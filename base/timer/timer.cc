@@ -28,6 +28,12 @@ namespace {
 constexpr Feature kAlwaysAbandonScheduledTask{"AlwaysAbandonScheduledTask",
                                               FEATURE_DISABLED_BY_DEFAULT};
 
+// Cache of the state of the kAlwaysAbandonScheduledTask feature. This avoids
+// the need to constantly query its enabled state through
+// FeatureList::IsEnabled().
+bool g_is_always_abandon_scheduled_task_enabled =
+    kAlwaysAbandonScheduledTask.default_state == FEATURE_ENABLED_BY_DEFAULT;
+
 }  // namespace
 
 // TaskDestructionDetector's role is to detect when the scheduled task is
@@ -56,6 +62,12 @@ class TaskDestructionDetector {
   // of sampling profiler data and tab_search:top100:2020).
   TimerBase* timer_;
 };
+
+// static
+void TimerBase::InitializeFeatures() {
+  g_is_always_abandon_scheduled_task_enabled =
+      FeatureList::IsEnabled(kAlwaysAbandonScheduledTask);
+}
 
 TimerBase::TimerBase() : TimerBase(nullptr) {}
 
@@ -138,7 +150,7 @@ void TimerBase::Stop() {
 
   is_running_ = false;
 
-  if (FeatureList::IsEnabled(kAlwaysAbandonScheduledTask))
+  if (g_is_always_abandon_scheduled_task_enabled)
     AbandonScheduledTask();
 
   // It's safe to destroy or restart Timer on another sequence after Stop().
@@ -151,7 +163,7 @@ void TimerBase::Stop() {
 void TimerBase::Reset() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!FeatureList::IsEnabled(kAlwaysAbandonScheduledTask)) {
+  if (!g_is_always_abandon_scheduled_task_enabled) {
     // If there's no pending task, start one up and return.
     if (!task_destruction_detector_) {
       ScheduleNewTask(delay_);
@@ -231,10 +243,8 @@ void TimerBase::OnScheduledTaskInvoked(
   task_destruction_detector.reset();
 
   // The timer may have been stopped.
-  if (!is_running_) {
-    DCHECK(!FeatureList::IsEnabled(kAlwaysAbandonScheduledTask));
+  if (!is_running_)
     return;
-  }
 
   // First check if we need to delay the task because of a new target time.
   if (desired_run_time_ > scheduled_run_time_) {
@@ -244,7 +254,6 @@ void TimerBase::OnScheduledTaskInvoked(
     // Task runner may have called us late anyway, so only post a continuation
     // task if the |desired_run_time_| is in the future.
     if (desired_run_time_ > now) {
-      DCHECK(!FeatureList::IsEnabled(kAlwaysAbandonScheduledTask));
       // Post a new task to span the remaining time.
       ScheduleNewTask(desired_run_time_ - now);
       return;

@@ -87,6 +87,10 @@ class TaskDestructionDetector;
 //
 class BASE_EXPORT TimerBase {
  public:
+  // Initializes the state of all the timer features. Must be invoked after
+  // FeatureList initialization and while Chrome is still single-threaded.
+  static void InitializeFeatures();
+
   // Constructs a timer. Start must be called later to set task info.
   // If |tick_clock| is provided, it is used instead of TimeTicks::Now() to get
   // TimeTicks when scheduling tasks.
