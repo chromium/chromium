@@ -710,6 +710,7 @@ content::RenderWidgetHost* GuestViewBase::GetOwnerRenderWidgetHost() {
   // embedded in a cross-process frame, this method should be overrode for that
   // specific guest type. For all other guests, the owner RenderWidgetHost is
   // that of the owner WebContents.
+  DCHECK(!CanBeEmbeddedInsideCrossProcessFrames());
   auto* owner = GetOwnerWebContents();
   if (owner && owner->GetRenderWidgetHostView())
     return owner->GetRenderWidgetHostView()->GetRenderWidgetHost();
@@ -722,6 +723,7 @@ content::SiteInstance* GuestViewBase::GetOwnerSiteInstance() {
   // embedded in a cross-process frame, this method should be overrode for that
   // specific guest type. For all other guests, the owner site instance can be
   // from the owner WebContents.
+  DCHECK(!CanBeEmbeddedInsideCrossProcessFrames());
   if (auto* owner_contents = GetOwnerWebContents())
     return owner_contents->GetSiteInstance();
   return nullptr;
@@ -912,7 +914,7 @@ void GuestViewBase::SetOwnerHost() {
                     : std::string();
 }
 
-bool GuestViewBase::CanBeEmbeddedInsideCrossProcessFrames() {
+bool GuestViewBase::CanBeEmbeddedInsideCrossProcessFrames() const {
   return false;
 }
 

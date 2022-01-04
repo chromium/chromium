@@ -96,6 +96,8 @@ bool ExtensionsGuestViewManagerDelegate::IsGuestAvailableToContext(
   const Extension* owner_extension = ProcessManager::Get(context_)->
       GetExtensionForWebContents(guest->owner_web_contents());
 
+  // Using `GetOwnerSiteURL` in the case of MimeHandlerViewGuest is safe, since
+  // mimeHandlerViewGuestInternal allows all urls.
   const GURL& owner_site_url = guest->GetOwnerSiteURL();
   // Ok for |owner_extension| to be nullptr, the embedder might be WebUI.
   Feature::Availability availability = feature->IsAvailableToContext(

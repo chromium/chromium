@@ -92,7 +92,7 @@ class MimeHandlerViewGuest
   static const char Type[];
 
   // GuestViewBase overrides.
-  bool CanBeEmbeddedInsideCrossProcessFrames() override;
+  bool CanBeEmbeddedInsideCrossProcessFrames() const override;
   content::RenderWidgetHost* GetOwnerRenderWidgetHost() override;
   content::SiteInstance* GetOwnerSiteInstance() override;
 

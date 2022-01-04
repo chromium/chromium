@@ -164,7 +164,10 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
   // Returns the user browser context of the embedder.
   content::BrowserContext* browser_context() const { return browser_context_; }
 
-  // Returns the URL of the owner WebContents.
+  // Returns the URL of the owner WebContents' SiteInstance.
+  // WARNING: Be careful using this with GuestViews where
+  // `CanBeEmbeddedInsideCrossProcessFrames` is true. This returns the site of
+  // the WebContents, not the embedding frame.
   const GURL& GetOwnerSiteURL() const;
 
   // Returns the host of the owner WebContents. For extensions, this is the
@@ -201,7 +204,7 @@ class GuestViewBase : public content::BrowserPluginGuestDelegate,
 
   // Returns true if the corresponding guest is allowed to be embedded inside an
   // <iframe> which is cross process.
-  virtual bool CanBeEmbeddedInsideCrossProcessFrames();
+  virtual bool CanBeEmbeddedInsideCrossProcessFrames() const;
 
  protected:
   explicit GuestViewBase(content::WebContents* owner_web_contents);

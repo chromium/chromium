@@ -119,7 +119,7 @@ content::SiteInstance* MimeHandlerViewGuest::GetOwnerSiteInstance() {
   return rfh ? rfh->GetSiteInstance() : nullptr;
 }
 
-bool MimeHandlerViewGuest::CanBeEmbeddedInsideCrossProcessFrames() {
+bool MimeHandlerViewGuest::CanBeEmbeddedInsideCrossProcessFrames() const {
   return true;
 }
 
