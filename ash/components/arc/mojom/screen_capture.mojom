@@ -10,12 +10,13 @@
 // The original version of this file lives in the Chromium repository at:
 // src/components/arc/mojom/screen_capture.mojom
 
-// Next MinVersion: 2
+// Next MinVersion: 3
 
 module arc.mojom;
 
 import "ash/components/arc/mojom/gfx.mojom";
 import "ash/components/arc/mojom/video_common.mojom";
+import "ui/gfx/mojom/buffer_types.mojom";
 
 // Implemented by Chrome in order to allow requesting of permissions to perform
 // desktop capture as well as creating a session for it.
@@ -55,7 +56,22 @@ interface ScreenCaptureSession {
   // graphics_buffer should be a handle to the buffer which corresponds to the
   //     surface being rendered to
   // stride is the stride in pixels for each row of the buffer
-  SetOutputBuffer@0(handle graphics_buffer, uint32 stride) => ();
+  // DEPRECATED: Please use SetOutputBuffer@1 instead.
+  SetOutputBufferDeprecated@0(handle graphics_buffer, uint32 stride) => ();
+
+  // Called to set the graphics buffer that the screen capture should be
+  // rendered to. This call does not return until the rendering is complete to
+  // the passed in buffer.
+  // graphics_buffer should be a handle to the buffer which corresponds to the
+  //     surface being rendered to
+  // buffer_format gives the general format of the buffer
+  // buffer_format_modifier is an additional buffer format modifier value
+  //     (See DRM_FORMAT_MOD_* in drm_fourcc.h)
+  // stride is the stride in pixels for each row of the buffer
+  [MinVersion=2] SetOutputBuffer@1(handle graphics_buffer,
+                                   gfx.mojom.BufferFormat buffer_format,
+                                   uint64 buffer_format_modifier,
+                                   uint32 stride) => ();
 };
 
 // Implemented by Android.
