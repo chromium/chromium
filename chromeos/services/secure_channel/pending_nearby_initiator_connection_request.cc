@@ -73,9 +73,9 @@ void PendingNearbyInitiatorConnectionRequest::HandleConnectionFailure(
 
   switch (failure_detail) {
     case NearbyInitiatorFailureType::kNearbyApiError:
-      FALLTHROUGH;
+      [[fallthrough]];
     case NearbyInitiatorFailureType::kConnectionRejected:
-      FALLTHROUGH;
+      [[fallthrough]];
     case NearbyInitiatorFailureType::kConnectivityError:
       StopRequestDueToConnectionFailures(
           mojom::ConnectionAttemptFailureReason::NEARBY_CONNECTION_ERROR);

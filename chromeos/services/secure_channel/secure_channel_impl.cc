@@ -230,7 +230,7 @@ void SecureChannelImpl::ProcessConnectionRequest(
 
       // Nearby Connections requires Bluetooth functionality, so fall through to
       // the Bluetooth case below.
-      FALLTHROUGH;
+      [[fallthrough]];
     case ConnectionMedium::kBluetoothLowEnergy:
       // Is the local Bluetooth adapter disabled or not present? If either,
       // notify client and return early.
