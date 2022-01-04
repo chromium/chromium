@@ -183,7 +183,7 @@ TEST_F(
 
 TEST_F(
     'MagnifierE2ETest', 'MovesFullscreenMagnifierSelectionEvent', function() {
-      this.runWithLoadedTree('', async function(root) {
+      this.runWithLoadedDesktop(async function(desktop) {
         const magnifier = accessibilityCommon.getMagnifierForTest();
         magnifier.setIsInitializingForTest(false);
 
@@ -209,11 +209,17 @@ TEST_F(
           });
         };
 
-        // Open Chrome Menu
-        chrome.accessibilityPrivate.sendSyntheticKeyEvent({
-          type: chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN,
-          keyCode: KeyCode.E,
-          modifiers: {alt: true}
+        // Trigger Chrome menu, and wait for it to open.
+        await new Promise(resolve => {
+          desktop.addEventListener(
+              chrome.automation.EventType.MENU_START, resolve, false);
+
+          chrome.accessibilityPrivate.sendSyntheticKeyEvent({
+            type:
+                chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN,
+            keyCode: KeyCode.E,
+            modifiers: {alt: true}
+          });
         });
 
         // Move menu selection to end of menu, and await new magnifier bounds.
