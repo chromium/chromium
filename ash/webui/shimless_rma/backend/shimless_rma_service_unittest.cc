@@ -2337,7 +2337,7 @@ TEST_F(ShimlessRmaServiceTest, RetryProvisioning) {
   run_loop.Run();
 }
 
-TEST_F(ShimlessRmaServiceTest, kFinalize) {
+TEST_F(ShimlessRmaServiceTest, Finalization) {
   const std::vector<rmad::GetStateReply> fake_states = {
       CreateStateReply(rmad::RmadState::kFinalize, rmad::RMAD_ERROR_OK),
       CreateStateReply(rmad::RmadState::kDeviceDestination,
@@ -2353,6 +2353,37 @@ TEST_F(ShimlessRmaServiceTest, kFinalize) {
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->FinalizationComplete(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kChooseDestination);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, RetryFinalization) {
+  const std::vector<rmad::GetStateReply> fake_states = {
+      CreateStateReply(rmad::RmadState::kFinalize, rmad::RMAD_ERROR_OK),
+      CreateStateReply(rmad::RmadState::kDeviceDestination,
+                       rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  fake_rmad_client_()->check_state_callback =
+      base::BindRepeating([](const rmad::RmadState& state) {
+        EXPECT_EQ(state.state_case(), rmad::RmadState::kFinalize);
+        EXPECT_EQ(state.finalize().choice(),
+                  rmad::FinalizeState::RMAD_FINALIZE_CHOICE_RETRY);
+      });
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kFinalize);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->RetryFinalization(base::BindLambdaForTesting(
       [&](mojom::State state, bool can_cancel, bool can_go_back,
           rmad::RmadErrorCode error) {
         EXPECT_EQ(state, mojom::State::kChooseDestination);

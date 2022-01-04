@@ -668,6 +668,13 @@ export class FakeShimlessRmaService {
   /**
    * @return {!Promise<!StateResult>}
    */
+  retryFinalization() {
+    return this.getNextStateForMethod_('retryFinalization', State.kFinalize);
+  }
+
+  /**
+   * @return {!Promise<!StateResult>}
+   */
   writeProtectManuallyEnabled() {
     return this.getNextStateForMethod_(
         'writeProtectManuallyEnabled', State.kWaitForManualWPEnable);
@@ -1228,6 +1235,7 @@ export class FakeShimlessRmaService {
     this.methods_.register('retryProvisioning');
     this.methods_.register('provisioningComplete');
 
+    this.methods_.register('retryFinalization');
     this.methods_.register('finalizationComplete');
 
     this.methods_.register('writeProtectManuallyEnabled');

@@ -117,6 +117,7 @@ class ShimlessRmaService : public mojom::ShimlessRmaService,
   void RetryProvisioning(RetryProvisioningCallback callback) override;
   void ProvisioningComplete(ProvisioningCompleteCallback callback) override;
 
+  void RetryFinalization(RetryFinalizationCallback callback) override;
   void FinalizationComplete(FinalizationCompleteCallback callback) override;
 
   void WriteProtectManuallyEnabled(

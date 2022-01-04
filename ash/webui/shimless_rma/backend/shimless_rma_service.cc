@@ -727,6 +727,20 @@ void ShimlessRmaService::ProvisioningComplete(
   TransitionNextStateGeneric(std::move(callback));
 }
 
+void ShimlessRmaService::RetryFinalization(RetryFinalizationCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kFinalize) {
+    LOG(ERROR) << "RetryFinalization called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run(RmadStateToMojo(state_proto_.state_case()),
+                            can_abort_, can_go_back_,
+                            rmad::RmadErrorCode::RMAD_ERROR_REQUEST_INVALID);
+    return;
+  }
+  state_proto_.mutable_finalize()->set_choice(
+      rmad::FinalizeState::RMAD_FINALIZE_CHOICE_RETRY);
+  TransitionNextStateGeneric(std::move(callback));
+}
+
 void ShimlessRmaService::FinalizationComplete(
     FinalizationCompleteCallback callback) {
   if (state_proto_.state_case() != rmad::RmadState::kFinalize) {

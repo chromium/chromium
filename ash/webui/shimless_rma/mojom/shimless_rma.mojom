@@ -661,6 +661,10 @@ interface ShimlessRmaService {
   ///////////////////////////////////////
   // Methods for kFinalize state
   //
+  // Retries provisioning after a failure.
+  RetryFinalization()
+      => (State state, bool can_cancel, bool can_go_back,
+          RmadErrorCode error);
   FinalizationComplete()
       => (State state, bool can_cancel, bool can_go_back,
           RmadErrorCode error);
