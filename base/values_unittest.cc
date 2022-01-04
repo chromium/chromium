@@ -1531,8 +1531,8 @@ TEST(ValuesTest, DictionarySetReturnsPointer) {
 
   {
     DictionaryValue dict;
-    DictionaryValue* dict_ptr = dict.SetDictionary(
-        "foo.bar", std::make_unique<base::DictionaryValue>());
+    Value* dict_ptr =
+        dict.SetPath("foo.bar", base::Value(base::Value::Type::DICTIONARY));
     EXPECT_EQ(Value::Type::DICTIONARY, dict_ptr->type());
   }
 
@@ -1609,8 +1609,8 @@ TEST(ValuesTest, DeepCopy) {
   Value* list_element_0_weak = &list_weak->GetList()[0];
   Value* list_element_1_weak = &list_weak->GetList()[1];
 
-  DictionaryValue* dict_weak = original_dict.SetDictionary(
-      "dictionary", std::make_unique<DictionaryValue>());
+  Value* dict_weak = original_dict.SetKey(
+      "dictionary", base::Value(base::Value::Type::DICTIONARY));
   dict_weak->SetStringKey("key", "value");
 
   auto copy_dict = original_dict.CreateDeepCopy();

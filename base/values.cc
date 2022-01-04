@@ -1154,12 +1154,6 @@ Value* DictionaryValue::SetString(StringPiece path,
   return Set(path, std::make_unique<Value>(in_value));
 }
 
-DictionaryValue* DictionaryValue::SetDictionary(
-    StringPiece path,
-    std::unique_ptr<DictionaryValue> in_value) {
-  return static_cast<DictionaryValue*>(Set(path, std::move(in_value)));
-}
-
 ListValue* DictionaryValue::SetList(StringPiece path,
                                     std::unique_ptr<ListValue> in_value) {
   return static_cast<ListValue*>(Set(path, std::move(in_value)));

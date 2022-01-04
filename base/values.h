@@ -671,9 +671,6 @@ class BASE_EXPORT DictionaryValue : public Value {
   // DEPRECATED, use `Value::SetStringKey()` or `Value::SetStringPath()`.
   Value* SetString(StringPiece path, const std::u16string& in_value);
   // DEPRECATED, use `Value::SetKey()` or `Value::SetPath()`.
-  DictionaryValue* SetDictionary(StringPiece path,
-                                 std::unique_ptr<DictionaryValue> in_value);
-  // DEPRECATED, use `Value::SetKey()` or `Value::SetPath()`.
   ListValue* SetList(StringPiece path, std::unique_ptr<ListValue> in_value);
 
   // Like Set(), but without special treatment of '.'.  This allows e.g. URLs to
