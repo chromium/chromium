@@ -285,12 +285,12 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
   if (request_options.make_u2f_api_credential) {
     authenticator_attachment =
         WEBAUTHN_AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM_U2F_V2;
-  } else if (request_options.is_off_the_record_context) {
-    // Disable all platform authenticators in off-the-record contexts.
-    //
-    // TODO(crbug.com/908622): Revisit this if the Windows WebAuthn API supports
-    // showing an equivalent dialog to what Chrome is displaying before creating
-    // a platform credential in Incognito mode.
+  } else if (request_options.is_off_the_record_context &&
+             api_version < WEBAUTHN_API_VERSION_4) {
+    // API versions before `WEBAUTHN_API_VERSION_4` don't have support for
+    // showing a warning message that platform credentials will out last the
+    // Incognito session. Thus, in this case, only external authenticators are
+    // enabled.
     authenticator_attachment = WEBAUTHN_AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM;
   } else {
     authenticator_attachment =
@@ -350,7 +350,7 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
       exclude_list_ptrs.data()};
 
   WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS options{
-      WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_4,
+      WEBAUTHN_AUTHENTICATOR_MAKE_CREDENTIAL_OPTIONS_VERSION_5,
       kWinWebAuthnTimeoutMilliseconds,
       WEBAUTHN_CREDENTIALS{
           0, nullptr},  // Ignored because pExcludeCredentialList is set.
@@ -368,6 +368,7 @@ AuthenticatorMakeCredentialBlocking(WinWebAuthnApi* webauthn_api,
       WEBAUTHN_LARGE_BLOB_SUPPORT_NONE,
       /*bPreferResidentKey=*/request_options.resident_key ==
           ResidentKeyRequirement::kPreferred,
+      request_options.is_off_the_record_context,
   };
 
   WEBAUTHN_CREDENTIAL_ATTESTATION* credential_attestation = nullptr;
@@ -410,6 +411,7 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
                                   CtapGetAssertionRequest request,
                                   CtapGetAssertionOptions request_options) {
   DCHECK(webauthn_api->IsAvailable());
+  const int api_version = webauthn_api->Version();
 
   std::u16string rp_id16 = base::UTF8ToUTF16(request.rp_id);
   std::string client_data_json = request.client_data_json;
@@ -447,20 +449,12 @@ AuthenticatorGetAssertionBlocking(WinWebAuthnApi* webauthn_api,
   if (request.is_u2f_only) {
     authenticator_attachment =
         WEBAUTHN_AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM_U2F_V2;
-  } else if (request.is_off_the_record_context) {
-    // Disable all platform authenticators in off-the-record contexts.
-    //
-    // TODO(crbug.com/908622): Revisit this if the Windows WebAuthn API supports
-    // showing an equivalent dialog to what Chrome is displaying before creating
-    // a platform credential in Incognito mode.
-    authenticator_attachment = WEBAUTHN_AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM;
   } else {
     authenticator_attachment = WEBAUTHN_AUTHENTICATOR_ATTACHMENT_ANY;
   }
 
   std::vector<WEBAUTHN_EXTENSION> extensions;
-  if (webauthn_api->Version() >= WEBAUTHN_API_VERSION_3 &&
-      request.get_cred_blob) {
+  if (api_version >= WEBAUTHN_API_VERSION_3 && request.get_cred_blob) {
     static const BOOL kCredBlobTrue = TRUE;
     extensions.emplace_back(WEBAUTHN_EXTENSION{
         /*pwszExtensionIdentifier=*/WEBAUTHN_EXTENSIONS_IDENTIFIER_CRED_BLOB,
