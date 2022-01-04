@@ -6,31 +6,27 @@
 #define CHROME_BROWSER_UI_VIEWS_OVERLAY_OVERLAY_WINDOW_VIEWS_H_
 
 #include "base/memory/raw_ptr.h"
-#include "content/public/browser/overlay_window.h"
-
 #include "base/timer/timer.h"
 #include "build/chromeos_buildflags.h"
+#include "content/public/browser/overlay_window.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/widget/widget.h"
-
-namespace views {
-class BackToTabImageButton;
-class CloseImageButton;
-class PlaybackImageButton;
-class ResizeHandleButton;
-class SkipAdLabelButton;
-class TrackImageButton;
-}  // namespace views
 
 namespace viz {
 class FrameSinkId;
 }  // namespace viz
 
+class BackToTabImageButton;
 class BackToTabLabelButton;
+class CloseImageButton;
 class HangUpButton;
+class PlaybackImageButton;
+class ResizeHandleButton;
+class SkipAdLabelButton;
 class ToggleMicrophoneButton;
 class ToggleCameraButton;
+class TrackImageButton;
 
 // The Chrome desktop implementation of OverlayWindow. This will only be
 // implemented in views, which will support all desktop platforms.
@@ -109,15 +105,15 @@ class OverlayWindowViews : public content::OverlayWindow,
   // is not done yet.
   bool IsLayoutPendingForTesting() const;
 
-  views::PlaybackImageButton* play_pause_controls_view_for_testing() const;
-  views::TrackImageButton* next_track_controls_view_for_testing() const;
-  views::TrackImageButton* previous_track_controls_view_for_testing() const;
-  views::SkipAdLabelButton* skip_ad_controls_view_for_testing() const;
+  PlaybackImageButton* play_pause_controls_view_for_testing() const;
+  TrackImageButton* next_track_controls_view_for_testing() const;
+  TrackImageButton* previous_track_controls_view_for_testing() const;
+  SkipAdLabelButton* skip_ad_controls_view_for_testing() const;
   ToggleMicrophoneButton* toggle_microphone_button_for_testing() const;
   ToggleCameraButton* toggle_camera_button_for_testing() const;
   HangUpButton* hang_up_button_for_testing() const;
   BackToTabLabelButton* back_to_tab_label_button_for_testing() const;
-  views::CloseImageButton* close_button_for_testing() const;
+  CloseImageButton* close_button_for_testing() const;
   gfx::Point close_image_position_for_testing() const;
   gfx::Point resize_handle_position_for_testing() const;
   OverlayWindowViews::PlaybackState playback_state_for_testing() const;
@@ -235,14 +231,14 @@ class OverlayWindowViews : public content::OverlayWindow,
   raw_ptr<views::View> video_view_ = nullptr;
   raw_ptr<views::View> controls_scrim_view_ = nullptr;
   raw_ptr<views::View> controls_container_view_ = nullptr;
-  raw_ptr<views::CloseImageButton> close_controls_view_ = nullptr;
-  raw_ptr<views::BackToTabImageButton> back_to_tab_image_button_ = nullptr;
+  raw_ptr<CloseImageButton> close_controls_view_ = nullptr;
+  raw_ptr<BackToTabImageButton> back_to_tab_image_button_ = nullptr;
   raw_ptr<BackToTabLabelButton> back_to_tab_label_button_ = nullptr;
-  raw_ptr<views::TrackImageButton> previous_track_controls_view_ = nullptr;
-  raw_ptr<views::PlaybackImageButton> play_pause_controls_view_ = nullptr;
-  raw_ptr<views::TrackImageButton> next_track_controls_view_ = nullptr;
-  raw_ptr<views::SkipAdLabelButton> skip_ad_controls_view_ = nullptr;
-  raw_ptr<views::ResizeHandleButton> resize_handle_view_ = nullptr;
+  raw_ptr<TrackImageButton> previous_track_controls_view_ = nullptr;
+  raw_ptr<PlaybackImageButton> play_pause_controls_view_ = nullptr;
+  raw_ptr<TrackImageButton> next_track_controls_view_ = nullptr;
+  raw_ptr<SkipAdLabelButton> skip_ad_controls_view_ = nullptr;
+  raw_ptr<ResizeHandleButton> resize_handle_view_ = nullptr;
   raw_ptr<ToggleMicrophoneButton> toggle_microphone_button_ = nullptr;
   raw_ptr<ToggleCameraButton> toggle_camera_button_ = nullptr;
   raw_ptr<HangUpButton> hang_up_button_ = nullptr;

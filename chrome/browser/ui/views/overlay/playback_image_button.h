@@ -9,8 +9,6 @@
 #include "chrome/browser/ui/views/overlay/overlay_window_views.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
-namespace views {
-
 // A resizable playback button with 3 states: play/pause/replay.
 class PlaybackImageButton : public OverlayWindowImageButton {
  public:
@@ -38,7 +36,5 @@ class PlaybackImageButton : public OverlayWindowImageButton {
   gfx::ImageSkia pause_image_;
   gfx::ImageSkia replay_image_;
 };
-
-}  // namespace views
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OVERLAY_PLAYBACK_IMAGE_BUTTON_H_

@@ -18,8 +18,6 @@ const int kBackToTabImageSize = 14;
 
 }  // namespace
 
-namespace views {
-
 BackToTabImageButton::BackToTabImageButton(PressedCallback callback)
     : OverlayWindowImageButton(std::move(callback)) {
   SetImage(views::Button::STATE_NORMAL,
@@ -35,5 +33,3 @@ BackToTabImageButton::BackToTabImageButton(PressedCallback callback)
 
 BEGIN_METADATA(BackToTabImageButton, OverlayWindowImageButton)
 END_METADATA
-
-}  // namespace views

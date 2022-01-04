@@ -13,8 +13,6 @@
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/vector_icons.h"
 
-namespace views {
-
 PlaybackImageButton::PlaybackImageButton(PressedCallback callback)
     : OverlayWindowImageButton(std::move(callback)) {
   // Accessibility.
@@ -67,5 +65,3 @@ void PlaybackImageButton::UpdateImageAndTooltipText() {
 
 BEGIN_METADATA(PlaybackImageButton, OverlayWindowImageButton)
 END_METADATA
-
-}  // namespace views

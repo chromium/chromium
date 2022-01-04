@@ -13,8 +13,6 @@ namespace gfx {
 struct VectorIcon;
 }
 
-namespace views {
-
 // A resizable previous/next track image button.
 class TrackImageButton : public OverlayWindowImageButton {
  public:
@@ -40,7 +38,5 @@ class TrackImageButton : public OverlayWindowImageButton {
   // Last visible size of the image button.
   gfx::Size last_visible_size_;
 };
-
-}  // namespace views
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OVERLAY_TRACK_IMAGE_BUTTON_H_

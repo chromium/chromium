@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/overlay/overlay_window_views.h"
-#include "base/memory/raw_ptr.h"
 
 #include <memory>
 #include <string>
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
@@ -377,7 +377,7 @@ void OverlayWindowViews::SetUpViews() {
   auto controls_scrim_view = std::make_unique<views::View>();
   auto controls_container_view = std::make_unique<views::View>();
   auto close_controls_view =
-      std::make_unique<views::CloseImageButton>(base::BindRepeating(
+      std::make_unique<CloseImageButton>(base::BindRepeating(
           [](OverlayWindowViews* overlay) {
             // Only pause the video if play/pause is available.
             const bool should_pause_video = overlay->show_play_pause_button_;
@@ -386,7 +386,7 @@ void OverlayWindowViews::SetUpViews() {
           },
           base::Unretained(this)));
 
-  std::unique_ptr<views::BackToTabImageButton> back_to_tab_image_button;
+  std::unique_ptr<BackToTabImageButton> back_to_tab_image_button;
   std::unique_ptr<BackToTabLabelButton> back_to_tab_label_button;
   auto back_to_tab_callback = base::BindRepeating(
       [](OverlayWindowViews* overlay) {
@@ -398,11 +398,11 @@ void OverlayWindowViews::SetUpViews() {
     back_to_tab_label_button =
         std::make_unique<BackToTabLabelButton>(std::move(back_to_tab_callback));
   } else {
-    back_to_tab_image_button = std::make_unique<views::BackToTabImageButton>(
-        std::move(back_to_tab_callback));
+    back_to_tab_image_button =
+        std::make_unique<BackToTabImageButton>(std::move(back_to_tab_callback));
   }
 
-  auto previous_track_controls_view = std::make_unique<views::TrackImageButton>(
+  auto previous_track_controls_view = std::make_unique<TrackImageButton>(
       base::BindRepeating(
           [](OverlayWindowViews* overlay) {
             overlay->controller_->PreviousTrack();
@@ -413,13 +413,13 @@ void OverlayWindowViews::SetUpViews() {
       l10n_util::GetStringUTF16(
           IDS_PICTURE_IN_PICTURE_PREVIOUS_TRACK_CONTROL_ACCESSIBLE_TEXT));
   auto play_pause_controls_view =
-      std::make_unique<views::PlaybackImageButton>(base::BindRepeating(
+      std::make_unique<PlaybackImageButton>(base::BindRepeating(
           [](OverlayWindowViews* overlay) {
             overlay->TogglePlayPause();
             overlay->RecordButtonPressed(OverlayWindowControl::kPlayPause);
           },
           base::Unretained(this)));
-  auto next_track_controls_view = std::make_unique<views::TrackImageButton>(
+  auto next_track_controls_view = std::make_unique<TrackImageButton>(
       base::BindRepeating(
           [](OverlayWindowViews* overlay) {
             overlay->controller_->NextTrack();
@@ -430,7 +430,7 @@ void OverlayWindowViews::SetUpViews() {
       l10n_util::GetStringUTF16(
           IDS_PICTURE_IN_PICTURE_NEXT_TRACK_CONTROL_ACCESSIBLE_TEXT));
   auto skip_ad_controls_view =
-      std::make_unique<views::SkipAdLabelButton>(base::BindRepeating(
+      std::make_unique<SkipAdLabelButton>(base::BindRepeating(
           [](OverlayWindowViews* overlay) {
             overlay->controller_->SkipAd();
             overlay->RecordButtonPressed(OverlayWindowControl::kSkipAd);
@@ -458,8 +458,8 @@ void OverlayWindowViews::SetUpViews() {
       },
       base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto resize_handle_view = std::make_unique<views::ResizeHandleButton>(
-      views::Button::PressedCallback());
+  auto resize_handle_view =
+      std::make_unique<ResizeHandleButton>(views::Button::PressedCallback());
 #endif
 
   window_background_view->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
@@ -1328,23 +1328,23 @@ void OverlayWindowViews::TogglePlayPause() {
   play_pause_controls_view_->SetPlaybackState(is_active ? kPlaying : kPaused);
 }
 
-views::PlaybackImageButton*
-OverlayWindowViews::play_pause_controls_view_for_testing() const {
+PlaybackImageButton* OverlayWindowViews::play_pause_controls_view_for_testing()
+    const {
   return play_pause_controls_view_;
 }
 
-views::TrackImageButton*
-OverlayWindowViews::next_track_controls_view_for_testing() const {
+TrackImageButton* OverlayWindowViews::next_track_controls_view_for_testing()
+    const {
   return next_track_controls_view_;
 }
 
-views::TrackImageButton*
-OverlayWindowViews::previous_track_controls_view_for_testing() const {
+TrackImageButton* OverlayWindowViews::previous_track_controls_view_for_testing()
+    const {
   return previous_track_controls_view_;
 }
 
-views::SkipAdLabelButton*
-OverlayWindowViews::skip_ad_controls_view_for_testing() const {
+SkipAdLabelButton* OverlayWindowViews::skip_ad_controls_view_for_testing()
+    const {
   return skip_ad_controls_view_;
 }
 
@@ -1367,7 +1367,7 @@ BackToTabLabelButton* OverlayWindowViews::back_to_tab_label_button_for_testing()
   return back_to_tab_label_button_;
 }
 
-views::CloseImageButton* OverlayWindowViews::close_button_for_testing() const {
+CloseImageButton* OverlayWindowViews::close_button_for_testing() const {
   return close_controls_view_;
 }
 

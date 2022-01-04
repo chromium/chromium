@@ -19,8 +19,6 @@ const int kTrackImageSize = 24;
 
 }  // namespace
 
-namespace views {
-
 TrackImageButton::TrackImageButton(PressedCallback callback,
                                    const gfx::VectorIcon& icon,
                                    std::u16string label)
@@ -37,7 +35,7 @@ TrackImageButton::TrackImageButton(PressedCallback callback,
 void TrackImageButton::SetVisible(bool visible) {
   // We need to do more than the usual visibility change because otherwise the
   // overlay window cannot be dragged when grabbing within the button area.
-  ImageButton::SetVisible(visible);
+  views::ImageButton::SetVisible(visible);
   SetSize(visible ? last_visible_size_ : gfx::Size());
 }
 
@@ -48,5 +46,3 @@ void TrackImageButton::OnBoundsChanged(const gfx::Rect&) {
 
 BEGIN_METADATA(TrackImageButton, OverlayWindowImageButton)
 END_METADATA
-
-}  // namespace views

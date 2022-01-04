@@ -20,8 +20,6 @@ constexpr int kCloseButtonSize = 16;
 
 }  // namespace
 
-namespace views {
-
 CloseImageButton::CloseImageButton(PressedCallback callback)
     : OverlayWindowImageButton(std::move(callback)) {
   SetSize(gfx::Size(kCloseButtonSize, kCloseButtonSize));
@@ -41,18 +39,16 @@ void CloseImageButton::SetPosition(
     OverlayWindowViews::WindowQuadrant quadrant) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (quadrant == OverlayWindowViews::WindowQuadrant::kBottomLeft) {
-    ImageButton::SetPosition(
+    views::ImageButton::SetPosition(
         gfx::Point(kCloseButtonMargin, kCloseButtonMargin));
     return;
   }
 #endif
 
-  ImageButton::SetPosition(
+  views::ImageButton::SetPosition(
       gfx::Point(size.width() - kCloseButtonSize - kCloseButtonMargin,
                  kCloseButtonMargin));
 }
 
 BEGIN_METADATA(CloseImageButton, OverlayWindowImageButton)
 END_METADATA
-
-}  // namespace views
