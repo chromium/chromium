@@ -83,8 +83,13 @@ void ShouldNeverRun(T t) {
 // Run() on the returned callbacks, or the thread that constructed the
 // BarrierCallback (in the case where `num_callbacks` is 0).
 //
+// BarrierCallback is copyable. Copies share state.
+//
 // `done_callback` is also cleared on the thread that runs it (by virtue of
 // being a OnceCallback).
+//
+// See also
+// https://chromium.googlesource.com/chromium/src/+/HEAD/docs/callback.md
 template <typename T,
           typename RawArg = base::remove_cvref_t<T>,
           typename DoneArg = std::vector<RawArg>,
