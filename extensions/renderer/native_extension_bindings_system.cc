@@ -834,7 +834,7 @@ void NativeExtensionBindingsSystem::OnEventListenerChanged(
       ipc_message_sender_->SendAddUnfilteredEventListenerIPC(script_context,
                                                              event_name);
       // Check if we need to add a lazy listener as well.
-      FALLTHROUGH;
+      [[fallthrough]];
     case binding::EventListenersChanged::
         kFirstUnfilteredListenerForContextAdded: {
       // If the listener is the first for the event page, we need to
@@ -852,7 +852,7 @@ void NativeExtensionBindingsSystem::OnEventListenerChanged(
       ipc_message_sender_->SendRemoveUnfilteredEventListenerIPC(script_context,
                                                                 event_name);
       // Check if we need to remove a lazy listener as well.
-      FALLTHROUGH;
+      [[fallthrough]];
     case binding::EventListenersChanged::
         kLastUnfilteredListenerForContextRemoved: {
       // If the listener was the last for the event page, we need to remove
