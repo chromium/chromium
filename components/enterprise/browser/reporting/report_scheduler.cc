@@ -61,7 +61,8 @@ void OnExtensionRequestEnqueued(bool success) {
   // So far, there is nothing handle the enqueue failure as the CBCM status
   // report will cover all failed requests. However, we may need a retry logic
   // here if Extension workflow is decoupled from the status report.
-  LOG(ERROR) << "Extension request failed to be added to the pipeline.";
+  if (!success)
+    LOG(ERROR) << "Extension request failed to be added to the pipeline.";
 }
 
 }  // namespace
