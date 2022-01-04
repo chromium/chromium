@@ -159,7 +159,7 @@ class NetworkHealthReportingTest
         ::ash::kReportDeviceNetworkTelemetryEventCheckingRateMs,
         kNetworkHealthRateMs);
 
-    const std::string kEthernetPath = "ethernet/path";
+    const std::string kWifiPath = "wifi/path1";
     const std::string kProfilePath = "/profile/path";
     network_handler_test_helper_.profile_test()->AddProfile(kProfilePath,
                                                             "user_hash");
@@ -169,11 +169,11 @@ class NetworkHealthReportingTest
 
     device_client->ClearDevices();
     service_client->ClearServices();
-    device_client->AddDevice(kEthernetPath, shill::kTypeEthernet, "ethernet");
-    service_client->AddService(kEthernetPath, "guid", "name",
-                               shill::kTypeEthernet, shill::kStateOnline,
+    device_client->AddDevice(kWifiPath, shill::kTypeEthernet, "ethernet");
+    service_client->AddService(kWifiPath, "guid", "name", shill::kTypeWifi,
+                               shill::kStateOnline,
                                /*is_visible=*/true);
-    service_client->SetServiceProperty(kEthernetPath, shill::kProfileProperty,
+    service_client->SetServiceProperty(kWifiPath, shill::kProfileProperty,
                                        base::Value(kProfilePath));
     base::RunLoop().RunUntilIdle();
   }
@@ -191,6 +191,30 @@ class NetworkHealthReportingTest
     base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
                                                      run_loop.QuitClosure());
     run_loop.Run();
+  }
+
+  void SetWifiResult() {
+    auto telemetry_info = chromeos::cros_healthd::mojom::TelemetryInfo::New();
+    std::vector<chromeos::cros_healthd::mojom::NetworkInterfaceInfoPtr>
+        network_interfaces;
+
+    auto wireless_link_info =
+        chromeos::cros_healthd::mojom::WirelessLinkInfo::New("", 0, 0, 0, 0, 0,
+                                                             0);
+    auto wireless_interface_info =
+        chromeos::cros_healthd::mojom::WirelessInterfaceInfo::New(
+            "path1", false, std::move(wireless_link_info));
+    network_interfaces.push_back(
+        chromeos::cros_healthd::mojom::NetworkInterfaceInfo::
+            NewWirelessInterfaceInfo(std::move(wireless_interface_info)));
+    auto network_interface_result =
+        chromeos::cros_healthd::mojom::NetworkInterfaceResult::
+            NewNetworkInterfaceInfo(std::move(network_interfaces));
+
+    telemetry_info->network_interface_result =
+        std::move(network_interface_result);
+    ::ash::cros_healthd::FakeCrosHealthdClient::Get()
+        ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -237,6 +261,7 @@ TEST_P(NetworkHealthReportingTest, Info_Telemetry_LatencyEvent) {
       ->set_verdict(test_case.latency_verdict);
   https_latency_sampler->SetMetricData(std::move(https_latency_data));
   fake_delegate->SetHttpsLatencySampler(std::move(https_latency_sampler));
+  SetWifiResult();
 
   int info_report_count = 0;
   int telemetry_report_count = 0;
@@ -413,6 +438,153 @@ INSTANTIATE_TEST_SUITE_P(
           /*expected_telemetry_count=*/1, /*expected_event_count=*/1,
           /*expected_flush_per_period=*/1}}),
     [](const testing::TestParamInfo<NetworkHealthReportingTest::ParamType>&
+           info) { return info.param.test_name; });
+
+struct HealthdInfoReportingTestCase {
+  std::string test_name;
+  bool is_deprovisioned;
+  std::string policy_path;
+  bool policy_enabled;
+  int expected_info_count;
+};
+
+class HealthdInfoReportingTest
+    : public ::testing::TestWithParam<HealthdInfoReportingTestCase> {
+ public:
+ protected:
+  void SetUp() override {
+    task_runner_ = base::ThreadPool::CreateSequencedTaskRunner({});
+    chromeos::cros_healthd::FakeCrosHealthdClient::InitializeFake();
+  }
+
+  void TearDown() override {
+    chromeos::cros_healthd::FakeCrosHealthdClient::Shutdown();
+    chromeos::cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
+  }
+
+  void SetHealthdMetricSamplerResult() {
+    auto telemetry_info = chromeos::cros_healthd::mojom::TelemetryInfo::New();
+
+    telemetry_info
+        ->cpu_result = chromeos::cros_healthd::mojom::CpuResult::NewCpuInfo(
+        chromeos::cros_healthd::mojom::CpuInfo::New(
+            0, chromeos::cros_healthd::mojom::CpuArchitectureEnum::kX86_64,
+            std::vector<chromeos::cros_healthd::mojom::PhysicalCpuInfoPtr>(),
+            std::vector<
+                chromeos::cros_healthd::mojom::CpuTemperatureChannelPtr>(),
+            chromeos::cros_healthd::mojom::KeylockerInfo::New(false)));
+
+    telemetry_info->memory_result =
+        chromeos::cros_healthd::mojom::MemoryResult::NewMemoryInfo(
+            chromeos::cros_healthd::mojom::MemoryInfo::New(
+                0, 0, 0, 0,
+                chromeos::cros_healthd::mojom::MemoryEncryptionInfo::New(
+                    chromeos::cros_healthd::mojom::EncryptionState::
+                        kEncryptionDisabled,
+                    0, 0,
+                    chromeos::cros_healthd::mojom::CryptoAlgorithm::
+                        kAesXts128)));
+
+    std::vector<chromeos::cros_healthd::mojom::BusDevicePtr> bus_devices;
+    auto tbt_device = chromeos::cros_healthd::mojom::BusDevice::New();
+    tbt_device->bus_info =
+        chromeos::cros_healthd::mojom::BusInfo::NewThunderboltBusInfo(
+            chromeos::cros_healthd::mojom::ThunderboltBusInfo::New(
+                chromeos::cros_healthd::mojom::ThunderboltSecurityLevel::kNone,
+                std::vector<chromeos::cros_healthd::mojom::
+                                ThunderboltBusInterfaceInfoPtr>()));
+    bus_devices.push_back(std::move(tbt_device));
+    telemetry_info->bus_result =
+        chromeos::cros_healthd::mojom::BusResult::NewBusDevices(
+            std::move(bus_devices));
+
+    chromeos::cros_healthd::FakeCrosHealthdClient::Get()
+        ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
+  }
+
+  base::test::TaskEnvironment task_environment_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  ::ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+};
+
+TEST_P(HealthdInfoReportingTest, HealthdInfoTest) {
+  const HealthdInfoReportingTestCase& test_case = GetParam();
+
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      test_case.policy_path, test_case.policy_enabled);
+
+  auto fake_delegate = std::make_unique<FakeDelegate>();
+
+  fake_delegate->SetIsDeprovisioned(test_case.is_deprovisioned);
+  SetHealthdMetricSamplerResult();
+
+  auto info_queue = std::unique_ptr<MockReportQueue, base::OnTaskRunnerDeleter>(
+      new ::testing::NiceMock<MockReportQueue>(),
+      base::OnTaskRunnerDeleter(task_runner_));
+  auto telemetry_queue =
+      std::unique_ptr<MockReportQueue, base::OnTaskRunnerDeleter>(
+          new ::testing::NiceMock<MockReportQueue>(),
+          base::OnTaskRunnerDeleter(task_runner_));
+  auto event_queue =
+      std::unique_ptr<MockReportQueue, base::OnTaskRunnerDeleter>(
+          new ::testing::NiceMock<MockReportQueue>(),
+          base::OnTaskRunnerDeleter(task_runner_));
+  auto* const info_queue_ptr = info_queue.get();
+
+  fake_delegate->SetInfoQueue(std::move(info_queue));
+  fake_delegate->SetTelemetryQueue(std::move(telemetry_queue));
+  fake_delegate->SetEventQueue(std::move(event_queue));
+
+  EXPECT_CALL(*info_queue_ptr, AddRecord).Times(test_case.expected_info_count);
+  auto metric_reporting_manager = MetricReportingManager::CreateForTesting(
+      std::move(fake_delegate), nullptr);
+
+  base::RunLoop run_loop;
+  run_loop.RunUntilIdle();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    HealthdInfoReportingTests,
+    HealthdInfoReportingTest,
+    ::testing::ValuesIn<HealthdInfoReportingTestCase>({
+        {"CpuReportingEnabled", /*is_deprovisioned=*/false,
+         /*policy_path=*/::ash::kReportDeviceCpuInfo,
+         /*policy_enabled=*/true,
+         /*expected_info_count=*/1},
+        {"CpuReportingDisabled", /*is_deprovisioned=*/false,
+         /*policy_path=*/::ash::kReportDeviceCpuInfo,
+         /*policy_enabled=*/false,
+         /*expected_info_count=*/0},
+        {"CpuReportingDeprovisioned", /*is_deprovisioned=*/true,
+         /*policy_path=*/::ash::kReportDeviceCpuInfo,
+         /*policy_enabled=*/true,
+         /*expected_info_count=*/0},
+        {"MemoryReportingEnabled", /*is_deprovisioned=*/false,
+         /*policy_path=*/::ash::kReportDeviceMemoryInfo,
+         /*policy_enabled=*/true,
+         /*expected_info_count=*/1},
+        {"MemoryReportingDisabled", /*is_deprovisioned=*/false,
+         /*policy_path=*/::ash::kReportDeviceMemoryInfo,
+         /*policy_enabled=*/false,
+         /*expected_info_count=*/0},
+        {"MemoryReportingDeprovisioned", /*is_deprovisioned=*/true,
+         /*policy_path=*/::ash::kReportDeviceMemoryInfo,
+         /*policy_enabled=*/true,
+         /*expected_info_count=*/0},
+        {"TbtReportingEnabled", /*is_deprovisioned=*/false,
+         /*policy_path=*/::ash::kReportDeviceSecurityStatus,
+         /*policy_enabled=*/true,
+         /*expected_info_count=*/1},
+        {"TbtReportingDisabled", /*is_deprovisioned=*/false,
+         /*policy_path=*/::ash::kReportDeviceSecurityStatus,
+         /*policy_enabled=*/false,
+         /*expected_info_count=*/0},
+        {"TbtReportingDeprovisioned", /*is_deprovisioned=*/true,
+         /*policy_path=*/::ash::kReportDeviceSecurityStatus,
+         /*policy_enabled=*/true,
+         /*expected_info_count=*/0},
+    }),
+    [](const testing::TestParamInfo<HealthdInfoReportingTest::ParamType>&
            info) { return info.param.test_name; });
 
 }  // namespace

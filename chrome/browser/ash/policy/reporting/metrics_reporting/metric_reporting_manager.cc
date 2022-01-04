@@ -155,6 +155,16 @@ void MetricReportingManager::Init() {
   event_report_queue_ =
       CreateMetricReportQueue(Destination::EVENT_METRIC, Priority::SLOW_BATCH);
 
+  InitCrosHealthdInfoCollector(
+      chromeos::cros_healthd::mojom::ProbeCategoryEnum::kCpu,
+      ::ash::kReportDeviceCpuInfo, /*default_value=*/false);
+  InitCrosHealthdInfoCollector(
+      chromeos::cros_healthd::mojom::ProbeCategoryEnum::kMemory,
+      ::ash::kReportDeviceMemoryInfo, /*default_value=*/false);
+  InitCrosHealthdInfoCollector(
+      chromeos::cros_healthd::mojom::ProbeCategoryEnum::kBus,
+      ::ash::kReportDeviceSecurityStatus,
+      /*default_value=*/false);
   if (base::FeatureList::IsEnabled(kEnableNetworkTelemetryReporting)) {
     // Network health info.
     // ReportDeviceNetworkConfiguration policy is enabled by default, so set its
@@ -266,6 +276,16 @@ void MetricReportingManager::CreateEventObserverManager(
           std::move(event_observer), event_report_queue_.get(),
           &reporting_settings_, enable_setting_path,
           setting_enabled_default_value, std::move(additional_samplers)));
+}
+
+void MetricReportingManager::InitCrosHealthdInfoCollector(
+    chromeos::cros_healthd::mojom::ProbeCategoryEnum probe_category,
+    const std::string& setting_path,
+    bool default_value) {
+  auto info_sampler = std::make_unique<CrosHealthdMetricSampler>(
+      probe_category, CrosHealthdMetricSampler::MetricType::kInfo);
+  CreateOneShotCollector(std::move(info_sampler), info_report_queue_.get(),
+                         setting_path, default_value);
 }
 
 void MetricReportingManager::InitNetworkCollectors() {

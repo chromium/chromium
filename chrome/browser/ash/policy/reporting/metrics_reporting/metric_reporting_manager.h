@@ -13,10 +13,12 @@
 #include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_healthd_metric_sampler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/cros_reporting_settings.h"
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
 #include "components/reporting/proto/synced/record_constants.pb.h"
 
 namespace reporting {
@@ -116,6 +118,11 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
       const std::string& enable_setting_path,
       bool setting_enabled_default_value,
       std::vector<Sampler*> additional_samplers = {});
+
+  void InitCrosHealthdInfoCollector(
+      chromeos::cros_healthd::mojom::ProbeCategoryEnum probe_category,
+      const std::string& setting_path,
+      bool default_value);
 
   void InitNetworkCollectors();
 
