@@ -505,14 +505,26 @@ typedef NS_ENUM(NSInteger, ReauthenticationReason) {
 }
 
 - (NSString*)footerText {
-  if (self.syncingUserEmail) {
-    return l10n_util::GetNSStringF(
-        IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER,
-        base::SysNSStringToUTF16(self.syncingUserEmail));
-  }
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kIOSEnablePasswordManagerBrandingUpdate)) {
+    if (self.syncingUserEmail) {
+      return l10n_util::GetNSStringF(
+          IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_BRANDED,
+          base::SysNSStringToUTF16(self.syncingUserEmail));
+    }
 
-  return l10n_util::GetNSString(
-      IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_NON_SYNCING);
+    return l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORD_FOOTER_NOT_SYNCING);
+  } else {
+    if (self.syncingUserEmail) {
+      return l10n_util::GetNSStringF(
+          IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER,
+          base::SysNSStringToUTF16(self.syncingUserEmail));
+    }
+
+    return l10n_util::GetNSString(
+        IDS_IOS_SETTINGS_ADD_PASSWORD_FOOTER_NON_SYNCING);
+  }
 }
 
 #pragma mark - UITableViewDelegate
