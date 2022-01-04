@@ -20,6 +20,8 @@ import {getBluetoothConfig} from 'chrome://resources/cr_components/chromeos/blue
 import {loadTimeData} from '../../i18n_setup.js';
 import {Router} from '../../router.js';
 import {routes} from '../os_route.m.js';
+import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+import {RouteOriginBehavior, RouteOriginBehaviorInterface} from '../route_origin_behavior.m.js';
 
 const mojom = chromeos.bluetoothConfig.mojom;
 
@@ -37,9 +39,11 @@ const LabelType = {
  * @constructor
  * @extends {PolymerElement}
  * @implements {I18nBehaviorInterface}
+ * @implements {RouteObserverBehaviorInterface}
+ * @implements {RouteOriginBehaviorInterface}
  */
-const SettingsBluetoothSummaryElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+const SettingsBluetoothSummaryElementBase = mixinBehaviors(
+    [I18nBehavior, RouteObserverBehavior, RouteOriginBehavior], PolymerElement);
 
 /** @polymer */
 class SettingsBluetoothSummaryElement extends
@@ -103,6 +107,20 @@ class SettingsBluetoothSummaryElement extends
         readOnly: true,
       },
     };
+  }
+
+  constructor() {
+    super();
+
+    /** RouteOriginBehaviorInterface override */
+    this.route_ = routes.BASIC;
+  }
+
+  /** @override */
+  ready() {
+    super.ready();
+
+    this.addFocusConfig(routes.BLUETOOTH_DEVICES, '.subpage-arrow');
   }
 
   /** @private */

@@ -425,13 +425,13 @@ Polymer({
     this.manageBrowserProxy_.manageA11yPageReady();
 
     const r = routes;
-    this.addFocusConfig_(r.MANAGE_TTS_SETTINGS, '#ttsSubpageButton');
-    this.addFocusConfig_(r.MANAGE_CAPTION_SETTINGS, '#captionsSubpageButton');
-    this.addFocusConfig_(
+    this.addFocusConfig(r.MANAGE_TTS_SETTINGS, '#ttsSubpageButton');
+    this.addFocusConfig(r.MANAGE_CAPTION_SETTINGS, '#captionsSubpageButton');
+    this.addFocusConfig(
         r.MANAGE_SWITCH_ACCESS_SETTINGS, '#switchAccessSubpageButton');
-    this.addFocusConfig_(r.DISPLAY, '#displaySubpageButton');
-    this.addFocusConfig_(r.KEYBOARD, '#keyboardSubpageButton');
-    this.addFocusConfig_(r.POINTERS, '#pointerSubpageButton');
+    this.addFocusConfig(r.DISPLAY, '#displaySubpageButton');
+    this.addFocusConfig(r.KEYBOARD, '#keyboardSubpageButton');
+    this.addFocusConfig(r.POINTERS, '#pointerSubpageButton');
   },
 
   /**

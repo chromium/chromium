@@ -253,7 +253,7 @@ Polymer({
         });
     this.browserProxy_.requestGmsCoreNotificationsDisabledDeviceNames();
 
-    this.addFocusConfig_(routes.KNOWN_NETWORKS, '#knownNetworksSubpageButton');
+    this.addFocusConfig(routes.KNOWN_NETWORKS, '#knownNetworksSubpageButton');
   },
 
   /** override */

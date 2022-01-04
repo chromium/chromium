@@ -57,7 +57,7 @@ Polymer({
   route_: settings.routes.MULTIDEVICE_FEATURES,
 
   ready() {
-    this.addFocusConfig_(this.subpageRoute, '#subpageButton');
+    this.addFocusConfig(this.subpageRoute, '#subpageButton');
   },
 
   /** @override */

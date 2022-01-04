@@ -50,6 +50,8 @@ js_library("os_bluetooth_devices_subpage") {
 js_library("os_bluetooth_summary") {
   deps = [
     "..:os_route.m",
+    "..:route_observer_behavior",
+    "..:route_origin_behavior.m",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/bluetooth:bluetooth_utils",

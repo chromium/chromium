@@ -34,7 +34,7 @@ cr.define('settings', function() {
      * @param {string} value A query selector leading to a button that routes
      *     the user to |route| if it is defined.
      */
-    addFocusConfig_(route, value) {
+    addFocusConfig(route, value) {
       if (route) {
         this.focusConfig_.set(route.path, value);
       }
@@ -74,7 +74,20 @@ cr.define('settings', function() {
   /* #export */ const RouteOriginBehavior =
       [settings.RouteObserverBehavior, RouteOriginBehaviorImpl];
 
+  /** @interface */
+  /* #export */ class RouteOriginBehaviorInterface {
+    /**
+     * @param {!settings.Route|undefined} route
+     * @param {string} value
+     */
+    addFocusConfig(route, value) {}
+  }
+
   // #cr_define_end
-  return {RouteOriginBehaviorImpl, RouteOriginBehavior};
+  return {
+    RouteOriginBehaviorImpl,
+    RouteOriginBehavior,
+    RouteOriginBehaviorInterface
+  };
 });
 
