@@ -197,8 +197,6 @@ if (!is_ios && !is_android) {
     visibility = [ ":*" ]
 
     sources = [
-      "src/util/histogram.cc",
-      "src/util/histogram.h",
       "src/util/testutil.cc",
       "src/util/testutil.h",
     ]
@@ -214,49 +212,63 @@ if (!is_ios && !is_android) {
     deps = [ "//base" ]
   }
 
-  test("leveldb_arena_test") {
-    sources = [ "src/util/arena_test.cc" ]
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    deps = [ ":leveldb_testutil" ]
-  }
+  test("leveldb_unittests") {
+    sources = [
+      # The project's tests.
+      "src/db/autocompact_test.cc",
+      "src/db/corruption_test.cc",
+      "src/db/db_test.cc",
+      "src/db/dbformat_test.cc",
+      "src/db/filename_test.cc",
+      "src/db/log_test.cc",
+      "src/db/recovery_test.cc",
+      "src/db/skiplist_test.cc",
+      "src/db/version_edit_test.cc",
+      "src/db/version_set_test.cc",
+      "src/db/write_batch_test.cc",
+      "src/helpers/memenv/memenv_test.cc",
+      "src/issues/issue178_test.cc",
+      "src/issues/issue200_test.cc",
+      "src/issues/issue320_test.cc",
+      "src/table/filter_block_test.cc",
+      "src/table/table_test.cc",
+      "src/util/arena_test.cc",
+      "src/util/bloom_test.cc",
+      "src/util/cache_test.cc",
+      "src/util/coding_test.cc",
+      "src/util/crc32c_test.cc",
+      "src/util/env_test.cc",
+      "src/util/hash_test.cc",
+      "src/util/logging_test.cc",
+      "src/util/no_destructor_test.cc",
+      "src/util/status_test.cc",
 
-  test("leveldb_bloom_test") {
-    sources = [ "src/util/bloom_test.cc" ]
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    deps = [ ":leveldb_testutil" ]
-  }
+      # Custom main() needed by Chromium's leveldb::Env.
+      "leveldb_unittest_main.cc",
+    ]
 
-  test("leveldb_cache_test") {
-    sources = [ "src/util/cache_test.cc" ]
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
-    deps = [ ":leveldb_testutil" ]
 
     if (is_win) {
       # util\cache_test.cc(167): warning C4018: '<': signed/unsigned mismatch
       # util\cache_test.cc(171): warning C4018: '<': signed/unsigned mismatch
       cflags = [ "/wd4018" ]  # Signed/unsigned mismatch in comparison.
     }
-  }
 
-  test("leveldb_corruption_test") {
-    sources = [ "src/db/corruption_test.cc" ]
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    deps = [ ":leveldb_testutil" ]
-  }
-
-  test("leveldb_crc32c_test") {
-    sources = [ "src/util/crc32c_test.cc" ]
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    deps = [ ":leveldb_testutil" ]
+    deps = [
+      ":leveldb_testutil",
+      "//base",
+      "//base/test:test_support",
+    ]
   }
 
   test("leveldb_db_bench") {
-    sources = [ "src/benchmarks/db_bench.cc" ]
+    sources = [
+      "src/benchmarks/db_bench.cc",
+      "src/util/histogram.cc",
+      "src/util/histogram.h",
+    ]
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
     deps = [ ":leveldb_testutil" ]
@@ -265,8 +277,8 @@ if (!is_ios && !is_android) {
   # The google/banchmark third_party dependency is optional, and only
   # available if specified. See third_party/google_benchmark/README.chromium.
   if (enable_google_benchmarks) {
-    test("leveldb_db_test") {
-      sources = [ "src/db/db_test.cc" ]
+    test("leveldb_db_bench_log") {
+      sources = [ "src/benchmarks/db_bench_log.cc" ]
       configs -= [ "//build/config/compiler:chromium_code" ]
       configs += [ "//build/config/compiler:no_chromium_code" ]
       deps = [
@@ -276,38 +288,6 @@ if (!is_ios && !is_android) {
     }
   }
 
-  test("leveldb_dbformat_test") {
-    sources = [ "src/db/dbformat_test.cc" ]
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    deps = [ ":leveldb_testutil" ]
-  }
-
-  test("leveldb_env_test") {
-    sources = [ "src/util/env_test.cc" ]
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    deps = [ ":leveldb_testutil" ]
-
-    if (is_win) {
-      cflags = [ "/wd4018" ]  # Signed/unsigned mismatch in comparison.
-    }
-  }
-
-  test("leveldb_filename_test") {
-    sources = [ "src/db/filename_test.cc" ]
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    deps = [ ":leveldb_testutil" ]
-  }
-
-  test("leveldb_filter_block_test") {
-    sources = [ "src/table/filter_block_test.cc" ]
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    deps = [ ":leveldb_testutil" ]
-  }
-
   executable("leveldb_leveldbutil") {
     sources = [ "src/db/leveldbutil.cc" ]
     configs -= [ "//build/config/compiler:chromium_code" ]
@@ -315,70 +295,15 @@ if (!is_ios && !is_android) {
     deps = [ ":leveldb_static" ]
   }
 
-  test("leveldb_log_test") {
-    sources = [ "src/db/log_test.cc" ]
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    deps = [ ":leveldb_testutil" ]
-
-    if (is_win) {
-      # db\log_test.cc(486) triggers two warnings:
-      # util\testharness.h(91): warning C4018: '<=': signed/unsigned mismatch
-      # util\testharness.h(89): warning C4018: '>=': signed/unsigned mismatch
-      cflags = [ "/wd4018" ]  # Signed/unsigned mismatch in comparison.
-    }
-  }
-
-  test("leveldb_skiplist_test") {
-    sources = [ "src/db/skiplist_test.cc" ]
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    deps = [ ":leveldb_testutil" ]
-  }
-
-  test("leveldb_table_test") {
-    sources = [ "src/table/table_test.cc" ]
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    deps = [ ":leveldb_testutil" ]
-  }
-
-  test("leveldb_version_edit_test") {
-    sources = [ "src/db/version_edit_test.cc" ]
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    deps = [ ":leveldb_testutil" ]
-  }
-
-  test("leveldb_write_batch_test") {
-    sources = [ "src/db/write_batch_test.cc" ]
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    deps = [ ":leveldb_testutil" ]
-  }
-
   group("leveldb_test_targets") {
     testonly = true
     deps = [
       ":env_chromium_unittests",
-      ":leveldb_arena_test",
-      ":leveldb_bloom_test",
-      ":leveldb_cache_test",
-      ":leveldb_corruption_test",
-      ":leveldb_crc32c_test",
       ":leveldb_db_bench",
-      ":leveldb_dbformat_test",
-      ":leveldb_env_test",
-      ":leveldb_filename_test",
-      ":leveldb_filter_block_test",
-      ":leveldb_log_test",
-      ":leveldb_skiplist_test",
-      ":leveldb_table_test",
-      ":leveldb_version_edit_test",
-      ":leveldb_write_batch_test",
+      ":leveldb_unittests",
     ]
     if (enable_google_benchmarks) {
-      deps += [ ":leveldb_db_test" ]
+      deps += [ ":leveldb_db_bench_log" ]
     }
   }
 }
