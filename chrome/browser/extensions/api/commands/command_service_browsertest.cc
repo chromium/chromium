@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
 
   // Removal of keybinding preference should be platform-specific, so the key on
   // another platform should always remained.
-  EXPECT_TRUE(bindings->HasKey(anotherPlatformKey));
+  EXPECT_TRUE(bindings->FindKey(anotherPlatformKey));
 }
 
 IN_PROC_BROWSER_TEST_F(CommandServiceTest,
