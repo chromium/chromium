@@ -182,6 +182,12 @@ message EphemeralUsersEnabledProto {
   optional bool ephemeral_users_enabled = 1;
 }
 
+message DeviceKeylockerForStorageEncryptionEnabledProto {
+  // Determines whether cryptohome uses Keylocker for storage encryption ciphers
+  // when supported.
+  optional bool enabled = 1;
+}
+
 // Details of an extension to install as part of the AppPack.
 message OBSOLETE_AppPackEntryProto {
   optional string OBSOLETE_extension_id = 1 [deprecated = true];
@@ -2025,4 +2031,6 @@ message ChromeDeviceSettingsProto {
   optional RevenDeviceHWDataUsageEnabledProto hardware_data_usage_enabled = 130;
   optional DeviceLoginScreenWebUILazyLoadingProto login_web_ui_lazy_loading =
       131;
+  optional DeviceKeylockerForStorageEncryptionEnabledProto
+      keylocker_for_storage_encryption_enabled = 132;
 }

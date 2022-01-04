@@ -2073,6 +2073,17 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                     nullptr);
     }
   }
+
+  if (policy.has_keylocker_for_storage_encryption_enabled()) {
+    const em::DeviceKeylockerForStorageEncryptionEnabledProto& container(
+        policy.keylocker_for_storage_encryption_enabled());
+    if (container.has_enabled()) {
+      policies->Set(key::kDeviceKeylockerForStorageEncryptionEnabled,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, base::Value(container.enabled()),
+                    nullptr);
+    }
+  }
 }
 
 }  // namespace
