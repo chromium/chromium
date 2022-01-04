@@ -26,7 +26,7 @@ DictionaryValueUpdate::DictionaryValueUpdate(UpdateCallback report_update,
 DictionaryValueUpdate::~DictionaryValueUpdate() = default;
 
 bool DictionaryValueUpdate::HasKey(base::StringPiece key) const {
-  return value_->HasKey(key);
+  return value_->FindKey(key);
 }
 
 size_t DictionaryValueUpdate::size() const {
