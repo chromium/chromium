@@ -59,7 +59,7 @@ std::u16string GetAudioDeviceName(const AudioDevice& device) {
       return l10n_util::GetStringFUTF16(IDS_ASH_STATUS_TRAY_AUDIO_USB_DEVICE,
                                         base::UTF8ToUTF16(device.display_name));
     case AudioDeviceType::kBluetooth:
-      FALLTHROUGH;
+      [[fallthrough]];
     case AudioDeviceType::kBluetoothNbMic:
       return l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_AUDIO_BLUETOOTH_DEVICE,
