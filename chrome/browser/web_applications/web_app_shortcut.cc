@@ -332,7 +332,7 @@ void PostShortcutIOTaskAndReply(
 
 scoped_refptr<base::TaskRunner> GetShortcutIOTaskRunner() {
   constexpr base::TaskTraits traits = {
-      base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+      base::MayBlock(), base::TaskPriority::USER_VISIBLE,
       base::TaskShutdownBehavior::BLOCK_SHUTDOWN};
 
 #if defined(OS_WIN)
