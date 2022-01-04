@@ -8714,9 +8714,7 @@ TEST_F(WebFrameTest, OverlayFullscreenVideo) {
 
   const cc::Layer* root_layer = layer_tree_host->root_layer();
   const char* view_background_layer_name =
-      RuntimeEnabledFeatures::CompositeAfterPaintEnabled()
-          ? "Scrolling background of LayoutView #document"
-          : "Scrolling Contents Layer";
+      "Scrolling background of LayoutView #document";
   EXPECT_EQ(1u, CcLayersByName(root_layer, view_background_layer_name).size());
   EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "other").size());
   // "spinner" is a composited element in the shadow DOM of the video element.
@@ -8814,9 +8812,7 @@ TEST_F(WebFrameTest, WebXrImmersiveOverlay) {
 
   const cc::Layer* root_layer = layer_tree_host->root_layer();
   const char* view_background_layer_name =
-      RuntimeEnabledFeatures::CompositeAfterPaintEnabled()
-          ? "Scrolling background of LayoutView #document"
-          : "Scrolling Contents Layer";
+      "Scrolling background of LayoutView #document";
   EXPECT_EQ(1u, CcLayersByName(root_layer, view_background_layer_name).size());
   EXPECT_EQ(1u, CcLayersByDOMElementId(root_layer, "other").size());
   // The overlay is not composited when it's not in full screen.

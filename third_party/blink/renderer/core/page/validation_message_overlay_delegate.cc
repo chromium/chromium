@@ -104,19 +104,7 @@ void ValidationMessageOverlayDelegate::PaintFrameOverlay(
     return;
   DrawingRecorder recorder(context, overlay, DisplayItem::kFrameOverlay,
                            gfx::Rect(view_size));
-
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    context.DrawRecord(FrameView().GetPaintRecord());
-  } else {
-    // The overlay frame is has a standalone paint property tree. Paint it in
-    // its root space into a paint record, then draw the record into the proper
-    // target space in the overlaid frame.
-    auto* paint_record_builder =
-        MakeGarbageCollected<PaintRecordBuilder>(context);
-    FrameView().PaintOutsideOfLifecycle(paint_record_builder->Context(),
-                                        kGlobalPaintNormalPhase);
-    context.DrawRecord(paint_record_builder->EndRecording());
-  }
+  context.DrawRecord(FrameView().GetPaintRecord());
 }
 
 void ValidationMessageOverlayDelegate::ServiceScriptedAnimations(

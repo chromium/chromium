@@ -2222,7 +2222,6 @@ void WebLocalFrameImpl::UpdateDevToolsOverlaysPrePaint() {
 }
 
 void WebLocalFrameImpl::PaintDevToolsOverlays(GraphicsContext& context) {
-  DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
   if (dev_tools_agent_)
     dev_tools_agent_->PaintOverlays(context);
 }

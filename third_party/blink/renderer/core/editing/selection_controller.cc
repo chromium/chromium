@@ -461,12 +461,11 @@ bool SelectionController::HandleTapInsideSelection(
   if (Selection().IsHandleVisible())
     return false;
 
-  // In CAP, we need to trigger a repaint on the selection endpoints if the
-  // selection is tapped when the selection handle was previously not visible.
-  // Repainting will record the painted selection bounds and send it through
-  // the pipeline so the handles show up in the next frame after the tap.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    MarkSelectionEndpointsForRepaint(selection);
+  // We need to trigger a repaint on the selection endpoints if the selection is
+  // tapped when the selection handle was previously not visible. Repainting
+  // will record the painted selection bounds and send it through the pipeline
+  // so the handles show up in the next frame after the tap.
+  MarkSelectionEndpointsForRepaint(selection);
 
   const bool did_select = UpdateSelectionForMouseDownDispatchingSelectStart(
       event.InnerNode(), selection,

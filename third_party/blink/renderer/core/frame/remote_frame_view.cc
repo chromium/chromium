@@ -294,8 +294,7 @@ void RemoteFrameView::Paint(GraphicsContext& context,
     context.Restore();
   }
 
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-      GetFrame().GetCcLayer()) {
+  if (GetFrame().GetCcLayer()) {
     RecordForeignLayer(
         context, owner_layout_object, DisplayItem::kForeignLayerRemoteFrame,
         GetFrame().GetCcLayer(), FrameRect().origin() + paint_offset);

@@ -2675,10 +2675,6 @@ void PaintLayerScrollableArea::ScrollbarManager::Trace(
   visitor->Trace(v_bar_);
 }
 
-uint64_t PaintLayerScrollableArea::Id() const {
-  return DOMNodeIds::IdForNode(GetLayoutBox()->GetNode());
-}
-
 int PaintLayerScrollableArea::PreventRelayoutScope::count_ = 0;
 SubtreeLayoutScope*
     PaintLayerScrollableArea::PreventRelayoutScope::layout_scope_ = nullptr;

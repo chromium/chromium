@@ -2365,10 +2365,6 @@ TEST_P(AnimationAnimationTestCompositing, MAYBE_ContentVisibleDisplayLockTest) {
 }
 
 TEST_P(AnimationAnimationTestCompositing, HiddenAnimationsDoNotTick) {
-  // This test applies to CompositeAfterPaint only.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   SetBodyInnerHTML(R"HTML(
     <style>
       @keyframes anim {
@@ -2412,10 +2408,6 @@ TEST_P(AnimationAnimationTestCompositing, HiddenAnimationsDoNotTick) {
 }
 
 TEST_P(AnimationAnimationTestCompositing, HiddenAnimationsTickWhenVisible) {
-  // This test applies to CompositeAfterPaint only.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   SetBodyInnerHTML(R"HTML(
     <style>
       @keyframes anim {

@@ -240,8 +240,7 @@ void FrameCaret::PaintCaret(GraphicsContext& context,
                                                DisplayItem::kCaret);
 
   display_item_client_->PaintCaret(context, paint_offset, DisplayItem::kCaret);
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-      frame_->Selection().IsHandleVisible() && !frame_->Selection().IsHidden())
+  if (frame_->Selection().IsHandleVisible() && !frame_->Selection().IsHidden())
     display_item_client_->RecordSelection(context, paint_offset);
 }
 

@@ -4002,7 +4002,6 @@ void LocalFrameView::PaintForTest(const CullRect& cull_rect) {
 }
 
 sk_sp<PaintRecord> LocalFrameView::GetPaintRecord() const {
-  DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
   DCHECK_EQ(DocumentLifecycle::kPaintClean, Lifecycle().GetState());
   DCHECK(frame_->IsLocalRoot());
   DCHECK(paint_controller_);
@@ -4280,10 +4279,6 @@ void LocalFrameView::RenderThrottlingStatusChanged() {
   TRACE_EVENT0("blink", "LocalFrameView::RenderThrottlingStatusChanged");
   DCHECK(!IsInPerformLayout());
   DCHECK(!frame_->GetDocument() || !frame_->GetDocument()->InStyleRecalc());
-
-  // We may record more/less pre-composited layers under the frame.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    SetPaintArtifactCompositorNeedsUpdate();
 
   if (!CanThrottleRendering()) {
     // Start ticking animation frames again if necessary.

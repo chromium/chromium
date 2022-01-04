@@ -105,11 +105,7 @@ bool DocumentLifecycle::CanAdvanceTo(LifecycleState next_state) const {
         return true;
       if (next_state == kLayoutClean)
         return true;
-      if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-          next_state == kInCompositingInputsUpdate)
-        return true;
-      if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-          next_state == kCompositingInputsClean)
+      if (next_state == kCompositingInputsClean)
         return true;
       break;
     case kInPerformLayout:
@@ -135,11 +131,7 @@ bool DocumentLifecycle::CanAdvanceTo(LifecycleState next_state) const {
       // InAccessibility only runs if there is an ExistingAXObjectCache.
       if (next_state == kInAccessibility)
         return true;
-      if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-          next_state == kInCompositingInputsUpdate)
-        return true;
-      if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-          next_state == kCompositingInputsClean)
+      if (next_state == kCompositingInputsClean)
         return true;
       if (next_state == kInPrePaint)
         return true;
@@ -149,18 +141,13 @@ bool DocumentLifecycle::CanAdvanceTo(LifecycleState next_state) const {
         return true;
       break;
     case kAccessibilityClean:
-      if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-          next_state == kInCompositingInputsUpdate)
+      if (next_state == kCompositingInputsClean)
         return true;
-      if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-          next_state == kCompositingInputsClean)
-        return true;
-      if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-          next_state == kInPrePaint)
+      if (next_state == kInPrePaint)
         return true;
       break;
     case kInCompositingInputsUpdate:
-      DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
+      NOTREACHED();
       return next_state == kCompositingInputsClean;
     case kCompositingInputsClean:
       // We can return to style re-calc, layout, or the start of compositing.
@@ -182,9 +169,6 @@ bool DocumentLifecycle::CanAdvanceTo(LifecycleState next_state) const {
         return true;
       if (next_state == kInStyleRecalc)
         return true;
-      if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-          next_state == kInCompositingInputsUpdate)
-        return true;
       if (next_state == kInPrePaint)
         return true;
       if (next_state == kInAccessibility)
@@ -197,11 +181,7 @@ bool DocumentLifecycle::CanAdvanceTo(LifecycleState next_state) const {
     case kPaintClean:
       if (next_state == kInStyleRecalc)
         return true;
-      if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-          next_state == kInCompositingInputsUpdate)
-        return true;
-      if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-          next_state == kCompositingInputsClean)
+      if (next_state == kCompositingInputsClean)
         return true;
       if (next_state == kInPrePaint)
         return true;

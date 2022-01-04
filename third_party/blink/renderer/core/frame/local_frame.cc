@@ -2393,7 +2393,6 @@ void LocalFrame::UpdateFrameColorOverlayPrePaint() {
 }
 
 void LocalFrame::PaintFrameColorOverlay(GraphicsContext& context) {
-  DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
   if (frame_color_overlay_)
     frame_color_overlay_->Paint(context);
 }

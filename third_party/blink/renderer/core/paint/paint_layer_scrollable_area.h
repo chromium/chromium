@@ -531,8 +531,6 @@ class CORE_EXPORT PaintLayerScrollableArea final
     return non_composited_main_thread_scrolling_reasons_;
   }
 
-  uint64_t Id() const;
-
   ScrollbarTheme& GetPageScrollbarTheme() const override;
 
   // Return the thickness of the existing scrollbar; or, if there is no

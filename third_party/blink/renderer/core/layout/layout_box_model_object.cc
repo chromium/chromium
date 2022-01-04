@@ -95,11 +95,6 @@ LayoutBoxModelObject::LayoutBoxModelObject(ContainerNode* node)
 bool LayoutBoxModelObject::UsesCompositedScrolling() const {
   NOT_DESTROYED();
 
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    return IsScrollContainer() && HasLayer() &&
-           Layer()->GetScrollableArea()->UsesCompositedScrolling();
-  }
-
   const auto* properties = FirstFragment().PaintProperties();
   return properties && properties->ScrollTranslation() &&
          properties->ScrollTranslation()->HasDirectCompositingReasons();

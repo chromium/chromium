@@ -185,12 +185,12 @@ void WebPluginContainerImpl::Paint(GraphicsContext& context,
         visual_rect);
   }
 
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() && layer_) {
+  if (layer_) {
     layer_->SetBounds(Size());
     layer_->SetIsDrawable(true);
     layer_->SetHitTestable(true);
-    // When compositing is after paint, composited plugins should have their
-    // layers inserted rather than invoking WebPlugin::paint.
+    // Composited plugins should have their layers inserted rather than invoking
+    // WebPlugin::paint.
     RecordForeignLayer(context, *element_->GetLayoutObject(),
                        DisplayItem::kForeignLayerPlugin, layer_,
                        FrameRect().origin() + paint_offset);

@@ -938,7 +938,6 @@ int OutlinePainter::OutlineOutsetExtent(const ComputedStyle& style) {
 }
 
 int OutlinePainter::FocusRingWidthInsideBorderBox(const ComputedStyle& style) {
-  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
   // Not sure why '+1'.
   return std::ceil(blink::FocusRingInnerStrokeWidth(style)) + 1;
 }

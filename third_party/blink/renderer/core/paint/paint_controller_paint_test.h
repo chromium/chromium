@@ -57,8 +57,7 @@ class PaintControllerPaintTestBase : public RenderingTest {
 
   void InvalidateAll() {
     RootPaintController().InvalidateAllForTesting();
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-      GetLayoutView().Layer()->SetNeedsRepaint();
+    GetLayoutView().Layer()->SetNeedsRepaint();
   }
 
   bool ClientCacheIsValid(const DisplayItemClient& client) {

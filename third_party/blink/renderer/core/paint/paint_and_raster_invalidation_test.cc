@@ -18,7 +18,6 @@ using ::testing::UnorderedElementsAreArray;
 static ContentLayerClientImpl* GetContentLayerClient(
     const LocalFrameView& root_frame_view,
     wtf_size_t index) {
-  DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
   const auto& clients = root_frame_view.GetPaintArtifactCompositor()
                             ->ContentLayerClientsForTesting();
   return index < clients.size() ? clients[index].get() : nullptr;

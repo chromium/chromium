@@ -889,9 +889,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
     return floating_objects_;
   }
 
-  static void UpdateAncestorShouldPaintFloatingObject(
-      const LayoutBox& float_box);
-
   bool ShouldTruncateOverflowingText() const;
 
  protected:

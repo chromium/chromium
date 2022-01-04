@@ -261,11 +261,9 @@ class InspectorOverlayAgent::InspectorPageOverlayDelegate final
  public:
   explicit InspectorPageOverlayDelegate(InspectorOverlayAgent& overlay)
       : overlay_(&overlay) {
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      layer_ = cc::PictureLayer::Create(this);
-      layer_->SetIsDrawable(true);
-      layer_->SetHitTestable(false);
-    }
+    layer_ = cc::PictureLayer::Create(this);
+    layer_->SetIsDrawable(true);
+    layer_->SetHitTestable(false);
   }
   ~InspectorPageOverlayDelegate() override {
     if (layer_)
@@ -280,28 +278,13 @@ class InspectorOverlayAgent::InspectorPageOverlayDelegate final
 
     overlay_->PaintOverlayPage();
 
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      layer_->SetBounds(size);
-      DEFINE_STATIC_LOCAL(
-          Persistent<LiteralDebugNameClient>, debug_name_client,
-          (MakeGarbageCollected<LiteralDebugNameClient>("InspectorOverlay")));
-      RecordForeignLayer(graphics_context, *debug_name_client,
-                         DisplayItem::kForeignLayerDevToolsOverlay, layer_,
-                         gfx::Point(), &PropertyTreeState::Root());
-      return;
-    }
-
-    frame_overlay.Invalidate();
-    DrawingRecorder recorder(graphics_context, frame_overlay,
-                             DisplayItem::kFrameOverlay, gfx::Rect(size));
-    // The overlay frame is has a standalone paint property tree. Paint it in
-    // its root space into a paint record, then draw the record into the proper
-    // target space in the overlaid frame.
-    PaintRecordBuilder* paint_record_builder =
-        MakeGarbageCollected<PaintRecordBuilder>(graphics_context);
-    overlay_->OverlayMainFrame()->View()->PaintOutsideOfLifecycle(
-        paint_record_builder->Context(), kGlobalPaintNormalPhase);
-    graphics_context.DrawRecord(paint_record_builder->EndRecording());
+    layer_->SetBounds(size);
+    DEFINE_STATIC_LOCAL(
+        Persistent<LiteralDebugNameClient>, debug_name_client,
+        (MakeGarbageCollected<LiteralDebugNameClient>("InspectorOverlay")));
+    RecordForeignLayer(graphics_context, *debug_name_client,
+                       DisplayItem::kForeignLayerDevToolsOverlay, layer_,
+                       gfx::Point(), &PropertyTreeState::Root());
   }
 
   void Invalidate() override {
@@ -330,7 +313,6 @@ class InspectorOverlayAgent::InspectorPageOverlayDelegate final
   }
 
   Persistent<InspectorOverlayAgent> overlay_;
-  // For CompositeAfterPaint.
   scoped_refptr<cc::PictureLayer> layer_;
 };
 
@@ -1006,7 +988,6 @@ void InspectorOverlayAgent::UpdatePrePaint() {
 }
 
 void InspectorOverlayAgent::PaintOverlay(GraphicsContext& context) {
-  DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
   if (frame_overlay_)
     frame_overlay_->Paint(context);
 }
@@ -1145,17 +1126,6 @@ void InspectorOverlayAgent::PaintOverlayPage() {
   blink::VisualViewport& visual_viewport =
       frame->GetPage()->GetVisualViewport();
   gfx::Size viewport_size = visual_viewport.Size();
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // To make overlay render the same size text with any emulation scale,
-    // compensate the emulation scale using page scale.
-    float emulation_scale =
-        frame->GetPage()->GetChromeClient().InputEventsScaleForEmulation();
-    viewport_size = gfx::ScaleToFlooredSize(viewport_size, emulation_scale);
-    overlay_page_->GetVisualViewport().SetSize(viewport_size);
-    overlay_page_->SetDefaultPageScaleLimits(1 / emulation_scale,
-                                             1 / emulation_scale);
-    overlay_page_->GetVisualViewport().SetScale(1 / emulation_scale);
-  }
   overlay_frame->SetPageZoomFactor(WindowToViewportScale());
   overlay_frame->View()->Resize(viewport_size);
 

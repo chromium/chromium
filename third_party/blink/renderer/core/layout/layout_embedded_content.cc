@@ -99,15 +99,6 @@ PaintLayerType LayoutEmbeddedContent::LayerTypeRequired() const {
   if (type != kNoPaintLayer)
     return type;
 
-  // We can't check layout_view->Layer()->GetCompositingReasons() here because
-  // we're only in style update, so haven't run compositing update yet.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    if (LayoutView* child_layout_view = ChildLayoutView()) {
-      if (child_layout_view->AdditionalCompositingReasons())
-        return kNormalPaintLayer;
-    }
-  }
-
   return kForcedPaintLayer;
 }
 

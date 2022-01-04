@@ -219,7 +219,6 @@ void ValidationMessageClientImpl::UpdatePrePaint() {
 }
 
 void ValidationMessageClientImpl::PaintOverlay(GraphicsContext& context) {
-  DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
   if (overlay_)
     overlay_->Paint(context);
 }

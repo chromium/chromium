@@ -31,11 +31,9 @@ class PaintAndRasterInvalidationTest : public PaintControllerPaintTest {
   void SetUp() override {
     PaintControllerPaintTest::SetUp();
 
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      layer_tree_ = std::make_unique<LayerTreeHostEmbedder>();
-      layer_tree_->layer_tree_host()->SetRootLayer(
-          GetDocument().View()->GetPaintArtifactCompositor()->RootLayer());
-    }
+    layer_tree_ = std::make_unique<LayerTreeHostEmbedder>();
+    layer_tree_->layer_tree_host()->SetRootLayer(
+        GetDocument().View()->GetPaintArtifactCompositor()->RootLayer());
   }
 
   void SetPreferCompositingToLCDText(bool enable) {

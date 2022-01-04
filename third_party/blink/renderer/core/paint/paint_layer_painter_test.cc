@@ -137,9 +137,6 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithBackgrounds) {
 }
 
 TEST_P(PaintLayerPainterTest, CachedSubsequenceAndChunksWithoutBackgrounds) {
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    return;
-
   SetBodyInnerHTML(R"HTML(
     <style>
       body { margin: 0 }
@@ -434,20 +431,10 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceRetainsPreviousPaintResult) {
                           IsSameId(content1->Id(), kBackgroundType)));
   EXPECT_EQ(gfx::Rect(0, 0, 800, 4600), GetCullRect(*target_layer).Rect());
   auto chunks = ContentPaintChunks();
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // |target| still created subsequence (cached).
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*target_layer, chunks.begin() + 1, 2);
-    EXPECT_THAT(chunks, ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-                                    IsPaintChunk(1, 1), IsPaintChunk(1, 2)));
-  } else {
-    EXPECT_THAT(ContentDisplayItems(),
-                ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                            IsSameId(content1->Id(), kBackgroundType)));
-    // |target| still created subsequence (cached).
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*target_layer, chunks.begin() + 1, 1);
-    EXPECT_THAT(chunks, ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-                                    IsPaintChunk(1, 2)));
-  }
+  // |target| still created subsequence (cached).
+  EXPECT_SUBSEQUENCE_FROM_CHUNK(*target_layer, chunks.begin() + 1, 2);
+  EXPECT_THAT(chunks, ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+                                  IsPaintChunk(1, 1), IsPaintChunk(1, 2)));
 
   // Change something that triggers a repaint but |target| should use cached
   // subsequence.
@@ -468,20 +455,13 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceRetainsPreviousPaintResult) {
   EXPECT_EQ(gfx::Rect(0, 0, 800, 4600), GetCullRect(*target_layer).Rect());
   chunks = ContentPaintChunks();
   EXPECT_EQ(CullRect(gfx::Rect(0, 0, 800, 4600)), GetCullRect(*target_layer));
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_THAT(ContentDisplayItems(),
-                ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
-                            IsSameId(content1->Id(), kBackgroundType)));
-    // |target| still created subsequence (cached).
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*target_layer, chunks.begin() + 1, 2);
-    EXPECT_THAT(chunks, ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-                                    IsPaintChunk(1, 1), IsPaintChunk(1, 2)));
-  } else {
-    // |target| still created subsequence (cached).
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*target_layer, chunks.begin() + 1, 1);
-    EXPECT_THAT(chunks, ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-                                    IsPaintChunk(1, 2)));
-  }
+  EXPECT_THAT(ContentDisplayItems(),
+              ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
+                          IsSameId(content1->Id(), kBackgroundType)));
+  // |target| still created subsequence (cached).
+  EXPECT_SUBSEQUENCE_FROM_CHUNK(*target_layer, chunks.begin() + 1, 2);
+  EXPECT_THAT(chunks, ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+                                  IsPaintChunk(1, 1), IsPaintChunk(1, 2)));
 
   // Scroll the view so that both |content1| and |content2| are in the interest
   // rect.
@@ -512,17 +492,10 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceRetainsPreviousPaintResult) {
   EXPECT_EQ(gfx::Rect(0, 0, 800, 7600), GetCullRect(*target_layer).Rect());
   chunks = ContentPaintChunks();
   EXPECT_EQ(CullRect(gfx::Rect(0, 0, 800, 7600)), GetCullRect(*target_layer));
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    // |target| still created subsequence (repainted).
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*target_layer, chunks.begin() + 1, 2);
-    EXPECT_THAT(chunks, ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-                                    IsPaintChunk(1, 1), IsPaintChunk(1, 3)));
-  } else {
-    // |target| still created subsequence (repainted).
-    EXPECT_SUBSEQUENCE_FROM_CHUNK(*target_layer, chunks.begin() + 1, 1);
-    EXPECT_THAT(chunks, ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-                                    IsPaintChunk(1, 3)));
-  }
+  // |target| still created subsequence (repainted).
+  EXPECT_SUBSEQUENCE_FROM_CHUNK(*target_layer, chunks.begin() + 1, 2);
+  EXPECT_THAT(chunks, ElementsAre(VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
+                                  IsPaintChunk(1, 1), IsPaintChunk(1, 3)));
 }
 
 TEST_P(PaintLayerPainterTest, PaintPhaseOutline) {
