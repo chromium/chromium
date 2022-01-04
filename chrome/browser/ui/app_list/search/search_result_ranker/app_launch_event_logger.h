@@ -86,9 +86,9 @@ class AppLaunchEventLogger {
   void EnforceLoggingPolicy();
 
   // The arc apps installed on the device.
-  const base::DictionaryValue* arc_apps_ = nullptr;
+  const base::Value* arc_apps_ = nullptr;
   // The arc packages installed on the device.
-  const base::DictionaryValue* arc_packages_ = nullptr;
+  const base::Value* arc_packages_ = nullptr;
   // The Chrome extension registry.
   extensions::ExtensionRegistry* registry_ = nullptr;
 
