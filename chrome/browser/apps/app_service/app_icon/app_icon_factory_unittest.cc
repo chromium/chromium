@@ -154,10 +154,12 @@ class AppIconFactoryTest : public testing::Test {
     base::FilePath base_path;
     std::string png_data_as_string;
     CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &base_path));
-    base::FilePath icon_file_path = base_path.AppendASCII("components")
+    base::FilePath icon_file_path = base_path.AppendASCII("ash")
+                                        .AppendASCII("components")
+                                        .AppendASCII("arc")
                                         .AppendASCII("test")
                                         .AppendASCII("data")
-                                        .AppendASCII("arc")
+                                        .AppendASCII("icons")
                                         .AppendASCII(file_name);
     CHECK(base::PathExists(icon_file_path));
     CHECK(base::ReadFileToString(icon_file_path, &png_data_as_string));

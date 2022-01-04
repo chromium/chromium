@@ -328,6 +328,11 @@ static_library("arc_test_support") {
     "test/test_browser_context.h",
   ]
 
+  data = [
+    "//ash/components/arc/test/data/icons/",
+    "//ash/components/arc/test/data/mem_profile/",
+  ]
+
   public_deps = [
     ":notification_test_support",
     "//ash/components/arc:compat_mode_test_support",
@@ -403,9 +408,6 @@ source_set("unit_tests") {
     "volume_mounter/arc_volume_mounter_bridge_unittest.cc",
     "wake_lock/arc_wake_lock_bridge_unittest.cc",
   ]
-
-  # TODO(b/210694808 ): Move ARC++ test data to //ash/components/arc/test/data.
-  data = [ "//components/test/data" ]
 
   # TODO(b/129295708): Clean up unused deps. Update users of this target.
   deps = [

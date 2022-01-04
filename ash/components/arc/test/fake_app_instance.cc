@@ -205,10 +205,12 @@ arc::mojom::RawIconPngDataPtr FakeAppInstance::GenerateIconResponse(
       base::FilePath base_path;
       CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &base_path));
       base::FilePath icon_file_path =
-          base_path.AppendASCII("components")
+          base_path.AppendASCII("ash")
+              .AppendASCII("components")
+              .AppendASCII("arc")
               .AppendASCII("test")
               .AppendASCII("data")
-              .AppendASCII("arc")
+              .AppendASCII("icons")
               .AppendASCII(base::StringPrintf(
                   "icon_%s_%d.png", app_icon ? "app" : "shortcut", dimension));
       std::string good_png_data_as_string;
@@ -264,10 +266,12 @@ arc::mojom::RawIconPngDataPtr FakeAppInstance::GetFakeIcon(
   base::FilePath base_path;
   std::string png_data_as_string;
   CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &base_path));
-  base::FilePath icon_file_path = base_path.AppendASCII("components")
+  base::FilePath icon_file_path = base_path.AppendASCII("ash")
+                                      .AppendASCII("components")
+                                      .AppendASCII("arc")
                                       .AppendASCII("test")
                                       .AppendASCII("data")
-                                      .AppendASCII("arc")
+                                      .AppendASCII("icons")
                                       .AppendASCII(icon_file_name);
   CHECK(base::PathExists(icon_file_path));
   CHECK(base::ReadFileToString(icon_file_path, &png_data_as_string));

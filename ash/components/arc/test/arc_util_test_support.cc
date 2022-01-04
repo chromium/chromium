@@ -36,10 +36,12 @@ bool GetSystemMemoryInfoForTesting(const std::string& file_name,
                                    base::SystemMemoryInfoKB* mem_info) {
   base::FilePath base_path;
   base::PathService::Get(base::DIR_SOURCE_ROOT, &base_path);
-  const base::FilePath test_path = base_path.Append("components")
+  const base::FilePath test_path = base_path.Append("ash")
+                                       .Append("components")
+                                       .Append("arc")
                                        .Append("test")
                                        .Append("data")
-                                       .Append("arc_mem_profile")
+                                       .Append("mem_profile")
                                        .Append(file_name);
   base::ScopedAllowBlockingForTesting allowBlocking;
   std::string mem_info_data;

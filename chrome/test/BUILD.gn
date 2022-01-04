@@ -1409,8 +1409,8 @@ if (!is_android && !is_fuchsia) {
 
     data = [
       "data/",
+      "//ash/components/arc/test/data/icons",
       "//chrome/browser/page_load_metrics/integration_tests/data/",
-      "//components/test/data/arc/",
       "//components/test/data/autofill/",
       "//components/test/data/optimization_guide/",
       "//components/test/data/payments/",
@@ -6438,6 +6438,8 @@ test("unit_tests") {
       "../browser/ui/views/passwords/post_save_compromised_bubble_view_unittest.cc",
       "../renderer/media/webrtc_logging_agent_impl_unittest.cc",
     ]
+
+    data += [ "//ash/components/arc/test/data/icons/" ]
 
     deps += [
       "//chrome/browser/share/core:share_targets_unittest",
