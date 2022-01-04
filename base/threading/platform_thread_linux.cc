@@ -144,7 +144,7 @@ FilePath ThreadPriorityToCgroupDirectory(const FilePath& cgroup_filepath,
     case ThreadPriority::BACKGROUND:
       return cgroup_filepath.Append(FILE_PATH_LITERAL("non-urgent"));
     case ThreadPriority::DISPLAY:
-      FALLTHROUGH;
+      [[fallthrough]];
     case ThreadPriority::REALTIME_AUDIO:
       return cgroup_filepath.Append(FILE_PATH_LITERAL("urgent"));
   }
@@ -228,12 +228,12 @@ void SetThreadLatencySensitivity(ProcessId process_id,
 
   switch (priority) {
     case ThreadPriority::NORMAL:
-      FALLTHROUGH;
+      [[fallthrough]];
     case ThreadPriority::BACKGROUND:
       break;
     case ThreadPriority::DISPLAY:
       // Display needs a boost for consistent 60 fps compositing.
-      FALLTHROUGH;
+      [[fallthrough]];
     case ThreadPriority::REALTIME_AUDIO:
       is_urgent = true;
       break;

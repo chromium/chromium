@@ -465,11 +465,11 @@ ThreadPriority PlatformThread::GetCurrentThreadPriority() {
       return ThreadPriority::BACKGROUND;
     case kWin7NormalPriority:
       DCHECK_EQ(win::GetVersion(), win::Version::WIN7);
-      FALLTHROUGH;
+      [[fallthrough]];
     case THREAD_PRIORITY_NORMAL:
       return ThreadPriority::NORMAL;
     case kWinNormalPriority1:
-      FALLTHROUGH;
+      [[fallthrough]];
     case kWinNormalPriority2:
       return ThreadPriority::NORMAL;
     case THREAD_PRIORITY_ABOVE_NORMAL:
