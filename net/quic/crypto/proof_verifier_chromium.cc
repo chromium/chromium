@@ -423,7 +423,7 @@ int ProofVerifierChromium::Job::DoVerifyCertComplete(int result) {
         break;
       case TransportSecurityState::PKPStatus::BYPASSED:
         verify_details_->pkp_bypassed = true;
-        FALLTHROUGH;
+        [[fallthrough]];
       case TransportSecurityState::PKPStatus::OK:
         // Do nothing.
         break;
