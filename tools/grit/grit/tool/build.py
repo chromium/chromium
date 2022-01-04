@@ -490,7 +490,7 @@ Extra output files:
 
 
   def GenerateDepfile(self, depfile, depdir, first_ids_file, depend_on_stamp):
-    '''Generate a depfile that contains the imlicit dependencies of the input
+    '''Generate a depfile that contains the implicit dependencies of the input
     grd. The depfile will be in the same format as a makefile, and will contain
     references to files relative to |depdir|. It will be put in |depfile|.
 
