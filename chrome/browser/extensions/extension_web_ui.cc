@@ -218,7 +218,7 @@ bool UpdateOverridesList(base::ListValue* overrides_list,
           break;
         }
         // Else fall through and erase the broken pref.
-        FALLTHROUGH;
+        [[fallthrough]];
       }
       case UPDATE_REMOVE:
         overrides_list->EraseListIter(iter);
