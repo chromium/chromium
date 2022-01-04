@@ -172,24 +172,24 @@ void PluginMetricsProvider::ProvideStabilityMetrics(
         stability->add_plugin_stability();
     *plugin_stability->mutable_plugin() = *system_profile_plugin;
 
-    int launches = 0;
-    plugin_dict->GetInteger(prefs::kStabilityPluginLaunches, &launches);
+    int launches =
+        plugin_dict->FindIntKey(prefs::kStabilityPluginLaunches).value_or(0);
     if (launches > 0)
       plugin_stability->set_launch_count(launches);
 
-    int instances = 0;
-    plugin_dict->GetInteger(prefs::kStabilityPluginInstances, &instances);
+    int instances =
+        plugin_dict->FindIntKey(prefs::kStabilityPluginInstances).value_or(0);
     if (instances > 0)
       plugin_stability->set_instance_count(instances);
 
-    int crashes = 0;
-    plugin_dict->GetInteger(prefs::kStabilityPluginCrashes, &crashes);
+    int crashes =
+        plugin_dict->FindIntKey(prefs::kStabilityPluginCrashes).value_or(0);
     if (crashes > 0)
       plugin_stability->set_crash_count(crashes);
 
-    int loading_errors = 0;
-    plugin_dict->GetInteger(prefs::kStabilityPluginLoadingErrors,
-                            &loading_errors);
+    int loading_errors =
+        plugin_dict->FindIntKey(prefs::kStabilityPluginLoadingErrors)
+            .value_or(0);
     if (loading_errors > 0)
       plugin_stability->set_loading_error_count(loading_errors);
   }
@@ -229,30 +229,30 @@ void PluginMetricsProvider::RecordCurrentState() {
 
     ChildProcessStats stats = child_process_stats_buffer_[plugin_name];
     if (stats.process_launches) {
-      int launches = 0;
-      plugin_dict->GetInteger(prefs::kStabilityPluginLaunches, &launches);
+      int launches =
+          plugin_dict->FindIntKey(prefs::kStabilityPluginLaunches).value_or(0);
       launches += stats.process_launches;
-      plugin_dict->SetInteger(prefs::kStabilityPluginLaunches, launches);
+      plugin_dict->SetIntKey(prefs::kStabilityPluginLaunches, launches);
     }
     if (stats.process_crashes) {
-      int crashes = 0;
-      plugin_dict->GetInteger(prefs::kStabilityPluginCrashes, &crashes);
+      int crashes =
+          plugin_dict->FindIntKey(prefs::kStabilityPluginCrashes).value_or(0);
       crashes += stats.process_crashes;
-      plugin_dict->SetInteger(prefs::kStabilityPluginCrashes, crashes);
+      plugin_dict->SetIntKey(prefs::kStabilityPluginCrashes, crashes);
     }
     if (stats.instances) {
-      int instances = 0;
-      plugin_dict->GetInteger(prefs::kStabilityPluginInstances, &instances);
+      int instances =
+          plugin_dict->FindIntKey(prefs::kStabilityPluginInstances).value_or(0);
       instances += stats.instances;
-      plugin_dict->SetInteger(prefs::kStabilityPluginInstances, instances);
+      plugin_dict->SetIntKey(prefs::kStabilityPluginInstances, instances);
     }
     if (stats.loading_errors) {
-      int loading_errors = 0;
-      plugin_dict->GetInteger(prefs::kStabilityPluginLoadingErrors,
-                              &loading_errors);
+      int loading_errors =
+          plugin_dict->FindIntKey(prefs::kStabilityPluginLoadingErrors)
+              .value_or(0);
       loading_errors += stats.loading_errors;
-      plugin_dict->SetInteger(prefs::kStabilityPluginLoadingErrors,
-                              loading_errors);
+      plugin_dict->SetIntKey(prefs::kStabilityPluginLoadingErrors,
+                             loading_errors);
     }
 
     child_process_stats_buffer_.erase(plugin_name);
@@ -272,14 +272,13 @@ void PluginMetricsProvider::RecordCurrentState() {
         new base::DictionaryValue);
 
     plugin_dict->SetString(prefs::kStabilityPluginName, cache_iter->first);
-    plugin_dict->SetInteger(prefs::kStabilityPluginLaunches,
-                            stats.process_launches);
-    plugin_dict->SetInteger(prefs::kStabilityPluginCrashes,
-                            stats.process_crashes);
-    plugin_dict->SetInteger(prefs::kStabilityPluginInstances,
-                            stats.instances);
-    plugin_dict->SetInteger(prefs::kStabilityPluginLoadingErrors,
-                            stats.loading_errors);
+    plugin_dict->SetIntKey(prefs::kStabilityPluginLaunches,
+                           stats.process_launches);
+    plugin_dict->SetIntKey(prefs::kStabilityPluginCrashes,
+                           stats.process_crashes);
+    plugin_dict->SetIntKey(prefs::kStabilityPluginInstances, stats.instances);
+    plugin_dict->SetIntKey(prefs::kStabilityPluginLoadingErrors,
+                           stats.loading_errors);
     plugins->Append(std::move(plugin_dict));
   }
   child_process_stats_buffer_.clear();
