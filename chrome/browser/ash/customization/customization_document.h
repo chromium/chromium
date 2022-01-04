@@ -22,6 +22,7 @@ class PrefRegistrySimple;
 class Profile;
 
 namespace base {
+// TODO(crbug.com/1187061): Refactor this to remove base::DictionaryValue.
 class DictionaryValue;
 class FilePath;
 }  // namespace base
