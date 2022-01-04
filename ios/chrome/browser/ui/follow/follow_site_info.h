@@ -11,16 +11,17 @@
 // status.
 @interface FollowSiteInfo : NSObject
 
-// Initiates a FollowSiteInfo with |siteURL| and |rssLinks|.
+// Initiates a FollowSiteInfo with |siteURL| and |RSSLinks|.
+// |RSSlinks| can be empty.
 - (instancetype)initWithPageURL:(NSURL*)siteURL
-                       rssLinks:(NSArray<NSURL*>*)rssLinks
+                       RSSLinks:(NSArray<NSURL*>*)RSSLinks
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
 // The URL of the site.
 @property(nonatomic, strong, readonly) NSURL* siteURL;
 // The list of RSS links.
-@property(nonatomic, strong, readonly) NSArray<NSURL*>* rssLinks;
+@property(nonatomic, strong, readonly) NSArray<NSURL*>* RSSLinks;
 
 @end
 

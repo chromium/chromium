@@ -12,9 +12,8 @@ bool FollowProvider::GetFollowStatus(FollowSiteInfo* followSiteInfo) {
   return false;
 }
 
-NSMutableArray<FollowSiteInfo*>* FollowProvider::GetFollowedChannels() {
+NSArray<FollowSiteInfo*>* FollowProvider::GetFollowedChannels() {
   return nil;
 }
 
-void FollowProvider::updateFollowStatus(NSMutableArray<FollowSiteInfo*>* sites,
-                                        bool newStatus) {}
+void FollowProvider::UpdateFollowStatus(FollowSiteInfo* site, bool state) {}

@@ -11,11 +11,11 @@
 @implementation FollowSiteInfo
 
 - (instancetype)initWithPageURL:(NSURL*)siteURL
-                       rssLinks:(NSArray<NSURL*>*)rssLinks {
+                       RSSLinks:(NSArray<NSURL*>*)RSSLinks {
   self = [super init];
   if (self) {
     _siteURL = siteURL;
-    _rssLinks = rssLinks;
+    _RSSLinks = RSSLinks;
   }
   return self;
 }

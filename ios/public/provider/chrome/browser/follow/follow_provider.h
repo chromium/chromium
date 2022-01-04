@@ -19,15 +19,14 @@ class FollowProvider {
   FollowProvider(const FollowProvider&) = delete;
   FollowProvider& operator=(const FollowProvider&) = delete;
 
-  // Returns YES if the website with |followSiteInfo| has been followed.
+  // Returns true if the website with |followSiteInfo| has been followed.
   virtual bool GetFollowStatus(FollowSiteInfo* followSiteInfo);
 
   // Returns a list of followed websites.
-  virtual NSMutableArray<FollowSiteInfo*>* GetFollowedChannels();
+  virtual NSArray<FollowSiteInfo*>* GetFollowedChannels();
 
-  // Updates the following status of |sites| to |status|.
-  virtual void updateFollowStatus(NSMutableArray<FollowSiteInfo*>* sites,
-                                  bool status);
+  // Updates the following status of |site| to |state|.
+  virtual void UpdateFollowStatus(FollowSiteInfo* site, bool state);
 };
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_FOLLOW_FOLLOW_PROVIDER_H_
