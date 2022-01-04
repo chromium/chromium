@@ -193,7 +193,7 @@ FilterGestureEventResult TouchActionFilter::FilterGestureEvent(
     case WebInputEvent::Type::kGesturePinchBegin:
       drop_pinch_events_ = (touch_action & cc::TouchAction::kPinchZoom) ==
                            cc::TouchAction::kNone;
-      FALLTHROUGH;
+      [[fallthrough]];
     case WebInputEvent::Type::kGesturePinchUpdate:
       gesture_sequence_.append("P");
       if (!drop_pinch_events_)

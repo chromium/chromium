@@ -360,7 +360,7 @@ void TouchSelectionControllerClientAura::OnSelectionEvent(
   switch (event) {
     case ui::SELECTION_HANDLES_SHOWN:
       quick_menu_requested_ = true;
-      FALLTHROUGH;
+      [[fallthrough]];
     case ui::INSERTION_HANDLE_SHOWN:
       UpdateQuickMenu();
       env_event_observer_ = std::make_unique<EnvEventObserver>(
