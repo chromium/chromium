@@ -1282,7 +1282,7 @@ ssl_verify_result_t SSLClientSocketImpl::HandleVerifyResult() {
         break;
       case TransportSecurityState::PKPStatus::BYPASSED:
         pkp_bypassed_ = true;
-        FALLTHROUGH;
+        [[fallthrough]];
       case TransportSecurityState::PKPStatus::OK:
         // Do nothing.
         break;

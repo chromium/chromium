@@ -969,7 +969,7 @@ void SSLServerContextImpl::Init() {
   switch (ssl_server_config_.client_cert_type) {
     case SSLServerConfig::ClientCertType::REQUIRE_CLIENT_CERT:
       verify_mode |= SSL_VERIFY_FAIL_IF_NO_PEER_CERT;
-      FALLTHROUGH;
+      [[fallthrough]];
     case SSLServerConfig::ClientCertType::OPTIONAL_CLIENT_CERT:
       verify_mode |= SSL_VERIFY_PEER;
       SSL_CTX_set_custom_verify(ssl_ctx_.get(), verify_mode,
