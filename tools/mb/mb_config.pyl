@@ -151,7 +151,7 @@
       'chromeos-amd64-generic-rel': 'chromeos_amd64-generic_use_fake_dbus_clients_vm_optimized',
       'chromeos-arm-generic-dbg': 'chromeos_arm-generic_dbg',
       'chromeos-arm-generic-rel': 'chromeos_arm-generic',
-      'chromeos-kevin-rel': 'chromeos_kevin',
+      'chromeos-kevin-rel': 'chromeos_kevin_dchecks',
       'lacros-amd64-generic-binary-size-rel': 'chromeos_amd64-generic_lacros_rel',
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel',
       'lacros-arm-generic-rel': 'chromeos_arm-generic_lacros_rel',
@@ -944,8 +944,8 @@
       'chromeos-amd64-generic-rel-rts': 'chromeos_amd64-generic_use_fake_dbus_clients',
       'chromeos-arm-generic-dbg': 'chromeos_arm-generic_dbg',
       'chromeos-arm-generic-rel': 'chromeos_arm-generic_dcheck_always_on',
-      'chromeos-kevin-compile-rel': 'chromeos_kevin',
-      'chromeos-kevin-rel': 'chromeos_kevin',
+      'chromeos-kevin-compile-rel': 'chromeos_kevin_dchecks',
+      'chromeos-kevin-rel': 'chromeos_kevin_dchecks',
       'gpu-fyi-try-chromeos-amd64-generic': 'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols',
       'gpu-fyi-try-chromeos-kevin': 'gpu_tests_chromeos_kevin_release_trybot_dcheck_off_no_symbols',
       'lacros-amd64-generic-rel': 'chromeos_amd64-generic_lacros_rel_dchecks',
@@ -1931,8 +1931,8 @@
       'chromeos_device', 'eve', 'include_unwind_tables', 'official', 'dcheck_always_on',
     ],
 
-    'chromeos_kevin': [
-      'chromeos_kevin'
+    'chromeos_kevin_dchecks': [
+      'chromeos_kevin', 'dcheck_always_on',
     ],
 
     'chromeos_kevin_include_unwind_tables_official': [
