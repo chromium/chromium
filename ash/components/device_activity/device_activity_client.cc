@@ -293,7 +293,7 @@ GURL DeviceActivityClient::GetFresnelURL() const {
       replacements.SetPathStr(kFresnelHealthCheckEndpoint);
       break;
     case State::kIdle:  // Fallthrough to |kUnknown| case.
-      FALLTHROUGH;
+      [[fallthrough]];
     case State::kUnknown:
       NOTREACHED();
       break;
