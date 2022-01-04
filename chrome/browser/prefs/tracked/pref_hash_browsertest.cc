@@ -858,9 +858,9 @@ class PrefHashBrowserTestChangedSplitPref : public PrefHashBrowserTestBase {
     // Tamper with any installed setting for good.crx
     base::DictionaryValue* good_crx_dict;
     EXPECT_TRUE(extensions_dict->GetDictionary(kGoodCrxId, &good_crx_dict));
-    int good_crx_state;
-    EXPECT_TRUE(good_crx_dict->GetInteger("state", &good_crx_state));
-    EXPECT_EQ(extensions::Extension::ENABLED, good_crx_state);
+    absl::optional<int> good_crx_state = good_crx_dict->FindIntKey("state");
+    ASSERT_TRUE(good_crx_state);
+    EXPECT_EQ(extensions::Extension::ENABLED, *good_crx_state);
     good_crx_dict->SetInteger("state", extensions::Extension::DISABLED);
 
     // Drop a fake extension (for the purpose of this test, dropped settings
