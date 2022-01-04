@@ -56,19 +56,18 @@ config("pgo_optimization_flags") {
     }
 
     if (pgo_data_path == "" && _pgo_target != "") {
-      pgo_data_path = rebase_path(exec_script("//tools/update_pgo_profiles.py",
-                                              [
-                                                "--target",
-                                                _pgo_target,
-                                                "get_profile_path",
-                                              ],
-                                              "value"),
-                                  root_build_dir)
+      pgo_data_path = exec_script("//tools/update_pgo_profiles.py",
+                                  [
+                                    "--target",
+                                    _pgo_target,
+                                    "get_profile_path",
+                                  ],
+                                  "value")
     }
     assert(pgo_data_path != "",
            "Please set pgo_data_path to point at the profile data")
     cflags = [
-      "-fprofile-instr-use=$pgo_data_path",
+      "-fprofile-instr-use=" + rebase_path(pgo_data_path, root_build_dir),
 
       # It's possible to have some profile data legitimately missing,
       # and at least some profile data always ends up being considered
