@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/payments/payment_request.h"
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
@@ -105,6 +107,8 @@ TEST_F(PaymentRequestForInvalidOriginOrSslTest,
        ShowIsRejected_WhenShowBeforeIdle) {
   PaymentRequestV8TestingScope scope;
   PaymentRequest* request = CreatePaymentRequest(scope);
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   ScriptPromise promise =
       request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
   // PaymentRequest.OnError() runs in this idle.
@@ -121,6 +125,8 @@ TEST_F(PaymentRequestForInvalidOriginOrSslTest,
   // PaymentRequest.OnError() runs in this idle.
   platform_->RunUntilIdle();
 
+  // The show() will be rejected before user activation is checked, so there is
+  // no need to trigger user-activation here.
   ScriptPromise promise =
       request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
   EXPECT_EQ("NotSupportedError: mock error message",
@@ -134,6 +140,8 @@ TEST_F(PaymentRequestForInvalidOriginOrSslTest,
   // PaymentRequest.OnError() runs in this idle.
   platform_->RunUntilIdle();
 
+  // The show()s will be rejected before user activation is checked, so there is
+  // no need to trigger user-activation here.
   ScriptPromise promise1 =
       request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
   EXPECT_EQ("NotSupportedError: mock error message",

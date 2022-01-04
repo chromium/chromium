@@ -256,6 +256,8 @@ TEST(PaymentRequestTest, RejectShowPromiseOnInvalidShippingAddress) {
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
 
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
 
@@ -270,6 +272,8 @@ TEST(PaymentRequestTest, OnShippingOptionChange) {
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
 
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectNoCall());
 
@@ -283,8 +287,12 @@ TEST(PaymentRequestTest, CannotCallShowTwice) {
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
 
+  // The second show() call will be rejected before user activation is checked,
+  // so there is no need to re-trigger user-activation here.
   request->show(scope.GetScriptState(), scope.GetExceptionState());
   EXPECT_EQ(scope.GetExceptionState().Code(),
             ToExceptionCode(DOMExceptionCode::kInvalidStateError));
@@ -296,11 +304,16 @@ TEST(PaymentRequestTest, CannotShowAfterAborted) {
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
+
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
   request->abort(scope.GetScriptState(), ASSERT_NO_EXCEPTION);
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)->OnAbort(
       true);
 
+  // The second show() call will be rejected before user activation is checked,
+  // so there is no need to re-trigger user-activation here.
   request->show(scope.GetScriptState(), scope.GetExceptionState());
   EXPECT_EQ(scope.GetExceptionState().Code(),
             ToExceptionCode(DOMExceptionCode::kInvalidStateError));
@@ -348,6 +361,8 @@ TEST(PaymentRequestTest, RejectShowPromiseOnErrorPaymentMethodNotSupported) {
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
 
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   String error_message;
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall(&error_message));
@@ -368,6 +383,8 @@ TEST(PaymentRequestTest, RejectShowPromiseOnErrorCancelled) {
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
 
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   String error_message;
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall(&error_message));
@@ -387,6 +404,8 @@ TEST(PaymentRequestTest, RejectShowPromiseOnUpdateDetailsFailure) {
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
 
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   String error_message;
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall(&error_message));
@@ -405,6 +424,9 @@ TEST(PaymentRequestTest, IgnoreUpdatePaymentDetailsAfterShowPromiseResolved) {
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
+
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectCall(), funcs.ExpectNoCall());
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
@@ -421,6 +443,8 @@ TEST(PaymentRequestTest, RejectShowPromiseOnNonPaymentDetailsUpdate) {
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
 
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
 
@@ -437,6 +461,8 @@ TEST(PaymentRequestTest, RejectShowPromiseOnInvalidPaymentDetailsUpdate) {
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
 
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
 
@@ -461,8 +487,12 @@ TEST(PaymentRequestTest,
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(), details,
       options, ASSERT_NO_EXCEPTION);
   EXPECT_TRUE(request->shippingOption().IsNull());
+
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectNoCall());
+
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnShippingAddressChange(BuildPaymentAddressForTest());
   String detail_with_shipping_options =
@@ -502,8 +532,11 @@ TEST(
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), options, ASSERT_NO_EXCEPTION);
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectNoCall());
+
   String detail =
       "{\"total\": {\"label\": \"Total\", \"amount\": {\"currency\": \"USD\", "
       "\"value\": \"5.00\"}},"
@@ -529,10 +562,13 @@ TEST(PaymentRequestTest, UseTheSelectedShippingOptionFromPaymentDetailsUpdate) {
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), options, ASSERT_NO_EXCEPTION);
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectNoCall());
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
       ->OnShippingAddressChange(BuildPaymentAddressForTest());
+
   String detail =
       "{\"total\": {\"label\": \"Total\", \"amount\": {\"currency\": \"USD\", "
       "\"value\": \"5.00\"}},"
@@ -557,6 +593,8 @@ TEST(PaymentRequestTest, NoExceptionWithErrorMessageInUpdate) {
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
 
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectNoCall());
   String detail_with_error_msg =
@@ -638,6 +676,8 @@ TEST(PaymentRequestTest, NoCrashWhenPaymentMethodChangeEventDestroysContext) {
       ExecutionContext::From(script_state), method_data,
       BuildPaymentDetailsInitForTest(), ASSERT_NO_EXCEPTION);
   request->setOnpaymentmethodchange(page_deleter);
+  LocalFrame::NotifyUserActivation(
+      &frame, mojom::UserActivationNotificationType::kTest);
   request->show(script_state, ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectNoCall());
 
