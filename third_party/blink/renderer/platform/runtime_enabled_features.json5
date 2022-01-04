@@ -893,11 +893,6 @@
       status: "experimental",
     },
     {
-      // Disable composited layer squashing in pre-CompositeAfterPaint for
-      // testing.
-      name: "DisableLayerSquashing",
-    },
-    {
       // When on, the display-capture permissions-policy is enforced.
       // When off, enforcement of this permissions-policy is skipped.
       // This is driven from the browser process by the Enterprise policy
@@ -973,10 +968,6 @@
     {
       name: "ExceptionMetaDataForDevTools",
       status: "stable",
-    },
-    {
-      name: "ExecCommandInJavaScript",
-      status: "test",
     },
     {
       name: "ExperimentalContentSecurityPolicyFeatures",
@@ -1433,9 +1424,6 @@
       status: "stable",
     },
     {
-      name: "MediaDocumentDownloadButton",
-    },
-    {
       name: "MediaElementVolumeGreaterThanOne",
     },
     // Set to reflect the kMediaEngagementBypassAutoplayPolicies feature.
@@ -1558,10 +1546,6 @@
       name: "NewCanvas2DAPI",
       origin_trial_feature_name: "NewCanvas2DAPI",
       status: "experimental",
-    },
-    // Not a web exposed feature, enabled from the command line.
-    {
-      name: "NewRemotePlaybackPipeline",
     },
     {
       name: "NoIdleEncodingForWebTests",
@@ -1720,9 +1704,6 @@
       // net::features::kPartitionedCookies, which needs to be enabled to make
       // the whole feature work.
     },
-    {
-      name: "PassPaintVisualRectToCompositor",
-    },
     // This is to add an option to enable the Reveal button on password inputs while waiting ::reveal gets standardized.
     {
       name: "PasswordReveal",
@@ -1776,10 +1757,6 @@
       name: "PerMethodCanMakePaymentQuota",
       origin_trial_feature_name: "PerMethodCanMakePaymentQuota",
       status: "experimental",
-    },
-    {
-      name: "PermissionDelegation",
-      status: "test",
     },
     {
       name: "Permissions",
