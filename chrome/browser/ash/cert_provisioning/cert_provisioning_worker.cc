@@ -99,28 +99,28 @@ int GetStateOrderedIndex(CertProvisioningWorkerState state) {
   switch (state) {
     case CertProvisioningWorkerState::kInitState:
       res -= 1;
-      FALLTHROUGH;
+      [[fallthrough]];
     case CertProvisioningWorkerState::kKeypairGenerated:
       res -= 1;
-      FALLTHROUGH;
+      [[fallthrough]];
     case CertProvisioningWorkerState::kStartCsrResponseReceived:
       res -= 1;
-      FALLTHROUGH;
+      [[fallthrough]];
     case CertProvisioningWorkerState::kVaChallengeFinished:
       res -= 1;
-      FALLTHROUGH;
+      [[fallthrough]];
     case CertProvisioningWorkerState::kKeyRegistered:
       res -= 1;
-      FALLTHROUGH;
+      [[fallthrough]];
     case CertProvisioningWorkerState::kKeypairMarked:
       res -= 1;
-      FALLTHROUGH;
+      [[fallthrough]];
     case CertProvisioningWorkerState::kSignCsrFinished:
       res -= 1;
-      FALLTHROUGH;
+      [[fallthrough]];
     case CertProvisioningWorkerState::kFinishCsrResponseReceived:
       res -= 1;
-      FALLTHROUGH;
+      [[fallthrough]];
     case CertProvisioningWorkerState::kSucceeded:
     case CertProvisioningWorkerState::kInconsistentDataError:
     case CertProvisioningWorkerState::kFailed:
