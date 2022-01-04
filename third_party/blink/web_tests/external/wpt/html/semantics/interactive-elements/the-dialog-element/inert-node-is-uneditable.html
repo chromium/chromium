@@ -24,8 +24,8 @@ promise_test(async () => {
       absoluteTop += parentNode.offsetTop;
     }
 
-    const x = absoluteLeft + element.offsetWidth / 2;
-    const y = absoluteTop + element.offsetHeight / 2;
+    const x = Math.round(absoluteLeft + element.offsetWidth / 2);
+    const y = Math.round(absoluteTop + element.offsetHeight / 2);
     const actions = new test_driver.Actions()
       .pointerMove(x, y)
       .pointerDown()

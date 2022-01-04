@@ -71532,6 +71532,58 @@
        {}
       ]
      ],
+     "background-image-gradient-currentcolor-conic-repaint.html": [
+      "cbd524615f52086c81b7d00e56a7ed11980aa292",
+      [
+       null,
+       [
+        [
+         "/css/css-backgrounds/background-image-gradient-currentcolor-conic-repaint-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "background-image-gradient-currentcolor-linear-repaint.html": [
+      "1ad63ccef6772ca01b2ccdfba2faabb5b0db491c",
+      [
+       null,
+       [
+        [
+         "/css/css-backgrounds/background-image-gradient-currentcolor-linear-repaint-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "background-image-gradient-currentcolor-radial-repaint.html": [
+      "3182f343cfbf17caaedb1a00179fb002a9ff9f74",
+      [
+       null,
+       [
+        [
+         "/css/css-backgrounds/background-image-gradient-currentcolor-radial-repaint-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "background-image-gradient-currentcolor-visited.html": [
+      "65467b5ebae3f42e3dd5e0a75a4d695b90751697",
+      [
+       null,
+       [
+        [
+         "/css/css-backgrounds/background-image-gradient-currentcolor-visited-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "background-image-large-with-auto.html": [
       "a5e487b3e12125d25416da4461253ffc4d9b36ea",
       [
@@ -213846,6 +213898,19 @@
          {}
         ]
        ],
+       "select-intrinsic-text-transform.html": [
+        "1026e29977bfbc1ccc24bd2597743c40fb7eb4c3",
+        [
+         null,
+         [
+          [
+           "/html/rendering/replaced-elements/the-select-element/select-intrinsic-text-transform-ref.html",
+           "=="
+          ]
+         ],
+         {}
+        ]
+       ],
        "select-multiple-re-add-option-via-document-fragment.html": [
         "844f05639c9ce1812071903866a751cf7396431a",
         [
@@ -239896,6 +239961,22 @@
      ],
      "background-image-centered-ref.html": [
       "f52cd963ad25238bafc2081b7024aa5375614f5a",
+      []
+     ],
+     "background-image-gradient-currentcolor-conic-repaint-ref.html": [
+      "32158493df0409621ee8150f517eeed6119f8ca7",
+      []
+     ],
+     "background-image-gradient-currentcolor-linear-repaint-ref.html": [
+      "9a534e3b4600d3bfcab26adfcb4029250deb01a8",
+      []
+     ],
+     "background-image-gradient-currentcolor-radial-repaint-ref.html": [
+      "45ff24dfeebdb711952ccb53d60550654c9b7d01",
+      []
+     ],
+     "background-image-gradient-currentcolor-visited-ref.html": [
+      "43e0d1c0652dd9549416c1e4442e2d426a059289",
       []
      ],
      "background-margin-iframe-root-ref.html": [
@@ -293282,6 +293363,10 @@
        ],
        "select-empty-ref.html": [
         "31ba23a5cf86f161b1204ea3f4c9fef4585af909",
+        []
+       ],
+       "select-intrinsic-text-transform-ref.html": [
+        "18e272ba10d3c319c06cdb669e5f7a535946d024",
         []
        ],
        "select-multiple-re-add-option-via-document-fragment-ref.html": [
@@ -453973,7 +454058,7 @@
         ]
        ],
        "inert-inlines.html": [
-        "8acdb570fc602e3cec63dc1ec207b376f994bb8b",
+        "5ee4113985fc827608c180cbeb25013c1c83e1e0",
         [
          null,
          {
@@ -453991,7 +454076,7 @@
         ]
        ],
        "inert-node-is-uneditable.html": [
-        "393e5e10b52e37749d741aab3ab56120aa32ce44",
+        "9141a383b01ad0536404c926f5cb81ed88ddc086",
         [
          null,
          {
