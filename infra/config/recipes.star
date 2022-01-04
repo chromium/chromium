@@ -216,6 +216,7 @@ build_recipe(
 build_recipe(
     name = "recipe:findit/chromium/single_revision",
     bootstrappable = PROPERTIES_OPTIONAL,
+    use_python3 = True,
 )
 
 build_recipe(
