@@ -938,7 +938,8 @@ void AppListControllerImpl::OnUiVisibilityChanged(
         if (is_old_visibility_closing) {
           // Avoid resetting the contents view when the transition to close the
           // Assistant ui is going to be reversed.
-          disabler.emplace(fullscreen_presenter_->GetView());
+          if (fullscreen_presenter_->GetView())
+            disabler.emplace(fullscreen_presenter_->GetView());
 
           // Reset `close_assistant_ui_runner_` because the Assistant ui is
           // going to show.
@@ -1486,6 +1487,10 @@ void AppListControllerImpl::OnStateTransitionAnimationCompleted(
     state_transition_animation_callback_.Run(state);
   }
 
+  MaybeCloseAssistant();
+}
+
+void AppListControllerImpl::MaybeCloseAssistant() {
   if (close_assistant_ui_runner_)
     close_assistant_ui_runner_.RunAndReset();
 }
@@ -1495,6 +1500,7 @@ AppListViewState AppListControllerImpl::GetAppListViewState() const {
 }
 
 void AppListControllerImpl::OnViewStateChanged(AppListViewState state) {
+  DVLOG(1) << __PRETTY_FUNCTION__ << " " << state;
   app_list_view_state_ = state;
 
   auto* notifier = GetNotifier();
@@ -1504,6 +1510,12 @@ void AppListControllerImpl::OnViewStateChanged(AppListViewState state) {
   for (auto& observer : observers_)
     observer.OnViewStateChanged(state);
 
+  if (state == AppListViewState::kClosed)
+    ScheduleCloseAssistant();
+}
+
+void AppListControllerImpl::ScheduleCloseAssistant() {
+  DVLOG(1) << __PRETTY_FUNCTION__;
   // Close the Assistant in asynchronous way if the app list is going to be
   // closed while the Assistant is visible. If the app list close animation is
   // not reversed, `close_assistant_ui_runner_` runs at the end of the animation
@@ -1511,7 +1523,7 @@ void AppListControllerImpl::OnViewStateChanged(AppListViewState state) {
   const bool is_assistant_ui_visible =
       (AssistantUiController::Get()->GetModel()->visibility() ==
        AssistantVisibility::kVisible);
-  if (state == AppListViewState::kClosed && is_assistant_ui_visible) {
+  if (is_assistant_ui_visible) {
     absl::optional<base::ScopedClosureRunner> runner =
         AssistantUiController::Get()->CloseUi(
             AssistantExitPoint::kLauncherClose);

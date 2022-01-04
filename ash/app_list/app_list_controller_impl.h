@@ -317,6 +317,12 @@ class ASH_EXPORT AppListControllerImpl : public AppListController,
   // fullscreen app list).
   bool IsShowingEmbeddedAssistantUI() const;
 
+  // Sets up `close_assistant_ui_runner_` to close the assistant.
+  void ScheduleCloseAssistant();
+
+  // Runs `close_assistant_ui_runner_` when it is non-null.
+  void MaybeCloseAssistant();
+
   // Get updated app list view state after dragging from shelf.
   AppListViewState CalculateStateAfterShelfDrag(
       const ui::LocatedEvent& event_in_screen,

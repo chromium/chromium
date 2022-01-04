@@ -306,9 +306,8 @@ void AppListBubblePresenter::Dismiss() {
   }
   controller_->OnVisibilityChanged(/*visible=*/false, display_id);
 
-  // Clean up assistant. Must occur after CloseNow(), otherwise it will try to
-  // Dismiss() the app list and call this function re-entrantly.
-  AssistantUiController::Get()->CloseUi(AssistantExitPoint::kLauncherClose);
+  // Clean up assistant if it is showing.
+  controller_->ScheduleCloseAssistant();
 }
 
 aura::Window* AppListBubblePresenter::GetWindow() const {
@@ -406,6 +405,8 @@ int64_t AppListBubblePresenter::GetDisplayId() const {
 
 void AppListBubblePresenter::OnHideAnimationEnded() {
   bubble_widget_->Hide();
+
+  controller_->MaybeCloseAssistant();
 }
 
 }  // namespace ash

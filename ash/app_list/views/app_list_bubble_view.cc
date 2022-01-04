@@ -334,7 +334,7 @@ bool AppListBubbleView::Back() {
 }
 
 void AppListBubbleView::ShowPage(AppListBubblePage page) {
-  DVLOG(1) << __PRETTY_FUNCTION__ << " page " << static_cast<int>(page);
+  DVLOG(1) << __PRETTY_FUNCTION__ << " page " << page;
   // The assistant has its own text input field.
   search_box_view_->SetVisible(page != AppListBubblePage::kAssistant);
   separator_->SetVisible(page != AppListBubblePage::kAssistant);
@@ -366,6 +366,7 @@ bool AppListBubbleView::IsShowingEmbeddedAssistantUI() const {
 }
 
 void AppListBubbleView::ShowEmbeddedAssistantUI() {
+  DVLOG(1) << __PRETTY_FUNCTION__;
   if (IsShowingEmbeddedAssistantUI())
     return;
   ShowPage(AppListBubblePage::kAssistant);

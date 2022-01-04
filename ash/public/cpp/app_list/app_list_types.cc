@@ -118,6 +118,34 @@ AppListItemMetadata::AppListItemMetadata(const AppListItemMetadata& rhs) =
 AppListItemMetadata::~AppListItemMetadata() = default;
 
 ////////////////////////////////////////////////////////////////////////////////
+
+std::ostream& operator<<(std::ostream& os, AppListBubblePage page) {
+  switch (page) {
+    case AppListBubblePage::kApps:
+      return os << "Apps";
+    case AppListBubblePage::kSearch:
+      return os << "Search";
+    case AppListBubblePage::kAssistant:
+      return os << "Assistant";
+  }
+}
+
+std::ostream& operator<<(std::ostream& os, AppListViewState state) {
+  switch (state) {
+    case AppListViewState::kClosed:
+      return os << "Closed";
+    case AppListViewState::kPeeking:
+      return os << "Peeking";
+    case AppListViewState::kHalf:
+      return os << "Half";
+    case AppListViewState::kFullscreenAllApps:
+      return os << "FullscreenAllApps";
+    case AppListViewState::kFullscreenSearch:
+      return os << "FullscreenSearch";
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // SearchResultIconInfo:
 
 SearchResultIconInfo::SearchResultIconInfo() = default;

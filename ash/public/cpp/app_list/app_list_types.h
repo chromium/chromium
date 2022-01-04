@@ -5,6 +5,7 @@
 #ifndef ASH_PUBLIC_CPP_APP_LIST_APP_LIST_TYPES_H_
 #define ASH_PUBLIC_CPP_APP_LIST_APP_LIST_TYPES_H_
 
+#include <ostream>
 #include <string>
 #include <vector>
 
@@ -190,6 +191,9 @@ enum class AppListState {
 // Sub-pages of the app list bubble (with ProductivityLauncher).
 enum class AppListBubblePage { kApps, kSearch, kAssistant };
 
+ASH_PUBLIC_EXPORT std::ostream& operator<<(std::ostream& os,
+                                           AppListBubblePage page);
+
 // All possible states of the app list view.
 enum class AppListViewState {
   // Closes |app_list_main_view_| and dismisses the delegate.
@@ -207,6 +211,9 @@ enum class AppListViewState {
   // search box from |FULLSCREEN_ALL_APPS|.
   kFullscreenSearch
 };
+
+ASH_PUBLIC_EXPORT std::ostream& operator<<(std::ostream& os,
+                                           AppListViewState state);
 
 // The status of the app list model.
 enum class AppListModelStatus {

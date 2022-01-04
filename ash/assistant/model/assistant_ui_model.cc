@@ -8,6 +8,17 @@
 
 namespace ash {
 
+std::ostream& operator<<(std::ostream& os, AssistantVisibility visibility) {
+  switch (visibility) {
+    case AssistantVisibility::kClosed:
+      return os << "Closed";
+    case AssistantVisibility::kClosing:
+      return os << "Closing";
+    case AssistantVisibility::kVisible:
+      return os << "Visible";
+  }
+}
+
 AssistantUiModel::AssistantUiModel() = default;
 
 AssistantUiModel::~AssistantUiModel() = default;
