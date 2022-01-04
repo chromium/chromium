@@ -23,6 +23,7 @@ namespace ash {
 namespace {
 
 content::WebUIDataSource* CreateMediaAppUntrustedDataSource(
+    content::WebUI* web_ui,
     MediaAppGuestUIDelegate* delegate) {
   content::WebUIDataSource* source =
       content::WebUIDataSource::Create(kChromeUIMediaAppGuestURL);
@@ -51,7 +52,7 @@ content::WebUIDataSource* CreateMediaAppUntrustedDataSource(
       kChromeosMediaAppBundleResources, kChromeosMediaAppBundleResourcesSize));
 
   // Note: go/bbsrc/flags.ts processes this.
-  delegate->PopulateLoadTimeData(source);
+  delegate->PopulateLoadTimeData(web_ui, source);
   source->UseStringsJs();
 
   source->AddFrameAncestor(GURL(kChromeUIMediaAppURL));
@@ -104,7 +105,7 @@ MediaAppGuestUI::MediaAppGuestUI(content::WebUI* web_ui,
     : UntrustedWebUIController(web_ui),
       WebContentsObserver(web_ui->GetWebContents()) {
   content::WebUIDataSource* untrusted_source =
-      CreateMediaAppUntrustedDataSource(delegate);
+      CreateMediaAppUntrustedDataSource(web_ui, delegate);
 
   auto* browser_context = web_ui->GetWebContents()->GetBrowserContext();
   content::WebUIDataSource::Add(browser_context, untrusted_source);

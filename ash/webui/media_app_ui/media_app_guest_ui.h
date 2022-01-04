@@ -18,8 +18,9 @@ namespace ash {
 // functionality to the data source
 class MediaAppGuestUIDelegate {
  public:
-  // Takes a WebUIDataSource, and populates its load-time data.
-  virtual void PopulateLoadTimeData(content::WebUIDataSource* source) = 0;
+  // Takes a WebUI and WebUIDataSource, and populates its load-time data.
+  virtual void PopulateLoadTimeData(content::WebUI* web_ui,
+                                    content::WebUIDataSource* source) = 0;
 };
 
 // The webui for chrome-untrusted://media-app.
