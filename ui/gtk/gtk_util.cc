@@ -868,11 +868,11 @@ absl::optional<SkColor> SkColorFromColorId(ui::ColorId color_id) {
     case ui::kColorLinkForegroundDisabled:
       if (GtkCheckVersion(3, 12))
         return GetFgColor("GtkLabel#label.link:link:disabled");
-      FALLTHROUGH;
+      [[fallthrough]];
     case ui::kColorLinkForegroundPressed:
       if (GtkCheckVersion(3, 12))
         return GetFgColor("GtkLabel#label.link:link:hover:active");
-      FALLTHROUGH;
+      [[fallthrough]];
     case ui::kColorLinkForeground: {
       if (GtkCheckVersion(3, 12))
         return GetFgColor("GtkLabel#label.link:link");
