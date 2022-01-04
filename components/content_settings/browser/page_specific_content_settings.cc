@@ -827,7 +827,7 @@ void PageSpecificContentSettings::OnContentSettingChanged(
           map_->GetContentSetting(current_url, current_url, content_type);
       if (geolocation_setting == CONTENT_SETTING_ALLOW)
         geolocation_was_just_granted_on_site_level_ = true;
-      FALLTHROUGH;
+      [[fallthrough]];
     }
     case ContentSettingsType::IMAGES:
     case ContentSettingsType::JAVASCRIPT:
