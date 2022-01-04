@@ -50,7 +50,7 @@ const base::Feature kIOSPersistCrashRestore{"IOSPersistCrashRestore",
                                             base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSearchHistoryLinkIOS{"SearchHistoryLinkIOS",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kUpdateHistoryEntryPointsInIncognito{
     "UpdateHistoryEntryPointsInIncognito", base::FEATURE_DISABLED_BY_DEFAULT};
