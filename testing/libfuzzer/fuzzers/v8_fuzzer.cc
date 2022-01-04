@@ -96,8 +96,8 @@ struct Environment {
         v8::platform::InProcessStackDumping::kDisabled, nullptr);
 
     v8::V8::InitializePlatform(platform_.get());
-#ifdef V8_VIRTUAL_MEMORY_CAGE
-    v8::V8::InitializeVirtualMemoryCage();
+#ifdef V8_SANDBOX
+    v8::V8::InitializeSandbox();
 #endif
     v8::V8::Initialize();
     v8::Isolate::CreateParams create_params;
