@@ -112,10 +112,10 @@ class UnsentLogStore : public LogStore {
   void TrimLogs();
 
   // Writes the list of logs to |list|.
-  void WriteLogsToPrefList(base::ListValue* list) const;
+  void WriteLogsToPrefList(base::Value* list) const;
 
   // Reads the list of logs from |list|.
-  void ReadLogsFromPrefList(const base::ListValue& list);
+  void ReadLogsFromPrefList(const base::Value& list);
 
   // Writes the unsent log info to the |metadata_pref_name_| preference.
   void WriteToMetricsPref(base::HistogramBase::Count unsent_samples_count,
