@@ -1049,7 +1049,7 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="8627191004499078455">Připojeno k zařízení <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Nastavení usnadnění přístupu</translation>
 <translation id="8637598503828012618"><ph name="CONNECTION_STATUS" />, síla signálu: <ph name="SIGNAL_STRENGTH" />, spravováno administrátorem</translation>
-<translation id="8639760480004882931">Zbývá <ph name="PERCENTAGE" /> %</translation>
+<translation id="8639760480004882931">Zbývá <ph name="PERCENTAGE" /></translation>
 <translation id="8641805545866562088">Obnovování seznamu profilů. Několik minut počkejte.</translation>
 <translation id="8646417893960517480">Časovač na <ph name="TOTAL_TIME" /></translation>
 <translation id="8647931990447795414">Pokud chcete přidat uživatele, zadejte rodičovský přístupový kód Family Link</translation>

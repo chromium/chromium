@@ -354,7 +354,7 @@
 <translation id="3513798432020909783">Администратор аккаунта: <ph name="MANAGER_EMAIL" /></translation>
 <translation id="352245152354538528">{0,plural, =1{Перезагрузите устройство в течение 1 минуты}one{Перезагрузите устройство в течение # минуты}few{Перезагрузите устройство в течение # минут}many{Перезагрузите устройство в течение # минут}other{Перезагрузите устройство в течение # минуты}}</translation>
 <translation id="353086728817903341">Подключенных устройств: <ph name="NUM_DEVICES" /></translation>
-<translation id="3552189655002856821">Нет подключения к Wi-Fi</translation>
+<translation id="3552189655002856821">Wi-Fi отключен</translation>
 <translation id="3560866052109807830">Инструменты рисования маркером</translation>
 <translation id="3563775809269155755">Включить точку доступа</translation>
 <translation id="3571734092741541777">Настроить</translation>
@@ -451,7 +451,7 @@
 <translation id="4197790712631116042">Отключено</translation>
 <translation id="4201033867194214117">Функция "<ph name="FEATURE_NAME" />" недоступна</translation>
 <translation id="4201051445878709314">Показать предыдущий месяц</translation>
-<translation id="4209973997261364186">Есть подключение к Wi-Fi</translation>
+<translation id="4209973997261364186">Wi-Fi включен</translation>
 <translation id="4212472694152630271">Войти с помощью PIN-кода</translation>
 <translation id="4215497585250573029">Настройки VPN</translation>
 <translation id="4217571870635786043">Голосовой ввод</translation>
@@ -644,7 +644,7 @@
 <translation id="5523434445161341166">Функция "<ph name="FEATURE_NAME" />" выполняет подключение.</translation>
 <translation id="5532994612895037630">Нажмите в любом месте, чтобы включить запись видео со всего экрана.</translation>
 <translation id="553675580533261935">Завершение сеанса</translation>
-<translation id="5537725057119320332">Cast</translation>
+<translation id="5537725057119320332">Трансляция</translation>
 <translation id="554893713779400387">Включение голосового ввода</translation>
 <translation id="556042886152191864">Кнопка</translation>
 <translation id="5571066253365925590">Bluetooth включен</translation>

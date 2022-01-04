@@ -119,7 +119,7 @@
 <translation id="1749561566933687563">உங்கள் புத்தகக்குறிகளை ஒத்திசைக்கவும்</translation>
 <translation id="17513872634828108">தாவல்களைத் திற</translation>
 <translation id="1754404134430936718">உரை நகலெடுக்கப்பட்டது</translation>
-<translation id="1772137089884020309">புக்மார்க் கோப்புறைகளின் பட்டியல் மூடப்பட்டது</translation>
+<translation id="1772137089884020309">புக்மார்க் ஃபோல்டர்களின் பட்டியல் மூடப்பட்டது</translation>
 <translation id="1779766957982586368">சாளரத்தை மூடுக</translation>
 <translation id="1782483593938241562">முடிவுத் தேதி: <ph name="DATE" /></translation>
 <translation id="1791662854739702043">நிறுவப்பட்டது</translation>
@@ -1039,7 +1039,7 @@
 <translation id="7177873915659574692">QR குறியீட்டை உருவாக்க முடியவில்லை. URLலில் <ph name="CHARACTER_LIMIT" /> எழுத்துகளுக்கு மேல் உள்ளன.</translation>
 <translation id="7180611975245234373">புதுப்பி</translation>
 <translation id="7187993566681480880">Chromeமைப் பயன்படுத்தும்போது இது பாதுகாப்பை வழங்கும், அத்துடன் நீங்கள் பிற Google ஆப்ஸில் உள்நுழைந்திருக்கும்போது உங்கள் பாதுகாப்பை மேம்படுத்துவதற்காக இதைப் பயன்படுத்தலாம்.</translation>
-<translation id="718926126787620637">புக்மார்க் கோப்புறைகளின் பட்டியல் முழுத் திரையில் காட்டப்படுகிறது</translation>
+<translation id="718926126787620637">புக்மார்க் ஃபோல்டர்களின் பட்டியல் முழுத் திரையில் காட்டப்படுகிறது</translation>
 <translation id="7191430249889272776">தாவல் பின்புலத்தில் திறக்கப்பட்டது.</translation>
 <translation id="7227218174981371415">{FILE_COUNT,plural, =1{ஒரு பதிவிறக்கம் நிலுவையில் உள்ளது}other{# பதிவிறக்கங்கள் நிலுவையில் உள்ளன}}</translation>
 <translation id="7242755609445462077">மெருகூட்டப்பட்ட ஹைலைட் <ph name="CURRENT_DATE" /></translation>
@@ -1353,7 +1353,7 @@
 <translation id="8922289737868596582">பக்கங்களை ஆஃப்லைனில் பயன்படுத்த, மேலும் விருப்பங்கள் பொத்தானுக்குச் சென்று, அவற்றைப் பதிவிறக்கவும்</translation>
 <translation id="8924575305646776101"><ph name="BEGIN_LINK" />மேலும் அறிக<ph name="END_LINK" /></translation>
 <translation id="892496902842311796"><ph name="LANG" /> மொழி தயாராக உள்ளது</translation>
-<translation id="8928626432984354940">புக்மார்க் கோப்புறைகளின் பட்டியல் பாதித் திரையில் காட்டப்படுகிறது</translation>
+<translation id="8928626432984354940">புக்மார்க் ஃபோல்டர்களின் பட்டியல் பாதித் திரையில் காட்டப்படுகிறது</translation>
 <translation id="8937267401510745927">பணிகளை நிறைவுசெய்ய உங்களுக்கு உதவும் வகையில் நீங்கள் Assistantடைப் பயன்படுத்தும் தளங்களின் URLகளையும் உள்ளடக்கங்களையும் Assistant மூலம் சமர்ப்பிக்கும் தகவல்களையும் Google பெறும். இந்தத் தகவல்கள் உங்கள் Google கணக்கில் சேமிக்கப்படலாம். Chrome அமைப்புகளுக்குச் சென்று Assistantடை முடக்கலாம்.</translation>
 <translation id="8937772741022875483">உங்கள் Chrome செயல்பாட்டை டிஜிட்டல் வெல்பீயிங்கிலிருந்து நீக்கவா?</translation>
 <translation id="8942627711005830162">வேறு சாளரத்தில் திற</translation>
@@ -1412,7 +1412,7 @@
 <translation id="932327136139879170">முகப்பு</translation>
 <translation id="938850635132480979">பிழை: <ph name="ERROR_CODE" /></translation>
 <translation id="939598580284253335">கடவுச்சொற்றொடரை உள்ளிடுக</translation>
-<translation id="948039501338975565">புக்மார்க் கோப்புறைகளின் பட்டியல்</translation>
+<translation id="948039501338975565">புக்மார்க் ஃபோல்டர்களின் பட்டியல்</translation>
 <translation id="95817756606698420">சீனாவில் தேடுவதற்கு, Chromeமில் <ph name="BEGIN_BOLD" />Sogou<ph name="END_BOLD" />ஐப் பயன்படுத்தலாம். இதை <ph name="BEGIN_LINK" />அமைப்புகளுக்குச்<ph name="END_LINK" /> சென்று மாற்றலாம்.</translation>
 <translation id="962979164594783469">இந்த ஆப்ஸை நிறுவும்</translation>
 <translation id="96681097142096641">படிப்பதற்கான பயன்முறையில் காட்டவா?</translation>
