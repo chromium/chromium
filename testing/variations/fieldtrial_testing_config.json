@@ -2348,23 +2348,6 @@
             ]
         }
     ],
-    "ClankStartupOptimizations": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "None",
-                    "enable_features": [
-                        "ElidePrioritizationOfPreNativeBootstrapTasks",
-                        "ElideTabPreloadAtStartup",
-                        "TreatBootstrapAsDefault"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClientSideDetectionReferrerChain": [
         {
             "platforms": [
