@@ -294,7 +294,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Scheduling.Renderer.DrawIntervalWithCustomPropertyAnimations2"
-    units="microseconds" expires_after="2022-05-01">
+    units="microseconds" expires_after="2022-07-03">
   <owner>xidachen@chromium.org</owner>
   <owner>animations-dev@chromium.org</owner>
   <summary>

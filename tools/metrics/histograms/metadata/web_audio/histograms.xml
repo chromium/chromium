@@ -121,7 +121,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="WebAudio.AudioContextOptions.sampleRateRatio" units="units"
-    expires_after="2022-05-01">
+    expires_after="2022-07-03">
   <owner>hongchan@chromium.org</owner>
   <summary>
     The ratio of the user-selected sample rate to the hardware sample rate of an
