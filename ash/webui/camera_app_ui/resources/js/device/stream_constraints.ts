@@ -4,38 +4,30 @@
 
 /**
  * Stream constraints for audio and video.
- * @record
  */
-export class StreamConstraints {
+export interface StreamConstraints {
   /**
-   * @public
+   * Target device id.
    */
-  constructor() {
-    /**
-     * @type {string} Target device id.
-     */
-    this.deviceId;
+  deviceId: string;
 
-    /**
-     * @type {!MediaTrackConstraints} Extra video constraints.
-     */
-    this.video;
+  /**
+   * Extra video constraints.
+   */
+  video: MediaTrackConstraints;
 
-    /**
-     * @type {boolean} Whether to enable audio.
-     */
-    this.audio;
-  }
+  /**
+   * Whether to enable audio.
+   */
+  audio: boolean;
 }
 
 /**
  * Convert this to MediaStreamConstraints that is suitable to be used in
  * getUserMedia.
- *
- * @param {!StreamConstraints} constraints
- * @return {!MediaStreamConstraints}
  */
-export function toMediaStreamConstraints(constraints) {
+export function toMediaStreamConstraints(constraints: StreamConstraints):
+    MediaStreamConstraints {
   return {
     audio: constraints.audio ? {echoCancellation: false} : false,
     video: {...constraints.video, deviceId: {exact: constraints.deviceId}},
