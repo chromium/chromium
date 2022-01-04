@@ -72,11 +72,13 @@
         <item name="buttonTint">@color/selection_control_button_tint</item>
         <item name="android:minWidth">0dp</item>
         <item name="android:minHeight">0dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.TextMedium.Primary</item>
     </style>
     <style name="Widget.BrowserUI.RadioButton" parent="Widget.Material3.CompoundButton.RadioButton">
         <item name="buttonTint">@color/selection_control_button_tint</item>
         <item name="android:minWidth">0dp</item>
         <item name="android:minHeight">0dp</item>
+        <item name="android:textAppearance">@style/TextAppearance.TextMedium.Primary</item>
     </style>
     <style name="Widget.BrowserUI.Switch" parent="Widget.MaterialComponents.CompoundButton.Switch">
         <item name="thumbTint">@color/switch_thumb_tint</item>
