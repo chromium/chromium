@@ -21,6 +21,10 @@ namespace network {
 struct CrossOriginEmbedderPolicy;
 }
 
+namespace storage {
+struct BucketLocator;
+}
+
 namespace content {
 
 class CacheStorageContextImpl;
@@ -50,6 +54,7 @@ class CacheStorageDispatcherHost {
       mojo::PendingRemote<network::mojom::CrossOriginEmbedderPolicyReporter>
           coep_reporter,
       const blink::StorageKey& storage_key,
+      const absl::optional<storage::BucketLocator>& bucket,
       storage::mojom::CacheStorageOwner owner,
       mojo::PendingReceiver<blink::mojom::CacheStorage> receiver);
 

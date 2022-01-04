@@ -156,13 +156,16 @@ void CacheStorageContextImpl::AddReceiverWithBucketInfo(
     mojo::PendingReceiver<blink::mojom::CacheStorage> receiver,
     storage::QuotaErrorOr<storage::BucketInfo> result) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(result.ok());
+
+  const absl::optional<storage::BucketLocator> bucket =
+      result.ok() ? absl::make_optional(result->ToBucketLocator())
+                  : absl::nullopt;
 
   if (!dispatcher_host_)
     dispatcher_host_ = std::make_unique<CacheStorageDispatcherHost>(this);
   dispatcher_host_->AddReceiver(cross_origin_embedder_policy,
-                                std::move(coep_reporter), storage_key, owner,
-                                std::move(receiver));
+                                std::move(coep_reporter), storage_key, bucket,
+                                owner, std::move(receiver));
 }
 
 }  // namespace content
