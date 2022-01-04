@@ -647,7 +647,7 @@ bool IsDownloadDone(const GURL& url,
     case DownloadItem::IN_PROGRESS:
       return false;
     case DownloadItem::COMPLETE:
-      FALLTHROUGH;
+      [[fallthrough]];
     case DownloadItem::CANCELLED:
       return true;
     case DownloadItem::INTERRUPTED:

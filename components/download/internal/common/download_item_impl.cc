@@ -2243,7 +2243,7 @@ void DownloadItemImpl::InterruptWithPartialState(
       }
       // else - Fallthrough for cancellation handling which is equivalent to the
       // IN_PROGRESS state.
-      FALLTHROUGH;
+      [[fallthrough]];
 
     case IN_PROGRESS_INTERNAL:
     case TARGET_RESOLVED_INTERNAL: {
