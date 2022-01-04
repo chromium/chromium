@@ -26,6 +26,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/font.h"
@@ -340,6 +341,7 @@ AshNotificationView::AshNotificationView(
   // icon.
   auto main_right_view_builder =
       CreateMainRightViewBuilder()
+          .CopyAddressTo(&main_right_view_)
           .AddChild(content_row_builder)
           .AddChild(
               views::Builder<views::Label>()
@@ -864,16 +866,19 @@ void AshNotificationView::ToggleInlineSettings(const ui::Event& event) {
   if (!inline_settings_enabled())
     return;
 
-  NotificationViewBase::ToggleInlineSettings(event);
+  bool should_show_inline_settings = !inline_settings_row()->GetVisible();
+  PerformToggleInlineSettingsAnimation(should_show_inline_settings);
 
-  bool inline_settings_visible = inline_settings_row()->GetVisible();
+  NotificationViewBase::ToggleInlineSettings(event);
 
   // In settings UI, we only show the app icon and header row along with the
   // inline settings UI.
   header_row()->SetVisible(true);
-  left_content()->SetVisible(!inline_settings_visible);
-  right_content()->SetVisible(!inline_settings_visible);
-  expand_button_->SetVisible(!inline_settings_visible);
+  left_content()->SetVisible(!should_show_inline_settings);
+  right_content()->SetVisible(!should_show_inline_settings);
+  expand_button_->SetVisible(!should_show_inline_settings);
+
+  PreferredSizeChanged();
 }
 
 void AshNotificationView::ActionButtonPressed(size_t index,
@@ -1185,6 +1190,96 @@ void AshNotificationView::PerformLargeImageAnimation() {
       .SetDuration(base::Milliseconds(kLargeImageScaleDownDurationMs))
       .SetTransform(image_container_view(), transform,
                     gfx::Tween::ACCEL_20_DECEL_100);
+}
+
+void AshNotificationView::PerformToggleInlineSettingsAnimation(
+    bool should_show_inline_settings) {
+  if (ui::ScopedAnimationDurationScaleMode::duration_multiplier() ==
+      ui::ScopedAnimationDurationScaleMode::ZERO_DURATION)
+    return;
+
+  message_center_utils::InitLayerForAnimations(main_right_view_);
+  message_center_utils::InitLayerForAnimations(inline_settings_row());
+  message_center_utils::InitLayerForAnimations(left_content());
+  message_center_utils::InitLayerForAnimations(icon_view());
+
+  // Fade out views.
+  if (should_show_inline_settings) {
+    message_center_utils::FadeOutView(
+        left_content(),
+        base::BindRepeating(
+            [](base::WeakPtr<ash::AshNotificationView> parent,
+               views::View* left_content) {
+              if (parent) {
+                left_content->layer()->SetOpacity(1.0f);
+                left_content->SetVisible(false);
+              }
+            },
+            weak_factory_.GetWeakPtr(), left_content()),
+        /*delay_in_ms=*/0, kToggleInlineSettingsFadeOutDurationMs);
+
+    message_center_utils::FadeOutView(
+        expand_button_,
+        base::BindRepeating(
+            [](base::WeakPtr<ash::AshNotificationView> parent,
+               views::View* expand_button) {
+              if (parent) {
+                expand_button->layer()->SetOpacity(1.0f);
+                expand_button->SetVisible(false);
+              }
+            },
+            weak_factory_.GetWeakPtr(), expand_button_),
+        /*delay_in_ms=*/0, kToggleInlineSettingsFadeOutDurationMs);
+
+    // Fade out icon_view() if it exists.
+    if (icon_view()) {
+      message_center_utils::FadeOutView(
+          icon_view(),
+          base::BindRepeating(
+              [](base::WeakPtr<ash::AshNotificationView> parent,
+                 views::View* icon_view) {
+                if (parent) {
+                  icon_view->layer()->SetOpacity(1.0f);
+                  icon_view->SetVisible(false);
+                }
+              },
+              weak_factory_.GetWeakPtr(), icon_view()),
+          /*delay_in_ms=*/0, kToggleInlineSettingsFadeOutDurationMs);
+    }
+  } else {
+    message_center_utils::FadeOutView(
+        inline_settings_row(),
+        base::BindRepeating(
+            [](base::WeakPtr<ash::AshNotificationView> parent,
+               views::View* inline_settings_row) {
+              if (parent) {
+                inline_settings_row->layer()->SetOpacity(1.0f);
+                inline_settings_row->SetVisible(false);
+              }
+            },
+            weak_factory_.GetWeakPtr(), inline_settings_row()),
+        /*delay_in_ms=*/0, kToggleInlineSettingsFadeOutDurationMs);
+
+    if (!header_row()->GetVisible()) {
+      message_center_utils::FadeOutView(
+          header_row(),
+          base::BindRepeating(
+              [](base::WeakPtr<ash::AshNotificationView> parent,
+                 views::View* header_row) {
+                if (parent) {
+                  header_row->layer()->SetOpacity(1.0f);
+                  header_row->SetVisible(false);
+                }
+              },
+              weak_factory_.GetWeakPtr(), header_row()),
+          /*delay_in_ms=*/0, kToggleInlineSettingsFadeOutDurationMs);
+    }
+  }
+
+  // Fade in views.
+  message_center_utils::FadeInView(main_right_view_,
+                                   kToggleInlineSettingsFadeInDelayMs,
+                                   kToggleInlineSettingsFadeInDurationMs);
 }
 
 }  // namespace ash

@@ -908,8 +908,6 @@ void NotificationViewBase::ToggleInlineSettings(const ui::Event& event) {
     if (!weak_ptr)
       return;
   }
-
-  PreferredSizeChanged();
 }
 
 NotificationControlButtonsView* NotificationViewBase::GetControlButtonsView()

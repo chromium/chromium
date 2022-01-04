@@ -528,6 +528,7 @@ void NotificationView::ToggleInlineSettings(const ui::Event& event) {
   dont_block_button_->SetChecked(true);
 
   NotificationViewBase::ToggleInlineSettings(event);
+  PreferredSizeChanged();
 
   if (inline_settings_row()->GetVisible())
     AddBackgroundAnimation(event);

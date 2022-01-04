@@ -167,7 +167,12 @@ class ASH_EXPORT AshNotificationView
   // Expand/collapse animation for large image within `image_container_view()`.
   void PerformLargeImageAnimation();
 
+  // Animations when toggle inline settings.
+  void PerformToggleInlineSettingsAnimation(bool should_show_inline_settings);
+
   // Owned by views hierarchy.
+  views::View* main_view_ = nullptr;
+  views::View* main_right_view_ = nullptr;
   RoundedImageView* app_icon_view_ = nullptr;
   AshNotificationExpandButton* expand_button_ = nullptr;
   views::FlexLayoutView* expand_button_container_ = nullptr;
@@ -177,7 +182,6 @@ class ASH_EXPORT AshNotificationView
   views::View* grouped_notifications_container_ = nullptr;
   views::View* collapsed_summary_view_ = nullptr;
   views::View* control_buttons_view_ = nullptr;
-  views::View* main_view_ = nullptr;
   views::LabelButton* turn_off_notifications_button_ = nullptr;
   views::LabelButton* inline_settings_cancel_button_ = nullptr;
   views::View* snooze_button_spacer_ = nullptr;
