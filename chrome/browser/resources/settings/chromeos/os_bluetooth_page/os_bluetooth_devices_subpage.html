@@ -46,9 +46,9 @@
   <template is="dom-if"
       if="[[shouldShowDeviceList_(connectedDevices_,
           connectedDevices_.length)]]" restamp>
-    <div class="settings-box-text">
+    <h2 class="settings-box-text">
       $i18n{bluetoothDeviceListCurrentlyConnected}
-    </div>
+    </h2>
     <div class="device-list">
       <os-settings-paired-bluetooth-list
           id="connectedDeviceList"
@@ -59,9 +59,9 @@
   <template is="dom-if"
       if="[[shouldShowDeviceList_(unconnectedDevices_,
           unconnectedDevices_.length)]]" restamp>
-    <div class="settings-box-text">
+    <h2 class="settings-box-text">
       $i18n{bluetoothDeviceListPreviouslyConnected}
-    </div>
+    </h2>
     <div class="device-list">
       <os-settings-paired-bluetooth-list
           id="unconnectedDeviceList"
