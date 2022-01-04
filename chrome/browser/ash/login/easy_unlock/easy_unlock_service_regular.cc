@@ -306,11 +306,13 @@ AccountId EasyUnlockServiceRegular::GetAccountId() const {
 }
 
 const base::ListValue* EasyUnlockServiceRegular::GetRemoteDevices() const {
-  const base::DictionaryValue* pairing_dict = &base::Value::AsDictionaryValue(
-      *profile()->GetPrefs()->GetDictionary(prefs::kEasyUnlockPairing));
-  const base::ListValue* devices = NULL;
-  if (pairing_dict && pairing_dict->GetList(kKeyDevices, &devices))
-    return devices;
+  const base::Value* pairing_dict =
+      profile()->GetPrefs()->GetDictionary(prefs::kEasyUnlockPairing);
+  if (pairing_dict) {
+    const base::Value* devices = pairing_dict->FindListKey(kKeyDevices);
+    if (devices)
+      return &base::Value::AsListValue(*devices);
+  }
   return NULL;
 }
 
