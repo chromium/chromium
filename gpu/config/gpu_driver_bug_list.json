@@ -3902,6 +3902,17 @@
         "disable_accelerated_vp8_decode",
         "disable_accelerated_vp9_decode"
       ]
+    },
+    {
+      "id": 389,
+      "description": "Avoid waiting on a egl fence before pageflipping and rely on implicit sync.",
+      "os": {
+        "type": "chromeos"
+      },
+      "gl_vendor": "nouveau.*",
+      "features": [
+        "rely_on_implicit_sync_for_swap_buffers"
+      ]
     }
   ]
 }
