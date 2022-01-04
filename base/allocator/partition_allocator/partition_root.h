@@ -404,14 +404,8 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
                                         size_t alignment,
                                         size_t requested_size);
 
-  // PartitionAlloc supports multiple partitions, and hence multiple callers to
-  // these functions. Setting ALWAYS_INLINE bloats code, and can be detrimental
-  // to performance, for instance if multiple callers are hot (by increasing
-  // cache footprint).
-  // Set NOINLINE on the "basic" top-level functions to mitigate that for
-  // "vanilla" callers.
-  NOINLINE MALLOC_FN void* Alloc(size_t requested_size,
-                                 const char* type_name) MALLOC_ALIGNED;
+  ALWAYS_INLINE MALLOC_FN void* Alloc(size_t requested_size,
+                                      const char* type_name) MALLOC_ALIGNED;
   ALWAYS_INLINE MALLOC_FN void* AllocFlags(int flags,
                                            size_t requested_size,
                                            const char* type_name)
@@ -441,19 +435,19 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
                                                   size_t slot_span_alignment)
       MALLOC_ALIGNED;
 
-  NOINLINE void* Realloc(void* ptr,
-                         size_t newize,
-                         const char* type_name) MALLOC_ALIGNED;
+  ALWAYS_INLINE void* Realloc(void* ptr,
+                              size_t newize,
+                              const char* type_name) MALLOC_ALIGNED;
   // Overload that may return nullptr if reallocation isn't possible. In this
   // case, |ptr| remains valid.
-  NOINLINE void* TryRealloc(void* ptr,
-                            size_t new_size,
-                            const char* type_name) MALLOC_ALIGNED;
+  ALWAYS_INLINE void* TryRealloc(void* ptr,
+                                 size_t new_size,
+                                 const char* type_name) MALLOC_ALIGNED;
   NOINLINE void* ReallocFlags(int flags,
                               void* ptr,
                               size_t new_size,
                               const char* type_name) MALLOC_ALIGNED;
-  NOINLINE static void Free(void* ptr);
+  ALWAYS_INLINE static void Free(void* ptr);
   // Same as |Free()|, bypasses the allocator hooks.
   ALWAYS_INLINE static void FreeNoHooks(void* ptr);
   // Immediately frees the pointer bypassing the quarantine.
