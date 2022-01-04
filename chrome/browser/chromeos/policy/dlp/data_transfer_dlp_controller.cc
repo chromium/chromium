@@ -353,7 +353,7 @@ void DataTransferDlpController::DropIfAllowed(
       break;
 
     case DlpRulesManager::Level::kAllow:
-      FALLTHROUGH;
+      [[fallthrough]];
     case DlpRulesManager::Level::kReport:
       std::move(drop_cb).Run();
       break;
