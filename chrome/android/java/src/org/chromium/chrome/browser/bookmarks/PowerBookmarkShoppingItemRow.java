@@ -126,6 +126,7 @@ public class PowerBookmarkShoppingItemRow extends BookmarkItemRow {
                 ImageFetcher.Params.create(leadImageUrl, ImageFetcher.POWER_BOOKMARKS_CLIENT_NAME,
                         mDesiredImageSize, mDesiredImageSize),
                 (image) -> {
+                    if (image == null) return;
                     // We've successfully fetched an image. Cancel any pending requests for the
                     // favicon.
                     cancelFavicon();
