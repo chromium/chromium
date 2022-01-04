@@ -87,7 +87,7 @@ NSString* const kConsentViewControllerIdentifier =
   captionLabel.textAlignment = NSTextAlignmentCenter;
   captionLabel.font =
       [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
-  captionLabel.textColor = [UIColor colorNamed:kGrey600Color];
+  captionLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
   captionLabel.translatesAutoresizingMaskIntoConstraints = NO;
   captionLabel.adjustsFontForContentSizeCategory = YES;
   return captionLabel;
