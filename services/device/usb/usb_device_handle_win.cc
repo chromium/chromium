@@ -913,7 +913,7 @@ void UsbDeviceHandleWin::OpenInterfaceForControlTransfer(
       }
 
       index = endpoint_it->second.interface->interface_number;
-      FALLTHROUGH;
+      [[fallthrough]];
     }
 
     case UsbControlTransferRecipient::INTERFACE: {
