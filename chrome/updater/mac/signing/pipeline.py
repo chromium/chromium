@@ -25,9 +25,8 @@ def _sign_app(paths, config, dest_dir):
     commands.copy_files(os.path.join(paths.input, config.app_dir), paths.work)
     parts.sign_all(paths, config)
     commands.make_dir(dest_dir)
-    commands.move_file(
-        os.path.join(paths.work, config.app_dir),
-        os.path.join(dest_dir, config.app_dir))
+    commands.move_file(os.path.join(paths.work, config.app_dir),
+                       os.path.join(dest_dir, config.app_dir))
 
 
 def _package_and_sign_dmg(paths, config):
@@ -41,8 +40,9 @@ def _package_and_sign_dmg(paths, config):
         The path to the signed DMG file.
     """
     dmg_path = _package_dmg(paths, config)
-    product = model.CodeSignedProduct(
-        dmg_path, config.packaging_basename, sign_with_identifier=True)
+    product = model.CodeSignedProduct(dmg_path,
+                                      config.packaging_basename,
+                                      sign_with_identifier=True)
     signing.sign_part(paths, config, product)
     signing.verify_part(paths, product)
     return dmg_path
