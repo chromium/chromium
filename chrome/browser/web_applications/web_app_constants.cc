@@ -28,7 +28,7 @@ DisplayMode ResolveAppDisplayModeForStandaloneLaunchContainer(
       return DisplayMode::kMinimalUi;
     case DisplayMode::kUndefined:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case DisplayMode::kStandalone:
     case DisplayMode::kFullscreen:
       return DisplayMode::kStandalone;
@@ -144,12 +144,12 @@ DisplayMode ResolveEffectiveDisplayMode(
     case DisplayMode::kFullscreen:
     case DisplayMode::kWindowControlsOverlay:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case DisplayMode::kTabbed:
       if (base::FeatureList::IsEnabled(features::kDesktopPWAsTabStripSettings))
         return user_display_mode;
       // Treat as standalone.
-      FALLTHROUGH;
+      [[fallthrough]];
     case DisplayMode::kStandalone:
       break;
   }

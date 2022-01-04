@@ -36,7 +36,7 @@ bool EqualsWithComparison(const GURL& a,
       return false;
     case UrlComparison::kSameOrigin:
       replace.ClearPath();
-      FALLTHROUGH;
+      [[fallthrough]];
     case UrlComparison::kIgnoreQueryParamsAndRef:
       replace.ClearQuery();
       replace.ClearRef();
