@@ -1352,8 +1352,11 @@ ash::ShelfID ChromeShelfController::InsertAppItem(
     const std::u16string& title) {
   CHECK(item_delegate);
   if (GetItem(item_delegate->shelf_id())) {
-    // TODO(crbug.com/1090134): try and identify why this would be called when
-    // there is an already existing shelf item for this ID.
+    static bool once = true;
+    if (once) {
+      base::debug::DumpWithoutCrashing();
+      once = false;
+    }
     return item_delegate->shelf_id();
   }
 
