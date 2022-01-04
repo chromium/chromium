@@ -467,7 +467,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   TabStripModel* tab_strip = new_browser->tab_strip_model();
   ASSERT_EQ(static_cast<int>(expected_urls.size()), tab_strip->count());
   for (size_t i = 0; i < expected_urls.size(); i++)
-    EXPECT_EQ(expected_urls[i], tab_strip->GetWebContentsAt(i)->GetURL());
+    EXPECT_EQ(expected_urls[i],
+              tab_strip->GetWebContentsAt(i)->GetVisibleURL());
 
   // The two test_server tabs, despite having the same site, should be in
   // different SiteInstances.
@@ -503,8 +504,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   // The new browser should have exactly one tab (not the startup URLs).
   TabStripModel* tab_strip = new_browser->tab_strip_model();
   ASSERT_EQ(1, tab_strip->count());
-  EXPECT_EQ(chrome::kChromeUINewTabURL,
-            tab_strip->GetWebContentsAt(0)->GetURL().possibly_invalid_spec());
+  EXPECT_EQ(
+      chrome::kChromeUINewTabURL,
+      tab_strip->GetWebContentsAt(0)->GetVisibleURL().possibly_invalid_spec());
 }
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, OpenAppUrlShortcut) {
@@ -693,7 +695,7 @@ class StartupBrowserCreatorChromeAppShortcutTest
     EXPECT_FALSE(browser()->is_type_app());
     EXPECT_TRUE(browser()->is_type_normal());
     EXPECT_EQ(GURL(url::kAboutBlankURL),
-              tab_strip->GetWebContentsAt(0)->GetURL());
+              tab_strip->GetWebContentsAt(0)->GetLastCommittedURL());
     // Should have opened the chrome://apps unsupported app flow in 2nd window.
     Browser* other_browser = FindOneOtherBrowser(browser());
     ASSERT_TRUE(other_browser);
@@ -702,7 +704,7 @@ class StartupBrowserCreatorChromeAppShortcutTest
     EXPECT_FALSE(other_browser->is_type_app());
     EXPECT_TRUE(other_browser->is_type_normal());
     EXPECT_EQ(GURL(chrome::kChromeUIAppsURL),
-              other_tab_strip->GetWebContentsAt(0)->GetURL());
+              other_tab_strip->GetWebContentsAt(0)->GetVisibleURL());
   }
 
   bool IsExpectedToAllowLaunch() {
@@ -1080,14 +1082,14 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, StartupURLsForTwoProfiles) {
 
   // The new browser should have only the desired URL for the profile.
   ASSERT_EQ(1, tab_strip->count());
-  EXPECT_EQ(urls1[0], tab_strip->GetWebContentsAt(0)->GetURL());
+  EXPECT_EQ(urls1[0], tab_strip->GetWebContentsAt(0)->GetVisibleURL());
 
   ASSERT_EQ(1u, chrome::GetBrowserCount(other_profile));
   new_browser = FindOneOtherBrowserForProfile(other_profile, nullptr);
   ASSERT_TRUE(new_browser);
   tab_strip = new_browser->tab_strip_model();
   ASSERT_EQ(1, tab_strip->count());
-  EXPECT_EQ(urls2[0], tab_strip->GetWebContentsAt(0)->GetURL());
+  EXPECT_EQ(urls2[0], tab_strip->GetWebContentsAt(0)->GetVisibleURL());
 }
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, PRE_UpdateWithTwoProfiles) {
@@ -1218,14 +1220,16 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, UpdateWithTwoProfiles) {
   ASSERT_TRUE(new_browser);
   TabStripModel* tab_strip = new_browser->tab_strip_model();
   ASSERT_EQ(1, tab_strip->count());
-  EXPECT_EQ("/empty.html", tab_strip->GetWebContentsAt(0)->GetURL().path());
+  EXPECT_EQ("/empty.html",
+            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
 
   ASSERT_EQ(1u, chrome::GetBrowserCount(profile2));
   new_browser = FindOneOtherBrowserForProfile(profile2, nullptr);
   ASSERT_TRUE(new_browser);
   tab_strip = new_browser->tab_strip_model();
   ASSERT_EQ(1, tab_strip->count());
-  EXPECT_EQ("/form.html", tab_strip->GetWebContentsAt(0)->GetURL().path());
+  EXPECT_EQ("/form.html",
+            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
 }
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
@@ -1319,7 +1323,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   // The new browser should have only the NTP.
   ASSERT_EQ(1, tab_strip->count());
   EXPECT_EQ(ntp_test_utils::GetFinalNtpUrl(new_browser->profile()),
-            tab_strip->GetWebContentsAt(0)->GetURL());
+            tab_strip->GetWebContentsAt(0)->GetVisibleURL());
 
   // profile_urls opened the urls.
   ASSERT_EQ(1u, chrome::GetBrowserCount(profile_urls));
@@ -1327,7 +1331,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   ASSERT_TRUE(new_browser);
   tab_strip = new_browser->tab_strip_model();
   ASSERT_EQ(1, tab_strip->count());
-  EXPECT_EQ(urls[0], tab_strip->GetWebContentsAt(0)->GetURL());
+  EXPECT_EQ(urls[0], tab_strip->GetWebContentsAt(0)->GetVisibleURL());
 
   // profile_last opened the last open pages.
   ASSERT_EQ(1u, chrome::GetBrowserCount(profile_last));
@@ -1335,7 +1339,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
   ASSERT_TRUE(new_browser);
   tab_strip = new_browser->tab_strip_model();
   ASSERT_EQ(1, tab_strip->count());
-  EXPECT_EQ("/empty.html", tab_strip->GetWebContentsAt(0)->GetURL().path());
+  EXPECT_EQ("/empty.html",
+            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
 
   // profile_home2 was not launched since it would've only opened the home page.
   ASSERT_EQ(0u, chrome::GetBrowserCount(profile_home2));
@@ -2161,13 +2166,15 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
   new_browser = FindOneOtherBrowserForProfile(profile1, nullptr);
   ASSERT_TRUE(new_browser);
   TabStripModel* tab_strip = new_browser->tab_strip_model();
-  EXPECT_EQ("/title1.html", tab_strip->GetWebContentsAt(0)->GetURL().path());
+  EXPECT_EQ("/title1.html",
+            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
 
   ASSERT_EQ(1u, chrome::GetBrowserCount(profile2));
   new_browser = FindOneOtherBrowserForProfile(profile2, nullptr);
   ASSERT_TRUE(new_browser);
   tab_strip = new_browser->tab_strip_model();
-  EXPECT_EQ("/title2.html", tab_strip->GetWebContentsAt(0)->GetURL().path());
+  EXPECT_EQ("/title2.html",
+            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -2341,7 +2348,8 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithRealWebAppTest,
   EXPECT_EQ(new_browser->type(), Browser::Type::TYPE_NORMAL);
 
   TabStripModel* tab_strip = new_browser->tab_strip_model();
-  EXPECT_EQ("/title1.html", tab_strip->GetWebContentsAt(0)->GetURL().path());
+  EXPECT_EQ("/title1.html",
+            tab_strip->GetWebContentsAt(0)->GetLastCommittedURL().path());
 
   // Now get the app, it should just be the other browser from this profile.
   new_browser = FindOneOtherBrowserForProfile(profile1, new_browser);
@@ -3233,9 +3241,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest, AddFirstRunTab) {
   EXPECT_EQ(2, tab_strip->count());
 
   EXPECT_EQ("title1.html",
-            tab_strip->GetWebContentsAt(0)->GetURL().ExtractFileName());
+            tab_strip->GetWebContentsAt(0)->GetVisibleURL().ExtractFileName());
   EXPECT_EQ("title2.html",
-            tab_strip->GetWebContentsAt(1)->GetURL().ExtractFileName());
+            tab_strip->GetWebContentsAt(1)->GetVisibleURL().ExtractFileName());
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(OS_MAC)
@@ -3290,7 +3298,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest,
   TabStripModel* tab_strip = new_browser->tab_strip_model();
   ASSERT_EQ(1, tab_strip->count());
   EXPECT_EQ("title1.html",
-            tab_strip->GetWebContentsAt(0)->GetURL().ExtractFileName());
+            tab_strip->GetWebContentsAt(0)->GetVisibleURL().ExtractFileName());
 }
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(OS_MAC)
@@ -3336,7 +3344,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest,
   TabStripModel* tab_strip = new_browser->tab_strip_model();
   ASSERT_EQ(1, tab_strip->count());
   EXPECT_EQ("title1.html",
-            tab_strip->GetWebContentsAt(0)->GetURL().ExtractFileName());
+            tab_strip->GetWebContentsAt(0)->GetVisibleURL().ExtractFileName());
 }
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest, WelcomePages) {
@@ -3347,8 +3355,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest, WelcomePages) {
   // (about:blank or new tab page will be shown instead)
   TabStripModel* tab_strip = browser()->tab_strip_model();
   ASSERT_EQ(1, tab_strip->count());
-  EXPECT_NE(chrome::kChromeUIWelcomeURL,
-            tab_strip->GetWebContentsAt(0)->GetURL().possibly_invalid_spec());
+  EXPECT_NE(chrome::kChromeUIWelcomeURL, tab_strip->GetWebContentsAt(0)
+                                             ->GetLastCommittedURL()
+                                             .possibly_invalid_spec());
 #endif
 
   ProfileManager* profile_manager = g_browser_process->profile_manager();
@@ -3377,7 +3386,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest, WelcomePages) {
   ASSERT_EQ(1, tab_strip1->count());
   bool should_show_welcome = true;
   std::string new_tab_url1 =
-      tab_strip1->GetWebContentsAt(0)->GetURL().possibly_invalid_spec();
+      tab_strip1->GetWebContentsAt(0)->GetVisibleURL().possibly_invalid_spec();
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Welcome page should not be shown on Lacros.
   // (about:blank or new tab page will be shown instead)
@@ -3398,8 +3407,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest, WelcomePages) {
 
   // Ensure that the new tab page appears on subsequent runs.
   ASSERT_EQ(1, tab_strip1->count());
-  EXPECT_EQ(chrome::kChromeUINewTabURL,
-            tab_strip1->GetWebContentsAt(0)->GetURL().possibly_invalid_spec());
+  EXPECT_EQ(
+      chrome::kChromeUINewTabURL,
+      tab_strip1->GetWebContentsAt(0)->GetVisibleURL().possibly_invalid_spec());
 }
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest,
@@ -3449,8 +3459,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest,
   // the policy is set.
   if (IsWindows10OrNewer()) {
     ASSERT_EQ(1, tab_strip->count());
-    EXPECT_EQ("title1.html",
-              tab_strip->GetWebContentsAt(0)->GetURL().ExtractFileName());
+    EXPECT_EQ(
+        "title1.html",
+        tab_strip->GetWebContentsAt(0)->GetVisibleURL().ExtractFileName());
 
     browser = CloseBrowserAndOpenNew(browser, profile1_ptr);
     ASSERT_TRUE(browser);
@@ -3461,7 +3472,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest,
   // on first run on all other platforms.
   ASSERT_EQ(1, tab_strip->count());
   EXPECT_EQ("title1.html",
-            tab_strip->GetWebContentsAt(0)->GetURL().ExtractFileName());
+            tab_strip->GetWebContentsAt(0)->GetVisibleURL().ExtractFileName());
 
   browser = CloseBrowserAndOpenNew(browser, profile1_ptr);
   ASSERT_TRUE(browser);
@@ -3470,7 +3481,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorFirstRunTest,
   // Ensure that the policy page page appears on subsequent runs.
   ASSERT_EQ(1, tab_strip->count());
   EXPECT_EQ("title1.html",
-            tab_strip->GetWebContentsAt(0)->GetURL().ExtractFileName());
+            tab_strip->GetWebContentsAt(0)->GetVisibleURL().ExtractFileName());
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)

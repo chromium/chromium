@@ -160,8 +160,10 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
 
   TabStripModel* tab_strip = new_browser->tab_strip_model();
   ASSERT_EQ(static_cast<int>(expected_urls.size()), tab_strip->count());
-  for (size_t i = 0; i < expected_urls.size(); i++)
-    EXPECT_EQ(expected_urls[i], tab_strip->GetWebContentsAt(i)->GetURL());
+  for (size_t i = 0; i < expected_urls.size(); i++) {
+    EXPECT_EQ(expected_urls[i],
+              tab_strip->GetWebContentsAt(i)->GetVisibleURL());
+  }
 }
 
 class StartupBrowserCreatorTriggeredResetFirstRunTest
@@ -207,9 +209,9 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetFirstRunTest,
   ASSERT_EQ(2, tab_strip->count());
 
   EXPECT_EQ("title1.html",
-            tab_strip->GetWebContentsAt(0)->GetURL().ExtractFileName());
+            tab_strip->GetWebContentsAt(0)->GetVisibleURL().ExtractFileName());
   EXPECT_EQ("title2.html",
-            tab_strip->GetWebContentsAt(1)->GetURL().ExtractFileName());
+            tab_strip->GetWebContentsAt(1)->GetVisibleURL().ExtractFileName());
 }
 
 IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
@@ -284,5 +286,5 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTriggeredResetTest,
   TabStripModel* other_tab_strip = other_profile_browser->tab_strip_model();
   ASSERT_LT(0, other_tab_strip->count());
   EXPECT_EQ(GetTriggeredResetSettingsURL(),
-            other_tab_strip->GetActiveWebContents()->GetURL());
+            other_tab_strip->GetActiveWebContents()->GetVisibleURL());
 }

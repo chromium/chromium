@@ -88,7 +88,7 @@ class StartupBrowserCreatorWelcomeBackTest : public InProcessBrowserTest {
   void ExpectUrlInBrowserAtPosition(const GURL& url, int tab_index) {
     Browser* browser = BrowserList::GetInstance()->get(0);
     TabStripModel* tab_strip = browser->tab_strip_model();
-    EXPECT_EQ(url, tab_strip->GetWebContentsAt(tab_index)->GetURL());
+    EXPECT_EQ(url, tab_strip->GetWebContentsAt(tab_index)->GetVisibleURL());
   }
 
   void TearDownOnMainThread() override {
