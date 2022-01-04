@@ -634,6 +634,16 @@
     'browsing_data': {
       'filepath': 'browsing_data|BrowsingData',
     },
+    'cast_2_class': {
+      'filepath':  '/access_code/' \
+                   '|access_code_cast' \
+                   '|ash/public/cpp/cast' \
+                   '|ash/system/cast' \
+                   '|chrome/browser/media/router/providers' \
+                   '|chrome/browser/ui/ash/cast' \
+                   '|media_router/cast_dialog_view' \
+                   '|media/router/discovery',
+    },
     'cast_certificate': {
       'filepath': 'components/cast_certificate/'\
                   '|components/test/data/cast_certificate/',
@@ -2351,6 +2361,7 @@
     'browser_scheduler': ['scheduler-bugs+browser@chromium.org'],
     'browsing_data': ['dullweber+watch@chromium.org',
                       'msramek+watch@chromium.org'],
+    'cast_2_class': ['cros-edu-eng+cl@google.com'],
     'cast_certificate': ['dougsteed+watch@chromium.org',
                          'mfoltz+watch@chromium.org',
                          'ryanchung+watch@chromium.org'],
