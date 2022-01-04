@@ -452,7 +452,7 @@ void CookiesViewHandler::ReturnLocalDataList(const std::string& callback_id) {
         case CookieTreeNode::DetailedInfo::TYPE_COOKIE:
           DCHECK_EQ(0u, item_count);
           item_count = 1;
-          FALLTHROUGH;
+          [[fallthrough]];
         case CookieTreeNode::DetailedInfo::TYPE_COOKIES:
           description += l10n_util::GetPluralStringFUTF16(
               IDS_SETTINGS_SITE_SETTINGS_NUM_COOKIES,
