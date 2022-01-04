@@ -101,16 +101,6 @@ DlpContentRestrictionSet DlpContentManagerAsh::GetOnScreenPresentRestrictions()
   return on_screen_restrictions_;
 }
 
-bool DlpContentManagerAsh::IsScreenshotRestricted(const ScreenshotArea& area) {
-  const ConfidentialContentsInfo info =
-      GetAreaConfidentialContentsInfo(area, DlpContentRestriction::kScreenshot);
-  MaybeReportEvent(info.restriction_info,
-                   DlpRulesManager::Restriction::kScreenshot);
-  DlpBooleanHistogram(dlp::kScreenshotBlockedUMA,
-                      IsBlocked(info.restriction_info));
-  return IsBlocked(info.restriction_info);
-}
-
 bool DlpContentManagerAsh::IsScreenshotApiRestricted(
     const ScreenshotArea& area) {
   const ConfidentialContentsInfo info =
@@ -159,10 +149,6 @@ void DlpContentManagerAsh::CheckScreenShareRestriction(
 }
 
 void DlpContentManagerAsh::OnVideoCaptureStarted(const ScreenshotArea& area) {
-  if (IsScreenshotRestricted(area)) {
-    InterruptVideoRecording();
-    return;
-  }
   DCHECK(!running_video_capture_info_.has_value());
   running_video_capture_info_.emplace(area);
 }

@@ -985,10 +985,6 @@ CaptureAllowance CaptureModeController::IsCaptureAllowedByEnterprisePolicies(
   if (!delegate_->IsCaptureAllowedByPolicy()) {
     return CaptureAllowance::kDisallowedByPolicy;
   }
-  if (!delegate_->IsCaptureAllowedByDlp(capture_params.window,
-                                        capture_params.bounds)) {
-    return CaptureAllowance::kDisallowedByDlp;
-  }
 
   return CaptureAllowance::kAllowed;
 }

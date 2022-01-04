@@ -89,9 +89,6 @@ class ASH_PUBLIC_EXPORT CaptureModeDelegate {
       const gfx::Rect& bounds,
       OnCaptureModeDlpRestrictionChecked callback) = 0;
 
-  virtual bool IsCaptureAllowedByDlp(const aura::Window* window,
-                                     const gfx::Rect& bounds) const = 0;
-
   // Returns whether screen capture is allowed by an enterprise policy.
   virtual bool IsCaptureAllowedByPolicy() const = 0;
 

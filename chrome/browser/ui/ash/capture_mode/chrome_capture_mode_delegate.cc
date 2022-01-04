@@ -148,13 +148,6 @@ void ChromeCaptureModeDelegate::CheckCaptureOperationRestrictionByDlp(
       area, std::move(callback));
 }
 
-bool ChromeCaptureModeDelegate::IsCaptureAllowedByDlp(
-    const aura::Window* window,
-    const gfx::Rect& bounds) const {
-  return !policy::DlpContentManagerAsh::Get()->IsScreenshotRestricted(
-      ConvertToScreenshotArea(window, bounds));
-}
-
 bool ChromeCaptureModeDelegate::IsCaptureAllowedByPolicy() const {
   return !is_screen_capture_locked_ && !IsScreenCaptureDisabledByPolicy();
 }

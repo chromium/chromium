@@ -68,10 +68,6 @@ class DlpContentManagerAsh : public DlpContentManager,
   // currently visible.
   DlpContentRestrictionSet GetOnScreenPresentRestrictions() const;
 
-  // Returns whether screenshots should be restricted.
-  // TODO(crbug.com/1257493): Remove when it won't be used anymore.
-  virtual bool IsScreenshotRestricted(const ScreenshotArea& area);
-
   // Returns whether screenshots should be restricted for extensions API.
   virtual bool IsScreenshotApiRestricted(const ScreenshotArea& area);
 
