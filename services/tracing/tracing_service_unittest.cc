@@ -272,9 +272,9 @@ TEST_F(TracingServiceTest, PerfettoClientConsumerLegacyJson) {
   wait_for_data_loop.Run();
   DCHECK(!tokenizer.has_more());
 
-  auto result = base::DictionaryValue::From(
-      base::Value::ToUniquePtrValue(*base::JSONReader::Read(json)));
-  EXPECT_TRUE(result->HasKey("traceEvents"));
+  absl::optional<base::Value> result = base::JSONReader::Read(json);
+  ASSERT_TRUE(result.has_value());
+  EXPECT_TRUE(result->FindKey("traceEvents"));
 }
 
 class CustomDataSource : public perfetto::DataSource<CustomDataSource> {
