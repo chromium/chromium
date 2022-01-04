@@ -70,6 +70,11 @@ class TargetTestOutputs(TestOutputs):
                          for_package=self._package_name,
                          for_realms=self._test_realms)
 
+  def GetFileGlobal(self, glob, destination):
+    """Places all files/directories located in the global filesystem matched by
+    a glob into a destination."""
+    self._target.GetFile(self.GetDevicePath(glob), destination, None, None)
+
 
 class CustomArtifactsTestOutputs(TestOutputs):
   """A TestOutputs implementation for CFv2 tests, where tests emit files into
@@ -213,6 +218,8 @@ def main():
 
   if args.component_version == "2":
     args.use_run_test_component = False
+    # TODO(crbug.com/1284141): Add code coverage support for v2 components.
+    assert not args.code_coverage
 
   if args.code_coverage and not args.use_run_test_component:
     raise ValueError('Collecting code coverage info requires using '
@@ -330,8 +337,8 @@ def main():
       if args.code_coverage:
         # Copy all the files in the profile directory. /* is used instead
         # of recursively copying due to permission issues for the latter.
-        test_outputs.GetFile(TEST_LLVM_PROFILE_DIR + '/*',
-                             args.code_coverage_dir)
+        test_outputs.GetFileGlobal(  # pylint: disable=no-member
+            TEST_LLVM_PROFILE_DIR + '/*', args.code_coverage_dir)
 
       if args.test_launcher_summary_output:
         test_outputs.GetFile(TEST_RESULT_FILE,
