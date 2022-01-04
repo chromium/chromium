@@ -545,10 +545,10 @@ TetherService::TetherFeatureState TetherService::GetTetherFeatureState() {
       // Note that because of the early return above after
       // !HasSyncedTetherHosts, if this point is hit, there are synced tether
       // hosts available, but the multidevice state is unverified.
-      FALLTHROUGH;
+      [[fallthrough]];
     case chromeos::multidevice_setup::mojom::FeatureState::
         kUnavailableNoVerifiedHost_ClientNotReady:
-      FALLTHROUGH;
+      [[fallthrough]];
     case chromeos::multidevice_setup::mojom::FeatureState::
         kNotSupportedByChromebook:
       // CryptAuth may not yet know that this device supports
@@ -556,7 +556,7 @@ TetherService::TetherFeatureState TetherService::GetTetherFeatureState() {
       // that). This should be resolved shortly once DeviceReenroller realizes
       // reconciles the discrepancy. For now, fall through to mark as
       // unavailable.
-      FALLTHROUGH;
+      [[fallthrough]];
     case chromeos::multidevice_setup::mojom::FeatureState::kNotSupportedByPhone:
       return NO_AVAILABLE_HOSTS;
     default:
