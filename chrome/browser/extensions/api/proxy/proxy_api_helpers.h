@@ -10,16 +10,11 @@
 #include <memory>
 #include <string>
 
+#include "base/values.h"
 #include "components/proxy_config/proxy_prefs.h"
 #include "net/proxy_resolution/proxy_config.h"
 
 class ProxyConfigDictionary;
-
-namespace base {
-class DictionaryValue;
-class ListValue;
-class Value;
-}
 
 namespace extensions {
 namespace proxy_api_helpers {
@@ -104,12 +99,11 @@ bool GetProxyServer(const base::DictionaryValue* proxy_server,
 
 // Joins a list of URLs (stored as StringValues) in |list| with |joiner|
 // to |out|. Returns true if successful and sets |error| otherwise.
-bool JoinUrlList(const base::ListValue* list,
+bool JoinUrlList(base::Value::ConstListView list,
                  const std::string& joiner,
                  std::string* out,
                  std::string* error,
                  bool* bad_message);
-
 
 // Helper functions for browser->extension pref transformation:
 

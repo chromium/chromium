@@ -84,25 +84,23 @@ bool GetPacMandatoryFromExtensionPref(const base::DictionaryValue* proxy_config,
                                       bool* out,
                                       std::string* error,
                                       bool* bad_message) {
-  const base::DictionaryValue* pac_dict = NULL;
-  proxy_config->GetDictionary(proxy_api_constants::kProxyConfigPacScript,
-                              &pac_dict);
+  const base::Value* pac_dict =
+      proxy_config->FindDictKey(proxy_api_constants::kProxyConfigPacScript);
   if (!pac_dict) {
     *out = false;
     return true;
   }
 
-  absl::optional<bool> mandatory_pac;
-  if (pac_dict->HasKey(proxy_api_constants::kProxyConfigPacScriptMandatory)) {
-    mandatory_pac = pac_dict->FindBoolKey(
-        proxy_api_constants::kProxyConfigPacScriptMandatory);
-    if (!mandatory_pac.has_value()) {
+  const base::Value* mandatory_pac =
+      pac_dict->FindKey(proxy_api_constants::kProxyConfigPacScriptMandatory);
+  if (mandatory_pac) {
+    if (!mandatory_pac->is_bool()) {
       LOG(ERROR) << "'pacScript.mandatory' could not be parsed.";
       *bad_message = true;
       return false;
     }
   }
-  *out = mandatory_pac.value_or(false);
+  *out = mandatory_pac ? mandatory_pac->GetBool() : false;
   return true;
 }
 
@@ -110,27 +108,29 @@ bool GetPacUrlFromExtensionPref(const base::DictionaryValue* proxy_config,
                                 std::string* out,
                                 std::string* error,
                                 bool* bad_message) {
-  const base::DictionaryValue* pac_dict = NULL;
-  proxy_config->GetDictionary(proxy_api_constants::kProxyConfigPacScript,
-                              &pac_dict);
+  const base::Value* pac_dict =
+      proxy_config->FindDictKey(proxy_api_constants::kProxyConfigPacScript);
   if (!pac_dict)
     return true;
 
   // TODO(battre): Handle UTF-8 URLs (http://crbug.com/72692).
-  std::u16string pac_url16;
-  if (pac_dict->HasKey(proxy_api_constants::kProxyConfigPacScriptUrl) &&
-      !pac_dict->GetString(proxy_api_constants::kProxyConfigPacScriptUrl,
-                           &pac_url16)) {
-    LOG(ERROR) << "'pacScript.url' could not be parsed.";
-    *bad_message = true;
-    return false;
+  std::string pac_url;
+  const base::Value* pac_url_val =
+      pac_dict->FindKey(proxy_api_constants::kProxyConfigPacScriptUrl);
+  if (pac_url_val) {
+    if (!pac_url_val->is_string()) {
+      LOG(ERROR) << "'pacScript.url' could not be parsed.";
+      *bad_message = true;
+      return false;
+    }
+    pac_url = pac_url_val->GetString();
   }
-  if (!base::IsStringASCII(pac_url16)) {
+  if (!base::IsStringASCII(pac_url)) {
     *error = "'pacScript.url' supports only ASCII URLs "
              "(encode URLs in Punycode format).";
     return false;
   }
-  *out = base::UTF16ToASCII(pac_url16);
+  *out = std::move(pac_url);
   return true;
 }
 
@@ -138,26 +138,29 @@ bool GetPacDataFromExtensionPref(const base::DictionaryValue* proxy_config,
                                  std::string* out,
                                  std::string* error,
                                  bool* bad_message) {
-  const base::DictionaryValue* pac_dict = NULL;
-  proxy_config->GetDictionary(proxy_api_constants::kProxyConfigPacScript,
-                              &pac_dict);
+  const base::Value* pac_dict =
+      proxy_config->FindDictKey(proxy_api_constants::kProxyConfigPacScript);
   if (!pac_dict)
     return true;
 
-  std::u16string pac_data16;
-  if (pac_dict->HasKey(proxy_api_constants::kProxyConfigPacScriptData) &&
-      !pac_dict->GetString(proxy_api_constants::kProxyConfigPacScriptData,
-                           &pac_data16)) {
-    LOG(ERROR) << "'pacScript.data' could not be parsed.";
-    *bad_message = true;
-    return false;
+  std::string pac_data;
+  const base::Value* pac_val =
+      pac_dict->FindKey(proxy_api_constants::kProxyConfigPacScriptData);
+  if (pac_val) {
+    if (!pac_val->is_string()) {
+      LOG(ERROR) << "'pacScript.data' could not be parsed.";
+      *bad_message = true;
+      return false;
+    }
+    pac_data = pac_val->GetString();
   }
-  if (!base::IsStringASCII(pac_data16)) {
+
+  if (!base::IsStringASCII(pac_data)) {
     *error = "'pacScript.data' supports only ASCII code"
              "(encode URLs in Punycode format).";
     return false;
   }
-  *out = base::UTF16ToASCII(pac_data16);
+  *out = std::move(pac_data);
   return true;
 }
 
@@ -275,13 +278,13 @@ bool GetProxyRulesStringFromExtensionPref(
   return true;
 }
 
-bool JoinUrlList(const base::ListValue* list,
+bool JoinUrlList(base::Value::ConstListView list,
                  const std::string& joiner,
                  std::string* out,
                  std::string* error,
                  bool* bad_message) {
   std::string result;
-  for (const auto& val : list->GetList()) {
+  for (const auto& val : list) {
     if (!result.empty())
       result.append(joiner);
 
@@ -307,25 +310,25 @@ bool GetBypassListFromExtensionPref(const base::DictionaryValue* proxy_config,
                                     std::string* out,
                                     std::string* error,
                                     bool* bad_message) {
-  const base::DictionaryValue* proxy_rules = NULL;
-  proxy_config->GetDictionary(proxy_api_constants::kProxyConfigRules,
-                              &proxy_rules);
+  const base::Value* proxy_rules =
+      proxy_config->FindDictKey(proxy_api_constants::kProxyConfigRules);
   if (!proxy_rules)
     return true;
 
-  if (!proxy_rules->HasKey(proxy_api_constants::kProxyConfigBypassList)) {
+  const base::Value* bypass_list =
+      proxy_rules->FindKey(proxy_api_constants::kProxyConfigBypassList);
+  if (!bypass_list) {
     *out = "";
     return true;
   }
-  const base::ListValue* bypass_list = NULL;
-  if (!proxy_rules->GetList(proxy_api_constants::kProxyConfigBypassList,
-                            &bypass_list)) {
+
+  if (!bypass_list->is_list()) {
     LOG(ERROR) << "'rules.bypassList' could not be parsed.";
     *bad_message = true;
     return false;
   }
 
-  return JoinUrlList(bypass_list, ",", out, error, bad_message);
+  return JoinUrlList(bypass_list->GetList(), ",", out, error, bad_message);
 }
 
 std::unique_ptr<base::Value> CreateProxyConfigDict(

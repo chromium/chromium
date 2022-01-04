@@ -299,14 +299,14 @@ TEST(ExtensionProxyApiHelpers, GetProxyServer) {
 
 TEST(ExtensionProxyApiHelpers, JoinUrlList) {
   bool bad_message = false;
-  base::ListValue list;
+  base::Value list(base::Value::Type::LIST);
   list.Append("s1");
   list.Append("s2");
   list.Append("s3");
 
   std::string out;
   std::string error;
-  ASSERT_TRUE(JoinUrlList(&list, ";", &out, &error, &bad_message));
+  ASSERT_TRUE(JoinUrlList(list.GetList(), ";", &out, &error, &bad_message));
   EXPECT_EQ("s1;s2;s3", out);
   EXPECT_FALSE(bad_message);
 }
