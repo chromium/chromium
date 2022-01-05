@@ -341,5 +341,6 @@ fuzzer_test("onc_normalizer_fuzzer") {
   deps = [
     ":network",
     "//base",
+    "//chromeos/components/onc:onc",
   ]
 }
