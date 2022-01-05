@@ -1083,6 +1083,9 @@
       status: "experimental",
     },
     {
+      name: "FirstPartySets",
+    },
+    {
       name: "Fledge",
       origin_trial_feature_name: "Fledge",
     },
