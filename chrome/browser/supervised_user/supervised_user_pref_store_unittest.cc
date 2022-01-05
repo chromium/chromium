@@ -122,9 +122,10 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   EXPECT_THAT(
       fixture.changed_prefs()->FindBoolPath(prefs::kForceGoogleSafeSearch),
       Optional(true));
-  int force_youtube_restrict = safe_search_util::YOUTUBE_RESTRICT_OFF;
-  EXPECT_TRUE(fixture.changed_prefs()->GetInteger(prefs::kForceYouTubeRestrict,
-                                                  &force_youtube_restrict));
+  int force_youtube_restrict =
+      fixture.changed_prefs()
+          ->FindIntPath(prefs::kForceYouTubeRestrict)
+          .value_or(safe_search_util::YOUTUBE_RESTRICT_OFF);
   EXPECT_EQ(force_youtube_restrict,
             safe_search_util::YOUTUBE_RESTRICT_MODERATE);
 
@@ -160,8 +161,11 @@ TEST_F(SupervisedUserPrefStoreTest, ConfigureSettings) {
   EXPECT_THAT(
       fixture.changed_prefs()->FindBoolPath(prefs::kForceGoogleSafeSearch),
       Optional(false));
-  EXPECT_TRUE(fixture.changed_prefs()->GetInteger(prefs::kForceYouTubeRestrict,
-                                                  &force_youtube_restrict));
+
+  force_youtube_restrict =
+      fixture.changed_prefs()
+          ->FindIntPath(prefs::kForceYouTubeRestrict)
+          .value_or(safe_search_util::YOUTUBE_RESTRICT_MODERATE);
   EXPECT_EQ(force_youtube_restrict, safe_search_util::YOUTUBE_RESTRICT_OFF);
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
