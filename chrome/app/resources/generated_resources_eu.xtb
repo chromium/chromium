@@ -2,7 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
 <translation id="1001033507375626788">Zurekin partekatuta dago sarea</translation>
-<translation id="1001307489511021749">Aplikazioak, ezarpenak eta pertsonalizatzeko beste aukera batzuk sinkronizatu egingo dira Chrome OS-eko eta Google-ko kontuan saioa hasita daukaten gailu guztien artean.</translation>
+<translation id="1001307489511021749">Aplikazioak, ezarpenak eta pertsonalizatzeko beste aukera batzuk sinkronizatu egingo dira Chrome OS-ko eta Google-ko kontuan saioa hasita daukaten gailu guztien artean.</translation>
 <translation id="1003088604756913841">Ireki esteka <ph name="APP" /> aplikazioaren beste leiho batean</translation>
 <translation id="100323615638474026">USB bidezko gailua (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
 <translation id="1004218526896219317">Webgunerako sarbidea</translation>
@@ -637,7 +637,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="1637350598157233081">Pasahitza gailu honetan gorde da</translation>
 <translation id="1637765355341780467">Arazoren bat izan da profila irekitzean. Baliteke eginbide batzuk erabilgarri ez egotea.</translation>
 <translation id="1639239467298939599">Kargatzen</translation>
-<translation id="163993578339087550"><ph name="SERVICE_NAME" /> zerbitzuak Chrome OS-eko gailu egoki bat erabiltzen ari zarela egiaztatu nahi du.</translation>
+<translation id="163993578339087550"><ph name="SERVICE_NAME" /> zerbitzuak Chrome OS-ko gailu egoki bat erabiltzen ari zarela egiaztatu nahi du.</translation>
 <translation id="1640235262200048077"><ph name="IME_NAME" /> ezin da erabili Linux-erako aplikazioetan oraindik</translation>
 <translation id="1640283014264083726">PKCS #1 MD4, RSA enkriptatzearekin</translation>
 <translation id="1641113438599504367">Arakatze segurua</translation>
@@ -1140,7 +1140,7 @@ Kontu honen ezarpenak kudeatzeko, instalatu Family Link aplikazioa zure gailuan.
 <translation id="2152281589789213846">Gehitu inprimagailuak profilean</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> argazki</translation>
 <translation id="2154484045852737596">Editatu txartela</translation>
-<translation id="2154502158735983655">Chrome OS-eko gailuei buruzko informazioa eta datuak irakurri.</translation>
+<translation id="2154502158735983655">Chrome OS-ko gailuei buruzko informazioa eta datuak irakurri.</translation>
 <translation id="2155772377859296191"><ph name="WIDTH" /> × <ph name="HEIGHT" /> dirudi</translation>
 <translation id="2156294658807918600">Service worker: <ph name="SCRIPT_URL" /></translation>
 <translation id="2156557113115192526">Ez galdetu berriro fitxategi-formatu hau aplikazioan irekitzean:
@@ -3485,7 +3485,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="457386861538956877">Gehiago…</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
 <translation id="457564749856982089">Profilean ikastetxeko kontu bat gehituz gero, haurrak erraz hasi ahalko du saioa ikasle gisa webgune, luzapen eta aplikazioetan, baina gurasoen murriztapenen mende egoteari utzi gabe. Horrela, ezingo ditu atzitu ikastetxeko kontuarekin sinkronizatutako laster-markak, pasahitzak edo bestelako arakatze-datuak.&lt;br&gt;&lt;br&gt;
-Haurrak ikastetxean Chromebook bat erabiltzen badu, eta etxean ere ikastetxeko baldintza beretan lan egiteko aukera eskaini nahi badiozu behar duen material guztietarako sarbidea izan dezan, amaitu saioa Family Link-eko kontu honetan eta hasi saioa ikastetxeko kontuarekin Chrome OS-eko kontuen orrian (oharra: ez dira aplikatuko Family Link-en gurasoen murriztapenak).&lt;br&gt;&lt;br&gt;
+Haurrak ikastetxean Chromebook bat erabiltzen badu, eta etxean ere ikastetxeko baldintza beretan lan egiteko aukera eskaini nahi badiozu behar duen material guztietarako sarbidea izan dezan, amaitu saioa Family Link-eko kontu honetan eta hasi saioa ikastetxeko kontuarekin Chrome OS-ko kontuen orrian (oharra: ez dira aplikatuko Family Link-en gurasoen murriztapenak).&lt;br&gt;&lt;br&gt;
 Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean egiten duena Family Link-en bidez kudeatu, sakatu behean dagoen Hurrengoa botoia eta gehitu ikastetxeko kontu bat profil honetan.</translation>
 <translation id="4576541033847873020">Parekatu Bluetooth bidezko gailua</translation>
 <translation id="4576763597586015380">Pasahitzak Google-ko kontuan gordetzen jarraitzeko, egiaztatu zeu zarela</translation>
@@ -3843,7 +3843,7 @@ Haurrak ikastetxean ez badu Chromebook-ik erabiltzen, edo nahiago baduzu etxean 
 <translation id="496446150016900060">Sinkronizatu wifi-sareak telefonoarekin</translation>
 <translation id="4965808351167763748">Ziur gailu hau Hangouts Meet zerbitzuarekin erabiltzeko konfiguratu nahi duzula?</translation>
 <translation id="4966972803217407697">Ezkutuko moduan zaude</translation>
-<translation id="496888482094675990">Fitxategiak aplikazioarekin, azkar atzituko dituzu Google Drive-n, kanpoko memorian edo Chrome OS-eko gailuan gordeta dituzun fitxategiak.</translation>
+<translation id="496888482094675990">Fitxategiak aplikazioarekin, azkar atzituko dituzu Google Drive-n, kanpoko memorian edo Chrome OS-ko gailuan gordeta dituzun fitxategiak.</translation>
 <translation id="4971412780836297815">Ireki amaitzean</translation>
 <translation id="4971735654804503942">Babes bizkorrago eta proaktiboa webgune, deskarga eta luzapen kaltegarrien aurka. Pasahitzen segurtasuna urratu dela abisatzen dizu. Google-ri arakatze-datuak bidali behar zaizkio.</translation>
 <translation id="4972129977812092092">Editatu inprimagailua</translation>
@@ -6209,7 +6209,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7477748600276493962">Sortu orri honen QR kodea</translation>
 <translation id="7477793887173910789">Kontrolatu musika, bideoak eta beste</translation>
 <translation id="7478485216301680444">Ezin izan da instalatu aplikazio espezializatua.</translation>
-<translation id="7478623944308207463">Aplikazioak eta ezarpenak Chrome OS-eko gailu guztietan sinkronizatuko dira, Google-ko kontuarekin saioa hasita badaukazu haietan. Arakatzailea sinkronizatzeko aukerak ikusteko, joan <ph name="LINK_BEGIN" />Chrome-ren ezarpenetara<ph name="LINK_END" />.</translation>
+<translation id="7478623944308207463">Aplikazioak eta ezarpenak Chrome OS-ko gailu guztietan sinkronizatuko dira, Google-ko kontuarekin saioa hasita badaukazu haietan. Arakatzailea sinkronizatzeko aukerak ikusteko, joan <ph name="LINK_BEGIN" />Chrome-ren ezarpenetara<ph name="LINK_END" />.</translation>
 <translation id="7478658909253570368">Ez eman serieko ataketara konektatzeko baimena webguneei</translation>
 <translation id="7479221278376295180">Memoriaren erabilerari buruzko informazio orokorra</translation>
 <translation id="747981547666531654"><ph name="FIRST_DEVICE" /> eta <ph name="SECOND_DEVICE" /> izeneko Bluetooth bidezko gailuetara konektatuta</translation>
@@ -6565,7 +6565,7 @@ Esleipen bat kentzeko, berriz, sakatu esleipen bat daukan erabilerraztasun-eteng
 <translation id="7826254698725248775">Gailu-identifikatzailea gatazkatsua da.</translation>
 <translation id="7826790948326204519"><ph name="BEGIN_H3" />Arazketa-eginbideak<ph name="END_H3" />
     <ph name="BR" />
-    Chrome OS-eko gailuan arazketa-eginbideak gai ditzakezu, gailuan kode pertsonalizatuak instalatzeko eta probatzeko. Horri esker, honako hauek egin ahalko dituzu:<ph name="BR" />
+    Chrome OS-ko gailuan arazketa-eginbideak gai ditzakezu, gailuan kode pertsonalizatuak instalatzeko eta probatzeko. Horri esker, honako hauek egin ahalko dituzu:<ph name="BR" />
     <ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" />Roofts egiaztapena kendu, sistema eragilearen fitxategiak aldatu ahal izateko.
       <ph name="LIST_ITEM" />Gailurako SSH sarbidea gaitu, probako gako estandarrak erabilita, gailua atzitzeko tresnak (adibidez, <ph name="BEGIN_CODE" />"cros flash"<ph name="END_CODE" />) erabili ahal izateko.
@@ -7042,7 +7042,7 @@ Gorde gakoen fitxategia leku seguru batean. Zure luzapenaren bertsio berriak sor
 <translation id="8284279544186306258"><ph name="WEBSITE_1" /> webguneak</translation>
 <translation id="8284326494547611709">Azpitituluak</translation>
 <translation id="8286036467436129157">Hasi saioa</translation>
-<translation id="8287902281644548111">Bilatu API deiaren edo URLaren arabera</translation>
+<translation id="8287902281644548111">Bilatu APIa abiarazteko eskaeraren edo URLaren arabera</translation>
 <translation id="8288032458496410887">Desinstalatu <ph name="APP" />…</translation>
 <translation id="8289128870594824098">Diskoaren tamaina</translation>
 <translation id="8289509909262565712">Ongi etorri <ph name="DEVICE_OS" /> sistemara</translation>
@@ -7877,7 +7877,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
       <ph name="LIST_ITEM" />Chrome-ren Konexioen diagnostikoak exekutatu.
     <ph name="END_LIST" /></translation>
 <translation id="916607977885256133">Pantaila txiki gainjarria</translation>
-<translation id="9166813363879986425">Gordetako hobespenak eta jarduerak prest egongo dira Chrome OS-eko gailuetan Google-ko kontuarekin saioa hasten duzunean. Zer sinkronizatu nahi duzun aukeratzeko, joan Ezarpenak atalera.</translation>
+<translation id="9166813363879986425">Gordetako hobespenak eta jarduerak prest egongo dira Chrome OS-ko gailuetan Google-ko kontuarekin saioa hasten duzunean. Zer sinkronizatu nahi duzun aukeratzeko, joan Ezarpenak atalera.</translation>
 <translation id="9167063903968449027">Erakutsi irakurketa-zerrenda</translation>
 <translation id="9167450455589251456">Ez da onartzen profila</translation>
 <translation id="9168436347345867845">Geroago</translation>
