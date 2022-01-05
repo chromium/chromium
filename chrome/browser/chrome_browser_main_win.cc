@@ -663,6 +663,16 @@ void ChromeBrowserMainPartsWin::PostProfileInit() {
   // needs to be done before any child processes are initialized as the
   // ModuleDatabase is an endpoint for IPC from child processes.
   SetupModuleDatabase(&module_watcher_);
+
+  // If Chrome was launched by a Progressive Web App launcher that needs to be
+  // updated, update all launchers for this profile.
+  if (parsed_command_line().HasSwitch(switches::kAppId) &&
+      parsed_command_line().GetSwitchValueASCII(
+          switches::kPwaLauncherVersion) != chrome::kChromeVersion) {
+    content::BrowserThread::PostBestEffortTask(
+        FROM_HERE, base::SequencedTaskRunnerHandle::Get(),
+        base::BindOnce(&UpdatePwaLaunchersForProfile, profile()->GetPath()));
+  }
 }
 
 void ChromeBrowserMainPartsWin::PostBrowserStart() {
@@ -714,16 +724,6 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(&web_app::WriteChromePathToLastBrowserFile,
                      user_data_dir()));
-
-  // If Chrome was launched by a Progressive Web App launcher that needs to be
-  // updated, update all launchers for this profile.
-  if (parsed_command_line().HasSwitch(switches::kAppId) &&
-      parsed_command_line().GetSwitchValueASCII(
-          switches::kPwaLauncherVersion) != chrome::kChromeVersion) {
-    content::BrowserThread::PostBestEffortTask(
-        FROM_HERE, base::SequencedTaskRunnerHandle::Get(),
-        base::BindOnce(&UpdatePwaLaunchersForProfile, profile()->GetPath()));
-  }
 
   // Record the result of the latest Progressive Web App launcher launch.
   base::ThreadPool::PostTask(
