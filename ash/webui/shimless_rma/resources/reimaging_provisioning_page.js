@@ -52,6 +52,12 @@ export class ReimagingProvisioningPage extends ReimagingProvisioningPageBase {
 
   static get properties() {
     return {
+      /**
+       * Set by shimless_rma.js.
+       * @type {boolean}
+       */
+      allButtonsDisabled: Boolean,
+
       /** @protected {!ProvisioningStatus} */
       status_: {
         type: Object,

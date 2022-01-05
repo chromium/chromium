@@ -166,4 +166,14 @@ export function reimagingProvisioningPageTest() {
     await flushTasks();
     assertEquals(1, callCount);
   });
+
+  test('ProvisioningFailedRetryDisabled', async () => {
+    await initializeWaitForProvisioningPage();
+
+    const retryButton =
+        component.shadowRoot.querySelector('#retryProvisioningButton');
+    assertFalse(retryButton.disabled);
+    component.allButtonsDisabled = true;
+    assertTrue(retryButton.disabled);
+  });
 }
