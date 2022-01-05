@@ -3030,7 +3030,7 @@
   {
     "name": "enhanced_clipboard_screenshot_nudge",
     "owners":["anasalazar@chromium.org", "gzadina@google.com"],
-    "expiry_milestone": 94
+    "expiry_milestone": 101
   },
   {
     "name": "enhanced-network-voices",
