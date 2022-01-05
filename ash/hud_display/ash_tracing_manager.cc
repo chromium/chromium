@@ -38,7 +38,7 @@ bool AshTracingManager::IsBusy() const {
 
   switch (GetLastRequestStatus()) {
     case AshTracingRequest::Status::kEmpty:
-      FALLTHROUGH;
+      [[fallthrough]];
     case AshTracingRequest::Status::kInitialized:
       return true;
     case AshTracingRequest::Status::kStarted:
@@ -46,9 +46,9 @@ bool AshTracingManager::IsBusy() const {
     case AshTracingRequest::Status::kStopping:
       return true;
     case AshTracingRequest::Status::kPendingMount:
-      FALLTHROUGH;
+      [[fallthrough]];
     case AshTracingRequest::Status::kWritingFile:
-      FALLTHROUGH;
+      [[fallthrough]];
     case AshTracingRequest::Status::kCompleted:
       return false;
   }
@@ -60,17 +60,17 @@ bool AshTracingManager::IsTracingStarted() const {
 
   switch (GetLastRequestStatus()) {
     case AshTracingRequest::Status::kEmpty:
-      FALLTHROUGH;
+      [[fallthrough]];
     case AshTracingRequest::Status::kInitialized:
-      FALLTHROUGH;
+      [[fallthrough]];
     case AshTracingRequest::Status::kStarted:
-      FALLTHROUGH;
+      [[fallthrough]];
     case AshTracingRequest::Status::kStopping:
       return true;
     case AshTracingRequest::Status::kPendingMount:
-      FALLTHROUGH;
+      [[fallthrough]];
     case AshTracingRequest::Status::kWritingFile:
-      FALLTHROUGH;
+      [[fallthrough]];
     case AshTracingRequest::Status::kCompleted:
       return false;
   }
@@ -88,11 +88,11 @@ std::string AshTracingManager::GetStatusMessage() const {
   for (const auto& request : tracing_requests_) {
     switch (request->status()) {
       case AshTracingRequest::Status::kEmpty:
-        FALLTHROUGH;
+        [[fallthrough]];
       case AshTracingRequest::Status::kInitialized:
-        FALLTHROUGH;
+        [[fallthrough]];
       case AshTracingRequest::Status::kStarted:
-        FALLTHROUGH;
+        [[fallthrough]];
       case AshTracingRequest::Status::kStopping:
         ++started;
         break;
