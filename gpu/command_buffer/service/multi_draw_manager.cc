@@ -170,10 +170,10 @@ void MultiDrawManager::ResizeArrays() {
   switch (result_.draw_function) {
     case DrawFunction::DrawArraysInstancedBaseInstance:
       result_.baseinstances.resize(result_.drawcount);
-      FALLTHROUGH;
+      [[fallthrough]];
     case DrawFunction::DrawArraysInstanced:
       result_.instance_counts.resize(result_.drawcount);
-      FALLTHROUGH;
+      [[fallthrough]];
     case DrawFunction::DrawArrays:
       result_.firsts.resize(result_.drawcount);
       result_.counts.resize(result_.drawcount);
@@ -181,10 +181,10 @@ void MultiDrawManager::ResizeArrays() {
     case DrawFunction::DrawElementsInstancedBaseVertexBaseInstance:
       result_.basevertices.resize(result_.drawcount);
       result_.baseinstances.resize(result_.drawcount);
-      FALLTHROUGH;
+      [[fallthrough]];
     case DrawFunction::DrawElementsInstanced:
       result_.instance_counts.resize(result_.drawcount);
-      FALLTHROUGH;
+      [[fallthrough]];
     case DrawFunction::DrawElements:
       result_.counts.resize(result_.drawcount);
       switch (index_type_) {
