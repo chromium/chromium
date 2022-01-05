@@ -75,6 +75,10 @@ class WakeUpQueue;
 // tasks (normally the most common type) don't starve out immediate work.
 class BASE_EXPORT TaskQueueImpl {
  public:
+  // Initializes the state of all the task queue features. Must be invoked
+  // after FeatureList initialization and while Chrome is still single-threaded.
+  static void InitializeFeatures();
+
   // Sets the global cached state of the RemoveCanceledTasksInTaskQueue feature
   // according to its enabled state. Must be invoked after FeatureList
   // initialization.

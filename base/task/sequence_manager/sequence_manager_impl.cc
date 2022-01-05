@@ -321,7 +321,7 @@ std::unique_ptr<SequenceManagerImpl> SequenceManagerImpl::CreateUnbound(
 // static
 void SequenceManagerImpl::InitializeFeatures() {
   ApplyNoWakeUpsForCanceledTasks();
-  TaskQueueImpl::ApplyRemoveCanceledTasksInTaskQueue();
+  TaskQueueImpl::InitializeFeatures();
 }
 
 // static

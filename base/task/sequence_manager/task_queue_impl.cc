@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/stack_container.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -33,6 +34,14 @@
 
 namespace base {
 namespace sequence_manager {
+
+namespace {
+
+// Controls whether cancelled tasks are removed from the delayed queue.
+const base::Feature kSweepCancelledTasks CONSTINIT{"SweepCancelledTasks",
+                                                   FEATURE_ENABLED_BY_DEFAULT};
+
+}  // namespace
 
 // static
 const char* TaskQueue::PriorityToString(TaskQueue::QueuePriority priority) {
@@ -61,10 +70,12 @@ namespace internal {
 
 namespace {
 
-// Cache of the state of the kRemoveCanceledTasksInTaskQueue feature. This
-// avoids the need to constantly query its enabled state through
-// FeatureList::IsEnabled().
+// Cache of the state of the kRemoveCanceledTasksInTaskQueue and
+// kSweepCancelledTasks features. This avoids the need to constantly query their
+// enabled state through FeatureList::IsEnabled().
 bool g_is_remove_canceled_tasks_in_task_queue_enabled = false;
+bool g_is_sweep_cancelled_tasks_enabled =
+    kSweepCancelledTasks.default_state == FEATURE_ENABLED_BY_DEFAULT;
 
 }  // namespace
 
@@ -179,9 +190,22 @@ bool TaskQueueImpl::TaskRunner::RunsTasksInCurrentSequence() const {
 }
 
 // static
+void TaskQueueImpl::InitializeFeatures() {
+  ApplyRemoveCanceledTasksInTaskQueue();
+  g_is_sweep_cancelled_tasks_enabled =
+      FeatureList::IsEnabled(kSweepCancelledTasks);
+}
+
+// static
 void TaskQueueImpl::ApplyRemoveCanceledTasksInTaskQueue() {
-  DCHECK_EQ(kRemoveCanceledTasksInTaskQueue.default_state,
-            FEATURE_DISABLED_BY_DEFAULT);
+  // Since kRemoveCanceledTasksInTaskQueue is not constexpr (forbidden for
+  // Features), it cannot be used to initialize
+  // |g_is_remove_canceled_tasks_in_task_queue_enabled| at compile time. At
+  // least DCHECK that its initial value matches the default value of the
+  // feature here.
+  DCHECK_EQ(g_is_remove_canceled_tasks_in_task_queue_enabled,
+            kRemoveCanceledTasksInTaskQueue.default_state ==
+                FEATURE_ENABLED_BY_DEFAULT);
   g_is_remove_canceled_tasks_in_task_queue_enabled =
       FeatureList::IsEnabled(kRemoveCanceledTasksInTaskQueue);
 }
@@ -1163,14 +1187,20 @@ void TaskQueueImpl::UpdateCrossThreadQueueStateLocked() {
 void TaskQueueImpl::ReclaimMemory(TimeTicks now) {
   if (main_thread_only().delayed_incoming_queue.empty())
     return;
-  main_thread_only().delayed_incoming_queue.SweepCancelledTasks(
-      sequence_manager_);
 
-  // If deleting one of the cancelled tasks shut down this queue, bail out. Note
-  // that in this scenario |this| is still valid, but some fields of the queue
-  // have been cleared out by |UnregisterTaskQueue|.
-  if (!main_thread_only().delayed_work_queue)
-    return;
+  if (g_is_sweep_cancelled_tasks_enabled) {
+    main_thread_only().delayed_incoming_queue.SweepCancelledTasks(
+        sequence_manager_);
+
+    // If deleting one of the cancelled tasks shut down this queue, bail out.
+    // Note that in this scenario |this| is still valid, but some fields of the
+    // queue have been cleared out by |UnregisterTaskQueue|.
+    if (!main_thread_only().delayed_work_queue)
+      return;
+
+    LazyNow lazy_now(now);
+    UpdateWakeUp(&lazy_now);
+  }
 
   // Also consider shrinking the work queue if it's wasting memory.
   main_thread_only().delayed_work_queue->MaybeShrinkQueue();
@@ -1180,9 +1210,6 @@ void TaskQueueImpl::ReclaimMemory(TimeTicks now) {
     base::internal::CheckedAutoLock lock(any_thread_lock_);
     any_thread_.immediate_incoming_queue.MaybeShrinkQueue();
   }
-
-  LazyNow lazy_now(now);
-  UpdateWakeUp(&lazy_now);
 }
 
 void TaskQueueImpl::PushImmediateIncomingTaskForTest(Task task) {
