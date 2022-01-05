@@ -32,12 +32,12 @@ void EcheConnectorImpl::SendMessage(const std::string& message) {
       eche_feature_status_provider_->GetStatus();
   switch (feature_status) {
     case FeatureStatus::kDependentFeature:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FeatureStatus::kDependentFeaturePending:
       PA_LOG(WARNING) << "Attempting to send message with ineligible dep";
       break;
     case FeatureStatus::kNotEnabledByPhone:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FeatureStatus::kIneligible:
       PA_LOG(WARNING) << "Attempting to send message for ineligible feature";
       break;
@@ -46,7 +46,7 @@ void EcheConnectorImpl::SendMessage(const std::string& message) {
       break;
     case FeatureStatus::kDisconnected:
       connection_manager_->AttemptNearbyConnection();
-      FALLTHROUGH;
+      [[fallthrough]];
     case FeatureStatus::kConnecting:
       PA_LOG(INFO) << "Connecting; queuing message";
       message_queue_.push(message);

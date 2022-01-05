@@ -159,19 +159,19 @@ FeatureStatus EcheFeatureStatusProvider::ComputeStatus() {
   // unavailable.
   switch (current_phone_hub_feature_status_) {
     case phonehub::FeatureStatus::kNotEligibleForFeature:
-      FALLTHROUGH;
+      [[fallthrough]];
     case phonehub::FeatureStatus::kEligiblePhoneButNotSetUp:
-      FALLTHROUGH;
+      [[fallthrough]];
     case phonehub::FeatureStatus::kPhoneSelectedAndPendingSetup:
-      FALLTHROUGH;
+      [[fallthrough]];
     case phonehub::FeatureStatus::kDisabled:
-      FALLTHROUGH;
+      [[fallthrough]];
     case phonehub::FeatureStatus::kUnavailableBluetoothOff:
       return FeatureStatus::kDependentFeature;
     case phonehub::FeatureStatus::kEnabledAndConnecting:
-      FALLTHROUGH;
+      [[fallthrough]];
     case phonehub::FeatureStatus::kEnabledButDisconnected:
-      FALLTHROUGH;
+      [[fallthrough]];
     // The device is in a suspended state.
     case phonehub::FeatureStatus::kLockOrSuspended:
       return FeatureStatus::kDependentFeaturePending;
