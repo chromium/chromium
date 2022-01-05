@@ -2964,7 +2964,8 @@ crbug.com/626703 [ Linux ] external/wpt/url/url-constructor.any.html [ Failure ]
 crbug.com/626703 [ Mac11 ] external/wpt/css/css-flexbox/abspos/flex-abspos-staticpos-align-self-006.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
-crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-022.html [ Failure Crash ]
+crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-constructor-error.https.html [ Failure ]
+crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-022.html [ Crash Failure ]
 crbug.com/626703 external/wpt/css/css-text-decor/text-decoration-dotted-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text-decor/text-decoration-dotted-002.html [ Failure ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/private-network-access/fetch.https.window.html?include=from-treat-as-public [ Timeout ]
