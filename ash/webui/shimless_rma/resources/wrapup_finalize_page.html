@@ -1,8 +1,4 @@
 <style include="cr-shared-style shimless-rma-shared">
-paper-spinner-lite {
-    height: 300px;
-    width: 300px;
-}
 </style>
 
 <base-page orientation="column">
@@ -13,7 +9,8 @@ paper-spinner-lite {
     </p>
   </div>
   <div slot="body">
-    <paper-spinner-lite active hidden$="[[finalizationComplete_]]">
+    <paper-spinner-lite active hidden$="[[finalizationComplete_]]"
+        class="large-spinner">
     </paper-spinner-lite>
   </div>
 </base-page>

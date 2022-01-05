@@ -1,13 +1,4 @@
 <style include="cr-shared-style shimless-rma-shared">
-  iron-icon {
-    height: 200px;
-    width: 300px;
-  }
-
-  paper-spinner-lite {
-    height: 300px;
-    width: 300px;
-  }
 </style>
 
 <base-page orientation="column">
@@ -18,7 +9,8 @@
     </div>
   </div>
   <div slot="body">
-    <paper-spinner-lite active hidden$="[[calibrationComplete_]]">
+    <paper-spinner-lite active hidden$="[[calibrationComplete_]]"
+        class="large-spinner">
     </paper-spinner-lite>
   </div>
 </base-page>
