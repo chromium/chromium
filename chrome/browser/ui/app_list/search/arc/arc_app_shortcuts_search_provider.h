@@ -31,7 +31,7 @@ class ArcAppShortcutsSearchProvider : public SearchProvider {
 
   // SearchProvider:
   void Start(const std::u16string& query) override;
-  ash::AppListSearchResultType ResultType() override;
+  ash::AppListSearchResultType ResultType() const override;
 
  private:
   void OnGetAppShortcutGlobalQueryItems(

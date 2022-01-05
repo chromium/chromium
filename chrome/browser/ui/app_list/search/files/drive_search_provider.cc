@@ -50,7 +50,7 @@ DriveSearchProvider::DriveSearchProvider(Profile* profile)
 
 DriveSearchProvider::~DriveSearchProvider() = default;
 
-ash::AppListSearchResultType DriveSearchProvider::ResultType() {
+ash::AppListSearchResultType DriveSearchProvider::ResultType() const {
   return ash::AppListSearchResultType::kDriveSearch;
 }
 

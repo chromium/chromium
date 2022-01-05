@@ -35,7 +35,7 @@ class DriveSearchProvider : public SearchProvider {
   DriveSearchProvider& operator=(const DriveSearchProvider&) = delete;
 
   // SearchProvider:
-  ash::AppListSearchResultType ResultType() override;
+  ash::AppListSearchResultType ResultType() const override;
   void Start(const std::u16string& query) override;
 
  private:

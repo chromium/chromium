@@ -239,7 +239,7 @@ OsSettingsProvider::OsSettingsProvider(Profile* profile)
 
 OsSettingsProvider::~OsSettingsProvider() = default;
 
-ash::AppListSearchResultType OsSettingsProvider::ResultType() {
+ash::AppListSearchResultType OsSettingsProvider::ResultType() const {
   return ash::AppListSearchResultType::kOsSettings;
 }
 

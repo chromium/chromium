@@ -64,8 +64,7 @@ class SearchControllerImplNew : public SearchController {
   size_t AddGroup(size_t max_results) override;
   void AddProvider(size_t group_id,
                    std::unique_ptr<SearchProvider> provider) override;
-  void SetResults(ash::AppListSearchResultType provider_type,
-                  Results results) override;
+  void SetResults(const SearchProvider* provider, Results results) override;
   ChromeSearchResult* FindSearchResult(const std::string& result_id) override;
   ChromeSearchResult* GetResultByTitleForTest(
       const std::string& title) override;
@@ -90,15 +89,40 @@ class SearchControllerImplNew : public SearchController {
   }
 
  private:
-  void RankAndPublish(
-      const absl::optional<ash::AppListSearchResultType> provider_type);
+  // Rank the results of |provider_type|.
+  void Rank(ash::AppListSearchResultType provider_type);
+
+  // Publish results to ash.
+  void Publish();
+
+  void SetSearchResults(const SearchProvider* provider);
+
+  void SetZeroStateResults(const SearchProvider* provider);
+
+  void OnZeroStateTimedOut();
 
   Profile* profile_;
 
   // The query associated with the most recent search.
   std::u16string last_query_;
 
-  // The time when Start was most recently called.
+  // How many search providers should block zero-state until they return
+  // results.
+  int total_zero_state_blockers_ = 0;
+
+  // How many zero-state blocking providers have returned for this search.
+  int returned_zero_state_blockers_ = 0;
+
+  // A timer to trigger a Publish at the end of the timeout period passed to
+  // StartZeroState.
+  base::OneShotTimer zero_state_timeout_;
+
+  // The callback to indicate zero-state should be published. It is reset after
+  // calling, and has_value is used as a flag for whether zero-state has
+  // published.
+  absl::optional<base::OnceClosure> on_zero_state_done_;
+
+  // The time when StartSearch was most recently called.
   base::Time session_start_;
 
   // The ID of the most recently launched app. This is used for app list launch

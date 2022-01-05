@@ -80,7 +80,8 @@ class HelpAppProvider : public SearchProvider,
   void StartZeroState() override;
   void ViewClosing() override;
   void AppListShown() override;
-  ash::AppListSearchResultType ResultType() override;
+  ash::AppListSearchResultType ResultType() const override;
+  bool ShouldBlockZeroState() const override;
 
   // apps::AppRegistryCache::Observer:
   void OnAppUpdate(const apps::AppUpdate& update) override;

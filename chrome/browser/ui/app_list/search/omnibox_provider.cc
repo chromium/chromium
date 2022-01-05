@@ -97,7 +97,7 @@ void OmniboxProvider::StartZeroState() {
   Start(std::u16string());
 }
 
-ash::AppListSearchResultType OmniboxProvider::ResultType() {
+ash::AppListSearchResultType OmniboxProvider::ResultType() const {
   return ash::AppListSearchResultType::kOmnibox;
 }
 

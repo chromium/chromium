@@ -54,22 +54,24 @@ SearchControllerImplNew::~SearchControllerImplNew() {}
 
 void SearchControllerImplNew::StartSearch(const std::u16string& query) {
   session_start_ = base::Time::Now();
+  last_query_ = query;
+  results_.clear();
+  categories_ = CreateAllCategories();
+
+  // Cancel a pending zero-state publish if it exists.
+  zero_state_timeout_.Stop();
 
   // For query searches, begin the burn-in timer.
   if (!query.empty()) {
-    burn_in_timer_.Start(
-        FROM_HERE, burnin_period_,
-        base::BindOnce(&SearchControllerImplNew::RankAndPublish,
-                       base::Unretained(this), absl::nullopt));
+    burn_in_timer_.Start(FROM_HERE, burnin_period_,
+                         base::BindOnce(&SearchControllerImplNew::Publish,
+                                        base::Unretained(this)));
   }
 
   // TODO(crbug.com/1199206): We should move this histogram logic somewhere
   // else.
   ash::RecordLauncherIssuedSearchQueryLength(query.length());
 
-  last_query_ = query;
-  results_.clear();
-  categories_ = CreateAllCategories();
   for (Observer& observer : observer_list_)
     observer.OnResultsCleared();
 
@@ -88,11 +90,39 @@ void SearchControllerImplNew::StartSearch(const std::u16string& query) {
 
 void SearchControllerImplNew::StartZeroState(base::OnceClosure on_done,
                                              base::TimeDelta timeout) {
+  last_query_.clear();
+  results_.clear();
   // Categories currently are not used by zero-state, but may be required for
   // sorting in SetResults.
   categories_ = CreateAllCategories();
-  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE, std::move(on_done), timeout);
+
+  // Cancel a pending search publish if it exists.
+  burn_in_timer_.Stop();
+
+  for (Observer& observer : observer_list_)
+    observer.OnResultsCleared();
+
+  ranker_->Start(std::u16string(), results_, categories_);
+
+  on_zero_state_done_ = std::move(on_done);
+  returned_zero_state_blockers_ = 0;
+  for (const auto& provider : providers_)
+    provider->StartZeroState();
+
+  zero_state_timeout_.Start(
+      FROM_HERE, timeout,
+      base::BindOnce(&SearchControllerImplNew::OnZeroStateTimedOut,
+                     base::Unretained(this)));
+}
+
+void SearchControllerImplNew::OnZeroStateTimedOut() {
+  // This will be nullopt if all zero-state blocking providers have returned. If
+  // it isn't, publish whatever results have been returned.
+  if (on_zero_state_done_.has_value()) {
+    Publish();
+    std::move(on_zero_state_done_.value()).Run();
+    on_zero_state_done_.reset();
+  }
 }
 
 void SearchControllerImplNew::OpenResult(ChromeSearchResult* result,
@@ -156,65 +186,74 @@ size_t SearchControllerImplNew::AddGroup(size_t max_results) {
 void SearchControllerImplNew::AddProvider(
     size_t group_id,
     std::unique_ptr<SearchProvider> provider) {
+  if (provider->ShouldBlockZeroState())
+    ++total_zero_state_blockers_;
   provider->set_controller(this);
   providers_.emplace_back(std::move(provider));
 }
 
-void SearchControllerImplNew::SetResults(
-    const ash::AppListSearchResultType provider_type,
-    Results results) {
+void SearchControllerImplNew::SetResults(const SearchProvider* provider,
+                                         Results results) {
   // Re-post onto the UI sequence if not called from there.
   auto ui_thread = content::GetUIThreadTaskRunner({});
   if (!ui_thread->RunsTasksInCurrentSequence()) {
-    ui_thread->PostTask(FROM_HERE,
-                        base::BindOnce(&SearchControllerImplNew::SetResults,
-                                       base::Unretained(this), provider_type,
-                                       std::move(results)));
+    ui_thread->PostTask(
+        FROM_HERE,
+        base::BindOnce(&SearchControllerImplNew::SetResults,
+                       base::Unretained(this), provider, std::move(results)));
     return;
   }
 
-  results_[provider_type] = std::move(results);
-
-  // If the burn-in period has not yet elapsed, don't call
-  // RankAndPublish here. This case is covered by a call scheduled
-  // from within Start().
-  // TODO(crbug.com/1199206): Refactor SetResults to split into query search /
-  // zero state pathways, and remove burn-in period from zero state.
-  if (base::Time::Now() - session_start_ > burnin_period_) {
-    RankAndPublish(provider_type);
+  results_[provider->ResultType()] = std::move(results);
+  if (last_query_.empty()) {
+    SetZeroStateResults(provider);
+  } else {
+    SetSearchResults(provider);
   }
 }
 
-void SearchControllerImplNew::RankAndPublish(
-    const absl::optional<ash::AppListSearchResultType> provider_type) {
-  DCHECK(ranker_);
+void SearchControllerImplNew::SetSearchResults(const SearchProvider* provider) {
+  Rank(provider->ResultType());
+  // If the burn-in period has not yet elapsed, don't call Publish here. This
+  // case is covered by a call scheduled from within Start().
+  if (base::Time::Now() - session_start_ > burnin_period_)
+    Publish();
+}
 
-  // TODO(crbug.com/1199206): Refactor RankAndPublish to split into query search
-  // / zero state pathways, and remove burn-in period from zero state.
+void SearchControllerImplNew::SetZeroStateResults(
+    const SearchProvider* provider) {
+  Rank(provider->ResultType());
+
+  if (provider->ShouldBlockZeroState())
+    ++returned_zero_state_blockers_;
+
+  if (!on_zero_state_done_) {
+    // Zero-state has been unblocked, publish immediately.
+    Publish();
+  } else if (returned_zero_state_blockers_ == total_zero_state_blockers_) {
+    // All zero-state blockers have returned. Publish everything received so
+    // far, and trigger the on-done callback.
+    Publish();
+    std::move(on_zero_state_done_.value()).Run();
+    on_zero_state_done_.reset();
+  }
+}
+
+void SearchControllerImplNew::Rank(ash::AppListSearchResultType provider_type) {
+  DCHECK(ranker_);
   if (results_.empty()) {
     // Happens if the burn-in period has elapsed without any results having been
     // received from providers. Return early.
     return;
   }
 
-  if (!provider_type.has_value()) {
-    // Update ranking of all results and categories for all providers which
-    // have returned results.
-    for (const auto& type_results : results_) {
-      // This ordering is important, as result scores may affect category
-      // scores.
-      // TODO(crbug.com/1199206): Look into whether UpdateCategoryRanks needs to
-      // be run more than once.
-      ranker_->UpdateResultRanks(results_, type_results.first);
-      ranker_->UpdateCategoryRanks(results_, categories_, type_results.first);
-    }
-  } else {
-    // Update ranking of all results and categories for this provider. This
-    // ordering is important, as result scores may affect category scores.
-    ranker_->UpdateResultRanks(results_, *provider_type);
-    ranker_->UpdateCategoryRanks(results_, categories_, *provider_type);
-  }
+  // Update ranking of all results and categories for this provider. This
+  // ordering is important, as result scores may affect category scores.
+  ranker_->UpdateResultRanks(results_, provider_type);
+  ranker_->UpdateCategoryRanks(results_, categories_, provider_type);
+}
 
+void SearchControllerImplNew::Publish() {
   // Sort categories and create a vector of category enums in display order.
   std::sort(categories_.begin(), categories_.end(),
             [](const auto& a, const auto& b) { return a.score > b.score; });

@@ -51,7 +51,8 @@ class AppSearchProvider : public SearchProvider {
   void Start(const std::u16string& query) override;
   void StartZeroState() override;
   void ViewClosing() override;
-  ash::AppListSearchResultType ResultType() override;
+  ash::AppListSearchResultType ResultType() const override;
+  bool ShouldBlockZeroState() const override;
 
   // Refreshes apps and updates results inline
   void RefreshAppsAndUpdateResults();

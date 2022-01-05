@@ -192,8 +192,12 @@ void ZeroStateDriveProvider::AppListShown() {
   item_suggest_cache_.UpdateCache();
 }
 
-ash::AppListSearchResultType ZeroStateDriveProvider::ResultType() {
+ash::AppListSearchResultType ZeroStateDriveProvider::ResultType() const {
   return ash::AppListSearchResultType::kZeroStateDrive;
+}
+
+bool ZeroStateDriveProvider::ShouldBlockZeroState() const {
+  return true;
 }
 
 void ZeroStateDriveProvider::StartZeroState() {

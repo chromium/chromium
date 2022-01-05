@@ -100,7 +100,7 @@ FileSearchProvider::FileSearchProvider(Profile* profile)
 
 FileSearchProvider::~FileSearchProvider() = default;
 
-ash::AppListSearchResultType FileSearchProvider::ResultType() {
+ash::AppListSearchResultType FileSearchProvider::ResultType() const {
   return ash::AppListSearchResultType::kFileSearch;
 }
 

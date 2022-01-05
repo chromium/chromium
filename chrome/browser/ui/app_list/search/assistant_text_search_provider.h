@@ -34,7 +34,7 @@ class AssistantTextSearchProvider : public SearchProvider,
 
  private:
   // SearchProvider:
-  ash::AppListSearchResultType ResultType() override;
+  ash::AppListSearchResultType ResultType() const override;
 
   // ash::AssistantControllerObserver:
   void OnAssistantControllerDestroying() override;

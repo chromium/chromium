@@ -29,7 +29,7 @@ void SearchProvider::SwapResults(Results* new_results) {
   if (app_list_features::IsCategoricalSearchEnabled()) {
     Results results;
     results.swap(*new_results);
-    search_controller_->SetResults(ResultType(), std::move(results));
+    search_controller_->SetResults(this, std::move(results));
   } else {
     results_.swap(*new_results);
     FireResultChanged();
@@ -54,6 +54,10 @@ void SearchProvider::FireResultChanged() {
     return;
 
   result_changed_callback_.Run();
+}
+
+bool SearchProvider::ShouldBlockZeroState() const {
+  return false;
 }
 
 }  // namespace app_list

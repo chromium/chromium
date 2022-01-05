@@ -89,8 +89,7 @@ class SearchController {
 
   // Update the controller with the given results. Used only if the categorical
   // search feature flag is enabled.
-  virtual void SetResults(ash::AppListSearchResultType provider_type,
-                          Results results) = 0;
+  virtual void SetResults(const SearchProvider* provider, Results results) = 0;
 
   virtual ChromeSearchResult* FindSearchResult(
       const std::string& result_id) = 0;

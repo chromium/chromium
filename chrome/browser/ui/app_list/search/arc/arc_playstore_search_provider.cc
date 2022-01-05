@@ -87,7 +87,7 @@ ArcPlayStoreSearchProvider::ArcPlayStoreSearchProvider(
 
 ArcPlayStoreSearchProvider::~ArcPlayStoreSearchProvider() = default;
 
-ash::AppListSearchResultType ArcPlayStoreSearchProvider::ResultType() {
+ash::AppListSearchResultType ArcPlayStoreSearchProvider::ResultType() const {
   return ash::AppListSearchResultType::kPlayStoreApp;
 }
 

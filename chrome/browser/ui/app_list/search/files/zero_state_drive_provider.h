@@ -53,9 +53,10 @@ class ZeroStateDriveProvider : public SearchProvider,
       const power_manager::ScreenIdleState& proto) override;
 
   // SearchProvider:
-  void AppListShown() override;
-  ash::AppListSearchResultType ResultType() override;
   void StartZeroState() override;
+  void AppListShown() override;
+  ash::AppListSearchResultType ResultType() const override;
+  bool ShouldBlockZeroState() const override;
 
   void set_session_manager_for_testing(
       session_manager::SessionManager* session_manager) {

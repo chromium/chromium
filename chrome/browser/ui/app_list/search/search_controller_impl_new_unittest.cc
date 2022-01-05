@@ -10,10 +10,14 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/test/shell_test_api.h"
+#include "base/task/post_task.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/ranking/ranker_delegate.h"
 #include "chrome/browser/ui/app_list/search/search_controller.h"
+#include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "chrome/browser/ui/app_list/test/fake_app_list_model_updater.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
@@ -22,7 +26,11 @@
 namespace app_list {
 namespace {
 
+// TODO(crbug.com/1258415): Since we have a lot of class fakes now, we should
+// generalize them and split them into a test utils directory.
+
 using Category = ash::AppListSearchResultCategory;
+using Result = ash::AppListSearchResultType;
 
 class TestSearchResult : public ChromeSearchResult {
  public:
@@ -43,6 +51,51 @@ class TestSearchResult : public ChromeSearchResult {
 
  private:
   void Open(int event_flags) override { NOTIMPLEMENTED(); }
+};
+
+class TestSearchProvider : public SearchProvider {
+ public:
+  TestSearchProvider(ash::AppListSearchResultType result_type,
+                     bool block_zero_state,
+                     base::TimeDelta delay)
+      : result_type_(result_type),
+        block_zero_state_(block_zero_state),
+        delay_(delay) {}
+
+  ~TestSearchProvider() override = default;
+
+  void SetNextResults(
+      std::vector<std::unique_ptr<ChromeSearchResult>> results) {
+    results_ = std::move(results);
+  }
+
+  bool ShouldBlockZeroState() const override { return block_zero_state_; }
+
+  ash::AppListSearchResultType ResultType() const override {
+    return result_type_;
+  }
+
+  void Start(const std::u16string& query) override {
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&TestSearchProvider::SetResults, base::Unretained(this)),
+        delay_);
+  }
+
+  void StartZeroState() override {
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&TestSearchProvider::SetResults, base::Unretained(this)),
+        delay_);
+  }
+
+ private:
+  void SetResults() { SwapResults(&results_); }
+
+  std::vector<std::unique_ptr<ChromeSearchResult>> results_;
+  ash::AppListSearchResultType result_type_;
+  bool block_zero_state_;
+  base::TimeDelta delay_;
 };
 
 // A test ranker delegate that circumvents all result rankings, and hardcodes
@@ -98,6 +151,15 @@ std::vector<std::unique_ptr<ChromeSearchResult>> MakeResults(
         ids[i], categories[i], best_matches[i], scores[i]));
   }
   return results;
+}
+
+// Returns a pointer to a search provider. Only valid until the next call to
+// SimpleProvider.
+static std::unique_ptr<SearchProvider> kProvider;
+SearchProvider* SimpleProvider(ash::AppListSearchResultType result_type) {
+  kProvider = std::make_unique<TestSearchProvider>(result_type, false,
+                                                   base::Seconds(0));
+  return kProvider.get();
 }
 
 }  // namespace
@@ -164,11 +226,11 @@ TEST_F(SearchControllerImplNewTest, CategoriesOrderedCorrectly) {
   search_controller_->StartSearch(u"abc");
   ElapseBurnInPeriod();
   // Simulate several providers returning results.
-  search_controller_->SetResults(ash::AppListSearchResultType::kOmnibox,
+  search_controller_->SetResults(SimpleProvider(Result::kOmnibox),
                                  std::move(web_results));
-  search_controller_->SetResults(ash::AppListSearchResultType::kInstalledApp,
+  search_controller_->SetResults(SimpleProvider(Result::kInstalledApp),
                                  std::move(app_results));
-  search_controller_->SetResults(ash::AppListSearchResultType::kFileSearch,
+  search_controller_->SetResults(SimpleProvider(Result::kFileSearch),
                                  std::move(file_results));
 
   ExpectIdOrder({"a", "b", "c", "d", "e"});
@@ -189,7 +251,7 @@ TEST_F(SearchControllerImplNewTest, BestMatchesOrderedAboveOtherResults) {
   // Simulate a provider returning and containing all of the above results. A
   // single provider wouldn't return many results like this, but that's
   // unimportant for the test.
-  search_controller_->SetResults(ash::AppListSearchResultType::kOmnibox,
+  search_controller_->SetResults(SimpleProvider(Result::kOmnibox),
                                  std::move(results));
 
   ExpectIdOrder({"a", "c", "d", "b"});
@@ -208,7 +270,7 @@ TEST_F(SearchControllerImplNewTest, SetResultsPreAndPostBurnIn) {
   search_controller_->StartSearch(u"abc");
 
   // Simulate a provider returning results within the burn-in period.
-  search_controller_->SetResults(ash::AppListSearchResultType::kOmnibox,
+  search_controller_->SetResults(SimpleProvider(Result::kOmnibox),
                                  std::move(web_results));
   ExpectIdOrder({});
 
@@ -217,12 +279,94 @@ TEST_F(SearchControllerImplNewTest, SetResultsPreAndPostBurnIn) {
   ExpectIdOrder({"b", "c", "d"});
 
   // Simulate several providers returning results after the burn-in period.
-  search_controller_->SetResults(ash::AppListSearchResultType::kInstalledApp,
+  search_controller_->SetResults(SimpleProvider(Result::kInstalledApp),
                                  std::move(app_results));
   ExpectIdOrder({"b", "c", "d", "e"});
-  search_controller_->SetResults(ash::AppListSearchResultType::kFileSearch,
+  search_controller_->SetResults(SimpleProvider(Result::kFileSearch),
                                  std::move(file_results));
   ExpectIdOrder({"a", "b", "c", "d", "e"});
+}
+
+TEST_F(SearchControllerImplNewTest, ZeroStateResultsAreBlocked) {
+  ranker_delegate_->SetCategoryRanks({{Category::kApps, 0.1}});
+
+  // Set up four providers, two are zero-state blocking. One is slow. The
+  // particular result types and categories don't matter.
+  auto provider_a = std::make_unique<TestSearchProvider>(
+      Result::kInstalledApp, true, base::Seconds(1));
+  auto provider_b = std::make_unique<TestSearchProvider>(
+      Result::kZeroStateFile, true, base::Seconds(2));
+  auto provider_c = std::make_unique<TestSearchProvider>(
+      Result::kOsSettings, false, base::Seconds(1));
+  auto provider_d = std::make_unique<TestSearchProvider>(
+      Result::kOmnibox, false, base::Seconds(4));
+
+  provider_a->SetNextResults(
+      MakeResults({"a"}, {Category::kApps}, {false}, {0.3}));
+  provider_b->SetNextResults(
+      MakeResults({"b"}, {Category::kApps}, {false}, {0.2}));
+  provider_c->SetNextResults(
+      MakeResults({"c"}, {Category::kApps}, {false}, {0.1}));
+  provider_d->SetNextResults(
+      MakeResults({"d"}, {Category::kApps}, {false}, {0.4}));
+
+  search_controller_->AddProvider(0, std::move(provider_a));
+  search_controller_->AddProvider(0, std::move(provider_b));
+  search_controller_->AddProvider(0, std::move(provider_c));
+  search_controller_->AddProvider(0, std::move(provider_d));
+
+  // Start the zero-state session. When on-done is called, we should have
+  // results from all but the slowest provider.
+  search_controller_->StartZeroState(base::BindLambdaForTesting([&]() {
+                                       ExpectIdOrder({"a", "b", "c"});
+                                     }),
+                                     base::Seconds(3));
+
+  // The fast provider has returned but shouldn't have published.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  ExpectIdOrder({});
+
+  // Additionally, those three results should be returned before the
+  // StartZeroState timeout.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  ExpectIdOrder({"a", "b", "c"});
+
+  // The latecomer should still be added when it arrives.
+  task_environment_.FastForwardBy(base::Seconds(2));
+  ExpectIdOrder({"d", "a", "b", "c"});
+}
+
+TEST_F(SearchControllerImplNewTest, ZeroStateResultsGetTimedOut) {
+  ranker_delegate_->SetCategoryRanks({{Category::kApps, 0.1}});
+
+  auto provider_a = std::make_unique<TestSearchProvider>(
+      Result::kInstalledApp, true, base::Seconds(1));
+  auto provider_b = std::make_unique<TestSearchProvider>(
+      Result::kZeroStateFile, true, base::Seconds(3));
+
+  provider_a->SetNextResults(
+      MakeResults({"a"}, {Category::kApps}, {false}, {0.3}));
+  provider_b->SetNextResults(
+      MakeResults({"b"}, {Category::kFiles}, {false}, {0.2}));
+
+  search_controller_->AddProvider(0, std::move(provider_a));
+  search_controller_->AddProvider(0, std::move(provider_b));
+
+  search_controller_->StartZeroState(
+      base::BindLambdaForTesting([&]() { ExpectIdOrder({"a"}); }),
+      base::Seconds(2));
+
+  // The fast provider has returned but shouldn't have published.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  ExpectIdOrder({});
+
+  // The timeout finished, the fast provider's result should be published.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  ExpectIdOrder({"a"});
+
+  // The slow provider should still publish when it returns.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  ExpectIdOrder({"a", "b"});
 }
 
 }  // namespace app_list

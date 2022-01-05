@@ -46,7 +46,12 @@ class SearchProvider {
   // provider to eg. warm up a cache of results.
   virtual void AppListShown() {}
   // Returns the main result type created by this provider.
-  virtual ash::AppListSearchResultType ResultType() = 0;
+  virtual ash::AppListSearchResultType ResultType() const = 0;
+
+  // Returns true if this provider should prevent zero-state results from being
+  // published until it has returned. If this is true, a provider should only
+  // return results once per call to StartZeroState.
+  virtual bool ShouldBlockZeroState() const;
 
   void set_controller(SearchController* controller) {
     search_controller_ = controller;

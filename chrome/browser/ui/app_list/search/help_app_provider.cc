@@ -315,8 +315,12 @@ void HelpAppProvider::AppListShown() {
   }
 }
 
-ash::AppListSearchResultType HelpAppProvider::ResultType() {
+ash::AppListSearchResultType HelpAppProvider::ResultType() const {
   return ash::AppListSearchResultType::kHelpApp;
+}
+
+bool HelpAppProvider::ShouldBlockZeroState() const {
+  return true;
 }
 
 void HelpAppProvider::OnAppUpdate(const apps::AppUpdate& update) {

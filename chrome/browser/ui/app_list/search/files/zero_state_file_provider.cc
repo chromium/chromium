@@ -103,8 +103,12 @@ ZeroStateFileProvider::ZeroStateFileProvider(Profile* profile)
 
 ZeroStateFileProvider::~ZeroStateFileProvider() = default;
 
-ash::AppListSearchResultType ZeroStateFileProvider::ResultType() {
+ash::AppListSearchResultType ZeroStateFileProvider::ResultType() const {
   return ash::AppListSearchResultType::kZeroStateFile;
+}
+
+bool ZeroStateFileProvider::ShouldBlockZeroState() const {
+  return true;
 }
 
 void ZeroStateFileProvider::StartZeroState() {

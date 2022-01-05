@@ -28,7 +28,7 @@ ArcAppShortcutsSearchProvider::ArcAppShortcutsSearchProvider(
 
 ArcAppShortcutsSearchProvider::~ArcAppShortcutsSearchProvider() = default;
 
-ash::AppListSearchResultType ArcAppShortcutsSearchProvider::ResultType() {
+ash::AppListSearchResultType ArcAppShortcutsSearchProvider::ResultType() const {
   return ash::AppListSearchResultType::kArcAppShortcut;
 }
 

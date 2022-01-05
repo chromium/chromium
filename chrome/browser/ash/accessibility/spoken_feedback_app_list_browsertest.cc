@@ -103,7 +103,9 @@ class TestSearchProvider : public app_list::SearchProvider {
     SwapResults(&results);
   }
 
-  ChromeSearchResult::ResultType ResultType() override { return result_type_; }
+  ChromeSearchResult::ResultType ResultType() const override {
+    return result_type_;
+  }
 
   void set_count(size_t count) { count_ = count; }
   void set_best_match_count(size_t count) { best_match_count_ = count; }

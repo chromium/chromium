@@ -460,8 +460,12 @@ void AppSearchProvider::ViewClosing() {
     data_source->ViewClosing();
 }
 
-ash::AppListSearchResultType AppSearchProvider::ResultType() {
+ash::AppListSearchResultType AppSearchProvider::ResultType() const {
   return ash::AppListSearchResultType::kInstalledApp;
+}
+
+bool AppSearchProvider::ShouldBlockZeroState() const {
+  return true;
 }
 
 void AppSearchProvider::RefreshAppsAndUpdateResults() {

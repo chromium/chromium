@@ -136,9 +136,8 @@ void SearchControllerImpl::AddProvider(
   providers_.emplace_back(std::move(provider));
 }
 
-void SearchControllerImpl::SetResults(
-    const ash::AppListSearchResultType provider_type,
-    Results results) {
+void SearchControllerImpl::SetResults(const SearchProvider* provider,
+                                      Results results) {
   // Should only be called when IsCategoricalSearchEnabled is true.
   NOTREACHED();
 }

@@ -49,7 +49,8 @@ class ZeroStateFileProvider : public SearchProvider,
 
   // SearchProvider:
   void StartZeroState() override;
-  ash::AppListSearchResultType ResultType() override;
+  ash::AppListSearchResultType ResultType() const override;
+  bool ShouldBlockZeroState() const override;
 
   // file_manager::file_tasks::FileTaskObserver:
   void OnFilesOpened(const std::vector<FileOpenEvent>& file_opens) override;
