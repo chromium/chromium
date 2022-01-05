@@ -16,6 +16,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/icon_standardizer.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,6 +34,7 @@
 #include "components/app_restore/restore_data.h"
 #include "components/app_restore/window_properties.h"
 #include "components/favicon/core/favicon_service.h"
+#include "components/favicon_base/favicon_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/types_util.h"
@@ -152,6 +154,38 @@ void ShowUnavailableAppToast(const std::vector<std::string>& unavailable_apps) {
   ash::ToastManager::Get()->Show(toast_data);
 }
 
+// Creates a callback for when a favicon image is retrieved which creates a
+// standard icon image and then calls `callback` with the standardized image.
+base::OnceCallback<void(const favicon_base::FaviconImageResult&)>
+ImageResultToImageSkia(
+    base::OnceCallback<void(const gfx::ImageSkia&)> callback) {
+  return base::BindOnce(
+      [](base::OnceCallback<void(const gfx::ImageSkia&)> image_skia_callback,
+         const favicon_base::FaviconImageResult& result) {
+        auto image = result.image.AsImageSkia();
+        image.EnsureRepsForSupportedScales();
+        std::move(image_skia_callback)
+            .Run(apps::CreateStandardIconImage(image));
+      },
+      std::move(callback));
+}
+
+// Creates a callback for when a app icon image is retrieved which creates a
+// standard icon image and then calls `callback` with the standardized image.
+base::OnceCallback<void(apps::IconValuePtr icon_value)>
+AppIconResultToImageSkia(
+    base::OnceCallback<void(const gfx::ImageSkia&)> callback) {
+  return base::BindOnce(
+      [](base::OnceCallback<void(const gfx::ImageSkia&)> image_skia_callback,
+         apps::IconValuePtr icon_value) {
+        auto image = icon_value->uncompressed;
+        image.EnsureRepsForSupportedScales();
+        std::move(image_skia_callback)
+            .Run(apps::CreateStandardIconImage(image));
+      },
+      std::move(callback));
+}
+
 }  // namespace
 
 ChromeDesksTemplatesDelegate::ChromeDesksTemplatesDelegate() = default;
@@ -262,41 +296,41 @@ ChromeDesksTemplatesDelegate::MaybeRetrieveIconForSpecialIdentifier(
 
 void ChromeDesksTemplatesDelegate::GetFaviconForUrl(
     const std::string& page_url,
-    int desired_icon_size,
-    favicon_base::FaviconRawBitmapCallback callback,
+    base::OnceCallback<void(const gfx::ImageSkia&)> callback,
     base::CancelableTaskTracker* tracker) const {
   favicon::FaviconService* favicon_service =
       FaviconServiceFactory::GetForProfile(
           ProfileManager::GetActiveUserProfile(),
           ServiceAccessType::EXPLICIT_ACCESS);
 
-  favicon_service->GetRawFaviconForPageURL(
-      GURL(page_url), {favicon_base::IconType::kFavicon}, desired_icon_size,
-      /*fallback_to_host=*/false, std::move(callback), tracker);
+  favicon_service->GetFaviconImageForPageURL(
+      GURL(page_url), ImageResultToImageSkia(std::move(callback)), tracker);
 }
 
 void ChromeDesksTemplatesDelegate::GetIconForAppId(
     const std::string& app_id,
     int desired_icon_size,
-    base::OnceCallback<void(apps::IconValuePtr icon_value)> callback) const {
+    base::OnceCallback<void(const gfx::ImageSkia&)> callback) const {
   auto* app_service_proxy = apps::AppServiceProxyFactory::GetForProfile(
       ProfileManager::GetActiveUserProfile());
   if (!app_service_proxy) {
-    std::move(callback).Run(std::make_unique<apps::IconValue>());
+    std::move(callback).Run(gfx::ImageSkia());
     return;
   }
 
   auto app_type = app_service_proxy->AppRegistryCache().GetAppType(app_id);
   if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
-    app_service_proxy->LoadIcon(
-        apps::ConvertMojomAppTypToAppType(app_type), app_id,
-        apps::IconType::kStandard, desired_icon_size,
-        /*allow_placeholder_icon=*/false, std::move(callback));
+    app_service_proxy->LoadIcon(apps::ConvertMojomAppTypToAppType(app_type),
+                                app_id, apps::IconType::kStandard,
+                                desired_icon_size,
+                                /*allow_placeholder_icon=*/false,
+                                AppIconResultToImageSkia(std::move(callback)));
   } else {
     app_service_proxy->LoadIcon(
         app_type, app_id, apps::mojom::IconType::kStandard, desired_icon_size,
         /*allow_placeholder_icon=*/false,
-        apps::MojomIconValueToIconValueCallback(std::move(callback)));
+        apps::MojomIconValueToIconValueCallback(
+            AppIconResultToImageSkia(std::move(callback))));
   }
 }
 

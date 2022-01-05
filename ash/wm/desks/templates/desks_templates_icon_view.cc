@@ -12,7 +12,6 @@
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/favicon_base/favicon_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/layer.h"
@@ -98,14 +97,14 @@ void DesksTemplatesIconView::SetIconIdentifierAndCount(
   if (!potential_url.is_valid()) {
     delegate->GetIconForAppId(
         icon_identifier_, kIconSize,
-        base::BindOnce(&DesksTemplatesIconView::OnAppIconLoaded,
+        base::BindOnce(&DesksTemplatesIconView::OnIconLoaded,
                        weak_ptr_factory_.GetWeakPtr()));
     return;
   }
 
   delegate->GetFaviconForUrl(
-      icon_identifier_, kIconSize,
-      base::BindOnce(&DesksTemplatesIconView::OnFaviconLoaded,
+      icon_identifier_,
+      base::BindOnce(&DesksTemplatesIconView::OnIconLoaded,
                      weak_ptr_factory_.GetWeakPtr()),
       &cancelable_task_tracker_);
 }
@@ -131,30 +130,10 @@ void DesksTemplatesIconView::Layout() {
   }
 }
 
-void DesksTemplatesIconView::OnFaviconLoaded(
-    const favicon_base::FaviconRawBitmapResult& image_result) {
-  if (image_result.is_valid()) {
+void DesksTemplatesIconView::OnIconLoaded(const gfx::ImageSkia& icon) {
+  if (!icon.isNull()) {
     icon_view_->SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
-        favicon_base::SelectFaviconFramesFromPNGs(
-            std::vector<favicon_base::FaviconRawBitmapResult>{image_result},
-            favicon_base::GetFaviconScales(), kIconSize)
-            .AsImageSkia(),
-        skia::ImageOperations::RESIZE_BEST, gfx::Size(kIconSize, kIconSize)));
-    return;
-  }
-  LoadDefaultIcon();
-}
-
-void DesksTemplatesIconView::OnAppIconLoaded(apps::IconValuePtr icon_value) {
-  if (!icon_value || icon_value->icon_type != apps::IconType::kStandard) {
-    LoadDefaultIcon();
-    return;
-  }
-
-  gfx::ImageSkia image_result = icon_value->uncompressed;
-  if (!icon_value->is_placeholder_icon && !image_result.isNull()) {
-    icon_view_->SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
-        image_result, skia::ImageOperations::RESIZE_BEST,
+        icon, skia::ImageOperations::RESIZE_BEST,
         gfx::Size(kIconSize, kIconSize)));
     return;
   }

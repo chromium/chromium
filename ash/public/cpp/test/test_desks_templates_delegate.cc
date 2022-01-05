@@ -40,14 +40,13 @@ TestDesksTemplatesDelegate::MaybeRetrieveIconForSpecialIdentifier(
 
 void TestDesksTemplatesDelegate::GetFaviconForUrl(
     const std::string& page_url,
-    int desired_icon_size,
-    favicon_base::FaviconRawBitmapCallback callback,
+    base::OnceCallback<void(const gfx::ImageSkia&)> callback,
     base::CancelableTaskTracker* tracker) const {}
 
 void TestDesksTemplatesDelegate::GetIconForAppId(
     const std::string& app_id,
     int desired_icon_size,
-    base::OnceCallback<void(apps::IconValuePtr icon_value)> callback) const {}
+    base::OnceCallback<void(const gfx::ImageSkia&)> callback) const {}
 
 void TestDesksTemplatesDelegate::LaunchAppsFromTemplate(
     std::unique_ptr<DeskTemplate> desk_template) {}

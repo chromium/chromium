@@ -8,8 +8,7 @@
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "components/favicon_base/favicon_callback.h"
-#include "components/services/app_service/public/cpp/icon_types.h"
+#include "base/callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_restore {
@@ -71,18 +70,17 @@ class ASH_PUBLIC_EXPORT DesksTemplatesDelegate {
 
   // Fetches the favicon for `page_url` and returns it via the provided
   // `callback`. `callback` may be called synchronously.
-  virtual void GetFaviconForUrl(const std::string& page_url,
-                                int desired_icon_size,
-                                favicon_base::FaviconRawBitmapCallback callback,
-                                base::CancelableTaskTracker* tracker) const = 0;
+  virtual void GetFaviconForUrl(
+      const std::string& page_url,
+      base::OnceCallback<void(const gfx::ImageSkia&)> callback,
+      base::CancelableTaskTracker* tracker) const = 0;
 
   // Fetches the icon for the app with `app_id` and returns it via the provided
   // `callback`. `callback` may be called synchronously.
   virtual void GetIconForAppId(
       const std::string& app_id,
       int desired_icon_size,
-      base::OnceCallback<void(apps::IconValuePtr icon_value)> callback)
-      const = 0;
+      base::OnceCallback<void(const gfx::ImageSkia&)> callback) const = 0;
 
   // Launches apps into the active desk. Ran immediately after a desk is created
   // for a template.

@@ -48,14 +48,14 @@ class ASH_PUBLIC_EXPORT TestDesksTemplatesDelegate
   absl::optional<gfx::ImageSkia> MaybeRetrieveIconForSpecialIdentifier(
       const std::string& identifier,
       const ui::ColorProvider* color_provider) const override;
-  void GetFaviconForUrl(const std::string& page_url,
-                        int desired_icon_size,
-                        favicon_base::FaviconRawBitmapCallback callback,
-                        base::CancelableTaskTracker* tracker) const override;
-  void GetIconForAppId(const std::string& app_id,
-                       int desired_icon_size,
-                       base::OnceCallback<void(apps::IconValuePtr icon_value)>
-                           callback) const override;
+  void GetFaviconForUrl(
+      const std::string& page_url,
+      base::OnceCallback<void(const gfx::ImageSkia&)> callback,
+      base::CancelableTaskTracker* tracker) const override;
+  void GetIconForAppId(
+      const std::string& app_id,
+      int desired_icon_size,
+      base::OnceCallback<void(const gfx::ImageSkia&)> callback) const override;
   void LaunchAppsFromTemplate(
       std::unique_ptr<DeskTemplate> desk_template) override;
   bool IsWindowSupportedForDeskTemplate(aura::Window* window) const override;

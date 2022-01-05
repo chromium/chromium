@@ -9,10 +9,12 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
-#include "components/favicon_base/favicon_types.h"
-#include "components/services/app_service/public/cpp/icon_types.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
+
+namespace gfx {
+class ImageSkia;
+}  // namespace gfx
 
 namespace views {
 class Label;
@@ -59,9 +61,7 @@ class DesksTemplatesIconView : public views::View {
   // Callbacks for when the app icon/favicon has been fetched. If the result is
   // non-null/empty then we'll set this's image to the result. Otherwise, we'll
   // use a placeholder icon.
-  void OnFaviconLoaded(
-      const favicon_base::FaviconRawBitmapResult& image_result);
-  void OnAppIconLoaded(apps::IconValuePtr icon_value);
+  void OnIconLoaded(const gfx::ImageSkia& icon);
 
   // Loads the default favicon to `icon_view_`. Should be called when we fail to
   // load an icon.
