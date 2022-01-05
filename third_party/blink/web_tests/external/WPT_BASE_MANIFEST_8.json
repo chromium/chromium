@@ -307,6 +307,20 @@
        {}
       ]
      ],
+     "chrome-bug-1283776-000-crash.html": [
+      "6df83b5e6371aecfd235a1eaebd07f26b3b83179",
+      [
+       null,
+       {}
+      ]
+     ],
+     "chrome-bug-1283776-001-crash.html": [
+      "1c242a99c1f024e15971d6c91d743db3b039b787",
+      [
+       null,
+       {}
+      ]
+     ],
      "flexbox": {
       "fixed-flex-item-inside-abs-flex-in-multicol-crash.html": [
        "29ba56748f9a81615977ded26f4299fa744475f0",
@@ -310489,15 +310503,15 @@
         []
        ],
        "redirect-scope.py": [
-        "2e7ae0163cb9853272b4501553280976438f59cb",
+        "84a97e594b25669fe4d61fa8fe60878175428dba",
         []
        ],
        "redirect-worker.js": [
-        "f7479edef9290c98c574a2dc72bc37fbd1f9b177",
+        "1b55f2ef0d98c00a949132e1880a6f11227f54c7",
         []
        ],
        "request-headers-scope.py": [
-        "46151cdcbb01d7adbce1d3d8be88ab828ec562a8",
+        "5bab5b01f3638b83f8ae07764e8d0cddf0a5725f",
         []
        ],
        "request-headers-worker.js": [
@@ -361703,6 +361717,13 @@
      ],
      "crash-font-face-invalid-descriptor.html": [
       "73cea13f091a767c66ff4eba956fa130cb3ea66e",
+      [
+       null,
+       {}
+      ]
+     ],
+     "crash-large-grapheme-cluster.html": [
+      "c1238e6f35232e52fa6f1cec83b174e53911517e",
       [
        null,
        {}
