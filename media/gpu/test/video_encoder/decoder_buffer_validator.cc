@@ -118,7 +118,7 @@ bool H264Validator::Validate(const DecoderBuffer& decoder_buffer,
           return false;
         }
 
-        FALLTHROUGH;
+        [[fallthrough]];
       case H264NALU::kNonIDRSlice: {
         if (!seen_idr_) {
           LOG(ERROR) << "Non IDR frame before IDR frame";
