@@ -367,6 +367,8 @@ void AddNearbyShareData(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_NEARBY_SHARE_FAST_INITIATION_NOTIFICATION_TOGGLE_TITLE},
       {"fastInitiationNotificationToggleDescription",
        IDS_SETTINGS_NEARBY_SHARE_FAST_INITIATION_NOTIFICATION_TOGGLE_DESCRIPTION},
+      {"fastInitiationNotificationToggleAriaLabel",
+       IDS_SETTINGS_NEARBY_SHARE_FAST_INITIATION_NOTIFICATION_TOGGLE_ARIA_LABEL},
       {"nearbyShareDeviceNameAriaDescription",
        IDS_SETTINGS_NEARBY_SHARE_DEVICE_NAME_ARIA_DESCRIPTION},
       {"nearbyShareConfirmDeviceName",
