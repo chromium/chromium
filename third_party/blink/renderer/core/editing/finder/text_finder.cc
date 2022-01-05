@@ -83,15 +83,13 @@ static void AutoExpandSearchableHiddenElementsUpFrameTree(Range* range) {
   bool needs_style_and_layout = false;
   bool needs_layout_shift_allowance = false;
 
-  // TODO(crbug.com/1280097): Rework this, since it is only used for
-  // bookkeeping.
-  DisplayLockUtilities::ActivateFindInPageMatchRangeIfNeeded(
-      EphemeralRangeInFlatTree(range));
-
-  // We need to update the style and layout since the event dispatched may
-  // have modified it, and we need up-to-date layout to ScrollRectToVisible
-  // below.
-  needs_style_and_layout = true;
+  // If the target text is in a content-visibility:auto subtree, then activate
+  // it so we can scroll to it.
+  if (DisplayLockUtilities::ActivateFindInPageMatchRangeIfNeeded(
+          EphemeralRangeInFlatTree(range))) {
+    needs_style_and_layout = true;
+    needs_layout_shift_allowance = true;
+  }
 
   // If the active match is hidden inside a <details> element, then we should
   // expand it so find-in-page can scroll to it.
@@ -149,6 +147,8 @@ static void AutoExpandSearchableHiddenElementsUpFrameTree(Range* range) {
       if (frame_needs_style_and_layout) {
         frame_element->GetDocument().UpdateStyleAndLayoutForNode(
             frame_element, DocumentUpdateReason::kFindInPage);
+        needs_style_and_layout = true;
+        needs_layout_shift_allowance = true;
       }
     } else {
       // TODO(crbug.com/1250847): Implement an IPC signal to expand in parent
