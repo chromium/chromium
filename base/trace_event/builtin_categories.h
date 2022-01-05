@@ -248,6 +248,7 @@
   X(TRACE_DISABLED_BY_DEFAULT("v8.gc"))                                  \
   X(TRACE_DISABLED_BY_DEFAULT("v8.gc_stats"))                            \
   X(TRACE_DISABLED_BY_DEFAULT("v8.ic_stats"))                            \
+  X(TRACE_DISABLED_BY_DEFAULT("v8.inspector"))                           \
   X(TRACE_DISABLED_BY_DEFAULT("v8.runtime"))                             \
   X(TRACE_DISABLED_BY_DEFAULT("v8.runtime_stats"))                       \
   X(TRACE_DISABLED_BY_DEFAULT("v8.runtime_stats_sampling"))              \
