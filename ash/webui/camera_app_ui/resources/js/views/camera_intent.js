@@ -119,7 +119,7 @@ export class CameraIntent extends Camera {
   async handlePhotoResult(result, name) {
     this.photoResult_ = result;
     try {
-      await this.resultSaver_.savePhoto(result.blob, name, /* metadata */ null);
+      await this.resultSaver.savePhoto(result.blob, name, /* metadata */ null);
     } catch (e) {
       toast.show(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
       throw e;
@@ -132,7 +132,7 @@ export class CameraIntent extends Camera {
   async handleVideoResult(result) {
     this.videoResult_ = result;
     try {
-      await this.resultSaver_.finishSaveVideo(result.videoSaver);
+      await this.resultSaver.finishSaveVideo(result.videoSaver);
     } catch (e) {
       toast.show(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
       throw e;
@@ -173,12 +173,12 @@ export class CameraIntent extends Camera {
       const duration =
           this.videoResult_ === null ? undefined : this.videoResult_.duration;
       metrics.sendCaptureEvent({
-        facing: this.facingMode_,
+        facing: this.facingMode,
         duration,
         resolution,
         intentResult: confirmed ? metrics.IntentResultType.CONFIRMED :
                                   metrics.IntentResultType.CANCELED,
-        shutterType: this.shutterType_,
+        shutterType: this.shutterType,
       });
       if (confirmed) {
         await this.intent_.finish();
@@ -203,7 +203,7 @@ export class CameraIntent extends Camera {
   /**
    * @override
    */
-  async startWithDevice_(deviceId) {
-    return this.startWithMode_(deviceId, this.defaultMode_);
+  async startWithDevice(deviceId) {
+    return this.startWithMode(deviceId, this.defaultMode);
   }
 }

@@ -8,30 +8,27 @@ import {
   assertInstanceof,
 } from '../assert.js';
 import {
-  PhotoConstraintsPreferrer,  // eslint-disable-line no-unused-vars
-  VideoConstraintsPreferrer,  // eslint-disable-line no-unused-vars
+  PhotoConstraintsPreferrer,
+  VideoConstraintsPreferrer,
 } from '../device/constraints_preferrer.js';
-// eslint-disable-next-line no-unused-vars
 import {DeviceInfoUpdater} from '../device/device_info_updater.js';
-// eslint-disable-next-line no-unused-vars
 import {StreamConstraints} from '../device/stream_constraints.js';
 import * as dom from '../dom.js';
 import * as error from '../error.js';
 import {Flag} from '../flag.js';
-import {Point} from '../geometry.js';  // eslint-disable-line no-unused-vars
+import {Point} from '../geometry.js';
 import {I18nString} from '../i18n_string.js';
 import * as metrics from '../metrics.js';
 import {Filenamer} from '../models/file_namer.js';
 import * as loadTimeData from '../models/load_time_data.js';
 import * as localStorage from '../models/local_storage.js';
-// eslint-disable-next-line no-unused-vars
 import {ResultSaver} from '../models/result_saver.js';
+import {VideoSaver} from '../models/video_saver.js';
 import {ChromeHelper} from '../mojo/chrome_helper.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 import {ScreenState} from '../mojo/type.js';
 import * as nav from '../nav.js';
 import * as newFeatureToast from '../new_feature_toast.js';
-// eslint-disable-next-line no-unused-vars
 import {PerfLogger} from '../perf.js';
 import * as sound from '../sound.js';
 import * as state from '../state.js';
@@ -41,7 +38,7 @@ import {
   ErrorLevel,
   ErrorType,
   Facing,
-  ImageBlob,  // eslint-disable-line no-unused-vars
+  ImageBlob,
   MimeType,
   Mode,
   PerfEvent,
@@ -56,12 +53,16 @@ import {Layout} from './camera/layout.js';
 import {
   getDefaultScanCorners,
   Modes,
-  PhotoHandler,  // eslint-disable-line no-unused-vars
-  ScanHandler,   // eslint-disable-line no-unused-vars
+  PhotoHandler,
+  PhotoResult,
+  ScanHandler,
   setAvc1Parameters,
   Video,
-  VideoHandler,  // eslint-disable-line no-unused-vars
+  VideoHandler,
+  VideoResult,
 } from './camera/mode/index.js';
+import {PortraitResult} from './camera/mode/portrait.js';
+import {GifResult} from './camera/mode/video.js';
 import {Options} from './camera/options.js';
 import {Preview} from './camera/preview.js';
 import {ScanOptions} from './camera/scan_options.js';
@@ -80,7 +81,7 @@ import {WarningType} from './warning.js';
  */
 class CameraSuspendedError extends Error {
   /**
-   * @param {string=} message Error message.
+   * @param message Error message.
    */
   constructor(message = 'Camera suspended.') {
     super(message);
@@ -90,214 +91,122 @@ class CameraSuspendedError extends Error {
 
 /**
  * Camera-view controller.
- * @implements {VideoHandler}
- * @implements {PhotoHandler}
- * @implements {ScanHandler}
  */
-export class Camera extends View {
+export class Camera extends View implements VideoHandler, PhotoHandler,
+                                            ScanHandler {
+  private readonly review = new review.Review();
+  private readonly cropDocument = new CropDocument();
+  private readonly docModeDialogView =
+      new Dialog(ViewName.DOCUMENT_MODE_DIALOG);
+  private readonly subViews: View[];
+
   /**
-   * @param {!ResultSaver} resultSaver
-   * @param {!DeviceInfoUpdater} infoUpdater
-   * @param {!PhotoConstraintsPreferrer} photoPreferrer
-   * @param {!VideoConstraintsPreferrer} videoPreferrer
-   * @param {!Mode} defaultMode
-   * @param {!PerfLogger} perfLogger
-   * @param {?Facing} facing
+   * Layout handler for the camera view.
    */
+  private readonly layoutHandler = new Layout();
+
+  private readonly scanOptions: ScanOptions;
+
+  /**
+   * Video preview for the camera.
+   */
+  private readonly preview: Preview;
+
+  /**
+   * Options for the camera.
+   */
+  private readonly options: Options;
+
+  private readonly videoEncoderOptions =
+      new VideoEncoderOptions((parameters) => setAvc1Parameters(parameters));
+
+  /**
+   * Clock-wise rotation that needs to be applied to the recorded video in
+   * order for the video to be replayed in upright orientation.
+   */
+  private outputVideoRotation = 0;
+
+  /**
+   * Device id of video device of active preview stream. Sets to null when
+   * preview become inactive.
+   */
+  private activeDeviceId: string|null = null;
+
+  /**
+   * The last time of all screen state turning from OFF to ON during the app
+   * execution. Sets to -Infinity for no such time since app is opened.
+   */
+  private lastScreenOnTime = -Infinity;
+
+  /**
+   * Modes for the camera.
+   */
+  private readonly modes: Modes;
+
+  protected facingMode: Facing;
+  protected shutterType = metrics.ShutterType.UNKNOWN;
+  private locked = false;
+  private retryStartTimeout: number|null = null;
+
+  /**
+   * Promise for the camera stream configuration process. It's resolved to
+   * boolean for whether the configuration is failed and kick out another
+   * round of reconfiguration. Sets to null once the configuration is
+   * completed.
+   */
+  private configuring: Promise<boolean>|null = null;
+
+  /**
+   * Promise for the current take of photo or recording.
+   */
+  private take: Promise<void>|null = null;
+
+  private readonly openPTZPanel = dom.get('#open-ptz-panel', HTMLButtonElement);
+  private readonly configureCompleteListener = new Set<() => void>();
+
+  /**
+   * Preview constraints saved for temporarily close/restore preview
+   * before/after |ScanHandler| review document result.
+   */
+  private constraints: StreamConstraints|null = null;
+
   constructor(
-      resultSaver, infoUpdater, photoPreferrer, videoPreferrer, defaultMode,
-      perfLogger, facing) {
+      protected readonly resultSaver: ResultSaver,
+      private readonly infoUpdater: DeviceInfoUpdater,
+      photoPreferrer: PhotoConstraintsPreferrer,
+      videoPreferrer: VideoConstraintsPreferrer,
+      protected readonly defaultMode: Mode,
+      private readonly perfLogger: PerfLogger,
+      facing: Facing|null,
+  ) {
     super(ViewName.CAMERA);
 
-    /**
-     * @type {!DeviceInfoUpdater}
-     * @private
-     */
-    this.infoUpdater_ = infoUpdater;
-
-    /**
-     * @type {!Mode}
-     * @protected
-     */
-    this.defaultMode_ = defaultMode;
-
-    /**
-     * @type {!PerfLogger}
-     * @private
-     */
-    this.perfLogger_ = perfLogger;
-
-    /**
-     * @type {!review.Review}
-     * @private
-     */
-    this.review_ = new review.Review();
-
-    /**
-     * @type {!CropDocument}
-     * @private
-     */
-    this.cropDocument_ = new CropDocument();
-
-    /**
-     * @type {!Dialog}
-     * @private
-     */
-    this.docModeDialogView_ = new Dialog(ViewName.DOCUMENT_MODE_DIALOG);
-
-    /**
-     * @const {!Array<!View>}
-     * @private
-     */
-    this.subViews_ = [
+    this.subViews = [
       new PrimarySettings(infoUpdater, photoPreferrer, videoPreferrer),
       new PTZPanel(),
-      this.review_,
-      this.cropDocument_,
-      this.docModeDialogView_,
+      this.review,
+      this.cropDocument,
+      this.docModeDialogView,
       new View(ViewName.FLASH),
     ];
 
-    /**
-     * Layout handler for the camera view.
-     * @type {!Layout}
-     * @private
-     */
-    this.layout_ = new Layout();
+    this.preview = new Preview(() => this.start());
 
-    /**
-     * Video preview for the camera.
-     * @type {!Preview}
-     * @private
-     */
-    this.preview_ = new Preview(() => this.start());
+    this.scanOptions =
+        new ScanOptions((point) => this.preview.setPointOfInterest(point));
 
-    /**
-     * @type {!ScanOptions}
-     * @private
-     */
-    this.scanOptions_ =
-        new ScanOptions((point) => this.preview_.setPointOfInterest(point));
+    this.options = new Options(infoUpdater, () => this.start());
 
-    /**
-     * Options for the camera.
-     * @type {!Options}
-     * @private
-     */
-    this.options_ = new Options(infoUpdater, () => this.start());
-
-    /**
-     * @type {!VideoEncoderOptions}
-     * @private
-     */
-    this.videoEncoderOptions_ =
-        new VideoEncoderOptions((parameters) => setAvc1Parameters(parameters));
-
-    /**
-     * Clock-wise rotation that needs to be applied to the recorded video in
-     * order for the video to be replayed in upright orientation.
-     * @type {number}
-     * @private
-     */
-    this.outputVideoRotation_ = 0;
-
-    /**
-     * @type {!ResultSaver}
-     * @protected
-     */
-    this.resultSaver_ = resultSaver;
-
-    /**
-     * Device id of video device of active preview stream. Sets to null when
-     * preview become inactive.
-     * @type {?string}
-     * @private
-     */
-    this.activeDeviceId_ = null;
-
-    /**
-     * The last time of all screen state turning from OFF to ON during the app
-     * execution. Sets to -Infinity for no such time since app is opened.
-     * @type {number}
-     * @private
-     */
-    this.lastScreenOnTime_ = -Infinity;
-
-    /**
-     * Modes for the camera.
-     * @type {!Modes}
-     * @private
-     */
-    this.modes_ = new Modes(
-        this.defaultMode_, photoPreferrer, videoPreferrer, () => this.start(),
+    this.modes = new Modes(
+        this.defaultMode, photoPreferrer, videoPreferrer, () => this.start(),
         this);
 
-    /**
-     * @type {!Facing}
-     * @protected
-     */
-    this.facingMode_ = facing ?? Facing.NOT_SET;
-
-    /**
-     * @type {!metrics.ShutterType}
-     * @protected
-     */
-    this.shutterType_ = metrics.ShutterType.UNKNOWN;
-
-    /**
-     * @type {boolean}
-     * @private
-     */
-    this.locked_ = false;
-
-    /**
-     * @type {?number}
-     * @private
-     */
-    this.retryStartTimeout_ = null;
-
-    /**
-     * Promise for the camera stream configuration process. It's resolved to
-     * boolean for whether the configuration is failed and kick out another
-     * round of reconfiguration. Sets to null once the configuration is
-     * completed.
-     * @type {?Promise<boolean>}
-     * @private
-     */
-    this.configuring_ = null;
-
-    /**
-     * Promise for the current take of photo or recording.
-     * @type {?Promise}
-     * @protected
-     */
-    this.take_ = null;
-
-    /**
-     * @type {!HTMLButtonElement}
-     */
-    this.openPTZPanel_ = dom.get('#open-ptz-panel', HTMLButtonElement);
-
-    /**
-     * @const {!Set<function(): *>}
-     * @private
-     */
-    this.configureCompleteListener_ = new Set();
-
-    /**
-     * Preview constraints saved for temporarily close/restore preview
-     * before/after |ScanHandler| review document result.
-     * @type {?StreamConstraints}
-     * @private
-     */
-    this.constraints_ = null;
+    this.facingMode = facing ?? Facing.NOT_SET;
 
     /**
      * Gets type of ways to trigger shutter from click event.
-     * @param {!MouseEvent} e
-     * @return {!metrics.ShutterType}
      */
-    const getShutterType = (e) => {
+    const getShutterType = (e: MouseEvent) => {
       if (e.clientX === 0 && e.clientY === 0) {
         return metrics.ShutterType.KEYBOARD;
       }
@@ -313,26 +222,26 @@ export class Camera extends View {
         });
 
     dom.get('#stop-takephoto', HTMLButtonElement)
-        .addEventListener('click', () => this.endTake_());
+        .addEventListener('click', () => this.endTake());
 
     const videoShutter = dom.get('#recordvideo', HTMLButtonElement);
     videoShutter.addEventListener('click', (e) => {
       if (!state.get(state.State.TAKING)) {
         this.beginTake(getShutterType(assertInstanceof(e, MouseEvent)));
       } else {
-        this.endTake_();
+        this.endTake();
       }
     });
 
     dom.get('#video-snapshot', HTMLButtonElement)
         .addEventListener('click', () => {
-          const videoMode = assertInstanceof(this.modes_.current, Video);
+          const videoMode = assertInstanceof(this.modes.current, Video);
           videoMode.takeSnapshot();
         });
 
     const pauseShutter = dom.get('#pause-recordvideo', HTMLButtonElement);
     pauseShutter.addEventListener('click', () => {
-      const videoMode = assertInstanceof(this.modes_.current, Video);
+      const videoMode = assertInstanceof(this.modes.current, Video);
       videoMode.togglePaused();
     });
 
@@ -351,13 +260,13 @@ export class Camera extends View {
       offLabel: I18nString.RECORD_VIDEO_PAUSE_BUTTON,
     });
 
-    this.initOpenPTZPanel_();
+    this.initOpenPTZPanel();
 
     // Monitor the states to stop camera when locked/minimized.
     const idleDetector = new IdleDetector();
     idleDetector.addEventListener('change', () => {
-      this.locked_ = idleDetector.screenState === 'locked';
-      if (this.locked_) {
+      this.locked = idleDetector.screenState === 'locked';
+      if (this.locked) {
         this.start();
       }
     });
@@ -369,7 +278,7 @@ export class Camera extends View {
 
     document.addEventListener('visibilitychange', () => {
       const recording = state.get(state.State.TAKING) && state.get(Mode.VIDEO);
-      if (this.isTabletBackground_() && !recording) {
+      if (this.isTabletBackground() && !recording) {
         this.start();
       }
     });
@@ -377,10 +286,9 @@ export class Camera extends View {
 
   /**
    * Initializes camera view.
-   * @return {!Promise}
    */
-  async initialize() {
-    const helper = await ChromeHelper.getInstance();
+  async initialize(): Promise<void> {
+    const helper = ChromeHelper.getInstance();
 
     const setTablet = (isTablet) => state.set(state.State.TABLET, isTablet);
     const isTablet = await helper.initTabletModeMonitor(setTablet);
@@ -401,10 +309,10 @@ export class Camera extends View {
     updateExternalScreen(hasExternalScreen);
 
     const handleScreenStateChange = () => {
-      if (this.screenOff_) {
+      if (this.screenOff) {
         this.start();
       } else {
-        this.lastScreenOnTime_ = performance.now();
+        this.lastScreenOnTime = performance.now();
       }
     };
 
@@ -418,19 +326,16 @@ export class Camera extends View {
       this.start();
     });
 
-    this.initVideoEncoderOptions_();
-    await this.initScanMode_();
+    this.initVideoEncoderOptions();
+    await this.initScanMode();
   }
 
-  /**
-   * @private
-   */
-  initOpenPTZPanel_() {
-    this.openPTZPanel_.addEventListener('click', () => {
+  private initOpenPTZPanel() {
+    this.openPTZPanel.addEventListener('click', () => {
       nav.open(ViewName.PTZ_PANEL, new PTZPanelOptions({
-                 stream: this.preview_.stream,
-                 vidPid: this.preview_.getVidPid(),
-                 resetPTZ: () => this.preview_.resetPTZ(),
+                 stream: this.preview.stream,
+                 vidPid: this.preview.getVidPid(),
+                 resetPTZ: () => this.preview.resetPTZ(),
                }));
       highlight(false);
     });
@@ -446,11 +351,11 @@ export class Camera extends View {
         return;
       }
       toastShown = true;
-      newFeatureToast.show(this.openPTZPanel_);
+      newFeatureToast.show(this.openPTZPanel);
       newFeatureToast.focus();
     };
 
-    this.addConfigureCompleteListener_(async () => {
+    this.addConfigureCompleteListener(async () => {
       const ptzToastKey = 'isPTZToastShown';
       if (!state.get(state.State.ENABLE_PTZ) ||
           state.get(state.State.IS_NEW_FEATURE_TOAST_SHOWN) ||
@@ -464,25 +369,19 @@ export class Camera extends View {
     });
   }
 
-  /**
-   * @private
-   */
-  initVideoEncoderOptions_() {
-    const options = this.videoEncoderOptions_;
-    this.addConfigureCompleteListener_(() => {
+  private initVideoEncoderOptions() {
+    const options = this.videoEncoderOptions;
+    this.addConfigureCompleteListener(() => {
       if (state.get(Mode.VIDEO)) {
         const {width, height, frameRate} =
-            this.preview_.stream.getVideoTracks()[0].getSettings();
+            this.preview.stream.getVideoTracks()[0].getSettings();
         options.updateValues(new Resolution(width, height), frameRate);
       }
     });
     options.initialize();
   }
 
-  /**
-   * @private
-   */
-  async initScanMode_() {
+  private async initScanMode() {
     const isPlatformSupport =
         await ChromeHelper.getInstance().isDocumentModeSupported();
     state.set(state.State.SHOW_SCAN_MODE, isPlatformSupport);
@@ -511,98 +410,80 @@ export class Camera extends View {
     if (!localStorage.getBool(docModeDialogKey)) {
       const checkShowDialog = () => {
         if (!state.get(Mode.SCAN) ||
-            !this.scanOptions_.isDocumentModeEanbled()) {
+            !this.scanOptions.isDocumentModeEanbled()) {
           return;
         }
-        this.removeConfigureCompleteListener_(checkShowDialog);
+        this.removeConfigureCompleteListener(checkShowDialog);
         localStorage.set(docModeDialogKey, true);
         const message = loadTimeData.getI18nMessage(
             I18nString.DOCUMENT_MODE_DIALOG_INTRO_TITLE);
         nav.open(ViewName.DOCUMENT_MODE_DIALOG, {message});
       };
-      this.addConfigureCompleteListener_(checkShowDialog);
+      this.addConfigureCompleteListener(checkShowDialog);
     }
 
     // When entering document mode, refocus to shutter button for letting user
     // to take document photo with space key as shortcut. See b/196907822.
     const checkRefocus = () => {
       if (!state.get(state.State.CAMERA_CONFIGURING) && state.get(Mode.SCAN) &&
-          this.scanOptions_.isDocumentModeEanbled() &&
+          this.scanOptions.isDocumentModeEanbled() &&
           nav.isTopMostView(this.name)) {
         dom.getAll('button.shutter', HTMLButtonElement)
             .forEach((btn) => btn.offsetParent && btn.focus());
       }
     };
     state.addObserver(state.State.CAMERA_CONFIGURING, checkRefocus);
-    this.scanOptions_.onChange = checkRefocus;
+    this.scanOptions.onChange = checkRefocus;
+  }
+
+  private addConfigureCompleteListener(listener: () => void) {
+    this.configureCompleteListener.add(listener);
+  }
+
+  private removeConfigureCompleteListener(listener: () => void) {
+    this.configureCompleteListener.delete(listener);
   }
 
   /**
-   * @param {function(): *} listener
-   * @private
+   * @return If the App window is invisible to user with respect to screen off
+   *     state.
    */
-  addConfigureCompleteListener_(listener) {
-    this.configureCompleteListener_.add(listener);
-  }
-
-  /**
-   * @param {function(): *} listener
-   * @private
-   */
-  removeConfigureCompleteListener_(listener) {
-    this.configureCompleteListener_.delete(listener);
-  }
-
-  /**
-   * @return {boolean} If the App window is invisible to user with respect to
-   * screen off state.
-   * @private
-   */
-  get screenOff_() {
+  private get screenOff(): boolean {
     return state.get(state.State.SCREEN_OFF_AUTO) &&
         !state.get(state.State.HAS_EXTERNAL_SCREEN);
   }
 
   /**
-   * @return {boolean} Returns if window is fully overlapped by other window in
-   * both window mode or tablet mode.
-   * @private
+   * @return Returns if window is fully overlapped by other window in both
+   *     window mode or tablet mode.
    */
-  get isVisible_() {
+  private get isVisible(): boolean {
     return document.visibilityState !== 'hidden';
   }
 
   /**
-   * @return {boolean} Whether window is put to background in tablet mode.
-   * @private
+   * @return Whether window is put to background in tablet mode.
    */
-  isTabletBackground_() {
-    return state.get(state.State.TABLET) && !this.isVisible_;
+  private isTabletBackground(): boolean {
+    return state.get(state.State.TABLET) && !this.isVisible;
   }
 
   /**
    * Whether app window is suspended.
-   * @return {boolean}
    */
-  isSuspended() {
-    return this.locked_ || windowController.isMinimized() ||
-        state.get(state.State.SUSPEND) || this.screenOff_ ||
-        this.isTabletBackground_();
+  isSuspended(): boolean {
+    return this.locked || windowController.isMinimized() ||
+        state.get(state.State.SUSPEND) || this.screenOff ||
+        this.isTabletBackground();
   }
 
-  /**
-   * @override
-   */
-  getSubViews() {
-    return this.subViews_;
+  getSubViews(): View[] {
+    return this.subViews;
   }
 
-  /**
-   * @override
-   */
-  focus() {
+  focus(): void {
     (async () => {
-      await this.configuring_;
+      await this.configuring;
 
       // Check the view is still on the top after await.
       if (!nav.isTopMostView(ViewName.CAMERA)) {
@@ -622,21 +503,20 @@ export class Camera extends View {
 
   /**
    * Begins to take photo or recording with the current options, e.g. timer.
-   * @param {!metrics.ShutterType} shutterType The shutter is triggered by which
-   *     shutter type.
-   * @return {?Promise} Promise resolved when take action completes. Returns
-   *     null if CCA can't start take action.
+   * @param shutterType The shutter is triggered by which shutter type.
+   * @return Promise resolved when take action completes. Returns null if CCA
+   *     can't start take action.
    */
-  beginTake(shutterType) {
+  beginTake(shutterType: metrics.ShutterType): Promise<void>|null {
     if (state.get(state.State.CAMERA_CONFIGURING) ||
         state.get(state.State.TAKING)) {
       return null;
     }
 
     state.set(state.State.TAKING, true);
-    this.shutterType_ = shutterType;
+    this.shutterType = shutterType;
     this.focus();  // Refocus the visible shutter button for ChromeVox.
-    this.take_ = (async () => {
+    this.take = (async () => {
       let hasError = false;
       try {
         // Record and keep the rotation only at the instance the user starts the
@@ -646,15 +526,15 @@ export class Camera extends View {
           if (deviceOperator === null) {
             return 0;
           }
-          assert(this.activeDeviceId_ !== null);
+          assert(this.activeDeviceId !== null);
           return await deviceOperator.getCameraFrameRotation(
-              this.activeDeviceId_);
+              this.activeDeviceId);
         })();
         // Translate the camera frame rotation back to the UI rotation, which is
         // what we need to rotate the captured video with.
-        this.outputVideoRotation_ = (360 - cameraFrameRotation) % 360;
+        this.outputVideoRotation = (360 - cameraFrameRotation) % 360;
         await timertick.start();
-        const captureDone = await this.modes_.current.startCapture();
+        const captureDone = await this.modes.current.startCapture();
         await captureDone();
       } catch (e) {
         hasError = true;
@@ -665,108 +545,89 @@ export class Camera extends View {
             ErrorType.START_CAPTURE_FAILURE, ErrorLevel.ERROR,
             assertInstanceof(e, Error));
       } finally {
-        this.take_ = null;
+        this.take = null;
         state.set(
-            state.State.TAKING, false, {hasError, facing: this.facingMode_});
+            state.State.TAKING, false, {hasError, facing: this.facingMode});
         this.focus();  // Refocus the visible shutter button for ChromeVox.
       }
     })();
-    return this.take_;
+    return this.take;
   }
 
   /**
    * Ends the current take (or clears scheduled further takes if any.)
-   * @return {!Promise} Promise for the operation.
-   * @private
+   * @return Promise for the operation.
    */
-  endTake_() {
+  private endTake(): Promise<void> {
     timertick.cancel();
-    this.modes_.current.stopCapture();
-    return Promise.resolve(this.take_);
+    this.modes.current.stopCapture();
+    return Promise.resolve(this.take);
   }
 
-  /**
-   * @return {number}
-   */
-  getPreviewAspectRatio() {
-    const {videoWidth, videoHeight} = this.preview_.getVideoElement();
+  getPreviewAspectRatio(): number {
+    const {videoWidth, videoHeight} = this.preview.getVideoElement();
     return videoWidth / videoHeight;
   }
 
-  /**
-   * @template T
-   * @param {!Promise<T>} pendingPhotoResult
-   * @return {!Promise<T>}
-   * @private
-   */
-  async checkPhotoResult_(pendingPhotoResult) {
+  private async checkPhotoResult<T>(pendingPhotoResult: Promise<T>):
+      Promise<T> {
     try {
-      return /** !Promise<!T> */ (await pendingPhotoResult);
+      return await pendingPhotoResult;
     } catch (e) {
       this.onPhotoError();
       throw e;
     }
   }
 
-  /**
-   * @override
-   */
-  async handleVideoSnapshot({resolution, blob, timestamp}) {
+  async handleVideoSnapshot({resolution, blob, timestamp}: PhotoResult):
+      Promise<void> {
     metrics.sendCaptureEvent({
-      facing: this.facingMode_,
+      facing: this.facingMode,
       resolution,
-      shutterType: this.shutterType_,
+      shutterType: this.shutterType,
       isVideoSnapshot: true,
     });
     try {
       const name = (new Filenamer(timestamp)).newImageName();
-      await this.resultSaver_.savePhoto(blob, name, /* metadata */ null);
+      await this.resultSaver.savePhoto(blob, name, /* metadata */ null);
     } catch (e) {
       toast.show(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
       throw e;
     }
   }
 
-  /**
-   * @override
-   */
-  async onPhotoError() {
+  async onPhotoError(): Promise<void> {
     toast.show(I18nString.ERROR_MSG_TAKE_PHOTO_FAILED);
   }
 
-  /**
-   * @override
-   */
-  async onNoPortrait() {
+  async onNoPortrait(): Promise<void> {
     toast.show(I18nString.ERROR_MSG_TAKE_PORTRAIT_BOKEH_PHOTO_FAILED);
   }
 
-  /**
-   * @override
-   */
-  async onPhotoCaptureDone(pendingPhotoResult) {
+  async onPhotoCaptureDone(pendingPhotoResult: Promise<PhotoResult>):
+      Promise<void> {
     state.set(PerfEvent.PHOTO_CAPTURE_POST_PROCESSING, true);
     try {
       const {resolution, blob, timestamp, metadata} =
-          await this.checkPhotoResult_(pendingPhotoResult);
+          await this.checkPhotoResult(pendingPhotoResult);
 
       metrics.sendCaptureEvent({
-        facing: this.facingMode_,
+        facing: this.facingMode,
         resolution,
-        shutterType: this.shutterType_,
+        shutterType: this.shutterType,
         isVideoSnapshot: false,
       });
 
       try {
         const name = (new Filenamer(timestamp)).newImageName();
-        await this.resultSaver_.savePhoto(blob, name, metadata);
+        await this.resultSaver.savePhoto(blob, name, metadata);
       } catch (e) {
         toast.show(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
         throw e;
       }
       state.set(
           PerfEvent.PHOTO_CAPTURE_POST_PROCESSING, false,
-          {resolution, facing: this.facingMode_});
+          {resolution, facing: this.facingMode});
     } catch (e) {
       state.set(
           PerfEvent.PHOTO_CAPTURE_POST_PROCESSING, false, {hasError: true});
@@ -774,22 +635,20 @@ export class Camera extends View {
     }
   }
 
-  /**
-   * @override
-   */
-  async onPortraitCaptureDone(pendingPortraitResult) {
+  async onPortraitCaptureDone(pendingPortraitResult: Promise<PortraitResult>):
+      Promise<void> {
     state.set(PerfEvent.PORTRAIT_MODE_CAPTURE_POST_PROCESSING, true);
     let hasError = false;
     try {
       const {timestamp, resolution, blob, metadata, pendingPortrait} =
-          await this.checkPhotoResult_(pendingPortraitResult);
+          await this.checkPhotoResult(pendingPortraitResult);
       const portraitBlobAndMetadata =
-          await this.checkPhotoResult_(pendingPortrait);
+          await this.checkPhotoResult(pendingPortrait);
 
       metrics.sendCaptureEvent({
-        facing: this.facingMode_,
+        facing: this.facingMode,
         resolution,
-        shutterType: this.shutterType_,
+        shutterType: this.shutterType,
         isVideoSnapshot: false,
       });
 
@@ -797,13 +656,13 @@ export class Camera extends View {
         // Save reference.
         const filenamer = new Filenamer(timestamp);
         const name = filenamer.newBurstName(false);
-        await this.resultSaver_.savePhoto(blob, name, metadata);
+        await this.resultSaver.savePhoto(blob, name, metadata);
 
         // Save portrait.
         if (portraitBlobAndMetadata !== null) {
           const {blob, metadata} = portraitBlobAndMetadata;
           const name = filenamer.newBurstName(true);
-          await this.resultSaver_.savePhoto(blob, name, metadata);
+          await this.resultSaver.savePhoto(blob, name, metadata);
         } else {
           toast.show(I18nString.ERROR_MSG_TAKE_PORTRAIT_BOKEH_PHOTO_FAILED);
         }
@@ -817,20 +676,18 @@ export class Camera extends View {
     } finally {
       state.set(
           PerfEvent.PORTRAIT_MODE_CAPTURE_POST_PROCESSING, false,
-          {hasError, facing: this.facingMode_});
+          {hasError, facing: this.facingMode});
     }
   }
 
-  /**
-   * @override
-   */
-  async onDocumentCaptureDone(pendingPhotoResult) {
+  async onDocumentCaptureDone(pendingPhotoResult: Promise<PhotoResult>):
+      Promise<void> {
     const {blob: rawBlob, resolution, timestamp, metadata} =
-        await this.checkPhotoResult_(pendingPhotoResult);
-    const helper = await ChromeHelper.getInstance();
+        await this.checkPhotoResult(pendingPhotoResult);
+    const helper = ChromeHelper.getInstance();
     const corners = await helper.scanDocumentCorners(rawBlob);
     const reviewResult =
-        await this.reviewDocument_({blob: rawBlob, resolution}, corners);
+        await this.reviewDocument({blob: rawBlob, resolution}, corners);
     if (reviewResult === null) {
       throw new CanceledError('Cancelled after review document');
     }
@@ -841,7 +698,7 @@ export class Camera extends View {
     }
     try {
       const name = (new Filenamer(timestamp)).newDocumentName(mimeType);
-      await this.resultSaver_.savePhoto(blob, name, metadata);
+      await this.resultSaver.savePhoto(blob, name, metadata);
     } catch (e) {
       toast.show(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
       throw e;
@@ -850,38 +707,35 @@ export class Camera extends View {
 
   /**
    * Opens review view to review input blob.
-   * @param {function(): !Promise} doReview
-   * @return {!Promise}
-   * @private
    */
-  async prepareReview_(doReview) {
+  private async prepareReview(doReview: () => Promise<void>): Promise<void> {
     // Because the review view will cover the whole camera view, prepare for
     // temporarily turn off camera by stopping preview.
-    this.constraints_ = this.preview_.getConstraints();
-    await this.preview_.close();
-    await this.scanOptions_.detachPreview();
+    this.constraints = this.preview.getConstraints();
+    await this.preview.close();
+    await this.scanOptions.detachPreview();
     try {
       await doReview();
     } finally {
-      assert(this.constraints_ !== null);
-      await this.modes_.prepareDevice();
-      await this.preview_.open(this.constraints_);
-      this.modes_.current.updatePreview(this.preview_.stream);
-      await this.scanOptions_.attachPreview(this.preview_.getVideoElement());
+      assert(this.constraints !== null);
+      await this.modes.prepareDevice();
+      await this.preview.open(this.constraints);
+      this.modes.current.updatePreview(this.preview.stream);
+      await this.scanOptions.attachPreview(this.preview.getVideoElement());
     }
   }
 
   /**
-   * @param {!ImageBlob} originImage Original photo to be cropped document from.
-   * @param {?Array<!Point>} refCorners Initial reference document corner
-   *     positions detected by scan API. Sets to null if scan API cannot find
-   *     any reference corner from |rawBlob|.
-   * @return {!Promise<?{docBlob: !Blob, mimeType: !MimeType}>} Returns the
-   *     processed document blob and which mime type user choose to save. Null
-   *     for cancel document.
-   * @private
+   * @param originImage Original photo to be cropped document from.
+   * @param refCorners Initial reference document corner positions detected by
+   *     scan API. Sets to null if scan API cannot find any reference corner
+   *     from |rawBlob|.
+   * @return Returns the processed document blob and which mime type user
+   *     choose to save. Null for cancel document.
    */
-  async reviewDocument_(originImage, refCorners) {
+  private async reviewDocument(
+      originImage: ImageBlob, refCorners: Point[]|null):
+      Promise<{docBlob: Blob, mimeType: MimeType}|null> {
     const needFirstRecrop = refCorners === null;
     const allowRecrop = loadTimeData.getChromeFlag(Flag.DOCUMENT_MANUAL_CROP);
     if (needFirstRecrop && !allowRecrop) {
@@ -892,10 +746,10 @@ export class Camera extends View {
     }
 
     nav.open(ViewName.FLASH);
-    const helper = await ChromeHelper.getInstance();
+    const helper = ChromeHelper.getInstance();
     let result = null;
     try {
-      await this.prepareReview_(async () => {
+      await this.prepareReview(async () => {
         const doCrop = (blob, corners, rotation) =>
             helper.convertToDocument(blob, corners, rotation, MimeType.JPEG);
         let corners =
@@ -904,9 +758,9 @@ export class Camera extends View {
         let fixType = metrics.DocFixType.NONE;
         const sendEvent = (docResult) => {
           metrics.sendCaptureEvent({
-            facing: this.facingMode_,
+            facing: this.facingMode,
             resolution: originImage.resolution,
-            shutterType: this.shutterType_,
+            shutterType: this.shutterType,
             docResult,
             docFixType: fixType,
           });
@@ -914,7 +768,7 @@ export class Camera extends View {
 
         const doRecrop = async () => {
           const {corners: newCorners, rotation} =
-              await this.cropDocument_.reviewCropArea(corners);
+              await this.cropDocument.reviewCropArea(corners);
 
           fixType = (() => {
             const isFixRotation = rotation !== Rotation.ANGLE_0;
@@ -944,16 +798,16 @@ export class Camera extends View {
               nav.close(ViewName.FLASH);
             }
           })();
-          await this.review_.setReviewPhoto(docBlob);
+          await this.review.setReviewPhoto(docBlob);
         };
 
-        await this.cropDocument_.setReviewPhoto(originImage.blob);
+        await this.cropDocument.setReviewPhoto(originImage.blob);
         if (needFirstRecrop) {
           nav.close(ViewName.FLASH);
           await doRecrop();
         } else {
           docBlob = await doCrop(originImage.blob, corners, Rotation.ANGLE_0);
-          await this.review_.setReviewPhoto(docBlob);
+          await this.review.setReviewPhoto(docBlob);
           nav.close(ViewName.FLASH);
         }
 
@@ -996,7 +850,7 @@ export class Camera extends View {
         }
         const negative = new review.Options(...optionsArgs);
 
-        const mimeType = await this.review_.startReview({positive, negative});
+        const mimeType = await this.review.startReview({positive, negative});
         assert(mimeType !== undefined);
         if (mimeType !== null) {
           result = {docBlob, mimeType};
@@ -1008,41 +862,27 @@ export class Camera extends View {
     return result;
   }
 
-  /**
-   * @override
-   */
-  createVideoSaver() {
-    return this.resultSaver_.startSaveVideo(this.outputVideoRotation_);
+  createVideoSaver(): Promise<VideoSaver> {
+    return this.resultSaver.startSaveVideo(this.outputVideoRotation);
   }
 
-  /**
-   * @override
-   */
-  getPreviewVideo() {
-    const video = this.preview_.getVideoElement();
+  getPreviewVideo(): HTMLVideoElement {
+    const video = this.preview.getVideoElement();
     assertInstanceof(video, HTMLVideoElement);
     return video;
   }
 
-  /**
-   * @override
-   */
-  playShutterEffect() {
+  playShutterEffect(): void {
     sound.play(dom.get('#sound-shutter', HTMLAudioElement));
-    animate.play(this.preview_.getVideoElement());
+    animate.play(this.preview.getVideoElement());
   }
 
-  /**
-   * @override
-   */
-  waitPreviewReady() {
-    return this.preview_.waitReadyForTakePhoto();
+  waitPreviewReady(): Promise<void> {
+    return this.preview.waitReadyForTakePhoto();
   }
 
-  /**
-   * @override
-   */
-  async onGifCaptureDone({name, gifSaver, resolution, duration}) {
+  async onGifCaptureDone({name, gifSaver, resolution, duration}: GifResult):
+      Promise<void> {
     nav.open(ViewName.FLASH);
 
     // Measure the latency of gif encoder finishing rest of the encoding
@@ -1054,17 +894,17 @@ export class Camera extends View {
     const sendEvent = (gifResult) => {
       metrics.sendCaptureEvent({
         recordType: metrics.RecordType.GIF,
-        facing: this.facingMode_,
+        facing: this.facingMode,
         resolution,
         duration,
-        shutterType: this.shutterType_,
+        shutterType: this.shutterType,
         gifResult,
       });
     };
 
     let result = false;
-    await this.prepareReview_(async () => {
-      await this.review_.setReviewPhoto(blob);
+    await this.prepareReview(async () => {
+      await this.review.setReviewPhoto(blob);
       const positive = new review.Options(
           new review.Option(I18nString.LABEL_SAVE, {exitValue: true}),
           new review.Option(I18nString.LABEL_SHARE, {
@@ -1077,34 +917,32 @@ export class Camera extends View {
       const negative = new review.Options(
           new review.Option(I18nString.LABEL_RETAKE, {exitValue: null}));
       nav.close(ViewName.FLASH);
-      result = await this.review_.startReview({positive, negative});
+      result = await this.review.startReview({positive, negative});
     });
     if (result) {
       sendEvent(metrics.GifResultType.SAVE);
-      await this.resultSaver_.saveGif(blob, name);
+      await this.resultSaver.saveGif(blob, name);
     } else {
       sendEvent(metrics.GifResultType.RETAKE);
     }
   }
 
-  /**
-   * @override
-   */
-  async onVideoCaptureDone({resolution, videoSaver, duration, everPaused}) {
+  async onVideoCaptureDone({resolution, videoSaver, duration, everPaused}:
+                               VideoResult): Promise<void> {
     state.set(PerfEvent.VIDEO_CAPTURE_POST_PROCESSING, true);
     try {
       metrics.sendCaptureEvent({
         recordType: metrics.RecordType.NORMAL_VIDEO,
-        facing: this.facingMode_,
+        facing: this.facingMode,
         duration,
         resolution,
-        shutterType: this.shutterType_,
+        shutterType: this.shutterType,
         everPaused,
       });
-      await this.resultSaver_.finishSaveVideo(videoSaver);
+      await this.resultSaver.finishSaveVideo(videoSaver);
       state.set(
           PerfEvent.VIDEO_CAPTURE_POST_PROCESSING, false,
-          {resolution, facing: this.facingMode_});
+          {resolution, facing: this.facingMode});
     } catch (e) {
       state.set(
           PerfEvent.VIDEO_CAPTURE_POST_PROCESSING, false, {hasError: true});
@@ -1112,25 +950,19 @@ export class Camera extends View {
     }
   }
 
-  /**
-   * @override
-   */
-  layout() {
-    this.layout_.update();
+  layout(): void {
+    this.layoutHandler.update();
   }
 
-  /**
-   * @override
-   */
-  handlingKey(key) {
+  handlingKey(key: string): boolean {
     if (key === 'Ctrl-R') {
-      toast.showDebugMessage(this.preview_.toString());
+      toast.showDebugMessage(this.preview.toString());
       return true;
     }
     if ((key === 'AudioVolumeUp' || key === 'AudioVolumeDown') &&
         state.get(state.State.TABLET) && state.get(state.State.STREAMING)) {
       if (state.get(state.State.TAKING)) {
-        this.endTake_();
+        this.endTake();
       } else {
         this.beginTake(metrics.ShutterType.VOLUME_KEY);
       }
@@ -1141,49 +973,46 @@ export class Camera extends View {
 
   /**
    * Stops camera and tries to start camera stream again if possible.
-   * @return {!Promise<boolean>} Promise resolved to whether start camera
-   *     successfully.
+   * @return Promise resolved to whether start camera successfully.
    */
-  async start() {
+  async start(): Promise<boolean> {
     // To prevent multiple callers enter this function at the same time, wait
     // until previous caller resets configuring to null.
-    while (this.configuring_ !== null) {
-      if (!await this.configuring_) {
+    while (this.configuring !== null) {
+      if (!await this.configuring) {
         // Retry will be kicked out soon.
         return false;
       }
     }
     state.set(state.State.CAMERA_CONFIGURING, true);
-    this.configuring_ = (async () => {
+    this.configuring = (async () => {
       try {
         if (state.get(state.State.TAKING)) {
-          await this.endTake_();
+          await this.endTake();
         }
       } finally {
-        await this.stopStreams_();
+        await this.stopStreams();
       }
-      return this.start_();
+      return this.startInternal();
     })();
-    return this.configuring_;
+    return this.configuring;
   }
 
   /**
    * Try start stream reconfiguration with specified mode and device id.
-   * @param {string} deviceId
-   * @param {!Mode} mode
-   * @return {!Promise<boolean>} If found suitable stream and reconfigure
-   *     successfully.
+   * @return If found suitable stream and reconfigure successfully.
    */
-  async startWithMode_(deviceId, mode) {
+  protected async startWithMode(deviceId: string, mode: Mode):
+      Promise<boolean> {
     const deviceOperator = await DeviceOperator.getInstance();
     state.set(state.State.USE_FAKE_CAMERA, deviceOperator === null);
     let resolCandidates;
     let photoRs;
     if (deviceOperator) {
-      resolCandidates = this.modes_.getResolutionCandidates(mode, deviceId);
+      resolCandidates = this.modes.getResolutionCandidates(mode, deviceId);
       photoRs = await deviceOperator.getPhotoResolutions(deviceId);
     } else {
-      resolCandidates = this.modes_.getFakeResolutionCandidates(mode, deviceId);
+      resolCandidates = this.modes.getFakeResolutionCandidates(mode, deviceId);
       photoRs = resolCandidates.map((c) => c.resolution);
     }
     const maxResolution =
@@ -1197,56 +1026,55 @@ export class Camera extends View {
             state.get(state.State.ENABLE_FULL_SIZED_VIDEO_SNAPSHOT) ?
             maxResolution :
             captureR;
-        this.modes_.setCaptureParams(
+        this.modes.setCaptureParams(
             mode, constraints, captureR, videoSnapshotResolution);
         try {
-          await this.modes_.prepareDevice();
-          const factory = this.modes_.getModeFactory(mode);
+          await this.modes.prepareDevice();
+          const factory = this.modes.getModeFactory(mode);
 
           // Sets 2500 ms delay between screen resumed and open camera preview.
           // TODO(b/173679752): Removes this workaround after fix delay on
           // kernel side.
           if (loadTimeData.getBoard() === 'zork') {
-            const screenOnTime = performance.now() - this.lastScreenOnTime_;
+            const screenOnTime = performance.now() - this.lastScreenOnTime;
             const delay = 2500 - screenOnTime;
             if (delay > 0) {
               await util.sleep(delay);
             }
           }
-          const stream = await this.preview_.open(constraints);
-          this.facingMode_ = this.preview_.getFacing();
+          const stream = await this.preview.open(constraints);
+          this.facingMode = this.preview.getFacing();
 
-          let enablePTZ = this.preview_.isSupportPTZ();
+          let enablePTZ = this.preview.isSupportPTZ();
           if (enablePTZ) {
             const modeSupport = deviceOperator === null ||
-                this.modes_.isSupportPTZ(
+                this.modes.isSupportPTZ(
                     mode,
                     captureR,
-                    this.preview_.getResolution(),
+                    this.preview.getResolution(),
                 );
             if (!modeSupport) {
-              await this.preview_.resetPTZ();
+              await this.preview.resetPTZ();
               enablePTZ = false;
             }
           }
           state.set(state.State.ENABLE_PTZ, enablePTZ);
 
-          this.options_.updateValues(stream, this.facingMode_);
+          this.options.updateValues(stream, this.facingMode);
           factory.setPreviewStream(stream);
-          factory.setFacing(this.facingMode_);
+          factory.setFacing(this.facingMode);
 
-          await this.modes_.updateModeSelectionUI(deviceId);
-          await this.modes_.updateMode(
-              factory, stream, this.facingMode_, deviceId);
-          await this.scanOptions_.attachPreview(
-              this.preview_.getVideoElement());
-          for (const l of this.configureCompleteListener_) {
+          await this.modes.updateModeSelectionUI(deviceId);
+          await this.modes.updateMode(
+              factory, stream, this.facingMode, deviceId);
+          await this.scanOptions.attachPreview(this.preview.getVideoElement());
+          for (const l of this.configureCompleteListener) {
             l();
           }
           nav.close(ViewName.WARNING, WarningType.NO_CAMERA);
           return true;
         } catch (e) {
-          await this.stopStreams_();
+          await this.stopStreams();
 
           let errorToReport = e;
           // Since OverconstrainedError is not an Error instance.
@@ -1278,16 +1106,14 @@ export class Camera extends View {
 
   /**
    * Try start stream reconfiguration with specified device id.
-   * @param {string} deviceId
-   * @return {!Promise<boolean>} If found suitable stream and reconfigure
-   *     successfully.
+   * @return If found suitable stream and reconfigure successfully.
    */
-  async startWithDevice_(deviceId) {
-    const supportedModes = await this.modes_.getSupportedModes(deviceId);
-    const modes = this.modes_.getModeCandidates().filter(
+  protected async startWithDevice(deviceId: string): Promise<boolean> {
+    const supportedModes = await this.modes.getSupportedModes(deviceId);
+    const modes = this.modes.getModeCandidates().filter(
         (m) => supportedModes.includes(m));
     for (const mode of modes) {
-      if (await this.startWithMode_(deviceId, mode)) {
+      if (await this.startWithMode(deviceId, mode)) {
         return true;
       }
     }
@@ -1296,25 +1122,23 @@ export class Camera extends View {
 
   /**
    * Starts camera configuration process.
-   * @return {!Promise<boolean>} Resolved to boolean for whether the
-   *     configuration is succeeded or kicks out another round of
-   *     reconfiguration.
-   * @private
+   * @return Resolved to boolean for whether the configuration is succeeded or
+   *     kicks out another round of reconfiguration.
    */
-  async start_() {
+  private async startInternal(): Promise<boolean> {
     try {
-      await this.infoUpdater_.lockDeviceInfo(async () => {
+      await this.infoUpdater.lockDeviceInfo(async () => {
         if (!this.isSuspended()) {
-          for (const id of this.options_.videoDeviceIds(this.facingMode_)) {
-            if (await this.startWithDevice_(id)) {
+          for (const id of this.options.videoDeviceIds(this.facingMode)) {
+            if (await this.startWithDevice(id)) {
               // Make the different active camera announced by screen reader.
-              const currentId = this.options_.currentDeviceId;
+              const currentId = this.options.currentDeviceId;
               assert(currentId !== null);
-              if (currentId === this.activeDeviceId_) {
+              if (currentId === this.activeDeviceId) {
                 return;
               }
-              this.activeDeviceId_ = currentId;
-              const info = this.infoUpdater_.getDeviceInfo(currentId);
+              this.activeDeviceId = currentId;
+              const info = this.infoUpdater.getDeviceInfo(currentId);
               if (info !== null) {
                 toast.speak(I18nString.STATUS_MSG_CAMERA_SWITCHED, info.label);
               }
@@ -1324,12 +1148,12 @@ export class Camera extends View {
         }
         throw new CameraSuspendedError();
       });
-      this.configuring_ = null;
+      this.configuring = null;
       state.set(state.State.CAMERA_CONFIGURING, false);
 
       return true;
     } catch (e) {
-      this.activeDeviceId_ = null;
+      this.activeDeviceId = null;
       if (!(e instanceof CameraSuspendedError)) {
         error.reportError(
             ErrorType.START_CAMERA_FAILURE, ErrorLevel.ERROR,
@@ -1337,26 +1161,25 @@ export class Camera extends View {
         nav.open(ViewName.WARNING, WarningType.NO_CAMERA);
       }
       // Schedule to retry.
-      if (this.retryStartTimeout_) {
-        clearTimeout(this.retryStartTimeout_);
-        this.retryStartTimeout_ = null;
+      if (this.retryStartTimeout) {
+        clearTimeout(this.retryStartTimeout);
+        this.retryStartTimeout = null;
       }
-      this.retryStartTimeout_ = setTimeout(() => {
-        this.configuring_ = this.start_();
+      this.retryStartTimeout = setTimeout(() => {
+        this.configuring = this.startInternal();
       }, 100);
 
-      this.perfLogger_.interrupt();
+      this.perfLogger.interrupt();
       return false;
     }
   }
 
   /**
    * Stop extra stream and preview stream.
-   * @private
    */
-  async stopStreams_() {
-    await this.modes_.clear();
-    await this.preview_.close();
-    await this.scanOptions_.detachPreview();
+  private async stopStreams() {
+    await this.modes.clear();
+    await this.preview.close();
+    await this.scanOptions.detachPreview();
   }
 }

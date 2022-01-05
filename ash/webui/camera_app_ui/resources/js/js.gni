@@ -69,7 +69,7 @@ compile_js_files = [
   "untrusted_video_processor_helper.ts",
   "util.ts",
   "views/camera_intent.js",
-  "views/camera.js",
+  "views/camera.ts",
   "views/camera/layout.js",
   "views/camera/mode/index.ts",
   "views/camera/mode/mode_base.js",
