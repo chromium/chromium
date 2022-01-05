@@ -2279,7 +2279,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.FileHandler.Registration.Linux.RecreateShortcut.Result"
     enum="FileHandlerRegistrationLinuxRecreateShortcutResult"
-    expires_after="M100">
+    expires_after="M110">
   <owner>estade@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -2289,7 +2289,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.FileHandler.Registration.Linux.Result"
-    enum="FileHandlerRegistrationLinuxResult" expires_after="M100">
+    enum="FileHandlerRegistrationLinuxResult" expires_after="M110">
   <owner>estade@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -2299,7 +2299,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.FileHandler.Registration.Win.Result"
-    enum="FileHandlerRegistrationWinResult" expires_after="M100">
+    enum="FileHandlerRegistrationWinResult" expires_after="M110">
   <owner>estade@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -2308,7 +2308,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.FileHandler.Unregistration.Linux.Result"
-    enum="FileHandlerRegistrationLinuxResult" expires_after="M100">
+    enum="FileHandlerRegistrationLinuxResult" expires_after="M110">
   <owner>estade@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
