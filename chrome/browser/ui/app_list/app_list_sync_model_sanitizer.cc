@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/guid.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "components/sync/model/string_ordinal.h"
 
@@ -46,23 +47,30 @@ void AppListSyncModelSanitizer::SanitizePageBreaksForProductivityLauncher(
 
   std::vector<std::string> page_breaks_to_remove;
   std::vector<syncer::StringOrdinal> page_breaks_to_add;
+  std::map<std::string, syncer::StringOrdinal> resolved_duplicate_positions;
 
   size_t current_page_size = 0;
   syncer::StringOrdinal last_valid_position;
-  for (auto* item : sync_items) {
+  for (size_t i = 0; i < sync_items.size(); ++i) {
+    const AppListSyncableService::SyncItem* item = sync_items[i];
+    const std::string item_id = item->item_id;
+    syncer::StringOrdinal item_ordinal =
+        resolved_duplicate_positions.count(item_id)
+            ? resolved_duplicate_positions[item_id]
+            : item->item_ordinal;
     // `AppListSyncableService::GetSortedTopLevelSyncItems()` filters out items
     // with an invalid position.
-    DCHECK(item->item_ordinal.IsValid());
+    DCHECK(item_ordinal.IsValid());
 
     if (item->item_type == sync_pb::AppListSpecifics::TYPE_PAGE_BREAK) {
       const bool implicit_page_break =
-          base::StartsWith(item->item_id, kImplicitPageBreakIdPrefix);
+          base::StartsWith(item_id, kImplicitPageBreakIdPrefix);
       if (reset_page_breaks && !implicit_page_break) {
         // When resetting page breaks, remove non-implicit page breaks.
         // If the page break is required at this position, a new implicit page
         // break will be created later on, with the difference that the new page
         // break will be removable by he sanitizer.
-        page_breaks_to_remove.push_back(item->item_id);
+        page_breaks_to_remove.push_back(item_id);
         continue;
       }
 
@@ -71,20 +79,20 @@ void AppListSyncModelSanitizer::SanitizePageBreaksForProductivityLauncher(
           current_page_size ==
               ash::SharedAppListConfig::instance().GetMaxNumOfItemsPerPage()) {
         current_page_size = 0;
-        last_valid_position = item->item_ordinal;
+        last_valid_position = item_ordinal;
         continue;
       }
 
       // If page is not yet full, and the page break was added to sanitize page
       // size (i.e. were not a result of an explicit user action in pre
       // productivity launcher), remove the page break.
-      page_breaks_to_remove.push_back(item->item_id);
+      page_breaks_to_remove.push_back(item_id);
       continue;
     }
 
     if (item->item_type != sync_pb::AppListSpecifics::TYPE_FOLDER &&
         item->item_type != sync_pb::AppListSpecifics::TYPE_APP) {
-      last_valid_position = item->item_ordinal;
+      last_valid_position = item_ordinal;
       continue;
     }
 
@@ -100,24 +108,44 @@ void AppListSyncModelSanitizer::SanitizePageBreaksForProductivityLauncher(
     // could also unexpectedly create partially filled pages where they did not
     // previously exist (for example, if sync contains items that are not
     // installed on a portion of the user's devices).
-    if (!base::Contains(top_level_items, item->item_id)) {
-      last_valid_position = item->item_ordinal;
+    if (!base::Contains(top_level_items, item_id)) {
+      last_valid_position = item_ordinal;
       continue;
     }
 
     // The item overflows the current page - add a page break just before it.
     if (current_page_size ==
         ash::SharedAppListConfig::instance().GetMaxNumOfItemsPerPage()) {
-      current_page_size = 0;
+      // The page break will be inserted before the current item, so the current
+      // page contains the current item.
+      current_page_size = 1;
 
       DCHECK(last_valid_position.IsValid());
-      page_breaks_to_add.push_back(
-          last_valid_position.CreateBetween(item->item_ordinal));
+      // If page break should be added between items with the same ordinal,
+      // deduplicate the item ordinals before calculating the new page break
+      // position.
+      if (last_valid_position.Equals(item_ordinal)) {
+        ResolveDuplicatePositionsStartingAtIndex(
+            sync_items, i, last_valid_position, &resolved_duplicate_positions);
+        DCHECK(resolved_duplicate_positions.count(item_id));
+
+        item_ordinal = resolved_duplicate_positions[item_id];
+        page_breaks_to_add.push_back(
+            last_valid_position.CreateBetween(item_ordinal));
+      } else {
+        page_breaks_to_add.push_back(
+            last_valid_position.CreateBetween(item_ordinal));
+      }
     } else {
       ++current_page_size;
     }
 
-    last_valid_position = item->item_ordinal;
+    last_valid_position = item_ordinal;
+  }
+
+  for (const auto& resolved_position : resolved_duplicate_positions) {
+    syncable_service_->GetModelUpdater()->SetItemPosition(
+        resolved_position.first, resolved_position.second);
   }
 
   for (const auto& position : page_breaks_to_add) {
@@ -128,6 +156,41 @@ void AppListSyncModelSanitizer::SanitizePageBreaksForProductivityLauncher(
 
   for (const auto& id : page_breaks_to_remove)
     syncable_service_->DeleteSyncItem(id);
+}
+
+void AppListSyncModelSanitizer::ResolveDuplicatePositionsStartingAtIndex(
+    const std::vector<AppListSyncableService::SyncItem*>& sync_items,
+    size_t starting_index,
+    const syncer::StringOrdinal& starting_ordinal,
+    std::map<std::string, syncer::StringOrdinal>* resolved_positions) {
+  DCHECK_LT(starting_index, sync_items.size());
+  // Find the next position distinct from `starting_ordinal`, starting at
+  // `starting_index`.
+  syncer::StringOrdinal next_valid_position;
+  // Default to the case a distinct position is not found.
+  size_t first_distinct_index = sync_items.size();
+  for (size_t i = starting_index; i < sync_items.size(); ++i) {
+    AppListSyncableService::SyncItem* item = sync_items[i];
+    if (item->item_ordinal.IsValid() &&
+        !item->item_ordinal.Equals(starting_ordinal)) {
+      next_valid_position = item->item_ordinal;
+      first_distinct_index = i;
+      break;
+    }
+  }
+
+  // If all items from starting position to the end of sync items list have the
+  // same ordinal, next valid position may not have been set.
+  if (!next_valid_position.IsValid())
+    next_valid_position = starting_ordinal.CreateAfter();
+
+  // Generate new ordinals for all detected duplicate items.
+  for (size_t current_index = first_distinct_index - 1;
+       current_index >= starting_index; --current_index) {
+    next_valid_position = starting_ordinal.CreateBetween(next_valid_position);
+    AppListSyncableService::SyncItem* item = sync_items[current_index];
+    resolved_positions->emplace(item->item_id, next_valid_position);
+  }
 }
 
 }  // namespace app_list

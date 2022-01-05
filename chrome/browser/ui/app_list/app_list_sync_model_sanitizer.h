@@ -5,12 +5,15 @@
 #ifndef CHROME_BROWSER_UI_APP_LIST_APP_LIST_SYNC_MODEL_SANITIZER_H_
 #define CHROME_BROWSER_UI_APP_LIST_APP_LIST_SYNC_MODEL_SANITIZER_H_
 
+#include <map>
 #include <set>
 #include <string>
+#include <vector>
+
+#include "chrome/browser/ui/app_list/app_list_syncable_service.h"
+#include "components/sync/model/string_ordinal.h"
 
 namespace app_list {
-
-class AppListSyncableService;
 
 // Utility class for sanitizing app list model sync state in response to model
 // changes that are result of local user actions.
@@ -48,6 +51,19 @@ class AppListSyncModelSanitizer {
       bool reset_page_breaks);
 
  private:
+  // For items in sync_items that have identical position ordinals starting at
+  // `starting_index` creates new ordinal values to preserve their order in
+  // `sync_items`. The new item ordinals will be added to `resolved_positions`
+  // as an item ID -> ordinal value pair. This method will not update the
+  // associated sync items.
+  // Expects `sync_items` to be sorted by the item string ordinals (in
+  // increasing order).
+  void ResolveDuplicatePositionsStartingAtIndex(
+      const std::vector<AppListSyncableService::SyncItem*>& sync_items,
+      size_t starting_index,
+      const syncer::StringOrdinal& starting_ordinal,
+      std::map<std::string, syncer::StringOrdinal>* resolved_positions);
+
   AppListSyncableService* const syncable_service_;
 };
 
