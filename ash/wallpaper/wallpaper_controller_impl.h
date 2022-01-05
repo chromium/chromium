@@ -665,8 +665,10 @@ class ASH_EXPORT WallpaperControllerImpl
   // wallpaper set.
   base::TimeDelta GetTimeToNextDailyRefreshUpdate() const;
 
-  void SaveWallpaperToDriveFs(const AccountId& account_id,
-                              const base::FilePath& origin_path);
+  void SaveWallpaperToDriveFsAndSyncInfo(const AccountId& account_id,
+                                         const base::FilePath& origin_path);
+
+  void WallpaperSavedToDriveFS(const AccountId& account_id, bool success);
 
   void HandleCustomWallpaperInfoSyncedIn(const AccountId& account_id,
                                          WallpaperInfo info);

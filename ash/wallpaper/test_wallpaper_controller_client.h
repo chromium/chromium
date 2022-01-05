@@ -68,8 +68,10 @@ class TestWallpaperControllerClient : public WallpaperControllerClient {
   void FetchImagesForCollection(
       const std::string& collection_id,
       FetchImagesForCollectionCallback callback) override;
-  bool SaveWallpaperToDriveFs(const AccountId& account_id,
-                              const base::FilePath& origin) override;
+  void SaveWallpaperToDriveFs(
+      const AccountId& account_id,
+      const base::FilePath& origin,
+      base::OnceCallback<void(bool)> wallpaper_saved_callback) override;
   base::FilePath GetWallpaperPathFromDriveFs(
       const AccountId& account_id) override;
   void GetFilesId(const AccountId& account_id,

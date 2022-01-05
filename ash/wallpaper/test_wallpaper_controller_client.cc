@@ -91,11 +91,12 @@ void TestWallpaperControllerClient::FetchImagesForCollection(
   }
 }
 
-bool TestWallpaperControllerClient::SaveWallpaperToDriveFs(
+void TestWallpaperControllerClient::SaveWallpaperToDriveFs(
     const AccountId& account_id,
-    const base::FilePath& origin) {
+    const base::FilePath& origin,
+    base::OnceCallback<void(bool)> wallpaper_saved_callback) {
   save_wallpaper_to_drive_fs_account_id_ = account_id;
-  return true;
+  std::move(wallpaper_saved_callback).Run(true);
 }
 
 base::FilePath TestWallpaperControllerClient::GetWallpaperPathFromDriveFs(

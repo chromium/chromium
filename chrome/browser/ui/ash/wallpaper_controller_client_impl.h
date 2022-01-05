@@ -72,8 +72,10 @@ class WallpaperControllerClientImpl
   void FetchImagesForCollection(
       const std::string& collection_id,
       FetchImagesForCollectionCallback callback) override;
-  bool SaveWallpaperToDriveFs(const AccountId& account_id,
-                              const base::FilePath& origin) override;
+  void SaveWallpaperToDriveFs(
+      const AccountId& account_id,
+      const base::FilePath& origin,
+      base::OnceCallback<void(bool)> wallpaper_saved_callback) override;
   base::FilePath GetWallpaperPathFromDriveFs(
       const AccountId& account_id) override;
   void GetFilesId(const AccountId& account_id,
@@ -207,6 +209,8 @@ class WallpaperControllerClientImpl
   base::ScopedObservation<session_manager::SessionManager,
                           session_manager::SessionManagerObserver>
       session_observation_{this};
+
+  scoped_refptr<base::SequencedTaskRunner> io_task_runner_;
 
   base::WeakPtrFactory<WallpaperControllerClientImpl> weak_factory_{this};
   base::WeakPtrFactory<WallpaperControllerClientImpl> storage_weak_factory_{

@@ -3358,6 +3358,16 @@ TEST_F(WallpaperControllerWallpaperWebUiTest, SetWallpaperInfoCustom) {
 }
 
 TEST_F(WallpaperControllerWallpaperWebUiTest, MigrateWallpaperInfo) {
+  WallpaperInfo expected_info = InfoWithType(WallpaperType::kOnline);
+  PutWallpaperInfoInPrefs(account_id_1, expected_info, GetLocalPrefService(),
+                          prefs::kUserWallpaperInfo);
+  SimulateUserLogin(account_id_1);
+  AssertWallpaperInfoInPrefs(GetProfilePrefService(account_id_1),
+                             prefs::kSyncableWallpaperInfo, account_id_1,
+                             expected_info);
+}
+
+TEST_F(WallpaperControllerWallpaperWebUiTest, MigrateWallpaperInfoCustomized) {
   WallpaperInfo expected_info = InfoWithType(WallpaperType::kCustomized);
   PutWallpaperInfoInPrefs(account_id_1, expected_info, GetLocalPrefService(),
                           prefs::kUserWallpaperInfo);

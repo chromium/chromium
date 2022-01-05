@@ -22,6 +22,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/unguessable_token.h"
 #include "base/values.h"
@@ -211,6 +212,34 @@ base::FilePath GetDriveFsWallpaperDir(Profile* profile) {
       .Append(kDriveFsWallpaperDirName);
 }
 
+bool SaveWallpaperToDriveFsIOTaskRunner(
+    const base::FilePath& origin,
+    const base::FilePath& destination_directory) {
+  if (destination_directory.empty())
+    return false;
+
+  if (!base::DirectoryExists(destination_directory) &&
+      !base::CreateDirectory(destination_directory)) {
+    return false;
+  }
+
+  std::string temp_file_name =
+      base::UnguessableToken::Create().ToString().append(
+          kDriveFsTempWallpaperFileName);
+  base::FilePath temp_destination =
+      destination_directory.Append(temp_file_name);
+  if (!base::CopyFile(origin, temp_destination)) {
+    base::DeleteFile(temp_destination);
+    return false;
+  }
+
+  base::FilePath destination =
+      destination_directory.Append(kDriveFsWallpaperFileName);
+  bool success = base::ReplaceFile(temp_destination, destination, nullptr);
+  base::DeleteFile(temp_destination);
+  return success;
+}
+
 }  // namespace
 
 WallpaperControllerClientImpl::WallpaperControllerClientImpl() {
@@ -229,6 +258,10 @@ WallpaperControllerClientImpl::WallpaperControllerClientImpl() {
   // SessionManager might not exist in unit tests.
   if (session_manager)
     session_observation_.Observe(session_manager);
+
+  io_task_runner_ = base::ThreadPool::CreateSequencedTaskRunner(
+      {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN});
 }
 
 WallpaperControllerClientImpl::~WallpaperControllerClientImpl() {
@@ -480,34 +513,17 @@ bool WallpaperControllerClientImpl::ShouldShowWallpaperSetting() {
   return wallpaper_controller_->ShouldShowWallpaperSetting();
 }
 
-bool WallpaperControllerClientImpl::SaveWallpaperToDriveFs(
+void WallpaperControllerClientImpl::SaveWallpaperToDriveFs(
     const AccountId& account_id,
-    const base::FilePath& origin) {
+    const base::FilePath& origin,
+    base::OnceCallback<void(bool)> wallpaper_saved_callback) {
   Profile* profile = ProfileHelper::Get()->GetProfileByAccountId(account_id);
   base::FilePath destination_directory = GetDriveFsWallpaperDir(profile);
-  if (destination_directory.empty())
-    return false;
-
-  if (!base::DirectoryExists(destination_directory) &&
-      !base::CreateDirectory(destination_directory)) {
-    return false;
-  }
-
-  std::string temp_file_name =
-      base::UnguessableToken::Create().ToString().append(
-          kDriveFsTempWallpaperFileName);
-  base::FilePath temp_destination =
-      destination_directory.Append(temp_file_name);
-  if (!base::CopyFile(origin, temp_destination)) {
-    base::DeleteFile(temp_destination);
-    return false;
-  }
-
-  base::FilePath destination =
-      destination_directory.Append(kDriveFsWallpaperFileName);
-  bool success = base::ReplaceFile(temp_destination, destination, nullptr);
-  base::DeleteFile(temp_destination);
-  return success;
+  io_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&SaveWallpaperToDriveFsIOTaskRunner, origin,
+                     destination_directory),
+      std::move(wallpaper_saved_callback));
 }
 
 base::FilePath WallpaperControllerClientImpl::GetWallpaperPathFromDriveFs(

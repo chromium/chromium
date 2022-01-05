@@ -45,9 +45,10 @@ class ASH_PUBLIC_EXPORT WallpaperControllerClient {
       const std::string& collection_id,
       DailyWallpaperUrlFetchedCallback callback) = 0;
 
-  // Returns true if image was successfully saved.
-  virtual bool SaveWallpaperToDriveFs(const AccountId& account_id,
-                                      const base::FilePath& origin) = 0;
+  virtual void SaveWallpaperToDriveFs(
+      const AccountId& account_id,
+      const base::FilePath& origin,
+      base::OnceCallback<void(bool)> wallpaper_saved_callback) = 0;
 
   virtual base::FilePath GetWallpaperPathFromDriveFs(
       const AccountId& account_id) = 0;

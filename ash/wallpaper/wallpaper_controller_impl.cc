@@ -1140,8 +1140,9 @@ void WallpaperControllerImpl::SetCustomWallpaper(
     SaveAndSetWallpaperWithCompletion(
         account_id, file_name, WallpaperType::kCustomized, layout,
         /*show_wallpaper=*/is_active_user, image,
-        base::BindOnce(&WallpaperControllerImpl::SaveWallpaperToDriveFs,
-                       weak_factory_.GetWeakPtr(), account_id));
+        base::BindOnce(
+            &WallpaperControllerImpl::SaveWallpaperToDriveFsAndSyncInfo,
+            weak_factory_.GetWeakPtr(), account_id));
   }
 }
 
@@ -1765,7 +1766,7 @@ void WallpaperControllerImpl::OnActiveUserPrefServiceChanged(
       if (local_info.type == WallpaperType::kCustomized) {
         base::FilePath source = GetCustomWallpaperDir(kOriginalWallpaperSubDir)
                                     .Append(local_info.location);
-        SaveWallpaperToDriveFs(account_id, source);
+        SaveWallpaperToDriveFsAndSyncInfo(account_id, source);
       } else {
         SetSyncedWallpaperInfo(account_id, local_info);
         wallpaper_controller_client_->MigrateCollectionIdFromChromeApp(
@@ -2746,7 +2747,7 @@ void WallpaperControllerImpl::SyncLocalAndRemotePrefs(
     // which may not be available at the time of setting the local_info.
     base::FilePath source = GetCustomWallpaperDir(kOriginalWallpaperSubDir)
                                 .Append(local_info.location);
-    SaveWallpaperToDriveFs(account_id, source);
+    SaveWallpaperToDriveFsAndSyncInfo(account_id, source);
   }
 }
 
@@ -2857,7 +2858,7 @@ base::TimeDelta WallpaperControllerImpl::GetTimeToNextDailyRefreshUpdate()
          base::Time::Now().ToDeltaSinceWindowsEpoch() + base::Days(1);
 }
 
-void WallpaperControllerImpl::SaveWallpaperToDriveFs(
+void WallpaperControllerImpl::SaveWallpaperToDriveFsAndSyncInfo(
     const AccountId& account_id,
     const base::FilePath& origin_path) {
   if (!features::IsWallpaperWebUIEnabled())
@@ -2866,10 +2867,17 @@ void WallpaperControllerImpl::SaveWallpaperToDriveFs(
     return;
   if (!wallpaper_controller_client_->IsWallpaperSyncEnabled(account_id))
     return;
-  if (!wallpaper_controller_client_->SaveWallpaperToDriveFs(account_id,
-                                                            origin_path)) {
+  wallpaper_controller_client_->SaveWallpaperToDriveFs(
+      account_id, origin_path,
+      base::BindOnce(&WallpaperControllerImpl::WallpaperSavedToDriveFS,
+                     weak_factory_.GetWeakPtr(), account_id));
+}
+
+void WallpaperControllerImpl::WallpaperSavedToDriveFS(
+    const AccountId& account_id,
+    bool success) {
+  if (!success)
     return;
-  }
   WallpaperInfo local_info;
   CHECK(GetLocalWallpaperInfo(account_id, &local_info));
   SetSyncedWallpaperInfo(account_id, local_info);
