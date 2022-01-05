@@ -97,13 +97,20 @@ void ArcAsh::RequestActivityIcons(
     mojom::ScaleFactor scale_factor,
     RequestActivityIconsCallback callback) {
   auto* intent_helper_holder = GetIntentHelperHolder();
-  if (!intent_helper_holder)
+  if (!intent_helper_holder) {
+    std::move(callback).Run(
+        std::vector<mojom::ActivityIconPtr>(),
+        mojom::RequestActivityIconsStatus::kArcNotAvailable);
     return;
+  }
 
   auto* instance =
       ARC_GET_INSTANCE_FOR_METHOD(intent_helper_holder, RequestActivityIcons);
   if (!instance) {
     LOG(WARNING) << "RequestActivityIcons is not supported.";
+    std::move(callback).Run(
+        std::vector<mojom::ActivityIconPtr>(),
+        mojom::RequestActivityIconsStatus::kArcNotAvailable);
     return;
   }
 
@@ -137,19 +144,27 @@ void ArcAsh::ConvertActivityIcons(
             icon->icon_png_data->foreground_icon_png_data,
             icon->icon_png_data->background_icon_png_data)));
   }
-  std::move(callback).Run(std::move(converted_icons));
+  std::move(callback).Run(std::move(converted_icons),
+                          mojom::RequestActivityIconsStatus::kSuccess);
 }
 
 void ArcAsh::RequestUrlHandlerList(const std::string& url,
                                    RequestUrlHandlerListCallback callback) {
   auto* intent_helper_holder = GetIntentHelperHolder();
-  if (!intent_helper_holder)
+  if (!intent_helper_holder) {
+    std::move(callback).Run(
+        std::vector<mojom::IntentHandlerInfoPtr>(),
+        mojom::RequestUrlHandlerListStatus::kArcNotAvailable);
     return;
+  }
 
   auto* instance =
       ARC_GET_INSTANCE_FOR_METHOD(intent_helper_holder, RequestUrlHandlerList);
   if (!instance) {
     LOG(WARNING) << "RequestUrlHandlerList is not supported.";
+    std::move(callback).Run(
+        std::vector<mojom::IntentHandlerInfoPtr>(),
+        mojom::RequestUrlHandlerListStatus::kArcNotAvailable);
     return;
   }
 
@@ -169,7 +184,8 @@ void ArcAsh::ConvertIntentHandlerInfo(
         handler->name, handler->package_name, handler->activity_name));
     converted_handlers.push_back(std::move(converted_handler));
   }
-  std::move(callback).Run(std::move(converted_handlers));
+  std::move(callback).Run(std::move(converted_handlers),
+                          mojom::RequestUrlHandlerListStatus::kSuccess);
 }
 
 void ArcAsh::HandleUrl(const std::string& url,

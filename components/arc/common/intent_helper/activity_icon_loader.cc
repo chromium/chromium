@@ -82,8 +82,47 @@ GetInstanceForRequestActivityIcons() {
   return instance;
 }
 #else  // BUILDFLAG(IS_CHROMEOS_LACROS)
+// Adapter class for wrapping crosapi::mojom::Arc used in lacros-chrome.
+// This is returned from GetInstanceForRequestActivityIcons().
+class Adapter {
+ public:
+  explicit Adapter(crosapi::mojom::Arc* instance) : instance_(instance) {}
+  ~Adapter() = default;
+
+  using OnRequestActivityIconsSucceededCallback =
+      base::OnceCallback<void(std::vector<crosapi::mojom::ActivityIconPtr>)>;
+
+  // If status is not kSuccess, immediately return callback.
+  void RequestActivityIcons(
+      std::vector<crosapi::mojom::ActivityNamePtr> activities,
+      crosapi::mojom::ScaleFactor scale_factor,
+      OnRequestActivityIconsSucceededCallback cb) {
+    instance_->RequestActivityIcons(
+        std::move(activities), scale_factor,
+        base::BindOnce(
+            [](OnRequestActivityIconsSucceededCallback cb,
+               std::vector<crosapi::mojom::ActivityIconPtr> icons,
+               crosapi::mojom::RequestActivityIconsStatus status) {
+              // If status is not kSuccess, immediately return callback.
+              if (status == crosapi::mojom::RequestActivityIconsStatus::
+                                kArcNotAvailable) {
+                LOG(ERROR) << "Failed to connect to ARC in ash-chrome.";
+                std::move(cb).Run(
+                    std::vector<crosapi::mojom::ActivityIconPtr>());
+                return;
+              }
+
+              std::move(cb).Run(std::move(icons));
+            },
+            std::move(cb)));
+  }
+
+ private:
+  crosapi::mojom::Arc* instance_;
+};
+
 // Lacros requests icons to ash-chrome via crosapi.
-absl::variant<crosapi::mojom::Arc*, ActivityIconLoader::GetResult>
+absl::variant<std::unique_ptr<Adapter>, ActivityIconLoader::GetResult>
 GetInstanceForRequestActivityIcons() {
   auto* service = chromeos::LacrosService::Get();
 
@@ -101,7 +140,8 @@ GetInstanceForRequestActivityIcons() {
     return ActivityIconLoader::GetResult::FAILED_ARC_NOT_SUPPORTED;
   }
 
-  return service->GetRemote<crosapi::mojom::Arc>().get();
+  return std::make_unique<Adapter>(
+      service->GetRemote<crosapi::mojom::Arc>().get());
 }
 
 #endif

@@ -50,7 +50,8 @@ class ArcIconCache : public arc::LinkHandlerModelDelegate,
   // ArcIconCacheDelegate::IntentHandlerInfo.
   void OnRequestUrlHandlerList(
       RequestUrlHandlerListCallback callback,
-      std::vector<crosapi::mojom::IntentHandlerInfoPtr> handlers);
+      std::vector<crosapi::mojom::IntentHandlerInfoPtr> handlers,
+      crosapi::mojom::RequestUrlHandlerListStatus status);
 
   // Cached activity icons.
   ActivityIconLoader icon_loader_;
