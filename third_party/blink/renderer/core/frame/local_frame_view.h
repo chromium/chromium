@@ -83,7 +83,6 @@ class DocumentLifecycle;
 class FragmentAnchor;
 class Frame;
 class FrameViewAutoSizeInfo;
-class GraphicsLayer;
 class HTMLVideoElement;
 class JSONObject;
 class KURL;

@@ -1975,11 +1975,6 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // This value gets cached by bitfields_.can_contain_fixed_position_objects_.
   bool ComputeIsFixedContainer(const ComputedStyle* style) const;
 
-  virtual LayoutObject* HoverAncestor() const {
-    NOT_DESTROYED();
-    return Parent();
-  }
-
   Element* OffsetParent(const Element* = nullptr) const;
 
   // Mark this object needing to re-run |CollectInlines()|. Ancestors may be

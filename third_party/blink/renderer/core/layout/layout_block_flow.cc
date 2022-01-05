@@ -2524,12 +2524,6 @@ void LayoutBlockFlow::QuadsForSelfInternal(Vector<FloatQuad>& quads,
     quads.push_back(FloatQuad(gfx::RectF(local_rect)));
 }
 
-LayoutObject* LayoutBlockFlow::HoverAncestor() const {
-  NOT_DESTROYED();
-  return IsAnonymousBlockContinuation() ? Continuation()
-                                        : LayoutBlock::HoverAncestor();
-}
-
 RootInlineBox* LayoutBlockFlow::CreateAndAppendRootInlineBox() {
   NOT_DESTROYED();
   RootInlineBox* root_box = CreateRootInlineBox();

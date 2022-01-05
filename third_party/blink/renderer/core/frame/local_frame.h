@@ -309,7 +309,7 @@ class CORE_EXPORT LocalFrame final
   // All public functions below this point are candidates to move out of
   // LocalFrame into another class.
 
-  // See GraphicsLayerClient.h for accepted flags.
+  // See layers_as_json.h for accepted flags.
   String GetLayerTreeAsTextForTesting(unsigned flags = 0) const;
 
   // Begin printing with the given page size information.

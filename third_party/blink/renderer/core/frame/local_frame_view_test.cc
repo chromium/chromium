@@ -26,7 +26,6 @@
 
 using blink::test::RunPendingTasks;
 using testing::_;
-using testing::AnyNumber;
 
 namespace blink {
 namespace {
@@ -36,8 +35,6 @@ class AnimationMockChromeClient : public RenderingTestChromeClient {
   AnimationMockChromeClient() : has_scheduled_animation_(false) {}
 
   // ChromeClient
-  MOCK_METHOD2(AttachRootGraphicsLayer,
-               void(GraphicsLayer*, LocalFrame* localRoot));
   MOCK_METHOD3(MockUpdateTooltipUnderCursor,
                void(LocalFrame*, const String&, TextDirection));
   void UpdateTooltipUnderCursor(LocalFrame& frame,
@@ -57,10 +54,7 @@ class LocalFrameViewTest : public RenderingTest {
  protected:
   LocalFrameViewTest()
       : RenderingTest(MakeGarbageCollected<SingleChildLocalFrameClient>()),
-        chrome_client_(MakeGarbageCollected<AnimationMockChromeClient>()) {
-    EXPECT_CALL(GetAnimationMockChromeClient(), AttachRootGraphicsLayer(_, _))
-        .Times(AnyNumber());
-  }
+        chrome_client_(MakeGarbageCollected<AnimationMockChromeClient>()) {}
 
   ~LocalFrameViewTest() override {
     testing::Mock::VerifyAndClearExpectations(&GetAnimationMockChromeClient());

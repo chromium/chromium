@@ -308,7 +308,6 @@ class PLATFORM_EXPORT PaintController {
   friend class PaintControllerTestBase;
   friend class PaintControllerPaintTestBase;
   friend class PaintUnderInvalidationChecker;
-  friend class GraphicsLayer;  // Temporary for ClientCacheIsValid().
 
   // Called before painting to optimize memory allocation by reserving space in
   // |new_paint_artifact_| and |new_subsequences_| based on the size of the

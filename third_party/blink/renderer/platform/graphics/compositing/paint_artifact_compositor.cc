@@ -271,8 +271,8 @@ PaintArtifactCompositor::CompositedLayerForPendingLayer(
   new_content_layer_clients.push_back(std::move(content_layer_client));
 
   // Set properties that foreign layers would normally control for themselves
-  // here to avoid changing foreign layers. This includes things set by
-  // GraphicsLayer on the ContentsLayer() or by video clients etc.
+  // here to avoid changing foreign layers. This includes things set by video
+  // clients etc.
   bool contents_opaque = pending_layer.RectKnownToBeOpaque().Contains(
       gfx::RectF(gfx::PointAtOffsetFromOrigin(layer_offset),
                  gfx::SizeF(layer_bounds)));

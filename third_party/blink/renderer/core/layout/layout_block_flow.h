@@ -566,7 +566,6 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   void LocalQuadsForSelf(Vector<FloatQuad>& quads) const override;
   void AbsoluteQuadsForSelf(Vector<FloatQuad>& quads,
                             MapCoordinatesFlags mode = 0) const override;
-  LayoutObject* HoverAncestor() const final;
 
   LayoutUnit LogicalRightOffsetForLine(
       LayoutUnit logical_top,
