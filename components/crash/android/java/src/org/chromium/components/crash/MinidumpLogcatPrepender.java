@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.crash;
+package org.chromium.components.crash;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -28,11 +28,11 @@ public class MinidumpLogcatPrepender {
     private static final String TAG = "LogcatPrepender";
 
     @VisibleForTesting
-    static final String LOGCAT_CONTENT_DISPOSITION =
+    public static final String LOGCAT_CONTENT_DISPOSITION =
             "Content-Disposition: form-data; name=\"logcat\"; filename=\"logcat\"";
 
     @VisibleForTesting
-    static final String LOGCAT_CONTENT_TYPE = "Content-Type: text/plain";
+    public static final String LOGCAT_CONTENT_TYPE = "Content-Type: text/plain";
 
     private final CrashFileManager mFileManager;
     private final File mMinidumpFile;

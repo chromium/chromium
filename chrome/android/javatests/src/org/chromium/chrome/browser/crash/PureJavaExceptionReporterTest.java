@@ -14,6 +14,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.components.crash.CrashKeyIndex;
 import org.chromium.components.crash.CrashKeys;
+import org.chromium.components.crash.LogcatCrashExtractor;
 import org.chromium.components.minidump_uploader.CrashTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -39,9 +40,7 @@ public class PureJavaExceptionReporterTest {
                 mReportUploaded = false;
                 return;
             }
-            LogcatExtractionRunnable logcatExtractionRunnable =
-                    new LogcatExtractionRunnable(mMinidumpFile);
-            mMinidumpFile = logcatExtractionRunnable.attachLogcatToMinidump();
+            mMinidumpFile = new LogcatCrashExtractor().attachLogcatToMinidump(mMinidumpFile);
             mReportUploaded = true;
         }
 

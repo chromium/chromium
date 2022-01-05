@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.crash;
+package org.chromium.components.crash;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 
-import static org.chromium.chrome.browser.crash.LogcatExtractionRunnable.BEGIN_MICRODUMP;
-import static org.chromium.chrome.browser.crash.LogcatExtractionRunnable.END_MICRODUMP;
-import static org.chromium.chrome.browser.crash.LogcatExtractionRunnable.SNIPPED_MICRODUMP;
+import static org.chromium.components.crash.LogcatCrashExtractor.BEGIN_MICRODUMP;
+import static org.chromium.components.crash.LogcatCrashExtractor.END_MICRODUMP;
+import static org.chromium.components.crash.LogcatCrashExtractor.SNIPPED_MICRODUMP;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -22,17 +22,17 @@ import java.util.LinkedList;
 import java.util.List;
 
 /**
- * junit tests for {@link LogcatExtractionRunnable}.
+ * junit tests for {@link LogcatCrashExtractor}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
-public class LogcatExtractionRunnableUnitTest {
+public class LogcatCrashExtractorTest {
     private static final int MAX_LINES = 5;
 
     @Test
     public void testLogTagNotElided() {
         List<String> original = Arrays.asList(new String[] {"I/cr_FooBar(123): Some message"});
-        assertEquals(original, LogcatExtractionRunnable.elideLogcat(original));
+        assertEquals(original, LogcatCrashExtractor.elideLogcat(original));
     }
 
     @Test
@@ -126,7 +126,7 @@ public class LogcatExtractionRunnableUnitTest {
     private void assertLogcatLists(List<String> expected, List<String> original) {
         // trimLogcat() expects a modifiable list as input.
         LinkedList<String> rawLogcat = new LinkedList<String>(original);
-        List<String> actualLogcat = LogcatExtractionRunnable.trimLogcat(rawLogcat, MAX_LINES);
+        List<String> actualLogcat = LogcatCrashExtractor.trimLogcat(rawLogcat, MAX_LINES);
         assertArrayEquals(expected.toArray(), actualLogcat.toArray());
     }
 }

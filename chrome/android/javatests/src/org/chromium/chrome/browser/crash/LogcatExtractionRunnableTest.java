@@ -27,6 +27,8 @@ import org.chromium.base.StreamUtil;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.components.background_task_scheduler.TaskIds;
+import org.chromium.components.crash.LogcatCrashExtractor;
+import org.chromium.components.crash.MinidumpLogcatPrepender;
 import org.chromium.components.minidump_uploader.CrashFileManager;
 import org.chromium.components.minidump_uploader.CrashTestRule;
 
@@ -53,11 +55,7 @@ public class LogcatExtractionRunnableTest {
     private static final List<String> LOGCAT =
             Arrays.asList("some random log content", "some more deterministic log content");
 
-    private static class TestLogcatExtractionRunnable extends LogcatExtractionRunnable {
-        TestLogcatExtractionRunnable(Context context, File minidump) {
-            super(minidump);
-        }
-
+    private static class TestLogcatCrashExtractor extends LogcatCrashExtractor {
         @Override
         protected List<String> getLogcat() {
             return LOGCAT;
@@ -193,7 +191,8 @@ public class LogcatExtractionRunnableTest {
         final File minidump = createMinidump("test.dmp");
         Context testContext = new TestContext(InstrumentationRegistry.getTargetContext());
 
-        LogcatExtractionRunnable runnable = new TestLogcatExtractionRunnable(testContext, minidump);
+        LogcatExtractionRunnable runnable =
+                new LogcatExtractionRunnable(minidump, new TestLogcatCrashExtractor());
         runnable.run();
 
         verifyMinidumpWithLogcat("test.dmp.try0");
@@ -208,7 +207,8 @@ public class LogcatExtractionRunnableTest {
         final File minidump = createMinidump("test.dmp");
         Context testContext = new TestContext(InstrumentationRegistry.getTargetContext());
 
-        LogcatExtractionRunnable runnable = new TestLogcatExtractionRunnable(testContext, minidump);
+        LogcatExtractionRunnable runnable =
+                new LogcatExtractionRunnable(minidump, new TestLogcatCrashExtractor());
         runnable.run();
 
         verifyMinidumpWithLogcat("test.dmp.try0");

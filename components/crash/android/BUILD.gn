@@ -22,11 +22,31 @@ java_cpp_enum("java_enums_srcjar") {
 android_library("java") {
   deps = [
     "//base:base_java",
+    "//components/minidump_uploader:minidump_uploader_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   srcjar_deps = [ ":java_enums_srcjar" ]
-  sources = _jni_sources
+  sources = [
+    "java/src/org/chromium/components/crash/LogcatCrashExtractor.java",
+    "java/src/org/chromium/components/crash/MinidumpLogcatPrepender.java",
+  ]
+  sources += _jni_sources
+}
+
+java_library("junit") {
+  # Skip platform checks since Robolectric depends on requires_android targets.
+  bypass_platform_checks = true
+  testonly = true
+  sources = [
+    "junit/src/org/chromium/components/crash/LogcatCrashExtractorTest.java",
+  ]
+  deps = [
+    ":java",
+    "//base:base_junit_test_support",
+    "//third_party/android_deps:robolectric_all_java",
+    "//third_party/junit",
+  ]
 }
 
 source_set("crash_android") {

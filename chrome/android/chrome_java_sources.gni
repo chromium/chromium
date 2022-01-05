@@ -424,7 +424,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/crash/ChromeMinidumpUploaderDelegate.java",
   "java/src/org/chromium/chrome/browser/crash/CrashUploadCountStore.java",
   "java/src/org/chromium/chrome/browser/crash/LogcatExtractionRunnable.java",
-  "java/src/org/chromium/chrome/browser/crash/MinidumpLogcatPrepender.java",
   "java/src/org/chromium/chrome/browser/crash/MinidumpUploadRetry.java",
   "java/src/org/chromium/chrome/browser/crash/MinidumpUploadServiceImpl.java",
   "java/src/org/chromium/chrome/browser/crash/PureJavaExceptionReporter.java",
