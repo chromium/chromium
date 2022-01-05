@@ -16,7 +16,9 @@
 #include "base/threading/thread.h"
 #include "media/base/video_frame.h"
 
+#ifndef KERNEL_VERSION
 #define KERNEL_VERSION(a, b, c) (((a) << 16) + ((b) << 8) + (c))
+#endif
 
 namespace media {
 
