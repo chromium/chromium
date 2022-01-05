@@ -231,8 +231,8 @@ void WebAppPolicyManager::RefreshPolicySettings() {
   // No need to validate the types or values of the policy members because we
   // are using a SimpleSchemaValidatingPolicyHandler which should validate them
   // for us.
-  const base::DictionaryValue* web_app_dict = &base::Value::AsDictionaryValue(
-      *pref_service_->GetDictionary(prefs::kWebAppSettings));
+  const base::Value* web_app_dict =
+      pref_service_->GetDictionary(prefs::kWebAppSettings);
 
   settings_by_url_.clear();
   default_settings_ = std::make_unique<WebAppPolicyManager::WebAppSetting>();
@@ -241,32 +241,31 @@ void WebAppPolicyManager::RefreshPolicySettings() {
     return;
 
   // Read default policy, if provided.
-  const base::DictionaryValue* default_settings_dict = nullptr;
-  if (web_app_dict->GetDictionary(kWildcard, &default_settings_dict)) {
-    if (!default_settings_->Parse(default_settings_dict, true)) {
+  const base::Value* default_settings_dict =
+      web_app_dict->FindDictKey(kWildcard);
+  if (default_settings_dict) {
+    if (!default_settings_->Parse(*default_settings_dict, true)) {
       SYSLOG(WARNING) << "Malformed default web app management setting.";
       default_settings_->ResetSettings();
     }
   }
 
   // Read policy for individual web apps
-  for (base::DictionaryValue::Iterator iter(*web_app_dict); !iter.IsAtEnd();
-       iter.Advance()) {
-    if (iter.key() == kWildcard)
+  for (const auto iter : web_app_dict->DictItems()) {
+    if (iter.first == kWildcard)
       continue;
 
-    const base::DictionaryValue* web_app_settings_dict;
-    if (!iter.value().GetAsDictionary(&web_app_settings_dict))
+    if (!iter.second.is_dict())
       continue;
 
-    GURL url = GURL(iter.key());
+    GURL url = GURL(iter.first);
     if (!url.is_valid()) {
-      LOG(WARNING) << "Invalid URL: " << iter.key();
+      LOG(WARNING) << "Invalid URL: " << iter.first;
       continue;
     }
 
     WebAppPolicyManager::WebAppSetting by_url(*default_settings_);
-    if (by_url.Parse(web_app_settings_dict, false)) {
+    if (by_url.Parse(iter.second, false)) {
       settings_by_url_[url] = by_url;
     } else {
       LOG(WARNING) << "Malformed web app settings for " << url;
@@ -360,13 +359,10 @@ ExternalInstallOptions WebAppPolicyManager::ParseInstallPolicyEntry(
       custom_manifest_values_by_url_[gurl].SetName(custom_name->GetString());
   }
 
-  if (custom_icon && gurl.is_valid()) {
-    const base::DictionaryValue* dict = nullptr;
-    if (custom_icon->GetAsDictionary(&dict)) {
-      const std::string* icon_url = dict->FindStringKey(kCustomIconURLKey);
-      if (icon_url) {
-        custom_manifest_values_by_url_[gurl].SetIcon(*icon_url);
-      }
+  if (custom_icon && custom_icon->is_dict() && gurl.is_valid()) {
+    const std::string* icon_url = custom_icon->FindStringKey(kCustomIconURLKey);
+    if (icon_url) {
+      custom_manifest_values_by_url_[gurl].SetIcon(*icon_url);
     }
   }
 
@@ -452,10 +448,9 @@ WebAppPolicyManager::WebAppSetting::WebAppSetting() {
   ResetSettings();
 }
 
-bool WebAppPolicyManager::WebAppSetting::Parse(
-    const base::DictionaryValue* dict,
-    bool for_default_settings) {
-  const std::string* run_on_os_login_str = dict->FindStringKey(kRunOnOsLogin);
+bool WebAppPolicyManager::WebAppSetting::Parse(const base::Value& dict,
+                                               bool for_default_settings) {
+  const std::string* run_on_os_login_str = dict.FindStringKey(kRunOnOsLogin);
   if (run_on_os_login_str) {
     if (*run_on_os_login_str == kAllowed) {
       run_on_os_login_policy = RunOnOsLoginPolicy::kAllowed;

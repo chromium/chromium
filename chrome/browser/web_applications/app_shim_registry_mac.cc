@@ -103,21 +103,19 @@ void AppShimRegistry::OnAppQuit(const std::string& app_id,
 std::set<std::string> AppShimRegistry::GetInstalledAppsForProfile(
     const base::FilePath& profile) const {
   std::set<std::string> result;
-  const base::DictionaryValue* app_shims = &base::Value::AsDictionaryValue(
-      *GetPrefService()->GetDictionary(kAppShims));
+  const base::Value* app_shims = GetPrefService()->GetDictionary(kAppShims);
   if (!app_shims)
     return result;
-  for (base::DictionaryValue::Iterator iter_app(*app_shims);
-       !iter_app.IsAtEnd(); iter_app.Advance()) {
+  for (const auto iter_app : app_shims->DictItems()) {
     const base::Value* installed_profiles_list =
-        iter_app.value().FindListKey(kInstalledProfiles);
+        iter_app.second.FindListKey(kInstalledProfiles);
     if (!installed_profiles_list)
       continue;
     for (const auto& profile_path_value : installed_profiles_list->GetList()) {
       if (!profile_path_value.is_string())
         continue;
       if (profile == GetFullProfilePath(profile_path_value.GetString())) {
-        result.insert(iter_app.key());
+        result.insert(iter_app.first);
         break;
       }
     }
