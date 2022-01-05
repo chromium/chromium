@@ -299,6 +299,10 @@ gfx::Vector2d ScrollableAppsGridView::GetGridCenteringOffset(int page) const {
 }
 
 void ScrollableAppsGridView::EnsureViewVisible(const GridIndex& index) {
+  // If called after usesr action that changes the grid size, make sure grid
+  // view ancestor layout is up to date before attempting scroll.
+  GetWidget()->LayoutRootViewIfNecessary();
+
   AppListItemView* view = GetViewAtIndex(index);
   if (view)
     view->ScrollViewToVisible();

@@ -1785,11 +1785,19 @@ void AppsGridView::HandleKeyboardReparent(
   SetSelectedView(original_parent_item_view);
   const GridIndex target_index = GetTargetGridIndexForKeyboardReparent(
       GetIndexOfView(original_parent_item_view), key_code);
-  AnnounceReorder(target_index);
   ReparentItemForReorder(reparented_view->item(), target_index);
 
+  view_structure_.SaveToMetadata();
+
+  // Update paging because the move could have resulted in a
+  // page getting created.
+  UpdatePaging();
+
   Layout();
+  EnsureViewVisible(target_index);
   GetViewAtIndex(target_index)->RequestFocus();
+  AnnounceReorder(target_index);
+
   RecordAppMovingTypeMetrics(kMoveByKeyboardOutOfFolder);
 }
 
@@ -1918,6 +1926,27 @@ void AppsGridView::DispatchDragEventToDragAndDropHost(
   }
 }
 
+bool AppsGridView::IsMoveTargetOnNewPage(const GridIndex& target) const {
+  // This is used to determine whether move should create a page break item,
+  // which is only relevant for page structure with partial pages.
+  DCHECK_EQ(view_structure_.mode(), PagedViewStructure::Mode::kPartialPages);
+
+  return target.page == GetTotalPages() ||
+         (target.page == GetTotalPages() - 1 &&
+          view_structure_.GetLastTargetIndexOfPage(target.page).slot == 0);
+}
+
+void AppsGridView::EnsurePageBreakBeforeItem(const std::string& item_id) {
+  DCHECK_EQ(view_structure_.mode(), PagedViewStructure::Mode::kPartialPages);
+
+  size_t item_list_index = 0;
+  if (item_list_->FindItemIndex(item_id, &item_list_index) &&
+      item_list_index > 0 &&
+      !item_list_->item_at(item_list_index - 1)->is_page_break()) {
+    model_->AddPageBreakItemAfter(item_list_->item_at(item_list_index - 1));
+  }
+}
+
 void AppsGridView::MoveItemInModel(AppListItem* item, const GridIndex& target) {
   const std::string item_id = item->id();
 
@@ -1930,9 +1959,7 @@ void AppsGridView::MoveItemInModel(AppListItem* item, const GridIndex& target) {
 
   const bool moving_to_new_page =
       view_structure_.mode() == PagedViewStructure::Mode::kPartialPages &&
-      (target.page == GetTotalPages() ||
-       (target.page == GetTotalPages() - 1 &&
-        view_structure_.GetLastTargetIndexOfPage(target.page).slot == 0));
+      IsMoveTargetOnNewPage(target);
 
   {
     ScopedModelUpdate update(this);
@@ -1940,15 +1967,8 @@ void AppsGridView::MoveItemInModel(AppListItem* item, const GridIndex& target) {
 
     // If the item is being moved to a new page, ensure that it's preceded by a
     // page break.
-    if (moving_to_new_page) {
-      size_t final_item_list_index = 0;
-      if (item_list_->FindItemIndex(item_id, &final_item_list_index) &&
-          final_item_list_index > 0 &&
-          !item_list_->item_at(final_item_list_index - 1)->is_page_break()) {
-        model_->AddPageBreakItemAfter(
-            item_list_->item_at(final_item_list_index - 1));
-      }
-    }
+    if (moving_to_new_page)
+      EnsurePageBreakBeforeItem(item_id);
   }
 }
 
@@ -1995,6 +2015,7 @@ void AppsGridView::ReparentItemForReorder(AppListItem* item,
                                           const GridIndex& target) {
   DCHECK(item->IsInFolder());
 
+  const std::string item_id = item->id();
   const std::string source_folder_id = item->folder_id();
   int target_item_index =
       view_structure_.GetTargetItemListIndexForMove(item, target);
@@ -2005,9 +2026,18 @@ void AppsGridView::ReparentItemForReorder(AppListItem* item,
   if (target_item_index < static_cast<int>(item_list_->item_count()))
     target_position = item_list_->item_at(target_item_index)->position();
 
+  const bool moving_to_new_page =
+      view_structure_.mode() == PagedViewStructure::Mode::kPartialPages &&
+      IsMoveTargetOnNewPage(target);
+
   {
     ScopedModelUpdate update(this);
     model_->MoveItemToRootAt(item, target_position);
+
+    // If the item is being moved to a new page, ensure that it's preceded by a
+    // page break.
+    if (moving_to_new_page)
+      EnsurePageBreakBeforeItem(item_id);
   }
 }
 
@@ -2392,15 +2422,14 @@ GridIndex AppsGridView::GetTargetGridIndexForKeyboardReparent(
   }
 
   // Ensure the item is placed on the same page as the folder when possible.
-  if (target_index.page < folder_index.page) {
-    target_index.page = folder_index.page;
-    target_index.slot = 0;
-  } else if (target_index.page > folder_index.page) {
-    // Prefer the last slot of the page over the next page. If the page is full
-    // the item will still end up being pushed off the page.
-    target_index = folder_index;
-    ++target_index.slot;
+  if (target_index.page < folder_index.page)
+    return folder_index;
+  const int folder_page_size = TilesPerPage(folder_index.page);
+  if (target_index.page > folder_index.page &&
+      folder_index.slot + 1 < folder_page_size) {
+    return GridIndex(folder_index.page, folder_index.slot + 1);
   }
+
   return target_index;
 }
 

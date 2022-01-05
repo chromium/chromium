@@ -596,6 +596,16 @@ class ASH_EXPORT AppsGridView : public views::View,
   void DispatchDragEventToDragAndDropHost(
       const gfx::Point& location_in_screen_coordinates);
 
+  // Returns whether the target grid index for item move operation is on a new
+  // apps grid page - i.e. if the move operation will create a new apps grid
+  // page. Used to determine whether a new page break should be created after
+  // app list item move.
+  bool IsMoveTargetOnNewPage(const GridIndex& target) const;
+
+  // Creates a page break just before the item in top level item list if the
+  // item is not already preceded by a page break.
+  void EnsurePageBreakBeforeItem(const std::string& item_id);
+
   // Updates `model_` to move `item` to `target` slot.
   void MoveItemInModel(AppListItem* item, const GridIndex& target);
 

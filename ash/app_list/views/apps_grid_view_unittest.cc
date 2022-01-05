@@ -2599,7 +2599,7 @@ TEST_P(AppsGridViewClamshellAndTabletTest, ControlShiftArrowFoldersItemBasic) {
 
 // Tests that foldering an item that is on a different page fails.
 TEST_P(AppsGridViewTabletTest, ControlShiftArrowFailsToFolderAcrossPages) {
-  model_->PopulateApps(2 * GetTilesPerPage(0));
+  model_->PopulateApps(GetTilesPerPage(0) + GetTilesPerPage(1));
   UpdateLayout();
 
   // For every item on the last row of the first page, test that foldering to
@@ -2655,6 +2655,185 @@ TEST_P(AppsGridViewTabletTest, ControlShiftArrowFailsToFolderAcrossPages) {
               test_api_->GetViewAtIndex(moved_view_index));
     EXPECT_EQ(1, GetPaginationModel()->selected_page());
   }
+}
+
+TEST_P(AppsGridViewClamshellAndTabletTest,
+       KeyboardReparentFromFolderInLastVisibleSlot) {
+  // Create grid with a folder on the last slot in a page (or for scrollable
+  // grid, the last slot in the page with enough items that the slot is
+  // initially not in the visible part of the grid).
+  const int kTopLevelItemCount = paged_apps_grid_view_
+                                     ? GetTilesPerPage(0) + GetTilesPerPage(1)
+                                     : apps_grid_view_->cols() * 8;
+  model_->PopulateApps(kTopLevelItemCount - 1);
+  const AppListFolderItem* folder_item =
+      model_->CreateAndPopulateFolderWithApps(3);
+  const std::string folder_id = folder_item->id();
+  apps_grid_view_->UpdatePagedViewStructure();
+  UpdateLayout();
+
+  AppListItemView* folder_view = apps_grid_view_->view_model()->view_at(
+      apps_grid_view_->view_model()->view_size() - 1);
+  ASSERT_TRUE(folder_view->is_folder());
+  EXPECT_FALSE(apps_grid_view_->GetWidget()->GetWindowBoundsInScreen().Contains(
+      folder_view->GetBoundsInScreen()));
+
+  folder_view->RequestFocus();
+  EXPECT_TRUE(apps_grid_view_->GetWidget()->GetWindowBoundsInScreen().Contains(
+      folder_view->GetBoundsInScreen()));
+
+  // Open the folder.
+  ui::test::EventGenerator* const event_generator = GetEventGenerator();
+  event_generator->PressAndReleaseKey(ui::VKEY_RETURN);
+  ASSERT_TRUE(GetAppListTestHelper()->IsInFolderView());
+
+  const AppListItemView* reparented_item_view =
+      folder_apps_grid_view()->view_model()->view_at(0);
+  ASSERT_TRUE(reparented_item_view);
+  ASSERT_TRUE(reparented_item_view->item());
+
+  std::string reparented_item_id = reparented_item_view->item()->id();
+  EXPECT_EQ(base::StringPrintf("Item %d", kTopLevelItemCount - 1),
+            reparented_item_id);
+  ASSERT_TRUE(reparented_item_view->HasFocus());
+
+  // Reparent the item to the slot after the folder view, which should be the
+  // last spot in the grid.
+  const ui::KeyboardCode forward_key = is_rtl_ ? ui::VKEY_LEFT : ui::VKEY_RIGHT;
+  event_generator->PressAndReleaseKey(forward_key,
+                                      ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  ASSERT_FALSE(GetAppListTestHelper()->IsInFolderView());
+  ASSERT_EQ(folder_item, model_->FindItem(folder_id));
+  EXPECT_EQ(2u, folder_item->ChildItemCount());
+
+  const AppListItemView* last_top_level_item_view =
+      apps_grid_view_->view_model()->view_at(
+          apps_grid_view_->view_model()->view_size() - 1);
+  // Verify the view is within visible grid bounds, and that it has focus.
+  EXPECT_EQ(reparented_item_id, last_top_level_item_view->item()->id());
+  EXPECT_TRUE(apps_grid_view_->GetWidget()->GetWindowBoundsInScreen().Contains(
+      last_top_level_item_view->GetBoundsInScreen()));
+  EXPECT_TRUE(last_top_level_item_view->HasFocus());
+
+  // In paged apps grid, the item should have been moved to a new page.
+  if (paged_apps_grid_view_) {
+    EXPECT_EQ(2, GetPaginationModel()->selected_page());
+    EXPECT_EQ(3, GetPaginationModel()->total_pages());
+  }
+}
+
+TEST_P(AppsGridViewClamshellAndTabletTest,
+       KeyboardReparentFromFolderInLastVisibleSlotUsingDownKey) {
+  // Create grid with a folder on the last slot in a page (or for scrollable
+  // grid, the last slot in the page with enough items that the slot is
+  // initially not in the visible part of the grid).
+  const int kTopLevelItemCount = paged_apps_grid_view_
+                                     ? GetTilesPerPage(0) + GetTilesPerPage(1)
+                                     : apps_grid_view_->cols() * 8;
+  model_->PopulateApps(kTopLevelItemCount - 1);
+  const AppListFolderItem* folder_item =
+      model_->CreateAndPopulateFolderWithApps(3);
+  const std::string folder_id = folder_item->id();
+  apps_grid_view_->UpdatePagedViewStructure();
+  UpdateLayout();
+
+  AppListItemView* folder_view = apps_grid_view_->view_model()->view_at(
+      apps_grid_view_->view_model()->view_size() - 1);
+  ASSERT_TRUE(folder_view->is_folder());
+  EXPECT_FALSE(apps_grid_view_->GetWidget()->GetWindowBoundsInScreen().Contains(
+      folder_view->GetBoundsInScreen()));
+
+  folder_view->RequestFocus();
+  EXPECT_TRUE(apps_grid_view_->GetWidget()->GetWindowBoundsInScreen().Contains(
+      folder_view->GetBoundsInScreen()));
+
+  // Open the folder.
+  ui::test::EventGenerator* const event_generator = GetEventGenerator();
+  event_generator->PressAndReleaseKey(ui::VKEY_RETURN);
+  ASSERT_TRUE(GetAppListTestHelper()->IsInFolderView());
+
+  const AppListItemView* reparented_item_view =
+      folder_apps_grid_view()->view_model()->view_at(0);
+  ASSERT_TRUE(reparented_item_view);
+  ASSERT_TRUE(reparented_item_view->item());
+
+  std::string reparented_item_id = reparented_item_view->item()->id();
+  EXPECT_EQ(base::StringPrintf("Item %d", kTopLevelItemCount - 1),
+            reparented_item_id);
+  ASSERT_TRUE(reparented_item_view->HasFocus());
+
+  // Reparent the item to the slot after the folder view, which should be the
+  // last spot in the grid.
+  event_generator->PressAndReleaseKey(ui::VKEY_DOWN,
+                                      ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  ASSERT_FALSE(GetAppListTestHelper()->IsInFolderView());
+  ASSERT_EQ(folder_item, model_->FindItem(folder_id));
+  EXPECT_EQ(2u, folder_item->ChildItemCount());
+
+  const AppListItemView* last_top_level_item_view =
+      apps_grid_view_->view_model()->view_at(
+          apps_grid_view_->view_model()->view_size() - 1);
+  // Verify the view is within visible grid bounds, and that it has focus.
+  EXPECT_EQ(reparented_item_id, last_top_level_item_view->item()->id());
+  EXPECT_TRUE(apps_grid_view_->GetWidget()->GetWindowBoundsInScreen().Contains(
+      last_top_level_item_view->GetBoundsInScreen()));
+  EXPECT_TRUE(last_top_level_item_view->HasFocus());
+
+  // In paged apps grid, the item should have been moved to a new page.
+  if (paged_apps_grid_view_) {
+    EXPECT_EQ(2, GetPaginationModel()->selected_page());
+    EXPECT_EQ(3, GetPaginationModel()->total_pages());
+  }
+}
+
+TEST_P(AppsGridViewTabletTest,
+       KeyboardReparentFromFolderPrefersLeavingMovedItemOnCurrentPage) {
+  model_->PopulateApps(GetTilesPerPage(0) - 2);
+  const AppListFolderItem* folder_item =
+      model_->CreateAndPopulateFolderWithApps(3);
+  model_->PopulateApps(GetTilesPerPage(1));
+  const std::string folder_id = folder_item->id();
+  apps_grid_view_->UpdatePagedViewStructure();
+  UpdateLayout();
+
+  AppListItemView* folder_view =
+      test_api_->GetViewAtIndex(GridIndex(0, GetTilesPerPage(0) - 2));
+  ASSERT_TRUE(folder_view->is_folder());
+  folder_view->RequestFocus();
+
+  // Open the folder.
+  ui::test::EventGenerator* const event_generator = GetEventGenerator();
+  event_generator->PressAndReleaseKey(ui::VKEY_RETURN);
+  ASSERT_TRUE(GetAppListTestHelper()->IsInFolderView());
+
+  const AppListItemView* reparented_item_view =
+      folder_apps_grid_view()->view_model()->view_at(0);
+  ASSERT_TRUE(reparented_item_view);
+  ASSERT_TRUE(reparented_item_view->item());
+
+  std::string reparented_item_id = reparented_item_view->item()->id();
+  EXPECT_EQ(base::StringPrintf("Item %d", GetTilesPerPage(0) - 2),
+            reparented_item_id);
+  ASSERT_TRUE(reparented_item_view->HasFocus());
+
+  // Reparent the item to the slot after the folder view, which should be the
+  // last spot in the grid.
+  event_generator->PressAndReleaseKey(ui::VKEY_DOWN,
+                                      ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
+  ASSERT_FALSE(GetAppListTestHelper()->IsInFolderView());
+  ASSERT_EQ(folder_item, model_->FindItem(folder_id));
+  EXPECT_EQ(2u, folder_item->ChildItemCount());
+
+  const AppListItemView* last_item_on_first_page =
+      test_api_->GetViewAtIndex(GridIndex(0, GetTilesPerPage(0) - 1));
+  // Verify the view is within visible grid bounds, and that it has focus.
+  EXPECT_EQ(reparented_item_id, last_item_on_first_page->item()->id());
+  EXPECT_TRUE(apps_grid_view_->GetWidget()->GetWindowBoundsInScreen().Contains(
+      last_item_on_first_page->GetBoundsInScreen()));
+  EXPECT_TRUE(last_item_on_first_page->HasFocus());
+
+  EXPECT_EQ(0, GetPaginationModel()->selected_page());
+  EXPECT_EQ(2, GetPaginationModel()->total_pages());
 }
 
 // Tests that foldering the item on the last slot of a page doesn't crash.
