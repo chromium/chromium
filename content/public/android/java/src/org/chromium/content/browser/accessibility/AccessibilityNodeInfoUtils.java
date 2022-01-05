@@ -4,6 +4,37 @@
 
 package org.chromium.content.browser.accessibility;
 
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_ACCESSIBILITY_FOCUS;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_CLEAR_ACCESSIBILITY_FOCUS;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_CLEAR_FOCUS;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_CLICK;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_COLLAPSE;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_CONTEXT_CLICK;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_COPY;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_CUT;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_EXPAND;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_FOCUS;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_IME_ENTER;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_NEXT_AT_MOVEMENT_GRANULARITY;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_NEXT_HTML_ELEMENT;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_PAGE_DOWN;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_PAGE_LEFT;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_PAGE_RIGHT;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_PAGE_UP;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_PASTE;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_PREVIOUS_HTML_ELEMENT;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SCROLL_BACKWARD;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SCROLL_DOWN;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SCROLL_FORWARD;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SCROLL_LEFT;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SCROLL_RIGHT;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SCROLL_UP;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SET_PROGRESS;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SET_SELECTION;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SET_TEXT;
+import static androidx.core.view.accessibility.AccessibilityNodeInfoCompat.AccessibilityActionCompat.ACTION_SHOW_ON_SCREEN;
+
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_OFFSCREEN;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_SUPPORTED_ELEMENTS;
 import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRAS_KEY_UNCLIPPED_BOTTOM;
@@ -14,7 +45,8 @@ import static java.lang.String.CASE_INSENSITIVE_ORDER;
 import android.os.Bundle;
 import android.text.InputType;
 import android.text.TextUtils;
-import android.view.accessibility.AccessibilityNodeInfo;
+
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -30,8 +62,7 @@ public class AccessibilityNodeInfoUtils {
      * @param node Object to create a toString for
      * @return String Custom toString result for the given object
      */
-    public static String toString(AccessibilityNodeInfo node) {
-        // Guard against null inputs.
+    public static String toString(AccessibilityNodeInfoCompat node) {
         if (node == null) return "";
 
         StringBuilder builder = new StringBuilder();
@@ -145,7 +176,7 @@ public class AccessibilityNodeInfoUtils {
     }
 
     // Various helper methods to print custom toStrings for objects.
-    private static String toString(AccessibilityNodeInfo.CollectionInfo info) {
+    private static String toString(AccessibilityNodeInfoCompat.CollectionInfoCompat info) {
         // Only include the isHierarchical boolean if true, since it is more often false, and
         // ignore selection mode, which is not set by Chrome.
         String prefix = "[";
@@ -156,7 +187,7 @@ public class AccessibilityNodeInfoUtils {
                 "%srows=%s, cols=%s]", prefix, info.getRowCount(), info.getColumnCount());
     }
 
-    private static String toString(AccessibilityNodeInfo.CollectionItemInfo info) {
+    private static String toString(AccessibilityNodeInfoCompat.CollectionItemInfoCompat info) {
         // Only include isHeading and isSelected if true, since both are more often false.
         String prefix = "[";
         if (info.isHeading()) {
@@ -169,25 +200,26 @@ public class AccessibilityNodeInfoUtils {
                 info.getRowIndex(), info.getRowSpan(), info.getColumnIndex(), info.getColumnSpan());
     }
 
-    private static String toString(AccessibilityNodeInfo.RangeInfo info) {
+    private static String toString(AccessibilityNodeInfoCompat.RangeInfoCompat info) {
         // Chrome always uses the float range type, so only print values of RangeInfo.
         return String.format(
                 "[current=%s, min=%s, max=%s]", info.getCurrent(), info.getMin(), info.getMax());
     }
 
-    private static String toString(List<AccessibilityNodeInfo.AccessibilityAction> actionList) {
+    private static String toString(
+            List<AccessibilityNodeInfoCompat.AccessibilityActionCompat> actionList) {
         // Sort actions list to ensure consistent output of tests.
         Collections.sort(actionList, (a1, b2) -> Integer.compare(a1.getId(), b2.getId()));
 
         List<String> actionStrings = new ArrayList<String>();
         StringBuilder builder = new StringBuilder();
         builder.append("[");
-        for (AccessibilityNodeInfo.AccessibilityAction action : actionList) {
+        for (AccessibilityNodeInfoCompat.AccessibilityActionCompat action : actionList) {
             // Four actions are set on all nodes, so ignore those when printing the tree.
-            if (action.getId() == AccessibilityNodeInfo.ACTION_NEXT_HTML_ELEMENT
-                    || action.getId() == AccessibilityNodeInfo.ACTION_PREVIOUS_HTML_ELEMENT
-                    || action.getId() == WebContentsAccessibilityImpl.ACTION_SHOW_ON_SCREEN
-                    || action.getId() == WebContentsAccessibilityImpl.ACTION_CONTEXT_CLICK) {
+            if (action.equals(ACTION_NEXT_HTML_ELEMENT)
+                    || action.equals(ACTION_PREVIOUS_HTML_ELEMENT)
+                    || action.equals(ACTION_SHOW_ON_SCREEN)
+                    || action.equals(ACTION_CONTEXT_CLICK)) {
                 continue;
             }
 
@@ -198,76 +230,68 @@ public class AccessibilityNodeInfoUtils {
         return builder.toString();
     }
 
-    private static String toString(int action) {
-        switch (action) {
-            // These could potentially be added to any given node.
-            case AccessibilityNodeInfo.ACTION_NEXT_AT_MOVEMENT_GRANULARITY:
-                return "NEXT";
-            case AccessibilityNodeInfo.ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY:
-                return "PREVIOUS";
-            case AccessibilityNodeInfo.ACTION_SET_TEXT:
-                return "SET_TEXT";
-            case AccessibilityNodeInfo.ACTION_PASTE:
-                return "PASTE";
-            case WebContentsAccessibilityImpl.ACTION_IME_ENTER:
-                return "IME_ENTER";
-            case AccessibilityNodeInfo.ACTION_SET_SELECTION:
-                return "SET_SELECTION";
-            case AccessibilityNodeInfo.ACTION_CUT:
-                return "CUT";
-            case AccessibilityNodeInfo.ACTION_COPY:
-                return "COPY";
-            case AccessibilityNodeInfo.ACTION_SCROLL_FORWARD:
-                return "SCROLL_FORWARD";
-            case AccessibilityNodeInfo.ACTION_SCROLL_BACKWARD:
-                return "SCROLL_BACKWARD";
-            case WebContentsAccessibilityImpl.ACTION_SCROLL_UP:
-                return "SCROLL_UP";
-            case WebContentsAccessibilityImpl.ACTION_PAGE_UP:
-                return "PAGE_UP";
-            case WebContentsAccessibilityImpl.ACTION_SCROLL_DOWN:
-                return "SCROLL_DOWN";
-            case WebContentsAccessibilityImpl.ACTION_PAGE_DOWN:
-                return "PAGE_DOWN";
-            case WebContentsAccessibilityImpl.ACTION_SCROLL_LEFT:
-                return "SCROLL_LEFT";
-            case WebContentsAccessibilityImpl.ACTION_PAGE_LEFT:
-                return "PAGE_LEFT";
-            case WebContentsAccessibilityImpl.ACTION_SCROLL_RIGHT:
-                return "SCROLL_RIGHT";
-            case WebContentsAccessibilityImpl.ACTION_PAGE_RIGHT:
-                return "PAGE_RIGHT";
-            case AccessibilityNodeInfo.ACTION_CLEAR_FOCUS:
-                return "CLEAR_FOCUS";
-            case AccessibilityNodeInfo.ACTION_FOCUS:
-                return "FOCUS";
-            case AccessibilityNodeInfo.ACTION_CLEAR_ACCESSIBILITY_FOCUS:
-                return "CLEAR_AX_FOCUS";
-            case AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS:
-                return "AX_FOCUS";
-            case AccessibilityNodeInfo.ACTION_CLICK:
-                return "CLICK";
-            case AccessibilityNodeInfo.ACTION_EXPAND:
-                return "EXPAND";
-            case AccessibilityNodeInfo.ACTION_COLLAPSE:
-                return "COLLAPSE";
-            case WebContentsAccessibilityImpl.ACTION_SET_PROGRESS:
-                return "SET_PROGRESS";
-
-            // The long click action is deliberately never be added to a node.
-            case AccessibilityNodeInfo.ACTION_LONG_CLICK:
-            // These are the remaining potential actions which Chrome does not implement.
-            case AccessibilityNodeInfo.ACTION_DISMISS:
-            case AccessibilityNodeInfo.ACTION_SELECT:
-            case AccessibilityNodeInfo.ACTION_CLEAR_SELECTION:
-            case WebContentsAccessibilityImpl.ACTION_SCROLL_TO_POSITION:
-            case WebContentsAccessibilityImpl.ACTION_MOVE_WINDOW:
-            case WebContentsAccessibilityImpl.ACTION_SHOW_TOOLTIP:
-            case WebContentsAccessibilityImpl.ACTION_HIDE_TOOLTIP:
-            case WebContentsAccessibilityImpl.ACTION_PRESS_AND_HOLD:
-            default:
-                return "NOT_IMPLEMENTED";
+    public static String toString(int action) {
+        if (action == ACTION_NEXT_AT_MOVEMENT_GRANULARITY.getId()) {
+            return "NEXT";
+        } else if (action == ACTION_PREVIOUS_AT_MOVEMENT_GRANULARITY.getId()) {
+            return "PREVIOUS";
+        } else if (action == ACTION_SET_TEXT.getId()) {
+            return "SET_TEXT";
+        } else if (action == ACTION_PASTE.getId()) {
+            return "PASTE";
+        } else if (action == ACTION_IME_ENTER.getId()) {
+            return "IME_ENTER";
+        } else if (action == ACTION_SET_SELECTION.getId()) {
+            return "SET_SELECTION";
+        } else if (action == ACTION_CUT.getId()) {
+            return "CUT";
+        } else if (action == ACTION_COPY.getId()) {
+            return "COPY";
+        } else if (action == ACTION_SCROLL_FORWARD.getId()) {
+            return "SCROLL_FORWARD";
+        } else if (action == ACTION_SCROLL_BACKWARD.getId()) {
+            return "SCROLL_BACKWARD";
+        } else if (action == ACTION_SCROLL_UP.getId()) {
+            return "SCROLL_UP";
+        } else if (action == ACTION_PAGE_UP.getId()) {
+            return "PAGE_UP";
+        } else if (action == ACTION_SCROLL_DOWN.getId()) {
+            return "SCROLL_DOWN";
+        } else if (action == ACTION_PAGE_DOWN.getId()) {
+            return "PAGE_DOWN";
+        } else if (action == ACTION_SCROLL_LEFT.getId()) {
+            return "SCROLL_LEFT";
+        } else if (action == ACTION_PAGE_LEFT.getId()) {
+            return "PAGE_LEFT";
+        } else if (action == ACTION_SCROLL_RIGHT.getId()) {
+            return "SCROLL_RIGHT";
+        } else if (action == ACTION_PAGE_RIGHT.getId()) {
+            return "PAGE_RIGHT";
+        } else if (action == ACTION_CLEAR_FOCUS.getId()) {
+            return "CLEAR_FOCUS";
+        } else if (action == ACTION_FOCUS.getId()) {
+            return "FOCUS";
+        } else if (action == ACTION_CLEAR_ACCESSIBILITY_FOCUS.getId()) {
+            return "CLEAR_AX_FOCUS";
+        } else if (action == ACTION_ACCESSIBILITY_FOCUS.getId()) {
+            return "AX_FOCUS";
+        } else if (action == ACTION_CLICK.getId()) {
+            return "CLICK";
+        } else if (action == ACTION_EXPAND.getId()) {
+            return "EXPAND";
+        } else if (action == ACTION_COLLAPSE.getId()) {
+            return "COLLAPSE";
+        } else if (action == ACTION_SET_PROGRESS.getId()) {
+            return "SET_PROGRESS";
+        } else {
+            return "NOT_IMPLEMENTED";
         }
+        /*
+         * The ACTION_LONG_CLICK click action is deliberately never be added to a node.
+         * These are the remaining potential actions which Chrome does not implement:
+         *  ACTION_DISMISS, ACTION_SELECT, ACTION_CLEAR_SELECTION, ACTION_SCROLL_TO_POSITION,
+         *  ACTION_MOVE_WINDOW, ACTION_SHOW_TOOLTIP, ACTION_HIDE_TOOLTIP, ACTION_PRESS_AND_HOLD
+         */
     }
 
     private static String toString(Bundle extras) {
@@ -300,6 +324,12 @@ public class AccessibilityNodeInfoUtils {
             // To prevent flakiness or dependency on screensize/form factor, drop the "offscreen"
             // Bundle extra.
             if (key.equals(EXTRAS_KEY_OFFSCREEN)) {
+                continue;
+            }
+
+            // The AccessibilityNodeInfoCompat class uses the extras for backwards compatibility,
+            // so exclude anything that contains the classname in the key.
+            if (key.contains("AccessibilityNodeInfoCompat")) {
                 continue;
             }
 

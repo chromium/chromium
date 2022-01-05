@@ -16,7 +16,9 @@ import android.os.Environment;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityNodeInfo;
-import android.view.accessibility.AccessibilityNodeProvider;
+
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
+import androidx.core.view.accessibility.AccessibilityNodeProviderCompat;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -55,7 +57,7 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
     // Member variables required for testing framework. Although they are the same object, we will
     // instantiate an object of type |AccessibilityNodeProvider| for convenience.
     protected static final String BASE_DIRECTORY = "/chromium_tests_root";
-    public AccessibilityNodeProvider mNodeProvider;
+    public AccessibilityNodeProviderCompat mNodeProvider;
     public WebContentsAccessibilityImpl mWcax;
 
     // Tracker for all events and actions performed during a given test.
@@ -124,27 +126,32 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
      * Returns the current |AccessibilityNodeProvider| from the WebContentsAccessibilityImpl
      * instance. Use polling to ensure a non-null value before returning.
      */
-    private AccessibilityNodeProvider getAccessibilityNodeProvider() {
-        CriteriaHelper.pollUiThread(() -> mWcax.getAccessibilityNodeProvider() != null, ANP_ERROR);
-        return mWcax.getAccessibilityNodeProvider();
+    private AccessibilityNodeProviderCompat getAccessibilityNodeProvider() {
+        CriteriaHelper.pollUiThread(
+                () -> mWcax.getAccessibilityNodeProviderCompat() != null, ANP_ERROR);
+        return mWcax.getAccessibilityNodeProviderCompat();
     }
 
     /**
      * Helper method to call AccessibilityNodeInfo.getChildId and convert to a virtual
      * view ID using reflection, since the needed methods are hidden.
      */
-    protected int getChildId(AccessibilityNodeInfo node, int index) {
+    protected int getChildId(AccessibilityNodeInfoCompat node, int index) {
         try {
+            // The methods found through reflection are only available in |AccessibilityNodeInfo|,
+            // so we will unwrap |node| to perform the calls.
+            AccessibilityNodeInfo nodeInfo = (AccessibilityNodeInfo) node.getInfo();
             Method getChildIdMethod =
                     AccessibilityNodeInfo.class.getMethod("getChildId", int.class);
-            long childId = (long) getChildIdMethod.invoke(node, Integer.valueOf(index));
+            long childId = (long) getChildIdMethod.invoke(nodeInfo, Integer.valueOf(index));
             Method getVirtualDescendantIdMethod =
                     AccessibilityNodeInfo.class.getMethod("getVirtualDescendantId", long.class);
             int virtualViewId =
                     (int) getVirtualDescendantIdMethod.invoke(null, Long.valueOf(childId));
             return virtualViewId;
         } catch (Exception ex) {
-            Assert.fail("Unable to call hidden AccessibilityNodeInfo method: " + ex.toString());
+            Assert.fail(
+                    "Unable to call hidden AccessibilityNodeInfoCompat method: " + ex.toString());
             return 0;
         }
     }
@@ -156,14 +163,14 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
      */
     private <T> int findNodeMatching(int virtualViewId,
             AccessibilityContentShellTestUtils.AccessibilityNodeInfoMatcher<T> matcher, T element) {
-        AccessibilityNodeInfo node = mNodeProvider.createAccessibilityNodeInfo(virtualViewId);
+        AccessibilityNodeInfoCompat node = mNodeProvider.createAccessibilityNodeInfo(virtualViewId);
         Assert.assertNotEquals(node, null);
 
         if (matcher.matches(node, element)) return virtualViewId;
 
         for (int i = 0; i < node.getChildCount(); i++) {
             int childId = getChildId(node, i);
-            AccessibilityNodeInfo child = mNodeProvider.createAccessibilityNodeInfo(childId);
+            AccessibilityNodeInfoCompat child = mNodeProvider.createAccessibilityNodeInfo(childId);
             if (child != null) {
                 int result = findNodeMatching(childId, matcher, element);
                 if (result != View.NO_ID) return result;
@@ -241,10 +248,10 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
      */
     public void focusNode(int virtualViewId) throws Throwable {
         // Focus given node, assert actions were performed, then poll until node is updated.
-        Assert.assertTrue(
-                performActionOnUiThread(virtualViewId, AccessibilityNodeInfo.ACTION_FOCUS, null));
         Assert.assertTrue(performActionOnUiThread(
-                virtualViewId, AccessibilityNodeInfo.ACTION_ACCESSIBILITY_FOCUS, null));
+                virtualViewId, AccessibilityNodeInfoCompat.ACTION_FOCUS, null));
+        Assert.assertTrue(performActionOnUiThread(
+                virtualViewId, AccessibilityNodeInfoCompat.ACTION_ACCESSIBILITY_FOCUS, null));
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> mNodeProvider.createAccessibilityNodeInfo(virtualViewId));
 

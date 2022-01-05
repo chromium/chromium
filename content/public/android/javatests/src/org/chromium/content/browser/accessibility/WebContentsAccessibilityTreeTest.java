@@ -11,8 +11,8 @@ import static org.chromium.content.browser.accessibility.AccessibilityContentShe
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.os.Build;
-import android.view.accessibility.AccessibilityNodeInfo;
 
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
@@ -114,13 +114,13 @@ public class WebContentsAccessibilityTreeTest {
         // Find the root node and generate its string.
         int rootNodevvId =
                 mActivityTestRule.waitForNodeMatching(sClassNameMatcher, "android.webkit.WebView");
-        AccessibilityNodeInfo nodeInfo = createAccessibilityNodeInfo(rootNodevvId);
+        AccessibilityNodeInfoCompat nodeInfo = createAccessibilityNodeInfo(rootNodevvId);
         builder.append(AccessibilityNodeInfoUtils.toString(nodeInfo));
 
         // Recursively generate strings for all descendants.
         for (int i = 0; i < nodeInfo.getChildCount(); ++i) {
             int childId = mActivityTestRule.getChildId(nodeInfo, i);
-            AccessibilityNodeInfo childNodeInfo = createAccessibilityNodeInfo(childId);
+            AccessibilityNodeInfoCompat childNodeInfo = createAccessibilityNodeInfo(childId);
             recursivelyFormatTree(childNodeInfo, builder, "++");
         }
 
@@ -135,17 +135,17 @@ public class WebContentsAccessibilityTreeTest {
      * @param indent prefix to indent each generation, e.g. "++"
      */
     private void recursivelyFormatTree(
-            AccessibilityNodeInfo node, StringBuilder builder, String indent) {
+            AccessibilityNodeInfoCompat node, StringBuilder builder, String indent) {
         builder.append("\n").append(indent).append(AccessibilityNodeInfoUtils.toString(node));
         for (int j = 0; j < node.getChildCount(); ++j) {
             int childId = mActivityTestRule.getChildId(node, j);
-            AccessibilityNodeInfo childNodeInfo = createAccessibilityNodeInfo(childId);
+            AccessibilityNodeInfoCompat childNodeInfo = createAccessibilityNodeInfo(childId);
             recursivelyFormatTree(childNodeInfo, builder, indent + "++");
         }
     }
 
     // Helper method to create an AccessibilityNodeInfo object.
-    private AccessibilityNodeInfo createAccessibilityNodeInfo(int virtualViewId) {
+    private AccessibilityNodeInfoCompat createAccessibilityNodeInfo(int virtualViewId) {
         return mActivityTestRule.mNodeProvider.createAccessibilityNodeInfo(virtualViewId);
     }
 
