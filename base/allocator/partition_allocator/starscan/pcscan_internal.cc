@@ -96,11 +96,21 @@ struct [[maybe_unused]] ReentrantScannerGuard final{};
 // a slot tag is changed by the mutator, while the scanner sees an old value.
 struct DisableMTEScope final {
   DisableMTEScope() {
+    // TODO(bikineev,1280482): The following function can allocate, which can
+    // cause safepoint reentrancy. Avoid this by bailing out from safepoints in
+    // case one is already running.
+#if 0
     memory::ChangeMemoryTaggingModeForCurrentThread(
         memory::TagViolationReportingMode::kDisabled);
+#endif
   }
   ~DisableMTEScope() {
+    // TODO(bikineev,1280482): The following function can allocate, which can
+    // cause safepoint reentrancy. Avoid this by bailing out from safepoints in
+    // case one is already running.
+#if 0
     memory::ChangeMemoryTaggingModeForCurrentThread(parent_tagging_mode);
+#endif
   }
 
  private:
