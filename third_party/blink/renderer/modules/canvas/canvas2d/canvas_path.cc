@@ -628,6 +628,19 @@ void CanvasPath::roundRect(
   path_.MoveTo(gfx::PointF(x, y));
 }
 
+void CanvasPath::roundRect(
+    double double_x,
+    double double_y,
+    double double_width,
+    double double_height,
+    const Member<V8UnionDOMPointInitOrUnrestrictedDouble>& radius,
+    ExceptionState& exception_state) {
+  const auto radii =
+      HeapVector<Member<V8UnionDOMPointInitOrUnrestrictedDouble>>(1, radius);
+  roundRect(double_x, double_y, double_width, double_height, radii,
+            exception_state);
+}
+
 void CanvasPath::Trace(Visitor* visitor) const {
   visitor->Trace(identifiability_study_helper_);
 }
