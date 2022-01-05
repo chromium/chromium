@@ -45,6 +45,8 @@ class ClientSidePhishingComponentInstallerPolicy
       const ClientSidePhishingComponentInstallerPolicy&) = delete;
   ~ClientSidePhishingComponentInstallerPolicy() override;
 
+  static void GetPublicHash(std::vector<uint8_t>* hash);
+
  private:
   // The following methods override ComponentInstallerPolicy.
   bool SupportsGroupPolicyEnabledComponentUpdates() const override;

@@ -13,25 +13,29 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service.h"
+#include "components/component_updater/installer_policies/client_side_phishing_component_installer_policy.h"
 #include "components/component_updater/installer_policies/origin_trials_component_installer.h"
 #include "components/component_updater/installer_policies/trust_token_key_commitments_component_installer_policy.h"
+#include "components/update_client/update_client.h"
 
 namespace android_webview {
 
 namespace {
 // Update when changing the components WebView registers.
-constexpr int kNumWebViewComponents = 3;
+constexpr int kNumWebViewComponents = 4;
 
 void RegisterComponentInstallerPolicyShim(
-    std::unique_ptr<component_updater::ComponentInstallerPolicy> policy_,
+    std::unique_ptr<component_updater::ComponentInstallerPolicy> policy,
     base::OnceCallback<bool(const component_updater::ComponentRegistration&)>
         register_callback,
     base::OnceClosure registration_finished) {
   base::MakeRefCounted<component_updater::ComponentInstaller>(
-      std::make_unique<AwComponentInstallerPolicyShim>(std::move(policy_)))
+      std::make_unique<AwComponentInstallerPolicyShim>(std::move(policy)))
       ->Register(std::move(register_callback),
                  std::move(registration_finished));
 }
@@ -46,8 +50,9 @@ void RegisterComponentsForUpdate(
   bool package_names_allowlist_enabled =
       !base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kWebViewDisableAppsPackageNamesAllowlistComponent);
-  int num_webview_components =
-      package_names_allowlist_enabled ? kNumWebViewComponents : 2;
+  int num_webview_components = package_names_allowlist_enabled
+                                   ? kNumWebViewComponents
+                                   : kNumWebViewComponents - 1;
 
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
       num_webview_components, base::BindOnce(std::move(on_finished)));
@@ -62,6 +67,23 @@ void RegisterComponentsForUpdate(
           component_updater::TrustTokenKeyCommitmentsComponentInstallerPolicy>(
           /* on_commitments_ready= */ base::BindRepeating(
               [](const std::string& raw_commitments) { NOTREACHED(); })),
+      register_callback, barrier_closure);
+
+  RegisterComponentInstallerPolicyShim(
+      std::make_unique<
+          component_updater::ClientSidePhishingComponentInstallerPolicy>(
+          // Files shouldn't be parsed or loaded in this process, thus
+          // ClientSidePhishingComponentInstallerPolicy::ComponentReady will
+          // never be called in this process and the `ReadFilesCallback`
+          // shouldn't be called either.
+          base::BindRepeating(
+              [](const base::FilePath& /* install_path */) { NOTREACHED(); }),
+          base::BindRepeating([]() {
+            // Always download the "default" binary, because variations aren't
+            // initialized in this process and values can't be dynamically
+            // changed using finch. See https://crbug.com/1115700#c36.
+            return update_client::InstallerAttributes{{"tag", "default"}};
+          })),
       register_callback, barrier_closure);
 
   if (package_names_allowlist_enabled) {
