@@ -49,13 +49,15 @@ class MockPairingRegistryCallbacks {
 // any shared secret.
 void VerifyPairing(PairingRegistry::Pairing expected,
                    const base::DictionaryValue& actual) {
-  std::string value;
-  EXPECT_TRUE(actual.GetString(PairingRegistry::kClientNameKey, &value));
-  EXPECT_EQ(expected.client_name(), value);
-  EXPECT_TRUE(actual.GetString(PairingRegistry::kClientIdKey, &value));
-  EXPECT_EQ(expected.client_id(), value);
+  const std::string* value =
+      actual.FindStringKey(PairingRegistry::kClientNameKey);
+  ASSERT_TRUE(value);
+  EXPECT_EQ(expected.client_name(), *value);
+  value = actual.FindStringKey(PairingRegistry::kClientIdKey);
+  ASSERT_TRUE(value);
+  EXPECT_EQ(expected.client_id(), *value);
 
-  EXPECT_FALSE(actual.HasKey(PairingRegistry::kSharedSecretKey));
+  EXPECT_FALSE(actual.FindKey(PairingRegistry::kSharedSecretKey));
 }
 
 }  // namespace
