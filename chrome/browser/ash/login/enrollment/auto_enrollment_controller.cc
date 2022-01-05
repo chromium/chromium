@@ -274,6 +274,10 @@ AutoEnrollmentController::GetFRERequirement() {
     // consumer-owned) so doing a FRE check is not necessary.
     return FRERequirement::kNotRequired;
   }
+  if (!vpd_read_successfully) {
+    LOG(ERROR) << "VPD could not be read, skipping explicitly required auto "
+                  "enrollment check.";
+  }
   return FRERequirement::kRequired;
 }
 
