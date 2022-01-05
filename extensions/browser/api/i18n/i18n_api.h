@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMECAST_BROWSER_EXTENSIONS_API_I18N_I18N_API_H_
-#define CHROMECAST_BROWSER_EXTENSIONS_API_I18N_I18N_API_H_
+#ifndef EXTENSIONS_BROWSER_API_I18N_I18N_API_H_
+#define EXTENSIONS_BROWSER_API_I18N_I18N_API_H_
 
 #include "extensions/browser/extension_function.h"
 
@@ -17,4 +17,4 @@ class I18nGetAcceptLanguagesFunction : public ExtensionFunction {
 
 }  // namespace extensions
 
-#endif  // CHROMECAST_BROWSER_EXTENSIONS_API_I18N_I18N_API_H_
+#endif  // EXTENSIONS_BROWSER_API_I18N_I18N_API_H_

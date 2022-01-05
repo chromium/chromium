@@ -350,6 +350,7 @@ source_set("unit_tests") {
     "feature_cache_unittest.cc",
     "gc_callback_unittest.cc",
     "gin_port_unittest.cc",
+    "i18n_hooks_delegate_unittest.cc",
     "messaging_util_unittest.cc",
     "module_system_test.cc",
     "module_system_test.h",

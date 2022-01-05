@@ -535,16 +535,6 @@
     "dependencies": ["permission:history"],
     "contexts": ["blessed_extension"]
   },
-  "i18n": {
-    "channel": "stable",
-    "extension_types": ["extension", "legacy_packaged_app", "platform_app",
-                        "login_screen_extension"],
-    "contexts": ["blessed_extension", "unblessed_extension", "content_script",
-                 "lock_screen_extension"]
-  },
-  "i18n.getMessage": {
-    "disallow_for_service_workers": true
-  },
   "identity": {
     "dependencies": ["permission:identity"],
     "contexts": ["blessed_extension"]

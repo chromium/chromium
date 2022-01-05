@@ -34,7 +34,6 @@ schema_sources_ = [
   "font_settings.json",
   "gcm.json",
   "history.json",
-  "i18n.json",
   "identity.idl",
   "identity_private.idl",
   "image_writer_private.idl",

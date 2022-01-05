@@ -135,6 +135,7 @@ group("api_implementations") {
     "//extensions/browser/api/feedback_private",
     "//extensions/browser/api/file_handlers",
     "//extensions/browser/api/file_system",
+    "//extensions/browser/api/i18n",
     "//extensions/browser/api/idle",
     "//extensions/browser/api/management",
     "//extensions/browser/api/messaging",

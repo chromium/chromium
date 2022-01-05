@@ -393,8 +393,6 @@ cast_source_set("browser_base") {
       "extensions/api/command_line_private/command_line_private_api.h",
       "extensions/api/history/history_api.cc",
       "extensions/api/history/history_api.h",
-      "extensions/api/i18n/i18n_api.cc",
-      "extensions/api/i18n/i18n_api.h",
       "extensions/api/identity/identity_api.cc",
       "extensions/api/identity/identity_api.h",
       "extensions/api/login_state/login_state.cc",
