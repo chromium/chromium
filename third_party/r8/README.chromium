@@ -30,6 +30,8 @@ Local Modifications:
     desugared version accesses the "dark greylisted"
     SynchronizedCollection.mutex field, which caused modal dialogs to appear on
     Android P instrumentation tests. https://crbug.com/1256614
+  * Removed references to ThreadLocalRandom to avoid streams APIs being pulled
+    in unnecessarily.  https://crbug.com/1280841
 * Added "java/src/org/chromium/build/CustomD8.java", custom_d8.jar, and BUILD.gn.
   * Used in "build/android/gyp/dex.py" to enable desugar dependencies.
 
@@ -90,7 +92,13 @@ java -cp third_party/r8/lib/r8.jar com.android.tools.r8.BackportedMethodList --m
 
 * Update instructions for desugar_jdk_libs.json:
 unzip -p third_party/android_deps/libs/com_android_tools_desugar_jdk_libs_configuration/*.jar META-INF/desugar/d8/desugar.json > third_party/r8/desugar_jdk_libs.json
-  * Remove all mentions of ConcurrentHashMap and TimeZone#getTimeZone and remove trailing commas.
+  * Remove all mentions of:
+    * ConcurrentHashMap
+    * TimeZone#getTimeZone
+    * Collections#synchronizedMap
+    * Collections#synchronizedSortedMap
+    * ThreadLocalRandom
+  * Don't forget to remove trailing commas where applicable.
   * Update //build/config/android/internal_rules.gni to point at the new .jar files:
     * desugar_jdk_libs-1.1.1.jar
     * desugar_jdk_libs_configuration-1.1.1.jar
