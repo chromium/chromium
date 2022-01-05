@@ -1279,6 +1279,9 @@ def main():
         if sys.platform != 'darwin':
           CopyFile(os.path.join(build_phase2_dir, 'lib', target_spec, asan_so),
                    fuchsia_lib_dst_dir)
+          CopyFile(
+              os.path.join(build_phase2_dir, 'lib', target_spec,
+                           asan_preinit_a), fuchsia_lib_dst_dir)
 
   # Run tests.
   if (not args.build_mac_arm and
