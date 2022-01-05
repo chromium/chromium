@@ -9,8 +9,7 @@
 
 #include "base/scoped_generic.h"
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 namespace internal {
 
@@ -33,7 +32,6 @@ using ScopedCFFileDescriptorRef =
     ScopedGeneric<CFFileDescriptorRef,
                   internal::ScopedCFFileDescriptorRefTraits>;
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac
 
 #endif  // BASE_MAC_SCOPED_CFFILEDESCRIPTORREF_H_

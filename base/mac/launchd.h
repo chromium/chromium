@@ -12,8 +12,7 @@
 
 #include "base/base_export.h"
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 // MessageForJob sends a single message to launchd with a simple dictionary
 // mapping |operation| to |job_label|, and returns the result of calling
@@ -28,7 +27,6 @@ launch_data_t MessageForJob(const std::string& job_label,
 BASE_EXPORT
 pid_t PIDForJob(const std::string& job_label);
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac
 
 #endif  // BASE_MAC_LAUNCHD_H_

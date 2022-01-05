@@ -7,8 +7,7 @@
 
 #include "base/base_export.h"
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 // Invokes the specified block in a stack frame with a special exception
 // handler. This function creates an exception handling stack frame that
@@ -20,7 +19,6 @@ namespace mac {
 // in such a way that disrupts the generation of useful stack traces.
 void BASE_EXPORT CallWithEHFrame(void (^block)(void));
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac
 
 #endif  // BASE_MAC_CALL_WITH_EH_FRAME_H_

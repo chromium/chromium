@@ -13,8 +13,7 @@
 // ScopedAuthorizationRef maintains ownership of an AuthorizationRef.  It is
 // patterned after the unique_ptr interface.
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 class BASE_EXPORT ScopedAuthorizationRef {
  public:
@@ -84,7 +83,6 @@ class BASE_EXPORT ScopedAuthorizationRef {
   AuthorizationRef authorization_;
 };
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac
 
 #endif  // BASE_MAC_SCOPED_AUTHORIZATIONREF_H_

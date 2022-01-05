@@ -8,10 +8,10 @@
 #include "base/base_export.h"
 
 namespace base {
-
 class FilePath;
+}
 
-namespace mac {
+namespace base::mac {
 
 // Returns true if the file or directory at `file_path` is excluded from
 // OS-managed backups.
@@ -20,7 +20,6 @@ BASE_EXPORT bool GetBackupExclusion(const FilePath& file_path);
 // Excludes the file or directory given by `file_path` from OS-managed backups.
 BASE_EXPORT bool SetBackupExclusion(const FilePath& file_path);
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac
 
 #endif  // BASE_MAC_BACKUP_UTIL_H_

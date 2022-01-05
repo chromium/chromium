@@ -6,8 +6,7 @@
 
 #include "base/check.h"
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 ScopedSendingEvent::ScopedSendingEvent()
     : app_(static_cast<NSObject<CrAppControlProtocol>*>(NSApp)) {
@@ -20,5 +19,4 @@ ScopedSendingEvent::~ScopedSendingEvent() {
   [app_ setHandlingSendEvent:handling_];
 }
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac

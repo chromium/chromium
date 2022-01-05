@@ -6,8 +6,7 @@
 
 #include "base/mac/mach_logging.h"
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 void ScopedMachVM::reset(vm_address_t address, vm_size_t size) {
   DCHECK_EQ(address % PAGE_SIZE, 0u);
@@ -34,5 +33,4 @@ void ScopedMachVM::reset_unaligned(vm_address_t address, vm_size_t size) {
   size_ = size;
 }
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac

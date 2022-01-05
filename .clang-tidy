@@ -11,6 +11,7 @@
                     google-explicit-constructor,
                     google-readability-casting,
                     modernize-avoid-bind,
+                    modernize-concat-nested-namespaces,
                     modernize-loop-convert,
                     modernize-make-shared,
                     modernize-make-unique,

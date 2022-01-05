@@ -8,8 +8,7 @@
 
 #include "base/check.h"
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 ScopedNSAutoreleasePool::ScopedNSAutoreleasePool()
     : autorelease_pool_([[NSAutoreleasePool alloc] init]) {
@@ -28,5 +27,4 @@ void ScopedNSAutoreleasePool::Recycle() {
   DCHECK(autorelease_pool_);
 }
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac

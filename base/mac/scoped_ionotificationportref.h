@@ -9,8 +9,7 @@
 
 #include "base/scoped_generic.h"
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 namespace internal {
 
@@ -27,7 +26,6 @@ using ScopedIONotificationPortRef =
     ScopedGeneric<IONotificationPortRef,
                   internal::ScopedIONotificationPortRefTraits>;
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac
 
 #endif  // BASE_MAC_SCOPED_IONOTIFICATIONPORTREF_H_

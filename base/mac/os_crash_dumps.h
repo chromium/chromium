@@ -7,8 +7,7 @@
 
 #include "base/base_export.h"
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 // On Mac OS X, it can take a really long time for the OS crash handler to
 // process a Chrome crash when debugging symbols are available.  This
@@ -16,7 +15,6 @@ namespace mac {
 // disables Apple Crash Reporter entirely.
 BASE_EXPORT void DisableOSCrashDumps();
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac
 
 #endif  // BASE_MAC_OS_CRASH_DUMPS_H_

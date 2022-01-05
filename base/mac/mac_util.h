@@ -14,10 +14,10 @@
 #include "base/base_export.h"
 
 namespace base {
-
 class FilePath;
+}
 
-namespace mac {
+namespace base::mac {
 
 // Returns an sRGB color space.  The return value is a static value; do not
 // release it!
@@ -214,7 +214,6 @@ BASE_EXPORT std::string GetOSDisplayName();
 // Returns the serial number of the macOS device.
 BASE_EXPORT std::string GetPlatformSerialNumber();
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac
 
 #endif  // BASE_MAC_MAC_UTIL_H_

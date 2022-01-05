@@ -4,12 +4,10 @@
 
 #include "base/mac/scoped_authorizationref.h"
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 void ScopedAuthorizationRef::FreeInternal() {
   AuthorizationFree(authorization_, kAuthorizationFlagDestroyRights);
 }
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac

@@ -11,8 +11,7 @@
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 namespace {
 
@@ -57,5 +56,4 @@ void DisableOSCrashDumps() {
   }
 }
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac

@@ -43,8 +43,7 @@
 //   }
 //   ScopedMachVM vm_owner(address, mach_vm_round_page(size));
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 class BASE_EXPORT ScopedMachVM {
  public:
@@ -96,7 +95,6 @@ class BASE_EXPORT ScopedMachVM {
   vm_size_t size_;
 };
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac
 
 #endif  // BASE_MAC_SCOPED_MACH_VM_H_

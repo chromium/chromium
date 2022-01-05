@@ -21,8 +21,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 namespace {
 
@@ -313,5 +312,4 @@ TEST_F(MacUtilTest, TestRemoveQuarantineAttributeNonExistentPath) {
 
 }  // namespace
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac

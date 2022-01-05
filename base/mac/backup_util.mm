@@ -15,8 +15,7 @@
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 bool GetBackupExclusion(const FilePath& file_path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -73,5 +72,4 @@ bool SetBackupExclusion(const FilePath& file_path) {
 #endif
 }
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac

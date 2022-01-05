@@ -7,8 +7,7 @@
 
 #import <CoreServices/CoreServices.h>
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 // The ScopedAEDesc is used to scope AppleEvent descriptors.  On creation,
 // it will store a NULL descriptor.  On destruction, it will dispose of the
@@ -45,7 +44,6 @@ class ScopedAEDesc {
   AEDescType desc_;
 };
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac
 
 #endif  // BASE_MAC_SCOPED_AEDESC_H_

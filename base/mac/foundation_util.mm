@@ -40,8 +40,7 @@ Boolean _CFIsObjC(CFTypeID typeID, CFTypeRef obj);
 #endif
 }  // extern "C"
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 namespace {
 
@@ -499,8 +498,7 @@ bool CFRangeToNSRange(CFRange range, NSRange* range_out) {
   return false;
 }
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac
 
 std::ostream& operator<<(std::ostream& o, const CFStringRef string) {
   return o << base::SysCFStringRefToUTF8(string);

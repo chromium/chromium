@@ -17,8 +17,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 TEST(FoundationUtilTest, CFCast) {
   // Build out the CF types to be tested as empty containers.
@@ -422,5 +421,4 @@ TEST(FoundationLoggingTest, NSRange) {
   EXPECT_LOG_EQ("{0, 100}", NSMakeRange(0, 100));
 }
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac
