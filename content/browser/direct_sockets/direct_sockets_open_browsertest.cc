@@ -6,10 +6,12 @@
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/direct_sockets/direct_sockets_service_impl.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
@@ -64,6 +66,12 @@ struct RecordedCall {
 
 constexpr char kPermissionDeniedHistogramName[] =
     "DirectSockets.PermissionDeniedFailures";
+
+constexpr char kTCPNetworkFailuresHistogramName[] =
+    "DirectSockets.TCPNetworkFailures";
+
+constexpr char kUDPNetworkFailuresHistogramName[] =
+    "DirectSockets.UDPNetworkFailures";
 
 const std::string kIPv4_tests[] = {
     // 0.0.0.0/8
@@ -612,6 +620,11 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsOne) {
   DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
       base::BindRepeating(&UnconditionallyPermitConnection));
 
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectUniqueSample(kTCPNetworkFailuresHistogramName,
+                                      -net::Error::ERR_PROXY_CONNECTION_FAILED,
+                                      0);
+
   MockNetworkContext mock_network_context(net::ERR_PROXY_CONNECTION_FAILED);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
   const std::string expected_result =
@@ -637,6 +650,12 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsOne) {
   EXPECT_EQ(3456, call.send_buffer_size);
   EXPECT_EQ(7890, call.receive_buffer_size);
   EXPECT_EQ(false, call.no_delay);
+
+  // To sync histograms from renderer.
+  FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectUniqueSample(kTCPNetworkFailuresHistogramName,
+                                      -net::Error::ERR_PROXY_CONNECTION_FAILED,
+                                      1);
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsTwo) {
@@ -840,6 +859,11 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_OptionsOne) {
   DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
       base::BindRepeating(&UnconditionallyPermitConnection));
 
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectUniqueSample(kUDPNetworkFailuresHistogramName,
+                                      -net::Error::ERR_PROXY_CONNECTION_FAILED,
+                                      0);
+
   MockNetworkContext mock_network_context(net::ERR_PROXY_CONNECTION_FAILED);
   DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
   const std::string expected_result =
@@ -863,6 +887,12 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_OptionsOne) {
   EXPECT_EQ(9012, call.remote_port);
   EXPECT_EQ(3456, call.send_buffer_size);
   EXPECT_EQ(7890, call.receive_buffer_size);
+
+  // To sync histograms from renderer.
+  FetchHistogramsFromChildProcesses();
+  histogram_tester.ExpectUniqueSample(kUDPNetworkFailuresHistogramName,
+                                      -net::Error::ERR_PROXY_CONNECTION_FAILED,
+                                      1);
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_OptionsTwo) {

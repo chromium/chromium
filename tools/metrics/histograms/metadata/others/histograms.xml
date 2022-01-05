@@ -4777,6 +4777,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DirectSockets.TCPNetworkFailures" enum="NetErrorCodes"
+    expires_after="2022-06-07">
+  <owner>ericwilligers@chromium.org</owner>
+  <owner>greengrape@google.com</owner>
+  <summary>
+    How often tcp socket opening finishes with a network failure.
+  </summary>
+</histogram>
+
+<histogram name="DirectSockets.UDPNetworkFailures" enum="NetErrorCodes"
+    expires_after="2022-06-07">
+  <owner>ericwilligers@chromium.org</owner>
+  <owner>greengrape@google.com</owner>
+  <summary>
+    How often udp socket opening finishes with a network failure.
+  </summary>
+</histogram>
+
 <histogram name="Discarding.DiscardCandidatesCount" units="tabs"
     expires_after="2022-05-01">
   <owner>chrisha@chromium.org</owner>

@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/direct_sockets/udp_socket.h"
 
+#include "base/metrics/histogram_functions.h"
 #include "net/base/net_errors.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -15,6 +16,13 @@
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
+
+namespace {
+
+constexpr char kUDPNetworkFailuresHistogramName[] =
+    "DirectSockets.UDPNetworkFailures";
+
+}
 
 UDPSocket::UDPSocket(ExecutionContext* execution_context,
                      ScriptPromiseResolver& resolver)
@@ -54,6 +62,10 @@ void UDPSocket::Init(int32_t result,
     peer_addr_ = peer_addr;
     init_resolver_->Resolve(this);
   } else {
+    if (result != net::Error::OK) {
+      // Error codes are negative.
+      base::UmaHistogramSparse(kUDPNetworkFailuresHistogramName, -result);
+    }
     // TODO(crbug/1282199): Create specific exception based on error code.
     init_resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError, "Permission denied"));
