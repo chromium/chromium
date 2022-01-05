@@ -82,13 +82,20 @@ void FastPairDiscoverableScanner::OnModelIdRetrieved(
   auto it = model_id_parse_attempts_.find(address);
 
   // If there's no entry in the map, the device was lost while parsing.
-  if (it == model_id_parse_attempts_.end())
+  if (it == model_id_parse_attempts_.end()) {
+    QP_LOG(WARNING)
+        << __func__
+        << ": Returning early because device as lost while parsing.";
     return;
+  }
 
   model_id_parse_attempts_.erase(it);
 
-  if (!model_id)
+  if (!model_id) {
+    QP_LOG(INFO) << __func__
+                 << ": Returning early because no model id was parsed.";
     return;
+  }
 
   // The Nearby Share feature advertises under the Fast Pair Service Data UUID
   // and uses a reserved model ID to enable their 'fast initiation' scenario.
