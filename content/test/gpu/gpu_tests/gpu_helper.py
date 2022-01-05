@@ -35,6 +35,7 @@ REMOTE_BROWSER_TYPES = [
     'android-chromium',
     'android-webview-instrumentation',
     'cros-chrome',
+    'fuchsia-chrome',
     'web-engine-shell',
 ]
 

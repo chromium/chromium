@@ -26,6 +26,8 @@ def RunTestOnFuchsiaDevice(script_cmd):
   parser = argparse.ArgumentParser()
   AddCommonArgs(parser)
   AddTargetSpecificArgs(parser)
+  parser.add_argument('--browser',
+                      choices=['web-engine-shell', 'fuchsia-chrome'])
   runner_script_args, test_args = parser.parse_known_args()
   ConfigureLogging(runner_script_args)
 
@@ -40,12 +42,18 @@ def RunTestOnFuchsiaDevice(script_cmd):
   if not runner_script_args.logs_dir:
     runner_script_args.logs_dir = tempfile.mkdtemp()
 
-  package_names = ['web_engine_with_webui', 'web_engine_shell']
-  web_engine_dir = os.path.join(runner_script_args.out_dir, 'gen', 'fuchsia',
-                                'engine')
-  package_paths = map(
-      lambda package_name: os.path.join(web_engine_dir, package_name),
-      package_names)
+  if runner_script_args.browser == 'web-engine-shell':
+    package_names = ['web_engine_with_webui', 'web_engine_shell']
+    package_dir = os.path.join(runner_script_args.out_dir, 'gen', 'fuchsia',
+                               'engine')
+  else:
+    package_names = ['chrome']
+    package_dir = os.path.join(runner_script_args.out_dir, 'gen', 'chrome',
+                               'app')
+
+  package_paths = list(
+      map(lambda package_name: os.path.join(package_dir, package_name),
+          package_names))
 
   # Pass all other arguments to the gpu integration tests.
   script_cmd.extend(test_args)
@@ -64,6 +72,7 @@ def RunTestOnFuchsiaDevice(script_cmd):
           '--fuchsia-system-log-file',
           os.path.join(runner_script_args.logs_dir, 'system_log')
       ])
+      script_cmd.extend(['--browser', runner_script_args.browser])
       # Add to the script
       if runner_script_args.verbose:
         script_cmd.append('-v')
@@ -71,10 +80,11 @@ def RunTestOnFuchsiaDevice(script_cmd):
       # Keep the package repository live while the test runs.
       with target.GetPkgRepo():
         # Install necessary packages on the device.
-        far_files = map(
-            lambda package_name: os.path.join(web_engine_dir, package_name,
-                                              package_name + '.far'),
-            package_names)
+        far_files = list(
+            map(
+                lambda package_name: os.path.join(package_dir, package_name,
+                                                  package_name + '.far'),
+                package_names))
         target.InstallPackage(far_files)
         return subprocess.call(script_cmd)
   finally:
