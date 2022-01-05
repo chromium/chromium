@@ -10,104 +10,123 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {isMac} from 'chrome://resources/js/cr.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {eventToPromise} from 'chrome://test/test_util.js';
+import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertThrows, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
 // clang-format on
 
 suite('find-shortcut', () => {
-  /** @override */
+  let wait: PromiseResolver<{modalContextOpen: boolean, self: HTMLElement}>;
+  let resolved: boolean;
 
-  /**
-   * @type {PromiseResolver<!{modalContextOpen: boolean, self: HTMLElement}>}
-   */
-  let wait;
-  /** @type {boolean} */
-  let resolved;
+  function pressCtrlF() {
+    pressAndReleaseKeyOn(
+        document.documentElement, 70, isMac ? 'meta' : 'ctrl', 'f');
+  }
 
-  const pressCtrlF = () =>
-      pressAndReleaseKeyOn(window, 70, isMac ? 'meta' : 'ctrl', 'f');
-  const pressSlash = () => pressAndReleaseKeyOn(window, 191, '', '/');
+  function pressSlash() {
+    pressAndReleaseKeyOn(document.documentElement, 191, '', '/');
+  }
 
   /**
    * Checks that the handleFindShortcut method is being called for the
    * element reference |expectedSelf| when a find shortcut is invoked.
-   * @param {!HTMLElement} expectedSelf
-   * @param {boolean} expectedModalContextOpen
-   * @param {function()} pressShortcut
-   * @return {!Promise}
    */
-  const check = async (
-      expectedSelf, expectedModalContextOpen = false,
-      pressShortcut = pressCtrlF) => {
+  async function check(
+      expectedSelf: HTMLElement, expectedModalContextOpen: boolean = false,
+      pressShortcut: () => void = pressCtrlF) {
     wait = new PromiseResolver();
     resolved = false;
     pressShortcut();
     const args = await wait.promise;
     assertEquals(expectedSelf, args.self);
     assertEquals(!!expectedModalContextOpen, args.modalContextOpen);
-  };
+  }
 
   /**
    * Registers for a keydown event to check whether the bubbled up event has
    * defaultPrevented set to true, in which case the event was handled.
-   * @param {boolean} defaultPrevented
-   * @return {!Promise}
    */
-  const listenOnceAndCheckDefaultPrevented = async defaultPrevented => {
+  async function listenOnceAndCheckDefaultPrevented(defaultPrevented: boolean) {
     const e = await eventToPromise('keydown', window);
     assertEquals(e.defaultPrevented, defaultPrevented);
-  };
+  }
+
+  const FindShortcutManualListenElementBase =
+      mixinBehaviors([FindShortcutBehavior], PolymerElement) as
+      {new (): PolymerElement & FindShortcutBehavior};
+
+  class FindShortcutManualListenElement extends
+      FindShortcutManualListenElementBase {
+    static get template() {
+      return html`<template></template>`;
+    }
+
+    hasFocus: boolean;
+
+    constructor() {
+      super();
+      this.findShortcutListenOnAttach = false;
+      this.hasFocus = false;
+    }
+
+    handleFindShortcut(modalContextOpen: boolean) {
+      assert(!resolved);
+      wait.resolve({modalContextOpen, self: this});
+      return true;
+    }
+
+    searchInputHasFocus() {
+      return this.hasFocus;
+    }
+  }
+  customElements.define(
+      'find-shortcut-element-manual-listen', FindShortcutManualListenElement);
+
+  const FindShortcutElementBase =
+      mixinBehaviors([FindShortcutBehavior], PolymerElement) as
+      {new (): PolymerElement & FindShortcutBehavior};
+
+  class FindShortcutElement extends FindShortcutElementBase {
+    static get template() {
+      return html`<template></template>`;
+    }
+
+    handledResponse: boolean;
+    hasFocus: boolean;
+
+    constructor() {
+      super();
+      this.handledResponse = true;
+      this.hasFocus = false;
+    }
+
+    handleFindShortcut(modalContextOpen: boolean) {
+      assert(!resolved);
+      wait.resolve({modalContextOpen, self: this});
+      return this.handledResponse;
+    }
+
+    searchInputHasFocus() {
+      return this.hasFocus;
+    }
+  }
+  customElements.define('find-shortcut-element', FindShortcutElement);
 
   suiteSetup(() => {
-    Polymer({
-      is: 'find-shortcut-element-manual-listen',
-      _template: null,
-
-      behaviors: [FindShortcutBehavior],
-
-      findShortcutListenOnAttach: false,
-      hasFocus: false,
-
-      handleFindShortcut(modalContextOpen) {
-        assert(!resolved);
-        wait.resolve({modalContextOpen, self: this});
-        return true;
-      },
-
-      searchInputHasFocus() {
-        return this.hasFocus;
-      }
-    });
-
-    Polymer({
-      is: 'find-shortcut-element',
-      _template: null,
-      behaviors: [FindShortcutBehavior],
-
-      handledResponse: true,
-      hasFocus: false,
-
-      handleFindShortcut(modalContextOpen) {
-        assert(!resolved);
-        wait.resolve({modalContextOpen, self: this});
-        return this.handledResponse;
-      },
-
-      searchInputHasFocus() {
-        return this.hasFocus;
-      },
-    });
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
   });
 
   teardown(() => {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     assertEquals(0, FindShortcutManager.listeners.length);
   });
 
   test('handled', async () => {
     document.body.innerHTML = `<find-shortcut-element></find-shortcut-element>`;
-    const testElement = document.body.querySelector('find-shortcut-element');
+    const testElement = document.body.querySelector<FindShortcutElement>(
+        'find-shortcut-element')!;
     await check(testElement);
   });
 
@@ -115,8 +134,9 @@ suite('find-shortcut', () => {
     document.body.innerHTML = `
         <find-shortcut-element></find-shortcut-element>
         <cr-dialog></cr-dialog>`;
-    const testElement = document.body.querySelector('find-shortcut-element');
-    const dialog = document.body.querySelector('cr-dialog');
+    const testElement = document.body.querySelector<FindShortcutElement>(
+        'find-shortcut-element')!;
+    const dialog = document.body.querySelector('cr-dialog')!;
     dialog.showModal();
     await check(testElement, true);
   });
@@ -125,8 +145,9 @@ suite('find-shortcut', () => {
     document.body.innerHTML = `
         <find-shortcut-element></find-shortcut-element>
         <cr-dialog></cr-dialog>`;
-    const testElement = document.body.querySelector('find-shortcut-element');
-    const dialog = document.body.querySelector('cr-dialog');
+    const testElement = document.body.querySelector<FindShortcutElement>(
+        'find-shortcut-element')!;
+    const dialog = document.body.querySelector('cr-dialog')!;
     dialog.showModal();
     assertTrue(dialog.open);
     const whenCloseFired = eventToPromise('close', dialog);
@@ -141,8 +162,8 @@ suite('find-shortcut', () => {
         <find-shortcut-element></find-shortcut-element>`;
     assertEquals(2, FindShortcutManager.listeners.length);
     const testElements =
-        document.body.querySelectorAll('find-shortcut-element');
-    await check(testElements[1]);
+        document.body.querySelectorAll<HTMLElement>('find-shortcut-element');
+    await check(testElements[1]!);
   });
 
   test('can remove listeners out of order', async () => {
@@ -152,12 +173,13 @@ suite('find-shortcut', () => {
         <find-shortcut-element-manual-listen>
         </find-shortcut-element-manual-listen>`;
     const testElements =
-        document.body.querySelectorAll('find-shortcut-element-manual-listen');
-    testElements[0].becomeActiveFindShortcutListener();
-    testElements[1].becomeActiveFindShortcutListener();
-    testElements[0].removeSelfAsFindShortcutListener();
-    await check(testElements[1]);
-    testElements[1].removeSelfAsFindShortcutListener();
+        document.body.querySelectorAll<FindShortcutManualListenElement>(
+            'find-shortcut-element-manual-listen');
+    testElements[0]!.becomeActiveFindShortcutListener();
+    testElements[1]!.becomeActiveFindShortcutListener();
+    testElements[0]!.removeSelfAsFindShortcutListener();
+    await check(testElements[1]!);
+    testElements[1]!.removeSelfAsFindShortcutListener();
   });
 
   test('removing self when not active throws exception', () => {
@@ -165,7 +187,8 @@ suite('find-shortcut', () => {
         <find-shortcut-element-manual-listen>
         </find-shortcut-element-manual-listen>`;
     const testElement =
-        document.body.querySelector('find-shortcut-element-manual-listen');
+        document.body.querySelector<FindShortcutManualListenElement>(
+            'find-shortcut-element-manual-listen')!;
     assertThrows(() => testElement.removeSelfAsFindShortcutListener());
   });
 
@@ -174,31 +197,32 @@ suite('find-shortcut', () => {
         <find-shortcut-element>
           <find-shortcut-element></find-shortcut-element>
         </find-shortcut-element>`;
-    const testElements =
-        document.body.querySelectorAll('find-shortcut-element');
-    assertThrows(() => testElements[0].becomeActiveFindShortcutListener());
-    assertThrows(() => testElements[1].becomeActiveFindShortcutListener());
+    const testElements = document.body.querySelectorAll<FindShortcutElement>(
+        'find-shortcut-element');
+    assertThrows(() => testElements[0]!.becomeActiveFindShortcutListener());
+    assertThrows(() => testElements[1]!.becomeActiveFindShortcutListener());
   });
 
   test('cmd+ctrl+f bubbles up', async () => {
     const bubbledUp = listenOnceAndCheckDefaultPrevented(false);
     document.body.innerHTML = `<find-shortcut-element></find-shortcut-element>`;
-    const testElement = document.body.querySelector('find-shortcut-element');
-    pressAndReleaseKeyOn(window, 70, ['meta', 'ctrl'], 'f');
+    pressAndReleaseKeyOn(document.documentElement, 70, ['meta', 'ctrl'], 'f');
     await bubbledUp;
   });
 
   test('find shortcut bubbles up', async () => {
     const bubbledUp = listenOnceAndCheckDefaultPrevented(true);
     document.body.innerHTML = `<find-shortcut-element></find-shortcut-element>`;
-    const testElement = document.body.querySelector('find-shortcut-element');
+    const testElement = document.body.querySelector<FindShortcutElement>(
+        'find-shortcut-element')!;
     await check(testElement);
     await bubbledUp;
   });
 
   test('shortcut with no listeners bubbles up', async () => {
     const bubbledUp = listenOnceAndCheckDefaultPrevented(false);
-    pressAndReleaseKeyOn(window, 70, isMac ? 'meta' : 'ctrl', 'f');
+    pressAndReleaseKeyOn(
+        document.documentElement, 70, isMac ? 'meta' : 'ctrl', 'f');
     await bubbledUp;
   });
 
@@ -207,16 +231,17 @@ suite('find-shortcut', () => {
         <find-shortcut-element>
           <find-shortcut-element></find-shortcut-element>
         </find-shortcut-element>`;
-    const testElements =
-        document.body.querySelectorAll('find-shortcut-element');
+    const testElements = document.body.querySelectorAll<FindShortcutElement>(
+        'find-shortcut-element');
     assertEquals(2, FindShortcutManager.listeners.length);
-    await check(testElements[1]);
+    await check(testElements[1]!);
   });
 
   test('not handle by listener bubbles up', async () => {
     const bubbledUp = listenOnceAndCheckDefaultPrevented(false);
     document.body.innerHTML = `<find-shortcut-element></find-shortcut-element>`;
-    const testElement = document.body.querySelector('find-shortcut-element');
+    const testElement = document.body.querySelector<FindShortcutElement>(
+        'find-shortcut-element')!;
     testElement.handledResponse = false;
     await check(testElement);
     await bubbledUp;
@@ -228,20 +253,22 @@ suite('find-shortcut', () => {
         <find-shortcut-element></find-shortcut-element>
         <find-shortcut-element></find-shortcut-element>`;
     const testElements =
-        Array.from(document.body.querySelectorAll('find-shortcut-element'));
-    testElements[0].hasFocus = true;
-    await check(testElements[2]);
-    testElements[0].hasFocus = false;
-    testElements[1].hasFocus = true;
-    await check(testElements[0]);
-    testElements[1].hasFocus = false;
-    testElements[2].hasFocus = true;
-    await check(testElements[1]);
+        Array.from(document.body.querySelectorAll<FindShortcutElement>(
+            'find-shortcut-element'));
+    testElements[0]!.hasFocus = true;
+    await check(testElements[2]!);
+    testElements[0]!.hasFocus = false;
+    testElements[1]!.hasFocus = true;
+    await check(testElements[0]!);
+    testElements[1]!.hasFocus = false;
+    testElements[2]!.hasFocus = true;
+    await check(testElements[1]!);
   });
 
   test('slash "/" is supported as a keyboard shortcut', async () => {
     document.body.innerHTML = '<find-shortcut-element></find-shortcut-element>';
-    const testElement = document.body.querySelector('find-shortcut-element');
+    const testElement = document.body.querySelector<FindShortcutElement>(
+        'find-shortcut-element')!;
     testElement.hasFocus = false;
     await check(testElement, false, pressSlash);
   });

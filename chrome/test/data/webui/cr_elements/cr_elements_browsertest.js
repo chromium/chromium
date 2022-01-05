@@ -115,7 +115,7 @@ GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 var CrElementsFindShortcutBehaviorTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/find_shortcut_behavior_test.js';
+    return 'chrome://test/test_loader.html?module=cr_elements/find_shortcut_behavior_test.js&host=webui-test';
   }
 };
 
@@ -127,7 +127,7 @@ GEN('#endif');
 var CrElementsFindShortcutMixinTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/find_shortcut_mixin_test.js';
+    return 'chrome://test/test_loader.html?module=cr_elements/find_shortcut_mixin_test.js&host=webui-test';
   }
 };
 
@@ -251,7 +251,7 @@ GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 var CrElementsSearchableDropDownTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_searchable_drop_down_tests.js';
+    return 'chrome://test/test_loader.html?module=cr_elements/cr_searchable_drop_down_tests.js&host=webui-test';
   }
 };
 

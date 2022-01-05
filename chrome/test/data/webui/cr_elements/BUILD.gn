@@ -3,33 +3,9 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
-import("//third_party/closure_compiler/closure_args.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("../namespace_rewrites.gni")
-
-if (is_chromeos_ash) {
-  js_type_check("closure_compile") {
-    is_polymer3 = true
-    closure_flags = default_closure_args + [
-                      "js_module_root=../../chrome/test/data/webui/",
-                      "js_module_root=./gen/chrome/test/data/webui/",
-                    ]
-
-    deps = [ ":cr_searchable_drop_down_tests" ]
-  }
-
-  js_library("cr_searchable_drop_down_tests") {
-    deps = [
-      "..:chai_assert",
-      "//third_party/polymer/v3_0/components-chromium/iron-test-helpers:mock-interactions",
-      "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
-      "//ui/webui/resources/cr_elements/cr_searchable_drop_down:cr_searchable_drop_down",
-    ]
-    externs_list = [ "$externs_path/mocha-2.5.js" ]
-  }
-}
 
 generate_grd("build_grdp") {
   grd_prefix = "webui_cr_elements"
@@ -86,8 +62,17 @@ ts_library("build_ts") {
     "cr_toolbar_search_field_tests.ts",
     "cr_toolbar_test.ts",
     "cr_view_manager_test.ts",
+    "find_shortcut_mixin_test.ts",
     "iron_list_focus_test.ts",
   ]
+
+  if (is_chromeos_ash) {
+    in_files += [
+      "cr_searchable_drop_down_tests.ts",
+      "find_shortcut_behavior_test.ts",
+    ]
+  }
+
   definitions = [ "//tools/typescript/definitions/settings_private.d.ts" ]
   deps = [ "//ui/webui/resources:library" ]
   extra_deps = [ "..:generate_definitions" ]

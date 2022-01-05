@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {IronDropdownElement} from 'chrome://resources/polymer/v3_0/iron-dropdown/iron-dropdown.js';
 import {LegacyElementMixin} from 'chrome://resources/polymer/v3_0/polymer/lib/legacy/legacy-element-mixin.js';
+
+import {CrInputElement} from '../cr_input/cr_input.m.js';
 
 interface CrSearchableDropDownElement extends LegacyElementMixin, HTMLElement {
   autofocus: boolean;
@@ -17,6 +20,11 @@ interface CrSearchableDropDownElement extends LegacyElementMixin, HTMLElement {
   label: string;
   updateValueOnInput: boolean;
   showLoading: boolean;
+
+  $: {
+    search: CrInputElement,
+    dropdown: IronDropdownElement,
+  };
 }
 
 export {CrSearchableDropDownElement};

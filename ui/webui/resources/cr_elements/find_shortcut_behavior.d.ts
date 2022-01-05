@@ -11,3 +11,7 @@ export interface FindShortcutBehavior {
 }
 
 declare const FindShortcutBehavior: object;
+
+export const FindShortcutManager: {
+  listeners: Array<FindShortcutBehavior>,
+};
