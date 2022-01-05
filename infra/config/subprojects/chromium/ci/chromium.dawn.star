@@ -144,19 +144,23 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Dawn Mac x64 Experimental Release (AMD)",
-    console_view_entry = consoles.console_view_entry(
-        category = "ToT|Mac|AMD",
-        short_name = "exp",
-    ),
+    # Uncomment this entry when this experimental tester is actually in use.
+    # console_view_entry = consoles.console_view_entry(
+    #     category = "ToT|Mac|AMD",
+    #     short_name = "exp",
+    # ),
+    list_view = "chromium.gpu.experimental",
     triggered_by = ["Dawn Mac x64 Builder"],
 )
 
 ci.thin_tester(
     name = "Dawn Mac x64 Experimental Release (Intel)",
-    console_view_entry = consoles.console_view_entry(
-        category = "ToT|Mac|Intel",
-        short_name = "exp",
-    ),
+    # Uncomment this entry when this experimental tester is actually in use.
+    # console_view_entry = consoles.console_view_entry(
+    #     category = "ToT|Mac|Intel",
+    #     short_name = "exp",
+    # ),
+    list_view = "chromium.gpu.experimental",
     triggered_by = ["Dawn Mac x64 Builder"],
 )
 

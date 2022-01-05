@@ -265,15 +265,18 @@ ci.thin_tester(
         category = "Linux|Intel",
         short_name = "exp",
     ),
+    list_view = "chromium.gpu.experimental",
     triggered_by = ["GPU FYI Linux Builder"],
 )
 
 ci.thin_tester(
     name = "Linux FYI Experimental Release (NVIDIA)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Linux|Nvidia",
-        short_name = "exp",
-    ),
+    # Uncomment this entry when this experimental tester is actually in use.
+    # console_view_entry = consoles.console_view_entry(
+    #     category = "Linux|Nvidia",
+    #     short_name = "exp",
+    # ),
+    list_view = "chromium.gpu.experimental",
     triggered_by = ["GPU FYI Linux Builder"],
 )
 
@@ -345,10 +348,12 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Mac FYI Experimental Release (Intel)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Mac|Intel",
-        short_name = "exp",
-    ),
+    # Uncomment this entry when this experimental tester is actually in use.
+    # console_view_entry = consoles.console_view_entry(
+    #     category = "Mac|Intel",
+    #     short_name = "exp",
+    # ),
+    list_view = "chromium.gpu.experimental",
     triggered_by = ["GPU FYI Mac Builder"],
 )
 
@@ -358,15 +363,18 @@ ci.thin_tester(
         category = "Mac|AMD|Retina",
         short_name = "exp",
     ),
+    list_view = "chromium.gpu.experimental",
     triggered_by = ["GPU FYI Mac Builder"],
 )
 
 ci.thin_tester(
     name = "Mac FYI Experimental Retina Release (NVIDIA)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Mac|Nvidia",
-        short_name = "exp",
-    ),
+    # Uncomment this entry when this experimental tester is actually in use.
+    # console_view_entry = consoles.console_view_entry(
+    #     category = "Mac|Nvidia",
+    #     short_name = "exp",
+    # ),
+    list_view = "chromium.gpu.experimental",
     # This bot has one machine backing its tests at the moment.
     # If it gets more, this can be removed.
     # See crbug.com/853307 for more context.
@@ -484,19 +492,23 @@ ci.thin_tester(
 
 ci.thin_tester(
     name = "Win10 FYI x64 Exp Release (Intel HD 630)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Windows|10|x64|Intel",
-        short_name = "exp",
-    ),
+    # Uncomment this entry when this experimental tester is actually in use.
+    # console_view_entry = consoles.console_view_entry(
+    #     category = "Windows|10|x64|Intel",
+    #     short_name = "exp",
+    # ),
+    list_view = "chromium.gpu.experimental",
     triggered_by = ["GPU FYI Win x64 Builder"],
 )
 
 ci.thin_tester(
     name = "Win10 FYI x64 Exp Release (NVIDIA)",
-    console_view_entry = consoles.console_view_entry(
-        category = "Windows|10|x64|Nvidia",
-        short_name = "exp",
-    ),
+    # Uncomment this entry when this experimental tester is actually in use.
+    # console_view_entry = consoles.console_view_entry(
+    #     category = "Windows|10|x64|Nvidia",
+    #     short_name = "exp",
+    # ),
+    list_view = "chromium.gpu.experimental",
     triggered_by = ["GPU FYI Win x64 Builder"],
 )
 
