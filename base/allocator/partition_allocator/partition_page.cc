@@ -12,6 +12,7 @@
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_alloc_forward.h"
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
@@ -218,7 +219,7 @@ void SlotSpanMetadata<thread_safe>::Decommit(PartitionRoot<thread_safe>* root) {
   // If lazy commit is enabled, only provisioned slots are committed.
   size_t dirty_size = bits::AlignUp(GetProvisionedSize(), SystemPageSize());
   size_t size_to_decommit =
-      root->use_lazy_commit ? dirty_size : bucket->get_bytes_per_span();
+      kUseLazyCommit ? dirty_size : bucket->get_bytes_per_span();
 
   PA_DCHECK(root->empty_slot_spans_dirty_bytes >= dirty_size);
   root->empty_slot_spans_dirty_bytes -= dirty_size;

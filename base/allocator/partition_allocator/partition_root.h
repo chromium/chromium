@@ -234,15 +234,6 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
 #endif
   bool use_configurable_pool;
 
-  // Lazy commit should only be enabled on Windows, because commit charge is
-  // only meaningful and limited on Windows. It affects performance on other
-  // platforms and is simply not needed there due to OS supporting overcommit.
-#if defined(OS_WIN)
-  static constexpr bool use_lazy_commit = true;
-#else
-  static constexpr bool use_lazy_commit = false;
-#endif
-
 #if !defined(PA_EXTRAS_REQUIRED)
   // Teach the compiler that code can be optimized in builds that use no extras.
   static constexpr uint32_t extras_size = 0;

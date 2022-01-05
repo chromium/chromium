@@ -12,6 +12,7 @@
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
 #include "base/allocator/partition_allocator/partition_direct_map_extent.h"
 #include "base/allocator/partition_allocator/partition_oom.h"
@@ -547,7 +548,7 @@ PartitionBucket<thread_safe>::AllocNewSlotSpan(PartitionRoot<thread_safe>* root,
   // before vending them back.
   // If lazy commit is enabled, pages will be committed when provisioning slots,
   // in ProvisionMoreSlotsAndAllocOne(), not here.
-  if (!root->use_lazy_commit) {
+  if (!kUseLazyCommit) {
     PA_DEBUG_DATA_ON_STACK("slotsize", slot_size);
     PA_DEBUG_DATA_ON_STACK("spansize", slot_span_reservation_size);
     PA_DEBUG_DATA_ON_STACK("spancmt", slot_span_committed_size);
@@ -759,7 +760,7 @@ ALWAYS_INLINE char* PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
   // Note, we can't use PageKeepPermissionsIfPossible, because we have no
   // knowledge which pages have been committed before (it doesn't matter on
   // Windows anyway).
-  if (root->use_lazy_commit) {
+  if (kUseLazyCommit) {
     // TODO(lizeb): Handle commit failure.
     root->RecommitSystemPagesForData(reinterpret_cast<uintptr_t>(commit_start),
                                      commit_end - commit_start,
@@ -974,20 +975,17 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
 
       // If lazy commit is enabled, pages will be recommitted when provisioning
       // slots, in ProvisionMoreSlotsAndAllocOne(), not here.
-      if (!root->use_lazy_commit) {
+      if (!kUseLazyCommit) {
         uintptr_t address = reinterpret_cast<uintptr_t>(
             SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(new_slot_span));
-        // If lazy commit isn't used, we have a guarantee that all slot span
+        // Since lazy commit isn't used, we have a guarantee that all slot span
         // pages have been previously committed, and then decommitted using
         // PageKeepPermissionsIfPossible, so use the same option as an
-        // optimization. Otherwise fall back to PageUpdatePermissions (slower).
-        // (Insider knowledge: as of writing this comment, lazy commit is only
-        // used on Windows and this flag is ignored there, thus no perf impact.)
+        // optimization.
         // TODO(lizeb): Handle commit failure.
         root->RecommitSystemPagesForData(
             address, new_slot_span->bucket->get_bytes_per_span(),
-            root->use_lazy_commit ? PageUpdatePermissions
-                                  : PageKeepPermissionsIfPossible);
+            PageKeepPermissionsIfPossible);
       }
 
       new_slot_span->Reset();

@@ -1746,9 +1746,8 @@ TEST_F(PartitionAllocTest, FreeCache) {
   EXPECT_EQ(nullptr, bucket->empty_slot_spans_head);
   EXPECT_EQ(1, slot_span->num_allocated_slots);
   // Lazy commit commits only needed pages.
-  size_t expected_committed_size = allocator.root()->use_lazy_commit
-                                       ? SystemPageSize()
-                                       : PartitionPageSize();
+  size_t expected_committed_size =
+      kUseLazyCommit ? SystemPageSize() : PartitionPageSize();
   EXPECT_EQ(expected_committed_size,
             allocator.root()->get_total_size_of_committed_pages());
   allocator.root()->Free(ptr);
@@ -1766,9 +1765,8 @@ TEST_F(PartitionAllocTest, FreeCache) {
                                               ->buckets[test_bucket_index_]
                                               .num_system_pages_per_slot_span;
   size_t expected_size =
-      allocator.root()->use_lazy_commit
-          ? SystemPageSize()
-          : num_system_pages_per_slot_span * SystemPageSize();
+      kUseLazyCommit ? SystemPageSize()
+                     : num_system_pages_per_slot_span * SystemPageSize();
   EXPECT_EQ(expected_size,
             allocator.root()->get_total_size_of_committed_pages());
 
@@ -3084,9 +3082,8 @@ TEST_F(PartitionAllocTest, Bookkeeping) {
   // A full slot span of size 1 partition page is committed.
   void* ptr = root.Alloc(small_size - kExtraAllocSize, type_name);
   // Lazy commit commits only needed pages.
-  size_t expected_committed_size = allocator.root()->use_lazy_commit
-                                       ? SystemPageSize()
-                                       : PartitionPageSize();
+  size_t expected_committed_size =
+      kUseLazyCommit ? SystemPageSize() : PartitionPageSize();
   size_t expected_super_pages_size = kSuperPageSize;
   size_t expected_max_committed_size = expected_committed_size;
   size_t bucket_index = SizeToIndex(small_size - kExtraAllocSize);
@@ -3132,9 +3129,8 @@ TEST_F(PartitionAllocTest, Bookkeeping) {
 
   // Allocating another size commits another slot span.
   ptr = root.Alloc(2 * small_size - kExtraAllocSize, type_name);
-  expected_committed_size += allocator.root()->use_lazy_commit
-                                 ? SystemPageSize()
-                                 : PartitionPageSize();
+  expected_committed_size +=
+      kUseLazyCommit ? SystemPageSize() : PartitionPageSize();
   expected_max_committed_size =
       std::max(expected_max_committed_size, expected_committed_size);
   expected_max_allocated_size =

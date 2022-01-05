@@ -12,6 +12,7 @@
 #include "base/allocator/partition_allocator/extended_api.h"
 #include "base/allocator/partition_allocator/partition_address_space.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
+#include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
 #include "base/bind.h"
 #include "base/callback.h"
@@ -876,9 +877,8 @@ TEST_F(PartitionAllocThreadCacheTest, Bookkeeping) {
   auto* tc_bucket = &root_->buckets[tc_bucket_index];
   size_t expected_allocated_size =
       tc_bucket->slot_size;  // For the ThreadCache itself.
-  size_t expected_committed_size = root_->use_lazy_commit
-                                       ? SystemPageSize()
-                                       : tc_bucket->get_bytes_per_span();
+  size_t expected_committed_size =
+      kUseLazyCommit ? SystemPageSize() : tc_bucket->get_bytes_per_span();
 
   EXPECT_EQ(expected_committed_size, root_->total_size_of_committed_pages);
   EXPECT_EQ(expected_committed_size, root_->max_size_of_committed_pages);
@@ -891,9 +891,8 @@ TEST_F(PartitionAllocThreadCacheTest, Bookkeeping) {
   auto* medium_bucket = &root_->buckets[root_->SizeToBucketIndex(kMediumSize)];
   size_t medium_alloc_size = medium_bucket->slot_size;
   expected_allocated_size += medium_alloc_size;
-  expected_committed_size += root_->use_lazy_commit
-                                 ? SystemPageSize()
-                                 : medium_bucket->get_bytes_per_span();
+  expected_committed_size +=
+      kUseLazyCommit ? SystemPageSize() : medium_bucket->get_bytes_per_span();
 
   EXPECT_EQ(expected_committed_size, root_->total_size_of_committed_pages);
   EXPECT_EQ(expected_committed_size, root_->max_size_of_committed_pages);

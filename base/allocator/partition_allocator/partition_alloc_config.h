@@ -161,4 +161,13 @@ static_assert(sizeof(void*) != 8, "");
 #define PA_HAS_ALLOCATION_GUARD
 #endif
 
+// Lazy commit should only be enabled on Windows, because commit charge is
+// only meaningful and limited on Windows. It affects performance on other
+// platforms and is simply not needed there due to OS supporting overcommit.
+#if defined(OS_WIN)
+constexpr bool kUseLazyCommit = true;
+#else
+constexpr bool kUseLazyCommit = false;
+#endif
+
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_ALLOC_CONFIG_H_
