@@ -61,7 +61,7 @@ to thoroughly review.
 1. Create new release branch
 
    Use the SQLite git commit hash for the release, found at
-   [sqlite/releases](https://github.com/sqlite/sqlite/releases), when creating
+   [sqlite/tags](https://github.com/sqlite/sqlite/tags), when creating
    a new release branch. For example,
    "[562fd18b9dc27216191c0a6477bba9b175f7f0d2](https://github.com/sqlite/sqlite/commit/562fd18b9dc27216191c0a6477bba9b175f7f0d2)"
    corresponds to the 3.31.1 release. The commit is used instead of the tag
@@ -82,15 +82,14 @@ to thoroughly review.
     git fetch origin
     export VERSION=3.33.0
     git checkout -b chromium-version-$VERSION \
-        --track origin/chromum-version-$VERSION
+        --track origin/chromium-version-$VERSION
     ```
 
 3. Generate and commit the SQLite amalgamations.
 
     ```sh
     ../scripts/generate_amalgamation.py
-    git add amalgamation
-    git add amalgamation_dev
+    git add amalgamation amalgamation_dev
     git commit -m "Amalgamations for release $VERSION"
     ```
 
@@ -113,7 +112,7 @@ to thoroughly review.
         ```sh
         roll-dep src/third_party/sqlite/src --roll-to <git hash of merged CL>
         ```
-    2. Update the version in //third_party/sqlite/README.chromium. Append the
+    2. Update the version in //third_party/sqlite/README.chromium. Amend the
        commit created by roll-dep above.
 
 ## Cherry-pick unreleased commit from SQLite.
