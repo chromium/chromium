@@ -257,6 +257,8 @@ class NavigationSimulator {
   virtual void SetInitiatorFrame(RenderFrameHost* initiator_frame_host) = 0;
   virtual void SetTransition(ui::PageTransition transition) = 0;
   virtual void SetHasUserGesture(bool has_user_gesture) = 0;
+  virtual void SetNavigationInputStart(
+      base::TimeTicks navigation_input_start) = 0;
   // Note: ReloadType should only be specified for browser-initiated
   // navigations.
   virtual void SetReloadType(ReloadType reload_type) = 0;

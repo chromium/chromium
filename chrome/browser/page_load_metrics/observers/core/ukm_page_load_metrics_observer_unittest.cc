@@ -80,6 +80,7 @@ using LargestContentTextOrImage =
 using PageLoad = ukm::builders::PageLoad;
 using MobileFriendliness = ukm::builders::MobileFriendliness;
 using PageLoad_Internal = ukm::builders::PageLoad_Internal;
+using UserPerceivedPageVisit = ukm::builders::UserPerceivedPageVisit;
 
 const char kTestUrl1[] = "https://www.google.com/";
 const char kTestUrl2[] = "https://www.example.com/";
@@ -2647,4 +2648,86 @@ TEST_F(UkmPageLoadMetricsObserverTest, BucketingViewportHardcodedWidth) {
   TestViewportHardcodedWidth(480, 480);
   TestViewportHardcodedWidth(460, 421);
   TestViewportHardcodedWidth(180, 180);
+}
+
+TEST_F(UkmPageLoadMetricsObserverTest,
+       TestLogsBrowserInitiatedNavigationAsUserInitiated) {
+  // Simulate a browser initiated navigation, which is always considered
+  // user initiated.
+  auto& test_ukm_recorder = tester()->test_ukm_recorder();
+  tester()->NavigateWithPageTransitionAndCommit(
+      GURL(kTestUrl1), ui::PageTransition::PAGE_TRANSITION_TYPED);
+  tester()->NavigateToUntrackedUrl();
+
+  auto result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      PageLoad::kEntryName,
+      PageLoad::kExperimental_Navigation_UserInitiatedName);
+  EXPECT_EQ(1U, result_metrics.size());
+  EXPECT_EQ(PageLoad::kExperimental_Navigation_UserInitiatedName,
+            result_metrics[0].begin()->first);
+  EXPECT_TRUE(result_metrics[0].begin()->second);
+  // Check the UserPerceivedPageVisit version of the metrics as well.
+  result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      UserPerceivedPageVisit::kEntryName,
+      UserPerceivedPageVisit::kUserInitiatedName);
+  EXPECT_EQ(1U, result_metrics.size());
+  EXPECT_EQ(UserPerceivedPageVisit::kUserInitiatedName,
+            result_metrics[0].begin()->first);
+  EXPECT_TRUE(result_metrics[0].begin()->second);
+}
+
+TEST_F(UkmPageLoadMetricsObserverTest,
+       TestLogsUserInitiatedRendererNavigationAsUserInitiated) {
+  auto& test_ukm_recorder = tester()->test_ukm_recorder();
+  // Simulate a renderer initiated navigation. The associated navigation input
+  // start time means this will also be considered user initiated.
+  std::unique_ptr<content::NavigationSimulator> navigation =
+      content::NavigationSimulator::CreateRendererInitiated(GURL(kTestUrl1),
+                                                            main_rfh());
+  navigation->SetNavigationInputStart(base::TimeTicks::Now());
+  navigation->Commit();
+  tester()->NavigateToUntrackedUrl();
+  auto result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      PageLoad::kEntryName,
+      PageLoad::kExperimental_Navigation_UserInitiatedName);
+  EXPECT_EQ(1U, result_metrics.size());
+  EXPECT_EQ(PageLoad::kExperimental_Navigation_UserInitiatedName,
+            result_metrics[0].begin()->first);
+  EXPECT_TRUE(result_metrics[0].begin()->second);
+
+  result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      UserPerceivedPageVisit::kEntryName,
+      UserPerceivedPageVisit::kUserInitiatedName);
+  EXPECT_EQ(1U, result_metrics.size());
+  EXPECT_EQ(UserPerceivedPageVisit::kUserInitiatedName,
+            result_metrics[0].begin()->first);
+  EXPECT_TRUE(result_metrics[0].begin()->second);
+}
+
+TEST_F(UkmPageLoadMetricsObserverTest,
+       TestLogsRendererInitiatedRendererNavigationAsUserInitiated) {
+  auto& test_ukm_recorder = tester()->test_ukm_recorder();
+  // Simulate a renderer initiated navigation without an associated
+  // navigation input start time. This will be considered not user
+  // initiated.
+  std::unique_ptr<content::NavigationSimulator> navigation =
+      content::NavigationSimulator::CreateRendererInitiated(GURL(kTestUrl1),
+                                                            main_rfh());
+  navigation->Commit();
+  tester()->NavigateToUntrackedUrl();
+  auto result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      PageLoad::kEntryName,
+      PageLoad::kExperimental_Navigation_UserInitiatedName);
+  EXPECT_EQ(1U, result_metrics.size());
+  EXPECT_EQ(PageLoad::kExperimental_Navigation_UserInitiatedName,
+            result_metrics[0].begin()->first);
+  EXPECT_FALSE(result_metrics[0].begin()->second);
+
+  result_metrics = test_ukm_recorder.FilteredHumanReadableMetricForEntry(
+      UserPerceivedPageVisit::kEntryName,
+      UserPerceivedPageVisit::kUserInitiatedName);
+  EXPECT_EQ(1U, result_metrics.size());
+  EXPECT_EQ(UserPerceivedPageVisit::kUserInitiatedName,
+            result_metrics[0].begin()->first);
+  EXPECT_FALSE(result_metrics[0].begin()->second);
 }

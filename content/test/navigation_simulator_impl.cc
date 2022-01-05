@@ -949,6 +949,11 @@ void NavigationSimulatorImpl::SetHasUserGesture(bool has_user_gesture) {
   has_user_gesture_ = has_user_gesture;
 }
 
+void NavigationSimulatorImpl::SetNavigationInputStart(
+    base::TimeTicks navigation_input_start) {
+  navigation_input_start_ = navigation_input_start;
+}
+
 void NavigationSimulatorImpl::SetReloadType(ReloadType reload_type) {
   CHECK_EQ(INITIALIZATION, state_) << "The reload_type parameter cannot "
                                       "be set after the navigation has started";
@@ -1294,6 +1299,7 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
           absl::nullopt /* web_bundle_token */);
   auto common_params = blink::CreateCommonNavigationParams();
   common_params->navigation_start = base::TimeTicks::Now();
+  common_params->input_start = navigation_input_start_;
   common_params->url = navigation_url_;
   common_params->initiator_origin = initiator_origin_.value();
   common_params->method = initial_method_;
