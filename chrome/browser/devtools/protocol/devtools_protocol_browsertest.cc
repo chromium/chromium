@@ -13,6 +13,7 @@
 #include "base/test/values_test_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -208,9 +209,17 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   EXPECT_EQ(nullptr, DevToolsWindow::FindDevToolsWindow(agent_host_.get()));
 }
 
+// Failing consistently on mac builds crbug.com/1284536
+#if defined(OS_MAC)
+#define MAYBE_NoPendingUrlShownWhenAttachedToBrowserInitiatedFailedNavigation \
+  DISABLED_NoPendingUrlShownWhenAttachedToBrowserInitiatedFailedNavigation
+#else
+#define MAYBE_NoPendingUrlShownWhenAttachedToBrowserInitiatedFailedNavigation \
+  NoPendingUrlShownWhenAttachedToBrowserInitiatedFailedNavigation
+#endif
 IN_PROC_BROWSER_TEST_F(
     DevToolsProtocolTest,
-    NoPendingUrlShownWhenAttachedToBrowserInitiatedFailedNavigation) {
+    MAYBE_NoPendingUrlShownWhenAttachedToBrowserInitiatedFailedNavigation) {
   GURL url("invalid.scheme:for-sure");
   ui_test_utils::AllBrowserTabAddedWaiter tab_added_waiter;
 
