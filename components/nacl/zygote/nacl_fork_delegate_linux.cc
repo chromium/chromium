@@ -38,6 +38,7 @@
 #include "sandbox/linux/suid/client/setuid_sandbox_host.h"
 #include "sandbox/linux/suid/common/sandbox.h"
 #include "sandbox/policy/switches.h"
+#include "third_party/cros_system_api/switches/chrome_switches.h"
 
 namespace {
 
@@ -213,6 +214,8 @@ void NaClForkDelegate::Init(const int sandboxdesc,
           sandbox::policy::switches::kDisableSeccompFilterSandbox,
           sandbox::policy::switches::kNoSandbox,
           switches::kEnableNaClDebug,
+          switches::kVerboseLoggingInNacl,
+          chromeos::switches::kFeatureFlags,
       };
       const base::CommandLine& current_cmd_line =
           *base::CommandLine::ForCurrentProcess();

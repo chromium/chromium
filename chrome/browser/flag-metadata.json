@@ -5666,6 +5666,12 @@
     "expiry_milestone": 100
   },
   {
+    "name": "verbose-logging-in-nacl",
+    "owners": [ "fabiansommer", "native-client-dev@googlegroups.com" ],
+    // This flag is useful for debugging NaCl-related issues.
+    "expiry_milestone": 128
+  },
+  {
     "name": "vertical-snap",
     "owners": [ "cattalyya", "afakhry", "nupurjain", "fanafan"],
     "expiry_milestone": 100

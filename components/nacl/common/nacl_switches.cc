@@ -39,4 +39,13 @@ const char kNaClGdb[]                       = "nacl-gdb";
 // for SFI mode.
 const char kNaClLoaderProcess[]             = "nacl-loader";
 
+// Sets NACLVERBOSITY to enable verbose logging.
+// This should match the string used in chrome/browser/about_flags.cc
+const char kVerboseLoggingInNacl[] = "verbose-logging-in-nacl";
+
+const char kVerboseLoggingInNaclChoiceLow[] = "1";
+const char kVerboseLoggingInNaclChoiceMedium[] = "2";
+const char kVerboseLoggingInNaclChoiceHigh[] = "4";
+const char kVerboseLoggingInNaclChoiceHighest[] = "7";
+const char kVerboseLoggingInNaclChoiceDisabled[] = "0";
 }  // namespace switches

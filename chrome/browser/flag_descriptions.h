@@ -3168,6 +3168,15 @@ extern const char kEnableJXLDescription[];
 #if BUILDFLAG(ENABLE_NACL)
 extern const char kNaclName[];
 extern const char kNaclDescription[];
+
+extern const char kVerboseLoggingInNaclName[];
+extern const char kVerboseLoggingInNaclDescription[];
+extern const char kVerboseLoggingInNaclChoiceDefault[];
+extern const char kVerboseLoggingInNaclChoiceLow[];
+extern const char kVerboseLoggingInNaclChoiceMedium[];
+extern const char kVerboseLoggingInNaclChoiceHigh[];
+extern const char kVerboseLoggingInNaclChoiceHighest[];
+extern const char kVerboseLoggingInNaclChoiceDisabled[];
 #endif  // ENABLE_NACL
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)

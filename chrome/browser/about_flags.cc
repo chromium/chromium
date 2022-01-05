@@ -747,6 +747,28 @@ const FeatureEntry::Choice kSchedulerConfigurationChoices[] = {
 };
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(ENABLE_NACL)
+// Note: This needs to be kept in sync with parsing in
+// content/common/zygote/zygote_communication_linux.cc
+const FeatureEntry::Choice kVerboseLoggingInNaclChoices[] = {
+    {flag_descriptions::kVerboseLoggingInNaclChoiceDefault, "", ""},
+    {flag_descriptions::kVerboseLoggingInNaclChoiceLow,
+     switches::kVerboseLoggingInNacl, switches::kVerboseLoggingInNaclChoiceLow},
+    {flag_descriptions::kVerboseLoggingInNaclChoiceMedium,
+     switches::kVerboseLoggingInNacl,
+     switches::kVerboseLoggingInNaclChoiceMedium},
+    {flag_descriptions::kVerboseLoggingInNaclChoiceHigh,
+     switches::kVerboseLoggingInNacl,
+     switches::kVerboseLoggingInNaclChoiceHigh},
+    {flag_descriptions::kVerboseLoggingInNaclChoiceHighest,
+     switches::kVerboseLoggingInNacl,
+     switches::kVerboseLoggingInNaclChoiceHighest},
+    {flag_descriptions::kVerboseLoggingInNaclChoiceDisabled,
+     switches::kVerboseLoggingInNacl,
+     switches::kVerboseLoggingInNaclChoiceDisabled},
+};
+#endif  // ENABLE_NACL
+
 const FeatureEntry::Choice kEnableUseZoomForDSFChoices[] = {
     {flag_descriptions::kEnableUseZoomForDsfChoiceDefault, "", ""},
     {flag_descriptions::kEnableUseZoomForDsfChoiceEnabled,
@@ -2792,6 +2814,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-nacl", flag_descriptions::kNaclName,
      flag_descriptions::kNaclDescription, kOsAll,
      SINGLE_VALUE_TYPE(switches::kEnableNaCl)},
+    {"verbose-logging-in-nacl", flag_descriptions::kVerboseLoggingInNaclName,
+     flag_descriptions::kVerboseLoggingInNaclDescription, kOsAll,
+     MULTI_VALUE_TYPE(kVerboseLoggingInNaclChoices)},
 #endif  // ENABLE_NACL
 #if BUILDFLAG(ENABLE_EXTENSIONS)
     {"extensions-on-chrome-urls",

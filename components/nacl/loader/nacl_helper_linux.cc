@@ -24,7 +24,9 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/environment.h"
 #include "base/files/scoped_file.h"
+#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/posix/eintr_wrapper.h"
@@ -44,6 +46,7 @@
 #include "mojo/core/embedder/embedder.h"
 #include "sandbox/linux/services/credentials.h"
 #include "sandbox/linux/services/namespace_sandbox.h"
+#include "third_party/cros_system_api/switches/chrome_switches.h"
 
 namespace {
 
@@ -51,6 +54,68 @@ struct NaClLoaderSystemInfo {
   size_t prereserved_sandbox_size;
   long number_of_cores;
 };
+
+#if defined(OS_CHROMEOS)
+std::string GetCommandLineFeatureFlagChoice(
+    const base::CommandLine* command_line,
+    std::string feature_flag) {
+  std::string encoded =
+      command_line->GetSwitchValueNative(chromeos::switches::kFeatureFlags);
+  if (encoded.empty()) {
+    return "";
+  }
+
+  auto flags_list = base::JSONReader::Read(encoded);
+  if (!flags_list) {
+    LOG(WARNING) << "Failed to parse feature flags configuration";
+    return "";
+  }
+
+  for (const auto& flag : flags_list.value().GetList()) {
+    if (!flag.is_string())
+      continue;
+    std::string flag_string = flag.GetString();
+    if (flag_string.rfind(feature_flag) != std::string::npos)
+      // For option x, this has the form "feature-flag-name@x". Return "x".
+      return flag_string.substr(feature_flag.size() + 1);
+  }
+  return "";
+}
+
+void AddVerboseLoggingInNaclSwitch(base::CommandLine* command_line) {
+  if (command_line->HasSwitch(switches::kVerboseLoggingInNacl))
+    // Flag is already present, nothing to do here.
+    return;
+
+  std::string option = GetCommandLineFeatureFlagChoice(
+      command_line, switches::kVerboseLoggingInNacl);
+
+  // This needs to be kept in sync with the order of choices for
+  // kVerboseLoggingInNacl in chrome/browser/about_flags.cc
+  if (option == "")
+    return;
+  if (option == "1")
+    return command_line->AppendSwitchASCII(
+        switches::kVerboseLoggingInNacl,
+        switches::kVerboseLoggingInNaclChoiceLow);
+  if (option == "2")
+    return command_line->AppendSwitchASCII(
+        switches::kVerboseLoggingInNacl,
+        switches::kVerboseLoggingInNaclChoiceMedium);
+  if (option == "3")
+    return command_line->AppendSwitchASCII(
+        switches::kVerboseLoggingInNacl,
+        switches::kVerboseLoggingInNaclChoiceHigh);
+  if (option == "4")
+    return command_line->AppendSwitchASCII(
+        switches::kVerboseLoggingInNacl,
+        switches::kVerboseLoggingInNaclChoiceHighest);
+  if (option == "5")
+    return command_line->AppendSwitchASCII(
+        switches::kVerboseLoggingInNacl,
+        switches::kVerboseLoggingInNaclChoiceDisabled);
+}
+#endif  // defined(OS_CHROMEOS)
 
 // The child must mimic the behavior of zygote_main_linux.cc on the child
 // side of the fork. See zygote_main_linux.cc:HandleForkRequest from
@@ -62,6 +127,16 @@ void BecomeNaClLoader(base::ScopedFD browser_fd,
   VLOG(1) << "NaCl loader: setting up IPC descriptor";
   // Close or shutdown IPC channels that we don't need anymore.
   PCHECK(0 == IGNORE_EINTR(close(kNaClZygoteDescriptor)));
+
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+#if defined(OS_CHROMEOS)
+  AddVerboseLoggingInNaclSwitch(command_line);
+#endif
+  if (command_line->HasSwitch(switches::kVerboseLoggingInNacl)) {
+    base::Environment::Create()->SetVar(
+        "NACLVERBOSITY",
+        command_line->GetSwitchValueASCII(switches::kVerboseLoggingInNacl));
+  }
 
   // Always ignore SIGPIPE, for consistency with other Chrome processes and
   // because some IPC code, such as sync_socket_posix.cc, requires this.

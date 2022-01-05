@@ -376,6 +376,7 @@
 #include "components/user_manager/user_manager.h"
 #include "services/service_manager/public/mojom/interface_provider_spec.mojom.h"
 #include "storage/browser/file_system/external_mount_points.h"
+#include "third_party/cros_system_api/switches/chrome_switches.h"
 #elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/chrome_browser_main_linux.h"
 #elif defined(OS_ANDROID)
@@ -2446,6 +2447,7 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
     static const char* const kSwitchNames[] = {
         switches::kEnableNaClDebug,
         switches::kForcePNaClSubzero,
+        switches::kVerboseLoggingInNacl,
     };
 
     command_line->CopySwitchesFrom(browser_command_line, kSwitchNames,
@@ -2456,6 +2458,14 @@ void ChromeContentBrowserClient::AppendExtraCommandLineSwitches(
     static const char* const kMoreSwitchNames[] = {switches::kLang};
     command_line->CopySwitchesFrom(browser_command_line, kMoreSwitchNames,
                                    base::size(kMoreSwitchNames));
+#endif
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // This is called before feature flags are parsed, so pass them in their raw
+    // form.
+    static const char* const kMoreCrOSSwitchNames[] = {
+        chromeos::switches::kFeatureFlags};
+    command_line->CopySwitchesFrom(browser_command_line, kMoreCrOSSwitchNames,
+                                   base::size(kMoreCrOSSwitchNames));
 #endif
   } else if (process_type == switches::kGpuProcess) {
     // If --ignore-gpu-blocklist is passed in, don't send in crash reports
