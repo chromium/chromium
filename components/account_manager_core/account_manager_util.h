@@ -7,6 +7,7 @@
 
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
+#include "components/account_manager_core/account_addition_options.h"
 #include "components/account_manager_core/account_addition_result.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -60,6 +61,11 @@ FromMojoAccountAdditionResult(
 COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
 crosapi::mojom::AccountAdditionResultPtr ToMojoAccountAdditionResult(
     account_manager::AccountAdditionResult result);
+
+COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
+absl::optional<account_manager::AccountAdditionOptions>
+FromMojoAccountAdditionOptions(
+    const crosapi::mojom::AccountAdditionOptionsPtr& mojo_options);
 }  // namespace account_manager
 
 #endif  // COMPONENTS_ACCOUNT_MANAGER_CORE_ACCOUNT_MANAGER_UTIL_H_

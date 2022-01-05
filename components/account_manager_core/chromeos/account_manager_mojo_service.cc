@@ -108,6 +108,7 @@ void AccountManagerMojoService::GetPersistentErrorForAccount(
 }
 
 void AccountManagerMojoService::ShowAddAccountDialog(
+    crosapi::mojom::AccountAdditionOptionsPtr options,
     ShowAddAccountDialogCallback callback) {
   DCHECK(account_manager_ui_);
   if (account_manager_ui_->IsDialogShown()) {

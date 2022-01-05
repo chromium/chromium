@@ -16,6 +16,7 @@
 #include "base/time/time.h"
 #include "chromeos/crosapi/mojom/account_manager.mojom.h"
 #include "components/account_manager_core/account.h"
+#include "components/account_manager_core/account_addition_options.h"
 #include "components/account_manager_core/account_addition_result.h"
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/account_manager_test_util.h"
@@ -157,8 +158,10 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
         ToMojoGoogleServiceAuthError(GoogleServiceAuthError::AuthErrorNone()));
   }
 
-  void ShowAddAccountDialog(ShowAddAccountDialogCallback callback) override {
+  void ShowAddAccountDialog(crosapi::mojom::AccountAdditionOptionsPtr options,
+                            ShowAddAccountDialogCallback callback) override {
     show_add_account_dialog_calls_++;
+    show_add_account_dialog_options_ = FromMojoAccountAdditionOptions(options);
     std::move(callback).Run(
         account_manager::ToMojoAccountAdditionResult(*add_account_result_));
   }
@@ -228,6 +231,11 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
     return show_add_account_dialog_calls_;
   }
 
+  absl::optional<account_manager::AccountAdditionOptions>
+  show_add_account_dialog_options() const {
+    return show_add_account_dialog_options_;
+  }
+
   int show_reauth_account_dialog_calls() const {
     return show_reauth_account_dialog_calls_;
   }
@@ -238,6 +246,8 @@ class FakeAccountManager : public crosapi::mojom::AccountManager {
 
  private:
   int show_add_account_dialog_calls_ = 0;
+  absl::optional<account_manager::AccountAdditionOptions>
+      show_add_account_dialog_options_;
   int show_reauth_account_dialog_calls_ = 0;
   int show_manage_accounts_settings_calls_ = 0;
   bool is_initialized_ = false;
@@ -434,6 +444,68 @@ TEST_F(AccountManagerFacadeImplTest, ShowAddAccountDialogCallsMojo) {
           kSettingsAddAccountButton);
   account_manager_facade->FlushMojoForTesting();
   EXPECT_EQ(1, account_manager().show_add_account_dialog_calls());
+}
+
+TEST_F(AccountManagerFacadeImplTest,
+       ShowAddAccountDialogSetsCorrectOptionsForAdditionFromAsh) {
+  std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
+      CreateFacade();
+  account_manager().SetAccountAdditionResult(
+      account_manager::AccountAdditionResult::FromStatus(
+          account_manager::AccountAdditionResult::Status::kUnexpectedResponse));
+  EXPECT_EQ(0, account_manager().show_add_account_dialog_calls());
+  account_manager_facade->ShowAddAccountDialog(
+      account_manager::AccountManagerFacade::AccountAdditionSource::
+          kSettingsAddAccountButton);
+  account_manager_facade->FlushMojoForTesting();
+  EXPECT_EQ(1, account_manager().show_add_account_dialog_calls());
+  EXPECT_TRUE(account_manager().show_add_account_dialog_options().has_value());
+  EXPECT_TRUE(
+      account_manager().show_add_account_dialog_options()->is_available_in_arc);
+  EXPECT_FALSE(account_manager()
+                   .show_add_account_dialog_options()
+                   ->show_arc_availability_picker);
+}
+
+TEST_F(AccountManagerFacadeImplTest,
+       ShowAddAccountDialogSetsCorrectOptionsForAdditionFromLacros) {
+  std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
+      CreateFacade();
+  account_manager().SetAccountAdditionResult(
+      account_manager::AccountAdditionResult::FromStatus(
+          account_manager::AccountAdditionResult::Status::kUnexpectedResponse));
+  EXPECT_EQ(0, account_manager().show_add_account_dialog_calls());
+  account_manager_facade->ShowAddAccountDialog(
+      account_manager::AccountManagerFacade::AccountAdditionSource::
+          kOgbAddAccount);
+  account_manager_facade->FlushMojoForTesting();
+  EXPECT_EQ(1, account_manager().show_add_account_dialog_calls());
+  EXPECT_TRUE(account_manager().show_add_account_dialog_options().has_value());
+  EXPECT_FALSE(
+      account_manager().show_add_account_dialog_options()->is_available_in_arc);
+  EXPECT_FALSE(account_manager()
+                   .show_add_account_dialog_options()
+                   ->show_arc_availability_picker);
+}
+
+TEST_F(AccountManagerFacadeImplTest,
+       ShowAddAccountDialogSetsCorrectOptionsForAdditionFromArc) {
+  std::unique_ptr<AccountManagerFacadeImpl> account_manager_facade =
+      CreateFacade();
+  account_manager().SetAccountAdditionResult(
+      account_manager::AccountAdditionResult::FromStatus(
+          account_manager::AccountAdditionResult::Status::kUnexpectedResponse));
+  EXPECT_EQ(0, account_manager().show_add_account_dialog_calls());
+  account_manager_facade->ShowAddAccountDialog(
+      account_manager::AccountManagerFacade::AccountAdditionSource::kArc);
+  account_manager_facade->FlushMojoForTesting();
+  EXPECT_EQ(1, account_manager().show_add_account_dialog_calls());
+  EXPECT_TRUE(account_manager().show_add_account_dialog_options().has_value());
+  EXPECT_TRUE(
+      account_manager().show_add_account_dialog_options()->is_available_in_arc);
+  EXPECT_TRUE(account_manager()
+                  .show_add_account_dialog_options()
+                  ->show_arc_availability_picker);
 }
 
 TEST_F(AccountManagerFacadeImplTest, ShowAddAccountDialogUMA) {

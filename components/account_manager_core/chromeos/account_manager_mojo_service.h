@@ -55,7 +55,8 @@ class COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE) AccountManagerMojoService
   void GetPersistentErrorForAccount(
       mojom::AccountKeyPtr mojo_account_key,
       GetPersistentErrorForAccountCallback callback) override;
-  void ShowAddAccountDialog(ShowAddAccountDialogCallback callback) override;
+  void ShowAddAccountDialog(mojom::AccountAdditionOptionsPtr options,
+                            ShowAddAccountDialogCallback callback) override;
   void ShowReauthAccountDialog(const std::string& email,
                                base::OnceClosure closure) override;
   void ShowManageAccountsSettings() override;
