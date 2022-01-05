@@ -311,4 +311,20 @@ TEST(InsetsTest, Size) {
   EXPECT_EQ(Size(6, 4), insets.size());
 }
 
+TEST(InsetsTest, SetToMax) {
+  Insets insets;
+  insets.SetToMax(Insets(-1, 2, -3, 4));
+  EXPECT_EQ(Insets(0, 2, 0, 4), insets);
+  insets.SetToMax(Insets());
+  EXPECT_EQ(Insets(0, 2, 0, 4), insets);
+  insets.SetToMax(Insets(1, 0, 3, 0));
+  EXPECT_EQ(Insets(1, 2, 3, 4), insets);
+  insets.SetToMax(Insets(20, 30, 40, 50));
+  EXPECT_EQ(Insets(20, 30, 40, 50), insets);
+
+  Insets insets1(-1, -2, -3, -4);
+  insets1.SetToMax(Insets());
+  EXPECT_EQ(Insets(), insets1);
+}
+
 }  // namespace gfx

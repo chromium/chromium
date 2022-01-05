@@ -80,6 +80,10 @@ class GEOMETRY_EXPORT Insets {
     right_ = GetClampedValue(left_, right);
   }
 
+  // Sets each side to the maximum of the side and the corresponding side of
+  // |other|.
+  void SetToMax(const gfx::Insets& other);
+
   bool operator==(const Insets& insets) const {
     return top_ == insets.top_ && left_ == insets.left_ &&
            bottom_ == insets.bottom_ && right_ == insets.right_;

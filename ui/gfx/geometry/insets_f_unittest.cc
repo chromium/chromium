@@ -110,4 +110,20 @@ TEST(InsetsFTest, ScaleNegative) {
   EXPECT_EQ(InsetsF(-17.5f, -12.5f, -7.5f, -2.5f), testf);
 }
 
+TEST(InsetsFTest, SetToMax) {
+  InsetsF insets;
+  insets.SetToMax(InsetsF(-1.25f, 2.5f, -3.75f, 4.5f));
+  EXPECT_EQ(InsetsF(0, 2.5f, 0, 4.5f), insets);
+  insets.SetToMax(InsetsF());
+  EXPECT_EQ(InsetsF(0, 2.5f, 0, 4.5f), insets);
+  insets.SetToMax(InsetsF(1.25f, 0, 3.75f, 0));
+  EXPECT_EQ(InsetsF(1.25f, 2.5f, 3.75f, 4.5f), insets);
+  insets.SetToMax(InsetsF(20, 30, 40, 50));
+  EXPECT_EQ(InsetsF(20, 30, 40, 50), insets);
+
+  InsetsF insets1(-1, -2, -3, -4);
+  insets1.SetToMax(InsetsF());
+  EXPECT_EQ(InsetsF(), insets1);
+}
+
 }  // namespace gfx

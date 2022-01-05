@@ -13,4 +13,11 @@ std::string InsetsF::ToString() const {
   return base::StringPrintf("%f,%f,%f,%f", top(),  left(), bottom(), right());
 }
 
+void InsetsF::SetToMax(const gfx::InsetsF& other) {
+  top_ = std::max(top_, other.top_);
+  left_ = std::max(left_, other.left_);
+  bottom_ = std::max(bottom_, other.bottom_);
+  right_ = std::max(right_, other.right_);
+}
+
 }  // namespace gfx

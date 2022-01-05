@@ -23,6 +23,13 @@ Insets Insets::Offset(const gfx::Vector2d& vector) const {
                      base::ClampSub(right(), vector.x()));
 }
 
+void Insets::SetToMax(const gfx::Insets& other) {
+  top_ = std::max(top_, other.top_);
+  left_ = std::max(left_, other.left_);
+  bottom_ = std::max(bottom_, other.bottom_);
+  right_ = std::max(right_, other.right_);
+}
+
 Insets ScaleToCeiledInsets(const Insets& insets, float x_scale, float y_scale) {
   if (x_scale == 1.f && y_scale == 1.f)
     return insets;

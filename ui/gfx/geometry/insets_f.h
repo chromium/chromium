@@ -48,6 +48,10 @@ class GEOMETRY_EXPORT InsetsF {
     right_ = right;
   }
 
+  // Sets each side to the maximum of the side and the corresponding side of
+  // |other|.
+  void SetToMax(const gfx::InsetsF& other);
+
   bool operator==(const InsetsF& insets) const {
     return top_ == insets.top_ && left_ == insets.left_ &&
            bottom_ == insets.bottom_ && right_ == insets.right_;
