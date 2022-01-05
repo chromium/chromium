@@ -716,6 +716,36 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
            LookalikeUrlMatchType::kFailedSpoofChecks);
 }
 
+// The navigated domain will fall back to punycode because it fails standard
+// ICU spoof checks in the IDN spoof checker. However, no interstitial will be
+// shown as the domain name is single character.
+IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
+                       Punycode_ShortHostname_NoInterstitial) {
+  const GURL kNavigatedUrl = GetURL("τ.com");
+
+  TestInterstitialNotShown(browser(), kNavigatedUrl);
+  CheckNoUkm();
+}
+
+// Same as Punycode_ShortHostname_NoInterstitial but also has target embedding.
+// Should show an interstitial this time.
+IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
+                       Punycode_ShortHostname_TargetEmbedding_Interstitial) {
+  if (!target_embedding_enabled()) {
+    return;
+  }
+  const GURL kNavigatedUrl = GetURL("google-com.τ.com");
+  const GURL kExpectedSuggestedUrl = GetURLWithoutPath("google.com");
+
+  base::HistogramTester histograms;
+  TestMetricsRecordedAndInterstitialShown(
+      browser(), histograms, kNavigatedUrl, kExpectedSuggestedUrl,
+      NavigationSuggestionEvent::kMatchTargetEmbedding);
+
+  CheckUkm({kNavigatedUrl}, "MatchType",
+           LookalikeUrlMatchType::kTargetEmbedding);
+}
+
 // The navigated domain will fall back to punycode because it fails spoof checks
 // in IDN spoof checker. The heuristic that changes this domain to punycode
 // (latin middle dot) is configured to show a punycode interstitial.

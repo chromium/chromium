@@ -177,7 +177,39 @@ struct TargetEmbeddingHeuristicTestCase {
   const TargetEmbeddingType expected_type;
 };
 
-TEST(LookalikeUrlUtilTest, TargetEmbedding) {
+TEST(LookalikeUrlUtilTest, ShouldBlockBySpoofCheckResult) {
+  EXPECT_FALSE(ShouldBlockBySpoofCheckResult(
+      GetDomainInfo(GURL("https://example.com"))));
+  // ASCII short eTLD+1:
+  EXPECT_FALSE(
+      ShouldBlockBySpoofCheckResult(GetDomainInfo(GURL("https://e.com"))));
+  EXPECT_FALSE(ShouldBlockBySpoofCheckResult(
+      GetDomainInfo(GURL("https://subdomain.e.com"))));
+  // Unicode single character e2LD:
+  EXPECT_FALSE(
+      ShouldBlockBySpoofCheckResult(GetDomainInfo(GURL("https://τ.com"))));
+  EXPECT_FALSE(
+      ShouldBlockBySpoofCheckResult(GetDomainInfo(GURL("https://test.τ.com"))));
+  // Unicode single character e2LD with a unicode registry.
+  EXPECT_FALSE(
+      ShouldBlockBySpoofCheckResult(GetDomainInfo(GURL("https://τ.рф"))));
+  EXPECT_FALSE(
+      ShouldBlockBySpoofCheckResult(GetDomainInfo(GURL("https://test.τ.рф"))));
+  // Non-unique hostname:
+  EXPECT_FALSE(ShouldBlockBySpoofCheckResult(GetDomainInfo(GURL("https://τ"))));
+
+  // Multi character e2LD with disallowed characters:
+  EXPECT_TRUE(
+      ShouldBlockBySpoofCheckResult(GetDomainInfo(GURL("https://ττ.com"))));
+  EXPECT_TRUE(ShouldBlockBySpoofCheckResult(
+      GetDomainInfo(GURL("https://test.ττ.com"))));
+  EXPECT_TRUE(
+      ShouldBlockBySpoofCheckResult(GetDomainInfo(GURL("https://ττ.рф"))));
+  EXPECT_TRUE(
+      ShouldBlockBySpoofCheckResult(GetDomainInfo(GURL("https://test.ττ.рф"))));
+}
+
+TEST(LookalikeUrlUtilTest, TargetEmbeddingTest) {
   const std::vector<DomainInfo> kEngagedSites = {
       GetDomainInfo(GURL("https://highengagement.com")),
       GetDomainInfo(GURL("https://highengagement.inthesubdomain.com")),
