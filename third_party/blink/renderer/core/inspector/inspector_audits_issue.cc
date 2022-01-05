@@ -454,12 +454,14 @@ void AuditsIssue::ReportSharedArrayBufferIssue(
 
 // static
 void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
-                                         const String& message) {
+                                         const String& message,
+                                         const String& type) {
   auto source_location = SourceLocation::Capture(execution_context);
   auto deprecation_issue_details =
       protocol::Audits::DeprecationIssueDetails::create()
           .setSourceCodeLocation(CreateProtocolLocation(*source_location))
           .setMessage(message)
+          .setDeprecationType(type)
           .build();
   if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
     auto affected_frame =

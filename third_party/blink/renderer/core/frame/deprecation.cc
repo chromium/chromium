@@ -794,7 +794,7 @@ void Deprecation::CountDeprecation(ExecutionContext* context,
 
   // Send the deprecation message as a DevTools issue.
   DCHECK(!info.message_.IsEmpty());
-  AuditsIssue::ReportDeprecationIssue(context, info.message_);
+  AuditsIssue::ReportDeprecationIssue(context, info.message_, info.id_);
 
   Report* report = CreateReportInternal(context->Url(), info);
 

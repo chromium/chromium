@@ -25,6 +25,7 @@ Deprecation issue: {
                 affectedFrame : {
                     frameId : <string>
                 }
+                deprecationType : SharedArrayBufferConstructedWithoutIsolation
                 message : SharedArrayBuffer will require cross-origin isolation as of M92, around July 2021. See https://developer.chrome.com/blog/enabling-shared-array-buffer/ for more details.
                 sourceCodeLocation : {
                     columnNumber : 18
