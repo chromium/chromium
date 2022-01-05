@@ -518,7 +518,7 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::DictionaryValue& params) {
     params.SetBoolean("dontResizeNonEmbeddedPages", true);
 
   content::WebContents* contents = web_ui()->GetWebContents();
-  const GURL& current_url = contents->GetURL();
+  const GURL& current_url = contents->GetLastCommittedURL();
   HandlerSigninReason reason = GetHandlerSigninReason(current_url);
 
   const GURL& url = GaiaUrls::GetInstance()->embedded_signin_url();
@@ -601,7 +601,7 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::DictionaryValue& params) {
 
 void InlineLoginHandlerImpl::CompleteLogin(const CompleteLoginParams& params) {
   content::WebContents* contents = web_ui()->GetWebContents();
-  const GURL& current_url = contents->GetURL();
+  const GURL& current_url = contents->GetLastCommittedURL();
 
   if (params.skip_for_now) {
     SyncSetupFailed();
@@ -794,7 +794,7 @@ void InlineLoginHandlerImpl::FinishCompleteLogin(
 
 void InlineLoginHandlerImpl::HandleLoginError(const SigninUIError& error) {
   content::WebContents* contents = web_ui()->GetWebContents();
-  const GURL& current_url = contents->GetURL();
+  const GURL& current_url = contents->GetLastCommittedURL();
   HandlerSigninReason reason = GetHandlerSigninReason(current_url);
 
   if (reason == HandlerSigninReason::kFetchLstOnly) {

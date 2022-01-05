@@ -78,7 +78,7 @@ void InlineLoginHandler::HandleInitializeMessage(const base::ListValue* args) {
   content::StoragePartition* partition =
       signin::GetSigninPartition(contents->GetBrowserContext());
   if (partition) {
-    const GURL& current_url = web_ui()->GetWebContents()->GetURL();
+    const GURL& current_url = web_ui()->GetWebContents()->GetLastCommittedURL();
 
     // If the kSignInPromoQueryKeyForceKeepData param is missing, or if it is
     // present and its value is zero, this means we don't want to keep the
@@ -109,7 +109,7 @@ void InlineLoginHandler::ContinueHandleInitializeMessage() {
   params.SetString("gaiaUrl", gaiaUrls->gaia_url().spec());
   params.SetInteger("authMode", InlineLoginHandler::kDesktopAuthMode);
 
-  const GURL& current_url = web_ui()->GetWebContents()->GetURL();
+  const GURL& current_url = web_ui()->GetWebContents()->GetLastCommittedURL();
   signin_metrics::AccessPoint access_point =
       signin::GetAccessPointForEmbeddedPromoURL(current_url);
   signin_metrics::Reason reason =
@@ -213,7 +213,7 @@ void InlineLoginHandler::HandleSwitchToFullTabMessage(
   CHECK(args->GetList()[0].is_string());
 
   Profile* profile = Profile::FromWebUI(web_ui());
-  GURL main_frame_url(web_ui()->GetWebContents()->GetURL());
+  GURL main_frame_url(web_ui()->GetWebContents()->GetLastCommittedURL());
 
   // Adds extra parameters to the signin URL so that Chrome will close the tab
   // and show the account management view of the avatar menu upon completion.

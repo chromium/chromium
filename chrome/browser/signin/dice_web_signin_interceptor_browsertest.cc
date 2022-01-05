@@ -369,8 +369,9 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, InterceptionTest) {
   ASSERT_EQ(BrowserList::GetInstance()->size(), 2u);
   EXPECT_EQ(added_browser->profile(), new_profile);
   EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
-  EXPECT_EQ(added_browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
-            intercepted_url);
+  EXPECT_EQ(
+      added_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      intercepted_url);
 
   CheckHistograms(histogram_tester,
                   SigninInterceptionHeuristicOutcome::kInterceptMultiUser);
@@ -449,8 +450,9 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAndLoad) {
   ASSERT_TRUE(added_browser);
   EXPECT_EQ(added_browser->profile(), new_profile);
   EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
-  EXPECT_EQ(added_browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
-            intercepted_url);
+  EXPECT_EQ(
+      added_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      intercepted_url);
 
   CheckHistograms(histogram_tester,
                   SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch);
@@ -528,8 +530,9 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAlreadyOpen) {
   EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
   EXPECT_EQ(other_browser->tab_strip_model()->count(),
             other_original_tab_count + 1);
-  EXPECT_EQ(other_browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
-            intercepted_url);
+  EXPECT_EQ(
+      other_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      intercepted_url);
 
   CheckHistograms(histogram_tester,
                   SigninInterceptionHeuristicOutcome::kInterceptProfileSwitch);
@@ -589,8 +592,9 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, CloseSourceTab) {
   ASSERT_TRUE(added_browser);
   EXPECT_EQ(added_browser->profile(), new_profile);
   EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
-  EXPECT_EQ(added_browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
-            GURL("chrome://newtab/"));
+  EXPECT_EQ(
+      added_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      GURL("chrome://newtab/"));
 }
 
 class DiceWebSigninInterceptorEnterpriseBrowserTest
@@ -703,8 +707,9 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
   ASSERT_EQ(BrowserList::GetInstance()->size(), 2u);
   EXPECT_EQ(added_browser->profile(), new_profile);
   EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
-  EXPECT_EQ(added_browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
-            intercepted_url);
+  EXPECT_EQ(
+      added_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      intercepted_url);
 
   CheckHistograms(histogram_tester,
                   SigninInterceptionHeuristicOutcome::kInterceptEnterprise);
@@ -799,8 +804,9 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
   ASSERT_EQ(BrowserList::GetInstance()->size(), 2u);
   EXPECT_EQ(added_browser->profile(), new_profile);
   EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
-  EXPECT_EQ(added_browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
-            intercepted_url);
+  EXPECT_EQ(
+      added_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      intercepted_url);
 
   CheckHistograms(
       histogram_tester,
@@ -878,8 +884,9 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
   ASSERT_EQ(BrowserList::GetInstance()->size(), 2u);
   EXPECT_EQ(added_browser->profile(), new_profile);
   EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
-  EXPECT_EQ(added_browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
-            intercepted_url);
+  EXPECT_EQ(
+      added_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      intercepted_url);
 
   CheckHistograms(
       histogram_tester,
@@ -952,8 +959,9 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
   EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count);
-  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents()->GetURL(),
-            intercepted_url);
+  EXPECT_EQ(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      intercepted_url);
 
   CheckHistograms(
       histogram_tester,
@@ -1019,8 +1027,9 @@ IN_PROC_BROWSER_TEST_F(
 
   ASSERT_EQ(BrowserList::GetInstance()->size(), 1u);
   EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count);
-  EXPECT_EQ(browser()->tab_strip_model()->GetActiveWebContents()->GetURL(),
-            intercepted_url);
+  EXPECT_EQ(
+      browser()->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      intercepted_url);
 
   CheckHistograms(histogram_tester,
                   SigninInterceptionHeuristicOutcome::kAbortAccountNotNew,
@@ -1095,8 +1104,9 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
   ASSERT_TRUE(added_browser);
   EXPECT_EQ(added_browser->profile(), new_profile);
   EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
-  EXPECT_EQ(added_browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
-            intercepted_url);
+  EXPECT_EQ(
+      added_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      intercepted_url);
 
   CheckHistograms(histogram_tester,
                   SigninInterceptionHeuristicOutcome::
@@ -1187,8 +1197,9 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
   EXPECT_EQ(browser()->tab_strip_model()->count(), original_tab_count - 1);
   EXPECT_EQ(other_browser->tab_strip_model()->count(),
             other_original_tab_count + 1);
-  EXPECT_EQ(other_browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
-            intercepted_url);
+  EXPECT_EQ(
+      other_browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL(),
+      intercepted_url);
 
   CheckHistograms(histogram_tester,
                   SigninInterceptionHeuristicOutcome::

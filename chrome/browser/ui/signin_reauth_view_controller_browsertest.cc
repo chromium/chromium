@@ -482,7 +482,8 @@ IN_PROC_BROWSER_TEST_F(SigninReauthViewControllerBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_NE(new_contents, original_contents);
   EXPECT_NE(new_contents, dialog_contents);
-  EXPECT_EQ(new_contents->GetURL(), https_server()->GetURL("/title1.html"));
+  EXPECT_EQ(new_contents->GetLastCommittedURL(),
+            https_server()->GetURL("/title1.html"));
 }
 
 // Tests that the authentication flow that goes outside of the reauth host is
@@ -516,7 +517,7 @@ IN_PROC_BROWSER_TEST_F(SigninReauthViewControllerBrowserTest,
       browser()->tab_strip_model()->GetActiveWebContents();
   EXPECT_NE(target_contents, original_contents);
   EXPECT_EQ(target_contents, signin_reauth_view_controller()->GetWebContents());
-  EXPECT_EQ(target_contents->GetURL(), target_url);
+  EXPECT_EQ(target_contents->GetLastCommittedURL(), target_url);
 
   ASSERT_TRUE(content::ExecuteScript(
       target_contents, "document.getElementsByTagName('a')[0].click();"));
@@ -543,7 +544,8 @@ IN_PROC_BROWSER_TEST_F(SigninReauthViewControllerBrowserTest, CloseSAMLTab) {
   tab_added_waiter.Wait();
 
   auto* tab_strip_model = browser()->tab_strip_model();
-  EXPECT_EQ(tab_strip_model->GetActiveWebContents()->GetURL(), target_url);
+  EXPECT_EQ(tab_strip_model->GetActiveWebContents()->GetLastCommittedURL(),
+            target_url);
   tab_strip_model->CloseWebContentsAt(tab_strip_model->active_index(),
                                       TabStripModel::CLOSE_USER_GESTURE);
   EXPECT_EQ(WaitForReauthResult(), signin::ReauthResult::kDismissedByUser);

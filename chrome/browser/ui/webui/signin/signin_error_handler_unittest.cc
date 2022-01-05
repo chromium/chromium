@@ -123,7 +123,7 @@ TEST_F(SigninErrorHandlerTest, InBrowserHandleLearnMore) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   EXPECT_EQ(1, tab_strip_model->count());
   EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
-            tab_strip_model->GetActiveWebContents()->GetURL());
+            tab_strip_model->GetActiveWebContents()->GetVisibleURL());
 
   // Open learn more
   CreateHandlerInBrowser();
@@ -136,7 +136,7 @@ TEST_F(SigninErrorHandlerTest, InBrowserHandleLearnMore) {
   // Verify that the learn more URL was opened.
   EXPECT_EQ(2, tab_strip_model->count());
   EXPECT_EQ(GURL(kSigninErrorLearnMoreUrl),
-            tab_strip_model->GetActiveWebContents()->GetURL());
+            tab_strip_model->GetActiveWebContents()->GetVisibleURL());
 }
 
 TEST_F(SigninErrorHandlerTest, InBrowserHandleLearnMoreAfterBrowserRemoved) {
@@ -144,7 +144,7 @@ TEST_F(SigninErrorHandlerTest, InBrowserHandleLearnMoreAfterBrowserRemoved) {
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   EXPECT_EQ(1, tab_strip_model->count());
   EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
-            tab_strip_model->GetActiveWebContents()->GetURL());
+            tab_strip_model->GetActiveWebContents()->GetVisibleURL());
 
   // Inform the handler that the browser was removed;
   CreateHandlerInBrowser();
@@ -160,7 +160,7 @@ TEST_F(SigninErrorHandlerTest, InBrowserHandleLearnMoreAfterBrowserRemoved) {
   // Verify that the learn more URL was not opened as the browser was removed.
   EXPECT_EQ(1, tab_strip_model->count());
   EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
-            tab_strip_model->GetActiveWebContents()->GetURL());
+            tab_strip_model->GetActiveWebContents()->GetVisibleURL());
 }
 
 TEST_F(SigninErrorHandlerTest, InBrowserTestConfirm) {

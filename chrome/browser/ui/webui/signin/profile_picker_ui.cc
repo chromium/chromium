@@ -251,7 +251,9 @@ ProfilePickerUI::ProfilePickerUI(content::WebUI* web_ui)
   profile_picker_handler_ = handler.get();
   web_ui->AddMessageHandler(std::move(handler));
 
-  if (web_ui->GetWebContents()->GetURL().query() ==
+  // GetVisibleURL is used here because a WebUIController is created before the
+  // navigation commits.
+  if (web_ui->GetWebContents()->GetVisibleURL().query() ==
       chrome::kChromeUIProfilePickerStartupQuery) {
     profile_picker_handler_->EnableStartupMetrics();
   }

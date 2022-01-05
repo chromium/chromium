@@ -165,7 +165,7 @@ void DiceInterceptedSessionStartupHelper::MoveTab() {
   GURL url_to_open = GURL(chrome::kChromeUINewTabURL);
   // If the intercepted web contents is still alive, close it now.
   if (web_contents_) {
-    url_to_open = web_contents_->GetURL();
+    url_to_open = web_contents_->GetLastCommittedURL();
     web_contents_->Close();
   }
 
