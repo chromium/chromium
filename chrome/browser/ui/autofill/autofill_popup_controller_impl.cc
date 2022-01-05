@@ -63,8 +63,8 @@ WeakPtr<AutofillPopupControllerImpl> AutofillPopupControllerImpl::GetOrCreate(
       previous->container_view() == container_view) {
     if (base::FeatureList::IsEnabled(
             features::kAutofillDelayPopupControllerDeletion) &&
-        previous->self_deletion_task_handle_.IsValid()) {
-      previous->self_deletion_task_handle_.CancelTask();
+        previous->self_deletion_weak_ptr_factory_.HasWeakPtrs()) {
+      previous->self_deletion_weak_ptr_factory_.InvalidateWeakPtrs();
     }
     previous->SetElementBounds(element_bounds);
     previous->ClearState();
@@ -595,18 +595,16 @@ void AutofillPopupControllerImpl::HideViewAndDie() {
     return;
   }
 
-  if (self_deletion_task_handle_.IsValid())
+  if (self_deletion_weak_ptr_factory_.HasWeakPtrs())
     return;
 
-  self_deletion_task_handle_ =
-      base::SequencedTaskRunnerHandle::Get()->PostCancelableDelayedTask(
-          FROM_HERE,
-          base::BindOnce(
-              [](WeakPtr<AutofillPopupControllerImpl> weak_this) {
-                delete weak_this.get();
-              },
-              weak_ptr_factory_.GetWeakPtr()),
-          base::TimeDelta());
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](WeakPtr<AutofillPopupControllerImpl> weak_this) {
+                       if (weak_this)
+                         delete weak_this.get();
+                     },
+                     self_deletion_weak_ptr_factory_.GetWeakPtr()));
 }
 
 bool AutofillPopupControllerImpl::IsMouseLocked() const {

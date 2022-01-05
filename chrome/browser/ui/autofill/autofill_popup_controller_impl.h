@@ -15,7 +15,6 @@
 #include "base/i18n/rtl.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/task/delayed_task_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
 #include "chrome/browser/ui/autofill/popup_controller_common.h"
@@ -219,7 +218,8 @@ class AutofillPopupControllerImpl : public AutofillPopupController {
   // AutofillPopupControllerImpl deletes itself. To simplify memory management,
   // we delete the object asynchronously if AutofillDelayPopupControllerDeletion
   // is enabled (TODO(crbug.com/1277218): Remove "if" clause).
-  base::DelayedTaskHandle self_deletion_task_handle_;
+  base::WeakPtrFactory<AutofillPopupControllerImpl>
+      self_deletion_weak_ptr_factory_{this};
 
   base::WeakPtrFactory<AutofillPopupControllerImpl> weak_ptr_factory_{this};
 };
