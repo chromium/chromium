@@ -227,7 +227,7 @@ NearbyConnectionsStatusToStartAdvertisingFailureReason(
       return StartAdvertisingFailureReason::kWifiLanError;
     case location::nearby::connections::mojom::Status::kSuccess:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case location::nearby::connections::mojom::Status::kAlreadyDiscovering:
     case location::nearby::connections::mojom::Status::kEndpointIOError:
     case location::nearby::connections::mojom::Status::kEndpointUnknown:
