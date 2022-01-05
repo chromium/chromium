@@ -76,7 +76,7 @@ void InputDelegateForTesting::QueueControllerActionForTesting(
 
   switch (controller_input.action) {
     case VrControllerTestAction::kHover:
-      FALLTHROUGH;
+      [[fallthrough]];
     case VrControllerTestAction::kClickUp:
       controller_model.touchpad_button_state =
           ControllerModel::ButtonState::kUp;
