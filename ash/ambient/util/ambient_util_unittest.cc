@@ -12,8 +12,8 @@ namespace ambient {
 namespace util {
 
 TEST(AmbientUtilTest, IsDynamicLottieAsset) {
-  EXPECT_TRUE(IsDynamicLottieAsset("USER_PHOTO_1"));
-  EXPECT_TRUE(IsDynamicLottieAsset("USER_PHOTO_2"));
+  EXPECT_TRUE(IsDynamicLottieAsset("dynamic_img1"));
+  EXPECT_TRUE(IsDynamicLottieAsset("dynamic_img2"));
   EXPECT_FALSE(IsDynamicLottieAsset("some_random_string"));
   EXPECT_FALSE(IsDynamicLottieAsset("random_string_with_user_photo_in_it"));
 }

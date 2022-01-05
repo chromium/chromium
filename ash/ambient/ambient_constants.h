@@ -64,7 +64,7 @@ constexpr int kMediaStringGradientWidthDip = 20;
 //
 // The motion designers who build the Lottie animations and eng have agreed upon
 // this prefix. Do not change unless coordinated with motion designers.
-constexpr char kLottieDynamicAssetIdPrefix[] = "USER_PHOTO_";
+constexpr char kLottieDynamicAssetIdPrefix[] = "dynamic_img";
 
 }  // namespace ash
 
