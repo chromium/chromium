@@ -95,8 +95,7 @@ typedef std::vector<CALayerOverlay> CALayerOverlayList;
 // CALayerOverlay into OverlayCandidate.
 class VIZ_SERVICE_EXPORT CALayerOverlayProcessor {
  public:
-  explicit CALayerOverlayProcessor(bool enable_ca_overlay);
-
+  CALayerOverlayProcessor();
   CALayerOverlayProcessor(const CALayerOverlayProcessor&) = delete;
   CALayerOverlayProcessor& operator=(const CALayerOverlayProcessor&) = delete;
 
@@ -146,7 +145,17 @@ class VIZ_SERVICE_EXPORT CALayerOverlayProcessor {
 
   void SaveCALayerResult(int result);
 
-  const bool enable_ca_overlay_;
+  // Set to false if the APIs required for overlays are not present, or the
+  // feature has been disabled.
+  const bool overlays_allowed_;
+
+  // Controls the feature of replacying all quads with overlays is enabled.
+  const bool enable_ca_renderer_;
+
+  // Controls the feature of putting HDR videos into underlays if the
+  // CARenderer fails (so that we can use the tone mapping provided by macOS).
+  const bool enable_hdr_underlays_;
+
   size_t max_quad_list_size_ = 0;
   int ca_layer_result_ = 0;
 };

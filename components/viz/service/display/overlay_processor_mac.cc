@@ -7,32 +7,18 @@
 #include <utility>
 #include <vector>
 
-#include "base/feature_list.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/service/display/display_resource_provider.h"
 #include "components/viz/service/display/output_surface.h"
-#include "ui/base/cocoa/remote_layer_api.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 
 namespace viz {
 
-namespace {
-// Control using the CoreAnimation renderer, which is the path that replaces
-// all quads with CALayers.
-base::Feature kCoreAnimationRenderer{"CoreAnimationRenderer",
-                                     base::FEATURE_ENABLED_BY_DEFAULT};
-
-bool AllowCoreAnimationRenderer() {
-  return ui::RemoteLayerAPISupported() &&
-         base::FeatureList::IsEnabled(kCoreAnimationRenderer);
-}
-}  // namespace
-
 OverlayProcessorMac::OverlayProcessorMac()
-    : ca_layer_overlay_processor_(std::make_unique<CALayerOverlayProcessor>(
-          AllowCoreAnimationRenderer())) {}
+    : ca_layer_overlay_processor_(std::make_unique<CALayerOverlayProcessor>()) {
+}
 
 OverlayProcessorMac::OverlayProcessorMac(
     std::unique_ptr<CALayerOverlayProcessor> ca_layer_overlay_processor)

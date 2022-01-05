@@ -17,6 +17,7 @@
 #include "components/viz/service/display/display_resource_provider.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "third_party/skia/include/core/SkDeferredDisplayList.h"
+#include "ui/base/cocoa/remote_layer_api.h"
 
 namespace viz {
 
@@ -351,6 +352,16 @@ class CALayerOverlayProcessorInternal {
   scoped_refptr<CALayerOverlaySharedState> most_recent_overlay_shared_state_;
 };
 
+// Control using the CoreAnimation renderer, which is the path that replaces
+// all quads with CALayers.
+base::Feature kCARenderer{"CoreAnimationRenderer",
+                          base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Control using the CoreAnimation renderer, which is the path that replaces
+// all quads with CALayers.
+base::Feature kHDRUnderlays{"CoreAnimationHDRUnderlays",
+                            base::FEATURE_ENABLED_BY_DEFAULT};
+
 }  // namespace
 
 CALayerOverlay::CALayerOverlay() : filter(GL_LINEAR) {}
@@ -362,8 +373,10 @@ CALayerOverlay::~CALayerOverlay() = default;
 CALayerOverlay& CALayerOverlay::operator=(const CALayerOverlay& other) =
     default;
 
-CALayerOverlayProcessor::CALayerOverlayProcessor(bool enable_ca_overlay)
-    : enable_ca_overlay_(enable_ca_overlay) {
+CALayerOverlayProcessor::CALayerOverlayProcessor()
+    : overlays_allowed_(ui::RemoteLayerAPISupported()),
+      enable_ca_renderer_(base::FeatureList::IsEnabled(kCARenderer)),
+      enable_hdr_underlays_(base::FeatureList::IsEnabled(kHDRUnderlays)) {
   max_quad_list_size_ = kTooManyQuads;
   if (base::FeatureList::IsEnabled(features::kMacCAOverlayQuad)) {
     const int max_num = features::kMacCAOverlayQuadMaxNum.Get();
@@ -432,9 +445,12 @@ void CALayerOverlayProcessor::PutForcedOverlayContentIntoUnderlays(
               gfx::ProtectedVideoType::kHardwareProtected)
         force_quad_to_overlay = true;
 
-      // Put HDR videos into an overlay
-      if (resource_provider->GetColorSpace(texture_quad->resource_id()).IsHDR())
-        force_quad_to_overlay = true;
+      // Put HDR videos into an underlay.
+      if (enable_hdr_underlays_) {
+        if (resource_provider->GetColorSpace(texture_quad->resource_id())
+                .IsHDR())
+          force_quad_to_overlay = true;
+      }
     }
 
     if (force_quad_to_overlay) {
@@ -465,7 +481,7 @@ bool CALayerOverlayProcessor::ProcessForCALayerOverlays(
   size_t num_visible_quads = quad_list.size();
 
   // Skip overlay processing
-  if (!enable_ca_overlay_) {
+  if (!overlays_allowed_ || !enable_ca_renderer_) {
     result = CA_LAYER_FAILED_OVERLAY_DISABLED;
   } else if (!render_pass->copy_requests.empty()) {
     result = CA_LAYER_FAILED_COPY_REQUESTS;
