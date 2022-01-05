@@ -84,7 +84,7 @@ void ShowStartVmFailedDialog(PluginVmLaunchResult result) {
   switch (result) {
     default:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case PluginVmLaunchResult::kError:
       title = l10n_util::GetStringFUTF16(IDS_PLUGIN_VM_START_VM_ERROR_TITLE,
                                          app_name);

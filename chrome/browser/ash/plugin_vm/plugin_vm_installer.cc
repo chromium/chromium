@@ -85,7 +85,7 @@ PluginVmSetupResult BucketForCancelledInstall(
   switch (installing_state) {
     case PluginVmInstaller::InstallingState::kInactive:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case PluginVmInstaller::InstallingState::kCheckingLicense:
       return PluginVmSetupResult::kUserCancelledValidatingLicense;
     case PluginVmInstaller::InstallingState::kCheckingDiskSpace:
