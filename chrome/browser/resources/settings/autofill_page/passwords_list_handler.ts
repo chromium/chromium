@@ -48,7 +48,8 @@ declare global {
 export interface PasswordsListHandlerElement {
   $: {
     menu: CrActionMenuElement,
-    toast: CrToastElement,
+    removalToast: CrToastElement,
+    copyToast: CrToastElement,
   };
 }
 
@@ -191,16 +192,14 @@ export class PasswordsListHandlerElement extends
   disconnectedCallback() {
     super.disconnectedCallback();
 
-    if (this.$.toast.open) {
-      this.$.toast.hide();
-    }
+    this.hideToasts_();
   }
 
   /**
    * Closes the toast manager.
    */
   onSavedPasswordOrExceptionRemoved() {
-    this.$.toast.hide();
+    this.$.removalToast.hide();
   }
 
   /**
@@ -292,6 +291,7 @@ export class PasswordsListHandlerElement extends
     this.requestActivePlaintextPassword_(
         chrome.passwordsPrivate.PlaintextReason.COPY, _ => {
           this.activePassword_ = null;
+          this.displayCopyNotification_();
         });
 
     this.$.menu.close();
@@ -321,6 +321,15 @@ export class PasswordsListHandlerElement extends
     this.activePassword_ = null;
   }
 
+  private hideToasts_() {
+    if (this.$.removalToast.open) {
+      this.$.removalToast.hide();
+    }
+    if (this.$.copyToast.open) {
+      this.$.copyToast.hide();
+    }
+  }
+
   /**
    * At least one of |removedFromAccount| or |removedFromDevice| must be true.
    */
@@ -338,12 +347,19 @@ export class PasswordsListHandlerElement extends
         this.removalNotification_ = this.i18n('passwordDeletedFromDevice');
       }
     }
-    this.$.toast.show();
+
+    this.hideToasts_();
+    this.$.removalToast.show();
   }
 
   private onUndoButtonClick_() {
     this.passwordManager_.undoRemoveSavedPasswordOrException();
     this.onSavedPasswordOrExceptionRemoved();
+  }
+
+  private displayCopyNotification_() {
+    this.hideToasts_();
+    this.$.copyToast.show();
   }
 
   /**

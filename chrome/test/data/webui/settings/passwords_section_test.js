@@ -1135,7 +1135,7 @@ suite('PasswordsSection', function() {
         createPasswordEntry({url: 'goo.gl', username: 'bart'});
     const passwordsSection = elementFactory.createPasswordsSection(
         passwordManager, [passwordEntry], []);
-    const toastManager = passwordsSection.$.passwordsListHandler.$.toast;
+    const toastManager = passwordsSection.$.passwordsListHandler.$.removalToast;
 
     // Click the remove button on the first password and assert that an undo
     // toast is shown.
