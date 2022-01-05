@@ -46,18 +46,21 @@ WebContents* FakeWebContentsGetter() {
 // functionality.
 class TestHandler : public ClearSiteDataHandler {
  public:
-  TestHandler(base::RepeatingCallback<BrowserContext*()> browser_context_getter,
-              base::RepeatingCallback<WebContents*()> web_contents_getter,
-              const GURL& url,
-              const std::string& header_value,
-              int load_flags,
-              base::OnceClosure callback,
-              std::unique_ptr<ConsoleMessagesDelegate> delegate)
+  TestHandler(
+      base::RepeatingCallback<BrowserContext*()> browser_context_getter,
+      base::RepeatingCallback<WebContents*()> web_contents_getter,
+      const GURL& url,
+      const std::string& header_value,
+      int load_flags,
+      const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
+      base::OnceClosure callback,
+      std::unique_ptr<ConsoleMessagesDelegate> delegate)
       : ClearSiteDataHandler(browser_context_getter,
                              web_contents_getter,
                              url,
                              header_value,
                              load_flags,
+                             cookie_partition_key,
                              std::move(callback),
                              std::move(delegate)) {}
   ~TestHandler() override = default;
@@ -66,11 +69,14 @@ class TestHandler : public ClearSiteDataHandler {
   // test cases.
   bool DoHandleHeader() { return HandleHeaderAndOutputConsoleMessages(); }
 
-  MOCK_METHOD4(ClearSiteData,
+  MOCK_METHOD6(ClearSiteData,
                void(const url::Origin& origin,
                     bool clear_cookies,
                     bool clear_storage,
-                    bool clear_cache));
+                    bool clear_cache,
+                    bool avoid_closing_connections,
+                    const absl::optional<net::CookiePartitionKey>&
+                        cookie_partition_key));
 
  protected:
   void ExecuteClearingTask(const url::Origin& origin,
@@ -78,7 +84,8 @@ class TestHandler : public ClearSiteDataHandler {
                            bool clear_storage,
                            bool clear_cache,
                            base::OnceClosure callback) override {
-    ClearSiteData(origin, clear_cookies, clear_storage, clear_cache);
+    ClearSiteData(origin, clear_cookies, clear_storage, clear_cache, false,
+                  CookiePartitionKeyForTesting());
 
     // NOTE: ResourceThrottle expects Resume() to be called asynchronously.
     // For the purposes of this test, synchronous call works correctly, and
@@ -227,15 +234,16 @@ TEST_F(ClearSiteDataHandlerTest, ParseHeaderAndExecuteClearingTask) {
       net::TestURLRequestContext context;
       std::unique_ptr<net::URLRequest> request(context.CreateRequest(
           url, net::DEFAULT_PRIORITY, nullptr, TRAFFIC_ANNOTATION_FOR_TESTS));
-      TestHandler handler(base::BindRepeating(&FakeBrowserContextGetter),
-                          base::BindRepeating(&FakeWebContentsGetter),
-                          request->url(), test_case.header,
-                          request->load_flags(), base::DoNothing(),
-                          std::make_unique<ConsoleMessagesDelegate>());
+      TestHandler handler(
+          base::BindRepeating(&FakeBrowserContextGetter),
+          base::BindRepeating(&FakeWebContentsGetter), request->url(),
+          test_case.header, request->load_flags(),
+          /*cookie_partition_key=*/absl::nullopt, base::DoNothing(),
+          std::make_unique<ConsoleMessagesDelegate>());
 
       EXPECT_CALL(handler,
                   ClearSiteData(url::Origin::Create(url), test_case.cookies,
-                                test_case.storage, test_case.cache));
+                                test_case.storage, test_case.cache, _, _));
       bool defer = handler.DoHandleHeader();
       EXPECT_TRUE(defer);
 
@@ -300,10 +308,11 @@ TEST_F(ClearSiteDataHandlerTest, ClearCookieSuccess) {
   TestHandler handler(
       base::BindRepeating(&FakeBrowserContextGetter),
       base::BindRepeating(&FakeWebContentsGetter), request->url(),
-      kClearCookiesHeader, request->load_flags(), base::DoNothing(),
+      kClearCookiesHeader, request->load_flags(),
+      /*cookie_partition_key*/ absl::nullopt, base::DoNothing(),
       std::make_unique<VectorConsoleMessagesDelegate>(&message_buffer));
 
-  EXPECT_CALL(handler, ClearSiteData(_, _, _, _));
+  EXPECT_CALL(handler, ClearSiteData(_, _, _, _, _, _));
   bool defer = handler.DoHandleHeader();
   EXPECT_TRUE(defer);
   EXPECT_EQ(1u, message_buffer.size());
@@ -327,10 +336,11 @@ TEST_F(ClearSiteDataHandlerTest, LoadDoNotSaveCookies) {
   TestHandler handler(
       base::BindRepeating(&FakeBrowserContextGetter),
       base::BindRepeating(&FakeWebContentsGetter), request->url(),
-      kClearCookiesHeader, request->load_flags(), base::DoNothing(),
+      kClearCookiesHeader, request->load_flags(),
+      /*cookie_partition_key=*/absl::nullopt, base::DoNothing(),
       std::make_unique<VectorConsoleMessagesDelegate>(&message_buffer));
 
-  EXPECT_CALL(handler, ClearSiteData(_, _, _, _)).Times(0);
+  EXPECT_CALL(handler, ClearSiteData(_, _, _, _, _, _)).Times(0);
   bool defer = handler.DoHandleHeader();
   EXPECT_FALSE(defer);
   EXPECT_EQ(1u, message_buffer.size());
@@ -376,10 +386,11 @@ TEST_F(ClearSiteDataHandlerTest, InvalidOrigin) {
     TestHandler handler(
         base::BindRepeating(&FakeBrowserContextGetter),
         base::BindRepeating(&FakeWebContentsGetter), request->url(),
-        kClearCookiesHeader, request->load_flags(), base::DoNothing(),
+        kClearCookiesHeader, request->load_flags(),
+        /*cookie_partition_key=*/absl::nullopt, base::DoNothing(),
         std::make_unique<VectorConsoleMessagesDelegate>(&message_buffer));
 
-    EXPECT_CALL(handler, ClearSiteData(_, _, _, _))
+    EXPECT_CALL(handler, ClearSiteData(_, _, _, _, _, _))
         .Times(test_case.expect_success ? 1 : 0);
 
     bool defer = handler.DoHandleHeader();
@@ -470,7 +481,8 @@ TEST_F(ClearSiteDataHandlerTest, FormattedConsoleOutput) {
       TestHandler handler(
           base::BindRepeating(&FakeBrowserContextGetter),
           base::BindRepeating(&FakeWebContentsGetter), GURL(kTestCases[i].url),
-          kTestCases[i].header, request->load_flags(), base::DoNothing(),
+          kTestCases[i].header, request->load_flags(),
+          /*cookie_partition_key=*/absl::nullopt, base::DoNothing(),
           std::make_unique<StringConsoleMessagesDelegate>(&output_buffer));
       handler.DoHandleHeader();
 
@@ -492,6 +504,29 @@ TEST_F(ClearSiteDataHandlerTest, FormattedConsoleOutput) {
     for (struct TestCase& test_case : kTestCases)
       expected_output += test_case.output;
     EXPECT_EQ(expected_output, output_buffer);
+  }
+}
+
+TEST_F(ClearSiteDataHandlerTest, CookiePartitionKey) {
+  absl::optional<net::CookiePartitionKey> cookie_partition_keys[] = {
+      absl::nullopt,
+      net::CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com")),
+  };
+  const GURL kTestURL("https://www.bar.com");
+
+  for (const auto& cookie_partition_key : cookie_partition_keys) {
+    net::TestURLRequestContext context;
+    std::unique_ptr<net::URLRequest> request(
+        context.CreateRequest(kTestURL, net::DEFAULT_PRIORITY, nullptr,
+                              TRAFFIC_ANNOTATION_FOR_TESTS));
+    std::string output_buffer;
+    TestHandler handler(
+        base::BindRepeating(&FakeBrowserContextGetter),
+        base::BindRepeating(&FakeWebContentsGetter), kTestURL, "\"cookies\"",
+        request->load_flags(), cookie_partition_key, base::DoNothing(),
+        std::make_unique<StringConsoleMessagesDelegate>(&output_buffer));
+    EXPECT_CALL(handler, ClearSiteData(_, _, _, _, _, cookie_partition_key));
+    EXPECT_TRUE(handler.DoHandleHeader());
   }
 }
 

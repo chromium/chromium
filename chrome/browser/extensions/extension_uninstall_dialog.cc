@@ -249,7 +249,8 @@ void ExtensionUninstallDialog::OnDialogClosed(CloseAction action) {
                 base::Unretained(profile_)),
             url::Origin::Create(GetLaunchURL()), true /*clear_cookies*/,
             true /*clear_storage*/, true /*clear_cache*/,
-            false /*avoid_closing_connections*/, base::DoNothing());
+            false /*avoid_closing_connections*/,
+            net::CookiePartitionKey::Todo(), base::DoNothing());
       } else {
         // If the extension specifies a custom uninstall page via
         // chrome.runtime.setUninstallURL, then at uninstallation its uninstall

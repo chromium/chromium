@@ -81,6 +81,9 @@ class NET_EXPORT CookiePartitionKeyCollection {
     return keys_;
   }
 
+  // Returns true if the collection contains the passed key.
+  bool Contains(const CookiePartitionKey& key) const;
+
  private:
   explicit CookiePartitionKeyCollection(bool contains_all_keys_);
 

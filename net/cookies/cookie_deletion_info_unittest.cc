@@ -507,10 +507,10 @@ TEST(CookieDeletionInfoTest, CookieDeletionInfoMatchesDomainList) {
 // the IncludeForRequestURL call uses CookieOptions::MakeAllInclusive).
 TEST(CookieDeletionInfoTest, MatchesWithCookieAccessSemantics) {
   // Cookie with unspecified SameSite.
-  auto cookie = CanonicalCookie::Create(
-      GURL("https://www.example.com"), "cookie=1", base::Time::Now(),
-      absl::nullopt /* server_time */,
-      absl::nullopt /* cookie_partition_key */);
+  auto cookie = CanonicalCookie::Create(GURL("https://www.example.com"),
+                                        "cookie=1", base::Time::Now(),
+                                        /*server_time=*/absl::nullopt,
+                                        /*cookie_partition_key=*/absl::nullopt);
 
   CookieDeletionInfo delete_info;
   delete_info.url = GURL("https://www.example.com/path");
@@ -529,6 +529,66 @@ TEST(CookieDeletionInfoTest, MatchesWithCookieAccessSemantics) {
       CookieAccessParams{CookieAccessSemantics::NONLEGACY,
                          /*delegate_treats_url_as_trustworthy=*/false,
                          CookieSamePartyStatus::kNoSamePartyEnforcement}));
+}
+
+TEST(CookieDeletionInfoTest, MatchesCookiePartitionKeyCollection) {
+  const CookiePartitionKey kPartitionKey =
+      CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com"));
+  const CookiePartitionKey kOtherPartitionKey =
+      CookiePartitionKey::FromURLForTesting(GURL("https://www.bar.com"));
+  const CookiePartitionKeyCollection kEmptyKeychain;
+  const CookiePartitionKeyCollection kSingletonKeychain(kPartitionKey);
+  const CookiePartitionKeyCollection kMultipleKeysKeychain(
+      {kPartitionKey, kOtherPartitionKey});
+  const CookiePartitionKeyCollection kAllKeysKeychain =
+      CookiePartitionKeyCollection::ContainsAll();
+  const absl::optional<CookiePartitionKey> kPartitionKeyOpt =
+      absl::make_optional(kPartitionKey);
+  const CookiePartitionKeyCollection kOtherKeySingletonKeychain(
+      kOtherPartitionKey);
+
+  struct TestCase {
+    const std::string desc;
+    const CookiePartitionKeyCollection filter_cookie_partition_key_collection;
+    const absl::optional<CookiePartitionKey> cookie_partition_key;
+    bool expects_match;
+  } test_cases[] = {
+      // Unpartitioned cookie always matches
+      {"Unpartitioned empty keychain", kEmptyKeychain, absl::nullopt, true},
+      {"Unpartitioned singleton keychain", kSingletonKeychain, absl::nullopt,
+       true},
+      {"Unpartitioned multiple keys", kMultipleKeysKeychain, absl::nullopt,
+       true},
+      {"Unpartitioned all keys", kAllKeysKeychain, absl::nullopt, true},
+      // Partitioned cookie only matches keychains which contain its partition
+      // key.
+      {"Partitioned empty keychain", kEmptyKeychain, kPartitionKeyOpt, false},
+      {"Partitioned singleton keychain", kSingletonKeychain, kPartitionKeyOpt,
+       true},
+      {"Partitioned multiple keys", kMultipleKeysKeychain, kPartitionKeyOpt,
+       true},
+      {"Partitioned all keys", kAllKeysKeychain, kPartitionKeyOpt, true},
+      {"Partitioned mismatched keys", kOtherKeySingletonKeychain,
+       kPartitionKeyOpt, false},
+  };
+
+  for (const auto& test_case : test_cases) {
+    SCOPED_TRACE(test_case.desc);
+    auto cookie = CanonicalCookie::Create(
+        GURL("https://www.example.com"),
+        "__Host-foo=bar; Secure; Path=/; Partitioned", base::Time::Now(),
+        /*server_time=*/absl::nullopt, test_case.cookie_partition_key);
+    CookieDeletionInfo delete_info;
+    delete_info.cookie_partition_key_collection =
+        test_case.filter_cookie_partition_key_collection;
+    EXPECT_EQ(
+        test_case.expects_match,
+        delete_info.Matches(
+            *cookie, CookieAccessParams{
+                         net::CookieAccessSemantics::UNKNOWN,
+                         /*delegate_treats_url_as_trustworthy=*/false,
+                         CookieSamePartyStatus::kNoSamePartyEnforcement}));
+  }
 }
 
 }  // namespace net

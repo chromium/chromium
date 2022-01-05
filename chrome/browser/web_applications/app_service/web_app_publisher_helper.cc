@@ -558,7 +558,8 @@ void WebAppPublisherHelper::UninstallWebApp(
                              },
                              base::Unretained(profile())),
                          origin, kClearCookies, kClearStorage, kClearCache,
-                         kAvoidClosingConnections, base::DoNothing());
+                         kAvoidClosingConnections,
+                         net::CookiePartitionKey::Todo(), base::DoNothing());
 }
 
 apps::mojom::IconKeyPtr WebAppPublisherHelper::MakeIconKey(

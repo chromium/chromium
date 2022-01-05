@@ -1,0 +1,25 @@
+<!doctype html>
+<head>
+<title>Test Clear-Site-Data and partitioned cookies</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="/cookies/resources/testharness-helpers.js"></script>
+</head>
+<body>
+<script>
+
+if (window.location.hostname != ORIGINAL_HOST) {
+  window.location.hostname = ORIGINAL_HOST;
+}
+
+const iframe = document.createElement("iframe");
+const url = new URL(
+    "/cookies/partitioned-cookies/resources/" +
+        "clear-site-data-cross-site-frame.html?step=1",
+    `https://${TEST_HOST}:${window.location.port}`);
+iframe.src = String(url);
+document.body.appendChild(iframe);
+fetch_tests_from_window(iframe.contentWindow);
+
+</script>
+</body>

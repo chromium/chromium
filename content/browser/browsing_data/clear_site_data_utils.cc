@@ -25,18 +25,21 @@ namespace {
 // on the IO thread.
 class SiteDataClearer : public BrowsingDataRemover::Observer {
  public:
-  SiteDataClearer(BrowserContext* browser_context,
-                  const url::Origin& origin,
-                  bool clear_cookies,
-                  bool clear_storage,
-                  bool clear_cache,
-                  bool avoid_closing_connections,
-                  base::OnceClosure callback)
+  SiteDataClearer(
+      BrowserContext* browser_context,
+      const url::Origin& origin,
+      bool clear_cookies,
+      bool clear_storage,
+      bool clear_cache,
+      bool avoid_closing_connections,
+      const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
+      base::OnceClosure callback)
       : origin_(origin),
         clear_cookies_(clear_cookies),
         clear_storage_(clear_storage),
         clear_cache_(clear_cache),
         avoid_closing_connections_(avoid_closing_connections),
+        cookie_partition_key_(cookie_partition_key),
         callback_(std::move(callback)),
         pending_task_count_(0),
         remover_(nullptr) {
@@ -69,10 +72,13 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
       if (domain.empty())
         domain = origin_.host();  // IP address or internal hostname.
 
-      std::unique_ptr<BrowsingDataFilterBuilder> domain_filter_builder(
+      std::unique_ptr<BrowsingDataFilterBuilder> cookie_filter_builder(
           BrowsingDataFilterBuilder::Create(
               BrowsingDataFilterBuilder::Mode::kDelete));
-      domain_filter_builder->AddRegisterableDomain(domain);
+      cookie_filter_builder->AddRegisterableDomain(domain);
+      cookie_filter_builder->SetCookiePartitionKeyCollection(
+          net::CookiePartitionKeyCollection::FromOptional(
+              cookie_partition_key_));
 
       pending_task_count_++;
       uint64_t remove_mask = BrowsingDataRemover::DATA_TYPE_COOKIES;
@@ -83,7 +89,7 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
           base::Time(), base::Time::Max(), remove_mask,
           BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB |
               BrowsingDataRemover::ORIGIN_TYPE_PROTECTED_WEB,
-          std::move(domain_filter_builder), this);
+          std::move(cookie_filter_builder), this);
     }
 
     // Delete origin-scoped data.
@@ -126,6 +132,7 @@ class SiteDataClearer : public BrowsingDataRemover::Observer {
   bool clear_storage_;
   bool clear_cache_;
   bool avoid_closing_connections_;
+  absl::optional<net::CookiePartitionKey> cookie_partition_key_;
   base::OnceClosure callback_;
   int pending_task_count_;
   raw_ptr<BrowsingDataRemover> remover_;
@@ -142,6 +149,7 @@ void ClearSiteData(
     bool clear_storage,
     bool clear_cache,
     bool avoid_closing_connections,
+    const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
     base::OnceClosure callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   BrowserContext* browser_context = browser_context_getter.Run();
@@ -151,7 +159,7 @@ void ClearSiteData(
   }
   (new SiteDataClearer(browser_context, origin, clear_cookies, clear_storage,
                        clear_cache, avoid_closing_connections,
-                       std::move(callback)))
+                       cookie_partition_key, std::move(callback)))
       ->RunAndDestroySelfWhenDone();
 }
 

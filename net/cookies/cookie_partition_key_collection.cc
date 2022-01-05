@@ -4,6 +4,8 @@
 
 #include "net/cookies/cookie_partition_key_collection.h"
 
+#include "base/containers/contains.h"
+
 namespace net {
 
 CookiePartitionKeyCollection::CookiePartitionKeyCollection() = default;
@@ -52,6 +54,11 @@ CookiePartitionKeyCollection CookiePartitionKeyCollection::FirstPartySetify(
     }
   }
   return CookiePartitionKeyCollection(keys);
+}
+
+bool CookiePartitionKeyCollection::Contains(
+    const CookiePartitionKey& key) const {
+  return contains_all_keys_ || base::Contains(keys_, key);
 }
 
 }  // namespace net

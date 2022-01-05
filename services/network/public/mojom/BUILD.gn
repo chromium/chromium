@@ -809,6 +809,14 @@ mojom("cookies_mojom") {
           cpp = "::net::CookieOptions"
         },
         {
+          mojom = "network.mojom.CookiePartitionKey"
+          cpp = "::net::CookiePartitionKey"
+        },
+        {
+          mojom = "network.mojom.CookiePartitionKeyCollection"
+          cpp = "::net::CookiePartitionKeyCollection"
+        },
+        {
           mojom = "network.mojom.CookiePartitionKeyCollection"
           cpp = "::net::CookiePartitionKeyCollection"
         },

@@ -1,0 +1,9 @@
+CONSOLE MESSAGE: Clear-Site-Data header on 'https://cookies.not-example.test:8443/cookies/resources/clear-site-data.php': Cleared data types: "cookies". Clearing channel IDs and HTTP authentication cache is currently not supported, as it breaks active network connections.
+CONSOLE MESSAGE: Clear-Site-Data header on 'https://cookies.not-example.test:8443/cookies/resources/clear-site-data.php': Cleared data types: "cookies". Clearing channel IDs and HTTP authentication cache is currently not supported, as it breaks active network connections.
+This is a testharness.js-based test.
+PASS Clearing partitioned cookies
+PASS Clearing partitioned cookies in another partition
+PASS Opened page from first partition
+PASS Clear-Site-Data does not leak across partitions
+Harness: the test ran to completion.
+

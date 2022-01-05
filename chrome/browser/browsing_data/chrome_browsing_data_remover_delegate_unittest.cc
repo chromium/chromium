@@ -2148,6 +2148,22 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
 }
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest,
+       DisableAutoSignInCrossSiteClearSiteData) {
+  RemovePasswordsTester tester(GetProfile());
+  std::unique_ptr<BrowsingDataFilterBuilder> filter(
+      BrowsingDataFilterBuilder::Create(
+          BrowsingDataFilterBuilder::Mode::kDelete));
+  filter->AddRegisterableDomain("cookie.com");
+  filter->SetCookiePartitionKeyCollection(net::CookiePartitionKeyCollection(
+      net::CookiePartitionKey::FromURLForTesting(
+          GURL("https://notcookie.com"))));
+  EXPECT_CALL(*tester.profile_store(), DisableAutoSignInForOrigins).Times(0);
+  BlockUntilOriginDataRemoved(base::Time(), base::Time::Max(),
+                              content::BrowsingDataRemover::DATA_TYPE_COOKIES,
+                              std::move(filter));
+}
+
+TEST_F(ChromeBrowsingDataRemoverDelegateTest,
        RemoveContentSettingsWithPreserveFilter) {
   // This test relies on async loading to complete. RunUntilIdle() should be
   // removed and an explicit wait should be added.

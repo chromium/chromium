@@ -131,6 +131,11 @@ bool CookieDeletionInfo::Matches(const CanonicalCookie& cookie,
     return false;
   }
 
+  if (cookie.IsPartitioned() &&
+      !cookie_partition_key_collection.Contains(*cookie.PartitionKey())) {
+    return false;
+  }
+
   return true;
 }
 

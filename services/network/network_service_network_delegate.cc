@@ -358,6 +358,8 @@ int NetworkServiceNetworkDelegate::HandleClearSiteDataHeader(
 
   url_loader_network_observer->OnClearSiteData(
       request->url(), header_value, request->load_flags(),
+      net::CookiePartitionKey::FromNetworkIsolationKey(
+          request->isolation_info().network_isolation_key()),
       base::BindOnce(&NetworkServiceNetworkDelegate::FinishedClearSiteData,
                      weak_ptr_factory_.GetWeakPtr(), request->GetWeakPtr(),
                      std::move(callback)));

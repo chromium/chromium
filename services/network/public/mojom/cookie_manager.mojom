@@ -345,6 +345,11 @@ struct CookieDeletionFilter {
 
   // Delete session/persistent cookies.
   CookieDeletionSessionControl session_control = IGNORE_CONTROL;
+
+  // Only delete partitioned cookies contained in this
+  // CookiePartitionKeyCollection.
+  // See net/cookies/cookie_partition_key_collection.h for documentation.
+  CookiePartitionKeyCollection cookie_partition_key_collection;
 };
 
 interface CookieChangeListener {

@@ -135,4 +135,34 @@ TEST(CookiePartitionKeyCollectionTest, FirstPartySetify) {
   EXPECT_EQ(kNonMemberPartitionKey, got.PartitionKeys()[1]);
 }
 
+TEST(CookiePartitionKeyCollectionTest, Contains) {
+  const CookiePartitionKey kPartitionKey =
+      CookiePartitionKey::FromURLForTesting(GURL("https://www.foo.com"));
+  const CookiePartitionKey kOtherPartitionKey =
+      CookiePartitionKey::FromURLForTesting(GURL("https://www.bar.com"));
+
+  struct TestCase {
+    const CookiePartitionKeyCollection keychain;
+    const CookiePartitionKey key;
+    bool expects_contains;
+  } test_cases[] = {
+      // Empty keychain
+      {CookiePartitionKeyCollection(), kPartitionKey, false},
+      // Singleton keychain with key
+      {CookiePartitionKeyCollection(kPartitionKey), kPartitionKey, true},
+      // Singleton keychain with different key
+      {CookiePartitionKeyCollection(kOtherPartitionKey), kPartitionKey, false},
+      // Multiple keys
+      {CookiePartitionKeyCollection({kPartitionKey, kOtherPartitionKey}),
+       kPartitionKey, true},
+      // Contains all keys
+      {CookiePartitionKeyCollection::ContainsAll(), kPartitionKey, true},
+  };
+
+  for (const auto& test_case : test_cases) {
+    EXPECT_EQ(test_case.expects_contains,
+              test_case.keychain.Contains(test_case.key));
+  }
+}
+
 }  // namespace net

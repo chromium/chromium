@@ -382,6 +382,9 @@ CookieDeletionInfo DeletionFilterToInfo(mojom::CookieDeletionFilterPtr filter) {
         filter->excluding_domains.value().end());
   }
 
+  delete_info.cookie_partition_key_collection =
+      filter->cookie_partition_key_collection;
+
   return delete_info;
 }
 

@@ -2022,18 +2022,21 @@ void StoragePartitionImpl::OnCanSendDomainReliabilityUpload(
       blink::mojom::PermissionStatus::GRANTED);
 }
 
-void StoragePartitionImpl::OnClearSiteData(const GURL& url,
-                                           const std::string& header_value,
-                                           int load_flags,
-                                           OnClearSiteDataCallback callback) {
+void StoragePartitionImpl::OnClearSiteData(
+    const GURL& url,
+    const std::string& header_value,
+    int load_flags,
+    const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
+    OnClearSiteDataCallback callback) {
   DCHECK(initialized_);
   auto browser_context_getter = base::BindRepeating(
       GetBrowserContextFromStoragePartition, weak_factory_.GetWeakPtr());
   auto web_contents_getter = base::BindRepeating(
       GetWebContents, url_loader_network_observers_.current_context());
-  ClearSiteDataHandler::HandleHeader(browser_context_getter,
-                                     web_contents_getter, url, header_value,
-                                     load_flags, std::move(callback));
+
+  ClearSiteDataHandler::HandleHeader(
+      browser_context_getter, web_contents_getter, url, header_value,
+      load_flags, cookie_partition_key, std::move(callback));
 }
 
 #if defined(OS_ANDROID)

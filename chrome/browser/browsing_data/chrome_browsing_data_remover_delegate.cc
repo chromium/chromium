@@ -637,12 +637,14 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     if (sb_service)
       safe_browsing_context = sb_service->GetNetworkContext(profile_);
 
-    browsing_data::RemoveEmbedderCookieData(
-        delete_begin, delete_end, filter_builder, host_content_settings_map_,
-        safe_browsing_context,
-        base::BindOnce(
-            &ChromeBrowsingDataRemoverDelegate::CreateTaskCompletionClosure,
-            base::Unretained(this), TracingDataType::kCookies));
+    if (!filter_builder->IsCrossSiteClearSiteData()) {
+      browsing_data::RemoveEmbedderCookieData(
+          delete_begin, delete_end, filter_builder, host_content_settings_map_,
+          safe_browsing_context,
+          base::BindOnce(
+              &ChromeBrowsingDataRemoverDelegate::CreateTaskCompletionClosure,
+              base::Unretained(this), TracingDataType::kCookies));
+    }
 
     if (filter_builder->GetMode() ==
         BrowsingDataFilterBuilder::Mode::kPreserve) {
@@ -661,7 +663,8 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
     }
 
     if (nullable_filter.is_null() ||
-        nullable_filter.Run(GaiaUrls::GetInstance()->google_url())) {
+        (!filter_builder->IsCrossSiteClearSiteData() &&
+         nullable_filter.Run(GaiaUrls::GetInstance()->google_url()))) {
       // Set a flag to clear account storage settings later instead of clearing
       // it now as we can not reset this setting before passwords are deleted.
       should_clear_password_account_storage_settings_ = true;
@@ -853,7 +856,7 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
                                             ServiceAccessType::EXPLICIT_ACCESS)
             .get();
 
-    if (password_store) {
+    if (password_store && !filter_builder->IsCrossSiteClearSiteData()) {
       password_store->DisableAutoSignInForOrigins(
           filter,
           CreateTaskCompletionClosure(TracingDataType::kDisableAutoSignin));
