@@ -653,6 +653,7 @@ bool IsAXSetter(SEL selector) {
 
   // These attributes are required on all accessibility objects.
   NSArray* const kAllRoleAttributes = @[
+    NSAccessibilityDOMClassList,
     NSAccessibilityDOMIdentifierAttribute,
     NSAccessibilityChildrenAttribute,
     NSAccessibilityParentAttribute,
@@ -1021,6 +1022,23 @@ bool IsAXSetter(SEL selector) {
   }
 
   return [elements count] ? elements : nil;
+}
+
+- (NSArray*)AXDOMClassList {
+  if (![self instanceActive])
+    return nil;
+
+  NSMutableArray* ret = [[[NSMutableArray alloc] init] autorelease];
+
+  std::string classes;
+  if (_node->GetStringAttribute(ax::mojom::StringAttribute::kClassName,
+                                &classes)) {
+    std::vector<std::string> split_classes = base::SplitString(
+        classes, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+    for (const auto& className : split_classes)
+      [ret addObject:(base::SysUTF8ToNSString(className))];
+  }
+  return ret;
 }
 
 - (NSString*)AXDOMIdentifier {

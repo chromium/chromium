@@ -201,6 +201,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXDetailsElements) {
   RunTypedTest<kMacAttributes>("ax-details-elements.html");
 }
 
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXDOMClassList) {
+  RunTypedTest<kMacAttributes>("ax-dom-class-list.html");
+}
+
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityScriptTest, AXDOMIdentifier) {
   RunTypedTest<kMacAttributes>("ax-dom-identifier.html");
 }

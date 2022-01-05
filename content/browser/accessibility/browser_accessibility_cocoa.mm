@@ -67,7 +67,6 @@ namespace {
 
 // Private WebKit accessibility attributes.
 NSString* const NSAccessibilityBlockQuoteLevelAttribute = @"AXBlockQuoteLevel";
-NSString* const NSAccessibilityDOMClassList = @"AXDOMClassList";
 NSString* const NSAccessibilityDropEffectsAttribute = @"AXDropEffects";
 NSString* const NSAccessibilityEditableAncestorAttribute =
     @"AXEditableAncestor";
@@ -702,7 +701,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
       {NSAccessibilityDisclosureLevelAttribute, @"disclosureLevel"},
       {NSAccessibilityDisclosedRowsAttribute, @"disclosedRows"},
       {NSAccessibilityDropEffectsAttribute, @"dropEffects"},
-      {NSAccessibilityDOMClassList, @"domClassList"},
       {NSAccessibilityEditableAncestorAttribute, @"editableAncestor"},
       {NSAccessibilityElementBusyAttribute, @"elementBusy"},
       {NSAccessibilityEnabledAttribute, @"enabled"},
@@ -1038,23 +1036,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
     return base::SysUTF8ToNSString(dropEffects);
 
   return nil;
-}
-
-- (NSArray*)domClassList {
-  if (![self instanceActive])
-    return nil;
-
-  NSMutableArray* ret = [[[NSMutableArray alloc] init] autorelease];
-
-  std::string classes;
-  if (_owner->GetStringAttribute(ax::mojom::StringAttribute::kClassName,
-                                 &classes)) {
-    std::vector<std::string> split_classes = base::SplitString(
-        classes, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
-    for (const auto& className : split_classes)
-      [ret addObject:(base::SysUTF8ToNSString(className))];
-  }
-  return ret;
 }
 
 - (id)editableAncestor {
@@ -2952,7 +2933,6 @@ id content::AXTextMarkerRangeFrom(id anchor_textmarker, id focus_textmarker) {
                        NSAccessibilityChildrenAttribute,
                        NSAccessibilityIdentifierChromeAttribute,
                        NSAccessibilityDescriptionAttribute,
-                       NSAccessibilityDOMClassList,
                        NSAccessibilityElementBusyAttribute,
                        NSAccessibilityEnabledAttribute,
                        NSAccessibilityEndTextMarkerAttribute,
