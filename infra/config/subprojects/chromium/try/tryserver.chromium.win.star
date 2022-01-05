@@ -129,8 +129,8 @@ try_.orchestrator_pair_builders(
     compilator_cores = 32,
     compilator_goma_jobs = goma.jobs.J300,
     compilator_name = "win10_chromium_x64_rel_ng-compilator",
-    # TODO (crbug/1271287): Revert when root issue is fixed
-    compilator_grace_period = 3 * time.minute,
+    # TODO (crbug.com/1245171): Revert when root issue is fixed
+    compilator_grace_period = 4 * time.minute,
 )
 
 try_.builder(

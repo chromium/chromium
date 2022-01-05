@@ -77,7 +77,7 @@ try_.orchestrator_pair_builders(
     compilator_goma_jobs = goma.jobs.J150,
     os = os.MAC_11,
     compilator_name = "mac11-arm64-rel-compilator",
-    # TODO (crbug/1271287): Revert when root issue is fixed
+    # TODO (crbug.com/1245171): Revert when root issue is fixed
     compilator_grace_period = 4 * time.minute,
 )
 
