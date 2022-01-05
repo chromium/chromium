@@ -206,13 +206,12 @@ class NET_EXPORT_PRIVATE URLRequestHttpJob : public URLRequestJob {
   // `override_response_info_::headers`.
   HttpResponseHeaders* GetResponseHeaders() const;
 
-  // Compute the `cookie_partition_key_` for the request. Partitioned cookies
-  // will be set using this key and only partitioned cookies with this partition
-  // key will be sent.
-  // Sets `cookie_partition_key_` to nullopt if cookie partitioning is not
-  // enabled, if the NIK has no top-frame site, or if the instance has no
-  // cookie store.
-  void ComputeCookiePartitionKey();
+  // Computes the cookie partition key for the request. Partitioned cookies
+  // should be set using this key and only partitioned cookies with this
+  // partition key should be sent.
+  // Returns nullopt if cookie partitioning is not enabled, if the NIK has no
+  // top-frame site, or if the instance has no cookie store.
+  absl::optional<CookiePartitionKey> ComputeCookiePartitionKey();
 
   // Returns true if partitioned cookies are enabled and can be accessed and/or
   // set.

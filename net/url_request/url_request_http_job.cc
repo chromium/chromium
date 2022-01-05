@@ -241,7 +241,7 @@ URLRequestHttpJob::URLRequestHttpJob(
     throttling_entry_ = manager->RegisterRequestUrl(request->url());
 
   ResetTimer();
-  ComputeCookiePartitionKey();
+  cookie_partition_key_ = ComputeCookiePartitionKey();
 }
 
 URLRequestHttpJob::~URLRequestHttpJob() {
@@ -1616,13 +1616,12 @@ void URLRequestHttpJob::NotifyURLRequestDestroyed() {
     network_quality_estimator->NotifyURLRequestDestroyed(*request());
 }
 
-void URLRequestHttpJob::ComputeCookiePartitionKey() {
+absl::optional<CookiePartitionKey>
+URLRequestHttpJob::ComputeCookiePartitionKey() {
   const CookieStore* cookie_store = request_->context()->cookie_store();
-  if (!cookie_store) {
-    cookie_partition_key_ = absl::nullopt;
-    return;
-  }
-  cookie_partition_key_ = CookieAccessDelegate::CreateCookiePartitionKey(
+  if (!cookie_store)
+    return absl::nullopt;
+  return CookieAccessDelegate::CreateCookiePartitionKey(
       cookie_store->cookie_access_delegate(),
       request_->isolation_info().network_isolation_key());
 }
