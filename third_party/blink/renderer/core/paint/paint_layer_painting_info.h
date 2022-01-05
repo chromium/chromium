@@ -45,11 +45,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_PAINTING_INFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_PAINTING_INFO_H_
 
-#include "base/check_op.h"
 #include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
-#include "third_party/blink/renderer/core/paint/paint_phase.h"
-#include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 #if DCHECK_IS_ON()
@@ -63,21 +60,11 @@ class PaintLayer;
 
 enum PaintLayerFlag {
   kPaintLayerNoFlag = 0,
-  kPaintLayerPaintingOverlayOverflowControls = 1 << 3,
-  kPaintLayerPaintingCompositingBackgroundPhase = 1 << 4,
-  kPaintLayerPaintingCompositingForegroundPhase = 1 << 5,
-  kPaintLayerPaintingCompositingMaskPhase = 1 << 6,
-  kPaintLayerPaintingCompositingScrollingPhase = 1 << 7,
-  kPaintLayerPaintingOverflowContents = 1 << 8,
-  kPaintLayerPaintingSkipRootBackground = 1 << 10,
-  kPaintLayerPaintingRenderingClipPathAsMask = 1 << 13,
-  kPaintLayerPaintingCompositingDecorationPhase = 1 << 14,
-  kPaintLayerPaintingRenderingResourceSubtree = 1 << 15,
-  kPaintLayerPaintingCompositingAllPhases =
-      (kPaintLayerPaintingCompositingBackgroundPhase |
-       kPaintLayerPaintingCompositingForegroundPhase |
-       kPaintLayerPaintingCompositingMaskPhase |
-       kPaintLayerPaintingCompositingDecorationPhase)
+  kPaintLayerPaintingOverlayOverflowControls = 1 << 0,
+  kPaintLayerPaintingOverflowContents = 1 << 1,
+  kPaintLayerPaintingSkipBackground = 1 << 2,
+  kPaintLayerPaintingRenderingClipPathAsMask = 1 << 3,
+  kPaintLayerPaintingRenderingResourceSubtree = 1 << 4,
 };
 
 typedef unsigned PaintLayerFlags;
@@ -118,27 +105,12 @@ inline String PaintLayerFlagsToDebugString(PaintLayerFlags flags) {
     need_separator = true;
   };
 
-  if (flags & kPaintLayerPaintingCompositingAllPhases) {
-    append("kPaintLayerPaintingCompositingAllPhases");
-  } else {
-    if (flags & kPaintLayerPaintingCompositingBackgroundPhase)
-      append("kPaintLayerPaintingCompositingBackgroundPhase");
-    if (flags & kPaintLayerPaintingCompositingForegroundPhase)
-      append("kPaintLayerPaintingCompositingForegroundPhase");
-    if (flags & kPaintLayerPaintingCompositingMaskPhase)
-      append("kPaintLayerPaintingCompositingMaskPhase");
-    if (flags & kPaintLayerPaintingCompositingDecorationPhase)
-      append("kPaintLayerPaintingCompositingDecorationPhase");
-  }
-
   if (flags & kPaintLayerPaintingOverlayOverflowControls)
     append("kPaintLayerPaintingOverlayOverflowControls");
-  if (flags & kPaintLayerPaintingCompositingScrollingPhase)
-    append("kPaintLayerPaintingCompositingScrollingPhase");
   if (flags & kPaintLayerPaintingOverflowContents)
     append("kPaintLayerPaintingOverflowContents");
-  if (flags & kPaintLayerPaintingSkipRootBackground)
-    append("kPaintLayerPaintingSkipRootBackground");
+  if (flags & kPaintLayerPaintingSkipBackground)
+    append("kPaintLayerPaintingSkipBackground");
   if (flags & kPaintLayerPaintingRenderingClipPathAsMask)
     append("kPaintLayerPaintingRenderingClipPathAsMask");
   if (flags & kPaintLayerPaintingRenderingResourceSubtree)

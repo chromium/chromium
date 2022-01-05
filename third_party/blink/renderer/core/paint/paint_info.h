@@ -103,13 +103,13 @@ struct CORE_EXPORT PaintInfo {
   }
 
   bool ShouldSkipBackground() const {
-    return paint_flags_ & kPaintLayerPaintingSkipRootBackground;
+    return paint_flags_ & kPaintLayerPaintingSkipBackground;
   }
   void SetSkipsBackground(bool b) {
     if (b)
-      paint_flags_ |= kPaintLayerPaintingSkipRootBackground;
+      paint_flags_ |= kPaintLayerPaintingSkipBackground;
     else
-      paint_flags_ &= ~kPaintLayerPaintingSkipRootBackground;
+      paint_flags_ &= ~kPaintLayerPaintingSkipBackground;
   }
 
   bool ShouldAddUrlMetadata() const {

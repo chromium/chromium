@@ -118,7 +118,6 @@ PaintResult PaintLayerPainter::Paint(
     return kFullyPainted;
   }
 
-  paint_flags |= kPaintLayerPaintingCompositingAllPhases;
   return PaintLayerContents(context, painting_info, paint_flags);
 }
 
@@ -279,10 +278,8 @@ void PaintLayerPainter::AdjustForPaintProperties(
   // transform space from the current root layer. Use the current layer as
   // the new root layer.
   painting_info.root_layer = &paint_layer_;
-  // These flags no longer apply for the new root layer.
-  paint_flags &= ~kPaintLayerPaintingSkipRootBackground;
+  // This flag no longer applies for the new root layer.
   paint_flags &= ~kPaintLayerPaintingOverflowContents;
-  paint_flags &= ~kPaintLayerPaintingCompositingScrollingPhase;
 
   if (first_fragment.PaintProperties() &&
       first_fragment.PaintProperties()->PaintOffsetTranslation()) {
@@ -348,24 +345,8 @@ PaintResult PaintLayerPainter::PaintLayerContents(
   bool is_self_painting_layer = paint_layer_.IsSelfPaintingLayer();
   bool is_painting_overlay_overflow_controls =
       paint_flags & kPaintLayerPaintingOverlayOverflowControls;
-  bool is_painting_scrolling_content =
-      paint_flags & kPaintLayerPaintingCompositingScrollingPhase;
-  bool is_painting_composited_foreground =
-      paint_flags & kPaintLayerPaintingCompositingForegroundPhase;
-  bool is_painting_composited_background =
-      paint_flags & kPaintLayerPaintingCompositingBackgroundPhase;
-  bool is_painting_composited_decoration =
-      paint_flags & kPaintLayerPaintingCompositingDecorationPhase;
   bool is_painting_overflow_contents =
       paint_flags & kPaintLayerPaintingOverflowContents;
-  bool is_painting_mask = paint_flags & kPaintLayerPaintingCompositingMaskPhase;
-
-  // Outline always needs to be painted even if we have no visible content.
-  // It is painted as part of the decoration phase which paints content that
-  // is not scrolled and should be above scrolled content.
-  bool should_paint_self_outline =
-      is_self_painting_layer && !is_painting_overlay_overflow_controls &&
-      is_painting_composited_decoration && object.StyleRef().HasOutline();
 
   bool should_paint_content =
       paint_layer_.HasVisibleContent() &&
@@ -434,23 +415,6 @@ PaintResult PaintLayerPainter::PaintLayerContents(
     subsequence_recorder.emplace(context, paint_layer_);
   }
 
-  bool is_painting_root_layer = (&paint_layer_) == painting_info.root_layer;
-  bool should_paint_background =
-      should_paint_content && !selection_drag_image_only &&
-      (is_painting_composited_background ||
-       (is_painting_root_layer &&
-        !(paint_flags & kPaintLayerPaintingSkipRootBackground)));
-  bool should_paint_neg_z_order_list =
-      !is_painting_overlay_overflow_controls &&
-      (is_painting_scrolling_content ? is_painting_overflow_contents
-                                     : is_painting_composited_background);
-  bool should_paint_own_contents =
-      is_painting_composited_foreground && should_paint_content;
-  bool should_paint_normal_flow_and_pos_z_order_lists =
-      is_painting_composited_foreground &&
-      !is_painting_overlay_overflow_controls;
-  bool is_video = IsA<LayoutVideo>(object);
-
   absl::optional<ScopedEffectivelyInvisible> effectively_invisible;
   if (PaintedOutputInvisible(object.StyleRef()))
     effectively_invisible.emplace(context.GetPaintController());
@@ -465,18 +429,21 @@ PaintResult PaintLayerPainter::PaintLayerContents(
         DisplayItem::kLayerChunk);
   }
 
+  bool should_paint_background =
+      should_paint_content && !selection_drag_image_only;
   if (should_paint_background) {
     PaintWithPhase(PaintPhase::kSelfBlockBackgroundOnly, context,
                    local_painting_info, paint_flags);
   }
 
-  if (should_paint_neg_z_order_list) {
+  bool should_paint_children = !is_painting_overlay_overflow_controls;
+  if (should_paint_children) {
     if (PaintChildren(kNegativeZOrderChildren, context, painting_info,
                       paint_flags) == kMayBeClippedByCullRect)
       result = kMayBeClippedByCullRect;
   }
 
-  if (should_paint_own_contents) {
+  if (should_paint_content) {
     // If the negative-z-order children created paint chunks, this gives the
     // foreground paint chunk a stable id.
     ScopedPaintChunkProperties foreground_properties(
@@ -492,12 +459,18 @@ PaintResult PaintLayerPainter::PaintLayerContents(
     }
   }
 
+  // Outline always needs to be painted even if we have no visible content.
+  bool should_paint_self_outline = is_self_painting_layer &&
+                                   !is_painting_overlay_overflow_controls &&
+                                   object.StyleRef().HasOutline();
+
+  bool is_video = IsA<LayoutVideo>(object);
   if (!is_video && should_paint_self_outline) {
     PaintWithPhase(PaintPhase::kSelfOutlineOnly, context, local_painting_info,
                    paint_flags);
   }
 
-  if (should_paint_normal_flow_and_pos_z_order_lists) {
+  if (should_paint_children) {
     if (PaintChildren(kNormalFlowAndPositiveZOrderChildren, context,
                       painting_info, paint_flags) == kMayBeClippedByCullRect)
       result = kMayBeClippedByCullRect;
@@ -519,7 +492,7 @@ PaintResult PaintLayerPainter::PaintLayerContents(
                    paint_flags);
   }
 
-  if (is_painting_mask && should_paint_content && !selection_drag_image_only) {
+  if (should_paint_content && !selection_drag_image_only) {
     if (const auto* properties = object.FirstFragment().PaintProperties()) {
       if (properties->Mask()) {
         PaintWithPhase(PaintPhase::kMask, context, local_painting_info,

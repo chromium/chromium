@@ -553,8 +553,7 @@ TEST_F(WebViewTest, SetBaseBackgroundColorAndBlendWithExistingContent) {
   view->GetLayoutView()->GetDocument().Lifecycle().AdvanceTo(
       DocumentLifecycle::kInPaint);
   PaintLayerPainter(*root_layer)
-      .PaintLayerContents(builder->Context(), painting_info,
-                          kPaintLayerPaintingCompositingAllPhases);
+      .PaintLayerContents(builder->Context(), painting_info, kPaintLayerNoFlag);
   view->GetLayoutView()->GetDocument().Lifecycle().AdvanceTo(
       DocumentLifecycle::kPaintClean);
   builder->EndRecording()->Playback(&canvas);
