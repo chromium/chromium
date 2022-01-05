@@ -1279,6 +1279,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.DeskTemplate.AddOrUpdateTemplateStatus"
+    enum="DeskModelAddOrUpdateEntryStatus" expires_after="2022-11-11">
+  <owner>yzd@google.com</owner>
+  <owner>janetmac@chromium.com</owner>
+  <summary>
+    Emitted when a desk template is added or updated to indicate result of this
+    operation. i.e. whether this operation is successful or failed with any
+    particular reason.
+  </summary>
+</histogram>
+
 <histogram name="Ash.DeskTemplate.DeleteTemplate" enum="BooleanHit"
     expires_after="2022-11-11">
   <owner>avynn@google.com</owner>

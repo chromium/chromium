@@ -21053,6 +21053,14 @@ Called by update_debug_scenarios.py.-->
   <int value="1" label="New key accelerator is used"/>
 </enum>
 
+<enum name="DeskModelAddOrUpdateEntryStatus">
+  <int value="0" label="Successfully added or updated"/>
+  <int value="1" label="Generic error"/>
+  <int value="2" label="Invalid argument (e.g. wrong ID format)"/>
+  <int value="3" label="Exceeed maximum number of templates"/>
+  <int value="4" label="Desk template is too large"/>
+</enum>
+
 <enum name="DesksCreationRemovalSource">
   <int value="0" label="Button pressed"/>
   <int value="1" label="Keyboard shortcut"/>
