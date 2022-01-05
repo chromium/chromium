@@ -75,8 +75,6 @@ class WaylandEventSource : public PlatformEventSource,
   // This method assumes connection is already estabilished and input objects
   // are already bound and properly initialized.
   void StartProcessingEvents();
-  // Stops polling for events from input devices.
-  void StopProcessingEvents();
 
   // Allow to explicitly reset pointer flags. Required in cases where the
   // pointer state is modified by a button pressed event, but the respective
@@ -157,6 +155,7 @@ class WaylandEventSource : public PlatformEventSource,
 
   // PlatformEventSource:
   void OnDispatcherListChanged() override;
+  void StopProcessingEventsForTesting() override;
 
   // WaylandWindowObserver:
   void OnWindowRemoved(WaylandWindow* window) override;
