@@ -19,6 +19,7 @@ public final class LanguageProfileController {
     private static final int TIMEOUT_IN_SECONDS = 60;
 
     private LanguageProfileDelegate mDelegate;
+    private LanguageProfileMetricsLogger mLogger = new LanguageProfileMetricsLogger();
 
     /**
      * @param delegate LanguageProfileDelegate to use.
@@ -34,19 +35,27 @@ public final class LanguageProfileController {
      * @return A list of language tags ordered by preference for |accountName|
      */
     public List<String> getLanguagePreferences(String accountName) {
+        boolean signedIn = accountName != null;
         ThreadUtils.assertOnBackgroundThread();
         if (!mDelegate.isULPSupported()) {
-            // (TODO:https://crbug.com/1258261) Add initiation histogram.
             Log.d(TAG, "ULP not available");
+            mLogger.recordInitiationStatus(
+                    signedIn, LanguageProfileMetricsLogger.ULPInitiationStatus.NOT_SUPPORTED);
             return new ArrayList<String>();
         }
         try {
-            return mDelegate.getLanguagePreferences(accountName, TIMEOUT_IN_SECONDS);
+            List<String> languages =
+                    mDelegate.getLanguagePreferences(accountName, TIMEOUT_IN_SECONDS);
+            mLogger.recordInitiationStatus(
+                    signedIn, LanguageProfileMetricsLogger.ULPInitiationStatus.SUCCESS);
+            return languages;
         } catch (TimeoutException e) {
-            // (TODO:https://crbug.com/1258261) Add initiation histogram.
+            mLogger.recordInitiationStatus(
+                    signedIn, LanguageProfileMetricsLogger.ULPInitiationStatus.TIMED_OUT);
             Log.d(TAG, "ULP getLanguagePreferences timed out");
         } catch (Exception e) {
-            // (TODO:https://crbug.com/1258261) Add initiation histogram.
+            mLogger.recordInitiationStatus(
+                    signedIn, LanguageProfileMetricsLogger.ULPInitiationStatus.FAILURE);
             Log.d(TAG, "ULP getLanguagePreferences threw exception:", e);
         }
         return new ArrayList<String>();

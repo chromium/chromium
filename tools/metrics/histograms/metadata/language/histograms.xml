@@ -376,6 +376,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="LanguageUsage.ULP.Initiation.Status{AccountType}"
+    enum="ULPInitiationStatus" expires_after="2022-06-30">
+  <owner>jds@google.com</owner>
+  <owner>chrome-language@google.com</owner>
+  <summary>
+    The result of initializing ULP, including {AccountType}.
+
+    Recorded once at startup when ULP is initialized.
+  </summary>
+  <token key="AccountType">
+    <variant name="" summary="all account types"/>
+    <variant name=".DefaultAccount" summary="only signed-out users"/>
+    <variant name=".SignedIn" summary="only signed-in users"/>
+  </token>
+</histogram>
+
 <histogram name="LanguageUsage.ULP.Initiation.TopAcceptLanguageInULP"
     enum="ULPLanguageStatus" expires_after="2022-06-30">
   <owner>jds@google.com</owner>
