@@ -16,6 +16,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/values.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/software_feature_state.h"
 #include "chromeos/services/device_sync/cryptauth_client.h"
@@ -204,14 +205,12 @@ SupportedAndEnabledSoftwareFeaturesToDictionaryValue(
 
 // Converts an unlock key proto to a dictionary that can be stored in user
 // prefs.
-std::unique_ptr<base::DictionaryValue> UnlockKeyToDictionary(
-    const cryptauth::ExternalDeviceInfo& device) {
+base::Value UnlockKeyToDictionary(const cryptauth::ExternalDeviceInfo& device) {
+  base::Value dictionary{base::Value::Type::DICTIONARY};
+
   // The device public key is a required value.
   if (!device.has_public_key())
-    return nullptr;
-
-  std::unique_ptr<base::DictionaryValue> dictionary(
-      new base::DictionaryValue());
+    return dictionary;
 
   // Note that the device public key, name, and Bluetooth addresses are stored
   // in Base64Url form because dictionary values must be valid UTF8 strings.
@@ -220,14 +219,14 @@ std::unique_ptr<base::DictionaryValue> UnlockKeyToDictionary(
   base::Base64UrlEncode(device.public_key(),
                         base::Base64UrlEncodePolicy::INCLUDE_PADDING,
                         &public_key_b64);
-  dictionary->SetString(kExternalDeviceKeyPublicKey, public_key_b64);
+  dictionary.SetStringKey(kExternalDeviceKeyPublicKey, public_key_b64);
 
   if (device.has_friendly_device_name()) {
     std::string device_name_b64;
     base::Base64UrlEncode(device.friendly_device_name(),
                           base::Base64UrlEncodePolicy::INCLUDE_PADDING,
                           &device_name_b64);
-    dictionary->SetString(kExternalDeviceKeyDeviceName, device_name_b64);
+    dictionary.SetStringKey(kExternalDeviceKeyDeviceName, device_name_b64);
   }
 
   if (device.has_bluetooth_address()) {
@@ -235,37 +234,37 @@ std::unique_ptr<base::DictionaryValue> UnlockKeyToDictionary(
     base::Base64UrlEncode(device.bluetooth_address(),
                           base::Base64UrlEncodePolicy::INCLUDE_PADDING,
                           &bluetooth_address_b64);
-    dictionary->SetString(kExternalDeviceKeyBluetoothAddress,
-                          bluetooth_address_b64);
+    dictionary.SetStringKey(kExternalDeviceKeyBluetoothAddress,
+                            bluetooth_address_b64);
   }
 
   if (device.has_unlockable()) {
-    dictionary->SetBoolean(kExternalDeviceKeyUnlockable, device.unlockable());
+    dictionary.SetBoolKey(kExternalDeviceKeyUnlockable, device.unlockable());
   }
 
   if (device.has_last_update_time_millis()) {
-    dictionary->SetString(kExternalDeviceKeyLastUpdateTimeMillis,
-                          std::to_string(device.last_update_time_millis()));
+    dictionary.SetStringKey(kExternalDeviceKeyLastUpdateTimeMillis,
+                            std::to_string(device.last_update_time_millis()));
   }
 
   if (device.has_device_type() &&
       cryptauth::DeviceType_IsValid(
           DeviceTypeStringToEnum(device.device_type()))) {
-    dictionary->SetInteger(kExternalDeviceKeyDeviceType,
-                           DeviceTypeStringToEnum(device.device_type()));
+    dictionary.SetIntKey(kExternalDeviceKeyDeviceType,
+                         DeviceTypeStringToEnum(device.device_type()));
   }
 
-  dictionary->SetKey(kExternalDeviceKeyBeaconSeeds,
-                     base::Value::FromUniquePtrValue(
-                         BeaconSeedsToListValue(device.beacon_seeds())));
+  dictionary.SetKey(kExternalDeviceKeyBeaconSeeds,
+                    base::Value::FromUniquePtrValue(
+                        BeaconSeedsToListValue(device.beacon_seeds())));
 
   if (device.has_arc_plus_plus()) {
-    dictionary->SetBoolean(kExternalDeviceKeyArcPlusPlus,
-                           device.arc_plus_plus());
+    dictionary.SetBoolKey(kExternalDeviceKeyArcPlusPlus,
+                          device.arc_plus_plus());
   }
 
   if (device.has_pixel_phone()) {
-    dictionary->SetBoolean(kExternalDeviceKeyPixelPhone, device.pixel_phone());
+    dictionary.SetBoolKey(kExternalDeviceKeyPixelPhone, device.pixel_phone());
   }
 
   if (device.has_no_pii_device_name()) {
@@ -273,8 +272,8 @@ std::unique_ptr<base::DictionaryValue> UnlockKeyToDictionary(
     base::Base64UrlEncode(device.no_pii_device_name(),
                           base::Base64UrlEncodePolicy::INCLUDE_PADDING,
                           &no_pii_device_name_b64);
-    dictionary->SetString(kExternalDeviceKeyNoPiiDeviceName,
-                          no_pii_device_name_b64);
+    dictionary.SetStringKey(kExternalDeviceKeyNoPiiDeviceName,
+                            no_pii_device_name_b64);
   }
 
   // In the case that the CryptAuth server is not yet serving SoftwareFeatures,
@@ -285,7 +284,7 @@ std::unique_ptr<base::DictionaryValue> UnlockKeyToDictionary(
   bool legacy_mobile_hotspot_supported =
       device.has_mobile_hotspot_supported() &&
       device.mobile_hotspot_supported();
-  dictionary->SetKey(
+  dictionary.SetKey(
       kDictionaryKeySoftwareFeatures,
       base::Value::FromUniquePtrValue(
           SupportedAndEnabledSoftwareFeaturesToDictionaryValue(
@@ -297,7 +296,7 @@ std::unique_ptr<base::DictionaryValue> UnlockKeyToDictionary(
 }
 
 void AddBeaconSeedsToExternalDevice(
-    const base::ListValue& beacon_seeds,
+    const base::Value& beacon_seeds,
     cryptauth::ExternalDeviceInfo* external_device) {
   for (const base::Value& seed_dictionary : beacon_seeds.GetList()) {
     if (!seed_dictionary.is_dict()) {
@@ -344,7 +343,7 @@ void AddBeaconSeedsToExternalDevice(
 }
 
 void AddSoftwareFeaturesToExternalDevice(
-    const base::DictionaryValue& software_features_dictionary,
+    const base::Value& software_features_dictionary,
     cryptauth::ExternalDeviceInfo* external_device,
     bool old_unlock_key_value_from_prefs,
     bool old_mobile_hotspot_supported_from_prefs) {
@@ -416,17 +415,18 @@ void AddSoftwareFeaturesToExternalDevice(
 // Converts an unlock key dictionary stored in user prefs to an
 // cryptauth::ExternalDeviceInfo proto. Returns true if the dictionary is valid,
 // and the parsed proto is written to |external_device|.
-bool DictionaryToUnlockKey(const base::DictionaryValue& dictionary,
+bool DictionaryToUnlockKey(const base::Value& dictionary,
                            cryptauth::ExternalDeviceInfo* external_device) {
-  std::string public_key_b64;
-  if (!dictionary.GetString(kExternalDeviceKeyPublicKey, &public_key_b64)) {
+  const std::string* public_key_b64 =
+      dictionary.FindStringKey(kExternalDeviceKeyPublicKey);
+  if (!public_key_b64) {
     // The public key is a required field, so if it is absent, there is no
     // valid data to return.
     return false;
   }
 
   std::string public_key;
-  if (!base::Base64UrlDecode(public_key_b64,
+  if (!base::Base64UrlDecode(*public_key_b64,
                              base::Base64UrlDecodePolicy::REQUIRE_PADDING,
                              &public_key)) {
     // The public key is stored as a Base64Url, so if it cannot be decoded,
@@ -435,21 +435,22 @@ bool DictionaryToUnlockKey(const base::DictionaryValue& dictionary,
   }
   external_device->set_public_key(public_key);
 
-  std::string device_name_b64;
-  if (dictionary.GetString(kExternalDeviceKeyDeviceName, &device_name_b64)) {
+  const std::string* device_name_b64 =
+      dictionary.FindStringKey(kExternalDeviceKeyDeviceName);
+  if (device_name_b64) {
     std::string device_name;
-    if (base::Base64UrlDecode(device_name_b64,
+    if (base::Base64UrlDecode(*device_name_b64,
                               base::Base64UrlDecodePolicy::REQUIRE_PADDING,
                               &device_name)) {
       external_device->set_friendly_device_name(device_name);
     }
   }
 
-  std::string bluetooth_address_b64;
-  if (dictionary.GetString(kExternalDeviceKeyBluetoothAddress,
-                           &bluetooth_address_b64)) {
+  const std::string* bluetooth_address_b64 =
+      dictionary.FindStringKey(kExternalDeviceKeyBluetoothAddress);
+  if (bluetooth_address_b64) {
     std::string bluetooth_address;
-    if (base::Base64UrlDecode(bluetooth_address_b64,
+    if (base::Base64UrlDecode(*bluetooth_address_b64,
                               base::Base64UrlDecodePolicy::REQUIRE_PADDING,
                               &bluetooth_address)) {
       external_device->set_bluetooth_address(bluetooth_address);
@@ -463,28 +464,30 @@ bool DictionaryToUnlockKey(const base::DictionaryValue& dictionary,
   if (unlockable.has_value())
     external_device->set_unlockable(unlockable.value());
 
-  std::string last_update_time_millis_str;
-  if (dictionary.GetString(kExternalDeviceKeyLastUpdateTimeMillis,
-                           &last_update_time_millis_str)) {
+  const std::string* last_update_time_millis_str =
+      dictionary.FindStringKey(kExternalDeviceKeyLastUpdateTimeMillis);
+  if (last_update_time_millis_str) {
     int64_t last_update_time_millis;
-    if (base::StringToInt64(last_update_time_millis_str,
+    if (base::StringToInt64(*last_update_time_millis_str,
                             &last_update_time_millis)) {
       external_device->set_last_update_time_millis(last_update_time_millis);
     } else {
       PA_LOG(WARNING) << "Unable to convert stored update time to int64_t: "
-                      << last_update_time_millis_str;
+                      << *last_update_time_millis_str;
     }
   }
 
-  int device_type;
-  if (dictionary.GetInteger(kExternalDeviceKeyDeviceType, &device_type) &&
-      cryptauth::DeviceType_IsValid(device_type)) {
+  absl::optional<int> device_type =
+      dictionary.FindIntKey(kExternalDeviceKeyDeviceType);
+  if (device_type.has_value() &&
+      cryptauth::DeviceType_IsValid(device_type.value())) {
     external_device->set_device_type(DeviceTypeEnumToString(
-        static_cast<cryptauth::DeviceType>(device_type)));
+        static_cast<cryptauth::DeviceType>(device_type.value())));
   }
 
-  const base::ListValue* beacon_seeds;
-  if (dictionary.GetList(kExternalDeviceKeyBeaconSeeds, &beacon_seeds))
+  const base::Value* beacon_seeds =
+      dictionary.FindListKey(kExternalDeviceKeyBeaconSeeds);
+  if (beacon_seeds)
     AddBeaconSeedsToExternalDevice(*beacon_seeds, external_device);
 
   absl::optional<bool> arc_plus_plus =
@@ -497,11 +500,11 @@ bool DictionaryToUnlockKey(const base::DictionaryValue& dictionary,
   if (pixel_phone.has_value())
     external_device->set_pixel_phone(pixel_phone.value());
 
-  std::string no_pii_device_name_b64;
-  if (dictionary.GetString(kExternalDeviceKeyNoPiiDeviceName,
-                           &no_pii_device_name_b64)) {
+  const std::string* no_pii_device_name_b64 =
+      dictionary.FindStringKey(kExternalDeviceKeyNoPiiDeviceName);
+  if (no_pii_device_name_b64) {
     std::string no_pii_device_name;
-    if (base::Base64UrlDecode(no_pii_device_name_b64,
+    if (base::Base64UrlDecode(*no_pii_device_name_b64,
                               base::Base64UrlDecodePolicy::REQUIRE_PADDING,
                               &no_pii_device_name)) {
       external_device->set_no_pii_device_name(no_pii_device_name);
@@ -513,9 +516,9 @@ bool DictionaryToUnlockKey(const base::DictionaryValue& dictionary,
   absl::optional<bool> mobile_hotspot_supported =
       dictionary.FindBoolKey(kExternalDeviceKeyMobileHotspotSupported);
 
-  const base::DictionaryValue* software_features_dictionary;
-  if (dictionary.GetDictionary(kDictionaryKeySoftwareFeatures,
-                               &software_features_dictionary)) {
+  const base::Value* software_features_dictionary =
+      dictionary.FindDictKey(kDictionaryKeySoftwareFeatures);
+  if (software_features_dictionary) {
     AddSoftwareFeaturesToExternalDevice(
         *software_features_dictionary, external_device,
         unlock_key.value_or(false), mobile_hotspot_supported.value_or(false));
@@ -700,14 +703,13 @@ void CryptAuthDeviceManagerImpl::OnGetMyDevicesSuccess(
   }
 
   for (const auto& device : response.devices()) {
-    std::unique_ptr<base::DictionaryValue> device_dictionary =
-        UnlockKeyToDictionary(device);
+    base::Value device_dictionary = UnlockKeyToDictionary(device);
 
     const std::string& device_name = device.has_friendly_device_name()
                                          ? device.friendly_device_name()
                                          : "[unknown]";
     PA_LOG(INFO) << "Synced device '" << device_name
-                 << "': " << *device_dictionary;
+                 << "': " << device_dictionary;
 
     devices_as_list->Append(std::move(device_dictionary));
   }
@@ -756,23 +758,19 @@ void CryptAuthDeviceManagerImpl::OnResyncMessage(
 }
 
 void CryptAuthDeviceManagerImpl::UpdateUnlockKeysFromPrefs() {
-  const base::ListValue* unlock_key_list = &base::Value::AsListValue(
-      *pref_service_->GetList(prefs::kCryptAuthDeviceSyncUnlockKeys));
+  const base::Value* unlock_key_list =
+      pref_service_->GetList(prefs::kCryptAuthDeviceSyncUnlockKeys);
   synced_devices_.clear();
-  for (size_t i = 0; i < unlock_key_list->GetList().size(); ++i) {
-    const base::DictionaryValue* unlock_key_dictionary;
-    if (unlock_key_list->GetDictionary(i, &unlock_key_dictionary)) {
+  for (const auto& it : unlock_key_list->GetList()) {
+    if (it.is_dict()) {
       cryptauth::ExternalDeviceInfo unlock_key;
-      if (DictionaryToUnlockKey(*unlock_key_dictionary, &unlock_key)) {
+      if (DictionaryToUnlockKey(it, &unlock_key)) {
         synced_devices_.push_back(unlock_key);
       } else {
-        PA_LOG(ERROR) << "Unable to deserialize unlock key dictionary "
-                      << "(index=" << i << "):\n"
-                      << *unlock_key_dictionary;
+        PA_LOG(ERROR) << "Unable to deserialize unlock key dictionary:\n" << it;
       }
     } else {
-      PA_LOG(ERROR) << "Can not get dictionary in list of unlock keys "
-                    << "(index=" << i << "):\n"
+      PA_LOG(ERROR) << "Can not get dictionary in list of unlock keys:\n"
                     << *unlock_key_list;
     }
   }
