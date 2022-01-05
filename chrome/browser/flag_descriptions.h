@@ -207,6 +207,9 @@ extern const char kAutofillEnableStickyManualFallbackForCardsDescription[];
 extern const char kAutofillEnableToolbarStatusChipName[];
 extern const char kAutofillEnableToolbarStatusChipDescription[];
 
+extern const char kAutofillEnableUpdateVirtualCardEnrollmentName[];
+extern const char kAutofillEnableUpdateVirtualCardEnrollmentDescription[];
+
 extern const char kAutofillEnableVirtualCardName[];
 extern const char kAutofillEnableVirtualCardDescription[];
 

@@ -7775,7 +7775,7 @@ const FeatureEntry kFeatureEntries[] = {
 #if defined(OS_CHROMEOS)
     {"link-capturing-ui-update", flag_descriptions::kLinkCapturingUiUpdateName,
      flag_descriptions::kLinkCapturingUiUpdateDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(features::kLinkCapturingUiUpdate)}
+     FEATURE_VALUE_TYPE(features::kLinkCapturingUiUpdate)},
 #endif
 
 #if defined(OS_ANDROID)
@@ -7788,8 +7788,15 @@ const FeatureEntry kFeatureEntries[] = {
     {"use-ulp-languages-in-chrome",
      flag_descriptions::kUseULPLanguagesInChromeName,
      flag_descriptions::kUseULPLanguagesInChromeDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(language::kUseULPLanguagesInChrome)}
+     FEATURE_VALUE_TYPE(language::kUseULPLanguagesInChrome)},
 #endif
+
+    {"autofill-enable-update-virtual-card-enrollment",
+     flag_descriptions::kAutofillEnableUpdateVirtualCardEnrollmentName,
+     flag_descriptions::kAutofillEnableUpdateVirtualCardEnrollmentDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillEnableUpdateVirtualCardEnrollment)},
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag

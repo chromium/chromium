@@ -98,6 +98,14 @@ const base::Feature kAutofillEnableStickyManualFallbackForCards{
 const base::Feature kAutofillEnableToolbarStatusChip{
     "AutofillEnableToolbarStatusChip", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// When enabled, the user will have the ability to update the virtual card
+// enrollment of a credit card through their chrome browser after certain
+// autofill flows (for example, downstream and upstream), and from the settings
+// page.
+const base::Feature kAutofillEnableUpdateVirtualCardEnrollment{
+    "AutofillEnableUpdateVirtualCardEnrollment",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 // When enabled, the option of using cloud token virtual card will be offered
 // when all requirements are met.
 const base::Feature kAutofillEnableVirtualCard{

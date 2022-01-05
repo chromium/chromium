@@ -350,6 +350,14 @@ const char kAutofillEnableToolbarStatusChipDescription[] =
     "When enabled, Autofill data related icon will be shown in the status "
     "chip next to the profile avatar icon in the toolbar.";
 
+const char kAutofillEnableUpdateVirtualCardEnrollmentName[] =
+    "Enable Update Virtual Card Enrollment";
+const char kAutofillEnableUpdateVirtualCardEnrollmentDescription[] =
+    "When enabled, the user will have the ability to update the virtual card "
+    "enrollment of a credit card through their chrome browser after certain "
+    "autofill flows (for example, downstream and upstream), and from the "
+    "settings page.";
+
 const char kAutofillEnableVirtualCardName[] =
     "Offer to use cloud token virtual card in Autofill";
 const char kAutofillEnableVirtualCardDescription[] =
