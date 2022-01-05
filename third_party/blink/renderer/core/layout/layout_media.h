@@ -86,12 +86,6 @@ class LayoutMedia : public LayoutImage {
     NOT_DESTROYED();
     return Children();
   }
-
-  PaintLayerType LayerTypeRequired() const override {
-    NOT_DESTROYED();
-    return kNormalPaintLayer;
-  }
-
   bool CanHaveChildren() const final {
     NOT_DESTROYED();
     return true;

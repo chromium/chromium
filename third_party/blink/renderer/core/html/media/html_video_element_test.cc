@@ -160,25 +160,24 @@ TEST_P(HTMLVideoElementTest, ChangeLayerNeedsCompositingUpdate) {
 
   auto layer1 = cc::Layer::Create();
   SetFakeCcLayer(layer1.get());
-  ASSERT_TRUE(video()->GetLayoutObject()->HasLayer());
-  auto* paint_layer =
-      To<LayoutBoxModelObject>(video()->GetLayoutObject())->Layer();
-  EXPECT_TRUE(paint_layer->SelfNeedsRepaint());
+  auto* painting_layer =
+      To<LayoutBoxModelObject>(video()->GetLayoutObject())->PaintingLayer();
+  EXPECT_TRUE(painting_layer->SelfNeedsRepaint());
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(paint_layer->SelfNeedsRepaint());
+  EXPECT_FALSE(painting_layer->SelfNeedsRepaint());
 
   // Change to another cc layer.
   auto layer2 = cc::Layer::Create();
   SetFakeCcLayer(layer2.get());
-  EXPECT_TRUE(paint_layer->SelfNeedsRepaint());
+  EXPECT_TRUE(painting_layer->SelfNeedsRepaint());
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(paint_layer->SelfNeedsRepaint());
+  EXPECT_FALSE(painting_layer->SelfNeedsRepaint());
 
   // Remove cc layer.
   SetFakeCcLayer(nullptr);
-  EXPECT_TRUE(paint_layer->SelfNeedsRepaint());
+  EXPECT_TRUE(painting_layer->SelfNeedsRepaint());
   UpdateAllLifecyclePhasesForTest();
-  EXPECT_FALSE(paint_layer->SelfNeedsRepaint());
+  EXPECT_FALSE(painting_layer->SelfNeedsRepaint());
 }
 
 TEST_P(HTMLVideoElementTest, HasAvailableVideoFrameChecksWMP) {
