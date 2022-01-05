@@ -1187,7 +1187,7 @@ void WebAppPublisherHelper::OnRequestUpdate(
   }
 
   absl::optional<AppId> app_id =
-      FindInstalledAppWithUrlInScope(profile(), web_contents->GetURL(),
+      FindInstalledAppWithUrlInScope(profile(), web_contents->GetVisibleURL(),
                                      /*window_only=*/false);
   if (!app_id.has_value()) {
     return;

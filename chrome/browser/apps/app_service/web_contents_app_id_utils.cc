@@ -55,7 +55,7 @@ const extensions::Extension* GetExtensionForWebContents(
   }
 
   auto* registry = extensions::ExtensionRegistry::Get(profile);
-  const GURL url = tab->GetURL();
+  const GURL url = tab->GetVisibleURL();
   const extensions::Extension* extension =
       registry->enabled_extensions().GetAppByURL(url);
 
@@ -89,7 +89,7 @@ absl::optional<std::string> GetInstanceAppIdForWebContents(
     }
 
     absl::optional<web_app::AppId> app_id =
-        provider->registrar().FindAppWithUrlInScope(tab->GetURL());
+        provider->registrar().FindAppWithUrlInScope(tab->GetVisibleURL());
     if (app_id) {
       const web_app::WebApp* web_app =
           provider->registrar().GetAppById(*app_id);

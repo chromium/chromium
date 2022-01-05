@@ -510,7 +510,8 @@ void ExtensionAppsChromeOs::OnRequestUpdate(
   }
 
   absl::optional<web_app::AppId> web_app_id =
-      web_app::FindInstalledAppWithUrlInScope(profile(), web_contents->GetURL(),
+      web_app::FindInstalledAppWithUrlInScope(profile(),
+                                              web_contents->GetVisibleURL(),
                                               /*window_only=*/false);
   if (web_app_id.has_value()) {
     // WebAppsChromeOs is responsible for |app_id|.
@@ -523,7 +524,7 @@ void ExtensionAppsChromeOs::OnRequestUpdate(
   DCHECK(registry);
   const extensions::ExtensionSet& extensions = registry->enabled_extensions();
   const extensions::Extension* extension =
-      extensions.GetAppByURL(web_contents->GetURL());
+      extensions.GetAppByURL(web_contents->GetVisibleURL());
   if (extension && Accepts(extension)) {
     app_id = extension->id();
   }
