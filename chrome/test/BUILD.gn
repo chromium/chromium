@@ -2675,6 +2675,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/extensions/extension_install_prompt_test_helper.cc",
         "../browser/extensions/extension_install_prompt_test_helper.h",
         "../browser/extensions/extension_install_ui_browsertest.cc",
+        "../browser/extensions/extension_l10n_browsertest.cc",
         "../browser/extensions/extension_loading_browsertest.cc",
         "../browser/extensions/extension_messages_apitest.cc",
         "../browser/extensions/extension_modules_apitest.cc",
