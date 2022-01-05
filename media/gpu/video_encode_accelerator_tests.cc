@@ -16,6 +16,7 @@
 #include "media/base/video_codecs.h"
 #include "media/base/video_decoder_config.h"
 #include "media/gpu/buildflags.h"
+#include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/test/video.h"
 #include "media/gpu/test/video_encoder/bitstream_file_writer.h"
 #include "media/gpu/test/video_encoder/bitstream_validator.h"
@@ -545,9 +546,10 @@ TEST_F(VideoEncoderTest, BitrateCheck_DynamicBitrate) {
   // Encode the video with the second bitrate.
   const uint32_t second_bitrate = first_bitrate * 3 / 2;
   encoder->ResetStats();
-  encoder->UpdateBitrate(
-      g_env->GetDefaultVideoBitrateAllocation(second_bitrate),
-      config.framerate);
+  encoder->UpdateBitrate(AllocateDefaultBitrateForTesting(
+                             config.num_spatial_layers,
+                             config.num_temporal_layers, second_bitrate),
+                         config.framerate);
   encoder->Encode();
   EXPECT_TRUE(encoder->WaitForFlushDone());
   EXPECT_NEAR(encoder->GetStats().Bitrate(), second_bitrate,
@@ -640,15 +642,19 @@ TEST_F(VideoEncoderTest, FlushAtEndOfStream_NV12DmabufScaling) {
   // 1/4 of the original resolution.
   uint32_t new_bitrate = g_env->Bitrate().GetSumBps() / 4;
   auto spatial_layers = g_env->SpatialLayers();
+  size_t num_temporal_layers = 1u;
   if (!spatial_layers.empty()) {
     CHECK_EQ(spatial_layers.size(), 1u);
     spatial_layers[0].width = output_resolution.width();
     spatial_layers[0].height = output_resolution.height();
     spatial_layers[0].bitrate_bps /= 4;
+    num_temporal_layers = spatial_layers[0].num_of_temporal_layers;
   }
   VideoEncoderClientConfig config(
       nv12_video, g_env->Profile(), spatial_layers,
-      g_env->GetDefaultVideoBitrateAllocation(new_bitrate), g_env->Reverse());
+      AllocateDefaultBitrateForTesting(/*num_spatial_layers=*/1u,
+                                       num_temporal_layers, new_bitrate),
+      g_env->Reverse());
   config.output_resolution = output_resolution;
   config.input_storage_type =
       VideoEncodeAccelerator::Config::StorageType::kGpuMemoryBuffer;

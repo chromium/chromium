@@ -65,9 +65,6 @@ class VideoEncoderTestEnvironment : public VideoTestEnvironment {
   // Get the spatial layers config for SVC. Return empty vector in non SVC mode.
   const std::vector<VideoEncodeAccelerator::Config::SpatialLayer>&
   SpatialLayers() const;
-  // Get default bitrate allocation from target bitrate.
-  VideoBitrateAllocation GetDefaultVideoBitrateAllocation(
-      uint32_t bitrate) const;
   // Get the target bitrate (bits/second).
   VideoBitrateAllocation Bitrate() const;
   // Whether the encoded bitstream is saved to disk.

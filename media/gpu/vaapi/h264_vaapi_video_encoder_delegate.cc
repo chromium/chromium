@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "build/build_config.h"
 #include "media/base/media_switches.h"
+#include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/vaapi/vaapi_common.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
@@ -82,35 +83,6 @@ void FillVAEncRateControlParams(
   memset(&hrd_param, 0, sizeof(hrd_param));
   hrd_param.buffer_size = buffer_size;
   hrd_param.initial_buffer_fullness = buffer_size / 2;
-}
-
-// TODO(hiroh): Put this to media/gpu/gpu_video_encode_accelerator_helpers.h
-VideoBitrateAllocation GetDefaultVideoBitrateAllocation(
-    const VideoEncodeAccelerator::Config& config) {
-  VideoBitrateAllocation bitrate_allocation;
-  if (!config.HasTemporalLayer() && !config.HasSpatialLayer()) {
-    bitrate_allocation.SetBitrate(0, 0, config.bitrate.target());
-    return bitrate_allocation;
-  }
-
-  auto& spatial_layer = config.spatial_layers[0];
-  const size_t num_temporal_layers = spatial_layer.num_of_temporal_layers;
-  // TODO(hiroh): support one temporal layer when moving this function.
-  DCHECK_GE(num_temporal_layers, 2u);
-  constexpr double kTemporalLayersBitrateScaleFactors[][3] = {
-      {0.60, 0.40, 0.00},  // For two temporal layers.
-      {0.50, 0.20, 0.30},  // For three temporal layers.
-  };
-
-  const uint32_t bitrate_bps = spatial_layer.bitrate_bps;
-  for (size_t tid = 0; tid < num_temporal_layers; ++tid) {
-    const double factor =
-        kTemporalLayersBitrateScaleFactors[num_temporal_layers - 2][tid];
-    bitrate_allocation.SetBitrate(
-        0, tid, base::checked_cast<int>(bitrate_bps * factor));
-  }
-
-  return bitrate_allocation;
 }
 
 static scoped_refptr<base::RefCountedBytes> MakeRefCountedBytes(void* ptr,
@@ -352,7 +324,7 @@ bool H264VaapiVideoEncoderDelegate::Initialize(
   UpdateSPS();
   UpdatePPS();
 
-  return UpdateRates(GetDefaultVideoBitrateAllocation(config),
+  return UpdateRates(AllocateBitrateForDefaultEncoding(config),
                      initial_framerate);
 }
 

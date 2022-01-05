@@ -7,7 +7,9 @@
 
 #include <vector>
 
+#include "media/base/video_bitrate_allocation.h"
 #include "media/gpu/media_gpu_export.h"
+#include "media/video/video_encode_accelerator.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -31,6 +33,27 @@ MEDIA_GPU_EXPORT size_t GetEncodeBitstreamBufferSize(const gfx::Size& size);
 MEDIA_GPU_EXPORT std::vector<uint8_t> GetFpsAllocation(
     size_t num_temporal_layers);
 
+// Create default VideoBitrateAllocation from |config|. A bitrate of each
+// spatial layer (|config.spatial_layers[i].bitrate_bps| is distributed to
+// temporal layers in the spatial layer based on the same bitrate division ratio
+// as a software encoder. If |config.spatial_layers| is empty,
+// VideoBitrateAllocation(0, 0) is set to |config.bitrate.target()| as it is
+// a configuration with no layers.
+MEDIA_GPU_EXPORT VideoBitrateAllocation
+AllocateBitrateForDefaultEncoding(const VideoEncodeAccelerator::Config& config);
+
+// Create VideoBitrateAllocation with |num_spatial_layers|,
+// |num_temporal_layers| and |bitrate|. |bitrate| is the bitrate of the entire
+// stream. |num_temporal_layers| is the number of temporal layers in each
+// spatial layer.
+// First, |bitrate| is distributed to spatial layers based on libwebrtc bitrate
+// division. Then the bitrate of each spatial layer is distributed to temporal
+// layers in the spatial layer based on the same bitrate division ratio as a
+// software encoder.
+MEDIA_GPU_EXPORT VideoBitrateAllocation
+AllocateDefaultBitrateForTesting(const size_t num_spatial_layers,
+                                 const size_t num_temporal_layers,
+                                 const uint32_t bitrate);
 }  // namespace media
 
 #endif  // MEDIA_GPU_GPU_VIDEO_ENCODE_ACCELERATOR_HELPERS_H_

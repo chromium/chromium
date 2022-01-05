@@ -18,6 +18,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_bitrate_allocation.h"
 #include "media/gpu/buildflags.h"
+#include "media/gpu/gpu_video_encode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/test/video.h"
 
@@ -36,22 +37,6 @@ struct CodecParamToProfile {
     {"vp9", VP9PROFILE_PROFILE0},
 };
 
-constexpr double kSpatialLayersBitrateScaleFactors[][3] = {
-    {1.00, 0.00, 0.00},  // For one spatial layer.
-    {0.30, 0.70, 0.00},  // For two spatial layers.
-    {0.07, 0.23, 0.70},  // For three spatial layers.
-};
-constexpr double kTemporalLayersBitrateScaleFactors[][3] = {
-    {1.00, 0.00, 0.00},  // For one temporal layer.
-    {0.55, 0.45, 0.00},  // For two temporal layers.
-    {0.50, 0.20, 0.30},  // For three temporal layers.
-};
-constexpr int kSpatialLayersResolutionScaleDenom[][3] = {
-    {1, 0, 0},  // For one spatial layer.
-    {2, 1, 0},  // For two spatial layers.
-    {4, 2, 1},  // For three spatial layers.
-};
-
 uint32_t GetDefaultTargetBitrate(const gfx::Size& resolution,
                                  const uint32_t framerate) {
   // This calculation is based on tinyurl.com/cros-platform-video-encoding.
@@ -67,6 +52,12 @@ GetDefaultSpatialLayers(const VideoBitrateAllocation& bitrate,
   // equivalent to a simple stream.
   if (num_temporal_layers == 1u && num_spatial_layers == 1u)
     return {};
+
+  constexpr int kSpatialLayersResolutionScaleDenom[][3] = {
+      {1, 0, 0},  // For one spatial layer.
+      {2, 1, 0},  // For two spatial layers.
+      {4, 2, 1},  // For three spatial layers.
+  };
 
   std::vector<VideoEncodeAccelerator::Config::SpatialLayer> spatial_layers;
   for (size_t sid = 0; sid < num_spatial_layers; ++sid) {
@@ -207,7 +198,9 @@ VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
       profile_(profile),
       num_temporal_layers_(num_temporal_layers),
       num_spatial_layers_(num_spatial_layers),
-      bitrate_(GetDefaultVideoBitrateAllocation(bitrate)),
+      bitrate_(AllocateDefaultBitrateForTesting(num_spatial_layers_,
+                                                num_temporal_layers_,
+                                                bitrate)),
       spatial_layers_(GetDefaultSpatialLayers(bitrate_,
                                               video_.get(),
                                               num_spatial_layers_,
@@ -247,33 +240,6 @@ VideoCodecProfile VideoEncoderTestEnvironment::Profile() const {
 const std::vector<VideoEncodeAccelerator::Config::SpatialLayer>&
 VideoEncoderTestEnvironment::SpatialLayers() const {
   return spatial_layers_;
-}
-
-VideoBitrateAllocation
-VideoEncoderTestEnvironment::GetDefaultVideoBitrateAllocation(
-    uint32_t bitrate) const {
-  VideoBitrateAllocation bitrate_allocation;
-  DCHECK_LE(num_spatial_layers_, 3u);
-  DCHECK_LE(num_temporal_layers_, 3u);
-  if (num_spatial_layers_ == 1u && num_temporal_layers_ == 1u) {
-    bitrate_allocation.SetBitrate(0, 0, bitrate);
-    return bitrate_allocation;
-  }
-
-  for (size_t sid = 0; sid < num_spatial_layers_; ++sid) {
-    const double bitrate_factor =
-        kSpatialLayersBitrateScaleFactors[num_spatial_layers_ - 1][sid];
-    uint32_t sl_bitrate = bitrate * bitrate_factor;
-
-    for (size_t tl_idx = 0; tl_idx < num_temporal_layers_; ++tl_idx) {
-      const double factor =
-          kTemporalLayersBitrateScaleFactors[num_temporal_layers_ - 1][tl_idx];
-      bitrate_allocation.SetBitrate(
-          sid, tl_idx, base::checked_cast<int>(sl_bitrate * factor));
-    }
-  }
-
-  return bitrate_allocation;
 }
 
 VideoBitrateAllocation VideoEncoderTestEnvironment::Bitrate() const {
