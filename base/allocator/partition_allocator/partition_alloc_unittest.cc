@@ -2114,7 +2114,11 @@ TEST_F(PartitionAllocDeathTest, OffByOneDetection) {
     EXPECT_DEATH(array[alloc_size] = 'A', "");
   } else {
     char previous_value = array[alloc_size];
-    array[alloc_size] = 'A';
+    // volatile is required to prevent the compiler from getting too clever and
+    // eliding the out-of-bounds write. The root cause is that the MALLOC_FN
+    // annotation tells the compiler (among other things) that the returned
+    // value cannot alias anything.
+    *const_cast<volatile char*>(&array[alloc_size]) = 'A';
     // Crash at the next allocation. This assumes that we are touching a new,
     // non-randomized slot span, where the next slot to be handed over to the
     // application directly follows the current one.
@@ -2134,12 +2138,12 @@ TEST_F(PartitionAllocDeathTest, OffByOneDetectionWithRealisticData) {
     EXPECT_DEATH(array[2] = &valid, "");
   } else {
     void* previous_value = array[2];
-    array[2] = &valid;
+    // As above, needs volatile to convince the compiler to perform the write.
+    *const_cast<void* volatile*>(&array[2]) = &valid;
     // Crash at the next allocation. This assumes that we are touching a new,
     // non-randomized slot span, where the next slot to be handed over to the
     // application directly follows the current one.
     EXPECT_DEATH(allocator.root()->Alloc(alloc_size, ""), "");
-
     array[2] = previous_value;
   }
 }
