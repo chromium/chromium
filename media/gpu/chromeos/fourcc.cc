@@ -82,7 +82,7 @@ absl::optional<Fourcc> Fourcc::FromVideoPixelFormat(
         return Fourcc(P010);
       case PIXEL_FORMAT_UYVY:
         NOTREACHED();
-        FALLTHROUGH;
+        [[fallthrough]];
       case PIXEL_FORMAT_I420A:
       case PIXEL_FORMAT_I444:
       case PIXEL_FORMAT_RGB24:
@@ -117,7 +117,7 @@ absl::optional<Fourcc> Fourcc::FromVideoPixelFormat(
         return Fourcc(NM21);
       case PIXEL_FORMAT_UYVY:
         NOTREACHED();
-        FALLTHROUGH;
+        [[fallthrough]];
       case PIXEL_FORMAT_I420A:
       case PIXEL_FORMAT_I444:
       case PIXEL_FORMAT_YUY2:
