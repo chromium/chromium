@@ -101,6 +101,7 @@ public final class StatusMediatorUnitTest {
     Bitmap mBitmap;
     OneshotSupplierImpl<TemplateUrlService> mTemplateUrlServiceSupplier;
     WindowAndroid mWindowAndroid;
+    LibraryLoader mOriginalLibraryLoader;
 
     @Before
     public void setUp() {
@@ -114,6 +115,7 @@ public final class StatusMediatorUnitTest {
         mModel = TestThreadUtils.runOnUiThreadBlockingNoException(
                 () -> new PropertyModel(StatusProperties.ALL_KEYS));
 
+        mOriginalLibraryLoader = LibraryLoader.getInstance();
         doReturn(true).when(mLibraryLoader).isInitialized();
         LibraryLoader.setLibraryLoaderForTesting(mLibraryLoader);
 
@@ -136,6 +138,7 @@ public final class StatusMediatorUnitTest {
 
     @After
     public void tearDown() {
+        LibraryLoader.setLibraryLoaderForTesting(mOriginalLibraryLoader);
         TestThreadUtils.runOnUiThreadBlocking(() -> { mWindowAndroid.destroy(); });
     }
 
