@@ -474,7 +474,7 @@ void GLHelper::CopyTextureToImpl::CancelRequests() {
 }
 
 bool GLHelper::CopyTextureToImpl::IsBGRAReadbackSupported() {
-  if (bgra_support_ == BGRA_PREFERENCE_UNKNOWN) {
+  if (bgra_support_ == BGRA_SUPPORT_UNKNOWN) {
     bgra_support_ = BGRA_NOT_SUPPORTED;
     if (auto* extensions = gl_->GetString(GL_EXTENSIONS)) {
       const std::string extensions_string =
