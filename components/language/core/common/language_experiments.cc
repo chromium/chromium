@@ -23,14 +23,8 @@ const base::Feature kAppLanguagePrompt{"AppLanguagePrompt",
                                        base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kForceAppLanguagePrompt{"ForceAppLanguagePrompt",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kUseFluentLanguageModel {
-  "UseFluentLanguageModel",
-#if defined(OS_IOS)
-      base::FEATURE_DISABLED_BY_DEFAULT
-#else
-      base::FEATURE_ENABLED_BY_DEFAULT
-#endif
-};
+const base::Feature kUseFluentLanguageModel{"UseFluentLanguageModel",
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kNotifySyncOnLanguageDetermined{
     "NotifySyncOnLanguageDetermined", base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kDetailedLanguageSettings{
