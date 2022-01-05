@@ -41,7 +41,7 @@ scoped_refptr<const NGLayoutResult> NGTableSectionLayoutAlgorithm::Layout() {
   for (NGBlockNode row = To<NGBlockNode>(Node().FirstChild()); row;
        row = To<NGBlockNode>(row.NextSibling())) {
     DCHECK_LT(row_index, table_data.sections[section_index].start_row_index +
-                             table_data.sections[section_index].rowspan);
+                             table_data.sections[section_index].row_count);
     NGConstraintSpaceBuilder row_space_builder(
         table_data.table_writing_direction.GetWritingMode(),
         table_data.table_writing_direction,
@@ -67,7 +67,7 @@ scoped_refptr<const NGLayoutResult> NGTableSectionLayoutAlgorithm::Layout() {
   }
   if (ConstraintSpace().IsFixedBlockSize()) {
     // A fixed block-size should only occur for a section without children.
-    DCHECK_EQ(table_data.sections[section_index].rowspan, 0u);
+    DCHECK_EQ(table_data.sections[section_index].row_count, 0u);
     container_builder_.SetFragmentBlockSize(
         ConstraintSpace().AvailableSize().block_size);
   } else {
