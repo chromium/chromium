@@ -49,6 +49,9 @@ bool g_profile_migration_completed_for_test = false;
 
 absl::optional<bool> g_lacros_primary_browser_for_test;
 
+LacrosLaunchSwitchSource g_lacros_launch_switch_source =
+    LacrosLaunchSwitchSource::kUnknown;
+
 // At session start the value for LacrosLaunchSwitch logic is applied and the
 // result is stored in this value which is used after that as a cache.
 absl::optional<LacrosLaunchSwitch> g_lacros_launch_switch_cache;
@@ -629,10 +632,12 @@ void CacheLacrosLaunchSwitch(const policy::PolicyMap& map) {
     LOG(ERROR) << "Trying to cache LacrosLaunchSwitch and the value was set";
     return;
   }
+  g_lacros_launch_switch_source = LacrosLaunchSwitchSource::kPossiblySetByUser;
   // Users can set this switch in chrome://flags to disable the effect of the
   // lacros-availability policy.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (command_line->HasSwitch(ash::switches::kLacrosAvailabilityIgnore)) {
+    g_lacros_launch_switch_source = LacrosLaunchSwitchSource::kForcedByUser;
     g_lacros_launch_switch_cache = LacrosLaunchSwitch::kUserChoice;
     return;
   }
@@ -658,6 +663,9 @@ void CacheLacrosLaunchSwitch(const policy::PolicyMap& map) {
     g_lacros_launch_switch_cache = LacrosLaunchSwitch::kUserChoice;
     return;
   }
+
+  if (result != LacrosLaunchSwitch::kUserChoice)
+    g_lacros_launch_switch_source = LacrosLaunchSwitchSource::kForcedByPolicy;
 
   g_lacros_launch_switch_cache = result;
 }
@@ -742,6 +750,10 @@ void ClearProfileMigrationCompletedForUser(PrefService* local_state,
 
 void SetProfileMigrationCompletedForTest(bool is_completed) {
   g_profile_migration_completed_for_test = is_completed;
+}
+
+LacrosLaunchSwitchSource GetLacrosLaunchSwitchSource() {
+  return g_lacros_launch_switch_source;
 }
 
 }  // namespace browser_util

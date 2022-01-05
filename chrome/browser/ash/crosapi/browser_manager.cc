@@ -96,6 +96,45 @@ enum class LacrosLaunchMode {
   kMaxValue = kLacrosOnly
 };
 
+// The actual Lacros launch mode.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class LacrosLaunchModeAndSource {
+  // Either set by user or system/flags, indicates that Lacros is disabled.
+  kPossiblySetByUserLacrosDisabled = 0,
+  // Either set by user or system/flags, indicates that Lacros and Ash are both
+  // enabled and accessible by the user.
+  kPossiblySetByUserSideBySide = 1,
+  // Either set by user or system/flags, indicates that Lacros is the primary
+  // (but not only) browser.
+  kPossiblySetByUserLacrosPrimary = 2,
+  // Either set by user or system/flags, Lacros is the only browser and Ash is
+  // disabled.
+  kPossiblySetByUserLacrosOnly = 3,
+  // Enforced by the user, indicates that Lacros is disabled.
+  kForcedByUserLacrosDisabled = 4 + kPossiblySetByUserLacrosDisabled,
+  // Enforced by the user, indicates that Lacros and Ash are both enabled and
+  // accessible by the user.
+  kForcedByUserSideBySide = 4 + kPossiblySetByUserSideBySide,
+  // Enforced by the user, indicates that Lacros is the primary (but not only)
+  // browser.
+  kForcedByUserLacrosPrimary = 4 + kPossiblySetByUserLacrosPrimary,
+  // Enforced by the user, Lacros is the only browser and Ash is disabled.
+  kForcedByUserLacrosOnly = 4 + kPossiblySetByUserLacrosOnly,
+  // Enforced by policy, indicates that Lacros is disabled.
+  kForcedByPolicyLacrosDisabled = 8 + kPossiblySetByUserLacrosDisabled,
+  // Enforced by policy, indicates that Lacros and Ash are both enabled and
+  // accessible by the user.
+  kForcedByPolicySideBySide = 8 + kPossiblySetByUserSideBySide,
+  // Enforced by policy, indicates that Lacros is the primary (but not only)
+  // browser.
+  kForcedByPolicyLacrosPrimary = 8 + kPossiblySetByUserLacrosPrimary,
+  // Enforced by policy, Lacros is the only browser and Ash is disabled.
+  kForcedByPolicyLacrosOnly = 8 + kPossiblySetByUserLacrosOnly,
+
+  kMaxValue = kForcedByPolicyLacrosOnly
+};
+
 using LaunchParamsFromBackground = BrowserManager::LaunchParamsFromBackground;
 
 // Pointer to the global instance of BrowserManager.
@@ -497,13 +536,13 @@ void BrowserManager::HandleTabScrubbing(float x_offset) {
 void BrowserManager::InitializeAndStart() {
   DCHECK_EQ(state_, State::NOT_INITIALIZED);
 
-  // Perform the UMA recording for the current Lacros mode of operation.
-  RecordLacrosLaunchMode();
-
   // Ensure this isn't run multiple times.
   session_manager::SessionManager::Get()->RemoveObserver(this);
 
   PrepareLacrosPolicies();
+
+  // Perform the UMA recording for the current Lacros mode of operation.
+  RecordLacrosLaunchMode();
 
   const bool is_lacros_enabled = browser_util::IsLacrosEnabled();
 
@@ -1166,21 +1205,60 @@ bool BrowserManager::IsReady() const {
 
 void BrowserManager::RecordLacrosLaunchMode() {
   LacrosLaunchMode lacros_mode;
+  LacrosLaunchModeAndSource lacros_mode_and_source;
+
   if (!browser_util::IsAshWebBrowserEnabled(chrome::GetChannel())) {
     // As Ash is disabled, Lacros is the only available browser.
     lacros_mode = LacrosLaunchMode::kLacrosOnly;
+    lacros_mode_and_source =
+        LacrosLaunchModeAndSource::kPossiblySetByUserLacrosOnly;
   } else if (browser_util::IsLacrosPrimaryBrowser()) {
     // Lacros is the primary browser - but Ash is still available.
     lacros_mode = LacrosLaunchMode::kLacrosPrimary;
+    lacros_mode_and_source =
+        LacrosLaunchModeAndSource::kPossiblySetByUserLacrosPrimary;
   } else if (browser_util::IsLacrosEnabled()) {
     // If Lacros is enabled but not primary or the only browser, the
     // side by side mode is active.
     lacros_mode = LacrosLaunchMode::kSideBySide;
+    lacros_mode_and_source =
+        LacrosLaunchModeAndSource::kPossiblySetByUserSideBySide;
+
   } else {
     lacros_mode = LacrosLaunchMode::kLacrosDisabled;
+    lacros_mode_and_source =
+        LacrosLaunchModeAndSource::kPossiblySetByUserLacrosDisabled;
   }
 
   UMA_HISTOGRAM_ENUMERATION("Ash.Lacros.Launch.Mode", lacros_mode);
+
+  crosapi::browser_util::LacrosLaunchSwitchSource source =
+      crosapi::browser_util::GetLacrosLaunchSwitchSource();
+
+  // Unit tests can come here before the source is known.
+  if (source == crosapi::browser_util::LacrosLaunchSwitchSource::kUnknown)
+    return;
+
+  LacrosLaunchModeAndSource source_offset;
+  if (source ==
+      crosapi::browser_util::LacrosLaunchSwitchSource::kPossiblySetByUser) {
+    source_offset = LacrosLaunchModeAndSource::kPossiblySetByUserLacrosDisabled;
+  } else if (source ==
+             crosapi::browser_util::LacrosLaunchSwitchSource::kForcedByUser) {
+    source_offset = LacrosLaunchModeAndSource::kForcedByUserLacrosDisabled;
+  } else {
+    source_offset = LacrosLaunchModeAndSource::kForcedByPolicyLacrosDisabled;
+  }
+
+  // The states are comprised of the basic four Lacros options and the
+  // source of the mode selection (By user, by Policy, by System). These
+  // combinations are "nibbled together" here in one status value.
+  lacros_mode_and_source = static_cast<LacrosLaunchModeAndSource>(
+      static_cast<int>(source_offset) +
+      static_cast<int>(lacros_mode_and_source));
+
+  UMA_HISTOGRAM_ENUMERATION("Ash.Lacros.Launch.ModeAndSource",
+                            lacros_mode_and_source);
 }
 
 }  // namespace crosapi

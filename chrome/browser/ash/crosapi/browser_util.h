@@ -40,6 +40,22 @@ class User;
 namespace crosapi {
 namespace browser_util {
 
+// Indicates how the decision for the usage of Lacros has been made.
+enum class LacrosLaunchSwitchSource {
+  // It is unknown yet if and how Lacros will be used.
+  kUnknown = 0,
+  // Either there were no policies, or the system had a special condition in
+  // which the policy got ignored and the user could have set the mode.
+  kPossiblySetByUser = 1,
+  // The Lacros usage was enforced by the user via #lacros-availability-ignore
+  // flag override.
+  kForcedByUser = 2,
+  // The Lacros usage was enforced using the policy. Note that in this case
+  // the policy might still not be used, but it is programmatically overridden
+  // and not by the user (e.g. special Googler user case).
+  kForcedByPolicy = 3
+};
+
 // Represents different options for how to launch Lacros browser. The values
 // shall be consistent with the controlling policy.
 enum class LacrosLaunchSwitch {
@@ -261,6 +277,10 @@ void ClearProfileMigrationCompletedForUser(PrefService* local_state,
 // completed by getting user_id_hash of the logged in user and updating
 // g_browser_process->local_state() etc.
 void SetProfileMigrationCompletedForTest(bool is_completed);
+
+// Returns who decided how Lacros should be used - or not: The User, the policy
+// or another edge case.
+LacrosLaunchSwitchSource GetLacrosLaunchSwitchSource();
 
 }  // namespace browser_util
 }  // namespace crosapi

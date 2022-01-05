@@ -1717,6 +1717,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ash.Lacros.Launch.ModeAndSource"
+    enum="LacrosLaunchModeAndSource" expires_after="2022-12-01">
+  <owner>skuhne@chromium.org</owner>
+  <owner>lacros-team@google.com</owner>
+  <summary>
+    The Lacros operation mode and the origin of the setting. This will record if
+    Ash is the only browser, both browsers are running side by side or if Lacros
+    is the only browser as well as if the setting was set by the user, enforced
+    by a policy or enforced by the user (overriding any given policy). It will
+    be emitted shortly before Lacros gets started the first time from the system
+    (Ash).
+  </summary>
+</histogram>
+
 <histogram name="Ash.Login.Lock.AuthMethod.Switched"
     enum="AuthMethodSwitchType" expires_after="2022-06-29">
   <owner>rsorokin@chromium.org</owner>
