@@ -424,7 +424,7 @@ bool TabStripPageHandler::PreHandleGestureEvent(
     case blink::WebInputEvent::Type::kGestureLongTap:
       if (context_menu_after_tap_)
         page_->ShowContextMenu();
-      FALLTHROUGH;
+      [[fallthrough]];
     case blink::WebInputEvent::Type::kGestureTap:
       // Ensure that we reset `should_drag_on_gesture_scroll_` when we encounter
       // a gesture tap event (i.e. an event triggered after the user lifts their
