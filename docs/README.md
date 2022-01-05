@@ -16,7 +16,7 @@ below.
 Markdown documents must follow the
 [style guide](https://github.com/google/styleguide/tree/gh-pages/docguide).
 
-### Preview local changes using [md_browser](../tools/md_browser/):
+### Preview local changes using [md_browser](../tools/md_browser/)
 
 ```bash
 # in chromium checkout
@@ -25,13 +25,21 @@ Markdown documents must follow the
 
 This is only an estimate. The **gitiles** view may differ.
 
-### Review changes online with gerrit's links to gitiles:
+### Review changes online with gerrit's links to gitiles
 
 1.  Upload a patch to gerrit, or receive a review request.
-    e.g. https://chromium-review.googlesource.com/c/572236
+    e.g. https://chromium-review.googlesource.com/c/3362532
 2.  View a specific .md file.
-    e.g. https://chromium-review.googlesource.com/c/572236/2/docs/README.md
-3.  Click on **gitiles** link at top of page.
+    e.g. https://chromium-review.googlesource.com/c/3362532/2/docs/README.md
+3.  You will see something like <br>
+    Base
+    [browse](https://chromium.googlesource.com/chromium/src/+/ad44f6081ccc6b92479b12f1eb7e9482f474859d/docs/README.md)
+    -> Patchset 3
+    [browse](https://chromium.googlesource.com/chromium/src/+/refs/changes/32/3362532/3/docs/README.md)
+    | DOWNLOAD <br>
+    at the top left of the page. Click on the second 
+    "[browse](https://chromium.googlesource.com/chromium/src/+/refs/changes/32/3362532/3/docs/README.md)"
+    link to open the preview for the current patch set.
 
 This **gitiles** view is the authoritative view, exactly the same as will be
 used when committed.
