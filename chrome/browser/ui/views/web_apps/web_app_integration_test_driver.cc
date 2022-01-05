@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
+#include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/notreached.h"
 #include "base/strings/pattern.h"
@@ -68,6 +69,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/widget/any_widget_observer.h"
 
@@ -163,6 +165,25 @@ base::FilePath GetShortcutProfile(base::FilePath shortcut_path) {
         shortcut_cmd_line.GetSwitchValuePath(switches::kProfileDirectory);
   }
   return shortcut_profile;
+}
+
+bool IsShortcutFoundForProfile(Profile* profile,
+                               const std::string& name,
+                               base::FilePath shortcut_dir) {
+  std::wstring_convert<std::codecvt_utf8<wchar_t>, wchar_t> converter;
+
+  base::FileEnumerator enumerator(shortcut_dir, false,
+                                  base::FileEnumerator::FILES);
+  while (!enumerator.Next().empty()) {
+    std::wstring shortcut_filename = enumerator.GetInfo().GetName().value();
+    if (re2::RE2::FullMatch(converter.to_bytes(shortcut_filename),
+                            name + "(.*).lnk")) {
+      base::FilePath shortcut_path = shortcut_dir.Append(shortcut_filename);
+      if (GetShortcutProfile(shortcut_path) == profile->GetBaseName())
+        return true;
+    }
+  }
+  return false;
 }
 #endif
 
@@ -1451,21 +1472,11 @@ bool WebAppIntegrationTestDriver::IsShortcutCreated(Profile* profile,
   bool shortcut_exists = false;
 
 #if defined(OS_WIN)
-  std::wstring_convert<std::codecvt_utf8<wchar_t>> converter;
-
-  std::wstring shortcut_filename = converter.from_bytes(name + ".lnk");
-  std::vector<base::FilePath> shortcut_paths{
-      shortcut_override_->desktop.GetPath().Append(shortcut_filename),
-      shortcut_override_->application_menu.GetPath().Append(shortcut_filename)};
-  base::FilePath desktop_shortcut_path =
-      shortcut_override_->desktop.GetPath().Append(shortcut_filename);
-  base::FilePath app_menu_shortcut_path =
-      shortcut_override_->application_menu.GetPath().Append(shortcut_filename);
   shortcut_exists =
-      (base::PathExists(desktop_shortcut_path) &&
-       GetShortcutProfile(desktop_shortcut_path) == profile->GetBaseName() &&
-       base::PathExists(app_menu_shortcut_path) &&
-       GetShortcutProfile(app_menu_shortcut_path) == profile->GetBaseName());
+      (IsShortcutFoundForProfile(profile, name,
+                                 shortcut_override_->desktop.GetPath()) &&
+       IsShortcutFoundForProfile(
+           profile, name, shortcut_override_->application_menu.GetPath()));
 #elif defined(OS_MAC)
   std::string shortcut_filename = name + ".app";
   base::FilePath app_shortcut_path =
