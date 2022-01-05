@@ -160,9 +160,10 @@ gfx::PointF StartOrEndPosition(const LayoutObject& query_root,
   if (item->IsHiddenForPaint())
     return gfx::PointF();
   const auto& inline_text = *To<LayoutSVGInlineText>(item->GetLayoutObject());
+  const SimpleFontData* font = inline_text.ScaledFont().PrimaryFont();
   const float ascent =
-      inline_text.ScaledFont().PrimaryFont()->GetFontMetrics().FixedAscent(
-          item->Style().GetFontBaseline());
+      font ? font->GetFontMetrics().FixedAscent(item->Style().GetFontBaseline())
+           : 0.0f;
   const bool left_or_top =
       IsLtr(item->ResolvedDirection()) == (pos == QueryPosition::kStart);
   gfx::PointF point;
