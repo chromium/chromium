@@ -86,5 +86,12 @@ bool IsNewDownloadAPIEnabled() {
   return false;
 }
 
+bool IsMediaPermissionsControlEnabled() {
+  if (@available(iOS 15, *)) {
+    return base::FeatureList::IsEnabled(kMediaPermissionsControl);
+  }
+  return false;
+}
+
 }  // namespace features
 }  // namespace web

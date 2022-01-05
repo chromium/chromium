@@ -90,6 +90,10 @@ bool ShouldTakeScreenshotOnNonHTMLContent();
 // When true, the new download API should be used.
 bool IsNewDownloadAPIEnabled();
 
+// When true, user control for camera and/or microphone access should be
+// enabled.
+bool IsMediaPermissionsControlEnabled();
+
 }  // namespace features
 }  // namespace web
 

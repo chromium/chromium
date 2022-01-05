@@ -171,6 +171,12 @@ class WebStateImpl::RealizedWebState final : public NavigationManagerDelegate {
   void CloseWebState();
   bool SetSessionStateData(NSData* data);
   NSData* SessionStateData() const;
+  PermissionState GetStateForPermission(Permission permission) const
+      API_AVAILABLE(ios(15.0));
+  void SetStateForPermission(PermissionState state, Permission permission)
+      API_AVAILABLE(ios(15.0));
+  void OnStateChangedForPermission(Permission permission)
+      API_AVAILABLE(ios(15.0));
 
   // NavigationManagerDelegate:
   void ClearDialogs() final;

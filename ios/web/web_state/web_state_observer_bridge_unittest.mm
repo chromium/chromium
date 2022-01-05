@@ -247,6 +247,11 @@ TEST_F(WebStateObserverBridgeTest, FaviconUrlUpdated) {
   EXPECT_EQ(url.icon_sizes[0].height(), actual_url.icon_sizes[0].height());
 }
 
+// Tests |webState:didChangeStateForPermission:| forwarding.
+TEST_F(WebStateObserverBridgeTest, PermissionStateChanged) {
+  // TODO(crbug.com/1284709): Implement this test.
+}
+
 // Tests |renderProcessGoneForWebState:| forwarding.
 TEST_F(WebStateObserverBridgeTest, RenderProcessGone) {
   ASSERT_FALSE([observer_ renderProcessGoneInfo]);

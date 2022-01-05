@@ -9,6 +9,7 @@ source_set("public") {
     ":web_state_observer",
     "//ios/web/public/favicon",
     "//ios/web/public/navigation",
+    "//ios/web/public/permissions",
     "//ios/web/public/thread",
     "//ios/web/public/ui",
     "//net",

@@ -18,6 +18,8 @@ class Value;
 namespace web {
 
 enum class NavigationInitiationType;
+enum class Permission;
+enum class PermissionState;
 enum class WKNavigationState;
 
 }  // namespace web
@@ -192,6 +194,13 @@ class WebStateImpl;
 // a no-op, and |sessionStateData| will return nil.
 - (BOOL)setSessionStateData:(NSData*)data;
 - (NSData*)sessionStateData;
+
+// Gets and sets the web state's state of a permission; for example, the one to
+// use the camera on the device.
+- (web::PermissionState)stateForPermission:(web::Permission)permission
+    API_AVAILABLE(ios(15.0));
+- (void)setState:(web::PermissionState)state
+    forPermission:(web::Permission)permission API_AVAILABLE(ios(15.0));
 
 // Injects the windowID into the main frame of the current webpage.
 // TODO(crbug.com/905939): Remove WindowID.

@@ -49,6 +49,8 @@ namespace web {
 
 class BrowserState;
 class NavigationManager;
+enum class Permission;
+enum class PermissionState;
 class SessionCertificatePolicyCache;
 class WebFrame;
 class WebFramesManager;
@@ -432,6 +434,14 @@ class WebState : public base::SupportsUserData {
   // Returns true if this operation succeeds, and false otherwise.
   virtual bool SetSessionStateData(NSData* data) = 0;
   virtual NSData* SessionStateData() = 0;
+
+  // Gets or sets the web state's permission for a specific type, for example
+  // camera or microphone, on the device.
+  virtual PermissionState GetStateForPermission(Permission permission) const
+      API_AVAILABLE(ios(15.0)) = 0;
+  virtual void SetStateForPermission(PermissionState state,
+                                     Permission permission)
+      API_AVAILABLE(ios(15.0)) = 0;
 
  protected:
   friend class WebStatePolicyDecider;
