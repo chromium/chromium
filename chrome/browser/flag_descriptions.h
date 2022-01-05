@@ -1262,9 +1262,6 @@ extern const char kSendTabToSelfWhenSignedInDescription[];
 extern const char kSendTabToSelfManageDevicesLinkName[];
 extern const char kSendTabToSelfManageDevicesLinkDescription[];
 
-extern const char kSendTabToSelfV2Name[];
-extern const char kSendTabToSelfV2Description[];
-
 extern const char kShoppingListName[];
 extern const char kShoppingListDescription[];
 
@@ -1999,6 +1996,9 @@ extern const char kScrollCaptureDescription[];
 
 extern const char kSecurePaymentConfirmationAndroidName[];
 extern const char kSecurePaymentConfirmationAndroidDescription[];
+
+extern const char kSendTabToSelfV2Name[];
+extern const char kSendTabToSelfV2Description[];
 
 extern const char kSetMarketUrlForTestingName[];
 extern const char kSetMarketUrlForTestingDescription[];

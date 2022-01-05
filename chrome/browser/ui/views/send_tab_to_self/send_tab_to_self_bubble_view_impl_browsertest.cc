@@ -12,7 +12,6 @@
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "components/send_tab_to_self/features.h"
 #include "components/send_tab_to_self/target_device_info.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "content/public/test/browser_test.h"
@@ -54,13 +53,9 @@ class TestSendTabToSelfBubbleController : public SendTabToSelfBubbleController {
 
 }  // namespace
 
-class SendTabToSelfBubbleTest : public DialogBrowserTest,
-                                public testing::WithParamInterface<bool> {
+class SendTabToSelfBubbleTest : public DialogBrowserTest {
  public:
-  SendTabToSelfBubbleTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        send_tab_to_self::kSendTabToSelfV2, GetParam());
-  }
+  SendTabToSelfBubbleTest() = default;
 
   SendTabToSelfBubbleTest(const SendTabToSelfBubbleTest&) = delete;
   SendTabToSelfBubbleTest& operator=(const SendTabToSelfBubbleTest&) = delete;
@@ -77,9 +72,6 @@ class SendTabToSelfBubbleTest : public DialogBrowserTest,
     BrowserView::GetBrowserViewForBrowser(browser())->ShowSendTabToSelfBubble(
         web_contents, controller, true);
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // crbug.com/1272360
@@ -88,12 +80,8 @@ class SendTabToSelfBubbleTest : public DialogBrowserTest,
 #else
 #define MAYBE_InvokeUi_default InvokeUi_default
 #endif
-IN_PROC_BROWSER_TEST_P(SendTabToSelfBubbleTest, MAYBE_InvokeUi_default) {
+IN_PROC_BROWSER_TEST_F(SendTabToSelfBubbleTest, MAYBE_InvokeUi_default) {
   ShowAndVerifyUi();
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         SendTabToSelfBubbleTest,
-                         ::testing::Values(false, true));
 
 }  // namespace send_tab_to_self

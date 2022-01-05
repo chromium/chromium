@@ -21,6 +21,9 @@ class SendTabToSelfEntry;
 // Handler for desktop notifications shown by SendTabToSelf.
 // Will only be used on desktop platform.
 // Will be created and owned by the NativeNotificationDisplayService.
+//
+// TODO(https://crbug.com/1280681): Remove this class, which is only used in
+// STTSv1.
 class DesktopNotificationHandler : public NotificationHandler,
                                    public ReceivingUiHandler {
  public:

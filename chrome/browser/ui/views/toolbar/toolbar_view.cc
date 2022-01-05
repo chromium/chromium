@@ -272,9 +272,7 @@ void ToolbarView::Init() {
 
   std::unique_ptr<send_tab_to_self::SendTabToSelfToolbarIconView>
       send_tab_to_self_button;
-  if ((base::FeatureList::IsEnabled(send_tab_to_self::kSendTabToSelfV2) ||
-       share::AreUpcomingSharingFeaturesEnabled()) &&
-      !browser_->profile()->IsOffTheRecord()) {
+  if (!browser_->profile()->IsOffTheRecord()) {
     send_tab_to_self_button =
         std::make_unique<send_tab_to_self::SendTabToSelfToolbarIconView>(
             browser_view_);

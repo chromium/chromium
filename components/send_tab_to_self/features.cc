@@ -31,14 +31,10 @@ const base::Feature kSendTabToSelfManageDevicesLink{
 #endif
 };
 
-const base::Feature kSendTabToSelfV2{
-  "SendTabToSelfV2",
 #if defined(OS_ANDROID) || defined(OS_IOS)
-      base::FEATURE_DISABLED_BY_DEFAULT
-#else
-      base::FEATURE_ENABLED_BY_DEFAULT
+const base::Feature kSendTabToSelfV2{"SendTabToSelfV2",
+                                     base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
-};
 
 bool IsReceivingEnabledByUserOnThisDevice(PrefService* prefs) {
   // TODO(crbug.com/1015322): SyncPrefs is used directly instead of methods in

@@ -61,19 +61,10 @@ void SendTabToSelfClientService::EntriesAddedRemotely(
     // TODO(skare): ReceivingUiHandler should be able to filter at its level,
     // or the registry should not be a singleton so we don't need to filter at
     // all. This narrow patch is less risky, but we should make a larger change.
-    if (base::FeatureList::IsEnabled(kSendTabToSelfV2) ||
-        share::AreUpcomingSharingFeaturesEnabled()) {
-      auto* button_controller =
-          static_cast<SendTabToSelfToolbarIconController*>(handler.get());
-      if (button_controller && button_controller->profile() == profile_) {
-        handler->DisplayNewEntries(new_entries);
-      }
-    } else {
-      auto* desktop_handler =
-          static_cast<DesktopNotificationHandler*>(handler.get());
-      if (desktop_handler && desktop_handler->profile() == profile_) {
-        handler->DisplayNewEntries(new_entries);
-      }
+    auto* button_controller =
+        static_cast<SendTabToSelfToolbarIconController*>(handler.get());
+    if (button_controller && button_controller->profile() == profile_) {
+      handler->DisplayNewEntries(new_entries);
     }
 #else
     handler->DisplayNewEntries(new_entries);

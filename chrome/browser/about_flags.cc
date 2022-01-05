@@ -6984,15 +6984,17 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSendTabToSelfManageDevicesLinkDescription, kOsAll,
      FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfManageDevicesLink)},
 
+#if defined(OS_ANDROID)
     {"send-tab-to-self-v2", flag_descriptions::kSendTabToSelfV2Name,
-     flag_descriptions::kSendTabToSelfV2Description, kOsAll,
+     flag_descriptions::kSendTabToSelfV2Description, kOsAndroid,
      FEATURE_VALUE_TYPE(send_tab_to_self::kSendTabToSelfV2)},
+#endif  // defined(OS_ANDROID)
 
 #if defined(OS_WIN)
     {"raw-audio-capture", flag_descriptions::kRawAudioCaptureName,
      flag_descriptions::kRawAudioCaptureDescription, kOsWin,
      FEATURE_VALUE_TYPE(media::kWasapiRawAudioCapture)},
-#endif  // defined(OS_MAC)
+#endif  // defined(OS_WIN)
 
     {"enable-managed-configuration-web-api",
      flag_descriptions::kEnableManagedConfigurationWebApiName,

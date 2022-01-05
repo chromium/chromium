@@ -38,18 +38,7 @@ ReceivingUiHandlerRegistry* ReceivingUiHandlerRegistry::GetInstance() {
 // Instantiates all the handlers relevant to this platform.
 void ReceivingUiHandlerRegistry::InstantiatePlatformSpecificHandlers(
     Profile* profile) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
-    defined(OS_WIN) || defined(OS_FUCHSIA)
-
-  // If STTS 2.0 is enabled the handler will be created when the toolbar
-  // button registers itself as the delegate.
-  if (!base::FeatureList::IsEnabled(kSendTabToSelfV2) &&
-      !share::AreUpcomingSharingFeaturesEnabled()) {
-    applicable_handlers_.push_back(
-        std::make_unique<send_tab_to_self::DesktopNotificationHandler>(
-            profile));
-  }
-#elif defined(OS_ANDROID)
+#if defined(OS_ANDROID)
   applicable_handlers_.push_back(
       std::make_unique<AndroidNotificationHandler>(profile));
 #endif

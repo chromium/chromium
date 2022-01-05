@@ -6,6 +6,7 @@
 #define COMPONENTS_SEND_TAB_TO_SELF_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "build/build_config.h"
 
 class PrefService;
 
@@ -20,9 +21,14 @@ extern const base::Feature kSendTabToSelfWhenSignedIn;
 // below the device list when sharing.
 extern const base::Feature kSendTabToSelfManageDevicesLink;
 
+#if defined(OS_ANDROID) || defined(OS_IOS)
 // If this feature is enabled, show received tabs in a new UI next to the
 // profile icon rather than in a system notification.
+//
+// V2 is the default on desktop and the V1 code path has been deleted there, so
+// this base::Feature no longer exists on desktop platforms.
 extern const base::Feature kSendTabToSelfV2;
+#endif  // OS_ANDROID || OS_IOS
 
 // Returns whether the receiving components of the feature is enabled on this
 // device. This doesn't rely on the SendTabToSelfSyncService to be actively up

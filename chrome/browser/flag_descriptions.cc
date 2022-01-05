@@ -2189,11 +2189,6 @@ const char kSendTabToSelfManageDevicesLinkDescription[] =
     "Shows a link to manage the user's devices below the device list when "
     "sharing";
 
-extern const char kSendTabToSelfV2Name[] = "Send tab to self 2.0";
-extern const char kSendTabToSelfV2Description[] =
-    "Enables new received tab "
-    "UI shown next to the profile icon instead of using system notifications.";
-
 const char kShoppingListName[] = "Shopping List";
 const char kShoppingListDescription[] = "Enable shopping list in bookmarks.";
 
@@ -3473,6 +3468,11 @@ const char kSecurePaymentConfirmationAndroidName[] =
     "Secure Payment Confirmation on Android";
 const char kSecurePaymentConfirmationAndroidDescription[] =
     "Enables Secure Payment Confirmation on Android.";
+
+const char kSendTabToSelfV2Name[] = "Send tab to self 2.0";
+const char kSendTabToSelfV2Description[] =
+    "Enables new received tab "
+    "UI shown next to the profile icon instead of using system notifications.";
 
 const char kSetMarketUrlForTestingName[] = "Set market URL for testing";
 const char kSetMarketUrlForTestingDescription[] =

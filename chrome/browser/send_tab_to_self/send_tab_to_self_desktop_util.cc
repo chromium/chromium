@@ -54,6 +54,9 @@ void CreateNewEntry(content::WebContents* tab,
   DCHECK(model);
 
   if (!model->IsReady()) {
+    // TODO(https://crbug.com/1280681): Is this legit? In STTSv2, there may not
+    // *be* a DesktopNotificationHandler for profile, and we're violating the
+    // lifetime rules of DesktopNotificationHandler here I think.
     DesktopNotificationHandler(profile).DisplayFailureMessage(shared_url);
     return;
   }
