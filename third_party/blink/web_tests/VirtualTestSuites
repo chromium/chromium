@@ -58,7 +58,6 @@
     "args": ["--enable-threaded-compositing",
              "--enable-blink-features=OffMainThreadCSSPaint",
              "--enable-gpu-rasterization",
-             "--enable-oop-rasterization",
              "--enable-accelerated-2d-canvas",
              "--disable-features=CanvasOopRasterization"]
   },
@@ -832,7 +831,6 @@
     "bases": [ "fast/canvas" ],
     "args": [ "--enable-features=CanvasOopRasterization",
               "--enable-accelerated-2d-canvas",
-              "--enable-oop-rasterization",
               "--enable-gpu-rasterization" ]
   },
   {

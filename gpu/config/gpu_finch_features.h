@@ -29,8 +29,6 @@ GPU_EXPORT extern const base::Feature kIncreaseBufferCountForHighFrameRate;
 
 GPU_EXPORT extern const base::Feature kDefaultEnableGpuRasterization;
 
-GPU_EXPORT extern const base::Feature kDefaultEnableOopRasterization;
-
 GPU_EXPORT extern const base::Feature kCanvasOopRasterization;
 
 GPU_EXPORT extern const base::Feature kDefaultEnableANGLEValidation;

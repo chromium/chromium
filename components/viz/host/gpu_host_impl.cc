@@ -476,12 +476,7 @@ void GpuHostImpl::DidInitialize(
 
   if (!params_.disable_gpu_shader_disk_cache) {
     CreateChannelCache(gpu::kDisplayCompositorClientId);
-
-    bool use_gr_shader_cache = base::FeatureList::IsEnabled(
-                                   features::kDefaultEnableOopRasterization) ||
-                               features::IsUsingSkiaRenderer();
-    if (use_gr_shader_cache)
-      CreateChannelCache(gpu::kGrShaderCacheClientId);
+    CreateChannelCache(gpu::kGrShaderCacheClientId);
   }
 }
 

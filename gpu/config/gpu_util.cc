@@ -210,22 +210,6 @@ GpuFeatureStatus GetOopRasterizationFeatureStatus(
 
   if (gpu_preferences.disable_oop_rasterization)
     return kGpuFeatureStatusDisabled;
-  else if (gpu_preferences.enable_oop_rasterization)
-    return kGpuFeatureStatusEnabled;
-
-  // Enable OOP rasterization for vulkan, unless it is overridden by
-  // commandline.
-  if (features::IsUsingVulkan() &&
-      !base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
-          features::kDefaultEnableOopRasterization.name,
-          base::FeatureList::OVERRIDE_DISABLE_FEATURE)) {
-    return kGpuFeatureStatusEnabled;
-  }
-
-  // OOP Rasterization on platforms that are not fully enabled is controlled by
-  // a finch experiment.
-  if (!base::FeatureList::IsEnabled(features::kDefaultEnableOopRasterization))
-    return kGpuFeatureStatusDisabled;
 
   return kGpuFeatureStatusEnabled;
 }

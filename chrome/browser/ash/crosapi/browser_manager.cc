@@ -822,7 +822,6 @@ void BrowserManager::StartWithLogFile(
                                    "--ozone-platform=wayland",
                                    "--user-data-dir=" + user_data_dir,
                                    "--enable-gpu-rasterization",
-                                   "--enable-oop-rasterization",
                                    "--lang=" + locale,
                                    "--enable-crashpad",
                                    "--enable-webgl-image-chromium",

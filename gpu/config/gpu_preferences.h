@@ -197,9 +197,7 @@ struct GPU_EXPORT GpuPreferences {
   // Ignores GPU blocklist.
   bool ignore_gpu_blocklist = false;
 
-  // Oop rasterization preferences in the GPU process.  disable wins over
-  // enable, and neither means use defaults from GpuFeatureInfo.
-  bool enable_oop_rasterization = false;
+  // Oop rasterization preferences in the GPU process.
   bool disable_oop_rasterization = false;
 
   bool enable_oop_rasterization_ddl = false;

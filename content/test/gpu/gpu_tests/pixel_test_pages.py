@@ -433,7 +433,7 @@ class PixelTestPages(object):
   def PaintWorkletPages(base_name):
     browser_args = [
         '--enable-blink-features=OffMainThreadCSSPaint',
-        '--enable-gpu-rasterization', '--enable-oop-rasterization'
+        '--enable-gpu-rasterization'
     ]
 
     return [

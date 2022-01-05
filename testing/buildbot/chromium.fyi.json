@@ -1580,7 +1580,6 @@
           "--test-launcher-filter-file=../../testing/buildbot/filters/vulkan.content_browsertests.filter",
           "--enable-features=UseSkiaRenderer,UiGpuRasterization,Vulkan",
           "--use-vulkan=swiftshader",
-          "--enable-oop-rasterization",
           "--enable-gpu-rasterization",
           "--disable-software-compositing-fallback",
           "--disable-vulkan-fallback-to-gl-for-testing",

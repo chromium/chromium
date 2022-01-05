@@ -2816,7 +2816,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/vulkan.content_browsertests.filter',
           '--enable-features=UseSkiaRenderer,UiGpuRasterization,Vulkan',
           '--use-vulkan=native',
-          '--enable-oop-rasterization',
           '--enable-gpu-rasterization',
           '--disable-software-compositing-fallback',
           '--disable-vulkan-fallback-to-gl-for-testing',
@@ -2847,7 +2846,6 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/vulkan.content_browsertests.filter',
           '--enable-features=UseSkiaRenderer,UiGpuRasterization,Vulkan',
           '--use-vulkan=swiftshader',
-          '--enable-oop-rasterization',
           '--enable-gpu-rasterization',
           '--disable-software-compositing-fallback',
           '--disable-vulkan-fallback-to-gl-for-testing',
@@ -3245,7 +3243,7 @@
           '--extra-browser-args=--enable-features=UseSkiaRenderer,SkiaDawn',
         ],
         'linux_args': [
-          '--extra-browser-args=--enable-features=UseSkiaRenderer,UiGpuRasterization,SkiaDawn --enable-gpu-rasterization --enable-oop-rasterization --use-vulkan=native',
+          '--extra-browser-args=--enable-features=UseSkiaRenderer,UiGpuRasterization,SkiaDawn --enable-gpu-rasterization --use-vulkan=native',
         ],
         'mixins': [
           'chrome-gpu-gold-service-account',
@@ -3269,7 +3267,7 @@
           '--test-filter=ScreenshotSync_GPURasterWithDivs::ScreenshotSync_SWRasterWithDivs',
         ],
         'linux_args': [
-          '--extra-browser-args=--enable-features=UseSkiaRenderer,UiGpuRasterization,SkiaDawn --enable-gpu-rasterization --enable-oop-rasterization --use-vulkan=native',
+          '--extra-browser-args=--enable-features=UseSkiaRenderer,UiGpuRasterization,SkiaDawn --enable-gpu-rasterization --use-vulkan=native',
           '--test-filter=ScreenshotSync_GPURasterWithDivs',
         ],
         'mixins': [
@@ -3285,7 +3283,7 @@
           '--dont-restore-color-profile-after-test',
           '--test-machine-name',
           '${buildername}',
-          '--extra-browser-args=--enable-features=UseSkiaRenderer --use-gl=egl --enable-gpu-rasterization --enable-oop-rasterization --disable-software-compositing-fallback --disable-headless-mode',
+          '--extra-browser-args=--enable-features=UseSkiaRenderer --use-gl=egl --enable-gpu-rasterization --disable-software-compositing-fallback --disable-headless-mode',
         ],
         'android_args': [
           # TODO(crbug.com/1093085): Remove this once we fix the tests.

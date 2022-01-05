@@ -132,11 +132,6 @@ const base::Feature kDefaultEnableGpuRasterization{
 #endif
 };
 
-// Enable out of process rasterization by default.  This can still be overridden
-// by --disable-oop-rasterization.
-const base::Feature kDefaultEnableOopRasterization{
-    "DefaultEnableOopRasterization", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Enables the use of out of process rasterization for canvas.
 const base::Feature kCanvasOopRasterization{"CanvasOopRasterization",
                                             base::FEATURE_DISABLED_BY_DEFAULT};

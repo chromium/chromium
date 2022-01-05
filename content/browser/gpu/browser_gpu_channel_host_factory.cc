@@ -305,19 +305,14 @@ BrowserGpuChannelHostFactory::BrowserGpuChannelHostFactory()
               gpu_client_id_, cache_dir));
     }
 
-    bool use_gr_shader_cache = base::FeatureList::IsEnabled(
-                                   features::kDefaultEnableOopRasterization) ||
-                               features::IsUsingSkiaRenderer();
-    if (use_gr_shader_cache) {
-      base::FilePath gr_cache_dir =
-          GetContentClient()->browser()->GetGrShaderDiskCacheDirectory();
-      if (!gr_cache_dir.empty()) {
-        GetUIThreadTaskRunner({})->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                &BrowserGpuChannelHostFactory::InitializeGrShaderDiskCacheOnIO,
-                gr_cache_dir));
-      }
+    base::FilePath gr_cache_dir =
+        GetContentClient()->browser()->GetGrShaderDiskCacheDirectory();
+    if (!gr_cache_dir.empty()) {
+      GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(
+              &BrowserGpuChannelHostFactory::InitializeGrShaderDiskCacheOnIO,
+              gr_cache_dir));
     }
   }
 }

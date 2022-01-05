@@ -53,7 +53,6 @@
           "--enable-gpu-rasterization",
           "--enable-features=UseSkiaRenderer",
           "--use-gl=any",
-          "--enable-oop-rasterization",
           "--disable-software-compositing-fallback",
           "--disable-headless-mode"
     ]
@@ -64,7 +63,6 @@
           "--enable-gpu-rasterization",
           "--enable-features=UseSkiaRenderer,Vulkan",
           "--use-gl=any",
-          "--enable-oop-rasterization",
           "--disable-software-compositing-fallback",
           "--use-vulkan=native",
           "--disable-vulkan-fallback-to-gl-for-testing",
@@ -76,7 +74,6 @@
     "args": [
           "--enable-gpu-rasterization",
           "--enable-features=UseSkiaRenderer,Vulkan",
-          "--enable-oop-rasterization",
           "--use-vulkan=swiftshader",
           "--disable-vulkan-fallback-to-gl-for-testing"
     ]
@@ -129,4 +126,3 @@
     ]
   }
 ]
-

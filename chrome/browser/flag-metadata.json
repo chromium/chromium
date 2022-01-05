@@ -2395,11 +2395,6 @@
     "expiry_milestone": 100
   },
   {
-    "name": "enable-oop-rasterization",
-    "owners": [ "sunnyps", "vasilyt" ],
-    "expiry_milestone": 86
-  },
-  {
     "name": "enable-oop-rasterization-ddl",
     "owners": [ "robertphillips", "penghuang" ],
     "expiry_milestone": 87

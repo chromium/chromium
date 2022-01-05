@@ -1838,11 +1838,6 @@ const char kEnableSearchPrefetchDescription[] =
     "Allow the default search engine to specify prefetch behavior for "
     "suggestions to search results pages.";
 
-const char kOopRasterizationName[] = "Out-of-process rasterization";
-const char kOopRasterizationDescription[] =
-    "Perform Ganesh raster in the GPU Process instead of the renderer.  "
-    "Must also enable GPU rasterization";
-
 const char kOopRasterizationDDLName[] =
     "Out of process rasterization using DDLs";
 const char kOopRasterizationDDLDescription[] =

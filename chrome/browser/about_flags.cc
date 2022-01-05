@@ -657,14 +657,6 @@ const FeatureEntry::Choice kEnableGpuRasterizationChoices[] = {
      switches::kDisableGpuRasterization, ""},
 };
 
-const FeatureEntry::Choice kEnableOopRasterizationChoices[] = {
-    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
-    {flags_ui::kGenericExperimentChoiceEnabled,
-     switches::kEnableOopRasterization, ""},
-    {flags_ui::kGenericExperimentChoiceDisabled,
-     switches::kDisableOopRasterization, ""},
-};
-
 const FeatureEntry::Choice kExtensionContentVerificationChoices[] = {
     {flags_ui::kGenericExperimentChoiceDefault, "", ""},
     {flag_descriptions::kExtensionContentVerificationBootstrap,
@@ -2989,9 +2981,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-gpu-rasterization", flag_descriptions::kGpuRasterizationName,
      flag_descriptions::kGpuRasterizationDescription, kOsAll,
      MULTI_VALUE_TYPE(kEnableGpuRasterizationChoices)},
-    {"enable-oop-rasterization", flag_descriptions::kOopRasterizationName,
-     flag_descriptions::kOopRasterizationDescription, kOsAll,
-     MULTI_VALUE_TYPE(kEnableOopRasterizationChoices)},
     {"enable-oop-rasterization-ddl",
      flag_descriptions::kOopRasterizationDDLName,
      flag_descriptions::kOopRasterizationDDLDescription, kOsAll,
