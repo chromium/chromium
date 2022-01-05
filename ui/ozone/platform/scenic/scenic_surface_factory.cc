@@ -253,6 +253,20 @@ void ScenicSurfaceFactory::CreateNativePixmapAsync(
       CreateNativePixmap(widget, vk_device, size, format, usage));
 }
 
+scoped_refptr<gfx::NativePixmap>
+ScenicSurfaceFactory::CreateNativePixmapFromHandle(
+    gfx::AcceleratedWidget widget,
+    gfx::Size size,
+    gfx::BufferFormat format,
+    gfx::NativePixmapHandle handle) {
+  auto collection = sysmem_buffer_manager_.GetCollectionById(
+      handle.buffer_collection_id.value());
+  if (!collection)
+    return nullptr;
+
+  return collection->CreateNativePixmap(handle.buffer_index);
+}
+
 #if BUILDFLAG(ENABLE_VULKAN)
 std::unique_ptr<gpu::VulkanImplementation>
 ScenicSurfaceFactory::CreateVulkanImplementation(bool use_swiftshader,

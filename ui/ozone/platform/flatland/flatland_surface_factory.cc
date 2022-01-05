@@ -234,6 +234,20 @@ void FlatlandSurfaceFactory::CreateNativePixmapAsync(
       CreateNativePixmap(widget, vk_device, size, format, usage));
 }
 
+scoped_refptr<gfx::NativePixmap>
+FlatlandSurfaceFactory::CreateNativePixmapFromHandle(
+    gfx::AcceleratedWidget widget,
+    gfx::Size size,
+    gfx::BufferFormat format,
+    gfx::NativePixmapHandle handle) {
+  auto collection = flatland_sysmem_buffer_manager_.GetCollectionById(
+      handle.buffer_collection_id.value());
+  if (!collection)
+    return nullptr;
+
+  return collection->CreateNativePixmap(handle.buffer_index);
+}
+
 #if BUILDFLAG(ENABLE_VULKAN)
 std::unique_ptr<gpu::VulkanImplementation>
 FlatlandSurfaceFactory::CreateVulkanImplementation(
