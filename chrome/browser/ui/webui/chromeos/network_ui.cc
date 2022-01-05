@@ -127,6 +127,8 @@ class NetworkDiagnosticsMessageHandler : public content::WebUIMessageHandler {
 
 }  // namespace
 
+namespace network_ui {
+
 class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
  public:
   NetworkConfigMessageHandler() {}
@@ -383,6 +385,8 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
   base::WeakPtrFactory<NetworkConfigMessageHandler> weak_ptr_factory_{this};
 };
 
+}  // namespace network_ui
+
 // static
 void NetworkUI::GetLocalizedStrings(base::DictionaryValue* localized_strings) {
   localized_strings->SetString("titleText",
@@ -541,7 +545,8 @@ void NetworkUI::GetLocalizedStrings(base::DictionaryValue* localized_strings) {
 
 NetworkUI::NetworkUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
-  web_ui->AddMessageHandler(std::make_unique<NetworkConfigMessageHandler>());
+  web_ui->AddMessageHandler(
+      std::make_unique<network_ui::NetworkConfigMessageHandler>());
   web_ui->AddMessageHandler(std::make_unique<OncImportMessageHandler>());
   web_ui->AddMessageHandler(std::make_unique<NetworkLogsMessageHandler>());
   web_ui->AddMessageHandler(
