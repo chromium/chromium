@@ -139,6 +139,10 @@ class AppServiceAppWindowShelfController
                                  const ash::ShelfID& shelf_id,
                                  content::BrowserContext* browser_context);
 
+  // Stop handling browser windows, because BrowserAppShelfController is used to
+  // handle browser windows.
+  void StopHandleWindow(aura::Window* window);
+
   AuraWindowToAppWindow aura_window_to_app_window_;
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       observed_windows_{this};
