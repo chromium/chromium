@@ -285,12 +285,6 @@ class ASH_EXPORT CaptureModeController
   // Called back when the mojo pipe to the recording service gets disconnected.
   void OnRecordingServiceDisconnected();
 
-  // Returns whether doing a screen capture is currently allowed by enterprise
-  // policies and a reason otherwise.
-  // ShouldBlockRecordingForContentProtection() should be used for HDCP checks.
-  CaptureAllowance IsCaptureAllowedByEnterprisePolicies(
-      const CaptureParams& capture_params) const;
-
   // Terminates the recording service process, closes any recording-related UI
   // elements (only if |success| is false as this indicates that recording was
   // not ended normally by calling EndVideoRecording()), and shows the video

@@ -261,9 +261,6 @@ int GetDisabledNotificationMessageId(CaptureAllowance allowance,
     case CaptureAllowance::kDisallowedByPolicy:
       return for_title ? IDS_ASH_SCREEN_CAPTURE_POLICY_DISABLED_TITLE
                        : IDS_ASH_SCREEN_CAPTURE_POLICY_DISABLED_MESSAGE;
-    case CaptureAllowance::kDisallowedByDlp:
-      return for_title ? IDS_ASH_SCREEN_CAPTURE_DLP_DISABLED_TITLE
-                       : IDS_ASH_SCREEN_CAPTURE_DLP_DISABLED_MESSAGE;
     case CaptureAllowance::kDisallowedByHdcp:
       return for_title ? IDS_ASH_SCREEN_CAPTURE_HDCP_STOPPED_TITLE
                        : IDS_ASH_SCREEN_CAPTURE_HDCP_BLOCKED_MESSAGE;
@@ -980,15 +977,6 @@ void CaptureModeController::OnRecordingServiceDisconnected() {
   FinalizeRecording(/*success=*/false, gfx::ImageSkia());
 }
 
-CaptureAllowance CaptureModeController::IsCaptureAllowedByEnterprisePolicies(
-    const CaptureParams& capture_params) const {
-  if (!delegate_->IsCaptureAllowedByPolicy()) {
-    return CaptureAllowance::kDisallowedByPolicy;
-  }
-
-  return CaptureAllowance::kAllowed;
-}
-
 void CaptureModeController::FinalizeRecording(bool success,
                                               const gfx::ImageSkia& thumbnail) {
   // If |success| is false, then recording has been force-terminated due to a
@@ -1032,8 +1020,7 @@ void CaptureModeController::CaptureImage(const CaptureParams& capture_params,
   // Note that |type_| may not necessarily be |kImage| here, since this may be
   // called to take an instant fullscreen screenshot for the keyboard shortcut,
   // which doesn't go through the capture mode UI, and doesn't change |type_|.
-  DCHECK_EQ(CaptureAllowance::kAllowed,
-            IsCaptureAllowedByEnterprisePolicies(capture_params));
+  DCHECK(delegate_->IsCaptureAllowedByPolicy());
 
   // Stop the capture session now, so as not to take a screenshot of the capture
   // bar.
@@ -1067,8 +1054,7 @@ void CaptureModeController::CaptureImage(const CaptureParams& capture_params,
 
 void CaptureModeController::CaptureVideo(const CaptureParams& capture_params) {
   DCHECK_EQ(CaptureModeType::kVideo, type_);
-  DCHECK_EQ(CaptureAllowance::kAllowed,
-            IsCaptureAllowedByEnterprisePolicies(capture_params));
+  DCHECK(delegate_->IsCaptureAllowedByPolicy());
 
   if (skip_count_down_ui_) {
     OnVideoRecordCountDownFinished();

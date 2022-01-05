@@ -3830,9 +3830,6 @@ Here are some things you can try to get started.
       <message name="IDS_ASH_SCREEN_CAPTURE_HDCP_BLOCKED_MESSAGE" desc="The text of the notification that informs the user the screen recording is blocked due to existence of protected content.">
         Screen recording is not allowed when protected content is visible
       </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_DLP_DISABLED_TITLE" desc="The title of the notification when capture mode is disabled because of confidential content.">
-        Can't capture confidential content
-      </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_POLICY_DISABLED_TITLE" desc="The title of the notification when capture mode is disabled because of a policy.">
         Can't capture content
       </message>
@@ -3841,9 +3838,6 @@ Here are some things you can try to get started.
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_HDCP_STOPPED_TITLE" desc="The title of the notification when video capture is stopped due to protected content showing up on the screen.">
         Can't record protected content
-      </message>
-      <message name="IDS_ASH_SCREEN_CAPTURE_DLP_DISABLED_MESSAGE" desc="The text of the notification when capture mode is disabled because of confidential content.">
-        Administrator policy disables screen capture when confidential content is visible
       </message>
       <message name="IDS_ASH_SCREEN_CAPTURE_POLICY_DISABLED_MESSAGE" desc="The text of the notification when capture mode is disabled because of a policy.">
         Administrator policy disables screen capture
