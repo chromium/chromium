@@ -288,7 +288,7 @@ class LayerTreeHostTestRequestedMainFrame : public LayerTreeHostTest {
       case 0:
         ADD_FAILURE()
             << "Case 0 is the initial commit used to send the test here";
-        FALLTHROUGH;
+        [[fallthrough]];
       case 1:
         layer_tree_host()->SetNeedsAnimate();
         break;
