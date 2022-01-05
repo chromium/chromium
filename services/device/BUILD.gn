@@ -302,6 +302,7 @@ source_set("tests") {
 
   if (is_serial_enabled_platform) {
     sources += [
+      "serial/bluetooth_serial_device_enumerator_unittests.cc",
       "serial/bluetooth_serial_port_impl_unittest.cc",
       "serial/serial_device_enumerator_unittest.cc",
       "serial/serial_port_impl_unittest.cc",

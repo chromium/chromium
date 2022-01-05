@@ -128,12 +128,14 @@ void SerialPortManagerImpl::OpenPort(
     absl::optional<std::string> address =
         bluetooth_enumerator_->GetAddressFromToken(token);
     if (address) {
+      const BluetoothUUID service_class_id =
+          bluetooth_enumerator_->GetServiceClassIdFromToken(token);
       ui_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(
               &SerialPortManagerImpl::OpenBluetoothSerialPortOnUI,
-              weak_factory_.GetWeakPtr(), *address, std::move(options),
-              std::move(client), std::move(watcher),
+              weak_factory_.GetWeakPtr(), *address, service_class_id,
+              std::move(options), std::move(client), std::move(watcher),
               base::BindOnce(&OnPortOpened, std::move(callback),
                              base::SequencedTaskRunnerHandle::Get())));
       return;
@@ -145,13 +147,15 @@ void SerialPortManagerImpl::OpenPort(
 
 void SerialPortManagerImpl::OpenBluetoothSerialPortOnUI(
     const std::string& address,
+    const BluetoothUUID& service_class_id,
     mojom::SerialConnectionOptionsPtr options,
     mojo::PendingRemote<mojom::SerialPortClient> client,
     mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher,
     BluetoothSerialPortImpl::OpenCallback callback) {
   BluetoothSerialPortImpl::Open(bluetooth_enumerator_->GetAdapter(), address,
-                                std::move(options), std::move(client),
-                                std::move(watcher), std::move(callback));
+                                service_class_id, std::move(options),
+                                std::move(client), std::move(watcher),
+                                std::move(callback));
 }
 
 void SerialPortManagerImpl::OnPortAdded(const mojom::SerialPortInfo& port) {

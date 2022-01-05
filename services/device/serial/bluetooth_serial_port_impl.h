@@ -18,6 +18,8 @@
 
 namespace device {
 
+class BluetoothUUID;
+
 // This class is intended to allow serial communication using a Bluetooth
 // SPP device. The Bluetooth device is used to create a Bluetooth socket
 // which is closed upon error in any of the interface functions.
@@ -32,6 +34,7 @@ class BluetoothSerialPortImpl : public mojom::SerialPort {
   static void Open(
       scoped_refptr<BluetoothAdapter> adapter,
       const std::string& address,
+      const BluetoothUUID& service_class_id,
       mojom::SerialConnectionOptionsPtr options,
       mojo::PendingRemote<mojom::SerialPortClient> client,
       mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher,
@@ -61,7 +64,7 @@ class BluetoothSerialPortImpl : public mojom::SerialPort {
   void GetPortInfo(GetPortInfoCallback callback) override;
   void Close(CloseCallback callback) override;
 
-  void OpenSocket(OpenCallback callback);
+  void OpenSocket(const BluetoothUUID& service_class_id, OpenCallback callback);
   void WriteToSocket(MojoResult result, const mojo::HandleSignalsState& state);
   void ReadFromSocketAndWriteOut(MojoResult result,
                                  const mojo::HandleSignalsState& state);

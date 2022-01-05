@@ -126,7 +126,7 @@ class BluetoothSerialPortImplTest : public testing::Test {
 
     base::RunLoop loop;
     BluetoothSerialPortImpl::Open(
-        std::move(adapter), kDeviceAddress,
+        std::move(adapter), kDeviceAddress, GetSerialPortProfileUUID(),
         mojom::SerialConnectionOptions::New(), FakeSerialPortClient::Create(),
         std::move(watcher_remote),
         base::BindLambdaForTesting(
@@ -181,8 +181,9 @@ TEST_F(BluetoothSerialPortImplTest, OpenFailure) {
 
   base::RunLoop loop;
   BluetoothSerialPortImpl::Open(
-      std::move(adapter), kDeviceAddress, mojom::SerialConnectionOptions::New(),
-      FakeSerialPortClient::Create(), mojo::NullRemote(),
+      std::move(adapter), kDeviceAddress, GetSerialPortProfileUUID(),
+      mojom::SerialConnectionOptions::New(), FakeSerialPortClient::Create(),
+      mojo::NullRemote(),
       base::BindLambdaForTesting(
           [&](mojo::PendingRemote<mojom::SerialPort> remote) {
             EXPECT_FALSE(remote.is_valid());

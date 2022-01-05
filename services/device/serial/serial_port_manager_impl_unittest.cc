@@ -372,7 +372,7 @@ TEST_F(SerialPortManagerImplTest, BluetoothPortRemovedAndAdded) {
   }
   ASSERT_FALSE(port1_token.is_empty());
 
-  bluetooth_enumerator_->PortRemoved(kDeviceAddress);
+  bluetooth_enumerator_->DeviceRemoved(kDeviceAddress);
   {
     base::RunLoop run_loop;
     EXPECT_CALL(client, OnPortRemoved(_))

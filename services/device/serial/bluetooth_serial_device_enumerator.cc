@@ -6,6 +6,8 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/unguessable_token.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "services/device/public/cpp/bluetooth/bluetooth_utils.h"
@@ -51,34 +53,27 @@ void BluetoothSerialDeviceEnumerator::AdapterHelper::OnGotClassicAdapter(
     scoped_refptr<device::BluetoothAdapter> adapter) {
   SEQUENCE_CHECKER(sequence_checker_);
   DCHECK(adapter);
-  adapter->AddObserver(this);
-  std::vector<std::string> port_device_addresses;
+
   BluetoothAdapter::DeviceList devices = adapter->GetDevices();
   for (auto* device : devices) {
-    BluetoothDevice::UUIDSet device_uuids = device->GetUUIDs();
-    if (base::Contains(device_uuids, GetSerialPortProfileUUID())) {
-      port_device_addresses.push_back(device->GetAddress());
-    }
+    DeviceAdded(adapter.get(), device);
   }
-
+  adapter->AddObserver(this);
   enumerator_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&BluetoothSerialDeviceEnumerator::SetClassicAdapter,
-                     enumerator_, std::move(adapter),
-                     std::move(port_device_addresses)));
+                     enumerator_, std::move(adapter)));
 }
 
 void BluetoothSerialDeviceEnumerator::AdapterHelper::DeviceAdded(
-    BluetoothAdapter* adapter,
+    BluetoothAdapter*,
     BluetoothDevice* device) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  BluetoothDevice::UUIDSet device_uuids = device->GetUUIDs();
-  if (!base::Contains(device_uuids, GetSerialPortProfileUUID()))
-    return;
-
   enumerator_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&BluetoothSerialDeviceEnumerator::PortAdded,
-                                enumerator_, device->GetAddress()));
+      FROM_HERE,
+      base::BindOnce(&BluetoothSerialDeviceEnumerator::DeviceAdded, enumerator_,
+                     device->GetAddress(), device->GetNameForDisplay(),
+                     device->GetUUIDs()));
 }
 
 void BluetoothSerialDeviceEnumerator::AdapterHelper::DeviceRemoved(
@@ -86,7 +81,7 @@ void BluetoothSerialDeviceEnumerator::AdapterHelper::DeviceRemoved(
     BluetoothDevice* device) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   enumerator_runner_->PostTask(
-      FROM_HERE, base::BindOnce(&BluetoothSerialDeviceEnumerator::PortRemoved,
+      FROM_HERE, base::BindOnce(&BluetoothSerialDeviceEnumerator::DeviceRemoved,
                                 enumerator_, device->GetAddress()));
 }
 
@@ -103,44 +98,61 @@ BluetoothSerialDeviceEnumerator::BluetoothSerialDeviceEnumerator(
 BluetoothSerialDeviceEnumerator::~BluetoothSerialDeviceEnumerator() = default;
 
 void BluetoothSerialDeviceEnumerator::SetClassicAdapter(
-    scoped_refptr<device::BluetoothAdapter> adapter,
-    std::vector<std::string> port_device_addresses) {
+    scoped_refptr<device::BluetoothAdapter> adapter) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(adapter);
   adapter_ = std::move(adapter);
-  DCHECK(device_ports_.empty());
-  for (const auto& device_address : port_device_addresses) {
-    PortAdded(device_address);
-  }
   if (got_adapter_callback_) {
     std::move(got_adapter_callback_).Run();
   }
 }
 
-void BluetoothSerialDeviceEnumerator::PortAdded(
-    const std::string& device_address) {
+void BluetoothSerialDeviceEnumerator::DeviceAdded(
+    base::StringPiece device_address,
+    base::StringPiece16 device_name,
+    BluetoothDevice::UUIDSet service_class_ids) {
+  for (const auto& service_class_id : service_class_ids) {
+    AddService(device_address, device_name, service_class_id);
+  }
+}
+
+void BluetoothSerialDeviceEnumerator::AddService(
+    base::StringPiece device_address,
+    base::StringPiece16 device_name,
+    const BluetoothUUID& service_class_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Ignore duplicate devices. Some ports send device notifications after
-  // requesting the classic adapter resulting in double detection of devices.
-  if (base::Contains(device_ports_, device_address))
+  DeviceServiceInfo key =
+      std::make_pair(std::string(device_address), service_class_id);
+  if (base::Contains(device_ports_, key))
     return;
 
   auto port = mojom::SerialPortInfo::New();
   port->token = base::UnguessableToken::Create();
   port->path = base::FilePath::FromUTF8Unsafe(device_address);
   port->type = mojom::DeviceType::SPP_DEVICE;
-  device_ports_.insert(std::make_pair(device_address, port->token));
+  // TODO(crbug.com/1261557): Use better name.
+  // Using service class ID for development to disambiguate device services.
+  const std::string device_name_utf8 = base::UTF16ToUTF8(device_name);
+  if (service_class_id == GetSerialPortProfileUUID()) {
+    port->display_name = device_name_utf8;
+  } else {
+    port->display_name = base::StringPrintf("%s [%s]", device_name_utf8.c_str(),
+                                            service_class_id.value().c_str());
+  }
+  device_ports_.insert(std::make_pair(std::move(key), port->token));
   AddPort(std::move(port));
 }
 
-void BluetoothSerialDeviceEnumerator::PortRemoved(
+void BluetoothSerialDeviceEnumerator::DeviceRemoved(
     const std::string& device_address) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto it = device_ports_.find(device_address);
-  DCHECK(it != device_ports_.end());
-  base::UnguessableToken token = it->second;
-  device_ports_.erase(it);
-  RemovePort(token);
+  base::EraseIf(device_ports_, [&](auto& map_entry) {
+    if (map_entry.first.first == device_address) {
+      RemovePort(/*token=*/map_entry.second);
+      return true;
+    }
+    return false;
+  });
 }
 
 scoped_refptr<BluetoothAdapter> BluetoothSerialDeviceEnumerator::GetAdapter() {
@@ -149,13 +161,23 @@ scoped_refptr<BluetoothAdapter> BluetoothSerialDeviceEnumerator::GetAdapter() {
 
 absl::optional<std::string>
 BluetoothSerialDeviceEnumerator::GetAddressFromToken(
-    const base::UnguessableToken& token) {
+    const base::UnguessableToken& token) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (const auto& entry : device_ports_) {
     if (entry.second == token)
-      return entry.first;
+      return entry.first.first;
   }
   return absl::nullopt;
+}
+
+BluetoothUUID BluetoothSerialDeviceEnumerator::GetServiceClassIdFromToken(
+    const base::UnguessableToken& token) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (const auto& entry : device_ports_) {
+    if (entry.second == token)
+      return entry.first.second;
+  }
+  return BluetoothUUID();
 }
 
 void BluetoothSerialDeviceEnumerator::OnGotAdapterForTesting(

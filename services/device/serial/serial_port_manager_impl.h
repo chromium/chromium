@@ -27,6 +27,8 @@ class UnguessableToken;
 
 namespace device {
 
+class BluetoothUUID;
+
 // TODO(leonhsl): Merge this class with SerialDeviceEnumerator if/once
 // SerialDeviceEnumerator is exposed only via the Device Service.
 // crbug.com/748505
@@ -75,6 +77,7 @@ class SerialPortManagerImpl : public mojom::SerialPortManager,
 
   void OpenBluetoothSerialPortOnUI(
       const std::string& address,
+      const BluetoothUUID& service_class_id,
       mojom::SerialConnectionOptionsPtr options,
       mojo::PendingRemote<mojom::SerialPortClient> client,
       mojo::PendingRemote<mojom::SerialPortConnectionWatcher> watcher,
