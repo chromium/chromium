@@ -191,14 +191,14 @@ void BuiltInBackendToAndroidBackendMigrator::
       // |android_backend_|.
       if (is_initial_migration) {
         callbacks_chain = base::BindOnce(
-            &PasswordStoreBackend::AddLoginAsync,
-            android_backend_->GetWeakPtr(), *login,
-            IgnoreChangeListAndRunCallback(std::move(callbacks_chain)));
+            &BuiltInBackendToAndroidBackendMigrator::AddLoginToBackend,
+            weak_ptr_factory_.GetWeakPtr(), android_backend_, *login,
+            std::move(callbacks_chain));
       } else {
         callbacks_chain = base::BindOnce(
-            &PasswordStoreBackend::RemoveLoginAsync,
-            built_in_backend_->GetWeakPtr(), *login,
-            IgnoreChangeListAndRunCallback(std::move(callbacks_chain)));
+            &BuiltInBackendToAndroidBackendMigrator::RemoveLoginFromBackend,
+            weak_ptr_factory_.GetWeakPtr(), built_in_backend_, *login,
+            std::move(callbacks_chain));
       }
 
       continue;
@@ -218,16 +218,16 @@ void BuiltInBackendToAndroidBackendMigrator::
       // // During initial migration, pick the most recently created one. This
       // is aligned with the merge sync logic in PasswordSyncBridge.
       callbacks_chain = base::BindOnce(
-          &PasswordStoreBackend::UpdateLoginAsync,
-          android_backend_->GetWeakPtr(), *login,
-          IgnoreChangeListAndRunCallback(std::move(callbacks_chain)));
+          &BuiltInBackendToAndroidBackendMigrator::UpdateLoginInBackend,
+          weak_ptr_factory_.GetWeakPtr(), android_backend_, *login,
+          std::move(callbacks_chain));
     } else {
       // During rolling migration, update the built-in version to match the
       // Android version.
       callbacks_chain = base::BindOnce(
-          &PasswordStoreBackend::UpdateLoginAsync,
-          built_in_backend_->GetWeakPtr(), *android_login,
-          IgnoreChangeListAndRunCallback(std::move(callbacks_chain)));
+          &BuiltInBackendToAndroidBackendMigrator::UpdateLoginInBackend,
+          weak_ptr_factory_.GetWeakPtr(), built_in_backend_, *android_login,
+          std::move(callbacks_chain));
     }
   }
 
@@ -244,12 +244,36 @@ void BuiltInBackendToAndroidBackendMigrator::
     // Add to the |built_in_backend_| any passwords from the |android_backend_|
     // that doesn't exist in the |built_in_backend_|.
     callbacks_chain = base::BindOnce(
-        &PasswordStoreBackend::AddLoginAsync, built_in_backend_->GetWeakPtr(),
-        *android_login,
-        IgnoreChangeListAndRunCallback(std::move(callbacks_chain)));
+        &BuiltInBackendToAndroidBackendMigrator::AddLoginToBackend,
+        weak_ptr_factory_.GetWeakPtr(), built_in_backend_, *android_login,
+        std::move(callbacks_chain));
   }
 
   std::move(callbacks_chain).Run();
+}
+
+void BuiltInBackendToAndroidBackendMigrator::AddLoginToBackend(
+    PasswordStoreBackend* backend,
+    const PasswordForm& form,
+    base::OnceClosure callback) {
+  backend->AddLoginAsync(form,
+                         IgnoreChangeListAndRunCallback(std::move(callback)));
+}
+
+void BuiltInBackendToAndroidBackendMigrator::UpdateLoginInBackend(
+    PasswordStoreBackend* backend,
+    const PasswordForm& form,
+    base::OnceClosure callback) {
+  backend->UpdateLoginAsync(
+      form, IgnoreChangeListAndRunCallback(std::move(callback)));
+}
+
+void BuiltInBackendToAndroidBackendMigrator::RemoveLoginFromBackend(
+    PasswordStoreBackend* backend,
+    const PasswordForm& form,
+    base::OnceClosure callback) {
+  backend->RemoveLoginAsync(
+      form, IgnoreChangeListAndRunCallback(std::move(callback)));
 }
 
 }  // namespace password_manager

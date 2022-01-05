@@ -42,6 +42,19 @@ class BuiltInBackendToAndroidBackendMigrator {
  private:
   struct BackendAndLoginsResults;
 
+  // Helper methods to {Add,Update,Remove} |form| in |backend|. This is used to
+  // ensure that all the operations are happening inside
+  // BuiltInBackendToAndroidBackendMigrator life-scope.
+  void AddLoginToBackend(PasswordStoreBackend* backend,
+                         const PasswordForm& form,
+                         base::OnceClosure callback);
+  void UpdateLoginInBackend(PasswordStoreBackend* backend,
+                            const PasswordForm& form,
+                            base::OnceClosure callback);
+  void RemoveLoginFromBackend(PasswordStoreBackend* backend,
+                              const PasswordForm& form,
+                              base::OnceClosure callback);
+
   // Saves current migration version in |prefs_|.
   void UpdateMigrationVersionInPref();
 
