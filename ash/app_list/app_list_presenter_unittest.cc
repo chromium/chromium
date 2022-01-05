@@ -192,6 +192,17 @@ void SanityCheckSearchResultsAnchoredDialogBounds(
   EXPECT_LT(dialog_bounds.y(), search_box_bounds.bottom());
 }
 
+// Returns the search box view from either the clamshell bubble or the tablet
+// mode fullscreen launcher.
+SearchBoxView* GetSearchBoxViewFromHelper(AppListTestHelper* helper) {
+  if (features::IsProductivityLauncherEnabled() &&
+      !Shell::Get()->IsInTabletMode()) {
+    DCHECK(Shell::Get()->app_list_controller()->IsVisible());
+    return helper->GetBubbleSearchBoxView();
+  }
+  return helper->GetSearchBoxView();
+}
+
 }  // namespace
 
 // This suite used to be called AppListPresenterDelegateTest. It's not called
@@ -235,12 +246,7 @@ class AppListPresenterTest : public AshTestBase,
   bool TestFullscreenParam() const { return GetParam(); }
 
   SearchBoxView* GetSearchBoxView() {
-    if (features::IsProductivityLauncherEnabled() &&
-        !Shell::Get()->IsInTabletMode()) {
-      DCHECK(Shell::Get()->app_list_controller()->IsVisible());
-      return GetAppListTestHelper()->GetBubbleSearchBoxView();
-    }
-    return GetAppListTestHelper()->GetSearchBoxView();
+    return GetSearchBoxViewFromHelper(GetAppListTestHelper());
   }
 
   gfx::Point GetPointOutsideSearchbox() {
@@ -4590,10 +4596,23 @@ TEST_P(AppListPresenterLayoutTest, SwitchPageInFullscreen) {
 }
 
 // Test a variety of behaviors for home launcher (app list in tablet mode).
-class AppListPresenterHomeLauncherTest : public AshTestBase {
+// Parameterized by ProductivityLauncher.
+class AppListPresenterHomeLauncherTest
+    : public AshTestBase,
+      public testing::WithParamInterface<bool> {
  public:
   AppListPresenterHomeLauncherTest() {
-    scoped_feature_list_.InitAndEnableFeature(features::kEnableBackgroundBlur);
+    const bool enable_productivity_launcher = GetParam();
+    if (enable_productivity_launcher) {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{features::kEnableBackgroundBlur,
+                                features::kProductivityLauncher},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          /*enabled_features=*/{features::kEnableBackgroundBlur},
+          /*disabled_features=*/{features::kProductivityLauncher});
+    }
   }
   AppListPresenterHomeLauncherTest(const AppListPresenterHomeLauncherTest&) =
       delete;
@@ -4653,8 +4672,7 @@ class AppListPresenterHomeLauncherTest : public AshTestBase {
     // (2) The point is outside of the search box.
     // (3) The touch event on the point should not be consumed by the handler
     // for back gesture.
-    return GetAppListView()
-        ->search_box_view()
+    return GetSearchBoxViewFromHelper(GetAppListTestHelper())
         ->GetBoundsInScreen()
         .bottom_right();
   }
@@ -4674,8 +4692,16 @@ class AppListPresenterHomeLauncherTest : public AshTestBase {
   std::unique_ptr<WallpaperControllerTestApi> wallpaper_test_api_;
 };
 
+INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
+                         AppListPresenterHomeLauncherTest,
+                         testing::Bool());
+
 // Verifies that mouse dragging AppListView is enabled.
-TEST_F(AppListPresenterHomeLauncherTest, MouseDragAppList) {
+TEST_P(AppListPresenterHomeLauncherTest, MouseDragAppList) {
+  // ProductivityLauncher doesn't use peeking state or app list dragging.
+  if (features::IsProductivityLauncherEnabled())
+    return;
+
   std::unique_ptr<AppListItem> item(new AppListItem("fake id"));
   GetAppListModel()->AddItem(std::move(item));
 
@@ -4705,7 +4731,11 @@ TEST_F(AppListPresenterHomeLauncherTest, MouseDragAppList) {
 
 // Verifies that mouse dragging AppListView creates layers, causes to change the
 // opacity, and destroys the layers when done.
-TEST_F(AppListPresenterHomeLauncherTest, MouseDragAppListItemOpacity) {
+TEST_P(AppListPresenterHomeLauncherTest, MouseDragAppListItemOpacity) {
+  // ProductivityLauncher doesn't use peeking state or app list dragging.
+  if (features::IsProductivityLauncherEnabled())
+    return;
+
   const int items_in_page =
       SharedAppListConfig::instance().GetMaxNumOfItemsPerPage();
   for (int i = 0; i < items_in_page; ++i) {
@@ -4767,7 +4797,11 @@ TEST_F(AppListPresenterHomeLauncherTest, MouseDragAppListItemOpacity) {
 
 // Tests that ending of the mouse dragging of app-list destroys the layers for
 // the items which are in the second page. See https://crbug.com/990529.
-TEST_F(AppListPresenterHomeLauncherTest, LayerOnSecondPage) {
+TEST_P(AppListPresenterHomeLauncherTest, LayerOnSecondPage) {
+  // ProductivityLauncher doesn't use peeking state or app list dragging.
+  if (features::IsProductivityLauncherEnabled())
+    return;
+
   const int items_in_page =
       SharedAppListConfig::instance().GetMaxNumOfItemsPerPage();
   AppListModel* model = GetAppListModel();
@@ -4843,7 +4877,7 @@ TEST_F(AppListPresenterHomeLauncherTest, LayerOnSecondPage) {
 
 // Tests that the app list is shown automatically when the tablet mode is on.
 // The app list is dismissed when the tablet mode is off.
-TEST_F(AppListPresenterHomeLauncherTest, ShowAppListForTabletMode) {
+TEST_P(AppListPresenterHomeLauncherTest, ShowAppListForTabletMode) {
   GetAppListTestHelper()->CheckVisibility(false);
 
   // Turns on tablet mode.
@@ -4857,11 +4891,11 @@ TEST_F(AppListPresenterHomeLauncherTest, ShowAppListForTabletMode) {
 
 // Tests that the app list window's parent is changed after entering tablet
 // mode.
-TEST_F(AppListPresenterHomeLauncherTest, ParentWindowContainer) {
+TEST_P(AppListPresenterHomeLauncherTest, ParentWindowContainer) {
   // Show app list in non-tablet mode. The window container should be
   // kShellWindowId_AppListContainer.
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
-  aura::Window* window = GetAppListView()->GetWidget()->GetNativeWindow();
+  aura::Window* window = Shell::Get()->app_list_controller()->GetWindow();
   aura::Window* root_window = window->GetRootWindow();
   EXPECT_TRUE(root_window->GetChildById(kShellWindowId_AppListContainer)
                   ->Contains(window));
@@ -4869,12 +4903,13 @@ TEST_F(AppListPresenterHomeLauncherTest, ParentWindowContainer) {
   // Turn on tablet mode. The window container should be
   // kShellWindowId_HomeScreenContainer.
   EnableTabletMode(true);
+  aura::Window* window2 = Shell::Get()->app_list_controller()->GetWindow();
   EXPECT_TRUE(root_window->GetChildById(kShellWindowId_HomeScreenContainer)
-                  ->Contains(window));
+                  ->Contains(window2));
 }
 
 // Tests that the background opacity change for app list.
-TEST_F(AppListPresenterHomeLauncherTest, BackgroundOpacity) {
+TEST_P(AppListPresenterHomeLauncherTest, BackgroundOpacity) {
   // ProductivityLauncher uses a different widget for clamshell mode.
   if (!features::IsProductivityLauncherEnabled()) {
     // Show app list in non-tablet mode. The background shield opacity should be
@@ -4914,7 +4949,7 @@ TEST_F(AppListPresenterHomeLauncherTest, BackgroundOpacity) {
 
 // Tests that the background blur which is present in clamshell mode does not
 // show in tablet mode.
-TEST_F(AppListPresenterHomeLauncherTest, BackgroundBlur) {
+TEST_P(AppListPresenterHomeLauncherTest, BackgroundBlur) {
   // ProductivityLauncher uses a different widget for clamshell mode.
   if (!features::IsProductivityLauncherEnabled()) {
     // Show app list in non-tablet mode. The background blur should be enabled.
@@ -4935,38 +4970,39 @@ TEST_F(AppListPresenterHomeLauncherTest, BackgroundBlur) {
 }
 
 // Tests that tapping or clicking on background cannot dismiss the app list.
-TEST_F(AppListPresenterHomeLauncherTest, TapOrClickToDismiss) {
+TEST_P(AppListPresenterHomeLauncherTest, TapOrClickToDismiss) {
   // Show app list in non-tablet mode. Click outside search box.
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckVisibility(true);
   ui::test::EventGenerator* generator = GetEventGenerator();
-  generator->MoveMouseTo(GetPointOutsideSearchbox());
+  const gfx::Point origin;
+  generator->MoveMouseTo(origin);
   generator->ClickLeftButton();
   GetAppListTestHelper()->WaitUntilIdle();
-  GetAppListTestHelper()->CheckVisibility(false);
+  EXPECT_FALSE(IsAppListVisible());
 
   // Show app list in non-tablet mode. Tap outside search box.
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckVisibility(true);
-  generator->GestureTapDownAndUp(GetPointOutsideSearchbox());
+  generator->GestureTapDownAndUp(origin);
   GetAppListTestHelper()->WaitUntilIdle();
-  GetAppListTestHelper()->CheckVisibility(false);
+  EXPECT_FALSE(IsAppListVisible());
 
   // Show app list in tablet mode. Click outside search box.
   EnableTabletMode(true);
   GetAppListTestHelper()->CheckVisibility(true);
-  generator->MoveMouseTo(GetPointOutsideSearchbox());
+  generator->MoveMouseTo(origin);
   generator->PressLeftButton();
   GetAppListTestHelper()->WaitUntilIdle();
-  GetAppListTestHelper()->CheckVisibility(true);
+  EXPECT_TRUE(IsAppListVisible());
 
   // Tap outside search box.
-  generator->GestureTapDownAndUp(GetPointOutsideSearchbox());
+  generator->GestureTapDownAndUp(origin);
   GetAppListTestHelper()->WaitUntilIdle();
-  GetAppListTestHelper()->CheckVisibility(true);
+  EXPECT_TRUE(IsAppListVisible());
 }
 
-TEST_F(AppListPresenterHomeLauncherTest,
+TEST_P(AppListPresenterHomeLauncherTest,
        EscapeKeyInNonTabletModeClosesLauncher) {
   ShowAppList();
   EXPECT_TRUE(IsAppListVisible());
@@ -4976,7 +5012,7 @@ TEST_F(AppListPresenterHomeLauncherTest,
   EXPECT_FALSE(IsAppListVisible());
 }
 
-TEST_F(AppListPresenterHomeLauncherTest, BackKeyInNonTabletModeClosesLauncher) {
+TEST_P(AppListPresenterHomeLauncherTest, BackKeyInNonTabletModeClosesLauncher) {
   ShowAppList();
   EXPECT_TRUE(IsAppListVisible());
 
@@ -4985,7 +5021,7 @@ TEST_F(AppListPresenterHomeLauncherTest, BackKeyInNonTabletModeClosesLauncher) {
   EXPECT_FALSE(IsAppListVisible());
 }
 
-TEST_F(AppListPresenterHomeLauncherTest,
+TEST_P(AppListPresenterHomeLauncherTest,
        SearchKeyInNonTabletModeClosesLauncher) {
   ShowAppList();
   EXPECT_TRUE(IsAppListVisible());
@@ -4995,7 +5031,7 @@ TEST_F(AppListPresenterHomeLauncherTest,
   EXPECT_FALSE(IsAppListVisible());
 }
 
-TEST_F(AppListPresenterHomeLauncherTest,
+TEST_P(AppListPresenterHomeLauncherTest,
        EscapeKeyInTabletModeDoesNotCloseLauncher) {
   EnableTabletMode(true);
   EXPECT_TRUE(IsAppListVisible());
@@ -5005,7 +5041,7 @@ TEST_F(AppListPresenterHomeLauncherTest,
   EXPECT_TRUE(IsAppListVisible());
 }
 
-TEST_F(AppListPresenterHomeLauncherTest,
+TEST_P(AppListPresenterHomeLauncherTest,
        BackKeyInTabletModeDoesNotCloseLauncher) {
   EnableTabletMode(true);
   EXPECT_TRUE(IsAppListVisible());
@@ -5015,7 +5051,7 @@ TEST_F(AppListPresenterHomeLauncherTest,
   EXPECT_TRUE(IsAppListVisible());
 }
 
-TEST_F(AppListPresenterHomeLauncherTest,
+TEST_P(AppListPresenterHomeLauncherTest,
        SearchKeyInTabletModeDoesNotCloseLauncher) {
   EnableTabletMode(true);
   EXPECT_TRUE(IsAppListVisible());
@@ -5026,7 +5062,7 @@ TEST_F(AppListPresenterHomeLauncherTest,
 }
 
 // Tests that moving focus outside app list window can dismiss it.
-TEST_F(AppListPresenterHomeLauncherTest, FocusOutToDismiss) {
+TEST_P(AppListPresenterHomeLauncherTest, FocusOutToDismiss) {
   // Show app list in non-tablet mode. Move focus to another window.
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckVisibility(true);
@@ -5132,7 +5168,11 @@ TEST_F(AppListPresenterNonBubbleTest, MouseScrollToDismissFromFullscreen) {
 
 // Test that the AppListView opacity is reset after it is hidden during the
 // overview mode animation.
-TEST_F(AppListPresenterHomeLauncherTest, LauncherShowsAfterOverviewMode) {
+TEST_P(AppListPresenterHomeLauncherTest, LauncherShowsAfterOverviewMode) {
+  // ProductivityLauncher closes itself in overview in clamshell mode.
+  if (features::IsProductivityLauncherEnabled())
+    return;
+
   // Show the AppList in clamshell mode.
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
   GetAppListTestHelper()->CheckVisibility(true);
@@ -5156,7 +5196,7 @@ TEST_F(AppListPresenterHomeLauncherTest, LauncherShowsAfterOverviewMode) {
 
 // Tests that tapping home button while home screen is visible and showing
 // search results moves the home screen to apps container page.
-TEST_F(AppListPresenterHomeLauncherTest, HomeButtonDismissesSearchResults) {
+TEST_P(AppListPresenterHomeLauncherTest, HomeButtonDismissesSearchResults) {
   // Show app list in tablet mode.
   EnableTabletMode(true);
   GetAppListTestHelper()->CheckVisibility(true);
@@ -5181,7 +5221,7 @@ TEST_F(AppListPresenterHomeLauncherTest, HomeButtonDismissesSearchResults) {
 }
 
 // Tests the app list opacity in overview mode.
-TEST_F(AppListPresenterHomeLauncherTest, OpacityInOverviewMode) {
+TEST_P(AppListPresenterHomeLauncherTest, OpacityInOverviewMode) {
   // Show app list in tablet mode.
   EnableTabletMode(true);
   GetAppListTestHelper()->CheckVisibility(true);
@@ -5199,13 +5239,13 @@ TEST_F(AppListPresenterHomeLauncherTest, OpacityInOverviewMode) {
   EXPECT_EQ(1.0f, layer->opacity());
 }
 
-TEST_F(AppListPresenterHomeLauncherTest, AppListHiddenDuringWallpaperPreview) {
+TEST_P(AppListPresenterHomeLauncherTest, AppListHiddenDuringWallpaperPreview) {
   EnableTabletMode(true);
   wallpaper_test_api_->StartWallpaperPreview();
   GetAppListTestHelper()->CheckVisibility(false);
 }
 
-TEST_F(AppListPresenterHomeLauncherTest,
+TEST_P(AppListPresenterHomeLauncherTest,
        AppListShownAfterWallpaperPreviewConfirmed) {
   EnableTabletMode(true);
   wallpaper_test_api_->StartWallpaperPreview();
@@ -5213,7 +5253,7 @@ TEST_F(AppListPresenterHomeLauncherTest,
   GetAppListTestHelper()->CheckVisibility(true);
 }
 
-TEST_F(AppListPresenterHomeLauncherTest,
+TEST_P(AppListPresenterHomeLauncherTest,
        AppListShownAfterWallpaperPreviewCanceled) {
   EnableTabletMode(true);
   wallpaper_test_api_->StartWallpaperPreview();
@@ -5221,7 +5261,7 @@ TEST_F(AppListPresenterHomeLauncherTest,
   GetAppListTestHelper()->CheckVisibility(true);
 }
 
-TEST_F(AppListPresenterHomeLauncherTest,
+TEST_P(AppListPresenterHomeLauncherTest,
        AppListShownAfterWallpaperPreviewAndExitOverviewMode) {
   EnableTabletMode(true);
   wallpaper_test_api_->StartWallpaperPreview();
@@ -5234,7 +5274,7 @@ TEST_F(AppListPresenterHomeLauncherTest,
 }
 
 // Tests that going home will minimize all windows.
-TEST_F(AppListPresenterHomeLauncherTest, GoingHomeMinimizesAllWindows) {
+TEST_P(AppListPresenterHomeLauncherTest, GoingHomeMinimizesAllWindows) {
   // Show app list in tablet mode. Maximize all windows.
   EnableTabletMode(true);
   GetAppListTestHelper()->CheckVisibility(true);
@@ -5271,7 +5311,7 @@ TEST_F(AppListPresenterHomeLauncherTest, GoingHomeMinimizesAllWindows) {
 }
 
 // Tests that going home will end split view mode.
-TEST_F(AppListPresenterHomeLauncherTest, GoingHomeEndsSplitViewMode) {
+TEST_P(AppListPresenterHomeLauncherTest, GoingHomeEndsSplitViewMode) {
   // Show app list in tablet mode. Enter split view mode.
   EnableTabletMode(true);
   GetAppListTestHelper()->CheckVisibility(true);
@@ -5285,7 +5325,7 @@ TEST_F(AppListPresenterHomeLauncherTest, GoingHomeEndsSplitViewMode) {
 }
 
 // Tests that going home will end overview mode.
-TEST_F(AppListPresenterHomeLauncherTest, GoingHomeEndOverviewMode) {
+TEST_P(AppListPresenterHomeLauncherTest, GoingHomeEndOverviewMode) {
   // Show app list in tablet mode. Enter overview mode.
   EnableTabletMode(true);
   GetAppListTestHelper()->CheckVisibility(true);
@@ -5301,7 +5341,7 @@ TEST_F(AppListPresenterHomeLauncherTest, GoingHomeEndOverviewMode) {
 
 // Tests that going home will end overview and split view mode if both are
 // active (e.g. one side of the split view contains overview).
-TEST_F(AppListPresenterHomeLauncherTest,
+TEST_P(AppListPresenterHomeLauncherTest,
        GoingHomeEndsSplitViewModeWithOverview) {
   // Show app list in tablet mode. Enter split view mode.
   EnableTabletMode(true);
@@ -5327,7 +5367,7 @@ TEST_F(AppListPresenterHomeLauncherTest,
 
 // Tests that the context menu is triggered in the same way as if we are on
 // the wallpaper.
-TEST_F(AppListPresenterHomeLauncherTest, WallpaperContextMenu) {
+TEST_P(AppListPresenterHomeLauncherTest, WallpaperContextMenu) {
   // Show app list in tablet mode.
   EnableTabletMode(true);
   GetAppListTestHelper()->CheckVisibility(true);
@@ -5370,10 +5410,12 @@ TEST_F(AppListPresenterHomeLauncherTest, WallpaperContextMenu) {
 
 // Tests app list visibility when switching to tablet mode during dragging from
 // shelf.
-// TODO(crbug.com/1281927): Figure out if ProductivityLauncher needs to
-// support swipe to open and close.
-TEST_F(AppListPresenterHomeLauncherTest,
+TEST_P(AppListPresenterHomeLauncherTest,
        SwitchToTabletModeDuringDraggingFromShelf) {
+  // ProductivityLauncher doesn't use peeking state or app list dragging.
+  if (features::IsProductivityLauncherEnabled())
+    return;
+
   UpdateDisplay("1080x900");
   GetAppListTestHelper()->CheckVisibility(false);
 
@@ -5415,10 +5457,12 @@ TEST_F(AppListPresenterHomeLauncherTest,
 
 // Tests app list visibility when switching to tablet mode during dragging to
 // close app list.
-// TODO(crbug.com/1281927): Figure out if ProductivityLauncher needs to
-// support swipe to open and close.
-TEST_F(AppListPresenterHomeLauncherTest,
+TEST_P(AppListPresenterHomeLauncherTest,
        SwitchToTabletModeDuringDraggingToClose) {
+  // ProductivityLauncher doesn't use peeking state or app list dragging.
+  if (features::IsProductivityLauncherEnabled())
+    return;
+
   UpdateDisplay("1080x900");
 
   // Open app list.
@@ -5454,7 +5498,7 @@ TEST_F(AppListPresenterHomeLauncherTest,
 }
 
 // Test backdrop exists for active non-fullscreen window in tablet mode.
-TEST_F(AppListPresenterHomeLauncherTest, BackdropTest) {
+TEST_P(AppListPresenterHomeLauncherTest, BackdropTest) {
   WorkspaceControllerTestApi test_helper(ShellTestApi().workspace_controller());
   EnableTabletMode(true);
   GetAppListTestHelper()->CheckVisibility(true);
@@ -5469,7 +5513,7 @@ TEST_F(AppListPresenterHomeLauncherTest, BackdropTest) {
 
 // Tests that app list is not active when switching to tablet mode if an active
 // window exists.
-TEST_F(AppListPresenterHomeLauncherTest,
+TEST_P(AppListPresenterHomeLauncherTest,
        NotActivateAppListWindowWhenActiveWindowExists) {
   // No window is active.
   EXPECT_EQ(nullptr, window_util::GetActiveWindow());
@@ -5589,7 +5633,7 @@ TEST_P(AppListPresenterVirtualKeyboardTest,
   EXPECT_FALSE(GetSearchBoxView()->is_search_box_active());
 }
 
-TEST_F(AppListPresenterHomeLauncherTest, TapHomeButtonOnExternalDisplay) {
+TEST_P(AppListPresenterHomeLauncherTest, TapHomeButtonOnExternalDisplay) {
   UpdateDisplay("800x600,1000x768");
 
   TapHomeButton(GetSecondaryDisplay().id());
