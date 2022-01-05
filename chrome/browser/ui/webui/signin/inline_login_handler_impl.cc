@@ -599,29 +599,22 @@ void InlineLoginHandlerImpl::SetExtraInitParams(base::DictionaryValue& params) {
   LogHistogramValue(signin_metrics::HISTOGRAM_SHOWN);
 }
 
-void InlineLoginHandlerImpl::CompleteLogin(const std::string& email,
-                                           const std::string& password,
-                                           const std::string& gaia_id,
-                                           const std::string& auth_code,
-                                           bool skip_for_now,
-                                           bool trusted,
-                                           bool trusted_found,
-                                           bool choose_what_to_sync) {
+void InlineLoginHandlerImpl::CompleteLogin(const CompleteLoginParams& params) {
   content::WebContents* contents = web_ui()->GetWebContents();
   const GURL& current_url = contents->GetURL();
 
-  if (skip_for_now) {
+  if (params.skip_for_now) {
     SyncSetupFailed();
     return;
   }
 
   // This value exists only for webview sign in.
-  if (trusted_found)
-    confirm_untrusted_signin_ = !trusted;
+  if (params.trusted_found)
+    confirm_untrusted_signin_ = !params.trusted_value;
 
-  DCHECK(!email.empty());
-  DCHECK(!gaia_id.empty());
-  DCHECK(!auth_code.empty());
+  DCHECK(!params.email.empty());
+  DCHECK(!params.gaia_id.empty());
+  DCHECK(!params.auth_code.empty());
 
   content::StoragePartition* partition =
       signin::GetSigninPartition(contents->GetBrowserContext());
@@ -637,8 +630,9 @@ void InlineLoginHandlerImpl::CompleteLogin(const std::string& email,
       !profile->IsSystemProfile()) {
     FinishCompleteLogin(FinishCompleteLoginParams(
                             this, partition, current_url, base::FilePath(),
-                            confirm_untrusted_signin_, email, gaia_id, password,
-                            auth_code, choose_what_to_sync, false),
+                            confirm_untrusted_signin_, params.email,
+                            params.gaia_id, params.password, params.auth_code,
+                            params.choose_what_to_sync, false),
                         profile, Profile::CREATE_STATUS_CREATED);
     return;
   }
@@ -648,7 +642,8 @@ void InlineLoginHandlerImpl::CompleteLogin(const std::string& email,
   DCHECK(signin_util::IsForceSigninEnabled());
 
   ProfileManager* manager = g_browser_process->profile_manager();
-  base::FilePath path = profiles::GetPathOfProfileWithEmail(manager, email);
+  base::FilePath path =
+      profiles::GetPathOfProfileWithEmail(manager, params.email);
   if (path.empty())
     path = ProfilePicker::GetForceSigninProfilePath();
   if (path.empty())
@@ -656,11 +651,12 @@ void InlineLoginHandlerImpl::CompleteLogin(const std::string& email,
 
   // Switch to the profile and finish the login. Pass the profile path so it can
   // be marked as unlocked.
-  FinishCompleteLoginParams params(
-      this, partition, current_url, path, confirm_untrusted_signin_, email,
-      gaia_id, password, auth_code, choose_what_to_sync, true);
-  ProfileManager::CreateCallback callback =
-      base::BindRepeating(&InlineLoginHandlerImpl::FinishCompleteLogin, params);
+  FinishCompleteLoginParams finish_login_params(
+      this, partition, current_url, path, confirm_untrusted_signin_,
+      params.email, params.gaia_id, params.password, params.auth_code,
+      params.choose_what_to_sync, true);
+  ProfileManager::CreateCallback callback = base::BindRepeating(
+      &InlineLoginHandlerImpl::FinishCompleteLogin, finish_login_params);
   // Browser window will be opened after ClientOAuthSuccess.
   profiles::LoadProfileAsync(path, callback);
 }

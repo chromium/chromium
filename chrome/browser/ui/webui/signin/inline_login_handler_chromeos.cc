@@ -219,17 +219,11 @@ void InlineLoginHandlerChromeOS::SetExtraInitParams(
   params.SetBoolean("ignoreCrOSIdpSetting", true);
 }
 
-void InlineLoginHandlerChromeOS::CompleteLogin(const std::string& email,
-                                               const std::string& password,
-                                               const std::string& gaia_id,
-                                               const std::string& auth_code,
-                                               bool skip_for_now,
-                                               bool trusted,
-                                               bool trusted_found,
-                                               bool choose_what_to_sync) {
-  CHECK(!auth_code.empty());
-  CHECK(!gaia_id.empty());
-  CHECK(!email.empty());
+void InlineLoginHandlerChromeOS::CompleteLogin(
+    const CompleteLoginParams& params) {
+  CHECK(!params.auth_code.empty());
+  CHECK(!params.gaia_id.empty());
+  CHECK(!params.email.empty());
 
   // TODO(sinhak): Do not depend on Profile unnecessarily.
   Profile* profile = Profile::FromWebUI(web_ui());
@@ -254,11 +248,13 @@ void InlineLoginHandlerChromeOS::CompleteLogin(const std::string& email,
 
   // Child user added a secondary account.
   if (profile->IsChild() &&
-      !gaia::AreEmailsSame(primary_account_email, email)) {
+      !gaia::AreEmailsSame(primary_account_email, params.email)) {
     new EduCoexistenceChildSigninHelper(
         account_manager, account_manager_mojo_service,
-        profile->GetURLLoaderFactory(), gaia_id, email, auth_code,
-        GetAccountDeviceId(GetSigninScopedDeviceIdForProfile(profile), gaia_id),
+        profile->GetURLLoaderFactory(), params.gaia_id, params.email,
+        params.auth_code,
+        GetAccountDeviceId(GetSigninScopedDeviceIdForProfile(profile),
+                           params.gaia_id),
         profile->GetPrefs(), web_ui());
 
     return;
@@ -267,8 +263,10 @@ void InlineLoginHandlerChromeOS::CompleteLogin(const std::string& email,
   // SigninHelper deletes itself after its work is done.
   new SigninHelper(
       account_manager, account_manager_mojo_service, close_dialog_closure_,
-      profile->GetURLLoaderFactory(), gaia_id, email, auth_code,
-      GetAccountDeviceId(GetSigninScopedDeviceIdForProfile(profile), gaia_id));
+      profile->GetURLLoaderFactory(), params.gaia_id, params.email,
+      params.auth_code,
+      GetAccountDeviceId(GetSigninScopedDeviceIdForProfile(profile),
+                         params.gaia_id));
 }
 
 void InlineLoginHandlerChromeOS::HandleDialogClose(

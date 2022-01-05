@@ -33,14 +33,7 @@ class InlineLoginHandlerChromeOS : public InlineLoginHandler {
   // InlineLoginHandler overrides.
   void RegisterMessages() override;
   void SetExtraInitParams(base::DictionaryValue& params) override;
-  void CompleteLogin(const std::string& email,
-                     const std::string& password,
-                     const std::string& gaia_id,
-                     const std::string& auth_code,
-                     bool skip_for_now,
-                     bool trusted,
-                     bool trusted_found,
-                     bool choose_what_to_sync) override;
+  void CompleteLogin(const CompleteLoginParams& params) override;
   void HandleDialogClose(const base::ListValue* args) override;
 
  private:
