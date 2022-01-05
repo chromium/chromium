@@ -64,7 +64,7 @@ declare_args() {
   additional_target_cpus = []
 
   # Set to true if all test apps should use the same bundle id.
-  ios_use_shared_bundle_id_for_test_apps = false
+  ios_use_shared_bundle_id_for_test_apps = true
 
   # Enabling this option makes clang compile to an intermediate
   # representation ("bitcode"), and not to native code. This is preferred
