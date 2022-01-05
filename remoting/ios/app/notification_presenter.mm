@@ -34,6 +34,12 @@ namespace {
 // kUserDidUpdate event.
 constexpr base::TimeDelta kFetchNotificationDelay = base::Seconds(2);
 
+// The "Don't show again" checkbox only appears if the notification has been
+// shown for at least |kTimesShownRequiredToAllowSilencing| times. Note that
+// this means the checkbox shows up starting from the
+// (|kTimesShownRequiredToAllowSilencing| + 1)th app launch.
+constexpr unsigned int kTimesShownRequiredToAllowSilencing = 2u;
+
 enum NotificationUiState : unsigned int {
   NOT_SHOWN = 0,
   SHOWN = 1,
@@ -135,10 +141,21 @@ void NotificationPresenter::OnNotificationFetched(
     ui_state = NOT_SHOWN;
     [RemotingPreferences.instance setObject:UiStateToNSNumber(ui_state)
                                     forFlag:RemotingFlagNotificationUiState];
+    [RemotingPreferences.instance setObject:@(0u)
+                                    forFlag:RemotingFlagNotificationShownTimes];
     [RemotingPreferences.instance synchronizeFlags];
   }
 
-  BOOL allowSilence = notification->allow_silence && ui_state == SHOWN;
+  NSNumber* notificationShownTimesNsNumber = [RemotingPreferences.instance
+      objectForFlag:RemotingFlagNotificationShownTimes];
+  unsigned int notification_shown_times =
+      notificationShownTimesNsNumber
+          ? notificationShownTimesNsNumber.unsignedIntValue
+          : 0u;
+
+  BOOL allowSilence =
+      notification->allow_silence && ui_state == SHOWN &&
+      notification_shown_times >= kTimesShownRequiredToAllowSilencing;
   NotificationDialogViewController* dialogVc =
       [[NotificationDialogViewController alloc]
           initWithNotificationMessage:*notification
@@ -147,6 +164,8 @@ void NotificationPresenter::OnNotificationFetched(
     NotificationUiState new_ui_state = isSilenced ? SILENCED : SHOWN;
     [RemotingPreferences.instance setObject:UiStateToNSNumber(new_ui_state)
                                     forFlag:RemotingFlagNotificationUiState];
+    [RemotingPreferences.instance setObject:@(notification_shown_times + 1)
+                                    forFlag:RemotingFlagNotificationShownTimes];
     [RemotingPreferences.instance synchronizeFlags];
   }];
 }
