@@ -14,7 +14,7 @@ namespace zucchini {
 
 Abs32GapFinder::Abs32GapFinder(ConstBufferView image,
                                ConstBufferView region,
-                               const std::vector<offset_t>& abs32_locations,
+                               const std::deque<offset_t>& abs32_locations,
                                size_t abs32_width)
     : base_(image.begin()),
       region_end_(region.end()),

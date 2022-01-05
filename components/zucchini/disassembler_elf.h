@@ -238,7 +238,7 @@ class DisassemblerElf : public Disassembler {
   std::vector<const typename Traits::Elf_Shdr*> exec_headers_;
 
   // Sorted file offsets of abs32 locations.
-  std::vector<offset_t> abs32_locations_;
+  std::deque<offset_t> abs32_locations_;
 };
 
 // Disassembler for ELF with Intel architectures.

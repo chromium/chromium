@@ -89,12 +89,12 @@ bool AbsoluteAddress::Write(offset_t offset, MutableBufferView* image) {
 Abs32RvaExtractorWin32::Abs32RvaExtractorWin32(
     ConstBufferView image,
     AbsoluteAddress&& addr,
-    const std::vector<offset_t>& abs32_locations,
+    const std::deque<offset_t>& abs32_locations,
     offset_t lo,
     offset_t hi)
     : image_(image), addr_(std::move(addr)) {
   CHECK_LE(lo, hi);
-  auto find_and_check = [this](const std::vector<offset_t>& locations,
+  auto find_and_check = [this](const std::deque<offset_t>& locations,
                                offset_t offset) {
     auto it = std::lower_bound(locations.begin(), locations.end(), offset);
     // Ensure that |offset| does not straddle a reference body.
@@ -167,12 +167,12 @@ void Abs32WriterWin32::PutNext(Reference ref) {
 size_t RemoveUntranslatableAbs32(ConstBufferView image,
                                  AbsoluteAddress&& addr,
                                  const AddressTranslator& translator,
-                                 std::vector<offset_t>* locations) {
+                                 std::deque<offset_t>* locations) {
   AddressTranslator::RvaToOffsetCache target_rva_checker(translator);
   Abs32RvaExtractorWin32 extractor(image, std::move(addr), *locations, 0,
                                    image.size());
   Abs32ReaderWin32 reader(std::move(extractor), translator);
-  std::vector<offset_t>::iterator write_it = locations->begin();
+  std::deque<offset_t>::iterator write_it = locations->begin();
   // |reader| reads |locations| while |write_it| modifies it. However, there's
   // no conflict since read occurs before write, and can skip ahead.
   for (auto ref = reader.GetNext(); ref.has_value(); ref = reader.GetNext())
@@ -184,7 +184,7 @@ size_t RemoveUntranslatableAbs32(ConstBufferView image,
 }
 
 size_t RemoveOverlappingAbs32Locations(uint32_t width,
-                                       std::vector<offset_t>* locations) {
+                                       std::deque<offset_t>* locations) {
   if (locations->size() <= 1)
     return 0;
 

@@ -114,7 +114,7 @@ class DisassemblerWin32 : public Disassembler {
   BufferRegion reloc_region_ = {kInvalidOffset, 0U};
   std::vector<offset_t> reloc_block_offsets_;
   offset_t reloc_end_ = 0;
-  std::vector<offset_t> abs32_locations_;
+  std::deque<offset_t> abs32_locations_;
   // Using std::deque to reduce peak memory footprint.
   std::deque<offset_t> rel32_locations_;
 

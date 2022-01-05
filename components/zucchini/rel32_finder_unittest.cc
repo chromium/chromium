@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <deque>
 #include <iterator>
 #include <string>
 #include <utility>
@@ -32,7 +33,7 @@ TEST(Abs32GapFinderTest, All) {
 
   // Common test code that returns the resulting segments as a string.
   auto run_test = [&](size_t rlo, size_t rhi,
-                      std::vector<offset_t> abs32_locations,
+                      std::deque<offset_t> abs32_locations,
                       std::ptrdiff_t abs32_width) -> std::string {
     CHECK_LE(rlo, kRegionTotal);
     CHECK_LE(rhi, kRegionTotal);
@@ -263,8 +264,8 @@ TEST(Rel32FinderX86Test, Integrated) {
 
   ConstBufferView image =
       ConstBufferView::FromRange(std::begin(kDataX86), std::end(kDataX86));
-  std::vector<offset_t> abs32_locations(std::begin(kAbs32X86),
-                                        std::end(kAbs32X86));
+  std::deque<offset_t> abs32_locations(std::begin(kAbs32X86),
+                                       std::end(kAbs32X86));
   std::vector<TruncatedResults> results;
 
   Abs32GapFinder gap_finder(image, image, abs32_locations,
@@ -427,8 +428,8 @@ TEST(Rel32FinderX64Test, Integrated) {
 
   ConstBufferView image =
       ConstBufferView::FromRange(std::begin(kDataX64), std::end(kDataX64));
-  std::vector<offset_t> abs32_locations(std::begin(kAbs32X64),
-                                        std::end(kAbs32X64));
+  std::deque<offset_t> abs32_locations(std::begin(kAbs32X64),
+                                       std::end(kAbs32X64));
   std::vector<TruncatedResults> results;
 
   Abs32GapFinder gap_finder(image, image, abs32_locations,
@@ -478,7 +479,7 @@ namespace {
 template <class REL32_FINDER>
 std::vector<typename REL32_FINDER::Result> ArmExtractRel32(
     ConstBufferView image,
-    const std::vector<offset_t>& abs32_locations,
+    const std::deque<offset_t>& abs32_locations,
     int abs32_width,
     REL32_FINDER&& rel32_finder) {
   std::vector<typename REL32_FINDER::Result> results;
@@ -552,8 +553,8 @@ TEST(Rel32FinderAArch32Test, IntegratedArmModeWithAbs32) {
 
   ConstBufferView image = ConstBufferView::FromRange(
       std::begin(kDataAarch32ArmMode), std::end(kDataAarch32ArmMode));
-  std::vector<offset_t> abs32_locations(std::begin(kAbs32Aarch32ArmMode),
-                                        std::end(kAbs32Aarch32ArmMode));
+  std::deque<offset_t> abs32_locations(std::begin(kAbs32Aarch32ArmMode),
+                                       std::end(kAbs32Aarch32ArmMode));
   AddressTranslator translator(GetTrivialTranslator(image.size()));
   Rel32FinderAArch32 rel32_finder(image, translator, /* is_thumb2 */ false);
 
@@ -653,8 +654,8 @@ TEST(Rel32FinderAArch32Test, IntegratedThumb2ModeWithAbs32) {
 
   ConstBufferView image = ConstBufferView::FromRange(
       std::begin(kDataAarch32Thumb2Mode), std::end(kDataAarch32Thumb2Mode));
-  std::vector<offset_t> abs32_locations(std::begin(kAbs32Aarch32Thumb2Mode),
-                                        std::end(kAbs32Aarch32Thumb2Mode));
+  std::deque<offset_t> abs32_locations(std::begin(kAbs32Aarch32Thumb2Mode),
+                                       std::end(kAbs32Aarch32Thumb2Mode));
   AddressTranslator translator(GetTrivialTranslator(image.size()));
   Rel32FinderAArch32 rel32_finder(image, translator, /* is_thumb2 */ true);
 
@@ -728,8 +729,8 @@ TEST(Rel32FinderAArch64Test, IntegratedWithAbs32) {
 
   ConstBufferView image = ConstBufferView::FromRange(std::begin(kDataAarch64),
                                                      std::end(kDataAarch64));
-  std::vector<offset_t> abs32_locations(std::begin(kAbs32Aarch64),
-                                        std::end(kAbs32Aarch64));
+  std::deque<offset_t> abs32_locations(std::begin(kAbs32Aarch64),
+                                       std::end(kAbs32Aarch64));
   AddressTranslator translator(GetTrivialTranslator(image.size()));
   Rel32FinderAArch64 rel32_finder(image, translator);
 
