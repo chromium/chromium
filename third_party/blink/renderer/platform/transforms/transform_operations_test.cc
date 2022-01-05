@@ -26,8 +26,6 @@
 
 #include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/geometry/float_box.h"
-#include "third_party/blink/renderer/platform/geometry/float_box_test_helpers.h"
 #include "third_party/blink/renderer/platform/transforms/interpolated_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_3d_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_transform_operation.h"
@@ -37,6 +35,8 @@
 #include "third_party/blink/renderer/platform/transforms/skew_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix_test_helpers.h"
 #include "third_party/blink/renderer/platform/transforms/translate_transform_operation.h"
+#include "ui/gfx/geometry/box_f.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 
 namespace blink {
 
@@ -46,14 +46,14 @@ static void EmpiricallyTestBounds(const TransformOperations& from,
                                   const TransformOperations& to,
                                   const double& min_progress,
                                   const double& max_progress) {
-  FloatBox box(200, 500, 100, 100, 300, 200);
-  FloatBox bounds;
+  gfx::BoxF box(200, 500, 100, 100, 300, 200);
+  gfx::BoxF bounds;
 
   EXPECT_TRUE(
       to.BlendedBoundsForBox(box, from, min_progress, max_progress, &bounds));
   bool first_time = true;
 
-  FloatBox empirical_bounds;
+  gfx::BoxF empirical_bounds;
   static const size_t kNumSteps = 10;
   for (size_t step = 0; step < kNumSteps; ++step) {
     float t = step / (kNumSteps - 1);
@@ -61,7 +61,7 @@ static void EmpiricallyTestBounds(const TransformOperations& from,
     TransformOperations operations = from.Blend(to, t);
     TransformationMatrix matrix;
     operations.Apply(gfx::SizeF(0, 0), matrix);
-    FloatBox transformed = box;
+    gfx::BoxF transformed = box;
     matrix.TransformBox(transformed);
 
     if (first_time)
@@ -71,7 +71,13 @@ static void EmpiricallyTestBounds(const TransformOperations& from,
     first_time = false;
   }
 
-  ASSERT_PRED_FORMAT2(float_box_test::AssertContains, bounds, empirical_bounds);
+  // Check whether |bounds| contains |empirical_bounds|.
+  gfx::BoxF expanded_bounds = bounds;
+  float tolerance =
+      std::max({bounds.width(), bounds.height(), bounds.depth()}) * 1e-6f;
+  expanded_bounds.ExpandTo(empirical_bounds);
+  EXPECT_BOXF_NEAR(bounds, expanded_bounds, tolerance)
+      << " Expected to contain: " << empirical_bounds.ToString();
 }
 
 TEST(TransformOperationsTest, AbsoluteAnimatedTranslatedBoundsTest) {
@@ -83,31 +89,26 @@ TEST(TransformOperationsTest, AbsoluteAnimatedTranslatedBoundsTest) {
   to_ops.Operations().push_back(TranslateTransformOperation::Create(
       Length::Fixed(10), Length::Fixed(10), 200,
       TransformOperation::kTranslate3D));
-  FloatBox box(0, 0, 0, 10, 10, 10);
-  FloatBox bounds;
+  gfx::BoxF box(0, 0, 0, 10, 10, 10);
+  gfx::BoxF bounds;
 
   EXPECT_TRUE(
       to_ops.BlendedBoundsForBox(box, kIdentityOperations, 0, 1, &bounds));
-  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
-                      FloatBox(0, 0, 0, 20, 20, 210), bounds);
+  EXPECT_BOXF_EQ(gfx::BoxF(0, 0, 0, 20, 20, 210), bounds);
 
   EXPECT_TRUE(
       kIdentityOperations.BlendedBoundsForBox(box, to_ops, 0, 1, &bounds));
-  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
-                      FloatBox(0, 0, 0, 20, 20, 210), bounds);
+  EXPECT_BOXF_EQ(gfx::BoxF(0, 0, 0, 20, 20, 210), bounds);
 
   EXPECT_TRUE(
       kIdentityOperations.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds));
-  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
-                      FloatBox(-30, 0, 0, 40, 30, 25), bounds);
+  EXPECT_BOXF_EQ(gfx::BoxF(-30, 0, 0, 40, 30, 25), bounds);
 
   EXPECT_TRUE(to_ops.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds));
-  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
-                      FloatBox(-30, 10, 15, 50, 20, 195), bounds);
+  EXPECT_BOXF_EQ(gfx::BoxF(-30, 10, 15, 50, 20, 195), bounds);
 
   EXPECT_TRUE(to_ops.BlendedBoundsForBox(box, from_ops, -0.5, 1.25, &bounds));
-  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
-                      FloatBox(-50, 7.5, -77.5, 80, 27.5, 333.75), bounds);
+  EXPECT_BOXF_EQ(gfx::BoxF(-50, 7.5, -77.5, 80, 27.5, 333.75), bounds);
 }
 
 TEST(TransformOperationsTest, EmpiricalAnimatedTranslatedBoundsTest) {
@@ -145,31 +146,26 @@ TEST(TransformOperationsTest, AbsoluteAnimatedScaleBoundsTest) {
   to_ops.Operations().push_back(
       ScaleTransformOperation::Create(5, 2, TransformOperation::kScale));
 
-  FloatBox box(0, 0, 0, 10, 10, 10);
-  FloatBox bounds;
+  gfx::BoxF box(0, 0, 0, 10, 10, 10);
+  gfx::BoxF bounds;
 
   EXPECT_TRUE(
       to_ops.BlendedBoundsForBox(box, kIdentityOperations, 0, 1, &bounds));
-  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
-                      FloatBox(0, 0, 0, 50, 20, 10), bounds);
+  EXPECT_BOXF_EQ(gfx::BoxF(0, 0, 0, 50, 20, 10), bounds);
 
   EXPECT_TRUE(
       kIdentityOperations.BlendedBoundsForBox(box, to_ops, 0, 1, &bounds));
-  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
-                      FloatBox(0, 0, 0, 50, 20, 10), bounds);
+  EXPECT_BOXF_EQ(gfx::BoxF(0, 0, 0, 50, 20, 10), bounds);
 
   EXPECT_TRUE(
       kIdentityOperations.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds));
-  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
-                      FloatBox(0, -30, 0, 40, 40, 10), bounds);
+  EXPECT_BOXF_EQ(gfx::BoxF(0, -30, 0, 40, 40, 10), bounds);
 
   EXPECT_TRUE(to_ops.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds));
-  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
-                      FloatBox(0, -30, 0, 50, 50, 10), bounds);
+  EXPECT_BOXF_EQ(gfx::BoxF(0, -30, 0, 50, 50, 10), bounds);
 
   EXPECT_TRUE(to_ops.BlendedBoundsForBox(box, from_ops, -0.5, 1.25, &bounds));
-  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
-                      FloatBox(0, -55, 0, 52.5, 87.5, 10), bounds);
+  EXPECT_BOXF_EQ(gfx::BoxF(0, -55, 0, 52.5, 87.5, 10), bounds);
 }
 
 TEST(TransformOperationsTest, EmpiricalAnimatedScaleBoundsTest) {
@@ -208,19 +204,18 @@ TEST(TransformOperationsTest, AbsoluteAnimatedRotationBounds) {
   to_ops.Operations().push_back(
       RotateTransformOperation::Create(360, TransformOperation::kRotate));
   float sqrt2 = sqrt(2.0f);
-  FloatBox box(-sqrt2, -sqrt2, 0, sqrt2, sqrt2, 0);
-  FloatBox bounds;
+  gfx::BoxF box(-sqrt2, -sqrt2, 0, sqrt2, sqrt2, 0);
+  gfx::BoxF bounds;
 
   // Since we're rotating 360 degrees, any box with dimensions between 0 and
   // 2 * sqrt(2) should give the same result.
   float sizes[] = {0, 0.1f, sqrt2, 2 * sqrt2};
   to_ops.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds);
   for (float size : sizes) {
-    box.set_size(gfx::Point3F(size, size, 0));
+    box.set_size(size, size, 0);
 
     EXPECT_TRUE(to_ops.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds));
-    EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
-                        FloatBox(-2, -2, 0, 4, 4, 0), bounds);
+    EXPECT_BOXF_EQ(gfx::BoxF(-2, -2, 0, 4, 4, 0), bounds);
   }
 }
 
@@ -235,14 +230,13 @@ TEST(TransformOperationsTest, AbsoluteAnimatedExtremeRotationBounds) {
   to_ops.Operations().push_back(RotateTransformOperation::Create(
       1, 1, 1, 390, TransformOperation::kRotate3D));
 
-  FloatBox box(1, 0, 0, 0, 0, 0);
-  FloatBox bounds;
+  gfx::BoxF box(1, 0, 0, 0, 0, 0);
+  gfx::BoxF bounds;
   float min = -1 / 3.0f;
   float max = 1;
   float size = max - min;
   EXPECT_TRUE(to_ops.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds));
-  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
-                      FloatBox(min, min, min, size, size, size), bounds);
+  EXPECT_BOXF_EQ(gfx::BoxF(min, min, min, size, size, size), bounds);
 }
 
 TEST(TransformOperationsTest, AbsoluteAnimatedAxisRotationBounds) {
@@ -262,8 +256,8 @@ TEST(TransformOperationsTest, AbsoluteAnimatedAxisRotationBounds) {
   to_different.Operations().push_back(RotateTransformOperation::Create(
       1, 3, 1, 390, TransformOperation::kRotate3D));
 
-  FloatBox box(1, 0, 0, 0, 0, 0);
-  FloatBox bounds;
+  gfx::BoxF box(1, 0, 0, 0, 0, 0);
+  gfx::BoxF bounds;
   EXPECT_TRUE(to_same.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds));
   EXPECT_FALSE(to_opposite.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds));
   EXPECT_FALSE(to_different.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds));
@@ -279,11 +273,11 @@ TEST(TransformOperationsTest, AbsoluteAnimatedOnAxisRotationBounds) {
   to_ops.Operations().push_back(RotateTransformOperation::Create(
       1, 1, 1, 390, TransformOperation::kRotate3D));
 
-  FloatBox box(1, 1, 1, 0, 0, 0);
-  FloatBox bounds;
+  gfx::BoxF box(1, 1, 1, 0, 0, 0);
+  gfx::BoxF bounds;
 
   EXPECT_TRUE(to_ops.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds));
-  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual, box, bounds);
+  EXPECT_BOXF_EQ(box, bounds);
 }
 
 // This would have been best as anonymous structs, but |base::size|
@@ -294,7 +288,7 @@ struct ProblematicAxisTest {
   double x;
   double y;
   double z;
-  FloatBox expected;
+  gfx::BoxF expected;
 };
 
 TEST(TransformOperationsTest, AbsoluteAnimatedProblematicAxisRotationBounds) {
@@ -308,13 +302,13 @@ TEST(TransformOperationsTest, AbsoluteAnimatedProblematicAxisRotationBounds) {
   float dim3 = 2 * dim2;
 
   ProblematicAxisTest tests[] = {
-      {0, 0, 0, FloatBox(1, 1, 1, 0, 0, 0)},
-      {1, 0, 0, FloatBox(1, -dim2, -dim2, 0, dim3, dim3)},
-      {0, 1, 0, FloatBox(-dim2, 1, -dim2, dim3, 0, dim3)},
-      {0, 0, 1, FloatBox(-dim2, -dim2, 1, dim3, dim3, 0)},
-      {1, 1, 0, FloatBox(dim1, dim1, -1, dim2, dim2, 2)},
-      {0, 1, 1, FloatBox(-1, dim1, dim1, 2, dim2, dim2)},
-      {1, 0, 1, FloatBox(dim1, -1, dim1, dim2, 2, dim2)}};
+      {0, 0, 0, gfx::BoxF(1, 1, 1, 0, 0, 0)},
+      {1, 0, 0, gfx::BoxF(1, -dim2, -dim2, 0, dim3, dim3)},
+      {0, 1, 0, gfx::BoxF(-dim2, 1, -dim2, dim3, 0, dim3)},
+      {0, 0, 1, gfx::BoxF(-dim2, -dim2, 1, dim3, dim3, 0)},
+      {1, 1, 0, gfx::BoxF(dim1, dim1, -1, dim2, dim2, 2)},
+      {0, 1, 1, gfx::BoxF(-1, dim1, dim1, 2, dim2, dim2)},
+      {1, 0, 1, gfx::BoxF(dim1, -1, dim1, dim2, 2, dim2)}};
 
   for (size_t i = 0; i < base::size(tests); ++i) {
     float x = tests[i].x;
@@ -326,12 +320,11 @@ TEST(TransformOperationsTest, AbsoluteAnimatedProblematicAxisRotationBounds) {
     TransformOperations to_ops;
     to_ops.Operations().push_back(RotateTransformOperation::Create(
         x, y, z, 360, TransformOperation::kRotate3D));
-    FloatBox box(1, 1, 1, 0, 0, 0);
-    FloatBox bounds;
+    gfx::BoxF box(1, 1, 1, 0, 0, 0);
+    gfx::BoxF bounds;
 
     EXPECT_TRUE(to_ops.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds));
-    EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual, tests[i].expected,
-                        bounds);
+    EXPECT_BOXF_NEAR(tests[i].expected, bounds, 1e-6f);
   }
 }
 
@@ -373,20 +366,18 @@ TEST(TransformOperationsTest, AbsoluteAnimatedPerspectiveBoundsTest) {
   TransformOperations to_ops;
   from_ops.Operations().push_back(PerspectiveTransformOperation::Create(20));
   to_ops.Operations().push_back(PerspectiveTransformOperation::Create(40));
-  FloatBox box(0, 0, 0, 10, 10, 10);
-  FloatBox bounds;
+  gfx::BoxF box(0, 0, 0, 10, 10, 10);
+  gfx::BoxF bounds;
   to_ops.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds);
-  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
-                      FloatBox(0, 0, 0, 20, 20, 20), bounds);
+  EXPECT_BOXF_EQ(gfx::BoxF(0, 0, 0, 20, 20, 20), bounds);
 
   from_ops.BlendedBoundsForBox(box, to_ops, -0.25, 1.25, &bounds);
   // The perspective range was [20, 40] and blending will extrapolate that to
   // [17.777..., 53.333...].  The cube has w/h/d of 10 and the observer is at
   // 17.777..., so the face closest the observer is 17.777...-10=7.777...
-  double projected_size = 10.0 / 7.7778 * 17.7778;
-  EXPECT_PRED_FORMAT2(
-      float_box_test::AssertAlmostEqual,
-      FloatBox(0, 0, 0, projected_size, projected_size, projected_size),
+  double projected_size = 10.0 / 7.7777778 * 17.7777778;
+  EXPECT_BOXF_EQ(
+      gfx::BoxF(0, 0, 0, projected_size, projected_size, projected_size),
       bounds);
 }
 
@@ -418,24 +409,20 @@ TEST(TransformOperationsTest, AnimatedSkewBoundsTest) {
       SkewTransformOperation::Create(-45, 0, TransformOperation::kSkew));
   to_ops.Operations().push_back(
       SkewTransformOperation::Create(0, 45, TransformOperation::kSkew));
-  FloatBox box(0, 0, 0, 10, 10, 10);
-  FloatBox bounds;
+  gfx::BoxF box(0, 0, 0, 10, 10, 10);
+  gfx::BoxF bounds;
 
   to_ops.BlendedBoundsForBox(box, kIdentityOperations, 0, 1, &bounds);
-  ASSERT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
-                      FloatBox(0, 0, 0, 10, 20, 10), bounds);
+  EXPECT_BOXF_EQ(gfx::BoxF(0, 0, 0, 10, 20, 10), bounds);
 
   kIdentityOperations.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds);
-  ASSERT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
-                      FloatBox(-10, 0, 0, 20, 10, 10), bounds);
+  EXPECT_BOXF_EQ(gfx::BoxF(-10, 0, 0, 20, 10, 10), bounds);
 
   to_ops.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds);
-  ASSERT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
-                      FloatBox(-10, 0, 0, 20, 20, 10), bounds);
+  EXPECT_BOXF_EQ(gfx::BoxF(-10, 0, 0, 20, 20, 10), bounds);
 
   from_ops.BlendedBoundsForBox(box, to_ops, 0, 1, &bounds);
-  ASSERT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
-                      FloatBox(-10, 0, 0, 20, 20, 10), bounds);
+  EXPECT_BOXF_EQ(gfx::BoxF(-10, 0, 0, 20, 20, 10), bounds);
 }
 
 TEST(TransformOperationsTest, NonCommutativeRotations) {
@@ -450,8 +437,8 @@ TEST(TransformOperationsTest, NonCommutativeRotations) {
   to_ops.Operations().push_back(RotateTransformOperation::Create(
       0, 1, 0, 135, TransformOperation::kRotate3D));
 
-  FloatBox box(0, 0, 0, 1, 1, 1);
-  FloatBox bounds;
+  gfx::BoxF box(0, 0, 0, 1, 1, 1);
+  gfx::BoxF bounds;
 
   double min_progress = 0;
   double max_progress = 1;
@@ -464,11 +451,10 @@ TEST(TransformOperationsTest, NonCommutativeRotations) {
 
   gfx::Point3F blended_point(0.9f, 0.9f, 0);
   blended_point = blended_transform.MapPoint(blended_point);
-  FloatBox expanded_bounds = bounds;
+  gfx::BoxF expanded_bounds = bounds;
   expanded_bounds.ExpandTo(blended_point);
 
-  ASSERT_PRED_FORMAT2(float_box_test::AssertAlmostEqual, bounds,
-                      expanded_bounds);
+  EXPECT_BOXF_EQ(bounds, expanded_bounds);
 }
 
 TEST(TransformOperationsTest, AbsoluteSequenceBoundsTest) {
@@ -493,26 +479,22 @@ TEST(TransformOperationsTest, AbsoluteSequenceBoundsTest) {
       TranslateTransformOperation::Create(Length::Fixed(6), Length::Fixed(-2),
                                           3, TransformOperation::kTranslate3D));
 
-  FloatBox box(1, 2, 3, 4, 4, 4);
-  FloatBox bounds;
+  gfx::BoxF box(1, 2, 3, 4, 4, 4);
+  gfx::BoxF bounds;
 
   EXPECT_TRUE(to_ops.BlendedBoundsForBox(box, from_ops, -0.5, 1.5, &bounds));
-  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
-                      FloatBox(-57, -59, -1, 76, 112, 80), bounds);
+  EXPECT_BOXF_EQ(gfx::BoxF(-57, -59, -1, 76, 112, 80), bounds);
 
   EXPECT_TRUE(to_ops.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds));
-  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
-                      FloatBox(-32, -25, 7, 42, 44, 48), bounds);
+  EXPECT_BOXF_EQ(gfx::BoxF(-32, -25, 7, 42, 44, 48), bounds);
 
   EXPECT_TRUE(
       to_ops.BlendedBoundsForBox(box, kIdentityOperations, 0, 1, &bounds));
-  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
-                      FloatBox(-33, -13, 3, 57, 19, 52), bounds);
+  EXPECT_BOXF_EQ(gfx::BoxF(-33, -13, 3, 57, 19, 52), bounds);
 
   EXPECT_TRUE(
       kIdentityOperations.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds));
-  EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
-                      FloatBox(-7, -3, 2, 15, 23, 20), bounds);
+  EXPECT_BOXF_EQ(gfx::BoxF(-7, -3, 2, 15, 23, 20), bounds);
 }
 
 TEST(TransformOperationsTest, ZoomTest) {

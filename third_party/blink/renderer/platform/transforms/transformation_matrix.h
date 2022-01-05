@@ -44,6 +44,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace gfx {
+class BoxF;
 class PointF;
 class Rect;
 class RectF;
@@ -55,7 +56,6 @@ namespace blink {
 class AffineTransform;
 class LayoutRect;
 class FloatQuad;
-class FloatBox;
 class JSONArray;
 struct Rotation;
 
@@ -233,7 +233,7 @@ class PLATFORM_EXPORT TransformationMatrix {
   // while sanitizing values created when the w component is negative.
   LayoutRect ClampedBoundsOfProjectedQuad(const FloatQuad&) const;
 
-  void TransformBox(FloatBox&) const;
+  void TransformBox(gfx::BoxF&) const;
 
   // Important: These indices are spoken in col-major order. i.e.:
   // | M11() M21() M31() M41() |

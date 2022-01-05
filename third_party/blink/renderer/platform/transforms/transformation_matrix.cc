@@ -32,7 +32,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
-#include "third_party/blink/renderer/platform/geometry/float_box.h"
 #include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
@@ -40,6 +39,7 @@
 #include "third_party/blink/renderer/platform/transforms/rotation.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -922,8 +922,8 @@ LayoutRect TransformationMatrix::ClampedBoundsOfProjectedQuad(
                     LayoutUnit::Clamp(bottom - top));
 }
 
-void TransformationMatrix::TransformBox(FloatBox& box) const {
-  FloatBox bounds;
+void TransformationMatrix::TransformBox(gfx::BoxF& box) const {
+  gfx::BoxF bounds;
   bool first_point = true;
   for (size_t i = 0; i < 2; ++i) {
     for (size_t j = 0; j < 2; ++j) {

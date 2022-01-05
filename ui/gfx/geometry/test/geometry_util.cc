@@ -137,6 +137,23 @@ Transform InvertAndCheck(const Transform& transform) {
   return EqFailure(lhs_expr, rhs_expr, lhs, rhs);
 }
 
+::testing::AssertionResult AssertBoxFloatNear(const char* lhs_expr,
+                                              const char* rhs_expr,
+                                              const char* abs_error_expr,
+                                              const BoxF& lhs,
+                                              const BoxF& rhs,
+                                              float abs_error) {
+  if (FloatNear(lhs.x(), rhs.x(), abs_error) &&
+      FloatNear(lhs.y(), rhs.y(), abs_error) &&
+      FloatNear(lhs.z(), rhs.z(), abs_error) &&
+      FloatNear(lhs.width(), rhs.width(), abs_error) &&
+      FloatNear(lhs.height(), rhs.height(), abs_error) &&
+      FloatNear(lhs.depth(), rhs.depth(), abs_error)) {
+    return ::testing::AssertionSuccess();
+  }
+  return NearFailure(lhs_expr, rhs_expr, abs_error_expr, lhs, rhs, abs_error);
+}
+
 ::testing::AssertionResult AssertPointFloatEqual(const char* lhs_expr,
                                                  const char* rhs_expr,
                                                  const PointF& lhs,

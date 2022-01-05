@@ -23,11 +23,11 @@
 
 #include <algorithm>
 #include "third_party/blink/renderer/platform/geometry/blend.h"
-#include "third_party/blink/renderer/platform/geometry/float_box.h"
 #include "third_party/blink/renderer/platform/transforms/interpolated_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/matrix_3d_transform_operation.h"
 #include "third_party/blink/renderer/platform/transforms/rotate_transform_operation.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
+#include "ui/gfx/geometry/box_f.h"
 
 namespace blink {
 
@@ -264,7 +264,7 @@ static void BoundingBoxForArc(const gfx::Point3F& point,
                               const RotateTransformOperation& to_transform,
                               double min_progress,
                               double max_progress,
-                              FloatBox& box) {
+                              gfx::BoxF& box) {
   double candidates[6];
   int num_candidates = 0;
 
@@ -370,11 +370,11 @@ static void BoundingBoxForArc(const gfx::Point3F& point,
   }
 }
 
-bool TransformOperations::BlendedBoundsForBox(const FloatBox& box,
+bool TransformOperations::BlendedBoundsForBox(const gfx::BoxF& box,
                                               const TransformOperations& from,
                                               const double& min_progress,
                                               const double& max_progress,
-                                              FloatBox* bounds) const {
+                                              gfx::BoxF* bounds) const {
   int from_size = from.Operations().size();
   int to_size = Operations().size();
   int size = std::max(from_size, to_size);
@@ -427,8 +427,8 @@ bool TransformOperations::BlendedBoundsForBox(const FloatBox& box,
         TransformationMatrix to_matrix;
         from_transform->Apply(from_matrix, gfx::SizeF());
         to_transform->Apply(to_matrix, gfx::SizeF());
-        FloatBox from_box = *bounds;
-        FloatBox to_box = *bounds;
+        gfx::BoxF from_box = *bounds;
+        gfx::BoxF to_box = *bounds;
         from_matrix.TransformBox(from_box);
         to_matrix.TransformBox(to_box);
         *bounds = from_box;
@@ -482,12 +482,12 @@ bool TransformOperations::BlendedBoundsForBox(const FloatBox& box,
           to_rotation = identity_rotation.get();
         }
 
-        FloatBox from_box = *bounds;
+        gfx::BoxF from_box = *bounds;
         bool first = true;
         for (size_t j = 0; j < 2; ++j) {
           for (size_t k = 0; k < 2; ++k) {
             for (size_t m = 0; m < 2; ++m) {
-              FloatBox bounds_for_arc;
+              gfx::BoxF bounds_for_arc;
               gfx::Point3F corner(from_box.x(), from_box.y(), from_box.z());
               corner +=
                   gfx::Vector3dF(j * from_box.width(), k * from_box.height(),

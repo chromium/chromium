@@ -31,8 +31,11 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/geometry/size_f.h"
 
+namespace gfx {
+class BoxF;
+}
+
 namespace blink {
-class FloatBox;
 
 class PLATFORM_EXPORT EmptyTransformOperations final {
   DISALLOW_NEW();
@@ -136,11 +139,11 @@ class PLATFORM_EXPORT TransformOperations {
     return index < operations_.size() ? operations_.at(index).get() : nullptr;
   }
 
-  bool BlendedBoundsForBox(const FloatBox&,
+  bool BlendedBoundsForBox(const gfx::BoxF&,
                            const TransformOperations& from,
                            const double& min_progress,
                            const double& max_progress,
-                           FloatBox* bounds) const;
+                           gfx::BoxF* bounds) const;
 
   scoped_refptr<TransformOperation> BlendRemainingByUsingMatrixInterpolation(
       const TransformOperations& from,
