@@ -474,6 +474,8 @@
       'Android FYI SkiaRenderer Vulkan (Pixel 2)': 'gpu_tests_android_release_trybot_reclient',
       'ChromeOS FYI Release (amd64-generic)': 'gpu_tests_chromeos_amd64_release_trybot_dcheck_off_no_symbols',
       'ChromeOS FYI Release (kevin)': 'gpu_tests_chromeos_kevin_release_trybot_dcheck_off_no_symbols',
+      'GPU FYI Android arm Builder': 'gpu_tests_android_release_trybot_reclient',
+      'GPU FYI Android arm64 Builder': 'gpu_tests_android_release_trybot_arm64_reclient',
       'GPU FYI Lacros x64 Builder': 'gpu_tests_ozone_linux_non_x11_release_trybot',
       'GPU FYI Linux Builder': 'gpu_fyi_tests_release_trybot',
       'GPU FYI Linux Builder (dbg)': 'gpu_fyi_tests_debug_trybot',

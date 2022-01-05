@@ -4129,6 +4129,8 @@
           'gpu_telemetry_tests': 'gpu_fyi_chromeos_release_telemetry_tests',
         },
       },
+      'GPU FYI Android arm Builder': {},
+      'GPU FYI Android arm64 Builder': {},
       'GPU FYI Fuchsia Builder' : {
         'additional_compile_targets': [
           'angle_end2end_tests',

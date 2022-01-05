@@ -160,6 +160,22 @@ ci.gpu.linux_builder(
 )
 
 ci.gpu.linux_builder(
+    name = "GPU FYI Android arm Builder",
+    console_view_entry = consoles.console_view_entry(
+        category = "Android|Builder",
+        short_name = "arm",
+    ),
+)
+
+ci.gpu.linux_builder(
+    name = "GPU FYI Android arm64 Builder",
+    console_view_entry = consoles.console_view_entry(
+        category = "Android|Builder",
+        short_name = "arm64",
+    ),
+)
+
+ci.gpu.linux_builder(
     name = "GPU FYI Lacros x64 Builder",
     console_view_entry = consoles.console_view_entry(
         category = "Lacros|Builder",
