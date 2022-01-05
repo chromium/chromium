@@ -305,11 +305,10 @@ class ManifestUpdateManagerBrowserTest : public InProcessBrowserTest {
 #if defined(OS_WIN)
     return os == kWin || os == kNotMac || os == kAll;
 #elif defined(OS_MAC)
-    // Older MAC OS versions than 11.0 don't seem to write size 48 to the
-    // shortcut. Instead of complicating all the call sites with OS-specific
-    // information, just make size 48 optional on MAC OS versions older than
-    // 11.0.
-    if (!base::mac::IsAtLeastOS11() && size == web_app::icon_size::k48)
+    // Older MAC OS versions don't seem to write size 48 to the shortcut.
+    // Instead of complicating all the call sites with OS-specific information,
+    // just make size 48 optional on those MAC OS versions.
+    if (!base::mac::IsAtLeastOS12() && size == web_app::icon_size::k48)
       return false;
     return os == kMac || os == kNotWin || os == kAll;
 #else
