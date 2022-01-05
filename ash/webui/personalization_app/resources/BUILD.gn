@@ -45,10 +45,12 @@ polymer_js_files = [
   "common/icons.js",
   "common/styles.js",
 
+  "trusted/ambient/ambient_subpage_element.ts",
   "trusted/personalization_main_element.ts",
   "trusted/personalization_router_element.ts",
   "trusted/personalization_toast_element.ts",
   "trusted/personalization_breadcrumb_element.ts",
+  "trusted/user/user_subpage_element.ts",
   "trusted/wallpaper/google_photos_albums_element.ts",
   "trusted/wallpaper/google_photos_collection_element.ts",
   "trusted/wallpaper/google_photos_photos_by_album_id_element.ts",

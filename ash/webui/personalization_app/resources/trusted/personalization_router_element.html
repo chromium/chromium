@@ -62,6 +62,12 @@
   <template is="dom-if" if="[[shouldShowRootPage_(path_)]]">
     <personalization-main></personalization-main>
   </template>
+  <template is="dom-if" if="[[shouldShowAmbientSubpage_(path_)]]">
+    <ambient-subpage></ambient-subpage>
+  </template>
+  <template is="dom-if" if="[[shouldShowUserSubpage_(path_)]]">
+    <user-subpage></user-subpage>
+  </template>
   <template is="dom-if" if="[[shouldShowWallpaperSubpage_(path_)]]">
     <div id="wallpaperContainer">
       <!-- Prevent left margin from collapsing on narrow window in RTL -->

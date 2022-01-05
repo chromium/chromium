@@ -8,6 +8,10 @@ namespace ash {
 
 const char kChromeUIPersonalizationAppHost[] = "personalization";
 const char kChromeUIPersonalizationAppURL[] = "chrome://personalization/";
+const char kChromeUIPersonalizationAppAmbientModeSubpageURL[] =
+    "chrome://personalization/ambient";
+const char kChromeUIPersonalizationAppUserSubpageURL[] =
+    "chrome://personalization/user";
 const char kChromeUIPersonalizationAppWallpaperSubpageURL[] =
     "chrome://personalization/wallpaper";
 const char kChromeUIUntrustedPersonalizationAppURL[] =

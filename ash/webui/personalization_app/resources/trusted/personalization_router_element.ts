@@ -15,6 +15,8 @@ import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/poly
 import {WallpaperCollection} from './personalization_app.mojom-webui.js';
 
 export enum Paths {
+  Ambient = '/ambient',
+  User = '/user',
   CollectionImages = '/wallpaper/collection',
   Collections = '/wallpaper',
   GooglePhotosCollection = '/wallpaper/google-photos',
@@ -139,6 +141,14 @@ export class PersonalizationRouter extends PolymerElement {
   private shouldShowRootPage_(path: string|null): boolean {
     return loadTimeData.getBoolean('isPersonalizationHubEnabled') &&
         path === Paths.Root;
+  }
+
+  private shouldShowAmbientSubpage_(path: string|null): boolean {
+    return !!path?.startsWith(Paths.Ambient);
+  }
+
+  private shouldShowUserSubpage_(path: string|null): boolean {
+    return !!path?.startsWith(Paths.User);
   }
 
   private shouldShowWallpaperSubpage_(path: string|null): boolean {

@@ -5,6 +5,7 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
+import {AmbientSubpageTest} from './ambient_subpage_element_test.js';
 import {GooglePhotosCollectionTest} from './google_photos_collection_element_test.js';
 import {GooglePhotosPhotosByAlbumIdTest} from './google_photos_photos_by_album_id_element_test.js';
 import {LocalImagesTest} from './local_images_element_test.js';
@@ -12,6 +13,7 @@ import {PersonalizationBreadcrumbTest} from './personalization_breadcrumb_elemen
 import {PersonalizationMainTest} from './personalization_main_element_test.js';
 import {PersonalizationRouterTest} from './personalization_router_element_test.js';
 import {PersonalizationToastTest} from './personalization_toast_element_test.js';
+import {UserSubpageTest} from './user_subpage_element_test.js';
 import {WallpaperCollectionsTest} from './wallpaper_collections_element_test.js';
 import {WallpaperFullscreenTest} from './wallpaper_fullscreen_element_test.js';
 import {WallpaperImagesTest} from './wallpaper_images_element_test.js';
@@ -22,6 +24,7 @@ import {WallpaperSelectedTest} from './wallpaper_selected_element_test.js';
 window.console.warn = () => {};
 
 const testCases = [
+  AmbientSubpageTest,
   GooglePhotosCollectionTest,
   GooglePhotosPhotosByAlbumIdTest,
   LocalImagesTest,
@@ -29,6 +32,7 @@ const testCases = [
   PersonalizationMainTest,
   PersonalizationRouterTest,
   PersonalizationToastTest,
+  UserSubpageTest,
   WallpaperCollectionsTest,
   WallpaperFullscreenTest,
   WallpaperImagesTest,
