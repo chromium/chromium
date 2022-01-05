@@ -104,7 +104,7 @@ base::StringPiece ContentOrderToString(ContentOrder content_order) {
   switch (content_order) {
     case ContentOrder::kUnspecified:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case ContentOrder::kGrouped:
       return "Grouped";
     case ContentOrder::kReverseChron:
