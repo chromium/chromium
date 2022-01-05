@@ -1896,6 +1896,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // RenderFrameHost.
   bool UnloadHandlerExistsInSameSiteInstanceSubtree();
 
+  bool has_unload_handler() const { return has_unload_handler_; }
+
   bool has_committed_any_navigation() const {
     return has_committed_any_navigation_;
   }

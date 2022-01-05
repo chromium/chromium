@@ -17,6 +17,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/content_browser_test_utils_internal.h"
@@ -117,7 +118,7 @@ class CrossOriginOpenerPolicyBrowserTest
     InitAndEnableRenderDocumentFeature(&feature_list_for_render_document_,
                                        std::get<0>(GetParam()));
     // Enable BackForwardCache:
-    if (std::get<1>(GetParam())) {
+    if (IsBackForwardCacheEnabled()) {
       feature_list_for_back_forward_cache_.InitWithFeaturesAndParameters(
           {{features::kBackForwardCache,
             {{"TimeToLiveInBackForwardCacheInSeconds", "3600"}}}},
@@ -128,6 +129,8 @@ class CrossOriginOpenerPolicyBrowserTest
           {}, {features::kBackForwardCache});
     }
   }
+
+  bool IsBackForwardCacheEnabled() { return std::get<1>(GetParam()); }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
 
@@ -1176,6 +1179,7 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   EXPECT_TRUE(NavigateToURL(shell(), non_isolated_page));
   scoped_refptr<SiteInstanceImpl> non_isolated_site_instance(
       current_frame_host()->GetSiteInstance());
+  RenderFrameHostImplWrapper non_isolated_rfh(current_frame_host());
   EXPECT_FALSE(non_isolated_site_instance->IsCrossOriginIsolated());
 
   // Keep this alive, simulating not receiving the UnloadACK from the renderer.
@@ -1187,6 +1191,13 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
       current_frame_host()->GetSiteInstance());
   EXPECT_TRUE(isolated_site_instance->IsCrossOriginIsolated());
 
+  // Confirm that the page is cached in back/forward cache if available.
+  if (IsBackForwardCacheEnabled()) {
+    EXPECT_TRUE(non_isolated_rfh->IsInBackForwardCache());
+  } else {
+    EXPECT_FALSE(non_isolated_rfh->IsInBackForwardCache());
+  }
+
   // Simulate the renderer process crashing.
   RenderProcessHost* process = isolated_site_instance->GetProcess();
   ASSERT_TRUE(process);
@@ -1197,11 +1208,21 @@ IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,
   crash_observer->Wait();
   crash_observer.reset();
 
-  // Navigate back. Isolated into non-isolated.
-  // This DCHECKs currently because of https://crbug.com/1264104,
-  // remove the death check and add a simple load wait when the
-  // bug is fixed.
-  EXPECT_DCHECK_DEATH(web_contents()->GetController().GoBack());
+  if (IsBackForwardCacheEnabled()) {
+    // Navigate back. Isolated into non-isolated.
+    // The page is cached in back/forward cache.
+    TestNavigationObserver navigation_observer(shell()->web_contents());
+    web_contents()->GetController().GoBack();
+    navigation_observer.WaitForNavigationFinished();
+    EXPECT_EQ(current_frame_host(), non_isolated_rfh.get());
+    EXPECT_FALSE(non_isolated_rfh.IsRenderFrameDeleted());
+  } else {
+    // Navigate back. Isolated into non-isolated.
+    // This DCHECKs currently because of https://crbug.com/1264104,
+    // remove the death check and add a simple load wait when the
+    // bug is fixed.
+    EXPECT_DCHECK_DEATH(web_contents()->GetController().GoBack());
+  }
 }
 
 IN_PROC_BROWSER_TEST_P(CrossOriginOpenerPolicyBrowserTest,

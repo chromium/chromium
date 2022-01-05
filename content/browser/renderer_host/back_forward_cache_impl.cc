@@ -837,8 +837,7 @@ void BackForwardCacheImpl::PopulateStickyReasonsForDocument(
     result.No(BackForwardCacheMetrics::NotRestoredReason::kHaveInnerContents);
   }
 
-  const bool has_unload_handler = rfh->GetSuddenTerminationDisablerState(
-      blink::mojom::SuddenTerminationDisablerType::kUnloadHandler);
+  const bool has_unload_handler = rfh->has_unload_handler();
   switch (unload_strategy_) {
     case BackForwardCacheImpl::UnloadSupportStrategy::kAlways:
       break;
