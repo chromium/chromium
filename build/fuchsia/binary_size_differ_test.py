@@ -108,8 +108,7 @@ class BinarySizeDifferTest(unittest.TestCase):
 
         other_blobs = copy.deepcopy(blobs)
         # Increase the limit of is_counted=false does not increase limit.
-        self.ChangeBlobSize(other_blobs, 'web_engine', 'meta.far',
-                            (16 * 1024 + 1))
+        self.ChangeBlobSize(other_blobs, 'web_engine', 'meta.far', (16 * 1024))
         binary_sizes.WritePackageBlobsJson(after_file.name, other_blobs)
         growth = binary_size_differ.ComputePackageDiffs(before_file.name,
                                                         after_file.name)
