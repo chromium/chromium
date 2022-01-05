@@ -132,6 +132,24 @@ void CertBuilder::CreateSimpleChain(
   (*out_leaf)->EraseExtension(AuthorityInfoAccessOid());
 }
 
+void CertBuilder::CreateSimpleChain(std::unique_ptr<CertBuilder>* out_leaf,
+                                    std::unique_ptr<CertBuilder>* out_root) {
+  const char kHostname[] = "www.example.com";
+  base::FilePath certs_dir = GetTestCertsDirectory();
+
+  auto orig_root = ImportCertFromFile(certs_dir, "root_ca_cert.pem");
+  ASSERT_TRUE(orig_root);
+  auto orig_leaf = ImportCertFromFile(certs_dir, "ok_cert.pem");
+  ASSERT_TRUE(orig_leaf);
+
+  // Build slightly modified variants of |orig_certs|.
+  *out_root = std::make_unique<CertBuilder>(orig_root->cert_buffer(), nullptr);
+
+  *out_leaf =
+      std::make_unique<CertBuilder>(orig_leaf->cert_buffer(), out_root->get());
+  (*out_leaf)->SetSubjectAltName(kHostname);
+}
+
 void CertBuilder::SetExtension(const der::Input& oid,
                                std::string value,
                                bool critical) {

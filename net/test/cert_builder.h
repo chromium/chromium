@@ -55,6 +55,12 @@ class CertBuilder {
                                 std::unique_ptr<CertBuilder>* out_intermediate,
                                 std::unique_ptr<CertBuilder>* out_root);
 
+  // Creates a simple leaf->root chain of CertBuilders with no AIA or
+  // CrlDistributionPoint extensions, and leaf having a subjectAltName of
+  // www.example.com.
+  static void CreateSimpleChain(std::unique_ptr<CertBuilder>* out_leaf,
+                                std::unique_ptr<CertBuilder>* out_root);
+
   // Sets a value for the indicated X.509 (v3) extension.
   void SetExtension(const der::Input& oid,
                     std::string value,
