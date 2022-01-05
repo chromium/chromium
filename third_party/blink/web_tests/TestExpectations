@@ -7985,3 +7985,6 @@ crbug.com/1280736 [ Win10.20h2 ] http/tests/inspector-protocol/network/blocked-s
 
 # Sheriff 2022-01-04
 crbug.com/1283865 external/wpt/webmessaging/without-ports/020.html [ Failure Pass ]
+
+# Sheriff 2022-01-05
+crbug.com/1284572 [ Linux ] virtual/threaded/http/tests/devtools/isolated-code-cache/same-origin-module-test.js [ Failure Pass ]
