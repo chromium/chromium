@@ -903,7 +903,9 @@ void LayoutBox::UpdateFromStyle() {
   const ComputedStyle& style_to_use = StyleRef();
   SetFloating(style_to_use.IsFloating() && !IsOutOfFlowPositioned() &&
               !style_to_use.IsFlexOrGridItem());
-  SetHasTransformRelatedProperty(style_to_use.HasTransformRelatedProperty());
+  SetHasTransformRelatedProperty(
+      IsSVGChild() ? style_to_use.HasTransformRelatedPropertyForSVG()
+                   : style_to_use.HasTransformRelatedProperty());
   SetHasReflection(style_to_use.BoxReflect());
   // LayoutTable and LayoutTableCell will overwrite this flag if needed.
   SetHasNonCollapsedBorderDecoration(style_to_use.HasBorderDecoration());

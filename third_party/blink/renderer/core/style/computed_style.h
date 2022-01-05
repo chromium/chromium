@@ -2496,6 +2496,9 @@ class ComputedStyle : public ComputedStyleBase,
     return HasTransform() || Preserves3D() || HasPerspective() ||
            HasWillChangeTransformHint();
   }
+  bool HasTransformRelatedPropertyForSVG() const {
+    return HasTransform() || HasWillChangeTransformHint();
+  }
 
   // Return true if this style has properties ('filter', 'clip-path' and 'mask')
   // that applies an effect to SVG elements.

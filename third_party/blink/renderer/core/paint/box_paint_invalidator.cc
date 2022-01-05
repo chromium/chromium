@@ -277,7 +277,7 @@ BoxPaintInvalidator::ComputeViewBackgroundInvalidation() {
       // onto an infinite canvas. In cases where it has a transform we can't
       // apply incremental invalidation, because the visual rect is no longer
       // axis-aligned to the LayoutView.
-      if (root_object->StyleRef().HasTransform())
+      if (root_object->HasTransform())
         return BackgroundInvalidationType::kFull;
     }
   }

@@ -378,20 +378,16 @@ void PaintLayer::UpdateTransformationMatrix() {
 void PaintLayer::UpdateTransform(const ComputedStyle* old_style,
                                  const ComputedStyle& new_style) {
   // It's possible for the old and new style transform data to be equivalent
-  // while hasTransform() differs, as it checks a number of conditions aside
+  // while HasTransform() differs, as it checks a number of conditions aside
   // from just the matrix, including but not limited to animation state.
-  if (old_style && old_style->HasTransform() == new_style.HasTransform() &&
+  bool had_transform = Transform();
+  bool has_transform = GetLayoutObject().HasTransform();
+  if (had_transform == has_transform && old_style &&
       new_style.TransformDataEquivalent(*old_style)) {
     return;
   }
+  bool had_3d_transform = Has3DTransform();
 
-  // LayoutObject::HasTransformRelatedProperty is also true when there is
-  // transform-style: preserve-3d or perspective set, so check style too.
-  bool has_transform = GetLayoutObject().HasTransformRelatedProperty() &&
-                       new_style.HasTransform();
-  bool had3d_transform = Has3DTransform();
-
-  bool had_transform = Transform();
   if (has_transform != had_transform) {
     if (has_transform)
       EnsureRareData().transform = std::make_unique<TransformationMatrix>();
@@ -401,7 +397,7 @@ void PaintLayer::UpdateTransform(const ComputedStyle* old_style,
 
   UpdateTransformationMatrix();
 
-  if (had3d_transform != Has3DTransform())
+  if (had_3d_transform != Has3DTransform())
     MarkAncestorChainForFlagsUpdate();
 
   if (LocalFrameView* frame_view = GetLayoutObject().GetDocument().View())

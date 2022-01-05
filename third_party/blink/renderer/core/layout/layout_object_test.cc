@@ -1691,4 +1691,50 @@ TEST_F(LayoutObjectTestWithCompositing,
       WebFeature::kDifferentPerspectiveCBOrParent);
 }
 
+TEST_F(LayoutObjectTest, HasTransformRelatedProperty) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+      .transform { transform: translateX(10px); }
+      .will-change { will-change: transform; }
+      .preserve-3d { transform-style: preserve-3d; }
+    </style>
+    <span id="span" class="transform will-change preserve-3d"></span>
+    <div id="div-transform" class="transform"></div>
+    <div id="div-will-change" class="will-change"></div>
+    <div id="div-preserve-3d" class="preserve-3d"></div>
+    <div id="div-none"></div>
+    <!-- overflow: visible to override the default overflow:hidden for and
+         enable preserve-3d -->
+    <svg id="svg" class="transform will-change preserve-3d"
+         style="overflow:visible">
+      <rect id="svg-rect" class="transform preserve-3d"/>
+      <rect id="svg-rect-will-change" class="will-change"/>
+      <rect id="svg-rect-preserve-3d" class="preserve-3d"/>
+      <text id="svg-text" class="transform preserve-3d"/>
+      <foreignObject id="foreign" class="transform preserve-3d"/>
+    </svg>
+  )HTML");
+
+  auto test = [&](const char* element_id, bool has_transform_related_property,
+                  bool has_transform, bool preserves_3d) {
+    SCOPED_TRACE(element_id);
+    const auto* object = GetLayoutObjectByElementId(element_id);
+    EXPECT_EQ(has_transform_related_property,
+              object->HasTransformRelatedProperty());
+    EXPECT_EQ(has_transform, object->HasTransform());
+    EXPECT_EQ(preserves_3d, object->Preserves3D());
+  };
+  test("span", false, false, false);
+  test("div-transform", true, true, false);
+  test("div-will-change", true, false, false);
+  test("div-preserve-3d", true, false, true);
+  test("div-none", false, false, false);
+  test("svg", true, true, true);
+  test("svg-rect", true, true, false);
+  test("svg-rect-will-change", true, false, false);
+  test("svg-rect-preserve-3d", false, false, false);
+  test("svg-text", true, true, false);
+  test("foreign", true, true, false);
+}
+
 }  // namespace blink

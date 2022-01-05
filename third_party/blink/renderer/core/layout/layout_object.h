@@ -1712,10 +1712,23 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return bitfields_.HasTransformRelatedProperty();
   }
+  // Compared to StyleRef().HasTransform(), this excludes objects that ignore
+  // transform-related styles (e.g. LayoutInline).
+  bool HasTransform() const {
+    NOT_DESTROYED();
+    return HasTransformRelatedProperty() && StyleRef().HasTransform();
+  }
+  // Similar to the above.
+  bool Preserves3D() const {
+    NOT_DESTROYED();
+    return HasTransformRelatedProperty() && StyleRef().Preserves3D() &&
+           !IsSVGChild();
+  }
   bool IsTransformApplicable() const {
     NOT_DESTROYED();
     return IsBox() || IsSVG();
   }
+
   bool HasMask() const {
     NOT_DESTROYED();
     return StyleRef().HasMask();
@@ -4086,7 +4099,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
 
     // The cached value from ComputedStyle::HasTransformRelatedProperty for
     // objects that do not ignore transform-related styles (e.g. not
-    // LayoutInline, LayoutSVGBlock).
+    // LayoutInline).
     ADD_BOOLEAN_BITFIELD(has_transform_related_property_,
                          HasTransformRelatedProperty);
     ADD_BOOLEAN_BITFIELD(has_reflection_, HasReflection);

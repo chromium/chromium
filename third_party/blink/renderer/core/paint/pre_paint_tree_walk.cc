@@ -1118,7 +1118,7 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
   PrePaintTreeWalkContext context(parent_context,
                                   needs_tree_builder_context_update);
 
-  if (object.StyleRef().HasTransform()) {
+  if (object.HasTransform()) {
     // Ignore clip changes from ancestor across transform boundaries.
     context.clip_changed = false;
     if (context.tree_builder_context)

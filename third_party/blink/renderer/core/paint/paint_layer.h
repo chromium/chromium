@@ -416,10 +416,7 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   TransformationMatrix CurrentTransform() const;
   TransformationMatrix RenderableTransform(GlobalPaintFlags) const;
 
-  bool Preserves3D() const {
-    return GetLayoutObject().IsBox() &&
-           GetLayoutObject().StyleRef().Preserves3D();
-  }
+  bool Preserves3D() const { return GetLayoutObject().Preserves3D(); }
   bool Has3DTransform() const {
     return rare_data_ && rare_data_->transform &&
            !rare_data_->transform->IsAffine();

@@ -433,14 +433,13 @@ static bool NeedsPaintOffsetTranslation(
   if (!object.IsBoxModelObject())
     return false;
 
-  // <foreignObject> inherits no paint offset, because there is no such
-  // concept within SVG. However, the foreign object can have its own paint
-  // offset due to the x and y parameters of the element. This affects the
-  // offset of painting of the <foreignObject> element and its children.
-  // However, <foreignObject> otherwise behaves like other SVG elements, in
-  // that the x and y offset is applied *after* any transform, instead of
-  // before. Therefore there is no paint offset translation needed.
-  if (object.IsSVGForeignObject())
+  // An SVG children inherits no paint offset, because there is no such concept
+  // within SVG. Though <foreignObject> can have its own paint offset due to the
+  // x and y parameters of the element, which affects the offset of painting of
+  // the <foreignObject> element and its children, it still behaves like other
+  // SVG elements, in that the x and y offset is applied *after* any transform,
+  // instead of before.
+  if (object.IsSVGChild())
     return false;
 
   const auto& box_model = To<LayoutBoxModelObject>(object);
@@ -456,10 +455,8 @@ static bool NeedsPaintOffsetTranslation(
     return true;
   }
 
-  if (box_model.HasLayer() && box_model.Layer()->PaintsWithTransform(
-                                  kGlobalPaintFlattenCompositingLayers)) {
+  if (box_model.HasTransform())
     return true;
-  }
   if (NeedsScrollOrScrollTranslation(object, direct_compositing_reasons))
     return true;
   if (NeedsStickyTranslation(object))
@@ -874,12 +871,12 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransformForSVGChild(
   }
 }
 
-static gfx::Point3F TransformOrigin(const ComputedStyle& style,
-                                    PhysicalSize size) {
+static gfx::Point3F TransformOrigin(const LayoutBox& box, PhysicalSize size) {
   // Transform origin has no effect without a transform or motion path.
-  if (!style.HasTransform())
+  if (!box.HasTransform())
     return gfx::Point3F();
   gfx::SizeF border_box_size(size);
+  const auto& style = box.StyleRef();
   return gfx::Point3F(
       FloatValueForLength(style.TransformOriginX(), border_box_size.width()),
       FloatValueForLength(style.TransformOriginY(), border_box_size.height()),
@@ -897,10 +894,7 @@ static bool NeedsTransform(const LayoutObject& object,
   if (direct_compositing_reasons & CompositingReasonsForTransformProperty())
     return true;
 
-  if (!object.IsBox())
-    return false;
-
-  if (object.StyleRef().HasTransform() || object.StyleRef().Preserves3D())
+  if (object.HasTransform() || object.Preserves3D())
     return true;
 
   return false;
@@ -965,8 +959,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransform() {
             matrix.IsIdentityOr2DTranslation()) {
           state.transform_and_origin = {matrix.To2DTranslation()};
         } else {
-          state.transform_and_origin = {matrix,
-                                        TransformOrigin(box.StyleRef(), size)};
+          state.transform_and_origin = {matrix, TransformOrigin(box, size)};
         }
 
         // We want to track whether (a) this element is in a preserve-3d scene
@@ -2162,10 +2155,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateScrollAndScrollTranslation() {
       // If scroll and transform are both present, we should use the
       // transform property tree node to determine visibility of the
       // scrolling contents.
-      if (object_.StyleRef().HasTransform() &&
-          object_.StyleRef().BackfaceVisibility() ==
-              EBackfaceVisibility::kHidden)
+      if (object_.HasTransform() && object_.StyleRef().BackfaceVisibility() ==
+                                        EBackfaceVisibility::kHidden) {
         state.flags.delegates_to_parent_for_backface = true;
+      }
       auto effective_change_type = properties_->UpdateScrollTranslation(
           *context_.current.transform, std::move(state));
       // Even if effective_change_type is kUnchanged, we might still need to
@@ -2655,7 +2648,7 @@ void FragmentPaintPropertyTreeBuilder::SetNeedsPaintPropertyUpdateIfNeeded() {
       // transform-origin, and perspective-origin can depend on the size of the
       // frame rect, so force a property update if it changes. TODO(pdr): We
       // only need to update properties if there are relative lengths.
-      box.StyleRef().HasTransform() || NeedsPerspective(box) ||
+      box.HasTransform() || NeedsPerspective(box) ||
       box_generates_property_nodes_for_mask_and_clip_path) {
     box.GetMutableForPainting().SetNeedsPaintPropertyUpdate();
   }

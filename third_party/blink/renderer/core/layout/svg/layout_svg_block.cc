@@ -115,7 +115,7 @@ void LayoutSVGBlock::StyleDidChange(StyleDifference diff,
   // |HasTransformRelatedProperty| is used for compositing so ensure it was
   // correctly set by the call to |StyleDidChange|.
   DCHECK_EQ(HasTransformRelatedProperty(),
-            StyleRef().HasTransformRelatedProperty());
+            StyleRef().HasTransformRelatedPropertyForSVG());
 
   transform_uses_reference_box_ =
       TransformHelper::DependsOnReferenceBox(StyleRef());
