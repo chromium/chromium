@@ -4,6 +4,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/sessions/tab_restore_service_factory.h"
 #include "chrome/browser/sessions/tab_restore_service_load_waiter.h"
 #include "chrome/browser/ui/browser.h"
@@ -38,7 +39,13 @@ bool TabRestoreServiceHasClosedWindow(sessions::TabRestoreService* service) {
 // properly (this was triggering a crash in AppMenu where it was trying to make
 // use of RecentTabsMenuModelDelegate before created). See
 // https://crbug.com/1249741 for more.
-IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, ShowWithRecentlyClosedWindow) {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/1284776): Re-enable once flakiness is fixed.
+#define MAYBE_ShowWithRecentlyClosedWindow DISABLED_ShowWithRecentlyClosedWindow
+#else
+#define MAYBE_ShowWithRecentlyClosedWindow ShowWithRecentlyClosedWindow
+#endif
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, MAYBE_ShowWithRecentlyClosedWindow) {
   // Create an additional browser, close it, and ensure it is added to the
   // TabRestoreService.
   sessions::TabRestoreService* tab_restore_service =
