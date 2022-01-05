@@ -4934,6 +4934,11 @@ proto_library("login_logout_event_proto") {
   deps = [ ":session_affiliated_user" ]
 }
 
+proto_library("crd_event_proto") {
+  sources = [ "../policy/messaging_layer/proto/synced/crd_event.proto" ]
+  deps = [ ":session_affiliated_user" ]
+}
+
 proto_library("session_affiliated_user") {
   sources =
       [ "../policy/messaging_layer/proto/synced/session_affiliated_user.proto" ]
