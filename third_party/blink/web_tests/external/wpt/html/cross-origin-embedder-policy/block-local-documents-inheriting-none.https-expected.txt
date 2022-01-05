@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+Harness Error. harness_status.status = 1 , harness_status.message = Uncaught Error: assert_unreached: Nested blob: loaded! Reached unreachable code
+FAIL Prevent local scheme documents from loading within a COEP: require-corp iframe if they inherit COEP: none assert_equals: expected 3 but got 0
+Harness: the test ran to completion.
+
