@@ -366,16 +366,20 @@ TEST_F(EditableComboboxTest, RemovingControlWhileMenuOpenClosesMenu) {
   InitEditableCombobox();
   ClickArrow();
   EXPECT_TRUE(IsMenuOpen());
-  parent_of_combobox_->RemoveChildView(combobox_);
+  auto combobox = parent_of_combobox_->RemoveChildViewT(combobox_);
   EXPECT_EQ(nullptr, combobox_->GetMenuRunnerForTest());
+  combobox_ = nullptr;
 }
 
 TEST_F(EditableComboboxTest, RemovingParentOfControlWhileMenuOpenClosesMenu) {
   InitEditableCombobox();
   ClickArrow();
   EXPECT_TRUE(IsMenuOpen());
-  widget_->GetContentsView()->RemoveChildView(parent_of_combobox_);
+  auto parent =
+      widget_->GetContentsView()->RemoveChildViewT(parent_of_combobox_);
   EXPECT_EQ(nullptr, combobox_->GetMenuRunnerForTest());
+  combobox_ = nullptr;
+  parent_of_combobox_ = nullptr;
 }
 
 TEST_F(EditableComboboxTest, LeftOrRightKeysMoveInTextfield) {
