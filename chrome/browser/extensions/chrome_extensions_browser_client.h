@@ -34,6 +34,7 @@ namespace extensions {
 class ChromeComponentExtensionResourceManager;
 class ChromeExtensionsAPIClient;
 class ChromeProcessManagerDelegate;
+class ScopedExtensionUpdaterKeepAlive;
 
 // Implementation of BrowserClient for Chrome, which includes
 // knowledge of Profiles, BrowserContexts and incognito.
@@ -136,6 +137,8 @@ class ChromeExtensionsBrowserClient : public ExtensionsBrowserClient {
   void AttachExtensionTaskManagerTag(content::WebContents* web_contents,
                                      mojom::ViewType view_type) override;
   scoped_refptr<update_client::UpdateClient> CreateUpdateClient(
+      content::BrowserContext* context) override;
+  std::unique_ptr<ScopedExtensionUpdaterKeepAlive> CreateUpdaterKeepAlive(
       content::BrowserContext* context) override;
   bool IsActivityLoggingEnabled(content::BrowserContext* context) override;
   void GetTabAndWindowIdForWebContents(content::WebContents* web_contents,
