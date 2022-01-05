@@ -109,6 +109,10 @@ class ASH_EXPORT AppListBubbleAppsPage : public views::View,
     return reorder_undo_container_;
   }
 
+  ScrollViewGradientHelper* gradient_helper_for_test() {
+    return gradient_helper_.get();
+  }
+
  private:
   friend class AppListTestHelper;
 

@@ -27,9 +27,11 @@
 #include "ash/app_list/views/search_box_view.h"
 #include "ash/assistant/model/assistant_ui_model.h"
 #include "ash/constants/ash_features.h"
+#include "ash/controls/scroll_view_gradient_helper.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/test/assistant_test_api.h"
+#include "ash/shelf/gradient_layer_delegate.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
@@ -1125,6 +1127,57 @@ TEST_F(AppListBubbleViewTest, ScrollInFolderHeaderScrollsFolder) {
   // The view scrolled.
   const int final_scroll_offset = scroll_view->GetVisibleRect().y();
   EXPECT_GT(final_scroll_offset, initial_scroll_offset);
+}
+
+TEST_F(AppListBubbleViewTest, AutoScrollToFitViewOnFocus) {
+  // Show an app list with enough apps to fill the page and trigger a gradient
+  // at the bottom.
+  AddAppItems(50);
+  ShowAppList();
+
+  // Scroll view gradient mask layer is created.
+  auto* scroll_view = GetAppsPage()->scroll_view();
+  EXPECT_TRUE(scroll_view->layer()->layer_mask_layer());
+  const int rows = base::ClampFloor(50.0 / GetAppsGridView()->cols());
+
+  // Focus the first item on the last row.
+  for (int i = 0; i < rows; i++)
+    PressAndReleaseKey(ui::VKEY_DOWN);
+
+  gfx::Rect app_view_bounds = GetAppsGridView()
+                                  ->GetFocusManager()
+                                  ->GetFocusedView()
+                                  ->GetBoundsInScreen();
+  GradientLayerDelegate* gradient_layer =
+      GetAppsPage()->gradient_helper_for_test()->gradient_layer_for_test();
+  gfx::Rect gradient_mask_bounds_start =
+      gradient_layer->start_fade_zone_bounds();
+  gfx::Rect gradient_mask_bounds_end = gradient_layer->end_fade_zone_bounds();
+  views::View::ConvertRectToScreen(scroll_view, &gradient_mask_bounds_start);
+  views::View::ConvertRectToScreen(scroll_view, &gradient_mask_bounds_end);
+
+  // The gradient mask should not obscure the focused app view.
+  EXPECT_FALSE(gradient_mask_bounds_start.Intersects(app_view_bounds));
+  EXPECT_FALSE(gradient_mask_bounds_end.Intersects(app_view_bounds));
+
+  // Press down arrow two more times to move focus to the first row again.
+  PressAndReleaseKey(ui::VKEY_DOWN);
+  PressAndReleaseKey(ui::VKEY_DOWN);
+
+  ASSERT_TRUE(GetAppsGridView()->GetItemViewAt(0)->HasFocus());
+
+  app_view_bounds = GetAppsGridView()
+                        ->GetFocusManager()
+                        ->GetFocusedView()
+                        ->GetBoundsInScreen();
+  gradient_mask_bounds_start = gradient_layer->start_fade_zone_bounds();
+  gradient_mask_bounds_end = gradient_layer->end_fade_zone_bounds();
+  views::View::ConvertRectToScreen(scroll_view, &gradient_mask_bounds_start);
+  views::View::ConvertRectToScreen(scroll_view, &gradient_mask_bounds_end);
+
+  // The gradient mask should not obscure the focused app view.
+  EXPECT_FALSE(gradient_mask_bounds_start.Intersects(app_view_bounds));
+  EXPECT_FALSE(gradient_mask_bounds_end.Intersects(app_view_bounds));
 }
 
 }  // namespace

@@ -35,10 +35,12 @@ ScrollViewGradientHelper::ScrollViewGradientHelper(
       scroll_view_->AddContentsScrollEndedCallback(
           base::BindRepeating(&ScrollViewGradientHelper::UpdateGradientZone,
                               base::Unretained(this)));
+  scroll_view_->SetPreferredViewportMargins(gfx::Insets(kGradientHeight, 0));
 }
 
 ScrollViewGradientHelper::~ScrollViewGradientHelper() {
   RemoveMaskLayer();
+  scroll_view_->SetPreferredViewportMargins(gfx::Insets());
 }
 
 void ScrollViewGradientHelper::UpdateGradientZone() {
