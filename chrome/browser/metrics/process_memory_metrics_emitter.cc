@@ -1067,9 +1067,9 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
         break;
       }
       case memory_instrumentation::mojom::ProcessType::PLUGIN:
-        FALLTHROUGH;
+        [[fallthrough]];
       case memory_instrumentation::mojom::ProcessType::ARC:
-        FALLTHROUGH;
+        [[fallthrough]];
       case memory_instrumentation::mojom::ProcessType::OTHER:
         break;
     }
