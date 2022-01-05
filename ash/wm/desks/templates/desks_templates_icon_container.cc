@@ -101,7 +101,9 @@ void InsertIdentifierInfoFromLaunchList(
     if (restore_data.second->urls.has_value() && is_browser) {
       const auto& urls = restore_data.second->urls.value();
       for (int i = 0; i < static_cast<int>(urls.size()); ++i) {
-        InsertIdentifierInfo(urls[i].spec(),
+        // Strip extra information from the url so urls with the same host but
+        // different queries are treated the same.
+        InsertIdentifierInfo(urls[i].GetWithEmptyPath().spec(),
                              active_tab_index == i
                                  ? activation_index
                                  : kInactiveTabOffset + activation_index,
