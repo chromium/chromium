@@ -3698,10 +3698,11 @@
             ]
         }
     ],
-    "FilesSystemWebApp": [
+    "FilesSWA": [
         {
             "platforms": [
-                "chromeos"
+                "chromeos",
+                "chromeos_lacros"
             ],
             "experiments": [
                 {
