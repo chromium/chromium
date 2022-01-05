@@ -42,6 +42,7 @@ namespace extensions {
 
 namespace {
 
+const char kTargetNotActiveError[] = "The specified target is not active.";
 const char kInvalidSourceNameError[] = "Invalid source type specified.";
 
 DesktopMediaPickerFactory* g_picker_factory = nullptr;
@@ -53,6 +54,10 @@ void DesktopCaptureChooseDesktopMediaFunctionBase::SetPickerFactoryForTests(
     DesktopMediaPickerFactory* factory) {
   g_picker_factory = factory;
 }
+
+const char
+    DesktopCaptureChooseDesktopMediaFunctionBase::kTargetNotFoundError[] =
+        "The specified target is not found.";
 
 DesktopCaptureChooseDesktopMediaFunctionBase::
     DesktopCaptureChooseDesktopMediaFunctionBase() = default;
@@ -77,10 +82,18 @@ void DesktopCaptureChooseDesktopMediaFunctionBase::Cancel() {
 ExtensionFunction::ResponseAction
 DesktopCaptureChooseDesktopMediaFunctionBase::Execute(
     const std::vector<api::desktop_capture::DesktopCaptureSourceType>& sources,
-    content::WebContents* web_contents,
+    content::RenderFrameHost* render_frame_host,
     const GURL& origin,
     const std::u16string target_name) {
   DCHECK(!picker_controller_);
+
+  if (!render_frame_host->IsActive())
+    return RespondNow(Error(kTargetNotActiveError));
+
+  content::WebContents* web_contents =
+      content::WebContents::FromRenderFrameHost(render_frame_host);
+  if (!web_contents)
+    return RespondNow(Error(kTargetNotFoundError));
 
   gfx::NativeWindow parent_window = web_contents->GetTopLevelNativeWindow();
   // In case of coming from background extension page, |parent_window| will

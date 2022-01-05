@@ -34,6 +34,8 @@ class DesktopCaptureChooseDesktopMediaFunctionBase : public ExtensionFunction {
  protected:
   ~DesktopCaptureChooseDesktopMediaFunctionBase() override;
 
+  static const char kTargetNotFoundError[];
+
   // |web_contents| is the WebContents for which the stream is created, and will
   // also be used to determine where to show the picker's UI.
   // |origin| is the origin for which the stream is created.
@@ -41,7 +43,7 @@ class DesktopCaptureChooseDesktopMediaFunctionBase : public ExtensionFunction {
   ResponseAction Execute(
       const std::vector<api::desktop_capture::DesktopCaptureSourceType>&
           sources,
-      content::WebContents* web_contents,
+      content::RenderFrameHost* render_frame_host,
       const GURL& origin,
       const std::u16string target_name);
 
