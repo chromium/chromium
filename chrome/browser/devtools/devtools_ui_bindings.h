@@ -80,6 +80,8 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
 
   ~DevToolsUIBindings() override;
 
+  std::string GetTypeForMetrics() override;
+
   content::WebContents* web_contents() { return web_contents_; }
   Profile* profile() { return profile_; }
   content::DevToolsAgentHost* agent_host() { return agent_host_.get(); }

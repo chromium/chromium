@@ -330,6 +330,8 @@ class DevToolsAgentHostClientImpl : public DevToolsAgentHostClient {
       agent_host_->DetachClient(this);
   }
 
+  std::string GetTypeForMetrics() override { return "RemoteDebugger"; }
+
   void AgentHostClosed(DevToolsAgentHost* agent_host) override {
     DCHECK_CURRENTLY_ON(BrowserThread::UI);
     DCHECK(agent_host == agent_host_.get());

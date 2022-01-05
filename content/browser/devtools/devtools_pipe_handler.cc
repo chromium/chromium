@@ -422,4 +422,8 @@ bool DevToolsPipeHandler::AllowUnsafeOperations() {
   return true;
 }
 
+std::string DevToolsPipeHandler::GetTypeForMetrics() {
+  return "RemoteDebugger";
+}
+
 }  // namespace content

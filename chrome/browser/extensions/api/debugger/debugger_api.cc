@@ -189,6 +189,8 @@ class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
 
   ~ExtensionDevToolsClientHost() override;
 
+  std::string GetTypeForMetrics() override { return "Extension"; }
+
   bool Attach();
   const std::string& extension_id() { return extension_->id(); }
   DevToolsAgentHost* agent_host() { return agent_host_.get(); }

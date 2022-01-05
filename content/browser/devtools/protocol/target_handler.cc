@@ -418,6 +418,8 @@ class TargetHandler::Session : public DevToolsAgentHostClient {
     agent_host_->DetachClient(this);
   }
 
+  std::string GetTypeForMetrics() override { return "DevTools"; }
+
   void Detach(bool host_closed) {
     handler_->frontend_->DetachedFromTarget(id_, agent_host_->GetId());
     if (flatten_protocol_)

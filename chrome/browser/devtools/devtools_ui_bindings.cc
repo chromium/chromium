@@ -653,6 +653,10 @@ DevToolsUIBindings* DevToolsUIBindings::ForWebContents(
   return nullptr;
 }
 
+std::string DevToolsUIBindings::GetTypeForMetrics() {
+  return "DevTools";
+}
+
 DevToolsUIBindings::DevToolsUIBindings(content::WebContents* web_contents)
     : profile_(Profile::FromBrowserContext(web_contents->GetBrowserContext())),
       android_bridge_(DevToolsAndroidBridge::Factory::GetForProfile(profile_)),
