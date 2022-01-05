@@ -62,6 +62,9 @@ class NET_EXPORT ParsedCookie {
     DCHECK(HasPath());
     return pairs_[path_index_].second;
   }
+  // Note that Domain() may return the empty string; in the case of cookie_line
+  // "domain=", HasDomain() will return true (as the empty string is an
+  // acceptable domain value), so Domain() will return std::string().
   bool HasDomain() const { return domain_index_ != 0; }
   const std::string& Domain() const {
     DCHECK(HasDomain());

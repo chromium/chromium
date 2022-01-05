@@ -765,7 +765,7 @@ void ParsedCookie::ParseTokenValuePairs(const std::string& cookie_line,
 }
 
 void ParsedCookie::SetupAttributes() {
-  // For UMA_HISTOGRAMS below
+  // For the UMA_HISTOGRAMS below.
   int domain_count =
       std::count_if(pairs_.begin(), pairs_.end(),
                     [](const std::pair<std::string, std::string>& pair) {
@@ -776,14 +776,19 @@ void ParsedCookie::SetupAttributes() {
     if (pairs_[i].first == kPathTokenName) {
       path_index_ = i;
     } else if (pairs_[i].first == kDomainTokenName) {
+      // Record usage metrics for the empty string domain.
       UMA_HISTOGRAM_BOOLEAN(
           "Cookie.EmptyDomain.SetupAttributes.Single",
           (domain_count == 1) && (pairs_[i].second == std::string()));
       UMA_HISTOGRAM_BOOLEAN(
           "Cookie.EmptyDomain.SetupAttributes.Multiple",
           (domain_count > 1) && (pairs_[i].second == std::string()));
-      if (pairs_[i].second != "")
+      // Domain can be the empty string if the flag is enabled.
+      if (base::FeatureList::IsEnabled(
+              features::kCookieDomainAttributeEmptyString) ||
+          pairs_[i].second != "") {
         domain_index_ = i;
+      }
     } else if (pairs_[i].first == kExpiresTokenName) {
       expires_index_ = i;
     } else if (pairs_[i].first == kMaxAgeTokenName) {

@@ -341,6 +341,25 @@ TEST(CanonicalCookieTest, Create) {
   EXPECT_EQ(cookie->SourcePort(), url::PORT_INVALID);
 }
 
+// Test that a cookie string with an empty domain attribute generates a
+// canonical host cookie.
+TEST(CanonicalCookieTest, CreateHostCookieFromString) {
+  // Enable the feature flag for this test.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kCookieDomainAttributeEmptyString);
+  // Create a new canonical host cookie via empty string domain in the
+  // cookie_line.
+  GURL url("http://www.example.com/test/foo.html");
+  base::Time creation_time = base::Time::Now();
+  absl::optional<base::Time> server_time = absl::nullopt;
+  std::unique_ptr<CanonicalCookie> cookie(CanonicalCookie::Create(
+      url, "A=2; domain=; Secure", creation_time, server_time,
+      absl::nullopt /*cookie_partition_key*/));
+  EXPECT_EQ("www.example.com", cookie->Domain());
+  EXPECT_TRUE(cookie->IsHostCookie());
+}
+
 TEST(CanonicalCookieTest, CreateNonStandardSameSite) {
   GURL url("http://www.example.com/test/foo.html");
   base::Time now = base::Time::Now();
