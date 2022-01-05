@@ -3198,11 +3198,35 @@ void NavigationRequest::OnResponseStarted(
   auto cross_origin_embedder_policy =
       CoepFromMainResponse(url, response_head_.get());
 
+  // Compute "topLevelCreationURL" for COEP and secure context.
+  //
+  // [spec]: https://html.spec.whatwg.org/C/#initialise-the-document-object
+  // 3. Let creationURL be navigationParams's response's URL.
+  // 5. If browsingContext is still on its initial about:blank Document [...]
+  // 6. Otherwise:
+  // 6.6. Let topLevelCreationURL be creationURL.
+  // 6.8. If browsingContext is not a top-level browsing context, then:
+  // 6.8.2. Set topLevelCreationURL to parentEnvironment's top-level creation
+  //        URL.
+  //
+  // TODO(arthursonzogni): It would be good clarifying what means
+  // |topLevelCreationURL| when loading FencedFrame/Portals/GuestView, and how
+  // it should affects COEP.
+  // Tracking bug:
+  // - FencedFrame: https://crbug.com/1277430
+  // - Portals: https://crbug.com/1278207
+  // - GuestView: XXX or slightly related https://crbug.com/1260747
+  const GURL& top_level_creation_url =
+      IsInMainFrame() ? url
+                      : frame_tree_node_->current_frame_host()
+                            ->GetMainFrame()
+                            ->GetLastCommittedURL();
+
   // [spec]: https://html.spec.whatwg.org/C/#obtain-an-embedder-policy
   //
   // 1. Let policy be a new embedder policy.
   // 2. If environment is a non-secure context, then return policy.
-  if (!network::IsUrlPotentiallyTrustworthy(url))
+  if (!network::IsUrlPotentiallyTrustworthy(top_level_creation_url))
     cross_origin_embedder_policy = network::CrossOriginEmbedderPolicy();
 
   // [spec]: https://html.spec.whatwg.org/C/#process-a-navigate-response
@@ -6660,13 +6684,6 @@ void NavigationRequest::ForceEnableOriginTrials(
 bool NavigationRequest::CheckResponseAdherenceToCoep(
     network::CrossOriginEmbedderPolicy* coep,
     const GURL& url) {
-  // TODO(arthursonzogni): This check looks fishy to me. Consider removing it.
-  // It was kept during refactoring, in order not to break WPT test:
-  // web-bundle/subresource-loading/link-coep.https.tentative.html
-  // This allows non trustworthy URL like urn: URL to bypass COEP check.
-  if (!network::IsUrlPotentiallyTrustworthy(url))
-    return true;
-
   // Fenced Frames should respect the outer frame's COEP.
   // Note: we only check the outer document for fenced frames, because it's
   // unclear if other embedded cases like Portals should inherit COEP from
