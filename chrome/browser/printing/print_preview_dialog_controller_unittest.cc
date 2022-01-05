@@ -24,6 +24,8 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/web_contents_tester.h"
+#include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 using content::WebContents;
 using content::WebContentsObserver;
@@ -38,6 +40,20 @@ class TestWebContentsDelegate : public content::WebContentsDelegate {};
 namespace printing {
 
 using PrintPreviewDialogControllerUnitTest = PrintPreviewTest;
+
+TEST_F(PrintPreviewDialogControllerUnitTest, IsPrintPreviewURL) {
+  EXPECT_TRUE(PrintPreviewDialogController::IsPrintPreviewURL(
+      GURL("chrome://print/fake-path")));
+  EXPECT_FALSE(PrintPreviewDialogController::IsPrintPreviewURL(
+      GURL("chrome-untrusted://print/fake-path")));
+}
+
+TEST_F(PrintPreviewDialogControllerUnitTest, IsPrintPreviewContentURL) {
+  EXPECT_TRUE(PrintPreviewDialogController::IsPrintPreviewContentURL(
+      GURL("chrome-untrusted://print/fake-path")));
+  EXPECT_FALSE(PrintPreviewDialogController::IsPrintPreviewContentURL(
+      GURL("chrome://print/fake-path")));
+}
 
 // Create/Get a preview dialog for initiator.
 TEST_F(PrintPreviewDialogControllerUnitTest, GetOrCreatePreviewDialog) {

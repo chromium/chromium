@@ -34,6 +34,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/common/url_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/web_dialogs/web_dialog_delegate.h"
 
@@ -269,6 +270,12 @@ void PrintPreviewDialogController::ForEachPreviewDialog(
 // static
 bool PrintPreviewDialogController::IsPrintPreviewURL(const GURL& url) {
   return url.SchemeIs(content::kChromeUIScheme) &&
+         url.host_piece() == chrome::kChromeUIPrintHost;
+}
+
+// static
+bool PrintPreviewDialogController::IsPrintPreviewContentURL(const GURL& url) {
+  return url.SchemeIs(content::kChromeUIUntrustedScheme) &&
          url.host_piece() == chrome::kChromeUIPrintHost;
 }
 

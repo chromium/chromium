@@ -3025,8 +3025,9 @@ bool RenderViewContextMenu::IsSaveAsEnabled() const {
                   ProfileIOData::IsHandledProtocol(url.scheme());
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
   // Do not save the preview PDF on the print preview page.
-  can_save = can_save &&
-             !(printing::PrintPreviewDialogController::IsPrintPreviewURL(url));
+  can_save =
+      can_save &&
+      !printing::PrintPreviewDialogController::IsPrintPreviewContentURL(url);
 #endif
   return can_save;
 }
