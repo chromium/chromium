@@ -313,18 +313,6 @@ bool Run(UpdaterScope scope, base::CommandLine command_line, int* exit_code) {
   return process.WaitForExitWithTimeout(base::Seconds(45), exit_code);
 }
 
-void SleepFor(int seconds) {
-  VLOG(2) << "Sleeping " << seconds << " seconds...";
-  base::WaitableEvent sleep(base::WaitableEvent::ResetPolicy::MANUAL,
-                            base::WaitableEvent::InitialState::NOT_SIGNALED);
-  base::ThreadPool::PostDelayedTask(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&base::WaitableEvent::Signal, base::Unretained(&sleep)),
-      base::Seconds(seconds));
-  sleep.Wait();
-  VLOG(2) << "Sleep complete.";
-}
-
 bool WaitFor(base::RepeatingCallback<bool()> predicate) {
   base::TimeTicks deadline =
       base::TimeTicks::Now() + TestTimeouts::action_max_timeout();
