@@ -923,6 +923,12 @@ EVENT_TYPE(URL_REQUEST_DELEGATE_RECEIVED_REDIRECT)
 EVENT_TYPE(URL_REQUEST_DELEGATE_RESPONSE_STARTED)
 EVENT_TYPE(URL_REQUEST_DELEGATE_SSL_CERTIFICATE_ERROR)
 
+// Like the above events, but the END phase also has the following parameter:
+//   {
+//     "net_error": <Network error code. Only present on error.
+//   }
+EVENT_TYPE(URL_REQUEST_DELEGATE_CONNECTED)
+
 // Logged when a delegate informs the URL_REQUEST of what's currently blocking
 // the request. The parameters attached to the begin event are:
 //   {

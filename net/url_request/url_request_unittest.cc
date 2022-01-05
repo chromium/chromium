@@ -1763,9 +1763,9 @@ TEST_F(URLRequestTest, NotifyDelegateConnectedSkippedOnEarlyFailure) {
   EXPECT_THAT(delegate.transports(), IsEmpty());
 }
 
-// This test verifies that URLRequest::Delegate's OnConnected() callback
+// This test verifies that URLRequest::Delegate's OnConnected() method
 // is called once for simple redirect-less requests.
-TEST_F(URLRequestTest, NotifyDelegateConnectedOnce) {
+TEST_F(URLRequestTest, OnConnected) {
   HttpTestServer test_server;
   ASSERT_TRUE(test_server.Start());
 
@@ -1782,11 +1782,25 @@ TEST_F(URLRequestTest, NotifyDelegateConnectedOnce) {
   expected_transport.endpoint =
       IPEndPoint(IPAddress::IPv4Localhost(), test_server.port());
   EXPECT_THAT(delegate.transports(), ElementsAre(expected_transport));
+
+  // Make sure URL_REQUEST_DELEGATE_CONNECTED is logged correctly.
+  auto entries = net_log_observer_.GetEntries();
+  size_t start_event_index = ExpectLogContainsSomewhere(
+      entries, /*min_offset=*/0,
+      NetLogEventType::URL_REQUEST_DELEGATE_CONNECTED, NetLogEventPhase::BEGIN);
+  size_t end_event_index = ExpectLogContainsSomewhereAfter(
+      entries, /*start_offset=*/start_event_index,
+      NetLogEventType::URL_REQUEST_DELEGATE_CONNECTED, NetLogEventPhase::END);
+  EXPECT_FALSE(LogContainsEntryWithTypeAfter(
+      entries, end_event_index + 1,
+      NetLogEventType::URL_REQUEST_DELEGATE_CONNECTED));
+  ASSERT_LT(end_event_index, entries.size());
+  EXPECT_FALSE(GetOptionalNetErrorCodeFromParams(entries[end_event_index]));
 }
 
-// This test verifies that URLRequest::Delegate's OnConnected() callback is
+// This test verifies that URLRequest::Delegate's OnConnected() method is
 // called after each redirect.
-TEST_F(URLRequestTest, NotifyDelegateConnectedOnEachRedirect) {
+TEST_F(URLRequestTest, OnConnectedRedirect) {
   HttpTestServer test_server;
   ASSERT_TRUE(test_server.Start());
 
@@ -1815,8 +1829,8 @@ TEST_F(URLRequestTest, NotifyDelegateConnectedOnEachRedirect) {
 }
 
 // This test verifies that when the URLRequest Delegate returns an error from
-// OnBeforeSendHeaders(), the entire request fails with that error.
-TEST_F(URLRequestTest, NotifyDelegateConnectedReturnError) {
+// OnConnected(), the entire request fails with that error.
+TEST_F(URLRequestTest, OnConnectedError) {
   HttpTestServer test_server;
   ASSERT_TRUE(test_server.Start());
 
@@ -1837,6 +1851,80 @@ TEST_F(URLRequestTest, NotifyDelegateConnectedReturnError) {
 
   EXPECT_TRUE(delegate.request_failed());
   EXPECT_THAT(delegate.request_status(), IsError(ERR_NOT_IMPLEMENTED));
+
+  // Make sure URL_REQUEST_DELEGATE_CONNECTED is logged correctly.
+  auto entries = net_log_observer_.GetEntries();
+  size_t start_event_index = ExpectLogContainsSomewhere(
+      entries, /*min_offset=*/0,
+      NetLogEventType::URL_REQUEST_DELEGATE_CONNECTED, NetLogEventPhase::BEGIN);
+  size_t end_event_index = ExpectLogContainsSomewhereAfter(
+      entries, /*start_offset=*/start_event_index,
+      NetLogEventType::URL_REQUEST_DELEGATE_CONNECTED, NetLogEventPhase::END);
+  EXPECT_FALSE(LogContainsEntryWithTypeAfter(
+      entries, end_event_index + 1,
+      NetLogEventType::URL_REQUEST_DELEGATE_CONNECTED));
+  ASSERT_LT(end_event_index, entries.size());
+  EXPECT_EQ(ERR_NOT_IMPLEMENTED,
+            GetOptionalNetErrorCodeFromParams(entries[end_event_index]));
+}
+
+TEST_F(URLRequestTest, OnConnectedAsync) {
+  HttpTestServer test_server;
+  ASSERT_TRUE(test_server.Start());
+
+  TestDelegate d;
+  d.set_on_connected_run_callback(true);
+  d.set_on_connected_result(OK);
+  std::unique_ptr<URLRequest> req(default_context_->CreateFirstPartyRequest(
+      test_server.GetURL("/defaultresponse"), DEFAULT_PRIORITY, &d,
+      TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->Start();
+  d.RunUntilComplete();
+  EXPECT_THAT(d.request_status(), IsOk());
+
+  // Make sure URL_REQUEST_DELEGATE_CONNECTED is logged correctly.
+  auto entries = net_log_observer_.GetEntries();
+  size_t start_event_index = ExpectLogContainsSomewhere(
+      entries, /*min_offset=*/0,
+      NetLogEventType::URL_REQUEST_DELEGATE_CONNECTED, NetLogEventPhase::BEGIN);
+  size_t end_event_index = ExpectLogContainsSomewhereAfter(
+      entries, /*start_offset=*/start_event_index,
+      NetLogEventType::URL_REQUEST_DELEGATE_CONNECTED, NetLogEventPhase::END);
+  EXPECT_FALSE(LogContainsEntryWithTypeAfter(
+      entries, end_event_index + 1,
+      NetLogEventType::URL_REQUEST_DELEGATE_CONNECTED));
+  ASSERT_LT(end_event_index, entries.size());
+  EXPECT_FALSE(GetOptionalNetErrorCodeFromParams(entries[end_event_index]));
+}
+
+TEST_F(URLRequestTest, OnConnectedAsyncError) {
+  HttpTestServer test_server;
+  ASSERT_TRUE(test_server.Start());
+
+  TestDelegate d;
+  d.set_on_connected_run_callback(true);
+  d.set_on_connected_result(ERR_NOT_IMPLEMENTED);
+  std::unique_ptr<URLRequest> req(default_context_->CreateFirstPartyRequest(
+      test_server.GetURL("/defaultresponse"), DEFAULT_PRIORITY, &d,
+      TRAFFIC_ANNOTATION_FOR_TESTS));
+  req->Start();
+  d.RunUntilComplete();
+  EXPECT_THAT(d.request_status(), IsError(ERR_NOT_IMPLEMENTED));
+
+  // Make sure URL_REQUEST_DELEGATE_CONNECTED is logged correctly.
+  auto entries = net_log_observer_.GetEntries();
+  size_t start_event_index = ExpectLogContainsSomewhere(
+      entries, /*min_offset=*/0,
+      NetLogEventType::URL_REQUEST_DELEGATE_CONNECTED, NetLogEventPhase::BEGIN);
+  size_t end_event_index = ExpectLogContainsSomewhereAfter(
+      entries, /*start_offset=*/start_event_index,
+      NetLogEventType::URL_REQUEST_DELEGATE_CONNECTED, NetLogEventPhase::END);
+  EXPECT_FALSE(LogContainsEntryWithTypeAfter(
+      entries, end_event_index + 1,
+      NetLogEventType::URL_REQUEST_DELEGATE_CONNECTED));
+  ASSERT_LT(end_event_index, entries.size());
+  EXPECT_EQ(ERR_NOT_IMPLEMENTED,
+            GetOptionalNetErrorCodeFromParams(entries[end_event_index]));
 }
 
 TEST_F(URLRequestTest, DelayedCookieCallback) {
@@ -13004,38 +13092,6 @@ TEST_F(URLRequestDnsAliasTest, NoAdditionalDnsAliases) {
   EXPECT_THAT(test_delegate_.request_status(), IsOk());
   EXPECT_THAT(request->response_info().dns_aliases,
               testing::ElementsAre("www.example.test"));
-}
-
-TEST_F(URLRequestTest, OnConnectedCallbackAsyncOK) {
-  HttpTestServer test_server;
-  ASSERT_TRUE(test_server.Start());
-
-  TestURLRequestContext context;
-  TestDelegate d;
-  d.set_on_connected_run_callback(true);
-  d.set_on_connected_result(OK);
-  std::unique_ptr<URLRequest> req(context.CreateFirstPartyRequest(
-      test_server.GetURL("/defaultresponse"), DEFAULT_PRIORITY, &d,
-      TRAFFIC_ANNOTATION_FOR_TESTS));
-  req->Start();
-  d.RunUntilComplete();
-  EXPECT_THAT(d.request_status(), IsOk());
-}
-
-TEST_F(URLRequestTest, OnConnectedCallbackAsyncError) {
-  HttpTestServer test_server;
-  ASSERT_TRUE(test_server.Start());
-
-  TestURLRequestContext context;
-  TestDelegate d;
-  d.set_on_connected_run_callback(true);
-  d.set_on_connected_result(ERR_FAILED);
-  std::unique_ptr<URLRequest> req(context.CreateFirstPartyRequest(
-      test_server.GetURL("/defaultresponse"), DEFAULT_PRIORITY, &d,
-      TRAFFIC_ANNOTATION_FOR_TESTS));
-  req->Start();
-  d.RunUntilComplete();
-  EXPECT_THAT(d.request_status(), IsError(ERR_FAILED));
 }
 
 TEST_F(URLRequestTest, SetURLChain) {

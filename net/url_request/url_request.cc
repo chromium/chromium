@@ -824,7 +824,18 @@ bool URLRequest::failed() const {
 
 int URLRequest::NotifyConnected(const TransportInfo& info,
                                 CompletionOnceCallback callback) {
-  return delegate_->OnConnected(this, info, std::move(callback));
+  OnCallToDelegate(NetLogEventType::URL_REQUEST_DELEGATE_CONNECTED);
+  int result = delegate_->OnConnected(
+      this, info,
+      base::BindOnce(
+          [](URLRequest* request, CompletionOnceCallback callback, int result) {
+            request->OnCallToDelegateComplete(result);
+            std::move(callback).Run(result);
+          },
+          this, std::move(callback)));
+  if (result != ERR_IO_PENDING)
+    OnCallToDelegateComplete(result);
+  return result;
 }
 
 void URLRequest::NotifyReceivedRedirect(const RedirectInfo& redirect_info,
@@ -1175,13 +1186,13 @@ void URLRequest::OnCallToDelegate(NetLogEventType type) {
   net_log_.BeginEvent(type);
 }
 
-void URLRequest::OnCallToDelegateComplete() {
+void URLRequest::OnCallToDelegateComplete(int error) {
   // This should have been cleared before resuming the request.
   DCHECK(blocked_by_.empty());
   if (!calling_delegate_)
     return;
   calling_delegate_ = false;
-  net_log_.EndEvent(delegate_event_type_);
+  net_log_.EndEventWithNetErrorCode(delegate_event_type_, error);
   delegate_event_type_ = NetLogEventType::FAILED;
 }
 

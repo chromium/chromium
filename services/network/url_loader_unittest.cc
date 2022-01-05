@@ -441,9 +441,27 @@ class URLRequestFakeTransportInfoJob : public net::URLRequestJob {
 
  private:
   void StartAsync() {
-    const int result = NotifyConnected(transport_info_, base::DoNothing());
+    // Simulate notifying caller of a connection. Call NotifyStartError() or
+    // NotifyHeadersComplete() synchronously/asynchronously on error/success,
+    // depending on return value and callback invocation.
+    const int result = NotifyConnected(
+        transport_info_,
+        base::BindOnce(
+            [](URLRequestFakeTransportInfoJob* job, int result) {
+              if (result != net::OK) {
+                job->NotifyStartError(result);
+                return;
+              }
+              job->NotifyHeadersComplete();
+            },
+            base::Unretained(this)));
 
-    if (result != net::OK && result != net::ERR_IO_PENDING) {
+    // Wait for callback to be invoked in async case.
+    if (result == net::ERR_IO_PENDING)
+      return;
+
+    // Fail request on synchronous error.
+    if (result != net::OK) {
       NotifyStartError(result);
       return;
     }
