@@ -172,13 +172,13 @@ void AppServiceShelfContextMenu::ExecuteCommand(int command_id,
       break;
 
     case ash::LAUNCH_TYPE_TABBED_WINDOW:
-      FALLTHROUGH;
+      [[fallthrough]];
     case ash::LAUNCH_TYPE_PINNED_TAB:
-      FALLTHROUGH;
+      [[fallthrough]];
     case ash::LAUNCH_TYPE_REGULAR_TAB:
-      FALLTHROUGH;
+      [[fallthrough]];
     case ash::LAUNCH_TYPE_WINDOW:
-      FALLTHROUGH;
+      [[fallthrough]];
     case ash::LAUNCH_TYPE_FULLSCREEN:
       SetLaunchType(command_id);
       break;
@@ -253,15 +253,15 @@ bool AppServiceShelfContextMenu::IsCommandIdChecked(int command_id) const {
                 extension_menu_items_->IsCommandIdChecked(command_id));
       }
     case apps::mojom::AppType::kArc:
-      FALLTHROUGH;
+      [[fallthrough]];
     case apps::mojom::AppType::kCrostini:
-      FALLTHROUGH;
+      [[fallthrough]];
     case apps::mojom::AppType::kBuiltIn:
-      FALLTHROUGH;
+      [[fallthrough]];
     case apps::mojom::AppType::kPluginVm:
-      FALLTHROUGH;
+      [[fallthrough]];
     case apps::mojom::AppType::kBorealis:
-      FALLTHROUGH;
+      [[fallthrough]];
     default:
       return ShelfContextMenu::IsCommandIdChecked(command_id);
   }
@@ -483,15 +483,15 @@ void AppServiceShelfContextMenu::SetLaunchType(int command_id) {
       SetExtensionLaunchType(command_id);
       return;
     case apps::mojom::AppType::kArc:
-      FALLTHROUGH;
+      [[fallthrough]];
     case apps::mojom::AppType::kCrostini:
-      FALLTHROUGH;
+      [[fallthrough]];
     case apps::mojom::AppType::kBuiltIn:
-      FALLTHROUGH;
+      [[fallthrough]];
     case apps::mojom::AppType::kPluginVm:
-      FALLTHROUGH;
+      [[fallthrough]];
     case apps::mojom::AppType::kBorealis:
-      FALLTHROUGH;
+      [[fallthrough]];
     default:
       return;
   }
