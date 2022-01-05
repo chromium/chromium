@@ -60,12 +60,13 @@
   }
 
   /* Mark the first and 10th group as scroll targets to get the correct scroll
-   * snapping behavior. */
-  #tabs :nth-child(2) {
+   * snapping behavior. Only apply scroll snapping when using emoji-based
+   subcategory bar. */
+  :host(:not([text-subcategory-bar-enabled])) #tabs :nth-child(2) {
     scroll-snap-align: center;
     scroll-snap-stop: always;
   }
-  #tabs :nth-child(14) {
+  :host(:not([text-subcategory-bar-enabled])) #tabs :nth-child(14) {
     scroll-snap-align: center;
     scroll-snap-stop: always;
   }
@@ -165,17 +166,9 @@
     grid-gap: unset;
   }
 
-  /* TODO(b/212459278, b/212459260): Reset bar, left and right chevron
-  visibility again after finishing the subcategory bar layout implementation.*/
+  /* TODO(b/212459278): Reset bar visibility again after finishing
+  the subcategory bar layout implementation.*/
   :host([text-subcategory-bar-enabled]) #bar {
-    visibility: hidden;
-  }
-
-  :host([text-subcategory-bar-enabled]) #left-chevron {
-    visibility: hidden;
-  }
-
-  :host([text-subcategory-bar-enabled]) #right-chevron {
     visibility: hidden;
   }
 </style>

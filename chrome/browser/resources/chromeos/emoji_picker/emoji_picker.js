@@ -190,6 +190,9 @@ export class EmojiPicker extends PolymerElement {
     /** @private {boolean} */
     this.v2Enabled = false;
 
+    /** @private {number} */
+    this.pagination = 1;
+
     this.addEventListener(
         GROUP_BUTTON_CLICK, ev => this.selectGroup(ev.detail.group));
     this.addEventListener(
@@ -354,20 +357,42 @@ export class EmojiPicker extends PolymerElement {
   }
 
   onRightChevronClick() {
-    this.$.tabs.scrollLeft = ((EMOJI_PICKER_TOTAL_EMOJI_WIDTH) * 8);
-    this.scrollToGroup(GROUP_TABS[GROUP_PER_ROW - 1].groupId);
-    this.groupTabsMoving = true;
-    this.$.bar.style.left = EMOJI_PICKER_TOTAL_EMOJI_WIDTH_PX;
+    if (!this.textSubcategoryBarEnabled) {
+      const numTabsInFirstPage = 8;
+      this.$.tabs.scrollLeft =
+          ((EMOJI_PICKER_TOTAL_EMOJI_WIDTH) * numTabsInFirstPage);
+      this.scrollToGroup(GROUP_TABS[GROUP_PER_ROW - 1].groupId);
+      this.groupTabsMoving = true;
+      this.$.bar.style.left = EMOJI_PICKER_TOTAL_EMOJI_WIDTH_PX;
+    } else {
+      // TODO(b/211057511): fix offset after new layout is applied
+      const offsetByLeftChevron = GROUP_ICON_SIZE;
+      const maxPagination = this.getPaginationArray(this.emojiGroupTabs).pop();
+      this.pagination = Math.min(this.pagination + 1, maxPagination);
+      this.$.tabs.scrollLeft =
+          (this.pagination - 1) * EMOJI_PICKER_WIDTH - offsetByLeftChevron;
+      this.groupTabsMoving = true;
+    }
   }
 
   onLeftChevronClick() {
-    this.$.tabs.scrollLeft = 0;
-    this.scrollToGroup(GROUP_TABS[0].groupId);
-    this.groupTabsMoving = true;
-    if (this.history.emoji.length > 0) {
-      this.$.bar.style.left = '0';
+    if (!this.textSubcategoryBarEnabled) {
+      this.$.tabs.scrollLeft = 0;
+      this.scrollToGroup(GROUP_TABS[0].groupId);
+      this.groupTabsMoving = true;
+      if (this.history.emoji.length > 0) {
+        this.$.bar.style.left = '0';
+      } else {
+        this.$.bar.style.left = EMOJI_PICKER_TOTAL_EMOJI_WIDTH_PX;
+      }
     } else {
-      this.$.bar.style.left = EMOJI_PICKER_TOTAL_EMOJI_WIDTH_PX;
+      // TODO(b/211057511): fix offset after new layout is applied
+      const offsetByLeftChevron = GROUP_ICON_SIZE;
+      this.pagination = Math.max(this.pagination - 1, 1);
+      this.$.tabs.scrollLeft = this.pagination === 1 ?
+          0 :
+          (this.pagination - 1) * EMOJI_PICKER_WIDTH - offsetByLeftChevron;
+      this.groupTabsMoving = true;
     }
   }
 
@@ -407,17 +432,26 @@ export class EmojiPicker extends PolymerElement {
    * @private
    */
   updateChevrons() {
-    if (this.$.tabs.scrollLeft > GROUP_ICON_SIZE) {
-      this.$['left-chevron'].style.display = 'flex';
+    if (!this.textSubcategoryBarEnabled) {
+      if (this.$.tabs.scrollLeft > GROUP_ICON_SIZE) {
+        this.$['left-chevron'].style.display = 'flex';
+      } else {
+        this.$['left-chevron'].style.display = 'none';
+      }
+      // 1 less because we need to allow room for the chevrons
+      if (this.$.tabs.scrollLeft + GROUP_ICON_SIZE * GROUP_PER_ROW <
+          GROUP_ICON_SIZE * (GROUP_TABS.length + 1)) {
+        this.$['right-chevron'].style.display = 'flex';
+      } else {
+        this.$['right-chevron'].style.display = 'none';
+      }
     } else {
-      this.$['left-chevron'].style.display = 'none';
-    }
-    // 1 less because we need to allow room for the chevrons
-    if (this.$.tabs.scrollLeft + GROUP_ICON_SIZE * GROUP_PER_ROW <
-        GROUP_ICON_SIZE * (GROUP_TABS.length + 1)) {
-      this.$['right-chevron'].style.display = 'flex';
-    } else {
-      this.$['right-chevron'].style.display = 'none';
+      this.$['left-chevron'].style.display =
+          this.pagination >= 2 ? 'flex' : 'none';
+      this.$['right-chevron'].style.display =
+          this.pagination < this.getPaginationArray(this.emojiGroupTabs).pop() ?
+          'flex' :
+          'none';
     }
   }
 
@@ -594,10 +628,12 @@ export class EmojiPicker extends PolymerElement {
    */
   onCategoryChanged(newCategoryName) {
     if (this.v2Enabled) {
-      const historyTab = this.emojiGroupTabs[0];
+      const historyTab = Object.assign(this.emojiGroupTabs[0], {pagination: 1});
       const categoryTabs =
           V2_SUBCATEGORY_TABS.filter(tab => tab.category === newCategoryName);
       this.set('emojiGroupTabs', [historyTab, ...categoryTabs]);
+      this.set('pagination', 1);
+      this.updateChevrons();
     }
   }
 
