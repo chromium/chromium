@@ -15,6 +15,7 @@
 #include "base/guid.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "components/policy/core/common/cloud/client_data_delegate.h"
 #include "components/policy/core/common/cloud/cloud_policy_util.h"
@@ -1225,6 +1226,12 @@ void CloudPolicyClient::OnPolicyFetchCompleted(
   if (status == DM_STATUS_SUCCESS) {
     const em::DevicePolicyResponse& policy_response =
         response.policy_response();
+    // Log histogram on first device policy fetch response to check the state
+    // keys.
+    if (responses_.empty()) {
+      base::UmaHistogramBoolean("Ash.StateKeysPresent",
+                                !state_keys_to_upload_.empty());
+    }
     responses_.clear();
     for (int i = 0; i < policy_response.responses_size(); ++i) {
       const em::PolicyFetchResponse& fetch_response =
