@@ -15,6 +15,7 @@ import run_cts
 
 sys.path.append(os.path.join(
     os.path.dirname(__file__), os.pardir, os.pardir, 'build', 'android'))
+# pylint: disable=wrong-import-position,import-error
 import devil_chromium  # pylint: disable=unused-import
 from devil.android.ndk import abis
 from devil.android.sdk import version_codes

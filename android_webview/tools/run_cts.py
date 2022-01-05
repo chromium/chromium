@@ -16,9 +16,9 @@ import sys
 import tempfile
 import zipfile
 
-
 sys.path.append(os.path.join(
     os.path.dirname(__file__), os.pardir, os.pardir, 'build', 'android'))
+# pylint: disable=wrong-import-position,import-error
 import devil_chromium  # pylint: disable=unused-import
 from devil.android import device_utils
 from devil.android.ndk import abis
@@ -83,9 +83,10 @@ def GetCtsInfo(arch, cts_release, item):
   try:
     if item in _ARCH_SPECIFIC_CTS_INFO:
       return cts_gcs_path_info[cts_release]['arch'][arch][item]
-    else:
-      return cts_gcs_path_info[cts_release][item]
+    return cts_gcs_path_info[cts_release][item]
   except KeyError:
+    # pylint: disable=raise-missing-from
+    # This script is executed with python2, and cannot use 'from'.
     raise Exception('No %s info available for arch:%s, android:%s' %
                     (item, arch, cts_release))
 
@@ -120,8 +121,7 @@ def GetTestRunFilterArg(args, test_run):
 
   if filter_string:
     return [TEST_FILTER_OPT + '=' + filter_string]
-  else:
-    return []
+  return []
 
 
 def RunCTS(test_runner_args, local_cts_dir, apk, json_results_file=None):

@@ -7,10 +7,10 @@ import os
 import re
 import tempfile
 import shutil
-import six
 import sys
 import unittest
 import zipfile
+import six
 
 from mock import patch  # pylint: disable=import-error
 
@@ -18,6 +18,7 @@ sys.path.append(
     os.path.join(
         os.path.dirname(__file__), os.pardir, os.pardir, 'third_party',
         'catapult', 'common', 'py_utils'))
+# pylint: disable=wrong-import-position,import-error
 from py_utils import tempfile_ext
 
 import cts_utils
@@ -169,7 +170,7 @@ with tempfile.NamedTemporaryFile() as _f:
   _TEMP_DIR = os.path.dirname(_f.name) + os.path.sep
 
 
-class FakeCIPD(object):
+class FakeCIPD:
   """Fake CIPD service that supports create and ensure operations."""
 
   _ensure_regex = r'\$ParanoidMode CheckIntegrity[\n\r]+' \
@@ -272,7 +273,7 @@ class FakeCIPD(object):
                 os.path.join(os.path.abspath(ensure_root), subdir, file_name))
 
 
-class FakeRunCmd(object):
+class FakeRunCmd:
   """Fake RunCmd that can perform cipd and cp operstions."""
 
   def __init__(self, cipd=None):

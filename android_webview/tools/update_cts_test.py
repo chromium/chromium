@@ -5,10 +5,10 @@
 
 import json
 import os
-import six
 import sys
 import unittest
 import zipfile
+import six
 
 import mock  # pylint: disable=import-error
 from mock import call  # pylint: disable=import-error
@@ -18,6 +18,7 @@ sys.path.append(
     os.path.join(
         os.path.dirname(__file__), os.pardir, os.pardir, 'third_party',
         'catapult', 'common', 'py_utils'))
+# pylint: disable=wrong-import-position,import-error
 from py_utils import tempfile_ext
 
 import update_cts
@@ -65,7 +66,7 @@ def verify_zip_file(path, *files):
         raise AssertionError('Expected ' + f + ', found ' + s)
 
 
-class FakeDownload(object):
+class FakeDownload:
   """Allows test to simulate downloads of CTS zip files."""
 
   def __init__(self):

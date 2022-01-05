@@ -103,7 +103,7 @@ def ConvertNameIfNecessary(name):
   return name
 
 
-class Flag(object):
+class Flag:
   """Simplified python equivalent of the Flag java class.
 
   See //android_webview/java/src/org/chromium/android_webview/common/Flag.java
@@ -114,7 +114,7 @@ class Flag(object):
     self.is_base_feature = is_base_feature
 
 
-class EnumValue(object):
+class EnumValue:
   def __init__(self, label):
     self.label = label
     self.value = GetSwitchId(label)

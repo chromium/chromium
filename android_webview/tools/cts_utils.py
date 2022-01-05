@@ -23,12 +23,14 @@ sys.path.append(
     os.path.join(
         os.path.dirname(__file__), os.pardir, os.pardir, 'third_party',
         'catapult', 'devil'))
+# pylint: disable=wrong-import-position,import-error
 from devil.utils import cmd_helper
 
 sys.path.append(
     os.path.join(
         os.path.dirname(__file__), os.pardir, os.pardir, 'third_party',
         'catapult', 'common', 'py_utils'))
+# pylint: disable=wrong-import-position,import-error
 from py_utils import tempfile_ext
 
 SRC_DIR = os.path.abspath(
@@ -67,7 +69,7 @@ _ENSURE_SUBDIR = 'cipd'
 _RE_COMMENT_OR_BLANK = re.compile(r'^ *(#.*)?$')
 
 
-class CTSConfig(object):
+class CTSConfig:
   """Represents a CTS config file."""
 
   def __init__(self, file_path=CONFIG_PATH):
@@ -107,7 +109,7 @@ class CTSConfig(object):
     return sorted([r['apk'] for r in self._config[platform]['test_runs']])
 
 
-class CTSCIPDYaml(object):
+class CTSCIPDYaml:
   """Represents a CTS CIPD yaml file."""
 
   RE_PACKAGE = r'^package:\s*(\S+)\s*$'
@@ -281,7 +283,7 @@ def filter_cts_file(cts_config, cts_zip_file, dest_dir):
   raise ValueError('Could not find platform and arch for: ' + cts_zip_file)
 
 
-class ChromiumRepoHelper(object):
+class ChromiumRepoHelper:
   """Performs operations on Chromium checkout."""
 
   def __init__(self, root_dir=SRC_DIR):
