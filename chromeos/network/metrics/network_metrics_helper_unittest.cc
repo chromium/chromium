@@ -119,6 +119,26 @@ const char kEthernetEapConnectionStateHistogram[] =
 const char kEthernetNoEapConnectionStateHistogram[] =
     "Network.Ash.Ethernet.NoEap.DisconnectionsWithoutUserAction";
 
+// LogEnableTechnologyResult() histograms.
+const char kEnableWifiResultHistogram[] =
+    "Network.Ash.WiFi.EnabledState.Enable.Result";
+const char kEnableEthernetResultHistogram[] =
+    "Network.Ash.Ethernet.EnabledState.Enable.Result";
+const char kEnableCellularResultHistogram[] =
+    "Network.Ash.Cellular.EnabledState.Enable.Result";
+const char kEnableVpnResultHistogram[] =
+    "Network.Ash.VPN.EnabledState.Enable.Result";
+
+// LogDisableTechnologyResult() histograms.
+const char kDisableWifiResultHistogram[] =
+    "Network.Ash.WiFi.EnabledState.Disable.Result";
+const char kDisableEthernetResultHistogram[] =
+    "Network.Ash.Ethernet.EnabledState.Disable.Result";
+const char kDisableCellularResultHistogram[] =
+    "Network.Ash.Cellular.EnabledState.Disable.Result";
+const char kDisableVpnResultHistogram[] =
+    "Network.Ash.VPN.EnabledState.Disable.Result";
+
 const char kTestGuid[] = "test_guid";
 const char kTestServicePath[] = "/service/network";
 const char kTestServicePath1[] = "/service/network1";
@@ -165,6 +185,40 @@ class NetworkMetricsHelperTest : public testing::Test {
   TestingPrefServiceSimple profile_prefs_;
   TestingPrefServiceSimple local_state_;
 };
+
+TEST_F(NetworkMetricsHelperTest, EnableDisableTechnology) {
+  NetworkMetricsHelper::LogEnableTechnologyResult(shill::kTypeWifi,
+                                                  /*success=*/true);
+  histogram_tester_->ExpectTotalCount(kEnableWifiResultHistogram, 1);
+
+  NetworkMetricsHelper::LogEnableTechnologyResult(shill::kTypeEthernet,
+                                                  /*success=*/true);
+  histogram_tester_->ExpectTotalCount(kEnableEthernetResultHistogram, 1);
+
+  NetworkMetricsHelper::LogEnableTechnologyResult(shill::kTypeCellular,
+                                                  /*success=*/true);
+  histogram_tester_->ExpectTotalCount(kEnableCellularResultHistogram, 1);
+
+  NetworkMetricsHelper::LogEnableTechnologyResult(shill::kTypeVPN,
+                                                  /*success=*/true);
+  histogram_tester_->ExpectTotalCount(kEnableVpnResultHistogram, 1);
+
+  NetworkMetricsHelper::LogDisableTechnologyResult(shill::kTypeWifi,
+                                                   /*success=*/true);
+  histogram_tester_->ExpectTotalCount(kDisableWifiResultHistogram, 1);
+
+  NetworkMetricsHelper::LogDisableTechnologyResult(shill::kTypeEthernet,
+                                                   /*success=*/true);
+  histogram_tester_->ExpectTotalCount(kDisableEthernetResultHistogram, 1);
+
+  NetworkMetricsHelper::LogDisableTechnologyResult(shill::kTypeCellular,
+                                                   /*success=*/true);
+  histogram_tester_->ExpectTotalCount(kDisableCellularResultHistogram, 1);
+
+  NetworkMetricsHelper::LogDisableTechnologyResult(shill::kTypeVPN,
+                                                   /*success=*/true);
+  histogram_tester_->ExpectTotalCount(kDisableVpnResultHistogram, 1);
+}
 
 TEST_F(NetworkMetricsHelperTest, CellularESim) {
   shill_service_client_->AddService(kTestServicePath, kTestGuid, kTestName,

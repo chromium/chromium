@@ -45,6 +45,16 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkMetricsHelper {
   static void LogConnectionStateResult(const std::string& guid,
                                        ConnectionState status);
 
+  // Logs result of an attempt to enable a shill associated network technology
+  // type.
+  static void LogEnableTechnologyResult(const std::string& technology,
+                                        bool success);
+
+  // Logs result of an attempt to disable a shill associated network technology
+  // type.
+  static void LogDisableTechnologyResult(const std::string& technology,
+                                         bool success);
+
   NetworkMetricsHelper();
   ~NetworkMetricsHelper();
 };
