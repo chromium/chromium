@@ -664,8 +664,9 @@ const CGFloat kButtonHorizontalPadding = 30.0;
         base::mac::ObjCCastStrict<HistoryEntryItem>(item);
     TableViewURLCell* URLCell =
         base::mac::ObjCCastStrict<TableViewURLCell>(cellToReturn);
+    CrURL* crurl = [[CrURL alloc] initWithGURL:URLItem.URL];
     [self.imageDataSource
-        faviconForURL:URLItem.URL
+        faviconForURL:crurl
            completion:^(FaviconAttributes* attributes) {
              // Only set favicon if the cell hasn't been reused.
              if ([URLCell.cellUniqueIdentifier

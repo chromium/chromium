@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/drag_and_drop/table_view_url_drag_drop_handler.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
+#import "ios/chrome/browser/net/crurl.h"
 #include "ios/chrome/browser/sessions/live_tab_context_browser_agent.h"
 #include "ios/chrome/browser/sessions/session_util.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -1026,8 +1027,9 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   TableViewURLCell* URLCell = base::mac::ObjCCastStrict<TableViewURLCell>(cell);
 
   NSString* itemIdentifier = URLItem.uniqueIdentifier;
+  CrURL* crurl = [[CrURL alloc] initWithGURL:URLItem.URL];
   [self.imageDataSource
-      faviconForURL:URLItem.URL
+      faviconForURL:crurl
          completion:^(FaviconAttributes* attributes) {
            // Only set favicon if the cell hasn't been reused.
            if ([URLCell.cellUniqueIdentifier isEqualToString:itemIdentifier]) {
