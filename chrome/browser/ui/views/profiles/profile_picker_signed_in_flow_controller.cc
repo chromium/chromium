@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
 
+#include "base/trace_event/trace_event.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile.h"
@@ -324,6 +325,9 @@ absl::optional<SkColor> ProfilePickerSignedInFlowController::GetProfileColor()
 
 void ProfilePickerSignedInFlowController::FinishAndOpenBrowserImpl(
     BrowserOpenedCallback callback) {
+  TRACE_EVENT1("browser",
+               "ProfilePickerSignedInFlowController::FinishAndOpenBrowserImpl",
+               "profile_path", profile_->GetPath().AsUTF8Unsafe());
   DCHECK(IsInitialized());
   DCHECK(!name_for_signed_in_profile_.empty());
 
@@ -418,6 +422,9 @@ void ProfilePickerSignedInFlowController::OnBrowserOpened(
     BrowserOpenedCallback finish_flow_callback,
     Profile* profile,
     Profile::CreateStatus profile_create_status) {
+  TRACE_EVENT1("browser",
+               "ProfilePickerSignedInFlowController::OnBrowserOpened",
+               "profile_path", profile_->GetPath().AsUTF8Unsafe());
   DCHECK(IsInitialized());
   CHECK_EQ(profile, profile_);
 
