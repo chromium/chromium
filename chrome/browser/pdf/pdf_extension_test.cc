@@ -139,6 +139,7 @@
 #include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
 
 #if defined(TOOLKIT_VIEWS) && !defined(OS_MAC)
@@ -1591,7 +1592,14 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, MAYBE_PdfZoomWithoutBubble) {
 #endif
 }
 
-class PDFExtensionKeyEventTest : public PDFExtensionTest {
+class PDFExtensionScrollTest : public PDFExtensionTest {
+ public:
+  void SetUpOnMainThread() override {
+    PDFExtensionTest::SetUpOnMainThread();
+
+    GetActiveWebContents()->Resize({0, 0, 1024, 768});
+  }
+
  protected:
   class ScrollEventWaiter {
    public:
@@ -1657,15 +1665,9 @@ class PDFExtensionKeyEventTest : public PDFExtensionTest {
 };
 
 // static
-constexpr int PDFExtensionKeyEventTest::kScrollIncrement;
+constexpr int PDFExtensionScrollTest::kScrollIncrement;
 
-// TODO: crbug.com/1284750
-#if defined(OS_WIN)
-#define MAYBE_ScrollWithSpace DISABLED_ScrollWithSpace
-#else
-#define MAYBE_ScrollWithSpace ScrollWithSpace
-#endif
-IN_PROC_BROWSER_TEST_P(PDFExtensionKeyEventTest, MAYBE_ScrollWithSpace) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithSpace) {
   WebContents* guest_contents = LoadPdfGetGuestContents(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
   SetInputFocusOnPlugin(guest_contents);
@@ -1703,13 +1705,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionKeyEventTest, MAYBE_ScrollWithSpace) {
   EXPECT_EQ(viewport_height, GetViewportScrollPositionY(guest_contents));
 }
 
-// crbug.com/1284637
-#if defined(OS_WIN)
-#define MAYBE_ScrollWithPageDownUp DISABLED_ScrollWithPageDownUp
-#else
-#define MAYBE_ScrollWithPageDownUp ScrollWithPageDownUp
-#endif
-IN_PROC_BROWSER_TEST_P(PDFExtensionKeyEventTest, MAYBE_ScrollWithPageDownUp) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithPageDownUp) {
   WebContents* guest_contents = LoadPdfGetGuestContents(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
   SetInputFocusOnPlugin(guest_contents);
@@ -1749,7 +1745,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionKeyEventTest, MAYBE_ScrollWithPageDownUp) {
   EXPECT_EQ(viewport_height, GetViewportScrollPositionY(guest_contents));
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionKeyEventTest, ScrollWithArrowLeftRight) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithArrowLeftRight) {
   WebContents* guest_contents = LoadPdfGetGuestContents(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf#zoom=200"));
   SetInputFocusOnPlugin(guest_contents);
@@ -1786,7 +1782,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionKeyEventTest, ScrollWithArrowLeftRight) {
   EXPECT_EQ(kScrollIncrement, GetViewportScrollPositionX(guest_contents));
 }
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionKeyEventTest, ScrollWithArrowDownUp) {
+IN_PROC_BROWSER_TEST_P(PDFExtensionScrollTest, WithArrowDownUp) {
   WebContents* guest_contents = LoadPdfGetGuestContents(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
   SetInputFocusOnPlugin(guest_contents);
@@ -1823,7 +1819,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionKeyEventTest, ScrollWithArrowDownUp) {
   EXPECT_EQ(kScrollIncrement, GetViewportScrollPositionY(guest_contents));
 }
 
-INSTANTIATE_TEST_SUITE_P(All, PDFExtensionKeyEventTest, testing::Values(true));
+INSTANTIATE_TEST_SUITE_P(All, PDFExtensionScrollTest, testing::Values(true));
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, SelectAllShortcut) {
   content::WebContents* guest_contents =
