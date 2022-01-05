@@ -136,6 +136,9 @@ COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordWritePasskeyGattError(
     device::BluetoothGattService::GattErrorCode error);
 
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordNotifyPasskeyCharacteristicTime(base::TimeDelta total_notify_time);
+
 }  // namespace quick_pair
 }  // namespace ash
 
