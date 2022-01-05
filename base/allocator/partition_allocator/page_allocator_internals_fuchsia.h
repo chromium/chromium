@@ -56,7 +56,7 @@ zx_vm_option_t PageAccessibilityToZxVmOptions(
       return ZX_VM_PERM_READ | ZX_VM_PERM_WRITE | ZX_VM_PERM_EXECUTE;
     default:
       PA_NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case PageInaccessible:
       return 0;
   }

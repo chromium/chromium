@@ -24,7 +24,7 @@ int GetAccessFlags(PageAccessibilityConfiguration accessibility) {
       return PROT_READ | PROT_WRITE |
              (CPU::GetInstanceNoAllocation().has_mte() ? PROT_MTE : 0u);
 #else
-      FALLTHROUGH;
+      [[fallthrough]];
 #endif
     case PageReadWrite:
       return PROT_READ | PROT_WRITE;
@@ -37,7 +37,7 @@ int GetAccessFlags(PageAccessibilityConfiguration accessibility) {
       return PROT_READ | PROT_WRITE | PROT_EXEC;
     default:
       PA_NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case PageInaccessible:
       return PROT_NONE;
   }
