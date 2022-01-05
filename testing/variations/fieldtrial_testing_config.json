@@ -2898,9 +2898,8 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_with_OOPR_Canvas",
+                    "name": "Enabled_20220104",
                     "enable_features": [
-                        "CanvasOopRasterization",
                         "DefaultPassthroughCommandDecoder"
                     ]
                 }
