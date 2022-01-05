@@ -373,7 +373,7 @@ std::unique_ptr<uint8_t[]> FileVideoCaptureDevice::CropPTZRegion(
       frame_buffer_size =
           VideoFrame::AllocationSize(PIXEL_FORMAT_I420, frame_size);
       *final_pixel_format = PIXEL_FORMAT_I420;
-      FALLTHROUGH;
+      [[fallthrough]];
     case PIXEL_FORMAT_I420:
       fourcc = libyuv::FOURCC_I420;
       break;
