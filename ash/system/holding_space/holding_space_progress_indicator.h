@@ -47,8 +47,16 @@ class ASH_EXPORT HoldingSpaceProgressIndicator : public ui::LayerOwner,
   // Adds the specified `callback` to be notified of `progress_` changes. The
   // `callback` will continue to receive events so long as both `this` and the
   // returned subscription exist.
-  base::RepeatingClosureList::Subscription AddProgressChangedCallback(
+  base::CallbackListSubscription AddProgressChangedCallback(
       base::RepeatingClosureList::CallbackType callback);
+
+  // Creates and returns the `layer()` which is owned by this progress
+  // indicator. Note that this may only be called if `layer()` does not exist.
+  ui::Layer* CreateLayer();
+
+  // Destroys the `layer()` which is owned by this progress indicator. Note that
+  // this will no-op if `layer()` does not exist.
+  void DestroyLayer();
 
   // Invoke to schedule repaint of the entire `layer()`.
   void InvalidateLayer();

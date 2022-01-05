@@ -243,7 +243,7 @@ HoldingSpaceTray::HoldingSpaceTray(Shelf* shelf) : TrayBackgroundView(shelf) {
   //   * previews are hidden.
   progress_indicator_ = HoldingSpaceProgressIndicator::CreateForController(
       HoldingSpaceController::Get());
-  layer()->Add(progress_indicator_->layer());
+  layer()->Add(progress_indicator_->CreateLayer());
 
   // Subscribe to receive notification of changes to the `progress_indicator_`'s
   // underlying progress. When progress changes, the `default_tray_icon_` may

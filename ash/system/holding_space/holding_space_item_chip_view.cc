@@ -167,7 +167,7 @@ class ProgressIndicatorView : public views::View {
 
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
-    layer()->Add(progress_indicator_->layer());
+    layer()->Add(progress_indicator_->CreateLayer());
   }
 
  private:

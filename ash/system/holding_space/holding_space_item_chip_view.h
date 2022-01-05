@@ -72,8 +72,7 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView {
   HoldingSpaceProgressIndicator* progress_indicator_ = nullptr;
 
   base::CallbackListSubscription image_skia_changed_subscription_;
-  HoldingSpaceAnimationRegistry::ProgressRingAnimationChangedCallbackList::
-      Subscription progress_ring_animation_changed_subscription_;
+  base::CallbackListSubscription progress_ring_animation_changed_subscription_;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */,

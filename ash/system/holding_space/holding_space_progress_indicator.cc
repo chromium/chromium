@@ -299,12 +299,7 @@ constexpr float HoldingSpaceProgressIndicator::kProgressComplete;
 
 HoldingSpaceProgressIndicator::HoldingSpaceProgressIndicator(
     const void* animation_key)
-    : ui::LayerOwner(std::make_unique<ui::Layer>(ui::LAYER_TEXTURED)),
-      animation_key_(animation_key) {
-  layer()->set_delegate(this);
-  layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetName(kClassName);
-
+    : animation_key_(animation_key) {
   HoldingSpaceAnimationRegistry* animation_registry =
       HoldingSpaceAnimationRegistry::GetInstance();
 
@@ -340,14 +335,32 @@ HoldingSpaceProgressIndicator::CreateForItem(const HoldingSpaceItem* item) {
   return std::make_unique<HoldingSpaceItemProgressIndicator>(item);
 }
 
-base::RepeatingClosureList::Subscription
+base::CallbackListSubscription
 HoldingSpaceProgressIndicator::AddProgressChangedCallback(
     base::RepeatingClosureList::CallbackType callback) {
   return progress_changed_callback_list_.Add(std::move(callback));
 }
 
+ui::Layer* HoldingSpaceProgressIndicator::CreateLayer() {
+  DCHECK(!layer());
+
+  auto layer = std::make_unique<ui::Layer>(ui::LAYER_TEXTURED);
+  layer->set_delegate(this);
+  layer->SetFillsBoundsOpaquely(false);
+  layer->SetName(kClassName);
+  Reset(std::move(layer));
+
+  return this->layer();
+}
+
+void HoldingSpaceProgressIndicator::DestroyLayer() {
+  if (layer())
+    ReleaseLayer();
+}
+
 void HoldingSpaceProgressIndicator::InvalidateLayer() {
-  layer()->SchedulePaint(gfx::Rect(layer()->size()));
+  if (layer())
+    layer()->SchedulePaint(gfx::Rect(layer()->size()));
 }
 
 void HoldingSpaceProgressIndicator::SetInnerIconVisible(bool visible) {

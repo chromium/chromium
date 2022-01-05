@@ -180,7 +180,7 @@ void DictationButtonTray::UpdateOnSpeechRecognitionDownloadChanged(
     // A progress indicator that is only visible when a SODA download is
     // in-progress.
     progress_indicator_ = std::make_unique<DictationProgressIndicator>(this);
-    layer()->Add(progress_indicator_->layer());
+    layer()->Add(progress_indicator_->CreateLayer());
   }
   progress_indicator_->InvalidateLayer();
 }

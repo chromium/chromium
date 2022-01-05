@@ -507,7 +507,7 @@ void HoldingSpaceTrayIconPreview::CreateLayer(
   new_layer->set_delegate(this);
   new_layer->SetFillsBoundsOpaquely(false);
   new_layer->SetTransform(initial_transform);
-  new_layer->Add(progress_indicator_->layer());
+  new_layer->Add(progress_indicator_->CreateLayer());
   layer_owner_.Reset(std::move(new_layer));
 
   UpdateLayerBounds();
@@ -517,6 +517,7 @@ void HoldingSpaceTrayIconPreview::CreateLayer(
 void HoldingSpaceTrayIconPreview::DestroyLayer() {
   if (layer())
     layer_owner_.ReleaseLayer();
+  progress_indicator_->DestroyLayer();
 }
 
 bool HoldingSpaceTrayIconPreview::NeedsLayer() const {
