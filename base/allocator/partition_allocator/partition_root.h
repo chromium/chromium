@@ -183,9 +183,8 @@ class ScopedSyscallTimer {
   const base::TimeTicks tick_;
 #else
   explicit ScopedSyscallTimer(PartitionRoot<thread_safe>* root) {
-    static_assert(true, "");  // To defeat compiler warnings with empty bodies.
+    root->syscall_count.fetch_add(1, std::memory_order_relaxed);
   }
-  ~ScopedSyscallTimer() { static_assert(true, ""); }
 #endif
 };
 

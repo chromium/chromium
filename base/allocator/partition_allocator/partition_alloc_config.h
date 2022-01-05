@@ -130,6 +130,7 @@ static_assert(sizeof(void*) != 8, "");
 //
 // Not enabled by default, as it has a runtime cost, and causes issues with some
 // builds (e.g. Windows).
+// However the total count is collected on all platforms.
 // #define PA_COUNT_SYSCALL_TIME
 
 // On Windows, |thread_local| variables cannot be marked "dllexport", see
