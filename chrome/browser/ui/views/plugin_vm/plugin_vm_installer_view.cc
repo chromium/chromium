@@ -72,7 +72,7 @@ int HttpErrorFailureReasonToInt(
   switch (reason) {
     default:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case Reason::DOWNLOAD_FAILED_401:
       return 401;
     case Reason::DOWNLOAD_FAILED_403:
@@ -362,7 +362,7 @@ std::u16string PluginVmInstallerView::GetMessage() const {
       switch (installing_state_) {
         case InstallingState::kInactive:
           NOTREACHED();
-          FALLTHROUGH;
+          [[fallthrough]];
         case InstallingState::kCheckingLicense:
         case InstallingState::kCheckingForExistingVm:
         case InstallingState::kCheckingDiskSpace:
