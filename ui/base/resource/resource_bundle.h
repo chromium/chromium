@@ -400,9 +400,7 @@ class COMPONENT_EXPORT(UI_BASE) ResourceBundle {
   friend class ChromeBrowserMainMacBrowserTest;
 
   class BitmapImageSource;
-  friend class BitmapImageSource;
   class LottieImageSource;
-  friend class LottieImageSource;
 
   using IdToStringMap = std::unordered_map<int, std::u16string>;
 
