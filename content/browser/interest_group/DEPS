@@ -3,9 +3,8 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  # The AuctionRunnerTests have integration tests that directly instantiate an
-  # in-process auction_worklet service.
-  "auction_runner_unittest\.cc": [
+  # Some unit tests directly instantiate an in-process auction_worklet service.
+  ".*_unittest\.cc": [
     "+content/services/auction_worklet",
   ],
 }

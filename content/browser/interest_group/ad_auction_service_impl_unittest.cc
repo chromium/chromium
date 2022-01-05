@@ -6,10 +6,12 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
@@ -17,13 +19,19 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
+#include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/interest_group_manager.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/url_loader_interceptor.h"
+#include "content/services/auction_worklet/auction_v8_helper.h"
+#include "content/services/auction_worklet/auction_worklet_service_impl.h"
+#include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/test/test_content_browser_client.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -47,6 +55,7 @@ constexpr char kOriginStringB[] = "https://b.test";
 constexpr char kOriginStringC[] = "https://c.test";
 constexpr char kBiddingUrlPath[] = "/interest_group/bidding_logic.js";
 constexpr char kNewBiddingUrlPath[] = "/interest_group/new_bidding_logic.js";
+constexpr char kDecisionUrlPath[] = "/interest_group/decision_logic.js";
 constexpr char kTrustedBiddingSignalsUrlPath[] =
     "/interest_group/trusted_bidding_signals.json";
 constexpr char kDailyUpdateUrlPath[] =
@@ -81,59 +90,88 @@ class AllowInterestGroupContentBrowserClient : public TestContentBrowserClient {
   }
 };
 
-constexpr char kFledgeHeaders[] =
+constexpr char kFledgeUpdateHeaders[] =
     "HTTP/1.1 200 OK\n"
     "Content-type: Application/JSON\n"
     "X-Allow-FLEDGE: true\n";
 
-// Allows registering network responses to update requests; *must* be destroyed
-// before the task environment is shutdown (which happens in
-// RenderViewHostTestHarness::TearDown()).
-class UpdateResponder {
+constexpr char kFledgeScriptHeaders[] =
+    "HTTP/1.1 200 OK\n"
+    "Content-type: Application/Javascript\n"
+    "X-Allow-FLEDGE: true\n";
+
+// Allows registering network responses to update and scoring / bidding script
+// requests; *must* be destroyed before the task environment is shutdown (which
+// happens in RenderViewHostTestHarness::TearDown()).
+//
+// Updates and script serving have different requirements, but unfortunately
+// it's not possible to simultaneously instantiate 2 classes that both use their
+// own URLLoaderInterceptor...so these are combined in this same class.
+class NetworkResponder {
  public:
+  // Register interest group update `response` to be served with JSON content
+  // type when a request to `url_path` is made.
   void RegisterUpdateResponse(const std::string& url_path,
                               const std::string& response) {
-    base::AutoLock auto_lock(json_update_lock_);
+    base::AutoLock auto_lock(lock_);
     json_update_map_[url_path] = response;
   }
 
-  // Registers a URL to use a "deferred" response. For a deferred response, the
-  // request handler returns true without a write, and writes are performed
-  // later in DoDeferredWrite() using a "stolen" Mojo pipe to the
+  // Register script `response` to be served with Javascript content type when a
+  // request to `url_path` is made.
+  void RegisterScriptResponse(const std::string& url_path,
+                              const std::string& response) {
+    base::AutoLock auto_lock(lock_);
+    script_map_[url_path] = response;
+  }
+
+  // Registers a URL to use a "deferred" update response. For a deferred
+  // response, the request handler returns true without a write, and writes are
+  // performed later in DoDeferredWrite() using a "stolen" Mojo pipe to the
   // URLLoaderClient.
   //
   // Only one request / response can be handled with this method at a time.
-  void RegisterDeferredResponse(const std::string& url_path) {
-    base::AutoLock auto_lock(json_update_lock_);
+  void RegisterDeferredUpdateResponse(const std::string& url_path) {
+    base::AutoLock auto_lock(lock_);
     deferred_response_url_path_ = url_path;
   }
 
   // Perform the deferred response -- the test fails if the client isn't waiting
-  // on `url_path` registered with RegisterDeferredResponse().
-  void DoDeferredResponse(const std::string& response) {
-    base::AutoLock auto_lock(json_update_lock_);
+  // on `url_path` registered with RegisterDeferredUpdateResponse().
+  void DoDeferredUpdateResponse(const std::string& response) {
+    base::AutoLock auto_lock(lock_);
     ASSERT_TRUE(deferred_response_url_loader_client_.is_bound());
     URLLoaderInterceptor::WriteResponse(
-        kFledgeHeaders, response, deferred_response_url_loader_client_.get());
+        kFledgeUpdateHeaders, response,
+        deferred_response_url_loader_client_.get());
     deferred_response_url_loader_client_.reset();
     deferred_response_url_path_ = "";
   }
 
   // Make the next request fail with `error` -- subsequent requests will succeed
-  // again unless another FailNextRequestWithError() call is made.
-  void FailNextRequestWithError(net::Error error) {
-    base::AutoLock auto_lock(json_update_lock_);
+  // again unless another FailNextUpdateRequestWithError() call is made.
+  void FailNextUpdateRequestWithError(net::Error error) {
+    base::AutoLock auto_lock(lock_);
     next_error_ = error;
   }
 
+  // Returns the number of updates that occurred -- does not include other
+  // network requests.
   size_t UpdateCount() const {
-    base::AutoLock auto_lock(json_update_lock_);
+    base::AutoLock auto_lock(lock_);
     return update_count_;
   }
 
  private:
-  bool RequestHandlerForUpdates(URLLoaderInterceptor::RequestParams* params) {
-    base::AutoLock auto_lock(json_update_lock_);
+  bool RequestHandler(URLLoaderInterceptor::RequestParams* params) {
+    base::AutoLock auto_lock(lock_);
+    const auto script_it = script_map_.find(params->url_request.url.path());
+    if (script_it != script_map_.end()) {
+      URLLoaderInterceptor::WriteResponse(
+          kFledgeScriptHeaders, script_it->second, params->client.get());
+      return true;
+    }
+    // Not a script request, so consider this an update request.
     update_count_++;
     EXPECT_TRUE(params->url_request.trusted_params->isolation_info
                     .network_isolation_key()
@@ -149,40 +187,72 @@ class UpdateResponder {
       deferred_response_url_loader_client_ = std::move(params->client);
       return true;
     }
-    const auto it = json_update_map_.find(params->url_request.url.path());
-    if (it == json_update_map_.end())
+    const auto update_it =
+        json_update_map_.find(params->url_request.url.path());
+    if (update_it == json_update_map_.end())
       return false;
-    URLLoaderInterceptor::WriteResponse(kFledgeHeaders, it->second,
+    URLLoaderInterceptor::WriteResponse(kFledgeUpdateHeaders, update_it->second,
                                         params->client.get());
     return true;
   }
 
-  // Handles network requests for interest group updates.
-  URLLoaderInterceptor update_interceptor_{
-      base::BindRepeating(&UpdateResponder::RequestHandlerForUpdates,
+  // Handles network requests for interest group updates and scripts.
+  URLLoaderInterceptor network_interceptor_{
+      base::BindRepeating(&NetworkResponder::RequestHandler,
                           base::Unretained(this))};
 
-  mutable base::Lock json_update_lock_;
+  mutable base::Lock lock_;
 
   // For each HTTPS request, we see if any path in the map matches the request
-  // path. If so, the server returns the mapped value string as the response.
-  base::flat_map<std::string, std::string> json_update_map_
-      GUARDED_BY(json_update_lock_);
+  // path. If so, the server returns the mapped value string as the response,
+  // with JSON MIME type.
+  base::flat_map<std::string, std::string> json_update_map_ GUARDED_BY(lock_);
+
+  // Like `json_update_map_`, but for serving bidding / scoring scripts, with
+  // the Javascript MIME type.
+  base::flat_map<std::string, std::string> script_map_ GUARDED_BY(lock_);
 
   // Stores the last URL path that was registered with
-  // RegisterDeferredResponse(). Empty initially and after DoDeferredResponse()
-  // -- when empty, no deferred response can occur.
-  std::string deferred_response_url_path_ GUARDED_BY(json_update_lock_);
+  // RegisterDeferredUpdateResponse(). Empty initially and after
+  // DoDeferredUpdateResponse() -- when empty, no deferred response can occur.
+  std::string deferred_response_url_path_ GUARDED_BY(lock_);
 
-  // Stores the Mojo URLLoaderClient remote "stolen" from
-  // RequestHandlerForUpdates() for use with deferred responses -- unbound if no
-  // remote has been "stolen" yet, or if the last deferred response completed.
+  // Stores the Mojo URLLoaderClient remote "stolen" from RequestHandler() for
+  // use with deferred responses -- unbound if no remote has been "stolen" yet,
+  // or if the last deferred response completed.
   mojo::Remote<network::mojom::URLLoaderClient>
-      deferred_response_url_loader_client_ GUARDED_BY(json_update_lock_);
+      deferred_response_url_loader_client_ GUARDED_BY(lock_);
 
-  net::Error next_error_ GUARDED_BY(json_update_lock_) = net::OK;
+  net::Error next_error_ GUARDED_BY(lock_) = net::OK;
 
-  size_t update_count_ GUARDED_BY(json_update_lock_) = 0;
+  size_t update_count_ GUARDED_BY(lock_) = 0;
+};
+
+// AuctionProcessManager that allows running auctions in-proc.
+class SameProcessAuctionProcessManager : public AuctionProcessManager {
+ public:
+  SameProcessAuctionProcessManager() = default;
+  SameProcessAuctionProcessManager(const SameProcessAuctionProcessManager&) =
+      delete;
+  SameProcessAuctionProcessManager& operator=(
+      const SameProcessAuctionProcessManager&) = delete;
+  ~SameProcessAuctionProcessManager() override = default;
+
+ private:
+  void LaunchProcess(
+      mojo::PendingReceiver<auction_worklet::mojom::AuctionWorkletService>
+          auction_worklet_service_receiver,
+      const std::string& display_name) override {
+    // Create one AuctionWorkletServiceImpl per Mojo pipe, just like in
+    // production code. Don't bother to delete the service on pipe close,
+    // though; just keep it in a vector instead.
+    auction_worklet_services_.push_back(
+        std::make_unique<auction_worklet::AuctionWorkletServiceImpl>(
+            std::move(auction_worklet_service_receiver)));
+  }
+
+  std::vector<std::unique_ptr<auction_worklet::AuctionWorkletServiceImpl>>
+      auction_worklet_services_;
 };
 
 }  // namespace
@@ -212,13 +282,17 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
     manager_ = (static_cast<StoragePartitionImpl*>(
                     browser_context()->GetDefaultStoragePartition()))
                    ->GetInterestGroupManager();
+    // Process creation crashes in the Chrome zygote init in unit tests, so run
+    // the auction "processes" in-process instead.
+    manager_->set_auction_process_manager_for_testing(
+        std::make_unique<SameProcessAuctionProcessManager>());
   }
 
   void TearDown() override {
-    // `update_responder_` must be destructed while the task environment,
+    // `network_responder_` must be destructed while the task environment,
     // which gets destroyed by RenderViewHostTestHarness::TearDown(), is still
     // active.
-    update_responder_.reset();
+    network_responder_.reset();
     RenderViewHostTestHarness::TearDown();
   }
 
@@ -244,6 +318,16 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
       }
     }
     return 0;
+  }
+
+  absl::optional<GURL> ConvertFencedFrameURNToURL(const GURL& urn_url) {
+    const FencedFrameURLMapping& fenced_frame_urls_map =
+        static_cast<RenderFrameHostImpl*>(main_rfh())
+            ->GetPage()
+            .fenced_frame_urls_map();
+    absl::optional<FencedFrameURLMapping::PendingAdComponentsMap> ignored;
+    return fenced_frame_urls_map.ConvertFencedFrameURNToURL(
+        const_cast<GURL&>(urn_url), ignored);
   }
 
   // Create a new AdAuctionServiceImpl and use it to try and join
@@ -301,6 +385,37 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
         rfh, interest_service.BindNewPipeAndPassReceiver());
 
     interest_service->UpdateAdInterestGroups();
+  }
+
+  // Runs an ad auction using the config specified in `auction_config` in the
+  // frame `rfh`. Returns the result of the auction, which is either a URL to
+  // the winning ad, or absl::nullopt if no ad won the auction.
+  absl::optional<GURL> RunAdAuctionAndFlushForFrame(
+      blink::mojom::AuctionAdConfigPtr auction_config,
+      RenderFrameHost* rfh) {
+    mojo::Remote<blink::mojom::AdAuctionService> interest_service;
+    AdAuctionServiceImpl::CreateMojoService(
+        rfh, interest_service.BindNewPipeAndPassReceiver());
+
+    base::RunLoop run_loop;
+    absl::optional<GURL> maybe_url;
+    interest_service->RunAdAuction(
+        std::move(auction_config),
+        base::BindLambdaForTesting(
+            [&run_loop, &maybe_url](const absl::optional<GURL>& result) {
+              maybe_url = result;
+              run_loop.Quit();
+            }));
+    interest_service.FlushForTesting();
+    run_loop.Run();
+    return maybe_url;
+  }
+
+  // Like RunAdAuctionAndFlushForFrame(), but uses the render frame host of the
+  // main frame.
+  absl::optional<GURL> RunAdAuctionAndFlush(
+      blink::mojom::AuctionAdConfigPtr auction_config) {
+    return RunAdAuctionAndFlushForFrame(std::move(auction_config), main_rfh());
   }
 
   // Like UpdateInterestGroupNoFlushForFrame, but uses the render frame host of
@@ -361,8 +476,8 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
 
   // Must be destroyed before RenderViewHostTestHarness::TearDown().
-  std::unique_ptr<UpdateResponder> update_responder_{
-      std::make_unique<UpdateResponder>()};
+  std::unique_ptr<NetworkResponder> network_responder_{
+      std::make_unique<NetworkResponder>()};
 };
 
 // Check basic success case.
@@ -543,7 +658,7 @@ TEST_F(AdAuctionServiceImplTest, LeaveInterestFromCrossSiteIFrame) {
 
 // The server JSON updates all fields that can be updated.
 TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
-  update_responder_->RegisterUpdateResponse(
+  network_responder_->RegisterUpdateResponse(
       kDailyUpdateUrlPath,
       base::StringPrintf(R"({
 "biddingLogicUrl": "%s/interest_group/new_bidding_logic.js",
@@ -599,13 +714,13 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
 
 // Only set the ads field -- the other fields shouldn't be changed.
 TEST_F(AdAuctionServiceImplTest, UpdatePartialPerformsMerge) {
-  update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
-                                            base::StringPrintf(R"({
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPath, base::StringPrintf(R"({
 "ads": [{"renderUrl": "%s/new_ad_render_url",
          "metadata": {"new_a": "b"}
         }]
 })",
-                                                               kOriginStringA));
+                                              kOriginStringA));
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.update_url = kUpdateUrlA;
@@ -653,13 +768,13 @@ TEST_F(AdAuctionServiceImplTest, UpdatePartialPerformsMerge) {
 
 // The update shouldn't change the expiration time of the interest group.
 TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeExpiration) {
-  update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
-                                            base::StringPrintf(R"({
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPath, base::StringPrintf(R"({
 "ads": [{"renderUrl": "%s/new_ad_render_url",
          "metadata": {"new_a": "b"}
         }]
 })",
-                                                               kOriginStringA));
+                                              kOriginStringA));
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.update_url = kUpdateUrlA;
@@ -700,7 +815,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeExpiration) {
 
 // Only set the ads field -- the other fields shouldn't be changed.
 TEST_F(AdAuctionServiceImplTest, UpdateSucceedsIfOptionalNameOwnerMatch) {
-  update_responder_->RegisterUpdateResponse(
+  network_responder_->RegisterUpdateResponse(
       kDailyUpdateUrlPath,
       base::StringPrintf(R"({
 "name": "%s",
@@ -759,14 +874,14 @@ TEST_F(AdAuctionServiceImplTest, UpdateSucceedsIfOptionalNameOwnerMatch) {
 // allowed to change. If they don't match the interest group (update URLs are
 // registered per interest group), fail the update and don't update anything.
 TEST_F(AdAuctionServiceImplTest, NoUpdateIfOptionalNameDoesntMatch) {
-  update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
-                                            base::StringPrintf(R"({
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPath, base::StringPrintf(R"({
 "name": "boats",
 "ads": [{"renderUrl": "%s/new_ad_render_url",
          "metadata":{"new_a": "b"}
         }]
 })",
-                                                               kOriginStringA));
+                                              kOriginStringA));
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.update_url = kUpdateUrlA;
@@ -802,7 +917,7 @@ TEST_F(AdAuctionServiceImplTest, NoUpdateIfOptionalNameDoesntMatch) {
 // allowed to change. If they don't match the interest group (update URLs are
 // registered per interest group), fail the update and don't update anything.
 TEST_F(AdAuctionServiceImplTest, NoUpdateIfOptionalOwnerDoesntMatch) {
-  update_responder_->RegisterUpdateResponse(
+  network_responder_->RegisterUpdateResponse(
       kDailyUpdateUrlPath, base::StringPrintf(R"({
 "owner": "%s",
 "ads": [{"renderUrl": "%s/new_ad_render_url",
@@ -850,20 +965,20 @@ TEST_F(AdAuctionServiceImplTest, UpdateMultipleInterestGroups) {
       "/interest_group/daily_update_partial1.json";
   constexpr char kDailyUpdateUrlPath2[] =
       "/interest_group/daily_update_partial2.json";
-  update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath1,
-                                            base::StringPrintf(R"({
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPath1, base::StringPrintf(R"({
 "ads": [{"renderUrl": "%s/new_ad_render_url1",
          "metadata": {"new_a": "b1"}
         }]
 })",
-                                                               kOriginStringA));
-  update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath2,
-                                            base::StringPrintf(R"({
+                                               kOriginStringA));
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPath2, base::StringPrintf(R"({
 "ads": [{"renderUrl": "%s/new_ad_render_url2",
          "metadata": {"new_a": "b2"}
         }]
 })",
-                                                               kOriginStringA));
+                                               kOriginStringA));
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.name = kGroupName1;
@@ -932,13 +1047,13 @@ TEST_F(AdAuctionServiceImplTest, UpdateMultipleInterestGroups) {
 TEST_F(AdAuctionServiceImplTest, UpdateOnlyOwnOrigin) {
   // Both interest groups can share the same update logic and path (they just
   // use different origins).
-  update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
-                                            base::StringPrintf(R"({
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPath, base::StringPrintf(R"({
 "ads": [{"renderUrl": "%s/new_ad_render_url",
          "metadata": {"new_a": "b"}
         }]
 })",
-                                                               kOriginStringA));
+                                              kOriginStringA));
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.update_url = kUpdateUrlA;
@@ -1005,13 +1120,13 @@ TEST_F(AdAuctionServiceImplTest, UpdateOnlyOwnOrigin) {
 TEST_F(AdAuctionServiceImplTest, UpdateFromCrossSiteIFrame) {
   // All interest groups can share the same update logic and path (they just
   // use different origins).
-  update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
-                                            base::StringPrintf(R"({
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPath, base::StringPrintf(R"({
 "ads": [{"renderUrl": "%s/new_ad_render_url",
          "metadata": {"new_a": "b"}
         }]
 })",
-                                                               kOriginStringA));
+                                              kOriginStringA));
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.update_url = kUpdateUrlA;
@@ -1127,14 +1242,14 @@ TEST_F(AdAuctionServiceImplTest, UpdateFromCrossSiteIFrame) {
 // The `ads` field is valid, but the ad `renderUrl` field is an invalid
 // URL. The entire update should get cancelled, since updates are atomic.
 TEST_F(AdAuctionServiceImplTest, UpdateInvalidFieldCancelsAllUpdates) {
-  update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
-                                            base::StringPrintf(R"({
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPath, base::StringPrintf(R"({
 "biddingLogicUrl": "%s/interest_group/new_bidding_logic.js",
 "ads": [{"renderUrl": "https://invalid^&",
          "metadata": {"new_a": "b"}
         }]
 })",
-                                                               kOriginStringA));
+                                              kOriginStringA));
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.update_url = kUpdateUrlA;
@@ -1168,8 +1283,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidFieldCancelsAllUpdates) {
 
 // The server response can't be parsed as valid JSON. The update is cancelled.
 TEST_F(AdAuctionServiceImplTest, UpdateInvalidJSONIgnored) {
-  update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
-                                            "This isn't JSON.");
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
+                                             "This isn't JSON.");
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.update_url = kUpdateUrlA;
@@ -1210,13 +1325,13 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidJSONIgnored) {
 // The server response is valid, but we simulate the JSON parser (which may
 // run in a separate process) crashing, so the update doesn't happen.
 TEST_F(AdAuctionServiceImplTest, UpdateJSONParserCrash) {
-  update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
-                                            base::StringPrintf(R"({
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPath, base::StringPrintf(R"({
 "ads": [{"renderUrl": "%s/new_ad_render_url",
          "metadata": {"new_a": "b"}
         }]
 })",
-                                                               kOriginStringA));
+                                              kOriginStringA));
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.update_url = kUpdateUrlA;
@@ -1290,7 +1405,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateNetworkFailure) {
 // The network request for updating interest groups times out, so the update
 // fails.
 TEST_F(AdAuctionServiceImplTest, UpdateTimeout) {
-  update_responder_->RegisterDeferredResponse(kDailyUpdateUrlPath);
+  network_responder_->RegisterDeferredUpdateResponse(kDailyUpdateUrlPath);
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.update_url = kUpdateUrlA;
   interest_group.bidding_url = kBiddingLogicUrlA;
@@ -1333,7 +1448,7 @@ TEST_F(AdAuctionServiceImplTest,
          "metadata": {"new_a": "b"}}]
 })",
                                                          kOriginStringA);
-  update_responder_->RegisterDeferredResponse(kDailyUpdateUrlPath);
+  network_responder_->RegisterDeferredUpdateResponse(kDailyUpdateUrlPath);
 
   // Make the interest group expire before the DB maintenance task should be
   // run, with a gap second where expiration has happened, but DB maintenance
@@ -1378,7 +1493,7 @@ TEST_F(AdAuctionServiceImplTest,
 
   // Now return the server response. The interest group shouldn't change as it's
   // expired.
-  update_responder_->DoDeferredResponse(kServerResponse);
+  network_responder_->DoDeferredUpdateResponse(kServerResponse);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
   EXPECT_EQ(0u, GetInterestGroupsForOwner(kOriginA).size());
@@ -1388,8 +1503,8 @@ TEST_F(AdAuctionServiceImplTest,
   // update actually happens.
   task_environment()->FastForwardBy(
       InterestGroupStorage::kUpdateSucceededBackoffPeriod + base::Seconds(1));
-  update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
-                                            kServerResponse);
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
+                                             kServerResponse);
   UpdateInterestGroupNoFlush();
   task_environment()->RunUntilIdle();
   EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1411,7 +1526,7 @@ TEST_F(AdAuctionServiceImplTest,
          "metadata": {"new_a": "b"}}]
 })",
                                                          kOriginStringA);
-  update_responder_->RegisterDeferredResponse(kDailyUpdateUrlPath);
+  network_responder_->RegisterDeferredUpdateResponse(kDailyUpdateUrlPath);
 
   // Make the interest group expire just before the DB maintenance task should
   // be run. Time order:
@@ -1460,7 +1575,7 @@ TEST_F(AdAuctionServiceImplTest,
 
   // Now return the server response. The interest group shouldn't change as it's
   // expired.
-  update_responder_->DoDeferredResponse(kServerResponse);
+  network_responder_->DoDeferredUpdateResponse(kServerResponse);
   task_environment()->RunUntilIdle();
   EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
   EXPECT_EQ(0u, GetInterestGroupsForOwner(kOriginA).size());
@@ -1470,8 +1585,8 @@ TEST_F(AdAuctionServiceImplTest,
   // update actually happens.
   task_environment()->FastForwardBy(
       InterestGroupStorage::kUpdateSucceededBackoffPeriod + base::Seconds(1));
-  update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
-                                            kServerResponse);
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
+                                             kServerResponse);
   UpdateInterestGroupNoFlush();
   task_environment()->RunUntilIdle();
   EXPECT_EQ(0, GetJoinCount(kOriginA, kInterestGroupName));
@@ -1481,13 +1596,13 @@ TEST_F(AdAuctionServiceImplTest,
 // The update doesn't happen because the update URL isn't specified at
 // Join() time.
 TEST_F(AdAuctionServiceImplTest, DoesntChangeGroupsWithNoUpdateUrl) {
-  update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
-                                            base::StringPrintf(R"({
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPath, base::StringPrintf(R"({
 "ads": [{"renderUrl": "%s/new_ad_render_url",
          "metadata": {"new_a": "b"}
         }]
 })",
-                                                               kOriginStringA));
+                                              kOriginStringA));
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.bidding_url = kBiddingLogicUrlA;
@@ -1521,13 +1636,13 @@ TEST_F(AdAuctionServiceImplTest, DoesntChangeGroupsWithNoUpdateUrl) {
 // Register a bid and a win, then perform a successful update. The bid and win
 // stats shouldn't change.
 TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeBrowserSignals) {
-  update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
-                                            base::StringPrintf(R"({
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPath, base::StringPrintf(R"({
 "ads": [{"renderUrl": "%s/new_ad_render_url",
          "metadata": {"new_a": "b"}
         }]
 })",
-                                                               kOriginStringA));
+                                              kOriginStringA));
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   interest_group.update_url = kUpdateUrlA;
@@ -1585,13 +1700,13 @@ TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeBrowserSignals) {
 // Advance to just before time limit drops, update does nothing (rate limited).
 // Advance after time limit. Update should work.
 TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterSuccessfulUpdate) {
-  update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
-                                            base::StringPrintf(R"({
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPath, base::StringPrintf(R"({
 "ads": [{"renderUrl": "%s/new_ad_render_url",
          "metadata": {"new_a": "b"}
         }]
 })",
-                                                               kOriginStringA));
+                                              kOriginStringA));
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   // Set a long expiration delta so that we can advance to the next rate limit
@@ -1621,13 +1736,13 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterSuccessfulUpdate) {
   EXPECT_EQ(group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
 
   // Change the update response and try updating again.
-  update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
-                                            base::StringPrintf(R"({
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPath, base::StringPrintf(R"({
 "ads": [{"renderUrl": "%s/newer_ad_render_url",
          "metadata": {"newer_a": "b"}
         }]
 })",
-                                                               kOriginStringA));
+                                              kOriginStringA));
   UpdateInterestGroupNoFlush();
   task_environment()->RunUntilIdle();
 
@@ -1689,8 +1804,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterSuccessfulUpdate) {
 // "successful" duration), update does nothing (rate limited).
 // Advance after time limit. Update should work.
 TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterBadUpdateResponse) {
-  update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
-                                            "This isn't JSON.");
+  network_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
+                                             "This isn't JSON.");
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   // Set a long expiration delta so that we can advance to the next rate limit
@@ -1721,13 +1836,13 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterBadUpdateResponse) {
             "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 
   // Change the update response and try updating again.
-  update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
-                                            base::StringPrintf(R"({
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPath, base::StringPrintf(R"({
 "ads": [{"renderUrl": "%s/new_ad_render_url",
          "metadata": {"new_a": "b"}
         }]
 })",
-                                                               kOriginStringA));
+                                              kOriginStringA));
   UpdateInterestGroupNoFlush();
   task_environment()->RunUntilIdle();
 
@@ -1791,7 +1906,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterBadUpdateResponse) {
 // Advance to just before rate limit drops, update does nothing (rate limited).
 // Advance after time limit. Update should work.
 TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterFailedUpdate) {
-  update_responder_->FailNextRequestWithError(net::ERR_CONNECTION_RESET);
+  network_responder_->FailNextUpdateRequestWithError(net::ERR_CONNECTION_RESET);
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   // Set a long expiration delta so that we can advance to the next rate limit
@@ -1822,13 +1937,13 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterFailedUpdate) {
             "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 
   // Change the update response and try updating again.
-  update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
-                                            base::StringPrintf(R"({
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPath, base::StringPrintf(R"({
 "ads": [{"renderUrl": "%s/new_ad_render_url",
          "metadata": {"new_a": "b"}
         }]
 })",
-                                                               kOriginStringA));
+                                              kOriginStringA));
   UpdateInterestGroupNoFlush();
   task_environment()->RunUntilIdle();
 
@@ -1891,7 +2006,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterFailedUpdate) {
 // Change update response to different value that will succeed.
 // Update succeeds (not rate limited).
 TEST_F(AdAuctionServiceImplTest, UpdateNotRateLimitedIfDisconnected) {
-  update_responder_->FailNextRequestWithError(net::ERR_INTERNET_DISCONNECTED);
+  network_responder_->FailNextUpdateRequestWithError(
+      net::ERR_INTERNET_DISCONNECTED);
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   // Set a long expiration delta so that we can advance to the next rate limit
@@ -1922,13 +2038,13 @@ TEST_F(AdAuctionServiceImplTest, UpdateNotRateLimitedIfDisconnected) {
             "{\"ad\":\"metadata\",\"here\":[1,2,3]}");
 
   // Change the update response and try updating again.
-  update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
-                                            base::StringPrintf(R"({
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPath, base::StringPrintf(R"({
 "ads": [{"renderUrl": "%s/new_ad_render_url",
          "metadata": {"new_a": "b"}
         }]
 })",
-                                                               kOriginStringA));
+                                              kOriginStringA));
   UpdateInterestGroupNoFlush();
   task_environment()->RunUntilIdle();
 
@@ -1946,13 +2062,13 @@ TEST_F(AdAuctionServiceImplTest, UpdateNotRateLimitedIfDisconnected) {
 
 // Fire off many updates rapidly in a loop. Only one update should happen.
 TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedTightLoop) {
-  update_responder_->RegisterUpdateResponse(kDailyUpdateUrlPath,
-                                            base::StringPrintf(R"({
+  network_responder_->RegisterUpdateResponse(
+      kDailyUpdateUrlPath, base::StringPrintf(R"({
 "ads": [{"renderUrl": "%s/new_ad_render_url",
          "metadata": {"new_a": "b"}
         }]
 })",
-                                                               kOriginStringA));
+                                              kOriginStringA));
 
   blink::InterestGroup interest_group = CreateInterestGroup();
   // Set a long expiration delta so that we can advance to the next rate limit
@@ -1967,14 +2083,14 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedTightLoop) {
   JoinInterestGroupAndFlush(std::move(interest_group));
   EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
 
-  EXPECT_EQ(update_responder_->UpdateCount(), 0u);
+  EXPECT_EQ(network_responder_->UpdateCount(), 0u);
 
   for (size_t i = 0; i < 1000u; i++) {
     UpdateInterestGroupNoFlush();
   }
   task_environment()->RunUntilIdle();
 
-  EXPECT_EQ(update_responder_->UpdateCount(), 1u);
+  EXPECT_EQ(network_responder_->UpdateCount(), 1u);
 
   // One of the updates completes successfully.
   std::vector<StorageInterestGroup> groups =
@@ -1986,6 +2102,44 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedTightLoop) {
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
             base::StringPrintf("%s/new_ad_render_url", kOriginStringA));
   EXPECT_EQ(group.ads.value()[0].metadata, "{\"new_a\":\"b\"}");
+}
+
+// Add an interest group, and run an ad auction.
+TEST_F(AdAuctionServiceImplTest, RunAdAuction) {
+  constexpr char kBiddingScript[] = R"(
+function generateBid(
+  interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+  browserSignals) {
+  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
+}
+  )";
+  constexpr char kDecisionScript[] = R"(
+function scoreAd(
+  adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return bid;
+}
+  )";
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad;
+  ad.render_url = GURL("https://example.com/render");
+  interest_group.ads->push_back(std::move(ad));
+  JoinInterestGroupAndFlush(std::move(interest_group));
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  auto auction_config = blink::mojom::AuctionAdConfig::New();
+  auction_config->seller = kOriginA;
+  auction_config->decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  auction_config->interest_group_buyers =
+      blink::mojom::InterestGroupBuyers::NewBuyers({kOriginA});
+  absl::optional<GURL> auction_result =
+      RunAdAuctionAndFlush(std::move(auction_config));
+  ASSERT_NE(auction_result, absl::nullopt);
+  EXPECT_EQ(ConvertFencedFrameURNToURL(*auction_result),
+            GURL("https://example.com/render"));
 }
 
 class AdAuctionServiceImplRestrictedPermissionsPolicyTest
@@ -2007,7 +2161,7 @@ class AdAuctionServiceImplRestrictedPermissionsPolicyTest
 // APIs should succeed.
 TEST_F(AdAuctionServiceImplRestrictedPermissionsPolicyTest,
        APICallsFromTopFrame) {
-  update_responder_->RegisterUpdateResponse(
+  network_responder_->RegisterUpdateResponse(
       kDailyUpdateUrlPath,
       base::StringPrintf(R"({"biddingLogicUrl": "%s%s"})", kOriginStringA,
                          kNewBiddingUrlPath));
@@ -2037,7 +2191,7 @@ TEST_F(AdAuctionServiceImplRestrictedPermissionsPolicyTest,
 // instead of a top frame.
 TEST_F(AdAuctionServiceImplRestrictedPermissionsPolicyTest,
        APICallsFromSameSiteIframe) {
-  update_responder_->RegisterUpdateResponse(
+  network_responder_->RegisterUpdateResponse(
       kDailyUpdateUrlPath,
       base::StringPrintf(R"({"biddingLogicUrl": "%s%s"})", kOriginStringA,
                          kNewBiddingUrlPath));
@@ -2075,7 +2229,7 @@ TEST_F(AdAuctionServiceImplRestrictedPermissionsPolicyTest,
 // APIs should not work.
 TEST_F(AdAuctionServiceImplRestrictedPermissionsPolicyTest,
        APICallsFromCrossSiteIFrame) {
-  update_responder_->RegisterUpdateResponse(
+  network_responder_->RegisterUpdateResponse(
       kDailyUpdateUrlPath,
       base::StringPrintf(R"({"biddingLogicUrl": "%s%s"})", kOriginStringC,
                          kNewBiddingUrlPath));
