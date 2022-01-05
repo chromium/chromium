@@ -492,11 +492,11 @@ TEST_F(BrowserUtilTest, RecordDataVer) {
   base::Version version{"1.1.1.1"};
   browser_util::RecordDataVer(&pref_service_, user_id_hash, version);
 
-  base::DictionaryValue expected;
-  expected.SetString(user_id_hash, version.GetString());
-  const base::DictionaryValue* dict = &base::Value::AsDictionaryValue(
-      *pref_service_.GetDictionary(browser_util::kDataVerPref));
-  EXPECT_TRUE(dict->Equals(&expected));
+  base::Value expected{base::Value::Type::DICTIONARY};
+  expected.SetStringKey(user_id_hash, version.GetString());
+  const base::Value* dict =
+      pref_service_.GetDictionary(browser_util::kDataVerPref);
+  EXPECT_EQ(*dict, expected);
 }
 
 TEST_F(BrowserUtilTest, RecordDataVerOverrides) {
@@ -507,12 +507,12 @@ TEST_F(BrowserUtilTest, RecordDataVerOverrides) {
   browser_util::RecordDataVer(&pref_service_, user_id_hash, version1);
   browser_util::RecordDataVer(&pref_service_, user_id_hash, version2);
 
-  base::DictionaryValue expected;
-  expected.SetString(user_id_hash, version2.GetString());
+  base::Value expected{base::Value::Type::DICTIONARY};
+  expected.SetStringKey(user_id_hash, version2.GetString());
 
-  const base::DictionaryValue* dict = &base::Value::AsDictionaryValue(
-      *pref_service_.GetDictionary(browser_util::kDataVerPref));
-  EXPECT_TRUE(dict->Equals(&expected));
+  const base::Value* dict =
+      pref_service_.GetDictionary(browser_util::kDataVerPref);
+  EXPECT_EQ(*dict, expected);
 }
 
 TEST_F(BrowserUtilTest, RecordDataVerWithMultipleUsers) {
@@ -529,13 +529,13 @@ TEST_F(BrowserUtilTest, RecordDataVerWithMultipleUsers) {
   base::Version version3{"3.3.3.3"};
   browser_util::RecordDataVer(&pref_service_, user_id_hash_1, version3);
 
-  base::DictionaryValue expected;
-  expected.SetString(user_id_hash_1, version3.GetString());
-  expected.SetString(user_id_hash_2, version2.GetString());
+  base::Value expected{base::Value::Type::DICTIONARY};
+  expected.SetStringKey(user_id_hash_1, version3.GetString());
+  expected.SetStringKey(user_id_hash_2, version2.GetString());
 
-  const base::DictionaryValue* dict = &base::Value::AsDictionaryValue(
-      *pref_service_.GetDictionary(browser_util::kDataVerPref));
-  EXPECT_TRUE(dict->Equals(&expected));
+  const base::Value* dict =
+      pref_service_.GetDictionary(browser_util::kDataVerPref);
+  EXPECT_EQ(*dict, expected);
 }
 
 TEST_F(BrowserUtilTest, IsDataWipeRequiredInvalid) {
