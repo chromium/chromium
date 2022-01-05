@@ -172,6 +172,8 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
        IDS_SHIMLESS_RMA_FINALIZE_FAILED_BLOCKING},
       {"finalizePageFailedNonBlockingText",
        IDS_SHIMLESS_RMA_FINALIZE_FAILED_NON_BLOCKING},
+      {"finalizePageFailedRetryButtonLabel",
+       IDS_SHIMLESS_RMA_FINALIZE_FAILED_RETRY_BUTTON_LABEL},
       // Run calibration page
       {"runCalibrationTitleText", IDS_SHIMLESS_RMA_RUN_CALIBRATION_PAGE_TITLE},
       {"runCalibrationCompleteText", IDS_SHIMLESS_RMA_RUN_CALIBRATION_COMPLETE},

@@ -4,12 +4,17 @@
 <base-page orientation="column">
   <div slot="header">
     <h1>[[i18n('finalizePageTitleText')]]</h1>
-    <p id="finalizationMessage">
-      [[finalizationMessage_]]
-    </p>
+    <div id="finalizationMessage">[[finalizationMessage_]]</div>
+    <div>
+      <cr-button id="retryFinalizationButton" class="cancel-button"
+          on-click="onRetryFinalizationButtonClicked_"
+          hidden$="[[!shouldShowRetryButton_]]">
+        [[i18n('finalizePageFailedRetryButtonLabel')]]
+      </cr-button>
+    </div>
   </div>
   <div slot="body">
-    <paper-spinner-lite active hidden$="[[finalizationComplete_]]"
+    <paper-spinner-lite active hidden$="[[shouldShowSpinner_]]"
         class="large-spinner">
     </paper-spinner-lite>
   </div>

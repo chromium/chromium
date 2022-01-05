@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import './shimless_rma_shared_css.js';
 import './base_page.js';
 
@@ -49,6 +50,18 @@ export class WrapupFinalizePage extends WrapupFinalizePageBase {
         type: String,
         value: '',
       },
+
+      /** @protected {boolean} */
+      shouldShowSpinner_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /** @protected {boolean} */
+      shouldShowRetryButton_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -81,6 +94,10 @@ export class WrapupFinalizePage extends WrapupFinalizePageBase {
         'disable-next-button',
         {bubbles: true, composed: true, detail: !this.finalizationComplete_},
         ));
+    this.shouldShowSpinner_ = status === FinalizationStatus.kInProgress;
+    this.shouldShowRetryButton_ =
+        status === FinalizationStatus.kFailedBlocking ||
+        status === FinalizationStatus.kFailedNonBlocking;
   }
 
   /** @return {!Promise<!StateResult>} */
@@ -90,6 +107,25 @@ export class WrapupFinalizePage extends WrapupFinalizePageBase {
     } else {
       return Promise.reject(new Error('Finalization is not complete.'));
     }
+  }
+
+  /** @private */
+  onRetryFinalizationButtonClicked_() {
+    if (!this.shouldShowRetryButton_) {
+      console.error('Finalization has not failed.');
+      return;
+    }
+
+    this.dispatchEvent(new CustomEvent(
+        'transition-state',
+        {
+          bubbles: true,
+          composed: true,
+          detail: (() => {
+            return this.shimlessRmaService_.retryFinalization();
+          })
+        },
+        ));
   }
 }
 
