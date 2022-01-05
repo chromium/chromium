@@ -20,7 +20,7 @@ const char kBundledConnectionHelpUrl[] = "chrome://connection-help";
 
 void RedirectToBundledHelp(content::WebContents* web_contents) {
   GURL::Replacements replacements;
-  std::string error_code = web_contents->GetURL().ref();
+  std::string error_code = web_contents->GetLastCommittedURL().ref();
   replacements.SetRefStr(error_code);
   web_contents->GetController().LoadURL(
       GURL(kBundledConnectionHelpUrl).ReplaceComponents(replacements),
@@ -35,8 +35,10 @@ void ConnectionHelpTabHelper::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   // Ignore pre-rendering navigations.
   if (navigation_handle->IsInPrimaryMainFrame() &&
-      (web_contents()->GetURL().EqualsIgnoringRef(GetHelpCenterURL()) ||
-       web_contents()->GetURL().EqualsIgnoringRef(GURL(kSymantecSupportUrl))) &&
+      (web_contents()->GetLastCommittedURL().EqualsIgnoringRef(
+           GetHelpCenterURL()) ||
+       web_contents()->GetLastCommittedURL().EqualsIgnoringRef(
+           GURL(kSymantecSupportUrl))) &&
       navigation_handle->IsErrorPage() &&
       net::IsCertificateError(navigation_handle->GetNetErrorCode())) {
     RedirectToBundledHelp(web_contents());

@@ -1573,7 +1573,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeSecurityStateTest, SecurityLevelIsSecure) {
   // The inner content of test.example.org_test.sxg has
   // "<script> document.title = document.location.href; </script>".
   EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-  ASSERT_EQ(inner_url, contents->GetURL());
+  ASSERT_EQ(inner_url, contents->GetLastCommittedURL());
 
   CheckSecurityInfoForSecure(
       browser()->tab_strip_model()->GetActiveWebContents(),
@@ -1618,7 +1618,7 @@ IN_PROC_BROWSER_TEST_P(SignedExchangeSecurityStateTest,
     // The inner content of test.example.org_test.sxg has
     // "<script> document.title = document.location.href; </script>".
     EXPECT_EQ(expected_title, title_watcher.WaitAndGetTitle());
-    ASSERT_EQ(inner_url, contents->GetURL());
+    ASSERT_EQ(inner_url, contents->GetLastCommittedURL());
   }
 
   CheckSecurityInfoForSecure(

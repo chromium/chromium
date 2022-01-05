@@ -4363,7 +4363,7 @@ IN_PROC_BROWSER_TEST_F(SSLUITest, TestInterstitialLinksOpenInNewTab) {
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   WebContents* new_tab = browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(new_tab);
-  EXPECT_EQ(mock_help_center_url.host(), new_tab->GetURL().host());
+  EXPECT_EQ(mock_help_center_url.host(), new_tab->GetLastCommittedURL().host());
 }
 
 // Verifies that switching tabs, while showing interstitial page, will not
