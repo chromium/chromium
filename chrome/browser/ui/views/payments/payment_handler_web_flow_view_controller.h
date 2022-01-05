@@ -21,7 +21,6 @@ class Profile;
 
 namespace content {
 class Page;
-class RenderFrameHost;
 }  // namespace content
 
 namespace views {
@@ -95,8 +94,6 @@ class PaymentHandlerWebFlowViewController
       content::NavigationHandle* navigation_handle) override;
   void LoadProgressChanged(double progress) override;
   void TitleWasSet(content::NavigationEntry* entry) override;
-
-  bool FrameSupportsPayments(content::RenderFrameHost* rfh) const;
 
   void AbortPayment();
 
