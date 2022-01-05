@@ -116,15 +116,25 @@ void AppPlatformInputMetrics::OnInstanceUpdate(const InstanceUpdate& update) {
     return;
   }
 
+  aura::Window* window = update.Window();
   if (update.State() & InstanceState::kDestroyed) {
-    window_to_app_info_.erase(update.Window());
+    window_to_app_info_.erase(window);
     return;
   }
 
-  aura::Window* window = update.Window();
   auto app_id = update.AppId();
-  AppTypeName app_type_name = GetAppTypeNameForWindow(
-      profile_, GetAppType(profile_, app_id), app_id, window);
+  auto app_type = GetAppType(profile_, app_id);
+
+  // For apps, not opened with browser windows, the app id and app type should
+  // not change. So if we have the app info for the window, we don't need to
+  // update it.
+  if (base::Contains(window_to_app_info_, window) &&
+      !IsAppOpenedWithBrowserWindow(profile_, app_type, app_id)) {
+    return;
+  }
+
+  AppTypeName app_type_name =
+      GetAppTypeNameForWindow(profile_, app_type, app_id, window);
   if (app_type_name == AppTypeName::kUnknown) {
     return;
   }

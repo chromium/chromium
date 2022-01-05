@@ -142,6 +142,29 @@ bool IsAppOpenedInTab(AppTypeName app_type_name, const std::string& app_id) {
          app_id != extension_misc::kChromeAppId;
 }
 
+bool IsAppOpenedWithBrowserWindow(Profile* profile,
+                                  apps::mojom::AppType app_type,
+                                  const std::string& app_id) {
+  if (app_type == mojom::AppType::kWeb ||
+      app_type == mojom::AppType::kSystemWeb ||
+      app_type == mojom::AppType::kExtension) {
+    return true;
+  }
+
+  if (app_type != mojom::AppType::kChromeApp) {
+    return false;
+  }
+
+  DCHECK(profile);
+  extensions::ExtensionRegistry* registry =
+      extensions::ExtensionRegistry::Get(profile);
+  DCHECK(registry);
+  const extensions::Extension* extension =
+      registry->GetInstalledExtension(app_id);
+
+  return extension && !extension->is_platform_app();
+}
+
 AppTypeName GetAppTypeNameForWebAppWindow(Profile* profile,
                                           const std::string& app_id,
                                           aura::Window* window) {

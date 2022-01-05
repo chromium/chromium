@@ -85,12 +85,18 @@ AppTypeName GetAppTypeNameForWebApp(Profile* profile,
                                     apps::mojom::LaunchContainer container);
 
 // Returns false if |window| is a Chrome app window or a standalone web app
-// window. Otherwise, return true;
+// window. Otherwise, return true.
 bool IsBrowser(aura::Window* window);
 
 // Returns true if the app with |app_id| is opened as a tab in a browser window.
-// Otherwise, return false;
+// Otherwise, return false.
 bool IsAppOpenedInTab(AppTypeName app_type_name, const std::string& app_id);
+
+// Returns true if the app with |app_type| is opened with a browser window.
+// Otherwise, return false.
+bool IsAppOpenedWithBrowserWindow(Profile* profile,
+                                  apps::mojom::AppType app_type,
+                                  const std::string& app_id);
 
 // Determines what app type a web app should be logged as based on |window|. In
 // particular, web apps in tabs are logged as part of Chrome browser.
