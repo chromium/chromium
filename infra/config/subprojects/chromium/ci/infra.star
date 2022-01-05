@@ -25,7 +25,6 @@ consoles.console_view(
 
 ci.builder(
     name = "linux-bootstrap",
-    bootstrap = True,
     builder_spec = builder_config.builder_spec(
         chromium_config = builder_config.chromium_config(
             config = "chromium",
@@ -47,7 +46,6 @@ ci.builder(
 
 ci.builder(
     name = "linux-bootstrap-tests",
-    bootstrap = True,
     builder_spec = builder_config.builder_spec(
         execution_mode = builder_config.execution_mode.TEST,
         parent = "ci/linux-bootstrap",
@@ -69,7 +67,6 @@ ci.builder(
 
 ci.builder(
     name = "win-bootstrap",
-    bootstrap = True,
     builderless = True,
     console_view_entry = consoles.console_view_entry(
         category = "bootstrap|win",
@@ -82,7 +79,6 @@ ci.builder(
 
 ci.builder(
     name = "win-bootstrap-tests",
-    bootstrap = True,
     console_view_entry = consoles.console_view_entry(
         category = "bootstrap|win",
         short_name = "tst",

@@ -60,7 +60,6 @@ defaults.caches.set([
 # longer overridable with Buildbucket V2
 builder(
     name = "findit-rerun",
-    bootstrap = True,
     executable = "recipe:findit/chromium/single_revision",
     goma_backend = goma.backend.RBE_PROD,
     reclient_instance = rbe_instance.DEFAULT,

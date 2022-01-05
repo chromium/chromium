@@ -58,7 +58,6 @@ try_.builder(
 try_.builder(
     name = "chromeos-arm-generic-rel",
     branch_selector = branches.CROS_LTS_MILESTONE,
-    bootstrap = True,
     mirrors = ["ci/chromeos-arm-generic-rel"],
     builderless = not settings.is_main,
     main_list_view = "try",
