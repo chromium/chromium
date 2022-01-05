@@ -4847,7 +4847,7 @@
       }
     },
 
-    'rust_unittests': {
+    'rust_gtests': {
       'test_cpp_including_rust_unittests': {
         'swarming': {},
         'test': 'test_cpp_including_rust_unittests',
@@ -4855,6 +4855,13 @@
       'test_serde_jsonrc': {
         'swarming': {},
         'test': 'test_serde_jsonrc',
+      },
+    },
+
+    'rust_native_tests': {
+      'build_rust_tests': {
+        'swarming': {},
+        'test': 'build_rust_tests',
       },
     },
 

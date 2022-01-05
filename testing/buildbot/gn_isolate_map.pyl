@@ -1337,6 +1337,10 @@
     "label": "//components/nacl/loader:nacl_loader_unittests",
     "type": "console_test_launcher",
   },
+  "build_rust_tests": {
+    "label": "//build/rust/tests:build_rust_tests",
+    "type": "generated_script",
+  },
   "native_theme_unittests": {
     "label": "//ui/native_theme:native_theme_unittests",
     "type": "windowed_test_launcher",

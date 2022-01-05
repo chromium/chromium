@@ -12,7 +12,7 @@ group("tests") {
 
   deps = [ ":deps" ]
   if (build_rust_unit_tests) {
-    deps += [ ":native_rust_unittests__from__build_rust_tests" ]
+    deps += [ ":build_rust_tests" ]
   }
 }
 
@@ -59,7 +59,8 @@ group("deps") {
 }
 
 if (build_rust_unit_tests) {
-  rust_unit_tests_group("native_rust_unittests__from__build_rust_tests") {
+  # A group covering all native Rust unit tests under //build/rust directory.
+  rust_unit_tests_group("build_rust_tests") {
     deps = [ ":deps" ]
   }
 }

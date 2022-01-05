@@ -65,6 +65,22 @@
         "test": "test_serde_jsonrc",
         "test_id_prefix": "ninja://build/rust/tests/test_serde_jsonrc:test_serde_jsonrc/"
       }
+    ],
+    "isolated_scripts": [
+      {
+        "isolate_name": "build_rust_tests",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "build_rust_tests",
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "build_rust_tests",
+        "test_id_prefix": "ninja://build/rust/tests:build_rust_tests/"
+      }
     ]
   }
 }

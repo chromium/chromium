@@ -162,6 +162,8 @@ Future work:
   existing test infrastructure, but this is something we're working on.
 - At present, the bot integration only supports reporting whether the tests
   passed or failed, and doesn't capture results or output of individual tests.
+- At present, there is no support for running native Rust unit tests on
+  Android.
 
 # Third party dependencies
 
