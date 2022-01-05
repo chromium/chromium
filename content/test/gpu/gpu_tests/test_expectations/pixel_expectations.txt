@@ -439,6 +439,7 @@ crbug.com/1213920 [ win10 skia-renderer-dawn ] Pixel_WebGPU* [ Failure ]
 
 # Flaky on Pixel 4
 crbug.com/1215747 [ android android-pixel-4 skia-renderer-gl ] Pixel_OffscreenCanvasWebGLDefault [ RetryOnFailure ]
+crbug.com/1276605 [ android android-pixel-4 skia-renderer-gl ] Pixel_OffscreenCanvasTransferToImageBitmap [ RetryOnFailure ]
 
 # Pixel tests are flakily asserting in GPU process on SkiaRenderer/Vulkan
 crbug.com/1230743 [ linux skia-renderer-vulkan ] Pixel_* [ RetryOnFailure ]
@@ -476,7 +477,6 @@ crbug.com/1213542 [ skia-renderer-gl mac intel-0x3e9b no-passthrough ] Pixel_Vid
 crbug.com/1213542 [ skia-renderer-gl mac amd-0x6821 passthrough ] Pixel_Video_Media_Stream_Incompatible_Stride [ RetryOnFailure ]
 
 # Flaky on Pixel 4 Android WebView
-crbug.com/1276605 [ android android-pixel-4 android-webview-instrumentation skia-renderer-gl ] Pixel_OffscreenCanvasTransferToImageBitmap [ RetryOnFailure ]
 crbug.com/1278893 [ android android-pixel-4 android-webview-instrumentation skia-renderer-gl ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ RetryOnFailure ]
 
 #######################################################################

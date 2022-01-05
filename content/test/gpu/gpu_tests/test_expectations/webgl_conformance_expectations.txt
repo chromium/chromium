@@ -346,6 +346,7 @@ crbug.com/angleproject/6358 conformance/programs/program-test.html [ Failure ]
 
 # Win / AMD / Passthrough command decoder / D3D11
 crbug.com/772037 [ win amd angle-d3d11 passthrough ] conformance/textures/misc/texture-sub-image-cube-maps.html [ RetryOnFailure ]
+crbug.com/1282819 [ win amd-0x6613 angle-d3d11 passthrough ] conformance/canvas/canvas-test.html [ Failure ]
 
 # Vulkan / Passthrough command decoder
 crbug.com/angleproject/4931 [ win nvidia angle-vulkan passthrough ] conformance/textures/misc/texture-mips.html [ Failure ]

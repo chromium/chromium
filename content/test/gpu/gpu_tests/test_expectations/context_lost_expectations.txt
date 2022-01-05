@@ -143,6 +143,9 @@ crbug.com/1161570 [ mac nvidia debug ] GpuCrash_InfoForDualHardwareGpus [ Skip ]
 ###################
 # Non-"Skip" expectations go here to suppress regular flakes/failures.
 
+# Flaking on Windows / Intel
+crbug.com/1282821 [ win10 intel ] ContextLost_WebGPUBlockedAfterJSNavigation [ RetryOnFailure ]
+
 # Flaking on Nexus 5X
 crbug.com/965268 [ android android-nexus-5x ] ContextLost_WebGLBlockedAfterJSNavigation [ Failure ]
 crbug.com/965268 [ android android-nexus-5x ] ContextLost_WebGLUnblockedAfterUserInitiatedReload [ Failure ]
