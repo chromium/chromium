@@ -111,6 +111,9 @@ void FastPairScannerImpl::DeviceChanged(device::BluetoothAdapter* adapter,
   const std::vector<uint8_t>* service_data =
       device->GetServiceDataForUUID(kFastPairBluetoothUuid);
 
+  if (!service_data || service_data->empty())
+    return;
+
   // If the advertisement data we have received does not pertain to a device
   // we have seen already from the scanner, or if the advertisement data for
   // a device we have already seen is not new, then early return and do not
