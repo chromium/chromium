@@ -211,12 +211,12 @@ void ExternalProviderImpl::UpdatePrefs(
 
   std::set<std::string> removed_extensions;
   // Find extensions that were removed by this ExternalProvider.
-  for (base::DictionaryValue::Iterator i(*prefs_); !i.IsAtEnd(); i.Advance()) {
-    const std::string& extension_id = i.key();
+  for (const auto kv : prefs_->DictItems()) {
+    const std::string& extension_id = kv.first;
     // Don't bother about invalid ids.
     if (!crx_file::id_util::IdIsValid(extension_id))
       continue;
-    if (!prefs->HasKey(extension_id))
+    if (!prefs->FindKey(extension_id))
       removed_extensions.insert(extension_id);
   }
 
@@ -534,7 +534,7 @@ bool ExternalProviderImpl::HasExtension(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(prefs_.get());
   CHECK(ready_);
-  return prefs_->HasKey(id);
+  return prefs_->FindKey(id);
 }
 
 bool ExternalProviderImpl::GetExtensionDetails(
@@ -549,18 +549,19 @@ bool ExternalProviderImpl::GetExtensionDetails(
     return false;
 
   ManifestLocation loc = ManifestLocation::kInvalidLocation;
-  if (extension->HasKey(kExternalUpdateUrl)) {
+  if (extension->FindKey(kExternalUpdateUrl)) {
     loc = download_location_;
 
-  } else if (extension->HasKey(kExternalCrx)) {
+  } else if (extension->FindKey(kExternalCrx)) {
     loc = crx_location_;
 
-    std::string external_version;
-    if (!extension->GetString(kExternalVersion, &external_version))
+    const std::string* external_version =
+        extension->FindStringKey(kExternalVersion);
+    if (!external_version)
       return false;
 
     if (version)
-      *version = std::make_unique<base::Version>(external_version);
+      *version = std::make_unique<base::Version>(*external_version);
 
   } else {
     NOTREACHED();  // Chrome should not allow prefs to get into this state.

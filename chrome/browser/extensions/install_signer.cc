@@ -206,11 +206,10 @@ std::unique_ptr<InstallSignature> InstallSignature::FromValue(
 
   // Note: earlier versions of the code did not write out a timestamp value
   // so older entries will not necessarily have this.
-  if (value.HasKey(kTimestampKey)) {
-    std::string timestamp;
+  if (const base::Value* timestamp = value.FindKey(kTimestampKey)) {
     int64_t timestamp_value = 0;
-    if (!value.GetString(kTimestampKey, &timestamp) ||
-        !base::StringToInt64(timestamp, &timestamp_value)) {
+    if (!timestamp->is_string() ||
+        !base::StringToInt64(timestamp->GetString(), &timestamp_value)) {
       result.reset();
       return result;
     }
