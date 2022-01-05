@@ -24,7 +24,8 @@ TEST_F(NGLayoutOverflowCalculatorTest,
       WebFeature::kNewLayoutOverflowDifferentAndAlreadyScrollsBlock));
 }
 
-TEST_F(NGLayoutOverflowCalculatorTest, NewLayoutOverflowDifferentBlock) {
+TEST_F(NGLayoutOverflowCalculatorTest,
+       DISABLED_NewLayoutOverflowDifferentBlock) {
   if (!RuntimeEnabledFeatures::LayoutNGEnabled())
     return;
   SetBodyInnerHTML(R"HTML(

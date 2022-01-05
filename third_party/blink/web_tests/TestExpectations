@@ -1226,6 +1226,10 @@ crbug.com/993813 external/wpt/css/css-overflow/webkit-line-clamp-008.html [ Fail
 crbug.com/993813 [ Mac ] external/wpt/css/css-overflow/webkit-line-clamp-025.html [ Failure ]
 crbug.com/993813 external/wpt/css/css-overflow/webkit-line-clamp-029.html [ Failure ]
 
+# Temporary failures while we evaluate the web-compat of adding inline-end padding for overflow.
+crbug.com/1245722 external/wpt/css/css-overflow/overflow-padding.html [ Failure ]
+crbug.com/1245722 external/wpt/css/css-overflow/orthogonal-flow-with-inline-end-margin.html [ Failure ]
+
 # Lack of support for font-language-override
 crbug.com/481430 external/wpt/css/css-fonts/font-language-override-01.html [ Failure ]
 crbug.com/481430 external/wpt/css/css-fonts/font-language-override-02.html [ Failure ]

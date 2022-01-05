@@ -136,6 +136,9 @@ const PhysicalRect NGLayoutOverflowCalculator::Result(
       converter.ToLogical(padding_rect_.size).inline_size)
     return normal_overflow;
 
+  if (!inflow_bounds->IsEmpty())
+    return normal_overflow;
+
   // We'd like everything to be |normal_overflow|, lets see what the impact
   // would be.
   if (node_.Style().OverflowInlineDirection() == EOverflow::kAuto ||
