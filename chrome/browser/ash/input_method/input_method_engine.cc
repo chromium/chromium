@@ -1116,23 +1116,19 @@ void InputMethodEngine::MenuItemToProperty(
     property->is_selection_item_checked = item.checked;
   }
   if (item.modified & MENU_ITEM_MODIFIED_STYLE) {
-    if (!item.children.empty()) {
-      // TODO(nona): Implement it.
-    } else {
-      switch (item.style) {
-        case InputMethodManager::MENU_ITEM_STYLE_NONE:
+    switch (item.style) {
+      case InputMethodManager::MENU_ITEM_STYLE_NONE:
           NOTREACHED();
           break;
-        case InputMethodManager::MENU_ITEM_STYLE_CHECK:
+      case InputMethodManager::MENU_ITEM_STYLE_CHECK:
           // TODO(nona): Implement it.
           break;
-        case InputMethodManager::MENU_ITEM_STYLE_RADIO:
+      case InputMethodManager::MENU_ITEM_STYLE_RADIO:
           property->is_selection_item = true;
           break;
-        case InputMethodManager::MENU_ITEM_STYLE_SEPARATOR:
+      case InputMethodManager::MENU_ITEM_STYLE_SEPARATOR:
           // TODO(nona): Implement it.
           break;
-      }
     }
   }
 

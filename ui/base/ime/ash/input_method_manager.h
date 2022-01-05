@@ -64,7 +64,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
     bool checked;
 
     unsigned int modified;
-    std::vector<MenuItem> children;
   };
 
   enum ImeMenuFeature {
