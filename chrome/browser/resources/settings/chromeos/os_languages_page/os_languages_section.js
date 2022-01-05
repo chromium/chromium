@@ -83,8 +83,7 @@ Polymer({
       type: Boolean,
       value() {
         return loadTimeData.getBoolean('allowAssistivePersonalInfo') ||
-            loadTimeData.getBoolean('allowEmojiSuggestion') ||
-            loadTimeData.getBoolean('allowPredictiveWriting');
+            loadTimeData.getBoolean('allowEmojiSuggestion');
       },
     }
   },

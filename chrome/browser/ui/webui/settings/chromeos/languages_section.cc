@@ -144,21 +144,6 @@ const std::vector<SearchConcept>& GetEmojiSuggestionSearchConcepts() {
   return *tags;
 }
 
-const std::vector<SearchConcept>& GetPredictiveWritingSearchConcepts() {
-  static const base::NoDestructor<std::vector<SearchConcept>> tags({
-      {IDS_OS_SETTINGS_TAG_LANGUAGES_PREDICTIVE_WRITING,
-       mojom::kSmartInputsSubpagePath,
-       mojom::SearchResultIcon::kGlobe,
-       mojom::SearchResultDefaultRank::kMedium,
-       mojom::SearchResultType::kSetting,
-       {.setting = mojom::Setting::kShowPredictiveWriting},
-       {IDS_OS_SETTINGS_TAG_LANGUAGES_PREDICTIVE_WRITING_ALT1,
-        IDS_OS_SETTINGS_TAG_LANGUAGES_PREDICTIVE_WRITING_ALT2,
-        SearchConcept::kAltTagEnd}},
-  });
-  return *tags;
-}
-
 bool IsAssistivePersonalInfoAllowed() {
   return !features::IsGuestModeActive() &&
          base::FeatureList::IsEnabled(
@@ -185,18 +170,12 @@ void AddSmartInputsStrings(content::WebUIDataSource* html_source,
       {"emojiSuggestionTitle", IDS_SETTINGS_SUGGESTIONS_EMOJI_SUGGESTION_TITLE},
       {"emojiSuggestionDescription",
        IDS_SETTINGS_SUGGESTIONS_EMOJI_SUGGESTION_DESCRIPTION},
-      {"predictiveWritingTitle",
-       IDS_SETTINGS_SUGGESTIONS_PREDICTIVE_WRITING_TITLE},
-      {"predictiveWritingDescription",
-       IDS_SETTINGS_SUGGESTIONS_PREDICTIVE_WRITING_DESCRIPTION},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
 
   html_source->AddBoolean("allowAssistivePersonalInfo",
                           IsAssistivePersonalInfoAllowed());
   html_source->AddBoolean("allowEmojiSuggestion", is_emoji_suggestion_allowed);
-  html_source->AddBoolean("allowPredictiveWriting",
-                          IsPredictiveWritingAllowed());
 }
 
 void AddInputMethodOptionsStrings(content::WebUIDataSource* html_source) {
@@ -271,6 +250,8 @@ void AddInputMethodOptionsStrings(content::WebUIDataSource* html_source) {
        IDS_SETTINGS_INPUT_METHOD_OPTIONS_KEYBOARD_COLEMAK},
   };
   html_source->AddLocalizedStrings(kLocalizedStrings);
+  html_source->AddBoolean("allowPredictiveWriting",
+                          IsPredictiveWritingAllowed());
 }
 
 void AddLanguagesPageStringsV2(content::WebUIDataSource* html_source) {
@@ -425,15 +406,12 @@ LanguagesSection::LanguagesSection(Profile* profile,
   updater.AddSearchTags(GetInputPageSearchConceptsV2());
   UpdateSpellCheckSearchTags();
 
-  if (IsAssistivePersonalInfoAllowed() || IsEmojiSuggestionAllowed() ||
-      IsPredictiveWritingAllowed()) {
+  if (IsAssistivePersonalInfoAllowed() || IsEmojiSuggestionAllowed()) {
     updater.AddSearchTags(GetSmartInputsSearchConcepts());
     if (IsAssistivePersonalInfoAllowed())
       updater.AddSearchTags(GetAssistivePersonalInfoSearchConcepts());
     if (IsEmojiSuggestionAllowed())
       updater.AddSearchTags(GetEmojiSuggestionSearchConcepts());
-    if (IsPredictiveWritingAllowed())
-      updater.AddSearchTags(GetPredictiveWritingSearchConcepts());
   }
 }
 
@@ -562,7 +540,6 @@ void LanguagesSection::RegisterHierarchy(HierarchyGenerator* generator) const {
   static constexpr mojom::Setting kSmartInputsFeaturesSettings[] = {
       mojom::Setting::kShowPersonalInformationSuggestions,
       mojom::Setting::kShowEmojiSuggestions,
-      mojom::Setting::kShowPredictiveWriting,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kSmartInputs,
                             kSmartInputsFeaturesSettings, generator);
