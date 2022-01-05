@@ -75,14 +75,14 @@ void FakeServiceConnectionImpl::REMOVED_0(
   NOTIMPLEMENTED();
 }
 
-void FakeServiceConnectionImpl::CreateGraphExecutorWithOptions(
+void FakeServiceConnectionImpl::CreateGraphExecutor(
     mojom::GraphExecutorOptionsPtr options,
     mojo::PendingReceiver<mojom::GraphExecutor> receiver,
-    mojom::Model::CreateGraphExecutorWithOptionsCallback callback) {
-  ScheduleCall(base::BindOnce(
-      &FakeServiceConnectionImpl::HandleCreateGraphExecutorWithOptionsCall,
-      base::Unretained(this), std::move(options), std::move(receiver),
-      std::move(callback)));
+    mojom::Model::CreateGraphExecutorCallback callback) {
+  ScheduleCall(
+      base::BindOnce(&FakeServiceConnectionImpl::HandleCreateGraphExecutorCall,
+                     base::Unretained(this), std::move(options),
+                     std::move(receiver), std::move(callback)));
 }
 
 void FakeServiceConnectionImpl::LoadTextClassifier(
@@ -261,10 +261,10 @@ void FakeServiceConnectionImpl::HandleLoadFlatBufferModelCall(
   std::move(callback).Run(load_model_result_);
 }
 
-void FakeServiceConnectionImpl::HandleCreateGraphExecutorWithOptionsCall(
+void FakeServiceConnectionImpl::HandleCreateGraphExecutorCall(
     mojom::GraphExecutorOptionsPtr options,
     mojo::PendingReceiver<mojom::GraphExecutor> receiver,
-    mojom::Model::CreateGraphExecutorWithOptionsCallback callback) {
+    mojom::Model::CreateGraphExecutorCallback callback) {
   if (create_graph_executor_result_ == mojom::CreateGraphExecutorResult::OK)
     graph_receivers_.Add(this, std::move(receiver));
 

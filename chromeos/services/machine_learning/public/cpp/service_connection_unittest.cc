@@ -277,7 +277,7 @@ TEST_F(ServiceConnectionTest, FakeServiceConnectionForBuiltinModel) {
   callback_done = false;
   mojo::Remote<mojom::GraphExecutor> graph;
   run_loop.reset(new base::RunLoop);
-  model->CreateGraphExecutorWithOptions(
+  model->CreateGraphExecutor(
       mojom::GraphExecutorOptions::New(), graph.BindNewPipeAndPassReceiver(),
       base::BindOnce(
           [](bool* callback_done, mojom::CreateGraphExecutorResult result) {
@@ -347,7 +347,7 @@ TEST_F(ServiceConnectionTest, FakeServiceConnectionForFlatBufferModel) {
   callback_done = false;
   mojo::Remote<mojom::GraphExecutor> graph;
   run_loop.reset(new base::RunLoop);
-  model->CreateGraphExecutorWithOptions(
+  model->CreateGraphExecutor(
       mojom::GraphExecutorOptions::New(), graph.BindNewPipeAndPassReceiver(),
       base::BindOnce(
           [](bool* callback_done, mojom::CreateGraphExecutorResult result) {

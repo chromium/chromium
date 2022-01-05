@@ -117,7 +117,7 @@ void DownloadWorker::LoadModelAndCreateGraphExecutor(
           model_.BindNewPipeAndPassReceiver(),
           base::BindOnce(&DownloadWorker::LoadModelCallback,
                          base::Unretained(this)));
-  model_->CreateGraphExecutorWithOptions(
+  model_->CreateGraphExecutor(
       chromeos::machine_learning::mojom::GraphExecutorOptions::New(),
       executor_.BindNewPipeAndPassReceiver(),
       base::BindOnce(&DownloadWorker::CreateGraphExecutorCallback,
