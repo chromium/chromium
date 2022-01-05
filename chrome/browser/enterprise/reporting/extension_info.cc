@@ -39,7 +39,7 @@ em::Extension_InstallType GetExtensionInstallType(
       return em::Extension_InstallType_TYPE_ADMIN;
     default:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case ManifestLocation::kInvalidLocation:
     case ManifestLocation::kComponent:
     case ManifestLocation::kExternalComponent:
