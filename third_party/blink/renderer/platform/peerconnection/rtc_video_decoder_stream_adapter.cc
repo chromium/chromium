@@ -318,10 +318,10 @@ RTCVideoDecoderStreamAdapter::RTCVideoDecoderStreamAdapter(
       max_pending_buffer_count_(kAbsoluteMaxPendingBuffers) {
   DVLOG(1) << __func__;
   // Default to hw-accelerated decoder, in case something checks before decoding
-  // a frame.  It's unclear what we should report in the long run, but for now,
+  // a frame. It's unclear what we should report in the long run, but for now,
   // it's better to report hardware since that's all we support anyway.
   decoder_info_.implementation_name = kExternalDecoderName;
-  decoder_info_.is_hardware_accelerated = false;
+  decoder_info_.is_hardware_accelerated = true;
   DETACH_FROM_SEQUENCE(decoding_sequence_checker_);
   // This is normally constructed on the media thread, but the first one is
   // constructed immediately so that we can post to the media thread.
