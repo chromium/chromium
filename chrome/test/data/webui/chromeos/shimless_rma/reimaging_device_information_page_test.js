@@ -159,6 +159,7 @@ export function reimagingDeviceInformationPageTest() {
   test('ReimagingDeviceInformationPageModifySerialNumberAndReset', async () => {
     await initializeReimagingDeviceInformationPage(fakeSerialNumber);
 
+    component.allButtonsDisabled = false;
     let serialNumber = fakeSerialNumber + 'new serial number';
     const serialNumberComponent =
         component.shadowRoot.querySelector('#serialNumber');
@@ -175,6 +176,29 @@ export function reimagingDeviceInformationPageTest() {
     await flushTasks();
     assertEquals(serialNumberComponent.value, fakeSerialNumber);
     assertTrue(resetSerialNumberComponent.disabled);
+  });
+
+  test('ReimagingDeviceInformationPageInputsDisabled', async () => {
+    await initializeReimagingDeviceInformationPage(fakeSerialNumber);
+
+    const serialNumberInput =
+        component.shadowRoot.querySelector('#serialNumber');
+    const serialNumberButton =
+        component.shadowRoot.querySelector('#resetSerialNumber');
+    const regionSelect = component.shadowRoot.querySelector('#regionSelect');
+    const regionButton = component.shadowRoot.querySelector('#resetRegion');
+    const skuSelect = component.shadowRoot.querySelector('#skuSelect');
+    const skuButton = component.shadowRoot.querySelector('#resetSku');
+
+    component.allButtonsDisabled = false;
+    assertFalse(serialNumberInput.disabled);
+    assertFalse(regionSelect.disabled);
+    assertFalse(skuSelect.disabled);
+
+    component.allButtonsDisabled = true;
+    assertTrue(serialNumberInput.disabled);
+    assertTrue(regionSelect.disabled);
+    assertTrue(skuSelect.disabled);
   });
 
   // TODO(gavindodd): Add tests for the selection lists when they are

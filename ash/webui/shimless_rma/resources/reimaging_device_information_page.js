@@ -41,23 +41,32 @@ export class ReimagingDeviceInformationPage extends
 
   static get properties() {
     return {
+
+      /**
+       * Set by shimless_rma.js.
+       * @type {boolean}
+       */
+      allButtonsDisabled: Boolean,
+
       /** @protected */
       disableResetSerialNumber_: {
         type: Boolean,
-        computed:
-            'getDisableResetSerialNumber_(originalSerialNumber_, serialNumber_)',
+        computed: 'getDisableResetSerialNumber_(originalSerialNumber_,' +
+            'serialNumber_, allButtonsDisabled)',
       },
 
       /** @protected */
       disableResetRegion_: {
         type: Boolean,
-        computed: 'getDisableResetRegion_(originalRegionIndex_, regionIndex_)',
+        computed: 'getDisableResetRegion_(originalRegionIndex_, regionIndex_,' +
+            'allButtonsDisabled)',
       },
 
       /** @protected */
       disableResetSku_: {
         type: Boolean,
-        computed: 'getDisableResetSku_(originalSkuIndex_, skuIndex_)',
+        computed: 'getDisableResetSku_(originalSkuIndex_, skuIndex_,' +
+            'allButtonsDisabled)',
       },
 
       /** @protected */
@@ -232,17 +241,19 @@ export class ReimagingDeviceInformationPage extends
 
   /** @protected */
   getDisableResetSerialNumber_() {
-    return this.originalSerialNumber_ === this.serialNumber_;
+    return this.originalSerialNumber_ === this.serialNumber_ ||
+        this.allButtonsDisabled;
   }
 
   /** @protected */
   getDisableResetRegion_() {
-    return this.originalRegionIndex_ === this.regionIndex_;
+    return this.originalRegionIndex_ === this.regionIndex_ ||
+        this.allButtonsDisabled;
   }
 
   /** @protected */
   getDisableResetSku_() {
-    return this.originalSkuIndex_ === this.skuIndex_;
+    return this.originalSkuIndex_ === this.skuIndex_ || this.allButtonsDisabled;
   }
 
   /** @protected */

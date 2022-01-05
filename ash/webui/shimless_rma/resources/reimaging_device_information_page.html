@@ -45,7 +45,8 @@
       </label>
       <div class="input-holder">
         <cr-input id="serialNumber" placeholder="Enter Serial Number"
-            value="{{serialNumber_}}" aria-labelledby="serialNumberLabel">
+            value="{{serialNumber_}}" aria-labelledby="serialNumberLabel"
+            disabled="[[allButtonsDisabled]]">
         </cr-input>
         <cr-button id="resetSerialNumber"
             on-click="onResetSerialNumberButtonClicked_"
@@ -60,7 +61,8 @@
       </label>
       <div class="input-holder">
         <select id="regionSelect" class="md-select"
-            on-change="onSelectedRegionChange_" aria-labelledby="regionLabel">
+            on-change="onSelectedRegionChange_" aria-labelledby="regionLabel"
+            disabled="[[allButtonsDisabled]]">
           <template is="dom-repeat" items="[[regions_]]" as="region">
             <option value="[[region]]">
               [[region]]
@@ -98,7 +100,8 @@
       </label>
       <div class="input-holder">
         <select id="skuSelect" class="md-select"
-            on-change="onSelectedSkuChange_" aria-labelledby="skuLabel">
+            on-change="onSelectedSkuChange_" aria-labelledby="skuLabel"
+            disabled="[[allButtonsDisabled]]">
           <template is="dom-repeat" items="[[skus_]]" as="sku">
             <option value="[[sku]]">
               [[sku]]
