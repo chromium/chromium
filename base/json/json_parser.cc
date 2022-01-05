@@ -322,7 +322,7 @@ void JSONParser::EatWhitespaceAndComments() {
         if (!(c == '\n' && index_ > 0 && input_[index_ - 1] == '\r')) {
           ++line_number_;
         }
-        FALLTHROUGH;
+        [[fallthrough]];
       case ' ':
       case '\t':
         ConsumeChar();
