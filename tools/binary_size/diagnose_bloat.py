@@ -931,6 +931,8 @@ def main():
   log_level = logging.DEBUG if args.verbose else logging.INFO
   logging.basicConfig(level=log_level,
                       format='%(levelname).1s %(relativeCreated)6d %(message)s')
+  if args.target and args.target.endswith('_bundle'):
+    parser.error('Bundle targets must use _minimal_apks variants')
 
   build = _BuildHelper(args)
   subrepo = args.subrepo or _SRC_ROOT
