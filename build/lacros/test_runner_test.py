@@ -79,7 +79,8 @@ class TestRunnerTest(unittest.TestCase):
           'build/lacros/prebuilt_ash_chrome/793554/test_ash_chrome'))
       expected_ash_chrome_args = [
           '--user-data-dir=/tmp/ash-data', '--enable-wayland-server',
-          '--no-startup-window', '--enable-features=LacrosSupport',
+          '--no-startup-window',
+          '--enable-features=LacrosSupport,LacrosPrimary',
           '--ash-ready-file-path=/tmp/ash-data/ash_ready.txt'
       ]
       if command == 'lacros_chrome_browsertests':
