@@ -9,6 +9,7 @@ import("//tools/polymer/html_to_js.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("../tools/optimize_webui.gni")
+import("downloads.gni")
 
 preprocess_folder = "preprocessed"
 
@@ -53,28 +54,16 @@ generate_grd("build_grd") {
 }
 
 preprocess_if_expr("preprocess") {
-  in_folder = "./"
+  in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [
-    "browser_proxy.ts",
-    "constants.ts",
-    "data.ts",
-    "downloads.ts",
-    "icon_loader.ts",
-    "search_service.ts",
-  ]
+  in_files = non_web_component_files
 }
 
 preprocess_if_expr("preprocess_web_components") {
   deps = [ ":web_components" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [
-    "icons.ts",
-    "item.ts",
-    "manager.ts",
-    "toolbar.ts",
-  ]
+  in_files = web_component_files
 }
 
 copy("copy_mojo") {
@@ -101,12 +90,7 @@ grit("resources") {
 }
 
 html_to_js("web_components") {
-  js_files = [
-    "icons.ts",
-    "item.ts",
-    "manager.ts",
-    "toolbar.ts",
-  ]
+  js_files = web_component_files
 }
 
 ts_library("build_ts") {
@@ -114,19 +98,8 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   composite = true
   tsconfig_base = "tsconfig_base.json"
-  in_files = [
-    "browser_proxy.ts",
-    "constants.ts",
-    "data.ts",
-    "downloads.mojom-webui.js",
-    "downloads.ts",
-    "icon_loader.ts",
-    "icons.ts",
-    "item.ts",
-    "manager.ts",
-    "search_service.ts",
-    "toolbar.ts",
-  ]
+  in_files = web_component_files + non_web_component_files +
+             [ "downloads.mojom-webui.js" ]
   deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
