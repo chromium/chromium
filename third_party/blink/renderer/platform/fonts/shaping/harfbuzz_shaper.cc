@@ -416,19 +416,23 @@ void HarfBuzzShaper::CommitGlyphs(RangeData* range_data,
         current_font, direction, canvas_rotation, script,
         current_slice->start_character_index, current_slice->num_glyphs,
         current_slice->num_characters);
+    unsigned next_start_glyph;
     shape_result->InsertRun(run, current_slice->start_glyph_index,
-                            current_slice->num_glyphs, range_data->buffer);
-    unsigned num_glyphs_inserted = run->NumGlyphs();
-    if (num_glyphs_inserted == current_slice->num_glyphs)
+                            current_slice->num_glyphs, &next_start_glyph,
+                            range_data->buffer);
+    DCHECK_GE(current_slice->start_glyph_index + current_slice->num_glyphs,
+              next_start_glyph);
+    unsigned next_num_glyphs =
+        current_slice->num_glyphs -
+        (next_start_glyph - current_slice->start_glyph_index);
+    if (!next_num_glyphs)
       break;
     // If the slice exceeds the limit a RunInfo can store, create another
     // RunInfo for the rest of the slice.
     DCHECK_GT(current_slice->num_characters, run->num_characters_);
-    DCHECK_GT(current_slice->num_glyphs, num_glyphs_inserted);
     next_slice = {current_slice->start_character_index + run->num_characters_,
                   current_slice->num_characters - run->num_characters_,
-                  current_slice->start_glyph_index + num_glyphs_inserted,
-                  current_slice->num_glyphs - num_glyphs_inserted};
+                  next_start_glyph, next_num_glyphs};
     current_slice = &next_slice;
   }
   if (is_last_font)

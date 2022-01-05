@@ -994,6 +994,7 @@ bool IsSafeToBreakBefore(const hb_glyph_info_t* glyph_infos,
 unsigned ShapeResult::RunInfo::LimitNumGlyphs(
     unsigned start_glyph,
     unsigned* num_glyphs_in_out,
+    unsigned* num_glyphs_removed_out,
     const bool is_ltr,
     const hb_glyph_info_t* glyph_infos) {
   unsigned num_glyphs = *num_glyphs_in_out;
@@ -1065,24 +1066,29 @@ unsigned ShapeResult::RunInfo::LimitNumGlyphs(
 
   // num_glyphs maybe still larger than kMaxGlyphs after it was reduced to fit
   // to kMaxCharacterIndex. Reduce to kMaxGlyphs if so.
+  *num_glyphs_removed_out = 0;
   if (UNLIKELY(num_glyphs > HarfBuzzRunGlyphData::kMaxGlyphs)) {
+    const unsigned old_num_glyphs = num_glyphs;
     num_glyphs = HarfBuzzRunGlyphData::kMaxGlyphs;
 
     // If kMaxGlyphs is not a cluster boundary, reduce further until the last
     // boundary.
     const unsigned end_cluster = glyph_infos[start_glyph + num_glyphs].cluster;
-    for (;; num_glyphs--) {
-      if (!num_glyphs) {
-        // Extreme edge case when kMaxGlyphs is one grapheme cluster. We don't
-        // have much choices, just cut at kMaxGlyphs.
-        num_glyphs = HarfBuzzRunGlyphData::kMaxGlyphs;
-        break;
-      }
+    for (; num_glyphs; num_glyphs--) {
       if (glyph_infos[start_glyph + num_glyphs - 1].cluster != end_cluster)
         break;
     }
-    num_characters_ = is_ltr ? end_cluster - start_cluster
-                             : glyph_infos[start_glyph].cluster - end_cluster;
+
+    if (!num_glyphs) {
+      // Extreme edge case when kMaxGlyphs is one grapheme cluster. We don't
+      // have much choices, just cut at kMaxGlyphs.
+      num_glyphs = HarfBuzzRunGlyphData::kMaxGlyphs;
+      *num_glyphs_removed_out = old_num_glyphs - num_glyphs;
+    } else {
+      num_characters_ = is_ltr ? end_cluster - start_cluster
+                               : glyph_infos[start_glyph].cluster - end_cluster;
+      DCHECK(num_characters_);
+    }
   }
 
   if (num_glyphs == *num_glyphs_in_out)
@@ -1097,6 +1103,7 @@ template <bool is_horizontal_run>
 void ShapeResult::ComputeGlyphPositions(ShapeResult::RunInfo* run,
                                         unsigned start_glyph,
                                         unsigned num_glyphs,
+                                        unsigned start_cluster,
                                         hb_buffer_t* harfbuzz_buffer) {
   DCHECK_EQ(is_horizontal_run, run->IsHorizontal());
   const hb_glyph_info_t* glyph_infos =
@@ -1104,10 +1111,6 @@ void ShapeResult::ComputeGlyphPositions(ShapeResult::RunInfo* run,
   const hb_glyph_position_t* glyph_positions =
       hb_buffer_get_glyph_positions(harfbuzz_buffer, nullptr);
 
-  const bool is_ltr =
-      HB_DIRECTION_IS_FORWARD(hb_buffer_get_direction(harfbuzz_buffer));
-  unsigned start_cluster =
-      run->LimitNumGlyphs(start_glyph, &num_glyphs, is_ltr, glyph_infos);
   DCHECK_LE(num_glyphs, HarfBuzzRunGlyphData::kMaxGlyphs);
 
   // Compute glyph_origin in physical, since offsets of glyphs are in physical.
@@ -1149,18 +1152,31 @@ void ShapeResult::ComputeGlyphPositions(ShapeResult::RunInfo* run,
 void ShapeResult::InsertRun(scoped_refptr<ShapeResult::RunInfo> run_to_insert,
                             unsigned start_glyph,
                             unsigned num_glyphs,
+                            unsigned* next_start_glyph,
                             hb_buffer_t* harfbuzz_buffer) {
   DCHECK_GT(num_glyphs, 0u);
   scoped_refptr<ShapeResult::RunInfo> run(std::move(run_to_insert));
 
+  const hb_glyph_info_t* glyph_infos =
+      hb_buffer_get_glyph_infos(harfbuzz_buffer, nullptr);
+  const bool is_ltr =
+      HB_DIRECTION_IS_FORWARD(hb_buffer_get_direction(harfbuzz_buffer));
+  // num_glyphs_removed will be non-zero if the first grapheme cluster of |run|
+  // is too big to fit in a single run, in which case it is truncated and the
+  // truncated glyphs won't be inserted into any run.
+  unsigned num_glyphs_removed = 0;
+  unsigned start_cluster = run->LimitNumGlyphs(
+      start_glyph, &num_glyphs, &num_glyphs_removed, is_ltr, glyph_infos);
+  *next_start_glyph = start_glyph + run->NumGlyphs() + num_glyphs_removed;
+
   if (run->IsHorizontal()) {
     // Inserting a horizontal run into a horizontal or vertical result.
     ComputeGlyphPositions<true>(run.get(), start_glyph, num_glyphs,
-                                harfbuzz_buffer);
+                                start_cluster, harfbuzz_buffer);
   } else {
     // Inserting a vertical run to a vertical result.
     ComputeGlyphPositions<false>(run.get(), start_glyph, num_glyphs,
-                                 harfbuzz_buffer);
+                                 start_cluster, harfbuzz_buffer);
   }
   width_ += run->width_;
   num_glyphs_ += run->NumGlyphs();

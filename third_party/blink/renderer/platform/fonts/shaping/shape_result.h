@@ -466,10 +466,15 @@ class PLATFORM_EXPORT ShapeResult : public RefCounted<ShapeResult> {
   void ComputeGlyphPositions(ShapeResult::RunInfo*,
                              unsigned start_glyph,
                              unsigned num_glyphs,
+                             unsigned start_cluster,
                              hb_buffer_t*);
+  // Inserts as many glyphs as possible as a RunInfo, and sets
+  // |next_start_glyph| to the start index of the remaining glyphs to be
+  // inserted.
   void InsertRun(scoped_refptr<ShapeResult::RunInfo>,
                  unsigned start_glyph,
                  unsigned num_glyphs,
+                 unsigned* next_start_glyph,
                  hb_buffer_t*);
   void InsertRun(scoped_refptr<ShapeResult::RunInfo>);
   void ReorderRtlRuns(unsigned run_size_before);

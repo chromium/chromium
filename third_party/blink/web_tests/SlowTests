@@ -784,3 +784,5 @@ crbug.com/1195814 [ Mac11 ] storage/indexeddb/key-generator.html [ Slow ]
 crbug.com/1195814 [ Mac11 ] storage/indexeddb/odd-strings.html [ Slow ]
 
 crbug.com/1263580 editing/deleting/delete-many-lines-of-text.html [ Slow ]
+
+crbug.com/1255482 external/wpt/css/css-fonts/crash-large-grapheme-cluster.html [ Slow ]

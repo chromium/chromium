@@ -122,6 +122,7 @@ struct ShapeResult::RunInfo : public RefCounted<ShapeResult::RunInfo> {
                                   GlyphIndexResult*) const;
   unsigned LimitNumGlyphs(unsigned start_glyph,
                           unsigned* num_glyphs_in_out,
+                          unsigned* num_glyphs_removed_out,
                           const bool is_ltr,
                           const hb_glyph_info_t* glyph_infos);
 

@@ -1902,4 +1902,33 @@ TEST_F(HarfBuzzShaperTest, EmojiPercentage) {
   CHECK_EQ(num_calls, base::size(expectations));
 }
 
+// https://crbug.com/1255482
+TEST_F(HarfBuzzShaperTest, OverlyLongGraphemeCluster) {
+  // Letter 'e' with 35000 diacritics, followed by letter 'X'
+  StringBuilder builder;
+  builder.Append('e');
+  for (unsigned i = 0; i < 35000; ++i)
+    builder.Append(kCombiningAcuteAccentCharacter);
+  builder.Append('X');
+  String string = builder.ToString();
+
+  HarfBuzzShaper shaper(string);
+  scoped_refptr<ShapeResult> result = shaper.Shape(&font, TextDirection::kLtr);
+  Vector<ShapeResultRunData> runs = ShapeResultRunData::Get(result);
+
+  ASSERT_EQ(2u, runs.size());
+
+  // The first run contains a glyph 'é' with 32767 diacritic glyphs, reaching
+  // the maximum allowed number of glyphs per run. The remaining 2232
+  // diacritics are abandoned.
+  EXPECT_EQ(0u, runs[0].start_index);
+  EXPECT_EQ(35001u, runs[0].num_characters);
+  EXPECT_EQ(32768u, runs[0].num_glyphs);
+
+  // The second run consists of a single glyph 'X'.
+  EXPECT_EQ(35001u, runs[1].start_index);
+  EXPECT_EQ(1u, runs[1].num_characters);
+  EXPECT_EQ(1u, runs[1].num_glyphs);
+}
+
 }  // namespace blink
