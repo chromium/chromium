@@ -394,4 +394,37 @@ TEST_F(FileSelectHelperTest, GetFileTypesFromAcceptType) {
   ASSERT_EQ(expected_extensions, file_type_info->extensions);
 }
 
+// This test depends on platform-specific mappings from mime types to file
+// extensions in PlatformMimeUtil. It would seem that Linux does not offer a way
+// to get extensions, and our Windows implementation still needs to be updated.
+#if defined(OS_MAC)
+TEST_F(FileSelectHelperTest, MultipleFileExtensionsForMime) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  scoped_refptr<FileSelectHelper> file_select_helper =
+      new FileSelectHelper(&profile);
+
+  std::vector<std::u16string> accept_types{u"application/vnd.ms-powerpoint"};
+  std::unique_ptr<ui::SelectFileDialog::FileTypeInfo> file_type_info =
+      file_select_helper->GetFileTypesFromAcceptType(accept_types);
+
+  std::vector<base::FilePath::StringType> expected_extensions {
+#if defined(OS_WIN)
+    L"ppt", L"pot", L"pps"
+  };
+#else
+    "ppt", "pot", "pps"
+  };
+#endif
+  std::sort(expected_extensions.begin(), expected_extensions.end());
+
+  ASSERT_EQ(file_type_info->extensions.size(), 1u);
+  std::vector<base::FilePath::StringType> actual_extensions =
+      file_type_info->extensions[0];
+  std::sort(actual_extensions.begin(), actual_extensions.end());
+
+  EXPECT_EQ(expected_extensions, actual_extensions);
+}
+#endif
+
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)

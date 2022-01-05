@@ -89,6 +89,7 @@ class FileSelectHelper : public base::RefCountedThreadSafe<
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest,
                            ContentAnalysisCompletionCallback_OKBadFiles);
   FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, GetFileTypesFromAcceptType);
+  FRIEND_TEST_ALL_PREFIXES(FileSelectHelperTest, MultipleFileExtensionsForMime);
 
   explicit FileSelectHelper(Profile* profile);
   ~FileSelectHelper() override;
