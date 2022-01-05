@@ -49,6 +49,7 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager.SnackbarController;
@@ -367,7 +368,8 @@ public class BookmarkUtils {
 
         // Tablet.
         if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)) {
-            openUrl(context, url, activity == null ? null : activity.getComponentName());
+            openUrl(context, url, activity == null ? null : activity.getComponentName(),
+                    /*launchType=*/null);
             return;
         }
 
@@ -500,7 +502,8 @@ public class BookmarkUtils {
                     isIncognito);
             model.setReadStatusForReadingList(bookmarkItem.getUrl(), true);
         } else {
-            openUrl(context, bookmarkItem.getUrl().getSpec(), openBookmarkComponentName);
+            openUrl(context, bookmarkItem.getUrl().getSpec(), openBookmarkComponentName,
+                    /*launchType=*/null);
         }
         return true;
     }
@@ -552,12 +555,26 @@ public class BookmarkUtils {
         return null;
     }
 
-    private static void openUrl(Context context, String url, ComponentName componentName) {
+    /**
+     * Opens a url.
+     *
+     * @param url Url to open.
+     * @param componentName Name of the component opening the URL. If null, {@link
+     *         ChromeTabbedActivity} is used.
+     * @param launchType If not null, url is opened in a new tab with the specified {@link
+     *         TabLaunchType}.
+     */
+    private static void openUrl(Context context, String url, ComponentName componentName,
+            @Nullable @TabLaunchType Integer launchType) {
         Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         intent.putExtra(
                 Browser.EXTRA_APPLICATION_ID, context.getApplicationContext().getPackageName());
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.putExtra(IntentHandler.EXTRA_PAGE_TRANSITION_TYPE, PageTransition.AUTO_BOOKMARK);
+        if (launchType != null) {
+            IntentHandler.setTabLaunchType(intent, launchType);
+            intent.putExtra(Browser.EXTRA_CREATE_NEW_TAB, true);
+        }
 
         if (componentName != null) {
             ChromeTabbedActivity.setNonAliasedComponent(intent, componentName);
@@ -576,7 +593,10 @@ public class BookmarkUtils {
         if (ReadingListFeatures.shouldUseCustomTab()) {
             openReadingListInCustomTab(context, url, isOffTheRecord);
         } else {
-            openUrl(context, url, componentName);
+            openUrl(context, url, componentName,
+                    DeviceFormFactor.isNonMultiDisplayContextOnTablet(context)
+                            ? null
+                            : TabLaunchType.FROM_READING_LIST);
         }
     }
 
