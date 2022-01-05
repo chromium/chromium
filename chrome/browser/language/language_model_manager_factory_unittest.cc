@@ -26,4 +26,7 @@ TEST(LanguageModelManagerFactoryTest, SharedWithIncognito) {
   ASSERT_THAT(incognito, Not(IsNull()));
   EXPECT_THAT(LanguageModelManagerFactory::GetForBrowserContext(incognito),
               Eq(manager));
+
+  // Must wait for task posted in PrepareLanguageModels to complete.
+  task_environment.RunUntilIdle();
 }
