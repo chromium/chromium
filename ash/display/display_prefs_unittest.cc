@@ -819,7 +819,7 @@ TEST_F(DisplayPrefsTestGuest, DisplayPrefsTestGuest) {
   EXPECT_EQ(display::DisplayPlacement::BOTTOM, placement.position);
   EXPECT_EQ(-10, placement.offset);
   const display::Display& primary_display = screen->GetPrimaryDisplay();
-  EXPECT_EQ("178x276", primary_display.bounds().size().ToString());
+  EXPECT_EQ(gfx::Size(178, 276), primary_display.bounds().size());
   EXPECT_EQ(display::Display::ROTATE_90, primary_display.rotation());
 
   const display::ManagedDisplayInfo& info1 =
@@ -895,7 +895,7 @@ TEST_P(DisplayPrefsPublicAccountTest, StoreDisplayPrefsForPublicAccount) {
   EXPECT_EQ(display::DisplayPlacement::BOTTOM, placement.position);
   EXPECT_EQ(-10, placement.offset);
   const display::Display& primary_display = screen->GetPrimaryDisplay();
-  EXPECT_EQ("178x276", primary_display.bounds().size().ToString());
+  EXPECT_EQ(gfx::Size(178, 276), primary_display.bounds().size());
   EXPECT_EQ(display::Display::ROTATE_90, primary_display.rotation());
 
   const display::ManagedDisplayInfo& info1 =
@@ -1157,9 +1157,8 @@ TEST_F(DisplayPrefsTest, SaveUnifiedMode) {
 
   UpdateDisplay("300x200,200x100");
   display::DisplayIdList list = display_manager()->GetCurrentDisplayIdList();
-  EXPECT_EQ(
-      "700x200",
-      display::Screen::GetScreen()->GetPrimaryDisplay().size().ToString());
+  EXPECT_EQ(gfx::Size(700, 200),
+            display::Screen::GetScreen()->GetPrimaryDisplay().size());
 
   const base::Value* secondary_displays =
       local_state()->GetDictionary(prefs::kSecondaryDisplays);
@@ -1179,9 +1178,8 @@ TEST_F(DisplayPrefsTest, SaveUnifiedMode) {
 
   display::test::SetDisplayResolution(display_manager(), unified_id,
                                       gfx::Size(350, 100));
-  EXPECT_EQ(
-      "350x100",
-      display::Screen::GetScreen()->GetPrimaryDisplay().size().ToString());
+  EXPECT_EQ(gfx::Size(350, 100),
+            display::Screen::GetScreen()->GetPrimaryDisplay().size());
   EXPECT_FALSE(displays->FindDictKey(base::NumberToString(unified_id)));
 
   // Mirror mode should remember if the default mode was unified.

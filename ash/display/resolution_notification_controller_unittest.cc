@@ -205,7 +205,7 @@ TEST_P(ResolutionNotificationControllerTest, Basic) {
             GetNotificationMessage());
   display::ManagedDisplayMode mode;
   EXPECT_TRUE(display_manager()->GetSelectedModeForDisplayId(id2, &mode));
-  EXPECT_EQ("300x200", mode.size().ToString());
+  EXPECT_EQ(gfx::Size(300, 200), mode.size());
   EXPECT_EQ(59.0, mode.refresh_rate());
 
   // Click the revert button, which reverts to the best resolution.
@@ -214,7 +214,7 @@ TEST_P(ResolutionNotificationControllerTest, Basic) {
   EXPECT_FALSE(IsNotificationVisible());
   EXPECT_EQ(0, accept_count());
   EXPECT_TRUE(display_manager()->GetSelectedModeForDisplayId(id2, &mode));
-  EXPECT_EQ("300x250", mode.size().ToString());
+  EXPECT_EQ(gfx::Size(300, 250), mode.size());
   EXPECT_EQ(60.0, mode.refresh_rate());
 }
 
@@ -234,7 +234,7 @@ TEST_P(ResolutionNotificationControllerTest, ForcedByPolicy) {
   EXPECT_FALSE(IsNotificationVisible());
   display::ManagedDisplayMode mode;
   EXPECT_TRUE(display_manager()->GetSelectedModeForDisplayId(id2, &mode));
-  EXPECT_EQ("300x200", mode.size().ToString());
+  EXPECT_EQ(gfx::Size(300, 200), mode.size());
   EXPECT_EQ(60.0, mode.refresh_rate());
 }
 
@@ -252,7 +252,7 @@ TEST_P(ResolutionNotificationControllerTest, ClickMeansAccept) {
   EXPECT_TRUE(IsNotificationVisible());
   display::ManagedDisplayMode mode;
   EXPECT_TRUE(display_manager()->GetSelectedModeForDisplayId(id2, &mode));
-  EXPECT_EQ("300x200", mode.size().ToString());
+  EXPECT_EQ(gfx::Size(300, 200), mode.size());
   EXPECT_EQ(60.0, mode.refresh_rate());
 
   ClickOnNotification();
@@ -260,7 +260,7 @@ TEST_P(ResolutionNotificationControllerTest, ClickMeansAccept) {
   EXPECT_FALSE(IsNotificationVisible());
   EXPECT_EQ(1, accept_count());
   EXPECT_TRUE(display_manager()->GetSelectedModeForDisplayId(id2, &mode));
-  EXPECT_EQ("300x200", mode.size().ToString());
+  EXPECT_EQ(gfx::Size(300, 200), mode.size());
   EXPECT_EQ(60.0, mode.refresh_rate());
 }
 
@@ -283,7 +283,7 @@ TEST_P(ResolutionNotificationControllerTest, AcceptButton) {
   EXPECT_TRUE(
       display_manager()->GetSelectedModeForDisplayId(display.id(), &mode));
 
-  EXPECT_EQ("300x200", mode.size().ToString());
+  EXPECT_EQ(gfx::Size(300, 200), mode.size());
   EXPECT_EQ(60.0f, mode.refresh_rate());
 
   // In that case the second button is revert.
@@ -301,7 +301,7 @@ TEST_P(ResolutionNotificationControllerTest, AcceptButton) {
   EXPECT_TRUE(
       display_manager()->GetSelectedModeForDisplayId(display.id(), &mode));
 
-  EXPECT_EQ("400x300", mode.size().ToString());
+  EXPECT_EQ(gfx::Size(400, 300), mode.size());
   EXPECT_EQ(60.0f, mode.refresh_rate());
 }
 
@@ -319,7 +319,7 @@ TEST_P(ResolutionNotificationControllerTest, Close) {
   EXPECT_TRUE(IsNotificationVisible());
   display::ManagedDisplayMode mode;
   EXPECT_TRUE(display_manager()->GetSelectedModeForDisplayId(id2, &mode));
-  EXPECT_EQ("300x200", mode.size().ToString());
+  EXPECT_EQ(gfx::Size(300, 200), mode.size());
   EXPECT_EQ(60.0f, mode.refresh_rate());
 
   // Close the notification (imitates clicking [x] button). Also verifies if
@@ -349,7 +349,7 @@ TEST_P(ResolutionNotificationControllerTest, Timeout) {
   display::ManagedDisplayMode mode;
   EXPECT_TRUE(
       display_manager()->GetSelectedModeForDisplayId(display.id(), &mode));
-  EXPECT_EQ("400x300", mode.size().ToString());
+  EXPECT_EQ(gfx::Size(400, 300), mode.size());
   EXPECT_EQ(60.0f, mode.refresh_rate());
 }
 
@@ -371,7 +371,7 @@ TEST_P(ResolutionNotificationControllerTest, DisplayDisconnected) {
   EXPECT_EQ(0, accept_count());
   display::ManagedDisplayMode mode;
   EXPECT_TRUE(display_manager()->GetSelectedModeForDisplayId(id2, &mode));
-  EXPECT_EQ("300x200", mode.size().ToString());
+  EXPECT_EQ(gfx::Size(300, 200), mode.size());
   EXPECT_EQ(60.0f, mode.refresh_rate());
 }
 
@@ -389,7 +389,7 @@ TEST_P(ResolutionNotificationControllerTest, MultipleResolutionChange) {
   EXPECT_TRUE(IsNotificationVisible());
   display::ManagedDisplayMode mode;
   EXPECT_TRUE(display_manager()->GetSelectedModeForDisplayId(id2, &mode));
-  EXPECT_EQ("300x200", mode.size().ToString());
+  EXPECT_EQ(gfx::Size(300, 200), mode.size());
   EXPECT_EQ(59.0f, mode.refresh_rate());
 
   // Invokes SetDisplayResolutionAndNotify during the previous notification is
@@ -398,7 +398,7 @@ TEST_P(ResolutionNotificationControllerTest, MultipleResolutionChange) {
       display_manager_test.GetSecondaryDisplay(), gfx::Size(350, 250), 58,
       /*old_is_native=*/false, /*new_is_native=*/true);
   EXPECT_TRUE(display_manager()->GetSelectedModeForDisplayId(id2, &mode));
-  EXPECT_EQ("350x250", mode.size().ToString());
+  EXPECT_EQ(gfx::Size(350, 250), mode.size());
   EXPECT_EQ(58.0f, mode.refresh_rate());
 
   // Then, click the revert button. Although |old_resolution| for the second
@@ -409,7 +409,7 @@ TEST_P(ResolutionNotificationControllerTest, MultipleResolutionChange) {
   EXPECT_FALSE(IsNotificationVisible());
   EXPECT_EQ(0, accept_count());
   EXPECT_TRUE(display_manager()->GetSelectedModeForDisplayId(id2, &mode));
-  EXPECT_EQ("350x250", mode.size().ToString());
+  EXPECT_EQ(gfx::Size(350, 250), mode.size());
   EXPECT_EQ(58.0f, mode.refresh_rate());
 }
 
@@ -432,7 +432,7 @@ TEST_P(ResolutionNotificationControllerTest, Fallback) {
             GetNotificationMessage());
   display::ManagedDisplayMode mode;
   EXPECT_TRUE(display_manager()->GetSelectedModeForDisplayId(id2, &mode));
-  EXPECT_EQ("300x200", mode.size().ToString());
+  EXPECT_EQ(gfx::Size(300, 200), mode.size());
   EXPECT_EQ(60.0f, mode.refresh_rate());
 
   // Click the revert button, which reverts to the best resolution.
@@ -442,7 +442,7 @@ TEST_P(ResolutionNotificationControllerTest, Fallback) {
   EXPECT_EQ(0, accept_count());
 
   EXPECT_TRUE(display_manager()->GetSelectedModeForDisplayId(id2, &mode));
-  EXPECT_EQ("350x250", mode.size().ToString());
+  EXPECT_EQ(gfx::Size(350, 250), mode.size());
   EXPECT_EQ(60.0f, mode.refresh_rate());
 }
 
@@ -491,7 +491,7 @@ TEST_P(ResolutionNotificationControllerTest, NoDialogInKioskMode) {
   EXPECT_FALSE(IsNotificationVisible());
   display::ManagedDisplayMode mode;
   EXPECT_TRUE(display_manager()->GetSelectedModeForDisplayId(id2, &mode));
-  EXPECT_EQ("300x200", mode.size().ToString());
+  EXPECT_EQ(gfx::Size(300, 200), mode.size());
   EXPECT_EQ(60.0f, mode.refresh_rate());
 }
 

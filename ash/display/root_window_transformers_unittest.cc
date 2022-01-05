@@ -94,8 +94,8 @@ class TestEventHandler : public ui::EventHandler {
     event->StopPropagation();
   }
 
-  std::string GetLocationAndReset() {
-    std::string result = mouse_location_.ToString();
+  gfx::Point GetLocationAndReset() {
+    gfx::Point result = mouse_location_;
     mouse_location_.SetPoint(0, 0);
     target_root_ = nullptr;
     return result;
@@ -191,14 +191,14 @@ TEST_F(RootWindowTransformersTest, RotateAndMagnify) {
 
   magnifier->SetEnabled(true);
   EXPECT_EQ(2.0f, magnifier->GetScale());
-  EXPECT_EQ("120x200", root_windows[0]->bounds().size().ToString());
-  EXPECT_EQ("150x200", root_windows[1]->bounds().size().ToString());
-  EXPECT_EQ("120,0 150x200",
-            display_manager_test.GetSecondaryDisplay().bounds().ToString());
+  EXPECT_EQ(gfx::Size(120, 200), root_windows[0]->bounds().size());
+  EXPECT_EQ(gfx::Size(150, 200), root_windows[1]->bounds().size());
+  EXPECT_EQ(gfx::Rect(120, 0, 150, 200),
+            display_manager_test.GetSecondaryDisplay().bounds());
   generator1.MoveMouseToInHost(40, 80);
-  EXPECT_EQ("50,90", event_handler.GetLocationAndReset());
-  EXPECT_EQ("50,90",
-            aura::Env::GetInstance()->last_mouse_location().ToString());
+  EXPECT_EQ(gfx::Point(50, 90), event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(50, 90),
+            aura::Env::GetInstance()->last_mouse_location());
   EXPECT_EQ(display::Display::ROTATE_0,
             GetActiveDisplayRotation(display1.id()));
   EXPECT_EQ(display::Display::ROTATE_0, GetActiveDisplayRotation(display2_id));
@@ -212,14 +212,14 @@ TEST_F(RootWindowTransformersTest, RotateAndMagnify) {
 
   magnifier->SetEnabled(true);
   EXPECT_EQ(2.0f, magnifier->GetScale());
-  EXPECT_EQ("200x120", root_windows[0]->bounds().size().ToString());
-  EXPECT_EQ("150x200", root_windows[1]->bounds().size().ToString());
-  EXPECT_EQ("200,0 150x200",
-            display_manager_test.GetSecondaryDisplay().bounds().ToString());
+  EXPECT_EQ(gfx::Size(200, 120), root_windows[0]->bounds().size());
+  EXPECT_EQ(gfx::Size(150, 200), root_windows[1]->bounds().size());
+  EXPECT_EQ(gfx::Rect(200, 0, 150, 200),
+            display_manager_test.GetSecondaryDisplay().bounds());
   generator1.MoveMouseToInHost(39, 120);
-  EXPECT_EQ("110,70", event_handler.GetLocationAndReset());
-  EXPECT_EQ("110,70",
-            aura::Env::GetInstance()->last_mouse_location().ToString());
+  EXPECT_EQ(gfx::Point(110, 70), event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(110, 70),
+            aura::Env::GetInstance()->last_mouse_location());
   EXPECT_EQ(display::Display::ROTATE_90,
             GetActiveDisplayRotation(display1.id()));
   EXPECT_EQ(display::Display::ROTATE_0, GetActiveDisplayRotation(display2_id));
@@ -228,8 +228,8 @@ TEST_F(RootWindowTransformersTest, RotateAndMagnify) {
   display_manager()->SetLayoutForCurrentDisplays(
       display::test::CreateDisplayLayout(
           display_manager(), display::DisplayPlacement::BOTTOM, 50));
-  EXPECT_EQ("50,120 150x200",
-            display_manager_test.GetSecondaryDisplay().bounds().ToString());
+  EXPECT_EQ(gfx::Rect(50, 120, 150, 200),
+            display_manager_test.GetSecondaryDisplay().bounds());
 
   display_manager()->SetDisplayRotation(
       display2_id, display::Display::ROTATE_270,
@@ -238,14 +238,14 @@ TEST_F(RootWindowTransformersTest, RotateAndMagnify) {
   generator2.MoveMouseToInHost(151, 199);
 
   magnifier->SetEnabled(true);
-  EXPECT_EQ("200x120", root_windows[0]->bounds().size().ToString());
-  EXPECT_EQ("200x150", root_windows[1]->bounds().size().ToString());
-  EXPECT_EQ("50,120 200x150",
-            display_manager_test.GetSecondaryDisplay().bounds().ToString());
+  EXPECT_EQ(gfx::Size(200, 120), root_windows[0]->bounds().size());
+  EXPECT_EQ(gfx::Size(200, 150), root_windows[1]->bounds().size());
+  EXPECT_EQ(gfx::Rect(50, 120, 200, 150),
+            display_manager_test.GetSecondaryDisplay().bounds());
   generator2.MoveMouseToInHost(172, 219);
-  EXPECT_EQ("95,80", event_handler.GetLocationAndReset());
-  EXPECT_EQ("145,200",
-            aura::Env::GetInstance()->last_mouse_location().ToString());
+  EXPECT_EQ(gfx::Point(95, 80), event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(145, 200),
+            aura::Env::GetInstance()->last_mouse_location());
   EXPECT_EQ(display::Display::ROTATE_90,
             GetActiveDisplayRotation(display1.id()));
   EXPECT_EQ(display::Display::ROTATE_270,
@@ -259,13 +259,13 @@ TEST_F(RootWindowTransformersTest, RotateAndMagnify) {
   generator1.MoveMouseToInHost(59, 99);
 
   magnifier->SetEnabled(true);
-  EXPECT_EQ("120x200", root_windows[0]->bounds().size().ToString());
-  EXPECT_EQ("200x150", root_windows[1]->bounds().size().ToString());
+  EXPECT_EQ(gfx::Size(120, 200), root_windows[0]->bounds().size());
+  EXPECT_EQ(gfx::Size(200, 150), root_windows[1]->bounds().size());
   // Display must share at least 100, so the x's offset becomes 20.
-  EXPECT_EQ("20,200 200x150",
-            display_manager_test.GetSecondaryDisplay().bounds().ToString());
+  EXPECT_EQ(gfx::Rect(20, 200, 200, 150),
+            display_manager_test.GetSecondaryDisplay().bounds());
   generator1.MoveMouseToInHost(39, 59);
-  EXPECT_EQ("70,120", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(70, 120), event_handler.GetLocationAndReset());
   EXPECT_EQ(display::Display::ROTATE_180,
             GetActiveDisplayRotation(display1.id()));
   EXPECT_EQ(display::Display::ROTATE_270,
@@ -293,15 +293,15 @@ TEST_F(RootWindowTransformersTest, ScaleAndMagnify) {
   magnifier->SetEnabled(true);
   EXPECT_EQ(2.0f, magnifier->GetScale());
   EXPECT_EQ(1.6f, display1.device_scale_factor());
-  EXPECT_EQ("0,0 375x250", display1.bounds().ToString());
-  EXPECT_EQ("0,0 375x250", root_windows[0]->bounds().ToString());
-  EXPECT_EQ("375,0 500x300", display2.bounds().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 375, 250), display1.bounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 375, 250), root_windows[0]->bounds());
+  EXPECT_EQ(gfx::Rect(375, 0, 500, 300), display2.bounds());
   EXPECT_EQ(1.0f, GetStoredZoomScale(display1.id()));
   EXPECT_EQ(1.0f, GetStoredZoomScale(display2.id()));
 
   ui::test::EventGenerator generator(root_windows[0]);
   generator.MoveMouseToInHost(500, 200);
-  EXPECT_EQ("249,124", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(249, 124), event_handler.GetLocationAndReset());
   magnifier->SetEnabled(false);
 
   display_manager()->UpdateZoomFactor(display1.id(), 1.f / 1.2f);
@@ -309,9 +309,9 @@ TEST_F(RootWindowTransformersTest, ScaleAndMagnify) {
   display2 = display_manager_test.GetSecondaryDisplay();
   magnifier->SetEnabled(true);
   EXPECT_EQ(2.0f, magnifier->GetScale());
-  EXPECT_EQ("0,0 450x300", display1.bounds().ToString());
-  EXPECT_EQ("0,0 450x300", root_windows[0]->bounds().ToString());
-  EXPECT_EQ("450,0 500x300", display2.bounds().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 450, 300), display1.bounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 450, 300), root_windows[0]->bounds());
+  EXPECT_EQ(gfx::Rect(450, 0, 500, 300), display2.bounds());
   EXPECT_FLOAT_EQ(1.f / 1.2f, GetStoredZoomScale(display1.id()));
   EXPECT_EQ(1.0f, GetStoredZoomScale(display2.id()));
   magnifier->SetEnabled(false);
@@ -365,24 +365,24 @@ TEST_F(RootWindowTransformersTest, ConvertHostToRootCoords) {
 
   display::Display display1 = display::Screen::GetScreen()->GetPrimaryDisplay();
   aura::Window::Windows root_windows = Shell::GetAllRootWindows();
-  EXPECT_EQ("0,0 250x375", display1.bounds().ToString());
-  EXPECT_EQ("0,0 250x375", root_windows[0]->bounds().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 250, 375), display1.bounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 250, 375), root_windows[0]->bounds());
   EXPECT_EQ(0.8f, GetStoredZoomScale(display1.id()));
 
   ui::test::EventGenerator generator(root_windows[0]);
   generator.MoveMouseToInHost(300, 200);
   magnifier->SetEnabled(true);
-  EXPECT_EQ("125,187", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(125, 187), event_handler.GetLocationAndReset());
   EXPECT_FLOAT_EQ(2.0f, magnifier->GetScale());
 
   generator.MoveMouseToInHost(300, 200);
-  EXPECT_EQ("124,186", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(124, 186), event_handler.GetLocationAndReset());
   generator.MoveMouseToInHost(200, 300);
-  EXPECT_EQ("155,218", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(155, 218), event_handler.GetLocationAndReset());
   generator.MoveMouseToInHost(100, 400);
-  EXPECT_EQ("204,249", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(204, 249), event_handler.GetLocationAndReset());
   generator.MoveMouseToInHost(0, 0);
-  EXPECT_EQ("125,298", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(125, 298), event_handler.GetLocationAndReset());
 
   magnifier->SetEnabled(false);
   EXPECT_FLOAT_EQ(1.0f, magnifier->GetScale());
@@ -391,23 +391,23 @@ TEST_F(RootWindowTransformersTest, ConvertHostToRootCoords) {
   UpdateDisplay("600x400*2/u@0.8");
   display1 = display::Screen::GetScreen()->GetPrimaryDisplay();
   root_windows = Shell::GetAllRootWindows();
-  EXPECT_EQ("0,0 375x250", display1.bounds().ToString());
-  EXPECT_EQ("0,0 375x250", root_windows[0]->bounds().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 375, 250), display1.bounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 375, 250), root_windows[0]->bounds());
   EXPECT_EQ(0.8f, GetStoredZoomScale(display1.id()));
 
   generator.MoveMouseToInHost(300, 200);
   magnifier->SetEnabled(true);
-  EXPECT_EQ("187,125", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(187, 125), event_handler.GetLocationAndReset());
   EXPECT_FLOAT_EQ(2.0f, magnifier->GetScale());
 
   generator.MoveMouseToInHost(300, 200);
-  EXPECT_EQ("186,124", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(186, 124), event_handler.GetLocationAndReset());
   generator.MoveMouseToInHost(200, 300);
-  EXPECT_EQ("218,93", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(218, 93), event_handler.GetLocationAndReset());
   generator.MoveMouseToInHost(100, 400);
-  EXPECT_EQ("249,43", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(249, 43), event_handler.GetLocationAndReset());
   generator.MoveMouseToInHost(0, 0);
-  EXPECT_EQ("298,125", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(298, 125), event_handler.GetLocationAndReset());
 
   magnifier->SetEnabled(false);
   EXPECT_FLOAT_EQ(1.0f, magnifier->GetScale());
@@ -416,23 +416,23 @@ TEST_F(RootWindowTransformersTest, ConvertHostToRootCoords) {
   UpdateDisplay("600x400*2/l@0.8");
   display1 = display::Screen::GetScreen()->GetPrimaryDisplay();
   root_windows = Shell::GetAllRootWindows();
-  EXPECT_EQ("0,0 250x375", display1.bounds().ToString());
-  EXPECT_EQ("0,0 250x375", root_windows[0]->bounds().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 250, 375), display1.bounds());
+  EXPECT_EQ(gfx::Rect(0, 0, 250, 375), root_windows[0]->bounds());
   EXPECT_EQ(0.8f, GetStoredZoomScale(display1.id()));
 
   generator.MoveMouseToInHost(300, 200);
   magnifier->SetEnabled(true);
-  EXPECT_EQ("125,187", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(125, 187), event_handler.GetLocationAndReset());
   EXPECT_FLOAT_EQ(2.0f, magnifier->GetScale());
 
   generator.MoveMouseToInHost(300, 200);
-  EXPECT_EQ("124,186", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(124, 186), event_handler.GetLocationAndReset());
   generator.MoveMouseToInHost(200, 300);
-  EXPECT_EQ("93,155", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(93, 155), event_handler.GetLocationAndReset());
   generator.MoveMouseToInHost(100, 400);
-  EXPECT_EQ("43,124", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(43, 124), event_handler.GetLocationAndReset());
   generator.MoveMouseToInHost(0, 0);
-  EXPECT_EQ("125,74", event_handler.GetLocationAndReset());
+  EXPECT_EQ(gfx::Point(125, 74), event_handler.GetLocationAndReset());
 
   magnifier->SetEnabled(false);
   EXPECT_FLOAT_EQ(1.0f, magnifier->GetScale());
@@ -448,13 +448,13 @@ TEST_F(RootWindowTransformersTest, LetterBoxPillarBox) {
   std::unique_ptr<RootWindowTransformer> transformer(
       CreateCurrentRootWindowTransformerForMirroring());
   // Y margin must be margin is (400 - 500/400 * 200) / 2 = 75
-  EXPECT_EQ("0,75,0,75", transformer->GetHostInsets().ToString());
+  EXPECT_EQ(gfx::Insets(0, 75, 0, 75), transformer->GetHostInsets());
 
   // Pillar boxed
   UpdateDisplay("200x400,500x400");
   // X margin must be margin is (500 - 200) / 2 = 150
   transformer = CreateCurrentRootWindowTransformerForMirroring();
-  EXPECT_EQ("150,0,150,0", transformer->GetHostInsets().ToString());
+  EXPECT_EQ(gfx::Insets(150, 0, 150, 0), transformer->GetHostInsets());
 }
 
 TEST_F(RootWindowTransformersTest, MirrorWithRotation) {

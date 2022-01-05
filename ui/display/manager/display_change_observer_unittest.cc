@@ -121,74 +121,74 @@ TEST_P(DisplayChangeObserverTest, GetExternalManagedDisplayModeList) {
   const bool listing_all_modes = GetParam();
   if (listing_all_modes) {
     ASSERT_EQ(13u, display_modes.size());
-    EXPECT_EQ("640x480", display_modes[0].size().ToString());
+    EXPECT_EQ(gfx::Size(640, 480), display_modes[0].size());
     EXPECT_TRUE(display_modes[0].is_interlaced());
     EXPECT_EQ(display_modes[0].refresh_rate(), 60);
 
-    EXPECT_EQ("1024x600", display_modes[1].size().ToString());
+    EXPECT_EQ(gfx::Size(1024, 600), display_modes[1].size());
     EXPECT_FALSE(display_modes[1].is_interlaced());
     EXPECT_EQ(display_modes[1].refresh_rate(), 60);
-    EXPECT_EQ("1024x600", display_modes[2].size().ToString());
+    EXPECT_EQ(gfx::Size(1024, 600), display_modes[2].size());
     EXPECT_TRUE(display_modes[2].is_interlaced());
     EXPECT_EQ(display_modes[2].refresh_rate(), 60);
-    EXPECT_EQ("1024x600", display_modes[3].size().ToString());
+    EXPECT_EQ(gfx::Size(1024, 600), display_modes[3].size());
     EXPECT_FALSE(display_modes[3].is_interlaced());
     EXPECT_EQ(display_modes[3].refresh_rate(), 70);
 
-    EXPECT_EQ("1024x768", display_modes[4].size().ToString());
+    EXPECT_EQ(gfx::Size(1024, 768), display_modes[4].size());
     EXPECT_TRUE(display_modes[4].is_interlaced());
     EXPECT_EQ(display_modes[4].refresh_rate(), 60);
-    EXPECT_EQ("1024x768", display_modes[5].size().ToString());
+    EXPECT_EQ(gfx::Size(1024, 768), display_modes[5].size());
     EXPECT_TRUE(display_modes[5].is_interlaced());
     EXPECT_EQ(display_modes[5].refresh_rate(), 70);
 
-    EXPECT_EQ("1280x720", display_modes[6].size().ToString());
+    EXPECT_EQ(gfx::Size(1280, 720), display_modes[6].size());
     EXPECT_FALSE(display_modes[6].is_interlaced());
     EXPECT_EQ(display_modes[6].refresh_rate(), 60);
-    EXPECT_EQ("1280x720", display_modes[7].size().ToString());
+    EXPECT_EQ(gfx::Size(1280, 720), display_modes[7].size());
     EXPECT_TRUE(display_modes[7].is_interlaced());
     EXPECT_EQ(display_modes[7].refresh_rate(), 60);
 
-    EXPECT_EQ("1920x1080", display_modes[8].size().ToString());
+    EXPECT_EQ(gfx::Size(1920, 1080), display_modes[8].size());
     EXPECT_FALSE(display_modes[8].is_interlaced());
     EXPECT_EQ(display_modes[8].refresh_rate(), 60);
-    EXPECT_EQ("1920x1080", display_modes[9].size().ToString());
+    EXPECT_EQ(gfx::Size(1920, 1080), display_modes[9].size());
     EXPECT_FALSE(display_modes[9].is_interlaced());
     EXPECT_EQ(display_modes[9].refresh_rate(), 70);
-    EXPECT_EQ("1920x1080", display_modes[10].size().ToString());
+    EXPECT_EQ(gfx::Size(1920, 1080), display_modes[10].size());
     EXPECT_FALSE(display_modes[10].is_interlaced());
     EXPECT_EQ(display_modes[10].refresh_rate(), 80);
 
-    EXPECT_EQ("1920x1200", display_modes[11].size().ToString());
+    EXPECT_EQ(gfx::Size(1920, 1200), display_modes[11].size());
     EXPECT_FALSE(display_modes[11].is_interlaced());
     EXPECT_EQ(display_modes[11].refresh_rate(), 60);
 
-    EXPECT_EQ("1920x1200", display_modes[12].size().ToString());
+    EXPECT_EQ(gfx::Size(1920, 1200), display_modes[12].size());
     EXPECT_FALSE(display_modes[12].is_interlaced());
     EXPECT_EQ(display_modes[12].refresh_rate(), 75);
   } else {
     ASSERT_EQ(6u, display_modes.size());
-    EXPECT_EQ("640x480", display_modes[0].size().ToString());
+    EXPECT_EQ(gfx::Size(640, 480), display_modes[0].size());
     EXPECT_TRUE(display_modes[0].is_interlaced());
     EXPECT_EQ(display_modes[0].refresh_rate(), 60);
 
-    EXPECT_EQ("1024x600", display_modes[1].size().ToString());
+    EXPECT_EQ(gfx::Size(1024, 600), display_modes[1].size());
     EXPECT_FALSE(display_modes[1].is_interlaced());
     EXPECT_EQ(display_modes[1].refresh_rate(), 70);
 
-    EXPECT_EQ("1024x768", display_modes[2].size().ToString());
+    EXPECT_EQ(gfx::Size(1024, 768), display_modes[2].size());
     EXPECT_TRUE(display_modes[2].is_interlaced());
     EXPECT_EQ(display_modes[2].refresh_rate(), 70);
 
-    EXPECT_EQ("1280x720", display_modes[3].size().ToString());
+    EXPECT_EQ(gfx::Size(1280, 720), display_modes[3].size());
     EXPECT_FALSE(display_modes[3].is_interlaced());
     EXPECT_EQ(display_modes[3].refresh_rate(), 60);
 
-    EXPECT_EQ("1920x1080", display_modes[4].size().ToString());
+    EXPECT_EQ(gfx::Size(1920, 1080), display_modes[4].size());
     EXPECT_FALSE(display_modes[4].is_interlaced());
     EXPECT_EQ(display_modes[4].refresh_rate(), 80);
 
-    EXPECT_EQ("1920x1200", display_modes[5].size().ToString());
+    EXPECT_EQ(gfx::Size(1920, 1200), display_modes[5].size());
     EXPECT_FALSE(display_modes[5].is_interlaced());
     EXPECT_EQ(display_modes[5].refresh_rate(), 60);
   }
@@ -320,19 +320,19 @@ TEST_P(DisplayChangeObserverTest,
 
   if (listing_all_modes) {
     ASSERT_EQ(2u, display_modes.size());
-    EXPECT_EQ("1920x1080", display_modes[0].size().ToString());
+    EXPECT_EQ(gfx::Size(1920, 1080), display_modes[0].size());
     EXPECT_FALSE(display_modes[0].is_interlaced());
     EXPECT_FALSE(display_modes[0].native());
     EXPECT_EQ(display_modes[0].refresh_rate(), 60);
 
-    EXPECT_EQ("1920x1080", display_modes[1].size().ToString());
+    EXPECT_EQ(gfx::Size(1920, 1080), display_modes[1].size());
     EXPECT_TRUE(display_modes[1].is_interlaced());
     EXPECT_TRUE(display_modes[1].native());
     EXPECT_EQ(display_modes[1].refresh_rate(), 60);
   } else {
     // Only the native mode will be listed.
     ASSERT_EQ(1u, display_modes.size());
-    EXPECT_EQ("1920x1080", display_modes[0].size().ToString());
+    EXPECT_EQ(gfx::Size(1920, 1080), display_modes[0].size());
     EXPECT_TRUE(display_modes[0].is_interlaced());
     EXPECT_TRUE(display_modes[0].native());
     EXPECT_EQ(display_modes[0].refresh_rate(), 60);

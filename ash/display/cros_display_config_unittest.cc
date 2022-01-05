@@ -366,16 +366,16 @@ TEST_F(CrosDisplayConfigTest, GetDisplayUnitInfoListBasic) {
   EXPECT_EQ(96, info_0.dpi_y);
   EXPECT_EQ(mojom::DisplayRotationOptions::kZeroDegrees,
             info_0.rotation_options);
-  EXPECT_EQ("0,0 500x600", info_0.bounds.ToString());
-  EXPECT_EQ("0,0,0,0", info_0.overscan.ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 500, 600), info_0.bounds);
+  EXPECT_EQ(gfx::Insets(), info_0.overscan);
 
   ASSERT_TRUE(base::StringToInt64(result[1]->id, &display_id));
   ASSERT_TRUE(DisplayExists(display_id));
   const mojom::DisplayUnitInfo& info_1 = *result[1];
   EXPECT_EQ(display_manager()->GetDisplayNameForId(display_id), info_1.name);
   // Second display is left of the primary display whose width 500.
-  EXPECT_EQ("500,0 400x520", info_1.bounds.ToString());
-  EXPECT_EQ("0,0,0,0", info_1.overscan.ToString());
+  EXPECT_EQ(gfx::Rect(500, 0, 400, 520), info_1.bounds);
+  EXPECT_EQ(gfx::Insets(), info_1.overscan);
   EXPECT_EQ(mojom::DisplayRotationOptions::kZeroDegrees,
             info_1.rotation_options);
   EXPECT_FALSE(info_1.is_primary);
@@ -436,7 +436,7 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesOverscan) {
   mojom::DisplayConfigResult result = SetDisplayProperties(
       base::NumberToString(secondary.id()), std::move(properties));
   EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
-  EXPECT_EQ("1200,0 150x250", secondary.bounds().ToString());
+  EXPECT_EQ(gfx::Rect(1200, 0, 150, 250), secondary.bounds());
   const gfx::Insets overscan =
       display_manager()->GetOverscanInsets(secondary.id());
   EXPECT_EQ(199, overscan.top());
@@ -459,7 +459,7 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesRotation) {
   result = SetDisplayProperties(base::NumberToString(secondary.id()),
                                 std::move(properties));
   EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
-  EXPECT_EQ("1200,0 500x300", secondary.bounds().ToString());
+  EXPECT_EQ(gfx::Rect(1200, 0, 500, 300), secondary.bounds());
   EXPECT_EQ(display::Display::ROTATE_90, secondary.rotation());
 
   properties = mojom::DisplayConfigProperties::New();
@@ -468,7 +468,7 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesRotation) {
   result = SetDisplayProperties(base::NumberToString(secondary.id()),
                                 std::move(properties));
   EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
-  EXPECT_EQ("1200,0 500x300", secondary.bounds().ToString());
+  EXPECT_EQ(gfx::Rect(1200, 0, 500, 300), secondary.bounds());
   EXPECT_EQ(display::Display::ROTATE_270, secondary.rotation());
 
   // Test setting primary and rotating.
@@ -482,7 +482,7 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesRotation) {
   const display::Display& primary =
       display::Screen::GetScreen()->GetPrimaryDisplay();
   EXPECT_EQ(secondary.id(), primary.id());
-  EXPECT_EQ("0,0 300x500", primary.bounds().ToString());
+  EXPECT_EQ(gfx::Rect(0, 0, 300, 500), primary.bounds());
   EXPECT_EQ(display::Display::ROTATE_180, primary.rotation());
 }
 
@@ -499,28 +499,28 @@ TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesBoundsOrigin) {
   result = SetDisplayProperties(base::NumberToString(secondary.id()),
                                 std::move(properties));
   EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
-  EXPECT_EQ("-520,50 520x400", secondary.bounds().ToString());
+  EXPECT_EQ(gfx::Rect(-520, 50, 520, 400), secondary.bounds());
 
   properties = mojom::DisplayConfigProperties::New();
   properties->bounds_origin = gfx::Point({1200, 100});
   result = SetDisplayProperties(base::NumberToString(secondary.id()),
                                 std::move(properties));
   EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
-  EXPECT_EQ("1200,100 520x400", secondary.bounds().ToString());
+  EXPECT_EQ(gfx::Rect(1200, 100, 520, 400), secondary.bounds());
 
   properties = mojom::DisplayConfigProperties::New();
   properties->bounds_origin = gfx::Point({1100, -400});
   result = SetDisplayProperties(base::NumberToString(secondary.id()),
                                 std::move(properties));
   EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
-  EXPECT_EQ("1100,-400 520x400", secondary.bounds().ToString());
+  EXPECT_EQ(gfx::Rect(1100, -400, 520, 400), secondary.bounds());
 
   properties = mojom::DisplayConfigProperties::New();
   properties->bounds_origin = gfx::Point({-350, 600});
   result = SetDisplayProperties(base::NumberToString(secondary.id()),
                                 std::move(properties));
   EXPECT_EQ(mojom::DisplayConfigResult::kSuccess, result);
-  EXPECT_EQ("-350,600 520x400", secondary.bounds().ToString());
+  EXPECT_EQ(gfx::Rect(-350, 600, 520, 400), secondary.bounds());
 }
 
 TEST_F(CrosDisplayConfigTest, SetDisplayPropertiesDisplayZoomFactor) {

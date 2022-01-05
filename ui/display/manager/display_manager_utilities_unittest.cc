@@ -149,14 +149,14 @@ TEST(DisplayUtilitiesTest, ComputeBoundary) {
   display_1.set_bounds(gfx::Rect(740, 0, 150, 300));
   display_2.set_bounds(gfx::Rect(759, 300, 133, 182));
   EXPECT_TRUE(ComputeBoundary(display_1, display_2, &edge_1, &edge_2));
-  EXPECT_EQ("759,299 131x1", edge_1.ToString());
-  EXPECT_EQ("759,300 131x1", edge_2.ToString());
+  EXPECT_EQ(gfx::Rect(759, 299, 131, 1), edge_1);
+  EXPECT_EQ(gfx::Rect(759, 300, 131, 1), edge_2);
 
   display_1.set_bounds(gfx::Rect(0, 0, 400, 400));
   display_2.set_bounds(gfx::Rect(400, 150, 400, 400));
   EXPECT_TRUE(ComputeBoundary(display_1, display_2, &edge_1, &edge_2));
-  EXPECT_EQ("399,150 1x250", edge_1.ToString());
-  EXPECT_EQ("400,150 1x250", edge_2.ToString());
+  EXPECT_EQ(gfx::Rect(399, 150, 1, 250), edge_1);
+  EXPECT_EQ(gfx::Rect(400, 150, 1, 250), edge_2);
 }
 
 }  // namespace display
