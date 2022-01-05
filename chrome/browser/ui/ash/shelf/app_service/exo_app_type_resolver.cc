@@ -45,6 +45,8 @@ void ExoAppTypeResolver::PopulateProperties(
     // of fullscreen.
     out_properties_container.SetProperty(exo::kRestoreOrMaximizeExitsFullscreen,
                                          true);
+    out_properties_container.SetProperty(app_restore::kLacrosWindowId,
+                                         params.app_id);
   } else if (borealis::BorealisWindowManager::IsBorealisWindowId(
                  params.app_id.empty() ? params.startup_id : params.app_id)) {
     // TODO(b/165865831): Stop using CROSTINI_APP for borealis windows.

@@ -12,6 +12,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
 #include "components/app_restore/app_launch_info.h"
+#include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_file_handler.h"
 #include "components/app_restore/full_restore_info.h"
 #include "components/app_restore/full_restore_read_handler.h"
@@ -64,6 +65,10 @@ void FullRestoreSaveHandler::SetPrimaryProfilePath(
     const base::FilePath& profile_path) {
   primary_profile_path_ = profile_path;
   arc_save_handler_ = std::make_unique<ArcSaveHandler>(primary_profile_path_);
+  if (::full_restore::features::IsFullRestoreForLacrosEnabled()) {
+    lacros_save_handler_ =
+        std::make_unique<LacrosSaveHandler>(primary_profile_path_);
+  }
 }
 
 void FullRestoreSaveHandler::SetActiveProfilePath(
@@ -107,6 +112,15 @@ void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
     if (arc_save_handler_)
       arc_save_handler_->OnWindowInitialized(window);
 
+    return;
+  }
+
+  if (window->GetProperty(aura::client::kAppType) ==
+      static_cast<int>(ash::AppType::LACROS)) {
+    observed_windows_.AddObservation(window);
+
+    if (lacros_save_handler_)
+      lacros_save_handler_->OnWindowInitialized(window);
     return;
   }
 
@@ -180,6 +194,13 @@ void FullRestoreSaveHandler::OnWindowDestroyed(aura::Window* window) {
       static_cast<int>(ash::AppType::ARC_APP)) {
     if (arc_save_handler_)
       arc_save_handler_->OnWindowDestroyed(window);
+    return;
+  }
+
+  if (window->GetProperty(aura::client::kAppType) ==
+      static_cast<int>(ash::AppType::LACROS)) {
+    if (lacros_save_handler_)
+      lacros_save_handler_->OnWindowDestroyed(window);
     return;
   }
 

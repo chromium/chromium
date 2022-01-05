@@ -41,6 +41,10 @@ extern const ui::ClassProperty<std::string*>* const kBrowserAppNameKey;
 COMPONENT_EXPORT(APP_RESTORE)
 extern const ui::ClassProperty<int32_t>* const kGhostWindowSessionIdKey;
 
+// A property key to store the window id for a Lacros window.
+COMPONENT_EXPORT(APP_RESTORE)
+extern const ui::ClassProperty<std::string*>* const kLacrosWindowId;
+
 // A property key indicating whether a window was launched from full restore.
 // These windows will not be activatable until they are shown.
 COMPONENT_EXPORT(APP_RESTORE)

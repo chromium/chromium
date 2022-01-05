@@ -18,6 +18,7 @@
 #include "base/timer/timer.h"
 #include "components/app_restore/app_restore_arc_info.h"
 #include "components/app_restore/arc_save_handler.h"
+#include "components/app_restore/lacros_save_handler.h"
 #include "ui/aura/env.h"
 #include "ui/aura/env_observer.h"
 #include "ui/aura/window.h"
@@ -261,6 +262,8 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreSaveHandler
   std::set<base::FilePath> save_running_;
 
   std::unique_ptr<ArcSaveHandler> arc_save_handler_;
+
+  std::unique_ptr<LacrosSaveHandler> lacros_save_handler_;
 
   bool is_shut_down_ = false;
 

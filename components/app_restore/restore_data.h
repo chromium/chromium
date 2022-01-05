@@ -23,11 +23,6 @@ struct WindowInfo;
 // This class is responsible for saving all app launch and app windows
 // information. It can be converted to JSON format to be written to the
 // FullRestoreData file.
-//
-// TODO(crbug.com/1146900):
-// 1. Add the interface to modify LaunchAndWindowInfo when the window
-// information is updated.
-// 2. Add the interface to remove LaunchAndWindowInfo.
 class COMPONENT_EXPORT(APP_RESTORE) RestoreData {
  public:
   // Map from a window id to AppRestoreData.
