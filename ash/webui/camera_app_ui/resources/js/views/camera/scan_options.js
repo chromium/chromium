@@ -7,6 +7,8 @@ import * as barcodeChip from '../../barcode_chip.js';
 // eslint-disable-next-line no-unused-vars
 import {DeviceInfoUpdater} from '../../device/device_info_updater.js';
 import * as dom from '../../dom.js';
+// eslint-disable-next-line no-unused-vars
+import {Point} from '../../geometry.js';
 import {sendBarcodeEnabledEvent} from '../../metrics.js';
 import {BarcodeScanner} from '../../models/barcode.js';
 import * as state from '../../state.js';
@@ -49,18 +51,11 @@ const DEFAULT_SCAN_TYPE = ScanType.DOCUMENT;
  */
 export class ScanOptions {
   /**
-   * @param {{
-   *   doReconfigure: function(): !Promise,
-   *   infoUpdater: !DeviceInfoUpdater,
-   * }} params
+   * @param {!function(!Point): !Promise<void>} updatePointOfInterest function
+   *     to update point of interest on the stream.
+   * @public
    */
-  constructor({doReconfigure, infoUpdater}) {
-    /**
-     * @type {function(): !Promise}
-     * @private
-     */
-    this.doReconfigure_ = doReconfigure;
-
+  constructor(updatePointOfInterest) {
     /**
      * Togglable barcode option in photo mode.
      * @type {!HTMLInputElement}
@@ -95,7 +90,8 @@ export class ScanOptions {
      * @const {!DocumentCornerOverlay}
      * @private
      */
-    this.documentCornerOverylay_ = new DocumentCornerOverlay();
+    this.documentCornerOverylay_ =
+        new DocumentCornerOverlay(updatePointOfInterest);
 
     /**
      * Called when scan option changed.

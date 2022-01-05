@@ -166,20 +166,18 @@ export class Camera extends View {
     this.layout_ = new Layout();
 
     /**
-     * @type {!ScanOptions}
-     * @private
-     */
-    this.scanOptions_ = new ScanOptions({
-      doReconfigure: () => this.start(),
-      infoUpdater: this.infoUpdater_,
-    });
-
-    /**
      * Video preview for the camera.
      * @type {!Preview}
      * @private
      */
     this.preview_ = new Preview(() => this.start());
+
+    /**
+     * @type {!ScanOptions}
+     * @private
+     */
+    this.scanOptions_ =
+        new ScanOptions((point) => this.preview_.setPointOfInterest(point));
 
     /**
      * Options for the camera.

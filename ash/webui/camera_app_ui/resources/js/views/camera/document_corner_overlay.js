@@ -7,10 +7,14 @@ import * as dom from '../../dom.js';
 import {
   Point,
   PolarVector,
+  Vector,
   vectorFromPoints,
 } from '../../geometry.js';
 import {I18nString} from '../../i18n_string.js';
 import {DeviceOperator} from '../../mojo/device_operator.js';
+import {
+  PointF,  // eslint-disable-line no-unused-vars
+} from '../../mojo/type.js';
 import {
   closeEndpoint,
   MojoEndpoint,  // eslint-disable-line no-unused-vars
@@ -24,6 +28,11 @@ import * as util from '../../util.js';
 const BASE_LENGTH = 100;
 
 /**
+ * Threshold of the document area scale difference.
+ */
+const THRESHOLD_SCALE_DIFF = 0.3;
+
+/**
  * @typedef {{
  *   position?: !Point,
  *   angle?: number,
@@ -31,6 +40,18 @@ const BASE_LENGTH = 100;
  * }}
  */
 let PlaceParams;  // eslint-disable-line no-unused-vars
+
+/**
+ * Information to roughly represents the area of the document displaying on the
+ * stream.
+ * The |center| is the center point of the detected document area and the
+ * |scale| is calculated by the longest length among the document edges.
+ * @typedef {{
+ *   center: !Point,
+ *   scale: number,
+ * }}
+ */
+let DocumentArea;  // eslint-disable-line no-unused-vars
 
 /**
  * Controller for placing line-like element.
@@ -163,9 +184,11 @@ const SHOW_NO_DOCUMENT_TOAST_TIMEOUT_MS = 4000;
  */
 export class DocumentCornerOverlay {
   /**
+   * @param {!function(!Point): !Promise<void>} updatePointOfInterest function
+   *     to update point of interest on the stream.
    * @public
    */
-  constructor() {
+  constructor(updatePointOfInterest) {
     /**
      * @const {!HTMLDivElement}
      * @private
@@ -185,6 +208,11 @@ export class DocumentCornerOverlay {
      */
     this.cornerContainer_ =
         dom.getFrom(this.overlay_, '.corner-container', HTMLDivElement);
+
+    /**
+     * @const {!function(!Point): !Promise<void>}
+     */
+    this.updatePointOfInterest_ = updatePointOfInterest;
 
     /**
      * @type {?string}
@@ -231,6 +259,13 @@ export class DocumentCornerOverlay {
      */
     this.noDocumentTimerId_ = null;
 
+    /**
+     * Previous document area which are used to calculate the point of interest.
+     * @type {!DocumentArea}
+     * @private
+     */
+    this.prevDocArea_ = null;
+
     this.hide_();
   }
 
@@ -270,6 +305,7 @@ export class DocumentCornerOverlay {
             this.onNoCornerDetected_();
             return;
           }
+          this.maybeUpdatePointOfInterest_(corners);
           const rect = this.cornerContainer_.getBoundingClientRect();
           const toOverlaySpace = (pt) =>
               new Point(rect.width * pt.x, rect.height * pt.y);
@@ -310,6 +346,57 @@ export class DocumentCornerOverlay {
     }
     if (this.noDocumentTimerId_ === null) {
       this.setNoDocumentTimer_();
+    }
+  }
+
+  /**
+   * @param {!Array<!PointF>} corners
+   * @return {!Promise<void>}
+   */
+  async maybeUpdatePointOfInterest_(corners) {
+    assert(corners.length === 4);
+
+    const newDocArea = (() => {
+      let centerX = 0;
+      let centerY = 0;
+      let maxEdgeLength = 0;
+      const shouldUpdatePOI = (() => {
+        let isPreviousPOIOutsideNewDoc = this.prevDocArea_ === null;
+        const {x: xp, y: yp} = this.prevDocArea_?.center || {x: 0, y: 0};
+        for (let i = 0; i < corners.length; ++i) {
+          const {x: x1, y: y1} = corners[i];
+          const {x: x2, y: y2} = corners[(i + 1) % 4];
+
+          centerX += x1 / 4;
+          centerY += y1 / 4;
+
+          const edgeLength = (new Vector(x2 - x1, y2 - y1)).length();
+          maxEdgeLength = Math.max(maxEdgeLength, edgeLength);
+
+          const d = (x2 - x1) * (yp - y1) - (xp - x1) * (y2 - y1);
+          if (d >= 0) {
+            isPreviousPOIOutsideNewDoc = true;
+          }
+        }
+        const isDocScaleChanges = this.prevDocArea_ === null ||
+            Math.abs(maxEdgeLength - this.prevDocArea_.scale) /
+                    this.prevDocArea_.scale >
+                THRESHOLD_SCALE_DIFF;
+        return isPreviousPOIOutsideNewDoc || isDocScaleChanges;
+      })();
+      if (!shouldUpdatePOI) {
+        return null;
+      }
+      return {center: new Point(centerX, centerY), scale: maxEdgeLength};
+    })();
+
+    if (newDocArea !== null) {
+      try {
+        await this.updatePointOfInterest_(newDocArea.center);
+      } catch {
+        // POI might not be supported on device so it is acceptable to fail.
+      }
+      this.prevDocArea_ = newDocArea;
     }
   }
 

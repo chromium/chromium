@@ -10,6 +10,7 @@ import {
 import * as dom from '../../dom.js';
 import {reportError} from '../../error.js';
 import {FaceOverlay} from '../../face.js';
+import {Point} from '../../geometry.js';
 import {DeviceOperator, parseMetadata} from '../../mojo/device_operator.js';
 import {
   AndroidControlAeAntibandingMode,
@@ -762,21 +763,32 @@ export class Preview {
   }
 
   /**
+   * Apply point of interest to the stream.
+   * @param {!Point} point The point in normalize coordidate system, which means
+   *     both |x| and |y| are in range [0, 1).
+   * @return {!Promise<void>}
+   */
+  setPointOfInterest(point) {
+    const constraints = {
+      advanced: [{pointsOfInterest: [{x: point.x, y: point.y}]}],
+    };
+    const track = this.getVideoTrack_();
+    return track.applyConstraints(constraints);
+  }
+
+  /**
    * Handles clicking for focus.
    * @param {!MouseEvent} event Click event.
    * @private
    */
   onFocusClicked_(event) {
     this.cancelFocus_();
-
-    // Normalize to square space coordinates by W3C spec.
-    const x = event.offsetX / this.video_.offsetWidth;
-    const y = event.offsetY / this.video_.offsetHeight;
-    const constraints = {advanced: [{pointsOfInterest: [{x, y}]}]};
-    const track = this.getVideoTrack_();
     const focus = (async () => {
       try {
-        await track.applyConstraints(constraints);
+        // Normalize to square space coordinates by W3C spec.
+        const x = event.offsetX / this.video_.offsetWidth;
+        const y = event.offsetY / this.video_.offsetHeight;
+        await this.setPointOfInterest(new Point(x, y));
       } catch {
         // The device might not support setting pointsOfInterest. Ignore the
         // error and return.
