@@ -5,12 +5,16 @@
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash.h"
 
 #include <functional>
+#include <memory>
+#include <string>
 
+#include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/test_future.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/policy/dlp/dlp_content_manager_ash_test_helper.h"
@@ -20,6 +24,7 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_reporting_manager_test_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_warn_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
 #include "chrome/browser/media/webrtc/desktop_capture_access_handler.h"
 #include "chrome/browser/media/webrtc/fake_desktop_media_picker_factory.h"
@@ -46,7 +51,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
+#include "ui/aura/test/event_generator_delegate_aura.h"
 #include "ui/aura/window.h"
+#include "ui/aura/window_tree_host.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
+#include "ui/events/event_constants.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 
 using testing::_;
@@ -54,6 +65,28 @@ using testing::_;
 namespace policy {
 
 namespace {
+
+class DlpEventGeneratorDelegate
+    : public aura::test::EventGeneratorDelegateAura {
+ public:
+  DlpEventGeneratorDelegate() = default;
+
+  DlpEventGeneratorDelegate(const DlpEventGeneratorDelegate&) = delete;
+  DlpEventGeneratorDelegate& operator=(const DlpEventGeneratorDelegate&) =
+      delete;
+
+  ~DlpEventGeneratorDelegate() override = default;
+
+  // aura::test::EventGeneratorDelegateAura overrides:
+  ui::EventTarget* GetTargetAt(const gfx::Point& point_in_screen) override {
+    display::Screen* screen = display::Screen::GetScreen();
+    display::Display display = screen->GetDisplayNearestPoint(point_in_screen);
+    return ash::Shell::GetRootWindowForDisplayId(display.id())
+        ->GetHost()
+        ->window();
+  }
+};
+
 const DlpContentRestrictionSet kEmptyRestrictionSet;
 const DlpContentRestrictionSet kScreenshotRestricted(
     DlpContentRestriction::kScreenshot,
@@ -68,6 +101,8 @@ const DlpContentRestrictionSet kPrintAllowed(DlpContentRestriction::kPrint,
                                              DlpRulesManager::Level::kAllow);
 const DlpContentRestrictionSet kPrintRestricted(DlpContentRestriction::kPrint,
                                                 DlpRulesManager::Level::kBlock);
+const DlpContentRestrictionSet kPrintWarned(DlpContentRestriction::kPrint,
+                                            DlpRulesManager::Level::kWarn);
 const DlpContentRestrictionSet kPrintReported(DlpContentRestriction::kPrint,
                                               DlpRulesManager::Level::kReport);
 const DlpContentRestrictionSet kScreenShareRestricted(
@@ -76,6 +111,9 @@ const DlpContentRestrictionSet kScreenShareRestricted(
 const DlpContentRestrictionSet kScreenShareReported(
     DlpContentRestriction::kScreenShare,
     DlpRulesManager::Level::kReport);
+const DlpContentRestrictionSet kScreenShareWarned(
+    DlpContentRestriction::kScreenShare,
+    DlpRulesManager::Level::kWarn);
 
 constexpr char kScreenShareBlockedNotificationId[] = "screen_share_dlp_blocked";
 constexpr char kScreenSharePausedNotificationId[] =
@@ -87,6 +125,9 @@ constexpr char kPrintBlockedNotificationId[] = "print_dlp_blocked";
 constexpr char kExampleUrl[] = "https://example.com";
 constexpr char kGoogleUrl[] = "https://google.com";
 constexpr char kSrcPattern[] = "example.com";
+constexpr char kLabel[] = "label";
+const std::u16string kApplicationTitle = u"example.com";
+
 }  // namespace
 
 // TODO(crbug.com/1262948): Enable and modify for lacros.
@@ -614,7 +655,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   const auto media_id = content::DesktopMediaID::RegisterNativeWindow(
       content::DesktopMediaID::TYPE_SCREEN, root_window);
   manager->OnScreenCaptureStarted(
-      "label", {media_id}, u"example.com",
+      kLabel, {media_id}, kApplicationTitle,
       base::BindOnce([]() { FAIL() << "Stop callback should not be called."; }),
       base::DoNothing());
 
@@ -651,7 +692,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   histogram_tester_.ExpectBucketCount(
       GetDlpHistogramPrefix() + dlp::kScreenSharePausedOrResumedUMA, false, 1);
 
-  manager->OnScreenCaptureStopped("label", media_id);
+  manager->OnScreenCaptureStopped(kLabel, media_id);
 
   EXPECT_FALSE(
       display_service_tester.GetNotification(kScreenSharePausedNotificationId));
@@ -697,6 +738,113 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
       GetDlpHistogramPrefix() + dlp::kScreenShareBlockedUMA, true, 1);
 
   helper_->ChangeConfidentiality(web_contents, kEmptyRestrictionSet);
+}
+
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
+                       ScreenShareWarnedDuringAllowed) {
+  helper_->EnableScreenShareWarningMode();
+  SetupReporting();
+  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  aura::Window* root_window =
+      browser()->window()->GetNativeWindow()->GetRootWindow();
+  const auto media_id = content::DesktopMediaID::RegisterNativeWindow(
+      content::DesktopMediaID::TYPE_SCREEN, root_window);
+
+  // TODO(https://crbug.com/1283065): this is needed since otherwise, due to a
+  // wrongly initialized notifier, calling the virtual ShowDlpWarningDialog()
+  // method causes a crash.
+  helper_->SetWarnNotifierForTesting(std::make_unique<DlpWarnNotifier>());
+
+  DlpContentManagerAsh* manager = helper_->GetContentManager();
+  base::MockCallback<content::MediaStreamUI::StateChangeCallback>
+      state_change_cb;
+  base::MockCallback<base::OnceClosure> stop_cb;
+  // Explicitly specify that the stop callback should never be invoked.
+  EXPECT_CALL(stop_cb, Run()).Times(0);
+  testing::InSequence s;
+  EXPECT_CALL(state_change_cb,
+              Run(testing::_, blink::mojom::MediaStreamStateChange::PAUSE))
+      .Times(1);
+  EXPECT_CALL(state_change_cb,
+              Run(testing::_, blink::mojom::MediaStreamStateChange::PLAY))
+      .Times(1);
+
+  manager->OnScreenCaptureStarted(kLabel, {media_id}, kApplicationTitle,
+                                  stop_cb.Get(), state_change_cb.Get());
+
+  helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
+
+  std::unique_ptr<ui::test::EventGenerator> event_generator =
+      std::make_unique<ui::test::EventGenerator>(
+          std::make_unique<DlpEventGeneratorDelegate>());
+
+  // Hit Enter to "Share anyway".
+  event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
+
+  EXPECT_TRUE(helper_->HasContentCachedForRestriction(
+      web_contents, DlpRulesManager::Restriction::kScreenShare));
+  // The contents should already be cached as allowed by the user, so this
+  // should not trigger a new warning.
+  helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
+}
+
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
+                       ScreenShareWarnedDuringCanceled) {
+  helper_->EnableScreenShareWarningMode();
+  SetupReporting();
+  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  aura::Window* root_window =
+      browser()->window()->GetNativeWindow()->GetRootWindow();
+  const auto media_id = content::DesktopMediaID::RegisterNativeWindow(
+      content::DesktopMediaID::TYPE_SCREEN, root_window);
+
+  // TODO(https://crbug.com/1283065): See previous test.
+  helper_->SetWarnNotifierForTesting(std::make_unique<DlpWarnNotifier>());
+
+  DlpContentManagerAsh* manager = helper_->GetContentManager();
+  base::MockCallback<content::MediaStreamUI::StateChangeCallback>
+      state_change_cb;
+  base::MockCallback<base::OnceClosure> stop_cb;
+  // Explicitly specify that the the screen share cannot be resumed.
+  EXPECT_CALL(state_change_cb,
+              Run(testing::_, blink::mojom::MediaStreamStateChange::PLAY))
+      .Times(0);
+
+  testing::InSequence s;
+  EXPECT_CALL(state_change_cb,
+              Run(testing::_, blink::mojom::MediaStreamStateChange::PAUSE))
+      .Times(1);
+  EXPECT_CALL(stop_cb, Run()).Times(1);
+
+  manager->OnScreenCaptureStarted(kLabel, {media_id}, kApplicationTitle,
+                                  stop_cb.Get(), state_change_cb.Get());
+
+  helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
+
+  std::unique_ptr<ui::test::EventGenerator> event_generator =
+      std::make_unique<ui::test::EventGenerator>(
+          std::make_unique<DlpEventGeneratorDelegate>());
+
+  // Hit Esc to "Cancel".
+  event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
+  EXPECT_FALSE(helper_->HasAnyContentCached());
+  // The screen share should be stopped so would not be checked again, and this
+  // should not trigger a new warning.
+  helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
 }
 
 IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest, ScreenShareRestricted) {

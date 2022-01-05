@@ -73,6 +73,11 @@ void DlpContentManagerAshTestHelper::EnableScreenShareWarningMode() {
   manager_->SetIsScreenShareWarningModeEnabledForTesting(/*is_enabled=*/true);
 }
 
+int DlpContentManagerAshTestHelper::ActiveWarningDialogsCount() const {
+  DCHECK(manager_);
+  return manager_->warn_notifier_->ActiveWarningDialogsCountForTesting();
+}
+
 base::TimeDelta DlpContentManagerAshTestHelper::GetPrivacyScreenOffDelay()
     const {
   DCHECK(manager_);

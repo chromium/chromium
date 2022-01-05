@@ -4,6 +4,9 @@
 
 #include "chrome/browser/chromeos/policy/dlp/dlp_warn_notifier.h"
 
+#include <memory>
+
+#include "base/containers/cxx20_erase.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_warn_dialog.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -11,8 +14,25 @@
 
 namespace policy {
 
+DlpWarnNotifier::DlpWarnNotifier() = default;
+
+DlpWarnNotifier::~DlpWarnNotifier() {
+  for (views::Widget* widget : widgets_) {
+    widget->RemoveObserver(this);
+    widget->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
+  }
+}
+
+void DlpWarnNotifier::OnWidgetClosing(views::Widget* widget) {
+  RemoveWidget(widget);
+}
+
+void DlpWarnNotifier::OnWidgetDestroying(views::Widget* widget) {
+  RemoveWidget(widget);
+}
+
 void DlpWarnNotifier::ShowDlpPrintWarningDialog(
-    OnDlpRestrictionCheckedCallback callback) const {
+    OnDlpRestrictionCheckedCallback callback) {
   ShowDlpWarningDialog(std::move(callback),
                        DlpWarnDialog::DlpWarnDialogOptions(
                            DlpWarnDialog::Restriction::kPrinting));
@@ -20,7 +40,7 @@ void DlpWarnNotifier::ShowDlpPrintWarningDialog(
 
 void DlpWarnNotifier::ShowDlpScreenCaptureWarningDialog(
     OnDlpRestrictionCheckedCallback callback,
-    const DlpConfidentialContents& confidential_contents) const {
+    const DlpConfidentialContents& confidential_contents) {
   ShowDlpWarningDialog(
       std::move(callback),
       DlpWarnDialog::DlpWarnDialogOptions(
@@ -29,7 +49,7 @@ void DlpWarnNotifier::ShowDlpScreenCaptureWarningDialog(
 
 void DlpWarnNotifier::ShowDlpVideoCaptureWarningDialog(
     OnDlpRestrictionCheckedCallback callback,
-    const DlpConfidentialContents& confidential_contents) const {
+    const DlpConfidentialContents& confidential_contents) {
   ShowDlpWarningDialog(
       std::move(callback),
       DlpWarnDialog::DlpWarnDialogOptions(
@@ -39,16 +59,20 @@ void DlpWarnNotifier::ShowDlpVideoCaptureWarningDialog(
 void DlpWarnNotifier::ShowDlpScreenShareWarningDialog(
     OnDlpRestrictionCheckedCallback callback,
     const DlpConfidentialContents& confidential_contents,
-    const std::u16string& application_title) const {
+    const std::u16string& application_title) {
   ShowDlpWarningDialog(std::move(callback),
                        DlpWarnDialog::DlpWarnDialogOptions(
                            DlpWarnDialog::Restriction::kScreenShare,
                            confidential_contents, application_title));
 }
 
+int DlpWarnNotifier::ActiveWarningDialogsCountForTesting() const {
+  return widgets_.size();
+}
+
 void DlpWarnNotifier::ShowDlpWarningDialog(
     OnDlpRestrictionCheckedCallback callback,
-    DlpWarnDialog::DlpWarnDialogOptions options) const {
+    DlpWarnDialog::DlpWarnDialogOptions options) {
   views::Widget* widget = views::DialogDelegate::CreateDialogWidget(
       new DlpWarnDialog(std::move(callback), options),
       /*context=*/nullptr, /*parent=*/nullptr);
@@ -57,6 +81,14 @@ void DlpWarnNotifier::ShowDlpWarningDialog(
   // end up showing in the screenshots, video recording, or screen share.
   widget->GetNativeWindow()->SetProperty(aura::client::kAnimationsDisabledKey,
                                          true);
+  widget->AddObserver(this);
+  widgets_.push_back(widget);
+}
+
+void DlpWarnNotifier::RemoveWidget(views::Widget* widget) {
+  base::EraseIf(widgets_, [=](views::Widget* widget_ptr) -> bool {
+    return widget_ptr == widget;
+  });
 }
 
 }  // namespace policy

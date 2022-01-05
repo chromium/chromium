@@ -372,9 +372,12 @@ void DlpContentManagerAsh::OnConfidentialityChanged(
                                             this);
     if (web_contents->GetVisibility() == content::Visibility::VISIBLE) {
       MaybeChangeOnScreenRestrictions();
+    } else {
+      CheckRunningScreenShares();
     }
+  } else {
+    CheckRunningScreenShares();
   }
-  CheckRunningScreenShares();
 }
 
 void DlpContentManagerAsh::OnVisibilityChanged(
@@ -472,6 +475,13 @@ DlpContentManagerAsh::GetConfidentialContentsOnScreen(
   for (auto& entry : confidential_web_contents_) {
     if (entry.first->GetVisibility() != content::Visibility::VISIBLE)
       continue;
+    if (entry.first->IsBeingDestroyed()) {
+      // The contents can be in the process of being destroyed during this
+      // check, although they have not yet been removed from
+      // confidential_web_contents_. For example, this happens when we trigger
+      // the check from OnWindowDestroying().
+      continue;
+    }
     if (entry.second.GetRestrictionLevel(restriction) ==
         info.restriction_info.level) {
       info.confidential_contents.Add(entry.first);

@@ -28,7 +28,7 @@ class MockDlpWarnNotifier : public DlpWarnNotifier {
               ShowDlpWarningDialog,
               (OnDlpRestrictionCheckedCallback callback,
                DlpWarnDialog::DlpWarnDialogOptions options),
-              (const, override));
+              (override));
 
  private:
   const bool should_proceed_;
