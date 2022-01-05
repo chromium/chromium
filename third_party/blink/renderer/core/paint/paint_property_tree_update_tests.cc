@@ -694,7 +694,7 @@ TEST_P(PaintPropertyTreeUpdateTest, PerspectiveOriginUpdatesOnSizeChanges) {
       TransformationMatrix().ApplyPerspective(100),
       perspective->FirstFragment().PaintProperties()->Perspective()->Matrix());
   EXPECT_EQ(
-      FloatPoint3D(50, 0, 0),
+      gfx::Point3F(50, 0, 0),
       perspective->FirstFragment().PaintProperties()->Perspective()->Origin());
 
   auto* contents = GetDocument().getElementById("contents");
@@ -704,7 +704,7 @@ TEST_P(PaintPropertyTreeUpdateTest, PerspectiveOriginUpdatesOnSizeChanges) {
       TransformationMatrix().ApplyPerspective(100),
       perspective->FirstFragment().PaintProperties()->Perspective()->Matrix());
   EXPECT_EQ(
-      FloatPoint3D(50, 100, 0),
+      gfx::Point3F(50, 100, 0),
       perspective->FirstFragment().PaintProperties()->Perspective()->Origin());
 }
 
@@ -1618,7 +1618,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
   ASSERT_TRUE(transform_node);
   EXPECT_TRUE(transform_node->HasActiveTransformAnimation());
   EXPECT_EQ(TransformationMatrix(), transform_node->Matrix());
-  EXPECT_EQ(FloatPoint3D(50, 50, 0), transform_node->Origin());
+  EXPECT_EQ(gfx::Point3F(50, 50, 0), transform_node->Origin());
   // Change of animation status should update PaintArtifactCompositor.
   auto* paint_artifact_compositor =
       GetDocument().View()->GetPaintArtifactCompositor();
@@ -1652,7 +1652,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
             target->FirstFragment().PaintProperties()->Transform());
   EXPECT_TRUE(transform_node->HasActiveTransformAnimation());
   EXPECT_EQ(TransformationMatrix().Rotate(10), transform_node->Matrix());
-  EXPECT_EQ(FloatPoint3D(70, 30, 0), transform_node->Origin());
+  EXPECT_EQ(gfx::Point3F(70, 30, 0), transform_node->Origin());
   EXPECT_TRUE(transform_node->BackfaceVisibilitySameAsParent());
   // Changing only transform or transform-origin values during a composited
   // animation should not schedule a PaintArtifactCompositor update.
@@ -1671,7 +1671,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
             target->FirstFragment().PaintProperties()->Transform());
   EXPECT_TRUE(transform_node->HasActiveTransformAnimation());
   EXPECT_EQ(TransformationMatrix().Rotate(10), transform_node->Matrix());
-  EXPECT_EQ(FloatPoint3D(70, 30, 0), transform_node->Origin());
+  EXPECT_EQ(gfx::Point3F(70, 30, 0), transform_node->Origin());
   EXPECT_FALSE(transform_node->BackfaceVisibilitySameAsParent());
   // Only transform and transform-origin value changes during composited
   // animation should not schedule PaintArtifactCompositor update. Backface

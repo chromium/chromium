@@ -83,15 +83,14 @@ static void UpdateCcTransformLocalMatrix(
     } else {
       compositor_node.local.matrix().setTranslate(translation.x(),
                                                   translation.y(), 0);
-      DCHECK_EQ(FloatPoint3D(), transform_node.Origin());
+      DCHECK_EQ(gfx::Point3F(), transform_node.Origin());
       compositor_node.origin = gfx::Point3F();
     }
   } else {
     DCHECK(!transform_node.ScrollNode());
-    FloatPoint3D origin = transform_node.Origin();
     compositor_node.local.matrix() =
         TransformationMatrix::ToSkMatrix44(transform_node.Matrix());
-    compositor_node.origin = ToGfxPoint3F(origin);
+    compositor_node.origin = transform_node.Origin();
   }
   compositor_node.needs_local_transform_update = true;
 }

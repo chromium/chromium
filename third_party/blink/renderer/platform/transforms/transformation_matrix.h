@@ -34,9 +34,11 @@
 
 #include "build/build_config.h"
 #include "skia/ext/skia_matrix_44.h"
-#include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkM44.h"
+#include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -199,7 +201,7 @@ class PLATFORM_EXPORT TransformationMatrix {
   }
 
   // Map a 3D point through the transform, returning a 3D point.
-  FloatPoint3D MapPoint(const FloatPoint3D&) const;
+  gfx::Point3F MapPoint(const gfx::Point3F&) const;
 
   // Map a 2D point through the transform, returning a 2D point.
   // Note that this ignores the z component, effectively projecting the point
@@ -323,7 +325,7 @@ class PLATFORM_EXPORT TransformationMatrix {
 
   // Changes the transform to apply as if the origin were at (x, y, z).
   TransformationMatrix& ApplyTransformOrigin(double x, double y, double z);
-  TransformationMatrix& ApplyTransformOrigin(const FloatPoint3D& origin) {
+  TransformationMatrix& ApplyTransformOrigin(const gfx::Point3F& origin) {
     return ApplyTransformOrigin(origin.x(), origin.y(), origin.z());
   }
 
@@ -487,7 +489,7 @@ class PLATFORM_EXPORT TransformationMatrix {
 
  private:
   gfx::PointF InternalMapPoint(const gfx::PointF& source_point) const;
-  FloatPoint3D InternalMapPoint(const FloatPoint3D& source_point) const;
+  gfx::Point3F InternalMapPoint(const gfx::Point3F& source_point) const;
 
   void SetMatrix(const Matrix4& m) { memcpy(&matrix_, &m, sizeof(Matrix4)); }
 

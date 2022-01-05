@@ -9,7 +9,6 @@
 
 #include "base/dcheck_is_on.h"
 #include "cc/trees/sticky_position_constraint.h"
-#include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
 #include "third_party/blink/renderer/platform/graphics/compositing_reasons.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper_clip_cache.h"
@@ -19,6 +18,7 @@
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/gfx/geometry/point3_f.h"
 
 namespace blink {
 
@@ -92,14 +92,16 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
     TransformAndOrigin() = default;
     // These constructors are not explicit so that we can use gfx::Vector2dF or
     // TransformationMatrix directly in the initialization list of State.
+    // NOLINTNEXTLINE(google-explicit-constructor)
     TransformAndOrigin(const gfx::Vector2dF& translation_2d)
         : translation_2d_(translation_2d) {}
     // This should be used for arbitrary matrix only. If the caller knows that
     // the transform is identity or a 2d translation, the translation_2d version
     // should be used instead.
+    // NOLINTNEXTLINE(google-explicit-constructor)
     TransformAndOrigin(const TransformationMatrix& matrix,
-                       const FloatPoint3D& origin = FloatPoint3D()) {
-      matrix_and_origin_.reset(new MatrixAndOrigin{matrix, origin});
+                       const gfx::Point3F& origin = gfx::Point3F()) {
+      matrix_and_origin_ = std::make_unique<MatrixAndOrigin>(matrix, origin);
     }
 
     bool IsIdentityOr2DTranslation() const { return !matrix_and_origin_; }
@@ -119,8 +121,8 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
                                 : TransformationMatrix().Translate(
                                       translation_2d_.x(), translation_2d_.y());
     }
-    FloatPoint3D Origin() const {
-      return matrix_and_origin_ ? matrix_and_origin_->origin : FloatPoint3D();
+    gfx::Point3F Origin() const {
+      return matrix_and_origin_ ? matrix_and_origin_->origin : gfx::Point3F();
     }
     bool TransformEquals(const TransformAndOrigin& other) const {
       return translation_2d_ == other.translation_2d_ &&
@@ -142,8 +144,10 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
 
    private:
     struct MatrixAndOrigin {
+      MatrixAndOrigin(const TransformationMatrix& m, const gfx::Point3F& o)
+          : matrix(m), origin(o) {}
       TransformationMatrix matrix;
-      FloatPoint3D origin;
+      gfx::Point3F origin;
     };
     gfx::Vector2dF translation_2d_;
     std::unique_ptr<MatrixAndOrigin> matrix_and_origin_;
@@ -241,7 +245,7 @@ class PLATFORM_EXPORT TransformPaintPropertyNode
   TransformationMatrix SlowMatrix() const {
     return state_.transform_and_origin.SlowMatrix();
   }
-  FloatPoint3D Origin() const { return state_.transform_and_origin.Origin(); }
+  gfx::Point3F Origin() const { return state_.transform_and_origin.Origin(); }
 
   // The associated scroll node, or nullptr otherwise.
   const ScrollPaintPropertyNode* ScrollNode() const {

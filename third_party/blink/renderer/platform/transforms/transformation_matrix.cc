@@ -928,9 +928,9 @@ void TransformationMatrix::TransformBox(FloatBox& box) const {
   for (size_t i = 0; i < 2; ++i) {
     for (size_t j = 0; j < 2; ++j) {
       for (size_t k = 0; k < 2; ++k) {
-        FloatPoint3D point(box.x(), box.y(), box.z());
+        gfx::Point3F point(box.x(), box.y(), box.z());
         point +=
-            FloatPoint3D(i * box.width(), j * box.height(), k * box.depth());
+            gfx::Vector3dF(i * box.width(), j * box.height(), k * box.depth());
         point = MapPoint(point);
         if (first_point) {
           bounds.set_origin(point);
@@ -952,11 +952,11 @@ gfx::PointF TransformationMatrix::MapPoint(const gfx::PointF& p) const {
   return InternalMapPoint(p);
 }
 
-FloatPoint3D TransformationMatrix::MapPoint(const FloatPoint3D& p) const {
+gfx::Point3F TransformationMatrix::MapPoint(const gfx::Point3F& p) const {
   if (IsIdentityOrTranslation()) {
-    return FloatPoint3D(p.x() + static_cast<float>(matrix_[3][0]),
-                        p.y() + static_cast<float>(matrix_[3][1]),
-                        p.z() + static_cast<float>(matrix_[3][2]));
+    return p + gfx::Vector3dF(static_cast<float>(matrix_[3][0]),
+                              static_cast<float>(matrix_[3][1]),
+                              static_cast<float>(matrix_[3][2]));
   }
   return InternalMapPoint(p);
 }
@@ -1653,8 +1653,8 @@ gfx::PointF TransformationMatrix::InternalMapPoint(
   return gfx::PointF(ClampToFloat(result_x), ClampToFloat(result_y));
 }
 
-FloatPoint3D TransformationMatrix::InternalMapPoint(
-    const FloatPoint3D& source_point) const {
+gfx::Point3F TransformationMatrix::InternalMapPoint(
+    const gfx::Point3F& source_point) const {
   double x = source_point.x();
   double y = source_point.y();
   double z = source_point.z();
@@ -1671,7 +1671,7 @@ FloatPoint3D TransformationMatrix::InternalMapPoint(
     result_y /= w;
     result_z /= w;
   }
-  return FloatPoint3D(ClampToFloat(result_x), ClampToFloat(result_y),
+  return gfx::Point3F(ClampToFloat(result_x), ClampToFloat(result_y),
                       ClampToFloat(result_z));
 }
 

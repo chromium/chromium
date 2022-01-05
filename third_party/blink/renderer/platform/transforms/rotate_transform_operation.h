@@ -25,10 +25,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_ROTATE_TRANSFORM_OPERATION_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_TRANSFORMS_ROTATE_TRANSFORM_OPERATION_H_
 
-#include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
 #include "third_party/blink/renderer/platform/transforms/rotation.h"
 #include "third_party/blink/renderer/platform/transforms/transform_operation.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "ui/gfx/geometry/vector3d_f.h"
 
 namespace blink {
 
@@ -36,7 +36,7 @@ class PLATFORM_EXPORT RotateTransformOperation : public TransformOperation {
  public:
   static scoped_refptr<RotateTransformOperation> Create(double angle,
                                                         OperationType type) {
-    return Create(Rotation(FloatPoint3D(0, 0, 1), angle), type);
+    return Create(Rotation(gfx::Vector3dF(0, 0, 1), angle), type);
   }
 
   static scoped_refptr<RotateTransformOperation> Create(double x,
@@ -44,7 +44,7 @@ class PLATFORM_EXPORT RotateTransformOperation : public TransformOperation {
                                                         double z,
                                                         double angle,
                                                         OperationType type) {
-    return Create(Rotation(FloatPoint3D(x, y, z), angle), type);
+    return Create(Rotation(gfx::Vector3dF(x, y, z), angle), type);
   }
 
   static scoped_refptr<RotateTransformOperation> Create(
@@ -62,11 +62,11 @@ class PLATFORM_EXPORT RotateTransformOperation : public TransformOperation {
   double Y() const { return rotation_.axis.y(); }
   double Z() const { return rotation_.axis.z(); }
   double Angle() const { return rotation_.angle; }
-  const FloatPoint3D& Axis() const { return rotation_.axis; }
+  const gfx::Vector3dF& Axis() const { return rotation_.axis; }
 
   static bool GetCommonAxis(const RotateTransformOperation*,
                             const RotateTransformOperation*,
-                            FloatPoint3D& result_axis,
+                            gfx::Vector3dF& result_axis,
                             double& result_angle_a,
                             double& result_angle_b);
 

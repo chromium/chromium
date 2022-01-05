@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/modules/xr/xr_rigid_transform.h"
 #include "third_party/blink/renderer/modules/xr/xr_session.h"
 #include "third_party/blink/renderer/modules/xr/xr_utils.h"
-#include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
+#include "ui/gfx/geometry/point3_f.h"
 
 namespace blink {
 namespace {
@@ -26,7 +26,7 @@ float RoundCm(float val) {
   return std::round(val * 100) / 100;
 }
 
-Member<DOMPointReadOnly> RoundedDOMPoint(const FloatPoint3D& val) {
+Member<DOMPointReadOnly> RoundedDOMPoint(const gfx::Point3F& val) {
   return DOMPointReadOnly::Create(RoundCm(val.x()), RoundCm(val.y()),
                                   RoundCm(val.z()), 1.0);
 }
@@ -77,8 +77,8 @@ void XRBoundedReferenceSpace::EnsureUpdated() const {
     if (stage_parameters->bounds &&
         stage_parameters->bounds->size() >= kMinimumNumberOfBoundVertices) {
       for (const auto& bound : *(stage_parameters->bounds)) {
-        FloatPoint3D p = offset_from_native.MapPoint(
-            FloatPoint3D(bound.x(), 0.0, bound.z()));
+        gfx::Point3F p = offset_from_native.MapPoint(
+            gfx::Point3F(bound.x(), 0.0, bound.z()));
         offset_bounds_geometry_.push_back(RoundedDOMPoint(p));
       }
     }

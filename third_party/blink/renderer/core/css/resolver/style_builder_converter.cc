@@ -1899,7 +1899,7 @@ StyleBuilderConverter::ConvertTranslate(StyleResolverState& state,
 Rotation StyleBuilderConverter::ConvertRotation(const CSSValue& value) {
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     DCHECK_EQ(identifier_value->GetValueID(), CSSValueID::kNone);
-    return Rotation(FloatPoint3D(0, 0, 1), 0);
+    return Rotation(gfx::Vector3dF(0, 0, 1), 0);
   }
 
   const auto& list = To<CSSValueList>(value);
@@ -1917,7 +1917,7 @@ Rotation StyleBuilderConverter::ConvertRotation(const CSSValue& value) {
   }
   double angle =
       To<CSSPrimitiveValue>(list.Item(list.length() - 1)).ComputeDegrees();
-  return Rotation(FloatPoint3D(x, y, z), angle);
+  return Rotation(gfx::Vector3dF(x, y, z), angle);
 }
 
 scoped_refptr<RotateTransformOperation> StyleBuilderConverter::ConvertRotate(

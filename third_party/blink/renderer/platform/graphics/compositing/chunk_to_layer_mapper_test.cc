@@ -33,7 +33,7 @@ class ChunkToLayerMapperTest : public testing::Test {
     if (!layer_transform_) {
       layer_transform_ =
           CreateTransform(t0(), TransformationMatrix().Translate(123, 456),
-                          FloatPoint3D(1, 2, 3));
+                          gfx::Point3F(1, 2, 3));
       layer_clip_ =
           CreateClip(c0(), *layer_transform_, FloatRoundedRect(12, 34, 56, 78));
       layer_effect_ = EffectPaintPropertyNode::Create(

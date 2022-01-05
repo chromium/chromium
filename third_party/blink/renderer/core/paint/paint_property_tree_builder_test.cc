@@ -576,7 +576,7 @@ TEST_P(PaintPropertyTreeBuilderTest, Perspective) {
             perspective_properties->Perspective()->Matrix());
   // The perspective origin is the center of the border box plus accumulated
   // paint offset.
-  EXPECT_EQ(FloatPoint3D(250, 250, 0),
+  EXPECT_EQ(gfx::Point3F(250, 250, 0),
             perspective_properties->Perspective()->Origin());
   EXPECT_EQ(DocScrollTranslation(),
             perspective_properties->Perspective()->Parent());
@@ -598,7 +598,7 @@ TEST_P(PaintPropertyTreeBuilderTest, Perspective) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(TransformationMatrix().ApplyPerspective(200),
             perspective_properties->Perspective()->Matrix());
-  EXPECT_EQ(FloatPoint3D(250, 250, 0),
+  EXPECT_EQ(gfx::Point3F(250, 250, 0),
             perspective_properties->Perspective()->Origin());
   EXPECT_EQ(DocScrollTranslation(),
             perspective_properties->Perspective()->Parent());
@@ -608,7 +608,7 @@ TEST_P(PaintPropertyTreeBuilderTest, Perspective) {
   UpdateAllLifecyclePhasesForTest();
   EXPECT_EQ(TransformationMatrix().ApplyPerspective(100),
             perspective_properties->Perspective()->Matrix());
-  EXPECT_EQ(FloatPoint3D(70, 160, 0),
+  EXPECT_EQ(gfx::Point3F(70, 160, 0),
             perspective_properties->Perspective()->Origin());
   EXPECT_EQ(DocScrollTranslation(),
             perspective_properties->Perspective()->Parent());
@@ -629,7 +629,7 @@ TEST_P(PaintPropertyTreeBuilderTest, Transform) {
 
   EXPECT_EQ(TransformationMatrix().Translate3d(123, 456, 789),
             transform_properties->Transform()->Matrix());
-  EXPECT_EQ(FloatPoint3D(200, 150, 0),
+  EXPECT_EQ(gfx::Point3F(200, 150, 0),
             transform_properties->Transform()->Origin());
   EXPECT_EQ(transform_properties->PaintOffsetTranslation(),
             transform_properties->Transform()->Parent());
@@ -775,7 +775,7 @@ TEST_P(PaintPropertyTreeBuilderTest, WillChangeTransform) {
   EXPECT_TRUE(transform_properties->Transform()->IsIdentity());
   EXPECT_EQ(gfx::Vector2dF(),
             transform_properties->Transform()->Translation2D());
-  EXPECT_EQ(FloatPoint3D(), transform_properties->Transform()->Origin());
+  EXPECT_EQ(gfx::Point3F(), transform_properties->Transform()->Origin());
   EXPECT_EQ(gfx::Vector2dF(50, 100),
             transform_properties->PaintOffsetTranslation()->Translation2D());
   EXPECT_TRUE(transform_properties->Transform()->HasDirectCompositingReasons());
@@ -1181,7 +1181,7 @@ TEST_P(PaintPropertyTreeBuilderTest, TransformNodesInSVG) {
       svg_root_with3d_transform.FirstFragment().PaintProperties();
   EXPECT_EQ(TransformationMatrix().Translate3d(1, 2, 3),
             svg_root_with3d_transform_properties->Transform()->Matrix());
-  EXPECT_EQ(FloatPoint3D(50, 50, 0),
+  EXPECT_EQ(gfx::Point3F(50, 50, 0),
             svg_root_with3d_transform_properties->Transform()->Origin());
   EXPECT_EQ(svg_root_with3d_transform_properties->PaintOffsetTranslation(),
             svg_root_with3d_transform_properties->Transform()->Parent());
@@ -1202,7 +1202,7 @@ TEST_P(PaintPropertyTreeBuilderTest, TransformNodesInSVG) {
   // SVG's transform origin is baked into the transform.
   matrix.ApplyTransformOrigin(50, 25, 0);
   EXPECT_EQ(matrix, rect_with2d_transform_properties->Transform()->Matrix());
-  EXPECT_EQ(FloatPoint3D(0, 0, 0),
+  EXPECT_EQ(gfx::Point3F(0, 0, 0),
             rect_with2d_transform_properties->Transform()->Origin());
   // SVG does not use paint offset.
   EXPECT_EQ(nullptr,
@@ -4970,15 +4970,15 @@ TEST_P(PaintPropertyTreeBuilderTest, TransformOriginWithAndWithoutTransform) {
   auto* translation = PaintPropertiesForElement("translation")->Transform();
   EXPECT_EQ(gfx::Vector2dF(100, 200), translation->Translation2D());
   // We don't need to store origin for 2d-translation.
-  EXPECT_EQ(FloatPoint3D(), translation->Origin());
+  EXPECT_EQ(gfx::Point3F(), translation->Origin());
 
   auto* scale = PaintPropertiesForElement("scale")->Transform();
   EXPECT_EQ(TransformationMatrix().Scale(2), scale->Matrix());
-  EXPECT_EQ(FloatPoint3D(300, 75, 0), scale->Origin());
+  EXPECT_EQ(gfx::Point3F(300, 75, 0), scale->Origin());
 
   auto* will_change = PaintPropertiesForElement("willChange")->Transform();
   EXPECT_TRUE(will_change->IsIdentity());
-  EXPECT_EQ(FloatPoint3D(), will_change->Origin());
+  EXPECT_EQ(gfx::Point3F(), will_change->Origin());
 }
 
 TEST_P(PaintPropertyTreeBuilderTest, TransformOriginWithAndWithoutMotionPath) {
@@ -5012,7 +5012,7 @@ TEST_P(PaintPropertyTreeBuilderTest, TransformOriginWithAndWithoutMotionPath) {
                                          ->Translation2D());
   // We don't need to store origin for 2d-translation.
   EXPECT_EQ(
-      FloatPoint3D(),
+      gfx::Point3F(),
       motion_path->FirstFragment().PaintProperties()->Transform()->Origin());
 
   auto* will_change = GetLayoutObjectByElementId("willChange");
@@ -5021,7 +5021,7 @@ TEST_P(PaintPropertyTreeBuilderTest, TransformOriginWithAndWithoutMotionPath) {
                   ->Transform()
                   ->IsIdentity());
   EXPECT_EQ(
-      FloatPoint3D(),
+      gfx::Point3F(),
       will_change->FirstFragment().PaintProperties()->Transform()->Origin());
 }
 
@@ -7032,7 +7032,7 @@ TEST_P(PaintPropertyTreeBuilderTest, SVGTransformAnimationAndOrigin) {
   ASSERT_TRUE(transform_node);
   EXPECT_TRUE(transform_node->HasActiveTransformAnimation());
   EXPECT_EQ(TransformationMatrix(), transform_node->Matrix());
-  EXPECT_EQ(FloatPoint3D(100, 100, 0), transform_node->Origin());
+  EXPECT_EQ(gfx::Point3F(100, 100, 0), transform_node->Origin());
 }
 
 }  // namespace blink

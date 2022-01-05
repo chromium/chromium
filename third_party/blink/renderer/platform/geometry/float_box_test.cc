@@ -45,11 +45,11 @@ TEST(FloatBoxTest, SimpleCreationTest) {
 
 TEST(FloatBoxTest, PositionTest) {
   FloatBox box(0, 0, 0, 4, 4, 4);
-  box.Move(FloatPoint3D(1, 2, 3));
+  box.Move(gfx::Vector3dF(1, 2, 3));
   EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                       FloatBox(1, 2, 3, 4, 4, 4), box);
-  box.set_origin(FloatPoint3D(-1, -2, -3));
-  box.Move(FloatPoint3D(-1, -2, -3));
+  box.set_origin(gfx::Point3F(-1, -2, -3));
+  box.Move(gfx::Vector3dF(-1, -2, -3));
   EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                       FloatBox(-2, -4, -6, 4, 4, 4), box);
 }
@@ -58,7 +58,7 @@ TEST(FloatBoxTest, CopyTest) {
   FloatBox box(1, 2, 3, 4, 4, 4);
   FloatBox box2(box);
   EXPECT_EQ(box, box2);
-  box.set_size(FloatPoint3D(3, 3, 3));
+  box.set_size(gfx::Point3F(3, 3, 3));
   EXPECT_NE(box, box2);
   EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                       FloatBox(1, 2, 3, 3, 3, 3), box);
@@ -73,16 +73,16 @@ TEST(FloatBoxTest, FlattenTest) {
 
 TEST(FloatBoxTest, ExpandTests) {
   FloatBox box;
-  box.ExpandTo(FloatPoint3D(10, -3, 2));
+  box.ExpandTo(gfx::Point3F(10, -3, 2));
   EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                       FloatBox(0, -3, 0, 10, 3, 2), box);
 
-  box.ExpandTo(FloatPoint3D(-15, 6, 8));
+  box.ExpandTo(gfx::Point3F(-15, 6, 8));
   EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                       FloatBox(-15, -3, 0, 25, 9, 8), box);
 
   box = FloatBox();
-  box.ExpandTo(FloatPoint3D(-3, 6, 9), FloatPoint3D(-2, 10, 11));
+  box.ExpandTo(gfx::Point3F(-3, 6, 9), gfx::Point3F(-2, 10, 11));
   EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
                       FloatBox(-3, 0, 0, 3, 10, 11), box);
 
@@ -111,9 +111,9 @@ TEST(FloatBoxTest, UnionTest) {
 TEST(FloatBoxTest, EmptyBoxTest) {
   FloatBox box;
   EXPECT_TRUE(box.IsEmpty());
-  box.ExpandTo(FloatPoint3D(1, 0, 0));
+  box.ExpandTo(gfx::Point3F(1, 0, 0));
   EXPECT_TRUE(box.IsEmpty());
-  box.ExpandTo(FloatPoint3D(0, 1, 0));
+  box.ExpandTo(gfx::Point3F(0, 1, 0));
   EXPECT_FALSE(box.IsEmpty());
 }
 

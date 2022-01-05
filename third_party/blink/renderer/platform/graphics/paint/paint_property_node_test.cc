@@ -457,7 +457,7 @@ TEST_F(PaintPropertyNodeTest, ChangeTransformOriginDuringCompositedAnimation) {
             transform.child1->Update(
                 *transform.ancestor,
                 TransformPaintPropertyNode::State{
-                    {TransformationMatrix(), FloatPoint3D(1, 2, 3)}},
+                    {TransformationMatrix(), gfx::Point3F(1, 2, 3)}},
                 animation_state));
 
   EXPECT_TRUE(transform.child1->Changed(

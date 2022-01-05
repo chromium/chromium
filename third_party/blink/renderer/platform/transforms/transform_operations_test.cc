@@ -215,8 +215,8 @@ TEST(TransformOperationsTest, AbsoluteAnimatedRotationBounds) {
   // 2 * sqrt(2) should give the same result.
   float sizes[] = {0, 0.1f, sqrt2, 2 * sqrt2};
   to_ops.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds);
-  for (size_t i = 0; i < base::size(sizes); ++i) {
-    box.set_size(FloatPoint3D(sizes[i], sizes[i], 0));
+  for (float size : sizes) {
+    box.set_size(gfx::Point3F(size, size, 0));
 
     EXPECT_TRUE(to_ops.BlendedBoundsForBox(box, from_ops, 0, 1, &bounds));
     EXPECT_PRED_FORMAT2(float_box_test::AssertAlmostEqual,
@@ -462,7 +462,7 @@ TEST(TransformOperationsTest, NonCommutativeRotations) {
   TransformationMatrix blended_transform;
   operations.Apply(gfx::SizeF(0, 0), blended_transform);
 
-  FloatPoint3D blended_point(0.9f, 0.9f, 0);
+  gfx::Point3F blended_point(0.9f, 0.9f, 0);
   blended_point = blended_transform.MapPoint(blended_point);
   FloatBox expanded_bounds = bounds;
   expanded_bounds.ExpandTo(blended_point);
@@ -518,7 +518,7 @@ TEST(TransformOperationsTest, AbsoluteSequenceBoundsTest) {
 TEST(TransformOperationsTest, ZoomTest) {
   double zoom_factor = 1.25;
 
-  FloatPoint3D original_point(2, 3, 4);
+  gfx::Point3F original_point(2, 3, 4);
 
   TransformOperations ops;
   ops.Operations().push_back(TranslateTransformOperation::Create(
@@ -529,20 +529,20 @@ TEST(TransformOperationsTest, ZoomTest) {
           1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16)));
 
   // Apply unzoomed ops to unzoomed units, then zoom in
-  FloatPoint3D unzoomed_point = original_point;
+  gfx::Point3F unzoomed_point = original_point;
   TransformOperations unzoomed_ops = ops;
   TransformationMatrix unzoomed_matrix;
   ops.Apply(gfx::SizeF(0, 0), unzoomed_matrix);
-  FloatPoint3D result1 = unzoomed_matrix.MapPoint(unzoomed_point);
+  gfx::Point3F result1 = unzoomed_matrix.MapPoint(unzoomed_point);
   result1.Scale(zoom_factor, zoom_factor, zoom_factor);
 
   // Apply zoomed ops to zoomed units
-  FloatPoint3D zoomed_point = original_point;
+  gfx::Point3F zoomed_point = original_point;
   zoomed_point.Scale(zoom_factor, zoom_factor, zoom_factor);
   TransformOperations zoomed_ops = ops.Zoom(zoom_factor);
   TransformationMatrix zoomed_matrix;
   zoomed_ops.Apply(gfx::SizeF(0, 0), zoomed_matrix);
-  FloatPoint3D result2 = zoomed_matrix.MapPoint(zoomed_point);
+  gfx::Point3F result2 = zoomed_matrix.MapPoint(zoomed_point);
 
   EXPECT_EQ(result1, result2);
 }

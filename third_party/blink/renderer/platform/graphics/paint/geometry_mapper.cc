@@ -118,7 +118,7 @@ GeometryMapper::SourceToDestinationProjectionInternal(
     // The result will be translate(origin)*matrix*translate(-origin) which
     // equals to matrix if the origin is zero or if the matrix is just
     // identity or 2d translation.
-    if (source.Origin().IsZero()) {
+    if (source.Origin().IsOrigin()) {
       has_animation = source.HasActiveTransformAnimation();
       return Translation2DOrMatrix(source.Matrix());
     }

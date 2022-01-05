@@ -228,7 +228,7 @@ TEST_P(GeometryMapperTest, RotationAndScaleTransformWithAlias) {
 TEST_P(GeometryMapperTest, RotationAndScaleTransformWithTransformOrigin) {
   expected_transform = TransformationMatrix().Rotate(45).Scale(2);
   auto transform =
-      CreateTransform(t0(), *expected_transform, FloatPoint3D(50, 50, 0));
+      CreateTransform(t0(), *expected_transform, gfx::Point3F(50, 50, 0));
   local_state.SetTransform(*transform);
 
   input_rect = gfx::RectF(0, 0, 100, 100);

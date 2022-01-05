@@ -31,14 +31,14 @@ TEST(PendingLayerTest, MightOverlap) {
   artifact.Chunk().Bounds(gfx::Rect(0, 0, 100, 100));
   artifact.Chunk().Bounds(gfx::Rect(0, 0, 100, 100));
   auto t2 = CreateTransform(t0(), TransformationMatrix().Translate(99, 0),
-                            FloatPoint3D(100, 100, 0));
+                            gfx::Point3F(100, 100, 0));
   artifact.Chunk(*t2, c0(), e0()).Bounds(gfx::Rect(0, 0, 100, 100));
   auto t3 = CreateTransform(t0(), TransformationMatrix().Translate(100, 0),
-                            FloatPoint3D(100, 100, 0));
+                            gfx::Point3F(100, 100, 0));
   artifact.Chunk(*t3, c0(), e0()).Bounds(gfx::Rect(0, 0, 100, 100));
   auto t4 =
       CreateAnimatingTransform(t0(), TransformationMatrix().Translate(100, 0),
-                               FloatPoint3D(100, 100, 0));
+                               gfx::Point3F(100, 100, 0));
   artifact.Chunk(*t4, c0(), e0()).Bounds(gfx::Rect(0, 0, 100, 100));
   PaintChunkSubset chunks(artifact.Build());
 

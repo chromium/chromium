@@ -217,7 +217,7 @@ inline scoped_refptr<TransformPaintPropertyNode> Create2DTranslation(
 inline scoped_refptr<TransformPaintPropertyNode> CreateTransform(
     const TransformPaintPropertyNodeOrAlias& parent,
     const TransformationMatrix& matrix,
-    const FloatPoint3D& origin = FloatPoint3D(),
+    const gfx::Point3F& origin = gfx::Point3F(),
     CompositingReasons compositing_reasons = CompositingReason::kNone) {
   TransformPaintPropertyNode::State state{{matrix, origin}};
   state.direct_compositing_reasons = compositing_reasons;
@@ -227,7 +227,7 @@ inline scoped_refptr<TransformPaintPropertyNode> CreateTransform(
 inline scoped_refptr<TransformPaintPropertyNode> CreateAnimatingTransform(
     const TransformPaintPropertyNodeOrAlias& parent,
     const TransformationMatrix& matrix = TransformationMatrix(),
-    const FloatPoint3D& origin = FloatPoint3D()) {
+    const gfx::Point3F& origin = gfx::Point3F()) {
   TransformPaintPropertyNode::State state{{matrix, origin}};
   state.direct_compositing_reasons =
       CompositingReason::kActiveTransformAnimation;

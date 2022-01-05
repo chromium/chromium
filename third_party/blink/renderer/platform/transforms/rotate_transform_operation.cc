@@ -50,7 +50,7 @@ bool RotateTransformOperation::operator==(
 
 bool RotateTransformOperation::GetCommonAxis(const RotateTransformOperation* a,
                                              const RotateTransformOperation* b,
-                                             FloatPoint3D& result_axis,
+                                             gfx::Vector3dF& result_axis,
                                              double& result_angle_a,
                                              double& result_angle_b) {
   return Rotation::GetCommonAxis(a ? a->rotation_ : Rotation(),
@@ -99,7 +99,7 @@ RotateAroundOriginTransformOperation::RotateAroundOriginTransformOperation(
     double angle,
     double origin_x,
     double origin_y)
-    : RotateTransformOperation(Rotation(FloatPoint3D(0, 0, 1), angle),
+    : RotateTransformOperation(Rotation(gfx::Vector3dF(0, 0, 1), angle),
                                kRotateAroundOrigin),
       origin_x_(origin_x),
       origin_y_(origin_y) {}

@@ -417,7 +417,7 @@ TEST_F(CullRectTest, SingleScrollWholeScrollingContents) {
 TEST_F(CullRectTest, ApplyTransformsWithOrigin) {
   auto t1 = CreateTransform(t0(), TransformationMatrix().Translate(1, 2));
   auto t2 = CreateTransform(*t1, TransformationMatrix().Scale(0.5),
-                            FloatPoint3D(50, 100, 0));
+                            gfx::Point3F(50, 100, 0));
   PropertyTreeState root = PropertyTreeState::Root();
   PropertyTreeState state1(*t1, c0(), e0());
   PropertyTreeState state2(*t2, c0(), e0());
@@ -640,7 +640,7 @@ TEST_F(CullRectTest, CompositedTranslationUnderClip) {
   auto c1 = CreateClip(c0(), t0(), FloatRoundedRect(100, 200, 300, 400));
   auto t1 = CreateTransform(
       t0(), TransformationMatrix().Translate(10, 20).Scale3d(2, 3, 1),
-      FloatPoint3D(), CompositingReason::kWillChangeTransform);
+      gfx::Point3F(), CompositingReason::kWillChangeTransform);
   PropertyTreeState state1(*t1, *c1, e0());
 
   CullRect cull_rect1(gfx::Rect(0, 0, 300, 500));
@@ -684,7 +684,7 @@ TEST_F(CullRectTest, ClipAndCompositedScrollAndClip) {
                         FloatRoundedRect(0, 8000, 100, 100));
   auto t2 =
       CreateTransform(*scroll_translation, TransformationMatrix(),
-                      FloatPoint3D(), CompositingReason::kWillChangeTransform);
+                      gfx::Point3F(), CompositingReason::kWillChangeTransform);
 
   // c2a is out of view, but in the expansion area of the composited scroll.
   CullRect cull_rect = CullRect::Infinite();

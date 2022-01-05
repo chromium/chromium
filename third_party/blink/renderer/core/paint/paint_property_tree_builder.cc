@@ -786,7 +786,7 @@ void FragmentPaintPropertyTreeBuilder::SetTransformNodeStateForSVGChild(
       state.transform_and_origin = {
           TransformationMatrix(TransformHelper::ComputeTransform(
               object_, ComputedStyle::kExcludeTransformOrigin)),
-          FloatPoint3D(TransformHelper::ComputeTransformOrigin(object_))};
+          gfx::Point3F(TransformHelper::ComputeTransformOrigin(object_))};
       // Composited transform animation works only if
       // LocalToSVGParentTransform() reflects the CSS transform properties.
       // If this fails, we need to exclude the case in
@@ -874,13 +874,13 @@ void FragmentPaintPropertyTreeBuilder::UpdateTransformForSVGChild(
   }
 }
 
-static FloatPoint3D TransformOrigin(const ComputedStyle& style,
+static gfx::Point3F TransformOrigin(const ComputedStyle& style,
                                     PhysicalSize size) {
   // Transform origin has no effect without a transform or motion path.
   if (!style.HasTransform())
-    return FloatPoint3D();
+    return gfx::Point3F();
   gfx::SizeF border_box_size(size);
-  return FloatPoint3D(
+  return gfx::Point3F(
       FloatValueForLength(style.TransformOriginX(), border_box_size.width()),
       FloatValueForLength(style.TransformOriginY(), border_box_size.height()),
       style.TransformOriginZ());
@@ -1937,8 +1937,8 @@ void FragmentPaintPropertyTreeBuilder::UpdatePerspective() {
       TransformPaintPropertyNode::State state{
           TransformPaintPropertyNode::TransformAndOrigin(
               TransformationMatrix().ApplyPerspective(style.UsedPerspective()),
-              PerspectiveOrigin(To<LayoutBox>(object_)) +
-                  gfx::Vector2dF(context_.current.paint_offset))};
+              gfx::Point3F(PerspectiveOrigin(To<LayoutBox>(object_)) +
+                           gfx::Vector2dF(context_.current.paint_offset)))};
       state.flags.flattens_inherited_transform =
           context_.should_flatten_inherited_transform;
       state.rendering_context_id = context_.rendering_context_id;

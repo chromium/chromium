@@ -90,7 +90,6 @@
 #include "third_party/blink/renderer/core/style/shape_clip_path_operation.h"
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
-#include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_filter_operations.h"
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
@@ -102,6 +101,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
@@ -1443,9 +1443,9 @@ static double ComputeZOffset(const HitTestingTransformState& transform_state) {
   gfx::PointF target_point = transform_state.MappedPoint();
 
   // Now map the point back through the transform, which computes Z.
-  FloatPoint3D backmapped_point =
+  gfx::Point3F backmapped_point =
       transform_state.AccumulatedTransform().MapPoint(
-          FloatPoint3D(target_point));
+          gfx::Point3F(target_point));
   return backmapped_point.z();
 }
 

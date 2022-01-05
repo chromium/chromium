@@ -283,12 +283,12 @@ void PannerHandler::ProcessSampleAccurateValues(AudioBus* destination,
   float total_gain[GetDeferredTaskHandler().RenderQuantumFrames()];
 
   for (unsigned k = 0; k < frames_to_process; ++k) {
-    FloatPoint3D panner_position(panner_x[k], panner_y[k], panner_z[k]);
-    FloatPoint3D orientation(orientation_x[k], orientation_y[k],
-                             orientation_z[k]);
-    FloatPoint3D listener_position(listener_x[k], listener_y[k], listener_z[k]);
-    FloatPoint3D listener_forward(forward_x[k], forward_y[k], forward_z[k]);
-    FloatPoint3D listener_up(up_x[k], up_y[k], up_z[k]);
+    gfx::Point3F panner_position(panner_x[k], panner_y[k], panner_z[k]);
+    gfx::Vector3dF orientation(orientation_x[k], orientation_y[k],
+                               orientation_z[k]);
+    gfx::Point3F listener_position(listener_x[k], listener_y[k], listener_z[k]);
+    gfx::Vector3dF listener_forward(forward_x[k], forward_y[k], forward_z[k]);
+    gfx::Vector3dF listener_up(up_x[k], up_y[k], up_z[k]);
 
     CalculateAzimuthElevation(&azimuth[k], &elevation[k], panner_position,
                               listener_position, listener_forward, listener_up);
@@ -552,46 +552,46 @@ void PannerHandler::SetOrientation(float x,
 void PannerHandler::CalculateAzimuthElevation(
     double* out_azimuth,
     double* out_elevation,
-    const FloatPoint3D& position,
-    const FloatPoint3D& listener_position,
-    const FloatPoint3D& listener_forward,
-    const FloatPoint3D& listener_up) {
+    const gfx::Point3F& position,
+    const gfx::Point3F& listener_position,
+    const gfx::Vector3dF& listener_forward,
+    const gfx::Vector3dF& listener_up) {
   // Calculate the source-listener vector
-  FloatPoint3D source_listener = position - listener_position;
+  gfx::Vector3dF source_listener = position - listener_position;
 
   // Quick default return if the source and listener are at the same position.
-  if (source_listener.IsZero()) {
+  if (!source_listener.GetNormalized(&source_listener)) {
     *out_azimuth = 0;
     *out_elevation = 0;
     return;
   }
 
-  // normalize() does nothing if the length of |sourceListener| is zero.
-  source_listener.Normalize();
-
   // Align axes
-  FloatPoint3D listener_right = listener_forward.Cross(listener_up);
-  listener_right.Normalize();
+  gfx::Vector3dF listener_right =
+      gfx::CrossProduct(listener_forward, listener_up);
+  listener_right.GetNormalized(&listener_right);
 
-  FloatPoint3D listener_forward_norm = listener_forward;
-  listener_forward_norm.Normalize();
+  gfx::Vector3dF listener_forward_norm = listener_forward;
+  listener_forward_norm.GetNormalized(&listener_forward_norm);
 
-  FloatPoint3D up = listener_right.Cross(listener_forward_norm);
+  gfx::Vector3dF up = gfx::CrossProduct(listener_right, listener_forward_norm);
 
-  float up_projection = source_listener.Dot(up);
+  float up_projection = gfx::DotProduct(source_listener, up);
 
-  FloatPoint3D projected_source = source_listener - up_projection * up;
-  projected_source.Normalize();
+  gfx::Vector3dF projected_source =
+      source_listener - gfx::ScaleVector3d(up, up_projection);
+  projected_source.GetNormalized(&projected_source);
 
-  // Don't use AngleBetween here.  It produces the wrong value when one of the
-  // vectors has zero length.  We know here that |projected_source| and
-  // |listener_right| are "normalized", so the dot product is good enough.
-  double azimuth =
-      Rad2deg(acos(ClampTo(projected_source.Dot(listener_right), -1.0f, 1.0f)));
+  // Don't use gfx::AngleBetweenVectorsInDegrees here.  It produces the wrong
+  // value when one of the vectors has zero length.  We know here that
+  // |projected_source| and |listener_right| are "normalized", so the dot
+  // product is good enough.
+  double azimuth = Rad2deg(acos(
+      ClampTo(gfx::DotProduct(projected_source, listener_right), -1.0f, 1.0f)));
   FixNANs(azimuth);  // avoid illegal values
 
   // Source  in front or behind the listener
-  double front_back = projected_source.Dot(listener_forward_norm);
+  double front_back = gfx::DotProduct(projected_source, listener_forward_norm);
   if (front_back < 0.0)
     azimuth = 360.0 - azimuth;
 
@@ -602,7 +602,8 @@ void PannerHandler::CalculateAzimuthElevation(
     azimuth = 450.0 - azimuth;
 
   // Elevation
-  double elevation = 90 - Rad2deg(source_listener.AngleBetween(up));
+  double elevation =
+      90 - gfx::AngleBetweenVectorsInDegrees(source_listener, up);
   FixNANs(elevation);  // avoid illegal values
 
   if (elevation > 90.0)
@@ -617,10 +618,10 @@ void PannerHandler::CalculateAzimuthElevation(
 }
 
 float PannerHandler::CalculateDistanceConeGain(
-    const FloatPoint3D& position,
-    const FloatPoint3D& orientation,
-    const FloatPoint3D& listener_position) {
-  double listener_distance = position.DistanceTo(listener_position);
+    const gfx::Point3F& position,
+    const gfx::Vector3dF& orientation,
+    const gfx::Point3F& listener_position) {
+  double listener_distance = (position - listener_position).Length();
   double distance_gain = distance_effect_.Gain(listener_distance);
   double cone_gain =
       cone_effect_.Gain(position, orientation, listener_position);
@@ -735,8 +736,8 @@ bool PannerHandler::IsAudioRate() const {
 void PannerHandler::UpdateDirtyState() {
   DCHECK(Context()->IsAudioThread());
 
-  FloatPoint3D current_position = GetPosition();
-  FloatPoint3D current_orientation = Orientation();
+  gfx::Point3F current_position = GetPosition();
+  gfx::Vector3dF current_orientation = Orientation();
 
   bool has_moved = current_position != last_position_ ||
                    current_orientation != last_orientation_;

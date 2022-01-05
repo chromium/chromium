@@ -108,8 +108,7 @@ int LayersAsJSON::AddTransformJSON(
 
   if (!transform.IsIdentityOr2DTranslation() &&
       !transform.Matrix().IsIdentityOrTranslation()) {
-    transform_json->SetArray(
-        "origin", Point3AsJSONArray(ToGfxPoint3F(transform.Origin())));
+    transform_json->SetArray("origin", Point3AsJSONArray(transform.Origin()));
   }
 
   if (!transform.FlattensInheritedTransform())

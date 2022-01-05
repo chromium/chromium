@@ -9,7 +9,7 @@
 
 namespace blink {
 
-void FloatBox::ExpandTo(const FloatPoint3D& low, const FloatPoint3D& high) {
+void FloatBox::ExpandTo(const gfx::Point3F& low, const gfx::Point3F& high) {
   DCHECK_LE(low.x(), high.x());
   DCHECK_LE(low.y(), high.y());
   DCHECK_LE(low.z(), high.z());

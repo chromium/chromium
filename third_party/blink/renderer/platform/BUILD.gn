@@ -751,8 +751,6 @@ component("platform") {
     "geometry/double_size.h",
     "geometry/float_box.cc",
     "geometry/float_box.h",
-    "geometry/float_point_3d.cc",
-    "geometry/float_point_3d.h",
     "geometry/float_polygon.cc",
     "geometry/float_polygon.h",
     "geometry/float_quad.cc",

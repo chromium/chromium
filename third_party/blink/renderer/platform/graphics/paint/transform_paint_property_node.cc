@@ -133,7 +133,7 @@ std::unique_ptr<JSONObject> TransformPaintPropertyNode::ToJSON() const {
       json->SetString("translation2d", String(Translation2D().ToString()));
   } else {
     json->SetString("matrix", Matrix().ToString());
-    json->SetString("origin", Origin().ToString());
+    json->SetString("origin", String(Origin().ToString()));
   }
   if (!state_.flags.flattens_inherited_transform)
     json->SetBoolean("flattensInheritedTransform", false);

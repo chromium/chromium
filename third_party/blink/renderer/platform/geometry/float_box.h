@@ -32,10 +32,11 @@
 
 #include <cmath>
 #include <iosfwd>
-#include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/box_f.h"
+#include "ui/gfx/geometry/point3_f.h"
 
 namespace blink {
 
@@ -69,13 +70,13 @@ class PLATFORM_EXPORT FloatBox {
   // Use ToBoxF() instead.
   operator gfx::BoxF() const = delete;
 
-  void set_origin(const FloatPoint3D& origin) {
+  void set_origin(const gfx::Point3F& origin) {
     x_ = origin.x();
     y_ = origin.y();
     z_ = origin.z();
   }
 
-  void set_size(const FloatPoint3D& origin) {
+  void set_size(const gfx::Point3F& origin) {
     DCHECK_GE(origin.x(), 0);
     DCHECK_GE(origin.y(), 0);
     DCHECK_GE(origin.z(), 0);
@@ -85,7 +86,7 @@ class PLATFORM_EXPORT FloatBox {
     depth_ = origin.z();
   }
 
-  void Move(const FloatPoint3D& location) {
+  void Move(const gfx::Vector3dF& location) {
     x_ += location.x();
     y_ += location.y();
     z_ += location.z();
@@ -96,12 +97,12 @@ class PLATFORM_EXPORT FloatBox {
     depth_ = 0;
   }
 
-  void ExpandTo(const FloatPoint3D& low, const FloatPoint3D& high);
-  void ExpandTo(const FloatPoint3D& point) { ExpandTo(point, point); }
+  void ExpandTo(const gfx::Point3F& low, const gfx::Point3F& high);
+  void ExpandTo(const gfx::Point3F& point) { ExpandTo(point, point); }
 
   void ExpandTo(const FloatBox& box) {
-    ExpandTo(FloatPoint3D(box.x(), box.y(), box.z()),
-             FloatPoint3D(box.right(), box.bottom(), box.front()));
+    ExpandTo(gfx::Point3F(box.x(), box.y(), box.z()),
+             gfx::Point3F(box.right(), box.bottom(), box.front()));
   }
 
   void Union(const FloatBox& box) {
