@@ -283,6 +283,7 @@ class AppsContainerView::ContinueContainer : public views::View {
     recent_apps_->layer()->SetFillsBoundsOpaquely(false);
 
     separator_ = AddChildView(std::make_unique<views::Separator>());
+    DCHECK(ColorProvider::Get());
     separator_->SetColor(ColorProvider::Get()->GetContentLayerColor(
         ColorProvider::ContentLayerType::kSeparatorColor));
     separator_->SetPreferredSize(

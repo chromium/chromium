@@ -438,6 +438,9 @@ SkColor AshColorProvider::GetInvertedBackgroundThemedColor() const {
 SkColor AshColorProvider::GetBackgroundThemedColorImpl(
     SkColor default_color,
     bool use_dark_color) const {
+  // May be null in unit tests.
+  if (!Shell::HasInstance())
+    return default_color;
   WallpaperControllerImpl* wallpaper_controller =
       Shell::Get()->wallpaper_controller();
   if (!wallpaper_controller)
