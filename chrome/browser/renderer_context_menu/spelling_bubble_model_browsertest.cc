@@ -68,7 +68,7 @@ IN_PROC_BROWSER_TEST_F(SpellingBubbleModelTest, OpenHelpPage) {
   model->OpenHelpPage();
   content::WebContents* web_contents = waiter.Wait();
   EXPECT_EQ(web_contents->GetBrowserContext(), browser()->profile());
-  EXPECT_EQ(web_contents->GetURL(), model->GetHelpPageURL());
+  EXPECT_EQ(web_contents->GetVisibleURL(), model->GetHelpPageURL());
 }
 
 // Tests that closing the tab with WebContents that was used to construct the
@@ -89,5 +89,5 @@ IN_PROC_BROWSER_TEST_F(SpellingBubbleModelTest,
   model->OpenHelpPage();
   content::WebContents* web_contents = waiter.Wait();
   EXPECT_EQ(web_contents->GetBrowserContext(), browser()->profile());
-  EXPECT_EQ(web_contents->GetURL(), model->GetHelpPageURL());
+  EXPECT_EQ(web_contents->GetVisibleURL(), model->GetHelpPageURL());
 }

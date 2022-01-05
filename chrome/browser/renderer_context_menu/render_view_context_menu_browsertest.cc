@@ -872,7 +872,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, RealMenu) {
   EXPECT_TRUE(content::WaitForLoadStop(tab));
 
   // Verify that it's the correct tab.
-  EXPECT_EQ(GURL("about:blank"), tab->GetURL());
+  EXPECT_EQ(GURL("about:blank"), tab->GetLastCommittedURL());
 }
 
 // Verify that "Open Link in New Tab" doesn't crash for about:blank.
@@ -901,7 +901,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenAboutBlankInNewTab) {
   EXPECT_TRUE(content::WaitForLoadStop(tab));
 
   // Verify that it's the correct tab.
-  EXPECT_EQ(GURL("about:blank"), tab->GetURL());
+  EXPECT_EQ(GURL("about:blank"), tab->GetLastCommittedURL());
 }
 
 // Verify that "Open Link in New Tab" doesn't crash for data: URLs.
@@ -964,7 +964,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenInNewTabReferrer) {
   EXPECT_TRUE(content::WaitForLoadStop(tab));
 
   // Verify that it's the correct tab.
-  ASSERT_EQ(echoheader, tab->GetURL());
+  ASSERT_EQ(echoheader, tab->GetLastCommittedURL());
   // Verify that the text on the page matches |kCorrectReferrer|.
   std::string actual_referrer;
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
@@ -1013,7 +1013,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, OpenIncognitoNoneReferrer) {
   EXPECT_TRUE(content::WaitForLoadStop(tab));
 
   // Verify that it's the correct tab.
-  ASSERT_EQ(echoheader, tab->GetURL());
+  ASSERT_EQ(echoheader, tab->GetLastCommittedURL());
   // Verify that the text on the page matches |kNoneReferrer|.
   std::string actual_referrer;
   ASSERT_TRUE(content::ExecuteScriptAndExtractString(
@@ -1486,7 +1486,7 @@ IN_PROC_BROWSER_TEST_F(ContextMenuBrowserTest, MAYBE_OpenLinkInProfile) {
     content::WaitForLoadStop(tab);
 
     // Verify that it's the correct tab and profile.
-    EXPECT_EQ(url, tab->GetURL());
+    EXPECT_EQ(url, tab->GetLastCommittedURL());
     EXPECT_EQ(profile, Profile::FromBrowserContext(tab->GetBrowserContext()));
   }
 }
@@ -1603,7 +1603,7 @@ IN_PROC_BROWSER_TEST_F(SearchByRegionBrowserTest,
   content::WaitForLoadStop(new_tab);
 
   std::string expected_content = GetLensRegionSearchURL().GetContent();
-  std::string new_tab_content = new_tab->GetURL().GetContent();
+  std::string new_tab_content = new_tab->GetLastCommittedURL().GetContent();
   // Match strings up to the query.
   std::size_t query_start_pos = new_tab_content.find("?");
   // Match the query parameters, without the value of start_time.
@@ -1624,7 +1624,7 @@ IN_PROC_BROWSER_TEST_F(SearchByRegionBrowserTest,
   content::WaitForLoadStop(new_tab);
 
   std::string expected_content = GetNonGoogleRegionSearchURL().GetContent();
-  std::string new_tab_content = new_tab->GetURL().GetContent();
+  std::string new_tab_content = new_tab->GetLastCommittedURL().GetContent();
   EXPECT_EQ(expected_content, new_tab_content);
 }
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -1721,7 +1721,7 @@ IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest, ImageSearchWithValidImage) {
   // The browser should open a new tab for an image search.
   content::WebContents* new_tab = add_tab.Wait();
   content::WaitForLoadStop(new_tab);
-  EXPECT_EQ(GetImageSearchURL(), new_tab->GetURL());
+  EXPECT_EQ(GetImageSearchURL(), new_tab->GetLastCommittedURL());
 }
 
 IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest, ImageSearchWithCorruptImage) {
@@ -1781,7 +1781,7 @@ IN_PROC_BROWSER_TEST_F(SearchByImageBrowserTest,
   content::WaitForLoadStop(new_tab);
 
   std::string expected_content = GetLensImageSearchURL().GetContent();
-  std::string new_tab_content = new_tab->GetURL().GetContent();
+  std::string new_tab_content = new_tab->GetLastCommittedURL().GetContent();
   // Match strings up to the query.
   std::size_t query_start_pos = new_tab_content.find("?");
   EXPECT_EQ(expected_content.substr(0, query_start_pos),
