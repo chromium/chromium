@@ -2063,6 +2063,16 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
                     nullptr);
     }
   }
+  if (policy.has_login_web_ui_lazy_loading()) {
+    const em::DeviceLoginScreenWebUILazyLoadingProto& container(
+        policy.login_web_ui_lazy_loading());
+    if (container.has_enabled()) {
+      policies->Set(key::kDeviceLoginScreenWebUILazyLoading,
+                    POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                    POLICY_SOURCE_CLOUD, base::Value(container.enabled()),
+                    nullptr);
+    }
+  }
 }
 
 }  // namespace

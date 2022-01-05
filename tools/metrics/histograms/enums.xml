@@ -27524,6 +27524,7 @@ Called by update_document_policy_enum.py.-->
   <int value="930" label="FullscreenNotificationUrlExemptList"/>
   <int value="931" label="OnPrintEnterpriseConnector"/>
   <int value="932" label="UserAgentReduction"/>
+  <int value="934" label="DeviceLoginScreenWebUILazyLoading"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

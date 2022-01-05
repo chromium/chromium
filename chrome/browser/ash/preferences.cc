@@ -143,6 +143,7 @@ void Preferences::RegisterPrefs(PrefRegistrySimple* registry) {
       prefs::kLocalStateDevicePeripheralDataAccessEnabled, false);
   registry->RegisterBooleanPref(prefs::kDeviceI18nShortcutsEnabled, true);
   registry->RegisterBooleanPref(prefs::kChromadToCloudMigrationEnabled, false);
+  registry->RegisterBooleanPref(prefs::kLoginScreenWebUILazyLoading, false);
 
   RegisterLocalStatePrefs(registry);
   sync_consent_optional_field_trial::RegisterLocalStatePrefs(registry);

@@ -17465,5 +17465,43 @@
         }
       }
     ]
+  },
+  "DeviceLoginScreenWebUILazyLoading": {
+    "os": [
+      "chromeos_ash"
+    ],
+    "policy_pref_mapping_tests": [
+      {
+        "policies": {},
+        "prefs": {
+          "ash.login.LoginScreenWebUILazyLoading": {
+            "default_value": false,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceLoginScreenWebUILazyLoading": false
+        },
+        "prefs": {
+          "ash.login.LoginScreenWebUILazyLoading": {
+            "value": false,
+            "location": "local_state"
+          }
+        }
+      },
+      {
+        "policies": {
+          "DeviceLoginScreenWebUILazyLoading": true
+        },
+        "prefs": {
+          "ash.login.LoginScreenWebUILazyLoading": {
+            "value": true,
+            "location": "local_state"
+          }
+        }
+      }
+    ]
   }
 }

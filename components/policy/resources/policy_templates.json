@@ -29047,6 +29047,42 @@ When this policy is set, <ph name="PRODUCT_OS_NAME">$2<ex>Google Chrome OS</ex><
       https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.html
       '''
     },
+    {
+      'name': 'DeviceLoginScreenWebUILazyLoading',
+      'owners': ['alemate@chromium.org', 'rsorokin@chromium.org', 'antrim@chromium.org'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'future_on': ['chrome_os'],
+      'device_only': True,
+      'features': {
+        'dynamic_refresh': False,
+        'per_profile': False,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Enable Lazy Login WebUI loading.',
+        },
+        {
+          'value': False,
+          'caption': 'Disable Lazy Login WebUI loading.',
+        },
+      ],
+      'default': False,
+      'example_value': True,
+      'id': 934,
+      'caption': '''Load Login WebUI only when needed.''',
+      'tags': [],
+      'desc': '''This policy controls whether the WebUI part of the sign-in screen will be always loaded at start or only before showing it. This policy applies to the sign-in screen.
+
+      If this policy is enabled, the WebUI part of the sign-in UI will be loaded only before showing it. This speeds up the login process.
+
+      If this policy is disabled, the WebUI part of the sign-in screen will always be loaded on boot (legacy behavior).
+
+      If unset, behavior will be controlled by kEnableLazyLoginWebUILoading feature.
+
+      This policy should be removed after kEnableLazyLoginWebUILoading is fully rolled out.''',
+    },
   ],
   'messages': {
     # Messages that are not associated to any policies.
@@ -29511,6 +29547,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'KioskCRXManifestUpdateURLIgnored': 'kiosk_crx_manifest_update_url_ignored',
     'DeviceI18nShortcutsEnabled': 'device_i18n_shortcuts_enabled.enabled',
     'ChromadToCloudMigrationEnabled': 'chromad_to_cloud_migration_enabled.value',
+    'DeviceLoginScreenWebUILazyLoading': 'login_web_ui_lazy_loading.enabled',
   },
   'policy_atomic_group_definitions': [
     {
@@ -30018,8 +30055,8 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     },
   ],
   'placeholders': [],
-  'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
+  'deleted_policy_ids': [114, 115, 204, 205, 206, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872, 933],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 932,
+  'highest_id_currently_used': 934,
   'highest_atomic_group_id_currently_used': 41
 }

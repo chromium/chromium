@@ -1848,6 +1848,12 @@ message RevenDeviceHWDataUsageEnabledProto {
   optional bool hardware_data_usage_enabled = 1 [default = false];
 }
 
+// Controls whether Login WebUI will be explicitly loaded on start.
+// Overrides EnableLazyLoginWebUILoading feature.
+message DeviceLoginScreenWebUILazyLoadingProto {
+  optional bool enabled = 1 [default = false];
+}
+
 message ChromeDeviceSettingsProto {
   reserved 61, 90;
   optional DevicePolicyRefreshRateProto device_policy_refresh_rate = 1;
@@ -2017,4 +2023,6 @@ message ChromeDeviceSettingsProto {
   optional DeviceI18nShortcutsEnabledProto device_i18n_shortcuts_enabled = 128;
   optional BooleanPolicyProto chromad_to_cloud_migration_enabled = 129;
   optional RevenDeviceHWDataUsageEnabledProto hardware_data_usage_enabled = 130;
+  optional DeviceLoginScreenWebUILazyLoadingProto login_web_ui_lazy_loading =
+      131;
 }
