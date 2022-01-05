@@ -4138,16 +4138,16 @@ class AutotestPrivateInstallPWAForCurrentURLFunction::PWABannerObserver
         app_banner_manager_->GetInstallableWebAppCheckResultForTesting();
     switch (installable) {
       case Installable::kNo:
-        FALLTHROUGH;
+        [[fallthrough]];
       case Installable::kNo_AlreadyInstalled:
-        FALLTHROUGH;
+        [[fallthrough]];
       case Installable::kUnknown:
         DCHECK(false) << "Unexpected AppBannerManager::Installable value (kNo "
                          "or kNoAlreadyInstalled or kUnknown)";
         break;
 
       case Installable::kYes_Promotable:
-        FALLTHROUGH;
+        [[fallthrough]];
       case Installable::kYes_ByUserRequest:
         observation_.Reset();
         std::move(callback_).Run();
