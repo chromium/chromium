@@ -1791,8 +1791,8 @@ class CONTENT_EXPORT ContentBrowserClient {
   // the url was made, e.g. by launching an app. Note that this does not
   // guarantee that the app successfully handled it.
   // If this is a navigation request, then |child_id| will be
-  // ChildProcessHost::kInvalidUniqueID and |navigation_ui_data| will valid.
-  // Otherwise child_id will be the process id and |navigation_ui_data| will be
+  // ChildProcessHost::kInvalidUniqueID and |navigation_ui| will be valid.
+  // Otherwise |child_id| will be the process id and |navigation_data| will be
   // nullptr.
   //
   // |initiating_origin| is the origin of the last redirecting server (falling
