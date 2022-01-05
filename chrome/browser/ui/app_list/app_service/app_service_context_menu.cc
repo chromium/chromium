@@ -314,15 +314,15 @@ bool AppServiceContextMenu::IsCommandIdChecked(int command_id) const {
       return AppContextMenu::IsCommandIdChecked(command_id);
 
     case apps::mojom::AppType::kArc:
-      FALLTHROUGH;
+      [[fallthrough]];
     case apps::mojom::AppType::kCrostini:
-      FALLTHROUGH;
+      [[fallthrough]];
     case apps::mojom::AppType::kBuiltIn:
-      FALLTHROUGH;
+      [[fallthrough]];
     case apps::mojom::AppType::kPluginVm:
-      FALLTHROUGH;
+      [[fallthrough]];
     case apps::mojom::AppType::kBorealis:
-      FALLTHROUGH;
+      [[fallthrough]];
     default:
       return AppContextMenu::IsCommandIdChecked(command_id);
   }
@@ -465,15 +465,15 @@ void AppServiceContextMenu::SetLaunchType(int command_id) {
       return;
     }
     case apps::mojom::AppType::kArc:
-      FALLTHROUGH;
+      [[fallthrough]];
     case apps::mojom::AppType::kCrostini:
-      FALLTHROUGH;
+      [[fallthrough]];
     case apps::mojom::AppType::kBuiltIn:
-      FALLTHROUGH;
+      [[fallthrough]];
     case apps::mojom::AppType::kPluginVm:
-      FALLTHROUGH;
+      [[fallthrough]];
     case apps::mojom::AppType::kBorealis:
-      FALLTHROUGH;
+      [[fallthrough]];
     default:
       return;
   }
