@@ -3111,10 +3111,6 @@ void RenderProcessHostImpl::DiscardSpareRenderProcessHostForTesting() {
 
 // static
 bool RenderProcessHostImpl::IsSpareProcessKeptAtAllTimes() {
-#if defined(OS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kSpareRenderer))
-    return true;
-#endif
   if (!SiteIsolationPolicy::UseDedicatedProcessesForAllSites())
     return false;
 
@@ -4628,14 +4624,7 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
   // spawning two processes at the same time.  In this case the call to
   // PrepareForFutureRequests will be postponed until later (e.g. until the
   // navigation commits or a cross-site redirect happens).
-  if (spare_was_taken
-#if defined(OS_ANDROID)
-      // If we're in the experiment to always create a spare renderer on Android
-      // don't start it right away on since the system is busy; this will happen
-      // when the page stops loading.
-      && !base::FeatureList::IsEnabled(features::kSpareRenderer)
-#endif
-  ) {
+  if (spare_was_taken) {
     spare_process_manager.PrepareForFutureRequests(browser_context);
   }
 

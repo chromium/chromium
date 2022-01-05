@@ -7282,13 +7282,6 @@ void WebContentsImpl::DidStopLoading() {
   }
 
   LoadingStateChanged(true /* should_show_loading_ui */, details.get());
-
-#if defined(OS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kSpareRenderer)) {
-    RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedBrowserContext(
-        GetBrowserContext());
-  }
-#endif
 }
 
 void WebContentsImpl::DidChangeLoadProgress() {

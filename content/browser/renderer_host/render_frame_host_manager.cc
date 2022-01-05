@@ -1914,16 +1914,8 @@ RenderFrameHostManager::GetSiteInstanceForNavigation(
   if (new_instance == current_instance) {
     // If we're navigating to the same site instance, we won't need to use the
     // current spare RenderProcessHost.
-#if defined(OS_ANDROID)
-    // If we're in the experiment to always create a spare renderer on Android
-    // don't start it right away on since the system is busy; this will happen
-    // when the page stops loading.
-    if (!base::FeatureList::IsEnabled(features::kSpareRenderer))
-#endif
-    {
-      RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedBrowserContext(
-          browser_context);
-    }
+    RenderProcessHostImpl::NotifySpareManagerAboutRecentlyUsedBrowserContext(
+        browser_context);
   }
 
   // Double-check that the new SiteInstance is associated with the right

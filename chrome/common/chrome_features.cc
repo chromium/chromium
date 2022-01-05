@@ -972,10 +972,6 @@ const base::Feature kSitePerProcess {
 const base::Feature kSmartDim{"SmartDim", base::FEATURE_DISABLED_BY_DEFAULT};
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// Enables prewarming a renderer when the primary profile is created.
-const base::Feature kSpareRendererOnPrimaryProfileCreation{
-    "SpareRendererOnPrimaryProfileCreation", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Enables or disables the ability to use the sound content setting to mute a
 // website.
 const base::Feature kSoundContentSetting{"SoundContentSetting",

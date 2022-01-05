@@ -1429,12 +1429,6 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
   if (profile_info.mode == StartupProfileMode::kError)
     return content::RESULT_CODE_NORMAL_EXIT;
 
-  if (base::FeatureList::IsEnabled(
-          features::kSpareRendererOnPrimaryProfileCreation)) {
-    content::RenderProcessHost::WarmupSpareRenderProcessHost(
-        profile_info.profile);
-  }
-
 #if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   // Create the spellcheck service. This will asynchronously retrieve the
   // Windows platform spellcheck dictionary language tags used to populate the
