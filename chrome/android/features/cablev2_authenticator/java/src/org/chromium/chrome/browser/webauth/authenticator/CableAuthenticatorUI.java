@@ -212,12 +212,6 @@ public class CableAuthenticatorUI extends Fragment implements OnClickListener {
                 mState = State.QR_CONFIRM;
                 break;
         }
-
-        // Reference these strings to avoid an error about them being unused.
-        // They're checked in for translation ahead of the code that uses them.
-        // TODO(agl): remove this.
-        getResources().getString(R.string.cablev2_paask_body);
-        getResources().getString(R.string.cablev2_paask_title);
     }
 
     // This class should not be reachable on Android versions < N (API level 24).
