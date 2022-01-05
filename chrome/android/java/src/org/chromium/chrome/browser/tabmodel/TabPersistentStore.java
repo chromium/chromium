@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.tab.state.FilePersistedTabDataStorage;
 import org.chromium.chrome.browser.tab.state.PersistedTabData;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
+import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.browser.LoadUrlParams;
@@ -717,8 +718,8 @@ public class TabPersistentStore {
             boolean wasIncognitoTabModelSelected = mTabModelSelector.isIncognitoSelected();
             int selectedModelTabCount = mTabModelSelector.getCurrentModel().getCount();
 
-            // TODO(hanxi): Sets the correct value for skipLoadingTab.
-            TabModelUtils.setIndex(model, TabModelUtils.getTabIndexById(model, tabId), false);
+            TabModelUtils.setIndex(model, TabModelUtils.getTabIndexById(model, tabId),
+                    StartSurfaceUserData.getInstance().getUnusedTabRestoredAtStartup());
             boolean isIncognitoTabModelSelected = mTabModelSelector.isIncognitoSelected();
 
             // Setting the index will cause the tab's model to be selected. Set it back to the model
