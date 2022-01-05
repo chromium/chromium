@@ -61,10 +61,10 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
-#include "chrome/browser/ash/arc/arc_web_contents_data.h"
 #include "chrome/browser/ash/crostini/crostini_terminal.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
+#include "chrome/browser/chromeos/arc/arc_web_contents_data.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_save_handler.h"
