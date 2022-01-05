@@ -175,7 +175,8 @@ Keyboard::Keyboard(std::unique_ptr<KeyboardDelegate> delegate, Seat* seat)
   ime_controller->AddObserver(this);
 
   delegate_->OnKeyboardLayoutUpdated(seat_->xkb_tracker()->GetKeymap().get());
-  OnSurfaceFocused(seat_->GetFocusedSurface());
+  OnSurfaceFocused(seat_->GetFocusedSurface(), nullptr,
+                   !!seat_->GetFocusedSurface());
   OnKeyRepeatSettingsChanged(
       ash::KeyboardController::Get()->GetKeyRepeatSettings());
 }
@@ -388,7 +389,9 @@ void Keyboard::OnSurfaceDestroying(Surface* surface) {
 ////////////////////////////////////////////////////////////////////////////////
 // SeatObserver overrides:
 
-void Keyboard::OnSurfaceFocused(Surface* gained_focus) {
+void Keyboard::OnSurfaceFocused(Surface* gained_focus,
+                                Surface* lost_focused,
+                                bool has_focused_surface) {
   Surface* gained_focus_surface =
       gained_focus && delegate_->CanAcceptKeyboardEventsForSurface(gained_focus)
           ? gained_focus

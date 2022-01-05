@@ -36,7 +36,11 @@ class TestSeatObserver : public SeatObserver {
       : callback_(callback) {}
 
   // Overridden from SeatObserver:
-  void OnSurfaceFocused(Surface* gained_focus) override { callback_.Run(); }
+  void OnSurfaceFocused(Surface* gained_focus,
+                        Surface* lost_focus,
+                        bool has_focused_surface) override {
+    callback_.Run();
+  }
 
  private:
   base::RepeatingClosure callback_;
@@ -601,26 +605,6 @@ TEST_F(SeatTest, DragDropAbort) {
   EXPECT_TRUE(seat.get_drag_drop_operation_for_testing());
   seat.AbortPendingDragOperation();
   EXPECT_FALSE(seat.get_drag_drop_operation_for_testing());
-}
-
-TEST_F(SeatTest, CanSetFocusChangedCallbackMoreThanOnce) {
-  TestSeat seat;
-  bool cb_1_called = false;
-  bool cb_2_called = false;
-
-  seat.SetFocusChangedCallback(base::BindLambdaForTesting(
-      [&](Surface* a, Surface* b, bool gained_or_lost) {
-        cb_1_called = true;
-      }));
-  seat.SetFocusChangedCallback(base::BindLambdaForTesting(
-      [&](Surface* a, Surface* b, bool gained_or_lost) {
-        cb_2_called = true;
-      }));
-
-  seat.OnWindowFocused(nullptr, nullptr);
-
-  EXPECT_TRUE(cb_1_called);
-  EXPECT_TRUE(cb_2_called);
 }
 
 }  // namespace

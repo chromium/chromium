@@ -10,11 +10,13 @@
 #include <memory>
 
 #include "ash/shell.h"
+#include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/bind.h"
 #include "base/posix/unix_domain_socket.h"
 #include "components/exo/display.h"
 #include "components/exo/test/exo_test_base.h"
+#include "components/exo/wayland/server_util.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/views/widget/widget.h"
@@ -91,6 +93,8 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
     return send_bounds_changed_counter_;
   }
 
+  static int last_desktop_focus_state() { return last_desktop_focus_state_; }
+
  private:
   std::unique_ptr<Display> display_;
 
@@ -102,6 +106,8 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
   std::unique_ptr<WaylandRemoteShell> shell_;
 
   static int send_bounds_changed_counter_;
+
+  static uint32_t last_desktop_focus_state_;
 
   const WaylandRemoteShellEventMapping test_event_mapping_ = {
       /*send_window_geometry_changed=*/+[](struct wl_resource*,
@@ -131,7 +137,9 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
       /*send_activated=*/
       +[](struct wl_resource*, struct wl_resource*, struct wl_resource*) {},
       /*send_desktop_focus_state_changed=*/
-      +[](struct wl_resource*, uint32_t) {},
+      +[](struct wl_resource*, uint32_t state) {
+        last_desktop_focus_state_ = state;
+      },
       /*send_workspace_info=*/
       +[](struct wl_resource*,
           uint32_t,
@@ -168,8 +176,8 @@ class WaylandRemoteShellTest : public test::ExoTestBase {
       /*set_use_default_scale_cancellation_since_version=*/0,
   };
 };
-
 int WaylandRemoteShellTest::send_bounds_changed_counter_ = 0;
+uint32_t WaylandRemoteShellTest::last_desktop_focus_state_ = 0;
 
 // Test that all bounds change requests are deferred while the tablet transition
 // is happening until it's finished.
@@ -207,6 +215,39 @@ TEST_F(WaylandRemoteShellTest, DeferBoundsChangeWhileTabletTransition) {
   task_environment()->RunUntilIdle();
 
   EXPECT_EQ(send_bounds_changed_counter(), 1);
+}
+
+// Test that the desktop focus state event is called with the proper value in
+// response to window focus change.
+TEST_F(WaylandRemoteShellTest, DesktopFocusState) {
+  // Setup buffer/surface/window.
+  const gfx::Size buffer_size(256, 256);
+  std::unique_ptr<Buffer> buffer(
+      new Buffer(exo_test_helper()->CreateGpuMemoryBuffer(buffer_size)));
+
+  std::unique_ptr<Surface> surface(new Surface);
+  auto shell_surface =
+      exo_test_helper()->CreateClientControlledShellSurface(surface.get());
+
+  ScopedWlResource wl_res(
+      wl_resource_create(wl_client(), &zcr_remote_surface_v2_interface, 1, 1));
+  shell_surface->set_delegate(
+      shell()->CreateShellSurfaceDelegate(wl_res.get()));
+  SetSurfaceResource(surface.get(), wl_res.get());
+
+  surface->Attach(buffer.get());
+  surface->Commit();
+  EXPECT_EQ(last_desktop_focus_state(), 2);
+
+  shell_surface->SetMinimized();
+  surface->Commit();
+  EXPECT_EQ(last_desktop_focus_state(), 1);
+
+  auto* other_client_window =
+      CreateTestWindowInShellWithBounds(gfx::Rect(0, 0, 100, 100));
+  other_client_window->Show();
+  other_client_window->Focus();
+  EXPECT_EQ(last_desktop_focus_state(), 3);
 }
 
 }  // namespace wayland

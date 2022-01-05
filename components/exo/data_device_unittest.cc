@@ -258,7 +258,7 @@ TEST_F(DataDeviceTest, DataEventsPreventMotion) {
       exo::test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();
   auto* other_surface = shell_surface->root_surface();
 
-  device_->OnSurfaceFocused(other_surface);
+  device_->OnSurfaceFocused(other_surface, nullptr, true);
   delegate_.PopEvents(&events);
 
   // Mimic an extended_drag_source drag operation.
@@ -471,14 +471,14 @@ TEST_F(DataDeviceTest, DropCallback_Reset) {
 
 TEST_F(DataDeviceTest, ClipboardCopy) {
   // Selection event sent when getting a focus.
-  device_->OnSurfaceFocused(surface_.get());
+  device_->OnSurfaceFocused(surface_.get(), nullptr, true);
   std::vector<DataEvent> events;
   ASSERT_EQ(2u, delegate_.PopEvents(&events));
   EXPECT_EQ(DataEvent::kOffer, events[0]);
   EXPECT_EQ(DataEvent::kSelection, events[1]);
 
   // Next focus does not send selection.
-  device_->OnSurfaceFocused(surface_.get());
+  device_->OnSurfaceFocused(surface_.get(), nullptr, true);
   EXPECT_EQ(0u, delegate_.PopEvents(&events));
 
   // Clipboard change
@@ -488,7 +488,7 @@ TEST_F(DataDeviceTest, ClipboardCopy) {
   EXPECT_EQ(DataEvent::kSelection, events[1]);
 
   // Losing focus does not create events.
-  device_->OnSurfaceFocused(nullptr);
+  device_->OnSurfaceFocused(nullptr, nullptr, true);
   EXPECT_EQ(0u, delegate_.PopEvents(&events));
 }
 
@@ -512,7 +512,7 @@ TEST_F(DataDeviceTest, ClipboardDeviceCreatedAfterFocus) {
 }
 
 TEST_F(DataDeviceTest, ClipboardFocusedSurfaceDestroyed) {
-  device_->OnSurfaceFocused(surface_.get());
+  device_->OnSurfaceFocused(surface_.get(), nullptr, true);
   surface_.reset();
   std::vector<DataEvent> events;
   delegate_.PopEvents(&events);
