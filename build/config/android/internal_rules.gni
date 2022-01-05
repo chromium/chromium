@@ -3696,21 +3696,6 @@ if (enable_java_templates) {
 
     _public_deps = []
     _analysis_public_deps = []
-    _analysis_files = []
-
-    if (defined(invoker.proguard_configs)) {
-      assert(_build_host_jar || _build_device_jar)
-
-      # proguard_configs listed on java_library targets need to be marked
-      # as inputs to at least one action so that "gn analyze" will know
-      # about them. Although this target doesn't use them, it's a convenient spot
-      # to list them.
-      # https://crbug.com/827197
-      _analysis_files = invoker.proguard_configs
-      _analysis_public_deps =
-          _non_java_deps + _srcjar_deps  # For the aapt-generated
-                                         # proguard rules.
-    }
 
     if (_has_sources) {
       if (defined(invoker.enable_errorprone)) {
@@ -4026,6 +4011,19 @@ if (enable_java_templates) {
     # the non-analysis steps of other targets that depend on this one.
     group("${target_name}__impl") {
       public_deps = _public_deps
+
+      # proguard_configs listed on java_library targets need to be marked
+      # as inputs to at least one target so that "gn analyze" will know
+      # about them. Although this target doesn't use them, it's a convenient spot
+      # to list them.
+      # https://crbug.com/827197
+      if (compute_inputs_for_analyze && defined(invoker.proguard_configs)) {
+        assert(_build_host_jar || _build_device_jar)
+        data = invoker.proguard_configs
+
+        # For the aapt-generated proguard rules.
+        deps = _non_java_deps + _srcjar_deps
+      }
     }
 
     java_lib_group("${target_name}__assetres") {
@@ -4051,10 +4049,6 @@ if (enable_java_templates) {
         public_deps = []
       }
       public_deps += [ ":${target_name}__impl" ]
-      if (!defined(data)) {
-        data = []
-      }
-      data += _analysis_files
       if (!defined(data_deps)) {
         data_deps = []
       }
