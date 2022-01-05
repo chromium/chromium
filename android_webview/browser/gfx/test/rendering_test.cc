@@ -156,7 +156,7 @@ bool RenderingTest::WillDrawOnRT(HardwareRendererDrawParams* params) {
 
 void RenderingTest::OnNewPicture() {}
 
-void RenderingTest::PostInvalidate() {
+void RenderingTest::PostInvalidate(bool inside_vsync) {
   if (window_)
     window_->PostInvalidate();
 }

@@ -26,7 +26,7 @@ class BrowserViewRendererClient {
   // Called to trigger view invalidations.
   // This calls postInvalidateOnAnimation if outside of a vsync, otherwise it
   // calls invalidate.
-  virtual void PostInvalidate() = 0;
+  virtual void PostInvalidate(bool inside_vsync) = 0;
 
   // Called to get view's absolute location on the screen.
   virtual gfx::Point GetLocationOnScreen() = 0;
@@ -47,7 +47,8 @@ class BrowserViewRendererClient {
 
   // Handle overscroll.
   virtual void DidOverscroll(const gfx::Vector2d& overscroll_delta,
-                             const gfx::Vector2dF& overscroll_velocity) = 0;
+                             const gfx::Vector2dF& overscroll_velocity,
+                             bool inside_vsync) = 0;
 
   // Create a text selection handle on demand.
   virtual ui::TouchHandleDrawable* CreateDrawable() = 0;

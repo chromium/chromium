@@ -312,7 +312,7 @@ class AwContents : public FindHelper::Listener,
   void OnWebLayoutContentsSizeChanged(const gfx::Size& contents_size) override;
 
   // BrowserViewRendererClient implementation.
-  void PostInvalidate() override;
+  void PostInvalidate(bool inside_vsync) override;
   void OnNewPicture() override;
   gfx::Point GetLocationOnScreen() override;
   void OnViewTreeForceDarkStateChanged(
@@ -327,7 +327,8 @@ class AwContents : public FindHelper::Listener,
                          float min_page_scale_factor,
                          float max_page_scale_factor) override;
   void DidOverscroll(const gfx::Vector2d& overscroll_delta,
-                     const gfx::Vector2dF& overscroll_velocity) override;
+                     const gfx::Vector2dF& overscroll_velocity,
+                     bool inside_vsync) override;
   ui::TouchHandleDrawable* CreateDrawable() override;
 
   void ClearCache(JNIEnv* env,

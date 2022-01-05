@@ -856,7 +856,8 @@ void BrowserViewRenderer::DidOverscroll(
   gfx::Vector2dF fling_velocity_pixels =
       gfx::ScaleVector2d(current_fling_velocity, physical_pixel_scale);
 
-  client_->DidOverscroll(rounded_overscroll_delta, fling_velocity_pixels);
+  client_->DidOverscroll(rounded_overscroll_delta, fling_velocity_pixels,
+                         begin_frame_source_->inside_begin_frame());
 }
 
 ui::TouchHandleDrawable* BrowserViewRenderer::CreateDrawable() {
@@ -904,7 +905,7 @@ void BrowserViewRenderer::PostInvalidate(
     return;
 
   did_invalidate_since_last_draw_ = true;
-  client_->PostInvalidate();
+  client_->PostInvalidate(begin_frame_source_->inside_begin_frame());
 }
 
 bool BrowserViewRenderer::CompositeSW(SkCanvas* canvas, bool software_canvas) {

@@ -194,9 +194,10 @@ class TestAnimateInAndOutOfScreen : public RenderingTest {
   bool WillDrawOnRT(HardwareRendererDrawParams* params) override {
     if (draw_gl_count_on_rt_ == 1) {
       draw_gl_count_on_rt_++;
-      ui_task_runner_->PostTask(FROM_HERE,
-                                base::BindOnce(&RenderingTest::PostInvalidate,
-                                               base::Unretained(this)));
+      ui_task_runner_->PostTask(
+          FROM_HERE,
+          base::BindOnce(&RenderingTest::PostInvalidate, base::Unretained(this),
+                         /*inside_vsync=*/false));
       return false;
     }
 

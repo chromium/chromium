@@ -31,6 +31,7 @@ class BeginFrameSourceWebView : public viz::ExternalBeginFrameSource {
 
   // Sets parent of this BeginFrameSource
   void SetParentSource(BeginFrameSourceWebView* parent);
+  bool inside_begin_frame() { return inside_begin_frame_; }
 
   // Schedules BeginFrame completion callback on root begin frame source.
   virtual void AddBeginFrameCompletionCallback(base::OnceClosure callback);
@@ -39,7 +40,6 @@ class BeginFrameSourceWebView : public viz::ExternalBeginFrameSource {
   void ObserveBeginFrameSource(viz::BeginFrameSource* begin_frame_source);
 
   virtual void AfterBeginFrame() {}
-  bool inside_begin_frame() { return inside_begin_frame_; }
 
  private:
   class BeginFrameObserver;
