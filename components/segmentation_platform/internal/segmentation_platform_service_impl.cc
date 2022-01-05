@@ -253,6 +253,12 @@ void SegmentationPlatformServiceImpl::OnSegmentationModelUpdated(
   signal_filter_processor_->OnSignalListUpdated();
 
   model_execution_scheduler_->OnNewModelInfoReady(segment_info);
+
+  // Update the service status for proxy.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&SegmentationPlatformServiceImpl::OnServiceStatusChanged,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SegmentationPlatformServiceImpl::OnExecuteDatabaseMaintenanceTasks() {
@@ -261,15 +267,12 @@ void SegmentationPlatformServiceImpl::OnExecuteDatabaseMaintenanceTasks() {
 
 void SegmentationPlatformServiceImpl::OnServiceStatusChanged() {
   int status = static_cast<int>(ServiceStatus::kUninitialized);
-  if (IsInitializationFinished()) {
-    if (segment_info_database_initialized_)
-      status |= static_cast<int>(ServiceStatus::kSegmentationInfoDbInitialized);
-    if (signal_database_initialized_)
-      status |= static_cast<int>(ServiceStatus::kSignalDbInitialized);
-    if (signal_storage_config_initialized_) {
-      status |=
-          static_cast<int>(ServiceStatus::kSignalStorageConfigInitialized);
-    }
+  if (segment_info_database_initialized_)
+    status |= static_cast<int>(ServiceStatus::kSegmentationInfoDbInitialized);
+  if (signal_database_initialized_)
+    status |= static_cast<int>(ServiceStatus::kSignalDbInitialized);
+  if (signal_storage_config_initialized_) {
+    status |= static_cast<int>(ServiceStatus::kSignalStorageConfigInitialized);
   }
 
   proxy_->OnServiceStatusChanged(IsInitializationFinished(), status);

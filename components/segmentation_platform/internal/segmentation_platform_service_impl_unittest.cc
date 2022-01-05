@@ -5,6 +5,7 @@
 #include "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
 
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
@@ -42,11 +43,14 @@
 #include "components/segmentation_platform/internal/signals/signal_filter_processor.h"
 #include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
 #include "components/segmentation_platform/public/config.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "components/segmentation_platform/internal/execution/model_execution_manager_impl.h"
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB
+
+using ::testing::_;
 
 namespace segmentation_platform {
 namespace {
@@ -94,6 +98,19 @@ std::vector<std::unique_ptr<Config>> CreateTestConfigs() {
 
 }  // namespace
 
+// A mock of the ServiceProxy::Observer.
+class MockServiceProxyObserver : public ServiceProxy::Observer {
+ public:
+  MockServiceProxyObserver() = default;
+  ~MockServiceProxyObserver() override = default;
+
+  MOCK_METHOD(void, OnServiceStatusChanged, (bool, int), (override));
+  MOCK_METHOD(void,
+              OnSegmentInfoAvailable,
+              ((const std::vector<std::pair<std::string, std::string>>&)),
+              (override));
+};
+
 class SegmentationPlatformServiceImplTest : public testing::Test {
  public:
   SegmentationPlatformServiceImplTest() = default;
@@ -126,6 +143,8 @@ class SegmentationPlatformServiceImplTest : public testing::Test {
             std::move(segment_db), std::move(signal_db),
             std::move(segment_storage_config_db), &model_provider_,
             &pref_service_, task_runner_, &test_clock_, std::move(configs));
+    segmentation_platform_service_impl_->GetServiceProxy()->AddObserver(
+        &observer_);
   }
 
   void TearDown() override {
@@ -206,10 +225,12 @@ class SegmentationPlatformServiceImplTest : public testing::Test {
   base::SimpleTestClock test_clock_;
   std::unique_ptr<SegmentationPlatformServiceImpl>
       segmentation_platform_service_impl_;
+  MockServiceProxyObserver observer_;
 };
 
 TEST_F(SegmentationPlatformServiceImplTest, InitializationFlow) {
   // Let the DB loading complete successfully.
+  EXPECT_CALL(observer_, OnServiceStatusChanged(true, 7));
   segment_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
   signal_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
   segment_storage_config_db_->InitStatusCallback(
@@ -273,6 +294,11 @@ TEST_F(SegmentationPlatformServiceImplTest, InitializationFlow) {
   AssertCachedSegment(kTestSegmentationKey2, false);
   AssertCachedSegment(kTestSegmentationKey3, false);
 
+  // ServiceProxy will load new segment info from the DB.
+  EXPECT_CALL(observer_, OnSegmentInfoAvailable(_));
+  task_environment_.RunUntilIdle();
+  segment_db_->LoadCallback(true);
+
   mem_impl->OnSegmentationModelUpdated(
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE, metadata);
   segment_db_->GetCallback(true);
@@ -285,6 +311,11 @@ TEST_F(SegmentationPlatformServiceImplTest, InitializationFlow) {
   EXPECT_EQ(
       2, histogram_tester.GetBucketCount(
              "SegmentationPlatform.Signals.ListeningCount.HistogramValue", 1));
+
+  // ServiceProxy will load new segment info from the DB.
+  EXPECT_CALL(observer_, OnSegmentInfoAvailable(_));
+  task_environment_.RunUntilIdle();
+  segment_db_->LoadCallback(true);
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
   // Database maintenance tasks should try to cleanup the signals after a short
@@ -326,6 +357,7 @@ class SegmentationPlatformServiceImplEmptyConfigTest
 
 TEST_F(SegmentationPlatformServiceImplEmptyConfigTest, InitializationFlow) {
   // Let the DB loading complete successfully.
+  EXPECT_CALL(observer_, OnServiceStatusChanged(true, 7));
   segment_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
   signal_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
   segment_storage_config_db_->InitStatusCallback(
@@ -359,6 +391,7 @@ class SegmentationPlatformServiceImplMultiClientTest
 
 TEST_F(SegmentationPlatformServiceImplMultiClientTest, InitializationFlow) {
   // Let the DB loading complete successfully.
+  EXPECT_CALL(observer_, OnServiceStatusChanged(true, 7));
   segment_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
   signal_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
   segment_storage_config_db_->InitStatusCallback(

@@ -58,10 +58,14 @@ void ServiceProxyImpl::RemoveObserver(ServiceProxy::Observer* observer) {
 
 void ServiceProxyImpl::OnServiceStatusChanged(bool is_initialized,
                                               int status_flag) {
+  bool changed = (is_service_initialized_ != is_initialized) ||
+                 (service_status_flag_ != status_flag);
   is_service_initialized_ = is_initialized;
   service_status_flag_ = status_flag;
-  for (Observer& obs : observers_)
-    obs.OnServiceStatusChanged(is_initialized, status_flag);
+  if (changed) {
+    for (Observer& obs : observers_)
+      obs.OnServiceStatusChanged(is_initialized, status_flag);
+  }
 
   if (segment_db_ &&
       (static_cast<int>(ServiceStatus::kSegmentationInfoDbInitialized) &
