@@ -80,6 +80,7 @@ export class ReadLaterAppElement extends PolymerElement {
   private currentPageActionButtonState_: CurrentPageActionButtonState;
   buttonRipples: boolean;
   private loadingContent_: boolean;
+  private unifiedSidePanel_: boolean;
   private apiProxy_: ReadLaterApiProxy = ReadLaterApiProxyImpl.getInstance();
   private listenerIds_: number[] = [];
   private visibilityChangedListener_: () => void;
@@ -108,6 +109,10 @@ export class ReadLaterAppElement extends PolymerElement {
         callbackRouter.currentPageActionButtonStateChanged.addListener(
             (state: CurrentPageActionButtonState) =>
                 this.updateCurrentPageActionButton_(state)));
+
+    if (this.unifiedSidePanel_) {
+      this.apiProxy_.showUI();
+    }
 
     // If added in a visible state update current read later items.
     if (document.visibilityState === 'visible') {
