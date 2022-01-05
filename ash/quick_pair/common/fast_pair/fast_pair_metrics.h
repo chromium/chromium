@@ -139,6 +139,12 @@ void RecordWritePasskeyGattError(
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordNotifyPasskeyCharacteristicTime(base::TimeDelta total_notify_time);
 
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordPasskeyCharacteristicDecryptTime(base::TimeDelta decrypt_time);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordPasskeyCharacteristicDecryptResult(bool success);
+
 }  // namespace quick_pair
 }  // namespace ash
 

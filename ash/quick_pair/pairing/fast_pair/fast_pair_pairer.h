@@ -13,6 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/time/time.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -83,7 +84,8 @@ class FastPairPairer : public device::BluetoothDevice::PairingDelegate,
                          absl::optional<PairFailure> failure);
 
   // FastPairDataEncryptor::ParseDecryptedPasskey callback
-  void OnParseDecryptedPasskey(const absl::optional<DecryptedPasskey>& passkey);
+  void OnParseDecryptedPasskey(base::TimeTicks decrypt_start_time,
+                               const absl::optional<DecryptedPasskey>& passkey);
 
   // Creates a 16-byte array of random bytes with a first byte of 0x04 to
   // signal Fast Pair account key, and then writes to the device.

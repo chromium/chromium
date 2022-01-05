@@ -70,6 +70,10 @@ const char kWritePasskeyCharacteristicResultMetric[] =
     "Bluetooth.ChromeOS.FastPair.Passkey.Write.Result";
 const char kWritePasskeyCharacteristicPairFailureMetric[] =
     "Bluetooth.ChromeOS.FastPair.Passkey.Write.PairFailure";
+const char kPasskeyCharacteristicDecryptTime[] =
+    "Bluetooth.ChromeOS.FastPair.Passkey.Decrypt.Time";
+const char kPasskeyCharacteristicDecryptResult[] =
+    "Bluetooth.ChromeOS.FastPair.Passkey.Decrypt.Result";
 
 class FakeBluetoothAdapter
     : public testing::NiceMock<device::MockBluetoothAdapter> {
@@ -440,6 +444,8 @@ TEST_F(FastPairPairerTest, ParseDecryptedPasskeyFailure_Initial) {
                                       0);
   histogram_tester().ExpectTotalCount(
       kWritePasskeyCharacteristicPairFailureMetric, 0);
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 0);
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
                                /*protocol=*/Protocol::kFastPairInitial);
   SetGetDeviceFailure();
@@ -454,6 +460,8 @@ TEST_F(FastPairPairerTest, ParseDecryptedPasskeyFailure_Initial) {
                                       1);
   histogram_tester().ExpectTotalCount(
       kWritePasskeyCharacteristicPairFailureMetric, 1);
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 0);
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 0);
 }
 
 TEST_F(FastPairPairerTest, ParseDecryptedPasskeyFailure_Subsequent) {
@@ -461,6 +469,8 @@ TEST_F(FastPairPairerTest, ParseDecryptedPasskeyFailure_Subsequent) {
                                       0);
   histogram_tester().ExpectTotalCount(
       kWritePasskeyCharacteristicPairFailureMetric, 0);
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 0);
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
                                /*protocol=*/Protocol::kFastPairSubsequent);
   SetGetDeviceFailure();
@@ -475,9 +485,13 @@ TEST_F(FastPairPairerTest, ParseDecryptedPasskeyFailure_Subsequent) {
                                       1);
   histogram_tester().ExpectTotalCount(
       kWritePasskeyCharacteristicPairFailureMetric, 1);
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 0);
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 0);
 }
 
 TEST_F(FastPairPairerTest, ParseDecryptedPasskeyIncorrectMessageType_Initial) {
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 0);
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
                                /*protocol=*/Protocol::kFastPairInitial);
   SetGetDeviceFailure();
@@ -489,10 +503,14 @@ TEST_F(FastPairPairerTest, ParseDecryptedPasskeyIncorrectMessageType_Initial) {
   base::RunLoop().RunUntilIdle();
   RunWritePasskeyCallback(kResponseBytes);
   EXPECT_EQ(GetPairFailure(), PairFailure::kIncorrectPasskeyResponseType);
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 0);
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 1);
 }
 
 TEST_F(FastPairPairerTest,
        ParseDecryptedPasskeyIncorrectMessageType_Subsequent) {
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 0);
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
                                /*protocol=*/Protocol::kFastPairSubsequent);
   SetGetDeviceFailure();
@@ -504,9 +522,13 @@ TEST_F(FastPairPairerTest,
   base::RunLoop().RunUntilIdle();
   RunWritePasskeyCallback(kResponseBytes);
   EXPECT_EQ(GetPairFailure(), PairFailure::kIncorrectPasskeyResponseType);
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 0);
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 1);
 }
 
 TEST_F(FastPairPairerTest, ParseDecryptedPasskeyMismatch_Initial) {
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 0);
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
                                /*protocol=*/Protocol::kFastPairInitial);
   SetGetDeviceFailure();
@@ -518,9 +540,13 @@ TEST_F(FastPairPairerTest, ParseDecryptedPasskeyMismatch_Initial) {
   base::RunLoop().RunUntilIdle();
   RunWritePasskeyCallback(kResponseBytes);
   EXPECT_EQ(GetPairFailure(), PairFailure::kPasskeyMismatch);
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 0);
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 1);
 }
 
 TEST_F(FastPairPairerTest, ParseDecryptedPasskeyMismatch_Subsequent) {
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 0);
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
                                /*protocol=*/Protocol::kFastPairSubsequent);
   SetGetDeviceFailure();
@@ -532,9 +558,13 @@ TEST_F(FastPairPairerTest, ParseDecryptedPasskeyMismatch_Subsequent) {
   base::RunLoop().RunUntilIdle();
   RunWritePasskeyCallback(kResponseBytes);
   EXPECT_EQ(GetPairFailure(), PairFailure::kPasskeyMismatch);
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 0);
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 1);
 }
 
 TEST_F(FastPairPairerTest, PairedDeviceLost_Initial) {
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 0);
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
                                /*protocol=*/Protocol::kFastPairInitial);
   SetGetDeviceFailure();
@@ -546,9 +576,13 @@ TEST_F(FastPairPairerTest, PairedDeviceLost_Initial) {
   base::RunLoop().RunUntilIdle();
   RunWritePasskeyCallback(kResponseBytes);
   EXPECT_EQ(GetPairFailure(), PairFailure::kPairingDeviceLost);
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 1);
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 1);
 }
 
 TEST_F(FastPairPairerTest, PairedDeviceLost_Subsequent) {
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 0);
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
                                /*protocol=*/Protocol::kFastPairSubsequent);
   SetGetDeviceFailure();
@@ -560,9 +594,13 @@ TEST_F(FastPairPairerTest, PairedDeviceLost_Subsequent) {
   base::RunLoop().RunUntilIdle();
   RunWritePasskeyCallback(kResponseBytes);
   EXPECT_EQ(GetPairFailure(), PairFailure::kPairingDeviceLost);
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 1);
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 1);
 }
 
 TEST_F(FastPairPairerTest, PairSuccess_Initial) {
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 0);
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
                                /*protocol=*/Protocol::kFastPairInitial);
   SetGetDeviceFailure();
@@ -577,9 +615,13 @@ TEST_F(FastPairPairerTest, PairSuccess_Initial) {
   RunWritePasskeyCallback(kResponseBytes);
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_TRUE(IsDevicePaired());
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 1);
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 1);
 }
 
 TEST_F(FastPairPairerTest, PairSuccess_Subsequent) {
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 0);
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
                                /*protocol=*/Protocol::kFastPairSubsequent);
   SetGetDeviceFailure();
@@ -594,6 +636,8 @@ TEST_F(FastPairPairerTest, PairSuccess_Subsequent) {
   RunWritePasskeyCallback(kResponseBytes);
   EXPECT_EQ(GetPairFailure(), absl::nullopt);
   EXPECT_TRUE(IsDevicePaired());
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 1);
+  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 1);
 }
 
 TEST_F(FastPairPairerTest, WriteAccountKey_Initial) {

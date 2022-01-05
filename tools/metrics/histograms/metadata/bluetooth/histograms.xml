@@ -430,6 +430,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.FastPair.Passkey.Decrypt.Result"
+    enum="BooleanSuccess" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the success or failure of decrypting the response from the passkey
+    characteristic. Emitted in the pairing protocol flow after the response
+    bytes have been attempted to be decrypted.
+  </summary>
+</histogram>
+
+<histogram name="Bluetooth.ChromeOS.FastPair.Passkey.Decrypt.Time" units="ms"
+    expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the total time it takes to decrypt a successful response from the
+    passkey characteristic. Emitted in the pairing protocol flow after the
+    response bytes have been successfully decrypted.
+  </summary>
+</histogram>
+
 <histogram name="Bluetooth.ChromeOS.FastPair.Passkey.NotifyTime" units="ms"
     expires_after="2022-09-20">
   <owner>shanefitz@google.com</owner>

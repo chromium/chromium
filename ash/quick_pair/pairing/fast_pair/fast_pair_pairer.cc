@@ -206,16 +206,19 @@ void FastPairPairer::OnPasskeyResponse(std::vector<uint8_t> response_bytes,
   }
 
   fast_pair_handshake_->fast_pair_data_encryptor()->ParseDecryptedPasskey(
-      response_bytes, base::BindOnce(&FastPairPairer::OnParseDecryptedPasskey,
-                                     weak_ptr_factory_.GetWeakPtr()));
+      response_bytes,
+      base::BindOnce(&FastPairPairer::OnParseDecryptedPasskey,
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
 void FastPairPairer::OnParseDecryptedPasskey(
+    base::TimeTicks decrypt_start_time,
     const absl::optional<DecryptedPasskey>& passkey) {
   if (!passkey) {
     QP_LOG(WARNING) << "Missing decrypted passkey from parse.";
     std::move(pair_failed_callback_)
         .Run(device_, PairFailure::kPasskeyDecryptFailure);
+    RecordPasskeyCharacteristicDecryptResult(/*success=*/false);
     return;
   }
 
@@ -226,6 +229,7 @@ void FastPairPairer::OnParseDecryptedPasskey(
         << ". Actual: " << MessageTypeToString(passkey->message_type);
     std::move(pair_failed_callback_)
         .Run(device_, PairFailure::kIncorrectPasskeyResponseType);
+    RecordPasskeyCharacteristicDecryptResult(/*success=*/false);
     return;
   }
 
@@ -234,8 +238,13 @@ void FastPairPairer::OnParseDecryptedPasskey(
                   << ". Actual: " << passkey->passkey;
     std::move(pair_failed_callback_)
         .Run(device_, PairFailure::kPasskeyMismatch);
+    RecordPasskeyCharacteristicDecryptResult(/*success=*/false);
     return;
   }
+
+  RecordPasskeyCharacteristicDecryptResult(/*success=*/true);
+  RecordPasskeyCharacteristicDecryptTime(base::TimeTicks::Now() -
+                                         decrypt_start_time);
 
   device::BluetoothDevice* pairing_device =
       adapter_->GetDevice(pairing_device_address_);
