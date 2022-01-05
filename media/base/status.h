@@ -106,6 +106,21 @@ struct StatusTraitsHelper {
   }
 };
 
+template <typename, typename>
+struct OkStatusDetectorHelper {
+  constexpr static bool has_ok = false;
+};
+
+// Matches <T,T> if T::kOk exists.
+template <typename T>
+struct OkStatusDetectorHelper<T, decltype(T::kOk)> {
+  constexpr static bool has_ok = true;
+};
+
+// Does T have a T::kOk?
+template <typename T>
+constexpr bool DoesHaveOkCode = OkStatusDetectorHelper<T, T>::has_ok;
+
 }  // namespace internal
 
 // See media/base/status.md for details and instructions for using TypedStatus.
@@ -115,6 +130,23 @@ class MEDIA_EXPORT TypedStatus {
                 "TypedStatus Traits::Codes must be an enum type.");
   static_assert(std::is_same<decltype(T::Group), StatusGroupType()>::value,
                 "TypedStatus Traits::Group() must return StatusGroupType.");
+
+  // Check that, if there is both `kOk` and a default value, that the default
+  // value is `kOk`.
+  constexpr static bool verify_default_okayness() {
+    // Fancy new (c++17) thing: remember that 'if constexpr' short-circuits at
+    // compile-time, so the later clauses don't have to be compilable if the
+    // the earlier ones match.  Specifically, it's okay to reference `kOk` even
+    // if `T::Codes` doesn't have `kOk`, since we check for it first.
+    if constexpr (!internal::DoesHaveOkCode<typename T::Codes>)
+      return true;
+    else if constexpr (!internal::StatusTraitsHelper<T>::DefaultEnumValue())
+      return true;
+    else
+      return T::DefaultEnumValue() == T::Codes::kOk;
+  }
+  static_assert(verify_default_okayness(),
+                "If kOk is defined, then either no default, or default==kOk");
 
  public:
   // Convenience aliases to allow, e.g., MyStatusType::Codes::kGreatDisturbance.
@@ -155,8 +187,15 @@ class MEDIA_EXPORT TypedStatus {
     return *this;
   }
 
-  // DEPRECATED: check code() == ok value.
-  bool is_ok() const { return !data_; }
+  // If `Codes` has a `kOk` value, then check return true if we're `kOk`.  If
+  // there is no `kOk`, or if we're some other value, then return false.
+  bool is_ok() const {
+    if constexpr (internal::DoesHaveOkCode<Codes>) {
+      return code() == Codes::kOk;
+    } else {
+      return false;
+    }
+  }
 
   Codes code() const {
     if (!data_)
@@ -252,15 +291,11 @@ class MEDIA_EXPORT TypedStatus {
     // Implicit constructors allow returning |OtherType| or |TypedStatus|
     // directly.
     Or(TypedStatus<T>&& error) : error_(std::move(error)) {
-      // |T| must either not have a default code, or not be default
-      DCHECK(!internal::StatusTraitsHelper<Traits>::DefaultEnumValue() ||
-             *internal::StatusTraitsHelper<Traits>::DefaultEnumValue() !=
-                 code());
+      // `error_` must not be `kOk`, if there is such a value.
+      DCHECK(!error_->is_ok());
     }
     Or(const TypedStatus<T>& error) : error_(error) {
-      DCHECK(!internal::StatusTraitsHelper<Traits>::DefaultEnumValue() ||
-             *internal::StatusTraitsHelper<Traits>::DefaultEnumValue() !=
-                 code());
+      DCHECK(!error_->is_ok());
     }
 
     Or(OtherType&& value) : value_(std::move(value)) {}
@@ -268,8 +303,7 @@ class MEDIA_EXPORT TypedStatus {
     Or(typename T::Codes code,
        const base::Location& location = base::Location::Current())
         : error_(TypedStatus<T>(code, "", location)) {
-      DCHECK(!internal::StatusTraitsHelper<Traits>::DefaultEnumValue() ||
-             *internal::StatusTraitsHelper<Traits>::DefaultEnumValue() != code);
+      DCHECK(!error_->is_ok());
     }
 
     // Move- and copy- construction and assignment are okay.
@@ -281,12 +315,19 @@ class MEDIA_EXPORT TypedStatus {
     bool has_value() const { return value_.has_value(); }
     bool has_error() const { return error_.has_value(); }
 
+    // If we have an error, verify that `code` matches.  If we have a value,
+    // then this should match if an only if `code` is `kOk`.  If there is no
+    // `kOk`, then it does not match even if we have a value.
     inline bool operator==(typename T::Codes code) const {
-      return code == this->code();
+      if constexpr (internal::DoesHaveOkCode<typename T::Codes>) {
+        return code == this->code();
+      } else {
+        return error_ ? code == error_->code() : false;
+      }
     }
 
     inline bool operator!=(typename T::Codes code) const {
-      return code != this->code();
+      return !(*this == code);
     }
 
     // Return the error, if we have one.
@@ -310,11 +351,14 @@ class MEDIA_EXPORT TypedStatus {
     typename T::Codes code() const {
       DCHECK(error_ || value_);
       // It is invalid to call |code()| on an |Or| with a value that
-      // is specialized in a TypedStatus with no DefaultEnumValue.
-      DCHECK(error_ ||
-             internal::StatusTraitsHelper<Traits>::DefaultEnumValue());
-      return error_ ? error_->code()
-                    : *internal::StatusTraitsHelper<Traits>::DefaultEnumValue();
+      // is specialized in a TypedStatus with no `kOk`.  Instead, you should
+      // explicitly call has_error() / error().code().
+      static_assert(internal::DoesHaveOkCode<typename T::Codes>,
+                    "Cannot call Or::code() if there is no kOk code.");
+      // TODO: should this DCHECK(error_) if we don't have kOk?  It's not as
+      // strong as the static_assert, but maybe we want to allow this for types
+      // that don't have `kOk`.
+      return error_ ? error_->code() : T::Codes::kOk;
     }
 
     template <typename FnType,

@@ -42,8 +42,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
     if (result.has_error()) {
       // Ensure that this was an error this function is expected to return
-      CHECK(result.code() == media::hls::ParseStatusCode::kReachedEOF ||
-            result.code() == media::hls::ParseStatusCode::kInvalidEOL);
+      CHECK(result == media::hls::ParseStatusCode::kReachedEOF ||
+            result == media::hls::ParseStatusCode::kInvalidEOL);
 
       // Ensure that `manifest` is still a substring of the previous manifest
       CHECK(IsSubstring(iterator.SourceForTesting(),
