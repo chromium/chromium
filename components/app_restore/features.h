@@ -29,6 +29,8 @@ COMPONENT_EXPORT(APP_RESTORE) extern const base::Feature kFullRestoreForLacros;
 
 COMPONENT_EXPORT(APP_RESTORE) bool IsArcGhostWindowEnabled();
 
+COMPONENT_EXPORT(APP_RESTORE) bool IsArcWindowPredictorEnabled();
+
 COMPONENT_EXPORT(APP_RESTORE) bool IsFullRestoreEnabled();
 
 COMPONENT_EXPORT(APP_RESTORE) bool IsFullRestoreForLacrosEnabled();
