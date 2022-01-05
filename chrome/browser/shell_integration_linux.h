@@ -118,6 +118,12 @@ std::string GetMimeTypesRegistrationFileContents(
 // them as a separate application.
 std::string GetWMClassFromAppName(std::string app_name);
 
+// Wayland version of GetWMClassFromAppName explained above.
+// The XDG application ID must match the name of the desktop entry file, where
+// the latter looks like 'chrome-<web app id>-<profile name>.desktop'.
+std::string GetXdgAppIdForWebApp(std::string app_name,
+                                 const base::FilePath& profile_path);
+
 // Helper to launch xdg scripts. We don't want them to ask any questions on the
 // terminal etc. The function returns true if the utility launches and exits
 // cleanly, in which case |exit_code| returns the utility's exit code.

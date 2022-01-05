@@ -374,6 +374,9 @@ class VIEWS_EXPORT Widget : public internal::NativeWidgetDelegate,
     std::string wm_class_name;
     std::string wm_class_class;
 
+    // Only used by Wayland, for root level windows.
+    std::string wayland_app_id;
+
     // If true then the widget uses software compositing.
     bool force_software_compositing = false;
 

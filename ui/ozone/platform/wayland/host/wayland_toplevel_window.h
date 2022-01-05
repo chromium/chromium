@@ -205,10 +205,10 @@ class WaylandToplevelWindow : public WaylandWindow,
   std::string window_unique_id_;
 #else
   // Id of the chromium app passed through
-  // PlatformWindowInitProperties::wm_class_class. This is used by Wayland
+  // PlatformWindowInitProperties::wm_class_name. This is used by Wayland
   // compositor to identify the app, unite it's windows into the same stack of
   // windows and find *.desktop file to set various preferences including icons.
-  std::string wm_class_class_;
+  std::string app_id_;
 #endif
 
   // Title of the ShellToplevel.

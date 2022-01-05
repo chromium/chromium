@@ -18,8 +18,6 @@
 
 namespace web_app {
 
-namespace {
-
 // The following string is used to build the directory name for
 // shortcuts to chrome applications (the kind which are installed
 // from a CRX).  Application shortcuts to URLs use the {host}_{path}
@@ -27,8 +25,6 @@ namespace {
 // By starting this string with an underscore, we ensure that there
 // are no naming conflicts.
 const char kCrxAppPrefix[] = "_crx_";
-
-}  // namespace
 
 std::string GenerateApplicationNameFromURL(const GURL& url) {
   return base::StrCat({url.host_piece(), "_", url.path_piece()});

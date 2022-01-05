@@ -54,6 +54,14 @@ views::Widget::InitParams DesktopBrowserFrameAuraLinux::GetWidgetParams() {
   params.remove_standard_frame = UseCustomFrame();
   params.opacity = views::Widget::InitParams::WindowOpacity::kTranslucent;
 
+  if ((browser.is_type_app() || browser.is_type_app_popup()) &&
+      browser.profile()) {
+    params.wayland_app_id = shell_integration_linux::GetXdgAppIdForWebApp(
+        browser.app_name(), browser.profile()->GetPath());
+  } else {
+    params.wayland_app_id = params.wm_class_name;
+  }
+
   return params;
 }
 

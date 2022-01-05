@@ -125,6 +125,10 @@ struct COMPONENT_EXPORT(PLATFORM_WINDOW) PlatformWindowInitProperties {
   std::string wm_class_class;
 
   X11ExtensionDelegate* x11_extension_delegate = nullptr;
+
+  // Wayland specific.  Holds the application ID that is used by the window
+  // manager to match the desktop entry and group windows.
+  std::string wayland_app_id;
 #endif
 
   bool enable_compositing_based_throttling = false;

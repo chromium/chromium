@@ -16,6 +16,8 @@ class Profile;
 
 namespace web_app {
 
+extern const char kCrxAppPrefix[];
+
 // Compute a deterministic name based on the URL. We use this pseudo name
 // as a key to store window location per application URLs in Browser and
 // as app id for BrowserWindow, shortcut and jump list.

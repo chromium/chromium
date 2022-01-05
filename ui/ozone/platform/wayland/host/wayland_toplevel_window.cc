@@ -69,7 +69,7 @@ bool WaylandToplevelWindow::CreateShellToplevel() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   shell_toplevel_->SetAppId(window_unique_id_);
 #else
-  shell_toplevel_->SetAppId(wm_class_class_);
+  shell_toplevel_->SetAppId(app_id_);
 #endif
   shell_toplevel_->SetTitle(window_title_);
   SetSizeConstraints();
@@ -239,7 +239,7 @@ std::string WaylandToplevelWindow::GetWindowUniqueId() const {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   return window_unique_id_;
 #else
-  return wm_class_class_;
+  return app_id_;
 #endif
 }
 
@@ -420,7 +420,7 @@ bool WaylandToplevelWindow::OnInitialize(
   window_unique_id_ =
       std::string(crosapi::kLacrosAppIdPrefix) + token.ToString();
 #else
-  wm_class_class_ = properties.wm_class_class;
+  app_id_ = properties.wayland_app_id;
 #endif
   SetWaylandExtension(this, static_cast<WaylandExtension*>(this));
   SetWmMoveLoopHandler(this, static_cast<WmMoveLoopHandler*>(this));
