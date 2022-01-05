@@ -356,7 +356,7 @@ void WebAppUrlHandlerIntentPickerView::RunCloseCallback(bool accepted) {
       break;
     case extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_REMEMBER_OPTION:
       remember_selection_checkbox_->SetChecked(/*checked=*/true);
-      FALLTHROUGH;
+      [[fallthrough]];
     case extensions::ScopedTestDialogAutoConfirm::ACCEPT_AND_OPTION:
       accepted_override = true;
       selected_app_tag_ =
