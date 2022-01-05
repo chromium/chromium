@@ -96,9 +96,6 @@ class TabModel {
     FROM_LONGPRESS_BACKGROUND_IN_GROUP,
     // Opened from an app widget.
     FROM_APP_WIDGET,
-    // Opened from a Reading list. When going "back" on Android, the Reading
-    // list should be reopened.
-    FROM_READING_LIST,
     // Must be last.
     SIZE
   };
