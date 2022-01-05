@@ -9,7 +9,7 @@
 namespace gfx {
 
 std::string Point3F::ToString() const {
-  return base::StringPrintf("%f,%f,%f", x_, y_, z_);
+  return base::StringPrintf("%g,%g,%g", x_, y_, z_);
 }
 
 Point3F operator+(const Point3F& lhs, const Vector3dF& rhs) {

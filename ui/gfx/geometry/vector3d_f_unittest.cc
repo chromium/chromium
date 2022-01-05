@@ -14,7 +14,7 @@
 
 namespace gfx {
 
-TEST(Vector3dTest, IsZero) {
+TEST(Vector3dFTest, IsZero) {
   gfx::Vector3dF float_zero(0, 0, 0);
   gfx::Vector3dF float_nonzero(0.1f, -0.1f, 0.1f);
 
@@ -22,7 +22,7 @@ TEST(Vector3dTest, IsZero) {
   EXPECT_FALSE(float_nonzero.IsZero());
 }
 
-TEST(Vector3dTest, Add) {
+TEST(Vector3dFTest, Add) {
   gfx::Vector3dF f1(3.1f, 5.1f, 2.7f);
   gfx::Vector3dF f2(4.3f, -1.3f, 8.1f);
 
@@ -40,7 +40,7 @@ TEST(Vector3dTest, Add) {
               float_tests[i].actual.ToString());
 }
 
-TEST(Vector3dTest, Negative) {
+TEST(Vector3dFTest, Negative) {
   const struct {
     gfx::Vector3dF expected;
     gfx::Vector3dF actual;
@@ -58,7 +58,7 @@ TEST(Vector3dTest, Negative) {
               float_tests[i].actual.ToString());
 }
 
-TEST(Vector3dTest, Scale) {
+TEST(Vector3dFTest, Scale) {
   float triple_values[][6] = {
     { 4.5f, 1.2f, 1.8f, 3.3f, 5.6f, 4.2f },
     { 4.5f, -1.2f, -1.8f, 3.3f, 5.6f, 4.2f },
@@ -142,7 +142,7 @@ TEST(Vector3dTest, Scale) {
   }
 }
 
-TEST(Vector3dTest, Length) {
+TEST(Vector3dFTest, Length) {
   float float_values[][3] = {
     { 0, 0, 0 },
     { 10.5f, 20.5f, 8.5f },
@@ -179,7 +179,7 @@ TEST(Vector3dTest, Length) {
   }
 }
 
-TEST(Vector3dTest, DotProduct) {
+TEST(Vector3dFTest, DotProduct) {
   const struct {
     float expected;
     gfx::Vector3dF input1;
@@ -204,7 +204,7 @@ TEST(Vector3dTest, DotProduct) {
   }
 }
 
-TEST(Vector3dTest, CrossProduct) {
+TEST(Vector3dFTest, CrossProduct) {
   const struct {
     gfx::Vector3dF expected;
     gfx::Vector3dF input1;
@@ -265,7 +265,7 @@ TEST(Vector3dFTest, ClampVector3dF) {
   EXPECT_EQ(Vector3dF(3.5f, 5.5f, 7.5f).ToString(), a.ToString());
 }
 
-TEST(Vector3dTest, AngleBetweenVectorsInDegress) {
+TEST(Vector3dFTest, AngleBetweenVectorsInDegress) {
   const struct {
     float expected;
     gfx::Vector3dF input1;
@@ -291,7 +291,7 @@ TEST(Vector3dTest, AngleBetweenVectorsInDegress) {
   }
 }
 
-TEST(Vector3dTest, ClockwiseAngleBetweenVectorsInDegress) {
+TEST(Vector3dFTest, ClockwiseAngleBetweenVectorsInDegress) {
   const struct {
     float expected;
     gfx::Vector3dF input1;
@@ -320,7 +320,7 @@ TEST(Vector3dTest, ClockwiseAngleBetweenVectorsInDegress) {
   }
 }
 
-TEST(Vector3dTest, GetNormalized) {
+TEST(Vector3dFTest, GetNormalized) {
   const struct {
     bool expected;
     gfx::Vector3dF v;
@@ -344,6 +344,10 @@ TEST(Vector3dTest, GetNormalized) {
     EXPECT_EQ(tests[i].expected, tests[i].v.GetNormalized(&n));
     EXPECT_EQ(tests[i].normalized.ToString(), n.ToString());
   }
+}
+
+TEST(Vector3dFTest, ToString) {
+  EXPECT_EQ("[1.03125 2.5 -3]", Vector3dF(1.03125, 2.5, -3).ToString());
 }
 
 }  // namespace gfx

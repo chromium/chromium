@@ -84,4 +84,8 @@ TEST(Point3FTest, OffsetFromOrigin) {
             Point3F(1.25f, 2.5f, -3.75f).OffsetFromOrigin());
 }
 
+TEST(Point3FTest, ToString) {
+  EXPECT_EQ("1.03125,2.5,-3", Point3F(1.03125, 2.5, -3).ToString());
+}
+
 }  // namespace gfx

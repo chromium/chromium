@@ -11,10 +11,8 @@ namespace media {
 namespace {
 
 TEST(PointTest, PointsToString) {
-  std::vector<Point> points(1, Point(1, 0, 0.01f));
-  points.push_back(Point(0, 2, 0.02f));
-  EXPECT_EQ("1.000000,0.000000,0.010000, 0.000000,2.000000,0.020000",
-            PointsToString(points));
+  std::vector<Point> points = {Point(1, 0, 0.01f), Point(0, 2, 0.02f)};
+  EXPECT_EQ("1,0,0.01, 0,2,0.02", PointsToString(points));
 
   EXPECT_EQ("", PointsToString(std::vector<Point>()));
 }
