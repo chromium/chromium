@@ -75,11 +75,13 @@ export class App {
 
     this.intent = intent;
 
-    this.photoPreferrer =
-        new PhotoConstraintsPreferrer(() => this.cameraView.start());
+    this.photoPreferrer = new PhotoConstraintsPreferrer(async () => {
+      await this.cameraView.start();
+    });
 
-    this.videoPreferrer =
-        new VideoConstraintsPreferrer(() => this.cameraView.start());
+    this.videoPreferrer = new VideoConstraintsPreferrer(async () => {
+      await this.cameraView.start();
+    });
 
     this.infoUpdater =
         new DeviceInfoUpdater(this.photoPreferrer, this.videoPreferrer);
