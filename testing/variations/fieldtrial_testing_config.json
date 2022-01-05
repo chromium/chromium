@@ -606,21 +606,6 @@
             ]
         }
     ],
-    "AndroidMessagesSyncError": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "MessagesForAndroidSyncError"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidPictureInPictureAPI": [
         {
             "platforms": [
