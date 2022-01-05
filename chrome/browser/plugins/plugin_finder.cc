@@ -177,9 +177,10 @@ bool PluginFinder::FindPluginWithIdentifier(
 void PluginFinder::ReinitializePlugins(
     const base::DictionaryValue* plugin_list) {
   base::AutoLock lock(mutex_);
-  int version = 0;  // If no version is defined, we default to 0.
   const char kVersionKey[] = "x-version";
-  plugin_list->GetInteger(kVersionKey, &version);
+
+  // If no version is defined, we default to 0.
+  int version = plugin_list->FindIntKey(kVersionKey).value_or(0);
   if (version <= version_)
     return;
 
