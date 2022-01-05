@@ -51,22 +51,22 @@ def HandleExceptionAndReturnExitCode():
 
   Returns the mapped return code."""
 
-  (ex_type, value, trace) = sys.exc_info()
+  (type, value, trace) = sys.exc_info()
   _PrintException(value, trace)
 
-  if ex_type is FuchsiaTargetException:
+  if type is FuchsiaTargetException:
     if 'ssh' in str(value).lower():
       print('Error: FuchsiaTargetException: SSH to Fuchsia target failed.')
       return 65
     return 64
-  if ex_type is IOError:
+  elif type is IOError:
     if value.errno == errno.EAGAIN:
       logging.info('Python print to sys.stdout probably failed')
       if not IsStdoutBlocking():
         logging.warn('sys.stdout is non-blocking')
       return 73
     return 72
-  if ex_type is subprocess.CalledProcessError:
+  elif type is subprocess.CalledProcessError:
     if os.path.basename(value.cmd[0]) == 'scp':
       print('Error: scp operation failed - %s' % str(value))
       return 81
@@ -74,4 +74,5 @@ def HandleExceptionAndReturnExitCode():
       print('Error: qemu-img fuchsia image generation failed.')
       return 82
     return 80
-  return 1
+  else:
+    return 1

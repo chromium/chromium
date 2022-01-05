@@ -36,21 +36,19 @@ def GetTargetType():
 
 
 class QemuTarget(emu_target.EmuTarget):
+  EMULATOR_NAME = 'qemu'
+
   def __init__(self, out_dir, target_cpu, cpu_cores, require_kvm, ram_size_mb,
                logs_dir):
-    super().__init__(out_dir, target_cpu, logs_dir)
+    super(QemuTarget, self).__init__(out_dir, target_cpu, logs_dir)
     self._cpu_cores=cpu_cores
     self._require_kvm=require_kvm
     self._ram_size_mb=ram_size_mb
-    self._host_ssh_port = None
 
   @staticmethod
   def CreateFromArgs(args):
     return QemuTarget(args.out_dir, args.target_cpu, args.cpu_cores,
                       args.require_kvm, args.ram_size_mb, args.logs_dir)
-
-  def _GetEmulatorName(self):
-    return 'qemu'
 
   def _IsKvmEnabled(self):
     kvm_supported = sys.platform.startswith('linux') and \
@@ -60,7 +58,7 @@ class QemuTarget(emu_target.EmuTarget):
         (self._target_cpu == 'x64' and platform.machine() == 'x86_64')
     if kvm_supported and same_arch:
       return True
-    if self._require_kvm:
+    elif self._require_kvm:
       if same_arch:
         if not os.path.exists('/dev/kvm'):
           kvm_error = 'File /dev/kvm does not exist. Please install KVM first.'
@@ -69,10 +67,12 @@ class QemuTarget(emu_target.EmuTarget):
                       'with "sudo usermod -a -G kvm $USER". Log out and back '\
                       'in for the change to take effect.'
         raise FuchsiaTargetException(kvm_error)
-      raise FuchsiaTargetException('KVM unavailable when CPU architecture '
-                                   'of host is different from that of'
-                                   ' target. See --allow-no-kvm.')
-    return False
+      else:
+        raise FuchsiaTargetException('KVM unavailable when CPU architecture '\
+                                     'of host is different from that of'\
+                                     ' target. See --allow-no-kvm.')
+    else:
+      return False
 
   def _BuildQemuConfig(self):
     boot_data.AssertBootImagesExist(self._GetTargetSdkArch(), 'qemu')
@@ -143,9 +143,8 @@ class QemuTarget(emu_target.EmuTarget):
       else:
         kvm_command.append('host,migratable=no,+invtsc')
     else:
-      logging.warning(
-          'Unable to launch %s with KVM acceleration. '
-          'The guest VM will be slow.', self._GetEmulatorName())
+      logging.warning('Unable to launch %s with KVM acceleration. '
+                      'The guest VM will be slow.' % (self.EMULATOR_NAME))
       if self._target_cpu == 'arm64':
         kvm_command = ['-cpu', 'cortex-a53']
       else:
@@ -178,18 +177,12 @@ class QemuTarget(emu_target.EmuTarget):
       raise Exception('Unknown target_cpu %s:' % self._target_cpu)
 
     qemu_command = [
-        os.path.join(GetEmuRootForPlatform(self._GetEmulatorName()), 'bin',
+        os.path.join(GetEmuRootForPlatform(self.EMULATOR_NAME), 'bin',
                      qemu_exec)
     ]
     qemu_command.extend(self._BuildQemuConfig())
     qemu_command.append('-nographic')
     return qemu_command
-
-  def _GetEndpoint(self):
-    if not self._IsEmuStillRunning():
-      raise Exception('%s quit unexpectedly.' % (self._GetEmulatorName()))
-    return (self.LOCAL_ADDRESS, self._host_ssh_port)
-
 
 def _ComputeFileHash(filename):
   hasher = hashlib.md5()

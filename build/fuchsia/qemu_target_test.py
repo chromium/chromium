@@ -17,8 +17,7 @@ tmpdir = tempfile.mkdtemp()
 # Register the target with the context manager so that it always gets
 # torn down on process exit. Otherwise there might be lingering QEMU instances
 # if Python crashes or is interrupted.
-with qemu_target.QemuTarget(tmpdir, 'x64', 2, True, 8192, None) as target:
-
+with qemu_target.QemuTarget(tmpdir, 'x64') as target:
   class TestQemuTarget(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

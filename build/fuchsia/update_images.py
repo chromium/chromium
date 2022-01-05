@@ -28,13 +28,13 @@ def GetSdkSignature(sdk_hash, boot_images):
 
 
 def GetAllImages(boot_image_names):
-  images_to_download = set()
-
   if not boot_image_names:
-    return images_to_download
+    return
 
   all_device_types = ['generic', 'qemu']
   all_archs = ['x64', 'arm64']
+
+  images_to_download = set()
 
   for boot_image in boot_image_names.split(','):
     components = boot_image.split('.')

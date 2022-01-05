@@ -56,7 +56,7 @@ class SSHPortForwarder(chrome_test_server_spawner.PortForwarder):
     raise Exception('Unmap called for unknown port: %d' % device_port)
 
 
-def SetupTestServer(target, test_concurrency, for_package, for_realms=()):
+def SetupTestServer(target, test_concurrency, for_package, for_realms=[]):
   """Provisions a forwarding test server and configures |target| to use it.
 
   Returns a Popen object for the test server process."""

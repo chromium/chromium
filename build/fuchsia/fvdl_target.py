@@ -32,15 +32,17 @@ def GetTargetType():
 
 class EmulatorNetworkNotFoundError(Exception):
   """Raised when emulator's address cannot be found"""
+  pass
 
 
 class FvdlTarget(emu_target.EmuTarget):
+  EMULATOR_NAME = 'aemu'
   _FVDL_PATH = os.path.join(common.SDK_ROOT, 'tools', 'x64', 'fvdl')
 
   def __init__(self, out_dir, target_cpu, require_kvm, enable_graphics,
                hardware_gpu, with_network, cpu_cores, ram_size_mb, logs_dir,
                custom_image):
-    super().__init__(out_dir, target_cpu, logs_dir)
+    super(FvdlTarget, self).__init__(out_dir, target_cpu, logs_dir)
     self._require_kvm = require_kvm
     self._enable_graphics = enable_graphics
     self._hardware_gpu = hardware_gpu
@@ -51,7 +53,6 @@ class FvdlTarget(emu_target.EmuTarget):
 
     self._host = None
     self._pid = None
-    self._host_ssh_port = None
 
     if custom_image:
       components = custom_image.split('.')
@@ -88,9 +89,6 @@ class FvdlTarget(emu_target.EmuTarget):
                            help='Specify an image used for booting up the '
                            'emulator.')
 
-  def _GetEmulatorName(self):
-    return 'aemu'
-
   def _BuildCommand(self):
     boot_data.ProvisionSSH()
     self._host_ssh_port = common.GetAvailableTcpPort()
@@ -104,7 +102,7 @@ class FvdlTarget(emu_target.EmuTarget):
         boot_data.GetTargetFile('storage-full.blk', self._image_arch,
                                 self._image_type))
     aemu_path = common.EnsurePathExists(
-        os.path.join(common.GetEmuRootForPlatform(self._GetEmulatorName()),
+        os.path.join(common.GetEmuRootForPlatform(self.EMULATOR_NAME),
                      'emulator'))
 
     emu_command = [
@@ -170,8 +168,8 @@ class FvdlTarget(emu_target.EmuTarget):
       ]
       if self._hardware_gpu:
         vulkan_icd_file = os.path.join(
-            common.GetEmuRootForPlatform(self._GetEmulatorName()), 'lib64',
-            'vulkan', 'vk_swiftshader_icd.json')
+            common.GetEmuRootForPlatform(self.EMULATOR_NAME), 'lib64', 'vulkan',
+            'vk_swiftshader_icd.json')
         env_flags.append('VK_ICD_FILENAMES=%s' % vulkan_icd_file)
       for flag in env_flags:
         emu_command.extend(['--envs', flag])
@@ -179,7 +177,7 @@ class FvdlTarget(emu_target.EmuTarget):
   def _WaitUntilReady(self):
     # Indicates the FVDL command finished running.
     self._emu_process.communicate()
-    super()._WaitUntilReady()
+    super(FvdlTarget, self)._WaitUntilReady()
 
   def _IsEmuStillRunning(self):
     if not self._pid:
@@ -217,14 +215,14 @@ class FvdlTarget(emu_target.EmuTarget):
               return (self._host, _DEFAULT_SSH_PORT)
         logging.error('Network address not found.')
         raise EmulatorNetworkNotFoundError()
-    except IOError:
+    except IOError as e:
       logging.error('vdl_output file not found. Cannot get network address.')
       raise
 
   def Shutdown(self):
     if not self._emu_process:
-      logging.error('%s did not start', self._GetEmulatorName())
-      super().Shutdown()
+      logging.error('%s did not start' % (self.EMULATOR_NAME))
+      super(FvdlTarget, self).Shutdown()
       return
     femu_command = [
         self._FVDL_PATH, '--sdk', 'kill', '--launched-proto',
@@ -235,12 +233,12 @@ class FvdlTarget(emu_target.EmuTarget):
     if returncode == 0:
       logging.info('FVDL shutdown successfully')
     else:
-      logging.info('FVDL kill returned error status %s', returncode)
+      logging.info('FVDL kill returned error status {}'.format(returncode))
     self.LogProcessStatistics('proc_stat_end_log')
     self.LogSystemStatistics('system_statistics_end_log')
     self._vdl_output_file.close()
     self._device_proto_file.close()
-    super().Shutdown()
+    super(FvdlTarget, self).Shutdown()
 
   def _GetSshConfigPath(self):
     return boot_data.GetSSHConfigPath()

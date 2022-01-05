@@ -23,10 +23,10 @@ def _IsLinkLocalIPv6(hostname):
 def _EscapeIfIPv6Address(address):
   if ':' in address:
     return '[' + address + ']'
-  return address
+  else:
+    return address
 
-
-class CommandRunner():
+class CommandRunner(object):
   """Helper class used to execute commands on a remote host over SSH."""
 
   def __init__(self, config_path, host, port):
@@ -124,7 +124,8 @@ class CommandRunner():
 
     _SSH_LOGGER.debug(' '.join(scp_command))
     try:
-      subprocess.check_output(scp_command, stderr=subprocess.STDOUT)
+      scp_output = subprocess.check_output(scp_command,
+                                           stderr=subprocess.STDOUT)
     except subprocess.CalledProcessError as error:
       _SSH_LOGGER.info(error.output)
       raise

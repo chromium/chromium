@@ -18,10 +18,12 @@ def GetTargetType():
 
 
 class AemuTarget(qemu_target.QemuTarget):
+  EMULATOR_NAME = 'aemu'
+
   def __init__(self, out_dir, target_cpu, cpu_cores, require_kvm, ram_size_mb,
                enable_graphics, hardware_gpu, logs_dir):
-    super().__init__(out_dir, target_cpu, cpu_cores, require_kvm, ram_size_mb,
-                     logs_dir)
+    super(AemuTarget, self).__init__(out_dir, target_cpu, cpu_cores,
+                                     require_kvm, ram_size_mb, logs_dir)
 
     self._enable_graphics = enable_graphics
     self._hardware_gpu = hardware_gpu
@@ -46,15 +48,12 @@ class AemuTarget(qemu_target.QemuTarget):
                            help='Use local GPU hardware instead of '\
                                 'Swiftshader.')
 
-  def _GetEmulatorName(self):
-    return 'aemu'
-
   def _EnsureEmulatorExists(self, path):
     assert os.path.exists(path), \
-          'This checkout is missing %s.' % (self._GetEmulatorName())
+          'This checkout is missing %s.' % (self.EMULATOR_NAME)
 
   def _BuildCommand(self):
-    aemu_folder = GetEmuRootForPlatform(self._GetEmulatorName())
+    aemu_folder = GetEmuRootForPlatform(self.EMULATOR_NAME)
 
     self._EnsureEmulatorExists(aemu_folder)
     aemu_path = os.path.join(aemu_folder, 'emulator')
@@ -101,7 +100,7 @@ class AemuTarget(qemu_target.QemuTarget):
     return aemu_command
 
   def _GetVulkanIcdFile(self):
-    return os.path.join(GetEmuRootForPlatform(self._GetEmulatorName()), 'lib64',
+    return os.path.join(GetEmuRootForPlatform(self.EMULATOR_NAME), 'lib64',
                         'vulkan', 'vk_swiftshader_icd.json')
 
   def _SetEnv(self):

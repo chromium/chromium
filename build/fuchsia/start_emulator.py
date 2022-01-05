@@ -42,6 +42,7 @@ def main():
                    'Chrome Fuchsia tests to target this emulator.')
     while fvdl_target._IsEmuStillRunning():
       time.sleep(10)
+      pass
 
 
 def AddLongRunningArgs(arg_parser):

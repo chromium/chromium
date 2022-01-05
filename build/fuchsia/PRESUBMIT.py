@@ -27,11 +27,7 @@ def CommonChecks(input_api, output_api):
                                            ],
                                            run_on_python2=False,
                                            run_on_python3=True))
-  results = []
-  results.extend(input_api.RunTests(tests))
-  results.extend(
-      input_api.canned_checks.RunPylint(input_api, output_api, version='2.7'))
-  return results
+  return input_api.RunTests(tests)
 
 
 def CheckChangeOnUpload(input_api, output_api):

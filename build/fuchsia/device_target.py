@@ -81,7 +81,7 @@ class DeviceTarget(target.Target):
     system_image_dir: The directory which contains the files used to pave the
                       device."""
 
-    super().__init__(out_dir, target_cpu, logs_dir)
+    super(DeviceTarget, self).__init__(out_dir, target_cpu, logs_dir)
 
     self._host = host
     self._port = port
@@ -345,8 +345,8 @@ class DeviceTarget(target.Target):
     if self._node_name:
       pave_command.extend(['-n', self._node_name, '-1'])
     logging.info(' '.join(pave_command))
-    return_code, _, stderr = SubprocessCallWithTimeout(pave_command,
-                                                       timeout_secs=300)
+    return_code, stdout, stderr = SubprocessCallWithTimeout(pave_command,
+                                                            timeout_secs=300)
     if return_code != 0:
       raise Exception('Could not pave device.')
     self._ParseNodename(stderr)
@@ -360,7 +360,7 @@ class DeviceTarget(target.Target):
 
   def Stop(self):
     try:
-      super().Stop()
+      super(DeviceTarget, self).Stop()
     finally:
       # End multiplexed ssh connection, ensure that ssh logging stops before
       # tests/scripts return.

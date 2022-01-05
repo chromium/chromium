@@ -10,7 +10,7 @@ logging purposes.
 import os
 
 
-class LogManager():
+class LogManager(object):
   def __init__(self, logs_dir):
 
     # A dictionary with the log file path as the key and a file stream as value.

@@ -89,9 +89,9 @@ class GenericX64PavedDeviceTarget(device_target.DeviceTarget):
     bootserver_command += boot_data.GetKernelArgs()
 
     logging.debug(' '.join(bootserver_command))
-    _, stdout, _ = SubprocessCallWithTimeout(bootserver_command,
-                                             silent=False,
-                                             timeout_secs=300)
+    _, stdout = SubprocessCallWithTimeout(bootserver_command,
+                                          silent=False,
+                                          timeout_secs=300)
 
     self._ParseNodename(stdout)
 

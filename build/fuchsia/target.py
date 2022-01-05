@@ -35,7 +35,7 @@ def _GetPackageInfo(package_path):
   # Query the metadata file which resides next to the package file.
   package_info = json.load(
       open(os.path.join(os.path.dirname(package_path), 'package')))
-  return package_info['name'], package_info['version']
+  return package_info['name'], package_info['version'],
 
 
 class _MapIsolatedPathsForPackage:
@@ -57,11 +57,12 @@ class _MapIsolatedPathsForPackage:
 
 
 class FuchsiaTargetException(Exception):
-  pass
+  def __init__(self, message):
+    super(FuchsiaTargetException, self).__init__(message)
 
 
 # TODO(crbug.com/1250803): Factor high level commands out of target.
-class Target():
+class Target(object):
   """Base class representing a Fuchsia deployment target."""
 
   def __init__(self, out_dir, target_cpu, logs_dir):
@@ -190,7 +191,7 @@ class Target():
     for_realms: If specified, identifies the sub-realm of 'sys' under which
                 isolated paths (see |for_package|) are stored.
     """
-    assert isinstance(source, str)
+    assert type(source) is str
     self.PutFiles([source], dest, recursive, for_package, for_realms)
 
   def PutFiles(self,
@@ -209,7 +210,7 @@ class Target():
     for_realms: If specified, identifies the sub-realm of 'sys' under which
                 isolated paths (see |for_package|) are stored.
     """
-    assert isinstance(sources, (tuple, list))
+    assert type(sources) is tuple or type(sources) is list
     if for_package:
       self.EnsureIsolatedPathsExist(for_package, for_realms)
       dest = _MapIsolatedPathsForPackage(for_package, 0, for_realms)(dest)
@@ -233,7 +234,7 @@ class Target():
                 isolated paths (see |for_package|) are stored.
     recursive: If true, performs a recursive copy.
     """
-    assert isinstance(source, str)
+    assert type(source) is str
     self.GetFiles([source], dest, for_package, for_realms, recursive)
 
   def GetFiles(self,
@@ -252,7 +253,7 @@ class Target():
                 isolated paths (see |for_package|) are stored.
     recursive: If true, performs a recursive copy.
     """
-    assert isinstance(sources, (tuple, list))
+    assert type(sources) is tuple or type(sources) is list
     self._AssertIsStarted()
     if for_package:
       sources = map(_MapIsolatedPathsForPackage(for_package, 0, for_realms),
@@ -272,7 +273,7 @@ class Target():
                                     stderr=subprocess.STDOUT)
     stdout, _ = cat_proc.communicate()
     if cat_proc.returncode != 0:
-      raise Exception('Could not read file %s on device.' % source)
+      raise Exception('Could not read file %s on device.', source)
     return stdout.decode('utf-8')
 
   def _GetEndpoint(self):
@@ -311,7 +312,7 @@ class Target():
 
     raise FuchsiaTargetException('Couldn\'t connect using SSH.')
 
-  def _GetSshConfigPath(self):
+  def _GetSshConfigPath(self, path):
     raise NotImplementedError()
 
   def GetPkgRepo(self):
@@ -335,7 +336,7 @@ class Target():
 
       # Resolve all packages, to have them pulled into the device/VM cache.
       for package_path in package_paths:
-        package_name, _ = _GetPackageInfo(package_path)
+        package_name, package_version = _GetPackageInfo(package_path)
         logging.info('Installing %s...', package_name)
         return_code = self.RunCommand(
             ['pkgctl', 'resolve',
@@ -348,13 +349,13 @@ class Target():
       # Verify that the newly resolved versions of packages are reported.
       for package_path in package_paths:
         # Use pkgctl get-hash to determine which version will be resolved.
-        package_name, _ = _GetPackageInfo(package_path)
+        package_name, package_version = _GetPackageInfo(package_path)
         pkgctl = self.RunCommandPiped(
             ['pkgctl', 'get-hash',
              _GetPackageUri(package_name)],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
-        pkgctl_out, _ = pkgctl.communicate()
+        pkgctl_out, pkgctl_err = pkgctl.communicate()
 
         # Read the expected version from the meta.far Merkel hash file alongside
         # the package's FAR.

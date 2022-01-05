@@ -31,7 +31,7 @@ def GetHostOsFromPlatform():
   host_platform = sys.platform
   if host_platform.startswith('linux'):
     return 'linux'
-  if host_platform.startswith('darwin'):
+  elif host_platform.startswith('darwin'):
     return 'mac'
   raise Exception('Unsupported host platform: %s' % host_platform)
 
@@ -39,11 +39,12 @@ def GetHostArchFromPlatform():
   host_arch = platform.machine()
   if host_arch == 'x86_64':
     return 'x64'
-  if host_arch == 'aarch64':
+  elif host_arch == 'aarch64':
     return 'arm64'
   raise Exception('Unsupported host architecture: %s' % host_arch)
 
 def GetHostToolPathFromPlatform(tool):
+  host_arch = platform.machine()
   return os.path.join(SDK_ROOT, 'tools', GetHostArchFromPlatform(), tool)
 
 
@@ -53,20 +54,23 @@ def GetEmuRootForPlatform(emulator):
           emulator, GetHostOsFromPlatform(), GetHostArchFromPlatform()))
 
 
-def ConnectPortForwardingTask(target, local_port):
+def ConnectPortForwardingTask(target, local_port, remote_port = 0):
   """Establishes a port forwarding SSH task to a localhost TCP endpoint hosted
   at port |local_port|. Blocks until port forwarding is established.
 
   Returns the remote port number."""
 
-  forwarding_flags = [
-      '-O',
-      'forward',  # Send SSH mux control signal.
-      '-R',
-      '0:localhost:%d' % local_port,
-      '-v',  # Get forwarded port info from stderr.
-      '-NT'
-  ]  # Don't execute command; don't allocate terminal.
+  forwarding_flags = ['-O', 'forward',  # Send SSH mux control signal.
+                      '-R', '%d:localhost:%d' % (remote_port, local_port),
+                      '-v',   # Get forwarded port info from stderr.
+                      '-NT']  # Don't execute command; don't allocate terminal.
+
+  if remote_port != 0:
+    # Forward to a known remote port.
+    task = target.RunCommand([], ssh_args=forwarding_flags)
+    if task.returncode != 0:
+      raise Exception('Could not establish a port forwarding connection.')
+    return
 
   task = target.RunCommandPiped([],
                                 ssh_args=forwarding_flags,
