@@ -1100,13 +1100,17 @@ void AppLauncherHandler::HandleSetPageIndex(const base::ListValue* args) {
 
 void AppLauncherHandler::HandleSaveAppPageName(const base::ListValue* args) {
   const std::string& name = args->GetList()[0].GetString();
-  double page_index = args->GetList()[1].GetDouble();
+  size_t page_index = static_cast<size_t>(args->GetList()[1].GetDouble());
 
   base::AutoReset<bool> auto_reset(&ignore_changes_, true);
   PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
   ListPrefUpdate update(prefs, prefs::kNtpAppPageNames);
   base::ListValue* list = update.Get();
-  list->GetList()[static_cast<size_t>(page_index)] = base::Value(name);
+  if (page_index < list->GetList().size()) {
+    list->GetList()[page_index] = base::Value(name);
+  } else {
+    list->Append(name);
+  }
 }
 
 void AppLauncherHandler::HandleGenerateAppForLink(const base::ListValue* args) {
