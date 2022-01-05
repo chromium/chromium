@@ -428,7 +428,6 @@ public class FullscreenManagerTest {
     @Test
     @LargeTest
     @Features.DisableFeatures({ChromeFeatureList.OFFLINE_INDICATOR})
-    @DisabledTest(message = "Disabled while investigating. crbug.com/1280192")
     public void testHidingBrowserControlsPreservesScrollOffset() throws TimeoutException {
         FullscreenManagerTestUtils.disableBrowserOverrides();
         mActivityTestRule.startMainActivityWithURL(SCROLL_OFFSET_TEST_PAGE);
