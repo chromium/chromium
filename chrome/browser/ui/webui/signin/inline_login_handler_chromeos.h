@@ -40,8 +40,7 @@ class InlineLoginHandlerChromeOS : public InlineLoginHandler {
                      bool skip_for_now,
                      bool trusted,
                      bool trusted_found,
-                     bool choose_what_to_sync,
-                     base::Value edu_login_params) override;
+                     bool choose_what_to_sync) override;
   void HandleDialogClose(const base::ListValue* args) override;
 
  private:

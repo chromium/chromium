@@ -70,8 +70,7 @@ class InlineLoginHandlerImpl : public InlineLoginHandler {
                      bool skip_for_now,
                      bool trusted,
                      bool trusted_found,
-                     bool choose_what_to_sync,
-                     base::Value edu_login_params) override;
+                     bool choose_what_to_sync) override;
 
   // This struct exists to pass parameters to the FinishCompleteLogin() method,
   // since the base::BindRepeating() call does not support this many template

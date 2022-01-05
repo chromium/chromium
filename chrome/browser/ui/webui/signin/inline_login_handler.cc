@@ -192,14 +192,8 @@ void InlineLoginHandler::HandleCompleteLoginMessageWithCookies(
   bool choose_what_to_sync =
       dict.FindBoolKey("chooseWhatToSync").value_or(false);
 
-  base::Value edu_login_params;
-  if (args.GetList().size() > 1) {
-    edu_login_params = args.GetList()[1].Clone();
-  }
-
   CompleteLogin(email, password, gaia_id, auth_code, skip_for_now,
-                trusted_value, trusted_found, choose_what_to_sync,
-                std::move(edu_login_params));
+                trusted_value, trusted_found, choose_what_to_sync);
 }
 
 void InlineLoginHandler::HandleSwitchToFullTabMessage(
