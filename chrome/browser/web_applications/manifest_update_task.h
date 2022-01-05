@@ -73,22 +73,19 @@ enum IconDiffResult : uint32_t {
   // below).
   ONE_OR_MORE_ICONS_CHANGED = 1 << 2,
 
-  // The launcher icon is changing. Note: that the launcher icon size is
-  // platform-specific and that this flag is only set if the diff process is
-  // allowed to continue to the end (doesn't stop as soon as it finds a
-  // change).
-  LAUNCHER_ICON_CHANGED = 1 << 3,
+  // Only one icon is changing. This flag is only set if the diff process is
+  // allowed to continue to the end (doesn't stop as soon as it finds a change).
+  SINGLE_ICON_CHANGED = 1 << 3,
 
-  // The launcher icon is changing. Note: that the install icon size is
-  // platform-specific and that this flag is only set if the diff process is
-  // allowed to continue to the end (doesn't stop as soon as it finds a
+  // Two or more icons are changing. This flag is only set if the diff process
+  // is allowed to continue to the end (doesn't stop as soon as it finds a
   // change).
-  INSTALL_ICON_CHANGED = 1 << 4,
+  MULTIPLE_ICONS_CHANGED = 1 << 4,
 
-  // An icon, other than the launcher/install icon changed. Note: that this flag
+  // And icon has changed, but it was a generated icon that changed. This flag
   // is only set if the diff process is allowed to continue to the end (doesn't
   // stop as soon as it finds a change).
-  UNIMPORTANT_ICON_CHANGED = 1 << 5,
+  GENERATED_ICON_CHANGED = 1 << 5,
 };
 
 // A structure to keep track of the differences found while comparing icons
@@ -111,9 +108,9 @@ struct IconDiff {
 
   // Returns true iff the mismatch should result in app identity dlg being
   // shown.
-  bool requires_app_identity_check() {
-    return ((diff_results & LAUNCHER_ICON_CHANGED) != 0) ||
-           ((diff_results & INSTALL_ICON_CHANGED) != 0);
+  bool supported_for_app_identity_check() {
+    return diff_results == SINGLE_ICON_CHANGED ||
+           diff_results == (SINGLE_ICON_CHANGED | GENERATED_ICON_CHANGED);
   }
 
   // Keeps track of all the differences discovered in the icon set.

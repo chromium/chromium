@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "build/build_config.h"
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -37,17 +36,6 @@ enum {
 };
 
 }  // namespace icon_size
-
-#if defined(OS_MAC)
-constexpr int kInstallIconSize = icon_size::k96;
-constexpr int kLauncherIconSize = icon_size::k256;
-#elif defined(OS_CHROMEOS)
-constexpr int kInstallIconSize = icon_size::k96;
-constexpr int kLauncherIconSize = icon_size::k128;
-#else
-constexpr int kInstallIconSize = icon_size::k48;
-constexpr int kLauncherIconSize = icon_size::k128;
-#endif
 
 using SizeToBitmap = std::map<SquareSizePx, SkBitmap>;
 
