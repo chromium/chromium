@@ -9,6 +9,7 @@
  */
 
 // #import {assert} from 'chrome://resources/js/assert.m.js';
+// #import {i18nTemplate} from 'chrome://resources/js/i18n_template_no_process.m.js';
 // #import {$} from 'chrome://resources/js/util.m.js';
 // #import {addSingletonGetter, sendWithPromise} from 'chrome://resources/js/cr.m.js';
 
@@ -366,7 +367,7 @@ cr.define('cr.ui', function() {
     static reloadContent(data) {
       // Reload global local strings, process DOM tree again.
       loadTimeData.overrideValues(data);
-      /* #ignore */ i18nTemplate.process(document, loadTimeData);
+      i18nTemplate.process(document, loadTimeData);
 
       // Update localized content of the screens.
       Oobe.getInstance().updateLocalizedContent_();

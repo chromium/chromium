@@ -140,6 +140,7 @@ preprocess_if_expr("preprocess_generated") {
 
   if (is_chromeos_ash) {
     in_files += [
+      "i18n_template_no_process.m.js",
       "post_message_api_server.m.js",
       "post_message_api_request_handler.m.js",
       "post_message_api_client.m.js",
@@ -263,6 +264,7 @@ js_modulizer("modulize_local") {
   ]
   if (is_chromeos_ash) {
     input_files += [
+      "i18n_template_no_process.js",
       "post_message_api_server.js",
       "post_message_api_request_handler.js",
       "post_message_api_client.js",
@@ -308,6 +310,7 @@ js_type_check("js_resources_modules") {
 
   if (is_chromeos_ash) {
     deps += [
+      ":i18n_template_no_process.m",
       ":post_message_api_client.m",
       ":post_message_api_server.m",
     ]
@@ -368,6 +371,13 @@ js_library("plural_string_proxy") {
 }
 
 if (is_chromeos_ash) {
+  js_library("i18n_template_no_process.m") {
+    sources =
+        [ "$root_gen_dir/ui/webui/resources/js/i18n_template_no_process.m.js" ]
+    deps = [ ":load_time_data" ]
+    extra_deps = [ ":modulize_local" ]
+  }
+
   js_library("post_message_api_server.m") {
     sources =
         [ "$root_gen_dir/ui/webui/resources/js/post_message_api_server.m.js" ]

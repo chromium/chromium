@@ -7,6 +7,7 @@ import {DebuggerUI} from './debug/debug.m.js';
 import {loadTimeData} from './i18n_setup.js';
 import 'chrome://oobe/components/test_util.m.js';
 import 'chrome://oobe/test_api/test_api.m.js';
+import {i18nTemplate} from 'chrome://resources/js/i18n_template_no_process.m.js';
 
 import 'chrome://oobe/screens/common/app_downloading.m.js';
 import 'chrome://oobe/screens/common/app_launch_splash.m.js';
@@ -77,6 +78,7 @@ function prepareGlobalValues(globalValue) {
 }
 
 (function (root) {
+    i18nTemplate.process(document, loadTimeData);
     prepareGlobalValues(window);
     Oobe.initialize();
 
