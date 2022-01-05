@@ -747,14 +747,14 @@ class MockAuctionProcessManager
       receiver_set_;
 };
 
-class SameThreadAuctionProcessManager : public AuctionProcessManager {
+class SameProcessAuctionProcessManager : public AuctionProcessManager {
  public:
-  SameThreadAuctionProcessManager() = default;
-  SameThreadAuctionProcessManager(const SameThreadAuctionProcessManager&) =
+  SameProcessAuctionProcessManager() = default;
+  SameProcessAuctionProcessManager(const SameProcessAuctionProcessManager&) =
       delete;
-  SameThreadAuctionProcessManager& operator=(
-      const SameThreadAuctionProcessManager&) = delete;
-  ~SameThreadAuctionProcessManager() override = default;
+  SameProcessAuctionProcessManager& operator=(
+      const SameProcessAuctionProcessManager&) = delete;
+  ~SameProcessAuctionProcessManager() override = default;
 
   // Resume all worklets paused waiting for debugger on startup.
   void ResumeAllPaused() {
@@ -886,7 +886,7 @@ class AuctionRunnerTest : public testing::Test,
           std::move(auction_process_manager_));
     } else {
       interest_group_manager_->set_auction_process_manager_for_testing(
-          std::make_unique<SameThreadAuctionProcessManager>());
+          std::make_unique<SameProcessAuctionProcessManager>());
     }
 
     histogram_tester_ = std::make_unique<base::HistogramTester>();
@@ -1170,9 +1170,9 @@ class AuctionRunnerTest : public testing::Test,
 
   // This is used (and consumed) when starting an auction, if non-null. Allows
   // either using a MockAuctionProcessManager instead of a
-  // SameThreadAuctionProcessManager, or using a SameThreadAuctionProcessManager
+  // SameProcessAuctionProcessManager, or using a SameProcessAuctionProcessManager
   // that has already vended processes. If nullptr, a new
-  // SameThreadAuctionProcessManager() is created when an auction is started.
+  // SameProcessAuctionProcessManager() is created when an auction is started.
   std::unique_ptr<AuctionProcessManager> auction_process_manager_;
 
   // Set by UseMockWorkletService(). Non-owning reference to the
@@ -1511,10 +1511,10 @@ TEST_F(AuctionRunnerTest, BasicDebug) {
 TEST_F(AuctionRunnerTest, PauseBidder) {
   pause_worklet_url_ = kBidder2Url;
 
-  // Save a pointer to SameThreadAuctionProcessManager since we'll need its help
+  // Save a pointer to SameProcessAuctionProcessManager since we'll need its help
   // to resume things.
-  auto process_manager = std::make_unique<SameThreadAuctionProcessManager>();
-  SameThreadAuctionProcessManager* process_manager_impl = process_manager.get();
+  auto process_manager = std::make_unique<SameProcessAuctionProcessManager>();
+  SameProcessAuctionProcessManager* process_manager_impl = process_manager.get();
   auction_process_manager_ = std::move(process_manager);
 
   // Have a 404 for script 2 until ready to resume.
@@ -1564,10 +1564,10 @@ TEST_F(AuctionRunnerTest, PauseBidder) {
 TEST_F(AuctionRunnerTest, PauseSeller) {
   pause_worklet_url_ = kSellerUrl;
 
-  // Save a pointer to SameThreadAuctionProcessManager since we'll need its help
+  // Save a pointer to SameProcessAuctionProcessManager since we'll need its help
   // to resume things.
-  auto process_manager = std::make_unique<SameThreadAuctionProcessManager>();
-  SameThreadAuctionProcessManager* process_manager_impl = process_manager.get();
+  auto process_manager = std::make_unique<SameProcessAuctionProcessManager>();
+  SameProcessAuctionProcessManager* process_manager_impl = process_manager.get();
   auction_process_manager_ = std::move(process_manager);
 
   // Have a 404 for seller until ready to resume.
@@ -2249,7 +2249,7 @@ TEST_F(AuctionRunnerTest, ProcessManagerDelaysAuction) {
   // Create AuctionProcessManager in advance of starting the auction so can
   // create seller worklets before the auction starts.
   auction_process_manager_ =
-      std::make_unique<SameThreadAuctionProcessManager>();
+      std::make_unique<SameProcessAuctionProcessManager>();
 
   AuctionProcessManager* auction_process_manager =
       auction_process_manager_.get();
