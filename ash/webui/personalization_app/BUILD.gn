@@ -11,9 +11,9 @@ static_library("personalization_app") {
   sources = [
     "personalization_app_ui.cc",
     "personalization_app_ui.h",
-    "personalization_app_ui_delegate.h",
     "personalization_app_url_constants.cc",
     "personalization_app_url_constants.h",
+    "personalization_app_wallpaper_provider.h",
     "untrusted_personalization_app_ui_config.cc",
     "untrusted_personalization_app_ui_config.h",
   ]
@@ -46,8 +46,8 @@ js2gtest("browser_tests_js") {
 source_set("browser_test_support") {
   testonly = true
   sources = [
-    "test/fake_personalization_app_ui_delegate.cc",
-    "test/fake_personalization_app_ui_delegate.h",
+    "test/fake_personalization_app_wallpaper_provider.cc",
+    "test/fake_personalization_app_wallpaper_provider.h",
     "test/personalization_app_browsertest_fixture.cc",
     "test/personalization_app_browsertest_fixture.h",
   ]

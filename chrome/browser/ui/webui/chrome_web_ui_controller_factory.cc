@@ -207,7 +207,7 @@
 #include "chrome/browser/ash/web_applications/chrome_file_manager_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/help_app/help_app_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/media_app/chrome_media_app_ui_delegate.h"
-#include "chrome/browser/ash/web_applications/personalization_app/chrome_personalization_app_ui_delegate.h"
+#include "chrome/browser/ash/web_applications/personalization_app/chrome_personalization_app_wallpaper_provider.h"
 #include "chrome/browser/feedback/feedback_dialog_utils.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
@@ -961,7 +961,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   if (url.host_piece() == ash::kChromeUIPersonalizationAppHost &&
       chromeos::features::IsWallpaperWebUIEnabled()) {
     return &NewComponentUI<ash::PersonalizationAppUI,
-                           ChromePersonalizationAppUiDelegate>;
+                           ChromePersonalizationAppWallpaperProvider>;
   }
   if (url.host_piece() == ash::kChromeUISystemExtensionsInternalsHost &&
       base::FeatureList::IsEnabled(ash::features::kSystemExtensions)) {

@@ -7,8 +7,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/grit/ash_personalization_app_resources.h"
 #include "ash/grit/ash_personalization_app_resources_map.h"
-#include "ash/webui/personalization_app/personalization_app_ui_delegate.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
+#include "ash/webui/personalization_app/personalization_app_wallpaper_provider.h"
 #include "base/strings/strcat.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -113,9 +113,10 @@ void AddBooleans(content::WebUIDataSource* source) {
 
 PersonalizationAppUI::PersonalizationAppUI(
     content::WebUI* web_ui,
-    std::unique_ptr<PersonalizationAppUiDelegate> delegate)
-    : ui::MojoWebUIController(web_ui), delegate_(std::move(delegate)) {
-  DCHECK(delegate_);
+    std::unique_ptr<PersonalizationAppWallpaperProvider> wallpaper_provider)
+    : ui::MojoWebUIController(web_ui),
+      wallpaper_provider_(std::move(wallpaper_provider)) {
+  DCHECK(wallpaper_provider_);
 
   std::unique_ptr<content::WebUIDataSource> source = base::WrapUnique(
       content::WebUIDataSource::Create(kChromeUIPersonalizationAppHost));
@@ -149,7 +150,7 @@ PersonalizationAppUI::~PersonalizationAppUI() = default;
 void PersonalizationAppUI::BindInterface(
     mojo::PendingReceiver<personalization_app::mojom::WallpaperProvider>
         receiver) {
-  delegate_->BindInterface(std::move(receiver));
+  wallpaper_provider_->BindInterface(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(PersonalizationAppUI)

@@ -8,15 +8,16 @@
 
 #include "ash/webui/personalization_app/personalization_app_ui.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
-#include "ash/webui/personalization_app/test/fake_personalization_app_ui_delegate.h"
+#include "ash/webui/personalization_app/test/fake_personalization_app_wallpaper_provider.h"
 #include "chrome/test/base/mojo_web_ui_browser_test.h"
 
 std::unique_ptr<content::WebUIController>
 TestPersonalizationAppWebUIProvider::NewWebUI(content::WebUI* web_ui,
                                               const GURL& url) {
-  auto delegate = std::make_unique<FakePersonalizationAppUiDelegate>(web_ui);
-  return std::make_unique<ash::PersonalizationAppUI>(web_ui,
-                                                     std::move(delegate));
+  auto wallpaper_provider =
+      std::make_unique<FakePersonalizationAppWallpaperProvider>(web_ui);
+  return std::make_unique<ash::PersonalizationAppUI>(
+      web_ui, std::move(wallpaper_provider));
 }
 
 void PersonalizationAppBrowserTestFixture::SetUpOnMainThread() {

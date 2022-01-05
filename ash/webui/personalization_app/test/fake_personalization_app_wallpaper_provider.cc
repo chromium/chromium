@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/webui/personalization_app/test/fake_personalization_app_ui_delegate.h"
+#include "ash/webui/personalization_app/test/fake_personalization_app_wallpaper_provider.h"
 
 #include <stdint.h>
 #include <vector>
@@ -20,19 +20,20 @@ namespace {
 const char kFakeCollectionId[] = "fake_collection_id";
 }  // namespace
 
-FakePersonalizationAppUiDelegate::FakePersonalizationAppUiDelegate(
-    content::WebUI* web_ui) {}
+FakePersonalizationAppWallpaperProvider::
+    FakePersonalizationAppWallpaperProvider(content::WebUI* web_ui) {}
 
-FakePersonalizationAppUiDelegate::~FakePersonalizationAppUiDelegate() = default;
+FakePersonalizationAppWallpaperProvider::
+    ~FakePersonalizationAppWallpaperProvider() = default;
 
-void FakePersonalizationAppUiDelegate::BindInterface(
+void FakePersonalizationAppWallpaperProvider::BindInterface(
     mojo::PendingReceiver<ash::personalization_app::mojom::WallpaperProvider>
         receiver) {
   wallpaper_receiver_.reset();
   wallpaper_receiver_.Bind(std::move(receiver));
 }
 
-void FakePersonalizationAppUiDelegate::FetchCollections(
+void FakePersonalizationAppWallpaperProvider::FetchCollections(
     FetchCollectionsCallback callback) {
   std::vector<backdrop::Collection> collections;
   backdrop::Collection collection;
@@ -45,7 +46,7 @@ void FakePersonalizationAppUiDelegate::FetchCollections(
   std::move(callback).Run(std::move(collections));
 }
 
-void FakePersonalizationAppUiDelegate::FetchImagesForCollection(
+void FakePersonalizationAppWallpaperProvider::FetchImagesForCollection(
     const std::string& collection_id,
     FetchImagesForCollectionCallback callback) {
   DCHECK_EQ(collection_id, kFakeCollectionId);
@@ -60,34 +61,34 @@ void FakePersonalizationAppUiDelegate::FetchImagesForCollection(
   std::move(callback).Run(std::move(images));
 }
 
-void FakePersonalizationAppUiDelegate::FetchGooglePhotosCount(
+void FakePersonalizationAppWallpaperProvider::FetchGooglePhotosCount(
     FetchGooglePhotosCountCallback callback) {
   std::move(callback).Run(0);
 }
 
-void FakePersonalizationAppUiDelegate::GetLocalImages(
+void FakePersonalizationAppWallpaperProvider::GetLocalImages(
     GetLocalImagesCallback callback) {
   std::move(callback).Run({});
 }
 
-void FakePersonalizationAppUiDelegate::GetLocalImageThumbnail(
+void FakePersonalizationAppWallpaperProvider::GetLocalImageThumbnail(
     const base::FilePath& path,
     GetLocalImageThumbnailCallback callback) {
   std::move(callback).Run(std::string());
 }
 
-void FakePersonalizationAppUiDelegate::SetWallpaperObserver(
+void FakePersonalizationAppWallpaperProvider::SetWallpaperObserver(
     mojo::PendingRemote<ash::personalization_app::mojom::WallpaperObserver>
         observer) {}
 
-void FakePersonalizationAppUiDelegate::SelectWallpaper(
+void FakePersonalizationAppWallpaperProvider::SelectWallpaper(
     uint64_t image_asset_id,
     bool preview_mode,
     SelectWallpaperCallback callback) {
   std::move(callback).Run(/*success=*/true);
 }
 
-void FakePersonalizationAppUiDelegate::SelectLocalImage(
+void FakePersonalizationAppWallpaperProvider::SelectLocalImage(
     const base::FilePath& path,
     ash::WallpaperLayout layout,
     bool preview_mode,
@@ -95,35 +96,35 @@ void FakePersonalizationAppUiDelegate::SelectLocalImage(
   std::move(callback).Run(/*success=*/true);
 }
 
-void FakePersonalizationAppUiDelegate::SetCustomWallpaperLayout(
+void FakePersonalizationAppWallpaperProvider::SetCustomWallpaperLayout(
     ash::WallpaperLayout layout) {
   return;
 }
 
-void FakePersonalizationAppUiDelegate::SetDailyRefreshCollectionId(
+void FakePersonalizationAppWallpaperProvider::SetDailyRefreshCollectionId(
     const std::string& collection_id) {
   return;
 }
 
-void FakePersonalizationAppUiDelegate::GetDailyRefreshCollectionId(
+void FakePersonalizationAppWallpaperProvider::GetDailyRefreshCollectionId(
     GetDailyRefreshCollectionIdCallback callback) {
   std::move(callback).Run(kFakeCollectionId);
 }
 
-void FakePersonalizationAppUiDelegate::UpdateDailyRefreshWallpaper(
+void FakePersonalizationAppWallpaperProvider::UpdateDailyRefreshWallpaper(
     UpdateDailyRefreshWallpaperCallback callback) {
   std::move(callback).Run(/*success=*/true);
 }
 
-void FakePersonalizationAppUiDelegate::IsInTabletMode(
+void FakePersonalizationAppWallpaperProvider::IsInTabletMode(
     IsInTabletModeCallback callback) {
   std::move(callback).Run(/*tablet_mode=*/false);
 }
 
-void FakePersonalizationAppUiDelegate::ConfirmPreviewWallpaper() {
+void FakePersonalizationAppWallpaperProvider::ConfirmPreviewWallpaper() {
   return;
 }
 
-void FakePersonalizationAppUiDelegate::CancelPreviewWallpaper() {
+void FakePersonalizationAppWallpaperProvider::CancelPreviewWallpaper() {
   return;
 }

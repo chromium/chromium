@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef ASH_WEBUI_PERSONALIZATION_APP_TEST_FAKE_PERSONALIZATION_APP_UI_DELEGATE_H_
-#define ASH_WEBUI_PERSONALIZATION_APP_TEST_FAKE_PERSONALIZATION_APP_UI_DELEGATE_H_
+#ifndef ASH_WEBUI_PERSONALIZATION_APP_TEST_FAKE_PERSONALIZATION_APP_WALLPAPER_PROVIDER_H_
+#define ASH_WEBUI_PERSONALIZATION_APP_TEST_FAKE_PERSONALIZATION_APP_WALLPAPER_PROVIDER_H_
 
-#include "ash/webui/personalization_app/personalization_app_ui_delegate.h"
+#include "ash/webui/personalization_app/personalization_app_wallpaper_provider.h"
 
 #include <stdint.h>
 
@@ -19,19 +19,19 @@ namespace content {
 class WebUI;
 }  // namespace content
 
-class FakePersonalizationAppUiDelegate
-    : public ash::PersonalizationAppUiDelegate {
+class FakePersonalizationAppWallpaperProvider
+    : public ash::PersonalizationAppWallpaperProvider {
  public:
-  explicit FakePersonalizationAppUiDelegate(content::WebUI* web_ui);
+  explicit FakePersonalizationAppWallpaperProvider(content::WebUI* web_ui);
 
-  FakePersonalizationAppUiDelegate(const FakePersonalizationAppUiDelegate&) =
-      delete;
-  FakePersonalizationAppUiDelegate& operator=(
-      const FakePersonalizationAppUiDelegate&) = delete;
+  FakePersonalizationAppWallpaperProvider(
+      const FakePersonalizationAppWallpaperProvider&) = delete;
+  FakePersonalizationAppWallpaperProvider& operator=(
+      const FakePersonalizationAppWallpaperProvider&) = delete;
 
-  ~FakePersonalizationAppUiDelegate() override;
+  ~FakePersonalizationAppWallpaperProvider() override;
 
-  // PersonalizationAppUIDelegate:
+  // PersonalizationAppWallpaperProvider:
   void BindInterface(
       mojo::PendingReceiver<ash::personalization_app::mojom::WallpaperProvider>
           receiver) override;
@@ -85,4 +85,4 @@ class FakePersonalizationAppUiDelegate
       wallpaper_receiver_{this};
 };
 
-#endif  // ASH_WEBUI_PERSONALIZATION_APP_TEST_FAKE_PERSONALIZATION_APP_UI_DELEGATE_H_
+#endif  // ASH_WEBUI_PERSONALIZATION_APP_TEST_FAKE_PERSONALIZATION_APP_WALLPAPER_PROVIDER_H_
