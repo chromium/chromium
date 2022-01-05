@@ -50,15 +50,25 @@ class RedactionTool {
   explicit RedactionTool(const char* const* first_party_extension_ids);
   ~RedactionTool();
 
+  // Return a map of [PII-sensitive data type -> set of data] that are detected
+  // in |input|.
+  std::map<PIIType, std::set<std::string>> Detect(const std::string& input);
+
   // Returns an redacted version of |input|. PII-sensitive data (such as MAC
   // addresses) in |input| is replaced with unique identifiers.
   // This is an expensive operation. Make sure not to execute this on the UI
   // thread.
   std::string Redact(const std::string& input);
 
-  // Return a map of [PII-sensitive data type -> set of data] that are detected
-  // in |input|.
-  std::map<PIIType, std::set<std::string>> Detect(const std::string& input);
+  // Attempts to redact PII sensitive data from |input| except the data that
+  // fits in one of the PII types in |pii_types_to_keep| and returns the
+  // redacted version.
+  // Note that URLs and Android storage paths may contain hashes. URLs and
+  // Android storage paths will be partially redacted (only hashes) if
+  // |pii_types_to_keep| contains PIIType::kURL or
+  // PIIType::kAndroidAppStoragePath and not PIIType::kHash.
+  std::string RedactAndKeepSelected(const std::string& input,
+                                    const std::set<PIIType>& pii_types_to_keep);
 
  private:
   friend class RedactionToolTest;
@@ -80,7 +90,13 @@ class RedactionTool {
   // redacted hashes to |detected| if |detected| is not nullptr.
   std::string RedactHashes(const std::string& input,
                            std::map<PIIType, std::set<std::string>>* detected);
-  std::string RedactCustomPatterns(std::string input);
+
+  // Redacts PII sensitive data that matches |pattern| from |input| and returns
+  // the redacted string. Keeps the PII data that belongs to PII type in
+  // |pii_types_to_keep| in the returned string.
+  std::string RedactAndKeepSelectedCustomPatterns(
+      std::string input,
+      const std::set<PIIType>& pii_types_to_keep);
 
   // Detects PII sensitive data in |input| using custom patterns. Adds the
   // detected PII sensitive data to corresponding PII type key in |detected|.

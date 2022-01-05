@@ -10,6 +10,8 @@ namespace feedback {
 // PII (Personally Identifiable Information) types that can be detected in the
 // debug data.
 enum class PIIType {
+  // Indicates no PII. Mainly for testing.
+  kNone,
   // Android App Storage paths. The path starts with either
   // /home/root/<hash>/data/data/<package_name>/ or
   // /home/root/<hash>/data/user_de/<number>/<package_name>/, the path

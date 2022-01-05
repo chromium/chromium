@@ -38,7 +38,7 @@ namespace {
 // Every matched identifier (in the context of the whole pattern) is redacted
 // by replacing it with an incremental instance identifier. Every different
 // pattern defines a separate instance identifier space. See the unit test for
-// RedactionTool::RedactCustomPatterns for pattern redaction examples.
+// RedactionToolTest::RedactCustomPatterns for pattern redaction examples.
 //
 // Useful regular expression syntax:
 //
@@ -454,19 +454,6 @@ RedactionTool::~RedactionTool() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-std::string RedactionTool::Redact(const std::string& input) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  base::AssertLongCPUWorkAllowed();
-
-  std::string redacted = RedactMACAddresses(input, nullptr);
-  redacted = RedactAndroidAppStoragePaths(std::move(redacted), nullptr);
-  redacted = RedactCustomPatterns(std::move(redacted));
-  // Do hashes last since they may appear in URLs and they also prevent us from
-  // properly recognizing the Android storage paths.
-  redacted = RedactHashes(std::move(redacted), nullptr);
-  return redacted;
-}
-
 std::map<PIIType, std::set<std::string>> RedactionTool::Detect(
     const std::string& input) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -483,6 +470,42 @@ std::map<PIIType, std::set<std::string>> RedactionTool::Detect(
   // properly recognizing the Android storage paths.
   RedactHashes(input, &detected);
   return detected;
+}
+
+std::string RedactionTool::Redact(const std::string& input) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return RedactAndKeepSelected(input, /*pii_types_to_keep=*/{});
+}
+
+std::string RedactionTool::RedactAndKeepSelected(
+    const std::string& input,
+    const std::set<PIIType>& pii_types_to_keep) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::AssertLongCPUWorkAllowed();
+
+  // Copy |input| so we can modify it.
+  std::string redacted = input;
+
+  if (pii_types_to_keep.find(PIIType::kMACAddress) == pii_types_to_keep.end()) {
+    redacted = RedactMACAddresses(std::move(redacted), nullptr);
+  }
+  if (pii_types_to_keep.find(PIIType::kAndroidAppStoragePath) ==
+      pii_types_to_keep.end()) {
+    redacted = RedactAndroidAppStoragePaths(std::move(redacted), nullptr);
+  }
+
+  redacted = RedactAndKeepSelectedCustomPatterns(std::move(redacted),
+                                                 pii_types_to_keep);
+
+  // Do hashes last since they may appear in URLs and they also prevent us
+  // from properly recognizing the Android storage paths.
+  if (pii_types_to_keep.find(PIIType::kHash) == pii_types_to_keep.end()) {
+    // URLs and Android storage paths will be partially redacted (only hashes)
+    // if |pii_types_to_keep| contains PIIType::kURL or
+    // PIIType::kAndroidAppStoragePath and not PIIType::kHash.
+    redacted = RedactHashes(std::move(redacted), nullptr);
+  }
+  return redacted;
 }
 
 RE2* RedactionTool::GetRegExp(const std::string& pattern) {
@@ -668,12 +691,18 @@ std::string RedactionTool::RedactAndroidAppStoragePaths(
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-std::string RedactionTool::RedactCustomPatterns(std::string input) {
+std::string RedactionTool::RedactAndKeepSelectedCustomPatterns(
+    std::string input,
+    const std::set<PIIType>& pii_types_to_keep) {
   for (const auto& pattern : kCustomPatternsWithContext) {
-    input = RedactCustomPatternWithContext(input, pattern, nullptr);
+    if (pii_types_to_keep.find(pattern.pii_type) == pii_types_to_keep.end()) {
+      input = RedactCustomPatternWithContext(input, pattern, nullptr);
+    }
   }
   for (const auto& pattern : kCustomPatternsWithoutContext) {
-    input = RedactCustomPatternWithoutContext(input, pattern, nullptr);
+    if (pii_types_to_keep.find(pattern.pii_type) == pii_types_to_keep.end()) {
+      input = RedactCustomPatternWithoutContext(input, pattern, nullptr);
+    }
   }
   return input;
 }
