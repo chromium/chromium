@@ -18,6 +18,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.os.Build;
+import android.view.ViewGroup;
 
 import androidx.test.filters.SmallTest;
 
@@ -36,8 +37,8 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.components.messages.MessageQueueManager.MessageState;
 import org.chromium.components.messages.MessageScopeChange.ChangeType;
-import org.chromium.content_public.browser.Visibility;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
+import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -74,10 +75,12 @@ public class MessageQueueManagerTest {
         }
     }
 
-    private static class InactiveMockWebContents extends MockWebContents {
+    private static class ActiveMockWebContents extends MockWebContents {
         @Override
-        public @Visibility int getVisibility() {
-            return Visibility.HIDDEN;
+        public ViewAndroidDelegate getViewAndroidDelegate() {
+            ViewGroup view = Mockito.mock(ViewGroup.class);
+            when(view.getVisibility()).thenReturn(ViewGroup.VISIBLE);
+            return ViewAndroidDelegate.createBasicDelegate(view);
         }
     }
 
@@ -95,10 +98,10 @@ public class MessageQueueManagerTest {
 
     private static final int SCOPE_TYPE = MessageScopeType.NAVIGATION;
     private static final ScopeKey SCOPE_INSTANCE_ID =
-            new ScopeKey(SCOPE_TYPE, new MockWebContents());
+            new ScopeKey(SCOPE_TYPE, new ActiveMockWebContents());
 
     private static final ScopeKey SCOPE_INSTANCE_ID_A =
-            new ScopeKey(SCOPE_TYPE, new MockWebContents());
+            new ScopeKey(SCOPE_TYPE, new ActiveMockWebContents());
 
     @Before
     public void setUp() {
@@ -344,8 +347,8 @@ public class MessageQueueManagerTest {
         MessageQueueDelegate delegate = Mockito.spy(mEmptyDelegate);
         MessageQueueManager queueManager = new MessageQueueManager();
         queueManager.setDelegate(delegate);
-        final ScopeKey inactiveScopeKey = new ScopeKey(SCOPE_TYPE, new InactiveMockWebContents());
-        final ScopeKey inactiveScopeKey2 = new ScopeKey(SCOPE_TYPE, new InactiveMockWebContents());
+        final ScopeKey inactiveScopeKey = new ScopeKey(SCOPE_TYPE, new MockWebContents());
+        final ScopeKey inactiveScopeKey2 = new ScopeKey(SCOPE_TYPE, new MockWebContents());
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
         queueManager.enqueueMessage(m1, m1, inactiveScopeKey2, false);
 
@@ -393,9 +396,9 @@ public class MessageQueueManagerTest {
         MessageQueueManager queueManager = new MessageQueueManager();
         queueManager.setDelegate(delegate);
         final ScopeKey navScopeKey =
-                new ScopeKey(MessageScopeType.NAVIGATION, new MockWebContents());
+                new ScopeKey(MessageScopeType.NAVIGATION, new ActiveMockWebContents());
         final ScopeKey windowScopeKey =
-                new ScopeKey(MessageScopeType.WEB_CONTENTS, new MockWindowAndroidWebContents());
+                new ScopeKey(new MockWindowAndroidWebContents().getTopLevelNativeWindow());
 
         MessageStateHandler m1 = Mockito.spy(new EmptyMessageStateHandler());
         queueManager.enqueueMessage(m1, m1, navScopeKey, false);
