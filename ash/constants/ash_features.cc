@@ -1218,6 +1218,11 @@ const base::Feature kTrafficCountersSettingsUi{
 const base::Feature kTrilinearFiltering{"TrilinearFiltering",
                                         base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Unblock the UsbPeripheralNotificationController class in ash to display
+// USB related notifications from the type-c daemon in Chrome OS.
+const base::Feature kUsbNotificationController{
+    "UsbNotificationController", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Uses new  AuthSession-based API in cryptohome to authenticate users during
 // sign-in.
 const base::Feature kUseAuthsessionAuthentication{

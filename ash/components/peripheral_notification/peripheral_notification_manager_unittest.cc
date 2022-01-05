@@ -450,4 +450,31 @@ TEST_F(PeripheralNotificationManagerTest, BillboardDevice) {
       1);
 }
 
+TEST_F(PeripheralNotificationManagerTest, InvalidDpCableWarning) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kUsbNotificationController);
+
+  InitializeManager(/*is_guest_profile=*/false,
+                    /*is_pcie_tunneling_allowed=*/false);
+
+  EXPECT_EQ(0u, GetInvalidDpCableNotificationObserverCalls());
+  histogram_tester_.ExpectBucketCount(
+      "Ash.Peripheral.ConnectivityResults",
+      PeripheralNotificationManager::PeripheralConnectivityResults::
+          kInvalidDpCable,
+      0);
+
+  // Simulate emitting D-Bus signal for an invalid dp cable.
+  typecd::CableWarningType cable_warning_type =
+      typecd::CableWarningType::kInvalidDpCable;
+  fake_typecd_client()->EmitCableWarningSignal(cable_warning_type);
+
+  EXPECT_EQ(1u, GetInvalidDpCableNotificationObserverCalls());
+  histogram_tester_.ExpectBucketCount(
+      "Ash.Peripheral.ConnectivityResults",
+      PeripheralNotificationManager::PeripheralConnectivityResults::
+          kInvalidDpCable,
+      1);
+}
+
 }  // namespace ash

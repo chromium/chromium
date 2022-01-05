@@ -5194,6 +5194,11 @@ const char kUiDevToolsDescription[] =
 const char kUiSlowAnimationsName[] = "Slow UI animations";
 const char kUiSlowAnimationsDescription[] = "Makes all UI animations slow.";
 
+const char kUsbNotificationControllerName[] =
+    "Enable USB Notification Controller";
+const char kUsbNotificationControllerDescription[] =
+    "Enables USB related notifications from the Chrome OS type-c daemon.";
+
 const char kVaapiJpegImageDecodeAccelerationName[] =
     "VA-API JPEG decode acceleration for images";
 const char kVaapiJpegImageDecodeAccelerationDescription[] =

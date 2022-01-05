@@ -5538,6 +5538,11 @@
     "expiry_milestone": 101
   },
   {
+    "name": "usb-notification-controller",
+    "owners": [ "jthies", "bleung" ],
+    "expiry_milestone": 102
+  },
+  {
     "name": "use-angle",
     "owners": [ "angle-team@google.com" ],
     // This flag is used by certain customers to set ANGLE to use its OpenGL

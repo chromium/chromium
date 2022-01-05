@@ -130,9 +130,14 @@ void PeripheralNotificationManager::OnBlockedThunderboltDeviceConnected(
 
 void PeripheralNotificationManager::OnCableWarning(
     typecd::CableWarningType cable_warning_type) {
-  // Adding function as stub. Will be enabled with flag CL.
-  // TODO: Add a flag to block this function. And behind the flag, call
-  // NotifyInvalidDpCable if the kInvalidDpCable CableWarningType is received.
+  if (!base::FeatureList::IsEnabled(features::kUsbNotificationController))
+    return;
+
+  // Decode cable warnging signal.
+  if (cable_warning_type == typecd::CableWarningType::kInvalidDpCable) {
+    NotifyInvalidDpCable();
+    RecordConnectivityMetric(PeripheralConnectivityResults::kInvalidDpCable);
+  }
 }
 
 void PeripheralNotificationManager::NotifyInvalidDpCable() {

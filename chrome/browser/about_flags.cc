@@ -7749,6 +7749,13 @@ const FeatureEntry kFeatureEntries[] = {
                                     "UseMultipleOverlays")},
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {"usb-notification-controller",
+     flag_descriptions::kUsbNotificationControllerName,
+     flag_descriptions::kUsbNotificationControllerDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kUsbNotificationController)},
+#endif
+
 #if defined(OS_CHROMEOS)
     {"link-capturing-ui-update", flag_descriptions::kLinkCapturingUiUpdateName,
      flag_descriptions::kLinkCapturingUiUpdateDescription, kOsCrOS,
