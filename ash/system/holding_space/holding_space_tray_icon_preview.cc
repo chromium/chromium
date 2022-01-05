@@ -117,39 +117,106 @@ void SetUpAnimation(ui::ScopedLayerAnimationSettings* animation_settings) {
   animation_settings->SetTweenType(gfx::Tween::EASE_OUT);
 }
 
-// ContentsImageSource ---------------------------------------------------------
+}  // namespace
 
-class ContentsImageSource : public gfx::ImageSkiaSource {
+// HoldingSpaceTrayIconPreview::ImageLayerOwner --------------------------------
+
+// Class which owns the `layer()` to which the image representation for the
+// associated holding space `item_` is painted.
+class HoldingSpaceTrayIconPreview::ImageLayerOwner : public ui::LayerOwner,
+                                                     public ui::LayerDelegate {
  public:
-  explicit ContentsImageSource(gfx::ImageSkia item_image)
-      : item_image_(item_image) {}
-  ContentsImageSource(const ContentsImageSource&) = delete;
-  ContentsImageSource& operator=(const ContentsImageSource&) = delete;
-  ~ContentsImageSource() override = default;
-
- private:
-  // gfx::ImageSkiaSource:
-  gfx::ImageSkiaRep GetImageForScale(float scale) override {
-    gfx::ImageSkia image = item_image_;
-
-    // The `image` should already be sized appropriately.
-    DCHECK_EQ(image.size(), GetPreviewSize());
-
-    // Clip to circle.
-    // NOTE: Since `image` is a square, the center x-coordinate, center
-    // y-coordinate, and radius all equal the same value.
-    const int radius = image.width() / 2;
-    gfx::Canvas canvas(image.size(), scale, /*is_opaque=*/false);
-    canvas.ClipPath(SkPath::Circle(/*cx=*/radius, /*cy=*/radius, radius),
-                    /*anti_alias=*/true);
-    canvas.DrawImageInt(image, /*x=*/0, /*y=*/0);
-    return gfx::ImageSkiaRep(canvas.GetBitmap(), scale);
+  explicit ImageLayerOwner(const HoldingSpaceItem* item) : item_(item) {
+    item_deletion_subscription_ = item->AddDeletionCallback(base::BindRepeating(
+        &ImageLayerOwner::OnHoldingSpaceItemDeleted, base::Unretained(this)));
+    item_image_skia_subscription_ =
+        item->image().AddImageSkiaChangedCallback(base::BindRepeating(
+            &ImageLayerOwner::OnHoldingSpaceItemImageSkiaChanged,
+            base::Unretained(this)));
   }
 
-  const gfx::ImageSkia item_image_;
-};
+  ImageLayerOwner(const ImageLayerOwner&) = delete;
+  ImageLayerOwner& operator=(const ImageLayerOwner&) = delete;
+  ~ImageLayerOwner() override = default;
 
-}  // namespace
+  // Creates and returns the `layer()` owned by this class. Note that this may
+  // only be called if `layer()` does not already exist.
+  ui::Layer* CreateLayer() {
+    DCHECK(!layer());
+
+    auto layer = std::make_unique<ui::Layer>(ui::LAYER_TEXTURED);
+    layer->set_delegate(this);
+    layer->SetFillsBoundsOpaquely(false);
+    Reset(std::move(layer));
+
+    return this->layer();
+  }
+
+  // Destroys the `layer()` which is owned by this class. Note that this will
+  // no-op if `layer()` does not exist.
+  void DestroyLayer() {
+    if (layer())
+      ReleaseLayer();
+  }
+
+  // Invoke to schedule repaint of the entire `layer()`.
+  void InvalidateLayer() {
+    // Clear cache.
+    image_skia_ = gfx::ImageSkia();
+
+    // Schedule repaint.
+    if (layer())
+      layer()->SchedulePaint(gfx::Rect(layer()->size()));
+  }
+
+ private:
+  // ui::LayerDelegate:
+  void OnPaintLayer(const ui::PaintContext& context) override {
+    if (image_skia_.isNull())
+      return;
+
+    // Paint `image_skia_`.
+    ui::PaintRecorder recorder(context, layer()->size());
+    gfx::Canvas* canvas = recorder.canvas();
+    canvas->DrawImageInt(image_skia_, 0, 0);
+  }
+
+  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
+                                  float new_device_scale_factor) override {
+    // Clear cache and schedule repaint.
+    InvalidateLayer();
+  }
+
+  void OnLayerBoundsChanged(const gfx::Rect& old_bounds,
+                            ui::PropertyChangeReason reason) override {
+    // Update corner radius.
+    const gfx::Size& size = layer()->size();
+    const float corner_radius = std::min(size.width(), size.height()) / 2.f;
+    layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(corner_radius));
+
+    // Clear cache and schedule repaint.
+    InvalidateLayer();
+  }
+
+  void UpdateVisualState() override {
+    if (item_ && image_skia_.isNull()) {
+      image_skia_ = item_->image().GetImageSkia(
+          layer()->size(), AshColorProvider::Get()->IsDarkModeEnabled());
+    }
+  }
+
+  void OnHoldingSpaceItemDeleted() { item_ = nullptr; }
+
+  void OnHoldingSpaceItemImageSkiaChanged() { InvalidateLayer(); }
+
+  const HoldingSpaceItem* item_ = nullptr;
+  base::CallbackListSubscription item_deletion_subscription_;
+  base::CallbackListSubscription item_image_skia_subscription_;
+
+  // Cached image representation of the associated holding space `item_` that is
+  // painted to the `layer()` owned by this class.
+  gfx::ImageSkia image_skia_;
+};
 
 // HoldingSpaceTrayIconPreview -------------------------------------------------
 
@@ -159,21 +226,9 @@ HoldingSpaceTrayIconPreview::HoldingSpaceTrayIconPreview(
     const HoldingSpaceItem* item)
     : shelf_(shelf),
       container_(container),
-      item_(item),
-      progress_indicator_(HoldingSpaceProgressIndicator::CreateForItem(item_)),
+      image_layer_owner_(std::make_unique<ImageLayerOwner>(item)),
+      progress_indicator_(HoldingSpaceProgressIndicator::CreateForItem(item)),
       use_small_previews_(ShouldUseSmallPreviews()) {
-  // Initialize the `contents_image_`.
-  OnHoldingSpaceItemImageChanged();
-
-  item_deletion_subscription_ = item->AddDeletionCallback(base::BindRepeating(
-      &HoldingSpaceTrayIconPreview::OnHoldingSpaceItemDeleted,
-      base::Unretained(this)));
-
-  image_subscription_ =
-      item->image().AddImageSkiaChangedCallback(base::BindRepeating(
-          &HoldingSpaceTrayIconPreview::OnHoldingSpaceItemImageChanged,
-          base::Unretained(this)));
-
   container_observer_.Observe(container_);
 }
 
@@ -405,20 +460,11 @@ void HoldingSpaceTrayIconPreview::OnShelfConfigChanged() {
     UpdateLayerBounds();
     layer()->SetTransform(transform_);
   }
-
-  // Invalidate `contents_image_` so it is resized.
-  OnHoldingSpaceItemImageChanged();
 }
 
 void HoldingSpaceTrayIconPreview::OnThemeChanged() {
-  // Invalidate `contents_image_` so that file type icons will use the correct
-  // foreground color to contrast the preview's background. Note that this will
-  // trigger `layer()` invalidation at which time the background will be painted
-  // in the appropriate color for the current theme.
-  OnHoldingSpaceItemImageChanged();
-
-  // Invalidate the `progress_indicator_` layer so that it gets repainted with
-  // colors that are appropriately themed.
+  InvalidateLayer();
+  image_layer_owner_->InvalidateLayer();
   progress_indicator_->InvalidateLayer();
 }
 
@@ -434,8 +480,8 @@ void HoldingSpaceTrayIconPreview::OnPaintLayer(
 
   // Background.
   // NOTE: The background radius is shrunk by a single pixel to avoid being
-  // painted outside `contents_image_` bounds as might otherwise occur due to
-  // pixel rounding. Failure to do so could result in paint artifacts.
+  // painted outside `image_layer_owner_` layer bounds as might otherwise occur
+  // due to pixel rounding. Failure to do so could result in paint artifacts.
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setColor(AshColorProvider::Get()->GetBaseLayerColor(
@@ -445,14 +491,6 @@ void HoldingSpaceTrayIconPreview::OnPaintLayer(
       gfx::PointF(contents_bounds.CenterPoint()),
       std::min(contents_bounds.width(), contents_bounds.height()) / 2.f - 0.5f,
       flags);
-
-  // Contents.
-  // NOTE: The `contents_image_` should already be resized.
-  if (!contents_image_.isNull()) {
-    DCHECK_EQ(contents_image_.size(), contents_bounds.size());
-    canvas->DrawImageInt(contents_image_, contents_bounds.x(),
-                         contents_bounds.y());
-  }
 }
 
 void HoldingSpaceTrayIconPreview::OnDeviceScaleFactorChanged(
@@ -481,23 +519,6 @@ void HoldingSpaceTrayIconPreview::OnViewIsDeleting(views::View* view) {
   container_observer_.Reset();
 }
 
-void HoldingSpaceTrayIconPreview::OnHoldingSpaceItemImageChanged() {
-  if (item_) {
-    const gfx::Size size(GetPreviewSize());
-    contents_image_ = gfx::ImageSkia(
-        std::make_unique<ContentsImageSource>(item_->image().GetImageSkia(
-            size, AshColorProvider::Get()->IsDarkModeEnabled())),
-        size);
-  } else {
-    contents_image_ = gfx::ImageSkia();
-  }
-  InvalidateLayer();
-}
-
-void HoldingSpaceTrayIconPreview::OnHoldingSpaceItemDeleted() {
-  item_ = nullptr;
-}
-
 void HoldingSpaceTrayIconPreview::CreateLayer(
     const gfx::Transform& initial_transform) {
   DCHECK(!layer());
@@ -507,6 +528,7 @@ void HoldingSpaceTrayIconPreview::CreateLayer(
   new_layer->set_delegate(this);
   new_layer->SetFillsBoundsOpaquely(false);
   new_layer->SetTransform(initial_transform);
+  new_layer->Add(image_layer_owner_->CreateLayer());
   new_layer->Add(progress_indicator_->CreateLayer());
   layer_owner_.Reset(std::move(new_layer));
 
@@ -517,6 +539,7 @@ void HoldingSpaceTrayIconPreview::CreateLayer(
 void HoldingSpaceTrayIconPreview::DestroyLayer() {
   if (layer())
     layer_owner_.ReleaseLayer();
+  image_layer_owner_->DestroyLayer();
   progress_indicator_->DestroyLayer();
 }
 
@@ -570,11 +593,12 @@ void HoldingSpaceTrayIconPreview::UpdateLayerBounds() {
   layer()->SetBounds(bounds);
 
   // The `layer()` was enlarged so that the shadow would be painted outside of
-  // desired preview bounds. Progress indicator bounds are clamped to preview
-  // size.
-  gfx::Rect progress_indicator_bounds(layer()->size());
-  progress_indicator_bounds.ClampToCenteredSize(GetPreviewSize());
-  progress_indicator_->layer()->SetBounds(progress_indicator_bounds);
+  // desired preview bounds. The image layer and progress indicator bounds are
+  // clamped to preview size.
+  bounds = gfx::Rect(layer()->size());
+  bounds.ClampToCenteredSize(GetPreviewSize());
+  image_layer_owner_->layer()->SetBounds(bounds);
+  progress_indicator_->layer()->SetBounds(bounds);
 }
 
 }  // namespace ash
