@@ -397,28 +397,23 @@ std::vector<apps::mojom::IntentFilterPtr> CreateExtensionIntentFilters(
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// TODO(crbug.com/853604): Make this not link to file manager extension if
-// possible. Added support to not link with file manager extension but still
-// need to refactor all users of the util functions to switch to it (alanding).
+// TODO(crbug.com/1253219): Use FilePaths in intents to avoid dependency on
+// File Manager.
 apps::mojom::IntentPtr CreateShareIntentFromFiles(
-    absl::optional<Profile*> profile,
+    Profile* profile,
     const std::vector<base::FilePath>& file_paths,
     const std::vector<std::string>& mime_types) {
-  auto file_urls = profile.has_value()
-                       ? apps::GetFileSystemUrls(profile.value(), file_paths)
-                       : apps::GetFileUrls(file_paths);
+  auto file_urls = apps::GetFileSystemUrls(profile, file_paths);
   return CreateShareIntentFromFiles(file_urls, mime_types);
 }
 
 apps::mojom::IntentPtr CreateShareIntentFromFiles(
-    absl::optional<Profile*> profile,
+    Profile* profile,
     const std::vector<base::FilePath>& file_paths,
     const std::vector<std::string>& mime_types,
     const std::string& share_text,
     const std::string& share_title) {
-  auto file_urls = profile.has_value()
-                       ? apps::GetFileSystemUrls(profile.value(), file_paths)
-                       : apps::GetFileUrls(file_paths);
+  auto file_urls = apps::GetFileSystemUrls(profile, file_paths);
   return CreateShareIntentFromFiles(file_urls, mime_types, share_text,
                                     share_title);
 }

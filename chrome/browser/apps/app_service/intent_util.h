@@ -61,25 +61,20 @@ std::vector<apps::mojom::IntentFilterPtr> CreateExtensionIntentFilters(
     const extensions::Extension* extension);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-// Create an intent struct with filesystem:// or file:// type URLs from the
-// file paths and mime types of a list of files.
-// This util has to live under chrome/ because it uses fileapis
-// and cannot be included in components/.
-// |profile| is required for generating filesystem:// type URLs, otherwise
-// default to generating file:// type URLs.
+// Create an intent struct with filesystem:// type URLs from the file paths and
+// mime types of a list of files. This util has to live under chrome/ because it
+// uses fileapis and cannot be included in components/.
 apps::mojom::IntentPtr CreateShareIntentFromFiles(
-    absl::optional<Profile*> profile,
+    Profile* profile,
     const std::vector<base::FilePath>& file_paths,
     const std::vector<std::string>& mime_types);
 
-// Create an intent struct with filesystem:// or file:// type URLs from the
-// file paths, mime types of a list of files, and the share text and title.
-// This util has to live under chrome/ because it uses fileapis
-// and cannot be included in components/.
-// |profile| is required for generating filesystem:// type URLs, otherwise
-// default to generating file:// type URLs.
+// Create an intent struct with filesystem:// type URLs from the file paths and
+// mime types of a list of files, and the share text and title. This util has to
+// live under chrome/ because it uses fileapis and cannot be included in
+// components/.
 apps::mojom::IntentPtr CreateShareIntentFromFiles(
-    absl::optional<Profile*> profile,
+    Profile* profile,
     const std::vector<base::FilePath>& file_paths,
     const std::vector<std::string>& mime_types,
     const std::string& share_text,

@@ -75,9 +75,6 @@ class NearbyShareSessionImpl : public mojom::NearbyShareSessionHost,
   // point we show the progress bar UI to the user.
   void OnFileStreamingStarted();
 
-  // Called when Share Intent Info object is converted to Intent mojom object.
-  void OnConvertedShareIntentInfoToIntent(apps::mojom::IntentPtr intent);
-
   // Calls |SharesheetService.ShowNearbyShareBubble()| to start the Chrome
   // Nearby Share user flow and display bubble in ARC window.
   void ShowNearbyShareBubbleInArcWindow(

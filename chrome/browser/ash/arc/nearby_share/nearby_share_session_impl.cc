@@ -237,7 +237,7 @@ apps::mojom::IntentPtr NearbyShareSessionImpl::ConvertShareIntentInfoToIntent()
       return nullptr;
     }
     return apps_util::CreateShareIntentFromFiles(
-        absl::nullopt, share_file_paths, share_file_mime_types, std::string(),
+        profile_, share_file_paths, share_file_mime_types, std::string(),
         share_info_->title);
   }
 
@@ -361,21 +361,8 @@ void NearbyShareSessionImpl::ShowNearbyShareBubbleInArcWindow(
     return;
   }
 
-  backend_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&NearbyShareSessionImpl::ConvertShareIntentInfoToIntent,
-                     base::Unretained(this)),
-      base::BindOnce(
-          &NearbyShareSessionImpl::OnConvertedShareIntentInfoToIntent,
-          weak_ptr_factory_.GetWeakPtr()));
-}
+  auto intent = ConvertShareIntentInfoToIntent();
 
-void NearbyShareSessionImpl::OnConvertedShareIntentInfoToIntent(
-    apps::mojom::IntentPtr intent) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(arc_window_);
-
-  DVLOG(1) << __func__;
   if (!intent) {
     LOG(ERROR) << "No share info found.";
     ShowErrorDialog();

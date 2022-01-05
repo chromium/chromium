@@ -9,11 +9,17 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/files/file_path.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/test/browser_task_environment.h"
+#include "storage/browser/file_system/external_mount_points.h"
+#include "storage/browser/file_system/file_system_url.h"
+#include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -23,9 +29,9 @@ const char kMessage[] = "Message";
 const char kTitle[] = "Title";
 const char kMimeTypeText[] = "text/plain";
 const char kMimeTypeJPG[] = "image/jpg";
-const char kTextFile1[] = "file:///path/to/file1.txt";
-const char kTextFile2[] = "file:///path/to/file2.txt";
-const char kImageFile[] = "file:///path/to/file3.jpg";
+const char kTextFile1[] = "file1.txt";
+const char kTextFile2[] = "file2.txt";
+const char kImageFile[] = "file3.jpg";
 const char kUrl[] = "https://google.com";
 const char kDriveShareUrl[] = "https://docs.google.com";
 
@@ -63,6 +69,27 @@ class NearbyShareActionTest : public testing::Test {
     ASSERT_DEATH(ActionCleanupCallbackStub(), "");
     nearby_share_action_->SetActionCleanupCallbackForArc(
         base::BindOnce(&ActionCleanupCallbackStub));
+
+    storage::ExternalMountPoints* mount_points =
+        storage::ExternalMountPoints::GetSystemInstance();
+    mount_points->RegisterFileSystem(
+        file_manager::util::GetDownloadsMountPointName(profile_),
+        storage::kFileSystemTypeLocal, storage::FileSystemMountOption(),
+        file_manager::util::GetDownloadsFolderForProfile(profile_));
+  }
+
+  GURL GetFileSystemUrl(const std::string& file_name) {
+    url::Origin origin =
+        url::Origin::Create(file_manager::util::GetFileManagerURL());
+    std::string mount_point_name =
+        file_manager::util::GetDownloadsMountPointName(profile_);
+    storage::ExternalMountPoints* mount_points =
+        storage::ExternalMountPoints::GetSystemInstance();
+    return mount_points
+        ->CreateExternalFileSystemURL(blink::StorageKey(origin),
+                                      mount_point_name,
+                                      base::FilePath(file_name))
+        .ToGURL();
   }
 
   std::vector<IntentTestCase> GetIntentTestCases() {
@@ -84,43 +111,47 @@ class NearbyShareActionTest : public testing::Test {
                           TextAttachment::Type::kUrl, /*file_count=*/0});
     // Drive share, one file
     test_cases.push_back(
-        {apps_util::CreateShareIntentFromDriveFile(
-             GURL(kTextFile1), kMimeTypeText, GURL(kDriveShareUrl), false),
+        {apps_util::CreateShareIntentFromDriveFile(GetFileSystemUrl(kTextFile1),
+                                                   kMimeTypeText,
+                                                   GURL(kDriveShareUrl), false),
          /*contains_hosted_document=*/true, /*should_show_action=*/true,
          TextAttachment::Type::kUrl, /*file_count=*/0});
     // File share, one file
     test_cases.push_back({apps_util::CreateShareIntentFromFiles(
-                              {GURL(kImageFile)}, {kMimeTypeJPG}),
+                              {GetFileSystemUrl(kImageFile)}, {kMimeTypeJPG}),
                           /*contains_hosted_document=*/false,
                           /*should_show_action=*/true, absl::nullopt,
                           /*file_count=*/1});
     // File share, two text files
-    test_cases.push_back({apps_util::CreateShareIntentFromFiles(
-                              {GURL(kTextFile1), GURL(kTextFile2)},
-                              {kMimeTypeText, kMimeTypeText}),
-                          /*contains_hosted_document=*/false,
-                          /*should_show_action=*/true, absl::nullopt,
-                          /*file_count=*/2});
+    test_cases.push_back(
+        {apps_util::CreateShareIntentFromFiles(
+             {GetFileSystemUrl(kTextFile1), GetFileSystemUrl(kTextFile2)},
+             {kMimeTypeText, kMimeTypeText}),
+         /*contains_hosted_document=*/false,
+         /*should_show_action=*/true, absl::nullopt,
+         /*file_count=*/2});
     // File share, two mixed files
-    test_cases.push_back({apps_util::CreateShareIntentFromFiles(
-                              {GURL(kTextFile1), GURL(kImageFile)},
-                              {kMimeTypeText, kMimeTypeJPG}),
-                          /*contains_hosted_document=*/false,
-                          /*should_show_action=*/true, absl::nullopt,
-                          /*file_count=*/2});
+    test_cases.push_back(
+        {apps_util::CreateShareIntentFromFiles(
+             {GetFileSystemUrl(kTextFile1), GetFileSystemUrl(kImageFile)},
+             {kMimeTypeText, kMimeTypeJPG}),
+         /*contains_hosted_document=*/false,
+         /*should_show_action=*/true, absl::nullopt,
+         /*file_count=*/2});
     // File share, one file with title
     test_cases.push_back(
-        {apps_util::CreateShareIntentFromFiles({GURL(kImageFile)},
+        {apps_util::CreateShareIntentFromFiles({GetFileSystemUrl(kImageFile)},
                                                {kMimeTypeJPG}, kEmpty, kTitle),
          /*contains_hosted_document=*/false, /*should_show_action=*/true,
          absl::nullopt, /*file_count=*/1});
     // Invalid: File share with text body
-    test_cases.push_back({apps_util::CreateShareIntentFromFiles(
-                              {GURL(kTextFile1), GURL(kTextFile2)},
-                              {kMimeTypeText, kMimeTypeText}, kMessage, kTitle),
-                          /*contains_hosted_document=*/false,
-                          /*should_show_action=*/false,
-                          TextAttachment::Type::kText, /*file_count=*/2});
+    test_cases.push_back(
+        {apps_util::CreateShareIntentFromFiles(
+             {GetFileSystemUrl(kTextFile1), GetFileSystemUrl(kTextFile2)},
+             {kMimeTypeText, kMimeTypeText}, kMessage, kTitle),
+         /*contains_hosted_document=*/false,
+         /*should_show_action=*/false, TextAttachment::Type::kText,
+         /*file_count=*/2});
     return test_cases;
   }
 
