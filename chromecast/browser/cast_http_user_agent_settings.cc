@@ -46,29 +46,6 @@ std::string LocaleToAcceptLanguage(const std::string locale) {
 namespace chromecast {
 namespace shell {
 
-CastHttpUserAgentSettings::CastHttpUserAgentSettings() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-}
-
-CastHttpUserAgentSettings::~CastHttpUserAgentSettings() {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-}
-
-std::string CastHttpUserAgentSettings::GetAcceptLanguage() const {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  std::string new_locale(GetLocale());
-  if (new_locale != last_locale_ || accept_language_.empty()) {
-    last_locale_ = new_locale;
-    accept_language_ = LocaleToAcceptLanguage(new_locale);
-    LOG(INFO) << "Locale changed: accept_language=" << accept_language_;
-  }
-  return accept_language_;
-}
-
-std::string CastHttpUserAgentSettings::GetUserAgent() const {
-  return chromecast::GetUserAgent();
-}
-
 std::string CastHttpUserAgentSettings::AcceptLanguage() {
   return LocaleToAcceptLanguage(GetLocale());
 }
