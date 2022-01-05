@@ -122,6 +122,7 @@ if (is_android) {
 # require many files from it. This makes linking more efficient.
 static_library("test_support") {
   defines = []
+  deps = []
   testonly = true
 
   sources = [
@@ -143,6 +144,8 @@ static_library("test_support") {
     "../browser/signin/identity_test_environment_profile_adaptor.h",
     "base/chrome_render_view_host_test_harness.cc",
     "base/chrome_render_view_host_test_harness.h",
+    "base/chrome_render_view_test.cc",
+    "base/chrome_render_view_test.h",
     "base/chrome_test_launcher.cc",
     "base/chrome_test_launcher.h",
     "base/chrome_test_suite.cc",
@@ -187,6 +190,19 @@ static_library("test_support") {
     "base/web_feature_histogram_tester.h",
   ]
 
+  if (enable_extensions) {
+    sources += [
+      "../browser/apps/platform_apps/app_browsertest_util.cc",
+      "../browser/apps/platform_apps/app_browsertest_util.h",
+    ]
+
+    deps += [
+      "//components/media_router/browser:test_support",
+      "//components/media_router/common:test_support",
+      "//extensions/renderer",
+    ]
+  }
+
   if (is_chrome_branded &&
       (is_mac || is_win || (is_posix && !is_android && !is_chromeos_ash) ||
        is_fuchsia)) {
@@ -204,12 +220,14 @@ static_library("test_support") {
 
   configs += [ "//build/config:precompiled_headers" ]
 
-  deps = [
+  deps += [
     "//build:chromeos_buildflags",
     "//chrome/app:command_ids",
     "//chrome/common/search:mojo_bindings",
+    "//components/autofill/content/renderer:test_support",
     "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests_support",
     "//components/security_interstitials/content:security_interstitial_page",
+    "//components/spellcheck/renderer",
   ]
 
   # New deps should go in the non-iOS section below.
@@ -780,14 +798,9 @@ if (is_android) {
       "../browser/subresource_filter/subresource_filter_browser_test_harness.cc",
       "../browser/subresource_filter/subresource_filter_browser_test_harness.h",
       "../browser/ui/autofill/payments/offer_notification_infobar_controller_impl_browsertest.cc",
+      "../renderer/safe_browsing/phishing_classifier_browsertest.cc",
       "android/browsertests_apk/android_browsertests_jni_onload.cc",
       "base/android/android_browser_test_browsertest_android.cc",
-    ]
-
-    sources += [
-      "../renderer/safe_browsing/phishing_classifier_browsertest.cc",
-      "../test/base/chrome_render_view_test.cc",
-      "../test/base/chrome_render_view_test.h",
     ]
 
     deps += [
@@ -2101,8 +2114,6 @@ if (!is_android && !is_fuchsia) {
       "../renderer/translate/per_frame_translate_agent_browsertest.cc",
       "../renderer/translate/translate_agent_browsertest.cc",
       "../renderer/translate/translate_script_browsertest.cc",
-      "base/chrome_render_view_test.cc",
-      "base/chrome_render_view_test.h",
       "base/devtools_listener.cc",
       "base/devtools_listener.h",
       "base/devtools_listener_browsertest.cc",
@@ -2525,8 +2536,6 @@ if (!is_android && !is_fuchsia) {
         "../browser/apps/platform_apps/api/music_manager_private/music_manager_private_browsertest.cc",
         "../browser/apps/platform_apps/api/sync_file_system/sync_file_system_apitest.cc",
         "../browser/apps/platform_apps/api/sync_file_system/sync_file_system_browsertest.cc",
-        "../browser/apps/platform_apps/app_browsertest_util.cc",
-        "../browser/apps/platform_apps/app_browsertest_util.h",
         "../browser/apps/platform_apps/audio_focus_web_contents_observer_browsertest.cc",
         "../browser/extensions/active_tab_apitest.cc",
         "../browser/extensions/alert_apitest.cc",
@@ -4886,8 +4895,6 @@ test("unit_tests") {
     "../renderer/subresource_redirect/robots_rules_parser_unittest.cc",
     "../renderer/subresource_redirect/subresource_redirect_util_unittest.cc",
     "../renderer/v8_unwinder_unittest.cc",
-    "../test/base/chrome_render_view_test.cc",
-    "../test/base/chrome_render_view_test.h",
     "../test/base/menu_model_test.cc",
     "../test/base/menu_model_test.h",
     "../test/base/v8_unit_test.cc",

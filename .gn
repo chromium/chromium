@@ -70,8 +70,6 @@ default_args = {
 # their includes checked for proper dependencies when you run either
 # "gn check" or "gn gen --check".
 no_check_targets = [
-  "//extensions:chrome_extensions_browsertests",  # 26 errors
-
   "//headless:headless_browsertests",  # 47 errors
   "//headless:headless_browsertests__exec",
   "//headless:headless_example",  # 3 errors

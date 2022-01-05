@@ -316,6 +316,7 @@ source_set("chrome_extensions_browsertests") {
     "//chrome/browser",
     "//chrome/common/extensions/api",
     "//chrome/renderer",
+    "//chrome/test:test_support",
     "//components/autofill/content/browser:risk_proto",
     "//components/autofill/content/renderer:test_support",
     "//components/captive_portal/core:test_support",
