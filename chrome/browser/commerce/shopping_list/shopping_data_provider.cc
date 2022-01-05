@@ -241,6 +241,9 @@ void PopulateShoppingSpecifics(
   if (data.has_image_url())
     shopping_specifics->set_image_url(data.image_url());
 
+  if (data.has_offer_id())
+    shopping_specifics->set_offer_id(data.offer_id());
+
   if (data.has_product_cluster_id())
     shopping_specifics->set_product_cluster_id(data.product_cluster_id());
 
