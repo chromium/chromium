@@ -3472,6 +3472,7 @@ if (!is_android && !is_fuchsia) {
         "../browser/signin/chromeos_mirror_account_consistency_browsertest.cc",
         "../browser/speech/network_speech_recognizer_browsertest.cc",
         "../browser/speech/on_device_speech_recognizer_browsertest.cc",
+        "../browser/support_tool/ash/ui_hierarchy_data_collector_browsertest.cc",
         "../browser/ui/app_list/app_list_client_impl_browsertest.cc",
         "../browser/ui/app_list/app_list_remove_space_browsertest.cc",
         "../browser/ui/app_list/app_list_sort_browsertest.cc",
@@ -3777,6 +3778,7 @@ if (!is_android && !is_fuchsia) {
         "//components/device_event_log",
         "//components/drive",
         "//components/exo:test_support",
+        "//components/feedback:feedback",
         "//components/live_caption:constants",
         "//components/metrics/structured",
         "//components/metrics/structured:structured_events",
@@ -4990,6 +4992,7 @@ test("unit_tests") {
       "../browser/performance_manager/policies/dynamic_tcmalloc_policy_chromeos_unittest.cc",
       "../browser/performance_manager/policies/working_set_trimmer_policy_arcvm_unittest.cc",
       "../browser/performance_manager/policies/working_set_trimmer_policy_chromeos_unittest.cc",
+      "../browser/support_tool/ash/ui_hierarchy_data_collector_unittest.cc",
       "../browser/ui/views/crostini/crostini_app_restart_dialog_unittest.cc",
     ]
 

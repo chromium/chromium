@@ -35,6 +35,10 @@ class UiHierarchyDataCollector : public DataCollector {
   UiHierarchyDataCollector();
   ~UiHierarchyDataCollector() override;
 
+  // Removes UI hierarchy window titles from `data` and returns the redacted
+  // version of `data`. Public for testing.
+  static std::string RemoveWindowTitles(const std::string& ui_hierarchy_data);
+
   // Overrides from DataCollector.
   std::string GetName() const override;
 
@@ -51,6 +55,14 @@ class UiHierarchyDataCollector : public DataCollector {
       DataCollectorDoneCallback on_exported_callback) override;
 
  private:
+  // Creates a "ui_hierarchy" file under `target_directory` and writes
+  // `ui_hierarchy_data` into this file. Tries to scrub PII sensitive data in
+  // `ui_hierarchy_data` when writing to it except the data under PII categories
+  // in `pii_types_to_keep`.
+  static bool WriteOutputFile(std::string ui_hierarchy_data,
+                              base::FilePath target_directory,
+                              std::set<feedback::PIIType> pii_types_to_keep);
+
   // Runs `on_exported_callback` when the data export is done. Returns an error
   // to the callback if `success` is false.
   void OnDataExportDone(DataCollectorDoneCallback on_exported_callback,
