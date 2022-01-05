@@ -548,7 +548,7 @@ void ScenicSurface::PresentEmptyImage() {
   image_pipe_->AddImage(image_id, image_id, 0, image_format);
 
   image_pipe_->PresentImage(image_id, last_frame_present_time_.ToZxTime(), {},
-                            {}, {});
+                            {}, [](fuchsia::images::PresentationInfo) {});
   image_pipe_->RemoveBufferCollection(image_id);
 }
 
