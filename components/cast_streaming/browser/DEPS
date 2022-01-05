@@ -1,5 +1,4 @@
 include_rules = [
-  "+chromecast/bindings/shared",
   "+components/cast/message_port",
   "+components/openscreen_platform",
   "+media/base",
@@ -8,5 +7,4 @@ include_rules = [
   "+mojo/public",
   "+net/base",
   "+third_party/openscreen/src",
-  "+third_party/cast_core/public/src",
 ]

@@ -10,8 +10,6 @@ source_set("public") {
   sources = [
     "cast_streaming_url.cc",
     "cast_streaming_url.h",
-    "constants.cc",
-    "constants.h",
   ]
 }
 
