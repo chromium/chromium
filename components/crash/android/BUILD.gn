@@ -6,6 +6,7 @@ import("//build/config/android/rules.gni")
 
 _jni_sources = [
   "java/src/org/chromium/components/crash/CrashKeys.java",
+  "java/src/org/chromium/components/crash/PureJavaExceptionHandler.java",
   "java/src/org/chromium/components/crash/browser/ChildProcessCrashObserver.java",
   "java/src/org/chromium/components/crash/browser/PackagePaths.java",
   "java/src/org/chromium/components/crash/browser/ProcessExitReasonFromSystem.java",
@@ -53,6 +54,8 @@ source_set("crash_android") {
   sources = [
     "crash_keys_android.cc",
     "crash_keys_android.h",
+    "pure_java_exception_handler.cc",
+    "pure_java_exception_handler.h",
   ]
   deps = [
     ":jni_headers",

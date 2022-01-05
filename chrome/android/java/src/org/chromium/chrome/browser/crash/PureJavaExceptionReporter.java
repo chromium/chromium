@@ -24,6 +24,7 @@ import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.components.crash.CrashKeys;
+import org.chromium.components.crash.PureJavaExceptionHandler;
 import org.chromium.components.version_info.VersionInfo;
 
 import java.io.File;

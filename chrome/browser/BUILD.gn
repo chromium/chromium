@@ -2734,8 +2734,6 @@ static_library("browser") {
       "android/contextualsearch/unhandled_tap_web_contents_observer.cc",
       "android/contextualsearch/unhandled_tap_web_contents_observer.h",
       "android/cookies/cookies_fetcher_util.cc",
-      "android/crash/pure_java_exception_handler.cc",
-      "android/crash/pure_java_exception_handler.h",
       "android/customtabs/client_data_header_web_contents_observer.cc",
       "android/customtabs/client_data_header_web_contents_observer.h",
       "android/customtabs/custom_tabs_connection.cc",
