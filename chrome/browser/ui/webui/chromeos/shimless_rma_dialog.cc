@@ -38,6 +38,8 @@ const std::string& ShimlessRmaDialog::Id() {
 
 void ShimlessRmaDialog::AdjustWidgetInitParams(
     views::Widget::InitParams* params) {
+  // This overrides the class name so TAST tests can find the root node.
+  params->name = "ShimlessRmaDialogView";
   params->type = views::Widget::InitParams::Type::TYPE_WINDOW_FRAMELESS;
   params->visible_on_all_workspaces = true;
   params->corner_radius = 0;
