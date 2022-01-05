@@ -1830,4 +1830,56 @@ TEST_F(ShellSurfaceTest, NotifyOnWindowCreation) {
   EXPECT_EQ(1u, observer.observed_windows().size());
 }
 
+TEST_F(ShellSurfaceTest, Reparent) {
+  auto shell_surface1 = test::ShellSurfaceBuilder({20, 20}).BuildShellSurface();
+  views::Widget* widget1 = shell_surface1->GetWidget();
+
+  // Create a second window.
+  auto shell_surface2 = test::ShellSurfaceBuilder({20, 20}).BuildShellSurface();
+  views::Widget* widget2 = shell_surface2->GetWidget();
+
+  auto child_shell_surface =
+      test::ShellSurfaceBuilder({20, 20}).BuildShellSurface();
+  child_shell_surface->SetParent(shell_surface1.get());
+  views::Widget* child_widget = child_shell_surface->GetWidget();
+  // By default, a child widget is not activatable. Explicitly make it
+  // activatable so that calling child_surface->RequestActivation() is
+  // possible.
+  child_widget->widget_delegate()->SetCanActivate(true);
+
+  GrantPermissionToActivateIndefinitely(widget1->GetNativeWindow());
+  GrantPermissionToActivateIndefinitely(widget2->GetNativeWindow());
+  GrantPermissionToActivateIndefinitely(child_widget->GetNativeWindow());
+
+  shell_surface2->Activate();
+  EXPECT_FALSE(child_widget->ShouldPaintAsActive());
+  EXPECT_FALSE(widget1->ShouldPaintAsActive());
+  EXPECT_TRUE(widget2->ShouldPaintAsActive());
+
+  child_shell_surface->Activate();
+  // A widget should have the same paint-as-active state with its parent.
+  EXPECT_TRUE(child_widget->ShouldPaintAsActive());
+  EXPECT_TRUE(widget1->ShouldPaintAsActive());
+  EXPECT_FALSE(widget2->ShouldPaintAsActive());
+
+  // Reparent child to widget2.
+  child_shell_surface->SetParent(shell_surface2.get());
+  EXPECT_TRUE(child_widget->ShouldPaintAsActive());
+  EXPECT_TRUE(widget2->ShouldPaintAsActive());
+  EXPECT_FALSE(widget1->ShouldPaintAsActive());
+
+  shell_surface1->Activate();
+  EXPECT_FALSE(child_widget->ShouldPaintAsActive());
+  EXPECT_FALSE(widget2->ShouldPaintAsActive());
+  EXPECT_TRUE(widget1->ShouldPaintAsActive());
+
+  // Delete widget1 (i.e. the non-parent widget) shouldn't crash.
+  widget1->Close();
+  shell_surface1.reset();
+
+  child_shell_surface->Activate();
+  EXPECT_TRUE(child_widget->ShouldPaintAsActive());
+  EXPECT_TRUE(widget2->ShouldPaintAsActive());
+}
+
 }  // namespace exo
