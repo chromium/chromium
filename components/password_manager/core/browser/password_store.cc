@@ -18,6 +18,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/ranges/algorithm.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/post_task.h"
 #include "base/task/task_runner_util.h"
 #include "base/task/thread_pool.h"
@@ -87,8 +88,9 @@ bool PasswordStore::Init(
   DCHECK(main_task_runner_);
   prefs_ = prefs;
   affiliated_match_helper_ = std::move(affiliated_match_helper);
+  sync_enabled_or_disabled_cb_ = std::move(sync_enabled_or_disabled_cb);
 
-  // TODO(crbug.bom/1226042): Backend might be null in tests, remove this after
+  // TODO(crbug.com/1226042): Backend might be null in tests, remove this after
   // tests switch to MockPasswordStoreInterface.
   if (backend_) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(
@@ -96,7 +98,11 @@ bool PasswordStore::Init(
     backend_->InitBackend(
         base::BindRepeating(&PasswordStore::NotifyLoginsChangedOnMainSequence,
                             this),
-        std::move(sync_enabled_or_disabled_cb),
+        base::BindPostTask(
+            main_task_runner_,
+            base::BindRepeating(
+                &PasswordStore::NotifySyncEnabledOrDisabledOnMainSequence,
+                this)),
         base::BindOnce(&PasswordStore::OnInitCompleted, this));
   }
   return true;
@@ -315,6 +321,11 @@ bool PasswordStore::IsAbleToSavePasswords() const {
 
 void PasswordStore::ShutdownOnUIThread() {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+
+  // Prevent in-flight tasks posted from the backend to invoke the callback
+  // after shutdown.
+  sync_enabled_or_disabled_cb_ = base::DoNothing();
+
   // The AffiliationService must be destroyed from the main sequence.
   affiliated_match_helper_.reset();
   if (backend_) {
@@ -367,6 +378,11 @@ void PasswordStore::NotifyLoginsChangedOnMainSequence(
   for (auto& observer : observers_) {
     observer.OnLoginsChanged(this, changes.value());
   }
+}
+
+void PasswordStore::NotifySyncEnabledOrDisabledOnMainSequence() {
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  sync_enabled_or_disabled_cb_.Run();
 }
 
 void PasswordStore::UnblocklistInternal(

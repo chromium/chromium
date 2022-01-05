@@ -71,8 +71,10 @@ class PasswordStore : public PasswordStoreInterface {
   PasswordStore(const PasswordStore&) = delete;
   PasswordStore& operator=(const PasswordStore&) = delete;
 
-  // Always call this too on the UI thread.
-  // TODO(crbug.bom/1218413): Move initialization into the core interface, too.
+  // Always call this too on the UI thread. |sync_enabled_or_disabled_cb| is
+  // invoked in UI thread (or sequence used to invoke Init()) when sync is
+  // enabled or disabled. It is no longer invoked after ShutdownOnUIThread().
+  // TODO(crbug.com/1218413): Move initialization into the core interface, too.
   bool Init(
       PrefService* prefs,
       std::unique_ptr<AffiliatedMatchHelper> affiliated_match_helper,
@@ -155,6 +157,9 @@ class PasswordStore : public PasswordStoreInterface {
   void NotifyLoginsChangedOnMainSequence(
       absl::optional<PasswordStoreChangeList> changes);
 
+  // Called when the backend reports that sync has been enabled or disabled.
+  void NotifySyncEnabledOrDisabledOnMainSequence();
+
   // The following methods notify observers that the password store may have
   // been modified via NotifyLoginsChangedOnMainSequence(). Note that there is
   // no guarantee that the called method will actually modify the password store
@@ -179,6 +184,9 @@ class PasswordStore : public PasswordStoreInterface {
   // TaskRunner for tasks that run on the main sequence (usually the UI thread).
   // TODO(crbug.com/1217071): Move into backend_.
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
+
+  // Closure passed during Init().
+  base::RepeatingClosure sync_enabled_or_disabled_cb_ = base::DoNothing();
 
   // The observers.
   base::ObserverList<Observer, /*check_empty=*/true> observers_;
