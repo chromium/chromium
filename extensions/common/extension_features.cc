@@ -34,7 +34,7 @@ const base::Feature kAllowWithholdingExtensionPermissionsOnInstall{
 // Enables support for the "match_origin_as_fallback" property in content
 // scripts.
 const base::Feature kContentScriptsMatchOriginAsFallback{
-    "ContentScriptsMatchOriginAsFallback", base::FEATURE_DISABLED_BY_DEFAULT};
+    "ContentScriptsMatchOriginAsFallback", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Whether Manifest Version 3-based extensions are supported.
 const base::Feature kMv3ExtensionsSupported{"Mv3ExtensionsSupported",
