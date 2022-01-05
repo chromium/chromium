@@ -2887,6 +2887,7 @@ et Ctrl+Alt+Diminuer la luminosité pour faire un zoom arrière.</translation>
 <translation id="3916445069167113093">Ce type de fichier risque d'endommager votre ordinateur. Voulez-vous vraiment enregistrer <ph name="FILE_NAME" /> ?</translation>
 <translation id="3918972485393593704">Envoyer les informations à Google</translation>
 <translation id="3919145445993746351">Pour synchroniser vos extensions sur tous vos ordinateurs, activez la synchronisation</translation>
+<translation id="3919229493046408863">Désactiver la notification en cas d'appareils à proximité</translation>
 <translation id="3919798653937160644">Les pages que vous consultez dans cette fenêtre ne sont pas consignées dans l'historique du navigateur et ne laissent aucune autre trace sur votre ordinateur (des cookies, par exemple), une fois que vous avez fermé toutes les fenêtres Invité ouvertes. Tous les fichiers téléchargés sont toutefois conservés.</translation>
 <translation id="3920504717067627103">Stratégies de certificat</translation>
 <translation id="392089482157167418">Activer ChromeVox (commentaires audio)</translation>
@@ -5921,6 +5922,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="7167486101654761064">&amp;Toujours ouvrir les fichiers de ce type</translation>
 <translation id="716810439572026343">Téléchargement de "<ph name="FILE_NAME" />"</translation>
 <translation id="7168109975831002660">Taille de police minimale</translation>
+<translation id="7169122689956315694">Activer la notification en cas d'appareils à proximité</translation>
 <translation id="7170236477717446850">Photo de profil</translation>
 <translation id="7171000599584840888">Ajouter un profil…</translation>
 <translation id="7171259390164035663">Ne pas enregistrer</translation>

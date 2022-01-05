@@ -122,6 +122,7 @@ Başlamaq üçün aşağıdakıları yoxlaya bilərsiniz.</translation>
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">Canlı Altyazı aktivdir.</translation>
 <translation id="1720011244392820496">Wi-Fi Sinxronlaşdırmasını aktiv edin</translation>
+<translation id="1736898441010944794">"<ph name="NAME" />" Bluetooth cihazlarına görünür.</translation>
 <translation id="1743570585616704562">Tanınmır</translation>
 <translation id="1746730358044914197">Daxiletmə üsulları administrator tərəfindən konfiqurasiya edilir.</translation>
 <translation id="1747827819627189109">Ekrandakı klaviaturanı aktiv edin</translation>
@@ -831,6 +832,7 @@ Yeni quraşdırma</translation>
 <translation id="6578407462441924264">Adsız</translation>
 <translation id="6585808820553845416">Sessiya <ph name="SESSION_TIME_REMAINING" /> tarixində bitir.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">Bağlantı daha təhlükəsiz şəbəkəyə keçdi</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, Siqnal Gücü <ph name="SIGNAL_STRENGTH" />, Administratorunuz tərəfindən idarə olunur</translation>
 <translation id="6612802754306526077">Ekranın yazılması rejimi seçilib</translation>
 <translation id="6614169507485700968">Məxfilik ekranı aktivdir</translation>

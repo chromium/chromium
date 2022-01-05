@@ -122,6 +122,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">Subtitri reāllaikā ir ieslēgti.</translation>
 <translation id="1720011244392820496">Wi-Fi sinhronizācijas ieslēgšana</translation>
+<translation id="1736898441010944794">Bluetooth ierīces var uztvert šo ierīci: <ph name="NAME" />.</translation>
 <translation id="1743570585616704562">Nav atpazīts</translation>
 <translation id="1746730358044914197">Administrators konfigurē ievades metodes.</translation>
 <translation id="1747827819627189109">Ekrāna tastatūra iespējota</translation>
@@ -831,6 +832,7 @@ Jauna instalācija</translation>
 <translation id="6578407462441924264">Bez nosaukuma</translation>
 <translation id="6585808820553845416">Atlikušais laiks līdz šīs sesijas beigām: <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">Savienojums tika mainīts uz drošāku tīklu</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signāla stiprums: <ph name="SIGNAL_STRENGTH" />, pārvalda jūsu administrators</translation>
 <translation id="6612802754306526077">Atlasīts ekrāna ierakstīšanas režīms</translation>
 <translation id="6614169507485700968">Konfidencialitātes ekrāns ir ieslēgts</translation>

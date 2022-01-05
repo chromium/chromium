@@ -2901,6 +2901,7 @@ và Ctrl+Alt+Giảm độ sáng để thu nhỏ.</translation>
 <translation id="3916445069167113093">Loại tệp này có thể gây hại cho máy tính của bạn. Bạn có muốn giữ tệp <ph name="FILE_NAME" /> không?</translation>
 <translation id="3918972485393593704">Báo cáo chi tiết cho Google</translation>
 <translation id="3919145445993746351">Để có các tiện ích trên tất cả các máy tính, hãy bật tính năng đồng bộ hóa</translation>
+<translation id="3919229493046408863">Tắt thông báo khi có thiết bị ở gần</translation>
 <translation id="3919798653937160644">Những trang bạn xem trong cửa sổ này sẽ không xuất hiện trong nhật ký duyệt web của trình duyệt, cũng như không để lại dấu vết khác (chẳng hạn như cookie) trên máy tính sau khi bạn đóng tất cả cửa sổ Khách đang mở. Tuy nhiên, hệ thống vẫn sẽ lưu giữ mọi tệp mà bạn tải xuống.</translation>
 <translation id="3920504717067627103">Chính sách Chứng chỉ</translation>
 <translation id="392089482157167418">Bật ChromeVox (phản hồi bằng giọng nói)</translation>
@@ -5935,6 +5936,7 @@ Bạn có thể gán nhiều công tắc cho thao tác này.</translation>
 <translation id="7167486101654761064">&amp;Luôn mở loại tệp này</translation>
 <translation id="716810439572026343">Đang tải xuống <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">Kích thước phông chữ tối thiểu</translation>
+<translation id="7169122689956315694">Bật thông báo khi có thiết bị ở gần</translation>
 <translation id="7170236477717446850">Ảnh hồ sơ</translation>
 <translation id="7171000599584840888">Thêm hồ sơ...</translation>
 <translation id="7171259390164035663">Không đăng ký</translation>

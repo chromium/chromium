@@ -122,6 +122,7 @@
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">«زیرنویس ناشنوایان زنده» روشن است.</translation>
 <translation id="1720011244392820496">‏روشن کردن «همگام‌سازی Wi-Fi»</translation>
+<translation id="1736898441010944794">«<ph name="NAME" />» برای دستگاه‌های بلوتوث قابل‌مشاهده است.</translation>
 <translation id="1743570585616704562">شناسایی نشد</translation>
 <translation id="1746730358044914197">روش‌های ورودی توسط سرپرستتان پیکربندی می‌شوند.</translation>
 <translation id="1747827819627189109">صفحه‌کلید مجازی فعال شد</translation>
@@ -831,6 +832,7 @@
 <translation id="6578407462441924264">بدون نام</translation>
 <translation id="6585808820553845416">جلسه در <ph name="SESSION_TIME_REMAINING" /> به پایان می‌رسد.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />، <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">اتصال شما به شبکه‌ای ایمن‌تر منتقل شد</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />، قدرت سیگنال <ph name="SIGNAL_STRENGTH" />، تحت‌مدیریت سرپرست</translation>
 <translation id="6612802754306526077">حالت ضبط صفحه‌نمایش انتخاب شد</translation>
 <translation id="6614169507485700968">صفحه حریم‌خصوصی روشن است</translation>

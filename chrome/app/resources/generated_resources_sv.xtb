@@ -2901,6 +2901,7 @@ och Ctrl + Alt + Minska ljusstyrka för att zooma ut.</translation>
 <translation id="3916445069167113093">Den här typen av fil kan skada datorn. Vill du behålla <ph name="FILE_NAME" /> ändå?</translation>
 <translation id="3918972485393593704">Rapportera informationen till Google</translation>
 <translation id="3919145445993746351">Aktivera synkronisering om du vill ha tilläggen på alla dina datorer</translation>
+<translation id="3919229493046408863">Inaktivera avisering när det finns enheter i närheten</translation>
 <translation id="3919798653937160644">Sidorna som du visar i det här fönstret visas inte i webbläsarhistoriken och lämnar inga andra spår, till exempel cookies, på datorn när du har stängt alla öppna gästfönster. Filer som du laddar ned kommer dock att sparas.</translation>
 <translation id="3920504717067627103">Certifikatpolicyer</translation>
 <translation id="392089482157167418">Aktivera ChromeVox (talad feedback)</translation>
@@ -5935,6 +5936,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="7167486101654761064">Öppna &amp;alltid filer av denna typ</translation>
 <translation id="716810439572026343">Laddar ned <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">Minsta teckenstorlek</translation>
+<translation id="7169122689956315694">Aktivera avisering när det finns enheter i närheten</translation>
 <translation id="7170236477717446850">Profilbild</translation>
 <translation id="7171000599584840888">Lägg till profil …</translation>
 <translation id="7171259390164035663">Registrera dig inte</translation>

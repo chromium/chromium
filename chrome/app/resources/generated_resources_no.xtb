@@ -1054,6 +1054,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="204914487372604757">Opprett snarvei</translation>
 <translation id="2050339315714019657">Stående</translation>
 <translation id="2053312383184521053">Data om hviletilstand</translation>
+<translation id="2054240652864153171">Vil du slette nettstedsdata for <ph name="SITE_NAME" /> som er partisjonert på <ph name="PARTITION_SITE_NAME" />?</translation>
 <translation id="2055585478631012616">Du blir logget av disse nettstedene – inkludert i åpne faner</translation>
 <translation id="205560151218727633">Google Assistent-logo</translation>
 <translation id="2058456167109518507">Enhet oppdaget</translation>
@@ -2399,6 +2400,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3433621910545056227">Beklager. Systemet kunne ikke oppdage enhetens attributtlås for installasjonstid.</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3434272557872943250">Hvis du har slått på innstillingen for annen nett- og appaktivitet for barnet ditt, kan disse dataene bli lagret i barnets Google-konto. Finn ut mer om disse innstillingene og hvordan du justerer dem, på families.google.com.</translation>
+<translation id="3434512374684753970">Lyd og video</translation>
 <translation id="3435688026795609344">«<ph name="EXTENSION_NAME" />» ber om <ph name="CODE_TYPE" /></translation>
 <translation id="3435738964857648380">Sikkerhet</translation>
 <translation id="343578350365773421">Tom for papir</translation>
@@ -2845,6 +2847,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3873423927483480833">Vis PIN-koder</translation>
 <translation id="3873915545594852654">Det oppsto et problem med ARC++.</translation>
 <translation id="3874164307099183178">Slå på Google-assistenten</translation>
+<translation id="3875783148670536197">Vis meg hvordan</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> er konfigurert til å åpnes i en ny nettleserfane. Støttede linker åpnes også i nettleseren. <ph name="BEGIN_LINK_LEARN_MORE" />Finn ut mer<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="3877075909000773256">Nærdelingsinnstillinger for enheten til <ph name="USER_NAME" />, som deles under kontoen <ph name="USER_EMAIL" />.</translation>
 <translation id="3879748587602334249">Nedlastingsbehandling</translation>
@@ -4477,6 +4480,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="562935524653278697">Administratoren din har slått av synkronisering av bokmerker, logg, passord og andre innstillinger du har.</translation>
 <translation id="5631017369956619646">CPU-bruk</translation>
 <translation id="5632059346822207074">Nettstedet ber om tillatelse. Trykk på Ctrl + Frem for å svare</translation>
+<translation id="5632485077360054581">Vis meg hvordan</translation>
 <translation id="5632566673632479864">Kontoen din (<ph name="EMAIL" />) er ikke tillatt som primærkonto lenger. Siden denne kontoen administreres av <ph name="DOMAIN" />, slettes bokmerkene, loggen, passordene og andre innstillinger du har, fra denne enheten.</translation>
 <translation id="5632592977009207922">Laster ned, <ph name="PERCENT_REMAINING" /> % gjenstår</translation>
 <translation id="563371367637259496">Mobil</translation>

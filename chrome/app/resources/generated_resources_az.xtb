@@ -2884,6 +2884,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3916445069167113093">Bu fayl növü kompüterinizi zədələyə bilər. <ph name="FILE_NAME" /> faylını yenə də saxlamaq istəyirsiniz?</translation>
 <translation id="3918972485393593704">Detalları Google'a bildirin</translation>
 <translation id="3919145445993746351">Artırmaları bütün kompüterlərdə əldə etmək üçün sinxronizasiyanı aktiv edin</translation>
+<translation id="3919229493046408863">Cihazlar yaxınlıqda olduqda bildirişi deaktiv edin</translation>
 <translation id="3919798653937160644">Bu pəncərədə baxdığınız səhifələr brauzer tarixçəsində görünməyəcək və bütün Qonaq səhifələrini qapadandan sonra, kuki kimi digər izlər buraxmayacaq. Lakin, endirmiş olduğunuz bütün fayllar qalacaq.</translation>
 <translation id="3920504717067627103">Sertifikat siyasəti</translation>
 <translation id="392089482157167418">ChromeVox'u (şifahi geri əlaqə) aktiv edin</translation>
@@ -5913,6 +5914,7 @@ Bu əməliyyata birdən çox keçirici təyin edə bilərsiniz.</translation>
 <translation id="7167486101654761064">Bu növ faylları hər zaman açın</translation>
 <translation id="716810439572026343"><ph name="FILE_NAME" /> yüklənir</translation>
 <translation id="7168109975831002660">Minimum şrift ölçüsü</translation>
+<translation id="7169122689956315694">Cihazlar yaxınlıqda olduqda bildirişi aktiv edin</translation>
 <translation id="7170236477717446850">Profil şəkli</translation>
 <translation id="7171000599584840888">Profil əlavə edin...</translation>
 <translation id="7171259390164035663">Qeydiyyatdan keçirməyin</translation>

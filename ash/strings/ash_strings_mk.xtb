@@ -122,6 +122,7 @@
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">„Автоматските титлови“ се вклучени.</translation>
 <translation id="1720011244392820496">Вклучете синхронизирање на Wi-Fi</translation>
+<translation id="1736898441010944794">„<ph name="NAME" />“ е видлив за уреди со Bluetooth.</translation>
 <translation id="1743570585616704562">Не е препознаен</translation>
 <translation id="1746730358044914197">Методите на внесување ги конфигурира вашиот администратор.</translation>
 <translation id="1747827819627189109">Тастатурата на екранот е овозможена</translation>
@@ -832,6 +833,7 @@
 <translation id="6578407462441924264">Неименувана</translation>
 <translation id="6585808820553845416">Сесијата ќе заврши во <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">Врската се префрли на побезбедна мрежа</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" />, управувана од администраторот</translation>
 <translation id="6612802754306526077">Избран е режимот на снимање на екранот</translation>
 <translation id="6614169507485700968">Вклучен е екранот за приватност</translation>

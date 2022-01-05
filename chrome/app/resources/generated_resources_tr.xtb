@@ -2884,6 +2884,7 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3916445069167113093">Bu türden bir dosya bilgisayarınıza zarar verebilir. <ph name="FILE_NAME" /> adlı dosyayı yine de saklamak istiyor musunuz?</translation>
 <translation id="3918972485393593704">Ayrıntıları Google'a bildir</translation>
 <translation id="3919145445993746351">Uzantıları tüm bilgisayarlarınızda almak için senkronizasyonu açın</translation>
+<translation id="3919229493046408863">Cihazlar yakındayken bildirimi kapatın</translation>
 <translation id="3919798653937160644">Bu pencerede görüntülediğiniz sayfalar, tarama geçmişinde görünmez ve açık olan tüm Misafir pencerelerini kapattığınızda bilgisayarda çerez gibi başka izler bırakmaz. Ancak indirdiğiniz dosyalar saklanır.</translation>
 <translation id="3920504717067627103">Sertifika Politikaları</translation>
 <translation id="392089482157167418">ChromeVox'u (sesli geri bildirim) etkinleştir</translation>
@@ -5918,6 +5919,7 @@ Hassas bilgileri vermediğinizden emin olun.</translation>
 <translation id="7167486101654761064">&amp;Bu tür dosyaları her zaman aç</translation>
 <translation id="716810439572026343"><ph name="FILE_NAME" /> indiriliyor</translation>
 <translation id="7168109975831002660">Minimum yazı tipi boyutu</translation>
+<translation id="7169122689956315694">Cihazlar yakındayken bildirimi açın</translation>
 <translation id="7170236477717446850">Profil resmi</translation>
 <translation id="7171000599584840888">Profil Ekle...</translation>
 <translation id="7171259390164035663">Kaydolma</translation>

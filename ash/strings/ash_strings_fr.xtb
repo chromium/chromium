@@ -122,6 +122,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">Sous-titres instantanés activés.</translation>
 <translation id="1720011244392820496">Activer Sync Wi-Fi</translation>
+<translation id="1736898441010944794">"<ph name="NAME" />" est visible par les appareils Bluetooth.</translation>
 <translation id="1743570585616704562">Non reconnu</translation>
 <translation id="1746730358044914197">Les modes de saisie sont configurés par votre administrateur.</translation>
 <translation id="1747827819627189109">Clavier à l'écran activé</translation>
@@ -831,6 +832,7 @@ Nouvelle installation</translation>
 <translation id="6578407462441924264">Sans nom</translation>
 <translation id="6585808820553845416">Fin de la session dans <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">La connexion a été établie sur un réseau plus sûr</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" />, géré par votre administrateur</translation>
 <translation id="6612802754306526077">Mode d'enregistreur d'écran sélectionné</translation>
 <translation id="6614169507485700968">L'écran de confidentialité est activé</translation>

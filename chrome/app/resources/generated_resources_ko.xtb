@@ -2901,6 +2901,7 @@
 <translation id="3916445069167113093">이 형식의 파일은 컴퓨터를 손상시킬 수 있습니다. 그래도 <ph name="FILE_NAME" />을(를) 다운로드하시겠습니까?</translation>
 <translation id="3918972485393593704">Google에 세부정보 신고</translation>
 <translation id="3919145445993746351">어느 컴퓨터에서나 내 확장 프로그램을 사용하려면 동기화를 사용 설정하세요.</translation>
+<translation id="3919229493046408863">기기가 주변에 있을 때 알림 끄기</translation>
 <translation id="3919798653937160644">이 창에서 보는 페이지는 방문 기록에 나타나지 않으며, 열려 있는 모든 게스트 창을 닫은 후 쿠키와 같은 다른 흔적을 컴퓨터에 남기지 않습니다. 하지만 다운로드한 파일은 모두 저장됩니다.</translation>
 <translation id="3920504717067627103">인증서 정책</translation>
 <translation id="392089482157167418">ChromeVox(음성 피드백) 사용</translation>
@@ -5932,6 +5933,7 @@
 <translation id="7167486101654761064">해당 유형의 파일 항상 열기(&amp;A)</translation>
 <translation id="716810439572026343"><ph name="FILE_NAME" /> 다운로드 중</translation>
 <translation id="7168109975831002660">최소 글꼴 크기</translation>
+<translation id="7169122689956315694">기기가 주변에 있을 때 알림 켜기</translation>
 <translation id="7170236477717446850">프로필 사진</translation>
 <translation id="7171000599584840888">프로필 추가...</translation>
 <translation id="7171259390164035663">등록하지 않음</translation>

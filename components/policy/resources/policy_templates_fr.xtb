@@ -2584,6 +2584,7 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="3964298692570794635">Autoriser le contenu non sécurisé sur ces sites</translation>
 <translation id="3965339130942650562">Délai avant exécution de la déconnexion de l'utilisateur en cas d'inactivité</translation>
 <translation id="396536755218079668">Utilisateurs supervisés</translation>
+<translation id="3968218878014278212">Autoriser le lancement de l'application Eche.</translation>
 <translation id="3971673686578912106">Si cette règle est activée, <ph name="PLUGIN_VM_NAME" /> est activé pour l'appareil tant que d'autres paramètres le permettent également. Les règles "<ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" />" et "<ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" />" doivent être définies sur "True", et l'une des deux règles "<ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" />" et "<ph name="PLUGIN_VM_USER_ID_POLICY_NAME" />" doit être configurée pour que <ph name="PLUGIN_VM_NAME" /> puisse être exécuté.
 
       Si cette règle est désactivée ou qu'elle n'est pas configurée, <ph name="PLUGIN_VM_NAME" /> n'est pas activé pour l'appareil.</translation>
@@ -3417,6 +3418,7 @@ Lorsque cette règle est définie, <ph name="PRODUCT_OS_NAME" /> n'autorise les 
       Si cette règle est définie sur "False" ou qu'elle n'est pas configurée, <ph name="PRODUCT_NAME" /> utilise les paramètres actuels de vérification en ligne de la révocation.</translation>
 <translation id="5078623750797048009">Activer les annotations des PDF</translation>
 <translation id="5081204761483900654">Sessions Invité gérées restreintes</translation>
+<translation id="5082296146261894974">Permet aux utilisateurs de cliquer sur une notification Phone Hub pour lancer l'application Eche.</translation>
 <translation id="5082572440690475059">Autoriser l'accès en lecture via l'API File System pour ces sites</translation>
 <translation id="5085647276663819155">Désactiver l'aperçu avant impression</translation>
 <translation id="5090791951240382356">Autoriser la fusion de règles de dictionnaire qui proviennent de sources différentes</translation>
@@ -4174,6 +4176,7 @@ Lorsque cette règle n'est pas configurée, le paramètre par défaut utilisé c
 
       Le champ <ph name="RUN_ON_OS_LOGIN_FIELD" /> indique si une application Web peut être exécutée pendant la connexion au système d'exploitation. Si ce champ est défini sur <ph name="BLOCKED" />, l'application Web ne s'exécutera pas pendant la connexion au système d'exploitation et l'utilisateur ne pourra pas activer ce champ plus tard. Si ce champ est défini sur <ph name="RUN_WINDOWED" />, l'application Web s'exécutera pendant la connexion au système d'exploitation et l'utilisateur ne pourra pas désactiver ce champ plus tard. Si ce champ est défini sur <ph name="ALLOWED" />, l'utilisateur pourra configurer l'application Web pour qu'elle s'exécute pendant la connexion au système d'exploitation. La configuration par défaut n'autorise que les valeurs <ph name="ALLOWED" /> et <ph name="BLOCKED" />.
       </translation>
+<translation id="5945312246863177268">Empêche les utilisateurs de cliquer sur une notification Phone Hub pour lancer l'application Eche.</translation>
 <translation id="5946082169633555022">Version bêta</translation>
 <translation id="5946329690214660966">Planifier de manière personnalisée la recherche de mises à jour</translation>
 <translation id="5950069117106131681">Si vous activez cette règle, les en-têtes et les pieds de pages sont activés dans l'aperçu avant impression. Si vous la désactivez, ces éléments le sont également dans l'aperçu avant impression.
@@ -4752,6 +4755,11 @@ Si vous sélectionnez les options suivantes :
 <translation id="66265932317331474">Transmettre les informations concernant le ou les processeurs</translation>
 <translation id="6628120204569232711">Envoyer des rapports sur l'état du stockage</translation>
 <translation id="663685822663765995">Limiter l'impression en mode couleur</translation>
+<translation id="6640355849038068978">Si ce paramètre est activé, les utilisateurs pourront lancer l'application Eche, par exemple en cliquant sur une notification Phone Hub.
+
+      S'il est désactivé, ils ne pourront pas lancer cette application.
+
+      Si cette règle n'est pas définie, le comportement par défaut sera autorisé pour les utilisateurs gérés par une entreprise et pour les utilisateurs non gérés.</translation>
 <translation id="6641981670621198190">Désactiver la prise en charge des API 3D graphics</translation>
 <translation id="6642682198621199507">Cette règle permet d'établir la liste des sites automatiquement autorisés à accéder à tous les ports série disponibles.
 

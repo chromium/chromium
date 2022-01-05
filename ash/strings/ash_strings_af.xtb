@@ -122,6 +122,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">Intydse onderskrifte is aan.</translation>
 <translation id="1720011244392820496">Skakel Wi-Fi-sinkronisering aan</translation>
+<translation id="1736898441010944794">"<ph name="NAME" />" is sigbaar vir Bluetooth-toestelle.</translation>
 <translation id="1743570585616704562">Nie herken nie</translation>
 <translation id="1746730358044914197">Invoermetodes word deur jou administrateur opgestel.</translation>
 <translation id="1747827819627189109">Opskerm-sleutelbord geaktiveer</translation>
@@ -832,6 +833,7 @@ Nuwe installasie</translation>
 <translation id="6578407462441924264">Naamloos</translation>
 <translation id="6585808820553845416">Sessie eindig oor <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">Jou verbinding het na 'n veiliger netwerk oorgeskakel</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, seinsterkte <ph name="SIGNAL_STRENGTH" />, deur jou administrateur bestuur</translation>
 <translation id="6612802754306526077">Skermopnamemodus gekies</translation>
 <translation id="6614169507485700968">Privaatheidskerm is aan</translation>
