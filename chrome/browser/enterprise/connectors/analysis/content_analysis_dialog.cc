@@ -561,7 +561,7 @@ std::u16string ContentAnalysisDialog::GetCancelButtonText() const {
   switch (dialog_state_) {
     case State::SUCCESS:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case State::PENDING:
       text_id = IDS_DEEP_SCANNING_DIALOG_CANCEL_UPLOAD_BUTTON;
       break;
