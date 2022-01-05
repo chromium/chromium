@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/compiler_specific.h"  // for FALLTHROUGH;
+#include "base/compiler_specific.h"  // for [[fallthrough]];
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
