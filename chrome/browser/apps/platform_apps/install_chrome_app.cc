@@ -61,7 +61,7 @@ class WebstoreInstallWithPromptAppsOnly
 };
 
 void WebstoreInstallWithPromptAppsOnly::OnManifestParsed() {
-  if (!manifest()->HasKey(extensions::manifest_keys::kApp)) {
+  if (!manifest()->FindKey(extensions::manifest_keys::kApp)) {
     CompleteInstall(extensions::webstore_install::NOT_PERMITTED,
                     kInstallChromeAppErrorNotAnApp);
     return;
