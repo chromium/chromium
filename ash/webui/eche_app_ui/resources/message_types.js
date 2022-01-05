@@ -24,6 +24,7 @@
  *    deviceName: string,
  *    tabletMode: boolean,
  *    wifiConnectionState: string,
+ *    debugMode: boolean,
  * }}
  */
 /* #export */ let SystemInfo;

@@ -77,8 +77,15 @@ const notificationGenerator =
 
  // window.close() doesn't work from the iframe.
  guestMessagePipe.registerHandler(Message.CLOSE_WINDOW, async () => {
-   console.log('echeapi browser_proxy.js window.close');
-   window.close();
+   const info = /** @type {!SystemInfo} */ (await systemInfo.getSystemInfo());
+   const systemInfoJson = JSON.parse(JSON.stringify(info));
+   const debugMode = JSON.parse(systemInfoJson.systemInfo)['debug_mode'];
+   if (debugMode) {
+     console.log('echeapi debug on, browser_proxy.js window.close block');
+   } else {
+     console.log('echeapi browser_proxy.js window.close');
+     window.close();
+   }
  });
 
  // Register GET_SYSTEM_INFO pipes for wrapping getSystemInfo async api call.
