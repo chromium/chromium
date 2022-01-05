@@ -56,15 +56,15 @@ class FastPairNotDiscoverableScanner final : public FastPairScanner::Observer {
 
  private:
   void OnAdvertisementParsed(
-      device::BluetoothDevice* device,
+      const std::string& address,
       const absl::optional<NotDiscoverableAdvertisement>& advertisement);
-  void OnAccountKeyFilterCheckResult(device::BluetoothDevice* device,
+  void OnAccountKeyFilterCheckResult(const std::string& address,
                                      absl::optional<PairingMetadata> metadata);
   void OnHandshakeComplete(scoped_refptr<Device> device,
                            absl::optional<PairFailure> failure);
   void NotifyDeviceFound(scoped_refptr<Device> device);
   void OnUtilityProcessStopped(
-      device::BluetoothDevice* device,
+      const std::string& address,
       QuickPairProcessManager::ShutdownReason shutdown_reason);
 
   scoped_refptr<FastPairScanner> scanner_;

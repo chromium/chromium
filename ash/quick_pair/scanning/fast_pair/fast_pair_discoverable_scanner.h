@@ -38,7 +38,7 @@ using DeviceCallback = base::RepeatingCallback<void(scoped_refptr<Device>)>;
 class FastPairDiscoverableScanner final : public FastPairScanner::Observer {
  public:
   FastPairDiscoverableScanner(scoped_refptr<FastPairScanner> scanner,
-                              scoped_refptr<device::BluetoothAdapter> adatper,
+                              scoped_refptr<device::BluetoothAdapter> adapter,
                               DeviceCallback found_callback,
                               DeviceCallback lost_callback);
   FastPairDiscoverableScanner(const FastPairDiscoverableScanner&) = delete;
@@ -51,16 +51,16 @@ class FastPairDiscoverableScanner final : public FastPairScanner::Observer {
   void OnDeviceLost(device::BluetoothDevice* device) override;
 
  private:
-  void OnModelIdRetrieved(device::BluetoothDevice* device,
+  void OnModelIdRetrieved(const std::string& address,
                           const absl::optional<std::string>& model_id);
-  void OnDeviceMetadataRetrieved(device::BluetoothDevice* device,
+  void OnDeviceMetadataRetrieved(const std::string& address,
                                  const std::string model_id,
                                  DeviceMetadata* device_metadata);
   void OnHandshakeComplete(scoped_refptr<Device> device,
                            absl::optional<PairFailure> failure);
   void NotifyDeviceFound(scoped_refptr<Device> device);
   void OnUtilityProcessStopped(
-      device::BluetoothDevice* device,
+      const std::string& address,
       QuickPairProcessManager::ShutdownReason shutdown_reason);
 
   scoped_refptr<FastPairScanner> scanner_;

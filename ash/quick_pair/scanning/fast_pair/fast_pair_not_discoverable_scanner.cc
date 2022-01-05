@@ -108,9 +108,9 @@ void FastPairNotDiscoverableScanner::OnDeviceFound(
   quick_pair_process::ParseNotDiscoverableAdvertisement(
       *fast_pair_service_data,
       base::BindOnce(&FastPairNotDiscoverableScanner::OnAdvertisementParsed,
-                     weak_pointer_factory_.GetWeakPtr(), device),
+                     weak_pointer_factory_.GetWeakPtr(), device->GetAddress()),
       base::BindOnce(&FastPairNotDiscoverableScanner::OnUtilityProcessStopped,
-                     weak_pointer_factory_.GetWeakPtr(), device));
+                     weak_pointer_factory_.GetWeakPtr(), device->GetAddress()));
 }
 
 void FastPairNotDiscoverableScanner::OnDeviceLost(
@@ -133,9 +133,9 @@ void FastPairNotDiscoverableScanner::OnDeviceLost(
 }
 
 void FastPairNotDiscoverableScanner::OnAdvertisementParsed(
-    device::BluetoothDevice* device,
+    const std::string& address,
     const absl::optional<NotDiscoverableAdvertisement>& advertisement) {
-  auto it = advertisement_parse_attempts_.find(device->GetAddress());
+  auto it = advertisement_parse_attempts_.find(address);
 
   // If this check fails, the device was lost during parsing
   if (it == advertisement_parse_attempts_.end())
@@ -145,6 +145,13 @@ void FastPairNotDiscoverableScanner::OnAdvertisementParsed(
 
   if (!advertisement)
     return;
+
+  // Don't continue if device was lost.
+  device::BluetoothDevice* device = adapter_->GetDevice(address);
+  if (!device) {
+    QP_LOG(WARNING) << __func__ << "Lost device after advertisement parsed.";
+    return;
+  }
 
   // Set the battery notification if the advertisement contains battery
   // notification information
@@ -156,21 +163,20 @@ void FastPairNotDiscoverableScanner::OnAdvertisementParsed(
 
   auto filter_iterator =
       account_key_filters_
-          .insert_or_assign(device->GetAddress(),
-                            AccountKeyFilter(advertisement.value()))
+          .insert_or_assign(address, AccountKeyFilter(advertisement.value()))
           .first;
 
   FastPairRepository::Get()->CheckAccountKeys(
       filter_iterator->second,
       base::BindOnce(
           &FastPairNotDiscoverableScanner::OnAccountKeyFilterCheckResult,
-          weak_pointer_factory_.GetWeakPtr(), device));
+          weak_pointer_factory_.GetWeakPtr(), address));
 }
 
 void FastPairNotDiscoverableScanner::OnAccountKeyFilterCheckResult(
-    device::BluetoothDevice* bluetooth_device,
+    const std::string& address,
     absl::optional<PairingMetadata> metadata) {
-  account_key_filters_.erase(bluetooth_device->GetAddress());
+  account_key_filters_.erase(address);
 
   QP_LOG(VERBOSE) << __func__ << " Metadata: " << (metadata ? "yes" : "no");
 
@@ -185,8 +191,8 @@ void FastPairNotDiscoverableScanner::OnAccountKeyFilterCheckResult(
   std::string model_id = model_id_stream.str();
 
   QP_LOG(VERBOSE) << __func__ << ": Id: " << model_id;
-  auto device = base::MakeRefCounted<Device>(
-      model_id, bluetooth_device->GetAddress(), Protocol::kFastPairSubsequent);
+  auto device = base::MakeRefCounted<Device>(model_id, address,
+                                             Protocol::kFastPairSubsequent);
   device->SetAdditionalData(Device::AdditionalDataType::kAccountKey,
                             metadata->account_key);
 
@@ -214,8 +220,8 @@ void FastPairNotDiscoverableScanner::OnHandshakeComplete(
       adapter_->GetDevice(device->ble_address);
 
   bool is_already_paired =
-      (classic_device != nullptr ? classic_device->IsPaired() : false) ||
-      ble_device->IsPaired();
+      (classic_device ? classic_device->IsPaired() : false) ||
+      (ble_device && ble_device->IsPaired());
 
   if (is_already_paired) {
     QP_LOG(INFO) << __func__ << ": Already paired with " << device;
@@ -227,15 +233,23 @@ void FastPairNotDiscoverableScanner::OnHandshakeComplete(
 }
 
 void FastPairNotDiscoverableScanner::OnUtilityProcessStopped(
-    device::BluetoothDevice* device,
+    const std::string& address,
     QuickPairProcessManager::ShutdownReason shutdown_reason) {
-  int current_retry_count = advertisement_parse_attempts_[device->GetAddress()];
+  int current_retry_count = advertisement_parse_attempts_[address];
   if (current_retry_count > kMaxParseAdvertisementRetryCount) {
     QP_LOG(WARNING) << "Failed to parse advertisement from device more than "
                     << kMaxParseAdvertisementRetryCount << " times.";
     // Clean up the state here which enables trying again in the future if
     // this device is re-discovered.
-    advertisement_parse_attempts_.erase(device->GetAddress());
+    advertisement_parse_attempts_.erase(address);
+    return;
+  }
+
+  // Don't try to parse the advertisement again if the device was lost.
+  device::BluetoothDevice* device = adapter_->GetDevice(address);
+  if (!device) {
+    QP_LOG(WARNING) << __func__ << ": Lost device in between parse attempts.";
+    advertisement_parse_attempts_.erase(address);
     return;
   }
 
@@ -245,18 +259,18 @@ void FastPairNotDiscoverableScanner::OnUtilityProcessStopped(
   if (!fast_pair_service_data) {
     QP_LOG(WARNING) << "Failed to get service data for a device we previously "
                        "did get it for.";
-    advertisement_parse_attempts_.erase(device->GetAddress());
+    advertisement_parse_attempts_.erase(address);
     return;
   }
 
-  advertisement_parse_attempts_[device->GetAddress()] = current_retry_count + 1;
+  advertisement_parse_attempts_[address] = current_retry_count + 1;
 
   quick_pair_process::ParseNotDiscoverableAdvertisement(
       *fast_pair_service_data,
       base::BindOnce(&FastPairNotDiscoverableScanner::OnAdvertisementParsed,
-                     weak_pointer_factory_.GetWeakPtr(), device),
+                     weak_pointer_factory_.GetWeakPtr(), address),
       base::BindOnce(&FastPairNotDiscoverableScanner::OnUtilityProcessStopped,
-                     weak_pointer_factory_.GetWeakPtr(), device));
+                     weak_pointer_factory_.GetWeakPtr(), address));
 }
 
 }  // namespace quick_pair
