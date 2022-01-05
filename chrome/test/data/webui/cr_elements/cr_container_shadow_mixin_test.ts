@@ -6,18 +6,12 @@
 import {CrContainerShadowMixin} from 'chrome://resources/cr_elements/cr_container_shadow_mixin.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertFalse, assertTrue} from '../chai_assert.js';
+import {assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 // clang-format on
 
 suite('CrContainerShadowBehavior', function() {
-  /**
-   * @constructor
-   * @extends {PolymerElement}
-   * @implements {CrContainerShadowMixinInterface}
-   */
   const TestElementBase = CrContainerShadowMixin(PolymerElement);
 
-  /** @polymer */
   class TestElement extends TestElementBase {
     static get is() {
       return 'test-element';
@@ -41,6 +35,8 @@ suite('CrContainerShadowBehavior', function() {
         showBottomShadow: Boolean,
       };
     }
+
+    showBottomShadow: boolean = false;
   }
 
   customElements.define(TestElement.is, TestElement);
@@ -50,32 +46,30 @@ suite('CrContainerShadowBehavior', function() {
   });
 
   test('no bottom shadow', function() {
-    const element =
-        /** @type {!TestElement} */ (document.createElement('test-element'));
+    const element = document.createElement('test-element') as TestElement;
     document.body.appendChild(element);
 
     // Should not have a bottom shadow div.
     assertFalse(
-        !!element.shadowRoot.querySelector('#cr-container-shadow-bottom'));
-    assertTrue(!!element.shadowRoot.querySelector('#cr-container-shadow-top'));
+        !!element.shadowRoot!.querySelector('#cr-container-shadow-bottom'));
+    assertTrue(!!element.shadowRoot!.querySelector('#cr-container-shadow-top'));
 
     element.showBottomShadow = true;
 
     // Still no bottom shadow since this is only checked in attached();
     assertFalse(
-        !!element.shadowRoot.querySelector('#cr-container-shadow-bottom'));
-    assertTrue(!!element.shadowRoot.querySelector('#cr-container-shadow-top'));
+        !!element.shadowRoot!.querySelector('#cr-container-shadow-bottom'));
+    assertTrue(!!element.shadowRoot!.querySelector('#cr-container-shadow-top'));
   });
 
   test('show bottom shadow', function() {
-    const element = /** @type {TestElementElement} */ (
-        document.createElement('test-element'));
+    const element = document.createElement('test-element') as TestElement;
     element.showBottomShadow = true;
     document.body.appendChild(element);
 
     // Has both shadows.
     assertTrue(
-        !!element.shadowRoot.querySelector('#cr-container-shadow-bottom'));
-    assertTrue(!!element.shadowRoot.querySelector('#cr-container-shadow-top'));
+        !!element.shadowRoot!.querySelector('#cr-container-shadow-bottom'));
+    assertTrue(!!element.shadowRoot!.querySelector('#cr-container-shadow-top'));
   });
 });

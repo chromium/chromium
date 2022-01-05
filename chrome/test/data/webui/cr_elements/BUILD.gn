@@ -9,54 +9,17 @@ import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("../namespace_rewrites.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + [
-                    "js_module_root=../../chrome/test/data/webui/",
-                    "js_module_root=./gen/chrome/test/data/webui/",
-                  ]
-
-  deps = [
-    ":cr_container_shadow_behavior_test",
-    ":cr_scrollable_behavior_tests",
-    ":iron_list_focus_test",
-  ]
-
-  if (is_chromeos_ash) {
-    deps += [ ":cr_searchable_drop_down_tests" ]
-  }
-}
-
-js_library("cr_container_shadow_behavior_test") {
-  deps = [
-    "..:chai_assert",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:cr_container_shadow_behavior.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("cr_scrollable_behavior_tests") {
-  deps = [
-    "..:chai_assert",
-    "..:test_util",
-    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements:cr_scrollable_behavior.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("iron_list_focus_test") {
-  deps = [
-    "..:chai_assert",
-    "//third_party/polymer/v3_0/components-chromium/iron-list:iron-list",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
 if (is_chromeos_ash) {
+  js_type_check("closure_compile") {
+    is_polymer3 = true
+    closure_flags = default_closure_args + [
+                      "js_module_root=../../chrome/test/data/webui/",
+                      "js_module_root=./gen/chrome/test/data/webui/",
+                    ]
+
+    deps = [ ":cr_searchable_drop_down_tests" ]
+  }
+
   js_library("cr_searchable_drop_down_tests") {
     deps = [
       "..:chai_assert",
@@ -85,11 +48,14 @@ ts_library("build_ts") {
                     rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
                                 target_gen_dir) ]
   in_files = [
+    "cr_a11y_announcer_test.ts",
     "cr_action_menu_test.ts",
     "cr_auto_img_test.ts",
     "cr_button_tests.ts",
     "cr_card_radio_button_test.ts",
     "cr_checkbox_test.ts",
+    "cr_container_shadow_behavior_test.ts",
+    "cr_container_shadow_mixin_test.ts",
     "cr_dialog_test.ts",
     "cr_drawer_tests.ts",
     "cr_expand_button_tests.ts",
@@ -100,6 +66,7 @@ ts_library("build_ts") {
     "cr_lazy_render_tests.ts",
     "cr_link_row_tests.ts",
     "cr_lottie_tests.ts",
+    "cr_menu_selector_focus_test.ts",
     "cr_policy_indicator_behavior_tests.ts",
     "cr_policy_indicator_tests.ts",
     "cr_policy_pref_indicator_tests.ts",
@@ -108,6 +75,7 @@ ts_library("build_ts") {
     "cr_radio_button_test.ts",
     "cr_radio_group_test.ts",
     "cr_search_field_tests.ts",
+    "cr_scrollable_behavior_tests.ts",
     "cr_slider_test.ts",
     "cr_splitter_test.ts",
     "cr_tabs_test.ts",
@@ -118,6 +86,7 @@ ts_library("build_ts") {
     "cr_toolbar_search_field_tests.ts",
     "cr_toolbar_test.ts",
     "cr_view_manager_test.ts",
+    "iron_list_focus_test.ts",
   ]
   definitions = [ "//tools/typescript/definitions/settings_private.d.ts" ]
   deps = [ "//ui/webui/resources:library" ]

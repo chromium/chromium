@@ -5,49 +5,49 @@
 // clang-format off
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
+import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assertEquals, assertNotEquals, assertTrue} from '../chai_assert.js';
+import {assertEquals, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 // clang-format on
 
 // test-iron-focusable is a native custom element in order to maintain
 // compatibility between Polymer v2 and Polymer v3.
-customElements.define('test-iron-focusable', class extends HTMLElement {
+class TestElement extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({mode: 'open'});
   }
 
   set text(value) {
-    const button = this.shadowRoot.querySelector('button');
+    const button = this.shadowRoot!.querySelector('button')!;
     assertTrue(!!button);
     button.textContent = value;
   }
 
   get text() {
-    const button = this.shadowRoot.querySelector('button');
+    const button = this.shadowRoot!.querySelector('button');
     assertTrue(!!button);
-    return button.textContent;
+    return button!.textContent;
   }
 
   // Pass focus to child in shadowRoot b/c iron-list expects that.
   focus() {
-    const button = this.shadowRoot.querySelector('button');
+    const button = this.shadowRoot!.querySelector('button');
     assertTrue(!!button);
-    button.focus();
+    button!.focus();
   }
 
   connectedCallback() {
     const button = document.createElement('button');
-    this.shadowRoot.appendChild(button);
+    this.shadowRoot!.appendChild(button);
   }
-});
+}
+customElements.define('test-iron-focusable', TestElement);
 
 suite('iron-list-focus-test', function() {
-  let testDiv = null;
-
-  /** @type {!IronListElement} */
-  let testIronList;
+  let testDiv: HTMLElement;
+  let testIronList: IronListElement;
 
   setup(function() {
     document.body.innerHTML = `
@@ -60,9 +60,8 @@ suite('iron-list-focus-test', function() {
         </iron-list>
       </div>`;
 
-    testDiv = document.querySelector('#testDiv');
-    testIronList =
-        /** @type {!IronListElement} */ (document.querySelector('iron-list'));
+    testDiv = document.querySelector('#testDiv')!;
+    testIronList = document.querySelector('iron-list')!;
 
     assertTrue(!!testDiv);
     assertTrue(!!testIronList);
@@ -72,7 +71,8 @@ suite('iron-list-focus-test', function() {
   });
 
   test('test focus is NOT preserved', function() {
-    const initialFocus = testIronList.querySelector('[tabindex="0"]');
+    const initialFocus =
+        testIronList.querySelector<TestElement>('[tabindex="0"]')!;
     initialFocus.focus();
     flush();
     assertEquals('item0', initialFocus.text);
@@ -81,7 +81,7 @@ suite('iron-list-focus-test', function() {
     testIronList.splice('items', 0, 1);  // Remove the item from the list.
     flush();
 
-    const newFocus = testIronList.querySelector('[tabindex="0"]');
+    const newFocus = testIronList.querySelector<TestElement>('[tabindex="0"]')!;
     assertEquals('item1', newFocus.text);
     assertNotEquals(newFocus, document.activeElement);
 
@@ -91,7 +91,8 @@ suite('iron-list-focus-test', function() {
     testIronList.splice('items', 5, 1);  // Remove a different item.
     flush();
 
-    const sameFocus = testIronList.querySelector('[tabindex="0"]');
+    const sameFocus =
+        testIronList.querySelector<TestElement>('[tabindex="0"]')!;
     assertEquals('item1', sameFocus.text);
     assertNotEquals(sameFocus, document.activeElement);
   });
@@ -99,7 +100,8 @@ suite('iron-list-focus-test', function() {
   test('test focus is preserved', function() {
     testIronList.preserveFocus = true;
 
-    const initialFocus = testIronList.querySelector('[tabindex="0"]');
+    const initialFocus =
+        testIronList.querySelector<TestElement>('[tabindex="0"]')!;
     initialFocus.focus();
     flush();
     assertEquals('item0', initialFocus.text);
@@ -108,14 +110,15 @@ suite('iron-list-focus-test', function() {
     testIronList.splice('items', 0, 1);  // Remove the item from the list.
     flush();
 
-    const newFocus = testIronList.querySelector('[tabindex="0"]');
+    const newFocus = testIronList.querySelector<TestElement>('[tabindex="0"]')!;
     assertEquals('item1', newFocus.text);
     assertEquals(newFocus, document.activeElement);
 
     testIronList.splice('items', 5, 1);  // Remove a different item.
     flush();
 
-    const sameFocus = testIronList.querySelector('[tabindex="0"]');
+    const sameFocus =
+        testIronList.querySelector<TestElement>('[tabindex="0"]')!;
     assertEquals('item1', sameFocus.text);
     assertEquals(sameFocus, document.activeElement);
   });

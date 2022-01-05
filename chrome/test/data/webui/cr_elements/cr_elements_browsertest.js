@@ -29,7 +29,7 @@ var CrElementsBrowserTest = class extends PolymerTest {
 var CrElementsA11yAnnouncerTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_a11y_announcer_test.js';
+    return 'chrome://test/test_loader.html?module=cr_elements/cr_a11y_announcer_test.js&host=webui-test';
   }
 };
 
@@ -52,7 +52,7 @@ var CrElementsContainerShadowBehaviorTest =
     class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_container_shadow_behavior_test.js';
+    return 'chrome://test/test_loader.html?module=cr_elements/cr_container_shadow_behavior_test.js&host=webui-test';
   }
 };
 
@@ -63,7 +63,7 @@ TEST_F('CrElementsContainerShadowBehaviorTest', 'All', function() {
 var CrElementsContainerShadowMixinTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_container_shadow_mixin_test.js';
+    return 'chrome://test/test_loader.html?module=cr_elements/cr_container_shadow_mixin_test.js&host=webui-test';
   }
 };
 
@@ -228,7 +228,7 @@ TEST_F('CrElementsRadioGroupTest', 'All', function() {
 var CrElementsScrollableBehaviorTest = class extends CrElementsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_scrollable_behavior_tests.js';
+    return 'chrome://test/test_loader.html?module=cr_elements/cr_scrollable_behavior_tests.js&host=webui-test';
   }
 };
 

@@ -92,3 +92,15 @@ index e6b510ce1ffda..da0718c12503f 100644
 
    /**
     * Alternative text content for accessibility support.
+diff --git a/components-chromium/iron-list/iron-list.d.ts b/components-chromium/iron-list/iron-list.d.ts
+index e469a76eccfbf..06629b5b15945 100644
+--- a/components-chromium/iron-list/iron-list.d.ts
++++ b/components-chromium/iron-list/iron-list.d.ts
+@@ -574,6 +574,7 @@ interface IronListElement extends Templatizer, IronResizableBehavior, IronScroll
+   readonly _estRowsInView: any;
+   readonly _physicalRows: any;
+   readonly _scrollOffset: any;
++  preserveFocus: boolean;
+   attached(): void;
+   detached(): void;
+

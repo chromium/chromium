@@ -2,18 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
+
 import {CrA11yAnnouncerElement, TIMEOUT_MS} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from '../chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('CrA11yAnnouncerElementTest', () => {
   setup(() => {
     document.body.innerHTML = '';
   });
-
-  function getMessagesDiv(announcer) {
-    return announcer.shadowRoot.querySelector('#messages');
-  }
 
   test('CreatesAndGetsAnnouncers', () => {
     const defaultAnnouncer = CrA11yAnnouncerElement.getInstance();
@@ -29,7 +27,7 @@ suite('CrA11yAnnouncerElementTest', () => {
 
   test('QueuesMessages', async () => {
     const announcer = CrA11yAnnouncerElement.getInstance();
-    const messagesDiv = announcer.shadowRoot.querySelector('#messages');
+    const messagesDiv = announcer.shadowRoot!.querySelector('#messages')!;
 
     // Queue up 2 messages at once, and assert they both exist.
     const message1 = 'Knock knock!';
@@ -37,16 +35,16 @@ suite('CrA11yAnnouncerElementTest', () => {
     announcer.announce(message1);
     announcer.announce(message2);
     await new Promise(resolve => setTimeout(resolve, TIMEOUT_MS));
-    assertTrue(messagesDiv.textContent.includes(message1));
-    assertTrue(messagesDiv.textContent.includes(message2));
+    assertTrue(messagesDiv.textContent!.includes(message1));
+    assertTrue(messagesDiv.textContent!.includes(message2));
 
     // Queue up 1 message, and assert it clears out previous messages.
     const message3 = 'No jokes allowed';
     announcer.announce(message3);
     await new Promise(resolve => setTimeout(resolve, TIMEOUT_MS));
-    assertFalse(messagesDiv.textContent.includes(message1));
-    assertFalse(messagesDiv.textContent.includes(message2));
-    assertTrue(messagesDiv.textContent.includes(message3));
+    assertFalse(messagesDiv.textContent!.includes(message1));
+    assertFalse(messagesDiv.textContent!.includes(message2));
+    assertTrue(messagesDiv.textContent!.includes(message3));
   });
 
   test('ClearsAnnouncerOnDisconnect', async () => {
@@ -55,8 +53,9 @@ suite('CrA11yAnnouncerElementTest', () => {
     announcer.announce(lostMessage);
     announcer.remove();
     await new Promise(resolve => setTimeout(resolve, TIMEOUT_MS));
-    assertFalse(announcer.shadowRoot.querySelector('#messages')
-                    .textContent.includes(lostMessage));
+    assertFalse(
+        announcer.shadowRoot!.querySelector('#messages')!.textContent!.includes(
+            lostMessage));
 
     // Creates new announcer since previous announcer is removed from instances.
     assertNotEquals(announcer, CrA11yAnnouncerElement.getInstance());

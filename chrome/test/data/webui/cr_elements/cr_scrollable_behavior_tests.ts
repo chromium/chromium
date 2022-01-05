@@ -3,23 +3,28 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {CrScrollableBehavior} from 'chrome://resources/cr_elements/cr_scrollable_behavior.m.js';
-import { Base, flush, html,Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 
-import {assertEquals, assertFalse, assertTrue} from '../chai_assert.js';
-import {waitBeforeNextRender} from '../test_util.js';
+import {CrScrollableBehavior} from 'chrome://resources/cr_elements/cr_scrollable_behavior.m.js';
+import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
+import {flush, html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {waitBeforeNextRender} from 'chrome://webui-test/test_util.js';
+
 // clang-format on
 
 suite('cr-scrollable-behavior', function() {
-  /** @type {!TestElementElement} */ let testElement;
-  /** @type {!HTMLDivElement} */ let container;
-  /** @type {!IronListElement} */ let ironList;
+  const TestElementBase =
+      mixinBehaviors([CrScrollableBehavior], PolymerElement) as
+      {new (): PolymerElement & CrScrollableBehavior};
 
-  suiteSetup(function() {
-    Polymer({
-      is: 'test-element',
+  class TestElement extends TestElementBase {
+    static get is() {
+      return 'test-element';
+    }
 
-      _template: html`
+    static get template() {
+      return html`
         <style>
           #container {
             height: 30px;
@@ -33,29 +38,31 @@ suite('cr-scrollable-behavior', function() {
             </template>
           </iron-list>
         </div>
-      `,
+      `;
+    }
 
-      properties: {
-        items: {
-          type: Array,
-          value: function() {
-            return ['apple', 'bannana', 'cucumber', 'doughnut'];
-          },
-        },
-      },
+    static get properties() {
+      return {
+        items: Array,
+      };
+    }
 
-      behaviors: [CrScrollableBehavior],
-    });
-  });
+    items: string[] = ['apple', 'bannana', 'cucumber', 'doughnut'];
+  }
+  customElements.define(TestElement.is, TestElement);
+
+  let testElement: TestElement;
+  let container: HTMLElement;
+  let ironList: IronListElement;
 
   setup(function(done) {
     document.body.innerHTML = '';
 
-    testElement = /** @type {!TestElementElement} */ (
-        document.createElement('test-element'));
+    testElement = document.createElement('test-element') as TestElement;
     document.body.appendChild(testElement);
-    container = /** @type {!HTMLDivElement} */ (testElement.$$('#container'));
-    ironList = /** @type {!IronListElement} */ (testElement.$$('iron-list'));
+    container =
+        testElement.shadowRoot!.querySelector<HTMLElement>('#container')!;
+    ironList = testElement.shadowRoot!.querySelector('iron-list')!;
 
     // Wait for CrScrollableBehavior to set the initial scrollable class
     // properties.
@@ -66,7 +73,7 @@ suite('cr-scrollable-behavior', function() {
 
   // There is no MockInteractions scroll event, and simlating a scroll is messy,
   // so instead scroll ironList and send a 'scroll' event to the container.
-  function scrollToIndex(index) {
+  function scrollToIndex(index: number) {
     ironList.scrollToIndex(index);
     container.dispatchEvent(new CustomEvent('scroll'));
     flush();
@@ -92,7 +99,7 @@ suite('cr-scrollable-behavior', function() {
     testElement.items = ['apple', 'bannana', 'cactus', 'cucumber', 'doughnut'];
     testElement.restoreScroll(ironList);
     flush();
-    Base.async(function() {
+    window.setTimeout(() => {
       assertEquals(scrollTop, container.scrollTop);
       done();
     });

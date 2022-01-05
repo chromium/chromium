@@ -110,7 +110,7 @@ TEST_F('CrElementsToolbarSearchFieldTest', 'All', function() {
 var IronListFocusTest = class extends CrElementsFocusTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/iron_list_focus_test.js';
+    return 'chrome://test/test_loader.html?module=cr_elements/iron_list_focus_test.js&host=webui-test';
   }
 };
 
@@ -134,7 +134,7 @@ TEST_F('CrElementsGridFocusTest', 'All', function() {
 var CrElementsMenuSelectorFocusTest = class extends CrElementsFocusTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://test/test_loader.html?module=cr_elements/cr_menu_selector_focus_test.js';
+    return 'chrome://test/test_loader.html?module=cr_elements/cr_menu_selector_focus_test.js&host=webui-test';
   }
 };
 
