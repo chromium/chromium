@@ -259,7 +259,7 @@ void BlinkGCPluginConsumer::CheckClass(RecordInfo* info) {
     }
 
     {
-      CheckGCRootsVisitor visitor;
+      CheckGCRootsVisitor visitor(options_);
       if (visitor.ContainsGCRoots(info))
         reporter_.ClassContainsGCRoots(info, visitor.gc_roots());
     }

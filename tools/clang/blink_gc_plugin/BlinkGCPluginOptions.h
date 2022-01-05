@@ -26,6 +26,17 @@ struct BlinkGCPluginOptions {
   // TODO(sof): remove this option once safely rolled out.
   bool enable_weak_members_in_unmanaged_classes = false;
 
+  // Persistent<T> fields are not allowed in garbage collected classes to avoid
+  // memory leaks. Enabling this flag allows the plugin to check also for
+  // Persistent<T> in types held by unique_ptr in garbage collected classes. The
+  // guideline for this check is that a Persistent<T> should never be kept alive
+  // by a garbage collected class, which unique_ptr clearly conveys.
+  //
+  // This check is disabled by default since there are currently non-ignored
+  // violations of this rule in the code base, leading to compilation failures.
+  // TODO(chromium:1283867): Enable this checks once all violations are handled.
+  bool enable_persistent_in_unique_ptr_check = false;
+
   std::set<std::string> ignored_classes;
   std::set<std::string> checked_namespaces;
   std::vector<std::string> ignored_directories;
