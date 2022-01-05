@@ -14,6 +14,8 @@
 #include "base/logging.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
+#include "chrome/browser/ash/account_manager/account_apps_availability.h"
+#include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
@@ -89,6 +91,7 @@ class EduCoexistenceChildSigninHelper : public SigninHelper {
       account_manager::AccountManager* account_manager,
       crosapi::AccountManagerMojoService* account_manager_mojo_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::unique_ptr<SigninHelper::ArcHelper> arc_helper,
       const std::string& gaia_id,
       const std::string& email,
       const std::string& auth_code,
@@ -101,6 +104,7 @@ class EduCoexistenceChildSigninHelper : public SigninHelper {
                      // dialog. Therefore, passing a void callback.
                      base::DoNothing(),
                      url_loader_factory,
+                     std::move(arc_helper),
                      gaia_id,
                      email,
                      auth_code,
@@ -246,13 +250,22 @@ void InlineLoginHandlerChromeOS::CompleteLogin(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .email;
 
+  std::unique_ptr<SigninHelper::ArcHelper> arc_helper;
+  if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+    // TODO(crbug.com/1260909): Set `is_available_in_arc` to the value chosen by
+    // the user.
+    arc_helper = std::make_unique<SigninHelper::ArcHelper>(
+        /*is_available_in_arc=*/true,
+        ash::AccountAppsAvailabilityFactory::GetForProfile(profile));
+  }
+
   // Child user added a secondary account.
   if (profile->IsChild() &&
       !gaia::AreEmailsSame(primary_account_email, params.email)) {
     new EduCoexistenceChildSigninHelper(
         account_manager, account_manager_mojo_service,
-        profile->GetURLLoaderFactory(), params.gaia_id, params.email,
-        params.auth_code,
+        profile->GetURLLoaderFactory(), std::move(arc_helper), params.gaia_id,
+        params.email, params.auth_code,
         GetAccountDeviceId(GetSigninScopedDeviceIdForProfile(profile),
                            params.gaia_id),
         profile->GetPrefs(), web_ui());
@@ -263,8 +276,8 @@ void InlineLoginHandlerChromeOS::CompleteLogin(
   // SigninHelper deletes itself after its work is done.
   new SigninHelper(
       account_manager, account_manager_mojo_service, close_dialog_closure_,
-      profile->GetURLLoaderFactory(), params.gaia_id, params.email,
-      params.auth_code,
+      profile->GetURLLoaderFactory(), std::move(arc_helper), params.gaia_id,
+      params.email, params.auth_code,
       GetAccountDeviceId(GetSigninScopedDeviceIdForProfile(profile),
                          params.gaia_id));
 }
