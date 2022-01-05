@@ -29,23 +29,29 @@ class BrowserToTabList {
   // Otherwise, returns false.
   bool HasActivatedTab(const aura::Window* browser_window);
 
-  // Returns the browser window for `tab_id`.
-  const aura::Window* GetBrowserWindow(
-      const base::UnguessableToken& tab_id) const;
+  // Returns the active tab's app id if the browser with `browser_window` has
+  // activated tab for an app. Otherwise, returns an empty string.
+  std::string GetActivatedTabAppId(const aura::Window* browser_window);
 
-  // Adds `browser_window` and `tab_id` to`active_browser_to_tabs_`.
-  void AddActivatedTab(const aura::Window* browser_window,
-                       const base::UnguessableToken& tab_id);
+  // Returns the browser window for `tab_id`.
+  aura::Window* GetBrowserWindow(const base::UnguessableToken& tab_id) const;
+
+  // Adds `browser_window`, `tab_id`, `tab_add_id` to`active_browser_to_tabs_`.
+  void AddActivatedTab(aura::Window* browser_window,
+                       const base::UnguessableToken& tab_id,
+                       const std::string& app_id);
 
   // Removes `tab_id` from `active_browser_to_tabs_`.
   void RemoveActivatedTab(const base::UnguessableToken& tab_id);
 
  private:
   struct BrowserToTab {
-    BrowserToTab(const aura::Window* browser_window,
-                 const base::UnguessableToken& tab_id);
-    const aura::Window* browser_window;
+    BrowserToTab(aura::Window* browser_window,
+                 const base::UnguessableToken& tab_id,
+                 const std::string& app_id);
+    aura::Window* browser_window;
     base::UnguessableToken tab_id;
+    std::string app_id;
   };
 
   // Stores the list of browser-tab instance id pairs.

@@ -41,22 +41,6 @@ InputEventSource GetInputEventSource(ui::EventPointerType type) {
   }
 }
 
-// Returns the app id for the active tab in the browser window `window`. If
-// there is no app for the active tab, returns the Chrome browser app id.
-std::string GetActiveAppIdForBrowserWindow(aura::Window* window) {
-  auto* browser = chrome::FindBrowserWithWindow(window);
-  if (!browser || !browser->tab_strip_model()) {
-    return extension_misc::kChromeAppId;
-  }
-
-  auto* web_contents = browser->tab_strip_model()->GetActiveWebContents();
-  if (!web_contents) {
-    return extension_misc::kChromeAppId;
-  }
-  auto app_id = GetAppIdForWebContents(web_contents);
-  return app_id.empty() ? extension_misc::kChromeAppId : app_id;
-}
-
 }  // namespace
 
 AppPlatformInputMetrics::AppPlatformInputMetrics(
@@ -119,6 +103,7 @@ void AppPlatformInputMetrics::OnInstanceUpdate(const InstanceUpdate& update) {
   aura::Window* window = update.Window();
   if (update.State() & InstanceState::kDestroyed) {
     window_to_app_info_.erase(window);
+    browser_to_tab_list_.RemoveActivatedTab(update.InstanceId());
     return;
   }
 
@@ -133,23 +118,11 @@ void AppPlatformInputMetrics::OnInstanceUpdate(const InstanceUpdate& update) {
     return;
   }
 
-  AppTypeName app_type_name =
-      GetAppTypeNameForWindow(profile_, app_type, app_id, window);
-  if (app_type_name == AppTypeName::kUnknown) {
-    return;
+  if (update.State() & apps::InstanceState::kActive) {
+    SetAppInfoForActivatedWindow(app_type, app_id, window, update.InstanceId());
+  } else {
+    SetAppInfoForInactivatedWindow(update.InstanceId());
   }
-
-  if (IsAppOpenedInTab(app_type_name, app_id)) {
-    window = window->GetToplevelWindow();
-    app_id = extension_misc::kChromeAppId;
-  }
-
-  if (app_id == extension_misc::kChromeAppId) {
-    app_id = GetActiveAppIdForBrowserWindow(window);
-  }
-
-  window_to_app_info_[window].app_id = app_id;
-  window_to_app_info_[window].app_type_name = app_type_name;
 }
 
 void AppPlatformInputMetrics::OnInstanceRegistryWillBeDestroyed(
@@ -178,6 +151,68 @@ void AppPlatformInputMetrics::OnAppUpdate(const AppUpdate& update) {
   // app is installed.
   AppPlatformMetrics::RemoveSourceId(it->second);
   app_id_to_source_id_.erase(it);
+}
+
+void AppPlatformInputMetrics::SetAppInfoForActivatedWindow(
+    mojom::AppType app_type,
+    const std::string& app_id,
+    aura::Window* window,
+    const base::UnguessableToken& instance_id) {
+  // For the browser window, if a tab of the browser is activated, we don't
+  // need to update, because we can reuse the active tab's app id.
+  if (app_id == extension_misc::kChromeAppId &&
+      browser_to_tab_list_.HasActivatedTab(window)) {
+    return;
+  }
+
+  AppTypeName app_type_name =
+      GetAppTypeNameForWindow(profile_, app_type, app_id, window);
+  if (app_type_name == AppTypeName::kUnknown) {
+    return;
+  }
+
+  // For apps opened in browser windows, get the top level window, and modify
+  // `browser_to_tab_list_` to save the activated tab app id.
+  if (IsAppOpenedWithBrowserWindow(profile_, app_type, app_id)) {
+    window = window->GetToplevelWindow();
+    if (IsAppOpenedInTab(app_type_name, app_id)) {
+      // When the tab is pulled to a separate browser window, the instance id is
+      // not changed, but the parent browser window is changed. So remove the
+      // tab window instance from previous browser window, and add it to the new
+      // browser window.
+      browser_to_tab_list_.RemoveActivatedTab(instance_id);
+      browser_to_tab_list_.AddActivatedTab(window, instance_id, app_id);
+    }
+  }
+
+  window_to_app_info_[window].app_id = app_id;
+  window_to_app_info_[window].app_type_name = app_type_name;
+}
+
+void AppPlatformInputMetrics::SetAppInfoForInactivatedWindow(
+    const base::UnguessableToken& instance_id) {
+  // When the window is inactived, only modify the app info for browser windows,
+  // because the activated tab changing might affect the app id for browser
+  // windows.
+  //
+  // For apps, not opened with browser windows,  the app id and app type should
+  // not be changed for non-browser windows, and they can be modified when the
+  // window is activated.
+  auto* browser_window = browser_to_tab_list_.GetBrowserWindow(instance_id);
+  if (!browser_window) {
+    return;
+  }
+
+  browser_to_tab_list_.RemoveActivatedTab(instance_id);
+
+  auto app_id = browser_to_tab_list_.GetActivatedTabAppId(browser_window);
+  if (app_id.empty()) {
+    app_id = extension_misc::kChromeAppId;
+  }
+
+  window_to_app_info_[browser_window].app_id = app_id;
+  window_to_app_info_[browser_window].app_type_name =
+      apps::AppTypeName::kChromeBrowser;
 }
 
 void AppPlatformInputMetrics::RecordEventCount(InputEventSource event_source,

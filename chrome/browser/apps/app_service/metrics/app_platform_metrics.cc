@@ -703,9 +703,13 @@ void AppPlatformMetrics::OnInstanceUpdate(const apps::InstanceUpdate& update) {
     // For web apps open in tabs, set the top browser window as inactive to stop
     // calculating the browser window running time.
     if (IsAppOpenedInTab(app_type_name, app_id)) {
+      // When the tab is pulled to a separate browser window, the instance id is
+      // not changed, but the parent browser window is changed. So remove the
+      // tab window instance from previous browser window, and add it to the new
+      // browser window.
       browser_to_tab_list_.RemoveActivatedTab(update.InstanceId());
       browser_to_tab_list_.AddActivatedTab(update.Window()->GetToplevelWindow(),
-                                           update.InstanceId());
+                                           update.InstanceId(), update.AppId());
       InstanceState state;
       base::UnguessableToken browser_id;
       GetBrowserIdAndState(update, browser_id, state);

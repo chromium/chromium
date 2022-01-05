@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_map.h"
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
+#include "chrome/browser/apps/app_service/metrics/browser_to_tab_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
@@ -74,6 +75,14 @@ class AppPlatformInputMetrics : public ui::EventHandler,
   void OnAppRegistryCacheWillBeDestroyed(AppRegistryCache* cache) override;
   void OnAppUpdate(const AppUpdate& update) override;
 
+  void SetAppInfoForActivatedWindow(mojom::AppType app_type,
+                                    const std::string& app_id,
+                                    aura::Window* window,
+                                    const base::UnguessableToken& instance_id);
+
+  void SetAppInfoForInactivatedWindow(
+      const base::UnguessableToken& instance_id);
+
   void RecordEventCount(InputEventSource event_source,
                         ui::EventTarget* event_target);
 
@@ -83,6 +92,8 @@ class AppPlatformInputMetrics : public ui::EventHandler,
                             const EventSourceToCounts& event_counts);
 
   Profile* profile_;
+
+  BrowserToTabList browser_to_tab_list_;
 
   // The map from the window to the app info.
   base::flat_map<aura::Window*, AppInfo> window_to_app_info_;

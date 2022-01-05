@@ -13,9 +13,10 @@ BrowserToTabList::BrowserToTabList() = default;
 BrowserToTabList::~BrowserToTabList() = default;
 
 BrowserToTabList::BrowserToTab::BrowserToTab(
-    const aura::Window* browser_window,
-    const base::UnguessableToken& tab_id)
-    : browser_window(browser_window), tab_id(tab_id) {}
+    aura::Window* browser_window,
+    const base::UnguessableToken& tab_id,
+    const std::string& app_id)
+    : browser_window(browser_window), tab_id(tab_id), app_id(app_id) {}
 
 bool BrowserToTabList::HasActivatedTab(const aura::Window* browser_window) {
   for (const auto& it : active_browsers_to_tabs_) {
@@ -26,7 +27,17 @@ bool BrowserToTabList::HasActivatedTab(const aura::Window* browser_window) {
   return false;
 }
 
-const aura::Window* BrowserToTabList::GetBrowserWindow(
+std::string BrowserToTabList::GetActivatedTabAppId(
+    const aura::Window* browser_window) {
+  for (const auto& it : active_browsers_to_tabs_) {
+    if (it.browser_window == browser_window) {
+      return it.app_id;
+    }
+  }
+  return std::string();
+}
+
+aura::Window* BrowserToTabList::GetBrowserWindow(
     const base::UnguessableToken& tab_id) const {
   for (const auto& it : active_browsers_to_tabs_) {
     if (it.tab_id == tab_id) {
@@ -36,8 +47,9 @@ const aura::Window* BrowserToTabList::GetBrowserWindow(
   return nullptr;
 }
 
-void BrowserToTabList::AddActivatedTab(const aura::Window* browser_window,
-                                       const base::UnguessableToken& tab_id) {
+void BrowserToTabList::AddActivatedTab(aura::Window* browser_window,
+                                       const base::UnguessableToken& tab_id,
+                                       const std::string& app_id) {
   bool found = false;
   for (const auto& it : active_browsers_to_tabs_) {
     if (it.browser_window == browser_window && it.tab_id == tab_id) {
@@ -47,7 +59,8 @@ void BrowserToTabList::AddActivatedTab(const aura::Window* browser_window,
   }
 
   if (!found) {
-    active_browsers_to_tabs_.push_back(BrowserToTab(browser_window, tab_id));
+    active_browsers_to_tabs_.push_back(
+        BrowserToTab(browser_window, tab_id, app_id));
   }
 }
 

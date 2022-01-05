@@ -1638,6 +1638,16 @@ class AppPlatformInputMetricsTest : public AppPlatformMetricsServiceTest {
     }
   }
 
+  std::unique_ptr<Browser> CreateBrowser() {
+    Browser::CreateParams params(profile(), true);
+    params.type = Browser::TYPE_NORMAL;
+    browser_window_ = std::make_unique<TestBrowserWindow>();
+    params.window = browser_window_.get();
+    browser_window_->SetNativeWindow(window());
+    params.window = browser_window_.get();
+    return std::unique_ptr<Browser>(Browser::Create(params));
+  }
+
   void VerifyUkm(const std::string& app_info,
                  AppTypeName app_type_name,
                  int event_count,
@@ -1655,17 +1665,36 @@ class AppPlatformInputMetricsTest : public AppPlatformMetricsServiceTest {
                                            (int)event_source);
   }
 
+  void VerifyUkm(int count,
+                 const std::string& app_info,
+                 AppTypeName app_type_name,
+                 int event_count,
+                 InputEventSource event_source) {
+    const auto entries =
+        test_ukm_recorder()->GetEntriesByName("ChromeOSApp.InputEvent");
+    ASSERT_EQ(count, (int)entries.size());
+    const auto* entry = entries[count - 1];
+    test_ukm_recorder()->ExpectEntrySourceHasUrl(entry, GURL(app_info));
+    test_ukm_recorder()->ExpectEntryMetric(entry, "AppType",
+                                           (int)app_type_name);
+    test_ukm_recorder()->ExpectEntryMetric(entry, "AppInputEventCount",
+                                           event_count);
+    test_ukm_recorder()->ExpectEntryMetric(entry, "AppInputEventSource",
+                                           (int)event_source);
+  }
+
  private:
   std::unique_ptr<ash::AshTestHelper> ash_test_helper_;
 
   // Where down events are dispatched to.
   std::unique_ptr<views::Widget> widget_;
+
+  std::unique_ptr<TestBrowserWindow> browser_window_;
 };
 
-// Verify the input event is recorded when the window is inactivated, and no
-// more input event is recorded when the window is destroyed.
-TEST_F(AppPlatformInputMetricsTest, WindowStateChanged) {
-  ModifyInstance(/*app_id=*/"a", window(), kInactiveInstanceState);
+// Verify no more input event is recorded when the window is destroyed.
+TEST_F(AppPlatformInputMetricsTest, WindowIsDestroyed) {
+  ModifyInstance(/*app_id=*/"a", window(), kActive);
   CreateInputEvent(InputEventSource::kMouse);
   app_platform_input_metrics()->OnFiveMinutes();
   VerifyUkm("app://com.google.A", AppTypeName::kArc, /*event_count=*/1,
@@ -1771,6 +1800,70 @@ TEST_F(AppPlatformInputMetricsTest, MultipleEvents) {
   EXPECT_EQ(2, mouse_event_count);
   EXPECT_EQ(1, keyboard_event_count);
   EXPECT_EQ(1, stylus_event_count);
+}
+
+TEST_F(AppPlatformInputMetricsTest, BrowserWindow) {
+  InstallOneApp(extension_misc::kChromeAppId, apps::mojom::AppType::kChromeApp,
+                "Chrome", apps::mojom::Readiness::kReady,
+                apps::mojom::InstallSource::kSystem);
+  auto browser = CreateBrowser();
+
+  // Set the browser window as activated.
+  ModifyInstance(extension_misc::kChromeAppId, window(), kActiveInstanceState);
+  CreateInputEvent(InputEventSource::kMouse);
+  app_platform_input_metrics()->OnFiveMinutes();
+  VerifyUkm(std::string("app://") + extension_misc::kChromeAppId,
+            AppTypeName::kChromeBrowser, /*event_count=*/1,
+            InputEventSource::kMouse);
+
+  // Create a web app tab1.
+  const std::string web_app_id1 = "w";
+  const GURL url1 = GURL("https://foo.com");
+  auto web_app_window1 =
+      CreateWebAppWindow(browser->window()->GetNativeWindow());
+
+  // Set the web app tab1 as activated.
+  ModifyInstance(web_app_id1, web_app_window1.get(), kActiveInstanceState);
+  CreateInputEvent(InputEventSource::kMouse);
+  app_platform_input_metrics()->OnFiveMinutes();
+  // Verify 2 input metrics events are recorded.
+  VerifyUkm(2, url1.spec(), AppTypeName::kChromeBrowser,
+            /*event_count=*/1, InputEventSource::kMouse);
+
+  // Create a web app tab2.
+  const std::string web_app_id2 = "w2";
+  const GURL url2 = GURL("https://foo2.com");
+  auto web_app_window2 =
+      CreateWebAppWindow(browser->window()->GetNativeWindow());
+
+  // Set the web app tab2 as activated.
+  ModifyInstance(web_app_id2, web_app_window2.get(), kActiveInstanceState);
+  ModifyInstance(web_app_id1, web_app_window1.get(), kInactiveInstanceState);
+  CreateInputEvent(InputEventSource::kStylus);
+  CreateInputEvent(InputEventSource::kStylus);
+  app_platform_input_metrics()->OnFiveMinutes();
+  // Verify 3 input metrics events are recorded.
+  VerifyUkm(3, url2.spec(), AppTypeName::kChromeBrowser,
+            /*event_count=*/2, InputEventSource::kStylus);
+
+  // Set the web app tab2 as destroyed, and web app tab1 as activated.
+  ModifyInstance(web_app_id2, web_app_window2.get(),
+                 apps::InstanceState::kDestroyed);
+  ModifyInstance(web_app_id1, web_app_window1.get(), kActiveInstanceState);
+  CreateInputEvent(InputEventSource::kKeyboard);
+  app_platform_input_metrics()->OnFiveMinutes();
+  // Verify 4 input metrics events are recorded.
+  VerifyUkm(4, url1.spec(), AppTypeName::kChromeBrowser,
+            /*event_count=*/1, InputEventSource::kKeyboard);
+
+  // Set the web app tab1 as inactivated.
+  ModifyInstance(web_app_id1, web_app_window1.get(), kInactiveInstanceState);
+  CreateInputEvent(InputEventSource::kStylus);
+  app_platform_input_metrics()->OnFiveMinutes();
+  // Verify 5 input metrics events are recorded.
+  VerifyUkm(5, std::string("app://") + extension_misc::kChromeAppId,
+            AppTypeName::kChromeBrowser,
+            /*event_count=*/1, InputEventSource::kStylus);
 }
 
 }  // namespace apps
