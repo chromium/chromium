@@ -810,9 +810,8 @@ void MobileActivator::ChangeState(const NetworkState* network,
     case PlanActivationState::kInitiatingActivation:
     case PlanActivationState::kTryingOTASP:
     case PlanActivationState::kOTASP:
-      // This used to call Shill.Service.ActivateCellularModem, however that
-      // method is no longer implemented. Instead this just starts the timer
-      // waiting for activation state changes. https://crbug.com/1021688.
+      // Starts the timer waiting for activation state changes.
+      // https://crbug.com/1021688.
       StartOTASPTimer();
       break;
     case PlanActivationState::kPageLoading:
