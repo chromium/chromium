@@ -92,10 +92,11 @@ class MockInputHandler : public cc::InputHandler {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
-  MOCK_METHOD0(PinchGestureBegin, void());
+  MOCK_METHOD2(PinchGestureBegin,
+               void(const gfx::Point& anchor, ui::ScrollInputType type));
   MOCK_METHOD2(PinchGestureUpdate,
                void(float magnify_delta, const gfx::Point& anchor));
-  MOCK_METHOD2(PinchGestureEnd, void(const gfx::Point& anchor, bool snap));
+  MOCK_METHOD1(PinchGestureEnd, void(const gfx::Point& anchor));
 
   MOCK_METHOD0(SetNeedsAnimateInput, void());
 
@@ -1132,7 +1133,7 @@ TEST_P(InputHandlerProxyTest, GesturePinch) {
   VERIFY_AND_RESET_MOCKS();
 
   gesture_.SetType(WebInputEvent::Type::kGesturePinchBegin);
-  EXPECT_CALL(mock_input_handler_, PinchGestureBegin());
+  EXPECT_CALL(mock_input_handler_, PinchGestureBegin(_, _));
   EXPECT_EQ(expected_disposition_,
             HandleInputEventAndFlushEventQueue(mock_input_handler_,
                                                input_handler_.get(), gesture_));
@@ -1160,7 +1161,7 @@ TEST_P(InputHandlerProxyTest, GesturePinch) {
   VERIFY_AND_RESET_MOCKS();
 
   gesture_.SetType(WebInputEvent::Type::kGesturePinchEnd);
-  EXPECT_CALL(mock_input_handler_, PinchGestureEnd(gfx::Point(9, 6), true));
+  EXPECT_CALL(mock_input_handler_, PinchGestureEnd(gfx::Point(9, 6)));
   EXPECT_EQ(expected_disposition_,
             HandleInputEventAndFlushEventQueue(mock_input_handler_,
                                                input_handler_.get(), gesture_));
@@ -1205,7 +1206,7 @@ TEST_P(InputHandlerProxyTest, GesturePinchAfterScrollOnMainThread) {
   VERIFY_AND_RESET_MOCKS();
 
   gesture_.SetType(WebInputEvent::Type::kGesturePinchBegin);
-  EXPECT_CALL(mock_input_handler_, PinchGestureBegin());
+  EXPECT_CALL(mock_input_handler_, PinchGestureBegin(_, _));
   EXPECT_EQ(expected_disposition_,
             HandleInputEventAndFlushEventQueue(mock_input_handler_,
                                                input_handler_.get(), gesture_));
@@ -1251,7 +1252,7 @@ TEST_P(InputHandlerProxyTest, GesturePinchAfterScrollOnMainThread) {
   VERIFY_AND_RESET_MOCKS();
 
   gesture_.SetType(WebInputEvent::Type::kGesturePinchEnd);
-  EXPECT_CALL(mock_input_handler_, PinchGestureEnd(gfx::Point(9, 6), true));
+  EXPECT_CALL(mock_input_handler_, PinchGestureEnd(gfx::Point(9, 6)));
   EXPECT_EQ(expected_disposition_,
             HandleInputEventAndFlushEventQueue(mock_input_handler_,
                                                input_handler_.get(), gesture_));
@@ -2682,11 +2683,11 @@ TEST_F(InputHandlerProxyEventQueueTest,
   EXPECT_CALL(mock_input_handler_, FindFrameElementIdAtPoint(_))
       .Times(8)
       .WillRepeatedly(testing::Return(cc::ElementId()));
-  EXPECT_CALL(mock_input_handler_, PinchGestureBegin());
+  EXPECT_CALL(mock_input_handler_, PinchGestureBegin(_, _));
   // Two |GesturePinchUpdate| will be coalesced.
   EXPECT_CALL(mock_input_handler_,
               PinchGestureUpdate(0.7f, gfx::Point(13, 17)));
-  EXPECT_CALL(mock_input_handler_, PinchGestureEnd(gfx::Point(), false));
+  EXPECT_CALL(mock_input_handler_, PinchGestureEnd(gfx::Point()));
   EXPECT_CALL(mock_input_handler_, RecordScrollEnd(_)).Times(2);
 
   HandleGestureEvent(WebInputEvent::Type::kGestureScrollUpdate, -30);
@@ -2830,7 +2831,7 @@ TEST_F(InputHandlerProxyEventQueueTest, VSyncAlignedCoalesceScrollAndPinch) {
 }
 
 TEST_F(InputHandlerProxyEventQueueTest, VSyncAlignedCoalesceTouchpadPinch) {
-  EXPECT_CALL(mock_input_handler_, PinchGestureBegin());
+  EXPECT_CALL(mock_input_handler_, PinchGestureBegin(_, _));
   EXPECT_CALL(mock_input_handler_, SetNeedsAnimateInput());
   EXPECT_CALL(mock_input_handler_, FindFrameElementIdAtPoint(_))
       .Times(1)
@@ -2893,9 +2894,9 @@ TEST_F(InputHandlerProxyEventQueueTest, OriginalEventsTracing) {
       .Times(::testing::AtLeast(1));
   EXPECT_CALL(mock_input_handler_, RecordScrollEnd(_)).Times(2);
 
-  EXPECT_CALL(mock_input_handler_, PinchGestureBegin());
+  EXPECT_CALL(mock_input_handler_, PinchGestureBegin(_, _));
   EXPECT_CALL(mock_input_handler_, PinchGestureUpdate(_, _));
-  EXPECT_CALL(mock_input_handler_, PinchGestureEnd(_, _));
+  EXPECT_CALL(mock_input_handler_, PinchGestureEnd(_));
 
   trace_analyzer::Start("*");
   // Simulate scroll.
@@ -3115,9 +3116,9 @@ TEST_F(InputHandlerProxyEventQueueTest, CoalescedEventSwitchToMainThread) {
   EXPECT_EQ(false, latency_info_recorder_[2].coalesced());
 
   // pinch start, handle scroll and pinch on compositor.
-  EXPECT_CALL(mock_input_handler_, PinchGestureBegin());
+  EXPECT_CALL(mock_input_handler_, PinchGestureBegin(_, _));
   EXPECT_CALL(mock_input_handler_, PinchGestureUpdate(_, _));
-  EXPECT_CALL(mock_input_handler_, PinchGestureEnd(_, _));
+  EXPECT_CALL(mock_input_handler_, PinchGestureEnd(_));
 
   HandleGestureEvent(WebInputEvent::Type::kGesturePinchBegin);
   HandleGestureEvent(WebInputEvent::Type::kGesturePinchUpdate, 10.0f, 1, 10);

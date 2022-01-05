@@ -977,9 +977,10 @@ INSTANTIATE_TEST_SUITE_P(All,
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, LocalAndExternalPinchState) {
   // PinchGestureBegin/End update pinch_gesture_active() properly.
   EXPECT_FALSE(GetInputHandler().pinch_gesture_active());
-  GetInputHandler().PinchGestureBegin();
+  GetInputHandler().PinchGestureBegin(gfx::Point(),
+                                      ui::ScrollInputType::kTouchscreen);
   EXPECT_TRUE(GetInputHandler().pinch_gesture_active());
-  GetInputHandler().PinchGestureEnd(gfx::Point(), false /* snap_to_min */);
+  GetInputHandler().PinchGestureEnd(gfx::Point());
   EXPECT_FALSE(GetInputHandler().pinch_gesture_active());
 
   // set_external_pinch_gesture_active updates pinch_gesture_active() properly.
@@ -990,11 +991,12 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, LocalAndExternalPinchState) {
 
   // Clearing external_pinch_gesture_active doesn't affect
   // pinch_gesture_active() if it was set by PinchGestureBegin().
-  GetInputHandler().PinchGestureBegin();
+  GetInputHandler().PinchGestureBegin(gfx::Point(),
+                                      ui::ScrollInputType::kTouchscreen);
   EXPECT_TRUE(GetInputHandler().pinch_gesture_active());
   GetInputHandler().set_external_pinch_gesture_active(false);
   EXPECT_TRUE(GetInputHandler().pinch_gesture_active());
-  GetInputHandler().PinchGestureEnd(gfx::Point(), false /* snap_to_min */);
+  GetInputHandler().PinchGestureEnd(gfx::Point());
   EXPECT_FALSE(GetInputHandler().pinch_gesture_active());
 }
 
@@ -3569,9 +3571,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ImplPinchZoom) {
                    ui::ScrollInputType::kTouchscreen)
             .get(),
         ui::ScrollInputType::kTouchscreen);
-    GetInputHandler().PinchGestureBegin();
+    GetInputHandler().PinchGestureBegin(gfx::Point(50, 50),
+                                        ui::ScrollInputType::kWheel);
     GetInputHandler().PinchGestureUpdate(page_scale_delta, gfx::Point(50, 50));
-    GetInputHandler().PinchGestureEnd(gfx::Point(50, 50), true);
+    GetInputHandler().PinchGestureEnd(gfx::Point(50, 50));
     GetInputHandler().ScrollEnd();
     EXPECT_FALSE(did_request_next_frame_);
     EXPECT_TRUE(did_request_redraw_);
@@ -3598,9 +3601,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ImplPinchZoom) {
                                              ui::ScrollInputType::kTouchscreen)
                                       .get(),
                                   ui::ScrollInputType::kTouchscreen);
-    GetInputHandler().PinchGestureBegin();
+    GetInputHandler().PinchGestureBegin(gfx::Point(),
+                                        ui::ScrollInputType::kWheel);
     GetInputHandler().PinchGestureUpdate(page_scale_delta, gfx::Point());
-    GetInputHandler().PinchGestureEnd(gfx::Point(), true);
+    GetInputHandler().PinchGestureEnd(gfx::Point());
     GetInputHandler().ScrollEnd();
 
     gfx::Vector2d scroll_delta(0, 10);
@@ -3703,9 +3707,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ViewportScrollOrder) {
                  ui::ScrollInputType::kTouchscreen)
           .get(),
       ui::ScrollInputType::kTouchscreen);
-  GetInputHandler().PinchGestureBegin();
+  GetInputHandler().PinchGestureBegin(gfx::Point(),
+                                      ui::ScrollInputType::kWheel);
   GetInputHandler().PinchGestureUpdate(2, gfx::Point(0, 0));
-  GetInputHandler().PinchGestureEnd(gfx::Point(0, 0), true);
+  GetInputHandler().PinchGestureEnd(gfx::Point(0, 0));
   GetInputHandler().ScrollEnd();
 
   // Sanity check - we're zoomed in, starting from the origin.
@@ -3827,7 +3832,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollDuringPinchGesture) {
                  ui::ScrollInputType::kTouchscreen)
           .get(),
       ui::ScrollInputType::kTouchscreen);
-  GetInputHandler().PinchGestureBegin();
+  GetInputHandler().PinchGestureBegin(gfx::Point(250, 250),
+                                      ui::ScrollInputType::kWheel);
 
   GetInputHandler().PinchGestureUpdate(2, gfx::Point(250, 250));
   EXPECT_POINTF_EQ(gfx::PointF(0, 0), CurrentScrollOffset(outer_scroll_layer));
@@ -3856,7 +3862,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, ScrollDuringPinchGesture) {
   EXPECT_POINTF_EQ(gfx::PointF(250, 250),
                    CurrentScrollOffset(inner_scroll_layer));
 
-  GetInputHandler().PinchGestureEnd(gfx::Point(250, 250), true);
+  GetInputHandler().PinchGestureEnd(gfx::Point(250, 250));
   GetInputHandler().ScrollEnd();
 }
 
@@ -3882,9 +3888,9 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PinchZoomSnapsToScreenEdge) {
       BeginState(anchor, gfx::Vector2dF(), ui::ScrollInputType::kTouchscreen)
           .get(),
       ui::ScrollInputType::kTouchscreen);
-  GetInputHandler().PinchGestureBegin();
+  GetInputHandler().PinchGestureBegin(anchor, ui::ScrollInputType::kWheel);
   GetInputHandler().PinchGestureUpdate(2, anchor);
-  GetInputHandler().PinchGestureEnd(anchor, true);
+  GetInputHandler().PinchGestureEnd(anchor);
   GetInputHandler().ScrollEnd();
 
   EXPECT_POINTF_EQ(gfx::PointF(250, 250),
@@ -3902,9 +3908,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PinchZoomSnapsToScreenEdge) {
       BeginState(anchor, gfx::Vector2dF(), ui::ScrollInputType::kTouchscreen)
           .get(),
       ui::ScrollInputType::kTouchscreen);
-  GetInputHandler().PinchGestureBegin();
+  GetInputHandler().PinchGestureBegin(gfx::Point(100, 100),
+                                      ui::ScrollInputType::kWheel);
   GetInputHandler().PinchGestureUpdate(2, anchor);
-  GetInputHandler().PinchGestureEnd(anchor, true);
+  GetInputHandler().PinchGestureEnd(anchor);
   GetInputHandler().ScrollEnd();
 
   EXPECT_POINTF_EQ(gfx::PointF(0, 0),
@@ -3922,9 +3929,9 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PinchZoomSnapsToScreenEdge) {
       BeginState(anchor, gfx::Vector2dF(), ui::ScrollInputType::kTouchscreen)
           .get(),
       ui::ScrollInputType::kTouchscreen);
-  GetInputHandler().PinchGestureBegin();
+  GetInputHandler().PinchGestureBegin(anchor, ui::ScrollInputType::kWheel);
   GetInputHandler().PinchGestureUpdate(2, anchor);
-  GetInputHandler().PinchGestureEnd(anchor, true);
+  GetInputHandler().PinchGestureEnd(anchor);
   GetInputHandler().ScrollEnd();
 
   EXPECT_POINTF_EQ(gfx::PointF(50, 50),
@@ -3943,9 +3950,9 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PinchZoomSnapsToScreenEdge) {
       BeginState(anchor, gfx::Vector2dF(), ui::ScrollInputType::kTouchscreen)
           .get(),
       ui::ScrollInputType::kTouchscreen);
-  GetInputHandler().PinchGestureBegin();
+  GetInputHandler().PinchGestureBegin(anchor, ui::ScrollInputType::kWheel);
   GetInputHandler().PinchGestureUpdate(2, anchor);
-  GetInputHandler().PinchGestureEnd(anchor, true);
+  GetInputHandler().PinchGestureEnd(anchor);
   GetInputHandler().ScrollEnd();
 
   EXPECT_POINTF_EQ(gfx::PointF(200, 200),
@@ -4158,9 +4165,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PinchGesture) {
                    ui::ScrollInputType::kTouchscreen)
             .get(),
         ui::ScrollInputType::kTouchscreen);
-    GetInputHandler().PinchGestureBegin();
+    GetInputHandler().PinchGestureBegin(gfx::Point(50, 50),
+                                        ui::ScrollInputType::kWheel);
     GetInputHandler().PinchGestureUpdate(page_scale_delta, gfx::Point(50, 50));
-    GetInputHandler().PinchGestureEnd(gfx::Point(50, 50), true);
+    GetInputHandler().PinchGestureEnd(gfx::Point(50, 50));
     GetInputHandler().ScrollEnd();
     EXPECT_FALSE(did_request_next_frame_);
     EXPECT_TRUE(did_request_redraw_);
@@ -4183,9 +4191,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PinchGesture) {
                    ui::ScrollInputType::kTouchscreen)
             .get(),
         ui::ScrollInputType::kTouchscreen);
-    GetInputHandler().PinchGestureBegin();
+    GetInputHandler().PinchGestureBegin(gfx::Point(50, 50),
+                                        ui::ScrollInputType::kWheel);
     GetInputHandler().PinchGestureUpdate(page_scale_delta, gfx::Point(50, 50));
-    GetInputHandler().PinchGestureEnd(gfx::Point(50, 50), true);
+    GetInputHandler().PinchGestureEnd(gfx::Point(50, 50));
     GetInputHandler().ScrollEnd();
 
     std::unique_ptr<CompositorCommitData> commit_data =
@@ -4211,9 +4220,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PinchGesture) {
                                              ui::ScrollInputType::kTouchscreen)
                                       .get(),
                                   ui::ScrollInputType::kTouchscreen);
-    GetInputHandler().PinchGestureBegin();
+    GetInputHandler().PinchGestureBegin(gfx::Point(),
+                                        ui::ScrollInputType::kWheel);
     GetInputHandler().PinchGestureUpdate(page_scale_delta, gfx::Point());
-    GetInputHandler().PinchGestureEnd(gfx::Point(), true);
+    GetInputHandler().PinchGestureEnd(gfx::Point());
     GetInputHandler().ScrollEnd();
 
     std::unique_ptr<CompositorCommitData> commit_data =
@@ -4242,10 +4252,11 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PinchGesture) {
                    ui::ScrollInputType::kTouchscreen)
             .get(),
         ui::ScrollInputType::kTouchscreen);
-    GetInputHandler().PinchGestureBegin();
+    GetInputHandler().PinchGestureBegin(gfx::Point(10, 10),
+                                        ui::ScrollInputType::kWheel);
     GetInputHandler().PinchGestureUpdate(page_scale_delta, gfx::Point(10, 10));
     GetInputHandler().PinchGestureUpdate(page_scale_delta, gfx::Point(20, 20));
-    GetInputHandler().PinchGestureEnd(gfx::Point(20, 20), true);
+    GetInputHandler().PinchGestureEnd(gfx::Point(20, 20));
     GetInputHandler().ScrollEnd();
 
     std::unique_ptr<CompositorCommitData> commit_data =
@@ -4273,14 +4284,15 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PinchGesture) {
                    ui::ScrollInputType::kTouchscreen)
             .get(),
         ui::ScrollInputType::kTouchscreen);
-    GetInputHandler().PinchGestureBegin();
+    GetInputHandler().PinchGestureBegin(gfx::Point(10, 10),
+                                        ui::ScrollInputType::kWheel);
     GetInputHandler().PinchGestureUpdate(page_scale_delta, gfx::Point(10, 10));
     GetInputHandler().ScrollUpdate(
         UpdateState(gfx::Point(10, 10), gfx::Vector2d(-10, -10),
                     ui::ScrollInputType::kTouchscreen)
             .get());
     GetInputHandler().PinchGestureUpdate(page_scale_delta, gfx::Point(20, 20));
-    GetInputHandler().PinchGestureEnd(gfx::Point(20, 20), true);
+    GetInputHandler().PinchGestureEnd(gfx::Point(20, 20));
     GetInputHandler().ScrollEnd();
 
     std::unique_ptr<CompositorCommitData> commit_data =
@@ -4306,7 +4318,8 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PinchGesture) {
                                              ui::ScrollInputType::kTouchscreen)
                                       .get(),
                                   ui::ScrollInputType::kTouchscreen);
-    GetInputHandler().PinchGestureBegin();
+    GetInputHandler().PinchGestureBegin(gfx::Point(0, 0),
+                                        ui::ScrollInputType::kWheel);
     GetInputHandler().PinchGestureUpdate(2, gfx::Point(0, 0));
     GetInputHandler().PinchGestureUpdate(1, gfx::Point(0, 0));
 
@@ -4318,7 +4331,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, PinchGesture) {
                     ui::ScrollInputType::kTouchscreen)
             .get());
     GetInputHandler().PinchGestureUpdate(1, gfx::Point(10, 10));
-    GetInputHandler().PinchGestureEnd(gfx::Point(10, 10), true);
+    GetInputHandler().PinchGestureEnd(gfx::Point(10, 10));
     GetInputHandler().ScrollEnd();
 
     std::unique_ptr<CompositorCommitData> commit_data =
@@ -4355,14 +4368,15 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, SyncSubpixelScrollDelta) {
                                            ui::ScrollInputType::kTouchscreen)
                                     .get(),
                                 ui::ScrollInputType::kTouchscreen);
-  GetInputHandler().PinchGestureBegin();
+  GetInputHandler().PinchGestureBegin(gfx::Point(10, 10),
+                                      ui::ScrollInputType::kWheel);
   GetInputHandler().PinchGestureUpdate(page_scale_delta, gfx::Point(10, 10));
   GetInputHandler().ScrollUpdate(UpdateState(gfx::Point(10, 10),
                                              gfx::Vector2dF(0, -1.001f),
                                              ui::ScrollInputType::kTouchscreen)
                                      .get());
   GetInputHandler().PinchGestureUpdate(page_scale_delta, gfx::Point(10, 9));
-  GetInputHandler().PinchGestureEnd(gfx::Point(10, 9), true);
+  GetInputHandler().PinchGestureEnd(gfx::Point(10, 9));
   GetInputHandler().ScrollEnd();
 
   std::unique_ptr<CompositorCommitData> commit_data =
@@ -4442,9 +4456,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
 
     did_request_redraw_ = false;
     did_request_next_frame_ = false;
-    GetInputHandler().PinchGestureBegin();
+    GetInputHandler().PinchGestureBegin(gfx::Point(50, 50),
+                                        ui::ScrollInputType::kWheel);
     GetInputHandler().PinchGestureUpdate(page_scale_delta, gfx::Point(50, 50));
-    GetInputHandler().PinchGestureEnd(gfx::Point(50, 50), true);
+    GetInputHandler().PinchGestureEnd(gfx::Point(50, 50));
     host_impl_->ActivateSyncTree();
     EXPECT_TRUE(did_request_redraw_);
     EXPECT_TRUE(did_request_next_frame_);
@@ -4497,9 +4512,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
 
     did_request_redraw_ = false;
     did_request_next_frame_ = false;
-    GetInputHandler().PinchGestureBegin();
+    GetInputHandler().PinchGestureBegin(gfx::Point(50, 50),
+                                        ui::ScrollInputType::kWheel);
     GetInputHandler().PinchGestureUpdate(page_scale_delta, gfx::Point(50, 50));
-    GetInputHandler().PinchGestureEnd(gfx::Point(50, 50), true);
+    GetInputHandler().PinchGestureEnd(gfx::Point(50, 50));
     host_impl_->ActivateSyncTree();
     EXPECT_TRUE(did_request_redraw_);
     EXPECT_FALSE(did_request_next_frame_);
@@ -6100,9 +6116,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, CompositorFrameMetadata) {
                                            ui::ScrollInputType::kTouchscreen)
                                     .get(),
                                 ui::ScrollInputType::kTouchscreen);
-  GetInputHandler().PinchGestureBegin();
+  GetInputHandler().PinchGestureBegin(gfx::Point(),
+                                      ui::ScrollInputType::kWheel);
   GetInputHandler().PinchGestureUpdate(2, gfx::Point());
-  GetInputHandler().PinchGestureEnd(gfx::Point(), true);
+  GetInputHandler().PinchGestureEnd(gfx::Point());
   GetInputHandler().ScrollEnd();
   {
     viz::CompositorFrameMetadata metadata =
@@ -8070,9 +8087,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
                                            ui::ScrollInputType::kTouchscreen)
                                     .get(),
                                 ui::ScrollInputType::kTouchscreen);
-  GetInputHandler().PinchGestureBegin();
+  GetInputHandler().PinchGestureBegin(gfx::Point(),
+                                      ui::ScrollInputType::kWheel);
   GetInputHandler().PinchGestureUpdate(page_scale, gfx::Point());
-  GetInputHandler().PinchGestureEnd(gfx::Point(), true);
+  GetInputHandler().PinchGestureEnd(gfx::Point());
   GetInputHandler().ScrollEnd();
 
   DrawOneFrame();
@@ -8120,9 +8138,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
                                            ui::ScrollInputType::kTouchscreen)
                                     .get(),
                                 ui::ScrollInputType::kTouchscreen);
-  GetInputHandler().PinchGestureBegin();
+  GetInputHandler().PinchGestureBegin(gfx::Point(),
+                                      ui::ScrollInputType::kWheel);
   GetInputHandler().PinchGestureUpdate(new_page_scale, gfx::Point());
-  GetInputHandler().PinchGestureEnd(gfx::Point(), true);
+  GetInputHandler().PinchGestureEnd(gfx::Point());
   GetInputHandler().ScrollEnd();
   DrawOneFrame();
 
@@ -8923,10 +8942,11 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, RootLayerScrollOffsetDelegation) {
                                            ui::ScrollInputType::kTouchscreen)
                                     .get(),
                                 ui::ScrollInputType::kTouchscreen);
-  GetInputHandler().PinchGestureBegin();
+  GetInputHandler().PinchGestureBegin(gfx::Point(),
+                                      ui::ScrollInputType::kWheel);
   GetInputHandler().PinchGestureUpdate(2, gfx::Point());
   GetInputHandler().PinchGestureUpdate(.5f, gfx::Point());
-  GetInputHandler().PinchGestureEnd(gfx::Point(), true);
+  GetInputHandler().PinchGestureEnd(gfx::Point());
   GetInputHandler().ScrollEnd();
 
   // Scrolling should be relative to the offset as given by the delegate.
@@ -10152,9 +10172,9 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, RootScrollerScrollNonDescendant) {
         BeginState(anchor, gfx::Vector2dF(), ui::ScrollInputType::kTouchscreen)
             .get(),
         ui::ScrollInputType::kTouchscreen);
-    GetInputHandler().PinchGestureBegin();
+    GetInputHandler().PinchGestureBegin(anchor, ui::ScrollInputType::kWheel);
     GetInputHandler().PinchGestureUpdate(page_scale_factor, anchor);
-    GetInputHandler().PinchGestureEnd(anchor, true);
+    GetInputHandler().PinchGestureEnd(anchor);
 
     EXPECT_POINTF_EQ(gfx::PointF(anchor.x() / 2, anchor.y() / 2),
                      CurrentScrollOffset(inner_scroll_layer));
@@ -15383,9 +15403,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
                                              ui::ScrollInputType::kTouchscreen)
                                       .get(),
                                   ui::ScrollInputType::kTouchscreen);
-    GetInputHandler().PinchGestureBegin();
+    GetInputHandler().PinchGestureBegin(gfx::Point(),
+                                        ui::ScrollInputType::kWheel);
     GetInputHandler().PinchGestureUpdate(page_scale_delta, gfx::Point());
-    GetInputHandler().PinchGestureEnd(gfx::Point(), true);
+    GetInputHandler().PinchGestureEnd(gfx::Point());
     GetInputHandler().ScrollEnd();
 
     gfx::Vector2dF scroll_delta(0, 5);
@@ -16612,9 +16633,10 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, RenderFrameMetadata) {
                                            ui::ScrollInputType::kTouchscreen)
                                     .get(),
                                 ui::ScrollInputType::kTouchscreen);
-  GetInputHandler().PinchGestureBegin();
+  GetInputHandler().PinchGestureBegin(gfx::Point(),
+                                      ui::ScrollInputType::kWheel);
   GetInputHandler().PinchGestureUpdate(2, gfx::Point());
-  GetInputHandler().PinchGestureEnd(gfx::Point(), true);
+  GetInputHandler().PinchGestureEnd(gfx::Point());
   GetInputHandler().ScrollEnd();
   {
     RenderFrameMetadata metadata = StartDrawAndProduceRenderFrameMetadata();

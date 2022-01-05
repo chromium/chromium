@@ -306,10 +306,11 @@ class CC_EXPORT InputHandler {
   virtual void SetSynchronousInputHandlerRootScrollOffset(
       const gfx::PointF& root_content_offset) = 0;
 
-  virtual void PinchGestureBegin() = 0;
+  virtual void PinchGestureBegin(const gfx::Point& anchor,
+                                 ui::ScrollInputType source) = 0;
   virtual void PinchGestureUpdate(float magnify_delta,
                                   const gfx::Point& anchor) = 0;
-  virtual void PinchGestureEnd(const gfx::Point& anchor, bool snap_to_min) = 0;
+  virtual void PinchGestureEnd(const gfx::Point& anchor) = 0;
 
   // Request another callback to InputHandlerClient::Animate().
   virtual void SetNeedsAnimateInput() = 0;

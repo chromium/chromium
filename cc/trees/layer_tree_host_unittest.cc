@@ -3622,9 +3622,10 @@ class ViewportDeltasAppliedDuringPinch : public LayerTreeHostTest,
 
   void DrawLayersOnThread(LayerTreeHostImpl* host_impl) override {
     if (!sent_gesture_) {
-      host_impl->GetInputHandler().PinchGestureBegin();
+      host_impl->GetInputHandler().PinchGestureBegin(
+          gfx::Point(100, 100), ui::ScrollInputType::kWheel);
       host_impl->GetInputHandler().PinchGestureUpdate(2, gfx::Point(100, 100));
-      host_impl->GetInputHandler().PinchGestureEnd(gfx::Point(100, 100), true);
+      host_impl->GetInputHandler().PinchGestureEnd(gfx::Point(100, 100));
       sent_gesture_ = true;
     }
   }
@@ -7527,23 +7528,23 @@ class LayerTreeHostTestCrispUpAfterPinchEnds : public LayerTreeHostTest {
     switch (frame_) {
       case 2:
         // Pinch zoom in.
-        host_impl->GetInputHandler().PinchGestureBegin();
+        host_impl->GetInputHandler().PinchGestureBegin(
+            gfx::Point(100, 100), ui::ScrollInputType::kWheel);
         host_impl->GetInputHandler().PinchGestureUpdate(1.5f,
                                                         gfx::Point(100, 100));
-        host_impl->GetInputHandler().PinchGestureEnd(gfx::Point(100, 100),
-                                                     true);
+        host_impl->GetInputHandler().PinchGestureEnd(gfx::Point(100, 100));
         break;
       case 3:
         // Pinch zoom back to 1.f but don't end it.
-        host_impl->GetInputHandler().PinchGestureBegin();
+        host_impl->GetInputHandler().PinchGestureBegin(
+            gfx::Point(100, 100), ui::ScrollInputType::kWheel);
         host_impl->GetInputHandler().PinchGestureUpdate(1.f / 1.5f,
                                                         gfx::Point(100, 100));
         break;
       case 4:
         // End the pinch, but delay tile production.
         playback_allowed_event_.Reset();
-        host_impl->GetInputHandler().PinchGestureEnd(gfx::Point(100, 100),
-                                                     true);
+        host_impl->GetInputHandler().PinchGestureEnd(gfx::Point(100, 100));
         break;
       case 5:
         // Let tiles complete.
@@ -7804,11 +7805,11 @@ class LayerTreeHostTestContinuousDrawWhenCreatingVisibleTiles
         // Delay tile production.
         playback_allowed_event_.Reset();
         // Pinch zoom in to cause new tiles to be required.
-        host_impl->GetInputHandler().PinchGestureBegin();
+        host_impl->GetInputHandler().PinchGestureBegin(
+            gfx::Point(100, 100), ui::ScrollInputType::kWheel);
         host_impl->GetInputHandler().PinchGestureUpdate(1.5f,
                                                         gfx::Point(100, 100));
-        host_impl->GetInputHandler().PinchGestureEnd(gfx::Point(100, 100),
-                                                     true);
+        host_impl->GetInputHandler().PinchGestureEnd(gfx::Point(100, 100));
         ++step_;
         break;
       case 2:
@@ -8995,7 +8996,8 @@ class LayerTreeHostTestCheckerboardUkm : public LayerTreeHostTest {
 
     // We have an active tree. Start a pinch gesture so we start recording
     // stats.
-    impl->GetInputHandler().PinchGestureBegin();
+    impl->GetInputHandler().PinchGestureBegin(
+        gfx::Point(100, 100), ui::ScrollInputType::kTouchscreen);
   }
 
   void DrawLayersOnThread(LayerTreeHostImpl* impl) override {
@@ -9004,7 +9006,7 @@ class LayerTreeHostTestCheckerboardUkm : public LayerTreeHostTest {
 
     // We just drew a frame, stats for it should have been recorded. End the
     // gesture so they are flushed to the recorder.
-    impl->GetInputHandler().PinchGestureEnd(gfx::Point(50, 50), false);
+    impl->GetInputHandler().PinchGestureEnd(gfx::Point(50, 50));
 
     // RenewTreePriority will run when the smoothness expiration timer fires.
     // Synthetically do it here so the UkmManager is notified.

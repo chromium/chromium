@@ -73,10 +73,11 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
   void RequestUpdateForSynchronousInputHandler() override;
   void SetSynchronousInputHandlerRootScrollOffset(
       const gfx::PointF& root_content_offset) override;
-  void PinchGestureBegin() override;
+  void PinchGestureBegin(const gfx::Point& anchor,
+                         ui::ScrollInputType source) override;
   void PinchGestureUpdate(float magnify_delta,
                           const gfx::Point& anchor) override;
-  void PinchGestureEnd(const gfx::Point& anchor, bool snap_to_min) override;
+  void PinchGestureEnd(const gfx::Point& anchor) override;
   void SetNeedsAnimateInput() override;
   bool IsCurrentlyScrollingViewport() const override;
   EventListenerProperties GetEventListenerProperties(

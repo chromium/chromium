@@ -715,7 +715,8 @@ TEST_F(LegacySWPictureLayerImplTest, ZoomOutCrash) {
   // input handler.
   InputHandler::Create(static_cast<CompositorDelegateForInput&>(*host_impl()));
 
-  host_impl()->GetInputHandler().PinchGestureBegin();
+  host_impl()->GetInputHandler().PinchGestureBegin(
+      gfx::Point(), ui::ScrollInputType::kTouchscreen);
   SetContentsScaleOnBothLayers(1.0f, 1.0f, 1.0f);
   SetContentsScaleOnBothLayers(1.0f, 1.0f, 1.0f);
   EXPECT_EQ(active_layer()->tilings()->NumHighResTilings(), 1);
@@ -778,7 +779,8 @@ TEST_F(LegacySWPictureLayerImplTest, PinchGestureTilings) {
   InputHandler::Create(static_cast<CompositorDelegateForInput&>(*host_impl()));
 
   // Start a pinch gesture.
-  host_impl()->GetInputHandler().PinchGestureBegin();
+  host_impl()->GetInputHandler().PinchGestureBegin(
+      gfx::Point(), ui::ScrollInputType::kTouchscreen);
 
   // Zoom out by a small amount. We should create a tiling at half
   // the scale (2/kMaxScaleRatioDuringPinch).
@@ -820,7 +822,7 @@ TEST_F(LegacySWPictureLayerImplTest, PinchGestureTilings) {
   EXPECT_NE(LOW_RESOLUTION, low_res_tiling->resolution());
 
   // Stop a pinch gesture.
-  host_impl()->GetInputHandler().PinchGestureEnd(gfx::Point(), false);
+  host_impl()->GetInputHandler().PinchGestureEnd(gfx::Point());
 
   // Ensure UpdateTiles won't remove any tilings.
   active_layer()->MarkAllTilingsUsed();
@@ -863,7 +865,8 @@ TEST_F(LegacySWPictureLayerImplTest, SnappedTilingDuringZoom) {
   InputHandler::Create(static_cast<CompositorDelegateForInput&>(*host_impl()));
 
   // Start a pinch gesture.
-  host_impl()->GetInputHandler().PinchGestureBegin();
+  host_impl()->GetInputHandler().PinchGestureBegin(
+      gfx::Point(), ui::ScrollInputType::kTouchscreen);
 
   // Zoom out by a small amount. We should create a tiling at half
   // the scale (1/kMaxScaleRatioDuringPinch).
@@ -939,7 +942,8 @@ TEST_F(LegacySWPictureLayerImplTest, CleanUpTilings) {
   // input handler.
   InputHandler::Create(static_cast<CompositorDelegateForInput&>(*host_impl()));
 
-  host_impl()->GetInputHandler().PinchGestureBegin();
+  host_impl()->GetInputHandler().PinchGestureBegin(
+      gfx::Point(), ui::ScrollInputType::kTouchscreen);
 
   // Changing the ideal but not creating new tilings.
   scale = 1.5f;
@@ -962,7 +966,7 @@ TEST_F(LegacySWPictureLayerImplTest, CleanUpTilings) {
       1.f * low_res_factor,
       active_layer()->tilings()->tiling_at(1)->contents_scale_key());
 
-  host_impl()->GetInputHandler().PinchGestureEnd(gfx::Point(), false);
+  host_impl()->GetInputHandler().PinchGestureEnd(gfx::Point());
 
   // Create a 1.2 scale tiling. Now we have 1.0 and 1.2 tilings. Ideal = 1.2.
   scale = 1.2f;
@@ -2684,7 +2688,8 @@ TEST_F(LegacySWPictureLayerImplTest, FirstTilingDuringPinch) {
 
   // When we page scale up by 2.3, we get a new tiling that is a power of 2, in
   // this case 4.
-  host_impl()->GetInputHandler().PinchGestureBegin();
+  host_impl()->GetInputHandler().PinchGestureBegin(
+      gfx::Point(), ui::ScrollInputType::kTouchscreen);
   float high_res_scale = 2.3f;
   SetContentsScaleOnBothLayers(high_res_scale, 1.f, high_res_scale);
   EXPECT_EQ(4.f, pending_layer()->HighResTiling()->contents_scale_key());
@@ -2701,7 +2706,8 @@ TEST_F(LegacySWPictureLayerImplTest, PinchingTooSmall) {
   // input handler.
   InputHandler::Create(static_cast<CompositorDelegateForInput&>(*host_impl()));
 
-  host_impl()->GetInputHandler().PinchGestureBegin();
+  host_impl()->GetInputHandler().PinchGestureBegin(
+      gfx::Point(), ui::ScrollInputType::kTouchscreen);
   float high_res_scale = 0.0001f;
   EXPECT_LT(high_res_scale, pending_layer()->MinimumContentsScale());
 
@@ -2727,7 +2733,8 @@ TEST_F(LegacySWPictureLayerImplTest, PinchingTooSmallWithContentsScale) {
   // input handler.
   InputHandler::Create(static_cast<CompositorDelegateForInput&>(*host_impl()));
 
-  host_impl()->GetInputHandler().PinchGestureBegin();
+  host_impl()->GetInputHandler().PinchGestureBegin(
+      gfx::Point(), ui::ScrollInputType::kTouchscreen);
 
   float page_scale = 0.0001f;
   EXPECT_LT(page_scale * contents_scale,
@@ -4026,7 +4033,8 @@ TEST_F(NoLowResPictureLayerImplTest, CleanUpTilings) {
   // input handler.
   InputHandler::Create(static_cast<CompositorDelegateForInput&>(*host_impl()));
 
-  host_impl()->GetInputHandler().PinchGestureBegin();
+  host_impl()->GetInputHandler().PinchGestureBegin(
+      gfx::Point(), ui::ScrollInputType::kTouchscreen);
 
   // Changing the ideal but not creating new tilings.
   scale *= 1.5f;
@@ -4039,7 +4047,7 @@ TEST_F(NoLowResPictureLayerImplTest, CleanUpTilings) {
   active_layer()->CleanUpTilingsOnActiveLayer(used_tilings);
   ASSERT_EQ(1u, active_layer()->tilings()->num_tilings());
 
-  host_impl()->GetInputHandler().PinchGestureEnd(gfx::Point(), false);
+  host_impl()->GetInputHandler().PinchGestureEnd(gfx::Point());
 
   // Create a 1.2 scale tiling. Now we have 1.0 and 1.2 tilings. Ideal = 1.2.
   scale /= 4.f;
@@ -5552,7 +5560,8 @@ TEST_F(NoLowResPictureLayerImplTest, LowResWasHighResCollision) {
   // input handler.
   InputHandler::Create(static_cast<CompositorDelegateForInput&>(*host_impl()));
 
-  host_impl()->GetInputHandler().PinchGestureBegin();
+  host_impl()->GetInputHandler().PinchGestureBegin(
+      gfx::Point(), ui::ScrollInputType::kTouchscreen);
 
   // Zoom out to exactly the low res factor so that the previous high res
   // would be equal to the current low res (if it were possible to have one).

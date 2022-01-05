@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<script src='../resources/testharness.js'></script>
+<script src='../resources/testharnessreport.js'></script>
+<script src='../resources/testdriver.js'></script>
+<script src='../resources/testdriver-actions.js'></script>
+<script src='../resources/testdriver-vendor.js'></script>
+<style>
+  body, html {
+    margin: 0;
+    height: 10000px;
+  }
+</style>
+
+<script>
+  // Test that a basic pointer action sequence resulting in a pinch-zoom works
+  // without crashing or DCHECK.
+  window.onload = () => {
+    promise_test(() => {
+      assert_equals(window.visualViewport.scale, 1,
+                    "PRECONDITION: Page loaded unzoomed.");
+      const pinch_zoom = new test_driver.Actions()
+          .setContext(window)
+          .addPointer("finger1", "touch")
+          .addPointer("finger2", "touch")
+          .pointerMove(400, 250, {origin: "viewport", sourceName: "finger1"})
+          .pointerMove(400, 350, {origin: "viewport", sourceName: "finger2"})
+          .pointerDown({sourceName: "finger1"})
+          .pointerDown({sourceName: "finger2"})
+          .pointerMove(400, 100, {origin: "viewport", sourceName: "finger1"})
+          .pointerMove(400, 500, {origin: "viewport", sourceName: "finger2"})
+          .pointerUp({sourceName: "finger1"})
+          .pointerUp({sourceName: "finger2"})
+          .send();
+
+      return pinch_zoom.then(() => {
+        assert_greater_than(window.visualViewport.scale, 1.5,
+                            "Action must have caused pinch-zoom.");
+      });
+    }, 'Simulated pinch-zoom with test_driver Actions API');
+
+  }
+</script>

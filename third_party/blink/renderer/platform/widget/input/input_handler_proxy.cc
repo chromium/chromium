@@ -697,7 +697,11 @@ InputHandlerProxy::RouteToTypeSpecificHandler(
 
     case WebInputEvent::Type::kGesturePinchBegin: {
       DCHECK(!gesture_pinch_in_progress_);
-      input_handler_->PinchGestureBegin();
+      const WebGestureEvent& gesture_event =
+          static_cast<const WebGestureEvent&>(event);
+      input_handler_->PinchGestureBegin(
+          gfx::ToFlooredPoint(gesture_event.PositionInWidget()),
+          GestureScrollInputType(gesture_event.SourceDevice()));
       gesture_pinch_in_progress_ = true;
       return DID_HANDLE;
     }
@@ -708,8 +712,7 @@ InputHandlerProxy::RouteToTypeSpecificHandler(
       const WebGestureEvent& gesture_event =
           static_cast<const WebGestureEvent&>(event);
       input_handler_->PinchGestureEnd(
-          gfx::ToFlooredPoint(gesture_event.PositionInWidget()),
-          gesture_event.SourceDevice() == WebGestureDevice::kTouchpad);
+          gfx::ToFlooredPoint(gesture_event.PositionInWidget()));
       return DID_HANDLE;
     }
 
@@ -1479,9 +1482,9 @@ void InputHandlerProxy::SynchronouslySetRootScrollOffset(
 void InputHandlerProxy::SynchronouslyZoomBy(float magnify_delta,
                                             const gfx::Point& anchor) {
   DCHECK(synchronous_input_handler_);
-  input_handler_->PinchGestureBegin();
+  input_handler_->PinchGestureBegin(anchor, ui::ScrollInputType::kTouchscreen);
   input_handler_->PinchGestureUpdate(magnify_delta, anchor);
-  input_handler_->PinchGestureEnd(anchor, false);
+  input_handler_->PinchGestureEnd(anchor);
 }
 
 bool InputHandlerProxy::GetSnapFlingInfoAndSetAnimatingSnapTarget(
@@ -1564,7 +1567,7 @@ const cc::InputHandlerPointerResult InputHandlerProxy::HandlePointerDown(
     DCHECK_NE(*currently_active_gesture_device_,
               WebGestureDevice::kUninitialized);
     if (gesture_pinch_in_progress_) {
-      input_handler_->PinchGestureEnd(gfx::ToFlooredPoint(position), true);
+      input_handler_->PinchGestureEnd(gfx::ToFlooredPoint(position));
     }
     if (handling_gesture_on_impl_thread_) {
       input_handler_->RecordScrollEnd(

@@ -731,14 +731,37 @@ void ThreadedInputHandler::SetSynchronousInputHandlerRootScrollOffset(
   compositor_delegate_.SetNeedsFullViewportRedraw();
 }
 
-void ThreadedInputHandler::PinchGestureBegin() {
+void ThreadedInputHandler::PinchGestureBegin(const gfx::Point& anchor,
+                                             ui::ScrollInputType source) {
+  DCHECK(source == ui::ScrollInputType::kTouchscreen ||
+         source == ui::ScrollInputType::kWheel);
+
   pinch_gesture_active_ = true;
   pinch_gesture_end_should_clear_scrolling_node_ = !CurrentlyScrollingNode();
 
   TRACE_EVENT_INSTANT1("cc", "SetCurrentlyScrollingNode PinchGestureBegin",
                        TRACE_EVENT_SCOPE_THREAD, "isNull",
                        OuterViewportScrollNode() ? false : true);
-  ActiveTree().SetCurrentlyScrollingNode(OuterViewportScrollNode());
+
+  // Some unit tests don't setup viewport scroll nodes but do initiate a pinch
+  // zoom gesture. Ideally, those tests should either create the viewport
+  // scroll nodes or avoid simulating a pinch gesture.
+  if (OuterViewportScrollNode()) {
+    ActiveTree().SetCurrentlyScrollingNode(OuterViewportScrollNode());
+
+    ScrollStateData scroll_state_data;
+    scroll_state_data.position_x = anchor.x();
+    scroll_state_data.position_y = anchor.y();
+    scroll_state_data.is_beginning = true;
+    scroll_state_data.delta_granularity =
+        ui::ScrollGranularity::kScrollByPrecisePixel;
+    scroll_state_data.is_direct_manipulation =
+        source == ui::ScrollInputType::kTouchscreen;
+    ScrollState state(scroll_state_data);
+
+    DidLatchToScroller(state, source);
+  }
+
   compositor_delegate_.GetImplDeprecated()
       .browser_controls_manager()
       ->PinchBegin();
@@ -759,8 +782,12 @@ void ThreadedInputHandler::PinchGestureUpdate(float magnify_delta,
   UpdateRootLayerStateForSynchronousInputHandler();
 }
 
-void ThreadedInputHandler::PinchGestureEnd(const gfx::Point& anchor,
-                                           bool snap_to_min) {
+void ThreadedInputHandler::PinchGestureEnd(const gfx::Point& anchor) {
+  // Some tests create a pinch gesture without creating a viewport scroll node.
+  // In those cases, PinchGestureBegin will not latch to a scroll node.
+  DCHECK(latched_scroll_type_.has_value() || !CurrentlyScrollingNode());
+  bool snap_to_min = latched_scroll_type_.has_value() &&
+                     latched_scroll_type_ == ui::ScrollInputType::kWheel;
   pinch_gesture_active_ = false;
   if (pinch_gesture_end_should_clear_scrolling_node_) {
     pinch_gesture_end_should_clear_scrolling_node_ = false;
@@ -1981,6 +2008,7 @@ void ThreadedInputHandler::DidLatchToScroller(const ScrollState& scroll_state,
       ->ScrollAnimationAbort();
 
   scroll_animating_snap_target_ids_ = TargetSnapAreaElementIds();
+
   last_latched_scroller_ = CurrentlyScrollingNode()->element_id;
   latched_scroll_type_ = type;
   last_scroll_begin_state_ = scroll_state;
