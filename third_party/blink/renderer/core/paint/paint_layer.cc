@@ -2674,9 +2674,8 @@ void PaintLayer::RemoveAncestorScrollContainerLayer(
 
     if (PaintLayerScrollableArea* ancestor_scrollable_area =
             AncestorScrollContainerLayer()->GetScrollableArea()) {
-      // TODO(pdr): When CompositeAfterPaint is enabled, we will need to
-      // invalidate the scroll paint property subtree for this so main thread
-      // scroll reasons are recomputed.
+      // TODO(pdr): We will need to invalidate the scroll paint property subtree
+      // for this so main thread scroll reasons are recomputed.
       ancestor_scrollable_area->InvalidateStickyConstraintsFor(this);
     }
   }

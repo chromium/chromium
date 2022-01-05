@@ -359,9 +359,7 @@ const NGBlockBreakToken* PreviousFragmentainerBreakToken(
 // nullptr if this is the first fragment. Note that this operation is O(n)
 // (number of fragments generated from the node), and should be avoided when
 // possible. This function should no longer be necessary once everything has
-// been properly converted to LayoutNG, and we have also gotten rid of the
-// fragment stitching of composited objects (will be fixed by
-// CompositeAfterPaint).
+// been properly converted to LayoutNG.
 const NGBlockBreakToken* FindPreviousBreakToken(const NGPhysicalBoxFragment&);
 
 // Return the index of the fragmentainer preceding the first fragmentainer

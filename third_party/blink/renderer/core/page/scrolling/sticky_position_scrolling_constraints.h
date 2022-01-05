@@ -98,8 +98,7 @@ struct CORE_EXPORT StickyPositionScrollingConstraints final
   // position before scroll.
   //
   // This method exists for performance (to avoid recomputing the sticky offset)
-  // and must only be called when compositing inputs are clean for the sticky
-  // element. (Or after prepaint for CompositeAfterPaint).
+  // and must only be called after prepaint.
   PhysicalOffset GetOffsetForStickyPosition(const StickyConstraintsMap&) const;
 
   void Trace(Visitor* visitor) const;

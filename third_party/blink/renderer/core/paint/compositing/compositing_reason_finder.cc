@@ -192,7 +192,7 @@ CompositingReasonFinder::DirectReasonsForPaintPropertiesExceptScrolling(
   if (object.CanHaveAdditionalCompositingReasons())
     reasons |= object.AdditionalCompositingReasons();
 
-  // TODO(wangxianzhu): Don't depend on PaintLayer for CompositeAfterPaint.
+  // TODO(wangxianzhu): Don't depend on PaintLayer.
   if (!object.HasLayer()) {
     if (object.IsSVGChild())
       reasons |= DirectReasonsForSVGChildPaintProperties(object);
@@ -248,10 +248,9 @@ bool CompositingReasonFinder::ShouldForcePreferCompositingToLCDText(
   if (reasons_except_scrolling != CompositingReason::kNone)
     return true;
 
-  // In CompositeAfterPaint though we don't treat hidden backface as a direct
-  // compositing reason, it's very likely that the object will be composited,
-  // and it also indicates preference of compositing, so we prefer composited
-  // scrolling here.
+  // Though we don't treat hidden backface as a direct compositing reason, it's
+  // very likely that the object will be composited, and it also indicates
+  // preference of compositing, so we prefer composited scrolling here.
   if (object.StyleRef().BackfaceVisibility() == EBackfaceVisibility::kHidden)
     return true;
 

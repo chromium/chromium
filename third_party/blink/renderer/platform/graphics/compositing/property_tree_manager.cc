@@ -937,8 +937,8 @@ int PropertyTreeManager::SynthesizeCcEffectsForClipsIfNeeded(
       if (!IsCurrentCcEffectSynthetic()) {
         // TODO(crbug.com/803649): We still have clip hierarchy issues with
         // fragment clips. See crbug.com/1238656 for the test case. Will change
-        // the above condition to DCHECK after both CompositeAfterPaint and
-        // LayoutNGBlockFragmentation are fully launched.
+        // the above condition to DCHECK after LayoutNGBlockFragmentation is
+        // fully launched.
         return cc::EffectTree::kInvalidNodeId;
       }
       const auto* pre_exit_clip = current_.clip;
@@ -964,8 +964,8 @@ int PropertyTreeManager::SynthesizeCcEffectsForClipsIfNeeded(
   if (!clip) {
     // TODO(crbug.com/803649): We still have clip hierarchy issues with
     // fragment clips. See crbug.com/1238656 for the test case. Will change
-    // the above condition to DCHECK after both CompositeAfterPaint and
-    // LayoutNGBlockFragmentation are fully launched.
+    // the above condition to DCHECK after LayoutNGBlockFragmentation is fully
+    // launched.
     return cc::EffectTree::kInvalidNodeId;
   }
 

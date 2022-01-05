@@ -430,7 +430,7 @@ class CORE_EXPORT WebLocalFrameImpl final
 
   bool HasDevToolsOverlays() const;
   void UpdateDevToolsOverlaysPrePaint();
-  void PaintDevToolsOverlays(GraphicsContext&);  // For CompositeAfterPaint.
+  void PaintDevToolsOverlays(GraphicsContext&);
 
   void CreateFrameView();
 

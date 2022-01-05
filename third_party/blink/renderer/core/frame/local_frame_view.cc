@@ -2357,8 +2357,7 @@ void LocalFrameView::UpdateLifecyclePhasesInternal(
       if (!run_more_lifecycle_phases)
         return;
 
-      // TODO(pdr): PrePaint should be under the "Paint" devtools timeline step
-      // when CompositeAfterPaint is enabled.
+      // TODO(pdr): PrePaint should be under the "Paint" devtools timeline step.
       run_more_lifecycle_phases = RunPrePaintLifecyclePhase(target_state);
       DCHECK(ShouldThrottleRendering() ||
              Lifecycle().GetState() >= DocumentLifecycle::kPrePaintClean);

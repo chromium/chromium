@@ -65,7 +65,6 @@ class ValidationMessageClient : public GarbageCollectedMixin {
   virtual void ServiceScriptedAnimations(base::TimeTicks) {}
   virtual void LayoutOverlay() {}
   virtual void UpdatePrePaint() {}
-  // For CompositeAfterPaint.
   virtual void PaintOverlay(GraphicsContext&) {}
 
   void Trace(Visitor* visitor) const override {}

@@ -937,11 +937,6 @@ int OutlinePainter::OutlineOutsetExtent(const ComputedStyle& style) {
       .Max(0);
 }
 
-int OutlinePainter::FocusRingWidthInsideBorderBox(const ComputedStyle& style) {
-  // Not sure why '+1'.
-  return std::ceil(blink::FocusRingInnerStrokeWidth(style)) + 1;
-}
-
 void OutlinePainter::IterateRightAnglePathForTesting(
     const SkPath& path,
     const base::RepeatingCallback<void(const Vector<Line>&)>& contour_action) {

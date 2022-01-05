@@ -275,8 +275,8 @@ bool GeometryMapper::LocalToAncestorVisualRectInternal(
 
   // TODO(crbug.com/803649): We still have clip hierarchy issues with fragment
   // clips. See crbug.com/1228364 for the test cases. Will remove the following
-  // statement (leaving success==false) after both CompositeAfterPaint and
-  // LayoutNGBlockFragmentation are fully launched.
+  // statement (leaving success==false) after LayoutNGBlockFragmentation is
+  // fully launched.
   success = true;
 
   rect_to_map.ClearIsTight();
@@ -427,8 +427,8 @@ FloatClipRect GeometryMapper::LocalToAncestorClipRectInternal(
   if (!clip_node) {
     // TODO(crbug.com/803649): We still have clip hierarchy issues with
     // fragment clips. See crbug.com/1228364 for the test cases. Will change
-    // the following to "success = false" after both CompositeAfterPaint and
-    // LayoutNGBlockFragmentation are fully launched.
+    // the following to "success = false" after LayoutNGBlockFragmentation is
+    // fully launched.
     success = true;
     return InfiniteLooseFloatClipRect();
   }

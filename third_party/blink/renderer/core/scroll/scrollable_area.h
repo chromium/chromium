@@ -437,8 +437,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
                    MaximumScrollOffset(orientation));
   }
 
-  // Note that in CompositeAfterPaint, these methods always return nullptr
-  // except for VisualViewport.
+  // These methods always return nullptr except for VisualViewport.
   virtual cc::Layer* LayerForHorizontalScrollbar() const { return nullptr; }
   virtual cc::Layer* LayerForVerticalScrollbar() const { return nullptr; }
   virtual cc::Layer* LayerForScrollCorner() const { return nullptr; }

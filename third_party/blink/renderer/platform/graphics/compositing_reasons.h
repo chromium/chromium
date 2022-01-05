@@ -90,7 +90,7 @@ using CompositingReasons = uint64_t;
   V(LayerForMask)                                                             \
   /* Composited layer painted on top of all other layers as decoration. */    \
   V(LayerForDecoration)                                                       \
-  /* Used in CompositeAfterPaint for link highlight, frame overlay, etc. */   \
+  /* Link highlight, frame overlay, etc. */                                   \
   V(LayerForOther)                                                            \
   /* DocumentTransition shared element.                                       \
   See third_party/blink/renderer/core/document_transition/README.md. */       \

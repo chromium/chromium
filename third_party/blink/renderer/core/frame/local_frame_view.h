@@ -544,12 +544,11 @@ class CORE_EXPORT LocalFrameView final
   PhysicalRect FrameToDocument(const PhysicalRect&) const;
 
   // Normally a LocalFrameView synchronously paints during full lifecycle
-  // updates, into the local frame root's PaintController (CompositeAfterPaint)
-  // or the PaintControllers of GraphicsLayers (pre-CompositeAfterPaint)
-  // However, in some cases (e.g. when printing) we need to paint the frame view
-  // into a PaintController other than the default one(s). The following
-  // functions are provided for these cases. This frame view must be in
-  // PrePaintClean or PaintClean state when these functions are called.
+  // updates, into the local frame root's PaintController. However, in some
+  // cases (e.g. when printing) we need to paint the frame view into a
+  // PaintController other than the default one(s). The following functions are
+  // provided for these cases. This frame view must be in PrePaintClean or
+  // PaintClean state when these functions are called.
   void PaintOutsideOfLifecycle(
       GraphicsContext&,
       const GlobalPaintFlags,
@@ -559,7 +558,7 @@ class CORE_EXPORT LocalFrameView final
   void PaintForTest(const CullRect&);
 
   // Get the PaintRecord based on the cached paint artifact generated during
-  // the last paint in lifecycle update. For CompositeAfterPaint only.
+  // the last paint in lifecycle update.
   sk_sp<cc::PaintRecord> GetPaintRecord() const;
 
   void Show() override;
@@ -642,7 +641,6 @@ class CORE_EXPORT LocalFrameView final
 
   void SetNeedsEnqueueScrollEvent(PaintLayerScrollableArea*);
 
-  // Only for CompositeAfterPaint.
   std::unique_ptr<JSONObject> CompositedLayersAsJSON(LayerTreeFlags);
 
   String MainThreadScrollingReasonsAsText();
@@ -1122,11 +1120,8 @@ class CORE_EXPORT LocalFrameView final
   // For testing.
   bool is_tracking_raster_invalidations_ = false;
 
-  // Currently used in PushPaintArtifactToCompositor() to collect composited
-  // layers as foreign layers. It's transient, but may live across frame updates
-  // until SetForeignLayerListNeedsUpdate() is called.
-  // For CompositeAfterPaint, we use it in PaintTree() for all paintings of the
-  // frame tree in PaintTree(). It caches display items and subsequences across
+  // Used by |PaintTree()| to collect the updated |PaintArtifact| which will be
+  // passed to the compositor. It caches display items and subsequences across
   // frame updates and repaints.
   std::unique_ptr<PaintController> paint_controller_;
   std::unique_ptr<PaintArtifactCompositor> paint_artifact_compositor_;

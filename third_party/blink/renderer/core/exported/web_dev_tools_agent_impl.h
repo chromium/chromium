@@ -74,7 +74,7 @@ class CORE_EXPORT WebDevToolsAgentImpl final
 
   bool HasOverlays() const { return !overlay_agents_.IsEmpty(); }
   void UpdateOverlaysPrePaint();
-  void PaintOverlays(GraphicsContext&);  // For CompositeAfterPaint.
+  void PaintOverlays(GraphicsContext&);
 
   WebInputEventResult HandleInputEvent(const WebInputEvent&);
   void DispatchBufferedTouchEvents();

@@ -53,8 +53,7 @@ class CORE_EXPORT FrameOverlay : public GarbageCollected<FrameOverlay>,
     virtual void PaintFrameOverlay(const FrameOverlay&,
                                    GraphicsContext&,
                                    const gfx::Size& view_size) const = 0;
-    // For CompositeAfterPaint. Invalidates composited layers managed by the
-    // delegate if any.
+    // Invalidates composited layers managed by the delegate, if any.
     virtual void Invalidate() {}
 
     // Service any animations managed by the delegate.
@@ -69,7 +68,6 @@ class CORE_EXPORT FrameOverlay : public GarbageCollected<FrameOverlay>,
 
   void UpdatePrePaint();
 
-  // For CompositeAfterPaint.
   void Paint(GraphicsContext&) const;
 
   // FrameOverlay is always the same size as the viewport.

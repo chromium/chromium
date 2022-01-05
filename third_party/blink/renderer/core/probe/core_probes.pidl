@@ -138,7 +138,6 @@ interface CoreProbes {
   void WebTransportClosed(ExecutionContext*, uint64_t transport_id);
   /* This is for pre-BlinkGenPropertyTrees. TODO(wangxianzhu): Remove this function for BlinkGenPropertyTrees. */
   void LayerTreeDidChange(LocalFrame*);
-  /* For BlinkGenPropertyTrees/CompositeAfterPaint. */
   void LayerTreePainted(LocalFrame*);
   void PseudoElementCreated([Keep] PseudoElement*);
   void PseudoElementDestroyed([Keep] PseudoElement*);

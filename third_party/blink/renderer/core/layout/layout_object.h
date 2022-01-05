@@ -4280,8 +4280,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     unsigned subtree_paint_property_update_reasons_
         : kSubtreePaintPropertyUpdateReasonsBitfieldWidth;
 
-    // For LayoutBox. Updated during CompositingUpdate in
-    // pre-CompositeAfterPaint, or PrePaint in CompositeAfterPaint.
+    // For LayoutBox. It's updated during PrePaint.
     unsigned background_paint_location_ : 2;  // BackgroundPaintLocation.
 
     unsigned overflow_clip_axes_ : 2;

@@ -342,8 +342,8 @@ void ConversionContext::SwitchToClip(const ClipPaintPropertyNode& target_clip) {
     if (!state_stack_.size() || state_stack_.back().type != StateEntry::kClip) {
       // TODO(crbug.com/803649): We still have clip hierarchy issues with
       // fragment clips. See crbug.com/1240080 for the test case. Will change
-      // the above condition to DCHECK after both CompositeAfterPaint and
-      // LayoutNGBlockFragmentation are fully launched.
+      // the above condition to DCHECK after LayoutNGBlockFragmentation is fully
+      // launched.
 #if DCHECK_IS_ON()
       DLOG(ERROR) << "Error: Chunk has a clip that escaped its layer's or "
                   << "effect's clip.\ntarget_clip:\n"
@@ -459,8 +459,8 @@ void ConversionContext::SwitchToEffect(
     if (!state_stack_.size()) {
       // TODO(crbug.com/803649): We still have clip hierarchy issues with
       // fragment clips. See crbug.com/1240080 for the test case. Will change
-      // the above condition to DCHECK after both CompositeAfterPaint and
-      // LayoutNGBlockFragmentation are fully launched.
+      // the above condition to DCHECK after LayoutNGBlockFragmentation is fully
+      // launched.
 #if DCHECK_IS_ON()
       DLOG(ERROR) << "Error: Chunk has an effect that escapes layer's effect.\n"
                   << "target_effect:\n"

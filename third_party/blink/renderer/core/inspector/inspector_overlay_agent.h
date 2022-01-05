@@ -272,7 +272,6 @@ class CORE_EXPORT InspectorOverlayAgent final
   String EvaluateInOverlayForTest(const String&);
 
   void UpdatePrePaint();
-  // For CompositeAfterPaint.
   void PaintOverlay(GraphicsContext&);
 
   bool IsInspectorLayer(const cc::Layer*) const;

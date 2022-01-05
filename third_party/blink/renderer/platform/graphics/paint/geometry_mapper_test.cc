@@ -768,9 +768,8 @@ TEST_P(GeometryMapperTest, SiblingTransformsWithClip) {
   LocalToAncestorVisualRectInternal(transform1_state, transform2_and_clip_state,
                                     result, success);
   // Fails, because the clip of the destination state is not an ancestor of the
-  // clip of the source state. Known bugs in pre-CompositeAfterPaint or
-  // CompositeAfterPaint without LayoutNGBlockFragmentation would make such
-  // query. In such cases, no clips are applied.
+  // clip of the source state. Known bugs pre-LayoutNGBlockFragmentation would
+  // make such a query. In such cases, no clips are applied.
   EXPECT_TRUE(success);
   FloatClipRect expected(gfx::RectF(-100, 0, 100, 100));
   expected.ClearIsTight();

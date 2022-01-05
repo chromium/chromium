@@ -39,9 +39,6 @@ class CORE_EXPORT OutlinePainter {
 
   static int OutlineOutsetExtent(const ComputedStyle&);
 
-  // For pre-CompositeAfterPaint only.
-  static int FocusRingWidthInsideBorderBox(const ComputedStyle&);
-
   struct Line {
     SkPoint start;
     SkPoint end;
