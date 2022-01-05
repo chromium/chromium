@@ -98,4 +98,10 @@ TEST(WebFeedPageInformation, SetUrlStripsFragment) {
   EXPECT_EQ(GURL("https://chromium.org"), info.url());
 }
 
+TEST(WebFeedPageInformation, SetCanonicalUrlStripsFragment) {
+  WebFeedPageInformation info;
+  info.SetCanonicalUrl(GURL("https://chromium.org#1"));
+  EXPECT_EQ(GURL("https://chromium.org"), info.canonical_url());
+}
+
 }  // namespace feed

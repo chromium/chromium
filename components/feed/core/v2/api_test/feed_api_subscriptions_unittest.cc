@@ -137,6 +137,7 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedSuccess) {
   auto sent_request = network_.GetApiRequestSent<FollowWebFeedDiscoverApi>();
   ASSERT_THAT(sent_request->page_rss_uris(),
               testing::ElementsAre("http://rss1/", "http://rss2/"));
+  EXPECT_EQ(sent_request->canonical_uri(), "");
   EXPECT_EQ("token", sent_request->consistency_token().token());
   EXPECT_EQ(
       "WebFeedMetadata{ id=id_cats title=Title cats "
@@ -155,6 +156,19 @@ TEST_F(FeedApiSubscriptionsTest, FollowWebFeedSuccess) {
       "ContentSuggestions.Feed.WebFeed.FollowCount.AfterFollow", 1, 1);
   histograms.ExpectUniqueSample(
       "ContentSuggestions.Feed.WebFeed.NewFollow.IsRecommended", 0, 1);
+}
+
+TEST_F(FeedApiSubscriptionsTest, FollowWebFeedSendsCanonicalUrl) {
+  network_.InjectResponse(SuccessfulFollowResponse("cats"));
+  CallbackReceiver<WebFeedSubscriptions::FollowWebFeedResult> callback;
+  WebFeedPageInformation page_info =
+      MakeWebFeedPageInformation("http://cats.com");
+  page_info.SetCanonicalUrl(GURL("http://felis-catus.com"));
+  subscriptions().FollowWebFeed(page_info, callback.Bind());
+  callback.RunUntilCalled();
+
+  auto sent_request = network_.GetApiRequestSent<FollowWebFeedDiscoverApi>();
+  EXPECT_EQ("http://felis-catus.com/", sent_request->canonical_uri());
 }
 
 TEST_F(FeedApiSubscriptionsTest, FollowRecommendedWebFeedById) {

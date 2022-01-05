@@ -112,16 +112,23 @@ class WebFeedPageInformation {
 
   // The URL for the page. `url().has_ref()` is always false.
   const GURL& url() const { return url_; }
+  // The Canonical URL for the page, if one was found. `url().has_ref()` is
+  // always false
+  const GURL& canonical_url() const { return canonical_url_; }
   // The list of RSS urls embedded in the page with the <link> tag.
   const std::vector<GURL>& GetRssUrls() const { return rss_urls_; }
 
   // Set the URL for the page. Trims off the URL ref.
   void SetUrl(const GURL& url);
 
+  // Set the canonical URL for the page. Trims off the URL ref.
+  void SetCanonicalUrl(const GURL& url);
+
   void SetRssUrls(const std::vector<GURL>& rss_urls);
 
  private:
   GURL url_;
+  GURL canonical_url_;
   std::vector<GURL> rss_urls_;
 };
 std::ostream& operator<<(std::ostream& os, const WebFeedPageInformation& value);

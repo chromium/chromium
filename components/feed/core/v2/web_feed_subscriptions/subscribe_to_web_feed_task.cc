@@ -67,6 +67,9 @@ void SubscribeToWebFeedTask::Run() {
     feedwire::webfeed::FollowWebFeedRequest request;
     SetConsistencyToken(request, stream_.GetMetadata().consistency_token());
     request.set_web_page_uri(request_.page_info.url().spec());
+    if (request_.page_info.canonical_url().is_valid()) {
+      request.set_canonical_uri(request_.page_info.canonical_url().spec());
+    }
     for (const GURL& rss_url : request_.page_info.GetRssUrls()) {
       request.add_page_rss_uris(rss_url.spec());
     }

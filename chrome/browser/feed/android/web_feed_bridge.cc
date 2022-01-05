@@ -136,8 +136,9 @@ class WebFeedPageInformationFetcher
   }
 
   void OnCanonicalUrlFetched(const absl::optional<::GURL>& url) {
-    if (url)
-      page_info_.SetUrl(*url);
+    if (url) {
+      page_info_.SetCanonicalUrl(*url);
+    }
 
     url_fetched_ = true;
     CallCallbackIfReady();
