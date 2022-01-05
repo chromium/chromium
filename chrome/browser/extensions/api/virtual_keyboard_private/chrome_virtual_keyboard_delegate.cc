@@ -656,10 +656,11 @@ ChromeVirtualKeyboardDelegate::RestrictFeatures(
 
   if (config != current_config) {
     ChromeKeyboardControllerClient::Get()->SetKeyboardConfig(config);
-    // This reloads virtual keyboard even if it exists. This ensures virtual
-    // keyboard gets the correct state through
-    // chrome.virtualKeyboardPrivate.getKeyboardConfig.
-    // TODO(oka): Extension should reload on it's own by receiving event
+    // This reloads the virtual keyboard (VK) even if it exists, so it can get
+    // new restrictFeatures via chrome.virtualKeyboardPrivate.getKeyboardConfig.
+    // However, this reload is unnecessary as the API specs do NOT require
+    // restrictFeatures to take effect immediately midway through a VK session.
+    // Keeping this unnecessary reload for now, just to avoid behaviour changes.
     ChromeKeyboardControllerClient::Get()->RebuildKeyboardIfEnabled();
   }
   return update;
