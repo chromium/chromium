@@ -197,6 +197,9 @@ class VIEWS_EXPORT NativeWidgetAura : public internal::NativeWidgetPrivate,
                                intptr_t old) override;
   void OnResizeLoopStarted(aura::Window* window) override;
   void OnResizeLoopEnded(aura::Window* window) override;
+  void OnWindowAddedToRootWindow(aura::Window* window) override;
+  void OnWindowRemovingFromRootWindow(aura::Window* window,
+                                      aura::Window* new_root) override;
 
   // ui::EventHandler:
   void OnKeyEvent(ui::KeyEvent* event) override;
