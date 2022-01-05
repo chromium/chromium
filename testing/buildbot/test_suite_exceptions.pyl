@@ -3265,7 +3265,9 @@
   },
   'webgl2_conformance_metal_passthrough_tests': {
     'remove_from': [
-      'Mac FYI ASAN (Intel)', # crbug.com/1270755
+      # crbug.com/1270755
+      'Mac FYI ASAN (Intel)',
+      'Mac FYI Retina ASAN (AMD)',
       # Not enough capacity.
       'Mac FYI Retina Release (NVIDIA)',
     ],
@@ -3317,7 +3319,9 @@
   },
   'webgl_conformance_metal_passthrough_tests': {
     'remove_from': [
-      'Mac FYI ASAN (Intel)', # crbug.com/1270755
+      # crbug.com/1270755
+      'Mac FYI ASAN (Intel)',
+      'Mac FYI Retina ASAN (AMD)',
       # crbug.com/1158857: re-enable when switching to Metal by default.
       'Mac FYI Retina Release (NVIDIA)',
     ],
