@@ -82,7 +82,7 @@ class WaylandBufferManagerGpu : public ozone::mojom::WaylandBufferManagerGpu {
   // Methods, which can be used when in both in-process-gpu and out of process
   // modes. These calls are forwarded to the browser process through the
   // WaylandConnection mojo interface. See more in
-  // ui/ozone/platform/wayland/mojom/wayland_connection.mojom.
+  // ui/ozone/platform/wayland/mojom/wayland_buffer_manager.mojom.
   //
   // Asks Wayland to create generic dmabuf-based wl_buffer.
   void CreateDmabufBasedBuffer(base::ScopedFD dmabuf_fd,

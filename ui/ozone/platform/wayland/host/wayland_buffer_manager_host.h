@@ -77,7 +77,7 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost {
   //
   // Called by the GPU and asks to import a wl_buffer based on a gbm file
   // descriptor using zwp_linux_dmabuf protocol. Check comments in the
-  // ui/ozone/platform/wayland/mojom/wayland_connection.mojom.
+  // ui/ozone/platform/wayland/mojom/wayland_buffer_manager.mojom.
   void CreateDmabufBasedBuffer(mojo::PlatformHandle dmabuf_fd,
                                const gfx::Size& size,
                                const std::vector<uint32_t>& strides,
@@ -88,15 +88,15 @@ class WaylandBufferManagerHost : public ozone::mojom::WaylandBufferManagerHost {
                                uint32_t buffer_id) override;
   // Called by the GPU and asks to import a wl_buffer based on a shared memory
   // file descriptor using wl_shm protocol. Check comments in the
-  // ui/ozone/platform/wayland/mojom/wayland_connection.mojom.
+  // ui/ozone/platform/wayland/mojom/wayland_buffer_manager.mojom.
   void CreateShmBasedBuffer(mojo::PlatformHandle shm_fd,
                             uint64_t length,
                             const gfx::Size& size,
                             uint32_t buffer_id) override;
   // Called by the GPU and asks to import a solid color wl_buffer. Check
-  // comments in the ui/ozone/platform/wayland/mojom/wayland_connection.mojom.
-  // The availability of this depends on existence of surface-augmenter
-  // protocol.
+  // comments in the
+  // ui/ozone/platform/wayland/mojom/wayland_buffer_manager.mojom. The
+  // availability of this depends on existence of surface-augmenter protocol.
   void CreateSolidColorBuffer(const gfx::Size& size,
                               SkColor color,
                               uint32_t buffer_id) override;
