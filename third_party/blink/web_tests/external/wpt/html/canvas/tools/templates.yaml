@@ -18,8 +18,8 @@ w3coffscreencanvas: |
     });
     t.step(function() {
 
-    var offscreenCanvas = new OffscreenCanvas(100, 50);
-    var ctx = offscreenCanvas.getContext(%(context_args)s);
+    var canvas = new OffscreenCanvas(100, 50);
+    var ctx = canvas.getContext(%(context_args)s);
 
     %(code)s
     });
@@ -42,8 +42,8 @@ w3cworker: |
     });
     t.step(function() {
 
-    var offscreenCanvas = new OffscreenCanvas(100, 50);
-    var ctx = offscreenCanvas.getContext(%(context_args)s);
+    var canvas = new OffscreenCanvas(100, 50);
+    var ctx = canvas.getContext(%(context_args)s);
 
     %(code)s
     });

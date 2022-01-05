@@ -199,30 +199,15 @@ def genTestUtils(TESTOUTPUTDIR, IMAGEOUTPUTDIR, TEMPLATEFILE, NAME2DIRFILE, ISOF
     def expand_test_code(code):
         code = re.sub(r'@nonfinite ([^(]+)\(([^)]+)\)(.*)', lambda m: expand_nonfinite(m.group(1), m.group(2), m.group(3)), code) # must come before '@assert throws'
 
-        if ISOFFSCREENCANVAS:
-            code = re.sub(r'@assert pixel (\d+,\d+) == (\d+,\d+,\d+,\d+);',
-                    r'_assertPixel(offscreenCanvas, \1, \2, "\1", "\2");',
-                    code)
-        else:
-            code = re.sub(r'@assert pixel (\d+,\d+) == (\d+,\d+,\d+,\d+);',
+        code = re.sub(r'@assert pixel (\d+,\d+) == (\d+,\d+,\d+,\d+);',
                     r'_assertPixel(canvas, \1, \2, "\1", "\2");',
                     code)
 
-        if ISOFFSCREENCANVAS:
-            code = re.sub(r'@assert pixel (\d+,\d+) ==~ (\d+,\d+,\d+,\d+);',
-                    r'_assertPixelApprox(offscreenCanvas, \1, \2, "\1", "\2", 2);',
-                    code)
-        else:
-            code = re.sub(r'@assert pixel (\d+,\d+) ==~ (\d+,\d+,\d+,\d+);',
+        code = re.sub(r'@assert pixel (\d+,\d+) ==~ (\d+,\d+,\d+,\d+);',
                     r'_assertPixelApprox(canvas, \1, \2, "\1", "\2", 2);',
                     code)
 
-        if ISOFFSCREENCANVAS:
-            code = re.sub(r'@assert pixel (\d+,\d+) ==~ (\d+,\d+,\d+,\d+) \+/- (\d+);',
-                    r'_assertPixelApprox(offscreenCanvas, \1, \2, "\1", "\2", \3);',
-                    code)
-        else:
-            code = re.sub(r'@assert pixel (\d+,\d+) ==~ (\d+,\d+,\d+,\d+) \+/- (\d+);',
+        code = re.sub(r'@assert pixel (\d+,\d+) ==~ (\d+,\d+,\d+,\d+) \+/- (\d+);',
                     r'_assertPixelApprox(canvas, \1, \2, "\1", "\2", \3);',
                     code)
 
