@@ -2863,6 +2863,22 @@
           'linux-focal',
         ],
       },
+      'fuchsia-fyi-x64-asan': {
+        'mixins': [
+          'linux-bionic',
+        ],
+        'swarming': {
+          'dimension_sets': [
+            {
+              'kvm': '1',
+            },
+          ],
+        },
+        'test_suites': {
+          'gtest_tests': 'fuchsia_gtests',
+          'isolated_scripts': 'gpu_angle_fuchsia_unittests_isolated_scripts',
+        },
+      },
       'fuchsia-fyi-x64-dbg': {
         'additional_compile_targets': [
           'all',

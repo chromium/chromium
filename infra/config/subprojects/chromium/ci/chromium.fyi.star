@@ -185,6 +185,24 @@ ci.builder(
 )
 
 ci.builder(
+    name = "fuchsia-fyi-x64-asan",
+    console_view_entry = [
+        consoles.console_view_entry(
+            category = "fuchsia|x64",
+            short_name = "asan",
+        ),
+        consoles.console_view_entry(
+            branch_selector = branches.MAIN,
+            console_view = "sheriff.fuchsia",
+            category = "fyi",
+            short_name = "asan",
+        ),
+    ],
+    notifies = ["cr-fuchsia"],
+    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+)
+
+ci.builder(
     name = "fuchsia-fyi-x64-dbg",
     console_view_entry = [
         consoles.console_view_entry(

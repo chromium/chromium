@@ -327,6 +327,7 @@
       'fuchsia-fyi-arm64-rel': 'release_bot_fuchsia_arm64',
       'fuchsia-fyi-x64-dbg': 'debug_bot_fuchsia',
       'fuchsia-fyi-x64-rel': 'release_bot_fuchsia',
+      'fuchsia-fyi-x64-asan': 'asan_bot_fuchsia',
       'ios14-beta-simulator': 'ios_simulator_debug_static_bot_xctest',
       'ios14-sdk-simulator': 'ios_simulator_debug_static_bot_xctest_arm64',
       'ios15-beta-simulator': 'ios_simulator_debug_static_bot_xctest',
@@ -1680,6 +1681,10 @@
 
     'arm64_official_optimize_goma': [
       'arm64', 'official_optimize_goma',
+    ],
+
+    'asan_bot_fuchsia': [
+      'asan', 'release_bot', 'fuchsia',
     ],
 
     'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release': [
