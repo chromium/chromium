@@ -267,11 +267,11 @@ def GenerateTokenAndSignature():
                                  expiry)
   data_to_sign = GenerateDataToSign(args.version[1], token_data)
   signature = Sign(private_key, data_to_sign)
-  return args, token_data, signature
+  return args, token_data, signature, expiry
 
 
 def main():
-  args, token_data, signature = GenerateTokenAndSignature()
+  args, token_data, signature, expiry = GenerateTokenAndSignature()
 
   # Output the token details
   print("Token details:")
