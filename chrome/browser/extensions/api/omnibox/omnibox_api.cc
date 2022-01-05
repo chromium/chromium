@@ -21,7 +21,8 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/extensions/api/omnibox.h"
 #include "chrome/common/extensions/api/omnibox/omnibox_handler.h"
-#include "components/omnibox/browser/omnibox_watcher.h"
+#include "components/omnibox/browser/omnibox_input_watcher.h"
+#include "components/omnibox/browser/omnibox_suggestions_watcher.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/notification_details.h"
@@ -154,7 +155,7 @@ void ExtensionOmniboxEventRouter::OnInputEntered(
   EventRouter::Get(profile)
       ->DispatchEventToExtension(extension_id, std::move(event));
 
-  OmniboxWatcher::GetForBrowserContext(profile)->NotifyInputEntered();
+  OmniboxInputWatcher::GetForBrowserContext(profile)->NotifyInputEntered();
 }
 
 // static
@@ -277,11 +278,10 @@ ExtensionFunction::ResponseAction OmniboxSendSuggestionsFunction::Run() {
       SendSuggestions::Params::Create(args()));
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  content::NotificationService::current()->Notify(
-      extensions::NOTIFICATION_EXTENSION_OMNIBOX_SUGGESTIONS_READY,
-      content::Source<Profile>(
-          Profile::FromBrowserContext(browser_context())->GetOriginalProfile()),
-      content::Details<SendSuggestions::Params>(params.get()));
+  Profile* profile =
+      Profile::FromBrowserContext(browser_context())->GetOriginalProfile();
+  OmniboxSuggestionsWatcher::GetForBrowserContext(profile)
+      ->NotifySuggestionsReady(params.get());
 
   return RespondNow(NoArguments());
 }

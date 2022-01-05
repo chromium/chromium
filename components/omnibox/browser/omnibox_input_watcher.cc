@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "omnibox_watcher.h"
+#include "omnibox_input_watcher.h"
 
 #if !defined(OS_IOS)
 #include "base/memory/singleton.h"
@@ -13,28 +13,28 @@
 namespace {
 
 #if !defined(OS_IOS)
-class OmniboxWatcherFactory : public BrowserContextKeyedServiceFactory {
+class OmniboxInputWatcherFactory : public BrowserContextKeyedServiceFactory {
  public:
-  static OmniboxWatcher* GetForBrowserContext(
+  static OmniboxInputWatcher* GetForBrowserContext(
       content::BrowserContext* context) {
-    return static_cast<OmniboxWatcher*>(
+    return static_cast<OmniboxInputWatcher*>(
         GetInstance()->GetServiceForBrowserContext(context, true));
   }
 
-  static OmniboxWatcherFactory* GetInstance() {
-    return base::Singleton<OmniboxWatcherFactory>::get();
+  static OmniboxInputWatcherFactory* GetInstance() {
+    return base::Singleton<OmniboxInputWatcherFactory>::get();
   }
 
-  OmniboxWatcherFactory()
+  OmniboxInputWatcherFactory()
       : BrowserContextKeyedServiceFactory(
-            "OmniboxWatcher",
+            "OmniboxInputWatcher",
             BrowserContextDependencyManager::GetInstance()) {}
 
  private:
   // BrowserContextKeyedServiceFactory overrides
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override {
-    return new OmniboxWatcher();
+    return new OmniboxInputWatcher();
   }
 
   content::BrowserContext* GetBrowserContextToUse(
@@ -46,26 +46,26 @@ class OmniboxWatcherFactory : public BrowserContextKeyedServiceFactory {
 
 }  // namespace
 
-OmniboxWatcher::OmniboxWatcher() = default;
-OmniboxWatcher::~OmniboxWatcher() = default;
+OmniboxInputWatcher::OmniboxInputWatcher() = default;
+OmniboxInputWatcher::~OmniboxInputWatcher() = default;
 
 #if !defined(OS_IOS)
 // static
-OmniboxWatcher* OmniboxWatcher::GetForBrowserContext(
+OmniboxInputWatcher* OmniboxInputWatcher::GetForBrowserContext(
     content::BrowserContext* browser_context) {
-  return OmniboxWatcherFactory::GetForBrowserContext(browser_context);
+  return OmniboxInputWatcherFactory::GetForBrowserContext(browser_context);
 }
 #endif  // !defined(OS_IOS)
 
-void OmniboxWatcher::AddObserver(Observer* observer) {
+void OmniboxInputWatcher::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
 }
 
-void OmniboxWatcher::RemoveObserver(Observer* observer) {
+void OmniboxInputWatcher::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-void OmniboxWatcher::NotifyInputEntered() {
+void OmniboxInputWatcher::NotifyInputEntered() {
   for (auto& observer : observers_)
     observer.OnOmniboxInputEntered();
 }

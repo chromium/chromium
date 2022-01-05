@@ -29,18 +29,25 @@ KeywordExtensionsDelegateImpl::KeywordExtensionsDelegateImpl(
   DCHECK(provider_);
 
   current_input_id_ = 0;
-  // Extension suggestions always come from the original profile, since that's
-  // where extensions run. We use the input ID to distinguish whether the
-  // suggestions are meant for us.
-  registrar_.Add(this,
-                 extensions::NOTIFICATION_EXTENSION_OMNIBOX_SUGGESTIONS_READY,
-                 content::Source<Profile>(profile_->GetOriginalProfile()));
+
   registrar_.Add(
       this,
       extensions::NOTIFICATION_EXTENSION_OMNIBOX_DEFAULT_SUGGESTION_CHANGED,
       content::Source<Profile>(profile_->GetOriginalProfile()));
 
-  omnibox_observation_.Observe(OmniboxWatcher::GetForBrowserContext(profile_));
+  omnibox_input_observation_.Observe(
+      OmniboxInputWatcher::GetForBrowserContext(profile_));
+
+  // TODO(crbug.com/1278436): The comment below is historic and maybe misleading
+  // because extensions don't always "run" in the original profile. Review and
+  // update as needed.
+  //
+  // Extension suggestions always come from the original profile, since that's
+  // where extensions run. We use the input ID to distinguish whether the
+  // suggestions are meant for us.
+  omnibox_suggestions_observation_.Observe(
+      OmniboxSuggestionsWatcher::GetForBrowserContext(
+          profile_->GetOriginalProfile()));
 }
 
 KeywordExtensionsDelegateImpl::~KeywordExtensionsDelegateImpl() = default;
@@ -135,6 +142,60 @@ void KeywordExtensionsDelegateImpl::OnOmniboxInputEntered() {
   IncrementInputId();
 }
 
+void KeywordExtensionsDelegateImpl::OnOmniboxSuggestionsReady(
+    omnibox_api::SendSuggestions::Params* suggestions) {
+  DCHECK(suggestions);
+
+  if (suggestions->request_id != current_input_id_)
+    return;  // This is an old result. Just ignore.
+
+  TemplateURLService* model = provider_->GetTemplateURLService();
+  DCHECK(model);
+
+  const AutocompleteInput& input = extension_suggest_last_input_;
+
+  // ExtractKeywordFromInput() can fail if e.g. this code is triggered by
+  // direct calls from the development console, outside the normal flow of
+  // user input.
+  std::u16string keyword, remaining_input;
+  if (!KeywordProvider::ExtractKeywordFromInput(input, model, &keyword,
+                                                &remaining_input))
+    return;
+
+  const TemplateURL* template_url = model->GetTemplateURLForKeyword(keyword);
+
+  for (size_t i = 0; i < suggestions->suggest_results.size(); ++i) {
+    const omnibox_api::SuggestResult& suggestion =
+        suggestions->suggest_results[i];
+    // We want to order these suggestions in descending order, so start with
+    // the relevance of the first result (added synchronously in Start()),
+    // and subtract 1 for each subsequent suggestion from the extension.
+    // We recompute the first match's relevance; we know that |complete|
+    // is true, because we wouldn't get results from the extension unless
+    // the full keyword had been typed.
+    int first_relevance = KeywordProvider::CalculateRelevance(
+        input.type(), true, true, true, input.prefer_keyword(),
+        input.allow_exact_keyword_match());
+    // Because these matches are async, we should never let them become the
+    // default match, lest we introduce race conditions in the omnibox user
+    // interaction.
+    extension_suggest_matches_.push_back(provider_->CreateAutocompleteMatch(
+        template_url, keyword.length(), input, keyword.length(),
+        base::UTF8ToUTF16(suggestion.content), false, first_relevance - (i + 1),
+        suggestion.deletable && *suggestion.deletable));
+
+    AutocompleteMatch* match = &extension_suggest_matches_.back();
+    match->contents.assign(base::UTF8ToUTF16(suggestion.description));
+    match->contents_class =
+        extensions::StyleTypesToACMatchClassifications(suggestion);
+  }
+
+  set_done(true);
+  matches()->insert(matches()->end(), extension_suggest_matches_.begin(),
+                    extension_suggest_matches_.end());
+  OnProviderUpdate(!extension_suggest_matches_.empty());
+}
+
 void KeywordExtensionsDelegateImpl::Observe(
     int type,
     const content::NotificationSource& source,
@@ -159,60 +220,6 @@ void KeywordExtensionsDelegateImpl::Observe(
       extensions::ApplyDefaultSuggestionForExtensionKeyword(
           profile_, template_url, remaining_input, &matches()->front());
       OnProviderUpdate(true);
-      return;
-    }
-
-    case extensions::NOTIFICATION_EXTENSION_OMNIBOX_SUGGESTIONS_READY: {
-      const omnibox_api::SendSuggestions::Params& suggestions =
-          *content::Details<
-              omnibox_api::SendSuggestions::Params>(details).ptr();
-      if (suggestions.request_id != current_input_id_)
-        return;  // This is an old result. Just ignore.
-
-      DCHECK(model);
-      // ExtractKeywordFromInput() can fail if e.g. this code is triggered by
-      // direct calls from the development console, outside the normal flow of
-      // user input.
-      std::u16string keyword, remaining_input;
-      if (!KeywordProvider::ExtractKeywordFromInput(input, model, &keyword,
-                                                    &remaining_input))
-        return;
-
-      const TemplateURL* template_url =
-          model->GetTemplateURLForKeyword(keyword);
-
-      for (size_t i = 0; i < suggestions.suggest_results.size(); ++i) {
-        const omnibox_api::SuggestResult& suggestion =
-            suggestions.suggest_results[i];
-        // We want to order these suggestions in descending order, so start with
-        // the relevance of the first result (added synchronously in Start()),
-        // and subtract 1 for each subsequent suggestion from the extension.
-        // We recompute the first match's relevance; we know that |complete|
-        // is true, because we wouldn't get results from the extension unless
-        // the full keyword had been typed.
-        int first_relevance = KeywordProvider::CalculateRelevance(
-            input.type(), true, true, true, input.prefer_keyword(),
-            input.allow_exact_keyword_match());
-        // Because these matches are async, we should never let them become the
-        // default match, lest we introduce race conditions in the omnibox user
-        // interaction.
-        extension_suggest_matches_.push_back(provider_->CreateAutocompleteMatch(
-            template_url, keyword.length(), input, keyword.length(),
-            base::UTF8ToUTF16(suggestion.content), false,
-            first_relevance - (i + 1),
-            suggestion.deletable && *suggestion.deletable));
-
-        AutocompleteMatch* match = &extension_suggest_matches_.back();
-        match->contents.assign(base::UTF8ToUTF16(suggestion.description));
-        match->contents_class =
-            extensions::StyleTypesToACMatchClassifications(suggestion);
-      }
-
-      set_done(true);
-      matches()->insert(matches()->end(),
-                        extension_suggest_matches_.begin(),
-                        extension_suggest_matches_.end());
-      OnProviderUpdate(!extension_suggest_matches_.empty());
       return;
     }
 

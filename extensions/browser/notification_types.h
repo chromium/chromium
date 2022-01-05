@@ -59,12 +59,6 @@ enum NotificationType {
   // TODO(https://crbug.com/1174748): Remove.
   NOTIFICATION_EXTENSION_BOOKMARKS_API_INVOKED,
 
-  // Sent when an omnibox extension has sent back omnibox suggestions. The
-  // source is the BrowserContext*, and the details are an
-  // extensions::api::omnibox::SendSuggestions::Params object.
-  // TODO(https://crbug.com/1174750): Remove.
-  NOTIFICATION_EXTENSION_OMNIBOX_SUGGESTIONS_READY,
-
   // Sent when an omnibox extension has updated the default suggestion. The
   // source is the BrowserContext*.
   // TODO(https://crbug.com/1174752): Remove.

@@ -6,6 +6,7 @@ import("//build/buildflag_header.gni")
 import("//build/config/ui.gni")
 import("//components/vector_icons/vector_icons.gni")
 import("//device/vr/buildflags/buildflags.gni")
+import("//extensions/buildflags/buildflags.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
@@ -183,8 +184,6 @@ static_library("browser") {
     "omnibox_triggered_feature_service.h",
     "omnibox_view.cc",
     "omnibox_view.h",
-    "omnibox_watcher.cc",
-    "omnibox_watcher.h",
     "on_device_head_model.cc",
     "on_device_head_model.h",
     "on_device_head_provider.cc",
@@ -289,6 +288,15 @@ static_library("browser") {
 
   if (!is_ios) {
     deps += [ "//components/keyed_service/content" ]
+  }
+
+  if (enable_extensions) {
+    sources += [
+      "omnibox_input_watcher.cc",
+      "omnibox_input_watcher.h",
+      "omnibox_suggestions_watcher.cc",
+      "omnibox_suggestions_watcher.h",
+    ]
   }
 
   if (is_android) {

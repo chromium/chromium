@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_WATCHER_H_
-#define COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_WATCHER_H_
+#ifndef COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_INPUT_WATCHER_H_
+#define COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_INPUT_WATCHER_H_
 
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
@@ -14,9 +14,8 @@
 #include "content/public/browser/browser_context.h"
 #endif  // !defined(OS_IOS)
 
-// This KeyedService is meant to observe the omnibox and provide notifications
-// to observers on suggestion changes and provided input.
-class OmniboxWatcher : public KeyedService {
+// This KeyedService is meant to observe omnibox input and provide notifications
+class OmniboxInputWatcher : public KeyedService {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -25,14 +24,14 @@ class OmniboxWatcher : public KeyedService {
   };
 
 #if !defined(OS_IOS)
-  static OmniboxWatcher* GetForBrowserContext(
+  static OmniboxInputWatcher* GetForBrowserContext(
       content::BrowserContext* browser_context);
 #endif  // !defined(OS_IOS)
 
-  OmniboxWatcher();
-  ~OmniboxWatcher() override;
-  OmniboxWatcher(const OmniboxWatcher&) = delete;
-  OmniboxWatcher& operator=(const OmniboxWatcher&) = delete;
+  OmniboxInputWatcher();
+  ~OmniboxInputWatcher() override;
+  OmniboxInputWatcher(const OmniboxInputWatcher&) = delete;
+  OmniboxInputWatcher& operator=(const OmniboxInputWatcher&) = delete;
 
   void NotifyInputEntered();
 
@@ -44,4 +43,4 @@ class OmniboxWatcher : public KeyedService {
   base::ObserverList<Observer> observers_;
 };
 
-#endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_WATCHER_H_
+#endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_INPUT_WATCHER_H_
