@@ -206,7 +206,6 @@ void BookmarkModelTypeProcessor::OnUpdateReceived(
       bookmark_tracker_->model_type_state().encryption_key_name() !=
       model_type_state.encryption_key_name();
   bookmark_tracker_->set_model_type_state(model_type_state);
-  bookmark_tracker_->UpdateLastSyncTime();
   updates_handler.Process(updates, got_new_encryption_requirements);
   if (bookmark_tracker_->ReuploadBookmarksOnLoadIfNeeded()) {
     NudgeForCommitIfNeeded();

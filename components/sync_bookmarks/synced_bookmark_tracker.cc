@@ -144,7 +144,6 @@ std::unique_ptr<SyncedBookmarkTracker> SyncedBookmarkTracker::CreateEmpty(
   // base::WrapUnique() used because the constructor is private.
   return base::WrapUnique(new SyncedBookmarkTracker(
       std::move(model_type_state), /*bookmarks_reuploaded=*/false,
-      /*last_sync_time=*/base::Time::Now(),
       /*num_ignored_updates_due_to_missing_parent=*/absl::optional<int64_t>(0),
       /*max_version_among_ignored_updates_due_to_missing_parent=*/
       absl::nullopt));
@@ -160,11 +159,6 @@ SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
   if (!model_metadata.model_type_state().initial_sync_done()) {
     return nullptr;
   }
-
-  // If the field is not present, |last_sync_time| will be initialized with the
-  // Unix epoch.
-  const base::Time last_sync_time =
-      syncer::ProtoTimeToTime(model_metadata.last_sync_time());
 
   // When the reupload feature is enabled and disabled again, there may occur
   // new entities which weren't reuploaded.
@@ -189,7 +183,7 @@ SyncedBookmarkTracker::CreateFromBookmarkModelAndMetadata(
 
   // base::WrapUnique() used because the constructor is private.
   auto tracker = base::WrapUnique(new SyncedBookmarkTracker(
-      model_metadata.model_type_state(), bookmarks_reuploaded, last_sync_time,
+      model_metadata.model_type_state(), bookmarks_reuploaded,
       num_ignored_updates_due_to_missing_parent,
       max_version_among_ignored_updates_due_to_missing_parent));
 
@@ -393,7 +387,6 @@ SyncedBookmarkTracker::BuildBookmarkModelMetadata() const {
   sync_pb::BookmarkModelMetadata model_metadata;
   model_metadata.set_bookmarks_hierarchy_fields_reuploaded(
       bookmarks_reuploaded_);
-  model_metadata.set_last_sync_time(syncer::TimeToProtoTime(last_sync_time_));
 
   if (num_ignored_updates_due_to_missing_parent_.has_value()) {
     model_metadata.set_num_ignored_updates_due_to_missing_parent(
@@ -493,13 +486,11 @@ SyncedBookmarkTracker::GetEntitiesWithLocalChanges(size_t max_entries) const {
 SyncedBookmarkTracker::SyncedBookmarkTracker(
     sync_pb::ModelTypeState model_type_state,
     bool bookmarks_reuploaded,
-    base::Time last_sync_time,
     absl::optional<int64_t> num_ignored_updates_due_to_missing_parent,
     absl::optional<int64_t>
         max_version_among_ignored_updates_due_to_missing_parent)
     : model_type_state_(std::move(model_type_state)),
       bookmarks_reuploaded_(bookmarks_reuploaded),
-      last_sync_time_(last_sync_time),
       num_ignored_updates_due_to_missing_parent_(
           num_ignored_updates_due_to_missing_parent),
       max_version_among_ignored_updates_due_to_missing_parent_(

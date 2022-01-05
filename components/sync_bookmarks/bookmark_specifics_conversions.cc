@@ -137,8 +137,6 @@ void SetBookmarkFaviconFromSpecifics(
 }
 
 // This is an exact copy of the same code in bookmark_update_preprocessing.cc.
-// TODO(crbug.com/1032052): Remove when client tags are adopted in
-// ModelTypeWorker.
 std::string ComputeGuidFromBytes(base::span<const uint8_t> bytes) {
   DCHECK_GE(bytes.size(), 16U);
 
@@ -162,9 +160,13 @@ std::string ComputeGuidFromBytes(base::span<const uint8_t> bytes) {
       bytes[14], bytes[15]);
 }
 
-// This is an exact copy of the same code in bookmark_update_preprocessing.cc.
-// TODO(crbug.com/1032052): Remove when client tags are adopted in
-// ModelTypeWorker.
+// This is an exact copy of the same code in bookmark_update_preprocessing.cc,
+// which could be removed if eventually client tags are adapted/inferred in
+// ModelTypeWorker. The reason why this is non-trivial today is that some users
+// are known to contain corrupt data in the sense that several different
+// entities (identified by their server-provided ID) use the same client tag
+// (and GUID). Currently BookmarkModelMerger has logic to prefer folders over
+// regular URLs and reassign GUIDs.
 std::string InferGuidForLegacyBookmark(
     const std::string& originator_cache_guid,
     const std::string& originator_client_item_id) {
