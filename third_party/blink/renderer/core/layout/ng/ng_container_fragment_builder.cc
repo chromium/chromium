@@ -376,14 +376,14 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
                                             new_inline_container);
   }
 
-  const NGFragmentedOutOfFlowData* oof_data =
-      fragment.FragmentedOutOfFlowData();
+  NGFragmentedOutOfFlowData* oof_data = fragment.FragmentedOutOfFlowData();
   if (!oof_data)
     return;
   DCHECK(!oof_data->multicols_with_pending_oofs.IsEmpty() ||
          !oof_data->oof_positioned_fragmentainer_descendants.IsEmpty());
   const NGPhysicalBoxFragment* box_fragment =
       DynamicTo<NGPhysicalBoxFragment>(&fragment);
+  bool is_column_spanner = box_fragment && box_fragment->IsColumnSpanAll();
 
   if (!oof_data->multicols_with_pending_oofs.IsEmpty()) {
     const auto& multicols_with_pending_oofs =
@@ -407,6 +407,8 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
       // |fragment|.
       LogicalOffset fixedpos_containing_block_offset;
       LogicalOffset fixedpos_containing_block_rel_offset;
+      bool is_inside_column_spanner =
+          multicol_info.fixedpos_containing_block.is_inside_column_spanner;
       if (fixedpos_containing_block_fragment) {
         fixedpos_containing_block_offset =
             converter.ToLogical(multicol_info.fixedpos_containing_block.offset,
@@ -425,6 +427,9 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
           fixedpos_containing_block_offset += offset;
         fixedpos_containing_block_offset.block_offset +=
             containing_block_adjustment;
+
+        if (is_column_spanner)
+          is_inside_column_spanner = true;
       } else {
         multicol_offset += adjusted_offset;
       }
@@ -434,29 +439,55 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
               multicol_offset, NGContainingBlock<LogicalOffset>(
                                    fixedpos_containing_block_offset,
                                    fixedpos_containing_block_rel_offset,
-                                   fixedpos_containing_block_fragment)));
+                                   fixedpos_containing_block_fragment,
+                                   is_inside_column_spanner)));
     }
   }
 
   if (oof_data->oof_positioned_fragmentainer_descendants.IsEmpty())
     return;
 
-  const auto& out_of_flow_fragmentainer_descendants =
+  auto& out_of_flow_fragmentainer_descendants =
       oof_data->oof_positioned_fragmentainer_descendants;
-  for (const auto& descendant : out_of_flow_fragmentainer_descendants) {
+  wtf_size_t next_idx;
+  for (wtf_size_t idx = 0; idx < out_of_flow_fragmentainer_descendants.size();
+       idx = next_idx) {
+    next_idx = idx + 1;
+    const auto& descendant = out_of_flow_fragmentainer_descendants[idx];
     const NGPhysicalFragment* containing_block_fragment =
         descendant.containing_block.fragment.get();
+    bool container_inside_column_spanner =
+        descendant.containing_block.is_inside_column_spanner;
+    bool fixedpos_container_inside_column_spanner =
+        descendant.fixedpos_containing_block.is_inside_column_spanner;
+    bool remove_descendant = false;
+
     if (!containing_block_fragment) {
       DCHECK(box_fragment);
       containing_block_fragment = box_fragment;
     } else if (box_fragment && box_fragment->IsFragmentationContextRoot()) {
       // If we find a multicol with OOF positioned fragmentainer descendants,
       // then that multicol is an inner multicol with pending OOFs. Those OOFs
-      // will be laid out inside the inner multicol when we reach the outermost
-      // fragmentation context, so we should not propagate those OOFs up the
-      // tree any further.
-      continue;
+      // will be laid out inside the inner multicol when we reach the
+      // outermost fragmentation context, so we should not propagate those
+      // OOFs up the tree any further. However, if the containing block is
+      // inside a column spanner contained by the current fragmentation root, we
+      // should continue to propagate that OOF up the tree so it can be laid out
+      // in the next fragmentation context.
+      if (container_inside_column_spanner) {
+        // Reset the OOF node's column spanner tags so that we don't propagate
+        // the OOF past the next fragmentation context root ancestor.
+        container_inside_column_spanner = false;
+        fixedpos_container_inside_column_spanner = false;
+        remove_descendant = true;
+      } else {
+        DCHECK(!fixedpos_container_inside_column_spanner);
+        continue;
+      }
     }
+
+    if (is_column_spanner)
+      container_inside_column_spanner = true;
 
     LogicalOffset containing_block_offset = converter.ToLogical(
         descendant.containing_block.offset, containing_block_fragment->Size());
@@ -490,6 +521,9 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
         fixedpos_containing_block_offset += offset;
       fixedpos_containing_block_offset.block_offset +=
           containing_block_adjustment;
+
+      if (is_column_spanner)
+        fixedpos_container_inside_column_spanner = true;
     }
 
     if (!fixedpos_containing_block_fragment && fixedpos_containing_block) {
@@ -523,12 +557,21 @@ void NGContainerFragmentBuilder::PropagateOOFPositionedInfo(
     AddOutOfFlowFragmentainerDescendant(
         {descendant.Node(), static_position, new_inline_container,
          /* needs_block_offset_adjustment */ false,
-         NGContainingBlock<LogicalOffset>(containing_block_offset,
-                                          containing_block_rel_offset,
-                                          containing_block_fragment),
-         NGContainingBlock<LogicalOffset>(fixedpos_containing_block_offset,
-                                          fixedpos_containing_block_rel_offset,
-                                          fixedpos_containing_block_fragment)});
+         NGContainingBlock<LogicalOffset>(
+             containing_block_offset, containing_block_rel_offset,
+             containing_block_fragment, container_inside_column_spanner),
+         NGContainingBlock<LogicalOffset>(
+             fixedpos_containing_block_offset,
+             fixedpos_containing_block_rel_offset,
+             fixedpos_containing_block_fragment,
+             fixedpos_container_inside_column_spanner)});
+
+    // Remove any descendants that were propagated to the next fragmentation
+    // context root (as a result of a column spanner).
+    if (remove_descendant) {
+      out_of_flow_fragmentainer_descendants.EraseAt(idx);
+      next_idx = idx;
+    }
   }
 }
 

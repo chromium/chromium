@@ -486,12 +486,11 @@ bool NGPhysicalFragment::IsPlacedByLayoutNG() const {
   return container->IsLayoutNGObject();
 }
 
-const NGFragmentedOutOfFlowData* NGPhysicalFragment::FragmentedOutOfFlowData()
-    const {
+NGFragmentedOutOfFlowData* NGPhysicalFragment::FragmentedOutOfFlowData() const {
   if (!has_fragmented_out_of_flow_data_)
     return nullptr;
-  const auto* oof_data =
-      reinterpret_cast<const NGFragmentedOutOfFlowData*>(oof_data_.get());
+  auto* oof_data =
+      reinterpret_cast<NGFragmentedOutOfFlowData*>(oof_data_.get());
   DCHECK(!oof_data->multicols_with_pending_oofs.IsEmpty() ||
          !oof_data->oof_positioned_fragmentainer_descendants.IsEmpty());
   return oof_data;

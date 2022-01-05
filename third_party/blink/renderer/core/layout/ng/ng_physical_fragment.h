@@ -621,7 +621,7 @@ class CORE_EXPORT NGPhysicalFragment
             oof_data_->oof_positioned_descendants.size()};
   }
 
-  const NGFragmentedOutOfFlowData* FragmentedOutOfFlowData() const;
+  NGFragmentedOutOfFlowData* FragmentedOutOfFlowData() const;
 
   // Figure out if the child has any out-of-flow positioned descendants, in
   // which case we'll need to propagate this to the fragment builder.

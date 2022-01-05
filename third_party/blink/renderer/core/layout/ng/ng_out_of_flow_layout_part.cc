@@ -932,17 +932,27 @@ void NGOutOfFlowLayoutPart::LayoutOOFsInMulticol(
           static_position,
           inline_container,
           /* needs_block_offset_adjustment */ false,
-          NGContainingBlock<LogicalOffset>(containing_block_offset,
-                                           containing_block_rel_offset,
-                                           containing_block_fragment),
-          NGContainingBlock<LogicalOffset>(fixedpos_containing_block_offset,
-                                           fixedpos_containing_block_rel_offset,
-                                           fixedpos_containing_block_fragment)};
+          NGContainingBlock<LogicalOffset>(
+              containing_block_offset, containing_block_rel_offset,
+              containing_block_fragment,
+              descendant.containing_block.is_inside_column_spanner),
+          NGContainingBlock<LogicalOffset>(
+              fixedpos_containing_block_offset,
+              fixedpos_containing_block_rel_offset,
+              fixedpos_containing_block_fragment,
+              descendant.fixedpos_containing_block.is_inside_column_spanner)};
       oof_nodes_to_layout.push_back(node);
     }
     previous_multicol_break_token = break_token;
   }
-  DCHECK(!oof_nodes_to_layout.IsEmpty());
+  // When an OOF's CB is a spanner (or a descendant of a spanner), we will lay
+  // out the OOF at the next fragmentation context root ancestor. As such, we
+  // remove any such OOF nodes from the nearest multicol's list of OOF
+  // descendants during OOF node propagation, which may cause
+  // |oof_nodes_to_layout| to be empty. Return early if this is the case.
+  if (oof_nodes_to_layout.IsEmpty())
+    return;
+
   DCHECK(!limited_multicol_container_builder
               .HasOutOfFlowFragmentainerDescendants());
 
