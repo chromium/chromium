@@ -58,11 +58,11 @@ decoded frames. These frame checksums can be generated using ffmpeg, e.g.:
 ## Command line options
 Multiple command line arguments can be given to the command:
 
-    -v                   enable verbose mode, e.g. -v=2.
+    -v                    enable verbose mode, e.g. -v=2.
     --vmodule             enable verbose mode for the specified module,
                           e.g. --vmodule=*media/gpu*=2.
 
-    --validator_type       validate decoded frames, possible values are
+    --validator_type      validate decoded frames, possible values are
                           md5 (default, compare against md5hash of expected
                           frames), ssim (compute SSIM against expected
                           frames, currently allowed for AV1 streams only)

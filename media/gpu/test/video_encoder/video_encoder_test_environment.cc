@@ -173,7 +173,7 @@ VideoEncoderTestEnvironment* VideoEncoderTestEnvironment::Create(
       media::kVaapiEnforceVideoMinMaxResolution);
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) && defined(ARCH_CPU_X86_FAMILY)
+#if BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(USE_VAAPI)
   // TODO(crbug.com/1186051): remove once enabled by default.
   combined_enabled_features.push_back(media::kVaapiVp9kSVCHWEncoding);
 #endif

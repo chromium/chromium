@@ -47,7 +47,7 @@ constexpr const char* usage_msg =
            [--output_folder=<filepath>] [--output_limit=<number>]
            [--disable_vaapi_lock]
            [-v=<level>] [--vmodule=<config>]
-            [--gtest_help] [--help]
+           [--gtest_help] [--help]
            [<video path>] [<video metadata path>]
 )";
 
