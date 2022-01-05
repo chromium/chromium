@@ -266,8 +266,8 @@ void WindowCycleList::OnModePrefsChanged() {
 }
 
 // static
-void WindowCycleList::DisableInitialDelayForTesting() {
-  g_disable_initial_delay = true;
+void WindowCycleList::SetDisableInitialDelayForTesting(bool disabled) {
+  g_disable_initial_delay = disabled;
 }
 
 void WindowCycleList::OnWindowDestroying(aura::Window* window) {

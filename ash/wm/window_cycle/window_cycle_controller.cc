@@ -136,8 +136,11 @@ void WindowCycleController::HandleCycleWindow(
 
 void WindowCycleController::HandleKeyboardNavigation(
     KeyboardNavDirection direction) {
-  if (!CanCycle() || !IsCycling() || !IsValidKeyboardNavigation(direction))
+  // If the UI is not shown yet, discard the event.
+  if (!CanCycle() || !IsCycling() || !window_cycle_list_->cycle_view() ||
+      !IsValidKeyboardNavigation(direction)) {
     return;
+  }
 
   switch (direction) {
     // Pressing the Up arrow key moves the focus from the window cycle list
