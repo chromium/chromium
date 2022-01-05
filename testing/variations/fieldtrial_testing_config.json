@@ -2174,6 +2174,7 @@
                 {
                     "name": "CandidateB",
                     "params": {
+                        "MaxSigninPromoImpressions": "5",
                         "hide_switch_when_no_incognito_tabs": "true",
                         "open_ntp_instead_of_start": "true",
                         "show_last_active_tab_only": "true",
@@ -2185,6 +2186,7 @@
                         "tab_switcher_on_return_time_ms": "3600000"
                     },
                     "enable_features": [
+                        "EnhancedProtectionPromoCard",
                         "StartSurfaceAndroid",
                         "TabSwitcherOnReturn"
                     ]
