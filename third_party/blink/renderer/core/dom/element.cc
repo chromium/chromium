@@ -4871,6 +4871,8 @@ bool Element::ForceLegacyLayoutInFormattingContext(
 
 bool Element::ForceLegacyLayoutInFragmentationContext(
     const ComputedStyle& new_style) {
+  DCHECK(new_style.InsideFragmentationContextWithNondeterministicEngine());
+
   // This element cannot be laid out natively by LayoutNG. We now need to switch
   // all enclosing block fragmentation contexts over to using legacy
   // layout. Find the element that establishes the fragmentation context, and
@@ -4880,24 +4882,31 @@ bool Element::ForceLegacyLayoutInFragmentationContext(
   // block of the table is on the outside of the fragmentation context, we're
   // still going to fall back to legacy.
 
-  bool needs_reattach = false;
+  bool found_outer_relevant_fragmentation_context = false;
   Element* parent;
   for (Element* walker = this; walker; walker = parent) {
     parent = DynamicTo<Element>(LayoutTreeBuilderTraversal::Parent(*walker));
     if (walker->ShouldForceLegacyLayoutForChild())
-      return needs_reattach;
+      return false;
 
-    if (!walker->GetComputedStyle()->SpecifiesColumns())
-      continue;
-    // Found an element that establishes a fragmentation context. Force it to do
-    // legacy layout. Keep looking for outer fragmentation contexts, since we
-    // need to force them over to legacy as well.
-    walker->SetShouldForceLegacyLayoutForChild(true);
-    walker->SetNeedsReattachLayoutTree();
-    needs_reattach = true;
     if (parent && !parent->GetComputedStyle()
                        ->InsideFragmentationContextWithNondeterministicEngine())
-      return needs_reattach;
+      found_outer_relevant_fragmentation_context = true;
+
+    // When we have found the outermost fragmentation context candidate, we need
+    // to make sure to keep walking all the way up to the element that we can
+    // tell for sure will establish a new formatting context.
+    //
+    // E.g. <span style="columns:1;"> will trigger legacy layout fallback (false
+    // positive). When this happens, we need to walk all the way up to the
+    // ancestor that establishes a formatting context, and this is the subtree
+    // that will force legacy layout.
+    if (found_outer_relevant_fragmentation_context &&
+        DefinitelyNewFormattingContext(*walker, *walker->GetComputedStyle())) {
+      walker->SetShouldForceLegacyLayoutForChild(true);
+      walker->SetNeedsReattachLayoutTree();
+      return true;
+    }
   }
 
   if (GetDocument().Printing()) {
@@ -4906,10 +4915,10 @@ bool Element::ForceLegacyLayoutInFragmentationContext(
     Element* root = GetDocument().documentElement();
     root->SetShouldForceLegacyLayoutForChild(true);
     root->SetNeedsReattachLayoutTree();
-    needs_reattach = true;
+    return true;
   }
 
-  return needs_reattach;
+  return false;
 }
 
 bool Element::IsFocusedElementInDocument() const {
