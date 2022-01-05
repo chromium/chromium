@@ -27,7 +27,7 @@ absl::optional<base::FilePath> GetInstalledExecutablePath(UpdaterScope scope) {
   return absl::nullopt;
 }
 
-void WaitForUpdaterExit(UpdaterScope scope) {
+void WaitForServerExit(UpdaterScope scope) {
   NOTREACHED();
 }
 
