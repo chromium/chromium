@@ -1659,7 +1659,13 @@ class PDFExtensionKeyEventTest : public PDFExtensionTest {
 // static
 constexpr int PDFExtensionKeyEventTest::kScrollIncrement;
 
-IN_PROC_BROWSER_TEST_P(PDFExtensionKeyEventTest, ScrollWithSpace) {
+// TODO: crbug.com/1284750
+#if defined(OS_WIN)
+#define MAYBE_ScrollWithSpace DISABLED_ScrollWithSpace
+#else
+#define MAYBE_ScrollWithSpace ScrollWithSpace
+#endif
+IN_PROC_BROWSER_TEST_P(PDFExtensionKeyEventTest, MAYBE_ScrollWithSpace) {
   WebContents* guest_contents = LoadPdfGetGuestContents(
       embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf"));
   SetInputFocusOnPlugin(guest_contents);
