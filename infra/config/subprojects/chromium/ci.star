@@ -104,7 +104,7 @@ consoles.console_view(
     title = "Fuchsia Sheriff Console",
     ordering = {
         "*type*": consoles.ordering(short_names = ["a64", "x64"]),
-        None: ["ci", "fyi", "misc"],
+        None: ["ci", "fyi", "astro", "sherlock", "misc"],
         "chromium.mac": "*type*",
         "chromium.fyi|13": "*type*",
     },
@@ -118,10 +118,11 @@ consoles.console_view(
     short_name = short_name,
 ) for name, category, short_name in (
     ("fuchsia-fyi-arm64-size", "fyi", "a64-size"),
-    ("fuchsia-fyi-astro", "fyi", "astro"),
+    ("fuchsia-fyi-astro", "astro", "gpu"),
+    ("fuchsia-fyi-sherlock", "sherlock", "gpu"),
     ("fuchsia-builder-perf-fyi", "fyi", "builder-perf"),
-    ("fuchsia-perf-fyi", "fyi", "ast-perf"),
-    ("fuchsia-perf-sherlock-fyi", "fyi", "shk-perf"),
+    ("fuchsia-perf-fyi", "astro", "perf"),
+    ("fuchsia-perf-sherlock-fyi", "sherlock", "perf"),
     ("fuchsia-x64", "ci", "x64-chrome"),
 )]
 
