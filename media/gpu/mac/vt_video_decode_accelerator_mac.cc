@@ -950,7 +950,7 @@ void VTVideoDecodeAccelerator::DecodeTask(scoped_refptr<DecoderBuffer> buffer,
           frame->pic_order_cnt = *pic_order_cnt;
           frame->reorder_window = ComputeReorderWindow(sps);
         }
-        FALLTHROUGH;
+        [[fallthrough]];
 
       default:
         nalus.push_back(nalu);

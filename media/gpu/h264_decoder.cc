@@ -1462,7 +1462,7 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
             (state_ == State::kAfterReset && !recovery_frame_cnt_))
           break;
 
-        FALLTHROUGH;
+        [[fallthrough]];
       case H264NALU::kIDRSlice: {
         // TODO(posciak): the IDR may require an SPS that we don't have
         // available. For now we'd fail if that happens, but ideally we'd like
@@ -1632,7 +1632,7 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
           }
         }
 
-        FALLTHROUGH;
+        [[fallthrough]];
       default:
         DVLOG(4) << "Skipping NALU type: " << curr_nalu_->nal_unit_type;
         break;
