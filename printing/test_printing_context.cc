@@ -116,15 +116,6 @@ mojom::ResultCode TestPrintingContext::NewDocument(
   return mojom::ResultCode::kSuccess;
 }
 
-mojom::ResultCode TestPrintingContext::NewPage() {
-  if (abort_printing_)
-    return mojom::ResultCode::kCanceled;
-  DCHECK(in_print_job_);
-
-  // No-op.
-  return mojom::ResultCode::kSuccess;
-}
-
 #if defined(OS_WIN)
 mojom::ResultCode TestPrintingContext::RenderPage(const PrintedPage& page,
                                                   const PageSetup& page_setup) {
@@ -137,15 +128,6 @@ mojom::ResultCode TestPrintingContext::RenderPage(const PrintedPage& page,
   return mojom::ResultCode::kSuccess;
 }
 #endif  // defined(OS_WIN)
-
-mojom::ResultCode TestPrintingContext::PageDone() {
-  if (abort_printing_)
-    return mojom::ResultCode::kCanceled;
-  DCHECK(in_print_job_);
-
-  // No-op.
-  return mojom::ResultCode::kSuccess;
-}
 
 mojom::ResultCode TestPrintingContext::PrintDocument(
     const MetafilePlayer& metafile,

@@ -366,18 +366,6 @@ mojom::ResultCode PrintingContextWin::NewDocument(
   return mojom::ResultCode::kSuccess;
 }
 
-mojom::ResultCode PrintingContextWin::NewPage() {
-  if (abort_printing_)
-    return mojom::ResultCode::kCanceled;
-  DCHECK(context_);
-  DCHECK(in_print_job_);
-
-  // Intentional No-op. MetafileSkia::SafePlayback takes care of calling
-  // ::StartPage().
-
-  return mojom::ResultCode::kSuccess;
-}
-
 mojom::ResultCode PrintingContextWin::RenderPage(const PrintedPage& page,
                                                  const PageSetup& page_setup) {
   if (abort_printing_)
@@ -412,17 +400,6 @@ mojom::ResultCode PrintingContextWin::RenderPage(const PrintedPage& page,
     if (::EndPage(context_) <= 0)
       return mojom::ResultCode::kFailed;
   }
-
-  return mojom::ResultCode::kSuccess;
-}
-
-mojom::ResultCode PrintingContextWin::PageDone() {
-  if (abort_printing_)
-    return mojom::ResultCode::kCanceled;
-  DCHECK(in_print_job_);
-
-  // Intentional No-op. MetafileSkia::SafePlayback takes care of calling
-  // ::EndPage().
 
   return mojom::ResultCode::kSuccess;
 }

@@ -519,21 +519,9 @@ void PrintJobWorker::SpoolPage(PrintedPage* page) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK_NE(page_number_, PageNumber::npos());
 
-  // Preprocess.
-  if (printing_context_->NewPage() != mojom::ResultCode::kSuccess) {
-    OnFailure();
-    return;
-  }
-
   // Actual printing.
   if (document_->RenderPrintedPage(*page, printing_context_.get()) !=
       mojom::ResultCode::kSuccess) {
-    OnFailure();
-    return;
-  }
-
-  // Postprocess.
-  if (printing_context_->PageDone() != mojom::ResultCode::kSuccess) {
     OnFailure();
     return;
   }

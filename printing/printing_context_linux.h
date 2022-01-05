@@ -45,8 +45,6 @@ class COMPONENT_EXPORT(PRINTING) PrintingContextLinux : public PrintingContext {
   mojom::ResultCode UpdatePrinterSettings(
       const PrinterSettings& printer_settings) override;
   mojom::ResultCode NewDocument(const std::u16string& document_name) override;
-  mojom::ResultCode NewPage() override;
-  mojom::ResultCode PageDone() override;
   mojom::ResultCode PrintDocument(const MetafilePlayer& metafile,
                                   const PrintSettings& settings,
                                   uint32_t num_pages) override;

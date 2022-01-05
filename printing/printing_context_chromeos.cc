@@ -402,32 +402,14 @@ mojom::ResultCode PrintingContextChromeos::NewDocument(
   return mojom::ResultCode::kSuccess;
 }
 
-mojom::ResultCode PrintingContextChromeos::NewPage() {
-  if (abort_printing_)
-    return mojom::ResultCode::kCanceled;
-
-  DCHECK(in_print_job_);
-
-  // Intentional No-op.
-
-  return mojom::ResultCode::kSuccess;
-}
-
-mojom::ResultCode PrintingContextChromeos::PageDone() {
-  if (abort_printing_)
-    return mojom::ResultCode::kCanceled;
-
-  DCHECK(in_print_job_);
-
-  // Intentional No-op.
-
-  return mojom::ResultCode::kSuccess;
-}
-
 mojom::ResultCode PrintingContextChromeos::PrintDocument(
     const MetafilePlayer& metafile,
     const PrintSettings& settings,
     uint32_t num_pages) {
+  if (abort_printing_)
+    return mojom::ResultCode::kCanceled;
+  DCHECK(in_print_job_);
+
 #if defined(USE_CUPS)
   std::vector<char> buffer;
   if (!metafile.GetDataAsVector(&buffer))

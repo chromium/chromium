@@ -151,30 +151,13 @@ mojom::ResultCode PrintingContextLinux::NewDocument(
   return mojom::ResultCode::kSuccess;
 }
 
-mojom::ResultCode PrintingContextLinux::NewPage() {
-  if (abort_printing_)
-    return mojom::ResultCode::kCanceled;
-  DCHECK(in_print_job_);
-
-  // Intentional No-op.
-
-  return mojom::ResultCode::kSuccess;
-}
-
-mojom::ResultCode PrintingContextLinux::PageDone() {
-  if (abort_printing_)
-    return mojom::ResultCode::kCanceled;
-  DCHECK(in_print_job_);
-
-  // Intentional No-op.
-
-  return mojom::ResultCode::kSuccess;
-}
-
 mojom::ResultCode PrintingContextLinux::PrintDocument(
     const MetafilePlayer& metafile,
     const PrintSettings& settings,
     uint32_t num_pages) {
+  if (abort_printing_)
+    return mojom::ResultCode::kCanceled;
+  DCHECK(in_print_job_);
   DCHECK(print_dialog_);
   // TODO(crbug.com/1252685)  Plumb error code back from
   // `PrintDialogGtkInterface`.

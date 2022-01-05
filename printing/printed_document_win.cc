@@ -24,8 +24,17 @@ mojom::ResultCode PrintedDocument::RenderPrintedPage(
 #endif
 
   DCHECK(context);
-  return context->RenderPage(page,
-                             immutable_.settings_->page_setup_device_units());
+  mojom::ResultCode result = context->RenderPage(
+      page, immutable_.settings_->page_setup_device_units());
+  if (result != mojom::ResultCode::kSuccess)
+    return result;
+
+  // Beware of any asynchronous aborts of the print job that happened during
+  // printing.
+  if (context->PrintingAborted())
+    return mojom::ResultCode::kCanceled;
+
+  return mojom::ResultCode::kSuccess;
 }
 
 }  // namespace printing

@@ -122,17 +122,11 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
   virtual mojom::ResultCode NewDocument(
       const std::u16string& document_name) = 0;
 
-  // Starts a new page.
-  virtual mojom::ResultCode NewPage() = 0;
-
 #if defined(OS_WIN)
   // Renders a page.
   virtual mojom::ResultCode RenderPage(const PrintedPage& page,
                                        const PageSetup& page_setup) = 0;
 #endif
-
-  // Closes the printed page.
-  virtual mojom::ResultCode PageDone() = 0;
 
   // Prints the document contained in `metafile`.
   virtual mojom::ResultCode PrintDocument(const MetafilePlayer& metafile,
@@ -174,6 +168,8 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
   const PrintSettings& settings() const;
 
   std::unique_ptr<PrintSettings> TakeAndResetSettings();
+
+  bool PrintingAborted() const { return abort_printing_; }
 
   int job_id() const { return job_id_; }
 
