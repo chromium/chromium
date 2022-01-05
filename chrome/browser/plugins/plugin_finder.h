@@ -43,6 +43,7 @@ class PluginFinder {
   // It should be called on the UI thread.
   void Init();
 
+  // TODO(crbug.com/1187061): Refactor this to remove DictionaryValue;
   void ReinitializePlugins(const base::DictionaryValue* json_metadata);
 
   // Finds the plugin with the given identifier. If found, sets |installer|
@@ -64,6 +65,7 @@ class PluginFinder {
   PluginFinder();
   ~PluginFinder();
 
+  // TODO(crbug.com/1187061): Refactor this to remove DictionaryValue;
   // Loads the plugin information from the browser resources and parses it.
   // Returns null if the plugin list couldn't be parsed.
   static std::unique_ptr<base::DictionaryValue> LoadBuiltInPluginList();
