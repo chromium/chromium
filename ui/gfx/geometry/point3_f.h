@@ -45,6 +45,8 @@ class GEOMETRY_EXPORT Point3F {
     z_ = z;
   }
 
+  bool IsOrigin() const { return x_ == 0 && y_ == 0 && z_ == 0; }
+
   // Offset the point by the given vector.
   void operator+=(const Vector3dF& v) {
     x_ += v.x();
@@ -68,6 +70,8 @@ class GEOMETRY_EXPORT Point3F {
   }
 
   PointF AsPointF() const { return PointF(x_, y_); }
+
+  Vector3dF OffsetFromOrigin() const { return Vector3dF(x_, y_, z_); }
 
   // Returns a string representation of 3d point.
   std::string ToString() const;

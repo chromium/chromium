@@ -2,15 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ui/gfx/geometry/point3_f.h"
+
 #include <stddef.h>
 
 #include "base/cxx17_backports.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/gfx/geometry/point3_f.h"
 
 namespace gfx {
 
-TEST(Point3Test, VectorArithmetic) {
+TEST(Point3FTest, VectorArithmetic) {
   gfx::Point3F a(1.6f, 5.1f, 3.2f);
   gfx::Vector3dF v1(3.1f, -3.2f, 9.3f);
   gfx::Vector3dF v2(-8.1f, 1.2f, 3.3f);
@@ -39,7 +40,7 @@ TEST(Point3Test, VectorArithmetic) {
   EXPECT_EQ(Point3F(12.8f, 0.7f, 9.2f).ToString(), a.ToString());
 }
 
-TEST(Point3Test, VectorFromPoints) {
+TEST(Point3FTest, VectorFromPoints) {
   gfx::Point3F a(1.6f, 5.2f, 3.2f);
   gfx::Vector3dF v1(3.1f, -3.2f, 9.3f);
 
@@ -47,7 +48,7 @@ TEST(Point3Test, VectorFromPoints) {
   EXPECT_EQ((b - a).ToString(), v1.ToString());
 }
 
-TEST(Point3Test, Scale) {
+TEST(Point3FTest, Scale) {
   EXPECT_EQ(Point3F().ToString(), ScalePoint(Point3F(), 2.f).ToString());
   EXPECT_EQ(Point3F().ToString(),
             ScalePoint(Point3F(), 2.f, 2.f, 2.f).ToString());
@@ -66,6 +67,21 @@ TEST(Point3Test, Scale) {
   point.Scale(2.f);
   point.Scale(6.f, 3.f, 1.5f);
   EXPECT_EQ(Point3F(12.f, -6.f, 6.f).ToString(), point.ToString());
+}
+
+TEST(Point3FTest, IsOrigin) {
+  EXPECT_TRUE(Point3F().IsOrigin());
+  EXPECT_FALSE(Point3F(0, 0, 0.1f).IsOrigin());
+  EXPECT_FALSE(Point3F(0, 0.1f, 0).IsOrigin());
+  EXPECT_FALSE(Point3F(0.1f, 0, 0).IsOrigin());
+  EXPECT_FALSE(Point3F(0, 0, -0.1f).IsOrigin());
+  EXPECT_FALSE(Point3F(0, -0.1f, 0).IsOrigin());
+  EXPECT_FALSE(Point3F(-0.1f, 0, 0).IsOrigin());
+}
+
+TEST(Point3FTest, OffsetFromOrigin) {
+  EXPECT_EQ(Vector3dF(1.25f, 2.5f, -3.75f),
+            Point3F(1.25f, 2.5f, -3.75f).OffsetFromOrigin());
 }
 
 }  // namespace gfx
