@@ -167,6 +167,8 @@ std::string MakeBidScript(const std::string& bid,
         throw new Error("wrong browserSignals.renderUrl");
       if (browserSignals.bid !== bid)
         throw new Error("wrong browserSignals.bid");
+      if (browserSignals.seller != 'https://adstuff.publisher1.com')
+         throw new Error("wrong seller");
 
       sendReportTo("https://buyer-reporting.example.com");
     }
@@ -332,6 +334,7 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
                  const std::string& seller_signals_json,
                  const GURL& browser_signal_render_url,
                  double browser_signal_bid,
+                 const url::Origin& browser_signal_seller_origin,
                  ReportWinCallback report_win_callback) override {
     // While the real BidderWorklet implementation supports multiple pending
     // callbacks, this class does not.

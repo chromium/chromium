@@ -244,6 +244,7 @@ void BidderWorklet::ReportWin(
     const std::string& seller_signals_json,
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
+    const url::Origin& browser_signal_seller_origin,
     ReportWinCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
@@ -255,6 +256,7 @@ void BidderWorklet::ReportWin(
   report_win_task->seller_signals_json = seller_signals_json;
   report_win_task->browser_signal_render_url = browser_signal_render_url;
   report_win_task->browser_signal_bid = browser_signal_bid;
+  report_win_task->browser_signal_seller_origin = browser_signal_seller_origin;
   report_win_task->callback = std::move(callback);
 
   // If worklet script isn't loaded, can't run script immediately.
@@ -316,6 +318,7 @@ void BidderWorklet::V8State::ReportWin(
     const std::string& seller_signals_json,
     const GURL& browser_signal_render_url,
     double browser_signal_bid,
+    const url::Origin& browser_signal_seller_origin,
     ReportWinCallbackInternal callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(v8_sequence_checker_);
 
@@ -354,7 +357,9 @@ void BidderWorklet::V8State::ReportWin(
                                 bidding_interest_group_->group.name) ||
       !browser_signals_dict.Set("renderUrl",
                                 browser_signal_render_url.spec()) ||
-      !browser_signals_dict.Set("bid", browser_signal_bid)) {
+      !browser_signals_dict.Set("bid", browser_signal_bid) ||
+      !browser_signals_dict.Set("seller",
+                                browser_signal_seller_origin.Serialize())) {
     PostReportWinCallbackToUserThread(std::move(callback),
                                       absl::nullopt /* report_url */,
                                       std::vector<std::string>() /* errors */);
@@ -761,6 +766,7 @@ void BidderWorklet::RunReportWin(ReportWinTaskList::iterator task) {
           task->auction_signals_json, task->per_buyer_signals_json,
           task->top_window_origin, task->seller_signals_json,
           task->browser_signal_render_url, task->browser_signal_bid,
+          task->browser_signal_seller_origin,
           base::BindOnce(&BidderWorklet::DeliverReportWinOnUserThread,
                          weak_ptr_factory_.GetWeakPtr(), task)));
 }

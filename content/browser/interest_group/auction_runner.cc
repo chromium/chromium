@@ -551,6 +551,7 @@ void AuctionRunner::ReportBidWin(
       auction_config_->auction_signals, PerBuyerSignals(top_bidder_),
       browser_signals_->top_frame_origin, signals_for_winner_arg,
       top_bidder_->bid_result->render_url, top_bidder_->bid_result->bid,
+      auction_config_->seller,
       base::BindOnce(&AuctionRunner::OnReportBidWinComplete,
                      base::Unretained(this)));
 }

@@ -99,7 +99,7 @@ interface BidderWorklet {
   //  where the auction is running.
   //
   // `browser_signal_seller_origin` The origin of the seller script running
-  //  the auction.
+  //  the auction. Typically a valid, non-opaque HTTPS origin.
   //
   // `auction_start_time` The time the auction started, used to ensure the
   //  last win times provided to all worklets are relative to the same time.
@@ -145,6 +145,9 @@ interface BidderWorklet {
   //  BidderWorklet's generateBid() method, invoked as part of BidderWorklet
   //  creation.
   //
+  // `browser_signal_seller_origin` The origin of the seller script running
+  //  the auction. Typically a valid, non-opaque HTTPS origin.
+  //
   // Returns:
   // `report_url` is the URL to request to report the result of the auction
   //  to the bidder. It will be null if no reports are requested, or the
@@ -160,7 +163,8 @@ interface BidderWorklet {
             url.mojom.Origin browser_signal_top_window_origin,
             string seller_signals_json,
             url.mojom.Url browser_signal_render_url,
-            double browser_signal_bid) => (
+            double browser_signal_bid,
+            url.mojom.Origin browser_signal_seller_origin) => (
                 url.mojom.Url? report_url,
                 array<string> errors);
 

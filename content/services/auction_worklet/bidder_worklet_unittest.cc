@@ -196,6 +196,7 @@ class BidderWorkletTest : public testing::Test {
     bidder_worklet->ReportWin(
         auction_signals_, per_buyer_signals_, browser_signal_top_window_origin_,
         seller_signals_, browser_signal_render_url_, browser_signal_bid_,
+        browser_signal_seller_origin_,
         base::BindOnce(
             [](const absl::optional<GURL>& expected_report_url,
                const std::vector<std::string>& expected_errors,
@@ -1646,6 +1647,7 @@ TEST_F(BidderWorkletTest, DeleteBeforeReportWinCallback) {
   bidder_worklet->ReportWin(
       auction_signals_, per_buyer_signals_, browser_signal_top_window_origin_,
       seller_signals_, browser_signal_render_url_, browser_signal_bid_,
+      browser_signal_seller_origin_,
       base::BindOnce([](const absl::optional<GURL>& report_url,
                         const std::vector<std::string>& errors) {
         ADD_FAILURE() << "Callback should not be invoked since worklet deleted";
@@ -1682,6 +1684,7 @@ TEST_F(BidderWorkletTest, ReportWinParallel) {
           /*auction_signals_json=*/base::NumberToString(i), per_buyer_signals_,
           browser_signal_top_window_origin_, seller_signals_,
           browser_signal_render_url_, browser_signal_bid_,
+          browser_signal_seller_origin_,
           base::BindLambdaForTesting(
               [&run_loop, &num_report_win_calls, i](
                   const absl::optional<GURL>& report_url,
@@ -1730,6 +1733,7 @@ TEST_F(BidderWorkletTest, ReportWinNetworkErrorParallel) {
           /*auction_signals_json=*/base::NumberToString(i), per_buyer_signals_,
           browser_signal_top_window_origin_, seller_signals_,
           browser_signal_render_url_, browser_signal_bid_,
+          browser_signal_seller_origin_,
           base::BindLambdaForTesting(
               [&run_loop, &num_report_win_calls](
                   const absl::optional<GURL>& report_url,
@@ -1861,6 +1865,14 @@ TEST_F(BidderWorkletTest, ReportWinBrowserSignalBid) {
       GURL("https://jumboshrimp.test"));
 }
 
+TEST_F(BidderWorkletTest, ReportWinBrowserSignalSeller) {
+  GURL seller_raw_url = GURL("https://seller.origin.test");
+  browser_signal_seller_origin_ = url::Origin::Create(seller_raw_url);
+  RunReportWinWithFunctionBodyExpectingResult(
+      "sendReportTo(browserSignals.seller)",
+      /*expected_report_url=*/seller_raw_url);
+}
+
 // Subsequent runs of the same script should not affect each other. Same is true
 // for different scripts, but it follows from the single script case.
 //
@@ -1905,6 +1917,7 @@ TEST_F(BidderWorkletTest, ScriptIsolation) {
     bidder_worklet->ReportWin(
         auction_signals_, per_buyer_signals_, browser_signal_top_window_origin_,
         seller_signals_, browser_signal_render_url_, browser_signal_bid_,
+        browser_signal_seller_origin_,
         base::BindLambdaForTesting(
             [&run_loop](const absl::optional<GURL>& report_url,
                         const std::vector<std::string>& errors) {
