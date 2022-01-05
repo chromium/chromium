@@ -9694,6 +9694,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NQE.ConnectivityMonitor.NetworkChangeEvent"
     enum="NQE.ConnectivityMonitor.NetworkChangeType" expires_after="2021-08-29">
+  <obsolete>
+    Removed January 2022.
+  </obsolete>
   <owner>rockot@google.com</owner>
   <owner>zhongyi@chromium.org</owner>
   <summary>
