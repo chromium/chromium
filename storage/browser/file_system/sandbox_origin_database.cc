@@ -116,7 +116,7 @@ bool SandboxOriginDatabase::Init(InitOption init_option,
       UMA_HISTOGRAM_ENUMERATION(kSandboxOriginDatabaseRepairHistogramLabel,
                                 SandboxOriginRepairResult::DB_REPAIR_FAILED,
                                 SandboxOriginRepairResult::DB_REPAIR_MAX);
-      FALLTHROUGH;
+      [[fallthrough]];
     case DELETE_ON_CORRUPTION:
       if (!base::DeletePathRecursively(file_system_directory_))
         return false;

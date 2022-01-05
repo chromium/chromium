@@ -746,7 +746,7 @@ bool SandboxDirectoryDatabase::Init(RecoveryOption recovery_option) {
                                 SandboxDirectoryRepairResult::DB_REPAIR_FAILED,
                                 SandboxDirectoryRepairResult::DB_REPAIR_MAX);
       LOG(WARNING) << "Failed to repair SandboxDirectoryDatabase.";
-      FALLTHROUGH;
+      [[fallthrough]];
     case DELETE_ON_CORRUPTION:
       LOG(WARNING) << "Clearing SandboxDirectoryDatabase.";
       if (!leveldb_chrome::DeleteDB(filesystem_data_directory_, options).ok())
