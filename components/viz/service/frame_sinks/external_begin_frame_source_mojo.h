@@ -14,6 +14,7 @@
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_receiver.h"
 #include "services/viz/privileged/mojom/compositing/external_begin_frame_controller.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace viz {
 
@@ -72,6 +73,7 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceMojo
                                  const BeginFrameArgs& args) override;
 
   void MaybeProduceFrameCallback();
+  void DispatchFrameCallback(const BeginFrameAck& ack);
 
   const raw_ptr<FrameSinkManagerImpl> frame_sink_manager_;
 
@@ -88,6 +90,7 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceMojo
   uint64_t original_source_id_ = BeginFrameArgs::kStartingSourceId;
 
   base::flat_set<FrameSinkId> pending_frame_sinks_;
+  absl::optional<BeginFrameAck> pending_ack_;
   raw_ptr<Display> display_ = nullptr;
 };
 
