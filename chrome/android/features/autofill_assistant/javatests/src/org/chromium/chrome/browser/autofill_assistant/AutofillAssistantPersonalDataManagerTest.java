@@ -537,10 +537,8 @@ public class AutofillAssistantPersonalDataManagerTest {
      */
     @Test
     @MediumTest
-    @DisableIf.Build(sdk_is_less_than = Build.VERSION_CODES.M,
-            message = "Failing on Lollipop Phone Tester (https://crbug.com/1247243)")
-    public void
-    testCreateAndEnterCard() throws Exception {
+    @DisabledTest(message = "https://crbug.com/1247243, https://crbug.com/1249164#c2")
+    public void testCreateAndEnterCard() throws Exception {
         // Add a profile for easier address selection.
         mHelper.addDummyProfile("Adam West", "adamwest@google.com");
 
