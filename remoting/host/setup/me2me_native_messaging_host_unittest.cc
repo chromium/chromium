@@ -214,7 +214,7 @@ void MockDaemonControllerDelegate::SetConfigAndStart(
     bool consent,
     DaemonController::CompletionCallback done) {
   // Verify parameters passed in.
-  if (consent && config && config->HasKey("start")) {
+  if (consent && config && config->FindKey("start")) {
     std::move(done).Run(DaemonController::RESULT_OK);
   } else {
     std::move(done).Run(DaemonController::RESULT_FAILED);
@@ -224,7 +224,7 @@ void MockDaemonControllerDelegate::SetConfigAndStart(
 void MockDaemonControllerDelegate::UpdateConfig(
     std::unique_ptr<base::DictionaryValue> config,
     DaemonController::CompletionCallback done) {
-  if (config && config->HasKey("update")) {
+  if (config && config->FindKey("update")) {
     std::move(done).Run(DaemonController::RESULT_OK);
   } else {
     std::move(done).Run(DaemonController::RESULT_FAILED);
