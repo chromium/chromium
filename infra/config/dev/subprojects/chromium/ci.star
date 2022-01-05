@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 load("//lib/builders.star", "builder", "cpu", "defaults", "goma", "os")
+load("//lib/builder_config.star", "builder_config")
 
 luci.bucket(
     name = "ci",

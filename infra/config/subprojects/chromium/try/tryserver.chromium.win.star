@@ -101,14 +101,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "win10_chromium_x64_20h2_fyi_rel_ng",
-    builderless = False,
-    use_clang_coverage = True,
-    coverage_test_types = ["unit", "overall"],
-    os = os.WINDOWS_10_20h2,
-)
-
-try_.builder(
     name = "win10_chromium_x64_dbg_ng",
     os = os.WINDOWS_10,
 )
