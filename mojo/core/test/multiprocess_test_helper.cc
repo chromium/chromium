@@ -188,7 +188,7 @@ ScopedMessagePipeHandle MultiprocessTestHelper::StartChildWithExtraSwitch(
       command_line.AppendSwitch(launch_type == LaunchType::ASYNC
                                     ? kAcceptInvitationAsync
                                     : kDisableAllCapabilities);
-      FALLTHROUGH;
+      [[fallthrough]];
     case LaunchType::CHILD:
 #if !defined(OS_FUCHSIA)
     case LaunchType::NAMED_CHILD:
