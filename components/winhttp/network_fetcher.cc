@@ -76,7 +76,7 @@ void NetworkFetcher::Close() {
 void NetworkFetcher::CompleteFetch() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!file_.IsValid()) {
-    std::move(fetch_complete_callback_).Run();
+    std::move(fetch_complete_callback_).Run(response_code_);
     return;
   }
   base::ThreadPool::PostTaskAndReply(
@@ -295,9 +295,8 @@ void NetworkFetcher::HeadersAvailable() {
                      WINHTTP_HEADER_NAME_BY_INDEX, &all);
   VLOG(3) << "response headers: " << all;
 
-  int response_code = 0;
   net_error_ = QueryHeadersInt(request_handle_.get(), WINHTTP_QUERY_STATUS_CODE,
-                               WINHTTP_HEADER_NAME_BY_INDEX, &response_code);
+                               WINHTTP_HEADER_NAME_BY_INDEX, &response_code_);
   if (FAILED(net_error_)) {
     CompleteFetch();
     return;
@@ -312,7 +311,7 @@ void NetworkFetcher::HeadersAvailable() {
     return;
   }
 
-  std::move(fetch_started_callback_).Run(response_code, content_length);
+  std::move(fetch_started_callback_).Run(response_code_, content_length);
 
   // Start reading the body of response.
   net_error_ = ReadData();

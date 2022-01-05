@@ -190,7 +190,7 @@ void NetworkFetcher::DownloadToFile(
                      base::Unretained(this)));
 }
 
-void NetworkFetcher::PostRequestComplete() {
+void NetworkFetcher::PostRequestComplete(int /*response_code*/) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Attempt to get some response headers.  Not all headers may be present so
@@ -215,7 +215,7 @@ void NetworkFetcher::PostRequestComplete() {
            base::SysWideToUTF8(x_cup_server_proof), x_retry_after_sec);
 }
 
-void NetworkFetcher::DownloadToFileComplete() {
+void NetworkFetcher::DownloadToFileComplete(int /*response_code*/) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::move(download_to_file_complete_callback_)
       .Run(winhttp_network_fetcher_->GetNetError(),

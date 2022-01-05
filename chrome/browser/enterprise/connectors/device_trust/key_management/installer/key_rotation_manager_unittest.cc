@@ -34,20 +34,16 @@ namespace enterprise_connectors {
 
 using test::MockKeyNetworkDelegate;
 using test::MockKeyPersistenceDelegate;
+using HttpResponseCode = KeyNetworkDelegate::HttpResponseCode;
 
 namespace {
 
 const char kDmServerUrl[] = "dmserver.example.com";
 const char kDmToken[] = "dm_token";
 
-std::string CreateResponse(BPKUP::ResponseCode response_code = BPKUP::SUCCESS) {
-  enterprise_management::DeviceManagementResponse response;
-  response.mutable_browser_public_key_upload_response()->set_response_code(
-      response_code);
-  std::string response_str;
-  response.SerializeToString(&response_str);
-  return response_str;
-}
+constexpr HttpResponseCode kSuccessCode = 200;
+constexpr HttpResponseCode kHardFailureCode = 400;
+constexpr HttpResponseCode kTransientFailureCode = 500;
 
 KeyPersistenceDelegate::KeyInfo CreateEmptyKeyPair() {
   return {BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED, std::vector<uint8_t>()};
@@ -74,6 +70,12 @@ class KeyRotationManagerTest : public testing::Test,
     return use_nonce()
                ? "Enterprise.DeviceTrust.RotateSigningKey.NoNonce.Status"
                : "Enterprise.DeviceTrust.RotateSigningKey.WithNonce.Status";
+  }
+
+  const char* http_code_histogram_name() const {
+    return use_nonce()
+               ? "Enterprise.DeviceTrust.RotateSigningKey.WithNonce.UploadCode"
+               : "Enterprise.DeviceTrust.RotateSigningKey.NoNonce.UploadCode";
   }
 
   test::ScopedKeyPersistenceDelegateFactory scoped_factory_;
@@ -106,7 +108,7 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_Tpm_WithKey) {
           Invoke([&captured_body](const GURL& url, const std::string& dm_token,
                                   const std::string& body) {
             captured_body = body;
-            return CreateResponse();
+            return kSuccessCode;
           }));
 
   auto manager = KeyRotationManager::CreateForTesting(
@@ -130,6 +132,8 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_Tpm_WithKey) {
   histogram_tester.ExpectTotalCount(opposite_status_histogram_name(), 0);
   histogram_tester.ExpectUniqueSample(
       "Enterprise.DeviceTrust.RotateSigningKey.Tries", 1, 1);
+  histogram_tester.ExpectUniqueSample(http_code_histogram_name(), kSuccessCode,
+                                      1);
 }
 
 // Tests a success key rotation flow when TPM key provider is available, but no
@@ -153,7 +157,7 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_Tpm_NoKey) {
   auto mock_network_delegate = std::make_unique<MockKeyNetworkDelegate>();
   EXPECT_CALL(*mock_network_delegate,
               SendPublicKeyToDmServerSync(dm_server_url, kDmToken, _))
-      .WillOnce(Return(CreateResponse()));
+      .WillOnce(Return(kSuccessCode));
 
   auto manager = KeyRotationManager::CreateForTesting(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
@@ -186,7 +190,7 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoTpm_NoKey) {
   auto mock_network_delegate = std::make_unique<MockKeyNetworkDelegate>();
   EXPECT_CALL(*mock_network_delegate,
               SendPublicKeyToDmServerSync(dm_server_url, kDmToken, _))
-      .WillOnce(Return(CreateResponse()));
+      .WillOnce(Return(kSuccessCode));
 
   auto manager = KeyRotationManager::CreateForTesting(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
@@ -227,7 +231,7 @@ TEST_P(KeyRotationManagerTest,
   auto mock_network_delegate = std::make_unique<MockKeyNetworkDelegate>();
   EXPECT_CALL(*mock_network_delegate,
               SendPublicKeyToDmServerSync(dm_server_url, kDmToken, _))
-      .WillOnce(Return(CreateResponse(BPKUP::INVALID_SIGNATURE)));
+      .WillOnce(Return(kHardFailureCode));
 
   EXPECT_CALL(
       *mock_persistence_delegate,
@@ -247,6 +251,8 @@ TEST_P(KeyRotationManagerTest,
   histogram_tester.ExpectTotalCount(opposite_status_histogram_name(), 0);
   histogram_tester.ExpectUniqueSample(
       "Enterprise.DeviceTrust.RotateSigningKey.Tries", 1, 1);
+  histogram_tester.ExpectUniqueSample(http_code_histogram_name(),
+                                      kHardFailureCode, 1);
 }
 
 // Tests a failed key rotation flow when a TPM key provider is available
@@ -277,7 +283,7 @@ TEST_P(
   auto mock_network_delegate = std::make_unique<MockKeyNetworkDelegate>();
   EXPECT_CALL(*mock_network_delegate,
               SendPublicKeyToDmServerSync(dm_server_url, kDmToken, _))
-      .WillRepeatedly(Return(CreateResponse(BPKUP::UNDEFINED)));
+      .WillRepeatedly(Return(kTransientFailureCode));
 
   EXPECT_CALL(
       *mock_persistence_delegate,
@@ -299,6 +305,8 @@ TEST_P(
   histogram_tester.ExpectTotalCount(opposite_status_histogram_name(), 0);
   histogram_tester.ExpectUniqueSample(
       "Enterprise.DeviceTrust.RotateSigningKey.Tries", 10, 1);
+  histogram_tester.ExpectUniqueSample(http_code_histogram_name(),
+                                      kTransientFailureCode, 10);
 }
 
 // Tests a failed key rotation flow when a TPM key provider is available
@@ -327,8 +335,8 @@ TEST_P(KeyRotationManagerTest,
   auto mock_network_delegate = std::make_unique<MockKeyNetworkDelegate>();
   EXPECT_CALL(*mock_network_delegate,
               SendPublicKeyToDmServerSync(dm_server_url, kDmToken, _))
-      .WillOnce(Return(CreateResponse(BPKUP::UNDEFINED)))
-      .WillOnce(Return(CreateResponse(BPKUP::INVALID_SIGNATURE)));
+      .WillOnce(Return(kTransientFailureCode))
+      .WillOnce(Return(kHardFailureCode));
 
   EXPECT_CALL(
       *mock_persistence_delegate,
@@ -350,6 +358,12 @@ TEST_P(KeyRotationManagerTest,
   histogram_tester.ExpectTotalCount(opposite_status_histogram_name(), 0);
   histogram_tester.ExpectUniqueSample(
       "Enterprise.DeviceTrust.RotateSigningKey.Tries", 2, 1);
+
+  histogram_tester.ExpectTotalCount(http_code_histogram_name(), 2);
+  histogram_tester.ExpectBucketCount(http_code_histogram_name(),
+                                     kTransientFailureCode, 1);
+  histogram_tester.ExpectBucketCount(http_code_histogram_name(),
+                                     kHardFailureCode, 1);
 }
 
 // Tests a success key rotation flow when a TPM key provider is not available
@@ -369,7 +383,7 @@ TEST_P(KeyRotationManagerTest, RotateWithAdminRights_NoTpm_WithKey) {
   auto mock_network_delegate = std::make_unique<MockKeyNetworkDelegate>();
   EXPECT_CALL(*mock_network_delegate,
               SendPublicKeyToDmServerSync(dm_server_url, kDmToken, _))
-      .WillOnce(Return(CreateResponse()));
+      .WillOnce(Return(kSuccessCode));
 
   auto manager = KeyRotationManager::CreateForTesting(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
@@ -440,8 +454,8 @@ TEST_P(KeyRotationManagerTest,
   auto mock_network_delegate = std::make_unique<MockKeyNetworkDelegate>();
   EXPECT_CALL(*mock_network_delegate,
               SendPublicKeyToDmServerSync(dm_server_url, kDmToken, _))
-      .WillOnce(Return(CreateResponse(BPKUP::UNDEFINED)))
-      .WillOnce(Return(CreateResponse(BPKUP::SUCCESS)));
+      .WillOnce(Return(kTransientFailureCode))
+      .WillOnce(Return(kSuccessCode));
 
   auto manager = KeyRotationManager::CreateForTesting(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
@@ -479,7 +493,7 @@ TEST_P(KeyRotationManagerTest,
   auto mock_network_delegate = std::make_unique<MockKeyNetworkDelegate>();
   EXPECT_CALL(*mock_network_delegate,
               SendPublicKeyToDmServerSync(dm_server_url, kDmToken, _))
-      .WillOnce(Return(CreateResponse(BPKUP::INVALID_SIGNATURE)));
+      .WillOnce(Return(kHardFailureCode));
 
   auto manager = KeyRotationManager::CreateForTesting(
       std::move(mock_network_delegate), std::move(mock_persistence_delegate));
@@ -522,8 +536,8 @@ TEST_P(KeyRotationManagerTest,
   auto mock_network_delegate = std::make_unique<MockKeyNetworkDelegate>();
   EXPECT_CALL(*mock_network_delegate,
               SendPublicKeyToDmServerSync(dm_server_url, kDmToken, _))
-      .WillOnce(Return(CreateResponse(BPKUP::UNDEFINED)))
-      .WillOnce(Return(CreateResponse(BPKUP::INVALID_SIGNATURE)));
+      .WillOnce(Return(kTransientFailureCode))
+      .WillOnce(Return(kHardFailureCode));
 
   EXPECT_CALL(*mock_persistence_delegate,
               StoreKeyPair(BPKUR::CHROME_BROWSER_OS_KEY, original_key_wrapped))
@@ -568,7 +582,7 @@ TEST_P(KeyRotationManagerTest,
   auto mock_network_delegate = std::make_unique<MockKeyNetworkDelegate>();
   EXPECT_CALL(*mock_network_delegate,
               SendPublicKeyToDmServerSync(dm_server_url, kDmToken, _))
-      .WillRepeatedly(Return(CreateResponse(BPKUP::UNDEFINED)));
+      .WillRepeatedly(Return(kTransientFailureCode));
 
   EXPECT_CALL(*mock_persistence_delegate,
               StoreKeyPair(BPKUR::CHROME_BROWSER_OS_KEY, original_key_wrapped))
