@@ -16,7 +16,6 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "components/metrics/metrics_pref_names.h"
-#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
 
@@ -49,19 +48,10 @@ void MetricsReportingHandler::OnJavascriptAllowed() {
       g_browser_process->local_state(),
       base::BindRepeating(&MetricsReportingHandler::OnPrefChanged,
                           base::Unretained(this)));
-
-  policy_registrar_ = std::make_unique<policy::PolicyChangeRegistrar>(
-      g_browser_process->policy_service(),
-      policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
-  policy_registrar_->Observe(
-      policy::key::kMetricsReportingEnabled,
-      base::BindRepeating(&MetricsReportingHandler::OnPolicyChanged,
-                          base::Unretained(this)));
 }
 
 void MetricsReportingHandler::OnJavascriptDisallowed() {
   pref_member_.reset();
-  policy_registrar_.reset();
 }
 
 void MetricsReportingHandler::HandleGetMetricsReporting(
@@ -132,11 +122,6 @@ void MetricsReportingHandler::HandleSetMetricsReportingEnabled(
   metrics_reporting_remote_->SetMetricsReportingEnabled(enabled,
                                                         base::DoNothing());
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-}
-
-void MetricsReportingHandler::OnPolicyChanged(const base::Value* previous,
-                                              const base::Value* current) {
-  SendMetricsReportingChange();
 }
 
 void MetricsReportingHandler::OnPrefChanged(const std::string& pref_name) {
