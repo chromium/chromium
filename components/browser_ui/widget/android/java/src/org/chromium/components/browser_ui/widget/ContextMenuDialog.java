@@ -52,8 +52,9 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
     private float mContextMenuSourceXPx;
     private float mContextMenuSourceYPx;
     private int mContextMenuFirstLocationYPx;
-    private AnchoredPopupWindow mPopupWindow;
+    private @Nullable AnchoredPopupWindow mPopupWindow;
     private View mLayout;
+    private OnLayoutChangeListener mOnLayoutChangeListener;
 
     private int mTopMarginPx;
     private int mBottomMarginPx;
@@ -137,7 +138,7 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
             layoutParams.topMargin = mTopMarginPx;
         }
 
-        (mIsPopup ? mLayout : mContentView).addOnLayoutChangeListener(new OnLayoutChangeListener() {
+        mOnLayoutChangeListener = new OnLayoutChangeListener() {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom,
                     int oldLeft, int oldTop, int oldRight, int oldBottom) {
@@ -168,8 +169,10 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
                     startEnterAnimation();
                 }
                 v.removeOnLayoutChangeListener(this);
+                mOnLayoutChangeListener = null;
             }
-        });
+        };
+        (mIsPopup ? mLayout : mContentView).addOnLayoutChangeListener(mOnLayoutChangeListener);
     }
 
     private void startEnterAnimation() {
@@ -195,12 +198,23 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
     @Override
     public void dismiss() {
         if (mIsPopup) {
-            mPopupWindow.dismiss();
+            if (mPopupWindow != null) {
+                mPopupWindow.dismiss();
+                mPopupWindow = null;
+            }
+            if (mOnLayoutChangeListener != null) {
+                mLayout.removeOnLayoutChangeListener(mOnLayoutChangeListener);
+                mOnLayoutChangeListener = null;
+            }
             super.dismiss();
 
             return;
         }
 
+        if (mOnLayoutChangeListener != null) {
+            mContentView.removeOnLayoutChangeListener(mOnLayoutChangeListener);
+            mOnLayoutChangeListener = null;
+        }
         int[] contextMenuFinalLocationPx = new int[2];
         mContentView.getLocationOnScreen(contextMenuFinalLocationPx);
         // Recalculate mContextMenuDestinationY because the context menu's final location may not be
