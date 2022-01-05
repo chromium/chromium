@@ -141,6 +141,8 @@ fuchsia::web::NavigationState
 NavigationControllerImpl::GetVisibleNavigationState() const {
   content::NavigationEntry* const entry =
       web_contents_->GetController().GetVisibleEntry();
+  CHECK(entry);
+
   if (entry->IsInitialEntry())
     return fuchsia::web::NavigationState();
 
@@ -373,6 +375,13 @@ void DiffNavigationEntries(const fuchsia::web::NavigationState& old_entry,
                            const fuchsia::web::NavigationState& new_entry,
                            fuchsia::web::NavigationState* difference) {
   DCHECK(difference);
+
+  // |new_entry| should not be empty when the difference is between states
+  // pre- and post-navigation. It is possible for non-navigation events (e.g.
+  // Renderer-process teardown) to trigger notifications, in which case both
+  // states may be empty (i.e. both come from the "initial" NavigationEntry).
+  if (new_entry.IsEmpty() && old_entry.IsEmpty())
+    return;
 
   DCHECK(new_entry.has_title());
   if (!old_entry.has_title() || (new_entry.title() != old_entry.title())) {
