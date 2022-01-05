@@ -691,26 +691,6 @@ enum class SwitchAccessKeyCode {
   kMaxValue = kNone,
 };
 
-void MigrateSwitchAccessKeyCodePref(PrefService* prefs,
-                                    const std::string& old_pref,
-                                    const std::string& new_pref) {
-  if (!prefs->HasPrefPath(old_pref))
-    return;
-
-  base::ListValue devices;
-  devices.Append(ash::kSwitchAccessInternalDevice);
-  devices.Append(ash::kSwitchAccessUsbDevice);
-  devices.Append(ash::kSwitchAccessBluetoothDevice);
-
-  const auto old_keys = prefs->Get(old_pref)->GetList();
-  base::DictionaryValue new_keys;
-  for (const auto& key : old_keys)
-    new_keys.SetPath(base::NumberToString(key.GetInt()), devices.Clone());
-
-  prefs->Set(new_pref, std::move(new_keys));
-  prefs->ClearPref(old_pref);
-}
-
 }  // namespace
 
 AccessibilityControllerImpl::Feature::Feature(
@@ -1696,26 +1676,6 @@ void AccessibilityControllerImpl::OnTabletModeEnded() {
 
 void AccessibilityControllerImpl::ObservePrefs(PrefService* prefs) {
   DCHECK(prefs);
-
-  // TODO(accessibility): Remove in m92 or later after deprecation; see
-  // https://bugs.chromium.org/p/chromium/issues/detail?id=1161305
-  static const char kAccessibilitySwitchAccessSelectKeyCodes[] =
-      "settings.a11y.switch_access.select.key_codes";
-  static const char kAccessibilitySwitchAccessNextKeyCodes[] =
-      "settings.a11y.switch_access.next.key_codes";
-  static const char kAccessibilitySwitchAccessPreviousKeyCodes[] =
-      "settings.a11y.switch_access.previous.key_codes";
-
-  // Migrate old keys to the new format.
-  MigrateSwitchAccessKeyCodePref(
-      prefs, kAccessibilitySwitchAccessSelectKeyCodes,
-      prefs::kAccessibilitySwitchAccessSelectDeviceKeyCodes);
-  MigrateSwitchAccessKeyCodePref(
-      prefs, kAccessibilitySwitchAccessNextKeyCodes,
-      prefs::kAccessibilitySwitchAccessNextDeviceKeyCodes);
-  MigrateSwitchAccessKeyCodePref(
-      prefs, kAccessibilitySwitchAccessPreviousKeyCodes,
-      prefs::kAccessibilitySwitchAccessPreviousDeviceKeyCodes);
 
   active_user_prefs_ = prefs;
 
