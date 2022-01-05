@@ -228,6 +228,24 @@ TEST_F(
       });
     });
 
+TEST_F('MagnifierE2ETest', 'IgnoresRootNodeFocus', function() {
+  const magnifier = accessibilityCommon.getMagnifierForTest();
+  magnifier.setIsInitializingForTest(false);
+
+  this.runWithLoadedTree('', async function(root) {
+    chrome.accessibilityPrivate.onMagnifierBoundsChanged.addListener(
+        newBounds => {
+          throw new Error(
+              'Magnifier did not ignore focus change on document load - ' +
+              'moved to following location: ' + JSON.stringify(newBounds));
+        });
+
+    // Wait seven seconds to verify magnifier successfully ignored focus on root
+    // node.
+    await new Promise(resolve => setTimeout(resolve, 7000));
+  });
+});
+
 TEST_F('MagnifierE2ETest', 'MagnifierCenterOnPoint', function() {
   this.runWithLoadedTree('', async function(root) {
     const magnifier = accessibilityCommon.getMagnifierForTest();

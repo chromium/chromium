@@ -2,6 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+const EventType = chrome.automation.EventType;
+const RoleType = chrome.automation.RoleType;
+
 /**
  * Main class for the Chrome OS magnifier.
  */
@@ -36,22 +39,21 @@ export class Magnifier {
 
     /** @private {!EventHandler} */
     this.focusHandler_ = new EventHandler(
-        [], chrome.automation.EventType.FOCUS,
-        event => this.onFocusOrSelectionChanged_(event));
+        [], EventType.FOCUS, event => this.onFocusOrSelectionChanged_(event));
 
     /** @private {!EventHandler} */
     this.activeDescendantHandler_ = new EventHandler(
-        [], chrome.automation.EventType.ACTIVE_DESCENDANT_CHANGED,
+        [], EventType.ACTIVE_DESCENDANT_CHANGED,
         event => this.onActiveDescendantChanged_(event));
 
     /** @private {!EventHandler} */
     this.selectionHandler_ = new EventHandler(
-        [], chrome.automation.EventType.SELECTION,
+        [], EventType.SELECTION,
         event => this.onFocusOrSelectionChanged_(event));
 
     /** @private {!EventHandler} */
     this.onCaretBoundsChangedHandler = new EventHandler(
-        [], chrome.automation.EventType.CARET_BOUNDS_CHANGED,
+        [], EventType.CARET_BOUNDS_CHANGED,
         event => this.onCaretBoundsChanged(event));
 
     /** @private {!ChromeEventHandler} */
@@ -178,12 +180,19 @@ export class Magnifier {
    * @private
    */
   onFocusOrSelectionChanged_(event) {
-    const {location} = event.target;
-    if (!location || !this.shouldFollowFocus()) {
+    const node = event.target;
+    if (!node.location || !this.shouldFollowFocus()) {
       return;
     }
 
-    chrome.accessibilityPrivate.moveMagnifierToRect(location);
+    // Skip trying to move magnifier to encompass whole webpage or pdf. It's too
+    // big, and magnifier usually ends up in middle at left edge of page.
+    if (node.isRootNode || node.role === RoleType.WEB_VIEW ||
+        node.role === RoleType.EMBEDDED_OBJECT) {
+      return;
+    }
+
+    chrome.accessibilityPrivate.moveMagnifierToRect(node.location);
   }
 
   /**
