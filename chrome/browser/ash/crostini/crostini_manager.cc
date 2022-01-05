@@ -2842,7 +2842,7 @@ void CrostiniManager::OnStartLxdContainer(
                                               CrostiniUISurface::kAppList);
       // signal.
       // Then perform the same steps as for starting.
-      FALLTHROUGH;
+      [[fallthrough]];
     case vm_tools::cicerone::StartLxdContainerResponse::STARTING: {
       VLOG(1) << "Awaiting LxdContainerStartingSignal for " << owner_id_ << ", "
               << container_id;

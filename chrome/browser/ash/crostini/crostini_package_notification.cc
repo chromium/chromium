@@ -228,7 +228,7 @@ void CrostiniPackageNotification::UpdateProgress(
       // it becomes in infinite progress bar. Do that here because we have no
       // way to know how long this will take or how close we are to completion.
       progress_percent = -1;
-      FALLTHROUGH;
+      [[fallthrough]];
     case PackageOperationStatus::RUNNING:
       never_timeout = true;
       notification_type = message_center::NOTIFICATION_TYPE_PROGRESS;
