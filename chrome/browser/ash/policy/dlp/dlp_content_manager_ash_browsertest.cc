@@ -11,6 +11,7 @@
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -182,6 +183,19 @@ class DlpContentManagerAshBrowserTest : public InProcessBrowserTest {
       EXPECT_THAT(events_[i], IsDlpPolicyEvent(CreateDlpPolicyEvent(
                                   kSrcPattern, restriction, level)));
     }
+  }
+
+  std::unique_ptr<ui::test::EventGenerator> GetEventGenerator() {
+    return std::make_unique<ui::test::EventGenerator>(
+        std::make_unique<DlpEventGeneratorDelegate>());
+  }
+
+  // TODO(https://crbug.com/1283065): Remove this.
+  // Currently, setting the notifier explicitly is needed since otherwise, due
+  // to a wrongly initialized notifier, calling the virtual
+  // ShowDlpWarningDialog() method causes a crash.
+  void SetWarnNotifier() {
+    helper_->SetWarnNotifierForTesting(std::make_unique<DlpWarnNotifier>());
   }
 
   void StartDesktopScreenShare(
@@ -745,6 +759,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   helper_->EnableScreenShareWarningMode();
   SetupReporting();
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
+  SetWarnNotifier();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
   content::WebContents* web_contents =
@@ -753,11 +768,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
       browser()->window()->GetNativeWindow()->GetRootWindow();
   const auto media_id = content::DesktopMediaID::RegisterNativeWindow(
       content::DesktopMediaID::TYPE_SCREEN, root_window);
-
-  // TODO(https://crbug.com/1283065): this is needed since otherwise, due to a
-  // wrongly initialized notifier, calling the virtual ShowDlpWarningDialog()
-  // method causes a crash.
-  helper_->SetWarnNotifierForTesting(std::make_unique<DlpWarnNotifier>());
 
   DlpContentManagerAsh* manager = helper_->GetContentManager();
   base::MockCallback<content::MediaStreamUI::StateChangeCallback>
@@ -780,8 +790,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
 
   std::unique_ptr<ui::test::EventGenerator> event_generator =
-      std::make_unique<ui::test::EventGenerator>(
-          std::make_unique<DlpEventGeneratorDelegate>());
+      GetEventGenerator();
 
   // Hit Enter to "Share anyway".
   event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
@@ -800,6 +809,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   helper_->EnableScreenShareWarningMode();
   SetupReporting();
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
+  SetWarnNotifier();
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
   content::WebContents* web_contents =
@@ -808,9 +818,6 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
       browser()->window()->GetNativeWindow()->GetRootWindow();
   const auto media_id = content::DesktopMediaID::RegisterNativeWindow(
       content::DesktopMediaID::TYPE_SCREEN, root_window);
-
-  // TODO(https://crbug.com/1283065): See previous test.
-  helper_->SetWarnNotifierForTesting(std::make_unique<DlpWarnNotifier>());
 
   DlpContentManagerAsh* manager = helper_->GetContentManager();
   base::MockCallback<content::MediaStreamUI::StateChangeCallback>
@@ -834,8 +841,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
 
   std::unique_ptr<ui::test::EventGenerator> event_generator =
-      std::make_unique<ui::test::EventGenerator>(
-          std::make_unique<DlpEventGeneratorDelegate>());
+      GetEventGenerator();
 
   // Hit Esc to "Cancel".
   event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
@@ -1058,7 +1064,56 @@ class DlpContentManagerReportingBrowserTest
             })));
   }
 
+  // Start printing and wait for the end of
+  // printing::PrintViewManager::RequestPrintPreview(). StartPrint() is an
+  // asynchronous function, which initializes mojo communication with a renderer
+  // process. We need to wait for the DLP restriction check in
+  // RequestPrintPreview(), which happens after the renderer process
+  // communicates back to the browser process.
+  void StartPrint(
+      printing::TestPrintViewManagerForRequestPreview* print_manager,
+      content::WebContents* web_contents) {
+    base::RunLoop run_loop;
+    print_manager->set_quit_closure(run_loop.QuitClosure());
+
+    printing::StartPrint(web_contents,
+                         /*print_renderer=*/mojo::NullAssociatedRemote(),
+                         /*print_preview_disabled=*/false,
+                         /*has_selection=*/false);
+    run_loop.Run();
+  }
+
  protected:
+  // Helper class to enable asserting that printing was accepted or rejected.
+  class MockPrintManager
+      : public printing::TestPrintViewManagerForRequestPreview {
+   public:
+    MOCK_METHOD(void, PrintPreviewAllowedForTesting, (), (override));
+    MOCK_METHOD(void, PrintPreviewRejectedForTesting, (), (override));
+
+    static void CreateForWebContents(content::WebContents* web_contents) {
+      web_contents->SetUserData(
+          PrintViewManager::UserDataKey(),
+          std::make_unique<MockPrintManager>(web_contents));
+    }
+
+    static MockPrintManager* FromWebContents(
+        content::WebContents* web_contents) {
+      return static_cast<MockPrintManager*>(
+          printing::TestPrintViewManagerForRequestPreview::FromWebContents(
+              web_contents));
+    }
+
+    explicit MockPrintManager(content::WebContents* web_contents)
+        : printing::TestPrintViewManagerForRequestPreview(web_contents) {}
+    ~MockPrintManager() override = default;
+  };
+
+  MockPrintManager* GetPrintManager(content::WebContents* web_contents) {
+    MockPrintManager::CreateForWebContents(web_contents);
+    return MockPrintManager::FromWebContents(web_contents);
+  }
+
   scoped_refptr<reporting::StorageModuleInterface> storage_module_;
   testing::NiceMock<testing::MockFunction<reporting::Status()>>
       mocked_policy_check_;
@@ -1068,7 +1123,6 @@ class DlpContentManagerReportingBrowserTest
       cloned_tab_observer_;
 };
 
-// TODO(crbug.com/1265935): Add a test for warning
 IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
                        PrintingRestricted) {
   // Set up mock rules manager.
@@ -1085,52 +1139,33 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
 
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
 
-  absl::optional<bool> is_printing_allowed;
-  helper_->GetContentManager()->CheckPrintingRestriction(
-      web_contents,
-      base::BindOnce(
-          [](absl::optional<bool>* out_result, bool should_proceed) {
-            *out_result = absl::make_optional(should_proceed);
-          },
-          &is_printing_allowed));
-  EXPECT_TRUE(is_printing_allowed);
-  EXPECT_TRUE(is_printing_allowed.value());
+  // Set up the mocks for directly calling CheckPrintingRestriction().
+  base::MockCallback<OnDlpRestrictionCheckedCallback> cb;
+  testing::InSequence s;
+  EXPECT_CALL(cb, Run(true)).Times(1);
+  EXPECT_CALL(cb, Run(false)).Times(1);
+
+  // Printing should first be allowed.
+  helper_->GetContentManager()->CheckPrintingRestriction(web_contents,
+                                                         cb.Get());
 
   // Set up printing restriction.
   helper_->ChangeConfidentiality(web_contents, kPrintRestricted);
-  is_printing_allowed.reset();
-  helper_->GetContentManager()->CheckPrintingRestriction(
-      web_contents,
-      base::BindOnce(
-          [](absl::optional<bool>* out_result, bool should_proceed) {
-            *out_result = absl::make_optional(should_proceed);
-          },
-          &is_printing_allowed));
-  EXPECT_TRUE(is_printing_allowed);
-  EXPECT_FALSE(is_printing_allowed.value());
+  helper_->GetContentManager()->CheckPrintingRestriction(web_contents,
+                                                         cb.Get());
 
-  // Start printing and wait for the end of
-  // printing::PrintViewManager::RequestPrintPreview(). StartPrint() is an
-  // asynchronous function, which initializes mojo communication with a renderer
-  // process. We need to wait for the DLP restriction check in
-  // RequestPrintPreview(), which happens after the renderer process
-  // communicates back to the browser process.
-  base::RunLoop run_loop;
-  printing::TestPrintViewManagerForRequestPreview::FromWebContents(web_contents)
-      ->set_quit_closure(run_loop.QuitClosure());
-  printing::StartPrint(web_contents,
-                       /*print_renderer=*/mojo::NullAssociatedRemote(),
-                       /*print_preview_disabled=*/false,
-                       /*has_selection=*/false);
-  run_loop.Run();
+  // Setup the mock for the printing manager to invoke
+  // CheckPrintingRestriction() indirectly.
+  MockPrintManager* print_manager = GetPrintManager(web_contents);
+  EXPECT_CALL(*print_manager, PrintPreviewAllowedForTesting).Times(0);
+  EXPECT_CALL(*print_manager, PrintPreviewRejectedForTesting).Times(1);
+  StartPrint(print_manager, web_contents);
 
   // Check for notification about printing restriction.
   EXPECT_TRUE(
       display_service_tester.GetNotification(kPrintBlockedNotificationId));
 }
 
-// For better understanding of this test see comments in
-// DlpContentManagerReportingBrowserTest.PrintingRestricted test.
 IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
                        PrintingReported) {
   SetupDlpRulesManager();
@@ -1145,30 +1180,63 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest,
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
 
   // Set up printing restriction.
-  absl::optional<bool> is_printing_allowed;
   helper_->ChangeConfidentiality(web_contents, kPrintReported);
-  // Printing should be reported, but still allowed.
-  helper_->GetContentManager()->CheckPrintingRestriction(
-      web_contents,
-      base::BindOnce(
-          [](absl::optional<bool>* out_result, bool should_proceed) {
-            *out_result = absl::make_optional(should_proceed);
-          },
-          &is_printing_allowed));
-  EXPECT_TRUE(is_printing_allowed);
-  EXPECT_TRUE(is_printing_allowed.value());
+  // Printing should be reported, but still allowed whether we call
+  // CheckPrintingRestriction() directly or indirectly.
+  base::MockCallback<OnDlpRestrictionCheckedCallback> cb;
+  EXPECT_CALL(cb, Run(true)).Times(1);
+  helper_->GetContentManager()->CheckPrintingRestriction(web_contents,
+                                                         cb.Get());
 
-  base::RunLoop run_loop;
-  printing::TestPrintViewManagerForRequestPreview::FromWebContents(web_contents)
-      ->set_quit_closure(run_loop.QuitClosure());
-  printing::StartPrint(web_contents,
-                       /*print_renderer=*/mojo::NullAssociatedRemote(),
-                       /*print_preview_disabled=*/false,
-                       /*has_selection=*/false);
-  run_loop.Run();
+  MockPrintManager* print_manager = GetPrintManager(web_contents);
+  EXPECT_CALL(*print_manager, PrintPreviewAllowedForTesting).Times(1);
+  EXPECT_CALL(*print_manager, PrintPreviewRejectedForTesting).Times(0);
+  StartPrint(print_manager, web_contents);
 
   EXPECT_FALSE(
       display_service_tester.GetNotification(kPrintBlockedNotificationId));
+}
+
+// TODO(https://crbug.com/1266815): Test reporting for warn/warn proceeded
+// events.
+IN_PROC_BROWSER_TEST_F(DlpContentManagerReportingBrowserTest, PrintingWarned) {
+  SetupDlpRulesManager();
+  SetupReportQueue();
+  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+  SetWarnNotifier();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(kExampleUrl)));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // Set up printing restriction.
+  helper_->ChangeConfidentiality(web_contents, kPrintWarned);
+
+  std::unique_ptr<ui::test::EventGenerator> event_generator =
+      GetEventGenerator();
+
+  MockPrintManager* print_manager = GetPrintManager(web_contents);
+  testing::InSequence s;
+  EXPECT_CALL(*print_manager, PrintPreviewRejectedForTesting()).Times(1);
+  EXPECT_CALL(*print_manager, PrintPreviewAllowedForTesting()).Times(1);
+
+  StartPrint(print_manager, web_contents);
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
+  // Hit Esc to "Cancel".
+  event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_ESCAPE);
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
+  // There should be no notification about printing restriction.
+  EXPECT_FALSE(
+      display_service_tester.GetNotification(kPrintBlockedNotificationId));
+
+  // Attempt to print again.
+  StartPrint(print_manager, web_contents);
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 1);
+  // Hit Enter to "Print anyway".
+  event_generator->PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
+  EXPECT_TRUE(helper_->HasContentCachedForRestriction(
+      web_contents, DlpRulesManager::Restriction::kPrinting));
 }
 
 }  // namespace policy
