@@ -914,7 +914,7 @@ DetermineChannelResult DetermineChannel(const InstallConstants& mode,
         return {std::move(channel_from_override), ChannelOrigin::kPolicy,
                 is_extended_stable};
       }
-      FALLTHROUGH;  // Return the default channel name for the mode.
+      [[fallthrough]];  // Return the default channel name for the mode.
     }
     case ChannelStrategy::FIXED:
       return {mode.default_channel_name, ChannelOrigin::kInstallMode,
