@@ -340,11 +340,15 @@ interface NetworkService {
   // collection of set declarations according to the format specified in this
   // document: https://github.com/privacycg/first-party-sets. The collection may
   // either be a single JSON array of such records, or a sequence of
-  // newline-delimited JSON objects (one per line). Note that by setting the
-  // First-Party Sets, any previous notion of First-Party Sets is cleared. On
-  // any kind of error, all First-Party Sets are cleared (except for the
-  // manually-specified set, if one exists).
-  SetFirstPartySets(mojo_base.mojom.ReadOnlyFile sets_file);
+  // newline-delimited JSON objects (one per line). Note that only the first
+  // invocation will have any effect. On any kind of error, this method has no
+  // effect.
+  //
+  // |sets_file| may be invalid ("nullopt"), if no such file exists on the
+  // client's device (i.e. if the First-Party Sets component has not been
+  // installed yet).  Such a case is considered the same as if the file's
+  // contents were empty.
+  SetFirstPartySets(mojo_base.mojom.ReadOnlyFile? sets_file);
 
   // Sets the First-Party Sets data that was persisted to compare it with the
   // current First-Party Sets data set by `SetFirstPartySets()`, which is

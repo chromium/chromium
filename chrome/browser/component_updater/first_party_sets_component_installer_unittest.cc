@@ -5,6 +5,8 @@
 #include "chrome/browser/component_updater/first_party_sets_component_installer.h"
 
 #include "base/callback_helpers.h"
+#include "base/check.h"
+#include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
@@ -86,6 +88,23 @@ TEST_F(FirstPartySetsComponentInstallerTest, NonexistentFile_OnComponentReady) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(FirstPartySetsComponentInstallerTest,
+       NonexistentFile_OnRegistrationComplete) {
+  ASSERT_TRUE(
+      base::DeleteFile(FirstPartySetsComponentInstallerPolicy::GetInstalledPath(
+          component_install_dir_.GetPath())));
+
+  base::RunLoop run_loop;
+  FirstPartySetsComponentInstallerPolicy(
+      base::BindLambdaForTesting([&](base::File file) {
+        EXPECT_FALSE(file.IsValid());
+        run_loop.Quit();
+      }))
+      .OnRegistrationComplete();
+
+  run_loop.Run();
+}
+
 TEST_F(FirstPartySetsComponentInstallerTest, LoadsSets_OnComponentReady) {
   SEQUENCE_CHECKER(sequence_checker);
   const std::string expectation = "some first party sets";
@@ -93,6 +112,7 @@ TEST_F(FirstPartySetsComponentInstallerTest, LoadsSets_OnComponentReady) {
   auto policy = std::make_unique<FirstPartySetsComponentInstallerPolicy>(
       base::BindLambdaForTesting([&](base::File file) {
         DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
+        EXPECT_TRUE(file.IsValid());
         EXPECT_EQ(ReadToString(std::move(file)), expectation);
         run_loop.Quit();
       }));
@@ -106,6 +126,41 @@ TEST_F(FirstPartySetsComponentInstallerTest, LoadsSets_OnComponentReady) {
                          base::Value(base::Value::Type::DICTIONARY));
 
   run_loop.Run();
+}
+
+// Test that when the first version of the component is installed,
+// ComponentReady is a no-op, because OnRegistrationComplete already executed
+// the OnceCallback.
+TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_NoInitialComponent) {
+  SEQUENCE_CHECKER(sequence_checker);
+
+  int callback_calls = 0;
+  FirstPartySetsComponentInstallerPolicy policy(
+      // This should run only once for the OnRegistrationComplete call.
+      base::BindLambdaForTesting([&](base::File file) {
+        DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
+        EXPECT_FALSE(file.IsValid());
+        callback_calls++;
+      }));
+
+  policy.OnRegistrationComplete();
+  env_.RunUntilIdle();
+  EXPECT_EQ(callback_calls, 1);
+
+  // Install the component, which should be ignored.
+  base::ScopedTempDir install_dir;
+  CHECK(install_dir.CreateUniqueTempDirUnderPath(
+      component_install_dir_.GetPath()));
+  ASSERT_TRUE(
+      base::WriteFile(FirstPartySetsComponentInstallerPolicy::GetInstalledPath(
+                          install_dir.GetPath()),
+                      "first party sets content"));
+  policy.ComponentReady(base::Version(), install_dir.GetPath(),
+                        base::Value(base::Value::Type::DICTIONARY));
+
+  env_.RunUntilIdle();
+
+  EXPECT_EQ(callback_calls, 1);
 }
 
 // Test if a component has been installed, ComponentReady will be no-op when
@@ -125,6 +180,7 @@ TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_OnComponentReady) {
       // It should run only once for the first ComponentReady call.
       base::BindLambdaForTesting([&](base::File file) {
         DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
+        EXPECT_TRUE(file.IsValid());
         EXPECT_EQ(ReadToString(std::move(file)), sets_v1);
         callback_calls++;
       }));
@@ -160,6 +216,7 @@ TEST_F(FirstPartySetsComponentInstallerTest, LoadsSets_OnNetworkRestart) {
     FirstPartySetsComponentInstallerPolicy policy(
         base::BindLambdaForTesting([&](base::File file) {
           DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
+          EXPECT_TRUE(file.IsValid());
           EXPECT_EQ(ReadToString(std::move(file)), expectation);
           run_loop.Quit();
         }));
@@ -181,6 +238,7 @@ TEST_F(FirstPartySetsComponentInstallerTest, LoadsSets_OnNetworkRestart) {
     FirstPartySetsComponentInstallerPolicy::ReconfigureAfterNetworkRestart(
         base::BindLambdaForTesting([&](base::File file) {
           DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
+          EXPECT_TRUE(file.IsValid());
           EXPECT_EQ(ReadToString(std::move(file)), expectation);
           run_loop.Quit();
         }));
@@ -205,6 +263,7 @@ TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_OnNetworkRestart) {
   FirstPartySetsComponentInstallerPolicy policy(
       base::BindLambdaForTesting([&](base::File file) {
         DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
+        EXPECT_TRUE(file.IsValid());
         EXPECT_EQ(ReadToString(std::move(file)), sets_v1);
       }));
 
@@ -231,6 +290,7 @@ TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_OnNetworkRestart) {
   FirstPartySetsComponentInstallerPolicy::ReconfigureAfterNetworkRestart(
       base::BindLambdaForTesting([&](base::File file) {
         DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker);
+        EXPECT_TRUE(file.IsValid());
         EXPECT_EQ(ReadToString(std::move(file)), sets_v1);
         callback_calls++;
       }));
