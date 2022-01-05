@@ -106,8 +106,10 @@ IsolateHolder::IsolateHolder(
 
 IsolateHolder::~IsolateHolder() {
   isolate_memory_dump_provider_.reset();
-  isolate_data_.reset();
+  // Calling Isolate::Dispose makes sure all threads which might access
+  // PerIsolateData are finished.
   isolate_->Dispose();
+  isolate_data_.reset();
   isolate_ = nullptr;
 }
 
