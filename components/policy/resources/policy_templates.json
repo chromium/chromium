@@ -13023,8 +13023,8 @@
     },
     {
       'id': 930,
-      'name': 'FullscreenNotificationUrlExemptList',
-      'caption': '''List of URLs which are exempt from the full screen notification''',
+      'name': 'KeepFullscreenWithoutNotificationUrlAllowList',
+      'caption': '''List of URLs which are allowed to remain in full screen mode without showing a notification''',
       'owners': ['aninak@chromium.org', 'file://ash/session/OWNERS'],
       'type': 'list',
       'schema': {
@@ -13042,11 +13042,11 @@
         '*',
       ],
       'tags': [],
-      'desc': '''Configure a list of URLs that are exempt from the full screen notification. The notification is shown when the device returns from sleep, low brightness or the lock screen and has a window in full screen mode. This is to make users aware that they are in full screen mode, which reduces the risk of phishing attacks.
+      'desc': '''Configure a list of URLs that are allowed to stay in full screen mode without showing a notification when the device returns from the lock screen.
 
-          This policy allows to disable the notification for specific URLs that will be considered trusted sources. It is set by specifying a list of URL patterns formatted according to this format ( https://www.chromium.org/administrators/url-blocklist-filter-format ). E.g., it is possible to disable the notifications altogether by specifying the wildcard character <ph name="WILDCARD_VALUE">*</ph> matching all URLs.
+          Normally, full screen mode is turned off when returning from the lock screen in order to reduce the risk of phishing attacks. This policy allows to specify URLs that will be considered trusted sources which are permitted to continue full screen mode on unlock. It is set by specifying a list of URL patterns formatted according to this format ( https://www.chromium.org/administrators/url-blocklist-filter-format ). E.g., it is possible to always keep full screen mode on unlock and disable the notifications altogether by specifying the wildcard character <ph name="WILDCARD_VALUE">*</ph> matching all URLs.
 
-          Setting this policy to an empty list or leaving it unset means no URLs are exempt from the full screen notification.''',
+          Setting this policy to an empty list or leaving it unset means no URLs are allowed to continue full screen mode without a notification.''',
     },
     {
       'name': 'ScreenDimDelayAC',

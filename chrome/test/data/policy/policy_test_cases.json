@@ -7802,7 +7802,7 @@
       }
     ]
   },
-  "FullscreenNotificationUrlExemptList": {
+  "KeepFullscreenWithoutNotificationUrlAllowList": {
     "os": [
       "chromeos_ash"
     ],
@@ -7810,19 +7810,19 @@
       {
         "policies": {},
         "prefs": {
-          "ash.fullscreen_notification_url_exempt_list": {
+          "ash.keep_fullscreen_without_notification_url_allow_list": {
             "default_value": []
           }
         }
       },
       {
         "policies": {
-          "FullscreenNotificationUrlExemptList": [
+          "KeepFullscreenWithoutNotificationUrlAllowList": [
             "*"
           ]
         },
         "prefs": {
-          "ash.fullscreen_notification_url_exempt_list": {
+          "ash.keep_fullscreen_without_notification_url_allow_list": {
             "value": [
               "*"
             ]

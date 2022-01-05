@@ -99,8 +99,9 @@ void FullscreenController::MaybeShowNotification() {
 void FullscreenController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kFullscreenAlertEnabled, true,
                                 PrefRegistry::PUBLIC);
-  registry->RegisterListPref(prefs::kFullscreenNotificationUrlExemptList,
-                             PrefRegistry::PUBLIC);
+  registry->RegisterListPref(
+      prefs::kKeepFullscreenWithoutNotificationUrlAllowList,
+      PrefRegistry::PUBLIC);
 }
 
 void FullscreenController::SuspendImminent(
