@@ -74,6 +74,8 @@ const char kPasskeyCharacteristicDecryptTime[] =
     "Bluetooth.ChromeOS.FastPair.Passkey.Decrypt.Time";
 const char kPasskeyCharacteristicDecryptResult[] =
     "Bluetooth.ChromeOS.FastPair.Passkey.Decrypt.Result";
+const char kWriteAccountKeyCharacteristicResultMetric[] =
+    "Bluetooth.ChromeOS.FastPair.AccountKey.Write.Result";
 
 class FakeBluetoothAdapter
     : public testing::NiceMock<device::MockBluetoothAdapter> {
@@ -600,7 +602,6 @@ TEST_F(FastPairPairerTest, PairedDeviceLost_Subsequent) {
 
 TEST_F(FastPairPairerTest, PairSuccess_Initial) {
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 0);
-  histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
                                /*protocol=*/Protocol::kFastPairInitial);
   SetGetDeviceFailure();
@@ -641,6 +642,8 @@ TEST_F(FastPairPairerTest, PairSuccess_Subsequent) {
 }
 
 TEST_F(FastPairPairerTest, WriteAccountKey_Initial) {
+  histogram_tester().ExpectTotalCount(
+      kWriteAccountKeyCharacteristicResultMetric, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
                                /*protocol=*/Protocol::kFastPairInitial);
   SetGetDeviceFailure();
@@ -659,9 +662,13 @@ TEST_F(FastPairPairerTest, WriteAccountKey_Initial) {
   EXPECT_CALL(pairing_procedure_complete_, Run);
   RunWriteAccountKeyCallback();
   EXPECT_TRUE(IsAccountKeySavedToFootprints());
+  histogram_tester().ExpectTotalCount(
+      kWriteAccountKeyCharacteristicResultMetric, 1);
 }
 
 TEST_F(FastPairPairerTest, WriteAccountKey_Retroactive) {
+  histogram_tester().ExpectTotalCount(
+      kWriteAccountKeyCharacteristicResultMetric, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
                                /*protocol=*/Protocol::kFastPairRetroactive);
   SetGetDeviceFailure();
@@ -669,9 +676,13 @@ TEST_F(FastPairPairerTest, WriteAccountKey_Retroactive) {
   base::RunLoop().RunUntilIdle();
   EXPECT_CALL(pairing_procedure_complete_, Run);
   RunWriteAccountKeyCallback();
+  histogram_tester().ExpectTotalCount(
+      kWriteAccountKeyCharacteristicResultMetric, 1);
 }
 
 TEST_F(FastPairPairerTest, WriteAccountKeyFailure_Initial) {
+  histogram_tester().ExpectTotalCount(
+      kWriteAccountKeyCharacteristicResultMetric, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
                                /*protocol=*/Protocol::kFastPairInitial);
   SetGetDeviceFailure();
@@ -690,6 +701,8 @@ TEST_F(FastPairPairerTest, WriteAccountKeyFailure_Initial) {
   RunWriteAccountKeyCallback(
       device::BluetoothGattService::GattErrorCode::GATT_ERROR_FAILED);
   EXPECT_FALSE(IsAccountKeySavedToFootprints());
+  histogram_tester().ExpectTotalCount(
+      kWriteAccountKeyCharacteristicResultMetric, 1);
 }
 
 TEST_F(FastPairPairerTest, FastPairVersionOne) {
@@ -700,6 +713,8 @@ TEST_F(FastPairPairerTest, FastPairVersionOne) {
 }
 
 TEST_F(FastPairPairerTest, WriteAccountKeyFailure_Retroactive) {
+  histogram_tester().ExpectTotalCount(
+      kWriteAccountKeyCharacteristicResultMetric, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
                                /*protocol=*/Protocol::kFastPairRetroactive);
   SetGetDeviceFailure();
@@ -708,6 +723,8 @@ TEST_F(FastPairPairerTest, WriteAccountKeyFailure_Retroactive) {
   EXPECT_CALL(account_key_failure_callback_, Run);
   RunWriteAccountKeyCallback(
       device::BluetoothGattService::GattErrorCode::GATT_ERROR_FAILED);
+  histogram_tester().ExpectTotalCount(
+      kWriteAccountKeyCharacteristicResultMetric, 1);
 }
 
 }  // namespace quick_pair

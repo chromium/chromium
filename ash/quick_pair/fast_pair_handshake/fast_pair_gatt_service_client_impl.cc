@@ -541,6 +541,7 @@ void FastPairGattServiceClientImpl::OnWriteAccountKeyError(
   QP_LOG(WARNING) << "WriteRemoteCharacteristic to account key characteristic "
                      "failed due to GATT error: "
                   << ToString(error);
+  RecordWriteAccountKeyGattError(error);
   NotifyWriteAccountKeyError(error);
 }
 

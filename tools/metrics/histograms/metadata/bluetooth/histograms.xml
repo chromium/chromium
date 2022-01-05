@@ -188,6 +188,30 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.FastPair.AccountKey.Write.GattErrorReason"
+    enum="BluetoothDeviceConnectErrorCode" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Breaks down why a written attempt to the account-key Gatt characteristic of
+    a device failed if it was a result of a Gatt error. Emitted following a
+    OnWriteRequest error in the FastPairGattServiceClient.
+  </summary>
+</histogram>
+
+<histogram name="Bluetooth.ChromeOS.FastPair.AccountKey.Write.Result"
+    enum="BooleanSuccess" expires_after="2022-06-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records success or failure of writing to the account-key Gatt characteristic
+    of the device during the pairing protocol. Emitted following the write
+    account key request in the FastPairPairer.
+  </summary>
+</histogram>
+
 <histogram
     name="Bluetooth.ChromeOS.FastPair.AccountKeyFailure.{FastPairPairingProtocol}"
     enum="FastPairAccountKeyFailure" expires_after="2022-09-20">

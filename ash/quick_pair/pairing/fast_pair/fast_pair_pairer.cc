@@ -283,6 +283,8 @@ void FastPairPairer::SendAccountKey() {
 void FastPairPairer::OnWriteAccountKey(
     std::array<uint8_t, 16> account_key,
     absl::optional<device::BluetoothGattService::GattErrorCode> error) {
+  RecordWriteAccountKeyCharacteristicResult(/*success=*/!error.has_value());
+
   if (error) {
     QP_LOG(WARNING)
         << "Failed to write account key to device due to Gatt Error: "
