@@ -79,7 +79,7 @@ StreamParser::ParseStreamIfAvailable() {
     switch (result) {
       case StreamParser::StreamParsingResult::kSuccessfullyParsedResponse:
         receive_messages_responses.push_back(parsed_response);
-        FALLTHROUGH;
+        [[fallthrough]];
       case StreamParser::StreamParsingResult::kNoop:
         bytes_consumed = input_stream.CurrentPosition();
         continue_parsing = bytes_consumed < unparsed_bytes_available;
