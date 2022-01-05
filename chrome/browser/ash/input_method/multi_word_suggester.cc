@@ -6,11 +6,14 @@
 
 #include <cmath>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/services/ime/public/cpp/suggestions.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_details.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
 namespace ash {
@@ -21,6 +24,7 @@ using ::chromeos::ime::TextSuggestion;
 using ::chromeos::ime::TextSuggestionMode;
 using ::chromeos::ime::TextSuggestionType;
 
+constexpr char kMultiWordFirstAcceptTimeDays[] = "multi_word_first_accept";
 constexpr char16_t kSuggestionShownMessage[] =
     u"predictive writing candidate shown, press tab to accept";
 constexpr char16_t kSuggestionAcceptedMessage[] =
@@ -64,13 +68,42 @@ void RecordTimeToDismiss(base::TimeDelta delta) {
                           delta);
 }
 
+std::optional<int> GetTimeFirstAcceptedSuggestion(Profile* profile) {
+  DictionaryPrefUpdate update(profile->GetPrefs(),
+                              prefs::kAssistiveInputFeatureSettings);
+  auto value = update->FindIntKey(kMultiWordFirstAcceptTimeDays);
+  if (value.has_value())
+    return value.value();
+  return std::nullopt;
+}
+
+void SetTimeFirstAcceptedSuggestion(Profile* profile) {
+  DictionaryPrefUpdate update(profile->GetPrefs(),
+                              prefs::kAssistiveInputFeatureSettings);
+  auto time_since_epoch = base::Time::Now() - base::Time::UnixEpoch();
+  update->SetIntKey(kMultiWordFirstAcceptTimeDays,
+                    time_since_epoch.InDaysFloored());
+}
+
+bool ShouldShowTabGuide(Profile* profile) {
+  auto time_first_accepted = GetTimeFirstAcceptedSuggestion(profile);
+  if (!time_first_accepted)
+    return true;
+
+  base::TimeDelta first_accepted = base::Days(*time_first_accepted);
+  base::TimeDelta time_since_epoch =
+      base::Time::Now() - base::Time::UnixEpoch();
+  return (time_since_epoch - first_accepted) <= base::Days(7);
+}
+
 // TODO(crbug/1146266): Add DismissedAccuracy metric back in.
 
 }  // namespace
 
 MultiWordSuggester::MultiWordSuggester(
-    SuggestionHandlerInterface* suggestion_handler)
-    : suggestion_handler_(suggestion_handler), state_(this) {
+    SuggestionHandlerInterface* suggestion_handler,
+    Profile* profile)
+    : suggestion_handler_(suggestion_handler), state_(this), profile_(profile) {
   suggestion_button_.id = ui::ime::ButtonId::kSuggestion;
   suggestion_button_.window_type =
       ui::ime::AssistiveWindowType::kMultiWordSuggestion;
@@ -171,6 +204,9 @@ bool MultiWordSuggester::AcceptSuggestion(size_t index) {
     RecordTimeToAccept(base::TimeTicks::Now() - suggestion->time_first_shown);
   }
 
+  if (!GetTimeFirstAcceptedSuggestion(profile_))
+    SetTimeFirstAcceptedSuggestion(profile_);
+
   state_.UpdateState(SuggestionState::State::kSuggestionAccepted);
   state_.ResetSuggestion();
   return true;
@@ -216,7 +252,7 @@ void MultiWordSuggester::DisplaySuggestion(
   ui::ime::SuggestionDetails details;
   details.text = suggestion.text;
   details.show_accept_annotation = false;
-  details.show_quick_accept_annotation = true;
+  details.show_quick_accept_annotation = ShouldShowTabGuide(profile_);
   details.confirmed_length = suggestion.confirmed_length;
   details.show_setting_link = false;
 

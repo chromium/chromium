@@ -28,6 +28,7 @@ bool FakeSuggestionHandler::SetSuggestion(
   context_id_ = context_id;
   suggestion_text_ = details.text;
   confirmed_length_ = details.confirmed_length;
+  last_suggestion_details_ = details;
   return true;
 }
 

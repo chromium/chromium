@@ -183,7 +183,7 @@ AssistiveSuggester::AssistiveSuggester(
     : profile_(profile),
       personal_info_suggester_(engine, profile),
       emoji_suggester_(engine, profile),
-      multi_word_suggester_(engine),
+      multi_word_suggester_(engine, profile),
       suggester_switch_(std::move(suggester_switch)) {
   RecordAssistiveUserPrefForPersonalInfo(
       profile_->GetPrefs()->GetBoolean(prefs::kAssistPersonalInfoEnabled));
