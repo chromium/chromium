@@ -1520,7 +1520,7 @@ public class ExternalNavigationHandler {
      * Sanitize intent to be passed to {@link queryIntentActivities()}
      * ensuring that web pages cannot bypass browser security.
      */
-    private void sanitizeQueryIntentActivitiesIntent(Intent intent) {
+    public static void sanitizeQueryIntentActivitiesIntent(Intent intent) {
         intent.setFlags(intent.getFlags() & ALLOWED_INTENT_FLAGS);
         intent.addCategory(Intent.CATEGORY_BROWSABLE);
         intent.setComponent(null);

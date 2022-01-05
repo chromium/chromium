@@ -86,10 +86,9 @@ public class RedirectHandler {
 
         if (checkIsToChrome) mIsInitialIntentHeadingToChrome = isIntentToChrome(intent);
 
-        // A copy of the intent with component cleared to find resolvers.
-        mInitialIntent = new Intent(intent).setComponent(null);
-        Intent selector = mInitialIntent.getSelector();
-        if (selector != null) selector.setComponent(null);
+        // A sanitized copy of the initial intent for detecting if resolvers have changed.
+        mInitialIntent = new Intent(intent);
+        ExternalNavigationHandler.sanitizeQueryIntentActivitiesIntent(mInitialIntent);
     }
 
     private static boolean isIntentToChrome(Intent intent) {
