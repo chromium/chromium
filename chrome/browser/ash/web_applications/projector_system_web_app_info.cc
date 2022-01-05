@@ -14,6 +14,18 @@
 #include "components/prefs/pref_service.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/styles/cros_styles.h"
+
+namespace {
+
+SkColor GetBgColor(bool use_dark_mode) {
+  return cros_styles::ResolveColor(
+      cros_styles::ColorName::kBgColor, use_dark_mode,
+      base::FeatureList::IsEnabled(
+          ash::features::kSemanticColorsDebugOverride));
+}
+
+}  // namespace
 
 ProjectorSystemWebAppDelegate::ProjectorSystemWebAppDelegate(Profile* profile)
     : web_app::SystemWebAppDelegate(web_app::SystemAppType::PROJECTOR,
@@ -34,8 +46,8 @@ ProjectorSystemWebAppDelegate::GetWebAppInfo() const {
   // TODO(b/195127670): Add 48, 128, and 192 size icons through
   // CreateIconInfoForSystemWebApp().
 
-  // TODO(b/195127670): Figure out the theme color.
-  info->theme_color = SK_ColorBLACK;
+  info->theme_color = GetBgColor(/*use_dark_mode=*/false);
+  info->dark_mode_theme_color = GetBgColor(/*use_dark_mode=*/true);
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
 
