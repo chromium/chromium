@@ -46,7 +46,7 @@ void BrowserSigninPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
 #if !defined(OS_LINUX) && !defined(OS_CHROMEOS)
       prefs->SetValue(prefs::kForceBrowserSignin, base::Value(true));
 #endif
-      FALLTHROUGH;
+      [[fallthrough]];
     case BrowserSigninMode::kEnabled:
       prefs->SetValue(
 #if defined(OS_ANDROID)
