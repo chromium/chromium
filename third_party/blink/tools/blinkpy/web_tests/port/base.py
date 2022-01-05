@@ -412,7 +412,7 @@ class Port(object):
         """Returns the amount of time in seconds to wait before killing the process in driver.stop()."""
         # We want to wait for at least 3 seconds, but if we are really slow, we
         # want to be slow on cleanup as well (for things like ASAN, Valgrind, etc.)
-        return (3.0 * float(self.get_option('time_out_ms', '0')) /
+        return (3.0 * float(self.get_option('timeout_ms', '0')) /
                 self._default_timeout_ms())
 
     def default_batch_size(self):

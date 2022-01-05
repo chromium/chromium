@@ -1201,7 +1201,7 @@ if (!is_ios) {
   } else {
     _common_web_test_args += [ "--release" ]
     if (dcheck_always_on) {
-      _common_web_test_args += [ "--time-out-ms=12000" ]
+      _common_web_test_args += [ "--timeout-ms=12000" ]
     }
   }
 
@@ -1403,7 +1403,7 @@ if (!is_ios) {
                          root_build_dir) + ")" ] + _common_web_test_args -
            [ _common_web_test_args[0] ]
     if (is_asan) {
-      args += [ "--time-out-ms=30000" ]
+      args += [ "--timeout-ms=30000" ]
     }
     args += [
       "--webgpu-cts-expectations",

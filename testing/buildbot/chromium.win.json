@@ -8780,7 +8780,7 @@
         "args": [
           "--num-retries=3",
           "--debug",
-          "--time-out-ms",
+          "--timeout-ms",
           "60000"
         ],
         "experiment_percentage": 100,

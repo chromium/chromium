@@ -547,7 +547,7 @@ class BBJSONGenerator(object):
         elif isinstance(a[key], list) and isinstance(b[key], list):
           # Args arrays are lists of strings. Just concatenate them,
           # and don't sort them, in order to keep some needed
-          # arguments adjacent (like --time-out-ms [arg], etc.)
+          # arguments adjacent (like --timeout-ms [arg], etc.)
           if all(isinstance(x, str)
                  for x in itertools.chain(a[key], b[key])):
             a[key] = self.maybe_fixup_args_array(a[key] + b[key])

@@ -12707,7 +12707,7 @@
           "--num-retries=3",
           "--additional-expectations",
           "../../third_party/blink/web_tests/ASANExpectations",
-          "--time-out-ms",
+          "--timeout-ms",
           "48000",
           "--enable-sanitizer"
         ],
@@ -12747,7 +12747,7 @@
           "--num-retries=3",
           "--additional-expectations",
           "../../third_party/blink/web_tests/LeakExpectations",
-          "--time-out-ms",
+          "--timeout-ms",
           "48000",
           "--enable-leak-detection"
         ],
@@ -12784,7 +12784,7 @@
           "--num-retries=3",
           "--additional-expectations",
           "../../third_party/blink/web_tests/MSANExpectations",
-          "--time-out-ms",
+          "--timeout-ms",
           "66000",
           "--enable-sanitizer"
         ],

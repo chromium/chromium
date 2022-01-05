@@ -357,8 +357,8 @@ class Manager(object):
     def _test_input_for_file(self, test_file, retry_attempt):
         return TestInput(
             test_file,
-            self._options.slow_time_out_ms
-            if self._test_is_slow(test_file) else self._options.time_out_ms,
+            self._options.slow_timeout_ms
+            if self._test_is_slow(test_file) else self._options.timeout_ms,
             self._test_requires_lock(test_file),
             retry_attempt=retry_attempt)
 

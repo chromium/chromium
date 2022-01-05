@@ -317,7 +317,7 @@
         'args': [
           '--additional-expectations',
           '../../third_party/blink/web_tests/ASANExpectations',
-          '--time-out-ms',
+          '--timeout-ms',
           '48000',
           '--enable-sanitizer',
         ],
@@ -329,7 +329,7 @@
         'args': [
           '--additional-expectations',
           '../../third_party/blink/web_tests/LeakExpectations',
-          '--time-out-ms',
+          '--timeout-ms',
           '48000',
           '--enable-leak-detection',
         ],
@@ -341,7 +341,7 @@
         'args': [
           '--additional-expectations',
           '../../third_party/blink/web_tests/MSANExpectations',
-          '--time-out-ms',
+          '--timeout-ms',
           '66000',
           '--enable-sanitizer',
         ],
@@ -388,7 +388,7 @@
       'Win7 Tests (dbg)(1)': {
         'args': [
           '--debug',
-          '--time-out-ms',
+          '--timeout-ms',
           '60000'
         ],
         'experiment_percentage': 100,
@@ -3350,7 +3350,7 @@
       # Increase the timeout with ASAN (crbug.com/1208253)
       'Dawn Win10 x64 ASAN Release': {
         'args': [
-          '--time-out-ms=48000',
+          '--timeout-ms=48000',
         ],
       },
     },

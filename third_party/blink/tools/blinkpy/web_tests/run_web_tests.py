@@ -554,7 +554,7 @@ def parse_args(args):
                 help='A colon-separated list of tests to run. Wildcards are '
                 'NOT supported. It is the same as listing the tests as '
                 'positional arguments.'),
-            optparse.make_option('--time-out-ms',
+            optparse.make_option('--timeout-ms',
                                  help='Set the timeout for each test'),
             optparse.make_option(
                 '--initialize-webgpu-adapter-at-startup-timeout-ms',
@@ -693,10 +693,10 @@ def _set_up_derived_options(port, options, args):
     if not options.configuration:
         options.configuration = port.default_configuration()
 
-    if not options.time_out_ms:
-        options.time_out_ms = str(port.timeout_ms())
+    if not options.timeout_ms:
+        options.timeout_ms = str(port.timeout_ms())
 
-    options.slow_time_out_ms = str(5 * int(options.time_out_ms))
+    options.slow_timeout_ms = str(5 * int(options.timeout_ms))
 
     if options.additional_platform_directory:
         additional_platform_directories = []

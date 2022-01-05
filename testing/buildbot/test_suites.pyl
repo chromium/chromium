@@ -4038,7 +4038,7 @@
           '--initialize-webgpu-adapter-at-startup-timeout-ms=60000',
           '--flag-specific=webgpu-with-backend-validation',
           # Increase the timeout when using backend validation layers (crbug.com/1208253)
-          '--time-out-ms=30000',
+          '--timeout-ms=30000',
         ],
         'win64_args': [ '--target=Release_x64' ],
         'mac_args': [
@@ -4106,7 +4106,7 @@
           '--initialize-webgpu-adapter-at-startup-timeout-ms=60000',
           '--flag-specific=webgpu-with-partial-backend-validation',
           # Increase the timeout when using backend validation layers (crbug.com/1208253)
-          '--time-out-ms=30000',
+          '--timeout-ms=30000',
         ],
         'win64_args': [ '--target=Release_x64' ],
         'mac_args': [

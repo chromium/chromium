@@ -5,7 +5,7 @@
 
 # Runs run-webkit-tests and attaches a debugger to the single renderer process.
 
-DEFAULT_TARGET_FLAGS=(--jobs=1 --time-out-ms=100000000 --additional-driver-flag=--no-sandbox --additional-driver-flag=--renderer-startup-dialog)
+DEFAULT_TARGET_FLAGS=(--jobs=1 --timeout-ms=100000000 --additional-driver-flag=--no-sandbox --additional-driver-flag=--renderer-startup-dialog)
 
 SAW_DISABLE_FEATURES=false
 for TARGET_FLAG in "$@"; do
