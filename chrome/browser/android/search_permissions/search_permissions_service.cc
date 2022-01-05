@@ -226,6 +226,7 @@ void SearchPermissionsService::InitializeSettingsIfNeeded() {
 }
 
 SearchPermissionsService::PrefValue SearchPermissionsService::GetDSEPref() {
+  // TODO(crbug.com/1187061): Refactor this to remove base::DictionaryValue.
   const base::DictionaryValue* dict = &base::Value::AsDictionaryValue(
       *pref_service_->GetDictionary(prefs::kDSEPermissionsSettings));
 
