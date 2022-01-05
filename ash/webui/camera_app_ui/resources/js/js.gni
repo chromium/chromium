@@ -52,7 +52,7 @@ compile_js_files = [
   "mojo/type.ts",
   "mojo/util.ts",
   "nav.ts",
-  "new_feature_toast.js",
+  "new_feature_toast.ts",
   "perf.ts",
   "snackbar.ts",
   "sound.ts",

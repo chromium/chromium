@@ -18,58 +18,44 @@ const RIPPLE_INTERVAL_MS = 5000;
  */
 class RippleEffect {
   /**
-   * @param {!HTMLElement} el Element to show ripple effect on.
+   * Initial width of ripple in px.
    */
-  constructor(el) {
-    /**
-     * @const {!HTMLElement}
-     * @private
-     */
-    this.el_ = el;
-
-    const style = this.el_.computedStyleMap();
-
-    /**
-     * Initial width of ripple in px.
-     * @const {!number}
-     * @private
-     */
-    this.width_ = util.getStyleValueInPx(style, '--ripple-start-width');
-
-    /**
-     * Initial height of ripple in px.
-     * @const {!number}
-     * @private
-     */
-    this.height_ = util.getStyleValueInPx(style, '--ripple-start-height');
-
-    /**
-     * @const {number}
-     * @private
-     */
-    this.cancelHandle_ = setInterval(() => {
-      this.addRipple_();
-    }, RIPPLE_INTERVAL_MS);
-
-    this.addRipple_();
-  }
+  private readonly width: number;
 
   /**
-   * @return {!Promise}
-   * @private
+   * Initial height of ripple in px.
    */
-  async addRipple_() {
-    const rect = this.el_.getBoundingClientRect();
+  private readonly height: number;
+
+  private readonly cancelHandle: number;
+
+  /**
+   * @param el Element to show ripple effect on.
+   */
+  constructor(private readonly el: HTMLElement) {
+    const style = this.el.computedStyleMap();
+
+    this.width = util.getStyleValueInPx(style, '--ripple-start-width');
+    this.height = util.getStyleValueInPx(style, '--ripple-start-height');
+    this.cancelHandle = setInterval(() => {
+      this.addRipple();
+    }, RIPPLE_INTERVAL_MS);
+
+    this.addRipple();
+  }
+
+  private async addRipple(): Promise<void> {
+    const rect = this.el.getBoundingClientRect();
     if (rect.width === 0) {
       return;
     }
     const tpl = util.instantiateTemplate('#ripple-template');
     const ripple = dom.getFrom(tpl, '.ripple', HTMLDivElement);
     const style = ripple.attributeStyleMap;
-    style.set('left', CSS.px(rect.left - (this.width_ - rect.width) / 2));
-    style.set('top', CSS.px(rect.top - (this.height_ - rect.height) / 2));
-    style.set('width', CSS.px(this.width_));
-    style.set('height', CSS.px(this.height_));
+    style.set('left', CSS.px(rect.left - (this.width - rect.width) / 2));
+    style.set('top', CSS.px(rect.top - (this.height - rect.height) / 2));
+    style.set('width', CSS.px(this.width));
+    style.set('height', CSS.px(this.height));
     document.body.appendChild(tpl);
     await animation.play(ripple);
     document.body.removeChild(ripple);
@@ -77,10 +63,9 @@ class RippleEffect {
 
   /**
    * Stops ripple effect.
-   * @public
    */
-  stop() {
-    clearInterval(this.cancelHandle_);
+  stop(): void {
+    clearInterval(this.cancelHandle);
   }
 }
 
@@ -89,44 +74,35 @@ class RippleEffect {
  */
 const TOAST_POSITION_UPDATE_MS = 500;
 
-/**
- * @enum {string}
- */
-const PositionProperty = {
-  BOTTOM: 'bottom',
-  LEFT: 'left',
-  RIGHT: 'right',
-  TOP: 'top',
-};
+enum PositionProperty {
+  BOTTOM = 'bottom',
+  LEFT = 'left',
+  RIGHT = 'right',
+  TOP = 'top',
+}
 
 /**
  * Controller for showing new feature toast.
  */
 class Toast {
-  /**
-   * @param {!HTMLElement} el
-   */
-  constructor(el) {
-    /**
-     * @const {!HTMLElement}
-     * @private
-     */
-    this.el_ = el;
+  private readonly offsetProperties: Array<{
+    elProperty: PositionProperty,
+    toastProperty: PositionProperty,
+    offset: number,
+  }>;
 
+  private readonly toast: HTMLDivElement;
+
+  private readonly cancelHandle: number;
+
+  constructor(private readonly el: HTMLElement) {
     /**
      * Offset between the position property of toast and the target |el| to
      * determine their relative position.
-     * @const {
-     *   !Array<{
-     *     elProperty: !PositionProperty,
-     *     toastProperty: !PositionProperty,
-     *     offset: number,
-     *   }>}
-     * @private
      */
-    this.offsetProperties_ = (() => {
+    this.offsetProperties = (() => {
       const properties = [];
-      const style = this.el_.computedStyleMap();
+      const style = this.el.computedStyleMap();
       for (const dir of ['x', 'y']) {
         const toastProperty = style.get(`--toast-ref-${dir}`).toString();
         const elProperty = style.get(`--toast-element-ref-${dir}`).toString();
@@ -137,47 +113,35 @@ class Toast {
     })();
 
     const tpl = util.instantiateTemplate('#new-feature-toast-template');
+    this.toast = dom.getFrom(tpl, '#new-feature-toast', HTMLDivElement);
 
-    /**
-     * @const {!HTMLDivElement}
-     * @private
-     */
-    this.toast_ = dom.getFrom(tpl, '#new-feature-toast', HTMLDivElement);
-
-    /**
-     * @const {number}
-     * @private
-     */
-    this.cancelHandle_ = setInterval(() => {
-      this.updatePosition_();
+    this.cancelHandle = setInterval(() => {
+      this.updatePosition();
     }, TOAST_POSITION_UPDATE_MS);
 
     // Set up i18n texts.
     const i18nId =
-        /** @type {!I18nString} */ (el.getAttribute('i18n-new-feature'));
+        util.assertEnumVariant(I18nString, el.getAttribute('i18n-new-feature'));
     const textEl = dom.getFrom(tpl, '.new-feature-toast-text', HTMLSpanElement);
     const text = loadTimeData.getI18nMessage(i18nId);
     textEl.textContent = text;
     const ariaLabel =
         loadTimeData.getI18nMessage(I18nString.NEW_CONTROL_NAVIGATION, text);
-    this.toast_.setAttribute('aria-label', ariaLabel);
+    this.toast.setAttribute('aria-label', ariaLabel);
 
     document.body.appendChild(tpl);
-    this.updatePosition_();
+    this.updatePosition();
   }
 
-  /**
-   * @private
-   */
-  updatePosition_() {
-    const rect = this.el_.getBoundingClientRect();
-    const style = this.toast_.attributeStyleMap;
+  private updatePosition() {
+    const rect = this.el.getBoundingClientRect();
+    const style = this.toast.attributeStyleMap;
     if (rect.width === 0) {
       style.set('display', 'none');
       return;
     }
     style.clear();
-    for (const {elProperty, toastProperty, offset} of this.offsetProperties_) {
+    for (const {elProperty, toastProperty, offset} of this.offsetProperties) {
       let value = rect[elProperty] + offset;
       if (toastProperty === PositionProperty.RIGHT) {
         value = window.innerWidth - value;
@@ -188,37 +152,25 @@ class Toast {
     }
   }
 
-  /**
-   * @public
-   */
-  focus() {
-    this.el_.setAttribute('aria-owns', 'new-feature-toast');
-    this.toast_.focus();
+  focus(): void {
+    this.el.setAttribute('aria-owns', 'new-feature-toast');
+    this.toast.focus();
   }
 
-  /**
-   * @public
-   */
-  hide() {
-    this.el_.removeAttribute('aria-owns');
-    clearInterval(this.cancelHandle_);
-    document.body.removeChild(this.toast_);
+  hide(): void {
+    this.el.removeAttribute('aria-owns');
+    clearInterval(this.cancelHandle);
+    document.body.removeChild(this.toast);
   }
 }
 
-/**
- * @type {?{
- *   ripple: !RippleEffect,
- *   toast: !Toast,
- *   timeout: number,
- * }}
- */
-let showing = null;
+let showing: {
+  ripple: RippleEffect,
+  toast: Toast,
+  timeout: number,
+}|null = null;
 
-/**
- * @public
- */
-export function hide() {
+export function hide(): void {
   if (showing === null) {
     return;
   }
@@ -234,11 +186,7 @@ export function hide() {
  */
 const SHOWING_TIMEOUT_MS = 10000;
 
-/**
- * @param {!HTMLElement} el
- * @return {!Promise}
- */
-export async function show(el) {
+export async function show(el: HTMLElement): Promise<void> {
   if (showing !== null) {
     hide();
   }
@@ -253,16 +201,16 @@ export async function show(el) {
 }
 
 /**
- * @return {boolean} If new feature toast is showing.
+ * @return If new feature toast is showing.
  */
-export function isShowing() {
+export function isShowing(): boolean {
   return showing !== null;
 }
 
 /**
  * Focuses to new feature toast.
  */
-export function focus() {
+export function focus(): void {
   if (showing === null) {
     return;
   }
