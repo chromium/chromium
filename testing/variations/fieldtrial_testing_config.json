@@ -3515,6 +3515,27 @@
             ]
         }
     ],
+    "EarlyEstablishGpuChannel": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EarlyEstablishGpuChannel"
+                    ]
+                }
+            ]
+        }
+    ],
     "EarlyHintsPreloadForNavigation": [
         {
             "platforms": [
@@ -5639,6 +5660,21 @@
             ]
         }
     ],
+    "OptimizeEarlyNavigation": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "OptimizeEarlyNavigation"
+                    ]
+                }
+            ]
+        }
+    ],
     "OptimizeLookalikeUrlNavigationThrottle": [
         {
             "platforms": [
@@ -6241,6 +6277,23 @@
                     },
                     "enable_features": [
                         "PreconnectToSearch"
+                    ]
+                }
+            ]
+        }
+    ],
+    "PrefetchAndroidFonts": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer",
+                "android_webview"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PrefetchAndroidFonts"
                     ]
                 }
             ]
