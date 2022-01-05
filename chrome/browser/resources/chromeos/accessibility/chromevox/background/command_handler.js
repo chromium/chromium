@@ -1084,10 +1084,10 @@ CommandHandler.onCommand = function(command) {
       return false;
     case 'readPhoneticPronunciation': {
       // Get node info.
-      let index = ChromeVoxState.instance.currentRange.start.index;
-      const text = node.name;
+      const index = ChromeVoxState.instance.currentRange.start.index;
+      const name = node.name;
       // If there is no text to speak, inform the user and return early.
-      if (!text) {
+      if (!name) {
         new Output()
             .withString(Msgs.getMsg('empty_name'))
             .withQueueMode(QueueMode.CATEGORY_FLUSH)
@@ -1105,21 +1105,21 @@ CommandHandler.onCommand = function(command) {
         wordEnds = node.nonInlineTextWordEnds;
       }
       // Find the word we want to speak phonetically. If index === -1, then the
-      // index represents an entire node. If that is the case, we want to find
-      // the first word in the node's name. We do this by setting index to 0.
+      // index represents an entire node.
+      let text = '';
       if (index === -1) {
-        index = 0;
-      }
-      let word = '';
-      for (let z = 0; z < wordStarts.length; ++z) {
-        if (wordStarts[z] <= index && wordEnds[z] > index) {
-          word = text.substring(wordStarts[z], wordEnds[z]);
-          break;
+        text = name;
+      } else {
+        for (let z = 0; z < wordStarts.length; ++z) {
+          if (wordStarts[z] <= index && wordEnds[z] > index) {
+            text = name.substring(wordStarts[z], wordEnds[z]);
+            break;
+          }
         }
       }
 
       const language = chrome.i18n.getUILanguage();
-      const phoneticText = PhoneticData.forText(word, language);
+      const phoneticText = PhoneticData.forText(text, language);
       if (phoneticText) {
         new Output()
             .withString(phoneticText)

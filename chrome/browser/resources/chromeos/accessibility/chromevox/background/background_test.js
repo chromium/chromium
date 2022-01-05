@@ -2086,10 +2086,17 @@ TEST_F('ChromeVoxBackgroundTest', 'ReadPhoneticPronunciationTest', function() {
   this.runWithLoadedTree(site, function(root) {
     root.find({role: RoleType.BUTTON}).focus();
     mockFeedback.call(doCmd('readPhoneticPronunciation'))
-        .expectSpeech('T: tango, h: hotel, i: india, s: sierra')
+        .expectSpeech(
+            'T: tango, h: hotel, i: india, s: sierra,  : , i: india, ' +
+            's: sierra,  : , a: alpha,  : , b: bravo, u: uniform, t: tango, ' +
+            't: tango, o: oscar, n: november')
         .call(doCmd('nextWord'))
         .call(doCmd('readPhoneticPronunciation'))
         .expectSpeech('i: india, s: sierra')
+        .call(doCmd('previousWord'))
+        .call(doCmd('readPhoneticPronunciation'))
+        .expectSpeech('T: tango, h: hotel, i: india, s: sierra')
+        .call(doCmd('nextWord'))
         .call(doCmd('nextWord'))
         .call(doCmd('nextWord'))
         .call(doCmd('readPhoneticPronunciation'))
