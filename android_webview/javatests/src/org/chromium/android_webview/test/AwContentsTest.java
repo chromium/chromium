@@ -51,7 +51,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
-import org.chromium.components.viz.common.VizFeatures;
 import org.chromium.content_public.browser.test.util.RenderProcessHostUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
@@ -1024,16 +1023,6 @@ public class AwContentsTest {
     @Feature({"AndroidWebView"})
     @MediumTest
     public void testHardwareRenderingSmokeTest() throws Throwable {
-        mActivityTestRule.startBrowserProcess();
-        doHardwareRenderingSmokeTest();
-    }
-
-    @Test
-    @Feature({"AndroidWebView"})
-    @MediumTest
-    @CommandLineFlags.
-    Add({"enable-features=" + VizFeatures.USE_SKIA_RENDERER, "disable-oop-rasterization"})
-    public void testHardwareRenderingSmokeTestSkiaRenderer() throws Throwable {
         mActivityTestRule.startBrowserProcess();
         doHardwareRenderingSmokeTest();
     }
