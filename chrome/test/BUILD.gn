@@ -7486,10 +7486,14 @@ test("unit_tests") {
   }
 
   if (is_linux || is_mac || is_win) {
-    sources += [ "../browser/enterprise/connectors/device_trust/attestation/desktop/desktop_attestation_service_unittest.cc" ]
+    sources += [
+      "../browser/enterprise/connectors/device_trust/attestation/desktop/desktop_attestation_service_unittest.cc",
+      "../browser/enterprise/remote_commands/rotate_attestation_credential_job_unittest.cc",
+    ]
 
     deps += [
       "../browser/enterprise/connectors/device_trust/key_management/browser",
+      "../browser/enterprise/connectors/device_trust/key_management/browser:test_support",
       "../browser/enterprise/connectors/device_trust/key_management/browser:unit_tests",
       "../browser/enterprise/connectors/device_trust/key_management/browser/commands:unit_tests",
       "../browser/enterprise/connectors/device_trust/key_management/core",
