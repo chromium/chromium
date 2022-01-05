@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <string>
 
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/autocomplete_input.h"
@@ -18,6 +19,7 @@
 #include "components/search_engines/omnibox_focus_type.h"
 #include "components/url_formatter/url_fixer.h"
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
+#include "url/url_constants.h"
 
 const int BuiltinProvider::kRelevance = 860;
 
@@ -37,11 +39,10 @@ void BuiltinProvider::Start(const AutocompleteInput& input,
 
   const size_t kAboutSchemeLength = strlen(url::kAboutScheme);
   const std::u16string kAbout =
-      base::ASCIIToUTF16(url::kAboutScheme) +
-      base::ASCIIToUTF16(url::kStandardSchemeSeparator);
-  const std::u16string embedderAbout =
-      base::UTF8ToUTF16(client_->GetEmbedderRepresentationOfAboutScheme()) +
-      base::ASCIIToUTF16(url::kStandardSchemeSeparator);
+      base::StrCat({url::kAboutScheme16, url::kStandardSchemeSeparator16});
+  const std::u16string embedderAbout = base::StrCat(
+      {base::UTF8ToUTF16(client_->GetEmbedderRepresentationOfAboutScheme()),
+       url::kStandardSchemeSeparator16});
 
   const int kUrl = ACMatchClassification::URL;
   const int kMatch = kUrl | ACMatchClassification::MATCH;
@@ -78,12 +79,12 @@ void BuiltinProvider::Start(const AutocompleteInput& input,
       // Chrome does not support trailing slashes or paths for about:blank.
       const std::u16string blank_host = u"blank";
       const std::u16string host = base::UTF8ToUTF16(url.host());
-      if (base::StartsWith(text, base::ASCIIToUTF16(url::kAboutScheme),
+      if (base::StartsWith(text, url::kAboutScheme16,
                            base::CompareCase::INSENSITIVE_ASCII) &&
           base::StartsWith(blank_host, host,
                            base::CompareCase::INSENSITIVE_ASCII) &&
           (url.path().length() <= 1) && !text_ends_with_slash) {
-        std::u16string match = base::ASCIIToUTF16(url::kAboutBlankURL);
+        std::u16string match(url::kAboutBlankURL16);
         const size_t corrected_length = kAboutSchemeLength + 1 + host.length();
         TermMatches style_matches = {{0, 0, corrected_length}};
         ACMatchClassifications styles =

@@ -27,8 +27,6 @@
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "url/gurl.h"
 
-using base::ASCIIToUTF16;
-
 namespace {
 
 const char kEmbedderAboutScheme[] = "chrome";
@@ -132,12 +130,11 @@ class BuiltinProviderTest : public testing::Test {
 };
 
 TEST_F(BuiltinProviderTest, TypingScheme) {
-  const std::u16string kAbout = ASCIIToUTF16(url::kAboutScheme);
+  const std::u16string kAbout = url::kAboutScheme16;
   const std::u16string kEmbedder = kEmbedderAboutScheme16;
   const std::u16string kSeparator1 = u":";
   const std::u16string kSeparator2 = u":/";
-  const std::u16string kSeparator3 =
-      ASCIIToUTF16(url::kStandardSchemeSeparator);
+  const std::u16string kSeparator3 = url::kStandardSchemeSeparator16;
 
   // These default URLs should correspond with those in BuiltinProvider::Start.
   const GURL kURL1(kDefaultURL1);
@@ -197,11 +194,11 @@ TEST_F(BuiltinProviderTest, NonEmbedderURLs) {
 }
 
 TEST_F(BuiltinProviderTest, EmbedderProvidedURLs) {
-  const std::u16string kAbout = ASCIIToUTF16(url::kAboutScheme);
+  const std::u16string kAbout = url::kAboutScheme16;
   const std::u16string kEmbedder = kEmbedderAboutScheme16;
   const std::u16string kSep1 = u":";
   const std::u16string kSep2 = u":/";
-  const std::u16string kSep3 = ASCIIToUTF16(url::kStandardSchemeSeparator);
+  const std::u16string kSep3 = url::kStandardSchemeSeparator16;
 
   // The following hosts are arbitrary, chosen so that they all start with the
   // letters "me".
@@ -246,12 +243,11 @@ TEST_F(BuiltinProviderTest, EmbedderProvidedURLs) {
 }
 
 TEST_F(BuiltinProviderTest, AboutBlank) {
-  const std::u16string kAbout = ASCIIToUTF16(url::kAboutScheme);
+  const std::u16string kAbout = url::kAboutScheme16;
   const std::u16string kEmbedder = kEmbedderAboutScheme16;
-  const std::u16string kAboutBlank = ASCIIToUTF16(url::kAboutBlankURL);
+  const std::u16string kAboutBlank = url::kAboutBlankURL16;
   const std::u16string kBlank = u"blank";
-  const std::u16string kSeparator1 =
-      ASCIIToUTF16(url::kStandardSchemeSeparator);
+  const std::u16string kSeparator1 = url::kStandardSchemeSeparator16;
   const std::u16string kSeparator2 = u":///";
   const std::u16string kSeparator3 = u";///";
 
@@ -338,9 +334,9 @@ TEST_F(BuiltinProviderTest, Subpages) {
 }
 
 TEST_F(BuiltinProviderTest, Inlining) {
-  const std::u16string kAbout = ASCIIToUTF16(url::kAboutScheme);
+  const std::u16string kAbout = url::kAboutScheme16;
   const std::u16string kEmbedder = kEmbedderAboutScheme16;
-  const std::u16string kSep = ASCIIToUTF16(url::kStandardSchemeSeparator);
+  const std::u16string kSep = url::kStandardSchemeSeparator16;
   const std::u16string kHostM = kHostMedia;
   const std::u16string kHostB = kHostBar;
   const std::u16string kHostMem = kHostMemory;

@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -450,10 +451,11 @@ void OmniboxEditModel::AdjustTextForCopy(int sel_min,
 
   // Infer the correct scheme for the copied text, and prepend it if necessary.
   {
-    std::u16string http = base::ASCIIToUTF16(url::kHttpScheme) +
-                          base::ASCIIToUTF16(url::kStandardSchemeSeparator);
-    std::u16string https = base::ASCIIToUTF16(url::kHttpsScheme) +
-                           base::ASCIIToUTF16(url::kStandardSchemeSeparator);
+    const std::u16string http =
+        base::StrCat({url::kHttpScheme16, url::kStandardSchemeSeparator16});
+    const std::u16string https =
+        base::StrCat({url::kHttpsScheme16, url::kStandardSchemeSeparator16});
+
     const std::u16string& current_page_url_prefix =
         current_page_url.SchemeIs(url::kHttpScheme) ? http : https;
 

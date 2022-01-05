@@ -184,7 +184,7 @@ void AutocompleteInput::Init(
                            &upgraded_url)) {
     DCHECK(upgraded_url.is_valid());
     added_default_scheme_to_typed_url_ = true;
-    scheme_ = base::ASCIIToUTF16(url::kHttpsScheme);
+    scheme_ = std::u16string(url::kHttpsScheme16);
     canonicalized_url = upgraded_url;
     // We changed the scheme from http to https. Offset remaining components
     // by one.
@@ -202,8 +202,7 @@ void AutocompleteInput::Init(
 
 AutocompleteInput::AutocompleteInput(const AutocompleteInput& other) = default;
 
-AutocompleteInput::~AutocompleteInput() {
-}
+AutocompleteInput::~AutocompleteInput() = default;
 
 // static
 std::string AutocompleteInput::TypeToString(metrics::OmniboxInputType type) {
