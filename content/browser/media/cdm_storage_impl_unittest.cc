@@ -11,6 +11,7 @@
 #include "base/files/file.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
+#include "base/test/test_future.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
@@ -96,27 +97,43 @@ class CdmStorageTest : public RenderViewHostTestHarness {
   // Open the file |name|. Returns true if the file returned is valid, false
   // otherwise. On success |cdm_file| is bound to the CdmFileImpl object.
   bool Open(const std::string& name,
-            mojo::AssociatedRemote<CdmFile>* cdm_file) {
+            mojo::AssociatedRemote<CdmFile>& cdm_file) {
     DVLOG(3) << __func__;
 
-    CdmStorage::Status status;
-    cdm_storage_->Open(
-        name, base::BindOnce(&CdmStorageTest::OpenDone, base::Unretained(this),
-                             &status, cdm_file));
-    RunAndWaitForResult(1);
+    base::test::TestFuture<CdmStorage::Status,
+                           mojo::PendingAssociatedRemote<CdmFile>>
+        future;
+    cdm_storage_->Open(name, future.GetCallback());
+
+    CdmStorage::Status status = future.Get<0>();
+    mojo::PendingAssociatedRemote<CdmFile> actual_file =
+        std::move(std::get<1>(future.Take()));
+    if (!actual_file) {
+      DCHECK_NE(status, CdmStorage::Status::kSuccess);
+      return false;
+    }
+
+    // Open() returns a mojo::PendingAssociatedRemote<CdmFile>, so bind it to
+    // the mojo::AssociatedRemote<CdmFileAssociated> provided.
+    mojo::AssociatedRemote<CdmFile> cdm_file_remote;
+    cdm_file_remote.Bind(std::move(actual_file));
+    cdm_file = std::move(cdm_file_remote);
+
     return status == CdmStorage::Status::kSuccess;
   }
 
   // Reads the contents of the previously opened |cdm_file|. If successful,
   // true is returned and |data| is updated with the contents of the file.
   // If unable to read the file, false is returned.
-  bool Read(CdmFile* cdm_file, std::vector<uint8_t>* data) {
+  bool Read(CdmFile* cdm_file, std::vector<uint8_t>& data) {
     DVLOG(3) << __func__;
 
-    CdmFile::Status status;
-    cdm_file->Read(base::BindOnce(&CdmStorageTest::FileRead,
-                                  base::Unretained(this), &status, data));
-    RunAndWaitForResult(1);
+    base::test::TestFuture<CdmFile::Status, std::vector<uint8_t>> future;
+    cdm_file->Read(
+        future.GetCallback<CdmFile::Status, const std::vector<uint8_t>&>());
+
+    CdmFile::Status status = future.Get<0>();
+    data = future.Get<1>();
     return status == CdmFile::Status::kSuccess;
   }
 
@@ -142,10 +159,10 @@ class CdmStorageTest : public RenderViewHostTestHarness {
   bool Write(CdmFile* cdm_file, const std::vector<uint8_t>& data) {
     DVLOG(3) << __func__;
 
-    CdmFile::Status status;
-    cdm_file->Write(data, base::BindOnce(&CdmStorageTest::FileWritten,
-                                         base::Unretained(this), &status));
-    RunAndWaitForResult(1);
+    base::test::TestFuture<CdmFile::Status> future;
+    cdm_file->Write(data, future.GetCallback());
+
+    CdmFile::Status status = future.Get();
     return status == CdmFile::Status::kSuccess;
   }
 
@@ -165,25 +182,6 @@ class CdmStorageTest : public RenderViewHostTestHarness {
   }
 
  private:
-  void OpenDone(CdmStorage::Status* status,
-                mojo::AssociatedRemote<CdmFile>* cdm_file,
-                CdmStorage::Status actual_status,
-                mojo::PendingAssociatedRemote<CdmFile> actual_cdm_file) {
-    DVLOG(3) << __func__;
-    *status = actual_status;
-
-    if (!actual_cdm_file) {
-      run_loop_with_count_->Quit();
-      return;
-    }
-    // Open() returns a mojo::PendingAssociatedRemote<CdmFile>, so bind it to
-    // the mojo::AssociatedRemote<CdmFileAssociated> provided.
-    mojo::AssociatedRemote<CdmFile> cdm_file_remote;
-    cdm_file_remote.Bind(std::move(actual_cdm_file));
-    *cdm_file = std::move(cdm_file_remote);
-    run_loop_with_count_->Quit();
-  }
-
   void FileRead(CdmFile::Status* status,
                 std::vector<uint8_t>* data,
                 CdmFile::Status actual_status,
@@ -216,21 +214,21 @@ TEST_F(CdmStorageTest, InvalidFileName) {
   // Unicode character to the name.
   const char kFileName[] = "openfile\u1234";
   mojo::AssociatedRemote<CdmFile> cdm_file;
-  EXPECT_FALSE(Open(kFileName, &cdm_file));
+  EXPECT_FALSE(Open(kFileName, cdm_file));
   EXPECT_FALSE(cdm_file.is_bound());
 }
 
 TEST_F(CdmStorageTest, InvalidFileNameEmpty) {
   const char kFileName[] = "";
   mojo::AssociatedRemote<CdmFile> cdm_file;
-  EXPECT_FALSE(Open(kFileName, &cdm_file));
+  EXPECT_FALSE(Open(kFileName, cdm_file));
   EXPECT_FALSE(cdm_file.is_bound());
 }
 
 TEST_F(CdmStorageTest, InvalidFileNameStartWithUnderscore) {
   const char kFileName[] = "_invalid";
   mojo::AssociatedRemote<CdmFile> cdm_file;
-  EXPECT_FALSE(Open(kFileName, &cdm_file));
+  EXPECT_FALSE(Open(kFileName, cdm_file));
   EXPECT_FALSE(cdm_file.is_bound());
 }
 
@@ -238,57 +236,57 @@ TEST_F(CdmStorageTest, InvalidFileNameTooLong) {
   // Limit is 256 characters, so try a file name with 257.
   const std::string kFileName(257, 'a');
   mojo::AssociatedRemote<CdmFile> cdm_file;
-  EXPECT_FALSE(Open(kFileName, &cdm_file));
+  EXPECT_FALSE(Open(kFileName, cdm_file));
   EXPECT_FALSE(cdm_file.is_bound());
 }
 
 TEST_F(CdmStorageTest, OpenFile) {
   const char kFileName[] = "test_file_name";
   mojo::AssociatedRemote<CdmFile> cdm_file;
-  EXPECT_TRUE(Open(kFileName, &cdm_file));
+  EXPECT_TRUE(Open(kFileName, cdm_file));
   EXPECT_TRUE(cdm_file.is_bound());
 }
 
 TEST_F(CdmStorageTest, OpenFileLocked) {
   const char kFileName[] = "test_file_name";
   mojo::AssociatedRemote<CdmFile> cdm_file1;
-  EXPECT_TRUE(Open(kFileName, &cdm_file1));
+  EXPECT_TRUE(Open(kFileName, cdm_file1));
   EXPECT_TRUE(cdm_file1.is_bound());
 
   // Second attempt on the same file should fail as the file is locked.
   mojo::AssociatedRemote<CdmFile> cdm_file2;
-  EXPECT_FALSE(Open(kFileName, &cdm_file2));
+  EXPECT_FALSE(Open(kFileName, cdm_file2));
   EXPECT_FALSE(cdm_file2.is_bound());
 
   // Now close the first file and try again. It should be free now.
   cdm_file1.reset();
 
   mojo::AssociatedRemote<CdmFile> cdm_file3;
-  EXPECT_TRUE(Open(kFileName, &cdm_file3));
+  EXPECT_TRUE(Open(kFileName, cdm_file3));
   EXPECT_TRUE(cdm_file3.is_bound());
 }
 
 TEST_F(CdmStorageTest, MultipleFiles) {
   const char kFileName1[] = "file1";
   mojo::AssociatedRemote<CdmFile> cdm_file1;
-  EXPECT_TRUE(Open(kFileName1, &cdm_file1));
+  EXPECT_TRUE(Open(kFileName1, cdm_file1));
   EXPECT_TRUE(cdm_file1.is_bound());
 
   const char kFileName2[] = "file2";
   mojo::AssociatedRemote<CdmFile> cdm_file2;
-  EXPECT_TRUE(Open(kFileName2, &cdm_file2));
+  EXPECT_TRUE(Open(kFileName2, cdm_file2));
   EXPECT_TRUE(cdm_file2.is_bound());
 
   const char kFileName3[] = "file3";
   mojo::AssociatedRemote<CdmFile> cdm_file3;
-  EXPECT_TRUE(Open(kFileName3, &cdm_file3));
+  EXPECT_TRUE(Open(kFileName3, cdm_file3));
   EXPECT_TRUE(cdm_file3.is_bound());
 }
 
 TEST_F(CdmStorageTest, WriteThenReadFile) {
   const char kFileName[] = "test_file_name";
   mojo::AssociatedRemote<CdmFile> cdm_file;
-  EXPECT_TRUE(Open(kFileName, &cdm_file));
+  EXPECT_TRUE(Open(kFileName, cdm_file));
   EXPECT_TRUE(cdm_file.is_bound());
 
   // Write several bytes and read them back.
@@ -296,33 +294,33 @@ TEST_F(CdmStorageTest, WriteThenReadFile) {
   EXPECT_TRUE(Write(cdm_file.get(), kTestData));
 
   std::vector<uint8_t> data_read;
-  EXPECT_TRUE(Read(cdm_file.get(), &data_read));
+  EXPECT_TRUE(Read(cdm_file.get(), data_read));
   EXPECT_EQ(kTestData, data_read);
 }
 
 TEST_F(CdmStorageTest, ReadThenWriteEmptyFile) {
   const char kFileName[] = "empty_file_name";
   mojo::AssociatedRemote<CdmFile> cdm_file;
-  EXPECT_TRUE(Open(kFileName, &cdm_file));
+  EXPECT_TRUE(Open(kFileName, cdm_file));
   EXPECT_TRUE(cdm_file.is_bound());
 
   // New file should be empty.
   std::vector<uint8_t> data_read;
-  EXPECT_TRUE(Read(cdm_file.get(), &data_read));
+  EXPECT_TRUE(Read(cdm_file.get(), data_read));
   EXPECT_EQ(0u, data_read.size());
 
   // Write nothing.
   EXPECT_TRUE(Write(cdm_file.get(), std::vector<uint8_t>()));
 
   // Should still be empty.
-  EXPECT_TRUE(Read(cdm_file.get(), &data_read));
+  EXPECT_TRUE(Read(cdm_file.get(), data_read));
   EXPECT_EQ(0u, data_read.size());
 }
 
 TEST_F(CdmStorageTest, ParallelRead) {
   const char kFileName[] = "duplicate_read_file_name";
   mojo::AssociatedRemote<CdmFile> cdm_file;
-  EXPECT_TRUE(Open(kFileName, &cdm_file));
+  EXPECT_TRUE(Open(kFileName, cdm_file));
   EXPECT_TRUE(cdm_file.is_bound());
 
   CdmFile::Status status1;
@@ -339,7 +337,7 @@ TEST_F(CdmStorageTest, ParallelRead) {
 TEST_F(CdmStorageTest, ParallelWrite) {
   const char kFileName[] = "duplicate_write_file_name";
   mojo::AssociatedRemote<CdmFile> cdm_file;
-  EXPECT_TRUE(Open(kFileName, &cdm_file));
+  EXPECT_TRUE(Open(kFileName, cdm_file));
   EXPECT_TRUE(cdm_file.is_bound());
 
   CdmFile::Status status1;
