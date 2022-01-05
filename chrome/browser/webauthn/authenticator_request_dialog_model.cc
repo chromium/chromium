@@ -252,7 +252,9 @@ void AuthenticatorRequestDialogModel::
     return;
   }
 
-  next_step_once_ble_powered_ = step;
+  after_ble_adapter_powered_ =
+      base::BindOnce(&AuthenticatorRequestDialogModel::SetCurrentStep,
+                     weak_factory_.GetWeakPtr(), step);
   SetCurrentStep(transport_availability()->can_power_on_ble_adapter
                      ? Step::kBlePowerOnAutomatic
                      : Step::kBlePowerOnManual);
@@ -262,9 +264,8 @@ void AuthenticatorRequestDialogModel::ContinueWithFlowAfterBleAdapterPowered() {
   DCHECK(current_step() == Step::kBlePowerOnManual ||
          current_step() == Step::kBlePowerOnAutomatic);
   DCHECK(ble_adapter_is_powered());
-  DCHECK(next_step_once_ble_powered_.has_value());
 
-  SetCurrentStep(*next_step_once_ble_powered_);
+  std::move(after_ble_adapter_powered_).Run();
 }
 
 void AuthenticatorRequestDialogModel::PowerOnBleAdapter() {
@@ -757,8 +758,23 @@ void AuthenticatorRequestDialogModel::ContactPhone(const std::string& name,
 
 void AuthenticatorRequestDialogModel::ContactPhoneAfterOffTheRecordInterstitial(
     std::string name) {
+  if (!ble_adapter_is_powered()) {
+    after_ble_adapter_powered_ = base::BindOnce(
+        &AuthenticatorRequestDialogModel::ContactPhoneAfterBleIsPowered,
+        weak_factory_.GetWeakPtr(), std::move(name));
+    SetCurrentStep(transport_availability()->can_power_on_ble_adapter
+                       ? Step::kBlePowerOnAutomatic
+                       : Step::kBlePowerOnManual);
+    return;
+  }
+
+  ContactPhoneAfterBleIsPowered(std::move(name));
+}
+
+void AuthenticatorRequestDialogModel::ContactPhoneAfterBleIsPowered(
+    std::string name) {
   ContactNextPhoneByName(name);
-  EnsureBleAdapterIsPoweredAndContinueWithStep(Step::kCableActivate);
+  SetCurrentStep(Step::kCableActivate);
 }
 
 void AuthenticatorRequestDialogModel::StartLocationBarBubbleRequest() {

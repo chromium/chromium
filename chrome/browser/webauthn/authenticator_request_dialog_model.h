@@ -586,6 +586,7 @@ class AuthenticatorRequestDialogModel {
   // Contacts a paired phone. The phone is specified by name.
   void ContactPhone(const std::string& name, size_t mechanism_index);
   void ContactPhoneAfterOffTheRecordInterstitial(std::string name);
+  void ContactPhoneAfterBleIsPowered(std::string name);
 
   void StartLocationBarBubbleRequest();
 
@@ -616,15 +617,14 @@ class AuthenticatorRequestDialogModel {
   // may request, e.g., PIN entry prior to that.
   absl::optional<Step> pending_step_;
 
-  // Determines which step to continue with once the Blueooth adapter is
-  // powered. Only set while the |current_step_| is either kBlePowerOnManual,
-  // kBlePowerOnAutomatic.
-  absl::optional<Step> next_step_once_ble_powered_;
-
   // after_off_the_record_interstitial_ contains the closure to run if the user
   // accepts the interstitial that warns that platform/caBLE authenticators may
   // record information even in incognito mode.
   base::OnceClosure after_off_the_record_interstitial_;
+
+  // after_ble_adapter_powered_ contains the closure to run if the user
+  // accepts the interstitial that requests to turn on the BLE adapter.
+  base::OnceClosure after_ble_adapter_powered_;
 
   base::ObserverList<Observer>::Unchecked observers_;
 
