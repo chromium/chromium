@@ -496,6 +496,8 @@ void WebRtcMedium::OnIceServersFetched(
   }
 
   webrtc::PeerConnectionInterface::RTCConfiguration rtc_config;
+  // Use the spec-compliant SDP semantics.
+  rtc_config.sdp_semantics = webrtc::SdpSemantics::kUnifiedPlan;
   // Add |ice_servers| into the rtc_config.servers.
   for (const auto& ice_server : ice_servers) {
     webrtc::PeerConnectionInterface::IceServer ice_turn_server;
