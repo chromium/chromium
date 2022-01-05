@@ -712,7 +712,11 @@ void CastMediaSinkServiceImpl::SetCastAllowAllIPs(bool allow_all_ips) {
 void CastMediaSinkServiceImpl::BindLogger(
     mojo::PendingRemote<mojom::Logger> pending_remote) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Reset |logger_| if it is bound to a disconnected remote.
+  if (logger_.is_bound())
+    return;
   logger_.Bind(std::move(pending_remote));
+  logger_.reset_on_disconnect();
 }
 
 }  // namespace media_router

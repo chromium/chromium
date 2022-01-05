@@ -32,7 +32,9 @@ namespace media_router {
 constexpr char kLoggerComponent[] = "MediaRouterDesktop";
 #endif
 
-MediaRouterDesktop::~MediaRouterDesktop() = default;
+MediaRouterDesktop::~MediaRouterDesktop() {
+  media_sink_service_->RemoveLogger();
+}
 
 void MediaRouterDesktop::OnUserGesture() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
