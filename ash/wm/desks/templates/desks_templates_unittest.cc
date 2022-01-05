@@ -1807,6 +1807,10 @@ TEST_F(DesksTemplatesTest, SaveDeskAsTemplateRecordsMetric) {
   constexpr int kExpectedNewTemplates = 1;
   histogram_tester.ExpectTotalCount(kNewTemplateHistogramName,
                                     kExpectedNewTemplates);
+  histogram_tester.ExpectBucketCount(
+      kAddOrUpdateTemplateStatusHistogramName,
+      static_cast<int>(desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk),
+      kExpectedNewTemplates);
 }
 
 // Tests to verify that clicking the spacebar doesn't cause the name view to

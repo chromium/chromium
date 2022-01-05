@@ -23,4 +23,10 @@ void RecordNewTemplateHistogram() {
   base::UmaHistogramBoolean(kNewTemplateHistogramName, true);
 }
 
+void RecordAddOrUpdateTemplateStatusHistogram(
+    desks_storage::DeskModel::AddOrUpdateEntryStatus status) {
+  base::UmaHistogramEnumeration(kAddOrUpdateTemplateStatusHistogramName,
+                                status);
+}
+
 }  // namespace ash

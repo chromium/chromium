@@ -56,6 +56,13 @@ using syncer::ModelTypeStore;
 // The maximum number of templates the local storage can hold.
 constexpr std::size_t kMaxTemplateCount = 6u;
 
+// The maximum number of bytes a template can be.
+// Sync server silently ignores large items. The client-side
+// needs to check item size to avoid sending large items.
+// This limit follows precedent set by the chrome extension API:
+// chrome.storage.sync.QUOTA_BYTES_PER_ITEM.
+constexpr std::size_t kMaxTemplateSize = 8192u;
+
 // Allocate a EntityData and copies |specifics| into it.
 std::unique_ptr<syncer::EntityData> CopyToEntityData(
     const sync_pb::WorkspaceDeskSpecifics& specifics) {
@@ -702,9 +709,16 @@ void DeskSyncBridge::AddOrUpdateEntry(std::unique_ptr<DeskTemplate> new_entry,
 
   std::unique_ptr<ModelTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
-  // Add/update this entry to the store and model.
-  auto entity_data = CopyToEntityData(ToSyncProto(entry.get()));
 
+  // Check the new entry size and ensure it is below the size limit.
+  auto sync_proto = ToSyncProto(entry.get());
+  if (sync_proto.ByteSizeLong() > kMaxTemplateSize) {
+    std::move(callback).Run(AddOrUpdateEntryStatus::kEntryTooLarge);
+    return;
+  }
+
+  // Add/update this entry to the store and model.
+  auto entity_data = CopyToEntityData(sync_proto);
   change_processor()->Put(uuid.AsLowercaseString(), std::move(entity_data),
                           batch->GetMetadataChangeList());
 

@@ -109,16 +109,17 @@ const std::string kPolicyWithTwoTemplates =
     "2\",\"title\":\"Example2\"}],\"active_tab_index\":1,\"window_id\":0,"
     "\"display_id\":\"100\",\"pre_minimized_window_state\":\"NORMAL\"}]}}]";
 
-void FillExampleBrowserAppWindow(WorkspaceDeskSpecifics_App* app) {
+void FillExampleBrowserAppWindow(WorkspaceDeskSpecifics_App* app,
+                                 int number_of_tabs = 2) {
   BrowserAppWindow* app_window =
       app->mutable_app()->mutable_browser_app_window();
-  BrowserAppTab* tab1 = app_window->add_tabs();
-  tab1->set_url(base::StringPrintf(kTestUrlFormat, 1));
 
-  BrowserAppTab* tab2 = app_window->add_tabs();
-  tab2->set_url(base::StringPrintf(kTestUrlFormat, 2));
+  for (int i = 0; i < number_of_tabs; ++i) {
+    BrowserAppTab* tab = app_window->add_tabs();
+    tab->set_url(base::StringPrintf(kTestUrlFormat, i));
+  }
 
-  app_window->set_active_tab_index(1);
+  app_window->set_active_tab_index(number_of_tabs - 1);
 
   WindowBound* window_bound = app->mutable_window_bound();
   window_bound->set_left(110);
@@ -169,7 +170,8 @@ void FillExampleChromeAppWindow(WorkspaceDeskSpecifics_App* app) {
 WorkspaceDeskSpecifics ExampleWorkspaceDeskSpecifics(
     const std::string uuid,
     const std::string template_name,
-    base::Time created_time = base::Time::Now()) {
+    base::Time created_time = base::Time::Now(),
+    int number_of_tabs = 2) {
   WorkspaceDeskSpecifics specifics;
   specifics.set_uuid(uuid);
   specifics.set_name(template_name);
@@ -180,7 +182,7 @@ WorkspaceDeskSpecifics ExampleWorkspaceDeskSpecifics(
           .ToDeltaSinceWindowsEpoch()
           .InMicroseconds());
   Desk* desk = specifics.mutable_desk();
-  FillExampleBrowserAppWindow(desk->add_apps());
+  FillExampleBrowserAppWindow(desk->add_apps(), number_of_tabs);
   FillExampleChromeAppWindow(desk->add_apps());
   FillExampleProgressiveWebAppWindow(desk->add_apps());
   return specifics;
@@ -617,6 +619,31 @@ TEST_F(DeskSyncBridgeTest, AddEntriesLocally) {
                 ->ToSyncProto(bridge()->GetEntryByUUID(kTestUuid2))
                 .SerializeAsString(),
             specifics2.SerializeAsString());
+}
+
+TEST_F(DeskSyncBridgeTest, AddEntryShouldFailWhenEntryIsTooLarge) {
+  InitializeBridge();
+
+  EXPECT_CALL(*mock_observer(), EntriesAddedOrUpdatedRemotely(_)).Times(0);
+  EXPECT_CALL(*mock_observer(), EntriesRemovedRemotely(_)).Times(0);
+
+  EXPECT_EQ(0ul, bridge()->GetAllEntryUuids().size());
+
+  // Create a large entry with 500 tabs. This entry should be too large for
+  // Sync.
+  constexpr int number_of_tabs = 500;
+  auto specifics = ExampleWorkspaceDeskSpecifics(
+      kTestUuid1.AsLowercaseString(), "template 1", AdvanceAndGetTime(),
+      number_of_tabs);
+
+  base::RunLoop loop;
+  bridge()->AddOrUpdateEntry(
+      DeskSyncBridge::FromSyncProto(specifics),
+      base::BindLambdaForTesting([&](DeskModel::AddOrUpdateEntryStatus status) {
+        EXPECT_EQ(status, DeskModel::AddOrUpdateEntryStatus::kEntryTooLarge);
+        loop.Quit();
+      }));
+  loop.Run();
 }
 
 TEST_F(DeskSyncBridgeTest, AddEntryShouldSucceedWheSyncIsDisabled) {

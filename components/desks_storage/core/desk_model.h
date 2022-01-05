@@ -49,11 +49,15 @@ class DeskModel {
   };
 
   // Status codes for adding or updating a desk template.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class AddOrUpdateEntryStatus {
-    kOk,
-    kFailure,
-    kInvalidArgument,
-    kHitMaximumLimit,
+    kOk = 0,
+    kFailure = 1,
+    kInvalidArgument = 2,
+    kHitMaximumLimit = 3,
+    kEntryTooLarge = 4,
+    kMaxValue = kEntryTooLarge,
   };
 
   // Status codes for deleting desk templates.

@@ -5,9 +5,11 @@
 #ifndef ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_METRICS_UTIL_H_
 #define ASH_WM_DESKS_TEMPLATES_DESKS_TEMPLATES_METRICS_UTIL_H_
 
+#include "components/desks_storage/core/desk_model.h"
+
 namespace ash {
 
-// Histogram names
+// Histogram names.
 constexpr char kLoadTemplateGridHistogramName[] =
     "Ash.DeskTemplate.LoadTemplateGrid";
 constexpr char kDeleteTemplateHistogramName[] =
@@ -15,12 +17,16 @@ constexpr char kDeleteTemplateHistogramName[] =
 constexpr char kNewTemplateHistogramName[] = "Ash.DeskTemplate.NewTemplate";
 constexpr char kLaunchTemplateHistogramName[] =
     "Ash.DeskTemplate.LaunchFromTemplate";
+constexpr char kAddOrUpdateTemplateStatusHistogramName[] =
+    "Ash.DeskTemplate.AddOrUpdateTemplateStatus";
 
 // Wrappers calls base::uma with correct histogram name.
 void RecordLoadTemplateHistogram();
 void RecordDeleteTemplateHistogram();
 void RecordLaunchTemplateHistogram();
 void RecordNewTemplateHistogram();
+void RecordAddOrUpdateTemplateStatusHistogram(
+    desks_storage::DeskModel::AddOrUpdateEntryStatus status);
 
 }  // namespace ash
 

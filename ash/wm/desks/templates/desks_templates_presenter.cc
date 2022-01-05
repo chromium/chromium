@@ -255,6 +255,10 @@ void DesksTemplatesPresenter::OnGetTemplateForDeskLaunch(
 void DesksTemplatesPresenter::OnAddOrUpdateEntry(
     bool was_update,
     desks_storage::DeskModel::AddOrUpdateEntryStatus status) {
+  // TODO(crbug.com/1284449): Add visible cue when failing to save a desk
+  // template.
+  RecordAddOrUpdateTemplateStatusHistogram(status);
+
   if (status != desks_storage::DeskModel::AddOrUpdateEntryStatus::kOk)
     return;
 
