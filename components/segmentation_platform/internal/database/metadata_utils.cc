@@ -206,7 +206,7 @@ base::TimeDelta GetTimeUnit(
     case proto::TimeUnit::SECOND:
       return base::Seconds(1);
     case proto::TimeUnit::UNKNOWN_TIME_UNIT:
-      FALLTHROUGH;
+      [[fallthrough]];
     default:
       NOTREACHED();
       return base::TimeDelta();
