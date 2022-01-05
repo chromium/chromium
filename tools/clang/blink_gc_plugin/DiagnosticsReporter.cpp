@@ -137,6 +137,10 @@ const char kMemberInStackAllocated[] =
     "[blink-gc] Member field %0 in stack allocated class declared here (use "
     "raw pointer or reference instead):";
 
+const char kMemberOnStack[] =
+    "[blink-gc] Member variable %0 declared on stack here (use raw pointer or "
+    "reference instead):";
+
 const char kUniquePtrUsedWithGC[] =
     "[blink-gc] Disallowed use of %0 found; %1 is a garbage-collected type. "
     "std::unique_ptr cannot hold garbage-collected objects.";
@@ -215,6 +219,8 @@ DiagnosticsReporter::DiagnosticsReporter(
       getErrorLevel(), kTraceMethodOfStackAllocatedParentNote);
   diag_member_in_stack_allocated_class_ =
       diagnostic_.getCustomDiagID(getErrorLevel(), kMemberInStackAllocated);
+  diag_member_on_stack_ =
+      diagnostic_.getCustomDiagID(getErrorLevel(), kMemberOnStack);
 
   // Register note messages.
   diag_base_requires_tracing_note_ = diagnostic_.getCustomDiagID(
@@ -570,4 +576,9 @@ void DiagnosticsReporter::VariantUsedWithGC(
     const clang::CXXRecordDecl* gc_type) {
   ReportDiagnostic(expr->getBeginLoc(), diag_variant_used_with_gc_)
       << variant << gc_type << expr->getSourceRange();
+}
+
+void DiagnosticsReporter::MemberOnStack(const clang::VarDecl* var) {
+  ReportDiagnostic(var->getBeginLoc(), diag_member_on_stack_)
+      << var->getName() << var->getSourceRange();
 }

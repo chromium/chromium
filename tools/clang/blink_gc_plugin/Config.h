@@ -182,7 +182,7 @@ class Config {
     return IsGCBase(name) || IsRefCountedBase(name);
   }
 
-  static bool IsAnnotated(clang::Decl* decl, const std::string& anno) {
+  static bool IsAnnotated(const clang::Decl* decl, const std::string& anno) {
     clang::AnnotateAttr* attr = decl->getAttr<clang::AnnotateAttr>();
     return attr && (attr->getAnnotation() == anno);
   }
@@ -191,7 +191,7 @@ class Config {
     return IsAnnotated(decl, "blink_stack_allocated");
   }
 
-  static bool IsIgnoreAnnotated(clang::Decl* decl) {
+  static bool IsIgnoreAnnotated(const clang::Decl* decl) {
     return IsAnnotated(decl, "blink_gc_plugin_ignore");
   }
 
