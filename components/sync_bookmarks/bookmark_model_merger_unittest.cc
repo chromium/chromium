@@ -1807,7 +1807,6 @@ TEST(BookmarkModelMergerTest, ShouldLogMetricsForkDescendantOfRootNode) {
   // -------- The remote model --------
   // root node
   //  | - bookmark (url1/Title1)
-  //  | - bookmark (url2/Title2)
   syncer::UpdateResponseDataList updates;
   updates.push_back(CreateBookmarkBarNodeUpdateData());
   updates.back().entity.id = kRootNodeId;
@@ -1816,30 +1815,18 @@ TEST(BookmarkModelMergerTest, ShouldLogMetricsForkDescendantOfRootNode) {
 
   updates.push_back(CreateUpdateResponseData(
       /*guid=*/base::GUID::GenerateRandomV4(),
-      /*parent_guid=*/base::GUID::GenerateRandomV4(), "Title1",
+      base::GUID::ParseLowercase(bookmarks::BookmarkNode::kRootNodeGuid),
+      "Title1",
       /*url=*/"http://url1",
       /*is_folder=*/false,
       /*unique_position=*/MakeRandomPosition()));
-  updates.back().entity.legacy_parent_id = kRootNodeId;
-  // To cover a slightly different case and guard against future bugs, let's
-  // assume one of the updates uses a GUID in specifics that refers to the
-  // root node.
-  updates.push_back(CreateUpdateResponseData(
-      /*guid=*/base::GUID::GenerateRandomV4(),
-      /*parent_guid=*/
-      base::GUID::ParseLowercase(bookmarks::BookmarkNode::kRootNodeGuid),
-      "Title2",
-      /*url=*/"http://url2",
-      /*is_folder=*/false,
-      /*unique_position=*/MakeRandomPosition()));
-  updates.back().entity.legacy_parent_id = kRootNodeId;
 
   base::HistogramTester histogram_tester;
   Merge(std::move(updates), bookmark_model.get());
   histogram_tester.ExpectUniqueSample(
       "Sync.ProblematicServerSideBookmarksDuringMerge",
       /*sample=*/ExpectedRemoteBookmarkUpdateError::kMissingParentEntity,
-      /*count=*/2);
+      /*count=*/1);
 }
 
 TEST(BookmarkModelMergerTest, ShouldRemoveMatchingDuplicatesByGUID) {

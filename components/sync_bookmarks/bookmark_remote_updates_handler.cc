@@ -133,8 +133,7 @@ size_t ComputeChildNodeIndex(const bookmarks::BookmarkNode* parent,
 }
 
 bool IsPermanentNodeUpdate(const syncer::EntityData& update_entity) {
-  return update_entity.legacy_parent_id == "0" ||
-         !update_entity.server_defined_unique_tag.empty();
+  return !update_entity.server_defined_unique_tag.empty();
 }
 
 // Checks that the |update_entity| is valid and returns false otherwise. It is
