@@ -17,7 +17,9 @@
 #include "ash/components/phonehub/util/histogram_util.h"
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/time/time.h"
 #include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -201,6 +203,14 @@ void CameraRollManagerImpl::SendFetchCameraRollItemsRequest() {
   // thumbnails will be invalidated anyway when the new response is received.
   CancelPendingThumbnailRequests();
 
+  // Do not update the timestamp if it is already set. It means that there's an
+  // in-progress request. We want to measure the time it takes from the first
+  // time we request an update to when the UI is updated. This is the time the
+  // user spends waiting.
+  if (!fetch_items_request_start_timestamp_) {
+    fetch_items_request_start_timestamp_ = base::TimeTicks::Now();
+  }
+
   proto::FetchCameraRollItemsRequest request;
   request.set_max_item_count(kMaxCameraRollItemCount);
   for (const CameraRollItem& current_item : current_items()) {
@@ -214,6 +224,12 @@ void CameraRollManagerImpl::OnItemThumbnailsDecoded(
     const std::vector<CameraRollItem>& items) {
   resetViewRefreshingFlagIfNeeded();
   if (result == CameraRollThumbnailDecoder::BatchDecodeResult::kCompleted) {
+    if (fetch_items_request_start_timestamp_) {
+      base::UmaHistogramMediumTimes(
+          "PhoneHub.CameraRoll.Latency.RefreshItems",
+          base::TimeTicks::Now() - *fetch_items_request_start_timestamp_);
+      fetch_items_request_start_timestamp_.reset();
+    }
     SetCurrentItems(items);
   }
 }

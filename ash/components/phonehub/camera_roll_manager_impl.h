@@ -15,6 +15,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 #include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
@@ -103,6 +104,8 @@ class CameraRollManagerImpl
   bool is_android_feature_enabled_ = false;
   bool is_android_storage_granted_ = false;
   bool is_refreshing_after_user_opt_in_ = false;
+  absl::optional<base::TimeTicks> fetch_items_request_start_timestamp_;
+
   PrefService* pref_service_;
   MessageReceiver* message_receiver_;
   MessageSender* message_sender_;

@@ -20,7 +20,9 @@
 #include "base/run_loop.h"
 #include "base/system/sys_info.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service_factory.h"
@@ -132,9 +134,11 @@ class CameraRollDownloadManagerImplTest : public testing::Test {
     return camera_roll_download_manager_.get();
   }
 
- private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::HistogramTester histogram_tester_;
+
+ private:
   std::unique_ptr<TestingProfileManager> profile_manager_;
   TestingProfile* const profile_;
   ash::FakeChromeUserManager* const user_manager_;
@@ -236,15 +240,17 @@ TEST_F(CameraRollDownloadManagerImplTest,
 TEST_F(CameraRollDownloadManagerImplTest, UpdateDownloadProgress) {
   proto::CameraRollItemMetadata item_metadata;
   item_metadata.set_file_name("IMG_0001.jpeg");
-  item_metadata.set_file_size_bytes(1000);
+  int64_t file_size_bytes = 1024 * 30;  // 30 KB;
+  item_metadata.set_file_size_bytes(file_size_bytes);
   CreatePayloadFiles(/*payload_id=*/1234, item_metadata);
 
+  task_environment_.FastForwardBy(base::Seconds(10));
   camera_roll_download_manager()->UpdateDownloadProgress(
       chromeos::secure_channel::mojom::FileTransferUpdate::New(
           /*payload_id=*/1234,
           chromeos::secure_channel::mojom::FileTransferStatus::kInProgress,
-          /*total_bytes=*/1000,
-          /*bytes_transferred=*/500));
+          /*total_bytes=*/file_size_bytes,
+          /*bytes_transferred=*/file_size_bytes / 2));
 
   const base::FilePath expected_path =
       GetDownloadPath().Append("IMG_0001.jpeg");
@@ -254,14 +260,19 @@ TEST_F(CameraRollDownloadManagerImplTest, UpdateDownloadProgress) {
   EXPECT_FALSE(holding_space_item->progress().IsComplete());
   EXPECT_EQ(0.5f, holding_space_item->progress().GetValue());
 
+  task_environment_.FastForwardBy(base::Seconds(5));
   camera_roll_download_manager()->UpdateDownloadProgress(
       chromeos::secure_channel::mojom::FileTransferUpdate::New(
           /*payload_id=*/1234,
           chromeos::secure_channel::mojom::FileTransferStatus::kSuccess,
-          /*total_bytes=*/1000,
-          /*bytes_transferred=*/1000));
+          /*total_bytes=*/file_size_bytes,
+          /*bytes_transferred=*/file_size_bytes));
   EXPECT_TRUE(holding_space_item->progress().IsComplete());
   EXPECT_EQ(1, holding_space_item->progress().GetValue());
+  // Expected transfer rate is 30 KB / (10 + 5) s = 2 Kb/s
+  histogram_tester_.ExpectUniqueSample(
+      "PhoneHub.CameraRoll.DownloadItem.TransferRate", 2,
+      /*expected_bucket_count=*/1);
 }
 
 TEST_F(CameraRollDownloadManagerImplTest,

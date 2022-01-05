@@ -15,6 +15,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/ash/holding_space/holding_space_keyed_service.h"
 #include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 
@@ -44,14 +45,17 @@ class CameraRollDownloadManagerImpl
   struct DownloadItem {
     DownloadItem(int64_t payload_id,
                  const base::FilePath& file_path,
+                 int64_t file_size_bytes,
                  const std::string& holding_space_item_id);
-    DownloadItem(const DownloadItem&);
-    DownloadItem& operator=(const DownloadItem&);
+    DownloadItem(DownloadItem&&) = default;
+    DownloadItem& operator=(DownloadItem&&) = default;
     ~DownloadItem();
 
     int64_t payload_id;
     base::FilePath file_path;
+    int64_t file_size_bytes;
     std::string holding_space_item_id;
+    base::TimeTicks start_timestamp = base::TimeTicks::Now();
   };
 
   void OnDiskSpaceCheckComplete(
@@ -70,6 +74,7 @@ class CameraRollDownloadManagerImpl
       int64_t file_size_bytes,
       CreatePayloadFilesCallback payload_files_callback,
       chromeos::secure_channel::mojom::PayloadFilesPtr payload_files);
+  int CalculateItemTransferRate(const DownloadItem& download_item) const;
 
   const base::FilePath download_path_;
   ash::HoldingSpaceKeyedService* holding_space_keyed_service_;

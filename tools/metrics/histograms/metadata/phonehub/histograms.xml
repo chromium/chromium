@@ -90,6 +90,28 @@ chromium-metrics-reviews@google.com.
   <token key="MediaType" variants="CameraRollMediaType"/>
 </histogram>
 
+<histogram name="PhoneHub.CameraRoll.DownloadItem.TransferRate" units="KB/s"
+    expires_after="2022-10-31">
+  <owner>jasonsun@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Measures the data transfer rate of downloading a recent photo or video taken
+    on a connected phone via Phone Hub. Emitted when an item is downloaded
+    successfully.
+  </summary>
+</histogram>
+
+<histogram name="PhoneHub.CameraRoll.Latency.RefreshItems" units="ms"
+    expires_after="2022-10-31">
+  <owner>jasonsun@chromium.org</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Measures the amount of time it takes for the Chromebook to receive the
+    up-to-date set of recent photos and videos taken on a connected phone and
+    display their thumbnails on the Phone Hub tray.
+  </summary>
+</histogram>
+
 <histogram name="PhoneHub.CameraRoll.OptInEntryPoint"
     enum="PhoneHubCameraRollOptInEntryPoint" expires_after="2022-10-31">
   <owner>jianbing@google.com</owner>
