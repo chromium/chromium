@@ -29,16 +29,18 @@ class FakeCameraRollDownloadManager : public CameraRollDownloadManager {
       chromeos::secure_channel::mojom::FileTransferUpdatePtr update) override;
   void DeleteFile(int64_t payload_id) override;
 
-  void set_should_create_payload_files_succeed(
-      bool should_create_payload_files_succeed) {
-    should_create_payload_files_succeed_ = should_create_payload_files_succeed;
+  void set_expected_create_payload_files_result(
+      CreatePayloadFilesResult expected_create_payload_files_result) {
+    expected_create_payload_files_result_ =
+        expected_create_payload_files_result;
   }
 
   const std::vector<chromeos::secure_channel::mojom::FileTransferUpdatePtr>&
   GetFileTransferUpdates(int64_t payload_id) const;
 
  private:
-  bool should_create_payload_files_succeed_ = true;
+  CreatePayloadFilesResult expected_create_payload_files_result_ =
+      CreatePayloadFilesResult::kSuccess;
 
   // A map from payload IDs to the list of FileTransferUpdate received for each
   // payload.
