@@ -137,7 +137,7 @@ void CvcUnmaskViewController::OnUnmaskVerificationResult(
   switch (result) {
     case autofill::AutofillClient::PaymentsRpcResult::kNone:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case autofill::AutofillClient::PaymentsRpcResult::kSuccess:
       // In the success case, don't show any error and don't hide the spinner
       // because the dialog is about to close when the merchant completes the
