@@ -6,10 +6,10 @@ import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {WallpaperCollection} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
+import {PersonalizationStore} from 'chrome://personalization/trusted/personalization_store.js';
 import * as wallpaperAction from 'chrome://personalization/trusted/wallpaper/wallpaper_actions.js';
 import {fetchCollections, fetchGooglePhotosAlbum, fetchLocalData, getLocalImages, initializeBackdropData, initializeGooglePhotosData, selectWallpaper} from 'chrome://personalization/trusted/wallpaper/wallpaper_controller.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {TestPersonalizationStore} from './test_personalization_store.js';
@@ -17,11 +17,9 @@ import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
 /**
  * Get a sub-property in obj. Splits on '.'
- * @param {!Object} obj
- * @param {string} key
  */
-function getProperty(obj, key) {
-  let ref = obj;
+function getProperty(obj: object, key: string): unknown {
+  let ref: any = obj;
   for (const part of key.split('.')) {
     ref = ref[part];
   }
@@ -30,12 +28,10 @@ function getProperty(obj, key) {
 
 /**
  * Returns a function that returns only nested subproperties in state.
- * @param {!Array<string>} keys
- * @return {!Function}
  */
-function filterAndFlattenState(keys) {
+function filterAndFlattenState(keys: string[]): (state: any) => any {
   return (state) => {
-    const result = {};
+    const result: any = {};
     for (const key of keys) {
       result[key] = getProperty(state, key);
     }
@@ -44,8 +40,8 @@ function filterAndFlattenState(keys) {
 }
 
 suite('Personalization app controller', () => {
-  let wallpaperProvider;
-  let personalizationStore;
+  let wallpaperProvider: TestWallpaperProvider;
+  let personalizationStore: TestPersonalizationStore;
 
   setup(() => {
     wallpaperProvider = new TestWallpaperProvider();
@@ -57,7 +53,9 @@ suite('Personalization app controller', () => {
     test('initializes Google Photos data in store', async () => {
       loadTimeData.overrideValues({isGooglePhotosIntegrationEnabled});
 
-      await initializeGooglePhotosData(wallpaperProvider, personalizationStore);
+      await initializeGooglePhotosData(
+          wallpaperProvider,
+          personalizationStore as unknown as PersonalizationStore);
 
       let expectedCount, expectedAlbums, expectedPhotos;
       if (isGooglePhotosIntegrationEnabled) {
@@ -207,7 +205,8 @@ suite('Personalization app controller', () => {
     personalizationStore.reset(personalizationStore.data);
 
     await fetchGooglePhotosAlbum(
-        wallpaperProvider, personalizationStore, album.id);
+        wallpaperProvider,
+        personalizationStore as unknown as PersonalizationStore, album.id);
 
     assertDeepEquals(
         [
@@ -275,7 +274,9 @@ suite('Personalization app controller', () => {
   });
 
   test('sets local images in store', async () => {
-    await fetchLocalData(wallpaperProvider, personalizationStore);
+    await fetchLocalData(
+        wallpaperProvider,
+        personalizationStore as unknown as PersonalizationStore);
     assertDeepEquals(
         [
           {name: 'begin_load_local_images'},
@@ -381,13 +382,17 @@ suite('Personalization app controller', () => {
   });
 
   test('subtracts an image from state when it disappears', async () => {
-    await fetchLocalData(wallpaperProvider, personalizationStore);
+    await fetchLocalData(
+        wallpaperProvider,
+        personalizationStore as unknown as PersonalizationStore);
     // Keep the current state but reset the history of actions and states.
     personalizationStore.reset(personalizationStore.data);
 
     // Only keep the first image.
-    wallpaperProvider.localImages = [wallpaperProvider.localImages[0]];
-    await fetchLocalData(wallpaperProvider, personalizationStore);
+    wallpaperProvider.localImages = [wallpaperProvider.localImages![0]!];
+    await fetchLocalData(
+        wallpaperProvider,
+        personalizationStore as unknown as PersonalizationStore);
 
     assertDeepEquals(
         [
@@ -432,14 +437,16 @@ suite('Personalization app controller', () => {
   });
 
   test('fetches new images that are added', async () => {
-    await fetchLocalData(wallpaperProvider, personalizationStore);
+    await fetchLocalData(
+        wallpaperProvider,
+        personalizationStore as unknown as PersonalizationStore);
     // Reset the history of actions and prior states, but keep the current
     // state.
     personalizationStore.reset(personalizationStore.data);
 
     // Subtract image 1 and add NewPath.png.
     wallpaperProvider.localImages = [
-      wallpaperProvider.localImages[0],
+      wallpaperProvider.localImages![0]!,
       {path: 'NewPath.png'},
     ];
 
@@ -448,7 +455,9 @@ suite('Personalization app controller', () => {
       'NewPath.png': 'data://newpath',
     };
 
-    await fetchLocalData(wallpaperProvider, personalizationStore);
+    await fetchLocalData(
+        wallpaperProvider,
+        personalizationStore as unknown as PersonalizationStore);
 
     assertDeepEquals(
         [
@@ -535,13 +544,17 @@ suite('Personalization app controller', () => {
   });
 
   test('clears local images when fetching new image list fails', async () => {
-    await fetchLocalData(wallpaperProvider, personalizationStore);
+    await fetchLocalData(
+        wallpaperProvider,
+        personalizationStore as unknown as PersonalizationStore);
     // Reset the history of actions and prior states, but keep the current
     // state.
     personalizationStore.reset(personalizationStore.data);
 
     wallpaperProvider.localImages = null;
-    await fetchLocalData(wallpaperProvider, personalizationStore);
+    await fetchLocalData(
+        wallpaperProvider,
+        personalizationStore as unknown as PersonalizationStore);
 
     assertEquals(null, personalizationStore.data.wallpaper.local.images);
     assertDeepEquals({}, personalizationStore.data.wallpaper.local.data);
@@ -553,8 +566,8 @@ suite('Personalization app controller', () => {
 suite('full screen mode', () => {
   const fullscreenPreviewFeature = 'fullScreenPreviewEnabled';
 
-  let wallpaperProvider;
-  let personalizationStore;
+  let wallpaperProvider: TestWallpaperProvider;
+  let personalizationStore: TestPersonalizationStore;
 
   setup(() => {
     wallpaperProvider = new TestWallpaperProvider();
@@ -566,7 +579,9 @@ suite('full screen mode', () => {
   test(
       'enters full screen mode when in tablet and preview flag is set',
       async () => {
-        await initializeBackdropData(wallpaperProvider, personalizationStore);
+        await initializeBackdropData(
+            wallpaperProvider,
+            personalizationStore as unknown as PersonalizationStore);
 
         assertFalse(personalizationStore.data.wallpaper.fullscreen);
 
@@ -575,12 +590,12 @@ suite('full screen mode', () => {
 
         {
           const selectWallpaperPromise = selectWallpaper(
-              wallpaperProvider.images[0], wallpaperProvider,
-              personalizationStore);
+              wallpaperProvider.images![0]!, wallpaperProvider,
+              personalizationStore as unknown as PersonalizationStore);
           const [assetId, previewMode] =
               await wallpaperProvider.whenCalled('selectWallpaper');
           assertFalse(previewMode);
-          assertEquals(wallpaperProvider.images[0].assetId, assetId);
+          assertEquals(wallpaperProvider.images![0]!.assetId, assetId);
 
           await selectWallpaperPromise;
 
@@ -594,13 +609,13 @@ suite('full screen mode', () => {
           loadTimeData.overrideValues({[fullscreenPreviewFeature]: true});
 
           const selectWallpaperPromise = selectWallpaper(
-              wallpaperProvider.images[0], wallpaperProvider,
-              personalizationStore);
+              wallpaperProvider.images![0]!, wallpaperProvider,
+              personalizationStore as unknown as PersonalizationStore);
 
           const [assetId, previewMode] =
               await wallpaperProvider.whenCalled('selectWallpaper');
           assertTrue(previewMode);
-          assertEquals(wallpaperProvider.images[0].assetId, assetId);
+          assertEquals(wallpaperProvider.images![0]!.assetId, assetId);
 
           await selectWallpaperPromise;
 
@@ -610,8 +625,8 @@ suite('full screen mode', () => {
 });
 
 suite('observes pendingState during wallpaper selection', () => {
-  let wallpaperProvider;
-  let personalizationStore;
+  let wallpaperProvider: TestWallpaperProvider;
+  let personalizationStore: TestPersonalizationStore;
 
   setup(() => {
     wallpaperProvider = new TestWallpaperProvider();
@@ -623,21 +638,21 @@ suite('observes pendingState during wallpaper selection', () => {
       'sets pendingState to selected image for successful operation',
       async () => {
         await selectWallpaper(
-            wallpaperProvider.images[0], wallpaperProvider,
-            personalizationStore);
+            wallpaperProvider.images![0]!, wallpaperProvider,
+            personalizationStore as unknown as PersonalizationStore);
 
         assertDeepEquals(
             [
               {
                 name: 'begin_select_image',
-                image: wallpaperProvider.images[0],
+                image: wallpaperProvider.images![0],
               },
               {
                 name: 'begin_load_selected_image',
               },
               {
                 name: 'end_select_image',
-                image: wallpaperProvider.images[0],
+                image: wallpaperProvider.images![0],
                 success: true,
               },
               {
@@ -652,19 +667,19 @@ suite('observes pendingState during wallpaper selection', () => {
             [
               // Begin selecting image.
               {
-                'wallpaper.pendingSelected': wallpaperProvider.images[0],
+                'wallpaper.pendingSelected': wallpaperProvider.images![0],
               },
               // Begin loading image.
               {
-                'wallpaper.pendingSelected': wallpaperProvider.images[0],
+                'wallpaper.pendingSelected': wallpaperProvider.images![0],
               },
               // End selecting image.
               {
-                'wallpaper.pendingSelected': wallpaperProvider.images[0],
+                'wallpaper.pendingSelected': wallpaperProvider.images![0],
               },
               // Set fullscreen enabled
               {
-                'wallpaper.pendingSelected': wallpaperProvider.images[0],
+                'wallpaper.pendingSelected': wallpaperProvider.images![0],
               },
             ],
             personalizationStore.states.map(
@@ -675,8 +690,8 @@ suite('observes pendingState during wallpaper selection', () => {
       'clears pendingState when error occured and only one request',
       async () => {
         await selectWallpaper(
-            wallpaperProvider.localImages[0], wallpaperProvider,
-            personalizationStore);
+            wallpaperProvider.localImages![0]!, wallpaperProvider,
+            personalizationStore as unknown as PersonalizationStore);
         // Reset the history of actions and prior states, but keep the current
         // state.
         personalizationStore.reset(personalizationStore.data);
@@ -686,8 +701,8 @@ suite('observes pendingState during wallpaper selection', () => {
         // sets selected image without file path to force fail the operation.
         wallpaperProvider.localImages = [{path: ''}];
         await selectWallpaper(
-            wallpaperProvider.localImages[0], wallpaperProvider,
-            personalizationStore);
+            wallpaperProvider.localImages[0]!, wallpaperProvider,
+            personalizationStore as unknown as PersonalizationStore);
 
         assertDeepEquals(
             [
@@ -736,8 +751,8 @@ suite('observes pendingState during wallpaper selection', () => {
 });
 
 suite('local images available but no internet connection', () => {
-  let wallpaperProvider;
-  let personalizationStore;
+  let wallpaperProvider: TestWallpaperProvider;
+  let personalizationStore: TestPersonalizationStore;
 
   setup(() => {
     wallpaperProvider = new TestWallpaperProvider();
@@ -751,13 +766,15 @@ suite('local images available but no internet connection', () => {
         loadTimeData.overrideValues({['networkError']: 'someError'});
 
         // Set collections to null to simulate collections failure.
-        wallpaperProvider.setCollections(null);
+        wallpaperProvider.setCollectionsToFail();
 
         // Assume that collections are loaded before local images.
-        const collectionsPromise =
-            fetchCollections(wallpaperProvider, personalizationStore);
-        const localImagesPromise =
-            getLocalImages(wallpaperProvider, personalizationStore);
+        const collectionsPromise = fetchCollections(
+            wallpaperProvider,
+            personalizationStore as unknown as PersonalizationStore);
+        const localImagesPromise = getLocalImages(
+            wallpaperProvider,
+            personalizationStore as unknown as PersonalizationStore);
 
         await collectionsPromise;
 

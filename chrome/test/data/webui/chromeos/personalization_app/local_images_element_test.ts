@@ -12,20 +12,16 @@ import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
 export function LocalImagesTest() {
-  /** @type {?HTMLElement} */
-  let localImagesElement = null;
+  let localImagesElement: LocalImages|null;
 
-  /** @type {?TestWallpaperProvider} */
-  let wallpaperProvider = null;
+  let wallpaperProvider: TestWallpaperProvider;
 
-  /** @type {?TestPersonalizationStore} */
-  let personalizationStore = null;
+  let personalizationStore: TestPersonalizationStore;
 
   /**
    * Get all currently visible photo loading placeholders.
-   * @return  {!Array<HTMLElement>}
    */
-  function getLoadingPlaceholders() {
+  function getLoadingPlaceholders(): HTMLElement[] {
     if (!localImagesElement) {
       return [];
     }
@@ -34,7 +30,7 @@ export function LocalImagesTest() {
       '.photo-inner-container.placeholder:not([style*="display: none"])',
     ];
     return Array.from(
-        localImagesElement.shadowRoot.querySelectorAll(selectors.join(' ')));
+        localImagesElement.shadowRoot!.querySelectorAll(selectors.join(' ')));
   }
 
   setup(() => {
@@ -107,13 +103,13 @@ export function LocalImagesTest() {
         localImagesElement = initElement(LocalImages, {hidden: false});
 
         const ironList =
-            localImagesElement.shadowRoot.querySelector('iron-list');
+            localImagesElement.shadowRoot!.querySelector('iron-list');
         assertTrue(!!ironList);
 
         // Both items are sent. No images are rendered yet because they are not
         // done loading thumbnails.
-        assertEquals(2, ironList.items.length);
-        assertEquals(0, ironList.shadowRoot.querySelectorAll('img').length);
+        assertEquals(2, ironList!.items!.length);
+        assertEquals(0, ironList!.shadowRoot!.querySelectorAll('img').length);
 
         // Set loading finished for first thumbnail.
         personalizationStore.data.wallpaper.loading.local.data = {
@@ -121,10 +117,10 @@ export function LocalImagesTest() {
         };
         personalizationStore.notifyObservers();
         await waitAfterNextRender(localImagesElement);
-        assertEquals(2, ironList.items.length);
-        let imgTags = localImagesElement.shadowRoot.querySelectorAll('img');
+        assertEquals(2, ironList!.items!.length);
+        let imgTags = localImagesElement.shadowRoot!.querySelectorAll('img');
         assertEquals(1, imgTags.length);
-        assertEquals('data://localimage0data', imgTags[0].src);
+        assertEquals('data://localimage0data', imgTags![0]!.src);
 
         // Set loading failed for second thumbnail.
         personalizationStore.data.wallpaper.loading.local.data = {
@@ -138,9 +134,9 @@ export function LocalImagesTest() {
         personalizationStore.notifyObservers();
         await waitAfterNextRender(localImagesElement);
         // Still only first thumbnail displayed.
-        imgTags = localImagesElement.shadowRoot.querySelectorAll('img');
+        imgTags = localImagesElement.shadowRoot!.querySelectorAll('img');
         assertEquals(1, imgTags.length);
-        assertEquals('data://localimage0data', imgTags[0].src);
+        assertEquals('data://localimage0data', imgTags![0]!.src);
       });
 
   test(
@@ -161,7 +157,7 @@ export function LocalImagesTest() {
 
         // iron-list pre-creates some extra DOM elements but marks them as
         // hidden. Ignore them here to only get visible images.
-        const images = localImagesElement.shadowRoot.querySelectorAll(
+        const images = localImagesElement.shadowRoot!.querySelectorAll(
             '.photo-container:not([hidden]) .photo-inner-container');
 
         assertEquals(2, images.length);
@@ -175,8 +171,8 @@ export function LocalImagesTest() {
         personalizationStore.notifyObservers();
 
         assertEquals(2, images.length);
-        assertEquals(images[0].getAttribute('aria-selected'), 'false');
-        assertEquals(images[1].getAttribute('aria-selected'), 'true');
+        assertEquals(images[0]!.getAttribute('aria-selected'), 'false');
+        assertEquals(images[1]!.getAttribute('aria-selected'), 'true');
       });
 
   test('images have proper aria label when loaded', async () => {
@@ -195,7 +191,7 @@ export function LocalImagesTest() {
 
     // iron-list pre-creates some extra DOM elements but marks them as
     // hidden. Ignore them here to only get visible images.
-    const images = localImagesElement.shadowRoot.querySelectorAll(
+    const images = localImagesElement.shadowRoot!.querySelectorAll(
         '.photo-container:not([hidden]) .photo-inner-container');
 
     assertEquals(2, images.length);
@@ -204,10 +200,10 @@ export function LocalImagesTest() {
         image => image.getAttribute('aria-selected') === 'false'));
     // Every image has aria-label set.
     assertEquals(
-        images[0].getAttribute('aria-label'),
-        wallpaperProvider.localImages[0].path);
+        images[0]!.getAttribute('aria-label'),
+        wallpaperProvider.localImages![0]!.path);
     assertEquals(
-        images[1].getAttribute('aria-label'),
-        wallpaperProvider.localImages[1].path);
+        images[1]!.getAttribute('aria-label'),
+        wallpaperProvider.localImages![1]!.path);
   });
 }

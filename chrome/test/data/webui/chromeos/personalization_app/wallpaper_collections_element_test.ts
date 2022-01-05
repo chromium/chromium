@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 import {kMaximumGooglePhotosPreviews, kMaximumLocalImagePreviews} from 'chrome://personalization/common/constants.js';
+import {WallpaperCollection} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {emptyState} from 'chrome://personalization/trusted/personalization_state.js';
 import {promisifyIframeFunctionsForTesting, WallpaperCollections} from 'chrome://personalization/trusted/wallpaper/wallpaper_collections_element.js';
-
+import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
+import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
@@ -14,14 +16,11 @@ import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
 export function WallpaperCollectionsTest() {
-  /** @type {?HTMLElement} */
-  let wallpaperCollectionsElement = null;
+  let wallpaperCollectionsElement: WallpaperCollections|null = null;
 
-  /** @type {?TestWallpaperProvider} */
-  let wallpaperProvider = null;
+  let wallpaperProvider: TestWallpaperProvider;
 
-  /** @type {?TestPersonalizationStore} */
-  let personalizationStore = null;
+  let personalizationStore: TestPersonalizationStore;
 
   setup(function() {
     const mocks = baseSetup();
@@ -48,15 +47,17 @@ export function WallpaperCollectionsTest() {
     personalizationStore.notifyObservers();
 
     // Wait for |sendCollections| to be called.
-    const [target, data] = await sendCollectionsPromise;
+    const [target, data] = await (
+        sendCollectionsPromise as
+        Promise<[Window, Array<WallpaperCollection>]>);
     await waitAfterNextRender(wallpaperCollectionsElement);
 
     const iframe =
-        wallpaperCollectionsElement.shadowRoot.querySelector('iframe');
-    assertFalse(iframe.hidden);
+        wallpaperCollectionsElement.shadowRoot!.querySelector('iframe');
+    assertFalse(iframe!.hidden);
 
-    assertWindowObjectsEqual(iframe.contentWindow, target);
-    assertDeepEquals(wallpaperProvider.collections, data);
+    assertWindowObjectsEqual(iframe!.contentWindow, target);
+    assertDeepEquals(wallpaperProvider!.collections, data);
   });
 
   test('sends Google Photos count when loaded', async () => {
@@ -70,14 +71,15 @@ export function WallpaperCollectionsTest() {
     personalizationStore.notifyObservers();
 
     // Wait for |sendGooglePhotosCount| to be called.
-    const [target, data] = await sendGooglePhotosCountPromise;
+    const [target, data] = await (
+        sendGooglePhotosCountPromise as Promise<[Window, number | null]>);
     await waitAfterNextRender(wallpaperCollectionsElement);
 
     const iframe =
-        wallpaperCollectionsElement.shadowRoot.querySelector('iframe');
-    assertFalse(iframe.hidden);
+        wallpaperCollectionsElement.shadowRoot!.querySelector('iframe');
+    assertFalse(iframe!.hidden);
 
-    assertWindowObjectsEqual(iframe.contentWindow, target);
+    assertWindowObjectsEqual(iframe!.contentWindow, target);
     assertDeepEquals(
         personalizationStore.data.wallpaper.googlePhotos.count, data);
   });
@@ -95,14 +97,15 @@ export function WallpaperCollectionsTest() {
     personalizationStore.notifyObservers();
 
     // Wait for |sendGooglePhotosPhotos| to be called.
-    const [target, data] = await sendGooglePhotosPhotosPromise;
+    const [target, data] = await (
+        sendGooglePhotosPhotosPromise as Promise<[Window, Array<Url>| null]>);
     await waitAfterNextRender(wallpaperCollectionsElement);
 
     const iframe =
-        wallpaperCollectionsElement.shadowRoot.querySelector('iframe');
-    assertFalse(iframe.hidden);
+        wallpaperCollectionsElement.shadowRoot!.querySelector('iframe');
+    assertFalse(iframe!.hidden);
 
-    assertWindowObjectsEqual(iframe.contentWindow, target);
+    assertWindowObjectsEqual(iframe!.contentWindow, target);
     assertDeepEquals(
         personalizationStore.data.wallpaper.googlePhotos.photos.slice(
             0, kMaximumGooglePhotosPreviews),
@@ -128,23 +131,25 @@ export function WallpaperCollectionsTest() {
         promisifyIframeFunctionsForTesting();
 
     personalizationStore.data.wallpaper.backdrop.images = {
-      'id_0': [wallpaperProvider.images[0]]
+      'id_0': [wallpaperProvider.images![0]]
     };
     personalizationStore.data.wallpaper.loading.images = {'id_0': false};
     personalizationStore.notifyObservers();
 
-    let counts = (await sendImageCountsPromise)[1];
+    let counts = (await (
+        sendImageCountsPromise as
+        Promise<[Window, {[key: string]: number | null}]>))[1];
     assertDeepEquals({'id_0': 1}, counts);
 
     // Load two collections in at once, and simulate one failure.
     sendImageCountsPromise =
         promisifyIframeFunctionsForTesting().sendImageCounts;
     personalizationStore.data.wallpaper.backdrop.images = {
-      'id_0': [wallpaperProvider.images[0]],
-      'id_1': [wallpaperProvider.images[0], wallpaperProvider.images[1]],
+      'id_0': [wallpaperProvider.images![0]],
+      'id_1': [wallpaperProvider.images![0], wallpaperProvider.images![1]],
       'id_2': [],
       'id_3': null,
-      'id_4': [wallpaperProvider.images[0], wallpaperProvider.images[2]],
+      'id_4': [wallpaperProvider.images![0], wallpaperProvider.images![2]],
     };
     personalizationStore.data.wallpaper.loading.images = {
       'id_0': false,
@@ -155,7 +160,9 @@ export function WallpaperCollectionsTest() {
     };
     personalizationStore.notifyObservers();
 
-    counts = (await sendImageCountsPromise)[1];
+    counts = (await (
+        sendImageCountsPromise as
+        Promise<[Window, {[key: string]: number | null}]>))[1];
     assertDeepEquals(
         {'id_0': 1, 'id_1': 2, 'id_2': 0, 'id_3': null, 'id_4': 1}, counts);
   });
@@ -178,14 +185,15 @@ export function WallpaperCollectionsTest() {
     personalizationStore.notifyObservers();
 
     // Wait for |sendLocalImages| to be called.
-    const [target, data] = await sendLocalImagesPromise;
+    const [target, data] =
+        await (sendLocalImagesPromise as Promise<[Window, FilePath[]]>);
     await waitAfterNextRender(wallpaperCollectionsElement);
 
     const iframe =
-        wallpaperCollectionsElement.shadowRoot.querySelector('iframe');
-    assertFalse(iframe.hidden);
+        wallpaperCollectionsElement.shadowRoot!.querySelector('iframe');
+    assertFalse(iframe!.hidden);
 
-    assertWindowObjectsEqual(iframe.contentWindow, target);
+    assertWindowObjectsEqual(iframe!.contentWindow, target);
     assertDeepEquals(wallpaperProvider.localImages, data);
   });
 
@@ -209,32 +217,35 @@ export function WallpaperCollectionsTest() {
     personalizationStore.notifyObservers();
 
     // Wait for |sendCollections| to be called.
-    let [target, data] = await sendCollectionsPromise;
+    let [target, data] = await (
+        sendCollectionsPromise as
+        Promise<[Window, Array<WallpaperCollection>]>);
     await waitAfterNextRender(wallpaperCollectionsElement);
 
     const iframe =
-        wallpaperCollectionsElement.shadowRoot.querySelector('iframe');
-    assertFalse(iframe.hidden);
+        wallpaperCollectionsElement.shadowRoot!.querySelector('iframe');
+    assertFalse(iframe!.hidden);
 
-    assertWindowObjectsEqual(iframe.contentWindow, target);
+    assertWindowObjectsEqual(iframe!.contentWindow, target);
     assertEquals(null, data);
 
     // Wait for |sendLocalImages| to be called.
-    [target, data] = await sendLocalImagesPromise;
+    let [imageTarget, imageData] =
+        await (sendLocalImagesPromise as Promise<[Window, FilePath[]]>);
     await waitAfterNextRender(wallpaperCollectionsElement);
 
-    assertFalse(iframe.hidden);
+    assertFalse(iframe!.hidden);
 
-    assertWindowObjectsEqual(iframe.contentWindow, target);
-    assertDeepEquals(wallpaperProvider.localImages, data);
+    assertWindowObjectsEqual(iframe!.contentWindow, imageTarget);
+    assertDeepEquals(wallpaperProvider.localImages, imageData);
   });
 
   test('shows error when fails to load', async () => {
     wallpaperCollectionsElement = initElement(WallpaperCollections);
 
     // No error displayed while loading.
-    let error =
-        wallpaperCollectionsElement.shadowRoot.querySelector('wallpaper-error');
+    let error = wallpaperCollectionsElement.shadowRoot!.querySelector(
+        'wallpaper-error');
     assertTrue(error === null);
 
     personalizationStore.data.wallpaper.loading = {
@@ -247,13 +258,13 @@ export function WallpaperCollectionsTest() {
     personalizationStore.notifyObservers();
     await waitAfterNextRender(wallpaperCollectionsElement);
 
-    error =
-        wallpaperCollectionsElement.shadowRoot.querySelector('wallpaper-error');
+    error = wallpaperCollectionsElement.shadowRoot!.querySelector(
+        'wallpaper-error');
     assertTrue(!!error);
 
     // Iframe should be hidden if there is an error.
-    assertTrue(
-        wallpaperCollectionsElement.shadowRoot.querySelector('iframe').hidden);
+    assertTrue(wallpaperCollectionsElement.shadowRoot!.querySelector(
+                                                          'iframe')!.hidden);
   });
 
   test('loads backdrop data and saves to store', async () => {
@@ -267,7 +278,9 @@ export function WallpaperCollectionsTest() {
 
     wallpaperCollectionsElement = initElement(WallpaperCollections);
 
-    const [_, collections] = await sendCollectionsPromise;
+    const [_, collections] = await (
+        sendCollectionsPromise as
+        Promise<[Window, Array<WallpaperCollection>]>);
     assertDeepEquals(wallpaperProvider.collections, collections);
 
     assertDeepEquals(
@@ -318,7 +331,7 @@ export function WallpaperCollectionsTest() {
         await sendLocalImages;
 
         // No thumbnails loaded so none sent.
-        assertFalse(wallpaperCollectionsElement.didSendLocalImageData_);
+        assertFalse(wallpaperCollectionsElement['didSendLocalImageData_']);
 
         // First thumbnail loads in.
         personalizationStore.data.wallpaper.loading.local.data = {
@@ -329,12 +342,12 @@ export function WallpaperCollectionsTest() {
         };
         personalizationStore.notifyObservers();
 
-        await wallpaperCollectionsElement.iframePromise_;
+        await wallpaperCollectionsElement['iframePromise_'];
         await waitAfterNextRender(wallpaperCollectionsElement);
 
         // Should not have sent any image data since more thumbnails are still
         // loading.
-        assertFalse(wallpaperCollectionsElement.didSendLocalImageData_);
+        assertFalse(wallpaperCollectionsElement['didSendLocalImageData_']);
 
         // Second thumbnail fails loading. Third succeeds.
         personalizationStore.data.wallpaper.loading.local.data = {
@@ -351,9 +364,10 @@ export function WallpaperCollectionsTest() {
 
         // 2 thumbnails have now loaded. 1 failed. But there are no more
         // remaining to try loading, should send local image data anyway.
-        const [_, sentData] = await sendLocalImageData;
+        const [_, sentData] = await (
+            sendLocalImageData as Promise<[Window, Record<string, string>]>);
 
-        assertTrue(wallpaperCollectionsElement.didSendLocalImageData_);
+        assertTrue(wallpaperCollectionsElement['didSendLocalImageData_']);
         assertDeepEquals(
             {
               'LocalImage0.png': 'local_data_0',

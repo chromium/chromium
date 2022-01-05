@@ -95,7 +95,7 @@ export class TestWallpaperProvider extends TestBrowserProxy implements
 
   private collections_: WallpaperCollection[]|null;
   private images_: WallpaperImage[]|null;
-  localImages: FilePath[];
+  localImages: FilePath[]|null;
   localImageData: Record<string, string>;
   currentWallpaper: CurrentWallpaper;
   selectWallpaperResponse = true;

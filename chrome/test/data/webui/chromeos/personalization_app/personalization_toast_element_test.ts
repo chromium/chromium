@@ -12,11 +12,9 @@ import {baseSetup, initElement, teardownElement} from './personalization_app_tes
 import {TestPersonalizationStore} from './test_personalization_store.js';
 
 export function PersonalizationToastTest() {
-  /** @type {!HTMLElement} */
-  let personalizationToastElement;
+  let personalizationToastElement: PersonalizationToastElement;
 
-  /** @type {?TestPersonalizationStore} */
-  let personalizationStore = null;
+  let personalizationStore: TestPersonalizationStore;
 
   setup(() => {
     const mocks = baseSetup();
@@ -38,10 +36,10 @@ export function PersonalizationToastTest() {
     personalizationStore.notifyObservers();
     await waitAfterNextRender(personalizationToastElement);
     assertTrue(
-        !!personalizationToastElement.shadowRoot.getElementById('container'));
+        !!personalizationToastElement.shadowRoot!.getElementById('container'));
     assertEquals(
         personalizationStore.data.error,
-        personalizationToastElement.shadowRoot.querySelector('p').innerText);
+        personalizationToastElement.shadowRoot!.querySelector('p')!.innerText);
   });
 
   test('deploys an dismiss action when dismiss is clicked', async () => {
@@ -50,7 +48,7 @@ export function PersonalizationToastTest() {
     await waitAfterNextRender(personalizationToastElement);
 
     personalizationStore.expectAction(PersonalizationActionName.DISMISS_ERROR);
-    personalizationToastElement.shadowRoot.querySelector('cr-button').click();
+    personalizationToastElement.shadowRoot!.querySelector('cr-button')!.click();
     await personalizationStore.waitForAction(
         PersonalizationActionName.DISMISS_ERROR);
   });

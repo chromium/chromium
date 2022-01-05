@@ -17,22 +17,18 @@ import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
 export function PersonalizationBreadcrumbTest() {
-  /** @type {?HTMLElement} */
-  let breadcrumbElement = null;
+  let breadcrumbElement: PersonalizationBreadcrumb|null;
 
-  /** @type {?TestWallpaperProvider} */
-  let wallpaperProvider = null;
+  let wallpaperProvider: TestWallpaperProvider;
 
-  /** @type {?TestPersonalizationStore} */
-  let personalizationStore = null;
+  let personalizationStore: TestPersonalizationStore;
 
   /**
    * Asserts that the specified |breadcrumbContainer| has children conforming
    * to the specified |breadcrumbs|, e.g. ["Wallpaper", "Google Photos"].
-   * @param {HTMLElement} breadcrumbContainer
-   * @param {Array<string>} breadcrumbs
    */
-  function assertBreadcrumbs(breadcrumbContainer, breadcrumbs) {
+  function assertBreadcrumbs(
+      breadcrumbContainer: HTMLElement, breadcrumbs: string[]) {
     // Ignore child elements which are not breadcrumbs.
     const breadcrumbEls = [...breadcrumbContainer.children].filter(child => {
       return child.classList.contains('breadcrumb');
@@ -44,13 +40,13 @@ export function PersonalizationBreadcrumbTest() {
       const breadcrumb = breadcrumbs[i];
       const breadcrumbEl = breadcrumbEls[i];
 
-      assertEquals(breadcrumbEl.textContent, breadcrumb);
+      assertEquals(breadcrumbEl!.textContent, breadcrumb);
 
       if (i < breadcrumbs.length - 1) {
         // Breadcrumbs are separated by a chevron icon.
-        const chevronEl = breadcrumbEl.nextElementSibling;
-        assertEquals(chevronEl.tagName, 'IRON-ICON');
-        assertEquals(chevronEl.getAttribute('icon'), 'cr:chevron-right');
+        const chevronEl = breadcrumbEl!.nextElementSibling;
+        assertEquals(chevronEl!.tagName, 'IRON-ICON');
+        assertEquals(chevronEl!.getAttribute('icon'), 'cr:chevron-right');
       }
     }
   }
@@ -73,16 +69,16 @@ export function PersonalizationBreadcrumbTest() {
     breadcrumbElement = initElement(PersonalizationBreadcrumb);
 
     const breadcrumbContainer =
-        breadcrumbElement.shadowRoot.getElementById('breadcrumbContainer');
+        breadcrumbElement.shadowRoot!.getElementById('breadcrumbContainer');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
-    assertBreadcrumbs(breadcrumbContainer, [breadcrumbElement.i18n('title')]);
+    assertBreadcrumbs(breadcrumbContainer!, [breadcrumbElement.i18n('title')]);
   });
 
   test('shows collection name when collection is selected', async () => {
-    const collection = wallpaperProvider.collections[0];
+    const collection = wallpaperProvider.collections![0];
     breadcrumbElement = initElement(
         PersonalizationBreadcrumb,
-        {'path': Paths.CollectionImages, 'collectionId': collection.id});
+        {'path': Paths.CollectionImages, 'collectionId': collection!.id});
 
     personalizationStore.data.wallpaper.backdrop.collections =
         wallpaperProvider.collections;
@@ -91,11 +87,11 @@ export function PersonalizationBreadcrumbTest() {
     await waitAfterNextRender(breadcrumbElement);
 
     const breadcrumbContainer =
-        breadcrumbElement.shadowRoot.getElementById('breadcrumbContainer');
+        breadcrumbElement.shadowRoot!.getElementById('breadcrumbContainer');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
     assertBreadcrumbs(
-        breadcrumbContainer,
-        [breadcrumbElement.i18n('title'), collection.name]);
+        breadcrumbContainer!,
+        [breadcrumbElement.i18n('title'), collection!.name]);
   });
 
   test('show album name when Google Photos subpage is loaded', async () => {
@@ -117,9 +113,9 @@ export function PersonalizationBreadcrumbTest() {
     });
 
     const breadcrumbContainer =
-        breadcrumbElement.shadowRoot.getElementById('breadcrumbContainer');
+        breadcrumbElement.shadowRoot!.getElementById('breadcrumbContainer');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
-    assertBreadcrumbs(breadcrumbContainer, [
+    assertBreadcrumbs(breadcrumbContainer!, [
       breadcrumbElement.i18n('title'),
       breadcrumbElement.i18n('googlePhotosLabel'), googlePhotosAlbum.name
     ]);
@@ -134,9 +130,9 @@ export function PersonalizationBreadcrumbTest() {
         PersonalizationBreadcrumb, {'path': Paths.GooglePhotosCollection});
 
     const breadcrumbContainer =
-        breadcrumbElement.shadowRoot.getElementById('breadcrumbContainer');
+        breadcrumbElement.shadowRoot!.getElementById('breadcrumbContainer');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
-    assertBreadcrumbs(breadcrumbContainer, [
+    assertBreadcrumbs(breadcrumbContainer!, [
       breadcrumbElement.i18n('title'),
       breadcrumbElement.i18n('googlePhotosLabel')
     ]);
@@ -153,9 +149,9 @@ export function PersonalizationBreadcrumbTest() {
     await waitAfterNextRender(breadcrumbElement);
 
     const breadcrumbContainer =
-        breadcrumbElement.shadowRoot.getElementById('breadcrumbContainer');
+        breadcrumbElement.shadowRoot!.getElementById('breadcrumbContainer');
     assertTrue(!!breadcrumbContainer && !breadcrumbContainer.hidden);
-    assertBreadcrumbs(breadcrumbContainer, [
+    assertBreadcrumbs(breadcrumbContainer!, [
       breadcrumbElement.i18n('title'), breadcrumbElement.i18n('myImagesLabel')
     ]);
   });

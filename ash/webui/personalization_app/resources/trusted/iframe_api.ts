@@ -107,7 +107,7 @@ export function sendLocalImages(target: Window, images: FilePath[]) {
  * Sends image data keyed by stringified image id.
  */
 export function sendLocalImageData(
-    target: Window, data: {[key: string]: string}) {
+    target: Window, data: Record<string, string>) {
   const event: constants.SendLocalImageDataEvent = {
     type: constants.EventType.SEND_LOCAL_IMAGE_DATA,
     data

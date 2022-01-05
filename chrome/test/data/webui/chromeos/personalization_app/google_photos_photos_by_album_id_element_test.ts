@@ -11,30 +11,17 @@ import {baseSetup, initElement, teardownElement} from './personalization_app_tes
 import {TestPersonalizationStore} from './test_personalization_store.js';
 
 export function GooglePhotosPhotosByAlbumIdTest() {
-  /** @type {?HTMLElement} */
-  let googlePhotosPhotosByAlbumIdElement = null;
+  let googlePhotosPhotosByAlbumIdElement: GooglePhotosPhotosByAlbumId|null;
 
-  /** @type {?TestPersonalizationStore} */
-  let personalizationStore = null;
-
-  /**
-   * Returns the match for |selector| in |googlePhotosPhotosByAlbumIdElement|'s
-   * shadow DOM.
-   * @return {?Element|undefined}
-   */
-  function querySelector(selector) {
-    return googlePhotosPhotosByAlbumIdElement?.shadowRoot?.querySelector(
-        selector);
-  }
+  let personalizationStore: TestPersonalizationStore;
 
   /**
    * Returns all matches for |selector| in
    * |googlePhotosPhotosByAlbumIdElement|'s shadow DOM.
-   * @return {?Array<Element>}
    */
-  function querySelectorAll(selector) {
+  function querySelectorAll(selector: string): Element[]|null {
     const matches =
-        googlePhotosPhotosByAlbumIdElement?.shadowRoot?.querySelectorAll(
+        googlePhotosPhotosByAlbumIdElement!.shadowRoot!.querySelectorAll(
             selector);
     return matches ? [...matches] : null;
   }
@@ -60,7 +47,7 @@ export function GooglePhotosPhotosByAlbumIdTest() {
 
     // Initially no album id selected. Photos should be absent.
     const photoSelector = 'wallpaper-grid-item:not([hidden]) .photo';
-    assertEquals(querySelectorAll(photoSelector).length, 0);
+    assertEquals(querySelectorAll(photoSelector)!.length, 0);
 
     const {fetchGooglePhotosAlbum: fetchGooglePhotosAlbumPromise} =
         promisifyWallpaperControllerFunctionsForTesting();
@@ -68,7 +55,7 @@ export function GooglePhotosPhotosByAlbumIdTest() {
     // Select an album id. Photos should be absent since they are not loaded.
     googlePhotosPhotosByAlbumIdElement.setAttribute('album-id', '1');
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
-    assertEquals(querySelectorAll(photoSelector).length, 0);
+    assertEquals(querySelectorAll(photoSelector)!.length, 0);
 
     // Expect a request to load photos for the selected album id.
     const [, , albumId] = await fetchGooglePhotosAlbumPromise;
@@ -83,7 +70,7 @@ export function GooglePhotosPhotosByAlbumIdTest() {
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
-    assertEquals(querySelectorAll(photoSelector).length, 0);
+    assertEquals(querySelectorAll(photoSelector)!.length, 0);
 
     // Load photos for an album id other than that which is selected. Photos
     // should still be absent since they are still not loaded for the selected
@@ -99,7 +86,7 @@ export function GooglePhotosPhotosByAlbumIdTest() {
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
-    assertEquals(querySelectorAll(photoSelector).length, 0);
+    assertEquals(querySelectorAll(photoSelector)!.length, 0);
 
     // Finish loading photos for the selected album id. Photos should now be
     // present since they are finished loading for the selected album id.
@@ -114,19 +101,19 @@ export function GooglePhotosPhotosByAlbumIdTest() {
     };
     personalizationStore.notifyObservers();
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
-    assertEquals(querySelectorAll(photoSelector).length, 100);
+    assertEquals(querySelectorAll(photoSelector)!.length, 100);
 
     // Select the other album id for which data is already loaded. Photos should
     // immediately update since they are already loaded for the selected album
     // id.
     googlePhotosPhotosByAlbumIdElement.setAttribute('album-id', '2');
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
-    assertEquals(querySelectorAll(photoSelector).length, 50);
+    assertEquals(querySelectorAll(photoSelector)!.length, 50);
 
     // Un-select the album id. Photos should be absent since no album id is
     // selected.
     googlePhotosPhotosByAlbumIdElement.removeAttribute('album-id');
     await waitAfterNextRender(googlePhotosPhotosByAlbumIdElement);
-    assertEquals(querySelectorAll(photoSelector).length, 0);
+    assertEquals(querySelectorAll(photoSelector)!.length, 0);
   });
 }
