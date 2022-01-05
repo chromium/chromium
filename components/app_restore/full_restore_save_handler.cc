@@ -136,22 +136,12 @@ void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
   if (app_id_str) {
     // For Chrome apps, launched via event, get the app id from the window's
     // property, then find the app launch info from
-    // |app_id_to_app_launch_infos_| to save the app launch info for |app_id|
+    // `app_id_to_app_launch_infos_` to save the app launch info for |app_id|
     // and |window_id|.
-    auto it = app_id_to_app_launch_infos_.find(*app_id_str);
-    if (it == app_id_to_app_launch_infos_.end())
+    app_launch_info = FetchAppLaunchInfo(active_profile_path_, *app_id_str);
+    if (!app_launch_info)
       return;
-
-    auto launch_it = it->second.find(active_profile_path_);
-    if (launch_it == it->second.end())
-      return;
-
-    DCHECK(!launch_it->second.empty());
-    app_launch_info = std::move(*launch_it->second.begin());
     app_launch_info->window_id = window_id;
-    it->second.erase(active_profile_path_);
-    if (it->second.empty())
-      app_id_to_app_launch_infos_.erase(it);
   } else {
     app_launch_info = std::make_unique<app_restore::AppLaunchInfo>(
         extension_misc::kChromeAppId, window_id);
@@ -310,9 +300,7 @@ void FullRestoreSaveHandler::SaveAppLaunchInfo(
     // app id, and move window info to the record of the system web app id.
     auto it = window_id_to_app_restore_info_.find(window_id);
     if (it != window_id_to_app_restore_info_.end()) {
-      window_info =
-          profile_path_to_restore_data_[it->second.first].GetWindowInfo(
-              it->second.second, window_id);
+      window_info = GetWindowInfo(profile_path, app_id, window_id);
       RemoveAppRestoreData(window_id);
     }
   }
@@ -528,6 +516,35 @@ std::string FullRestoreSaveHandler::GetAppId(aura::Window* window) {
     return iter != window_id_to_app_restore_info_.end() ? iter->second.second
                                                         : std::string();
   }
+}
+
+std::unique_ptr<app_restore::AppLaunchInfo>
+FullRestoreSaveHandler::FetchAppLaunchInfo(const base::FilePath& profile_path,
+                                           const std::string& app_id) {
+  auto it = app_id_to_app_launch_infos_.find(app_id);
+  if (it == app_id_to_app_launch_infos_.end())
+    return nullptr;
+
+  auto launch_it = it->second.find(profile_path);
+  if (launch_it == it->second.end())
+    return nullptr;
+
+  DCHECK(!launch_it->second.empty());
+  auto app_launch_info = std::move(*launch_it->second.begin());
+  it->second.erase(profile_path);
+  if (it->second.empty())
+    app_id_to_app_launch_infos_.erase(it);
+  return app_launch_info;
+}
+
+std::unique_ptr<app_restore::WindowInfo> FullRestoreSaveHandler::GetWindowInfo(
+    const base::FilePath& profile_path,
+    const std::string& app_id,
+    int window_id) {
+  auto it = profile_path_to_restore_data_.find(profile_path);
+  return it != profile_path_to_restore_data_.end()
+             ? it->second.GetWindowInfo(app_id, window_id)
+             : nullptr;
 }
 
 void FullRestoreSaveHandler::ClearForTesting() {
