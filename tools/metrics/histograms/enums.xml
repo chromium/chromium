@@ -4373,6 +4373,15 @@ Unknown properties are collapsed to zero. -->
   <int value="7" label="Failed With Unknown Reason"/>
 </enum>
 
+<enum name="ArcRightClickConversionResult">
+  <summary>
+    Describes whether the right click was converted to long press or not
+  </summary>
+  <int value="0" label="DISABLED"/>
+  <int value="1" label="CONVERTED"/>
+  <int value="2" label="NOT_CONVERTED"/>
+</enum>
+
 <enum name="ArcSdkVersionUpgradeType">
   <summary>Defines the types of ARC SDK version upgrade</summary>
   <int value="0" label="NO_UPGRADE"/>

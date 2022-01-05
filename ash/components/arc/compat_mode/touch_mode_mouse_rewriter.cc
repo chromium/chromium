@@ -5,6 +5,7 @@
 #include "ash/components/arc/compat_mode/touch_mode_mouse_rewriter.h"
 
 #include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/compat_mode/metrics.h"
 #include "ash/shell.h"
 #include "base/bind.h"
 #include "base/ignore_result.h"
@@ -110,12 +111,20 @@ ui::EventDispatchDetails TouchModeMouseRewriter::RewriteEvent(
 
   const ui::MouseEvent& mouse_event = *event.AsMouseEvent();
   if (mouse_event.IsRightMouseButton() || mouse_event.IsLeftMouseButton()) {
-    if (!base::FeatureList::IsEnabled(arc::kRightClickLongPress))
+    if (!base::FeatureList::IsEnabled(arc::kRightClickLongPress)) {
+      RecordRightClickConversionResultHistogram(
+          RightClickConversionResultHistogramResult::kDisabled);
       return SendEvent(continuation, &event);
+    }
 
-    if (!in_resize_locked)
+    if (!in_resize_locked) {
+      RecordRightClickConversionResultHistogram(
+          RightClickConversionResultHistogramResult::kNotConverted);
       return SendEvent(continuation, &event);
+    }
 
+    RecordRightClickConversionResultHistogram(
+        RightClickConversionResultHistogramResult::kConverted);
     return RewriteMouseClickEvent(mouse_event, continuation);
   }
 

@@ -5,7 +5,9 @@
 #include "ash/components/arc/compat_mode/touch_mode_mouse_rewriter.h"
 
 #include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/compat_mode/metrics.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/views/test/views_test_base.h"
@@ -90,6 +92,7 @@ class TouchModeMouseRewriterTest : public views::ViewsTestBase {
   }
 
   base::test::ScopedFeatureList feature_list_;
+  base::HistogramTester histogram_tester;
 };
 
 TEST_F(TouchModeMouseRewriterTest, RightClickConvertedToLongPress) {
@@ -111,6 +114,10 @@ TEST_F(TouchModeMouseRewriterTest, RightClickConvertedToLongPress) {
   EXPECT_TRUE(view->left_pressed());
   EXPECT_FALSE(view->right_pressed());
 
+  histogram_tester.ExpectUniqueSample(
+      "Arc.CompatMode.RightClickConversion",
+      RightClickConversionResultHistogramResult::kConverted, 1);
+
   // Immediately release the right button. It will not generate any event.
   generator.ReleaseRightButton();
   EXPECT_TRUE(view->left_pressed());
@@ -122,6 +129,71 @@ TEST_F(TouchModeMouseRewriterTest, RightClickConvertedToLongPress) {
   EXPECT_FALSE(view->right_pressed());
 
   touch_mode_mouse_rewriter.DisableForWindow(widget->GetNativeWindow());
+}
+
+TEST_F(TouchModeMouseRewriterTest, FeatureIsDisabled) {
+  // Disable kRightClickLongPress
+  feature_list_.Reset();
+  feature_list_.InitWithFeatures({}, {arc::kRightClickLongPress});
+
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::TYPE_CONTROL);
+  LongPressReceiverView* view =
+      widget->SetContentsView(std::make_unique<LongPressReceiverView>());
+  widget->Show();
+
+  TouchModeMouseRewriter touch_mode_mouse_rewriter;
+  touch_mode_mouse_rewriter.EnableForWindow(widget->GetNativeWindow());
+  ui::test::EventGenerator generator(GetContext(), widget->GetNativeWindow());
+  EXPECT_FALSE(view->left_pressed());
+  EXPECT_FALSE(view->right_pressed());
+
+  // Press the right button.
+  generator.PressRightButton();
+  EXPECT_TRUE(view->right_pressed());
+
+  histogram_tester.ExpectUniqueSample(
+      "Arc.CompatMode.RightClickConversion",
+      RightClickConversionResultHistogramResult::kDisabled, 1);
+
+  // Immediately release the right button.
+  generator.ReleaseRightButton();
+  EXPECT_FALSE(view->right_pressed());
+
+  touch_mode_mouse_rewriter.DisableForWindow(widget->GetNativeWindow());
+}
+
+TEST_F(TouchModeMouseRewriterTest, DisabledForWindow) {
+  std::unique_ptr<views::Widget> widget =
+      CreateTestWidget(views::Widget::InitParams::TYPE_CONTROL);
+  LongPressReceiverView* view =
+      widget->SetContentsView(std::make_unique<LongPressReceiverView>());
+  widget->Show();
+
+  TouchModeMouseRewriter touch_mode_mouse_rewriter;
+  touch_mode_mouse_rewriter.EnableForWindow(widget->GetNativeWindow());
+
+  std::unique_ptr<views::Widget> widget2 =
+      CreateTestWidget(views::Widget::InitParams::TYPE_CONTROL);
+  LongPressReceiverView* view2 =
+      widget2->SetContentsView(std::make_unique<LongPressReceiverView>());
+  widget2->Show();
+  // Not enabled for the widget2.
+  ui::test::EventGenerator generator(GetContext(), widget2->GetNativeWindow());
+  EXPECT_FALSE(view->left_pressed());
+  EXPECT_FALSE(view->right_pressed());
+
+  // Press the right button.
+  generator.PressRightButton();
+  EXPECT_TRUE(view2->right_pressed());
+
+  histogram_tester.ExpectUniqueSample(
+      "Arc.CompatMode.RightClickConversion",
+      RightClickConversionResultHistogramResult::kNotConverted, 1);
+
+  // Immediately release the right button.
+  generator.ReleaseRightButton();
+  EXPECT_FALSE(view2->right_pressed());
 }
 
 TEST_F(TouchModeMouseRewriterTest, LeftPressedBeforeRightClick) {
