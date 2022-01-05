@@ -9,6 +9,8 @@
 namespace ash {
 namespace phonehub {
 
+using FeatureState = ::chromeos::multidevice_setup::mojom::FeatureState;
+
 FakeRecentAppsInteractionHandler::FakeRecentAppsInteractionHandler() = default;
 
 FakeRecentAppsInteractionHandler::~FakeRecentAppsInteractionHandler() = default;
@@ -32,6 +34,12 @@ void FakeRecentAppsInteractionHandler::RemoveRecentAppClickObserver(
   recent_app_click_observer_count_--;
 }
 
+void FakeRecentAppsInteractionHandler::OnFeatureStateChanged(
+    FeatureState feature_state) {
+  feature_state_ = feature_state;
+  ComputeAndUpdateUiState();
+}
+
 void FakeRecentAppsInteractionHandler::NotifyRecentAppAddedOrUpdated(
     const Notification::AppMetadata& app_metadata,
     base::Time last_accessed_timestamp) {
@@ -45,6 +53,16 @@ FakeRecentAppsInteractionHandler::FetchRecentAppMetadataList() {
     app_metadata_list.emplace_back(recent_app_metadata.first);
   }
   return app_metadata_list;
+}
+
+void FakeRecentAppsInteractionHandler::ComputeAndUpdateUiState() {
+  if (feature_state_ != FeatureState::kEnabledByUser) {
+    ui_state_ = RecentAppsUiState::HIDDEN;
+    return;
+  }
+  ui_state_ = recent_apps_metadata_.empty()
+                  ? RecentAppsUiState::PLACEHOLDER_VIEW
+                  : RecentAppsUiState::ITEMS_VISIBLE;
 }
 
 }  // namespace phonehub

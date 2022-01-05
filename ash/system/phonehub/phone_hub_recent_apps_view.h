@@ -15,13 +15,18 @@ namespace ash {
 
 // A view in Phone Hub bubble that allows user to relaunch a streamed app from
 // the recent apps list.
-class ASH_EXPORT PhoneHubRecentAppsView : public views::View {
+class ASH_EXPORT PhoneHubRecentAppsView
+    : public views::View,
+      public phonehub::RecentAppsInteractionHandler::Observer {
  public:
   explicit PhoneHubRecentAppsView(
       phonehub::RecentAppsInteractionHandler* recent_apps_interaction_handler);
   ~PhoneHubRecentAppsView() override;
   PhoneHubRecentAppsView(PhoneHubRecentAppsView&) = delete;
   PhoneHubRecentAppsView operator=(PhoneHubRecentAppsView&) = delete;
+
+  // phonehub::RecentAppsInteractionHandler::Observer:
+  void OnRecentAppsUiStateUpdated() override;
 
   // views::View:
   const char* GetClassName() const override;

@@ -181,6 +181,7 @@ static_library("debug") {
     "//ash/constants",
     "//base",
     "//chromeos/components/multidevice/logging",
+    "//chromeos/services/multidevice_setup/public/mojom",
   ]
 }
 

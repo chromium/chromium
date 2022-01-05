@@ -8,12 +8,16 @@
 
 #include "ash/components/phonehub/notification.h"
 #include "ash/components/phonehub/pref_names.h"
+#include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
+#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
 namespace phonehub {
 namespace {
+
+using FeatureState = ::chromeos::multidevice_setup::mojom::FeatureState;
 
 class FakeClickHandler : public RecentAppClickObserver {
  public:
@@ -45,8 +49,10 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     RecentAppsInteractionHandlerImpl::RegisterPrefs(pref_service_.registry());
-    interaction_handler_ =
-        std::make_unique<RecentAppsInteractionHandlerImpl>(&pref_service_);
+    fake_multidevice_setup_client_ =
+        std::make_unique<multidevice_setup::FakeMultiDeviceSetupClient>();
+    interaction_handler_ = std::make_unique<RecentAppsInteractionHandlerImpl>(
+        &pref_service_, fake_multidevice_setup_client_.get());
     interaction_handler_->AddRecentAppClickObserver(&fake_click_handler_);
   }
 
@@ -80,6 +86,14 @@ class RecentAppsInteractionHandlerTest : public testing::Test {
   }
 
   RecentAppsInteractionHandlerImpl& handler() { return *interaction_handler_; }
+
+  void SetEcheFeatureState(FeatureState feature_state) {
+    fake_multidevice_setup_client_->SetFeatureState(
+        chromeos::multidevice_setup::mojom::Feature::kEche, feature_state);
+  }
+
+  std::unique_ptr<multidevice_setup::FakeMultiDeviceSetupClient>
+      fake_multidevice_setup_client_;
 
  private:
   FakeClickHandler fake_click_handler_;
@@ -217,6 +231,73 @@ TEST_F(RecentAppsInteractionHandlerTest,
 
   EXPECT_EQ(package_name1, recent_apps_metadata_result[0].package_name);
   EXPECT_EQ(package_name2, recent_apps_metadata_result[1].package_name);
+}
+
+TEST_F(RecentAppsInteractionHandlerTest,
+       OnFeatureStatesChangedToDisabledWithEmptyRecentAppsList) {
+  SetEcheFeatureState(FeatureState::kDisabledByUser);
+
+  EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::HIDDEN,
+            handler().ui_state());
+}
+
+TEST_F(RecentAppsInteractionHandlerTest,
+       OnFeatureStatesChangedToDisabledWithNonEmptyRecentAppsList) {
+  const base::Time now = base::Time::Now();
+  const char16_t app_visible_name1[] = u"Fake App";
+  const char package_name1[] = "com.fakeapp";
+  const int64_t expected_user_id1 = 1;
+  auto app_metadata1 = Notification::AppMetadata(
+      app_visible_name1, package_name1, gfx::Image(), expected_user_id1);
+
+  handler().NotifyRecentAppAddedOrUpdated(app_metadata1, now);
+  SetEcheFeatureState(FeatureState::kDisabledByUser);
+
+  EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::HIDDEN,
+            handler().ui_state());
+}
+
+TEST_F(RecentAppsInteractionHandlerTest,
+       OnFeatureStatesChangedToEnabledWithEmptyRecentAppsList) {
+  SetEcheFeatureState(FeatureState::kEnabledByUser);
+
+  EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::PLACEHOLDER_VIEW,
+            handler().ui_state());
+}
+
+TEST_F(RecentAppsInteractionHandlerTest,
+       OnFeatureStatesChangedToEnabledWithNonEmptyRecentAppsList) {
+  const base::Time now = base::Time::Now();
+  const char16_t app_visible_name1[] = u"Fake App";
+  const char package_name1[] = "com.fakeapp";
+  const int64_t expected_user_id1 = 1;
+  auto app_metadata1 = Notification::AppMetadata(
+      app_visible_name1, package_name1, gfx::Image(), expected_user_id1);
+
+  handler().NotifyRecentAppAddedOrUpdated(app_metadata1, now);
+  SetEcheFeatureState(FeatureState::kEnabledByUser);
+
+  EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::ITEMS_VISIBLE,
+            handler().ui_state());
+}
+
+TEST_F(RecentAppsInteractionHandlerTest,
+       UiStateChangedToVisibleWhenRecentAppBeAdded) {
+  SetEcheFeatureState(FeatureState::kEnabledByUser);
+
+  EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::PLACEHOLDER_VIEW,
+            handler().ui_state());
+
+  const base::Time now = base::Time::Now();
+  const char16_t app_visible_name1[] = u"Fake App";
+  const char package_name1[] = "com.fakeapp";
+  const int64_t expected_user_id1 = 1;
+  auto app_metadata1 = Notification::AppMetadata(
+      app_visible_name1, package_name1, gfx::Image(), expected_user_id1);
+  handler().NotifyRecentAppAddedOrUpdated(app_metadata1, now);
+
+  EXPECT_EQ(RecentAppsInteractionHandler::RecentAppsUiState::ITEMS_VISIBLE,
+            handler().ui_state());
 }
 
 }  // namespace phonehub

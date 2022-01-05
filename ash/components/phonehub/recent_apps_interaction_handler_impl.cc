@@ -12,6 +12,9 @@
 namespace ash {
 namespace phonehub {
 
+using ::chromeos::multidevice_setup::mojom::Feature;
+using ::chromeos::multidevice_setup::mojom::FeatureState;
+
 const size_t kMaxMostRecentApps = 5;
 
 // static
@@ -21,10 +24,16 @@ void RecentAppsInteractionHandlerImpl::RegisterPrefs(
 }
 
 RecentAppsInteractionHandlerImpl::RecentAppsInteractionHandlerImpl(
-    PrefService* pref_service)
-    : pref_service_(pref_service) {}
+    PrefService* pref_service,
+    multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client)
+    : pref_service_(pref_service),
+      multidevice_setup_client_(multidevice_setup_client) {
+  multidevice_setup_client_->AddObserver(this);
+}
 
-RecentAppsInteractionHandlerImpl::~RecentAppsInteractionHandlerImpl() = default;
+RecentAppsInteractionHandlerImpl::~RecentAppsInteractionHandlerImpl() {
+  multidevice_setup_client_->RemoveObserver(this);
+}
 
 void RecentAppsInteractionHandlerImpl::AddRecentAppClickObserver(
     RecentAppClickObserver* observer) {
@@ -76,6 +85,7 @@ void RecentAppsInteractionHandlerImpl::NotifyRecentAppAddedOrUpdated(
             });
 
   SaveRecentAppMetadataListToPref();
+  ComputeAndUpdateUiState();
 }
 
 std::vector<Notification::AppMetadata>
@@ -117,6 +127,27 @@ void RecentAppsInteractionHandlerImpl::SaveRecentAppMetadataListToPref() {
   }
   pref_service_->Set(prefs::kRecentAppsHistory,
                      base::Value(std::move(app_metadata_value_list)));
+}
+
+void RecentAppsInteractionHandlerImpl::OnFeatureStatesChanged(
+    const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
+        feature_states_map) {
+  ComputeAndUpdateUiState();
+}
+
+void RecentAppsInteractionHandlerImpl::ComputeAndUpdateUiState() {
+  // Hide the recent apps UI if the Eche feature is disabled by user.
+  FeatureState feature_state =
+      multidevice_setup_client_->GetFeatureState(Feature::kEche);
+  if (feature_state != FeatureState::kEnabledByUser) {
+    ui_state_ = RecentAppsUiState::HIDDEN;
+  } else {
+    LoadRecentAppMetadataListFromPrefIfNeed();
+    ui_state_ = recent_app_metadata_list_.empty()
+                    ? RecentAppsUiState::PLACEHOLDER_VIEW
+                    : RecentAppsUiState::ITEMS_VISIBLE;
+  }
+  NotifyRecentAppsViewUiStateUpdated();
 }
 
 }  // namespace phonehub

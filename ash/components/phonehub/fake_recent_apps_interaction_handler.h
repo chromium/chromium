@@ -9,6 +9,7 @@
 
 #include "ash/components/phonehub/notification.h"
 #include "ash/components/phonehub/recent_apps_interaction_handler.h"
+#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 
 namespace ash {
 namespace phonehub {
@@ -21,6 +22,9 @@ class FakeRecentAppsInteractionHandler : public RecentAppsInteractionHandler {
   FakeRecentAppsInteractionHandler* operator=(
       const FakeRecentAppsInteractionHandler&) = delete;
   ~FakeRecentAppsInteractionHandler() override;
+
+  void OnFeatureStateChanged(
+      chromeos::multidevice_setup::mojom::FeatureState feature_state);
 
   size_t HandledRecentAppsCount(const std::string& package_name) const {
     return package_name_to_click_count_.at(package_name);
@@ -40,7 +44,11 @@ class FakeRecentAppsInteractionHandler : public RecentAppsInteractionHandler {
   std::vector<Notification::AppMetadata> FetchRecentAppMetadataList() override;
 
  private:
+  void ComputeAndUpdateUiState();
+
   size_t recent_app_click_observer_count_ = 0;
+  chromeos::multidevice_setup::mojom::FeatureState feature_state_ =
+      chromeos::multidevice_setup::mojom::FeatureState::kDisabledByUser;
 
   std::vector<std::pair<Notification::AppMetadata, base::Time>>
       recent_apps_metadata_;

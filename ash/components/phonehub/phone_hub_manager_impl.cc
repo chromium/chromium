@@ -125,7 +125,9 @@ PhoneHubManagerImpl::PhoneHubManagerImpl(
           phone_model_.get())),
       recent_apps_interaction_handler_(
           features::IsPhoneHubRecentAppsEnabled()
-              ? std::make_unique<RecentAppsInteractionHandlerImpl>(pref_service)
+              ? std::make_unique<RecentAppsInteractionHandlerImpl>(
+                    pref_service,
+                    multidevice_setup_client)
               : nullptr),
       tether_controller_(
           std::make_unique<TetherControllerImpl>(phone_model_.get(),
