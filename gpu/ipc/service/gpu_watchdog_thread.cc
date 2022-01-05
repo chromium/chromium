@@ -36,9 +36,6 @@
 #endif
 
 namespace gpu {
-namespace {
-constexpr int64_t kDelayForAddPowerObserverInMs = 50;
-}
 
 base::TimeDelta GetGpuWatchdogTimeout() {
   std::string timeout_str =
@@ -176,14 +173,11 @@ void GpuWatchdogThread::OnInitComplete() {
                                 base::Unretained(this)));
   Disarm();
 
-  // Use a delayed task for AddPowerObserver. The PowerMonitor is initialized in
-  // ChildThreadImpl::Init right after GpuInit::InitializeAndStartSandbox which
-  // calls OnInitComplete() at the end if no errors.
-  task_runner()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&GpuWatchdogThread::AddPowerObserver,
-                     base::Unretained(this)),
-      base::Milliseconds(kDelayForAddPowerObserverInMs));
+  // The PowerMonitorObserver needs to be register on the watchdog thread so the
+  // notifications are delivered on that thread.
+  task_runner()->PostTask(FROM_HERE,
+                          base::BindOnce(&GpuWatchdogThread::AddPowerObserver,
+                                         base::Unretained(this)));
 }
 
 // Called from the gpu thread in viz::GpuServiceImpl::~GpuServiceImpl().
@@ -296,26 +290,12 @@ void GpuWatchdogThread::OnResume() {
 void GpuWatchdogThread::AddPowerObserver() {
   DCHECK(watchdog_thread_task_runner_->BelongsToCurrentThread());
 
-  // The Observer can only be added after the power monitor is initialized.
-  // When this function is called, PowerMonitor is probably ready.
-  if (base::PowerMonitor::IsInitialized()) {
-    bool is_system_suspended =
-        base::PowerMonitor::AddPowerSuspendObserverAndReturnSuspendedState(
-            this);
-    if (is_system_suspended) {
-      StopWatchdogTimeoutTask(kPowerSuspendResume);
-    }
-
-    is_power_observer_added_ = true;
-  } else {
-    // Just in case PowerMonitor is not ready.
-    // It usually takes hundreds of milliseconds to finish the whole GPU
-    // initialization. Try again in 100 ms.
-    task_runner()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(&GpuWatchdogThread::AddPowerObserver, weak_ptr_),
-        base::Milliseconds(100));
-  }
+  // Adding the Observer to the power monitor is safe even if power monitor is
+  // not yet initialized.
+  bool is_system_suspended =
+      base::PowerMonitor::AddPowerSuspendObserverAndReturnSuspendedState(this);
+  if (is_system_suspended)
+    StopWatchdogTimeoutTask(kPowerSuspendResume);
 }
 
 // Running on the watchdog thread.
@@ -631,7 +611,6 @@ void GpuWatchdogThread::DeliberatelyTerminateToRecoverFromHang() {
   base::debug::Alias(&in_power_suspension_);
   base::debug::Alias(&in_gpu_process_teardown_);
   base::debug::Alias(&is_backgrounded_);
-  base::debug::Alias(&is_power_observer_added_);
   base::debug::Alias(&last_on_watchdog_timeout_timeticks_);
   base::TimeDelta timeticks_elapses =
       function_begin_timeticks - last_on_watchdog_timeout_timeticks_;
@@ -778,19 +757,6 @@ bool GpuWatchdogThread::ContinueOnNonHostX11ServerTty() {
 bool GpuWatchdogThread::IsGpuHangDetectedForTesting() {
   DCHECK(is_test_mode_);
   return test_result_timeout_and_gpu_hang_.IsSet();
-}
-
-// This should be called on the test main thread only. It will wait until the
-// power observer is added on the watchdog thread.
-void GpuWatchdogThread::WaitForPowerObserverAddedForTesting() {
-  DCHECK(watched_gpu_task_runner_->BelongsToCurrentThread());
-
-  base::WaitableEvent event;
-  task_runner()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&base::WaitableEvent::Signal, base::Unretained(&event)),
-      base::Milliseconds(kDelayForAddPowerObserverInMs));
-  event.Wait();
 }
 
 }  // namespace gpu
