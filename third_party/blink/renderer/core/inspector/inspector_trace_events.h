@@ -527,7 +527,7 @@ void Data(perfetto::TracedValue context);
 }
 
 namespace inspector_invalidate_layout_event {
-void Data(perfetto::TracedValue context, LocalFrame*);
+void Data(perfetto::TracedValue context, LocalFrame*, DOMNodeId);
 }
 
 namespace inspector_recalculate_styles_event {

@@ -1348,9 +1348,11 @@ void inspector_update_counters_event::Data(perfetto::TracedValue context) {
 }
 
 void inspector_invalidate_layout_event::Data(perfetto::TracedValue context,
-                                             LocalFrame* frame) {
+                                             LocalFrame* frame,
+                                             DOMNodeId nodeId) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("frame", IdentifiersFactory::FrameId(frame));
+  dict.Add("nodeId", nodeId);
   SetCallStack(dict);
 }
 

@@ -1562,7 +1562,8 @@ void LocalFrameView::ScheduleRelayout() {
     return;
   DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT_WITH_CATEGORIES(
       TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "InvalidateLayout",
-      inspector_invalidate_layout_event::Data, frame_.Get());
+      inspector_invalidate_layout_event::Data, frame_.Get(),
+      GetLayoutView()->OwnerNodeId());
 
   ClearLayoutSubtreeRootsAndMarkContainingBlocks();
 
@@ -1610,7 +1611,8 @@ void LocalFrameView::ScheduleRelayoutOfSubtree(LayoutObject* relayout_root) {
   }
   DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT_WITH_CATEGORIES(
       TRACE_DISABLED_BY_DEFAULT("devtools.timeline"), "InvalidateLayout",
-      inspector_invalidate_layout_event::Data, frame_.Get());
+      inspector_invalidate_layout_event::Data, frame_.Get(),
+      relayout_root->OwnerNodeId());
 }
 
 bool LocalFrameView::LayoutPending() const {
