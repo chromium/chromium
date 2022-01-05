@@ -313,13 +313,7 @@ uint32_t GetURLLoaderOptions(bool is_main_frame, bool is_in_fenced_frame_tree) {
   // Ensure that Mime sniffing works.
   options |= network::mojom::kURLLoadOptionSniffMimeType;
 
-  if (is_in_fenced_frame_tree) {
-    // Fenced frames cannot have any credentialed requests.
-    // TODO(https://crbug.com/1229638): Once cookies partitioning is in place,
-    // consider using a unique partition for those cookies instead of blocking.
-    // For unpartitioned cookies though, we will continue to block them.
-    options |= network::mojom::kURLLoadOptionBlockAllCookies;
-  } else if (is_main_frame) {
+  if (is_main_frame && !is_in_fenced_frame_tree) {
     // SSLInfo is not needed on subframe or fenced frame responses because users
     // can inspect only the certificate for the main frame when using the info
     // bubble.

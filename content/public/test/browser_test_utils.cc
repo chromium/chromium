@@ -1985,7 +1985,8 @@ bool ExecuteWebUIResourceTest(WebContents* web_contents) {
 
 std::string GetCookies(BrowserContext* browser_context,
                        const GURL& url,
-                       net::CookieOptions::SameSiteCookieContext context) {
+                       net::CookieOptions::SameSiteCookieContext context,
+                       net::CookiePartitionKeyCollection key_collection) {
   std::string cookies;
   base::RunLoop run_loop;
   mojo::Remote<network::mojom::CookieManager> cookie_manager;
@@ -1995,7 +1996,7 @@ std::string GetCookies(BrowserContext* browser_context,
   net::CookieOptions options;
   options.set_same_site_cookie_context(context);
   cookie_manager->GetCookieList(
-      url, options, net::CookiePartitionKeyCollection(),
+      url, options, key_collection,
       base::BindOnce(
           [](std::string* cookies_out, base::RunLoop* run_loop,
              const net::CookieAccessResultList& cookies,
@@ -2010,7 +2011,8 @@ std::string GetCookies(BrowserContext* browser_context,
 
 std::vector<net::CanonicalCookie> GetCanonicalCookies(
     BrowserContext* browser_context,
-    const GURL& url) {
+    const GURL& url,
+    net::CookiePartitionKeyCollection key_collection) {
   std::vector<net::CanonicalCookie> cookies;
   base::RunLoop run_loop;
   mojo::Remote<network::mojom::CookieManager> cookie_manager;
@@ -2022,7 +2024,7 @@ std::vector<net::CanonicalCookie> GetCanonicalCookies(
   options.set_same_site_cookie_context(
       net::CookieOptions::SameSiteCookieContext::MakeInclusive());
   cookie_manager->GetCookieList(
-      url, options, net::CookiePartitionKeyCollection(),
+      url, options, key_collection,
       base::BindOnce(
           [](base::RunLoop* run_loop,
              std::vector<net::CanonicalCookie>* cookies_out,

@@ -105,6 +105,10 @@ class NET_EXPORT CookiePartitionKey {
 
   const absl::optional<base::UnguessableToken>& nonce() const { return nonce_; }
 
+  static bool HasNonce(const absl::optional<CookiePartitionKey>& key) {
+    return key && key->nonce();
+  }
+
  private:
   explicit CookiePartitionKey(const SchemefulSite& site,
                               absl::optional<base::UnguessableToken> nonce);

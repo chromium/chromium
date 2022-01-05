@@ -511,6 +511,29 @@ TEST(CanonicalCookieTest, CreateWithPartitioned) {
   EXPECT_FALSE(cookie.get());
   EXPECT_TRUE(status.HasExactlyExclusionReasonsForTesting(
       {CookieInclusionStatus::EXCLUDE_INVALID_PARTITIONED}));
+
+  // Invalid Partitioned attribute: SameParty cookie but with a nonce.
+  auto partition_key_with_nonce =
+      absl::make_optional(CookiePartitionKey::FromURLForTesting(
+          GURL("https://toplevelsite.com"), base::UnguessableToken::Create()));
+  status = CookieInclusionStatus();
+  cookie = CanonicalCookie::Create(
+      url, "A=2; Partitioned; Path=/; Secure; SameParty", creation_time,
+      server_time, partition_key_with_nonce, &status);
+  EXPECT_TRUE(cookie.get());
+  EXPECT_TRUE(status.IsInclude());
+  EXPECT_TRUE(cookie->IsPartitioned());
+  EXPECT_EQ(partition_key_with_nonce, cookie->PartitionKey());
+
+  // No Partitioned attribute but with a nonce.
+  status = CookieInclusionStatus();
+  cookie =
+      CanonicalCookie::Create(url, "__Host-A=2; Path=/; Secure", creation_time,
+                              server_time, partition_key_with_nonce, &status);
+  EXPECT_TRUE(cookie.get());
+  EXPECT_TRUE(status.IsInclude());
+  EXPECT_TRUE(cookie->IsPartitioned());
+  EXPECT_EQ(partition_key_with_nonce, cookie->PartitionKey());
 }
 
 TEST(CanonicalCookieTest, CreateWithMaxAge) {

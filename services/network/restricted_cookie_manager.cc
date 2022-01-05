@@ -25,6 +25,7 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_inclusion_status.h"
 #include "net/cookies/cookie_options.h"
+#include "net/cookies/cookie_partition_key.h"
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_util.h"
 #include "net/cookies/same_party_context.h"
@@ -568,6 +569,13 @@ void RestrictedCookieManager::SetCanonicalCookie(
   // equal to RestrictedCookieManager's partition key.
   absl::optional<net::CookiePartitionKey> cookie_partition_key =
       cookie.PartitionKey();
+
+  // If the `cookie_partition_key_` has a nonce then force all cookie writes to
+  // be in the nonce based partition even if the cookie was not set with the
+  // Partitioned attribute.
+  if (net::CookiePartitionKey::HasNonce(cookie_partition_key_)) {
+    cookie_partition_key = cookie_partition_key_;
+  }
   if (cookie_partition_key) {
     // RestrictedCookieManager having a null partition key strictly implies the
     // feature is disabled. If that is the case, we treat the cookie as
@@ -576,8 +584,8 @@ void RestrictedCookieManager::SetCanonicalCookie(
       cookie_partition_key = absl::nullopt;
     } else {
       bool cookie_partition_key_ok =
-          cookie.PartitionKey()->from_script() ||
-          cookie.PartitionKey().value() == cookie_partition_key_.value();
+          cookie_partition_key->from_script() ||
+          cookie_partition_key.value() == cookie_partition_key_.value();
       UMA_HISTOGRAM_BOOLEAN("Net.RestrictedCookieManager.CookiePartitionKeyOK",
                             cookie_partition_key_ok);
       if (!cookie_partition_key_ok) {
@@ -586,7 +594,7 @@ void RestrictedCookieManager::SetCanonicalCookie(
         std::move(callback).Run(false);
         return;
       }
-      if (cookie.PartitionKey()->from_script()) {
+      if (cookie_partition_key->from_script()) {
         cookie_partition_key = cookie_partition_key_;
       }
     }

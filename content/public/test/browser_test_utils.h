@@ -42,6 +42,7 @@
 #include "ipc/message_filter.h"
 #include "net/base/load_flags.h"
 #include "net/cookies/cookie_options.h"
+#include "net/cookies/cookie_partition_key_collection.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "storage/common/file_system/file_system_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -924,12 +925,16 @@ std::string GetCookies(
     BrowserContext* browser_context,
     const GURL& url,
     net::CookieOptions::SameSiteCookieContext context =
-        net::CookieOptions::SameSiteCookieContext::MakeInclusive());
+        net::CookieOptions::SameSiteCookieContext::MakeInclusive(),
+    net::CookiePartitionKeyCollection key_collection =
+        net::CookiePartitionKeyCollection::ContainsAll());
 
 // Returns the canonical cookies for the given url.
 std::vector<net::CanonicalCookie> GetCanonicalCookies(
     BrowserContext* browser_context,
-    const GURL& url);
+    const GURL& url,
+    net::CookiePartitionKeyCollection key_collection =
+        net::CookiePartitionKeyCollection::ContainsAll());
 
 // Sets a cookie for the given url. Uses inclusive SameSiteCookieContext and
 // SamePartyContext::Type by default, which get cookies regardless of their

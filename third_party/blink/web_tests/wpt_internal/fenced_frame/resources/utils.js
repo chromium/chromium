@@ -109,6 +109,8 @@ const KEYS = {
   "resize_lock_report_inner_dimensions"         : "00000000-0000-0000-0000-00000000004A",
 
   "csp"                                         : "00000000-0000-0000-0000-00000000004B",
+
+  "cookie_value"                                : "00000000-0000-0000-0000-00000000004C",
   // Add keys above this list, incrementing the key UUID in hexadecimal
 }
 
