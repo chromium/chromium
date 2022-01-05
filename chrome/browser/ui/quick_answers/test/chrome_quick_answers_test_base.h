@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_TEST_CHROME_QUICK_ANSWERS_TEST_BASE_H_
-#define CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_TEST_CHROME_QUICK_ANSWERS_TEST_BASE_H_
+#ifndef CHROME_BROWSER_UI_QUICK_ANSWERS_TEST_CHROME_QUICK_ANSWERS_TEST_BASE_H_
+#define CHROME_BROWSER_UI_QUICK_ANSWERS_TEST_CHROME_QUICK_ANSWERS_TEST_BASE_H_
 
 #include "chrome/test/base/chrome_ash_test_base.h"
 
-namespace ash {
 class QuickAnswersController;
-}  // namespace ash
 
 namespace ui {
 class SimpleMenuModel;
@@ -46,7 +44,7 @@ class ChromeQuickAnswersTestBase : public ChromeAshTestBase {
   std::unique_ptr<views::MenuRunner> menu_runner_;
   std::unique_ptr<views::Widget> menu_parent_;
 
-  std::unique_ptr<ash::QuickAnswersController> quick_answers_controller_;
+  std::unique_ptr<QuickAnswersController> quick_answers_controller_;
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_TEST_CHROME_QUICK_ANSWERS_TEST_BASE_H_
+#endif  // CHROME_BROWSER_UI_QUICK_ANSWERS_TEST_CHROME_QUICK_ANSWERS_TEST_BASE_H_

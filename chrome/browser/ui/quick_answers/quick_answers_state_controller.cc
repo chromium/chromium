@@ -2,15 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/quick_answers/quick_answers_state_controller.h"
+#include "chrome/browser/ui/quick_answers/quick_answers_state_controller.h"
 
 #include "ash/public/cpp/assistant/assistant_state.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "chromeos/services/assistant/public/cpp/assistant_prefs.h"
 #include "components/prefs/pref_service.h"
-
-namespace ash {
 
 namespace {
 
@@ -56,9 +54,7 @@ QuickAnswersStateController::~QuickAnswersStateController() = default;
 
 void QuickAnswersStateController::OnFirstSessionStarted() {
   PrefService* prefs =
-      Shell::Get()->session_controller()->GetPrimaryUserPrefService();
+      ash::Shell::Get()->session_controller()->GetPrimaryUserPrefService();
   state_.RegisterPrefChanges(prefs);
   MigrateQuickAnswersConsentStatus(prefs);
 }
-
-}  // namespace ash

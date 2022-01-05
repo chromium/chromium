@@ -13,7 +13,6 @@
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
-namespace ash {
 namespace quick_answers {
 
 // Interaction with the consent-view (used for logging).
@@ -211,6 +210,5 @@ struct QuickAnswersRequest {
 };
 
 }  // namespace quick_answers
-}  // namespace ash
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_QUICK_ANSWERS_MODEL_H_

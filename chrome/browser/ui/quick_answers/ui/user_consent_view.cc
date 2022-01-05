@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/quick_answers/ui/user_consent_view.h"
+#include "chrome/browser/ui/quick_answers/ui/user_consent_view.h"
 
 #include "base/bind.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#include "chrome/browser/ui/ash/quick_answers/quick_answers_ui_controller.h"
+#include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
@@ -30,7 +30,6 @@
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
-namespace ash {
 namespace quick_answers {
 
 using ::ash::AccessibilityManager;
@@ -359,4 +358,3 @@ void UserConsentView::UpdateWidgetBounds() {
 }
 
 }  // namespace quick_answers
-}  // namespace ash

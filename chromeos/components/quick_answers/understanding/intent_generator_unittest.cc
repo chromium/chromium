@@ -19,7 +19,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
 namespace quick_answers {
 namespace {
 
@@ -487,4 +486,3 @@ TEST_F(IntentGeneratorTest, TextAnnotationIntentUnSupportedEntity) {
   EXPECT_EQ("the unfathomable reaches of space", intent_info_.intent_text);
 }
 }  // namespace quick_answers
-}  // namespace ash

@@ -11,7 +11,6 @@ namespace base {
 class Value;
 }  // namespace base
 
-namespace ash {
 namespace quick_answers {
 
 class KpEntityResultParser : public ResultParser {
@@ -21,6 +20,5 @@ class KpEntityResultParser : public ResultParser {
 };
 
 }  // namespace quick_answers
-}  // namespace ash
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_SEARCH_RESULT_PARSERS_KP_ENTITY_RESULT_PARSER_H_

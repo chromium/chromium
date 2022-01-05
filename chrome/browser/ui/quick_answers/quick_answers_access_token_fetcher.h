@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_QUICK_ANSWERS_ACCESS_TOKEN_FETCHER_H_
-#define CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_QUICK_ANSWERS_ACCESS_TOKEN_FETCHER_H_
+#ifndef CHROME_BROWSER_UI_QUICK_ANSWERS_QUICK_ANSWERS_ACCESS_TOKEN_FETCHER_H_
+#define CHROME_BROWSER_UI_QUICK_ANSWERS_QUICK_ANSWERS_ACCESS_TOKEN_FETCHER_H_
 
 #include <string>
 #include <vector>
@@ -61,4 +61,4 @@ class QuickAnswersAccessTokenFetcher {
   base::WeakPtrFactory<QuickAnswersAccessTokenFetcher> weak_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_QUICK_ANSWERS_ACCESS_TOKEN_FETCHER_H_
+#endif  // CHROME_BROWSER_UI_QUICK_ANSWERS_QUICK_ANSWERS_ACCESS_TOKEN_FETCHER_H_

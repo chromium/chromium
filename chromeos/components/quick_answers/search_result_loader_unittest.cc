@@ -19,7 +19,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
 namespace quick_answers {
 namespace {
 
@@ -89,7 +88,7 @@ TEST_F(SearchResultLoaderTest, Success) {
   loader_->Fetch(PreprocessRequest(IntentInfo("23cm", IntentType::kUnknown)));
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
-      assistant::kKnowledgeApiEndpoint, kValidResponse, net::HTTP_OK,
+      ash::assistant::kKnowledgeApiEndpoint, kValidResponse, net::HTTP_OK,
       network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
   base::RunLoop().RunUntilIdle();
 }
@@ -100,7 +99,7 @@ TEST_F(SearchResultLoaderTest, NetworkError) {
   loader_->Fetch(PreprocessRequest(IntentInfo("23cm", IntentType::kUnknown)));
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
-      assistant::kKnowledgeApiEndpoint, std::string(), net::HTTP_NOT_FOUND,
+      ash::assistant::kKnowledgeApiEndpoint, std::string(), net::HTTP_NOT_FOUND,
       network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
   base::RunLoop().RunUntilIdle();
 }
@@ -111,11 +110,10 @@ TEST_F(SearchResultLoaderTest, EmptyResponse) {
   loader_->Fetch(PreprocessRequest(IntentInfo("23cm", IntentType::kUnknown)));
 
   test_url_loader_factory_.SimulateResponseForPendingRequest(
-      assistant::kKnowledgeApiEndpoint, std::string(), net::HTTP_OK,
+      ash::assistant::kKnowledgeApiEndpoint, std::string(), net::HTTP_OK,
       network::TestURLLoaderFactory::ResponseMatchFlags::kUrlMatchPrefix);
 
   base::RunLoop().RunUntilIdle();
 }
 
 }  // namespace quick_answers
-}  // namespace ash

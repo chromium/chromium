@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
+#include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/ui/ash/quick_answers/quick_answers_ui_controller.h"
+#include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -16,13 +16,13 @@
 
 namespace {
 
-using ::ash::quick_answers::Context;
-using ::ash::quick_answers::IntentType;
-using ::ash::quick_answers::QuickAnswer;
-using ::ash::quick_answers::QuickAnswersClient;
-using ::ash::quick_answers::QuickAnswersExitPoint;
-using ::ash::quick_answers::QuickAnswersRequest;
-using ::ash::quick_answers::ResultType;
+using ::quick_answers::Context;
+using ::quick_answers::IntentType;
+using ::quick_answers::QuickAnswer;
+using ::quick_answers::QuickAnswersClient;
+using ::quick_answers::QuickAnswersExitPoint;
+using ::quick_answers::QuickAnswersRequest;
+using ::quick_answers::ResultType;
 
 constexpr char kQuickAnswersSettingsUrl[] =
     "chrome://os-settings/osSearch/search";
@@ -47,29 +47,27 @@ std::u16string IntentTypeToString(IntentType intent_type) {
 // Returns if the request has already been processed (by the text annotator).
 bool IsProcessedRequest(const QuickAnswersRequest& request) {
   return (request.preprocessed_output.intent_info.intent_type !=
-          ash::quick_answers::IntentType::kUnknown);
+          quick_answers::IntentType::kUnknown);
 }
 
 bool ShouldShowQuickAnswers() {
-  if (!ash::QuickAnswersState::Get()->is_eligible())
+  if (!QuickAnswersState::Get()->is_eligible())
     return false;
 
-  bool settings_enabled = ash::QuickAnswersState::Get()->settings_enabled();
+  bool settings_enabled = QuickAnswersState::Get()->settings_enabled();
   // Respect the managed settings.
-  if (ash::QuickAnswersState::Get()->IsSettingsEnforced())
+  if (QuickAnswersState::Get()->IsSettingsEnforced())
     return settings_enabled;
 
   if (settings_enabled)
     return true;
 
-  bool should_show_consent = ash::QuickAnswersState::Get()->consent_status() ==
-                             ash::quick_answers::prefs::ConsentStatus::kUnknown;
+  bool should_show_consent = QuickAnswersState::Get()->consent_status() ==
+                             quick_answers::prefs::ConsentStatus::kUnknown;
   return should_show_consent;
 }
 
 }  // namespace
-
-namespace ash {
 
 QuickAnswersControllerImpl::QuickAnswersControllerImpl()
     : quick_answers_ui_controller_(
@@ -104,7 +102,7 @@ void QuickAnswersControllerImpl::MaybeShowQuickAnswers(
   quick_answer_.reset();
 
   QuickAnswersRequest request = BuildRequest();
-  if (ash::QuickAnswersState::Get()->ShouldUseQuickAnswersTextAnnotator()) {
+  if (QuickAnswersState::Get()->ShouldUseQuickAnswersTextAnnotator()) {
     // Send the request for preprocessing. Only shows quick answers view if the
     // predicted intent is not |kUnknown| at |OnRequestPreprocessFinish|.
     quick_answers_client_->SendRequestForPreprocessing(request);
@@ -206,7 +204,7 @@ void QuickAnswersControllerImpl::OnNetworkError() {
 
 void QuickAnswersControllerImpl::OnRequestPreprocessFinished(
     const QuickAnswersRequest& processed_request) {
-  if (!ash::QuickAnswersState::Get()->ShouldUseQuickAnswersTextAnnotator()) {
+  if (!QuickAnswersState::Get()->ShouldUseQuickAnswersTextAnnotator()) {
     // Ignore preprocessing result if text annotator is not enabled.
     return;
   }
@@ -234,7 +232,7 @@ void QuickAnswersControllerImpl::RequestAccessToken(
 
 void QuickAnswersControllerImpl::OnRetryQuickAnswersRequest() {
   QuickAnswersRequest request = BuildRequest();
-  if (ash::QuickAnswersState::Get()->ShouldUseQuickAnswersTextAnnotator()) {
+  if (QuickAnswersState::Get()->ShouldUseQuickAnswersTextAnnotator()) {
     quick_answers_client_->SendRequestForPreprocessing(request);
   } else {
     quick_answers_client_->SendRequest(request);
@@ -259,7 +257,7 @@ void QuickAnswersControllerImpl::SetPendingShowQuickAnswers() {
 void QuickAnswersControllerImpl::OnUserConsentResult(bool consented) {
   quick_answers_ui_controller_->CloseUserConsentView();
 
-  ash::QuickAnswersState::Get()->OnConsentResult(
+  QuickAnswersState::Get()->OnConsentResult(
       consented ? ConsentResultType::kAllow : ConsentResultType::kNoThanks);
 
   if (consented) {
@@ -270,13 +268,14 @@ void QuickAnswersControllerImpl::OnUserConsentResult(bool consented) {
 }
 
 void QuickAnswersControllerImpl::OpenQuickAnswersSettings() {
-  NewWindowDelegate::GetInstance()->OpenUrl(GURL(kQuickAnswersSettingsUrl),
-                                            /*from_user_interaction=*/true);
+  ash::NewWindowDelegate::GetInstance()->OpenUrl(
+      GURL(kQuickAnswersSettingsUrl),
+      /*from_user_interaction=*/true);
 }
 
 void QuickAnswersControllerImpl::MaybeDismissQuickAnswersConsent() {
   if (quick_answers_ui_controller_->is_showing_user_consent_view())
-    ash::QuickAnswersState::Get()->OnConsentResult(ConsentResultType::kDismiss);
+    QuickAnswersState::Get()->OnConsentResult(ConsentResultType::kDismiss);
   quick_answers_ui_controller_->CloseUserConsentView();
 }
 
@@ -297,4 +296,3 @@ QuickAnswersRequest QuickAnswersControllerImpl::BuildRequest() {
   request.context = context_;
   return request;
 }
-}  // namespace ash

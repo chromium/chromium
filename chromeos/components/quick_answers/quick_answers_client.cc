@@ -12,7 +12,6 @@
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace ash {
 namespace quick_answers {
 namespace {
 
@@ -128,7 +127,7 @@ void QuickAnswersClient::IntentGeneratorCallback(
 
   delegate_->OnRequestPreprocessFinished(processed_request);
 
-  if (ash::QuickAnswersState::Get()->ShouldUseQuickAnswersTextAnnotator()) {
+  if (QuickAnswersState::Get()->ShouldUseQuickAnswersTextAnnotator()) {
     RecordIntentType(intent_info.intent_type);
     if (intent_info.intent_type == IntentType::kUnknown) {
       // Don't fetch answer if no intent is generated.
@@ -154,4 +153,3 @@ base::TimeDelta QuickAnswersClient::GetImpressionDuration() const {
 }
 
 }  // namespace quick_answers
-}  // namespace ash

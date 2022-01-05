@@ -2,20 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_QUICK_ANSWERS_CONTROLLER_IMPL_H_
-#define CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_QUICK_ANSWERS_CONTROLLER_IMPL_H_
+#ifndef CHROME_BROWSER_UI_QUICK_ANSWERS_QUICK_ANSWERS_CONTROLLER_IMPL_H_
+#define CHROME_BROWSER_UI_QUICK_ANSWERS_QUICK_ANSWERS_CONTROLLER_IMPL_H_
 
 #include <memory>
 #include <string>
 
-#include "chrome/browser/ui/ash/quick_answers/quick_answers_access_token_fetcher.h"
-#include "chrome/browser/ui/ash/quick_answers/quick_answers_state_controller.h"
+#include "chrome/browser/ui/quick_answers/quick_answers_access_token_fetcher.h"
+#include "chrome/browser/ui/quick_answers/quick_answers_state_controller.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "ui/gfx/geometry/rect.h"
-
-namespace ash {
 
 class QuickAnswersUiController;
 
@@ -119,5 +117,4 @@ class QuickAnswersControllerImpl : public QuickAnswersController,
   QuickAnswersVisibility visibility_ = QuickAnswersVisibility::kClosed;
 };
 
-}  // namespace ash
-#endif  // CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_QUICK_ANSWERS_CONTROLLER_IMPL_H_
+#endif  // CHROME_BROWSER_UI_QUICK_ANSWERS_QUICK_ANSWERS_CONTROLLER_IMPL_H_

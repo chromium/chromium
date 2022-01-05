@@ -14,7 +14,6 @@ namespace base {
 class Value;
 }  // namespace base
 
-namespace ash {
 namespace quick_answers {
 
 // Parser interface.
@@ -41,6 +40,5 @@ class ResultParserFactory {
 };
 
 }  // namespace quick_answers
-}  // namespace ash
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_SEARCH_RESULT_PARSERS_RESULT_PARSER_H_

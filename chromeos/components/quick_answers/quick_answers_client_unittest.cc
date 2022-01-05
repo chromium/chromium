@@ -21,7 +21,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
 namespace quick_answers {
 
 namespace {
@@ -266,4 +265,3 @@ TEST_F(QuickAnswersClientTest, PreprocessUnitConversionIntent) {
 }
 
 }  // namespace quick_answers
-}  // namespace ash

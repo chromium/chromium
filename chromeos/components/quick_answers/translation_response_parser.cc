@@ -11,7 +11,6 @@
 #include "chromeos/components/quick_answers/search_result_parsers/result_parser.h"
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 
-namespace ash {
 namespace quick_answers {
 
 TranslationResponseParser::TranslationResponseParser(
@@ -71,4 +70,3 @@ void TranslationResponseParser::OnJsonParsed(
 }
 
 }  // namespace quick_answers
-}  // namespace ash

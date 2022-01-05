@@ -19,7 +19,6 @@ class SimpleURLLoader;
 struct ResourceRequest;
 }  // namespace network
 
-namespace ash {
 namespace quick_answers {
 
 enum class IntentType;
@@ -115,6 +114,5 @@ class ResultLoader {
 };
 
 }  // namespace quick_answers
-}  // namespace ash
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_RESULT_LOADER_H_

@@ -6,7 +6,6 @@
 
 #include "components/prefs/pref_registry_simple.h"
 
-namespace ash {
 namespace quick_answers {
 namespace prefs {
 
@@ -63,4 +62,3 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 }  // namespace prefs
 }  // namespace quick_answers
-}  // namespace ash

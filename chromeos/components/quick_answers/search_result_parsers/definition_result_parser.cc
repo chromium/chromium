@@ -11,7 +11,6 @@
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 #include "url/gurl.h"
 
-namespace ash {
 namespace quick_answers {
 namespace {
 
@@ -134,4 +133,3 @@ GURL DefinitionResultParser::ExtractPhoneticsAudio(
 }
 
 }  // namespace quick_answers
-}  // namespace ash

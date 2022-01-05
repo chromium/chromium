@@ -11,7 +11,6 @@
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 #include "chromeos/components/quick_answers/utils/unit_conversion_constants.h"
 
-namespace ash {
 namespace quick_answers {
 namespace {
 
@@ -106,4 +105,3 @@ const Value* UnitConverter::GetPossibleUnitsForCategory(
 }
 
 }  // namespace quick_answers
-}  // namespace ash

@@ -9,7 +9,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 
-namespace ash {
 namespace quick_answers {
 
 namespace {
@@ -123,4 +122,3 @@ void RecordNetworkError(IntentType intent_type) {
 }
 
 }  // namespace quick_answers
-}  // namespace ash

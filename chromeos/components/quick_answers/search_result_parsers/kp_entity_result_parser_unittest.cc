@@ -12,7 +12,6 @@
 #include "chromeos/components/quick_answers/test/test_helpers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
 namespace quick_answers {
 namespace {
 using base::Value;
@@ -136,4 +135,3 @@ TEST_F(KpEntityResultParserTest, IncorrectPath) {
 }
 
 }  // namespace quick_answers
-}  // namespace ash

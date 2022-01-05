@@ -16,7 +16,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
 namespace quick_answers {
 
 struct QuickAnswersRequest;
@@ -68,6 +67,5 @@ class IntentGenerator {
 };
 
 }  // namespace quick_answers
-}  // namespace ash
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_UNDERSTANDING_INTENT_GENERATOR_H_

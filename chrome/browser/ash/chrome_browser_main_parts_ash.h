@@ -31,6 +31,7 @@ class AssistantBrowserDelegateImpl;
 class AssistantStateClient;
 class ChromeKeyboardControllerClient;
 class ImageDownloaderImpl;
+class QuickAnswersController;
 
 namespace arc {
 namespace data_snapshotd {
@@ -80,7 +81,6 @@ class LoginScreenExtensionsStorageCleaner;
 class LowDiskNotification;
 class PowerMetricsReporter;
 class PSIMemoryMetrics;
-class QuickAnswersController;
 class RendererFreezer;
 class SessionTerminationManager;
 class ShortcutMappingPrefService;
@@ -163,7 +163,7 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<NetworkThrottlingObserver> network_throttling_observer_;
   std::unique_ptr<NetworkChangeManagerClient> network_change_manager_client_;
   std::unique_ptr<DebugdNotificationHandler> debugd_notification_handler_;
-  std::unique_ptr<ash::QuickAnswersController> quick_answers_controller_;
+  std::unique_ptr<QuickAnswersController> quick_answers_controller_;
 
   std::unique_ptr<internal::DBusServices> dbus_services_;
 

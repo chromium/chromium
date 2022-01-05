@@ -24,7 +24,7 @@ class SearchTagRegistry;
 // feature and relevant flags are enabled/disabled.
 class SearchSection : public OsSettingsSection,
                       public ash::AssistantStateObserver,
-                      public ash::QuickAnswersStateObserver {
+                      public QuickAnswersStateObserver {
  public:
   SearchSection(Profile* profile, SearchTagRegistry* search_tag_registry);
   ~SearchSection() override;
@@ -46,7 +46,7 @@ class SearchSection : public OsSettingsSection,
   void OnAssistantSettingsEnabled(bool enabled) override;
   void OnAssistantHotwordEnabled(bool enabled) override;
 
-  // ash::QuickAnswersStateObserver:
+  // QuickAnswersStateObserver:
   void OnSettingsEnabled(bool enabled) override;
 
   bool IsAssistantAllowed() const;

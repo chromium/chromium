@@ -13,7 +13,6 @@
 #include "chromeos/services/machine_learning/public/mojom/text_classifier.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace ash {
 namespace quick_answers {
 
 // Utility class for language detection.
@@ -57,6 +56,5 @@ class LanguageDetector {
 };
 
 }  // namespace quick_answers
-}  // namespace ash
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_UTILS_LANGUAGE_DETECTOR_H_

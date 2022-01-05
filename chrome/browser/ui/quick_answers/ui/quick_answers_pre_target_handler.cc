@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_pre_target_handler.h"
+#include "chrome/browser/ui/quick_answers/ui/quick_answers_pre_target_handler.h"
 
 #include "base/containers/adapters.h"
-#include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_view.h"
-#include "chrome/browser/ui/ash/quick_answers/ui/user_consent_view.h"
+#include "chrome/browser/ui/quick_answers/ui/quick_answers_view.h"
+#include "chrome/browser/ui/quick_answers/ui/user_consent_view.h"
 #include "ui/aura/env.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -14,8 +14,6 @@
 #include "ui/views/focus/external_focus_tracker.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
-
-namespace ash {
 
 QuickAnswersPreTargetHandler::QuickAnswersPreTargetHandler(
     QuickAnswersView* view)
@@ -235,5 +233,3 @@ void QuickAnswersPreTargetHandler::ProcessKeyEvent(ui::KeyEvent* key_event) {
       return;
   }
 }
-
-}  // namespace ash

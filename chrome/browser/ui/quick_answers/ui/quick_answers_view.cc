@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_view.h"
+#include "chrome/browser/ui/quick_answers/ui/quick_answers_view.h"
 
 #include "base/bind.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/quick_answers/quick_answers_ui_controller.h"
-#include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_pre_target_handler.h"
+#include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
+#include "chrome/browser/ui/quick_answers/ui/quick_answers_pre_target_handler.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/vector_icons/vector_icons.h"
@@ -38,7 +38,6 @@
 #include "ui/views/widget/widget.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
-namespace ash {
 namespace {
 
 using quick_answers::QuickAnswer;
@@ -616,5 +615,3 @@ void QuickAnswersView::OnPhoneticsAudioButtonPressed(
     const GURL& phonetics_audio) {
   phonetics_audio_web_view_->LoadInitialURL(phonetics_audio);
 }
-
-}  // namespace ash

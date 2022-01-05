@@ -17,7 +17,6 @@
 #include "chromeos/services/machine_learning/public/mojom/text_classifier.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
 namespace quick_answers {
 namespace {
 
@@ -172,4 +171,3 @@ TEST_F(LanguageDetectorTest, DetectLanguageLowConfidence) {
 }
 
 }  // namespace quick_answers
-}  // namespace ash

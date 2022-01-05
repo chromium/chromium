@@ -14,7 +14,6 @@
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
 namespace quick_answers {
 
 class SearchResponseParserTest : public testing::Test {
@@ -151,4 +150,3 @@ TEST_F(SearchResponseParserTest, ProcessResponseInvalidXssiPrefix) {
 }
 
 }  // namespace quick_answers
-}  // namespace ash

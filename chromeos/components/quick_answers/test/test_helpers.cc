@@ -4,7 +4,6 @@
 
 #include "chromeos/components/quick_answers/test/test_helpers.h"
 
-namespace ash {
 namespace quick_answers {
 
 std::string GetQuickAnswerTextForTesting(
@@ -32,4 +31,3 @@ MockResultLoaderDelegate::MockResultLoaderDelegate() = default;
 MockResultLoaderDelegate::~MockResultLoaderDelegate() = default;
 
 }  // namespace quick_answers
-}  // namespace ash

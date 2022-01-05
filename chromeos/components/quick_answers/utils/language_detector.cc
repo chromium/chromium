@@ -8,7 +8,6 @@
 #include "base/metrics/field_trial_params.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace ash {
 namespace quick_answers {
 namespace {
 
@@ -76,4 +75,3 @@ void LanguageDetector::FindLanguagesForSurroundingTextCallback(
 }
 
 }  // namespace quick_answers
-}  // namespace ash

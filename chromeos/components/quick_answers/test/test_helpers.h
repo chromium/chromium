@@ -11,7 +11,6 @@
 #include "chromeos/components/quick_answers/utils/quick_answers_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-namespace ash {
 namespace quick_answers {
 
 std::string GetQuickAnswerTextForTesting(
@@ -62,6 +61,5 @@ MATCHER_P(PreprocessedOutputEqual, preprocessed_output, "") {
 }
 
 }  // namespace quick_answers
-}  // namespace ash
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_TEST_TEST_HELPERS_H_

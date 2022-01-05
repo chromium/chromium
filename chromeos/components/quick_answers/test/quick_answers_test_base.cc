@@ -4,8 +4,6 @@
 
 #include "chromeos/components/quick_answers/test/quick_answers_test_base.h"
 
-namespace ash {
-
 QuickAnswersTestBase::QuickAnswersTestBase() = default;
 
 QuickAnswersTestBase::~QuickAnswersTestBase() = default;
@@ -21,5 +19,3 @@ void QuickAnswersTestBase::TearDown() {
   quick_answers_state_.reset();
   testing::Test::TearDown();
 }
-
-}  // namespace ash

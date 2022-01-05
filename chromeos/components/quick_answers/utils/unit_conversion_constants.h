@@ -7,7 +7,6 @@
 
 #include <string>
 
-namespace ash {
 namespace quick_answers {
 
 extern const char kRuleSetPath[];
@@ -25,6 +24,5 @@ extern const char kUnitsPath[];
 std::string GetUnitDisplayText(const std::string& name);
 
 }  // namespace quick_answers
-}  // namespace ash
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_UTILS_UNIT_CONVERSION_CONSTANTS_H_

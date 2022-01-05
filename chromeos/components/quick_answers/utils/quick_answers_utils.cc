@@ -11,7 +11,6 @@
 #include "net/base/escape.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace ash {
 namespace quick_answers {
 
 namespace {
@@ -95,4 +94,3 @@ absl::optional<double> GetRatio(const double value1, const double value2) {
 }
 
 }  // namespace quick_answers
-}  // namespace ash

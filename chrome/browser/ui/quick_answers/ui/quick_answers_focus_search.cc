@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_focus_search.h"
-
-namespace ash {
+#include "chrome/browser/ui/quick_answers/ui/quick_answers_focus_search.h"
 
 QuickAnswersFocusSearch::QuickAnswersFocusSearch(
     views::View* view,
@@ -60,5 +58,3 @@ views::FocusTraversable* QuickAnswersFocusSearch::GetFocusTraversableParent() {
 views::View* QuickAnswersFocusSearch::GetFocusTraversableParentView() {
   return nullptr;
 }
-
-}  // namespace ash

@@ -16,8 +16,6 @@
 class PrefChangeRegistrar;
 class PrefService;
 
-namespace ash {
-
 // The consent will appear up to a total of 6 times.
 constexpr int kConsentImpressionCap = 6;
 // The consent need to show for at least 1 second to be counted.
@@ -126,7 +124,5 @@ class QuickAnswersState {
 
   base::ObserverList<QuickAnswersStateObserver> observers_;
 };
-
-}  // namespace ash
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_PUBLIC_CPP_QUICK_ANSWERS_STATE_H_

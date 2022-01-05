@@ -6,8 +6,6 @@
 
 #include "base/check_op.h"
 
-namespace ash {
-
 namespace {
 QuickAnswersController* g_instance = nullptr;
 }
@@ -25,4 +23,3 @@ QuickAnswersController::~QuickAnswersController() {
 QuickAnswersController* QuickAnswersController::Get() {
   return g_instance;
 }
-}  // namespace ash

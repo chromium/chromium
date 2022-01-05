@@ -7,7 +7,6 @@
 
 class PrefRegistrySimple;
 
-namespace ash {
 namespace quick_answers {
 namespace prefs {
 
@@ -38,6 +37,5 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 }  // namespace prefs
 }  // namespace quick_answers
-}  // namespace ash
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_PUBLIC_CPP_QUICK_ANSWERS_PREFS_H_

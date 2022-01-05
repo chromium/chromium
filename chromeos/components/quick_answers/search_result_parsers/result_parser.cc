@@ -10,7 +10,6 @@
 #include "chromeos/components/quick_answers/search_result_parsers/kp_entity_result_parser.h"
 #include "chromeos/components/quick_answers/search_result_parsers/unit_conversion_result_parser.h"
 
-namespace ash {
 namespace quick_answers {
 namespace {
 using base::Value;
@@ -57,4 +56,3 @@ std::unique_ptr<ResultParser> ResultParserFactory::Create(
 }
 
 }  // namespace quick_answers
-}  // namespace ash

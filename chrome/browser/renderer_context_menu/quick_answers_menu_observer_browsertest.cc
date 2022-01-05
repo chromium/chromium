@@ -30,7 +30,7 @@ class QuickAnswersMenuObserverTest : public InProcessBrowserTest {
   // InProcessBrowserTest overrides:
   void SetUpOnMainThread() override {
     Reset(false);
-    ash::QuickAnswersState::Get()->set_eligibility_for_testing(true);
+    QuickAnswersState::Get()->set_eligibility_for_testing(true);
   }
 
   void TearDownOnMainThread() override {
@@ -55,9 +55,7 @@ class QuickAnswersMenuObserverTest : public InProcessBrowserTest {
   }
 
   MockRenderViewContextMenu* menu() { return menu_.get(); }
-  ash::QuickAnswersController* controller() {
-    return ash::QuickAnswersController::Get();
-  }
+  QuickAnswersController* controller() { return QuickAnswersController::Get(); }
   QuickAnswersMenuObserver* observer() { return observer_.get(); }
 
  protected:
@@ -68,7 +66,7 @@ class QuickAnswersMenuObserverTest : public InProcessBrowserTest {
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(QuickAnswersMenuObserverTest, FeatureIneligible) {
-  ash::QuickAnswersState::Get()->set_eligibility_for_testing(false);
+  QuickAnswersState::Get()->set_eligibility_for_testing(false);
 
   content::ContextMenuParams params;
   params.selection_text = u"test";
@@ -76,12 +74,12 @@ IN_PROC_BROWSER_TEST_F(QuickAnswersMenuObserverTest, FeatureIneligible) {
   ShowMenu(params);
 
   // Quick Answers UI should stay hidden since the feature is not eligible.
-  ASSERT_EQ(ash::QuickAnswersVisibility::kClosed,
+  ASSERT_EQ(QuickAnswersVisibility::kClosed,
             controller()->GetVisibilityForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(QuickAnswersMenuObserverTest, PasswordField) {
-  ash::QuickAnswersState::Get()->set_eligibility_for_testing(true);
+  QuickAnswersState::Get()->set_eligibility_for_testing(true);
 
   content::ContextMenuParams params;
   params.input_field_type =
@@ -92,29 +90,29 @@ IN_PROC_BROWSER_TEST_F(QuickAnswersMenuObserverTest, PasswordField) {
 
   // Quick Answers UI should stay hidden since the input field is password
   // field.
-  ASSERT_EQ(ash::QuickAnswersVisibility::kClosed,
+  ASSERT_EQ(QuickAnswersVisibility::kClosed,
             controller()->GetVisibilityForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(QuickAnswersMenuObserverTest, NoSelectedText) {
-  ash::QuickAnswersState::Get()->set_eligibility_for_testing(true);
+  QuickAnswersState::Get()->set_eligibility_for_testing(true);
 
   content::ContextMenuParams params;
   ShowMenu(params);
 
   // Quick Answers UI should stay hidden since no text is selected.
-  ASSERT_EQ(ash::QuickAnswersVisibility::kClosed,
+  ASSERT_EQ(QuickAnswersVisibility::kClosed,
             controller()->GetVisibilityForTesting());
 }
 
 IN_PROC_BROWSER_TEST_F(QuickAnswersMenuObserverTest, QuickAnswersPending) {
-  ash::QuickAnswersState::Get()->set_eligibility_for_testing(true);
+  QuickAnswersState::Get()->set_eligibility_for_testing(true);
 
   content::ContextMenuParams params;
   params.selection_text = u"test";
   ShowMenu(params);
 
   // Quick Answers UI should be pending.
-  ASSERT_EQ(ash::QuickAnswersVisibility::kPending,
+  ASSERT_EQ(QuickAnswersVisibility::kPending,
             controller()->GetVisibilityForTesting());
 }

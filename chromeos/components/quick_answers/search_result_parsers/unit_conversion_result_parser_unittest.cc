@@ -14,7 +14,6 @@
 #include "chromeos/components/quick_answers/utils/unit_conversion_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
 namespace quick_answers {
 namespace {
 
@@ -217,4 +216,3 @@ TEST_F(UnitConversionResultParserTest,
 }
 
 }  // namespace quick_answers
-}  // namespace ash

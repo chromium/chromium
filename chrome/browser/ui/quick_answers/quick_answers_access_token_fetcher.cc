@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/quick_answers/quick_answers_access_token_fetcher.h"
+#include "chrome/browser/ui/quick_answers/quick_answers_access_token_fetcher.h"
 
 #include "base/logging.h"
 #include "base/rand_util.h"

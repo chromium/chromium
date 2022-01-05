@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_UI_QUICK_ANSWERS_PRE_TARGET_HANDLER_H_
-#define CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_UI_QUICK_ANSWERS_PRE_TARGET_HANDLER_H_
+#ifndef CHROME_BROWSER_UI_QUICK_ANSWERS_UI_QUICK_ANSWERS_PRE_TARGET_HANDLER_H_
+#define CHROME_BROWSER_UI_QUICK_ANSWERS_UI_QUICK_ANSWERS_PRE_TARGET_HANDLER_H_
 
 #include "ui/events/event_handler.h"
 #include "ui/views/view.h"
@@ -15,8 +15,6 @@ class LocatedEvent;
 namespace views {
 class ExternalFocusTracker;
 }  // namespace views
-
-namespace ash {
 
 class QuickAnswersView;
 
@@ -63,6 +61,4 @@ class QuickAnswersPreTargetHandler : public ui::EventHandler {
   std::unique_ptr<views::ExternalFocusTracker> external_focus_tracker_;
 };
 
-}  // namespace ash
-
-#endif  // CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_UI_QUICK_ANSWERS_PRE_TARGET_HANDLER_H_
+#endif  // CHROME_BROWSER_UI_QUICK_ANSWERS_UI_QUICK_ANSWERS_PRE_TARGET_HANDLER_H_

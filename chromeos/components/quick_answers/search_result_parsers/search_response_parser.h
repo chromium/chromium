@@ -15,7 +15,6 @@ namespace base {
 class Value;
 }  // namespace base
 
-namespace ash {
 namespace quick_answers {
 
 struct QuickAnswer;
@@ -47,6 +46,5 @@ class SearchResponseParser {
 };
 
 }  // namespace quick_answers
-}  // namespace ash
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_SEARCH_RESULT_PARSERS_SEARCH_RESPONSE_PARSER_H_

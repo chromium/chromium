@@ -16,7 +16,6 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "url/gurl.h"
 
-namespace ash {
 namespace quick_answers {
 namespace {
 
@@ -87,11 +86,11 @@ SearchResultLoader::~SearchResultLoader() = default;
 void SearchResultLoader::BuildRequest(
     const PreprocessedOutput& preprocessed_output,
     BuildRequestCallback callback) const {
-  GURL url = GURL(assistant::kKnowledgeApiEndpoint);
+  GURL url = GURL(ash::assistant::kKnowledgeApiEndpoint);
 
   // Add encoded request payload.
   url = net::AppendOrReplaceQueryParameter(
-      url, assistant::kPayloadParamName,
+      url, ash::assistant::kPayloadParamName,
       BuildSearchRequestPayload(preprocessed_output.query));
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
@@ -109,4 +108,3 @@ void SearchResultLoader::ProcessResponse(
 }
 
 }  // namespace quick_answers
-}  // namespace ash

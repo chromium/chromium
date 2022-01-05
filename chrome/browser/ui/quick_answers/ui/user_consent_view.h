@@ -2,20 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_UI_USER_CONSENT_VIEW_H_
-#define CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_UI_USER_CONSENT_VIEW_H_
+#ifndef CHROME_BROWSER_UI_QUICK_ANSWERS_UI_USER_CONSENT_VIEW_H_
+#define CHROME_BROWSER_UI_QUICK_ANSWERS_UI_USER_CONSENT_VIEW_H_
 
 #include <memory>
 
-#include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_focus_search.h"
-#include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_pre_target_handler.h"
+#include "chrome/browser/ui/quick_answers/ui/quick_answers_focus_search.h"
+#include "chrome/browser/ui/quick_answers/ui/quick_answers_pre_target_handler.h"
 #include "ui/views/view.h"
 
 namespace views {
 class LabelButton;
 }  // namespace views
-
-namespace ash {
 
 class QuickAnswersUiController;
 
@@ -74,6 +72,5 @@ class UserConsentView : public views::View {
 };
 
 }  // namespace quick_answers
-}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_UI_USER_CONSENT_VIEW_H_
+#endif  // CHROME_BROWSER_UI_QUICK_ANSWERS_UI_USER_CONSENT_VIEW_H_

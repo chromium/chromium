@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/quick_answers/quick_answers_ui_controller.h"
+#include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
 
 #include "ash/public/cpp/new_window_delegate.h"
 #include "base/bind.h"
 #include "base/strings/stringprintf.h"
-#include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
-#include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_view.h"
-#include "chrome/browser/ui/ash/quick_answers/ui/user_consent_view.h"
+#include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
+#include "chrome/browser/ui/quick_answers/ui/quick_answers_view.h"
+#include "chrome/browser/ui/quick_answers/ui/user_consent_view.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -18,8 +18,6 @@
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/widget/widget.h"
-
-namespace ash {
 
 namespace {
 
@@ -63,7 +61,7 @@ void QuickAnswersUiController::OnQuickAnswersViewPressed() {
   // Route dismissal through |controller_| for logging impressions.
   controller_->DismissQuickAnswers(QuickAnswersExitPoint::kQuickAnswersClick);
 
-  NewWindowDelegate::GetPrimary()->OpenUrl(
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
       GURL(kGoogleSearchUrlPrefix +
            net::EscapeUrlEncodedData(query_, /*use_plus=*/true)),
       /*from_user_interaction=*/true);
@@ -143,8 +141,8 @@ void QuickAnswersUiController::OnReportQueryButtonPressed() {
   controller_->DismissQuickAnswers(
       QuickAnswersExitPoint::kReportQueryButtonClick);
 
-  NewWindowDelegate::GetPrimary()->OpenFeedbackPage(
-      NewWindowDelegate::FeedbackSource::kFeedbackSourceQuickAnswers,
+  ash::NewWindowDelegate::GetPrimary()->OpenFeedbackPage(
+      ash::NewWindowDelegate::FeedbackSource::kFeedbackSourceQuickAnswers,
       base::StringPrintf(kFeedbackDescriptionTemplate, query_.c_str()));
 }
 
@@ -155,5 +153,3 @@ void QuickAnswersUiController::OnUserConsentResult(bool consented) {
   if (consented && quick_answers_view_)
     quick_answers_view_->RequestFocus();
 }
-
-}  // namespace ash

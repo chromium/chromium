@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/quick_answers/test/chrome_quick_answers_test_base.h"
+#include "chrome/browser/ui/quick_answers/test/chrome_quick_answers_test_base.h"
 
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
-#include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
+#include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -19,11 +19,10 @@ ChromeQuickAnswersTestBase::~ChromeQuickAnswersTestBase() = default;
 void ChromeQuickAnswersTestBase::SetUp() {
   ChromeAshTestBase::SetUp();
 
-  if (!ash::QuickAnswersController::Get())
-    quick_answers_controller_ =
-        std::make_unique<ash::QuickAnswersControllerImpl>();
+  if (!QuickAnswersController::Get())
+    quick_answers_controller_ = std::make_unique<QuickAnswersControllerImpl>();
 
-  ash::QuickAnswersState::Get()->RegisterPrefChanges(
+  QuickAnswersState::Get()->RegisterPrefChanges(
       ash::Shell::Get()->session_controller()->GetPrimaryUserPrefService());
 }
 

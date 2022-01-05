@@ -13,7 +13,6 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-namespace ash {
 namespace quick_answers {
 namespace {
 
@@ -115,4 +114,3 @@ void ResultLoader::OnResultParserComplete(
   delegate_->OnQuickAnswerReceived(std::move(quick_answer));
 }
 }  // namespace quick_answers
-}  // namespace ash

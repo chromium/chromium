@@ -2,13 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_view.h"
+#include "chrome/browser/ui/quick_answers/ui/quick_answers_view.h"
 
-#include "chrome/browser/ui/ash/quick_answers/quick_answers_controller_impl.h"
-#include "chrome/browser/ui/ash/quick_answers/quick_answers_ui_controller.h"
-#include "chrome/browser/ui/ash/quick_answers/test/chrome_quick_answers_test_base.h"
-
-namespace ash {
+#include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
+#include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
+#include "chrome/browser/ui/quick_answers/test/chrome_quick_answers_test_base.h"
 
 namespace {
 
@@ -63,5 +61,3 @@ TEST_F(QuickAnswersUiControllerTest, TearDownWhileConsentViewShowing) {
                                          std::u16string(), std::u16string());
   EXPECT_TRUE(ui_controller()->is_showing_user_consent_view());
 }
-
-}  // namespace ash

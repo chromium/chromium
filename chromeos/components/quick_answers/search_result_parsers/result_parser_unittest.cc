@@ -10,7 +10,6 @@
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
 namespace quick_answers {
 
 class ResultParserFactoryTest : public testing::Test {
@@ -37,4 +36,3 @@ TEST_F(ResultParserFactoryTest, UnsupportedType) {
 }
 
 }  // namespace quick_answers
-}  // namespace ash

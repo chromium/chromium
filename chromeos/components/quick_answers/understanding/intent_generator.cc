@@ -18,7 +18,6 @@
 #include "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace ash {
 namespace quick_answers {
 namespace {
 
@@ -137,7 +136,7 @@ IntentGenerator::~IntentGenerator() {
 }
 
 void IntentGenerator::GenerateIntent(const QuickAnswersRequest& request) {
-  if (ash::QuickAnswersState::Get()->ShouldUseQuickAnswersTextAnnotator()) {
+  if (QuickAnswersState::Get()->ShouldUseQuickAnswersTextAnnotator()) {
     // Load text classifier.
     chromeos::machine_learning::ServiceConnection::GetInstance()
         ->GetMachineLearningService()
@@ -192,9 +191,9 @@ void IntentGenerator::AnnotationCallback(
     if (it != intent_type_map.end()) {
       // Skip the entity if the corresponding intent type is disabled.
       bool definition_disabled =
-          !ash::QuickAnswersState::Get()->definition_enabled();
+          !QuickAnswersState::Get()->definition_enabled();
       bool unit_conversion_disabled =
-          !ash::QuickAnswersState::Get()->unit_conversion_enabled();
+          !QuickAnswersState::Get()->unit_conversion_enabled();
       if ((it->second == IntentType::kDictionary && definition_disabled) ||
           (it->second == IntentType::kUnit && unit_conversion_disabled)) {
         // Fallback to language detection for generating translation intent.
@@ -222,7 +221,7 @@ void IntentGenerator::MaybeGenerateTranslationIntent(
     const QuickAnswersRequest& request) {
   DCHECK(complete_callback_);
 
-  if (!ash::QuickAnswersState::Get()->translation_enabled() ||
+  if (!QuickAnswersState::Get()->translation_enabled() ||
       chromeos::features::IsQuickAnswersV2TranslationDisabled()) {
     std::move(complete_callback_)
         .Run(IntentInfo(request.selected_text, IntentType::kUnknown));
@@ -271,4 +270,3 @@ void IntentGenerator::LanguageDetectorCallback(
 }
 
 }  // namespace quick_answers
-}  // namespace ash

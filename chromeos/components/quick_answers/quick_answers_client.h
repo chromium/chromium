@@ -17,7 +17,6 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
-namespace ash {
 namespace quick_answers {
 
 struct QuickAnswer;
@@ -145,6 +144,5 @@ class QuickAnswersClient : public ResultLoader::ResultLoaderDelegate {
 };
 
 }  // namespace quick_answers
-}  // namespace ash
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_QUICK_ANSWERS_CLIENT_H_

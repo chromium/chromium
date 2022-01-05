@@ -10,8 +10,6 @@
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-
 // Helper class for Quick Answers related tests.
 class QuickAnswersTestBase : public testing::Test {
  public:
@@ -29,7 +27,5 @@ class QuickAnswersTestBase : public testing::Test {
  private:
   std::unique_ptr<QuickAnswersState> quick_answers_state_;
 };
-
-}  // namespace ash
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_TEST_QUICK_ANSWERS_TEST_BASE_H_

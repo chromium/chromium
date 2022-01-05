@@ -2,14 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_UI_QUICK_ANSWERS_FOCUS_SEARCH_H_
-#define CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_UI_QUICK_ANSWERS_FOCUS_SEARCH_H_
+#ifndef CHROME_BROWSER_UI_QUICK_ANSWERS_UI_QUICK_ANSWERS_FOCUS_SEARCH_H_
+#define CHROME_BROWSER_UI_QUICK_ANSWERS_UI_QUICK_ANSWERS_FOCUS_SEARCH_H_
 
 #include "base/callback.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/focus/focus_search.h"
-
-namespace ash {
 
 // This class manages the focus traversal order for elements inside
 // Quick-Answers related views.
@@ -47,6 +45,4 @@ class QuickAnswersFocusSearch : public views::FocusSearch,
   const GetFocusableViewsCallback get_focusable_views_callback_;
 };
 
-}  // namespace ash
-
-#endif  // CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_UI_QUICK_ANSWERS_FOCUS_SEARCH_H_
+#endif  // CHROME_BROWSER_UI_QUICK_ANSWERS_UI_QUICK_ANSWERS_FOCUS_SEARCH_H_

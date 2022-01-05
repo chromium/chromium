@@ -16,7 +16,6 @@ namespace network {
 class SharedURLLoaderFactory;
 }  // namespace network
 
-namespace ash {
 namespace quick_answers {
 
 class SearchResultLoader : public ResultLoader {
@@ -42,6 +41,5 @@ class SearchResultLoader : public ResultLoader {
 };
 
 }  // namespace quick_answers
-}  // namespace ash
 
 #endif  // CHROMEOS_COMPONENTS_QUICK_ANSWERS_SEARCH_RESULT_LOADER_H_

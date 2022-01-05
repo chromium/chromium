@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_UI_QUICK_ANSWERS_VIEW_H_
-#define CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_UI_QUICK_ANSWERS_VIEW_H_
+#ifndef CHROME_BROWSER_UI_QUICK_ANSWERS_UI_QUICK_ANSWERS_VIEW_H_
+#define CHROME_BROWSER_UI_QUICK_ANSWERS_UI_QUICK_ANSWERS_VIEW_H_
 
 #include <vector>
 
-#include "chrome/browser/ui/ash/quick_answers/ui/quick_answers_focus_search.h"
+#include "chrome/browser/ui/quick_answers/ui/quick_answers_focus_search.h"
 #include "ui/events/event_handler.h"
 #include "ui/views/focus/focus_manager.h"
 
@@ -17,8 +17,6 @@ class Label;
 class LabelButton;
 class WebView;
 }  // namespace views
-
-namespace ash {
 
 class QuickAnswersUiController;
 class QuickAnswersPreTargetHandler;
@@ -98,6 +96,5 @@ class QuickAnswersView : public views::View {
   std::unique_ptr<QuickAnswersFocusSearch> focus_search_;
   base::WeakPtrFactory<QuickAnswersView> weak_factory_{this};
 };
-}  // namespace ash
 
-#endif  // CHROME_BROWSER_UI_ASH_QUICK_ANSWERS_UI_QUICK_ANSWERS_VIEW_H_
+#endif  // CHROME_BROWSER_UI_QUICK_ANSWERS_UI_QUICK_ANSWERS_VIEW_H_

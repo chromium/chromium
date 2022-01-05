@@ -6684,10 +6684,6 @@ test("unit_tests") {
       "../browser/ui/ash/network/tether_notification_presenter_unittest.cc",
       "../browser/ui/ash/projector/projector_client_impl_unittest.cc",
       "../browser/ui/ash/projector/projector_soda_installation_controller_unittest.cc",
-      "../browser/ui/ash/quick_answers/quick_answers_controller_unittest.cc",
-      "../browser/ui/ash/quick_answers/quick_answers_state_controller_unittest.cc",
-      "../browser/ui/ash/quick_answers/quick_answers_ui_controller_unittest.cc",
-      "../browser/ui/ash/quick_answers/ui/quick_answers_view_unittest.cc",
       "../browser/ui/ash/session_controller_client_impl_unittest.cc",
       "../browser/ui/ash/sharesheet/sharesheet_bubble_view_unittest.cc",
       "../browser/ui/ash/shelf/arc_app_shelf_id_unittest.cc",
@@ -6696,6 +6692,10 @@ test("unit_tests") {
       "../browser/ui/ash/shelf/shelf_context_menu_unittest.cc",
       "../browser/ui/ash/wallpaper_controller_client_impl_unittest.cc",
       "../browser/ui/ash/window_pin_util_unittest.cc",
+      "../browser/ui/quick_answers/quick_answers_controller_unittest.cc",
+      "../browser/ui/quick_answers/quick_answers_state_controller_unittest.cc",
+      "../browser/ui/quick_answers/quick_answers_ui_controller_unittest.cc",
+      "../browser/ui/quick_answers/ui/quick_answers_view_unittest.cc",
       "../browser/ui/webui/chromeos/login/fake_update_required_screen_handler.cc",
       "../browser/ui/webui/chromeos/login/fake_update_required_screen_handler.h",
       "../browser/ui/webui/chromeos/sync/os_sync_handler_unittest.cc",
@@ -7989,8 +7989,8 @@ static_library("test_support_unit") {
 
   if (is_chromeos_ash) {
     sources += [
-      "../browser/ui/ash/quick_answers/test/chrome_quick_answers_test_base.cc",
-      "../browser/ui/ash/quick_answers/test/chrome_quick_answers_test_base.h",
+      "../browser/ui/quick_answers/test/chrome_quick_answers_test_base.cc",
+      "../browser/ui/quick_answers/test/chrome_quick_answers_test_base.h",
       "base/chrome_ash_test_base.cc",
       "base/chrome_ash_test_base.h",
     ]

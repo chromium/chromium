@@ -18,7 +18,6 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
 
-namespace ash {
 namespace quick_answers {
 namespace {
 
@@ -104,4 +103,3 @@ void TranslationResultLoader::OnRequestAccessTokenComplete(
 }
 
 }  // namespace quick_answers
-}  // namespace ash

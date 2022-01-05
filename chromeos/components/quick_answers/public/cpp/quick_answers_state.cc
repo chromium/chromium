@@ -15,8 +15,6 @@
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace ash {
-
 namespace {
 
 using quick_answers::prefs::ConsentStatus;
@@ -201,7 +199,7 @@ bool QuickAnswersState::ShouldUseQuickAnswersTextAnnotator() {
 
 bool QuickAnswersState::IsSettingsEnforced() {
   return pref_change_registrar_->prefs()->IsManagedPreference(
-      ash::quick_answers::prefs::kQuickAnswersEnabled);
+      quick_answers::prefs::kQuickAnswersEnabled);
 }
 
 void QuickAnswersState::InitializeObserver(
@@ -279,5 +277,3 @@ void QuickAnswersState::UpdateEligibility() {
   is_eligible_ = IsQuickAnswersAllowedForLocale(
       resolved_locale, icu::Locale::getDefault().getName());
 }
-
-}  // namespace ash
