@@ -268,7 +268,7 @@ bool ShelfContextMenu::ExecuteCommonCommand(int command_id, int event_flags) {
     case ash::MENU_OPEN_NEW:
       ash::full_restore::FullRestoreService::MaybeCloseNotification(
           controller()->profile());
-      FALLTHROUGH;
+      [[fallthrough]];
     case ash::MENU_CLOSE:
     case ash::MENU_PIN:
     case ash::SWAP_WITH_NEXT:
