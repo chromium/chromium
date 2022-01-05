@@ -327,13 +327,12 @@ void FrameLoader::SaveScrollState() {
 }
 
 void FrameLoader::DispatchUnloadEvent(
-    SecurityOrigin* committing_origin,
-    absl::optional<Document::UnloadEventTiming>* timing) {
+    UnloadEventTimingInfo* unload_timing_info) {
   FrameNavigationDisabler navigation_disabler(*frame_);
   SaveScrollState();
 
   if (!SVGImage::IsInSVGImage(frame_->GetDocument()))
-    frame_->GetDocument()->DispatchUnloadEvents(committing_origin, timing);
+    frame_->GetDocument()->DispatchUnloadEvents(unload_timing_info);
 }
 
 void FrameLoader::DidExplicitOpen() {
@@ -1017,7 +1016,8 @@ void FrameLoader::CommitNavigation(
     }
   }
 
-  absl::optional<Document::UnloadEventTiming> unload_timing;
+  UnloadEventTimingInfo unload_timing_info(
+      {SecurityOrigin::Create(navigation_params->url), absl::nullopt});
   FrameSwapScope frame_swap_scope(frame_owner);
   {
     base::AutoReset<bool> scoped_committing(&committing_navigation_, true);
@@ -1033,8 +1033,6 @@ void FrameLoader::CommitNavigation(
     }
 
     DCHECK(Client()->HasWebView());
-    scoped_refptr<SecurityOrigin> security_origin =
-        SecurityOrigin::Create(navigation_params->url);
 
     // If `frame_` is provisional, `DetachDocument()` is largely a no-op other
     // than cleaning up the initial (and unused) empty document. Otherwise, this
@@ -1047,7 +1045,7 @@ void FrameLoader::CommitNavigation(
     // document.
     if (commit_reason == CommitReason::kXSLT && document_loader_)
       document_loader_->SetSentDidFinishLoad();
-    if (!DetachDocument(security_origin.get(), &unload_timing)) {
+    if (!DetachDocument(&unload_timing_info)) {
       DCHECK(!is_provisional);
       return;
     }
@@ -1103,7 +1101,7 @@ void FrameLoader::CommitNavigation(
       frame_, navigation_type, std::move(navigation_params),
       std::move(policy_container), std::move(extra_data));
 
-  CommitDocumentLoader(new_document_loader, unload_timing,
+  CommitDocumentLoader(new_document_loader, unload_timing_info.unload_timing,
                        previous_history_item, commit_reason);
 
   RestoreScrollPositionAndViewState();
@@ -1167,9 +1165,7 @@ void FrameLoader::DidAccessInitialDocument() {
   }
 }
 
-bool FrameLoader::DetachDocument(
-    SecurityOrigin* committing_origin,
-    absl::optional<Document::UnloadEventTiming>* timing) {
+bool FrameLoader::DetachDocument(UnloadEventTimingInfo* unload_timing_info) {
   DCHECK(frame_->GetDocument());
   DCHECK(document_loader_);
 
@@ -1190,7 +1186,7 @@ bool FrameLoader::DetachDocument(
   // both when unloading itself and when unloading its descendants.
   IgnoreOpensDuringUnloadCountIncrementer ignore_opens_during_unload(
       frame_->GetDocument());
-  DispatchUnloadEvent(committing_origin, timing);
+  DispatchUnloadEvent(unload_timing_info);
   frame_->DetachChildren();
   // The previous calls to dispatchUnloadEvent() and detachChildren() can
   // execute arbitrary script via things like unload events. If the executed
@@ -1225,7 +1221,7 @@ bool FrameLoader::DetachDocument(
 
 void FrameLoader::CommitDocumentLoader(
     DocumentLoader* document_loader,
-    const absl::optional<Document::UnloadEventTiming>& unload_timing,
+    const absl::optional<UnloadEventTiming>& unload_timing,
     HistoryItem* previous_history_item,
     CommitReason commit_reason) {
   TRACE_EVENT("blink", "FrameLoader::CommitDocumentLoader");

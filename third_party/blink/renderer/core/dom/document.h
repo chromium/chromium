@@ -272,6 +272,24 @@ using DocumentClassFlags = unsigned char;
 using ExplicitlySetAttrElementsMap =
     HeapHashMap<QualifiedName, Member<HeapLinkedHashSet<WeakMember<Element>>>>;
 
+// Represents the start and end time of the unload event.
+struct UnloadEventTiming {
+  bool can_request;
+  base::TimeTicks unload_event_start;
+  base::TimeTicks unload_event_end;
+};
+
+// Used to gather the unload event timing of an unloading document, to be used
+// in a new document (if it's same-origin).
+struct UnloadEventTimingInfo {
+  // The origin of the new document that replaces the older document.
+  const scoped_refptr<SecurityOrigin> new_document_origin;
+  // The unload timing of the old document. This is only set from
+  // Document::DispatchUnloadEvents() of the old document. This might not be set
+  // if no old document gets unloaded.
+  absl::optional<UnloadEventTiming> unload_timing;
+};
+
 // A document (https://dom.spec.whatwg.org/#concept-document) is the root node
 // of a tree of DOM nodes, generally resulting from the parsing of a markup
 // (typically, HTML) resource.
@@ -727,16 +745,9 @@ class CORE_EXPORT Document : public ContainerNode,
                                  bool is_reload,
                                  bool& did_allow_navigation);
 
-  struct UnloadEventTiming {
-    bool can_request;
-    base::TimeTicks unload_event_start;
-    base::TimeTicks unload_event_end;
-  };
   // Dispatches "pagehide", "visibilitychange" and "unload" events, if not
-  // dispatched already. Fills unload timing if present and |committing_origin|
-  // has access to the unload timing of the document.
-  void DispatchUnloadEvents(SecurityOrigin* committing_origin,
-                            absl::optional<Document::UnloadEventTiming>*);
+  // dispatched already. Fills `unload_timing_info` if present.
+  void DispatchUnloadEvents(UnloadEventTimingInfo* unload_timing_info);
 
   void DispatchFreezeEvent();
 

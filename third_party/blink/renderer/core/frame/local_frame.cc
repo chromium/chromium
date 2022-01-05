@@ -501,7 +501,7 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
   IgnoreOpensDuringUnloadCountIncrementer ignore_opens_during_unload(
       GetDocument());
 
-  loader_.DispatchUnloadEvent(nullptr, nullptr);
+  loader_.DispatchUnloadEvent(/*unload_timing_info=*/nullptr);
   if (evict_cached_session_storage_on_freeze_or_unload_) {
     // Evicts the cached data of Session Storage to avoid reusing old data in
     // the cache after the session storage has been modified by another renderer
@@ -596,7 +596,7 @@ bool LocalFrame::DetachImpl(FrameDetachType type) {
 }
 
 bool LocalFrame::DetachDocument() {
-  return Loader().DetachDocument(nullptr, nullptr);
+  return Loader().DetachDocument(/*unload_timing_info=*/nullptr);
 }
 
 void LocalFrame::CheckCompleted() {

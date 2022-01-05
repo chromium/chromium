@@ -3724,9 +3724,7 @@ bool Document::DispatchBeforeUnloadEvent(ChromeClient* chrome_client,
   return false;
 }
 
-void Document::DispatchUnloadEvents(
-    SecurityOrigin* committing_origin,
-    absl::optional<Document::UnloadEventTiming>* unload_timing) {
+void Document::DispatchUnloadEvents(UnloadEventTimingInfo* unload_timing_info) {
   PluginScriptForbiddenScope forbid_plugin_destructor_scripting;
   PageDismissalScope in_page_dismissal;
   if (parser_)
@@ -3808,15 +3806,16 @@ void Document::DispatchUnloadEvents(
   dom_window_->DispatchEvent(unload_event, this);
   const base::TimeTicks unload_event_end = base::TimeTicks::Now();
 
-  if (unload_timing) {
+  if (unload_timing_info) {
     // Record unload event timing when navigating cross-document.
     DEFINE_STATIC_LOCAL(
         CustomCountHistogram, unload_histogram,
         ("DocumentEventTiming.UnloadDuration", 0, 10000000, 50));
     unload_histogram.CountMicroseconds(unload_event_end - unload_event_start);
 
-    auto& timing = unload_timing->emplace();
-    timing.can_request = committing_origin->CanRequest(Url());
+    auto& timing = unload_timing_info->unload_timing.emplace();
+    timing.can_request =
+        unload_timing_info->new_document_origin->CanRequest(Url());
     timing.unload_event_start = unload_event_start;
     timing.unload_event_end = unload_event_end;
   }
