@@ -21,7 +21,6 @@ console-format-classes.js:30 (6) [1, empty × 2, 2, (...), empty]
             tree-outline hide-selection-when-blurred source-code object-properties-section
               parent object-properties-section-root-element
                 selection fill
-                tree-element-content
           console-object console-object-preview
             object-description
             object-properties-preview
@@ -43,7 +42,6 @@ console-format-classes.js:30 {a: 1}
             tree-outline hide-selection-when-blurred source-code object-properties-section
               parent object-properties-section-root-element
                 selection fill
-                tree-element-content
           console-object console-object-preview
             object-properties-preview
               name
@@ -61,7 +59,6 @@ console-format-classes.js:30 {str: '', nan: NaN, posInf: Infinity, negInf: -Infi
             tree-outline hide-selection-when-blurred source-code object-properties-section
               parent object-properties-section-root-element
                 selection fill
-                tree-element-content
           console-object console-object-preview
             object-properties-preview
               name
@@ -87,7 +84,6 @@ console-format-classes.js:30 {null: null, undef: undefined, re: /^[regexp]$/g, c
             tree-outline hide-selection-when-blurred source-code object-properties-section
               parent object-properties-section-root-element
                 selection fill
-                tree-element-content
           console-object console-object-preview
             object-properties-preview
               name
@@ -113,7 +109,6 @@ console-format-classes.js:30 Proxy {a: 1}
             tree-outline hide-selection-when-blurred source-code object-properties-section
               parent object-properties-section-root-element
                 selection fill
-                tree-element-content
           console-object console-object-preview
             object-description
             object-properties-preview
@@ -132,7 +127,6 @@ console-format-classes.js:30 HTMLAllCollection(4) [html, head, base, body]
             tree-outline hide-selection-when-blurred source-code object-properties-section
               parent object-properties-section-root-element
                 selection fill
-                tree-element-content
           console-object console-object-preview
             object-description
             object-properties-preview
@@ -158,7 +152,6 @@ console-format-classes.js:34 (7) [Error: custom error with link www.chromium.or
             tree-outline hide-selection-when-blurred source-code object-properties-section
               parent object-properties-section-root-element
                 selection fill
-                tree-element-content
           console-object console-object-preview
             object-description
             object-properties-preview
