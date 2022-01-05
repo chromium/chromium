@@ -395,16 +395,8 @@ void DroppedFrameCounter::ReportFrames() {
 void DroppedFrameCounter::ReportFramesForUI() {
   DCHECK(report_for_ui_);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  UMA_HISTOGRAM_PERCENTAGE(
-      "Ash.Smoothness.MaxPercentDroppedFrames_1sWindow.Uniform",
-      sliding_window_max_percent_dropped_);
-
-  if (sliding_window_max_percent_dropped_ !=
-      last_reported_metrics_.max_window) {
-    UMA_HISTOGRAM_PERCENTAGE("Ash.Smoothness.MaxPercentDroppedFrames_1sWindow",
-                             sliding_window_max_percent_dropped_);
-    last_reported_metrics_.max_window = sliding_window_max_percent_dropped_;
-  }
+  UMA_HISTOGRAM_PERCENTAGE("Ash.Smoothness.PercentDroppedFrames_1sWindow",
+                           sliding_window_current_percent_dropped_);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
@@ -527,7 +519,7 @@ void DroppedFrameCounter::PopSlidingWindow() {
   uint32_t dropped =
       dropped_frame_count_in_window_[SmoothnessStrategy::kDefaultStrategy] -
       invalidated_frames;
-  double percent_dropped_frame =
+  const double percent_dropped_frame =
       std::min((dropped * 100.0) / total_frames_in_window_, 100.0);
   sliding_window_histogram_[SmoothnessStrategy::kDefaultStrategy]
       .AddPercentDroppedFrame(percent_dropped_frame, count);
@@ -561,6 +553,7 @@ void DroppedFrameCounter::PopSlidingWindow() {
     time_max_delta_ = newest_args.frame_time - time_fcp_received_;
     sliding_window_max_percent_dropped_ = percent_dropped_frame;
   }
+  sliding_window_current_percent_dropped_ = percent_dropped_frame;
 
   latest_sliding_window_start_ = last_timestamp;
   latest_sliding_window_interval_ = remaining_oldest_args.interval;

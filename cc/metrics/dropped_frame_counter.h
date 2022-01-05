@@ -216,6 +216,7 @@ class CC_EXPORT DroppedFrameCounter {
   absl::optional<SortedFrameCallback> sorted_frame_callback_;
 
   bool report_for_ui_ = false;
+  double sliding_window_current_percent_dropped_ = 0.0;
 };
 
 CC_EXPORT std::ostream& operator<<(

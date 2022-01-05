@@ -932,12 +932,9 @@ TEST_F(DroppedFrameCounterTest, ReportForUI) {
   // 4 seconds with 20% dropped frames.
   SimulateFrameSequence({false, false, false, false, true}, (kFps / 5) * 4);
 
-  // Exact 1 sample of changing to 20% dropped frame percentage.
-  histogram_tester.ExpectUniqueSample(
-      "Ash.Smoothness.MaxPercentDroppedFrames_1sWindow", 20, 1);
-  // More than 1 samples of 20% dropped frame percentage.
+  // Recorded more than 1 samples of 20% dropped frame percentage.
   EXPECT_GE(histogram_tester.GetBucketCount(
-                "Ash.Smoothness.MaxPercentDroppedFrames_1sWindow.Uniform", 20),
+                "Ash.Smoothness.PercentDroppedFrames_1sWindow", 20),
             1);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
