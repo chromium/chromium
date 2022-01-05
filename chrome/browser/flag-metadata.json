@@ -5607,8 +5607,8 @@
   },
   {
     "name": "use-search-click-for-right-click",
-    "owners": [ "zentaro", "cros-peripherals@google.com" ],
-    "expiry_milestone": 95
+    "owners": [ "zentaro", "jimmyxgong", "cros-peripherals@google.com" ],
+    "expiry_milestone": 105
   },
   {
     "name": "use-sf-symbols-samples",
