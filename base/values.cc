@@ -872,10 +872,6 @@ bool Value::GetAsDictionary(const DictionaryValue** out_value) const {
   return is_dict();
 }
 
-Value* Value::DeepCopy() const {
-  return new Value(Clone());
-}
-
 std::unique_ptr<Value> Value::CreateDeepCopy() const {
   return std::make_unique<Value>(Clone());
 }

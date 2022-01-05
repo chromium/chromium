@@ -550,9 +550,6 @@ class BASE_EXPORT Value {
   // this works because C++ supports covariant return types.
   // DEPRECATED, use `Value::Clone()` instead.
   // TODO(crbug.com/646113): Delete this and migrate callsites.
-  Value* DeepCopy() const;
-  // DEPRECATED, use `Value::Clone()` instead.
-  // TODO(crbug.com/646113): Delete this and migrate callsites.
   std::unique_ptr<Value> CreateDeepCopy() const;
 
   // Comparison operators so that Values can easily be used with standard
