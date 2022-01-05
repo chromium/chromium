@@ -36,11 +36,13 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_launch_params_helper.h"
+#include "chromeos/ui/base/window_properties.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
+#include "ui/chromeos/styles/cros_styles.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
@@ -87,6 +89,23 @@ ui::ModalType ChromeCameraAppUIDelegate::CameraAppDialog::GetDialogModalType()
 
 bool ChromeCameraAppUIDelegate::CameraAppDialog::CanMaximizeDialog() const {
   return !ash::TabletMode::Get()->InTabletMode();
+}
+
+ui::WebDialogDelegate::FrameKind
+ChromeCameraAppUIDelegate::CameraAppDialog::GetWebDialogFrameKind() const {
+  // For customizing the title bar.
+  return ui::WebDialogDelegate::FrameKind::kNonClient;
+}
+
+void ChromeCameraAppUIDelegate::CameraAppDialog::AdjustWidgetInitParams(
+    views::Widget::InitParams* params) {
+  auto grey_900 = cros_styles::ResolveColor(
+      cros_styles::ColorName::kGoogleGrey900, /*is_dark_mode=*/false,
+      /*use_debug_colors=*/false);
+  params->init_properties_container.SetProperty(chromeos::kFrameActiveColorKey,
+                                                grey_900);
+  params->init_properties_container.SetProperty(
+      chromeos::kFrameInactiveColorKey, grey_900);
 }
 
 void ChromeCameraAppUIDelegate::CameraAppDialog::GetDialogSize(
