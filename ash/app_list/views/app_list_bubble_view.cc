@@ -559,6 +559,8 @@ void AppListBubbleView::OnHideAnimationEnded(const gfx::Rect& layer_bounds) {
   // Restore the layer bounds. This isn't visible because opacity is 0.
   layer()->SetBounds(layer_bounds);
 
+  search_box_view_->ClearSearch();
+
   // Hide any open folder by showing the apps page.
   ShowApps(/*folder_item_view=*/nullptr, /*select_folder=*/false);
 

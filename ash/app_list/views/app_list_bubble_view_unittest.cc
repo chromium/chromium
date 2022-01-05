@@ -449,6 +449,38 @@ TEST_F(AppListBubbleViewTest, OpeningBubbleTwiceFocusesSearchBox) {
   EXPECT_TRUE(search_box_view->is_search_box_active());
 }
 
+TEST_F(AppListBubbleViewTest, ClosingBubbleClearsSearch) {
+  AddAppItems(1);
+  ShowAppList();
+
+  // Enter a query, and verify that search results page is shown.
+  PressAndReleaseKey(ui::VKEY_A);
+
+  EXPECT_FALSE(GetAppsPage()->GetVisible());
+  EXPECT_TRUE(GetSearchPage()->GetVisible());
+  EXPECT_FALSE(GetAssistantPage()->GetVisible());
+
+  views::Textfield* search_box_input = GetSearchBoxView()->search_box();
+  EXPECT_TRUE(search_box_input->HasFocus());
+  EXPECT_EQ(u"a", search_box_input->GetText());
+  TestAppListClient* client = GetAppListTestHelper()->app_list_client();
+  EXPECT_EQ(u"a", client->last_search_query());
+
+  // The app list view and widget are cached after this close.
+  DismissAppList();
+
+  // Search box is empty on next show.
+  ShowAppList();
+  EXPECT_TRUE(GetAppsPage()->GetVisible());
+  EXPECT_FALSE(GetSearchPage()->GetVisible());
+  EXPECT_FALSE(GetAssistantPage()->GetVisible());
+
+  search_box_input = GetSearchBoxView()->search_box();
+  EXPECT_TRUE(search_box_input->HasFocus());
+  EXPECT_EQ(u"", search_box_input->GetText());
+  EXPECT_EQ(u"", client->last_search_query());
+}
+
 TEST_F(AppListBubbleViewTest, SearchBoxTextUsesPrimaryTextColor) {
   ShowAppList();
 
