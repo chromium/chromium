@@ -75,6 +75,7 @@
 #include "content/public/common/referrer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/navigation_handle_observer.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/signed_exchange_browser_test_helper.h"
@@ -1794,6 +1795,107 @@ IN_PROC_BROWSER_TEST_F(SecurityStateTabHelperPrerenderTest,
 
   // Shutdown server.
   ASSERT_TRUE(test_server->ShutdownAndWaitUntilComplete());
+}
+
+// For tests which use fenced frame.
+class SecurityStateTabHelperFencedFrameTest
+    : public SecurityStateTabHelperTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  SecurityStateTabHelperFencedFrameTest() {
+    // Enable or disable MixedContentAutoupgrade feature based on the test
+    // parameter.
+    scoped_feature_list_.InitWithFeatureState(
+        blink::features::kMixedContentAutoupgrade, GetParam());
+  }
+  ~SecurityStateTabHelperFencedFrameTest() override = default;
+  SecurityStateTabHelperFencedFrameTest(
+      const SecurityStateTabHelperFencedFrameTest&) = delete;
+
+  SecurityStateTabHelperFencedFrameTest& operator=(
+      const SecurityStateTabHelperFencedFrameTest&) = delete;
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_helper_;
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  bool IsAutoupgradeEnabled() { return GetParam(); }
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         SecurityStateTabHelperFencedFrameTest,
+                         testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(SecurityStateTabHelperFencedFrameTest,
+                       ChangeSecurityStateWhenLoadingInsecureContent) {
+  // Setup a mock certificate verifier.
+  SetUpMockCertVerifierForHttpsServer(0, net::OK);
+
+  // Load a valid HTTPS page.
+  auto primary_url = https_server_.GetURL("/empty.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), primary_url));
+  CheckSecurityInfoForSecure(web_contents(), security_state::SECURE, false,
+                             false, false,
+                             false /* expect cert status error */);
+
+  // Create a fenced frame with a page that displays insecure content.
+  GURL fenced_frame_url =
+      https_server_.GetURL("/ssl/page_displays_insecure_content.html");
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          web_contents()->GetMainFrame(), fenced_frame_url);
+  EXPECT_NE(nullptr, fenced_frame_host);
+
+  if (IsAutoupgradeEnabled()) {
+    // The security state of the web contents should not be changed because
+    // the MixedContentAutoupgrade feature changes the internal insecure url
+    // from http to https.
+    CheckSecurityInfoForSecure(web_contents(), security_state::SECURE, false,
+                               false, false,
+                               false /* expect cert status error */);
+  } else {
+    // The security state of the web contents should be changed to WARNING.
+    CheckSecurityInfoForSecure(web_contents(), security_state::WARNING, false,
+                               true, false,
+                               false /* expect cert status error */);
+  }
+}
+
+// TODO(crbug.com/1282044): This behavior should not be allowed, since it allows
+// mixed frames, which are otherwise blocked, once this is fixed, change this
+// test so it verifies the navigation is block.
+IN_PROC_BROWSER_TEST_P(SecurityStateTabHelperFencedFrameTest,
+                       LoadFencedFrameViaInsecureURL) {
+  // Setup a mock certificate verifier.
+  SetUpMockCertVerifierForHttpsServer(0, net::OK);
+
+  // Load a valid HTTPS page.
+  auto primary_url = https_server_.GetURL("/empty.html");
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), primary_url));
+  CheckSecurityInfoForSecure(web_contents(), security_state::SECURE, false,
+                             false, false,
+                             false /* expect cert status error */);
+
+  // Create a fenced frame with an insecure url.
+  GURL fenced_frame_url =
+      embedded_test_server()->GetURL("b.com", "/fenced_frames/title1.html");
+
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_test_helper().CreateFencedFrame(
+          web_contents()->GetMainFrame(), fenced_frame_url);
+  EXPECT_NE(nullptr, fenced_frame_host);
+
+  CheckSecurityInfoForSecure(web_contents(), security_state::DANGEROUS, false,
+                             false, true, false /* expect cert status error */);
 }
 
 }  // namespace

@@ -437,7 +437,24 @@ bool SSLManager::UpdateEntry(NavigationEntryImpl* entry,
 
 void SSLManager::UpdateLastCommittedEntry(int add_content_status_flags,
                                           int remove_content_status_flags) {
-  NavigationEntryImpl* entry = controller_->GetLastCommittedEntry();
+  NavigationEntryImpl* entry;
+  if (controller_->frame_tree().type() == FrameTree::Type::kFencedFrame) {
+    // Only the primary frame tree's NavigationEntries are exposed outside of
+    // content, so the primary frame tree's NavigationController needs to
+    // represent an aggregate view of the security state of its inner frame
+    // trees.
+    RenderFrameHost* rfh =
+        controller_->frame_tree().root()->current_frame_host();
+    DCHECK(rfh);
+    WebContentsImpl* contents = static_cast<WebContentsImpl*>(
+        WebContents::FromRenderFrameHost(rfh->GetOutermostMainFrame()));
+    // TODO(crbug.com/1232528): Ensure only fenced frames owned by active pages
+    // can modify this.
+    entry = contents->GetController().GetLastCommittedEntry();
+  } else {
+    entry = controller_->GetLastCommittedEntry();
+  }
+
   if (!entry)
     return;
   UpdateEntry(entry, add_content_status_flags, remove_content_status_flags);
