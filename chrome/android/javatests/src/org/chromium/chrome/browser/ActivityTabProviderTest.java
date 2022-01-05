@@ -175,7 +175,7 @@ public class ActivityTabProviderTest {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Select the original tab without switching layouts.
             mActivity.getTabModelSelector().getCurrentModel().setIndex(
-                    0, TabSelectionType.FROM_USER);
+                    0, TabSelectionType.FROM_USER, false);
         });
         mActivityTabChangedHelper.waitForCallback(callCount);
 

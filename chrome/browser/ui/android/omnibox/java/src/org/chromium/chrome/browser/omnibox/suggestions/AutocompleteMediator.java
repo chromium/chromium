@@ -446,7 +446,7 @@ class AutocompleteMediator implements OnSuggestionsReceivedListener,
             assert tabModel != null;
 
             int tabIndex = TabModelUtils.getTabIndexById(tabModel, tab.getId());
-            tabModel.setIndex(tabIndex, TabSelectionType.FROM_OMNIBOX);
+            tabModel.setIndex(tabIndex, TabSelectionType.FROM_OMNIBOX, false);
         } else {
             mBringTabToFrontCallback.onResult(tab);
         }

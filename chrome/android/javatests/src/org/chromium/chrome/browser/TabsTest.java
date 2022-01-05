@@ -1096,7 +1096,7 @@ public class TabsTest {
             InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
                 @Override
                 public void run() {
-                    TabModelUtils.setIndex(tabModel, tabModel.indexOf(tab));
+                    TabModelUtils.setIndex(tabModel, tabModel.indexOf(tab), false);
                 }
             });
             pageLoadedCallbacks[i].waitForCallback(0);

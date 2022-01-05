@@ -232,7 +232,7 @@ public class BottomSheetControllerTest {
             assertEquals("The bottom sheet should be hidden.", SheetState.HIDDEN,
                     mSheetController.getSheetState());
             mActivity.getTabModelSelector().getCurrentModel().setIndex(
-                    0, TabSelectionType.FROM_USER);
+                    0, TabSelectionType.FROM_USER, false);
         });
 
         setTabSwitcherState(false);
@@ -312,7 +312,7 @@ public class BottomSheetControllerTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mActivity.getTabModelSelector().getCurrentModel().setIndex(
-                    originalTabIndex, TabSelectionType.FROM_USER);
+                    originalTabIndex, TabSelectionType.FROM_USER, false);
         });
 
         // Request content be shown again.

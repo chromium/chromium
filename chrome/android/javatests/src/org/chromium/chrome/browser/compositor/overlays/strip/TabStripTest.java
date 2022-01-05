@@ -117,7 +117,8 @@ public class TabStripTest {
             @Override
             public void run() {
                 TabModelUtils.setIndex(
-                        sActivityTestRule.getActivity().getTabModelSelector().getModel(false), 0);
+                        sActivityTestRule.getActivity().getTabModelSelector().getModel(false), 0,
+                        false);
             }
         });
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();

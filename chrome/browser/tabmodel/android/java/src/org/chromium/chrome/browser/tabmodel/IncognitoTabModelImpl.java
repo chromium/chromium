@@ -186,8 +186,8 @@ class IncognitoTabModelImpl implements IncognitoTabModel {
     }
 
     @Override
-    public void setIndex(int i, @TabSelectionType int type) {
-        mDelegateModel.setIndex(i, type);
+    public void setIndex(int i, @TabSelectionType int type, boolean skipLoadingTab) {
+        mDelegateModel.setIndex(i, type, skipLoadingTab);
     }
 
     @Override

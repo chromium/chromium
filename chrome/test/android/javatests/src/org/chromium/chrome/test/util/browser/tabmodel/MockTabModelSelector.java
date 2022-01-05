@@ -31,12 +31,12 @@ public class MockTabModelSelector extends TabModelSelectorBase {
         for (int i = 0; i < tabCount; i++) {
             addMockTab();
         }
-        if (tabCount > 0) TabModelUtils.setIndex(getModel(false), 0);
+        if (tabCount > 0) TabModelUtils.setIndex(getModel(false), 0, false);
 
         for (int i = 0; i < incognitoTabCount; i++) {
             addMockIncognitoTab();
         }
-        if (incognitoTabCount > 0) TabModelUtils.setIndex(getModel(true), 0);
+        if (incognitoTabCount > 0) TabModelUtils.setIndex(getModel(true), 0, false);
         mTabCount = tabCount;
     }
 

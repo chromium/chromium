@@ -89,8 +89,8 @@ public class ChromeTabCreatorTest {
             @Override
             public void run() {
                 TestThreadUtils.runOnUiThreadBlocking(() -> {
-                    TabModelUtils.setIndex(
-                            sActivityTestRule.getActivity().getCurrentTabModel(), indexOf(bgTab));
+                    TabModelUtils.setIndex(sActivityTestRule.getActivity().getCurrentTabModel(),
+                            indexOf(bgTab), false);
                 });
             }
         });

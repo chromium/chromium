@@ -450,7 +450,8 @@ public abstract class Layout {
         if (mNextTabId != Tab.INVALID_TAB_ID) {
             TabModel model = mTabModelSelector.getModelForTabId(mNextTabId);
             if (model != null) {
-                TabModelUtils.setIndex(model, TabModelUtils.getTabIndexById(model, mNextTabId));
+                TabModelUtils.setIndex(
+                        model, TabModelUtils.getTabIndexById(model, mNextTabId), false);
             }
             mNextTabId = Tab.INVALID_TAB_ID;
         }

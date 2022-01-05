@@ -371,7 +371,7 @@ public class ChromeTabUtils {
     public static void switchTabInCurrentTabModel(final ChromeActivity activity,
             final int tabIndex) {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { TabModelUtils.setIndex(activity.getCurrentTabModel(), tabIndex); });
+                () -> { TabModelUtils.setIndex(activity.getCurrentTabModel(), tabIndex, false); });
     }
 
     /**

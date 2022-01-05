@@ -180,7 +180,7 @@ public class TabSuspensionTest {
         doReturn(true).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mActivity.getTabModelSelector().getCurrentModel().setIndex(
-                    originalTabIndex, TabSelectionType.FROM_USER);
+                    originalTabIndex, TabSelectionType.FROM_USER, false);
         });
         waitForSuspendedTabToShow(mTab, STARTING_FQDN);
     }
@@ -311,7 +311,7 @@ public class TabSuspensionTest {
             mPageViewObserver.notifySiteSuspensionChanged(STARTING_FQDN, false);
             doReturn(false).when(mSuspensionTracker).isWebsiteSuspended(STARTING_FQDN);
             mActivity.getTabModelSelector().getCurrentModel().setIndex(
-                    originalTabIndex, TabSelectionType.FROM_USER);
+                    originalTabIndex, TabSelectionType.FROM_USER, false);
         });
 
         assertSuspendedTabHidden(mTab);
