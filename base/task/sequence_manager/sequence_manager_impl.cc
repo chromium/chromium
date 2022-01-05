@@ -14,7 +14,6 @@
 #include "base/compiler_specific.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/stack_trace.h"
-#include "base/feature_list.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -67,10 +66,6 @@ class TracedBaseValue : public trace_event::ConvertableToTraceFormat {
  private:
   base::Value value_;
 };
-
-// Controls whether canceled tasks are removed from the front of the queue when
-// deciding when the next wake up should happen.
-std::atomic_bool g_no_wake_ups_for_canceled_tasks{false};
 
 }  // namespace
 
@@ -150,6 +145,12 @@ char* PrependHexAddress(char* output, const void* address) {
   return output;
 }
 #endif  // !defined(OS_NACL)
+
+// Controls whether canceled tasks are removed from the front of the queue when
+// deciding when the next wake up should happen.
+// Note: An atomic is used here because some tests can initialize two different
+//       sequence managers on different threads (e.g. by using base::Thread).
+std::atomic_bool g_no_wake_ups_for_canceled_tasks{false};
 
 }  // namespace
 
@@ -318,14 +319,30 @@ std::unique_ptr<SequenceManagerImpl> SequenceManagerImpl::CreateUnbound(
 }
 
 // static
-void SequenceManagerImpl::MaybeSetNoWakeUpsForCanceledTasks() {
-  if (FeatureList::IsEnabled(kNoWakeUpsForCanceledTasks))
-    g_no_wake_ups_for_canceled_tasks.store(true, std::memory_order_relaxed);
+void SequenceManagerImpl::InitializeFeatures() {
+  ApplyNoWakeUpsForCanceledTasks();
+  TaskQueueImpl::ApplyRemoveCanceledTasksInTaskQueue();
+}
+
+// static
+void SequenceManagerImpl::ApplyNoWakeUpsForCanceledTasks() {
+  // Since kNoWakeUpsForCanceledTasks is not constexpr (forbidden for Features),
+  // it cannot be used to initialize |g_no_wake_ups_for_canceled_tasks| at
+  // compile time. At least DCHECK that its initial value matches the default
+  // value of the feature here.
+  DCHECK_EQ(
+      g_no_wake_ups_for_canceled_tasks.load(std::memory_order_relaxed),
+      kNoWakeUpsForCanceledTasks.default_state == FEATURE_ENABLED_BY_DEFAULT);
+  g_no_wake_ups_for_canceled_tasks.store(
+      FeatureList::IsEnabled(kNoWakeUpsForCanceledTasks),
+      std::memory_order_relaxed);
 }
 
 // static
 void SequenceManagerImpl::ResetNoWakeUpsForCanceledTasksForTesting() {
-  g_no_wake_ups_for_canceled_tasks.store(false, std::memory_order_relaxed);
+  g_no_wake_ups_for_canceled_tasks.store(
+      kNoWakeUpsForCanceledTasks.default_state == FEATURE_ENABLED_BY_DEFAULT,
+      std::memory_order_relaxed);
 }
 
 void SequenceManagerImpl::BindToMessagePump(std::unique_ptr<MessagePump> pump) {

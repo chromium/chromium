@@ -99,11 +99,26 @@ TEST(TaskQueueTest, ShutdownQueueBeforeDisabledVoterDeleted) {
   voter.reset();
 }
 
+class ScopedNoWakeUpsForCanceledTasks {
+ public:
+  explicit ScopedNoWakeUpsForCanceledTasks(bool feature_enabled) {
+    scoped_feature_list_.InitWithFeatureState(kRemoveCanceledTasksInTaskQueue,
+                                              feature_enabled);
+    TaskQueueImpl::ApplyRemoveCanceledTasksInTaskQueue();
+  }
+
+  ~ScopedNoWakeUpsForCanceledTasks() {
+    TaskQueueImpl::ResetRemoveCanceledTasksInTaskQueueForTesting();
+  }
+
+ private:
+  test::ScopedFeatureList scoped_feature_list_;
+};
+
 TEST(TaskQueueTest, CanceledTaskRemovedIfFeatureEnabled) {
   for (bool feature_enabled : {false, true}) {
-    test::ScopedFeatureList scoped_feature_list;
-    scoped_feature_list.InitWithFeatureState(kRemoveCanceledTasksInTaskQueue,
-                                             feature_enabled);
+    ScopedNoWakeUpsForCanceledTasks scoped_no_wake_ups_for_canceled_tasks(
+        feature_enabled);
 
     auto sequence_manager = CreateSequenceManagerOnCurrentThreadWithPump(
         MessagePump::Create(MessagePumpType::DEFAULT));

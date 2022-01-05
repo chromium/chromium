@@ -75,6 +75,15 @@ class WakeUpQueue;
 // tasks (normally the most common type) don't starve out immediate work.
 class BASE_EXPORT TaskQueueImpl {
  public:
+  // Sets the global cached state of the RemoveCanceledTasksInTaskQueue feature
+  // according to its enabled state. Must be invoked after FeatureList
+  // initialization.
+  static void ApplyRemoveCanceledTasksInTaskQueue();
+
+  // Resets the global cached state of the RemoveCanceledTasksInTaskQueue
+  // feature according to its default state.
+  static void ResetRemoveCanceledTasksInTaskQueueForTesting();
+
   TaskQueueImpl(SequenceManagerImpl* sequence_manager,
                 WakeUpQueue* wake_up_queue,
                 const TaskQueue::Spec& spec);
@@ -344,17 +353,9 @@ class BASE_EXPORT TaskQueueImpl {
    private:
     ~TaskRunner() final;
 
-    bool IsRemoveCanceledTasksInTaskQueueFeatureEnabled();
-
     const scoped_refptr<GuardedTaskPoster> task_poster_;
     const scoped_refptr<AssociatedThreadId> associated_thread_;
     const TaskType task_type_;
-    // Caches whether kRemoveCanceledTasksInTaskQueue is enabled. FeatureList
-    // access is too expensive to be done for each task, costing >1% of total
-    // CPU on the main renderer thread, from field data.
-    // Using an optional since *this can be constructed before the feature
-    // system is initialized.
-    absl::optional<bool> remove_canceled_tasks_in_task_queue_;
   };
 
   // A queue for holding delayed tasks before their delay has expired.

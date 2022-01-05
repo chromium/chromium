@@ -59,6 +59,15 @@ const char* TaskQueue::PriorityToString(TaskQueue::QueuePriority priority) {
 
 namespace internal {
 
+namespace {
+
+// Cache of the state of the kRemoveCanceledTasksInTaskQueue feature. This
+// avoids the need to constantly query its enabled state through
+// FeatureList::IsEnabled().
+bool g_is_remove_canceled_tasks_in_task_queue_enabled = false;
+
+}  // namespace
+
 TaskQueueImpl::GuardedTaskPoster::GuardedTaskPoster(TaskQueueImpl* outer)
     : outer_(outer) {}
 
@@ -131,7 +140,7 @@ DelayedTaskHandle TaskQueueImpl::TaskRunner::PostCancelableDelayedTaskAt(
     OnceClosure callback,
     TimeTicks delayed_run_time,
     base::subtle::DelayPolicy delay_policy) {
-  if (!IsRemoveCanceledTasksInTaskQueueFeatureEnabled()) {
+  if (!g_is_remove_canceled_tasks_in_task_queue_enabled) {
     // This will revert to PostDelayedTaskAt() with default DelayedTaskHandle.
     return SequencedTaskRunner::PostCancelableDelayedTaskAt(
         pass_key, location, std::move(callback), delayed_run_time,
@@ -146,7 +155,7 @@ DelayedTaskHandle TaskQueueImpl::TaskRunner::PostCancelableDelayedTask(
     const Location& location,
     OnceClosure callback,
     TimeDelta delay) {
-  if (!IsRemoveCanceledTasksInTaskQueueFeatureEnabled()) {
+  if (!g_is_remove_canceled_tasks_in_task_queue_enabled) {
     return SequencedTaskRunner::PostCancelableDelayedTask(
         location, std::move(callback), delay);
   }
@@ -169,13 +178,19 @@ bool TaskQueueImpl::TaskRunner::RunsTasksInCurrentSequence() const {
   return associated_thread_->IsBoundToCurrentThread();
 }
 
-bool TaskQueueImpl::TaskRunner::
-    IsRemoveCanceledTasksInTaskQueueFeatureEnabled() {
-  if (!remove_canceled_tasks_in_task_queue_.has_value()) {
-    remove_canceled_tasks_in_task_queue_ =
-        FeatureList::IsEnabled(kRemoveCanceledTasksInTaskQueue);
-  }
-  return remove_canceled_tasks_in_task_queue_.value();
+// static
+void TaskQueueImpl::ApplyRemoveCanceledTasksInTaskQueue() {
+  DCHECK_EQ(kRemoveCanceledTasksInTaskQueue.default_state,
+            FEATURE_DISABLED_BY_DEFAULT);
+  g_is_remove_canceled_tasks_in_task_queue_enabled =
+      FeatureList::IsEnabled(kRemoveCanceledTasksInTaskQueue);
+}
+
+// static
+void TaskQueueImpl::ResetRemoveCanceledTasksInTaskQueueForTesting() {
+  g_is_remove_canceled_tasks_in_task_queue_enabled =
+      kRemoveCanceledTasksInTaskQueue.default_state ==
+      FEATURE_ENABLED_BY_DEFAULT;
 }
 
 TaskQueueImpl::TaskQueueImpl(SequenceManagerImpl* sequence_manager,

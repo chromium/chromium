@@ -451,7 +451,7 @@ class ScopedNoWakeUpsForCanceledTasks {
  public:
   ScopedNoWakeUpsForCanceledTasks()
       : scoped_feature_list_(SequenceManagerImpl::kNoWakeUpsForCanceledTasks) {
-    SequenceManagerImpl::MaybeSetNoWakeUpsForCanceledTasks();
+    SequenceManagerImpl::ApplyNoWakeUpsForCanceledTasks();
   }
 
   ~ScopedNoWakeUpsForCanceledTasks() {

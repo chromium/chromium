@@ -18,6 +18,7 @@
 #include "base/cancelable_callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/debug/crash_logging.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -104,12 +105,17 @@ class BASE_EXPORT SequenceManagerImpl
   static std::unique_ptr<SequenceManagerImpl> CreateUnbound(
       SequenceManager::Settings settings);
 
-  // Sets state to eliminate wake ups for canceled tasks, if the
-  // kNoWakeUpsForCanceledTasks feature is enabled. Must be invoked after
-  // FeatureList initialization.
-  static void MaybeSetNoWakeUpsForCanceledTasks();
+  // Initializes the state of all the sequence manager features. Must be invoked
+  // after FeatureList initialization.
+  static void InitializeFeatures();
 
-  // Resets state that eliminates wake ups for canceled tasks.
+  // Sets the global cached state of the NoWakeUpsForCanceledTasks feature
+  // according to its enabled state. Must be invoked after FeatureList
+  // initialization.
+  static void ApplyNoWakeUpsForCanceledTasks();
+
+  // Resets the global cached state of the NoWakeUpsForCanceledTasks feature
+  // according to its default state.
   static void ResetNoWakeUpsForCanceledTasksForTesting();
 
   // SequenceManager implementation:

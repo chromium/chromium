@@ -728,8 +728,7 @@ void ChromeMainDelegate::PostFieldTrialInitialization() {
   base::HangWatcher::InitializeOnMainThread();
 
   base::internal::TimerBase::InitializeFeatures();
-  base::sequence_manager::internal::SequenceManagerImpl::
-      MaybeSetNoWakeUpsForCanceledTasks();
+  base::sequence_manager::internal::SequenceManagerImpl::InitializeFeatures();
 }
 
 #if defined(OS_WIN)
