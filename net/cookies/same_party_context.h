@@ -27,13 +27,10 @@ class NET_EXPORT SamePartyContext {
   };
 
   SamePartyContext() = default;
-  explicit SamePartyContext(
-      Type type,
-      FirstPartySetsContextType first_party_sets_context_type);
+  explicit SamePartyContext(Type type);
   SamePartyContext(Type context_type,
                    Type ancestors_for_metrics,
-                   Type top_resource_for_metrics,
-                   FirstPartySetsContextType first_party_sets_context_type);
+                   Type top_resource_for_metrics);
 
   bool operator==(const SamePartyContext& other) const;
 
@@ -53,10 +50,6 @@ class NET_EXPORT SamePartyContext {
     return top_resource_for_metrics_only_;
   }
 
-  FirstPartySetsContextType first_party_sets_context_type() const {
-    return first_party_sets_context_type_;
-  }
-
   // Creates a SamePartyContext that is as permissive as possible.
   static SamePartyContext MakeInclusive();
 
@@ -64,9 +57,10 @@ class NET_EXPORT SamePartyContext {
   Type context_type_ = Type::kCrossParty;
   Type ancestors_for_metrics_only_ = Type::kCrossParty;
   Type top_resource_for_metrics_only_ = Type::kCrossParty;
-  FirstPartySetsContextType first_party_sets_context_type_ =
-      FirstPartySetsContextType::kUnknown;
 };
+
+NET_EXPORT std::ostream& operator<<(std::ostream& os,
+                                    const SamePartyContext& spc);
 
 }  // namespace net
 

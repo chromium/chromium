@@ -30,6 +30,7 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_monster.h"
 #include "net/cookies/cookie_options.h"
+#include "net/cookies/first_party_set_metadata.h"
 #include "net/cookies/same_party_context.h"
 #include "net/http/http_util.h"
 #include "url/gurl.h"
@@ -741,18 +742,17 @@ bool IsFirstPartySetsEnabled() {
   return base::FeatureList::IsEnabled(features::kFirstPartySets);
 }
 
-// Return SamePartyCookieContextType::kCrossParty when:
-// 1) `isolation_info` is not fully populated.
-// 2) `isolation_info.party_context` is null.
-// 3) `cookie_access_delegate.IsContextSamePartyWithSite` returns false.
-SamePartyContext ComputeSamePartyContext(
+// Returns First-Party Set metadata for the given context. Returns empty/default
+// metadata if `isolation_info` is not fully populated, or
+// `isolation_info.party_context` is nullopt.
+FirstPartySetMetadata ComputeFirstPartySetMetadata(
     const SchemefulSite& request_site,
     const IsolationInfo& isolation_info,
     const CookieAccessDelegate* cookie_access_delegate,
     bool force_ignore_top_frame_party) {
   if (!isolation_info.IsEmpty() && isolation_info.party_context().has_value() &&
       cookie_access_delegate) {
-    return cookie_access_delegate->ComputeSamePartyContext(
+    return cookie_access_delegate->ComputeFirstPartySetMetadata(
         request_site,
         force_ignore_top_frame_party
             ? nullptr
@@ -761,7 +761,7 @@ SamePartyContext ComputeSamePartyContext(
         isolation_info.party_context().value());
   }
 
-  return SamePartyContext();
+  return FirstPartySetMetadata();
 }
 
 CookieSamePartyStatus GetSamePartyStatus(const CanonicalCookie& cookie,

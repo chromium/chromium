@@ -36,11 +36,11 @@ bool TestCookieAccessDelegate::ShouldIgnoreSameSiteRestrictions(
   return true;
 }
 
-SamePartyContext TestCookieAccessDelegate::ComputeSamePartyContext(
+FirstPartySetMetadata TestCookieAccessDelegate::ComputeFirstPartySetMetadata(
     const net::SchemefulSite& site,
     const net::SchemefulSite* top_frame_site,
     const std::set<net::SchemefulSite>& party_context) const {
-  return SamePartyContext();
+  return FirstPartySetMetadata();
 }
 
 absl::optional<net::SchemefulSite>

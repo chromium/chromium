@@ -928,8 +928,7 @@ TEST_F(CookieManagerTest, GetCookieListSameParty) {
     // included, and non-SameParty cookies should be excluded based on SameSite
     // value.
     options.set_same_party_context(
-        net::SamePartyContext(net::SamePartyContext::Type::kSameParty,
-                              net::FirstPartySetsContextType::kUnknown));
+        net::SamePartyContext(net::SamePartyContext::Type::kSameParty));
     EXPECT_THAT(service_wrapper()->GetCookieList(
                     cookie_url, options, net::CookiePartitionKeyCollection()),
                 UnorderedElementsAre(
@@ -990,8 +989,7 @@ TEST_F(CookieManagerTest, GetCookieListSameParty) {
 
     // Same-party, cross-site.
     options.set_same_party_context(
-        net::SamePartyContext(net::SamePartyContext::Type::kSameParty,
-                              net::FirstPartySetsContextType::kUnknown));
+        net::SamePartyContext(net::SamePartyContext::Type::kSameParty));
     EXPECT_THAT(
         service_wrapper()->GetCookieList(cookie_url, options,
                                          net::CookiePartitionKeyCollection()),

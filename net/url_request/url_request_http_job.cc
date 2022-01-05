@@ -580,19 +580,15 @@ void URLRequestHttpJob::AddCookieHeaderAndStart() {
             request_->site_for_cookies(), request_->initiator(),
             is_main_frame_navigation, force_ignore_site_for_cookies);
 
-    net::SchemefulSite request_site(request_->url());
-    const CookieAccessDelegate* delegate =
-        cookie_store->cookie_access_delegate();
-
     bool is_in_nontrivial_first_party_set =
-        delegate && delegate->FindFirstPartySetOwner(request_site).has_value();
+        request_->first_party_set_metadata().owner().has_value();
     CookieOptions options = CreateCookieOptions(
-        same_site_context, request_->same_party_context(),
+        same_site_context, request_->first_party_set_metadata().context(),
         request_->isolation_info(), is_in_nontrivial_first_party_set);
 
     UMA_HISTOGRAM_ENUMERATION(
         "Cookie.FirstPartySetsContextType.HTTP.Read",
-        request_->same_party_context().first_party_sets_context_type());
+        request_->first_party_set_metadata().first_party_sets_context_type());
 
     cookie_store->GetCookieListWithOptionsAsync(
         request_->url(), options,
@@ -747,18 +743,15 @@ void URLRequestHttpJob::SaveCookiesAndNotifyHeadersComplete(int result) {
           request_->initiator(), is_main_frame_navigation,
           force_ignore_site_for_cookies);
 
-  const CookieAccessDelegate* delegate = cookie_store->cookie_access_delegate();
-  net::SchemefulSite request_site(request_->url());
-
   bool is_in_nontrivial_first_party_set =
-      delegate && delegate->FindFirstPartySetOwner(request_site).has_value();
+      request_->first_party_set_metadata().owner().has_value();
   CookieOptions options = CreateCookieOptions(
-      same_site_context, request_->same_party_context(),
+      same_site_context, request_->first_party_set_metadata().context(),
       request_->isolation_info(), is_in_nontrivial_first_party_set);
 
   UMA_HISTOGRAM_ENUMERATION(
       "Cookie.FirstPartySetsContextType.HTTP.Write",
-      request_->same_party_context().first_party_sets_context_type());
+      request_->first_party_set_metadata().first_party_sets_context_type());
 
   // Set all cookies, without waiting for them to be set. Any subsequent
   // read will see the combined result of all cookie operation.

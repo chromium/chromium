@@ -127,26 +127,6 @@ enum SamePartyCookieContextType {
   kSameParty,
 };
 
-// This must be kept in sync with the corresponding enum in
-// /net/cookies/cookie_constants.h.
-enum FirstPartySetsContextType {
-  // Unknown context type.
-  kUnknown = 0,
-  // The top frame was ignored, and the rest of the context consisted of at
-  // least 2 different parties.
-  kTopFrameIgnoredMixed = 1,
-  // The top frame was ignored, and the rest of the context was a single party.
-  kTopFrameIgnoredHomogeneous = 2,
-  // The top frame and resource URL were of different parties.
-  kTopResourceMismatch = 3,
-  // The top frame and resource URL were both of the same party, and there was
-  // at least one intervening frame of a different party.
-  kTopResourceMatchMixed = 4,
-  // The top frame, resource URL, and all intervening frames were all from the
-  // same party.
-  kHomogeneous = 5,
-};
-
 // What rules to apply when determining whether access to a particular cookie is
 // allowed.
 // Keep in sync with net/cookies/cookie_constants.h.
@@ -251,7 +231,6 @@ struct SamePartyContext {
   SamePartyCookieContextType context_type = kCrossParty;
   SamePartyCookieContextType ancestors_for_metrics_only = kCrossParty;
   SamePartyCookieContextType top_resource_for_metrics_only = kCrossParty;
-  FirstPartySetsContextType first_party_sets_context_type = kUnknown;
 };
 
 // Keep values here in sync with net::CookieChangeCause.

@@ -1502,8 +1502,8 @@ TEST(CookieUtilTest, GetSamePartyStatus_NotInSet) {
                     secure, httponly, same_site,
                     CookiePriority::COOKIE_PRIORITY_DEFAULT, same_party);
 
-            options.set_same_party_context(SamePartyContext(
-                party_context_type, FirstPartySetsContextType::kUnknown));
+            options.set_same_party_context(
+                SamePartyContext(party_context_type));
             EXPECT_EQ(CookieSamePartyStatus::kNoSamePartyEnforcement,
                       cookie_util::GetSamePartyStatus(*cookie, options));
           }
@@ -1539,8 +1539,8 @@ TEST(CookieUtilTest, GetSamePartyStatus_FeatureDisabled) {
                     secure, httponly, same_site,
                     CookiePriority::COOKIE_PRIORITY_DEFAULT, same_party);
 
-            options.set_same_party_context(SamePartyContext(
-                party_context_type, FirstPartySetsContextType::kUnknown));
+            options.set_same_party_context(
+                SamePartyContext(party_context_type));
             EXPECT_EQ(CookieSamePartyStatus::kNoSamePartyEnforcement,
                       cookie_util::GetSamePartyStatus(*cookie, options));
           }
@@ -1575,8 +1575,7 @@ TEST(CookieUtilTest, GetSamePartyStatus_NotSameParty) {
                   httponly, same_site, CookiePriority::COOKIE_PRIORITY_DEFAULT,
                   false /* same_party */);
 
-          options.set_same_party_context(SamePartyContext(
-              party_context_type, FirstPartySetsContextType::kUnknown));
+          options.set_same_party_context(SamePartyContext(party_context_type));
           EXPECT_EQ(CookieSamePartyStatus::kNoSamePartyEnforcement,
                     cookie_util::GetSamePartyStatus(*cookie, options));
         }
@@ -1634,14 +1633,12 @@ TEST(CookieUtilTest, GetSamePartyStatus_SamePartySemantics) {
                   true /* same_party */);
 
           options.set_same_party_context(
-              SamePartyContext(SamePartyContext::Type::kCrossParty,
-                               FirstPartySetsContextType::kUnknown));
+              SamePartyContext(SamePartyContext::Type::kCrossParty));
           EXPECT_EQ(CookieSamePartyStatus::kEnforceSamePartyExclude,
                     cookie_util::GetSamePartyStatus(*cookie, options));
 
           options.set_same_party_context(
-              SamePartyContext(SamePartyContext::Type::kSameParty,
-                               FirstPartySetsContextType::kUnknown));
+              SamePartyContext(SamePartyContext::Type::kSameParty));
           EXPECT_EQ(CookieSamePartyStatus::kEnforceSamePartyInclude,
                     cookie_util::GetSamePartyStatus(*cookie, options));
         }

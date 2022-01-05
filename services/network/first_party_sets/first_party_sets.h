@@ -17,6 +17,7 @@
 #include "base/thread_annotations.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/first_party_set_metadata.h"
 #include "net/cookies/same_party_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -63,11 +64,8 @@ class FirstPartySets {
   // Has no effect if `kFirstPartySets` is disabled.
   void ParseAndSet(base::File sets_file);
 
-  // Computes the SameParty context, indicating whether `site` is same-party
-  // with `top_frame_site` (if not nullptr) and `party_context`. The context
-  // includes the real context type, plus some additional "hypothetical" context
-  // types for metrics.
-  net::SamePartyContext ComputeContext(
+  // Computes the First-Party Set metadata related to the given context.
+  net::FirstPartySetMetadata ComputeMetadata(
       const net::SchemefulSite& site,
       const net::SchemefulSite* top_frame_site,
       const std::set<net::SchemefulSite>& party_context) const;

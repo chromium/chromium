@@ -10,34 +10,33 @@
 
 namespace net {
 
-SamePartyContext::SamePartyContext(
-    Type type,
-    FirstPartySetsContextType first_party_sets_context_type)
-    : SamePartyContext(type, type, type, first_party_sets_context_type) {}
+SamePartyContext::SamePartyContext(Type type)
+    : SamePartyContext(type, type, type) {}
 
-SamePartyContext::SamePartyContext(
-    Type context_type,
-    Type ancestors_for_metrics,
-    Type top_resource_for_metrics,
-    FirstPartySetsContextType first_party_sets_context_type)
+SamePartyContext::SamePartyContext(Type context_type,
+                                   Type ancestors_for_metrics,
+                                   Type top_resource_for_metrics)
     : context_type_(context_type),
       ancestors_for_metrics_only_(ancestors_for_metrics),
-      top_resource_for_metrics_only_(top_resource_for_metrics),
-      first_party_sets_context_type_(first_party_sets_context_type) {}
+      top_resource_for_metrics_only_(top_resource_for_metrics) {}
 
 bool SamePartyContext::operator==(const SamePartyContext& other) const {
   return std::make_tuple(context_type(), ancestors_for_metrics_only(),
-                         top_resource_for_metrics_only(),
-                         first_party_sets_context_type()) ==
+                         top_resource_for_metrics_only()) ==
          std::make_tuple(other.context_type(),
                          other.ancestors_for_metrics_only(),
-                         other.top_resource_for_metrics_only(),
-                         other.first_party_sets_context_type());
+                         other.top_resource_for_metrics_only());
+}
+
+std::ostream& operator<<(std::ostream& os, const SamePartyContext& spc) {
+  os << "{" << static_cast<int>(spc.context_type()) << ", "
+     << static_cast<int>(spc.ancestors_for_metrics_only()) << ", "
+     << static_cast<int>(spc.top_resource_for_metrics_only()) << "}";
+  return os;
 }
 
 // static
 SamePartyContext SamePartyContext::MakeInclusive() {
-  return SamePartyContext(Type::kSameParty,
-                          FirstPartySetsContextType::kHomogeneous);
+  return SamePartyContext(Type::kSameParty);
 }
 }  // namespace net

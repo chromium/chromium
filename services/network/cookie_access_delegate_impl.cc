@@ -6,7 +6,7 @@
 
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
-#include "net/cookies/same_party_context.h"
+#include "net/cookies/first_party_set_metadata.h"
 #include "services/network/first_party_sets/first_party_sets.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -55,13 +55,14 @@ bool CookieAccessDelegateImpl::ShouldIgnoreSameSiteRestrictions(
   return false;
 }
 
-net::SamePartyContext CookieAccessDelegateImpl::ComputeSamePartyContext(
+net::FirstPartySetMetadata
+CookieAccessDelegateImpl::ComputeFirstPartySetMetadata(
     const net::SchemefulSite& site,
     const net::SchemefulSite* top_frame_site,
     const std::set<net::SchemefulSite>& party_context) const {
-  return first_party_sets_ ? first_party_sets_->ComputeContext(
+  return first_party_sets_ ? first_party_sets_->ComputeMetadata(
                                  site, top_frame_site, party_context)
-                           : net::SamePartyContext();
+                           : net::FirstPartySetMetadata();
 }
 
 absl::optional<net::SchemefulSite>

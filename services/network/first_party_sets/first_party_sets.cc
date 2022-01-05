@@ -25,6 +25,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
+#include "net/cookies/first_party_set_metadata.h"
 #include "net/cookies/same_party_context.h"
 #include "services/network/first_party_sets/first_party_set_parser.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -166,7 +167,7 @@ bool FirstPartySets::IsContextSamePartyWithSite(
   return base::ranges::all_of(party_context, is_owned_by_site_owner);
 }
 
-net::SamePartyContext FirstPartySets::ComputeContext(
+net::FirstPartySetMetadata FirstPartySets::ComputeMetadata(
     const net::SchemefulSite& site,
     const net::SchemefulSite* top_frame_site,
     const std::set<net::SchemefulSite>& party_context) const {
@@ -183,6 +184,8 @@ net::SamePartyContext FirstPartySets::ComputeContext(
       ContextTypeFromBool(IsContextSamePartyWithSite(
           site, top_frame_site, {}, true /* infer_singleton_sets */));
 
+  net::SamePartyContext context(context_type, ancestors, top_resource);
+
   UMA_HISTOGRAM_CUSTOM_MICROSECONDS_TIMES(
       "Cookie.FirstPartySets.ComputeContext.Latency", timer.Elapsed(),
       base::Microseconds(1), base::Milliseconds(100), 50);
@@ -190,8 +193,9 @@ net::SamePartyContext FirstPartySets::ComputeContext(
   net::FirstPartySetsContextType first_party_sets_context_type =
       ComputeContextType(site, top_frame_site, party_context);
 
-  return net::SamePartyContext(context_type, ancestors, top_resource,
-                               first_party_sets_context_type);
+  return net::FirstPartySetMetadata(context,
+                                    base::OptionalOrNullptr(FindOwner(site)),
+                                    first_party_sets_context_type);
 }
 
 net::FirstPartySetsContextType FirstPartySets::ComputeContextType(

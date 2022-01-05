@@ -1780,8 +1780,7 @@ TEST(CanonicalCookieTest, IncludeForRequestURL_SameSiteNone_Metrics) {
       CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE));
   // Same as default, but just to be explicit:
   options.set_same_party_context(
-      SamePartyContext(SamePartyContext::Type::kCrossParty,
-                       FirstPartySetsContextType::kUnknown));
+      SamePartyContext(SamePartyContext::Type::kCrossParty));
 
   // Check that the most restrictive context is recognized and enforced.
   EXPECT_THAT(
@@ -1810,7 +1809,7 @@ TEST(CanonicalCookieTest, IncludeForRequestURL_SameSiteNone_Metrics) {
   // but the next-most-restrictive variation would still be blocked.
   options.set_same_party_context(SamePartyContext(
       SamePartyContextType::kSameParty, SamePartyContextType::kCrossParty,
-      SamePartyContextType::kSameParty, FirstPartySetsContextType::kUnknown));
+      SamePartyContextType::kSameParty));
   EXPECT_THAT(
       same_site_none_cookie->IncludeForRequestURL(
           url, options,
@@ -4483,8 +4482,7 @@ TEST(CanonicalCookieTest, IsSetPermitted_SameSiteNone_Metrics) {
       CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE));
   // Same as default, but just to be explicit:
   options.set_same_party_context(
-      SamePartyContext(SamePartyContext::Type::kCrossParty,
-                       FirstPartySetsContextType::kUnknown));
+      SamePartyContext(SamePartyContext::Type::kCrossParty));
   EXPECT_THAT(
       same_site_none_cookie->IsSetPermittedInContext(
           url, options,
@@ -4512,7 +4510,7 @@ TEST(CanonicalCookieTest, IsSetPermitted_SameSiteNone_Metrics) {
   // check that if we modify the cookie as indicated, the set would be allowed.
   options.set_same_party_context(SamePartyContext(
       SamePartyContextType::kSameParty, SamePartyContextType::kCrossParty,
-      SamePartyContextType::kSameParty, FirstPartySetsContextType::kUnknown));
+      SamePartyContextType::kSameParty));
   EXPECT_THAT(
       same_site_none_cookie->IsSetPermittedInContext(
           url, options,
@@ -4612,8 +4610,8 @@ TEST(CanonicalCookieTest, IsSetPermitted_SameParty) {
   CookieOptions options;
   options.set_same_site_cookie_context(CookieOptions::SameSiteCookieContext(
       CookieOptions::SameSiteCookieContext::ContextType::CROSS_SITE));
-  options.set_same_party_context(SamePartyContext(
-      SamePartyContext::Type::kSameParty, FirstPartySetsContextType::kUnknown));
+  options.set_same_party_context(
+      SamePartyContext(SamePartyContext::Type::kSameParty));
 
   {
     bool delegate_treats_url_as_trustworthy = false;

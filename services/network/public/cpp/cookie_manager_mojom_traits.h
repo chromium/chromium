@@ -148,16 +148,6 @@ struct EnumTraits<network::mojom::SamePartyCookieContextType,
 };
 
 template <>
-struct EnumTraits<network::mojom::FirstPartySetsContextType,
-                  net::FirstPartySetsContextType> {
-  static network::mojom::FirstPartySetsContextType ToMojom(
-      net::FirstPartySetsContextType type);
-
-  static bool FromMojom(network::mojom::FirstPartySetsContextType type,
-                        net::FirstPartySetsContextType* out);
-};
-
-template <>
 struct StructTraits<network::mojom::CookieOptionsDataView, net::CookieOptions> {
   static bool exclude_httponly(const net::CookieOptions& o) {
     return o.exclude_httponly();
@@ -374,10 +364,6 @@ struct StructTraits<network::mojom::SamePartyContextDataView,
   static net::SamePartyContext::Type top_resource_for_metrics_only(
       const net::SamePartyContext& s) {
     return s.top_resource_for_metrics_only();
-  }
-  static net::FirstPartySetsContextType first_party_sets_context_type(
-      const net::SamePartyContext& s) {
-    return s.first_party_sets_context_type();
   }
 
   static bool Read(network::mojom::SamePartyContextDataView bundle,

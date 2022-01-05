@@ -2057,8 +2057,7 @@ bool SetCookie(BrowserContext* browser_context,
   net::CookieOptions options;
   options.set_include_httponly();
   options.set_same_site_cookie_context(context);
-  options.set_same_party_context(net::SamePartyContext(
-      party_context, net::FirstPartySetsContextType::kUnknown));
+  options.set_same_party_context(net::SamePartyContext(party_context));
   cookie_manager->SetCanonicalCookie(
       *cc.get(), url, options,
       base::BindOnce(
