@@ -1268,11 +1268,26 @@ scoped_refptr<const NGLayoutResult> NGOutOfFlowLayoutPart::LayoutOOFNode(
       PaintLayerScrollableArea::FreezeScrollbarsRootScope freezer(
           *node_info.node.GetLayoutBox(), freeze_horizontal, freeze_vertical);
 
-      // The offset itself does not need to be recalculated. However, the
-      // |node_dimensions| and |initial_layout_result| may need to be updated,
-      // so recompute the OffsetInfo.
-      offset_info = CalculateOffset(node_info, only_layout,
-                                    /* is_first_run */ false);
+      if (!IsResumingLayout(oof_node_to_layout.break_token)) {
+        // The offset itself does not need to be recalculated. However, the
+        // |node_dimensions| and |initial_layout_result| may need to be updated,
+        // so recompute the OffsetInfo.
+        //
+        // Only do this if we're currently building the first fragment of the
+        // OOF. If we're resuming after a fragmentainer break, we can't update
+        // our intrinsic inline-size. First of all, the intrinsic inline-size
+        // should be the same across all fragments [1], and besides, this
+        // operation would lead to performing a non-fragmented layout pass (to
+        // measure intrinsic block-size; see IntrinsicBlockSizeFunc in
+        // ComputeOutOfFlowBlockDimensions()), which in turn would overwrite the
+        // result of the first fragment entry in LayoutBox without a break
+        // token, causing major confusion everywhere.
+        //
+        // [1] https://drafts.csswg.org/css-break/#varying-size-boxes
+        offset_info = CalculateOffset(node_info, only_layout,
+                                      /* is_first_run */ false);
+      }
+
       layout_result =
           Layout(oof_node_to_layout, fragmentainer_constraint_space);
 
