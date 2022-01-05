@@ -73,39 +73,35 @@ bool ProcessEndpoint(ReportingDelegate* delegate,
                      const ReportingEndpointGroupKey& group_key,
                      const base::Value& value,
                      ReportingEndpoint::EndpointInfo* endpoint_info_out) {
-  const base::DictionaryValue* dict = nullptr;
-  if (!value.GetAsDictionary(&dict))
+  if (!value.is_dict())
     return false;
-  DCHECK(dict);
 
-  std::string endpoint_url_string;
-  if (!dict->HasKey(kUrlKey))
-    return false;
-  if (!dict->GetString(kUrlKey, &endpoint_url_string))
+  const std::string* endpoint_url_string = value.FindStringKey(kUrlKey);
+  if (!endpoint_url_string)
     return false;
 
   GURL endpoint_url;
-  if (!ProcessEndpointURLString(endpoint_url_string, group_key.origin,
+  if (!ProcessEndpointURLString(*endpoint_url_string, group_key.origin,
                                 endpoint_url)) {
     return false;
   }
   endpoint_info_out->url = std::move(endpoint_url);
 
   int priority = ReportingEndpoint::EndpointInfo::kDefaultPriority;
-  if (const base::Value* value = dict->FindKey(kPriorityKey)) {
-    if (!value->is_int())
+  if (const base::Value* priority_value = value.FindKey(kPriorityKey)) {
+    if (!priority_value->is_int())
       return false;
-    priority = value->GetInt();
+    priority = priority_value->GetInt();
   }
   if (priority < 0)
     return false;
   endpoint_info_out->priority = priority;
 
   int weight = ReportingEndpoint::EndpointInfo::kDefaultWeight;
-  if (const base::Value* value = dict->FindKey(kWeightKey)) {
-    if (!value->is_int())
+  if (const base::Value* weight_value = value.FindKey(kWeightKey)) {
+    if (!weight_value->is_int())
       return false;
-    weight = value->GetInt();
+    weight = weight_value->GetInt();
   }
   if (weight < 0)
     return false;
@@ -127,19 +123,20 @@ bool ProcessEndpointGroup(ReportingDelegate* delegate,
                           const url::Origin& origin,
                           const base::Value& value,
                           ReportingEndpointGroup* parsed_endpoint_group_out) {
-  const base::DictionaryValue* dict = nullptr;
-  if (!value.GetAsDictionary(&dict))
+  if (!value.is_dict())
     return false;
-  DCHECK(dict);
 
   std::string group_name = kDefaultGroupName;
-  if (dict->HasKey(kGroupKey) && !dict->GetString(kGroupKey, &group_name))
-    return false;
+  if (const base::Value* maybe_group_name = value.FindKey(kGroupKey)) {
+    if (!maybe_group_name->is_string())
+      return false;
+    group_name = maybe_group_name->GetString();
+  }
   ReportingEndpointGroupKey group_key(network_isolation_key, origin,
                                       group_name);
   parsed_endpoint_group_out->group_key = group_key;
 
-  int ttl_sec = dict->FindIntKey(kMaxAgeKey).value_or(-1);
+  int ttl_sec = value.FindIntKey(kMaxAgeKey).value_or(-1);
   if (ttl_sec < 0)
     return false;
   // max_age: 0 signifies removal of the endpoint group.
@@ -150,7 +147,7 @@ bool ProcessEndpointGroup(ReportingDelegate* delegate,
   parsed_endpoint_group_out->ttl = base::Seconds(ttl_sec);
 
   absl::optional<bool> subdomains_bool =
-      dict->FindBoolKey(kIncludeSubdomainsKey);
+      value.FindBoolKey(kIncludeSubdomainsKey);
   if (subdomains_bool && subdomains_bool.value()) {
     // Disallow eTLDs from setting include_subdomains endpoint groups.
     if (registry_controlled_domains::GetRegistryLength(
@@ -163,10 +160,8 @@ bool ProcessEndpointGroup(ReportingDelegate* delegate,
     parsed_endpoint_group_out->include_subdomains = OriginSubdomains::INCLUDE;
   }
 
-  const base::ListValue* endpoint_list = nullptr;
-  if (!dict->HasKey(kEndpointsKey))
-    return false;
-  if (!dict->GetList(kEndpointsKey, &endpoint_list))
+  const base::Value* endpoint_list = value.FindListKey(kEndpointsKey);
+  if (!endpoint_list)
     return false;
 
   std::vector<ReportingEndpoint::EndpointInfo> endpoints;
