@@ -11,9 +11,7 @@ import("//testing/test.gni")
 source_set("core") {
   deps = [
     "//base",
-    "//chromecast/bindings/shared:proto_serializer",
     "//media",
-    "//third_party/cast_core/public/src/proto/bindings:cast_channel_proto",
   ]
   public_deps = [
     "//components/cast/message_port",

@@ -18,7 +18,6 @@
 #include "base/task/current_thread.h"
 #include "components/cast/message_port/fuchsia/message_port_fuchsia.h"
 #include "components/cast/message_port/platform_message_port.h"
-#include "components/cast_streaming/public/constants.h"
 #include "fuchsia/base/agent_manager.h"
 #include "fuchsia/runners/cast/cast_runner.h"
 #include "fuchsia/runners/cast/cast_streaming.h"
@@ -173,9 +172,8 @@ void CastComponent::StartComponent() {
                              fuchsia::sys::TerminationReason::INTERNAL_ERROR);
           }
         });
-    api_bindings_client_->OnPortConnected(
-        cast_streaming::kCastTransportBindingName,
-        std::move(message_port_for_agent));
+    api_bindings_client_->OnPortConnected(kCastStreamingMessagePortName,
+                                          std::move(message_port_for_agent));
   }
 
   api_bindings_client_->AttachToFrame(
