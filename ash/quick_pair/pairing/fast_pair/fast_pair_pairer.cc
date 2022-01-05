@@ -9,6 +9,7 @@
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/quick_pair/common/account_key_failure.h"
 #include "ash/quick_pair/common/device.h"
+#include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/pair_failure.h"
 #include "ash/quick_pair/common/protocol.h"
@@ -196,7 +197,10 @@ void FastPairPairer::ConfirmPasskey(device::BluetoothDevice* device,
 
 void FastPairPairer::OnPasskeyResponse(std::vector<uint8_t> response_bytes,
                                        absl::optional<PairFailure> failure) {
+  RecordWritePasskeyCharacteristicResult(/*success=*/!failure.has_value());
+
   if (failure) {
+    RecordWritePasskeyCharacteristicPairFailure(failure.value());
     std::move(pair_failed_callback_).Run(device_, failure.value());
     return;
   }

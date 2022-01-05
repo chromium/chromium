@@ -126,6 +126,16 @@ void RecordKeyBasedCharacteristicDecryptTime(base::TimeDelta decrypt_time);
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordKeyBasedCharacteristicDecryptResult(bool success);
 
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordWritePasskeyCharacteristicResult(bool success);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordWritePasskeyCharacteristicPairFailure(PairFailure failure);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordWritePasskeyGattError(
+    device::BluetoothGattService::GattErrorCode error);
+
 }  // namespace quick_pair
 }  // namespace ash
 

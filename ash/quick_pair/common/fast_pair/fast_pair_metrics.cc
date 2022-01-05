@@ -73,6 +73,12 @@ const char kKeyBasedCharacteristicDecryptTime[] =
     "Bluetooth.ChromeOS.FastPair.KeyBasedPairing.DecryptTime";
 const char kKeyBasedCharacteristicDecryptResult[] =
     "Bluetooth.ChromeOS.FastPair.KeyBasedPairing.DecryptResult";
+const char kWritePasskeyCharacteristicResult[] =
+    "Bluetooth.ChromeOS.FastPair.Passkey.Write.Result";
+const char kWritePasskeyCharacteristicPairFailure[] =
+    "Bluetooth.ChromeOS.FastPair.Passkey.Write.PairFailure";
+const char kWritePasskeyCharacteristicGattError[] =
+    "Bluetooth.ChromeOS.FastPair.Passkey.Write.GattErrorReason";
 
 }  // namespace
 
@@ -145,7 +151,7 @@ void RecordGattConnectionErrorCode(
     device::BluetoothDevice::ConnectErrorCode error_code) {
   base::UmaHistogramEnumeration(
       kGattConnectionErrorMetric, error_code,
-      device::BluetoothDevice::NUM_CONNECT_ERROR_CODES);
+      device::BluetoothDevice::ConnectErrorCode::NUM_CONNECT_ERROR_CODES);
 }
 
 void RecordPairingResult(const Device& device, bool success) {
@@ -182,16 +188,16 @@ void RecordAccountKeyFailureReason(const Device& device,
                                    AccountKeyFailure failure) {
   switch (device.protocol) {
     case Protocol::kFastPairInitial:
-      base::UmaHistogramSparse(kFastPairAccountKeyWriteFailureInitialMetric,
-                               static_cast<int>(failure));
+      base::UmaHistogramEnumeration(
+          kFastPairAccountKeyWriteFailureInitialMetric, failure);
       break;
     case Protocol::kFastPairRetroactive:
-      base::UmaHistogramSparse(kFastPairAccountKeyWriteFailureRetroactiveMetric,
-                               static_cast<int>(failure));
+      base::UmaHistogramEnumeration(
+          kFastPairAccountKeyWriteFailureRetroactiveMetric, failure);
       break;
     case Protocol::kFastPairSubsequent:
-      base::UmaHistogramSparse(kFastPairAccountKeyWriteFailureSubsequentMetric,
-                               static_cast<int>(failure));
+      base::UmaHistogramEnumeration(
+          kFastPairAccountKeyWriteFailureSubsequentMetric, failure);
       break;
   }
 }
@@ -245,6 +251,20 @@ void RecordKeyBasedCharacteristicDecryptTime(base::TimeDelta decrypt_time) {
 
 void RecordKeyBasedCharacteristicDecryptResult(bool success) {
   base::UmaHistogramBoolean(kKeyBasedCharacteristicDecryptResult, success);
+}
+
+void RecordWritePasskeyCharacteristicResult(bool success) {
+  base::UmaHistogramBoolean(kWritePasskeyCharacteristicResult, success);
+}
+
+void RecordWritePasskeyCharacteristicPairFailure(PairFailure failure) {
+  base::UmaHistogramEnumeration(kWritePasskeyCharacteristicPairFailure,
+                                failure);
+}
+
+void RecordWritePasskeyGattError(
+    device::BluetoothGattService::GattErrorCode error) {
+  base::UmaHistogramEnumeration(kWritePasskeyCharacteristicGattError, error);
 }
 
 }  // namespace quick_pair

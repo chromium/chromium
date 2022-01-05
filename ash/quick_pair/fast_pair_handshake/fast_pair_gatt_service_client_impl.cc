@@ -523,6 +523,7 @@ void FastPairGattServiceClientImpl::OnWritePasskeyError(
   QP_LOG(WARNING) << "WriteRemoteCharacteristic to passkey pairing "
                      "characteristic failed due to GATT error: "
                   << ToString(error);
+  RecordWritePasskeyGattError(error);
   NotifyWritePasskeyError(PairFailure::kPasskeyPairingCharacteristicWrite);
 }
 
