@@ -399,7 +399,7 @@ void OnWebAppInstallabilityChecked(
     case InstallableCheckResult::kInstallable:
       content::WebContents* containing_contents = web_contents.get();
       chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-      const GURL& url = web_contents->GetURL();
+      const GURL& url = web_contents->GetLastCommittedURL();
       chrome::AddWebContents(
           displayer.browser(), nullptr, std::move(web_contents), url,
           WindowOpenDisposition::NEW_FOREGROUND_TAB, gfx::Rect());
