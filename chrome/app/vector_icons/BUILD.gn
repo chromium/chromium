@@ -250,6 +250,7 @@ aggregate_vector_icons("chrome_vector_icons") {
       "google_chrome/google_g_logo_monochrome.icon",
       "google_chrome/google_keep_note.icon",
       "google_chrome/google_lens_full_logo.icon",
+      "google_chrome/google_lens_full_logo_dark.icon",
       "google_chrome/google_pay_logo.icon",
       "google_chrome/google_sites.icon",
       "google_chrome/google_super_g.icon",

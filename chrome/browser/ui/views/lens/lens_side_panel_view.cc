@@ -111,13 +111,16 @@ void LensSidePanelView::OnThemeChanged() {
   const auto* color_provider = GetColorProvider();
   separator_->SetColor(color_provider->GetColor(ui::kColorMenuSeparator));
 
-  const SkColor color = color_provider->GetColor(ui::kColorIcon);
   // kGoogleLensFullLogoIcon is rectangular. We should create a tiled image so
   // that the coordinates and scale are correct. The vector icon should have its
-  // own fill color.
-  gfx::ImageSkia image = gfx::ImageSkiaOperations::CreateTiledImage(
-      gfx::CreateVectorIcon(kGoogleLensFullLogoIcon, color), 0, 0,
-      kGoogleLensLogoWidth, kGoogleLensLogoHeight);
+  // own fill color. The same applies to the dark mode icon.
+  const SkColor color = color_provider->GetColor(ui::kColorIcon);
+  const gfx::VectorIcon& icon = GetNativeTheme()->ShouldUseDarkColors()
+                                    ? kGoogleLensFullLogoDarkIcon
+                                    : kGoogleLensFullLogoIcon;
+  const gfx::ImageSkia image = gfx::ImageSkiaOperations::CreateTiledImage(
+      gfx::CreateVectorIcon(icon, color), 0, 0, kGoogleLensLogoWidth,
+      kGoogleLensLogoHeight);
   branding_->SetImage(image);
 }
 
