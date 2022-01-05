@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "chromecast/cast_core/runtime/browser/grpc/grpc_method.h"
 #include "components/cast/message_port/message_port.h"
 #include "third_party/cast_core/public/src/proto/v2/core_application_service.grpc.pb.h"
@@ -61,7 +62,6 @@ class MessagePortService {
   class AsyncConnect final : public GrpcCall {
    public:
     AsyncConnect(const cast::bindings::ConnectRequest& request,
-                 std::unique_ptr<cast_api_bindings::MessagePort> port,
                  cast::v2::CoreApplicationService::Stub* core_app_stub,
                  grpc::CompletionQueue* cq,
                  base::WeakPtr<MessagePortService> service);
@@ -76,7 +76,6 @@ class MessagePortService {
         grpc::ClientAsyncResponseReader<cast::bindings::ConnectResponse>>
         response_reader_;
 
-    std::unique_ptr<cast_api_bindings::MessagePort> port_;
     uint32_t channel_id_;
   };
 
@@ -85,9 +84,7 @@ class MessagePortService {
       std::unique_ptr<cast_api_bindings::MessagePort> port);
 
   // Callback invoked when AsyncConnect gets a gRPC result.
-  void OnConnectComplete(bool ok,
-                         uint32_t channel_id,
-                         std::unique_ptr<cast_api_bindings::MessagePort> port);
+  void OnConnectComplete(bool ok, uint32_t channel_id);
 
   CreatePairCallback create_pair_;
 
@@ -98,6 +95,7 @@ class MessagePortService {
   // NOTE: Keyed by channel_id of cast::web::MessageChannelDescriptor.
   base::flat_map<uint32_t, std::unique_ptr<MessagePortHandler>> ports_;
 
+  SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<MessagePortService> weak_factory_{this};
 };
 

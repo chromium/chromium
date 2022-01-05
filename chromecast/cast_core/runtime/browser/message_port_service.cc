@@ -22,6 +22,7 @@ MessagePortService::~MessagePortService() = default;
 
 void MessagePortService::HandleMessage(const cast::web::Message& message,
                                        cast::web::MessagePortStatus* response) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   uint32_t channel_id = message.channel().channel_id();
   auto entry = ports_.find(channel_id);
   if (entry == ports_.end()) {
@@ -40,11 +41,12 @@ void MessagePortService::HandleMessage(const cast::web::Message& message,
 bool MessagePortService::ConnectToPort(
     base::StringPiece port_name,
     std::unique_ptr<cast_api_bindings::MessagePort> port) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DLOG(INFO) << "MessagePortService connecting to port '" << port_name
              << "' as channel " << next_outgoing_channel_id_;
   cast::web::MessagePortDescriptor port_descriptor;
-  port_descriptor.mutable_channel()->set_channel_id(
-      next_outgoing_channel_id_++);
+  uint32_t channel_id = next_outgoing_channel_id_++;
+  port_descriptor.mutable_channel()->set_channel_id(channel_id);
   port_descriptor.mutable_peer_status()->set_status(
       cast::web::MessagePortStatus_Status_STARTED);
   port_descriptor.set_sequence_number(0);
@@ -52,13 +54,18 @@ bool MessagePortService::ConnectToPort(
   cast::bindings::ConnectRequest connect_request;
   connect_request.set_port_name(std::string(port_name));
   *connect_request.mutable_port() = port_descriptor;
-  new AsyncConnect(connect_request, std::move(port), core_app_stub_, grpc_cq_,
+  auto result = ports_.emplace(
+      channel_id, MakeMessagePortHandler(channel_id, std::move(port)));
+  DCHECK(result.second);
+
+  new AsyncConnect(connect_request, core_app_stub_, grpc_cq_,
                    weak_factory_.GetWeakPtr());
   return true;
 }
 
 uint32_t MessagePortService::RegisterOutgoingPort(
     std::unique_ptr<cast_api_bindings::MessagePort> port) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   uint32_t channel_id = next_outgoing_channel_id_++;
   ports_.emplace(channel_id,
                  MakeMessagePortHandler(channel_id, std::move(port)));
@@ -68,12 +75,14 @@ uint32_t MessagePortService::RegisterOutgoingPort(
 void MessagePortService::RegisterIncomingPort(
     uint32_t channel_id,
     std::unique_ptr<cast_api_bindings::MessagePort> port) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto result = ports_.emplace(
       channel_id, MakeMessagePortHandler(channel_id, std::move(port)));
   DCHECK(result.second);
 }
 
 void MessagePortService::Remove(uint32_t channel_id) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ports_.erase(channel_id);
 }
 
@@ -86,27 +95,19 @@ std::unique_ptr<MessagePortHandler> MessagePortService::MakeMessagePortHandler(
   return port_handler;
 }
 
-void MessagePortService::OnConnectComplete(
-    bool ok,
-    uint32_t channel_id,
-    std::unique_ptr<cast_api_bindings::MessagePort> port) {
-  if (ok) {
-    DLOG(INFO) << "CoreApplicationService::Connect succeeded";
-    auto result = ports_.emplace(
-        channel_id, MakeMessagePortHandler(channel_id, std::move(port)));
-    DCHECK(result.second);
+void MessagePortService::OnConnectComplete(bool ok, uint32_t channel_id) {
+  if (!ok) {
+    DLOG(INFO) << "CoreApplicationService::Connect failed";
+    Remove(channel_id);
   }
 }
 
 MessagePortService::AsyncConnect::AsyncConnect(
     const cast::bindings::ConnectRequest& request,
-    std::unique_ptr<cast_api_bindings::MessagePort> port,
     cast::v2::CoreApplicationService::Stub* core_app_stub,
     grpc::CompletionQueue* cq,
     base::WeakPtr<MessagePortService> service)
-    : service_(service),
-      port_(std::move(port)),
-      channel_id_(request.port().channel().channel_id()) {
+    : service_(service), channel_id_(request.port().channel().channel_id()) {
   response_reader_ = core_app_stub->PrepareAsyncConnect(&context_, request, cq);
   response_reader_->StartCall();
   response_reader_->Finish(&response_, &status_, static_cast<GRPC*>(this));
@@ -116,8 +117,7 @@ MessagePortService::AsyncConnect::~AsyncConnect() = default;
 
 void MessagePortService::AsyncConnect::StepGRPC(grpc::Status status) {
   if (service_) {
-    service_->OnConnectComplete(status_.ok() && status.ok(), channel_id_,
-                                std::move(port_));
+    service_->OnConnectComplete(status_.ok(), channel_id_);
   }
   delete this;
 }
