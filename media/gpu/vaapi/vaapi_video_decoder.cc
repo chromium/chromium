@@ -1175,7 +1175,7 @@ void VaapiVideoDecoder::SetState(State state) {
       break;
     case State::kWaitingForProtected:
       DCHECK(!!cdm_context_ref_);
-      FALLTHROUGH;
+      [[fallthrough]];
     case State::kWaitingForOutput:
       DCHECK(current_decode_task_);
       DCHECK_EQ(state_, State::kDecoding);

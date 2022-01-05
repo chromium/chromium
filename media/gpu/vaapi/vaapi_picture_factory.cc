@@ -145,7 +145,7 @@ void VaapiPictureFactory::DeterminePictureCreationAndDownloadingMechanism() {
       break;
 #else
       // ozone or egl must be used to use the DRM implementation.
-      FALLTHROUGH;
+      [[fallthrough]];
 #endif
     default:
       NOTREACHED();
