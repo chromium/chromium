@@ -229,7 +229,7 @@ class MultiDeviceSetupHostVerifierImplTest
   bool HasInstanceId() {
     switch (GetParam()) {
       case TestType::kYesV1YesInstanceId:
-        FALLTHROUGH;
+        [[fallthrough]];
       case TestType::kNoV1YesInstanceId:
         return true;
       case TestType::kYesV1NoInstanceId:
@@ -241,7 +241,7 @@ class MultiDeviceSetupHostVerifierImplTest
     bool use_v1;
     switch (GetParam()) {
       case TestType::kYesV1YesInstanceId:
-        FALLTHROUGH;
+        [[fallthrough]];
       case TestType::kYesV1NoInstanceId:
         use_v1 = true;
         break;
