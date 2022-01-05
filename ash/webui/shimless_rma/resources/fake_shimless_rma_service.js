@@ -566,13 +566,30 @@ export class FakeShimlessRmaService {
   }
 
   /**
+   * @return {!Promise<!{dramPartNumber: string}>}
+   */
+  getOriginalDramPartNumber() {
+    return this.methods_.resolveMethod('getOriginalDramPartNumber');
+  }
+
+  /**
+   * @param {string} dramPartNumber
+   */
+  setGetOriginalDramPartNumberResult(dramPartNumber) {
+    this.methods_.setResult(
+        'getOriginalDramPartNumber', {dramPartNumber: dramPartNumber});
+  }
+
+  /**
    * @param {string} serialNumber
    * @param {number} regionIndex
    * @param {number} skuIndex
    * @param {number} whiteLabelIndex
+   * @param {string} dramPartNumber
    * @return {!Promise<!StateResult>}
    */
-  setDeviceInformation(serialNumber, regionIndex, skuIndex, whiteLabelIndex) {
+  setDeviceInformation(
+      serialNumber, regionIndex, skuIndex, whiteLabelIndex, dramPartNumber) {
     // TODO(gavindodd): Validate range of region and sku.
     return this.getNextStateForMethod_(
         'setDeviceInformation', State.kUpdateDeviceInformation);
@@ -1224,6 +1241,7 @@ export class FakeShimlessRmaService {
     this.methods_.register('getOriginalRegion');
     this.methods_.register('getOriginalSku');
     this.methods_.register('getOriginalWhiteLabel');
+    this.methods_.register('getOriginalDramPartNumber');
     this.methods_.register('setDeviceInformation');
 
     this.methods_.register('getCalibrationComponentList');

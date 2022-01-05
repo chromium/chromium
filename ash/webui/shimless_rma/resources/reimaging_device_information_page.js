@@ -308,9 +308,10 @@ export class ReimagingDeviceInformationPage extends
     if (this.serialNumber_ === '') {
       return Promise.reject(new Error('Serial number not set'));
     } else {
+      // TODO(gavindodd): Return correct DRAM part number.
       return this.shimlessRmaService_.setDeviceInformation(
           this.serialNumber_, this.regionIndex_, this.skuIndex_,
-          this.whiteLabelIndex_);
+          this.whiteLabelIndex_, '');
     }
   }
 }

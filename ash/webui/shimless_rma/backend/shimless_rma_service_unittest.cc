@@ -1855,6 +1855,58 @@ TEST_F(ShimlessRmaServiceTest, GetOriginalWhiteLabelFromWrongStateEmpty) {
   run_loop.Run();
 }
 
+TEST_F(ShimlessRmaServiceTest, GetOriginalDramPartNumber) {
+  rmad::GetStateReply update_device_info_state =
+      CreateStateReply(rmad::RmadState::kUpdateDeviceInfo, rmad::RMAD_ERROR_OK);
+  update_device_info_state.mutable_state()
+      ->mutable_update_device_info()
+      ->set_original_dram_part_number("123-456-789");
+  update_device_info_state.mutable_state()
+      ->mutable_update_device_info()
+      ->set_dram_part_number("987-654-321");
+  const std::vector<rmad::GetStateReply> fake_states = {
+      update_device_info_state,
+      CreateStateReply(rmad::RmadState::kDeviceDestination,
+                       rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kUpdateDeviceInformation);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->GetOriginalDramPartNumber(
+      base::BindLambdaForTesting([&](const std::string& part_number) {
+        EXPECT_EQ(part_number, "123-456-789");
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
+TEST_F(ShimlessRmaServiceTest, GetOriginalDramPartNumberFromWrongStateEmpty) {
+  const std::vector<rmad::GetStateReply> fake_states = {CreateStateReply(
+      rmad::RmadState::kDeviceDestination, rmad::RMAD_ERROR_OK)};
+  fake_rmad_client_()->SetFakeStateReplies(std::move(fake_states));
+  base::RunLoop run_loop;
+  shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
+      [&](mojom::State state, bool can_cancel, bool can_go_back,
+          rmad::RmadErrorCode error) {
+        EXPECT_EQ(state, mojom::State::kChooseDestination);
+        EXPECT_EQ(error, rmad::RmadErrorCode::RMAD_ERROR_OK);
+      }));
+  run_loop.RunUntilIdle();
+
+  shimless_rma_provider_->GetOriginalDramPartNumber(
+      base::BindLambdaForTesting([&](const std::string& part_number) {
+        EXPECT_EQ(part_number, "");
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+}
+
 TEST_F(ShimlessRmaServiceTest, SetDeviceInformation) {
   const std::vector<rmad::GetStateReply> fake_states = {
       CreateStateReply(rmad::RmadState::kUpdateDeviceInfo, rmad::RMAD_ERROR_OK),
@@ -1868,6 +1920,7 @@ TEST_F(ShimlessRmaServiceTest, SetDeviceInformation) {
         EXPECT_EQ(state.update_device_info().region_index(), 1UL);
         EXPECT_EQ(state.update_device_info().sku_index(), 2UL);
         EXPECT_EQ(state.update_device_info().whitelabel_index(), 3UL);
+        EXPECT_EQ(state.update_device_info().dram_part_number(), "123-456-789");
       });
   base::RunLoop run_loop;
   shimless_rma_provider_->GetCurrentState(base::BindLambdaForTesting(
@@ -1879,7 +1932,7 @@ TEST_F(ShimlessRmaServiceTest, SetDeviceInformation) {
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->SetDeviceInformation(
-      "serial number", 1, 2, 3,
+      "serial number", 1, 2, 3, "123-456-789",
       base::BindLambdaForTesting([&](mojom::State state, bool can_cancel,
                                      bool can_go_back,
                                      rmad::RmadErrorCode error) {
@@ -1904,7 +1957,7 @@ TEST_F(ShimlessRmaServiceTest, SetDeviceInformationFromWrongStateFails) {
   run_loop.RunUntilIdle();
 
   shimless_rma_provider_->SetDeviceInformation(
-      "serial number", 1, 2, 3,
+      "serial number", 1, 2, 3, "123-456-789",
       base::BindLambdaForTesting([&](mojom::State state, bool can_cancel,
                                      bool can_go_back,
                                      rmad::RmadErrorCode error) {

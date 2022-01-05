@@ -601,11 +601,13 @@ interface ShimlessRmaService {
   GetOriginalSku() => (uint8 sku_index);
   // Get the device white-label index at RMA start.
   GetOriginalWhiteLabel() => (uint8 white_label_index);
+  // Get the device dram part number at RMA start.
+  GetOriginalDramPartNumber() => (string dram_part_number);
   // Attempt to set device info and transition to the next state.
   // Returns the next state to display and an error code.
   SetDeviceInformation(
       string serial_number, uint8 region_index, uint8 sku_index,
-      uint8 white_label_index)
+      uint8 white_label_index, string dram_part_number)
           => (State state, bool can_cancel, bool can_go_back,
               RmadErrorCode error);
 

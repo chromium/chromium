@@ -534,11 +534,25 @@ export function fakeShimlessRmaServiceTestSuite() {
     });
   });
 
-  test('SetGetOriginalRegionResultUpdatesResult', () => {
-    const expected_whiteLabel = 1;
-    service.setGetOriginalWhiteLabelResult(expected_whiteLabel);
+  test('SetGetOriginalWhiteLabelResultUpdatesResult', () => {
+    const expectedWhiteLabel = 1;
+    service.setGetOriginalWhiteLabelResult(expectedWhiteLabel);
     return service.getOriginalWhiteLabel().then((whiteLabel) => {
-      assertEquals(whiteLabel.whiteLabelIndex, expected_whiteLabel);
+      assertEquals(whiteLabel.whiteLabelIndex, expectedWhiteLabel);
+    });
+  });
+
+  test('GetOriginalDramPartNumberDefaultUndefined', () => {
+    return service.getOriginalDramPartNumber().then((dramPartNumber) => {
+      assertEquals(dramPartNumber, undefined);
+    });
+  });
+
+  test('SetGetOriginalDramPartNumberResultUpdatesResult', () => {
+    const expectedDramPartNumber = '123-456-789';
+    service.setGetOriginalDramPartNumberResult(expectedDramPartNumber);
+    return service.getOriginalDramPartNumber().then((dramPartNumber) => {
+      assertEquals(dramPartNumber.dramPartNumber, expectedDramPartNumber);
     });
   });
 
@@ -549,7 +563,7 @@ export function fakeShimlessRmaServiceTestSuite() {
     ];
     service.setStates(states);
 
-    return service.setDeviceInformation('serial number', 1, 2, 3)
+    return service.setDeviceInformation('serial number', 1, 2, 3, '123-456-789')
         .then((state) => {
           assertEquals(state.state, State.kChooseDestination);
           assertEquals(state.error, RmadErrorCode.kOk);

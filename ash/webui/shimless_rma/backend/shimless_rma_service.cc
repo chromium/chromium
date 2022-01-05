@@ -588,11 +588,26 @@ void ShimlessRmaService::GetOriginalWhiteLabel(
       state_proto_.update_device_info().original_whitelabel_index());
 }
 
+void ShimlessRmaService::GetOriginalDramPartNumber(
+    GetOriginalDramPartNumberCallback callback) {
+  if (state_proto_.state_case() != rmad::RmadState::kUpdateDeviceInfo) {
+    // TODO(gavindodd): Consider replacing all invalid call handling with
+    // mojo::ReportBadMessage("error message");
+    LOG(ERROR) << "GetOriginalDramPartNumber called from incorrect state "
+               << state_proto_.state_case();
+    std::move(callback).Run("");
+    return;
+  }
+  std::move(callback).Run(
+      state_proto_.update_device_info().original_dram_part_number());
+}
+
 void ShimlessRmaService::SetDeviceInformation(
     const std::string& serial_number,
     uint8_t region_index,
     uint8_t sku_index,
     uint8_t white_label_index,
+    const std::string& dram_part_number,
     SetDeviceInformationCallback callback) {
   if (state_proto_.state_case() != rmad::RmadState::kUpdateDeviceInfo) {
     LOG(ERROR) << "SetDeviceInformation called from incorrect state "
@@ -607,6 +622,8 @@ void ShimlessRmaService::SetDeviceInformation(
   state_proto_.mutable_update_device_info()->set_sku_index(sku_index);
   state_proto_.mutable_update_device_info()->set_whitelabel_index(
       white_label_index);
+  state_proto_.mutable_update_device_info()->set_dram_part_number(
+      dram_part_number);
   TransitionNextStateGeneric(std::move(callback));
 }
 
