@@ -603,9 +603,7 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
 
   EXPECT_CALL(manager_, GetPendingReportsForWebUI)
       .WillOnce(InvokeCallback<std::vector<AttributionReport>>(
-          {ReportBuilder(SourceBuilder(base::Time::Now()).Build())
-               .SetPriority(7)
-               .Build()}))
+          {ReportBuilder(SourceBuilder().Build()).SetPriority(7).Build()}))
       .WillOnce(InvokeCallback<std::vector<AttributionReport>>({}));
 
   EXPECT_CALL(manager_, SendReportsForWebUI)

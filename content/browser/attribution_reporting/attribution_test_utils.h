@@ -211,7 +211,7 @@ class MockAttributionManager : public AttributionManager {
 // builder pattern.
 class SourceBuilder {
  public:
-  explicit SourceBuilder(base::Time time);
+  explicit SourceBuilder(base::Time time = base::Time::Now());
   ~SourceBuilder();
 
   SourceBuilder& SetExpiry(base::TimeDelta delta) WARN_UNUSED_RESULT;

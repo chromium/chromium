@@ -44,7 +44,7 @@ class RateLimitTableTest : public testing::Test {
       StorableSource::Id impression_id = StorableSource::Id(0),
       StorableSource::SourceType source_type =
           StorableSource::SourceType::kNavigation) {
-    return ReportBuilder(SourceBuilder(base::Time::Now())
+    return ReportBuilder(SourceBuilder()
                              .SetImpressionOrigin(std::move(impression_origin))
                              .SetConversionOrigin(std::move(conversion_origin))
                              .SetImpressionId(impression_id)
@@ -466,7 +466,7 @@ TEST_F(RateLimitTableTest, ClearDataForOriginsInRange) {
   EXPECT_EQ(AttributionAllowedStatus::kAllowed,
             table()->AddAggregateHistogramContributionsForTesting(
                 &db,
-                SourceBuilder(base::Time::Now())
+                SourceBuilder()
                     .SetImpressionOrigin(example_a)
                     .SetConversionOrigin(example_b)
                     .SetImpressionId(StorableSource::Id(1))
@@ -586,7 +586,7 @@ TEST_F(RateLimitTableTest, Aggregate) {
   });
 
   const auto impression =
-      SourceBuilder(base::Time::Now())
+      SourceBuilder()
           .SetImpressionOrigin(url::Origin::Create(GURL("https://a.example/")))
           .SetConversionOrigin(url::Origin::Create(GURL("https://b.example/")))
           .SetImpressionId(StorableSource::Id(1))

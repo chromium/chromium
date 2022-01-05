@@ -230,7 +230,7 @@ class AttributionManagerImplTest : public testing::Test {
 };
 
 TEST_F(AttributionManagerImplTest, ImpressionRegistered_ReturnedToWebUI) {
-  auto impression = SourceBuilder(base::Time::Now())
+  auto impression = SourceBuilder()
                         .SetExpiry(kImpressionExpiry)
                         .SetSourceEventId(100)
                         .Build();
@@ -240,7 +240,7 @@ TEST_F(AttributionManagerImplTest, ImpressionRegistered_ReturnedToWebUI) {
 }
 
 TEST_F(AttributionManagerImplTest, ExpiredImpression_NotReturnedToWebUI) {
-  attribution_manager_->HandleSource(SourceBuilder(base::Time::Now())
+  attribution_manager_->HandleSource(SourceBuilder()
                                          .SetExpiry(kImpressionExpiry)
                                          .SetSourceEventId(100)
                                          .Build());
@@ -250,7 +250,7 @@ TEST_F(AttributionManagerImplTest, ExpiredImpression_NotReturnedToWebUI) {
 }
 
 TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportReturnedToWebUI) {
-  auto impression = SourceBuilder(base::Time::Now())
+  auto impression = SourceBuilder()
                         .SetExpiry(kImpressionExpiry)
                         .SetSourceEventId(100)
                         .Build();
@@ -277,7 +277,7 @@ TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportReturnedToWebUI) {
 
 TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportSent) {
   attribution_manager_->HandleSource(
-      SourceBuilder(base::Time::Now()).SetExpiry(kImpressionExpiry).Build());
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
 
   // Make sure the report is not sent earlier than its report time.
@@ -302,21 +302,21 @@ TEST_F(AttributionManagerImplTest,
   const auto origin_b = url::Origin::Create(url_b);
   const auto origin_c = url::Origin::Create(url_c);
 
-  attribution_manager_->HandleSource(SourceBuilder(base::Time::Now())
+  attribution_manager_->HandleSource(SourceBuilder()
                                          .SetExpiry(kImpressionExpiry)
                                          .SetReportingOrigin(origin_a)
                                          .Build());
   attribution_manager_->HandleTrigger(
       TriggerBuilder().SetReportingOrigin(origin_a).Build());
 
-  attribution_manager_->HandleSource(SourceBuilder(base::Time::Now())
+  attribution_manager_->HandleSource(SourceBuilder()
                                          .SetExpiry(kImpressionExpiry)
                                          .SetReportingOrigin(origin_b)
                                          .Build());
   attribution_manager_->HandleTrigger(
       TriggerBuilder().SetReportingOrigin(origin_b).Build());
 
-  attribution_manager_->HandleSource(SourceBuilder(base::Time::Now())
+  attribution_manager_->HandleSource(SourceBuilder()
                                          .SetExpiry(kImpressionExpiry)
                                          .SetReportingOrigin(origin_c)
                                          .Build());
@@ -349,7 +349,7 @@ TEST_F(AttributionManagerImplTest,
   const auto origin_a = url::Origin::Create(url_a);
   const auto origin_b = url::Origin::Create(url_b);
 
-  attribution_manager_->HandleSource(SourceBuilder(base::Time::Now())
+  attribution_manager_->HandleSource(SourceBuilder()
                                          .SetExpiry(kImpressionExpiry)
                                          .SetReportingOrigin(origin_a)
                                          .Build());
@@ -358,7 +358,7 @@ TEST_F(AttributionManagerImplTest,
 
   task_environment_.FastForwardBy(base::Microseconds(1));
 
-  attribution_manager_->HandleSource(SourceBuilder(base::Time::Now())
+  attribution_manager_->HandleSource(SourceBuilder()
                                          .SetExpiry(kImpressionExpiry)
                                          .SetReportingOrigin(origin_b)
                                          .Build());
@@ -382,7 +382,7 @@ TEST_F(AttributionManagerImplTest,
 
 TEST_F(AttributionManagerImplTest, SenderStillHandlingReport_NotSentAgain) {
   attribution_manager_->HandleSource(
-      SourceBuilder(base::Time::Now()).SetExpiry(kImpressionExpiry).Build());
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
   task_environment_.FastForwardBy(kFirstReportingWindow);
   EXPECT_THAT(network_sender_->calls(), SizeIs(1));
@@ -399,7 +399,7 @@ TEST_F(AttributionManagerImplTest,
   base::HistogramTester histograms;
 
   attribution_manager_->HandleSource(
-      SourceBuilder(base::Time::Now()).SetExpiry(kImpressionExpiry).Build());
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
 
   task_environment_.FastForwardBy(kFirstReportingWindow);
@@ -432,7 +432,7 @@ TEST_F(AttributionManagerImplTest, RetryLogicOverridesGetReportTimer) {
   const auto origin_a = url::Origin::Create(url_a);
   const auto origin_b = url::Origin::Create(url_b);
 
-  attribution_manager_->HandleSource(SourceBuilder(base::Time::Now())
+  attribution_manager_->HandleSource(SourceBuilder()
                                          .SetExpiry(kImpressionExpiry)
                                          .SetReportingOrigin(origin_a)
                                          .Build());
@@ -440,7 +440,7 @@ TEST_F(AttributionManagerImplTest, RetryLogicOverridesGetReportTimer) {
       TriggerBuilder().SetReportingOrigin(origin_a).Build());
 
   task_environment_.FastForwardBy(base::Minutes(10));
-  attribution_manager_->HandleSource(SourceBuilder(base::Time::Now())
+  attribution_manager_->HandleSource(SourceBuilder()
                                          .SetExpiry(kImpressionExpiry)
                                          .SetReportingOrigin(origin_b)
                                          .Build());
@@ -466,7 +466,7 @@ TEST_F(AttributionManagerImplTest,
   base::HistogramTester histograms;
 
   attribution_manager_->HandleSource(
-      SourceBuilder(base::Time::Now()).SetExpiry(kImpressionExpiry).Build());
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
   EXPECT_THAT(StoredReports(), SizeIs(1));
 
@@ -493,7 +493,7 @@ TEST_F(AttributionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
   base::HistogramTester histograms;
 
   attribution_manager_->HandleSource(
-      SourceBuilder(base::Time::Now()).SetExpiry(kImpressionExpiry).Build());
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
 
   task_environment_.FastForwardBy(kFirstReportingWindow -
@@ -528,7 +528,7 @@ TEST_F(AttributionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
 
 TEST_F(AttributionManagerImplTest, ReportExpiredAtStartup_Sent) {
   attribution_manager_->HandleSource(
-      SourceBuilder(base::Time::Now()).SetExpiry(kImpressionExpiry).Build());
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
 
   ShutdownManager();
@@ -547,7 +547,7 @@ TEST_F(AttributionManagerImplTest, ReportExpiredAtStartup_Sent) {
 TEST_F(AttributionManagerImplTest, ReportSent_Deleted) {
   base::HistogramTester histograms;
   attribution_manager_->HandleSource(
-      SourceBuilder(base::Time::Now()).SetExpiry(kImpressionExpiry).Build());
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
   task_environment_.FastForwardBy(kFirstReportingWindow);
   EXPECT_THAT(network_sender_->calls(), SizeIs(1));
@@ -584,33 +584,25 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_ObserversNotified) {
                             Property(&StorableSource::source_event_id, 3u)),
                    _));
 
-  attribution_manager_->HandleSource(SourceBuilder(base::Time::Now())
-                                         .SetSourceEventId(1)
-                                         .SetExpiry(kImpressionExpiry)
-                                         .Build());
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetSourceEventId(1).SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
   task_environment_.FastForwardBy(kFirstReportingWindow);
 
   // This one should be stored, as its status is `kDropped`.
-  attribution_manager_->HandleSource(SourceBuilder(base::Time::Now())
-                                         .SetSourceEventId(2)
-                                         .SetExpiry(kImpressionExpiry)
-                                         .Build());
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetSourceEventId(2).SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
   task_environment_.FastForwardBy(kFirstReportingWindow);
 
-  attribution_manager_->HandleSource(SourceBuilder(base::Time::Now())
-                                         .SetSourceEventId(3)
-                                         .SetExpiry(kImpressionExpiry)
-                                         .Build());
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetSourceEventId(3).SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
   task_environment_.FastForwardBy(kFirstReportingWindow);
 
   // This one shouldn't be stored, as it will be retried.
-  attribution_manager_->HandleSource(SourceBuilder(base::Time::Now())
-                                         .SetSourceEventId(4)
-                                         .SetExpiry(kImpressionExpiry)
-                                         .Build());
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetSourceEventId(4).SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
   task_environment_.FastForwardBy(kFirstReportingWindow);
 
@@ -678,7 +670,7 @@ TEST_F(AttributionManagerImplTest, DroppedReport_ObserversNotified) {
   }
 
   attribution_manager_->HandleSource(
-      SourceBuilder(base::Time::Now()).SetExpiry(kImpressionExpiry).Build());
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   EXPECT_THAT(StoredSources(), SizeIs(1));
 
   // `kNavigation` sources can have 3 reports, so none of these should result in
@@ -744,7 +736,7 @@ TEST_F(AttributionManagerImplTest, ClearData) {
 
 TEST_F(AttributionManagerImplTest, ConversionsSentFromUI_ReportedImmediately) {
   attribution_manager_->HandleSource(
-      SourceBuilder(base::Time::Now()).SetExpiry(kImpressionExpiry).Build());
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
   EXPECT_THAT(network_sender_->calls(), IsEmpty());
 
@@ -758,7 +750,7 @@ TEST_F(AttributionManagerImplTest,
   size_t callback_calls = 0;
 
   attribution_manager_->HandleSource(
-      SourceBuilder(base::Time::Now()).SetExpiry(kImpressionExpiry).Build());
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
   attribution_manager_->HandleTrigger(DefaultTrigger());
   EXPECT_THAT(network_sender_->calls(), IsEmpty());
@@ -782,7 +774,7 @@ TEST_F(AttributionManagerImplTest, ExpiredReportsAtStartup_Delayed) {
   base::Time start_time = base::Time::Now();
 
   attribution_manager_->HandleSource(
-      SourceBuilder(base::Time::Now()).SetExpiry(kImpressionExpiry).Build());
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
 
   ShutdownManager();
@@ -810,7 +802,7 @@ TEST_F(AttributionManagerImplTest,
 
   // Create a report that will be reported at t= 2 days.
   attribution_manager_->HandleSource(
-      SourceBuilder(base::Time::Now()).SetExpiry(kImpressionExpiry).Build());
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
 
   ShutdownManager();
@@ -832,7 +824,7 @@ TEST_F(AttributionManagerImplTest,
 TEST_F(AttributionManagerImplTest, SessionOnlyOrigins_DataDeletedAtShutdown) {
   GURL session_only_origin("https://sessiononly.example");
   auto impression =
-      SourceBuilder(base::Time::Now())
+      SourceBuilder()
           .SetImpressionOrigin(url::Origin::Create(session_only_origin))
           .Build();
 
@@ -857,18 +849,15 @@ TEST_F(AttributionManagerImplTest,
       url::Origin::Create(GURL("https://sessiononly.example"));
   // Create impressions which each have the session only origin as one of
   // impression/conversion/reporting origin.
-  auto impression1 = SourceBuilder(base::Time::Now())
-                         .SetImpressionOrigin(session_only_origin)
-                         .Build();
-  auto impression2 = SourceBuilder(base::Time::Now())
-                         .SetReportingOrigin(session_only_origin)
-                         .Build();
-  auto impression3 = SourceBuilder(base::Time::Now())
-                         .SetConversionOrigin(session_only_origin)
-                         .Build();
+  auto impression1 =
+      SourceBuilder().SetImpressionOrigin(session_only_origin).Build();
+  auto impression2 =
+      SourceBuilder().SetReportingOrigin(session_only_origin).Build();
+  auto impression3 =
+      SourceBuilder().SetConversionOrigin(session_only_origin).Build();
 
   // Create one  impression which is not session only.
-  auto impression4 = SourceBuilder(base::Time::Now()).Build();
+  auto impression4 = SourceBuilder().Build();
 
   mock_storage_policy_->AddSessionOnly(session_only_origin.GetURL());
 
@@ -894,7 +883,7 @@ TEST_F(AttributionManagerImplTest,
 // priority trigger.
 TEST_F(AttributionManagerImplTest, ConversionPrioritization_OneReportSent) {
   attribution_manager_->HandleSource(
-      SourceBuilder(base::Time::Now()).SetExpiry(base::Days(7)).Build());
+      SourceBuilder().SetExpiry(base::Days(7)).Build());
   EXPECT_THAT(StoredSources(), SizeIs(1));
 
   attribution_manager_->HandleTrigger(TriggerBuilder().SetPriority(1).Build());
@@ -926,7 +915,7 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_RecordsMetric) {
 
 TEST_F(AttributionManagerImplTest, OnReportSent_RecordsDeleteEventMetric) {
   base::HistogramTester histograms;
-  attribution_manager_->HandleSource(SourceBuilder(base::Time::Now()).Build());
+  attribution_manager_->HandleSource(SourceBuilder().Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
   EXPECT_THAT(StoredReports(), SizeIs(1));
 
@@ -958,10 +947,8 @@ TEST_F(AttributionManagerImplTest, HandleSource_NotifiesObservers) {
       observation(&observer);
   observation.Observe(attribution_manager_.get());
 
-  auto source1 = SourceBuilder(base::Time::Now())
-                     .SetExpiry(kImpressionExpiry)
-                     .SetSourceEventId(7)
-                     .Build();
+  auto source1 =
+      SourceBuilder().SetExpiry(kImpressionExpiry).SetSourceEventId(7).Build();
 
   Checkpoint checkpoint;
   {
@@ -995,10 +982,8 @@ TEST_F(AttributionManagerImplTest, HandleSource_NotifiesObservers) {
   EXPECT_THAT(StoredReports(), SizeIs(1));
   checkpoint.Call(2);
 
-  auto source2 = SourceBuilder(base::Time::Now())
-                     .SetExpiry(kImpressionExpiry)
-                     .SetSourceEventId(9)
-                     .Build();
+  auto source2 =
+      SourceBuilder().SetExpiry(kImpressionExpiry).SetSourceEventId(9).Build();
   attribution_manager_->HandleSource(source2);
   EXPECT_THAT(StoredSources(), SizeIs(1));
 }
@@ -1009,10 +994,8 @@ TEST_F(AttributionManagerImplTest, HandleTrigger_NotifiesObservers) {
       observation(&observer);
   observation.Observe(attribution_manager_.get());
 
-  auto source1 = SourceBuilder(base::Time::Now())
-                     .SetExpiry(kImpressionExpiry)
-                     .SetSourceEventId(7)
-                     .Build();
+  auto source1 =
+      SourceBuilder().SetExpiry(kImpressionExpiry).SetSourceEventId(7).Build();
 
   Checkpoint checkpoint;
   {
@@ -1104,7 +1087,7 @@ TEST_F(AttributionManagerImplTest, EmbedderDisallowsReporting_ReportNotSent) {
   base::HistogramTester histograms;
 
   attribution_manager_->HandleSource(
-      SourceBuilder(base::Time::Now()).SetExpiry(kImpressionExpiry).Build());
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
   EXPECT_THAT(StoredReports(), SizeIs(1));
 
@@ -1127,7 +1110,7 @@ TEST_F(AttributionManagerImplTest, EmbedderDisallowsReporting_ReportNotSent) {
 
 TEST_F(AttributionManagerImplTest, Offline_NoReportSent) {
   attribution_manager_->HandleSource(
-      SourceBuilder(base::Time::Now()).SetExpiry(kImpressionExpiry).Build());
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
   EXPECT_THAT(StoredReports(), SizeIs(1));
 
@@ -1143,7 +1126,7 @@ TEST_F(AttributionManagerImplTest, TimeFromConversionToReportSendHistogram) {
   base::HistogramTester histograms;
 
   attribution_manager_->HandleSource(
-      SourceBuilder(base::Time::Now()).SetExpiry(kImpressionExpiry).Build());
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
 
   task_environment_.FastForwardBy(kFirstReportingWindow);
@@ -1157,7 +1140,7 @@ TEST_F(AttributionManagerImplTest, SendReport_RecordsExtraReportDelay2) {
   base::HistogramTester histograms;
 
   attribution_manager_->HandleSource(
-      SourceBuilder(base::Time::Now()).SetExpiry(kImpressionExpiry).Build());
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
 
   // Prevent the report from being sent until after its original report time.
@@ -1177,7 +1160,7 @@ TEST_F(AttributionManagerImplTest, SendReportsFromWebUI_DoesNotRecordMetrics) {
   base::HistogramTester histograms;
 
   attribution_manager_->HandleSource(
-      SourceBuilder(base::Time::Now()).SetExpiry(kImpressionExpiry).Build());
+      SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
 
   attribution_manager_->SendReportsForWebUI(base::DoNothing());
