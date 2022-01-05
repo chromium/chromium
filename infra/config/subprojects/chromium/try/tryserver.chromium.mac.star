@@ -72,7 +72,7 @@ try_.orchestrator_pair_builders(
     main_list_view = "try",
     orchestrator_cores = 2,
     orchestrator_tryjob = try_.job(
-        experiment_percentage = 50,
+        experiment_percentage = 100,
     ),
     compilator_goma_jobs = goma.jobs.J150,
     os = os.MAC_11,
