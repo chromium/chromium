@@ -617,7 +617,7 @@ WebFrameLoadType NavigationTypeToLoadType(
       if (has_valid_page_state)
         return WebFrameLoadType::kBackForward;
       // If there is no valid page state, fall through to the default case.
-      FALLTHROUGH;
+      [[fallthrough]];
 
     case blink::mojom::NavigationType::SAME_DOCUMENT:
     case blink::mojom::NavigationType::DIFFERENT_DOCUMENT:
