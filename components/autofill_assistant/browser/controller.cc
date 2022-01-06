@@ -879,6 +879,9 @@ void Controller::ShutdownIfNecessary() {
     // point and therefore the reason we pass here in the argument should be
     // ignored.
     client_->Shutdown(Metrics::DropOutReason::UI_CLOSED_UNEXPECTEDLY);
+  } else if (needs_ui_) {
+    needs_ui_ = false;
+    client_->DestroyUI();
   }
 }
 
@@ -891,7 +894,11 @@ void Controller::ReportNavigationStateChanged() {
 void Controller::EnterStoppedState(bool show_feedback_chip) {
   if (script_tracker_)
     script_tracker_->StopScript();
+  SetStoppedUI(show_feedback_chip);
+  EnterState(AutofillAssistantState::STOPPED);
+}
 
+void Controller::SetStoppedUI(bool show_feedback_chip) {
   std::unique_ptr<std::vector<UserAction>> final_actions;
   if (base::FeatureList::IsEnabled(features::kAutofillAssistantFeedbackChip) &&
       show_feedback_chip) {
@@ -912,7 +919,6 @@ void Controller::EnterStoppedState(bool show_feedback_chip) {
   SetUserActions(std::move(final_actions));
   SetCollectUserDataOptions(nullptr);
   SetForm(nullptr, base::DoNothing(), base::DoNothing());
-  EnterState(AutofillAssistantState::STOPPED);
 }
 
 bool Controller::EnterState(AutofillAssistantState state) {
@@ -941,8 +947,6 @@ bool Controller::EnterState(AutofillAssistantState state) {
 
   if (!ui_shown_ && StateNeedsUI(state)) {
     RequireUI();
-  } else if (needs_ui_ && state == AutofillAssistantState::TRACKING) {
-    needs_ui_ = false;
   } else if (browse_mode_invisible_ && ui_shown_ &&
              state == AutofillAssistantState::BROWSE) {
     needs_ui_ = false;
@@ -1176,9 +1180,13 @@ void Controller::ExecuteScript(const std::string& script_path,
   if (!start_message.empty())
     SetStatusMessage(start_message);
 
-  EnterState(AutofillAssistantState::RUNNING);
-  if (needs_ui)
+  if (needs_ui) {
     RequireUI();
+  } else if (needs_ui_ && state_ == AutofillAssistantState::TRACKING) {
+    needs_ui_ = false;
+    client_->DestroyUI();
+  }
+  EnterState(AutofillAssistantState::RUNNING);
 
   touchable_element_area()->Clear();
 
@@ -1221,6 +1229,7 @@ void Controller::OnScriptExecuted(const std::string& script_path,
         client_->Shutdown(Metrics::DropOutReason::SCRIPT_SHUTDOWN);
         return;
       }
+      needs_ui_ = false;
       end_state = AutofillAssistantState::TRACKING;
       break;
 
@@ -1231,6 +1240,8 @@ void Controller::OnScriptExecuted(const std::string& script_path,
         RecordDropOutOrShutdown(Metrics::DropOutReason::SCRIPT_SHUTDOWN);
         return;
       }
+      needs_ui_ = true;
+      SetStoppedUI(show_feedback_chip_on_graceful_shutdown_);
       end_state = AutofillAssistantState::TRACKING;
       break;
 
@@ -1242,10 +1253,14 @@ void Controller::OnScriptExecuted(const std::string& script_path,
         client_->Shutdown(Metrics::DropOutReason::CUSTOM_TAB_CLOSED);
         return;
       }
+      needs_ui_ = false;
       end_state = AutofillAssistantState::TRACKING;
       return;
 
     case ScriptExecutor::CONTINUE:
+      if (end_state == AutofillAssistantState::TRACKING) {
+        needs_ui_ = false;
+      }
       break;
 
     default:
@@ -1403,6 +1418,10 @@ bool Controller::Start(const GURL& deeplink_url,
     ShowFirstMessageAndStart();
   }
   return true;
+}
+
+bool Controller::NeedsUI() const {
+  return needs_ui_;
 }
 
 void Controller::ShowFirstMessageAndStart() {
@@ -2108,6 +2127,15 @@ void Controller::DidStartNavigation(
     OnNavigationShutdownOrError(
         navigation_handle->GetURL(),
         Metrics::DropOutReason::NAVIGATION_WHILE_RUNNING);
+    return;
+  }
+
+  // When in TRACKING state all navigation is allowed, but user-initiated
+  // navigation will close the UI if any.
+  if (state_ == AutofillAssistantState::TRACKING &&
+      is_user_initiated_or_back_forward &&
+      !navigation_handle->WasServerRedirect()) {
+    ShutdownIfNecessary();
     return;
   }
 

@@ -1326,11 +1326,12 @@ TEST_F(ControllerTest, TrackScriptWithNoUI) {
 TEST_F(ControllerTest, TrackScriptShowUIOnTell) {
   SupportsScriptResponseProto script_response;
   auto* script = AddRunnableScript(&script_response, "runnable");
-  script->mutable_presentation()->set_needs_ui(false);
+  script->mutable_presentation()->set_needs_ui(true);
   SetupScripts(script_response);
 
   ActionsResponseProto runnable_script;
   runnable_script.add_actions()->mutable_tell()->set_message("error");
+  runnable_script.add_actions()->mutable_stop();
   SetupActionsForScript("runnable", runnable_script);
 
   // Start tracking at example.com, with one script matching
@@ -1345,7 +1346,93 @@ TEST_F(ControllerTest, TrackScriptShowUIOnTell) {
       controller_->PerformDirectAction(0, std::make_unique<TriggerContext>()));
   EXPECT_EQ(AutofillAssistantState::TRACKING, controller_->GetState());
 
-  // As the controller is back in tracking mode; A UI is not needed anymore.
+  // The last tell message should still be shown to the user.
+  EXPECT_TRUE(controller_->NeedsUI());
+
+  // Check the full history of state transitions.
+  EXPECT_THAT(states_, ElementsAre(AutofillAssistantState::TRACKING,
+                                   AutofillAssistantState::RUNNING,
+                                   AutofillAssistantState::TRACKING));
+}
+
+TEST_F(ControllerTest, RunDirectActionWhileTrackingWithUi) {
+  SupportsScriptResponseProto script_response;
+  auto* script_needs_ui = AddRunnableScript(&script_response, "needs_ui");
+  script_needs_ui->mutable_presentation()->set_needs_ui(true);
+
+  auto* script_no_ui = AddRunnableScript(&script_response, "no_ui");
+  script_no_ui->mutable_presentation()->set_needs_ui(false);
+  SetupScripts(script_response);
+
+  ActionsResponseProto needs_ui_script;
+  needs_ui_script.add_actions()->mutable_tell()->set_message("error");
+  needs_ui_script.add_actions()->mutable_stop();
+  SetupActionsForScript("needs_ui", needs_ui_script);
+
+  ActionsResponseProto no_ui_script;
+  no_ui_script.add_actions()->mutable_stop();
+  SetupActionsForScript("no_ui", no_ui_script);
+
+  // Start tracking at example.com, with one script matching
+  SetLastCommittedUrl(GURL("http://example.com/"));
+
+  controller_->Track(std::make_unique<TriggerContext>(), base::DoNothing());
+  ASSERT_THAT(controller_->GetDirectActionScripts(), SizeIs(2));
+  EXPECT_EQ(controller_->GetDirectActionScripts()[0].path, "needs_ui");
+
+  EXPECT_FALSE(controller_->NeedsUI());
+  EXPECT_CALL(mock_client_, AttachUI());
+  EXPECT_TRUE(
+      controller_->PerformDirectAction(0, std::make_unique<TriggerContext>()));
+  EXPECT_EQ(AutofillAssistantState::TRACKING, controller_->GetState());
+
+  // The last tell message should still be shown to the user.
+  EXPECT_TRUE(controller_->NeedsUI());
+
+  EXPECT_CALL(mock_client_, DestroyUI());
+  EXPECT_TRUE(
+      controller_->PerformDirectAction(1, std::make_unique<TriggerContext>()));
+
+  // UI should have been cleared
+  EXPECT_FALSE(controller_->NeedsUI());
+
+  // Check the full history of state transitions.
+  EXPECT_THAT(states_, ElementsAre(AutofillAssistantState::TRACKING,
+                                   AutofillAssistantState::RUNNING,
+                                   AutofillAssistantState::TRACKING,
+                                   AutofillAssistantState::RUNNING,
+                                   AutofillAssistantState::TRACKING));
+}
+
+TEST_F(ControllerTest, TrackScriptClosesUI) {
+  SupportsScriptResponseProto script_response;
+  auto* script = AddRunnableScript(&script_response, "runnable");
+  script->mutable_presentation()->set_needs_ui(false);
+  SetupScripts(script_response);
+
+  ActionsResponseProto runnable_script;
+  runnable_script.add_actions()->mutable_tell()->set_message("hi");
+  runnable_script.add_actions()
+      ->mutable_wait_for_dom()
+      ->mutable_wait_condition();
+  runnable_script.add_actions()->mutable_stop();
+
+  SetupActionsForScript("runnable", runnable_script);
+
+  // Start tracking at example.com, with one script matching
+  SetLastCommittedUrl(GURL("http://example.com/"));
+
+  controller_->Track(std::make_unique<TriggerContext>(), base::DoNothing());
+  ASSERT_THAT(controller_->GetDirectActionScripts(), SizeIs(1));
+
+  EXPECT_FALSE(controller_->NeedsUI());
+  EXPECT_CALL(mock_client_, AttachUI());
+  EXPECT_TRUE(
+      controller_->PerformDirectAction(0, std::make_unique<TriggerContext>()));
+  EXPECT_EQ(AutofillAssistantState::TRACKING, controller_->GetState());
+
+  // The tell action wasn't the last one before close, so UI should close when
+  // the script is finished.
   EXPECT_FALSE(controller_->NeedsUI());
 
   // Check the full history of state transitions.
@@ -1377,8 +1464,8 @@ TEST_F(ControllerTest, TrackScriptShowUIOnError) {
       controller_->PerformDirectAction(0, std::make_unique<TriggerContext>()));
   EXPECT_EQ(AutofillAssistantState::TRACKING, controller_->GetState());
 
-  // As the controller is back in tracking mode; A UI is not needed anymore.
-  EXPECT_FALSE(controller_->NeedsUI());
+  // UI must remain visible for the user to see the error message.
+  EXPECT_TRUE(controller_->NeedsUI());
 
   // Check the full history of state transitions.
   EXPECT_THAT(states_, ElementsAre(AutofillAssistantState::TRACKING,
@@ -1957,6 +2044,41 @@ TEST_F(ControllerTest, NavigationAfterStopped) {
                                    AutofillAssistantState::RUNNING,
                                    AutofillAssistantState::PROMPT,
                                    AutofillAssistantState::STOPPED));
+}
+
+TEST_F(ControllerTest, NavigationWhileTrackingWithUi) {
+  SupportsScriptResponseProto script_response;
+  auto* script = AddRunnableScript(&script_response, "runnable");
+  script->mutable_presentation()->set_needs_ui(true);
+  SetupScripts(script_response);
+
+  ActionsResponseProto runnable_script;
+  runnable_script.add_actions()->mutable_tell()->set_message("error");
+  runnable_script.add_actions()->mutable_stop();
+  SetupActionsForScript("runnable", runnable_script);
+
+  // Start tracking at example.com, with one script matching
+  SetLastCommittedUrl(GURL("http://example.com/"));
+
+  controller_->Track(std::make_unique<TriggerContext>(), base::DoNothing());
+  ASSERT_THAT(controller_->GetDirectActionScripts(), SizeIs(1));
+
+  EXPECT_TRUE(
+      controller_->PerformDirectAction(0, std::make_unique<TriggerContext>()));
+  EXPECT_EQ(AutofillAssistantState::TRACKING, controller_->GetState());
+  EXPECT_TRUE(controller_->NeedsUI());
+
+  // Browser navigation will destroy the UI.
+  EXPECT_CALL(mock_client_, DestroyUI());
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://a.example.com/page"));
+  EXPECT_EQ(AutofillAssistantState::TRACKING, controller_->GetState());
+  EXPECT_FALSE(controller_->NeedsUI());
+
+  // Full history of state transitions.
+  EXPECT_THAT(states_, ElementsAre(AutofillAssistantState::TRACKING,
+                                   AutofillAssistantState::RUNNING,
+                                   AutofillAssistantState::TRACKING));
 }
 
 TEST_F(ControllerTest, NavigationToGooglePropertyShutsDownDestroyingUI) {

@@ -107,7 +107,7 @@ class Controller : public ScriptExecutorDelegate,
              std::unique_ptr<TriggerContext> trigger_context);
 
   // Returns true if the controller is in a state where UI is necessary.
-  bool NeedsUI() const { return needs_ui_; }
+  bool NeedsUI() const override;
 
   // Called when an accessibility service with "FEEDBACK_SPOKEN" feedback type
   // is enabled or disabled.
@@ -418,9 +418,13 @@ class Controller : public ScriptExecutorDelegate,
   void ShowFirstMessageAndStart();
 
   // Clear out visible state and enter the stopped state.
+  void EnterStoppedState(bool show_feedback_chip);
+
+  // Configure the UI for the stopped state, clearing out visible state except
+  // for the message and possibly the "Send feedback" chip.
   // If |show_feedback_chip| is true, a "Send feedback" chip will be added to
   // the bottom sheet.
-  void EnterStoppedState(bool show_feedback_chip);
+  void SetStoppedUI(bool show_feedback_chip);
 
   void OnFeedbackChipClicked();
 

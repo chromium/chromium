@@ -442,8 +442,13 @@ void UiControllerAndroid::SetupForState() {
       SetOverlayState(OverlayState::HIDDEN);
       SetSpinPoodle(false);
 
-      Java_AssistantModel_setVisible(AttachCurrentThread(), GetModel(), false);
-      DestroySelf();
+      if (!ui_delegate_->NeedsUI()) {
+        Java_AssistantModel_setVisible(AttachCurrentThread(), GetModel(),
+                                       false);
+        DestroySelf();
+      } else if (ui_delegate_->IsTabSelected()) {
+        ShowContentAndExpandBottomSheet();
+      }
       return;
 
     case AutofillAssistantState::INACTIVE:
@@ -807,7 +812,8 @@ void UiControllerAndroid::UpdateActions(
 
   if (!has_close_or_cancel) {
     base::android::ScopedJavaLocalRef<jobject> jcancel_chip;
-    if (ui_delegate_->GetState() == AutofillAssistantState::STOPPED) {
+    if (ui_delegate_->GetState() == AutofillAssistantState::STOPPED ||
+        ui_delegate_->GetState() == AutofillAssistantState::TRACKING) {
       jcancel_chip = Java_AutofillAssistantUiController_createCloseButton(
           env, java_object_, ICON_CLEAR, ConvertUTF8ToJavaString(env, ""),
           /* disabled= */ false, /* sticky= */ true, /* visible=*/true,

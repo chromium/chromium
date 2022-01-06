@@ -276,6 +276,9 @@ class UiDelegate {
   // bottom sheet.
   virtual void OnInputTextFocusChanged(bool is_text_focused) = 0;
 
+  // Returns true if the controller is in a state where UI is necessary.
+  virtual bool NeedsUI() const = 0;
+
  protected:
   UiDelegate() = default;
 };
