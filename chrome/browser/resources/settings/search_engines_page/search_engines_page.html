@@ -110,7 +110,7 @@
       </settings-search-engines-list>
     </template>
 
-    <div hidden="[[isActiveSearchEnginesFlagEnabled_]]">
+    <template is="dom-if" if="[[!isActiveSearchEnginesFlagEnabled_]]">
       <div class="cr-row first">
         <h2 class="flex">$i18n{searchEnginesOther}</h2>
         <cr-button class="secondary-button header-aligned-button"
@@ -126,7 +126,7 @@
                 "[[isActiveSearchEnginesFlagEnabled_]]"
           name-column-header="$i18n{searchEnginesSearchEngine}">
       </settings-search-engines-list>
-    </div>
+    </template>
 
     <template is="dom-if" if="[[isActiveSearchEnginesFlagEnabled_]]">
       <div class="cr-row first">

@@ -141,6 +141,7 @@ export {SettingsResetProfileDialogElement} from './reset_page/reset_profile_dial
 export {SettingsOmniboxExtensionEntryElement} from './search_engines_page/omnibox_extension_entry.js';
 export {SettingsSearchEngineDialogElement} from './search_engines_page/search_engine_dialog.js';
 export {SettingsSearchEngineEntryElement} from './search_engines_page/search_engine_entry.js';
+export {SettingsSearchEnginesListElement} from './search_engines_page/search_engines_list.js';
 export {SettingsSearchEnginesPageElement} from './search_engines_page/search_engines_page.js';
 export {AddSiteDialogElement} from './site_settings/add_site_dialog.js';
 export {AllSitesElement} from './site_settings/all_sites.js';

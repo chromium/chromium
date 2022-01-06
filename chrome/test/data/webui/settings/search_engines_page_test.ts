@@ -7,7 +7,7 @@ import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrInputElement, SettingsOmniboxExtensionEntryElement, SettingsSearchEngineDialogElement, SettingsSearchEngineEntryElement, SettingsSearchEnginesPageElement} from 'chrome://settings/lazy_load.js';
+import {CrInputElement, SettingsOmniboxExtensionEntryElement, SettingsSearchEngineDialogElement, SettingsSearchEngineEntryElement, SettingsSearchEnginesListElement, SettingsSearchEnginesPageElement} from 'chrome://settings/lazy_load.js';
 import {ExtensionControlBrowserProxyImpl, loadTimeData, SearchEngine, SearchEnginesBrowserProxyImpl, SearchEnginesInfo, SearchEnginesInteractions} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
@@ -177,6 +177,48 @@ suite('SearchEngineEntryTests', function() {
         entry.shadowRoot!.querySelector('#url-column')!.textContent);
   });
 
+  // Test that the <search-engine-entry> is populated according to its
+  // underlying SearchEngine model. If the #omnibox-active-search-engines flag
+  // is enabled, show the shortcut column instead of the keyword column.
+  test('Initialization_ActiveFlagEnabled', function() {
+    entry.set('isActiveSearchEnginesFlagEnabled', true);
+    flush();
+    assertEquals(
+        searchEngine.displayName,
+        entry.shadowRoot!.querySelector('#name-column')!.textContent!.trim());
+    assertEquals(
+        searchEngine.keyword,
+        entry.shadowRoot!.querySelector('#shortcut-column')!.textContent);
+    assertEquals(
+        searchEngine.url,
+        entry.shadowRoot!.querySelector('#url-column')!.textContent);
+  });
+
+  // Tests that columns are hidden and shown appropriately.
+  test('ColumnVisibility_ActiveFlagEnabled', function() {
+    entry.set('isActiveSearchEnginesFlagEnabled', true);
+    flush();
+
+    // Test shortcut column visibility.
+    entry.set('showShortcut', true);
+    assertFalse(
+        entry.shadowRoot!.querySelector<HTMLElement>(
+                             '#shortcut-column')!.hidden);
+    entry.set('showShortcut', false);
+    assertTrue(entry.shadowRoot!.querySelector<HTMLElement>(
+                                    '#shortcut-column')!.hidden);
+
+    // Test query URL column visibility.
+    entry.set('showQueryUrl', true);
+    assertFalse(
+        entry.shadowRoot!.querySelector<HTMLElement>(
+                             '#url-column-padded')!.hidden);
+    entry.set('showQueryUrl', false);
+    assertTrue(
+        entry.shadowRoot!.querySelector<HTMLElement>(
+                             '#url-column-padded')!.hidden);
+  });
+
   test('Remove_Enabled', function() {
     // Open action menu.
     entry.shadowRoot!.querySelector('cr-icon-button')!.click();
@@ -233,6 +275,29 @@ suite('SearchEngineEntryTests', function() {
     return promise;
   });
 
+  // Test that clicking the "edit" menu item fires an edit event. If the
+  // #omnibox-active-search-engines flag is enabled, the edit button is an icon
+  // button inline with the Search Engine entry and not in the 3-dot menu.
+  test('Edit_Enabled_ActiveFlagEnabled', function() {
+    entry.set('isActiveSearchEnginesFlagEnabled', true);
+    flush();
+
+    const engine = entry.engine;
+    const editButton =
+        entry.shadowRoot!.querySelector<HTMLButtonElement>(`#editIconButton`)!;
+    assertTrue(!!editButton);
+    assertFalse(editButton.hidden);
+
+    const promise = eventToPromise('edit-search-engine', entry).then(e => {
+      assertEquals(engine, e.detail.engine);
+      assertEquals(
+          entry.shadowRoot!.querySelector('cr-icon-button'),
+          e.detail.anchorElement);
+    });
+    editButton.click();
+    return promise;
+  });
+
   /**
    * Checks that the given button is hidden for the given search engine.
    */
@@ -248,6 +313,26 @@ suite('SearchEngineEntryTests', function() {
     testButtonHidden(createSampleSearchEngine({canBeRemoved: false}), 'delete');
   });
 
+  test('Activate_Hidden_ActiveFlagEnabled', function() {
+    entry.set('isActiveSearchEnginesFlagEnabled', true);
+    flush();
+    testButtonHidden(
+        createSampleSearchEngine({canBeActivated: false}), 'activate');
+  });
+
+  test('Deactivate_Hidden_ActiveFlagEnabled', function() {
+    entry.set('isActiveSearchEnginesFlagEnabled', true);
+    flush();
+    testButtonHidden(
+        createSampleSearchEngine({canBeDeactivated: false}), 'deactivate');
+  });
+
+  test('Edit_Hidden_ActiveFlagEnabled', function() {
+    entry.set('isActiveSearchEnginesFlagEnabled', true);
+    flush();
+    testButtonHidden(
+        createSampleSearchEngine({canBeActivated: true}), 'editIconButton');
+  });
   /**
    * Checks that the given button is disabled for the given search engine.
    */
@@ -268,8 +353,15 @@ suite('SearchEngineEntryTests', function() {
     testButtonDisabled(createSampleSearchEngine({canBeEdited: false}), 'edit');
   });
 
+  test('Edit_Disabled_ActiveFlagEnabled', function() {
+    entry.set('isActiveSearchEnginesFlagEnabled', true);
+    flush();
+    testButtonDisabled(
+        createSampleSearchEngine({canBeEdited: false}), 'editIconButton');
+  });
+
   // Test that clicking the "activate" button fires an activate event.
-  test('Activate', async function() {
+  test('Activate_ActiveFlagEnabled', async function() {
     entry.set('isActiveSearchEnginesFlagEnabled', true);
     flush();
     entry.engine = createSampleSearchEngine({canBeActivated: true});
@@ -288,7 +380,7 @@ suite('SearchEngineEntryTests', function() {
   });
 
   // Test that clicking the "Deactivate" button fires a deactivate event.
-  test('Deactivate', async function() {
+  test('Deactivate_ActiveFlagEnabled', async function() {
     entry.set('isActiveSearchEnginesFlagEnabled', true);
     flush();
     entry.engine = createSampleSearchEngine({canBeDeactivated: true});
@@ -462,7 +554,8 @@ suite('SearchEnginePageTests', function() {
   test('AddSearchEngineDialog', function() {
     assertFalse(
         !!page.shadowRoot!.querySelector('settings-search-engine-dialog'));
-    const addSearchEngineButton = page.$.addSearchEngine;
+    const addSearchEngineButton =
+        page.shadowRoot!.querySelector<HTMLButtonElement>('#addSearchEngine')!;
     assertTrue(!!addSearchEngineButton);
 
     addSearchEngineButton.click();
@@ -553,6 +646,174 @@ suite('SearchEnginePageTests', function() {
     page.filter = 'extension';
     flush();
     assertSearchResults(0, 0, 1);
+  });
+});
+
+suite('SearchEnginePageTests_ActiveFlagEnabled', function() {
+  let page: SettingsSearchEnginesPageElement;
+  let searchEnginesLists: NodeListOf<SettingsSearchEnginesListElement>;
+  let browserProxy: TestSearchEnginesBrowserProxy;
+
+  const searchEnginesInfo: SearchEnginesInfo = {
+    defaults: [
+      createSampleSearchEngine({id: 0}),
+      createSampleSearchEngine({id: 1}),
+      createSampleSearchEngine({id: 2}),
+      createSampleSearchEngine({id: 3}),
+      createSampleSearchEngine({id: 4}),
+      createSampleSearchEngine({id: 5}),
+    ],
+    actives: [createSampleSearchEngine({id: 6})],
+    others: [
+      createSampleSearchEngine({id: 7}),
+      createSampleSearchEngine({id: 8}),
+      createSampleSearchEngine({id: 9}),
+      createSampleSearchEngine({id: 10}),
+      createSampleSearchEngine({id: 11}),
+      createSampleSearchEngine({id: 12}),
+      createSampleSearchEngine({id: 13}),
+    ],
+    extensions: [createSampleOmniboxExtension()],
+  };
+
+  setup(function() {
+    browserProxy = new TestSearchEnginesBrowserProxy();
+
+    // Purposefully pass a clone of |searchEnginesInfo| to avoid any
+    // mutations on ground truth data.
+    browserProxy.setSearchEnginesInfo({
+      defaults: searchEnginesInfo.defaults.slice(),
+      actives: searchEnginesInfo.actives.slice(),
+      others: searchEnginesInfo.others.slice(),
+      extensions: searchEnginesInfo.extensions.slice(),
+    });
+    loadTimeData.overrideValues({'isActiveSearchEnginesFlagEnabled': true});
+    SearchEnginesBrowserProxyImpl.setInstance(browserProxy);
+    document.body.innerHTML = '';
+    page = document.createElement('settings-search-engines-page');
+    document.body.appendChild(page);
+    return browserProxy.whenCalled('getSearchEnginesList');
+  });
+
+  teardown(function() {
+    page.remove();
+  });
+
+  // Tests that the page is querying and displaying search engine info on
+  // startup.
+  test('Initialization', function() {
+    searchEnginesLists =
+        page.shadowRoot!.querySelectorAll('settings-search-engines-list');
+    assertEquals(3, searchEnginesLists.length);
+  });
+
+  test('testDefaultsList', function() {
+    const defaultsListElement = searchEnginesLists[0]!;
+
+    // The defaults list should only show the name and shortcut columns.
+    assertFalse(
+        defaultsListElement.shadowRoot!.querySelector('.name')!.hasAttribute(
+            'hidden'));
+    assertFalse(defaultsListElement.shadowRoot!.querySelector('.shortcut')!
+                    .hasAttribute('hidden'));
+    assertTrue(
+        defaultsListElement.shadowRoot!.querySelector('.url')!.hasAttribute(
+            'hidden'));
+
+    // The default engines list should not collapse and should show all entries
+    // in the list by default.
+    const lists =
+        defaultsListElement.shadowRoot!.querySelectorAll('dom-repeat')!;
+    assertEquals(1, lists.length);
+    const defaultsEntries = lists[0]!.items;
+    assertEquals(searchEnginesInfo.defaults.length, defaultsEntries!.length);
+  });
+
+  test('testActivesList', function() {
+    const activesListElement = searchEnginesLists[1]!;
+
+    // The actives list should only show the name and shortcut columns.
+    assertFalse(
+        activesListElement.shadowRoot!.querySelector('.name')!.hasAttribute(
+            'hidden'));
+    assertFalse(
+        activesListElement.shadowRoot!.querySelector('.shortcut')!.hasAttribute(
+            'hidden'));
+    assertTrue(
+        activesListElement.shadowRoot!.querySelector('.url')!.hasAttribute(
+            'hidden'));
+
+    // With less than `visibleEnginesSize` elements in the list, all elements
+    // should be visible and the collapsible section should not be present.
+    const lists = activesListElement.shadowRoot!.querySelectorAll('dom-repeat');
+    const visibleEntries = lists[0]!.items;
+    const collapsedEntries = lists[1]!.items;
+    assertEquals(searchEnginesInfo.actives.length, visibleEntries!.length);
+    assertEquals(0, collapsedEntries!.length);
+
+    const expandButton =
+        activesListElement.shadowRoot!.querySelector('cr-expand-button');
+    assertTrue(!!expandButton);
+    assertTrue(expandButton!.hasAttribute('hidden'));
+  });
+
+  test('testOthersList', function() {
+    const othersListElement = searchEnginesLists[2]!;
+
+    // The others list should only show the name and url columns.
+    assertFalse(
+        othersListElement.shadowRoot!.querySelector('.name')!.hasAttribute(
+            'hidden'));
+    assertTrue(
+        othersListElement.shadowRoot!.querySelector('.shortcut')!.hasAttribute(
+            'hidden'));
+    assertFalse(othersListElement.shadowRoot!.querySelector('.url-padded')!
+                    .hasAttribute('hidden'));
+
+    // Any engines greater than `visibleEnginesSize` will be in a second list
+    // under the collapsible section. The button to expand this section must be
+    // visible.
+    const visibleEnginesSize = othersListElement.visibleEnginesSize;
+    const lists = othersListElement.shadowRoot!.querySelectorAll('dom-repeat');
+    const visibleEntries = lists[0]!.items;
+    const collapsedEntries = lists[1]!.items;
+    assertEquals(visibleEnginesSize, visibleEntries!.length);
+    assertEquals(
+        searchEnginesInfo.others.length - visibleEnginesSize,
+        collapsedEntries!.length);
+
+    const expandButton =
+        othersListElement.shadowRoot!.querySelector('cr-expand-button');
+    assertTrue(!!expandButton);
+    assertFalse(expandButton!.hasAttribute('hidden'));
+  });
+
+  // Test that the "no other search engines" message is shown/hidden as
+  // expected.
+  test('NoSearchEnginesMessages', function() {
+    webUIListenerCallback('search-engines-changed', {
+      defaults: [],
+      actives: [],
+      others: [],
+      extensions: [],
+    });
+
+    const messageActive = page.shadowRoot!.querySelector('#noActiveEngines');
+    assertTrue(!!messageActive);
+    assertFalse(messageActive!.hasAttribute('hidden'));
+
+    const messageOther = page.shadowRoot!.querySelector('#noOtherEngines');
+    assertTrue(!!messageOther);
+    assertFalse(messageOther!.hasAttribute('hidden'));
+
+    webUIListenerCallback('search-engines-changed', {
+      defaults: [],
+      actives: [createSampleSearchEngine()],
+      others: [createSampleSearchEngine()],
+      extensions: [],
+    });
+    assertTrue(messageActive!.hasAttribute('hidden'));
+    assertTrue(messageOther!.hasAttribute('hidden'));
   });
 });
 
