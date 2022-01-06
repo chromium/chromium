@@ -9,12 +9,14 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/test_with_browser_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "content/public/browser/web_contents.h"
@@ -27,6 +29,7 @@
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/bubble/bubble_frame_view.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/button/checkbox.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/resources/grit/views_resources.h"
 #include "url/gurl.h"
@@ -122,6 +125,14 @@ class IntentPickerBubbleViewTest : public TestWithBrowserView {
         web_contents);
     bubble_ = bubble.get();
     views::BubbleDialogDelegateView::CreateBubble(std::move(bubble));
+  }
+
+  // Add an app to the bubble opened by CreateBubbleView. Manually added apps
+  // will appear before automatic placeholder apps.
+  void AddApp(apps::PickerEntryType app_type,
+              const std::string& launch_name,
+              const std::string& title) {
+    app_info_.emplace_back(app_type, ui::ImageModel(), launch_name, title);
   }
 
   void FillAppListWithDummyIcons() {
@@ -313,4 +324,32 @@ TEST_F(IntentPickerBubbleViewTest, InitiatingOriginView) {
                    url::Origin::Create(GURL("http://www.google.com")));
   const int children_with_same_origin = bubble_->children().size();
   EXPECT_EQ(children_without_origin, children_with_same_origin);
+}
+
+TEST_F(IntentPickerBubbleViewTest, RememberCheckbox) {
+  AddApp(apps::PickerEntryType::kDevice, "device_id", "Android Phone");
+  AddApp(apps::PickerEntryType::kWeb, "web_app_id", "Web App");
+  AddApp(apps::PickerEntryType::kArc, "arc_app_id", "Arc App");
+
+  CreateBubbleView(/*use_icons=*/false, /*show_stay_in_chrome=*/false,
+                   PageActionIconType::kIntentPicker,
+                   /*initiating_origin=*/absl::nullopt);
+
+  const ui::MouseEvent event(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                             ui::EventTimeForNow(), 0, 0);
+
+  // kDevice entries should not allow persistence.
+  bubble_->PressButtonForTesting(0, event);
+  ASSERT_FALSE(bubble_->remember_selection_checkbox_->GetEnabled());
+
+  // kWeb entries should allow persistence when kIntentPickerPWAPersistence is
+  // enabled.
+  bubble_->PressButtonForTesting(1, event);
+  ASSERT_EQ(
+      bubble_->remember_selection_checkbox_->GetEnabled(),
+      base::FeatureList::IsEnabled(features::kIntentPickerPWAPersistence));
+
+  // Other app types can be persisted.
+  bubble_->PressButtonForTesting(2, event);
+  ASSERT_TRUE(bubble_->remember_selection_checkbox_->GetEnabled());
 }

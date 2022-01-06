@@ -496,17 +496,16 @@ size_t IntentPickerBubbleView::CalculateNextAppIndex(int delta) {
 void IntentPickerBubbleView::UpdateCheckboxState() {
   if (!remember_selection_checkbox_)
     return;
-  // TODO(crbug.com/826982): allow PWAs to have their decision persisted when
-  // there is a central Chrome OS apps registry to store persistence.
-  // TODO(crbug.com/1000037): allow to persist remote devices too.
-  bool should_enable = false;
-  if (base::FeatureList::IsEnabled(features::kIntentPickerPWAPersistence)) {
-    should_enable = true;
-  } else {
-    auto selected_app_type = app_info_[selected_app_tag_].type;
-    should_enable = selected_app_type != apps::PickerEntryType::kWeb &&
-                    selected_app_type != apps::PickerEntryType::kDevice;
+  auto selected_app_type = app_info_[selected_app_tag_].type;
+  bool should_enable = true;
+  if (selected_app_type == apps::PickerEntryType::kDevice) {
+    // TODO(crbug.com/1000037): Allow persisting remote devices.
+    should_enable = false;
+  } else if (selected_app_type == apps::PickerEntryType::kWeb) {
+    should_enable =
+        base::FeatureList::IsEnabled(features::kIntentPickerPWAPersistence);
   }
+
   // Reset the checkbox state to the default unchecked if becomes disabled.
   if (!should_enable)
     remember_selection_checkbox_->SetChecked(false);
