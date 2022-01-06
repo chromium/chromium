@@ -45,7 +45,6 @@ Case: Displaying movie
       "name": "LayoutFlexibleBox DIV class='sizing-small phase-pre-ready state-no-source'",
       "bounds": [352, 288],
       "contentsOpaqueForText": true,
-      "drawsContent": false,
       "transform": 1
     },
     {

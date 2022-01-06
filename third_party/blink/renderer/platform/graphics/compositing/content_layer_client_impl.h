@@ -55,8 +55,7 @@ class PLATFORM_EXPORT ContentLayerClientImpl : public cc::ContentLayerClient,
       const PaintChunkSubset&,
       const gfx::Vector2dF& layer_offset,
       const gfx::Size& layer_bounds,
-      const PropertyTreeState&,
-      bool draws_content);
+      const PropertyTreeState&);
 
   RasterInvalidator& GetRasterInvalidator() { return raster_invalidator_; }
 

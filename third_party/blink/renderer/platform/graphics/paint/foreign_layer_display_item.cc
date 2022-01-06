@@ -25,8 +25,7 @@ ForeignLayerDisplayItem::ForeignLayerDisplayItem(
                   type,
                   gfx::Rect(origin, layer->bounds()),
                   outset,
-                  paint_invalidation_reason,
-                  /*draws_content*/ true),
+                  paint_invalidation_reason),
       layer_(std::move(layer)) {
   DCHECK(IsForeignLayerType(type));
 }

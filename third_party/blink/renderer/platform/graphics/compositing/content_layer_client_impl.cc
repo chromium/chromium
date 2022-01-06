@@ -64,8 +64,7 @@ scoped_refptr<cc::PictureLayer> ContentLayerClientImpl::UpdateCcPictureLayer(
     const PaintChunkSubset& paint_chunks,
     const gfx::Vector2dF& layer_offset,
     const gfx::Size& layer_bounds,
-    const PropertyTreeState& layer_state,
-    bool draws_content) {
+    const PropertyTreeState& layer_state) {
   if (paint_chunks.begin()->is_cacheable)
     id_.emplace(paint_chunks.begin()->id);
   else
@@ -128,7 +127,7 @@ scoped_refptr<cc::PictureLayer> ContentLayerClientImpl::UpdateCcPictureLayer(
   cc_picture_layer_->SetBounds(layer_bounds);
   cc_picture_layer_->SetHitTestable(true);
   cc_picture_layer_->SetIsDrawable(
-      (!layer_bounds.IsEmpty() && draws_content) ||
+      (!layer_bounds.IsEmpty() && cc_display_item_list_->TotalOpCount()) ||
       // Backdrop effects and filters require the layer to be drawable even if
       // the layer draws nothing.
       layer_state.Effect().HasBackdropEffect() ||

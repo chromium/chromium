@@ -112,10 +112,6 @@ struct PLATFORM_EXPORT PaintChunk {
     return *layer_selection_data;
   }
 
-  bool DrawsContent() const {
-    return !effectively_invisible && !drawable_bounds.IsEmpty();
-  }
-
   size_t MemoryUsageInBytes() const;
 
   // The no-argument version is for operator<< which is used in DCHECK and unit

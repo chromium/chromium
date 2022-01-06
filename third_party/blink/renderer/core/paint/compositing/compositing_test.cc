@@ -2052,6 +2052,7 @@ TEST_P(CompositingSimTest, ChangingContentsOpaqueForTextRequiresFullUpdate) {
           padding: 5px;
           background: lightblue;
         }
+      }
       </style>
       <div id="target">
         <div id="textContainer">
@@ -2082,39 +2083,6 @@ TEST_P(CompositingSimTest, ChangingContentsOpaqueForTextRequiresFullUpdate) {
             PaintArtifactCompositor::PreviousUpdateType::kFull);
   EXPECT_FALSE(CcLayerByDOMElementId("target")->contents_opaque());
   EXPECT_FALSE(CcLayerByDOMElementId("target")->contents_opaque_for_text());
-}
-
-TEST_P(CompositingSimTest, ChangingDrawsContentRequiresFullUpdate) {
-  InitializeWithHTML(R"HTML(
-      <!DOCTYPE html>
-      <style>
-        #target {
-          width: 100px;
-          height: 100px;
-          will-change: transform;
-        }
-      </style>
-      <div id="target"></div>
-  )HTML");
-
-  Compositor().BeginFrame();
-
-  // Initially, no update is needed.
-  EXPECT_FALSE(paint_artifact_compositor()->NeedsUpdate());
-  EXPECT_FALSE(CcLayerByDOMElementId("target")->DrawsContent());
-
-  // Clear the previous update to ensure we record a new one in the next update.
-  paint_artifact_compositor()->ClearPreviousUpdateForTesting();
-
-  // A simple repaint change that causes Layer::DrawsContent to change still
-  // needs to cause a full update because it can affect whether mask layers are
-  // created.
-  auto* target = GetElementById("target");
-  target->setAttribute(html_names::kStyleAttr, "background: rgba(0,0,0,0.5)");
-  Compositor().BeginFrame();
-  EXPECT_EQ(paint_artifact_compositor()->PreviousUpdateForTesting(),
-            PaintArtifactCompositor::PreviousUpdateType::kFull);
-  EXPECT_TRUE(CcLayerByDOMElementId("target")->DrawsContent());
 }
 
 TEST_P(CompositingSimTest, ContentsOpaqueForTextWithSubpixelSizeSimpleBg) {
