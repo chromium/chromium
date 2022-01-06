@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <atomic>
 #include <string>
 
 #include "base/compiler_specific.h"
