@@ -19,6 +19,7 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksShim;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkType;
@@ -882,6 +883,8 @@ public class BookmarkBridge {
         assert title != null;
         assert url != null;
 
+        recordBookmarkAdded();
+
         if (TextUtils.isEmpty(title)) title = url.getSpec();
         return BookmarkBridgeJni.get().addBookmark(
                 mNativeBookmarkBridge, BookmarkBridge.this, parent, index, title, url);
@@ -908,9 +911,16 @@ public class BookmarkBridge {
         assert title != null;
         assert url != null;
 
+        recordBookmarkAdded();
+
         if (TextUtils.isEmpty(title)) title = url.getSpec();
         return BookmarkBridgeJni.get().addPowerBookmark(
                 mNativeBookmarkBridge, this, webContents, parent, index, title, url);
+    }
+
+    /** Record the user action for adding a bookmark. */
+    private void recordBookmarkAdded() {
+        RecordUserAction.record("BookmarkAdded");
     }
 
     @Deprecated // Only included until internal repository is updated.
