@@ -418,7 +418,8 @@ void PredictionManager::FetchModels() {
 
   proto::ModelInfo base_model_info;
   if (features::IsModelDownloadingEnabled()) {
-    // TODO(crbug/1204614): Remove v2.3* and 2.4 when server supports 2.7.
+    // TODO(crbug/1204614): Tidy these up so only the current version is sent to
+    // the server.
     base_model_info.add_supported_model_engine_versions(
         proto::MODEL_ENGINE_VERSION_TFLITE_2_3_0);
     base_model_info.add_supported_model_engine_versions(
@@ -429,6 +430,8 @@ void PredictionManager::FetchModels() {
         proto::MODEL_ENGINE_VERSION_TFLITE_2_7);
     base_model_info.add_supported_model_engine_versions(
         proto::MODEL_ENGINE_VERSION_TFLITE_2_8);
+    base_model_info.add_supported_model_engine_versions(
+        proto::MODEL_ENGINE_VERSION_TFLITE_2_9);
   }
 
   std::string debug_msg;
