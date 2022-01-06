@@ -305,7 +305,6 @@ public class StartSurfaceLayout extends Layout {
     @Override
     public void startHiding(int nextId, boolean hintAtTabSelection) {
         int startSurfaceState = mController.getStartSurfaceState();
-        StartSurfaceUserData.getInstance().setUnusedTabRestoredAtStartup(false);
         if (startSurfaceState == StartSurfaceState.SHOWN_HOMEPAGE) {
             startHidingStartSurface(nextId, hintAtTabSelection);
         } else {
