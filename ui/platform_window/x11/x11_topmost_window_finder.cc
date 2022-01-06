@@ -44,15 +44,8 @@ bool EnumerateChildren(ShouldStopIteratingCallback should_stop_iterating,
   for (iter = windows.rbegin(); iter != windows.rend(); iter++) {
     if (IsWindowNamed(*iter) && should_stop_iterating.Run(*iter))
       return true;
-  }
-
-  // If we're at this point, we didn't find the window we're looking for at the
-  // current level, so we need to recurse to the next level.  We use a second
-  // loop because the recursion and call to XQueryTree are expensive and is only
-  // needed for a small number of cases.
-  if (++depth <= max_depth) {
-    for (iter = windows.rbegin(); iter != windows.rend(); iter++) {
-      if (EnumerateChildren(should_stop_iterating, *iter, max_depth, depth))
+    if (depth < max_depth) {
+      if (EnumerateChildren(should_stop_iterating, *iter, max_depth, depth + 1))
         return true;
     }
   }
