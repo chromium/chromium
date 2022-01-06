@@ -25,6 +25,7 @@
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/contents_view.h"
+#include "ash/app_list/views/continue_section_view.h"
 #include "ash/app_list/views/expand_arrow_view.h"
 #include "ash/app_list/views/folder_background_view.h"
 #include "ash/app_list/views/folder_header_view.h"
@@ -504,6 +505,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     view_->InitView(GetContext());
     Show();
     test_api_ = std::make_unique<AppsGridViewTestApi>(apps_grid_view());
+    // May be null for ProductivityLauncher, which does not use chips.
     suggestions_container_ = contents_view()
                                  ->apps_container_view()
                                  ->suggestion_chip_container_view_for_test();
@@ -523,7 +525,8 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     AppListFolderItem* folder_item =
         model->CreateAndPopulateFolderWithApps(kItemNumInFolder);
     model->PopulateApps(kAppListItemNum);
-    suggestions_container()->Update();
+    if (suggestions_container_)
+      suggestions_container_->Update();
     EXPECT_EQ(static_cast<size_t>(kAppListItemNum + 1),
               model->top_level_item_list()->item_count());
     EXPECT_EQ(folder_item->id(),
@@ -595,6 +598,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
         result->set_display_type(data.first);
         result->set_display_score(display_score);
         result->set_title(u"Test");
+        result->set_best_match(true);
         results->Add(std::move(result));
       }
     }
@@ -639,6 +643,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     result->set_display_type(ash::SearchResultDisplayType::kList);
     result->set_display_score(score);
     result->set_title(ASCIIToUTF16(title));
+    result->set_best_match(true);
     GetSearchModel()->results()->Add(std::move(result));
     RunPendingMessages();
   }
@@ -823,6 +828,8 @@ class AppListViewFocusTest : public views::ViewsTestBase,
   }
 
   std::vector<views::View*> GetAllSuggestions() {
+    // ProductivityLauncher does not use suggestion chips.
+    DCHECK(!features::IsProductivityLauncherEnabled());
     const auto& children = suggestions_container()->children();
     std::vector<views::View*> suggestions;
     std::copy_if(children.cbegin(), children.cend(),
@@ -848,10 +855,12 @@ class AppListViewFocusTest : public views::ViewsTestBase,
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
-  TestAppListColorProvider color_provider_;  // Needed by AppListView.
+  TestAppListColorProvider app_list_color_provider_;  // Needed by AppListView.
+  AshColorProvider ash_color_provider_;  // Needed by ProductivityLauncher.
   AppListView* view_ = nullptr;  // Owned by native widget.
-  SearchResultContainerView* suggestions_container_ =
-      nullptr;                                    // Owned by view hierarchy.
+  // Owned by view hierarchy. May be null for ProductivityLauncher, which does
+  // not use suggestion chips.
+  SearchResultContainerView* suggestions_container_ = nullptr;
   ExpandArrowView* expand_arrow_view_ = nullptr;  // Owned by view hierarchy.
 
   std::unique_ptr<AppListTestViewDelegate> delegate_;
@@ -863,7 +872,20 @@ class AppListViewFocusTest : public views::ViewsTestBase,
   keyboard::KeyboardUIController keyboard_ui_controller_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, AppListViewFocusTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(Rtl, AppListViewFocusTest, testing::Bool());
+
+// Tests for the legacy "peeking" clamshell launcher. These can be deleted when
+// ProductivityLauncher is the default.
+class AppListViewPeekingFocusTest : public AppListViewFocusTest {
+ public:
+  AppListViewPeekingFocusTest() {
+    feature_list_.InitAndDisableFeature(features::kProductivityLauncher);
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(Rtl, AppListViewPeekingFocusTest, testing::Bool());
 
 // Tests that the initial focus is on search box.
 TEST_F(AppListViewFocusTest, InitialFocus) {
@@ -871,7 +893,7 @@ TEST_F(AppListViewFocusTest, InitialFocus) {
 }
 
 // Tests the linear focus traversal in PEEKING state.
-TEST_P(AppListViewFocusTest, LinearFocusTraversalInPeekingState) {
+TEST_P(AppListViewPeekingFocusTest, LinearFocusTraversalInPeekingState) {
   Show();
   SetAppListState(ash::AppListViewState::kPeeking);
 
@@ -901,6 +923,11 @@ TEST_P(AppListViewFocusTest, LinearFocusTraversalInPeekingState) {
 
 // Tests the linear focus traversal in FULLSCREEN_ALL_APPS state.
 TEST_P(AppListViewFocusTest, LinearFocusTraversalInFullscreenAllAppsState) {
+  // TODO(https://crbug.com/1284992): Fix for ProductivityLauncher, which
+  // does not use suggestion chips.
+  if (features::IsProductivityLauncherEnabled())
+    return;
+
   Show();
   SetAppListState(ash::AppListViewState::kFullscreenAllApps);
 
@@ -932,7 +959,7 @@ TEST_P(AppListViewFocusTest, LinearFocusTraversalInFullscreenAllAppsState) {
 }
 
 // Tests focus traversal in HALF state with opened search box using |VKEY_TAB|.
-TEST_F(AppListViewFocusTest, TabFocusTraversalInHalfState) {
+TEST_F(AppListViewPeekingFocusTest, TabFocusTraversalInHalfState) {
   Show();
 
   // Type something in search box to transition to HALF state and populate
@@ -986,7 +1013,7 @@ TEST_F(AppListViewFocusTest, TabFocusTraversalInHalfState) {
 // *   search box text is cleared
 // *   search box gets focus, but it's not active
 // *   subsequent tab keys move focus to app list folder view.
-TEST_F(AppListViewFocusTest, CloseButtonClearsSearchOnEnter) {
+TEST_F(AppListViewPeekingFocusTest, CloseButtonClearsSearchOnEnter) {
   Show();
 
   // Type something in search box to transition to HALF state and populate
@@ -1030,7 +1057,7 @@ TEST_F(AppListViewFocusTest, CloseButtonClearsSearchOnEnter) {
 
 // Tests focus traversal in HALF state with opened search box using |VKEY_LEFT|
 // and |VKEY_RIGHT|.
-TEST_P(AppListViewFocusTest, LeftRightFocusTraversalInHalfState) {
+TEST_P(AppListViewPeekingFocusTest, LeftRightFocusTraversalInHalfState) {
   Show();
 
   // Type something in search box to transition to HALF state and populate
@@ -1115,24 +1142,42 @@ TEST_F(AppListViewFocusTest, OpeningFolderRemovesOtherViewsFromAccessibility) {
 
   // Note: For fullscreen app list, the search box is part of the focus cycle
   // when a folder is open.
+  // ProductivityLauncher uses recent apps and continue section.
+  auto* recent_apps_view = apps_container_view->GetRecentApps();
+  auto* continue_section_view = apps_container_view->GetContinueSection();
+  // Non-ProductivityLauncher uses suggestion chips.
   auto* suggestion_chip_container =
       apps_container_view->suggestion_chip_container_view_for_test();
-  EXPECT_TRUE(suggestion_chip_container->GetViewAccessibility().IsIgnored());
-  EXPECT_TRUE(suggestion_chip_container->GetViewAccessibility().IsLeaf());
+  if (features::IsProductivityLauncherEnabled()) {
+    EXPECT_TRUE(recent_apps_view->GetViewAccessibility().IsIgnored());
+    EXPECT_TRUE(recent_apps_view->GetViewAccessibility().IsLeaf());
+    EXPECT_TRUE(continue_section_view->GetViewAccessibility().IsIgnored());
+    EXPECT_TRUE(continue_section_view->GetViewAccessibility().IsLeaf());
+  } else {
+    EXPECT_TRUE(suggestion_chip_container->GetViewAccessibility().IsIgnored());
+    EXPECT_TRUE(suggestion_chip_container->GetViewAccessibility().IsLeaf());
+  }
   EXPECT_TRUE(apps_grid_view()->GetViewAccessibility().IsIgnored());
   EXPECT_TRUE(apps_grid_view()->GetViewAccessibility().IsLeaf());
 
   // Close the folder.
   SimulateKeyPress(ui::VKEY_ESCAPE, false);
 
-  EXPECT_FALSE(suggestion_chip_container->GetViewAccessibility().IsIgnored());
-  EXPECT_FALSE(suggestion_chip_container->GetViewAccessibility().IsLeaf());
+  if (features::IsProductivityLauncherEnabled()) {
+    EXPECT_FALSE(recent_apps_view->GetViewAccessibility().IsIgnored());
+    EXPECT_FALSE(recent_apps_view->GetViewAccessibility().IsLeaf());
+    EXPECT_FALSE(continue_section_view->GetViewAccessibility().IsIgnored());
+    EXPECT_FALSE(continue_section_view->GetViewAccessibility().IsLeaf());
+  } else {
+    EXPECT_FALSE(suggestion_chip_container->GetViewAccessibility().IsIgnored());
+    EXPECT_FALSE(suggestion_chip_container->GetViewAccessibility().IsLeaf());
+  }
   EXPECT_FALSE(apps_grid_view()->GetViewAccessibility().IsIgnored());
   EXPECT_FALSE(apps_grid_view()->GetViewAccessibility().IsLeaf());
 }
 
 // Tests the vertical focus traversal by in PEEKING state.
-TEST_P(AppListViewFocusTest, VerticalFocusTraversalInPeekingState) {
+TEST_P(AppListViewPeekingFocusTest, VerticalFocusTraversalInPeekingState) {
   Show();
   SetAppListState(ash::AppListViewState::kPeeking);
 
@@ -1158,6 +1203,11 @@ TEST_P(AppListViewFocusTest, VerticalFocusTraversalInPeekingState) {
 
 // Tests the vertical focus traversal in FULLSCREEN_ALL_APPS state.
 TEST_P(AppListViewFocusTest, VerticalFocusTraversalInFullscreenAllAppsState) {
+  // TODO(https://crbug.com/1284992): Fix for ProductivityLauncher, which
+  // does not use suggestion chips.
+  if (features::IsProductivityLauncherEnabled())
+    return;
+
   Show();
   SetAppListState(ash::AppListViewState::kFullscreenAllApps);
 
@@ -1190,7 +1240,7 @@ TEST_P(AppListViewFocusTest, VerticalFocusTraversalInFullscreenAllAppsState) {
 }
 
 // Tests the vertical focus traversal in HALF state with opened search box.
-TEST_F(AppListViewFocusTest, VerticalFocusTraversalInHalfState) {
+TEST_F(AppListViewPeekingFocusTest, VerticalFocusTraversalInHalfState) {
   Show();
 
   // Type something in search box to transition to HALF state and populate
@@ -1272,8 +1322,9 @@ TEST_F(AppListViewFocusTest, VerticalFocusTraversalInFirstPageOfFolder) {
 }
 
 // Tests the vertical focus traversal in FULLSCREEN_ALL_APPS state in the second
-// page within folder.
-TEST_F(AppListViewFocusTest, VerticalFocusTraversalInSecondPageOfFolder) {
+// page within folder. ProductivityLauncher does not use pages for folders.
+TEST_F(AppListViewPeekingFocusTest,
+       VerticalFocusTraversalInSecondPageOfFolder) {
   Show();
 
   // Transition to FULLSCREEN_ALL_APPS state and open the folder.
@@ -1320,7 +1371,7 @@ TEST_F(AppListViewFocusTest, VerticalFocusTraversalInSecondPageOfFolder) {
 
 // Tests that the focus is set back onto search box after all state transitions
 // besides those going to/from an activated folder.
-TEST_F(AppListViewFocusTest, FocusResetAfterStateTransition) {
+TEST_F(AppListViewPeekingFocusTest, FocusResetAfterStateTransition) {
   Show();
 
   // Type something in search box to transition to HALF state and populate
@@ -1377,6 +1428,11 @@ TEST_F(AppListViewFocusTest, FocusResetAfterStateTransition) {
 // Tests that key event which is not handled by focused view will be redirected
 // to search box when search box view is active (but not focused).
 TEST_F(AppListViewFocusTest, RedirectFocusToSearchBox) {
+  // TODO(https://crbug.com/1284992): Fix for ProductivityLauncher, which
+  // does not support this behavior and also does not use suggestion chips.
+  if (features::IsProductivityLauncherEnabled())
+    return;
+
   Show();
 
   // Set focus to first suggestion app and type a character.
@@ -1566,8 +1622,10 @@ TEST_F(AppListViewFocusTest, HittingEnterWhenFocusOnSearchBox) {
 TEST_F(AppListViewFocusTest, SetFocusOnSearchboxWhenActivated) {
   Show();
 
-  // Set focus to the first suggestion app.
-  GetAllSuggestions()[0]->RequestFocus();
+  // Press tab several times to move focus out of the search box.
+  SimulateKeyPress(ui::VKEY_TAB, false);
+  SimulateKeyPress(ui::VKEY_TAB, false);
+  SimulateKeyPress(ui::VKEY_TAB, false);
   EXPECT_FALSE(search_box_view()->search_box()->HasFocus());
 
   // Activate the search box.
@@ -2654,7 +2712,9 @@ TEST_P(AppListViewTabletTest, PagePersistanceTabletModeTest) {
 }
 
 // Tests selecting search result to show embedded Assistant UI.
-TEST_F(AppListViewFocusTest, ShowEmbeddedAssistantUI) {
+// TODO(https://crbug.com/1280300): Figure out if ProductivityLauncher needs a
+// version of this test. ProductivityLauncherSearchView has its own test suite.
+TEST_F(AppListViewPeekingFocusTest, ShowEmbeddedAssistantUI) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       {app_list_features::kEnableAssistantSearch}, {});
@@ -3118,8 +3178,8 @@ TEST_F(AppListViewScalableLayoutTest, AppListViewLayoutAfterConfigChange) {
 }
 
 // Tests that page switching in folder doesn't record AppListPageSwitcherSource
-// metric.
-TEST_F(AppListViewFocusTest, PageSwitchingNotRecordingMetric) {
+// metric. ProductivityLauncher does not use pages in folders.
+TEST_F(AppListViewPeekingFocusTest, PageSwitchingNotRecordingMetric) {
   base::HistogramTester histogram_tester;
   Show();
 
