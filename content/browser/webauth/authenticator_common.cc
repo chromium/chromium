@@ -986,7 +986,7 @@ void AuthenticatorCommon::GetAssertion(
       return;
     }
     url::Origin top_origin =
-        web_contents->GetMainFrame()->GetLastCommittedOrigin();
+        GetRenderFrameHost()->GetOutermostMainFrame()->GetLastCommittedOrigin();
     client_data_json_ = BuildClientDataJson(
         ClientDataRequestType::kPaymentGet, caller_origin_.Serialize(),
         options->challenge, is_cross_origin, std::move(payment),
