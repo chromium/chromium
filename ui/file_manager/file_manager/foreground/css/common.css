@@ -114,10 +114,19 @@ cr-menu.chrome-menu > hr:first-child {
   display: none;
 }
 
-cr-menu.chrome-menu > cr-menu-item[checked] {
-  background-image: -webkit-image-set(
-    url(../images/common/check_no_box.png) 1x,
-    url(../images/common/2x/check_no_box.png) 2x);
+cr-menu.chrome-menu > cr-menu-item[checked]::after {
+  -webkit-mask-image: url(../images/common/ic_selected.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  background-color: var(--cros-icon-color-prominent);
+  content: '';
+  float: right;
+  height: 32px;
+  width: 20px;
+}
+
+html[dir='rtl'] cr-menu.chrome-menu > cr-menu-item[checked]::after {
+  float: left;
 }
 
 cr-menu.chrome-menu > [checked]::before {

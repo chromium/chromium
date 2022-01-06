@@ -1796,16 +1796,12 @@ html[dir='rtl'] .badge {
 }
 
 .copied .badge {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/cloud_import_syncing.png) 1x,
-      url(../images/files/ui/2x/cloud_import_syncing.png) 2x);
+  background-image: url(../images/files/ui/cloud_import_syncing.svg);
   display: block;
 }
 
 .imported .badge {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/service_drive.png) 1x,
-      url(../images/files/ui/2x/service_drive.png) 2x);
+  background-image: url(../images/volumes/service_drive.svg);
   display: block;
 }
 
@@ -2683,9 +2679,10 @@ list.autocomplete-suggestions > li > div.detail-text em {
 }
 
 list.autocomplete-suggestions > li > div[search-icon] {
-  background: -webkit-image-set(
-      url(../images/files/ui/search.png) 1x,
-      url(../images/files/ui/2x/search.png) 2x) center no-repeat;
+  -webkit-mask-image: url(../images/files/ui/search.svg);
+  -webkit-mask-position: center;
+  -webkit-mask-repeat: no-repeat;
+  background-color: var(--cros-menu-icon-color);
 }
 
 list.autocomplete-suggestions > [selected],

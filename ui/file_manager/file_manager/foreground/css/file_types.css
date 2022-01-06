@@ -138,52 +138,27 @@ body.files-ng [file-type-icon='word'] {
 }
 
 /* Large generic thumbnails, used when a file does not have a thumbnail. */
-[generic-thumbnail] {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/filetype_placeholder_generic.png) 1x,
-      url(../images/files/ui/2x/filetype_placeholder_generic.png) 2x);
-  background-position: center 50px;
-  background-repeat: no-repeat;
-}
-
-body.files-ng .no-thumbnail[generic-thumbnail] {
+.no-thumbnail[generic-thumbnail] {
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
   -webkit-mask-size: 48px;
   background-color: transparent;
   background-image: url(../images/files/ui/filetype_placeholder_generic.svg);
   background-position: center;
+  background-repeat: no-repeat;
   background-size: 48px;
 }
 
-[generic-thumbnail='audio'] {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/filetype_placeholder_audio.png) 1x,
-      url(../images/files/ui/2x/filetype_placeholder_audio.png) 2x);
-}
-
-body.files-ng .no-thumbnail[generic-thumbnail='audio'] {
+.no-thumbnail[generic-thumbnail='audio'] {
   background-image: url(../images/filetype/filetype_audio.svg);
 }
 
-[generic-thumbnail='image'] {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/filetype_placeholder_image.png) 1x,
-      url(../images/files/ui/2x/filetype_placeholder_image.png) 2x);
-}
-
-body.files-ng .no-thumbnail[generic-thumbnail='image'],
-body.files-ng .no-thumbnail[generic-thumbnail='raw'] {
+.no-thumbnail[generic-thumbnail='image'],
+.no-thumbnail[generic-thumbnail='raw'] {
   background-image: url(../images/filetype/filetype_image.svg);
 }
 
-[generic-thumbnail='video'] {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/filetype_placeholder_video.png) 1x,
-      url(../images/files/ui/2x/filetype_placeholder_video.png) 2x);
-}
-
-body.files-ng .no-thumbnail[generic-thumbnail='video'] {
+.no-thumbnail[generic-thumbnail='video'] {
   background-image: url(../images/filetype/filetype_video.svg);
 }
 
@@ -417,5 +392,3 @@ body.files-ng [file-type-icon='trash'] {
 .tree-row > .file-row > [volume-type-icon='trash'] {
   -webkit-mask-image: url(../images/files/ui/delete_ng.svg);
 }
-
-
