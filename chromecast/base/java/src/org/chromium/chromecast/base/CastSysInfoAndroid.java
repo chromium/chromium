@@ -30,10 +30,8 @@ public final class CastSysInfoAndroid {
         String serialNumber = Build.SERIAL;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
             Context context = ContextUtils.getApplicationContext();
-            if (ContextCompat.checkSelfPermission(context, READ_PRIVILEGED_PHONE_STATE_PERMISSION)
-                    == PackageManager.PERMISSION_GRANTED) {
-                serialNumber = Build.getSerial();
-            }
+            int permissionCheck = ContextCompat.checkSelfPermission(context, READ_PRIVILEGED_PHONE_STATE_PERMISSION);
+            assert permissionCheck== PackageManager.PERMISSION_GRANTED : "Should not be granted READ_PRIVILEGED_PHONE_STATE_PERMISSION";
         }
         if (!Build.UNKNOWN.equals(serialNumber)) return serialNumber;
         return CastSerialGenerator.getGeneratedSerial();
