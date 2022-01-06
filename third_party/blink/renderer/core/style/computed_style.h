@@ -2119,6 +2119,11 @@ class ComputedStyle : public ComputedStyleBase,
   }
   CORE_EXPORT bool ShouldApplyAnyContainment(const Element& element) const;
 
+  // Utility method which checks if legacy layout is forced for the element in
+  // addition to checking IsContainerForContainerQueries(). Query containers are
+  // not established in legacy layout.
+  bool IsContainerForContainerQueries(const Element& element) const;
+
   bool IsContainerForContainerQueries() const {
     return IsInlineOrBlockSizeContainer() && StyleType() == kPseudoIdNone &&
            !InsideFragmentationContextWithNondeterministicEngine();

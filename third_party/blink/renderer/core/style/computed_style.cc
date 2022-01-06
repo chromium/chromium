@@ -2633,6 +2633,11 @@ bool ComputedStyle::ShouldApplyAnyContainment(const Element& element) const {
           Display() == EDisplay::kTableCaption);
 }
 
+bool ComputedStyle::IsContainerForContainerQueries(
+    const Element& element) const {
+  return IsContainerForContainerQueries() && !element.ShouldForceLegacyLayout();
+}
+
 STATIC_ASSERT_ENUM(cc::OverscrollBehavior::Type::kAuto,
                    EOverscrollBehavior::kAuto);
 STATIC_ASSERT_ENUM(cc::OverscrollBehavior::Type::kContain,

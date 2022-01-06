@@ -65,7 +65,7 @@ Element* ContainerQueryEvaluator::FindContainer(
   for (Element* element = container; element;
        element = LayoutTreeBuilderTraversal::ParentElement(*element)) {
     if (const ComputedStyle* style = element->GetComputedStyle()) {
-      if (style->IsContainerForContainerQueries() &&
+      if (style->IsContainerForContainerQueries(*element) &&
           Matches(*style, container_selector)) {
         return element;
       }

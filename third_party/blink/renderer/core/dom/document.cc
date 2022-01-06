@@ -1997,7 +1997,7 @@ static void AssertLayoutTreeUpdated(Node& root,
           (allow_dirty_container_subtrees && element->GetLayoutObject() &&
            element->GetLayoutObject()
                ->StyleRef()
-               .IsContainerForContainerQueries())) {
+               .IsContainerForContainerQueries(*element))) {
         node = FlatTreeTraversal::NextSkippingChildren(*node);
         continue;
       }
