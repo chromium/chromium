@@ -80,10 +80,31 @@ Polymer({
     },
 
     /*
+     * True if `kArcAccountRestrictions` feature is enabled.
+     * @private
+     */
+    isArcAccountRestrictionsEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('isArcAccountRestrictionsEnabled');
+      },
+      readOnly: true,
+    },
+
+    /*
      * True if the dialog is open for reauthentication.
      * @private
      */
     isReauthentication_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /*
+     * True if the account should be available in ARC++ after addition.
+     * @private
+     */
+    isAvailableInArc_: {
       type: Boolean,
       value: false,
     },
@@ -207,7 +228,16 @@ Polymer({
    */
   onAuthCompleted_(e) {
     this.loading_ = true;
-    this.browserProxy_.completeLogin(e.detail);
+    /** @type {!AuthCompletedCredentials} */
+    const credentials = e.detail;
+
+    // <if expr="chromeos_ash">
+    if (this.isArcAccountRestrictionsEnabled_ && !this.isReauthentication_) {
+      credentials.isAvailableInArc = this.isAvailableInArc_;
+    }
+    // </if>
+
+    this.browserProxy_.completeLogin(credentials);
   },
 
   /** @private */

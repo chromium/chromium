@@ -52,6 +52,46 @@ TEST_F('InlineLoginBrowserTest', 'BackButton', function() {
 });
 
 GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
+// TODO(crbug.com/1275568): Merge this test suite with the test above after the
+// feature is launched.
+// eslint-disable-next-line no-var
+var InlineLoginBrowserTestWithArcAccountRestrictionsEnabled =
+    class extends InlineLoginBrowserTest {
+  /** @override */
+  get featureList() {
+    return {
+      enabled: [
+        'chromeos::features::kArcAccountRestrictions',
+        'chromeos::features::kLacrosSupport'
+      ]
+    };
+  }
+};
+
+TEST_F(
+    'InlineLoginBrowserTestWithArcAccountRestrictionsEnabled', 'Initialize',
+    function() {
+      this.runMochaTest(inline_login_test.TestNames.Initialize);
+    });
+
+TEST_F(
+    'InlineLoginBrowserTestWithArcAccountRestrictionsEnabled', 'WebUICallbacks',
+    function() {
+      this.runMochaTest(inline_login_test.TestNames.WebUICallbacks);
+    });
+
+TEST_F(
+    'InlineLoginBrowserTestWithArcAccountRestrictionsEnabled',
+    'AuthExtHostCallbacks', function() {
+      this.runMochaTest(inline_login_test.TestNames.AuthExtHostCallbacks);
+    });
+
+TEST_F(
+    'InlineLoginBrowserTestWithArcAccountRestrictionsEnabled', 'BackButton',
+    function() {
+      this.runMochaTest(inline_login_test.TestNames.BackButton);
+    });
+
 // eslint-disable-next-line no-var
 var InlineLoginWelcomePageBrowserTest = class extends InlineLoginBrowserTest {
   /** @override */
