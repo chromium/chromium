@@ -10,13 +10,15 @@ AXPlatformNodeFuchsia::AXPlatformNodeFuchsia() = default;
 
 AXPlatformNodeFuchsia::~AXPlatformNodeFuchsia() = default;
 
-gfx::NativeViewAccessible AXPlatformNodeFuchsia::GetNativeViewAccessible() {
-  return nullptr;
+// static
+AXPlatformNode* AXPlatformNode::Create(AXPlatformNodeDelegate* delegate) {
+  AXPlatformNodeFuchsia* node = new AXPlatformNodeFuchsia();
+  node->Init(delegate);
+  return node;
 }
 
-void AXPlatformNodeFuchsia::NotifyAccessibilityEvent(
-    ax::mojom::Event event_type) {
-  NOTIMPLEMENTED();
+gfx::NativeViewAccessible AXPlatformNodeFuchsia::GetNativeViewAccessible() {
+  return nullptr;
 }
 
 void AXPlatformNodeFuchsia::PerformAction(const AXActionData& data) {

@@ -23,7 +23,6 @@ class AX_EXPORT AXPlatformNodeFuchsia : public AXPlatformNodeBase {
 
   // AXPlatformNode overrides.
   gfx::NativeViewAccessible GetNativeViewAccessible() override;
-  void NotifyAccessibilityEvent(ax::mojom::Event event_type) override;
 
   // Requests that the delegate perform the specified action.
   void PerformAction(const AXActionData& data);
