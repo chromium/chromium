@@ -37,15 +37,6 @@ constexpr base::TimeDelta kSaveDelay = base::Milliseconds(2500);
 // Delay starting `save_timer_` during the system startup phase.
 constexpr base::TimeDelta kWaitDelay = base::Seconds(120);
 
-const char kCrxAppPrefix[] = "_crx_";
-
-std::string GetAppIdFromAppName(const std::string& app_name) {
-  std::string prefix(kCrxAppPrefix);
-  if (app_name.substr(0, prefix.length()) != prefix)
-    return std::string();
-  return app_name.substr(prefix.length());
-}
-
 }  // namespace
 
 FullRestoreSaveHandler* FullRestoreSaveHandler::GetInstance() {
@@ -155,7 +146,8 @@ void FullRestoreSaveHandler::OnWindowInitialized(aura::Window* window) {
       std::string* browser_app_name =
           window->GetProperty(app_restore::kBrowserAppNameKey);
       if (browser_app_name) {
-        std::string app_id = GetAppIdFromAppName(*browser_app_name);
+        std::string app_id =
+            app_restore::GetAppIdFromAppName(*browser_app_name);
         auto it =
             profile_path_to_app_registry_cache_.find(active_profile_path_);
         if (it != profile_path_to_app_registry_cache_.end() && it->second &&

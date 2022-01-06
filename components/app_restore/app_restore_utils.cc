@@ -19,6 +19,8 @@
 namespace app_restore {
 namespace {
 
+const char kCrxAppPrefix[] = "_crx_";
+
 // Always use the full restore ARC data if ARC apps for desks templates is not
 // enabled.
 bool ShouldUseFullRestoreArcData() {
@@ -182,6 +184,13 @@ int32_t GetArcRestoreWindowIdForSessionId(int32_t session_id) {
   }
   return DeskTemplateReadHandler::Get()->GetArcRestoreWindowIdForSessionId(
       session_id);
+}
+
+std::string GetAppIdFromAppName(const std::string& app_name) {
+  std::string prefix(kCrxAppPrefix);
+  if (app_name.substr(0, prefix.length()) != prefix)
+    return std::string();
+  return app_name.substr(prefix.length());
 }
 
 }  // namespace app_restore

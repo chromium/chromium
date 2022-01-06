@@ -13,6 +13,7 @@
 #include "ash/wm/desks/templates/desks_templates_icon_view.h"
 #include "base/containers/contains.h"
 #include "components/app_restore/app_launch_info.h"
+#include "components/app_restore/app_restore_utils.h"
 #include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -110,7 +111,14 @@ void InsertIdentifierInfoFromLaunchList(
                              out_identifier_info);
       }
     } else {
-      InsertIdentifierInfo(app_id, activation_index, out_identifier_info);
+      // PWAs will have the same app id as chrome. For these apps, retrieve
+      // their app id from their app name if possible.
+      std::string new_app_id = app_id;
+      absl::optional<std::string> app_name = restore_data.second->app_name;
+      if (app_id == extension_misc::kChromeAppId && app_name.has_value())
+        new_app_id = app_restore::GetAppIdFromAppName(app_name.value());
+
+      InsertIdentifierInfo(new_app_id, activation_index, out_identifier_info);
     }
   }
 }

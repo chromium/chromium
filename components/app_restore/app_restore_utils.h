@@ -60,6 +60,10 @@ int32_t GetArcRestoreWindowIdForTaskId(int32_t task_id);
 COMPONENT_EXPORT(APP_RESTORE)
 int32_t GetArcRestoreWindowIdForSessionId(int32_t session_id);
 
+// Remove the "_crx_" prefix from a given `app_name` to get the app id.
+COMPONENT_EXPORT(APP_RESTORE)
+std::string GetAppIdFromAppName(const std::string& app_name);
+
 }  // namespace app_restore
 
 #endif  // COMPONENTS_APP_RESTORE_APP_RESTORE_UTILS_H_
