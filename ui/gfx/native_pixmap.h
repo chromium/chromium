@@ -5,7 +5,6 @@
 #ifndef UI_GFX_NATIVE_PIXMAP_H_
 #define UI_GFX_NATIVE_PIXMAP_H_
 
-#include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "ui/gfx/buffer_types.h"
 #include "ui/gfx/geometry/size.h"
