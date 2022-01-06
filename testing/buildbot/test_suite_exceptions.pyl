@@ -1090,10 +1090,6 @@
     ],
   },
   'components_browsertests': {
-    'remove_from': [
-      'fuchsia-fyi-arm64-rel',  # https://crbug.com/961457
-      'fuchsia-fyi-x64-rel',  # https://crbug.com/961457
-    ],
     'modifications': {
       'android-11-x86-rel': {
         'swarming': {
