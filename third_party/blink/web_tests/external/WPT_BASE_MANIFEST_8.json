@@ -90542,6 +90542,19 @@
         {}
        ]
       ],
+      "table-inside-container-changing-display.html": [
+       "bdb99c182417fa090296fb86bc44327b915f8338",
+       [
+        null,
+        [
+         [
+          "/css/css-contain/container-queries/table-inside-container-changing-display-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "top-layer-dialog-backdrop.html": [
        "20c78d58e27546bffbc17feed2e02e03df943218",
        [
@@ -143217,7 +143230,7 @@
       ]
      ],
      "target-text-dynamic-001.html": [
-      "1a7a72ca4e0cc98fcd511f022c3c0af12bc57e9a",
+      "63cbaa52b257674993afab1e22be3c5ed0927406",
       [
        null,
        [
@@ -242891,6 +242904,10 @@
         []
        ]
       },
+      "table-inside-container-changing-display-ref.html": [
+       "c0355d2f5019b8c7c1e0b387e2f9c3b1a0c1f81c",
+       []
+      ],
       "top-layer-dialog-backdrop-ref.html": [
        "49c46974c9de23284852d302b57b0ad206158d0f",
        []
@@ -358492,7 +358509,7 @@
     },
     "css-color-adjust": {
      "inheritance.html": [
-      "f7f6529349bf1ba0436e2d1165a81552de95ffaa",
+      "f834d7bb54cd7b8adf32ce56a3b0fe1acbd58a0b",
       [
        null,
        {}
