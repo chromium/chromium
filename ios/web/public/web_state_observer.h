@@ -5,8 +5,6 @@
 #ifndef IOS_WEB_PUBLIC_WEB_STATE_OBSERVER_H_
 #define IOS_WEB_PUBLIC_WEB_STATE_OBSERVER_H_
 
-#include <CoreFoundation/CFBase.h>
-
 #include <stddef.h>
 
 #include <string>
@@ -16,7 +14,6 @@ namespace web {
 
 struct FaviconURL;
 class NavigationContext;
-enum class Permission;
 class WebFrame;
 class WebState;
 
@@ -125,11 +122,6 @@ class WebStateObserver {
   // Invoked when new favicon URL candidates are received.
   virtual void FaviconUrlUpdated(WebState* web_state,
                                  const std::vector<FaviconURL>& candidates) {}
-
-  // Invoked when the state of a certain permission has changed.
-  virtual void PermissionStateChanged(WebState* web_state,
-                                      Permission permission)
-      API_AVAILABLE(ios(15.0)) {}
 
   // Called when a frame was created or navigated to a new document.
   // Receivers can keep references to |web_frame| until

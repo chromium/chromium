@@ -15,7 +15,6 @@
 #include "ios/web/public/deprecated/url_verification_constants.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
-#import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/web_state.h"
 #include "ios/web/public/web_state_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -91,12 +90,6 @@ class FakeWebState : public WebState {
 
   bool SetSessionStateData(NSData* data) override;
   NSData* SessionStateData() override;
-
-  PermissionState GetStateForPermission(Permission permission) const override
-      API_AVAILABLE(ios(15.0));
-  void SetStateForPermission(PermissionState state,
-                             Permission permission) override
-      API_AVAILABLE(ios(15.0));
 
   void AddPolicyDecider(WebStatePolicyDecider* decider) override;
   void RemovePolicyDecider(WebStatePolicyDecider* decider) override;
@@ -189,9 +182,6 @@ class FakeWebState : public WebState {
   base::RepeatingCallbackList<ScriptCommandCallbackSignature> callback_list_;
   absl::optional<ScriptCommandCallback> last_added_callback_;
   std::string last_command_prefix_;
-  PermissionState camera_permission_state_ = PermissionState::NOT_ACCESSIBLE;
-  PermissionState microphone_permission_state_ =
-      PermissionState::NOT_ACCESSIBLE;
 
   // A list of observers notified when page state changes. Weak references.
   base::ObserverList<WebStateObserver, true>::Unchecked observers_;

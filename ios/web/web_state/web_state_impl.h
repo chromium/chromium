@@ -41,8 +41,6 @@ class BrowserState;
 struct FaviconURL;
 class NavigationContextImpl;
 class NavigationManager;
-enum class Permission;
-enum class PermissionState;
 class SessionCertificatePolicyCacheImpl;
 class WebFrame;
 
@@ -117,11 +115,6 @@ class WebStateImpl final : public WebState {
 
   // Called when new FaviconURL candidates are received.
   void OnFaviconUrlUpdated(const std::vector<FaviconURL>& candidates);
-
-  // Notifies web state observers when any of the web state's permission has
-  // changed.
-  void OnStateChangedForPermission(Permission permission)
-      API_AVAILABLE(ios(15.0));
 
   // Returns the NavigationManager for this WebState.
   NavigationManagerImpl& GetNavigationManagerImpl();
@@ -311,10 +304,6 @@ class WebStateImpl final : public WebState {
   void CloseWebState() final;
   bool SetSessionStateData(NSData* data) final;
   NSData* SessionStateData() final;
-  PermissionState GetStateForPermission(Permission permission) const final
-      API_AVAILABLE(ios(15.0));
-  void SetStateForPermission(PermissionState state, Permission permission) final
-      API_AVAILABLE(ios(15.0));
 
  protected:
   // WebState:

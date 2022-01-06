@@ -10,8 +10,6 @@
 
 namespace web {
 
-enum class Permission;
-
 WebStateObserverBridge::WebStateObserverBridge(id<CRWWebStateObserver> observer)
     : observer_(observer) {}
 
@@ -122,15 +120,6 @@ void WebStateObserverBridge::FaviconUrlUpdated(
   SEL selector = @selector(webState:didUpdateFaviconURLCandidates:);
   if ([observer_ respondsToSelector:selector]) {
     [observer_ webState:web_state didUpdateFaviconURLCandidates:candidates];
-  }
-}
-
-void WebStateObserverBridge::PermissionStateChanged(
-    web::WebState* web_state,
-    web::Permission permission) {
-  SEL selector = @selector(webState:didChangeStateForPermission:);
-  if ([observer_ respondsToSelector:selector]) {
-    [observer_ webState:web_state didChangeStateForPermission:permission];
   }
 }
 
