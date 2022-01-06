@@ -200,8 +200,10 @@ void AXFuchsiaSemanticProvider::OnAccessibilityActionRequested(
     fuchsia::accessibility::semantics::Action action,
     fuchsia::accessibility::semantics::SemanticListener::
         OnAccessibilityActionRequestedCallback callback) {
-  if (delegate_->OnAccessibilityAction(node_id, action))
+  if (delegate_->OnAccessibilityAction(node_id, action)) {
     callback(true);
+    return;
+  }
 
   // The action was not handled.
   callback(false);

@@ -127,6 +127,10 @@ class AXFuchsiaSemanticProviderTest
       fidl::InterfaceRequest<fuchsia::accessibility::semantics::SemanticTree>
           semantic_tree_request) final {
     semantic_listener_ = listener.Bind();
+    semantic_listener_.set_error_handler([](zx_status_t status) {
+      // The test should fail if an error occurs.
+      ADD_FAILURE();
+    });
     semantic_tree_binding_.Bind(std::move(semantic_tree_request));
   }
 
