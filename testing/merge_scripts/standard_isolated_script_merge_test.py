@@ -37,7 +37,7 @@ class StandardIsolatedScriptMergeTest(unittest.TestCase):
 
   def tearDown(self):
     shutil.rmtree(self.temp_dir)
-    super(StandardIsolatedScriptMergeTest, self).tearDown()
+    super().tearDown()
 
   def _write_temp_file(self, path, content):
     abs_path = os.path.join(self.temp_dir, path.replace('/', os.sep))
@@ -104,7 +104,7 @@ class OutputTest(StandardIsolatedScriptMergeTest):
 
 class InputParsingTest(StandardIsolatedScriptMergeTest):
   def setUp(self):
-    super(InputParsingTest, self).setUp()
+    super().setUp()
 
     self.merge_test_results_args = []
     def mock_merge_test_results(results_list):
@@ -174,7 +174,7 @@ class InputParsingTest(StandardIsolatedScriptMergeTest):
 class CommandLineTest(common_merge_script_tests.CommandLineTest):
 
   def __init__(self, methodName='runTest'):
-    super(CommandLineTest, self).__init__(
+    super().__init__(
         methodName, standard_isolated_script_merge)
 
 

@@ -7,7 +7,7 @@ import json
 import tempfile
 
 
-class SkiaGoldSessionManager(object):
+class SkiaGoldSessionManager():
   def __init__(self, working_dir, gold_properties):
     """Abstract class to manage one or more skia_gold_session.SkiaGoldSessions.
 

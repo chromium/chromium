@@ -13,7 +13,7 @@ import logging
 import os
 
 
-class SkiaGoldProperties(object):
+class SkiaGoldProperties():
   def __init__(self, args):
     """Abstract class to validate and store properties related to Skia Gold.
 

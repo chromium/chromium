@@ -3,7 +3,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import cStringIO
+import io
 import json
 import logging
 import os
@@ -429,7 +429,7 @@ class MergeShardResultsTest(_StandardGtestMergeTest):
   """Tests for merge_shard_results function."""
 
   def setUp(self):
-    super(MergeShardResultsTest, self).setUp()
+    super().setUp()
     self.summary = None
     self.test_files = []
 
@@ -440,7 +440,7 @@ class MergeShardResultsTest(_StandardGtestMergeTest):
       self.test_files.append(abs_path)
 
   def call(self):
-    stdout = cStringIO.StringIO()
+    stdout = io.StringIO()
     with mock.patch('sys.stdout', stdout):
       merged = standard_gtest_merge.merge_shard_results(
           self.summary, self.test_files)
@@ -601,7 +601,7 @@ class MergeShardResultsTest(_StandardGtestMergeTest):
 class CommandLineTest(common_merge_script_tests.CommandLineTest):
 
   def __init__(self, methodName='runTest'):
-    super(CommandLineTest, self).__init__(methodName, standard_gtest_merge)
+    super().__init__(methodName, standard_gtest_merge)
 
 
 if __name__ == '__main__':

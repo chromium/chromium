@@ -47,8 +47,8 @@ def StandardIsolatedScriptMerge(output_json, summary_json, jsons_to_merge):
     with open(output_path) as f:
       try:
         json_contents = json.load(f)
-      except ValueError:
-        raise ValueError('Failed to parse JSON from %s' % j)
+      except ValueError as e:
+        raise ValueError('Failed to parse JSON from %s' % j) from e
       shard_results_list.append(json_contents)
 
   merged_results = results_merger.merge_test_results(shard_results_list)
@@ -85,7 +85,7 @@ def find_shard_output_path(index, task_id, jsons_to_merge):
   if not matching_json_files:
     print('shard %s test output missing' % index, file=sys.stderr)
     return None
-  elif len(matching_json_files) > 1:
+  if len(matching_json_files) > 1:
     print('duplicate test output for shard %s' % index, file=sys.stderr)
     return None
 

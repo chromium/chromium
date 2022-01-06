@@ -27,8 +27,8 @@ else:
   GOLDCTL_BINARY = os.path.join(GOLDCTL_BINARY, 'linux', 'goldctl')
 
 
-class SkiaGoldSession(object):
-  class StatusCodes(object):
+class SkiaGoldSession():
+  class StatusCodes():
     """Status codes for RunComparison."""
     SUCCESS = 0
     AUTH_FAILURE = 1
@@ -38,7 +38,7 @@ class SkiaGoldSession(object):
     LOCAL_DIFF_FAILURE = 5
     NO_OUTPUT_MANAGER = 6
 
-  class ComparisonResults(object):
+  class ComparisonResults():
     """Struct-like object for storing results of an image comparison."""
 
     def __init__(self):

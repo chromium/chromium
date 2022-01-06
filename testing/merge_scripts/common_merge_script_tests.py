@@ -12,7 +12,7 @@ import unittest
 class CommandLineTest(unittest.TestCase):
 
   def __init__(self, methodName, module):
-    super(CommandLineTest, self).__init__(methodName)
+    super().__init__(methodName)
     self._module = module
 
   def setUp(self):
@@ -48,4 +48,4 @@ class CommandLineTest(unittest.TestCase):
       '--output-json', output_json,
       shard0_json,
     ]
-    self.assertEquals(0, self._module.main(raw_args))
+    self.assertEqual(0, self._module.main(raw_args))
