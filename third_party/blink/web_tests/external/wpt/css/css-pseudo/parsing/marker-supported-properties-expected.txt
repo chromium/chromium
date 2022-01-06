@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 61 tests; 58 PASS, 3 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 61 tests; 59 PASS, 2 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Property font value 'italic small-caps 900 expanded 25px / 50px Ahem' in ::marker
 PASS Property font-family value 'Ahem' in ::marker
 PASS Property font-feature-settings value '"smcp"' in ::marker
@@ -49,7 +49,7 @@ PASS Property text-transform value 'uppercase' in ::marker
 PASS Property word-break value 'break-word' in ::marker
 PASS Property word-spacing value '10px' in ::marker
 PASS Property text-decoration-skip-ink value 'none' in ::marker
-FAIL Property text-emphasis value 'filled dot rgb(0, 255, 0)' in ::marker assert_equals: expected "filled dot rgb(0, 255, 0)" but got ""
+PASS Property text-emphasis value 'filled dot rgb(0, 255, 0)' in ::marker
 PASS Property text-emphasis-color value 'rgb(0, 255, 0)' in ::marker
 PASS Property text-emphasis-position value 'under left' in ::marker
 PASS Property text-emphasis-style value 'filled dot' in ::marker

@@ -3078,6 +3078,14 @@ bool TextEmphasis::ParseShorthand(
       textEmphasisShorthand(), important, context, range, properties);
 }
 
+const CSSValue* TextEmphasis::CSSValueFromComputedStyleInternal(
+    const ComputedStyle& style,
+    const LayoutObject* layout_object,
+    bool allow_visited_style) const {
+  return ComputedStyleUtils::ValuesForShorthandProperty(
+      textEmphasisShorthand(), style, layout_object, allow_visited_style);
+}
+
 bool WebkitTextStroke::ParseShorthand(
     bool important,
     CSSParserTokenRange& range,

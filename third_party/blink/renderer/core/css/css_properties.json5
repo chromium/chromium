@@ -6401,7 +6401,7 @@
     {
       name: "text-emphasis",
       longhands: ["text-emphasis-style", "text-emphasis-color"],
-      property_methods: ["ParseShorthand"],
+      property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
     },
     {
       name: "-webkit-text-stroke",
