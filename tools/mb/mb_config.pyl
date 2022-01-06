@@ -477,8 +477,8 @@
       'GPU FYI Android arm Builder': 'gpu_tests_android_release_trybot_reclient',
       'GPU FYI Android arm64 Builder': 'gpu_tests_android_release_trybot_arm64_reclient',
       'GPU FYI Lacros x64 Builder': 'gpu_tests_ozone_linux_non_x11_release_trybot',
-      'GPU FYI Linux Builder': 'gpu_fyi_tests_release_trybot',
-      'GPU FYI Linux Builder (dbg)': 'gpu_fyi_tests_debug_trybot',
+      'GPU FYI Linux Builder': 'gpu_fyi_tests_release_trybot_reclient',
+      'GPU FYI Linux Builder (dbg)': 'gpu_fyi_tests_debug_trybot_reclient',
       'GPU FYI Mac Builder': 'gpu_fyi_tests_release_trybot',
       'GPU FYI Mac Builder (asan)': 'gpu_fyi_tests_release_trybot_asan',
       'GPU FYI Mac Builder (dbg)': 'gpu_fyi_tests_debug_trybot',
@@ -2221,6 +2221,10 @@
       'gpu_fyi_tests', 'debug_bot', 'disable_nacl',
     ],
 
+    'gpu_fyi_tests_debug_trybot_reclient': [
+      'gpu_fyi_tests', 'debug_bot_reclient', 'disable_nacl',
+    ],
+
     'gpu_fyi_tests_dx12vk_debug_trybot': [
       'gpu_fyi_tests', 'dx12vk', 'debug_bot', 'disable_nacl',
     ],
@@ -2243,6 +2247,10 @@
 
     'gpu_fyi_tests_release_trybot_fuchsia': [
       'gpu_fyi_tests', 'release_trybot_minimal_symbols', 'fuchsia', 'disable_nacl',
+    ],
+
+    'gpu_fyi_tests_release_trybot_reclient': [
+      'gpu_fyi_tests', 'release_trybot_minimal_symbols_reclient', 'disable_nacl',
     ],
 
     'gpu_fyi_tests_release_trybot_tsan': [
@@ -3030,10 +3038,6 @@
 
     'release_trybot_minimal_symbols': [
       'release_trybot_minimal_symbols',
-    ],
-
-    'release_trybot_minimal_symbols_reclient': [
-      'release_trybot_minimal_symbols_reclient',
     ],
 
     'release_trybot_minimal_symbols_reclient': [
@@ -3910,11 +3914,6 @@
 
     'release_trybot_minimal_symbols': {
       'mixins': ['release_bot', 'minimal_symbols', 'dcheck_always_on',
-                 'blink_disable_generated_code_formatting'],
-    },
-
-    'release_trybot_minimal_symbols_reclient': {
-      'mixins': ['release_bot_reclient', 'minimal_symbols', 'dcheck_always_on',
                  'blink_disable_generated_code_formatting'],
     },
 

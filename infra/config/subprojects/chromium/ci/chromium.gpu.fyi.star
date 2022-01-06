@@ -189,6 +189,9 @@ ci.gpu.linux_builder(
         category = "Linux|Builder",
         short_name = "rel",
     ),
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.gpu.linux_builder(
@@ -197,6 +200,9 @@ ci.gpu.linux_builder(
         category = "Linux|Builder",
         short_name = "dbg",
     ),
+    goma_backend = None,
+    reclient_instance = rbe_instance.DEFAULT,
+    reclient_jobs = rbe_jobs.HIGH_JOBS_FOR_CI,
 )
 
 ci.gpu.linux_builder(
