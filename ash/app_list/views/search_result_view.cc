@@ -363,8 +363,7 @@ void SearchResultView::StyleLabel(views::Label* label,
   // Apply font color styles.
   label->SetEnabledColor(
       is_url
-          ? AshColorProvider::Get()->GetContentLayerColor(
-                AshColorProvider::ContentLayerType::kTextColorURL)
+          ? AppListColorProvider::Get()->GetTextColorURL()
           : is_title_label
                 ? AppListColorProvider::Get()->GetSearchBoxTextColor(
                       kDeprecatedSearchBoxTextDefaultColor)
