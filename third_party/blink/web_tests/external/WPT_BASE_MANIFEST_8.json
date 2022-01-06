@@ -2111,6 +2111,13 @@
        {}
       ]
      ],
+     "delete-in-empty-editable-list-followed-by-non-editable-listitem.html": [
+      "9e872f5ac47a1f6bda848dfe4b61efcf6679a966",
+      [
+       null,
+       {}
+      ]
+     ],
      "execCommand-at-load-with-changing-editing-host.html": [
       "ec1dd30dc023205ce479df1038d08279c315ae62",
       [
@@ -260957,11 +260964,11 @@
      ],
      "parsing": {
       "marker-supported-properties-expected.txt": [
-       "1d6999f2ffb0e8722aa14df88d01a5e79ae48044",
+       "b599ad933fc63e2535c7740ac8cca8e933e17883",
        []
       ],
       "marker-supported-properties-in-animation-expected.txt": [
-       "10967acc54685e3b6ee6f454df09641eca9f741a",
+       "6bd099eac1c177010daa3d51c265533fc6148f85",
        []
       ]
      },
@@ -287923,6 +287930,10 @@
      ],
      "blob.https.html.headers": [
       "6604450991a122e3e241e40b1b9e0516c525389d",
+      []
+     ],
+     "block-local-documents-inheriting-none.https-expected.txt": [
+      "d6a62671f448633dd4ec0f7e71c9b1fc362a521e",
       []
      ],
      "cache-storage-reporting-dedicated-worker.https-expected.txt": [
@@ -369154,7 +369165,7 @@
        ]
       ],
       "marker-supported-properties-in-animation.html": [
-       "d2b9961351fb20c534caf2f86041ba1c2d47603b",
+       "259a5b84eb5122c309294973b5ad745da11216e5",
        [
         null,
         {}
@@ -375280,6 +375291,13 @@
       ],
       "text-decoration-valid.html": [
        "ad82dd203cdfafc5ee5960837a23bf14cd661cf3",
+       [
+        null,
+        {}
+       ]
+      ],
+      "text-emphasis-computed.html": [
+       "460035a55179ada38a78be2dd7a280c8a0bd3518",
        [
         null,
         {}
@@ -441528,6 +441546,13 @@
      },
      "blob.https.html": [
       "ce72f247ef7b6fc6b54196dbc47582b5118d54ca",
+      [
+       null,
+       {}
+      ]
+     ],
+     "block-local-documents-inheriting-none.https.html": [
+      "ab645b7e8f1c4f7854878ad90067b30fda28c121",
       [
        null,
        {}
