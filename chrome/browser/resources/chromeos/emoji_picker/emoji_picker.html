@@ -240,8 +240,8 @@
           </emoji-group-button>
           <!-- Render non history tab. -->
           <template is="dom-repeat"
-            items="[[getGroupTabsByPagination(emojiGroupTabs, 1)]]"
-            filter="isNonHistoryTab">
+            items="[[emojiGroupTabs]]"
+            filter="[[filterGroupTabByPagination(1)]]">
             <text-group-button data-group$="[[item.groupId]]"
               group-id="[[item.groupId]]"
               active="[[item.active]]"
@@ -254,8 +254,9 @@
         <template is="dom-repeat" as="pageNumber" filter="isNotFirstPage"
           items="[[getPaginationArray(emojiGroupTabs)]]">
           <div class="pagination">
-            <template is="dom-repeat" 
-              items="[[getGroupTabsByPagination(emojiGroupTabs, pageNumber)]]">
+            <template is="dom-repeat"
+              items="[[emojiGroupTabs]]"
+              filter="[[filterGroupTabByPagination(pageNumber)]]">
               <text-group-button data-group$="[[item.groupId]]"
                 group-id="[[item.groupId]]"
                 active="[[item.active]]"

@@ -17,7 +17,7 @@ import {EmojiButton} from './emoji_button.js';
 import {Feature} from './emoji_picker.mojom-webui.js';
 import {EmojiPickerApiProxy, EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
 import {CATEGORY_BUTTON_CLICK, createCustomEvent, EMOJI_BUTTON_CLICK, EMOJI_CLEAR_RECENTS_CLICK, EMOJI_DATA_LOADED, EMOJI_VARIANTS_SHOWN, EmojiVariantsShownEvent, GROUP_BUTTON_CLICK} from './events.js';
-import {V2_SUBCATEGORY_TABS} from './metadata_extension.js';
+import {EMPTY_EMOTICON_DATA, V2_SUBCATEGORY_TABS} from './metadata_extension.js';
 import {RecentEmojiStore} from './store.js';
 import {Emoji, EmojiGroup, EmojiGroupData, EmojiVariants, StoredEmoji, SubcategoryData} from './types.js';
 
@@ -211,6 +211,16 @@ export class EmojiPicker extends PolymerElement {
     this.getHistory();
   }
 
+  /**
+   * @private
+   * @param {number} pageNumber
+   */
+  filterGroupTabByPagination(pageNumber) {
+    return function(tab) {
+      return tab.pagination === pageNumber && tab.groupId !== 'history';
+    };
+  }
+
   async getHistory() {
     const incognito = (await this.apiProxy_.isIncognitoTextField()).incognito;
     if (incognito) {
@@ -241,8 +251,19 @@ export class EmojiPicker extends PolymerElement {
       this.fetchEmojiData(),
     ]);
 
-    initializationPromise.then(
-        () => afterNextRender(this, () => this.apiProxy_.showUI()));
+    initializationPromise.then(() => {
+      afterNextRender(this, () => {
+        this.apiProxy_.showUI();
+        if (this.v2Enabled) {
+          this.addEventListener(
+              CATEGORY_BUTTON_CLICK,
+              ev => this.set('category', ev.detail.categoryName));
+          // TODO(b/211520561): remove below line after the emoticon loading
+          // logic is finished.
+          this.emojiData = this.emojiData.concat(EMPTY_EMOTICON_DATA);
+        }
+      });
+    });
 
     this.updateStyles({
       '--emoji-group-button-size': EMOJI_GROUP_SIZE_PX,
@@ -253,15 +274,6 @@ export class EmojiPicker extends PolymerElement {
       '--emoji-picker-side-padding': EMOJI_PICKER_SIDE_PADDING_PX,
       '--emoji-picker-top-padding': EMOJI_PICKER_TOP_PADDING_PX,
       '--emoji-spacing': EMOJI_SPACING_PX,
-    });
-
-    // only after the next render is this.v2Enabled updated.
-    afterNextRender(this, () => {
-      if (this.v2Enabled) {
-        this.addEventListener(
-            CATEGORY_BUTTON_CLICK,
-            ev => this.set('category', ev.detail.categoryName));
-      }
     });
   }
 
@@ -513,13 +525,18 @@ export class EmojiPicker extends PolymerElement {
       }
 
       if (updateTabsScroll) {
-        this.$.tabs.scrollLeft = tabscrollLeft;
         this.$.bar.style.left =
             ((index * EMOJI_PICKER_TOTAL_EMOJI_WIDTH - tabscrollLeft)) + 'px';
       } else {
         this.$.bar.style.left = ((index * EMOJI_PICKER_TOTAL_EMOJI_WIDTH -
                                   this.$.tabs.scrollLeft)) +
             'px';
+      }
+
+      // only update tab scroll when using emoji-based subcategory, because the
+      // scroll position of the text subcategory bar is controlled differently.
+      if (updateTabsScroll && !this.textSubcategoryBarEnabled) {
+        this.$.tabs.scrollLeft = tabscrollLeft;
       }
     }
   }
@@ -634,6 +651,11 @@ export class EmojiPicker extends PolymerElement {
       this.set('emojiGroupTabs', [historyTab, ...categoryTabs]);
       this.set('pagination', 1);
       this.updateChevrons();
+      this.scrollToGroup(this.emojiGroupTabs[0].groupId);
+      afterNextRender(this, () => {
+        this.updateActiveGroup(true);
+        this.$.tabs.scrollLeft = 0;
+      });
     }
   }
 
@@ -656,16 +678,6 @@ export class EmojiPicker extends PolymerElement {
     // Categories that require its subcategory bar to be labelled by text.
     const textCategories = ['symbol', 'emoticon'];
     return v2Enabled && textCategories.includes(category);
-  }
-
-  /**
-   * Returns an array of tabs that have the matched page number.
-   * @private
-   * @param {Array<SubcategoryData>} tabs
-   * @param {number} pageNumber
-   */
-  getGroupTabsByPagination(tabs, pageNumber) {
-    return tabs.filter((tab) => tab.pagination === pageNumber);
   }
 
   /**
