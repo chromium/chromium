@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_conversions.h"
 
 namespace blink {
@@ -53,12 +54,12 @@ bool FillsViewport(const Element& element) {
                           ? layout_box->PhysicalContentBoxRect()
                           : layout_box->PhysicalPaddingBoxRect();
 
-  FloatQuad quad = layout_box->LocalRectToAbsoluteQuad(rect);
+  gfx::QuadF quad = layout_box->LocalRectToAbsoluteQuad(rect);
 
   if (!quad.IsRectilinear())
     return false;
 
-  gfx::Rect bounding_box = ToEnclosingRect(quad.BoundingBox());
+  gfx::Rect bounding_box = gfx::ToEnclosingRect(quad.BoundingBox());
 
   gfx::Size icb_size = top_document.GetLayoutView()->GetLayoutSize();
 

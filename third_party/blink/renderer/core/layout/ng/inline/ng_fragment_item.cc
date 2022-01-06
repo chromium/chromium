@@ -379,10 +379,10 @@ gfx::RectF NGFragmentItem::ObjectBoundingBox(
   return ink_bounds;
 }
 
-FloatQuad NGFragmentItem::SvgUnscaledQuad() const {
+gfx::QuadF NGFragmentItem::SvgUnscaledQuad() const {
   DCHECK_EQ(Type(), kSvgText);
-  FloatQuad quad = BuildSvgTransformForBoundingBox().MapQuad(
-      FloatQuad(SvgFragmentData()->rect));
+  gfx::QuadF quad = BuildSvgTransformForBoundingBox().MapQuad(
+      gfx::QuadF(SvgFragmentData()->rect));
   const float scaling_factor = SvgScalingFactor();
   quad.Scale(1 / scaling_factor, 1 / scaling_factor);
   return quad;

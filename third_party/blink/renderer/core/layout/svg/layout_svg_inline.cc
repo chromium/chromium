@@ -138,7 +138,7 @@ void LayoutSVGInline::MapLocalToAncestor(const LayoutBoxModelObject* ancestor,
   SVGLayoutSupport::MapLocalToAncestor(this, ancestor, transform_state, flags);
 }
 
-void LayoutSVGInline::AbsoluteQuads(Vector<FloatQuad>& quads,
+void LayoutSVGInline::AbsoluteQuads(Vector<gfx::QuadF>& quads,
                                     MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
   if (IsInLayoutNGInlineFormattingContext()) {
@@ -148,7 +148,7 @@ void LayoutSVGInline::AbsoluteQuads(Vector<FloatQuad>& quads,
       const NGFragmentItem& item = *cursor.CurrentItem();
       if (item.Type() == NGFragmentItem::kSvgText) {
         quads.push_back(LocalToAbsoluteQuad(
-            FloatQuad(SVGLayoutSupport::ExtendTextBBoxWithStroke(
+            gfx::QuadF(SVGLayoutSupport::ExtendTextBBoxWithStroke(
                 *this, cursor.Current().ObjectBoundingBox(cursor))),
             mode));
       }
@@ -158,7 +158,7 @@ void LayoutSVGInline::AbsoluteQuads(Vector<FloatQuad>& quads,
   for (InlineFlowBox* box : *LineBoxes()) {
     gfx::RectF box_rect(box->FrameRect());
     quads.push_back(LocalToAbsoluteQuad(
-        FloatQuad(SVGLayoutSupport::ExtendTextBBoxWithStroke(*this, box_rect)),
+        gfx::QuadF(SVGLayoutSupport::ExtendTextBBoxWithStroke(*this, box_rect)),
         mode));
   }
 }

@@ -96,7 +96,7 @@ class LayoutSVGText final : public LayoutSVGBlock {
 
   void UpdateLayout() override;
 
-  void AbsoluteQuads(Vector<FloatQuad>&,
+  void AbsoluteQuads(Vector<gfx::QuadF>&,
                      MapCoordinatesFlags mode = 0) const override;
 
   void AddChild(LayoutObject* child,

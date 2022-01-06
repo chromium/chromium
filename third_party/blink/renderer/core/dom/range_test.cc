@@ -26,11 +26,12 @@
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "ui/gfx/geometry/quad_f.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -325,27 +326,27 @@ TEST_F(RangeTest, BorderAndTextQuadsWithInputInBetween) {
   Node* bar = GetDocument().QuerySelector("u")->lastChild();
   auto* range = MakeGarbageCollected<Range>(GetDocument(), foo, 2, bar, 2);
 
-  Vector<FloatQuad> quads;
+  Vector<gfx::QuadF> quads;
   range->GetBorderAndTextQuads(quads);
 
   // Should get one quad for "o ", <input> and " b", respectively.
   ASSERT_EQ(3u, quads.size());
 }
 
-static Vector<FloatQuad> GetBorderAndTextQuads(const Position& start,
-                                               const Position& end) {
+static Vector<gfx::QuadF> GetBorderAndTextQuads(const Position& start,
+                                                const Position& end) {
   DCHECK_LE(start, end);
   auto* const range =
       MakeGarbageCollected<Range>(*start.GetDocument(), start, end);
-  Vector<FloatQuad> quads;
+  Vector<gfx::QuadF> quads;
   range->GetBorderAndTextQuads(quads);
   return quads;
 }
 
-static Vector<gfx::Size> ComputeSizesOfQuads(const Vector<FloatQuad>& quads) {
+static Vector<gfx::Size> ComputeSizesOfQuads(const Vector<gfx::QuadF>& quads) {
   Vector<gfx::Size> sizes;
   for (const auto& quad : quads)
-    sizes.push_back(quad.EnclosingBoundingBox().size());
+    sizes.push_back(gfx::ToEnclosingRect(quad.BoundingBox()).size());
   return sizes;
 }
 
@@ -368,22 +369,22 @@ TEST_F(RangeTest, GetBorderAndTextQuadsWithCombinedText) {
   const Text& text4 = *To<Text>(GetElementById("c4")->firstChild());
 
   EXPECT_THAT(GetBorderAndTextQuads(Position(text1, 0), Position(text1, 1)),
-              ElementsAre(FloatQuad(gfx::RectF(3, 0, 20, 20))));
+              ElementsAre(gfx::QuadF(gfx::RectF(3, 0, 20, 20))));
 
   if (RuntimeEnabledFeatures::LayoutNGTextCombineEnabled()) {
     EXPECT_THAT(GetBorderAndTextQuads(Position(text2, 0), Position(text2, 2)),
-                ElementsAre(FloatQuad(gfx::RectF(2, 20, 22, 20))));
+                ElementsAre(gfx::QuadF(gfx::RectF(2, 20, 22, 20))));
     EXPECT_THAT(GetBorderAndTextQuads(Position(text3, 0), Position(text3, 3)),
-                ElementsAre(FloatQuad(gfx::RectF(2, 40, 22, 20))));
+                ElementsAre(gfx::QuadF(gfx::RectF(2, 40, 22, 20))));
     EXPECT_THAT(GetBorderAndTextQuads(Position(text4, 0), Position(text4, 4)),
-                ElementsAre(FloatQuad(gfx::RectF(2, 60, 22, 20))));
+                ElementsAre(gfx::QuadF(gfx::RectF(2, 60, 22, 20))));
   } else {
     EXPECT_THAT(GetBorderAndTextQuads(Position(text2, 0), Position(text2, 2)),
-                ElementsAre(FloatQuad(gfx::RectF(3, 20, 20, 20))));
+                ElementsAre(gfx::QuadF(gfx::RectF(3, 20, 20, 20))));
     EXPECT_THAT(GetBorderAndTextQuads(Position(text3, 0), Position(text3, 3)),
-                ElementsAre(FloatQuad(gfx::RectF(3, 40, 20, 20))));
+                ElementsAre(gfx::QuadF(gfx::RectF(3, 40, 20, 20))));
     EXPECT_THAT(GetBorderAndTextQuads(Position(text4, 0), Position(text4, 4)),
-                ElementsAre(FloatQuad(gfx::RectF(3, 60, 20, 20))));
+                ElementsAre(gfx::QuadF(gfx::RectF(3, 60, 20, 20))));
   }
 }
 
@@ -401,18 +402,18 @@ TEST_F(RangeTest, GetBorderAndTextQuadsWithFirstLetterOne) {
   Element* const expected = GetDocument().getElementById("expected");
   Element* const sample = GetDocument().getElementById("sample");
 
-  const Vector<FloatQuad> expected_quads =
+  const Vector<gfx::QuadF> expected_quads =
       GetBorderAndTextQuads(Position(expected, 0), Position(expected, 2));
-  const Vector<FloatQuad> sample_quads =
+  const Vector<gfx::QuadF> sample_quads =
       GetBorderAndTextQuads(Position(sample, 0), Position(sample, 1));
   ASSERT_EQ(2u, sample_quads.size());
   ASSERT_EQ(3u, expected_quads.size())
       << "expected_quads has SPAN, SPAN.firstChild and P.lastChild";
-  EXPECT_EQ(expected_quads[0].EnclosingBoundingBox().size(),
-            sample_quads[0].EnclosingBoundingBox().size())
+  EXPECT_EQ(gfx::ToEnclosingRect(expected_quads[0].BoundingBox()).size(),
+            gfx::ToEnclosingRect(sample_quads[0].BoundingBox()).size())
       << "Check size of first-letter part";
-  EXPECT_EQ(expected_quads[2].EnclosingBoundingBox().size(),
-            sample_quads[1].EnclosingBoundingBox().size())
+  EXPECT_EQ(gfx::ToEnclosingRect(expected_quads[2].BoundingBox()).size(),
+            gfx::ToEnclosingRect(sample_quads[1].BoundingBox()).size())
       << "Check size of first-letter part";
 
   EXPECT_EQ(ComputeSizesOfQuads(
@@ -446,18 +447,18 @@ TEST_F(RangeTest, GetBorderAndTextQuadsWithFirstLetterThree) {
   Element* const expected = GetDocument().getElementById("expected");
   Element* const sample = GetDocument().getElementById("sample");
 
-  const Vector<FloatQuad> expected_quads =
+  const Vector<gfx::QuadF> expected_quads =
       GetBorderAndTextQuads(Position(expected, 0), Position(expected, 2));
-  const Vector<FloatQuad> sample_quads =
+  const Vector<gfx::QuadF> sample_quads =
       GetBorderAndTextQuads(Position(sample, 0), Position(sample, 1));
   ASSERT_EQ(2u, sample_quads.size());
   ASSERT_EQ(3u, expected_quads.size())
       << "expected_quads has SPAN, SPAN.firstChild and P.lastChild";
-  EXPECT_EQ(expected_quads[0].EnclosingBoundingBox().size(),
-            sample_quads[0].EnclosingBoundingBox().size())
+  EXPECT_EQ(gfx::ToEnclosingRect(expected_quads[0].BoundingBox()).size(),
+            gfx::ToEnclosingRect(sample_quads[0].BoundingBox()).size())
       << "Check size of first-letter part";
-  EXPECT_EQ(expected_quads[2].EnclosingBoundingBox().size(),
-            sample_quads[1].EnclosingBoundingBox().size())
+  EXPECT_EQ(gfx::ToEnclosingRect(expected_quads[2].BoundingBox()).size(),
+            gfx::ToEnclosingRect(sample_quads[1].BoundingBox()).size())
       << "Check size of first-letter part";
 
   EXPECT_EQ(ComputeSizesOfQuads(
@@ -507,18 +508,18 @@ TEST_F(RangeTest, CollapsedRangeGetBorderAndTextQuadsWithFirstLetter) {
   Element* const expected = GetDocument().getElementById("expected");
   Element* const sample = GetDocument().getElementById("sample");
 
-  const Vector<FloatQuad> expected_quads =
+  const Vector<gfx::QuadF> expected_quads =
       GetBorderAndTextQuads(Position(expected, 0), Position(expected, 2));
-  const Vector<FloatQuad> sample_quads =
+  const Vector<gfx::QuadF> sample_quads =
       GetBorderAndTextQuads(Position(sample, 0), Position(sample, 1));
   ASSERT_EQ(2u, sample_quads.size());
   ASSERT_EQ(3u, expected_quads.size())
       << "expected_quads has SPAN, SPAN.firstChild and P.lastChild";
-  EXPECT_EQ(expected_quads[0].EnclosingBoundingBox().size(),
-            sample_quads[0].EnclosingBoundingBox().size())
+  EXPECT_EQ(gfx::ToEnclosingRect(expected_quads[0].BoundingBox()).size(),
+            gfx::ToEnclosingRect(sample_quads[0].BoundingBox()).size())
       << "Check size of first-letter part";
-  EXPECT_EQ(expected_quads[2].EnclosingBoundingBox().size(),
-            sample_quads[1].EnclosingBoundingBox().size())
+  EXPECT_EQ(gfx::ToEnclosingRect(expected_quads[2].BoundingBox()).size(),
+            gfx::ToEnclosingRect(sample_quads[1].BoundingBox()).size())
       << "Check size of first-letter part";
 
   EXPECT_EQ(ComputeSizesOfQuads(GetBorderAndTextQuads(

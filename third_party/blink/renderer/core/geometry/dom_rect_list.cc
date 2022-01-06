@@ -30,7 +30,7 @@ namespace blink {
 
 DOMRectList::DOMRectList() = default;
 
-DOMRectList::DOMRectList(const Vector<FloatQuad>& quads) {
+DOMRectList::DOMRectList(const Vector<gfx::QuadF>& quads) {
   list_.ReserveInitialCapacity(quads.size());
   for (const auto& quad : quads)
     list_.push_back(DOMRect::FromRectF(quad.BoundingBox()));

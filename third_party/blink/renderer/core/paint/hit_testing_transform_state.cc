@@ -56,7 +56,7 @@ gfx::PointF HitTestingTransformState::MappedPoint() const {
   return accumulated_transform_.Inverse().ProjectPoint(last_planar_point_);
 }
 
-FloatQuad HitTestingTransformState::MappedQuad() const {
+gfx::QuadF HitTestingTransformState::MappedQuad() const {
   return accumulated_transform_.Inverse().ProjectQuad(last_planar_quad_);
 }
 

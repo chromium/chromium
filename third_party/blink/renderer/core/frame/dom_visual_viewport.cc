@@ -204,8 +204,8 @@ absl::optional<HeapVector<Member<DOMRect>>> DOMVisualViewport::segments()
   const float page_zoom_factor = frame->PageZoomFactor();
   const float scale_factor = dips_to_blink / page_zoom_factor;
   for (auto const& web_segment : web_segments) {
-    blink::FloatQuad quad = blink::FloatQuad(web_segment);
-    quad.Scale(scale_factor, scale_factor);
+    gfx::QuadF quad((gfx::RectF(web_segment)));
+    quad.Scale(scale_factor);
     viewport_segments.push_back(DOMRect::FromRectF(quad.BoundingBox()));
   }
 

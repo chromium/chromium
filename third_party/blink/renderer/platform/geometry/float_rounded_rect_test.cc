@@ -30,9 +30,9 @@
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/quad_f.h"
 
 namespace blink {
 
@@ -190,46 +190,46 @@ TEST(FloatRoundedRectTest, IntersectsQuadIsInclusive) {
   FloatRoundedRect r(gfx::RectF(10, 10, 20, 20), corner_radii);
 
   // A quad fully inside the rounded rect should intersect.
-  EXPECT_TRUE(r.IntersectsQuad(FloatQuad(gfx::RectF(11, 11, 8, 8))));
+  EXPECT_TRUE(r.IntersectsQuad(gfx::QuadF(gfx::RectF(11, 11, 8, 8))));
 
   // A quad fully outside the rounded rect should not intersect.
-  EXPECT_FALSE(r.IntersectsQuad(FloatQuad(gfx::RectF(0, 0, 1, 1))));
+  EXPECT_FALSE(r.IntersectsQuad(gfx::QuadF(gfx::RectF(0, 0, 1, 1))));
 
   // A quad touching the top edge of the rounded rect should intersect.
-  EXPECT_TRUE(r.IntersectsQuad(FloatQuad(gfx::RectF(15, 9, 5, 1))));
+  EXPECT_TRUE(r.IntersectsQuad(gfx::QuadF(gfx::RectF(15, 9, 5, 1))));
 
   // A quad touching the right edge of the rounded rect should intersect.
-  EXPECT_TRUE(r.IntersectsQuad(FloatQuad(gfx::RectF(30, 15, 1, 1))));
+  EXPECT_TRUE(r.IntersectsQuad(gfx::QuadF(gfx::RectF(30, 15, 1, 1))));
 
   // A quad touching the bottom edge of the rounded rect should intersect.
-  EXPECT_TRUE(r.IntersectsQuad(FloatQuad(gfx::RectF(15, 30, 1, 1))));
+  EXPECT_TRUE(r.IntersectsQuad(gfx::QuadF(gfx::RectF(15, 30, 1, 1))));
 
   // A quad touching the left edge of the rounded rect should intersect.
-  EXPECT_TRUE(r.IntersectsQuad(FloatQuad(gfx::RectF(9, 15, 1, 1))));
+  EXPECT_TRUE(r.IntersectsQuad(gfx::QuadF(gfx::RectF(9, 15, 1, 1))));
 
   // A quad outside the top-left arc should not intersect.
-  EXPECT_FALSE(r.IntersectsQuad(FloatQuad(gfx::RectF(10, 10, 1, 1))));
+  EXPECT_FALSE(r.IntersectsQuad(gfx::QuadF(gfx::RectF(10, 10, 1, 1))));
 
   // A quad inside the top-left arc should intersect.
-  EXPECT_TRUE(r.IntersectsQuad(FloatQuad(gfx::RectF(13, 13, 1, 1))));
+  EXPECT_TRUE(r.IntersectsQuad(gfx::QuadF(gfx::RectF(13, 13, 1, 1))));
 
   // A quad outside the top-right arc should not intersect.
-  EXPECT_FALSE(r.IntersectsQuad(FloatQuad(gfx::RectF(29, 10, 1, 1))));
+  EXPECT_FALSE(r.IntersectsQuad(gfx::QuadF(gfx::RectF(29, 10, 1, 1))));
 
   // A quad inside the top-right arc should intersect.
-  EXPECT_TRUE(r.IntersectsQuad(FloatQuad(gfx::RectF(26, 13, 1, 1))));
+  EXPECT_TRUE(r.IntersectsQuad(gfx::QuadF(gfx::RectF(26, 13, 1, 1))));
 
   // A quad outside the bottom-right arc should not intersect.
-  EXPECT_FALSE(r.IntersectsQuad(FloatQuad(gfx::RectF(29, 29, 1, 1))));
+  EXPECT_FALSE(r.IntersectsQuad(gfx::QuadF(gfx::RectF(29, 29, 1, 1))));
 
   // A quad inside the bottom-right arc should intersect.
-  EXPECT_TRUE(r.IntersectsQuad(FloatQuad(gfx::RectF(26, 26, 1, 1))));
+  EXPECT_TRUE(r.IntersectsQuad(gfx::QuadF(gfx::RectF(26, 26, 1, 1))));
 
   // A quad outside the bottom-left arc should not intersect.
-  EXPECT_FALSE(r.IntersectsQuad(FloatQuad(gfx::RectF(10, 29, 1, 1))));
+  EXPECT_FALSE(r.IntersectsQuad(gfx::QuadF(gfx::RectF(10, 29, 1, 1))));
 
   // A quad inside the bottom-left arc should intersect.
-  EXPECT_TRUE(r.IntersectsQuad(FloatQuad(gfx::RectF(13, 26, 1, 1))));
+  EXPECT_TRUE(r.IntersectsQuad(gfx::QuadF(gfx::RectF(13, 26, 1, 1))));
 }
 
 TEST(FloatRoundedrectTest, ConstrainRadii) {

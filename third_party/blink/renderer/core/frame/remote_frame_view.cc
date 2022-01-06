@@ -158,7 +158,7 @@ void RemoteFrameView::UpdateCompositingRect() {
   TransformationMatrix matrix =
       local_root_transform_state.AccumulatedTransform().Inverse();
   PhysicalRect local_viewport_rect = PhysicalRect::EnclosingRect(
-      matrix.ProjectQuad(FloatQuad(viewport_rect)).BoundingBox());
+      matrix.ProjectQuad(gfx::QuadF(gfx::RectF(viewport_rect))).BoundingBox());
   compositing_rect_ = ToEnclosingRect(local_viewport_rect);
   gfx::Size frame_size = Size();
 

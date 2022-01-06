@@ -108,12 +108,12 @@
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/platform/geometry/double_rect.h"
-#include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
+#include "ui/gfx/geometry/quad_f.h"
 
 namespace blink {
 
@@ -1213,7 +1213,7 @@ void LayoutBox::SetMargin(const NGPhysicalBoxStrut& box) {
   margin_box_outsets_.SetLeft(box.left);
 }
 
-void LayoutBox::AbsoluteQuads(Vector<FloatQuad>& quads,
+void LayoutBox::AbsoluteQuads(Vector<gfx::QuadF>& quads,
                               MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
   if (LayoutFlowThread* flow_thread = FlowThreadContainingBlock()) {
@@ -1527,7 +1527,7 @@ void LayoutBox::SetLocationAndUpdateOverflowControlsIfNeeded(
   }
 }
 
-FloatQuad LayoutBox::AbsoluteContentQuad(MapCoordinatesFlags flags) const {
+gfx::QuadF LayoutBox::AbsoluteContentQuad(MapCoordinatesFlags flags) const {
   NOT_DESTROYED();
   PhysicalRect rect = PhysicalContentBoxRect();
   return LocalRectToAbsoluteQuad(rect, flags);
@@ -2056,8 +2056,8 @@ bool LayoutBox::MapVisualRectToContainer(
   // using TransformState::kAccumulateTransform?)
   if (!StyleRef().Preserves3D()) {
     transform_state.Flatten();
-    transform_state.SetQuad(
-        FloatQuad(transform_state.LastPlanarQuad().EnclosingBoundingBox()));
+    transform_state.SetQuad(gfx::QuadF(gfx::RectF(
+        gfx::ToEnclosingRect(transform_state.LastPlanarQuad().BoundingBox()))));
   }
 
   // 2. Generate transformation matrix.
@@ -2157,7 +2157,8 @@ bool LayoutBox::ApplyBoxClips(
   PhysicalRect clip_rect = ClippingRect(PhysicalOffset());
 
   transform_state.Flatten();
-  PhysicalRect rect(transform_state.LastPlanarQuad().EnclosingBoundingBox());
+  PhysicalRect rect(
+      gfx::ToEnclosingRect(transform_state.LastPlanarQuad().BoundingBox()));
   bool does_intersect;
   if (visual_rect_flags & kEdgeInclusive) {
     does_intersect = rect.InclusiveIntersect(clip_rect);
@@ -2165,7 +2166,7 @@ bool LayoutBox::ApplyBoxClips(
     rect.Intersect(clip_rect);
     does_intersect = !rect.IsEmpty();
   }
-  transform_state.SetQuad(FloatQuad(gfx::RectF(rect)));
+  transform_state.SetQuad(gfx::QuadF(gfx::RectF(rect)));
 
   return does_intersect;
 }
@@ -4149,7 +4150,7 @@ void LayoutBox::InflateVisualRectForFilter(
   PhysicalRect rect = PhysicalRect::EnclosingRect(
       transform_state.LastPlanarQuad().BoundingBox());
   transform_state.SetQuad(
-      FloatQuad(gfx::RectF(Layer()->MapRectForFilter(rect))));
+      gfx::QuadF(gfx::RectF(Layer()->MapRectForFilter(rect))));
 }
 
 static bool ShouldRecalculateMinMaxWidthsAffectedByAncestor(

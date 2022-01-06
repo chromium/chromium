@@ -25,9 +25,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
-#include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
@@ -50,7 +50,7 @@ class CORE_EXPORT HitTestLocation {
   explicit HitTestLocation(const gfx::Point&);
   explicit HitTestLocation(const gfx::PointF&);
   explicit HitTestLocation(const DoublePoint&);
-  explicit HitTestLocation(const gfx::PointF&, const FloatQuad&);
+  explicit HitTestLocation(const gfx::PointF&, const gfx::QuadF&);
   explicit HitTestLocation(const PhysicalRect&);
 
   // The bounding box isn't always a 1x1 rect even when the hit test is not
@@ -89,11 +89,11 @@ class CORE_EXPORT HitTestLocation {
   // (see LayoutRect::InclusiveIntersect for a definition)
   bool Intersects(const gfx::RectF&) const;
   bool Intersects(const FloatRoundedRect&) const;
-  bool Intersects(const FloatQuad&) const;
+  bool Intersects(const gfx::QuadF&) const;
   bool ContainsPoint(const gfx::PointF&) const;
 
   const gfx::PointF& TransformedPoint() const { return transformed_point_; }
-  const FloatQuad& TransformedRect() const { return transformed_rect_; }
+  const gfx::QuadF& TransformedRect() const { return transformed_rect_; }
 
  private:
   void Move(const PhysicalOffset& offset);
@@ -104,7 +104,7 @@ class CORE_EXPORT HitTestLocation {
   PhysicalRect bounding_box_;
 
   gfx::PointF transformed_point_;
-  FloatQuad transformed_rect_;
+  gfx::QuadF transformed_rect_;
 
   // Index of fragment (FragmentData) to hit-test. If it's -1, all fragments
   // will be hit-tested. This is used to hit test items inside one NG block

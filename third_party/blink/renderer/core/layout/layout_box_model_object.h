@@ -537,9 +537,9 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
 
   // Same as AbsoluteQuads, but in the local border box coordinates of this
   // object.
-  void LocalQuads(Vector<FloatQuad>& quads) const;
+  void LocalQuads(Vector<gfx::QuadF>& quads) const;
 
-  void AbsoluteQuads(Vector<FloatQuad>& quads,
+  void AbsoluteQuads(Vector<gfx::QuadF>& quads,
                      MapCoordinatesFlags mode = 0) const override;
 
   // Returns the bounodiong box of all quads returned by LocalQuads.
@@ -581,10 +581,10 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
   // Compute absolute quads for |this|, but not any continuations. May only be
   // called for objects which can be or have continuations, i.e. LayoutInline or
   // LayoutBlockFlow.
-  virtual void AbsoluteQuadsForSelf(Vector<FloatQuad>& quads,
+  virtual void AbsoluteQuadsForSelf(Vector<gfx::QuadF>& quads,
                                     MapCoordinatesFlags mode = 0) const;
   // Same as AbsoluteQuadsForSelf, but in the local border box coordinates.
-  virtual void LocalQuadsForSelf(Vector<FloatQuad>& quads) const;
+  virtual void LocalQuadsForSelf(Vector<gfx::QuadF>& quads) const;
 
   void WillBeDestroyed() override;
 
@@ -673,7 +673,7 @@ class CORE_EXPORT LayoutBoxModelObject : public LayoutObject {
                               bool full_remove_insert = false);
 
  private:
-  void QuadsInternal(Vector<FloatQuad>& quads,
+  void QuadsInternal(Vector<gfx::QuadF>& quads,
                      MapCoordinatesFlags mode,
                      bool map_to_absolute) const;
 

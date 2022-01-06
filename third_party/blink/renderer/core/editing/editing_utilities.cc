@@ -1685,7 +1685,7 @@ wtf_size_t ComputeDistanceToRightGraphemeBoundary(const Position& position) {
       position.ComputeOffsetInContainerNode());
 }
 
-FloatQuad LocalToAbsoluteQuadOf(const LocalCaretRect& caret_rect) {
+gfx::QuadF LocalToAbsoluteQuadOf(const LocalCaretRect& caret_rect) {
   return caret_rect.layout_object->LocalRectToAbsoluteQuad(caret_rect.rect);
 }
 

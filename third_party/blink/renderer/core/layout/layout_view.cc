@@ -55,13 +55,13 @@
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/view_painter.h"
 #include "third_party/blink/renderer/core/svg/svg_document_extensions.h"
-#include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_controller.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "ui/display/screen_info.h"
+#include "ui/gfx/geometry/quad_f.h"
 
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
@@ -491,7 +491,7 @@ bool LayoutView::MapToVisualRectInAncestorSpace(
     return intersects;
 
   TransformState transform_state(TransformState::kApplyTransformDirection,
-                                 FloatQuad(gfx::RectF(rect)));
+                                 gfx::QuadF(gfx::RectF(rect)));
   intersects = MapToVisualRectInAncestorSpaceInternal(ancestor, transform_state,
                                                       mode, visual_rect_flags);
   transform_state.Flatten();
@@ -535,7 +535,7 @@ bool LayoutView::MapToVisualRectInAncestorSpaceInternal(
         transform_state.LastPlanarQuad().BoundingBox());
     bool retval = GetFrameView()->MapToVisualRectInRemoteRootFrame(
         rect, !(visual_rect_flags & kDontApplyMainFrameOverflowClip));
-    transform_state.SetQuad(FloatQuad(gfx::RectF(rect)));
+    transform_state.SetQuad(gfx::QuadF(gfx::RectF(rect)));
     return retval;
   }
 
@@ -545,7 +545,7 @@ bool LayoutView::MapToVisualRectInAncestorSpaceInternal(
     PhysicalRect view_rectangle = ViewRect();
     if (visual_rect_flags & kEdgeInclusive) {
       if (!rect.InclusiveIntersect(view_rectangle)) {
-        transform_state.SetQuad(FloatQuad(gfx::RectF(rect)));
+        transform_state.SetQuad(gfx::QuadF(gfx::RectF(rect)));
         return false;
       }
     } else {
@@ -560,14 +560,14 @@ bool LayoutView::MapToVisualRectInAncestorSpaceInternal(
 
     // Adjust for frame border.
     rect.Move(obj->PhysicalContentBoxOffset());
-    transform_state.SetQuad(FloatQuad(gfx::RectF(rect)));
+    transform_state.SetQuad(gfx::QuadF(gfx::RectF(rect)));
 
     return obj->MapToVisualRectInAncestorSpaceInternal(
         ancestor, transform_state, visual_rect_flags);
   }
 
   // This can happen, e.g., if the iframe element has display:none.
-  transform_state.SetQuad(FloatQuad(gfx::RectF()));
+  transform_state.SetQuad(gfx::QuadF(gfx::RectF()));
   return false;
 }
 
@@ -581,7 +581,7 @@ PhysicalOffset LayoutView::PixelSnappedOffsetForFixedPosition() const {
   return PhysicalOffset(ToFlooredPoint(OffsetForFixedPosition()));
 }
 
-void LayoutView::AbsoluteQuads(Vector<FloatQuad>& quads,
+void LayoutView::AbsoluteQuads(Vector<gfx::QuadF>& quads,
                                MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
   quads.push_back(LocalRectToAbsoluteQuad(

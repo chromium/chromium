@@ -101,7 +101,7 @@ using protocol::Response;
 namespace {
 
 bool ParseQuad(std::unique_ptr<protocol::Array<double>> quad_array,
-               FloatQuad* quad) {
+               gfx::QuadF* quad) {
   const size_t kCoordinatesInQuad = 8;
   if (!quad_array || quad_array->size() != kCoordinatesInQuad)
     return false;
@@ -227,7 +227,7 @@ void InspectTool::Trace(Visitor* visitor) const {
 
 // Hinge -----------------------------------------------------------------------
 
-Hinge::Hinge(FloatQuad quad,
+Hinge::Hinge(gfx::QuadF quad,
              Color content_color,
              Color outline_color,
              InspectorOverlayAgent* overlay)
@@ -607,8 +607,8 @@ Response InspectorOverlayAgent::highlightRect(
     int height,
     Maybe<protocol::DOM::RGBA> color,
     Maybe<protocol::DOM::RGBA> outline_color) {
-  std::unique_ptr<FloatQuad> quad =
-      std::make_unique<FloatQuad>(gfx::RectF(x, y, width, height));
+  std::unique_ptr<gfx::QuadF> quad =
+      std::make_unique<gfx::QuadF>(gfx::RectF(x, y, width, height));
   return SetInspectTool(MakeGarbageCollected<QuadHighlightTool>(
       this, GetFrontend(), std::move(quad),
       InspectorDOMAgent::ParseColor(color.fromMaybe(nullptr)),
@@ -619,7 +619,7 @@ Response InspectorOverlayAgent::highlightQuad(
     std::unique_ptr<protocol::Array<double>> quad_array,
     Maybe<protocol::DOM::RGBA> color,
     Maybe<protocol::DOM::RGBA> outline_color) {
-  std::unique_ptr<FloatQuad> quad = std::make_unique<FloatQuad>();
+  std::unique_ptr<gfx::QuadF> quad = std::make_unique<gfx::QuadF>();
   if (!ParseQuad(std::move(quad_array), quad.get()))
     return Response::ServerError("Invalid Quad format");
   return SetInspectTool(MakeGarbageCollected<QuadHighlightTool>(
@@ -660,7 +660,7 @@ Response InspectorOverlayAgent::setShowHinge(
 
   DCHECK(frame_impl_->GetFrameView() && GetFrame());
 
-  FloatQuad quad(gfx::RectF(x, y, width, height));
+  gfx::QuadF quad(gfx::RectF(x, y, width, height));
   hinge_ =
       MakeGarbageCollected<Hinge>(quad, content_color, outline_color, this);
 

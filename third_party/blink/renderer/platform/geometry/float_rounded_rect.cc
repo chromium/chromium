@@ -30,10 +30,10 @@
 #include "third_party/blink/renderer/platform/geometry/float_rounded_rect.h"
 
 #include <algorithm>
-#include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/insets_f.h"
+#include "ui/gfx/geometry/quad_f.h"
 
 namespace blink {
 
@@ -264,7 +264,7 @@ void FloatRoundedRect::InflateWithRadii(int size) {
   radii_.Scale(factor);
 }
 
-bool FloatRoundedRect::IntersectsQuad(const FloatQuad& quad) const {
+bool FloatRoundedRect::IntersectsQuad(const gfx::QuadF& quad) const {
   if (!quad.IntersectsRect(rect_))
     return false;
 

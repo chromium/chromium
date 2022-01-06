@@ -149,10 +149,10 @@ int LineBoxes(const LayoutObject& layout_object) {
 
   // If it has empty quads, it's most likely not a line broken ("fragmented")
   // text. <a><div></div></a> has for example one empty rect.
-  Vector<FloatQuad> quads;
+  Vector<gfx::QuadF> quads;
   layout_object.AbsoluteQuads(quads);
-  for (const FloatQuad& quad : quads) {
-    if (quad.IsEmpty())
+  for (const gfx::QuadF& quad : quads) {
+    if (quad.BoundingBox().IsEmpty())
       return 1;
   }
 
@@ -874,7 +874,7 @@ PhysicalRect SearchOriginFragment(const PhysicalRect& visible_part,
                                   const SpatialNavigationDirection direction) {
   // For accuracy, use the first visible fragment (not the fragmented element's
   // entire bounding rect which is a union of all fragments) as search origin.
-  Vector<FloatQuad> fragments;
+  Vector<gfx::QuadF> fragments;
   fragmented.AbsoluteQuads(
       fragments, kTraverseDocumentBoundaries | kApplyRemoteMainFrameTransform);
   switch (direction) {

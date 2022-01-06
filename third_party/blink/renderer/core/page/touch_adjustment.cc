@@ -36,11 +36,12 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/text/text_break_iterator.h"
 #include "ui/display/screen_info.h"
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/point_f.h"
+#include "ui/gfx/geometry/quad_f.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
@@ -59,17 +60,19 @@ class SubtargetGeometry {
   DISALLOW_NEW();
 
  public:
-  SubtargetGeometry(Node* node, const FloatQuad& quad)
+  SubtargetGeometry(Node* node, const gfx::QuadF& quad)
       : node_(node), quad_(quad) {}
   void Trace(Visitor* visitor) const { visitor->Trace(node_); }
 
   Node* GetNode() const { return node_; }
-  FloatQuad Quad() const { return quad_; }
-  gfx::Rect BoundingBox() const { return quad_.EnclosingBoundingBox(); }
+  gfx::QuadF Quad() const { return quad_; }
+  gfx::Rect BoundingBox() const {
+    return gfx::ToEnclosingRect(quad_.BoundingBox());
+  }
 
  private:
   Member<Node> node_;
-  FloatQuad quad_;
+  gfx::QuadF quad_;
 };
 
 }  // namespace touch_adjustment
@@ -156,11 +159,11 @@ bool ProvidesContextMenuItems(Node* node) {
 }
 
 static inline void AppendQuadsToSubtargetList(
-    Vector<FloatQuad>& quads,
+    Vector<gfx::QuadF>& quads,
     Node* node,
     SubtargetGeometryList& subtargets) {
-  Vector<FloatQuad>::const_iterator it = quads.begin();
-  const Vector<FloatQuad>::const_iterator end = quads.end();
+  Vector<gfx::QuadF>::const_iterator it = quads.begin();
+  const Vector<gfx::QuadF>::const_iterator end = quads.end();
   for (; it != end; ++it)
     subtargets.push_back(SubtargetGeometry(node, *it));
 }
@@ -171,7 +174,7 @@ static inline void AppendBasicSubtargetsForNode(
   // Node guaranteed to have layoutObject due to check in node filter.
   DCHECK(node->GetLayoutObject());
 
-  Vector<FloatQuad> quads;
+  Vector<gfx::QuadF> quads;
   node->GetLayoutObject()->AbsoluteQuads(quads);
 
   AppendQuadsToSubtargetList(quads, node, subtargets);
@@ -204,7 +207,7 @@ static inline void AppendContextSubtargetsForNode(
     int offset;
     while ((offset = word_iterator->next()) != -1) {
       if (IsWordTextBreak(word_iterator)) {
-        Vector<FloatQuad> quads;
+        Vector<gfx::QuadF> quads;
         text_layout_object->AbsoluteQuadsForRange(quads, last_offset, offset);
         AppendQuadsToSubtargetList(quads, text_node, subtargets);
       }
@@ -218,7 +221,7 @@ static inline void AppendContextSubtargetsForNode(
     const LayoutTextSelectionStatus& selection_status =
         frame_selection.ComputeLayoutSelectionStatus(*text_layout_object);
     // If selected, make subtargets out of only the selected part of the text.
-    Vector<FloatQuad> quads;
+    Vector<gfx::QuadF> quads;
     text_layout_object->AbsoluteQuadsForRange(quads, selection_status.start,
                                               selection_status.end);
     AppendQuadsToSubtargetList(quads, text_node, subtargets);
@@ -409,7 +412,7 @@ bool SnapTo(const SubtargetGeometry& geom,
             const gfx::Rect& touch_area,
             gfx::Point& adjusted_point) {
   LocalFrameView* view = geom.GetNode()->GetDocument().View();
-  FloatQuad quad = geom.Quad();
+  gfx::QuadF quad = geom.Quad();
 
   if (quad.IsRectilinear()) {
     gfx::Rect bounds = view->ConvertToRootFrame(geom.BoundingBox());
@@ -436,20 +439,20 @@ bool SnapTo(const SubtargetGeometry& geom,
   gfx::PointF p2 = ConvertToRootFrame(view, quad.p2());
   gfx::PointF p3 = ConvertToRootFrame(view, quad.p3());
   gfx::PointF p4 = ConvertToRootFrame(view, quad.p4());
-  quad = FloatQuad(p1, p2, p3, p4);
+  quad = gfx::QuadF(p1, p2, p3, p4);
 
-  if (quad.ContainsPoint(gfx::PointF(touch_point))) {
+  if (quad.Contains(gfx::PointF(touch_point))) {
     adjusted_point = touch_point;
     return true;
   }
 
   // Pull point towards the center of the element.
-  gfx::PointF center = quad.Center();
+  gfx::PointF center = quad.CenterPoint();
 
   AdjustPointToRect(center, touch_area);
   adjusted_point = gfx::ToRoundedPoint(center);
 
-  return quad.ContainsPoint(gfx::PointF(adjusted_point));
+  return quad.Contains(gfx::PointF(adjusted_point));
 }
 
 // A generic function for finding the target node with the lowest distance

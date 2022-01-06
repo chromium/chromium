@@ -32,7 +32,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/logging.h"
-#include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
@@ -40,6 +39,7 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/box_f.h"
+#include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/quaternion.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -868,8 +868,8 @@ gfx::PointF TransformationMatrix::ProjectPoint(const gfx::PointF& p,
   return gfx::PointF(static_cast<float>(out_x), static_cast<float>(out_y));
 }
 
-FloatQuad TransformationMatrix::ProjectQuad(const FloatQuad& q) const {
-  FloatQuad projected_quad;
+gfx::QuadF TransformationMatrix::ProjectQuad(const gfx::QuadF& q) const {
+  gfx::QuadF projected_quad;
 
   bool clamped1 = false;
   bool clamped2 = false;
@@ -885,7 +885,7 @@ FloatQuad TransformationMatrix::ProjectQuad(const FloatQuad& q) const {
   // visible to the projected surface.
   bool everything_was_clipped = clamped1 && clamped2 && clamped3 && clamped4;
   if (everything_was_clipped)
-    return FloatQuad();
+    return gfx::QuadF();
 
   return projected_quad;
 }
@@ -897,7 +897,7 @@ static float ClampEdgeValue(float f) {
 }
 
 LayoutRect TransformationMatrix::ClampedBoundsOfProjectedQuad(
-    const FloatQuad& q) const {
+    const gfx::QuadF& q) const {
   gfx::RectF mapped_quad_bounds = ProjectQuad(q).BoundingBox();
 
   float left = ClampEdgeValue(floorf(mapped_quad_bounds.x()));
@@ -977,7 +977,7 @@ gfx::RectF TransformationMatrix::MapRect(const gfx::RectF& r) const {
     return mapped_rect;
   }
 
-  FloatQuad result;
+  gfx::QuadF result;
 
   float max_x = r.right();
   float max_y = r.bottom();
@@ -989,15 +989,13 @@ gfx::RectF TransformationMatrix::MapRect(const gfx::RectF& r) const {
   return result.BoundingBox();
 }
 
-FloatQuad TransformationMatrix::MapQuad(const FloatQuad& q) const {
+gfx::QuadF TransformationMatrix::MapQuad(const gfx::QuadF& q) const {
   if (IsIdentityOrTranslation()) {
-    FloatQuad mapped_quad(q);
-    mapped_quad.Move(static_cast<float>(matrix_[3][0]),
-                     static_cast<float>(matrix_[3][1]));
-    return mapped_quad;
+    return q + gfx::Vector2dF(ClampTo<float>(matrix_[3][0]),
+                              ClampTo<float>(matrix_[3][1]));
   }
 
-  FloatQuad result;
+  gfx::QuadF result;
   result.set_p1(InternalMapPoint(q.p1()));
   result.set_p2(InternalMapPoint(q.p2()));
   result.set_p3(InternalMapPoint(q.p3()));

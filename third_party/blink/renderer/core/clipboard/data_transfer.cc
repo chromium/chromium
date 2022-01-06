@@ -123,7 +123,7 @@ class DraggedNodeImageBuilder {
 
     gfx::RectF bounding_box =
         layer->GetLayoutObject()
-            .AbsoluteToLocalQuad(FloatQuad(absolute_bounding_box))
+            .AbsoluteToLocalQuad(gfx::QuadF(gfx::RectF(absolute_bounding_box)))
             .BoundingBox();
     gfx::RectF cull_rect = bounding_box;
     cull_rect.Offset(

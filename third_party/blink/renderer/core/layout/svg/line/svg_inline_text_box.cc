@@ -290,7 +290,7 @@ bool SVGInlineTextBox::HitTestFragments(
   float baseline = font_data->GetFontMetrics().FloatAscent() /
                    line_layout_item.ScalingFactor();
   for (const SVGTextFragment& fragment : text_fragments_) {
-    FloatQuad fragment_quad = fragment.BoundingQuad(baseline);
+    gfx::QuadF fragment_quad = fragment.BoundingQuad(baseline);
     if (hit_test_location.Intersects(fragment_quad))
       return true;
   }

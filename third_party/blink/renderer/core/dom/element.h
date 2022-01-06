@@ -53,6 +53,7 @@
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace gfx {
+class QuadF;
 class Vector2dF;
 }
 
@@ -79,7 +80,6 @@ class ElementInternals;
 class ElementIntersectionObserverData;
 class ElementRareData;
 class ExceptionState;
-class FloatQuad;
 class FocusOptions;
 class GetInnerHTMLOptions;
 class HTMLFieldSetElement;
@@ -1259,7 +1259,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
                 const AtomicString& new_id);
   void UpdateName(const AtomicString& old_name, const AtomicString& new_name);
 
-  void ClientQuads(Vector<FloatQuad>& quads) const;
+  void ClientQuads(Vector<gfx::QuadF>& quads) const;
 
   NodeType getNodeType() const final;
   bool ChildTypeAllowed(NodeType) const final;

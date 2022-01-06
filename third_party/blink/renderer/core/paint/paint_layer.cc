@@ -1445,7 +1445,7 @@ HitTestingTransformState PaintLayer::CreateLocalTransformState(
           : HitTestingTransformState(
                 recursion_data.location.TransformedPoint(),
                 recursion_data.location.TransformedRect(),
-                FloatQuad(gfx::RectF(recursion_data.rect)));
+                gfx::QuadF(gfx::RectF(recursion_data.rect)));
 
   if (container_transform_state &&
       (!transform_container.Preserves3D() ||

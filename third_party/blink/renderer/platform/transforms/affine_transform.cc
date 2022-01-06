@@ -27,7 +27,6 @@
 
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 
-#include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -289,19 +288,12 @@ gfx::RectF AffineTransform::MapRect(const gfx::RectF& rect) const {
     return mapped_rect;
   }
 
-  // Still use FloatQuad because FloatQuad::BoundingBox() clamp to int range,
-  // which is required by some callers.
-  // TODO(crbug.com/738465): Find a way to use gfx types.
-  FloatQuad result;
+  gfx::QuadF result;
   result.set_p1(MapPoint(rect.origin()));
   result.set_p2(MapPoint(rect.top_right()));
   result.set_p3(MapPoint(rect.bottom_right()));
   result.set_p4(MapPoint(rect.bottom_left()));
   return result.BoundingBox();
-}
-
-FloatQuad AffineTransform::MapQuad(const FloatQuad& q) const {
-  return FloatQuad(MapQuad(ToGfxQuadF(q)));
 }
 
 gfx::QuadF AffineTransform::MapQuad(const gfx::QuadF& q) const {

@@ -40,9 +40,11 @@
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
-namespace blink {
+namespace gfx {
+class QuadF;
+}
 
-class FloatQuad;
+namespace blink {
 
 // Represents a rect with rounded corners.
 // We don't use gfx::RRect in blink because gfx::RRect is based on SkRRect
@@ -189,7 +191,7 @@ class PLATFORM_EXPORT FloatRoundedRect {
   // This only works for convex quads.
   // This intersection is edge-inclusive and will return true even if the
   // intersecting area is empty (i.e., the intersection is a line or a point).
-  bool IntersectsQuad(const FloatQuad&) const;
+  bool IntersectsQuad(const gfx::QuadF&) const;
 
   // Whether the radii are constrained in the size of rect().
   bool IsRenderable() const;

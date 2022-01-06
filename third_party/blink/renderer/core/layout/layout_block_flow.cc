@@ -2488,7 +2488,7 @@ void LayoutBlockFlow::ComputeLayoutOverflow(LayoutUnit old_client_after_edge,
     AddLayoutOverflowFromFloats();
 }
 
-void LayoutBlockFlow::AbsoluteQuads(Vector<FloatQuad>& quads,
+void LayoutBlockFlow::AbsoluteQuads(Vector<gfx::QuadF>& quads,
                                     MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
   if (!IsAnonymousBlockContinuation()) {
@@ -2498,16 +2498,16 @@ void LayoutBlockFlow::AbsoluteQuads(Vector<FloatQuad>& quads,
   LayoutBoxModelObject::AbsoluteQuads(quads, mode);
 }
 
-void LayoutBlockFlow::LocalQuadsForSelf(Vector<FloatQuad>& quads) const {
+void LayoutBlockFlow::LocalQuadsForSelf(Vector<gfx::QuadF>& quads) const {
   return QuadsForSelfInternal(quads, 0, false);
 }
 
-void LayoutBlockFlow::AbsoluteQuadsForSelf(Vector<FloatQuad>& quads,
+void LayoutBlockFlow::AbsoluteQuadsForSelf(Vector<gfx::QuadF>& quads,
                                            MapCoordinatesFlags mode) const {
   return QuadsForSelfInternal(quads, mode, true);
 }
 
-void LayoutBlockFlow::QuadsForSelfInternal(Vector<FloatQuad>& quads,
+void LayoutBlockFlow::QuadsForSelfInternal(Vector<gfx::QuadF>& quads,
                                            MapCoordinatesFlags mode,
                                            bool map_to_absolute) const {
   NOT_DESTROYED();
@@ -2521,7 +2521,7 @@ void LayoutBlockFlow::QuadsForSelfInternal(Vector<FloatQuad>& quads,
   if (map_to_absolute)
     quads.push_back(LocalRectToAbsoluteQuad(local_rect, mode));
   else
-    quads.push_back(FloatQuad(gfx::RectF(local_rect)));
+    quads.push_back(gfx::QuadF(gfx::RectF(local_rect)));
 }
 
 RootInlineBox* LayoutBlockFlow::CreateAndAppendRootInlineBox() {

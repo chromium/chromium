@@ -86,6 +86,7 @@ class SingleThreadTaskRunner;
 }
 
 namespace gfx {
+class QuadF;
 class RectF;
 }
 
@@ -148,7 +149,6 @@ class EventListener;
 template <typename EventType>
 class EventWithHitTestResults;
 class ExceptionState;
-class FloatQuad;
 class FontMatchingMetrics;
 class FormController;
 class FrameCallback;
@@ -1396,8 +1396,8 @@ class CORE_EXPORT Document : public ContainerNode,
                               const ElementRegistrationOptions*,
                               ExceptionState&);
 
-  void AdjustFloatQuadsForScrollAndAbsoluteZoom(Vector<FloatQuad>&,
-                                                const LayoutObject&) const;
+  void AdjustQuadsForScrollAndAbsoluteZoom(Vector<gfx::QuadF>&,
+                                           const LayoutObject&) const;
   void AdjustRectForScrollAndAbsoluteZoom(gfx::RectF&,
                                           const LayoutObject&) const;
 

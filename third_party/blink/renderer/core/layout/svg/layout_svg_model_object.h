@@ -55,7 +55,7 @@ class LayoutSVGModelObject : public LayoutObject {
     return StrokeBoundingBox();
   }
 
-  void AbsoluteQuads(Vector<FloatQuad>&,
+  void AbsoluteQuads(Vector<gfx::QuadF>&,
                      MapCoordinatesFlags mode = 0) const override;
   gfx::RectF LocalBoundingBoxRectForAccessibility() const final;
 

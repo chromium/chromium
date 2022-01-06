@@ -49,9 +49,9 @@
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/outline_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
-#include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/geometry/region.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
+#include "ui/gfx/geometry/quad_f.h"
 
 namespace blink {
 
@@ -1004,16 +1004,16 @@ bool LayoutInline::AbsoluteTransformDependsOnPoint(
   return false;
 }
 
-void LayoutInline::LocalQuadsForSelf(Vector<FloatQuad>& quads) const {
+void LayoutInline::LocalQuadsForSelf(Vector<gfx::QuadF>& quads) const {
   QuadsForSelfInternal(quads, 0, false);
 }
 
-void LayoutInline::AbsoluteQuadsForSelf(Vector<FloatQuad>& quads,
+void LayoutInline::AbsoluteQuadsForSelf(Vector<gfx::QuadF>& quads,
                                         MapCoordinatesFlags mode) const {
   QuadsForSelfInternal(quads, mode, true);
 }
 
-void LayoutInline::QuadsForSelfInternal(Vector<FloatQuad>& quads,
+void LayoutInline::QuadsForSelfInternal(Vector<gfx::QuadF>& quads,
                                         MapCoordinatesFlags mode,
                                         bool map_to_absolute) const {
   NOT_DESTROYED();
@@ -1033,10 +1033,10 @@ void LayoutInline::QuadsForSelfInternal(Vector<FloatQuad>& quads,
         mapping_to_absolute.emplace(LocalToAbsoluteTransform(mode));
     }
     if (transform_depends_on_point) {
-      quads.push_back(LocalToAbsoluteQuad(FloatQuad(gfx::RectF(rect)), mode));
+      quads.push_back(LocalToAbsoluteQuad(gfx::QuadF(gfx::RectF(rect)), mode));
     } else {
       quads.push_back(
-          mapping_to_absolute->MapQuad(FloatQuad(gfx::RectF(rect))));
+          mapping_to_absolute->MapQuad(gfx::QuadF(gfx::RectF(rect))));
     }
   };
 
@@ -1045,13 +1045,13 @@ void LayoutInline::QuadsForSelfInternal(Vector<FloatQuad>& quads,
         if (map_to_absolute)
           PushAbsoluteQuad(rect);
         else
-          quads.push_back(FloatQuad(gfx::RectF(rect)));
+          quads.push_back(gfx::QuadF(gfx::RectF(rect)));
       });
   if (quads.IsEmpty()) {
     if (map_to_absolute)
       PushAbsoluteQuad(PhysicalRect());
     else
-      quads.push_back(FloatQuad());
+      quads.push_back(gfx::QuadF());
   }
 }
 

@@ -1999,7 +1999,7 @@ gfx::Rect Element::BoundsInViewport() const {
   if (!view)
     return gfx::Rect();
 
-  Vector<FloatQuad> quads;
+  Vector<gfx::QuadF> quads;
 
   // TODO(pdr): Unify the quad/bounds code with Element::ClientQuads.
 
@@ -2014,7 +2014,7 @@ gfx::Rect Element::BoundsInViewport() const {
     // TODO(pdr): This should include stroke.
     if (IsA<SVGGraphicsElement>(svg_element)) {
       quads.push_back(GetLayoutObject()->LocalToAbsoluteQuad(
-          FloatQuad(GetLayoutObject()->ObjectBoundingBox())));
+          gfx::QuadF(GetLayoutObject()->ObjectBoundingBox())));
     }
   } else {
     // Get the bounding rectangle from the box model.
@@ -2025,11 +2025,11 @@ gfx::Rect Element::BoundsInViewport() const {
   if (quads.IsEmpty())
     return gfx::Rect();
 
-  gfx::Rect result = quads[0].EnclosingBoundingBox();
-  for (wtf_size_t i = 1; i < quads.size(); ++i)
-    result.Union(quads[i].EnclosingBoundingBox());
+  gfx::RectF result;
+  for (auto& quad : quads)
+    result.Union(quad.BoundingBox());
 
-  return view->FrameToViewport(result);
+  return view->FrameToViewport(gfx::ToEnclosingRect(result));
 }
 
 Vector<gfx::Rect> Element::OutlineRectsInVisualViewport(
@@ -2107,7 +2107,7 @@ gfx::Rect Element::VisibleBoundsInVisualViewport() const {
   return visible_rect;
 }
 
-void Element::ClientQuads(Vector<FloatQuad>& quads) const {
+void Element::ClientQuads(Vector<gfx::QuadF>& quads) const {
   LayoutObject* element_layout_object = GetLayoutObject();
   if (!element_layout_object)
     return;
@@ -2125,7 +2125,7 @@ void Element::ClientQuads(Vector<FloatQuad>& quads) const {
     // If stroke is desired, we can update this to use AbsoluteQuads, below.
     if (IsA<SVGGraphicsElement>(svg_element)) {
       quads.push_back(element_layout_object->LocalToAbsoluteQuad(
-          FloatQuad(element_layout_object->ObjectBoundingBox())));
+          gfx::QuadF(element_layout_object->ObjectBoundingBox())));
     }
     return;
   }
@@ -2139,27 +2139,27 @@ void Element::ClientQuads(Vector<FloatQuad>& quads) const {
 DOMRectList* Element::getClientRects() {
   GetDocument().EnsurePaintLocationDataValidForNode(
       this, DocumentUpdateReason::kJavaScript);
-  Vector<FloatQuad> quads;
+  Vector<gfx::QuadF> quads;
   ClientQuads(quads);
   if (quads.IsEmpty())
     return MakeGarbageCollected<DOMRectList>();
 
   LayoutObject* element_layout_object = GetLayoutObject();
   DCHECK(element_layout_object);
-  GetDocument().AdjustFloatQuadsForScrollAndAbsoluteZoom(
-      quads, *element_layout_object);
+  GetDocument().AdjustQuadsForScrollAndAbsoluteZoom(quads,
+                                                    *element_layout_object);
   return MakeGarbageCollected<DOMRectList>(quads);
 }
 
 gfx::RectF Element::GetBoundingClientRectNoLifecycleUpdate() const {
-  Vector<FloatQuad> quads;
+  Vector<gfx::QuadF> quads;
   ClientQuads(quads);
   if (quads.IsEmpty())
     return gfx::RectF();
 
-  gfx::RectF result = quads[0].BoundingBox();
-  for (wtf_size_t i = 1; i < quads.size(); ++i)
-    result.Union(quads[i].BoundingBox());
+  gfx::RectF result;
+  for (auto& quad : quads)
+    result.Union(quad.BoundingBox());
 
   LayoutObject* element_layout_object = GetLayoutObject();
   DCHECK(element_layout_object);

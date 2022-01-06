@@ -515,7 +515,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
   // The content box converted to absolute coords (taking transforms into
   // account).
-  FloatQuad AbsoluteContentQuad(MapCoordinatesFlags = 0) const;
+  gfx::QuadF AbsoluteContentQuad(MapCoordinatesFlags = 0) const;
 
   // The enclosing rectangle of the background with given opacity requirement.
   // TODO(crbug.com/877518): Some callers of this method may actually want
@@ -981,7 +981,7 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
                              CollapsedMarginAfter(), LayoutUnit());
   }
 
-  void AbsoluteQuads(Vector<FloatQuad>&,
+  void AbsoluteQuads(Vector<gfx::QuadF>&,
                      MapCoordinatesFlags mode = 0) const override;
   gfx::RectF LocalBoundingBoxRectForAccessibility() const override;
 

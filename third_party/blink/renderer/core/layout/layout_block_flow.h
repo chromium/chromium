@@ -561,10 +561,10 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
 
   void UpdateBlockChildDirtyBitsBeforeLayout(bool relayout_children,
                                              LayoutBox&);
-  void AbsoluteQuads(Vector<FloatQuad>&,
+  void AbsoluteQuads(Vector<gfx::QuadF>&,
                      MapCoordinatesFlags mode = 0) const override;
-  void LocalQuadsForSelf(Vector<FloatQuad>& quads) const override;
-  void AbsoluteQuadsForSelf(Vector<FloatQuad>& quads,
+  void LocalQuadsForSelf(Vector<gfx::QuadF>& quads) const override;
+  void AbsoluteQuadsForSelf(Vector<gfx::QuadF>& quads,
                             MapCoordinatesFlags mode = 0) const override;
 
   LayoutUnit LogicalRightOffsetForLine(
@@ -613,7 +613,7 @@ class CORE_EXPORT LayoutBlockFlow : public LayoutBlock {
   PhysicalOffset AccumulateRelativePositionOffsets() const override;
 
  private:
-  void QuadsForSelfInternal(Vector<FloatQuad>& quads,
+  void QuadsForSelfInternal(Vector<gfx::QuadF>& quads,
                             MapCoordinatesFlags mode,
                             bool map_to_absolute) const;
 

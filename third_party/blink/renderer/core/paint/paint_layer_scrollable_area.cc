@@ -1173,8 +1173,8 @@ bool PaintLayerScrollableArea::RestoreScrollAnchor(
          scroll_anchor_.RestoreAnchor(serialized_anchor);
 }
 
-FloatQuad PaintLayerScrollableArea::LocalToVisibleContentQuad(
-    const FloatQuad& quad,
+gfx::QuadF PaintLayerScrollableArea::LocalToVisibleContentQuad(
+    const gfx::QuadF& quad,
     const LayoutObject* local_object,
     MapCoordinatesFlags flags) const {
   LayoutBox* box = GetLayoutBox();

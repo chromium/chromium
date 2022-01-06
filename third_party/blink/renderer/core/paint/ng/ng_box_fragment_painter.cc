@@ -2047,7 +2047,7 @@ bool NGBoxFragmentPainter::HitTestTextItem(
 
   if (text_item.Type() == NGFragmentItem::kSvgText &&
       text_item.HasSvgTransformForBoundingBox()) {
-    const FloatQuad quad = text_item.SvgUnscaledQuad();
+    const gfx::QuadF quad = text_item.SvgUnscaledQuad();
     if (!hit_test.location.Intersects(quad))
       return false;
     return hit_test.AddNodeToResultWithContentOffset(

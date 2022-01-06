@@ -44,12 +44,12 @@
 #include "third_party/blink/renderer/core/inspector/inspector_highlight.h"
 #include "third_party/blink/renderer/core/inspector/inspector_overlay_host.h"
 #include "third_party/blink/renderer/core/inspector/protocol/overlay.h"
-#include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/quad_f.h"
 
 namespace cc {
 class Layer;
@@ -124,7 +124,7 @@ class CORE_EXPORT InspectTool : public GarbageCollected<InspectTool> {
 
 class CORE_EXPORT Hinge final : public GarbageCollected<Hinge> {
  public:
-  Hinge(FloatQuad quad,
+  Hinge(gfx::QuadF quad,
         Color color,
         Color outline_color,
         InspectorOverlayAgent* overlay);
@@ -136,7 +136,7 @@ class CORE_EXPORT Hinge final : public GarbageCollected<Hinge> {
   void Trace(Visitor* visitor) const;
 
  private:
-  FloatQuad quad_;
+  gfx::QuadF quad_;
   Color content_color_;
   Color outline_color_;
   Member<InspectorOverlayAgent> overlay_;

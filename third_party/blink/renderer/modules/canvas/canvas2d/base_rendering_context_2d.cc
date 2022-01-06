@@ -26,7 +26,6 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/path_2d.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_frame.h"
-#include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -34,6 +33,7 @@
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "ui/gfx/geometry/quad_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
@@ -1709,8 +1709,8 @@ void BaseRenderingContext2D::ClearCanvasForSrcCompositeOp() {
 bool BaseRenderingContext2D::RectContainsTransformedRect(
     const gfx::RectF& rect,
     const SkIRect& transformed_rect) const {
-  FloatQuad quad(rect);
-  FloatQuad transformed_quad(
+  gfx::QuadF quad(rect);
+  gfx::QuadF transformed_quad(
       gfx::RectF(transformed_rect.x(), transformed_rect.y(),
                  transformed_rect.width(), transformed_rect.height()));
   return GetState().GetTransform().MapQuad(quad).ContainsQuad(transformed_quad);

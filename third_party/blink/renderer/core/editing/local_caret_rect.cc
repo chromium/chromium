@@ -39,6 +39,7 @@
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_caret_position.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_caret_rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -203,7 +204,7 @@ static gfx::Rect AbsoluteCaretBoundsOfAlgorithm(
       position, extra_width_to_end_of_line, rule);
   if (caret_rect.IsEmpty())
     return gfx::Rect();
-  return LocalToAbsoluteQuadOf(caret_rect).EnclosingBoundingBox();
+  return gfx::ToEnclosingRect(LocalToAbsoluteQuadOf(caret_rect).BoundingBox());
 }
 
 gfx::Rect AbsoluteCaretBoundsOf(const PositionWithAffinity& position,
@@ -221,7 +222,7 @@ static gfx::Rect AbsoluteSelectionBoundsOfAlgorithm(
       LocalSelectionRectOfPosition(visible_position.ToPositionWithAffinity());
   if (caret_rect.IsEmpty())
     return gfx::Rect();
-  return LocalToAbsoluteQuadOf(caret_rect).EnclosingBoundingBox();
+  return gfx::ToEnclosingRect(LocalToAbsoluteQuadOf(caret_rect).BoundingBox());
 }
 
 gfx::Rect AbsoluteSelectionBoundsOf(const VisiblePosition& visible_position) {

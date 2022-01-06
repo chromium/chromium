@@ -533,27 +533,27 @@ void LayoutBoxModelObject::RecalcVisualOverflow() {
 }
 
 void LayoutBoxModelObject::AbsoluteQuadsForSelf(
-    Vector<FloatQuad>& quads,
+    Vector<gfx::QuadF>& quads,
     MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
   NOTREACHED();
 }
 
-void LayoutBoxModelObject::LocalQuadsForSelf(Vector<FloatQuad>& quads) const {
+void LayoutBoxModelObject::LocalQuadsForSelf(Vector<gfx::QuadF>& quads) const {
   NOT_DESTROYED();
   NOTREACHED();
 }
 
-void LayoutBoxModelObject::AbsoluteQuads(Vector<FloatQuad>& quads,
+void LayoutBoxModelObject::AbsoluteQuads(Vector<gfx::QuadF>& quads,
                                          MapCoordinatesFlags mode) const {
   QuadsInternal(quads, mode, true);
 }
 
-void LayoutBoxModelObject::LocalQuads(Vector<FloatQuad>& quads) const {
+void LayoutBoxModelObject::LocalQuads(Vector<gfx::QuadF>& quads) const {
   QuadsInternal(quads, 0, false);
 }
 
-void LayoutBoxModelObject::QuadsInternal(Vector<FloatQuad>& quads,
+void LayoutBoxModelObject::QuadsInternal(Vector<gfx::QuadF>& quads,
                                          MapCoordinatesFlags mode,
                                          bool map_to_absolute) const {
   NOT_DESTROYED();
@@ -581,7 +581,7 @@ void LayoutBoxModelObject::QuadsInternal(Vector<FloatQuad>& quads,
 
 gfx::RectF LayoutBoxModelObject::LocalBoundingBoxRectF() const {
   NOT_DESTROYED();
-  Vector<FloatQuad> quads;
+  Vector<gfx::QuadF> quads;
   LocalQuads(quads);
 
   wtf_size_t n = quads.size();

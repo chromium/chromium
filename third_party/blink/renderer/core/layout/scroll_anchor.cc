@@ -133,7 +133,7 @@ static LayoutRect RelativeBounds(const LayoutObject* layout_object,
   LayoutRect relative_bounds =
       LayoutRect(scroller
                      ->LocalToVisibleContentQuad(
-                         FloatQuad(gfx::RectF(local_bounds)), layout_object)
+                         gfx::QuadF(gfx::RectF(local_bounds)), layout_object)
                      .BoundingBox());
 
   return relative_bounds;

@@ -25,7 +25,7 @@ body { margin:0; padding: 0; }
 </svg>)HTML");
   UpdateAllLifecyclePhasesForTest();
 
-  Vector<FloatQuad> quads;
+  Vector<gfx::QuadF> quads;
   auto* object = GetLayoutObjectByElementId("t");
   object->AbsoluteQuads(quads, 0);
   EXPECT_EQ(1u, quads.size());

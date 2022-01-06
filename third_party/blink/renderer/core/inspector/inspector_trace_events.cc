@@ -661,7 +661,7 @@ void inspector_layout_event::BeginData(perfetto::TracedValue context,
   SetCallStack(dict);
 }
 
-static void CreateQuad(perfetto::TracedValue context, const FloatQuad& quad) {
+static void CreateQuad(perfetto::TracedValue context, const gfx::QuadF& quad) {
   auto array = std::move(context).WriteArray();
   array.Append(quad.p1().x());
   array.Append(quad.p1().y());
@@ -692,7 +692,7 @@ static void CreateLayoutRoot(perfetto::TracedValue context,
   auto dict = std::move(context).WriteDictionary();
   SetGeneratingNodeInfo(dict, layout_root.object, "nodeId");
   dict.Add("depth", static_cast<int>(layout_root.depth));
-  Vector<FloatQuad> quads;
+  Vector<gfx::QuadF> quads;
   layout_root.object->AbsoluteQuads(quads);
   if (quads.size() > kMaxQuads)
     quads.Shrink(kMaxQuads);
@@ -1111,7 +1111,7 @@ void inspector_xhr_load_event::Data(perfetto::TracedValue trace_context,
 void inspector_paint_event::Data(perfetto::TracedValue context,
                                  Frame* frame,
                                  const LayoutObject* layout_object,
-                                 const FloatQuad& quad,
+                                 const gfx::QuadF& quad,
                                  int layer_id) {
   auto dict = std::move(context).WriteDictionary();
   dict.Add("frame", IdentifiersFactory::FrameId(frame));

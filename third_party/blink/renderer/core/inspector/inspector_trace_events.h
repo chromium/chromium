@@ -29,6 +29,7 @@ class UnguessableToken;
 
 namespace gfx {
 class RectF;
+class QuadF;
 }
 
 namespace v8 {
@@ -51,7 +52,6 @@ class Element;
 class EncodedFormData;
 class Event;
 class ExecutionContext;
-class FloatQuad;
 class Frame;
 class HitTestLocation;
 class HitTestRequest;
@@ -435,7 +435,7 @@ namespace inspector_paint_event {
 void Data(perfetto::TracedValue context,
           Frame*,
           const LayoutObject*,
-          const FloatQuad& quad,
+          const gfx::QuadF& quad,
           int layer_id);
 }
 

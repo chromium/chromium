@@ -37,6 +37,10 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 
+namespace gfx {
+class QuadF;
+}
+
 namespace blink {
 
 class DOMRect;
@@ -45,7 +49,6 @@ class ContainerNode;
 class Document;
 class DocumentFragment;
 class ExceptionState;
-class FloatQuad;
 class Node;
 class NodeWithIndex;
 class Text;
@@ -139,7 +142,7 @@ class CORE_EXPORT Range final : public AbstractRange {
   gfx::Rect BoundingBox() const;
 
   // Transform-friendly
-  void GetBorderAndTextQuads(Vector<FloatQuad>&) const;
+  void GetBorderAndTextQuads(Vector<gfx::QuadF>&) const;
   gfx::RectF BoundingRect() const;
 
   void NodeChildrenWillBeRemoved(ContainerNode&);

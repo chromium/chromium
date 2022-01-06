@@ -895,12 +895,10 @@ int ScrollableArea::HorizontalScrollbarHeight(
   return 0;
 }
 
-FloatQuad ScrollableArea::LocalToVisibleContentQuad(const FloatQuad& quad,
-                                                    const LayoutObject*,
-                                                    unsigned) const {
-  FloatQuad result(quad);
-  result.Move(-GetScrollOffset());
-  return result;
+gfx::QuadF ScrollableArea::LocalToVisibleContentQuad(const gfx::QuadF& quad,
+                                                     const LayoutObject*,
+                                                     unsigned) const {
+  return quad - GetScrollOffset();
 }
 
 gfx::Size ScrollableArea::ExcludeScrollbars(const gfx::Size& size) const {

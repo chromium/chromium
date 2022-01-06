@@ -56,7 +56,6 @@
 #include "third_party/blink/renderer/core/paint/paint_phase.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/core/style/style_difference.h"
-#include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/compositing_reasons.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
@@ -65,6 +64,7 @@
 #include "third_party/blink/renderer/platform/graphics/subtree_paint_property_update_reason.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/gfx/geometry/quad_f.h"
 
 namespace ui {
 class Cursor;
@@ -2391,12 +2391,12 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
                                    MapCoordinatesFlags mode = 0) const {
     NOT_DESTROYED();
     return PhysicalRect::EnclosingRect(
-        AncestorToLocalQuad(ancestor, FloatQuad(gfx::RectF(rect)), mode)
+        AncestorToLocalQuad(ancestor, gfx::QuadF(gfx::RectF(rect)), mode)
             .BoundingBox());
   }
-  FloatQuad AncestorToLocalQuad(const LayoutBoxModelObject*,
-                                const FloatQuad&,
-                                MapCoordinatesFlags mode = 0) const;
+  gfx::QuadF AncestorToLocalQuad(const LayoutBoxModelObject*,
+                                 const gfx::QuadF&,
+                                 MapCoordinatesFlags mode = 0) const;
   PhysicalOffset AncestorToLocalPoint(const LayoutBoxModelObject* ancestor,
                                       const PhysicalOffset& p,
                                       MapCoordinatesFlags mode = 0) const {
@@ -2423,15 +2423,15 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   PhysicalRect LocalToAncestorRect(const PhysicalRect& rect,
                                    const LayoutBoxModelObject* ancestor,
                                    MapCoordinatesFlags mode = 0) const;
-  FloatQuad LocalRectToAncestorQuad(const PhysicalRect& rect,
-                                    const LayoutBoxModelObject* ancestor,
-                                    MapCoordinatesFlags mode = 0) const {
+  gfx::QuadF LocalRectToAncestorQuad(const PhysicalRect& rect,
+                                     const LayoutBoxModelObject* ancestor,
+                                     MapCoordinatesFlags mode = 0) const {
     NOT_DESTROYED();
-    return LocalToAncestorQuad(FloatQuad(gfx::RectF(rect)), ancestor, mode);
+    return LocalToAncestorQuad(gfx::QuadF(gfx::RectF(rect)), ancestor, mode);
   }
-  FloatQuad LocalToAncestorQuad(const FloatQuad&,
-                                const LayoutBoxModelObject* ancestor,
-                                MapCoordinatesFlags = 0) const;
+  gfx::QuadF LocalToAncestorQuad(const gfx::QuadF&,
+                                 const LayoutBoxModelObject* ancestor,
+                                 MapCoordinatesFlags = 0) const;
   PhysicalOffset LocalToAncestorPoint(const PhysicalOffset& p,
                                       const LayoutBoxModelObject* ancestor,
                                       MapCoordinatesFlags mode = 0) const {
@@ -2469,13 +2469,13 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return LocalToAncestorRect(rect, nullptr, mode);
   }
-  FloatQuad LocalRectToAbsoluteQuad(const PhysicalRect& rect,
-                                    MapCoordinatesFlags mode = 0) const {
+  gfx::QuadF LocalRectToAbsoluteQuad(const PhysicalRect& rect,
+                                     MapCoordinatesFlags mode = 0) const {
     NOT_DESTROYED();
     return LocalRectToAncestorQuad(rect, nullptr, mode);
   }
-  FloatQuad LocalToAbsoluteQuad(const FloatQuad& quad,
-                                MapCoordinatesFlags mode = 0) const {
+  gfx::QuadF LocalToAbsoluteQuad(const gfx::QuadF& quad,
+                                 MapCoordinatesFlags mode = 0) const {
     NOT_DESTROYED();
     return LocalToAncestorQuad(quad, nullptr, mode);
   }
@@ -2494,8 +2494,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return AncestorToLocalRect(nullptr, rect, mode);
   }
-  FloatQuad AbsoluteToLocalQuad(const FloatQuad& quad,
-                                MapCoordinatesFlags mode = 0) const {
+  gfx::QuadF AbsoluteToLocalQuad(const gfx::QuadF& quad,
+                                 MapCoordinatesFlags mode = 0) const {
     NOT_DESTROYED();
     return AncestorToLocalQuad(nullptr, quad, mode);
   }
@@ -2539,7 +2539,7 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   PhysicalRect AbsoluteBoundingBoxRectForScrollIntoView() const;
 
   // Build an array of quads in absolute coords for line boxes
-  virtual void AbsoluteQuads(Vector<FloatQuad>&,
+  virtual void AbsoluteQuads(Vector<gfx::QuadF>&,
                              MapCoordinatesFlags mode = 0) const {
     NOT_DESTROYED();
   }
@@ -3736,9 +3736,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
                                    MapCoordinatesFlags mode,
                                    PhysicalRect& result) const;
 
-  FloatQuad LocalToAncestorQuadInternal(const FloatQuad&,
-                                        const LayoutBoxModelObject* ancestor,
-                                        MapCoordinatesFlags = 0) const;
+  gfx::QuadF LocalToAncestorQuadInternal(const gfx::QuadF&,
+                                         const LayoutBoxModelObject* ancestor,
+                                         MapCoordinatesFlags = 0) const;
 
   void ClearLayoutRootIfNeeded() const;
 

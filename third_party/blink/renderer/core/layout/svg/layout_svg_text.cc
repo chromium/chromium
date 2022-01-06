@@ -46,8 +46,8 @@
 #include "third_party/blink/renderer/core/paint/svg_text_painter.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/core/svg/svg_text_element.h"
-#include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "ui/gfx/geometry/quad_f.h"
 
 namespace blink {
 
@@ -393,10 +393,10 @@ PositionWithAffinity LayoutSVGText::PositionForPoint(
       PhysicalOffset(clipped_point_in_contents.left, closest_box->Y()));
 }
 
-void LayoutSVGText::AbsoluteQuads(Vector<FloatQuad>& quads,
+void LayoutSVGText::AbsoluteQuads(Vector<gfx::QuadF>& quads,
                                   MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
-  quads.push_back(LocalToAbsoluteQuad(FloatQuad(StrokeBoundingBox()), mode));
+  quads.push_back(LocalToAbsoluteQuad(gfx::QuadF(StrokeBoundingBox()), mode));
 }
 
 void LayoutSVGText::Paint(const PaintInfo& paint_info) const {

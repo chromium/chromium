@@ -307,7 +307,7 @@ void SearchingForNodeTool::NodeHighlightRequested(Node* node) {
 
 QuadHighlightTool::QuadHighlightTool(InspectorOverlayAgent* overlay,
                                      OverlayFrontend* frontend,
-                                     std::unique_ptr<FloatQuad> quad,
+                                     std::unique_ptr<gfx::QuadF> quad,
                                      Color color,
                                      Color outline_color)
     : InspectTool(overlay, frontend),

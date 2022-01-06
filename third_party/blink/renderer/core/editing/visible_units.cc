@@ -63,6 +63,7 @@
 #include "third_party/blink/renderer/core/svg_element_type_helpers.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/text/text_boundaries.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 
 namespace blink {
 
@@ -1276,7 +1277,7 @@ PositionInFlatTree SkipWhitespace(const PositionInFlatTree& position) {
 }
 
 template <typename Strategy>
-static Vector<FloatQuad> ComputeTextBounds(
+static Vector<gfx::QuadF> ComputeTextBounds(
     const EphemeralRangeTemplate<Strategy>& range) {
   const PositionTemplate<Strategy>& start_position = range.StartPosition();
   const PositionTemplate<Strategy>& end_position = range.EndPosition();
@@ -1286,7 +1287,7 @@ static Vector<FloatQuad> ComputeTextBounds(
   DCHECK(end_container);
   DCHECK(!start_container->GetDocument().NeedsLayoutTreeUpdate());
 
-  Vector<FloatQuad> result;
+  Vector<gfx::QuadF> result;
   for (const Node& node : range.Nodes()) {
     LayoutObject* const layout_object = node.GetLayoutObject();
     if (!layout_object || !layout_object->IsText())
@@ -1312,11 +1313,11 @@ static gfx::RectF ComputeTextRectTemplate(
 }
 
 gfx::Rect ComputeTextRect(const EphemeralRange& range) {
-  return ToEnclosingRect(ComputeTextRectTemplate(range));
+  return gfx::ToEnclosingRect(ComputeTextRectTemplate(range));
 }
 
 gfx::Rect ComputeTextRect(const EphemeralRangeInFlatTree& range) {
-  return ToEnclosingRect(ComputeTextRectTemplate(range));
+  return gfx::ToEnclosingRect(ComputeTextRectTemplate(range));
 }
 
 gfx::RectF ComputeTextRectF(const EphemeralRange& range) {

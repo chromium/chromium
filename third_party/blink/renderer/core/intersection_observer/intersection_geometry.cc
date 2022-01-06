@@ -382,11 +382,11 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
           implicit_root_to_target_document_transform.AccumulatedTransform()
               .Inverse();
       intersection_rect_ = PhysicalRect::EnclosingRect(
-          matrix.ProjectQuad(FloatQuad(gfx::RectF(intersection_rect_)))
+          matrix.ProjectQuad(gfx::QuadF(gfx::RectF(intersection_rect_)))
               .BoundingBox());
       unclipped_intersection_rect_ = PhysicalRect::EnclosingRect(
           matrix
-              .ProjectQuad(FloatQuad(gfx::RectF(unclipped_intersection_rect_)))
+              .ProjectQuad(gfx::QuadF(gfx::RectF(unclipped_intersection_rect_)))
               .BoundingBox());
       // intersection_rect_ is in the coordinate system of the implicit root;
       // map it down the to absolute coordinates for the target's document.
@@ -396,11 +396,11 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
       // same as root's document).
       intersection_rect_ = PhysicalRect::EnclosingRect(
           root_geometry.root_to_document_transform
-              .MapQuad(FloatQuad(gfx::RectF(intersection_rect_)))
+              .MapQuad(gfx::QuadF(gfx::RectF(intersection_rect_)))
               .BoundingBox());
       unclipped_intersection_rect_ = PhysicalRect::EnclosingRect(
           root_geometry.root_to_document_transform
-              .MapQuad(FloatQuad(gfx::RectF(unclipped_intersection_rect_)))
+              .MapQuad(gfx::QuadF(gfx::RectF(unclipped_intersection_rect_)))
               .BoundingBox());
     }
   } else {
@@ -409,7 +409,7 @@ void IntersectionGeometry::ComputeGeometry(const RootGeometry& root_geometry,
   // Map root_rect_ from root's coordinate system to absolute coordinates.
   root_rect_ = PhysicalRect::EnclosingRect(
       root_geometry.root_to_document_transform
-          .MapQuad(FloatQuad(gfx::RectF(root_rect_)))
+          .MapQuad(gfx::QuadF(gfx::RectF(root_rect_)))
           .BoundingBox());
 
   // Some corner cases for threshold index:

@@ -180,7 +180,7 @@ bool LayoutSVGBlock::MapToVisualRectInAncestorSpaceInternal(
   // Apply other mappings on local SVG coordinates.
   bool retval = SVGLayoutSupport::MapToVisualRectInAncestorSpace(
       *this, ancestor, gfx::RectF(rect), rect);
-  transform_state.SetQuad(FloatQuad(gfx::RectF(rect)));
+  transform_state.SetQuad(gfx::QuadF(gfx::RectF(rect)));
   return retval;
 }
 

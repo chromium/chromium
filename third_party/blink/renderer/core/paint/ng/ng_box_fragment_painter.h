@@ -206,7 +206,7 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
 
     // Add |node| to |HitTestResult|. Returns true if the hit-testing should
     // stop.
-    // T is PhysicalRect or FloatQuad.
+    // T is PhysicalRect or gfx::QuadF.
     template <typename T>
     bool AddNodeToResult(Node* node,
                          const NGPhysicalBoxFragment* box_fragment,
@@ -215,7 +215,7 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
     // Same as |AddNodeToResult|, except that |offset| is in the content
     // coordinate system rather than the container coordinate system. They
     // differ when |container| is a scroll container.
-    // T is PhysicalRect or FloatQuad.
+    // T is PhysicalRect or gfx::QuadF.
     template <typename T>
     bool AddNodeToResultWithContentOffset(
         Node* node,

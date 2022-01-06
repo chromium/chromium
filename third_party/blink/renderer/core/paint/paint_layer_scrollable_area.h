@@ -484,9 +484,9 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   LayoutBox* GetLayoutBox() const override;
 
-  FloatQuad LocalToVisibleContentQuad(const FloatQuad&,
-                                      const LayoutObject*,
-                                      unsigned = 0) const final;
+  gfx::QuadF LocalToVisibleContentQuad(const gfx::QuadF&,
+                                       const LayoutObject*,
+                                       unsigned = 0) const final;
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTimerTaskRunner() const final;
 

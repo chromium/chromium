@@ -138,13 +138,13 @@ LayoutBox* RootFrameViewport::GetLayoutBox() const {
   return LayoutViewport().GetLayoutBox();
 }
 
-FloatQuad RootFrameViewport::LocalToVisibleContentQuad(
-    const FloatQuad& quad,
+gfx::QuadF RootFrameViewport::LocalToVisibleContentQuad(
+    const gfx::QuadF& quad,
     const LayoutObject* local_object,
     unsigned flags) const {
   if (!layout_viewport_)
     return quad;
-  FloatQuad viewport_quad =
+  gfx::QuadF viewport_quad =
       layout_viewport_->LocalToVisibleContentQuad(quad, local_object, flags);
   if (visual_viewport_) {
     viewport_quad = visual_viewport_->LocalToVisibleContentQuad(

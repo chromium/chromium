@@ -2174,7 +2174,7 @@ bool LayoutTableSection::MapToVisualRectInAncestorSpaceInternal(
     transform_state.Flatten();
     gfx::RectF rect = transform_state.LastPlanarQuad().BoundingBox();
     rect.set_height(Table()->LogicalHeight());
-    transform_state.SetQuad(FloatQuad(rect));
+    transform_state.SetQuad(gfx::QuadF(rect));
     return Table()->MapToVisualRectInAncestorSpaceInternal(
         ancestor, transform_state, flags);
   }

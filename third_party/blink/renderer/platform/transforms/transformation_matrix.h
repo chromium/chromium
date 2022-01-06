@@ -46,6 +46,7 @@
 namespace gfx {
 class BoxF;
 class PointF;
+class QuadF;
 class Rect;
 class RectF;
 class Transform;
@@ -55,7 +56,6 @@ namespace blink {
 
 class AffineTransform;
 class LayoutRect;
-class FloatQuad;
 class JSONArray;
 struct Rotation;
 
@@ -220,7 +220,7 @@ class PLATFORM_EXPORT TransformationMatrix {
 
   // If the matrix has 3D components, the z component of the result is
   // dropped, effectively projecting the quad into the z=0 plane
-  FloatQuad MapQuad(const FloatQuad&) const;
+  gfx::QuadF MapQuad(const gfx::QuadF&) const;
 
   // Map a point on the z=0 plane into a point on the plane with with the
   // transform applied, by extending a ray perpendicular to the source plane and
@@ -228,10 +228,10 @@ class PLATFORM_EXPORT TransformationMatrix {
   // with the destination plane.
   gfx::PointF ProjectPoint(const gfx::PointF&, bool* clamped = nullptr) const;
   // Projects the four corners of the quad.
-  FloatQuad ProjectQuad(const FloatQuad&) const;
+  gfx::QuadF ProjectQuad(const gfx::QuadF&) const;
   // Projects the four corners of the quad and takes a bounding box,
   // while sanitizing values created when the w component is negative.
-  LayoutRect ClampedBoundsOfProjectedQuad(const FloatQuad&) const;
+  LayoutRect ClampedBoundsOfProjectedQuad(const gfx::QuadF&) const;
 
   void TransformBox(gfx::BoxF&) const;
 

@@ -21,11 +21,11 @@ namespace blink {
 
 namespace {
 
-FloatQuad GetQuadForTraceEvent(const LocalFrameView& frame_view,
-                               const CullRect& cull_rect) {
-  FloatQuad quad(gfx::RectF(cull_rect.Rect()));
+gfx::QuadF GetQuadForTraceEvent(const LocalFrameView& frame_view,
+                                const CullRect& cull_rect) {
+  gfx::QuadF quad(gfx::RectF(cull_rect.Rect()));
   if (auto* owner = frame_view.GetFrame().OwnerLayoutObject()) {
-    quad.Move(gfx::Vector2dF(owner->PhysicalContentBoxOffset()));
+    quad += gfx::Vector2dF(owner->PhysicalContentBoxOffset());
     owner->LocalToAbsoluteQuad(
         quad, kTraverseDocumentBoundaries | kUseGeometryMapperMode);
   }

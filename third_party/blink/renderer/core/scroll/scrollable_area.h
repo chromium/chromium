@@ -35,7 +35,6 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/loader/history_item.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
-#include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
@@ -45,6 +44,7 @@
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "ui/gfx/geometry/quad_f.h"
 
 namespace base {
 class SingleThreadTaskRunner;
@@ -491,9 +491,9 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   // ScrollableArea to the coordinate system of the ScrollableArea's visible
   // content rect.  If the LayoutObject* argument is null, the argument quad is
   // considered to be in the coordinate space of the overflow rect.
-  virtual FloatQuad LocalToVisibleContentQuad(const FloatQuad&,
-                                              const LayoutObject*,
-                                              unsigned = 0) const;
+  virtual gfx::QuadF LocalToVisibleContentQuad(const gfx::QuadF&,
+                                               const LayoutObject*,
+                                               unsigned = 0) const;
 
   virtual bool IsPaintLayerScrollableArea() const { return false; }
   virtual bool IsRootFrameViewport() const { return false; }

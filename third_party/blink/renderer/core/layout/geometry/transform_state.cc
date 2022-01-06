@@ -64,7 +64,7 @@ void TransformState::TranslateMappedCoordinates(const PhysicalOffset& offset) {
   if (map_point_)
     last_planar_point_ += adjusted_offset;
   if (map_quad_)
-    last_planar_quad_.Move(adjusted_offset);
+    last_planar_quad_ += adjusted_offset;
 }
 
 void TransformState::Move(const PhysicalOffset& offset,
@@ -171,11 +171,11 @@ PhysicalOffset TransformState::MappedPoint() const {
   return PhysicalOffset::FromPointFRound(point);
 }
 
-FloatQuad TransformState::MappedQuad() const {
-  FloatQuad quad = last_planar_quad_;
-  quad.Move(gfx::Vector2dF((direction_ == kApplyTransformDirection)
-                               ? accumulated_offset_
-                               : -accumulated_offset_));
+gfx::QuadF TransformState::MappedQuad() const {
+  gfx::QuadF quad = last_planar_quad_;
+  quad += gfx::Vector2dF((direction_ == kApplyTransformDirection)
+                             ? accumulated_offset_
+                             : -accumulated_offset_);
   if (!accumulated_transform_)
     return quad;
 

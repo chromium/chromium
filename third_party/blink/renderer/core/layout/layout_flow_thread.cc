@@ -132,7 +132,7 @@ bool LayoutFlowThread::MapToVisualRectInAncestorSpaceInternal(
   transform_state.Flatten();
   LayoutRect rect(transform_state.LastPlanarQuad().BoundingBox());
   rect = FragmentsBoundingBox(rect);
-  transform_state.SetQuad(FloatQuad(gfx::RectF(rect)));
+  transform_state.SetQuad(gfx::QuadF(gfx::RectF(rect)));
   return LayoutBlockFlow::MapToVisualRectInAncestorSpaceInternal(
       ancestor, transform_state, visual_rect_flags);
 }
@@ -171,7 +171,7 @@ void LayoutFlowThread::ComputeLogicalHeight(
 }
 
 void LayoutFlowThread::AbsoluteQuadsForDescendant(const LayoutBox& descendant,
-                                                  Vector<FloatQuad>& quads,
+                                                  Vector<gfx::QuadF>& quads,
                                                   MapCoordinatesFlags mode) {
   NOT_DESTROYED();
   LayoutPoint offset_from_flow_thread;

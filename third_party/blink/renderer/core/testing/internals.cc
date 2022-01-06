@@ -2920,10 +2920,10 @@ DOMRectList* Internals::AnnotatedRegions(Document* document,
   document->View()->UpdateDocumentAnnotatedRegions();
   Vector<AnnotatedRegionValue> regions = document->AnnotatedRegions();
 
-  Vector<FloatQuad> quads;
+  Vector<gfx::QuadF> quads;
   for (const AnnotatedRegionValue& region : regions) {
     if (region.draggable == draggable)
-      quads.push_back(FloatQuad(gfx::RectF(region.bounds)));
+      quads.push_back(gfx::QuadF(gfx::RectF(region.bounds)));
   }
   return MakeGarbageCollected<DOMRectList>(quads);
 }

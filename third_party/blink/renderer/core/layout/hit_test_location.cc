@@ -60,7 +60,7 @@ HitTestLocation::HitTestLocation(const DoublePoint& point)
     : HitTestLocation(gfx::PointF(point)) {}
 
 HitTestLocation::HitTestLocation(const gfx::PointF& point,
-                                 const FloatQuad& quad)
+                                 const gfx::QuadF& quad)
     : transformed_point_(point), transformed_rect_(quad), is_rect_based_(true) {
   point_ = PhysicalOffset::FromPointFFloor(point);
   bounding_box_ = PhysicalRect::EnclosingRect(quad.BoundingBox());
@@ -73,7 +73,7 @@ HitTestLocation::HitTestLocation(const PhysicalRect& rect)
       transformed_point_(point_),
       is_rect_based_(true),
       is_rectilinear_(true) {
-  transformed_rect_ = FloatQuad(gfx::RectF(bounding_box_));
+  transformed_rect_ = gfx::QuadF(gfx::RectF(bounding_box_));
 }
 
 HitTestLocation::HitTestLocation(const HitTestLocation& other,
@@ -106,7 +106,7 @@ void HitTestLocation::Move(const PhysicalOffset& offset) {
   point_ += offset;
   bounding_box_.Move(offset);
   transformed_point_ += gfx::Vector2dF(offset);
-  transformed_rect_.Move(gfx::Vector2dF(offset));
+  transformed_rect_ += gfx::Vector2dF(offset);
 }
 
 bool HitTestLocation::Intersects(const PhysicalRect& rect) const {
@@ -142,16 +142,16 @@ bool HitTestLocation::Intersects(const FloatRoundedRect& rect) const {
   return rect.IntersectsQuad(transformed_rect_);
 }
 
-bool HitTestLocation::Intersects(const FloatQuad& quad) const {
+bool HitTestLocation::Intersects(const gfx::QuadF& quad) const {
   // TODO(chrishtr): if the quads are not rectilinear, calling Intersects
   // has false positives.
   if (is_rect_based_)
     return Intersects(quad.BoundingBox());
-  return quad.ContainsPoint(gfx::PointF(point_));
+  return quad.Contains(gfx::PointF(point_));
 }
 
 bool HitTestLocation::ContainsPoint(const gfx::PointF& point) const {
-  return transformed_rect_.ContainsPoint(point);
+  return transformed_rect_.Contains(point);
 }
 
 }  // namespace blink

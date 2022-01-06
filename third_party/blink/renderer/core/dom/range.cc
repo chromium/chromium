@@ -59,9 +59,9 @@
 #include "third_party/blink/renderer/core/svg/svg_svg_element.h"
 #include "third_party/blink/renderer/core/trustedtypes/trusted_types_util.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/geometry/float_quad.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
+#include "ui/gfx/geometry/quad_f.h"
 
 namespace blink {
 
@@ -1595,7 +1595,7 @@ DOMRectList* Range::getClientRects() const {
       this, DisplayLockContext::ForcedPhase::kLayout);
   owner_document_->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
 
-  Vector<FloatQuad> quads;
+  Vector<gfx::QuadF> quads;
   GetBorderAndTextQuads(quads);
 
   return MakeGarbageCollected<DOMRectList>(quads);
@@ -1606,22 +1606,22 @@ DOMRect* Range::getBoundingClientRect() const {
 }
 
 // TODO(editing-dev): We should make
-// |Document::AdjustFloatQuadsForScrollAndAbsoluteZoom()| as const function
+// |Document::AdjustQuadsForScrollAndAbsoluteZoom()| as const function
 // and takes |const LayoutObject&|.
-static Vector<FloatQuad> ComputeTextQuads(const Document& owner_document,
-                                          const LayoutText& layout_text,
-                                          unsigned start_offset,
-                                          unsigned end_offset) {
-  Vector<FloatQuad> text_quads;
+static Vector<gfx::QuadF> ComputeTextQuads(const Document& owner_document,
+                                           const LayoutText& layout_text,
+                                           unsigned start_offset,
+                                           unsigned end_offset) {
+  Vector<gfx::QuadF> text_quads;
   layout_text.AbsoluteQuadsForRange(text_quads, start_offset, end_offset);
   const_cast<Document&>(owner_document)
-      .AdjustFloatQuadsForScrollAndAbsoluteZoom(
+      .AdjustQuadsForScrollAndAbsoluteZoom(
           text_quads, const_cast<LayoutText&>(layout_text));
   return text_quads;
 }
 
 // https://www.w3.org/TR/cssom-view-1/#dom-range-getclientrects
-void Range::GetBorderAndTextQuads(Vector<FloatQuad>& quads) const {
+void Range::GetBorderAndTextQuads(Vector<gfx::QuadF>& quads) const {
   Node* start_container = &start_.Container();
   Node* end_container = &end_.Container();
   Node* stop_node = PastLastNode();
@@ -1651,10 +1651,10 @@ void Range::GetBorderAndTextQuads(Vector<FloatQuad>& quads) const {
       LayoutObject* const layout_object = element_node->GetLayoutObject();
       if (!layout_object)
         continue;
-      Vector<FloatQuad> element_quads;
+      Vector<gfx::QuadF> element_quads;
       layout_object->AbsoluteQuads(element_quads);
-      owner_document_->AdjustFloatQuadsForScrollAndAbsoluteZoom(element_quads,
-                                                                *layout_object);
+      owner_document_->AdjustQuadsForScrollAndAbsoluteZoom(element_quads,
+                                                           *layout_object);
 
       quads.AppendVector(element_quads);
       continue;
@@ -1724,11 +1724,11 @@ gfx::RectF Range::BoundingRect() const {
   }
   owner_document_->UpdateStyleAndLayout(DocumentUpdateReason::kJavaScript);
 
-  Vector<FloatQuad> quads;
+  Vector<gfx::QuadF> quads;
   GetBorderAndTextQuads(quads);
 
   gfx::RectF result;
-  for (const FloatQuad& quad : quads)
+  for (const gfx::QuadF& quad : quads)
     result.Union(quad.BoundingBox());  // Skips empty rects.
 
   // If all rects are empty, return the first rect.
