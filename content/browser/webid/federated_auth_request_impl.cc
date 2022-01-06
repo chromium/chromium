@@ -354,39 +354,17 @@ void FederatedAuthRequestImpl::CompleteRevokeRequest(RevokeStatus status) {
 void FederatedAuthRequestImpl::OnClientIdMetadataResponseReceived(
     IdpNetworkRequestManager::FetchStatus status,
     IdpNetworkRequestManager::ClientIdMetadata data) {
-  switch (status) {
-    case IdpNetworkRequestManager::FetchStatus::kHttpNotFoundError: {
-      CompleteRequest(
-          RequestIdTokenStatus::kErrorFetchingClientIdMetadataHttpNotFound, "");
-      return;
-    }
-    case IdpNetworkRequestManager::FetchStatus::kNoResponseError: {
-      CompleteRequest(
-          RequestIdTokenStatus::kErrorFetchingClientIdMetadataNoResponse, "");
-      return;
-    }
-    case IdpNetworkRequestManager::FetchStatus::kInvalidResponseError: {
-      CompleteRequest(
-          RequestIdTokenStatus::kErrorFetchingClientIdMetadataInvalidResponse,
-          "");
-      return;
-    }
-    case IdpNetworkRequestManager::FetchStatus::kInvalidRequestError: {
-      NOTREACHED();
-      return;
-    }
-    case IdpNetworkRequestManager::FetchStatus::kSuccess: {
-      client_id_metadata_ = data;
-      network_manager_->SendAccountsRequest(
-          endpoints_.accounts,
-          request_dialog_controller_->GetBrandIconIdealSize(),
-          request_dialog_controller_->GetBrandIconMinimumSize(),
-          base::BindOnce(&FederatedAuthRequestImpl::DownloadBitmap,
-                         weak_ptr_factory_.GetWeakPtr()),
-          base::BindOnce(&FederatedAuthRequestImpl::OnAccountsResponseReceived,
-                         weak_ptr_factory_.GetWeakPtr()));
-    }
-  }
+  // TODO(cbiesinger): we currently do not send referer to IDP when fetching the
+  // client metadata so we cannot get any response. Making client metadata
+  // optional until the fix is in place. https://crbug.com/1284781.
+  client_id_metadata_ = data;
+  network_manager_->SendAccountsRequest(
+      endpoints_.accounts, request_dialog_controller_->GetBrandIconIdealSize(),
+      request_dialog_controller_->GetBrandIconMinimumSize(),
+      base::BindOnce(&FederatedAuthRequestImpl::DownloadBitmap,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&FederatedAuthRequestImpl::OnAccountsResponseReceived,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void FederatedAuthRequestImpl::OnSigninApproved(
