@@ -174,6 +174,9 @@ void DesksTemplatesPresenter::SaveOrUpdateDeskTemplate(
 
   weak_ptr_factory_.InvalidateWeakPtrs();
 
+  if (!is_update)
+    RecordWindowAndTabCountHistogram(desk_template.get());
+
   // Save or update `desk_template_clone` as an entry in DeskModel.
   GetDeskModel()->AddOrUpdateEntry(
       std::move(desk_template_clone),
@@ -227,6 +230,7 @@ void DesksTemplatesPresenter::OnDeleteEntry(
     return;
 
   RecordDeleteTemplateHistogram();
+  RecordUserTemplateCountHistogram(GetEntryCount(), GetMaxEntryCount());
   GetAllEntries();
 }
 
@@ -276,8 +280,10 @@ void DesksTemplatesPresenter::OnAddOrUpdateEntry(
   for (auto& overview_grid : grid_list)
     overview_grid->UpdateSaveDeskAsTemplateButton();
 
-  if (!was_update)
+  if (!was_update) {
     RecordNewTemplateHistogram();
+    RecordUserTemplateCountHistogram(GetEntryCount(), GetMaxEntryCount());
+  }
 }
 
 }  // namespace ash

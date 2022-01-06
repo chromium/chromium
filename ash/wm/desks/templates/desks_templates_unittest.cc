@@ -1939,4 +1939,104 @@ TEST_F(DesksTemplatesTest, TemplatesNameHitTest) {
   }
 }
 
+TEST_F(DesksTemplatesTest, UserTemplateCountRecordsCorrectly) {
+  // Record histogram.
+  base::HistogramTester histogram_tester;
+
+  // Create three new templates through the UI.
+  for (unsigned long num_templates = 0; num_templates < 3; ++num_templates) {
+    // There are no saved template entries and one test window initially.
+    auto test_window = CreateAppWindow();
+
+    // Toggle overview if there isn't currently an overview. This is needed
+    // to save a template via the UI.
+    if (!GetOverviewSession()) {
+      ToggleOverview();
+      WaitForDesksTemplatesUI();
+    }
+
+    // The `save_desk_as_template_widget` is visible when at least one window is
+    // open.
+    views::Widget* save_desk_as_template_widget =
+        GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
+    ASSERT_TRUE(save_desk_as_template_widget);
+    EXPECT_TRUE(save_desk_as_template_widget->GetContentsView()->GetVisible());
+
+    // Click on `save_desk_as_template_widget` button.
+    ClickOnView(save_desk_as_template_widget->GetContentsView());
+    ASSERT_EQ(num_templates + 1, GetAllEntries().size());
+
+    // Expect that the Desk Templates grid is visible.
+    EXPECT_TRUE(GetOverviewGridList()[0]->IsShowingDesksTemplatesGrid());
+  }
+
+  OpenOverviewAndShowTemplatesGrid();
+
+  // Delete one of the templates which will iterate the histogram's second
+  // bucket.
+  DeleteTemplate(GetAllEntries()[0]->uuid(), /*expected_item_count=*/3);
+
+  histogram_tester.ExpectBucketCount(kUserTemplateCountHistogramName, 1, 1);
+  histogram_tester.ExpectBucketCount(kUserTemplateCountHistogramName, 2, 2);
+  histogram_tester.ExpectBucketCount(kUserTemplateCountHistogramName, 3, 1);
+}
+
+// Tests that the window and tab counts are properly recorded in their
+// resepctive metrics.
+TEST_F(DesksTemplatesTest, SaveDeskRecordsWindowAndTabCountMetrics) {
+  const std::string kAppId1 = extension_misc::kChromeAppId;
+  constexpr int kWindowId1 = 1;
+  constexpr int kActiveTabIndex1 = 1;
+  const std::vector<GURL> kTabs1{GURL("http://a.com"), GURL("http://b.com"),
+                                 GURL("http://c.com")};
+
+  const std::string kAppId2 = extension_misc::kChromeAppId;
+  constexpr int kWindowId2 = 2;
+  constexpr int kActiveTabIndex2 = 2;
+  const std::vector<GURL> kTabs2{GURL("http://d.com"), GURL("http://e.com"),
+                                 GURL("http://f.com")};
+
+  // Create `restore_data` for the template.
+  auto restore_data = std::make_unique<app_restore::RestoreData>();
+
+  // Add app launch info for the first browser instance.
+  auto app_launch_info_1 =
+      std::make_unique<app_restore::AppLaunchInfo>(kAppId1, kWindowId1);
+  app_launch_info_1->active_tab_index = kActiveTabIndex1;
+  app_launch_info_1->urls = absl::make_optional(kTabs1);
+  restore_data->AddAppLaunchInfo(std::move(app_launch_info_1));
+  app_restore::WindowInfo window_info_1;
+  window_info_1.activation_index = absl::make_optional<int32_t>(kWindowId1);
+  restore_data->ModifyWindowInfo(kAppId1, kWindowId1, window_info_1);
+
+  // Add app launch info for the second browser instance.
+  auto app_launch_info_2 =
+      std::make_unique<app_restore::AppLaunchInfo>(kAppId2, kWindowId2);
+  app_launch_info_2->active_tab_index = kActiveTabIndex2;
+  app_launch_info_2->urls = absl::make_optional(kTabs2);
+  restore_data->AddAppLaunchInfo(std::move(app_launch_info_2));
+  app_restore::WindowInfo window_info_2;
+  window_info_2.activation_index = absl::make_optional<int32_t>(kWindowId2);
+  restore_data->ModifyWindowInfo(kAppId2, kWindowId2, window_info_2);
+
+  auto desk_template = std::make_unique<DeskTemplate>(
+      base::GUID::GenerateRandomV4().AsLowercaseString(),
+      DeskTemplateSource::kUser, "template_1", base::Time::Now());
+  desk_template->set_desk_restore_data(std::move(restore_data));
+
+  // Record histogram.
+  base::HistogramTester histogram_tester;
+
+  ToggleOverview();
+  WaitForDesksTemplatesUI();
+
+  // Mocks saving templates with some browsers.
+  DesksTemplatesPresenter::Get()->SaveOrUpdateDeskTemplate(
+      /*is_update=*/false, std::move(desk_template));
+
+  histogram_tester.ExpectBucketCount(kWindowCountHistogramName, 2, 1);
+  histogram_tester.ExpectBucketCount(kTabCountHistogramName, 6, 1);
+  histogram_tester.ExpectBucketCount(kWindowAndTabCountHistogramName, 6, 1);
+}
+
 }  // namespace ash

@@ -31,7 +31,8 @@ namespace {
 
 DesksTemplatesClient* g_desks_templates_client_instance = nullptr;
 
-// Histogram names
+// TODO(https://crbug.com/1284774): Remove metrics from this file.
+// Histogram names.
 constexpr char kWindowCountHistogramName[] = "Ash.DeskTemplate.WindowCount";
 constexpr char kTabCountHistogramName[] = "Ash.DeskTemplate.TabCount";
 constexpr char kWindowAndTabCountHistogramName[] =
