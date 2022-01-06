@@ -179,6 +179,28 @@ TEST_F('OSSettingsOsSettingsPageV3Test', 'AllJsTests', () => {
 
 // TODO(crbug.com/1234871) Move this test back into the list of tests below once
 // Bluetooth revamp is launched.
+var OSSettingsOsBluetoothDevicesSubpageV3Test =
+    class extends OSSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/os_bluetooth_devices_subpage_tests.m.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled:
+          super.featureList.enabled.concat(['ash::features::kBluetoothRevamp'])
+    };
+  }
+};
+
+TEST_F('OSSettingsOsBluetoothDevicesSubpageV3Test', 'AllJsTests', () => {
+  mocha.run();
+});
+
+// TODO(crbug.com/1234871) Move this test back into the list of tests below once
+// Bluetooth revamp is launched.
 var OSSettingsOsPairedBluetoothListItemV3Test =
     class extends OSSettingsV3BrowserTest {
   /** @override */
@@ -318,7 +340,6 @@ TEST_F('OSSettingsOsBluetoothDeviceDetailSubpageV3Test', 'AllJsTests', () => {
  ['NetworkSummary', 'network_summary_test.m.js'],
  ['NetworkSummaryItem', 'network_summary_item_test.m.js'],
  ['OncMojoTest', 'onc_mojo_test.m.js'],
- ['OsBluetoothDevicesSubpage', 'os_bluetooth_devices_subpage_tests.m.js'],
  ['OsBluetoothPage', 'os_bluetooth_page_tests.m.js'],
  ['OsBluetoothPairingDialog', 'os_bluetooth_pairing_dialog_tests.m.js'],
  ['OsBluetoothSummary', 'os_bluetooth_summary_tests.m.js'],

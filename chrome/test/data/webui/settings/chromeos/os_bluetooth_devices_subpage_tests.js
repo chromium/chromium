@@ -7,10 +7,12 @@
 
 // #import 'chrome://os-settings/strings.m.js';
 
+// #import {Router, Route, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {assertTrue} from '../../../chai_assert.js';
+// #import {assertTrue, assertEquals, assertNotEquals} from '../../../chai_assert.js';
 // #import {createDefaultBluetoothDevice, FakeBluetoothConfig} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
 // #import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
+// #import {waitAfterNextRender} from 'chrome://test/test_util.js';
 // clang-format on
 
 suite('OsBluetoothDevicesSubpageTest', function() {
@@ -35,6 +37,12 @@ suite('OsBluetoothDevicesSubpageTest', function() {
     setBluetoothConfigForTesting(bluetoothConfig);
   });
 
+  teardown(function() {
+    bluetoothDevicesSubpage.remove();
+    bluetoothDevicesSubpage = null;
+    settings.Router.getInstance().resetRouteForTesting();
+  });
+
   function init() {
     bluetoothDevicesSubpage =
         document.createElement('os-settings-bluetooth-devices-subpage');
@@ -52,6 +60,8 @@ suite('OsBluetoothDevicesSubpageTest', function() {
       }
     };
     bluetoothConfig.observeSystemProperties(propertiesObserver);
+    settings.Router.getInstance().navigateTo(settings.routes.BLUETOOTH_DEVICES);
+    return flushAsync();
   }
 
   function flushAsync() {
@@ -59,8 +69,8 @@ suite('OsBluetoothDevicesSubpageTest', function() {
     return new Promise(resolve => setTimeout(resolve));
   }
 
-  test('Base Test', function() {
-    init();
+  test('Base Test', async function() {
+    await init();
     assertTrue(!!bluetoothDevicesSubpage);
   });
 
@@ -68,12 +78,12 @@ suite('OsBluetoothDevicesSubpageTest', function() {
     bluetoothConfig.setSystemState(
         chromeos.bluetoothConfig.mojom.BluetoothSystemState.kEnabled);
     await flushAsync();
-    init();
+    await init();
     assertTrue(bluetoothDevicesSubpage.$.enableBluetoothToggle.checked);
   });
 
   test('Toggle button states', async function() {
-    init();
+    await init();
 
     const enableBluetoothToggle =
         bluetoothDevicesSubpage.$.enableBluetoothToggle;
@@ -122,7 +132,7 @@ suite('OsBluetoothDevicesSubpageTest', function() {
   });
 
   test('Device lists states', async function() {
-    init();
+    await init();
 
     const getNoDeviceText = () =>
         bluetoothDevicesSubpage.shadowRoot.querySelector('#noDevices');
@@ -167,4 +177,92 @@ suite('OsBluetoothDevicesSubpageTest', function() {
     assertEquals(getDeviceList(/*connected=*/ false).devices.length, 1);
     assertFalse(!!getNoDeviceText());
   });
+
+  test(
+      'Device list items are focused on backward navigation', async function() {
+        await init();
+
+        const getDeviceList = (connected) => {
+          return bluetoothDevicesSubpage.shadowRoot.querySelector(
+              connected ? '#connectedDeviceList' : '#unconnectedDeviceList');
+        };
+        const getDeviceListItem = (connected, index) => {
+          return getDeviceList(connected).shadowRoot.querySelectorAll(
+              'os-settings-paired-bluetooth-list-item')[index];
+        };
+
+        const connectedDeviceId = '1';
+        const connectedDevice = createDefaultBluetoothDevice(
+            /*id=*/ connectedDeviceId, /*publicName=*/ 'BeatsX',
+            /*connectionState=*/
+            chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected);
+        const unconnectedDeviceId = '2';
+        const unconnectedDevice = createDefaultBluetoothDevice(
+            /*id=*/ unconnectedDeviceId, /*publicName=*/ 'MX 3',
+            /*connectionState=*/
+            chromeos.bluetoothConfig.mojom.DeviceConnectionState.kNotConnected);
+        bluetoothConfig.appendToPairedDeviceList([connectedDevice]);
+        bluetoothConfig.appendToPairedDeviceList([unconnectedDevice]);
+        await flushAsync();
+
+        assertTrue(!!getDeviceList(/*connected=*/ true));
+        assertEquals(getDeviceList(/*connected=*/ true).devices.length, 1);
+        assertTrue(!!getDeviceList(/*connected=*/ false));
+        assertEquals(getDeviceList(/*connected=*/ false).devices.length, 1);
+
+        // Simulate navigating to the detail page of |connectedDevice|.
+        let params = new URLSearchParams();
+        params.append('id', connectedDeviceId);
+        settings.Router.getInstance().navigateTo(
+            settings.routes.BLUETOOTH_DEVICE_DETAIL, params);
+        await flushAsync();
+
+        // Create a promise that is resolved when
+        // |bluetoothDevicesSubpage.currentRouteChanged| is called.
+        let currentRouteChangedFinished;
+        let currentRouteChangedPromise = new Promise((resolve) => {
+          currentRouteChangedFinished = resolve;
+        });
+        const currentRouteChanged = bluetoothDevicesSubpage.currentRouteChanged;
+        bluetoothDevicesSubpage.currentRouteChanged = (route, oldRoute) => {
+          currentRouteChanged.call(bluetoothDevicesSubpage, route, oldRoute);
+          currentRouteChangedFinished();
+        };
+
+        // Navigate backwards.
+        assertNotEquals(
+            getDeviceListItem(/*connected=*/ true, /*index=*/ 0),
+            getDeviceList(/*connected=*/ true).shadowRoot.activeElement);
+        settings.Router.getInstance().navigateToPreviousRoute();
+        await currentRouteChangedPromise;
+
+        // The first connected device list item should be focused.
+        assertEquals(
+            getDeviceListItem(/*connected=*/ true, /*index=*/ 0),
+            getDeviceList(/*connected=*/ true).shadowRoot.activeElement);
+
+        // Simulate navigating to the detail page of |unconnectedDevice|.
+        params = new URLSearchParams();
+        params.append('id', unconnectedDeviceId);
+        settings.Router.getInstance().navigateTo(
+            settings.routes.BLUETOOTH_DEVICE_DETAIL, params);
+        await flushAsync();
+
+        // Reset the promise.
+        currentRouteChangedPromise = new Promise((resolve) => {
+          currentRouteChangedFinished = resolve;
+        });
+
+        // Navigate backwards.
+        assertNotEquals(
+            getDeviceListItem(/*connected=*/ false, /*index=*/ 0),
+            getDeviceList(/*connected=*/ false).shadowRoot.activeElement);
+        settings.Router.getInstance().navigateToPreviousRoute();
+        await currentRouteChangedPromise;
+
+        // The first unconnected device list item should be focused.
+        assertEquals(
+            getDeviceListItem(/*connected=*/ false, /*index=*/ 0),
+            getDeviceList(/*connected=*/ false).shadowRoot.activeElement);
+      });
 });

@@ -16,7 +16,8 @@ import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getBluetoothConfig} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {Route} from '../../router.js';
+
+import {Route, Router} from '../../router.js';
 import {routes} from '../os_route.m.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
 
@@ -99,16 +100,49 @@ class SettingsBluetoothDevicesSubpageElement extends
     };
   }
 
+  constructor() {
+    super();
+
+    /**
+     * The id of the last device that was selected to view its detail page.
+     * @private {?string}
+     */
+    this.lastSelectedDeviceId_ = null;
+  }
+
   /**
    * RouteObserverBehaviorInterface override
    * @param {!Route} route
+   * @param {!Route=} oldRoute
    */
-  currentRouteChanged(route) {
+  currentRouteChanged(route, oldRoute) {
+    // If we're navigating to a device's detail page, save the id of the device.
+    if (route === routes.BLUETOOTH_DEVICE_DETAIL &&
+        oldRoute === routes.BLUETOOTH_DEVICES) {
+      const queryParams = Router.getInstance().getQueryParameters();
+      this.lastSelectedDeviceId_ = queryParams.get('id');
+      return;
+    }
+
     if (route !== routes.BLUETOOTH_DEVICES) {
       return;
     }
     recordBluetoothUiSurfaceMetrics(
         BluetoothUiSurface.SETTINGS_DEVICE_LIST_SUBPAGE);
+
+    // If a backwards navigation occurred from a Bluetooth device's detail page,
+    // focus the list item corresponding to that device.
+    if (oldRoute !== routes.BLUETOOTH_DEVICE_DETAIL) {
+      return;
+    }
+
+    // Don't attempt to focus any item unless the last navigation was a
+    // 'pop' (backwards) navigation.
+    if (!Router.getInstance().lastRouteChangeWasPopstate()) {
+      return;
+    }
+
+    this.focusLastSelectedDeviceItem_();
   }
 
   /** @private */
@@ -127,6 +161,36 @@ class SettingsBluetoothDevicesSubpageElement extends
     this.unconnectedDevices_ = this.systemProperties.pairedDevices.filter(
         device => device.deviceProperties.connectionState ===
             mojom.DeviceConnectionState.kNotConnected);
+  }
+
+  /** @private */
+  focusLastSelectedDeviceItem_() {
+    const focusItem = (deviceListSelector, index) => {
+      const deviceList = this.shadowRoot.querySelector(deviceListSelector);
+      const items = deviceList.shadowRoot.querySelectorAll(
+          'os-settings-paired-bluetooth-list-item');
+      if (index >= items.length) {
+        return;
+      }
+      items[index].focus();
+    };
+
+    // Search |connectedDevices_| for the device.
+    let index = this.connectedDevices_.findIndex(
+        device => device.deviceProperties.id === this.lastSelectedDeviceId_);
+    if (index >= 0) {
+      focusItem(/*deviceListSelector=*/ '#connectedDeviceList', index);
+      return;
+    }
+
+    // If |connectedDevices_| doesn't contain the device, search
+    // |unconnectedDevices_|.
+    index = this.unconnectedDevices_.findIndex(
+        device => device.deviceProperties.id === this.lastSelectedDeviceId_);
+    if (index < 0) {
+      return;
+    }
+    focusItem(/*deviceListSelector=*/ '#unconnectedDeviceList', index);
   }
 
   /**
