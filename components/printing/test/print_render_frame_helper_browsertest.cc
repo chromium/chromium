@@ -205,7 +205,7 @@ class FakePrintPreviewUI : public mojom::PrintPreviewUI {
   void DidPreviewPage(mojom::DidPreviewPageParamsPtr params,
                       int32_t request_id) override {
     uint32_t page_number = params->page_number;
-    DCHECK_NE(page_number, printing::kInvalidPageIndex);
+    DCHECK_NE(page_number, kInvalidPageIndex);
     print_preview_pages_remaining_--;
     print_preview_pages_.emplace_back(
         params->page_number, params->content->metafile_data_region.GetSize());
@@ -268,7 +268,7 @@ class FakePrintPreviewUI : public mojom::PrintPreviewUI {
   bool has_custom_page_size_style_ = false;
   // Simulates cancelling print preview if |print_preview_pages_remaining_|
   // equals this.
-  uint32_t print_preview_cancel_page_number_ = printing::kInvalidPageIndex;
+  uint32_t print_preview_cancel_page_number_ = kInvalidPageIndex;
   mojom::PageSizeMarginsPtr page_layout_;
   mojom::DidPreviewDocumentParamsPtr did_preview_document_params_;
   // Number of pages to generate for print preview.
@@ -333,41 +333,38 @@ class TestPrintManagerHost
     // Check and make sure the required settings are all there.
     // We don't actually care about the values.
     absl::optional<int> margins_type =
-        job_settings.FindIntKey(printing::kSettingMarginsType);
+        job_settings.FindIntKey(kSettingMarginsType);
     if (!margins_type.has_value() ||
-        !job_settings.FindBoolKey(printing::kSettingLandscape) ||
-        !job_settings.FindBoolKey(printing::kSettingCollate) ||
-        !job_settings.FindIntKey(printing::kSettingColor) ||
-        !job_settings.FindIntKey(printing::kSettingPrinterType) ||
-        !job_settings.FindBoolKey(printing::kIsFirstRequest) ||
-        !job_settings.FindStringKey(printing::kSettingDeviceName) ||
-        !job_settings.FindIntKey(printing::kSettingDuplexMode) ||
-        !job_settings.FindIntKey(printing::kSettingCopies) ||
-        !job_settings.FindIntKey(printing::kPreviewUIID) ||
-        !job_settings.FindIntKey(printing::kPreviewRequestID)) {
+        !job_settings.FindBoolKey(kSettingLandscape) ||
+        !job_settings.FindBoolKey(kSettingCollate) ||
+        !job_settings.FindIntKey(kSettingColor) ||
+        !job_settings.FindIntKey(kSettingPrinterType) ||
+        !job_settings.FindBoolKey(kIsFirstRequest) ||
+        !job_settings.FindStringKey(kSettingDeviceName) ||
+        !job_settings.FindIntKey(kSettingDuplexMode) ||
+        !job_settings.FindIntKey(kSettingCopies) ||
+        !job_settings.FindIntKey(kPreviewUIID) ||
+        !job_settings.FindIntKey(kPreviewRequestID)) {
       std::move(callback).Run(std::move(params), canceled);
       return;
     }
 
     // Just return the default settings.
-    const base::Value* page_range =
-        job_settings.FindListKey(printing::kSettingPageRange);
-    printing::PageRanges new_ranges;
+    const base::Value* page_range = job_settings.FindListKey(kSettingPageRange);
+    PageRanges new_ranges;
     if (page_range) {
       for (const base::Value& dict : page_range->GetList()) {
         if (!dict.is_dict())
           continue;
 
-        absl::optional<int> range_from =
-            dict.FindIntKey(printing::kSettingPageRangeFrom);
-        absl::optional<int> range_to =
-            dict.FindIntKey(printing::kSettingPageRangeTo);
+        absl::optional<int> range_from = dict.FindIntKey(kSettingPageRangeFrom);
+        absl::optional<int> range_to = dict.FindIntKey(kSettingPageRangeTo);
         if (!range_from || !range_to)
           continue;
 
         // Page numbers are 1-based in the dictionary.
         // Page numbers are 0-based for the printing context.
-        printing::PageRange range;
+        PageRange range;
         range.from = range_from.value() - 1;
         range.to = range_to.value() - 1;
         new_ranges.push_back(range);
@@ -376,18 +373,17 @@ class TestPrintManagerHost
 
     // Get media size
     const base::Value* media_size_value =
-        job_settings.FindDictKey(printing::kSettingMediaSize);
+        job_settings.FindDictKey(kSettingMediaSize);
     gfx::Size page_size;
     if (media_size_value) {
       absl::optional<int> width_microns =
-          media_size_value->FindIntKey(printing::kSettingMediaSizeWidthMicrons);
-      absl::optional<int> height_microns = media_size_value->FindIntKey(
-          printing::kSettingMediaSizeHeightMicrons);
+          media_size_value->FindIntKey(kSettingMediaSizeWidthMicrons);
+      absl::optional<int> height_microns =
+          media_size_value->FindIntKey(kSettingMediaSizeHeightMicrons);
 
       if (width_microns && height_microns) {
         float device_microns_per_unit =
-            static_cast<float>(printing::kMicronsPerInch) /
-            printing::kDefaultPdfDpi;
+            static_cast<float>(kMicronsPerInch) / kDefaultPdfDpi;
         page_size = gfx::Size(width_microns.value() / device_microns_per_unit,
                               height_microns.value() / device_microns_per_unit);
       }
@@ -395,16 +391,16 @@ class TestPrintManagerHost
 
     // Get scaling
     absl::optional<int> setting_scale_factor =
-        job_settings.FindIntKey(printing::kSettingScaleFactor);
+        job_settings.FindIntKey(kSettingScaleFactor);
     int scale_factor = setting_scale_factor.value_or(100);
 
-    std::vector<uint32_t> pages(printing::PageRange::GetPages(new_ranges));
+    std::vector<uint32_t> pages(PageRange::GetPages(new_ranges));
     printer_->UpdateSettings(cookie, params.get(), pages, margins_type.value(),
                              page_size, scale_factor);
     absl::optional<bool> selection_only =
-        job_settings.FindBoolKey(printing::kSettingShouldPrintSelectionOnly);
+        job_settings.FindBoolKey(kSettingShouldPrintSelectionOnly);
     absl::optional<bool> should_print_backgrounds =
-        job_settings.FindBoolKey(printing::kSettingShouldPrintBackgrounds);
+        job_settings.FindBoolKey(kSettingShouldPrintBackgrounds);
     params->params->selection_only = selection_only.value();
     params->params->should_print_backgrounds = should_print_backgrounds.value();
     std::move(callback).Run(std::move(params), canceled);
