@@ -24,6 +24,7 @@
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/account_id/account_id.h"
+#include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_info.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
@@ -48,6 +49,18 @@ const char kRestoreForCrashNotificationHistogramName[] =
     "Apps.RestoreForCrashNotification";
 const char kRestoreSettingHistogramName[] = "Apps.RestoreSetting";
 const char kRestoreInitSettingHistogramName[] = "Apps.RestoreInitSetting";
+
+bool IsFullRestoreAvailableForLacros() {
+  if (!::full_restore::features::IsFullRestoreForLacrosEnabled())
+    return false;
+
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->GetPrimaryUser();
+  DCHECK(user);
+  Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  DCHECK(profile);
+  return FullRestoreServiceFactory::IsFullRestoreAvailableForProfile(profile);
+}
 
 // static
 FullRestoreService* FullRestoreService::GetForProfile(Profile* profile) {

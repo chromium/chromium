@@ -40,6 +40,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
+#include "chrome/browser/ash/app_restore/full_restore_service.h"
 #include "chrome/browser/ash/crosapi/browser_data_migrator.h"
 #include "chrome/browser/ash/crosapi/browser_loader.h"
 #include "chrome/browser/ash/crosapi/browser_service_host_ash.h"
@@ -269,11 +270,14 @@ bool GetLaunchOnLoginPref() {
       browser_util::kLaunchOnLoginPref);
 }
 
-// Returns the initial browser action. No browser will be opened when
-// lacros-chrome is initialized in the web Kiosk session.
+// Returns the initial browser action. No browser will be opened in the
+// following circumstances:
+// 1. Lacros-chrome is initialized in the web Kiosk session
+// 2. Full restore is responsible for restoring/launching Lacros.
 browser_util::InitialBrowserAction GetInitialBrowserAction() {
   return browser_util::InitialBrowserAction(
-      user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp()
+      user_manager::UserManager::Get()->IsLoggedInAsWebKioskApp() ||
+              ash::full_restore::IsFullRestoreAvailableForLacros()
           ? mojom::InitialBrowserAction::kDoNotOpenWindow
           : mojom::InitialBrowserAction::kUseStartupPreference);
 }

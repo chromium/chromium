@@ -27,6 +27,7 @@
 #include "chrome/browser/sessions/session_service_log.h"
 #include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/common/chrome_switches.h"
+#include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_read_handler.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "extensions/common/constants.h"
@@ -163,6 +164,14 @@ void FullRestoreAppLaunchHandler::OnGotSession(Profile* session_profile,
     browser_window_count_ = window_count;
 }
 
+void FullRestoreAppLaunchHandler::OnStateChanged() {
+  if (crosapi::BrowserManager::Get()->IsRunning()) {
+    observation_.Reset();
+    crosapi::BrowserManager::Get()->NewWindow(
+        /*incognito=*/false, /*should_trigger_session_restore=*/true);
+  }
+}
+
 void FullRestoreAppLaunchHandler::ForceLaunchBrowserForTesting() {
   ::full_restore::AddChromeBrowserLaunchInfoForTesting(profile()->GetPath());
   UserSessionManager::GetInstance()->LaunchBrowser(profile());
@@ -222,6 +231,8 @@ void FullRestoreAppLaunchHandler::MaybeRestore() {
     arc_task_handler->full_restore_arc_app_launch_handler()->RestoreArcApps(
         this);
   }
+
+  MaybeRestoreLacros();
 
   LaunchApps();
 
@@ -312,6 +323,27 @@ void FullRestoreAppLaunchHandler::RecordRestoredAppLaunch(
     apps::AppTypeName app_type_name) {
   base::UmaHistogramEnumeration(kRestoredAppLaunchHistogramPrefix,
                                 app_type_name);
+}
+
+void FullRestoreAppLaunchHandler::MaybeRestoreLacros() {
+  if (!::full_restore::features::IsFullRestoreForLacrosEnabled())
+    return;
+
+  // TODO(https://crbug.com/1239984):
+  // 1. Modify the restore conditions, e.g. check web apps ready, etc.
+  // 2. Handle the migration scenario, e.g. from flag disable to enable.
+  if (!base::Contains(restore_data()->app_id_to_launch_list(),
+                      extension_misc::kLacrosAppId)) {
+    return;
+  }
+
+  if (crosapi::BrowserManager::Get()->IsRunning()) {
+    crosapi::BrowserManager::Get()->NewWindow(
+        /*incognito=*/false, /*should_trigger_session_restore=*/true);
+    return;
+  }
+
+  observation_.Observe(crosapi::BrowserManager::Get());
 }
 
 void FullRestoreAppLaunchHandler::RecordLaunchBrowserResult() {
