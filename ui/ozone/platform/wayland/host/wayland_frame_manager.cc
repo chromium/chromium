@@ -400,7 +400,7 @@ void WaylandFrameManager::OnPresentation(
       // Investigate the issue with surface sync.
       frame->feedback = gfx::PresentationFeedback::Failure();
     }
-    CHECK_NE(frame, submitted_frames_.back());
+    CHECK_NE(frame.get(), submitted_frames_.back().get());
   }
   MaybeProcessSubmittedFrames();
 }
