@@ -162,6 +162,10 @@ class CONTENT_EXPORT BackgroundFetchDelegateProxy
       const std::string& download_guid,
       BackgroundFetchDelegate::GetUploadDataCallback callback) override;
 
+  void DidGetPermissionFromDownloadRequestLimiter(
+      GetPermissionForOriginCallback callback,
+      bool has_permission);
+
   BrowserContext* GetBrowserContext();
 
   BackgroundFetchDelegate* GetDelegate();

@@ -29,18 +29,6 @@ ContentSetting BackgroundFetchPermissionContext::GetPermissionStatusInternal(
     const GURL& embedding_origin) const {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  auto* host_content_settings_map =
-      HostContentSettingsMapFactory::GetForProfile(browser_context());
-  DCHECK(host_content_settings_map);
-
-  // The set of valid settings for automatic downloads is defined as
-  // {CONTENT_SETTING_ALLOW, CONTENT_SETTING_ASK, CONTENT_SETTING_BLOCK}.
-  const ContentSetting setting = host_content_settings_map->GetContentSetting(
-      requesting_origin, requesting_origin,
-      ContentSettingsType::AUTOMATIC_DOWNLOADS);
-  if (setting == CONTENT_SETTING_BLOCK)
-    return setting;
-
   if (render_frame_host && !render_frame_host->GetParent()) {
     DownloadRequestLimiter* limiter =
         g_browser_process->download_request_limiter();
@@ -62,13 +50,26 @@ ContentSetting BackgroundFetchPermissionContext::GetPermissionStatusInternal(
   }
 
   // |render_frame_host| is either a nullptr, which means we're being called
-  // from a worker context, or it's not a top level frame. Due to privacy
-  // concerns as outlined in https://crbug.com/896311 the most permissive state
-  // BGF can be in for non top level frames or service workers is ASK. This
-  // causes background fetches that do not originate in a main frame to start
-  // paused.
-  DCHECK(setting == CONTENT_SETTING_ASK || setting == CONTENT_SETTING_ALLOW);
-  return CONTENT_SETTING_ASK;
+  // from a worker context, or it's not a top level frame. In either case, use
+  // content settings.
+  auto* host_content_settings_map =
+      HostContentSettingsMapFactory::GetForProfile(browser_context());
+  DCHECK(host_content_settings_map);
+
+  // The set of valid settings for automatic downloads is defined as
+  // {CONTENT_SETTING_ALLOW, CONTENT_SETTING_ASK, CONTENT_SETTING_BLOCK}.
+  ContentSetting setting = host_content_settings_map->GetContentSetting(
+      requesting_origin, requesting_origin,
+      ContentSettingsType::AUTOMATIC_DOWNLOADS);
+
+  // Due to privacy concerns as outlined in https://crbug.com/896311 the most
+  // permissive state BGF can be in for non top level frames or service workers
+  // is ASK. This causes background fetches that do not originate in a main
+  // frame to start paused.
+  if (setting == CONTENT_SETTING_ALLOW)
+    setting = CONTENT_SETTING_ASK;
+
+  return setting;
 }
 
 void BackgroundFetchPermissionContext::DecidePermission(
