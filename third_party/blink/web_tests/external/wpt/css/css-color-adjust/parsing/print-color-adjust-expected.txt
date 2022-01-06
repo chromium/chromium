@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+FAIL e.style['print-color-adjust'] = "exact" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['print-color-adjust'] = "economy" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['color-adjust'] = "exact" should set the property value assert_not_equals: property should be set got disallowed value ""
+FAIL e.style['color-adjust'] = "economy" should set the property value assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

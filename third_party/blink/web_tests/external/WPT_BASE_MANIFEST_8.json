@@ -515,6 +515,13 @@
         {}
        ]
       ],
+      "input-column-group-container-crash.html": [
+       "5e520a45cffb9c203085118efde823b6b40cdf60",
+       [
+        null,
+        {}
+       ]
+      ],
       "pseudo-container-crash.html": [
        "f998c3a4464ca3eb3ce07687cf24d9dcdc9a16af",
        [
@@ -136359,6 +136366,19 @@
        {}
       ]
      ],
+     "overflow-clip-margin-010.html": [
+      "e2d1983069f367dc6edc4065de6535b5a2431c13",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/overflow-clip-margin-010-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "overflow-clip-margin-invalidation.html": [
       "d9c87a34a53f17451b0d3ae8c2071971d1df3a94",
       [
@@ -172841,7 +172861,7 @@
     },
     "css-transforms": {
      "2d-rotate-001.html": [
-      "23c412f7afff5caa2c5928809e50a93f57a24a0f",
+      "9e87de5fd284bf80bc9693edf1e91d6e8c2ba9ce",
       [
        null,
        [
@@ -172857,10 +172877,10 @@
           [
            [
             87,
-            128
+            159
            ],
            [
-            981,
+            643,
             1193
            ]
           ]
@@ -173501,7 +173521,7 @@
       ]
      ],
      "css-skew-002.html": [
-      "1b24515e43e936d5a5233cd8b4e170a9d557bb73",
+      "ff042380206b31194fa95cc284a1a7bd5ee54bf8",
       [
        null,
        [
@@ -173520,7 +173540,7 @@
             32
            ],
            [
-            24,
+            12,
             159
            ]
           ]
@@ -176781,7 +176801,7 @@
       ]
      ],
      "rotate_45deg.html": [
-      "e5ca42f2bc277d08a1988688c825deb5ccc18459",
+      "a4876acd3bdb8b1328fa3a43e951423b0569bf6c",
       [
        null,
        [
@@ -176800,7 +176820,7 @@
             255
            ],
            [
-            100,
+            50,
             200
            ]
           ]
@@ -176810,7 +176830,7 @@
       ]
      ],
      "rotate_x_45deg.html": [
-      "f55bdf1f01c48af66db909a653766d7398066ecc",
+      "04a584abdcbc4a43b688d9d82cbe449fc82899a6",
       [
        null,
        [
@@ -176829,7 +176849,7 @@
             255
            ],
            [
-            100,
+            50,
             200
            ]
           ]
@@ -176839,7 +176859,7 @@
       ]
      ],
      "rotate_y_45deg.html": [
-      "5b705c403115abf4123f06ab1b843c06ff97c064",
+      "e3c06521328b704ff8f523a1374cfe1a7e41c8d3",
       [
        null,
        [
@@ -176858,7 +176878,7 @@
             255
            ],
            [
-            100,
+            50,
             200
            ]
           ]
@@ -177182,7 +177202,7 @@
       ]
      ],
      "skew-test1.html": [
-      "a68e59e0422ba3e3d7b91e6e3fce2a011051b2c0",
+      "30e0028664b62ac00362028641d03e4ed786277e",
       [
        null,
        [
@@ -177198,7 +177218,7 @@
           [
            [
             17,
-            97
+            233
            ],
            [
             96,
@@ -180945,7 +180965,7 @@
       ]
      ],
      "transform-percent-008.html": [
-      "dcdec73fa523207e058b97e61921163e35931b5e",
+      "e4b333216333c320dafb7697a7cf47acfc20e3f5",
       [
        null,
        [
@@ -180965,7 +180985,7 @@
           [
            [
             0,
-            99
+            102
            ],
            [
             0,
@@ -183505,7 +183525,7 @@
       ]
      ],
      "ttwf-transform-skewx-001.html": [
-      "f633bf4344e8bfacdde8efa5495392fb922468e7",
+      "40b6ea80531467448447b6fe693b53c2920bef1e",
       [
        null,
        [
@@ -183524,7 +183544,7 @@
             64
            ],
            [
-            200,
+            100,
             200
            ]
           ]
@@ -183534,7 +183554,7 @@
       ]
      ],
      "ttwf-transform-skewy-001.html": [
-      "ce64b53d0e21cf1ed4163cbf0e81872de5a4eed1",
+      "599d615cb9d690e2ef9001fa612324d8e0ff07ad",
       [
        null,
        [
@@ -183550,10 +183570,10 @@
           [
            [
             63,
-            66
+            68
            ],
            [
-            200,
+            100,
             200
            ]
           ]
@@ -242513,6 +242533,12 @@
       "e72f837c95c06189d2945adedaa02351989590ab",
       []
      ],
+     "parsing": {
+      "print-color-adjust-expected.txt": [
+       "1fbbb6154eea30c0ec1253dcb8d69f12889bb733",
+       []
+      ]
+     },
      "print-color-adjust-parsing-expected.txt": [
       "1fbbb6154eea30c0ec1253dcb8d69f12889bb733",
       []
@@ -259477,6 +259503,10 @@
      ],
      "overflow-clip-margin-009-ref.html": [
       "efbf8985e56728c6f1a962fac8da8209d5a112af",
+      []
+     ],
+     "overflow-clip-margin-010-ref.html": [
+      "e548417c728fce159e7a7388d5530966944bd4ea",
       []
      ],
      "overflow-clip-margin-invalidation-ref.html": [
@@ -286813,7 +286843,7 @@
        },
        "imagebitmap": {
         "common.sub.js": [
-         "aa1e382a2088fee541a1020a03a4299a3b18d6cd",
+         "1889035202287d8ee8e6e192647826c702b60be5",
          []
         ],
         "createImageBitmap-drawImage-expected.txt": [
@@ -299876,6 +299906,10 @@
     ],
     "webp-animated.webp": [
      "35a8dfcf34d58060ec70f0a2a04e0d58e357e084",
+     []
+    ],
+    "wide-gamut-pattern.png": [
+     "f35cd4a2e1628bf0b6cd0bb58ea1c3b0d51f0e45",
      []
     ],
     "wpt-logo": {
@@ -358536,15 +358570,15 @@
         null,
         {}
        ]
+      ],
+      "print-color-adjust.html": [
+       "03522bc32db278d667cc02908b7facd241add480",
+       [
+        null,
+        {}
+       ]
       ]
      },
-     "print-color-adjust-parsing.html": [
-      "03522bc32db278d667cc02908b7facd241add480",
-      [
-       null,
-       {}
-      ]
-     ],
      "rendering": {
       "dark-color-scheme": {
        "color-scheme-color-property.html": [
@@ -425729,6 +425763,13 @@
         ],
         "createImageBitmap-bounds.html": [
          "9c4f1401e2d4078776a4e24b67e51a2db84d0d22",
+         [
+          null,
+          {}
+         ]
+        ],
+        "createImageBitmap-colorSpaceConversion.html": [
+         "c7b49884d38f23035b96abeeadd4e91744291e99",
          [
           null,
           {}
@@ -514474,7 +514515,7 @@
      ]
     ],
     "resize-event-order.html": [
-     "fbda86579a3e6707e413ee647108c508ba72e9b4",
+     "41a13728bc3ff61cfc32bb02839eab5a11d1d33b",
      [
       null,
       {
@@ -514483,7 +514524,7 @@
      ]
     ],
     "scroll-event-order.html": [
-     "bca6297ebe154f35be506a823bf8ab1866609f82",
+     "5ab5e0747a67bbc82e3620da5cafd1813277245c",
      [
       null,
       {
