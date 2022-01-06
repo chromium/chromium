@@ -411,8 +411,18 @@ void RootFrameViewport::DistributeScrollBetweenViewports(
   ScrollableArea& secondary =
       scroll_first == kVisualViewport ? LayoutViewport() : GetVisualViewport();
 
-  ScrollOffset target_offset = primary.ClampScrollOffset(
+  // Compute the clamped offsets for both viewports before performing any
+  // scrolling since the order of distribution can vary (and is typically
+  // visualViewport-first) but, per-spec, if we scroll both viewports the
+  // scroll event must be sent to the DOMWindow first, then to the
+  // VisualViewport. Thus, we'll always perform the scrolls in that order,
+  // regardless of the order of distribution.
+  ScrollOffset primary_offset = primary.ClampScrollOffset(
       primary.GetScrollAnimator().CurrentOffset() + delta);
+  ScrollOffset unconsumed_by_primary =
+      (primary.GetScrollAnimator().CurrentOffset() + delta) - primary_offset;
+  ScrollOffset secondary_offset = secondary.ClampScrollOffset(
+      secondary.GetScrollAnimator().CurrentOffset() + unconsumed_by_primary);
 
   auto all_done = on_finish ? base::BarrierClosure(2, std::move(on_finish))
                             : base::RepeatingClosure();
@@ -421,24 +431,15 @@ void RootFrameViewport::DistributeScrollBetweenViewports(
   // so we assume that aborting sequenced smooth scrolls has been handled.
   // It can also be called from inside an animation to set the offset in
   // each frame. In that case, we shouldn't abort sequenced smooth scrolls.
-  primary.SetScrollOffset(target_offset, scroll_type, behavior, all_done);
 
-  // Scroll the secondary viewport if all of the scroll was not applied to the
-  // primary viewport.
-  ScrollOffset updated_offset =
-      secondary.GetScrollAnimator().CurrentOffset() + target_offset;
-  ScrollOffset applied = updated_offset - old_offset;
-  delta -= applied;
-
-  if (delta.IsZero()) {
-    if (all_done)
-      all_done.Run();
-    return;
-  }
-
-  target_offset = secondary.ClampScrollOffset(
-      secondary.GetScrollAnimator().CurrentOffset() + delta);
-  secondary.SetScrollOffset(target_offset, scroll_type, behavior, all_done);
+  // Actually apply the scroll the layout viewport first so that the DOM event
+  // is dispatched to the DOMWindow before the VisualViewport.
+  LayoutViewport().SetScrollOffset(
+      scroll_first == kLayoutViewport ? primary_offset : secondary_offset,
+      scroll_type, behavior, all_done);
+  GetVisualViewport().SetScrollOffset(
+      scroll_first == kVisualViewport ? primary_offset : secondary_offset,
+      scroll_type, behavior, all_done);
 }
 
 gfx::Vector2d RootFrameViewport::ScrollOffsetInt() const {
