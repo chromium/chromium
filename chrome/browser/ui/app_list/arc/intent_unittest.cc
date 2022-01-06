@@ -112,4 +112,23 @@ TEST_F(ArcIntentTest, ShelfGroupId) {
   EXPECT_EQ(shelf_id2.app_id(), kPlayStoreAppId);
 }
 
+TEST_F(ArcIntentTest, EmptyExtraParams) {
+  auto intent =
+      Intent::Get(GetLaunchIntent(kPlayStorePackage, kPlayStoreActivity, {}));
+  ASSERT_TRUE(intent);
+  EXPECT_TRUE(intent->extra_params().empty());
+}
+
+TEST_F(ArcIntentTest, WrongIntents) {
+  // ;; is bad part here.
+  EXPECT_FALSE(
+      Intent::Get("#Intent;action=android.intent.action.MAIN;category=android."
+                  "intent.category.LAUNCHER;launchFlags=0x10200000;component="
+                  "com.android.vending/.AssetBrowserActivity;;end"));
+  EXPECT_TRUE(
+      Intent::Get("#Intent;action=android.intent.action.MAIN;category=android."
+                  "intent.category.LAUNCHER;launchFlags=0x10200000;component="
+                  "com.android.vending/.AssetBrowserActivity;end"));
+}
+
 }  // namespace arc

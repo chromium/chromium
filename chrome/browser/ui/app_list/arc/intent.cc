@@ -40,7 +40,7 @@ Intent::~Intent() = default;
 // static
 std::unique_ptr<Intent> Intent::Get(const std::string& intent_as_string) {
   const std::vector<base::StringPiece> parts = base::SplitStringPiece(
-      intent_as_string, ";", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
+      intent_as_string, ";", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (parts.size() < 2 || parts.front() != kIntentPrefix ||
       parts.back() != kEndSuffix) {
     DVLOG(1) << "Failed to split intent " << intent_as_string << ".";
@@ -52,6 +52,13 @@ std::unique_ptr<Intent> Intent::Get(const std::string& intent_as_string) {
   for (size_t i = 1; i < parts.size() - 1; ++i) {
     const size_t separator = parts[i].find('=');
     if (separator == std::string::npos) {
+      if (parts[i].empty()) {
+        // Intent should not have empty param. The empty param would appear in
+        // intent string as ';;'. In the last case it would cause error in
+        // Android framework. Such intents must not appear in the system.
+        DVLOG(1) << "Found empty param in " << intent_as_string << ".";
+        return nullptr;
+      }
       intent->AddExtraParam(std::string(parts[i]));
       continue;
     }
@@ -116,7 +123,8 @@ std::string GetLaunchIntent(const std::string& package_name,
                             const std::string& activity,
                             const std::vector<std::string>& extra_params) {
   const std::string extra_params_extracted =
-      base::JoinString(extra_params, ";") + ';';
+      extra_params.empty() ? std::string()
+                           : (base::JoinString(extra_params, ";") + ";");
 
   // Remove the |package_name| prefix, if activity starts with it.
   const char* activity_compact_name =
