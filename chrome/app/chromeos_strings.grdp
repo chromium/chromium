@@ -3662,10 +3662,10 @@
   <message name="IDS_HATS_DONE_BUTTON_LABEL" desc="Label used for the done button at the end of survey">
     Done
   </message>
-  <message name="IDS_ARC_CHILD_TRANSITION_TITLE" desc="Title of the toast shown when the user tries to activate ARC app and transition from child to regular user or from regular to child user is not completed.">
+  <message name="IDS_ARC_CHILD_TRANSITION_TITLE" desc="Title of the notification shown when the user tries to activate ARC app and transition from child to regular user or from regular to child user is not completed.">
     Action not available
   </message>
-  <message name="IDS_ARC_CHILD_TRANSITION_MESSAGE" desc="Message of the toast shown when the user tries to activate ARC app and transition from child to regular user or from regular to child user is not completed.">
+  <message name="IDS_ARC_CHILD_TRANSITION_MESSAGE" desc="Message of the notification shown when the user tries to activate ARC app and transition from child to regular user or from regular to child user is not completed.">
     Please try again in a few moments
   </message>
   <message name="IDS_ARC_DATA_REMOVAL_CONFIRMATION_HEADING" desc="Heading text in the content area of the confirmation for data removal in case ARC comes to wrong state.">
