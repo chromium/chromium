@@ -37,3 +37,21 @@ export function getWallpaperLayoutEnum(layout: string): WallpaperLayout {
 export function isNonEmptyString(maybeString: unknown): maybeString is string {
   return typeof maybeString === 'string' && maybeString.length > 0;
 }
+
+/**
+ * Wallpaper images sometimes have a resolution suffix appended to the end of
+ * the image. This is typically to fetch a high resolution image to show as the
+ * user's wallpaper. We do not want the full resolution here, so remove the
+ * suffix to get a 512x512 preview.
+ * TODO(b/186807814) support different resolution parameters here.
+ */
+export function removeHighResolutionSuffix(url: string): string {
+  return url.replace(/=w\d+$/, '');
+}
+
+/**
+ * Returns whether the given URL starts with http:// or https://.
+ */
+export function hasHttpScheme(url: string): boolean {
+  return url.startsWith('http://') || url.startsWith('https://');
+}

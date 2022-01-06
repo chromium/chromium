@@ -5,11 +5,10 @@
 /** @fileoverview Test suite for wallpaper-selected component.  */
 
 import {Paths} from 'chrome://personalization/trusted/personalization_router_element.js';
-import {emptyState} from 'chrome://personalization/trusted/personalization_state.js';
-import {WallpaperActionName} from 'chrome://personalization/trusted/wallpaper/wallpaper_actions.js';
-import {mockTimeoutForTesting, WallpaperSelected} from 'chrome://personalization/trusted/wallpaper/wallpaper_selected_element.js';
+import {WallpaperSelected} from 'chrome://personalization/trusted/wallpaper/wallpaper_selected_element.js';
 
-import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertNotReached, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
 import {baseSetup, initElement} from './personalization_app_test_utils.js';
@@ -84,21 +83,13 @@ export function WallpaperSelectedTest() {
         assertEquals('', placeholder!.style.display);
       });
 
-  test('sets wallpaper image in store on first load', async () => {
-    personalizationStore.expectAction(WallpaperActionName.SET_SELECTED_IMAGE);
-    wallpaperSelectedElement = initElement(WallpaperSelected);
-    const action = await personalizationStore.waitForAction(
-        WallpaperActionName.SET_SELECTED_IMAGE);
-    assertDeepEquals(wallpaperProvider.currentWallpaper, action.image);
-  });
-
   test('shows wallpaper image and attribution when loaded', async () => {
     personalizationStore.data.wallpaper.currentSelected =
         wallpaperProvider.currentWallpaper;
 
     wallpaperSelectedElement = initElement(WallpaperSelected);
     await waitAfterNextRender(wallpaperSelectedElement);
-
+                                                                                                                             
     const img = wallpaperSelectedElement.shadowRoot!.querySelector('img');
     assertEquals(
         `chrome://image/?${wallpaperProvider.currentWallpaper.url.url}`,
@@ -209,24 +200,6 @@ export function WallpaperSelectedTest() {
         null, wallpaperSelectedElement.shadowRoot!.querySelector('img'));
   });
 
-  test('sets selected wallpaper data in store on changed', async () => {
-    // Make sure state starts as expected.
-    assertDeepEquals(emptyState(), personalizationStore.data);
-
-    wallpaperSelectedElement = initElement(WallpaperSelected);
-
-    await wallpaperProvider.whenCalled('setWallpaperObserver');
-
-    personalizationStore.expectAction(WallpaperActionName.SET_SELECTED_IMAGE);
-    wallpaperProvider.wallpaperObserverRemote!.onWallpaperChanged(
-        wallpaperProvider.currentWallpaper);
-
-    const {image} = await personalizationStore.waitForAction(
-        WallpaperActionName.SET_SELECTED_IMAGE);
-
-    assertDeepEquals(wallpaperProvider.currentWallpaper, image);
-  });
-
   test('shows image url with data scheme', async () => {
     personalizationStore.data.wallpaper.currentSelected = {
       url: {url: 'data:image/png;base64,abc='},
@@ -288,90 +261,4 @@ export function WallpaperSelectedTest() {
                 'refreshWallpaper');
         assertFalse(newRefreshWallpaper!.hidden);
       });
-
-  test('sets current image to null after timeout', async () => {
-    let timeoutCallback: Function;
-    mockTimeoutForTesting({
-      setTimeout(callback, delay) {
-        assertEquals(120 * 1000, delay);
-        timeoutCallback = callback as Function;
-        return 1234;
-      },
-      clearTimeout() {
-        assertNotReached('Should not clear timeout');
-      },
-    });
-
-    wallpaperProvider.wallpaperObserverUpdateTimeout = 100;
-
-    wallpaperSelectedElement =
-        initElement(WallpaperSelected, {'path': Paths.CollectionImages});
-    await waitAfterNextRender(wallpaperSelectedElement);
-
-    personalizationStore.expectAction(WallpaperActionName.SET_SELECTED_IMAGE);
-
-    timeoutCallback!.call(wallpaperSelectedElement);
-
-    const action = await personalizationStore.waitForAction(
-        WallpaperActionName.SET_SELECTED_IMAGE);
-    assertEquals(null, action.image);
-  });
-
-  test('cancels timeout after receiving first image', async () => {
-    const timeoutId = 1234;
-    const clearTimeoutPromise = new Promise<void>(resolve => {
-      mockTimeoutForTesting({
-        setTimeout() {
-          return timeoutId;
-        },
-        clearTimeout(id) {
-          assertEquals(timeoutId, id);
-          resolve();
-        },
-      });
-    });
-
-    wallpaperSelectedElement =
-        initElement(WallpaperSelected, {'path': Paths.CollectionImages});
-    await waitAfterNextRender(wallpaperSelectedElement);
-
-    wallpaperProvider.wallpaperObserverRemote!.onWallpaperChanged(
-        wallpaperProvider.currentWallpaper);
-
-    await clearTimeoutPromise;
-  });
-
-  test('skips updating OnWallpaperChange while in fullscreen', async () => {
-    personalizationStore.data.wallpaper.fullscreen = true;
-
-    wallpaperSelectedElement =
-        initElement(WallpaperSelected, {'path': Paths.CollectionImages});
-    await waitAfterNextRender(wallpaperSelectedElement);
-
-    personalizationStore.resetLastAction();
-
-    wallpaperProvider.wallpaperObserverRemote!.onWallpaperChanged(
-        wallpaperProvider.currentWallpaper);
-    await waitAfterNextRender(wallpaperSelectedElement);
-
-    assertEquals(null, personalizationStore.lastAction);
-
-    personalizationStore.data.wallpaper.fullscreen = false;
-    personalizationStore.notifyObservers();
-
-    personalizationStore.expectAction(WallpaperActionName.SET_SELECTED_IMAGE);
-
-    wallpaperProvider.wallpaperObserverRemote!.onWallpaperChanged(
-        wallpaperProvider.currentWallpaper);
-
-    const action = await personalizationStore.waitForAction(
-        WallpaperActionName.SET_SELECTED_IMAGE);
-
-    assertDeepEquals(
-        {
-          name: WallpaperActionName.SET_SELECTED_IMAGE,
-          image: wallpaperProvider.currentWallpaper,
-        },
-        action);
-  });
 }

@@ -17,6 +17,8 @@ import {UserSubpageTest} from './user_subpage_element_test.js';
 import {WallpaperCollectionsTest} from './wallpaper_collections_element_test.js';
 import {WallpaperFullscreenTest} from './wallpaper_fullscreen_element_test.js';
 import {WallpaperImagesTest} from './wallpaper_images_element_test.js';
+import {WallpaperObserverTest} from './wallpaper_observer_test.js';
+import {WallpaperPreviewTest} from './wallpaper_preview_element_test.js';
 import {WallpaperSelectedTest} from './wallpaper_selected_element_test.js';
 
 // Mute console.warn during tests. Several tests intentionally hit asserts to
@@ -36,7 +38,9 @@ const testCases = [
   WallpaperCollectionsTest,
   WallpaperFullscreenTest,
   WallpaperImagesTest,
+  WallpaperPreviewTest,
   WallpaperSelectedTest,
+  WallpaperObserverTest,
 ];
 
 for (const testCase of testCases) {

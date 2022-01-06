@@ -13,9 +13,14 @@ import './wallpaper_collections_element.js';
 import './wallpaper_error_element.js';
 import './wallpaper_fullscreen_element.js';
 import './wallpaper_images_element.js';
+import './wallpaper_preview_element.js';
 import './wallpaper_selected_element.js';
 import './styles.js';
+
 import {onMessageReceived} from './untrusted_message_handler.js';
+import {WallpaperObserver} from './wallpaper_observer.js';
+
+WallpaperObserver.initWallpaperObserverIfNeeded();
 
 window.addEventListener('message', onMessageReceived);
 

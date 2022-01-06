@@ -33,6 +33,7 @@ static_js_files = [
   "trusted/wallpaper/untrusted_message_handler.ts",
   "trusted/wallpaper/wallpaper_controller.ts",
   "trusted/wallpaper/wallpaper_interface_provider.ts",
+  "trusted/wallpaper/wallpaper_observer.ts",
   "trusted/wallpaper/wallpaper_reducers.ts",
   "trusted/wallpaper/wallpaper_state.ts",
   "trusted/wallpaper/wallpaper_subpage.ts",
@@ -63,6 +64,7 @@ polymer_js_files = [
   "trusted/wallpaper/wallpaper_fullscreen_element.ts",
   "trusted/wallpaper/wallpaper_grid_item_element.ts",
   "trusted/wallpaper/wallpaper_images_element.ts",
+  "trusted/wallpaper/wallpaper_preview_element.ts",
   "trusted/wallpaper/wallpaper_selected_element.ts",
 
   "untrusted/collections_grid.ts",

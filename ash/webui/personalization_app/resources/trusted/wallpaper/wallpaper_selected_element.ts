@@ -17,54 +17,13 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {isNonEmptyArray} from '../../common/utils.js';
-import {CurrentWallpaper, WallpaperLayout, WallpaperObserverInterface, WallpaperObserverReceiver, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
+import {CurrentWallpaper, WallpaperLayout, WallpaperProviderInterface, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {Paths} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
-import {getWallpaperLayoutEnum} from '../utils.js';
+import {getWallpaperLayoutEnum, hasHttpScheme, removeHighResolutionSuffix} from '../utils.js';
 
-import {beginLoadSelectedImageAction, setSelectedImageAction} from './wallpaper_actions.js';
 import {getDailyRefreshCollectionId, setCustomWallpaperLayout, setDailyRefreshCollectionId, updateDailyRefreshWallpaper} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
-
-let setTimeout = window.setTimeout;
-let clearTimeout = window.clearTimeout;
-
-export function mockTimeoutForTesting(mock: {
-  setTimeout: typeof window.setTimeout,
-  clearTimeout: typeof window.clearTimeout,
-}) {
-  setTimeout = mock.setTimeout;
-  clearTimeout = mock.clearTimeout;
-}
-
-/**
- * Set up the observer to listen for wallpaper changes.
- */
-function initWallpaperObserver(
-    wallpaperProvider: WallpaperProviderInterface,
-    target: WallpaperObserverInterface): WallpaperObserverReceiver {
-  const receiver = new WallpaperObserverReceiver(target);
-  wallpaperProvider.setWallpaperObserver(receiver.$.bindNewPipeAndPassRemote());
-  return receiver;
-}
-
-/**
- * Wallpaper images sometimes have a resolution suffix appended to the end of
- * the image. This is typically to fetch a high resolution image to show as the
- * user's wallpaper. We do not want the full resolution here, so remove the
- * suffix to get a 512x512 preview.
- * TODO(b/186807814) support different resolution parameters here.
- */
-function removeHighResolutionSuffix(url: string): string {
-  return url.replace(/=w\d+$/, '');
-}
-
-/**
- * Returns whether the given URL starts with http:// or https://.
- */
-function hasHttpScheme(url: string): boolean {
-  return url.startsWith('http://') || url.startsWith('https://');
-}
 
 export class WallpaperSelected extends WithPersonalizationStore {
   static get is() {
@@ -187,20 +146,14 @@ export class WallpaperSelected extends WithPersonalizationStore {
   private showPreviewButton_: boolean;
 
   private wallpaperProvider_: WallpaperProviderInterface;
-  private wallpaperObserver_: WallpaperObserverReceiver|null;
-  private initialLoadTimeout_: number|null;
 
   constructor() {
     super();
     this.wallpaperProvider_ = getWallpaperProvider();
-    this.wallpaperObserver_ = null;
   }
 
   connectedCallback() {
     super.connectedCallback();
-    this.dispatch(beginLoadSelectedImageAction());
-    this.wallpaperObserver_ =
-        initWallpaperObserver(this.wallpaperProvider_, this);
     this.watch('error_', state => state.error);
     this.watch('image_', state => state.wallpaper.currentSelected);
     this.watch(
@@ -213,49 +166,8 @@ export class WallpaperSelected extends WithPersonalizationStore {
         state => state.wallpaper.dailyRefresh.collectionId);
     this.updateFromStore();
     getDailyRefreshCollectionId(this.wallpaperProvider_, this.getStore());
-    /**
-     * Set a 2 minute timer. If no wallpaper information has been received by
-     * then, dispatch a failure state.
-     * @type {?number}
-     */
-    this.initialLoadTimeout_ = setTimeout(() => {
-      // If still loading the initial currently selected wallpaper image after
-      // 120 seconds, consider this an error and update the store.
-      this.dispatch(setSelectedImageAction(null));
-      this.initialLoadTimeout_ = null;
-    }, 120 * 1000);
   }
 
-  disconnectedCallback() {
-    if (this.wallpaperObserver_) {
-      this.wallpaperObserver_.$.close();
-    }
-  }
-
-  /**
-   * Called when the wallpaper changes.
-   */
-  onWallpaperChanged(currentWallpaper: CurrentWallpaper|null) {
-    // Ignore updates while in fullscreen preview mode. The attribution
-    // information is for the old (non-preview) wallpaper. This is because
-    // setting an image in preview mode updates the image but not the stored
-    // WallpaperInfo. The wallpaper app should treat the duration of preview
-    // mode as loading. Another onWallpaperChanged will fire when preview mode
-    // is canceled or confirmed.
-    if (this.getState().wallpaper.fullscreen) {
-      return;
-    }
-
-    // Clear the initial load timer if wallpaper information is received.
-    if (this.initialLoadTimeout_) {
-      clearTimeout(this.initialLoadTimeout_);
-      this.initialLoadTimeout_ = null;
-    }
-    this.dispatch(setSelectedImageAction(currentWallpaper));
-
-    // Daily Refresh state should also get updated when wallpaper changes.
-    getDailyRefreshCollectionId(this.wallpaperProvider_, this.getStore());
-  }
 
   /**
    * Return a chrome://image or data:// url to load the image safely. Returns
