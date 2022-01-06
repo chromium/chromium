@@ -177,6 +177,11 @@ class StartupBrowserCreator {
       base::OnceClosure on_urls_unhandled_cb);
 #endif
 
+  // Returns true if Chrome is intended to load a profile and launch without any
+  // window.
+  static bool ShouldLoadProfileWithoutWindow(
+      const base::CommandLine& command_line);
+
  private:
   friend class CloudPrintProxyPolicyTest;
   friend class CloudPrintProxyPolicyStartupTest;

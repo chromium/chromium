@@ -13,10 +13,6 @@
 #include "chrome/common/url_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/ash/crosapi/browser_util.h"
-#endif
-
 using Creator = StartupBrowserCreatorImpl;
 
 namespace {
@@ -536,30 +532,4 @@ TEST(StartupBrowserCreatorImplTest, DetermineBrowserOpenBehavior_NotStartup) {
 
   output = Creator::DetermineBrowserOpenBehavior(pref_urls, 0);
   EXPECT_EQ(Creator::BrowserOpenBehavior::NEW, output);
-}
-
-TEST(StartupBrowserCreatorImplTest, ShouldLaunch) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Forcibly set ash-chrome as the primary browser.
-  // This is the current default behavior.
-  crosapi::browser_util::SetLacrosPrimaryBrowserForTest(false);
-#endif
-
-  EXPECT_TRUE(StartupBrowserCreatorImpl::ShouldLaunch(
-      base::CommandLine(base::CommandLine::NO_PROGRAM)));
-  {
-    base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-    command_line.AppendSwitch(switches::kNoStartupWindow);
-    EXPECT_FALSE(StartupBrowserCreatorImpl::ShouldLaunch(command_line));
-  }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Check what happens if lacros-chrome becomes the primary browser.
-  crosapi::browser_util::SetLacrosPrimaryBrowserForTest(true);
-  EXPECT_FALSE(StartupBrowserCreatorImpl::ShouldLaunch(
-      base::CommandLine(base::CommandLine::NO_PROGRAM)));
-
-  // Restore the global testing set up.
-  crosapi::browser_util::SetLacrosPrimaryBrowserForTest(absl::nullopt);
-#endif
 }

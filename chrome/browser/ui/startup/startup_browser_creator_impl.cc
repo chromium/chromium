@@ -85,10 +85,6 @@
 #include "components/app_restore/full_restore_utils.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chromeos/lacros/lacros_service.h"
-#endif
-
 namespace {
 
 // Utility functions ----------------------------------------------------------
@@ -309,7 +305,7 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
 StartupBrowserCreatorImpl::LaunchResult
 StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
     chrome::startup::IsProcessStartup process_startup) {
-  if (!ShouldLaunch(command_line_))
+  if (StartupBrowserCreator::ShouldLoadProfileWithoutWindow(command_line_))
     return LaunchResult::kNormally;
 
   const bool is_incognito_or_guest = profile_->IsOffTheRecord();
@@ -645,30 +641,6 @@ StartupBrowserCreatorImpl::DetermineSynchronousRestoreOptions(
     options |= SessionRestore::ALWAYS_CREATE_TABBED_BROWSER;
 
   return options;
-}
-
-// static
-bool StartupBrowserCreatorImpl::ShouldLaunch(
-    const base::CommandLine& command_line) {
-  // Don't open any browser windows if starting up in "background mode".
-  if (command_line.HasSwitch(switches::kNoStartupWindow))
-    return false;
-
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-    // Don't open any browser windows if Ash requested that Lacros not do so.
-    // The implicit assumption is that some other code is responsible for
-    // keeping Lacros running in the background.
-    // Temporarily remove this logic to deal with https://crbug.com/1278549.
-#endif
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // If Lacros is the primary web browser, do not open the browser window
-  // on Chrome OS session login.
-  if (crosapi::browser_util::IsLacrosPrimaryBrowser())
-    return false;
-#endif
-
-  return true;
 }
 
 // static

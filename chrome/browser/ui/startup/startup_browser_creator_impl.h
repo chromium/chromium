@@ -98,7 +98,6 @@ class StartupBrowserCreatorImpl {
                            DetermineBrowserOpenBehavior_NotStartup);
   FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorImplTest,
                            DetermineStartupTabs_NewFeaturesPage);
-  FRIEND_TEST_ALL_PREFIXES(StartupBrowserCreatorImplTest, ShouldLaunch);
 
   enum class LaunchResult {
     kNormally,
@@ -198,9 +197,6 @@ class StartupBrowserCreatorImpl {
       bool has_create_browser_default,
       bool has_create_browser_switch,
       bool was_mac_login_or_resume);
-
-  // Returns whether or not a browser window should be created/restored.
-  static bool ShouldLaunch(const base::CommandLine& command_line);
 
   // Returns whether `switches::kKioskMode` is set on the command line of
   // the current process. This is a static method to avoid accidentally reading

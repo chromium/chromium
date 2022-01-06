@@ -785,6 +785,30 @@ void StartupBrowserCreator::MaybeHandleProfileAgnosticUrls(
 }
 #endif  // defined(OS_MAC)
 
+// static
+bool StartupBrowserCreator::ShouldLoadProfileWithoutWindow(
+    const base::CommandLine& command_line) {
+  // Don't open any browser windows if starting up in "background mode".
+  if (command_line.HasSwitch(switches::kNoStartupWindow))
+    return true;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    // Don't open any browser windows if Ash requested that Lacros not do so.
+    // The implicit assumption is that some other code is responsible for
+    // keeping Lacros running in the background.
+    // Temporarily remove this logic to deal with https://crbug.com/1278549.
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // If Lacros is the primary web browser, do not open the browser window
+  // on Chrome OS session login.
+  if (crosapi::browser_util::IsLacrosPrimaryBrowser())
+    return true;
+#endif
+
+  return false;
+}
+
 bool StartupBrowserCreator::ProcessCmdLineImpl(
     const base::CommandLine& command_line,
     const base::FilePath& cur_dir,
