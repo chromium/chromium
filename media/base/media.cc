@@ -10,6 +10,7 @@
 #include "base/allocator/buildflags.h"
 #include "base/command_line.h"
 #include "base/metrics/field_trial.h"
+#include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/media_switches.h"
 #include "media/media_buildflags.h"
@@ -56,9 +57,9 @@ class MediaInitializer {
   ~MediaInitializer() = delete;
 };
 
-static MediaInitializer* GetMediaInstance() {
-  static MediaInitializer* instance = new MediaInitializer();
-  return instance;
+static const MediaInitializer& GetMediaInstance() {
+  static const base::NoDestructor<MediaInitializer> instance;
+  return *instance;
 }
 
 void InitializeMediaLibrary() {
