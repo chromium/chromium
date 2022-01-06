@@ -111,6 +111,12 @@ class MacPort(base.Port):
         return '/usr/sbin/httpd'
 
     def path_to_apache_config_file(self):
+        # TODO(crbug.com/1190885): Workaround for Monterey, should be reverted
+        # once we build chromium specific httpd.
+        if self.host.platform.is_mac_monterey():
+            config_file_name = "apache2-httpd-2.4-prefork.conf"
+            return self._filesystem.join(self.apache_config_directory(), config_file_name)
+
         config_file_basename = 'apache2-httpd-' + self._apache_version()
         if self.host.platform.os_version not in ['mac10.12']:
             config_file_basename += '-php7'
