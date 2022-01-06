@@ -54,6 +54,8 @@ const char kNotifyPasskeyCharacteristicTime[] =
     "Bluetooth.ChromeOS.FastPair.Passkey.NotifyTime";
 const char kWriteAccountKeyCharacteristicGattError[] =
     "Bluetooth.ChromeOS.FastPair.AccountKey.Write.GattErrorReason";
+const char kWriteAccountKeyTimeMetric[] =
+    "Bluetooth.ChromeOS.FastPair.AccountKey.Write.TotalTime";
 
 constexpr base::TimeDelta kConnectingTestTimeout = base::Seconds(5);
 
@@ -775,6 +777,7 @@ TEST_F(FastPairGattServiceClientTest, WritePasskeyRequestTimeout) {
 TEST_F(FastPairGattServiceClientTest, WriteAccountKey) {
   histogram_tester().ExpectTotalCount(kWriteAccountKeyCharacteristicGattError,
                                       0);
+  histogram_tester().ExpectTotalCount(kWriteAccountKeyTimeMetric, 0);
   SuccessfulGattConnectionSetUp();
   NotifyGattDiscoveryCompleteForService();
   EXPECT_EQ(GetInitializedCallbackResult(), absl::nullopt);
@@ -786,11 +789,13 @@ TEST_F(FastPairGattServiceClientTest, WriteAccountKey) {
   EXPECT_EQ(GetAccountKeyCallback(), absl::nullopt);
   histogram_tester().ExpectTotalCount(kWriteAccountKeyCharacteristicGattError,
                                       0);
+  histogram_tester().ExpectTotalCount(kWriteAccountKeyTimeMetric, 1);
 }
 
 TEST_F(FastPairGattServiceClientTest, WriteAccountKeyFailure) {
   histogram_tester().ExpectTotalCount(kWriteAccountKeyCharacteristicGattError,
                                       0);
+  histogram_tester().ExpectTotalCount(kWriteAccountKeyTimeMetric, 0);
   SetAccountKeyCharacteristicWriteError(true);
   SuccessfulGattConnectionSetUp();
   NotifyGattDiscoveryCompleteForService();
@@ -803,6 +808,7 @@ TEST_F(FastPairGattServiceClientTest, WriteAccountKeyFailure) {
   EXPECT_NE(GetAccountKeyCallback(), absl::nullopt);
   histogram_tester().ExpectTotalCount(kWriteAccountKeyCharacteristicGattError,
                                       1);
+  histogram_tester().ExpectTotalCount(kWriteAccountKeyTimeMetric, 0);
 }
 
 }  // namespace quick_pair

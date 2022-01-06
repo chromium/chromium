@@ -188,6 +188,25 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="Bluetooth.ChromeOS.FastPair.AccountKey.Failure.{FastPairPairingProtocol}"
+    enum="FastPairAccountKeyFailure" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Breaks down why a account key write attempt to a device failed (see
+    'Bluetooth.ChromeOS.FastPair.AccountKey.Result'). Suffixed by FastPair
+    pairing protocol type. Emitted on the OnWriteAccountKey event in the Fast
+    Pair flow.
+  </summary>
+  <token key="FastPairPairingProtocol">
+    <variant name="InitialPairingProtocol" summary="initial pairing protocol"/>
+    <variant name="RetroactivePairingProtocol"
+        summary="retroactive pairing protocol"/>
+  </token>
+</histogram>
+
 <histogram name="Bluetooth.ChromeOS.FastPair.AccountKey.Write.GattErrorReason"
     enum="BluetoothDeviceConnectErrorCode" expires_after="2022-09-20">
   <owner>shanefitz@google.com</owner>
@@ -202,6 +221,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Bluetooth.ChromeOS.FastPair.AccountKey.Write.Result"
     enum="BooleanSuccess" expires_after="2022-06-20">
+  <obsolete>
+    Removed 2022/01/06 to add dimmensions for different pairing scenarios. See
+    `Bluetooth.ChromeOS.FastPair.AccountKey.Write.Result.{FastPairPairingProtocol}`
+  </obsolete>
   <owner>shanefitz@google.com</owner>
   <owner>julietlevesque@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -213,8 +236,47 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="Bluetooth.ChromeOS.FastPair.AccountKey.Write.Result.{FastPairPairingProtocol}"
+    enum="BooleanSuccess" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records success or failure of writing an account key to a device. Emitted on
+    the OnPairFailure event and the OnDevicePaired event in the Fast Pair flow.
+  </summary>
+  <token key="FastPairPairingProtocol">
+    <variant name="InitialPairingProtocol" summary="initial pairing protocol"/>
+    <variant name="RetroactivePairingProtocol"
+        summary="retroactive pairing protocol"/>
+    <variant name="SubsequentPairingProtocol"
+        summary="subsequent pairing protocol"/>
+  </token>
+</histogram>
+
+<histogram name="Bluetooth.ChromeOS.FastPair.AccountKey.Write.TotalTime"
+    units="ms" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the total time it takes to write the account key gatt characteristic
+    of a device. Time is calculated as the difference between when the write to
+    characteristic occurs and when the OnAccountKeyWrite event is fired in the
+    GattServiceClient during the pairing protocol. Emitted when the
+    OnAccountKeyWrite event fires. If the account key write fails, then no value
+    is logged to this metric.
+  </summary>
+</histogram>
+
+<histogram
     name="Bluetooth.ChromeOS.FastPair.AccountKeyFailure.{FastPairPairingProtocol}"
     enum="FastPairAccountKeyFailure" expires_after="2022-09-20">
+  <obsolete>
+    Renamed to
+    'Bluetooth.ChromeOS.FastPair.AccountKey.Failure.{FastPairPairingProtocol}'
+    for consistency among metrics related to AccountKey. Removed 2022/01/05.
+  </obsolete>
   <owner>shanefitz@google.com</owner>
   <owner>julietlevesque@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
@@ -234,6 +296,11 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Bluetooth.ChromeOS.FastPair.AccountKeyWrite.Result.{FastPairPairingProtocol}"
     enum="BooleanSuccess" expires_after="2022-09-20">
+  <obsolete>
+    Renamed to
+    'Bluetooth.ChromeOS.FastPair.AccountKey.Write.Result.{FastPairPairingProtocol}'
+    for consistency among metrics related to AccountKey. Removed 2022/01/05.
+  </obsolete>
   <owner>shanefitz@google.com</owner>
   <owner>julietlevesque@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>

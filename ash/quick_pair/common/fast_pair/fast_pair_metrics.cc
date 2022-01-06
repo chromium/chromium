@@ -44,19 +44,20 @@ const char kFastPairPairResultSubsequentMetric[] =
 const char kFastPairPairResultRetroactiveMetric[] =
     "Bluetooth.ChromeOS.FastPair.Pairing.Result.RetroactivePairingProtocol";
 const char kFastPairAccountKeyWriteResultInitialMetric[] =
-    "Bluetooth.ChromeOS.FastPair.AccountKeyWrite.Result.InitialPairingProtocol";
+    "Bluetooth.ChromeOS.FastPair.AccountKey.Write.Result."
+    "InitialPairingProtocol";
 const char kFastPairAccountKeyWriteResultSubsequentMetric[] =
-    "Bluetooth.ChromeOS.FastPair.AccountKeyWrite.Result."
+    "Bluetooth.ChromeOS.FastPair.AccountKey.Write.Result."
     "SubsequentPairingProtocol";
 const char kFastPairAccountKeyWriteResultRetroactiveMetric[] =
-    "Bluetooth.ChromeOS.FastPair.AccountKeyWrite.Result."
+    "Bluetooth.ChromeOS.FastPair.AccountKey.Write.Result."
     "RetroactivePairingProtocol";
 const char kFastPairAccountKeyWriteFailureInitialMetric[] =
-    "Bluetooth.ChromeOS.FastPair.AccountKeyFailure.InitialPairingProtocol";
+    "Bluetooth.ChromeOS.FastPair.AccountKey.Failure.InitialPairingProtocol";
 const char kFastPairAccountKeyWriteFailureSubsequentMetric[] =
-    "Bluetooth.ChromeOS.FastPair.AccountKeyFailure.SubsequentPairingProtocol";
+    "Bluetooth.ChromeOS.FastPair.AccountKey.Failure.SubsequentPairingProtocol";
 const char kFastPairAccountKeyWriteFailureRetroactiveMetric[] =
-    "Bluetooth.ChromeOS.FastPair.AccountKeyFailure.RetroactivePairingProtocol";
+    "Bluetooth.ChromeOS.FastPair.AccountKey.Failure.RetroactivePairingProtocol";
 const char kKeyGenerationResultMetric[] =
     "Bluetooth.ChromeOS.FastPair.KeyGenerationResult";
 const char kDataEncryptorCreateResultMetric[] =
@@ -89,6 +90,8 @@ const char kWriteAccountKeyCharacteristicResult[] =
     "Bluetooth.ChromeOS.FastPair.AccountKey.Write.Result";
 const char kWriteAccountKeyCharacteristicGattError[] =
     "Bluetooth.ChromeOS.FastPair.AccountKey.Write.GattErrorReason";
+const char kWriteAccountKeyTime[] =
+    "Bluetooth.ChromeOS.FastPair.AccountKey.Write.TotalTime";
 
 }  // namespace
 
@@ -295,8 +298,11 @@ void RecordWriteAccountKeyCharacteristicResult(bool success) {
 
 void RecordWriteAccountKeyGattError(
     device::BluetoothGattService::GattErrorCode error) {
-  base::UmaHistogramSparse(kWriteAccountKeyCharacteristicGattError,
-                           static_cast<int>(error));
+  base::UmaHistogramEnumeration(kWriteAccountKeyCharacteristicGattError, error);
+}
+
+void RecordWriteAccountKeyTime(base::TimeDelta write_time) {
+  base::UmaHistogramTimes(kWriteAccountKeyTime, write_time);
 }
 
 }  // namespace quick_pair

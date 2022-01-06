@@ -63,14 +63,15 @@ const char kFastPairPairResultMetricSubsequent[] =
 const char kFastPairPairResultMetricRetroactive[] =
     "Bluetooth.ChromeOS.FastPair.Pairing.Result.RetroactivePairingProtocol";
 const char kFastPairAccountKeyWriteResultMetricInitial[] =
-    "Bluetooth.ChromeOS.FastPair.AccountKeyWrite.Result.InitialPairingProtocol";
+    "Bluetooth.ChromeOS.FastPair.AccountKey.Write.Result."
+    "InitialPairingProtocol";
 const char kFastPairAccountKeyWriteResultMetricRetroactive[] =
-    "Bluetooth.ChromeOS.FastPair.AccountKeyWrite.Result."
+    "Bluetooth.ChromeOS.FastPair.AccountKey.Write.Result."
     "RetroactivePairingProtocol";
 const char kFastPairAccountKeyWriteFailureMetricInitial[] =
-    "Bluetooth.ChromeOS.FastPair.AccountKeyFailure.InitialPairingProtocol";
+    "Bluetooth.ChromeOS.FastPair.AccountKey.Failure.InitialPairingProtocol";
 const char kFastPairAccountKeyWriteFailureMetricRetroactive[] =
-    "Bluetooth.ChromeOS.FastPair.AccountKeyFailure.RetroactivePairingProtocol";
+    "Bluetooth.ChromeOS.FastPair.AccountKey.Failure.RetroactivePairingProtocol";
 
 constexpr char kTestDeviceAddress[] = "11:12:13:14:15:16";
 constexpr char kTestBleDeviceName[] = "Test Device Name";

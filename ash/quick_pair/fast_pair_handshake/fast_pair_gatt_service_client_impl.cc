@@ -110,9 +110,8 @@ FastPairGattServiceClientImpl::FastPairGattServiceClientImpl(
                   << device_address_ << "].";
   device->CreateGattConnection(
       base::BindOnce(&FastPairGattServiceClientImpl::OnGattConnection,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
       kFastPairBluetoothUuid);
-  gatt_connection_start_time_ = base::TimeTicks::Now();
   gatt_service_discovery_timer_.Start(
       FROM_HERE, kGattOperationTimeout,
       base::BindOnce(&FastPairGattServiceClientImpl::NotifyInitializedError,
@@ -123,6 +122,7 @@ FastPairGattServiceClientImpl::FastPairGattServiceClientImpl(
 FastPairGattServiceClientImpl::~FastPairGattServiceClientImpl() = default;
 
 void FastPairGattServiceClientImpl::OnGattConnection(
+    base::TimeTicks gatt_connection_start_time,
     std::unique_ptr<device::BluetoothGattConnection> gatt_connection,
     absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code) {
   RecordGattConnectionResult(/*success=*/!error_code.has_value());
@@ -137,7 +137,7 @@ void FastPairGattServiceClientImpl::OnGattConnection(
         << "Successful creation of GATT connection to device at address:["
         << device_address_ << "].";
     RecordTotalGattConnectionTime(base::TimeTicks::Now() -
-                                  gatt_connection_start_time_);
+                                  gatt_connection_start_time);
     gatt_connection_ = std::move(gatt_connection);
   }
 }
@@ -468,7 +468,7 @@ void FastPairGattServiceClientImpl::WriteAccountKey(
       std::vector<uint8_t>(data_to_write.begin(), data_to_write.end()),
       device::BluetoothRemoteGattCharacteristic::WriteType::kWithResponse,
       base::BindOnce(&FastPairGattServiceClientImpl::OnWriteAccountKey,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()),
       base::BindOnce(&FastPairGattServiceClientImpl::OnWriteAccountKeyError,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -529,11 +529,14 @@ void FastPairGattServiceClientImpl::OnWritePasskeyError(
   NotifyWritePasskeyError(PairFailure::kPasskeyPairingCharacteristicWrite);
 }
 
-void FastPairGattServiceClientImpl::OnWriteAccountKey() {
+void FastPairGattServiceClientImpl::OnWriteAccountKey(
+    base::TimeTicks write_account_key_start_time) {
   QP_LOG(VERBOSE)
       << "WriteRemoteCharacteristic to account key characteristic successful.";
   DCHECK(write_account_key_callback_);
-  std::move(write_account_key_callback_).Run(absl::nullopt);
+  RecordWriteAccountKeyTime(base::TimeTicks::Now() -
+                            write_account_key_start_time);
+  std::move(write_account_key_callback_).Run(/*failure=*/absl::nullopt);
 }
 
 void FastPairGattServiceClientImpl::OnWriteAccountKeyError(
