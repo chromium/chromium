@@ -974,26 +974,16 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, PrintLayoutTest) {
 // These print preview tests do not work on Chrome OS yet.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
 
-// RenderViewTest-based tests crash on Android
-// http://crbug.com/187500
-#if defined(OS_ANDROID)
-#define MAYBE_PrintRenderFrameHelperPreviewTest \
-  DISABLED_PrintRenderFrameHelperPreviewTest
-#else
-#define MAYBE_PrintRenderFrameHelperPreviewTest \
-  PrintRenderFrameHelperPreviewTest
-#endif  // defined(OS_ANDROID)
-
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-class MAYBE_PrintRenderFrameHelperPreviewTest
+class PrintRenderFrameHelperPreviewTest
     : public PrintRenderFrameHelperTestBase {
  public:
-  MAYBE_PrintRenderFrameHelperPreviewTest() = default;
-  MAYBE_PrintRenderFrameHelperPreviewTest(
-      const MAYBE_PrintRenderFrameHelperPreviewTest&) = delete;
-  MAYBE_PrintRenderFrameHelperPreviewTest& operator=(
-      const MAYBE_PrintRenderFrameHelperPreviewTest&) = delete;
-  ~MAYBE_PrintRenderFrameHelperPreviewTest() override = default;
+  PrintRenderFrameHelperPreviewTest() = default;
+  PrintRenderFrameHelperPreviewTest(const PrintRenderFrameHelperPreviewTest&) =
+      delete;
+  PrintRenderFrameHelperPreviewTest& operator=(
+      const PrintRenderFrameHelperPreviewTest&) = delete;
+  ~PrintRenderFrameHelperPreviewTest() override = default;
 
   void SetUp() override {
     PrintRenderFrameHelperTestBase::SetUp();
@@ -1062,7 +1052,7 @@ class MAYBE_PrintRenderFrameHelperPreviewTest
   }
 };
 
-TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest, BlockScriptInitiatedPrinting) {
+TEST_F(PrintRenderFrameHelperPreviewTest, BlockScriptInitiatedPrinting) {
   LoadHTML(kHelloWorldHTML);
   PrintRenderFrameHelper* print_render_frame_helper =
       GetPrintRenderFrameHelper();
@@ -1077,7 +1067,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest, BlockScriptInitiatedPrinting) {
   OnClosePrintPreviewDialog();
 }
 
-TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest, PrintWithJavaScript) {
+TEST_F(PrintRenderFrameHelperPreviewTest, PrintWithJavaScript) {
   LoadHTML(kPrintOnUserAction);
   gfx::Size new_size(200, 100);
   Resize(new_size, false);
@@ -1092,7 +1082,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest, PrintWithJavaScript) {
 
 // Tests that print preview work and sending and receiving messages through
 // that channel all works.
-TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest, OnPrintPreview) {
+TEST_F(PrintRenderFrameHelperPreviewTest, OnPrintPreview) {
   LoadHTML(kHelloWorldHTML);
 
   // Fill in some dummy values.
@@ -1112,8 +1102,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest, OnPrintPreview) {
   OnClosePrintPreviewDialog();
 }
 
-TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest,
-       PrintPreviewHTMLWithPageMarginsCss) {
+TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewHTMLWithPageMarginsCss) {
   // A simple web page with print margins css.
   static const char kHTMLWithPageMarginsCss[] =
       "<html><head><style>"
@@ -1148,7 +1137,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest,
 
 // Test to verify that print preview ignores print media css when non-default
 // margin is selected.
-TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest,
+TEST_F(PrintRenderFrameHelperPreviewTest,
        NonDefaultMarginsSelectedIgnorePrintCss) {
   LoadHTML(kHTMLWithPageSizeCss);
 
@@ -1175,8 +1164,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest,
 
 // Test to verify that print preview honor print media size css when
 // PRINT_TO_PDF is selected and doesn't fit to printer default paper size.
-TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest,
-       PrintToPDFSelectedHonorPrintCss) {
+TEST_F(PrintRenderFrameHelperPreviewTest, PrintToPDFSelectedHonorPrintCss) {
   LoadHTML(kHTMLWithPageSizeCss);
 
   // Fill in some dummy values.
@@ -1200,8 +1188,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest,
   OnClosePrintPreviewDialog();
 }
 
-TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest,
-       PreviewLayoutTriggeredByResize) {
+TEST_F(PrintRenderFrameHelperPreviewTest, PreviewLayoutTriggeredByResize) {
   // A simple web page with print margins css.
   static const char kHTMLWithPageCss[] =
       "<!DOCTYPE html>"
@@ -1327,7 +1314,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest,
 
 // Test to verify that print preview honor print margin css when PRINT_TO_PDF
 // is selected and doesn't fit to printer default paper size.
-TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest,
+TEST_F(PrintRenderFrameHelperPreviewTest,
        PrintToPDFSelectedHonorPageMarginsCss) {
   // A simple web page with print margins css.
   static const char kHTMLWithPageCss[] =
@@ -1364,7 +1351,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest,
 
 // Test to verify that print preview workflow center the html page contents to
 // fit the page size.
-TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest, PrintPreviewCenterToFitPage) {
+TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewCenterToFitPage) {
   LoadHTML(kHTMLWithPageSizeCss);
 
   // Fill in some dummy values.
@@ -1388,7 +1375,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest, PrintPreviewCenterToFitPage) {
 
 // Test to verify that print preview workflow scale the html page contents to
 // fit the page size.
-TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest, PrintPreviewShrinkToFitPage) {
+TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewShrinkToFitPage) {
   // A simple web page with print margins css.
   static const char kHTMLWithPageCss[] =
       "<html><head><style>"
@@ -1423,8 +1410,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest, PrintPreviewShrinkToFitPage) {
 
 // Test to verify that print preview workflow honor the orientation settings
 // specified in css.
-TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest,
-       PrintPreviewHonorsOrientationCss) {
+TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewHonorsOrientationCss) {
   LoadHTML(kHTMLWithLandscapePageCss);
 
   // Fill in some dummy values.
@@ -1450,7 +1436,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest,
 
 // Test to verify that print preview workflow honors the orientation settings
 // specified in css when PRINT_TO_PDF is selected.
-TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest,
+TEST_F(PrintRenderFrameHelperPreviewTest,
        PrintToPDFSelectedHonorOrientationCss) {
   LoadHTML(kHTMLWithLandscapePageCss);
 
@@ -1473,7 +1459,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest,
   OnClosePrintPreviewDialog();
 }
 
-TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest, PrintPreviewForMultiplePages) {
+TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewForMultiplePages) {
   LoadHTML(kMultipageHTML);
 
   // Fill in some dummy values.
@@ -1495,7 +1481,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest, PrintPreviewForMultiplePages) {
   OnClosePrintPreviewDialog();
 }
 
-TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest, PrintPreviewForSelectedPages) {
+TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewForSelectedPages) {
   LoadHTML(kMultipageHTML);
 
   // Fill in some dummy values.
@@ -1533,7 +1519,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest, PrintPreviewForSelectedPages) {
 }
 
 // Test to verify that preview generated only for one page.
-TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest, PrintPreviewForSelectedText) {
+TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewForSelectedText) {
   LoadHTML(kMultipageHTML);
   GetMainFrame()->SelectRange(blink::WebRange(1, 3),
                               blink::WebLocalFrame::kHideSelectionHandle,
@@ -1558,7 +1544,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest, PrintPreviewForSelectedText) {
 }
 
 // Test to verify that preview generated only for two pages.
-TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest, PrintPreviewForSelectedText2) {
+TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewForSelectedText2) {
   LoadHTML(kMultipageHTML);
   GetMainFrame()->SelectRange(blink::WebRange(1, 8),
                               blink::WebLocalFrame::kHideSelectionHandle,
@@ -1583,7 +1569,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest, PrintPreviewForSelectedText2) {
 }
 
 // Tests that cancelling print preview works.
-TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest, PrintPreviewCancel) {
+TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewCancel) {
   LoadHTML(kLongPageHTML);
 
   const uint32_t kCancelPage = 3;
@@ -1604,7 +1590,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest, PrintPreviewCancel) {
 
 // Tests that when default printer has invalid printer settings, print preview
 // receives error message.
-TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest,
+TEST_F(PrintRenderFrameHelperPreviewTest,
        OnPrintPreviewUsingInvalidPrinterSettings) {
   LoadHTML(kPrintPreviewHTML);
 
@@ -1629,8 +1615,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest,
 
 // Tests that when the selected printer has invalid page settings, print preview
 // receives error message.
-TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest,
-       OnPrintPreviewUsingInvalidPageSize) {
+TEST_F(PrintRenderFrameHelperPreviewTest, OnPrintPreviewUsingInvalidPageSize) {
   LoadHTML(kPrintPreviewHTML);
 
   printer()->UseInvalidPageSize();
@@ -1651,7 +1636,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest,
 
 // Tests that when the selected printer has invalid content settings, print
 // preview receives error message.
-TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest,
+TEST_F(PrintRenderFrameHelperPreviewTest,
        OnPrintPreviewUsingInvalidContentSize) {
   LoadHTML(kPrintPreviewHTML);
 
@@ -1671,7 +1656,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest,
   OnClosePrintPreviewDialog();
 }
 
-TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest, BasicBeforePrintAfterPrint) {
+TEST_F(PrintRenderFrameHelperPreviewTest, BasicBeforePrintAfterPrint) {
   LoadHTML(kBeforeAfterPrintHtml);
   ExpectNoBeforeNoAfterPrintEvent();
 
@@ -1694,8 +1679,7 @@ TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest, BasicBeforePrintAfterPrint) {
 }
 
 // Regression test for https://crbug.com/912966
-TEST_F(MAYBE_PrintRenderFrameHelperPreviewTest,
-       WindowPrintBeforePrintAfterPrint) {
+TEST_F(PrintRenderFrameHelperPreviewTest, WindowPrintBeforePrintAfterPrint) {
   LoadHTML(kBeforeAfterPrintHtml);
   gfx::Size new_size(200, 100);
   Resize(new_size, false);
