@@ -1140,6 +1140,12 @@ void NodeController::OnRequestIntroduction(const ports::NodeName& from_node,
                                            const ports::NodeName& name) {
   DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
 
+  if (broker_name_ != ports::kInvalidNodeName) {
+    DLOG(ERROR) << "Ignoring OnRequestIntroduction on non-broker node.";
+    DropPeer(from_node, nullptr);
+    return;
+  }
+
   scoped_refptr<NodeChannel> requestor = GetPeerChannel(from_node);
   if (from_node == name || name == ports::kInvalidNodeName || !requestor) {
     DLOG(ERROR) << "Rejecting invalid OnRequestIntroduction message from "
@@ -1211,6 +1217,12 @@ void NodeController::OnIntroduce(const ports::NodeName& from_node,
 void NodeController::OnBroadcast(const ports::NodeName& from_node,
                                  Channel::MessagePtr message) {
   DCHECK(!message->has_handles());
+
+  if (broker_name_ != ports::kInvalidNodeName) {
+    DLOG(ERROR) << "Ignoring OnBroadcast on non-broker node.";
+    DropPeer(from_node, nullptr);
+    return;
+  }
 
   auto event = DeserializeEventMessage(from_node, std::move(message));
   if (!event) {
