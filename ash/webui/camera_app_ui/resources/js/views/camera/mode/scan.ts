@@ -1,0 +1,102 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {StreamConstraints} from '../../../device/stream_constraints.js';
+import {Point} from '../../../geometry.js';
+import {
+  Facing,
+  Resolution,
+} from '../../../type.js';
+
+import {ModeBase, ModeFactory} from './mode_base.js';
+import {
+  Photo,
+  PhotoHandler,
+  PhotoResult,
+} from './photo.js';
+
+/**
+ * @param size Size of image to be cropped document from.
+ */
+export function getDefaultScanCorners(size: Resolution): Point[] {
+  // No initial guess from scan API, position corners in box of portrait A4
+  // size occupied with 80% center area.
+  const WIDTH_A4 = 210;
+  const HEIGHT_A4 = 297;
+  const {width: w, height: h} = size;
+  const [width, height] = size.aspectRatio > WIDTH_A4 / HEIGHT_A4 ?
+      [h / w * WIDTH_A4 / HEIGHT_A4 * 0.8, 0.8] :
+      [0.8, w / h * HEIGHT_A4 / WIDTH_A4 * 0.8];
+  return [
+    new Point(0.5 - width / 2, 0.5 - height / 2),
+    new Point(0.5 - width / 2, 0.5 + height / 2),
+    new Point(0.5 + width / 2, 0.5 + height / 2),
+    new Point(0.5 + width / 2, 0.5 - height / 2),
+  ];
+}
+
+/**
+ * Provides external dependency functions used by photo mode and handles the
+ * captured result photo.
+ */
+export interface ScanHandler extends PhotoHandler {
+  onDocumentCaptureDone(pendingPhotoResult: Promise<PhotoResult>):
+      Promise<void>;
+}
+
+class DocumentPhotoHandler implements PhotoHandler {
+  constructor(private readonly handler: ScanHandler) {}
+
+  playShutterEffect(): void {
+    this.handler.playShutterEffect();
+  }
+
+  waitPreviewReady(): Promise<void> {
+    return this.handler.waitPreviewReady();
+  }
+
+  onPhotoError(): void {
+    this.handler.onPhotoError();
+  }
+
+  onPhotoCaptureDone(pendingPhotoResult: Promise<PhotoResult>): Promise<void> {
+    return this.handler.onDocumentCaptureDone(pendingPhotoResult);
+  }
+}
+
+/**
+ * Photo mode capture controller.
+ */
+export class Scan extends Photo {
+  constructor(
+      stream: MediaStream, facing: Facing, captureResolution: Resolution,
+      scanHandler: ScanHandler) {
+    super(
+        stream, facing, captureResolution,
+        new DocumentPhotoHandler(scanHandler));
+  }
+}
+
+/**
+ * Factory for creating photo mode capture object.
+ */
+export class ScanFactory extends ModeFactory {
+  /**
+   * @param constraints Constraints for preview stream.
+   */
+  constructor(
+      constraints: StreamConstraints, captureResolution: Resolution,
+      protected readonly handler: ScanHandler) {
+    super(constraints, captureResolution);
+  }
+
+  produce(): ModeBase {
+    return new Scan(
+        this.previewStream_,
+        this.facing_,
+        this.captureResolution_,
+        this.handler,
+    );
+  }
+}
