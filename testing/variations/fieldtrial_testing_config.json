@@ -8563,21 +8563,6 @@
             ]
         }
     ],
-    "WebApkInstallCompleteNotification": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "WebApkInstallCompleteNotification"
-                    ]
-                }
-            ]
-        }
-    ],
     "WebFeedsMVP": [
         {
             "platforms": [
