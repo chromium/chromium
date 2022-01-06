@@ -242,20 +242,17 @@ public class CronetHttpURLConnectionTest {
                 (HttpURLConnection) url.openConnection();
         connection.setDoOutput(true);
         connection.setRequestMethod("POST");
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            String dataString = "some very important data";
-            byte[] data = dataString.getBytes();
-            Class<?> c = connection.getClass();
-            Method method = c.getMethod("setFixedLengthStreamingMode",
-                    new Class[] {long.class});
-            method.invoke(connection, (long) data.length);
-            OutputStream out = connection.getOutputStream();
-            out.write(data);
-            assertEquals(200, connection.getResponseCode());
-            assertEquals("OK", connection.getResponseMessage());
-            assertEquals(dataString, TestUtil.getResponseAsString(connection));
-            connection.disconnect();
-        }
+        String dataString = "some very important data";
+        byte[] data = dataString.getBytes();
+        Class<?> c = connection.getClass();
+        Method method = c.getMethod("setFixedLengthStreamingMode", new Class[] {long.class});
+        method.invoke(connection, (long) data.length);
+        OutputStream out = connection.getOutputStream();
+        out.write(data);
+        assertEquals(200, connection.getResponseCode());
+        assertEquals("OK", connection.getResponseMessage());
+        assertEquals(dataString, TestUtil.getResponseAsString(connection));
+        connection.disconnect();
     }
 
     @Test

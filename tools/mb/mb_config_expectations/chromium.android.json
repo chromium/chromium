@@ -179,7 +179,7 @@
     "gn_args": {
       "arm_use_neon": false,
       "clang_use_default_sample_profile": false,
-      "default_min_sdk_version": 16,
+      "default_min_sdk_version": 19,
       "disable_file_support": true,
       "enable_jdk_library_desugaring": false,
       "enable_reporting": true,
@@ -208,7 +208,7 @@
       "arm_use_neon": false,
       "clang_use_default_sample_profile": false,
       "dcheck_always_on": false,
-      "default_min_sdk_version": 16,
+      "default_min_sdk_version": 19,
       "disable_file_support": true,
       "enable_jdk_library_desugaring": false,
       "enable_reporting": true,
@@ -236,7 +236,7 @@
   "android-cronet-arm64-dbg": {
     "gn_args": {
       "clang_use_default_sample_profile": false,
-      "default_min_sdk_version": 16,
+      "default_min_sdk_version": 19,
       "disable_file_support": true,
       "enable_jdk_library_desugaring": false,
       "enable_reporting": true,
@@ -263,7 +263,7 @@
     "gn_args": {
       "clang_use_default_sample_profile": false,
       "dcheck_always_on": false,
-      "default_min_sdk_version": 16,
+      "default_min_sdk_version": 19,
       "disable_file_support": true,
       "enable_jdk_library_desugaring": false,
       "enable_reporting": true,
@@ -293,7 +293,7 @@
       "arm_use_neon": false,
       "clang_use_default_sample_profile": false,
       "dcheck_always_on": false,
-      "default_min_sdk_version": 16,
+      "default_min_sdk_version": 19,
       "disable_file_support": true,
       "enable_jdk_library_desugaring": false,
       "enable_reporting": true,
@@ -323,7 +323,7 @@
     "gn_args": {
       "clang_use_default_sample_profile": false,
       "dcheck_always_on": false,
-      "default_min_sdk_version": 16,
+      "default_min_sdk_version": 19,
       "disable_file_support": true,
       "enable_jdk_library_desugaring": false,
       "enable_reporting": true,
@@ -351,7 +351,7 @@
   "android-cronet-x86-dbg": {
     "gn_args": {
       "clang_use_default_sample_profile": false,
-      "default_min_sdk_version": 16,
+      "default_min_sdk_version": 19,
       "disable_file_support": true,
       "enable_jdk_library_desugaring": false,
       "enable_reporting": true,
@@ -378,7 +378,7 @@
     "gn_args": {
       "clang_use_default_sample_profile": false,
       "dcheck_always_on": false,
-      "default_min_sdk_version": 16,
+      "default_min_sdk_version": 19,
       "disable_file_support": true,
       "enable_jdk_library_desugaring": false,
       "enable_reporting": true,

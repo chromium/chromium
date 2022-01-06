@@ -351,15 +351,9 @@ final class JavaUrlRequest extends UrlRequestBase {
 
         @Override
         protected void initializeStart(long totalBytes) {
-            if (totalBytes > 0 && totalBytes <= Integer.MAX_VALUE) {
-                mUrlConnection.setFixedLengthStreamingMode((int) totalBytes);
-            } else if (totalBytes > Integer.MAX_VALUE
-                    && Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            if (totalBytes > 0) {
                 mUrlConnection.setFixedLengthStreamingMode(totalBytes);
             } else {
-                // Even if we know the length, but we're running pre-kitkat and it's larger
-                // than an int can hold, we have to use chunked - otherwise we'll end up
-                // buffering the whole response in memory.
                 mUrlConnection.setChunkedStreamingMode(DEFAULT_CHUNK_LENGTH);
             }
         }
