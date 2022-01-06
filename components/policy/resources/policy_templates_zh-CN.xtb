@@ -177,6 +177,7 @@
 
       如需详细了解有效的 <ph name="URL_LABEL" /> 格式，请访问 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是此政策可接受的值。</translation>
 <translation id="120937472976628837">报告风扇信息</translation>
+<translation id="1212233008927724662">停用延迟的登录 WebUI 加载。</translation>
 <translation id="1216919699175573511">启用 Signed HTTP Exchange (SXG) 支持</translation>
 <translation id="1219695476179627719">指定是否要将已在运行较新版本的设备回滚到 <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> 所设定的版本。
 
@@ -629,6 +630,7 @@
       另请参阅 <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />。
 
       注意：此设置会覆盖 <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />（若已设置）。</translation>
+<translation id="1721304336924950970">仅在需要时加载登录 WebUI。</translation>
 <translation id="172374442286684480">允许所有网站设置本地数据</translation>
 <translation id="1729169799290004131">通过设置此政策，您可以指定屏幕亮度百分比（关闭自动调节亮度功能）。系统会根据政策值调整初始屏幕亮度，但用户可以更改相关设置。
 
@@ -1850,6 +1852,15 @@
 <translation id="3152425128389603870">使“统一桌面”功能可供用户使用，并使其在默认情况下处于启用状态</translation>
 <translation id="3159375329008977062">允许用户通过界面导出/导入 Crostini 容器</translation>
 <translation id="3164531087779621747">打印 PostScript 模式</translation>
+<translation id="3165468162820163252">此政策用于控制是让系统始终在启动时加载登录屏幕的 WebUI 部分，还是仅在显示该部分之前加载它。此政策适用于登录屏幕。
+
+      如果此政策已启用，系统将仅在显示登录界面的 WebUI 部分之前加载该部分。这可以加快登录流程。
+
+      如果此政策已停用，系统将始终在启动时加载登录屏幕的 WebUI 部分（旧版行为）。
+
+      如果此政策未设置，相应行为将由 kEnableLazyLoginWebUILoading 功能控制。
+
+      待 kEnableLazyLoginWebUILoading 全面推出后，此政策应该会被移除。</translation>
 <translation id="3165808775394012744">将这些政策列于此处是为了方便您移除它们。</translation>
 <translation id="3166210414652928099">允许用户使用来源不受信任的 Android 应用</translation>
 <translation id="316778957754360075">此设置从 <ph name="PRODUCT_NAME" />版本 29 起开始弃用。我们建议您将托管 CRX 软件包的网站包含在 ExtensionInstallSources 中，然后将上述软件包的直接下载链接放在某网页上，从而建立一个由企业托管的扩展程序/应用包。相关网页的启动器可使用 ExtensionInstallForcelist 政策创建。</translation>
@@ -4736,6 +4747,7 @@
       您只需将以下各项连结起来即可指定 <ph name="SUBJECT_PUBLIC_KEY_INFO" /> 哈希：哈希算法名称、“/”字符，以及相应哈希算法（对所指定证书的 DER 编码 <ph name="SUBJECT_PUBLIC_KEY_INFO" /> 应用的哈希算法）的 Base64 编码。Base64 编码的格式与 SPKI 指纹的格式一致。唯一得到认可的哈希算法是 sha256，其他算法都会被忽略。
 
       如果您不设置此政策，<ph name="PRODUCT_NAME" /> 便会将那些应按照证书透明度要求进行披露但却未予披露的证书视为不可信证书。</translation>
+<translation id="6704445641918520643">启用延迟的登录 WebUI 加载。</translation>
 <translation id="6704515759227307131">此政策已被弃用，且已被 AdvancedProtectionAllowed 取代。
 
       此政策用于控制是否允许已加入“高级保护”计划的用户将他们的下载内容发送给 Google 进行恶意软件扫描。如果此政策设为 True 或未设置，系统会提示用户将下载的文件发送给 Google 进行深度扫描。如果用户选择“扫描”，系统便会将相应文件发送给 Google。如果此政策设为 False，系统不会提示用户，也不会将他们的下载内容发送给 Google。</translation>

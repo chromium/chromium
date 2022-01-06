@@ -178,6 +178,7 @@
 
       Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez consulter la page https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="120937472976628837">Transmettre des infos sur le ventilateur</translation>
+<translation id="1212233008927724662">Désactiver le chargement différé du WebUI de connexion.</translation>
 <translation id="1216919699175573511">Activer la compatibilité avec la fonctionnalité Signed HTTP Exchange (SXG)</translation>
 <translation id="1219695476179627719">Spécifie si la version définie par <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> doit être rétablie sur l'appareil s'il exécute une version ultérieure.
 
@@ -636,6 +637,7 @@ Si vous la désactivez, le défilement des pages Web vers des fragments de texte
       Consultez également la règle "<ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />".
 
       Remarque : Ce paramètre ignore la règle "<ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />", le cas échéant.</translation>
+<translation id="1721304336924950970">Charger le WebUI de connexion uniquement si nécessaire.</translation>
 <translation id="172374442286684480">Autoriser tous les sites à définir des données locales</translation>
 <translation id="1729169799290004131">Cette règle permet de définir le niveau de luminosité de l'écran (en pourcentage), ce qui désactive les fonctionnalités de réglage automatique de la luminosité. En outre, le niveau initial de luminosité de l'écran est ajusté à la valeur définie dans cette règle. Toutefois, les utilisateurs peuvent modifier ce paramètre.
 
@@ -1870,6 +1872,15 @@ Si elle n'est pas définie, l'écran de confidentialité est désactivé initial
 <translation id="3152425128389603870">Rendre le mode bureau unifié disponible et l'activer par défaut</translation>
 <translation id="3159375329008977062">L'utilisateur est autorisé à exporter/importer des conteneurs Crostini via l'UI</translation>
 <translation id="3164531087779621747">Mode d'impression PostScript</translation>
+<translation id="3165468162820163252">Cette règle permet de définir si la partie WebUI de l'écran de connexion est systématiquement chargée au démarrage ou seulement avant de l'afficher. Cette règle s'applique à l'écran de connexion.
+
+      Si cette règle est activée, la partie WebUI de l'écran de connexion se charge uniquement avant d'être affichée. Cela accélère le processus de connexion.
+
+      Si cette règle est désactivée, la partie WebUI de l'écran de connexion est systématiquement chargée au démarrage (ancien comportement).
+
+      Si elle n'est pas configurée, le comportement est contrôlé par la fonctionnalité kEnableLazyLoginWebUILoading.
+
+      Cette règle devrait être supprimée une fois kEnableLazyLoginWebUILoading entièrement déployé.</translation>
 <translation id="3165808775394012744">Ces règles sont incluses ici pour faciliter leur suppression.</translation>
 <translation id="3166210414652928099">Autoriser l'utilisateur à se servir des applications Android provenant de sources non approuvées</translation>
 <translation id="316778957754360075">Ce paramètre a été supprimé à partir de la version 29 de <ph name="PRODUCT_NAME" />. Pour configurer des collections d'extensions et d'applications hébergées par l'organisation, il est recommandé d'inclure le site hébergeant les packages CRX dans ExtensionInstallSources et d'insérer des liens directs de téléchargement dans les packages sur une page Web. Il est possible de créer un lanceur d'applications pour cette page à l'aide de la règle ExtensionInstallForcelist.</translation>
@@ -4791,6 +4802,7 @@ Si vous sélectionnez les options suivantes :
       Spécifiez un hachage <ph name="SUBJECT_PUBLIC_KEY_INFO" /> en concaténant le nom de l'algorithme de hachage, une barre oblique et l'encodage Base64 de cet algorithme de hachage appliqué à l'élément <ph name="SUBJECT_PUBLIC_KEY_INFO" /> encodé en DER du certificat spécifié. Le format d'encodage Base64 correspond à celui d'une empreinte SPKI. SHA-256 est le seul algorithme de hachage reconnu (les autres sont ignorés).
 
       Si cette règle n'est pas configurée, cela signifie que si les certificats ne sont pas communiqués tel que le prévoient les règles de transparence des certificats, <ph name="PRODUCT_NAME" /> considère alors qu'ils ne sont pas fiables.</translation>
+<translation id="6704445641918520643">Activer le chargement différé du WebUI de connexion.</translation>
 <translation id="6704515759227307131">Cette règle est obsolète et a été remplacée par AdvancedProtectionAllowed.
 
       Elle permet de contrôler si les utilisateurs inscrits au Programme Protection Avancée sont autorisés à envoyer leurs téléchargements à Google pour les faire analyser afin de détecter d'éventuels logiciels malveillants. Si cette règle est définie sur "True" ou si elle n'est pas configurée, ces utilisateurs sont invités à envoyer leurs téléchargements à Google pour une analyse approfondie. Si ces utilisateurs sélectionnent l'option d'analyse, leurs téléchargements sont envoyés à Google. Si cette règle est définie sur "False", aucune invite ne s'affiche, et les téléchargements des utilisateurs ne sont pas envoyés à Google.</translation>

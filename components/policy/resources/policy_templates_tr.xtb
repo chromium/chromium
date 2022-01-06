@@ -178,6 +178,7 @@
 
       Geçerli <ph name="URL_LABEL" /> kalıpları hakkında ayrıntılı bilgi için https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns adresine bakabilirsiniz.  <ph name="WILDCARD_VALUE" />, bu politikada kabul edilen bir değer değildir.</translation>
 <translation id="120937472976628837">Pervane bilgilerini raporla</translation>
+<translation id="1212233008927724662">Lazy Login WebUI yüklemeyi devre dışı bırak.</translation>
 <translation id="1216919699175573511">İmzalı HTTP Değişimi (SXG) desteğini etkinleştir</translation>
 <translation id="1219695476179627719">Bu cihazın sonraki bir sürümü çalıştırıyor olması halinde, <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> tarafından ayarlanan sürüme geri döndürülüp döndürülmeyeceğini belirler.
 
@@ -634,6 +635,7 @@ Bu politikayı devre dışı bırakırsanız web sayfasını URL yoluyla belirli
       Ayrıca <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" /> politikasına bakın.
 
       Not: Bu ayar mevcut olması halinde <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> politikasını geçersiz kılar.</translation>
+<translation id="1721304336924950970">Yalnızca gerektiğinde Login WebUI yükle.</translation>
 <translation id="172374442286684480">Tüm sitelerin yerel verileri ayarlamasına izin verme</translation>
 <translation id="1729169799290004131">Politika ayarlandığında otomatik parlaklık özellikleri devre dışı bırakılır ve ekran parlaklığı yüzdesi belirtilir. Başlangıçtaki ekran parlaklığı, politika değerine ayarlanır, ancak kullanıcılar bunu değiştirebilir.
 
@@ -1862,6 +1864,15 @@ Bu politika ayarlanmadan bırakılırsa gizlilik ekranı başta devre dışı b�
 <translation id="3152425128389603870">Birleşik Masaüstü'nü kullanılabilir hale getir ve varsayılan olarak aç.</translation>
 <translation id="3159375329008977062">Kullanıcının, kullanıcı arayüzü üzerinden Crostini kapsayıcıları dışa/içe aktarmasına izin verilir</translation>
 <translation id="3164531087779621747">Yazdırma PostScript Modu</translation>
+<translation id="3165468162820163252">Bu politika, oturum açma ekranındaki WebUI bölümünün her zaman başlangıçta mı yoksa yalnızca gösterilmeden önce mi yükleneceğini kontrol eder. Bu politika, oturum açma ekranı için geçerlidir.
+
+      Bu politika etkinleştirilirse oturum açma kullanıcı arayüzündeki WebUI bölümü yalnızca gösterilmeden önce yüklenir. Bu da giriş işlemini hızlandırır.
+
+      Bu politika devre dışı bırakılırsa oturum açma ekranındaki WebUI bölümü her zaman başlangıçta yüklenir (eski davranış).
+
+      Politika ayarlanmazsa davranışı kEnableLazyLoginWebUILoading özelliği kontrol eder.
+
+      Bu politika, kEnableLazyLoginWebUILoading tamamen kullanıma sunulduktan sonra kaldırılmalıdır.</translation>
 <translation id="3165808775394012744">Bu politikalar kolay kaldırılabilmeleri için buraya eklenmiştir.</translation>
 <translation id="3166210414652928099">Kullanıcının güvenilmeyen kaynaklardan Android uygulamaları kullanmasına izin ver</translation>
 <translation id="316778957754360075">Bu ayar, <ph name="PRODUCT_NAME" /> Sürüm 29 itibariyle kullanımdan kaldırılmıştır. Kuruluş tarafından barındırılan uzantı/uygulama koleksiyonları oluşturmanın önerilen yöntemi, CRX paketlerini barındıran siteyi ExtensionInstallSources içine eklemek ve web sayfasına paketler için doğrudan indirme bağlantıları koymaktır. ExtensionInstallForcelist politikası kullanılarak bu web sayfası için bir başlatıcı oluşturulabilir.</translation>
@@ -4759,6 +4770,7 @@ Bu ayar devre dışı bırakılır veya herhangi bir değer belirlenmezse <ph na
       <ph name="SUBJECT_PUBLIC_KEY_INFO" /> karmasını, karma algoritması adı, eğik çizgi ve belirtilen sertifikanın DER kodlamalı <ph name="SUBJECT_PUBLIC_KEY_INFO" /> öğesine uygulanan Base64 kodlamasını bağlayarak belirtir. Base64 kodlamasının biçimi, SPKI Parmak İzi ile aynıdır. Yalnızca karma algoritması tanınır, diğerleri yok sayılır.
 
       Politikanın ayarlanmadan bırakılması, Sertifika Şeffaflığı aracılığıyla açıklama gerektiren sertifikaların açıklanmaması durumunda <ph name="PRODUCT_NAME" /> ürününün bu sertifikalara güvenmeyeceği anlamına gelir.</translation>
+<translation id="6704445641918520643">Lazy Login WebUI yüklemeyi etkinleştir.</translation>
 <translation id="6704515759227307131">Bu politika artık kullanılmamakta olup yerine AdvancedProtectionAllowed politikası getirilmiştir.
 
       Bu politika, Gelişmiş Koruma programına kayıtlı kullanıcıların indirdikleri dosyaları kötü amaçlı yazılıma karşı taranmak üzere Google'a göndermelerine izin verilip verilmeyeceğini kontrol eder. Bu politika True (Doğru) değerine ayarlanır veya ayarlanmadan bırakılırsa kayıtlı kullanıcılardan dosyalarını ayrıntılı tarama için Google'a göndermeleri istenir. Kullanıcı "Tara" öğesini seçerse indirdiği dosya Google'a gönderilir. Bu politika False (Yanlış) değerine ayarlanırsa kullanıcılardan istekte bulunulmaz ve indirdikleri dosyalar Google'a gönderilmez.</translation>

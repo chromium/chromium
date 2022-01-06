@@ -178,6 +178,7 @@
 
       Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos, consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="120937472976628837">Envía información de los ventiladores</translation>
+<translation id="1212233008927724662">Inhabilitar la carga diferida de la WebUI de acceso</translation>
 <translation id="1216919699175573511">Habilitar compatibilidad con intercambios HTTP firmados (SXG)</translation>
 <translation id="1219695476179627719">Especifica si el dispositivo debe volver a la versión que se establece en <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" />, si ya ejecuta una versión más reciente.
 
@@ -635,6 +636,7 @@ Si la inhabilitas, se inhabilitará el desplazamiento de la página web a fragme
       Consulta también <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.
 
       Nota: Esta configuración anulará <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />, si se aplica.</translation>
+<translation id="1721304336924950970">Cargar la WebUI de acceso solo cuando sea necesario</translation>
 <translation id="172374442286684480">Permitir a todos los sitios establecer datos locales</translation>
 <translation id="1729169799290004131">Si estableces la política, se especificará el porcentaje de brillo de la pantalla y se desactivarán las funciones de brillo automático. Se ajustará el brillo inicial de la pantalla conforme al valor de la política, pero los usuarios podrán cambiar este valor.
 
@@ -1869,6 +1871,15 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="3152425128389603870">Habilitar el modo de escritorio unificado y activarlo de forma predeterminada</translation>
 <translation id="3159375329008977062">El usuario está habilitado para exportar o importar contenedores de Crostini mediante la IU</translation>
 <translation id="3164531087779621747">Imprimir con el modo PostScript</translation>
+<translation id="3165468162820163252">Esta política controla si la parte WebUI de la pantalla de acceso cargará al inicio o solo antes de que se muestre. Esta política se aplica a la pantalla de acceso.
+
+      Si la habilitas, la parte WebUI de la IU de acceso cargará solo antes de que se muestre. Esto acelera el acceso.
+
+      Si la inhabilitas, la parte WebUI de la pantalla de acceso siempre cargará al inicio (comportamiento heredado).
+
+      Si no la estableces, la función kEnableLazyLoginWebUILoading controlará el comportamiento.
+
+      Se debe quitar esta política después del lanzamiento completo de kEnableLazyLoginWebUILoading.</translation>
 <translation id="3165808775394012744">Se incluyen estas políticas aquí para que sea más fácil quitarlas.</translation>
 <translation id="3166210414652928099">Permite que el usuario utilice apps para Android de fuentes no confiables</translation>
 <translation id="316778957754360075">Esta opción se eliminó a partir de la versión 29 de <ph name="PRODUCT_NAME" />. La forma recomendada de configurar colecciones de aplicaciones o extensiones alojadas por una organización es incluir el sitio que aloja los paquetes CRX en la política ExtensionInstallSources y colocar vínculos de descarga directa a los paquetes en una página web. Se puede crear un selector para esa página web con la política ExtensionInstallForcelist.</translation>
@@ -4795,6 +4806,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
       Para especificar un hash de <ph name="SUBJECT_PUBLIC_KEY_INFO" />, se debe vincular el nombre del algoritmo del hash, una barra y la codificación de Base64 de ese algoritmo aplicada al campo <ph name="SUBJECT_PUBLIC_KEY_INFO" /> codificado con DER del certificado específico. Esta codificación de Base64 tiene el mismo formato que una SPKI Fingerprint. El único algoritmo de hash compatible es sha256; se ignorarán los demás.
 
       Si no estableces esta política, <ph name="PRODUCT_NAME" /> considerará que no son de confianza los certificados que no se divulguen, a pesar de requerir divulgación mediante el Certificado de transparencia.</translation>
+<translation id="6704445641918520643">Habilitar la carga diferida de la WebUI de acceso</translation>
 <translation id="6704515759227307131">Esta política es obsoleta y se reemplazó por AdvancedProtectionAllowed.
 
       Esta política controla si los usuarios inscritos en el Programa de Protección Avanzada pueden enviar sus descargas a Google para comprobar que no incluyan software malicioso. Si se establece como verdadera o no se establece, se les pedirá a los usuarios inscritos que envíen sus archivos a Google para un análisis en profundidad. Si el usuario selecciona "Analizar", se enviará la descarga a Google. Si se establece como falsa, no se les pedirá a los usuarios que realicen ninguna acción y no se enviarán sus descargas a Google.</translation>

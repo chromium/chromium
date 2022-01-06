@@ -178,6 +178,7 @@
 
       Để biết thông tin chi tiết về các mẫu <ph name="URL_LABEL" /> hợp lệ, vui lòng xem tại https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  Chúng tôi không chấp nhận giá trị <ph name="WILDCARD_VALUE" /> đối với chính sách này.</translation>
 <translation id="120937472976628837">Báo cáo thông tin về quạt</translation>
+<translation id="1212233008927724662">Tắt chế độ tải Lazy Login WebUI.</translation>
 <translation id="1216919699175573511">Bật tính năng hỗ trợ cho Signed HTTP Exchange (SXG)</translation>
 <translation id="1219695476179627719">Chỉ định xem thiết bị có phải khôi phục về phiên bản do <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> đặt không nếu đã chạy phiên bản mới hơn.
 
@@ -635,6 +636,7 @@ Nếu bạn tắt chính sách này, thì việc cuộn trang web đến các ph
       Để biết thêm thông tin, vui lòng truy cập <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.
 
       Lưu ý: Tùy chọn cài đặt này sẽ ghi đè chính sách <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />, nếu có.</translation>
+<translation id="1721304336924950970">Tải WebUI đăng nhập chỉ khi cần.</translation>
 <translation id="172374442286684480">Cho phép tất cả trang web lưu dữ liệu trên máy</translation>
 <translation id="1729169799290004131">Việc đặt chính sách này sẽ chỉ định tỷ lệ phần trăm độ sáng màn hình, tắt các tính năng tự động điều chỉnh độ sáng. Độ sáng màn hình ban đầu sẽ thay đổi theo giá trị của chính sách nhưng người dùng có thể thay đổi giá trị này.
 
@@ -1872,6 +1874,15 @@ Khi chính sách này được đặt thành false hoặc không được địn
 <translation id="3152425128389603870">Cho phép Màn hình hợp nhất và chính sách này bật theo mặc định.</translation>
 <translation id="3159375329008977062">Người dùng được phép xuất/nhập các vùng chứa Crostini qua giao diện người dùng</translation>
 <translation id="3164531087779621747">Chế độ in PostScript</translation>
+<translation id="3165468162820163252">Chính sách này kiểm soát việc liệu phần WebUI của màn hình đăng nhập sẽ luôn tải khi khởi động hay chỉ tải trước khi xuất hiện. Chính sách này áp dụng cho màn hình đăng nhập.
+
+      Nếu chính sách này đang bật thì phần WebUI của giao diện đăng nhập sẽ chỉ tải trước khi xuất hiện. Việc này sẽ đẩy nhanh quá trình đăng nhập.
+
+      Nếu chính sách này đang tắt thì phần WebUI của màn hình đăng nhập sẽ luôn tải khi khởi động (hành vi cũ).
+
+      Nếu bạn không thiết lập thì hành vi này sẽ chịu sự kiểm soát của tính năng kEnableLazyLoginWebUILoading.
+
+      Chính sách này sẽ bị xoá sau khi kEnableLazyLoginWebUILoading hoàn tất quá trình ra mắt.</translation>
 <translation id="3165808775394012744">Những chính sách này được đưa vào đây để dễ xóa.</translation>
 <translation id="3166210414652928099">Cho phép người dùng sử dụng các ứng dụng Android từ những nguồn không tin cậy</translation>
 <translation id="316778957754360075">Cài đặt này đã bị xóa kể từ phiên bản <ph name="PRODUCT_NAME" /> 29. Phương thức được đề xuất để thiết lập bộ sưu tập tiện ích/ứng dụng được tổ chức lưu trữ là đưa trang web lưu trữ gói CRX vào ExtensionInstallSources và đặt liên kết tải xuống trực tiếp vào trong các gói trên trang web. Có thể tạo trình chạy cho trang web đó bằng chính sách ExtensionInstallForcelist.</translation>
@@ -4808,6 +4819,7 @@ web và Ứng dụng web tiến bộ. Hiện chỉ được hỗ trợ trên
       Hãy chỉ định hàm băm <ph name="SUBJECT_PUBLIC_KEY_INFO" /> bằng cách liên kết tên thuật toán hàm băm, một dấu gạch chéo và phương thức mã hóa Base64 của thuật toán hàm băm đó, áp dụng cho <ph name="SUBJECT_PUBLIC_KEY_INFO" /> được mã hóa theo DER (Quy tắc mã hóa phân biệt) của chứng chỉ đã chỉ định. Định dạng mã hóa Base64 trùng khớp với định dạng của Vân tay số SPKI. Thuật toán hàm băm duy nhất mà hệ thống nhận dạng được là sha256. Các thuật toán hàm băm khác đều bị bỏ qua.
 
       Không đặt chính sách này đồng nghĩa với việc nếu bạn không tiết lộ những chứng chỉ buộc phải tiết lộ thông qua Tính minh bạch của chứng chỉ, thì <ph name="PRODUCT_NAME" /> sẽ không tin cậy những chứng chỉ đó.</translation>
+<translation id="6704445641918520643">Bật chế độ tải Lazy Login WebUI.</translation>
 <translation id="6704515759227307131">Chính sách này không còn dùng nữa và đã được thay thế bằng AdvancedProtectionAllowed.
 
       Chính sách này kiểm soát liệu người dùng đăng ký chương trình Bảo vệ nâng cao có được phép gửi các tệp đã tải xuống cho Google để quét tìm phần mềm độc hại hay không. Nếu bạn không đặt hoặc đặt thành True, thì người dùng đã đăng ký sẽ được nhắc gửi các tệp của họ cho Google để quét sâu. Nếu người dùng chọn 'Quét' thì tệp họ đã tải xuống sẽ được gửi cho Google. Nếu bạn đặt thành False, thì người dùng sẽ không được nhắc và các tệp họ đã tải xuống sẽ không được gửi cho Google.</translation>

@@ -178,6 +178,7 @@
 
       Untuk informasi selengkapnya tentang pola <ph name="URL_LABEL" /> yang valid, lihat https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.  <ph name="WILDCARD_VALUE" /> bukanlah nilai yang diterima untuk kebijakan ini.</translation>
 <translation id="120937472976628837">Melaporkan info kipas</translation>
+<translation id="1212233008927724662">Nonaktifkan pemuatan WebUI Login Lambat.</translation>
 <translation id="1216919699175573511">Aktifkan dukungan Signed HTTP Exchange (SXG)</translation>
 <translation id="1219695476179627719">Menentukan apakah perangkat harus di-rollback ke versi yang disetel oleh <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> jika telah menjalankan versi lebih baru.
 
@@ -634,6 +635,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Lihat juga <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.
 
       Catatan: Setelan ini akan menggantikan <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />, jika ada.</translation>
+<translation id="1721304336924950970">Memuat WebUI Login hanya jika diperlukan.</translation>
 <translation id="172374442286684480">Izinkan semua situs menyetel data lokal</translation>
 <translation id="1729169799290004131">Menyetel kebijakan akan menentukan persentase kecerahan layar dan menonaktifkan fitur kecerahan otomatis. Kecerahan layar awal akan disesuaikan dengan nilai kebijakan, tetapi pengguna tidak dapat mengubahnya.
 
@@ -1873,6 +1875,15 @@ Jika kebijakan ini tidak ditetapkan, layar privasi mula-mula akan dinonaktifkan 
 <translation id="3152425128389603870">Membuat Desktop Terpadu tersedia dan aktif secara default</translation>
 <translation id="3159375329008977062">Pengguna diaktifkan untuk mengekspor/mengimpor container Crostini melalui UI</translation>
 <translation id="3164531087779621747">Mode PostScript Cetak</translation>
+<translation id="3165468162820163252">Kebijakan ini mengontrol apakah bagian WebUI pada layar login akan selalu dimuat di awal atau hanya sebelum ditampilkan. Kebijakan ini berlaku untuk layar login.
+
+      Jika kebijakan ini disetel ke aktif, bagian WebUI pada UI login akan dimuat hanya sebelum ditampilkan. Hal ini akan mempercepat proses login.
+
+      Jika kebijakan ini disetel ke nonaktif, bagian WebUI pada layar login akan selalu dimuat saat booting (perilaku lama).
+
+      Jika kebijakan ini tidak disetel, perilaku akan dikontrol oleh fitur kEnableLazyLoginWebUILoading.
+
+      Kebijakan ini akan dihapus setelah kEnableLazyLoginWebUILoading diluncurkan sepenuhnya.</translation>
 <translation id="3165808775394012744">Kebijakan ini disertakan di sini untuk memudahkan penghapusannya.</translation>
 <translation id="3166210414652928099">Mengizinkan pengguna menggunakan aplikasi Android dari sumber yang tidak tepercaya</translation>
 <translation id="316778957754360075">Setelan ini tidak lagi digunakan sejak <ph name="PRODUCT_NAME" /> versi 29. Cara yang disarankan untuk menyiapkan koleksi aplikasi/ekstensi yang dihosting organisasi adalah dengan menyertakan situs yang menghosting paket CRX di ExtensionInstallSources dan meletakkan link download langsung di paket dalam halaman web. Peluncur untuk halaman web tersebut dapat dibuat menggunakan kebijakan ExtensionInstallForcelist.</translation>
@@ -4808,6 +4819,7 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Tentukan hash <ph name="SUBJECT_PUBLIC_KEY_INFO" /> dengan menggabungkan nama algoritme hash, garis miring, dan encoding Base64 dari algoritme hash yang diterapkan ke <ph name="SUBJECT_PUBLIC_KEY_INFO" /> yang dienkode DER dari sertifikat yang ditentukan. Format encoding Base64 cocok dengan Sidik Jari SPKI. Satu-satunya algoritme hash yang dikenali adalah sha256; selain itu diabaikan.
 
       Jika kebijakan tidak ditetapkan, itu berarti saat sertifikat yang memerlukan pengungkapan melalui Transparansi Sertifikat tidak diungkapkan, <ph name="PRODUCT_NAME" /> tidak akan memercayai sertifikat tersebut.</translation>
+<translation id="6704445641918520643">Aktifkan pemuatan WebUI Login Lambat.</translation>
 <translation id="6704515759227307131">Kebijakan ini tidak digunakan lagi, dan telah diganti dengan AdvancedProtectionAllowed.
 
       Kebijakan ini mengontrol apakah pengguna yang terdaftar dalam Program Perlindungan Lanjutan diizinkan mengirimkan hasil download mereka ke Google untuk pemindaian malware. Jika ditetapkan ke Benar atau tidak ditetapkan, pengguna terdaftar akan diminta mengirimkan file mereka ke Google untuk pemindaian mendalam. Jika pengguna memilih 'Pindai', hasil download mereka akan dikirim ke Google. Jika ditetapkan ke Salah, pengguna tidak akan diminta mengirimkan hasil download ke Google.</translation>

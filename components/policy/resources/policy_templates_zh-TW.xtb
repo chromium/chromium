@@ -177,6 +177,7 @@
 
       想進一步瞭解有效的<ph name="URL_LABEL" />模式，請參閱 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns。<ph name="WILDCARD_VALUE" /> 不是這項政策許可的值。</translation>
 <translation id="120937472976628837">回報風扇資訊</translation>
+<translation id="1212233008927724662">停用 Lazy Login WebUI 載入功能。</translation>
 <translation id="1216919699175573511">啟用 Signed HTTP Exchange (SXG) 支援</translation>
 <translation id="1219695476179627719">指定是否要將已搭載較新版本的裝置復原至 <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> 所設定的版本。
 
@@ -632,6 +633,7 @@
       另請參閱 <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />。
 
       注意：這項設定會覆寫 <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> (如有設定的話)。</translation>
+<translation id="1721304336924950970">只在必要時載入 Login WebUI。</translation>
 <translation id="172374442286684480">允許所有網站設定本機資料</translation>
 <translation id="1729169799290004131">你可以透過這項政策指定螢幕亮度百分比，並關閉自動調整亮度功能。初始螢幕亮度會依政策設定值調整，但使用者可進行變更。
 
@@ -1851,6 +1853,15 @@
 <translation id="3152425128389603870">允許使用整合桌面並預設為啟用。</translation>
 <translation id="3159375329008977062">允許使用者透過 UI 匯出/匯入 Crostini 容器</translation>
 <translation id="3164531087779621747">列印 PostScript 模式</translation>
+<translation id="3165468162820163252">這項政策可控管登入畫面的 WebUI 部分要一律在啟動時載入，或是只在顯示前才載入。這項政策適用於登入畫面。
+
+      如果啟用這項政策，系統只會在顯示登入使用者介面之前才載入 WebUI 部分。這會加快登入程序。
+
+      如果停用這項政策，系統一律會在啟動時載入登入畫面的 WebUI 部分 (舊版行為)。
+
+      如果不設定這項政策，這個行為將會由 kEnableLazyLoginWebUILoading 功能控管。
+
+      這項政策應該會在 kEnableLazyLoginWebUILoading 全面推出後移除。</translation>
 <translation id="3165808775394012744">這些政策全部集中在這個資料夾裡，方便輕鬆移除。</translation>
 <translation id="3166210414652928099">允許使用者使用來源不受信任的 Android 應用程式</translation>
 <translation id="316778957754360075">我們已於 <ph name="PRODUCT_NAME" /> 版本 29 移除這項設定。如要設定機構代管的擴充功能/應用程式系列，建議你將代管 CRX 封裝檔的網站加入 ExtensionInstallSources 中，並在網頁上提供該封裝檔的直接下載連結。你可以透過 ExtensionInstallForcelist 政策建立該網頁專用的啟動器。</translation>
@@ -4718,6 +4729,7 @@
       指定 <ph name="SUBJECT_PUBLIC_KEY_INFO" /> 雜湊的方法是串連雜湊演算法名稱、斜線以及套用到指定憑證 <ph name="SUBJECT_PUBLIC_KEY_INFO" /> (採 DER 編碼) 雜湊演算法所採用的 Base64 編碼。Base64 編碼格式符合 SPKI 指紋編碼的格式。系統僅能辨識 sha256 雜湊演算法，其他雜湊演算法則會忽略。
 
       如果未設定這項政策，凡是應依憑證透明化規定公開而未公開的憑證，<ph name="PRODUCT_NAME" /> 都會將其視為不受信任的憑證。</translation>
+<translation id="6704445641918520643">啟用 Lazy Login WebUI 載入功能。</translation>
 <translation id="6704515759227307131">這項政策已遭淘汰，並已替換為 AdvancedProtectionAllowed。
 
       這項政策可控管已加入進階保護計畫的使用者是否可以將下載內容傳送至 Google 進行惡意軟體掃描。如果設為 True 或不予設定，系統會提示已加入計畫的使用者將檔案傳送至 Google 進行深度掃描。如果使用者選取「掃描」，系統會將其下載內容傳送至 Google。如果設為 False，系統不會提示使用者，也不會將其下載內容傳送至 Google。</translation>

@@ -178,6 +178,7 @@
 
       Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen.  <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="120937472976628837">Ventilatorgegevens rapporteren</translation>
+<translation id="1212233008927724662">Lazy loading van WebUI voor inloggen uitzetten.</translation>
 <translation id="1216919699175573511">Signed HTTP Exchange-ondersteuning (SXG) aanzetten</translation>
 <translation id="1219695476179627719">Geeft aan of het apparaat moet terugkeren naar de versie die is ingesteld met <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> als er al een latere versie is geïnstalleerd.
 
@@ -636,6 +637,7 @@ Het veld <ph name="PROXY_SERVER_MODE_PROXY_SETTINGS_FIELD" /> is beëindigd ten 
       Zie ook <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.
 
       Opmerking: Deze instelling overschrijft <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> (indien aanwezig).</translation>
+<translation id="1721304336924950970">WebUI voor inloggen alleen laden indien nodig.</translation>
 <translation id="172374442286684480">Alle sites toestaan lokale gegevens in te stellen</translation>
 <translation id="1729169799290004131">Als je het beleid instelt, wordt de helderheid van het scherm als percentage ingesteld en worden de functies voor automatische helderheid uitgezet. Het scherm heeft aanvankelijk de helderheid van de beleidswaarde, maar gebruikers kunnen deze aanpassen.
 
@@ -1855,6 +1857,15 @@ Als je dit beleid niet instelt, geldt de standaardwaarde 'niet toegestaan' voor 
 <translation id="3152425128389603870">Maak Samengestelde desktop beschikbaar en zet deze standaard aan</translation>
 <translation id="3159375329008977062">Gebruiker kan Crostini-containers exporteren/importeren via de gebruikersinterface</translation>
 <translation id="3164531087779621747">Modus voor PostScript-afdrukken</translation>
+<translation id="3165468162820163252">Dit beleid bepaalt of het WebUI-gedeelte van het inlogscherm altijd wordt geladen bij het opstarten of alleen voordat het wordt getoond. Dit beleid is van toepassing op het inlogscherm.
+
+      Als je dit beleid toepast, wordt het WebUI-gedeelte van de inlog-UI alleen geladen voordat het wordt getoond. Dit versnelt het inlogproces.
+
+      Als je dit beleid niet toepast, wordt het WebUI-gedeelte van het inlogscherm altijd geladen bij het opstarten (verouderd gedrag).
+
+      Als je dit beleid niet instelt, wordt het gedrag bepaald door de functie kEnableLazyLoginWebUILoading.
+
+      Dit beleid moet worden verwijderd nadat kEnableLazyLoginWebUILoading helemaal is uitgerold.</translation>
 <translation id="3165808775394012744">Deze beleidsregels zijn hier opgenomen zodat je ze makkelijk kunt verwijderen.</translation>
 <translation id="3166210414652928099">Toestaan dat de gebruiker Android-apps van niet-vertrouwde bronnen gebruikt</translation>
 <translation id="316778957754360075">Deze instelling wordt niet meer gebruikt sinds <ph name="PRODUCT_NAME" /> versie 29. De aanbevolen manier om verzamelingen van extensies/apps die door de organisatie worden gehost in te stellen, is het opnemen van de site die de CRX-pakketten in ExtensionInstallSources host en het plaatsen van rechtstreekse downloadlinks naar de pakketten op een webpagina. Je kunt voor die webpagina een startprogramma maken met het beleid ExtensionInstallForcelist.</translation>
@@ -4736,6 +4747,7 @@ Als je ervoor kiest het volgende te gebruiken:
       Geef een <ph name="SUBJECT_PUBLIC_KEY_INFO" />-hash op door de naam van het hash-algoritme, een slash en de Base64-codering van het betreffende toegepaste hash-algoritme te koppelen aan de <ph name="SUBJECT_PUBLIC_KEY_INFO" /> met DER-codering van het opgegeven certificaat. Een indeling met Base64-codering komt overeen met die van een SPKI-vingerafdruk. Het enige herkende hash-algoritme is sha256. Andere algoritmen worden genegeerd.
 
       Als je het beleid niet instelt, betekent dit dat als certificaten die openbaar moeten worden gemaakt via Certificaattransparantie niet openbaar worden gemaakt, de betreffende certificaten niet door <ph name="PRODUCT_NAME" /> worden vertrouwd.</translation>
+<translation id="6704445641918520643">Lazy loading van WebUI voor inloggen aanzetten.</translation>
 <translation id="6704515759227307131">Dit beleid is beëindigd en is vervangen door AdvancedProtectionAllowed.
 
       Met dit beleid wordt bepaald of gebruikers die zijn ingeschreven bij 'Geavanceerde beveiliging' hun downloads naar Google mogen sturen om ze te laten scannen. Als dit beleid is ingesteld op True of niet is ingesteld, wordt ingeschreven gebruikers gevraagd hun bestanden naar Google te sturen voor een uitgebreide scan. Als gebruikers 'Scannen' selecteren, worden hun downloads naar Google gestuurd. Als dit beleid is ingesteld op False, ontvangen gebruikers geen melding en worden hun downloads niet naar Google gestuurd.</translation>

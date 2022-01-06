@@ -178,6 +178,7 @@
 
       유효한 <ph name="URL_LABEL" /> 패턴에 관해 자세히 알아보려면 https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns를 참고하세요.  <ph name="WILDCARD_VALUE" />는 이 정책에 허용되는 값이 아닙니다.</translation>
 <translation id="120937472976628837">팬 정보 보고</translation>
+<translation id="1212233008927724662">Lazy Login WebUI 로딩을 사용 중지합니다.</translation>
 <translation id="1216919699175573511">서명된 HTTP 교환(SXG) 지원 사용 설정</translation>
 <translation id="1219695476179627719">기기가 이미 이후 버전을 실행하는 경우 기기를 <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" />에 설정된 버전으로 롤백할지 여부를 지정합니다.
 
@@ -635,6 +636,7 @@
       <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />도 참고하세요.
 
       <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />이 있더라도 이 설정이 우선 적용됩니다.</translation>
+<translation id="1721304336924950970">필요할 때만 Login WebUI를 로드합니다.</translation>
 <translation id="172374442286684480">모든 사이트에서 로컬 데이터 설정 허용</translation>
 <translation id="1729169799290004131">정책을 설정하면 화면 밝기 비율을 지정할 수 있으며 자동 밝기 기능이 사용 중지됩니다. 초기 화면 밝기는 정책 값으로 조정되지만 사용자가 변경할 수 있습니다.
 
@@ -1873,6 +1875,15 @@ False로 설정하면 개인정보 보호 화면은 항상 사용 중지됩니�
 <translation id="3152425128389603870">통합 바탕화면을 기본적으로 허용하고 사용 설정합니다.</translation>
 <translation id="3159375329008977062">사용자가 UI를 통해 Crostini 컨테이너를 내보내고 가져올 수 있음</translation>
 <translation id="3164531087779621747">인쇄 PostScript 모드</translation>
+<translation id="3165468162820163252">로그인 화면의 WebUI 부분을 시작할 때 항상 로드할지, 아니면 로그인 화면을 표시하기 전에만 로드할지 결정하는 정책입니다. 이 정책은 로그인 화면에 적용됩니다.
+
+      정책이 사용 설정되어 있으면 로그인 UI에서 WebUI 부분이 로그인 화면을 표시하기 전에만 로드됩니다. 따라서 로그인 과정이 빨라집니다.
+
+      정책을 사용 중지하면 로그인 화면의 WebUI 부분을 부팅 시 항상 로드하고(레거시 동작),
+
+      설정하지 않으면 kEnableLazyLoginWebUILoading 기능으로 동작을 제어하게 됩니다.
+
+      kEnableLazyLoginWebUILoading이 완전히 출시되면 이 정책은 삭제됩니다.</translation>
 <translation id="3165808775394012744">간편하게 삭제할 수 있도록 정책이 여기에 표시됩니다.</translation>
 <translation id="3166210414652928099">사용자가 신뢰할 수 없는 출처의 Android 앱을 사용하도록 허용</translation>
 <translation id="316778957754360075">이 설정은 <ph name="PRODUCT_NAME" /> 버전 29를 기준으로 지원 중단되었습니다. 기관/단체에서 호스팅하는 확장 프로그램/앱 컬렉션을 설정하는 가장 좋은 방법은 CRX 패키지를 호스팅하는 사이트를 ExtensionInstallSources에 포함시키고 패키지에 대한 직접 다운로드 링크를 웹페이지에 제공하는 것입니다. 웹페이지 런처는 ExtensionInstallForcelist 정책을 사용하여 만들 수 있습니다.</translation>
@@ -4804,6 +4815,7 @@ False로 설정하면 <ph name="PRODUCT_NAME" />에서 시스템 알림을 사�
       해시 알고리즘 이름, 슬래시 및 지정된 인증서의 DER 인코딩 <ph name="SUBJECT_PUBLIC_KEY_INFO" />에 적용된 해시 알고리즘 Base64 인코딩을 연결하여 <ph name="SUBJECT_PUBLIC_KEY_INFO" /> 해시를 지정합니다. Base64 인코딩 형식은 SPKI 지문 형식과 일치합니다. 유일하게 인식되는 해시 알고리즘은 sha256이고 다른 모든 알고리즘은 무시됩니다.
 
       정책을 설정하지 않으면 인증서 투명성을 통해 공개해야 하는 인증서가 공개되지 않은 경우 <ph name="PRODUCT_NAME" />에서 인증서를 신뢰하지 않습니다.</translation>
+<translation id="6704445641918520643">Lazy Login WebUI 로딩을 사용 설정합니다.</translation>
 <translation id="6704515759227307131">지원이 중단되어 AdvancedProtectionAllowed로 대체된 정책입니다.
 
       이 정책은 고급 보호 프로그램에 등록된 사용자가 Google에 다운로드 항목을 전송하여 멀웨어가 있는지 검사하도록 허용할지 결정합니다. 정책이 True로 설정되거나 설정되지 않으면 등록된 사용자에게 파일을 Google에 전송하여 심층 검사를 받으라는 메시지가 표시됩니다. 이때 사용자가 '검사'를 선택하면 다운로드 항목이 Google로 전송됩니다. False로 설정되면 사용자에게 메시지가 표시되지 않으며 다운로드한 파일이 Google에 전송되지 않습니다.</translation>

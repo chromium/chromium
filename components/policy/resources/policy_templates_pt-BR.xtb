@@ -174,6 +174,7 @@
 
       Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns (link em inglês).  <ph name="WILDCARD_VALUE" /> não é um valor aceitável para esta política.</translation>
 <translation id="120937472976628837">Enviar informações sobre o ventilador</translation>
+<translation id="1212233008927724662">Desativar o carregamento de Lazy Login WebUI.</translation>
 <translation id="1216919699175573511">Ativa a compatibilidade com Signed HTTP Exchange (SXG)</translation>
 <translation id="1219695476179627719">Especifica se o dispositivo deve ser revertido para a versão definida por <ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> se ele já estiver executando uma versão posterior.
 
@@ -631,6 +632,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Veja também: <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" />.
 
       Observação: esta configuração substituirá a <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" />, se ela estiver presente.</translation>
+<translation id="1721304336924950970">Carregar Login WebUI apenas quando necessário.</translation>
 <translation id="172374442286684480">Permitir que todos os sites definam dados locais</translation>
 <translation id="1729169799290004131">Se a política for definida, a porcentagem de brilho da tela será especificada, desativando os recursos do brilho automático. O brilho inicial da tela será ajustado para o valor da política, mas os usuários poderão mudá-lo.
 
@@ -1870,6 +1872,15 @@ Se esta política não for definida, a tela de privacidade ficará desativada in
 <translation id="3152425128389603870">Disponibilizar e ativar por padrão a área de trabalho unificada</translation>
 <translation id="3159375329008977062">O usuário tem permissão para exportar/importar contêineres do Crostini por meio da IU</translation>
 <translation id="3164531087779621747">Modo PostScript de impressão</translation>
+<translation id="3165468162820163252">Esta política controla se a parte WebUI da tela de login é carregada no início ou apenas antes de ela ser mostrada. A política se aplica à tela de login.
+
+      Se ela for ativada, a parte WebUI será carregada apenas antes de ser mostrada. Isso acelera o processo de login.
+
+      Se a política for desativada, a parte WebUI da tela de login sempre será carregada na inicialização (comportamento legado).
+
+      Se a política for deixada sem definição, o comportamento será controlado pelo recurso kEnableLazyLoginWebUILoading.
+
+      É necessário remover a política após o lançamento do kEnableLazyLoginWebUILoading.</translation>
 <translation id="3165808775394012744">Essas políticas estão incluídas aqui para facilitar a remoção delas.</translation>
 <translation id="3166210414652928099">Permite o uso de apps Android de fontes não confiáveis</translation>
 <translation id="316778957754360075">Esta configuração foi descontinuada a partir da versão 29 do <ph name="PRODUCT_NAME" />. O modo recomendado de configurar as coleções de extensões/aplicativos hospedados pela organização é incluir na hospedagem do site os pacotes CRX em ExtensionInstallSources e colocar links de download direto para os pacotes em uma página da Web. É possível criar um iniciador da página da Web usando a política ExtensionInstallForcelist.</translation>
@@ -4786,6 +4797,7 @@ Se esta configuração estiver desativada ou se nenhum valor for definido, o Mod
       Especifique um hash <ph name="SUBJECT_PUBLIC_KEY_INFO" /> vinculando o nome do algoritmo dele, uma barra e a codificação Base64 desse algoritmo de hash aplicado ao <ph name="SUBJECT_PUBLIC_KEY_INFO" /> codificado por DER do certificado especificado. O formato de codificação Base64 corresponde ao de uma impressão digital SPKI. O único algoritmo de hash reconhecido é sha256, enquanto os outros são ignorados.
 
       Deixar esta política sem definição significa que se os certificados que precisam ser divulgados via Transparência dos certificados não o forem, o <ph name="PRODUCT_NAME" /> não confiará nesses certificados.</translation>
+<translation id="6704445641918520643">Ativar o carregamento de Lazy Login WebUI.</translation>
 <translation id="6704515759227307131">Esta política está obsoleta e foi substituída pela AdvancedProtectionAllowed.
 
       Ela controla se os usuários inscritos no Programa Proteção Avançada têm permissão para enviar os downloads para o Google para verificação de malware. Se esta política for definida como verdadeira ou não for configurada, um aviso aparecerá para os usuários pedindo que enviem os arquivos ao Google para verificação detalhada. Se o usuário selecionar "Verificar", o download será enviado para o Google. Se esta política for definida como falsa, o aviso não aparecerá e os downloads não serão enviados para o Google.</translation>

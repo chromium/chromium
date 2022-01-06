@@ -174,6 +174,7 @@
 
       有効な <ph name="URL_LABEL" /> パターンについて詳しくは、https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns をご覧ください。このポリシーの値に「<ph name="WILDCARD_VALUE" />」は使用できません。</translation>
 <translation id="120937472976628837">ファン情報を報告する</translation>
+<translation id="1212233008927724662">ログイン WebUI の遅延読み込みを無効にする。</translation>
 <translation id="1216919699175573511">Signed HTTP Exchange（SXG）のサポートを有効にします</translation>
 <translation id="1219695476179627719">デバイスですでに新しいバージョンを実行している場合に、<ph name="DEVICE_TARGET_VERSION_PREFIX_POLICY_NAME" /> で設定されているバージョンに戻すかどうかを指定します。
 
@@ -627,6 +628,7 @@
       <ph name="REMOTE_ACCESS_HOST_CLIENT_DOMAIN_LIST_POLICY_NAME" /> も参照してください。
 
       注: この設定は <ph name="REMOTE_ACCESS_HOST_DOMAIN_POLICY_NAME" /> より優先されます（指定されている場合）。</translation>
+<translation id="1721304336924950970">ログイン WebUI を必要なときにのみ読み込みます。</translation>
 <translation id="172374442286684480">ローカル データの設定をすべてのサイトに許可する</translation>
 <translation id="1729169799290004131">このポリシーでは、画面の明るさの割合（%）を指定できます。このとき、明るさの自動調整機能は無効になります。初期画面の明るさはポリシーの値に調整されますが、ユーザーはこの設定を変更できます。
 
@@ -1813,6 +1815,15 @@
 <translation id="3152425128389603870">統合デスクトップを使用可能にし、デフォルトで有効にする</translation>
 <translation id="3159375329008977062">ユーザーは UI から Crostini コンテナを書き出しおよび読み込みできます</translation>
 <translation id="3164531087779621747">印刷の PostScript モード</translation>
+<translation id="3165468162820163252">このポリシーでは、ログイン画面の WebUI を常に起動時に読み込むか、表示の直前に読み込むかを制御します。このポリシーはログイン画面に適用されます。
+
+      このポリシーを有効に設定した場合、ログイン画面の WebUI は表示の直前に読み込まれます。これによりログイン プロセスが迅速化されます。
+
+      このポリシーを無効に設定した場合、ログイン画面の WebUI は常に起動時に読み込まれます（従来の動作）。
+
+      未設定のままにした場合、動作は kEnableLazyLoginWebUILoading 機能によって制御されます。
+
+      このポリシーは、kEnableLazyLoginWebUILoading が完全にリリースされた後に削除されます。</translation>
 <translation id="3165808775394012744">これらのポリシーは、削除しやすいようにこのフォルダにまとめられています。</translation>
 <translation id="3166210414652928099">信頼できない提供元の Android アプリの使用をユーザーに許可する</translation>
 <translation id="316778957754360075">この設定は <ph name="PRODUCT_NAME" /> バージョン 29 で廃止されました。組織でホストする拡張機能/アプリのコレクションを設定するには、CRX パッケージをホストするサイトを ExtensionInstallSources の中で指定し、パッケージへの直接ダウンロード リンクをウェブページに置くことをおすすめします。そのウェブページのランチャーは、ExtensionInstallForcelist ポリシーを使用して作成できます。</translation>
@@ -4599,6 +4610,7 @@
       * サーバー証明書の <ph name="SUBJECT_PUBLIC_KEY_INFO" /> で指定されている。
 
       * 証明書チェーンの CA（認証局）証明書に出現する <ph name="SUBJECT_PUBLIC_KEY_INFO" /> で指定されている。CA 証明書に X.509v3 nameConstraints 拡張による制約が適用され、permittedSubtrees に directoryName nameConstraints が 1 つ以上存在し、その directoryName に organizationName 属性が含まれている。* 証明書チェーン内の CA 証明書に出現する <ph name="SUBJECT_PUBLIC_KEY_INFO" /> で指定されていて、その CA 証明書のサブジェクトに organizationName 属性が 1 つ以上含まれていること。さらに、サーバーの証明書にも同じ数の organizationName 属性が同じ順序で含まれ、それらの値がバイト単位で同一である。<ph name="SUBJECT_PUBLIC_KEY_INFO" /> ハッシュは、ハッシュ アルゴリズム名とスラッシュに加え、指定された証明書の DER-エンコード済み <ph name="SUBJECT_PUBLIC_KEY_INFO" /> に適用されているハッシュ アルゴリズムの Base64 エンコードをリンクすることで指定します。Base64 エンコードの形式は、SPKI フィンガープリントの形式に一致します。認識されるハッシュ アルゴリズムは SHA256 だけです。その他は無視されます。ポリシーが未設定のまま、Certificate Transparency（証明書の透明性）による開示を必要とする証明書が開示されていない場合、<ph name="PRODUCT_NAME" /> はその証明書を信頼しません。</translation>
+<translation id="6704445641918520643">ログイン WebUI の遅延読み込みを有効にする。</translation>
 <translation id="6704515759227307131">このポリシーはサポートが終了しており、AdvancedProtectionAllowed に置き換えられました。
 
       このポリシーは、高度な保護機能プログラムに登録しているユーザーに対し、不正なソフトウェアがないかスキャンする目的で、ダウンロードしたコンテンツを Google に送信することを許可するかどうかを制御します。True に設定するか未設定のままにした場合、高度な保護機能プログラムに登録しているユーザーには、詳細なスキャンのためにファイルを Google に送信するかを確認するメッセージが表示されます。ユーザーが [スキャン] を選択した場合、ダウンロードしたコンテンツは Google に送信されます。False に設定した場合、ユーザーにメッセージは表示されず、ダウンロードしたコンテンツは Google に送信されません。</translation>
