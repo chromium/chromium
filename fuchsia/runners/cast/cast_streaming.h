@@ -17,6 +17,9 @@
 // URL for the Cast Streaming application.
 extern const char kCastStreamingWebUrl[];
 
+// Name of the Cast Streaming MessagePort.
+extern const char kCastStreamingMessagePortName[];
+
 // Returns true if |application_config| is a cast streaming application.
 bool IsAppConfigForCastStreaming(
     const chromium::cast::ApplicationConfig& application_config);

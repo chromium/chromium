@@ -9,7 +9,6 @@
 #include "components/cast/message_port/platform_message_port.h"
 #include "components/cast_streaming/browser/public/receiver_session.h"
 #include "components/cast_streaming/public/cast_streaming_url.h"
-#include "components/cast_streaming/public/constants.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -20,6 +19,7 @@
 namespace chromecast {
 namespace {
 
+const char kCastTransportBindingName[] = "cast.__platform__.cast_transport";
 const char kMediaCapabilitiesBindingName[] = "cast.__platform__.canDisplayType";
 
 const char kStreamingPageUrlTemplate[] =
@@ -84,8 +84,8 @@ void StreamingRuntimeApplication::InitializeApplication(
   std::unique_ptr<cast_api_bindings::MessagePort> server_port;
   std::unique_ptr<cast_api_bindings::MessagePort> client_port;
   cast_api_bindings::CreatePlatformMessagePortPair(&client_port, &server_port);
-  message_port_service_->ConnectToPort(
-      cast_streaming::kCastTransportBindingName, std::move(client_port));
+  message_port_service_->ConnectToPort(kCastTransportBindingName,
+                                       std::move(client_port));
 
   // Allow for capturing of the renderer controls mojo pipe.
   Observe(cast_web_contents);
