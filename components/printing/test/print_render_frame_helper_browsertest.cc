@@ -543,22 +543,6 @@ class PrintRenderFrameHelperTestBase : public content::RenderViewTest {
     base::RunLoop().RunUntilIdle();
   }
 
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  void BindToFakePrintPreviewUI() {
-    PrintRenderFrameHelper* frame_helper = GetPrintRenderFrameHelper();
-    frame_helper->SetPrintPreviewUI(preview_ui_->BindReceiver());
-  }
-
-  void WaitForPreviewMessages() { preview_ui()->WaitUntilPreviewUpdate(); }
-
-  // The renderer should be done calculating the number of rendered pages
-  // according to the specified settings defined in the mock render thread.
-  // Verify the page count is correct.
-  void VerifyPreviewPageCount(uint32_t expected_count) {
-    EXPECT_EQ(expected_count, preview_ui()->page_count());
-  }
-#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
-
   // Verifies whether the pages printed or not.
   void VerifyPagesPrinted(bool expect_printed,
                           content::RenderFrame* render_frame = nullptr) {
@@ -585,25 +569,6 @@ class PrintRenderFrameHelperTestBase : public content::RenderViewTest {
     helper->PrintRequestedPages();
     base::RunLoop().RunUntilIdle();
   }
-
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW)
-  void VerifyPreviewRequest(bool expect_request) {
-    EXPECT_EQ(expect_request, print_manager()->IsSetupScriptedPrintPreview());
-  }
-
-  void OnPrintPreview(const base::DictionaryValue& dict) {
-    PrintRenderFrameHelper* print_render_frame_helper =
-        GetPrintRenderFrameHelper();
-    print_render_frame_helper->InitiatePrintPreview(
-        mojo::NullAssociatedRemote(), false);
-    print_render_frame_helper->PrintPreview(dict.Clone());
-    WaitForPreviewMessages();
-  }
-
-  void OnClosePrintPreviewDialog() {
-    GetPrintRenderFrameHelper()->OnPrintPreviewDialogClosed();
-  }
-#endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
   PrintRenderFrameHelper* GetPrintRenderFrameHelper() {
     return PrintRenderFrameHelper::Get(
@@ -991,6 +956,37 @@ class PrintRenderFrameHelperPreviewTest
   }
 
  protected:
+  void BindToFakePrintPreviewUI() {
+    PrintRenderFrameHelper* frame_helper = GetPrintRenderFrameHelper();
+    frame_helper->SetPrintPreviewUI(preview_ui()->BindReceiver());
+  }
+
+  void OnPrintPreview(const base::DictionaryValue& dict) {
+    PrintRenderFrameHelper* print_render_frame_helper =
+        GetPrintRenderFrameHelper();
+    print_render_frame_helper->InitiatePrintPreview(
+        mojo::NullAssociatedRemote(), false);
+    print_render_frame_helper->PrintPreview(dict.Clone());
+    WaitForPreviewMessages();
+  }
+
+  void OnClosePrintPreviewDialog() {
+    GetPrintRenderFrameHelper()->OnPrintPreviewDialogClosed();
+  }
+
+  void WaitForPreviewMessages() { preview_ui()->WaitUntilPreviewUpdate(); }
+
+  void VerifyPreviewRequest(bool expect_request) {
+    EXPECT_EQ(expect_request, print_manager()->IsSetupScriptedPrintPreview());
+  }
+
+  // The renderer should be done calculating the number of rendered pages
+  // according to the specified settings defined in the mock render thread.
+  // Verify the page count is correct.
+  void VerifyPreviewPageCount(uint32_t expected_count) {
+    EXPECT_EQ(expected_count, preview_ui()->page_count());
+  }
+
   void VerifyPrintPreviewCancelled(bool expect_cancel) {
     EXPECT_EQ(expect_cancel, preview_ui()->PreviewCancelled());
   }

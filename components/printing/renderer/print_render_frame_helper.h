@@ -163,6 +163,7 @@ class PrintRenderFrameHelper
   const mojo::AssociatedRemote<mojom::PrintManagerHost>& GetPrintManagerHost();
 
  private:
+  friend class PrintRenderFrameHelperPreviewTest;
   friend class PrintRenderFrameHelperTestBase;
   FRIEND_TEST_ALL_PREFIXES(PrintRenderFrameHelperPreviewTest,
                            BlockScriptInitiatedPrinting);
