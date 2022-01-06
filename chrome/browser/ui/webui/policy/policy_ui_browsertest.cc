@@ -369,25 +369,23 @@ void PolicyUITest::VerifyExportingPolicies(
 
   // Check that the file contains a valid dictionary.
   EXPECT_TRUE(value_ptr.get());
-  base::DictionaryValue* actual_policies = nullptr;
-  EXPECT_TRUE(value_ptr->GetAsDictionary(&actual_policies));
+  EXPECT_TRUE(value_ptr->is_dict());
 
   // Since Chrome Metadata has a lot of variations based on platform, OS,
   // architecture and version, it is difficult to test for exact values. Test
   // instead that the same keys exist in the meta data and also that the type of
   // all the keys is a string. The incoming |expected| value should already be
   // filled with the expected keys.
-  base::Value* chrome_metadata = actual_policies->FindKeyOfType(
-      "chromeMetadata", base::Value::Type::DICTIONARY);
+  base::Value* chrome_metadata =
+      value_ptr->FindKeyOfType("chromeMetadata", base::Value::Type::DICTIONARY);
   EXPECT_NE(chrome_metadata, nullptr);
 
-  base::DictionaryValue* chrome_metadata_dict = nullptr;
-  EXPECT_TRUE(chrome_metadata->GetAsDictionary(&chrome_metadata_dict));
+  EXPECT_TRUE(chrome_metadata->is_dict());
 
   // The |chrome_metadata| we compare against will have the actual values so
   // those will be cleared to empty values so that the equals comparison below
   // will just compare key existence and value types.
-  for (auto key_value : chrome_metadata_dict->DictItems())
+  for (auto key_value : chrome_metadata->DictItems())
     key_value.second = base::Value(key_value.second.type());
 
   // Since policy management status can have variable information based on the
@@ -397,12 +395,12 @@ void PolicyUITest::VerifyExportingPolicies(
   // |expected| value should already have a "status" key with an empty
   // dictionary value.
   base::Value* status =
-      actual_policies->FindKeyOfType("status", base::Value::Type::DICTIONARY);
+      value_ptr->FindKeyOfType("status", base::Value::Type::DICTIONARY);
   EXPECT_NE(status, nullptr);
   status->DictClear();
 
   // Check that this dictionary is the same as expected.
-  EXPECT_EQ(expected, *actual_policies);
+  EXPECT_EQ(expected, *value_ptr);
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyUITest, WritePoliciesToJSONFile) {
