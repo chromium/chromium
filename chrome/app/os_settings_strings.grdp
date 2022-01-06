@@ -2040,6 +2040,12 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_FORGET_A11Y_LABEL" desc="Bluetooth device details page: Accessibility label for button that forgets the Bluetooth device when clicked.">
    Forget <ph name="DEVICE_NAME">$1<ex>Beats</ex></ph>
   </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_HID_MESSAGE_CONNECTED" desc="Bluetooth device details page: Message displayed for devices that are currently connected that will disconnect automatically when turned off or not used.">
+    Device will disconnect automatically when it's turned off or isn't being used
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_HID_MESSAGE_DISCONNECTED" desc="Bluetooth device details page: Message displayed for devices that are currently disconnected that will connect automatically when turned on and used.">
+    Device will connect automatically when it's turned on and is being used
+  </message>
   <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_NAME" desc="Bluetooth device details page: label informing user the text below is the device name.">
     Device name
   </message>

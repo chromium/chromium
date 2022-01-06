@@ -85,6 +85,14 @@
       </template>
     </div>
   </div>
+  <template is="dom-if"
+      if="[[shouldShowNonAudioOutputDeviceMessage_(device_.*)]]" restamp>
+    <div id="nonAudioOutputDeviceMessage"
+        class="settings-box settings-box-text continuation"
+        aria-live="polite">
+      [[getNonAudioOutputDeviceMessage_(device_.*)]]
+    </div>
+  </template>
   <div id="deviceNameSettings" class="settings-box">
     <div id="bluetoothDeviceName"
         class="bluetooth-middle settings-box-text no-padding"

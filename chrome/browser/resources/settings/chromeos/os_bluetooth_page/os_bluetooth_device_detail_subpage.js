@@ -257,6 +257,36 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     }
   }
 
+  /**
+   * @return {boolean}
+   * @private
+   */
+  shouldShowNonAudioOutputDeviceMessage_() {
+    if (!this.device_) {
+      return false;
+    }
+    return this.device_.deviceProperties.audioCapability !==
+        mojom.AudioOutputCapability.kCapableOfAudioOutput;
+  }
+
+  /**
+   * Message displayed for devices that are human interactive.
+   * @return {string}
+   * @private
+   */
+  getNonAudioOutputDeviceMessage_() {
+    if (!this.device_) {
+      return '';
+    }
+
+    if (this.device_.deviceProperties.connectionState ===
+        mojom.DeviceConnectionState.kConnected) {
+      return this.i18n('bluetoothDeviceDetailHIDMessageConnected');
+    }
+
+    return this.i18n('bluetoothDeviceDetailHIDMessageDisconnected');
+  }
+
   /** @private */
   onChangeNameClick_() {
     this.shouldShowChangeDeviceNameDialog_ = true;

@@ -280,6 +280,8 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         bluetoothDeviceDetailPage.$$('#bluetoothDeviceNameLabel');
     const getBluetoothDeviceBatteryInfo = () =>
         bluetoothDeviceDetailPage.$$('#batteryInfo');
+    const getNonAudioOutputDeviceMessage = () =>
+        bluetoothDeviceDetailPage.$$('#nonAudioOutputDeviceMessage');
 
     bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
 
@@ -289,6 +291,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     assertFalse(!!getBluetoothForgetBtn());
     assertFalse(!!getBluetoothStateBtn());
     assertFalse(!!getBluetoothDeviceBatteryInfo());
+    assertFalse(!!getNonAudioOutputDeviceMessage());
 
     const deviceNickname = 'device1';
     const device1 = createDefaultBluetoothDevice(
@@ -326,6 +329,7 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     assertEquals(
         'os-settings:bluetooth-connected', getBluetoothStatusIcon().icon);
     assertTrue(!!getBluetoothDeviceBatteryInfo());
+    assertFalse(!!getNonAudioOutputDeviceMessage());
 
     // Simulate disconnected state and not audio capable.
     device1.deviceProperties.connectionState =
@@ -348,6 +352,23 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         getBluetoothForgetBtn().ariaLabel,
         bluetoothDeviceDetailPage.i18n(
             'bluetoothDeviceDetailForgetA11yLabel', deviceNickname));
+    assertTrue(!!getNonAudioOutputDeviceMessage());
+    assertEquals(
+        bluetoothDeviceDetailPage.i18n(
+            'bluetoothDeviceDetailHIDMessageDisconnected'),
+        getNonAudioOutputDeviceMessage().textContent.trim());
+
+    // Simulate connected state and not audio capable.
+    device1.deviceProperties.connectionState =
+        mojom.DeviceConnectionState.kConnected;
+    bluetoothConfig.updatePairedDevice(device1);
+    await flushAsync();
+
+    assertTrue(!!getNonAudioOutputDeviceMessage());
+    assertEquals(
+        bluetoothDeviceDetailPage.i18n(
+            'bluetoothDeviceDetailHIDMessageConnected'),
+        getNonAudioOutputDeviceMessage().textContent.trim());
   });
 
   test(
