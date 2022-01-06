@@ -71,8 +71,8 @@ class ToggleButton::ThumbView : public View {
   // Returns the extra space needed to draw the shadows around the thumb. Since
   // the extra space is around the thumb, the insets will be negative.
   static gfx::Insets GetShadowOutsets() {
-    return gfx::Insets(-kShadowBlur)
-        .Offset(gfx::Vector2d(kShadowOffsetX, kShadowOffsetY));
+    return gfx::Insets(-kShadowBlur) +
+           gfx::Vector2d(kShadowOffsetX, kShadowOffsetY);
   }
 
   void SetThumbColor(bool is_on, const absl::optional<SkColor>& thumb_color) {

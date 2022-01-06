@@ -143,8 +143,13 @@ TEST(InsetsTest, Offset) {
   offset_first.Offset(vector);
   offset_first.Inset(insets);
 
+  Insets insets_with_offset = insets;
+  insets_with_offset.Offset(vector);
+  EXPECT_EQ(Insets(11, 11, -7, -5), insets_with_offset);
+  EXPECT_EQ(insets_with_offset, insets + vector);
+
   Rect inset_by_offset = rect;
-  inset_by_offset.Inset(insets.Offset(vector));
+  inset_by_offset.Inset(insets_with_offset);
 
   EXPECT_EQ(inset_first, offset_first);
   EXPECT_EQ(inset_by_offset, inset_first);
@@ -292,8 +297,8 @@ TEST(InsetsTest, IntegerOverflowOffset) {
 
   const Vector2d max_vector(int_max, int_max);
   Insets insets(1, 2, 3, 4);
-  Insets offset_test = insets.Offset(max_vector);
-  EXPECT_EQ(Insets(int_max, int_max, 3 - int_max, 4 - int_max), offset_test);
+  insets.Offset(max_vector);
+  EXPECT_EQ(Insets(int_max, int_max, 3 - int_max, 4 - int_max), insets);
 }
 
 TEST(InsetsTest, IntegerUnderflowOffset) {
@@ -301,9 +306,8 @@ TEST(InsetsTest, IntegerUnderflowOffset) {
 
   const Vector2d min_vector(int_min, int_min);
   Insets insets(-10);
-  Insets offset_test = insets.Offset(min_vector);
-  EXPECT_EQ(Insets(int_min, int_min, -10 - int_min, -10 - int_min),
-            offset_test);
+  insets.Offset(min_vector);
+  EXPECT_EQ(Insets(int_min, int_min, -10 - int_min, -10 - int_min), insets);
 }
 
 TEST(InsetsTest, Size) {

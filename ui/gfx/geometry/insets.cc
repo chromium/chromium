@@ -16,11 +16,10 @@ std::string Insets::ToString() const {
   return base::StringPrintf("%d,%d,%d,%d", top(),  left(), bottom(), right());
 }
 
-Insets Insets::Offset(const gfx::Vector2d& vector) const {
-  return gfx::Insets(base::ClampAdd(top(), vector.y()),
-                     base::ClampAdd(left(), vector.x()),
-                     base::ClampSub(bottom(), vector.y()),
-                     base::ClampSub(right(), vector.x()));
+void Insets::Offset(const gfx::Vector2d& vector) {
+  Set(base::ClampAdd(top(), vector.y()), base::ClampAdd(left(), vector.x()),
+      base::ClampSub(bottom(), vector.y()),
+      base::ClampSub(right(), vector.x()));
 }
 
 void Insets::SetToMax(const gfx::Insets& other) {

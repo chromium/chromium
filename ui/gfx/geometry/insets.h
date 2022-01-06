@@ -115,8 +115,8 @@ class GEOMETRY_EXPORT Insets {
 
   // Adjusts the vertical and horizontal dimensions by the values described in
   // |vector|. Offsetting insets before applying to a rectangle would be
-  // equivalent to offseting the rectangle then applying the insets.
-  Insets Offset(const gfx::Vector2d& vector) const;
+  // equivalent to offsetting the rectangle then applying the insets.
+  void Offset(const gfx::Vector2d& vector);
 
   operator InsetsF() const {
     return InsetsF(static_cast<float>(top()), static_cast<float>(left()),
@@ -182,6 +182,11 @@ inline Insets operator+(Insets lhs, const Insets& rhs) {
 inline Insets operator-(Insets lhs, const Insets& rhs) {
   lhs -= rhs;
   return lhs;
+}
+
+inline Insets operator+(Insets insets, const gfx::Vector2d& offset) {
+  insets.Offset(offset);
+  return insets;
 }
 
 // Helper methods to scale a gfx::Insets to a new gfx::Insets.
