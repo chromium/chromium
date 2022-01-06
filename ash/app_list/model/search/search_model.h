@@ -71,7 +71,8 @@ class APP_LIST_MODEL_EXPORT SearchModel {
   // hidden by its source. Returns null if no such result exists.
   SearchResult* GetFirstVisibleResult();
 
-  // Deletes all search results. This is used in profile switches.
+  // Deletes all search results. This is used when moving from zero-state to a
+  // search query.
   void DeleteAllResults();
 
   // Delete result by the given id.

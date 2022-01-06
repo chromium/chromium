@@ -319,6 +319,11 @@ void ChromeAppListModelUpdater::PublishSearchResults(
   search_model_.PublishResults(std::move(ash_results), categories);
 }
 
+void ChromeAppListModelUpdater::ClearSearchResults() {
+  published_results_.clear();
+  search_model_.DeleteAllResults();
+}
+
 std::vector<ChromeSearchResult*>
 ChromeAppListModelUpdater::GetPublishedSearchResultsForTest() {
   return published_results_;

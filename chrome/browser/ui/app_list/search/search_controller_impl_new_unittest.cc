@@ -188,11 +188,11 @@ class SearchControllerImplNewTest : public testing::Test {
         std::move(ranker_delegate));
   }
 
-  void ExpectIdOrder(std::vector<std::string> id_order) {
-    const auto& sorted_results = model_updater_.search_results();
-    ASSERT_EQ(sorted_results.size(), id_order.size());
-    for (size_t i = 0; i < sorted_results.size(); ++i)
-      EXPECT_EQ(sorted_results[i]->id(), id_order[i]);
+  void ExpectIdOrder(std::vector<std::string> expected_ids) {
+    const auto& actual_results = model_updater_.search_results();
+    ASSERT_EQ(actual_results.size(), expected_ids.size());
+    for (size_t i = 0; i < actual_results.size(); ++i)
+      EXPECT_EQ(actual_results[i]->id(), expected_ids[i]);
   }
 
   void Wait() { task_environment_.RunUntilIdle(); }
@@ -285,6 +285,41 @@ TEST_F(SearchControllerImplNewTest, SetResultsPreAndPostBurnIn) {
   search_controller_->SetResults(SimpleProvider(Result::kFileSearch),
                                  std::move(file_results));
   ExpectIdOrder({"a", "b", "c", "d", "e"});
+}
+
+TEST_F(SearchControllerImplNewTest, FirstSearchResultsNotShownInSecondSearch) {
+  ranker_delegate_->SetCategoryRanks({{Category::kApps, 0.1}});
+
+  auto provider = std::make_unique<TestSearchProvider>(Result::kInstalledApp,
+                                                       false, base::Seconds(1));
+  auto* provider_ptr = provider.get();
+  search_controller_->AddProvider(0, std::move(provider));
+
+  // Start the first search.
+  provider_ptr->SetNextResults(
+      MakeResults({"AAA"}, {Category::kApps}, {false}, {0.1}));
+  search_controller_->StartSearch(u"A");
+  ExpectIdOrder({});
+
+  // Provider has returned and the A result should be published.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  ExpectIdOrder({"AAA"});
+
+  provider_ptr->SetNextResults({});
+  search_controller_->StartZeroState(base::DoNothing(), base::Seconds(1));
+  task_environment_.FastForwardBy(base::Seconds(1));
+
+  // Start the second search.
+  provider_ptr->SetNextResults(
+      MakeResults({"BBB"}, {Category::kApps}, {false}, {0.1}));
+  search_controller_->StartSearch(u"B");
+  // The B result is not ready yet, and the A result should *not* have been
+  // published.
+  ExpectIdOrder({});
+
+  // Provider has returned and the B result should be published.
+  task_environment_.FastForwardBy(base::Seconds(1));
+  ExpectIdOrder({"BBB"});
 }
 
 TEST_F(SearchControllerImplNewTest, ZeroStateResultsAreBlocked) {

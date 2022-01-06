@@ -66,6 +66,7 @@ class AppListModelUpdater {
   virtual void PublishSearchResults(
       const std::vector<ChromeSearchResult*>& results,
       const std::vector<ash::AppListSearchResultCategory>& categories) {}
+  virtual void ClearSearchResults() {}
   virtual std::vector<ChromeSearchResult*> GetPublishedSearchResultsForTest();
 
   // Item field setters only used by ChromeAppListItem and its derived classes.

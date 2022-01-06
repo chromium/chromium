@@ -203,6 +203,10 @@ void FakeAppListModelUpdater::PublishSearchResults(
   search_results_ = results;
 }
 
+void FakeAppListModelUpdater::ClearSearchResults() {
+  search_results_.clear();
+}
+
 void FakeAppListModelUpdater::UpdateAppItemFromSyncItem(
     app_list::AppListSyncableService::SyncItem* sync_item,
     bool update_name,

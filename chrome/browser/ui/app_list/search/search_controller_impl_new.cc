@@ -53,14 +53,6 @@ SearchControllerImplNew::SearchControllerImplNew(
 SearchControllerImplNew::~SearchControllerImplNew() {}
 
 void SearchControllerImplNew::StartSearch(const std::u16string& query) {
-  session_start_ = base::Time::Now();
-  last_query_ = query;
-  results_.clear();
-  categories_ = CreateAllCategories();
-
-  // Cancel a pending zero-state publish if it exists.
-  zero_state_timeout_.Stop();
-
   // For query searches, begin the burn-in timer.
   if (!query.empty()) {
     burn_in_timer_.Start(FROM_HERE, burnin_period_,
@@ -68,12 +60,27 @@ void SearchControllerImplNew::StartSearch(const std::u16string& query) {
                                         base::Unretained(this)));
   }
 
+  // Cancel a pending zero-state publish if it exists.
+  zero_state_timeout_.Stop();
+
   // TODO(crbug.com/1199206): We should move this histogram logic somewhere
   // else.
   ash::RecordLauncherIssuedSearchQueryLength(query.length());
 
+  // Clear all results.
+  // - If the search is transitioning out of zero-state, clear the model updater
+  // so that old results are never shown.
+  // - Otherwise, do not publish this clear so that the results for the last
+  // query remain on-screen until the results are ready.
+  results_.clear();
+  categories_ = CreateAllCategories();
+  if (last_query_.empty())
+    model_updater_->ClearSearchResults();
   for (Observer& observer : observer_list_)
     observer.OnResultsCleared();
+
+  session_start_ = base::Time::Now();
+  last_query_ = query;
 
   ranker_->Start(query, results_, categories_);
 
@@ -90,17 +97,17 @@ void SearchControllerImplNew::StartSearch(const std::u16string& query) {
 
 void SearchControllerImplNew::StartZeroState(base::OnceClosure on_done,
                                              base::TimeDelta timeout) {
-  last_query_.clear();
+  // Cancel a pending search publish if it exists.
+  burn_in_timer_.Stop();
+
   results_.clear();
   // Categories currently are not used by zero-state, but may be required for
   // sorting in SetResults.
   categories_ = CreateAllCategories();
-
-  // Cancel a pending search publish if it exists.
-  burn_in_timer_.Stop();
-
   for (Observer& observer : observer_list_)
     observer.OnResultsCleared();
+
+  last_query_.clear();
 
   ranker_->Start(std::u16string(), results_, categories_);
 
