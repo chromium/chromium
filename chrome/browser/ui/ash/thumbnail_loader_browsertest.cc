@@ -29,7 +29,7 @@ namespace {
 
 // References to paths set up in the test mount point during the browser test
 // setup.
-enum class TestPath { kNonExistent, kEmptyDir, kJpg, kBrokenJpg, kPng };
+enum class TestPath { kNonExistent, kEmptyDir, kJpg, kBrokenJpg, kPng, kBin };
 
 // Copies |bitmap| into |copy| and runs |callback|.
 void CopyBitmapAndRunClosure(base::OnceClosure callback,
@@ -135,6 +135,8 @@ class ThumbnailLoaderTest : public InProcessBrowserTest {
         return mount_point()->GetRootPath().AppendASCII("broken.jpg");
       case TestPath::kPng:
         return mount_point()->GetRootPath().AppendASCII("image.png");
+      case TestPath::kBin:
+        return mount_point()->GetRootPath().AppendASCII("random.bin");
     }
   }
 
@@ -151,6 +153,8 @@ class ThumbnailLoaderTest : public InProcessBrowserTest {
                                GetTestPath(TestPath::kJpg)));
     ASSERT_TRUE(base::CopyFile(GetTestDataFilePath("broken.jpg"),
                                GetTestPath(TestPath::kBrokenJpg)));
+    ASSERT_TRUE(base::CopyFile(GetTestDataFilePath("random.bin"),
+                               GetTestPath(TestPath::kBin)));
   }
 
   std::unique_ptr<ScopedExternalMountPoint> test_mount_point_;
@@ -158,7 +162,7 @@ class ThumbnailLoaderTest : public InProcessBrowserTest {
   std::unique_ptr<ash::ThumbnailLoader> thumbnail_loader_;
 };
 
-IN_PROC_BROWSER_TEST_F(ThumbnailLoaderTest, LoadNonExistentItem) {
+IN_PROC_BROWSER_TEST_F(ThumbnailLoaderTest, LoadNonExistentFile) {
   ash::ThumbnailLoader* loader = GetThumbnailLoader();
   ASSERT_TRUE(loader);
 
@@ -242,6 +246,24 @@ IN_PROC_BROWSER_TEST_F(ThumbnailLoaderTest, LoadPng) {
   EXPECT_EQ(48, bitmap.height());
 }
 
+IN_PROC_BROWSER_TEST_F(ThumbnailLoaderTest, LoadUnsupportedFiletype) {
+  ash::ThumbnailLoader* loader = GetThumbnailLoader();
+  ASSERT_TRUE(loader);
+
+  ash::ThumbnailLoader::ThumbnailRequest request(GetTestPath(TestPath::kBin),
+                                                 gfx::Size(48, 48));
+
+  base::RunLoop run_loop;
+  loader->Load(request,
+               base::BindLambdaForTesting(
+                   [&](const SkBitmap* bitmap, base::File::Error error) {
+                     EXPECT_FALSE(bitmap);
+                     EXPECT_EQ(error, base::File::FILE_ERROR_ABORT);
+                     run_loop.Quit();
+                   }));
+  run_loop.Run();
+}
+
 IN_PROC_BROWSER_TEST_F(ThumbnailLoaderTest, RepeatedLoads) {
   ash::ThumbnailLoader* loader = GetThumbnailLoader();
   ASSERT_TRUE(loader);
@@ -282,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(ThumbnailLoaderTest, RepeatedLoads) {
   EXPECT_FALSE(gfx::test::AreBitmapsEqual(bitmap1, bitmap3));
 }
 
-IN_PROC_BROWSER_TEST_F(ThumbnailLoaderTest, ConcurentLoads) {
+IN_PROC_BROWSER_TEST_F(ThumbnailLoaderTest, ConcurrentLoads) {
   ash::ThumbnailLoader* loader = GetThumbnailLoader();
   ASSERT_TRUE(loader);
 

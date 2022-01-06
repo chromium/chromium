@@ -38,11 +38,11 @@ class ThumbnailLoader {
 
   // Thumbnail request data that will be forwarded to the image loader.
   struct ThumbnailRequest {
-    ThumbnailRequest(const base::FilePath& item_path, const gfx::Size& size);
+    ThumbnailRequest(const base::FilePath& file_path, const gfx::Size& size);
     ~ThumbnailRequest();
 
-    // The absolute item file path.
-    const base::FilePath item_path;
+    // The absolute file path.
+    const base::FilePath file_path;
 
     // The desired bitmap size.
     const gfx::Size size;

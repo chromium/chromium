@@ -1128,6 +1128,7 @@
                   'ash/system/holding_space|'\
                   'chrome/browser/lacros/.*holding_space.*|'\
                   'chrome/browser/ui/ash/holding_space|'\
+                  'chrome/browser/ui/ash/thumbnail_loader.*|'\
                   'chromeos/crosapi/mojom/.*holding_space.*|'\
                   'tools/metrics/histograms/metadata/holding_space'
     },

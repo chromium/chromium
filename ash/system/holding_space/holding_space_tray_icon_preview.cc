@@ -175,10 +175,15 @@ class HoldingSpaceTrayIconPreview::ImageLayerOwner : public ui::LayerOwner,
     if (image_skia_.isNull())
       return;
 
-    // Paint `image_skia_`.
+    // Copy `image_skia_` since retrieving a representation at the appropriate
+    // scale may result in a series of events in which `image_skia_` is deleted.
+    // Note that `gfx::ImageSkia`'s shared storage makes this a cheap copy.
+    gfx::ImageSkia image_skia(image_skia_);
+
+    // Paint `image_skia`.
     ui::PaintRecorder recorder(context, layer()->size());
     gfx::Canvas* canvas = recorder.canvas();
-    canvas->DrawImageInt(image_skia_, 0, 0);
+    canvas->DrawImageInt(image_skia, 0, 0);
   }
 
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
