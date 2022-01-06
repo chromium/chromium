@@ -227,7 +227,7 @@ const base::Feature kWebUIBubblePerProfilePersistence{
 
 #if !defined(ANDROID)
 const base::Feature kWebUIBrandingUpdate{"WebUIBrandingUpdate",
-                                         base::FEATURE_DISABLED_BY_DEFAULT};
+                                         base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 // Enables the WebUI Download Shelf instead of the Views framework Download
