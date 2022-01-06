@@ -100,6 +100,10 @@ constexpr char kFledgeScriptHeaders[] =
     "Content-type: Application/Javascript\n"
     "X-Allow-FLEDGE: true\n";
 
+constexpr char kFledgeReportHeaders[] =
+    "HTTP/1.1 200 OK\n"
+    "X-Allow-FLEDGE: true\n";
+
 // Allows registering network responses to update and scoring / bidding script
 // requests; *must* be destroyed before the task environment is shutdown (which
 // happens in RenderViewHostTestHarness::TearDown()).
@@ -125,6 +129,14 @@ class NetworkResponder {
     script_map_[url_path] = response;
   }
 
+  // Register ad auction reporting `response` to be served when a request to
+  // `url_path` is made.
+  void RegisterReportResponse(const std::string& url_path,
+                              const std::string& response) {
+    base::AutoLock auto_lock(lock_);
+    report_map_[url_path] = response;
+  }
+
   // Registers a URL to use a "deferred" update response. For a deferred
   // response, the request handler returns true without a write, and writes are
   // performed later in DoDeferredWrite() using a "stolen" Mojo pipe to the
@@ -134,6 +146,15 @@ class NetworkResponder {
   void RegisterDeferredUpdateResponse(const std::string& url_path) {
     base::AutoLock auto_lock(lock_);
     deferred_response_url_path_ = url_path;
+  }
+
+  // Registers a URL that, when seen, will have its URLLoaderClient stored in
+  // `stored_url_loader_client_` without sending a response.
+  //
+  // Only one request can be handled with this method at a time.
+  void RegisterStoreUrlLoaderClient(const std::string& url_path) {
+    base::AutoLock auto_lock(lock_);
+    store_url_loader_client_url_path_ = url_path;
   }
 
   // Perform the deferred response -- the test fails if the client isn't waiting
@@ -162,6 +183,19 @@ class NetworkResponder {
     return update_count_;
   }
 
+  // Returns the number of reports that occurred -- does not include other
+  // network requests.
+  size_t ReportCount() const {
+    base::AutoLock auto_lock(lock_);
+    return report_count_;
+  }
+
+  // Indicates whether `stored_url_loader_client_` is connected to a receiver.
+  bool RemoteIsConnected() {
+    base::AutoLock auto_lock(lock_);
+    return stored_url_loader_client_.is_connected();
+  }
+
  private:
   bool RequestHandler(URLLoaderInterceptor::RequestParams* params) {
     base::AutoLock auto_lock(lock_);
@@ -171,29 +205,51 @@ class NetworkResponder {
           kFledgeScriptHeaders, script_it->second, params->client.get());
       return true;
     }
-    // Not a script request, so consider this an update request.
+
+    // Not a script request, check if it's a reporting request.
+    const auto report_it = report_map_.find(params->url_request.url.path());
+    if (report_it != report_map_.end()) {
+      report_count_++;
+      URLLoaderInterceptor::WriteResponse(
+          kFledgeReportHeaders, report_it->second, params->client.get());
+      return true;
+    }
+
+    if ((params->url_request.url.path() == store_url_loader_client_url_path_)) {
+      CHECK(!stored_url_loader_client_);
+      stored_url_loader_client_ = std::move(params->client);
+      report_count_++;
+      return true;
+    }
+
+    // Not a script request or report request, so consider this an update
+    // request.
     update_count_++;
     EXPECT_TRUE(params->url_request.trusted_params->isolation_info
                     .network_isolation_key()
                     .IsTransient());
+    const auto update_it =
+        json_update_map_.find(params->url_request.url.path());
+    if (update_it != json_update_map_.end()) {
+      URLLoaderInterceptor::WriteResponse(
+          kFledgeUpdateHeaders, update_it->second, params->client.get());
+      return true;
+    }
+
+    if (params->url_request.url.path() == deferred_response_url_path_) {
+      CHECK(!deferred_response_url_loader_client_);
+      deferred_response_url_loader_client_ = std::move(params->client);
+      return true;
+    }
+
     if (next_error_ != net::OK) {
       params->client->OnComplete(
           network::URLLoaderCompletionStatus(next_error_));
       next_error_ = net::OK;
       return true;
     }
-    if (params->url_request.url.path() == deferred_response_url_path_) {
-      CHECK(!deferred_response_url_loader_client_);
-      deferred_response_url_loader_client_ = std::move(params->client);
-      return true;
-    }
-    const auto update_it =
-        json_update_map_.find(params->url_request.url.path());
-    if (update_it == json_update_map_.end())
-      return false;
-    URLLoaderInterceptor::WriteResponse(kFledgeUpdateHeaders, update_it->second,
-                                        params->client.get());
-    return true;
+
+    return false;
   }
 
   // Handles network requests for interest group updates and scripts.
@@ -212,10 +268,16 @@ class NetworkResponder {
   // the Javascript MIME type.
   base::flat_map<std::string, std::string> script_map_ GUARDED_BY(lock_);
 
+  base::flat_map<std::string, std::string> report_map_ GUARDED_BY(lock_);
+
   // Stores the last URL path that was registered with
   // RegisterDeferredUpdateResponse(). Empty initially and after
   // DoDeferredUpdateResponse() -- when empty, no deferred response can occur.
   std::string deferred_response_url_path_ GUARDED_BY(lock_);
+
+  // Stores the last URL path that was registered with
+  // RegisterStoreUrlLoaderClient().
+  std::string store_url_loader_client_url_path_ GUARDED_BY(lock_);
 
   // Stores the Mojo URLLoaderClient remote "stolen" from RequestHandler() for
   // use with deferred responses -- unbound if no remote has been "stolen" yet,
@@ -223,9 +285,17 @@ class NetworkResponder {
   mojo::Remote<network::mojom::URLLoaderClient>
       deferred_response_url_loader_client_ GUARDED_BY(lock_);
 
+  // Stores the Mojo URLLoaderClient remote "stolen" from
+  // RequestHandlerForUpdates() for use with no responses -- unbound if no
+  // remote has been "stolen" yet, or if the last no response request timed out.
+  mojo::Remote<network::mojom::URLLoaderClient> stored_url_loader_client_
+      GUARDED_BY(lock_);
+
   net::Error next_error_ GUARDED_BY(lock_) = net::OK;
 
   size_t update_count_ GUARDED_BY(lock_) = 0;
+
+  size_t report_count_ GUARDED_BY(lock_) = 0;
 };
 
 // AuctionProcessManager that allows running auctions in-proc.
@@ -2140,6 +2210,69 @@ function scoreAd(
   ASSERT_NE(auction_result, absl::nullopt);
   EXPECT_EQ(ConvertFencedFrameURNToURL(*auction_result),
             GURL("https://example.com/render"));
+}
+
+TEST_F(AdAuctionServiceImplTest, FetchReport) {
+  const std::string kBiddingScript = base::StringPrintf(R"(
+function generateBid(
+  interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+  browserSignals) {
+  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
+}
+function reportWin(
+  auctionSignals, perBuyerSignals, sellerSignals, browserSignals) {
+  sendReportTo('%s/report_bidder');
+}
+  )",
+                                                        kOriginStringA);
+  const std::string kDecisionScript =
+      base::StringPrintf(R"(
+function scoreAd(
+  adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return bid;
+}
+function reportResult(auctionConfig, browserSignals) {
+  sendReportTo('%s/report_seller');
+  return {
+    'success': true,
+    'signalsForWinner': {'signalForWinner': 1},
+    'reportUrl': '%s/report_seller',
+  };
+}
+  )",
+                         kOriginStringA, kOriginStringA);
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+  network_responder_->RegisterReportResponse("/report_bidder", "");
+  network_responder_->RegisterStoreUrlLoaderClient("/report_seller");
+
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad;
+  ad.render_url = GURL("https://example.com/render");
+  interest_group.ads->push_back(std::move(ad));
+  JoinInterestGroupAndFlush(std::move(interest_group));
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  auto auction_config = blink::mojom::AuctionAdConfig::New();
+  auction_config->seller = kOriginA;
+  auction_config->decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  auction_config->interest_group_buyers =
+      blink::mojom::InterestGroupBuyers::NewBuyers({kOriginA});
+  absl::optional<GURL> auction_result =
+      RunAdAuctionAndFlush(std::move(auction_config));
+  EXPECT_NE(auction_result, absl::nullopt);
+
+  task_environment()->FastForwardBy(base::Seconds(30) - base::Seconds(1));
+  // There should be two reports, one for winning bidder and one for seller.
+  EXPECT_EQ(network_responder_->ReportCount(), 2u);
+  // The request to seller report url should hang before 30s.
+  EXPECT_TRUE(network_responder_->RemoteIsConnected());
+  task_environment()->FastForwardBy(base::Seconds(2));
+  // The request to seller report url should be disconnected after 30s due to
+  // timeout.
+  EXPECT_FALSE(network_responder_->RemoteIsConnected());
 }
 
 class AdAuctionServiceImplRestrictedPermissionsPolicyTest

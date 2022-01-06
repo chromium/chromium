@@ -93,7 +93,7 @@ void FetchReport(network::mojom::URLLoaderFactory* url_loader_factory,
   network::SimpleURLLoader* simple_url_loader_ptr = simple_url_loader.get();
   // Pass simple_url_loader to keep it alive until the request fails or succeeds
   // to prevent cancelling the request.
-  // TODO(qingxin): time out these requests if they take too long.
+  simple_url_loader_ptr->SetTimeoutDuration(base::Seconds(30));
   simple_url_loader_ptr->DownloadHeadersOnly(
       url_loader_factory,
       base::BindOnce([](std::unique_ptr<network::SimpleURLLoader>,
