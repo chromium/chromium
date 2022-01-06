@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/paint/paint_controller_paint_test.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/testing/paint_property_test_helpers.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 using testing::ElementsAre;
 
@@ -65,20 +66,21 @@ void ViewPainterFixedBackgroundTest::RunFixedBackgroundTest(
 
   // This is the dest_rect_ calculated by BackgroundImageGeometry. For a fixed
   // background in scrolling contents layer, its location is the scroll offset.
-  SkRect rect = static_cast<const cc::DrawRectOp*>(*it)->rect;
+  auto rect = gfx::SkRectToRectF(static_cast<const cc::DrawRectOp*>(*it)->rect);
   if (prefer_compositing_to_lcd_text) {
-    EXPECT_EQ(SkRect::MakeXYWH(0, 0, 800, 600), rect);
+    EXPECT_EQ(gfx::RectF(0, 0, 800, 600), rect);
   } else {
-    EXPECT_EQ(SkRect::MakeXYWH(scroll_offset.x(), scroll_offset.y(), 800, 600),
-              rect);
+    EXPECT_EQ(gfx::RectF(scroll_offset.x(), scroll_offset.y(), 800, 600), rect);
   }
 }
 
-TEST_P(ViewPainterFixedBackgroundTest, DocumentFixedBackgroundLowDPI) {
+TEST_P(ViewPainterFixedBackgroundTest,
+       DocumentFixedBackgroundNotPreferCompositing) {
   RunFixedBackgroundTest(false);
 }
 
-TEST_P(ViewPainterFixedBackgroundTest, DocumentFixedBackgroundHighDPI) {
+TEST_P(ViewPainterFixedBackgroundTest,
+       DocumentFixedBackgroundPreferCompositing) {
   RunFixedBackgroundTest(true);
 }
 

@@ -13,12 +13,14 @@
 #include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/table/layout_ng_table_cell.h"
+#include "third_party/blink/renderer/core/paint/paint_info.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/paint/rounded_border_geometry.h"
 #include "third_party/blink/renderer/core/style/border_edge.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/graphics/paint/geometry_mapper.h"
 
 namespace blink {
 
@@ -49,25 +51,6 @@ LayoutUnit ComputeTilePhase(LayoutUnit position, LayoutUnit tile_extent) {
   // partial tile is visible. That is the phase.
   return tile_extent ? tile_extent - IntMod(position, tile_extent)
                      : LayoutUnit();
-}
-
-PhysicalOffset AccumulatedScrollOffsetForFixedBackground(
-    const LayoutBoxModelObject& object,
-    const LayoutBoxModelObject* container) {
-  PhysicalOffset result;
-  if (&object == container)
-    return result;
-
-  LayoutObject::AncestorSkipInfo skip_info(container);
-  for (const LayoutBlock* block = object.ContainingBlock(&skip_info);
-       block && !skip_info.AncestorSkipped();
-       block = block->ContainingBlock(&skip_info)) {
-    if (block->IsScrollContainer())
-      result += block->ScrolledContentOffset();
-    if (block == container)
-      break;
-  }
-  return result;
 }
 
 }  // anonymous namespace
@@ -228,6 +211,7 @@ void BackgroundImageGeometry::SetSpaceY(LayoutUnit space,
 
 void BackgroundImageGeometry::UseFixedAttachment(
     const PhysicalOffset& attachment_point) {
+  DCHECK(has_background_fixed_to_viewport_);
   PhysicalOffset fixed_adjustment =
       attachment_point - unsnapped_dest_rect_.offset;
   fixed_adjustment.ClampNegativeToZero();
@@ -327,58 +311,33 @@ PhysicalSize BackgroundImageGeometry::GetBackgroundObjectDimensions(
 }
 
 bool BackgroundImageGeometry::ShouldUseFixedAttachment(
-    const FillLayer& fill_layer) {
-  // Solid color background should use default attachment.
-  return fill_layer.GetImage() &&
+    const FillLayer& fill_layer) const {
+  // Only backgrounds fixed to viewport should be treated as fixed attachment.
+  // See comments in the private constructor.
+  return has_background_fixed_to_viewport_ &&
+         // Solid color background should use default attachment.
+         fill_layer.GetImage() &&
          fill_layer.Attachment() == EFillAttachment::kFixed;
 }
 
 namespace {
 
-PhysicalRect FixedAttachmentPositioningArea(
-    const LayoutBoxModelObject& obj,
-    const LayoutBoxModelObject* container) {
-  // TODO(crbug.com/667006): We should consider ancestor with transform as the
-  // fixed background container, instead of always the viewport.
-  const LocalFrameView* frame_view = obj.GetFrameView();
-  if (!frame_view)
-    return PhysicalRect();
-
-  const ScrollableArea* layout_viewport = frame_view->LayoutViewport();
+PhysicalRect FixedAttachmentPositioningArea(const PaintInfo& paint_info,
+                                            const LayoutBoxModelObject& obj) {
+  DCHECK(obj.View());
+  gfx::PointF viewport_origin_in_local_space =
+      GeometryMapper::SourceToDestinationProjection(
+          obj.View()->FirstFragment().LocalBorderBoxProperties().Transform(),
+          paint_info.context.GetPaintController()
+              .CurrentPaintChunkProperties()
+              .Transform())
+          .MapPoint(gfx::PointF());
+  DCHECK(obj.GetFrameView());
+  const ScrollableArea* layout_viewport = obj.GetFrameView()->LayoutViewport();
   DCHECK(layout_viewport);
-
-  PhysicalRect rect(PhysicalOffset(),
-                    PhysicalSize(layout_viewport->VisibleContentRect().size()));
-
-  if (const auto* layout_view = DynamicTo<LayoutView>(obj)) {
-    if (!(layout_view->GetBackgroundPaintLocation() &
-          kBackgroundPaintInContentsSpace))
-      return rect;
-    // The LayoutView is the only object that can paint a fixed background into
-    // its scrolling contents layer, so it gets a special adjustment here.
-    rect.offset = layout_view->ScrolledContentOffset();
-  }
-
-  rect.Move(AccumulatedScrollOffsetForFixedBackground(obj, container));
-
-  if (!container)
-    return rect;
-
-  rect.Move(
-      -container->LocalToAbsolutePoint(PhysicalOffset(), kIgnoreTransforms));
-
-  // By now we have converted the viewport rect to the border box space of
-  // |container|, however |container| does not necessarily create a paint
-  // offset translation node, thus its paint offset must be added to convert
-  // the rect to the space of the transform node.
-  // TODO(trchen): This function does only one simple thing -- mapping the
-  // viewport rect from frame space to whatever space the current paint
-  // context uses. However we can't always invoke geometry mapper because
-  // there are at least one caller uses this before PrePaint phase.
-  DCHECK_GE(container->GetDocument().Lifecycle().GetState(),
-            DocumentLifecycle::kPrePaintClean);
-  rect.Move(container->FirstFragment().PaintOffset());
-  return rect;
+  return PhysicalRect(
+      PhysicalOffset::FromPointFRound(viewport_origin_in_local_space),
+      PhysicalSize(layout_viewport->VisibleContentRect().size()));
 }
 
 }  // Anonymous namespace
@@ -386,7 +345,10 @@ PhysicalRect FixedAttachmentPositioningArea(
 BackgroundImageGeometry::BackgroundImageGeometry(
     const LayoutView& view,
     const PhysicalOffset& element_positioning_area_offset)
-    : box_(&view), positioning_box_(&view.RootBox()), painting_view_(true) {
+    : box_(&view), positioning_box_(&view.RootBox()) {
+  has_background_fixed_to_viewport_ =
+      view.StyleRef().HasFixedAttachmentBackgroundImage();
+  painting_view_ = true;
   // The background of the box generated by the root element covers the
   // entire canvas and will be painted by the view object, but the we should
   // still use the root element box for positioning.
@@ -397,19 +359,17 @@ BackgroundImageGeometry::BackgroundImageGeometry(
 
 BackgroundImageGeometry::BackgroundImageGeometry(
     const LayoutBoxModelObject& obj)
-    : box_(&obj), positioning_box_(&obj) {
-  // Specialized constructor should be used for LayoutView.
-  DCHECK(!IsA<LayoutView>(obj));
-}
+    : BackgroundImageGeometry(&obj, &obj) {}
 
 BackgroundImageGeometry::BackgroundImageGeometry(
     const LayoutTableCell& cell,
     const LayoutObject* background_object)
-    : box_(&cell),
-      positioning_box_(background_object && !background_object->IsTableCell()
-                           ? &To<LayoutBoxModelObject>(*background_object)
-                           : &cell),
-      painting_table_cell_(true) {
+    : BackgroundImageGeometry(
+          &cell,
+          background_object && !background_object->IsTableCell()
+              ? &To<LayoutBoxModelObject>(*background_object)
+              : &cell) {
+  painting_table_cell_ = true;
   cell_using_container_background_ =
       background_object && !background_object->IsTableCell();
   if (cell_using_container_background_) {
@@ -425,7 +385,8 @@ BackgroundImageGeometry::BackgroundImageGeometry(const LayoutNGTableCell& cell,
                                                  PhysicalOffset cell_offset,
                                                  const LayoutBox& table_part,
                                                  PhysicalSize table_part_size)
-    : box_(&cell), positioning_box_(&table_part), painting_table_cell_(true) {
+    : BackgroundImageGeometry(&cell, &table_part) {
+  painting_table_cell_ = true;
   cell_using_container_background_ = true;
   element_positioning_area_offset_ = cell_offset;
   positioning_size_override_ = table_part_size;
@@ -433,12 +394,10 @@ BackgroundImageGeometry::BackgroundImageGeometry(const LayoutNGTableCell& cell,
 
 BackgroundImageGeometry::BackgroundImageGeometry(
     const NGPhysicalBoxFragment& fragment)
-    : box_(To<LayoutBoxModelObject>(fragment.GetLayoutObject())),
-      positioning_box_(box_) {
-  DCHECK(box_);
+    : BackgroundImageGeometry(
+          To<LayoutBoxModelObject>(fragment.GetLayoutObject()),
+          To<LayoutBoxModelObject>(fragment.GetLayoutObject())) {
   DCHECK(box_->IsBox());
-  // Specialized constructor should be used for LayoutView.
-  DCHECK(!IsA<LayoutView>(box_));
 
   if (!fragment.IsOnlyForNode()) {
     // The element is block-fragmented. We need to calculate the correct
@@ -447,6 +406,35 @@ BackgroundImageGeometry::BackgroundImageGeometry(
     element_positioning_area_offset_ =
         OffsetInStitchedFragments(fragment, &positioning_size_override_);
     box_has_multiple_fragments_ = true;
+  }
+}
+
+BackgroundImageGeometry::BackgroundImageGeometry(
+    const LayoutBoxModelObject* box,
+    const LayoutBoxModelObject* positioning_box)
+    : box_(box), positioning_box_(positioning_box) {
+  // Specialized constructor should be used for LayoutView.
+  DCHECK(!IsA<LayoutView>(box));
+  DCHECK(box);
+  DCHECK(positioning_box);
+  if (positioning_box->StyleRef().HasFixedAttachmentBackgroundImage()) {
+    has_background_fixed_to_viewport_ = true;
+    // https://www.w3.org/TR/css-transforms-1/#transform-rendering
+    // Fixed backgrounds on the root element are affected by any transform
+    // specified for that element. For all other elements that are effected
+    // by a transform, a value of fixed for the background-attachment property
+    // is treated as if it had a value of scroll.
+    for (const LayoutObject* container = box;
+         container && !IsA<LayoutView>(container);
+         container = container->Container()) {
+      // Not using HasTransformRelatedProperty(), to excludes will-change:
+      // transform, etc. Otherwise at least
+      // compositing/backgrounds/fixed-backgrounds.html will fail.
+      if (container->HasTransform()) {
+        has_background_fixed_to_viewport_ = false;
+        break;
+      }
+    }
   }
 }
 
@@ -603,8 +591,7 @@ void BackgroundImageGeometry::ComputePositioningAreaAdjustments(
 }
 
 void BackgroundImageGeometry::ComputePositioningArea(
-    const LayoutBoxModelObject* container,
-    PaintPhase paint_phase,
+    const PaintInfo& paint_info,
     const FillLayer& fill_layer,
     const PhysicalRect& paint_rect,
     PhysicalRect& unsnapped_positioning_area,
@@ -613,9 +600,8 @@ void BackgroundImageGeometry::ComputePositioningArea(
     PhysicalOffset& snapped_box_offset) {
   if (ShouldUseFixedAttachment(fill_layer)) {
     // No snapping for fixed attachment.
-    SetHasNonLocalGeometry();
     unsnapped_positioning_area =
-        FixedAttachmentPositioningArea(*box_, container);
+        FixedAttachmentPositioningArea(paint_info, *box_);
     unsnapped_dest_rect_ = snapped_dest_rect_ = snapped_positioning_area =
         unsnapped_positioning_area;
   } else {
@@ -650,7 +636,7 @@ void BackgroundImageGeometry::ComputePositioningArea(
     // * We are painting a block-fragmented box.
     // * There is a border image, because it may not be opaque or may be outset.
     bool disallow_border_derived_adjustment =
-        !ShouldPaintSelfBlockBackground(paint_phase) ||
+        !ShouldPaintSelfBlockBackground(paint_info.phase) ||
         fill_layer.Composite() != CompositeOperator::kCompositeSourceOver ||
         painting_view_ || painting_table_cell_ || box_has_multiple_fragments_ ||
         positioning_box_->StyleRef().BorderImage().GetImage() ||
@@ -813,10 +799,12 @@ void BackgroundImageGeometry::CalculateFillTileSize(
   return;
 }
 
-void BackgroundImageGeometry::Calculate(const LayoutBoxModelObject* container,
-                                        PaintPhase paint_phase,
+void BackgroundImageGeometry::Calculate(const PaintInfo& paint_info,
                                         const FillLayer& fill_layer,
                                         const PhysicalRect& paint_rect) {
+  DCHECK_GE(box_->GetDocument().Lifecycle().GetState(),
+            DocumentLifecycle::kPrePaintClean);
+
   // Unsnapped positioning area is used to derive quantities
   // that reference source image maps and define non-integer values, such
   // as phase and position.
@@ -832,7 +820,7 @@ void BackgroundImageGeometry::Calculate(const LayoutBoxModelObject* container,
   PhysicalOffset snapped_box_offset;
 
   // This method also sets the destination rects.
-  ComputePositioningArea(container, paint_phase, fill_layer, paint_rect,
+  ComputePositioningArea(paint_info, fill_layer, paint_rect,
                          unsnapped_positioning_area, snapped_positioning_area,
                          unsnapped_box_offset, snapped_box_offset);
 

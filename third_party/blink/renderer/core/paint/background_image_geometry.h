@@ -24,6 +24,7 @@ class LayoutObject;
 class LayoutTableCell;
 class LayoutView;
 class NGPhysicalBoxFragment;
+struct PaintInfo;
 
 class BackgroundImageGeometry {
   STACK_ALLOCATED();
@@ -40,7 +41,7 @@ class BackgroundImageGeometry {
                           const LayoutObject* background_object);
 
   // Generic constructor for all other elements.
-  BackgroundImageGeometry(const LayoutBoxModelObject&);
+  explicit BackgroundImageGeometry(const LayoutBoxModelObject&);
 
   // Constructor for TablesNG table parts.
   BackgroundImageGeometry(const LayoutNGTableCell& cell,
@@ -50,8 +51,10 @@ class BackgroundImageGeometry {
 
   explicit BackgroundImageGeometry(const NGPhysicalBoxFragment&);
 
-  void Calculate(const LayoutBoxModelObject* container,
-                 PaintPhase,
+  // Calculates data members. This must be called before any of the following
+  // getters is called. The document lifecycle phase must be at least
+  // PrePaintClean.
+  void Calculate(const PaintInfo& paint_info,
                  const FillLayer&,
                  const PhysicalRect& paint_rect);
 
@@ -87,10 +90,6 @@ class BackgroundImageGeometry {
   // the image if used as a pattern with background-repeat: space.
   const PhysicalSize& SpaceSize() const { return repeat_spacing_; }
 
-  // Has background-attachment: fixed. Implies that we can't always cheaply
-  // compute the destination rects.
-  bool HasNonLocalGeometry() const { return has_non_local_geometry_; }
-
   // Whether the background needs to be positioned relative to a container
   // element. Only used for tables.
   bool CellUsingContainerBackground() const {
@@ -103,7 +102,10 @@ class BackgroundImageGeometry {
   InterpolationQuality ImageInterpolationQuality() const;
 
  private:
-  static bool ShouldUseFixedAttachment(const FillLayer&);
+  BackgroundImageGeometry(const LayoutBoxModelObject* box,
+                          const LayoutBoxModelObject* positioning_box);
+
+  bool ShouldUseFixedAttachment(const FillLayer&) const;
 
   void SetSpaceSize(const PhysicalSize& repeat_spacing) {
     repeat_spacing_ = repeat_spacing;
@@ -127,7 +129,6 @@ class BackgroundImageGeometry {
   void SetSpaceY(LayoutUnit space, LayoutUnit extra_offset);
 
   void UseFixedAttachment(const PhysicalOffset& attachment_point);
-  void SetHasNonLocalGeometry() { has_non_local_geometry_ = true; }
   PhysicalOffset GetPositioningOffsetForCell(const LayoutTableCell&,
                                              const LayoutBox&);
   PhysicalSize GetBackgroundObjectDimensions(const LayoutTableCell&,
@@ -152,8 +153,7 @@ class BackgroundImageGeometry {
                                          LayoutRectOutsets&,
                                          LayoutRectOutsets&) const;
 
-  void ComputePositioningArea(const LayoutBoxModelObject*,
-                              PaintPhase,
+  void ComputePositioningArea(const PaintInfo&,
                               const FillLayer&,
                               const PhysicalRect&,
                               PhysicalRect&,
@@ -192,7 +192,7 @@ class BackgroundImageGeometry {
   PhysicalOffset phase_;
   PhysicalSize tile_size_;
   PhysicalSize repeat_spacing_;
-  bool has_non_local_geometry_ = false;
+  bool has_background_fixed_to_viewport_ = false;
   bool painting_view_ = false;
   bool painting_table_cell_ = false;
   bool cell_using_container_background_ = false;

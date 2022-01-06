@@ -690,8 +690,6 @@ crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-5.htm
 crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-6.html [ Failure ]
 crbug.com/1175040 external/wpt/css/css-backgrounds/background-repeat-space-7.html [ Failure ]
 
-crbug.com/667006 external/wpt/css/css-backgrounds/background-attachment-fixed-inside-transform-1.html [ Failure ]
-
 # Bug accidentally masked by using square mask geometry.
 crbug.com/1155161 svg/masking/mask-of-root.html [ Failure ]
 
@@ -6847,11 +6845,6 @@ crbug.com/1199522 http/tests/devtools/layers/layers-3d-view-hit-testing.js [ Fai
 # Failing css-transforms-2 web platform tests.
 crbug.com/847356 external/wpt/css/css-transforms/transform-box/view-box-mutation-001.html [ Failure ]
 
-crbug.com/1261900 external/wpt/css/css-transforms/transform-fixed-bg-002.html [ Failure ]
-crbug.com/1261900 external/wpt/css/css-transforms/transform-fixed-bg-004.html [ Failure ]
-crbug.com/1261900 external/wpt/css/css-transforms/transform-fixed-bg-005.html [ Failure ]
-crbug.com/1261900 external/wpt/css/css-transforms/transform-fixed-bg-006.html [ Failure ]
-crbug.com/1261900 external/wpt/css/css-transforms/transform-fixed-bg-007.html [ Failure ]
 # Started failing after rolling new version of check-layout-th.js
 css3/flexbox/perpendicular-writing-modes-inside-flex-item.html [ Failure ]
 
