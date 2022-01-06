@@ -42,12 +42,14 @@ public class PriceDropNotifier {
 
     static class NotificationData {
         public NotificationData(CharSequence title, CharSequence text, String iconUrl,
-                String destinationUrl, String offerId, List<ActionData> actions) {
+                String destinationUrl, String offerId, String productClusterId,
+                List<ActionData> actions) {
             this.title = title;
             this.text = text;
             this.iconUrl = iconUrl;
             this.destinationUrl = destinationUrl;
             this.offerId = offerId;
+            this.productClusterId = productClusterId;
             this.actions = actions;
         }
 
@@ -73,6 +75,10 @@ public class PriceDropNotifier {
          * Associated offer ID.
          */
         public final String offerId;
+        /**
+         * Associated cluster ID.
+         */
+        public final String productClusterId;
         /**
          * A list of button actions.
          */
@@ -170,8 +176,9 @@ public class PriceDropNotifier {
                 PriceTrackingNotificationConfig.getNotificationTimeoutMs());
         if (notificationData.actions != null) {
             for (ActionData action : notificationData.actions) {
-                PendingIntentProvider actionClickIntentProvider = createClickIntent(
-                        action.actionId, notificationData.destinationUrl, notificationData.offerId);
+                PendingIntentProvider actionClickIntentProvider =
+                        createClickIntent(action.actionId, notificationData.destinationUrl,
+                                notificationData.offerId, notificationData.productClusterId);
                 notificationBuilder.addAction(0, action.text, actionClickIntentProvider,
                         actionIdToUmaActionType(action.actionId));
             }
@@ -197,9 +204,10 @@ public class PriceDropNotifier {
                 mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    private PendingIntentProvider createClickIntent(String actionId, String url, String offerId) {
+    private PendingIntentProvider createClickIntent(
+            String actionId, String url, String offerId, String clusterId) {
         Intent intent = mPriceDropNotificationManager.getNotificationActionClickIntent(
-                actionId, url, offerId);
+                actionId, url, offerId, clusterId);
         return PendingIntentProvider.getActivity(
                 mContext, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
     }
