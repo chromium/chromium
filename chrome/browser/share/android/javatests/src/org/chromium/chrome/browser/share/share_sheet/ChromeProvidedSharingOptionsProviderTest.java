@@ -136,7 +136,6 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     @MediumTest
-    @Features.EnableFeatures({ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT})
     @Features.DisableFeatures({ChromeFeatureList.LIGHTWEIGHT_REACTIONS})
     @DisabledTest(message = "https://crbug.com/1233184")
     public void getPropertyModels_screenshotEnabled() {
@@ -164,7 +163,6 @@ public class ChromeProvidedSharingOptionsProviderTest {
     @Test
     @MediumTest
     @Features.EnableFeatures({ChromeFeatureList.LIGHTWEIGHT_REACTIONS})
-    @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT})
     public void getPropertyModels_lightweightReactionsEnabled() {
         setUpChromeProvidedSharingOptionsProviderTest(
                 /*printingEnabled=*/false, LinkGeneration.MAX);
@@ -178,6 +176,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
                 ImmutableList.of(
                         mActivity.getResources().getString(R.string.sharing_webnotes_create_card),
                         mActivity.getResources().getString(R.string.sharing_screenshot),
+                        mActivity.getResources().getString(R.string.sharing_long_screenshot),
                         mActivity.getResources().getString(R.string.sharing_lightweight_reactions),
                         mActivity.getResources().getString(R.string.sharing_copy_image),
                         mActivity.getResources().getString(R.string.sharing_copy),
@@ -189,11 +188,9 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     @MediumTest
-    @Features.DisableFeatures({ChromeFeatureList.CHROME_SHARE_LONG_SCREENSHOT,
-            ChromeFeatureList.LIGHTWEIGHT_REACTIONS})
+    @Features.DisableFeatures({ChromeFeatureList.LIGHTWEIGHT_REACTIONS})
     @DisabledTest(message = "https://crbug.com/1233184")
-    public void
-    getPropertyModels_printingEnabled_includesPrinting() {
+    public void getPropertyModels_printingEnabled_includesPrinting() {
         setUpChromeProvidedSharingOptionsProviderTest(
                 /*printingEnabled=*/true, LinkGeneration.MAX);
         List<PropertyModel> propertyModels =
@@ -206,6 +203,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
                 ImmutableList.of(
                         mActivity.getResources().getString(R.string.sharing_webnotes_create_card),
                         mActivity.getResources().getString(R.string.sharing_screenshot),
+                        mActivity.getResources().getString(R.string.sharing_long_screenshot),
                         mActivity.getResources().getString(R.string.sharing_copy_image),
                         mActivity.getResources().getString(R.string.sharing_copy),
                         mActivity.getResources().getString(
