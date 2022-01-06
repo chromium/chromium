@@ -1841,6 +1841,10 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // this WebContents (i.e. for WebContents::GetTitle()).
   NavigationEntry* GetNavigationEntryForTitle();
 
+  // Wrapper for ui::GetAvailablePointerAndHoverTypes which temporarily allows
+  // blocking calls required on Windows when running on touch enabled devices.
+  static std::pair<int, int> GetAvailablePointerAndHoverTypes();
+
   // Data for core operation ---------------------------------------------------
 
   // Delegate for notifying our owner about stuff. Not owned by us.

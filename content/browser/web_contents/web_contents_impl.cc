@@ -170,6 +170,7 @@
 #include "ui/gfx/animation/animation.h"
 
 #if defined(OS_WIN)
+#include "base/threading/thread_restrictions.h"
 #include "content/browser/renderer_host/dip_util.h"
 #include "ui/gfx/geometry/dip_util.h"
 #endif
@@ -2829,7 +2830,7 @@ void WebContentsImpl::SetSlowWebPreferences(
                    switches::kTouchEventFeatureDetectionEnabled);
 
     std::tie(prefs->available_pointer_types, prefs->available_hover_types) =
-        ui::GetAvailablePointerAndHoverTypes();
+        GetAvailablePointerAndHoverTypes();
     prefs->primary_pointer_type = static_cast<blink::mojom::PointerType>(
         ui::GetPrimaryPointerType(prefs->available_pointer_types));
     prefs->primary_hover_type = static_cast<blink::mojom::HoverType>(
@@ -9246,6 +9247,18 @@ std::unique_ptr<PrerenderHandle> WebContentsImpl::StartPrerendering(
         prerendering_url);
   }
   return nullptr;
+}
+
+// static
+std::pair<int, int> WebContentsImpl::GetAvailablePointerAndHoverTypes() {
+  // On Windows we have to temporarily allow blocking calls since
+  // ui::GetAvailablePointerAndHoverTypes needs to call some in order to
+  // figure out tablet device details in base::win::IsDeviceUsedAsATablet,
+  // see https://crbug.com/1262162.
+#if defined(OS_WIN)
+  base::ScopedAllowBlocking scoped_allow_blocking;
+#endif
+  return ui::GetAvailablePointerAndHoverTypes();
 }
 
 }  // namespace content
