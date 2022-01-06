@@ -377,11 +377,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "android_clang_dbg_recipe",
-    goma_jobs = goma.jobs.J300,
-)
-
-try_.builder(
     name = "android_compile_dbg",
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = not settings.is_main,

@@ -1063,21 +1063,6 @@
       "use_thin_lto": true
     }
   },
-  "android_clang_dbg_recipe": {
-    "gn_args": {
-      "disable_android_lint": true,
-      "ffmpeg_branding": "Chrome",
-      "is_asan": true,
-      "is_clang": true,
-      "is_component_build": true,
-      "is_debug": true,
-      "proprietary_codecs": true,
-      "symbol_level": 0,
-      "target_os": "android",
-      "use_errorprone_java_compiler": false,
-      "use_goma": true
-    }
-  },
   "android_compile_dbg": {
     "gn_args": {
       "ffmpeg_branding": "Chrome",
