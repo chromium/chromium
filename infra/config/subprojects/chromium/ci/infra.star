@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 """Definitions of builders in the infra builder group."""
 
-load("//lib/builder_config.star", "builder_config")
 load("//lib/builders.star", "goma", "os")
 load("//lib/ci.star", "ci")
 load("//lib/consoles.star", "consoles")
@@ -21,67 +20,4 @@ ci.defaults.set(
 
 consoles.console_view(
     name = "infra",
-)
-
-ci.builder(
-    name = "linux-bootstrap",
-    builder_spec = builder_config.builder_spec(
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-        ),
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "bootstrap|linux",
-        short_name = "bld",
-    ),
-    schedule = "triggered",
-    triggered_by = [],
-)
-
-ci.builder(
-    name = "linux-bootstrap-tests",
-    builder_spec = builder_config.builder_spec(
-        execution_mode = builder_config.execution_mode.TEST,
-        parent = "ci/linux-bootstrap",
-        chromium_config = builder_config.chromium_config(
-            config = "chromium",
-            apply_configs = ["mb"],
-            build_config = builder_config.build_config.RELEASE,
-            target_bits = 64,
-        ),
-        gclient_config = builder_config.gclient_config(
-            config = "chromium",
-        ),
-    ),
-    console_view_entry = consoles.console_view_entry(
-        category = "bootstrap|linux",
-        short_name = "tst",
-    ),
-)
-
-ci.builder(
-    name = "win-bootstrap",
-    builderless = True,
-    console_view_entry = consoles.console_view_entry(
-        category = "bootstrap|win",
-        short_name = "bld",
-    ),
-    os = os.WINDOWS_10,
-    schedule = "triggered",
-    triggered_by = [],
-)
-
-ci.builder(
-    name = "win-bootstrap-tests",
-    console_view_entry = consoles.console_view_entry(
-        category = "bootstrap|win",
-        short_name = "tst",
-    ),
-    triggered_by = ["ci/win-bootstrap"],
 )

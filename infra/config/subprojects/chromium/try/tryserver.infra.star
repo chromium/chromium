@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 """Definitions of builders in the tryserver.infra builder group."""
 
-load("//lib/builders.star", "goma", "os")
+load("//lib/builders.star", "goma")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
 
@@ -19,19 +19,4 @@ try_.defaults.set(
 
 consoles.list_view(
     name = "tryserver.infra",
-)
-
-try_.builder(
-    name = "linux-bootstrap",
-    mirrors = [
-        "ci/linux-bootstrap",
-        "ci/linux-bootstrap-tests",
-    ],
-    os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
-)
-
-try_.builder(
-    name = "win-bootstrap",
-    builderless = True,
-    os = os.WINDOWS_10,
 )

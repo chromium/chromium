@@ -494,12 +494,6 @@
       },
     },
 
-    # This is for testing the chromium bootstrapper, the actual tests aren't
-    # important, just that the tester will actually run some test
-    'bootstrap_tests': {
-      'base_unittests': {},
-    },
-
     'cast_audio_specific_chromium_gtests': {
       'cast_audio_backend_unittests': {},
       'cast_base_unittests': {},

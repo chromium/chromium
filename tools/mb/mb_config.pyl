@@ -730,11 +730,6 @@
       'Windows deterministic': 'release_bot_x86_minimal_symbols',
     },
 
-    'infra': {
-      'linux-bootstrap': 'release_bot',
-      'win-bootstrap': 'release_bot',
-    },
-
     'internal.chrome.fyi': {
       'chromeos-amd64-generic-lacros-internal-rel': 'chromeos_amd64-generic_lacros_rel',
       'linux-autofill-captured-sites-rel': 'release_bot',
@@ -1229,11 +1224,6 @@
       # Align devtools blink builders with chromium linux-rel
       'devtools_frontend_linux_blink_light_rel': 'release_trybot_blink',
       'devtools_frontend_linux_blink_rel': 'release_trybot_blink',
-    },
-
-    'tryserver.infra': {
-      'linux-bootstrap': 'release_trybot',
-      'win-bootstrap': 'release_trybot',
     },
 
     'tryserver.v8': {

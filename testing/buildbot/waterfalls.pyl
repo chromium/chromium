@@ -6385,24 +6385,6 @@
     },
   },
   {
-    'name': 'infra',
-    'mixins': ['chromium-tester-service-account'],
-    'machines': {
-      'linux-bootstrap-tests': {
-        'mixins': ['linux-bionic'],
-        'test_suites': {
-          'gtest_tests': 'bootstrap_tests',
-        }
-      },
-      'win-bootstrap-tests': {
-        'mixins': ['win10'],
-        'test_suites': {
-          'gtest_tests': 'bootstrap_tests',
-        }
-      },
-    }
-  },
-  {
     'project': 'chrome',
     'bucket': 'ci',
     'name': 'internal.chromeos.fyi',
