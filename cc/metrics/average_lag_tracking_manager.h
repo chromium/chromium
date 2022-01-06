@@ -11,10 +11,7 @@
 #include "base/containers/circular_deque.h"
 #include "cc/cc_export.h"
 #include "cc/metrics/average_lag_tracker.h"
-
-namespace ui {
-class LatencyInfo;
-}  // namespace ui
+#include "cc/metrics/event_metrics.h"
 
 namespace viz {
 struct FrameTimingDetails;
@@ -22,7 +19,7 @@ struct FrameTimingDetails;
 
 namespace cc {
 
-// A helper to decouple the LatencyInfos and the AverageLagTracker
+// A helper to decouple the `EventMetrics` and the `AverageLagTracker`.
 class CC_EXPORT AverageLagTrackingManager {
  public:
   AverageLagTrackingManager();
@@ -36,7 +33,7 @@ class CC_EXPORT AverageLagTrackingManager {
   // Adds all the eligible events in the collection |infos| to the |frame_token|
   // wait list.
   void CollectScrollEventsFromFrame(uint32_t frame_token,
-                                    const std::vector<ui::LatencyInfo>& infos);
+                                    const EventMetricsSet& events_metrics);
 
   // Sends all pending events in the |frame_token| list to the
   // AverageLagTracker, given its |frame_details|.

@@ -94,14 +94,13 @@ enum class SourceEventType {
   LAST = OTHER,
 };
 
-// TODO(crbug.com/1101000): Some of the data in `LatencyInfo` is only used for
+// TODO(crbug.com/1101000): Some of the data in `LatencyInfo` were only used for
 // calculating AverageLag metrics, namely:
 //  - `INPUT_EVENT_LATENCY_SCROLL_UPDATE_LAST_EVENT_COMPONENT` component;
 //  - `scroll_update_delta_`; and
 //  - `predicted_scroll_update_delta_`.
-// Equivalent data is added to `cc::EventMetrics` to be used instead. Remove
-// data from `LatencyInfo` when AverageLag metrics switch to use
-// `cc::EventMetrics`.
+// Equivalent data is now added to `cc::EventMetrics` and used in calculating
+// AverageLag metrics. Remove unused data from `LatencyInfo`.
 class LatencyInfo {
  public:
   enum : size_t { kMaxInputCoordinates = 2 };

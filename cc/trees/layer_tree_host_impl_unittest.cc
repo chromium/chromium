@@ -11182,7 +11182,7 @@ class LayerTreeHostImplTestDrawAndTestDamage : public LayerTreeHostImplTest {
                 root_render_pass->quad_list.ElementAt(1)->visible_rect);
     }
 
-    EXPECT_EQ(expect_to_draw, host_impl_->DrawLayers(&frame));
+    EXPECT_EQ(expect_to_draw, host_impl_->DrawLayers(&frame).has_value());
     host_impl_->DidDrawAllLayers(frame);
     host_impl_->DidFinishImplFrame(args);
   }
@@ -14024,18 +14024,18 @@ TEST_F(LayerTreeHostImplTest,
                     ui::ScrollInputType::kTouchscreen)
             .get());
 
-    // Add a LatencyInfo object that will be accepted by
-    // AverageLagTrackingManager::CollectScrollEventsFromFrame.
-    ui::LatencyInfo latency_info;
-    latency_info.set_source_event_type(ui::SourceEventType::TOUCH);
-    latency_info.AddLatencyNumber(
-        ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_ORIGINAL_COMPONENT);
-    latency_info.AddLatencyNumberWithTimestamp(
-        ui::INPUT_EVENT_LATENCY_SCROLL_UPDATE_LAST_EVENT_COMPONENT,
-        base::TimeTicks::Now());
-    std::unique_ptr<SwapPromise> swap_promise(
-        new LatencyInfoSwapPromise(latency_info));
-    host_impl_->active_tree()->QueuePinnedSwapPromise(std::move(swap_promise));
+    // Add an `EventMetrics` object that will be accepted by
+    // `AverageLagTrackingManager::CollectScrollEventsFromFrame()`.
+    EventMetrics::List events_metrics;
+    events_metrics.push_back(ScrollUpdateEventMetrics::Create(
+        ui::EventType::ET_GESTURE_SCROLL_UPDATE,
+        ui::ScrollInputType::kTouchscreen,
+        /*is_inertial=*/false,
+        i == 0 ? ScrollUpdateEventMetrics::ScrollUpdateType::kStarted
+               : ScrollUpdateEventMetrics::ScrollUpdateType::kContinued,
+        /*delta=*/10.0f, base::TimeTicks::Now()));
+    host_impl_->active_tree()->AppendEventsMetricsFromMainThread(
+        std::move(events_metrics));
 
     DrawFrame();
   }

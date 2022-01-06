@@ -2478,7 +2478,8 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
   return metadata;
 }
 
-bool LayerTreeHostImpl::DrawLayers(FrameData* frame) {
+absl::optional<EventMetricsSet> LayerTreeHostImpl::DrawLayers(
+    FrameData* frame) {
   DCHECK(CanDraw());
   DCHECK_EQ(frame->has_no_damage, frame->render_passes.empty());
   ResetRequiresHighResToDraw();
@@ -2492,7 +2493,7 @@ bool LayerTreeHostImpl::DrawLayers(FrameData* frame) {
     TRACE_EVENT_INSTANT0("cc", "EarlyOut_NoDamage", TRACE_EVENT_SCOPE_THREAD);
     active_tree()->BreakSwapPromises(SwapPromise::SWAP_FAILS);
     active_tree()->ResetAllChangeTracking();
-    return false;
+    return absl::nullopt;
   }
 
   layer_tree_frame_sink_->set_source_frame_number(
@@ -2504,9 +2505,11 @@ bool LayerTreeHostImpl::DrawLayers(FrameData* frame) {
   const viz::BeginFrameId begin_frame_ack_frame_id =
       compositor_frame.metadata.begin_frame_ack.frame_id;
 
-  // Collect |latency_info| information for tracking
-  lag_tracking_manager_.CollectScrollEventsFromFrame(
-      frame_token, compositor_frame.metadata.latency_info);
+  EventMetricsSet events_metrics(
+      active_tree()->TakeEventsMetrics(),
+      events_metrics_manager_.TakeSavedEventsMetrics());
+  lag_tracking_manager_.CollectScrollEventsFromFrame(frame_token,
+                                                     events_metrics);
   layer_tree_frame_sink_->SubmitCompositorFrame(
       std::move(compositor_frame),
       /*hit_test_data_changed=*/false, debug_state_.show_hit_test_borders);
@@ -2577,7 +2580,7 @@ bool LayerTreeHostImpl::DrawLayers(FrameData* frame) {
     client_->FrameSinksToThrottleUpdated(throttle_decider_.ids());
   }
 
-  return true;
+  return events_metrics;
 }
 
 viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
@@ -5145,11 +5148,6 @@ void LayerTreeHostImpl::RequestInvalidationForAnimatedImages() {
   // before a new tree is activated.
   bool needs_first_draw_on_activation = true;
   client_->NeedsImplSideInvalidation(needs_first_draw_on_activation);
-}
-
-EventMetricsSet LayerTreeHostImpl::TakeEventsMetrics() {
-  return EventMetricsSet(active_tree()->TakeEventsMetrics(),
-                         events_metrics_manager_.TakeSavedEventsMetrics());
 }
 
 base::WeakPtr<LayerTreeHostImpl> LayerTreeHostImpl::AsWeakPtr() {

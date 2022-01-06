@@ -817,11 +817,12 @@ DrawResult ProxyImpl::DrawInternal(bool forced_draw) {
   }
 
   if (draw_frame) {
-    if (host_impl_->DrawLayers(&frame)) {
+    if (absl::optional<EventMetricsSet> events_metrics =
+            host_impl_->DrawLayers(&frame)) {
       DCHECK_NE(frame.frame_token, 0u);
       // Drawing implies we submitted a frame to the LayerTreeFrameSink.
       scheduler_->DidSubmitCompositorFrame(frame.frame_token,
-                                           host_impl_->TakeEventsMetrics(),
+                                           std::move(*events_metrics),
                                            frame.has_missing_content);
     }
     result = DRAW_SUCCESS;
