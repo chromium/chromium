@@ -626,6 +626,7 @@ ci.builder(
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
     reclient_jobs = 400,
     reclient_instance = rbe_instance.DEFAULT,
+    reclient_ensure_verified = True,
 )
 # End - Reclient migration, phase 2, block 1 shadow builders
 
