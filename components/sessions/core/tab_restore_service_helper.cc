@@ -30,6 +30,7 @@
 #include "components/sessions/core/live_tab.h"
 #include "components/sessions/core/live_tab_context.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
+#include "components/sessions/core/session_constants.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sessions/core/session_types.h"
 #include "components/sessions/core/tab_restore_service_client.h"
@@ -38,6 +39,60 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 
 namespace sessions {
+namespace {
+
+// Specifies what entries are added.
+enum class AddBehavior {
+  // Adds the current entry, and entries preceeding it.
+  kCurrentAndPreceedingEntries,
+
+  // Adds entries after the current.
+  kEntriesFollowingCurrentEntry,
+};
+
+// Adds serialized navigation entries from a LiveTab.
+void AddSerializedNavigationEntries(
+    LiveTab* live_tab,
+    AddBehavior behavior,
+    std::vector<SerializedNavigationEntry>& navigations) {
+  // It is assumed this is called for back navigations first, at which point the
+  // vector should be empty. This is necessary as back navigations are added
+  // in reverse order and then the vector is reversed.
+  DCHECK(behavior == AddBehavior::kEntriesFollowingCurrentEntry ||
+         navigations.empty());
+  const int max_index = live_tab->GetEntryCount();
+  const int delta =
+      (behavior == AddBehavior::kCurrentAndPreceedingEntries) ? -1 : 1;
+  int current_index = live_tab->GetCurrentEntryIndex();
+  if (behavior == AddBehavior::kEntriesFollowingCurrentEntry)
+    ++current_index;
+  int added_count = 0;
+  while (current_index >= 0 && current_index < max_index &&
+         added_count <= gMaxPersistNavigationCount) {
+    SerializedNavigationEntry entry = live_tab->GetEntryAtIndex(current_index);
+    current_index += delta;
+    // Reader Mode is meant to be considered a "mode" that users can only enter
+    // using a button in the omnibox, so it does not show up in recently closed
+    // tabs, session sync, or chrome://history. Remove Reader Mode pages from
+    // the navigations.
+    if (entry.virtual_url().SchemeIs(dom_distiller::kDomDistillerScheme))
+      continue;
+
+    // As this code was identified as doing a lot of allocations, push_back is
+    // always used and the vector is reversed for `kCurrentAndPreceedingEntries`
+    // when done. Doing this instead of inserting at the beginning results in
+    // less memory operations.
+    navigations.push_back(std::move(entry));
+    ++added_count;
+  }
+  // Iteration for `kCurrentAndPreceedingEntries` happens in descending order.
+  // This results in the entries being added in reverse order. Use
+  // std::reverse() so the entries end up in ascending order.
+  if (behavior == AddBehavior::kCurrentAndPreceedingEntries)
+    std::reverse(navigations.begin(), navigations.end());
+}
+
+}  // namespace
 
 // TabRestoreServiceHelper::Observer -------------------------------------------
 
@@ -754,30 +809,19 @@ void TabRestoreServiceHelper::PopulateTab(Tab* tab,
                                           int index,
                                           LiveTabContext* context,
                                           LiveTab* live_tab) {
-  int max_entry_count =
-      live_tab->IsInitialBlankNavigation() ? 0 : live_tab->GetEntryCount();
-  tab->navigations.resize(static_cast<int>(max_entry_count));
-  int actual_entry_count = 0;
-  int current_navigation_index = live_tab->GetCurrentEntryIndex();
-  for (int i = 0; i < max_entry_count; ++i) {
-    SerializedNavigationEntry entry = live_tab->GetEntryAtIndex(i);
-    // Reader Mode is meant to be considered a "mode" that users can only enter
-    // using a button in the omnibox, so it does not show up in recently closed
-    // tabs, session sync, or chrome://history. Remove Reader Mode pages from
-    // the navigations.
-    if (!entry.virtual_url().SchemeIs(dom_distiller::kDomDistillerScheme)) {
-      tab->navigations[actual_entry_count++] = entry;
-    } else if (current_navigation_index >= i) {
-      // The page removed was behind the current navigation index, so
-      // decrement the current navigation index.
-      current_navigation_index--;
+  tab->current_navigation_index = 0;
+  if (!live_tab->IsInitialBlankNavigation() && live_tab->GetEntryCount() > 0) {
+    AddSerializedNavigationEntries(
+        live_tab, AddBehavior::kCurrentAndPreceedingEntries, tab->navigations);
+    if (!tab->navigations.empty()) {
+      tab->current_navigation_index =
+          static_cast<int>(tab->navigations.size()) - 1;
     }
+    AddSerializedNavigationEntries(
+        live_tab, AddBehavior::kEntriesFollowingCurrentEntry, tab->navigations);
   }
-  if (actual_entry_count != max_entry_count)
-    tab->navigations.resize(static_cast<int>(actual_entry_count));
 
   tab->timestamp = TimeNow();
-  tab->current_navigation_index = current_navigation_index;
   tab->tabstrip_index = index;
   tab->extension_app_id = client_->GetExtensionAppIDForTab(live_tab);
   tab->user_agent_override = live_tab->GetUserAgentOverride();
