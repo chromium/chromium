@@ -41,6 +41,7 @@ const int kBoundaryCharSearchLimit = 200;
 enum class ShouldOfferResult {
   kSuccess = 0,
   kBlockListed = 2,
+  kUnableToInvokeJavaScript = 3,
   kSelectionEmpty = 6,
   kUserEditing = 7,
   kTextInputNotFound = 8,
@@ -48,7 +49,6 @@ enum class ShouldOfferResult {
 
   // Deprecated. Do not reuse, change, or remove these values.
   kRejectedInJavaScript = 1,
-  kUnableToInvokeJavaScript = 3,
   kWebLayerTaskTimeout = 4,
   kDispatchedTimeout = 5,
 
