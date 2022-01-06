@@ -736,6 +736,7 @@ mojom("cookies_mojom") {
   sources = [
     "cookie_access_observer.mojom",
     "cookie_manager.mojom",
+    "cookie_partition_key.mojom",
     "restricted_cookie_manager.mojom",
     "site_for_cookies.mojom",
   ]
