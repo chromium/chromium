@@ -124,11 +124,11 @@ testing::AssertionResult CheckSessionModels(const base::ListValue& devices,
     EXPECT_TRUE(session_value.is_dict());
     const base::DictionaryValue& session =
         base::Value::AsDictionaryValue(session_value);
-    const base::DictionaryValue* window = nullptr;
-    EXPECT_TRUE(session.GetDictionary("window", &window));
+    const base::Value* window = session.FindDictKey("window");
+    EXPECT_TRUE(window);
     // Only the tabs are interesting.
-    const base::ListValue* tabs = nullptr;
-    EXPECT_TRUE(window->GetList("tabs", &tabs));
+    const base::Value* tabs = window->FindListKey("tabs");
+    EXPECT_TRUE(tabs);
     EXPECT_EQ(base::size(kTabIDs), tabs->GetList().size());
     for (size_t j = 0; j < tabs->GetList().size(); ++j) {
       const base::Value& tab_value = tabs->GetList()[j];
@@ -325,11 +325,10 @@ IN_PROC_BROWSER_TEST_F(ExtensionSessionsTest, RestoreForeignSessionWindow) {
 
   base::ListValue* windows = result.get();
   EXPECT_EQ(2u, windows->GetList().size());
-  base::DictionaryValue* restored_window = nullptr;
-  EXPECT_TRUE(
-      restored_window_session->GetDictionary("window", &restored_window));
+  base::Value* restored_window = restored_window_session->FindDictKey("window");
+  EXPECT_TRUE(restored_window);
   const base::DictionaryValue* window = nullptr;
-  int restored_id = api_test_utils::GetInteger(restored_window, "id");
+  int restored_id = restored_window->FindIntKey("id").value_or(0);
   for (const base::Value& window_value : windows->GetList()) {
     EXPECT_TRUE(window_value.is_dict());
     window = &base::Value::AsDictionaryValue(window_value);

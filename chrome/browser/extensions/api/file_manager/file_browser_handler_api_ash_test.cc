@@ -341,8 +341,7 @@ IN_PROC_BROWSER_TEST_F(FileBrowserHandlerExtensionTest, SelectionFailed) {
           "[{\"suggestedName\": \"some_file_name.txt\"}]", browser())));
 
   EXPECT_FALSE(extensions::api_test_utils::GetBoolean(result.get(), "success"));
-  base::DictionaryValue* entry_info;
-  EXPECT_FALSE(result->GetDictionary("entry", &entry_info));
+  EXPECT_FALSE(result->FindDictKey("entry"));
 }
 
 // Tests that user cannot be suggested a full file path when selecting a file,
@@ -366,8 +365,7 @@ IN_PROC_BROWSER_TEST_F(FileBrowserHandlerExtensionTest, SuggestedFullPath) {
           browser())));
 
   EXPECT_FALSE(extensions::api_test_utils::GetBoolean(result.get(), "success"));
-  base::DictionaryValue* entry_info;
-  EXPECT_FALSE(result->GetDictionary("entry", &entry_info));
+  EXPECT_FALSE(result->FindDictKey("entry"));
 }
 
 }  // namespace

@@ -380,12 +380,13 @@ ExtensionActionSetIconFunction::RunExtensionAction() {
 
   // setIcon can take a variant argument: either a dictionary of canvas
   // ImageData, or an icon index.
-  base::DictionaryValue* canvas_set = NULL;
-  if (details_->GetDictionary("imageData", &canvas_set)) {
+  base::Value* canvas_set = details_->FindDictKey("imageData");
+  if (canvas_set) {
     gfx::ImageSkia icon;
 
     ExtensionAction::IconParseResult parse_result =
-        ExtensionAction::ParseIconFromCanvasDictionary(*canvas_set, &icon);
+        ExtensionAction::ParseIconFromCanvasDictionary(
+            base::Value::AsDictionaryValue(*canvas_set), &icon);
 
     if (parse_result != ExtensionAction::IconParseResult::kSuccess) {
       switch (parse_result) {

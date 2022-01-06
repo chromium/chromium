@@ -553,7 +553,7 @@ void CommandService::UpdateExtensionSuggestedCommandPrefs(
 void CommandService::RemoveDefunctExtensionSuggestedCommandPrefs(
     const Extension* extension) {
   ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile_);
-  const base::DictionaryValue* current_prefs = NULL;
+  const base::DictionaryValue* current_prefs = nullptr;
   extension_prefs->ReadPrefAsDictionary(extension->id(),
                                         kCommands,
                                         &current_prefs);
@@ -602,20 +602,21 @@ bool CommandService::IsCommandShortcutUserModified(
   ui::Accelerator suggested_key;
   absl::optional<bool> suggested_key_was_assigned;
   ExtensionPrefs* extension_prefs = ExtensionPrefs::Get(profile_);
-  const base::DictionaryValue* commands_prefs = NULL;
-  const base::DictionaryValue* suggested_key_prefs = NULL;
-  if (extension_prefs->ReadPrefAsDictionary(extension->id(),
-                                            kCommands,
-                                            &commands_prefs) &&
-      commands_prefs->GetDictionary(command_name, &suggested_key_prefs)) {
-    std::string suggested_key_string;
-    if (suggested_key_prefs->GetString(kSuggestedKey, &suggested_key_string)) {
-      suggested_key = Command::StringToAccelerator(suggested_key_string,
-                                                   command_name);
+  const base::DictionaryValue* commands_prefs = nullptr;
+  if (extension_prefs->ReadPrefAsDictionary(extension->id(), kCommands,
+                                            &commands_prefs)) {
+    const base::Value* suggested_key_prefs =
+        commands_prefs->FindDictPath(command_name);
+    if (suggested_key_prefs) {
+      const std::string* suggested_key_string =
+          suggested_key_prefs->FindStringKey(kSuggestedKey);
+      if (suggested_key_string) {
+        suggested_key =
+            Command::StringToAccelerator(*suggested_key_string, command_name);
+      }
+      suggested_key_was_assigned =
+          suggested_key_prefs->FindBoolKey(kSuggestedKeyWasAssigned);
     }
-
-    suggested_key_was_assigned =
-        suggested_key_prefs->FindBoolKey(kSuggestedKeyWasAssigned);
   }
 
   // Get the active shortcut from the prefs, if any.
@@ -628,8 +629,7 @@ bool CommandService::IsCommandShortcutUserModified(
 
 void CommandService::RemoveKeybindingPrefs(const std::string& extension_id,
                                            const std::string& command_name) {
-  DictionaryPrefUpdate updater(profile_->GetPrefs(),
-                               prefs::kExtensionCommands);
+  DictionaryPrefUpdate updater(profile_->GetPrefs(), prefs::kExtensionCommands);
   base::DictionaryValue* bindings = updater.Get();
 
   typedef std::vector<std::string> KeysToRemove;
@@ -719,8 +719,8 @@ bool CommandService::GetExtensionActionCommand(const std::string& extension_id,
 }
 
 template <>
-void
-BrowserContextKeyedAPIFactory<CommandService>::DeclareFactoryDependencies() {
+void BrowserContextKeyedAPIFactory<
+    CommandService>::DeclareFactoryDependencies() {
   DependsOn(ExtensionCommandsGlobalRegistry::GetFactoryInstance());
 }
 

@@ -143,9 +143,8 @@ class BrowsingDataApiTest : public ExtensionServiceTestBase {
     SCOPED_TRACE("settings");
     std::unique_ptr<base::Value> result = RunFunctionAndReturnSingleResult(
         function.get(), std::string("[]"), browser());
-
     EXPECT_TRUE(result->is_dict());
-    EXPECT_TRUE(result->FindDoublePath("options.since"));
+    ASSERT_TRUE(result->FindDoublePath("options.since"));
     double since = *result->FindDoublePath("options.since");
 
     double expected_since = 0;

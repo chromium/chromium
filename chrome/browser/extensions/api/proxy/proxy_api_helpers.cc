@@ -211,9 +211,8 @@ bool GetProxyRulesStringFromExtensionPref(
     std::string* out,
     std::string* error,
     bool* bad_message) {
-  const base::DictionaryValue* proxy_rules = NULL;
-  proxy_config->GetDictionary(proxy_api_constants::kProxyConfigRules,
-                              &proxy_rules);
+  const base::Value* proxy_rules =
+      proxy_config->FindDictKey(proxy_api_constants::kProxyConfigRules);
   if (!proxy_rules)
     return true;
 
@@ -227,13 +226,14 @@ bool GetProxyRulesStringFromExtensionPref(
   // singleProxy that will supersede per-URL proxies, but it's worth it to keep
   // the code simple and extensible.
   for (size_t i = 0; i <= proxy_api_constants::SCHEME_MAX; ++i) {
-    const base::DictionaryValue* proxy_dict = NULL;
-    has_proxy[i] = proxy_rules->GetDictionary(
-        proxy_api_constants::field_name[i], &proxy_dict);
+    const base::Value* proxy_dict =
+        proxy_rules->FindDictPath(proxy_api_constants::field_name[i]);
+    has_proxy[i] = proxy_dict != nullptr;
     if (has_proxy[i]) {
       net::ProxyServer::Scheme default_scheme = net::ProxyServer::SCHEME_HTTP;
-      if (!GetProxyServer(proxy_dict, default_scheme,
-                          &proxy_server[i], error, bad_message)) {
+      if (!GetProxyServer(&base::Value::AsDictionaryValue(*proxy_dict),
+                          default_scheme, &proxy_server[i], error,
+                          bad_message)) {
         // Don't set |error| here, as GetProxyServer takes care of that.
         return false;
       }

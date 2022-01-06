@@ -406,10 +406,10 @@ std::unique_ptr<ContentAction> SetIcon::Create(
   }
 
   gfx::ImageSkia icon;
-  const base::DictionaryValue* canvas_set = NULL;
-  if (dict->GetDictionary("imageData", &canvas_set) &&
-      ExtensionAction::ParseIconFromCanvasDictionary(*canvas_set, &icon) !=
-          ExtensionAction::IconParseResult::kSuccess) {
+  const base::Value* canvas_set = dict->FindDictKey("imageData");
+  if (canvas_set && ExtensionAction::ParseIconFromCanvasDictionary(
+                        base::Value::AsDictionaryValue(*canvas_set), &icon) !=
+                        ExtensionAction::IconParseResult::kSuccess) {
     *error = kInvalidIconDictionary;
     return nullptr;
   }
