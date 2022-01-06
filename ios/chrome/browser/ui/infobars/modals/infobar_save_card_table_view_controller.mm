@@ -10,6 +10,7 @@
 #include "base/metrics/user_metrics_action.h"
 #import "components/autofill/core/common/autofill_features.h"
 #include "ios/chrome/browser/infobars/infobar_metrics_recorder.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/autofill/cells/target_account_item.h"
 #import "ios/chrome/browser/ui/autofill/save_card_infobar_metrics_recorder.h"
 #import "ios/chrome/browser/ui/autofill/save_card_message_with_links.h"
@@ -330,8 +331,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       for (SaveCardMessageWithLinks* message in self.legalMessages) {
         [message.linkRanges enumerateObjectsUsingBlock:^(
                                 NSValue* rangeValue, NSUInteger i, BOOL* stop) {
-          [linkCell setLinkURL:message.linkURLs[i]
-                      forRange:rangeValue.rangeValue];
+          CrURL* crurl = [[CrURL alloc] initWithGURL:message.linkURLs[i]];
+          [linkCell setLinkURL:crurl forRange:rangeValue.rangeValue];
         }];
       }
       linkCell.delegate = self;
@@ -374,8 +375,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 #pragma mark - TableViewTextLinkCellDelegate
 
 - (void)tableViewTextLinkCell:(TableViewTextLinkCell*)cell
-            didRequestOpenURL:(const GURL&)URL {
-  [self.saveCardModalDelegate dismissModalAndOpenURL:URL];
+            didRequestOpenURL:(CrURL*)URL {
+  [self.saveCardModalDelegate dismissModalAndOpenURL:URL.gurl];
 }
 
 #pragma mark - Private Methods

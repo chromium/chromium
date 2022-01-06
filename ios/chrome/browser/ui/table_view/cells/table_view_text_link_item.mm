@@ -6,13 +6,12 @@
 
 #include "base/ios/ns_range.h"
 #include "base/mac/foundation_util.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "net/base/mac/url_conversions.h"
-#include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -39,7 +38,7 @@
       base::mac::ObjCCastStrict<TableViewTextLinkCell>(tableCell);
   cell.textView.text = self.text;
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
-  if (!self.linkURL.is_empty())
+  if (self.linkURL && !self.linkURL.gurl.is_empty())
     [cell setLinkURL:self.linkURL];
 }
 
@@ -90,8 +89,10 @@
   return self;
 }
 
-- (void)setLinkURL:(const GURL&)URL {
-  if (URL.is_valid()) {
+- (void)setLinkURL:(CrURL*)URL {
+  if (!URL)
+    return;
+  if (URL.gurl.is_valid()) {
     UITextView* textView = self.textView;
     DCHECK(textView.text.length > 0);
     // Attribute form of the font/color given to the text view on init.
@@ -102,8 +103,10 @@
   }
 }
 
-- (void)setLinkURL:(const GURL&)URL forRange:(NSRange)range {
-  if (URL.is_valid()) {
+- (void)setLinkURL:(CrURL*)URL forRange:(NSRange)range {
+  if (!URL)
+    return;
+  if (URL.gurl.is_valid()) {
     NSMutableAttributedString* text = [[NSMutableAttributedString alloc]
         initWithAttributedString:self.textView.attributedText];
     [text addAttributes:[self linkAttributesForURL:URL] range:range];
@@ -111,9 +114,8 @@
   }
 }
 
-- (NSDictionary<NSAttributedStringKey, id>*)linkAttributesForURL:
-    (const GURL&)URL {
-  NSURL* linkURL = net::NSURLWithGURL(URL);
+- (NSDictionary<NSAttributedStringKey, id>*)linkAttributesForURL:(CrURL*)URL {
+  NSURL* linkURL = URL.nsurl;
   return @{
     NSForegroundColorAttributeName : [UIColor colorNamed:kBlueColor],
     NSLinkAttributeName : linkURL,
@@ -131,8 +133,8 @@
               interaction:(UITextItemInteraction)interaction {
   DCHECK(self.textView == textView);
   DCHECK(URL);
-  [self.delegate tableViewTextLinkCell:self
-                     didRequestOpenURL:net::GURLWithNSURL(URL)];
+  CrURL* crurl = [[CrURL alloc] initWithNSURL:URL];
+  [self.delegate tableViewTextLinkCell:self didRequestOpenURL:crurl];
   // Returns NO as the app is handling the opening of the URL.
   return NO;
 }
