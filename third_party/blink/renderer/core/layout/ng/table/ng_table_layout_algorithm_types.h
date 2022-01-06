@@ -199,7 +199,7 @@ class CORE_EXPORT NGTableTypes {
 
   struct Section {
     wtf_size_t start_row;
-    wtf_size_t rowspan;
+    wtf_size_t row_count;
     LayoutUnit block_size;
     absl::optional<float> percent;
     bool is_constrained;
@@ -220,7 +220,7 @@ class CORE_EXPORT NGTableTypes {
 
   static Section CreateSection(const NGLayoutInputNode&,
                                wtf_size_t start_row,
-                               wtf_size_t rowspan,
+                               wtf_size_t row_count,
                                LayoutUnit block_size,
                                bool treat_as_tbody);
 

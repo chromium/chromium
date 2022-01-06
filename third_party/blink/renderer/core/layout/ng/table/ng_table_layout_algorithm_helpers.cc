@@ -1304,7 +1304,7 @@ void NGTableAlgorithmHelpers::DistributeTableBlockSizeToSections(
     if (!section.needs_redistribution)
       continue;
     DistributeExcessBlockSizeToRows(
-        section.start_row, section.rowspan, section.block_size,
+        section.start_row, section.row_count, section.block_size,
         /* desired_block_size_is_rowspan */ false, border_block_spacing,
         section.block_size, rows);
   }

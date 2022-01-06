@@ -215,7 +215,7 @@ NGTableTypes::CellInlineConstraint NGTableTypes::CreateCellInlineConstraint(
 NGTableTypes::Section NGTableTypes::CreateSection(
     const NGLayoutInputNode& section,
     wtf_size_t start_row,
-    wtf_size_t rows,
+    wtf_size_t row_count,
     LayoutUnit block_size,
     bool treat_as_tbody) {
   const Length& section_css_block_size = section.Style().LogicalHeight();
@@ -226,7 +226,7 @@ NGTableTypes::Section NGTableTypes::CreateSection(
   if (section_css_block_size.IsPercent())
     percent = section_css_block_size.Percent();
   return Section{start_row,
-                 rows,
+                 row_count,
                  block_size,
                  percent,
                  is_constrained,

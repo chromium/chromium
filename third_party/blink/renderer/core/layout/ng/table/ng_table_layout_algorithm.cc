@@ -249,7 +249,7 @@ scoped_refptr<const NGTableConstraintSpaceData> CreateConstraintSpaceData(
   }
   data->sections.ReserveCapacity(sections.size());
   for (const auto& section : sections)
-    data->sections.emplace_back(section.start_row, section.rowspan);
+    data->sections.emplace_back(section.start_row, section.row_count);
   data->rows.ReserveCapacity(rows.size());
   for (const auto& row : rows) {
     data->rows.emplace_back(
@@ -262,13 +262,12 @@ scoped_refptr<const NGTableConstraintSpaceData> CreateConstraintSpaceData(
   // section. The cell does not know what section it is in.
   for (const auto& section : sections) {
     for (wtf_size_t row_index = section.start_row;
-         row_index < section.start_row + section.rowspan; ++row_index) {
-      for (wtf_size_t cell_index = rows[row_index].start_cell_index;
-           cell_index <
-           rows[row_index].start_cell_index + rows[row_index].cell_count;
-           ++cell_index) {
+         row_index < section.start_row + section.row_count; ++row_index) {
+      const auto& row = rows[row_index];
+      for (wtf_size_t cell_index = row.start_cell_index;
+           cell_index < row.start_cell_index + row.cell_count; ++cell_index) {
         wtf_size_t max_rowspan =
-            section.start_row + section.rowspan - row_index;
+            section.start_row + section.row_count - row_index;
         wtf_size_t rowspan =
             std::min(cell_block_constraints[cell_index].rowspan, max_rowspan);
         // Compute cell's size.
