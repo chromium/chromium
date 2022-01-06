@@ -185,8 +185,7 @@ class AppMenuItemViewBinder {
                     R.id.menu_item_enter_anim_id, AppMenuUtil.buildIconItemEnterAnimator(buttons));
 
             // Tint action bar's background.
-            view.setBackgroundDrawable(ApiCompatibilityUtils.getDrawable(
-                    view.getContext().getResources(), R.drawable.menu_action_bar_bg));
+            view.setBackgroundResource(R.drawable.menu_action_bar_bg);
 
             view.setEnabled(false);
         }

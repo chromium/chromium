@@ -44,12 +44,12 @@
 
     <!-- TODO(https://crbug.com/1210689): These all need to ultimately be
          removed because they do not work with dynamic colors. -->
-    <color name="default_bg_color_elev_1_baseline" tools:ignore="UnusedResources">@color/default_bg_color_light_elev_1</color>
-    <color name="default_bg_color_elev_2_baseline" tools:ignore="UnusedResources">@color/default_bg_color_light_elev_2</color>
-    <color name="default_bg_color_elev_3_baseline" tools:ignore="UnusedResources">@color/default_bg_color_light_elev_3</color>
-    <color name="default_bg_color_elev_4_baseline">@color/default_bg_color_light_elev_4</color>
-    <color name="default_bg_color_elev_5_baseline" tools:ignore="UnusedResources">@color/default_bg_color_light_elev_5</color>
-    <color name="default_bg_color_elev_6_baseline" tools:ignore="UnusedResources">@color/default_bg_color_light_elev_6</color>
+    <color name="default_bg_color_elev_1_baseline" tools:ignore="UnusedResources">@color/default_bg_color_light_elev_1_baseline</color>
+    <color name="default_bg_color_elev_2_baseline" tools:ignore="UnusedResources">@color/default_bg_color_light_elev_2_baseline</color>
+    <color name="default_bg_color_elev_3_baseline" tools:ignore="UnusedResources">@color/default_bg_color_light_elev_3_baseline</color>
+    <color name="default_bg_color_elev_4_baseline">@color/default_bg_color_light_elev_4_baseline</color>
+    <color name="default_bg_color_elev_5_baseline" tools:ignore="UnusedResources">@color/default_bg_color_light_elev_5_baseline</color>
+    <color name="default_bg_color_elev_6_baseline" tools:ignore="UnusedResources">@color/default_bg_color_light_elev_6_baseline</color>
     <color name="legacy_bg_color_elev_1">@color/legacy_bg_color_light_elev_1</color>
     <color name="legacy_bg_color_elev_4">@color/legacy_bg_color_light_elev_4</color>
 
@@ -113,7 +113,7 @@
          file. These reference non-color palette colors which is currently
          blocked by PRESUBMIT scripts. -->
     <color name="menu_action_bar_bg_color">@color/menu_action_bar_bg_color_light</color>
-    <color name="menu_action_bar_bg_color_light">@color/default_bg_color_light_elev_1</color>
+    <color name="menu_action_bar_bg_color_light">@color/default_bg_color_light_elev_1_baseline</color>
     <color name="menu_action_bar_bg_color_dark">@color/default_bg_color_dark_elev_6</color>
     <color name="menu_item_bg_color">@color/menu_item_bg_color_light</color>
     <color name="menu_item_bg_color_light">@color/default_bg_color_light</color>
