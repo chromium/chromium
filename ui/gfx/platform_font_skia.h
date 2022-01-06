@@ -31,10 +31,8 @@ class GFX_EXPORT PlatformFontSkia : public PlatformFont {
   PlatformFontSkia(const PlatformFontSkia&) = delete;
   PlatformFontSkia& operator=(const PlatformFontSkia&) = delete;
 
-  // Initials the default PlatformFont. Returns true if this is successful, or
-  // false if fonts resources are not available. If this returns false, the
-  // calling service should shut down.
-  static bool InitDefaultFont();
+  // Initializes the default PlatformFont.
+  static void EnsuresDefaultFontIsInitialized();
 
   // Resets and reloads the cached system font used by the default constructor.
   // This function is useful when the system font has changed, for example, when

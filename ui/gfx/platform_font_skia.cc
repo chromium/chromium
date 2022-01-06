@@ -95,7 +95,7 @@ std::string* PlatformFontSkia::default_font_description_ = NULL;
 // PlatformFontSkia, public:
 
 PlatformFontSkia::PlatformFontSkia() {
-  CHECK(InitDefaultFont()) << "Could not find the default font";
+  EnsuresDefaultFontIsInitialized();
   InitFromPlatformFont(g_default_font.Get().get());
 }
 
@@ -142,11 +142,10 @@ PlatformFontSkia::PlatformFontSkia(
 // PlatformFontSkia, PlatformFont implementation:
 
 // static
-bool PlatformFontSkia::InitDefaultFont() {
+void PlatformFontSkia::EnsuresDefaultFontIsInitialized() {
   if (g_default_font.Get())
-    return true;
+    return;
 
-  bool success = false;
   std::string family = kFallbackFontFamilyName;
   int size_pixels = PlatformFont::kDefaultBaseFontSize;
   int style = Font::NORMAL;
@@ -191,13 +190,13 @@ bool PlatformFontSkia::InitDefaultFont() {
     params = gfx::GetFontRenderParams(FontRenderParamsQuery(), nullptr);
   }
 
+  bool success = false;
   sk_sp<SkTypeface> typeface =
       CreateSkTypeface(style & Font::ITALIC, weight, &family, &success);
-  if (!success)
-    return false;
+  CHECK(success);
+
   g_default_font.Get() = new PlatformFontSkia(
       std::move(typeface), family, size_pixels, style, weight, params);
-  return true;
 }
 
 // static
@@ -341,9 +340,7 @@ void PlatformFontSkia::InitFromDetails(sk_sp<SkTypeface> typeface,
                                           &font_family_, &success);
 
   if (!success) {
-    LOG(ERROR) << "Could not find any font: " << font_family << ", "
-               << kFallbackFontFamilyName << ". Falling back to the default";
-
+    EnsuresDefaultFontIsInitialized();
     InitFromPlatformFont(g_default_font.Get().get());
     return;
   }
