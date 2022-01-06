@@ -483,7 +483,7 @@ TEST(RevocationChecker, SkipUnsupportedCRLDistPointWithReasons) {
   //       }
   //     }
   //     # reasons
-  //     [1 PRIMITIVE] { `0560` }
+  //     [1 PRIMITIVE] { b`011` }
   //   }
   //   # Second distribution point. This should be used since it only has a
   //   # fullName URI.

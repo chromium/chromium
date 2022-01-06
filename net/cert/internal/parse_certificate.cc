@@ -137,40 +137,42 @@ WARN_UNUSED_RESULT bool BitStringIsAllZeros(const der::BitString& bits) {
 
 // Parses a DistributionPointName.
 //
-// Currently this implementation is only concerned with URIs encoded in
-// fullName and skips the rest (it does not fully parse the GeneralNames).
-//
-// URIs found in fullName are appended to |uris|.
-//
 // From RFC 5280:
 //
 //    DistributionPointName ::= CHOICE {
 //      fullName                [0]     GeneralNames,
 //      nameRelativeToCRLIssuer [1]     RelativeDistinguishedName }
 bool ParseDistributionPointName(const der::Input& dp_name,
-                                std::vector<base::StringPiece>* uris) {
-  bool has_full_name;
-  der::Input der_full_name;
-  if (!der::Parser(dp_name).ReadOptionalTag(
-          der::kTagContextSpecific | der::kTagConstructed | 0, &der_full_name,
-          &has_full_name)) {
+                                ParsedDistributionPoint* distribution_point) {
+  der::Parser parser(dp_name);
+  absl::optional<der::Input> der_full_name;
+  if (!parser.ReadOptionalTag(
+          der::kTagContextSpecific | der::kTagConstructed | 0,
+          &der_full_name)) {
     return false;
   }
-  if (!has_full_name) {
-    // Only process DistributionPoints which provide "fullName".
-    return true;
+  if (der_full_name) {
+    // TODO(mattm): surface the CertErrors.
+    CertErrors errors;
+    distribution_point->distribution_point_fullname =
+        GeneralNames::CreateFromValue(*der_full_name, &errors);
+    if (!distribution_point->distribution_point_fullname)
+      return false;
+    return !parser.HasMore();
   }
 
-  // TODO(mattm): surface the CertErrors.
-  CertErrors errors;
-  std::unique_ptr<GeneralNames> full_name =
-      GeneralNames::CreateFromValue(der_full_name, &errors);
-  if (!full_name)
+  if (!parser.ReadOptionalTag(
+          der::kTagContextSpecific | der::kTagConstructed | 1,
+          &distribution_point
+               ->distribution_point_name_relative_to_crl_issuer)) {
     return false;
+  }
+  if (distribution_point->distribution_point_name_relative_to_crl_issuer) {
+    return !parser.HasMore();
+  }
 
-  // This code is only interested in extracting the URIs from fullName.
-  *uris = full_name->uniform_resource_identifiers;
-  return true;
+  // The CHOICE must contain either fullName or nameRelativeToCRLIssuer.
+  return false;
 }
 
 // RFC 5280, section 4.2.1.13.
@@ -190,48 +192,37 @@ bool ParseAndAddDistributionPoint(
     return false;
 
   //  distributionPoint       [0]     DistributionPointName OPTIONAL,
-  bool distribution_point_present;
-  der::Input name;
+  absl::optional<der::Input> distribution_point_name;
   if (!distrib_point_parser.ReadOptionalTag(
-          der::kTagContextSpecific | der::kTagConstructed | 0, &name,
-          &distribution_point_present)) {
+          der::kTagContextSpecific | der::kTagConstructed | 0,
+          &distribution_point_name)) {
     return false;
   }
 
-  if (!distribution_point_present) {
-    // Only process DistributionPoints which provide a "distributionPoint".
-    return true;
+  if (distribution_point_name &&
+      !ParseDistributionPointName(*distribution_point_name,
+                                  &distribution_point)) {
+    return false;
   }
 
   //  reasons                 [1]     ReasonFlags OPTIONAL,
-  bool reasons_present;
-  if (!distrib_point_parser.SkipOptionalTag(der::kTagContextSpecific | 1,
-                                            &reasons_present)) {
+  if (!distrib_point_parser.ReadOptionalTag(der::kTagContextSpecific | 1,
+                                            &distribution_point.reasons)) {
     return false;
   }
-
-  // If it contains a subset of reasons then we skip it. We aren't
-  // interested in subsets of CRLs and the RFC states that there MUST be
-  // a CRL that covers all reasons.
-  if (reasons_present) {
-    return true;
-  }
-
-  // Extract the URIs from the DistributionPointName.
-  if (!ParseDistributionPointName(name, &distribution_point.uris))
-    return false;
 
   //  cRLIssuer               [2]     GeneralNames OPTIONAL }
-  bool crl_issuer_present;
-  der::Input crl_issuer;
   if (!distrib_point_parser.ReadOptionalTag(
-          der::kTagContextSpecific | der::kTagConstructed | 2, &crl_issuer,
-          &crl_issuer_present)) {
+          der::kTagContextSpecific | der::kTagConstructed | 2,
+          &distribution_point.crl_issuer)) {
     return false;
   }
+  // TODO(eroman): Parse "cRLIssuer"?
 
-  distribution_point.has_crl_issuer = crl_issuer_present;
-  // TODO(eroman): Parse "cRLIssuer".
+  // RFC 5280, section 4.2.1.13:
+  // either distributionPoint or cRLIssuer MUST be present.
+  if (!distribution_point_name && !distribution_point.crl_issuer)
+    return false;
 
   if (distrib_point_parser.HasMore())
     return false;

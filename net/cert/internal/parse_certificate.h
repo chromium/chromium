@@ -13,6 +13,7 @@
 
 #include "base/compiler_specific.h"
 #include "net/base/net_export.h"
+#include "net/cert/internal/general_names.h"
 #include "net/der/input.h"
 #include "net/der/parse_values.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -517,8 +518,6 @@ NET_EXPORT bool ParseAuthorityInfoAccess(
     std::vector<base::StringPiece>* out_ocsp_uris) WARN_UNUSED_RESULT;
 
 // ParsedDistributionPoint represents a parsed DistributionPoint from RFC 5280.
-// It is simplified compared to that from RFC 5280 as it make assumptions about
-// which OPTIONAL fields are present, and which CHOICEs are used.
 //
 //   DistributionPoint ::= SEQUENCE {
 //    distributionPoint       [0]     DistributionPointName OPTIONAL,
@@ -529,30 +528,26 @@ struct NET_EXPORT ParsedDistributionPoint {
   ParsedDistributionPoint(ParsedDistributionPoint&& other);
   ~ParsedDistributionPoint();
 
-  // The possibly-empty list of URIs from distributionPoint.
-  std::vector<base::StringPiece> uris;
+  // The parsed fullName, if distributionPoint was present and was a fullName.
+  std::unique_ptr<GeneralNames> distribution_point_fullname;
 
-  // TODO(eroman): Include the actual cRLIssuer.
-  bool has_crl_issuer = false;
+  // If present, the DER encoded value of the nameRelativeToCRLIssuer field.
+  // This should be a RelativeDistinguishedName, but the parser does not
+  // validate it.
+  absl::optional<der::Input> distribution_point_name_relative_to_crl_issuer;
+
+  // If present, the DER encoded value of the reasons field. This should be a
+  // ReasonFlags bitString, but the parser does not validate it.
+  absl::optional<der::Input> reasons;
+
+  // If present, the DER encoded value of the cRLIssuer field. This should be a
+  // GeneralNames, but the parser does not validate it.
+  absl::optional<der::Input> crl_issuer;
 };
 
 // Parses the value of a CRL Distribution Points extension (sequence of
 // DistributionPoint). Return true on success, and fills |distribution_points|
 // with values that reference data in |distribution_points_tlv|.
-//
-// Some simplifications are made during parsing.
-//
-//  * Skips DistributionPoints that lack a "distributionPoint" (name) field.
-//
-//  * Skips DistributionPoints that contain a "reasons" field. This is
-//    reasonable under RFC 5280's profile which requires that conforming CAs
-//    "MUST include at least one DistributionPoint that points to a CRL that
-//    covers the certificate for all reasons".
-//
-//  * Only parses URIs from the GeneralNames "distributionPoint". If the
-//    DistributionPoint uses "nameRelativeToCRLIssuer" rather than "fullName" it
-//    is skipped. And if "fullName" includes names ofther than
-//    "uniformResourceIdentifier" they are also skipped.
 NET_EXPORT bool ParseCrlDistributionPoints(
     const der::Input& distribution_points_tlv,
     std::vector<ParsedDistributionPoint>* distribution_points)
