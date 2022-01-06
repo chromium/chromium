@@ -50,23 +50,23 @@ async function runTest(win, resizeFunc) {
 onload = () => {
   // Test the event order in a top-level window which we will programmatically
   // resize.
-  promise_test(t => new Promise(async (resolve) => {
-    test_driver.bless('Open a popup in a new window', async () => {
-        const popup = window.open('about:blank', 'newwindow', 'width=300,height=300');
-        await runTest(popup, (x, y) => {popup.resizeTo(x, y);});
-        resolve();
+  promise_test(async t => {
+    let popup = null;
+    test_driver.bless('Open a popup in a new window', () => {
+        popup = window.open('about:blank', 'newwindow', 'width=300,height=300');
     });
-  }), 'Popup: DOMWindow resize fired before VisualViewport.');
+    await t.step_wait(() => popup != null, "Opened popup window");
+
+    await runTest(popup, (x, y) => {popup.resizeTo(x, y);});
+  }, 'Popup: DOMWindow resize fired before VisualViewport.');
 
   // Also test the resize resulting from an iframe's size change.
-  promise_test(t => new Promise(async (resolve) => {
-      const iframe = frames[0];
-      await runTest(iframe, (x, y) => {iframe.frameElement.style.width = x + 'px';
-                                         iframe.frameElement.style.height = y + 'px';
-                                         iframe.frameElement.offsetWidth; /* force reflow */});
-      resolve();
-    })
-  , 'iframe: DOMWindow resize fired before VisualViewport.');
+  promise_test(async t => {
+    const iframe = frames[0];
+    await runTest(iframe, (x, y) => {iframe.frameElement.style.width = x + 'px';
+                                     iframe.frameElement.style.height = y + 'px';
+                                     iframe.frameElement.offsetWidth; /* force reflow */});
+  }, 'iframe: DOMWindow resize fired before VisualViewport.');
 }
 
 </script>

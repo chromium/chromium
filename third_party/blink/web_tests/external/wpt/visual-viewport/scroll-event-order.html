@@ -67,49 +67,47 @@ function pinch_zoom_in() {
 const scroller1 = document.getElementById('scroller1');
 const scroller2 = document.getElementById('scroller2');
 
-promise_test(t => new Promise(async (resolve) => {
-  // Pinch-zoom in so that the scrollIntoView call below causes scrolling in
-  // both the layout and visual viewports within the same rAF.
-  await pinch_zoom_in();
-  assert_greater_than(window.visualViewport.scale, 1, 'Must have zoomed in');
+promise_test(async t => {
+    // Pinch-zoom in so that the scrollIntoView call below causes scrolling in
+    // both the layout and visual viewports within the same rAF.
+    await pinch_zoom_in();
+    assert_greater_than(window.visualViewport.scale, 1, 'Must have zoomed in');
 
-  await oneRaf();
+    await oneRaf();
 
-  const scroll_events = [];
+    const scroll_events = [];
 
-  // Register the scroll handlers on the window, visualViewport, and both
-  // <div> scrollers.
-  {
-    window.onscroll = () => { scroll_events.push('window-attribute'); }
-    window.addEventListener('scroll', () => { scroll_events.push('window-addEventListener'); });
-    window.visualViewport.onscroll = () => { scroll_events.push('visualViewport-attribute'); }
-    window.visualViewport.addEventListener('scroll', () => {
-          scroll_events.push('visualViewport-addEventListener'); });
-    scroller1.addEventListener('scroll',
-        () => { scroll_events.push('scroller1'); });
-    scroller2.addEventListener('scroll',
-        () => { scroll_events.push('scroller2'); });
-  }
+    // Register the scroll handlers on the window, visualViewport, and both
+    // <div> scrollers.
+    {
+      window.onscroll = () => { scroll_events.push('window-attribute'); }
+      window.addEventListener('scroll', () => { scroll_events.push('window-addEventListener'); });
+      window.visualViewport.onscroll = () => { scroll_events.push('visualViewport-attribute'); }
+      window.visualViewport.addEventListener('scroll', () => {
+            scroll_events.push('visualViewport-addEventListener'); });
+      scroller1.addEventListener('scroll',
+          () => { scroll_events.push('scroller1'); });
+      scroller2.addEventListener('scroll',
+          () => { scroll_events.push('scroller2'); });
+    }
 
-  // Cause scrolling in each scroller and scrollIntoView so that the layout
-  // and visual viewports both scroll.
-  scroller1.scrollTop = 200;
-  document.getElementById('target').scrollIntoView();
-  scroller2.scrollTop = 200;
+    // Cause scrolling in each scroller and scrollIntoView so that the layout
+    // and visual viewports both scroll.
+    scroller1.scrollTop = 200;
+    document.getElementById('target').scrollIntoView();
+    scroller2.scrollTop = 200;
 
-  // Wait a rAF since scroll events are delievered as part of the event loop.
-  await oneRaf();
+    // Wait a rAF since scroll events are delievered as part of the event loop.
+    await oneRaf();
 
-  // The scroll events must be delivered in the order they were executed,
-  // scroller1 first, then the viewport (window then visualViewport), then
-  // scroller2.
-  assert_equals(scroll_events.toString(),
-                'scroller1,' +
-                'window-attribute,window-addEventListener,' +
-                'visualViewport-attribute,visualViewport-addEventListener,' +
-                'scroller2');
-
-  resolve();
-}), "Scroll event ordering");
+    // The scroll events must be delivered in the order they were executed,
+    // scroller1 first, then the viewport (window then visualViewport), then
+    // scroller2.
+    assert_equals(scroll_events.toString(),
+                  'scroller1,' +
+                  'window-attribute,window-addEventListener,' +
+                  'visualViewport-attribute,visualViewport-addEventListener,' +
+                  'scroller2');
+}, "Scroll event ordering");
 
 </script>
