@@ -16,6 +16,6 @@ jobs:
       - uses: ./.github/actions/release
         env:
           BUILD_TEST_AUTHORIZATION: ${{ secrets.BUILD_TEST_AUTHORIZATION }}
-          BUILD_TEST_HOSTNAME: ${{ secrets.BUILD_TEST_HOSTNAME }}
+          BUILD_TEST_HOSTNAME: build-server.replay.prod
           BUILD_TEST_PORT: ${{ secrets.BUILD_TEST_PORT }}
           BUILD_TEST_INSECURE: ${{ secrets.BUILD_TEST_INSECURE }}
