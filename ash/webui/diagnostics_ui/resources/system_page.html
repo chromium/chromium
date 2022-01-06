@@ -32,9 +32,9 @@
  }
 
  #download-icon {
+   --iron-icon-fill-color: currentColor;
    --iron-icon-height: 20px;
    --iron-icon-width: 20px;
-   color: var(--cros-icon-color-prominent);
    right: 4px;
  }
 
@@ -100,7 +100,7 @@
   <template is="dom-if" if="[[!isNetworkingEnabled]]">
     <div class="session-log-container">
       <cr-button on-click="onSessionLogClick_" class="session-log-button"
-          hidden="[[!isLoggedIn_]]">
+          disabled="[[!saveSessionLogEnabled_]]" hidden="[[!isLoggedIn_]]">
         <iron-icon icon="diagnostics:download" id="download-icon"></iron-icon>
         <span>[[i18n('sessionLog')]]</span>
       </cr-button>
