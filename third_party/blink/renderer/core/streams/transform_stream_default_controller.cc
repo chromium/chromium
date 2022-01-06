@@ -329,19 +329,19 @@ v8::Local<v8::Promise> TransformStreamDefaultController::PerformTransform(
 
   class RejectFunction final : public PromiseHandlerWithValue {
    public:
-    RejectFunction(ScriptState* script_state, TransformStream* stream)
-        : PromiseHandlerWithValue(script_state), stream_(stream) {}
+    explicit RejectFunction(TransformStream* stream) : stream_(stream) {}
 
-    v8::Local<v8::Value> CallWithLocal(v8::Local<v8::Value> r) override {
+    v8::Local<v8::Value> CallWithLocal(ScriptState* script_state,
+                                       v8::Local<v8::Value> r) override {
       // 2. Return the result of transforming transformPromise with a rejection
       //    handler that, when called with argument r, performs the following
       //    steps:
       //    a. Perform ! TransformStreamError(controller.
       //       [[controlledTransformStream]], r).
-      TransformStream::Error(GetScriptState(), stream_, r);
+      TransformStream::Error(script_state, stream_, r);
 
       //    b. Throw r.
-      return PromiseReject(GetScriptState(), r);
+      return PromiseReject(script_state, r);
     }
 
     void Trace(Visitor* visitor) const override {
@@ -356,8 +356,9 @@ v8::Local<v8::Promise> TransformStreamDefaultController::PerformTransform(
   // 2. Return the result of transforming transformPromise ...
   return StreamThenPromise(
       script_state->GetContext(), transform_promise, nullptr,
-      MakeGarbageCollected<RejectFunction>(
-          script_state, controller->controlled_transform_stream_));
+      MakeGarbageCollected<NewScriptFunction>(
+          script_state, MakeGarbageCollected<RejectFunction>(
+                            controller->controlled_transform_stream_)));
 }
 
 void TransformStreamDefaultController::Terminate(

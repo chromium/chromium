@@ -405,7 +405,9 @@ class CrossRealmTransformWritable::WriteAlgorithm final
     return StreamThenPromise(
         script_state->GetContext(),
         writable_->backpressure_promise_->V8Promise(isolate),
-        MakeGarbageCollected<DoWriteOnResolve>(script_state, chunk, this));
+        MakeGarbageCollected<NewScriptFunction>(
+            script_state,
+            MakeGarbageCollected<DoWriteOnResolve>(script_state, chunk, this)));
   }
 
   void Trace(Visitor* visitor) const override {
@@ -420,12 +422,10 @@ class CrossRealmTransformWritable::WriteAlgorithm final
     DoWriteOnResolve(ScriptState* script_state,
                      v8::Local<v8::Value> chunk,
                      WriteAlgorithm* target)
-        : PromiseHandlerWithValue(script_state),
-          chunk_(script_state->GetIsolate(), chunk),
-          target_(target) {}
+        : chunk_(script_state->GetIsolate(), chunk), target_(target) {}
 
-    v8::Local<v8::Value> CallWithLocal(v8::Local<v8::Value>) override {
-      ScriptState* script_state = GetScriptState();
+    v8::Local<v8::Value> CallWithLocal(ScriptState* script_state,
+                                       v8::Local<v8::Value>) override {
       return target_->DoWrite(script_state,
                               chunk_.Get(script_state->GetIsolate()));
     }

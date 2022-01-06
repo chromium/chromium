@@ -36,7 +36,7 @@ namespace {
 // Web platform tests test ReadableStream more thoroughly from scripts.
 class ReadableStreamTest : public testing::Test {
  public:
-  ReadableStreamTest() {}
+  ReadableStreamTest() = default;
 
   absl::optional<String> ReadAll(V8TestingScope& scope,
                                  ReadableStream* stream) {
@@ -552,7 +552,7 @@ TEST_F(ReadableStreamTest, GarbageCollectJavaScriptUnderlyingSource) {
 TEST_F(ReadableStreamTest, GarbageCollectCPlusPlusUnderlyingSource) {
   class NoopUnderlyingSource : public UnderlyingSourceBase {
    public:
-    NoopUnderlyingSource(ScriptState* script_state)
+    explicit NoopUnderlyingSource(ScriptState* script_state)
         : UnderlyingSourceBase(script_state) {}
   };
 

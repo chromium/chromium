@@ -40,7 +40,7 @@ using ::testing::Return;
 
 class TransformStreamTest : public ::testing::Test {
  public:
-  TransformStreamTest() {}
+  TransformStreamTest() = default;
 
   TransformStream* Stream() const { return stream_; }
 

@@ -467,11 +467,11 @@ void ReadableByteStreamController::CallPullIfNeeded(
 
   class ResolveFunction final : public PromiseHandler {
    public:
-    ResolveFunction(ScriptState* script_state,
-                    ReadableByteStreamController* controller)
-        : PromiseHandler(script_state), controller_(controller) {}
+    explicit ResolveFunction(ReadableByteStreamController* controller)
+        : controller_(controller) {}
 
-    void CallWithLocal(v8::Local<v8::Value>) override {
+    void CallWithLocal(ScriptState* script_state,
+                       v8::Local<v8::Value>) override {
       // 7. Upon fulfillment of pullPromise,
       //   a. Set controller.[[pulling]] to false.
       controller_->pulling_ = false;
@@ -481,7 +481,7 @@ void ReadableByteStreamController::CallPullIfNeeded(
         controller_->pull_again_ = false;
         //     ii. Perform !
         //     ReadableByteStreamControllerCallPullIfNeeded(controller).
-        CallPullIfNeeded(GetScriptState(), controller_);
+        CallPullIfNeeded(script_state, controller_);
       }
     }
 
@@ -496,14 +496,14 @@ void ReadableByteStreamController::CallPullIfNeeded(
 
   class RejectFunction final : public PromiseHandler {
    public:
-    RejectFunction(ScriptState* script_state,
-                   ReadableByteStreamController* controller)
-        : PromiseHandler(script_state), controller_(controller) {}
+    explicit RejectFunction(ReadableByteStreamController* controller)
+        : controller_(controller) {}
 
-    void CallWithLocal(v8::Local<v8::Value> e) override {
+    void CallWithLocal(ScriptState* script_state,
+                       v8::Local<v8::Value> e) override {
       // 8. Upon rejection of pullPromise with reason e,
       //   a. Perform ! ReadableByteStreamControllerError(controller, e).
-      Error(GetScriptState(), controller_, e);
+      Error(script_state, controller_, e);
     }
 
     void Trace(Visitor* visitor) const override {
@@ -517,8 +517,10 @@ void ReadableByteStreamController::CallPullIfNeeded(
 
   StreamThenPromise(
       script_state->GetContext(), pull_promise,
-      MakeGarbageCollected<ResolveFunction>(script_state, controller),
-      MakeGarbageCollected<RejectFunction>(script_state, controller));
+      MakeGarbageCollected<NewScriptFunction>(
+          script_state, MakeGarbageCollected<ResolveFunction>(controller)),
+      MakeGarbageCollected<NewScriptFunction>(
+          script_state, MakeGarbageCollected<RejectFunction>(controller)));
 }
 
 ReadableByteStreamController::PullIntoDescriptor*
@@ -738,11 +740,11 @@ void ReadableByteStreamController::SetUp(
 
   class ResolveFunction final : public PromiseHandler {
    public:
-    ResolveFunction(ScriptState* script_state,
-                    ReadableByteStreamController* controller)
-        : PromiseHandler(script_state), controller_(controller) {}
+    explicit ResolveFunction(ReadableByteStreamController* controller)
+        : controller_(controller) {}
 
-    void CallWithLocal(v8::Local<v8::Value>) override {
+    void CallWithLocal(ScriptState* script_state,
+                       v8::Local<v8::Value>) override {
       // 16. Upon fulfillment of startPromise,
       //   a. Set controller.[[started]] to true.
       controller_->started_ = true;
@@ -752,7 +754,7 @@ void ReadableByteStreamController::SetUp(
       DCHECK(!controller_->pull_again_);
       //   d. Perform !
       //   ReadableByteStreamControllerCallPullIfNeeded(controller).
-      CallPullIfNeeded(GetScriptState(), controller_);
+      CallPullIfNeeded(script_state, controller_);
     }
 
     void Trace(Visitor* visitor) const override {
@@ -766,14 +768,14 @@ void ReadableByteStreamController::SetUp(
 
   class RejectFunction final : public PromiseHandler {
    public:
-    RejectFunction(ScriptState* script_state,
-                   ReadableByteStreamController* controller)
-        : PromiseHandler(script_state), controller_(controller) {}
+    explicit RejectFunction(ReadableByteStreamController* controller)
+        : controller_(controller) {}
 
-    void CallWithLocal(v8::Local<v8::Value> r) override {
+    void CallWithLocal(ScriptState* script_state,
+                       v8::Local<v8::Value> r) override {
       // 17. Upon rejection of startPromise with reason r,
       //   a. Perform ! ReadableByteStreamControllerError(controller, r).
-      Error(GetScriptState(), controller_, r);
+      Error(script_state, controller_, r);
     }
 
     void Trace(Visitor* visitor) const override {
@@ -787,8 +789,10 @@ void ReadableByteStreamController::SetUp(
 
   StreamThenPromise(
       script_state->GetContext(), start_promise,
-      MakeGarbageCollected<ResolveFunction>(script_state, controller),
-      MakeGarbageCollected<RejectFunction>(script_state, controller));
+      MakeGarbageCollected<NewScriptFunction>(
+          script_state, MakeGarbageCollected<ResolveFunction>(controller)),
+      MakeGarbageCollected<NewScriptFunction>(
+          script_state, MakeGarbageCollected<RejectFunction>(controller)));
 }
 
 void ReadableByteStreamController::SetUpFromUnderlyingSource(
