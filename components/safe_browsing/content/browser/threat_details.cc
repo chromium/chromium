@@ -665,16 +665,20 @@ void ThreatDetails::RequestThreatDOMDetails(content::RenderFrameHost* frame) {
   pending_render_frame_hosts_.push_back(frame);
   raw_threat_report->GetThreatDOMDetails(
       base::BindOnce(&ThreatDetails::OnReceivedThreatDOMDetails, GetWeakPtr(),
-                     std::move(threat_reporter), frame));
+                     std::move(threat_reporter), frame->GetGlobalId()));
 }
 
 // When the renderer is done, this is called.
 void ThreatDetails::OnReceivedThreatDOMDetails(
     mojo::Remote<mojom::ThreatReporter> threat_reporter,
-    content::RenderFrameHost* sender,
+    content::GlobalRenderFrameHostId sender_id,
     std::vector<mojom::ThreatDOMDetailsNodePtr> params) {
   // If the RenderFrameHost was closed between sending the IPC and this callback
   // running, |sender| will be invalid.
+  auto* sender = content::RenderFrameHost::FromID(sender_id);
+  if (!sender) {
+    return;
+  }
   const auto sender_it = std::find(pending_render_frame_hosts_.begin(),
                                    pending_render_frame_hosts_.end(), sender);
   if (sender_it == pending_render_frame_hosts_.end()) {
