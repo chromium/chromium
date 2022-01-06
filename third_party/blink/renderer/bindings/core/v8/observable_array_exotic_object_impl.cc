@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
+#include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
 #include "v8/include/v8-container.h"
 #include "v8/include/v8-object.h"
 #include "v8/include/v8-proxy.h"
@@ -16,8 +17,11 @@ namespace blink {
 
 namespace bindings {
 
-// static
-const WrapperTypeInfo ObservableArrayExoticObjectImpl::wrapper_type_info_body_{
+namespace {
+
+const V8PrivateProperty::SymbolKey kV8ProxyTargetToV8WrapperKey;
+
+const WrapperTypeInfo kWrapperTypeInfoBody{
     gin::kEmbedderBlink,
     /*install_interface_template_func=*/nullptr,
     /*install_context_dependent_props_func=*/nullptr,
@@ -30,13 +34,11 @@ const WrapperTypeInfo ObservableArrayExoticObjectImpl::wrapper_type_info_body_{
     WrapperTypeInfo::kIdlObservableArray,
 };
 
-// static
-const WrapperTypeInfo& ObservableArrayExoticObjectImpl::wrapper_type_info_ =
-    ObservableArrayExoticObjectImpl::wrapper_type_info_body_;
+}  // namespace
 
 // static
-const V8PrivateProperty::SymbolKey
-    ObservableArrayExoticObjectImpl::kV8ProxyTargetToV8WrapperKey;
+const WrapperTypeInfo& ObservableArrayExoticObjectImpl::wrapper_type_info_ =
+    kWrapperTypeInfoBody;
 
 // static
 bindings::ObservableArrayBase*

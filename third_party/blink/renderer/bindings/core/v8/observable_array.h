@@ -5,42 +5,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_OBSERVABLE_ARRAY_H_
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_OBSERVABLE_ARRAY_H_
 
-#include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/bindings/core/v8/observable_array_exotic_object_impl.h"
 #include "third_party/blink/renderer/platform/bindings/observable_array_base.h"
-#include "third_party/blink/renderer/platform/bindings/v8_private_property.h"
 #include "third_party/blink/renderer/platform/heap/heap_traits.h"
 
 namespace blink {
 
 namespace bindings {
-
-// The implementation class of ObservableArrayExoticObject.
-class CORE_EXPORT ObservableArrayExoticObjectImpl final
-    : public ObservableArrayExoticObject {
-  DEFINE_WRAPPERTYPEINFO();
-
- public:
-  // Returns the backing list object extracted from the proxy target object
-  // of type JS Array.
-  static bindings::ObservableArrayBase* ProxyTargetToObservableArrayBase(
-      v8::Isolate* isolate,
-      v8::Local<v8::Array> v8_proxy_target);
-
-  explicit ObservableArrayExoticObjectImpl(
-      bindings::ObservableArrayBase* observable_array_backing_list_object);
-  ~ObservableArrayExoticObjectImpl() override = default;
-
-  // ScriptWrappable overrides
-  v8::MaybeLocal<v8::Value> Wrap(ScriptState* script_state) override;
-  WARN_UNUSED_RESULT v8::Local<v8::Object> AssociateWithWrapper(
-      v8::Isolate* isolate,
-      const WrapperTypeInfo* wrapper_type_info,
-      v8::Local<v8::Object> wrapper) override;
-
- private:
-  static const WrapperTypeInfo wrapper_type_info_body_;
-  static const V8PrivateProperty::SymbolKey kV8ProxyTargetToV8WrapperKey;
-};
 
 template <typename ElementType>
 class ObservableArrayImplHelper : public bindings::ObservableArrayBase {
