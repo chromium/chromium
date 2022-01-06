@@ -13,6 +13,7 @@
 #include "media/base/video_encoder.h"
 #include "media/base/video_frame_pool.h"
 #include "third_party/libaom/source/libaom/aom/aom_encoder.h"
+#include "third_party/libaom/source/libaom/aom/aomcx.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -38,13 +39,17 @@ class MEDIA_EXPORT Av1VideoEncoder : public VideoEncoder {
 
  private:
   base::TimeDelta GetFrameDuration(const VideoFrame& frame);
-  void DrainOutputs(base::TimeDelta ts, gfx::ColorSpace color_space);
+  void DrainOutputs(int temporal_id,
+                    base::TimeDelta ts,
+                    gfx::ColorSpace color_space);
+  EncoderStatus::Or<int> AssignNextTemporalId(bool key_frame);
 
   using aom_codec_unique_ptr =
       std::unique_ptr<aom_codec_ctx_t, void (*)(aom_codec_ctx_t*)>;
 
   aom_codec_unique_ptr codec_;
-  aom_codec_enc_cfg_t config_;
+  aom_codec_enc_cfg_t config_ = {};
+  aom_svc_params_t svc_params_ = {};
   aom_image_t image_ = {};
 
   // This is a timestamp that is always increasing by frame's duration.
@@ -52,9 +57,9 @@ class MEDIA_EXPORT Av1VideoEncoder : public VideoEncoder {
   // coming from real frames.
   aom_codec_pts_t artificial_timestamp_ = 0;
 
-  gfx::Size originally_configured_size_;
   base::TimeDelta last_frame_timestamp_;
   gfx::ColorSpace last_frame_color_space_;
+  int temporal_svc_frame_index_ = 0;
 
   VideoCodecProfile profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
   VideoFramePool frame_pool_;

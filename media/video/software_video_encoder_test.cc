@@ -892,6 +892,19 @@ INSTANTIATE_TEST_SUITE_P(Av1Generic,
                          SoftwareVideoEncoderTest,
                          ::testing::ValuesIn(kAv1Params),
                          PrintTestParams);
+
+SwVideoTestParams kAv1SVCParams[] = {
+    {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_I420,
+     absl::nullopt},
+    {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_I420,
+     SVCScalabilityMode::kL1T2},
+    {VideoCodec::kAV1, AV1PROFILE_PROFILE_MAIN, PIXEL_FORMAT_I420,
+     SVCScalabilityMode::kL1T3}};
+
+INSTANTIATE_TEST_SUITE_P(Av1TemporalSvc,
+                         SVCVideoEncoderTest,
+                         ::testing::ValuesIn(kAv1SVCParams),
+                         PrintTestParams);
 #endif  // ENABLE_LIBAOM
 
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(H264VideoEncoderTest);

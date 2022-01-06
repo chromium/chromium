@@ -292,7 +292,7 @@ VideoEncoderTraits::ParsedConfig* ParseConfigStatic(
 }
 
 const base::Feature kWebCodecsAv1Encoding{"WebCodecsAv1Encoding",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool VerifyCodecSupportStatic(VideoEncoderTraits::ParsedConfig* config,
                               ExceptionState* exception_state) {
@@ -307,14 +307,6 @@ bool VerifyCodecSupportStatic(VideoEncoderTraits::ParsedConfig* config,
         return false;
       }
 
-      if (config->options.scalability_mode.has_value()) {
-        if (exception_state) {
-          exception_state->ThrowDOMException(
-              DOMExceptionCode::kNotSupportedError,
-              "SVC encoding is not supported for AV1 yet.");
-        }
-        return false;
-      }
       if (config->profile !=
           media::VideoCodecProfile::AV1PROFILE_PROFILE_MAIN) {
         if (exception_state) {
@@ -323,7 +315,6 @@ bool VerifyCodecSupportStatic(VideoEncoderTraits::ParsedConfig* config,
         }
         return false;
       }
-      // TODO(crbug.com/1208280): Check for supported AV1 levels
       break;
 
     case media::VideoCodec::kVP8:
@@ -995,6 +986,9 @@ static void isConfigSupportedWithSoftwareOnly(
     VideoEncoderTraits::ParsedConfig* config) {
   std::unique_ptr<media::VideoEncoder> software_encoder;
   switch (config->codec) {
+    case media::VideoCodec::kAV1:
+      software_encoder = CreateAv1VideoEncoder();
+      break;
     case media::VideoCodec::kVP8:
     case media::VideoCodec::kVP9:
       software_encoder = CreateVpxVideoEncoder();

@@ -55,7 +55,8 @@ int GetNumberOfThreads(int width) {
 }
 
 EncoderStatus SetUpAomConfig(const VideoEncoder::Options& opts,
-                             aom_codec_enc_cfg_t* config) {
+                             aom_codec_enc_cfg_t& config,
+                             aom_svc_params_t& svc_params) {
   if (opts.frame_size.width() <= 0 || opts.frame_size.height() <= 0)
     return EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedConfig,
                          "Negative width or height values.");
@@ -64,60 +65,100 @@ EncoderStatus SetUpAomConfig(const VideoEncoder::Options& opts,
     return EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedConfig,
                          "Frame is too large.");
 
-  config->g_profile = 0;  // main
-  config->g_input_bit_depth = 8;
-  config->g_pass = AOM_RC_ONE_PASS;
-  config->g_lag_in_frames = 0;
-  config->rc_max_quantizer = 56;
-  config->rc_min_quantizer = 10;
-  config->rc_dropframe_thresh = 0;  // Don't drop frames
+  // Set up general config
+  config.g_profile = 0;  // main
+  config.g_input_bit_depth = 8;
+  config.g_pass = AOM_RC_ONE_PASS;
+  config.g_lag_in_frames = 0;
+  config.rc_max_quantizer = 56;
+  config.rc_min_quantizer = 10;
+  config.rc_dropframe_thresh = 0;  // Don't drop frames
 
-  config->rc_undershoot_pct = 50;
-  config->rc_overshoot_pct = 50;
-  config->rc_buf_initial_sz = 600;
-  config->rc_buf_optimal_sz = 600;
-  config->rc_buf_sz = 1000;
-  config->g_error_resilient = 0;
+  config.rc_undershoot_pct = 50;
+  config.rc_overshoot_pct = 50;
+  config.rc_buf_initial_sz = 600;
+  config.rc_buf_optimal_sz = 600;
+  config.rc_buf_sz = 1000;
+  config.g_error_resilient = 0;
 
-  config->g_timebase.num = 1;
-  config->g_timebase.den = base::Time::kMicrosecondsPerSecond;
+  config.g_timebase.num = 1;
+  config.g_timebase.den = base::Time::kMicrosecondsPerSecond;
 
   // Set the number of threads based on the image width and num of cores.
-  config->g_threads = GetNumberOfThreads(opts.frame_size.width());
+  config.g_threads = GetNumberOfThreads(opts.frame_size.width());
 
   // Insert keyframes at will with a given max interval
   if (opts.keyframe_interval.has_value()) {
-    config->kf_mode = AOM_KF_AUTO;
-    config->kf_min_dist = 0;
-    config->kf_max_dist = opts.keyframe_interval.value();
+    config.kf_mode = AOM_KF_AUTO;
+    config.kf_min_dist = 0;
+    config.kf_max_dist = opts.keyframe_interval.value();
   }
 
   if (opts.bitrate.has_value()) {
     auto& bitrate = opts.bitrate.value();
-    config->rc_target_bitrate = bitrate.target() / 1000;
+    config.rc_target_bitrate = bitrate.target() / 1000;
     switch (bitrate.mode()) {
       case Bitrate::Mode::kVariable:
-        config->rc_end_usage = AOM_VBR;
+        config.rc_end_usage = AOM_VBR;
         break;
       case Bitrate::Mode::kConstant:
-        config->rc_end_usage = AOM_CBR;
+        config.rc_end_usage = AOM_CBR;
         break;
     }
   } else {
     // Default that gives about 2mbps to HD video
-    config->rc_end_usage = AOM_VBR;
-    config->rc_target_bitrate =
+    config.rc_end_usage = AOM_VBR;
+    config.rc_target_bitrate =
         int{(opts.frame_size.GetCheckedArea() * 2)
                 .ValueOrDefault(std::numeric_limits<int>::max())};
   }
 
-  config->g_w = opts.frame_size.width();
-  config->g_h = opts.frame_size.height();
+  config.g_w = opts.frame_size.width();
+  config.g_h = opts.frame_size.height();
 
+  // Setting up SVC parameters
+  svc_params = {};
+  svc_params.framerate_factor[0] = 1;
+  svc_params.number_spatial_layers = 1;
   if (opts.scalability_mode.has_value()) {
-    return EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedConfig,
-                         "Unsupported number of temporal layers.");
+    switch (opts.scalability_mode.value()) {
+      case SVCScalabilityMode::kL1T2:
+        svc_params.framerate_factor[0] = 2;
+        svc_params.framerate_factor[1] = 1;
+        svc_params.number_temporal_layers = 2;
+        // Bitrate allocation L0: 60% L1: 40%
+        svc_params.layer_target_bitrate[0] =
+            60 * config.rc_target_bitrate / 100;
+        svc_params.layer_target_bitrate[1] = config.rc_target_bitrate;
+        break;
+      case SVCScalabilityMode::kL1T3:
+        svc_params.framerate_factor[0] = 4;
+        svc_params.framerate_factor[1] = 2;
+        svc_params.framerate_factor[2] = 1;
+        svc_params.number_temporal_layers = 3;
+
+        // Bitrate allocation L0: 50% L1: 20% L2: 30%
+        svc_params.layer_target_bitrate[0] =
+            50 * config.rc_target_bitrate / 100;
+        svc_params.layer_target_bitrate[1] =
+            70 * config.rc_target_bitrate / 100;
+        svc_params.layer_target_bitrate[2] = config.rc_target_bitrate;
+
+        break;
+      default:
+        return EncoderStatus(
+            EncoderStatus::Codes::kEncoderUnsupportedConfig,
+            "Unsupported configuration of scalability layers.");
+    }
   }
+
+  for (int i = 0; i < svc_params.number_temporal_layers; ++i) {
+    svc_params.scaling_factor_num[i] = 1;
+    svc_params.scaling_factor_den[i] = 1;
+    svc_params.max_quantizers[i] = config.rc_max_quantizer;
+    svc_params.min_quantizers[i] = config.rc_min_quantizer;
+  }
+
   return EncoderStatus::Codes::kOk;
 }
 
@@ -135,7 +176,7 @@ void Av1VideoEncoder::Initialize(VideoCodecProfile profile,
     return;
   }
   profile_ = profile;
-  if (profile < AV1PROFILE_MIN || profile > AV1PROFILE_MAX) {
+  if (profile != AV1PROFILE_PROFILE_MAIN) {
     std::move(done_cb).Run(
         EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedProfile)
             .WithData("profile", profile));
@@ -154,8 +195,11 @@ void Av1VideoEncoder::Initialize(VideoCodecProfile profile,
     return;
   }
 
-  POST_STATUS_AND_RETURN_ON_FAILURE(SetUpAomConfig(options, &config_),
-                                    std::move(done_cb), );
+  if (auto status = SetUpAomConfig(options, config_, svc_params_);
+      !status.is_ok()) {
+    std::move(done_cb).Run(std::move(status));
+    return;
+  }
 
   // Initialize an encoder instance.
   aom_codec_unique_ptr codec(new aom_codec_ctx_t, FreeCodecCtx);
@@ -203,6 +247,7 @@ void Av1VideoEncoder::Initialize(VideoCodecProfile profile,
   CALL_AOM_CONTROL(AV1E_SET_ENABLE_ANGLE_DELTA, 0);
   CALL_AOM_CONTROL(AV1E_SET_ENABLE_FILTER_INTRA, 0);
   CALL_AOM_CONTROL(AV1E_SET_INTRA_DEFAULT_TX_ONLY, 1);
+  CALL_AOM_CONTROL(AV1E_SET_SVC_PARAMS, &svc_params_);
 
   if (config_.rc_end_usage == AOM_CBR)
     CALL_AOM_CONTROL(AV1E_SET_AQ_MODE, 3);
@@ -222,7 +267,6 @@ void Av1VideoEncoder::Initialize(VideoCodecProfile profile,
 #undef CALL_AOM_CONTROL
 
   options_ = options;
-  originally_configured_size_ = options.frame_size;
   output_cb_ = BindToCurrentLoop(std::move(output_cb));
   codec_ = std::move(codec);
   std::move(done_cb).Run(EncoderStatus::Codes::kOk);
@@ -292,6 +336,7 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
       std::move(done_cb).Run(
           EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode,
                         "Can't allocate a resized frame."));
+      return;
     }
     frame = std::move(resized_frame);
   }
@@ -315,6 +360,12 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
     key_frame = true;
   }
 
+  auto temporal_id_status = AssignNextTemporalId(key_frame);
+  if (temporal_id_status.has_error()) {
+    std::move(done_cb).Run(std::move(temporal_id_status).error());
+    return;
+  }
+
   TRACE_EVENT0("media", "aom_codec_encode");
   // Use artificial timestamps, so the encoder will not be misled by frame's
   // fickle timestamps when doing rate control.
@@ -332,7 +383,8 @@ void Av1VideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
         EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode, msg));
     return;
   }
-  DrainOutputs(frame->timestamp(), frame->ColorSpace());
+  DrainOutputs(std::move(temporal_id_status).value(), frame->timestamp(),
+               frame->ColorSpace());
   std::move(done_cb).Run(EncoderStatus::Codes::kOk);
 }
 
@@ -345,9 +397,41 @@ void Av1VideoEncoder::ChangeOptions(const Options& options,
         EncoderStatus::Codes::kEncoderInitializeNeverCompleted);
     return;
   }
-  // TODO(crbug.com/1208280) Try to actually adjust setting instead of
-  // immediately dismissing configuration change.
-  std::move(done_cb).Run(EncoderStatus::Codes::kEncoderUnsupportedConfig);
+
+  aom_codec_enc_cfg_t new_config = config_;
+  aom_svc_params_t new_svc_params;
+  if (auto status = SetUpAomConfig(options, new_config, new_svc_params);
+      !status.is_ok()) {
+    std::move(done_cb).Run(status);
+    return;
+  }
+
+  auto error = aom_codec_enc_config_set(codec_.get(), &new_config);
+  if (error != AOM_CODEC_OK) {
+    std::move(done_cb).Run(
+        EncoderStatus(EncoderStatus::Codes::kEncoderUnsupportedConfig,
+                      "Failed to set a new AOM config")
+            .WithData("error_code", error)
+            .WithData("error_message", aom_codec_err_to_string(error)));
+    return;
+  }
+
+  error = aom_codec_control(codec_.get(), AV1E_SET_SVC_PARAMS, &new_svc_params);
+  if (error != AOM_CODEC_OK) {
+    std::move(done_cb).Run(
+        EncoderStatus(EncoderStatus::Codes::kEncoderInitializationError,
+                      "Setting AV1E_SET_SVC_PARAMS failed.")
+            .WithData("error_code", error)
+            .WithData("error_message", aom_codec_err_to_string(error)));
+    return;
+  }
+
+  config_ = new_config;
+  svc_params_ = new_svc_params;
+  options_ = options;
+  if (!output_cb.is_null())
+    output_cb_ = BindToCurrentLoop(std::move(output_cb));
+  std::move(done_cb).Run(EncoderStatus::Codes::kOk);
 }
 
 base::TimeDelta Av1VideoEncoder::GetFrameDuration(const VideoFrame& frame) {
@@ -367,7 +451,8 @@ base::TimeDelta Av1VideoEncoder::GetFrameDuration(const VideoFrame& frame) {
   return base::clamp(duration, min_duration, max_duration);
 }
 
-void Av1VideoEncoder::DrainOutputs(base::TimeDelta ts,
+void Av1VideoEncoder::DrainOutputs(int temporal_id,
+                                   base::TimeDelta ts,
                                    gfx::ColorSpace color_space) {
   const aom_codec_cx_pkt_t* pkt = nullptr;
   aom_codec_iter_t iter = nullptr;
@@ -380,10 +465,62 @@ void Av1VideoEncoder::DrainOutputs(base::TimeDelta ts,
     result.timestamp = ts;
     result.color_space = color_space;
     result.size = pkt->data.frame.sz;
+
+    if (result.key_frame) {
+      // If we got an unexpected key frame, temporal_svc_frame_index needs to
+      // be adjusted, because the next frame should have index 1.
+      temporal_svc_frame_index_ = 1;
+      result.temporal_id = 0;
+    } else {
+      result.temporal_id = temporal_id;
+    }
+
     result.data.reset(new uint8_t[result.size]);
     memcpy(result.data.get(), pkt->data.frame.buf, result.size);
     output_cb_.Run(std::move(result), {});
   }
+}
+
+EncoderStatus::Or<int> Av1VideoEncoder::AssignNextTemporalId(bool key_frame) {
+  if (svc_params_.number_temporal_layers < 2)
+    return 0;
+
+  int temporal_id = 0;
+  if (key_frame)
+    temporal_svc_frame_index_ = 0;
+
+  switch (svc_params_.number_temporal_layers) {
+    case 2: {
+      const static std::array<int, 2> kTwoTemporalLayers = {0, 1};
+      temporal_id = kTwoTemporalLayers[temporal_svc_frame_index_ %
+                                       kTwoTemporalLayers.size()];
+      break;
+    }
+    case 3: {
+      const static std::array<int, 4> kThreeTemporalLayers = {0, 2, 1, 2};
+      temporal_id = kThreeTemporalLayers[temporal_svc_frame_index_ %
+                                         kThreeTemporalLayers.size()];
+      break;
+    }
+  }
+
+  temporal_svc_frame_index_++;
+
+  aom_svc_layer_id_t layer_id = {};
+  layer_id.temporal_layer_id = temporal_id;
+
+  auto error =
+      aom_codec_control(codec_.get(), AV1E_SET_SVC_LAYER_ID, &layer_id);
+  if (error == AOM_CODEC_OK)
+    aom_codec_control(codec_.get(), AV1E_SET_ERROR_RESILIENT_MODE,
+                      temporal_id > 0 ? 1 : 0);
+  if (error != AOM_CODEC_OK) {
+    auto msg =
+        base::StringPrintf("Set AV1E_SET_SVC_LAYER_ID error: %s (%d)",
+                           aom_codec_error_detail(codec_.get()), codec_->err);
+    return EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode, msg);
+  }
+  return temporal_id;
 }
 
 Av1VideoEncoder::~Av1VideoEncoder() = default;
@@ -397,7 +534,6 @@ void Av1VideoEncoder::Flush(EncoderStatusCB done_cb) {
   }
 
   auto error = aom_codec_encode(codec_.get(), nullptr, 0, 0, 0);
-
   if (error != AOM_CODEC_OK) {
     auto msg =
         base::StringPrintf("AOM encoding error: %s (%d)",
@@ -407,7 +543,11 @@ void Av1VideoEncoder::Flush(EncoderStatusCB done_cb) {
         EncoderStatus(EncoderStatus::Codes::kEncoderFailedEncode, msg));
     return;
   }
-  DrainOutputs(base::TimeDelta(), gfx::ColorSpace());
+
+  // We don't call DrainOutputs() because Flush() is not expected to produce any
+  // outputs. The encoder configured with g_lag_in_frames = 0 and all outputs
+  // are drained after each Encode(). We might want to change this in the
+  // future, see: crbug.com/1280404
   std::move(done_cb).Run(EncoderStatus::Codes::kOk);
 }
 

@@ -10,7 +10,7 @@
 var ENCODER_CONFIG = null;
 promise_setup(async () => {
   const config = {
-    '?av1': {codec: 'av01.0.04M.08'}, // Not supported yet
+    '?av1': {codec: 'av01.0.04M.08'},
     '?vp8': {codec: 'vp8'},
     '?vp9_p0': {codec: 'vp09.00.10.08'},
     '?vp9_p2': {codec: 'vp09.02.10.10'},
