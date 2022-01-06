@@ -393,9 +393,7 @@ FragmentData* PrePaintTreeWalk::GetOrCreateFragmentData(
     fragment_id = 0;
 
   if (pre_paint_info.is_first_for_node) {
-    if (allow_update)
-      fragment_data->ClearNextFragment();
-    else
+    if (!allow_update)
       DCHECK_EQ(fragment_data->FragmentID(), fragment_id);
   } else {
     FragmentData* last_fragment = nullptr;
@@ -406,14 +404,7 @@ FragmentData* PrePaintTreeWalk::GetOrCreateFragmentData(
       fragment_data = fragment_data->NextFragment();
     } while (fragment_data);
     if (fragment_data) {
-      if (pre_paint_info.is_last_for_node) {
-        // We have reached the end. There may be more data entries that were
-        // needed in the previous layout, but not any more. Clear them.
-        if (allow_update)
-          fragment_data->ClearNextFragment();
-        else
-          DCHECK(!fragment_data->NextFragment());
-      } else if (fragment_data->FragmentID() != fragment_id) {
+      if (fragment_data->FragmentID() != fragment_id) {
         // There are entries for fragmentainers after this one, but none for
         // this one. Remove the fragment tail.
         DCHECK(allow_update);
@@ -431,6 +422,15 @@ FragmentData* PrePaintTreeWalk::GetOrCreateFragmentData(
       DCHECK(allow_update);
       fragment_data = &last_fragment->EnsureNextFragment();
     }
+  }
+
+  if (pre_paint_info.is_last_for_node) {
+    // We have reached the end. There may be more data entries that were
+    // needed in the previous layout, but not any more. Clear them.
+    if (allow_update)
+      fragment_data->ClearNextFragment();
+    else
+      DCHECK(!fragment_data->NextFragment());
   }
 
   if (allow_update) {
