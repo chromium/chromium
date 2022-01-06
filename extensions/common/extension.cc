@@ -204,10 +204,6 @@ const char Extension::kMimeType[] = "application/x-chrome-extension";
 const int Extension::kValidWebExtentSchemes =
     URLPattern::SCHEME_HTTP | URLPattern::SCHEME_HTTPS;
 
-const int Extension::kValidBookmarkAppSchemes = URLPattern::SCHEME_HTTP |
-                                                URLPattern::SCHEME_HTTPS |
-                                                URLPattern::SCHEME_EXTENSION;
-
 // TODO(https://crbug.com/1257045): Remove urn: scheme support.
 const int Extension::kValidHostPermissionSchemes =
     URLPattern::SCHEME_CHROMEUI | URLPattern::SCHEME_HTTP |
@@ -568,10 +564,6 @@ bool Extension::is_chromeos_system_extension() const {
 }
 
 void Extension::AddWebExtentPattern(const URLPattern& pattern) {
-  // Bookmark apps are permissionless.
-  if (from_bookmark())
-    return;
-
   extent_.AddPattern(pattern);
 }
 

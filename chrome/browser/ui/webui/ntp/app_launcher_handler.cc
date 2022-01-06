@@ -137,15 +137,6 @@ const char kRunOnOsLoginModeNotRun[] = "run_on_os_login_mode_not_run";
 const char kRunOnOsLoginModeWindowed[] = "run_on_os_login_mode_windowed";
 
 // The Youtube app is incorrectly harded to be a 'bookmark app'. However, it is
-// a platform app. This helper method special cases that, and should be used
-// instead of extension->from_bookmark().
-// TODO(crbug.com/1065748): Remove this hack once the youtube app is fixed.
-bool FromBookmark(const extensions::Extension* extension) {
-  return extension->from_bookmark() &&
-         extension->id() != extension_misc::kYoutubeAppId;
-}
-
-// The Youtube app is incorrectly harded to be a 'bookmark app'. However, it is
 // a platform app.
 // TODO(crbug.com/1065748): Remove this hack once the youtube app is fixed.
 bool IsYoutubeExtension(const std::string& extension_id) {
@@ -302,7 +293,6 @@ void AppLauncherHandler::CreateWebAppInfo(const web_app::AppId& app_id,
 
 void AppLauncherHandler::CreateExtensionInfo(const Extension* extension,
                                              base::DictionaryValue* value) {
-  DCHECK(!FromBookmark(extension));
   // The items which are to be written into |value| are also described in
   // chrome/browser/resources/ntp4/page_list_view.js in @typedef for AppInfo.
   // Please update it whenever you add or remove any keys here.
@@ -519,8 +509,6 @@ void AppLauncherHandler::OnExtensionLoaded(
     const Extension* extension) {
   if (!ShouldShow(extension))
     return;
-  if (FromBookmark(extension))
-    return;
 
   std::unique_ptr<base::DictionaryValue> app_info(GetExtensionInfo(extension));
   if (!app_info.get())
@@ -535,9 +523,6 @@ void AppLauncherHandler::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const Extension* extension,
     extensions::UnloadedExtensionReason reason) {
-  // Exclude events from bookmarks apps if BMO is turned on.
-  if (extension->from_bookmark())
-    return;
   ExtensionRemoved(extension, /*is_uninstall=*/false);
 }
 
@@ -545,9 +530,6 @@ void AppLauncherHandler::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
     extensions::UninstallReason reason) {
-  // Exclude events from bookmarks apps if BMO is turned on.
-  if (FromBookmark(extension))
-    return;
   ExtensionRemoved(extension, /*is_uninstall=*/true);
 }
 
@@ -644,7 +626,6 @@ void AppLauncherHandler::FillAppDictionary(base::DictionaryValue* dictionary) {
     const Extension* extension = registry->GetInstalledExtension(*it);
     if (extension &&
         extensions::ui_util::ShouldDisplayInNewTabPage(extension, profile)) {
-      DCHECK(!FromBookmark(extension));
       installed_extensions->Append(GetExtensionInfo(extension));
     }
   }
@@ -698,24 +679,18 @@ void AppLauncherHandler::HandleGetApps(const base::ListValue* args) {
     const ExtensionSet& enabled_set = registry->enabled_extensions();
     for (extensions::ExtensionSet::const_iterator it = enabled_set.begin();
          it != enabled_set.end(); ++it) {
-      if (FromBookmark(it->get()))
-        continue;
       visible_apps_.insert((*it)->id());
     }
 
     const ExtensionSet& disabled_set = registry->disabled_extensions();
     for (ExtensionSet::const_iterator it = disabled_set.begin();
          it != disabled_set.end(); ++it) {
-      if (FromBookmark(it->get()))
-        continue;
       visible_apps_.insert((*it)->id());
     }
 
     const ExtensionSet& terminated_set = registry->terminated_extensions();
     for (ExtensionSet::const_iterator it = terminated_set.begin();
          it != terminated_set.end(); ++it) {
-      if (FromBookmark(it->get()))
-        continue;
       visible_apps_.insert((*it)->id());
     }
   }
@@ -791,7 +766,6 @@ void AppLauncherHandler::HandleLaunchApp(const base::ListValue* args) {
       PromptToEnableApp(extension_id);
       return;
     }
-    DCHECK(!FromBookmark(extension));
     type = extension->GetType();
     full_launch_url = extensions::AppLaunchInfo::GetFullLaunchURL(extension);
     launch_container =
@@ -897,7 +871,6 @@ void AppLauncherHandler::HandleSetLaunchType(const base::ListValue* args) {
                                  extensions::ExtensionRegistry::TERMINATED);
   if (!extension)
     return;
-  DCHECK(!FromBookmark(extension));
 
   // Don't update the page; it already knows about the launch type change.
   base::AutoReset<bool> auto_reset(&ignore_changes_, true);
@@ -952,7 +925,6 @@ void AppLauncherHandler::HandleUninstallApp(const base::ListValue* args) {
           ->GetInstalledExtension(extension_id);
   if (!extension)
     return;
-  DCHECK(!FromBookmark(extension));
 
   if (!extensions::ExtensionSystem::Get(extension_service_->profile())
            ->management_policy()
@@ -1007,7 +979,6 @@ void AppLauncherHandler::HandleCreateAppShortcut(const base::ListValue* args) {
                                  extensions::ExtensionRegistry::TERMINATED);
   if (!extension)
     return;
-  DCHECK(!FromBookmark(extension));
 
   Browser* browser = chrome::FindBrowserWithWebContents(
         web_ui()->GetWebContents());
@@ -1050,7 +1021,6 @@ void AppLauncherHandler::HandleShowAppInfo(const base::ListValue* args) {
                                  extensions::ExtensionRegistry::TERMINATED);
   if (!extension)
     return;
-  DCHECK(!FromBookmark(extension));
 
   ShowAppInfoInNativeDialog(web_ui()->GetWebContents(),
                             Profile::FromWebUI(web_ui()), extension,
@@ -1323,7 +1293,6 @@ AppLauncherHandler::CreateExtensionUninstallDialog() {
 
 void AppLauncherHandler::ExtensionRemoved(const Extension* extension,
                                           bool is_uninstall) {
-  DCHECK(!FromBookmark(extension));
   if (!ShouldShow(extension))
     return;
 

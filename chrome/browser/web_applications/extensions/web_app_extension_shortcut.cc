@@ -20,20 +20,17 @@
 #include "chrome/browser/extensions/extension_ui_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/extensions/manifest_handlers/app_launch_info.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/services/app_service/public/cpp/file_handler.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/image_loader.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/manifest_handlers/file_handler_info.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -214,20 +211,6 @@ std::unique_ptr<ShortcutInfo> ShortcutInfoForExtensionAndProfile(
   shortcut_info->profile_name =
       profile->GetPrefs()->GetString(prefs::kProfileName);
   shortcut_info->version_for_display = app->GetVersionForDisplay();
-
-  // File Handlers should only be included in bookmark apps.
-  if (app->from_bookmark()) {
-    shortcut_info->is_multi_profile = true;
-    OsIntegrationManager& os_integration_manager =
-        WebAppProvider::GetForWebApps(profile)->os_integration_manager();
-    if (const auto* file_handlers =
-            os_integration_manager.GetEnabledFileHandlers(app->id())) {
-      shortcut_info->file_handler_extensions =
-          apps::GetFileExtensionsFromFileHandlers(*file_handlers);
-      shortcut_info->file_handler_mime_types =
-          apps::GetMimeTypesFromFileHandlers(*file_handlers);
-    }
-  }
 
   return shortcut_info;
 }

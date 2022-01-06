@@ -180,9 +180,6 @@ class ExtensionUninstallDialog
   // True if a checkbox for reporting abuse is shown.
   bool show_report_abuse_checkbox_ = false;
 
-  // True if a checkbox for removing associated data is shown.
-  bool show_remove_data_checkbox_ = false;
-
   // Whether the extension was uninstalled before the user closed the dialog
   // (e.g. by another source).
   bool extension_uninstalled_early_ = false;

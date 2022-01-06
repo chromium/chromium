@@ -187,9 +187,8 @@ bool ExtensionSpecialStoragePolicy::IsStorageDurable(const GURL& origin) {
 
 bool ExtensionSpecialStoragePolicy::NeedsProtection(
     const extensions::Extension* extension) {
-  // We only consider "protecting" storage for hosted apps (excluding bookmark
-  // apps, which are only hosted apps as an implementation detail).
-  if (!extension->is_hosted_app() || extension->from_bookmark())
+  // We only consider "protecting" storage for hosted apps.
+  if (!extension->is_hosted_app())
     return false;
 
   // Default-installed apps don't have protected storage.

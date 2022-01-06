@@ -88,11 +88,6 @@ void UninstallDialog::PrepareToShow(apps::mojom::IconKeyPtr mojom_icon_key,
 void UninstallDialog::OnDialogClosed(bool uninstall,
                                      bool clear_site_data,
                                      bool report_abuse) {
-  if (!uninstall && (app_type_ == apps::mojom::AppType::kChromeApp ||
-                     app_type_ == apps::mojom::AppType::kWeb)) {
-    ExtensionAppsChromeOs::RecordUninstallCanceledAction(profile_, app_id_);
-  }
-
   std::move(uninstall_callback_)
       .Run(uninstall, clear_site_data, report_abuse, this);
 }

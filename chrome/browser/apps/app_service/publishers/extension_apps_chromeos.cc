@@ -120,25 +120,6 @@ ExtensionAppsChromeOs::~ExtensionAppsChromeOs() {
   }
 }
 
-// static
-void ExtensionAppsChromeOs::RecordUninstallCanceledAction(
-    Profile* profile,
-    const std::string& app_id) {
-  const extensions::Extension* extension =
-      extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
-          app_id);
-  if (!extension) {
-    return;
-  }
-
-  if (extension->from_bookmark()) {
-    UMA_HISTOGRAM_ENUMERATION(
-        "Webapp.UninstallDialogAction",
-        extensions::ExtensionUninstallDialog::CLOSE_ACTION_CANCELED,
-        extensions::ExtensionUninstallDialog::CLOSE_ACTION_LAST);
-  }
-}
-
 void ExtensionAppsChromeOs::Shutdown() {
   if (arc_prefs_) {
     arc_prefs_->RemoveObserver(this);
@@ -727,7 +708,7 @@ bool ExtensionAppsChromeOs::Accepts(const extensions::Extension* extension) {
   if (!extension->is_app() || IsBlocklisted(extension->id())) {
     return false;
   }
-  return !extension->from_bookmark();
+  return true;
 }
 
 void ExtensionAppsChromeOs::SetShowInFields(

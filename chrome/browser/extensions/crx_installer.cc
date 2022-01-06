@@ -371,13 +371,11 @@ absl::optional<CrxInstallError> CrxInstaller::AllowInstall(
           l10n_util::GetStringUTF16(IDS_EXTENSION_MANIFEST_INVALID));
   }
 
-  // The checks below are skipped for themes, external installs, and bookmark
-  // apps.
+  // The checks below are skipped for themes and external installs.
   // TODO(pamg): After ManagementPolicy refactoring is complete, remove this
   // and other uses of install_source_ that are no longer needed now that the
   // SandboxedUnpacker sets extension->location.
-  if (extension->is_theme() || extension->from_bookmark() ||
-      Manifest::IsExternalLocation(install_source_)) {
+  if (extension->is_theme() || Manifest::IsExternalLocation(install_source_)) {
     return absl::nullopt;
   }
 
@@ -653,12 +651,6 @@ void CrxInstaller::CheckInstall() {
     }
   }
 
-  // Skip the checks if the extension is a bookmark app.
-  if (extension()->from_bookmark()) {
-    ConfirmInstall();
-    return;
-  }
-
   // Run the policy, requirements and blocklist checks in parallel.
   check_group_ = std::make_unique<PreloadCheckGroup>();
 
@@ -862,13 +854,6 @@ void CrxInstaller::InitializeCreationFlagsForUpdate(const Extension* extension,
       extension_management->UpdatesFromWebstore(*extension)) {
     creation_flags_ |= Extension::FROM_WEBSTORE;
   }
-
-  // Bookmark apps being updated is kind of a contradiction, but that's because
-  // we mark the default apps as bookmark apps, and they're hosted in the web
-  // store, thus they can get updated. See http://crbug.com/101605 for more
-  // details.
-  if (extension->from_bookmark())
-    creation_flags_ |= Extension::FROM_BOOKMARK;
 
   if (extension->was_installed_by_default())
     creation_flags_ |= Extension::WAS_INSTALLED_BY_DEFAULT;

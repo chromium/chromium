@@ -246,12 +246,9 @@ GURL ChromeContentBrowserClientExtensionsPart::GetEffectiveURL(
   // also that we must not return an invalid effective URL here, since that
   // might lead to incorrect security decisions - see
   // https://crbug.com/1016954.
-  //
-  // Bookmark apps do not use the hosted app process model, and should be
-  // treated as normal URLs.
   const Extension* hosted_app =
       registry->enabled_extensions().GetHostedAppByURL(url);
-  if (hosted_app && !hosted_app->from_bookmark())
+  if (hosted_app)
     return hosted_app->url();
 
   // If this is a chrome-extension: URL, check whether a corresponding

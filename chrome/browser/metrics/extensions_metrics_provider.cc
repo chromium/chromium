@@ -319,7 +319,8 @@ metrics::ExtensionInstallProto ConstructInstallProto(
   install.set_is_from_store(extension.from_webstore());
   install.set_updates_from_store(
       extension_management->UpdatesFromWebstore(extension));
-  install.set_is_from_bookmark(extension.from_bookmark());
+  // TODO(crbug.com/1065748): Remove this setter.
+  install.set_is_from_bookmark(false);
   install.set_is_converted_from_user_script(
       extension.converted_from_user_script());
   install.set_is_default_installed(extension.was_installed_by_default());

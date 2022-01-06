@@ -219,8 +219,7 @@ std::unique_ptr<AppBrowserController> MaybeCreateAppBrowserController(
         extensions::ExtensionRegistry::Get(browser->profile())
             ->GetExtensionById(app_id,
                                extensions::ExtensionRegistry::EVERYTHING);
-    if (extension && extension->is_hosted_app() &&
-        !extension->from_bookmark()) {
+    if (extension && extension->is_hosted_app()) {
       controller =
           std::make_unique<extensions::HostedAppBrowserController>(browser);
     }

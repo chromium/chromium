@@ -4821,7 +4821,6 @@ TEST_F(ExtensionServiceTest, ReloadExtensions) {
       registry()->disabled_extensions().GetByID(good_crx);
   EXPECT_TRUE(extension->from_webstore());
   EXPECT_TRUE(extension->was_installed_by_default());
-  EXPECT_FALSE(extension->from_bookmark());
 
   // Extension counts shouldn't change.
   EXPECT_EQ(0u, registry()->enabled_extensions().size());

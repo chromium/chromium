@@ -32,7 +32,7 @@ bool ExtensionApps::Accepts(const extensions::Extension* extension) {
     return false;
   }
 
-  return !extension->from_bookmark();
+  return true;
 }
 
 bool ExtensionApps::ShouldShownInLauncher(

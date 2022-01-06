@@ -3818,6 +3818,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Extensions.UninstallBookmarkApp" enum="Boolean"
+    expires_after="2022-12-01">
+  <owner>phillis@chromium.org</owner>
+  <owner>extensions-core@chromium.org</owner>
+  <summary>
+    Tracks whether bookmark app uninstalling succeeded or not. This is emitted
+    whenever a bookmark app (which is deprecated) gets uninstalled.
+  </summary>
+</histogram>
+
 <histogram name="Extensions.UninstallDialogAction"
     enum="ExtensionUninstallDialogAction" expires_after="2021-12-01">
   <obsolete>

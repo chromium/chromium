@@ -427,8 +427,7 @@ extensions::AppWindowRegistry::AppWindowList GetAppWindowsForNSWindow(
     // Ignore is_browser: if a window becomes main that does not belong to an
     // extension or browser, treat it the same as switching to a browser.
     const Extension* extension = GetExtensionForNSWindow(window);
-    // Do not install the App menu for bookmark apps (which includes PWAs).
-    if (extension && !extension->from_bookmark())
+    if (extension)
       [self appBecameMain:extension];
     else
       [self chromeBecameMain];

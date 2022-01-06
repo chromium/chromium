@@ -706,7 +706,6 @@ void NewWindow(Browser* browser) {
   // Hosted apps should open a window to their launch page.
   const extensions::Extension* extension = GetExtensionForBrowser(browser);
   if (extension && extension->is_hosted_app()) {
-    DCHECK(!extension->from_bookmark());
     const auto app_launch_params = CreateAppLaunchParamsUserContainer(
         profile, extension, WindowOpenDisposition::NEW_WINDOW,
         apps::mojom::LaunchSource::kFromKeyboard);

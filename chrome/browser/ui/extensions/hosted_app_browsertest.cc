@@ -239,7 +239,6 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
             ? extensions::Extension::NO_FLAGS
             : extensions::Extension::FROM_BOOKMARK);
     ASSERT_TRUE(app);
-    ASSERT_FALSE(app->from_bookmark());
     app_id_ = app->id();
 
     // Launch app in a window.
@@ -485,7 +484,6 @@ IN_PROC_BROWSER_TEST_P(HostedAppTest, NotWebApp) {
   const Extension* app = ExtensionRegistry::Get(profile())->GetExtensionById(
       app_id_, ExtensionRegistry::ENABLED);
   EXPECT_TRUE(app->is_hosted_app());
-  EXPECT_FALSE(app->from_bookmark());
 }
 
 IN_PROC_BROWSER_TEST_P(HostedAppTest, HasReloadButton) {

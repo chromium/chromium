@@ -38,7 +38,7 @@ content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(profile_)->GetInstalledExtension(
           params.app_id);
-  if (!extension || extension->from_bookmark()) {
+  if (!extension) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     AppLaunchParams params_for_restore(params.app_id, params.container,
                                        params.disposition, params.launch_source,
@@ -86,8 +86,6 @@ content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
     return web_app_launch_manager_.OpenApplication(std::move(params));
 #endif
   }
-
-  DCHECK(!extension->from_bookmark());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // If the restore id is available, save the launch parameters to the full
@@ -138,7 +136,7 @@ void BrowserAppLauncher::LaunchAppWithCallback(
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(profile_)->GetInstalledExtension(
           app_id);
-  if (!extension || extension->from_bookmark()) {
+  if (!extension) {
     web_app_launch_manager_.LaunchApplication(
         app_id, command_line, current_directory, url_handler_launch_url,
         protocol_handler_launch_url, launch_files, std::move(callback));

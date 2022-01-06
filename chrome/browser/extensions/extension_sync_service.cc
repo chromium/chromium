@@ -8,6 +8,7 @@
 
 #include "base/auto_reset.h"
 #include "base/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/one_shot_event.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/extension_management.h"
@@ -183,7 +184,7 @@ ExtensionSyncService::MergeDataAndStartSyncing(
   std::unique_ptr<ExtensionSet> all_extensions =
       registry->GenerateInstalledExtensionsSet();
   for (const auto& extension : *all_extensions) {
-    if (extension->from_bookmark()) {
+    if (extension->from_desprecated_bookmark()) {
       // Deleting deprecated bookmark apps.
       const std::string& id = extension->id();
       std::u16string error;
@@ -193,6 +194,7 @@ ExtensionSyncService::MergeDataAndStartSyncing(
         LOG(WARNING) << "Failed to uninstall bookmark apps with id '" << id
                      << "' : " << error;
       }
+      base::UmaHistogramBoolean("Extensions.UninstallBookmarkApp", uninstalled);
     }
   }
 

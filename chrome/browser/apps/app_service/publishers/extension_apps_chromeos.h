@@ -29,8 +29,6 @@
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-class Profile;
-
 namespace extensions {
 class AppWindow;
 }  // namespace extensions
@@ -66,10 +64,6 @@ class ExtensionAppsChromeOs : public ExtensionAppsBase,
 
   ExtensionAppsChromeOs(const ExtensionAppsChromeOs&) = delete;
   ExtensionAppsChromeOs& operator=(const ExtensionAppsChromeOs&) = delete;
-
-  // Record uninstall dialog action for Web apps and Chrome apps.
-  static void RecordUninstallCanceledAction(Profile* profile,
-                                            const std::string& app_id);
 
   void Shutdown();
 

@@ -150,10 +150,7 @@ bool ExtensionAppShimManagerDelegate::AppCanCreateHost(
 bool ExtensionAppShimManagerDelegate::AppIsMultiProfile(
     Profile* profile,
     const web_app::AppId& app_id) {
-  const Extension* extension = MaybeGetAppExtension(profile, app_id);
-  if (!profile || !extension)
-    return false;
-  return extension->from_bookmark();
+  return false;
 }
 
 bool ExtensionAppShimManagerDelegate::AppUsesRemoteCocoa(
@@ -165,10 +162,8 @@ bool ExtensionAppShimManagerDelegate::AppUsesRemoteCocoa(
   if (!extension->is_hosted_app())
     return false;
 
-  // The Gmail, Google Drive, and YouTube apps behave like bookmark apps.
   // https://crbug.com/1086824
-  return extension->from_bookmark() ||
-         extension->id() == extension_misc::kYoutubeAppId ||
+  return extension->id() == extension_misc::kYoutubeAppId ||
          extension->id() == extension_misc::kGoogleDriveAppId ||
          extension->id() == extension_misc::kGmailAppId;
 }

@@ -83,9 +83,9 @@ bool UrlHandlers::CanPlatformAppHandleUrl(const Extension* app,
 }
 
 // static
+// TODO(crbug.com/1065748): Clean up this function and related paths.
 bool UrlHandlers::CanBookmarkAppHandleUrl(const Extension* app,
                                           const GURL& url) {
-  DCHECK(app->from_bookmark());
   return !!GetMatchingUrlHandler(app, url);
 }
 
@@ -137,13 +137,6 @@ bool ParseUrlHandler(const std::string& handler_id,
     // TODO(sergeygs): Also add a verification to the CWS installer that the
     // URL patterns claimed here belong to the app's author verified sites.
     URLPattern pattern(URLPattern::SCHEME_HTTP | URLPattern::SCHEME_HTTPS);
-    // System Web Apps are bookmark apps that point to chrome:// URLs.
-    // TODO(calamity): Remove once Bookmark Apps are no longer on Extensions.
-    if (extension->location() == mojom::ManifestLocation::kExternalComponent &&
-        extension->from_bookmark()) {
-      pattern = URLPattern(URLPattern::SCHEME_CHROMEUI);
-    }
-
     if (pattern.Parse(str_pattern) != URLPattern::ParseResult::kSuccess) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           merrors::kInvalidURLHandlerPatternElement, handler_id);

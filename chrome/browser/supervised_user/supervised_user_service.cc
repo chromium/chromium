@@ -792,8 +792,8 @@ SupervisedUserService::ExtensionState SupervisedUserService::GetExtensionState(
   // management; in particular we don't want to override the force-install list.
   if (extensions::Manifest::IsComponentLocation(extension.location()) ||
       extensions::Manifest::IsPolicyLocation(extension.location()) ||
-      extension.is_theme() || extension.from_bookmark() ||
-      extension.is_shared_module() || was_installed_by_default) {
+      extension.is_theme() || extension.is_shared_module() ||
+      was_installed_by_default) {
     return ExtensionState::ALLOWED;
   }
 

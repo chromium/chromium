@@ -84,9 +84,6 @@ bool OpenExtensionApplicationWindow(Profile* profile,
   if (launch_container == extensions::LaunchContainer::kLaunchContainerTab)
     return false;
 
-  if (app->from_bookmark())
-    return false;
-
   RecordCmdLineAppHistogram(app->GetType());
 
   apps::AppLaunchParams params(app_id, launch_container,

@@ -216,7 +216,6 @@ void TabHelper::SetExtensionApp(const Extension* extension) {
 
   if (extension) {
     DCHECK(extension->is_app());
-    DCHECK(!extension->from_bookmark());
   }
   extension_app_ = extension;
 
@@ -318,8 +317,7 @@ void TabHelper::DidFinishNavigation(
         ExtensionRegistry::EVERYTHING);
     if (extension && AppLaunchInfo::GetFullLaunchURL(extension).is_valid()) {
       DCHECK(extension->is_app());
-      if (!extension->from_bookmark())
-        SetExtensionApp(extension);
+      SetExtensionApp(extension);
     }
   } else {
     UpdateExtensionAppIcon(

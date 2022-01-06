@@ -121,11 +121,7 @@ void AppShortcutManager::OnExtensionWillBeInstalled(
     const Extension* extension,
     bool is_update,
     const std::string& old_name) {
-  // Bookmark apps are handled in
-  // web_app::AppShortcutManager::OnWebAppInstalled() and
-  // web_app::AppShortcutManager::OnWebAppManifestUpdated().
-  if (!extension->is_app() || extension->from_bookmark() ||
-      g_suppress_shortcuts_for_testing) {
+  if (!extension->is_app() || g_suppress_shortcuts_for_testing) {
     return;
   }
 
@@ -144,9 +140,7 @@ void AppShortcutManager::OnExtensionUninstalled(
     content::BrowserContext* browser_context,
     const Extension* extension,
     extensions::UninstallReason reason) {
-  // Bookmark apps are handled in
-  // web_app::AppShortcutManager::OnWebAppWillBeUninstalled()
-  if (!extension->from_bookmark() && !g_suppress_shortcuts_for_testing)
+  if (!g_suppress_shortcuts_for_testing)
     web_app::DeleteAllShortcuts(profile_, extension);
 }
 

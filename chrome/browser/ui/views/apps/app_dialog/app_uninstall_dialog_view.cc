@@ -283,8 +283,6 @@ void AppUninstallDialogView::InitializeViewForExtension(
         l10n_util::GetStringUTF16(IDS_EXTENSION_PROMPT_UNINSTALL_REPORT_ABUSE));
     report_abuse_checkbox->SetMultiLine(true);
     report_abuse_checkbox_ = AddChildView(std::move(report_abuse_checkbox));
-  } else if (extension->from_bookmark()) {
-    InitializeCheckbox(extensions::AppLaunchInfo::GetFullLaunchURL(extension));
   }
 }
 

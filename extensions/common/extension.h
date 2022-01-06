@@ -177,9 +177,6 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   // Valid schemes for web extent URLPatterns.
   static const int kValidWebExtentSchemes;
 
-  // Valid schemes for bookmark app installs by the user.
-  static const int kValidBookmarkAppSchemes;
-
   // Valid schemes for host permission URLPatterns.
   static const int kValidHostPermissionSchemes;
 
@@ -322,7 +319,11 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   }
   int creation_flags() const { return creation_flags_; }
   bool from_webstore() const { return (creation_flags_ & FROM_WEBSTORE) != 0; }
-  bool from_bookmark() const { return false; }
+  // TODO(crbug.com/1065748): Retire this function when there are no old
+  // entries.
+  bool from_desprecated_bookmark() const {
+    return (creation_flags_ & FROM_BOOKMARK) != 0;
+  }
   bool may_be_untrusted() const {
     return (creation_flags_ & MAY_BE_UNTRUSTED) != 0;
   }

@@ -59,8 +59,7 @@ const extensions::Extension* GetExtensionForWebContents(
   const extensions::Extension* extension =
       registry->enabled_extensions().GetAppByURL(url);
 
-  if (extension && !extension->from_bookmark() &&
-      !extensions::LaunchesInWindow(profile, extension)) {
+  if (extension && !extensions::LaunchesInWindow(profile, extension)) {
     return extension;
   }
   return nullptr;
@@ -148,7 +147,7 @@ void SetAppIdForWebContents(Profile* profile,
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
           app_id);
-  if (extension && !extension->from_bookmark()) {
+  if (extension) {
     DCHECK(extension->is_app());
     web_app::WebAppTabHelper::FromWebContents(web_contents)
         ->SetAppId(std::string());
@@ -167,7 +166,7 @@ bool IsInstalledApp(Profile* profile, const std::string& app_id) {
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
           app_id);
-  if (extension && !extension->from_bookmark()) {
+  if (extension) {
     DCHECK(extension->is_app());
     return true;
   }
