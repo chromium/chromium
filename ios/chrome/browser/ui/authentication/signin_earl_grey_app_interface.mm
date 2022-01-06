@@ -78,12 +78,12 @@
   return base::SysUTF8ToNSString(info.gaia);
 }
 
-+ (NSString*)primaryAccountEmail {
++ (NSString*)primaryAccountEmailWithConsent:(signin::ConsentLevel)consentLevel {
   ChromeBrowserState* browserState =
       chrome_test_util::GetOriginalBrowserState();
   CoreAccountInfo info =
       IdentityManagerFactory::GetForBrowserState(browserState)
-          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
+          ->GetPrimaryAccountInfo(consentLevel);
 
   return base::SysUTF8ToNSString(info.email);
 }

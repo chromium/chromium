@@ -216,6 +216,7 @@ source_set("eg_test_support+eg2") {
     ":signin_presenter",
     "//base",
     "//base/test:test_support",
+    "//components/signin/public/base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ui/authentication/cells:constants",
     "//ios/chrome/browser/ui/authentication/signin:constants",
