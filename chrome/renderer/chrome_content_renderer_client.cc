@@ -350,8 +350,10 @@ bool IsTerminalSystemWebAppNaClPage(GURL url) {
   url::Replacements<char> replacements;
   replacements.ClearQuery();
   replacements.ClearRef();
-  return url.ReplaceComponents(replacements) ==
-         "chrome-untrusted://terminal/html/nassh.html";
+  url = url.ReplaceComponents(replacements);
+  // TODO(crbug.com/1283153): remove nassh.html when the migration is done.
+  return url == "chrome-untrusted://terminal/html/nassh.html" ||
+         url == "chrome-untrusted://terminal/html/terminal_ssh.html";
 }
 #endif
 
