@@ -29,8 +29,18 @@ try_.builder(
     name = "android-10-arm64-rel",
 )
 
-try_.builder(
+try_.orchestrator_pair_builders(
     name = "android-11-x86-rel",
+    # TODO(crbug.com/1137474): Enable it on branch after running on CQ
+    #branch_selector = branches.STANDARD_MILESTONE,
+    main_list_view = "try",
+    orchestrator_cores = 4,
+    # TODO(crbug.com/1137474): Enable it 5% experimentally once it works fine
+    # under orchestrator.
+    orchestrator_tryjob = None,
+    compilator_cores = 32,
+    compilator_goma_jobs = goma.jobs.J300,
+    compilator_name = "android-11-x86-rel-compilator",
 )
 
 try_.builder(

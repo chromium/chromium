@@ -509,6 +509,7 @@ ci.builder(
     ),
 )
 
+# TODO(crbug.com/1137474): Update the console view config once on CQ
 ci.builder(
     name = "android-11-x86-rel",
     console_view_entry = consoles.console_view_entry(
