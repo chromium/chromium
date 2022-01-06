@@ -250,8 +250,7 @@ class WebViewGuest : public guest_view::GuestView<WebViewGuest> {
       content::NavigationHandle* navigation_handle) final;
   void DidFinishNavigation(content::NavigationHandle* navigation_handle) final;
   void LoadProgressChanged(double progress) final;
-  void DocumentOnLoadCompletedInMainFrame(
-      content::RenderFrameHost* render_frame_host) final;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() final;
   void PrimaryMainFrameRenderProcessGone(base::TerminationStatus status) final;
   void UserAgentOverrideSet(const blink::UserAgentOverride& ua_override) final;
   void FrameNameChanged(content::RenderFrameHost* render_frame_host,

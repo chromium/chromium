@@ -58,8 +58,7 @@ class RecentTabHelper
       content::NavigationHandle* navigation_handle) override;
   void DocumentAvailableInMainFrame(
       content::RenderFrameHost* render_frame_host) override;
-  void DocumentOnLoadCompletedInMainFrame(
-      content::RenderFrameHost* render_frame_host) override;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
   void WebContentsDestroyed() override;
   void OnVisibilityChanged(content::Visibility visibility) override;
 

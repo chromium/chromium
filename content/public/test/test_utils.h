@@ -154,7 +154,7 @@ std::string GetWebUIURLString(const std::string& host);
 // inner WebContents will be deleted if the frame it's attached to goes away.
 WebContents* CreateAndAttachInnerContents(RenderFrameHost* rfh);
 
-// Spins a run loop until IsDocumentOnLoadCompletedInMainFrame() is true.
+// Spins a run loop until IsDocumentOnLoadCompletedInPrimaryMainFrame() is true.
 void AwaitDocumentOnLoadCompleted(WebContents* web_contents);
 
 // Helper class to Run and Quit the message loop. Run and Quit can only happen

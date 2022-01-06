@@ -85,8 +85,8 @@ class SnapshotController {
   // Invoked from WebContentObserver::DocumentAvailableInMainFrame
   void DocumentAvailableInMainFrame();
 
-  // Invoked from WebContentObserver::DocumentOnLoadCompletedInMainFrame
-  void DocumentOnLoadCompletedInMainFrame();
+  // Invoked from WebContentObserver::DocumentOnLoadCompletedInPrimaryMainFrame
+  void DocumentOnLoadCompletedInPrimaryMainFrame();
 
   int64_t GetDelayAfterDocumentAvailableForTest();
   int64_t GetDelayAfterDocumentOnLoadCompletedForTest();

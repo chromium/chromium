@@ -721,7 +721,7 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
 
   void SetUpUrl(const GURL& url) {
     NavigateAndCommit(url);
-    prompt_factory_->DocumentOnLoadCompletedInMainFrame(main_rfh());
+    prompt_factory_->DocumentOnLoadCompletedInPrimaryMainFrame();
   }
 
  private:

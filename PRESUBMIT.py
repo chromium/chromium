@@ -5418,7 +5418,7 @@ def CheckMPArchApiUsage(input_api, output_api):
      'RenderViewDeleted',
      'RenderViewHostChanged',
      'DocumentAvailableInMainFrame',
-     'DocumentOnLoadCompletedInMainFrame',
+     'DocumentOnLoadCompletedInPrimaryMainFrame',
      'DOMContentLoaded',
      'DidFinishLoad',
   ]

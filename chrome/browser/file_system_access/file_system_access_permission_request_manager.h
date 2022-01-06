@@ -93,8 +93,7 @@ class FileSystemAccessPermissionRequestManager
   void DequeueAndShowRequest();
 
   // WebContentsObserver
-  void DocumentOnLoadCompletedInMainFrame(
-      content::RenderFrameHost* render_frame_host) override;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 
   void OnPermissionDialogResult(permissions::PermissionAction result);
 

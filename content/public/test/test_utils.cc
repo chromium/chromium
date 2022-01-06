@@ -297,7 +297,8 @@ void AwaitDocumentOnLoadCompleted(WebContents* web_contents) {
    public:
     explicit Awaiter(content::WebContents* web_contents)
         : content::WebContentsObserver(web_contents),
-          observed_(web_contents->IsDocumentOnLoadCompletedInMainFrame()) {}
+          observed_(
+              web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {}
 
     Awaiter(const Awaiter&) = delete;
     Awaiter& operator=(const Awaiter&) = delete;
@@ -307,12 +308,11 @@ void AwaitDocumentOnLoadCompleted(WebContents* web_contents) {
     void Await() {
       if (!observed_)
         run_loop_.Run();
-      DCHECK(web_contents()->IsDocumentOnLoadCompletedInMainFrame());
+      DCHECK(web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame());
     }
 
     // WebContentsObserver:
-    void DocumentOnLoadCompletedInMainFrame(
-        RenderFrameHost* render_frame_host) override {
+    void DocumentOnLoadCompletedInPrimaryMainFrame() override {
       observed_ = true;
       if (run_loop_.running())
         run_loop_.Quit();

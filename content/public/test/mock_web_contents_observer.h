@@ -99,10 +99,7 @@ class MockWebContentsObserver : public WebContentsObserver {
               DocumentAvailableInMainFrame,
               (RenderFrameHost* render_frame_host),
               (override));
-  MOCK_METHOD(void,
-              DocumentOnLoadCompletedInMainFrame,
-              (RenderFrameHost* render_frame_host),
-              (override));
+  MOCK_METHOD(void, DocumentOnLoadCompletedInPrimaryMainFrame, (), (override));
   MOCK_METHOD(void,
               DOMContentLoaded,
               (RenderFrameHost* render_frame_host),

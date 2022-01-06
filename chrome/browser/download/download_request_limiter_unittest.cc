@@ -160,8 +160,8 @@ class DownloadRequestLimiterTest : public ChromeRenderViewHostTestHarness {
   }
 
   void LoadCompleted() {
-    mock_permission_prompt_factory_->DocumentOnLoadCompletedInMainFrame(
-        main_rfh());
+    mock_permission_prompt_factory_
+        ->DocumentOnLoadCompletedInPrimaryMainFrame();
   }
 
   int AskAllowCount() { return mock_permission_prompt_factory_->show_count(); }

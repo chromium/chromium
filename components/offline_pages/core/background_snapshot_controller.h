@@ -75,8 +75,8 @@ class BackgroundSnapshotController {
   // The Client calls this when renovations have completed.
   void RenovationsCompleted();
 
-  // Invoked from WebContentObserver::DocumentOnLoadCompletedInMainFrame
-  void DocumentOnLoadCompletedInMainFrame();
+  // Invoked from WebContentObserver::DocumentOnLoadCompletedInPrimaryMainFrame
+  void DocumentOnLoadCompletedInPrimaryMainFrame();
 
   int64_t GetDelayAfterDocumentOnLoadCompletedForTest();
   int64_t GetDelayAfterRenovationsCompletedForTest();

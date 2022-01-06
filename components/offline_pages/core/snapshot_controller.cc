@@ -74,7 +74,7 @@ void SnapshotController::DocumentAvailableInMainFrame() {
       base::Milliseconds(delay_after_document_available_ms_));
 }
 
-void SnapshotController::DocumentOnLoadCompletedInMainFrame() {
+void SnapshotController::DocumentOnLoadCompletedInPrimaryMainFrame() {
   // Post a delayed task to snapshot and then stop this controller.
   task_runner_->PostDelayedTask(
       FROM_HERE,

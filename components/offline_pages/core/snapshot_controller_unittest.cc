@@ -76,7 +76,7 @@ void SnapshotControllerTest::FastForwardBy(base::TimeDelta delta) {
 
 TEST_F(SnapshotControllerTest, OnLoad) {
   // Onload should make snapshot after its delay.
-  controller()->DocumentOnLoadCompletedInMainFrame();
+  controller()->DocumentOnLoadCompletedInPrimaryMainFrame();
   PumpLoop();
   EXPECT_EQ(0, snapshot_count());
   FastForwardBy(base::Milliseconds(
@@ -103,7 +103,7 @@ TEST_F(SnapshotControllerTest, OnLoadSnapshotIsTheLastOne) {
   controller()->DocumentAvailableInMainFrame();
   PumpLoop();
   EXPECT_EQ(0, snapshot_count());
-  controller()->DocumentOnLoadCompletedInMainFrame();
+  controller()->DocumentOnLoadCompletedInPrimaryMainFrame();
   // Advance time to OnLoadCompleted delay to trigger snapshot.
   FastForwardBy(base::Milliseconds(
       controller()->GetDelayAfterDocumentOnLoadCompletedForTest()));
@@ -128,7 +128,7 @@ TEST_F(SnapshotControllerTest, OnLoadSnapshotAfterLongDelay) {
   // Report that snapshot is completed.
   controller()->PendingSnapshotCompleted();
   // OnLoad should make 2nd snapshot after its delay.
-  controller()->DocumentOnLoadCompletedInMainFrame();
+  controller()->DocumentOnLoadCompletedInPrimaryMainFrame();
   FastForwardBy(base::Milliseconds(
       controller()->GetDelayAfterDocumentOnLoadCompletedForTest()));
   EXPECT_EQ(2, snapshot_count());
@@ -145,7 +145,7 @@ TEST_F(SnapshotControllerTest, Stop) {
   // Should not start snapshots
   EXPECT_EQ(0, snapshot_count());
   // Also should not start snapshot.
-  controller()->DocumentOnLoadCompletedInMainFrame();
+  controller()->DocumentOnLoadCompletedInPrimaryMainFrame();
   EXPECT_EQ(0, snapshot_count());
 }
 
@@ -157,7 +157,7 @@ TEST_F(SnapshotControllerTest, ClientReset) {
       controller()->GetDelayAfterDocumentAvailableForTest()));
   // No snapshot since session was reset.
   EXPECT_EQ(0, snapshot_count());
-  controller()->DocumentOnLoadCompletedInMainFrame();
+  controller()->DocumentOnLoadCompletedInPrimaryMainFrame();
   FastForwardBy(base::Milliseconds(
       controller()->GetDelayAfterDocumentOnLoadCompletedForTest()));
   EXPECT_EQ(1, snapshot_count());
@@ -173,7 +173,7 @@ TEST_F(SnapshotControllerTest, ClientReset) {
 // This simulated a Reset while there is ongoing snapshot, which is reported
 // as done later. That reporting should have no effect nor crash.
 TEST_F(SnapshotControllerTest, ClientResetWhileSnapshotting) {
-  controller()->DocumentOnLoadCompletedInMainFrame();
+  controller()->DocumentOnLoadCompletedInPrimaryMainFrame();
   FastForwardBy(base::Milliseconds(
       controller()->GetDelayAfterDocumentOnLoadCompletedForTest()));
   EXPECT_EQ(1, snapshot_count());

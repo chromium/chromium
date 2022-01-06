@@ -265,7 +265,7 @@ class BackgroundLoaderOfflinerTest : public testing::Test {
     // Call complete loading.
     auto* main_frame = offliner()->web_contents()->GetMainFrame();
     offliner()->DocumentAvailableInMainFrame(main_frame);
-    offliner()->DocumentOnLoadCompletedInMainFrame(main_frame);
+    offliner()->DocumentOnLoadCompletedInPrimaryMainFrame();
     PumpLoop();
   }
 

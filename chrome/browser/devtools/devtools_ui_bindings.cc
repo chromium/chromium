@@ -551,8 +551,7 @@ class DevToolsUIBindings::FrontendWebContentsObserver
       base::TerminationStatus status) override;
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void DocumentOnLoadCompletedInMainFrame(
-      content::RenderFrameHost* render_frame_host) override;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
 
@@ -628,9 +627,8 @@ void DevToolsUIBindings::FrontendWebContentsObserver::ReadyToCommitNavigation(
 }
 
 void DevToolsUIBindings::FrontendWebContentsObserver::
-    DocumentOnLoadCompletedInMainFrame(
-        content::RenderFrameHost* render_frame_host) {
-  devtools_bindings_->DocumentOnLoadCompletedInMainFrame();
+    DocumentOnLoadCompletedInPrimaryMainFrame() {
+  devtools_bindings_->DocumentOnLoadCompletedInPrimaryMainFrame();
 }
 
 void DevToolsUIBindings::FrontendWebContentsObserver::DidFinishNavigation(
@@ -1715,7 +1713,7 @@ void DevToolsUIBindings::ReadyToCommitNavigation(
   content::DevToolsFrontendHost::SetupExtensionsAPI(frame, script);
 }
 
-void DevToolsUIBindings::DocumentOnLoadCompletedInMainFrame() {
+void DevToolsUIBindings::DocumentOnLoadCompletedInPrimaryMainFrame() {
   FrontendLoaded();
 }
 

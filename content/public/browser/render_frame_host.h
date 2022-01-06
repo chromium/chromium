@@ -998,7 +998,7 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   virtual void DisableWebRtcEventLogOutput(int lid) = 0;
 
   // Return true if onload has been executed in the renderer in the main frame.
-  virtual bool IsDocumentOnLoadCompletedInMainFrame() = 0;
+  virtual bool IsDocumentOnLoadCompletedInPrimaryMainFrame() = 0;
 
   // Returns the raw list of favicon candidates as reported to observers via
   // since the last navigation start. If called on a subframe, returns the

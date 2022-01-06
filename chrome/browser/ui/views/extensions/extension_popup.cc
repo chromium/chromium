@@ -170,8 +170,7 @@ void ExtensionPopup::OnExtensionUnloaded(
   }
 }
 
-void ExtensionPopup::DocumentOnLoadCompletedInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
+void ExtensionPopup::DocumentOnLoadCompletedInPrimaryMainFrame() {
   // Show when the content finishes loading and its width is computed.
   ShowBubble();
   Observe(nullptr);

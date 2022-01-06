@@ -4720,10 +4720,7 @@ class DocumentOnLoadObserver : public WebContentsObserver {
 
  protected:
   // WebContentsObserver:
-  void DocumentOnLoadCompletedInMainFrame(
-      RenderFrameHost* render_frame_host) override {
-    callback_.Run();
-  }
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override { callback_.Run(); }
 
  private:
   base::RepeatingClosure callback_;
@@ -4750,7 +4747,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, LoadCallbacks) {
   shell()->LoadURL(main_document_url);
 
   EXPECT_FALSE(rfhi->IsDOMContentLoaded());
-  EXPECT_FALSE(web_contents->IsDocumentOnLoadCompletedInMainFrame());
+  EXPECT_FALSE(web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame());
 
   main_document_response.WaitForRequest();
   main_document_response.Send(
@@ -4762,7 +4759,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, LoadCallbacks) {
 
   load_observer.WaitForNavigationFinished();
   EXPECT_FALSE(rfhi->IsDOMContentLoaded());
-  EXPECT_FALSE(web_contents->IsDocumentOnLoadCompletedInMainFrame());
+  EXPECT_FALSE(web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame());
 
   main_document_response.Done();
 
@@ -4771,7 +4768,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, LoadCallbacks) {
   loop_until_dcl.Run();
   EXPECT_TRUE(rfhi->is_loading());
   EXPECT_TRUE(rfhi->IsDOMContentLoaded());
-  EXPECT_FALSE(web_contents->IsDocumentOnLoadCompletedInMainFrame());
+  EXPECT_FALSE(web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame());
 
   base::RunLoop loop_until_onload;
   DocumentOnLoadObserver onload_observer(web_contents,
@@ -4783,7 +4780,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, LoadCallbacks) {
   // And now onload() should be reached.
   loop_until_onload.Run();
   EXPECT_TRUE(rfhi->IsDOMContentLoaded());
-  EXPECT_TRUE(web_contents->IsDocumentOnLoadCompletedInMainFrame());
+  EXPECT_TRUE(web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame());
 }
 
 IN_PROC_BROWSER_TEST_F(ContentBrowserTest, LoadingStateResetOnNavigation) {
@@ -4804,7 +4801,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, LoadingStateResetOnNavigation) {
 
   EXPECT_TRUE(static_cast<RenderFrameHostImpl*>(web_contents->GetMainFrame())
                   ->IsDOMContentLoaded());
-  EXPECT_TRUE(web_contents->IsDocumentOnLoadCompletedInMainFrame());
+  EXPECT_TRUE(web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame());
 
   // Expect that the loading state will be reset after a navigation.
 
@@ -4818,7 +4815,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, LoadingStateResetOnNavigation) {
       "\r\n");
   navigation_observer.WaitForNavigationFinished();
   EXPECT_FALSE(web_contents->GetMainFrame()->IsDOMContentLoaded());
-  EXPECT_FALSE(web_contents->IsDocumentOnLoadCompletedInMainFrame());
+  EXPECT_FALSE(web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame());
 }
 
 IN_PROC_BROWSER_TEST_F(ContentBrowserTest,
@@ -4841,7 +4838,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest,
   loop_until_onload.Run();
 
   EXPECT_TRUE(rfhi->IsDOMContentLoaded());
-  EXPECT_TRUE(web_contents->IsDocumentOnLoadCompletedInMainFrame());
+  EXPECT_TRUE(web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame());
 
   // Expect that the loading state will NOT be reset after a cancelled
   // navigation.
@@ -4859,7 +4856,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest,
   navigation_manager.WaitForNavigationFinished();
 
   EXPECT_TRUE(rfhi->IsDOMContentLoaded());
-  EXPECT_TRUE(web_contents->IsDocumentOnLoadCompletedInMainFrame());
+  EXPECT_TRUE(web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame());
 }
 
 IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest, GetUkmSourceIds) {

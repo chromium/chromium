@@ -3535,12 +3535,12 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
 }
 
-// Test that WebContentsObserver::DocumentOnLoadCompletedInMainFrame is not
-// invoked when the page gets loaded while prerendering but it is deferred and
-// invoked on prerender activation.
+// Test that WebContentsObserver::DocumentOnLoadCompletedInPrimaryMainFrame is
+// not invoked when the page gets loaded while prerendering but it is deferred
+// and invoked on prerender activation.
 IN_PROC_BROWSER_TEST_F(
     PrerenderBrowserTest,
-    DocumentOnLoadCompletedInMainFrameInvokedAfterActivation) {
+    DocumentOnLoadCompletedInPrimaryMainFrameInvokedAfterActivation) {
   const GURL kInitialUrl = GetUrl("/empty.html");
   const GURL kPrerenderingUrl = GetUrl("/page_with_iframe.html");
 
@@ -3548,10 +3548,10 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_TRUE(NavigateToURL(shell(), kInitialUrl));
 
   // Initialize a MockWebContentsObserver and ensure that
-  // DocumentOnLoadCompletedInMainFrame is not invoked while prerendering.
+  // DocumentOnLoadCompletedInPrimaryMainFrame is not invoked while
+  // prerendering.
   testing::NiceMock<MockWebContentsObserver> observer(shell()->web_contents());
-  EXPECT_CALL(observer, DocumentOnLoadCompletedInMainFrame(testing::_))
-      .Times(0);
+  EXPECT_CALL(observer, DocumentOnLoadCompletedInPrimaryMainFrame()).Times(0);
 
   // Start a prerender.
   int prerender_host_id = AddPrerender(kPrerenderingUrl);
@@ -3566,15 +3566,13 @@ IN_PROC_BROWSER_TEST_F(
   testing::InSequence s;
 
   // Activate the prerendered page. This should result in invoking
-  // DocumentOnLoadCompletedInMainFrame only for main RenderFrameHost.
+  // DocumentOnLoadCompletedInPrimaryMainFrame only for main RenderFrameHost.
   {
     // Verify that DidFinishNavigation is invoked before
-    // DocumentOnLoadCompletedInMainFrame on activation.
+    // DocumentOnLoadCompletedInPrimaryMainFrame on activation.
     EXPECT_CALL(observer, DidFinishNavigation(testing::_));
 
-    EXPECT_CALL(observer,
-                DocumentOnLoadCompletedInMainFrame(prerender_frame_host))
-        .Times(1);
+    EXPECT_CALL(observer, DocumentOnLoadCompletedInPrimaryMainFrame()).Times(1);
   }
   NavigatePrimaryPage(kPrerenderingUrl);
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), kPrerenderingUrl);
@@ -3611,7 +3609,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest,
   testing::InSequence s;
 
   // Activate the prerendered page. This should result in invoking
-  // DocumentOnLoadCompletedInMainFrame only for main RenderFrameHost.
+  // DocumentOnLoadCompletedInPrimaryMainFrame only for main RenderFrameHost.
   // Verify that DidFinishNavigation is invoked before
   // DocumentAvailableInMainFrame on activation.
   EXPECT_CALL(observer, DidFinishNavigation(testing::_));
@@ -3711,8 +3709,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, OrderingOfDifferentLoadEvents) {
 
     EXPECT_CALL(observer, DOMContentLoaded(testing::_)).Times(1);
 
-    EXPECT_CALL(observer, DocumentOnLoadCompletedInMainFrame(testing::_))
-        .Times(1);
+    EXPECT_CALL(observer, DocumentOnLoadCompletedInPrimaryMainFrame()).Times(1);
 
     EXPECT_CALL(observer, DidFinishLoad(testing::_, testing::_)).Times(1);
 

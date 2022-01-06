@@ -62,8 +62,7 @@ class LoadingPredictorTabHelper
       const GURL& url,
       const std::string& mime_type,
       network::mojom::RequestDestination request_destination) override;
-  void DocumentOnLoadCompletedInMainFrame(
-      content::RenderFrameHost* render_frame_host) override;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 
   // Used by LoadingPredictorPageLoadMetricsObserver.
   void RecordFirstContentfulPaint(content::RenderFrameHost* render_frame_host,
@@ -105,7 +104,7 @@ class LoadingPredictorTabHelper
     bool has_local_preconnect_predictions_for_current_navigation_ = false;
 
     // The optimization guide prediction for the current navigation. If set,
-    // this will be cleared on |DocumentOnLoadCompletedInMainFrame|.
+    // this will be cleared on |DocumentOnLoadCompletedInPrimaryMainFrame|.
     absl::optional<OptimizationGuidePrediction>
         last_optimization_guide_prediction_;
 

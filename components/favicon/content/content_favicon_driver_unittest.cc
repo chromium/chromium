@@ -145,8 +145,9 @@ TEST_F(ContentFaviconDriverTest, UseManifestURLAFterOnLoad) {
             favicon_driver->GetManifestURL(web_contents()->GetMainFrame()));
 }
 
-// Test that no download is initiated when DocumentOnLoadCompletedInMainFrame()
-// is not triggered (e.g. user stopped an ongoing page load).
+// Test that no download is initiated when
+// DocumentOnLoadCompletedInPrimaryMainFrame() is not triggered (e.g. user
+// stopped an ongoing page load).
 TEST_F(ContentFaviconDriverTest, ShouldNotCauseImageDownload) {
   ContentFaviconDriver* favicon_driver =
       ContentFaviconDriver::FromWebContents(web_contents());

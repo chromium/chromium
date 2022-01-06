@@ -41,9 +41,9 @@ enum NotificationType {
 
   // Other load-related (not from NavigationController) ----------------------
 
-  // Corresponds to ViewHostMsg_DocumentOnLoadCompletedInMainFrame. The source
-  // is the WebContents.
-  // DEPRECATED: Use WebContentsObserver::DocumentOnLoadCompletedInMainFrame()
+  // DEPRECATED: Use
+  // WebContentsObserver::DocumentOnLoadCompletedInPrimaryMainFrame() when this
+  // is fired.
   // TODO(https://crbug.com/1174761): Remove.
   NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
 

@@ -756,7 +756,7 @@ TEST_F(PermissionManagerTest, GetPermissionStatusDelegation) {
       PermissionRequestManager::FromWebContents(web_contents());
   auto prompt_factory = std::make_unique<MockPermissionPromptFactory>(manager);
   prompt_factory->set_response_type(PermissionRequestManager::ACCEPT_ALL);
-  prompt_factory->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  prompt_factory->DocumentOnLoadCompletedInPrimaryMainFrame();
 
   RequestPermission(PermissionType::GEOLOCATION, child, GURL(kOrigin2));
 

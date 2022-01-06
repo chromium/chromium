@@ -59,8 +59,7 @@ class PerFrameContentTranslateDriver : public ContentTranslateDriver {
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
-  void DocumentOnLoadCompletedInMainFrame(
-      content::RenderFrameHost* render_frame_host) override;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 
   void OnPageLanguageDetermined(const LanguageDetectionDetails& details,
                                 bool page_level_translation_critiera_met);

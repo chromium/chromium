@@ -99,7 +99,7 @@ class PermissionRequestManagerTest
   }
 
   void WaitForBubbleToBeShown() {
-    manager_->DocumentOnLoadCompletedInMainFrame(main_rfh());
+    manager_->DocumentOnLoadCompletedInPrimaryMainFrame();
     base::RunLoop().RunUntilIdle();
   }
 

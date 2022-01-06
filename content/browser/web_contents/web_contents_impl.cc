@@ -1934,7 +1934,7 @@ bool WebContentsImpl::ShouldShowLoadingUI() {
   return IsLoading() && should_show_loading_ui_;
 }
 
-bool WebContentsImpl::IsDocumentOnLoadCompletedInMainFrame() {
+bool WebContentsImpl::IsDocumentOnLoadCompletedInPrimaryMainFrame() {
   // TODO(mparch): This should be moved to Page, and callers should use it
   // directly.
   return GetPrimaryPage().is_on_load_completed_in_main_document();
@@ -7445,8 +7445,7 @@ void WebContentsImpl::DocumentOnLoadCompleted(
   ShowInsecureLocalhostWarningIfNeeded(render_frame_host->GetPage());
 
   observers_.NotifyObservers(
-      &WebContentsObserver::DocumentOnLoadCompletedInMainFrame,
-      render_frame_host);
+      &WebContentsObserver::DocumentOnLoadCompletedInPrimaryMainFrame);
 
   // TODO(avi): Remove. http://crbug.com/170921
   NotificationService::current()->Notify(NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,

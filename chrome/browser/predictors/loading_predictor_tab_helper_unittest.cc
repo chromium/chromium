@@ -265,7 +265,7 @@ TEST_F(LoadingPredictorTabHelperTest, DocumentOnLoadCompleted) {
   NavigateAndCommitInFrame("http://sub.test.org", subframe);
 
   EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, _));
-  tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
 }
 
 // Tests that a resource load is correctly recorded.
@@ -343,7 +343,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
   NavigateAndCommitInMainFrameAndVerifyMetrics("http://test.org");
   // Trigger onLoad to get rid of previous prediction.
   EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, _));
-  tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
 
   base::HistogramTester histogram_tester;
 
@@ -364,7 +364,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
       null_optimization_guide_prediction;
   EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(
                                     _, null_optimization_guide_prediction));
-  tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
 
   histogram_tester.ExpectTotalCount(
       "LoadingPredictor.OptimizationHintsReceiveStatus", 0);
@@ -410,7 +410,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
                                         GURL("http://other.org/resource2"),
                                         GURL("http://other.org/resource3")};
   EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, prediction));
-  tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
 
   histogram_tester.ExpectUniqueSample(
       "LoadingPredictor.OptimizationHintsReceiveStatus",
@@ -464,7 +464,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
                                         GURL("http://other.org/resource2"),
                                         GURL("http://other.org/resource3")};
   EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, prediction));
-  tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
 
   // Optimization guide predictions came after commit.
   histogram_tester.ExpectUniqueSample(
@@ -523,7 +523,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
   optimization_guide_prediction->decision =
       optimization_guide::OptimizationGuideDecision::kUnknown;
   EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, _));
-  tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
 
   histogram_tester.ExpectUniqueSample(
       "LoadingPredictor.OptimizationHintsReceiveStatus",
@@ -553,7 +553,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
   prediction->decision =
       optimization_guide::OptimizationGuideDecision::kUnknown;
   EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, prediction));
-  tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
 
   // Histogram should not be recorded since prediction did not come back.
   histogram_tester.ExpectTotalCount(
@@ -597,7 +597,7 @@ TEST_F(
   prediction->decision =
       optimization_guide::OptimizationGuideDecision::kUnknown;
   EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, prediction));
-  tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
 
   // Invoke callback after document completed in main frame..
   std::move(callback).Run(optimization_guide::OptimizationGuideDecision::kTrue,
@@ -639,7 +639,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderTest,
       OptimizationGuidePrediction();
   prediction->decision = optimization_guide::OptimizationGuideDecision::kFalse;
   EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, prediction));
-  tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
 
   // Histogram should still be recorded even though no predictions were
   // returned.
@@ -682,7 +682,7 @@ TEST_F(
       optimization_guide::OptimizationGuideDecision::kUnknown;
   EXPECT_CALL(*mock_collector_,
               RecordMainFrameLoadComplete(_, optimization_guide_prediction));
-  tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
 
   // Histogram should still be recorded even though no predictions were
   // returned.
@@ -762,7 +762,7 @@ TEST_F(LoadingPredictorTabHelperOptimizationGuideDeciderWithPrefetchTest,
       GURL("http://test.org/resource1"), GURL("http://other.org/resource2"),
       GURL("http://other.org/resource3"), GURL("http://preconnectonly.com/")};
   EXPECT_CALL(*mock_collector_, RecordMainFrameLoadComplete(_, prediction));
-  tab_helper_->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  tab_helper_->DocumentOnLoadCompletedInPrimaryMainFrame();
 
   histogram_tester.ExpectUniqueSample(
       "LoadingPredictor.OptimizationHintsReceiveStatus",

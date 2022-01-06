@@ -335,9 +335,9 @@ void WebContentsObserverConsistencyChecker::DocumentAvailableInMainFrame(
   AssertMainFrameExists();
 }
 
-void WebContentsObserverConsistencyChecker::DocumentOnLoadCompletedInMainFrame(
-    RenderFrameHost* render_frame_host) {
-  CHECK(static_cast<PageImpl&>(render_frame_host->GetPage())
+void WebContentsObserverConsistencyChecker::
+    DocumentOnLoadCompletedInPrimaryMainFrame() {
+  CHECK(static_cast<PageImpl&>(web_contents()->GetPrimaryPage())
             .is_on_load_completed_in_main_document());
   AssertMainFrameExists();
 }

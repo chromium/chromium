@@ -592,12 +592,9 @@ class WebContents : public PageNavigator,
 
   // Returns whether the current primary main document has reached and finished
   // executing its onload() handler. Corresponds to
-  // WebContentsObserver::DocumentOnLoadCompletedInMainFrame() and see comments
-  // there for more details.
-  //
-  // TODO(crbug.com/1257140): Rename IsDocumentOnLoadCompletedInMainFrame to
-  // IsDocumentOnLoadCompletedInPrimaryMainFrame to capture the new behaviour.
-  virtual bool IsDocumentOnLoadCompletedInMainFrame() = 0;
+  // WebContentsObserver::DocumentOnLoadCompletedInPrimaryMainFrame() and see
+  // comments there for more details.
+  virtual bool IsDocumentOnLoadCompletedInPrimaryMainFrame() = 0;
 
   // Returns whether this WebContents is waiting for a first-response for the
   // main resource of the page.

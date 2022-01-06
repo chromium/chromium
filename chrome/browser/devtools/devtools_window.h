@@ -267,7 +267,7 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   // - Toggle/Open: client call;
   // - Create;
   // - ScheduleShow: setup window to be functional, but not yet show;
-  // - DocumentOnLoadCompletedInMainFrame: frontend loaded;
+  // - DocumentOnLoadCompletedInPrimaryMainFrame: frontend loaded;
   // - SetIsDocked: frontend decided on docking state;
   // - OnLoadCompleted: ready to present frontend;
   // - Show: actually placing frontend WebContents to a Browser or docked place;

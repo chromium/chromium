@@ -209,7 +209,7 @@ class DevToolsUIBindings : public DevToolsEmbedderMessageDispatcher::Delegate,
                               const base::Value& targets);
 
   void ReadyToCommitNavigation(content::NavigationHandle* navigation_handle);
-  void DocumentOnLoadCompletedInMainFrame();
+  void DocumentOnLoadCompletedInPrimaryMainFrame();
   void DidNavigateMainFrame();
   void FrontendLoaded();
 

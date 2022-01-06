@@ -375,8 +375,7 @@ void PermissionRequestManager::DidFinishNavigation(
   CleanUpRequests();
 }
 
-void PermissionRequestManager::DocumentOnLoadCompletedInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
+void PermissionRequestManager::DocumentOnLoadCompletedInPrimaryMainFrame() {
   // This is scheduled because while all calls to the browser have been
   // issued at DOMContentLoaded, they may be bouncing around in scheduled
   // callbacks finding the UI thread still. This makes sure we allow those
@@ -428,7 +427,7 @@ void PermissionRequestManager::OnVisibilityChanged(
     return;
   }
 
-  if (!web_contents()->IsDocumentOnLoadCompletedInMainFrame())
+  if (!web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame())
     return;
 
   if (!IsRequestInProgress()) {
@@ -584,7 +583,7 @@ void PermissionRequestManager::DequeueRequestIfNeeded() {
   // PermissionBubbleMediaAccessHandler and UserMediaClient. We probably don't
   // need two permission queues, so resolve the duplication.
 
-  if (!web_contents()->IsDocumentOnLoadCompletedInMainFrame() || view_ ||
+  if (!web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame() || view_ ||
       IsRequestInProgress()) {
     return;
   }
@@ -665,7 +664,7 @@ void PermissionRequestManager::ShowBubble() {
   if (!IsRequestInProgress() || view_)
     return;
 
-  DCHECK(web_contents()->IsDocumentOnLoadCompletedInMainFrame());
+  DCHECK(web_contents()->IsDocumentOnLoadCompletedInPrimaryMainFrame());
   DCHECK(current_request_ui_to_use_);
 
   if (tab_is_hidden_)

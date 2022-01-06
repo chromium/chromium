@@ -173,7 +173,7 @@ void ContentFaviconDriver::DidUpdateFaviconURL(
   if (!entry)
     return;
 
-  if (!rfh->IsDocumentOnLoadCompletedInMainFrame())
+  if (!rfh->IsDocumentOnLoadCompletedInPrimaryMainFrame())
     return;
 
   OnUpdateCandidates(rfh->GetLastCommittedURL(),
@@ -188,7 +188,7 @@ void ContentFaviconDriver::DidUpdateWebManifestURL(
   // occur when loading an initially blank page.
   content::NavigationEntry* entry =
       web_contents()->GetController().GetLastCommittedEntry();
-  if (!entry || !rfh->IsDocumentOnLoadCompletedInMainFrame())
+  if (!entry || !rfh->IsDocumentOnLoadCompletedInPrimaryMainFrame())
     return;
 
   DocumentManifestData* document_data =

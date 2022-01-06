@@ -276,10 +276,9 @@ void RecentTabHelper::DocumentAvailableInMainFrame(
   snapshot_controller_->DocumentAvailableInMainFrame();
 }
 
-void RecentTabHelper::DocumentOnLoadCompletedInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
+void RecentTabHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
   EnsureInitialized();
-  snapshot_controller_->DocumentOnLoadCompletedInMainFrame();
+  snapshot_controller_->DocumentOnLoadCompletedInPrimaryMainFrame();
 }
 
 void RecentTabHelper::WebContentsDestroyed() {

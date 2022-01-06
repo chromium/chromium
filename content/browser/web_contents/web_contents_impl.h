@@ -378,7 +378,7 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   bool IsLoading() override;
   double GetLoadProgress() override;
   bool ShouldShowLoadingUI() override;
-  bool IsDocumentOnLoadCompletedInMainFrame() override;
+  bool IsDocumentOnLoadCompletedInPrimaryMainFrame() override;
   bool IsWaitingForResponse() override;
   const net::LoadStateWithParam& GetLoadState() override;
   const std::u16string& GetLoadStateHost() override;

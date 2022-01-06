@@ -81,8 +81,7 @@ class BackgroundLoaderOffliner
   // WebContentsObserver implementation.
   void DocumentAvailableInMainFrame(
       content::RenderFrameHost* render_frame_host) override;
-  void DocumentOnLoadCompletedInMainFrame(
-      content::RenderFrameHost* render_frame_host) override;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
   void WebContentsDestroyed() override;

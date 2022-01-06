@@ -5752,13 +5752,13 @@ void RenderFrameHostImpl::DocumentOnLoadCompleted() {
 
   GetPage().set_is_on_load_completed_in_main_document(true);
 
-  // Don't dispatch DocumentOnLoadCompletedInMainFrame for non-primary main
-  // frames. As most of the observers are interested only in the onload
+  // Don't dispatch DocumentOnLoadCompletedInPrimaryMainFrame for non-primary
+  // main frames. As most of the observers are interested only in the onload
   // completion of the current document in the primary main frame. Since the
   // WebContents could be hosting more than one main frame (e.g., fenced frames,
   // prerender pages or pending delete RFHs), return early for other cases. In
-  // case of prerendering, we dispatch DocumentOnLoadCompletedInMainFrame on
-  // activation.
+  // case of prerendering, we dispatch DocumentOnLoadCompletedInPrimaryMainFrame
+  // on activation.
   if (!IsInPrimaryMainFrame())
     return;
 
@@ -12528,7 +12528,7 @@ void RenderFrameHostImpl::DisableWebRtcEventLogOutput(int lid) {
   GetPeerConnectionTrackerHost().StopEventLog(lid);
 }
 
-bool RenderFrameHostImpl::IsDocumentOnLoadCompletedInMainFrame() {
+bool RenderFrameHostImpl::IsDocumentOnLoadCompletedInPrimaryMainFrame() {
   return GetPage().is_on_load_completed_in_main_document();
 }
 

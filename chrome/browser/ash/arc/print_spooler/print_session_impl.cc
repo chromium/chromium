@@ -180,7 +180,7 @@ base::ReadOnlySharedMemoryRegion ReadPreviewDocument(
 // print preview will find the embedded plugin element instead of trying to
 // print the top-level frame.
 bool IsPdfPluginLoaded(content::WebContents* web_contents) {
-  if (!web_contents->IsDocumentOnLoadCompletedInMainFrame()) {
+  if (!web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
     VLOG(1) << "Top-level WebContents not ready yet.";
     return false;
   }
@@ -198,7 +198,7 @@ bool IsPdfPluginLoaded(content::WebContents* web_contents) {
     return false;
   }
 
-  if (!contents_to_use->IsDocumentOnLoadCompletedInMainFrame()) {
+  if (!contents_to_use->IsDocumentOnLoadCompletedInPrimaryMainFrame()) {
     VLOG(1) << "Plugin frame still loading.";
     return false;
   }

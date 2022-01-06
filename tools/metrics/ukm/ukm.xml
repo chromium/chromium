@@ -9330,7 +9330,7 @@ be describing additional metrics about the same event.
   <summary>
     Metrics that reflect the accuracy of the predictions used by the Loading
     Predictor. This event will be recorded once per page load on
-    DocumentOnLoadCompletedInMainFrame().
+    DocumentOnLoadCompletedInPrimaryMainFrame().
   </summary>
   <metric name="CorrectSubresourceOriginPreconnectsInitiated">
     <summary>

@@ -260,9 +260,7 @@ class CryptoTokenPermissionTest : public ExtensionApiUnittest {
       bool* out_result) {
     if (bubble_action != permissions::PermissionRequestManager::NONE) {
       prompt_factory_->set_response_type(bubble_action);
-      auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(0);
-      prompt_factory_->DocumentOnLoadCompletedInMainFrame(
-          web_contents->GetMainFrame());
+      prompt_factory_->DocumentOnLoadCompletedInPrimaryMainFrame();
     }
 
     auto function = base::MakeRefCounted<
@@ -295,9 +293,7 @@ class CryptoTokenPermissionTest : public ExtensionApiUnittest {
       bool* out_result) {
     if (bubble_action != permissions::PermissionRequestManager::NONE) {
       prompt_factory_->set_response_type(bubble_action);
-      auto* web_contents = browser()->tab_strip_model()->GetWebContentsAt(0);
-      prompt_factory_->DocumentOnLoadCompletedInMainFrame(
-          web_contents->GetMainFrame());
+      prompt_factory_->DocumentOnLoadCompletedInPrimaryMainFrame();
     }
 
     auto function = base::MakeRefCounted<

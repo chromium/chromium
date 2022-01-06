@@ -363,26 +363,19 @@ class CONTENT_EXPORT WebContentsObserver {
   // current document (i.e., |render_frame_host|) has completed. This happens
   // when the primary main document has finished running onload events after
   // loading all content (images, scripts, etc). Prefer using
-  // WebContents::IsDocumentOnLoadCompletedInMainFrame instead of saving this
-  // state in your component.
+  // WebContents::IsDocumentOnLoadCompletedInPrimaryMainFrame instead of saving
+  // this state in your component.
   //
-  // For prerendering we dispatch DocumentOnLoadCompletedInMainFrame on
+  // For prerendering we dispatch DocumentOnLoadCompletedInPrimaryMainFrame on
   // activation whereas for BackForwardCache restores we don't dispatch
-  // DocumentOnLoadCompletedInMainFrame.
+  // DocumentOnLoadCompletedInPrimaryMainFrame.
   //
-  // DocumentOnLoadCompletedInMainFrame is typically used by the embedders to
-  // perform actions on a loaded page, for example showing load completion
-  // bubbles, injecting scripts which take page snapshots. Note, however, that
-  // some web pages might still be loading (i.e. if they dynamically inject
-  // content).
-  //
-  // TODO(crbug.com/1257140): Rename DocumentOnLoadCompletedInMainFrame to
-  // DocumentOnLoadCompletedInPrimaryMainFrame to capture the new behavior.
-  // TODO(crbug.com/1271481): Remove RenderFrameHost* argument from
-  // DocumentOnLoadCompletedInMainFrame and directly rely on
-  // WebContents::GetPrimaryMainFrame().
-  virtual void DocumentOnLoadCompletedInMainFrame(
-      RenderFrameHost* render_frame_host) {}
+  // DocumentOnLoadCompletedInPrimaryMainFrame is typically used by the
+  // embedders to perform actions on a loaded page, for example showing load
+  // completion bubbles, injecting scripts which take page snapshots. Note,
+  // however, that some web pages might still be loading (i.e. if they
+  // dynamically inject content).
+  virtual void DocumentOnLoadCompletedInPrimaryMainFrame() {}
 
   // This method is invoked when we have received a response from the
   // renderer in response to a dom automation controller action.

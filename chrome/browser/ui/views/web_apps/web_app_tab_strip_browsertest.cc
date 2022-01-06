@@ -194,7 +194,8 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest,
 
   // Expect manifest background color prior to page loading.
   {
-    ASSERT_FALSE(app.web_contents->IsDocumentOnLoadCompletedInMainFrame());
+    ASSERT_FALSE(
+        app.web_contents->IsDocumentOnLoadCompletedInPrimaryMainFrame());
     EXPECT_EQ(app.browser->app_controller()->GetBackgroundColor().value(),
               kAppBackgroundColor);
     EXPECT_EQ(GetTabColor(app.browser_view), kAppBackgroundColor);

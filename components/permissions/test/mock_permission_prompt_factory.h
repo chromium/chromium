@@ -44,8 +44,7 @@ class MockPermissionPromptFactory {
 
   void ResetCounts();
 
-  void DocumentOnLoadCompletedInMainFrame(
-      content::RenderFrameHost* render_frame_host);
+  void DocumentOnLoadCompletedInPrimaryMainFrame();
 
   void set_response_type(PermissionRequestManager::AutoResponseType type) {
     response_type_ = type;

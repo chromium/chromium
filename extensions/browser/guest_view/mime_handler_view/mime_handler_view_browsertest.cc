@@ -477,8 +477,7 @@ class DocumentLoadComplete : public content::WebContentsObserver {
       : content::WebContentsObserver(web_contents) {}
   ~DocumentLoadComplete() override {}
 
-  void DocumentOnLoadCompletedInMainFrame(
-      content::RenderFrameHost* render_frame_host) override {
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override {
     did_load_ = true;
     run_loop_.Quit();
   }
