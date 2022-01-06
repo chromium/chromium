@@ -5,22 +5,30 @@
 /**
  * @fileoverview a mock store for personalization app. Use to monitor actions
  * and manipulate state.
- *
- * Skip type-checks for this file because ../../test_store.js is not properly
- * typed.
- * @suppress {checkTypes}
  */
 
 import {reduce} from 'chrome://personalization/trusted/personalization_reducers.js';
 import {emptyState} from 'chrome://personalization/trusted/personalization_state.js';
 import {PersonalizationStore} from 'chrome://personalization/trusted/personalization_store.js';
+import {Action} from 'chrome://resources/js/cr/ui/store.js';
 import {TestStore} from 'chrome://webui-test/test_store.js';
 
 export class TestPersonalizationStore extends TestStore {
-  constructor(data) {
+  // received actions and states.
+  private actions_: Action[];
+  private states_: any[];
+
+  constructor(data: any) {
     super(data, PersonalizationStore, emptyState(), reduce);
     this.actions_ = [];
     this.states_ = [];
+
+    // manually override `reduce_` method because it's private.
+    this['reduce_'] = (action: Action) => {
+      super['reduce_'](action);
+      this.actions_.push(action);
+      this.states_.push(this.data);
+    };
   }
 
   get actions() {
@@ -31,16 +39,8 @@ export class TestPersonalizationStore extends TestStore {
     return this.states_;
   }
 
-  /** @override */
   replaceSingleton() {
     PersonalizationStore.setInstance(this);
-  }
-
-  /** @override */
-  reduce_(action) {
-    super.reduce_(action);
-    this.actions_.push(action);
-    this.states_.push(this.data);
   }
 
   reset(data = {}) {
