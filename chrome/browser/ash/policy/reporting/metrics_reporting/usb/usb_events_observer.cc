@@ -18,16 +18,18 @@ UsbEventsObserver::~UsbEventsObserver() = default;
 void UsbEventsObserver::OnAdd(UsbEventInfoPtr info) {
   MetricData metric_data;
   metric_data.mutable_event_data()->set_type(MetricEventType::USB_ADDED);
-  FillUsbEventData(metric_data.mutable_event_data()->mutable_usb_event_data(),
-                   std::move(info));
+  FillUsbTelemetry(
+      metric_data.mutable_telemetry_data()->mutable_usb_telemetry(),
+      std::move(info));
   OnEventObserved(std::move(metric_data));
 }
 
 void UsbEventsObserver::OnRemove(UsbEventInfoPtr info) {
   MetricData metric_data;
   metric_data.mutable_event_data()->set_type(MetricEventType::USB_REMOVED);
-  FillUsbEventData(metric_data.mutable_event_data()->mutable_usb_event_data(),
-                   std::move(info));
+  FillUsbTelemetry(
+      metric_data.mutable_telemetry_data()->mutable_usb_telemetry(),
+      std::move(info));
   OnEventObserved(std::move(metric_data));
 }
 
@@ -36,7 +38,7 @@ void UsbEventsObserver::AddObserver() {
       BindNewPipeAndPassRemote());
 }
 
-void UsbEventsObserver::FillUsbEventData(UsbEventData* data,
+void UsbEventsObserver::FillUsbTelemetry(UsbTelemetry* data,
                                          UsbEventInfoPtr info) {
   data->set_vendor(info->vendor);
   data->set_name(info->name);

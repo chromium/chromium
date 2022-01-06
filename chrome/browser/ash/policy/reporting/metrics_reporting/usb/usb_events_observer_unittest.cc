@@ -74,28 +74,25 @@ TEST_F(UsbEventsObserverTest, UsbOnAdd) {
   usb_observer.OnRemove(std::move(test_usb_event_info));
 
   ASSERT_TRUE(metric_data.has_event_data());
-  ASSERT_TRUE(metric_data.event_data().has_usb_event_data());
-  EXPECT_TRUE(metric_data.event_data().usb_event_data().has_name());
-  EXPECT_TRUE(metric_data.event_data().usb_event_data().has_pid());
-  EXPECT_TRUE(metric_data.event_data().usb_event_data().has_vendor());
-  EXPECT_TRUE(metric_data.event_data().usb_event_data().has_vid());
-  EXPECT_THAT(metric_data.event_data().usb_event_data().categories(),
-              Not(IsEmpty()));
-  EXPECT_THAT(metric_data.event_data().usb_event_data().name(),
+  ASSERT_TRUE(metric_data.telemetry_data().has_usb_telemetry());
+  EXPECT_TRUE(metric_data.telemetry_data().usb_telemetry().has_name());
+  EXPECT_TRUE(metric_data.telemetry_data().usb_telemetry().has_pid());
+  EXPECT_TRUE(metric_data.telemetry_data().usb_telemetry().has_vendor());
+  EXPECT_TRUE(metric_data.telemetry_data().usb_telemetry().has_vid());
+  EXPECT_THAT(metric_data.telemetry_data().usb_telemetry().name(),
               StrEq(kTestName));
-  EXPECT_THAT(metric_data.event_data().usb_event_data().pid(), Eq(kTestPid));
-  EXPECT_THAT(metric_data.event_data().usb_event_data().vendor(),
+  EXPECT_THAT(metric_data.telemetry_data().usb_telemetry().pid(), Eq(kTestPid));
+  EXPECT_THAT(metric_data.telemetry_data().usb_telemetry().vendor(),
               StrEq(kTestVendor));
-  EXPECT_THAT(metric_data.event_data().usb_event_data().vid(), Eq(kTestVid));
-  EXPECT_THAT(metric_data.event_data().usb_event_data().categories().size(),
+  EXPECT_THAT(metric_data.telemetry_data().usb_telemetry().vid(), Eq(kTestVid));
+  EXPECT_EQ(metric_data.event_data().type(), MetricEventType::USB_REMOVED);
+  ASSERT_THAT(metric_data.telemetry_data().usb_telemetry().categories().size(),
               Eq(kTestCategories.size()));
 
-  for (int i = 0; i < kTestCategories.size(); i++) {
-    EXPECT_THAT(metric_data.event_data().usb_event_data().categories()[i],
+  for (int i = 0; i < kTestCategories.size(); ++i) {
+    EXPECT_THAT(metric_data.telemetry_data().usb_telemetry().categories()[i],
                 StrEq(kTestCategories[i]));
   }
-
-  EXPECT_EQ(metric_data.event_data().type(), MetricEventType::USB_REMOVED);
 }
 
 TEST_F(UsbEventsObserverTest, UsbOnRemoved) {
@@ -109,28 +106,25 @@ TEST_F(UsbEventsObserverTest, UsbOnRemoved) {
   usb_observer.OnAdd(std::move(test_usb_event_info));
 
   ASSERT_TRUE(metric_data.has_event_data());
-  ASSERT_TRUE(metric_data.event_data().has_usb_event_data());
-  EXPECT_TRUE(metric_data.event_data().usb_event_data().has_name());
-  EXPECT_TRUE(metric_data.event_data().usb_event_data().has_pid());
-  EXPECT_TRUE(metric_data.event_data().usb_event_data().has_vendor());
-  EXPECT_TRUE(metric_data.event_data().usb_event_data().has_vid());
-  EXPECT_THAT(metric_data.event_data().usb_event_data().categories(),
-              Not(IsEmpty()));
-  EXPECT_THAT(metric_data.event_data().usb_event_data().name(),
+  ASSERT_TRUE(metric_data.telemetry_data().has_usb_telemetry());
+  EXPECT_TRUE(metric_data.telemetry_data().usb_telemetry().has_name());
+  EXPECT_TRUE(metric_data.telemetry_data().usb_telemetry().has_pid());
+  EXPECT_TRUE(metric_data.telemetry_data().usb_telemetry().has_vendor());
+  EXPECT_TRUE(metric_data.telemetry_data().usb_telemetry().has_vid());
+  EXPECT_THAT(metric_data.telemetry_data().usb_telemetry().name(),
               StrEq(kTestName));
-  EXPECT_THAT(metric_data.event_data().usb_event_data().pid(), Eq(kTestPid));
-  EXPECT_THAT(metric_data.event_data().usb_event_data().vendor(),
+  EXPECT_THAT(metric_data.telemetry_data().usb_telemetry().pid(), Eq(kTestPid));
+  EXPECT_THAT(metric_data.telemetry_data().usb_telemetry().vendor(),
               StrEq(kTestVendor));
-  EXPECT_THAT(metric_data.event_data().usb_event_data().vid(), Eq(kTestVid));
-  EXPECT_THAT(metric_data.event_data().usb_event_data().categories().size(),
+  EXPECT_THAT(metric_data.telemetry_data().usb_telemetry().vid(), Eq(kTestVid));
+  EXPECT_EQ(metric_data.event_data().type(), MetricEventType::USB_ADDED);
+  ASSERT_THAT(metric_data.telemetry_data().usb_telemetry().categories().size(),
               Eq(kTestCategories.size()));
 
-  for (int i = 0; i < kTestCategories.size(); i++) {
-    EXPECT_THAT(metric_data.event_data().usb_event_data().categories()[i],
+  for (int i = 0; i < kTestCategories.size(); ++i) {
+    EXPECT_THAT(metric_data.telemetry_data().usb_telemetry().categories()[i],
                 StrEq(kTestCategories[i]));
   }
-
-  EXPECT_EQ(metric_data.event_data().type(), MetricEventType::USB_ADDED);
 }
 
 TEST_F(UsbEventsObserverTest, UsbOnAddUsingFakeCrosHealthdClient) {
@@ -145,12 +139,12 @@ TEST_F(UsbEventsObserverTest, UsbOnAddUsingFakeCrosHealthdClient) {
 
   const auto metric_data = result_metric_data.result();
   ASSERT_TRUE(metric_data.has_event_data());
-  ASSERT_TRUE(metric_data.event_data().has_usb_event_data());
-  EXPECT_TRUE(metric_data.event_data().usb_event_data().has_name());
-  EXPECT_TRUE(metric_data.event_data().usb_event_data().has_pid());
-  EXPECT_TRUE(metric_data.event_data().usb_event_data().has_vendor());
-  EXPECT_TRUE(metric_data.event_data().usb_event_data().has_vid());
-  EXPECT_THAT(metric_data.event_data().usb_event_data().categories(),
+  ASSERT_TRUE(metric_data.telemetry_data().has_usb_telemetry());
+  EXPECT_TRUE(metric_data.telemetry_data().usb_telemetry().has_name());
+  EXPECT_TRUE(metric_data.telemetry_data().usb_telemetry().has_pid());
+  EXPECT_TRUE(metric_data.telemetry_data().usb_telemetry().has_vendor());
+  EXPECT_TRUE(metric_data.telemetry_data().usb_telemetry().has_vid());
+  EXPECT_THAT(metric_data.telemetry_data().usb_telemetry().categories(),
               IsEmpty());
   EXPECT_EQ(metric_data.event_data().type(), MetricEventType::USB_ADDED);
 }

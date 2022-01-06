@@ -277,6 +277,8 @@ message TelemetryData {
   optional NetworksTelemetry networks_telemetry = 1;
   // Audio telemetry data.
   optional AudioTelemetry audio_telemetry = 2;
+  // Usb telemetry data
+  optional UsbTelemetry usb_telemetry = 3;
 }
 
 enum MetricEventType {
@@ -289,15 +291,15 @@ enum MetricEventType {
   USB_REMOVED = 6;
 }
 
-message UsbEventData {
+message UsbTelemetry {
   // Vendor name
   optional string vendor = 1;
   // Device name, model name, or product name
   optional string name = 2;
   // Vendor ID
-  optional int64 vid = 3;
+  optional int32 vid = 3;
   // Product ID
-  optional int64 pid = 4;
+  optional int32 pid = 4;
   // List of names of USB categories the device falls under
   // https://www.usb.org/defined-class-codes
   repeated string categories = 5;
@@ -307,7 +309,6 @@ message UsbEventData {
 // associated with the event will be reported as TelemetryData.
 message EventData {
   optional MetricEventType type = 1;
-  optional UsbEventData usb_event_data = 2;
 }
 
 // Main message to be reported, can contain `InfoData`, `TelemetryData`, or

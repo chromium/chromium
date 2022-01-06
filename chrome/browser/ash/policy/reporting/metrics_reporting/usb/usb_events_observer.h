@@ -34,7 +34,7 @@ class UsbEventsObserver
   void AddObserver() override;
 
  private:
-  void FillUsbEventData(UsbEventData* data, UsbEventInfoPtr info);
+  void FillUsbTelemetry(UsbTelemetry* data, UsbEventInfoPtr info);
 };
 }  // namespace reporting
 
