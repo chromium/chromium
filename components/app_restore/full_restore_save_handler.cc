@@ -334,6 +334,20 @@ void FullRestoreSaveHandler::SaveWindowInfo(
   ModifyWindowInfo(window_id, window_info);
 }
 
+void FullRestoreSaveHandler::OnLacrosChromeAppWindowAdded(
+    const std::string& app_id,
+    const std::string& window_id) {
+  if (lacros_save_handler_)
+    lacros_save_handler_->OnAppWindowAdded(app_id, window_id);
+}
+
+void FullRestoreSaveHandler::OnLacrosChromeAppWindowRemoved(
+    const std::string& app_id,
+    const std::string& window_id) {
+  if (lacros_save_handler_)
+    lacros_save_handler_->OnAppWindowRemoved(app_id, window_id);
+}
+
 void FullRestoreSaveHandler::Flush(const base::FilePath& profile_path) {
   if (save_running_.find(profile_path) != save_running_.end())
     return;

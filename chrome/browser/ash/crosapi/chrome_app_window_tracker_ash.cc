@@ -10,6 +10,7 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ui/ash/shelf/standalone_browser_extension_app_shelf_item_controller.h"
+#include "components/app_restore/full_restore_utils.h"
 #include "components/exo/shell_surface_util.h"
 
 namespace crosapi {
@@ -29,12 +30,14 @@ void ChromeAppWindowTrackerAsh::OnAppWindowAdded(const std::string& app_id,
                                                  const std::string& window_id) {
   pending_window_ids_[window_id].app_id = app_id;
   CheckWindowNoLongerPending(window_id);
+  full_restore::OnLacrosChromeAppWindowAdded(app_id, window_id);
 }
 
 void ChromeAppWindowTrackerAsh::OnAppWindowRemoved(
     const std::string& app_id,
     const std::string& window_id) {
   pending_window_ids_.erase(window_id);
+  full_restore::OnLacrosChromeAppWindowRemoved(app_id, window_id);
 }
 
 void ChromeAppWindowTrackerAsh::OnWindowInitialized(aura::Window* window) {

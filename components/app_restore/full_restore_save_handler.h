@@ -110,6 +110,18 @@ class COMPONENT_EXPORT(APP_RESTORE) FullRestoreSaveHandler
   // Saves |window_info| to |profile_path_to_restore_data_|.
   void SaveWindowInfo(const app_restore::WindowInfo& window_info);
 
+  // Invoked when an Chrome app Lacros window is created. `app_id` is the
+  // AppService id, and `window_id` is the wayland app_id property for the
+  // window.
+  void OnLacrosChromeAppWindowAdded(const std::string& app_id,
+                                    const std::string& window_id);
+
+  // Invoked when an Chrome app Lacros window is removed. `app_id` is the
+  // AppService id, and `window_id` is the wayland app_id property for the
+  // window.
+  void OnLacrosChromeAppWindowRemoved(const std::string& app_id,
+                                      const std::string& window_id);
+
   // Flushes the full restore file in |profile_path| with the current restore
   // data.
   void Flush(const base::FilePath& profile_path);
