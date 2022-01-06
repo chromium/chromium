@@ -3478,6 +3478,9 @@
     },
   },
   'webview_64_cts_tests': {
+    'remove_from': [
+      'android-12-x64-fyi-rel', # crbug.com/1260194
+    ],
     'modifications': {
       'android-pie-arm64-rel': {
         # TODO(crbug.com/1111436): Move this back to walleye if/when additional
