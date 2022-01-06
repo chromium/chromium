@@ -788,9 +788,6 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     history_item_->SetScrollRestorationType(scroll_restoration_type);
   }
 
-  if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow()))
-    app_history->UpdateForNavigation(*history_item_, type);
-
   WebHistoryCommitType commit_type = LoadTypeToCommitType(type);
   frame_->GetFrameScheduler()->DidCommitProvisionalLoad(
       commit_type == kWebHistoryInertCommit,
@@ -804,6 +801,9 @@ void DocumentLoader::UpdateForSameDocumentNavigation(
     GetLocalFrameClient().DidStopLoading();
     frame_->UpdateFaviconURL();
   }
+
+  if (auto* app_history = AppHistory::appHistory(*frame_->DomWindow()))
+    app_history->UpdateForNavigation(*history_item_, type);
 }
 
 const KURL& DocumentLoader::UrlForHistory() const {
