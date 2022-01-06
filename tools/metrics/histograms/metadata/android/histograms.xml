@@ -4810,7 +4810,8 @@ chromium-metrics-reviews@google.com.
     Records the number of seconds any WebView was visible (the view itself was
     visible, and was attached to the view hierarchy of a visible window) with a
     particular URL scheme in the primary main frame. Updated with every Metrics
-    upload.
+    upload. Note that the seconds are logged as the count for the scheme enum
+    values.
   </summary>
 </histogram>
 
@@ -4823,7 +4824,8 @@ chromium-metrics-reviews@google.com.
     Records the number of seconds each WebView was visible (the view itself was
     visible, and was attached to the view hierarchy of a visible window) with a
     particular URL scheme in the primary main frame. Updated with every Metrics
-    upload.
+    upload. Note that the seconds are logged as the count for the scheme enum
+    values.
   </summary>
 </histogram>
 
