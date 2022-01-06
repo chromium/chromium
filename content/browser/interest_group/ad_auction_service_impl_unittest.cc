@@ -19,15 +19,19 @@
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/interest_group_manager.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/public/browser/back_forward_cache.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/common/content_client.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
+#include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "content/services/auction_worklet/auction_worklet_service_impl.h"
@@ -364,6 +368,21 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
     // active.
     network_responder_.reset();
     RenderViewHostTestHarness::TearDown();
+  }
+
+  void NavigateAndWaitForPageDestroyed(const GURL& dest_url) {
+    // Wait until the main render frame is deleted, which happens asynchronously
+    // after navigation -- the page gets destroyed with the main render frame.
+    // On Android, this hangs, likely due to architectural differences, so don't
+    // perform this wait on Android.
+#if !defined(OS_ANDROID)
+    RenderFrameHostWrapper main_frame_wrapper(web_contents()->GetMainFrame());
+    ASSERT_FALSE(main_frame_wrapper.IsDestroyed());
+#endif  // !defined(OS_ANDROID)
+    NavigateAndCommit(dest_url);
+#if !defined(OS_ANDROID)
+    ASSERT_TRUE(main_frame_wrapper.WaitUntilRenderFrameDeleted());
+#endif  // !defined(OS_ANDROID)
   }
 
   std::vector<StorageInterestGroup> GetInterestGroupsForOwner(
@@ -2273,6 +2292,309 @@ function reportResult(auctionConfig, browserSignals) {
   // The request to seller report url should be disconnected after 30s due to
   // timeout.
   EXPECT_FALSE(network_responder_->RemoteIsConnected());
+}
+
+// Run several auctions, some of which have a winner, and some of which do
+// not. Verify that the auction result UMA is recorded correctly.
+TEST_F(AdAuctionServiceImplTest,
+       AddInterestGroupRunAuctionVerifyResultMetrics) {
+  // The test assumes that the main frame RFH will be replaced during
+  // navigation.
+  DisableBackForwardCacheForTesting(web_contents(),
+                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+  base::HistogramTester histogram_tester;
+  constexpr char kDecisionFailAllUrlPath[] =
+      "/interest_group/decision_logic_fail_all.js";
+  constexpr char kBiddingScript[] = R"(
+function generateBid(
+  interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+  browserSignals) {
+  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
+}
+function reportWin() {}
+  )";
+  constexpr char kDecisionScript[] = R"(
+function scoreAd(
+  adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return bid;
+}
+function reportResult() {}
+  )";
+  constexpr char kDecisionScriptFailAll[] = R"(
+function scoreAd(
+  adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return 0;
+}
+function reportResult() {}
+)";
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+  network_responder_->RegisterScriptResponse(kDecisionFailAllUrlPath,
+                                             kDecisionScriptFailAll);
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.expiry = base::Time::Now() + base::Days(10);
+  interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad;
+  ad.render_url = GURL("https://example.com/render");
+  interest_group.ads->push_back(std::move(ad));
+  JoinInterestGroupAndFlush(std::move(interest_group));
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  // Run 7 auctions, with delays:
+  //
+  // succeed, (1s), fail, (3s), succeed, (1m), succeed, (10m) succeed, (30m)
+  // fail, (1h), fail, which in bits (with an extra leading 1) is 0b1101110 --
+  // the last failure isn't recorded in the bitfield, since only the first 6
+  // auctions get recorded in the bitfield.
+
+  // Expect*TimeSample() doesn't accept base::TimeDelta::Max(), but the max time
+  // bucket size is 1 hour, so specifying kMaxTime will select the max bucket.
+  constexpr base::TimeDelta kMaxTime{base::Days(1)};
+
+  auto succeed_auction_config = blink::mojom::AuctionAdConfig::New();
+  succeed_auction_config->seller = kOriginA;
+  succeed_auction_config->decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  succeed_auction_config->interest_group_buyers =
+      blink::mojom::InterestGroupBuyers::NewBuyers({kOriginA});
+
+  auto fail_auction_config = blink::mojom::AuctionAdConfig::New();
+  fail_auction_config->seller = kOriginA;
+  fail_auction_config->decision_logic_url =
+      kUrlA.Resolve(kDecisionFailAllUrlPath);
+  fail_auction_config->interest_group_buyers =
+      blink::mojom::InterestGroupBuyers::NewBuyers({kOriginA});
+
+  // 1st auction
+  EXPECT_NE(RunAdAuctionAndFlush(succeed_auction_config->Clone()),
+            absl::nullopt);
+  // Time metrics are published every auction.
+  histogram_tester.ExpectUniqueTimeSample(
+      "Ads.InterestGroup.Auction.TimeSinceLastAuctionPerPage", kMaxTime, 1);
+
+  // 2nd auction
+  task_environment()->FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(RunAdAuctionAndFlush(fail_auction_config->Clone()), absl::nullopt);
+  histogram_tester.ExpectTimeBucketCount(
+      "Ads.InterestGroup.Auction.TimeSinceLastAuctionPerPage", base::Seconds(1),
+      1);
+
+  // 3rd auction
+  task_environment()->FastForwardBy(base::Seconds(3));
+  EXPECT_NE(RunAdAuctionAndFlush(succeed_auction_config->Clone()),
+            absl::nullopt);
+  histogram_tester.ExpectTimeBucketCount(
+      "Ads.InterestGroup.Auction.TimeSinceLastAuctionPerPage", base::Seconds(3),
+      1);
+
+  // 4th auction
+  task_environment()->FastForwardBy(base::Minutes(1));
+  EXPECT_NE(RunAdAuctionAndFlush(succeed_auction_config->Clone()),
+            absl::nullopt);
+  histogram_tester.ExpectTimeBucketCount(
+      "Ads.InterestGroup.Auction.TimeSinceLastAuctionPerPage", base::Minutes(1),
+      1);
+
+  // 5th auction
+  task_environment()->FastForwardBy(base::Minutes(10));
+  EXPECT_NE(RunAdAuctionAndFlush(succeed_auction_config->Clone()),
+            absl::nullopt);
+  histogram_tester.ExpectTimeBucketCount(
+      "Ads.InterestGroup.Auction.TimeSinceLastAuctionPerPage",
+      base::Minutes(10), 1);
+
+  // 6th auction
+  task_environment()->FastForwardBy(base::Minutes(30));
+  EXPECT_EQ(RunAdAuctionAndFlush(fail_auction_config->Clone()), absl::nullopt);
+  histogram_tester.ExpectTimeBucketCount(
+      "Ads.InterestGroup.Auction.TimeSinceLastAuctionPerPage",
+      base::Minutes(30), 1);
+
+  // 7th auction
+  task_environment()->FastForwardBy(base::Hours(1));
+  EXPECT_EQ(RunAdAuctionAndFlush(fail_auction_config->Clone()), absl::nullopt);
+  // Since the 1st auction has no prior auction -- it gets put in the same
+  // bucket with the 7th auction -- there are 2 auctions now in this bucket.
+  histogram_tester.ExpectTimeBucketCount(
+      "Ads.InterestGroup.Auction.TimeSinceLastAuctionPerPage", kMaxTime, 2);
+
+  // Some metrics only get reported until after navigation.
+  EXPECT_EQ(histogram_tester
+                .GetAllSamples("Ads.InterestGroup.Auction.NumAuctionsPerPage")
+                .size(),
+            0u);
+  EXPECT_EQ(
+      histogram_tester
+          .GetAllSamples(
+              "Ads.InterestGroup.Auction.PercentAuctionsSuccessfulPerPage")
+          .size(),
+      0u);
+  EXPECT_EQ(
+      histogram_tester
+          .GetAllSamples("Ads.InterestGroup.Auction.First6AuctionsBitsPerPage")
+          .size(),
+      0u);
+
+  // Navigate to populate remaining metrics.
+  ASSERT_NO_FATAL_FAILURE(NavigateAndWaitForPageDestroyed(kUrlB));
+
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.NumAuctionsPerPage", 7, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.PercentAuctionsSuccessfulPerPage", 4 * 100 / 7,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.First6AuctionsBitsPerPage", 0b1101110, 1);
+}
+
+// Like AddInterestGroupRunAuctionVerifyResultMetrics, but with a smaller number
+// of auctions -- this verifies that metrics (especially the bit metrics) are
+// reported correctly in this scenario.
+TEST_F(AdAuctionServiceImplTest,
+       AddInterestGroupRunAuctionVerifyResultMetricsFewAuctions) {
+  // The test assumes that the main frame RFH will be replaced during
+  // navigation.
+  DisableBackForwardCacheForTesting(web_contents(),
+                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+  base::HistogramTester histogram_tester;
+  constexpr char kDecisionFailAllUrlPath[] =
+      "/interest_group/decision_logic_fail_all.js";
+  constexpr char kBiddingScript[] = R"(
+function generateBid(
+  interestGroup, auctionSignals, perBuyerSignals, trustedBiddingSignals,
+  browserSignals) {
+  return {'ad': 'example', 'bid': 1, 'render': 'https://example.com/render'};
+}
+function reportWin() {}
+  )";
+  constexpr char kDecisionScript[] = R"(
+function scoreAd(
+  adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return bid;
+}
+function reportResult() {}
+  )";
+  constexpr char kDecisionScriptFailAll[] = R"(
+function scoreAd(
+  adMetadata, bid, auctionConfig, trustedScoringSignals, browserSignals) {
+  return 0;
+}
+function reportResult() {}
+)";
+  network_responder_->RegisterScriptResponse(kBiddingUrlPath, kBiddingScript);
+  network_responder_->RegisterScriptResponse(kDecisionUrlPath, kDecisionScript);
+  network_responder_->RegisterScriptResponse(kDecisionFailAllUrlPath,
+                                             kDecisionScriptFailAll);
+  blink::InterestGroup interest_group = CreateInterestGroup();
+  interest_group.expiry = base::Time::Now() + base::Days(10);
+  interest_group.bidding_url = kUrlA.Resolve(kBiddingUrlPath);
+  interest_group.ads.emplace();
+  blink::InterestGroup::Ad ad;
+  ad.render_url = GURL("https://example.com/render");
+  interest_group.ads->push_back(std::move(ad));
+  JoinInterestGroupAndFlush(std::move(interest_group));
+  EXPECT_EQ(1, GetJoinCount(kOriginA, kInterestGroupName));
+
+  // Run 2 auctions, with delays:
+  //
+  // succeed, (1s), fail, which in bits (with an extra leading 1) is 0b110.
+
+  // Expect*TimeSample() doesn't accept base::TimeDelta::Max(), but the max time
+  // bucket size is 1 hour, so specifying kMaxTime will select the max bucket.
+  constexpr base::TimeDelta kMaxTime{base::Days(1)};
+
+  auto succeed_auction_config = blink::mojom::AuctionAdConfig::New();
+  succeed_auction_config->seller = kOriginA;
+  succeed_auction_config->decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
+  succeed_auction_config->interest_group_buyers =
+      blink::mojom::InterestGroupBuyers::NewBuyers({kOriginA});
+
+  auto fail_auction_config = blink::mojom::AuctionAdConfig::New();
+  fail_auction_config->seller = kOriginA;
+  fail_auction_config->decision_logic_url =
+      kUrlA.Resolve(kDecisionFailAllUrlPath);
+  fail_auction_config->interest_group_buyers =
+      blink::mojom::InterestGroupBuyers::NewBuyers({kOriginA});
+
+  // 1st auction
+  EXPECT_NE(RunAdAuctionAndFlush(succeed_auction_config->Clone()),
+            absl::nullopt);
+  // Time metrics are published every auction.
+  histogram_tester.ExpectUniqueTimeSample(
+      "Ads.InterestGroup.Auction.TimeSinceLastAuctionPerPage", kMaxTime, 1);
+
+  // 2nd auction
+  task_environment()->FastForwardBy(base::Seconds(1));
+  EXPECT_EQ(RunAdAuctionAndFlush(fail_auction_config->Clone()), absl::nullopt);
+  histogram_tester.ExpectTimeBucketCount(
+      "Ads.InterestGroup.Auction.TimeSinceLastAuctionPerPage", base::Seconds(1),
+      1);
+
+  // Some metrics only get reported until after navigation.
+  EXPECT_EQ(histogram_tester
+                .GetAllSamples("Ads.InterestGroup.Auction.NumAuctionsPerPage")
+                .size(),
+            0u);
+  EXPECT_EQ(
+      histogram_tester
+          .GetAllSamples(
+              "Ads.InterestGroup.Auction.PercentAuctionsSuccessfulPerPage")
+          .size(),
+      0u);
+  EXPECT_EQ(
+      histogram_tester
+          .GetAllSamples("Ads.InterestGroup.Auction.First6AuctionsBitsPerPage")
+          .size(),
+      0u);
+
+  // Navigate to populate remaining metrics.
+  ASSERT_NO_FATAL_FAILURE(NavigateAndWaitForPageDestroyed(kUrlB));
+
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.NumAuctionsPerPage", 2, 1);
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.PercentAuctionsSuccessfulPerPage", 1 * 100 / 2,
+      1);
+  histogram_tester.ExpectUniqueSample(
+      "Ads.InterestGroup.Auction.First6AuctionsBitsPerPage", 0b110, 1);
+}
+
+// Like AddInterestGroupRunAuctionVerifyResultMetricsFewAuctions, but with no
+// auctions.
+TEST_F(AdAuctionServiceImplTest,
+       AddInterestGroupRunAuctionVerifyResultMetricsNoAuctions) {
+  // The test assumes that the main frame RFH will be replaced during
+  // navigation.
+  DisableBackForwardCacheForTesting(web_contents(),
+                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+  base::HistogramTester histogram_tester;
+
+  // Don't run any auctions.
+
+  // Navigate to "populate" remaining metrics.
+  ASSERT_NO_FATAL_FAILURE(NavigateAndWaitForPageDestroyed(kUrlB));
+
+  // Nothing gets reported since there were no auctions.
+  EXPECT_EQ(histogram_tester
+                .GetAllSamples("Ads.InterestGroup.Auction.NumAuctionsPerPage")
+                .size(),
+            0u);
+  EXPECT_EQ(
+      histogram_tester
+          .GetAllSamples(
+              "Ads.InterestGroup.Auction.PercentAuctionsSuccessfulPerPage")
+          .size(),
+      0u);
+  EXPECT_EQ(
+      histogram_tester
+          .GetAllSamples("Ads.InterestGroup.Auction.First6AuctionsBitsPerPage")
+          .size(),
+      0u);
+  EXPECT_EQ(histogram_tester
+                .GetAllSamples(
+                    "Ads.InterestGroup.Auction.TimeSinceLastAuctionPerPage")
+                .size(),
+            0u);
 }
 
 class AdAuctionServiceImplRestrictedPermissionsPolicyTest

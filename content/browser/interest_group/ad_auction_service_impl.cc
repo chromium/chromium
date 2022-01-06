@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "content/browser/devtools/devtools_instrumentation.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
+#include "content/browser/interest_group/ad_auction_result_metrics.h"
 #include "content/browser/interest_group/auction_runner.h"
 #include "content/browser/interest_group/interest_group_manager.h"
 #include "content/browser/renderer_host/page_impl.h"
@@ -429,10 +430,15 @@ void AdAuctionServiceImpl::OnAuctionComplete(
         base::StrCat({"Worklet error: ", error}));
   }
 
+  auto* auction_result_metrics = AdAuctionResultMetrics::GetOrCreateForPage(
+      render_frame_host()->GetPage());
+
   if (!render_url) {
     DCHECK(!bidder_report_url);
     DCHECK(!seller_report_url);
     std::move(callback).Run(absl::nullopt);
+    auction_result_metrics->ReportAuctionResult(
+        AdAuctionResultMetrics::AuctionResult::kFailed);
     return;
   }
 
@@ -452,6 +458,8 @@ void AdAuctionServiceImpl::OnAuctionComplete(
   DCHECK(render_url->is_valid());
 
   std::move(callback).Run(render_url);
+  auction_result_metrics->ReportAuctionResult(
+      AdAuctionResultMetrics::AuctionResult::kSucceeded);
 
   network::mojom::URLLoaderFactory* factory = GetTrustedURLLoaderFactory();
   if (bidder_report_url) {

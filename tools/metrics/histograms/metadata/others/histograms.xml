@@ -487,6 +487,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.First6AuctionsBitsPerPage"
+    units="bitfield" expires_after="2022-03-31">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The outcome of the first 6 auctions reported as bits, tracked per-page,
+    reported at page unload (if at least 1 auction completed). A 1 indicates
+    auction success, 0 indicates auction failure. The most significant bit
+    corresponds to the least recent auction. An extra leading 1 is prepended --
+    this allows reporting metrics when fewer than 6 auctions occurred during the
+    page's lifetime. Therefore, the max value is 0b1111111 (7 bits, represents 6
+    successful auctions), and the min value is 0b10 (represents a page that had
+    1 failed auction), and every value in between is valid.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.Auction.NumAuctionsPerPage" units="auctions"
+    expires_after="2022-03-31">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The number of auctions (runAdAuction() calls) per-page, from page load to
+    unload, reported at unload (if at least 1 auction completed).
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.NumInterestGroups" units="groups"
     expires_after="2022-06-26">
   <owner>mmenke@chromium.org</owner>
@@ -520,6 +554,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.PercentAuctionsSuccessfulPerPage"
+    units="%" expires_after="2022-03-31">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The percentage of auctions (runAdAuction() calls) per-page that succeed,
+    from page load to unload, reported at unload (if at least 1 auction
+    completed), rounded down to the nearest percent.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.Result" enum="AuctionResult"
     expires_after="2022-06-26">
   <owner>mmenke@chromium.org</owner>
@@ -527,6 +576,20 @@ chromium-metrics-reviews@google.com.
   <summary>
     The final result type of running a FLEDGE auction. Recorded on auction
     completion/cancellation.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
+<histogram name="Ads.InterestGroup.Auction.TimeSinceLastAuctionPerPage"
+    units="ms" expires_after="2022-03-31">
+  <owner>caraitto@chromium.org</owner>
+  <owner>pauljensen@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The duration between runAdAuction() calls, collected on a per-page basis,
+    reported on each auction.
 
     See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
     version of the FLEDGE explainer.
