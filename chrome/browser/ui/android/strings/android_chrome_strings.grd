@@ -585,17 +585,14 @@ CHAR_LIMIT guidelines:
       <message name="IDS_PASSWORDS_CHECK_DESCRIPTION" desc="Text explaining the benefits of checking the passwords, to be displayed under the Check Passwords button title.">
         Keep your passwords safe from data breaches and other security issues
       </message>
-      <!-- TODO(crbug.com/1202088): Remove "translateable=false" once definitive string is available, and update description. -->
-      <message translateable="false" name="IDS_ANDROID_TRUSTED_VAULT_BANNER_LABEL" desc="Title for the trusted vault banner in password settings.">
-        Trusted vault
+      <message name="IDS_ANDROID_TRUSTED_VAULT_BANNER_LABEL" desc="Title for the on-device encryption banner in password settings.">
+        On-device encryption
       </message>
-      <!-- TODO(crbug.com/1202088): Remove "translateable=false" once definitive string is available, and update description. -->
-      <message translateable="false" name="IDS_ANDROID_TRUSTED_VAULT_BANNER_SUB_LABEL_OFFER_OPT_IN" desc="Sub-label for the trusted vault banner when the user is offered to opt in to trusted vault encryption.">
-        Opt in to trusted vault
+      <message name="IDS_ANDROID_TRUSTED_VAULT_BANNER_SUB_LABEL_OFFER_OPT_IN" desc="Sub-label for the on-device encryption banner when the user is offered to opt in.">
+        Encrypt passwords on your device before they‘re saved to Google Password Manager
       </message>
-      <!-- TODO(crbug.com/1202088): Remove "translateable=false" once definitive string is available, and update description. -->
-      <message translateable="false" name="IDS_ANDROID_TRUSTED_VAULT_BANNER_SUB_LABEL_OPTED_IN" desc="Sub-label for the trusted vault banner when the user is already opted in to trusted vault encryption.">
-        You are opted in to trusted vault
+      <message name="IDS_ANDROID_TRUSTED_VAULT_BANNER_SUB_LABEL_OPTED_IN" desc="Sub-label for the on-device encryption banner when the user is already opted in.">
+        Your password are encrypted on your device before they’re saved to Google Password Manager
       </message>
       <message name="IDS_SECTION_SAVED_PASSWORDS_EXCEPTIONS" desc="Header for the list of websites for which user selected to never save passwords. [CHAR_LIMIT=32]">
         Never saved

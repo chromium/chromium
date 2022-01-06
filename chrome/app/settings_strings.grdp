@@ -726,17 +726,14 @@
   <message name="IDS_SETTINGS_PASSWORD_ROW_FEDERATED_MORE_ACTIONS" desc="The ARIA (accessibility) message for the More Actions button, which sits in every row of the password list. For this row does not include a password, only information of the account. It opens a menu with a list of actions, which apply to the account presented on this row.">
     More actions, saved account for <ph name="USERNAME">$1<ex>example@gmail.com</ex></ph> on <ph name="DOMAIN">$2<ex>www.google.com</ex></ph>
   </message>
-  <!-- TODO(crbug.com/1202088): Remove "translateable=false" once definitive string is available, and update description. -->
-  <message translateable="false" name="IDS_SETTINGS_TRUSTED_VAULT_BANNER_LABEL" desc="Label for the trusted vault encryption banner in settings.">
-    Trusted vault
+  <message name="IDS_SETTINGS_TRUSTED_VAULT_BANNER_LABEL" desc="Label for the on-device encryption banner in settings.">
+    On-device encryption
   </message>
-  <!-- TODO(crbug.com/1202088): Remove "translateable=false" once definitive string is available, and update description. -->
-  <message translateable="false" name="IDS_SETTINGS_TRUSTED_VAULT_BANNER_SUB_LABEL_OFFER_OPT_IN" desc="Sub-label for the trusted vault encryption banner in settings, when the user is being offered to opt in.">
-    Opt in to trusted vault
+  <message name="IDS_SETTINGS_TRUSTED_VAULT_BANNER_SUB_LABEL_OFFER_OPT_IN" desc="Sub-label for the on-device encryption banner in settings, when the user is being offered to opt in.">
+    Encrypt passwords on your device before they‘re saved to Google Password Manager
   </message>
-  <!-- TODO(crbug.com/1202088): Remove "translateable=false" once definitive string is available, and update description. -->
-  <message translateable="false" name="IDS_SETTINGS_TRUSTED_VAULT_BANNER_SUB_LABEL_OPTED_IN" desc="Sub-label for the trusted vault encryption banner in settings, when the user is already opted in.">
-    You are opted in to trusted vault
+  <message name="IDS_SETTINGS_TRUSTED_VAULT_BANNER_SUB_LABEL_OPTED_IN" desc="Sub-label for the on-device encryption banner in settings, when the user is already opted in.">
+    Your password are encrypted on your device before they‘re saved to Google Password Manager
   </message>
   <message name="IDS_SETTINGS_PASSWORD_SHOW_PASSWORD_A11Y" desc="The ARIA (accessibility) message for the 'Show Password' button, which sits in every row of the password list. For this row does not include a password, only information of the account. Reveals password when clicked.">
     Show password for <ph name="USERNAME">$1<ex>example@gmail.com</ex></ph> on <ph name="DOMAIN">$2<ex>www.google.com</ex></ph>
