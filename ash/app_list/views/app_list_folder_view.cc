@@ -777,8 +777,6 @@ void AppListFolderView::ScheduleShowHideAnimation(bool show,
             "Apps.AppListFolder.ShowHide.AnimationSmoothness", smoothness);
       })));
 
-  hide_for_reparent_ = hide_for_reparent;
-
   if (!features::IsProductivityLauncherEnabled()) {
     static_cast<PagedAppsGridView*>(items_grid_view_)
         ->pagination_model()
@@ -806,20 +804,18 @@ void AppListFolderView::ScheduleShowHideAnimation(bool show,
       std::make_unique<ContentsContainerAnimation>(show, hide_for_reparent,
                                                    this));
 
-  // If the folder view is hiding for folder closure, reset the folder state
-  // when the animations complete. Not resetting state immediately so the folder
-  // view keeps tracking folder item view's liveness (so it can reset animations
-  // if the folder item view gets deleted).
-  // If the view is hidden for reparent, the state will be cleared when the
-  // reparent drag ends.
-  base::RepeatingClosure animation_completion_callback =
-      !show && !hide_for_reparent
-          ? base::BarrierClosure(
-                folder_visibility_animations_.size(),
-                base::BindOnce(&AppListFolderView::ResetState,
-                               base::Unretained(this),
-                               /*reset_folder_item_view_state=*/true))
-          : base::RepeatingClosure();
+  base::RepeatingClosure animation_completion_callback;
+  if (!show) {
+    animation_completion_callback = base::BarrierClosure(
+        folder_visibility_animations_.size(),
+        base::BindOnce(&AppListFolderView::OnHideAnimationDone,
+                       weak_ptr_factory_.GetWeakPtr(), hide_for_reparent));
+  } else if (animation_done_test_callback_) {
+    animation_completion_callback = base::BarrierClosure(
+        folder_visibility_animations_.size(),
+        base::BindOnce(&AppListFolderView::OnShowAnimationDone,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
 
   for (auto& animation : folder_visibility_animations_)
     animation->ScheduleAnimation(animation_completion_callback);
@@ -928,10 +924,30 @@ void AppListFolderView::ResetState(bool restore_folder_item_view_state) {
   folder_item_view_observer_.Reset();
   folder_item_view_ = nullptr;
 
-  hide_for_reparent_ = false;
-
   preferred_bounds_ = gfx::Rect();
   folder_item_icon_bounds_ = gfx::Rect();
+}
+
+void AppListFolderView::OnShowAnimationDone() {
+  if (animation_done_test_callback_)
+    std::move(animation_done_test_callback_).Run();
+}
+
+void AppListFolderView::OnHideAnimationDone(bool hide_for_reparent) {
+  // If the folder view is hiding for folder closure, reset the
+  // folder state when the animations complete. Not resetting state
+  // immediately so the folder view keeps tracking folder item
+  // view's liveness (so it can reset animations if the folder item
+  // view gets deleted).
+  // If the view is hidden for reparent, the state will be cleared
+  // when the reparent drag ends.
+  if (!hide_for_reparent) {
+    ResetState(
+        /*reset_folder_item_view_state=*/true);
+  }
+
+  if (animation_done_test_callback_)
+    std::move(animation_done_test_callback_).Run();
 }
 
 void AppListFolderView::UpdatePreferredBounds() {
@@ -1003,6 +1019,12 @@ bool AppListFolderView::IsAnimationRunning() const {
 void AppListFolderView::SetBoundingBox(const gfx::Rect& bounding_box) {
   bounding_box_ = bounding_box;
   ShrinkGridTileMarginsWhenNeeded();
+}
+
+void AppListFolderView::SetAnimationDoneTestCallback(
+    base::OnceClosure animation_done_callback) {
+  DCHECK(!animation_done_callback || !animation_done_test_callback_);
+  animation_done_test_callback_ = std::move(animation_done_callback);
 }
 
 void AppListFolderView::RecordAnimationSmoothness() {

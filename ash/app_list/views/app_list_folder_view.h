@@ -139,6 +139,9 @@ class ASH_EXPORT AppListFolderView
   // to be in the parent view's coordinate system.
   void SetBoundingBox(const gfx::Rect& bounding_box);
 
+  // Sets the callback that runs when the folder animation ends.
+  void SetAnimationDoneTestCallback(base::OnceClosure animation_done_callback);
+
   AppsGridView* items_grid_view() { return items_grid_view_; }
 
   FolderHeaderView* folder_header_view() { return folder_header_view_; }
@@ -230,6 +233,14 @@ class ASH_EXPORT AppListFolderView
   // false when resetting the folder state due to folder item view deletion.
   void ResetState(bool restore_folder_item_view_state);
 
+  // Called when the animation to show the folder view is completed.
+  void OnShowAnimationDone();
+
+  // Called when the animation to hide the folder view is completed.
+  // `hide_for_reparent` is true if an item in the folder is being reparented to
+  // the root grid view.
+  void OnHideAnimationDone(bool hide_for_reparent);
+
   // Controller interface implemented by the container for this view.
   AppListFolderController* const folder_controller_;
 
@@ -274,8 +285,6 @@ class ASH_EXPORT AppListFolderView
   // are relative the the parent view's coordinate system.
   gfx::Rect bounding_box_;
 
-  bool hide_for_reparent_ = false;
-
   std::vector<std::unique_ptr<Animation>> folder_visibility_animations_;
 
   // Records smoothness of the folder show/hide animation.
@@ -290,6 +299,9 @@ class ASH_EXPORT AppListFolderView
   // model, and animations depend on the folder item view).
   base::ScopedObservation<views::View, views::ViewObserver>
       folder_item_view_observer_{this};
+
+  // The callback that runs at the end of the folder animation.
+  base::OnceClosure animation_done_test_callback_;
 
   base::WeakPtrFactory<AppListFolderView> weak_ptr_factory_{this};
 };

@@ -17,6 +17,7 @@
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
+#include "ash/app_list/views/app_list_folder_view.h"
 #include "ash/app_list/views/app_list_item_view.h"
 #include "ash/app_list/views/app_list_main_view.h"
 #include "ash/app_list/views/app_list_reorder_undo_container_view.h"
@@ -41,13 +42,15 @@ namespace ash {
 
 namespace {
 
+AppListView* GetAppListView() {
+  return Shell::Get()->app_list_controller()->presenter()->GetView();
+}
+
 PagedAppsGridView* GetPagedAppsGridView() {
   // This view only exists for tablet launcher and legacy peeking launcher.
   DCHECK(Shell::Get()->IsInTabletMode() ||
          !features::IsProductivityLauncherEnabled());
-  AppListView* app_list_view =
-      Shell::Get()->app_list_controller()->presenter()->GetView();
-  return AppListView::TestApi(app_list_view).GetRootAppsGridView();
+  return AppListView::TestApi(GetAppListView()).GetRootAppsGridView();
 }
 
 AppListBubbleView* GetAppListBubbleView() {
@@ -59,6 +62,20 @@ AppListBubbleView* GetAppListBubbleView() {
                          "show the launcher and may need to call "
                          "WaitForBubbleWindow() if animations are enabled.";
   return bubble_view;
+}
+
+AppListFolderView* GetAppListFolderView() {
+  // Handle the case that the app list bubble view is effective.
+  if (features::IsProductivityLauncherEnabled() &&
+      !Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+    return GetAppListBubbleView()->folder_view_for_test();
+  }
+
+  return GetAppListView()
+      ->app_list_main_view()
+      ->contents_view()
+      ->apps_container_view()
+      ->app_list_folder_view();
 }
 
 AppListReorderUndoContainerView* GetReorderUndoContainerViewFromBubble() {
@@ -246,6 +263,14 @@ AppsGridView* AppListTestApi::GetTopLevelAppsGridView() {
   return GetPagedAppsGridView();
 }
 
+AppsGridView* AppListTestApi::GetFolderAppsGridView() {
+  return GetAppListFolderView()->items_grid_view();
+}
+
+bool AppListTestApi::IsFolderViewAnimating() const {
+  return GetAppListFolderView()->IsAnimationRunning();
+}
+
 views::View* AppListTestApi::GetBubbleReorderUndoButton() {
   return GetReorderUndoContainerViewFromBubble()
       ->GetToastDismissButtonForTest();
@@ -253,6 +278,17 @@ views::View* AppListTestApi::GetBubbleReorderUndoButton() {
 
 bool AppListTestApi::GetBubbleReorderUndoToastVisibility() const {
   return GetReorderUndoContainerViewFromBubble()->is_toast_visible_for_test();
+}
+
+void AppListTestApi::SetFolderViewAnimationCallback(
+    base::OnceClosure folder_animation_done_callback) {
+  AppListFolderView* folder_view = GetAppListFolderView();
+  folder_view->SetAnimationDoneTestCallback(base::BindOnce(
+      [](AppListFolderView* folder_view,
+         base::OnceClosure folder_animation_done_callback) {
+        std::move(folder_animation_done_callback).Run();
+      },
+      folder_view, std::move(folder_animation_done_callback)));
 }
 
 }  // namespace ash

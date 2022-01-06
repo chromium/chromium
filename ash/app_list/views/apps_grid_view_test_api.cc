@@ -130,6 +130,18 @@ void AppsGridViewTestApi::WaitForItemMoveAnimationDone() {
   waiter.Wait();
 }
 
+void AppsGridViewTestApi::FireReorderTimerAndWaitForAnimationDone() {
+  base::OneShotTimer* timer = &view_->reorder_timer_;
+  if (timer->IsRunning())
+    timer->FireNow();
+
+  WaitForItemMoveAnimationDone();
+}
+
+void AppsGridViewTestApi::FireFolderItemReparentTimer() {
+  view_->FireFolderItemReparentTimerForTest();
+}
+
 gfx::Rect AppsGridViewTestApi::GetDragIconBoundsInAppsGridView() {
   if (!view_->drag_icon_proxy_)
     return gfx::Rect();

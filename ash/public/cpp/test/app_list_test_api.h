@@ -86,6 +86,12 @@ class ASH_EXPORT AppListTestApi {
   // bubble launcher is enabled or PagedAppsGridView otherwise.
   AppsGridView* GetTopLevelAppsGridView();
 
+  // Returns the apps grid view in the folder.
+  AppsGridView* GetFolderAppsGridView();
+
+  // Returns whether the folder view is under animation.
+  bool IsFolderViewAnimating() const;
+
   // Returns the app list bubble's undo button that reverts the temporary
   // sorting order when triggered.
   views::View* GetBubbleReorderUndoButton();
@@ -93,6 +99,11 @@ class ASH_EXPORT AppListTestApi {
   // Returns the visibility of the app list bubble's undo toast where the undo
   // button is located.
   bool GetBubbleReorderUndoToastVisibility() const;
+
+  // Registers a callback that runs when all the animations scheduled to show or
+  // hide the folder view complete.
+  void SetFolderViewAnimationCallback(
+      base::OnceClosure folder_animation_done_callback);
 };
 
 }  // namespace ash
