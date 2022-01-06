@@ -92,6 +92,8 @@ const char kWriteAccountKeyCharacteristicGattError[] =
     "Bluetooth.ChromeOS.FastPair.AccountKey.Write.GattErrorReason";
 const char kWriteAccountKeyTime[] =
     "Bluetooth.ChromeOS.FastPair.AccountKey.Write.TotalTime";
+const char kTotalDataEncryptorCreateTime[] =
+    "Bluetooth.ChromeOS.FastPair.FastPairDataEncryptor.CreateTime";
 
 }  // namespace
 
@@ -303,6 +305,10 @@ void RecordWriteAccountKeyGattError(
 
 void RecordWriteAccountKeyTime(base::TimeDelta write_time) {
   base::UmaHistogramTimes(kWriteAccountKeyTime, write_time);
+}
+
+void RecordTotalDataEncryptorCreateTime(base::TimeDelta total_create_time) {
+  base::UmaHistogramTimes(kTotalDataEncryptorCreateTime, total_create_time);
 }
 
 }  // namespace quick_pair

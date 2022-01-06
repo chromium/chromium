@@ -155,6 +155,9 @@ void RecordWriteAccountKeyGattError(
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordWriteAccountKeyTime(base::TimeDelta write_time);
 
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordTotalDataEncryptorCreateTime(base::TimeDelta total_create_time);
+
 }  // namespace quick_pair
 }  // namespace ash
 

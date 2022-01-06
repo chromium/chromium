@@ -54,10 +54,11 @@ void FastPairHandshakeImpl::OnGattClientInitializedCallback(
   FastPairDataEncryptorImpl::Factory::CreateAsync(
       device_,
       base::BindOnce(&FastPairHandshakeImpl::OnDataEncryptorCreateAsync,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
 void FastPairHandshakeImpl::OnDataEncryptorCreateAsync(
+    base::TimeTicks encryptor_create_start_time,
     std::unique_ptr<FastPairDataEncryptor> fast_pair_data_encryptor) {
   bool success = fast_pair_data_encryptor != nullptr;
   RecordDataEncryptorCreateResult(/*success=*/success);
@@ -73,6 +74,8 @@ void FastPairHandshakeImpl::OnDataEncryptorCreateAsync(
   fast_pair_data_encryptor_ = std::move(fast_pair_data_encryptor);
   QP_LOG(INFO) << __func__
                << ": Fast Pair GATT service client initialization successful.";
+  RecordTotalDataEncryptorCreateTime(base::TimeTicks::Now() -
+                                     encryptor_create_start_time);
 
   bool is_retroactive = device_->protocol == Protocol::kFastPairRetroactive;
 

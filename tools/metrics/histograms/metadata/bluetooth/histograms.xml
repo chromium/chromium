@@ -352,6 +352,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.FastPair.FastPairDataEncryptor.CreateTime"
+    units="ms" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the total time it takes for a successful async creation of a
+    FastPairDataEncryptor (see
+    'Bluetooth.ChromeOS.FastPair.FastPairDataEncryptor.CreateResult'). The time
+    is calculated as the difference between the start of the call to create the
+    data encryptor, and when the callback is invoked. If the creation is
+    unsuccessful, then no value is logged to this metric. Emitted in the
+    FastPairHandshake on the OnDataEncryptorCreateAsync callback call. This
+    metric helps us understand how much time in the flow is being sunk into the
+    creation of the data encryptor, who's construction is responsible for
+    creating the secret key using ECDH (see
+    'Bluetooth.ChromeOS.FastPair.KeyGenerationResult').
+  </summary>
+</histogram>
+
 <histogram name="Bluetooth.ChromeOS.FastPair.GattConnection.ErrorReason"
     enum="BluetoothDeviceConnectErrorCode" expires_after="2022-09-20">
   <owner>shanefitz@google.com</owner>
