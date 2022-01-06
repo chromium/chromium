@@ -66,8 +66,6 @@ void LogKeyValidation(KeyValidationState state);
 // ProvideCurrentSessionData.
 void LogNumEventsInUpload(int num_events);
 
-void LogClientInitializationSuccessful(bool success);
-
 // Logs that an event was recorded using the mojo API.
 void LogIsEventRecordedUsingMojo(bool used_mojo_api);
 

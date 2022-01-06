@@ -793,6 +793,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="UMA.StructuredMetrics.ClientInitializationSuccessful"
     enum="BooleanSuccess" expires_after="M97">
+  <obsolete>
+    Expired in M97 and removed from code in Jan 2022 for M99. This was reporting
+    100% success on all channels as of Jan 2022.
+  </obsolete>
   <owner>jongahn@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <summary>

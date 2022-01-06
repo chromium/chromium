@@ -81,13 +81,9 @@ void ChromeStructuredMetricsRecorder::Initialize() {
     auto* lacros_recorder =
         static_cast<LacrosStructuredMetricsRecorder*>(delegate_.get());
 
-    const bool is_current_ui_thread_set = base::CurrentUIThread::IsSet();
-    LogClientInitializationSuccessful(is_current_ui_thread_set);
-
     // Ensure that the sequence is the ui thread.
-    DCHECK(is_current_ui_thread_set);
+    DCHECK(base::CurrentUIThread::IsSet());
     lacros_recorder->SetSequence(base::SequencedTaskRunnerHandle::Get());
-    LogClientInitializationSuccessful(true);
     LogInitializationInStructuredMetrics(
         StructuredMetricsPlatform::kLacrosChrome);
   } else {
