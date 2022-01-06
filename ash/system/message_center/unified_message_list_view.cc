@@ -743,7 +743,7 @@ void UnifiedMessageListView::AnimationEnded(const gfx::Animation* animation) {
     case State::IDLE:
     case State::EXPAND_OR_COLLAPSE:
       expand_or_collapsing_container_ = nullptr;
-      FALLTHROUGH;
+      [[fallthrough]];
     case State::MOVE_DOWN:
       state_ = State::IDLE;
       break;

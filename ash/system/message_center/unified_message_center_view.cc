@@ -461,7 +461,7 @@ void UnifiedMessageCenterView::ScrollToTarget() {
           scroll_bar_->GetMaxPosition() - last_scroll_position_from_bottom_;
       break;
     case UnifiedSystemTrayModel::NotificationTargetMode::NOTIFICATION_ID:
-      FALLTHROUGH;
+      [[fallthrough]];
     case UnifiedSystemTrayModel::NotificationTargetMode::LAST_NOTIFICATION: {
       const gfx::Rect& target_rect =
           (model_->notification_target_mode() ==
