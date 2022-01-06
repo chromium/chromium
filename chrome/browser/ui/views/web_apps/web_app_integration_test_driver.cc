@@ -1377,19 +1377,12 @@ void WebAppIntegrationTestDriver::UninstallPolicyAppById(const AppId& id) {
 
 bool WebAppIntegrationTestDriver::AreNoAppWindowsOpen(Profile* profile,
                                                       const AppId& app_id) {
-  auto* provider = GetProviderForProfile(profile);
-  const GURL& app_scope = provider->registrar().GetAppScope(app_id);
   auto* browser_list = BrowserList::GetInstance();
   for (Browser* browser : *browser_list) {
-    if (browser->IsAttemptingToCloseBrowser()) {
+    if (browser->IsAttemptingToCloseBrowser())
       continue;
-    }
-    const GURL& browser_url =
-        browser->tab_strip_model()->GetActiveWebContents()->GetURL();
-    if (AppBrowserController::IsWebApp(browser) &&
-        IsInScope(browser_url, app_scope)) {
+    if (AppBrowserController::IsForWebApp(browser, app_id))
       return false;
-    }
   }
   return true;
 }
