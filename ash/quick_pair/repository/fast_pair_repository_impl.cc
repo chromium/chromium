@@ -7,6 +7,7 @@
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/proto/fastpair_data.pb.h"
+#include "ash/quick_pair/repository/fast_pair/device_id_map.h"
 #include "ash/quick_pair/repository/fast_pair/device_image_store.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata_fetcher.h"
 #include "ash/quick_pair/repository/fast_pair/fast_pair_image_decoder.h"
@@ -28,6 +29,7 @@ FastPairRepositoryImpl::FastPairRepositoryImpl()
       footprints_fetcher_(std::make_unique<FootprintsFetcher>()),
       image_decoder_(std::make_unique<FastPairImageDecoder>(
           std::unique_ptr<image_fetcher::ImageFetcher>())),
+      device_id_map_(std::make_unique<DeviceIdMap>()),
       device_image_store_(std::make_unique<DeviceImageStore>()),
       saved_device_registry_(std::make_unique<SavedDeviceRegistry>()),
       footprints_last_updated_(base::Time::UnixEpoch()) {
