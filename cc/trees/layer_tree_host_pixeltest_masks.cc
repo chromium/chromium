@@ -32,9 +32,11 @@ namespace {
 std::vector<RasterTestConfig> const kTestCases = {
     {viz::RendererType::kSoftware, TestRasterType::kBitmap},
 #if BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
+#if BUILDFLAG(ENABLE_GL_RENDERER_TESTS)
     {viz::RendererType::kGL, TestRasterType::kGpu},
     {viz::RendererType::kGL, TestRasterType::kOneCopy},
     {viz::RendererType::kGL, TestRasterType::kZeroCopy},
+#endif  // BUILDFLAG(ENABLE_GL_RENDERER_TESTS)
     {viz::RendererType::kSkiaGL, TestRasterType::kGpu},
     {viz::RendererType::kSkiaGL, TestRasterType::kOneCopy},
     {viz::RendererType::kSkiaGL, TestRasterType::kZeroCopy},
@@ -871,6 +873,7 @@ class LayerTreeHostMaskAsBlendingPixelTest
 MaskTestConfig const kTestConfigs[] = {
     MaskTestConfig{{viz::RendererType::kSoftware, TestRasterType::kBitmap}, 0},
 #if BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
+#if BUILDFLAG(ENABLE_GL_RENDERER_TESTS)
     MaskTestConfig{{viz::RendererType::kGL, TestRasterType::kZeroCopy}, 0},
     MaskTestConfig{{viz::RendererType::kGL, TestRasterType::kZeroCopy},
                    kUseAntialiasing},
@@ -878,9 +881,14 @@ MaskTestConfig const kTestConfigs[] = {
                    kForceShaders},
     MaskTestConfig{{viz::RendererType::kGL, TestRasterType::kZeroCopy},
                    kUseAntialiasing | kForceShaders},
+#endif  // BUILDFLAG(ENABLE_GL_RENDERER_TESTS)
     MaskTestConfig{{viz::RendererType::kSkiaGL, TestRasterType::kZeroCopy}, 0},
     MaskTestConfig{{viz::RendererType::kSkiaGL, TestRasterType::kZeroCopy},
                    kUseAntialiasing},
+    MaskTestConfig{{viz::RendererType::kSkiaGL, TestRasterType::kZeroCopy},
+                   kForceShaders},
+    MaskTestConfig{{viz::RendererType::kSkiaGL, TestRasterType::kZeroCopy},
+                   kUseAntialiasing | kForceShaders},
 #endif  // BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
 #if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
     MaskTestConfig{{viz::RendererType::kSkiaVk, TestRasterType::kZeroCopy}, 0},
