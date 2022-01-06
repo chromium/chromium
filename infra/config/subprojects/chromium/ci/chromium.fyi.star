@@ -582,6 +582,7 @@ ci.builder(
 
 ci.builder(
     name = "Comparison Windows",
+    builderless = True,
     console_view_entry = consoles.console_view_entry(
         category = "win",
         short_name = "re",
