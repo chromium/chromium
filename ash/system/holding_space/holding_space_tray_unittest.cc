@@ -26,6 +26,7 @@
 #include "ash/shell.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
 #include "ash/system/holding_space/holding_space_progress_indicator.h"
+#include "ash/system/holding_space/holding_space_tray_icon_preview.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
@@ -45,6 +46,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/compositor/layer.h"
 #include "ui/events/base_event_utils.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/controls/menu/menu_item_view.h"
@@ -1244,6 +1246,7 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest,
   EXPECT_EQ(item_3->id(),
             HoldingSpaceItemView::Cast(download_chips[0])->item()->id());
 }
+
 // Tests how opacity and transform for holding space tray's default tray icon is
 // adjusted to avoid overlap with the holding space tray's progress indicator.
 TEST_P(HoldingSpaceTrayDownloadsSectionTest,
@@ -1263,9 +1266,8 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest,
               ->owner());
   ASSERT_TRUE(progress_indicator);
 
-  // Wait until the `progress_indicator` is synced with the model. Note that
-  // this happens asynchronously since the `progress_indicator` does so in
-  // response to compositor scheduling.
+  // Wait until the `progress_indicator` is synced with the model, which happens
+  // asynchronously in response to compositor scheduling.
   PredicateWaiter().WaitUntil(base::BindLambdaForTesting([&]() {
     return progress_indicator->progress() ==
            HoldingSpaceProgressIndicator::kProgressComplete;
@@ -1296,9 +1298,8 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest,
   // Complete the in-progress `item`.
   model()->UpdateItem(item->id())->SetProgress(HoldingSpaceProgress(100, 100));
 
-  // Wait until the `progress_indicator` is synced with the model. Note that
-  // this happens asynchronously since the `progress_indicator` does so in
-  // response to compositor scheduling.
+  // Wait until the `progress_indicator` is synced with the model, which happens
+  // asynchronously in response to compositor scheduling.
   PredicateWaiter().WaitUntil(base::BindLambdaForTesting([&]() {
     return progress_indicator->progress() ==
            HoldingSpaceProgressIndicator::kProgressComplete;
@@ -1307,6 +1308,68 @@ TEST_P(HoldingSpaceTrayDownloadsSectionTest,
   // Verify target opacity/transform.
   EXPECT_EQ(default_tray_icon->layer()->GetTargetOpacity(), 1.f);
   EXPECT_EQ(default_tray_icon->layer()->GetTargetTransform(), gfx::Transform());
+}
+
+// Tests how opacity and transform for holding space tray icon preview images
+// are adjusted to avoid overlay with progress indicators.
+TEST_P(HoldingSpaceTrayDownloadsSectionTest,
+       TrayIconPreviewOpacityAndTransform) {
+  StartSession();
+
+  // Add an in-progress `item` to the model.
+  HoldingSpaceItem* const item = AddItem(
+      GetType(), base::FilePath("/tmp/fake_1"), HoldingSpaceProgress(0, 100));
+  ASSERT_TRUE(item);
+
+  // Force immediate update of previews.
+  GetTray()->FirePreviewsUpdateTimerIfRunningForTesting();
+
+  // Cache `preview`.
+  ui::Layer* const preview =
+      FindLayerWithName(GetTray(), HoldingSpaceTrayIconPreview::kClassName);
+  ASSERT_TRUE(preview);
+
+  // Cache `image`.
+  ui::Layer* const image =
+      FindLayerWithName(preview, HoldingSpaceTrayIconPreview::kImageLayerName);
+  ASSERT_TRUE(image);
+
+  // Cache `progress_indicator`.
+  HoldingSpaceProgressIndicator* const progress_indicator =
+      static_cast<HoldingSpaceProgressIndicator*>(
+          FindLayerWithName(preview, HoldingSpaceProgressIndicator::kClassName)
+              ->owner());
+  ASSERT_TRUE(progress_indicator);
+
+  // Wait until the `progress_indicator` is synced with the model, which happens
+  // asynchronously in response to compositor scheduling.
+  PredicateWaiter().WaitUntil(base::BindLambdaForTesting(
+      [&]() { return progress_indicator->progress() == 0.f; }));
+
+  // Verify image opacity/transform.
+  if (!IsInProgressAnimationV2Enabled()) {
+    EXPECT_EQ(image->GetTargetOpacity(), 1.f);
+    EXPECT_EQ(image->GetTargetTransform(), gfx::Transform());
+  } else {
+    EXPECT_EQ(image->GetTargetOpacity(), 0.f);
+    EXPECT_EQ(
+        image->GetTargetTransform(),
+        gfx::GetScaleTransform(gfx::Rect(image->size()).CenterPoint(), 0.7f));
+  }
+
+  // Complete the in-progress `item`.
+  model()->UpdateItem(item->id())->SetProgress(HoldingSpaceProgress(100, 100));
+
+  // Wait until the `progress_indicator` is synced with the model, which happens
+  // asynchronously in response to compositor scheduling.
+  PredicateWaiter().WaitUntil(base::BindLambdaForTesting([&]() {
+    return progress_indicator->progress() ==
+           HoldingSpaceProgressIndicator::kProgressComplete;
+  }));
+
+  // Verify image opacity.
+  EXPECT_EQ(image->GetTargetOpacity(), 1.f);
+  EXPECT_EQ(image->GetTargetTransform(), gfx::Transform());
 }
 
 // Tests how screen captures section is updated during item addition, removal

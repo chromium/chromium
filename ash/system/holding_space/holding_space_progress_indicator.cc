@@ -294,6 +294,7 @@ class HoldingSpaceItemProgressIndicator : public HoldingSpaceProgressIndicator,
 
 // HoldingSpaceProgressIndicator -----------------------------------------------
 
+// static
 constexpr char HoldingSpaceProgressIndicator::kClassName[];
 constexpr float HoldingSpaceProgressIndicator::kProgressComplete;
 

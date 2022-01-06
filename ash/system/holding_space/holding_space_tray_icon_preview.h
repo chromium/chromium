@@ -34,6 +34,10 @@ class ASH_EXPORT HoldingSpaceTrayIconPreview
       public ui::ImplicitAnimationObserver,
       public views::ViewObserver {
  public:
+  static constexpr char kClassName[] = "HoldingSpaceTrayIconPreview";
+  static constexpr char kImageLayerName[] =
+      "HoldingSpaceTrayIconPreview::Image";
+
   HoldingSpaceTrayIconPreview(Shelf* shelf,
                               views::View* container,
                               const HoldingSpaceItem* item);
