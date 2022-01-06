@@ -12,6 +12,7 @@ import datetime
 import functools
 import gzip
 import itertools
+import json
 import logging
 import os
 import posixpath
@@ -63,56 +64,19 @@ _OutputDirectoryContext = collections.namedtuple('_OutputDirectoryContext', [
 _SECTION_SIZE_BLOCKLIST = ['.symtab', '.shstrtab', '.strtab']
 
 
-# Tunable constant "knobs" for CreateContainerAndSymbols().
-class SectionSizeKnobs:
-  def __init__(self):
-    # A limit on the number of symbols an address can have, before these symbols
-    # are compacted into shared symbols. Increasing this value causes more data
-    # to be stored .size files, but is also more expensive.
-    # Effect of max_same_name_alias_count (as of Oct 2017, with min_pss = max):
-    # 1: shared .text syms = 1772874 bytes, file size = 9.43MiB (645476 syms).
-    # 2: shared .text syms = 1065654 bytes, file size = 9.58MiB (669952 syms).
-    # 6: shared .text syms = 464058 bytes, file size = 10.11MiB (782693 syms).
-    # 10: shared .text syms = 365648 bytes, file size = 10.24MiB (813758 syms).
-    # 20: shared .text syms = 86202 bytes, file size = 10.38MiB (854548 syms).
-    # 40: shared .text syms = 48424 bytes, file size = 10.50MiB (890396 syms).
-    # 50: shared .text syms = 41860 bytes, file size = 10.54MiB (902304 syms).
-    # max: shared .text syms = 0 bytes, file size = 11.10MiB (1235449 syms).
-    self.max_same_name_alias_count = 40  # 50kb is basically negligable.
-
-    # File name: Source file.
-    self.apk_other_files = {
-        'assets/icudtl.dat':
-        '../../third_party/icu/android/icudtl.dat',
-        'assets/snapshot_blob_32.bin':
-        '../../v8/snapshot_blob_32.bin',
-        'assets/snapshot_blob_64.bin':
-        '../../v8/snapshot_blob_64.bin',
-        'assets/unwind_cfi_32':
-        '../../base/trace_event/cfi_backtrace_android.cc',
-        'assets/webapk_dex_version.txt':
-        '../../chrome/android/webapk/libs/runtime_library_version.gni',
-        'lib/armeabi-v7a/libarcore_sdk_c_minimal.so':
-        '../../third_party/arcore-android-sdk/BUILD.gn',
-        'lib/armeabi-v7a/libarcore_sdk_c.so':
-        '../../third_party/arcore-android-sdk/BUILD.gn',
-        'lib/armeabi-v7a/libcrashpad_handler_trampoline.so':
-        '../../third_party/crashpad/BUILD.gn',
-        'lib/armeabi-v7a/libyoga.so':
-        '../../chrome/android/feed/BUILD.gn',
-        'lib/armeabi-v7a/libelements.so':
-        '../../chrome/android/feed/BUILD.gn',
-        'lib/arm64-v8a/libarcore_sdk_c_minimal.so':
-        '../../third_party/arcore-android-sdk/BUILD.gn',
-        'lib/arm64-v8a/libarcore_sdk_c.so':
-        '../../third_party/arcore-android-sdk/BUILD.gn',
-        'lib/arm64-v8a/libcrashpad_handler_trampoline.so':
-        '../../third_party/crashpad/BUILD.gn',
-        'lib/arm64-v8a/libyoga.so':
-        '../../chrome/android/feed/BUILD.gn',
-        'lib/arm64-v8a/libelements.so':
-        '../../chrome/android/feed/BUILD.gn',
-    }
+# A limit on the number of symbols an address can have, before these symbols
+# are compacted into shared symbols. Increasing this value causes more data
+# to be stored .size files, but is also more expensive.
+# Effect as of Oct 2017, with min_pss = max:
+# 1: shared .text syms = 1772874 bytes, file size = 9.43MiB (645476 syms).
+# 2: shared .text syms = 1065654 bytes, file size = 9.58MiB (669952 syms).
+# 6: shared .text syms = 464058 bytes, file size = 10.11MiB (782693 syms).
+# 10: shared .text syms = 365648 bytes, file size = 10.24MiB (813758 syms).
+# 20: shared .text syms = 86202 bytes, file size = 10.38MiB (854548 syms).
+# 40: shared .text syms = 48424 bytes, file size = 10.50MiB (890396 syms).
+# 50: shared .text syms = 41860 bytes, file size = 10.54MiB (902304 syms).
+# max: shared .text syms = 0 bytes, file size = 11.10MiB (1235449 syms).
+_MAX_SAME_NAME_ALIAS_COUNT = 40  # 50kb is basically negligible.
 
 
 @dataclasses.dataclass
@@ -136,12 +100,24 @@ class PakSpec:
 
 @dataclasses.dataclass
 class ApkSpec:
-  apk_path: str  # Never None.
+  # Path the .apk file. Never None.
+  # This is a temp file when .apks is being analyzed.
+  apk_path: str
+  # Path to .minimal.apks (when analyzing bundles).
   minimal_apks_path: str = None
+  # Proguard mapping path.
   mapping_path: str = None
+  # Name of the apk split when .apks is being analyzed.
   split_name: str = None
+  # Path such as: out/Release/size-info/BaseName
   size_info_prefix: str = None
+  # Whether to break down classes.dex.
   analyze_dex: bool = True
+  # Dict of apk_path -> source_path, provided by json config.
+  path_defaults: dict = None
+  # Component to use for symbols when not specified by DIR_METADATA, provided by
+  # json config.
+  default_component: str = ''
 
 
 def _OpenMaybeGzAsText(path):
@@ -352,7 +328,7 @@ def _ComputeAncestorPath(path_list, symbol_count):
   return os.path.join(os.path.dirname(prefix), '{shared}', symbol_count_str)
 
 
-def _CompactLargeAliasesIntoSharedSymbols(raw_symbols, knobs):
+def _CompactLargeAliasesIntoSharedSymbols(raw_symbols):
   """Converts symbols with large number of aliases into single symbols.
 
   The merged symbol's path fields are changed to common-ancestor paths in
@@ -369,7 +345,7 @@ def _CompactLargeAliasesIntoSharedSymbols(raw_symbols, knobs):
     raw_symbols[dst_cursor] = symbol
     dst_cursor += 1
     aliases = symbol.aliases
-    if aliases and len(aliases) > knobs.max_same_name_alias_count:
+    if aliases and len(aliases) > _MAX_SAME_NAME_ALIAS_COUNT:
       symbol.source_path = _ComputeAncestorPath(
           [s.source_path for s in aliases if s.source_path], len(aliases))
       symbol.object_path = _ComputeAncestorPath(
@@ -979,8 +955,8 @@ def _ParseElfInfo(native_spec, outdir_context=None):
 
 
 class _ResourceSourceMapper:
-  def __init__(self, size_info_prefix, knobs):
-    self._knobs = knobs
+  def __init__(self, size_info_prefix, path_defaults):
+    self._path_defaults = path_defaults or {}
     self._res_info = self._LoadResInfo(size_info_prefix)
     self._pattern_dollar_underscore = re.compile(r'\$+(.*?)(?:__\d)+')
     self._pattern_version_suffix = re.compile(r'-v\d+/')
@@ -998,7 +974,7 @@ class _ResourceSourceMapper:
         os.path.join('res', dest): source
         for dest, source in res_info_without_root.items()
     }
-    res_info.update(self._knobs.apk_other_files)
+    res_info.update(self._path_defaults)
     return res_info
 
   def FindSourceForPath(self, path):
@@ -1054,9 +1030,10 @@ class _ResourcePathDeobfuscator:
 
 
 def _ParseApkOtherSymbols(*, apk_spec, native_spec, section_ranges,
-                          resources_pathmap_path, metadata, knobs):
+                          resources_pathmap_path, metadata):
   apk_so_path = native_spec and native_spec.apk_so_path
-  res_source_mapper = _ResourceSourceMapper(apk_spec.size_info_prefix, knobs)
+  res_source_mapper = _ResourceSourceMapper(apk_spec.size_info_prefix,
+                                            apk_spec.path_defaults)
   resource_deobfuscator = _ResourcePathDeobfuscator(resources_pathmap_path)
   apk_symbols = []
   dex_size = 0
@@ -1216,7 +1193,6 @@ def _ParseNinjaFiles(output_directory, elf_path=None):
 
 
 def CreateContainerAndSymbols(*,
-                              knobs,
                               container_name,
                               metadata,
                               apk_spec,
@@ -1229,7 +1205,6 @@ def CreateContainerAndSymbols(*,
   """Creates a Container (with sections sizes) and symbols for a SizeInfo.
 
   Args:
-    knobs: Instance of SectionSizeKnobs.
     container_name: Name for the created Container. May be '' if only one
         Container exists.
     metadata: Metadata dict from CreateMetadata().
@@ -1249,7 +1224,6 @@ def CreateContainerAndSymbols(*,
     (section_sizes maps section names to respective sizes).
     raw_symbols is a list of Symbol objects.
   """
-  knobs = knobs or SectionSizeKnobs()
   apk_elf_result = None
   if apk_spec and native_spec and native_spec.apk_so_path:
     # Extraction takes around 1 second, so do it in parallel.
@@ -1344,8 +1318,7 @@ def CreateContainerAndSymbols(*,
         native_spec=native_spec,
         section_ranges=section_ranges,
         resources_pathmap_path=resources_pathmap_path,
-        metadata=metadata,
-        knobs=knobs)
+        metadata=metadata)
 
     if apk_spec.analyze_dex:
       logging.info('Analyzing Dex')
@@ -1418,9 +1391,12 @@ def CreateContainerAndSymbols(*,
     _AddSourcePathsUsingAddress(dwarf_source_mapper, raw_symbols)
   _NormalizePaths(raw_symbols)
 
-  dir_metadata.PopulateComponents(raw_symbols, source_directory)
+  default_component = apk_spec.default_component if apk_spec else ''
+  dir_metadata.PopulateComponents(raw_symbols,
+                                  source_directory,
+                                  default_component=default_component)
   logging.info('Converting excessive aliases into shared-path symbols')
-  _CompactLargeAliasesIntoSharedSymbols(raw_symbols, knobs)
+  _CompactLargeAliasesIntoSharedSymbols(raw_symbols)
 
   if native_spec:
     logging.debug('Connecting nm aliases')
@@ -1610,6 +1586,7 @@ def _AddContainerArguments(parser, is_top_args=False):
   group.add_argument('--output-directory',
                      help='Path to the root build directory.')
   if is_top_args:
+    group.add_argument('--json-config', help='Path to a supersize.json.')
     group.add_argument('--no-output-directory',
                        action='store_true',
                        help='Do not auto-detect --output-directory.')
@@ -1845,6 +1822,7 @@ def _ReadMultipleArgsFromFile(ssargs_file, on_config_error):
 # Both |top_args| and |sub_args| may be modified.
 def _ProcessContainerArgs(top_args,
                           sub_args,
+                          json_config,
                           container_name,
                           on_config_error,
                           apk_path=None,
@@ -1885,6 +1863,12 @@ def _ProcessContainerArgs(top_args,
                                                os.path.basename(apk_prefix))
     apk_spec.analyze_dex = not (sub_args.native_only or sub_args.no_java
                                 or top_args.native_only or top_args.no_java)
+    apk_spec.path_defaults = {
+        k: v['source_path']
+        for k, v in json_config.get('apk_files', {}).items()
+    }
+    apk_spec.default_component = json_config.get('apk_splits', {}).get(
+        split_name, {}).get('default_component', '')
 
   pak_spec = None
   apk_pak_paths = None
@@ -1960,12 +1944,23 @@ def _IsOnDemand(apk_path):
   return on_demand
 
 
+def _ParseJsonConfig(path, on_config_error):
+  path = path or path_util.GetDefaultJsonConfigPath()
+  try:
+    with open(path) as f:
+      return json.load(f)
+  except Exception as e:
+    on_config_error(f'Error while parsing {path}: {e}')
+
+
 def _IterSubArgs(top_args, on_config_error):
   """Generates main paths (may be deduced) for each containers given by input.
 
   Yields:
     For each container, main paths and other info needed to create size_info.
   """
+  json_config = _ParseJsonConfig(top_args.json_config, on_config_error)
+
   main_file = _IdentifyInputFile(top_args, on_config_error)
   if top_args.no_output_directory:
     top_args.output_directory = None
@@ -2011,13 +2006,14 @@ def _IterSubArgs(top_args, on_config_error):
             'splits/{}-master.apk'.format(split_name)) as temp:
           yield _ProcessContainerArgs(top_args,
                                       sub_args,
+                                      json_config,
                                       container_name,
                                       on_config_error,
                                       apk_path=temp,
                                       split_name=split_name)
     else:
-      yield _ProcessContainerArgs(top_args, sub_args, container_name,
-                                  on_config_error)
+      yield _ProcessContainerArgs(top_args, sub_args, json_config,
+                                  container_name, on_config_error)
 
 
 def Run(top_args, on_config_error):
@@ -2026,7 +2022,6 @@ def Run(top_args, on_config_error):
   if top_args.check_data_quality:
     start_time = time.time()
 
-  knobs = SectionSizeKnobs()
   build_config = {}
   seen_container_names = set()
   container_list = []
@@ -2050,7 +2045,6 @@ def Run(top_args, on_config_error):
                                 source_directory=sub_args.source_directory,
                                 output_directory=sub_args.output_directory)
       container, raw_symbols = CreateContainerAndSymbols(
-          knobs=knobs,
           container_name=container_name,
           metadata=metadata,
           apk_spec=apk_spec,

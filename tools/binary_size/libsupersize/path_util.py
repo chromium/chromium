@@ -240,3 +240,8 @@ def GetBcAnalyzerPath(tool_prefix):
   if tool_prefix[-5:] != 'llvm-':
     raise ValueError('BC analyzer is only supported in LLVM.')
   return tool_prefix + 'bcanalyzer'
+
+
+def GetDefaultJsonConfigPath():
+  return FromToolsSrcRootRelative(
+      os.path.join('tools', 'binary_size', 'supersize.json'))

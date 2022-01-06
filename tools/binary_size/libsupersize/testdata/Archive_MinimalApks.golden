@@ -201,7 +201,7 @@ Section .pak.nontranslated: 0 bytes from 0 symbols.
 Section .other: has 100.0% of 695 bytes accounted for from 2 symbols. 0 bytes are unaccounted for.
 * Padding accounts for 136 bytes (19.6%)
 * 1 have source paths. Accounts for 559 bytes (80.4%).
-* 0 have a component assigned. Accounts for 0 bytes (0.0%).
+* 1 have a component assigned. Accounts for 559 bytes (80.4%).
 * 0 symbols have shared ownership.
 * 1 symbols are from generated sources. Accounts for 559 bytes (80.4%).
 <Bundle.minimal.apks/base.apk>.text@28d900(size_without_padding=16,padding=0,full_name=_GLOBAL__sub_I_page_allocator.cc,object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={startup},num_aliases=1,component=Blink>Internal)
@@ -702,5 +702,5 @@ Section .other: has 100.0% of 695 bytes accounted for from 2 symbols. 0 bytes ar
 <Bundle.minimal.apks/base.apk>.other@0(size_without_padding=0,padding=33902635,full_name=Overhead: ELF file,object_path=,source_path=,flags={},num_aliases=1,component=)
 <Bundle.minimal.apks/not_on_demand.apk>.other@0(size_without_padding=560,padding=0,full_name=AndroidManifest.xml,object_path=,source_path=$APK/AndroidManifest.xml,flags={gen},num_aliases=1,component=)
 <Bundle.minimal.apks/not_on_demand.apk>.other@0(size_without_padding=0,padding=136,full_name=Overhead: APK file,object_path=,source_path=,flags={},num_aliases=1,component=)
-<Bundle.minimal.apks/on_demand.apk?>.other@0(size_without_padding=559,padding=0,full_name=AndroidManifest.xml,object_path=,source_path=$APK/AndroidManifest.xml,flags={gen},num_aliases=1,component=)
+<Bundle.minimal.apks/on_demand.apk?>.other@0(size_without_padding=559,padding=0,full_name=AndroidManifest.xml,object_path=,source_path=$APK/AndroidManifest.xml,flags={gen},num_aliases=1,component=DEFAULT)
 <Bundle.minimal.apks/on_demand.apk?>.other@0(size_without_padding=0,padding=136,full_name=Overhead: APK file,object_path=,source_path=,flags={},num_aliases=1,component=)

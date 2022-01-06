@@ -92,7 +92,7 @@ class _ComponentLookupContext:
     return result
 
 
-def PopulateComponents(raw_symbols, source_directory):
+def PopulateComponents(raw_symbols, source_directory, default_component):
   """Populates the |component| field based on |source_path|.
 
   Symbols without a |source_path| are skipped.
@@ -100,8 +100,10 @@ def PopulateComponents(raw_symbols, source_directory):
   Args:
     raw_symbols: list of Symbol objects.
     source_directory: Directory to use as the root.
+    default_component: Component to use when none was found.
   """
   context = _ComponentLookupContext(source_directory)
   for symbol in raw_symbols:
     if symbol.source_path:
-      symbol.component = context.ComponentForSourcePath(symbol.source_path)
+      found_component = context.ComponentForSourcePath(symbol.source_path)
+      symbol.component = found_component or default_component

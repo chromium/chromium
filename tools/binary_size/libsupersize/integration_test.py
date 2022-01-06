@@ -65,6 +65,11 @@ _TEST_APK_DEX_PATH = 'test.dex'
 _TEST_APK_OTHER_FILE_PATH = 'assets/icudtl.dat'
 _TEST_APK_RES_FILE_PATH = 'res/drawable-v13/test.xml'
 
+_TEST_CONFIG_JSON = os.path.join(_TEST_DATA_DIR, 'supersize.json')
+_TEST_PATH_DEFAULTS = {
+    'assets/icudtl.dat': '../../third_party/icu/android/icudtl.dat',
+}
+
 
 def _CompareWithGolden(name=None):
   def real_decorator(func):
@@ -239,6 +244,7 @@ class IntegrationTest(unittest.TestCase):
 
         if use_apk or use_minimal_apks:
           native_spec.apk_so_path = _TEST_APK_SO_PATH
+          apk_spec.path_defaults = _TEST_PATH_DEFAULTS
           if output_directory:
             if use_apk:
               orig_path = _TEST_APK_PATH
@@ -268,16 +274,12 @@ class IntegrationTest(unittest.TestCase):
             container_name = 'Bundle.minimal.apks/%s.apk' % split_name
             if split_name == 'on_demand':
               container_name += '?'
+              apk_spec.default_component = 'DEFAULT'
             yield container_name, apk_spec, pak_spec, native_spec
 
       container_list = []
       raw_symbols_list = []
       build_config = {}
-
-      # Override for testing. Lower the bar for compacting symbols, to allow
-      # smaller test cases to be created.
-      knobs = archive.SectionSizeKnobs()
-      knobs.max_same_name_alias_count = 3
 
       with _AddMocksToPath():
         pak_id_map = pakfile.PakIdMap()
@@ -288,7 +290,6 @@ class IntegrationTest(unittest.TestCase):
                                             source_directory=_TEST_SOURCE_DIR,
                                             output_directory=output_directory)
           container, raw_symbols = archive.CreateContainerAndSymbols(
-              knobs=knobs,
               container_name=container_name,
               metadata=metadata,
               apk_spec=apk_spec,
@@ -324,6 +325,8 @@ class IntegrationTest(unittest.TestCase):
         _TEST_SOURCE_DIR,
         '--tool-prefix',
         _TEST_TOOL_PREFIX,
+        '--json-config',
+        _TEST_CONFIG_JSON,
     ]
 
     if use_output_directory:
