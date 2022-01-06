@@ -22,7 +22,10 @@ source_set("feature_flags") {
 
   configs += [ "//build/config/compiler:enable_arc" ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ios/chrome/browser/ui/infobars:constants",
+  ]
 }
 
 source_set("coordinators") {

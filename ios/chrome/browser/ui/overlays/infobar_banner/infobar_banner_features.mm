@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/overlays/infobar_banner/infobar_banner_features.h"
+#import "ios/chrome/browser/ui/infobars/infobar_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -25,11 +26,13 @@ double GetDefaultPresentationMessageDuration() {
   return base::GetFieldTrialParamByFeatureAsDouble(
       kEnableLongMessageDuration,
       kDefaultPresentationMessagesDurationFeatureParam,
-      15 /*default to 15 second*/);
+      kInfobarBannerDefaultPresentationDurationInSeconds
+      /*default to banner's default duration*/);
 }
 
 double GetLongPresentationMessageDuration() {
   return base::GetFieldTrialParamByFeatureAsDouble(
       kEnableLongMessageDuration, kLongPresentationMessagesDurationFeatureParam,
-      20 /*default to 20 second*/);
+      kInfobarBannerLongPresentationDurationInSeconds
+      /*default to banner's long duration*/);
 }

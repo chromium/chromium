@@ -4852,6 +4852,21 @@
             ]
         }
     ],
+    "LongMessageDurationIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enable_14s_20220104",
+                    "enable_features": [
+                        "EnableLongMessageDuration"
+                    ]
+                }
+            ]
+        }
+    ],
     "MacCAOverlayQuads": [
         {
             "platforms": [
