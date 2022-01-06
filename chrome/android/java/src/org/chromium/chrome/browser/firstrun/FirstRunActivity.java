@@ -8,7 +8,6 @@ import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewTreeObserver.OnPreDrawListener;
 
@@ -479,9 +478,6 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
         if (mFreProperties.getBoolean(OPEN_ADVANCED_SYNC_SETTINGS)) {
             recordFreProgressHistogram(MobileFreProgress.SYNC_CONSENT_SETTINGS_LINK_CLICK);
         }
-        recordFreProgressHistogram(TextUtils.isEmpty(mResultSyncConsentAccountName)
-                        ? MobileFreProgress.SYNC_CONSENT_DISMISSED
-                        : MobileFreProgress.SYNC_CONSENT_ACCEPTED);
 
         FirstRunFlowSequencer.markFlowAsCompleted(mResultSyncConsentAccountName,
                 mFreProperties.getBoolean(OPEN_ADVANCED_SYNC_SETTINGS));
@@ -541,12 +537,14 @@ public class FirstRunActivity extends FirstRunActivityBase implements FirstRunPa
     public void refuseSync() {
         mResultSyncConsentAccountName = null;
         mFreProperties.putBoolean(OPEN_ADVANCED_SYNC_SETTINGS, false);
+        recordFreProgressHistogram(MobileFreProgress.SYNC_CONSENT_DISMISSED);
     }
 
     @Override
     public void acceptSync(String accountName, boolean openSettings) {
         mResultSyncConsentAccountName = accountName;
         mFreProperties.putBoolean(OPEN_ADVANCED_SYNC_SETTINGS, openSettings);
+        recordFreProgressHistogram(MobileFreProgress.SYNC_CONSENT_ACCEPTED);
     }
 
     @Override

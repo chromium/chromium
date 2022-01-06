@@ -86,7 +86,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentUrlConstants;
 
 import java.util.ArrayList;
-import java.util.BitSet;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -105,8 +105,8 @@ public class FirstRunIntegrationTest {
     private static final String FOO_URL = "https://foo.com";
     private static final long ACTIVITY_WAIT_LONG_MS = TimeUnit.SECONDS.toMillis(10);
     private static final String TEST_ENROLLMENT_TOKEN = "enrollment-token";
-    private static final String FRE_PROGRESS_MAIN_INTENT_HISTOGRAM =
-            "MobileFre.Progress.MainIntent";
+    private static final String FRE_PROGRESS_VIEW_INTENT_HISTOGRAM =
+            "MobileFre.Progress.ViewIntent";
 
     @Rule
     public MultiActivityTestRule mTestRule = new MultiActivityTestRule();
@@ -681,14 +681,10 @@ public class FirstRunIntegrationTest {
 
         waitForActivity(ChromeTabbedActivity.class);
 
-        checkRecordedProgressSteps(BitSet.valueOf(new long[] {
-                MobileFreProgress.STARTED,
-                MobileFreProgress.WELCOME_SHOWN,
-                MobileFreProgress.DATA_SAVER_SHOWN,
-                MobileFreProgress.SYNC_CONSENT_SHOWN,
-                MobileFreProgress.SYNC_CONSENT_ACCEPTED,
-                MobileFreProgress.DEFAULT_SEARCH_ENGINE_SHOWN,
-        }));
+        checkRecordedProgressSteps(Arrays.asList(new Integer[] {MobileFreProgress.STARTED,
+                MobileFreProgress.WELCOME_SHOWN, MobileFreProgress.DATA_SAVER_SHOWN,
+                MobileFreProgress.SYNC_CONSENT_SHOWN, MobileFreProgress.SYNC_CONSENT_DISMISSED,
+                MobileFreProgress.DEFAULT_SEARCH_ENGINE_SHOWN}));
     }
 
     @Test
@@ -704,27 +700,24 @@ public class FirstRunIntegrationTest {
 
         waitForActivity(ChromeTabbedActivity.class);
 
-        checkRecordedProgressSteps(BitSet.valueOf(new long[] {
-                MobileFreProgress.STARTED,
-                MobileFreProgress.WELCOME_SHOWN,
-                MobileFreProgress.SYNC_CONSENT_DISMISSED,
-        }));
+        checkRecordedProgressSteps(Arrays.asList(
+                new Integer[] {MobileFreProgress.STARTED, MobileFreProgress.WELCOME_SHOWN}));
     }
 
-    private void checkRecordedProgressSteps(BitSet bucketsRecorded) {
+    private void checkRecordedProgressSteps(List<Integer> bucketsRecorded) {
         for (int bucket = MobileFreProgress.STARTED; bucket < MobileFreProgress.MAX; ++bucket) {
             int recordedValue = RecordHistogram.getHistogramValueCountForTesting(
-                    FRE_PROGRESS_MAIN_INTENT_HISTOGRAM, bucket);
-            if (bucketsRecorded.get(bucket)) {
+                    FRE_PROGRESS_VIEW_INTENT_HISTOGRAM, bucket);
+            if (bucketsRecorded.contains(bucket)) {
                 Assert.assertEquals(
                         String.format(
                                 "Histogram <%s>, bucket <%d> should be recorded exactly once.",
-                                FRE_PROGRESS_MAIN_INTENT_HISTOGRAM, bucket),
+                                FRE_PROGRESS_VIEW_INTENT_HISTOGRAM, bucket),
                         1, recordedValue);
             } else {
                 Assert.assertEquals(
                         String.format("Histogram <%s>, bucket <%d> should not be recorded.",
-                                FRE_PROGRESS_MAIN_INTENT_HISTOGRAM, bucket),
+                                FRE_PROGRESS_VIEW_INTENT_HISTOGRAM, bucket),
                         0, recordedValue);
             }
         }
