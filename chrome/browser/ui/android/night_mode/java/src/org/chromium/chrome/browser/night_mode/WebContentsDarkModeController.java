@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.night_mode;
 
 import android.content.Context;
 
-import androidx.annotation.IntDef;
-
 import org.chromium.components.browser_ui.site_settings.AutoDarkMetrics;
 import org.chromium.components.browser_ui.site_settings.AutoDarkMetrics.AutoDarkSettingsChangeSource;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
@@ -19,31 +17,11 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.util.ColorUtils;
 import org.chromium.url.GURL;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-
 /**
  * A controller class could enable or disable web content dark mode feature based on the content
  * settings {@link ContentSettingsType.AUTO_DARK_WEB_CONTENT}.
  */
 public class WebContentsDarkModeController {
-    /**
-     * Enum class that explained the enabled state for auto dark mode. See {@link #getEnabledState}
-     */
-    @IntDef({AutoDarkModeEnabledState.INVALID, AutoDarkModeEnabledState.ENABLED,
-            AutoDarkModeEnabledState.DISABLED_GLOBAL_SETTINGS,
-            AutoDarkModeEnabledState.DISABLED_LIGHT_MODE,
-            AutoDarkModeEnabledState.DISABLED_URL_SETTINGS})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface AutoDarkModeEnabledState {
-        // INVALID state used as test placeholder.
-        int INVALID = -1;
-        int ENABLED = 0;
-        int DISABLED_GLOBAL_SETTINGS = 1;
-        int DISABLED_LIGHT_MODE = 2;
-        int DISABLED_URL_SETTINGS = 3;
-    }
-
     /**
      * Return whether auto dark mode is enable for a given URL.
      * @param browserContextHandle Current browser context handle.
@@ -137,19 +115,19 @@ public class WebContentsDarkModeController {
      * @param browserContextHandle Current browser context handle.
      * @param context {@link Context} used to check whether UI is in night mode.
      * @param url Queried URL whether auto dark is enabled.
-     * @return The current enabled state in {@link AutoDarkModeEnabledState}.
+     * @return Whether auto dark is enabled for the given input.
      */
-    public static @AutoDarkModeEnabledState int getEnabledState(
+    public static boolean getEnabledState(
             BrowserContextHandle browserContextHandle, Context context, GURL url) {
         if (!isGlobalUserSettingsEnabled(browserContextHandle)) {
-            return AutoDarkModeEnabledState.DISABLED_GLOBAL_SETTINGS;
+            return false;
         }
         if (!ColorUtils.inNightMode(context)) {
-            return AutoDarkModeEnabledState.DISABLED_LIGHT_MODE;
+            return false;
         }
         if (!url.isEmpty() && !isEnabledForUrl(browserContextHandle, url)) {
-            return AutoDarkModeEnabledState.DISABLED_URL_SETTINGS;
+            return false;
         }
-        return AutoDarkModeEnabledState.ENABLED;
+        return true;
     }
 }

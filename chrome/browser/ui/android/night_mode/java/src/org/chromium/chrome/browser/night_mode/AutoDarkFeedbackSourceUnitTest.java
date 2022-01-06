@@ -24,7 +24,6 @@ import org.robolectric.annotation.Implements;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.night_mode.AutoDarkFeedbackSourceUnitTest.ShadowWebContentsDarkModeController;
-import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController.AutoDarkModeEnabledState;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.BrowserContextHandle;
@@ -37,10 +36,10 @@ import org.chromium.url.GURL;
 public class AutoDarkFeedbackSourceUnitTest {
     @Implements(WebContentsDarkModeController.class)
     static class ShadowWebContentsDarkModeController {
-        static @AutoDarkModeEnabledState int sEnabledState;
+        static boolean sEnabledState;
 
         @Implementation
-        public static @AutoDarkModeEnabledState int getEnabledState(
+        public static boolean getEnabledState(
                 BrowserContextHandle browserContextHandle, Context context, GURL url) {
             return sEnabledState;
         }
@@ -58,12 +57,12 @@ public class AutoDarkFeedbackSourceUnitTest {
 
     @Before
     public void setup() {
-        ShadowWebContentsDarkModeController.sEnabledState = AutoDarkModeEnabledState.INVALID;
+        ShadowWebContentsDarkModeController.sEnabledState = false;
     }
 
     @After
     public void tearDown() {
-        ShadowWebContentsDarkModeController.sEnabledState = -1;
+        ShadowWebContentsDarkModeController.sEnabledState = false;
     }
 
     @Test
@@ -75,34 +74,20 @@ public class AutoDarkFeedbackSourceUnitTest {
     @Test
     @Features.DisableFeatures(ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)
     public void testDisabled_FeatureNotEnabled() {
-        doTestFeedbackSource(AutoDarkFeedbackSource.DISABLED_FEATURE_VALUE);
+        ShadowWebContentsDarkModeController.sEnabledState = true;
+        doTestFeedbackSource(AutoDarkFeedbackSource.DISABLED_VALUE);
     }
 
     @Test
     public void testAutoDarkEnabledState_Enabled() {
-        ShadowWebContentsDarkModeController.sEnabledState = AutoDarkModeEnabledState.ENABLED;
+        ShadowWebContentsDarkModeController.sEnabledState = true;
         doTestFeedbackSource(AutoDarkFeedbackSource.ENABLED_VALUE);
     }
 
     @Test
     public void testAutoDarkEnabledState_DisabledGlobalSettings() {
-        ShadowWebContentsDarkModeController.sEnabledState =
-                AutoDarkModeEnabledState.DISABLED_GLOBAL_SETTINGS;
-        doTestFeedbackSource(AutoDarkFeedbackSource.DISABLED_GLOBAL_SETTINGS_VALUE);
-    }
-
-    @Test
-    public void testAutoDarkEnabledState_DisabledLightMode() {
-        ShadowWebContentsDarkModeController.sEnabledState =
-                AutoDarkModeEnabledState.DISABLED_LIGHT_MODE;
-        doTestFeedbackSource(AutoDarkFeedbackSource.DISABLED_BY_LIGHT_MODE_VALUE);
-    }
-
-    @Test
-    public void testAutoDarkEnabledState_DisabledUrlSettings() {
-        ShadowWebContentsDarkModeController.sEnabledState =
-                AutoDarkModeEnabledState.DISABLED_URL_SETTINGS;
-        doTestFeedbackSource(AutoDarkFeedbackSource.DISABLED_URL_SETTINGS_VALUE);
+        ShadowWebContentsDarkModeController.sEnabledState = false;
+        doTestFeedbackSource(AutoDarkFeedbackSource.DISABLED_VALUE);
     }
 
     private void doTestFeedbackSource(String expectedPsdValue) {

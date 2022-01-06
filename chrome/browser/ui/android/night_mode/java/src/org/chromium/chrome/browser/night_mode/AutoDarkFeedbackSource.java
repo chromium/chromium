@@ -10,7 +10,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.browser.feedback.FeedbackSource;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.night_mode.WebContentsDarkModeController.AutoDarkModeEnabledState;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.url.GURL;
 
@@ -26,19 +25,7 @@ public class AutoDarkFeedbackSource implements FeedbackSource {
 
     /** Feature flag for auto dark is disabled. */
     @VisibleForTesting
-    static final String DISABLED_FEATURE_VALUE = "DisabledFeatureGroup";
-
-    /** User settings for auto dark is disabled. */
-    @VisibleForTesting
-    static final String DISABLED_GLOBAL_SETTINGS_VALUE = "DisabledGlobalSettings";
-
-    /** Whether the current URL has auto dark enabled. */
-    @VisibleForTesting
-    static final String DISABLED_URL_SETTINGS_VALUE = "DisabledUrlSettings";
-
-    /** Settings is enabled, theme is in light */
-    @VisibleForTesting
-    static final String DISABLED_BY_LIGHT_MODE_VALUE = "DisabledByLightMode";
+    static final String DISABLED_VALUE = "Disabled";
 
     private final HashMap<String, String> mMap;
 
@@ -50,26 +37,11 @@ public class AutoDarkFeedbackSource implements FeedbackSource {
 
         if (!ChromeFeatureList.isEnabled(
                     ChromeFeatureList.DARKEN_WEBSITES_CHECKBOX_IN_THEMES_SETTING)) {
-            mMap.put(AUTO_DARK_FEEDBACK_KEY, DISABLED_FEATURE_VALUE);
+            mMap.put(AUTO_DARK_FEEDBACK_KEY, DISABLED_VALUE);
         } else {
-            @AutoDarkModeEnabledState
-            int enabledState = WebContentsDarkModeController.getEnabledState(profile, context, url);
-            mMap.put(AUTO_DARK_FEEDBACK_KEY, toFeedbackValue(enabledState));
-        }
-    }
-
-    private String toFeedbackValue(@AutoDarkModeEnabledState int enabledState) {
-        switch (enabledState) {
-            case AutoDarkModeEnabledState.ENABLED:
-                return ENABLED_VALUE;
-            case AutoDarkModeEnabledState.DISABLED_GLOBAL_SETTINGS:
-                return DISABLED_GLOBAL_SETTINGS_VALUE;
-            case AutoDarkModeEnabledState.DISABLED_URL_SETTINGS:
-                return DISABLED_URL_SETTINGS_VALUE;
-            case AutoDarkModeEnabledState.DISABLED_LIGHT_MODE:
-                return DISABLED_BY_LIGHT_MODE_VALUE;
-            default:
-                throw new RuntimeException("Invalid enabled state.");
+            boolean enabledState =
+                    WebContentsDarkModeController.getEnabledState(profile, context, url);
+            mMap.put(AUTO_DARK_FEEDBACK_KEY, enabledState ? ENABLED_VALUE : DISABLED_VALUE);
         }
     }
 
