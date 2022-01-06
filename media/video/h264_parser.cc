@@ -612,8 +612,19 @@ H264Parser::Result H264Parser::AdvanceToNextNALU(H264NALU* nalu) {
   nalu->size = nalu_size_with_start_code - start_code_size;
   DVLOG(4) << "NALU found: size=" << nalu_size_with_start_code;
 
-  // Initialize bit reader at the start of found NALU.
-  if (!br_.Initialize(nalu->data, nalu->size)) {
+  // Initialize bit reader at the start of the found NALU. Limit the NALU size
+  // in the bitstream reader to unencrypted data.
+  size_t clear_nalu_size = nalu->size;
+  const uint8_t* nalu_end = nalu->data + nalu->size;
+  for (size_t i = 0; i < encrypted_ranges_.size(); ++i) {
+    if (nalu_end <= encrypted_ranges_.start(i))
+      break;
+    if (nalu_end <= encrypted_ranges_.end(i)) {
+      clear_nalu_size = encrypted_ranges_.start(i) - nalu->data;
+      break;
+    }
+  }
+  if (!br_.Initialize(nalu->data, clear_nalu_size)) {
     stream_ = nullptr;
     bytes_left_ = 0;
     return kEOStream;
