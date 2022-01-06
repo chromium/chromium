@@ -49,6 +49,27 @@ constexpr size_t kStackFrameAdjustment = sizeof(uintptr_t);
 constexpr size_t kStackFrameAdjustment = 0;
 #endif
 
+// On Arm-v8.3+ systems with pointer authentication codes (PAC), signature bits
+// are set in the top bits of the pointer, which confuses test assertions.
+// Because the signature size can vary based on the system configuration, use
+// the xpaclri instruction to remove the signature.
+static uintptr_t StripPointerAuthenticationBits(uintptr_t ptr) {
+#if defined(ARCH_CPU_ARM64)
+  // A single Chromium binary currently spans all Arm systems (including those
+  // with and without pointer authentication). xpaclri is used here because it's
+  // in the HINT space and treated as a no-op on older Arm cores (unlike the
+  // more generic xpaci which has a new encoding). The downside is that ptr has
+  // to be moved to x30 to use this instruction. TODO(richard.townsend@arm.com):
+  // replace with an intrinsic once that is available.
+  register uintptr_t x30 __asm("x30") = ptr;
+  asm("xpaclri" : "+r"(x30));
+  return x30;
+#else
+  // No-op on other platforms.
+  return ptr;
+#endif
+}
+
 uintptr_t GetNextStackFrame(uintptr_t fp) {
   const uintptr_t* fp_addr = reinterpret_cast<const uintptr_t*>(fp);
   MSAN_UNPOISON(fp_addr, sizeof(uintptr_t));
@@ -58,7 +79,7 @@ uintptr_t GetNextStackFrame(uintptr_t fp) {
 uintptr_t GetStackFramePC(uintptr_t fp) {
   const uintptr_t* fp_addr = reinterpret_cast<const uintptr_t*>(fp);
   MSAN_UNPOISON(&fp_addr[1], sizeof(uintptr_t));
-  return fp_addr[1];
+  return StripPointerAuthenticationBits(fp_addr[1]);
 }
 
 bool IsStackFrameValid(uintptr_t fp, uintptr_t prev_fp, uintptr_t stack_end) {
