@@ -905,7 +905,8 @@ void BrowserViewRenderer::PostInvalidate(
     return;
 
   did_invalidate_since_last_draw_ = true;
-  client_->PostInvalidate(begin_frame_source_->inside_begin_frame());
+  client_->PostInvalidate(
+      RootBeginFrameSourceWebView::GetInstance()->inside_begin_frame());
 }
 
 bool BrowserViewRenderer::CompositeSW(SkCanvas* canvas, bool software_canvas) {
