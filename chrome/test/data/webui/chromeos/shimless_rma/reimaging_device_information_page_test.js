@@ -11,6 +11,7 @@ import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../cha
 import {flushTasks} from '../../test_util.js';
 
 let fakeSerialNumber = 'serial# 0001';
+let fakeDramPartNumber = 'dram# 0123';
 
 // TODO(gavindodd) how to update selectedIndex and trigger on-change
 // automatically.
@@ -48,19 +49,17 @@ export function reimagingDeviceInformationPageTest() {
     service.reset();
   });
 
-  /**
-   * @param {string} serialNumber
-   * @return {!Promise}
-   */
-  async function initializeReimagingDeviceInformationPage(serialNumber) {
+  /** @return {!Promise} */
+  async function initializeReimagingDeviceInformationPage() {
     assertFalse(!!component);
-    service.setGetOriginalSerialNumberResult(serialNumber);
+    service.setGetOriginalSerialNumberResult(fakeSerialNumber);
     service.setGetRegionListResult(fakeDeviceRegions);
     service.setGetOriginalRegionResult(2);
     service.setGetWhiteLabelListResult(fakeDeviceWhiteLabels);
     service.setGetOriginalWhiteLabelResult(3);
     service.setGetSkuListResult(fakeDeviceSkus);
     service.setGetOriginalSkuResult(1);
+    service.setGetOriginalDramPartNumberResult(fakeDramPartNumber);
 
     component = /** @type {!ReimagingDeviceInformationPage} */ (
         document.createElement('reimaging-device-information-page'));
@@ -75,7 +74,7 @@ export function reimagingDeviceInformationPageTest() {
   }
 
   test('ReimagingDeviceInformationPageInitializes', async () => {
-    await initializeReimagingDeviceInformationPage(fakeSerialNumber);
+    await initializeReimagingDeviceInformationPage();
 
     const serialNumberComponent =
         component.shadowRoot.querySelector('#serialNumber');
@@ -104,7 +103,7 @@ export function reimagingDeviceInformationPageTest() {
 
   test('ReimagingDeviceInformationPageNextReturnsInformation', async () => {
     const resolver = new PromiseResolver();
-    await initializeReimagingDeviceInformationPage(fakeSerialNumber);
+    await initializeReimagingDeviceInformationPage();
 
     const serialNumberComponent =
         component.shadowRoot.querySelector('#serialNumber');
@@ -113,14 +112,18 @@ export function reimagingDeviceInformationPageTest() {
     const whiteLabelSelectComponent =
         component.shadowRoot.querySelector('#whiteLabelSelect');
     const skuSelectComponent = component.shadowRoot.querySelector('#skuSelect');
+    const dramPartNumberComponent =
+        component.shadowRoot.querySelector('#dramPartNumber');
     let expectedSerialNumber = 'expected serial number';
     let expectedRegionIndex = 0;
     let expectedWhiteLabelIndex = 1;
     let expectedSkuIndex = 2;
+    let expectedDramPartNumber = 'expected dram part number';
     serialNumberComponent.value = expectedSerialNumber;
     regionSelectComponent.selectedIndex = expectedRegionIndex;
     whiteLabelSelectComponent.selectedIndex = expectedWhiteLabelIndex;
     skuSelectComponent.selectedIndex = expectedSkuIndex;
+    dramPartNumberComponent.value = expectedDramPartNumber;
     // TODO(gavindodd) how to update selectedIndex and trigger on-change
     // automatically.
     suppressedComponentOnSelectedChange_(component);
@@ -129,15 +132,17 @@ export function reimagingDeviceInformationPageTest() {
     let regionIndex;
     let whiteLabelIndex;
     let skuIndex;
+    let dramPartNumber;
     let callCounter = 0;
     service.setDeviceInformation =
         (resultSerialNumber, resultRegionIndex, resultSkuIndex,
-         resultWhiteLabelIndex) => {
+         resultWhiteLabelIndex, resultDramPartNumber) => {
           callCounter++;
           serialNumber = resultSerialNumber;
           regionIndex = resultRegionIndex;
           whiteLabelIndex = resultWhiteLabelIndex;
           skuIndex = resultSkuIndex;
+          dramPartNumber = resultDramPartNumber;
           return resolver.promise;
         };
 
@@ -153,11 +158,12 @@ export function reimagingDeviceInformationPageTest() {
     assertEquals(expectedRegionIndex, regionIndex);
     assertEquals(expectedWhiteLabelIndex, whiteLabelIndex);
     assertEquals(expectedSkuIndex, skuIndex);
+    assertEquals(expectedDramPartNumber, dramPartNumber);
     assertDeepEquals(expectedResult, savedResult);
   });
 
   test('ReimagingDeviceInformationPageModifySerialNumberAndReset', async () => {
-    await initializeReimagingDeviceInformationPage(fakeSerialNumber);
+    await initializeReimagingDeviceInformationPage();
 
     component.allButtonsDisabled = false;
     let serialNumber = fakeSerialNumber + 'new serial number';
@@ -179,7 +185,7 @@ export function reimagingDeviceInformationPageTest() {
   });
 
   test('ReimagingDeviceInformationPageInputsDisabled', async () => {
-    await initializeReimagingDeviceInformationPage(fakeSerialNumber);
+    await initializeReimagingDeviceInformationPage();
 
     const serialNumberInput =
         component.shadowRoot.querySelector('#serialNumber');
@@ -200,6 +206,29 @@ export function reimagingDeviceInformationPageTest() {
     assertTrue(regionSelect.disabled);
     assertTrue(skuSelect.disabled);
   });
+
+  test(
+      'ReimagingDeviceInformationPageModifyDramPartNumberAndReset',
+      async () => {
+        await initializeReimagingDeviceInformationPage();
+
+        let dramPartNumber = fakeDramPartNumber + 'new part number';
+        const dramPartNumberComponent =
+            component.shadowRoot.querySelector('#dramPartNumber');
+        const resetDramPartNumberComponent =
+            component.shadowRoot.querySelector('#resetDramPartNumber');
+
+        assertEquals(dramPartNumberComponent.value, fakeDramPartNumber);
+        assertTrue(resetDramPartNumberComponent.disabled);
+        dramPartNumberComponent.value = dramPartNumber;
+        await flushTasks();
+        assertFalse(resetDramPartNumberComponent.disabled);
+        assertEquals(dramPartNumberComponent.value, dramPartNumber);
+        resetDramPartNumberComponent.click();
+        await flushTasks();
+        assertEquals(dramPartNumberComponent.value, fakeDramPartNumber);
+        assertTrue(resetDramPartNumberComponent.disabled);
+      });
 
   // TODO(gavindodd): Add tests for the selection lists when they are
   // reimplemented and bound.

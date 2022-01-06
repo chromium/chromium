@@ -56,6 +56,25 @@
       </div>
     </div>
     <div class="input-row">
+      <label id="dramPartNumberLabel" class="cr-form-field-label">
+        [[i18n('confirmDeviceInfoDramPartNumberLabel')]]
+      </label>
+      <div class="input-holder">
+        <cr-input
+            id="dramPartNumber"
+            placeholder=
+                "[[i18n('confirmDeviceInfoDramPartNumberPlaceholderLabel')]]"
+            value="{{dramPartNumber_}}"
+            aria-labelledby="dramPartNumberLabel">
+        </cr-input>
+        <cr-button id="resetDramPartNumber"
+            on-click="onResetDramPartNumberButtonClicked_"
+            disabled="[[disableResetDramPartNumber_]]">
+          [[i18n('confirmDeviceInfoResetButtonLabel')]]
+        </cr-button>
+      </div>
+    </div>
+    <div class="input-row">
       <label id="regionLabel" class="cr-form-field-label">
         [[i18n('confirmDeviceInfoRegionLabel')]]
       </label>

@@ -77,6 +77,13 @@ export class ReimagingDeviceInformationPage extends
       },
 
       /** @protected */
+      disableResetDramPartNumber_: {
+        type: Boolean,
+        computed: 'getDisableResetDramPartNumber_(' +
+            'originalDramPartNumber_, dramPartNumber_)',
+      },
+
+      /** @protected */
       originalSerialNumber_: {
         type: String,
         value: '',
@@ -141,6 +148,18 @@ export class ReimagingDeviceInformationPage extends
         type: Number,
         value: 0,
       },
+
+      /** @protected */
+      originalDramPartNumber_: {
+        type: String,
+        value: '',
+      },
+
+      /** @protected */
+      dramPartNumber_: {
+        type: String,
+        value: '',
+      },
     };
   }
 
@@ -157,6 +176,7 @@ export class ReimagingDeviceInformationPage extends
     this.getOriginalRegionAndRegionList_();
     this.getOriginalSkuAndSkuList_();
     this.getOriginalWhiteLabelAndWhiteLabelList_();
+    this.getOriginalDramPartNumber_();
     this.dispatchEvent(new CustomEvent(
         'disable-next-button',
         {bubbles: true, composed: true, detail: false},
@@ -239,6 +259,14 @@ export class ReimagingDeviceInformationPage extends
         });
   }
 
+  /** @private */
+  getOriginalDramPartNumber_() {
+    this.shimlessRmaService_.getOriginalDramPartNumber().then((result) => {
+      this.originalDramPartNumber_ = result.dramPartNumber;
+      this.dramPartNumber_ = this.originalDramPartNumber_;
+    });
+  }
+
   /** @protected */
   getDisableResetSerialNumber_() {
     return this.originalSerialNumber_ === this.serialNumber_ ||
@@ -259,6 +287,11 @@ export class ReimagingDeviceInformationPage extends
   /** @protected */
   getDisableResetWhiteLabel_() {
     return this.originalWhiteLabelIndex_ === this.whiteLabelIndex_;
+  }
+
+  /** @protected */
+  getDisableResetDramPartNumber_() {
+    return this.originalDramPartNumber_ === this.dramPartNumber_;
   }
 
   /** @protected */
@@ -303,6 +336,11 @@ export class ReimagingDeviceInformationPage extends
         this.whiteLabelIndex_;
   }
 
+  /** @protected */
+  onResetDramPartNumberButtonClicked_(event) {
+    this.dramPartNumber_ = this.originalDramPartNumber_;
+  }
+
   /** @return {!Promise<!StateResult>} */
   onNextButtonClick() {
     if (this.serialNumber_ === '') {
@@ -311,7 +349,7 @@ export class ReimagingDeviceInformationPage extends
       // TODO(gavindodd): Return correct DRAM part number.
       return this.shimlessRmaService_.setDeviceInformation(
           this.serialNumber_, this.regionIndex_, this.skuIndex_,
-          this.whiteLabelIndex_, '');
+          this.whiteLabelIndex_, this.dramPartNumber_);
     }
   }
 }
