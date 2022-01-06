@@ -15,6 +15,7 @@
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/extension_system.h"
+#include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -119,10 +120,9 @@ TEST_F(ExtensionInstalledBubbleModelTest, OmniboxExtension) {
 
 TEST_F(ExtensionInstalledBubbleModelTest, PageActionExtension) {
   // An extension with a page action...
-  auto extension =
-      extensions::ExtensionBuilder("Foo")
-          .SetAction(extensions::ExtensionBuilder::ActionType::PAGE_ACTION)
-          .Build();
+  auto extension = extensions::ExtensionBuilder("Foo")
+                       .SetAction(extensions::ActionInfo::TYPE_PAGE)
+                       .Build();
   extension_service()->AddExtension(extension.get());
 
   ExtensionInstalledBubbleModel model(browser()->profile(), extension.get(),
@@ -142,7 +142,7 @@ TEST_F(ExtensionInstalledBubbleModelTest, PageActionExtension) {
 TEST_F(ExtensionInstalledBubbleModelTest, ExtensionWithKeyBinding) {
   // An extension with a browser action and a key binding...
   auto builder = extensions::ExtensionBuilder("Foo");
-  builder.SetAction(extensions::ExtensionBuilder::ActionType::BROWSER_ACTION);
+  builder.SetAction(extensions::ActionInfo::TYPE_BROWSER);
   AddBrowserActionKeyBinding(&builder, "Alt+Shift+E");
   auto extension = builder.Build();
 

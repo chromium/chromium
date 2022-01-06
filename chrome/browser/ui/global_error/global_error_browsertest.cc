@@ -41,6 +41,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/mock_external_provider.h"
 #include "extensions/browser/sandboxed_unpacker.h"
+#include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/feature_switch.h"
 
@@ -133,7 +134,7 @@ void GlobalErrorBubbleTest::ShowUi(const std::string& name) {
       extensions::ExtensionRegistry::Get(profile);
 
   extensions::ExtensionBuilder builder("Browser Action");
-  builder.SetAction(extensions::ExtensionBuilder::ActionType::BROWSER_ACTION);
+  builder.SetAction(extensions::ActionInfo::TYPE_BROWSER);
   builder.SetLocation(extensions::mojom::ManifestLocation::kInternal);
   scoped_refptr<const extensions::Extension> test_extension = builder.Build();
   extension_service->AddExtension(test_extension.get());

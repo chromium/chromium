@@ -25,6 +25,7 @@
 #include "base/values.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/extension_features_unittest.h"
+#include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/features/feature_session_type.h"
@@ -976,9 +977,7 @@ TEST(ExtensionAPITest, ManifestKeys) {
       ExtensionAPI::CreateWithDefaultConfiguration());
 
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("Test")
-          .SetAction(ExtensionBuilder::ActionType::BROWSER_ACTION)
-          .Build();
+      ExtensionBuilder("Test").SetAction(ActionInfo::TYPE_BROWSER).Build();
 
   EXPECT_TRUE(extension_api
                   ->IsAvailable("browserAction", extension.get(),

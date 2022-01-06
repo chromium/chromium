@@ -814,13 +814,11 @@ TEST_F(ExtensionInfoGeneratorUnitTest, ExtensionActionCommands) {
   struct {
     const char* name;
     const char* command_key;
-    ExtensionBuilder::ActionType action_type;
+    ActionInfo::Type action_type;
   } test_cases[] = {
-      {"browser action", "_execute_browser_action",
-       ExtensionBuilder::ActionType::BROWSER_ACTION},
-      {"page action", "_execute_page_action",
-       ExtensionBuilder::ActionType::PAGE_ACTION},
-      {"action", "_execute_action", ExtensionBuilder::ActionType::ACTION},
+      {"browser action", "_execute_browser_action", ActionInfo::TYPE_BROWSER},
+      {"page action", "_execute_page_action", ActionInfo::TYPE_PAGE},
+      {"action", "_execute_action", ActionInfo::TYPE_ACTION},
   };
 
   for (const auto& test_case : test_cases) {

@@ -38,6 +38,7 @@
 #include "extensions/browser/extension_system.h"
 #include "extensions/browser/notification_types.h"
 #include "extensions/browser/test_extension_registry_observer.h"
+#include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/mojom/run_location.mojom-shared.h"
 #include "extensions/common/user_script.h"
@@ -107,7 +108,7 @@ class ExtensionActionViewControllerUnitTest : public BrowserWithTestWindowTest {
 
   scoped_refptr<const extensions::Extension> CreateAndAddExtension(
       const std::string& name,
-      extensions::ExtensionBuilder::ActionType action_type) {
+      extensions::ActionInfo::Type action_type) {
     scoped_refptr<const extensions::Extension> extension =
         extensions::ExtensionBuilder(name)
             .SetAction(action_type)
@@ -144,8 +145,7 @@ class ExtensionActionViewControllerUnitTest : public BrowserWithTestWindowTest {
 TEST_F(ExtensionActionViewControllerUnitTest,
        ExtensionActionWantsToRunAppearance) {
   const std::string id =
-      CreateAndAddExtension(
-          "extension", extensions::ExtensionBuilder::ActionType::PAGE_ACTION)
+      CreateAndAddExtension("extension", extensions::ActionInfo::TYPE_PAGE)
           ->id();
 
   AddTab(browser(), GURL("chrome://newtab"));
@@ -169,7 +169,7 @@ TEST_F(ExtensionActionViewControllerUnitTest,
 TEST_F(ExtensionActionViewControllerUnitTest, BrowserActionBlockedActions) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("browser action")
-          .SetAction(extensions::ExtensionBuilder::ActionType::BROWSER_ACTION)
+          .SetAction(extensions::ActionInfo::TYPE_BROWSER)
           .SetLocation(ManifestLocation::kInternal)
           .AddPermission("https://www.google.com/*")
           .Build();
@@ -217,7 +217,7 @@ TEST_F(ExtensionActionViewControllerUnitTest, BrowserActionBlockedActions) {
 TEST_F(ExtensionActionViewControllerUnitTest, PageActionBlockedActions) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("page action")
-          .SetAction(extensions::ExtensionBuilder::ActionType::PAGE_ACTION)
+          .SetAction(extensions::ActionInfo::TYPE_PAGE)
           .SetLocation(ManifestLocation::kInternal)
           .AddPermission("https://www.google.com/*")
           .Build();
@@ -313,8 +313,7 @@ TEST_F(ExtensionActionViewControllerUnitTest, OnlyHostPermissionsAppearance) {
 TEST_F(ExtensionActionViewControllerUnitTest,
        ExtensionActionContextMenuVisibility) {
   std::string id =
-      CreateAndAddExtension(
-          "extension", extensions::ExtensionBuilder::ActionType::BROWSER_ACTION)
+      CreateAndAddExtension("extension", extensions::ActionInfo::TYPE_BROWSER)
           ->id();
 
   // Check that the context menu has the proper string for the action's pinned
@@ -529,7 +528,7 @@ scoped_refptr<const extensions::Extension>
 ExtensionActionViewControllerGrayscaleTest::CreateExtension(
     PermissionType permission_type) {
   extensions::ExtensionBuilder builder("extension");
-  builder.SetAction(extensions::ExtensionBuilder::ActionType::BROWSER_ACTION)
+  builder.SetAction(extensions::ActionInfo::TYPE_BROWSER)
       .SetLocation(ManifestLocation::kInternal);
   constexpr char kHostGoogle[] = "https://www.google.com/*";
   switch (permission_type) {
@@ -577,7 +576,7 @@ TEST_F(ExtensionActionViewControllerGrayscaleTest,
 TEST_F(ExtensionActionViewControllerUnitTest, RuntimeHostsTooltip) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("extension name")
-          .SetAction(extensions::ExtensionBuilder::ActionType::BROWSER_ACTION)
+          .SetAction(extensions::ActionInfo::TYPE_BROWSER)
           .SetLocation(ManifestLocation::kInternal)
           .AddPermission("https://www.google.com/*")
           .Build();
@@ -697,7 +696,7 @@ TEST_F(ExtensionActionViewControllerUnitTest,
        GetPageInteractionStatusWithActiveTab) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("active tab")
-          .SetAction(extensions::ExtensionBuilder::ActionType::BROWSER_ACTION)
+          .SetAction(extensions::ActionInfo::TYPE_BROWSER)
           .AddPermission("activeTab")
           .Build();
   extension_service()->AddExtension(extension.get());
@@ -795,7 +794,7 @@ TEST_F(ExtensionActionViewControllerUnitTest,
 TEST_F(ExtensionActionViewControllerUnitTest, TestGetIconWithNullWebContents) {
   scoped_refptr<const extensions::Extension> extension =
       extensions::ExtensionBuilder("extension name")
-          .SetAction(extensions::ExtensionBuilder::ActionType::BROWSER_ACTION)
+          .SetAction(extensions::ActionInfo::TYPE_BROWSER)
           .AddPermission("https://example.com/")
           .Build();
 

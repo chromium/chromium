@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
+#include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/manifest.mojom-shared.h"
 #include "extensions/common/value_builder.h"
@@ -43,12 +44,6 @@ class ExtensionBuilder {
   enum class Type {
     EXTENSION,
     PLATFORM_APP,
-  };
-
-  enum class ActionType {
-    PAGE_ACTION,
-    BROWSER_ACTION,
-    ACTION,
   };
 
   enum class BackgroundContext {
@@ -95,7 +90,7 @@ class ExtensionBuilder {
 
   // Sets an action type for the extension to have. By default, no action will
   // be set (though note that we synthesize a page action for most extensions).
-  ExtensionBuilder& SetAction(ActionType action);
+  ExtensionBuilder& SetAction(ActionInfo::Type type);
 
   // Sets a background context for the extension. By default, none will be set.
   ExtensionBuilder& SetBackgroundContext(BackgroundContext background_context);

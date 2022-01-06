@@ -99,22 +99,10 @@ MenuItem::Context MenuItemContextForActionType(ActionInfo::Type type) {
 
 scoped_refptr<const Extension> BuildExtensionWithActionType(
     ActionInfo::Type type) {
-  ExtensionBuilder builder("extension");
-  switch (type) {
-    case ActionInfo::TYPE_BROWSER:
-      builder.SetAction(ExtensionBuilder::ActionType::BROWSER_ACTION);
-      break;
-    case ActionInfo::TYPE_PAGE:
-      builder.SetAction(ExtensionBuilder::ActionType::PAGE_ACTION);
-      break;
-    case ActionInfo::TYPE_ACTION:
-      builder.SetAction(ExtensionBuilder::ActionType::ACTION);
-      break;
-  }
-
-  builder.SetManifestVersion(GetManifestVersionForActionType(type));
-
-  return builder.Build();
+  return ExtensionBuilder("extension")
+      .SetAction(type)
+      .SetManifestVersion(GetManifestVersionForActionType(type))
+      .Build();
 }
 
 // Label for test extension menu item.
@@ -1588,9 +1576,7 @@ TEST_F(ExtensionContextMenuModelTest, HistogramTest_CustomCommand) {
 
   InitializeEmptyExtensionService();
   scoped_refptr<const Extension> extension =
-      ExtensionBuilder("extension")
-          .SetAction(ExtensionBuilder::ActionType::BROWSER_ACTION)
-          .Build();
+      ExtensionBuilder("extension").SetAction(ActionInfo::TYPE_BROWSER).Build();
   InitializeAndAddExtension(*extension);
 
   MenuManager* const manager = CreateMenuManager();

@@ -22,7 +22,7 @@ struct ExtensionBuilder::ManifestData {
   Type type;
   std::string name;
   std::vector<std::string> permissions;
-  absl::optional<ActionType> action;
+  absl::optional<ActionInfo::Type> action;
   absl::optional<BackgroundContext> background_context;
   absl::optional<std::string> version;
   absl::optional<int> manifest_version;
@@ -62,15 +62,17 @@ struct ExtensionBuilder::ManifestData {
     }
 
     if (action) {
+      // TODO(devlin): Update this when action_info_test_util.[h|cc] is moved to
+      // //extensions.
       const char* action_key = nullptr;
       switch (*action) {
-        case ActionType::PAGE_ACTION:
+        case ActionInfo::TYPE_PAGE:
           action_key = manifest_keys::kPageAction;
           break;
-        case ActionType::BROWSER_ACTION:
+        case ActionInfo::TYPE_BROWSER:
           action_key = manifest_keys::kBrowserAction;
           break;
-        case ActionType::ACTION:
+        case ActionInfo::TYPE_ACTION:
           action_key = manifest_keys::kAction;
           break;
       }
@@ -190,9 +192,9 @@ ExtensionBuilder& ExtensionBuilder::AddPermissions(
   return *this;
 }
 
-ExtensionBuilder& ExtensionBuilder::SetAction(ActionType action) {
+ExtensionBuilder& ExtensionBuilder::SetAction(ActionInfo::Type type) {
   CHECK(manifest_data_);
-  manifest_data_->action = action;
+  manifest_data_->action = type;
   return *this;
 }
 

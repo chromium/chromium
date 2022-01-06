@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/extensions/extension_install_ui_default.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
@@ -34,10 +35,9 @@ class ExtensionInstalledBubbleViewsBrowserTest
     extensions::ExtensionBuilder builder(type);
 
     if (type == "BrowserAction") {
-      builder.SetAction(
-          extensions::ExtensionBuilder::ActionType::BROWSER_ACTION);
+      builder.SetAction(extensions::ActionInfo::TYPE_BROWSER);
     } else if (type == "PageAction") {
-      builder.SetAction(extensions::ExtensionBuilder::ActionType::PAGE_ACTION);
+      builder.SetAction(extensions::ActionInfo::TYPE_PAGE);
     }
 
     if (type == "SignInPromo" || type == "NoAction") {
