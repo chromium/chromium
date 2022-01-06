@@ -27,7 +27,6 @@
 
 namespace {
 const char kToastId[] = "copy_to_clipboard_share_action";
-const int kToastDurationMs = 2500;
 
 void RecordMimeTypes(
     const base::flat_set<::sharesheet::SharesheetMetrics::MimeType>&
@@ -109,10 +108,7 @@ void CopyToClipboardShareAction::LaunchAction(
 
   ToastData toast(kToastId,
                   l10n_util::GetStringUTF16(
-                      IDS_SHARESHEET_COPY_TO_CLIPBOARD_SUCCESS_TOAST_LABEL),
-                  kToastDurationMs,
-                  /*dismiss_text=*/absl::nullopt,
-                  /*visible_on_lock_screen=*/false);
+                      IDS_SHARESHEET_COPY_TO_CLIPBOARD_SUCCESS_TOAST_LABEL));
   ShowToast(toast);
 }
 

@@ -11,13 +11,13 @@ namespace ash {
 ToastData::ToastData(std::string id,
                      const std::u16string& text,
                      int32_t duration_ms,
-                     const absl::optional<std::u16string>& dismiss_text,
-                     bool visible_on_lock_screen)
+                     bool visible_on_lock_screen,
+                     const absl::optional<std::u16string>& dismiss_text)
     : id(std::move(id)),
       text(text),
       duration_ms(duration_ms),
-      dismiss_text(dismiss_text),
-      visible_on_lock_screen(visible_on_lock_screen) {}
+      visible_on_lock_screen(visible_on_lock_screen),
+      dismiss_text(dismiss_text) {}
 
 ToastData::ToastData(const ToastData& other) = default;
 

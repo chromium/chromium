@@ -59,10 +59,6 @@ namespace {
 constexpr char kAppNotAvailableTemplateToastName[] =
     "AppNotAvailableTemplateToast";
 
-// The amount of time for which the launch template toasts will remain
-// displayed.
-constexpr int kLaunchTemplateToastDurationMs = 6 * 1000;
-
 // Returns the TabStripModel that associates with `window` if the given `window`
 // contains a browser frame, otherwise returns nullptr.
 TabStripModel* GetTabstripModelForWindowIfAny(aura::Window* window) {
@@ -148,9 +144,7 @@ void ShowUnavailableAppToast(const std::vector<std::string>& unavailable_apps) {
   }
 
   ash::ToastData toast_data = {/*id=*/kAppNotAvailableTemplateToastName,
-                               /*text=*/
-                               toast_string, kLaunchTemplateToastDurationMs,
-                               /*dismiss_text=*/absl::nullopt};
+                               /*text=*/toast_string};
   ash::ToastManager::Get()->Show(toast_data);
 }
 

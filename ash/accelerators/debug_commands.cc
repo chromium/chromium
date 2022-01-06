@@ -178,8 +178,9 @@ void PerformDebugActionIfEnabled(AcceleratorAction action) {
       HandlePrintWindowHierarchy();
       break;
     case DEBUG_SHOW_TOAST:
-      Shell::Get()->toast_manager()->Show(
-          ToastData("id", u"Toast", 5000 /* duration_ms */, u"Dismiss"));
+      Shell::Get()->toast_manager()->Show(ToastData(
+          /*id=*/"id", /*text=*/u"Toast", ToastData::kDefaultToastDurationMs,
+          /*visible_on_lock_screen=*/false, /*dismiss_text=*/u"Dismiss"));
       break;
     case DEBUG_TOGGLE_TOUCH_PAD:
       HandleToggleTouchpad();

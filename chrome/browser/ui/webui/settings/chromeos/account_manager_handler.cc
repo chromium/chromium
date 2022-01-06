@@ -43,7 +43,6 @@ namespace settings {
 namespace {
 
 constexpr char kFamilyLink[] = "Family Link";
-constexpr int kToastDurationMs = 2500;
 constexpr char kAccountRemovedToastId[] =
     "settings_account_manager_account_removed";
 
@@ -88,8 +87,7 @@ bool IsSameAccount(const ::account_manager::AccountKey& account_key,
 }
 
 void ShowToast(const std::string& id, const std::u16string& message) {
-  ash::ToastManager::Get()->Show(ash::ToastData(
-      id, message, kToastDurationMs, /*dismiss_text=*/absl::nullopt));
+  ash::ToastManager::Get()->Show(ash::ToastData(id, message));
 }
 
 class AccountBuilder {

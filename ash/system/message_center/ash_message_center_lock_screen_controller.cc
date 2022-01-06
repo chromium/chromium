@@ -142,7 +142,7 @@ void AshMessageCenterLockScreenController::EncourageUserToUnlock(
 
   // TODO(yoshiki): Update UI after the UX finalizes.
   Shell::Get()->toast_manager()->Show(
-      ToastData(kToastId, message, ToastData::kInfiniteDuration, absl::nullopt,
+      ToastData(kToastId, message, ToastData::kInfiniteDuration,
                 /*visible_on_lock_screen=*/true));
 }
 

@@ -37,8 +37,6 @@ constexpr char kExitOverviewToastId[] = "ash.wm.reverse_exit_overview_toast";
 constexpr char kSwitchNextDeskToastId[] = "ash.wm.reverse_next_desk_toast";
 constexpr char kSwitchLastDeskToastId[] = "ash.wm.reverse_last_desk_toast";
 
-constexpr base::TimeDelta kToastDurationMs = base::Milliseconds(2500);
-
 // Check if the user used the wrong gestures.
 bool g_did_wrong_enter_overview_gesture = false;
 bool g_did_wrong_exit_overview_gesture = false;
@@ -65,8 +63,7 @@ float GetOffset(float offset) {
 
 void ShowReverseGestureToast(const char* toast_id, int message_id) {
   Shell::Get()->toast_manager()->Show(
-      ToastData(toast_id, l10n_util::GetStringUTF16(message_id),
-                kToastDurationMs.InMilliseconds(), absl::nullopt));
+      ToastData(toast_id, l10n_util::GetStringUTF16(message_id)));
 }
 
 // When reverse scrolling for touchpad is Off, if the user performs wrong

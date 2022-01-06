@@ -28,10 +28,6 @@ namespace {
 
 DesksTemplatesPresenter* g_instance = nullptr;
 
-// The amount of time for which the launch template toasts will remain
-// displayed.
-constexpr int kLaunchTemplateToastDurationMs = 6 * 1000;
-
 // Toast name.
 constexpr char kMaximumDeskLaunchTemplateToastName[] =
     "MaximumDeskLaunchTemplateToast";
@@ -142,9 +138,7 @@ void DesksTemplatesPresenter::LaunchDeskTemplate(
         /*text=*/
         l10n_util::GetStringFUTF16(
             IDS_ASH_DESKS_TEMPLATES_REACH_MAXIMUM_DESK_TOAST,
-            base::FormatNumber(desks_util::kMaxNumberOfDesks)),
-        kLaunchTemplateToastDurationMs,
-        /*dismiss_text=*/absl::nullopt};
+            base::FormatNumber(desks_util::kMaxNumberOfDesks))};
     ToastManager::Get()->Show(toast_data);
     return;
   }

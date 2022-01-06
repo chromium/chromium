@@ -134,7 +134,6 @@ using input_method::InputMethodManager;
 
 // Toast id and duration for Assistant shortcuts.
 constexpr char kAssistantErrorToastId[] = "assistant_error";
-constexpr int kToastDurationMs = 2500;
 
 constexpr char kVirtualDesksToastId[] = "virtual_desks_toast";
 
@@ -219,7 +218,7 @@ void NotifyShortcutChangesInRelease(PrefService* pref_service) {
 }
 
 void ShowToast(std::string id, const std::u16string& text) {
-  ToastData toast(id, text, kToastDurationMs, absl::nullopt,
+  ToastData toast(id, text, ToastData::kDefaultToastDurationMs,
                   /*visible_on_lock_screen=*/true);
   Shell::Get()->toast_manager()->Show(toast);
 }

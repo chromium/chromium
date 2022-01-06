@@ -21,7 +21,6 @@ using chromeos::bluetooth_config::GetPairedDeviceName;
 using chromeos::bluetooth_config::mojom::PairedBluetoothDevicePropertiesPtr;
 
 const char kBluetoothToastIdPrefix[] = "cros_bluetooth_device_toast_id-";
-constexpr int kToastDurationMs = 6000;
 
 }  // namespace
 
@@ -43,10 +42,7 @@ void BluetoothDeviceStatusUiHandler::OnDevicePaired(
       /*text=*/
       l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIRED_OR_CONNECTED_TOAST,
-          GetPairedDeviceName(device.get())),
-      /*timeout_ms=*/kToastDurationMs,
-      /*dismiss_text=*/absl::nullopt,
-      /*visible_on_lock_screen=*/false);
+          GetPairedDeviceName(device.get())));
 
   ShowToast(toast_data);
   device::RecordUiSurfaceDisplayed(device::BluetoothUiSurface::kPairedToast);
@@ -59,10 +55,7 @@ void BluetoothDeviceStatusUiHandler::OnDeviceDisconnected(
       /*text=*/
       l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_BLUETOOTH_DISCONNECTED_TOAST,
-          GetPairedDeviceName(device.get())),
-      /*timeout_ms=*/kToastDurationMs,
-      /*dismiss_text=*/absl::nullopt,
-      /*visible_on_lock_screen=*/false);
+          GetPairedDeviceName(device.get())));
   ShowToast(toast_data);
   device::RecordUiSurfaceDisplayed(
       device::BluetoothUiSurface::kConnectionToast);
@@ -75,10 +68,7 @@ void BluetoothDeviceStatusUiHandler::OnDeviceConnected(
       /*text=*/
       l10n_util::GetStringFUTF16(
           IDS_ASH_STATUS_TRAY_BLUETOOTH_PAIRED_OR_CONNECTED_TOAST,
-          GetPairedDeviceName(device.get())),
-      /*timeout_ms=*/kToastDurationMs,
-      /*dismiss_text=*/absl::nullopt,
-      /*visible_on_lock_screen=*/false);
+          GetPairedDeviceName(device.get())));
   ShowToast(toast_data);
   device::RecordUiSurfaceDisplayed(
       device::BluetoothUiSurface::kDisconnectedToast);

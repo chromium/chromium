@@ -134,7 +134,6 @@ constexpr base::TimeDelta kOcclusionUnpauseDurationForRotation =
 // that is visible on all desks to another desk.
 constexpr char kMoveVisibleOnAllDesksWindowToastId[] =
     "ash.wm.overview.move_visible_on_all_desks_window_toast";
-constexpr int kToastDurationMs = 2500;
 
 // Histogram names for overview enter/exit smoothness in clamshell,
 // tablet mode and splitview.
@@ -1428,10 +1427,10 @@ bool OverviewGrid::MaybeDropItemOnDeskMiniViewOrNewDeskButton(
   if (dragged_window_is_visible_on_all_desks) {
     // Show toast since items that are visible on all desks should not be able
     // to be unassigned during overview.
-    Shell::Get()->toast_manager()->Show(ToastData(
-        kMoveVisibleOnAllDesksWindowToastId,
-        l10n_util::GetStringUTF16(IDS_ASH_OVERVIEW_VISIBLE_ON_ALL_DESKS_TOAST),
-        kToastDurationMs, absl::nullopt));
+    Shell::Get()->toast_manager()->Show(
+        ToastData(kMoveVisibleOnAllDesksWindowToastId,
+                  l10n_util::GetStringUTF16(
+                      IDS_ASH_OVERVIEW_VISIBLE_ON_ALL_DESKS_TOAST)));
     return false;
   }
 

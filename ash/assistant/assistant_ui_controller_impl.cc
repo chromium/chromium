@@ -44,15 +44,12 @@ PrefService* pref_service() {
 
 // Toast -----------------------------------------------------------------------
 
-constexpr int kToastDurationMs = 2500;
-
 constexpr char kStylusPromptToastId[] = "stylus_prompt_for_embedded_ui";
 constexpr char kUnboundServiceToastId[] =
     "assistant_controller_unbound_service";
 
 void ShowToast(const std::string& id, int message_id) {
-  ToastData toast(id, l10n_util::GetStringUTF16(message_id), kToastDurationMs,
-                  absl::nullopt);
+  ToastData toast(id, l10n_util::GetStringUTF16(message_id));
   Shell::Get()->toast_manager()->Show(toast);
 }
 

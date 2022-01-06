@@ -32,11 +32,8 @@ namespace {
 // a notification.
 constexpr const base::TimeDelta kNetworkConnectionTimeout = base::Seconds(3);
 
-constexpr int kToastDurationMs = 2500;
-
 void ShowToast(std::string id, const std::u16string& text) {
-  ash::ToastManager::Get()->Show(ToastData(id, text, kToastDurationMs,
-                                           /*dismiss_text=*/absl::nullopt));
+  ash::ToastManager::Get()->Show(ToastData(id, text));
 }
 
 }  // namespace

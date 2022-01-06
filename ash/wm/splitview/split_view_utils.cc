@@ -50,7 +50,6 @@ constexpr base::TimeDelta kLabelAnimationDelay = base::Milliseconds(167);
 
 // Toast data.
 constexpr char kAppCannotSnapToastId[] = "split_view_app_cannot_snap";
-constexpr int kAppCannotSnapToastDurationMs = 2500;
 
 // Gets the duration, tween type and delay before animation based on |type|.
 void GetAnimationValuesForType(
@@ -399,10 +398,9 @@ bool ShouldAllowSplitView() {
 }
 
 void ShowAppCannotSnapToast() {
-  Shell::Get()->toast_manager()->Show(ToastData(
-      kAppCannotSnapToastId,
-      l10n_util::GetStringUTF16(IDS_ASH_SPLIT_VIEW_CANNOT_SNAP),
-      kAppCannotSnapToastDurationMs, absl::optional<std::u16string>()));
+  Shell::Get()->toast_manager()->Show(
+      ToastData(kAppCannotSnapToastId,
+                l10n_util::GetStringUTF16(IDS_ASH_SPLIT_VIEW_CANNOT_SNAP)));
 }
 
 SplitViewController::SnapPosition GetSnapPositionForLocation(

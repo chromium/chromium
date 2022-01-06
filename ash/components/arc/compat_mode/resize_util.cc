@@ -116,14 +116,10 @@ void TurnOffResizeLock(views::Widget* target_widget,
 
   constexpr char kTurnOffResizeLockToastId[] =
       "arc.compat_mode.turn_off_resize_lock";
-  constexpr int kToastDurationMs = 3500;
   toast_manager->Cancel(kTurnOffResizeLockToastId);
   ash::ToastData toast(
       kTurnOffResizeLockToastId,
-      l10n_util::GetStringUTF16(IDS_ARC_COMPAT_MODE_DISABLE_RESIZE_LOCK_TOAST),
-      kToastDurationMs,
-      /*dismiss_text=*/absl::nullopt,
-      /*visible_on_lock_screen=*/false);
+      l10n_util::GetStringUTF16(IDS_ARC_COMPAT_MODE_DISABLE_RESIZE_LOCK_TOAST));
   toast_manager->Show(toast);
 }
 

@@ -291,10 +291,9 @@ LoginScreenModel* LoginScreenController::GetModel() {
 }
 
 void LoginScreenController::ShowKioskAppError(const std::string& message) {
-  ToastData toast_data(
-      "KioskAppError", base::UTF8ToUTF16(message), -1 /*duration_ms*/,
-      absl::optional<std::u16string>(std::u16string()) /*dismiss_text*/,
-      true /*visible_on_lock_screen*/);
+  ToastData toast_data("KioskAppError", base::UTF8ToUTF16(message),
+                       ToastData::kInfiniteDuration,
+                       /*visible_on_lock_screen=*/true);
   Shell::Get()->toast_manager()->Show(toast_data);
 }
 

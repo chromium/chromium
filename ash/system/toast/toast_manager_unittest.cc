@@ -100,7 +100,7 @@ class ToastManagerImplTest : public AshTestBase {
                         bool visible_on_lock_screen = false) {
     std::string id = "TOAST_ID_" + base::NumberToString(serial_++);
     manager()->Show(ToastData(id, base::ASCIIToUTF16(text), duration,
-                              std::u16string(), visible_on_lock_screen));
+                              visible_on_lock_screen));
     return id;
   }
 
@@ -113,8 +113,9 @@ class ToastManagerImplTest : public AshTestBase {
       localized_dismiss = base::ASCIIToUTF16(dismiss_text.value());
 
     std::string id = "TOAST_ID_" + base::NumberToString(serial_++);
-    manager()->Show(
-        ToastData(id, base::ASCIIToUTF16(text), duration, localized_dismiss));
+    manager()->Show(ToastData(id, base::ASCIIToUTF16(text), duration,
+                              /*visible_on_lock_screen=*/false,
+                              localized_dismiss));
     return id;
   }
 
@@ -142,7 +143,7 @@ TEST_F(ToastManagerImplTest, ShowAndCloseAutomatically) {
 }
 
 TEST_F(ToastManagerImplTest, ShowAndCloseManually) {
-  ShowToast("DUMMY", ToastData::kInfiniteDuration);
+  ShowToastWithDismiss("DUMMY", ToastData::kInfiniteDuration, "Dismiss");
 
   EXPECT_EQ(1, GetToastSerial());
 
@@ -158,7 +159,7 @@ TEST_F(ToastManagerImplTest, DISABLED_ShowAndCloseManuallyDuringAnimation) {
   ui::ScopedAnimationDurationScaleMode slow_animation_duration(
       ui::ScopedAnimationDurationScaleMode::SLOW_DURATION);
 
-  ShowToast("DUMMY", ToastData::kInfiniteDuration);
+  ShowToastWithDismiss("DUMMY", ToastData::kInfiniteDuration, "Dismiss");
   EXPECT_TRUE(GetCurrentWidget()->GetLayer()->GetAnimator()->is_animating());
   base::RunLoop().RunUntilIdle();
 

@@ -115,8 +115,7 @@ void CrostiniUnsupportedActionNotifier::
         /*id=*/"VKUnsupportedInCrostini",
         /*text=*/
         l10n_util::GetStringUTF16(IDS_CROSTINI_UNSUPPORTED_VIRTUAL_KEYBOARD),
-        /*timeout_ms=*/delegate_->ToastTimeoutMs(),
-        /*dismiss_text=*/absl::nullopt};
+        /*timeout_ms=*/delegate_->ToastTimeoutMs()};
     delegate_->ShowToast(data);
     virtual_keyboard_unsupported_message_shown_ = true;
     EmitMetricReasonShown(reason);
@@ -138,8 +137,7 @@ void CrostiniUnsupportedActionNotifier::
         /*id=*/"IMEUnsupportedInCrostini",
         /*text=*/
         l10n_util::GetStringFUTF16(IDS_CROSTINI_UNSUPPORTED_IME, ime_name),
-        /*timeout_ms=*/delegate_->ToastTimeoutMs(),
-        /*dismiss_text=*/absl::nullopt};
+        /*timeout_ms=*/delegate_->ToastTimeoutMs()};
     delegate_->ShowToast(data);
     ime_unsupported_message_shown_ = true;
     EmitMetricReasonShown(NotificationReason::kUnsupportedIME);
@@ -194,7 +192,7 @@ int CrostiniUnsupportedActionNotifier::Delegate::ToastTimeoutMs() {
       (manager->IsMagnifierEnabled() || manager->IsDockedMagnifierEnabled())) {
     return 60 * 1000;
   } else {
-    return 5 * 1000;
+    return ash::ToastData::kDefaultToastDurationMs;
   }
 }
 

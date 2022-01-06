@@ -61,13 +61,9 @@ Browser* FindOrCreateVisibleBrowser(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Toast id and duration for extension install success.
 constexpr char kExtensionInstallSuccessToastId[] = "extension_install_success";
-// TODO(crbug.com/1270549): Use value from central location.
-constexpr int kToastDurationMs = 2500;
 
 void ShowToast(const std::string& id, const std::u16string& text) {
-  ash::ToastManager::Get()->Show(
-      ash::ToastData(id, text, kToastDurationMs,
-                     /*dismiss_text=*/absl::nullopt));
+  ash::ToastManager::Get()->Show(ash::ToastData(id, text));
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
