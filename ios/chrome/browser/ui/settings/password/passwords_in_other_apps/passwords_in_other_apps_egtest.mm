@@ -58,7 +58,7 @@ id<GREYMatcher> PasswordsInOtherAppsListItemMatcher() {
 // Matcher for turn off instructions.
 id<GREYMatcher> PasswordsInOtherAppsTurnOffInstruction() {
   NSString* turnOffInstructionText =
-      @"To turn off, open Settings and go to Passwords.";
+      @"To turn off, open Settings and go to AutoFill Passwords.";
   return grey_text(turnOffInstructionText);
 }
 

@@ -2129,7 +2129,7 @@ Try to use a unique password for every site.
         Passwords In Other Apps
       </message>
       <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_CAPTION" desc="The caption label below subtitle of the view that teaches users to turn off iOS auto-fill from Chrome password manager">
-        To turn off, open <ph name="BEGIN_LINK">BEGIN_LINK</ph>Settings<ph name="END_LINK">END_LINK</ph> and go to Passwords.
+        To turn off, open <ph name="BEGIN_LINK">BEGIN_LINK</ph>Settings<ph name="END_LINK">END_LINK</ph> and go to AutoFill Passwords.
       </message>
       <message name="IDS_IOS_SETTINGS_PASSWORDS_IN_OTHER_APPS_SHORTENED_STEP_1" desc="Text of the row indicating the first step of shortened instruction of of turning on iOS auto-fill from Chrome password manager [iOS only]">
         Open AutoFill Password Settings
