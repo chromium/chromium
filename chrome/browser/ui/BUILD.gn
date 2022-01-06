@@ -695,7 +695,10 @@ static_library("ui") {
     ]
   }
   if (is_chromeos) {
-    deps += [ "//chromeos/crosapi/cpp:cpp" ]
+    deps += [
+      "//chromeos/constants",
+      "//chromeos/crosapi/cpp",
+    ]
   }
 
   if (!is_fuchsia) {

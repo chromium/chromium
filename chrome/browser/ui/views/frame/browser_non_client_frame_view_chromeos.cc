@@ -30,6 +30,7 @@
 #include "chrome/browser/ui/views/web_apps/frame_toolbar/web_app_frame_toolbar_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/base/tablet_state.h"
 #include "chromeos/ui/base/window_properties.h"
@@ -268,16 +269,17 @@ SkColor BrowserNonClientFrameViewChromeOS::GetFrameColor(
 
   SkColor fallback_color = chromeos::kDefaultFrameColor;
 
+  if (chromeos::features::IsDarkLightModeEnabled() && GetWidget()) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/1278862): make these features available in Lacros.
-  if (ash::features::IsDarkLightModeEnabled() && GetWidget()) {
+    bool use_debug_colors = base::FeatureList::IsEnabled(
+        ash::features::kSemanticColorsDebugOverride);
+#else
+    bool use_debug_colors = false;
+#endif
     fallback_color = cros_styles::ResolveColor(
         cros_styles::ColorName::kBgColor,
-        GetNativeTheme()->ShouldUseDarkColors(),
-        base::FeatureList::IsEnabled(
-            ash::features::kSemanticColorsDebugOverride));
+        GetNativeTheme()->ShouldUseDarkColors(), use_debug_colors);
   }
-#endif
 
   return color.value_or(fallback_color);
 }
