@@ -68,6 +68,14 @@ Polymer({
     },
 
     /**
+     * @private {?settings.PhoneHubPermissionsSetupMode}
+     */
+    phonePermissionSetupMode_: {
+      type: Number,
+      value: null,
+    },
+
+    /**
      * Whether or not Nearby Share is supported which controls if the Nearby
      * Share settings and subpage are accessible.
      * @private {boolean}
@@ -120,6 +128,7 @@ Polymer({
     'close': 'onDialogClose_',
     'feature-toggle-clicked': 'onFeatureToggleClicked_',
     'forget-device-requested': 'onForgetDeviceRequested_',
+    'permission-setup-requested': 'onPermissionSetupRequested_',
   },
 
   /** @private {?settings.MultiDeviceBrowserProxy} */
@@ -374,6 +383,8 @@ Polymer({
           return;
         case settings.PhoneHubNotificationAccessStatus
             .AVAILABLE_BUT_NOT_GRANTED:
+          this.phonePermissionSetupMode_ =
+              settings.PhoneHubPermissionsSetupMode.NOTIFICATION_SETUP_MODE;
           this.showPhonePermissionSetupDialog_ = true;
           return;
         default:
@@ -427,6 +438,16 @@ Polymer({
   },
 
   /**
+   * @param {!CustomEvent<!{mode: !settings.PhoneHubPermissionsSetupMode}>}
+   *     event
+   * @private
+   */
+  onPermissionSetupRequested_(event) {
+    this.showPhonePermissionSetupDialog_ = true;
+    this.phonePermissionSetupMode_ = event.detail.mode;
+  },
+
+  /**
    * Checks if the user is in a nested page without a host set and, if so,
    * navigates them back to the main page.
    * @private
@@ -475,6 +496,8 @@ Polymer({
     // param.
     const urlParams = settings.Router.getInstance().getQueryParameters();
     if (urlParams.get('showNotificationAccessSetupDialog') !== null) {
+      this.phonePermissionSetupMode_ =
+          settings.PhoneHubPermissionsSetupMode.NOTIFICATION_SETUP_MODE;
       this.showPhonePermissionSetupDialog_ = true;
     }
   },
@@ -627,6 +650,7 @@ Polymer({
       return;
     }
     this.showPhonePermissionSetupDialog_ = false;
+    this.phonePermissionSetupMode_ = null;
   },
 
   /** @private */

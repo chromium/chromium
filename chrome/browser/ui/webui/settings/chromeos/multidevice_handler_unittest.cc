@@ -325,6 +325,21 @@ class MultideviceHandlerTest : public testing::Test {
                                          &empty_args);
   }
 
+  void CallAttemptAppsSetup(bool has_access_been_granted) {
+    fake_apps_access_manager()->SetAccessStatusInternal(
+        has_access_been_granted
+            ? ash::eche_app::AppsAccessManager::AccessStatus::kAccessGranted
+            : ash::eche_app::AppsAccessManager::AccessStatus::
+                  kAvailableButNotGranted);
+    base::ListValue empty_args;
+    test_web_ui()->HandleReceivedMessage("attemptAppsSetup", &empty_args);
+  }
+
+  void CallCancelAppsSetup() {
+    base::ListValue empty_args;
+    test_web_ui()->HandleReceivedMessage("cancelAppsSetup", &empty_args);
+  }
+
   void SimulateHostStatusUpdate(
       multidevice_setup::mojom::HostStatus host_status,
       const absl::optional<multidevice::RemoteDeviceRef>& host_device) {
@@ -559,6 +574,32 @@ class MultideviceHandlerTest : public testing::Test {
     return fake_notification_access_manager()->IsSetupOperationInProgress();
   }
 
+  void SimulateAppsOptInStatusChange(
+      ash::eche_app::AppsAccessSetupOperation::Status status) {
+    size_t call_data_count_before_call = test_web_ui()->call_data().size();
+
+    fake_apps_access_manager()->SetAppsSetupOperationStatus(status);
+
+    bool completed_successfully =
+        status ==
+        ash::eche_app::AppsAccessSetupOperation::Status::kCompletedSuccessfully;
+    if (completed_successfully)
+      call_data_count_before_call++;
+
+    EXPECT_EQ(call_data_count_before_call + 1u,
+              test_web_ui()->call_data().size());
+    const content::TestWebUI::CallData& call_data =
+        CallDataAtIndex(call_data_count_before_call);
+    EXPECT_EQ("cr.webUIListenerCallback", call_data.function_name());
+    EXPECT_EQ("settings.onAppsAccessSetupStatusChanged",
+              call_data.arg1()->GetString());
+    EXPECT_EQ(call_data.arg2()->GetInt(), static_cast<int32_t>(status));
+  }
+
+  bool IsAppsAccessSetupOperationInProgress() {
+    return fake_apps_access_manager()->IsSetupOperationInProgress();
+  }
+
   const multidevice::RemoteDeviceRef test_device_;
 
   bool expected_is_nearby_share_disallowed_by_policy_ = false;
@@ -651,6 +692,55 @@ TEST_F(MultideviceHandlerTest, NotificationSetupFlow) {
   // If access has already been granted, a setup operation should not occur.
   CallAttemptNotificationSetup(/*has_access_been_granted=*/true);
   EXPECT_FALSE(IsNotificationAccessSetupOperationInProgress());
+}
+
+TEST_F(MultideviceHandlerTest, AppsSetupFlow) {
+  using Status = ash::eche_app::AppsAccessSetupOperation::Status;
+
+  // Simulate success flow.
+  CallAttemptAppsSetup(/*has_access_been_granted=*/false);
+  EXPECT_TRUE(IsAppsAccessSetupOperationInProgress());
+
+  SimulateAppsOptInStatusChange(Status::kConnecting);
+  EXPECT_TRUE(IsAppsAccessSetupOperationInProgress());
+
+  SimulateAppsOptInStatusChange(
+      Status::kSentMessageToPhoneAndWaitingForResponse);
+  EXPECT_TRUE(IsAppsAccessSetupOperationInProgress());
+
+  SimulateAppsOptInStatusChange(Status::kCompletedSuccessfully);
+  EXPECT_FALSE(IsAppsAccessSetupOperationInProgress());
+
+  // Simulate cancel flow.
+  CallAttemptAppsSetup(/*has_access_been_granted=*/false);
+  EXPECT_TRUE(IsAppsAccessSetupOperationInProgress());
+
+  CallCancelAppsSetup();
+  EXPECT_FALSE(IsAppsAccessSetupOperationInProgress());
+
+  // Simulate failure via time-out flow.
+  CallAttemptAppsSetup(/*has_access_been_granted=*/false);
+  EXPECT_TRUE(IsAppsAccessSetupOperationInProgress());
+
+  SimulateAppsOptInStatusChange(Status::kConnecting);
+  EXPECT_TRUE(IsAppsAccessSetupOperationInProgress());
+
+  SimulateAppsOptInStatusChange(Status::kTimedOutConnecting);
+  EXPECT_FALSE(IsAppsAccessSetupOperationInProgress());
+
+  // Simulate failure via connected then disconnected flow.
+  CallAttemptAppsSetup(/*has_access_been_granted=*/false);
+  EXPECT_TRUE(IsAppsAccessSetupOperationInProgress());
+
+  SimulateAppsOptInStatusChange(Status::kConnecting);
+  EXPECT_TRUE(IsAppsAccessSetupOperationInProgress());
+
+  SimulateAppsOptInStatusChange(Status::kConnectionDisconnected);
+  EXPECT_FALSE(IsAppsAccessSetupOperationInProgress());
+
+  // If access has already been granted, a setup operation should not occur.
+  CallAttemptAppsSetup(/*has_access_been_granted=*/true);
+  EXPECT_FALSE(IsAppsAccessSetupOperationInProgress());
 }
 
 TEST_F(MultideviceHandlerTest, PageContentData) {

@@ -80,6 +80,22 @@ cr.define('settings', function() {
   };
 
   /**
+   * Possible of Phone Hub's permissions setup mode．The value will be assigned
+   * when the user clicks on the settings UI. Basically, INIT_MODE will be
+   * default value, which means it has not been set yet.
+   * ALL_PERMISSIONS_SETUP_MODE means that we will process notifications and
+   * apps streaming onboarding flow in order.
+   *
+   * @enum {number}
+   */
+  /* #export */ const PhoneHubPermissionsSetupMode = {
+    INIT_MODE: 0,
+    NOTIFICATION_SETUP_MODE: 1,
+    APPS_SETUP_MODE: 2,
+    ALL_PERMISSIONS_SETUP_MODE: 3,
+  };
+
+  /**
    * Container for the initial data that the page requires in order to display
    * the correct content. It is also used for receiving status updates during
    * use. Note that the host device may be verified (enabled or disabled),
@@ -122,6 +138,7 @@ cr.define('settings', function() {
     MultiDeviceFeatureState,
     MultiDevicePageContentData,
     PhoneHubNotificationAccessStatus,
+    PhoneHubPermissionsSetupMode,
     SmartLockSignInEnabledState
   };
 });

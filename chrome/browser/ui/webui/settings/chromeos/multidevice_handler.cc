@@ -145,6 +145,14 @@ void MultideviceHandler::RegisterMessages() {
       "cancelNotificationSetup",
       base::BindRepeating(&MultideviceHandler::HandleCancelNotificationSetup,
                           base::Unretained(this)));
+  web_ui()->RegisterDeprecatedMessageCallback(
+      "attemptAppsSetup",
+      base::BindRepeating(&MultideviceHandler::HandleAttemptAppsSetup,
+                          base::Unretained(this)));
+  web_ui()->RegisterDeprecatedMessageCallback(
+      "cancelAppsSetup",
+      base::BindRepeating(&MultideviceHandler::HandleCancelAppsSetup,
+                          base::Unretained(this)));
 }
 
 void MultideviceHandler::OnJavascriptAllowed() {
@@ -220,6 +228,7 @@ void MultideviceHandler::OnJavascriptDisallowed() {
     DCHECK(apps_access_manager_observation_.IsObservingSource(
         apps_access_manager_));
     apps_access_manager_observation_.Reset();
+    apps_access_operation_.reset();
   }
 
   if (camera_roll_manager_) {
@@ -466,6 +475,34 @@ void MultideviceHandler::HandleCancelNotificationSetup(
   notification_access_operation_.reset();
 }
 
+void MultideviceHandler::HandleAttemptAppsSetup(const base::ListValue* args) {
+  DCHECK(features::IsEcheSWAEnabled());
+  DCHECK(features::IsEchePhoneHubPermissionsOnboarding());
+  DCHECK(!apps_access_operation_);
+
+  ash::eche_app::AppsAccessManager::AccessStatus apps_access_status =
+      apps_access_manager_->GetAccessStatus();
+
+  if (apps_access_status !=
+      ash::eche_app::AppsAccessManager::AccessStatus::kAvailableButNotGranted) {
+    PA_LOG(WARNING) << "Cannot request apps access setup flow; current "
+                    << "status: " << apps_access_status;
+    return;
+  }
+
+  apps_access_operation_ =
+      apps_access_manager_->AttemptAppsAccessSetup(/*delegate=*/this);
+  DCHECK(apps_access_operation_);
+}
+
+void MultideviceHandler::HandleCancelAppsSetup(const base::ListValue* args) {
+  DCHECK(features::IsEcheSWAEnabled());
+  DCHECK(features::IsEchePhoneHubPermissionsOnboarding());
+  DCHECK(apps_access_operation_);
+
+  apps_access_operation_.reset();
+}
+
 void MultideviceHandler::OnStatusChange(
     phonehub::NotificationAccessSetupOperation::Status new_status) {
   FireWebUIListener("settings.onNotificationAccessSetupStatusChanged",
@@ -473,6 +510,15 @@ void MultideviceHandler::OnStatusChange(
 
   if (phonehub::NotificationAccessSetupOperation::IsFinalStatus(new_status))
     notification_access_operation_.reset();
+}
+
+void MultideviceHandler::OnAppsStatusChange(
+    ash::eche_app::AppsAccessSetupOperation::Status new_status) {
+  FireWebUIListener("settings.onAppsAccessSetupStatusChanged",
+                    base::Value(static_cast<int32_t>(new_status)));
+
+  if (ash::eche_app::AppsAccessSetupOperation::IsFinalStatus(new_status))
+    apps_access_operation_.reset();
 }
 
 void MultideviceHandler::OnSetFeatureStateEnabledResult(

@@ -37,6 +37,7 @@ class MultideviceHandler
       public phonehub::NotificationAccessManager::Observer,
       public phonehub::NotificationAccessSetupOperation::Delegate,
       public ash::eche_app::AppsAccessManager::Observer,
+      public ash::eche_app::AppsAccessSetupOperation::Delegate,
       public ash::phonehub::CameraRollManager::Observer {
  public:
   MultideviceHandler(
@@ -75,6 +76,10 @@ class MultideviceHandler
   void OnStatusChange(
       phonehub::NotificationAccessSetupOperation::Status new_status) override;
 
+  // ash::eche_app::AppsAccessSetupOperation::Delegate:
+  void OnAppsStatusChange(
+      ash::eche_app::AppsAccessSetupOperation::Status new_status) override;
+
   // phonehub::NotificationAccessManager::Observer:
   void OnNotificationAccessChanged() override;
 
@@ -109,6 +114,8 @@ class MultideviceHandler
   void HandleGetAndroidSmsInfo(const base::ListValue* args);
   void HandleAttemptNotificationSetup(const base::ListValue* args);
   void HandleCancelNotificationSetup(const base::ListValue* args);
+  void HandleAttemptAppsSetup(const base::ListValue* args);
+  void HandleCancelAppsSetup(const base::ListValue* args);
 
   void OnSetFeatureStateEnabledResult(const std::string& js_callback_id,
                                       bool success);
@@ -151,6 +158,8 @@ class MultideviceHandler
   android_sms::AndroidSmsAppManager* android_sms_app_manager_;
 
   ash::eche_app::AppsAccessManager* apps_access_manager_;
+  std::unique_ptr<ash::eche_app::AppsAccessSetupOperation>
+      apps_access_operation_;
 
   ash::phonehub::CameraRollManager* camera_roll_manager_;
 

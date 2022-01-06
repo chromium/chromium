@@ -220,11 +220,15 @@ Polymer({
 
   /** @private */
   handlePhoneHubAppsSetupClick_() {
-    // TODO: Fire event to show a setup dialog.
+    this.fire(
+        'permission-setup-requested',
+        {mode: PhoneHubPermissionsSetupMode.APPS_SETUP_MODE});
   },
 
   /** @private */
   handlePhoneHubCombinedSetupClick_() {
-    // TODO: Fire event to show a setup dialog.
+    this.fire(
+        'permission-setup-requested',
+        {mode: PhoneHubPermissionsSetupMode.ALL_PERMISSIONS_SETUP_MODE});
   },
 });
