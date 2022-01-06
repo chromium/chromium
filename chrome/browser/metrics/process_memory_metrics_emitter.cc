@@ -235,6 +235,8 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
      "wasted", EmitTo::kSizeInUmaOnly, nullptr},
     {"malloc/partitions/allocator", "Malloc.Fragmentation",
      MetricSize::kPercentage, "fragmentation", EmitTo::kSizeInUmaOnly, nullptr},
+    {"malloc", "Malloc.SyscallsPerMinute", MetricSize::kTiny,
+     "syscalls_per_minute", EmitTo::kSizeInUmaOnly, nullptr},
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     {"mojo", "NumberOfMojoHandles", MetricSize::kSmall,
      MemoryAllocatorDump::kNameObjectCount, EmitTo::kCountsInUkmOnly,

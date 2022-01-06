@@ -111,7 +111,8 @@ void ReportPartitionAllocStats(ProcessMemoryDump* pmd,
                                MemoryDumpLevelOfDetail level_of_detail,
                                size_t* total_virtual_size,
                                size_t* resident_size,
-                               size_t* allocated_objects_size) {
+                               size_t* allocated_objects_size,
+                               uint64_t* syscall_count) {
   MemoryDumpPartitionStatsDumper partition_stats_dumper("malloc", pmd,
                                                         level_of_detail);
   bool is_light_dump = level_of_detail == MemoryDumpLevelOfDetail::BACKGROUND;
@@ -141,6 +142,7 @@ void ReportPartitionAllocStats(ProcessMemoryDump* pmd,
   *total_virtual_size += partition_stats_dumper.total_resident_bytes();
   *resident_size += partition_stats_dumper.total_resident_bytes();
   *allocated_objects_size += partition_stats_dumper.total_active_bytes();
+  *syscall_count += partition_stats_dumper.syscall_count();
 }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 
@@ -172,10 +174,14 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
   size_t resident_size = 0;
   size_t allocated_objects_size = 0;
   size_t allocated_objects_count = 0;
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  uint64_t syscall_count = 0;
+#endif
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   ReportPartitionAllocStats(pmd, args.level_of_detail, &total_virtual_size,
-                            &resident_size, &allocated_objects_size);
+                            &resident_size, &allocated_objects_size,
+                            &syscall_count);
 
 #if OS_WIN
   ReportWinHeapStats(args.level_of_detail, pmd, &total_virtual_size,
@@ -264,6 +270,18 @@ bool MallocDumpProvider::OnMemoryDump(const MemoryDumpArgs& args,
                           resident_size - allocated_objects_size);
   }
 
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  uint64_t new_syscalls = syscall_count - last_syscall_count_;
+  base::TimeDelta time_since_last_dump =
+      base::TimeTicks::Now() - last_memory_dump_time_;
+  uint64_t syscalls_per_minute = static_cast<uint64_t>(
+      (60 * new_syscalls) / time_since_last_dump.InSecondsF());
+  outer_dump->AddScalar("syscalls_per_minute", "count", syscalls_per_minute);
+
+  last_memory_dump_time_ = base::TimeTicks::Now();
+  last_syscall_count_ = syscall_count;
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
   return true;
 }
 
@@ -294,6 +312,7 @@ void MemoryDumpPartitionStatsDumper::PartitionDumpTotals(
   total_mmapped_bytes_ += memory_stats->total_mmapped_bytes;
   total_resident_bytes_ += memory_stats->total_resident_bytes;
   total_active_bytes_ += memory_stats->total_active_bytes;
+  syscall_count_ += memory_stats->syscall_count;
 
   std::string dump_name = GetPartitionDumpName(root_name_, partition_name);
   MemoryAllocatorDump* allocator_dump =

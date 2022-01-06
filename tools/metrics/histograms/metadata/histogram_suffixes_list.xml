@@ -13432,6 +13432,10 @@ chromium-metrics-reviews@google.com.
   <suffix name="Malloc.BRPQuarantinedCount"
       label="Number of slots quarantined by BRP, recorded when
              USE_BACKUP_REF_PTR build flag is enabled."/>
+  <suffix name="Malloc.SyscallsPerMinute"
+      label="Number of system calls made per minute, averaged during the last
+             memory dump interval. Only collected when PartitionAlloc is
+             malloc()."/>
   <suffix name="NumberOfAdSubframes" label=""/>
   <suffix name="NumberOfArrayBufferContents" label=""/>
   <suffix name="NumberOfAudioHandler" label=""/>

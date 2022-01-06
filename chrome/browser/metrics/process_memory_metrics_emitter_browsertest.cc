@@ -208,6 +208,11 @@ void CheckExperimentalMemoryMetricsForProcessType(
   CheckMemoryMetric(
       std::string("Memory.Experimental.") + process_type + "2.Malloc.Wasted",
       histogram_tester, count, ValueRestriction::NONE, number_of_processes);
+  // Restriction: every process makes at least a system call.
+  CheckMemoryMetric(std::string("Memory.Experimental.") + process_type +
+                        "2.Tiny.Malloc.SyscallsPerMinute",
+                    histogram_tester, count, ValueRestriction::ABOVE_ZERO,
+                    number_of_processes);
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
