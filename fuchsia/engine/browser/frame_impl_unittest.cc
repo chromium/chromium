@@ -4,6 +4,7 @@
 
 #include "fuchsia/engine/browser/frame_impl.h"
 #include "base/strings/string_piece.h"
+#include "base/test/gtest_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using NavigationState = fuchsia::web::NavigationState;
@@ -96,4 +97,28 @@ TEST(FrameImplUnitTest, DiffNavigationEntriesIsMainDocumentLoaded) {
   DiffNavigationEntries(state2, state1, &difference);
   EXPECT_FALSE(difference.IsEmpty());
   EXPECT_TRUE(difference.is_main_document_loaded());
+}
+
+// Verifies that transitions from empty to non-empty states are handled.
+TEST(FrameImplUnitTest, DiffNavigationEntriesFromInitial) {
+  fuchsia::web::NavigationState difference;
+  NavigationState state1;
+  NavigationState state2 = CreateNavigationState(
+      GURL(kUrl1), kTitle1, fuchsia::web::PageType::NORMAL, true, true, false);
+
+  DiffNavigationEntries(state1, state2, &difference);
+  EXPECT_FALSE(difference.IsEmpty());
+
+  // Transitions from non-empty to empty (initial) state are DCHECK'd.
+  EXPECT_DCHECK_DEATH({ DiffNavigationEntries(state2, state1, &difference); });
+}
+
+// Verifies that differencing between two empty/initial states are handled.
+TEST(FrameImplUnitTest, DiffNavigationEntriesBothInitial) {
+  fuchsia::web::NavigationState difference;
+  NavigationState state1;
+  NavigationState state2;
+
+  DiffNavigationEntries(state1, state2, &difference);
+  EXPECT_TRUE(difference.IsEmpty());
 }
