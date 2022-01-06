@@ -75,15 +75,14 @@ GpuWatchdogThread::GpuWatchdogThread(base::TimeDelta timeout,
       is_test_mode_(is_test_mode),
       watched_gpu_task_runner_(base::ThreadTaskRunnerHandle::Get()) {
   base::CurrentThread::Get()->AddTaskObserver(this);
-  num_of_processors_ = base::SysInfo::NumberOfProcessors();
 
 #if defined(OS_WIN)
   // GetCurrentThread returns a pseudo-handle that cannot be used by one thread
   // to identify another. DuplicateHandle creates a "real" handle that can be
   // used for this purpose.
-  if (!DuplicateHandle(GetCurrentProcess(), GetCurrentThread(),
-                       GetCurrentProcess(), &watched_thread_handle_,
-                       THREAD_QUERY_INFORMATION, FALSE, 0)) {
+  if (!::DuplicateHandle(::GetCurrentProcess(), ::GetCurrentThread(),
+                         ::GetCurrentProcess(), &watched_thread_handle_,
+                         THREAD_QUERY_INFORMATION, FALSE, 0)) {
     watched_thread_handle_ = nullptr;
   }
 #endif
@@ -628,7 +627,8 @@ void GpuWatchdogThread::DeliberatelyTerminateToRecoverFromHang() {
   crash_keys::gpu_watchdog_kill_after_power_resume.Set(
       WithinOneMinFromPowerResumed() ? "1" : "0");
 
-  crash_keys::num_of_processors.Set(base::NumberToString(num_of_processors_));
+  const int num_of_processors = base::SysInfo::NumberOfProcessors();
+  crash_keys::num_of_processors.Set(base::NumberToString(num_of_processors));
 
   // Check the arm_disarm_counter value one more time.
   auto last_arm_disarm_counter = ReadArmDisarmCounter();
@@ -683,7 +683,7 @@ void GpuWatchdogThread::WatchedThreadNeedsMoreThreadTimeHistogram(
   if (start_of_more_thread_time) {
     // This is the start of allowing more thread time. Only record it once for
     // all following timeouts on the same detected gpu hang, so we know this
-    // is equivlent one crash in our crash reports.
+    // is equivalent one crash in our crash reports.
     GpuWatchdogTimeoutHistogram(GpuWatchdogTimeoutEvent::kMoreThreadTime);
   } else {
     if (count_of_more_gpu_thread_time_allowed_ > 0) {
@@ -693,12 +693,10 @@ void GpuWatchdogThread::WatchedThreadNeedsMoreThreadTimeHistogram(
         // progress. Record this case.
         GpuWatchdogTimeoutHistogram(
             GpuWatchdogTimeoutEvent::kProgressAfterMoreThreadTime);
-      } else {
-        if (count_of_more_gpu_thread_time_allowed_ >=
-            kMaxCountOfMoreGpuThreadTimeAllowed) {
-          GpuWatchdogTimeoutHistogram(
-              GpuWatchdogTimeoutEvent::kLessThanFullThreadTimeAfterCapped);
-        }
+      } else if (count_of_more_gpu_thread_time_allowed_ >=
+                 kMaxCountOfMoreGpuThreadTimeAllowed) {
+        GpuWatchdogTimeoutHistogram(
+            GpuWatchdogTimeoutEvent::kLessThanFullThreadTimeAfterCapped);
       }
 
       // Used by GPU.WatchdogThread.WaitTime later

@@ -171,7 +171,7 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
   base::ThreadTicks GetWatchedThreadTime();
 #endif
 
-  // Do not change the function name. It is used for [GPU HANG] carsh reports.
+  // Do not change the function name. It is used for [GPU HANG] crash reports.
   void DeliberatelyTerminateToRecoverFromHang();
 
   // Records "GPU.WatchdogThread.Event".
@@ -208,11 +208,11 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
   base::TimeDelta watchdog_timeout_;
 
   // The one-time watchdog timeout multiplier in the gpu initialization.
-  int watchdog_init_factor_;
+  const int watchdog_init_factor_;
 
   // The one-time watchdog timeout multiplier after the watchdog pauses and
   // restarts.
-  int watchdog_restart_factor_;
+  const int watchdog_restart_factor_;
 
   // The time the gpu watchdog was created.
   base::TimeTicks watchdog_start_timeticks_;
@@ -290,9 +290,6 @@ class GPU_IPC_SERVICE_EXPORT GpuWatchdogThread
   // Read/Write by the watchdog thread only after initialized in the
   // constructor.
   bool in_gpu_initialization_ = false;
-
-  // The number of logical processors/cores on the current machine.
-  int num_of_processors_ = 0;
 
   // For the experiment and the debugging purpose
   size_t num_of_timeout_after_power_resume_ = 0;
