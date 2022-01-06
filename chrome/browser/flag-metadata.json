@@ -2192,7 +2192,7 @@
   {
     "name": "enable-input-in-diagnostics-app",
     "owners": [ "//ash/webui/diagnostics_ui/OWNERS" ],
-    "expiry_milestone": 98
+    "expiry_milestone": 104
   },
   {
     "name": "enable-input-noise-cancellation-ui",
