@@ -7,7 +7,6 @@ load("//lib/branches.star", "branches")
 load("//lib/builders.star", "cpu", "goma", "os", "xcode")
 load("//lib/try.star", "try_")
 load("//lib/consoles.star", "consoles")
-load("//project.star", "settings")
 
 try_.defaults.set(
     builder_group = "tryserver.chromium.mac",
@@ -43,25 +42,13 @@ try_.builder(
     os = os.MAC_DEFAULT,
 )
 
-try_.builder(
+try_.orchestrator_pair_builders(
     name = "mac-rel",
     branch_selector = branches.DESKTOP_EXTENDED_STABLE_MILESTONE,
-    builderless = not settings.is_main,
-    use_clang_coverage = True,
-    goma_jobs = goma.jobs.J150,
-    main_list_view = "try",
-    os = os.MAC_DEFAULT,
-    tryjob = try_.job(),
-)
-
-try_.orchestrator_pair_builders(
-    name = "mac-rel-orchestrator",
     main_list_view = "try",
     use_clang_coverage = True,
     orchestrator_cores = 2,
-    orchestrator_tryjob = try_.job(
-        experiment_percentage = 1,
-    ),
+    orchestrator_tryjob = try_.job(),
     compilator_goma_jobs = goma.jobs.J150,
     os = os.MAC_DEFAULT,
     compilator_name = "mac-rel-compilator",
