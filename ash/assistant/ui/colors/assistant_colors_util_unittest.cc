@@ -45,6 +45,10 @@ TEST_F(AssistantColorsUtilUnittest, AssistantColor) {
 TEST_F(AssistantColorsUtilUnittest, AssistantColorFlagOff) {
   ASSERT_FALSE(chromeos::features::IsDarkLightModeEnabled());
 
+  // ProductivityLauncher uses DarkLightMode colors.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kProductivityLauncher);
+
   EXPECT_EQ(
       ResolveAssistantColor(assistant_colors::ColorName::kBgAssistantPlate),
       SK_ColorWHITE);
@@ -57,6 +61,10 @@ TEST_F(AssistantColorsUtilUnittest, AssistantColorFlagOff) {
 // mode off if the color is not defined in the cc file map and the flag is off.
 TEST_F(AssistantColorsUtilUnittest, AssistantColorFlagOffFallback) {
   ASSERT_FALSE(chromeos::features::IsDarkLightModeEnabled());
+
+  // ProductivityLauncher uses DarkLightMode colors.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kProductivityLauncher);
 
   EXPECT_EQ(ResolveAssistantColor(assistant_colors::ColorName::kGoogleBlue100),
             assistant_colors::ResolveColor(

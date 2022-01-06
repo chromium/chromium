@@ -57,9 +57,8 @@ void AssistantTestApiImpl::DisableAnimations() {
 bool AssistantTestApiImpl::IsVisible() {
   if (!TabletMode::Get()->InTabletMode() &&
       features::IsProductivityLauncherEnabled()) {
-    auto* bubble_view = GetAppListBubbleView();
-    // `bubble_view` is null when the bubble launcher is closed.
-    return bubble_view && bubble_view->assistant_page_->GetVisible();
+    return Shell::Get()->app_list_controller()->IsVisible() &&
+           GetAppListBubbleView()->assistant_page_->GetVisible();
   }
   return AppListViewsHaveBeenCreated() && page_view()->GetVisible();
 }
