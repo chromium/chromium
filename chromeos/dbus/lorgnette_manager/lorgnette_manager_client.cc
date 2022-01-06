@@ -393,7 +393,10 @@ class LorgnetteManagerClientImpl : public LorgnetteManagerClient {
       return;
 
     ScanJobState& state = it->second;
-    DCHECK(!state.cancel_callback.is_null());
+    if (state.cancel_callback.is_null()) {
+      LOG(ERROR) << "No callback active to cancel job " << scan_uuid;
+      return;
+    }
     if (!response) {
       LOG(ERROR) << "Failed to obtain CancelScanResponse";
       std::move(state.cancel_callback).Run(false);
