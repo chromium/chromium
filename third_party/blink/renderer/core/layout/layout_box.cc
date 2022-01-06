@@ -6941,7 +6941,7 @@ PositionWithAffinity LayoutBox::PositionForPointInFragments(
     // Otherwise find the closest fragment.
     const LayoutUnit square_distance =
         distance.width * distance.width + distance.height * distance.height;
-    if (square_distance < shortest_square_distance) {
+    if (square_distance < shortest_square_distance || !closest_fragment) {
       shortest_square_distance = square_distance;
       closest_fragment = &fragment;
       closest_fragment_offset = fragment_offset;
