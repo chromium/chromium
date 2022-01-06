@@ -391,15 +391,15 @@ Node* Node::PseudoAwarePreviousSibling() const {
     case kPseudoIdAfter:
       if (Node* previous = parent->lastChild())
         return previous;
-      FALLTHROUGH;
+      [[fallthrough]];
     case kPseudoIdNone:
       if (Node* previous = parent->GetPseudoElement(kPseudoIdBefore))
         return previous;
-      FALLTHROUGH;
+      [[fallthrough]];
     case kPseudoIdBefore:
       if (Node* previous = parent->GetPseudoElement(kPseudoIdMarker))
         return previous;
-      FALLTHROUGH;
+      [[fallthrough]];
     case kPseudoIdMarker:
       break;
     default:
@@ -416,15 +416,15 @@ Node* Node::PseudoAwareNextSibling() const {
     case kPseudoIdMarker:
       if (Node* next = parent->GetPseudoElement(kPseudoIdBefore))
         return next;
-      FALLTHROUGH;
+      [[fallthrough]];
     case kPseudoIdBefore:
       if (parent->HasChildren())
         return parent->firstChild();
-      FALLTHROUGH;
+      [[fallthrough]];
     case kPseudoIdNone:
       if (Node* next = parent->GetPseudoElement(kPseudoIdAfter))
         return next;
-      FALLTHROUGH;
+      [[fallthrough]];
     case kPseudoIdAfter:
       break;
     default:

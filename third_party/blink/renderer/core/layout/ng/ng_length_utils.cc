@@ -159,7 +159,7 @@ LayoutUnit ResolveInlineLengthInternal(
     case Length::kDeviceHeight:
     case Length::kExtendToZoom:
       NOTREACHED() << "These should only be used for viewport definitions";
-      FALLTHROUGH;
+      [[fallthrough]];
     case Length::kAuto:
     case Length::kNone:
     default:
@@ -224,7 +224,7 @@ LayoutUnit ResolveBlockLengthInternal(
     case Length::kDeviceHeight:
     case Length::kExtendToZoom:
       NOTREACHED() << "These should only be used for viewport definitions";
-      FALLTHROUGH;
+      [[fallthrough]];
     case Length::kAuto:
     case Length::kNone:
     default:

@@ -1137,7 +1137,7 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
     case kInitialMode:
       DCHECK_EQ(GetInsertionMode(), kInitialMode);
       DefaultForInitial();
-      FALLTHROUGH;
+      [[fallthrough]];
     case kBeforeHTMLMode:
       DCHECK_EQ(GetInsertionMode(), kBeforeHTMLMode);
       if (token->GetName() == html_names::kHTMLTag) {
@@ -1146,7 +1146,7 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
         return;
       }
       DefaultForBeforeHTML();
-      FALLTHROUGH;
+      [[fallthrough]];
     case kBeforeHeadMode:
       DCHECK_EQ(GetInsertionMode(), kBeforeHeadMode);
       if (token->GetName() == html_names::kHTMLTag) {
@@ -1159,13 +1159,13 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
         return;
       }
       DefaultForBeforeHead();
-      FALLTHROUGH;
+      [[fallthrough]];
     case kInHeadMode:
       DCHECK_EQ(GetInsertionMode(), kInHeadMode);
       if (ProcessStartTagForInHead(token))
         return;
       DefaultForInHead();
-      FALLTHROUGH;
+      [[fallthrough]];
     case kAfterHeadMode:
       DCHECK_EQ(GetInsertionMode(), kAfterHeadMode);
       if (token->GetName() == html_names::kHTMLTag) {
@@ -1205,7 +1205,7 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
         return;
       }
       DefaultForAfterHead();
-      FALLTHROUGH;
+      [[fallthrough]];
     case kInBodyMode:
       DCHECK_EQ(GetInsertionMode(), kInBodyMode);
       ProcessStartTagForInBody(token);
@@ -1408,7 +1408,7 @@ void HTMLTreeBuilder::ProcessStartTag(AtomicHTMLToken* token) {
         ProcessStartTag(token);
         return;
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case kInSelectMode:
       DCHECK(GetInsertionMode() == kInSelectMode ||
              GetInsertionMode() == kInSelectInTableMode);
@@ -2063,7 +2063,7 @@ void HTMLTreeBuilder::ProcessEndTag(AtomicHTMLToken* token) {
     case kInitialMode:
       DCHECK_EQ(GetInsertionMode(), kInitialMode);
       DefaultForInitial();
-      FALLTHROUGH;
+      [[fallthrough]];
     case kBeforeHTMLMode:
       DCHECK_EQ(GetInsertionMode(), kBeforeHTMLMode);
       if (token->GetName() != html_names::kHeadTag &&
@@ -2074,7 +2074,7 @@ void HTMLTreeBuilder::ProcessEndTag(AtomicHTMLToken* token) {
         return;
       }
       DefaultForBeforeHTML();
-      FALLTHROUGH;
+      [[fallthrough]];
     case kBeforeHeadMode:
       DCHECK_EQ(GetInsertionMode(), kBeforeHeadMode);
       if (token->GetName() != html_names::kHeadTag &&
@@ -2085,7 +2085,7 @@ void HTMLTreeBuilder::ProcessEndTag(AtomicHTMLToken* token) {
         return;
       }
       DefaultForBeforeHead();
-      FALLTHROUGH;
+      [[fallthrough]];
     case kInHeadMode:
       DCHECK_EQ(GetInsertionMode(), kInHeadMode);
       // FIXME: This case should be broken out into processEndTagForInHead,
@@ -2108,7 +2108,7 @@ void HTMLTreeBuilder::ProcessEndTag(AtomicHTMLToken* token) {
         return;
       }
       DefaultForInHead();
-      FALLTHROUGH;
+      [[fallthrough]];
     case kAfterHeadMode:
       DCHECK_EQ(GetInsertionMode(), kAfterHeadMode);
       if (token->GetName() != html_names::kBodyTag &&
@@ -2118,7 +2118,7 @@ void HTMLTreeBuilder::ProcessEndTag(AtomicHTMLToken* token) {
         return;
       }
       DefaultForAfterHead();
-      FALLTHROUGH;
+      [[fallthrough]];
     case kInBodyMode:
       DCHECK_EQ(GetInsertionMode(), kInBodyMode);
       ProcessEndTagForInBody(token);
@@ -2196,7 +2196,7 @@ void HTMLTreeBuilder::ProcessEndTag(AtomicHTMLToken* token) {
         SetInsertionMode(kAfterAfterBodyMode);
         return;
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case kAfterAfterBodyMode:
       DCHECK(GetInsertionMode() == kAfterBodyMode ||
              GetInsertionMode() == kAfterAfterBodyMode);
@@ -2265,7 +2265,7 @@ void HTMLTreeBuilder::ProcessEndTag(AtomicHTMLToken* token) {
         SetInsertionMode(kAfterAfterFramesetMode);
         return;
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case kAfterAfterFramesetMode:
       DCHECK(GetInsertionMode() == kAfterFramesetMode ||
              GetInsertionMode() == kAfterAfterFramesetMode);
@@ -2287,7 +2287,7 @@ void HTMLTreeBuilder::ProcessEndTag(AtomicHTMLToken* token) {
         }
         return;
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case kInSelectMode:
       DCHECK(GetInsertionMode() == kInSelectMode ||
              GetInsertionMode() == kInSelectInTableMode);
@@ -2393,7 +2393,7 @@ ReprocessBuffer:
       if (buffer.IsEmpty())
         return;
       DefaultForInitial();
-      FALLTHROUGH;
+      [[fallthrough]];
     }
     case kBeforeHTMLMode: {
       DCHECK_EQ(GetInsertionMode(), kBeforeHTMLMode);
@@ -2405,7 +2405,7 @@ ReprocessBuffer:
         buffer.SkipRemaining();
         return;
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     }
     case kBeforeHeadMode: {
       DCHECK_EQ(GetInsertionMode(), kBeforeHeadMode);
@@ -2413,7 +2413,7 @@ ReprocessBuffer:
       if (buffer.IsEmpty())
         return;
       DefaultForBeforeHead();
-      FALLTHROUGH;
+      [[fallthrough]];
     }
     case kInHeadMode: {
       DCHECK_EQ(GetInsertionMode(), kInHeadMode);
@@ -2423,7 +2423,7 @@ ReprocessBuffer:
       if (buffer.IsEmpty())
         return;
       DefaultForInHead();
-      FALLTHROUGH;
+      [[fallthrough]];
     }
     case kAfterHeadMode: {
       DCHECK_EQ(GetInsertionMode(), kAfterHeadMode);
@@ -2433,7 +2433,7 @@ ReprocessBuffer:
       if (buffer.IsEmpty())
         return;
       DefaultForAfterHead();
-      FALLTHROUGH;
+      [[fallthrough]];
     }
     case kInBodyMode:
     case kInCaptionMode:
@@ -2467,7 +2467,7 @@ ReprocessBuffer:
         ProcessCharacterBufferForInBody(buffer);
         break;
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     }
     case kInTableTextMode: {
       buffer.GiveRemainingTo(pending_table_characters_);
@@ -2559,23 +2559,23 @@ void HTMLTreeBuilder::ProcessEndOfFile(AtomicHTMLToken* token) {
     case kInitialMode:
       DCHECK_EQ(GetInsertionMode(), kInitialMode);
       DefaultForInitial();
-      FALLTHROUGH;
+      [[fallthrough]];
     case kBeforeHTMLMode:
       DCHECK_EQ(GetInsertionMode(), kBeforeHTMLMode);
       DefaultForBeforeHTML();
-      FALLTHROUGH;
+      [[fallthrough]];
     case kBeforeHeadMode:
       DCHECK_EQ(GetInsertionMode(), kBeforeHeadMode);
       DefaultForBeforeHead();
-      FALLTHROUGH;
+      [[fallthrough]];
     case kInHeadMode:
       DCHECK_EQ(GetInsertionMode(), kInHeadMode);
       DefaultForInHead();
-      FALLTHROUGH;
+      [[fallthrough]];
     case kAfterHeadMode:
       DCHECK_EQ(GetInsertionMode(), kAfterHeadMode);
       DefaultForAfterHead();
-      FALLTHROUGH;
+      [[fallthrough]];
     case kInBodyMode:
     case kInCellMode:
     case kInCaptionMode:
@@ -2614,7 +2614,7 @@ void HTMLTreeBuilder::ProcessEndOfFile(AtomicHTMLToken* token) {
       DCHECK(tree_.CurrentNode()->HasTagName(html_names::kColgroupTag) ||
              IsA<HTMLTemplateElement>(tree_.CurrentNode()));
       ProcessColgroupEndTagForInColumnGroup();
-      FALLTHROUGH;
+      [[fallthrough]];
     case kInFramesetMode:
     case kInTableMode:
     case kInTableBodyMode:

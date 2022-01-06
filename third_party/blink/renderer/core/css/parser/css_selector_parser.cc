@@ -1032,7 +1032,7 @@ CSSSelector::MatchType CSSSelectorParser::ConsumeAttributeMatch(
     case kDelimiterToken:
       if (token.Delimiter() == '=')
         return CSSSelector::kAttributeExact;
-      FALLTHROUGH;
+      [[fallthrough]];
     default:
       failed_parsing_ = true;
       return CSSSelector::kAttributeExact;

@@ -1532,7 +1532,7 @@ ShadowData StyleBuilderConverter::ConvertShadow(
         switch (value_id) {
           case CSSValueID::kInvalid:
             NOTREACHED();
-            FALLTHROUGH;
+            [[fallthrough]];
           case CSSValueID::kInternalQuirkInherit:
           case CSSValueID::kWebkitLink:
           case CSSValueID::kWebkitActivelink:

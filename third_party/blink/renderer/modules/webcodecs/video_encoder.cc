@@ -561,7 +561,7 @@ std::unique_ptr<media::VideoEncoder> VideoEncoder::CreateMediaVideoEncoder(
                 &VideoEncoder::CreateSoftwareVideoEncoder,
                 WrapCrossThreadWeakPersistent(this), config.codec)));
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case HardwarePreference::kPreferSoftware:
       return CreateSoftwareVideoEncoder(this, config.codec);
 

@@ -165,7 +165,7 @@ class CORE_EXPORT AtomicHTMLToken {
             duplicate_attribute_ = true;
           }
         }
-        FALLTHROUGH;
+        [[fallthrough]];
       case HTMLToken::kEndTag:
         self_closing_ = token.SelfClosing();
         name_ = AtomicString(token.Data());

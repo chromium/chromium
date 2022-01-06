@@ -37,7 +37,7 @@ absl::optional<V8AudioSampleFormat> MediaFormatToBlinkFormat(
       // to kSampleFormatS32, but we do not update our labelling. It's ok to
       // treat the kSampleFormatS24 as kSampleFormatS32 until we update the
       // labelling, since our code already treats S24 as S32.
-      FALLTHROUGH;
+      [[fallthrough]];
     case media::SampleFormat::kSampleFormatS32:
       return V8AudioSampleFormat(FormatEnum::kS32);
 

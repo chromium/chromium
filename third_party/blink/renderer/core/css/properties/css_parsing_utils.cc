@@ -821,7 +821,7 @@ CSSPrimitiveValue* ConsumeLength(CSSParserTokenRange& range,
       case CSSPrimitiveValue::UnitType::kQuirkyEms:
         if (context.Mode() != kUASheetMode)
           return nullptr;
-        FALLTHROUGH;
+        [[fallthrough]];
       case CSSPrimitiveValue::UnitType::kEms:
       case CSSPrimitiveValue::UnitType::kRems:
       case CSSPrimitiveValue::UnitType::kChs:
@@ -2509,7 +2509,7 @@ void CountKeywordOnlyPropertyUsage(CSSPropertyID property,
                   "standardized. It will be removed in the future."));
         }
       }
-      FALLTHROUGH;
+      [[fallthrough]];
       // This function distinguishes 'appearance' and '-webkit-appearance'
       // though other property aliases are handles as their aliased properties.
       // See Appearance::ParseSingleValue().

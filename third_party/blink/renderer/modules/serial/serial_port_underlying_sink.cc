@@ -210,7 +210,7 @@ void SerialPortUnderlyingSink::WriteData() {
         pending_operation_ = nullptr;
         break;
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case MOJO_RESULT_SHOULD_WAIT:
       watcher_.ArmOrNotify();
       break;

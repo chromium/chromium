@@ -319,7 +319,7 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
     case CSSSelector::kRelativeDescendant:
       DCHECK(result.has_argument_leftmost_compound_matches);
       result.has_argument_leftmost_compound_matches->push_back(context.element);
-      FALLTHROUGH;
+      [[fallthrough]];
     case CSSSelector::kDescendant:
       if (next_context.selector->GetPseudoType() == CSSSelector::kPseudoScope) {
         if (next_context.selector->IsLastInTagHistory()) {
@@ -342,7 +342,7 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
     case CSSSelector::kRelativeChild:
       DCHECK(result.has_argument_leftmost_compound_matches);
       result.has_argument_leftmost_compound_matches->push_back(context.element);
-      FALLTHROUGH;
+      [[fallthrough]];
     case CSSSelector::kChild: {
       if (next_context.selector->GetPseudoType() == CSSSelector::kPseudoScope) {
         if (next_context.selector->IsLastInTagHistory()) {
@@ -360,7 +360,7 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
     case CSSSelector::kRelativeDirectAdjacent:
       DCHECK(result.has_argument_leftmost_compound_matches);
       result.has_argument_leftmost_compound_matches->push_back(context.element);
-      FALLTHROUGH;
+      [[fallthrough]];
     case CSSSelector::kDirectAdjacent:
       if (mode_ == kResolvingStyle) {
         if (ContainerNode* parent =
@@ -375,7 +375,7 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
     case CSSSelector::kRelativeIndirectAdjacent:
       DCHECK(result.has_argument_leftmost_compound_matches);
       result.has_argument_leftmost_compound_matches->push_back(context.element);
-      FALLTHROUGH;
+      [[fallthrough]];
     case CSSSelector::kIndirectAdjacent:
       if (mode_ == kResolvingStyle) {
         if (ContainerNode* parent =
@@ -1257,7 +1257,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
           mode_ == kQueryingRules
               ? WebFeature::kCSSSelectorHostContextInSnapshotProfile
               : WebFeature::kCSSSelectorHostContextInLiveProfile);
-      FALLTHROUGH;
+      [[fallthrough]];
     case CSSSelector::kPseudoHost:
       return CheckPseudoHost(context, result);
     case CSSSelector::kPseudoSpatialNavigationFocus:
@@ -1432,7 +1432,7 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
         UseCounter::Count(context.element->GetDocument(),
                           WebFeature::kCSSSelectorTargetText);
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     default:
       DCHECK_NE(mode_, kQueryingRules);
       result.dynamic_pseudo =

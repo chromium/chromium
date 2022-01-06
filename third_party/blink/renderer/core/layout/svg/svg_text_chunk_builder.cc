@@ -32,7 +32,7 @@ float CalculateTextAnchorShift(const ComputedStyle& style, float length) {
   switch (style.TextAnchor()) {
     default:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case ETextAnchor::kStart:
       return is_ltr ? 0 : -length;
     case ETextAnchor::kMiddle:
@@ -49,7 +49,7 @@ bool NeedsTextAnchorAdjustment(const ComputedStyle& style) {
   switch (style.TextAnchor()) {
     default:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case ETextAnchor::kStart:
       return !is_ltr;
     case ETextAnchor::kMiddle:

@@ -88,7 +88,7 @@ void PortalContents::OnActivateResponse(
     case mojom::blink::PortalActivateResult::kPredecessorWasAdopted:
       if (auto* page = GetDocument().GetPage())
         page->SetInsidePortal(true);
-      FALLTHROUGH;
+      [[fallthrough]];
     case mojom::blink::PortalActivateResult::kPredecessorWillUnload:
       activation_delegate_->ActivationDidSucceed();
       should_destroy_contents = true;

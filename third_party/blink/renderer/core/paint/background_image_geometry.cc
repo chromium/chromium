@@ -456,7 +456,7 @@ void BackgroundImageGeometry::ComputeDestRectAdjustments(
         snapped_dest_adjust = unsnapped_dest_adjust;
         return;
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case EFillBox::kPadding:
       unsnapped_dest_adjust = positioning_box_->BorderBoxOutsets();
       if (disallow_border_derived_adjustment) {
@@ -555,7 +555,7 @@ void BackgroundImageGeometry::ComputePositioningAreaAdjustments(
         snapped_box_outset = unsnapped_box_outset;
         return;
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case EFillBox::kPadding:
       unsnapped_box_outset = positioning_box_->BorderBoxOutsets();
       if (disallow_border_derived_adjustment) {

@@ -92,7 +92,7 @@ CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
       if (identifier_value &&
           identifier_value->GetValueID() == CSSValueID::kAuto)
         return CSSKeywordValue::Create("auto");
-      FALLTHROUGH;
+      [[fallthrough]];
     }
     case CSSPropertyID::kBackgroundColor:
     case CSSPropertyID::kBorderBottomColor:
@@ -151,7 +151,7 @@ CSSStyleValue* CreateStyleValueWithPropertyInternal(CSSPropertyID property_id,
       // offset-anchor and offset-position can be 'auto'
       if (value.IsIdentifierValue())
         return CreateStyleValue(value);
-      FALLTHROUGH;
+      [[fallthrough]];
     case CSSPropertyID::kObjectPosition:
     case CSSPropertyID::kPerspectiveOrigin:
     case CSSPropertyID::kTransformOrigin:

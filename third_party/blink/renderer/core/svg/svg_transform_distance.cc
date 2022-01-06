@@ -52,7 +52,7 @@ SVGTransformDistance::SVGTransformDistance(
   switch (transform_type_) {
     case SVGTransformType::kMatrix:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case SVGTransformType::kUnknown:
       break;
     case SVGTransformType::kRotate: {
@@ -89,7 +89,7 @@ SVGTransformDistance SVGTransformDistance::ScaledDistance(
   switch (transform_type_) {
     case SVGTransformType::kMatrix:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case SVGTransformType::kUnknown:
       return SVGTransformDistance();
     case SVGTransformType::kRotate:
@@ -127,7 +127,7 @@ SVGTransform* SVGTransformDistance::AddSVGTransforms(const SVGTransform* first,
   switch (first->TransformType()) {
     case SVGTransformType::kMatrix:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case SVGTransformType::kUnknown:
       return transform;
     case SVGTransformType::kRotate: {
@@ -174,7 +174,7 @@ SVGTransform* SVGTransformDistance::AddToSVGTransform(
   switch (transform_type_) {
     case SVGTransformType::kMatrix:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case SVGTransformType::kUnknown:
       return MakeGarbageCollected<SVGTransform>();
     case SVGTransformType::kTranslate: {
@@ -213,7 +213,7 @@ float SVGTransformDistance::Distance() const {
   switch (transform_type_) {
     case SVGTransformType::kMatrix:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case SVGTransformType::kUnknown:
       return 0;
     case SVGTransformType::kRotate:

@@ -137,7 +137,7 @@ ResourceLoadPriority TypeToPriority(ResourceType type) {
       return ResourceLoadPriority::kVeryHigh;
     case ResourceType::kXSLStyleSheet:
       DCHECK(RuntimeEnabledFeatures::XSLTEnabled());
-      FALLTHROUGH;
+      [[fallthrough]];
     case ResourceType::kRaw:
     case ResourceType::kScript:
       // Also visible resources/images (set explicitly in loadPriority)
@@ -295,7 +295,7 @@ mojom::blink::RequestContextType ResourceFetcher::DetermineRequestContext(
   switch (type) {
     case ResourceType::kXSLStyleSheet:
       DCHECK(RuntimeEnabledFeatures::XSLTEnabled());
-      FALLTHROUGH;
+      [[fallthrough]];
     case ResourceType::kCSSStyleSheet:
       return mojom::blink::RequestContextType::STYLE;
     case ResourceType::kScript:
@@ -332,7 +332,7 @@ network::mojom::RequestDestination ResourceFetcher::DetermineRequestDestination(
   switch (type) {
     case ResourceType::kXSLStyleSheet:
       DCHECK(RuntimeEnabledFeatures::XSLTEnabled());
-      FALLTHROUGH;
+      [[fallthrough]];
     case ResourceType::kCSSStyleSheet:
       return network::mojom::RequestDestination::kStyle;
     case ResourceType::kScript:
@@ -1073,7 +1073,7 @@ Resource* ResourceFetcher::RequestResource(FetchParameters& params,
   switch (policy) {
     case RevalidationPolicy::kReload:
       GetMemoryCache()->Remove(resource);
-      FALLTHROUGH;
+      [[fallthrough]];
     case RevalidationPolicy::kLoad:
       resource = CreateResourceForLoading(params, factory);
       break;

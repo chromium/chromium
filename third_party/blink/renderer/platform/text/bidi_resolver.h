@@ -1019,7 +1019,7 @@ void BidiResolver<Iterator, Run, IsolatedRun>::CreateBidiRunsForLine(
             case WTF::unicode::kCommonNumberSeparator:
               if (status_.eor == WTF::unicode::kEuropeanNumber)
                 break;
-              FALLTHROUGH;
+              [[fallthrough]];
             case WTF::unicode::kEuropeanNumberTerminator:
             case WTF::unicode::kBoundaryNeutral:
             case WTF::unicode::kBlockSeparator:
@@ -1074,7 +1074,7 @@ void BidiResolver<Iterator, Run, IsolatedRun>::CreateBidiRunsForLine(
             direction_ = WTF::unicode::kLeftToRight;
           break;
         }
-        FALLTHROUGH;
+        [[fallthrough]];
       case WTF::unicode::kArabicNumber:
         dir_current = WTF::unicode::kArabicNumber;
         switch (status_.last) {
@@ -1093,7 +1093,7 @@ void BidiResolver<Iterator, Run, IsolatedRun>::CreateBidiRunsForLine(
           case WTF::unicode::kCommonNumberSeparator:
             if (status_.eor == WTF::unicode::kArabicNumber)
               break;
-            FALLTHROUGH;
+            [[fallthrough]];
           case WTF::unicode::kEuropeanNumberSeparator:
           case WTF::unicode::kEuropeanNumberTerminator:
           case WTF::unicode::kBoundaryNeutral:

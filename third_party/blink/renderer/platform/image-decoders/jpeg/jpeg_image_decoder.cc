@@ -642,9 +642,10 @@ class JPEGImageReader final {
 
         switch (info_.jpeg_color_space) {
           case JCS_YCbCr:
-            FALLTHROUGH;  // libjpeg can convert YCbCr image pixels to RGB.
+            [[fallthrough]];  // libjpeg can convert YCbCr image pixels to RGB.
           case JCS_GRAYSCALE:
-            FALLTHROUGH;  // libjpeg can convert GRAYSCALE image pixels to RGB.
+            [[fallthrough]];  // libjpeg can convert GRAYSCALE image pixels to
+                              // RGB.
           case JCS_RGB:
             info_.out_color_space = rgbOutputColorSpace();
             break;
@@ -769,7 +770,7 @@ class JPEGImageReader final {
           return true;
         }
       }
-      FALLTHROUGH;
+        [[fallthrough]];
       case kJpegStartDecompress:
         if (decoding_mode == JPEGImageDecoder::DecodingMode::kDecodeToYuv) {
           DCHECK(decoder_->CanDecodeToYUV());
@@ -808,7 +809,7 @@ class JPEGImageReader final {
         // If this is a progressive JPEG ...
         state_ = (info_.buffered_image) ? kJpegDecompressProgressive
                                         : kJpegDecompressSequential;
-        FALLTHROUGH;
+        [[fallthrough]];
 
       case kJpegDecompressSequential:
         if (state_ == kJpegDecompressSequential) {
@@ -819,7 +820,7 @@ class JPEGImageReader final {
           DCHECK_EQ(info_.output_scanline, info_.output_height);
           state_ = kJpegDone;
         }
-        FALLTHROUGH;
+        [[fallthrough]];
 
       case kJpegDecompressProgressive:
         if (state_ == kJpegDecompressProgressive) {
@@ -900,7 +901,7 @@ class JPEGImageReader final {
 
           state_ = kJpegDone;
         }
-        FALLTHROUGH;
+        [[fallthrough]];
 
       case kJpegDone:
         // Finish decompression.

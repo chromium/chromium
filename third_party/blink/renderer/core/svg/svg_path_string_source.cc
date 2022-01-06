@@ -197,12 +197,12 @@ PathSegmentData SVGPathStringSource::ParseSegment() {
     case kPathSegCurveToCubicAbs:
       segment.point1.set_x(ParseNumberWithError());
       segment.point1.set_y(ParseNumberWithError());
-      FALLTHROUGH;
+      [[fallthrough]];
     case kPathSegCurveToCubicSmoothRel:
     case kPathSegCurveToCubicSmoothAbs:
       segment.point2.set_x(ParseNumberWithError());
       segment.point2.set_y(ParseNumberWithError());
-      FALLTHROUGH;
+      [[fallthrough]];
     case kPathSegMoveToRel:
     case kPathSegMoveToAbs:
     case kPathSegLineToRel:

@@ -23,7 +23,7 @@ void AppliedDecorationPainter::Paint(const PaintFlags* flags) {
     case ETextDecorationStyle::kDotted:
     case ETextDecorationStyle::kDashed:
       context_.SetShouldAntialias(decoration_info_.ShouldAntialias());
-      FALLTHROUGH;
+      [[fallthrough]];
     default:
       context_.DrawLineForText(decoration_info_.StartPoint(),
                                decoration_info_.Width(), auto_dark_mode, flags);

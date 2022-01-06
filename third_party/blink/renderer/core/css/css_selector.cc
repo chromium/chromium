@@ -134,13 +134,13 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
         case kPseudoHost:
           if (!SelectorList())
             return kClassLikeSpecificity;
-          FALLTHROUGH;
+          [[fallthrough]];
         case kPseudoHostContext:
           DCHECK(SelectorList()->HasOneSelector());
           return kClassLikeSpecificity + SelectorList()->First()->Specificity();
         case kPseudoNot:
           DCHECK(SelectorList());
-          FALLTHROUGH;
+          [[fallthrough]];
         case kPseudoIs:
           return MaximumSpecificity(SelectorList());
         case kPseudoHas:
@@ -645,7 +645,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
       // but should be PseudoElement like double colon.
       if (match_ == kPseudoClass)
         match_ = kPseudoElement;
-      FALLTHROUGH;
+      [[fallthrough]];
     // For pseudo elements
     case kPseudoBackdrop:
     case kPseudoCue:
@@ -693,7 +693,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
         pseudo_type_ = kPseudoUnknown;
         break;
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     // For pseudo classes
     case kPseudoActive:
     case kPseudoAny:

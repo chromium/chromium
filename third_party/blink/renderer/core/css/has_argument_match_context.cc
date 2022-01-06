@@ -69,7 +69,7 @@ HasArgumentMatchContext::HasArgumentMatchContext(const CSSSelector* selector)
     switch (relation) {
       case CSSSelector::kRelativeDescendant:
         leftmost_relation_ = relation;
-        FALLTHROUGH;
+        [[fallthrough]];
       case CSSSelector::kDescendant:
         descendant_traversal_depth_ = kInfiniteDepth;
         adjacent_traversal_distance_ = 0;
@@ -77,7 +77,7 @@ HasArgumentMatchContext::HasArgumentMatchContext(const CSSSelector* selector)
 
       case CSSSelector::kRelativeChild:
         leftmost_relation_ = relation;
-        FALLTHROUGH;
+        [[fallthrough]];
       case CSSSelector::kChild:
         if (descendant_traversal_depth_ != kInfiniteDepth) {
           descendant_traversal_depth_++;
@@ -87,7 +87,7 @@ HasArgumentMatchContext::HasArgumentMatchContext(const CSSSelector* selector)
 
       case CSSSelector::kRelativeDirectAdjacent:
         leftmost_relation_ = relation;
-        FALLTHROUGH;
+        [[fallthrough]];
       case CSSSelector::kDirectAdjacent:
         if (adjacent_traversal_distance_ != kInfiniteAdjacentDistance)
           adjacent_traversal_distance_++;
@@ -95,7 +95,7 @@ HasArgumentMatchContext::HasArgumentMatchContext(const CSSSelector* selector)
 
       case CSSSelector::kRelativeIndirectAdjacent:
         leftmost_relation_ = relation;
-        FALLTHROUGH;
+        [[fallthrough]];
       case CSSSelector::kIndirectAdjacent:
         adjacent_traversal_distance_ = kInfiniteAdjacentDistance;
         break;

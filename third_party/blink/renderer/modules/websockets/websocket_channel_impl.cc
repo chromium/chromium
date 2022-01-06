@@ -805,7 +805,7 @@ void WebSocketChannelImpl::ProcessSendQueue() {
     switch (message.Type()) {
       case kMessageTypeText:
         message_type = network::mojom::blink::WebSocketMessageType::TEXT;
-        FALLTHROUGH;
+        [[fallthrough]];
       case kMessageTypeArrayBuffer: {
         base::span<const char>& data_frame = message.MutablePendingPayload();
         if (!message.GetDidCallSendMessage()) {

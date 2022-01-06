@@ -657,7 +657,7 @@ PhysicalRect LayoutReplaced::ComputeObjectFit(
       if (auto* image = DynamicTo<LayoutImage>(this)) {
         scaled_intrinsic_size.Scale(1.0 / image->ImageDevicePixelRatio());
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case EObjectFit::kContain:
     case EObjectFit::kCover:
       final_rect.size = final_rect.size.FitToAspectRatio(
@@ -667,7 +667,7 @@ PhysicalRect LayoutReplaced::ComputeObjectFit(
       if (object_fit != EObjectFit::kScaleDown ||
           final_rect.Width() <= scaled_intrinsic_size.width)
         break;
-      FALLTHROUGH;
+      [[fallthrough]];
     case EObjectFit::kNone:
       final_rect.size = scaled_intrinsic_size;
       break;

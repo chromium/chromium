@@ -143,7 +143,7 @@ PhysicalRect NGInkOverflow::Self(Type type, const PhysicalSize& size) const {
 #if DCHECK_IS_ON()
       if (!read_unset_as_none_)
         NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
 #endif
     case kNone:
     case kSmallContents:
@@ -171,7 +171,7 @@ PhysicalRect NGInkOverflow::Contents(Type type,
 #if DCHECK_IS_ON() && !BUILDFLAG(IS_CHROMEOS_ASH)
       if (!read_unset_as_none_)
         NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
 #endif
     case kNone:
     case kSmallSelf:
@@ -199,7 +199,7 @@ PhysicalRect NGInkOverflow::SelfAndContents(Type type,
 #if DCHECK_IS_ON()
       if (!read_unset_as_none_)
         NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
 #endif
     case kNone:
       return {PhysicalOffset(), size};
@@ -269,7 +269,7 @@ NGInkOverflow::Type NGInkOverflow::SetSingle(Type type,
   switch (type) {
     case kSelfAndContents:
       Reset(type);
-      FALLTHROUGH;
+      [[fallthrough]];
     case kNotSet:
     case kInvalidated:
     case kNone:
@@ -322,7 +322,7 @@ NGInkOverflow::Type NGInkOverflow::Set(Type type,
     case kSelf:
     case kContents:
       Reset(type);
-      FALLTHROUGH;
+      [[fallthrough]];
     case kNotSet:
     case kInvalidated:
     case kNone:

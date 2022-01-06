@@ -245,7 +245,7 @@ void EventHandlerRegistry::NotifyHandlersChanged(
     case kTouchStartOrMoveEventBlockingLowLatency:
       GetPage()->GetChromeClient().SetNeedsLowLatencyInput(frame,
                                                            has_active_handlers);
-      FALLTHROUGH;
+      [[fallthrough]];
     case kTouchAction:
     case kTouchStartOrMoveEventBlocking:
     case kTouchStartOrMoveEventPassive:

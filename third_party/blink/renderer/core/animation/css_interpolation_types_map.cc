@@ -238,7 +238,7 @@ const InterpolationTypes& CSSInterpolationTypesMap::Get(
       case CSSPropertyID::kOffsetPath:
         applicable_types->push_back(
             std::make_unique<CSSRayInterpolationType>(used_property));
-        FALLTHROUGH;
+        [[fallthrough]];
       case CSSPropertyID::kD:
         applicable_types->push_back(
             std::make_unique<CSSPathInterpolationType>(used_property));

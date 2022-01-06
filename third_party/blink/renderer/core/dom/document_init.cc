@@ -282,7 +282,7 @@ Document* DocumentInit::CreateDocument() const {
     case Type::kText:
       return MakeGarbageCollected<TextDocument>(*this);
     case Type::kUnspecified:
-      FALLTHROUGH;
+      [[fallthrough]];
     default:
       break;
   }

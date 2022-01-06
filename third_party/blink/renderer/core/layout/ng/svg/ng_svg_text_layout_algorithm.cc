@@ -519,7 +519,7 @@ void NGSvgTextLayoutAlgorithm::ApplyAnchoring(
       switch (style.TextAnchor()) {
         default:
           NOTREACHED();
-          FALLTHROUGH;
+          [[fallthrough]];
         case ETextAnchor::kStart:
           shift = is_ltr ? shift - min_position : shift - max_position;
           break;

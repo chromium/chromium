@@ -389,7 +389,7 @@ FrameWidgetInputHandlerImpl::HandlingState::HandlingState(
   switch (state) {
     case UpdateState::kIsPasting:
       widget->set_is_pasting(true);
-      FALLTHROUGH;  // Set both
+      [[fallthrough]];  // Set both
     case UpdateState::kIsSelectingRange:
       widget->set_handling_select_range(true);
       break;

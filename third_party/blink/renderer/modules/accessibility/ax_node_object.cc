@@ -2650,7 +2650,7 @@ bool AXNodeObject::ValueForRange(float* out_value) const {
         *out_value = (min_value + max_value) / 2.0f;
         return true;
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     }
     case ax::mojom::blink::Role::kSplitter: {
       *out_value = 50.0f;

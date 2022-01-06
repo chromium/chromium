@@ -494,7 +494,7 @@ bool CSSParserImpl::ConsumeRuleList(CSSParserTokenStream& stream,
           stream.UncheckedConsume();
           continue;
         }
-        FALLTHROUGH;
+        [[fallthrough]];
       default:
         rule = ConsumeQualifiedRule(stream, allowed_rules);
         break;

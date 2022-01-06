@@ -95,7 +95,7 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
     switch (type) {
       default:
         NOTREACHED();
-        FALLTHROUGH;
+        [[fallthrough]];
       case EFloat::kLeft:
         has_break_before_left_float_ = true;
         break;
@@ -109,7 +109,7 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
     switch (type) {
       default:
         NOTREACHED();
-        FALLTHROUGH;
+        [[fallthrough]];
       case EFloat::kLeft:
         has_break_inside_left_float_ = true;
         break;
@@ -124,7 +124,7 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
     switch (type) {
       default:
         NOTREACHED();
-        FALLTHROUGH;
+        [[fallthrough]];
       case EClear::kNone:
         return false;
       case EClear::kLeft:
@@ -133,7 +133,7 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
             has_break_inside_left_float_ || has_break_before_left_float_;
         if (type == EClear::kLeft)
           break;
-        FALLTHROUGH;
+        [[fallthrough]];
       case EClear::kRight:
         needs_clearance |=
             has_break_inside_right_float_ || has_break_before_right_float_;

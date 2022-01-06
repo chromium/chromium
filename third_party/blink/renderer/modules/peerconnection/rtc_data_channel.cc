@@ -556,11 +556,11 @@ bool RTCDataChannel::HasPendingActivity() const {
   switch (state_) {
     case webrtc::DataChannelInterface::kConnecting:
       has_valid_listeners |= HasEventListeners(event_type_names::kOpen);
-      FALLTHROUGH;
+      [[fallthrough]];
     case webrtc::DataChannelInterface::kOpen:
       has_valid_listeners |= HasEventListeners(event_type_names::kMessage) ||
                              HasEventListeners(event_type_names::kClosing);
-      FALLTHROUGH;
+      [[fallthrough]];
     case webrtc::DataChannelInterface::kClosing:
       has_valid_listeners |= HasEventListeners(event_type_names::kError) ||
                              HasEventListeners(event_type_names::kClose);

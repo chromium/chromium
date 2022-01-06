@@ -1852,7 +1852,7 @@ void UserMediaProcessor::StopAllProcessing() {
         // canceled.
         GetMediaStreamDispatcherHost()->CancelRequest(
             current_request_info_->request_id());
-        FALLTHROUGH;
+        [[fallthrough]];
 
       case RequestInfo::State::kNotSentForGeneration:
         LogUserMediaRequestWithNoResult(

@@ -58,7 +58,7 @@ static TransformOperation::OperationType GetTransformOperationType(
   switch (type) {
     default:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case CSSValueID::kScale:
       return TransformOperation::kScale;
     case CSSValueID::kScaleX:

@@ -298,7 +298,7 @@ void DrawBleedAdjustedDRRect(GraphicsContext& context,
         context.FillDRRect(adjusted_outer, inner, color, auto_dark_mode);
         break;
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     default:
       context.FillDRRect(outer, inner, color, auto_dark_mode);
       break;
@@ -1857,12 +1857,12 @@ void BoxBorderPainter::DrawLineForBoxSide(GraphicsContext& context,
       // https://bugs.webkit.org/show_bug.cgi?id=58608
       if (side == BoxSide::kTop || side == BoxSide::kLeft)
         color = color.Dark();
-      FALLTHROUGH;
+      [[fallthrough]];
     case EBorderStyle::kOutset:
       if (style == EBorderStyle::kOutset &&
           (side == BoxSide::kBottom || side == BoxSide::kRight))
         color = color.Dark();
-      FALLTHROUGH;
+      [[fallthrough]];
     case EBorderStyle::kSolid:
       DrawSolidBoxSide(context, x1, y1, x2, y2, side, color, adjacent_width1,
                        adjacent_width2, antialias, auto_dark_mode);

@@ -983,7 +983,7 @@ net::NetworkTrafficAnnotationTag WebURLLoader::Context::GetTrafficAnnotationTag(
     case network::mojom::RequestDestination::kFrame:
     case network::mojom::RequestDestination::kFencedframe:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
 
     case network::mojom::RequestDestination::kEmpty:
     case network::mojom::RequestDestination::kAudio:

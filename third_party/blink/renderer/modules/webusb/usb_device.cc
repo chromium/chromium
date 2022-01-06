@@ -767,7 +767,7 @@ void USBDevice::AsyncOpen(ScriptPromiseResolver* resolver,
   switch (error) {
     case UsbOpenDeviceError::ALREADY_OPEN:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case UsbOpenDeviceError::OK:
       OnDeviceOpenedOrClosed(true /* opened */);
       resolver->Resolve();

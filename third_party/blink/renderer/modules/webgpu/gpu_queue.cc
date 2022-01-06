@@ -62,10 +62,10 @@ WGPUOrigin3D GPUOrigin2DToWGPUOrigin3D(const V8GPUOrigin2D* webgpu_origin) {
         default:
           // This is a 2D origin and the depth should be 0 always.
           dawn_origin.y = webgpu_origin_sequence[1];
-          FALLTHROUGH;
+          [[fallthrough]];
         case 1:
           dawn_origin.x = webgpu_origin_sequence[0];
-          FALLTHROUGH;
+          [[fallthrough]];
         case 0:
           break;
       }

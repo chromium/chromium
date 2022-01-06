@@ -408,7 +408,7 @@ bool Scrollbar::GestureEvent(const WebGestureEvent& evt,
       // says we injected GestureScrollBegin, since we no longer need to inject
       // a GSE ourselves.
       injected_gesture_scroll_begin_ = false;
-      FALLTHROUGH;
+      [[fallthrough]];
     case WebInputEvent::Type::kGestureLongPress:
     case WebInputEvent::Type::kGestureFlingStart:
       scroll_pos_ = 0;
