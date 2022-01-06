@@ -103,6 +103,10 @@ suite(extension_navigation_helper_tests.suiteName, function() {
             url: 'chrome://extensions/shortcuts',
             state: {page: Page.SHORTCUTS},
           },
+          sitePermissions: {
+            url: 'chrome://extensions/sitePermissions',
+            state: {page: Page.SITE_PERMISSIONS},
+          },
         };
 
         // Test url -> state.

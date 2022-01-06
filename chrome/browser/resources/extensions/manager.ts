@@ -20,15 +20,16 @@ import './keyboard_shortcuts.js';
 import './load_error.js';
 import './options_dialog.js';
 import './sidebar.js';
+import './site_permissions.js';
 import './toolbar.js';
 // <if expr="chromeos">
 import './kiosk_dialog.js';
 // </if>
 
+import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
 
 import {ActivityLogExtensionPlaceholder} from './activity_log/activity_log.js';
 import {ExtensionsDetailViewElement} from './detail_view.js';
@@ -105,6 +106,11 @@ class ExtensionsManagerElement extends PolymerElement {
       showActivityLog: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('showActivityLog'),
+      },
+
+      enableEnhancedSiteControls: {
+        type: Boolean,
+        value: () => loadTimeData.getBoolean('enableEnhancedSiteControls'),
       },
 
       devModeControlledByPolicy: {
@@ -194,6 +200,7 @@ class ExtensionsManagerElement extends PolymerElement {
   delegate: Service;
   inDevMode: boolean;
   showActivityLog: boolean;
+  enableEnhancedSiteControls: boolean;
   devModeControlledByPolicy: boolean;
   private isChildAccount_: boolean;
   private incognitoAvailable_: boolean;
@@ -552,6 +559,12 @@ class ExtensionsManagerElement extends PolymerElement {
       }
 
       this.activityLogItem_ = data ? assert(data) : activityLogPlaceholder;
+    } else if (
+        toPage === Page.SITE_PERMISSIONS && !this.enableEnhancedSiteControls) {
+      // Redirect back to the main page if we try to view the new site
+      // permissions page but the flag is not set.
+      navigation.replaceWith({page: Page.LIST});
+      return;
     }
 
     if (fromPage !== toPage) {
@@ -615,7 +628,8 @@ class ExtensionsManagerElement extends PolymerElement {
     const viewType = (e.composedPath()[0] as HTMLElement).tagName;
     if (viewType === 'EXTENSIONS-ITEM-LIST' ||
         viewType === 'EXTENSIONS-KEYBOARD-SHORTCUTS' ||
-        viewType === 'EXTENSIONS-ACTIVITY-LOG') {
+        viewType === 'EXTENSIONS-ACTIVITY-LOG' ||
+        viewType === 'EXTENSIONS-SITE-PERMISSIONS') {
       return;
     }
 

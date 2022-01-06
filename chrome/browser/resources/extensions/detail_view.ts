@@ -78,6 +78,13 @@ export class ExtensionsDetailViewElement extends
       /** Whether the user has enabled the UI's developer mode. */
       inDevMode: Boolean,
 
+      /**
+       * Whether enhanced site controls have been enabled (through a feature
+       * flag). For this page, there are some changes to the site permissions
+       * section.
+       */
+      enableEnhancedSiteControls: Boolean,
+
       /** Whether "allow in incognito" option should be shown. */
       incognitoAvailable: Boolean,
 
@@ -96,6 +103,7 @@ export class ExtensionsDetailViewElement extends
   data: chrome.developerPrivate.ExtensionInfo;
   delegate: ItemDelegate;
   inDevMode: boolean;
+  enableEnhancedSiteControls: boolean;
   incognitoAvailable: boolean;
   showActivityLog: boolean;
   fromActivityLog: boolean;

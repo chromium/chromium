@@ -367,6 +367,12 @@
   <message name="IDS_EXTENSIONS_SEARCH" desc="The text displayed in the search box on the chrome://extensions page.">
     Search extensions
   </message>
+  <message name="IDS_EXTENSIONS_SITE_PERMISSIONS" desc="The text for the link to manage site permissions for extensions.">
+    Site permissions
+  </message>
+  <message name="IDS_EXTENSIONS_SITE_PERMISSIONS_PAGE_TITLE" desc="The title for the extensions site permissions management page.">
+    Site permissions
+  </message>
   <message name="IDS_EXTENSIONS_EDIT_SHORTCUT" desc="The label for a button to edit the shortcut.">
     Edit shortcut
   </message>

@@ -1,4 +1,4 @@
-<style include="cr-icons">
+<style include="cr-icons cr-hidden-style">
   :host {
     --sidebar-inactive-color: #5a5a5a;
     color: var(--sidebar-inactive-color);
@@ -61,6 +61,13 @@
   <a class="section-item" id="sections-extensions" href="/"
       on-click="onLinkTap_" data-path="items-list">
     $i18n{sidebarExtensions}
+    <paper-ripple></paper-ripple>
+  </a>
+  <a class="section-item" id="sections-site-permissions"
+      hidden="[[!enableEnhancedSiteControls]]"
+      href="/sitePermissions" on-click="onLinkTap_"
+      data-path="site-permissions">
+    $i18n{sitePermissions}
     <paper-ripple></paper-ripple>
   </a>
   <a class="section-item" id="sections-shortcuts" href="/shortcuts"

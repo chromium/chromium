@@ -9,6 +9,7 @@ GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "chrome/browser/ui/webui/extensions/' +
     'extension_settings_browsertest.h"');
+GEN('#include "chrome/browser/ui/ui_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 GEN('#include "build/chromeos_buildflags.h"');
 
@@ -476,6 +477,20 @@ TEST_F(
     'CrExtensionsManagerTestWithMultipleExtensionTypesInstalled',
     'PageTitleUpdate', function() {
       this.runMochaTest(extension_manager_tests.TestNames.PageTitleUpdate);
+    });
+
+TEST_F(
+    'CrExtensionsManagerTestWithMultipleExtensionTypesInstalled',
+    'NavigateToSitePermissionsFail', function() {
+      this.runMochaTest(
+          extension_manager_tests.TestNames.NavigateToSitePermissionsFail);
+    });
+
+TEST_F(
+    'CrExtensionsManagerTestWithMultipleExtensionTypesInstalled',
+    'NavigateToSitePermissionsSuccess', function() {
+      this.runMochaTest(
+          extension_manager_tests.TestNames.NavigateToSitePermissionsSuccess);
     });
 
 var CrExtensionsManagerTestWithIdQueryParam =

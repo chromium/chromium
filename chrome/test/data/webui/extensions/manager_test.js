@@ -16,6 +16,10 @@ extension_manager_tests.TestNames = {
   ItemListVisibility: 'item list visibility',
   SplitItems: 'split items',
   PageTitleUpdate: 'updates the title based on current route',
+  NavigateToSitePermissionsFail:
+      'url navigation to site permissions page without flag set',
+  NavigateToSitePermissionsSuccess:
+      'url navigation to site permissions page with flag set',
 };
 
 function getDataByName(list, name) {
@@ -25,7 +29,7 @@ function getDataByName(list, name) {
 }
 
 suite(extension_manager_tests.suiteName, function() {
-  /** @type {Manager} */
+  /** @type {ExtensionsManagerElement} */
   let manager;
 
   /** @param {string} viewElement */
@@ -139,4 +143,33 @@ suite(extension_manager_tests.suiteName, function() {
     flush();
     expectEquals('Extensions', document.title);
   });
+
+  test(
+      assert(extension_manager_tests.TestNames.NavigateToSitePermissionsFail),
+      function() {
+        expectFalse(manager.enableEnhancedSiteControls);
+
+        // Try to open the site permissions page.
+        navigation.navigateTo({page: Page.SITE_PERMISSIONS});
+        flush();
+
+        // Should be re-routed to the main page with enableEnhancedSiteControls
+        // set to false.
+        assertViewActive('extensions-item-list');
+      });
+
+  test(
+      assert(
+          extension_manager_tests.TestNames.NavigateToSitePermissionsSuccess),
+      function() {
+        // Set the enableEnhancedSiteControls flag to true.
+        manager.enableEnhancedSiteControls = true;
+        flush();
+
+        // Try to open the site permissions page. The navigation should succeed
+        // with enableEnhancedSiteControls set to true.
+        navigation.navigateTo({page: Page.SITE_PERMISSIONS});
+        flush();
+        assertViewActive('extensions-site-permissions');
+      });
 });

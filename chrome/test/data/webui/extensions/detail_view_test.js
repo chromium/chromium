@@ -55,6 +55,7 @@ suite(extension_detail_view_tests.suiteName, function() {
     item.set('inDevMode', false);
     item.set('incognitoAvailable', true);
     item.set('showActivityLog', false);
+    item.set('enableEnhancedSiteControls', false);
     document.body.appendChild(item);
   });
 

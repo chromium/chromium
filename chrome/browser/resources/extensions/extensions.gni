@@ -48,6 +48,7 @@ web_component_files = [
   "shared_vars.ts",
   "shortcut_input.ts",
   "sidebar.ts",
+  "site_permissions.ts",
   "toggle_row.ts",
   "toolbar.ts",
 ]

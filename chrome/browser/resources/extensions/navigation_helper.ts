@@ -13,6 +13,7 @@ export enum Page {
   LIST = 'items-list',
   DETAILS = 'details-view',
   ACTIVITY_LOG = 'activity-log',
+  SITE_PERMISSIONS = 'site-permissions',
   SHORTCUTS = 'keyboard-shortcuts',
   ERRORS = 'error-page',
 }
@@ -103,6 +104,9 @@ export class NavigationHelper {
     if (this.currentPath_ === '/shortcuts') {
       return {page: Page.SHORTCUTS};
     }
+    if (this.currentPath_ === '/sitePermissions') {
+      return {page: Page.SITE_PERMISSIONS};
+    }
 
     return {page: Page.LIST};
   }
@@ -181,6 +185,9 @@ export class NavigationHelper {
         } else {
           path = '/?id=' + entry.extensionId;
         }
+        break;
+      case Page.SITE_PERMISSIONS:
+        path = '/sitePermissions';
         break;
       case Page.SHORTCUTS:
         path = '/shortcuts';

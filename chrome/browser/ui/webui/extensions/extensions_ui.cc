@@ -59,8 +59,7 @@ namespace {
 constexpr char kInDevModeKey[] = "inDevMode";
 constexpr char kShowActivityLogKey[] = "showActivityLog";
 constexpr char kLoadTimeClassesKey[] = "loadTimeClasses";
-constexpr char kExtensionsMenuAccessControlEnabled[] =
-    "extensionsMenuAccessControlEnabled";
+constexpr char kEnableEnhancedSiteControls[] = "enableEnhancedSiteControls";
 
 std::string GetLoadTimeClasses(bool in_dev_mode) {
   return in_dev_mode ? "in-dev-mode" : std::string();
@@ -242,6 +241,8 @@ content::WebUIDataSource* CreateExtensionsSource(Profile* profile,
     {"packDialogKeyFile", IDS_EXTENSIONS_PACK_DIALOG_KEY_FILE_LABEL},
     {"packDialogContent", IDS_EXTENSION_PACK_DIALOG_HEADING},
     {"packDialogConfirm", IDS_EXTENSIONS_PACK_DIALOG_CONFIRM_BUTTON},
+    {"sitePermissions", IDS_EXTENSIONS_SITE_PERMISSIONS},
+    {"sitePermissionsPageTitle", IDS_EXTENSIONS_SITE_PERMISSIONS_PAGE_TITLE},
     {"editShortcut", IDS_EXTENSIONS_EDIT_SHORTCUT},
     {"shortcutNotSet", IDS_EXTENSIONS_SHORTCUT_NOT_SET},
     {"shortcutScopeGlobal", IDS_EXTENSIONS_SHORTCUT_SCOPE_GLOBAL},
@@ -335,7 +336,7 @@ content::WebUIDataSource* CreateExtensionsSource(Profile* profile,
   source->AddString(kLoadTimeClassesKey, GetLoadTimeClasses(in_dev_mode));
 
   source->AddBoolean(
-      kExtensionsMenuAccessControlEnabled,
+      kEnableEnhancedSiteControls,
       base::FeatureList::IsEnabled(features::kExtensionsMenuAccessControl));
 
   return source;
