@@ -99,6 +99,11 @@ TEST(InsetsFTest, Scale) {
   EXPECT_EQ(InsetsF(24.5f, 12.5f, 10.5f, 2.5f), testf);
   testf = ScaleInsets(in, 2.5f);
   EXPECT_EQ(InsetsF(17.5f, 12.5f, 7.5f, 2.5f), testf);
+
+  in.Scale(2.5f, 3.5f);
+  EXPECT_EQ(InsetsF(24.5f, 12.5f, 10.5f, 2.5f), in);
+  in.Scale(-2.5f);
+  EXPECT_EQ(InsetsF(-61.25f, -31.25f, -26.25f, -6.25f), in);
 }
 
 TEST(InsetsFTest, ScaleNegative) {
@@ -108,6 +113,11 @@ TEST(InsetsFTest, ScaleNegative) {
   EXPECT_EQ(InsetsF(-24.5f, -12.5f, -10.5f, -2.5f), testf);
   testf = ScaleInsets(in, 2.5f);
   EXPECT_EQ(InsetsF(-17.5f, -12.5f, -7.5f, -2.5f), testf);
+
+  in.Scale(2.5f, 3.5f);
+  EXPECT_EQ(InsetsF(-24.5f, -12.5f, -10.5f, -2.5f), in);
+  in.Scale(-2.5f);
+  EXPECT_EQ(InsetsF(61.25f, 31.25f, 26.25f, 6.25f), in);
 }
 
 TEST(InsetsFTest, SetToMax) {

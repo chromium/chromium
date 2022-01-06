@@ -961,7 +961,7 @@ gfx::RectF GM2TabStyle::ScaleAndAlignBounds(const gfx::Rect& bounds,
 
   // Convert back to full bounds.  It's OK that the outer corners of the curves
   // around the separator may not be snapped to the pixel grid as a result.
-  aligned_bounds.Inset(-layout_insets.Scale(scale));
+  aligned_bounds.Inset(-gfx::ScaleInsets(layout_insets, scale));
   return aligned_bounds;
 }
 

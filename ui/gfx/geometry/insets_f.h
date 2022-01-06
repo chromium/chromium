@@ -79,10 +79,13 @@ class GEOMETRY_EXPORT InsetsF {
     return InsetsF(-top_, -left_, -bottom_, -right_);
   }
 
-  InsetsF Scale(float scale) const {
-    return InsetsF(scale * top(), scale * left(), scale * bottom(),
-                   scale * right());
+  void Scale(float x_scale, float y_scale) {
+    top_ *= y_scale;
+    left_ *= x_scale;
+    bottom_ *= y_scale;
+    right_ *= x_scale;
   }
+  void Scale(float scale) { Scale(scale, scale); }
 
   // Returns a string representation of the insets.
   std::string ToString() const;
@@ -99,14 +102,13 @@ class GEOMETRY_EXPORT InsetsF {
 // test. This should not be used in production code - call ToString() instead.
 void PrintTo(const InsetsF& point, ::std::ostream* os);
 
-inline InsetsF ScaleInsets(const InsetsF& i, float scale) {
-  return InsetsF(i.top() * scale, i.left() * scale, i.bottom() * scale,
-                 i.right() * scale);
+inline InsetsF ScaleInsets(InsetsF i, float x_scale, float y_scale) {
+  i.Scale(x_scale, y_scale);
+  return i;
 }
 
-inline InsetsF ScaleInsets(const InsetsF& i, float x_scale, float y_scale) {
-  return InsetsF(i.top() * y_scale, i.left() * x_scale, i.bottom() * y_scale,
-                 i.right() * x_scale);
+inline InsetsF ScaleInsets(const InsetsF& i, float scale) {
+  return ScaleInsets(i, scale, scale);
 }
 
 inline InsetsF operator+(InsetsF lhs, const InsetsF& rhs) {
