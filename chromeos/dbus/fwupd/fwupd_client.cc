@@ -156,9 +156,10 @@ class FwupdClientImpl : public FwupdClient {
   void RequestUpdatesCallback(const std::string& device_id,
                               dbus::Response* response,
                               dbus::ErrorResponse* error_response) {
+    bool can_parse = true;
     if (!response) {
       LOG(ERROR) << "No Dbus response received from fwupd.";
-      return;
+      can_parse = false;
     }
 
     dbus::MessageReader reader(response);
@@ -166,17 +167,18 @@ class FwupdClientImpl : public FwupdClient {
 
     if (!reader.PopArray(&array_reader)) {
       LOG(ERROR) << "Failed to parse string from DBus Signal";
-      return;
+      can_parse = false;
     }
 
     FwupdUpdateList updates;
-    while (array_reader.HasMoreData()) {
+    while (can_parse && array_reader.HasMoreData()) {
       // Parse update description.
       std::unique_ptr<base::DictionaryValue> dict =
           PopStringToStringDictionary(&array_reader);
       if (!dict) {
         LOG(ERROR) << "Failed to parse the update description.";
-        return;
+        // Ran into an error, exit early.
+        break;
       }
 
       const auto* version = dict->FindKey("Version");
