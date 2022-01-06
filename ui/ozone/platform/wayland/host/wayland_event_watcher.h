@@ -17,6 +17,7 @@ struct wl_event_queue;
 namespace base {
 class Thread;
 class SingleThreadTaskRunner;
+class WaitableEvent;
 }  // namespace base
 
 namespace ui {
@@ -58,6 +59,10 @@ class WaylandEventWatcher : public base::MessagePumpForUI::FdWatcher {
   void MaybePrepareReadQueue();
   void DispatchPendingQueue();
 
+  // Dispatches pending tasks. Must only be called on main thread.
+  // Signals |event| before dispatching the pending tasks.
+  void DispatchPendingMainThread(base::WaitableEvent* event);
+
   // Checks if |display_| has any error set. If so, |shutdown_cb_| is executed
   // and false is returned.
   bool CheckForErrors();
@@ -66,6 +71,7 @@ class WaylandEventWatcher : public base::MessagePumpForUI::FdWatcher {
 
   wl_display* const display_;  // Owned by WaylandConnection.
   wl_event_queue* const event_queue_;  // Owned by WaylandConnection.
+  base::WeakPtr<WaylandEventWatcher> weak_this_;  // Bound to the main thread.
 
   bool watching_ = false;
   bool prepared_ = false;
@@ -80,6 +86,12 @@ class WaylandEventWatcher : public base::MessagePumpForUI::FdWatcher {
   // continue to watch the file descriptor on the same thread where the
   // ozone_unittests run.
   bool use_dedicated_polling_thread_ = true;
+
+  // Set to true when the event watcher begins to shut down. Setting this to
+  // true has two effects:
+  // (1) the main thread will stop dispatching queued events
+  // (2) the polling thread will stop posting tasks to the main thread.
+  std::atomic<bool> shutting_down_{false};
 
   base::OnceCallback<void()> shutdown_cb_;
 
@@ -97,6 +109,7 @@ class WaylandEventWatcher : public base::MessagePumpForUI::FdWatcher {
   // The thread's task runner where the wl_display's fd is being watched.
   scoped_refptr<base::SingleThreadTaskRunner> watching_thread_task_runner_;
 
+  // This weak factory must only be accessed on the main thread.
   base::WeakPtrFactory<WaylandEventWatcher> weak_factory_{this};
 };
 

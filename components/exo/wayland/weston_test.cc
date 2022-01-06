@@ -52,7 +52,10 @@ static void weston_test_move_pointer(struct wl_client* client,
   ui_controls::SendMouseMoveNotifyWhenDone(point_in_root.x(), point_in_root.y(),
                                            run_loop.QuitClosure());
   run_loop.Run();
-  weston_test_send_pointer_position(resource, x, y);
+  // TODO(https://crbug.com/1284726): This should not be necessary.
+  // At this point the resource could have been destroyed.
+  if (GetUserDataAs<WestonTestState>(resource))
+    weston_test_send_pointer_position(resource, x, y);
 }
 
 static void weston_test_send_button(struct wl_client* client,
@@ -93,7 +96,11 @@ static void weston_test_send_button(struct wl_client* client,
   ui_controls::SendMouseEventsNotifyWhenDone(mouse_button, mouse_state,
                                              run_loop.QuitClosure());
   run_loop.Run();
-  weston_test_send_pointer_button(resource, button, state);
+
+  // TODO(https://crbug.com/1284726): This should not be necessary.
+  // At this point the resource could have been destroyed.
+  if (GetUserDataAs<WestonTestState>(resource))
+    weston_test_send_pointer_button(resource, button, state);
 }
 
 static void weston_test_reset_pointer(struct wl_client* client,
@@ -105,8 +112,12 @@ static void weston_test_reset_pointer(struct wl_client* client,
     ui_controls::SendMouseEventsNotifyWhenDone(
         ui_controls::LEFT, ui_controls::UP, run_loop.QuitClosure());
     run_loop.Run();
-    weston_test_send_pointer_button(resource, BTN_LEFT,
-                                    WL_POINTER_BUTTON_STATE_RELEASED);
+    // TODO(https://crbug.com/1284726): This should not be necessary.
+    // At this point the resource could have been destroyed.
+    if (GetUserDataAs<WestonTestState>(resource)) {
+      weston_test_send_pointer_button(resource, BTN_LEFT,
+                                      WL_POINTER_BUTTON_STATE_RELEASED);
+    }
   }
   if (weston_test->middle_button_pressed) {
     weston_test->middle_button_pressed = false;
@@ -114,8 +125,12 @@ static void weston_test_reset_pointer(struct wl_client* client,
     ui_controls::SendMouseEventsNotifyWhenDone(
         ui_controls::MIDDLE, ui_controls::UP, run_loop.QuitClosure());
     run_loop.Run();
-    weston_test_send_pointer_button(resource, BTN_MIDDLE,
-                                    WL_POINTER_BUTTON_STATE_RELEASED);
+    // TODO(https://crbug.com/1284726): This should not be necessary.
+    // At this point the resource could have been destroyed.
+    if (GetUserDataAs<WestonTestState>(resource)) {
+      weston_test_send_pointer_button(resource, BTN_MIDDLE,
+                                      WL_POINTER_BUTTON_STATE_RELEASED);
+    }
   }
   if (weston_test->right_button_pressed) {
     weston_test->right_button_pressed = false;
@@ -123,8 +138,12 @@ static void weston_test_reset_pointer(struct wl_client* client,
     ui_controls::SendMouseEventsNotifyWhenDone(
         ui_controls::RIGHT, ui_controls::UP, run_loop.QuitClosure());
     run_loop.Run();
-    weston_test_send_pointer_button(resource, BTN_RIGHT,
-                                    WL_POINTER_BUTTON_STATE_RELEASED);
+    // TODO(https://crbug.com/1284726): This should not be necessary.
+    // At this point the resource could have been destroyed.
+    if (GetUserDataAs<WestonTestState>(resource)) {
+      weston_test_send_pointer_button(resource, BTN_RIGHT,
+                                      WL_POINTER_BUTTON_STATE_RELEASED);
+    }
   }
 }
 
@@ -198,7 +217,10 @@ static void weston_test_send_key(struct wl_client* client,
       weston_test->command_pressed,
       run_loop.QuitClosure());
   run_loop.Run();
-  weston_test_send_keyboard_key(resource, key, state);
+  // TODO(https://crbug.com/1284726): This should not be necessary.
+  // At this point the resource could have been destroyed.
+  if (GetUserDataAs<WestonTestState>(resource))
+    weston_test_send_keyboard_key(resource, key, state);
 }
 
 static void weston_test_device_release(struct wl_client* client,

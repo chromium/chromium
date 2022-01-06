@@ -14,6 +14,7 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/current_thread.h"
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -25,10 +26,6 @@
 namespace ui {
 
 namespace {
-
-void DispatchPending(wl_display* display, wl_event_queue* event_queue) {
-  wl_display_dispatch_queue_pending(display, event_queue);
-}
 
 void wayland_log(const char* fmt, va_list argp) {
   LOG(WARNING) << "libwayland: " << base::StringPrintV(fmt, argp);
@@ -88,13 +85,14 @@ void WaylandEventWatcher::SetShutdownCb(
 void WaylandEventWatcher::StartProcessingEvents() {
   if (!ui_thread_task_runner_)
     ui_thread_task_runner_ = base::ThreadTaskRunnerHandle::Get();
+  weak_this_ = weak_factory_.GetWeakPtr();
   if (use_dedicated_polling_thread_ && !thread_) {
     // FD watching will happen on a different thread.
     DETACH_FROM_THREAD(thread_checker_);
 
     thread_ = std::make_unique<WaylandEventWatcherThread>(
         base::BindOnce(&WaylandEventWatcher::StartProcessingEventsInternal,
-                       weak_factory_.GetWeakPtr()));
+                       base::Unretained(this)));
     base::Thread::Options thread_options;
     thread_options.message_pump_type = base::MessagePumpType::UI;
 
@@ -113,14 +111,18 @@ void WaylandEventWatcher::StartProcessingEvents() {
 }
 
 void WaylandEventWatcher::StopProcessingEvents() {
+  shutting_down_ = true;
   if (!watching_)
     return;
 
   if (use_dedicated_polling_thread_) {
+    // This object is constructed and destroyed on the main thread. As such, it
+    // doesn't makes sense to pass a WeakPtr bound to the main thread for
+    // dereferencing on the watching thread. This code has never worked.
     watching_thread_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&WaylandEventWatcher::StopProcessingEventsInternal,
-                       weak_factory_.GetWeakPtr()));
+                       base::Unretained(this)));
   } else {
     StopProcessingEventsInternal();
   }
@@ -228,13 +230,39 @@ void WaylandEventWatcher::MaybePrepareReadQueue() {
 }
 
 void WaylandEventWatcher::DispatchPendingQueue() {
+  // Once the class is shutting down, never dispatch any more events.
+  if (shutting_down_)
+    return;
+
   if (ui_thread_task_runner_->BelongsToCurrentThread()) {
     DCHECK(!use_dedicated_polling_thread_);
-    DispatchPending(display_, event_queue_);
+    DispatchPendingMainThread(nullptr);
   } else {
     DCHECK(use_dedicated_polling_thread_);
-    auto cb = base::BindOnce(&DispatchPending, display_, event_queue_);
+    base::WaitableEvent event;
+    auto cb = base::BindOnce(&WaylandEventWatcher::DispatchPendingMainThread,
+                             weak_this_, &event);
     ui_thread_task_runner_->PostTask(FROM_HERE, std::move(cb));
+
+    // The point of the dedicated polling thread is to let the main thread know
+    // that there are events to be dispatched. Now that this has happened the
+    // polling thread should go to sleep until the main thread is finished
+    // dispatching those events, at which point the dedicated polling thread
+    // should resume.
+    event.Wait();
+  }
+}
+
+void WaylandEventWatcher::DispatchPendingMainThread(
+    base::WaitableEvent* event) {
+  // wl_display_dispatch_queue_pending may block if dispatching events results
+  // in a tab dragging that spins a run loop, which doesn't return until it's
+  // over. Thus, signal before this function is called.
+  if (event)
+    event->Signal();
+
+  if (!shutting_down_) {
+    wl_display_dispatch_queue_pending(display_, event_queue_);
   }
 }
 
