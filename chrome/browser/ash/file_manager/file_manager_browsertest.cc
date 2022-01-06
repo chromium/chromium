@@ -446,7 +446,7 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("renameFileDrive"),
         TestCase("renameNewFolderDownloads").InGuestMode(),
         TestCase("renameNewFolderDownloads"),
-        TestCase("renameNewFolderDrive")));
+        TestCase("renameRemovableWithKeyboardOnFileList")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     ContextMenu, /* context_menu.js for file list */

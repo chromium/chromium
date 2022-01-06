@@ -5,7 +5,7 @@
 import {ENTRIES, getCaller, pending, repeatUntil, RootPath, sendTestMessage, TestEntryInfo} from '../test_util.js';
 import {testcase} from '../testcase.js';
 
-import {expandTreeItem, remoteCall, setupAndWaitUntilReady} from './background.js';
+import {expandTreeItem, IGNORE_APP_ERRORS, remoteCall, setupAndWaitUntilReady} from './background.js';
 import {TREEITEM_DOWNLOADS, TREEITEM_DRIVE} from './create_new_folder.js';
 
 /**
@@ -323,6 +323,70 @@ testcase.renameNewFolderDownloads = () => {
 
 testcase.renameNewFolderDrive = () => {
   return testRenameFolder(RootPath.DRIVE, TREEITEM_DRIVE);
+};
+
+/**
+ * Tests renaming partitions with the keyboard on the file list.
+ */
+testcase.renameRemovableWithKeyboardOnFileList = async () => {
+  // Open Files app on local downloads.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.world]);
+
+  // Mount removable device with partitions.
+  await sendTestMessage({name: 'mountUsbWithMultiplePartitionTypes'});
+
+  // Wait and select the removable group by clicking the label.
+  const removableGroup = '#directory-tree [root-type-icon="removable"]';
+  await remoteCall.waitAndClickElement(appId, removableGroup);
+
+  // Focus on the file list.
+  await remoteCall.callRemoteTestUtil('focus', appId, ['#file-list']);
+
+  // Wait for partitions to show up.
+  const expectedRows = [
+    ['partition-1', '--', 'ntfs', ''], ['partition-2', '--', 'ext4', ''],
+    ['partition-3', '--', 'vfat', '']
+  ];
+  await remoteCall.waitForFiles(
+      appId, expectedRows, {ignoreLastModifiedTime: true});
+
+  // Attempt to rename partition with a label longer than permitted for fat32.
+  const partitionToRename = 'partition-3';  // fat32
+  await renameFile(appId, partitionToRename, 'very-long-partition-name');
+
+  // Verify that an error was triggered.
+  const errorTextElement =
+      await remoteCall.waitForElement(appId, '.cr-dialog-text');
+  chrome.test.assertEq(
+      `Use a name that's 11 characters or less`, errorTextElement.text);
+
+  // Dismiss the error dialog.
+  await remoteCall.waitAndClickElement(appId, '.cr-dialog-ok');
+
+  // Enter ctrl+A to select the old text so we can replace it.
+  const textInput = '#file-list > li input';
+  await remoteCall.callRemoteTestUtil(
+      'fakeKeyDown', appId, [textInput, 'A', true, false, false]);
+
+  // Enter a valid name this time.
+  const smallerPartitionName = 'smaller';
+  const enterKey = [textInput, 'Enter', false, false, false];
+  await remoteCall.inputText(appId, textInput, smallerPartitionName);
+  await remoteCall.callRemoteTestUtil('fakeKeyDown', appId, enterKey);
+
+  // Wait for the renaming input element to disappear.
+  await remoteCall.waitForElementLost(appId, textInput);
+
+  // verify the partition was successfully renamed.
+  expectedRows[2][0] = smallerPartitionName;
+  await remoteCall.waitForFiles(
+      appId, expectedRows, {ignoreLastModifiedTime: true});
+
+  // Even though the Files app rename flow worked, the background.js page
+  // console errors about not being able to 'mount' the older volume name
+  // due to a disk_mount_manager.cc error: user/fake-usb not found.
+  return IGNORE_APP_ERRORS;
 };
 
 /**

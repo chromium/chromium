@@ -6,10 +6,11 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {AlertDialog, ConfirmDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
 
 import {strf, util} from '../../common/js/util.js';
+import {VolumeInfo} from '../../externs/volume_info.js';
 
 import {FileFilter} from './directory_contents.js';
 import {DirectoryModel} from './directory_model.js';
-import {getRenameErrorMessage, renameEntry, validateFileName} from './file_rename.js';
+import {getRenameErrorMessage, renameEntry, validateExternalDriveName, validateFileName} from './file_rename.js';
 import {FileSelectionHandler} from './file_selection.js';
 import {ListContainer} from './ui/list_container.js';
 
@@ -45,6 +46,16 @@ export class NamingController {
 
     /** @private @const {!FileSelectionHandler} */
     this.selectionHandler_ = selectionHandler;
+
+    /**
+     * Whether the entry being renamed is a root of a removable
+     * partition/volume.
+     * @private {boolean}
+     */
+    this.isRemovableRoot_ = false;
+
+    /** @private {?VolumeInfo} */
+    this.volumeInfo_ = null;
 
     // Register events.
     this.listContainer_.renameInput.addEventListener(
@@ -142,7 +153,17 @@ export class NamingController {
     return !!this.listContainer_.renameInput.currentEntry;
   }
 
-  initiateRename() {
+  /**
+   * @param {boolean} isRemovableRoot Indicates whether the target is a
+   *     removable volume root or not.
+   * @param {VolumeInfo} volumeInfo A volume information about the target entry.
+   *     |volumeInfo| can be null if method is invoked on a folder that is in
+   *     the tree view and is not root of an external drive.
+   */
+  initiateRename(isRemovableRoot = false, volumeInfo = null) {
+    this.isRemovableRoot_ = isRemovableRoot;
+    this.volumeInfo_ = this.isRemovableRoot_ ? assert(volumeInfo) : null;
+
     const selectedIndex = this.listContainer_.selectionModel.selectedIndex;
     const item =
         this.listContainer_.currentList.getListItemByIndex(selectedIndex);
@@ -265,6 +286,8 @@ export class NamingController {
       return;
     }
 
+    const volumeInfo = this.volumeInfo_;
+    const isRemovableRoot = this.isRemovableRoot_;
     input.validation_ = true;
     const validationDone = valid => {
       input.validation_ = false;
@@ -289,42 +312,71 @@ export class NamingController {
       // case of success.
       nameNode.textContent = newName;
 
-      renameEntry(
-          entry, newName,
-          newEntry => {
-            this.directoryModel_.onRenameEntry(entry, assert(newEntry), () => {
-              // Select new entry.
-              this.listContainer_.currentList.selectionModel.selectedIndex =
-                  this.directoryModel_.getFileList().indexOf(newEntry);
-              // Force to update selection immediately.
-              this.selectionHandler_.onFileSelectionChanged();
+      if (isRemovableRoot) {
+        chrome.fileManagerPrivate.renameVolume(volumeInfo.volumeId, newName);
 
+        // Select new entry.
+        this.listContainer_.currentList.selectionModel.selectedIndex =
+            this.directoryModel_.getFileList().indexOf(entry);
+        // Force to update selection immediately.
+        this.selectionHandler_.onFileSelectionChanged();
+
+        renamedItemElement.removeAttribute('renaming');
+        this.listContainer_.endBatchUpdates();
+
+        // Focus may go out of the list. Back it to the list.
+        this.listContainer_.currentList.focus();
+      } else {
+        renameEntry(
+            entry, newName,
+            newEntry => {
+              this.directoryModel_.onRenameEntry(
+                  entry, assert(newEntry), () => {
+                    // Select new entry.
+                    this.listContainer_.currentList.selectionModel
+                        .selectedIndex =
+                        this.directoryModel_.getFileList().indexOf(newEntry);
+                    // Force to update selection immediately.
+                    this.selectionHandler_.onFileSelectionChanged();
+
+                    renamedItemElement.removeAttribute('renaming');
+                    this.listContainer_.endBatchUpdates();
+
+                    // Focus may go out of the list. Back it to the list.
+                    this.listContainer_.currentList.focus();
+                  });
+            },
+            error => {
+              // Write back to the old name.
+              nameNode.textContent = entry.name;
               renamedItemElement.removeAttribute('renaming');
               this.listContainer_.endBatchUpdates();
 
-              // Focus may go out of the list. Back it to the list.
-              this.listContainer_.currentList.focus();
+              // Show error dialog.
+              const message = getRenameErrorMessage(error, entry, newName);
+              this.alertDialog_.show(message);
             });
-          },
-          error => {
-            // Write back to the old name.
-            nameNode.textContent = entry.name;
-            renamedItemElement.removeAttribute('renaming');
-            this.listContainer_.endBatchUpdates();
-
-            // Show error dialog.
-            const message = getRenameErrorMessage(error, entry, newName);
-            this.alertDialog_.show(message);
-          });
+      }
     };
 
-    // TODO(mtomasz): this.getCurrentDirectoryEntry() might not return the
-    // actual parent if the directory content is a search result. Fix it to do
-    // proper validation.
-    this.validateFileName(
-        /** @type {!DirectoryEntry} */ (
-            this.directoryModel_.getCurrentDirEntry()),
-        newName, validationDone.bind(this));
+    if (isRemovableRoot) {
+      // Validate new name.
+      validateExternalDriveName(
+          newName, assert(volumeInfo && volumeInfo.diskFileSystemType))
+          .then(validationDone.bind(this, true), errorMessage => {
+            this.alertDialog_.show(
+                /** @type {string} */ (errorMessage),
+                validationDone.bind(this, false));
+          });
+    } else {
+      // TODO(mtomasz): this.getCurrentDirectoryEntry() might not return the
+      // actual parent if the directory content is a search result. Fix it to do
+      // proper validation.
+      this.validateFileName(
+          /** @type {!DirectoryEntry} */ (
+              this.directoryModel_.getCurrentDirEntry()),
+          newName, validationDone.bind(this));
+    }
   }
 
   /**

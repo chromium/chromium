@@ -1531,20 +1531,18 @@ CommandHandler.COMMANDS_['rename'] = new class extends FilesCommand {
     if (util.isNonModifiable(fileManager.volumeManager, entry)) {
       return;
     }
+    let isRemovableRoot = false;
+    let volumeInfo = null;
+    if (entry) {
+      volumeInfo = fileManager.volumeManager.getVolumeInfo(entry);
+      // Checks whether the target is an external drive.
+      if (volumeInfo &&
+          CommandUtil.isRootEntry(fileManager.volumeManager, entry)) {
+        isRemovableRoot = true;
+      }
+    }
     if (event.target instanceof DirectoryTree ||
         event.target instanceof DirectoryItem) {
-      let isRemovableRoot = false;
-      let volumeInfo = null;
-      if (entry) {
-        volumeInfo = fileManager.volumeManager.getVolumeInfo(entry);
-        // Checks whether the target is actually external drive or just a folder
-        // inside the drive.
-        if (volumeInfo &&
-            CommandUtil.isRootEntry(fileManager.volumeManager, entry)) {
-          isRemovableRoot = true;
-        }
-      }
-
       if (event.target instanceof DirectoryTree) {
         const directoryTree = event.target;
         assert(fileManager.directoryTreeNamingController)
@@ -1557,7 +1555,7 @@ CommandHandler.COMMANDS_['rename'] = new class extends FilesCommand {
             .attachAndStart(directoryItem, isRemovableRoot, volumeInfo);
       }
     } else {
-      fileManager.namingController.initiateRename();
+      fileManager.namingController.initiateRename(isRemovableRoot, volumeInfo);
     }
   }
 

@@ -37,7 +37,11 @@ export class DirectoryTreeNamingController {
     /** @private {boolean} */
     this.editing_ = false;
 
-    /** @private {boolean} */
+    /**
+     * Whether the entry being renamed is a root of a removable
+     * partition/volume.
+     * @private {boolean}
+     */
     this.isRemovableRoot_ = false;
 
     /** @private {?VolumeInfo} */
@@ -80,9 +84,9 @@ export class DirectoryTreeNamingController {
    * Attaches naming controller to specified directory item and start rename.
    * @param {!DirectoryItem} directoryItem An html element of a node of the
    *     target.
-   * @param {boolean} isRemovableRoot Indicates whether the target is removable
-   *     node or not.
-   * @param {VolumeInfo} volumeInfo A volume information about the target node.
+   * @param {boolean} isRemovableRoot Indicates whether the target is a
+   *     removable volume root or not.
+   * @param {VolumeInfo} volumeInfo A volume information about the target entry.
    *     |volumeInfo| can be null if method is invoked on a folder that is in
    *     the tree view and is not root of an external drive.
    */
