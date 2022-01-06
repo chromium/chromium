@@ -613,17 +613,18 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.Cors.AccessCheckResult" enum="CorsAccessCheckResult"
-    expires_after="M98">
+    expires_after="M102">
   <owner>toyoshim@chromium.org</owner>
   <owner>yhirano@chromium.org</owner>
   <summary>
     The distribution of CORS access check results. This reports whenever CORS
-    AccessCheck runs.
+    AccessCheck runs. This is recorded when a CORS enabled request receives a
+    response and completes CORS checks.
   </summary>
 </histogram>
 
 <histogram name="Net.Cors.AccessCheckResult.NotSecureRequestor"
-    enum="CorsAccessCheckResult" expires_after="M98">
+    enum="CorsAccessCheckResult" expires_after="M102">
   <owner>carlosil@chromium.org</owner>
   <owner>estark@chromium.org</owner>
   <summary>
