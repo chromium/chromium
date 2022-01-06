@@ -55,89 +55,76 @@ def gpu_fyi_windows_builder(*, name, **kwargs):
     kwargs.setdefault("execution_timeout", ci.DEFAULT_EXECUTION_TIMEOUT)
     return ci.gpu.windows_builder(name = name, **kwargs)
 
-ci.gpu.linux_builder(
+ci.thin_tester(
     name = "Android FYI Release (NVIDIA Shield TV)",
     console_view_entry = consoles.console_view_entry(
         category = "Android|N64|NVDA",
         short_name = "STV",
     ),
+    triggered_by = ["GPU FYI Android arm64 Builder"],
 )
 
-ci.gpu.linux_builder(
+ci.thin_tester(
     name = "Android FYI Release (Nexus 5)",
     console_view_entry = consoles.console_view_entry(
         category = "Android|L32",
         short_name = "N5",
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
+    triggered_by = ["GPU FYI Android arm Builder"],
 )
 
-ci.gpu.linux_builder(
+ci.thin_tester(
     name = "Android FYI Release (Nexus 5X)",
     console_view_entry = consoles.console_view_entry(
         category = "Android|M64|QCOM",
         short_name = "N5X",
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
+    triggered_by = ["GPU FYI Android arm64 Builder"],
 )
 
-ci.gpu.linux_builder(
+ci.thin_tester(
     name = "Android FYI Release (Nexus 9)",
     console_view_entry = consoles.console_view_entry(
         category = "Android|M64|NVDA",
         short_name = "N9",
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
+    triggered_by = ["GPU FYI Android arm64 Builder"],
 )
 
-ci.gpu.linux_builder(
+ci.thin_tester(
     name = "Android FYI Release (Pixel 2)",
     console_view_entry = consoles.console_view_entry(
         category = "Android|P32|QCOM",
         short_name = "P2",
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
+    triggered_by = ["GPU FYI Android arm Builder"],
 )
 
-ci.gpu.linux_builder(
+ci.thin_tester(
     name = "Android FYI Release (Pixel 4)",
     console_view_entry = consoles.console_view_entry(
         category = "Android|R32|QCOM",
         short_name = "P4",
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
+    triggered_by = ["GPU FYI Android arm Builder"],
 )
 
-ci.gpu.linux_builder(
+ci.thin_tester(
     name = "Android FYI SkiaRenderer GL (Nexus 5X)",
     console_view_entry = consoles.console_view_entry(
         category = "Android|skgl|M64",
         short_name = "N5X",
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
+    triggered_by = ["GPU FYI Android arm64 Builder"],
 )
 
-ci.gpu.linux_builder(
+ci.thin_tester(
     name = "Android FYI SkiaRenderer Vulkan (Pixel 2)",
     console_view_entry = consoles.console_view_entry(
         category = "Android|skv|P32",
         short_name = "P2",
     ),
-    goma_backend = None,
-    reclient_jobs = rbe_jobs.DEFAULT,
-    reclient_instance = rbe_instance.DEFAULT,
+    triggered_by = ["GPU FYI Android arm Builder"],
 )
 
 ci.gpu.linux_builder(
@@ -165,6 +152,9 @@ ci.gpu.linux_builder(
         category = "Android|Builder",
         short_name = "arm",
     ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu.linux_builder(
@@ -173,6 +163,9 @@ ci.gpu.linux_builder(
         category = "Android|Builder",
         short_name = "arm64",
     ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.gpu.linux_builder(
