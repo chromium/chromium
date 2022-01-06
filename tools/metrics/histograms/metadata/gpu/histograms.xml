@@ -1292,6 +1292,10 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Gpu.Metal.ReadWriteTextureSupport"
     enum="MetalReadWriteTextureSupportTier" expires_after="2022-05-31">
+  <obsolete>
+    Code producing this histogram has been reverted while we investigate
+    crashes. Since 2022-01-06.
+  </obsolete>
   <owner>cwallez@chromium.org</owner>
   <owner>graphics-dev@chromium.org</owner>
   <summary>
