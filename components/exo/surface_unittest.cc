@@ -30,6 +30,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -858,38 +859,53 @@ TEST_P(SurfaceTest, SubpixelCoordinate) {
                              false, false, false, false};
   static_assert(base::size(kTestRects) == base::size(kExpectedAligned),
                 "Number of elements in each list should be the identical.");
+  for (int j = 0; j < 2; j++) {
+    const bool kTestCaseRotation = (j == 1);
+    for (size_t i = 0; i < base::size(kTestRects); i++) {
+      auto rect_in_dip = kTestRects[i];
+      device_scale_transform.TransformRect(&rect_in_dip);
+      sub_surface->SetPosition(rect_in_dip.origin());
+      child_surface->SetViewport(rect_in_dip.size());
+      const int kChildBufferScale = 2;
+      child_surface->SetBufferScale(kChildBufferScale);
+      if (kTestCaseRotation) {
+        child_surface->SetBufferTransform(Transform::ROTATE_90);
+      }
+      child_surface->Commit();
+      surface->Commit();
+      base::RunLoop().RunUntilIdle();
 
-  for (size_t i = 0; i < base::size(kTestRects); i++) {
-    auto rect_in_dip = kTestRects[i];
-    device_scale_transform.TransformRect(&rect_in_dip);
-    sub_surface->SetPosition(rect_in_dip.origin());
-    child_surface->SetViewport(rect_in_dip.size());
-    const int kChildBufferScale = 2;
-    child_surface->SetBufferScale(kChildBufferScale);
-    child_surface->Commit();
-    surface->Commit();
-    base::RunLoop().RunUntilIdle();
-
-    const viz::CompositorFrame& frame =
-        GetFrameFromSurface(shell_surface.get());
-    ASSERT_EQ(1u, frame.render_pass_list.size());
-    const auto& quad_list = frame.render_pass_list[0]->quad_list;
-    ASSERT_EQ(2u, quad_list.size());
-    auto transform =
-        quad_list.front()->shared_quad_state->quad_to_target_transform;
-    auto rect = gfx::RectF(quad_list.front()->rect);
-    transform.TransformRect(&rect);
-    if (kExpectedAligned[i]) {
-      EXPECT_EQ(gfx::Transform(), transform);
-      EXPECT_EQ(kTestRects[i], rect);
-    } else {
-      EXPECT_EQ(gfx::Rect(1, 1), quad_list.front()->rect);
-      // Subpixel quads have non identity transforms and due to floating point
-      // math can only be approximately compared.
-      EXPECT_NEAR(kTestRects[i].x(), rect.x(), 0.001f);
-      EXPECT_NEAR(kTestRects[i].y(), rect.y(), 0.001f);
-      EXPECT_NEAR(kTestRects[i].width(), rect.width(), 0.001f);
-      EXPECT_NEAR(kTestRects[i].height(), rect.height(), 0.001f);
+      const viz::CompositorFrame& frame =
+          GetFrameFromSurface(shell_surface.get());
+      ASSERT_EQ(1u, frame.render_pass_list.size());
+      const auto& quad_list = frame.render_pass_list[0]->quad_list;
+      ASSERT_EQ(2u, quad_list.size());
+      auto transform =
+          quad_list.front()->shared_quad_state->quad_to_target_transform;
+      auto rect = gfx::RectF(quad_list.front()->rect);
+      transform.TransformRect(&rect);
+      if (kExpectedAligned[i] && !kTestCaseRotation) {
+        // A transformed rect cannot express a rotation.
+        // Manipulation of texture coordinates, in addition to a transformed
+        // rect, can represent flip/mirror but only as two uv points and not as
+        // a uv rect.
+        auto* tex_draw_quad =
+            viz::TextureDrawQuad::MaterialCast(quad_list.front());
+        EXPECT_POINTF_NEAR(tex_draw_quad->uv_top_left, gfx::PointF(0, 0),
+                           0.001f);
+        EXPECT_POINTF_NEAR(tex_draw_quad->uv_bottom_right, gfx::PointF(1, 1),
+                           0.001f);
+        EXPECT_EQ(gfx::Transform(), transform);
+        EXPECT_EQ(kTestRects[i], rect);
+      } else {
+        EXPECT_EQ(gfx::Rect(1, 1), quad_list.front()->rect);
+        // Subpixel quads have non identity transforms and due to floating point
+        // math can only be approximately compared.
+        EXPECT_NEAR(kTestRects[i].x(), rect.x(), 0.001f);
+        EXPECT_NEAR(kTestRects[i].y(), rect.y(), 0.001f);
+        EXPECT_NEAR(kTestRects[i].width(), rect.width(), 0.001f);
+        EXPECT_NEAR(kTestRects[i].height(), rect.height(), 0.001f);
+      }
     }
   }
 }

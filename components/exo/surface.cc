@@ -1358,7 +1358,11 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
   gfx::RectF target_space_rect(quad_rect);
   quad_to_target_transform.TransformRect(&target_space_rect);
   CHECK(quad_to_target_transform.Preserves2dAxisAlignment());
-  if (gfx::IsNearestRectWithinDistance(target_space_rect, 0.001f)) {
+  // This simple rect representation cannot mathematically express a rotation
+  // (and currently does not express flip/mirror) hence the
+  // 'IsPositiveScaleOrTranslation' check.
+  if (gfx::IsNearestRectWithinDistance(target_space_rect, 0.001f) &&
+      quad_to_target_transform.IsPositiveScaleOrTranslation()) {
     quad_rect = gfx::ToNearestRect(target_space_rect);
     // Later in 'SurfaceAggregator' this transform will have 2d translation.
     quad_to_target_transform = gfx::Transform();
