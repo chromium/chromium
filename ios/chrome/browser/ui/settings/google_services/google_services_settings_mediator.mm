@@ -16,6 +16,7 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/unified_consent/pref_names.h"
 #include "ios/chrome/browser/application_context.h"
+#import "ios/chrome/browser/commerce/price_alert_util.h"
 #import "ios/chrome/browser/policy/policy_util.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
@@ -56,6 +57,8 @@ namespace {
 
 NSString* const kBetterSearchAndBrowsingItemAccessibilityID =
     @"betterSearchAndBrowsingItem_switch";
+NSString* const kTrackPricesOnTabsItemAccessibilityID =
+    @"trackPricesOnTabsItem_switch";
 
 // List of sections.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
@@ -78,6 +81,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   BetterSearchAndBrowsingItemType,
   BetterSearchAndBrowsingManagedItemType,
   PasswordLeakCheckSwitchItemType,
+  TrackPricesOnTabsItemType,
 };
 
 // TODO(crbug.com/1244632): Use the Authentication Service sign-in status API
@@ -170,6 +174,11 @@ bool GetStatusForSigninPolicy() {
 // Account manager service to retrieve Chrome identities.
 @property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
 
+// Preference value for displaying price drop annotations on Tabs for shopping
+// URLs in the Tab Switching UI as price drops are identified.
+@property(nonatomic, strong, readonly)
+    PrefBackedBoolean* trackPricesOnTabsPreference;
+
 @end
 
 @implementation GoogleServicesSettingsMediator
@@ -212,6 +221,10 @@ bool GetStatusForSigninPolicy() {
                    prefName:unified_consent::prefs::
                                 kUrlKeyedAnonymizedDataCollectionEnabled];
     _anonymizedDataCollectionPreference.observer = self;
+    _trackPricesOnTabsPreference = [[PrefBackedBoolean alloc]
+        initWithPrefService:userPrefService
+                   prefName:prefs::kTrackPricesOnTabsEnabled];
+    _trackPricesOnTabsPreference.observer = self;
     _accountManagerService = accountManagerService;
   }
   return self;
@@ -311,6 +324,10 @@ bool GetStatusForSigninPolicy() {
         break;
       case PasswordLeakCheckSwitchItemType:
         [self updateLeakCheckItem];
+        break;
+      case TrackPricesOnTabsItemType:
+        base::mac::ObjCCast<SyncSwitchItem>(item).on =
+            self.trackPricesOnTabsPreference.value;
         break;
     }
   }
@@ -428,6 +445,29 @@ bool GetStatusForSigninPolicy() {
       betterSearchAndBrowsingItem.accessibilityIdentifier =
           kBetterSearchAndBrowsingItemAccessibilityID;
       [items addObject:betterSearchAndBrowsingItem];
+    }
+    if (IsPriceAlertsEnabled()) {
+      if (self.userPrefService->IsManagedPreference(
+              prefs::kTrackPricesOnTabsEnabled)) {
+        TableViewInfoButtonItem* trackPricesOnTabsItem = [self
+            TableViewInfoButtonItemType:TrackPricesOnTabsItemType
+                           textStringID:IDS_IOS_TRACK_PRICES_ON_TABS
+                         detailStringID:IDS_IOS_TRACK_PRICES_ON_TABS_DESCRIPTION
+                                 status:self.trackPricesOnTabsPreference
+                           controllable:self.trackPricesOnTabsPreference];
+        trackPricesOnTabsItem.accessibilityIdentifier =
+            kTrackPricesOnTabsItemAccessibilityID;
+        [items addObject:trackPricesOnTabsItem];
+      } else {
+        SyncSwitchItem* trackPricesOnTabsItem = [self
+            switchItemWithItemType:TrackPricesOnTabsItemType
+                      textStringID:IDS_IOS_TRACK_PRICES_ON_TABS
+                    detailStringID:IDS_IOS_TRACK_PRICES_ON_TABS_DESCRIPTION
+                          dataType:0];
+        trackPricesOnTabsItem.accessibilityIdentifier =
+            kTrackPricesOnTabsItemAccessibilityID;
+        [items addObject:trackPricesOnTabsItem];
+      }
     }
 
     _nonPersonalizedItems = items;
@@ -598,6 +638,9 @@ bool GetStatusForSigninPolicy() {
       self.passwordLeakCheckPreference.value = value;
       // Update the item.
       [self updateLeakCheckItem];
+      break;
+    case TrackPricesOnTabsItemType:
+      self.trackPricesOnTabsPreference.value = value;
       break;
     case AutocompleteSearchesAndURLsManagedItemType:
     case SafeBrowsingManagedItemType:
