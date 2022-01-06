@@ -4,6 +4,7 @@
 
 #include "ash/quick_pair/message_stream/message_stream.h"
 
+#include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/services/quick_pair/quick_pair_process.h"
 #include "ash/services/quick_pair/quick_pair_process_manager.h"
@@ -65,6 +66,7 @@ void MessageStream::Receive() {
 
 void MessageStream::ReceiveDataSuccess(int buffer_size,
                                        scoped_refptr<net::IOBuffer> io_buffer) {
+  RecordMessageStreamReceiveResult(/*success=*/true);
   receive_retry_counter_ = 0;
 
   if (!io_buffer->data()) {
@@ -89,6 +91,8 @@ void MessageStream::ReceiveDataSuccess(int buffer_size,
 void MessageStream::ReceiveDataError(device::BluetoothSocket::ErrorReason error,
                                      const std::string& error_message) {
   QP_LOG(INFO) << __func__ << ": Error: " << error_message;
+  RecordMessageStreamReceiveResult(/*success=*/false);
+  RecordMessageStreamReceiveError(error);
 
   if (error == device::BluetoothSocket::ErrorReason::kDisconnected) {
     OnSocketDisconnected();

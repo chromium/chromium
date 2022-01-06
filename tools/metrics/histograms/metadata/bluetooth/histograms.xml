@@ -485,6 +485,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.FastPair.MessageStream.Receive.ErrorReason"
+    enum="BluetoothSocketErrorReason" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the error reason that caused the failure of receiving data from a
+    socket in the Fast Pair MessageStream opened to the device. This metric is
+    emitted after the socket is failed to be receive to in the MessageStream, in
+    the ReceiveDataError callback.
+  </summary>
+</histogram>
+
+<histogram name="Bluetooth.ChromeOS.FastPair.MessageStream.Receive.Result"
+    enum="BooleanSuccess" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the success or failure of receiving data from a socket in the Fast
+    Pair MessageStream opened to the device. This metric is emitted after the
+    socket is attempted to be receive to in the MessageStream, either
+    ReceiveDataSuccess or ReceiveDataError callbacks.
+  </summary>
+</histogram>
+
 <histogram
     name="Bluetooth.ChromeOS.FastPair.PairFailure.{FastPairPairingProtocol}"
     enum="FastPairPairFailure" expires_after="2022-09-20">

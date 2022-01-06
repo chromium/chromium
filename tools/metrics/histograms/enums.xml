@@ -8791,6 +8791,12 @@ Called by update_bad_message_reasons.py.-->
   <int value="8" label="Unknown or unhandler error"/>
 </enum>
 
+<enum name="BluetoothSocketErrorReason">
+  <int value="0" label="System Error"/>
+  <int value="1" label="IO Pending"/>
+  <int value="2" label="Disconnected"/>
+</enum>
+
 <enum name="BluetoothSocketServiceHash">
   <obsolete>
     No longer used by active histograms in M73.

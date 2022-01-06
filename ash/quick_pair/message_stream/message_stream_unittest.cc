@@ -16,6 +16,7 @@
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "device/bluetooth/bluetooth_socket.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -95,6 +96,11 @@ const std::string kBleAddressString = "AA:BB:CC:DD:EE:FF";
 constexpr int kMaxRetryCount = 10;
 constexpr int kMessageStorageCapacity = 1000;
 constexpr char kTestDeviceAddress[] = "11:12:13:14:15:16";
+
+const char kMessageStreamReceiveResultMetric[] =
+    "Bluetooth.ChromeOS.FastPair.MessageStream.Receive.Result";
+const char kMessageStreamReceiveErrorMetric[] =
+    "Bluetooth.ChromeOS.FastPair.MessageStream.Receive.ErrorReason";
 
 }  // namespace
 
@@ -207,7 +213,10 @@ class MessageStreamTest : public testing::Test, public MessageStream::Observer {
     sdk_version_ = sdk_version;
   }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  protected:
+  base::HistogramTester histogram_tester_;
   scoped_refptr<FakeBluetoothSocket> fake_socket_ =
       base::MakeRefCounted<FakeBluetoothSocket>();
   std::unique_ptr<MessageStream> message_stream_;
@@ -231,6 +240,9 @@ class MessageStreamTest : public testing::Test, public MessageStream::Observer {
 };
 
 TEST_F(MessageStreamTest, ReceiveMessages_Observation_SuccessfulMessage) {
+  histogram_tester().ExpectTotalCount(kMessageStreamReceiveResultMetric, 0);
+  histogram_tester().ExpectTotalCount(kMessageStreamReceiveErrorMetric, 0);
+
   EXPECT_TRUE(model_id_.empty());
   EXPECT_TRUE(message_stream_->messages().empty());
 
@@ -241,9 +253,15 @@ TEST_F(MessageStreamTest, ReceiveMessages_Observation_SuccessfulMessage) {
 
   EXPECT_EQ(model_id_, kModelIdString);
   EXPECT_FALSE(message_stream_->messages().empty());
+
+  histogram_tester().ExpectTotalCount(kMessageStreamReceiveResultMetric, 1);
+  histogram_tester().ExpectTotalCount(kMessageStreamReceiveErrorMetric, 0);
 }
 
 TEST_F(MessageStreamTest, ReceiveMessages_Observation_NullMessage) {
+  histogram_tester().ExpectTotalCount(kMessageStreamReceiveResultMetric, 0);
+  histogram_tester().ExpectTotalCount(kMessageStreamReceiveErrorMetric, 0);
+
   EXPECT_TRUE(model_id_.empty());
   EXPECT_TRUE(message_stream_->messages().empty());
 
@@ -254,6 +272,9 @@ TEST_F(MessageStreamTest, ReceiveMessages_Observation_NullMessage) {
 
   EXPECT_TRUE(message_stream_->messages().empty());
   EXPECT_TRUE(model_id_.empty());
+
+  histogram_tester().ExpectTotalCount(kMessageStreamReceiveResultMetric, 1);
+  histogram_tester().ExpectTotalCount(kMessageStreamReceiveErrorMetric, 0);
 }
 
 TEST_F(MessageStreamTest, ReceiveMessages_GetMessages) {
@@ -284,6 +305,9 @@ TEST_F(MessageStreamTest, ReceiveMessages_CleanUp) {
 }
 
 TEST_F(MessageStreamTest, ReceiveMessages_SocketDisconnect) {
+  histogram_tester().ExpectTotalCount(kMessageStreamReceiveResultMetric, 0);
+  histogram_tester().ExpectTotalCount(kMessageStreamReceiveErrorMetric, 0);
+
   EXPECT_FALSE(on_socket_disconnected_);
   EXPECT_TRUE(message_stream_->messages().empty());
 
@@ -295,6 +319,9 @@ TEST_F(MessageStreamTest, ReceiveMessages_SocketDisconnect) {
 
   EXPECT_TRUE(message_stream_->messages().empty());
   EXPECT_TRUE(on_socket_disconnected_);
+
+  histogram_tester().ExpectTotalCount(kMessageStreamReceiveResultMetric, 1);
+  histogram_tester().ExpectTotalCount(kMessageStreamReceiveErrorMetric, 1);
 }
 
 TEST_F(MessageStreamTest, ReceiveMessages_FailureAfterMaxRetries) {

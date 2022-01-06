@@ -94,6 +94,10 @@ const char kWriteAccountKeyTime[] =
     "Bluetooth.ChromeOS.FastPair.AccountKey.Write.TotalTime";
 const char kTotalDataEncryptorCreateTime[] =
     "Bluetooth.ChromeOS.FastPair.FastPairDataEncryptor.CreateTime";
+const char kMessageStreamReceiveResult[] =
+    "Bluetooth.ChromeOS.FastPair.MessageStream.Receive.Result";
+const char kMessageStreamReceiveError[] =
+    "Bluetooth.ChromeOS.FastPair.MessageStream.Receive.ErrorReason";
 
 }  // namespace
 
@@ -309,6 +313,15 @@ void RecordWriteAccountKeyTime(base::TimeDelta write_time) {
 
 void RecordTotalDataEncryptorCreateTime(base::TimeDelta total_create_time) {
   base::UmaHistogramTimes(kTotalDataEncryptorCreateTime, total_create_time);
+}
+
+void RecordMessageStreamReceiveResult(bool success) {
+  base::UmaHistogramBoolean(kMessageStreamReceiveResult, success);
+}
+
+void RecordMessageStreamReceiveError(
+    device::BluetoothSocket::ErrorReason error) {
+  base::UmaHistogramEnumeration(kMessageStreamReceiveError, error);
 }
 
 }  // namespace quick_pair
