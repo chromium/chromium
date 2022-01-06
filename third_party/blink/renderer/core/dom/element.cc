@@ -2340,13 +2340,6 @@ void Element::setAttribute(const QualifiedName& name,
   setAttribute(name, AtomicString(string));
 }
 
-static inline AtomicString MakeIdForStyleResolution(const AtomicString& value,
-                                                    bool in_quirks_mode) {
-  if (in_quirks_mode)
-    return value.LowerASCII();
-  return value;
-}
-
 DISABLE_CFI_PERF
 void Element::AttributeChanged(const AttributeModificationParams& params) {
   const QualifiedName& name = params.name;
@@ -2362,8 +2355,10 @@ void Element::AttributeChanged(const AttributeModificationParams& params) {
                                        params.new_value);
 
   if (name == html_names::kIdAttr) {
-    AtomicString new_id = MakeIdForStyleResolution(
-        params.new_value, GetDocument().InQuirksMode());
+    AtomicString lowercase_id;
+    if (GetDocument().InQuirksMode() && !params.new_value.IsLowerASCII())
+      lowercase_id = params.new_value.LowerASCII();
+    const AtomicString& new_id = lowercase_id ? lowercase_id : params.new_value;
     if (new_id != GetElementData()->IdForStyleResolution()) {
       AtomicString old_id = GetElementData()->SetIdForStyleResolution(new_id);
       GetDocument().GetStyleEngine().IdChangedForElement(old_id, new_id, *this);
