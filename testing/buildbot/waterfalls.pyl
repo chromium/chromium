@@ -2915,7 +2915,7 @@
           'linux-bionic',
         ],
         'args': [
-          '-custom-image=workstation.qemu-x64-release',
+          '--custom-image=workstation.qemu-x64-release',
         ],
         'swarming': {
           'dimension_sets': [
