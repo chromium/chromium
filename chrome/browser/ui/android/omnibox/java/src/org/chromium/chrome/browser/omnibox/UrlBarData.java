@@ -11,7 +11,9 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.CollectionUtil;
+import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.content_public.common.ContentUrlConstants;
 
 import java.util.HashSet;
@@ -57,6 +59,11 @@ public class UrlBarData {
 
     public static UrlBarData forUrlAndText(String url, String displayText) {
         return forUrlAndText(url, displayText, null);
+    }
+
+    /** Returns whether supplied URL should be shown in the Omnibox/Suggestions list. */
+    public static boolean shouldShowUrl(String url, boolean isIncognito) {
+        return !(NativePage.isNativePageUrl(url, isIncognito) || UrlUtilities.isNTPUrl(url));
     }
 
     public static UrlBarData forUrlAndText(

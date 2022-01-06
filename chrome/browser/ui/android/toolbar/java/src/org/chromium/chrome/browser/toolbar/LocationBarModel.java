@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TrustedCdn;
 import org.chromium.chrome.browser.theme.ThemeUtils;
-import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -248,11 +247,12 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     @Override
     public UrlBarData getUrlBarData() {
-        if (!hasTab()) return UrlBarData.EMPTY;
+        if (!hasTab() || StartSurfaceConfiguration.shouldHandleAsNtp(getTab())) {
+            return UrlBarData.EMPTY;
+        }
 
         String url = getCurrentUrl();
-        if (NativePage.isNativePageUrl(url, isIncognito()) || UrlUtilities.isNTPUrl(url)
-                || StartSurfaceConfiguration.shouldHandleAsNtp(getTab())) {
+        if (!UrlBarData.shouldShowUrl(url, isIncognito())) {
             return UrlBarData.EMPTY;
         }
 

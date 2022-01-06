@@ -14,6 +14,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
 import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
 import org.chromium.chrome.browser.omnibox.R;
+import org.chromium.chrome.browser.omnibox.UrlBarData;
 import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxSuggestionUiType;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionHost;
@@ -164,7 +165,8 @@ public class BasicSuggestionProcessor extends BaseSuggestionViewProcessor {
         boolean urlHighlighted = false;
 
         if (!isSearchSuggestion) {
-            if (!suggestion.getUrl().isEmpty()) {
+            if (!suggestion.getUrl().isEmpty()
+                    && UrlBarData.shouldShowUrl(suggestion.getUrl().getSpec(), false)) {
                 SuggestionSpannable str = new SuggestionSpannable(suggestion.getDisplayText());
                 urlHighlighted = applyHighlightToMatchRegions(
                         str, suggestion.getDisplayTextClassifications());
