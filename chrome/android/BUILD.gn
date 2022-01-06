@@ -907,6 +907,7 @@ junit_binary("chrome_junit_tests") {
     ":base_module_java",
     ":chrome_app_java_resources",
     ":chrome_java",
+    ":chrome_jni_headers",
     ":chrome_public_android_manifest",
     ":delegate_public_impl_java",
     "$google_play_services_package:google_play_services_base_java",

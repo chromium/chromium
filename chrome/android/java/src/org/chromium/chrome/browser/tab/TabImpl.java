@@ -419,7 +419,7 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     @Override
     public void freezeNativePage() {
         if (mNativePage == null || mNativePage.isFrozen()
-                || mNativePage.getView().getParent() == null) {
+                || mNativePage.getView().getParent() != null) {
             return;
         }
         mNativePage = FrozenNativePage.freeze(mNativePage);
