@@ -46,10 +46,10 @@
 #include "media/gpu/vaapi/vaapi_utils.h"
 #include "media/gpu/vaapi/vaapi_wrapper.h"
 #include "media/gpu/vaapi/vp8_vaapi_video_encoder_delegate.h"
-#include "media/gpu/vaapi/vp9_svc_layers.h"
 #include "media/gpu/vaapi/vp9_vaapi_video_encoder_delegate.h"
 #include "media/gpu/vp8_reference_frame_vector.h"
 #include "media/gpu/vp9_reference_frame_vector.h"
+#include "media/gpu/vp9_svc_layers.h"
 
 #define NOTIFY_ERROR(error, msg)                        \
   do {                                                  \

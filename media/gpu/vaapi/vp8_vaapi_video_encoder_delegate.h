@@ -10,9 +10,9 @@
 
 #include "media/base/video_bitrate_allocation.h"
 #include "media/gpu/vaapi/vaapi_video_encoder_delegate.h"
-#include "media/gpu/vaapi/vpx_rate_control.h"
 #include "media/gpu/vp8_picture.h"
 #include "media/gpu/vp8_reference_frame_vector.h"
+#include "media/gpu/vpx_rate_control.h"
 #include "media/parsers/vp8_parser.h"
 
 namespace libvpx {

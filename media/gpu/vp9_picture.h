@@ -17,7 +17,7 @@ namespace media {
 class V4L2VP9Picture;
 class VaapiVP9Picture;
 
-class VP9Picture : public CodecPicture {
+class MEDIA_GPU_EXPORT VP9Picture : public CodecPicture {
  public:
   VP9Picture();
 

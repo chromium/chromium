@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/vaapi/vp9_svc_layers.h"
+#include "media/gpu/vp9_svc_layers.h"
 
 #include <algorithm>
 #include <array>

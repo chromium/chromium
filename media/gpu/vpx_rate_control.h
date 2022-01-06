@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_VAAPI_VPX_RATE_CONTROL_H_
-#define MEDIA_GPU_VAAPI_VPX_RATE_CONTROL_H_
+#ifndef MEDIA_GPU_VPX_RATE_CONTROL_H_
+#define MEDIA_GPU_VPX_RATE_CONTROL_H_
 
 #include <memory>
 
@@ -52,4 +52,4 @@ class VPXRateControl {
 };
 
 }  // namespace media
-#endif  // MEDIA_GPU_VAAPI_VPX_RATE_CONTROL_H_
+#endif  // MEDIA_GPU_VPX_RATE_CONTROL_H_

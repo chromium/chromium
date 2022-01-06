@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_GPU_VAAPI_VP9_SVC_LAYERS_H_
-#define MEDIA_GPU_VAAPI_VP9_SVC_LAYERS_H_
+#ifndef MEDIA_GPU_VP9_SVC_LAYERS_H_
+#define MEDIA_GPU_VP9_SVC_LAYERS_H_
 
 #include <stdint.h>
 
 #include <vector>
 
 #include "media/filters/vp9_parser.h"
+#include "media/gpu/media_gpu_export.h"
 #include "media/video/video_encode_accelerator.h"
 
 namespace media {
@@ -22,7 +23,7 @@ struct Vp9Metadata;
 // temporal layer sizes must be unchanged. The temporal layer sizes among
 // spatial layers must be identical. Temporal layers and spatial layers are
 // described in https://tools.ietf.org/html/draft-ietf-payload-vp9-10#section-3.
-class VP9SVCLayers {
+class MEDIA_GPU_EXPORT VP9SVCLayers {
  public:
   struct FrameConfig;
 
@@ -99,5 +100,4 @@ class VP9SVCLayers {
 };
 
 }  // namespace media
-
-#endif  // MEDIA_GPU_VAAPI_VP9_SVC_LAYERS_H_
+#endif  // MEDIA_GPU_VP9_SVC_LAYERS_H_

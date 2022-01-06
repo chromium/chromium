@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/vaapi/vpx_rate_control.h"
+#include "media/gpu/vpx_rate_control.h"
 
 #include "third_party/libvpx/source/libvpx/vp9/ratectrl_rtc.h"
 

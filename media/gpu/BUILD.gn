@@ -311,6 +311,16 @@ source_set("common") {
     "//ui/gfx/geometry",
   ]
 
+  if (is_win || use_vaapi) {
+    sources += [
+      "vp9_svc_layers.cc",
+      "vp9_svc_layers.h",
+      "vpx_rate_control.cc",
+      "vpx_rate_control.h",
+    ]
+    configs += [ "//third_party/libvpx:libvpx_config" ]
+    deps += [ "//third_party/libvpx:libvpxrc" ]
+  }
   if (use_libgav1_parser) {
     sources += [
       "av1_decoder.cc",
@@ -526,6 +536,10 @@ source_set("unit_tests") {
 
   if (is_mac) {
     deps += [ "//media/gpu/mac:unit_tests" ]
+  }
+
+  if (is_win || use_vaapi) {
+    sources += [ "vp9_svc_layers_unittest.cc" ]
   }
 }
 
