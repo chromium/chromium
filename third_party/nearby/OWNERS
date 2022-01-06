@@ -1,3 +1,6 @@
 hansberry@chromium.org
 
 file://chrome/browser/nearby_sharing/OWNERS
+
+# To ease autorolling.
+per-file README.chromium=*
