@@ -475,7 +475,8 @@ WorkerScriptFetcher::CreateFactoryBundle(
       GetContentClient()
           ->browser()
           ->RegisterNonNetworkSubresourceURLLoaderFactories(
-              worker_process_id, MSG_ROUTING_NONE, &non_network_factories);
+              worker_process_id, MSG_ROUTING_NONE,
+              request_initiator_storage_key.origin(), &non_network_factories);
       break;
   }
 

@@ -46,6 +46,7 @@ class WebEngineContentBrowserClient final
   void RegisterNonNetworkSubresourceURLLoaderFactories(
       int render_process_id,
       int render_frame_id,
+      const absl::optional<url::Origin>& request_initiator_origin,
       NonNetworkURLLoaderFactoryMap* factories) override;
   bool ShouldEnableStrictSiteIsolation() override;
   void AppendExtraCommandLineSwitches(base::CommandLine* command_line,

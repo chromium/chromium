@@ -2891,6 +2891,7 @@ CreateNetworkFactoryForDevTools(
     base::StringPiece scheme,
     RenderProcessHost* host,
     int routing_id,
+    const url::Origin& origin,
     network::mojom::URLLoaderFactoryParamsPtr params) {
   if (!host || !params) {
     // Return an invalid remote by default.
@@ -2917,7 +2918,7 @@ CreateNetworkFactoryForDevTools(
     GetContentClient()
         ->browser()
         ->RegisterNonNetworkSubresourceURLLoaderFactories(
-            host->GetID(), routing_id, &factories);
+            host->GetID(), routing_id, origin, &factories);
     auto i = factories.find(std::string(scheme));
     if (i == factories.end()) {
       return {};
@@ -2990,7 +2991,7 @@ void NetworkHandler::LoadNetworkResource(
 
     auto factory = CreateNetworkFactoryForDevTools(
         gurl.scheme(), frame->GetProcess(), frame->GetRoutingID(),
-        std::move(params));
+        frame->GetLastCommittedOrigin(), std::move(params));
 
     url_loader_factory.Bind(std::move(factory));
     auto loader = DevToolsNetworkResourceLoader::Create(
@@ -3006,7 +3007,7 @@ void NetworkHandler::LoadNetworkResource(
     // TODO(sigurds): Support dedicated workers.
     auto info = host->CreateNetworkFactoryParamsForDevTools();
     auto factory = CreateNetworkFactoryForDevTools(
-        gurl.scheme(), host->GetProcessHost(), MSG_ROUTING_NONE,
+        gurl.scheme(), host->GetProcessHost(), MSG_ROUTING_NONE, info.origin,
         std::move(info.factory_params));
     if (factory.is_valid()) {
       url_loader_factory.Bind(std::move(factory));

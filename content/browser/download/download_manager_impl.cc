@@ -1361,7 +1361,7 @@ void DownloadManagerImpl::BeginResourceDownloadOnChecksComplete(
         ->browser()
         ->RegisterNonNetworkSubresourceURLLoaderFactories(
             params->render_process_host_id(),
-            params->render_frame_host_routing_id(),
+            params->render_frame_host_routing_id(), params->initiator(),
             &non_network_url_loader_factories);
     auto it = non_network_url_loader_factories.find(params->url().scheme());
     if (it != non_network_url_loader_factories.end()) {

@@ -8085,7 +8085,9 @@ void RenderFrameHostImpl::CommitNavigation(
     GetContentClient()
         ->browser()
         ->RegisterNonNetworkSubresourceURLLoaderFactories(
-            GetProcess()->GetID(), routing_id_, &non_network_factories);
+            GetProcess()->GetID(), routing_id_,
+            subresource_loader_factories_config.origin(),
+            &non_network_factories);
 
     for (auto& factory : non_network_factories) {
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
