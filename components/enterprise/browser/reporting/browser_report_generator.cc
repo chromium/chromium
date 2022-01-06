@@ -28,13 +28,16 @@ BrowserReportGenerator::~BrowserReportGenerator() = default;
 void BrowserReportGenerator::Generate(ReportType report_type,
                                       ReportCallback callback) {
   auto report = std::make_unique<em::BrowserReport>();
-  if (report_type != ReportType::kProfileReport)
-    GenerateProfileInfo(report.get());
   GenerateBasicInfo(report.get(), report_type);
 
-  // std::move is required here because the function completes the report
-  // asynchronously.
-  delegate_->GeneratePluginsIfNeeded(std::move(callback), std::move(report));
+  if (report_type != ReportType::kProfileReport) {
+    GenerateProfileInfo(report.get());
+    // std::move is required here because the function completes the report
+    // asynchronously.
+    delegate_->GeneratePluginsIfNeeded(std::move(callback), std::move(report));
+  } else {
+    std::move(callback).Run(std::move(report));
+  }
 }
 
 void BrowserReportGenerator::GenerateProfileInfo(em::BrowserReport* report) {

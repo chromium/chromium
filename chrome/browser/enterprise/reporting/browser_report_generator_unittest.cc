@@ -247,7 +247,7 @@ class BrowserReportGeneratorTest : public ::testing::Test {
               VerifyBrowserVersionAndChannel(report.get());
               VerifyBuildState(report.get());
               VerifyExtendedStableChannel(report.get());
-              VerifyPlugins(report.get());
+              EXPECT_LE(0, report->plugins_size());
 
               // There should be no profile information.
               EXPECT_EQ(0, report->chrome_user_profile_infos_size());
