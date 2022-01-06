@@ -10,6 +10,7 @@ component("fwupd") {
   defines = [ "IS_ASH_FIRMWARE_UPDATE_MANAGER_IMPL" ]
 
   deps = [
+    "//ash/public/cpp",
     "//ash/public/mojom",
     "//ash/webui/firmware_update_ui/mojom",
     "//base:base",
@@ -29,14 +30,21 @@ source_set("unit_tests") {
   deps = [
     ":fwupd",
     "//ash/constants",
+    "//ash/public/cpp",
     "//ash/public/mojom",
     "//ash/webui/firmware_update_ui/mojom",
     "//base/test:test_support",
     "//chromeos/dbus/fwupd",
     "//dbus:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
     "//testing/gmock",
     "//testing/gtest",
   ]
 
-  sources = [ "firmware_update_manager_unittest.cc" ]
+  sources = [
+    "fake_fwupd_download_client.cc",
+    "fake_fwupd_download_client.h",
+    "firmware_update_manager_unittest.cc",
+  ]
 }
