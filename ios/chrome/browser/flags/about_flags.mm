@@ -180,12 +180,22 @@ const FeatureEntry::FeatureVariation
          base::size(kAutofillUseMobileLabelDisambiguationShowOne), nullptr}};
 
 const FeatureEntry::FeatureParam kCommercePriceTrackingWithOptimizationGuide[] =
-    {{"price_tracking_with_optimization_guide", "true"}};
+    {{"price_tracking_with_optimization_guide", "true"},
+     {"price_tracking_opt_out", "false"}};
+
+const FeatureEntry::FeatureParam
+    kCommercePriceTrackingWithOptimizationGuideAndOptOut[] = {
+        {"price_tracking_with_optimization_guide", "true"},
+        {"price_tracking_opt_out", "true"}};
 
 const FeatureEntry::FeatureVariation kCommercePriceTrackingVariations[] = {
     {"Price Tracking with Optimization Guide",
      kCommercePriceTrackingWithOptimizationGuide,
-     base::size(kCommercePriceTrackingWithOptimizationGuide), nullptr}};
+     base::size(kCommercePriceTrackingWithOptimizationGuide), nullptr},
+    {"Price Tracking with Optimization Guide and Opt Out",
+     kCommercePriceTrackingWithOptimizationGuideAndOptOut,
+     base::size(kCommercePriceTrackingWithOptimizationGuideAndOptOut),
+     nullptr}};
 
 const FeatureEntry::FeatureParam
     kDefaultBrowserFullscreenPromoExperimentRemindMeLater[] = {
