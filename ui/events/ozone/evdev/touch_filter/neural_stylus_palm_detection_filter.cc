@@ -172,7 +172,8 @@ void NeuralStylusPalmDetectionFilter::Filter(
     auto stroke_it = strokes_.find(tracking_id);
 
     if (stroke_it == strokes_.end()) {
-      LOG(DFATAL) << "No stroke found, continue.";
+      // TODO(crbug.com/1256926): Work out why this is hit on long presses.
+      DVLOG(1) << "No stroke found, continue.";
       continue;
     }
 
