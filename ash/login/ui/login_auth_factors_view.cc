@@ -39,6 +39,9 @@ constexpr int kSpacingBetweenIconsAndLabelDp = 8;
 constexpr int kIconTopSpacingDp = 10;
 constexpr int kArrowButtonSizeDp = 32;
 constexpr base::TimeDelta kErrorTimeout = base::Seconds(3);
+constexpr int kLabelMaxLines = 3;
+constexpr int kLabelLineHeightDp = 20;
+constexpr int kLabelHeightDp = kLabelMaxLines * kLabelLineHeightDp;
 
 // The values of this enum should be nearly the same as the values of
 // AuthFactorState, except instead of kErrorTemporary and kErrorPermanent, we
@@ -138,7 +141,10 @@ class AuthFactorsLabel : public views::Label {
     SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
         AshColorProvider::ContentLayerType::kTextColorSecondary));
     SetMultiLine(true);
+    SetMaxLines(kLabelMaxLines);
+    SetLineHeight(kLabelLineHeightDp);
     SizeToFit(kAuthFactorsViewWidthDp);
+    SetVerticalAlignment(gfx::VerticalAlignment::ALIGN_TOP);
   }
 
   AuthFactorsLabel(const AuthFactorsLabel&) = delete;
@@ -159,9 +165,7 @@ class AuthFactorsLabel : public views::Label {
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override {
-    gfx::Size size = views::View::CalculatePreferredSize();
-    size.set_width(kAuthFactorsViewWidthDp);
-    return size;
+    return gfx::Size(kAuthFactorsViewWidthDp, kLabelHeightDp);
   }
 
   void SetAccessibleName(const std::u16string& name) {
@@ -209,13 +213,20 @@ AuthIconView* LoginAuthFactorsView::TestApi::checkmark_icon() {
 }
 
 LoginAuthFactorsView::LoginAuthFactorsView(
-    base::RepeatingClosure on_click_to_enter)
-    : on_click_to_enter_callback_(on_click_to_enter) {
+    base::RepeatingClosure on_click_to_enter,
+    base::RepeatingCallback<void(bool)> on_click_required_changed)
+    : on_click_to_enter_callback_(on_click_to_enter),
+      on_click_required_changed_callback_(on_click_required_changed) {
+  DCHECK(on_click_required_changed);
+
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
   SetBorder(views::CreateEmptyBorder(kIconTopSpacingDp, 0, 0, 0));
 
-  SetBoxLayout(this);
+  auto* layout = SetLayoutManager(std::make_unique<views::FlexLayout>());
+  layout->SetOrientation(views::LayoutOrientation::kVertical);
+  layout->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
+  layout->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
 
   auth_factor_icon_row_ = AddChildView(std::make_unique<views::View>());
   auto* animating_layout = auth_factor_icon_row_->SetLayoutManager(
@@ -262,6 +273,11 @@ LoginAuthFactorsView::LoginAuthFactorsView(
   checkmark_icon_->SetVisible(false);
 
   label_ = AddChildView(std::make_unique<AuthFactorsLabel>());
+  label_->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets(/*top=*/kSpacingBetweenIconsAndLabelDp, /*left=*/0,
+                  /*bottom=*/0,
+                  /*right=*/0));
 }
 
 LoginAuthFactorsView::~LoginAuthFactorsView() = default;
@@ -308,6 +324,18 @@ void LoginAuthFactorsView::UpdateState() {
     error_timer_.Stop();
   }
 
+  // Fire a callback whenever entering/leaving the kClickRequired state. Avoid
+  // firing the callback for the kAuthenticated state since we do not want to
+  // change the visibility of the password/PIN fields when transitioning from
+  // kClickRequired to kAuthenticated.
+  bool should_show_arrow_button =
+      state == PrioritizedAuthFactorViewState::kClickRequired;
+  if (on_click_required_changed_callback_ &&
+      should_show_arrow_button != arrow_button_->GetVisible() &&
+      state != PrioritizedAuthFactorViewState::kAuthenticated) {
+    on_click_required_changed_callback_.Run(should_show_arrow_button);
+  }
+
   int ready_label_id;
   size_t num_factors_in_error_background_state;
   switch (state) {
@@ -324,7 +352,6 @@ void LoginAuthFactorsView::UpdateState() {
       return;
     case PrioritizedAuthFactorViewState::kClickRequired:
       // An auth factor requires a click to enter. Show arrow button.
-      // TODO(crbug.com/1233614): collapse password/pin
       ShowArrowButton();
       SetLabelTextAndAccessibleName(IDS_AUTH_FACTOR_LABEL_CLICK_TO_ENTER,
                                     IDS_AUTH_FACTOR_LABEL_CLICK_TO_ENTER);
@@ -440,6 +467,16 @@ void LoginAuthFactorsView::SetLabelTextAndAccessibleName(
     int accessible_name_id) {
   label_->SetText(l10n_util::GetStringUTF16(label_id));
   label_->SetAccessibleName(l10n_util::GetStringUTF16(accessible_name_id));
+
+  // Add margin to the bottom of the label to ensure that the total height of
+  // the label and margin is always |kLabelMaxLines| lines.
+  int bottom_margin =
+      (kLabelMaxLines - label_->GetRequiredLines()) * label_->GetLineHeight();
+  label_->SetProperty(
+      views::kMarginsKey,
+      gfx::Insets(/*top=*/kSpacingBetweenIconsAndLabelDp, /*left=*/0,
+                  /*bottom=*/std::max(bottom_margin, 0),
+                  /*right=*/0));
 }
 
 int LoginAuthFactorsView::GetReadyLabelId() const {
@@ -550,6 +587,7 @@ void LoginAuthFactorsView::SetArrowVisibility(bool is_visible) {
     arrow_button_->EnableLoadingAnimation(false);
     arrow_button_->RunTransformAnimation();
     arrow_nudge_animation_->RunNudgeAnimation();
+    arrow_button_->RequestFocus();
   } else {
     arrow_nudge_animation_->StopAnimating();
     arrow_button_->StopAnimating();

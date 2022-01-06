@@ -1094,6 +1094,7 @@ void LockContentsView::OnSmartLockAuthResult(const AccountId& account_id,
     return;
 
   big_view->auth_user()->NotifySmartLockAuthResult(success);
+  LayoutAuth(big_view, /*opt_to_hide=*/nullptr, /*animate=*/true);
 }
 
 void LockContentsView::OnAuthEnabledForUser(const AccountId& user) {

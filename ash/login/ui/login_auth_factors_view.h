@@ -51,7 +51,9 @@ class ASH_EXPORT LoginAuthFactorsView : public views::View {
     LoginAuthFactorsView* const view_;
   };
 
-  explicit LoginAuthFactorsView(base::RepeatingClosure on_click_to_enter);
+  LoginAuthFactorsView(
+      base::RepeatingClosure on_click_to_enter,
+      base::RepeatingCallback<void(bool)> on_click_required_changed);
   LoginAuthFactorsView(LoginAuthFactorsView&) = delete;
   LoginAuthFactorsView& operator=(LoginAuthFactorsView&) = delete;
   ~LoginAuthFactorsView() override;
@@ -148,6 +150,7 @@ class ASH_EXPORT LoginAuthFactorsView : public views::View {
   std::vector<std::unique_ptr<AuthFactorModel>> auth_factors_;
 
   base::RepeatingClosure on_click_to_enter_callback_;
+  base::RepeatingCallback<void(bool)> on_click_required_changed_callback_;
   base::OneShotTimer error_timer_;
 };
 

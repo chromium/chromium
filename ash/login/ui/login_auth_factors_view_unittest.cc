@@ -130,16 +130,18 @@ class LoginAuthFactorsViewUnittest : public AshTestBase {
     AshTestBase::SetUp();
 
     // We proxy |view_| inside of |container_| so we can control layout.
-    // TODO(crbug.com/1233614): Add layout tests to check positioning/ordering
-    // of icons.
+    // TODO(crbug.com/1233614): Add layout tests to check
+    // positioning/ordering of icons.
     container_ = std::make_unique<views::View>();
     container_->SetLayoutManager(std::make_unique<views::BoxLayout>(
         views::BoxLayout::Orientation::kVertical));
 
-    view_ = container_->AddChildView(
-        std::make_unique<LoginAuthFactorsView>(base::BindRepeating(
+    view_ = container_->AddChildView(std::make_unique<LoginAuthFactorsView>(
+        base::BindRepeating(
             &LoginAuthFactorsViewUnittest::set_click_to_enter_called,
-            base::Unretained(this), true)));
+            base::Unretained(this), true),
+        base::BindRepeating(&LoginAuthFactorsViewUnittest::set_click_required,
+                            base::Unretained(this))));
   }
 
   void TearDown() override {
@@ -171,11 +173,16 @@ class LoginAuthFactorsViewUnittest : public AshTestBase {
     click_to_enter_called_ = called;
   }
 
+  void set_click_required(bool click_required) {
+    click_required_ = click_required;
+  }
+
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<views::View> container_;
   LoginAuthFactorsView* view_ = nullptr;  // Owned by container.
   std::vector<FakeAuthFactorModel*> auth_factors_;
   bool click_to_enter_called_ = false;
+  bool click_required_ = false;
 };
 
 TEST_F(LoginAuthFactorsViewUnittest, NotVisibleIfNoAuthFactors) {
@@ -297,6 +304,8 @@ TEST_F(LoginAuthFactorsViewUnittest, ClickRequired) {
       ui::ScopedAnimationDurationScaleMode::NORMAL_DURATION);
 
   AddAuthFactors({AuthFactorType::kFingerprint, AuthFactorType::kSmartLock});
+  ASSERT_FALSE(click_required_);
+
   LoginAuthFactorsView::TestApi test_api(view_);
   auth_factors_[0]->state_ = AuthFactorState::kReady;
   auth_factors_[1]->state_ = AuthFactorState::kClickRequired;
@@ -310,6 +319,12 @@ TEST_F(LoginAuthFactorsViewUnittest, ClickRequired) {
   EXPECT_FALSE(test_api.auth_factor_icon_row()->GetVisible());
   EXPECT_EQ(l10n_util::GetStringUTF16(IDS_AUTH_FACTOR_LABEL_CLICK_TO_ENTER),
             test_api.label()->GetText());
+  EXPECT_TRUE(click_required_);
+
+  auth_factors_[1]->state_ = AuthFactorState::kReady;
+  test_api.UpdateState();
+
+  EXPECT_FALSE(click_required_);
 }
 
 TEST_F(LoginAuthFactorsViewUnittest, ClickingArrowButton) {

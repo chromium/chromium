@@ -140,6 +140,10 @@ constexpr int kLockedTpmMessageIconSizeDp = 24;
 constexpr int kLockedTpmMessageDeltaDp = 0;
 constexpr int kLockedTpmMessageRoundedCornerRadiusDp = 8;
 
+constexpr int kAuthFactorClickRequiredSlideUpDistanceDp = 42;
+constexpr base::TimeDelta kAuthFactorClickRequiredSlideUpDuration =
+    base::Milliseconds(600);
+
 constexpr int kNonEmptyWidthDp = 1;
 gfx::Size SizeFromHeight(int height) {
   return gfx::Size(kNonEmptyWidthDp, height);
@@ -1135,13 +1139,20 @@ LoginAuthUserView::LoginAuthUserView(const LoginUserInfo& user,
         std::make_unique<SmartLockAuthFactorModel>(base::BindRepeating(
             &LoginAuthUserView::OnUserViewTap, base::Unretained(this)));
     smart_lock_auth_factor_model_ = smart_lock_auth_factor_model.get();
-    auth_factors_view =
-        std::make_unique<LoginAuthFactorsView>(base::BindRepeating(
+    auth_factors_view = std::make_unique<LoginAuthFactorsView>(
+        base::BindRepeating(
             &SmartLockAuthFactorModel::OnArrowButtonTapOrClickEvent,
-            base::Unretained(smart_lock_auth_factor_model_)));
+            base::Unretained(smart_lock_auth_factor_model_)),
+        base::BindRepeating(
+            &LoginAuthUserView::OnAuthFactorClickRequiredChanged,
+            base::Unretained(this)));
     auth_factors_view_ = auth_factors_view.get();
     auth_factors_view_->AddAuthFactor(std::move(fingerprint_auth_factor_model));
     auth_factors_view_->AddAuthFactor(std::move(smart_lock_auth_factor_model));
+
+    // Needed for up/down sliding animation.
+    auth_factors_view_->SetPaintToLayer();
+    auth_factors_view_->layer()->SetFillsBoundsOpaquely(false);
   } else {
     fingerprint_view = std::make_unique<FingerprintView>();
     fingerprint_view_ = fingerprint_view.get();
@@ -1411,6 +1422,9 @@ void LoginAuthUserView::CaptureStateForAnimationPreLayout() {
   }
   stop_animation(challenge_response_view_);
   stop_animation(pin_password_toggle_);
+  if (auth_factors_view_) {
+    stop_animation(auth_factors_view_);
+  }
 
   DCHECK(!previous_state_);
   previous_state_ = std::make_unique<UiState>(this);
@@ -1430,6 +1444,8 @@ void LoginAuthUserView::ApplyAnimationPostLayout(bool animate) {
   // Animate the user info (ie, icon, name) up or down the screen.
   {
     int non_pin_y_end_in_screen = GetBoundsInScreen().y();
+    auto prev_transform_y =
+        layer()->GetAnimator()->GetTargetTransform().To2dTranslation().y();
 
     // Transform the layer so the user view renders where it used to be. This
     // requires a y offset.
@@ -1437,8 +1453,8 @@ void LoginAuthUserView::ApplyAnimationPostLayout(bool animate) {
     // but it seems that the timing gets slightly out of sync with the PIN
     // animation.
     auto move_to_center = std::make_unique<ui::InterpolatedTranslation>(
-        gfx::PointF(0, previous_state_->non_pin_y_start_in_screen -
-                           non_pin_y_end_in_screen),
+        gfx::PointF(0, previous_state_->non_pin_y_start_in_screen +
+                           prev_transform_y - non_pin_y_end_in_screen),
         gfx::PointF());
     auto transition =
         ui::LayerAnimationElement::CreateInterpolatedTransformElement(
@@ -1535,8 +1551,7 @@ void LoginAuthUserView::ApplyAnimationPostLayout(bool animate) {
 
   ////////
   // Fade the fingerprint view if it is being hidden or shown.
-
-  if (fingerprint_view_ &&
+  if (!smart_lock_ui_revamp_enabled_ && fingerprint_view_ &&
       previous_state_->has_fingerprint != current_state.has_fingerprint) {
     float opacity_start = 0, opacity_end = 1;
     if (!current_state.has_fingerprint)
@@ -1551,6 +1566,39 @@ void LoginAuthUserView::ApplyAnimationPostLayout(bool animate) {
           base::Milliseconds(login::kChangeUserAnimationDurationMs));
       settings.SetTweenType(gfx::Tween::Type::FAST_OUT_SLOW_IN);
       fingerprint_view_->layer()->SetOpacity(opacity_end);
+    }
+  }
+
+  ////////
+  // Slide the auth factors view up/down when entering/leaving the click
+  // required state.
+  if (smart_lock_ui_revamp_enabled_) {
+    {
+      CHECK(auth_factors_view_);
+      ui::ScopedLayerAnimationSettings settings(
+          auth_factors_view_->layer()->GetAnimator());
+      settings.SetTransitionDuration(kAuthFactorClickRequiredSlideUpDuration);
+      settings.SetTweenType(gfx::Tween::Type::ACCEL_20_DECEL_100);
+
+      gfx::Transform transform;
+      transform.Translate(/*x=*/0,
+                          /*y=*/auth_factor_has_click_required_
+                              ? -kAuthFactorClickRequiredSlideUpDistanceDp
+                              : 0);
+      auth_factors_view_->layer()->GetAnimator()->SetTransform(transform);
+    }
+
+    // Translate the user view to its previous position when in the click
+    // required state. This prevents the user view from moving when the password
+    // view collapses.
+    if (auth_factor_has_click_required_) {
+      layer()->GetAnimator()->StopAnimating();
+      int non_pin_y_end_in_screen = GetBoundsInScreen().y();
+      gfx::Transform transform;
+      transform.Translate(/*x=*/0,
+                          /*y=*/previous_state_->non_pin_y_start_in_screen -
+                              non_pin_y_end_in_screen);
+      layer()->GetAnimator()->SetTransform(transform);
     }
   }
 
@@ -1776,6 +1824,13 @@ void LoginAuthUserView::OnPinTextChanged(bool is_empty) {
     pin_view_->OnPasswordTextChanged(is_empty);
 }
 
+void LoginAuthUserView::OnAuthFactorClickRequiredChanged(bool click_required) {
+  if (click_required == auth_factor_has_click_required_) {
+    return;
+  }
+  auth_factor_has_click_required_ = click_required;
+}
+
 bool LoginAuthUserView::HasAuthMethod(AuthMethods auth_method) const {
   return (auth_methods_ & auth_method) != 0;
 }
@@ -1858,9 +1913,10 @@ void LoginAuthUserView::UpdateInputFieldMode() {
   // - Online sign in message shown
   // - Disabled message shown
   // - No password auth available
+  // - Auth factors view is showing "click to enter"
   if (HasAuthMethod(AUTH_CHALLENGE_RESPONSE) ||
       HasAuthMethod(AUTH_ONLINE_SIGN_IN) || HasAuthMethod(AUTH_DISABLED) ||
-      !HasAuthMethod(AUTH_PASSWORD)) {
+      !HasAuthMethod(AUTH_PASSWORD) || auth_factor_has_click_required_) {
     input_field_mode_ = InputFieldMode::NONE;
     return;
   }
