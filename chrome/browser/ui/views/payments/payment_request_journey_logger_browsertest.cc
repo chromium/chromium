@@ -1040,13 +1040,17 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestIframeTest, CrossOriginIframe) {
       https_server()->GetURL("a.com", "/payment_request_main.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
-  // The iframe calls show() immediately.
   content::WebContents* tab =
       browser()->tab_strip_model()->GetActiveWebContents();
   GURL iframe_url =
       https_server()->GetURL("b.com", "/payment_request_iframe.html");
-  ResetEventWaiterForDialogOpened();
   EXPECT_TRUE(content::NavigateIframeToURL(tab, "test", iframe_url));
+
+  content::RenderFrameHost* iframe = content::FrameMatchingPredicate(
+      tab->GetPrimaryPage(),
+      base::BindRepeating(&content::FrameHasSourceUrl, iframe_url));
+  ResetEventWaiterForDialogOpened();
+  EXPECT_TRUE(content::ExecJs(iframe, "triggerPaymentRequest()"));
   WaitForObservedEvent();
 
   // Simulate that the user cancels the PR.

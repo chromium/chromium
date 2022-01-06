@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <script>
-new PaymentRequest(
-    [{supportedMethods: 'basic-card'}],
-    {total: {label: 'Tots', amount: {currency: 'USD', value: '1.00'}}}).show();
+function triggerPaymentRequest() {
+  new PaymentRequest(
+      [{supportedMethods: 'basic-card'}],
+      {total: {label: 'Tots', amount: {currency: 'USD', value: '1.00'}}}).show();
+}
 </script>

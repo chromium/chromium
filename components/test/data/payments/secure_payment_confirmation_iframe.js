@@ -4,14 +4,6 @@
  * found in the LICENSE file.
  */
 
-window.onmessage = (e) => {
-  requestPayment(e.data).then((result) => {
-    e.source.postMessage(result, e.origin);
-  }).catch((error) => {
-    e.source.postMessage(error, e.origin);
-  });
-};
-
 /**
  * Requests a secure payment confirmation payment for the given credential
  * identifier.
@@ -20,7 +12,7 @@ window.onmessage = (e) => {
  * @return {Promise<string>} - Either the clientDataJSON string or an error
  * message.
  */
-async function requestPayment(credentialId) {
+async function requestPayment(credentialId) { // eslint-disable-line no-unused-vars, max-len
   try {
     const request = new PaymentRequest(
         [{supportedMethods: 'secure-payment-confirmation',
