@@ -5700,9 +5700,20 @@ TEST_P(PaintPropertyTreeBuilderTest, FragmentClipPixelSnapped) {
 TEST_P(PaintPropertyTreeBuilderTest,
        UpdateUnderChangedEffectUnderCompositedLayer) {
   SetBodyInnerHTML(R"HTML(
-    <div id="opacity" style="isolation: isolate; width: 100px: height: 100px">
-      <div id="target"
-          style="will-change: transform; width: 100px: height: 100px">
+    <style>
+      #opacity {
+        isolation: isolate;
+        width: 100px;
+        height: 100px;
+      }
+      #target {
+        will-change: transform;
+        width: 100px;
+        height: 100px;
+      }
+    </style>
+    <div id="opacity">
+      <div id="target">
       </div>
     </div>
   )HTML");
