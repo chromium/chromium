@@ -903,10 +903,7 @@ void WebAppIntegrationTestDriver::CheckAppNavigationIsStartUrl() {
   BeforeStateCheckAction();
   ASSERT_FALSE(active_app_id_.empty());
   ASSERT_TRUE(app_browser());
-  GURL url = app_browser()
-                 ->tab_strip_model()
-                 ->GetActiveWebContents()
-                 ->GetLastCommittedURL();
+  GURL url = app_browser()->tab_strip_model()->GetActiveWebContents()->GetURL();
   EXPECT_EQ(url, provider()->registrar().GetAppStartUrl(active_app_id_));
   AfterStateCheckAction();
 }
@@ -1233,7 +1230,7 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
       for (int i = 0; i < tabs->count(); ++i) {
         content::WebContents* tab = tabs->GetWebContentsAt(i);
         DCHECK(tab);
-        GURL url = tab->GetLastCommittedURL();
+        GURL url = tab->GetURL();
         auto* app_banner_manager =
             webapps::TestAppBannerManagerDesktop::FromWebContents(tab);
         bool installable = app_banner_manager->WaitForInstallableCheck();
@@ -1387,9 +1384,8 @@ bool WebAppIntegrationTestDriver::AreNoAppWindowsOpen(Profile* profile,
     if (browser->IsAttemptingToCloseBrowser()) {
       continue;
     }
-    const GURL& browser_url = browser->tab_strip_model()
-                                  ->GetActiveWebContents()
-                                  ->GetLastCommittedURL();
+    const GURL& browser_url =
+        browser->tab_strip_model()->GetActiveWebContents()->GetURL();
     if (AppBrowserController::IsWebApp(browser) &&
         IsInScope(browser_url, app_scope)) {
       return false;
@@ -1439,7 +1435,7 @@ void WebAppIntegrationTestDriver::MaybeWaitForManifestUpdates() {
 
 void WebAppIntegrationTestDriver::MaybeNavigateTabbedBrowserInScope(
     const std::string& site_mode) {
-  auto browser_url = GetCurrentTab(browser())->GetLastCommittedURL();
+  auto browser_url = GetCurrentTab(browser())->GetURL();
   auto dest_url = GetInScopeURL(site_mode);
   if (browser_url.is_empty() || browser_url != dest_url) {
     NavigateTabbedBrowserToSite(dest_url);
