@@ -74,7 +74,7 @@ export class Portrait extends Photo {
   /**
    * @override
    */
-  async start_() {
+  async start() {
     const timestamp = Date.now();
     if (this.crosImageCapture_ === null) {
       this.crosImageCapture_ =
@@ -167,7 +167,7 @@ export class PortraitFactory extends PhotoFactory {
    */
   produce() {
     return new Portrait(
-        this.previewStream_, this.facing_, this.captureResolution_,
+        this.previewStream, this.facing, this.captureResolution,
         this.portraitHandler_);
   }
 }

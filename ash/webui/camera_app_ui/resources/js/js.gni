@@ -72,7 +72,7 @@ compile_js_files = [
   "views/camera.ts",
   "views/camera/layout.js",
   "views/camera/mode/index.ts",
-  "views/camera/mode/mode_base.js",
+  "views/camera/mode/mode_base.ts",
   "views/camera/mode/photo.js",
   "views/camera/mode/portrait.js",
   "views/camera/mode/record_time.js",

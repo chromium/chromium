@@ -138,7 +138,7 @@ export class Photo extends ModeBase {
   /**
    * @override
    */
-  async start_() {
+  async start() {
     const timestamp = Date.now();
     state.set(PerfEvent.PHOTO_CAPTURE_SHUTTER, true);
     const {blob, pendingMetadata} = await (async () => {
@@ -152,7 +152,7 @@ export class Photo extends ModeBase {
       } finally {
         state.set(
             PerfEvent.PHOTO_CAPTURE_SHUTTER, false,
-            hasError ? {hasError} : {facing: this.facing_});
+            hasError ? {hasError} : {facing: this.facing});
       }
     })();
 
@@ -294,7 +294,6 @@ export class PhotoFactory extends ModeFactory {
    */
   produce() {
     return new Photo(
-        this.previewStream_, this.facing_, this.captureResolution_,
-        this.handler_);
+        this.previewStream, this.facing, this.captureResolution, this.handler_);
   }
 }

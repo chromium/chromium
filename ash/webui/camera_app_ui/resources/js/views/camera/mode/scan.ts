@@ -93,9 +93,9 @@ export class ScanFactory extends ModeFactory {
 
   produce(): ModeBase {
     return new Scan(
-        this.previewStream_,
-        this.facing_,
-        this.captureResolution_,
+        this.previewStream,
+        this.facing,
+        this.captureResolution,
         this.handler,
     );
   }

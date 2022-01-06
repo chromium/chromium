@@ -288,7 +288,7 @@ export class Video extends ModeBase {
      * @private
      */
     this.gifRecordTime_ = new GifRecordTime(
-        {maxTime: MAX_GIF_DURATION_MS, onMaxTimeout: () => this.stop_()});
+        {maxTime: MAX_GIF_DURATION_MS, onMaxTimeout: () => this.stop()});
 
     /**
      * Record type of ongoing recording.
@@ -336,7 +336,7 @@ export class Video extends ModeBase {
    */
   updatePreview(stream) {
     assert(!state.get(state.State.RECORDING));
-    this.stream_ = stream;
+    this.stream = stream;
     this.crosImageCapture_ = new CrosImageCapture(this.getVideoTrack_());
   }
 
@@ -358,7 +358,7 @@ export class Video extends ModeBase {
    */
   async isBlobVideoSnapshotEnabled() {
     const deviceOperator = await DeviceOperator.getInstance();
-    const deviceId = this.stream_.getVideoTracks()[0].getSettings().deviceId;
+    const deviceId = this.stream.getVideoTracks()[0].getSettings().deviceId;
     return deviceOperator !== null &&
         (await deviceOperator.isBlobVideoSnapshotEnabled(deviceId));
   }
@@ -480,7 +480,7 @@ export class Video extends ModeBase {
     if (this.captureStream_ !== null) {
       return this.captureStream_;
     }
-    return this.stream_;
+    return this.stream;
   }
 
   /**
@@ -494,7 +494,7 @@ export class Video extends ModeBase {
   /**
    * @override
    */
-  async start_() {
+  async start() {
     assert(this.snapshotting_ === null);
     this.togglePaused_ = null;
     this.everPaused_ = false;
@@ -514,7 +514,7 @@ export class Video extends ModeBase {
         // Blob stream is configured on the original device rather than the
         // virtual one when multi-stream is enabled.
         this.crosImageCapture_ =
-            new CrosImageCapture(this.stream_.getVideoTracks()[0]);
+            new CrosImageCapture(this.stream.getVideoTracks()[0]);
       } else {
         this.crosImageCapture_ = new CrosImageCapture(this.getVideoTrack_());
       }
@@ -608,7 +608,7 @@ export class Video extends ModeBase {
   /**
    * @override
    */
-  stop_() {
+  stop() {
     if (this.recordingType_ === RecordType.GIF) {
       state.set(state.State.RECORDING, false);
     } else {
@@ -759,19 +759,19 @@ export class VideoFactory extends ModeFactory {
     let captureConstraints = null;
     if (state.get(state.State.ENABLE_MULTISTREAM_RECORDING)) {
       const {width, height} =
-          assertInstanceof(this.captureResolution_, Resolution);
+          assertInstanceof(this.captureResolution, Resolution);
       captureConstraints = {
-        deviceId: this.constraints_.deviceId,
-        audio: this.constraints_.audio,
+        deviceId: this.constraints.deviceId,
+        audio: this.constraints.audio,
         video: {
-          frameRate: this.constraints_.video.frameRate,
+          frameRate: this.constraints.video.frameRate,
           width,
           height,
         },
       };
     }
     return new Video(
-        this.previewStream_, captureConstraints, this.captureResolution_,
-        this.snapshotResolution_, this.facing_, this.handler_);
+        this.previewStream, captureConstraints, this.captureResolution,
+        this.snapshotResolution_, this.facing, this.handler_);
   }
 }
