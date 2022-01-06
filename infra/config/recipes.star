@@ -85,6 +85,7 @@ build_recipe(
 
 build_recipe(
     name = "recipe:android/avd_packager",
+    use_python3 = True,
 )
 
 build_recipe(
