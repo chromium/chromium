@@ -91,7 +91,7 @@ class WaylandEventWatcher : public base::MessagePumpForUI::FdWatcher {
   // true has two effects:
   // (1) the main thread will stop dispatching queued events
   // (2) the polling thread will stop posting tasks to the main thread.
-  std::atomic<bool> shutting_down_ = false;
+  std::atomic<bool> shutting_down_{false};
 
   base::OnceCallback<void()> shutdown_cb_;
 
