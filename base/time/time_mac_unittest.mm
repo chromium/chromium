@@ -10,10 +10,8 @@
 namespace {
 class ScopedTimebase {
  public:
-  ScopedTimebase(mach_timebase_info_data_t timebase)
-      : orig_timebase_(*base::TimeTicks::MachTimebaseInfoForTesting()) {
-    base::TimeTicks::MachTimebaseInfoForTesting()->numer = timebase.numer;
-    base::TimeTicks::MachTimebaseInfoForTesting()->denom = timebase.denom;
+  ScopedTimebase(mach_timebase_info_data_t timebase) {
+    orig_timebase_ = base::TimeTicks::SetMachTimebaseInfoForTesting(timebase);
   }
 
   ScopedTimebase(const ScopedTimebase&) = delete;
@@ -21,7 +19,7 @@ class ScopedTimebase {
   ScopedTimebase& operator=(const ScopedTimebase&) = delete;
 
   ~ScopedTimebase() {
-    *base::TimeTicks::MachTimebaseInfoForTesting() = orig_timebase_;
+    base::TimeTicks::SetMachTimebaseInfoForTesting(orig_timebase_);
   }
 
  private:
@@ -110,25 +108,77 @@ TEST(TimeMacTest, MachTimeToMicrosecondsOverflowDetection) {
   ScopedTimebase timebase({kArbitraryNumer, 1});
 
   // Expect an overflow.
-  EXPECT_CHECK_DEATH(TimeDelta::FromMachTime(ULLONG_MAX));
+  EXPECT_CHECK_DEATH(
+      TimeDelta::FromMachTime(std::numeric_limits<uint64_t>::max()));
 }
 
 // Tests that there's no overflow in MachTimeToMicroseconds even with
-// ULLONG_MAX ticks on Intel.
+// std::numeric_limits<uint64_t>::max() ticks on Intel.
 TEST(TimeMacTest, MachTimeToMicrosecondsNoOverflowIntel) {
   ScopedTimebase timebase(kIntelTimebase);
 
-  // Don't expect an overflow.
-  TimeDelta::FromMachTime(ULLONG_MAX);
+  // The incoming Mach time ticks are on the order of nanoseconds while the
+  // return result is microseconds. Even though we're passing in the largest
+  // tick count the result should be orders of magnitude smaller. On Intel the
+  // mapping from ticks to nanoseconds is 1:1 so we wouldn't ever expect an
+  // overflow when applying the timebase conversion.
+  TimeDelta::FromMachTime(std::numeric_limits<uint64_t>::max());
 }
 
 // Tests that there's no overflow in MachTimeToMicroseconds even with
-// ULLONG_MAX ticks on M1.
+// std::numeric_limits<uint64_t>::max() ticks on M1.
 TEST(TimeMacTest, MachTimeToMicrosecondsNoOverflowM1) {
   ScopedTimebase timebase(kM1Timebase);
 
-  // Don't expect an overflow.
-  TimeDelta::FromMachTime(ULLONG_MAX);
+  // The incoming Mach time ticks are on the order of nanoseconds while the
+  // return result is microseconds. Even though we're passing in the largest
+  // tick count the result should be orders of magnitude smaller. Expect that
+  // FromMachTime(), when applying the timebase conversion, is smart enough to
+  // not multiply first and generate an overflow.
+  TimeDelta::FromMachTime(std::numeric_limits<uint64_t>::max());
 }
+
+// Tests that there's no underflow in MachTimeToMicroseconds on Intel.
+TEST(TimeMacTest, MachTimeToMicrosecondsNoUnderflowIntel) {
+  ScopedTimebase timebase(kIntelTimebase);
+
+  // On Intel the timebase conversion is 1:1, so min ticks is one microsecond
+  // worth of nanoseconds.
+  const uint64_t kMinimumTicks = base::Time::kNanosecondsPerMicrosecond;
+  const uint64_t kOneMicrosecond = 1;
+  EXPECT_EQ(kOneMicrosecond,
+            TimeDelta::FromMachTime(kMinimumTicks).InMicroseconds() * 1UL);
+
+  // If we have even one fewer tick (i.e. not enough ticks to constitute a full
+  // microsecond) the integer rounding should result in 0 microseconds.
+  const uint64_t kZeroMicroseconds = 0;
+  EXPECT_EQ(kZeroMicroseconds,
+            TimeDelta::FromMachTime(kMinimumTicks - 1).InMicroseconds() * 1UL);
+}
+
+// Tests that there's no underflow in MachTimeToMicroseconds for M1.
+TEST(TimeMacTest, MachTimeToMicrosecondsNoUnderflowM1) {
+  ScopedTimebase timebase(kM1Timebase);
+
+  // Microseconds is mach_time multiplied by kM1Timebase.numer /
+  // (kM1Timebase.denom * base::Time::kNanosecondsPerMicrosecond). Inverting
+  // that should be the minimum number of ticks to get a single microsecond in
+  // return. If we get zero it means an underflow in the conversion. For example
+  // if FromMachTime() first divides mach_time by kM1Timebase.denom *
+  // base::Time::kNanosecondsPerMicrosecond we'll get zero back.
+  const uint64_t kMinimumTicks =
+      (kM1Timebase.denom * base::Time::kNanosecondsPerMicrosecond) /
+      kM1Timebase.numer;
+  const uint64_t kOneMicrosecond = 1;
+  EXPECT_EQ(kOneMicrosecond,
+            TimeDelta::FromMachTime(kMinimumTicks).InMicroseconds() * 1UL);
+
+  // If we have even one fewer tick (i.e. not enough ticks to constitute a full
+  // microsecond) the integer rounding should result in 0 microseconds.
+  const uint64_t kZeroMicroseconds = 0;
+  EXPECT_EQ(kZeroMicroseconds,
+            TimeDelta::FromMachTime(kMinimumTicks - 1).InMicroseconds() * 1UL);
+}
+
 }  // namespace
 }  // namespace base

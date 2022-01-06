@@ -1055,7 +1055,10 @@ class BASE_EXPORT TimeTicks : public time_internal::TimeBase<TimeTicks> {
 #if defined(OS_MAC)
   static TimeTicks FromMachAbsoluteTime(uint64_t mach_absolute_time);
 
-  static mach_timebase_info_data_t* MachTimebaseInfoForTesting();
+  // Sets the current Mach timebase to `timebase`. Returns the old timebase.
+  static mach_timebase_info_data_t SetMachTimebaseInfoForTesting(
+      mach_timebase_info_data_t timebase);
+
 #endif  // defined(OS_MAC)
 
 #if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
