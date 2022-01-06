@@ -843,11 +843,15 @@ void AccessibilityWinBrowserTest::AccessibleChecker::CheckAccessibleChildren(
 class NativeWinEventWaiter {
  public:
   NativeWinEventWaiter(BrowserAccessibilityManager* manager,
-                       const std::string& match_pattern)
+                       const std::string& match_pattern,
+                       ui::AXApiType::Type type = ui::AXApiType::kWinIA2)
       : event_recorder_(
-            AXInspectFactory::CreatePlatformRecorder(manager,
-                                                     base::GetCurrentProcId())),
-        match_pattern_(match_pattern) {
+            AXInspectFactory::CreateRecorder(type,
+                                             manager,
+                                             base::GetCurrentProcId(),
+                                             {})),
+        match_pattern_(match_pattern),
+        browser_accessibility_manager_(manager) {
     event_recorder_->ListenToEvents(base::BindRepeating(
         &NativeWinEventWaiter::OnEvent, base::Unretained(this)));
   }
@@ -860,10 +864,16 @@ class NativeWinEventWaiter {
 
   void Wait() { run_loop_.Run(); }
 
+  ~NativeWinEventWaiter() {
+    browser_accessibility_manager_->SignalEndOfTest();
+    event_recorder_->WaitForDoneRecording();
+  }
+
  private:
   std::unique_ptr<ui::AXEventRecorder> event_recorder_;
   std::string match_pattern_;
   base::RunLoop run_loop_;
+  BrowserAccessibilityManager* browser_accessibility_manager_;
 };
 
 // Helper class that reproduces a specific crash when UIA parent navigation
@@ -5402,6 +5412,35 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest,
   ASSERT_HRESULT_SUCCEEDED(
       first_child->GetCurrentPattern(UIA_TextPatternId, &text_pattern_unknown));
   EXPECT_NE(nullptr, text_pattern_unknown.Get());
+}
+
+IN_PROC_BROWSER_TEST_F(AccessibilityWinUIABrowserTest,
+                       AsyncContentLoadedEventOnDocumentLoad) {
+  // Load the page.
+  AccessibilityNotificationWaiter waiter(shell()->web_contents(),
+                                         ui::kAXModeComplete,
+                                         ax::mojom::Event::kLoadComplete);
+  EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
+  WebContentsImpl* web_contents =
+      static_cast<WebContentsImpl*>(shell()->web_contents());
+  BrowserAccessibilityManager* browser_accessibility_manager =
+      web_contents->GetOrCreateRootBrowserAccessibilityManager();
+
+  NativeWinEventWaiter win_event_waiter(
+      browser_accessibility_manager,
+      "AsyncContentLoaded on role=document, name=Accessibility Test",
+      ui::AXApiType::kWinUIA);
+
+  const char url_str[] =
+      "data:text/html,"
+      "<!doctype html>"
+      "<html><head><title>Accessibility Test</title></head>"
+      "<body>"
+      "<button>This is a button</button>"
+      "</body></html>";
+  GURL url(url_str);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  win_event_waiter.Wait();
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, TestOffsetsOfSelectionAll) {

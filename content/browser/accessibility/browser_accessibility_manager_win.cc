@@ -169,6 +169,7 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
   if (load_complete_pending_ && can_fire_events && GetRoot()) {
     load_complete_pending_ = false;
     FireWinAccessibilityEvent(IA2_EVENT_DOCUMENT_LOAD_COMPLETE, GetRoot());
+    FireUiaAccessibilityEvent(UIA_AsyncContentLoadedEventId, GetRoot());
   }
 
   if (!can_fire_events && !load_complete_pending_ &&
@@ -358,6 +359,7 @@ void BrowserAccessibilityManagerWin::FireGeneratedEvent(
       break;
     case ui::AXEventGenerator::Event::LOAD_COMPLETE:
       FireWinAccessibilityEvent(IA2_EVENT_DOCUMENT_LOAD_COMPLETE, node);
+      FireUiaAccessibilityEvent(UIA_AsyncContentLoadedEventId, node);
       break;
     case ui::AXEventGenerator::Event::LAYOUT_INVALIDATED:
       FireUiaAccessibilityEvent(UIA_LayoutInvalidatedEventId, node);
