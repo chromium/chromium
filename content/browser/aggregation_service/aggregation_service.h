@@ -46,7 +46,7 @@ class AggregationService {
 
   // Sends an aggregatable report to the reporting endpoint `url`.
   virtual void SendReport(const GURL& url,
-                          AggregatableReport report,
+                          const AggregatableReport& report,
                           SendCallback callback) = 0;
 
   // Sends the contents of an aggregatable report to the reporting endpoint

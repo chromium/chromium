@@ -117,9 +117,9 @@ class AggregationServiceImplTest : public testing::Test {
                                 }));
   }
 
-  void SendReport(const GURL& url, AggregatableReport report) {
+  void SendReport(const GURL& url, const AggregatableReport& report) {
     service()->SendReport(
-        url, std::move(report),
+        url, report,
         base::BindLambdaForTesting([&](AggregationService::SendStatus status) {
           last_send_status_ = status;
         }));
@@ -221,7 +221,7 @@ TEST_F(AggregationServiceImplTest, SendReport) {
 
   AggregatableReport report(std::move(payloads), std::move(shared_info));
 
-  SendReport(GURL("https://example.com/reports"), std::move(report));
+  SendReport(GURL("https://example.com/reports"), report);
 
   sender()->TriggerResponse(/*report_id=*/0,
                             AggregatableReportSender::RequestStatus::kOk);

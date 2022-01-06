@@ -61,7 +61,7 @@ void HandleAggregatableReportCallback(
     return;
   }
 
-  std::move(callback).Run(std::move(report.value()).GetAsJson());
+  std::move(callback).Run(report->GetAsJson());
 }
 
 }  // namespace

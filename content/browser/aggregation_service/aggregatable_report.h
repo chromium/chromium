@@ -74,6 +74,9 @@ class CONTENT_EXPORT AggregatableReport {
     AggregationServicePayload(url::Origin origin,
                               std::vector<uint8_t> payload,
                               std::string key_id);
+    AggregationServicePayload(const AggregationServicePayload& other);
+    AggregationServicePayload& operator=(
+        const AggregationServicePayload& other);
     AggregationServicePayload(AggregationServicePayload&& other);
     AggregationServicePayload& operator=(AggregationServicePayload&& other);
     ~AggregationServicePayload();
@@ -140,7 +143,8 @@ class CONTENT_EXPORT AggregatableReport {
 
   AggregatableReport(std::vector<AggregationServicePayload> payloads,
                      AggregatableReportSharedInfo shared_info);
-  // Move-only.
+  AggregatableReport(const AggregatableReport& other);
+  AggregatableReport& operator=(const AggregatableReport& other);
   AggregatableReport(AggregatableReport&& other);
   AggregatableReport& operator=(AggregatableReport&& other);
   ~AggregatableReport();
@@ -171,9 +175,8 @@ class CONTENT_EXPORT AggregatableReport {
   //   ]
   // }
   // Note that APIs may wish to add additional key-value pairs to this returned
-  // value. `this` is required to be an rvalue to avoid unnecessary copies; this
-  // method should only need to be called once.
-  base::Value::DictStorage GetAsJson() &&;
+  // value.
+  base::Value::DictStorage GetAsJson() const;
 
   // TODO(crbug.com/1247409): Expose static method to validate that a
   // base::Value appears to represent a valid report.

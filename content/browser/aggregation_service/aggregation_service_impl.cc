@@ -88,10 +88,9 @@ void AggregationServiceImpl::AssembleReport(
 }
 
 void AggregationServiceImpl::SendReport(const GURL& url,
-                                        AggregatableReport report,
+                                        const AggregatableReport& report,
                                         SendCallback callback) {
-  SendReport(url, base::Value(std::move(report).GetAsJson()),
-             std::move(callback));
+  SendReport(url, base::Value(report.GetAsJson()), std::move(callback));
 }
 
 void AggregationServiceImpl::SendReport(const GURL& url,

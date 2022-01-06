@@ -56,7 +56,7 @@ class CONTENT_EXPORT AggregationServiceImpl
   void AssembleReport(AggregatableReportRequest report_request,
                       AssemblyCallback callback) override;
   void SendReport(const GURL& url,
-                  AggregatableReport report,
+                  const AggregatableReport& report,
                   SendCallback callback) override;
   void SendReport(const GURL& url,
                   const base::Value& contents,

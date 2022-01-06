@@ -484,7 +484,7 @@ TEST(AggregatableReportTest, GetAsJsonOnePayload_ValidJsonReturned) {
       /*privacy_budget_key=*/"example_pbk");
 
   AggregatableReport report(std::move(payloads), std::move(shared_info));
-  base::Value::DictStorage report_json_value = std::move(report).GetAsJson();
+  base::Value::DictStorage report_json_value = report.GetAsJson();
 
   std::string report_json_string;
   base::JSONWriter::Write(base::Value(report_json_value), &report_json_string);
@@ -514,7 +514,7 @@ TEST(AggregatableReportTest, GetAsJsonTwoPayloads_ValidJsonReturned) {
       /*privacy_budget_key=*/"example_pbk");
 
   AggregatableReport report(std::move(payloads), std::move(shared_info));
-  base::Value::DictStorage report_json_value = std::move(report).GetAsJson();
+  base::Value::DictStorage report_json_value = report.GetAsJson();
 
   std::string report_json_string;
   base::JSONWriter::Write(base::Value(report_json_value), &report_json_string);

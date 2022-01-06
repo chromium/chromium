@@ -327,6 +327,11 @@ AggregatableReport::AggregationServicePayload::AggregationServicePayload(
       key_id(std::move(key_id)) {}
 
 AggregatableReport::AggregationServicePayload::AggregationServicePayload(
+    const AggregatableReport::AggregationServicePayload& other) = default;
+AggregatableReport::AggregationServicePayload&
+AggregatableReport::AggregationServicePayload::operator=(
+    const AggregatableReport::AggregationServicePayload& other) = default;
+AggregatableReport::AggregationServicePayload::AggregationServicePayload(
     AggregatableReport::AggregationServicePayload&& other) = default;
 AggregatableReport::AggregationServicePayload&
 AggregatableReport::AggregationServicePayload::operator=(
@@ -338,6 +343,12 @@ AggregatableReport::AggregatableReport(
     std::vector<AggregationServicePayload> payloads,
     AggregatableReportSharedInfo shared_info)
     : payloads_(std::move(payloads)), shared_info_(std::move(shared_info)) {}
+
+AggregatableReport::AggregatableReport(const AggregatableReport& other) =
+    default;
+
+AggregatableReport& AggregatableReport::operator=(
+    const AggregatableReport& other) = default;
 
 AggregatableReport::AggregatableReport(AggregatableReport&& other) = default;
 
@@ -425,11 +436,10 @@ AggregatableReport::Provider::CreateFromRequestAndPublicKeys(
                             std::move(report_request.shared_info_));
 }
 
-base::Value::DictStorage AggregatableReport::GetAsJson() && {
+base::Value::DictStorage AggregatableReport::GetAsJson() const {
   base::Value::DictStorage value;
 
-  value.emplace(kPrivacyBudgetKeyKey,
-                std::move(shared_info_.privacy_budget_key));
+  value.emplace(kPrivacyBudgetKeyKey, shared_info_.privacy_budget_key);
 
   // Encoded as a string representing the number of milliseconds since the Unix
   // epoch, ignoring leap seconds.
@@ -446,7 +456,7 @@ base::Value::DictStorage AggregatableReport::GetAsJson() && {
     payload_dict_value.SetStringKey("origin", payload.origin.Serialize());
     payload_dict_value.SetStringKey("payload",
                                     base::Base64Encode(payload.payload));
-    payload_dict_value.SetStringKey("key_id", std::move(payload.key_id));
+    payload_dict_value.SetStringKey("key_id", payload.key_id);
 
     payloads_list_value.Append(std::move(payload_dict_value));
   }
