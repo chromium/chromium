@@ -1848,7 +1848,7 @@ int AXPlatformNodeWin::GetAnnotationTypeImpl() const {
       if (DescendantHasComment(this))
         return AnnotationType_Comment;
 
-      FALLTHROUGH;
+      [[fallthrough]];
     }
     default:
       return AnnotationType_Unknown;
@@ -5872,7 +5872,7 @@ int32_t AXPlatformNodeWin::ComputeIA2State() {
       if (!HasState(ax::mojom::State::kFocusable) ||
           GetBoolAttribute(ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot))
         break;  // Not used with activedescendant, so preserve editable state.
-      FALLTHROUGH;  // Will clear editable state.
+      [[fallthrough]];  // Will clear editable state.
     case ax::mojom::Role::kMenuListPopup:
     case ax::mojom::Role::kMenuListOption:
       ia2_state &= ~(IA2_STATE_EDITABLE);

@@ -2372,7 +2372,7 @@ std::string AXPlatformNodeBase::ComputeDetailsRoles() const {
           details_roles_set.insert("comment");
           break;
         }
-        FALLTHROUGH;
+        [[fallthrough]];
       }
       default:
         // Use * to indicate some other role.

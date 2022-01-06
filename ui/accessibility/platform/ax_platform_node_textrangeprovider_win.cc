@@ -299,7 +299,7 @@ HRESULT AXPlatformNodeTextRangeProviderWin::ExpandToEnclosingUnitImpl(
         break;
       }
     }
-      FALLTHROUGH;
+      [[fallthrough]];
     case TextUnit_Document:
       SetStart(start()->CreatePositionAtStartOfContent()->AsLeafTextPosition());
       SetEnd(start()->CreatePositionAtEndOfContent());

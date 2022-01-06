@@ -703,7 +703,7 @@ std::u16string TestAXNodeWrapper::GetLocalizedStringForLandmarkType() const {
     case ax::mojom::Role::kSection:
       if (HasStringAttribute(ax::mojom::StringAttribute::kName))
         return u"region";
-      FALLTHROUGH;
+      [[fallthrough]];
 
     default:
       return {};
