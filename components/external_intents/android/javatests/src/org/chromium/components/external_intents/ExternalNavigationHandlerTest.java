@@ -2342,14 +2342,6 @@ public class ExternalNavigationHandlerTest {
         Assert.assertEquals("target.package", mDelegate.startActivityIntent.getPackage());
     }
 
-    @Test
-    @SmallTest
-    public void testBlockNonExportedActivity() {
-        mDelegate.add(new IntentActivity(YOUTUBE_URL, YOUTUBE_PACKAGE_NAME, false));
-
-        checkUrl(YOUTUBE_URL).expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
-    }
-
     private static List<ResolveInfo> makeResolveInfos(ResolveInfo... infos) {
         return Arrays.asList(infos);
     }
@@ -2358,7 +2350,6 @@ public class ExternalNavigationHandlerTest {
         ActivityInfo ai = new ActivityInfo();
         ai.packageName = packageName;
         ai.name = "Name: " + packageName;
-        ai.exported = true;
         ResolveInfo ri = new ResolveInfo();
         ri.activityInfo = ai;
         return ri;
@@ -2369,23 +2360,17 @@ public class ExternalNavigationHandlerTest {
         ResolveInfo info = newResolveInfo(packageName);
         info.filter = new IntentFilter(Intent.ACTION_VIEW);
         info.filter.addDataAuthority(activity.mUrlPrefix, null);
-        info.activityInfo.exported = activity.isExported();
         return info;
     }
 
     private static class IntentActivity {
         private String mUrlPrefix;
         private String mPackageName;
-        private boolean mIsExported;
+        private boolean mIsWebApk;
 
         public IntentActivity(String urlPrefix, String packageName) {
-            this(urlPrefix, packageName, true);
-        }
-
-        public IntentActivity(String urlPrefix, String packageName, boolean isExported) {
             mUrlPrefix = urlPrefix;
             mPackageName = packageName;
-            mIsExported = isExported;
         }
 
         public String urlPrefix() {
@@ -2394,10 +2379,6 @@ public class ExternalNavigationHandlerTest {
 
         public String packageName() {
             return mPackageName;
-        }
-
-        public boolean isExported() {
-            return mIsExported;
         }
 
         public boolean isSpecialized() {
