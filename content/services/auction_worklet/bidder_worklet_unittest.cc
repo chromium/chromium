@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -38,6 +39,23 @@ using testing::StartsWith;
 
 namespace auction_worklet {
 namespace {
+
+// This was produced by running wat2wasm on this:
+// (module
+//  (global (export "test_const") i32 (i32.const 123))
+// )
+const uint8_t kToyWasm[] = {
+    0x00, 0x61, 0x73, 0x6d, 0x01, 0x00, 0x00, 0x00, 0x06, 0x07, 0x01,
+    0x7f, 0x00, 0x41, 0xfb, 0x00, 0x0b, 0x07, 0x0e, 0x01, 0x0a, 0x74,
+    0x65, 0x73, 0x74, 0x5f, 0x63, 0x6f, 0x6e, 0x73, 0x74, 0x03, 0x00};
+
+const char kWasmUrl[] = "https://foo.test/helper.wasm";
+
+// Packs kToyWasm into a std::string.
+std::string ToyWasm() {
+  return std::string(reinterpret_cast<const char*>(kToyWasm),
+                     base::size(kToyWasm));
+}
 
 // Creates generateBid() scripts with the specified result value, in raw
 // Javascript. Allows returning generateBid() arguments, arbitrary values,
@@ -231,6 +249,7 @@ class BidderWorkletTest : public testing::Test {
     interest_group.owner = interest_group_owner_;
     interest_group.name = interest_group_name_;
     interest_group.bidding_url = url;
+    interest_group.bidding_wasm_helper_url = interest_group_wasm_url_;
     interest_group.user_bidding_signals = interest_group_user_bidding_signals_;
     interest_group.trusted_bidding_signals_url =
         interest_group_trusted_bidding_signals_url_;
@@ -324,6 +343,7 @@ class BidderWorkletTest : public testing::Test {
   url::Origin interest_group_owner_;
   std::string interest_group_name_;
   const GURL interest_group_bidding_url_ = GURL("https://url.test/");
+  absl::optional<GURL> interest_group_wasm_url_;
   absl::optional<std::string> interest_group_user_bidding_signals_;
   std::vector<blink::InterestGroup::Ad> interest_group_ads_;
   absl::optional<std::vector<blink::InterestGroup::Ad>>
@@ -1436,6 +1456,149 @@ TEST_F(BidderWorkletTest, GenerateBidAdComponents) {
           std::vector<GURL>{GURL("https://ad_component.test/"),
                             GURL("https://ad_component2.test/")},
           base::TimeDelta()));
+}
+
+TEST_F(BidderWorkletTest, GenerateBidWasm404) {
+  interest_group_wasm_url_ = GURL(kWasmUrl);
+  // Have the WASM URL 404.
+  AddResponse(&url_loader_factory_, interest_group_wasm_url_.value(),
+              kWasmMimeType,
+              /*charset=*/absl::nullopt, "Error 404", kAllowFledgeHeader,
+              net::HTTP_NOT_FOUND);
+
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateBasicGenerateBidScript(),
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      {"Failed to load https://foo.test/helper.wasm "
+       "HTTP status = 404 Not Found."});
+}
+
+TEST_F(BidderWorkletTest, GenerateBidWasmFailure) {
+  interest_group_wasm_url_ = GURL(kWasmUrl);
+  // Instead of WASM have JS, but with WASM mimetype.
+  AddResponse(&url_loader_factory_, interest_group_wasm_url_.value(),
+              kWasmMimeType,
+              /*charset=*/absl::nullopt, CreateBasicGenerateBidScript());
+
+  RunGenerateBidWithJavascriptExpectingResult(
+      CreateBasicGenerateBidScript(),
+      /*expected_bid=*/mojom::BidderWorkletBidPtr(),
+      {"https://foo.test/helper.wasm Uncaught CompileError: "
+       "WasmModuleObject::Compile(): expected magic word 00 61 73 6d, found "
+       "0a 20 20 20 @+0."});
+}
+
+TEST_F(BidderWorkletTest, GenerateBidWasm) {
+  std::string bid_script = CreateGenerateBidScript(
+      R"({ad: WebAssembly.Module.exports(browserSignals.wasmHelper), bid: 1,
+          render:"https://response.test/"})");
+
+  interest_group_wasm_url_ = GURL(kWasmUrl);
+  AddResponse(&url_loader_factory_, GURL(kWasmUrl), kWasmMimeType,
+              /*charset=*/absl::nullopt, ToyWasm());
+
+  RunGenerateBidWithJavascriptExpectingResult(
+      bid_script, mojom::BidderWorkletBid::New(
+                      R"([{"name":"test_const","kind":"global"}])", 1,
+                      GURL("https://response.test/"),
+                      /*ad_components=*/absl::nullopt, base::TimeDelta()));
+}
+
+TEST_F(BidderWorkletTest, WasmReportWin) {
+  // Regression test for state machine bug during development, with
+  // double-execution of report win tasks when waiting on WASM.
+  AddJavascriptResponse(
+      &url_loader_factory_, interest_group_bidding_url_,
+      CreateReportWinScript(R"(sendReportTo("https://foo.test"))"));
+  interest_group_wasm_url_ = GURL(kWasmUrl);
+
+  auto bidder_worklet = CreateWorklet();
+  ASSERT_TRUE(bidder_worklet);
+
+  // Wedge the V8 thread so that completed first instance of reportWin doesn't
+  // fully wrap up and clean up the task by time the WASM is delivered.
+  base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
+
+  base::RunLoop run_loop;
+  bidder_worklet->ReportWin(
+      /*auction_signals_json=*/"0", per_buyer_signals_,
+      browser_signal_top_window_origin_, seller_signals_,
+      browser_signal_render_url_, browser_signal_bid_,
+      browser_signal_seller_origin_,
+      base::BindLambdaForTesting(
+          [&run_loop](const absl::optional<GURL>& report_url,
+                      const std::vector<std::string>& errors) {
+            run_loop.Quit();
+          }));
+  base::RunLoop().RunUntilIdle();
+  AddResponse(&url_loader_factory_, GURL(kWasmUrl), kWasmMimeType,
+              /*charset=*/absl::nullopt, ToyWasm());
+  base::RunLoop().RunUntilIdle();
+  event_handle->Signal();
+  run_loop.Run();
+  // Make sure there isn't a second attempt to complete lurking.
+  task_environment_.RunUntilIdle();
+}
+
+TEST_F(BidderWorkletTest, WasmOrdering) {
+  enum Event { kWasmSuccess, kJsSuccess, kWasmFailure, kJsFailure };
+
+  struct Test {
+    std::vector<Event> events;
+    bool expect_success;
+  };
+
+  const Test tests[] = {
+      {{kWasmSuccess, kJsSuccess}, /*expect_success=*/true},
+      {{kJsSuccess, kWasmSuccess}, /*expect_success=*/true},
+      {{kWasmFailure, kJsSuccess}, /*expect_success=*/false},
+      {{kJsSuccess, kWasmFailure}, /*expect_success=*/false},
+      {{kWasmSuccess, kJsFailure}, /*expect_success=*/false},
+      {{kJsFailure, kWasmSuccess}, /*expect_success=*/false},
+      {{kJsFailure, kWasmFailure}, /*expect_success=*/false},
+      {{kWasmFailure, kJsFailure}, /*expect_success=*/false},
+  };
+
+  interest_group_wasm_url_ = GURL(kWasmUrl);
+
+  for (const Test& test : tests) {
+    url_loader_factory_.ClearResponses();
+
+    mojo::Remote<mojom::BidderWorklet> bidder_worklet = CreateWorklet();
+    load_script_run_loop_ = std::make_unique<base::RunLoop>();
+    GenerateBid(bidder_worklet.get());
+
+    for (Event ev : test.events) {
+      switch (ev) {
+        case kWasmSuccess:
+          AddResponse(&url_loader_factory_, GURL(kWasmUrl),
+                      std::string(kWasmMimeType),
+                      /*charset=*/absl::nullopt, ToyWasm());
+          break;
+
+        case kJsSuccess:
+          AddJavascriptResponse(&url_loader_factory_,
+                                interest_group_bidding_url_,
+                                CreateBasicGenerateBidScript());
+          break;
+
+        case kWasmFailure:
+          url_loader_factory_.AddResponse(kWasmUrl, "", net::HTTP_NOT_FOUND);
+          break;
+
+        case kJsFailure:
+          url_loader_factory_.AddResponse(interest_group_bidding_url_.spec(),
+                                          "", net::HTTP_NOT_FOUND);
+
+          break;
+      };
+      task_environment_.RunUntilIdle();
+    }
+
+    load_script_run_loop_->Run();
+    load_script_run_loop_.reset();
+    EXPECT_EQ(bid_.is_null(), !test.expect_success);
+  }
 }
 
 // Utility method to create a vector of PreviousWin. Needed because StructPtrs

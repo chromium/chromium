@@ -142,6 +142,7 @@ class BidderWorklet : public mojom::BidderWorklet {
             mojom::BiddingInterestGroupPtr bidding_interest_group);
 
     void SetWorkletScript(WorkletLoader::Result worklet_script);
+    void SetWasmHelper(WorkletWasmLoader::Result wasm_helper);
 
     // These match the mojom GenerateBidCallback / ReportWinCallback functions,
     // except the errors vectors are passed by value. They're callbacks that
@@ -203,6 +204,9 @@ class BidderWorklet : public mojom::BidderWorklet {
     // different context and executed, without persisting any state.
     v8::Global<v8::UnboundScript> worklet_script_;
 
+    // Loaded WASM module. Can be used to create instances for each context.
+    WorkletWasmLoader::Result wasm_helper_;
+
     const GURL script_source_url_;
 
     SEQUENCE_CHECKER(v8_sequence_checker_);
@@ -215,6 +219,10 @@ class BidderWorklet : public mojom::BidderWorklet {
 
   void OnScriptDownloaded(WorkletLoader::Result worklet_script,
                           absl::optional<std::string> error_msg);
+  void OnWasmDownloaded(WorkletWasmLoader::Result worklet_script,
+                        absl::optional<std::string> error_msg);
+  void RunReadyGenerateBidTasks();
+  void RunReportWinTasks();
 
   void OnTrustedBiddingSignalsDownloaded(
       GenerateBidTaskList::iterator task,
@@ -246,6 +254,9 @@ class BidderWorklet : public mojom::BidderWorklet {
                                     absl::optional<GURL> report_url,
                                     std::vector<std::string> errors);
 
+  // Combines `worklet_js_load_state_` and `worklet_wasm_load_state_`.
+  LoadState CodeLoadState() const;
+
   scoped_refptr<base::SequencedTaskRunner> v8_runner_;
 
   const scoped_refptr<AuctionV8Helper> v8_helper_;
@@ -258,6 +269,10 @@ class BidderWorklet : public mojom::BidderWorklet {
 
   std::unique_ptr<WorkletLoader> worklet_loader_;
   LoadState worklet_js_load_state_ = LoadState::kLoading;
+
+  absl::optional<GURL> wasm_helper_url_;
+  std::unique_ptr<WorkletWasmLoader> wasm_loader_;
+  LoadState worklet_wasm_load_state_ = LoadState::kLoading;
 
   // Values copied from the interest group used to create the BidderWorklet.
   const absl::optional<GURL> trusted_bidding_signals_url_;
@@ -273,8 +288,8 @@ class BidderWorklet : public mojom::BidderWorklet {
   GenerateBidTaskList generate_bid_tasks_;
   ReportWinTaskList report_win_tasks_;
 
-  // Error that occurred while loading the bidder worklet script, if any.
-  absl::optional<std::string> load_script_error_msg_;
+  // Errors that occurred while loading the code, if any.
+  std::vector<std::string> load_code_error_msgs_;
 
   SEQUENCE_CHECKER(user_sequence_checker_);
 
