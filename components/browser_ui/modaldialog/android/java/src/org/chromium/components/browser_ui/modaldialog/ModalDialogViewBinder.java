@@ -22,6 +22,8 @@ public class ModalDialogViewBinder
     public void bind(PropertyModel model, ModalDialogView view, PropertyKey propertyKey) {
         if (ModalDialogProperties.TITLE == propertyKey) {
             view.setTitle(model.get(ModalDialogProperties.TITLE));
+        } else if (ModalDialogProperties.TITLE_MAX_LINES == propertyKey) {
+            view.setTitleMaxLines(model.get(ModalDialogProperties.TITLE_MAX_LINES));
         } else if (ModalDialogProperties.TITLE_ICON == propertyKey) {
             view.setTitleIcon(model.get(ModalDialogProperties.TITLE_ICON));
         } else if (ModalDialogProperties.MESSAGE == propertyKey) {

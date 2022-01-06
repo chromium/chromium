@@ -146,6 +146,11 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         updateContentVisibility();
     }
 
+    /** @param maxLines The maximum number of title lines. */
+    public void setTitleMaxLines(int maxLines) {
+        mTitleView.setMaxLines(maxLines);
+    }
+
     /**
      * @param drawable The icon drawable on the title.
      */

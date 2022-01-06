@@ -15,6 +15,7 @@ import org.chromium.ui.modelutil.PropertyModel.ReadableBooleanPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.ReadableObjectPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableBooleanPropertyKey;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
 import java.lang.annotation.Retention;
@@ -81,6 +82,9 @@ public class ModalDialogProperties {
 
     /** The title of the dialog. */
     public static final WritableObjectPropertyKey<String> TITLE = new WritableObjectPropertyKey<>();
+
+    /** The maximum number of lines that the title can take. */
+    public static final WritableIntPropertyKey TITLE_MAX_LINES = new WritableIntPropertyKey();
 
     /** The title icon of the dialog. */
     public static final WritableObjectPropertyKey<Drawable> TITLE_ICON =
@@ -161,7 +165,7 @@ public class ModalDialogProperties {
     public static final WritableBooleanPropertyKey FOCUS_DIALOG = new WritableBooleanPropertyKey();
 
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {CONTROLLER, CONTENT_DESCRIPTION,
-            TITLE, TITLE_ICON, MESSAGE, CUSTOM_VIEW, POSITIVE_BUTTON_TEXT,
+            TITLE, TITLE_MAX_LINES, TITLE_ICON, MESSAGE, CUSTOM_VIEW, POSITIVE_BUTTON_TEXT,
             POSITIVE_BUTTON_CONTENT_DESCRIPTION, POSITIVE_BUTTON_DISABLED, NEGATIVE_BUTTON_TEXT,
             NEGATIVE_BUTTON_CONTENT_DESCRIPTION, NEGATIVE_BUTTON_DISABLED, CANCEL_ON_TOUCH_OUTSIDE,
             FILTER_TOUCH_FOR_SECURITY, TOUCH_FILTERED_CALLBACK, TITLE_SCROLLABLE, BUTTON_STYLES,
