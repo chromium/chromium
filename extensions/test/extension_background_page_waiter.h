@@ -23,7 +23,8 @@ namespace extensions {
 //   _event_ - such as host destruction.
 // See also
 // https://chromium.googlesource.com/chromium/src/+/main/docs/patterns/synchronous-runloop.md#events-vs-states
-// Note: This does not (yet) accommodate ServiceWorker-based extensions.
+// TODO(devlin): Rename this to ExtensionBackgroundContextWaiter? It supports
+// service workers in addition to background (and event) pages.
 class ExtensionBackgroundPageWaiter {
  public:
   ExtensionBackgroundPageWaiter(content::BrowserContext* browser_context,
@@ -49,12 +50,17 @@ class ExtensionBackgroundPageWaiter {
   void WaitForBackgroundInitialized();
 
   // Waits for the extension background context to currently be open and active.
+  // Note: this does not (yet) support worker-based extensions.
   void WaitForBackgroundOpen();
 
   // Waits for the extension background context to be closed.
+  // Note: this does not (yet) support worker-based extensions.
   void WaitForBackgroundClosed();
 
  private:
+  void WaitForBackgroundWorkerInitialized();
+  void WaitForBackgroundPageInitialized();
+
   const raw_ptr<content::BrowserContext> browser_context_;
   scoped_refptr<const Extension> extension_;
 };

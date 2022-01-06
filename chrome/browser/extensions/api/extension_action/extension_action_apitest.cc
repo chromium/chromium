@@ -449,8 +449,7 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, OnClickedDispatching) {
            chrome.test.assertTrue(tab.id > 0);
            chrome.test.assertTrue(tab.index > -1);
            chrome.test.notifyPass();
-         });
-         chrome.test.sendMessage('ready');)";
+         });)";
 
   const char* background_specification =
       GetParam() == ActionInfo::TYPE_ACTION
@@ -472,10 +471,8 @@ IN_PROC_BROWSER_TEST_P(MultiActionAPITest, OnClickedDispatching) {
       ExtensionActionTestHelper::Create(browser());
   EXPECT_EQ(0, toolbar_helper->NumberOfBrowserActions());
 
-  ExtensionTestMessageListener listener("ready", /*will_reply=*/false);
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
   ASSERT_TRUE(extension);
-  ASSERT_TRUE(listener.WaitUntilSatisfied());
   ASSERT_EQ(1, toolbar_helper->NumberOfBrowserActions());
   EXPECT_TRUE(toolbar_helper->HasAction(extension->id()));
 
