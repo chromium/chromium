@@ -289,7 +289,9 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
 
             logFetchFontResult(FetchFontResult.SUCCESS);
             return fileDescriptor;
-        } catch (NameNotFoundException | IOException | OutOfMemoryError e) {
+        } catch (NameNotFoundException | IOException | OutOfMemoryError | RuntimeException e) {
+            // We sometimes get CursorWindowAllocationException, but it's a hidden class. So, we
+            // catch RuntimeException.
             Log.d(TAG, "Failed to get font with: %s", e.toString());
             logFetchFontResult(FetchFontResult.FAILED_EXCEPTION);
             return null;
