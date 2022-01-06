@@ -95,6 +95,9 @@ class ProjectorSodaInstallationControllerTest : public testing::Test {
   }
 
   MockAppClient& app_client() { return *mock_app_client_; }
+  MockProjectorController& projector_controller() {
+    return *mock_projector_controller_;
+  }
 
   ProjectorSodaInstallationController* soda_installation_controller() {
     return soda_installation_controller_.get();
@@ -166,6 +169,10 @@ TEST_F(ProjectorSodaInstallationControllerTest, OnSodaInstallProgress) {
 TEST_F(ProjectorSodaInstallationControllerTest, OnSodaInstallError) {
   SetLocale(kEnglishLocale);
   EXPECT_CALL(app_client(), OnSodaInstallError()).Times(1);
+  EXPECT_CALL(projector_controller(),
+              OnSpeechRecognitionAvailabilityChanged(
+                  ash::SpeechRecognitionAvailability::kSodaInstallationError))
+      .Times(1);
   speech::SodaInstaller::GetInstance()->NotifySodaErrorForTesting();
 }
 

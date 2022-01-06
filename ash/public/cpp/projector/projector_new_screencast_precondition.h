@@ -31,6 +31,7 @@ enum class ASH_PUBLIC_EXPORT NewScreencastPreconditionState {
 // NewScreencastPreconditionReason enum in
 // //ash/webui/projector_app/resources/communication/message_types.js.
 enum class ASH_PUBLIC_EXPORT NewScreencastPreconditionReason {
+  kSodaInstallationError = 0,
   kOnDeviceSpeechRecognitionNotSupported = 1,
   kUserLocaleNotSupported = 2,
   kInProjectorSession = 3,

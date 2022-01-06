@@ -52,6 +52,7 @@ export const NewScreencastPreconditionState = {
  * @enum {number}
  */
 export const NewScreencastPreconditionReason = {
+  SODA_INSTALLATION_ERROR: 0,
   ON_DEVICE_RECOGNITION_NOT_SUPPORTED: 1,
   USER_LOCALE_NOT_SUPPORTED: 2,
   IN_PROJECTOR_SESSION: 3,

@@ -184,6 +184,11 @@ ProjectorControllerImpl::GetNewScreencastPrecondition() const {
         result.reasons = {
             NewScreencastPreconditionReason::kSodaDownloadInProgress};
         return result;
+      case SpeechRecognitionAvailability::kSodaInstallationError:
+        result.state = NewScreencastPreconditionState::kDisabled;
+        result.reasons = {
+            NewScreencastPreconditionReason::kSodaInstallationError};
+        return result;
       case SpeechRecognitionAvailability::kAvailable:
         break;
     }

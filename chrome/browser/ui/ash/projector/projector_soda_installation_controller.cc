@@ -102,6 +102,8 @@ void ProjectorSodaInstallationController::OnSodaInstalled() {
 }
 
 void ProjectorSodaInstallationController::OnSodaError() {
+  projector_controller_->OnSpeechRecognitionAvailabilityChanged(
+      ash::SpeechRecognitionAvailability::kSodaInstallationError);
   app_client_->OnSodaInstallError();
 }
 
