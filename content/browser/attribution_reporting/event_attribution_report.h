@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_REPORT_H_
-#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_REPORT_H_
+#ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_EVENT_ATTRIBUTION_REPORT_H_
+#define CONTENT_BROWSER_ATTRIBUTION_REPORTING_EVENT_ATTRIBUTION_REPORT_H_
 
 #include <stdint.h>
 
@@ -24,23 +24,23 @@ namespace content {
 // Class that contains all the data needed to serialize and send a conversion
 // report. This represents the report for a conversion event and its associated
 // source.
-class CONTENT_EXPORT AttributionReport {
+class CONTENT_EXPORT EventAttributionReport {
  public:
-  using Id = base::StrongAlias<AttributionReport, int64_t>;
+  using Id = base::StrongAlias<EventAttributionReport, int64_t>;
 
   // The conversion_id may not be set for a conversion report.
-  AttributionReport(StorableSource source,
-                    uint64_t trigger_data,
-                    base::Time conversion_time,
-                    base::Time report_time,
-                    int64_t priority,
-                    base::GUID external_report_id,
-                    absl::optional<Id> report_id);
-  AttributionReport(const AttributionReport& other);
-  AttributionReport& operator=(const AttributionReport& other);
-  AttributionReport(AttributionReport&& other);
-  AttributionReport& operator=(AttributionReport&& other);
-  ~AttributionReport();
+  EventAttributionReport(StorableSource source,
+                         uint64_t trigger_data,
+                         base::Time conversion_time,
+                         base::Time report_time,
+                         int64_t priority,
+                         base::GUID external_report_id,
+                         absl::optional<Id> report_id);
+  EventAttributionReport(const EventAttributionReport& other);
+  EventAttributionReport& operator=(const EventAttributionReport& other);
+  EventAttributionReport(EventAttributionReport&& other);
+  EventAttributionReport& operator=(EventAttributionReport&& other);
+  ~EventAttributionReport();
 
   // Returns the URL to which the report will be sent.
   GURL ReportURL() const WARN_UNUSED_RESULT;
@@ -104,4 +104,4 @@ class CONTENT_EXPORT AttributionReport {
 
 }  // namespace content
 
-#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_REPORT_H_
+#endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_EVENT_ATTRIBUTION_REPORT_H_

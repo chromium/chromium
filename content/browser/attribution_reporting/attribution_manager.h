@@ -10,8 +10,8 @@
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
 #include "base/observer_list_types.h"
-#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
+#include "content/browser/attribution_reporting/event_attribution_report.h"
 
 namespace base {
 class Time;
@@ -59,7 +59,7 @@ class AttributionManager {
     virtual void OnSourceDeactivated(
         const AttributionStorage::DeactivatedSource& source) {}
 
-    virtual void OnReportSent(const AttributionReport& report,
+    virtual void OnReportSent(const EventAttributionReport& report,
                               const SendResult& info) {}
 
     virtual void OnReportDropped(
@@ -88,7 +88,8 @@ class AttributionManager {
   // Get all pending reports that are currently stored in this partition. Used
   // for populating WebUI.
   virtual void GetPendingReportsForWebUI(
-      base::OnceCallback<void(std::vector<AttributionReport>)> callback) = 0;
+      base::OnceCallback<void(std::vector<EventAttributionReport>)>
+          callback) = 0;
 
   // Sends all pending reports immediately, and runs |done| once they have all
   // been sent.

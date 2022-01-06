@@ -83,13 +83,13 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       int deactivated_source_return_limit = -1) override;
   CreateReportResult MaybeCreateAndStoreReport(
       const StorableTrigger& trigger) override;
-  std::vector<AttributionReport> GetAttributionsToReport(
+  std::vector<EventAttributionReport> GetAttributionsToReport(
       base::Time max_report_time,
       int limit = -1) override;
   absl::optional<base::Time> GetNextReportTime(base::Time time) override;
   std::vector<StorableSource> GetActiveSources(int limit = -1) override;
-  bool DeleteReport(AttributionReport::Id report_id) override;
-  bool UpdateReportForSendFailure(AttributionReport::Id report_id,
+  bool DeleteReport(EventAttributionReport::Id report_id) override;
+  bool UpdateReportForSendFailure(EventAttributionReport::Id report_id,
                                   base::Time new_report_time) override;
   absl::optional<base::Time> AdjustOfflineReportTimes(
       base::TimeDelta min_delay,
@@ -124,7 +124,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   // Deletes the report with `report_id` without checking the the DB
   // initialization status or the number of deleted rows. Returns false on
   // failure.
-  bool DeleteReportInternal(AttributionReport::Id report_id)
+  bool DeleteReportInternal(EventAttributionReport::Id report_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
   bool HasCapacityForStoringSource(const std::string& serialized_origin)
@@ -159,13 +159,14 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
     kReplaceOldReport,
   };
   MaybeReplaceLowerPriorityReportResult MaybeReplaceLowerPriorityReport(
-      const AttributionReport& report,
+      const EventAttributionReport& report,
       int num_conversions,
       int64_t conversion_priority,
-      absl::optional<AttributionReport>& replaced_report)
+      absl::optional<EventAttributionReport>& replaced_report)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
-  absl::optional<AttributionReport> GetReport(AttributionReport::Id report_id)
+  absl::optional<EventAttributionReport> GetReport(
+      EventAttributionReport::Id report_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
   absl::optional<std::vector<int64_t>> ReadDedupKeys(
@@ -179,8 +180,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
   // Stores |report| in the database, but uses |source_id| rather than
-  // |AttributionReport::impression::impression_id()|, which may be null.
-  bool StoreReport(const AttributionReport& report,
+  // |EventAttributionReport::impression::impression_id()|, which may be null.
+  bool StoreReport(const EventAttributionReport& report,
                    StorableSource::Id source_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 

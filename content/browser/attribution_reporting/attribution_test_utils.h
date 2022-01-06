@@ -21,8 +21,8 @@
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_policy.h"
-#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
+#include "content/browser/attribution_reporting/event_attribution_report.h"
 #include "content/browser/attribution_reporting/rate_limit_table.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
@@ -175,7 +175,7 @@ class MockAttributionManager : public AttributionManager {
   MOCK_METHOD(
       void,
       GetPendingReportsForWebUI,
-      (base::OnceCallback<void(std::vector<AttributionReport>)> callback),
+      (base::OnceCallback<void(std::vector<EventAttributionReport>)> callback),
       (override));
 
   MOCK_METHOD(void, SendReportsForWebUI, (base::OnceClosure done), (override));
@@ -196,7 +196,7 @@ class MockAttributionManager : public AttributionManager {
   void NotifyReportsChanged();
   void NotifySourceDeactivated(
       const AttributionStorage::DeactivatedSource& source);
-  void NotifyReportSent(const AttributionReport& report,
+  void NotifyReportSent(const EventAttributionReport& report,
                         const SendResult& info);
   void NotifyReportDropped(
       const AttributionStorage::CreateReportResult& result);
@@ -295,7 +295,7 @@ class TriggerBuilder {
   absl::optional<int64_t> dedup_key_ = absl::nullopt;
 };
 
-// Helper class to construct an `AttributionReport` for tests using default
+// Helper class to construct an `EventAttributionReport` for tests using default
 // data.
 class ReportBuilder {
  public:
@@ -313,10 +313,10 @@ class ReportBuilder {
   ReportBuilder& SetExternalReportId(base::GUID external_report_id)
       WARN_UNUSED_RESULT;
 
-  ReportBuilder& SetReportId(absl::optional<AttributionReport::Id> id)
+  ReportBuilder& SetReportId(absl::optional<EventAttributionReport::Id> id)
       WARN_UNUSED_RESULT;
 
-  AttributionReport Build() const WARN_UNUSED_RESULT;
+  EventAttributionReport Build() const WARN_UNUSED_RESULT;
 
  private:
   StorableSource source_;
@@ -325,12 +325,13 @@ class ReportBuilder {
   base::Time report_time_;
   int64_t priority_ = 0;
   base::GUID external_report_id_;
-  absl::optional<AttributionReport::Id> report_id_;
+  absl::optional<EventAttributionReport::Id> report_id_;
 };
 
 bool operator==(const StorableSource& a, const StorableSource& b);
 
-bool operator==(const AttributionReport& a, const AttributionReport& b);
+bool operator==(const EventAttributionReport& a,
+                const EventAttributionReport& b);
 
 bool operator==(const SendResult& a, const SendResult& b);
 
@@ -353,7 +354,8 @@ std::ostream& operator<<(std::ostream& out, const StorableTrigger& conversion);
 
 std::ostream& operator<<(std::ostream& out, const StorableSource& impression);
 
-std::ostream& operator<<(std::ostream& out, const AttributionReport& report);
+std::ostream& operator<<(std::ostream& out,
+                         const EventAttributionReport& report);
 
 std::ostream& operator<<(std::ostream& out, SendResult::Status status);
 
@@ -366,7 +368,7 @@ std::ostream& operator<<(
     std::ostream& out,
     const AttributionStorage::DeactivatedSource& deactivated_source);
 
-std::vector<AttributionReport> GetAttributionsToReportForTesting(
+std::vector<EventAttributionReport> GetAttributionsToReportForTesting(
     AttributionManagerImpl* manager,
     base::Time max_report_time) WARN_UNUSED_RESULT;
 

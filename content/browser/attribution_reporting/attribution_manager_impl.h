@@ -19,8 +19,8 @@
 #include "base/threading/sequence_bound.h"
 #include "base/timer/wall_clock_timer.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
-#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
+#include "content/browser/attribution_reporting/event_attribution_report.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
 #include "storage/browser/quota/special_storage_policy.h"
@@ -110,7 +110,7 @@ class CONTENT_EXPORT AttributionManagerImpl
   void GetActiveSourcesForWebUI(
       base::OnceCallback<void(std::vector<StorableSource>)> callback) override;
   void GetPendingReportsForWebUI(
-      base::OnceCallback<void(std::vector<AttributionReport>)> callback)
+      base::OnceCallback<void(std::vector<EventAttributionReport>)> callback)
       override;
   void SendReportsForWebUI(base::OnceClosure done) override;
   const AttributionPolicy& GetAttributionPolicy() const override;
@@ -138,7 +138,7 @@ class CONTENT_EXPORT AttributionManagerImpl
   // |max_report_time|, and calls |handler_function| on them; use a negative
   // number for no limit.
   using ReportsHandlerFunc =
-      base::OnceCallback<void(std::vector<AttributionReport>)>;
+      base::OnceCallback<void(std::vector<EventAttributionReport>)>;
   void GetAndHandleReports(ReportsHandlerFunc handler_function,
                            base::Time max_report_time,
                            int limit);
@@ -146,18 +146,18 @@ class CONTENT_EXPORT AttributionManagerImpl
   void UpdateGetReportsToSendTimer(absl::optional<base::Time> time);
   void StartGetReportsToSendTimer();
   void GetReportsToSend();
-  void OnGetReportsToSend(std::vector<AttributionReport> reports);
+  void OnGetReportsToSend(std::vector<EventAttributionReport> reports);
 
   void OnGetReportsToSendFromWebUI(base::OnceClosure done,
-                                   std::vector<AttributionReport> reports);
+                                   std::vector<EventAttributionReport> reports);
 
-  void SendReports(std::vector<AttributionReport> reports,
+  void SendReports(std::vector<EventAttributionReport> reports,
                    bool log_metrics,
                    base::RepeatingClosure done);
   void OnReportSent(base::OnceClosure done,
-                    AttributionReport report,
+                    EventAttributionReport report,
                     SendResult info);
-  void MarkReportCompleted(AttributionReport::Id report_id);
+  void MarkReportCompleted(EventAttributionReport::Id report_id);
 
   void OnReportStored(AttributionStorage::CreateReportResult result);
 
@@ -170,7 +170,7 @@ class CONTENT_EXPORT AttributionManagerImpl
   void HandleTriggerInternal(StorableTrigger trigger);
 
   // Friend to expose the AttributionStorage for certain tests.
-  friend std::vector<AttributionReport> GetAttributionsToReportForTesting(
+  friend std::vector<EventAttributionReport> GetAttributionsToReportForTesting(
       AttributionManagerImpl* manager,
       base::Time max_report_time);
 
@@ -194,7 +194,7 @@ class CONTENT_EXPORT AttributionManagerImpl
   // Set of all conversion IDs that are currently being sent, deleted, or
   // updated. The number of concurrent conversion reports being sent at any time
   // is expected to be small, so a `flat_set` is used.
-  base::flat_set<AttributionReport::Id> reports_being_sent_;
+  base::flat_set<EventAttributionReport::Id> reports_being_sent_;
 
   base::ObserverList<Observer> observers_;
 
