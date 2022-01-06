@@ -104,6 +104,8 @@ void WaylandFrameManager::MaybeProcessPendingFrame() {
           subsurface_to_overlay.second->buffer_id);
       // Buffer is gone while this frame is pending, remove this config.
       if (!handle) {
+        frame->buffer_id = subsurface_to_overlay.second->buffer_id;
+        frame->buffer_lost = true;
         subsurface_to_overlay.second.reset();
       } else if (!handle->wl_buffer() && !handle_pending_creation) {
         // Found the first not-ready buffer, let handle invoke
@@ -116,6 +118,8 @@ void WaylandFrameManager::MaybeProcessPendingFrame() {
     auto* handle = connection_->buffer_manager_host()->EnsureBufferHandle(
         frame->root_surface, frame->root_config->buffer_id);
     if (!handle) {
+      frame->buffer_id = frame->root_config->buffer_id;
+      frame->buffer_lost = true;
       frame->root_config.reset();
     } else if (!handle->wl_buffer() && !handle_pending_creation) {
       handle_pending_creation = handle;
@@ -142,9 +146,26 @@ void WaylandFrameManager::MaybeProcessPendingFrame() {
   PlayBackFrame(std::move(playback));
 
   pending_frames_.pop_front();
+
+  // wl_frame_callback drives the continuous playback of frames, if the frame we
+  // just played-back did not set up a wl_frame_callback, we should playback
+  // another frame.
+  if (!submitted_frames_.empty() &&
+      !submitted_frames_.back()->wl_frame_callback) {
+    MaybeProcessPendingFrame();
+  }
 }
 
 void WaylandFrameManager::PlayBackFrame(std::unique_ptr<WaylandFrame> frame) {
+  // Skip this frame if we can't playback this frame due to lost buffers.
+  if (frame->buffer_lost) {
+    frame->feedback = gfx::PresentationFeedback::Failure();
+    submitted_frames_.push_back(std::move(frame));
+    VerifyNumberOfSubmittedFrames();
+    MaybeProcessSubmittedFrames();
+    return;
+  }
+
   auto* root_surface = frame->root_surface;
   auto& root_config = frame->root_config;
   bool empty_frame = !root_config || !root_config->buffer_id;

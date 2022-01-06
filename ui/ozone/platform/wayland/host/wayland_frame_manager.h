@@ -60,6 +60,10 @@ struct WaylandFrame {
   // Used to invoke buffer_manager_host OnSubmission and OnPrensentation calls.
   uint32_t buffer_id;
 
+  // An indicator that there are buffers destrotyed before frame playback. This
+  // frame should be skipped.
+  bool buffer_lost = false;
+
   // A Wayland callback, which is triggered once wl_buffer has been committed
   // and it is the right time to notify the GPU that it can start a new drawing
   // operation.
