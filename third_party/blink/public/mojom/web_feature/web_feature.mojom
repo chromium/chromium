@@ -3408,6 +3408,7 @@ enum WebFeature {
   kLayerXYWithCanvasTarget = 4099,
   kLayerXYWithFrameTarget = 4100,
   kLayerXYWithSVGTarget = 4101,
+  kHTMLObjectElementFallback = 4102,
 
 
   // Add new features immediately above this line. Don't change assigned

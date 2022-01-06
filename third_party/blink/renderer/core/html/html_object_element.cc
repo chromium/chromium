@@ -363,6 +363,7 @@ void HTMLObjectElement::RenderFallbackContent(
   }
 
   // TODO(dcheng): Detach the content frame here.
+  UseCounter::Count(GetDocument(), WebFeature::kHTMLObjectElementFallback);
   use_fallback_content_ = true;
   ReattachFallbackContent();
 }
