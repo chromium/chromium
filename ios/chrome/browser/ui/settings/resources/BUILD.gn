@@ -127,8 +127,6 @@ imageset("settings_passwords") {
     "settings_passwords.imageset/Contents.json",
     "settings_passwords.imageset/settings_passwords@2x.png",
     "settings_passwords.imageset/settings_passwords@3x.png",
-    "settings_passwords.imageset/settings_passwords_dark@2x.png",
-    "settings_passwords.imageset/settings_passwords_dark@3x.png",
   ]
 }
 
