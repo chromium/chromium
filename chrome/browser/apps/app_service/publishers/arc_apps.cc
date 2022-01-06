@@ -93,9 +93,9 @@ void OnArcAppIconCompletelyLoaded(apps::IconType icon_type,
 
   switch (icon_type) {
     case apps::IconType::kCompressed:
-      FALLTHROUGH;
+      [[fallthrough]];
     case apps::IconType::kUncompressed:
-      FALLTHROUGH;
+      [[fallthrough]];
     case apps::IconType::kStandard: {
       iv->uncompressed =
           icon->is_adaptive_icon()

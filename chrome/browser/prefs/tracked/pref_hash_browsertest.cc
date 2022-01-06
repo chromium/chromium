@@ -663,13 +663,13 @@ class PrefHashBrowserTestUntrustedInitialized : public PrefHashBrowserTestBase {
       case PROTECTION_ENABLED_ALL:
       case PROTECTION_ENABLED_EXTENSIONS:
         ++num_protected_prefs;
-        FALLTHROUGH;
+        [[fallthrough]];
       case PROTECTION_ENABLED_DSE:
         ++num_protected_prefs;
-        FALLTHROUGH;
+        [[fallthrough]];
       case PROTECTION_ENABLED_BASIC:
         num_protected_prefs += num_tracked_prefs() - num_null_values - 2;
-        FALLTHROUGH;
+        [[fallthrough]];
       case PROTECTION_DISABLED_FOR_GROUP:
       case PROTECTION_DISABLED_ON_PLATFORM:
         // No protection.

@@ -751,7 +751,7 @@ SkColor Tab::GetAlertIndicatorColor(TabAlertState state) const {
     case TabAlertState::PIP_PLAYING:
       if (color_utils::IsDark(foreground_color_))
         return gfx::kGoogleBlue600;
-      FALLTHROUGH;
+      [[fallthrough]];
     case TabAlertState::AUDIO_PLAYING:
     case TabAlertState::AUDIO_MUTING:
     case TabAlertState::BLUETOOTH_CONNECTED:

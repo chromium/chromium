@@ -132,7 +132,7 @@ Status H264AnnexBToAvcBitstreamConverter::ConvertChunk(
           config_changed = true;
         }
       }
-        FALLTHROUGH;
+        [[fallthrough]];
       default:
         slice_units.push_back(nalu);
         data_size += config_.length_size + nalu.size;

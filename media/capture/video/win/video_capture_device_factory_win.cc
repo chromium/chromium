@@ -358,7 +358,7 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryWin::CreateDevice(
   DCHECK(thread_checker_.CalledOnValidThread());
   switch (device_descriptor.capture_api) {
     case VideoCaptureApi::WIN_MEDIA_FOUNDATION:
-      FALLTHROUGH;
+      [[fallthrough]];
     case VideoCaptureApi::WIN_MEDIA_FOUNDATION_SENSOR: {
       DCHECK(PlatformSupportsMediaFoundation());
       ComPtr<IMFMediaSource> source;

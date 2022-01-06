@@ -280,7 +280,7 @@ std::string GetFileSystemTypeString(FileSystemType type) {
     case kFileSystemInternalTypeEnumStart:
     case kFileSystemInternalTypeEnumEnd:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case kFileSystemTypeUnknown:
       return "Unknown";
   }

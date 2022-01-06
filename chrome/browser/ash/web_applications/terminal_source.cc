@@ -180,7 +180,7 @@ std::string TerminalSource::GetContentSecurityPolicy(
     case network::mojom::CSPDirectiveName::StyleSrc:
       return "style-src * 'unsafe-inline'; font-src *;";
     case network::mojom::CSPDirectiveName::RequireTrustedTypesFor:
-      FALLTHROUGH;
+      [[fallthrough]];
     case network::mojom::CSPDirectiveName::TrustedTypes:
       // TODO(crbug.com/1098685): Trusted Type remaining WebUI
       // This removes require-trusted-types-for and trusted-types directives

@@ -139,7 +139,7 @@ class Gav1VideoDecoderTest : public testing::Test {
           break;
         case StatusCode::kAborted:
           NOTREACHED();
-          FALLTHROUGH;
+          [[fallthrough]];
         default:
           DCHECK(output_frames_.empty());
           return status;

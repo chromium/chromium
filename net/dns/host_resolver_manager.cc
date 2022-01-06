@@ -1517,7 +1517,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
         case DnsQueryType::HTTPS:
           DCHECK(!secure_ ||
                  !features::kUseDnsHttpsSvcbEnforceSecureResponse.Get());
-          FALLTHROUGH;
+          [[fallthrough]];
         case DnsQueryType::HTTPS_EXPERIMENTAL:
           if (httpssvc_metrics_) {
             // Don't record provider ID for timeouts. It is not precisely known

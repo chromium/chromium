@@ -822,7 +822,7 @@ SystemNotificationManager::UpdateDeviceMountStatus(
         GetNotificationDisplayService()->Close(
             NotificationHandler::Type::TRANSIENT, kDeviceFailNotificationId);
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case MOUNT_STATUS_NO_RESULT:
       if (event.status ==
           file_manager_private::MOUNT_COMPLETED_STATUS_SUCCESS) {

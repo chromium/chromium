@@ -106,7 +106,7 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
           // stack about stream video quads. Investigate alternative solutions.
           if (use_stream_video_draw_quad || dcomp_surface)
             return VideoFrameResourceType::STREAM_TEXTURE;
-          FALLTHROUGH;
+          [[fallthrough]];
         case GL_TEXTURE_2D:
         case GL_TEXTURE_RECTANGLE_ARB:
           return (format == PIXEL_FORMAT_XRGB)
@@ -166,7 +166,7 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
 
     case PIXEL_FORMAT_UYVY:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case PIXEL_FORMAT_YV12:
     case PIXEL_FORMAT_I422:
     case PIXEL_FORMAT_I444:

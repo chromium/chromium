@@ -135,7 +135,7 @@ bool EventFilter::IsEventAllowed(ui::EventType type) {
 
     case ui::ET_LAST:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
 
     case ui::ET_UNKNOWN:
       break;

@@ -573,7 +573,7 @@ bool MimeUtil::IsCodecSupportedOnAndroid(
       // valid codecs to be used with HLS mime types.
       DCHECK(!base::EndsWith(mime_type_lower_case, "mpegurl",
                              base::CompareCase::SENSITIVE));
-      FALLTHROUGH;
+      [[fallthrough]];
     case PCM:
     case MP3:
     case MPEG4_AAC:

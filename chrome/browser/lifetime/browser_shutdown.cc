@@ -262,7 +262,7 @@ void ShutdownPostThreadsStop(RestartMode restart_mode) {
 
       case RestartMode::kRestartInBackground:
         new_cl.AppendSwitch(switches::kNoStartupWindow);
-        FALLTHROUGH;
+        [[fallthrough]];
 
       case RestartMode::kRestartLastSession:
         // Relaunch the browser without any command line URLs or certain one-off

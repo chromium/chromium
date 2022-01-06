@@ -493,7 +493,7 @@ PageInfoUI::GetSecurityDescription(const IdentityInfo& identity_info) const {
       // Internal pages on desktop have their own UI implementations which
       // should never call this function.
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case PageInfo::SITE_IDENTITY_STATUS_EV_CERT:
     case PageInfo::SITE_IDENTITY_STATUS_CERT:
     case PageInfo::SITE_IDENTITY_STATUS_ADMIN_PROVIDED_CERT:
@@ -604,7 +604,7 @@ std::u16string PageInfoUI::PermissionActionToUIString(
         button_text_ids = kPermissionButtonTextIDDefaultSetting;
         break;
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case content_settings::SETTING_SOURCE_POLICY:
     case content_settings::SETTING_SOURCE_EXTENSION:
 #if !defined(OS_ANDROID)

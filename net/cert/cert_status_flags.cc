@@ -31,7 +31,7 @@ CertStatus MapNetErrorToCertStatus(int error) {
     // We should not use ERR_CERT_CONTAINS_ERRORS in new code.
     case ERR_CERT_CONTAINS_ERRORS:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case ERR_CERT_INVALID:
       return CERT_STATUS_INVALID;
     case ERR_CERT_WEAK_SIGNATURE_ALGORITHM:

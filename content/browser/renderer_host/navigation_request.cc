@@ -3615,7 +3615,7 @@ void NavigationRequest::OnRequestFailedInternal(
       // account for clearing the expected process if it clears the speculative
       // RenderFrameHost. See https://crbug.com/793127.
       ResetExpectedProcess();
-      FALLTHROUGH;
+      [[fallthrough]];
     case ErrorPageProcess::kDestinationProcess:
       // A same-document navigation would normally attempt to navigate the
       // current document, but since we will be presenting an error instead and

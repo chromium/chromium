@@ -401,7 +401,7 @@ void AppIconLoader::LoadWebAppIcon(
                            base::WrapRefCounted(this)));
         return;
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case IconType::kUncompressed:
       if (icon_type_ == apps::IconType::kUncompressed) {
         // For uncompressed icon, apply the resize and pad effect.
@@ -412,7 +412,7 @@ void AppIconLoader::LoadWebAppIcon(
         icon_effects_ &= ~apps::IconEffects::kCrOsStandardBackground;
         icon_effects_ &= ~apps::IconEffects::kCrOsStandardMask;
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case IconType::kStandard: {
       // If |icon_effects| are requested, we must always load the
       // uncompressed image to apply the icon effects, and then re-encode the
@@ -475,9 +475,9 @@ void AppIconLoader::LoadExtensionIcon(const extensions::Extension* extension,
                            base::WrapRefCounted(this)));
         return;
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case IconType::kUncompressed:
-      FALLTHROUGH;
+      [[fallthrough]];
     case IconType::kStandard:
       // If |icon_effects| are requested, we must always load the
       // uncompressed image to apply the icon effects, and then re-encode
@@ -563,9 +563,9 @@ void AppIconLoader::LoadIconFromResource(int icon_resource) {
         CompleteWithCompressed(std::vector<uint8_t>(data.begin(), data.end()));
         return;
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case IconType::kUncompressed:
-      FALLTHROUGH;
+      [[fallthrough]];
     case IconType::kStandard: {
       // For compressed icons with |icon_effects|, or for uncompressed
       // icons, we load the uncompressed image, apply the icon effects, and

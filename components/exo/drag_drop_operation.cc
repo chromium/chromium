@@ -49,7 +49,7 @@ uint32_t DndActionsToDragOperations(const base::flat_set<DndAction>& actions) {
   for (const DndAction action : actions) {
     switch (action) {
       case DndAction::kNone:
-        FALLTHROUGH;
+        [[fallthrough]];
         // We don't support the ask action
       case DndAction::kAsk:
         break;

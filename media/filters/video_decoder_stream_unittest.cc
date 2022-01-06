@@ -477,7 +477,7 @@ class VideoDecoderStreamTest
       case DEMUXER_READ_CONFIG_CHANGE:
         EXPECT_MEDIA_LOG(HasSubstr("decoder config changed"))
             .Times(testing::AtLeast(1));
-        FALLTHROUGH;
+        [[fallthrough]];
       case DEMUXER_READ_NORMAL:
         demuxer_stream_->SatisfyRead();
         break;

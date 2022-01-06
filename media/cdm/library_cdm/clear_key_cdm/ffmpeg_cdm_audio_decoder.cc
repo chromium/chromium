@@ -248,7 +248,7 @@ cdm::Status FFmpegCdmAudioDecoder::DecodeBuffer(
       return cdm::kDecodeError;
     case FFmpegDecodingLoop::DecodeStatus::kFrameProcessingFailed:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case FFmpegDecodingLoop::DecodeStatus::kDecodeFrameFailed:
       DLOG(WARNING) << " failed to decode an audio buffer: "
                     << timestamp.InMicroseconds();

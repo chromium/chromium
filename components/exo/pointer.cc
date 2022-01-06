@@ -451,7 +451,7 @@ void Pointer::OnMouseEvent(ui::MouseEvent* event) {
   switch (event->type()) {
     case ui::ET_MOUSE_RELEASED:
       seat_->AbortPendingDragOperation();
-      FALLTHROUGH;
+      [[fallthrough]];
     case ui::ET_MOUSE_PRESSED: {
       delegate_->OnPointerButton(event->time_stamp(),
                                  event->changed_button_flags(),

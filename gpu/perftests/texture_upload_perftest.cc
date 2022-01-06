@@ -151,7 +151,7 @@ bool CompareBufferToRGBABuffer(GLenum format,
         case GL_LUMINANCE:  // (L_t, L_t, L_t, 1)
           expected[1] = pixels[pixels_index];
           expected[2] = pixels[pixels_index];
-          FALLTHROUGH;
+          [[fallthrough]];
         case GL_RED:  // (R_t, 0, 0, 1)
           expected[0] = pixels[pixels_index];
           expected[3] = 255;

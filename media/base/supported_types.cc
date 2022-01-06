@@ -62,7 +62,7 @@ bool IsHevcProfileSupported(VideoCodecProfile profile) {
   }
   switch (profile) {
     case HEVCPROFILE_MAIN:
-      FALLTHROUGH;
+      [[fallthrough]];
     case HEVCPROFILE_MAIN10:
       return true;
     case HEVCPROFILE_MAIN_STILL_PICTURE:

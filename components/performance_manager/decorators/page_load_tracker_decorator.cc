@@ -229,7 +229,7 @@ void PageLoadTrackerDecorator::UpdateLoadIdleStatePage(
                                LoadIdleState::kWaitingForNavigationTimedOut);
       }
 
-      FALLTHROUGH;
+      [[fallthrough]];
     }
 
     case LoadIdleState::kWaitingForNavigationTimedOut: {
@@ -268,7 +268,7 @@ void PageLoadTrackerDecorator::UpdateLoadIdleStatePage(
       data->loading_stopped_ = now;
       // Let the kLoadedNotIdling state transition evaluate, allowing an
       // immediate transition to kLoadedAndIdling if the page is already idling.
-      FALLTHROUGH;
+      [[fallthrough]];
     }
 
     case LoadIdleState::kLoadedNotIdling: {
@@ -282,7 +282,7 @@ void PageLoadTrackerDecorator::UpdateLoadIdleStatePage(
 
       data->SetLoadIdleState(page_node, LoadIdleState::kLoadedAndIdling);
       data->idling_started_ = now;
-      FALLTHROUGH;
+      [[fallthrough]];
     }
 
     case LoadIdleState::kLoadedAndIdling: {

@@ -331,7 +331,7 @@ void GuessAutocompleteAttributesForPasswordFields(
   switch (password_count) {
     case 3:
       (*autocomplete_suggestions)[password_inputs[0]] = "current-password";
-      FALLTHROUGH;  // To match the last two password fields.
+      [[fallthrough]];  // To match the last two password fields.
     case 2:
       (*autocomplete_suggestions)[password_inputs[password_count - 2]] =
           "new-password";

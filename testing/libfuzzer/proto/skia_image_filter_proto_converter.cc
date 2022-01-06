@@ -1303,7 +1303,7 @@ void Converter::Visit(const PathRef& path_ref) {
           break;
         case ValidVerb::kConic_Verb:
           num_conics += 1;
-          FALLTHROUGH;
+          [[fallthrough]];
         case ValidVerb::kQuad_Verb:
           num_points += 2;
           break;

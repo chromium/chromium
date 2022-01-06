@@ -255,7 +255,7 @@ class UrlRuleFlatBufferConverter {
     switch (rule_.source_type()) {
       case proto::SOURCE_TYPE_ANY:
         options_ |= flat::OptionFlag_APPLIES_TO_THIRD_PARTY;
-        FALLTHROUGH;
+        [[fallthrough]];
       case proto::SOURCE_TYPE_FIRST_PARTY:
         options_ |= flat::OptionFlag_APPLIES_TO_FIRST_PARTY;
         break;

@@ -65,7 +65,7 @@ class HostsParser {
           }
 
           // If comma_mode_ is COMMA_IS_TOKEN, fall through:
-          FALLTHROUGH;
+          [[fallthrough]];
 
         default: {
           size_t token_start = pos_;

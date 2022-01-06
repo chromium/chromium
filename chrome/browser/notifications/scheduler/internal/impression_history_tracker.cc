@@ -283,7 +283,7 @@ void ImpressionHistoryTrackerImpl::AnalyzeImpressionHistory(
                               false /*update_db*/);
         break;
       case UserFeedback::kNoFeedback:
-        FALLTHROUGH;
+        [[fallthrough]];
       default:
         // The user didn't interact with the notification yet.
         continue;

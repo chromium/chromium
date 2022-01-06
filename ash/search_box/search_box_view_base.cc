@@ -244,7 +244,7 @@ class SearchBoxTextfield : public views::Textfield {
           break;
         }
         // If |search_box_view_| is active, handle it as normal below
-        FALLTHROUGH;
+        [[fallthrough]];
       default:
         // Handle all other events as normal
         Textfield::OnGestureEvent(event);

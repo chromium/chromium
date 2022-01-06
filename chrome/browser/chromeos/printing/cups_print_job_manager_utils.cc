@@ -148,7 +148,7 @@ bool UpdatePrintJob(const ::printing::PrinterStatus& printer_status,
     case ::printing::CupsJob::CANCELED:
       print_job->set_error_code(
           PrinterErrorCodeFromPrinterStatusReasons(printer_status));
-      FALLTHROUGH;
+      [[fallthrough]];
     default:
       print_job->set_state(ConvertState(job.state));
       break;

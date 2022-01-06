@@ -103,13 +103,13 @@ DnsConfig GetFuzzedDnsConfig(FuzzedDataProvider* data_provider) {
   switch (data_provider->ConsumeIntegralInRange(0, 3)) {
     case 3:
       config.search.push_back("foo.com");
-      FALLTHROUGH;
+      [[fallthrough]];
     case 2:
       config.search.push_back("bar");
-      FALLTHROUGH;
+      [[fallthrough]];
     case 1:
       config.search.push_back("com");
-      FALLTHROUGH;
+      [[fallthrough]];
     default:
       break;
   }

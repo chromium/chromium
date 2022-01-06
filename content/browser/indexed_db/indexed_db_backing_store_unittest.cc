@@ -609,7 +609,7 @@ class IndexedDBBackingStoreTestWithExternalObjects
             EXPECT_EQ(a.last_modified(), b.last_modified());
             return false;
           }
-          FALLTHROUGH;
+          [[fallthrough]];
         case IndexedDBExternalObject::ObjectType::kBlob:
           if (a.type() != b.type()) {
             EXPECT_EQ(a.type(), b.type());

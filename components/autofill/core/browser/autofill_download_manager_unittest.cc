@@ -1409,7 +1409,7 @@ class AutofillServerCommunicationTest
       case COMMAND_LINE_URL:
         scoped_command_line_.GetProcessCommandLine()->AppendSwitchASCII(
             switches::kAutofillServerURL, autofill_server_url.spec());
-        FALLTHROUGH;
+        [[fallthrough]];
       case DEFAULT_URL:
         scoped_feature_list_2_.InitAndEnableFeature(
             features::kAutofillServerCommunication);

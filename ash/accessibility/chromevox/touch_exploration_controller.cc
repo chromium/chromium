@@ -791,7 +791,7 @@ void TouchExplorationController::OnTapTimerFired() {
       return;
     }
     case SINGLE_TAP_PRESSED:
-      FALLTHROUGH;
+      [[fallthrough]];
     case GESTURE_IN_PROGRESS:
       // If only one finger is down, go into touch exploration.
       if (current_touch_ids_.size() == 1) {

@@ -730,7 +730,7 @@ void ArcSessionImpl::Stop() {
     case State::WAITING_FOR_NUM_CORES:
       if (scheduler_configuration_manager_)  // for testing
         scheduler_configuration_manager_->RemoveObserver(this);
-      FALLTHROUGH;
+      [[fallthrough]];
     case State::NOT_STARTED:
       // If |Stop()| is called while waiting for LCD density or CPU cores
       // information, it can directly move to stopped state.

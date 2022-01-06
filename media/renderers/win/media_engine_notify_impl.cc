@@ -79,7 +79,7 @@ PipelineStatus MediaEngineErrorToPipelineStatus(
     case MF_MEDIA_ENGINE_ERR_NETWORK:
       return PipelineStatus::PIPELINE_ERROR_NETWORK;
     case MF_MEDIA_ENGINE_ERR_DECODE:
-      FALLTHROUGH;
+      [[fallthrough]];
     case MF_MEDIA_ENGINE_ERR_ENCRYPTED:
       return PipelineStatus::PIPELINE_ERROR_DECODE;
     case MF_MEDIA_ENGINE_ERR_SRC_NOT_SUPPORTED:
