@@ -230,6 +230,9 @@ constexpr int kUninstallPingReasonUserNotAnOwner = 1;
 // The file downloaded to a temporary location could not be moved.
 constexpr int kErrorFailedToMoveDownloadedFile = 5;
 
+// A connection was rejected due to insufficient permissions.
+constexpr int kPermissionDeniedError = 403;
+
 constexpr double kInitialDelay = 60;
 constexpr int kServerKeepAliveSeconds = 10;
 

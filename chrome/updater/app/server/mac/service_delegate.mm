@@ -6,6 +6,8 @@
 
 #import <Foundation/Foundation.h>
 
+#include <sys/types.h>
+#include <unistd.h>
 #include <utility>
 #include <vector>
 
@@ -24,6 +26,7 @@
 #import "chrome/updater/app/server/mac/server.h"
 #import "chrome/updater/app/server/mac/service_protocol.h"
 #import "chrome/updater/app/server/mac/update_service_wrappers.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/mac/setup/setup.h"
 #import "chrome/updater/mac/xpc_service_names.h"
 #include "chrome/updater/update_service.h"
@@ -44,7 +47,7 @@
 @end
 
 @implementation CRUUpdateServiceXPCImpl {
-  updater::UpdateService* _service;
+  scoped_refptr<updater::UpdateService> _service;
   scoped_refptr<updater::AppServerMac> _appServer;
   scoped_refptr<base::SequencedTaskRunner> _callbackRunner;
 }
@@ -115,12 +118,10 @@
 
     base::scoped_nsobject<CRUUpdateStateStateWrapper> updateStateStateWrapper(
         [[CRUUpdateStateStateWrapper alloc]
-            initWithUpdateStateState:state.state],
-        base::scoped_policy::RETAIN);
+            initWithUpdateStateState:state.state]);
     base::scoped_nsobject<CRUErrorCategoryWrapper> errorCategoryWrapper(
         [[CRUErrorCategoryWrapper alloc]
-            initWithErrorCategory:state.error_category],
-        base::scoped_policy::RETAIN);
+            initWithErrorCategory:state.error_category]);
 
     base::scoped_nsobject<CRUUpdateStateWrapper> updateStateWrapper(
         [[CRUUpdateStateWrapper alloc]
@@ -148,6 +149,7 @@
             (CRUPolicySameVersionUpdateWrapper* _Nonnull)policySameVersionUpdate
                     updateState:(id<CRUUpdateStateObserving>)updateState
                           reply:(void (^_Nonnull)(int rc))reply {
+  // This function may be called by any user.
   auto cb =
       base::BindOnce(base::RetainBlock(^(updater::UpdateService::Result error) {
         VLOG(0) << "Update complete: error = " << error;
@@ -164,12 +166,10 @@
 
     base::scoped_nsobject<CRUUpdateStateStateWrapper> updateStateStateWrapper(
         [[CRUUpdateStateStateWrapper alloc]
-            initWithUpdateStateState:state.state],
-        base::scoped_policy::RETAIN);
+            initWithUpdateStateState:state.state]);
     base::scoped_nsobject<CRUErrorCategoryWrapper> errorCategoryWrapper(
         [[CRUErrorCategoryWrapper alloc]
-            initWithErrorCategory:state.error_category],
-        base::scoped_policy::RETAIN);
+            initWithErrorCategory:state.error_category]);
 
     base::scoped_nsobject<CRUUpdateStateWrapper> updateStateWrapper(
         [[CRUUpdateStateWrapper alloc]
@@ -231,8 +231,7 @@
       ^(const std::vector<updater::UpdateService::AppState>& states) {
         if (reply) {
           base::scoped_nsobject<CRUAppStatesWrapper> appStatesWrapper(
-              [[CRUAppStatesWrapper alloc] initWithAppStates:states],
-              base::scoped_policy::RETAIN);
+              [[CRUAppStatesWrapper alloc] initWithAppStates:states]);
           reply(appStatesWrapper);
         }
 
@@ -246,6 +245,91 @@
 }
 @end
 
+// CRUUpdateServiceXPCFilterUnprivileged is an implementation of UpdateService
+// that rejects sensitive operations (which can only be performed by privileged
+// clients). It only accepts operations that are safe for any user on the
+// system (even an attacker) to call.
+@interface CRUUpdateServiceXPCFilterUnprivileged : NSObject <CRUUpdateServicing>
+
+- (instancetype)init NS_UNAVAILABLE;
+
+// Designated initializers.
+- (instancetype)initWithService:
+    (base::scoped_nsobject<CRUUpdateServiceXPCImpl>)service
+    NS_DESIGNATED_INITIALIZER;
+
+@end
+
+@implementation CRUUpdateServiceXPCFilterUnprivileged {
+  base::scoped_nsobject<CRUUpdateServiceXPCImpl> _service;
+}
+
+- (instancetype)initWithService:
+    (base::scoped_nsobject<CRUUpdateServiceXPCImpl>)service {
+  if (self = [super init]) {
+    _service = service;
+  }
+  return self;
+}
+
+#pragma mark CRUUpdateServicing
+- (void)getVersionWithReply:(void (^_Nonnull)(NSString* version))reply {
+  // This function may be called by any user.
+  [_service getVersionWithReply:reply];
+}
+
+- (void)runPeriodicTasksWithReply:(void (^)(void))reply {
+  // This function may only be called by the same user.
+  VLOG(1) << "Rejecting cross-user attempt to call " << __func__;
+  if (reply)
+    reply();
+}
+
+- (void)checkForUpdatesWithUpdateState:(id<CRUUpdateStateObserving>)updateState
+                                 reply:(void (^_Nonnull)(int rc))reply {
+  // This function may only be called by the same user.
+  VLOG(1) << "Rejecting cross-user attempt to call " << __func__;
+  if (reply)
+    reply(updater::kPermissionDeniedError);
+}
+
+- (void)checkForUpdateWithAppID:(NSString* _Nonnull)appID
+                       priority:(CRUPriorityWrapper* _Nonnull)priority
+        policySameVersionUpdate:
+            (CRUPolicySameVersionUpdateWrapper* _Nonnull)policySameVersionUpdate
+                    updateState:(id<CRUUpdateStateObserving>)updateState
+                          reply:(void (^_Nonnull)(int rc))reply {
+  // This function may be called by any user.
+  [_service checkForUpdateWithAppID:appID
+                           priority:priority
+            policySameVersionUpdate:policySameVersionUpdate
+                        updateState:updateState
+                              reply:reply];
+}
+
+- (void)registerForUpdatesWithAppId:(NSString* _Nullable)appId
+                          brandCode:(NSString* _Nullable)brandCode
+                          brandPath:(NSString* _Nullable)brandPath
+                                tag:(NSString* _Nullable)ap
+                            version:(NSString* _Nullable)version
+               existenceCheckerPath:(NSString* _Nullable)existenceCheckerPath
+                              reply:(void (^_Nonnull)(int rc))reply {
+  // This function may only be called by the same user.
+  VLOG(1) << "Rejecting cross-user attempt to call " << __func__;
+  if (reply)
+    reply(updater::kPermissionDeniedError);
+}
+
+- (void)getAppStatesWithReply:(void (^_Nonnull)(CRUAppStatesWrapper*))reply {
+  // This function may only be called by the same user.
+  VLOG(1) << "Rejecting cross-user attempt to call " << __func__;
+  if (reply) {
+    reply(base::scoped_nsobject<CRUAppStatesWrapper>(
+        [[CRUAppStatesWrapper alloc] initWithAppStates:{}]));
+  }
+}
+@end
+
 @interface CRUUpdateServiceInternalXPCImpl
     : NSObject <CRUUpdateServicingInternal>
 
@@ -253,7 +337,8 @@
 
 // Designated initializers.
 - (instancetype)
-    initWithUpdateServiceInternal:(updater::UpdateServiceInternal*)service
+    initWithUpdateServiceInternal:
+        (scoped_refptr<updater::UpdateServiceInternal>)service
                         appServer:
                             (scoped_refptr<updater::AppServerMac>)appServer
                    callbackRunner:
@@ -263,13 +348,14 @@
 @end
 
 @implementation CRUUpdateServiceInternalXPCImpl {
-  updater::UpdateServiceInternal* _service;
+  scoped_refptr<updater::UpdateServiceInternal> _service;
   scoped_refptr<updater::AppServerMac> _appServer;
   scoped_refptr<base::SequencedTaskRunner> _callbackRunner;
 }
 
 - (instancetype)
-    initWithUpdateServiceInternal:(updater::UpdateServiceInternal*)service
+    initWithUpdateServiceInternal:
+        (scoped_refptr<updater::UpdateServiceInternal>)service
                         appServer:
                             (scoped_refptr<updater::AppServerMac>)appServer
                    callbackRunner:(scoped_refptr<base::SequencedTaskRunner>)
@@ -334,17 +420,21 @@
 
 - (BOOL)listener:(NSXPCListener*)listener
     shouldAcceptNewConnection:(NSXPCConnection*)newConnection {
-  // Check to see if the other side of the connection is "okay";
-  // if not, invalidate newConnection and return NO.
-
   newConnection.exportedInterface = updater::GetXPCUpdateServicingInterface();
 
-  base::scoped_nsobject<CRUUpdateServiceXPCImpl> object(
+  base::scoped_nsobject<CRUUpdateServiceXPCImpl> impl(
       [[CRUUpdateServiceXPCImpl alloc]
           initWithUpdateService:_service.get()
                       appServer:_appServer
                  callbackRunner:_callbackRunner.get()]);
-  newConnection.exportedObject = object.get();
+  if (newConnection.effectiveUserIdentifier == geteuid()) {
+    newConnection.exportedObject = impl.get();
+  } else {
+    // Other users get an unprivileged implementation.
+    base::scoped_nsobject<CRUUpdateServiceXPCFilterUnprivileged> unprivileged(
+        [[CRUUpdateServiceXPCFilterUnprivileged alloc] initWithService:impl]);
+    newConnection.exportedObject = unprivileged.get();
+  }
   [newConnection resume];
   return YES;
 }
@@ -372,8 +462,13 @@
 
 - (BOOL)listener:(NSXPCListener*)listener
     shouldAcceptNewConnection:(NSXPCConnection*)newConnection {
-  // Check to see if the other side of the connection is "okay";
-  // if not, invalidate newConnection and return NO.
+  // Reject connections from other users.
+  if (newConnection.effectiveUserIdentifier != geteuid()) {
+    VLOG(1) << "Rejecting UpdateServiceInternal XPC connection from EUID "
+            << newConnection.effectiveUserIdentifier << ", required "
+            << geteuid() << ".";
+    return NO;
+  }
 
   newConnection.exportedInterface =
       updater::GetXPCUpdateServicingInternalInterface();
