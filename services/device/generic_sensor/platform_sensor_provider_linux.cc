@@ -56,7 +56,7 @@ void PlatformSensorProviderLinux::CreateSensorInternal(
       if (will_run)
         enumeration_status_ = SensorEnumerationState::kEnumerationStarted;
 
-      FALLTHROUGH;
+      [[fallthrough]];
     }
     case SensorEnumerationState::kEnumerationStarted:
       return;
