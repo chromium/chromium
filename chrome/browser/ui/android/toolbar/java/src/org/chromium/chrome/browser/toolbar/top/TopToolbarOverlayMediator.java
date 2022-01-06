@@ -13,6 +13,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsUtils;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutStateProvider.LayoutStateObserver;
 import org.chromium.chrome.browser.layouts.LayoutType;
@@ -209,8 +210,10 @@ public class TopToolbarOverlayMediator {
         // Update and set the progress info to trigger an update; the PROGRESS_BAR_INFO
         // property skips the object equality check.
         mProgressInfoCallback.onResult(mModel.get(TopToolbarOverlayProperties.PROGRESS_BAR_INFO));
-        mModel.set(TopToolbarOverlayProperties.PROGRESS_BAR_INFO,
-                mModel.get(TopToolbarOverlayProperties.PROGRESS_BAR_INFO));
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.DISABLE_COMPOSITED_PROGRESS_BAR)) {
+            mModel.set(TopToolbarOverlayProperties.PROGRESS_BAR_INFO,
+                    mModel.get(TopToolbarOverlayProperties.PROGRESS_BAR_INFO));
+        }
     }
 
     /** @return Whether this component is in tablet mode. */

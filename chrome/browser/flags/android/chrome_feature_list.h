@@ -79,6 +79,7 @@ extern const base::Feature kContextualTriggersSelectionMenu;
 extern const base::Feature kContextualTriggersSelectionSize;
 extern const base::Feature kQuickActionSearchWidgetAndroidDinoVariant;
 extern const base::Feature kDirectActions;
+extern const base::Feature kDisableCompositedProgressBar;
 extern const base::Feature kDontPrefetchLibraries;
 extern const base::Feature kDownloadAutoResumptionThrottling;
 extern const base::Feature kDownloadFileProvider;

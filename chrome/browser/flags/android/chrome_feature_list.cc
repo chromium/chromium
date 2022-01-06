@@ -213,6 +213,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kContextualTriggersSelectionMenu,
     &kContextualTriggersSelectionSize,
     &kDirectActions,
+    &kDisableCompositedProgressBar,
     &kDownloadFileProvider,
     &kDownloadNotificationBadge,
     &kDownloadProgressInfoBar,
@@ -577,6 +578,9 @@ const base::Feature kQuickActionSearchWidgetAndroidDinoVariant{
 
 const base::Feature kDirectActions{"DirectActions",
                                    base::FEATURE_ENABLED_BY_DEFAULT};
+
+const base::Feature kDisableCompositedProgressBar{
+    "DisableCompositedProgressBar", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const base::Feature kDownloadAutoResumptionThrottling{
     "DownloadAutoResumptionThrottling", base::FEATURE_ENABLED_BY_DEFAULT};
