@@ -2376,6 +2376,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Cast.Sender.CastMediaType" enum="MediaContainers"
     expires_after="2022-02-01">
+  <obsolete>
+    No longer collected as of 2022-01.
+  </obsolete>
   <owner>takumif@chromium.org</owner>
   <owner>mfoltz@chromium.org</owner>
   <owner>openscreen-eng@google.com</owner>
