@@ -42,10 +42,8 @@
   }
 
   function populateFileSystem(name) {
-    var urlPrefix =
-        TestRunner.mainTarget.inspectedURL().substr(0, TestRunner.mainTarget.inspectedURL().lastIndexOf('/') + 1);
     var url = TestRunner.url('resources/' + name);
-    return Root.Runtime.loadResourcePromise(url).then(function(text) {
+    return fetch(url).then(result => result.text()).then(function(text) {
       fs.root.addFile(name, text);
     });
   }
