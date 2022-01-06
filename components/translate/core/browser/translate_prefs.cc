@@ -386,7 +386,7 @@ void TranslatePrefs::RearrangeLanguage(
       // To avoid code duplication, set |offset| to max int and re-use the logic
       // to move |language| up in the list as far as possible.
       offset = std::numeric_limits<int>::max();
-      FALLTHROUGH;
+      [[fallthrough]];
     case kUp:
       if (pos == languages.begin())
         return;
