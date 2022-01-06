@@ -22,6 +22,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_simple_task_runner.h"
 #include "base/values.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_web_ui.h"
@@ -149,7 +150,10 @@ class TestSelectFileDialogFactory : public ui::SelectFileDialogFactory {
 class SessionLogHandlerTest : public testing::Test {
  public:
   SessionLogHandlerTest()
-      : task_environment_(), web_ui_(), session_log_handler_() {
+      : task_environment_(),
+        task_runner_(new base::TestSimpleTaskRunner()),
+        web_ui_(),
+        session_log_handler_() {
     EXPECT_TRUE(temp_dir_.CreateUniqueTempDir());
     base::FilePath routine_log_path =
         temp_dir_.GetPath().AppendASCII(kRoutineLogFileName);
@@ -165,14 +169,19 @@ class SessionLogHandlerTest : public testing::Test {
         std::move(networking_log), &holding_space_client_);
     session_log_handler_->SetWebUIForTest(&web_ui_);
     session_log_handler_->RegisterMessages();
+    session_log_handler_->SetTaskRunnerForTesting(task_runner_);
 
     base::ListValue args;
     web_ui_.HandleReceivedMessage("initialize", &args);
   }
 
   ~SessionLogHandlerTest() override {
+    task_runner_.reset();
+    task_environment_.RunUntilIdle();
     ui::SelectFileDialog::SetFactory(nullptr);
   }
+
+  void RunTasks() { task_runner_->RunPendingTasks(); }
 
   const content::TestWebUI::CallData& CallDataAtIndex(size_t index) {
     return *web_ui_.call_data()[index];
@@ -185,6 +194,8 @@ class SessionLogHandlerTest : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  // Task runner for tasks posted by save session log handler.
+  scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
 
   content::TestWebUI web_ui_;
   std::unique_ptr<diagnostics::SessionLogHandler> session_log_handler_;
@@ -226,10 +237,11 @@ TEST_F(SessionLogHandlerTest, SaveSessionLog) {
   args.Append(kHandlerFunctionName);
   session_log_handler_->SetLogCreatedClosureForTest(run_loop.QuitClosure());
   web_ui_.HandleReceivedMessage("saveSessionLog", &args);
-  run_loop.Run();
+  run_loop.RunUntilIdle();
   const std::string expected_system_log_header = "=== System ===";
   const std::string expected_system_info_section_name = "--- System Info ---";
   const std::string expected_snapshot_time_prefix = "Snapshot Time: ";
+  RunTasks();
   const std::vector<std::string> log_lines = GetCombinedLogContents(log_path);
   ASSERT_EQ(18u, log_lines.size());
   EXPECT_EQ(expected_system_log_header, log_lines[0]);
@@ -282,7 +294,8 @@ TEST_F(SessionLogHandlerTest, SelectDirectory) {
   base::RunLoop run_loop;
   session_log_handler_->SetLogCreatedClosureForTest(run_loop.QuitClosure());
   web_ui_.HandleReceivedMessage("saveSessionLog", &args);
-  run_loop.Run();
+  RunTasks();
+  run_loop.RunUntilIdle();
 
   EXPECT_EQ(call_data_count_before_call + 1u, web_ui_.call_data().size());
   const content::TestWebUI::CallData& call_data =
@@ -302,6 +315,7 @@ TEST_F(SessionLogHandlerTest, CancelDialog) {
   base::ListValue args;
   args.Append(kHandlerFunctionName);
   web_ui_.HandleReceivedMessage("saveSessionLog", &args);
+  RunTasks();
 
   EXPECT_EQ(call_data_count_before_call + 1u, web_ui_.call_data().size());
   const content::TestWebUI::CallData& call_data =
@@ -323,7 +337,24 @@ TEST_F(SessionLogHandlerTest, AddToHoldingSpace) {
   base::RunLoop run_loop;
   session_log_handler_->SetLogCreatedClosureForTest(run_loop.QuitClosure());
   web_ui_.HandleReceivedMessage("saveSessionLog", &args);
-  run_loop.Run();
+  RunTasks();
+  run_loop.RunUntilIdle();
+}
+
+// Validates that the lifecycle clean up tasks are completed if the select file
+// dialog is open when session_log_handler is destroyed.
+TEST_F(SessionLogHandlerTest, CleanUpDialogOnDeconstruct) {
+  base::FilePath log_path = temp_dir_.GetPath().AppendASCII("test_path");
+  ui::SelectFileDialog::SetFactory(new TestSelectFileDialogFactory(log_path));
+  base::ListValue args;
+  args.Append(kHandlerFunctionName);
+  base::RunLoop run_loop;
+
+  session_log_handler_->SetLogCreatedClosureForTest(run_loop.QuitClosure());
+  web_ui_.HandleReceivedMessage("saveSessionLog", &args);
+  EXPECT_NO_FATAL_FAILURE(session_log_handler_.reset());
+  EXPECT_NO_FATAL_FAILURE(task_runner_.reset());
+  EXPECT_NO_FATAL_FAILURE(run_loop.RunUntilIdle());
 }
 
 }  // namespace diagnostics

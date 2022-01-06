@@ -64,31 +64,39 @@ SessionLogHandler::SessionLogHandler(
       telemetry_log_(std::move(telemetry_log)),
       routine_log_(std::move(routine_log)),
       networking_log_(std::move(networking_log)),
-      holding_space_client_(holding_space_client) {
+      holding_space_client_(holding_space_client),
+      task_runner_(
+          base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()})) {
   DCHECK(holding_space_client_);
+  weak_ptr_ = weak_factory_.GetWeakPtr();
 }
 
-SessionLogHandler::~SessionLogHandler() = default;
+SessionLogHandler::~SessionLogHandler() {
+  if (select_file_dialog_) {
+    /* Lifecycle for SelectFileDialog is responsibility of calling code. */
+    select_file_dialog_->ListenerDestroyed();
+  }
+}
 
 void SessionLogHandler::RegisterMessages() {
   web_ui()->RegisterDeprecatedMessageCallback(
-      "initialize", base::BindRepeating(&SessionLogHandler::HandleInitialize,
-                                        base::Unretained(this)));
+      "initialize",
+      base::BindRepeating(&SessionLogHandler::HandleInitialize, weak_ptr_));
   web_ui()->RegisterDeprecatedMessageCallback(
       "saveSessionLog",
       base::BindRepeating(&SessionLogHandler::HandleSaveSessionLogRequest,
-                          base::Unretained(this)));
+                          weak_ptr_));
 }
 
 void SessionLogHandler::FileSelected(const base::FilePath& path,
                                      int index,
                                      void* params) {
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()},
+  task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
       base::BindOnce(&SessionLogHandler::CreateSessionLog,
                      base::Unretained(this), path),
-      base::BindOnce(&SessionLogHandler::OnSessionLogCreated,
-                     weak_factory_.GetWeakPtr(), path));
+      base::BindOnce(&SessionLogHandler::OnSessionLogCreated, weak_ptr_, path));
+  select_file_dialog_.reset();
 }
 
 void SessionLogHandler::OnSessionLogCreated(const base::FilePath& file_path,
@@ -109,6 +117,7 @@ void SessionLogHandler::FileSelectionCanceled(void* params) {
   RejectJavascriptCallback(base::Value(save_session_log_callback_id_),
                            /*success=*/base::Value(false));
   save_session_log_callback_id_ = "";
+  select_file_dialog_.reset();
 }
 
 TelemetryLog* SessionLogHandler::GetTelemetryLog() const {
@@ -121,6 +130,11 @@ RoutineLog* SessionLogHandler::GetRoutineLog() const {
 
 NetworkingLog* SessionLogHandler::GetNetworkingLog() const {
   return networking_log_.get();
+}
+
+void SessionLogHandler::SetTaskRunnerForTesting(
+    const scoped_refptr<base::SequencedTaskRunner>& task_runner) {
+  task_runner_ = std::move(task_runner.get());
 }
 
 void SessionLogHandler::SetWebUIForTest(content::WebUI* web_ui) {
