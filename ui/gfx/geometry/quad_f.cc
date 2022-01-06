@@ -11,6 +11,63 @@
 
 namespace gfx {
 
+namespace {
+
+PointF RightMostCornerToVector(const RectF& rect, const Vector2dF& vector) {
+  // Return the corner of the rectangle that if it is to the left of the vector
+  // would mean all of the rectangle is to the left of the vector.
+  // The vector here represents the side between two points in a clockwise
+  // convex polygon.
+  //
+  //  Q  XXX
+  // QQQ XXX   If the lower left corner of X is left of the vector that goes
+  //  QQQ      from the top corner of Q to the right corner of Q, then all of X
+  //   Q       is left of the vector, and intersection impossible.
+  //
+  PointF point;
+  if (vector.x() >= 0)
+    point.set_y(rect.bottom());
+  else
+    point.set_y(rect.y());
+  if (vector.y() >= 0)
+    point.set_x(rect.x());
+  else
+    point.set_x(rect.right());
+  return point;
+}
+
+// Tests whether the line is contained by or intersected with the circle.
+bool LineIntersectsCircle(const PointF& center,
+                          float radius,
+                          const PointF& p0,
+                          const PointF& p1) {
+  float x0 = p0.x() - center.x(), y0 = p0.y() - center.y();
+  float x1 = p1.x() - center.x(), y1 = p1.y() - center.y();
+  float radius2 = radius * radius;
+  if ((x0 * x0 + y0 * y0) <= radius2 || (x1 * x1 + y1 * y1) <= radius2)
+    return true;
+  if (p0 == p1)
+    return false;
+
+  float a = y0 - y1;
+  float b = x1 - x0;
+  float c = x0 * y1 - x1 * y0;
+  float distance2 = c * c / (a * a + b * b);
+  // If distance between the center point and the line > the radius,
+  // the line doesn't cross (or is contained by) the ellipse.
+  if (distance2 > radius2)
+    return false;
+
+  // The nearest point on the line is between p0 and p1?
+  float x = -a * c / (a * a + b * b);
+  float y = -b * c / (a * a + b * b);
+
+  return (((x0 <= x && x <= x1) || (x0 >= x && x >= x1)) &&
+          ((y0 <= y && y <= y1) || (y1 <= y && y <= y0)));
+}
+
+}  // anonymous namespace
+
 void QuadF::operator=(const RectF& rect) {
   p1_ = PointF(rect.x(), rect.y());
   p2_ = PointF(rect.right(), rect.y());
@@ -64,8 +121,13 @@ bool QuadF::IsCounterClockwise() const {
 }
 
 bool QuadF::Contains(const PointF& point) const {
-  return PointIsInTriangle(point, p1_, p2_, p3_)
-      || PointIsInTriangle(point, p1_, p3_, p4_);
+  return PointIsInTriangle(point, p1_, p2_, p3_) ||
+         PointIsInTriangle(point, p1_, p3_, p4_);
+}
+
+bool QuadF::ContainsQuad(const QuadF& other) const {
+  return Contains(other.p1()) && Contains(other.p2()) && Contains(other.p3()) &&
+         Contains(other.p4());
 }
 
 void QuadF::Scale(float x_scale, float y_scale) {
@@ -99,6 +161,66 @@ QuadF operator-(const QuadF& lhs, const Vector2dF& rhs) {
   QuadF result = lhs;
   result -= rhs;
   return result;
+}
+
+bool QuadF::IntersectsRect(const RectF& rect) const {
+  // For each side of the quad clockwise we check if the rectangle is to the
+  // left of it since only content on the right can overlap with the quad.
+  // This only works if the quad is convex.
+  Vector2dF v1, v2, v3, v4;
+
+  // Ensure we use clockwise vectors.
+  if (IsCounterClockwise()) {
+    v1 = p4_ - p1_;
+    v2 = p1_ - p2_;
+    v3 = p2_ - p3_;
+    v4 = p3_ - p4_;
+  } else {
+    v1 = p2_ - p1_;
+    v2 = p3_ - p2_;
+    v3 = p4_ - p3_;
+    v4 = p1_ - p4_;
+  }
+
+  PointF p = RightMostCornerToVector(rect, v1);
+  if (CrossProduct(v1, p - p1_) < 0)
+    return false;
+
+  p = RightMostCornerToVector(rect, v2);
+  if (CrossProduct(v2, p - p2_) < 0)
+    return false;
+
+  p = RightMostCornerToVector(rect, v3);
+  if (CrossProduct(v3, p - p3_) < 0)
+    return false;
+
+  p = RightMostCornerToVector(rect, v4);
+  if (CrossProduct(v4, p - p4_) < 0)
+    return false;
+
+  // If not all of the rectangle is outside one of the quad's four sides, then
+  // that means at least a part of the rectangle is overlapping the quad.
+  return true;
+}
+
+bool QuadF::IntersectsCircle(const PointF& center, float radius) const {
+  return Contains(center) || LineIntersectsCircle(center, radius, p1_, p2_) ||
+         LineIntersectsCircle(center, radius, p2_, p3_) ||
+         LineIntersectsCircle(center, radius, p3_, p4_) ||
+         LineIntersectsCircle(center, radius, p4_, p1_);
+}
+
+bool QuadF::IntersectsEllipse(const PointF& center, const SizeF& radii) const {
+  // Transform the ellipse to an origin-centered circle whose radius is the
+  // product of major radius and minor radius.  Here we apply the same
+  // transformation to the quad.
+  QuadF transformed_quad = *this;
+  transformed_quad -= center.OffsetFromOrigin();
+  transformed_quad.Scale(radii.height(), radii.width());
+
+  PointF origin_point;
+  return transformed_quad.IntersectsCircle(origin_point,
+                                           radii.height() * radii.width());
 }
 
 }  // namespace gfx

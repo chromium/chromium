@@ -772,7 +772,7 @@ test("gfx_unittests") {
       "geometry/point3_f_unittest.cc",
       "geometry/point_f_unittest.cc",
       "geometry/point_unittest.cc",
-      "geometry/quad_unittest.cc",
+      "geometry/quad_f_unittest.cc",
       "geometry/quaternion_unittest.cc",
       "geometry/rect_conversions_unittest.cc",
       "geometry/rect_f_unittest.cc",
