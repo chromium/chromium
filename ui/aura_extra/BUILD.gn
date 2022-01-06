@@ -9,6 +9,8 @@ component("aura_extra") {
     "aura_extra_export.h",
     "image_window_delegate.cc",
     "image_window_delegate.h",
+    "window_position_in_root_monitor.cc",
+    "window_position_in_root_monitor.h",
   ]
 
   defines = [ "AURA_EXTRA_IMPLEMENTATION" ]
@@ -34,18 +36,6 @@ component("aura_extra") {
   }
 }
 
-source_set("window_position_in_root_monitor") {
-  sources = [
-    "window_position_in_root_monitor.cc",
-    "window_position_in_root_monitor.h",
-  ]
-
-  deps = [
-    "//base",
-    "//ui/aura",
-  ]
-}
-
 source_set("tests") {
   testonly = true
 
@@ -53,7 +43,6 @@ source_set("tests") {
 
   deps = [
     ":aura_extra",
-    ":window_position_in_root_monitor",
     "//base",
     "//base/test:test_support",
     "//testing/gtest",

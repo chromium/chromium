@@ -71,6 +71,7 @@
 #include "ui/aura/window_event_dispatcher.h"
 #include "ui/aura/window_observer.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/aura_extra/window_position_in_root_monitor.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
@@ -240,57 +241,6 @@ class RenderWidgetHostViewAura::WindowObserver : public aura::WindowObserver {
  private:
   raw_ptr<RenderWidgetHostViewAura> view_;
 };
-
-// This class provides functionality to observe the ancestors of the RWHVA for
-// bounds changes. This is done to snap the RWHVA window to a pixel boundary,
-// which could change when the bounds relative to the root changes.
-// An example where this happens is below:-
-// The fast resize code path for bookmarks where in the parent of RWHVA which
-// is WCV has its bounds changed before the bookmark is hidden. This results in
-// the traditional bounds change notification for the WCV reporting the old
-// bounds as the bookmark is still around. Observing all the ancestors of the
-// RWHVA window enables us to know when the bounds of the window relative to
-// root changes and allows us to snap accordingly.
-class RenderWidgetHostViewAura::WindowAncestorObserver
-    : public aura::WindowObserver {
- public:
-  explicit WindowAncestorObserver(RenderWidgetHostViewAura* view)
-      : view_(view) {
-    aura::Window* parent = view_->window_->parent();
-    while (parent) {
-      parent->AddObserver(this);
-      ancestors_.insert(parent);
-      parent = parent->parent();
-    }
-  }
-
-  WindowAncestorObserver(const WindowAncestorObserver&) = delete;
-  WindowAncestorObserver& operator=(const WindowAncestorObserver&) = delete;
-
-  ~WindowAncestorObserver() override {
-    RemoveAncestorObservers();
-  }
-
-  void OnWindowBoundsChanged(aura::Window* window,
-                             const gfx::Rect& old_bounds,
-                             const gfx::Rect& new_bounds,
-                             ui::PropertyChangeReason reason) override {
-    DCHECK(ancestors_.find(window) != ancestors_.end());
-    if (new_bounds.origin() != old_bounds.origin())
-      view_->HandleParentBoundsChanged();
-  }
-
- private:
-  void RemoveAncestorObservers() {
-    for (auto* ancestor : ancestors_)
-      ancestor->RemoveObserver(this);
-    ancestors_.clear();
-  }
-
-  raw_ptr<RenderWidgetHostViewAura> view_;
-  std::set<aura::Window*> ancestors_;
-};
-
 
 ////////////////////////////////////////////////////////////////////////////////
 // RenderWidgetHostViewAura, public:
@@ -501,7 +451,7 @@ RenderFrameHostImpl* RenderWidgetHostViewAura::GetFocusedFrame() const {
   return focused_frame->current_frame_host();
 }
 
-void RenderWidgetHostViewAura::HandleParentBoundsChanged() {
+void RenderWidgetHostViewAura::HandleBoundsInRootChanged() {
 #if defined(OS_WIN)
   if (legacy_render_widget_host_HWND_) {
     legacy_render_widget_host_HWND_->SetBounds(
@@ -521,9 +471,27 @@ void RenderWidgetHostViewAura::HandleParentBoundsChanged() {
 }
 
 void RenderWidgetHostViewAura::ParentHierarchyChanged() {
-  ancestor_window_observer_ = std::make_unique<WindowAncestorObserver>(this);
+  if (window_->parent()) {
+    // Track changes of the window relative to the root. This is done to snap
+    // `window_` to a pixel boundary, which could change when the bounds
+    // relative to the root changes. An example where this happens:
+    // The fast resize code path for bookmarks where in the parent of RWHVA
+    // which is WCV has its bounds changed before the bookmark is hidden. This
+    // results in the traditional bounds change notification for the WCV
+    // reporting the old bounds as the bookmark is still around. Observing all
+    // the ancestors of the RWHVA window enables us to know when the bounds of
+    // the window relative to root changes and allows us to snap accordingly.
+    position_in_root_observer_ =
+        std::make_unique<aura_extra::WindowPositionInRootMonitor>(
+            window_->parent(),
+            base::BindRepeating(
+                &RenderWidgetHostViewAura::HandleBoundsInRootChanged,
+                base::Unretained(this)));
+  } else {
+    position_in_root_observer_.reset();
+  }
   // Snap when we receive a hierarchy changed. http://crbug.com/388908.
-  HandleParentBoundsChanged();
+  HandleBoundsInRootChanged();
 }
 
 void RenderWidgetHostViewAura::Focus() {

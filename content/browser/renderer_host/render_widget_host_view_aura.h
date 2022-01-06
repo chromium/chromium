@@ -50,6 +50,10 @@
 #include "ui/gfx/selection_bound.h"
 #include "ui/wm/public/activation_delegate.h"
 
+namespace aura_extra {
+class WindowPositionInRootMonitor;
+}
+
 namespace wm {
 class ScopedTooltipDisabler;
 }
@@ -511,8 +515,6 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   class WindowObserver;
   friend class WindowObserver;
 
-  class WindowAncestorObserver;
-  friend class WindowAncestorObserver;
   friend void VerifyStaleContentOnFrameEviction(
       RenderWidgetHostView* render_widget_host_view);
 
@@ -594,8 +596,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // Converts |rect| from screen coordinate to window coordinate.
   gfx::Rect ConvertRectFromScreen(const gfx::Rect& rect) const;
 
-  // Called when the parent window bounds change.
-  void HandleParentBoundsChanged();
+  // Called when the bounds of `window_` relative to the root change.
+  void HandleBoundsInRootChanged();
 
   // Called when the parent window hierarchy for our window changes.
   void ParentHierarchyChanged();
@@ -637,7 +639,8 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   std::unique_ptr<WindowObserver> window_observer_;
 
   // Tracks the ancestors of the RWHVA window for window location changes.
-  std::unique_ptr<WindowAncestorObserver> ancestor_window_observer_;
+  std::unique_ptr<aura_extra::WindowPositionInRootMonitor>
+      position_in_root_observer_;
 
   // Are we in the process of closing?  Tracked so we don't try to shutdown
   // again while inside shutdown, causing a double-free.

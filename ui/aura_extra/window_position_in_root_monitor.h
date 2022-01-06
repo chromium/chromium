@@ -9,13 +9,15 @@
 
 #include "base/callback.h"
 #include "ui/aura/window_observer.h"
+#include "ui/aura_extra/aura_extra_export.h"
 
 namespace aura_extra {
 
 // WindowPositionInRootMonitor notifies a callback any time the position of a
 // window, relative to the root, changes. Changes are only sent when attached
 // to a valid root.
-class WindowPositionInRootMonitor : public aura::WindowObserver {
+class AURA_EXTRA_EXPORT WindowPositionInRootMonitor
+    : public aura::WindowObserver {
  public:
   WindowPositionInRootMonitor(aura::Window* window,
                               base::RepeatingClosure callback);
