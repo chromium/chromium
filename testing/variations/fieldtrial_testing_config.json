@@ -1812,7 +1812,8 @@
         {
             "platforms": [
                 "android",
-                "windows"
+                "windows",
+                "mac"
             ],
             "experiments": [
                 {
