@@ -44,9 +44,10 @@ void TestCreditCardSaveManager::set_upload_request_card_number(
 
 void TestCreditCardSaveManager::OnDidUploadCard(
     AutofillClient::PaymentsRpcResult result,
-    const std::string& server_id) {
+    const payments::PaymentsClient::UploadCardResponseDetails&
+        upload_card_response_details) {
   credit_card_was_uploaded_ = true;
-  CreditCardSaveManager::OnDidUploadCard(result, server_id);
+  CreditCardSaveManager::OnDidUploadCard(result, upload_card_response_details);
 }
 
 }  // namespace autofill

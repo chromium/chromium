@@ -593,10 +593,12 @@ class GetUploadDetailsRequest : public PaymentsRequest {
 
 class UploadCardRequest : public PaymentsRequest {
  public:
-  UploadCardRequest(const PaymentsClient::UploadRequestDetails& request_details,
-                    const bool full_sync_enabled,
-                    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                                            const std::string&)> callback)
+  UploadCardRequest(
+      const PaymentsClient::UploadRequestDetails& request_details,
+      const bool full_sync_enabled,
+      base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                              const PaymentsClient::UploadCardResponseDetails&)>
+          callback)
       : request_details_(request_details),
         full_sync_enabled_(full_sync_enabled),
         callback_(std::move(callback)) {}
@@ -692,22 +694,23 @@ class UploadCardRequest : public PaymentsRequest {
   void ParseResponse(const base::Value& response) override {
     const std::string* credit_card_id =
         response.FindStringKey("credit_card_id");
-    server_id_ = credit_card_id ? *credit_card_id : std::string();
+    upload_card_response_details_.server_id =
+        credit_card_id ? *credit_card_id : std::string();
   }
 
   bool IsResponseComplete() override { return true; }
 
   void RespondToDelegate(AutofillClient::PaymentsRpcResult result) override {
-    std::move(callback_).Run(result, server_id_);
+    std::move(callback_).Run(result, upload_card_response_details_);
   }
 
  private:
   const PaymentsClient::UploadRequestDetails request_details_;
   const bool full_sync_enabled_;
   base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                          const std::string&)>
+                          const PaymentsClient::UploadCardResponseDetails&)>
       callback_;
-  std::string server_id_;
+  PaymentsClient::UploadCardResponseDetails upload_card_response_details_;
 };
 
 class MigrateCardsRequest : public PaymentsRequest {
@@ -1037,7 +1040,7 @@ void PaymentsClient::GetUploadDetails(
 void PaymentsClient::UploadCard(
     const PaymentsClient::UploadRequestDetails& request_details,
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                            const std::string&)> callback) {
+                            const UploadCardResponseDetails&)> callback) {
   IssueRequest(
       std::make_unique<UploadCardRequest>(
           request_details, account_info_getter_->IsSyncFeatureEnabled(),

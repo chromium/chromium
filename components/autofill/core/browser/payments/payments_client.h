@@ -277,6 +277,17 @@ class PaymentsClient {
     LOCAL_CARD_MIGRATION_SETTINGS_PAGE,
   };
 
+  // TODO(crbug.com/1285086): Remove the |server_id| field from
+  //  UploadCardResponseDetails since it is never used.
+  // A collection of information received in the response for an
+  // UploadCardRequest.
+  struct UploadCardResponseDetails {
+    std::string server_id;
+    // TODO(crbug.com/1281695): Add |virtual_card_enrollment_state| and
+    //   |card_art_url| data members when integrating all of the logic for the
+    //   virtual card enrollment flow.
+  };
+
   // TODO(crbug.com/1281695): Add GetDetailsForEnrollRequest.
   // A collection of information received in the response for a
   // GetDetailsForEnrollRequest.
@@ -373,7 +384,8 @@ class PaymentsClient {
   virtual void UploadCard(
       const UploadRequestDetails& details,
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                              const std::string&)> callback);
+                              const PaymentsClient::UploadCardResponseDetails&)>
+          callback);
 
   // The user has indicated that they would like to migrate their local credit
   // cards. This request will fail server-side if a successful call to

@@ -1234,8 +1234,11 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NotSavedLocally) {
 
   credit_card_save_manager_->SetCreditCardUploadEnabled(true);
 
-  const char* const server_id = "InstrumentData:1234";
-  payments_client_->SetServerIdForCardUpload(server_id);
+  payments::PaymentsClient::UploadCardResponseDetails
+      upload_card_response_details;
+  upload_card_response_details.server_id = "InstrumentData:1234";
+  payments_client_->SetUploadCardResponseDetailsForUploadCard(
+      upload_card_response_details);
 
   // Create, fill and submit an address form in order to establish a recent
   // profile which can be selected for the upload request.
@@ -5035,8 +5038,11 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NumStrikesLoggedOnAdd) {
 // bubble is shown.
 TEST_F(CreditCardSaveManagerTest,
        UploadCreditCard_NumStrikesLoggedOnUploadNotSuccess) {
-  const char* const server_id = "InstrumentData:1234";
-  payments_client_->SetServerIdForCardUpload(server_id);
+  payments::PaymentsClient::UploadCardResponseDetails
+      upload_card_response_details;
+  upload_card_response_details.server_id = "InstrumentData:1234";
+  payments_client_->SetUploadCardResponseDetailsForUploadCard(
+      upload_card_response_details);
   TestCreditCardSaveStrikeDatabase credit_card_save_strike_database =
       TestCreditCardSaveStrikeDatabase(strike_database_);
   EXPECT_EQ(0, credit_card_save_strike_database.GetStrikes("1111"));
@@ -5047,7 +5053,8 @@ TEST_F(CreditCardSaveManagerTest,
   credit_card_save_manager_->set_upload_request_card_number(
       u"4111111111111111");
   credit_card_save_manager_->OnDidUploadCard(
-      AutofillClient::PaymentsRpcResult::kTryAgainFailure, server_id);
+      AutofillClient::PaymentsRpcResult::kTryAgainFailure,
+      upload_card_response_details);
   EXPECT_EQ(1, credit_card_save_strike_database.GetStrikes("1111"));
 }
 

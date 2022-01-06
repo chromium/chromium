@@ -128,7 +128,7 @@ class PaymentsClientTest : public testing::Test {
         switches::kWalletServiceUseSandbox, "0");
 
     result_ = AutofillClient::PaymentsRpcResult::kNone;
-    server_id_.clear();
+    upload_card_response_details_.server_id.clear();
     unmask_response_details_ = nullptr;
     legal_message_.reset();
     has_variations_header_ = false;
@@ -200,9 +200,10 @@ class PaymentsClientTest : public testing::Test {
   }
 
   void OnDidUploadCard(AutofillClient::PaymentsRpcResult result,
-                       const std::string& server_id) {
+                       const PaymentsClient::UploadCardResponseDetails&
+                           upload_card_respone_details) {
     result_ = result;
-    server_id_ = server_id;
+    upload_card_response_details_ = upload_card_respone_details;
   }
 
 #if !defined(OS_ANDROID) && !defined(OS_IOS)
@@ -434,7 +435,7 @@ class PaymentsClientTest : public testing::Test {
   raw_ptr<payments::PaymentsClient::UnmaskDetails> unmask_details_;
 
   // Server ID of a saved card via credit card upload save.
-  std::string server_id_;
+  PaymentsClient::UploadCardResponseDetails upload_card_response_details_;
   // The OptChangeResponseDetails retrieved from an OptChangeRequest.
   PaymentsClient::OptChangeResponseDetails opt_change_response_;
   // The UnmaskResponseDetails retrieved from an UnmaskRequest.  Includes PAN.
@@ -1140,7 +1141,7 @@ TEST_F(PaymentsClientTest, UploadSuccessWithoutServerId) {
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK, "{}");
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
-  EXPECT_TRUE(server_id_.empty());
+  EXPECT_TRUE(upload_card_response_details_.server_id.empty());
 }
 
 TEST_F(PaymentsClientTest, UploadSuccessWithServerId) {
@@ -1148,7 +1149,7 @@ TEST_F(PaymentsClientTest, UploadSuccessWithServerId) {
   IssueOAuthToken();
   ReturnResponse(net::HTTP_OK, "{ \"credit_card_id\": \"InstrumentData:1\" }");
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kSuccess, result_);
-  EXPECT_EQ("InstrumentData:1", server_id_);
+  EXPECT_EQ("InstrumentData:1", upload_card_response_details_.server_id);
 }
 
 TEST_F(PaymentsClientTest, UploadIncludesNonLocationData) {

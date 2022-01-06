@@ -60,7 +60,8 @@ class TestPaymentsClient : public payments::PaymentsClient {
   void UploadCard(
       const payments::PaymentsClient::UploadRequestDetails& request_details,
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                              const std::string&)> callback) override;
+                              const PaymentsClient::UploadCardResponseDetails&)>
+          callback) override;
 
   void MigrateCards(
       const MigrationRequestDetails& details,
@@ -82,7 +83,9 @@ class TestPaymentsClient : public payments::PaymentsClient {
                            std::string credential_id,
                            std::string relying_party_id);
 
-  void SetServerIdForCardUpload(std::string);
+  void SetUploadCardResponseDetailsForUploadCard(
+      const PaymentsClient::UploadCardResponseDetails&
+          upload_card_response_details);
 
   void SetSaveResultForCardsMigration(
       std::unique_ptr<std::unordered_map<std::string, std::string>>
@@ -126,7 +129,7 @@ class TestPaymentsClient : public payments::PaymentsClient {
   }
 
  private:
-  std::string server_id_;
+  PaymentsClient::UploadCardResponseDetails upload_card_response_details_;
   // Some metrics are affected by the latency of GetUnmaskDetails, so it is
   // useful to control whether or not GetUnmaskDetails() is responded to.
   bool should_return_unmask_details_ = true;

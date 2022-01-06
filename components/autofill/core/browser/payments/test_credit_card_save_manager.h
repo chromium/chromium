@@ -45,8 +45,10 @@ class TestCreditCardSaveManager : public CreditCardSaveManager {
   void set_upload_request_card_number(const std::u16string& credit_card_number);
 
  private:
-  void OnDidUploadCard(AutofillClient::PaymentsRpcResult result,
-                       const std::string& server_id) override;
+  void OnDidUploadCard(
+      AutofillClient::PaymentsRpcResult result,
+      const payments::PaymentsClient::UploadCardResponseDetails&
+          upload_card_response_details) override;
 
   bool credit_card_upload_enabled_ = false;
   bool credit_card_was_uploaded_ = false;

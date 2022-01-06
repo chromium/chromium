@@ -308,7 +308,8 @@ bool CreditCardSaveManager::IsCreditCardUploadEnabled() {
 
 void CreditCardSaveManager::OnDidUploadCard(
     AutofillClient::PaymentsRpcResult result,
-    const std::string& server_id) {
+    const payments::PaymentsClient::UploadCardResponseDetails&
+        upload_card_response_details) {
   if (observer_for_testing_)
     observer_for_testing_->OnReceivedUploadCardResponse();
 

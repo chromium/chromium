@@ -152,8 +152,10 @@ class CreditCardSaveManager {
   // |AutofillClient::PaymentsRpcResult::kSuccess|, clears strikes for the saved
   // card. Additionally, |server_id| may, optionally, contain the opaque
   // identifier for the card on the server. Exposed for testing.
-  virtual void OnDidUploadCard(AutofillClient::PaymentsRpcResult result,
-                               const std::string& server_id);
+  virtual void OnDidUploadCard(
+      AutofillClient::PaymentsRpcResult result,
+      const payments::PaymentsClient::UploadCardResponseDetails&
+          upload_card_response_details);
 
  private:
   friend class CreditCardSaveManagerTest;
