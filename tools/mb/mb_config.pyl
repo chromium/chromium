@@ -325,9 +325,10 @@
       'fuchsia-fyi-arm64-dbg': 'debug_bot_fuchsia_arm64',
       'fuchsia-fyi-arm64-femu': 'release_bot_fuchsia_arm64',
       'fuchsia-fyi-arm64-rel': 'release_bot_fuchsia_arm64',
+      'fuchsia-fyi-x64-asan': 'asan_bot_fuchsia',
       'fuchsia-fyi-x64-dbg': 'debug_bot_fuchsia',
       'fuchsia-fyi-x64-rel': 'release_bot_fuchsia',
-      'fuchsia-fyi-x64-asan': 'asan_bot_fuchsia',
+      'fuchsia-fyi-x64-wst': 'fuchsia_workstation_bot',
       'ios14-beta-simulator': 'ios_simulator_debug_static_bot_xctest',
       'ios14-sdk-simulator': 'ios_simulator_debug_static_bot_xctest_arm64',
       'ios15-beta-simulator': 'ios_simulator_debug_static_bot_xctest',
@@ -2209,6 +2210,10 @@
       'official_optimize_goma_trybot', 'fuchsia',
     ],
 
+    'fuchsia_workstation_bot': [
+      'release_bot', 'fuchsia', 'fuchsia_include_workstation_image',
+    ],
+
     'gpu_fyi_tests_debug_trybot': [
       'gpu_fyi_tests', 'debug_bot', 'disable_nacl',
     ],
@@ -2752,7 +2757,7 @@
     ],
 
     'official_goma_fuchsia_arm64_perf': [
-      'official', 'goma', 'minimal_symbols', 'fuchsia', 'fuchsia_include_all_images', 'arm64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'test_isolate_no_emulator'
+      'official', 'goma', 'minimal_symbols', 'fuchsia', 'fuchsia_include_sd_images', 'arm64', 'ffmpeg_branding_chrome', 'proprietary_codecs', 'test_isolate_no_emulator'
     ],
 
     'official_goma_linux_pgo': [
@@ -3511,8 +3516,12 @@
       'gn_args': 'fuchsia_code_coverage=true',
     },
 
-    'fuchsia_include_all_images': {
+    'fuchsia_include_sd_images': {
       'gn_args': 'fuchsia_additional_boot_images=["//third_party/fuchsia-sdk/images-internal/astro-release/","//third_party/fuchsia-sdk/images-internal/sherlock-release/"]',
+    },
+
+    'fuchsia_include_workstation_image': {
+      'gn_args': 'fuchsia_additional_boot_images=["//third_party/fuchsia-sdk/images/qemu-x64-release/"]',
     },
 
     'full_symbols': {

@@ -2908,6 +2908,27 @@
           'gtest_tests': 'fuchsia_experimental_gtests',
         },
       },
+      'fuchsia-fyi-x64-wst': {
+        'browser_config': 'web-engine-shell',
+        'os_type': 'linux',
+        'mixins': [
+          'linux-bionic',
+        ],
+        'args': [
+          '-custom-image=workstation.qemu-x64-release',
+        ],
+        'swarming': {
+          'dimension_sets': [
+            {
+              'kvm': '1',
+            },
+          ],
+        },
+        'test_suites': {
+          'gpu_telemetry_tests': 'fuchsia_gpu_telemetry_tests',
+          'gtest_tests': 'fuchsia_experimental_gtests',
+        },
+      },
       'ios-asan': {
         'mixins': [
           'has_native_resultdb_integration',
