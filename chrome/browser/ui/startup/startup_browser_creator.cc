@@ -333,6 +333,13 @@ bool ShouldShowProfilePickerAtProcessLaunch(
     return false;
   }
 #endif  // defined(OS_WIN)
+
+  // Don't show the picker if Chrome should be launched without window. This
+  // will also cause a profile to be loaded which Chrome needs for performing
+  // background activity.
+  if (StartupBrowserCreator::ShouldLoadProfileWithoutWindow(command_line))
+    return false;
+
   return ProfilePicker::ShouldShowAtLaunch();
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }

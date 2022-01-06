@@ -3960,6 +3960,11 @@ class StartupBrowserCreatorPickerTest
   ~StartupBrowserCreatorPickerTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    StartupBrowserCreatorPickerTestBase::SetUpCommandLine(command_line);
+
+    if (content::IsPreTest())
+      return;  // Don't apply the test parameters to the PRE test.
+
     if (GetParam().url_arg) {
       command_line->AppendArg(GetParam().url_arg->spec());
     } else if (GetParam().switch_value_ascii) {
@@ -4001,13 +4006,30 @@ IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorPickerTest, PRE_TestSetup) {
       GetParam().shutdown_type == ProfilePickerSetup::ShutdownType::kRestart);
 }
 
+// Checks that either the ProfilePicker or a browser window is open at startup.
+// Except with switches::kNoStartupWindow, for which neither the picker nor a
+// browser is open.
 IN_PROC_BROWSER_TEST_P(StartupBrowserCreatorPickerTest, TestSetup) {
-  if (GetParam().expected_to_show) {
-    // Opens the picker and thus does not open any new browser window for the
-    // main profile.
+  ProfilePickerSetup setup_param = GetParam();
+
+  // Check the ProfilePicker.
+  if (setup_param.expected_to_show) {
+    if (!ProfilePicker::IsOpen()) {
+      base::RunLoop run_loop;
+      ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
+          run_loop.QuitClosure());
+      run_loop.Run();
+    }
+    EXPECT_TRUE(ProfilePicker::IsOpen());
+  } else {
+    EXPECT_FALSE(ProfilePicker::IsOpen());
+  }
+
+  // Check the browser window.
+  if (setup_param.expected_to_show ||
+      setup_param.switch_name == switches::kNoStartupWindow) {
     EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
   } else {
-    // The picker is skipped which means a browser window is opened on startup.
     EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   }
 }
@@ -4029,6 +4051,8 @@ INSTANTIATE_TEST_SUITE_P(
                            /*switch_name=*/switches::kApp},
         ProfilePickerSetup{/*expected_to_show=*/false,
                            /*switch_name=*/switches::kAppId},
+        ProfilePickerSetup{/*expected_to_show=*/false,
+                           /*switch_name=*/switches::kNoStartupWindow},
         // Skip the picker when a specific profile is requested (used e.g. by
         // profile specific desktop shortcuts on Win).
         ProfilePickerSetup{/*expected_to_show=*/false,
