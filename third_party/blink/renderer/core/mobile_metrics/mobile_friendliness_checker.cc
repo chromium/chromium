@@ -40,6 +40,8 @@ static constexpr base::TimeDelta kTimeBudgetForBadTapTarget =
     base::Milliseconds(5);
 static constexpr base::TimeDelta kEvaluationDelay = base::Milliseconds(3000);
 static constexpr base::TimeDelta kEvaluationInterval = base::Minutes(1);
+// Consider a fixed number of tap targets.
+static constexpr int kMaxTapTargets = 1000;
 
 MobileFriendlinessChecker::MobileFriendlinessChecker(LocalFrameView& frame_view)
     : frame_view_(&frame_view),
@@ -154,69 +156,89 @@ bool IsTapTargetCandidate(const Node* node) {
           !To<HTMLAnchorElement>(node)->Href().IsEmpty());
 }
 
+// Skip the whole subtree if the object is invisible. Some elements in subtree
+// may have visibility: visible property which should not be ignored for
+// correctness, but it is rare and we prioritize performance.
+bool ShouldSkipSubree(const LayoutObject* object) {
+  const auto& style = object->StyleRef();
+  return object->IsElementContinuation() ||
+         style.Visibility() != EVisibility::kVisible ||
+         style.ContentVisibility() != EContentVisibility::kVisible;
+}
+
+void AddElement(const LayoutObject* object,
+                WTF::HashSet<Member<const LayoutObject>>* tap_targets,
+                int finger_radius,
+                Vector<int>& x_positions,
+                Vector<std::pair<int, EdgeOrCenter>>& vertices) {
+  Node* node = object->GetNode();
+  if (!node || !IsTapTargetCandidate(node)) {
+    return;
+  }
+  if (Element* element = DynamicTo<Element>(object->GetNode())) {
+    // Expand each corner by the size of fingertips.
+    const gfx::RectF rect = element->GetBoundingClientRectNoLifecycleUpdate();
+    if (!rect.IsEmpty()) {
+      if (!tap_targets->insert(object).is_new_entry) {
+        const int top = ClampTo<int>(rect.y() - finger_radius);
+        const int bottom = ClampTo<int>(rect.bottom() + finger_radius);
+        const int left = ClampTo<int>(rect.x() - finger_radius);
+        const int right = ClampTo<int>(rect.right() + finger_radius);
+        const int center = right / 2 + left / 2;
+        vertices.emplace_back(top, EdgeOrCenter::StartEdge(left, right));
+        vertices.emplace_back(bottom / 2 + top / 2,
+                              EdgeOrCenter::Center(center));
+        vertices.emplace_back(bottom, EdgeOrCenter::EndEdge(left, right));
+        x_positions.push_back(left);
+        x_positions.push_back(right);
+        x_positions.push_back(center);
+      }
+    }
+  }
+}
+
 // Scans full DOM tree and register all tap regions.
-// root: DOM tree's root.
+// frame_view: DOM tree's root.
 // finger_radius: Extends every tap regions with given pixels.
 // x_positions: Collects and inserts every x dimension positions.
 // vertices: Inserts y dimension keyed vertex positions with its attribute.
 // Returns total count of tap targets.
 // Returns kTimeBudgetExceeded if time limit exceeded.
 int ExtractAndCountAllTapTargets(
-    LayoutObject* const root,
+    const LocalFrameView& frame_view,
     int finger_radius,
-    int scroll_offset,
-    int max_height,
     Vector<int>& x_positions,
     const base::Time& started,
     Vector<std::pair<int, EdgeOrCenter>>& vertices) {
   vertices.clear();
-  int tap_targets = 0;
-  for (LayoutObject* object = root; object;) {
-    if (IsTimeBudgetExpired(started))
-      return kTimeBudgetExceeded;
+  LayoutObject* const root =
+      frame_view.GetFrame().GetDocument()->GetLayoutView();
+  WTF::HashSet<Member<const LayoutObject>> tap_targets;
 
-    Node* node = object->GetNode();
-    const ComputedStyle* style = object->Style();
-    if (!node || !IsTapTargetCandidate(node)) {
-      object = object->NextInPreOrder();
-      continue;
+  // Simultaneously iterate front-to-back and back-to-front to consider
+  // both page headers and footers using the same time budget.
+  for (const LayoutObject *forward = root, *backward = root;
+       forward && backward && tap_targets.size() < kMaxTapTargets;) {
+    if (IsTimeBudgetExpired(started)) {
+      return kTimeBudgetExceeded;
     }
-    if (object->IsElementContinuation() ||
-        style->Visibility() != EVisibility::kVisible ||
-        style->ContentVisibility() != EContentVisibility::kVisible) {
-      // Skip the whole subtree in this case. Some elements in subtree may have
-      // visibility: visible property which should not be ignored for
-      // correctness, but it is rare and we priority performance.
-      object = object->NextInPreOrderAfterChildren();
-      continue;
+
+    if (ShouldSkipSubree(forward)) {
+      forward = forward->NextInPreOrderAfterChildren();
+    } else {
+      AddElement(forward, &tap_targets, finger_radius, x_positions, vertices);
+      forward = forward->NextInPreOrder();
     }
-    if (Element* element = DynamicTo<Element>(object->GetNode())) {
-      // Expand each corner by the size of fingertips.
-      const gfx::RectF rect = element->GetBoundingClientRectNoLifecycleUpdate();
-      if (rect.IsEmpty()) {
-        object = object->NextInPreOrder();
-        continue;
-      }
-      const int top = ClampTo<int>(rect.y() - finger_radius + scroll_offset);
-      const int bottom =
-          ClampTo<int>(rect.bottom() + finger_radius + scroll_offset);
-      const int left = ClampTo<int>(rect.x() - finger_radius);
-      const int right = ClampTo<int>(rect.right() + finger_radius);
-      const int center = right / 2 + left / 2;
-      if (top > max_height) {
-        break;
-      }
-      vertices.emplace_back(top, EdgeOrCenter::StartEdge(left, right));
-      vertices.emplace_back(bottom / 2 + top / 2, EdgeOrCenter::Center(center));
-      vertices.emplace_back(bottom, EdgeOrCenter::EndEdge(left, right));
-      x_positions.push_back(left);
-      x_positions.push_back(right);
-      x_positions.push_back(center);
-      tap_targets++;
+
+    if (ShouldSkipSubree(backward)) {
+      backward = backward->PreviousInPostOrderBeforeChildren(nullptr);
+    } else {
+      AddElement(backward, &tap_targets, finger_radius, x_positions, vertices);
+      backward = backward->PreviousInPostOrder(nullptr);
     }
-    object = object->NextInPreOrder();
   }
-  return tap_targets;
+
+  return static_cast<int>(tap_targets.size());
 }
 
 // Compress the x-dimension range and overwrites the value.
@@ -309,18 +331,10 @@ int MobileFriendlinessChecker::ComputeBadTapTargetsRatio() {
   Vector<std::pair<int, EdgeOrCenter>> vertices;
   Vector<int> x_positions;
 
-  // This is like DOMWindow::scrollY() but without layout update.
-  const int scroll_y = AdjustForAbsoluteZoom::AdjustScroll(
-      frame_view_->LayoutViewport()->GetScrollOffset().y(),
-      frame_view_->GetFrame().PageZoomFactor());
-  const int screen_height =
-      frame_view_->LayoutViewport()->GetLayoutBox()->Size().Height().ToInt();
-
   // Scan full DOM tree and extract every corner and center position of tap
   // targets.
   const int all_tap_targets = ExtractAndCountAllTapTargets(
-      frame_view_->GetFrame().GetDocument()->GetLayoutView(), finger_radius,
-      scroll_y, screen_height, x_positions, started, vertices);
+      *frame_view_, finger_radius, x_positions, started, vertices);
   if (all_tap_targets <= 0)
     return all_tap_targets;  // Means there is no tap target or timeout.
 
@@ -347,7 +361,7 @@ int MobileFriendlinessChecker::ComputeBadTapTargetsRatio() {
   if (bad_tap_targets == kTimeBudgetExceeded)
     return kTimeBudgetExceeded;
 
-  return bad_tap_targets * 100.0 / all_tap_targets;
+  return std::ceil(bad_tap_targets * 100.0 / all_tap_targets);
 }
 
 void MobileFriendlinessChecker::Activate(TimerBase*) {

@@ -763,7 +763,7 @@ TEST_F(MobileFriendlinessCheckerTest, ScrollerOutsideViewport) {
 
 TEST_F(ClockFixedMobileFriendlinessCheckerTest, SingleTapTarget) {
   MobileFriendliness actual_mf = CalculateMainFrameMetricsForHTMLString(R"(
-</html>
+<html>
   <head>
     <meta name="viewport" content="width=480, initial-scale=1">
   </head>
@@ -906,7 +906,7 @@ TEST_F(ClockFixedMobileFriendlinessCheckerTest,
   </body>
 </html>
 )");
-  EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 33);
+  EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 34);
 }
 
 TEST_F(ClockFixedMobileFriendlinessCheckerTest, TooCloseTapTargetsHorizontal) {
@@ -958,7 +958,7 @@ TEST_F(ClockFixedMobileFriendlinessCheckerTest,
   </body>
 </html>
 )");
-  EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 33);
+  EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 34);
 }
 
 TEST_F(ClockFixedMobileFriendlinessCheckerTest, GridGoodTargets3X3) {
@@ -1146,92 +1146,6 @@ TEST_F(ClockFixedMobileFriendlinessCheckerTest,
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 100);
 }
 
-TEST_F(ClockFixedMobileFriendlinessCheckerTest,
-       BadTapTargetBelowFirstOnePager) {
-  MobileFriendliness actual_mf = CalculateMainFrameMetricsForHTMLString(R"(
-<html>
-  <head>
-    <meta name="viewport" content="width=480, initial-scale=1">
-  </head>
-  <body style="font-size: 18px">
-    <button style="position:absolute; width:50px; height:50px">
-      a
-    </button>
-    <button style="position:relative; width:50px; height:50px">
-      b
-    </button>
-    <!-- below area must be ignored -->
-    <div style="margin-top: 800px">
-      <a href="about:blank">
-        <div style="width: 50px;height: 50px; margin: 50px; display:inline-block">
-          have
-        </div>
-      </a>
-      <a href="about:blank">
-        <div style="width: 50px;height: 50px; margin: 50px; display:inline-block">
-          enough
-        </div>
-      </a>
-      <a href="about:blank">
-        <div style="width: 50px;height: 50px; margin: 50px; display:inline-block">
-          spans
-        </div>
-      </a>
-    </div>
-  </body>
-</html>
-)");
-  EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 100);
-}
-
-TEST_F(ClockFixedMobileFriendlinessCheckerTest,
-       BadTapTargetBelowFirstOnePagerWithScroll) {
-  auto eval_btt_with_scroll = [&](const int scroll_offset) {
-    return CalculateMainFrameMetricsForHTMLString(R"(
-<html>
-  <head>
-    <meta name="viewport" content="width=480, initial-scale=1">
-  </head>
-  <body style="font-size: 18px">
-    <button style="position:absolute; width:50px; height:50px">
-      a
-    </button>
-    <button style="position:relative; width:50px; height:50px">
-      b
-    </button>
-    <!-- below area must be ignored -->
-    <div style="margin-top: 800px">
-      <a href="about:blank">
-        <div style="width: 50px;height: 50px; margin: 50px; display:inline-block">
-          have
-        </div>
-      </a>
-      <a href="about:blank">
-        <div style="width: 50px;height: 50px; margin: 50px; display:inline-block">
-          enough
-        </div>
-      </a>
-      <a href="about:blank">
-        <div style="width: 50px;height: 50px; margin: 50px; display:inline-block">
-          spans
-        </div>
-      </a>
-    </div>
-  </body>
-</html>
-)",
-                                                  1.0 /*=device_scale*/,
-                                                  scroll_offset)
-        .bad_tap_targets_ratio;
-  };
-
-  // BadTapTargetResult must not be affected by scrolling offset.
-  EXPECT_EQ(eval_btt_with_scroll(0), 100);
-  EXPECT_EQ(eval_btt_with_scroll(400), 100);
-  EXPECT_EQ(eval_btt_with_scroll(800), 100);
-  EXPECT_EQ(eval_btt_with_scroll(1200), 100);
-}
-
 TEST_F(ClockFixedMobileFriendlinessCheckerTest, TapTargetTimeout) {
   clock_override_.reset();
   clock_override_ = std::make_unique<base::subtle::ScopedTimeClockOverrides>(
@@ -1270,6 +1184,21 @@ TEST_F(ClockFixedMobileFriendlinessCheckerTest, TapTargetTimeout) {
 </html>
 )");
   EXPECT_EQ(actual_mf.bad_tap_targets_ratio, -2);
+}
+
+TEST_F(ClockFixedMobileFriendlinessCheckerTest, TapTargetPositionFixed) {
+  MobileFriendliness actual_mf = CalculateMainFrameMetricsForHTMLString(R"(
+<html>
+  <head>
+    <meta name="viewport" content="width=480, initial-scale=1">
+  </head>
+  <body style="font-size: 18px">
+    <button style="position: fixed; bottom: 0; right: 100">fixed</button>
+    <button style="position: fixed; bottom: 10; right: 100">fixed</button>
+  </body>
+</html>
+)");
+  EXPECT_EQ(actual_mf.bad_tap_targets_ratio, 100);
 }
 
 TEST_F(ClockFixedMobileFriendlinessCheckerTest, IFrameTest) {
