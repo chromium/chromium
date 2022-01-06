@@ -369,7 +369,7 @@ bool ShouldShowWelcomePage() {
 }
 
 bool IsOnWelcomePage(content::WebContents* contents) {
-  return contents->GetURL().GetWithEmptyPath() ==
+  return contents->GetVisibleURL().GetWithEmptyPath() ==
          GURL(chrome::kChromeUIWelcomeURL);
 }
 
