@@ -2212,8 +2212,9 @@ void SkiaRenderer::DrawTileDrawQuad(const TileDrawQuad* quad,
       quad->tex_coord_rect, gfx::RectF(quad->rect), params->visible_rect);
 
   bool translate_only = params->content_device_transform.matrix().isTranslate();
-  UMA_HISTOGRAM_BOOLEAN("SkiaRenderer.DrawTileDrawQuad.CDT.TranslateOnly",
-                        translate_only);
+  UMA_HISTOGRAM_BOOLEAN(
+      "Compositing.SkiaRenderer.DrawTileDrawQuad.CDT.IsTranslateOnly",
+      translate_only);
   if (builder.paint_op_buffer()) {
     DCHECK(!rpdq_params);
     DrawPaintOpBuffer(builder.paint_op_buffer(), builder.clear_color(), quad,
