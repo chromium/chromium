@@ -102,9 +102,8 @@ enum CrossedReason {
 };
 
 void RecordIgnore(base::DictionaryValue* dict) {
-  int times_ignored = 0;
-  dict->GetInteger(kNumTimesIgnoredName, &times_ignored);
-  dict->SetInteger(kNumTimesIgnoredName, ++times_ignored);
+  int times_ignored = dict->FindIntKey(kNumTimesIgnoredName).value_or(0);
+  dict->SetIntKey(kNumTimesIgnoredName, ++times_ignored);
   dict->SetDoubleKey(kTimeLastIgnored, base::Time::Now().ToDoubleT());
 }
 
