@@ -9,9 +9,12 @@ import android.annotation.TargetApi;
 import android.app.PictureInPictureParams;
 import android.content.ClipData;
 import android.content.ClipDescription;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Process;
+import android.view.Display;
 import android.view.textclassifier.TextClassification;
 import android.view.textclassifier.TextLinks;
 import android.view.textclassifier.TextSelection;
@@ -92,5 +95,13 @@ public final class ApiHelperForS {
      */
     public static TextClassification getTextClassification(TextSelection textSelection) {
         return textSelection.getTextClassification();
+    }
+
+    /**
+     * See Context#createWindowContext.
+     */
+    public static Context createWindowContext(
+            Context context, Display display, int type, Bundle options) {
+        return context.createWindowContext(display, type, options);
     }
 }
