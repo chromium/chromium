@@ -28,6 +28,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if defined(OS_MAC)
+#include "base/threading/platform_thread.h"
 #include "media/cast/sender/h264_vt_encoder.h"
 #endif
 

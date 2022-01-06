@@ -6,6 +6,7 @@
 #define COMPONENTS_VIZ_SERVICE_MAIN_VIZ_COMPOSITOR_THREAD_RUNNER_H_
 
 #include "base/callback.h"
+#include "base/threading/platform_thread.h"
 #include "services/viz/privileged/mojom/viz_main.mojom.h"
 
 namespace base {

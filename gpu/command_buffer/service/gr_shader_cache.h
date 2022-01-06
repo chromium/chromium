@@ -11,6 +11,7 @@
 #include "base/hash/hash.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/synchronization/lock.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "gpu/raster_export.h"

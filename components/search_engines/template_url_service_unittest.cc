@@ -2,11 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/search_engines/template_url_service.h"
+
 #include <stddef.h>
 
 #include <memory>
 
-#include "components/search_engines/template_url_service.h"
+#include "base/threading/platform_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 class TemplateURLServiceUnitTest : public testing::Test {
