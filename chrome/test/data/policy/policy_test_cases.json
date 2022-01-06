@@ -11695,6 +11695,9 @@
   "ReportDeviceLoginLogout": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },
+  "ReportCRDSessions": {
+    "reason_for_missing_test": "Maps into CrosSettings"
+  },
   "ReportDevicePrintJobs": {
     "reason_for_missing_test": "Maps into CrosSettings"
   },

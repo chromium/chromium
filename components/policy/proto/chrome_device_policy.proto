@@ -173,6 +173,9 @@ message DeviceReportingProto {
   // Audio telemetry policy
   optional int64 report_device_audio_status_checking_rate_ms = 35
       [default = 600000];
+
+  // CRD Sessions reporting policy
+  optional bool report_crd_sessions = 36 [default = false];
 }
 
 message EphemeralUsersEnabledProto {

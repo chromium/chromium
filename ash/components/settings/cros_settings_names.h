@@ -133,6 +133,8 @@ COMPONENT_EXPORT(ASH_SETTINGS) extern const char kReportDevicePrintJobs[];
 COMPONENT_EXPORT(ASH_SETTINGS)
 extern const char kReportDeviceLoginLogout[];
 COMPONENT_EXPORT(ASH_SETTINGS)
+extern const char kReportCRDSessions[];
+COMPONENT_EXPORT(ASH_SETTINGS)
 extern const char kReportDeviceNetworkTelemetryCollectionRateMs[];
 COMPONENT_EXPORT(ASH_SETTINGS)
 extern const char kReportDeviceNetworkTelemetryEventCheckingRateMs[];

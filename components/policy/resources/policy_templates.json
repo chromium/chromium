@@ -972,6 +972,7 @@
         'ReportDeviceSystemInfo',
         'ReportDevicePrintJobs',
         'ReportDeviceLoginLogout',
+        'ReportCRDSessions',
         'ReportUploadFrequency',
         'ReportArcStatusEnabled',
         'HeartbeatEnabled',
@@ -11150,6 +11151,38 @@
 
       If the policy is set to false or left unset, the information will not be reported.
       If set to true, the device's login/logout events will be reported.''',
+      'arc_support': 'This policy has no effect on the logging done by Android.',
+    },
+    {
+      'name': 'ReportCRDSessions',
+      'owners': ['lbaraz@google.com', 'cros-reporting-team@google.com'],
+      'type': 'main',
+      'schema': { 'type': 'boolean' },
+      'supported_on': ['chrome_os:99-'],
+      'supported_chrome_os_management': ['google_cloud'],
+      'device_only': True,
+      'features': {
+        'dynamic_refresh': True,
+      },
+      'items': [
+        {
+          'value': True,
+          'caption': 'Report <ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME">Chrome Remote Desktop</ph> events',
+        },
+        {
+          'value': False,
+          'caption': 'Do not report CRD sessions events',
+        },
+      ],
+      'example_value': False,
+      'default': False,
+      'id': 939,
+      'caption': '''Report CRD sessions''',
+      'tags': ['admin-sharing'],
+      'desc': '''Report CRD sessions events on enrolled devices for affiliated users.
+
+      If the policy is Disabled or left unset, the information will not be reported.
+      If Enabled, the CRD events will be reported, if the user is affiliated''',
       'arc_support': 'This policy has no effect on the logging done by Android.',
     },
     {
@@ -29642,6 +29675,7 @@ The recommended way to configure policy on Windows is via GPO, although provisio
     'ReportDeviceSystemInfo': 'device_reporting.report_system_info',
     'ReportDevicePrintJobs': 'device_reporting.report_print_jobs',
     'ReportDeviceLoginLogout': 'device_reporting.report_login_logout',
+    'ReportCRDSessions': 'device_reporting.report_crd_sessions',
     'ReportDeviceNetworkTelemetryCollectionRateMs': 'device_reporting.report_network_telemetry_collection_rate_ms',
     'ReportDeviceNetworkTelemetryEventCheckingRateMs': 'device_reporting.report_network_telemetry_event_checking_rate_ms',
     'ReportDeviceAudioStatusCheckingRateMs': 'device_reporting.report_device_audio_status_checking_rate_ms',
@@ -30226,6 +30260,6 @@ The recommended way to configure policy on Windows is via GPO, although provisio
   'placeholders': [],
   'deleted_policy_ids': [114, 115, 204, 205, 206, 341, 412, 476, 544, 546, 562, 569, 578, 583, 585, 586, 587, 588, 589, 590, 591, 600, 668, 669, 872],
   'deleted_atomic_policy_group_ids': [19],
-  'highest_id_currently_used': 938,
+  'highest_id_currently_used': 939,
   'highest_atomic_group_id_currently_used': 41
 }

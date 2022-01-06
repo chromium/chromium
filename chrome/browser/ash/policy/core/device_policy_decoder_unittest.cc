@@ -223,6 +223,19 @@ TEST_F(DevicePolicyDecoderTest, ReportDeviceLoginLogout) {
                                std::move(report_login_logout_value));
 }
 
+TEST_F(DevicePolicyDecoderTest, ReportDeviceCRDSessions) {
+  em::ChromeDeviceSettingsProto device_policy;
+
+  DecodeUnsetDevicePolicyTestHelper(device_policy, key::kReportCRDSessions);
+
+  base::Value report_crd_sessions_value(true);
+  device_policy.mutable_device_reporting()->set_report_crd_sessions(
+      report_crd_sessions_value.GetBool());
+
+  DecodeDevicePolicyTestHelper(device_policy, key::kReportCRDSessions,
+                               std::move(report_crd_sessions_value));
+}
+
 TEST_F(DevicePolicyDecoderTest, ReportDeviceNetworkTelemetryCollectionRateMs) {
   em::ChromeDeviceSettingsProto device_policy;
 

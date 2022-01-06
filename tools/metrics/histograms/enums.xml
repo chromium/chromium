@@ -28192,6 +28192,7 @@ Called by update_document_policy_enum.py.-->
   <int value="936" label="PhoneHubCameraRollAllowed"/>
   <int value="937" label="EcheAllowed"/>
   <int value="938" label="DeviceKeylockerForStorageEncryptEnabled"/>
+  <int value="939" label="ReportCRDSessions"/>
 </enum>
 
 <enum name="EnterprisePolicyDeviceIdValidity">

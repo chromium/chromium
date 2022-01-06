@@ -690,6 +690,7 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     //   kReportDeviceSystemInfo
     //   kReportDevicePrintJobs
     //   kReportDeviceLoginLogout
+    //   kReportCRDSessions
     //   kServiceAccountIdentity
     //   kSystemTimezonePolicy
     //   kVariationsRestrictParameter

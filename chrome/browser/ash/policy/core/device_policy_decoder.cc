@@ -877,6 +877,11 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
                     POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
                     base::Value(container.report_login_logout()), nullptr);
     }
+    if (container.has_report_crd_sessions()) {
+      policies->Set(key::kReportCRDSessions, POLICY_LEVEL_MANDATORY,
+                    POLICY_SCOPE_MACHINE, POLICY_SOURCE_CLOUD,
+                    base::Value(container.report_crd_sessions()), nullptr);
+    }
     if (container.has_report_network_telemetry_collection_rate_ms()) {
       DecodeIntegerReportingPolicy(
           policies, key::kReportDeviceNetworkTelemetryCollectionRateMs,
