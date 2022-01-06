@@ -8,7 +8,11 @@
 namespace std {
 
 template<typename CharType>
-class basic_string {
+struct basic_string {
+  basic_string();
+  basic_string(const basic_string&);
+  basic_string(basic_string&&);
+  ~basic_string();
 };
 
 using string = basic_string<char>;

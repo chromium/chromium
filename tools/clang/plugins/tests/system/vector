@@ -8,7 +8,11 @@
 namespace std {
 
 template<typename T>
-class vector {
+struct vector {
+  vector();
+  vector(const vector&);
+  vector(vector&&);
+  ~vector();
 };
 
 }  // namespace std

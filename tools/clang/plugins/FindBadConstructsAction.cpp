@@ -57,6 +57,8 @@ bool FindBadConstructsAction::ParseArgs(const CompilerInstance& instance,
       options_.checked_ptr_as_trivial_member = true;
     } else if (args[i] == "raw-ptr-template-as-trivial-member") {
       options_.raw_ptr_template_as_trivial_member = true;
+    } else if (args[i] == "use-classify-type") {
+      options_.use_classify_type = true;
     } else {
       parsed = false;
       llvm::errs() << "Unknown clang plugin argument: " << args[i] << "\n";
