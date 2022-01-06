@@ -75,11 +75,10 @@ suite('OsBluetoothSummaryTest', function() {
         settings.routes.BLUETOOTH_DEVICES);
 
     // Navigate back to the top-level page.
-    await flushAsync();
     assertNotEquals(iconButton, bluetoothSummary.shadowRoot.activeElement);
+    const windowPopstatePromise = test_util.eventToPromise('popstate', window);
     settings.Router.getInstance().navigateToPreviousRoute();
-    await flushAsync();
-    await waitAfterNextRender(bluetoothSummary);
+    await windowPopstatePromise;
 
     // Check that |iconButton| has been focused.
     assertEquals(iconButton, bluetoothSummary.shadowRoot.activeElement);
