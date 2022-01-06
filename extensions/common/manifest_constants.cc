@@ -638,6 +638,9 @@ const char kLocalesTreeMissing[] =
 const char kManifestParseError[] =
     "Manifest is not valid JSON.";
 const char kManifestUnreadable[] = "Manifest file is missing or unreadable";
+const char kManifestV2IsDeprecatedWarning[] =
+    "Manifest version 2 is deprecated, and support will be removed in 2023. "
+    "See https://developer.chrome.com/blog/mv2-transition/ for more details.";
 const char kManifestVersionTooHighWarning[] =
     "The maximum currently-supported manifest version is *, but this is *.  "
     "Certain features may not work as expected.";

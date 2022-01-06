@@ -723,12 +723,17 @@ var CrExtensionsErrorConsoleTest = class extends CrExtensionsBrowserTest {
   /** @override */
   testGenPreamble() {
     GEN('  SetDevModeEnabled(true);');
+    // TODO(https://crbug.com/1269161): Update the associated extensions to
+    // Manifest V3 and stop ignoring deprecated manifest version warnings.
+    GEN('  SetSilenceDeprecatedManifestVersionWarnings(true);');
     GEN('  InstallErrorsExtension();');
   }
 
   /** @override */
   testGenPostamble() {
-    GEN('  SetDevModeEnabled(false);');  // Return this to default.
+    // Return settings to default.
+    GEN('  SetDevModeEnabled(false);');
+    GEN('  SetSilenceDeprecatedManifestVersionWarnings(false);');
   }
 };
 

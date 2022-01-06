@@ -353,6 +353,14 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   void AddWebExtentPattern(const URLPattern& pattern);
   const URLPatternSet& web_extent() const { return extent_; }
 
+  // Sets whether to ignore deprecated manifest versions for testing purposes.
+  // PLEASE DON'T USE THIS. Instead:
+  // * Ideally, use the current manifest version (V3)! :)
+  // * Failing that, please instead allow the warning to be emitted by e.g.
+  //   toggling ignore_manifest_warnings on ChromeTestExtensionLoader.
+  static void set_silence_deprecated_manifest_version_warnings_for_testing(
+      bool silence);
+
  private:
   friend class base::RefCountedThreadSafe<Extension>;
 

@@ -60,6 +60,9 @@ class ExtensionSettingsUIBrowserTest : public WebUIBrowserTest {
   // Shrinks the web contents view in order to ensure vertical overflow.
   void ShrinkWebContentsView();
 
+  // Sets whether to ignore errors for deprecated manifest versions.
+  void SetSilenceDeprecatedManifestVersionWarnings(bool silence);
+
   const base::FilePath& test_data_dir() { return test_data_dir_; }
 
  private:

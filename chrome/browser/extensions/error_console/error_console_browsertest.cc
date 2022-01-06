@@ -127,6 +127,15 @@ void CheckManifestError(const ExtensionError* error,
             manifest_error->manifest_specific());
 }
 
+// Checks that a given `error` refers to an error for using a deprecated
+// manifest version.
+void CheckDeprecatedManifestVersionError(const ExtensionError* error,
+                                         const std::string& id) {
+  CheckManifestError(error, id, manifest_errors::kManifestV2IsDeprecatedWarning,
+                     manifest_keys::kManifestVersion,
+                     std::string() /* no manifest_specific bit */);
+}
+
 }  // namespace
 
 class ErrorConsoleBrowserTest : public ExtensionBrowserTest {
@@ -412,8 +421,9 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BrowserActionRuntimeError) {
   const Extension* extension = nullptr;
   LoadExtensionAndCheckErrors(
       "browser_action_runtime_error", {.ignore_manifest_warnings = false},
-      1u,  // One error: A reference error from within the browser action.
-      ACTION_BROWSER_ACTION, &extension);
+      // Two errors: An error for running a deprecated manifest version and
+      // a reference error from within the browser action.
+      2u, ACTION_BROWSER_ACTION, &extension);
 
   std::string script_url =
       extension->GetResourceURL("browser_action.js").spec();
@@ -421,18 +431,20 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BrowserActionRuntimeError) {
   const ErrorList& errors =
       error_console()->GetErrorsForExtension(extension->id());
 
+  CheckDeprecatedManifestVersionError(errors[0].get(), extension->id());
+
   // TODO(devlin): The specific event name (here, 'browserAction.onClicked')
   // may or may not be worth preserving. In most cases, it's unnecessary with
   // the line number, but it could be useful in some cases.
   std::string message =
       "Error in event handler: ReferenceError: baz is not defined";
 
-  CheckRuntimeError(errors[0].get(), extension->id(), script_url,
+  CheckRuntimeError(errors[1].get(), extension->id(), script_url,
                     false,  // not incognito
                     message, logging::LOG_ERROR,
                     extension->GetResourceURL(kBackgroundPageName), 1u);
 
-  const StackTrace& stack_trace = GetStackTraceFromError(errors[0].get());
+  const StackTrace& stack_trace = GetStackTraceFromError(errors[1].get());
   // Note: This test used to have a stack trace of length 6 that contains stack
   // frames in the extension code, but since crbug.com/404406 was fixed only
   // stack frames within user-defined extension code are printed.
@@ -445,23 +457,26 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadAPIArgumentsRuntimeError) {
   const Extension* extension = nullptr;
   LoadExtensionAndCheckErrors(
       "bad_api_arguments_runtime_error", {.ignore_manifest_warnings = false},
-      1,  // One error: call an API with improper arguments.
-      ACTION_NONE, &extension);
+      // Two errors: An error for running a deprecated manifest version and an
+      // error for calling an API with improper arguments.
+      2, ACTION_NONE, &extension);
 
   const ErrorList& errors =
       error_console()->GetErrorsForExtension(extension->id());
+
+  CheckDeprecatedManifestVersionError(errors[0].get(), extension->id());
 
   std::string source = extension->GetResourceURL("background.js").spec();
   std::string message =
       "Uncaught TypeError: Error in invocation of tabs.get"
       "(integer tabId, function callback): No matching signature.";
 
-  CheckRuntimeError(errors[0].get(), extension->id(), source,
+  CheckRuntimeError(errors[1].get(), extension->id(), source,
                     false,  // not incognito
                     message, logging::LOG_ERROR,
                     extension->GetResourceURL(kBackgroundPageName), 1u);
 
-  const StackTrace& stack_trace = GetStackTraceFromError(errors[0].get());
+  const StackTrace& stack_trace = GetStackTraceFromError(errors[1].get());
   ASSERT_EQ(1u, stack_trace.size());
   CheckStackFrame(stack_trace[0], source, kAnonymousFunction);
 }
@@ -472,23 +487,26 @@ IN_PROC_BROWSER_TEST_F(ErrorConsoleBrowserTest, BadAPIPermissionsRuntimeError) {
   const Extension* extension = nullptr;
   LoadExtensionAndCheckErrors(
       "bad_api_permissions_runtime_error", {.ignore_manifest_warnings = false},
-      1,  // One error: we try to call addUrl() on chrome.history without
-          // permission, which results in a TypeError.
-      ACTION_NONE, &extension);
+      // Two errors: an error for running a deprecated manifest version and an
+      // error for trying to call addUrl() on chrome.history without permission
+      // which results in a TypeError.
+      2, ACTION_NONE, &extension);
 
   std::string script_url = extension->GetResourceURL("background.js").spec();
 
   const ErrorList& errors =
       error_console()->GetErrorsForExtension(extension->id());
 
-  CheckRuntimeError(errors[0].get(), extension->id(), script_url,
+  CheckDeprecatedManifestVersionError(errors[0].get(), extension->id());
+
+  CheckRuntimeError(errors[1].get(), extension->id(), script_url,
                     false,  // not incognito
                     "Uncaught TypeError: Cannot read properties of undefined "
                     "(reading 'addUrl')",
                     logging::LOG_ERROR,
                     extension->GetResourceURL(kBackgroundPageName), 1u);
 
-  const StackTrace& stack_trace = GetStackTraceFromError(errors[0].get());
+  const StackTrace& stack_trace = GetStackTraceFromError(errors[1].get());
   ASSERT_EQ(1u, stack_trace.size());
   CheckStackFrame(stack_trace[0],
                   script_url,

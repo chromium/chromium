@@ -27,6 +27,7 @@
 #include "extensions/browser/test_extension_registry_observer.h"
 #include "extensions/browser/user_script_loader.h"
 #include "extensions/browser/user_script_manager.h"
+#include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/background_info.h"
 #include "extensions/common/manifest_handlers/content_scripts_handler.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
@@ -337,16 +338,24 @@ bool ChromeTestExtensionLoader::CheckInstallWarnings(
     const Extension& extension) {
   if (ignore_manifest_warnings_)
     return true;
+
   const std::vector<InstallWarning>& install_warnings =
       extension.install_warnings();
-  if (install_warnings.empty())
+  std::string install_warnings_string;
+  for (const InstallWarning& warning : install_warnings) {
+    // Don't fail on the manifest v2 deprecation warning in tests for now.
+    // TODO(https://crbug.com/1269161): Stop skipping this warning when all
+    // tests are updated to MV3.
+    if (warning.message == manifest_errors::kManifestV2IsDeprecatedWarning)
+      continue;
+    install_warnings_string += "  " + warning.message + "\n";
+  }
+
+  if (install_warnings_string.empty())
     return true;
 
-  std::string install_warnings_message = "Unexpected warnings for extension:\n";
-  for (const InstallWarning& warning : install_warnings)
-    install_warnings_message += "  " + warning.message + "\n";
-
-  ADD_FAILURE() << install_warnings_message;
+  ADD_FAILURE() << "Unexpected warnings for extension:\n"
+                << install_warnings_string;
   return false;
 }
 

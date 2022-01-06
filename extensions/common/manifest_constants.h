@@ -434,6 +434,7 @@ extern const char kLocalesNoValidLocaleNamesListed[];
 extern const char kLocalesTreeMissing[];
 extern const char kManifestParseError[];
 extern const char kManifestUnreadable[];
+extern const char kManifestV2IsDeprecatedWarning[];
 extern const char kManifestVersionTooHighWarning[];
 extern const char kMatchOriginAsFallbackCantHavePaths[];
 extern const char kMatchOriginAsFallbackRestrictedToMV3[];

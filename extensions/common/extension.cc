@@ -56,11 +56,13 @@ namespace errors = manifest_errors;
 
 namespace {
 
-constexpr int kModernManifestVersion = 2;
+constexpr int kMinimumSupportedManifestVersion = 2;
 constexpr int kMaximumSupportedManifestVersion = 3;
 constexpr int kPEMOutputColumns = 64;
-static_assert(kMaximumSupportedManifestVersion >= kModernManifestVersion,
+static_assert(kMaximumSupportedManifestVersion >=
+                  kMinimumSupportedManifestVersion,
               "The modern manifest version must be supported.");
+bool g_silence_deprecated_manifest_version_warnings = false;
 
 // KEY MARKERS
 constexpr char kKeyBeginHeaderMarker[] = "-----BEGIN";
@@ -85,6 +87,7 @@ bool ContainsReservedCharacters(const base::FilePath& path) {
 // should be added.
 bool IsManifestSupported(int manifest_version,
                          Manifest::Type type,
+                         ManifestLocation location,
                          int creation_flags,
                          std::string* warning) {
   // The ultimate short-circuit: If the feature for MV3 is disabled, it's not
@@ -95,9 +98,16 @@ bool IsManifestSupported(int manifest_version,
     return false;
   }
 
-  // Modern is always safe.
-  if (manifest_version >= kModernManifestVersion &&
+  // Supported versions are always safe.
+  if (manifest_version >= kMinimumSupportedManifestVersion &&
       manifest_version <= kMaximumSupportedManifestVersion) {
+    // Emit a warning for unpacked extensions on Manifest V2 warning that
+    // MV2 is deprecated.
+    if (type == Manifest::TYPE_EXTENSION && manifest_version == 2 &&
+        Manifest::IsUnpackedLocation(location) &&
+        !g_silence_deprecated_manifest_version_warnings) {
+      *warning = errors::kManifestV2IsDeprecatedWarning;
+    }
     return true;
   }
 
@@ -178,16 +188,18 @@ bool ComputeExtensionID(const base::DictionaryValue& manifest,
 std::u16string InvalidManifestVersionError(const char* manifest_version_error,
                                            bool is_platform_app) {
   std::string valid_version;
-  if (kModernManifestVersion == kMaximumSupportedManifestVersion) {
-    valid_version = base::NumberToString(kModernManifestVersion);
-  } else if (kMaximumSupportedManifestVersion - kModernManifestVersion == 1) {
+  if (kMinimumSupportedManifestVersion == kMaximumSupportedManifestVersion) {
+    valid_version = base::NumberToString(kMinimumSupportedManifestVersion);
+  } else if (kMaximumSupportedManifestVersion -
+                 kMinimumSupportedManifestVersion ==
+             1) {
     valid_version = base::StrCat(
-        {"either ", base::NumberToString(kModernManifestVersion), " or ",
-         base::NumberToString(kMaximumSupportedManifestVersion)});
+        {"either ", base::NumberToString(kMinimumSupportedManifestVersion),
+         " or ", base::NumberToString(kMaximumSupportedManifestVersion)});
   } else {
     valid_version = base::StrCat(
-        {"between ", base::NumberToString(kModernManifestVersion), " and ",
-         base::NumberToString(kMaximumSupportedManifestVersion)});
+        {"between ", base::NumberToString(kMinimumSupportedManifestVersion),
+         " and ", base::NumberToString(kMaximumSupportedManifestVersion)});
   }
 
   return ErrorUtils::FormatErrorMessageUTF16(
@@ -214,6 +226,12 @@ const int Extension::kValidHostPermissionSchemes =
 //
 // Extension
 //
+
+// static
+void Extension::set_silence_deprecated_manifest_version_warnings_for_testing(
+    bool silence) {
+  g_silence_deprecated_manifest_version_warnings = silence;
+}
 
 // static
 scoped_refptr<Extension> Extension::Create(const base::FilePath& path,
@@ -811,8 +829,8 @@ bool Extension::LoadManifestVersion(std::u16string* error) {
 
   manifest_version_ = manifest_->manifest_version();
   std::string warning;
-  if (!IsManifestSupported(manifest_version_, GetType(), creation_flags_,
-                           &warning)) {
+  if (!IsManifestSupported(manifest_version_, GetType(), location(),
+                           creation_flags_, &warning)) {
     std::string json;
     base::JSONWriter::Write(*manifest_->value(), &json);
     LOG(WARNING) << "Failed to load extension.  Manifest JSON: " << json;

@@ -109,6 +109,12 @@ void ExtensionSettingsUIBrowserTest::ShrinkWebContentsView() {
   web_contents->Resize(gfx::Rect(0, 0, 400, 400));
 }
 
+void ExtensionSettingsUIBrowserTest::
+    SetSilenceDeprecatedManifestVersionWarnings(bool silence) {
+  Extension::set_silence_deprecated_manifest_version_warnings_for_testing(
+      silence);
+}
+
 const Extension* ExtensionSettingsUIBrowserTest::InstallExtension(
     const base::FilePath& path) {
   extensions::ChromeTestExtensionLoader loader(browser()->profile());

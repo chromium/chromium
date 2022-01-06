@@ -36,12 +36,12 @@ namespace extensions {
 
 namespace {
 
-const char manifest_content[] =
-    "{\n"
-    "  \"name\": \"Underscore folder test\",\n"
-    "  \"version\": \"1.0\",\n"
-    "  \"manifest_version\": 2\n"
-    "}\n";
+constexpr char kManifestContent[] =
+    R"({
+         "name": "Underscore folder test",
+         "version": "1.0",
+         "manifest_version": 3
+       })";
 
 const char kCustomManifest[] = "custom_manifest.json";
 const base::FilePath::CharType kCustomManifestFilename[] =
@@ -85,9 +85,8 @@ void RunUnderscoreDirectoriesTest(
   for (const auto& dir : underscore_directories)
     ASSERT_TRUE(base::CreateDirectory(ext_path.AppendASCII(dir)));
 
-  ASSERT_EQ(static_cast<int>(strlen(manifest_content)),
-            base::WriteFile(ext_path.AppendASCII("manifest.json"),
-                            manifest_content, strlen(manifest_content)));
+  ASSERT_TRUE(
+      base::WriteFile(ext_path.AppendASCII("manifest.json"), kManifestContent));
 
   std::string error;
   scoped_refptr<Extension> extension = file_util::LoadExtension(
