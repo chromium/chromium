@@ -19,6 +19,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/prerender_test_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
 
@@ -132,6 +133,59 @@ IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottleTest, 204Throttle) {
   SetNewTabPage(https_test_server()->GetURL("/page204.html").spec());
   // 204 makes a redirect to the 3P WebUI NTP.
   EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL, NavigateToNewTabPage());
+}
+
+class NewTabPageNavigationThrottlePrerenderTest
+    : public NewTabPageNavigationThrottleTest {
+ public:
+  NewTabPageNavigationThrottlePrerenderTest()
+      : prerender_test_helper_(base::BindRepeating(
+            &NewTabPageNavigationThrottlePrerenderTest::web_contents,
+            base::Unretained(this))) {}
+  ~NewTabPageNavigationThrottlePrerenderTest() override = default;
+  NewTabPageNavigationThrottlePrerenderTest(
+      const NewTabPageNavigationThrottlePrerenderTest&) = delete;
+
+  NewTabPageNavigationThrottlePrerenderTest& operator=(
+      const NewTabPageNavigationThrottlePrerenderTest&) = delete;
+
+  void SetUp() override {
+    prerender_test_helper_.SetUp(https_test_server());
+    NewTabPageNavigationThrottleTest::SetUp();
+  }
+
+  content::test::PrerenderTestHelper& prerender_test_helper() {
+    return prerender_test_helper_;
+  }
+
+ private:
+  content::test::PrerenderTestHelper prerender_test_helper_;
+};
+
+IN_PROC_BROWSER_TEST_F(NewTabPageNavigationThrottlePrerenderTest,
+                       PrerenderingShouldNotAffectTitle) {
+  ASSERT_TRUE(https_test_server()->Start());
+  GURL ntp_url = https_test_server()->GetURL("/instant_extended.html");
+
+  GURL title_url = https_test_server()->GetURL("/title2.html");
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), title_url));
+  EXPECT_EQ(u"Title Of Awesomeness", web_contents()->GetTitle());
+
+  // Load a page in the prerendering.
+  const int host_id = prerender_test_helper().AddPrerender(ntp_url);
+  content::test::PrerenderHostObserver host_observer(*web_contents(), host_id);
+  EXPECT_FALSE(host_observer.was_activated());
+
+  // Prerendering should not change the title of the web contents.
+  EXPECT_EQ(u"Title Of Awesomeness", web_contents()->GetTitle());
+
+  // Activate the prerender page.
+  SetNewTabPage(ntp_url.spec());
+  prerender_test_helper().NavigatePrimaryPage(ntp_url);
+  EXPECT_TRUE(host_observer.was_activated());
+
+  // The title should be changed after activating.
+  EXPECT_NE(u"Title Of Awesomeness", web_contents()->GetTitle());
 }
 
 class NewTabPageNavigationThrottleFencedFrameTest
