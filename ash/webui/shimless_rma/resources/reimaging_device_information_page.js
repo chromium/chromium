@@ -39,6 +39,12 @@ export class ReimagingDeviceInformationPage extends
     return html`{__html_template__}`;
   }
 
+  static get observers() {
+    return [
+      'updateNextButtonDisabledState_(serialNumber_, skuIndex_, regionIndex_)',
+    ];
+  }
+
   static get properties() {
     return {
 
@@ -104,13 +110,13 @@ export class ReimagingDeviceInformationPage extends
       /** @protected */
       originalRegionIndex_: {
         type: Number,
-        value: 0,
+        value: -1,
       },
 
       /** @protected */
       regionIndex_: {
         type: Number,
-        value: 0,
+        value: -1,
       },
 
       /** @protected {!Array<string>} */
@@ -122,13 +128,13 @@ export class ReimagingDeviceInformationPage extends
       /** @protected */
       originalSkuIndex_: {
         type: Number,
-        value: 0,
+        value: -1,
       },
 
       /** @protected */
       skuIndex_: {
         type: Number,
-        value: 0,
+        value: -1,
       },
 
       /** @protected {!Array<string>} */
@@ -177,9 +183,20 @@ export class ReimagingDeviceInformationPage extends
     this.getOriginalSkuAndSkuList_();
     this.getOriginalWhiteLabelAndWhiteLabelList_();
     this.getOriginalDramPartNumber_();
+  }
+
+  /** @private */
+  allInformationIsValid_() {
+    return (this.serialNumber_ !== '') && (this.skuIndex_ >= 0) &&
+        (this.regionIndex_ >= 0);
+  }
+
+  /** @private */
+  updateNextButtonDisabledState_() {
+    const disabled = !this.allInformationIsValid_();
     this.dispatchEvent(new CustomEvent(
         'disable-next-button',
-        {bubbles: true, composed: true, detail: false},
+        {bubbles: true, composed: true, detail: disabled},
         ));
   }
 
@@ -343,10 +360,9 @@ export class ReimagingDeviceInformationPage extends
 
   /** @return {!Promise<!StateResult>} */
   onNextButtonClick() {
-    if (this.serialNumber_ === '') {
-      return Promise.reject(new Error('Serial number not set'));
+    if (!this.allInformationIsValid_()) {
+      return Promise.reject(new Error('Some required information is not set'));
     } else {
-      // TODO(gavindodd): Return correct DRAM part number.
       return this.shimlessRmaService_.setDeviceInformation(
           this.serialNumber_, this.regionIndex_, this.skuIndex_,
           this.whiteLabelIndex_, this.dramPartNumber_);

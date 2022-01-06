@@ -230,6 +230,123 @@ export function reimagingDeviceInformationPageTest() {
         assertTrue(resetDramPartNumberComponent.disabled);
       });
 
+  test(
+      'ReimagingDeviceInformationPageSerialNumberUpdatesNextDisable',
+      async () => {
+        const resolver = new PromiseResolver();
+        await initializeReimagingDeviceInformationPage();
+        let disableNextButtonEventFired = false;
+        let disableNextButton = false;
+        component.addEventListener('disable-next-button', (e) => {
+          disableNextButtonEventFired = true;
+          disableNextButton = e.detail;
+        });
+
+        const serialNumberComponent =
+            component.shadowRoot.querySelector('#serialNumber');
+        serialNumberComponent.value = '';
+        await flushTasks();
+
+        assertTrue(disableNextButtonEventFired);
+        assertTrue(disableNextButton);
+
+        disableNextButtonEventFired = false;
+        serialNumberComponent.value = 'valid serial number';
+        await flushTasks();
+
+        assertTrue(disableNextButtonEventFired);
+        assertFalse(disableNextButton);
+      });
+
+  test('ReimagingDeviceInformationPageRegionUpdatesNextDisable', async () => {
+    const resolver = new PromiseResolver();
+    await initializeReimagingDeviceInformationPage();
+    let disableNextButtonEventFired = false;
+    let disableNextButton = false;
+    component.addEventListener('disable-next-button', (e) => {
+      disableNextButtonEventFired = true;
+      disableNextButton = e.detail;
+    });
+
+    const regionSelectComponent =
+        component.shadowRoot.querySelector('#regionSelect');
+    regionSelectComponent.selectedIndex = -1;
+    // TODO(gavindodd) how to update selectedIndex and trigger on-change
+    // automatically.
+    suppressedComponentOnSelectedChange_(component);
+    await flushTasks();
+
+    assertTrue(disableNextButtonEventFired);
+    assertTrue(disableNextButton);
+
+    disableNextButtonEventFired = false;
+    regionSelectComponent.selectedIndex = 1;
+    // TODO(gavindodd) how to update selectedIndex and trigger on-change
+    // automatically.
+    suppressedComponentOnSelectedChange_(component);
+    await flushTasks();
+
+    assertTrue(disableNextButtonEventFired);
+    assertFalse(disableNextButton);
+  });
+
+  test('ReimagingDeviceInformationPageSkuUpdatesNextDisable', async () => {
+    const resolver = new PromiseResolver();
+    await initializeReimagingDeviceInformationPage();
+    let disableNextButtonEventFired = false;
+    let disableNextButton = false;
+    component.addEventListener('disable-next-button', (e) => {
+      disableNextButtonEventFired = true;
+      disableNextButton = e.detail;
+    });
+
+    const skuSelectComponent = component.shadowRoot.querySelector('#skuSelect');
+    skuSelectComponent.selectedIndex = -1;
+    // TODO(gavindodd) how to update selectedIndex and trigger on-change
+    // automatically.
+    suppressedComponentOnSelectedChange_(component);
+    await flushTasks();
+
+    assertTrue(disableNextButtonEventFired);
+    assertTrue(disableNextButton);
+
+    disableNextButtonEventFired = false;
+    skuSelectComponent.selectedIndex = 1;
+    // TODO(gavindodd) how to update selectedIndex and trigger on-change
+    // automatically.
+    suppressedComponentOnSelectedChange_(component);
+    await flushTasks();
+
+    assertTrue(disableNextButtonEventFired);
+    assertFalse(disableNextButton);
+  });
+
+  test(
+      'ReimagingDeviceInformationPageDramPartNumberDoesNotUpdateNextDisable',
+      async () => {
+        const resolver = new PromiseResolver();
+        await initializeReimagingDeviceInformationPage();
+        let disableNextButtonEventFired = false;
+        let disableNextButton = false;
+        component.addEventListener('disable-next-button', (e) => {
+          disableNextButtonEventFired = true;
+          disableNextButton = e.detail;
+        });
+
+        const dramPartNumberComponent =
+            component.shadowRoot.querySelector('#dramPartNumber');
+        dramPartNumberComponent.value = '';
+        await flushTasks();
+
+        assertFalse(disableNextButtonEventFired);
+
+        disableNextButtonEventFired = false;
+        dramPartNumberComponent.value = 'valid dram part number';
+        await flushTasks();
+
+        assertFalse(disableNextButtonEventFired);
+      });
+
   // TODO(gavindodd): Add tests for the selection lists when they are
   // reimplemented and bound.
   // The standard `select` object is not bound.
