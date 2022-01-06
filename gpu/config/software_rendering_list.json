@@ -1667,6 +1667,18 @@
       "features": [
         "accelerated_video_encode"
       ]
+    },
+    {
+      "id": 174,
+      "description": "Disable canvas acceleration on a specific Haswell GPU on ChromeOS",
+      "os": {
+        "type": "chromeos"
+      },
+      "vendor_id": "0x8086",
+      "device_id": ["0x0a16"],
+      "features": [
+        "accelerated_2d_canvas"
+      ]
     }
   ]
 }
