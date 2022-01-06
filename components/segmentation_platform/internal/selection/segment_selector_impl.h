@@ -43,6 +43,10 @@ class SegmentSelectorImpl : public SegmentSelector {
   void GetSelectedSegment(SegmentSelectionCallback callback) override;
   SegmentSelectionResult GetCachedSegmentResult() override;
 
+  // Helper function to update the selected segment in the prefs. Auto-extends
+  // the selection if the new result is unknown.
+  void UpdateSelectedSegment(OptimizationTarget new_selection);
+
   // ModelExecutionScheduler::Observer overrides.
 
   // Called whenever a model eval completes. Runs segment selection to find the
@@ -71,10 +75,6 @@ class SegmentSelectorImpl : public SegmentSelector {
   OptimizationTarget FindBestSegment(
       const std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>&
           all_segments);
-
-  // Helper function to update the selected segment in the prefs. Auto-extends
-  // the selection if the new result is unknown.
-  void UpdateSelectedSegment(OptimizationTarget new_selection);
 
   // The database storing metadata and results.
   raw_ptr<SegmentInfoDatabase> segment_database_;
