@@ -111,10 +111,8 @@ PaintResult PaintLayerPainter::Paint(
       properties->Transform()->HasActiveTransformAnimation()) {
     paint_non_invertible_transforms = true;
   }
-  if (!paint_non_invertible_transforms &&
-      paint_layer_.PaintsWithTransform(painting_info.GetGlobalPaintFlags()) &&
-      !paint_layer_.RenderableTransform(painting_info.GetGlobalPaintFlags())
-           .IsInvertible()) {
+  if (!paint_non_invertible_transforms && paint_layer_.Transform() &&
+      !paint_layer_.Transform()->IsInvertible()) {
     return kFullyPainted;
   }
 
@@ -229,7 +227,7 @@ bool PaintLayerPainter::ShouldUseInfiniteCullRectInternal(
   //      change.
   // For these reasons, we use an infinite dirty rect here.
   // The reasons don't apply for CullRectUpdater.
-  if (!for_cull_rect_update && paint_layer_.PaintsWithTransform(global_flags) &&
+  if (!for_cull_rect_update && paint_layer_.Transform() &&
       // The reasons don't apply for printing though, because when we enter and
       // leaving printing mode, full invalidations occur.
       !is_printing)

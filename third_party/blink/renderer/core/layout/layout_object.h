@@ -4587,12 +4587,6 @@ inline void LayoutObject::SetHasBoxDecorationBackground(bool b) {
   bitfields_.SetHasBoxDecorationBackground(b);
 }
 
-inline void MakeMatrixRenderable(TransformationMatrix& matrix,
-                                 bool has3d_rendering) {
-  if (!has3d_rendering)
-    matrix.MakeAffine();
-}
-
 enum class LayoutObjectSide {
   kRemainingTextIfOnBoundary,
   kFirstLetterIfOnBoundary

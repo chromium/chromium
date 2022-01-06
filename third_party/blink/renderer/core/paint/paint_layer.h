@@ -410,11 +410,8 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
     return rare_data_ ? rare_data_->transform.get() : nullptr;
   }
 
-  // currentTransform computes a transform which takes accelerated animations
-  // into account. The resulting transform has transform-origin baked in. If the
-  // layer does not have a transform, returns the identity matrix.
+  // Returns *Transform(), or identity matrix if Transform() is nullptr.
   TransformationMatrix CurrentTransform() const;
-  TransformationMatrix RenderableTransform(GlobalPaintFlags) const;
 
   bool Preserves3D() const { return GetLayoutObject().Preserves3D(); }
   bool Has3DTransform() const {
@@ -427,8 +424,6 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   bool HasFilterInducingProperty() const {
     return GetLayoutObject().HasFilterInducingProperty();
   }
-
-  bool PaintsWithTransform(GlobalPaintFlags) const;
 
   bool SupportsSubsequenceCaching() const;
 

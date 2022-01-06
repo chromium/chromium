@@ -369,9 +369,8 @@ void PaintLayer::UpdateTransformationMatrix() {
         *transform, box->Size(), ComputedStyle::kIncludeTransformOrigin,
         ComputedStyle::kIncludeMotionPath,
         ComputedStyle::kIncludeIndependentTransformProperties);
-    MakeMatrixRenderable(
-        *transform,
-        box->GetDocument().GetSettings()->GetAcceleratedCompositingEnabled());
+    if (!box->GetDocument().GetSettings()->GetAcceleratedCompositingEnabled())
+      transform->MakeAffine();
   }
 }
 
@@ -408,21 +407,6 @@ TransformationMatrix PaintLayer::CurrentTransform() const {
   if (TransformationMatrix* transform = Transform())
     return *transform;
   return TransformationMatrix();
-}
-
-TransformationMatrix PaintLayer::RenderableTransform(
-    GlobalPaintFlags global_paint_flags) const {
-  TransformationMatrix* transform = Transform();
-  if (!transform)
-    return TransformationMatrix();
-
-  if (global_paint_flags & kGlobalPaintFlattenCompositingLayers) {
-    TransformationMatrix matrix = *transform;
-    MakeMatrixRenderable(matrix, false /* flatten 3d */);
-    return matrix;
-  }
-
-  return *transform;
 }
 
 void PaintLayer::ConvertFromFlowThreadToVisualBoundingBoxInAncestor(
@@ -2351,11 +2335,6 @@ PhysicalRect PaintLayer::BoundingBoxForCompositingInternal(
     result.Move(delta);
   }
   return result;
-}
-
-bool PaintLayer::PaintsWithTransform(
-    GlobalPaintFlags global_paint_flags) const {
-  return Transform();
 }
 
 bool PaintLayer::SupportsSubsequenceCaching() const {
