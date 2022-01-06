@@ -5,6 +5,7 @@
 #include "net/cookies/cookie_partition_key_collection.h"
 
 #include "base/containers/contains.h"
+#include "net/cookies/cookie_access_delegate.h"
 
 namespace net {
 
@@ -26,8 +27,8 @@ CookiePartitionKeyCollection::CookiePartitionKeyCollection(
     : keys_(keys) {}
 
 CookiePartitionKeyCollection::CookiePartitionKeyCollection(
-    bool contains_all_keys_)
-    : contains_all_keys_(contains_all_keys_) {}
+    bool contains_all_keys)
+    : contains_all_keys_(contains_all_keys) {}
 
 CookiePartitionKeyCollection& CookiePartitionKeyCollection::operator=(
     const CookiePartitionKeyCollection& other) = default;
