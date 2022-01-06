@@ -277,7 +277,6 @@ class IntegrationTest(unittest.TestCase):
               apk_spec.default_component = 'DEFAULT'
             yield container_name, apk_spec, pak_spec, native_spec
 
-      container_list = []
       raw_symbols_list = []
       build_config = {}
 
@@ -289,7 +288,7 @@ class IntegrationTest(unittest.TestCase):
                                             native_spec=native_spec,
                                             source_directory=_TEST_SOURCE_DIR,
                                             output_directory=output_directory)
-          container, raw_symbols = archive.CreateContainerAndSymbols(
+          raw_symbols = archive.CreateContainerSymbols(
               container_name=container_name,
               metadata=metadata,
               apk_spec=apk_spec,
@@ -298,11 +297,10 @@ class IntegrationTest(unittest.TestCase):
               source_directory=_TEST_SOURCE_DIR,
               output_directory=output_directory,
               pak_id_map=pak_id_map)
-          container_list.append(container)
           raw_symbols_list.append(raw_symbols)
 
         IntegrationTest.cached_size_info[cache_key] = archive.CreateSizeInfo(
-            build_config, container_list, raw_symbols_list)
+            build_config, raw_symbols_list)
     return copy.deepcopy(IntegrationTest.cached_size_info[cache_key])
 
   def _DoArchive(self,

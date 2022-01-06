@@ -1192,16 +1192,16 @@ def _ParseNinjaFiles(output_directory, elf_path=None):
   return source_mapper, ninja_elf_object_paths
 
 
-def CreateContainerAndSymbols(*,
-                              container_name,
-                              metadata,
-                              apk_spec,
-                              pak_spec,
-                              native_spec,
-                              source_directory,
-                              output_directory=None,
-                              resources_pathmap_path=None,
-                              pak_id_map=None):
+def CreateContainerSymbols(*,
+                           container_name,
+                           metadata,
+                           apk_spec,
+                           pak_spec,
+                           native_spec,
+                           source_directory,
+                           output_directory=None,
+                           resources_pathmap_path=None,
+                           pak_id_map=None):
   """Creates a Container (with sections sizes) and symbols for a SizeInfo.
 
   Args:
@@ -1219,10 +1219,7 @@ def CreateContainerAndSymbols(*,
     pak_id_map: Instance of PakIdMap, or None.
 
   Returns:
-    A tuple of (container, raw_symbols).
-    containers is a Container instance that stores metadata and section_sizes
-    (section_sizes maps section names to respective sizes).
-    raw_symbols is a list of Symbol objects.
+    List of symbols.
   """
   apk_elf_result = None
   if apk_spec and native_spec and native_spec.apk_so_path:
@@ -1410,17 +1407,13 @@ def CreateContainerAndSymbols(*,
     symbol.container = container
 
   file_format.SortSymbols(raw_symbols, check_already_mostly_sorted=True)
-
-  return container, raw_symbols
+  return raw_symbols
 
 
 def CreateSizeInfo(build_config,
-                   container_list,
                    raw_symbols_list,
                    normalize_names=True):
   """Performs operations on all symbols and creates a SizeInfo object."""
-  assert len(container_list) == len(raw_symbols_list)
-
   all_raw_symbols = []
   for raw_symbols in raw_symbols_list:
     file_format.CalculatePadding(raw_symbols)
@@ -1433,6 +1426,8 @@ def CreateSizeInfo(build_config,
 
     all_raw_symbols += raw_symbols
 
+  # Containers should always have at least one symbol.
+  container_list = [syms[0].container for syms in raw_symbols_list]
   return models.SizeInfo(build_config, container_list, all_raw_symbols)
 
 
@@ -2024,7 +2019,6 @@ def Run(top_args, on_config_error):
 
   build_config = {}
   seen_container_names = set()
-  container_list = []
   raw_symbols_list = []
   pak_id_map = pakfile.PakIdMap()
 
@@ -2044,7 +2038,7 @@ def Run(top_args, on_config_error):
                                 native_spec=native_spec,
                                 source_directory=sub_args.source_directory,
                                 output_directory=sub_args.output_directory)
-      container, raw_symbols = CreateContainerAndSymbols(
+      raw_symbols = CreateContainerSymbols(
           container_name=container_name,
           metadata=metadata,
           apk_spec=apk_spec,
@@ -2054,12 +2048,11 @@ def Run(top_args, on_config_error):
           output_directory=sub_args.output_directory,
           resources_pathmap_path=resources_pathmap_path,
           pak_id_map=pak_id_map)
+      assert raw_symbols, f'Container {container_name} had no symbols.'
 
-      container_list.append(container)
       raw_symbols_list.append(raw_symbols)
 
   size_info = CreateSizeInfo(build_config,
-                             container_list,
                              raw_symbols_list,
                              normalize_names=False)
 
