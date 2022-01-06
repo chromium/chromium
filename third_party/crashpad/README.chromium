@@ -45,3 +45,4 @@ Local Modifications:
    (crashpad/util/BUILD.gn, crashpad/util/linux/memory_map_test.cc)
  - CloseMultipleNowOrOnExec has been updated to invoke the new
    base::subtle::ResetFDOwnership() API
+ - FALLTHROUGH macro has been replaced with C++17 attribute [[fallthrough]]

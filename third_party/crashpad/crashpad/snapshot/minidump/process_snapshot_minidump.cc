@@ -323,7 +323,7 @@ bool ProcessSnapshotMinidump::InitializeMiscInfo() {
       full_version_ = base::UTF16ToUTF8(info.BuildString);
 #endif
       full_version_ = full_version_.substr(0, full_version_.find(';'));
-      FALLTHROUGH;
+      [[fallthrough]];
     case sizeof(MINIDUMP_MISC_INFO_3):
     case sizeof(MINIDUMP_MISC_INFO_2):
     case sizeof(MINIDUMP_MISC_INFO):
