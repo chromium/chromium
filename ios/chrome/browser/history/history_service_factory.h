@@ -30,6 +30,9 @@ class HistoryServiceFactory : public BrowserStateKeyedServiceFactory {
       ServiceAccessType access_type);
   static HistoryServiceFactory* GetInstance();
 
+  // Returns the default factory, useful in tests where it's null by default.
+  static TestingFactory GetDefaultFactory();
+
   HistoryServiceFactory(const HistoryServiceFactory&) = delete;
   HistoryServiceFactory& operator=(const HistoryServiceFactory&) = delete;
 
