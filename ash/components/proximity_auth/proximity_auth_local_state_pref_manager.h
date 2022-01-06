@@ -12,7 +12,7 @@ class PrefRegistrySimple;
 class PrefService;
 
 namespace base {
-class DictionaryValue;
+class Value;
 }  // namespace base
 
 namespace proximity_auth {
@@ -62,7 +62,7 @@ class ProximityAuthLocalStatePrefManager : public ProximityAuthPrefManager {
   void SetHasShownLoginDisabledMessage(bool has_shown) override;
   bool HasShownLoginDisabledMessage() const override;
 
-  const base::DictionaryValue* GetActiveUserPrefsDictionary() const;
+  const base::Value* GetActiveUserPrefsDictionary() const;
 
   // Contains local state preferences that outlive the lifetime of this object
   // and across process restarts. Not owned and must outlive this instance.

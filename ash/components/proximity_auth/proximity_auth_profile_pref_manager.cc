@@ -217,14 +217,15 @@ void ProximityAuthProfilePrefManager::SetHasShownLoginDisabledMessage(
 }
 
 bool ProximityAuthProfilePrefManager::HasShownLoginDisabledMessage() const {
-  const base::DictionaryValue* all_user_prefs_dict =
-      &base::Value::AsDictionaryValue(
-          *local_state_->GetDictionary(prefs::kEasyUnlockLocalStateUserPrefs));
-  const base::DictionaryValue* current_user_prefs;
-  if (!all_user_prefs_dict ||
-      !all_user_prefs_dict->GetDictionaryWithoutPathExpansion(
-          account_id_.GetUserEmail(), &current_user_prefs) ||
-      !current_user_prefs) {
+  const base::Value* all_user_prefs_dict =
+      local_state_->GetDictionary(prefs::kEasyUnlockLocalStateUserPrefs);
+  if (!all_user_prefs_dict) {
+    PA_LOG(ERROR) << "Failed to find local state prefs for current user.";
+    return false;
+  }
+  const base::Value* current_user_prefs =
+      all_user_prefs_dict->FindDictKey(account_id_.GetUserEmail());
+  if (!current_user_prefs) {
     PA_LOG(ERROR) << "Failed to find local state prefs for current user.";
     return false;
   }
