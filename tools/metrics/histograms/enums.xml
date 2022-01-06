@@ -8693,6 +8693,13 @@ Called by update_bad_message_reasons.py.-->
   <int value="7" label="Not connectable"/>
 </enum>
 
+<enum name="BluetoothConnectToServiceError">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Failed to accept connection"/>
+  <int value="2" label="Invalid UUID"/>
+  <int value="3" label="Socket is not listening"/>
+</enum>
+
 <enum name="BluetoothDeviceConnectErrorCode">
   <int value="0" label="Authorization Cancelled"/>
   <int value="1" label="Authorization Failed"/>

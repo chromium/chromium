@@ -13,6 +13,7 @@
 #include "base/callback.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_socket.h"
@@ -26,6 +27,14 @@ constexpr char kTestDeviceAddress[] = "11:12:13:14:15:16";
 
 const device::BluetoothUUID kMessageStreamUuid(
     "df21fe2c-2515-4fdb-8886-f12c4d67927c");
+
+const char kMessageStreamConnectToServiceError[] =
+    "Bluetooth.ChromeOS.FastPair.MessageStream.ConnectToService.ErrorReason";
+const char kMessageStreamConnectToServiceResult[] =
+    "Bluetooth.ChromeOS.FastPair.MessageStream.ConnectToService.Result";
+const char kMessageStreamConnectToServiceTime[] =
+    "Bluetooth.ChromeOS.FastPair.MessageStream.ConnectToService."
+    "TotalConnectTime";
 
 }  // namespace
 
@@ -124,8 +133,11 @@ class MessageStreamLookupTest : public testing::Test,
     message_stream_ = message_stream;
   }
 
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
+
  protected:
   base::test::SingleThreadTaskEnvironment task_enviornment_;
+  base::HistogramTester histogram_tester_;
   MessageStream* message_stream_ = nullptr;
   scoped_refptr<MessageStreamFakeBluetoothAdapter> adapter_;
   MessageStreamFakeBluetoothDevice* device_;
@@ -133,15 +145,27 @@ class MessageStreamLookupTest : public testing::Test,
 };
 
 TEST_F(MessageStreamLookupTest, ConnectDevice_NoMessageStreamUUid) {
+  histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceError, 0);
+  histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceTime, 0);
+  histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
+
   SetConnectToServiceError();
 
   EXPECT_EQ(GetMessageStream(), nullptr);
   NotifyDeviceConnectedStateChanged(/*is_now_connected=*/true);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(GetMessageStream(), nullptr);
+
+  histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceError, 0);
+  histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceTime, 0);
+  histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
 }
 
 TEST_F(MessageStreamLookupTest, ConnectDevice_ConnectToServiceFailure) {
+  histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceError, 0);
+  histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceTime, 0);
+  histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
+
   device_->AddUUID(kMessageStreamUuid);
   SetConnectToServiceError();
 
@@ -149,15 +173,27 @@ TEST_F(MessageStreamLookupTest, ConnectDevice_ConnectToServiceFailure) {
   NotifyDeviceConnectedStateChanged(/*is_now_connected=*/true);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(GetMessageStream(), nullptr);
+
+  histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceError, 1);
+  histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceTime, 0);
+  histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 1);
 }
 
 TEST_F(MessageStreamLookupTest, ConnectDevice_ConnectToServiceSuccess) {
+  histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceError, 0);
+  histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceTime, 0);
+  histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 0);
+
   device_->AddUUID(kMessageStreamUuid);
 
   EXPECT_EQ(GetMessageStream(), nullptr);
   NotifyDeviceConnectedStateChanged(/*is_now_connected=*/true);
   base::RunLoop().RunUntilIdle();
   EXPECT_NE(GetMessageStream(), nullptr);
+
+  histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceError, 0);
+  histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceTime, 1);
+  histogram_tester().ExpectTotalCount(kMessageStreamConnectToServiceResult, 1);
 }
 
 TEST_F(MessageStreamLookupTest,

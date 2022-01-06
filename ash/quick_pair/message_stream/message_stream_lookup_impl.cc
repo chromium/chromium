@@ -5,6 +5,7 @@
 #include "ash/quick_pair/message_stream/message_stream_lookup_impl.h"
 
 #include "ash/quick_pair/common/constants.h"
+#include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/common/logging.h"
 #include "base/containers/contains.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -103,7 +104,8 @@ void MessageStreamLookupImpl::CreateMessageStream(
   device->ConnectToService(
       /*uuid=*/kMessageStreamUuid, /*callback=*/
       base::BindOnce(&MessageStreamLookupImpl::OnConnected,
-                     weak_ptr_factory_.GetWeakPtr(), device_address),
+                     weak_ptr_factory_.GetWeakPtr(), device_address,
+                     base::TimeTicks::Now()),
       /*error_callback=*/
       base::BindOnce(&MessageStreamLookupImpl::OnConnectError,
                      weak_ptr_factory_.GetWeakPtr()));
@@ -111,8 +113,13 @@ void MessageStreamLookupImpl::CreateMessageStream(
 
 void MessageStreamLookupImpl::OnConnected(
     std::string device_address,
+    base::TimeTicks connect_to_service_start_time,
     scoped_refptr<device::BluetoothSocket> socket) {
   QP_LOG(VERBOSE) << __func__;
+  RecordMessageStreamConnectToServiceResult(/*success=*/true);
+  RecordMessageStreamConnectToServiceTime(base::TimeTicks::Now() -
+                                          connect_to_service_start_time);
+
   std::unique_ptr<MessageStream> message_stream =
       std::make_unique<MessageStream>(device_address, std::move(socket));
 
@@ -124,6 +131,8 @@ void MessageStreamLookupImpl::OnConnected(
 
 void MessageStreamLookupImpl::OnConnectError(const std::string& error_message) {
   QP_LOG(INFO) << __func__ << ": Error = [ " << error_message << "].";
+  RecordMessageStreamConnectToServiceResult(/*success=*/false);
+  RecordMessageStreamConnectToServiceError(error_message);
 }
 
 }  // namespace quick_pair

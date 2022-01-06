@@ -166,6 +166,16 @@ COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordMessageStreamReceiveError(
     device::BluetoothSocket::ErrorReason error);
 
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordMessageStreamConnectToServiceResult(bool success);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordMessageStreamConnectToServiceError(const std::string& error);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordMessageStreamConnectToServiceTime(
+    base::TimeDelta total_connect_time);
+
 }  // namespace quick_pair
 }  // namespace ash
 

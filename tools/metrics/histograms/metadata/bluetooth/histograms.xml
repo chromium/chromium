@@ -485,16 +485,56 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Bluetooth.ChromeOS.FastPair.MessageStream.Receive.ErrorReason"
+<histogram
+    name="Bluetooth.ChromeOS.FastPair.MessageStream.ConnectToService.ErrorReason"
     enum="BluetoothSocketErrorReason" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the error reason that caused the failure of creating a RFCOMM
+    channel (creating the MessageStream). This metric is emitted after the
+    channel is failed to be created in the MessageStreamLookup in the
+    OnConnectError callback.
+  </summary>
+</histogram>
+
+<histogram
+    name="Bluetooth.ChromeOS.FastPair.MessageStream.ConnectToService.Result"
+    enum="BooleanSuccess" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the success or failure of attempted to create an RFCOMM channel to
+    the device (creating the MessageStream). The metric is emitted in the
+    success/failure callbacks.
+  </summary>
+</histogram>
+
+<histogram
+    name="Bluetooth.ChromeOS.FastPair.MessageStream.ConnectToService.TotalConnectTime"
+    units="ms" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the total time it takes to create a successful RFCOMM channel
+    connection to the device. This metric is emitted after the channel is
+    successfully created, and it is not emitted on failure.
+  </summary>
+</histogram>
+
+<histogram name="Bluetooth.ChromeOS.FastPair.MessageStream.Receive.ErrorReason"
+    enum="BluetoothConnectToServiceError" expires_after="2022-09-20">
   <owner>shanefitz@google.com</owner>
   <owner>julietlevesque@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
     Records the error reason that caused the failure of receiving data from a
     socket in the Fast Pair MessageStream opened to the device. This metric is
-    emitted after the socket is failed to be receive to in the MessageStream, in
-    the ReceiveDataError callback.
+    emitted following an error to receive data from a socket, and no metric is
+    emitted on success.
   </summary>
 </histogram>
 
