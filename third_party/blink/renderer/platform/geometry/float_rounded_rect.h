@@ -108,6 +108,10 @@ class PLATFORM_EXPORT FloatRoundedRect {
                 float right_width);
     void Shrink(float size) { Shrink(size, size, size, size); }
 
+    // Reshapes the corners based on the algorithm in
+    // https://drafts.csswg.org/css-backgrounds-3/#shadow-shape.
+    void Reshape(float inflation);
+
     String ToString() const;
 
    private:
@@ -142,6 +146,10 @@ class PLATFORM_EXPORT FloatRoundedRect {
   void Move(const gfx::Vector2dF& offset) { rect_.Offset(offset); }
   void InflateWithRadii(int size);
   void Inflate(float size) { rect_.Outset(size); }
+
+  // Inflates the rect and reshapes the corners based on the algorithm in
+  // https://drafts.csswg.org/css-backgrounds-3/#shadow-shape.
+  void InflateAndReshape(float size);
 
   // expandRadii() does not have any effect on corner radii which have zero
   // width or height. This is because the process of expanding the radius of a

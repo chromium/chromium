@@ -1805,6 +1805,18 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowControlsClip() {
   // LayoutObjects under custom scrollbars don't support paint properties.
 }
 
+static void AdjustRoundedClipForOverflowClipMargin(
+    const LayoutBox& box,
+    gfx::RectF& layout_clip_rect,
+    FloatRoundedRect& paint_clip_rect) {
+  const auto& style = box.StyleRef();
+  LayoutUnit overflow_clip_margin = style.OverflowClipMargin();
+  if (!overflow_clip_margin || !box.ShouldApplyOverflowClipMargin())
+    return;
+  layout_clip_rect.Outset(overflow_clip_margin.ToFloat());
+  paint_clip_rect.InflateAndReshape(overflow_clip_margin.ToFloat());
+}
+
 void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderRadiusClip() {
   DCHECK(properties_);
 
@@ -1812,12 +1824,16 @@ void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderRadiusClip() {
     if (NeedsInnerBorderRadiusClip(object_)) {
       const auto& box = To<LayoutBox>(object_);
       PhysicalRect box_rect(context_.current.paint_offset, box.Size());
-      ClipPaintPropertyNode::State state(
-          context_.current.transform,
+      gfx::RectF layout_clip_rect =
           RoundedBorderGeometry::RoundedInnerBorder(box.StyleRef(), box_rect)
-              .Rect(),
+              .Rect();
+      FloatRoundedRect paint_clip_rect =
           RoundedBorderGeometry::PixelSnappedRoundedInnerBorder(box.StyleRef(),
-                                                                box_rect));
+                                                                box_rect);
+      AdjustRoundedClipForOverflowClipMargin(box, layout_clip_rect,
+                                             paint_clip_rect);
+      ClipPaintPropertyNode::State state(context_.current.transform,
+                                         layout_clip_rect, paint_clip_rect);
       OnUpdateClip(properties_->UpdateInnerBorderRadiusClip(
           *context_.current.clip, std::move(state)));
     } else {

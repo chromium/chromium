@@ -142,6 +142,39 @@ void FloatRoundedRect::Radii::Expand(float top_width,
   }
 }
 
+// From: https://drafts.csswg.org/css-backgrounds-3/#shadow-shape
+// When the border radius is less than the spread distance, the spread distance
+// is first multiplied by the proportion 1 + (r-1)^3, where r is the ratio of
+// the border radius to the spread distance, in calculating the corner radii of
+// the spread shadow shape. For example, if the border radius is 10px and the
+// spread distance is 20px (r = .5), the corner radius of the shadow shape will
+// be 10px + 20px × (1 + (.5 - 1)^3) = 27.5px rather than 30px. This adjustment
+// is applied independently to the radii in each dimension.
+static void ReshapeCorner(gfx::SizeF& corner, float inflation) {
+  if (corner.width() == 0 && corner.height() == 0)
+    return;
+
+  float width_factor = 1;
+  if (corner.width() < inflation)
+    width_factor = 1 + pow(corner.width() / inflation - 1, 3);
+
+  float height_factor = 1;
+  if (corner.height() == corner.width())
+    height_factor = width_factor;
+  else if (corner.height() < inflation)
+    height_factor = 1 + pow(corner.height() / inflation - 1, 3);
+
+  corner.set_width(corner.width() + width_factor * inflation);
+  corner.set_height(corner.height() + height_factor * inflation);
+}
+
+void FloatRoundedRect::Radii::Reshape(float inflation) {
+  ReshapeCorner(top_left_, inflation);
+  ReshapeCorner(top_right_, inflation);
+  ReshapeCorner(bottom_left_, inflation);
+  ReshapeCorner(bottom_right_, inflation);
+}
+
 static inline float CornerRectIntercept(float y,
                                         const gfx::RectF& corner_rect) {
   DCHECK_GT(corner_rect.height(), 0);
@@ -207,6 +240,13 @@ bool FloatRoundedRect::XInterceptsAtY(float y,
   }
 
   return true;
+}
+
+void FloatRoundedRect::InflateAndReshape(float size) {
+  if (size == 0.f)
+    return;
+  rect_.Outset(size);
+  radii_.Reshape(size);
 }
 
 void FloatRoundedRect::InflateWithRadii(int size) {
