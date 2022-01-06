@@ -766,6 +766,9 @@ void PhoneHubNotificationController::SetNotification(
 
   shown_notification_ids_.insert(phone_hub_id);
 
+  phone_hub_metrics::LogNotificationMessageLength(
+      cros_notification->message().length());
+
   auto* message_center = message_center::MessageCenter::Get();
   if (notification_already_exists)
     message_center->UpdateNotification(cros_id, std::move(cros_notification));

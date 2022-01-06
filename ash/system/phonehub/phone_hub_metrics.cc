@@ -97,6 +97,10 @@ void LogNotificationInteraction(NotificationInteraction interaction) {
                                 interaction);
 }
 
+void LogNotificationMessageLength(int length) {
+  base::UmaHistogramCounts10000("PhoneHub.NotificationMessageLength", length);
+}
+
 std::string GetCameraRollMediaTypeSubcategoryName(
     CameraRollMediaType mediaType) {
   switch (mediaType) {

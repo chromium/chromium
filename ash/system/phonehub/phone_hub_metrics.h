@@ -117,6 +117,9 @@ void LogNotificationCount(int count);
 // Logs a given |interaction| with a PhoneHub notification.
 void LogNotificationInteraction(NotificationInteraction interaction);
 
+// Logs the message length of a PhoneHub notification.
+void LogNotificationMessageLength(int length);
+
 // Logs the display of a Camera Roll item at |index|.
 void LogCameraRollContentShown(int index, CameraRollMediaType mediaType);
 
