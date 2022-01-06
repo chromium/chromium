@@ -286,19 +286,17 @@ bool ConvertCryptoResult<bool>(v8::Isolate*, const ScriptValue& value) {
 }
 
 template <typename T>
-class WebCryptoResultAdapter : public ScriptFunction {
+class WebCryptoResultAdapter : public NewScriptFunction::Callable {
  public:
-  WebCryptoResultAdapter(ScriptState* script_state,
-                         base::RepeatingCallback<void(T)> function)
-      : ScriptFunction(script_state), function_(std::move(function)) {}
+  explicit WebCryptoResultAdapter(base::RepeatingCallback<void(T)> function)
+      : function_(std::move(function)) {}
 
- private:
-  ScriptValue Call(ScriptValue value) final {
-    function_.Run(
-        ConvertCryptoResult<T>(GetScriptState()->GetIsolate(), value));
-    return ScriptValue::From(GetScriptState(), ToV8UndefinedGenerator());
+  ScriptValue Call(ScriptState* script_state, ScriptValue value) final {
+    function_.Run(ConvertCryptoResult<T>(script_state->GetIsolate(), value));
+    return ScriptValue::From(script_state, ToV8UndefinedGenerator());
   }
 
+ private:
   base::RepeatingCallback<void(T)> function_;
   template <typename U>
   friend WebCryptoResult ToWebCryptoResult(ScriptState*,
@@ -310,14 +308,17 @@ WebCryptoResult ToWebCryptoResult(ScriptState* script_state,
                                   base::RepeatingCallback<void(T)> function) {
   auto* result = MakeGarbageCollected<CryptoResultImpl>(script_state);
   result->Promise().Then(
-      (MakeGarbageCollected<WebCryptoResultAdapter<T>>(script_state,
-                                                       std::move(function)))
-          ->BindToV8Function(),
-      (MakeGarbageCollected<WebCryptoResultAdapter<DOMException*>>(
-           script_state, WTF::BindRepeating([](DOMException* exception) {
-             CHECK(false) << "crypto operation failed";
-           })))
-          ->BindToV8Function());
+      (MakeGarbageCollected<NewScriptFunction>(
+           script_state, MakeGarbageCollected<WebCryptoResultAdapter<T>>(
+                             std::move(function))))
+          ->V8Function(),
+      (MakeGarbageCollected<NewScriptFunction>(
+           script_state,
+           MakeGarbageCollected<WebCryptoResultAdapter<DOMException*>>(
+               WTF::BindRepeating([](DOMException* exception) {
+                 CHECK(false) << "crypto operation failed";
+               }))))
+          ->V8Function());
   return result->Result();
 }
 

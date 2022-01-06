@@ -72,38 +72,24 @@ class PromiseAllHandler final : public GarbageCollected<PromiseAllHandler> {
   }
 
  private:
-  class AdapterFunction : public ScriptFunction {
+  class AdapterFunction : public NewScriptFunction::Callable {
    public:
     enum ResolveType {
       kFulfilled,
       kRejected,
     };
 
-    static v8::Local<v8::Function> Create(ScriptState* script_state,
-                                          ResolveType resolve_type,
-                                          wtf_size_t index,
-                                          PromiseAllHandler* handler) {
-      AdapterFunction* self = MakeGarbageCollected<AdapterFunction>(
-          script_state, resolve_type, index, handler);
-      return self->BindToV8Function();
-    }
-
-    AdapterFunction(ScriptState* script_state,
-                    ResolveType resolve_type,
+    AdapterFunction(ResolveType resolve_type,
                     wtf_size_t index,
                     PromiseAllHandler* handler)
-        : ScriptFunction(script_state),
-          resolve_type_(resolve_type),
-          index_(index),
-          handler_(handler) {}
+        : resolve_type_(resolve_type), index_(index), handler_(handler) {}
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(handler_);
-      ScriptFunction::Trace(visitor);
+      NewScriptFunction::Callable::Trace(visitor);
     }
 
-   private:
-    ScriptValue Call(ScriptValue value) override {
+    ScriptValue Call(ScriptState*, ScriptValue value) override {
       if (resolve_type_ == kFulfilled)
         handler_->OnFulfilled(index_, value);
       else
@@ -112,6 +98,7 @@ class PromiseAllHandler final : public GarbageCollected<PromiseAllHandler> {
       return ScriptValue();
     }
 
+   private:
     const ResolveType resolve_type_;
     const wtf_size_t index_;
     Member<PromiseAllHandler> handler_;
@@ -119,13 +106,17 @@ class PromiseAllHandler final : public GarbageCollected<PromiseAllHandler> {
 
   v8::Local<v8::Function> CreateFulfillFunction(ScriptState* script_state,
                                                 wtf_size_t index) {
-    return AdapterFunction::Create(script_state, AdapterFunction::kFulfilled,
-                                   index, this);
+    return MakeGarbageCollected<NewScriptFunction>(
+               script_state, MakeGarbageCollected<AdapterFunction>(
+                                 AdapterFunction::kFulfilled, index, this))
+        ->V8Function();
   }
 
   v8::Local<v8::Function> CreateRejectFunction(ScriptState* script_state) {
-    return AdapterFunction::Create(script_state, AdapterFunction::kRejected, 0,
-                                   this);
+    return MakeGarbageCollected<NewScriptFunction>(
+               script_state, MakeGarbageCollected<AdapterFunction>(
+                                 AdapterFunction::kRejected, 0, this))
+        ->V8Function();
   }
 
   void OnFulfilled(wtf_size_t index, const ScriptValue& value) {
