@@ -64,6 +64,25 @@ def main(raw_args):
       action='store_true',
       help='Keep the AVD after creating the CIPD package.')
   create_parser.add_argument(
+      '--privileged-apk',
+      action='append',
+      default=[],
+      dest='privileged_apk_pairs',
+      nargs=2,
+      metavar=('APK_PATH', 'DEVICE_PARTITION'),
+      help='Privileged apks to be installed during AVD launching. Expecting '
+      'two strings where the first element being the path to the APK, and the '
+      'second element being the system image partition on device where the APK '
+      'will be pushed to. Example: --privileged-apk path/to/some.apk /system')
+  create_parser.add_argument(
+      '--additional-apk',
+      action='append',
+      default=[],
+      dest='additional_apks',
+      metavar='APK_PATH',
+      type=os.path.realpath,
+      help='Additional apk to be installed during AVD launching')
+  create_parser.add_argument(
       '--cipd-json-output',
       type=os.path.realpath,
       metavar='PATH',
@@ -79,6 +98,8 @@ def main(raw_args):
         force=args.force,
         snapshot=args.snapshot,
         keep=args.keep,
+        additional_apks=args.additional_apks,
+        privileged_apk_tuples=[tuple(p) for p in args.privileged_apk_pairs],
         cipd_json_output=args.cipd_json_output,
         dry_run=args.dry_run)
     return 0
@@ -89,21 +110,32 @@ def main(raw_args):
       'start',
       help='Start an AVD instance with the given config.',
       formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-  start_parser.add_argument('--wipe-data',
-                            action='store_true',
-                            default=False,
-                            help='Reset user data image for this emulator.')
+  start_parser.add_argument(
+      '--wipe-data',
+      action='store_true',
+      default=False,
+      help='Reset user data image for this emulator. Note that when set, all '
+      'the customization, e.g. wifi, additional apks, privileged apks will be '
+      'gone')
+  start_parser.add_argument(
+      '--read-only',
+      action='store_true',
+      help='Allowing running multiple instances of emulators on the same AVD, '
+      'but cannot save snapshot. This will be forced to False if emulator '
+      'has a system snapshot.')
   start_parser.add_argument(
       '--no-read-only',
       action='store_false',
-      dest='read_only',
-      default=True,
-      help='Run a modifiable emulator. Will save snapshots on exit.')
+      dest='read_only')
+  # TODO(crbug.com/1278096): Default to False when AVDs with sideloaded
+  # system apks are rolled.
+  start_parser.set_defaults(read_only=True)
   start_parser.add_argument(
       '--writable-system',
       action='store_true',
       default=False,
-      help='Makes system & vendor image writable after adb remount.')
+      help='Makes system & vendor image writable after adb remount. This will '
+      'be forced to True, if emulator has a system snapshot.')
   start_parser.add_argument(
       '--emulator-window',
       action='store_true',
@@ -128,7 +160,6 @@ def main(raw_args):
   def start_cmd(args):
     inst = avd.AvdConfig(args.avd_config).CreateInstance()
     inst.Start(read_only=args.read_only,
-               snapshot_save=not args.read_only,
                window=args.emulator_window,
                writable_system=args.writable_system,
                gpu_mode=args.gpu_mode,

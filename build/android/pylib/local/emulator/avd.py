@@ -16,6 +16,7 @@ from google.protobuf import text_format  # pylint: disable=import-error
 
 from devil.android import device_utils
 from devil.android.sdk import adb_wrapper
+from devil.android.tools import system_app
 from devil.utils import cmd_helper
 from devil.utils import timeout_retry
 from py_utils import tempfile_ext
@@ -36,6 +37,12 @@ _DEFAULT_SCREEN_WIDTH = 480
 
 # Default to swiftshader_indirect since it works for most cases.
 _DEFAULT_GPU_MODE = 'swiftshader_indirect'
+
+# The snapshot name to load/save when writable_system=False.
+# This is the default name used by the emulator binary.
+_DEFAULT_SNAPSHOT_NAME = 'default_boot'
+# The snapshot name to load/save when writable_system=True
+_SYSTEM_SNAPSHOT_NAME = 'boot_with_system'
 
 
 class AvdException(Exception):
@@ -195,6 +202,8 @@ class AvdConfig:
              force=False,
              snapshot=False,
              keep=False,
+             additional_apks=None,
+             privileged_apk_tuples=None,
              cipd_json_output=None,
              dry_run=False):
     """Create an instance of the AVD CIPD package.
@@ -204,7 +213,8 @@ class AvdConfig:
      - creates the AVD
      - modifies the AVD's ini files to support running chromium tests
        in chromium infrastructure
-     - optionally starts & stops the AVD for snapshotting (default no)
+     - optionally starts, installs additional apks and/or privileged apks, and
+       stops the AVD for snapshotting (default no)
      - By default creates and uploads an instance of the AVD CIPD package
        (can be turned off by dry_run flag).
      - optionally deletes the AVD (default yes)
@@ -215,6 +225,12 @@ class AvdConfig:
         the CIPD package.
       keep: bool indicating whether to keep the AVD after creating
         the CIPD package.
+      additional_apks: a list of strings contains the paths to the APKs. These
+        APKs will be installed after AVD is started.
+      privileged_apk_tuples: a list of (apk_path, device_partition) tuples where
+        |apk_path| is a string containing the path to the APK, and
+        |device_partition| is a string indicating the system image partition on
+        device that contains "priv-app" directory, e.g. "/system", "/product".
       cipd_json_output: string path to pass to `cipd create` via -json-output.
       dry_run: When set to True, it will skip the CIPD package creation
         after creating the AVD.
@@ -282,28 +298,45 @@ class AvdConfig:
                               self._config)
       # Enable debug for snapshot when it is set to True
       debug_tags = 'init,snapshot' if snapshot else None
+      # Installing privileged apks requires modifying the system image.
+      writable_system = bool(privileged_apk_tuples)
       instance.Start(read_only=False,
-                     snapshot_save=snapshot,
-                     debug_tags=debug_tags,
-                     gpu_mode=_DEFAULT_GPU_MODE)
+                     writable_system=writable_system,
+                     gpu_mode=_DEFAULT_GPU_MODE,
+                     debug_tags=debug_tags)
+
+      assert instance.device is not None, '`instance.device` not initialized.'
       # Android devices with full-disk encryption are encrypted on first boot,
       # and then get decrypted to continue the boot process (See details in
       # https://bit.ly/3agmjcM).
       # Wait for this step to complete since it can take a while for old OSs
       # like M, otherwise the avd may have "Encryption Unsuccessful" error.
-      device = device_utils.DeviceUtils(instance.serial)
-      device.WaitUntilFullyBooted(decrypt=True, timeout=180, retries=0)
+      instance.device.WaitUntilFullyBooted(decrypt=True, timeout=180, retries=0)
+
+      if additional_apks:
+        for additional_apk in additional_apks:
+          instance.device.Install(additional_apk,
+                                  allow_downgrade=True,
+                                  reinstall=True)
+
+      if privileged_apk_tuples:
+        system_app.InstallPrivilegedApps(instance.device, privileged_apk_tuples)
 
       # Skip network disabling on pre-N for now since the svc commands fail
       # on Marshmallow.
-      if device.build_version_sdk > 23:
+      if instance.device.build_version_sdk > 23:
         # Always disable the network to prevent built-in system apps from
         # updating themselves, which could take over package manager and
         # cause shell command timeout.
         # Use svc as this also works on the images with build type "user".
         logging.info('Disabling the network in emulator.')
-        device.RunShellCommand(['svc', 'wifi', 'disable'], check_return=True)
-        device.RunShellCommand(['svc', 'data', 'disable'], check_return=True)
+        instance.device.RunShellCommand(['svc', 'wifi', 'disable'],
+                                        check_return=True)
+        instance.device.RunShellCommand(['svc', 'data', 'disable'],
+                                        check_return=True)
+
+      if snapshot:
+        instance.SaveSnapshot()
 
       instance.Stop()
 
@@ -532,20 +565,37 @@ class _AvdInstance:
     self._emulator_path = emulator_path
     self._emulator_proc = None
     self._emulator_serial = None
+    self._emulator_device = None
     self._sink = None
+
+    self._writable_system = False
 
   def __str__(self):
     return '%s|%s' % (self._avd_name, (self._emulator_serial or id(self)))
 
   def Start(self,
             read_only=True,
-            snapshot_save=False,
             window=False,
             writable_system=False,
             gpu_mode=_DEFAULT_GPU_MODE,
             wipe_data=False,
             debug_tags=None):
     """Starts the emulator running an instance of the given AVD."""
+    # Force to load system snapshot if detected.
+    if self.HasSystemSnapshot():
+      if not writable_system:
+        logging.info('System snapshot found. Set "writable_system=True" '
+                     'to load it properly.')
+        writable_system = True
+      if read_only:
+        logging.info('System snapshot found. Set "read_only=False" '
+                     'to load it properly.')
+        read_only = False
+    elif writable_system:
+      logging.warning('Emulator will be slow to start, as '
+                      '"writable_system=True" but system snapshot not found.')
+
+    self._writable_system = writable_system
 
     with tempfile_ext.TemporaryFileName() as socket_path, (contextlib.closing(
         socket.socket(socket.AF_UNIX))) as sock:
@@ -557,14 +607,17 @@ class _AvdInstance:
           '-report-console',
           'unix:%s' % socket_path,
           '-no-boot-anim',
+          # Explicitly prevent emulator from auto-saving to snapshot on exit.
+          '-no-snapshot-save',
+          # Explicitly set the snapshot name for auto-load
+          '-snapshot',
+          self.GetSnapshotName(),
       ]
 
       if wipe_data:
         emulator_cmd.append('-wipe-data')
       if read_only:
         emulator_cmd.append('-read-only')
-      if not snapshot_save:
-        emulator_cmd.append('-no-snapshot-save')
       if writable_system:
         emulator_cmd.append('-writable-system')
       # Note when "--gpu-mode" is set to "host":
@@ -591,8 +644,11 @@ class _AvdInstance:
 
       sock.listen(1)
 
-      logging.info('Starting emulator with commands: %s',
-                   ' '.join(emulator_cmd))
+      logging.info('Starting emulator...')
+      logging.info(
+          '  With environments: %s',
+          ' '.join(['%s=%s' % (k, v) for k, v in emulator_env.items()]))
+      logging.info('  With commands: %s', ' '.join(emulator_cmd))
 
       # TODO(jbudorick): Add support for logging emulator stdout & stderr at
       # higher logging levels.
@@ -624,17 +680,50 @@ class _AvdInstance:
     """Stops the emulator process."""
     if self._emulator_proc:
       if self._emulator_proc.poll() is None:
-        if self._emulator_serial:
-          device_utils.DeviceUtils(self._emulator_serial).adb.Emu('kill')
+        if self.device:
+          self.device.adb.Emu('kill')
         else:
           self._emulator_proc.terminate()
         self._emulator_proc.wait()
       self._emulator_proc = None
+      self._emulator_serial = None
+      self._emulator_device = None
 
     if self._sink:
       self._sink.close()
       self._sink = None
 
+  def GetSnapshotName(self):
+    """Return the snapshot name to load/save.
+
+    Emulator has a different snapshot process when '-writable-system' flag is
+    set (See https://issuetracker.google.com/issues/135857816#comment8).
+
+    """
+    if self._writable_system:
+      return _SYSTEM_SNAPSHOT_NAME
+
+    return _DEFAULT_SNAPSHOT_NAME
+
+  def HasSystemSnapshot(self):
+    """Check if the instance has the snapshot named _SYSTEM_SNAPSHOT_NAME."""
+    snapshot_path = os.path.join(self._emulator_home, 'avd',
+                                 '%s.avd' % self._avd_name, 'snapshots',
+                                 _SYSTEM_SNAPSHOT_NAME)
+    return os.path.exists(snapshot_path)
+
+  def SaveSnapshot(self):
+    snapshot_name = self.GetSnapshotName()
+    if self.device:
+      logging.info('Saving snapshot to %r.', snapshot_name)
+      self.device.adb.Emu(['avd', 'snapshot', 'save', snapshot_name])
+
   @property
   def serial(self):
     return self._emulator_serial
+
+  @property
+  def device(self):
+    if not self._emulator_device and self._emulator_serial:
+      self._emulator_device = device_utils.DeviceUtils(self._emulator_serial)
+    return self._emulator_device
