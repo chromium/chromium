@@ -93,6 +93,7 @@
 #include "storage/browser/quota/quota_manager.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/background_fetch/background_fetch.mojom.h"
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom.h"
 #include "third_party/blink/public/mojom/bluetooth/web_bluetooth.mojom.h"
@@ -1196,6 +1197,8 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
       &RenderProcessHostImpl::BindIndexedDB, host));
   map->Add<blink::mojom::NativeIOHost>(BindWorkerReceiverForStorageKey(
       &RenderProcessHostImpl::BindNativeIOHost, host));
+  map->Add<blink::mojom::LockManager>(BindWorkerReceiverForStorageKey(
+      &RenderProcessHostImpl::CreateLockManager, host));
 }
 
 void PopulateBinderMapWithContext(
@@ -1210,8 +1213,6 @@ void PopulateBinderMapWithContext(
       &RenderProcessHostImpl::BindBucketManagerHost, host));
 
   // RenderProcessHost binders taking a frame id and an origin
-  map->Add<blink::mojom::LockManager>(BindWorkerReceiverForOriginAndFrameId(
-      &RenderProcessHostImpl::CreateLockManager, host));
   map->Add<blink::mojom::NotificationService>(
       BindWorkerReceiverForOriginAndFrameId(
           &RenderProcessHostImpl::CreateNotificationService, host));
@@ -1289,6 +1290,8 @@ void PopulateSharedWorkerBinders(SharedWorkerHost* host, mojo::BinderMap* map) {
       &RenderProcessHostImpl::BindNativeIOHost, host));
   map->Add<blink::mojom::WebSocketConnector>(BindWorkerReceiverForStorageKey(
       &RenderProcessHostImpl::CreateWebSocketConnector, host));
+  map->Add<blink::mojom::LockManager>(BindWorkerReceiverForStorageKey(
+      &RenderProcessHostImpl::CreateLockManager, host));
 }
 
 void PopulateBinderMapWithContext(
@@ -1303,8 +1306,6 @@ void PopulateBinderMapWithContext(
       &RenderProcessHostImpl::BindBucketManagerHost, host));
 
   // RenderProcessHost binders taking a frame id and an origin
-  map->Add<blink::mojom::LockManager>(BindWorkerReceiverForOriginAndFrameId(
-      &RenderProcessHostImpl::CreateLockManager, host));
   map->Add<blink::mojom::NotificationService>(
       BindWorkerReceiverForOriginAndFrameId(
           &RenderProcessHostImpl::CreateNotificationService, host));
@@ -1416,11 +1417,10 @@ void PopulateBinderMapWithContext(
   map->Add<blink::mojom::WebSocketConnector>(
       BindServiceWorkerReceiverForStorageKey(
           &RenderProcessHostImpl::CreateWebSocketConnector, host));
+  map->Add<blink::mojom::LockManager>(BindServiceWorkerReceiverForStorageKey(
+      &RenderProcessHostImpl::CreateLockManager, host));
 
   // RenderProcessHost binders taking a frame id and an origin
-  map->Add<blink::mojom::LockManager>(
-      BindServiceWorkerReceiverForOriginAndFrameId(
-          &RenderProcessHostImpl::CreateLockManager, host));
   map->Add<blink::mojom::NotificationService>(
       BindServiceWorkerReceiverForOriginAndFrameId(
           &RenderProcessHostImpl::CreateNotificationService, host));

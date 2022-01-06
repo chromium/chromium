@@ -34,11 +34,8 @@ class CONTENT_EXPORT LockManager : public blink::mojom::LockManager {
   LockManager& operator=(const LockManager&) = delete;
 
   // Binds |receiver| to this LockManager. |receiver| belongs to a frame or
-  // worker at |bucket_id| hosted by |render_process_id|. If it belongs to a
-  // frame, |render_frame_id| identifies it, otherwise it is MSG_ROUTING_NONE.
-  void BindReceiver(int render_process_id,
-                    int render_frame_id,
-                    storage::BucketId bucket_id,
+  // worker at |bucket_id|.
+  void BindReceiver(storage::BucketId bucket_id,
                     mojo::PendingReceiver<blink::mojom::LockManager> receiver);
 
   // Request a lock. When the lock is acquired, |callback| will be invoked with

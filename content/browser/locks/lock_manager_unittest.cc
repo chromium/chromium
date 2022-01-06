@@ -21,12 +21,9 @@ class LockManagerInvalidBucketTest : public testing::Test {
   void SetUp() override {
     pending_receiver_ = pending_remote_.InitWithNewPipeAndPassReceiver();
 
-    int render_process_id = 2;
-    int render_frame_id = 5;
     storage::BucketId bucket_id = storage::BucketId();  // Invalid BucketId.
 
-    lock_manager_.BindReceiver(render_process_id, render_frame_id, bucket_id,
-                               std::move(pending_receiver_));
+    lock_manager_.BindReceiver(bucket_id, std::move(pending_receiver_));
 
     remote_.Bind(std::move(pending_remote_));
   }

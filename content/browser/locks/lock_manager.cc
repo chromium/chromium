@@ -317,8 +317,6 @@ LockManager::ReceiverState::ReceiverState(const ReceiverState& other) = default;
 LockManager::ReceiverState::~ReceiverState() = default;
 
 void LockManager::BindReceiver(
-    int render_process_id,
-    int render_frame_id,
     storage::BucketId bucket_id,
     mojo::PendingReceiver<blink::mojom::LockManager> receiver) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

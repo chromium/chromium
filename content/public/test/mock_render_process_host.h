@@ -223,8 +223,7 @@ class MockRenderProcessHost : public RenderProcessHost {
       mojo::PendingReceiver<blink::mojom::QuotaManagerHost> receiver) override {
   }
   void CreateLockManager(
-      int render_frame_id,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::LockManager> receiver) override {}
   void CreateOneShotSyncService(
       const url::Origin& origin,

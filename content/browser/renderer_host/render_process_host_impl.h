@@ -616,14 +616,12 @@ class CONTENT_EXPORT RenderProcessHostImpl
       mojo::PendingReceiver<blink::mojom::QuotaManagerHost> receiver) override;
 
   // Binds |receiver| to the LockManager owned by |storage_partition_impl_|.
-  // |receiver| belongs to a frame or worker at |origin| hosted by this process.
-  // If it belongs to a frame, |render_frame_id| identifies it, otherwise it is
-  // MSG_ROUTING_NONE.
+  // |receiver| belongs to a frame or worker with |storage_key| hosted by this
+  // process.
   //
   // Used by frames and workers via BrowserInterfaceBroker.
   void CreateLockManager(
-      int render_frame_id,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::LockManager> receiver) override;
 
   // Binds |receiver| to the PermissionService instance owned by
@@ -865,7 +863,6 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Helper method for CreateLockManager() which facilitates use of |bucket|
   // instead of |origin| for binding |receiver|
   void CreateLockManagerWithBucketInfo(
-      int render_frame_id,
       mojo::PendingReceiver<blink::mojom::LockManager> receiver,
       storage::QuotaErrorOr<storage::BucketInfo> bucket);
 

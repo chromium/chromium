@@ -2076,26 +2076,21 @@ void RenderProcessHostImpl::BindQuotaManagerHost(
 }
 
 void RenderProcessHostImpl::CreateLockManager(
-    int render_frame_id,
-    const url::Origin& origin,
+    const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::LockManager> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   storage_partition_impl_->GetQuotaManager()->proxy()->GetOrCreateBucket(
-      blink::StorageKey(origin), storage::kDefaultBucketName,
-      GetUIThreadTaskRunner({}),
+      storage_key, storage::kDefaultBucketName, GetUIThreadTaskRunner({}),
       base::BindOnce(&RenderProcessHostImpl::CreateLockManagerWithBucketInfo,
-                     weak_factory_.GetWeakPtr(), render_frame_id,
-                     std::move(receiver)));
+                     weak_factory_.GetWeakPtr(), std::move(receiver)));
 }
 
 void RenderProcessHostImpl::CreateLockManagerWithBucketInfo(
-    int render_frame_id,
     mojo::PendingReceiver<blink::mojom::LockManager> receiver,
     storage::QuotaErrorOr<storage::BucketInfo> bucket) {
   storage_partition_impl_->GetLockManager()->BindReceiver(
-      GetID(), render_frame_id, bucket.ok() ? bucket->id : storage::BucketId(),
-      std::move(receiver));
+      bucket.ok() ? bucket->id : storage::BucketId(), std::move(receiver));
 }
 
 void RenderProcessHostImpl::CreatePermissionService(
