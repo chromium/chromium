@@ -51714,6 +51714,8 @@ from previous Chrome versions.
   <int value="-1291963295" label="ComputePressure:disabled"/>
   <int value="-1290471006"
       label="EnableHistoryFaviconsGoogleServerQuery:enabled"/>
+  <int value="-1290446351"
+      label="ExperimentalAccessibilityDictationExtension:disabled"/>
   <int value="-1290053302"
       label="OfflinePagesInDownloadHomeOpenInCct:disabled"/>
   <int value="-1289678848" label="SystemDownloadManager:enabled"/>
@@ -52983,6 +52985,8 @@ from previous Chrome versions.
   <int value="-351830087" label="AssistantConsentSimplifiedText:enabled"/>
   <int value="-351552989" label="disable-hosted-apps-in-windows"/>
   <int value="-351127770" label="enable-offline-pages-as-bookmarks"/>
+  <int value="-350336634"
+      label="ExperimentalAccessibilityDictationExtension:enabled"/>
   <int value="-349437334" label="UseDdljsonApi:disabled"/>
   <int value="-349380607" label="AndroidNightMode:disabled"/>
   <int value="-349057743" label="extensions-on-chrome-urls"/>

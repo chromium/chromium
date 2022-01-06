@@ -57,7 +57,6 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/test/browser_test.h"
 #include "ui/accessibility/accessibility_features.h"
-#include "ui/accessibility/accessibility_switches.h"
     `);
   }
 
@@ -65,8 +64,6 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
   testGenPreamble() {
     super.testGenPreamble();
     GEN(`
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-    ::switches::kEnableExperimentalAccessibilityDictationExtension);
   base::OnceClosure load_cb =
     base::BindOnce(&ash::AccessibilityManager::SetDictationEnabled,
         base::Unretained(ash::AccessibilityManager::Get()),
@@ -77,7 +74,12 @@ import('/accessibility_common/accessibility_common_loader.js').then(reinit);
 
   /** @override */
   get featureList() {
-    return {enabled: ['features::kExperimentalAccessibilityDictationCommands']};
+    return {
+      enabled: [
+        'features::kExperimentalAccessibilityDictationCommands',
+        'features::kExperimentalAccessibilityDictationExtension'
+      ]
+    };
   }
 
   /**

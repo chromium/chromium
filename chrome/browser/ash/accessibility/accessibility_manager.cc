@@ -87,7 +87,6 @@
 #include "extensions/common/extension_resource.h"
 #include "services/audio/public/cpp/sounds/sounds_manager.h"
 #include "ui/accessibility/accessibility_features.h"
-#include "ui/accessibility/accessibility_switches.h"
 #include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
@@ -706,7 +705,7 @@ void AccessibilityManager::OnAccessibilityCommonChanged(
     return;
 
   if (pref_name == ash::prefs::kAccessibilityDictationEnabled &&
-      !::switches::IsExperimentalAccessibilityDictationExtensionEnabled()) {
+      !::features::IsExperimentalAccessibilityDictationExtensionEnabled()) {
     return;
   }
 
@@ -1790,7 +1789,7 @@ bool AccessibilityManager::ToggleDictation() {
   if (!profile_)
     return false;
 
-  if (!::switches::IsExperimentalAccessibilityDictationExtensionEnabled()) {
+  if (!::features::IsExperimentalAccessibilityDictationExtensionEnabled()) {
     if (!dictation_.get())
       dictation_ = std::make_unique<Dictation>(profile_);
 
