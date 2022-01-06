@@ -50,7 +50,8 @@ class AdSamplerTriggerTest : public content::RenderViewHostTestHarness {
 
   void CreateTriggerWithFrequency(const size_t denominator) {
     safe_browsing::AdSamplerTrigger::CreateForWebContents(
-        web_contents(), &trigger_manager_, &prefs_, nullptr, nullptr, nullptr);
+        web_contents(), &trigger_manager_, &prefs_, nullptr, nullptr,
+        base::NullCallback(), nullptr);
 
     safe_browsing::AdSamplerTrigger* ad_sampler =
         safe_browsing::AdSamplerTrigger::FromWebContents(web_contents());
@@ -100,7 +101,7 @@ TEST_F(AdSamplerTriggerTest, TriggerDisabledBySamplingFrequency) {
   // zero, which disables the trigger.
   CreateTriggerWithFrequency(kAdSamplerFrequencyDisabled);
   EXPECT_CALL(*get_trigger_manager(),
-              StartCollectingThreatDetails(_, _, _, _, _, _, _))
+              StartCollectingThreatDetails(_, _, _, _, _, _, _, _))
       .Times(0);
   EXPECT_CALL(*get_trigger_manager(),
               FinishCollectingThreatDetails(_, _, _, _, _, _))
@@ -127,7 +128,7 @@ TEST_F(AdSamplerTriggerTest, DISABLED_PageWithNoAds) {
   CreateTriggerWithFrequency(/*denominator=*/1);
 
   EXPECT_CALL(*get_trigger_manager(),
-              StartCollectingThreatDetails(_, _, _, _, _, _, _))
+              StartCollectingThreatDetails(_, _, _, _, _, _, _, _))
       .Times(0);
   EXPECT_CALL(*get_trigger_manager(),
               FinishCollectingThreatDetails(_, _, _, _, _, _))
@@ -150,7 +151,7 @@ TEST_F(AdSamplerTriggerTest, PageWithMultipleAds) {
   CreateTriggerWithFrequency(/*denominator=*/1);
   EXPECT_CALL(*get_trigger_manager(),
               StartCollectingThreatDetails(TriggerType::AD_SAMPLE,
-                                           web_contents(), _, _, _, _, _))
+                                           web_contents(), _, _, _, _, _, _))
       .Times(2)
       .WillRepeatedly(Return(true));
   EXPECT_CALL(*get_trigger_manager(),
@@ -183,7 +184,7 @@ TEST_F(AdSamplerTriggerTest, ReportRejectedByTriggerManager) {
   CreateTriggerWithFrequency(/*denominator=*/1);
   EXPECT_CALL(*get_trigger_manager(),
               StartCollectingThreatDetails(TriggerType::AD_SAMPLE,
-                                           web_contents(), _, _, _, _, _))
+                                           web_contents(), _, _, _, _, _, _))
       .Times(1)
       .WillOnce(Return(false));
   EXPECT_CALL(*get_trigger_manager(),
@@ -215,7 +216,8 @@ TEST(AdSamplerTriggerTestFinch, FrequencyDenominatorFeature) {
   // given.
   content::BrowserTaskEnvironment task_environment;
   AdSamplerTrigger trigger_default(nullptr, nullptr, nullptr, nullptr, nullptr,
-                                   nullptr);
+                                   base::NullCallback(), nullptr);
+
   EXPECT_EQ(kAdSamplerDefaultFrequency,
             trigger_default.sampler_frequency_denominator_);
 
@@ -230,7 +232,7 @@ TEST(AdSamplerTriggerTestFinch, FrequencyDenominatorFeature) {
       safe_browsing::kAdSamplerTriggerFeature, feature_params);
 
   AdSamplerTrigger trigger_finch(nullptr, nullptr, nullptr, nullptr, nullptr,
-                                 nullptr);
+                                 base::NullCallback(), nullptr);
   EXPECT_EQ(kDenominatorInt, trigger_finch.sampler_frequency_denominator_);
 }
 }  // namespace safe_browsing

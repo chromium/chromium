@@ -132,6 +132,8 @@ class TriggerManager {
       const security_interstitials::UnsafeResource& resource,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       history::HistoryService* history_service,
+      base::RepeatingCallback<ChromeUserPopulation()>
+          get_user_population_callback,
       ReferrerChainProvider* referrer_chain_provider,
       const SBErrorOptions& error_display_options,
       TriggerManagerReason* out_reason);
@@ -144,6 +146,8 @@ class TriggerManager {
       const security_interstitials::UnsafeResource& resource,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       history::HistoryService* history_service,
+      base::RepeatingCallback<ChromeUserPopulation()>
+          get_user_population_callback,
       ReferrerChainProvider* referrer_chain_provider,
       const SBErrorOptions& error_display_options);
 

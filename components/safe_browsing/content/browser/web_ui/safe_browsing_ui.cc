@@ -1150,6 +1150,10 @@ std::string SerializeCSBRR(const ClientSafeBrowsingReportRequest& report) {
     report_request.SetBoolean("show_download_in_folder",
                               report.show_download_in_folder());
   }
+  if (report.has_population()) {
+    report_request.SetKey("population",
+                          SerializeChromeUserPopulation(report.population()));
+  }
   std::string serialized;
   if (report.SerializeToString(&serialized)) {
     std::string base64_encoded;

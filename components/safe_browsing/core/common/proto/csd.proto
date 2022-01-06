@@ -1384,7 +1384,7 @@ message DownloadMetadata {
 // A Detailed Safebrowsing Report from clients. Chrome safebrowsing reports are
 // only sent by Chrome users who have opted into extended Safe Browsing.
 // This proto is replacing ClientMalwareReportRequest.
-// Next tag: 26
+// Next tag: 27
 message ClientSafeBrowsingReportRequest {
   // Note: A lot of the "optional" fields would make sense to be
   // "required" instead.  However, having them as optional allows the
@@ -1560,6 +1560,8 @@ message ClientSafeBrowsingReportRequest {
   // The SafetyNet ID of the Android device.
   // Deprecated, not launched.
   optional string safety_net_id = 25 [deprecated = true];
+
+  optional ChromeUserPopulation population = 26;
 }
 
 // An HTML Element on the page (eg: iframe, div, script, etc).

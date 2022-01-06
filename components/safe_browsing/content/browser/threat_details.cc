@@ -330,6 +330,8 @@ class ThreatDetailsFactoryImpl : public ThreatDetailsFactory {
       const security_interstitials::UnsafeResource& unsafe_resource,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       history::HistoryService* history_service,
+      base::RepeatingCallback<ChromeUserPopulation()>
+          get_user_population_callback,
       ReferrerChainProvider* referrer_chain_provider,
       bool trim_to_ad_tags,
       ThreatDetailsDoneCallback done_callback) override {
@@ -338,8 +340,8 @@ class ThreatDetailsFactoryImpl : public ThreatDetailsFactory {
     // used.
     auto threat_details = base::WrapUnique(new ThreatDetails(
         ui_manager, web_contents, unsafe_resource, url_loader_factory,
-        history_service, referrer_chain_provider, trim_to_ad_tags,
-        std::move(done_callback)));
+        history_service, get_user_population_callback, referrer_chain_provider,
+        trim_to_ad_tags, std::move(done_callback)));
     threat_details->StartCollection();
     return threat_details;
   }
@@ -361,6 +363,8 @@ std::unique_ptr<ThreatDetails> ThreatDetails::NewThreatDetails(
     const UnsafeResource& resource,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     history::HistoryService* history_service,
+    base::RepeatingCallback<ChromeUserPopulation()>
+        get_user_population_callback,
     ReferrerChainProvider* referrer_chain_provider,
     bool trim_to_ad_tags,
     ThreatDetailsDoneCallback done_callback) {
@@ -370,7 +374,8 @@ std::unique_ptr<ThreatDetails> ThreatDetails::NewThreatDetails(
     factory_ = g_threat_details_factory_impl.Pointer();
   return factory_->CreateThreatDetails(
       ui_manager, web_contents, resource, url_loader_factory, history_service,
-      referrer_chain_provider, trim_to_ad_tags, std::move(done_callback));
+      get_user_population_callback, referrer_chain_provider, trim_to_ad_tags,
+      std::move(done_callback));
 }
 
 // Create a ThreatDetails for the given tab. Runs in the UI thread.
@@ -380,6 +385,8 @@ ThreatDetails::ThreatDetails(
     const UnsafeResource& resource,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     history::HistoryService* history_service,
+    base::RepeatingCallback<ChromeUserPopulation()>
+        get_user_population_callback,
     ReferrerChainProvider* referrer_chain_provider,
     bool trim_to_ad_tags,
     ThreatDetailsDoneCallback done_callback)
@@ -388,6 +395,7 @@ ThreatDetails::ThreatDetails(
       ui_manager_(ui_manager),
       browser_context_(web_contents->GetBrowserContext()),
       resource_(resource),
+      get_user_population_callback_(get_user_population_callback),
       referrer_chain_provider_(referrer_chain_provider),
       cache_result_(false),
       did_proceed_(false),
@@ -854,6 +862,10 @@ void ThreatDetails::OnCacheCollectionReady() {
 
   report_->mutable_client_properties()->set_url_api_type(
       GetUrlApiTypeForThreatSource(resource_.threat_source));
+
+  if (!get_user_population_callback_.is_null()) {
+    *report_->mutable_population() = get_user_population_callback_.Run();
+  }
 
   // Fill the referrer chain if applicable.
   MaybeFillReferrerChain();

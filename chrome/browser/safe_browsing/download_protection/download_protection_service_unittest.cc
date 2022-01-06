@@ -50,6 +50,7 @@
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager.h"
 #include "chrome/browser/safe_browsing/advanced_protection_status_manager_factory.h"
+#include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service_factory.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
@@ -199,8 +200,9 @@ class FakeSafeBrowsingService : public TestSafeBrowsingService {
   }
 
   void SendSerializedDownloadReport(Profile* profile,
-                                    const std::string& unused_report) override {
+                                    const std::string& report) override {
     download_report_count_++;
+    latest_report_ = report;
   }
 
   network::TestURLLoaderFactory* GetTestURLLoaderFactory(Profile* profile) {
@@ -219,6 +221,8 @@ class FakeSafeBrowsingService : public TestSafeBrowsingService {
   }
 
   int download_report_count() { return download_report_count_; }
+
+  std::string latest_report() { return latest_report_; }
 
  protected:
   ~FakeSafeBrowsingService() override = default;
@@ -243,6 +247,7 @@ class FakeSafeBrowsingService : public TestSafeBrowsingService {
 
   scoped_refptr<MockSafeBrowsingDatabaseManager> mock_database_manager_;
   int download_report_count_ = 0;
+  std::string latest_report_ = "";
 };
 
 using NiceMockDownloadItem = NiceMock<download::MockDownloadItem>;
@@ -2715,6 +2720,7 @@ TEST_F(DownloadProtectionServiceTest,
                            FILE_PATH_LITERAL("a.tmp"),   // tmp_path
                            FILE_PATH_LITERAL("a.exe"));  // final_path
   content::DownloadItemUtils::AttachInfoForTesting(&item, profile(), nullptr);
+  std::string token = "token";
   ASSERT_EQ(0, sb_service_->download_report_count());
 
   // No report sent if download item without token field.
@@ -2722,7 +2728,7 @@ TEST_F(DownloadProtectionServiceTest,
   EXPECT_EQ(0, sb_service_->download_report_count());
 
   // No report sent if user is in incognito mode.
-  DownloadProtectionService::SetDownloadPingToken(&item, "token");
+  DownloadProtectionService::SetDownloadPingToken(&item, token);
   content::DownloadItemUtils::AttachInfoForTesting(
       &item, profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true),
       nullptr);
@@ -2744,10 +2750,29 @@ TEST_F(DownloadProtectionServiceTest,
   // incognito, download item has a token stored and the download is detected to
   // be dangerous.
   EXPECT_CALL(item, IsDangerous()).WillRepeatedly(Return(true));
+  auto validate_report_contents = [this, token](bool show_download_in_folder) {
+    ClientSafeBrowsingReportRequest expected_report;
+    expected_report.set_url(GURL::EmptyGURL().spec());
+    expected_report.set_type(
+        ClientSafeBrowsingReportRequest::DANGEROUS_DOWNLOAD_OPENED);
+    *expected_report.mutable_population() =
+        safe_browsing::GetUserPopulationForProfile(profile());
+    expected_report.set_download_verdict(ClientDownloadResponse::SAFE);
+    expected_report.set_did_proceed(true);
+    expected_report.set_token(token);
+    expected_report.set_show_download_in_folder(show_download_in_folder);
+    std::string expected_report_serialized;
+    expected_report.SerializeToString(&expected_report_serialized);
+
+    EXPECT_EQ(expected_report_serialized, sb_service_->latest_report());
+  };
+
   download_service_->MaybeSendDangerousDownloadOpenedReport(&item, false);
   EXPECT_EQ(1, sb_service_->download_report_count());
+  validate_report_contents(/* show_download_in_folder */ false);
   download_service_->MaybeSendDangerousDownloadOpenedReport(&item, true);
   EXPECT_EQ(2, sb_service_->download_report_count());
+  validate_report_contents(/* show_download_in_folder */ true);
 }
 
 TEST_F(DownloadProtectionServiceTest,

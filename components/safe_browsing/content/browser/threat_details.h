@@ -87,6 +87,8 @@ class ThreatDetails : public content::WebContentsObserver {
       const UnsafeResource& resource,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       history::HistoryService* history_service,
+      base::RepeatingCallback<ChromeUserPopulation()>
+          get_user_population_callback,
       ReferrerChainProvider* referrer_chain_provider,
       bool trim_to_ad_tags,
       ThreatDetailsDoneCallback done_callback);
@@ -127,6 +129,8 @@ class ThreatDetails : public content::WebContentsObserver {
       const UnsafeResource& resource,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       history::HistoryService* history_service,
+      base::RepeatingCallback<ChromeUserPopulation()>
+          get_user_population_callback,
       ReferrerChainProvider* referrer_chain_provider,
       bool trim_to_ad_tags,
       ThreatDetailsDoneCallback done_callback);
@@ -206,6 +210,8 @@ class ThreatDetails : public content::WebContentsObserver {
   raw_ptr<content::BrowserContext> browser_context_;
 
   const UnsafeResource resource_;
+
+  base::RepeatingCallback<ChromeUserPopulation()> get_user_population_callback_;
 
   raw_ptr<ReferrerChainProvider> referrer_chain_provider_;
 
@@ -301,6 +307,8 @@ class ThreatDetailsFactory {
       const security_interstitials::UnsafeResource& unsafe_resource,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       history::HistoryService* history_service,
+      base::RepeatingCallback<ChromeUserPopulation()>
+          get_user_population_callback,
       ReferrerChainProvider* referrer_chain_provider,
       bool trim_to_ad_tags,
       ThreatDetailsDoneCallback done_callback) = 0;

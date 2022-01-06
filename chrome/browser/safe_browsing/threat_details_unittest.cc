@@ -16,6 +16,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/chrome_ui_manager_delegate.h"
+#include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -103,12 +104,15 @@ class ThreatDetailsWrap : public ThreatDetails {
       const security_interstitials::UnsafeResource& unsafe_resource,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       history::HistoryService* history_service,
+      base::RepeatingCallback<ChromeUserPopulation()>
+          get_user_population_callback,
       ReferrerChainProvider* referrer_chain_provider)
       : ThreatDetails(ui_manager,
                       web_contents,
                       unsafe_resource,
                       url_loader_factory,
                       history_service,
+                      get_user_population_callback,
                       referrer_chain_provider,
                       /*trim_to_ad_tags=*/false,
                       base::BindOnce(&ThreatDetailsWrap::ThreatDetailsDone,
@@ -122,6 +126,8 @@ class ThreatDetailsWrap : public ThreatDetails {
       const security_interstitials::UnsafeResource& unsafe_resource,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       history::HistoryService* history_service,
+      base::RepeatingCallback<ChromeUserPopulation()>
+          get_user_population_callback,
       ReferrerChainProvider* referrer_chain_provider,
       bool trim_to_ad_tags)
       : ThreatDetails(ui_manager,
@@ -129,6 +135,7 @@ class ThreatDetailsWrap : public ThreatDetails {
                       unsafe_resource,
                       url_loader_factory,
                       history_service,
+                      get_user_population_callback,
                       referrer_chain_provider,
                       trim_to_ad_tags,
                       base::BindOnce(&ThreatDetailsWrap::ThreatDetailsDone,
@@ -245,6 +252,11 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
         profile(), ServiceAccessType::EXPLICIT_ACCESS);
   }
 
+  base::RepeatingCallback<ChromeUserPopulation()> user_population_callback() {
+    return base::BindRepeating(&safe_browsing::GetUserPopulationForProfile,
+                               profile());
+  }
+
   bool ReportWasSent() { return ui_manager_->ReportWasSent(); }
 
  protected:
@@ -319,6 +331,12 @@ class ThreatDetailsTest : public ChromeRenderViewHostTestHarness {
     EXPECT_EQ(expected_pb.client_properties().url_api_type(),
               report_pb.client_properties().url_api_type());
     EXPECT_EQ(expected_pb.complete(), report_pb.complete());
+
+    std::string expected_population_serialized;
+    std::string actual_population_serialized;
+    report_pb.population().SerializeToString(&actual_population_serialized);
+    expected_pb.population().SerializeToString(&expected_population_serialized);
+    EXPECT_EQ(expected_population_serialized, actual_population_serialized);
 
     EXPECT_EQ(expected_pb.referrer_chain_size(),
               report_pb.referrer_chain_size());
@@ -434,7 +452,56 @@ TEST_F(ThreatDetailsTest, ThreatSubResource) {
 
   auto report = std::make_unique<ThreatDetailsWrap>(
       ui_manager_.get(), web_contents(), resource, nullptr, history_service(),
-      referrer_chain_provider_.get());
+      user_population_callback(), referrer_chain_provider_.get());
+  report->StartCollection();
+
+  std::string serialized = WaitForThreatDetailsDone(
+      report.get(), true /* did_proceed*/, 1 /* num_visit */);
+
+  ClientSafeBrowsingReportRequest actual;
+  actual.ParseFromString(serialized);
+
+  ClientSafeBrowsingReportRequest expected;
+  expected.set_type(ClientSafeBrowsingReportRequest::URL_MALWARE);
+  expected.set_url(kThreatURL);
+  expected.set_page_url(kLandingURL);
+  // The referrer is stripped to its origin because it's a cross-origin URL.
+  expected.set_referrer_url(
+      GURL(kReferrerURL).DeprecatedGetOriginAsURL().spec());
+  expected.set_did_proceed(true);
+  expected.set_repeat_visit(true);
+  *expected.mutable_population() =
+      safe_browsing::GetUserPopulationForProfile(profile());
+
+  ClientSafeBrowsingReportRequest::Resource* pb_resource =
+      expected.add_resources();
+  pb_resource->set_id(0);
+  pb_resource->set_url(kLandingURL);
+  pb_resource = expected.add_resources();
+  pb_resource->set_id(1);
+  pb_resource->set_url(kThreatURL);
+  pb_resource = expected.add_resources();
+  pb_resource->set_id(2);
+  pb_resource->set_url(GURL(kReferrerURL).DeprecatedGetOriginAsURL().spec());
+
+  VerifyResults(actual, expected);
+}
+
+// Tests creating a simple threat report where no user population is present
+TEST_F(ThreatDetailsTest, NoUserPopulation) {
+  auto navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL(kLandingURL), web_contents());
+  navigation->SetReferrer(blink::mojom::Referrer::New(
+      GURL(kReferrerURL), network::mojom::ReferrerPolicy::kDefault));
+  navigation->Commit();
+
+  UnsafeResource resource;
+  InitResource(SB_THREAT_TYPE_URL_MALWARE, ThreatSource::CLIENT_SIDE_DETECTION,
+               true /* is_subresource */, GURL(kThreatURL), &resource);
+
+  auto report = std::make_unique<ThreatDetailsWrap>(
+      ui_manager_.get(), web_contents(), resource, nullptr, history_service(),
+      base::NullCallback(), referrer_chain_provider_.get());
   report->StartCollection();
 
   std::string serialized = WaitForThreatDetailsDone(
@@ -490,7 +557,7 @@ TEST_F(ThreatDetailsTest, SuspiciousSiteWithReferrerChain) {
 
   auto report = std::make_unique<ThreatDetailsWrap>(
       ui_manager_.get(), web_contents(), resource, nullptr, history_service(),
-      referrer_chain_provider_.get());
+      user_population_callback(), referrer_chain_provider_.get());
   report->StartCollection();
 
   std::string serialized = WaitForThreatDetailsDone(
@@ -510,6 +577,8 @@ TEST_F(ThreatDetailsTest, SuspiciousSiteWithReferrerChain) {
       GURL(kReferrerURL).DeprecatedGetOriginAsURL().spec());
   expected.set_did_proceed(true);
   expected.set_repeat_visit(true);
+  *expected.mutable_population() =
+      safe_browsing::GetUserPopulationForProfile(profile());
 
   ClientSafeBrowsingReportRequest::Resource* pb_resource =
       expected.add_resources();
@@ -541,7 +610,7 @@ TEST_F(ThreatDetailsTest, ThreatSubResourceWithOriginalUrl) {
 
   auto report = std::make_unique<ThreatDetailsWrap>(
       ui_manager_.get(), web_contents(), resource, nullptr, history_service(),
-      referrer_chain_provider_.get());
+      user_population_callback(), referrer_chain_provider_.get());
   report->StartCollection();
 
   std::string serialized = WaitForThreatDetailsDone(
@@ -559,6 +628,8 @@ TEST_F(ThreatDetailsTest, ThreatSubResourceWithOriginalUrl) {
   expected.set_referrer_url("");
   expected.set_did_proceed(false);
   expected.set_repeat_visit(true);
+  *expected.mutable_population() =
+      safe_browsing::GetUserPopulationForProfile(profile());
 
   ClientSafeBrowsingReportRequest::Resource* pb_resource =
       expected.add_resources();
@@ -590,7 +661,7 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails) {
 
   auto report = std::make_unique<ThreatDetailsWrap>(
       ui_manager_.get(), web_contents(), resource, nullptr, history_service(),
-      referrer_chain_provider_.get());
+      user_population_callback(), referrer_chain_provider_.get());
   report->StartCollection();
 
   // Send a message from the DOM, with 2 nodes, a parent and a child.
@@ -626,6 +697,8 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails) {
   expected.set_referrer_url("");
   expected.set_did_proceed(false);
   expected.set_repeat_visit(false);
+  *expected.mutable_population() =
+      safe_browsing::GetUserPopulationForProfile(profile());
 
   ClientSafeBrowsingReportRequest::Resource* pb_resource =
       expected.add_resources();
@@ -743,6 +816,8 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_MultipleFrames) {
   expected.set_referrer_url("");
   expected.set_did_proceed(false);
   expected.set_repeat_visit(false);
+  *expected.mutable_population() =
+      safe_browsing::GetUserPopulationForProfile(profile());
 
   ClientSafeBrowsingReportRequest::Resource* pb_resource =
       expected.add_resources();
@@ -815,7 +890,7 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_MultipleFrames) {
   {
     auto report = std::make_unique<ThreatDetailsWrap>(
         ui_manager_.get(), web_contents(), resource, nullptr, history_service(),
-        referrer_chain_provider_.get());
+        user_population_callback(), referrer_chain_provider_.get());
     report->StartCollection();
 
     std::vector<mojom::ThreatDOMDetailsNodePtr> outer_params_copy;
@@ -874,7 +949,7 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_MultipleFrames) {
 
     auto report = std::make_unique<ThreatDetailsWrap>(
         ui_manager_.get(), web_contents(), resource, nullptr, history_service(),
-        referrer_chain_provider_.get());
+        user_population_callback(), referrer_chain_provider_.get());
     report->StartCollection();
 
     // Send both sets of nodes from different render frames.
@@ -951,6 +1026,8 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_AmbiguousDOM) {
   expected.set_referrer_url("");
   expected.set_did_proceed(false);
   expected.set_repeat_visit(false);
+  *expected.mutable_population() =
+      safe_browsing::GetUserPopulationForProfile(profile());
 
   ClientSafeBrowsingReportRequest::Resource* pb_resource =
       expected.add_resources();
@@ -1000,7 +1077,7 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_AmbiguousDOM) {
                true /* is_subresource */, GURL(kThreatURL), &resource);
   auto report = std::make_unique<ThreatDetailsWrap>(
       ui_manager_.get(), web_contents(), resource, nullptr, history_service(),
-      referrer_chain_provider_.get());
+      user_population_callback(), referrer_chain_provider_.get());
   report->StartCollection();
 
   base::HistogramTester histograms;
@@ -1163,6 +1240,8 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_TrimToAdTags) {
   expected.set_did_proceed(false);
   expected.set_repeat_visit(false);
   expected.set_complete(false);  // Since the cache was missing.
+  *expected.mutable_population() =
+      safe_browsing::GetUserPopulationForProfile(profile());
 
   ClientSafeBrowsingReportRequest::Resource* pb_resource =
       expected.add_resources();
@@ -1270,7 +1349,7 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_TrimToAdTags) {
   // Send both sets of nodes, from different render frames.
   auto trimmed_report = std::make_unique<ThreatDetailsWrap>(
       ui_manager_.get(), web_contents(), resource, nullptr, history_service(),
-      referrer_chain_provider_.get(),
+      user_population_callback(), referrer_chain_provider_.get(),
       /*trim_to_ad_tags=*/true);
   trimmed_report->StartCollection();
 
@@ -1346,7 +1425,7 @@ TEST_F(ThreatDetailsTest, ThreatDOMDetails_EmptyReportNotSent) {
   // Send both sets of nodes, from different render frames.
   auto trimmed_report = std::make_unique<ThreatDetailsWrap>(
       ui_manager_.get(), web_contents(), resource, nullptr, history_service(),
-      referrer_chain_provider_.get(),
+      user_population_callback(), referrer_chain_provider_.get(),
       /*trim_to_ad_tags=*/true);
   trimmed_report->StartCollection();
 
@@ -1381,7 +1460,7 @@ TEST_F(ThreatDetailsTest, ThreatWithRedirectUrl) {
 
   auto report = std::make_unique<ThreatDetailsWrap>(
       ui_manager_.get(), web_contents(), resource, nullptr, history_service(),
-      referrer_chain_provider_.get());
+      user_population_callback(), referrer_chain_provider_.get());
   report->StartCollection();
 
   std::string serialized = WaitForThreatDetailsDone(
@@ -1398,6 +1477,8 @@ TEST_F(ThreatDetailsTest, ThreatWithRedirectUrl) {
   expected.set_referrer_url("");
   expected.set_did_proceed(true);
   expected.set_repeat_visit(false);
+  *expected.mutable_population() =
+      safe_browsing::GetUserPopulationForProfile(profile());
 
   ClientSafeBrowsingReportRequest::Resource* pb_resource =
       expected.add_resources();
@@ -1455,7 +1536,7 @@ TEST_F(ThreatDetailsTest, ThreatOnMainPageLoadBlocked) {
   // Start ThreatDetails collection.
   auto report = std::make_unique<ThreatDetailsWrap>(
       ui_manager_.get(), web_contents(), resource, nullptr, history_service(),
-      referrer_chain_provider_.get());
+      user_population_callback(), referrer_chain_provider_.get());
   report->StartCollection();
 
   // Simulate clicking don't proceed.
@@ -1477,6 +1558,8 @@ TEST_F(ThreatDetailsTest, ThreatOnMainPageLoadBlocked) {
   expected.set_referrer_url(kReferrerURL);
   expected.set_did_proceed(false);
   expected.set_repeat_visit(true);
+  *expected.mutable_population() =
+      safe_browsing::GetUserPopulationForProfile(profile());
 
   ClientSafeBrowsingReportRequest::Resource* pb_resource =
       expected.add_resources();
@@ -1517,7 +1600,7 @@ TEST_F(ThreatDetailsTest, ThreatWithPendingLoad) {
   // Do ThreatDetails collection.
   auto report = std::make_unique<ThreatDetailsWrap>(
       ui_manager_.get(), web_contents(), resource, nullptr, history_service(),
-      referrer_chain_provider_.get());
+      user_population_callback(), referrer_chain_provider_.get());
   report->StartCollection();
 
   std::string serialized = WaitForThreatDetailsDone(
@@ -1537,6 +1620,8 @@ TEST_F(ThreatDetailsTest, ThreatWithPendingLoad) {
       GURL(kReferrerURL).DeprecatedGetOriginAsURL().spec());
   expected.set_did_proceed(true);
   expected.set_repeat_visit(true);
+  *expected.mutable_population() =
+      safe_browsing::GetUserPopulationForProfile(profile());
 
   ClientSafeBrowsingReportRequest::Resource* pb_resource =
       expected.add_resources();
@@ -1569,7 +1654,7 @@ TEST_F(ThreatDetailsTest, ThreatOnFreshTab) {
   // Do ThreatDetails collection.
   auto report = std::make_unique<ThreatDetailsWrap>(
       ui_manager_.get(), web_contents(), resource, nullptr, history_service(),
-      referrer_chain_provider_.get());
+      user_population_callback(), referrer_chain_provider_.get());
   report->StartCollection();
 
   std::string serialized = WaitForThreatDetailsDone(
@@ -1583,6 +1668,8 @@ TEST_F(ThreatDetailsTest, ThreatOnFreshTab) {
   expected.set_url(kThreatURL);
   expected.set_did_proceed(true);
   expected.set_repeat_visit(true);
+  *expected.mutable_population() =
+      safe_browsing::GetUserPopulationForProfile(profile());
 
   ClientSafeBrowsingReportRequest::Resource* pb_resource =
       expected.add_resources();
@@ -1604,7 +1691,8 @@ TEST_F(ThreatDetailsTest, HTTPCache) {
 
   auto report = std::make_unique<ThreatDetailsWrap>(
       ui_manager_.get(), web_contents(), resource, test_shared_loader_factory_,
-      history_service(), referrer_chain_provider_.get());
+      history_service(), user_population_callback(),
+      referrer_chain_provider_.get());
   report->StartCollection();
 
   SimulateFillCache(kThreatURL);
@@ -1630,6 +1718,8 @@ TEST_F(ThreatDetailsTest, HTTPCache) {
   expected.set_page_url(kLandingURL);
   expected.set_referrer_url("");
   expected.set_did_proceed(true);
+  *expected.mutable_population() =
+      safe_browsing::GetUserPopulationForProfile(profile());
 
   ClientSafeBrowsingReportRequest::Resource* pb_resource =
       expected.add_resources();
@@ -1685,7 +1775,8 @@ TEST_F(ThreatDetailsTest, HttpsResourceSanitization) {
 
   auto report = std::make_unique<ThreatDetailsWrap>(
       ui_manager_.get(), web_contents(), resource, test_shared_loader_factory_,
-      history_service(), referrer_chain_provider_.get());
+      history_service(), user_population_callback(),
+      referrer_chain_provider_.get());
   report->StartCollection();
 
   SimulateFillCache(kThreatURLHttps);
@@ -1711,6 +1802,8 @@ TEST_F(ThreatDetailsTest, HttpsResourceSanitization) {
   expected.set_page_url(kLandingURL);
   expected.set_referrer_url("");
   expected.set_did_proceed(true);
+  *expected.mutable_population() =
+      safe_browsing::GetUserPopulationForProfile(profile());
 
   ClientSafeBrowsingReportRequest::Resource* pb_resource =
       expected.add_resources();
@@ -1763,7 +1856,8 @@ TEST_F(ThreatDetailsTest, HTTPCacheNoEntries) {
 
   auto report = std::make_unique<ThreatDetailsWrap>(
       ui_manager_.get(), web_contents(), resource, test_shared_loader_factory_,
-      history_service(), referrer_chain_provider_.get());
+      history_service(), user_population_callback(),
+      referrer_chain_provider_.get());
   report->StartCollection();
 
   // Simulate no cache entry found.
@@ -1797,6 +1891,8 @@ TEST_F(ThreatDetailsTest, HTTPCacheNoEntries) {
   expected.set_page_url(kLandingURL);
   expected.set_referrer_url("");
   expected.set_did_proceed(false);
+  *expected.mutable_population() =
+      safe_browsing::GetUserPopulationForProfile(profile());
 
   ClientSafeBrowsingReportRequest::Resource* pb_resource =
       expected.add_resources();
@@ -1831,7 +1927,7 @@ TEST_F(ThreatDetailsTest, HistoryServiceUrls) {
                true /* is_subresource */, GURL(kThreatURL), &resource);
   auto report = std::make_unique<ThreatDetailsWrap>(
       ui_manager_.get(), web_contents(), resource, nullptr, history_service(),
-      referrer_chain_provider_.get());
+      user_population_callback(), referrer_chain_provider_.get());
   report->StartCollection();
 
   // The redirects collection starts after the IPC from the DOM is fired.
@@ -1857,6 +1953,8 @@ TEST_F(ThreatDetailsTest, HistoryServiceUrls) {
   expected.set_referrer_url("");
   expected.set_did_proceed(true);
   expected.set_repeat_visit(true);
+  *expected.mutable_population() =
+      safe_browsing::GetUserPopulationForProfile(profile());
 
   ClientSafeBrowsingReportRequest::Resource* pb_resource =
       expected.add_resources();
