@@ -9,6 +9,8 @@ assert(is_chromeos_ash,
 
 source_set("repository") {
   sources = [
+    "fast_pair/device_image_store.cc",
+    "fast_pair/device_image_store.h",
     "fast_pair/device_metadata.cc",
     "fast_pair/device_metadata.h",
     "fast_pair/device_metadata_fetcher.cc",
@@ -42,6 +44,7 @@ source_set("repository") {
     "//ash/quick_pair/proto:fastpair_proto",
     "//ash/services/quick_pair/public/cpp",
     "//base",
+    "//chromeos/services/bluetooth_config/public/cpp",
     "//components/image_fetcher/core",
     "//components/prefs",
     "//components/signin/public/identity_manager",
@@ -52,6 +55,7 @@ source_set("repository") {
     "//services/network/public/cpp",
     "//services/network/public/mojom:url_loader_base",
     "//third_party/protobuf:protobuf_lite",
+    "//ui/base",
   ]
 }
 
@@ -84,6 +88,7 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "fast_pair/device_image_store_unittest.cc",
     "fast_pair/device_metadata_fetcher_unittest.cc",
     "fast_pair/pending_write_store_unittest.cc",
     "fast_pair/saved_device_registry_unittest.cc",
@@ -92,13 +97,16 @@ source_set("unit_tests") {
   deps = [
     ":repository",
     ":test_support",
+    "//ash:test_support",
     "//ash/quick_pair/common",
     "//ash/quick_pair/common:test_support",
     "//ash/quick_pair/proto:fastpair_proto",
     "//base",
     "//base/test:test_support",
+    "//chromeos/services/bluetooth_config/public/cpp",
     "//components/prefs:test_support",
     "//services/data_decoder/public/cpp:test_support",
     "//testing/gtest",
+    "//ui/gfx:test_support",
   ]
 }

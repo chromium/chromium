@@ -20,6 +20,7 @@
 #include "ash/quick_pair/message_stream/message_stream_lookup_impl.h"
 #include "ash/quick_pair/pairing/pairer_broker_impl.h"
 #include "ash/quick_pair/pairing/retroactive_pairing_detector_impl.h"
+#include "ash/quick_pair/repository/fast_pair/device_image_store.h"
 #include "ash/quick_pair/repository/fast_pair/pending_write_store.h"
 #include "ash/quick_pair/repository/fast_pair/saved_device_registry.h"
 #include "ash/quick_pair/repository/fast_pair_repository_impl.h"
@@ -115,8 +116,7 @@ void Mediator::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 
 // static
 void Mediator::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
-  // TODO(dclasson): register future local state prefs here.
-  return;
+  DeviceImageStore::RegisterLocalStatePrefs(registry);
 }
 
 chromeos::bluetooth_config::FastPairDelegate* Mediator::GetFastPairDelegate() {

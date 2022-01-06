@@ -2193,6 +2193,7 @@ component("ash") {
     "//ash/assistant/ui",
     "//ash/quick_pair/feature_status_tracker",
     "//ash/quick_pair/pairing",
+    "//ash/quick_pair/repository",
     "//ash/quick_pair/ui",
   ]
 

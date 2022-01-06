@@ -6,7 +6,6 @@
 #define ASH_QUICK_PAIR_REPOSITORY_FAST_PAIR_REPOSITORY_IMPL_H_
 
 #include "ash/quick_pair/common/device.h"
-#include "ash/quick_pair/repository/fast_pair/device_metadata.h"
 #include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
@@ -26,6 +25,7 @@ class UserReadDevicesResponse;
 namespace ash {
 namespace quick_pair {
 
+class DeviceImageStore;
 class DeviceMetadataFetcher;
 class FastPairImageDecoder;
 class FootprintsFetcher;
@@ -83,6 +83,7 @@ class FastPairRepositoryImpl : public FastPairRepository {
   std::unique_ptr<DeviceMetadataFetcher> device_metadata_fetcher_;
   std::unique_ptr<FootprintsFetcher> footprints_fetcher_;
   std::unique_ptr<FastPairImageDecoder> image_decoder_;
+  std::unique_ptr<DeviceImageStore> device_image_store_;
   std::unique_ptr<SavedDeviceRegistry> saved_device_registry_;
 
   base::flat_map<std::string, std::unique_ptr<DeviceMetadata>> metadata_cache_;
