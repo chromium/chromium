@@ -12,6 +12,7 @@ enum ConnectionType {
   CRD_CONNECTION_UNKNOWN = 0;
   CRD_CONNECTION_DIRECT = 1;
   CRD_CONNECTION_RELAY = 2;
+  CRD_CONNECTION_STUN = 3;
 }
 
 // To be reported when host is started.
