@@ -1175,6 +1175,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Arc.NearbyShare.FileStreamComplete.TimeDelta" units="ms"
+    expires_after="2022-07-01">
+  <owner>alanding@google.com</owner>
+  <owner>arc-app-dev@google.com</owner>
+  <summary>
+    Time taken by ARC Nearby Share to transfer file streams from ARC's virtual
+    file system in ContentProviders to Chrome's native file system. The time is
+    only recorded when file stream completes successfully.
+  </summary>
+</histogram>
+
 <histogram name="Arc.NearbyShare.FileStreamFailure" enum="PlatformFileError"
     expires_after="2022-03-23">
   <owner>ttefera@google.com</owner>

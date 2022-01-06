@@ -29,4 +29,12 @@ void UpdateNearbyShareFileStreamError(base::File::Error result) {
   base::UmaHistogramExactLinear("Arc.NearbyShare.FileStreamFailure", -result,
                                 -base::File::FILE_ERROR_MAX);
 }
+
+void UpdateNearbyShareFileStreamCompleteTime(
+    const base::TimeDelta& elapsed_time) {
+  base::UmaHistogramCustomTimes("Arc.NearbyShare.FileStreamComplete.TimeDelta",
+                                elapsed_time,
+                                /*min=*/base::Milliseconds(1),
+                                /*max=*/base::Minutes(30), /*buckets=*/50);
+}
 }  // namespace arc

@@ -13,6 +13,7 @@
 #include "ash/components/arc/mojom/nearby_share.mojom.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/arc/nearby_share/share_info_file_stream_adapter.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -180,6 +181,9 @@ class ShareInfoFileHandler
 
   // Timeout timer for asynchronous file streaming tasks.
   base::OneShotTimer file_streaming_timer_;
+
+  // Time when the file streaming is started.
+  base::TimeTicks file_streaming_started_;
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.
