@@ -171,6 +171,10 @@ class TestingProfile : public Profile {
     // Sets the UserProfileName to be used by this profile.
     void SetProfileName(const std::string& profile_name);
 
+    // Sets the SharedURLLoaderFactory to be used by this profile.
+    void SetSharedURLLoaderFactory(
+        scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+
     void OverridePolicyConnectorIsManagedForTesting(bool is_managed);
 
     // Creates the TestingProfile using previously-set settings.
@@ -212,6 +216,7 @@ class TestingProfile : public Profile {
     TestingFactories testing_factories_;
     std::string profile_name_{kDefaultProfileUserName};
     absl::optional<bool> override_policy_connector_is_managed_;
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   };
 
   // Multi-profile aware constructor that takes the path to a directory managed
@@ -253,7 +258,8 @@ class TestingProfile : public Profile {
       TestingFactories testing_factories,
       const std::string& profile_name,
       absl::optional<bool> override_policy_connector_is_managed,
-      absl::optional<OTRProfileID> otr_profile_id);
+      absl::optional<OTRProfileID> otr_profile_id,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   ~TestingProfile() override;
 
@@ -521,6 +527,8 @@ class TestingProfile : public Profile {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   raw_ptr<TestingPrefStore> supervised_user_pref_store_ = nullptr;
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
+
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 };
 
 #endif  // CHROME_TEST_BASE_TESTING_PROFILE_H_
