@@ -601,6 +601,13 @@
         {}
        ]
       ],
+      "hidden-execcommand-crash.html": [
+       "67e297e6520b49325dd6091ca474c0151af5e0ea",
+       [
+        null,
+        {}
+       ]
+      ],
       "hidden-pseudo-element-removed-crash.html": [
        "62e38f214be715299f59bfc5f85697d28dfe4e92",
        [
@@ -85202,6 +85209,71 @@
        [
         [
          "/css/css-color/t44-currentcolor-inherited-c-ref.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "tagged-images-001.html": [
+      "0af9c0ce51e109588772a291e7b0250549c7fbe8",
+      [
+       null,
+       [
+        [
+         "/css/css-color/009900-image-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "tagged-images-002.html": [
+      "b7c76b35502e13e65c4e8204ea1f05d15940f0ea",
+      [
+       null,
+       [
+        [
+         "/css/css-color/009900-image-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "tagged-images-003.html": [
+      "09ce9e9418f4e3edfb0977b52b24906f45e5a715",
+      [
+       null,
+       [
+        [
+         "/css/css-color/greensquare-090-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "tagged-images-004.html": [
+      "9e67776f680901d05c6c89df044f8b201f33d600",
+      [
+       null,
+       [
+        [
+         "/css/css-color/greensquare-090-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "untagged-images-001.html": [
+      "a1aafb759c0d5994cc45ddd9422a1f7e39fa66e8",
+      [
+       null,
+       [
+        [
+         "/css/css-color/009900-tagged-image-ref.html",
          "=="
         ]
        ],
@@ -242061,6 +242133,14 @@
      }
     },
     "css-color": {
+     "009900-image-ref.html": [
+      "cf1ba5c48f70bba18ac44e3acf35378aa4f62fd5",
+      []
+     ],
+     "009900-tagged-image-ref.html": [
+      "21086fc62185a65da89513daf0c8bc1b66688064",
+      []
+     ],
      "LICENSE": [
       "d47f50cca8a2d9dc40dee384ae256f8aecf44e0a",
       []
@@ -242327,6 +242407,20 @@
       "a1574caa30328d9b053283515f9d2b54d6326a54",
       []
      ],
+     "support": {
+      "009900-sRGB.png": [
+       "d6b0c96642f2552a75fb2be54b3bb3a3d49730dd",
+       []
+      ],
+      "009900.png": [
+       "7ddaa10b44e83d5a64a66370da1b1dcaa1ea7ec4",
+       []
+      ],
+      "swap-990000-iCCP.png": [
+       "766d0f76797a31c3d1c041680b8d04dfcb72ab1a",
+       []
+      ]
+     },
      "t31-color-currentColor-b-ref.html": [
       "3013c7050c3c6f057e295923d43c87da6c09751f",
       []
@@ -288034,10 +288128,6 @@
        "377c7296a781adb8ce5792cda50a4ded28472339",
        []
       ],
-      "local-storage.tentative.https.window-expected.txt": [
-       "0f6267c7c83b6d4183dc8d273e43e12b80fe07fc",
-       []
-      ],
       "require-corp-embed-anonymous-iframe.tentative.https.window.js.headers": [
        "6604450991a122e3e241e40b1b9e0516c525389d",
        []
@@ -309252,10 +309342,6 @@
     ],
     "OWNERS": [
      "3f8456354bd08a3cb87e767ca0eb508603f45f1b",
-     []
-    ],
-    "basic-dedicated-worker-expected.txt": [
-     "12e06f3594177c46c8e01fcd3873c83d8d03cc0b",
      []
     ],
     "basic-popup-and-iframe-tests.https-expected.txt": [
@@ -495964,7 +496050,7 @@
    },
    "secure-contexts": {
     "basic-dedicated-worker.html": [
-     "581d761f5e795a2734f306c239d4a96220d4219a",
+     "ecd6138ac25d575a76a8625323513b9ec42646d6",
      [
       null,
       {}
