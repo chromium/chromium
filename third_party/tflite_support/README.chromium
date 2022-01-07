@@ -33,6 +33,8 @@ is a no-op in chromium builds and upsets clang.
 09) Remove unbuilt files that triggered checkdeps warnings, and fix file perms.
 10) Remove memory mapped file support in external_file_handler.cc since it is
 only available on POSIX systems.
+11) Run clang-format.
+12) Remove an unneeded static initializer.
 
 Update Process:
 1) Clone the tflite-support github repo at the desired commit into src/

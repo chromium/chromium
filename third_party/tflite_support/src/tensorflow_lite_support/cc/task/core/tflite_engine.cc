@@ -32,21 +32,6 @@ namespace tflite {
 namespace task {
 namespace core {
 
-#ifdef __ANDROID__
-// https://github.com/opencv/opencv/issues/14906
-// "ios_base::Init" object is not a part of Android's "iostream" header (in case
-// of clang toolchain, NDK 20).
-//
-// Ref1:
-// https://en.cppreference.com/w/cpp/io/ios_base/Init
-//       The header <iostream> behaves as if it defines (directly or indirectly)
-//       an instance of std::ios_base::Init with static storage duration
-//
-// Ref2:
-// https://github.com/gcc-mirror/gcc/blob/gcc-8-branch/libstdc%2B%2B-v3/include/std/iostream#L73-L74
-static std::ios_base::Init s_iostream_initializer;
-#endif
-
 using ::absl::StatusCode;
 using ::tflite::proto::ComputeSettings;
 using ::tflite::support::CreateStatusWithPayload;
