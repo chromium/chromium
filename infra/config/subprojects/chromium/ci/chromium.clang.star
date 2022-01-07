@@ -359,24 +359,6 @@ ci.builder(
 )
 
 ci.builder(
-    name = "ToTWinCFI",
-    console_view_entry = consoles.console_view_entry(
-        category = "CFI|Win",
-        short_name = "x86",
-    ),
-    os = os.WINDOWS_ANY,
-)
-
-ci.builder(
-    name = "ToTWinCFI64",
-    console_view_entry = consoles.console_view_entry(
-        category = "CFI|Win",
-        short_name = "x64",
-    ),
-    os = os.WINDOWS_ANY,
-)
-
-ci.builder(
     name = "ToTWindowsCoverage",
     console_view_entry = consoles.console_view_entry(
         category = "ToT Code Coverage",

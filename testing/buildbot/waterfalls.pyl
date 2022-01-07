@@ -1997,24 +1997,6 @@
           'all',
         ],
       },
-      'ToTWinCFI': {
-        'test_suites': {
-          'gtest_tests': 'chromium_win_gtests',
-          'isolated_scripts': 'win_specific_isolated_scripts',
-        },
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
-      'ToTWinCFI64': {
-        'test_suites': {
-          'gtest_tests': 'chromium_win_gtests',
-          'isolated_scripts': 'win_specific_isolated_scripts',
-        },
-        'additional_compile_targets': [
-          'all',
-        ],
-      },
       'ToTWinOfficial': {
         'mixins': [
           'chrome-tester-service-account',

@@ -210,8 +210,6 @@
       'ToTWin64(dll)': 'clang_tot_shared_release_dcheck',
       'ToTWin64PGO': 'clang_tot_official_pgo',
       'ToTWinASanLibfuzzer': 'libfuzzer_windows_asan_clang_tot_release_bot',
-      'ToTWinCFI': 'clang_tot_win_cfi_full_cfi_diag_thin_lto_release_static_dcheck_always_on_x86',
-      'ToTWinCFI64': 'clang_tot_win_cfi_full_cfi_diag_thin_lto_release_static_dcheck_always_on',
       'ToTWindowsCoverage': 'clang_tot_coverage_minimal_symbols_release',
       'ToTiOS': 'ios_clang_tot_xctest',
       'ToTiOSDevice': 'ios_clang_device_tot_xctest',
@@ -1992,16 +1990,6 @@
 
     'clang_tot_cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on': [
       'clang_tot', 'cfi_full', 'cfi_icall', 'cfi_diag', 'thin_lto', 'release', 'static', 'dcheck_always_on',
-    ],
-
-    'clang_tot_win_cfi_full_cfi_diag_thin_lto_release_static_dcheck_always_on': [
-      'clang_tot', 'cfi_full', 'cfi_diag', 'thin_lto', 'release', 'static',
-      'dcheck_always_on', 'win_linker_timing',
-    ],
-
-    'clang_tot_win_cfi_full_cfi_diag_thin_lto_release_static_dcheck_always_on_x86': [
-      'clang_tot', 'cfi_full', 'cfi_diag', 'thin_lto', 'release', 'static',
-      'dcheck_always_on', 'x86', 'win_linker_timing',
     ],
 
     'clang_tot_ubsan_no_recover_hack_static_release': [

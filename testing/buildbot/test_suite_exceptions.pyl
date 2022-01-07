@@ -2367,8 +2367,6 @@
       'ToTWin64',
       'ToTWin64(dbg)',
       'ToTWin64(dll)',
-      'ToTWinCFI',
-      'ToTWinCFI64',
     ],
   },
   'overlay_prioritization_viz_unittests': {
