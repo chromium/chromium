@@ -241,8 +241,11 @@ DragOperation DragDropController::StartDragAndDrop(
       !pending_long_tap_.get()) {
     // If drag cancel animation is running, this cleanup is done when the
     // animation completes.
-    if (drag_source_window_)
+    if (drag_source_window_) {
+      // A check to catch an UAF issue like crbug.com/1282480 on non asan build.
+      DCHECK(!drag_source_window_->is_destroying());
       drag_source_window_->RemoveObserver(this);
+    }
     drag_source_window_ = nullptr;
   }
 
@@ -703,9 +706,14 @@ void DragDropController::ForwardPendingLongTap() {
 void DragDropController::Cleanup() {
   for (aura::client::DragDropClientObserver& observer : observers_)
     observer.OnDragEnded();
-  if (drag_window_)
+
+  // Do not remove observer `the drag_window_1 is same as `drag_source_window_`.
+  // `drag_source_window_` is still necessary to process long tab and the
+  // observer will be reset when `drag_source_window_` is destroyed.
+  if (drag_window_ && drag_window_ != drag_source_window_)
     drag_window_->RemoveObserver(this);
   drag_window_ = nullptr;
+
   drag_data_.reset();
   allowed_operations_ = 0;
   tab_drag_drop_delegate_.reset();
