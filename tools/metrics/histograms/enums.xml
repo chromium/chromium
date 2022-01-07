@@ -26828,6 +26828,13 @@ Called by update_document_policy_enum.py.-->
   <int value="8" label="TPM unreachable">error: cryptohomed unreachable</int>
 </enum>
 
+<enum name="EnterpriseAutoEnrollmentControllerTimeoutReport">
+  <summary>Timeout status for AutoEnrollmentController</summary>
+  <int value="0" label="Timeout cancelled"/>
+  <int value="1" label="Timeout encountered during forced re-enrollment"/>
+  <int value="2" label="Timeout on a consumer device"/>
+</enum>
+
 <enum name="EnterpriseCheckError">
   <summary>
     Defined as DomainCheckErrors in
