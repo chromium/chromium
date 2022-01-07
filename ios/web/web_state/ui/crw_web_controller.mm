@@ -43,6 +43,7 @@
 #import "ios/web/public/deprecated/crw_js_injection_evaluator.h"
 #import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #include "ios/web/public/js_messaging/web_frame_util.h"
+#import "ios/web/public/permissions/permissions.h"
 #import "ios/web/public/ui/crw_web_view_scroll_view_proxy.h"
 #import "ios/web/public/ui/page_display_state.h"
 #import "ios/web/public/web_client.h"
@@ -467,11 +468,19 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
 }
 
 - (NSDictionary*)WKWebViewObservers {
-  return @{
-    @"serverTrust" : @"webViewSecurityFeaturesDidChange",
-    @"hasOnlySecureContent" : @"webViewSecurityFeaturesDidChange",
-    @"title" : @"webViewTitleDidChange",
-  };
+  NSMutableDictionary<NSString*, NSString*>* observers =
+      [[NSMutableDictionary alloc] initWithDictionary:@{
+        @"serverTrust" : @"webViewSecurityFeaturesDidChange",
+        @"hasOnlySecureContent" : @"webViewSecurityFeaturesDidChange",
+        @"title" : @"webViewTitleDidChange",
+      }];
+  if (web::features::IsMediaPermissionsControlEnabled()) {
+    [observers addEntriesFromDictionary:@{
+      @"cameraCaptureState" : @"webViewCameraCaptureStateDidChange",
+      @"microphoneCaptureState" : @"webViewMicrophoneCaptureStateDidChange",
+    }];
+  }
+  return observers;
 }
 
 - (GURL)currentURL {
@@ -883,6 +892,63 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   }
   return NO;
 }
+
+#if !TARGET_OS_MACCATALYST
+- (web::PermissionState)stateForPermission:(web::Permission)permission {
+  WKMediaCaptureState captureState;
+  switch (permission) {
+    case web::Permission::CAMERA:
+      captureState = self.webView.cameraCaptureState;
+      break;
+    case web::Permission::MICROPHONE:
+      captureState = self.webView.microphoneCaptureState;
+      break;
+  }
+  switch (captureState) {
+    case WKMediaCaptureStateActive:
+      return web::PermissionState::ALLOWED;
+    case WKMediaCaptureStateMuted:
+      return web::PermissionState::BLOCKED;
+    case WKMediaCaptureStateNone:
+      return web::PermissionState::NOT_ACCESSIBLE;
+  }
+}
+
+- (void)setState:(web::PermissionState)state
+    forPermission:(web::Permission)permission {
+  WKMediaCaptureState captureState;
+  switch (state) {
+    case web::PermissionState::ALLOWED:
+      captureState = WKMediaCaptureStateActive;
+      break;
+    case web::PermissionState::BLOCKED:
+      captureState = WKMediaCaptureStateMuted;
+      break;
+    case web::PermissionState::NOT_ACCESSIBLE:
+      captureState = WKMediaCaptureStateNone;
+      break;
+  }
+  switch (permission) {
+    case web::Permission::CAMERA:
+      [self.webView setCameraCaptureState:captureState completionHandler:nil];
+      break;
+    case web::Permission::MICROPHONE:
+      [self.webView setMicrophoneCaptureState:captureState
+                            completionHandler:nil];
+      break;
+  }
+}
+#else
+// Stub getter implementation for mac catalyst build.
+- (web::PermissionState)stateForPermission:(web::Permission)permission {
+  return web::PermissionState::NOT_ACCESSIBLE;
+}
+
+// Stub setter implementation for mac catalyst build.
+- (void)setState:(web::PermissionState)state
+    forPermission:(web::Permission)permission {
+}
+#endif
 
 - (NSData*)sessionStateData {
   if (@available(iOS 15, *)) {
@@ -1699,6 +1765,16 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
     [self.navigationHandler
         setLastCommittedNavigationItemTitle:self.webView.title];
   }
+}
+
+// Called when WKWebView cameraCaptureState property has changed.
+- (void)webViewCameraCaptureStateDidChange API_AVAILABLE(ios(15.0)) {
+  self.webStateImpl->OnStateChangedForPermission(web::Permission::CAMERA);
+}
+
+// Called when WKWebView microphoneCaptureState property has changed.
+- (void)webViewMicrophoneCaptureStateDidChange API_AVAILABLE(ios(15.0)) {
+  self.webStateImpl->OnStateChangedForPermission(web::Permission::MICROPHONE);
 }
 
 #pragma mark - CRWWebViewHandlerDelegate

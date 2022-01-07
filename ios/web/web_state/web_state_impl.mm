@@ -11,6 +11,7 @@
 #import "base/feature_list.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/permissions/permissions.h"
 #import "ios/web/session/session_certificate_policy_cache_impl.h"
 #import "ios/web/web_state/global_web_state_event_tracker.h"
 #import "ios/web/web_state/web_state_impl_realized_web_state.h"
@@ -138,6 +139,10 @@ void WebStateImpl::OnPageLoaded(const GURL& url, bool load_success) {
 void WebStateImpl::OnFaviconUrlUpdated(
     const std::vector<FaviconURL>& candidates) {
   RealizedState()->OnFaviconUrlUpdated(candidates);
+}
+
+void WebStateImpl::OnStateChangedForPermission(Permission permission) {
+  RealizedState()->OnStateChangedForPermission(permission);
 }
 
 NavigationManagerImpl& WebStateImpl::GetNavigationManagerImpl() {
@@ -546,6 +551,17 @@ bool WebStateImpl::SetSessionStateData(NSData* data) {
 
 NSData* WebStateImpl::SessionStateData() {
   return LIKELY(pimpl_) ? pimpl_->SessionStateData() : nil;
+}
+
+PermissionState WebStateImpl::GetStateForPermission(
+    Permission permission) const {
+  return LIKELY(pimpl_) ? pimpl_->GetStateForPermission(permission)
+                        : PermissionState::NOT_ACCESSIBLE;
+}
+
+void WebStateImpl::SetStateForPermission(PermissionState state,
+                                         Permission permission) {
+  RealizedState()->SetStateForPermission(state, permission);
 }
 
 void WebStateImpl::AddPolicyDecider(WebStatePolicyDecider* decider) {

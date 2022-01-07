@@ -802,6 +802,24 @@ NSData* WebStateImpl::RealizedWebState::SessionStateData() const {
   return [web_controller_ sessionStateData];
 }
 
+PermissionState WebStateImpl::RealizedWebState::GetStateForPermission(
+    Permission permission) const {
+  return [web_controller_ stateForPermission:permission];
+}
+
+void WebStateImpl::RealizedWebState::SetStateForPermission(
+    PermissionState state,
+    Permission permission) {
+  [web_controller_ setState:state forPermission:permission];
+}
+
+void WebStateImpl::RealizedWebState::OnStateChangedForPermission(
+    Permission permission) {
+  for (auto& observer : observers()) {
+    observer.PermissionStateChanged(owner_, permission);
+  }
+}
+
 #pragma mark - NavigationManagerDelegate implementation
 
 void WebStateImpl::RealizedWebState::ClearDialogs() {
