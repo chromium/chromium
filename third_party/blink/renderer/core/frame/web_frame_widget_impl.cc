@@ -3691,32 +3691,57 @@ void WebFrameWidgetImpl::SelectAroundCaret(
     return;
   }
 
-  // TODO(crbug.com/1278134): Calculate extended adjustments.
-  bool did_select = false;
   int extended_start_adjust = 0;
   int extended_end_adjust = 0;
+  int word_start_adjust = 0;
+  int word_end_adjust = 0;
   blink::WebRange initial_range = focused_frame->SelectionRange();
   SetHandlingInputEvent(true);
-  if (!initial_range.IsNull()) {
-    did_select = focused_frame->SelectAroundCaret(
-        granularity, should_show_handle, should_show_context_menu);
-  }
 
-  if (!did_select) {
+  if (initial_range.IsNull()) {
     std::move(callback).Run(std::move(nullptr));
     return;
   }
 
-  blink::WebRange adjusted_range = focused_frame->SelectionRange();
-  DCHECK(!adjusted_range.IsNull());
+  // If the requested granularity is not word, still calculate the hypothetical
+  // word selection offsets. This is needed for contextual search to support
+  // legacy semantics for the word that was tapped.
+  blink::WebRange word_range;
+  if (granularity != mojom::blink::SelectionGranularity::kWord) {
+    word_range = focused_frame->GetWordSelectionRangeAroundCaret();
+  }
+
+  // Select around the caret at the specified |granularity|.
+  if (!focused_frame->SelectAroundCaret(granularity, should_show_handle,
+                                        should_show_context_menu)) {
+    std::move(callback).Run(std::move(nullptr));
+    return;
+  }
+
+  blink::WebRange extended_range = focused_frame->SelectionRange();
+  DCHECK(!extended_range.IsNull());
   extended_start_adjust =
-      adjusted_range.StartOffset() - initial_range.StartOffset();
-  extended_end_adjust = adjusted_range.EndOffset() - initial_range.EndOffset();
+      extended_range.StartOffset() - initial_range.StartOffset();
+  extended_end_adjust = extended_range.EndOffset() - initial_range.EndOffset();
+
+  if (granularity == mojom::blink::SelectionGranularity::kWord) {
+    // Since the requested granularity was word, simply set the word offset
+    // to be the same as the extended offset values.
+    word_start_adjust = extended_start_adjust;
+    word_end_adjust = extended_end_adjust;
+  } else {
+    // Calculate the word offset compared to the initial selection (caret).
+    DCHECK(!word_range.IsNull());
+    word_start_adjust = word_range.StartOffset() - initial_range.StartOffset();
+    word_end_adjust = word_range.EndOffset() - initial_range.EndOffset();
+  }
 
   SetHandlingInputEvent(false);
   auto result = mojom::blink::SelectAroundCaretResult::New();
   result->extended_start_adjust = extended_start_adjust;
   result->extended_end_adjust = extended_end_adjust;
+  result->word_start_adjust = word_start_adjust;
+  result->word_end_adjust = word_end_adjust;
   std::move(callback).Run(std::move(result));
 }
 #endif

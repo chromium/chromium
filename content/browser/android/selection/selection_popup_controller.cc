@@ -214,7 +214,8 @@ void SelectionPopupController::OnSelectAroundCaretAck(
     Java_SelectionPopupControllerImpl_onSelectAroundCaretFailure(env, obj);
   } else {
     Java_SelectionPopupControllerImpl_onSelectAroundCaretSuccess(
-        env, obj, result->extended_start_adjust, result->extended_end_adjust);
+        env, obj, result->extended_start_adjust, result->extended_end_adjust,
+        result->word_start_adjust, result->word_end_adjust);
   }
 }
 

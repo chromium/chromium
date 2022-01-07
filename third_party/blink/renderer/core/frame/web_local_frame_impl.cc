@@ -1429,6 +1429,11 @@ bool WebLocalFrameImpl::SelectAroundCaret(
                                : ContextMenuVisibility ::kNotVisible);
 }
 
+EphemeralRange WebLocalFrameImpl::GetWordSelectionRangeAroundCaret() const {
+  TRACE_EVENT0("blink", "WebLocalFrameImpl::getWordSelectionRangeAroundCaret");
+  return GetFrame()->Selection().GetWordSelectionRangeAroundCaret();
+}
+
 void WebLocalFrameImpl::SelectRange(const gfx::Point& base_in_viewport,
                                     const gfx::Point& extent_in_viewport) {
   MoveRangeSelection(base_in_viewport, extent_in_viewport);
