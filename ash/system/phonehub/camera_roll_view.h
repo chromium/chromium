@@ -41,10 +41,13 @@ class ASH_EXPORT CameraRollView : public views::View,
   bool should_disable_annimator_timer_for_test_ = false;
 
  private:
+  friend class CameraRollViewTest;
   FRIEND_TEST_ALL_PREFIXES(CameraRollViewTest, DisplayOptInView);
   FRIEND_TEST_ALL_PREFIXES(CameraRollViewTest, OptInAlready);
   FRIEND_TEST_ALL_PREFIXES(CameraRollViewTest, RightAfterOptIn);
   FRIEND_TEST_ALL_PREFIXES(CameraRollViewTest, ViewLayout);
+  FRIEND_TEST_ALL_PREFIXES(CameraRollViewTest, ImageThumbnail);
+  FRIEND_TEST_ALL_PREFIXES(CameraRollViewTest, VideoThumbnail);
 
   class CameraRollItemsView : public views::View {
    public:
@@ -64,6 +67,8 @@ class ASH_EXPORT CameraRollView : public views::View,
 
    private:
     FRIEND_TEST_ALL_PREFIXES(CameraRollViewTest, ViewLayout);
+    FRIEND_TEST_ALL_PREFIXES(CameraRollViewTest, ImageThumbnail);
+    FRIEND_TEST_ALL_PREFIXES(CameraRollViewTest, VideoThumbnail);
 
     gfx::Point GetCameraRollItemPosition(int index);
     void CalculateIdealBounds();

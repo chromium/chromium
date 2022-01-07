@@ -7,6 +7,8 @@
 #include "ash/components/phonehub/camera_roll_item.h"
 #include "ash/components/phonehub/fake_camera_roll_manager.h"
 #include "ash/components/phonehub/fake_user_action_recorder.h"
+#include "ash/system/phonehub/camera_roll_thumbnail.h"
+#include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/test/ash_test_base.h"
 #include "camera_roll_view.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -85,12 +87,36 @@ class CameraRollViewTest : public AshTestBase {
     return items;
   }
 
-  const views::View* GetItemsView() const {
-    return camera_roll_view()->children().at(1);
+  const std::vector<phonehub::CameraRollItem> CreateSingleItemWithType(
+      bool is_video) {
+    phonehub::proto::CameraRollItemMetadata metadata;
+    metadata.set_key("key");
+    metadata.set_last_modified_millis(1577865600);
+    metadata.set_file_size_bytes(123456);
+
+    if (is_video) {
+      metadata.set_mime_type("video/mp4");
+      metadata.set_file_name("fake_video.mp4");
+    } else {
+      metadata.set_mime_type("image/png");
+      metadata.set_file_name("fake_image.png");
+    }
+
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(1, 1);
+    gfx::Image thumbnail = gfx::Image::CreateFrom1xBitmap(bitmap);
+
+    return std::vector<phonehub::CameraRollItem>{
+        phonehub::CameraRollItem(metadata, thumbnail)};
   }
 
-  const views::MenuButton* GetThumbnailView(int index) const {
-    return static_cast<views::MenuButton*>(
+  CameraRollView::CameraRollItemsView* GetItemsView() const {
+    return static_cast<CameraRollView::CameraRollItemsView*>(
+        camera_roll_view()->children().at(1));
+  }
+
+  CameraRollThumbnail* GetThumbnailView(int index) const {
+    return static_cast<CameraRollThumbnail*>(
         GetItemsView()->children().at(index));
   }
 
@@ -189,16 +215,12 @@ TEST_F(CameraRollViewTest, ViewLayout) {
   // Test the layout size and positions of the items. If the layout is being
   // intentionally changed this test will need to be updated.
   fake_camera_roll_manager()->SetCurrentItems(CreateFakeItems(4));
-  EXPECT_EQ(camera_roll_view()->items_view_->CalculatePreferredSize(),
-            gfx::Size(328, 82));
-  EXPECT_EQ(camera_roll_view()->items_view_->GetCameraRollItemPosition(0),
-            gfx::Point(4, 4));
-  EXPECT_EQ(camera_roll_view()->items_view_->GetCameraRollItemPosition(1),
-            gfx::Point(86, 4));
-  EXPECT_EQ(camera_roll_view()->items_view_->GetCameraRollItemPosition(2),
-            gfx::Point(168, 4));
-  EXPECT_EQ(camera_roll_view()->items_view_->GetCameraRollItemPosition(3),
-            gfx::Point(250, 4));
+  GetItemsView()->Layout();
+  EXPECT_EQ(GetItemsView()->CalculatePreferredSize(), gfx::Size(328, 82));
+  EXPECT_EQ(GetThumbnailView(0)->bounds(), gfx::Rect(4, 4, 74, 74));
+  EXPECT_EQ(GetThumbnailView(1)->bounds(), gfx::Rect(86, 4, 74, 74));
+  EXPECT_EQ(GetThumbnailView(2)->bounds(), gfx::Rect(168, 4, 74, 74));
+  EXPECT_EQ(GetThumbnailView(3)->bounds(), gfx::Rect(250, 4, 74, 74));
 }
 
 TEST_F(CameraRollViewTest, AccessibleNameAndTooltip) {
@@ -214,6 +236,26 @@ TEST_F(CameraRollViewTest, AccessibleNameAndTooltip) {
   EXPECT_EQ(u"Recent photo 3 of 4.", GetThumbnailView(2)->GetTooltipText());
   EXPECT_EQ(u"Recent photo 4 of 4.", GetThumbnailView(3)->GetAccessibleName());
   EXPECT_EQ(u"Recent photo 4 of 4.", GetThumbnailView(3)->GetTooltipText());
+}
+
+TEST_F(CameraRollViewTest, ImageThumbnail) {
+  PresetCameraRollOptInState(/*has_been_dismissed=*/true,
+                             /*can_be_enabled=*/false);
+  fake_camera_roll_manager()->SetCurrentItems(
+      CreateSingleItemWithType(/*is_video=*/false));
+
+  EXPECT_EQ(GetThumbnailView(0)->GetMediaType(),
+            phone_hub_metrics::CameraRollMediaType::kPhoto);
+}
+
+TEST_F(CameraRollViewTest, VideoThumbnail) {
+  PresetCameraRollOptInState(/*has_been_dismissed=*/true,
+                             /*can_be_enabled=*/false);
+  fake_camera_roll_manager()->SetCurrentItems(
+      CreateSingleItemWithType(/*is_video=*/true));
+
+  EXPECT_EQ(GetThumbnailView(0)->GetMediaType(),
+            phone_hub_metrics::CameraRollMediaType::kVideo);
 }
 
 }  // namespace ash

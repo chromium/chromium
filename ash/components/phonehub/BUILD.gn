@@ -220,6 +220,7 @@ source_set("unit_tests") {
   sources = [
     "browser_tabs_model_controller_unittest.cc",
     "browser_tabs_model_unittest.cc",
+    "camera_roll_item_unittest.cc",
     "camera_roll_manager_impl_unittest.cc",
     "camera_roll_thumbnail_decoder_impl_unittest.cc",
     "connection_scheduler_impl_unittest.cc",

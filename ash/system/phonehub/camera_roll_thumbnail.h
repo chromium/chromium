@@ -36,6 +36,9 @@ class ASH_EXPORT CameraRollThumbnail : public views::MenuButton {
   const char* GetClassName() const override;
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(CameraRollViewTest, ImageThumbnail);
+  FRIEND_TEST_ALL_PREFIXES(CameraRollViewTest, VideoThumbnail);
+
   void ButtonPressed();
   ui::SimpleMenuModel* GetMenuModel();
   void DownloadRequested();
