@@ -75,7 +75,8 @@ content::WebUIDataSource* CreateComponentsUIHTMLSource(Profile* profile) {
           user_manager::UserManager::Get()->IsLoggedInAsPublicAccount()
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
       chromeos::LacrosService::Get()->init_params()->session_type ==
-          crosapi::mojom::SessionType::kPublicSession
+              crosapi::mojom::SessionType::kPublicSession ||
+          profile->IsGuestSession()
 #else
       profile->IsOffTheRecord()
 #endif
