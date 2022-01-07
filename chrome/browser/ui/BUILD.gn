@@ -534,6 +534,7 @@ static_library("ui") {
     "//components/permissions",
     "//components/policy/core/browser",
     "//components/pref_registry",
+    "//components/privacy_sandbox",
     "//components/privacy_sandbox:privacy_sandbox_prefs",
     "//components/profile_metrics",
     "//components/proxy_config",

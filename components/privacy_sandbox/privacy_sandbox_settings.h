@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_H_
-#define CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_H_
+#ifndef COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_H_
+#define COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_H_
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
@@ -11,7 +11,6 @@
 #include "base/time/time.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/policy/core/common/policy_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -33,7 +32,6 @@ class Origin;
 // they are allowed to run. While a basic on/off control is provided by this
 // service, embedders are expected to achieve fine-grained control though
 // the underlying preferences and content settings separately.
-// TODO (crbug.com/1154686): Move this service into components/
 class PrivacySandboxSettings : public KeyedService {
  public:
   class Observer {
@@ -135,4 +133,4 @@ class PrivacySandboxSettings : public KeyedService {
   raw_ptr<PrefService> pref_service_;
 };
 
-#endif  // CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_H_
+#endif  // COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_H_

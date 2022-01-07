@@ -11,10 +11,10 @@
 #include "base/task/cancelable_task_tracker.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/federated_learning/floc_id_provider.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/federated_learning/floc_sorting_lsh_clusters_service.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
+#include "components/privacy_sandbox/privacy_sandbox_settings.h"
 
 namespace federated_learning {
 

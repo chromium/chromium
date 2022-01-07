@@ -7,12 +7,12 @@
 #include "base/memory/singleton.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_settings.h"
 
 PrivacySandboxSettingsFactory* PrivacySandboxSettingsFactory::GetInstance() {
   return base::Singleton<PrivacySandboxSettingsFactory>::get();

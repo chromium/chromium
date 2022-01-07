@@ -110,7 +110,6 @@ source_set("unit_tests") {
     "//components/pref_registry:pref_registry",
     "//components/prefs",
     "//components/prefs:test_support",
-    "//components/privacy_sandbox:privacy_sandbox_prefs",
     "//components/sync_preferences:test_support",
     "//extensions/buildflags",
     "//net",
@@ -126,6 +125,7 @@ source_set("unit_tests") {
     deps += [
       "//components/policy:generated",
       "//components/policy/core/browser:test_support",
+      "//components/privacy_sandbox:privacy_sandbox_prefs",
       "//third_party/blink/public/common:headers",
     ]
   }

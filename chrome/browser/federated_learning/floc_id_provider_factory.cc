@@ -10,7 +10,6 @@
 #include "chrome/browser/federated_learning/floc_remote_permission_service.h"
 #include "chrome/browser/federated_learning/floc_remote_permission_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -18,6 +17,7 @@
 #include "components/federated_learning/features/features.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
+#include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/sync/driver/sync_service.h"
 #include "components/sync_user_events/user_event_service.h"
 

@@ -316,6 +316,7 @@ test("components_unittests") {
       "//components/permissions:unit_tests",
       "//components/permissions/prediction_service:unit_tests",
       "//components/policy/content:unit_tests",
+      "//components/privacy_sandbox:unit_tests",
       "//components/query_tiles:unit_tests",
 
       # TODO(chromium: 1169835) components / reporting / storage / resources: unit_tests

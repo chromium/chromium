@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_TEST_UTIL_H_
-#define CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_TEST_UTIL_H_
+#ifndef COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_TEST_UTIL_H_
+#define COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_TEST_UTIL_H_
 
 #include <string>
 
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace sync_preferences {
@@ -50,4 +50,4 @@ void SetupTestState(
 
 }  // namespace privacy_sandbox_test_util
 
-#endif  // CHROME_BROWSER_PRIVACY_SANDBOX_PRIVACY_SANDBOX_TEST_UTIL_H_
+#endif  // COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_TEST_UTIL_H_
