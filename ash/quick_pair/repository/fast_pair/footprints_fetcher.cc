@@ -4,6 +4,7 @@
 
 #include "ash/quick_pair/repository/fast_pair/footprints_fetcher.h"
 
+#include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/proto/fastpair_data.pb.h"
@@ -89,6 +90,7 @@ void FootprintsFetcher::OnGetComplete(
 
   if (!response_body) {
     QP_LOG(WARNING) << __func__ << ": No response.";
+    RecordFootprintsFetcherGetResult(/*success=*/false);
     std::move(callback).Run(absl::nullopt);
     return;
   }
@@ -96,10 +98,12 @@ void FootprintsFetcher::OnGetComplete(
   nearby::fastpair::UserReadDevicesResponse devices;
   if (!devices.ParseFromString(*response_body)) {
     QP_LOG(WARNING) << __func__ << ": Failed to parse.";
+    RecordFootprintsFetcherGetResult(/*success=*/false);
     std::move(callback).Run(absl::nullopt);
     return;
   }
 
+  RecordFootprintsFetcherGetResult(/*success=*/true);
   QP_LOG(VERBOSE)
       << __func__
       << ": Successfully retrived footprints data.  Paired devices:";
@@ -131,6 +135,7 @@ void FootprintsFetcher::OnPostComplete(
     std::unique_ptr<HttpFetcher> http_fetcher,
     std::unique_ptr<std::string> response_body) {
   QP_LOG(VERBOSE) << __func__;
+  RecordFootprintsFetcherPostResult(/*success=*/response_body ? true : false);
 
   if (!response_body) {
     QP_LOG(WARNING) << __func__ << ": No response.";
@@ -158,6 +163,7 @@ void FootprintsFetcher::OnDeleteComplete(
     std::unique_ptr<HttpFetcher> http_fetcher,
     std::unique_ptr<std::string> response_body) {
   QP_LOG(VERBOSE) << __func__;
+  RecordFootprintsFetcherDeleteResult(/*success=*/response_body ? true : false);
 
   if (!response_body) {
     QP_LOG(WARNING) << __func__ << ": No response.";

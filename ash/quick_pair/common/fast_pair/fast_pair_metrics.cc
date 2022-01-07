@@ -140,6 +140,12 @@ const char kMessageStreamConnectToServiceTime[] =
     "TotalConnectTime";
 const char kDeviceMetadataFetchResult[] =
     "Bluetooth.ChromeOS.FastPair.DeviceMetadataFetcher.Result";
+const char kFootprintsFetcherDeleteResult[] =
+    "Bluetooth.ChromeOS.FastPair.FootprintsFetcher.Delete.Result";
+const char kFootprintsFetcherPostResult[] =
+    "Bluetooth.ChromeOS.FastPair.FootprintsFetcher.Post.Result";
+const char kFootprintsFetcherGetResult[] =
+    "Bluetooth.ChromeOS.FastPair.FootprintsFetcher.Get.Result";
 
 }  // namespace
 
@@ -383,6 +389,18 @@ void RecordMessageStreamConnectToServiceTime(
 
 void RecordDeviceMetadataFetchResult(bool success) {
   base::UmaHistogramBoolean(kDeviceMetadataFetchResult, success);
+}
+
+void RecordFootprintsFetcherDeleteResult(bool success) {
+  base::UmaHistogramBoolean(kFootprintsFetcherDeleteResult, success);
+}
+
+void RecordFootprintsFetcherPostResult(bool success) {
+  base::UmaHistogramBoolean(kFootprintsFetcherPostResult, success);
+}
+
+void RecordFootprintsFetcherGetResult(bool success) {
+  base::UmaHistogramBoolean(kFootprintsFetcherGetResult, success);
 }
 
 }  // namespace quick_pair

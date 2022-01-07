@@ -179,6 +179,15 @@ void RecordMessageStreamConnectToServiceTime(
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordDeviceMetadataFetchResult(bool success);
 
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordFootprintsFetcherDeleteResult(bool success);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordFootprintsFetcherPostResult(bool success);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordFootprintsFetcherGetResult(bool success);
+
 }  // namespace quick_pair
 }  // namespace ash
 

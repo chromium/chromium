@@ -383,6 +383,45 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.FastPair.FootprintsFetcher.Delete.Result"
+    enum="BooleanSuccess" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the success or failure of a Delete request in the FootprintsFetcher.
+    A failure is considered no response from the server. A success is considered
+    a response that is able to be parsed. Emitted when the HTTP response is
+    received from the Footprints server.
+  </summary>
+</histogram>
+
+<histogram name="Bluetooth.ChromeOS.FastPair.FootprintsFetcher.Get.Result"
+    enum="BooleanSuccess" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the success or failure of a Get request in the FootprintsFetcher. A
+    failure is considered either no response, or a response that is unable to be
+    parsed. A success is considered a response that is able to be parsed.
+    Emitted when the HTTP response is received from the Footprints server.
+  </summary>
+</histogram>
+
+<histogram name="Bluetooth.ChromeOS.FastPair.FootprintsFetcher.Post.Result"
+    enum="BooleanSuccess" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the success or failure of a Post request in the FootprintsFetcher. A
+    failure is considered no response from the server. A success is considered a
+    response that is able to be parsed. Emitted when the HTTP response is
+    received from the Footprints server.
+  </summary>
+</histogram>
+
 <histogram name="Bluetooth.ChromeOS.FastPair.GattConnection.ErrorReason"
     enum="BluetoothDeviceConnectErrorCode" expires_after="2022-09-20">
   <owner>shanefitz@google.com</owner>
