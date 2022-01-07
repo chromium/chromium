@@ -14988,6 +14988,7 @@ Called by update_net_error_codes.py.-->
   <int value="15" label="CONTEXT_LOST_DIRECT_COMPOSITION_OVERLAY_FAILED"/>
   <int value="16" label="CONTEXT_LOST_SWAP_FAILED"/>
   <int value="17" label="CONTEXT_LOST_BEGIN_PAINT_FAILED"/>
+  <int value="18" label="CONTEXT_LOST_ALLOCATE_FRAME_BUFFERS_FAILED"/>
 </enum>
 
 <enum name="ContextMenuDelayedElementDetails">

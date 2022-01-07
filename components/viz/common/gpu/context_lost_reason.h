@@ -32,9 +32,10 @@ enum ContextLostReason {
   CONTEXT_LOST_DIRECT_COMPOSITION_OVERLAY_FAILED = 15,
   CONTEXT_LOST_SWAP_FAILED = 16,
   CONTEXT_LOST_BEGIN_PAINT_FAILED = 17,
+  CONTEXT_LOST_ALLOCATE_FRAME_BUFFERS_FAILED = 18,
   // Update kMaxValue here and <enum name="ContextLostReason"> in
   // tools/metrics/histograms/enum.xml when adding new values.
-  kMaxValue = CONTEXT_LOST_BEGIN_PAINT_FAILED
+  kMaxValue = CONTEXT_LOST_ALLOCATE_FRAME_BUFFERS_FAILED
 };
 
 VIZ_COMMON_EXPORT ContextLostReason
