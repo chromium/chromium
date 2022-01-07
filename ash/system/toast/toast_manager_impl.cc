@@ -31,7 +31,11 @@ void ToastManagerImpl::Show(const ToastData& data) {
   DCHECK(!id.empty());
 
   if (current_toast_data_ && current_toast_data_->id == id) {
-    // TODO(yoshiki): Replaces the visible toast.
+    // Replace the visible toast by adding the new toast data to the front of
+    // the queue and hiding the visible toast. Once the visible toast finishes
+    // hiding, the new toast will be displayed.
+    queue_.emplace_front(data);
+    overlay_->Show(false);
     return;
   }
 
