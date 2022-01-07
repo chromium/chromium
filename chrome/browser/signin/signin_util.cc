@@ -290,7 +290,9 @@ void SetUserSignoutAllowedForProfile(Profile* profile, bool is_allowed) {
   UserSignoutSetting::GetForProfile(profile)->set_state(new_state);
 }
 
-void EnsurePrimaryAccountAllowedForProfile(Profile* profile) {
+void EnsurePrimaryAccountAllowedForProfile(
+    Profile* profile,
+    signin_metrics::ProfileSignout clear_primary_account_source) {
 // All primary accounts are allowed on ChromeOS, so this method is a no-op on
 // ChromeOS.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -318,7 +320,7 @@ void EnsurePrimaryAccountAllowedForProfile(Profile* profile) {
       auto* primary_account_mutator =
           identity_manager->GetPrimaryAccountMutator();
       primary_account_mutator->ClearPrimaryAccount(
-          signin_metrics::SIGNIN_NOT_ALLOWED_ON_PROFILE_INIT,
+          clear_primary_account_source,
           signin_metrics::SignoutDelete::kIgnoreMetric);
       break;
     }

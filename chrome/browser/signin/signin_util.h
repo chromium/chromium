@@ -8,6 +8,7 @@
 #include <string>
 
 #include "build/build_config.h"
+#include "components/signin/public/base/signin_metrics.h"
 
 class Profile;
 
@@ -54,7 +55,11 @@ void EnsureUserSignoutAllowedIsInitializedForProfile(Profile* profile);
 //   is no longer allowed, then this clears the primary account.
 // * If |IsUserSignoutAllowedForProfile| is not allowed and the primary account
 //   is not longer allowed, then this removes the profile.
-void EnsurePrimaryAccountAllowedForProfile(Profile* profile);
+//
+// TODO(msarda): Move to |primary_account_policy_manager.h|
+void EnsurePrimaryAccountAllowedForProfile(
+    Profile* profile,
+    signin_metrics::ProfileSignout clear_primary_account_source);
 
 #if !defined(OS_ANDROID)
 // Returns true if profile separation is enforced by policy.

@@ -26,7 +26,6 @@
 #include "components/signin/internal/identity_manager/gaia_cookie_manager_service.h"
 #include "components/signin/internal/identity_manager/primary_account_manager.h"
 #include "components/signin/internal/identity_manager/primary_account_mutator_impl.h"
-#include "components/signin/internal/identity_manager/primary_account_policy_manager_impl.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/test_signin_client.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
@@ -337,15 +336,9 @@ IdentityTestEnvironment::FinishBuildIdentityManagerForTests(
       signin_client, token_service.get(), account_tracker_service.get(),
       std::make_unique<image_fetcher::FakeImageDecoder>());
 
-  std::unique_ptr<PrimaryAccountPolicyManager> policy_manager;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-  policy_manager =
-      std::make_unique<PrimaryAccountPolicyManagerImpl>(signin_client);
-#endif
   std::unique_ptr<PrimaryAccountManager> primary_account_manager =
       std::make_unique<PrimaryAccountManager>(
-          signin_client, token_service.get(), account_tracker_service.get(),
-          std::move(policy_manager));
+          signin_client, token_service.get(), account_tracker_service.get());
   primary_account_manager->Initialize(pref_service);
 
   std::unique_ptr<GaiaCookieManagerService> gaia_cookie_manager_service =

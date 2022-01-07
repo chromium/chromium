@@ -14,7 +14,6 @@
 #include "components/prefs/testing_pref_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service.h"
-#include "components/signin/internal/identity_manager/primary_account_policy_manager_impl.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/test_signin_client.h"
@@ -67,8 +66,7 @@ class AccessTokenFetcherTest
         account_tracker_(std::make_unique<AccountTrackerService>()),
         primary_account_manager_(&signin_client_,
                                  &token_service_,
-                                 account_tracker_.get(),
-                                 nullptr /* policy_manager */) {
+                                 account_tracker_.get()) {
     AccountTrackerService::RegisterPrefs(pref_service_.registry());
     PrimaryAccountManager::RegisterProfilePrefs(pref_service_.registry());
 
