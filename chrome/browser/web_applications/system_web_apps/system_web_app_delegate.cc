@@ -95,6 +95,10 @@ bool SystemWebAppDelegate::ShouldAllowScriptsToCloseWindows() const {
   return false;
 }
 
+bool SystemWebAppDelegate::ShouldHandleFileOpenIntents() const {
+  return ShouldShowInLauncher();
+}
+
 absl::optional<SystemAppBackgroundTaskInfo> SystemWebAppDelegate::GetTimerInfo()
     const {
   return absl::nullopt;

@@ -24,6 +24,7 @@ struct WebAppChromeOsData {
   // on the WebApp, which would require refactoring PreinstalledWebAppManager to
   // manage multiple Sources for a single app.
   bool oem_installed = false;
+  bool handles_file_open_intents = show_in_launcher;
 };
 
 bool operator==(const WebAppChromeOsData& chromeos_data1,

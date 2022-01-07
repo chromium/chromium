@@ -336,6 +336,7 @@ TEST_F(SystemWebAppManagerTest, UninstallAppInstalledInPreviousSession) {
   options.add_to_search = true;
   options.add_to_management = false;
   options.is_disabled = false;
+  options.handles_file_open_intents = false;
   options.bypass_service_worker_check = true;
   options.force_reinstall = true;
   options.only_use_app_info_factory = true;

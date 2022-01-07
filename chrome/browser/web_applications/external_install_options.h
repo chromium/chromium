@@ -190,6 +190,9 @@ struct ExternalInstallOptions {
   // Whether this should be installed on devices without a touch screen with
   // stylus support.
   bool disable_if_touchscreen_with_stylus_not_supported = false;
+
+  // Whether the app should show up in file-open intent and picking surfaces.
+  bool handles_file_open_intents = false;
 };
 
 WebAppInstallParams ConvertExternalInstallOptionsToParams(

@@ -944,6 +944,33 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerNotShownInSearchTest,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
+class SystemWebAppManagerHandlesFileOpenIntentsTest
+    : public SystemWebAppManagerBrowserTest {
+ public:
+  SystemWebAppManagerHandlesFileOpenIntentsTest()
+      : SystemWebAppManagerBrowserTest(/*install_mock=*/false) {
+    maybe_installation_ =
+        TestSystemWebAppInstallation::SetUpAppThatHandlesFileOpenIntents();
+  }
+};
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+IN_PROC_BROWSER_TEST_P(SystemWebAppManagerHandlesFileOpenIntentsTest,
+                       HandlesFileOpenIntents) {
+  WaitForTestSystemAppInstall();
+  AppId app_id = GetManager().GetAppIdForSystemApp(GetMockAppType()).value();
+
+  // OS Integration only relevant for Chrome OS.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  GetAppServiceProxy(browser()->profile())
+      ->AppRegistryCache()
+      .ForOneApp(app_id, [](const apps::AppUpdate& update) {
+        EXPECT_EQ(apps::mojom::OptionalBool::kTrue, update.HandlesIntents());
+      });
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+
 class SystemWebAppManagerAdditionalSearchTermsTest
     : public SystemWebAppManagerBrowserTest {
  public:
@@ -1801,6 +1828,9 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerNotShownInSearchTest);
+
+INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
+    SystemWebAppManagerHandlesFileOpenIntentsTest);
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_REGULAR_PROFILE_P(
     SystemWebAppManagerAdditionalSearchTermsTest);

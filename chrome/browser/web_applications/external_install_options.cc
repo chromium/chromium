@@ -77,7 +77,8 @@ bool ExternalInstallOptions::operator==(
         options.only_use_app_info_factory,
         options.system_app_type,
         options.oem_installed,
-        options.disable_if_touchscreen_with_stylus_not_supported
+        options.disable_if_touchscreen_with_stylus_not_supported,
+        options.handles_file_open_intents
         // clang-format on
     );
   };
@@ -116,6 +117,7 @@ base::Value ExternalInstallOptions::AsDebugValue() const {
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   root.SetBoolKey("disable_if_touchscreen_with_stylus_not_supported",
                   disable_if_touchscreen_with_stylus_not_supported);
+  root.SetBoolKey("handles_file_open_intents", handles_file_open_intents);
   root.SetKey("fallback_app_name", ConvertOptional(fallback_app_name));
   root.SetBoolKey("force_reinstall", force_reinstall);
   root.SetKey("force_reinstall_for_milestone",
@@ -176,6 +178,7 @@ WebAppInstallParams ConvertExternalInstallOptionsToParams(
   params.add_to_search = install_options.add_to_search;
   params.add_to_management = install_options.add_to_management;
   params.is_disabled = install_options.is_disabled;
+  params.handles_file_open_intents = install_options.handles_file_open_intents;
 
   params.bypass_service_worker_check =
       install_options.bypass_service_worker_check;

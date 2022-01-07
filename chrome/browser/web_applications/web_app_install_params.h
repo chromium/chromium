@@ -92,6 +92,7 @@ struct WebAppInstallParams {
   bool add_to_search = true;
   bool add_to_management = true;
   bool is_disabled = false;
+  bool handles_file_open_intents = true;
 
   bool bypass_service_worker_check = false;
   bool require_manifest = false;

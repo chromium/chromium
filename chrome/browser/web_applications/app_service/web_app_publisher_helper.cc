@@ -321,13 +321,9 @@ void WebAppPublisherHelper::SetWebAppShowInFields(apps::mojom::AppPtr& app,
     app->show_in_management = chromeos_data.show_in_management
                                   ? apps::mojom::OptionalBool::kTrue
                                   : apps::mojom::OptionalBool::kFalse;
-
-    app->handles_intents = app->show_in_launcher;
-    if (web_app::IsSystemAppIdWithFileHandlers(web_app->app_id())) {
-      // TODO(crbug.com/1240906): add handles_intents to chromeos_data() so that
-      // SWAs can stipulate it themselves rather than needing this check.
-      app->handles_intents = apps::mojom::OptionalBool::kTrue;
-    }
+    app->handles_intents = chromeos_data.handles_file_open_intents
+                               ? apps::mojom::OptionalBool::kTrue
+                               : app->show_in_launcher;
     return;
   }
 

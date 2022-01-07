@@ -130,6 +130,9 @@ class SystemWebAppDelegate {
   // using `window.close()`.
   virtual bool ShouldAllowScriptsToCloseWindows() const;
 
+  // If true, allows app to show up in file-open intent and picking surfaces.
+  virtual bool ShouldHandleFileOpenIntents() const;
+
   // Setup information to drive a background task.
   virtual absl::optional<SystemAppBackgroundTaskInfo> GetTimerInfo() const;
 

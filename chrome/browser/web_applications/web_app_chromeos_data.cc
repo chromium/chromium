@@ -17,6 +17,7 @@ base::Value WebAppChromeOsData::AsDebugValue() const {
   root.SetBoolKey("show_in_management", show_in_management);
   root.SetBoolKey("is_disabled", is_disabled);
   root.SetBoolKey("oem_installed", oem_installed);
+  root.SetBoolKey("handles_file_open_intents", handles_file_open_intents);
   return root;
 }
 
@@ -25,11 +26,13 @@ bool operator==(const WebAppChromeOsData& chromeos_data1,
   return std::tie(chromeos_data1.show_in_launcher,
                   chromeos_data1.show_in_search,
                   chromeos_data1.show_in_management, chromeos_data1.is_disabled,
-                  chromeos_data1.oem_installed) ==
+                  chromeos_data1.oem_installed,
+                  chromeos_data1.handles_file_open_intents) ==
          std::tie(chromeos_data2.show_in_launcher,
                   chromeos_data2.show_in_search,
                   chromeos_data2.show_in_management, chromeos_data2.is_disabled,
-                  chromeos_data2.oem_installed);
+                  chromeos_data2.oem_installed,
+                  chromeos_data2.handles_file_open_intents);
 }
 
 }  // namespace web_app

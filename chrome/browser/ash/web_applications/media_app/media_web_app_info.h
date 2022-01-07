@@ -21,6 +21,7 @@ class MediaSystemAppDelegate : public web_app::SystemWebAppDelegate {
   bool ShouldShowInSearch() const override;
   bool ShouldShowNewWindowMenuOption() const override;
   bool ShouldReuseExistingWindow() const override;
+  bool ShouldHandleFileOpenIntents() const override;
   base::FilePath GetLaunchDirectory(
       const apps::AppLaunchParams& params) const override;
 };

@@ -40,6 +40,7 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   std::vector<int> GetAdditionalSearchTerms() const override;
   bool ShouldShowInLauncher() const override;
   bool ShouldShowInSearch() const override;
+  bool ShouldHandleFileOpenIntents() const override;
   bool ShouldCaptureNavigations() const override;
   bool ShouldAllowResize() const override;
   bool ShouldAllowMaximize() const override;
@@ -60,6 +61,7 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   void SetAdditionalSearchTerms(const std::vector<int>&);
   void SetShouldShowInLauncher(bool);
   void SetShouldShowInSearch(bool);
+  void SetShouldHandleFileOpenIntents(bool);
   void SetShouldCaptureNavigations(bool);
   void SetShouldAllowResize(bool);
   void SetShouldAllowMaximize(bool);
@@ -81,6 +83,7 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   std::vector<int> additional_search_terms_;
   bool show_in_launcher_ = true;
   bool show_in_search_ = true;
+  bool handles_file_open_intents_ = false;
   bool capture_navigations_ = false;
   bool is_resizeable_ = true;
   bool is_maximizable_ = true;
@@ -127,6 +130,9 @@ class TestSystemWebAppInstallation {
 
   static std::unique_ptr<TestSystemWebAppInstallation>
   SetUpAppNotShownInSearch();
+
+  static std::unique_ptr<TestSystemWebAppInstallation>
+  SetUpAppThatHandlesFileOpenIntents();
 
   static std::unique_ptr<TestSystemWebAppInstallation>
   SetUpAppWithAdditionalSearchTerms();

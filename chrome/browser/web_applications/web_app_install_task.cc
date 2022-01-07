@@ -267,6 +267,8 @@ void UpdateFinalizerClientData(
       options->chromeos_data->show_in_management = params->add_to_management;
       options->chromeos_data->is_disabled = params->is_disabled;
       options->chromeos_data->oem_installed = params->oem_installed;
+      options->chromeos_data->handles_file_open_intents =
+          params->handles_file_open_intents;
     }
     if (params->system_app_type.has_value()) {
       options->system_web_app_data.emplace();

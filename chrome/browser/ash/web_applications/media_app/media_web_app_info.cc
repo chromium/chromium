@@ -202,3 +202,7 @@ bool MediaSystemAppDelegate::ShouldShowNewWindowMenuOption() const {
 bool MediaSystemAppDelegate::ShouldReuseExistingWindow() const {
   return !ShouldShowNewWindowMenuOption();
 }
+
+bool MediaSystemAppDelegate::ShouldHandleFileOpenIntents() const {
+  return true;
+}

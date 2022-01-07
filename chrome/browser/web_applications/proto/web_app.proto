@@ -59,6 +59,7 @@ message ChromeOSDataProto {
   required bool show_in_management = 3;
   required bool is_disabled = 4;
   optional bool oem_installed = 5;
+  optional bool handles_file_open_intents = 6;
 }
 
 message ClientDataProto {
@@ -273,4 +274,7 @@ message WebAppProto {
   // Whether the file handling abilities of the app should be registered with
   // the OS.
   optional OsIntegrationState file_handler_os_integration_state = 46;
+
+  // Whether the app should show up in file-open intent and picking surfaces.
+  optional bool handles_file_open_intents = 47;
 }

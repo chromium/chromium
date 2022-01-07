@@ -197,6 +197,8 @@ ExternalInstallOptions CreateInstallOptionsForSystemApp(
   install_options.uninstall_and_replace =
       delegate.GetAppIdsToUninstallAndReplace();
   install_options.system_app_type = app_type;
+  install_options.handles_file_open_intents =
+      delegate.ShouldHandleFileOpenIntents();
 
   const auto& search_terms = delegate.GetAdditionalSearchTerms();
   std::transform(search_terms.begin(), search_terms.end(),

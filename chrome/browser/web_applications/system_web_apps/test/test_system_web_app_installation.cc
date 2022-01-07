@@ -134,6 +134,9 @@ bool UnittestingSystemAppDelegate::ShouldShowInLauncher() const {
 bool UnittestingSystemAppDelegate::ShouldShowInSearch() const {
   return show_in_search_;
 }
+bool UnittestingSystemAppDelegate::ShouldHandleFileOpenIntents() const {
+  return handles_file_open_intents_;
+}
 bool UnittestingSystemAppDelegate::ShouldCaptureNavigations() const {
   return capture_navigations_;
 }
@@ -201,6 +204,9 @@ void UnittestingSystemAppDelegate::SetShouldShowInLauncher(bool value) {
 }
 void UnittestingSystemAppDelegate::SetShouldShowInSearch(bool value) {
   show_in_search_ = value;
+}
+void UnittestingSystemAppDelegate::SetShouldHandleFileOpenIntents(bool value) {
+  handles_file_open_intents_ = value;
 }
 void UnittestingSystemAppDelegate::SetShouldCaptureNavigations(bool value) {
   capture_navigations_ = value;
@@ -390,6 +396,20 @@ TestSystemWebAppInstallation::SetUpAppNotShownInSearch() {
           GURL("chrome://test-system-app/pwa.html"),
           base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
   delegate->SetShouldShowInSearch(false);
+
+  return base::WrapUnique(
+      new TestSystemWebAppInstallation(std::move(delegate)));
+}
+
+// static
+std::unique_ptr<TestSystemWebAppInstallation>
+TestSystemWebAppInstallation::SetUpAppThatHandlesFileOpenIntents() {
+  std::unique_ptr<UnittestingSystemAppDelegate> delegate =
+      std::make_unique<UnittestingSystemAppDelegate>(
+          SystemAppType::MEDIA, "Test",
+          GURL("chrome://test-system-app/pwa.html"),
+          base::BindRepeating(&GenerateWebApplicationInfoForTestApp));
+  delegate->SetShouldHandleFileOpenIntents(true);
 
   return base::WrapUnique(
       new TestSystemWebAppInstallation(std::move(delegate)));

@@ -338,6 +338,8 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
         chromeos_data.show_in_management);
     mutable_chromeos_data->set_is_disabled(chromeos_data.is_disabled);
     mutable_chromeos_data->set_oem_installed(chromeos_data.oem_installed);
+    mutable_chromeos_data->set_handles_file_open_intents(
+        chromeos_data.handles_file_open_intents);
   }
 
   if (web_app.client_data().system_web_app_data.has_value()) {
@@ -648,6 +650,8 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
         chromeos_data_proto.show_in_management();
     chromeos_data->is_disabled = chromeos_data_proto.is_disabled();
     chromeos_data->oem_installed = chromeos_data_proto.oem_installed();
+    chromeos_data->handles_file_open_intents =
+        chromeos_data_proto.handles_file_open_intents();
     web_app->SetWebAppChromeOsData(std::move(chromeos_data));
   }
 
