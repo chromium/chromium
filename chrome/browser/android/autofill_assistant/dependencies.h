@@ -25,6 +25,8 @@ class Dependencies {
   static base::android::ScopedJavaGlobalRef<jobject> GetInfoPageUtil(
       const base::android::ScopedJavaGlobalRef<jobject>& java_object);
 
+  base::android::ScopedJavaGlobalRef<jobject> GetAccessTokenUtil() const;
+
   virtual ~Dependencies();
 
   virtual std::unique_ptr<AssistantFieldTrialUtil> CreateFieldTrialUtil()

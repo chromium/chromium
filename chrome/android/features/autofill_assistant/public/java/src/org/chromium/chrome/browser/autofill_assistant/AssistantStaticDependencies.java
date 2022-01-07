@@ -38,6 +38,9 @@ public interface AssistantStaticDependencies {
 
     AssistantTabUtil getTabUtil();
 
+    @CalledByNative
+    AssistantAccessTokenUtil getAccessTokenUtil();
+
     @Nullable
     String getSignedInAccountEmailOrNull();
 

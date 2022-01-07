@@ -70,6 +70,11 @@ public class AssistantStaticDependenciesChrome implements AssistantStaticDepende
     }
 
     @Override
+    public AssistantAccessTokenUtil getAccessTokenUtil() {
+        return new AssistantAccessTokenUtilChrome();
+    }
+
+    @Override
     @Nullable
     public String getSignedInAccountEmailOrNull() {
         IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(

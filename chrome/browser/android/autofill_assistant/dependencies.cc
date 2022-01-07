@@ -38,6 +38,12 @@ ScopedJavaGlobalRef<jobject> Dependencies::GetInfoPageUtil(
                                                        java_object));
 }
 
+ScopedJavaGlobalRef<jobject> Dependencies::GetAccessTokenUtil() const {
+  return ScopedJavaGlobalRef<jobject>(
+      Java_AssistantStaticDependencies_getAccessTokenUtil(AttachCurrentThread(),
+                                                          java_object_));
+}
+
 Dependencies::~Dependencies() = default;
 
 }  // namespace autofill_assistant

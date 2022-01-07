@@ -18,7 +18,6 @@ import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.user_data.GmsIntegrator;
-import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.components.signin.AccessTokenData;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
@@ -37,15 +36,16 @@ import java.util.Map;
  */
 @JNINamespace("autofill_assistant")
 public class AutofillAssistantClient {
-    /** OAuth2 scope that RPCs require. */
-    private static final String AUTH_TOKEN_TYPE =
-            "oauth2:https://www.googleapis.com/auth/userinfo.profile";
-
     /**
      * Pointer to the corresponding native autofill_assistant::ClientAndroid instance. Might be 0 if
      * the native instance has been deleted. Always check before use.
      */
     private long mNativeClientAndroid;
+
+    /**
+     * Util for fetching access tokens.
+     */
+    private final AssistantAccessTokenUtil mAccessTokenUtil;
 
     /**
      * Indicates whether account initialization was started.
@@ -93,8 +93,10 @@ public class AutofillAssistantClient {
     }
 
     @CalledByNative
-    private AutofillAssistantClient(long nativeClientAndroid) {
+    private AutofillAssistantClient(
+            long nativeClientAndroid, AssistantAccessTokenUtil accessTokenUtil) {
         mNativeClientAndroid = nativeClientAndroid;
+        mAccessTokenUtil = accessTokenUtil;
 
         // Add listener for accessibility services with "FEEDBACK_SPOKEN" feedback type.
         BrowserAccessibilityState.Listener listener = (unused) -> {
@@ -281,10 +283,8 @@ public class AutofillAssistantClient {
             return;
         }
 
-        IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
-                AutofillAssistantUiController.getProfile());
-        identityManager.getAccessToken(
-                mAccount, AUTH_TOKEN_TYPE, new IdentityManager.GetAccessTokenCallback() {
+        mAccessTokenUtil.getAccessToken(
+                mAccount, new IdentityManager.GetAccessTokenCallback() {
                     @Override
                     public void onGetTokenSuccess(AccessTokenData token) {
                         if (mNativeClientAndroid != 0) {
@@ -309,9 +309,7 @@ public class AutofillAssistantClient {
             return;
         }
 
-        IdentityManager identityManager = IdentityServicesProvider.get().getIdentityManager(
-                AutofillAssistantUiController.getProfile());
-        identityManager.invalidateAccessToken(accessToken);
+        mAccessTokenUtil.invalidateAccessToken(accessToken);
     }
 
     /** Returns the e-mail address that corresponds to the access token or an empty string. */

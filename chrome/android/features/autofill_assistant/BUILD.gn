@@ -72,6 +72,7 @@ android_library("java") {
 
   sources = [
     "java/src/org/chromium/chrome/browser/autofill_assistant/AbstractListObserver.java",
+    "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantAccessTokenUtilChrome.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantAccessibilityUtils.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantBottomBarCoordinator.java",
     "java/src/org/chromium/chrome/browser/autofill_assistant/AssistantBottomBarDelegate.java",
