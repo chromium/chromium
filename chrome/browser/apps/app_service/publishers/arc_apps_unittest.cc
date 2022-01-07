@@ -111,7 +111,8 @@ class ArcAppsPublisherTest : public testing::Test {
 
 // Verifies that a call to set the supported links preference from ARC persists
 // the setting in app service.
-TEST_F(ArcAppsPublisherTest, SetSupportedLinksFromArc) {
+// Flaky: https://crbug.com/1285361.
+TEST_F(ArcAppsPublisherTest, DISABLED_SetSupportedLinksFromArc) {
   constexpr char kTestAuthority[] = "www.example.com";
   const auto& fake_apps = arc_test()->fake_apps();
   std::string package_name = fake_apps[0].package_name;
