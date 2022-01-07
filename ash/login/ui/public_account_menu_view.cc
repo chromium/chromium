@@ -62,7 +62,8 @@ PublicAccountMenuView::Item::Item() = default;
 PublicAccountMenuView::PublicAccountMenuView(const std::vector<Item>& items,
                                              const size_t selected_index,
                                              const OnSelect& on_select)
-    : views::Combobox(new PublicAccountComboboxModel(items, selected_index)),
+    : views::Combobox(
+          std::make_unique<PublicAccountComboboxModel>(items, selected_index)),
       items_(items),
       on_select_(on_select) {
   SetPreferredSize(
