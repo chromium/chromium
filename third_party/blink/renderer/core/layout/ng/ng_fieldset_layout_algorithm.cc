@@ -376,7 +376,13 @@ NGBreakStatus NGFieldsetLayoutAlgorithm::LayoutFieldsetContent(
   if (max_content_block_size != LayoutUnit::Max() &&
       (!result || result->Status() == NGLayoutResult::kSuccess)) {
     DCHECK_EQ(adjusted_padding_box_size.block_size, kIndefiniteSize);
-    max_content_block_size -= borders_.BlockSum();
+    if (max_content_block_size > padding_.BlockSum()) {
+      // intrinsic_block_size_ is
+      // max(borders_.block_start, legend margin box block size).
+      max_content_block_size = std::max(
+          max_content_block_size - (intrinsic_block_size_ + borders_.block_end),
+          padding_.BlockSum());
+    }
 
     if (result) {
       const auto& fragment = result->PhysicalFragment();
