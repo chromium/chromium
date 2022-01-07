@@ -785,6 +785,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"use-sf-symbols-samples", flag_descriptions::kUseSFSymbolsSamplesName,
      flag_descriptions::kUseSFSymbolsSamplesDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kUseSFSymbolsSamples)},
+    {"use-new-popup-menu", flag_descriptions::kUseUIKitPopupMenuName,
+     flag_descriptions::kUseUIKitPopupMenuDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kUseUIKitPopupMenu)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

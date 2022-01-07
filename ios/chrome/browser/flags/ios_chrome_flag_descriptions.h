@@ -480,6 +480,10 @@ extern const char kUseLensToSearchForImageDescription[];
 extern const char kUseSFSymbolsSamplesName[];
 extern const char kUseSFSymbolsSamplesDescription[];
 
+// Title and description for the flag to replace the popup menus by UIKit menus.
+extern const char kUseUIKitPopupMenuName[];
+extern const char kUseUIKitPopupMenuDescription[];
+
 // Title and description for the flag to control the maximum wait time (in
 // seconds) for a response from the Account Capabilities API.
 extern const char kWaitThresholdMillisecondsForCapabilitiesApiName[];

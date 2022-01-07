@@ -533,6 +533,11 @@ const char kUseSFSymbolsSamplesName[] = "Replace Image by SFSymbols";
 const char kUseSFSymbolsSamplesDescription[] =
     "When enabled, some images (toolbar...) are replaced by SFSymbols";
 
+const char kUseUIKitPopupMenuName[] = "Replace popup menus by native ones";
+const char kUseUIKitPopupMenuDescription[] =
+    "When enabled, the popup menus displayed for example when long pressing on "
+    "a toolbar button are replaced by native ones (UIKit).";
+
 const char kWaitThresholdMillisecondsForCapabilitiesApiName[] =
     "Maximum wait time (in seconds) for a response from the Account "
     "Capabilities API";
