@@ -45,6 +45,10 @@ void ScopedProfileKeepAlive::RemoveKeepAliveOnUIThread(
     const Profile* profile,
     ProfileKeepAliveOrigin origin) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // |g_browser_process| could be nullptr if this is called during shutdown,
+  // e.g. in tests.
+  if (!g_browser_process)
+    return;
   // |profile_manager| could be nullptr if this is called during shutdown, e.g.
   // for system/guest profiles or in tests.
   auto* profile_manager = g_browser_process->profile_manager();
