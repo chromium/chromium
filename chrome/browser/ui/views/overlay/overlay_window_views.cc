@@ -851,12 +851,7 @@ bool OverlayWindowViews::IsActive() const {
 
 void OverlayWindowViews::Close() {
   views::Widget::Close();
-
-  if (has_registered_frame_sink_hierarchy_) {
-    DCHECK(GetCurrentFrameSinkId());
-    GetCompositor()->RemoveChildFrameSink(*GetCurrentFrameSinkId());
-    has_registered_frame_sink_hierarchy_ = false;
-  }
+  MaybeUnregisterFrameSinkHierarchy();
 }
 
 void OverlayWindowViews::ShowInactive() {
@@ -889,12 +884,7 @@ void OverlayWindowViews::ShowInactive() {
 
 void OverlayWindowViews::Hide() {
   views::Widget::Hide();
-
-  if (has_registered_frame_sink_hierarchy_) {
-    DCHECK(GetCurrentFrameSinkId());
-    GetCompositor()->RemoveChildFrameSink(*GetCurrentFrameSinkId());
-    has_registered_frame_sink_hierarchy_ = false;
-  }
+  MaybeUnregisterFrameSinkHierarchy();
 }
 
 bool OverlayWindowViews::IsVisible() {
@@ -996,10 +986,7 @@ void OverlayWindowViews::SetSurfaceId(const viz::SurfaceId& surface_id) {
   // The PiP window may have a previous surface set. If the window stays open
   // since then, we need to unregister the previous frame sink; otherwise the
   // surface frame sink should already be removed when the window closed.
-  if (has_registered_frame_sink_hierarchy_) {
-    DCHECK(GetCurrentFrameSinkId());
-    GetCompositor()->RemoveChildFrameSink(*GetCurrentFrameSinkId());
-  }
+  MaybeUnregisterFrameSinkHierarchy();
 
   // Add the new frame sink to the PiP window and set the surface.
   GetCompositor()->AddChildFrameSink(surface_id.frame_sink_id());
@@ -1026,11 +1013,7 @@ void OverlayWindowViews::OnNativeBlur() {
 
 void OverlayWindowViews::OnNativeWidgetDestroying() {
   views::Widget::OnNativeWidgetDestroying();
-  if (has_registered_frame_sink_hierarchy_) {
-    DCHECK(GetCurrentFrameSinkId());
-    GetCompositor()->RemoveChildFrameSink(*GetCurrentFrameSinkId());
-    has_registered_frame_sink_hierarchy_ = false;
-  }
+  MaybeUnregisterFrameSinkHierarchy();
 }
 
 void OverlayWindowViews::OnNativeWidgetDestroyed() {
@@ -1094,11 +1077,7 @@ void OverlayWindowViews::OnNativeWidgetAddedToCompositor() {
 }
 
 void OverlayWindowViews::OnNativeWidgetRemovingFromCompositor() {
-  if (has_registered_frame_sink_hierarchy_) {
-    DCHECK(GetCurrentFrameSinkId());
-    GetCompositor()->RemoveChildFrameSink(*GetCurrentFrameSinkId());
-    has_registered_frame_sink_hierarchy_ = false;
-  }
+  MaybeUnregisterFrameSinkHierarchy();
 }
 
 void OverlayWindowViews::OnKeyEvent(ui::KeyEvent* event) {
@@ -1428,4 +1407,12 @@ const viz::FrameSinkId* OverlayWindowViews::GetCurrentFrameSinkId() const {
     return &surface->frame_sink_id();
 
   return nullptr;
+}
+
+void OverlayWindowViews::MaybeUnregisterFrameSinkHierarchy() {
+  if (has_registered_frame_sink_hierarchy_) {
+    DCHECK(GetCurrentFrameSinkId());
+    GetCompositor()->RemoveChildFrameSink(*GetCurrentFrameSinkId());
+    has_registered_frame_sink_hierarchy_ = false;
+  }
 }

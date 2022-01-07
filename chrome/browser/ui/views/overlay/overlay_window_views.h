@@ -202,6 +202,11 @@ class OverlayWindowViews : public content::OverlayWindow,
   // returns nullptr.
   const viz::FrameSinkId* GetCurrentFrameSinkId() const;
 
+  // Unregisters the current frame sink id for the surface displayed in the
+  // |video_view_| from its parent frame sink if the frame sink hierarchy has
+  // been registered before.
+  void MaybeUnregisterFrameSinkHierarchy();
+
   // Not owned; |controller_| owns |this|.
   raw_ptr<content::PictureInPictureWindowController> controller_;
 
