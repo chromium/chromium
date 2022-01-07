@@ -17,38 +17,31 @@ namespace app_restore {
 RestoreData::RestoreData() = default;
 
 RestoreData::RestoreData(std::unique_ptr<base::Value> restore_data_value) {
-  base::DictionaryValue* restore_data_dict = nullptr;
-  if (!restore_data_value || !restore_data_value->is_dict() ||
-      !restore_data_value->GetAsDictionary(&restore_data_dict) ||
-      !restore_data_dict) {
+  if (!restore_data_value || !restore_data_value->is_dict()) {
     DVLOG(0) << "Fail to parse full restore data. "
              << "Cannot find the full restore data dict.";
     return;
   }
 
-  for (base::DictionaryValue::Iterator iter(*restore_data_dict);
-       !iter.IsAtEnd(); iter.Advance()) {
-    const std::string& app_id = iter.key();
-    base::Value* value = restore_data_dict->FindDictKey(app_id);
-    base::DictionaryValue* data_dict = nullptr;
-    if (!value || !value->is_dict() || !value->GetAsDictionary(&data_dict) ||
-        !data_dict) {
+  for (auto iter : restore_data_value->DictItems()) {
+    const std::string& app_id = iter.first;
+    base::Value* value = restore_data_value->FindDictKey(app_id);
+    if (!value || !value->is_dict()) {
       DVLOG(0) << "Fail to parse full restore data. "
                << "Cannot find the app restore data dict.";
       continue;
     }
 
-    for (base::DictionaryValue::Iterator data_iter(*data_dict);
-         !data_iter.IsAtEnd(); data_iter.Advance()) {
+    for (auto data_iter : value->DictItems()) {
       int window_id = 0;
-      if (!base::StringToInt(data_iter.key(), &window_id)) {
+      if (!base::StringToInt(data_iter.first, &window_id)) {
         DVLOG(0) << "Fail to parse full restore data. "
                  << "Cannot find the valid id.";
         continue;
       }
       app_id_to_launch_list_[app_id][window_id] =
           std::make_unique<AppRestoreData>(
-              std::move(*data_dict->FindDictKey(data_iter.key())));
+              std::move(*value->FindDictKey(data_iter.first)));
     }
   }
 }
