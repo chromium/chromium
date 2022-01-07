@@ -7,6 +7,7 @@
  * the personalization hub.
  */
 
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {WithPersonalizationStore} from './personalization_store.js';
 
@@ -21,6 +22,10 @@ export class PersonalizationMain extends WithPersonalizationStore {
 
   static get properties() {
     return {};
+  }
+
+  private isDarkLightModeEnabled_(): boolean {
+    return loadTimeData.getBoolean('isDarkLightModeEnabled');
   }
 }
 

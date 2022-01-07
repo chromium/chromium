@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/grit/ash_personalization_app_resources.h"
 #include "ash/grit/ash_personalization_app_resources_map.h"
+#include "ash/webui/personalization_app/personalization_app_theme_provider.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/personalization_app/personalization_app_wallpaper_provider.h"
 #include "base/strings/strcat.h"
@@ -77,7 +78,10 @@ void AddStrings(content::WebUIDataSource* source) {
       {"exitFullscreen", IDS_PERSONALIZATION_APP_EXIT_FULL_SCREEN},
       {"ariaLabelExitFullscreen",
        IDS_PERSONALIZATION_APP_ARIA_LABEL_EXIT_FULL_SCREEN},
-      {"setAsWallpaper", IDS_PERSONALIZATION_APP_SET_AS_WALLPAPER}};
+      {"setAsWallpaper", IDS_PERSONALIZATION_APP_SET_AS_WALLPAPER},
+      {"themeLabel", IDS_PERSONALIZATION_APP_THEME_LABEL},
+      {"darkColorMode", IDS_PERSONALIZATION_APP_THEME_DARK_COLOR_MODE},
+      {"lightColorMode", IDS_PERSONALIZATION_APP_THEME_LIGHT_COLOR_MODE}};
   source->AddLocalizedStrings(kLocalizedStrings);
 
   if (features::IsWallpaperGooglePhotosIntegrationEnabled()) {
@@ -113,8 +117,10 @@ void AddBooleans(content::WebUIDataSource* source) {
 
 PersonalizationAppUI::PersonalizationAppUI(
     content::WebUI* web_ui,
+    std::unique_ptr<PersonalizationAppThemeProvider> theme_provider,
     std::unique_ptr<PersonalizationAppWallpaperProvider> wallpaper_provider)
     : ui::MojoWebUIController(web_ui),
+      theme_provider_(std::move(theme_provider)),
       wallpaper_provider_(std::move(wallpaper_provider)) {
   DCHECK(wallpaper_provider_);
 
@@ -146,6 +152,11 @@ PersonalizationAppUI::PersonalizationAppUI(
 }
 
 PersonalizationAppUI::~PersonalizationAppUI() = default;
+
+void PersonalizationAppUI::BindInterface(
+    mojo::PendingReceiver<personalization_app::mojom::ThemeProvider> receiver) {
+  theme_provider_->BindInterface(std::move(receiver));
+}
 
 void PersonalizationAppUI::BindInterface(
     mojo::PendingReceiver<personalization_app::mojom::WallpaperProvider>

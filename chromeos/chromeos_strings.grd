@@ -1959,6 +1959,15 @@ Try tapping the mic to ask me anything.
       <message name="IDS_PERSONALIZATION_APP_SET_AS_WALLPAPER" desc="Label for the button to confirm preview wallpaper">
         Set as wallpaper
       </message>
+      <message name="IDS_PERSONALIZATION_APP_THEME_LABEL" desc="Label for theme element in personalization hub">
+        Theme
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_THEME_DARK_COLOR_MODE" desc="Label for dark color mode setting">
+        Dark
+      </message>
+      <message name="IDS_PERSONALIZATION_APP_THEME_LIGHT_COLOR_MODE" desc="Label for light color mode setting">
+        Light
+      </message>
 
       <!-- Traffic Counters UI -->
       <message name="IDS_TRAFFIC_COUNTERS_UNKNOWN" desc="Traffic counters related to an unknown source">

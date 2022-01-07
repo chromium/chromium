@@ -9,6 +9,7 @@ assert(is_chromeos_ash, "Personalization App is ash-chrome only")
 
 static_library("personalization_app") {
   sources = [
+    "personalization_app_theme_provider.h",
     "personalization_app_ui.cc",
     "personalization_app_ui.h",
     "personalization_app_url_constants.cc",
@@ -46,6 +47,8 @@ js2gtest("browser_tests_js") {
 source_set("browser_test_support") {
   testonly = true
   sources = [
+    "test/fake_personalization_app_theme_provider.cc",
+    "test/fake_personalization_app_theme_provider.h",
     "test/fake_personalization_app_wallpaper_provider.cc",
     "test/fake_personalization_app_wallpaper_provider.h",
     "test/personalization_app_browsertest_fixture.cc",

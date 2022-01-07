@@ -218,5 +218,17 @@
       width: 100%;
       z-index: 1;
     }
+    cr-button {
+      border-color: var(--cros-button-stroke-color-secondary);
+      border-radius: 16px;
+    }
+    cr-button[aria-pressed=true],
+    cr-button[aria-selected=true] {
+      background-color: var(--cros-highlight-color);
+      border: 0;
+    }
+    cr-button + cr-button {
+      margin-inline-start: 8px;
+    }
   </style>
 </template>

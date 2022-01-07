@@ -9,6 +9,7 @@
 GEN('#include "ash/webui/personalization_app/test/personalization_app_browsertest_fixture.h"');
 
 GEN('#include "ash/constants/ash_features.h"');
+GEN('#include "chromeos/constants/chromeos_features.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 const ROOT_PAGE = 'chrome://personalization/';
@@ -24,7 +25,9 @@ class PersonalizationAppBrowserTest extends testing.Test {
   get featureList() {
     return {
       enabled: [
-        'ash::features::kWallpaperWebUI', 'ash::features::kPersonalizationHub'
+        'ash::features::kWallpaperWebUI',
+        'ash::features::kPersonalizationHub',
+        'chromeos::features::kDarkLightMode',
       ]
     };
   }
@@ -59,6 +62,20 @@ TEST_F('PersonalizationAppBrowserTest', 'HasRootPageUrl', () => {
           .shadowRoot.querySelector('personalization-main')
           .shadowRoot.querySelector('h1')
           .innerText);
+  testDone();
+});
+
+TEST_F('PersonalizationAppBrowserTest', 'ShowsThemeButtons', () => {
+  const theme = document.querySelector('personalization-router')
+                    .shadowRoot.querySelector('personalization-main')
+                    .shadowRoot.querySelector('personalization-theme');
+
+  const lightButton = theme.shadowRoot.getElementById('lightMode');
+  assertTrue(!!lightButton);
+  assertEquals(lightButton.getAttribute('aria-pressed'), 'true');
+  const darkButton = theme.shadowRoot.getElementById('darkMode');
+  assertTrue(!!darkButton);
+  assertEquals(darkButton.getAttribute('aria-pressed'), 'false');
   testDone();
 });
 

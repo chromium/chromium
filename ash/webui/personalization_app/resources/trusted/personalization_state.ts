@@ -2,16 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {emptyState as emptyThemeState, ThemeState} from './theme/theme_state.js';
 import {emptyState as emptyWallpaperState, WallpaperState} from './wallpaper/wallpaper_state.js';
 
 export interface PersonalizationState {
   wallpaper: WallpaperState;
   error: string|null;
+  theme: ThemeState;
 }
 
 export function emptyState(): PersonalizationState {
   return {
     wallpaper: emptyWallpaperState(),
     error: null,
+    theme: emptyThemeState(),
   };
 }

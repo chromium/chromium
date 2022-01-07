@@ -2,4 +2,7 @@
 <div id="container">
   <h1>Personalization</h1>
   <wallpaper-preview></wallpaper-preview>
+  <template is="dom-if" if="[[isDarkLightModeEnabled_()]]">
+    <personalization-theme></personalization-theme>
+  </template>
 </div>

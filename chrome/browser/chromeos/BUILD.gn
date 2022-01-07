@@ -3195,6 +3195,8 @@ source_set("chromeos") {
     "../ash/web_applications/os_settings_web_app_info.h",
     "../ash/web_applications/os_url_handler_system_web_app_info.cc",
     "../ash/web_applications/os_url_handler_system_web_app_info.h",
+    "../ash/web_applications/personalization_app/chrome_personalization_app_theme_provider.cc",
+    "../ash/web_applications/personalization_app/chrome_personalization_app_theme_provider.h",
     "../ash/web_applications/personalization_app/chrome_personalization_app_wallpaper_provider.cc",
     "../ash/web_applications/personalization_app/chrome_personalization_app_wallpaper_provider.h",
     "../ash/web_applications/personalization_app/personalization_app_info.cc",

@@ -176,3 +176,20 @@ interface WallpaperProvider {
     // called in preview mode.
     CancelPreviewWallpaper();
 };
+
+// Receives information whenever there are theme related changes such as color
+// mode.
+interface ThemeObserver {
+  // Triggered by |ColorModeObserver::OnColorModeChanged|. Retrieves information
+  // whether dark mode is enabled
+  OnColorModeChanged(bool dark_mode_enabled);
+};
+
+// Provides APIs to expose theme settings such dark/light color mode.
+interface ThemeProvider {
+  // Binds a listener to start receiving updates on color mode changes.
+  SetThemeObserver(pending_remote<ThemeObserver> observer);
+
+  // Disables or enables dark color mode.
+  SetColorModePref(bool dark_mode_enabled);
+};

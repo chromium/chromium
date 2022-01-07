@@ -1,0 +1,15 @@
+<style include="common-style">
+</style>
+<div id="container">
+  <h2>[[i18n('themeLabel')]]</h2>
+  <cr-button id="lightMode" data-color-mode="LIGHT"
+      on-click="onClickColorModeButton_"
+      aria-pressed$="[[getLightAriaPressed_(darkModeEnabled_)]]">
+    <div class="text">[[i18n('lightColorMode')]]</div>
+  </cr-button>
+  <cr-button id="darkMode" data-color-mode="DARK"
+      on-click="onClickColorModeButton_"
+      aria-pressed$="[[getDarkAriaPressed_(darkModeEnabled_)]]">
+    <div class="text">[[i18n('darkColorMode')]]</div>
+  </cr-button>
+</div>

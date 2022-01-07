@@ -975,6 +975,12 @@ void PopulateChromeWebUIFrameBinders(
         ash::PersonalizationAppUI>(map);
   }
 
+  if (ash::features::IsPersonalizationHubEnabled()) {
+    RegisterWebUIControllerInterfaceBinder<
+        ash::personalization_app::mojom::ThemeProvider,
+        ash::PersonalizationAppUI>(map);
+  }
+
   RegisterWebUIControllerInterfaceBinder<
       launcher_internals::mojom::PageHandlerFactory,
       chromeos::LauncherInternalsUI>(map);

@@ -207,6 +207,7 @@
 #include "chrome/browser/ash/web_applications/chrome_file_manager_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/help_app/help_app_ui_delegate.h"
 #include "chrome/browser/ash/web_applications/media_app/chrome_media_app_ui_delegate.h"
+#include "chrome/browser/ash/web_applications/personalization_app/chrome_personalization_app_theme_provider.h"
 #include "chrome/browser/ash/web_applications/personalization_app/chrome_personalization_app_wallpaper_provider.h"
 #include "chrome/browser/feedback/feedback_dialog_utils.h"
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
@@ -577,6 +578,18 @@ WebUIController* NewWebUI<ash::ConnectivityDiagnosticsUI>(WebUI* web_ui,
           chrome::WebUIFeedbackSource::kConnectivityDiagnostics),
       /*show_feedback_button=*/!chrome::IsRunningInAppMode());
 }
+
+template <>
+WebUIController* NewWebUI<ash::PersonalizationAppUI>(WebUI* web_ui,
+                                                     const GURL& url) {
+  auto theme_provider =
+      std::make_unique<ChromePersonalizationAppThemeProvider>(web_ui);
+  auto wallpaper_provider =
+      std::make_unique<ChromePersonalizationAppWallpaperProvider>(web_ui);
+  return new ash::PersonalizationAppUI(web_ui, std::move(theme_provider),
+                                       std::move(wallpaper_provider));
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -960,8 +973,7 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   }
   if (url.host_piece() == ash::kChromeUIPersonalizationAppHost &&
       chromeos::features::IsWallpaperWebUIEnabled()) {
-    return &NewComponentUI<ash::PersonalizationAppUI,
-                           ChromePersonalizationAppWallpaperProvider>;
+    return &NewWebUI<ash::PersonalizationAppUI>;
   }
   if (url.host_piece() == ash::kChromeUISystemExtensionsInternalsHost &&
       base::FeatureList::IsEnabled(ash::features::kSystemExtensions)) {

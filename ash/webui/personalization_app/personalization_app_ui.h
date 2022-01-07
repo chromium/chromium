@@ -13,12 +13,14 @@
 
 namespace ash {
 
+class PersonalizationAppThemeProvider;
 class PersonalizationAppWallpaperProvider;
 
 class PersonalizationAppUI : public ui::MojoWebUIController {
  public:
   PersonalizationAppUI(
       content::WebUI* web_ui,
+      std::unique_ptr<PersonalizationAppThemeProvider> theme_provider,
       std::unique_ptr<PersonalizationAppWallpaperProvider> wallpaper_provider);
 
   PersonalizationAppUI(const PersonalizationAppUI&) = delete;
@@ -27,10 +29,15 @@ class PersonalizationAppUI : public ui::MojoWebUIController {
   ~PersonalizationAppUI() override;
 
   void BindInterface(
+      mojo::PendingReceiver<personalization_app::mojom::ThemeProvider>
+          receiver);
+
+  void BindInterface(
       mojo::PendingReceiver<personalization_app::mojom::WallpaperProvider>
           receiver);
 
  private:
+  std::unique_ptr<PersonalizationAppThemeProvider> theme_provider_;
   std::unique_ptr<PersonalizationAppWallpaperProvider> wallpaper_provider_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
