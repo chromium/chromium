@@ -569,6 +569,15 @@ bssl::UniquePtr<EC_KEY> IdentityKey(base::span<const uint8_t, 32> root_secret) {
 
 absl::optional<std::vector<uint8_t>> EncodePaddedCBORMap(
     cbor::Value::MapValue map) {
+  // The number of padding bytes is a uint16_t, so the granularity cannot be
+  // larger than that.
+  static_assert(kPostHandshakeMsgPaddingGranularity > 0, "");
+  static_assert(kPostHandshakeMsgPaddingGranularity - 1 <=
+                std::numeric_limits<uint16_t>::max());
+  // The granularity must also be a power of two.
+  static_assert((kPostHandshakeMsgPaddingGranularity &
+                 (kPostHandshakeMsgPaddingGranularity - 1)) == 0);
+
   absl::optional<std::vector<uint8_t>> cbor_bytes =
       cbor::Writer::Write(cbor::Value(std::move(map)));
   if (!cbor_bytes) {
@@ -576,60 +585,39 @@ absl::optional<std::vector<uint8_t>> EncodePaddedCBORMap(
   }
 
   base::CheckedNumeric<size_t> padded_size_checked = cbor_bytes->size();
-  padded_size_checked += 1;  // padding-length byte
-  padded_size_checked = (padded_size_checked + 255) & ~255;
+  padded_size_checked += sizeof(uint16_t);  // padding-length bytes
+  padded_size_checked =
+      (padded_size_checked + kPostHandshakeMsgPaddingGranularity - 1) &
+      ~(kPostHandshakeMsgPaddingGranularity - 1);
   if (!padded_size_checked.IsValid()) {
     return absl::nullopt;
   }
 
   const size_t padded_size = padded_size_checked.ValueOrDie();
-  DCHECK_GT(padded_size, cbor_bytes->size());
-  const size_t extra_padding = padded_size - cbor_bytes->size();
+  DCHECK_GE(padded_size, cbor_bytes->size() + sizeof(uint16_t));
+  const size_t extra_bytes = padded_size - cbor_bytes->size();
+  const size_t num_padding_bytes =
+      extra_bytes - sizeof(uint16_t) /* length of padding length */;
 
   cbor_bytes->resize(padded_size);
-  DCHECK_LE(extra_padding, 256u);
-  cbor_bytes->at(padded_size - 1) = static_cast<uint8_t>(extra_padding - 1);
+  const uint16_t num_padding_bytes16 =
+      base::checked_cast<uint16_t>(num_padding_bytes);
+  memcpy(&cbor_bytes.value()[padded_size - sizeof(num_padding_bytes16)],
+         &num_padding_bytes16, sizeof(num_padding_bytes16));
 
   return *cbor_bytes;
 }
 
-// DecodePaddedCBORMap16 is the future replacement for |DecodePaddedCBORMap|,
-// below. It parses a slightly different format that allows for more padding.
-// (This is needed because some structures ended up larger than initially
-// expected.) In order to transition, |DecodePaddedCBORMap| calls this function
-// if it fails to parse. In the future we can drop supporting the old format and
-// start sending new-format messages. This works because CBOR parsing doesn't
-// depend on the length of the input (other than to fail on truncation) so
-// there's no ambiguity about the parse.
-absl::optional<cbor::Value> DecodePaddedCBORMap16(
-    base::span<const uint8_t> input) {
-  if (input.size() < sizeof(uint16_t)) {
-    return absl::nullopt;
-  }
+namespace {
 
-  uint16_t padding_length16;
-  memcpy(&padding_length16, &input[input.size() - sizeof(padding_length16)],
-         sizeof(padding_length16));
-  const size_t padding_length = padding_length16;
-  if (padding_length + sizeof(uint16_t) > input.size()) {
-    FIDO_LOG(DEBUG) << "Invalid padding in caBLE handshake message";
-    return absl::nullopt;
-  }
-  input = input.subspan(0, input.size() - padding_length - sizeof(uint16_t));
-
-  absl::optional<cbor::Value> payload = cbor::Reader::Read(input);
-  if (!payload || !payload->is_map()) {
-    FIDO_LOG(DEBUG) << "CBOR parse failure in caBLE handshake message";
-    return absl::nullopt;
-  }
-
-  return payload;
-}
-
-absl::optional<cbor::Value> DecodePaddedCBORMap(
+// DecodePaddedCBORMap8 performs the actions of |DecodePaddedCBORMap| using the
+// old padding format. We still support this format for backwards compatibility.
+// See comment in |DecodePaddedCBORMap|.
+//
+// TODO(agl): remove support for this padding format. (Chromium started sending
+// the new format with M99.)
+absl::optional<cbor::Value> DecodePaddedCBORMap8(
     const base::span<const uint8_t> input) {
-  // TODO: replace this with the body of |DecodePaddedCBORMap16| once M92 is
-  // everywhere.
   if (input.empty()) {
     return absl::nullopt;
   }
@@ -642,10 +630,52 @@ absl::optional<cbor::Value> DecodePaddedCBORMap(
 
   absl::optional<cbor::Value> payload = cbor::Reader::Read(unpadded_input);
   if (!payload || !payload->is_map()) {
-    return DecodePaddedCBORMap16(input);
+    return absl::nullopt;
   }
 
   return payload;
+}
+
+// DecodePaddedCBORMap16 performs the actions of |DecodePaddedCBORMap| using the
+// new padding format. See comment in |DecodePaddedCBORMap|.
+absl::optional<cbor::Value> DecodePaddedCBORMap16(
+    base::span<const uint8_t> input) {
+  if (input.size() < sizeof(uint16_t)) {
+    return absl::nullopt;
+  }
+
+  uint16_t padding_length16;
+  memcpy(&padding_length16, &input[input.size() - sizeof(padding_length16)],
+         sizeof(padding_length16));
+  const size_t padding_length = padding_length16;
+  if (padding_length + sizeof(uint16_t) > input.size()) {
+    return absl::nullopt;
+  }
+  input = input.subspan(0, input.size() - padding_length - sizeof(uint16_t));
+
+  absl::optional<cbor::Value> payload = cbor::Reader::Read(input);
+  if (!payload || !payload->is_map()) {
+    return absl::nullopt;
+  }
+
+  return payload;
+}
+
+}  // namespace
+
+absl::optional<cbor::Value> DecodePaddedCBORMap(
+    base::span<const uint8_t> input) {
+  // Two padding formats are currently in use. They are unambiguous so we try
+  // each, new first. Eventually the old format can be removed once enough time
+  // has passed since M99.
+  absl::optional<cbor::Value> result = DecodePaddedCBORMap16(input);
+  if (!result) {
+    result = DecodePaddedCBORMap8(input);
+  }
+  if (!result) {
+    FIDO_LOG(DEBUG) << "Invalid padding in caBLE handshake message";
+  }
+  return result;
 }
 
 Crypter::Crypter(base::span<const uint8_t, 32> read_key,
