@@ -61,22 +61,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "cast-binary-size",
-    builderless = True,
-    executable = "recipe:binary_size_cast_trybot",
-    properties = {
-        "$build/binary_size": {
-            "analyze_targets": [
-                "//chromecast:cast_shell",
-            ],
-            "compile_targets": [
-                "cast_shell",
-            ],
-        },
-    },
-)
-
-try_.builder(
     name = "fuchsia-binary-size",
     branch_selector = branches.STANDARD_MILESTONE,
     builderless = True,
