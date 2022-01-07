@@ -232,8 +232,8 @@ class ASH_EXPORT AppListItemView : public views::Button,
 
  private:
   friend class AppListItemViewProductivityLauncherTest;
+  friend class AppListMainViewTest;
   friend class test::AppsGridViewTest;
-  friend class test::AppListMainViewTest;
 
   class IconImageView;
   class AppNotificationIndicatorView;

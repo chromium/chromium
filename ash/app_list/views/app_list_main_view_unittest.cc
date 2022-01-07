@@ -19,8 +19,10 @@
 #include "ash/app_list/views/page_switcher.h"
 #include "ash/app_list/views/paged_apps_grid_view.h"
 #include "ash/app_list/views/search_box_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
@@ -34,17 +36,20 @@
 #include "ui/views/widget/widget.h"
 
 namespace ash {
-namespace test {
-
 namespace {
 
 const int kInitialItems = 2;
 
 }  // namespace
 
-class AppListMainViewTest : public views::ViewsTestBase {
+// Parameterized by ProductivityLauncher.
+class AppListMainViewTest : public views::ViewsTestBase,
+                            public testing::WithParamInterface<bool> {
  public:
-  AppListMainViewTest() = default;
+  AppListMainViewTest() {
+    feature_list_.InitWithFeatureState(features::kProductivityLauncher,
+                                       GetParam());
+  }
   AppListMainViewTest(const AppListMainViewTest& other) = delete;
   AppListMainViewTest& operator=(const AppListMainViewTest& other) = delete;
   ~AppListMainViewTest() override = default;
@@ -57,7 +62,7 @@ class AppListMainViewTest : public views::ViewsTestBase {
             ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
     // Create, and show the app list is fullscreen apps grid state.
-    delegate_ = std::make_unique<AppListTestViewDelegate>();
+    delegate_ = std::make_unique<test::AppListTestViewDelegate>();
     app_list_view_ = new AppListView(delegate_.get());
     app_list_view_->InitView(GetContext());
     app_list_view_->Show(AppListViewState::kFullscreenAllApps,
@@ -236,37 +241,43 @@ class AppListMainViewTest : public views::ViewsTestBase {
   }
 
  protected:
-  TestAppListColorProvider color_provider_;  // Needed by AppListView.
+  base::test::ScopedFeatureList feature_list_;
+  TestAppListColorProvider app_list_color_provider_;  // Needed by AppListView.
+  AshColorProvider ash_color_provider_;      // Needed by ContinueContainer.
   AppListView* app_list_view_ = nullptr;     // Owned by native widget.
-  std::unique_ptr<AppListTestViewDelegate> delegate_;
+  std::unique_ptr<test::AppListTestViewDelegate> delegate_;
 
  private:
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
 };
 
+INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
+                         AppListMainViewTest,
+                         testing::Bool());
+
 // Tests that the close button becomes invisible after close button is clicked.
-TEST_F(AppListMainViewTest, CloseButtonInvisibleAfterCloseButtonClicked) {
+TEST_P(AppListMainViewTest, CloseButtonInvisibleAfterCloseButtonClicked) {
   PressKeyInSearchBox(ui::VKEY_A);
   ClickButton(search_box_view()->close_button());
   EXPECT_FALSE(search_box_view()->close_button()->GetVisible());
 }
 
 // Tests that the search box becomes empty after close button is clicked.
-TEST_F(AppListMainViewTest, SearchBoxEmptyAfterCloseButtonClicked) {
+TEST_P(AppListMainViewTest, SearchBoxEmptyAfterCloseButtonClicked) {
   PressKeyInSearchBox(ui::VKEY_A);
   ClickButton(search_box_view()->close_button());
   EXPECT_TRUE(search_box_view()->search_box()->GetText().empty());
 }
 
 // Tests that the search box is no longer active after close button is clicked.
-TEST_F(AppListMainViewTest, SearchBoxActiveAfterCloseButtonClicked) {
+TEST_P(AppListMainViewTest, SearchBoxActiveAfterCloseButtonClicked) {
   PressKeyInSearchBox(ui::VKEY_A);
   ClickButton(search_box_view()->close_button());
   EXPECT_FALSE(search_box_view()->is_search_box_active());
 }
 
 // Tests changing the AppListModel when switching profiles.
-TEST_F(AppListMainViewTest, ModelChanged) {
+TEST_P(AppListMainViewTest, ModelChanged) {
   delegate_->GetTestModel()->PopulateApps(kInitialItems);
   EXPECT_EQ(kInitialItems, GetRootViewModel()->view_size());
 
@@ -283,7 +294,7 @@ TEST_F(AppListMainViewTest, ModelChanged) {
 
 // Tests dragging an item out of a single item folder and dropping it onto the
 // page switcher. Regression test for http://crbug.com/415530/.
-TEST_F(AppListMainViewTest, DragReparentItemOntoPageSwitcher) {
+TEST_P(AppListMainViewTest, DragReparentItemOntoPageSwitcher) {
   AppListItemView* folder_item_view = CreateAndOpenSingleItemFolder();
   ASSERT_TRUE(folder_item_view);
 
@@ -318,7 +329,7 @@ TEST_F(AppListMainViewTest, DragReparentItemOntoPageSwitcher) {
 // Test that an interrupted drag while reparenting an item from a folder, when
 // canceled via the root grid, correctly forwards the cancelation to the drag
 // ocurring from the folder.
-TEST_F(AppListMainViewTest, MouseDragItemOutOfFolderWithCancel) {
+TEST_P(AppListMainViewTest, MouseDragItemOutOfFolderWithCancel) {
   CreateAndOpenSingleItemFolder();
   AppListItemView* dragged = StartDragForReparent(0);
 
@@ -341,7 +352,7 @@ TEST_F(AppListMainViewTest, MouseDragItemOutOfFolderWithCancel) {
 // Test that dragging an app out of a single item folder and reparenting it
 // back into its original folder results in a cancelled reparent. This is a
 // regression test for http://crbug.com/429083.
-TEST_F(AppListMainViewTest, ReparentSingleItemOntoSelf) {
+TEST_P(AppListMainViewTest, ReparentSingleItemOntoSelf) {
   // Add a folder with 1 item.
   AppListItemView* folder_item_view = CreateAndOpenSingleItemFolder();
   std::string folder_id = folder_item_view->item()->id();
@@ -369,5 +380,4 @@ TEST_F(AppListMainViewTest, ReparentSingleItemOntoSelf) {
   EXPECT_EQ(1u, folder_item->item_list()->item_count());
 }
 
-}  // namespace test
 }  // namespace ash
