@@ -33,6 +33,8 @@ GPU_EXPORT extern const base::Feature kCanvasOopRasterization;
 
 GPU_EXPORT extern const base::Feature kDefaultEnableANGLEValidation;
 
+GPU_EXPORT extern const base::Feature kCanvasContextLostInBackground;
+
 #if defined(OS_WIN)
 GPU_EXPORT extern const base::Feature kGpuProcessHighPriorityWin;
 #endif

@@ -35,6 +35,7 @@
 #include "cc/layers/texture_layer.h"
 #include "components/viz/common/resources/transferable_resource.h"
 #include "gpu/command_buffer/client/raster_interface.h"
+#include "gpu/config/gpu_finch_features.h"
 
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
@@ -368,7 +369,8 @@ void Canvas2DLayerBridge::SetIsInHiddenPage(bool hidden) {
 
   if (!lose_context_in_background_ && !lose_context_in_background_scheduled_ &&
       ResourceProvider() && !context_lost_ && IsHidden() &&
-      RuntimeEnabledFeatures::CanvasContextLostInBackgroundEnabled()) {
+      base::FeatureList::IsEnabled(
+          ::features::kCanvasContextLostInBackground)) {
     lose_context_in_background_scheduled_ = true;
     if (dont_use_idle_scheduling_for_testing_) {
       Thread::Current()->GetTaskRunner()->PostTask(
@@ -381,7 +383,8 @@ void Canvas2DLayerBridge::SetIsInHiddenPage(bool hidden) {
     }
   } else if (CANVAS2D_HIBERNATION_ENABLED && ResourceProvider() &&
              IsAccelerated() && IsHidden() && !hibernation_scheduled_ &&
-             !RuntimeEnabledFeatures::CanvasContextLostInBackgroundEnabled()) {
+             !base::FeatureList::IsEnabled(
+                 ::features::kCanvasContextLostInBackground)) {
     if (layer_)
       layer_->ClearTexture();
     logger_->ReportHibernationEvent(kHibernationScheduled);

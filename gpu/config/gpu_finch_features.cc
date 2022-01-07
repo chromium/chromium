@@ -140,6 +140,11 @@ const base::Feature kCanvasOopRasterization{"CanvasOopRasterization",
 const base::Feature kDefaultEnableANGLEValidation{
     "DefaultEnableANGLEValidation", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Enables canvas to free its resources by default when it's running in
+// the background.
+const base::Feature kCanvasContextLostInBackground{
+    "CanvasContextLostInBackground", base::FEATURE_DISABLED_BY_DEFAULT};
+
 #if defined(OS_WIN)
 // Use a high priority for GPU process on Windows.
 const base::Feature kGpuProcessHighPriorityWin{
