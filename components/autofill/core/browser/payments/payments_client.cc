@@ -30,6 +30,7 @@
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/select_challenge_option_request.h"
 #include "components/autofill/core/browser/payments/payments_requests/unmask_card_request.h"
+#include "components/autofill/core/browser/payments/payments_requests/update_virtual_card_enrollment_request.h"
 #include "components/autofill/core/browser/payments/payments_service_url.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -968,6 +969,14 @@ PaymentsClient::GetDetailsForEnrollmentResponseDetails::
 PaymentsClient::GetDetailsForEnrollmentResponseDetails::
     ~GetDetailsForEnrollmentResponseDetails() = default;
 
+PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails::
+    UpdateVirtualCardEnrollmentRequestDetails() = default;
+PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails::
+    UpdateVirtualCardEnrollmentRequestDetails(
+        const UpdateVirtualCardEnrollmentRequestDetails&) = default;
+PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails::
+    ~UpdateVirtualCardEnrollmentRequestDetails() = default;
+
 PaymentsClient::PaymentsClient(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     signin::IdentityManager* identity_manager,
@@ -1064,6 +1073,14 @@ void PaymentsClient::SelectChallengeOption(
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                             const std::string&)> callback) {
   IssueRequest(std::make_unique<SelectChallengeOptionRequest>(
+                   request_details, std::move(callback)),
+               /*authenticate=*/true);
+}
+
+void PaymentsClient::UpdateVirtualCardEnrollment(
+    const UpdateVirtualCardEnrollmentRequestDetails& request_details,
+    base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback) {
+  IssueRequest(std::make_unique<UpdateVirtualCardEnrollmentRequest>(
                    request_details, std::move(callback)),
                /*authenticate=*/true);
 }

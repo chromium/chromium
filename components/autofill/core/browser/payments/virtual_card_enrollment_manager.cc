@@ -22,7 +22,7 @@ VirtualCardEnrollmentManager::~VirtualCardEnrollmentManager() = default;
 
 void VirtualCardEnrollmentManager::OfferVirtualCardEnroll(
     raw_ptr<CreditCard> credit_card,
-    VirtualCardEnrollmentFlow virtual_card_enrollment_flow) {}
+    VirtualCardEnrollmentSource virtual_card_enrollment_source) {}
 
 void VirtualCardEnrollmentManager::Unenroll(int64_t instrument_id) {}
 

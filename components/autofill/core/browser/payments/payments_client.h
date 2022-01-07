@@ -20,6 +20,7 @@
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/payments/card_unmask_challenge_option.h"
 #include "components/autofill/core/browser/payments/card_unmask_delegate.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -109,7 +110,7 @@ class PaymentsClient {
     // An opaque token used to chain consecutive payments requests together.
     std::string context_token;
     // The url origin of the website where the unmasking happened. Should be
-    // populated when the unmasking is for a virtual card.
+    // populated when the unmasking is for a virtual-card.
     absl::optional<GURL> last_committed_url_origin;
   };
 
@@ -133,11 +134,11 @@ class PaymentsClient {
     std::string real_pan;
     std::string dcvv;
     // The expiration month of the card. It falls in between 1 - 12. Should be
-    // populated when the card is a virtual card which does not necessarily have
+    // populated when the card is a virtual-card which does not necessarily have
     // the same expiration date as its related actual card.
     std::string expiration_month;
     // The four-digit expiration year of the card. Should be populated when the
-    // card is a virtual card which does not necessarily have the same
+    // card is a virtual-card which does not necessarily have the same
     // expiration date as its related actual card.
     std::string expiration_year;
     // Challenge required for enrolling user into FIDO authentication for future
@@ -285,7 +286,42 @@ class PaymentsClient {
     std::string server_id;
     // TODO(crbug.com/1281695): Add |virtual_card_enrollment_state| and
     //   |card_art_url| data members when integrating all of the logic for the
-    //   virtual card enrollment flow.
+    //   virtual-card enrollment flow.
+  };
+
+  // A collection of information needed for the
+  // UpdateVirtualCardEnrollmentRequest.
+  struct UpdateVirtualCardEnrollmentRequestDetails {
+    UpdateVirtualCardEnrollmentRequestDetails();
+    UpdateVirtualCardEnrollmentRequestDetails(
+        const UpdateVirtualCardEnrollmentRequestDetails&);
+    UpdateVirtualCardEnrollmentRequestDetails operator=(
+        const UpdateVirtualCardEnrollmentRequestDetails&) = delete;
+    ~UpdateVirtualCardEnrollmentRequestDetails();
+    // Denotes the source that the corresponding
+    // UpdateVirtualCardEnrollmentRequest for this
+    // UpdateVirtualCardEnrollmentRequestDetails originated from, i.e., a
+    // |virtual_card_enrollment_source| of kUpstream means the request happens
+    // after a user saved a card in the upstream flow.
+    VirtualCardEnrollmentSource virtual_card_enrollment_source =
+        VirtualCardEnrollmentSource::kNone;
+    // Denotes the type of this specific UpdateVirtualCardEnrollmentRequest,
+    // i.e., a type of VirtualCardEnrollmentRequestType::kEnroll would mean this
+    // is an enroll request.
+    VirtualCardEnrollmentRequestType virtual_card_enrollment_request_type =
+        VirtualCardEnrollmentRequestType::kNone;
+    // The billing customer number for the account this request is sent to. If
+    // |billing_customer_number| is non-zero, it means the user has a Google
+    // Payments account.
+    int64_t billing_customer_number = 0;
+    // Populated if it is an unenroll request. |instrument_id| lets the server
+    // know which card to unenroll from VCN.
+    absl::optional<int64_t> instrument_id;
+    // Populated if it is an enroll request. Based on the |vcn_context_token|
+    // the server is able to retrieve the instrument id, and using
+    // |vcn_context_token| for enroll allows the server to link a
+    // GetDetailsForEnroll call with the corresponding Enroll call.
+    absl::optional<std::string> vcn_context_token;
   };
 
   // TODO(crbug.com/1281695): Add GetDetailsForEnrollRequest.
@@ -303,10 +339,10 @@ class PaymentsClient {
     // and link this specific GetDetailsForEnroll call with its corresponding
     // enroll call.
     std::string vcn_context_token;
-    // Google's legal message lines in the virtual card enroll flow for this
+    // Google's legal message lines in the virtual-card enroll flow for this
     // specific card based on |vcn_context_token|.
     LegalMessageLines google_legal_message;
-    // The issuer's legal message lines in the virtual card enroll flow for this
+    // The issuer's legal message lines in the virtual-card enroll flow for this
     // specific card based on |vcn_context_token|.
     LegalMessageLines issuer_legal_message;
   };
@@ -401,6 +437,14 @@ class PaymentsClient {
       const SelectChallengeOptionRequestDetails& details,
       base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
                               const std::string&)> callback);
+
+  // The user has chosen to change the virtual-card enrollment of a credit card.
+  // Send the necessary information for the server to identify the credit card
+  // for which virtual-card enrollment will be updated, as well as metadata so
+  // that the server understands the context for the request.
+  virtual void UpdateVirtualCardEnrollment(
+      const UpdateVirtualCardEnrollmentRequestDetails& request_details,
+      base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback);
 
   // Cancels and clears the current |request_|.
   void CancelRequest();

@@ -10,27 +10,11 @@
 #include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 
 namespace autofill {
 
 class CreditCard;
-
-// This enum is used to denote the specific flow that the virtual card
-// enrollment process is a part of.
-enum class VirtualCardEnrollmentFlow {
-  // Default value, should never be used.
-  kNone = 0,
-  // Offering VCN Enrollment after Upstream flow, i.e., saving a card to
-  // Google Payments.
-  kUpstream = 1,
-  // Offering VCN Enrollment after Downstream flow, i.e., unmasking a card
-  // from Google Payments.
-  kDownstream = 2,
-  // Offering VCN Enrollment from the payment methods settings page.
-  kSettingsPage = 3,
-  // Max value, needs to be updated every time a new enum is added.
-  kMaxValue = kSettingsPage,
-};
 
 // This struct is passed into the controller when we show the
 // VirtualCardEnrollmentBubble, and it lets the controller customize the
@@ -52,9 +36,9 @@ struct VirtualCardEnrollmentFields {
   // The legal message lines for the footer of the
   // VirtualCardEnrollmentBubble.
   LegalMessageLines legal_message_lines;
-  // The flow for which the VirtualCardEnrollmentBubble will be shown.
-  VirtualCardEnrollmentFlow virtual_card_enrollment_flow =
-      VirtualCardEnrollmentFlow::kNone;
+  // The source for which the VirtualCardEnrollmentBubble will be shown.
+  VirtualCardEnrollmentSource virtual_card_enrollment_source =
+      VirtualCardEnrollmentSource::kNone;
 };
 
 // This struct is used to track the state of the virtual card enrollment
@@ -70,7 +54,7 @@ struct VirtualCardEnrollmentProcessState {
   // Only populated once the risk engine responded.
   absl::optional<std::string> risk_data;
   // |virtual_card_enrollment_fields|'s |credit_card| and
-  // |virtual_card_enrollment_flow| are populated in the beginning of the
+  // |virtual_card_enrollment_source| are populated in the beginning of the
   // virtual card enrollment flow, but the rest of the fields are only populated
   // before showing the VirtualCardEnrollmentBubble.
   VirtualCardEnrollmentFields virtual_card_enrollment_fields;
@@ -97,12 +81,12 @@ class VirtualCardEnrollmentManager {
   // Starting point for the VCN enroll flow. The fields in |credit_card| will
   // be used throughout the flow, such as for request fields as well as credit
   // card specific fields for the bubble to display.
-  // |virtual_card_enrollment_flow| will be used by
+  // |virtual_card_enrollment_source| will be used by
   // ShowVirtualCardEnrollBubble() to differentiate different bubbles based on
-  // the flow we are in.
+  // the source we originated from.
   void OfferVirtualCardEnroll(
       raw_ptr<CreditCard> credit_card,
-      VirtualCardEnrollmentFlow virtual_card_enrollment_flow);
+      VirtualCardEnrollmentSource virtual_card_enrollment_source);
 
   // Unenrolls the card mapped to the given |instrument_id|.
   void Unenroll(int64_t instrument_id);
@@ -111,7 +95,7 @@ class VirtualCardEnrollmentManager {
   // Called once the risk data is loaded. The |risk_data| will be used with
   // |state|'s |virtual_card_enrollment_fields|'s |credit_card|'s
   // |instrument_id_| field to make a GetDetailsForEnroll request, and
-  // |state|'s |virtual_card_enrollment_flow| will be passed down to when we
+  // |state|'s |virtual_card_enrollment_source| will be passed down to when we
   // show the bubble so that we show the correct bubble version.
   void OnRiskDataLoadedForVirtualCard(
       std::unique_ptr<VirtualCardEnrollmentProcessState> state,
@@ -123,7 +107,7 @@ class VirtualCardEnrollmentManager {
   // |virtual_card_enrollment_fields|'s |credit_card|'s |instrument_id| are the
   // fields the server requires for the GetDetailsForEnrollRequest, and will be
   // used by |client_|'s |payments_client_|. |state|'s
-  // |virtual_card_enrollment_fields_|'s |virtual_card_enrollment_flow| is
+  // |virtual_card_enrollment_fields_|'s |virtual_card_enrollment_source| is
   // passed here so that it can be forwarded to ShowVirtualCardEnrollBubble.
   void GetDetailsForEnroll(
       std::unique_ptr<VirtualCardEnrollmentProcessState> state);

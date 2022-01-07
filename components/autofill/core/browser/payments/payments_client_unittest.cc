@@ -23,6 +23,7 @@
 #include "components/autofill/core/browser/payments/credit_card_save_manager.h"
 #include "components/autofill/core/browser/payments/local_card_migration_manager.h"
 #include "components/autofill/core/browser/payments/payments_client.h"
+#include "components/autofill/core/browser/payments/virtual_card_enrollment_flow.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_features.h"
@@ -222,6 +223,11 @@ class PaymentsClientTest : public testing::Test {
                                   const std::string& updated_context_token) {
     result_ = result;
     context_token_ = updated_context_token;
+  }
+
+  void OnDidGetUpdateVirtualCardEnrollmentResponse(
+      AutofillClient::PaymentsRpcResult result) {
+    result_ = result;
   }
 
  protected:
@@ -1595,6 +1601,130 @@ TEST_F(PaymentsClientTest, SelectChallengeOptionResponseMissingContextToken) {
   ReturnResponse(net::HTTP_OK, "{}");
 
   EXPECT_EQ(AutofillClient::PaymentsRpcResult::kPermanentFailure, result_);
+}
+
+typedef std::tuple<VirtualCardEnrollmentSource,
+                   VirtualCardEnrollmentRequestType,
+                   AutofillClient::PaymentsRpcResult>
+    UpdateVirtualCardEnrollmentTestData;
+
+class UpdateVirtualCardEnrollmentTest
+    : public PaymentsClientTest,
+      public ::testing::WithParamInterface<
+          UpdateVirtualCardEnrollmentTestData> {
+ public:
+  UpdateVirtualCardEnrollmentTest() = default;
+  ~UpdateVirtualCardEnrollmentTest() override = default;
+
+  void TriggerFlow() {
+    VirtualCardEnrollmentSource virtual_card_enrollment_source =
+        std::get<0>(GetParam());
+    VirtualCardEnrollmentRequestType virtual_card_enrollment_request_type =
+        std::get<1>(GetParam());
+    StartUpdateVirtualCardEnrollment(virtual_card_enrollment_source,
+                                     virtual_card_enrollment_request_type);
+    IssueOAuthToken();
+
+    // |response_type_for_test| is the AutofillClient::PaymentsRpcResult
+    // response type we want to test for the combination of
+    // |virtual_card_enrollment_source| and
+    // |virtual_card_enrollment_request_type| we are currently on.
+    AutofillClient::PaymentsRpcResult response_type_for_test =
+        std::get<2>(GetParam());
+    switch (response_type_for_test) {
+      case AutofillClient::PaymentsRpcResult::kSuccess:
+        if (virtual_card_enrollment_request_type ==
+            VirtualCardEnrollmentRequestType::kEnroll) {
+          ReturnResponse(net::HTTP_OK,
+                         "{ \"enroll_result\": \"ENROLL_SUCCESS\" }");
+        } else if (virtual_card_enrollment_request_type ==
+                   VirtualCardEnrollmentRequestType::kUnenroll) {
+          ReturnResponse(net::HTTP_OK, "{}");
+        }
+        break;
+      case AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure:
+        ReturnResponse(
+            net::HTTP_OK,
+            "{ \"error\": { \"code\": \"ANYTHING_ELSE\", "
+            "\"api_error_reason\": \"virtual_card_temporary_error\"} }");
+        break;
+      case AutofillClient::PaymentsRpcResult::kTryAgainFailure:
+        ReturnResponse(net::HTTP_OK,
+                       "{ \"error\": { \"code\": \"INTERNAL\", "
+                       "\"api_error_reason\": \"ANYTHING_ELSE\"} }");
+        break;
+      case AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure:
+        ReturnResponse(
+            net::HTTP_OK,
+            "{ \"error\": { \"code\": \"ANYTHING_ELSE\", "
+            "\"api_error_reason\": \"virtual_card_permanent_error\"} }");
+        break;
+      case AutofillClient::PaymentsRpcResult::kPermanentFailure:
+        ReturnResponse(net::HTTP_OK,
+                       "{ \"error\": { \"code\": \"ANYTHING_ELSE\" } }");
+        break;
+      case AutofillClient::PaymentsRpcResult::kNetworkError:
+        ReturnResponse(net::HTTP_REQUEST_TIMEOUT, "");
+        break;
+      case AutofillClient::PaymentsRpcResult::kNone:
+        NOTREACHED();
+        break;
+    }
+    EXPECT_EQ(response_type_for_test, result_);
+  }
+
+ private:
+  void StartUpdateVirtualCardEnrollment(
+      VirtualCardEnrollmentSource virtual_card_enrollment_source,
+      VirtualCardEnrollmentRequestType virtual_card_enrollment_request_type) {
+    PaymentsClient::UpdateVirtualCardEnrollmentRequestDetails request_details;
+    request_details.virtual_card_enrollment_request_type =
+        virtual_card_enrollment_request_type;
+    request_details.virtual_card_enrollment_source =
+        virtual_card_enrollment_source;
+    request_details.billing_customer_number = 555666777888;
+    if (virtual_card_enrollment_request_type ==
+        VirtualCardEnrollmentRequestType::kEnroll) {
+      request_details.vcn_context_token = "fake context token";
+    } else if (virtual_card_enrollment_request_type ==
+               VirtualCardEnrollmentRequestType::kUnenroll) {
+      request_details.instrument_id = 12345678;
+    }
+    client_->UpdateVirtualCardEnrollment(
+        request_details,
+        base::BindOnce(
+            &PaymentsClientTest::OnDidGetUpdateVirtualCardEnrollmentResponse,
+            weak_ptr_factory_.GetWeakPtr()));
+  }
+};
+
+// Initializes the parameterized test suite with all possible values of
+// VirtualCardEnrollmentSource, VirtualCardEnrollmentRequestType, and
+// AutofillClient::PaymentsRpcResult.
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    UpdateVirtualCardEnrollmentTest,
+    testing::Combine(
+        testing::Values(VirtualCardEnrollmentSource::kUpstream,
+                        VirtualCardEnrollmentSource::kDownstream,
+                        VirtualCardEnrollmentSource::kSettingsPage),
+        testing::Values(VirtualCardEnrollmentRequestType::kEnroll,
+                        VirtualCardEnrollmentRequestType::kUnenroll),
+        testing::Values(
+            AutofillClient::PaymentsRpcResult::kSuccess,
+            AutofillClient::PaymentsRpcResult::kVcnRetrievalTryAgainFailure,
+            AutofillClient::PaymentsRpcResult::kTryAgainFailure,
+            AutofillClient::PaymentsRpcResult::kVcnRetrievalPermanentFailure,
+            AutofillClient::PaymentsRpcResult::kPermanentFailure,
+            AutofillClient::PaymentsRpcResult::kNetworkError)));
+
+// Parameterized test that tests all combinations of
+// VirtualCardEnrollmentSource and VirtualCardEnrollmentRequestType against all
+// possible server responses in the UpdateVirtualCardEnrollmentFlow. This test
+// will be run once for each combination.
+TEST_P(UpdateVirtualCardEnrollmentTest,
+       UpdateVirtualCardEnrollmentTest_TestAllFlows) {
+  TriggerFlow();
 }
 
 }  // namespace payments
