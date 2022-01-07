@@ -392,7 +392,7 @@ def builder(
         fully_qualified_builder_dimension = args.DEFAULT,
         cores = args.DEFAULT,
         cpu = args.DEFAULT,
-        bootstrap = False,
+        bootstrap = True,
         builder_group = args.DEFAULT,
         builder_spec = None,
         mirrors = None,

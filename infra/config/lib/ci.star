@@ -31,7 +31,6 @@ def ci_builder(
         *,
         name,
         branch_selector = branches.MAIN,
-        bootstrap = True,
         console_view_entry = None,
         main_console_view = args.DEFAULT,
         cq_mirrors_console_view = args.DEFAULT,
@@ -49,13 +48,6 @@ def ci_builder(
       branch_selector: A branch selector value controlling whether the
         builder definition is executed. See branches.star for more
         information.
-      bootstrap: a boolean indicating whether the builder should have its
-        properties bootstrapped. If True, the builder's properties will be
-        written to a separate file and its definition will be updated with
-        new properties and executable that cause a bootstrapping binary to
-        be used. The build's default values for properties will be taken
-        from the properties file at the version that the build will check
-        out.
       console_view_entry: A `consoles.console_view_entry` struct or a list of
         them describing console view entries to create for the builder.
         See `consoles.console_view_entry` for details.
@@ -151,7 +143,6 @@ def ci_builder(
     builders.builder(
         name = name,
         branch_selector = branch_selector,
-        bootstrap = bootstrap,
         console_view_entry = console_view_entry,
         resultdb_bigquery_exports = merged_resultdb_bigquery_exports,
         sheriff_rotations = sheriff_rotations,
