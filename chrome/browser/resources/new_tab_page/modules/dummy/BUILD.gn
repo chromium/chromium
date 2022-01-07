@@ -17,7 +17,7 @@ js_library("module") {
 }
 
 js_library("foo_proxy") {
-  deps = [ "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings_js_library_for_compile" ]
+  deps = [ "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings_webui_js" ]
 }
 
 html_to_js("web_components") {

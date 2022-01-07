@@ -9,6 +9,7 @@ import '../module_header.js';
 
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {FooDataItem} from '../../foo.mojom-webui.js';
 import {I18nBehavior, loadTimeData} from '../../i18n_setup.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 
@@ -32,7 +33,7 @@ class DummyModuleElement extends mixinBehaviors
 
   static get properties() {
     return {
-      /** @type {!Array<!foo.mojom.FooDataItem>} */
+      /** @type {!Array<!FooDataItem>} */
       tiles: Array,
 
       /** @type {!string} */

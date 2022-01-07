@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../../foo.mojom-lite.js';
+import {FooHandler, FooHandlerRemote} from '../../foo.mojom-webui.js';
 
 /**
  * @fileoverview This file provides a class that exposes the Mojo handler
@@ -10,16 +10,16 @@ import '../../foo.mojom-lite.js';
  * and receiving the browser response.
  */
 
-/** @type {?foo.mojom.FooHandlerRemote} */
+/** @type {?FooHandlerRemote} */
 let handler = null;
 
 export class FooProxy {
-  /** @return {!foo.mojom.FooHandlerRemote} */
+  /** @return {!FooHandlerRemote} */
   static getHandler() {
-    return handler || (handler = foo.mojom.FooHandler.getRemote());
+    return handler || (handler = FooHandler.getRemote());
   }
 
-  /** @param {!foo.mojom.FooHandlerRemote} newHandler */
+  /** @param {!FooHandlerRemote} newHandler */
   static setHandler(newHandler) {
     handler = newHandler;
   }

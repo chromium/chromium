@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {$$, dummyDescriptor, FooProxy} from 'chrome://new-tab-page/new_tab_page.js';
+import {$$, dummyDescriptor, FooHandlerRemote, FooProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 import {installMock} from 'chrome://test/new_tab_page/test_support.js';
@@ -16,7 +16,7 @@ suite('NewTabPageModulesDummyModuleTest', () => {
   setup(() => {
     document.body.innerHTML = '';
 
-    handler = installMock(foo.mojom.FooHandlerRemote, FooProxy.setHandler);
+    handler = installMock(FooHandlerRemote, FooProxy.setHandler);
     handler.setResultFor('getData', Promise.resolve({data: []}));
   });
 
