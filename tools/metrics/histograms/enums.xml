@@ -32124,6 +32124,18 @@ Called by update_extension_permission.py.-->
   <int value="1213" label="Pairing Failed: Error UI Dismissed By User"/>
 </enum>
 
+<enum name="FastPairHandshakeFailureReason">
+  <int value="0" label="Failed to initialize GATT connection"/>
+  <int value="1" label="Failed to create FastPairDataEncryptor"/>
+  <int value="2"
+      label="Failed to write to the Key-based Pairing Characteristic"/>
+  <int value="3"
+      label="Failed to decrypt the the Key-based Pairing Characteristic
+             response"/>
+  <int value="4"
+      label="Incorrect Key-based Pairing Characteristic response type"/>
+</enum>
+
 <enum name="FastPairPairFailure">
   <int value="0" label="Failed to create a GATT connection to the device"/>
   <int value="1" label="Failed to find the expected GATT service"/>

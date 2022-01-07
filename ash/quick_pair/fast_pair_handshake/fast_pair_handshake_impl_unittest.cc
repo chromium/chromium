@@ -105,6 +105,9 @@ const char kKeyBasedCharacteristicDecryptResult[] =
     "Bluetooth.ChromeOS.FastPair.KeyBasedPairing.DecryptResult";
 const char kTotalDataEncryptorCreateTimeMetric[] =
     "Bluetooth.ChromeOS.FastPair.FastPairDataEncryptor.CreateTime";
+const char kHandshakeResult[] = "Bluetooth.ChromeOS.FastPair.Handshake.Result";
+const char kHandshakeFailureReason[] =
+    "Bluetooth.ChromeOS.FastPair.Handshake.FailureReason";
 
 }  // namespace
 
@@ -161,13 +164,19 @@ class FastPairHandshakeImplTest : public testing::Test {
 };
 
 TEST_F(FastPairHandshakeImplTest, GattError) {
+  histogram_tester().ExpectTotalCount(kHandshakeResult, 0);
+  histogram_tester().ExpectTotalCount(kHandshakeFailureReason, 0);
   fake_fast_pair_gatt_service_client()->RunOnGattClientInitializedCallback(
       PairFailure::kCreateGattConnection);
   EXPECT_EQ(failure_.value(), PairFailure::kCreateGattConnection);
   EXPECT_FALSE(handshake_->completed_successfully());
+  histogram_tester().ExpectTotalCount(kHandshakeResult, 1);
+  histogram_tester().ExpectTotalCount(kHandshakeFailureReason, 1);
 }
 
 TEST_F(FastPairHandshakeImplTest, DataEncryptorCreateError) {
+  histogram_tester().ExpectTotalCount(kHandshakeResult, 0);
+  histogram_tester().ExpectTotalCount(kHandshakeFailureReason, 0);
   histogram_tester().ExpectTotalCount(kWriteKeyBasedCharacteristicResultMetric,
                                       0);
   histogram_tester().ExpectTotalCount(kDataEncryptorCreateResultMetric, 0);
@@ -184,9 +193,13 @@ TEST_F(FastPairHandshakeImplTest, DataEncryptorCreateError) {
   histogram_tester().ExpectTotalCount(
       kWriteKeyBasedCharacteristicPairFailureMetric, 0);
   histogram_tester().ExpectTotalCount(kTotalDataEncryptorCreateTimeMetric, 0);
+  histogram_tester().ExpectTotalCount(kHandshakeResult, 1);
+  histogram_tester().ExpectTotalCount(kHandshakeFailureReason, 1);
 }
 
 TEST_F(FastPairHandshakeImplTest, WriteResponseError) {
+  histogram_tester().ExpectTotalCount(kHandshakeResult, 0);
+  histogram_tester().ExpectTotalCount(kHandshakeFailureReason, 0);
   histogram_tester().ExpectTotalCount(kDataEncryptorCreateResultMetric, 0);
   histogram_tester().ExpectTotalCount(kWriteKeyBasedCharacteristicResultMetric,
                                       0);
@@ -204,9 +217,13 @@ TEST_F(FastPairHandshakeImplTest, WriteResponseError) {
                                       1);
   histogram_tester().ExpectTotalCount(
       kWriteKeyBasedCharacteristicPairFailureMetric, 1);
+  histogram_tester().ExpectTotalCount(kHandshakeResult, 1);
+  histogram_tester().ExpectTotalCount(kHandshakeFailureReason, 1);
 }
 
 TEST_F(FastPairHandshakeImplTest, ParseResponseError) {
+  histogram_tester().ExpectTotalCount(kHandshakeResult, 0);
+  histogram_tester().ExpectTotalCount(kHandshakeFailureReason, 0);
   histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptTime, 0);
   histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptResult, 0);
   histogram_tester().ExpectTotalCount(
@@ -222,9 +239,13 @@ TEST_F(FastPairHandshakeImplTest, ParseResponseError) {
       kWriteKeyBasedCharacteristicPairFailureMetric, 0);
   histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptTime, 0);
   histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptResult, 1);
+  histogram_tester().ExpectTotalCount(kHandshakeResult, 1);
+  histogram_tester().ExpectTotalCount(kHandshakeFailureReason, 1);
 }
 
 TEST_F(FastPairHandshakeImplTest, ParseResponseWrongType) {
+  histogram_tester().ExpectTotalCount(kHandshakeResult, 0);
+  histogram_tester().ExpectTotalCount(kHandshakeFailureReason, 0);
   histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptTime, 0);
   histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptResult, 0);
   fake_fast_pair_gatt_service_client()->RunOnGattClientInitializedCallback();
@@ -239,9 +260,13 @@ TEST_F(FastPairHandshakeImplTest, ParseResponseWrongType) {
   EXPECT_FALSE(handshake_->completed_successfully());
   histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptTime, 0);
   histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptResult, 1);
+  histogram_tester().ExpectTotalCount(kHandshakeResult, 1);
+  histogram_tester().ExpectTotalCount(kHandshakeFailureReason, 1);
 }
 
 TEST_F(FastPairHandshakeImplTest, Success) {
+  histogram_tester().ExpectTotalCount(kHandshakeResult, 0);
+  histogram_tester().ExpectTotalCount(kHandshakeFailureReason, 0);
   histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptTime, 0);
   histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptResult, 0);
   fake_fast_pair_gatt_service_client()->RunOnGattClientInitializedCallback();
@@ -255,6 +280,8 @@ TEST_F(FastPairHandshakeImplTest, Success) {
   EXPECT_TRUE(handshake_->completed_successfully());
   histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptTime, 1);
   histogram_tester().ExpectTotalCount(kKeyBasedCharacteristicDecryptResult, 1);
+  histogram_tester().ExpectTotalCount(kHandshakeResult, 1);
+  histogram_tester().ExpectTotalCount(kHandshakeFailureReason, 0);
 }
 
 }  // namespace quick_pair

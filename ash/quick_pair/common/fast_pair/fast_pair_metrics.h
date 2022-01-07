@@ -60,6 +60,19 @@ enum class COMPONENT_EXPORT(QUICK_PAIR_COMMON) PairingMethod {
   kMaxValue = kSystemPairingUi,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. This enum should be kept in sync
+// with the FastPairHandshakeFailureReason enum in
+// src/tools/metrics/histograms/enums.xml.
+enum class COMPONENT_EXPORT(QUICK_PAIR_COMMON) HandshakeFailureReason {
+  kFailedGattInit = 0,
+  kFailedCreateEncryptor = 1,
+  kFailedWriteResponse = 2,
+  kFailedDecryptResponse = 3,
+  kFailedIncorrectResponseType = 4,
+  kMaxValue = kFailedIncorrectResponseType,
+};
+
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void AttemptRecordingFastPairEngagementFlow(const Device& device,
                                             FastPairEngagementFlowEvent event);
@@ -190,6 +203,12 @@ void RecordFootprintsFetcherGetResult(bool success);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordFastPairRepositoryCacheResult(bool success);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordHandshakeResult(bool success);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordHandshakeFailureReason(HandshakeFailureReason failure_reason);
 
 }  // namespace quick_pair
 }  // namespace ash

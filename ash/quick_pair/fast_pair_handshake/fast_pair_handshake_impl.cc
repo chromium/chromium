@@ -48,6 +48,8 @@ void FastPairHandshakeImpl::OnGattClientInitializedCallback(
                     << ": Failed to init gatt client with failure = "
                     << failure.value();
     std::move(on_complete_callback_).Run(device_, failure.value());
+    RecordHandshakeResult(/*success=*/false);
+    RecordHandshakeFailureReason(HandshakeFailureReason::kFailedGattInit);
     return;
   }
 
@@ -68,6 +70,9 @@ void FastPairHandshakeImpl::OnDataEncryptorCreateAsync(
                     << ": Fast Pair Data Encryptor failed to be created.";
     std::move(on_complete_callback_)
         .Run(device_, PairFailure::kDataEncryptorRetrieval);
+    RecordHandshakeResult(/*success=*/false);
+    RecordHandshakeFailureReason(
+        HandshakeFailureReason::kFailedCreateEncryptor);
     return;
   }
 
@@ -98,6 +103,8 @@ void FastPairHandshakeImpl::OnWriteResponse(
     QP_LOG(WARNING) << __func__
                     << ": Failed to write request: " << failure.value();
     RecordWriteKeyBasedCharacteristicPairFailure(failure.value());
+    RecordHandshakeResult(/*success=*/false);
+    RecordHandshakeFailureReason(HandshakeFailureReason::kFailedWriteResponse);
     std::move(on_complete_callback_).Run(device_, failure.value());
     return;
   }
@@ -118,6 +125,9 @@ void FastPairHandshakeImpl::OnParseDecryptedResponse(
     std::move(on_complete_callback_)
         .Run(device_, PairFailure::kKeybasedPairingResponseDecryptFailure);
     RecordKeyBasedCharacteristicDecryptResult(/*success=*/false);
+    RecordHandshakeResult(/*success=*/false);
+    RecordHandshakeFailureReason(
+        HandshakeFailureReason::kFailedDecryptResponse);
     return;
   }
 
@@ -127,6 +137,9 @@ void FastPairHandshakeImpl::OnParseDecryptedResponse(
     std::move(on_complete_callback_)
         .Run(device_, PairFailure::kIncorrectKeyBasedPairingResponseType);
     RecordKeyBasedCharacteristicDecryptResult(/*success=*/false);
+    RecordHandshakeResult(/*success=*/false);
+    RecordHandshakeFailureReason(
+        HandshakeFailureReason::kFailedIncorrectResponseType);
     return;
   }
 
@@ -138,6 +151,7 @@ void FastPairHandshakeImpl::OnParseDecryptedResponse(
   device_->set_classic_address(device_address);
 
   completed_successfully_ = true;
+  RecordHandshakeResult(/*success=*/true);
   std::move(on_complete_callback_).Run(device_, absl::nullopt);
 }
 

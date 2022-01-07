@@ -459,6 +459,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.FastPair.Handshake.FailureReason"
+    enum="FastPairHandshakeFailureReason" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records reason behind the failure of the big picture Fast Pair Handshake
+    with a device (see 'Bluetooth.ChromeOS.FastPair.Handshake.Result'). Emitted
+    on Handshake failure.
+  </summary>
+</histogram>
+
+<histogram name="Bluetooth.ChromeOS.FastPair.Handshake.Result"
+    enum="BooleanSuccess" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the success or failure of the big picture Fast Pair Handshake with a
+    device. Possible failures include : creating a Gatt connection, creating the
+    data encryptor, writing to the device, parsing the response bytes from the
+    device. Success is considered when we receive a valid response from the
+    device. Emitted when the Handshake reaches a terminal point.
+  </summary>
+</histogram>
+
 <histogram name="Bluetooth.ChromeOS.FastPair.KeyBasedPairing.DecryptResult"
     enum="BooleanSuccess" expires_after="2022-09-20">
   <owner>shanefitz@google.com</owner>
