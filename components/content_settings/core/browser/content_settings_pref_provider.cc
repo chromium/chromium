@@ -179,7 +179,7 @@ bool PrefProvider::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
-    std::unique_ptr<base::Value>&& in_value,
+    base::Value&& in_value,
     const ContentSettingConstraints& constraints) {
   DCHECK(CalledOnValidThread());
   DCHECK(prefs_);
@@ -205,12 +205,13 @@ bool PrefProvider::SetWebsiteSetting(
   // existing Allow Always setting.
   if (constraints.session_model == SessionModel::OneTime) {
     DCHECK_EQ(content_type, ContentSettingsType::GEOLOCATION);
-    in_value = nullptr;
+    in_value = base::Value();
   }
 
-  return GetPref(content_type)
+  GetPref(content_type)
       ->SetWebsiteSetting(primary_pattern, secondary_pattern, modified_time,
                           std::move(in_value), constraints);
+  return true;
 }
 
 base::Time PrefProvider::GetWebsiteSettingLastModified(

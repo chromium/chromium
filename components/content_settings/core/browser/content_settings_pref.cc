@@ -37,20 +37,20 @@ const char kSessionModelKey[] = "model";
 const char kSettingKey[] = "setting";
 const char kLastModifiedKey[] = "last_modified";
 
-bool IsValueAllowedForType(const base::Value* value, ContentSettingsType type) {
+bool IsValueAllowedForType(const base::Value& value, ContentSettingsType type) {
   const content_settings::ContentSettingsInfo* info =
       content_settings::ContentSettingsRegistry::GetInstance()->Get(type);
   if (info) {
-    if (!value->is_int())
+    if (!value.is_int())
       return false;
-    if (value->GetInt() == CONTENT_SETTING_DEFAULT)
+    if (value.GetInt() == CONTENT_SETTING_DEFAULT)
       return false;
-    return info->IsSettingValid(IntToContentSetting(value->GetInt()));
+    return info->IsSettingValid(IntToContentSetting(value.GetInt()));
   }
 
   // TODO(raymes): We should permit different types of base::Value for
   // website settings.
-  return value->type() == base::Value::Type::DICTIONARY;
+  return value.is_dict();
 }
 
 std::string GetString(const base::Value& dict, const char* key) {
@@ -143,7 +143,7 @@ ContentSettingsPref::ContentSettingsPref(
                                       base::Unretained(this)));
 }
 
-ContentSettingsPref::~ContentSettingsPref() {}
+ContentSettingsPref::~ContentSettingsPref() = default;
 
 std::unique_ptr<RuleIterator> ContentSettingsPref::GetRuleIterator(
     bool off_the_record) const {
@@ -152,20 +152,17 @@ std::unique_ptr<RuleIterator> ContentSettingsPref::GetRuleIterator(
   return value_map_.GetRuleIterator(content_type_, &lock_);
 }
 
-bool ContentSettingsPref::SetWebsiteSetting(
+void ContentSettingsPref::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     base::Time modified_time,
-    std::unique_ptr<base::Value>&& in_value,
+    base::Value value,
     const ContentSettingConstraints& constraints) {
-  DCHECK(!in_value || IsValueAllowedForType(in_value.get(), content_type_));
+  DCHECK(value.is_none() || IsValueAllowedForType(value, content_type_));
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(prefs_);
   DCHECK(primary_pattern != ContentSettingsPattern::Wildcard() ||
          secondary_pattern != ContentSettingsPattern::Wildcard());
-
-  // At this point take the ownership of the |in_value|.
-  std::unique_ptr<base::Value> value(std::move(in_value));
 
   // Update in memory value map.
   OriginIdentifierValueMap* map_to_modify = &off_the_record_value_map_;
@@ -174,9 +171,9 @@ bool ContentSettingsPref::SetWebsiteSetting(
 
   {
     base::AutoLock auto_lock(lock_);
-    if (value) {
+    if (!value.is_none()) {
       map_to_modify->SetValue(primary_pattern, secondary_pattern, content_type_,
-                              modified_time, value->Clone(), constraints);
+                              modified_time, value.Clone(), constraints);
     } else {
       map_to_modify->DeleteValue(primary_pattern, secondary_pattern,
                                  content_type_);
@@ -184,13 +181,11 @@ bool ContentSettingsPref::SetWebsiteSetting(
   }
   // Update the content settings preference.
   if (!off_the_record_) {
-    UpdatePref(primary_pattern, secondary_pattern, modified_time, value.get(),
-               constraints);
+    UpdatePref(primary_pattern, secondary_pattern, modified_time,
+               std::move(value), constraints);
   }
 
   notify_callback_.Run(primary_pattern, secondary_pattern, content_type_);
-
-  return true;
 }
 
 base::Time ContentSettingsPref::GetWebsiteSettingLastModified(
@@ -323,7 +318,7 @@ void ContentSettingsPref::ReadContentSettingsFromPref() {
     const base::Value* value = settings_dictionary.FindKey(kSettingKey);
     if (value) {
       base::Time last_modified = GetTimeStamp(settings_dictionary);
-      DCHECK(IsValueAllowedForType(value, content_type_));
+      DCHECK(IsValueAllowedForType(*value, content_type_));
       value_map_.SetValue(std::move(pattern_pair.first),
                           std::move(pattern_pair.second), content_type_,
                           last_modified, value->Clone(),
@@ -374,7 +369,7 @@ void ContentSettingsPref::UpdatePref(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     const base::Time last_modified,
-    const base::Value* value,
+    base::Value value,
     const ContentSettingConstraints& constraints) {
   // Ensure that |lock_| is not held by this thread, since this function will
   // send out notifications (by |~ScopedDictionaryPrefUpdate|).
@@ -393,7 +388,7 @@ void ContentSettingsPref::UpdatePref(
     bool found = pattern_pairs_settings->GetDictionaryWithoutPathExpansion(
         pattern_str, &settings_dictionary);
 
-    if (!found && value) {
+    if (!found && !value.is_none()) {
       settings_dictionary =
           pattern_pairs_settings->SetDictionaryWithoutPathExpansion(
               pattern_str, std::make_unique<base::DictionaryValue>());
@@ -401,7 +396,7 @@ void ContentSettingsPref::UpdatePref(
 
     if (settings_dictionary) {
       // Update settings dictionary.
-      if (value == nullptr) {
+      if (value.is_none()) {
         settings_dictionary->RemoveWithoutPathExpansion(kSettingKey, nullptr);
         settings_dictionary->RemoveWithoutPathExpansion(kLastModifiedKey,
                                                         nullptr);
@@ -410,8 +405,7 @@ void ContentSettingsPref::UpdatePref(
         settings_dictionary->RemoveWithoutPathExpansion(kSessionModelKey,
                                                         nullptr);
       } else {
-        settings_dictionary->SetWithoutPathExpansion(
-            kSettingKey, base::Value::ToUniquePtrValue(value->Clone()));
+        settings_dictionary->SetKey(kSettingKey, std::move(value));
         settings_dictionary->SetKey(
             kLastModifiedKey,
             base::Value(base::NumberToString(

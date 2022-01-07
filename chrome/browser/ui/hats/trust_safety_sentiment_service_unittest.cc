@@ -502,7 +502,7 @@ TEST_F(TrustSafetySentimentServiceTest, PrivacySettingsProductSpecificData) {
   managed_provider->SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
       ContentSettingsType::COOKIES,
-      std::make_unique<base::Value>(ContentSetting::CONTENT_SETTING_BLOCK));
+      base::Value(ContentSetting::CONTENT_SETTING_BLOCK));
   content_settings::TestUtils::OverrideProvider(
       content_settings, std::move(managed_provider),
       HostContentSettingsMap::POLICY_PROVIDER);

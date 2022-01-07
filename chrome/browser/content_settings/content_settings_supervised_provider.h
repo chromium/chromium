@@ -37,7 +37,7 @@ class SupervisedProvider : public ObservableProvider {
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type,
-      std::unique_ptr<base::Value>&& value,
+      base::Value&& value,
       const ContentSettingConstraints& constraints = {}) override;
 
   void ClearAllContentSettingsRules(ContentSettingsType content_type) override;

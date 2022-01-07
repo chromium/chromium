@@ -146,11 +146,9 @@ TEST_F(PolicyProviderTest, GettingManagedContentSettings) {
   // The PolicyProvider does not allow setting content settings as they are
   // enforced via policies and not set by the user or extension. So a call to
   // SetWebsiteSetting does nothing.
-  std::unique_ptr<base::Value> value_block(
-      new base::Value(CONTENT_SETTING_BLOCK));
   bool owned = provider.SetWebsiteSetting(yt_url_pattern, yt_url_pattern,
                                           ContentSettingsType::COOKIES,
-                                          std::move(value_block));
+                                          base::Value(CONTENT_SETTING_BLOCK));
   EXPECT_FALSE(owned);
   EXPECT_EQ(CONTENT_SETTING_DEFAULT,
             TestUtils::GetContentSetting(&provider, youtube_url, youtube_url,

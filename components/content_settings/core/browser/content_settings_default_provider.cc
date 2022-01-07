@@ -73,9 +73,9 @@ const std::string& GetPrefName(ContentSettingsType type) {
 
 class DefaultRuleIterator : public RuleIterator {
  public:
-  explicit DefaultRuleIterator(const base::Value* value) {
-    if (value)
-      value_ = value->Clone();
+  explicit DefaultRuleIterator(base::Value value) {
+    if (!value.is_none())
+      value_ = std::move(value);
     else
       is_done_ = true;
   }
@@ -241,14 +241,13 @@ DefaultProvider::DefaultProvider(PrefService* prefs, bool off_the_record)
     pref_change_registrar_.Add(info->default_value_pref_name(), callback);
 }
 
-DefaultProvider::~DefaultProvider() {
-}
+DefaultProvider::~DefaultProvider() = default;
 
 bool DefaultProvider::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
-    std::unique_ptr<base::Value>&& in_value,
+    base::Value&& in_value,
     const ContentSettingConstraints& constraints) {
   DCHECK(CalledOnValidThread());
   DCHECK(prefs_);
@@ -259,9 +258,9 @@ bool DefaultProvider::SetWebsiteSetting(
     return false;
   }
 
-  // Put |in_value| in a scoped pointer to ensure that it gets cleaned up
-  // properly if we don't pass on the ownership.
-  std::unique_ptr<base::Value> value(std::move(in_value));
+  // Move |in_value| to ensure that it gets cleaned up properly even if we don't
+  // pass on the ownership.
+  base::Value value(std::move(in_value));
 
   // The default settings may not be directly modified for OTR sessions.
   // Instead, they are synced to the main profile's setting.
@@ -276,9 +275,9 @@ bool DefaultProvider::SetWebsiteSetting(
     // whose callbacks may try to reacquire the lock on the same thread.
     {
       base::AutoLock lock(lock_);
-      ChangeSetting(content_type, value.get());
+      ChangeSetting(content_type, value.Clone());
     }
-    WriteToPref(content_type, value.get());
+    WriteToPref(content_type, value);
   }
 
   NotifyObservers(ContentSettingsPattern::Wildcard(),
@@ -295,12 +294,12 @@ std::unique_ptr<RuleIterator> DefaultProvider::GetRuleIterator(
     return nullptr;
 
   base::AutoLock lock(lock_);
-  auto it = default_settings_.find(content_type);
+  const auto it = default_settings_.find(content_type);
   if (it == default_settings_.end()) {
     NOTREACHED();
     return nullptr;
   }
-  return std::make_unique<DefaultRuleIterator>(it->second.get());
+  return std::make_unique<DefaultRuleIterator>(it->second.Clone());
 }
 
 void DefaultProvider::ClearAllContentSettingsRules(
@@ -324,35 +323,34 @@ void DefaultProvider::ReadDefaultSettings() {
   WebsiteSettingsRegistry* website_settings =
       WebsiteSettingsRegistry::GetInstance();
   for (const WebsiteSettingsInfo* info : *website_settings)
-    ChangeSetting(info->type(), ReadFromPref(info->type()).get());
+    ChangeSetting(info->type(), ReadFromPref(info->type()));
 }
 
 bool DefaultProvider::IsValueEmptyOrDefault(ContentSettingsType content_type,
-                                            base::Value* value) {
-  return !value ||
+                                            const base::Value& value) {
+  return value.is_none() ||
          ValueToContentSetting(value) == GetDefaultValue(content_type);
 }
 
 void DefaultProvider::ChangeSetting(ContentSettingsType content_type,
-                                    base::Value* value) {
+                                    base::Value value) {
   const ContentSettingsInfo* info =
       ContentSettingsRegistry::GetInstance()->Get(content_type);
-  DCHECK(!info || !value ||
+  DCHECK(!info || value.is_none() ||
          info->IsDefaultSettingValid(ValueToContentSetting(value)));
   default_settings_[content_type] =
-      value ? ToNullableUniquePtrValue(value->Clone())
-            : ToNullableUniquePtrValue(
-                  ContentSettingToValue(GetDefaultValue(content_type)));
+      value.is_none() ? ContentSettingToValue(GetDefaultValue(content_type))
+                      : std::move(value);
 }
 
 void DefaultProvider::WriteToPref(ContentSettingsType content_type,
-                                  base::Value* value) {
+                                  const base::Value& value) {
   if (IsValueEmptyOrDefault(content_type, value)) {
     prefs_->ClearPref(GetPrefName(content_type));
     return;
   }
 
-  prefs_->SetInteger(GetPrefName(content_type), value->GetInt());
+  prefs_->SetInteger(GetPrefName(content_type), value.GetInt());
 }
 
 void DefaultProvider::OnPreferenceChanged(const std::string& name) {
@@ -387,7 +385,7 @@ void DefaultProvider::OnPreferenceChanged(const std::string& name) {
     // whose callbacks may try to reacquire the lock on the same thread.
     {
       base::AutoLock lock(lock_);
-      ChangeSetting(content_type, ReadFromPref(content_type).get());
+      ChangeSetting(content_type, ReadFromPref(content_type));
     }
   }
 
@@ -395,11 +393,9 @@ void DefaultProvider::OnPreferenceChanged(const std::string& name) {
                   ContentSettingsPattern::Wildcard(), content_type);
 }
 
-std::unique_ptr<base::Value> DefaultProvider::ReadFromPref(
-    ContentSettingsType content_type) {
+base::Value DefaultProvider::ReadFromPref(ContentSettingsType content_type) {
   int int_value = prefs_->GetInteger(GetPrefName(content_type));
-  return ToNullableUniquePtrValue(
-      ContentSettingToValue(IntToContentSetting(int_value)));
+  return ContentSettingToValue(IntToContentSetting(int_value));
 }
 
 void DefaultProvider::DiscardOrMigrateObsoletePreferences() {

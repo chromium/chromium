@@ -47,8 +47,7 @@ TEST_F(ContentSettingsDefaultProviderTest, DefaultValues) {
                                          ContentSettingsType::COOKIES, false));
   provider_.SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES,
-      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+      ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_BLOCK));
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             TestUtils::GetContentSetting(&provider_, GURL(), GURL(),
                                          ContentSettingsType::COOKIES, false));
@@ -58,8 +57,7 @@ TEST_F(ContentSettingsDefaultProviderTest, DefaultValues) {
                                      ContentSettingsType::GEOLOCATION, false));
   provider_.SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::GEOLOCATION,
-      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+      ContentSettingsType::GEOLOCATION, base::Value(CONTENT_SETTING_BLOCK));
   EXPECT_EQ(
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&provider_, GURL(), GURL(),
@@ -78,11 +76,10 @@ TEST_F(ContentSettingsDefaultProviderTest, IgnoreNonDefaultSettings) {
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             TestUtils::GetContentSetting(&provider_, primary_url, secondary_url,
                                          ContentSettingsType::COOKIES, false));
-  std::unique_ptr<base::Value> value(new base::Value(CONTENT_SETTING_BLOCK));
   bool owned = provider_.SetWebsiteSetting(
       ContentSettingsPattern::FromURL(primary_url),
       ContentSettingsPattern::FromURL(secondary_url),
-      ContentSettingsType::COOKIES, std::move(value));
+      ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_BLOCK));
   EXPECT_FALSE(owned);
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
             TestUtils::GetContentSetting(&provider_, primary_url, secondary_url,
@@ -96,15 +93,13 @@ TEST_F(ContentSettingsDefaultProviderTest, Observer) {
   provider_.AddObserver(&mock_observer);
   provider_.SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES,
-      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+      ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_BLOCK));
 
   EXPECT_CALL(mock_observer,
               OnContentSettingChanged(_, _, ContentSettingsType::GEOLOCATION));
   provider_.SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::GEOLOCATION,
-      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+      ContentSettingsType::GEOLOCATION, base::Value(CONTENT_SETTING_BLOCK));
 }
 
 TEST_F(ContentSettingsDefaultProviderTest, ObservePref) {
@@ -112,8 +107,7 @@ TEST_F(ContentSettingsDefaultProviderTest, ObservePref) {
 
   provider_.SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES,
-      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+      ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_BLOCK));
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             TestUtils::GetContentSetting(&provider_, GURL(), GURL(),
                                          ContentSettingsType::COOKIES, false));
@@ -248,8 +242,7 @@ TEST_F(ContentSettingsDefaultProviderTest, OffTheRecord) {
   // incognito map.
   provider_.SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES,
-      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+      ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_BLOCK));
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             TestUtils::GetContentSetting(&provider_, GURL(), GURL(),
                                          ContentSettingsType::COOKIES,
@@ -261,10 +254,9 @@ TEST_F(ContentSettingsDefaultProviderTest, OffTheRecord) {
                                          true /* include_incognito */));
 
   // Changing content settings on the incognito provider should be ignored.
-  std::unique_ptr<base::Value> value(new base::Value(CONTENT_SETTING_ALLOW));
   bool owned = otr_provider.SetWebsiteSetting(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::COOKIES, std::move(value));
+      ContentSettingsType::COOKIES, base::Value(CONTENT_SETTING_ALLOW));
   EXPECT_TRUE(owned);
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             TestUtils::GetContentSetting(&provider_, GURL(), GURL(),

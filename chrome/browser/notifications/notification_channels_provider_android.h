@@ -90,13 +90,12 @@ class NotificationChannelsProviderAndroid
   std::unique_ptr<content_settings::RuleIterator> GetRuleIterator(
       ContentSettingsType content_type,
       bool incognito) const override;
-  bool SetWebsiteSetting(
-      const ContentSettingsPattern& primary_pattern,
-      const ContentSettingsPattern& secondary_pattern,
-      ContentSettingsType content_type,
-      std::unique_ptr<base::Value>&& value,
-      const content_settings::ContentSettingConstraints& constraints = {})
-      override;
+  bool SetWebsiteSetting(const ContentSettingsPattern& primary_pattern,
+                         const ContentSettingsPattern& secondary_pattern,
+                         ContentSettingsType content_type,
+                         base::Value&& value,
+                         const content_settings::ContentSettingConstraints&
+                             constraints = {}) override;
   void ClearAllContentSettingsRules(ContentSettingsType content_type) override;
   void ShutdownOnUIThread() override;
   base::Time GetWebsiteSettingLastModified(

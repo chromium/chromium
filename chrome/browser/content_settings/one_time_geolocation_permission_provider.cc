@@ -68,7 +68,7 @@ bool OneTimeGeolocationPermissionProvider::SetWebsiteSetting(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_settings_type,
-    std::unique_ptr<base::Value>&& value,
+    base::Value&& value,
     const content_settings::ContentSettingConstraints& constraints) {
   if (content_settings_type != ContentSettingsType::GEOLOCATION)
     return false;
@@ -81,7 +81,7 @@ bool OneTimeGeolocationPermissionProvider::SetWebsiteSetting(
       grants_with_open_tabs_.erase(matching_iterator);
     return false;
   }
-  DCHECK_EQ(content_settings::ValueToContentSetting(value.get()),
+  DCHECK_EQ(content_settings::ValueToContentSetting(value),
             CONTENT_SETTING_ALLOW);
   grants_with_open_tabs_[primary_pattern] = base::Time::Now();
   // We need to handle transitions from Allow to Allow Once gracefully.

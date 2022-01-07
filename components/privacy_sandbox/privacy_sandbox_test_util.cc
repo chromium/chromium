@@ -42,31 +42,27 @@ void SetupTestState(
   if (default_cookie_setting != kNoSetting) {
     user_provider->SetWebsiteSetting(
         ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-        ContentSettingsType::COOKIES,
-        std::make_unique<base::Value>(default_cookie_setting));
+        ContentSettingsType::COOKIES, base::Value(default_cookie_setting));
   }
 
   for (const auto& exception : user_cookie_exceptions) {
     user_provider->SetWebsiteSetting(
         ContentSettingsPattern::FromString(exception.primary_pattern),
         ContentSettingsPattern::FromString(exception.secondary_pattern),
-        ContentSettingsType::COOKIES,
-        std::make_unique<base::Value>(exception.content_setting));
+        ContentSettingsType::COOKIES, base::Value(exception.content_setting));
   }
 
   if (managed_cookie_setting != kNoSetting) {
     managed_provider->SetWebsiteSetting(
         ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-        ContentSettingsType::COOKIES,
-        std::make_unique<base::Value>(managed_cookie_setting));
+        ContentSettingsType::COOKIES, base::Value(managed_cookie_setting));
   }
 
   for (const auto& exception : managed_cookie_exceptions) {
     managed_provider->SetWebsiteSetting(
         ContentSettingsPattern::FromString(exception.primary_pattern),
         ContentSettingsPattern::FromString(exception.secondary_pattern),
-        ContentSettingsType::COOKIES,
-        std::make_unique<base::Value>(exception.content_setting));
+        ContentSettingsType::COOKIES, base::Value(exception.content_setting));
   }
 
   content_settings::TestUtils::OverrideProvider(

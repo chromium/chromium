@@ -52,10 +52,10 @@ class ContentSettingsPref {
   std::unique_ptr<RuleIterator> GetRuleIterator(
       bool off_the_record) const;
 
-  bool SetWebsiteSetting(const ContentSettingsPattern& primary_pattern,
+  void SetWebsiteSetting(const ContentSettingsPattern& primary_pattern,
                          const ContentSettingsPattern& secondary_pattern,
                          base::Time modified_time,
-                         std::unique_ptr<base::Value>&& value,
+                         base::Value value,
                          const ContentSettingConstraints& constraints);
 
   // Returns the |last_modified| date of a setting.
@@ -87,7 +87,7 @@ class ContentSettingsPref {
   void UpdatePref(const ContentSettingsPattern& primary_pattern,
                   const ContentSettingsPattern& secondary_pattern,
                   const base::Time last_modified,
-                  const base::Value* value,
+                  base::Value value,
                   const ContentSettingConstraints& constraints);
 
   // In the debug mode, asserts that |lock_| is not held by this thread. It's

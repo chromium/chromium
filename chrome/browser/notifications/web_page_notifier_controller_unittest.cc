@@ -89,7 +89,7 @@ void WebPageNotifierControllerTest::TestGetNotifiersList(
     provider->SetWebsiteSetting(ContentSettingsPattern::FromString(pattern),
                                 ContentSettingsPattern::Wildcard(),
                                 ContentSettingsType::NOTIFICATIONS,
-                                std::make_unique<base::Value>(content_setting));
+                                base::Value(content_setting));
   }
 
   content_settings::TestUtils::OverrideProvider(

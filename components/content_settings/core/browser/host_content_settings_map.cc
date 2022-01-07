@@ -110,9 +110,9 @@ bool SchemeCanBeAllowlisted(const std::string& scheme) {
 
 // Handles inheritance of settings from the regular profile into the incognito
 // profile.
-std::unique_ptr<base::Value> ProcessIncognitoInheritanceBehavior(
+base::Value ProcessIncognitoInheritanceBehavior(
     ContentSettingsType content_type,
-    std::unique_ptr<base::Value> value) {
+    base::Value value) {
   // Website setting inheritance can be completely disallowed.
   const WebsiteSettingsInfo* website_settings_info =
       content_settings::WebsiteSettingsRegistry::GetInstance()->Get(
@@ -120,7 +120,7 @@ std::unique_ptr<base::Value> ProcessIncognitoInheritanceBehavior(
   if (website_settings_info &&
       website_settings_info->incognito_behavior() ==
           WebsiteSettingsInfo::DONT_INHERIT_IN_INCOGNITO) {
-    return nullptr;
+    return base::Value();
   }
 
   // Content setting inheritance can be for settings, that are more permissive
@@ -135,15 +135,13 @@ std::unique_ptr<base::Value> ProcessIncognitoInheritanceBehavior(
       case ContentSettingsInfo::INHERIT_IN_INCOGNITO:
         return value;
       case ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE:
-        ContentSetting setting =
-            content_settings::ValueToContentSetting(value.get());
+        ContentSetting setting = content_settings::ValueToContentSetting(value);
         const base::Value* initial_value = content_settings_info
             ->website_settings_info()->initial_default_value();
         ContentSetting initial_setting =
             content_settings::ValueToContentSetting(initial_value);
         if (content_settings::IsMorePermissive(setting, initial_setting))
-          return content_settings::ToNullableUniquePtrValue(
-              content_settings::ContentSettingToValue(initial_setting));
+          return content_settings::ContentSettingToValue(initial_setting);
         return value;
     }
   }
@@ -323,7 +321,7 @@ ContentSetting HostContentSettingsMap::GetDefaultContentSettingFromProvider(
       content_settings::Rule rule = rule_iterator->Next();
       if (rule.primary_pattern == wildcard &&
           rule.secondary_pattern == wildcard) {
-        return content_settings::ValueToContentSetting(&rule.value);
+        return content_settings::ValueToContentSetting(rule.value);
       }
     }
   }
@@ -347,9 +345,7 @@ ContentSetting HostContentSettingsMap::GetDefaultContentSettingInternal(
       default_setting = content_settings::ValueToContentSetting(
           ProcessIncognitoInheritanceBehavior(
               content_type,
-              content_settings::ToNullableUniquePtrValue(
-                  content_settings::ContentSettingToValue(default_setting)))
-              .get());
+              content_settings::ContentSettingToValue(default_setting)));
     }
     if (default_setting != CONTENT_SETTING_DEFAULT) {
       *provider_type = provider_pair.first;
@@ -451,21 +447,34 @@ void HostContentSettingsMap::SetWebsiteSettingCustomScope(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
-    std::unique_ptr<base::Value> value,
+    std::unique_ptr<base::Value> value_ptr,
     const content_settings::ContentSettingConstraints& constraints) {
   DCHECK(IsSecondaryPatternAllowed(primary_pattern, secondary_pattern,
-                                   content_type, value.get()));
+                                   content_type, value_ptr.get()));
   // TODO(crbug.com/731126): Verify that assumptions for notification content
   // settings are met.
   UsedContentSettingsProviders();
 
+  base::Value value;
+  if (value_ptr)
+    value = std::move(*value_ptr);
+
+#if DCHECK_IS_ON()
+  base::Value clone = value.Clone();
+#endif
   for (const auto& provider_pair : content_settings_providers_) {
+    // The std::move(value) here just turns the value into an r-value reference.
+    // It doesn't actually move the value yet. The provider can decide to accept
+    // the value. If successful then ownership is passed to the provider.
     if (provider_pair.second->SetWebsiteSetting(
             primary_pattern, secondary_pattern, content_type, std::move(value),
             constraints)) {
-      // If successful then ownership is passed to the provider.
       return;
     }
+    // Ensure that the value is unmodified until accepted by a provider.
+#if DCHECK_IS_ON()
+    DCHECK_EQ(value, clone);
+#endif
   }
   NOTREACHED();
 }
@@ -736,7 +745,7 @@ void HostContentSettingsMap::ClearSettingsForOneTypeWithPredicate(
             (last_modified < end_time || end_time.is_null())) {
           provider->SetWebsiteSetting(setting.primary_pattern,
                                       setting.secondary_pattern, content_type,
-                                      nullptr, {});
+                                      base::Value(), {});
         }
       }
     }
@@ -797,11 +806,10 @@ void HostContentSettingsMap::AddSettingsForOneType(
     // Normal rules applied to incognito profiles are subject to inheritance
     // settings.
     if (!incognito && is_off_the_record_) {
-      std::unique_ptr<base::Value> inherit_value =
-          ProcessIncognitoInheritanceBehavior(
-              content_type, base::Value::ToUniquePtrValue(std::move(value)));
-      if (inherit_value)
-        value = std::move(*inherit_value);
+      base::Value inherit_value =
+          ProcessIncognitoInheritanceBehavior(content_type, std::move(value));
+      if (!inherit_value.is_none())
+        value = std::move(inherit_value);
       else
         continue;
     }
@@ -945,8 +953,11 @@ HostContentSettingsMap::GetContentSettingValueAndPatterns(
   std::unique_ptr<base::Value> value = GetContentSettingValueAndPatterns(
       rule_iterator.get(), primary_url, secondary_url, primary_pattern,
       secondary_pattern, session_model);
-  if (value && include_incognito)
-    value = ProcessIncognitoInheritanceBehavior(content_type, std::move(value));
+  if (value && include_incognito) {
+    value = content_settings::ToNullableUniquePtrValue(
+        ProcessIncognitoInheritanceBehavior(
+            content_type, base::Value::FromUniquePtrValue(std::move(value))));
+  }
   return value;
 }
 
