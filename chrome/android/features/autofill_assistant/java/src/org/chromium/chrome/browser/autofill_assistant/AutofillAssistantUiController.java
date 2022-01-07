@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.autofill_assistant;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.res.Configuration;
 import android.view.Window;
 
 import androidx.annotation.Nullable;
@@ -21,7 +20,6 @@ import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -426,11 +424,7 @@ public class AutofillAssistantUiController {
 
     @CalledByNative
     private int[] getWindowSize() {
-        Activity activity = TabUtils.getActivity(TabUtils.fromWebContents(mWebContents));
-        if (activity == null) {
-            return null;
-        }
-        Window window = activity.getWindow();
+        Window window = mDependencies.getActivity().getWindow();
         if (window == null) {
             return null;
         }
@@ -439,11 +433,7 @@ public class AutofillAssistantUiController {
 
     @CalledByNative
     private int getScreenOrientation() {
-        Activity activity = TabUtils.getActivity(TabUtils.fromWebContents(mWebContents));
-        if (activity == null) {
-            return Configuration.ORIENTATION_UNDEFINED;
-        }
-        return activity.getResources().getConfiguration().orientation;
+        return mDependencies.getActivity().getResources().getConfiguration().orientation;
     }
 
     // Native methods.
