@@ -117,4 +117,21 @@ export function onboardingEnterRsuWpDisableCodePageTest() {
     component.shadowRoot.querySelector('#rsuCodeDialogLink').click();
     assertTrue(component.shadowRoot.querySelector('#rsuChallengeDialog').open);
   });
+
+  test('EnterRsuWpDisableCodePageDisableInput', async () => {
+    await initializeEnterRsuWpDisableCodePage('', '');
+
+    const rsuCodeInput = component.shadowRoot.querySelector('#rsuCode');
+    assertFalse(rsuCodeInput.disabled);
+    component.allButtonsDisabled = true;
+    assertTrue(rsuCodeInput.disabled);
+  });
+
+  test('EnterRsuWpDisableCodePageStopChallengeDialogOpening', async () => {
+    await initializeEnterRsuWpDisableCodePage('', '');
+
+    component.allButtonsDisabled = true;
+    component.shadowRoot.querySelector('#rsuCodeDialogLink').click();
+    assertFalse(component.shadowRoot.querySelector('#rsuChallengeDialog').open);
+  });
 }

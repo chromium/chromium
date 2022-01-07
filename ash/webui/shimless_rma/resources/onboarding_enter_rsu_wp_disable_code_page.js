@@ -47,6 +47,12 @@ export class OnboardingEnterRsuWpDisableCodePage extends
 
   static get properties() {
     return {
+      /**
+       * Set by shimless_rma.js.
+       * @type {boolean}
+       */
+      allButtonsDisabled: Boolean,
+
       /** @protected */
       canvasSize_: {
         type: Number,
@@ -202,9 +208,13 @@ export class OnboardingEnterRsuWpDisableCodePage extends
         this.i18nAdvanced('rsuCodeInstructionsText', {attrs: ['id']});
     const linkElement = this.shadowRoot.querySelector('#rsuCodeDialogLink');
     linkElement.setAttribute('href', '#');
-    linkElement.addEventListener(
-        'click',
-        () => this.shadowRoot.querySelector('#rsuChallengeDialog').showModal());
+    linkElement.addEventListener('click', () => {
+      if (this.allButtonsDisabled) {
+        return;
+      }
+
+      this.shadowRoot.querySelector('#rsuChallengeDialog').showModal();
+    });
   }
 
   /**
