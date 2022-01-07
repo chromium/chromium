@@ -119,21 +119,21 @@ public class TabUnitTest {
         verify(mCriticalPersistedTabDataObserver).onRootIdChanged(mTab, TAB2_ID);
 
         assertThat(CriticalPersistedTabData.from(mTab).getRootId(), equalTo(TAB2_ID));
-        assertThat(TabStateAttributes.from(mTab).isTabStateDirty(), equalTo(true));
+        assertThat(mTab.isTabStateDirty(), equalTo(true));
     }
 
     @Test
     @SmallTest
     public void testSetRootIdWithoutChange() {
         assertThat(CriticalPersistedTabData.from(mTab).getRootId(), equalTo(TAB1_ID));
-        TabStateAttributes.from(mTab).setIsTabStateDirty(false);
+        mTab.setIsTabStateDirty(false);
 
         CriticalPersistedTabData.from(mTab).setRootId(TAB1_ID);
 
         verify(mCriticalPersistedTabDataObserver, never())
                 .onRootIdChanged(any(Tab.class), anyInt());
         assertThat(CriticalPersistedTabData.from(mTab).getRootId(), equalTo(TAB1_ID));
-        assertThat(TabStateAttributes.from(mTab).isTabStateDirty(), equalTo(false));
+        assertThat(mTab.isTabStateDirty(), equalTo(false));
     }
 
     @Test
