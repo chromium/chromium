@@ -160,6 +160,8 @@ public class SigninPromoController {
         if (resetAfterMs <= 0 || lastShownTime <= 0) return;
 
         if (currentTime - lastShownTime >= resetAfterMs) {
+            SharedPreferencesManager.getInstance().writeInt(
+                    getPromoShowCountPreferenceName(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS), 0);
             SharedPreferencesManager.getInstance().removeKey(
                     ChromePreferenceKeys.SIGNIN_PROMO_NTP_FIRST_SHOWN_TIME);
             SharedPreferencesManager.getInstance().removeKey(
@@ -190,7 +192,12 @@ public class SigninPromoController {
     }
 
     private static boolean canShowNTPPromo() {
-        if (timeElapsedSinceFirstShownExceedsLimit()) {
+        final int maxImpressions =
+                StartSurfaceConfiguration.SIGNIN_PROMO_NTP_COUNT_LIMIT.getValue();
+        if (timeElapsedSinceFirstShownExceedsLimit()
+                || SharedPreferencesManager.getInstance().readInt(getPromoShowCountPreferenceName(
+                           SigninAccessPoint.NTP_CONTENT_SUGGESTIONS))
+                        >= maxImpressions) {
             return false;
         }
 
@@ -241,6 +248,10 @@ public class SigninPromoController {
             case SigninAccessPoint.BOOKMARK_MANAGER:
                 return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
                         AccessPointId.BOOKMARKS);
+            case SigninAccessPoint.NTP_CONTENT_SUGGESTIONS:
+                // This preference may get reset while the other ones are never reset unless device
+                // data is wiped.
+                return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(AccessPointId.NTP);
             case SigninAccessPoint.SETTINGS:
                 return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(AccessPointId.SETTINGS);
             default:
@@ -457,8 +468,7 @@ public class SigninPromoController {
 
     /** Increases promo show count by one. */
     public void increasePromoShowCount() {
-        if (mAccessPoint != SigninAccessPoint.RECENT_TABS
-                && mAccessPoint != SigninAccessPoint.NTP_CONTENT_SUGGESTIONS) {
+        if (mAccessPoint != SigninAccessPoint.RECENT_TABS) {
             SharedPreferencesManager.getInstance().incrementInt(
                     getPromoShowCountPreferenceName(mAccessPoint));
         }

@@ -139,6 +139,7 @@ public class ChromeCachedFlags {
                         add(StartSurfaceConfiguration.OMNIBOX_FOCUSED_ON_NEW_TAB);
                         add(StartSurfaceConfiguration.SHOW_NTP_TILES_ON_OMNIBOX);
                         add(StartSurfaceConfiguration.SHOW_TABS_IN_MRU_ORDER);
+                        add(StartSurfaceConfiguration.SIGNIN_PROMO_NTP_COUNT_LIMIT);
                         add(StartSurfaceConfiguration
                                         .SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS);
                         add(StartSurfaceConfiguration.SIGNIN_PROMO_NTP_RESET_AFTER_HOURS);
