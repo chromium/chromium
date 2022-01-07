@@ -13,7 +13,7 @@
     }
 
     :host-context([enable-branding-update]) .cr-nav-menu-item {
-      --iron-icon-fill-color: var(--google-grey-refresh-700);
+      --iron-icon-fill-color: var(--google-grey-700);
       border-end-end-radius: 100px;
       border-start-end-radius: 100px;
       box-sizing: border-box;
@@ -49,12 +49,12 @@
     :host-context([enable-branding-update]) .cr-nav-menu-item[selected] {
       --iron-icon-fill-color: var(--google-blue-600);
       background: var(--google-blue-50);
-      color: var(--google-blue-refresh-700);
+      color: var(--google-blue-700);
     }
 
     @media (prefers-color-scheme: dark) {
       :host-context([enable-branding-update]) .cr-nav-menu-item {
-        --iron-icon-fill-color: var(--google-grey-refresh-500);
+        --iron-icon-fill-color: var(--google-grey-500);
         color: white;
       }
 
@@ -65,7 +65,7 @@
 
       :host-context([enable-branding-update]) .cr-nav-menu-item[selected] {
         --iron-icon-fill-color: black;
-        background: var(--google-blue-refresh-300);
+        background: var(--google-blue-300);
         color: var(--google-grey-900);
       }
 
