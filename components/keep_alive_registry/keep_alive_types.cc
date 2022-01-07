@@ -68,6 +68,8 @@ std::ostream& operator<<(std::ostream& out, const KeepAliveOrigin& origin) {
       return out << "CREDENTIAL_PROVIDER_SIGNIN_DIALOG";
     case KeepAliveOrigin::WEB_APP_INTENT_PICKER:
       return out << "WEB_APP_INTENT_PICKER";
+    case KeepAliveOrigin::WEB_APP_UNINSTALL:
+      return out << "WEB_APP_UNINSTALL";
     case KeepAliveOrigin::APP_MANIFEST_UPDATE:
       return out << "APP_MANIFEST_UPDATE";
     case KeepAliveOrigin::APP_START_URL_MIGRATION:

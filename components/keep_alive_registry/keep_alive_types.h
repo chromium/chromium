@@ -64,6 +64,9 @@ enum class KeepAliveOrigin {
   CREDENTIAL_PROVIDER_SIGNIN_DIALOG,
   WEB_APP_INTENT_PICKER,
 
+  // c/b/ui/web_applications
+  WEB_APP_UNINSTALL,
+
   // c/b/web_applications
   APP_MANIFEST_UPDATE,
   APP_START_URL_MIGRATION,
