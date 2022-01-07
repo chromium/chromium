@@ -33,9 +33,6 @@ void BookmarkIOSUnitTest::SetUp() {
       AuthenticationServiceFactory::GetInstance(),
       base::BindRepeating(
           &AuthenticationServiceFake::CreateAuthenticationService));
-  state_dir_ = std::make_unique<base::ScopedTempDir>();
-  ASSERT_TRUE(state_dir_->CreateUniqueTempDir());
-  test_cbs_builder.SetPath(state_dir_->GetPath());
 
   chrome_browser_state_ = test_cbs_builder.Build();
   chrome_browser_state_->CreateBookmarkModel(true);
