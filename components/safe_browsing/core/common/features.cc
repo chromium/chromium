@@ -114,10 +114,6 @@ const base::Feature kSafeBrowsingDisableConsumerCsdForEnterprise{
     "SafeBrowsingDisableConsumerCsdForEnterprise",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kRealTimeUrlLookupReferrerChainForEnterprise{
-    "SafeBrowsingRealTimeUrlLookupReferrerChainForEnterprise",
-    base::FEATURE_ENABLED_BY_DEFAULT};
-
 const base::Feature kSafeBrowsingPageLoadToken{
     "SafeBrowsingPageLoadToken", base::FEATURE_ENABLED_BY_DEFAULT};
 
@@ -177,7 +173,6 @@ constexpr struct {
     {&kFileTypePoliciesTag, true},
     {&kOmitNonUserGesturesFromReferrerChain, true},
     {&kPasswordProtectionForSignedInUsers, true},
-    {&kRealTimeUrlLookupReferrerChainForEnterprise, true},
     {&kSafeBrowsingPageLoadToken, true},
     {&kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid, true},
     {&kSafeBrowsingRemoveCookiesInAuthRequests, true},

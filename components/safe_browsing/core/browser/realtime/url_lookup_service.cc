@@ -127,10 +127,6 @@ bool RealTimeUrlLookupService::CanPerformFullURLLookupWithToken() const {
       variations_);
 }
 
-bool RealTimeUrlLookupService::CanAttachReferrerChain() const {
-  return true;
-}
-
 int RealTimeUrlLookupService::GetReferrerUserGestureLimit() const {
   return kDefaultRealTimeUrlLookupReferrerLength;
 }

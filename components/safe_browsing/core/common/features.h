@@ -119,10 +119,6 @@ extern const base::Feature kSafeBrowsingRemoveCookiesInAuthRequests;
 // Controls the daily quota for the suspicious site trigger.
 extern const base::Feature kSuspiciousSiteTriggerQuotaFeature;
 
-// Controls whether the referrer chain is attached to real time requests for
-// enterprise.
-extern const base::Feature kRealTimeUrlLookupReferrerChainForEnterprise;
-
 // Controls whether to send sample pings of Protego allowlist domains on
 // the allowlist to Safe Browsing.
 extern const base::Feature kSendSampledPingsForProtegoAllowlistDomains;

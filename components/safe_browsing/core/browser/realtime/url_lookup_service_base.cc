@@ -524,7 +524,7 @@ std::unique_ptr<RTLookupRequest> RealTimeUrlLookupServiceBase::FillRequestProto(
           request->population().user_population() ==
               ChromeUserPopulation::ENHANCED_PROTECTION);
 
-  if (CanAttachReferrerChain() && referrer_chain_provider_) {
+  if (referrer_chain_provider_) {
     referrer_chain_provider_->IdentifyReferrerChainByPendingEventURL(
         SanitizeURL(url), GetReferrerUserGestureLimit(),
         request->mutable_referrer_chain());

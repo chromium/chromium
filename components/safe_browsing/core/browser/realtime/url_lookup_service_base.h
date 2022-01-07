@@ -148,9 +148,6 @@ class RealTimeUrlLookupServiceBase : public KeyedService {
   // Returns true if real time URL lookup with GAIA token is enabled.
   virtual bool CanPerformFullURLLookupWithToken() const = 0;
 
-  // Returns true if referrer chain should be attached to requests.
-  virtual bool CanAttachReferrerChain() const = 0;
-
   // Returns the user gesture limit of the referrer chain.
   virtual int GetReferrerUserGestureLimit() const = 0;
 

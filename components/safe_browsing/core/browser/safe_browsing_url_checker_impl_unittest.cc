@@ -242,7 +242,6 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
     return TRAFFIC_ANNOTATION_FOR_TESTS;
   }
   bool CanPerformFullURLLookupWithToken() const override { return false; }
-  bool CanAttachReferrerChain() const override { return false; }
   int GetReferrerUserGestureLimit() const override { return 0; }
   bool CanSendPageLoadToken() const override { return false; }
   void GetAccessToken(

@@ -56,11 +56,6 @@ bool ChromeEnterpriseRealTimeUrlLookupService::
   return false;
 }
 
-bool ChromeEnterpriseRealTimeUrlLookupService::CanAttachReferrerChain() const {
-  return base::FeatureList::IsEnabled(
-      kRealTimeUrlLookupReferrerChainForEnterprise);
-}
-
 int ChromeEnterpriseRealTimeUrlLookupService::GetReferrerUserGestureLimit()
     const {
   return 2;
