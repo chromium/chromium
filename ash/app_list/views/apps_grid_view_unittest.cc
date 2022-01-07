@@ -3757,7 +3757,12 @@ TEST_P(AppsGridViewTabletTest, EnsureBlurAfterScrollingWithoutTransition) {
 
   AppListItemView* folder_view = GetItemViewInTopLevelGrid(0);
   ASSERT_TRUE(folder_view->is_folder());
-  ASSERT_FALSE(apps_grid_view_->layer()->layer_mask_layer());
+
+  views::View* scrollable_container = app_list_view_->app_list_main_view()
+                                          ->contents_view()
+                                          ->apps_container_view()
+                                          ->scrollable_container_for_test();
+  ASSERT_FALSE(scrollable_container->layer()->layer_mask_layer());
 
   // On the first page drag upwards, there should not be a page switch and the
   // layer mask should make the folder lose blur.
@@ -3768,7 +3773,7 @@ TEST_P(AppsGridViewTabletTest, EnsureBlurAfterScrollingWithoutTransition) {
   EXPECT_TRUE(scroll_update_upwards.handled());
 
   ASSERT_EQ(0, GetPaginationModel()->selected_page());
-  ASSERT_TRUE(apps_grid_view_->layer()->layer_mask_layer());
+  ASSERT_TRUE(scrollable_container->layer()->layer_mask_layer());
 
   // Continue drag, now switching directions and release. There shouldn't be
   // any transition and the mask layer should've been reset.
@@ -3778,7 +3783,7 @@ TEST_P(AppsGridViewTabletTest, EnsureBlurAfterScrollingWithoutTransition) {
   EXPECT_TRUE(scroll_end.handled());
 
   EXPECT_FALSE(GetPaginationModel()->has_transition());
-  EXPECT_FALSE(apps_grid_view_->layer()->layer_mask_layer());
+  EXPECT_FALSE(scrollable_container->layer()->layer_mask_layer());
 }
 
 TEST_F(AppsGridViewTest, PopulateAppsGridWithTwoApps) {

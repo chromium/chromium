@@ -307,10 +307,7 @@ AppsGridView::AppsGridView(AppListA11yAnnouncer* a11y_announcer,
   if (!folder_delegate_)
     DCHECK(folder_controller_);
 
-  // Clip any icons that are outside the grid view's bounds. These icons would
-  // otherwise be visible to the user when the grid view is off screen.
   SetPaintToLayer(ui::LAYER_NOT_DRAWN);
-  layer()->SetMasksToBounds(true);
 
   items_container_ = AddChildView(std::make_unique<views::View>());
   items_container_->SetPaintToLayer();

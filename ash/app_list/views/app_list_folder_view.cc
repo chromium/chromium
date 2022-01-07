@@ -630,6 +630,7 @@ void AppListFolderView::CreatePagedAppsGrid(ContentsView* contents_view) {
       contents_container_->AddChildView(std::make_unique<PagedAppsGridView>(
           contents_view, a11y_announcer_, this, /*folder_controller=*/nullptr,
           /*container_delegate=*/this));
+  contents_container_->layer()->SetMasksToBounds(true);
   items_grid_view_ = items_grid_view;
 
   items_grid_view_->Init();

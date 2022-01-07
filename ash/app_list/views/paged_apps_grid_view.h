@@ -55,6 +55,13 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
     virtual bool IsPointWithinBottomDragBuffer(
         const gfx::Point& point,
         int page_flip_zone_size) const = 0;
+
+    // Triggered when cardified state begins before animations start.
+    virtual void OnCardifiedStateStarted() {}
+
+    // Triggered when cardified state ends and the bounds animations for leaving
+    // cardified state have completed.
+    virtual void OnCardifiedStateEnded() {}
   };
 
   PagedAppsGridView(ContentsView* contents_view,
@@ -175,10 +182,12 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   int GetFirstPageRowsForTesting() const { return max_rows_on_first_page_; }
   int GetRowsForTesting() const { return max_rows_; }
 
+  void set_margin_for_gradient_mask(int margin) {
+    margin_for_gradient_mask_ = margin;
+  }
+
  private:
   friend class test::AppsGridViewTest;
-
-  class FadeoutLayerDelegate;
 
   // Gets the leading padding for app list item grid on the first app list page.
   // Includes the space reserved for the continue seaction of the app list UI,
@@ -197,11 +206,6 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   // Indicates whether the drag event (from the gesture or mouse) should be
   // handled by PagedAppsGridView.
   bool ShouldHandleDragEvent(const ui::LocatedEvent& event);
-
-  // Creates a layer mask for gradient alpha when the feature is enabled. The
-  // gradient appears at the top and bottom of the apps grid to create a
-  // "fade out" effect when dragging the whole page.
-  void MaybeCreateGradientMask();
 
   // Returns true if the page is the right target to flip to.
   bool IsValidPageFlipTarget(int page) const;
@@ -282,10 +286,6 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   // between-item drags that move the entire grid, not for app icon drags.
   gfx::PointF last_mouse_drag_point_;
 
-  // Implements a "fade out" gradient at the top and bottom of the grid. Used
-  // during page flip transitions and for cardified drags.
-  std::unique_ptr<FadeoutLayerDelegate> fadeout_layer_delegate_;
-
   // Records smoothness of pagination animation.
   absl::optional<ui::ThroughputTracker> pagination_metrics_tracker_;
 
@@ -325,6 +325,10 @@ class ASH_EXPORT PagedAppsGridView : public AppsGridView,
   // Cardified animation observers.
   std::vector<std::unique_ptr<ui::ImplicitAnimationObserver>>
       animation_observers_;
+
+  // A margin added to the height of the clip rect used for clipping the
+  // cardified state's background cards.
+  int margin_for_gradient_mask_ = 0;
 
   base::WeakPtrFactory<PagedAppsGridView> weak_ptr_factory_{this};
 };

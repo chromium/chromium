@@ -144,67 +144,6 @@ class CardifiedAnimationObserver : public ui::ImplicitAnimationObserver {
 
 }  // namespace
 
-// A layer delegate used for PagedAppsGridView's mask layer, with top and bottom
-// gradient fading out zones.
-class PagedAppsGridView::FadeoutLayerDelegate : public ui::LayerDelegate {
- public:
-  explicit FadeoutLayerDelegate(int fadeout_mask_height)
-      : layer_(ui::LAYER_TEXTURED), fadeout_mask_height_(fadeout_mask_height) {
-    layer_.set_delegate(this);
-    layer_.SetFillsBoundsOpaquely(false);
-  }
-  FadeoutLayerDelegate(const FadeoutLayerDelegate&) = delete;
-  FadeoutLayerDelegate& operator=(const FadeoutLayerDelegate&) = delete;
-
-  ~FadeoutLayerDelegate() override { layer_.set_delegate(nullptr); }
-
-  ui::Layer* layer() { return &layer_; }
-
- private:
-  // ui::LayerDelegate:
-  // TODO(warx): using a mask is expensive. It would be more efficient to avoid
-  // the mask for the central area and only use it for top/bottom areas.
-  void OnPaintLayer(const ui::PaintContext& context) override {
-    const gfx::Size size = layer()->size();
-    gfx::Rect top_rect(0, 0, size.width(), fadeout_mask_height_);
-    gfx::Rect bottom_rect(0, size.height() - fadeout_mask_height_, size.width(),
-                          fadeout_mask_height_);
-
-    views::PaintInfo paint_info =
-        views::PaintInfo::CreateRootPaintInfo(context, size);
-    const auto& prs = paint_info.paint_recording_size();
-
-    //  Pass the scale factor when constructing PaintRecorder so the MaskLayer
-    //  size is not incorrectly rounded (see https://crbug.com/921274).
-    ui::PaintRecorder recorder(context, paint_info.paint_recording_size(),
-                               static_cast<float>(prs.width()) / size.width(),
-                               static_cast<float>(prs.height()) / size.height(),
-                               nullptr);
-
-    gfx::Canvas* canvas = recorder.canvas();
-    // Clear the canvas.
-    canvas->DrawColor(SK_ColorBLACK, SkBlendMode::kSrc);
-    // Draw top gradient zone.
-    cc::PaintFlags flags;
-    flags.setBlendMode(SkBlendMode::kSrc);
-    flags.setAntiAlias(false);
-    flags.setShader(gfx::CreateGradientShader(
-        gfx::Point(), gfx::Point(0, fadeout_mask_height_), SK_ColorTRANSPARENT,
-        SK_ColorBLACK));
-    canvas->DrawRect(top_rect, flags);
-    // Draw bottom gradient zone.
-    flags.setShader(gfx::CreateGradientShader(
-        gfx::Point(0, size.height() - fadeout_mask_height_),
-        gfx::Point(0, size.height()), SK_ColorBLACK, SK_ColorTRANSPARENT));
-    canvas->DrawRect(bottom_rect, flags);
-  }
-  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
-                                  float new_device_scale_factor) override {}
-
-  ui::Layer layer_;
-  const int fadeout_mask_height_;
-};
-
 PagedAppsGridView::PagedAppsGridView(
     ContentsView* contents_view,
     AppListA11yAnnouncer* a11y_announcer,
@@ -521,9 +460,6 @@ void PagedAppsGridView::Layout() {
                                                page_height * pages));
   }
 
-  if (fadeout_layer_delegate_)
-    fadeout_layer_delegate_->layer()->SetBounds(layer()->bounds());
-
   CalculateIdealBounds();
   for (int i = 0; i < view_model()->view_size(); ++i) {
     AppListItemView* view = GetItemViewAt(i);
@@ -539,7 +475,6 @@ void PagedAppsGridView::Layout() {
       items_container()->layer()->StackAtBottom(background_card);
     }
     MaskContainerToBackgroundBounds();
-    MaybeCreateGradientMask();
   }
   views::ViewModelUtils::SetViewBoundsToIdealBounds(pulsing_blocks_model());
 }
@@ -783,7 +718,6 @@ void PagedAppsGridView::TransitionStarting() {
   // Drag ends and animation starts.
   presentation_time_recorder_.reset();
 
-  MaybeCreateGradientMask();
   CancelContextMenusOnCurrentPage();
 }
 
@@ -828,16 +762,11 @@ void PagedAppsGridView::TransitionChanged() {
 
 void PagedAppsGridView::TransitionEnded() {
   pagination_metrics_tracker_->Stop();
-
-  // Gradient mask is no longer necessary once transition is finished.
-  if (layer()->layer_mask_layer())
-    layer()->SetMaskLayer(nullptr);
 }
 
 void PagedAppsGridView::ScrollStarted() {
   DCHECK(!presentation_time_recorder_);
 
-  MaybeCreateGradientMask();
   if (IsTabletMode()) {
     presentation_time_recorder_ = CreatePresentationTimeHistogramRecorder(
         GetWidget()->GetCompositor(), kPageDragScrollInTabletHistogram,
@@ -852,9 +781,6 @@ void PagedAppsGridView::ScrollStarted() {
 void PagedAppsGridView::ScrollEnded() {
   // Scroll can end without triggering state animation.
   presentation_time_recorder_.reset();
-  // Need to reset the mask because transition will not happen in some
-  // cases. (See https://crbug.com/1049275)
-  layer()->SetMaskLayer(nullptr);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -934,24 +860,6 @@ bool PagedAppsGridView::ShouldHandleDragEvent(const ui::LocatedEvent& event) {
   }
 
   return true;
-}
-
-void PagedAppsGridView::MaybeCreateGradientMask() {
-  if (!IsInFolder() && features::IsBackgroundBlurEnabled()) {
-    // TODO(newcomer): Improve implementation of the mask layer so we can
-    // enable it on all devices https://crbug.com/765292.
-    if (!layer()->layer_mask_layer()) {
-      // Always create a new layer. The layer may be recreated by animation,
-      // and using the mask layer used by the detached layer can lead to
-      // crash. b/118822974.
-      if (!fadeout_layer_delegate_) {
-        fadeout_layer_delegate_ =
-            std::make_unique<FadeoutLayerDelegate>(GetFadeoutMaskHeight());
-        fadeout_layer_delegate_->layer()->SetBounds(layer()->bounds());
-      }
-      layer()->SetMaskLayer(fadeout_layer_delegate_->layer());
-    }
-  }
 }
 
 bool PagedAppsGridView::IsValidPageFlipTarget(int page) const {
@@ -1047,7 +955,7 @@ void PagedAppsGridView::StartAppsGridCardifiedView() {
     AppendBackgroundCard();
   cardified_state_ = true;
   UpdateTilePadding();
-  MaybeCreateGradientMask();
+  container_delegate_->OnCardifiedStateStarted();
   AnimateCardifiedState();
 }
 
@@ -1201,6 +1109,11 @@ void PagedAppsGridView::MaybeCallOnBoundsAnimatorDone() {
   if (bounds_animation_for_cardified_state_in_progress_ == 0) {
     animation_observers_.clear();
     OnBoundsAnimatorDone(/*animator=*/nullptr);
+
+    // Notify container that cardified state has ended once ending animations
+    // are complete.
+    if (!cardified_state_)
+      container_delegate_->OnCardifiedStateEnded();
   }
 }
 
@@ -1274,10 +1187,12 @@ void PagedAppsGridView::RemoveBackgroundCard() {
 
 void PagedAppsGridView::MaskContainerToBackgroundBounds() {
   DCHECK(!background_cards_.empty());
-  // Mask apps grid container layer to the background card width.
-  layer()->SetClipRect(gfx::Rect(background_cards_[0]->bounds().x(), 0,
-                                 background_cards_[0]->bounds().width(),
-                                 layer()->bounds().height()));
+  // Mask apps grid container layer to the background card width. Optionally
+  // also include extra height to ensure the top gradient mask is shown as well.
+  layer()->SetClipRect(
+      gfx::Rect(background_cards_[0]->bounds().x(), -margin_for_gradient_mask_,
+                background_cards_[0]->bounds().width(),
+                layer()->bounds().height() + margin_for_gradient_mask_));
 }
 
 void PagedAppsGridView::RemoveAllBackgroundCards() {

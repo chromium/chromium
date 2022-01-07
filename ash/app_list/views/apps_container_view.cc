@@ -29,6 +29,7 @@
 #include "ash/public/cpp/app_list/app_list_switches.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/search_box/search_box_constants.h"
+#include "ash/shelf/gradient_layer_delegate.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/style_util.h"
 #include "base/bind.h"
@@ -119,9 +120,8 @@ constexpr int kGridToPageSwitcherMargin = 8;
 // Minimal horizontal distance from the page switcher to apps container bounds.
 constexpr int kPageSwitcherEndMargin = 16;
 
-// The apps grid view's fadeout zone height, that contains a fadeout mask, and
-// which is used as a margin for the `AppsGridView` contents.
-constexpr int kGridFadeoutZoneHeight = 24;
+// The vertical margin for the `AppsGridView` contents.
+constexpr int kGridVerticalMargin = 24;
 
 // The space between sort ui controls (including sort button and redo button).
 constexpr int kSortUiControlSpacing = 10;
@@ -142,6 +142,10 @@ constexpr int kDenseSeparatorVerticalInset = 8;
 
 // The width of the separator.
 constexpr int kSeparatorWidth = 240;
+
+// The actual height of the fadeout gradient mask at the top and bottom of the
+// `scrollable_container_`.
+constexpr int kDefaultFadeoutMaskHeight = 16;
 
 // SortUiControl ---------------------------------------------------------------
 
@@ -370,10 +374,11 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
   AppListViewDelegate* view_delegate =
       contents_view_->GetAppListMainView()->view_delegate();
 
+  // The bounds of the |scrollable_container_| will visually clip the
+  // |continue_container_| and |apps_grid_view_| layers.
+  scrollable_container_->layer()->SetMasksToBounds(true);
+
   if (features::IsProductivityLauncherEnabled()) {
-    // The bounds of the |scrollable_container_| will visually clip the
-    // |continue_container_| layer during page changes.
-    scrollable_container_->layer()->SetMasksToBounds(true);
     continue_container_ = scrollable_container_->AddChildView(
         std::make_unique<ContinueContainer>(this, view_delegate));
   } else {
@@ -395,9 +400,9 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
                                           /*container_delegate=*/this),
       0);
   apps_grid_view_->Init();
-
+  apps_grid_view_->pagination_model()->AddObserver(this);
   if (features::IsProductivityLauncherEnabled())
-    apps_grid_view_->pagination_model()->AddObserver(this);
+    apps_grid_view_->set_margin_for_gradient_mask(kDefaultFadeoutMaskHeight);
 
   // Page switcher should be initialized after AppsGridView.
   auto page_switcher = std::make_unique<PageSwitcher>(
@@ -429,9 +434,7 @@ AppsContainerView::AppsContainerView(ContentsView* contents_view)
 
 AppsContainerView::~AppsContainerView() {
   AppListModelProvider::Get()->RemoveObserver(this);
-
-  if (features::IsProductivityLauncherEnabled())
-    apps_grid_view_->pagination_model()->RemoveObserver(this);
+  apps_grid_view_->pagination_model()->RemoveObserver(this);
 
   // Make sure |page_switcher_| is deleted before |apps_grid_view_| because
   // |page_switcher_| uses the PaginationModel owned by |apps_grid_view_|.
@@ -471,7 +474,7 @@ gfx::Rect AppsContainerView::CalculateAvailableBoundsForAppsGrid(
           contents_view_->GetSearchBoxSize(AppListState::kStateApps)),
       0, 0);
   // Subtracts apps grid view insets from space available for apps grid.
-  available_bounds.Inset(0, kGridFadeoutZoneHeight);
+  available_bounds.Inset(0, kGridVerticalMargin);
 
   return available_bounds;
 }
@@ -610,6 +613,11 @@ void AppsContainerView::ReparentDragEnded() {
 // PaginationModelObserver:
 void AppsContainerView::SelectedPageChanged(int old_selected,
                                             int new_selected) {
+  // There is no |continue_container_| to translate when productivity launcher
+  // is not enabled, so return early.
+  if (!features::IsProductivityLauncherEnabled())
+    return;
+
   // |continue_container_| is hidden above the grid when not on the first page.
   gfx::Transform transform;
   gfx::Vector2dF translate;
@@ -619,6 +627,11 @@ void AppsContainerView::SelectedPageChanged(int old_selected,
 }
 
 void AppsContainerView::TransitionChanged() {
+  // There is no |continue_container_| to translate when productivity launcher
+  // is not enabled, so return early.
+  if (!features::IsProductivityLauncherEnabled())
+    return;
+
   auto* pagination_model = apps_grid_view_->pagination_model();
   const PaginationModel::Transition& transition =
       pagination_model->transition();
@@ -644,6 +657,28 @@ void AppsContainerView::TransitionChanged() {
     transform.Translate(translate);
     continue_container_->layer()->SetTransform(transform);
   }
+}
+
+void AppsContainerView::TransitionStarted() {
+  MaybeCreateGradientMask();
+}
+
+void AppsContainerView::TransitionEnded() {
+  // TODO(crbug.com/1285184): Sometimes gradient mask is not removed because
+  // this function does not get called in some cases.
+
+  // Gradient mask is no longer necessary once transition is finished.
+  MaybeRemoveGradientMask();
+}
+
+void AppsContainerView::ScrollStarted() {
+  MaybeCreateGradientMask();
+}
+
+void AppsContainerView::ScrollEnded() {
+  // Need to reset the mask because transition will not happen in some
+  // cases. (See https://crbug.com/1049275)
+  MaybeRemoveGradientMask();
 }
 
 // PagedAppsGridView::ContainerDelegate:
@@ -672,6 +707,36 @@ bool AppsContainerView::IsPointWithinBottomDragBuffer(
   // want to handle this and update this code to reflect that.
   return point_in_parent.y() > kBottomDragBufferMin &&
          point_in_parent.y() < kBottomDragBufferMax;
+}
+
+void AppsContainerView::MaybeCreateGradientMask() {
+  if (features::IsBackgroundBlurEnabled()) {
+    if (!layer()->layer_mask_layer() && !gradient_layer_delegate_) {
+      gradient_layer_delegate_ = std::make_unique<GradientLayerDelegate>();
+      UpdateGradientMaskBounds();
+    }
+    if (gradient_layer_delegate_) {
+      scrollable_container_->layer()->SetMaskLayer(
+          gradient_layer_delegate_->layer());
+    }
+  }
+}
+
+void AppsContainerView::MaybeRemoveGradientMask() {
+  if (scrollable_container_->layer()->layer_mask_layer() &&
+      !keep_gradient_mask_for_cardified_state_) {
+    scrollable_container_->layer()->SetMaskLayer(nullptr);
+  }
+}
+
+void AppsContainerView::OnCardifiedStateStarted() {
+  keep_gradient_mask_for_cardified_state_ = true;
+  MaybeCreateGradientMask();
+}
+
+void AppsContainerView::OnCardifiedStateEnded() {
+  keep_gradient_mask_for_cardified_state_ = false;
+  MaybeRemoveGradientMask();
 }
 
 // RecentAppsView::Delegate:
@@ -848,19 +913,31 @@ void AppsContainerView::Layout() {
       GetContentsBounds(),
       contents_view_->GetSearchBoxSize(AppListState::kStateApps));
   gfx::Rect grid_rect = rect;
-  grid_rect.Inset(margins.left(), kGridFadeoutZoneHeight, margins.right(),
+  grid_rect.Inset(margins.left(), kGridVerticalMargin, margins.right(),
                   margins.bottom());
   // The grid rect insets are added to calculated margins. Given that the
   // grid bounds rect should include insets, they have to be removed from
   // added margins.
   grid_rect.Inset(-grid_insets);
-  scrollable_container_->SetBoundsRect(grid_rect);
+
+  gfx::Rect scrollable_bounds = grid_rect;
+  // With productivity launcher enabled, add space to the top of the
+  // `scrollable_container_` bounds to make room for the gradient mask to be
+  // placed above the continue section.
+  if (features::IsProductivityLauncherEnabled())
+    scrollable_bounds.Inset(0, -kDefaultFadeoutMaskHeight, 0, 0);
+  scrollable_container_->SetBoundsRect(scrollable_bounds);
+
+  if (gradient_layer_delegate_)
+    UpdateGradientMaskBounds();
+
   bool first_page_config_changed = false;
   if (features::IsProductivityLauncherEnabled()) {
     const int continue_container_height =
         continue_container_->GetPreferredSize().height();
-    continue_container_->SetBoundsRect(
-        gfx::Rect(0, 0, grid_rect.width(), continue_container_height));
+    continue_container_->SetBoundsRect(gfx::Rect(0, kDefaultFadeoutMaskHeight,
+                                                 grid_rect.width(),
+                                                 continue_container_height));
     // Setting this offset prevents the app items in the grid from overlapping
     // with the continue section.
     first_page_config_changed = apps_grid_view_->ConfigureFirstPagePadding(
@@ -872,7 +949,11 @@ void AppsContainerView::Layout() {
   // shown in the grid.
   UpdateTopLevelGridDimensions();
 
-  const gfx::Rect apps_grid_bounds(grid_rect.size());
+  gfx::Rect apps_grid_bounds(grid_rect.size());
+  // Set the apps grid bounds y to make room for the top gradient mask.
+  if (features::IsProductivityLauncherEnabled())
+    apps_grid_bounds.set_y(kDefaultFadeoutMaskHeight);
+
   if (apps_grid_view_->bounds() != apps_grid_bounds) {
     apps_grid_view_->SetBoundsRect(apps_grid_bounds);
   } else if (first_page_config_changed) {
@@ -1085,9 +1166,7 @@ int AppsContainerView::GetMinTopMarginForAppsGrid(
           ? 0
           : kSuggestionChipContainerHeight + kSuggestionChipContainerTopMargin;
 
-  // NOTE: Use the fadeout zone height as min top margin to match the apps grid
-  // view's bottom margin.
-  return search_box_size.height() + kGridFadeoutZoneHeight +
+  return search_box_size.height() + kGridVerticalMargin +
          suggestion_chip_container_size;
 }
 
@@ -1152,7 +1231,7 @@ const gfx::Insets& AppsContainerView::CalculateMarginsForAvailableBounds(
     // Productivity launcher does not have a preset number of rows per page.
     // Instead of adjusting the margins to fit a set number of rows, the grid
     // will change the number of rows to fit within the provided space.
-    vertical_margin = kGridFadeoutZoneHeight;
+    vertical_margin = kGridVerticalMargin;
   } else {
     vertical_margin =
         calculate_margin(GetIdealVerticalMargin(), available_height,
@@ -1166,9 +1245,9 @@ const gfx::Insets& AppsContainerView::CalculateMarginsForAvailableBounds(
   const int min_horizontal_margin = GetMinHorizontalMarginForAppsGrid();
 
   cached_container_margins_.margins =
-      gfx::Insets(std::max(vertical_margin, kGridFadeoutZoneHeight),
+      gfx::Insets(std::max(vertical_margin, kGridVerticalMargin),
                   std::max(horizontal_margin, min_horizontal_margin),
-                  std::max(vertical_margin, kGridFadeoutZoneHeight),
+                  std::max(vertical_margin, kGridVerticalMargin),
                   std::max(horizontal_margin, min_horizontal_margin));
   cached_container_margins_.bounds_size = available_bounds.size();
   cached_container_margins_.search_box_size = search_box_size;
@@ -1388,6 +1467,23 @@ void AppsContainerView::OnSuggestionChipsBlurDisablerReleased() {
 
   if (suggestion_chips_blur_disabler_count_ == 0)
     suggestion_chip_container_view_->SetBlurDisabled(false);
+}
+
+void AppsContainerView::UpdateGradientMaskBounds() {
+  const gfx::Rect container_bounds = scrollable_container_->bounds();
+  const gfx::Rect top_gradient_bounds(0, 0, container_bounds.width(),
+                                      kDefaultFadeoutMaskHeight);
+  const gfx::Rect bottom_gradient_bounds(
+      0, container_bounds.height() - kDefaultFadeoutMaskHeight,
+      container_bounds.width(), kDefaultFadeoutMaskHeight);
+
+  gradient_layer_delegate_->set_start_fade_zone({top_gradient_bounds,
+                                                 /*fade_in=*/true,
+                                                 /*is_horizontal=*/false});
+  gradient_layer_delegate_->set_end_fade_zone({bottom_gradient_bounds,
+                                               /*fade_in=*/false,
+                                               /*is_horizonal=*/false});
+  gradient_layer_delegate_->layer()->SetBounds(container_bounds);
 }
 
 }  // namespace ash

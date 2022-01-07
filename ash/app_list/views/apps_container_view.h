@@ -31,6 +31,7 @@ class ContinueSectionView;
 class FolderBackgroundView;
 class PageSwitcher;
 class SuggestionChipContainerView;
+class GradientLayerDelegate;
 
 // AppsContainerView contains a root level AppsGridView to render the root level
 // app items, and a AppListFolderView to render the app items inside the
@@ -149,11 +150,17 @@ class ASH_EXPORT AppsContainerView
   // PaginationModelObserver:
   void SelectedPageChanged(int old_selected, int new_selected) override;
   void TransitionChanged() override;
+  void TransitionStarted() override;
+  void TransitionEnded() override;
+  void ScrollStarted() override;
+  void ScrollEnded() override;
 
   // PagedAppsGridView::ContainerDelegate:
   bool IsPointWithinPageFlipBuffer(const gfx::Point& point) const override;
   bool IsPointWithinBottomDragBuffer(const gfx::Point& point,
                                      int page_flip_zone_size) const override;
+  void OnCardifiedStateStarted() override;
+  void OnCardifiedStateEnded() override;
 
   // RecentAppsView::Delegate:
   void MoveFocusUpFromRecents() override;
@@ -252,6 +259,22 @@ class ASH_EXPORT AppsContainerView
   // Callback returned by DisableBlur().
   void OnSuggestionChipsBlurDisablerReleased();
 
+  // Updates the bounds of the gradient mask to fit the current bounds of the
+  // `scrollable_container_`.
+  void UpdateGradientMaskBounds();
+
+  // Creates a layer mask for gradient alpha when the feature is enabled. The
+  // gradient appears at the top and bottom of the 'scrollable_container_' to
+  // create a "fade out" effect when dragging the whole page.
+  void MaybeCreateGradientMask();
+
+  // Removes the gradient mask from being set as the mask layer.
+  void MaybeRemoveGradientMask();
+
+  // While true, the gradient mask will not be removed as a mask layer until
+  // cardified state ends.
+  bool keep_gradient_mask_for_cardified_state_ = false;
+
   ContentsView* const contents_view_;
 
   // The app list config used to configure sizing and layout of apps grid items
@@ -291,6 +314,8 @@ class ASH_EXPORT AppsContainerView
   // |cached_container_margins_|, provided the method arguments match the cached
   // arguments (otherwise the margins will be recalculated).
   CachedContainerMargins cached_container_margins_;
+
+  std::unique_ptr<GradientLayerDelegate> gradient_layer_delegate_;
 
   base::WeakPtrFactory<AppsContainerView> weak_ptr_factory_{this};
 };
