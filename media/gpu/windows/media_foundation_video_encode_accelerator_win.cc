@@ -279,8 +279,10 @@ MediaFoundationVideoEncodeAccelerator::GetSupportedProfilesForCodec(
   if (pp_activate) {
     for (UINT32 i = 0; i < encoder_count; i++) {
       if (pp_activate[i]) {
-        if (populate_svc_info && IsSvcSupported(pp_activate[i]))
+        if (populate_svc_info && !svc_supported &&
+            IsSvcSupported(pp_activate[i])) {
           svc_supported = true;
+        }
 
         // Release the enumerated instances if any.
         // According to Windows Dev Center,
