@@ -4135,6 +4135,7 @@ if (is_chromeos_lacros) {
 
     data = [
       "data/media/",
+      "data/extensions/api_test/login_screen_apis/",
       "data/extensions/platform_apps/minimal/",
     ]
 

@@ -96,8 +96,8 @@ ExtensionFunction::ResponseAction LoginStateGetSessionStateFunction::Run() {
   }
 #endif
 
-  auto callback = base::BindOnce(&LoginStateGetSessionStateFunction::OnResult,
-                                 base::Unretained(this));
+  auto callback =
+      base::BindOnce(&LoginStateGetSessionStateFunction::OnResult, this);
 
   GetLoginStateApi()->GetSessionState(std::move(callback));
   return did_respond() ? AlreadyResponded() : RespondLater();
