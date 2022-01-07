@@ -822,13 +822,7 @@ class BookmarkBarViewTest4 : public BookmarkBarViewEventTestBase {
   BookmarkContextMenuNotificationObserver observer_;
 };
 
-// TODO(crbug.com/1281302): Flaky on Linux
-#if defined(OS_LINUX)
-#define MAYBE_ContextMenus DISABLED_ContextMenus
-#else
-#define MAYBE_ContextMenus ContextMenus
-#endif
-VIEW_TEST(BookmarkBarViewTest4, MAYBE_ContextMenus)
+VIEW_TEST(BookmarkBarViewTest4, ContextMenus)
 
 // Tests drag and drop within the same menu.
 class BookmarkBarViewTest5 : public BookmarkBarViewDragTestBase {
