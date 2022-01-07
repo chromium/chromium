@@ -309,13 +309,11 @@ void PolicyApplicator::ApplyNewPolicy(const std::string& entry,
       profile_, new_guid, &global_network_config_, new_policy_as_dict,
       user_settings);
 
-  if (features::IsESimPolicyEnabled()) {
-    // Copy over the value of ICCID and EID property from old entry to new shill
-    // properties since Shill requires ICCID and EID to create or update the
-    // existing service.
-    CopyRequiredCellularProperies(entry_properties_as_dict,
-                                  &new_shill_properties);
-  }
+  // Copy over the value of ICCID and EID property from old entry to new shill
+  // properties since Shill requires ICCID and EID to create or update the
+  // existing service.
+  CopyRequiredCellularProperies(entry_properties_as_dict,
+                                &new_shill_properties);
 
   // A new policy has to be applied to this profile entry. In order to keep
   // implicit state of Shill like "connected successfully before", keep the
