@@ -1,4 +1,4 @@
-r// Return a promise, which resolves when new navigations aren't considered
+// Return a promise, which resolves when new navigations aren't considered
 // client-side redirects anymore.
 //
 // Note: A long `setTimeout` is used, because client-side redirect is an
