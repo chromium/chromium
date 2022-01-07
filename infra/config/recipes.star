@@ -170,6 +170,7 @@ build_recipe(
 build_recipe(
     name = "recipe:chromium_trybot",
     bootstrappable = True,
+    use_python3 = True,
 )
 
 build_recipe(
