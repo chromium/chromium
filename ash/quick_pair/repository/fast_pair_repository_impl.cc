@@ -48,10 +48,12 @@ void FastPairRepositoryImpl::GetDeviceMetadata(
   std::string normalized_id = base::ToUpperASCII(hex_model_id);
   if (metadata_cache_.contains(normalized_id)) {
     QP_LOG(VERBOSE) << __func__ << ": Data already in cache.";
+    RecordFastPairRepositoryCacheResult(/*success=*/true);
     std::move(callback).Run(metadata_cache_[normalized_id].get());
     return;
   }
   QP_LOG(VERBOSE) << __func__ << ": Not cached, fetching from web service.";
+  RecordFastPairRepositoryCacheResult(/*success=*/false);
   device_metadata_fetcher_->LookupHexDeviceId(
       normalized_id, base::BindOnce(&FastPairRepositoryImpl::OnMetadataFetched,
                                     weak_ptr_factory_.GetWeakPtr(),

@@ -188,6 +188,9 @@ void RecordFootprintsFetcherPostResult(bool success);
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordFootprintsFetcherGetResult(bool success);
 
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordFastPairRepositoryCacheResult(bool success);
+
 }  // namespace quick_pair
 }  // namespace ash
 

@@ -383,6 +383,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.FastPair.FastPairRepository.Cache.Result"
+    enum="Boolean" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records whether or not device metadata we retrieve is in the cache in the
+    repository. Records true when the metadata is in the cache, and false when
+    the metadata is not in the cache. Emitted in the FastPairRepository on a
+    GetDeviceMetadata request.
+  </summary>
+</histogram>
+
 <histogram name="Bluetooth.ChromeOS.FastPair.FootprintsFetcher.Delete.Result"
     enum="BooleanSuccess" expires_after="2022-09-20">
   <owner>shanefitz@google.com</owner>

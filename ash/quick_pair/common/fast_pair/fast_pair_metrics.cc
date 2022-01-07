@@ -146,6 +146,8 @@ const char kFootprintsFetcherPostResult[] =
     "Bluetooth.ChromeOS.FastPair.FootprintsFetcher.Post.Result";
 const char kFootprintsFetcherGetResult[] =
     "Bluetooth.ChromeOS.FastPair.FootprintsFetcher.Get.Result";
+const char kFastPairRepositoryCacheResult[] =
+    "Bluetooth.ChromeOS.FastPair.FastPairRepository.Cache.Result";
 
 }  // namespace
 
@@ -401,6 +403,10 @@ void RecordFootprintsFetcherPostResult(bool success) {
 
 void RecordFootprintsFetcherGetResult(bool success) {
   base::UmaHistogramBoolean(kFootprintsFetcherGetResult, success);
+}
+
+void RecordFastPairRepositoryCacheResult(bool success) {
+  base::UmaHistogramBoolean(kFastPairRepositoryCacheResult, success);
 }
 
 }  // namespace quick_pair
