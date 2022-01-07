@@ -66,16 +66,9 @@ std::unique_ptr<blink::WebCoalescedInputEvent> ScaleEvent(
     const ui::LatencyInfo& latency_info) {
   std::unique_ptr<blink::WebInputEvent> event_in_viewport =
       ui::ScaleWebInputEvent(event, scale);
-  if (event_in_viewport) {
-    return std::make_unique<blink::WebCoalescedInputEvent>(
-        std::move(event_in_viewport),
-        std::vector<std::unique_ptr<WebInputEvent>>(),
-        std::vector<std::unique_ptr<WebInputEvent>>(),
-        latency_info.ScaledBy(scale));
-  }
-
   return std::make_unique<blink::WebCoalescedInputEvent>(
-      event.Clone(), std::vector<std::unique_ptr<WebInputEvent>>(),
+      event_in_viewport ? std::move(event_in_viewport) : event.Clone(),
+      std::vector<std::unique_ptr<WebInputEvent>>(),
       std::vector<std::unique_ptr<WebInputEvent>>(), latency_info);
 }
 

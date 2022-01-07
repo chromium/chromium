@@ -34,9 +34,6 @@ bool AreLatencyInfosEqual(const ui::LatencyInfo& a, const ui::LatencyInfo& b) {
   return a.began() == b.began() && a.terminated() == b.terminated() &&
          a.coalesced() == b.coalesced() && a.trace_id() == b.trace_id() &&
          a.ukm_source_id() == b.ukm_source_id() &&
-         std::abs(a.scroll_update_delta() - b.scroll_update_delta()) < 1e-6 &&
-         std::abs(a.predicted_scroll_update_delta() -
-                  b.predicted_scroll_update_delta()) < 1e-6 &&
          a.gesture_scroll_id() == b.gesture_scroll_id();
 }
 

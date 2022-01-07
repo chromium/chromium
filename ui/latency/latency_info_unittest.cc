@@ -40,26 +40,4 @@ TEST(LatencyInfoTest, AddTwoSeparateEvent) {
   EXPECT_EQ(timestamp, ToTestTimeTicks(1000));
 }
 
-TEST(LatencyInfoTest, CoalesceTwoGSU) {
-  LatencyInfo info1, info2;
-  info1.set_trace_id(1);
-  info1.AddLatencyNumberWithTimestamp(
-      INPUT_EVENT_LATENCY_SCROLL_UPDATE_LAST_EVENT_COMPONENT,
-      ToTestTimeTicks(1234));
-  info1.set_scroll_update_delta(-3);
-
-  info2.set_trace_id(2);
-  info2.AddLatencyNumberWithTimestamp(
-      INPUT_EVENT_LATENCY_SCROLL_UPDATE_LAST_EVENT_COMPONENT,
-      ToTestTimeTicks(2345));
-  info2.set_scroll_update_delta(5);
-
-  info1.CoalesceScrollUpdateWith(info2);
-  base::TimeTicks timestamp;
-  EXPECT_TRUE(info1.FindLatency(
-      INPUT_EVENT_LATENCY_SCROLL_UPDATE_LAST_EVENT_COMPONENT, &timestamp));
-  EXPECT_EQ(timestamp, ToTestTimeTicks(2345));
-  EXPECT_EQ(info1.scroll_update_delta(), 2);
-}
-
 }  // namespace ui
