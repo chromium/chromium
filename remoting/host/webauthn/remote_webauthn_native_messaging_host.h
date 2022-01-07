@@ -13,6 +13,7 @@
 #include "extensions/browser/api/messaging/native_message_host.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "remoting/host/chromoting_host_services_client.h"
+#include "remoting/host/mojom/webauthn_proxy.mojom-forward.h"
 #include "remoting/host/mojom/webauthn_proxy.mojom.h"
 
 namespace remoting {
@@ -38,10 +39,13 @@ class RemoteWebAuthnNativeMessagingHost final
   void ProcessHello(base::Value response);
   void ProcessGetRemoteState(base::Value response);
   void ProcessIsUvpaa(const base::Value& request, base::Value response);
+  void ProcessCreate(const base::Value& request, base::Value response);
 
   void OnQueryVersionResult(uint32_t version);
   void OnIpcDisconnected();
   void OnIsUvpaaResponse(base::Value response, bool is_available);
+  void OnCreateResponse(base::Value response,
+                        mojom::WebAuthnCreateResponsePtr remote_response);
 
   void QueryNextRemoteState();
   void SendNextRemoteState(bool is_remoted);

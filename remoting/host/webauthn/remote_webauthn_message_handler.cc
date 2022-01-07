@@ -11,6 +11,23 @@
 #include "remoting/proto/remote_webauthn.pb.h"
 #include "remoting/protocol/message_serialization.h"
 
+namespace {
+
+template <typename CallbackType, typename ResponseType>
+void FindAndRunCallback(base::flat_map<uint64_t, CallbackType>& callback_map,
+                        uint64_t id,
+                        ResponseType response) {
+  auto it = callback_map.find(id);
+  if (it == callback_map.end()) {
+    LOG(WARNING) << "No callback found associated with ID: " << id;
+    return;
+  }
+  std::move(it->second).Run(std::move(response));
+  callback_map.erase(it);
+}
+
+}  // namespace
+
 namespace remoting {
 
 RemoteWebAuthnMessageHandler::RemoteWebAuthnMessageHandler(
@@ -48,6 +65,10 @@ void RemoteWebAuthnMessageHandler::OnIncomingMessage(
       OnIsUvpaaResponse(remote_webauthn->id(),
                         remote_webauthn->is_uvpaa_response());
       break;
+    case protocol::RemoteWebAuthn::kCreateResponse:
+      OnCreateResponse(remote_webauthn->id(),
+                       remote_webauthn->create_response());
+      break;
     default:
       LOG(ERROR) << "Unknown message case: " << remote_webauthn->message_case();
   }
@@ -80,6 +101,20 @@ void RemoteWebAuthnMessageHandler::
   remote_webauthn.set_id(id);
   // This simply creates the is_uvpaa_request.
   remote_webauthn.mutable_is_uvpaa_request();
+  Send(remote_webauthn, base::DoNothing());
+}
+
+void RemoteWebAuthnMessageHandler::Create(const std::string& request_data,
+                                          CreateCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  uint64_t id = AssignNextMessageId();
+  create_callbacks_[id] = std::move(callback);
+
+  protocol::RemoteWebAuthn remote_webauthn;
+  remote_webauthn.set_id(id);
+  remote_webauthn.mutable_create_request()->set_request_details_json(
+      request_data);
   Send(remote_webauthn, base::DoNothing());
 }
 
@@ -121,13 +156,34 @@ void RemoteWebAuthnMessageHandler::OnIsUvpaaResponse(
     const protocol::RemoteWebAuthn_IsUvpaaResponse& response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  auto it = is_uvpaa_callbacks_.find(id);
-  if (it == is_uvpaa_callbacks_.end()) {
-    LOG(WARNING) << "No IsUvpaa IPC callback associated with ID: " << id;
-    return;
+  FindAndRunCallback(is_uvpaa_callbacks_, id, response.is_available());
+}
+
+void RemoteWebAuthnMessageHandler::OnCreateResponse(
+    uint64_t id,
+    const protocol::RemoteWebAuthn_CreateResponse& response) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  mojom::WebAuthnCreateResponsePtr mojo_response;
+  switch (response.result_case()) {
+    case protocol::RemoteWebAuthn::CreateResponse::ResultCase::kErrorName:
+      mojo_response =
+          mojom::WebAuthnCreateResponse::NewErrorName(response.error_name());
+      break;
+    case protocol::RemoteWebAuthn::CreateResponse::ResultCase::kResponseJson:
+      mojo_response = mojom::WebAuthnCreateResponse::NewResponseData(
+          response.response_json());
+      break;
+    case protocol::RemoteWebAuthn::CreateResponse::ResultCase::RESULT_NOT_SET:
+      // Do nothing and send a nullptr to the mojo client. This means the remote
+      // create() call has yielded `null`, which is still a valid response
+      // according to the spec.
+      break;
+    default:
+      NOTREACHED() << "Unknown create result case: " << response.result_case();
   }
-  std::move(it->second).Run(response.is_available());
-  is_uvpaa_callbacks_.erase(it);
+
+  FindAndRunCallback(create_callbacks_, id, std::move(mojo_response));
 }
 
 uint64_t RemoteWebAuthnMessageHandler::AssignNextMessageId() {

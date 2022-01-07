@@ -48,6 +48,8 @@ void RemoteWebAuthnNativeMessagingHost::OnMessage(const std::string& message) {
     ProcessIsUvpaa(request, std::move(response));
   } else if (type == kGetRemoteStateMessageType) {
     ProcessGetRemoteState(std::move(response));
+  } else if (type == kCreateMessageType) {
+    ProcessCreate(request, std::move(response));
   } else {
     LOG(ERROR) << "Unsupported request type: " << type;
   }
@@ -94,6 +96,40 @@ void RemoteWebAuthnNativeMessagingHost::ProcessIsUvpaa(
                      base::Unretained(this), std::move(response)));
 }
 
+void RemoteWebAuthnNativeMessagingHost::ProcessCreate(
+    const base::Value& request,
+    base::Value response) {
+  // Create request: {id: string, type: 'create', requestData: string}
+  // Create response: {
+  //   id: string, type: 'createResponse', responseData?: string,
+  //   errorName?: string}
+
+  DCHECK(task_runner_->BelongsToCurrentThread());
+
+  if (!EnsureIpcConnection()) {
+    // TODO(yuweih): See if this is the right error to use here.
+    response.SetStringKey(kCreateResponseErrorNameKey, "InvalidStateError");
+    SendMessageToClient(std::move(response));
+    return;
+  }
+
+  const std::string* request_data =
+      request.FindStringKey(kCreateRequestDataKey);
+  if (!request_data) {
+    LOG(ERROR) << "Request data not found in create request.";
+    // navigator.credentials.create() throws NotSupportedError if the parameter
+    // is unexpected.
+    response.SetStringKey(kCreateResponseErrorNameKey, "NotSupportedError");
+    SendMessageToClient(std::move(response));
+    return;
+  }
+
+  remote_->Create(
+      *request_data,
+      base::BindOnce(&RemoteWebAuthnNativeMessagingHost::OnCreateResponse,
+                     base::Unretained(this), std::move(response)));
+}
+
 void RemoteWebAuthnNativeMessagingHost::ProcessGetRemoteState(
     base::Value response) {
   // GetRemoteState request: {id: string, type: 'getRemoteState'}
@@ -133,6 +169,33 @@ void RemoteWebAuthnNativeMessagingHost::OnIsUvpaaResponse(base::Value response,
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   response.SetBoolKey(kIsUvpaaResponseIsAvailableKey, is_available);
+  SendMessageToClient(std::move(response));
+}
+
+void RemoteWebAuthnNativeMessagingHost::OnCreateResponse(
+    base::Value response,
+    mojom::WebAuthnCreateResponsePtr remote_response) {
+  DCHECK(task_runner_->BelongsToCurrentThread());
+
+  // If |remote_response| is null, it means that the remote create() call has
+  // yielded `null`, which is still a valid response according to the spec. In
+  // this case we just send back an empty create response.
+  if (!remote_response.is_null()) {
+    switch (remote_response->which()) {
+      case mojom::WebAuthnCreateResponse::Tag::kErrorName:
+        response.SetStringKey(kCreateResponseErrorNameKey,
+                              remote_response->get_error_name());
+        break;
+      case mojom::WebAuthnCreateResponse::Tag::kResponseData:
+        response.SetStringKey(kCreateResponseDataKey,
+                              remote_response->get_response_data());
+        break;
+      default:
+        NOTREACHED() << "Unexpected create response tag: "
+                     << static_cast<uint32_t>(remote_response->which());
+    }
+  }
+
   SendMessageToClient(std::move(response));
 }
 

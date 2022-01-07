@@ -4,13 +4,37 @@
 
 module remoting.mojom;
 
+// The response object for WebAuthnProxy.Create().
+union WebAuthnCreateResponse {
+  // The `name` property of the `DOMException`, if any, yielded by the remote
+  // request.
+  string error_name;
+
+  // A string-serialized representation of the `PublicKeyCredential`
+  // (https://w3c.github.io/webauthn/#publickeycredential), if any, yielded
+  // by the remote request.
+  // Note that it is opaque to chromoting host processes and will be passed
+  // verbatim to the Chrome webAuthenticationProxy extension API.
+  string response_data;
+};
+
 // An interface for the host-side chromoting extension to pass intercepted Web
 // Authentication API requests to the client side chromoting security extension
 // through a chromoting host process.
-// The remote of this interface is always owned by a low-trust native messaging
-// host process; on Windows, the receiver is bound in a low-trust chromoting
-// network process, while on Linux, the receiver is bound in a high-trust
-// chromoting host process.
+//
+// The interface defined here generally matches the IDL of the Chrome
+// webAuthenticationProxy extension API:
+//   chrome/common/extensions/api/web_authentication_proxy.idl
+//
+// The remote of this interface is always owned by a native messaging host
+// process; on Windows, the receiver is bound in a chromoting network process,
+// while on Linux, the receiver is bound in a chromoting host process. Both the
+// remote and the receiver are generally trusted.
+//
+// There is an intrinsic risk of remote WebAuthn forwarding, but it's an
+// accepted risk and the impact is limited given the limited scope of the
+// feature. Please see the note here: go/crd-webauthn#heading=h.s445jjbbs1m2
+//
 // Note that both processes are chromoting-only and they don't make IPCs with
 // Chrome processes.
 interface WebAuthnProxy {
@@ -18,4 +42,12 @@ interface WebAuthnProxy {
   // PublicKeyCredential.isUserVerifyingPlatformAuthenticatorAvailable() call
   // remotely.
   IsUserVerifyingPlatformAuthenticatorAvailable() => (bool is_available);
+
+  // Handles a navigator.credentials.create() call remotely.
+  // |request_data| is the string-serialized representation of the parameters
+  // passed to the create() call. It is opaque to chromoting host processes and
+  // will be passed verbatim to the client.
+  // If |response| is null, it means that the remote create() call has yielded
+  // `null`, which is still a valid response according to the spec.
+  Create(string request_data) => (WebAuthnCreateResponse? response);
 };

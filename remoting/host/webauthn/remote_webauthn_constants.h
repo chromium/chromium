@@ -12,10 +12,14 @@ extern const char kRemoteWebAuthnDataChannelName[];
 // NMH message types.
 extern const char kIsUvpaaMessageType[];
 extern const char kGetRemoteStateMessageType[];
+extern const char kCreateMessageType[];
 
 // NMH message keys.
 extern const char kIsUvpaaResponseIsAvailableKey[];
 extern const char kGetRemoteStateResponseIsRemotedKey[];
+extern const char kCreateRequestDataKey[];
+extern const char kCreateResponseErrorNameKey[];
+extern const char kCreateResponseDataKey[];
 
 }  // namespace remoting
 

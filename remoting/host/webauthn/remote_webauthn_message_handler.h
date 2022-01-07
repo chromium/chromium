@@ -22,6 +22,7 @@
 namespace remoting {
 
 namespace protocol {
+class RemoteWebAuthn_CreateResponse;
 class RemoteWebAuthn_IsUvpaaResponse;
 }  // namespace protocol
 
@@ -44,6 +45,8 @@ class RemoteWebAuthnMessageHandler final
   // mojom::WebAuthnProxy implementation.
   void IsUserVerifyingPlatformAuthenticatorAvailable(
       IsUserVerifyingPlatformAuthenticatorAvailableCallback callback) override;
+  void Create(const std::string& request_data,
+              CreateCallback callback) override;
 
   void AddReceiver(mojo::PendingReceiver<mojom::WebAuthnProxy> receiver);
   void ClearReceivers();
@@ -55,10 +58,16 @@ class RemoteWebAuthnMessageHandler final
   base::WeakPtr<RemoteWebAuthnMessageHandler> GetWeakPtr();
 
  private:
+  template <typename CallbackType>
+  using CallbackMap = base::flat_map<uint64_t, CallbackType>;
+
   void OnReceiverDisconnected();
   void OnIsUvpaaResponse(
       uint64_t id,
       const protocol::RemoteWebAuthn_IsUvpaaResponse& response);
+  void OnCreateResponse(
+      uint64_t id,
+      const protocol::RemoteWebAuthn_CreateResponse& response);
 
   uint64_t AssignNextMessageId();
 
@@ -68,9 +77,10 @@ class RemoteWebAuthnMessageHandler final
   mojo::ReceiverSet<mojom::WebAuthnProxy> receiver_set_;
 
   // message ID => mojo callback mappings.
-  base::flat_map<uint64_t,
-                 IsUserVerifyingPlatformAuthenticatorAvailableCallback>
+  CallbackMap<IsUserVerifyingPlatformAuthenticatorAvailableCallback>
       is_uvpaa_callbacks_ GUARDED_BY_CONTEXT(sequence_checker_);
+  CallbackMap<CreateCallback> create_callbacks_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   uint64_t current_message_id_ GUARDED_BY_CONTEXT(sequence_checker_) = 0u;
 
