@@ -81,6 +81,7 @@ build_recipe = _recipe_for_package(
 
 build_recipe(
     name = "recipe:android/androidx_packager",
+    use_python3 = True,
 )
 
 build_recipe(
