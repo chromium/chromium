@@ -50,6 +50,7 @@ source_set("reading_list") {
     "//ios/components/webui:url_constants",
     "//ios/web/public",
     "//ios/web/public/deprecated",
+    "//ios/web/public/js_messaging:js_messaging",
     "//ios/web/public/security",
     "//net",
     "//services/network/public/cpp",

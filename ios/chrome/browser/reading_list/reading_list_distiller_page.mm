@@ -7,13 +7,17 @@
 #include "base/bind.h"
 #include "base/mac/foundation_util.h"
 #include "base/strings/string_util.h"
+#include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/values.h"
 #include "components/favicon/ios/web_favicon_driver.h"
 #include "components/google/core/common/google_util.h"
 #include "ios/chrome/browser/reading_list/favicon_web_state_dispatcher_impl.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/web/public/deprecated/crw_js_injection_receiver.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #include "ios/web/public/security/ssl_status.h"
@@ -245,20 +249,30 @@ bool ReadingListDistillerPage::IsGoogleCachedAMPPage() {
 }
 
 void ReadingListDistillerPage::HandleGoogleCachedAMPPage() {
-  base::WeakPtr<ReadingListDistillerPage> weak_this =
-      weak_ptr_factory_.GetWeakPtr();
-  [CurrentWebState()->GetJSInjectionReceiver()
-      executeJavaScript:@(kGetIframeURLJavaScript)
-      completionHandler:^(id result, NSError* error) {
-        if (weak_this &&
-            !weak_this->HandleGoogleCachedAMPPageJavaScriptResult(result,
-                                                                  error)) {
-          // If there is an error on navigation, continue normal distillation.
-          weak_this->ContinuePageDistillation();
-        }
-        // If there is no error, the navigation completion will trigger a new
-        // |OnLoadURLDone| call that will resume the distillation.
-      }];
+  web::WebFrame* web_frame = web::GetMainFrame(CurrentWebState());
+  web_frame->ExecuteJavaScript(
+      kGetIframeURLJavaScript,
+      base::BindOnce(
+          &ReadingListDistillerPage::OnHandleGoogleCachedAMPPageResult,
+          weak_ptr_factory_.GetWeakPtr()));
+
+  // If there is no error, the navigation completion will
+  // trigger a new |OnLoadURLDone| call that will resume
+  // the distillation.
+}
+
+void ReadingListDistillerPage::OnHandleGoogleCachedAMPPageResult(
+    const base::Value* value) {
+  if (!value->is_string()) {
+    return;
+  }
+
+  NSString* result = base::SysUTF8ToNSString(value->GetString());
+  if (!HandleGoogleCachedAMPPageJavaScriptResult(result, nil)) {
+    // If there is an error on navigation, continue
+    // normal distillation.
+    ContinuePageDistillation();
+  }
 }
 
 bool ReadingListDistillerPage::HandleGoogleCachedAMPPageJavaScriptResult(
@@ -294,15 +308,17 @@ bool ReadingListDistillerPage::IsWikipediaPage() {
 }
 
 void ReadingListDistillerPage::HandleWikipediaPage() {
-  base::WeakPtr<ReadingListDistillerPage> weak_this =
-      weak_ptr_factory_.GetWeakPtr();
-  [CurrentWebState()->GetJSInjectionReceiver()
-      executeJavaScript:@(kWikipediaWorkaround)
-      completionHandler:^(id result, NSError* error) {
-        if (weak_this) {
-          weak_this->ContinuePageDistillation();
-        }
-      }];
+  web::WebFrame* web_frame = web::GetMainFrame(CurrentWebState());
+
+  web_frame->ExecuteJavaScript(
+      kWikipediaWorkaround,
+      BindOnce(&ReadingListDistillerPage::OnHandleWikipediaPageResult,
+               weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ReadingListDistillerPage::OnHandleWikipediaPageResult(
+    const base::Value* value) {
+  ContinuePageDistillation();
 }
 
 }  // namespace reading_list

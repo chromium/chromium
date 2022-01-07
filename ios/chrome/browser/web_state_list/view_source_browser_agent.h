@@ -7,6 +7,8 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/memory/weak_ptr.h"
+#import "base/values.h"
 #import "ios/chrome/browser/main/browser_user_data.h"
 
 class Browser;
@@ -39,8 +41,15 @@ class ViewSourceBrowserAgent : public BrowserUserData<ViewSourceBrowserAgent> {
   // Inserts a tab into |browser_| showing the |source| for |web_state|.
   void InsertSourceViewTab(NSString* source, web::WebState* web_state);
 
+  // OnHandleViewSourceForActiveWebStateResult is called asynchronously with
+  // the result of the javascript evaluation started in
+  // ViewSourceForActiveWebState.
+  void OnHandleViewSourceForActiveWebStateResult(const base::Value* value);
+
   // The browser this agent is associated with.
   Browser* browser_;
+
+  base::WeakPtrFactory<ViewSourceBrowserAgent> weak_ptr_factory_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_WEB_STATE_LIST_VIEW_SOURCE_BROWSER_AGENT_H_

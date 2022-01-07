@@ -67,6 +67,7 @@ source_set("agents") {
   deps = [
     ":session_metrics",
     ":web_state_list",
+    "//base",
     "//components/navigation_metrics",
     "//components/profile_metrics",
     "//ios/chrome/browser:chrome_url_constants",
@@ -83,6 +84,7 @@ source_set("agents") {
     "//ios/components/security_interstitials:security_interstitials",
     "//ios/web/public",
     "//ios/web/public/deprecated",
+    "//ios/web/public/js_messaging:js_messaging",
   ]
   frameworks = [ "Foundation.framework" ]
   configs += [ "//build/config/compiler:enable_arc" ]
