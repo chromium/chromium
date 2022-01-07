@@ -853,7 +853,7 @@ void TableView::OnItemsRemoved(int start, int length) {
 
   // Remove the virtual views that are no longer needed.
   auto& virtual_children = GetViewAccessibility().virtual_children();
-  for (int i = start; i < start + length; i++)
+  for (int i = start; !virtual_children.empty() && i < start + length; i++)
     virtual_children[virtual_children.size() - 1]->RemoveFromParentView();
 
   UpdateVirtualAccessibilityChildrenBounds();
@@ -1648,7 +1648,11 @@ void TableView::UpdateVirtualAccessibilityChildrenBounds() {
 
   // Update the bounds for the table's content rows.
   for (int row_index = 0; row_index < GetRowCount(); row_index++) {
-    auto& ax_row = virtual_children[header_ ? row_index + 1 : row_index];
+    const size_t ax_row_index = header_ ? row_index + 1 : row_index;
+    if (ax_row_index >= virtual_children.size())
+      break;
+
+    auto& ax_row = virtual_children[ax_row_index];
     ui::AXNodeData& row_data = ax_row->GetCustomData();
     DCHECK_EQ(row_data.role, ax::mojom::Role::kRow);
     row_data.relative_bounds.bounds =
