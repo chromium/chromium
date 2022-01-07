@@ -13,10 +13,11 @@
 
 namespace ui {
 
-// Do not fail on SANITIZER builds as they run slow.
-#if !DCHECK_IS_ON() || defined(ADDRESS_SANITIZER) ||          \
-    defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER) || \
-    defined(LEAK_SANITIZER) || defined(UNDEFINED_SANITIZER)
+// Do not fail on builds that run slow, such as SANITIZER, debug.
+#if !DCHECK_IS_ON() || defined(ADDRESS_SANITIZER) ||           \
+    defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER) ||  \
+    defined(LEAK_SANITIZER) || defined(UNDEFINED_SANITIZER) || \
+    !defined(NDEBUG)
 #define NOTREACHED_OR_WARN() LOG(WARNING)
 #else
 #define NOTREACHED_OR_WARN() NOTREACHED()
