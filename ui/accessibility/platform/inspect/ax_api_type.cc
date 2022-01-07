@@ -4,6 +4,8 @@
 
 #include "ui/accessibility/platform/inspect/ax_api_type.h"
 
+#include <cstring>
+
 namespace ui {
 
 namespace {
