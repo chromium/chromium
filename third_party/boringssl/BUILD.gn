@@ -35,9 +35,6 @@ config("internal_config") {
     "BORINGSSL_NO_STATIC_INITIALIZER",
     "OPENSSL_SMALL",
   ]
-  if (is_posix || is_fuchsia) {
-    defines += [ "_XOPEN_SOURCE=700" ]
-  }
 }
 
 config("no_asm_config") {
