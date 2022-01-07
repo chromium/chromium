@@ -979,12 +979,6 @@ void AuthenticatorCommon::GetAssertion(
         ClientDataRequestType::kU2fSign, options->relying_party_id,
         options->challenge, /*is_cross_origin=*/false);
   } else if (payment) {
-    auto* web_contents = WebContents::FromRenderFrameHost(GetRenderFrameHost());
-    if (!web_contents) {
-      CompleteGetAssertionRequest(
-          blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR);
-      return;
-    }
     url::Origin top_origin =
         GetRenderFrameHost()->GetOutermostMainFrame()->GetLastCommittedOrigin();
     client_data_json_ = BuildClientDataJson(
