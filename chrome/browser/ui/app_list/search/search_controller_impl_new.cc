@@ -295,7 +295,7 @@ void SearchControllerImplNew::Publish() {
     category_enums.push_back(category.category);
 
   // Compile a single list of results and sort first by their category with best
-  // match first, and then by relevance.
+  // match first, then by burn-in iteration number, and finally by relevance.
   std::vector<ChromeSearchResult*> all_results;
   for (const auto& type_results : results_) {
     for (const auto& result : type_results.second) {
