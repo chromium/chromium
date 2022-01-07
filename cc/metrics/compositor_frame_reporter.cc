@@ -348,6 +348,41 @@ base::TimeTicks ComputeSafeDeadlineForFrame(const viz::BeginFrameArgs& args) {
   return args.frame_time + (args.interval * 1.5);
 }
 
+perfetto::protos::pbzero::EventLatency::EventType ToProtoEnum(
+    EventMetrics::EventType event_type) {
+#define CASE(event_type, proto_event_type)  \
+  case EventMetrics::EventType::event_type: \
+    return perfetto::protos::pbzero::EventLatency::proto_event_type
+  switch (event_type) {
+    CASE(kMousePressed, MOUSE_PRESSED);
+    CASE(kMouseReleased, MOUSE_RELEASED);
+    CASE(kMouseWheel, MOUSE_WHEEL);
+    CASE(kKeyPressed, KEY_PRESSED);
+    CASE(kKeyReleased, KEY_RELEASED);
+    CASE(kTouchPressed, TOUCH_PRESSED);
+    CASE(kTouchReleased, TOUCH_RELEASED);
+    CASE(kTouchMoved, TOUCH_MOVED);
+    CASE(kGestureScrollBegin, GESTURE_SCROLL_BEGIN);
+    CASE(kGestureScrollUpdate, GESTURE_SCROLL_UPDATE);
+    CASE(kGestureScrollEnd, GESTURE_SCROLL_END);
+    CASE(kGestureDoubleTap, GESTURE_DOUBLE_TAP);
+    CASE(kGestureLongPress, GESTURE_LONG_PRESS);
+    CASE(kGestureLongTap, GESTURE_LONG_TAP);
+    CASE(kGestureShowPress, GESTURE_SHOW_PRESS);
+    CASE(kGestureTap, GESTURE_TAP);
+    CASE(kGestureTapCancel, GESTURE_TAP_CANCEL);
+    CASE(kGestureTapDown, GESTURE_TAP_DOWN);
+    CASE(kGestureTapUnconfirmed, GESTURE_TAP_UNCONFIRMED);
+    CASE(kGestureTwoFingerTap, GESTURE_TWO_FINGER_TAP);
+    CASE(kFirstGestureScrollUpdate, FIRST_GESTURE_SCROLL_UPDATE);
+    CASE(kMouseDragged, MOUSE_DRAGGED);
+    CASE(kGesturePinchBegin, GESTURE_PINCH_BEGIN);
+    CASE(kGesturePinchEnd, GESTURE_PINCH_END);
+    CASE(kGesturePinchUpdate, GESTURE_PINCH_UPDATE);
+    CASE(kInertialGestureScrollUpdate, INERTIAL_GESTURE_SCROLL_UPDATE);
+  }
+}
+
 }  // namespace
 
 // CompositorFrameReporter::ProcessedBlinkBreakdown::Iterator ==================
@@ -1206,10 +1241,16 @@ void CompositorFrameReporter::ReportEventLatencyTraceEvents() const {
         event_metrics->GetDispatchStageTimestamp(
             EventMetrics::DispatchStage::kGenerated);
 
-    const auto trace_id = TRACE_ID_LOCAL(event_metrics.get());
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP1(
-        kTraceEventCategory, "EventLatency", trace_id, generated_timestamp,
-        "event", event_metrics->GetTypeName());
+    const auto trace_track =
+        perfetto::Track(base::trace_event::GetNextGlobalTraceId());
+    TRACE_EVENT_BEGIN(
+        kTraceEventCategory, "EventLatency", trace_track, generated_timestamp,
+        [&](perfetto::EventContext context) {
+          auto* event =
+              context.event<perfetto::protos::pbzero::ChromeTrackEvent>();
+          auto* event_latency = event->set_event_latency();
+          event_latency->set_event_type(ToProtoEnum(event_metrics->type()));
+        });
 
     // Event dispatch stages.
     EventMetrics::DispatchStage dispatch_stage =
@@ -1235,10 +1276,10 @@ void CompositorFrameReporter::ReportEventLatencyTraceEvents() const {
 
       const char* breakdown_name =
           GetEventLatencyDispatchBreakdownName(dispatch_stage, end_stage);
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-          kTraceEventCategory, breakdown_name, trace_id, dispatch_timestamp);
-      TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-          kTraceEventCategory, breakdown_name, trace_id, end_timestamp);
+      TRACE_EVENT_BEGIN(kTraceEventCategory,
+                        perfetto::StaticString{breakdown_name}, trace_track,
+                        dispatch_timestamp);
+      TRACE_EVENT_END(kTraceEventCategory, trace_track, end_timestamp);
 
       dispatch_stage = end_stage;
       dispatch_timestamp = end_timestamp;
@@ -1267,11 +1308,10 @@ void CompositorFrameReporter::ReportEventLatencyTraceEvents() const {
     const char* d2c_breakdown_name =
         GetEventLatencyDispatchToCompositorBreakdownName(dispatch_stage,
                                                          stage_it->stage_type);
-    TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-        kTraceEventCategory, d2c_breakdown_name, trace_id, dispatch_timestamp);
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(kTraceEventCategory,
-                                                   d2c_breakdown_name, trace_id,
-                                                   stage_it->start_time);
+    TRACE_EVENT_BEGIN(kTraceEventCategory,
+                      perfetto::StaticString{d2c_breakdown_name}, trace_track,
+                      dispatch_timestamp);
+    TRACE_EVENT_END(kTraceEventCategory, trace_track, stage_it->start_time);
 
     // Compositor stages.
     for (; stage_it != stage_history_.end(); ++stage_it) {
@@ -1285,8 +1325,8 @@ void CompositorFrameReporter::ReportEventLatencyTraceEvents() const {
         continue;
       const char* stage_name = GetStageName(stage_type_index);
 
-      TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-          kTraceEventCategory, stage_name, trace_id, stage_it->start_time);
+      TRACE_EVENT_BEGIN(kTraceEventCategory, perfetto::StaticString{stage_name},
+                        trace_track, stage_it->start_time);
 
       if (stage_it->stage_type ==
           StageType::kSubmitCompositorFrameToPresentationCompositorFrame) {
@@ -1298,18 +1338,16 @@ void CompositorFrameReporter::ReportEventLatencyTraceEvents() const {
           if (start_time >= end_time)
             continue;
           const char* breakdown_name = GetVizBreakdownName(it.GetBreakdown());
-          TRACE_EVENT_NESTABLE_ASYNC_BEGIN_WITH_TIMESTAMP0(
-              kTraceEventCategory, breakdown_name, trace_id, start_time);
-          TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-              kTraceEventCategory, breakdown_name, trace_id, end_time);
+          TRACE_EVENT_BEGIN(kTraceEventCategory,
+                            perfetto::StaticString{breakdown_name}, trace_track,
+                            start_time);
+          TRACE_EVENT_END(kTraceEventCategory, trace_track, end_time);
         }
       }
 
-      TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-          kTraceEventCategory, stage_name, trace_id, stage_it->end_time);
+      TRACE_EVENT_END(kTraceEventCategory, trace_track, stage_it->end_time);
     }
-    TRACE_EVENT_NESTABLE_ASYNC_END_WITH_TIMESTAMP0(
-        kTraceEventCategory, "EventLatency", trace_id, frame_termination_time_);
+    TRACE_EVENT_END(kTraceEventCategory, trace_track, frame_termination_time_);
   }
 }
 
