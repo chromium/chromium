@@ -1183,10 +1183,12 @@ scoped_refptr<const ComputedStyle> StyleResolver::StyleForPage(
 }
 
 const ComputedStyle& StyleResolver::InitialStyle() const {
+  DCHECK(initial_style_);
   return *initial_style_;
 }
 
 scoped_refptr<ComputedStyle> StyleResolver::CreateComputedStyle() const {
+  DCHECK(initial_style_);
   return ComputedStyle::Clone(*initial_style_);
 }
 
