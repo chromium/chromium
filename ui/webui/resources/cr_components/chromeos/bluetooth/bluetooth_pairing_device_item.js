@@ -73,6 +73,16 @@ export class SettingsBluetoothPairingDeviceItemElement extends
     };
   }
 
+  /** @override */
+  focus() {
+    // Prevent scroll stops iron list from trying to bring this element to view,
+    // if it is the |lastFocused| element and scrolled out of view. This can
+    // happen if this element is tabbed to or selected and then scrolled out of
+    // view.
+    // TODO(b/210743107) Add a test for this.
+    this.$.container.focus({preventScroll: true});
+  }
+
   /**
    * @return {boolean}
    * @private

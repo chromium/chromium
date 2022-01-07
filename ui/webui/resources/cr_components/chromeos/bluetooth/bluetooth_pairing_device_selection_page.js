@@ -47,6 +47,7 @@ export class SettingsBluetoothPairingDeviceSelectionPageElement extends
       devices: {
         type: Array,
         value: [],
+        observer: 'onDevicesChanged_',
       },
 
       /**
@@ -129,6 +130,15 @@ export class SettingsBluetoothPairingDeviceSelectionPageElement extends
 
       items[index].focus();
     });
+  }
+
+  /** @private */
+  onDevicesChanged_() {
+    // CrScrollableBehaviorInterface method required for list items to be
+    // properly rendered when devices updates. This is because iron-list size
+    // is not fixed, if this is not called iron-list container would not be
+    // properly sized.
+    this.updateScrollableContents();
   }
 
   /** @private */
