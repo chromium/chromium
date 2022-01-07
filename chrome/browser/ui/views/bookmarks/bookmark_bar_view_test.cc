@@ -731,13 +731,7 @@ class BookmarkBarViewTest3 : public BookmarkBarViewEventTestBase {
   }
 };
 
-// TODO(crbug.com/1281365): Flakes on Linux.
-#if defined(OS_LINUX)
-#define MAYBE_Submenus DISABLED_Submenus
-#else
-#define MAYBE_Submenus Submenus
-#endif
-VIEW_TEST(BookmarkBarViewTest3, MAYBE_Submenus)
+VIEW_TEST(BookmarkBarViewTest3, Submenus)
 
 // Observer that posts a task upon the context menu creation.
 // This is necessary for Linux as the context menu has to check the clipboard,
