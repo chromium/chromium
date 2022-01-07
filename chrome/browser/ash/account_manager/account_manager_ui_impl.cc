@@ -8,6 +8,7 @@
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
+#include "components/account_manager_core/account_addition_options.h"
 
 namespace ash {
 
@@ -17,8 +18,9 @@ AccountManagerUIImpl::AccountManagerUIImpl() = default;
 AccountManagerUIImpl::~AccountManagerUIImpl() = default;
 
 void AccountManagerUIImpl::ShowAddAccountDialog(
+    const account_manager::AccountAdditionOptions& options,
     base::OnceClosure close_dialog_closure) {
-  InlineLoginDialogChromeOS::Show(std::move(close_dialog_closure));
+  InlineLoginDialogChromeOS::Show(options, std::move(close_dialog_closure));
 }
 
 void AccountManagerUIImpl::ShowReauthAccountDialog(

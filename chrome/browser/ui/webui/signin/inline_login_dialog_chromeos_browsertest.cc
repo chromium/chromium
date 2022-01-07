@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/signin/inline_login_dialog_chromeos.h"
 
+#include "base/json/json_reader.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "content/public/browser/web_contents.h"
@@ -42,6 +44,8 @@ class ChildModalDialogDelegate : public views::DialogDelegateView {
   ~ChildModalDialogDelegate() override = default;
 };
 
+}  // namespace
+
 using InlineLoginDialogChromeOSTest = InProcessBrowserTest;
 
 // Regression test for use-after-free and crash. https://1170577
@@ -70,5 +74,50 @@ IN_PROC_BROWSER_TEST_F(InlineLoginDialogChromeOSTest,
   // No crash.
 }
 
-}  // namespace
+IN_PROC_BROWSER_TEST_F(InlineLoginDialogChromeOSTest, ReturnsEmptyDialogArgs) {
+  auto* dialog = new InlineLoginDialogChromeOS(
+      GURL(chrome::kChromeUIChromeSigninURL), /*options=*/absl::nullopt,
+      /*close_dialog_closure=*/base::DoNothing());
+  EXPECT_TRUE(InlineLoginDialogChromeOS::IsShown());
+  EXPECT_EQ(dialog->GetDialogArgs(), "");
+
+  // Delete dialog by calling OnDialogClosed.
+  dialog->OnDialogClosed("");
+  // Make sure the dialog is deleted.
+  EXPECT_FALSE(InlineLoginDialogChromeOS::IsShown());
+}
+
+IN_PROC_BROWSER_TEST_F(InlineLoginDialogChromeOSTest,
+                       ReturnsCorrectDialogArgs) {
+  account_manager::AccountAdditionOptions options;
+  options.is_available_in_arc = true;
+  options.show_arc_availability_picker = false;
+  auto* dialog = new InlineLoginDialogChromeOS(
+      GURL(chrome::kChromeUIChromeSigninURL), options,
+      /*close_dialog_closure=*/base::DoNothing());
+  EXPECT_TRUE(InlineLoginDialogChromeOS::IsShown());
+
+  absl::optional<base::Value> args =
+      base::JSONReader::Read(dialog->GetDialogArgs());
+  ASSERT_TRUE(args.has_value());
+  EXPECT_TRUE(args.value().is_dict());
+  base::DictionaryValue* dict = nullptr;
+  args.value().GetAsDictionary(&dict);
+  ASSERT_TRUE(dict != nullptr);
+  absl::optional<bool> is_available_in_arc =
+      dict->FindBoolKey("isAvailableInArc");
+  absl::optional<bool> show_arc_availability_picker =
+      dict->FindBoolKey("showArcAvailabilityPicker");
+  ASSERT_TRUE(is_available_in_arc.has_value());
+  ASSERT_TRUE(show_arc_availability_picker.has_value());
+  EXPECT_EQ(is_available_in_arc.value(), options.is_available_in_arc);
+  EXPECT_EQ(show_arc_availability_picker.value(),
+            options.show_arc_availability_picker);
+
+  // Delete dialog by calling OnDialogClosed.
+  dialog->OnDialogClosed("");
+  // Make sure the dialog is deleted.
+  EXPECT_FALSE(InlineLoginDialogChromeOS::IsShown());
+}
+
 }  // namespace chromeos

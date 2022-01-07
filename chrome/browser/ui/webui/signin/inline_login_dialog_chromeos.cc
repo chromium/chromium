@@ -22,6 +22,7 @@
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/webui/chromeos/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/account_manager_core/account_addition_options.h"
 #include "components/account_manager_core/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
@@ -163,10 +164,12 @@ InlineLoginDialogChromeOS::InlineLoginDialogChromeOS(const GURL& url)
 
 InlineLoginDialogChromeOS::InlineLoginDialogChromeOS(
     const GURL& url,
+    absl::optional<account_manager::AccountAdditionOptions> options,
     base::OnceClosure close_dialog_closure)
     : SystemWebDialogDelegate(url, std::u16string() /* title */),
       delegate_(this),
       url_(url),
+      add_account_options_(options),
       close_dialog_closure_(std::move(close_dialog_closure)) {
   DCHECK(!dialog);
   dialog = this;
@@ -223,20 +226,39 @@ void InlineLoginDialogChromeOS::OnDialogClosed(const std::string& json_retval) {
   SystemWebDialogDelegate::OnDialogClosed(json_retval);
 }
 
+std::string InlineLoginDialogChromeOS::GetDialogArgs() const {
+  if (!add_account_options_)
+    return std::string();
+
+  base::DictionaryValue args;
+  args.SetKey("isAvailableInArc",
+              base::Value(add_account_options_->is_available_in_arc));
+  args.SetKey("showArcAvailabilityPicker",
+              base::Value(add_account_options_->show_arc_availability_picker));
+  std::string json;
+  base::JSONWriter::Write(args, &json);
+  return json;
+}
+
 // static
-void InlineLoginDialogChromeOS::Show(base::OnceClosure close_dialog_closure) {
-  Show(/* email= */ std::string(), std::move(close_dialog_closure));
+void InlineLoginDialogChromeOS::Show(
+    const account_manager::AccountAdditionOptions& options,
+    base::OnceClosure close_dialog_closure) {
+  ShowInternal(/* email= */ std::string(), options,
+               std::move(close_dialog_closure));
 }
 
 // static
 void InlineLoginDialogChromeOS::Show(const std::string& email,
                                      base::OnceClosure close_dialog_closure) {
-  ShowInternal(email, std::move(close_dialog_closure));
+  ShowInternal(email, /*options=*/absl::nullopt,
+               std::move(close_dialog_closure));
 }
 
 // static
 void InlineLoginDialogChromeOS::ShowInternal(
     const std::string& email,
+    absl::optional<account_manager::AccountAdditionOptions> options,
     base::OnceClosure close_dialog_closure) {
   // If the dialog was triggered as a response to background request, it could
   // get displayed on the lock screen. In this case it is safe to ignore it,
@@ -251,7 +273,7 @@ void InlineLoginDialogChromeOS::ShowInternal(
   }
 
   // Will be deleted by |SystemWebDialogDelegate::OnDialogClosed|.
-  dialog = new InlineLoginDialogChromeOS(GetInlineLoginUrl(email),
+  dialog = new InlineLoginDialogChromeOS(GetInlineLoginUrl(email), options,
                                          std::move(close_dialog_closure));
   dialog->ShowSystemDialog();
 

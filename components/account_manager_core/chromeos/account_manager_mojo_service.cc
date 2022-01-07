@@ -122,7 +122,9 @@ void AccountManagerMojoService::ShowAddAccountDialog(
   DCHECK(!account_addition_in_progress_);
   account_addition_in_progress_ = true;
   account_addition_callback_ = std::move(callback);
+  auto maybe_options = account_manager::FromMojoAccountAdditionOptions(options);
   account_manager_ui_->ShowAddAccountDialog(
+      maybe_options.value_or(account_manager::AccountAdditionOptions{}),
       base::BindOnce(&AccountManagerMojoService::OnAddAccountDialogClosed,
                      weak_ptr_factory_.GetWeakPtr()));
 }

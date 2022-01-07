@@ -46,7 +46,9 @@ class FakeAccountManagerUI : public account_manager::AccountManagerUI {
   }
 
   // AccountManagerUI overrides:
-  void ShowAddAccountDialog(base::OnceClosure close_dialog_closure) override;
+  void ShowAddAccountDialog(
+      const account_manager::AccountAdditionOptions& options,
+      base::OnceClosure close_dialog_closure) override;
   void ShowReauthAccountDialog(const std::string& email,
                                base::OnceClosure close_dialog_closure) override;
   bool IsDialogShown() override;
