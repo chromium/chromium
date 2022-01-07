@@ -472,6 +472,9 @@ crbug.com/1213542 [ skia-renderer-gl mac amd-0x6821 passthrough ] Pixel_Video_Me
 
 # Flaky on Pixel 4 Android WebView
 crbug.com/1278893 [ android android-pixel-4 android-webview-instrumentation skia-renderer-gl ] Pixel_OffscreenCanvasWebGLPaintAfterResize [ RetryOnFailure ]
+crbug.com/1285104 [ android android-pixel-4 android-webview-instrumentation skia-renderer-gl ] Pixel_OffscreenCanvas2DResizeOnWorker [ RetryOnFailure ]
+crbug.com/1285084 [ android android-pixel-4 android-webview-instrumentation skia-renderer-gl ] Pixel_CSS3DBlueBox [ RetryOnFailure ]
+
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
