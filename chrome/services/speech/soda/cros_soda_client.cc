@@ -54,9 +54,15 @@ void CrosSodaClient::AddAudio(const char* audio_buffer,
   soda_recognizer_->AddAudio(audio);
 }
 
+void CrosSodaClient::MarkDone() {
+  DCHECK(IsInitialized()) << "Can't mark as done before starting";
+  soda_recognizer_->MarkDone();
+}
+
 void CrosSodaClient::Reset(
     chromeos::machine_learning::mojom::SodaConfigPtr soda_config,
-    CrosSodaClient::TranscriptionResultCallback callback) {
+    CrosSodaClient::TranscriptionResultCallback transcription_callback,
+    CrosSodaClient::OnStopCallback stop_callback) {
   sample_rate_ = soda_config->sample_rate;
   channel_count_ = soda_config->channel_count;
   if (is_initialized_) {
@@ -79,13 +85,17 @@ void CrosSodaClient::Reset(
             }
           }));
 
-  callback_ = callback;
+  transcription_callback_ = transcription_callback;
+  stop_callback_ = stop_callback;
+
   // Ensure this one is started.
   soda_recognizer_->Start();
 }
+
 void CrosSodaClient::OnStop() {
-  // Do nothing OnStop.
+  stop_callback_.Run();
 }
+
 void CrosSodaClient::OnStart() {
   // Do nothing OnStart.
 }
@@ -94,12 +104,14 @@ void CrosSodaClient::OnSpeechRecognizerEvent(
   if (event->is_final_result()) {
     auto& final_result = event->get_final_result();
     if (!final_result->final_hypotheses.empty())
-      callback_.Run(GetSpeechRecognitionResultFromFinalEvent(final_result));
+      transcription_callback_.Run(
+          GetSpeechRecognitionResultFromFinalEvent(final_result));
   } else if (event->is_partial_result()) {
     auto& partial_result = event->get_partial_result();
     if (!partial_result->partial_text.empty()) {
       const std::string partial_hyp = partial_result->partial_text.front();
-      callback_.Run(media::SpeechRecognitionResult(partial_hyp, false));
+      transcription_callback_.Run(
+          media::SpeechRecognitionResult(partial_hyp, false));
     }
   } else if (!event->is_endpointer_event() && !event->is_audio_event()) {
     LOG(ERROR) << "Some kind of other soda event, ignoring completely. Tag is '"

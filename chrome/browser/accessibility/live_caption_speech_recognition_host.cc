@@ -74,6 +74,12 @@ void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionError() {
     live_caption_controller->OnError(context_.get());
 }
 
+void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionStopped() {
+  LiveCaptionController* live_caption_controller = GetLiveCaptionController();
+  if (live_caption_controller)
+    live_caption_controller->OnAudioStreamEnd(context_.get());
+}
+
 #if defined(OS_MAC) || defined(OS_CHROMEOS)
 void LiveCaptionSpeechRecognitionHost::MediaEffectivelyFullscreenChanged(
     bool is_fullscreen) {

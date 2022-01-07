@@ -224,8 +224,9 @@ TEST_F(ProjectorControllerTest, RecordingEnded) {
             mock_client_,
             OnNewScreencastPreconditionChanged(NewScreencastPrecondition(
                 NewScreencastPreconditionState::kEnabled, {})));
-
-        EXPECT_CALL(mock_client_, StopSpeechRecognition());
+        EXPECT_CALL(mock_client_, StopSpeechRecognition())
+            .WillOnce(testing::Invoke(
+                [&]() { controller_->OnSpeechRecognitionStopped(); }));
 
         // Verify that |SaveMetadata| in |ProjectorMetadataController| is called
         // with the expected path.

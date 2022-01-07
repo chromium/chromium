@@ -48,6 +48,7 @@ class SpeechRecognitionPrivateRecognizer : public SpeechRecognizerDelegate {
   void OnSpeechSoundLevelChanged(int16_t level) override {}
   void OnSpeechRecognitionStateChanged(
       SpeechRecognizerStatus new_state) override;
+  void OnSpeechRecognitionStopped() override {}
 
   // Handles a call to start speech recognition.
   void HandleStart(absl::optional<std::string> locale,

@@ -90,6 +90,12 @@ void OnSodaResponse(const char* serialized_proto,
              static_cast<media::mojom::ConfidenceLevel>(
                  event.confidence_level()));
   }
+
+  if (response.soda_type() == soda::chrome::SodaResponse::STOP) {
+    static_cast<SpeechRecognitionRecognizerImpl*>(callback_handle)
+        ->speech_recognition_stopped_callback()
+        .Run();
+  }
 }
 
 speech::soda::chrome::ExtendedSodaConfigMsg::RecognitionMode
@@ -157,6 +163,12 @@ void SpeechRecognitionRecognizerImpl::OnLanguageIdentificationEvent(
   }
 }
 
+void SpeechRecognitionRecognizerImpl::OnRecognitionStoppedCallback() {
+  if (client_remote_.is_bound()) {
+    client_remote_->OnSpeechRecognitionStopped();
+  }
+}
+
 SpeechRecognitionRecognizerImpl::SpeechRecognitionRecognizerImpl(
     mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient> remote,
     base::WeakPtr<SpeechRecognitionServiceImpl> speech_recognition_service_impl,
@@ -173,6 +185,10 @@ SpeechRecognitionRecognizerImpl::SpeechRecognitionRecognizerImpl(
       media::BindToCurrentLoop(base::BindRepeating(
           &SpeechRecognitionRecognizerImpl::OnLanguageIdentificationEvent,
           weak_factory_.GetWeakPtr()));
+  speech_recognition_stopped_callback_ =
+      media::BindToCurrentLoop(base::BindRepeating(
+          &SpeechRecognitionRecognizerImpl::OnRecognitionStoppedCallback,
+          weak_factory_.GetWeakPtr()));
 
   // Unretained is safe because |this| owns the mojo::Remote.
   client_remote_.set_disconnect_handler(
@@ -180,14 +196,14 @@ SpeechRecognitionRecognizerImpl::SpeechRecognitionRecognizerImpl(
                      weak_factory_.GetWeakPtr()));
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-    // On Chrome OS Ash, soda_client_ is not used, so don't try to create it
-    // here because it exists at a different location. Instead,
-    // CrosSpeechRecognitionRecognizerImpl has its own CrosSodaClient.
-    DCHECK(base::PathExists(binary_path));
-    soda_client_ = std::make_unique<::soda::SodaClient>(binary_path);
-    if (!soda_client_->BinaryLoadedSuccessfully()) {
-      OnSpeechRecognitionError();
-    }
+  // On Chrome OS Ash, soda_client_ is not used, so don't try to create it
+  // here because it exists at a different location. Instead,
+  // CrosSpeechRecognitionRecognizerImpl has its own CrosSodaClient.
+  DCHECK(base::PathExists(binary_path));
+  soda_client_ = std::make_unique<::soda::SodaClient>(binary_path);
+  if (!soda_client_->BinaryLoadedSuccessfully()) {
+    OnSpeechRecognitionError();
+  }
 #endif
 }
 
@@ -244,6 +260,10 @@ void SpeechRecognitionRecognizerImpl::OnSpeechRecognitionError() {
   }
 }
 
+void SpeechRecognitionRecognizerImpl::MarkDone() {
+  soda_client_->MarkDone();
+}
+
 void SpeechRecognitionRecognizerImpl::
     SendAudioToSpeechRecognitionServiceInternal(
         media::mojom::AudioDataS16Ptr buffer) {
@@ -257,15 +277,15 @@ void SpeechRecognitionRecognizerImpl::
     return;
   }
 
-    CHECK(soda_client_);
-    DCHECK(base::PathExists(config_path_));
-    if (!soda_client_->IsInitialized() ||
-        soda_client_->DidAudioPropertyChange(sample_rate_, channel_count_)) {
-      ResetSoda();
-    }
+  CHECK(soda_client_);
+  DCHECK(base::PathExists(config_path_));
+  if (!soda_client_->IsInitialized() ||
+      soda_client_->DidAudioPropertyChange(sample_rate_, channel_count_)) {
+    ResetSoda();
+  }
 
-    soda_client_->AddAudio(reinterpret_cast<char*>(buffer->data.data()),
-                           buffer_size);
+  soda_client_->AddAudio(reinterpret_cast<char*>(buffer->data.data()),
+                         buffer_size);
 }
 
 void SpeechRecognitionRecognizerImpl::OnLanguageChanged(

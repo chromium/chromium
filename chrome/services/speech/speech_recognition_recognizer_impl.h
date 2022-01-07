@@ -31,6 +31,8 @@ class SpeechRecognitionRecognizerImpl
       const std::string& language,
       const media::mojom::ConfidenceLevel confidence_level)>;
 
+  using OnSpeechRecognitionStoppedCallback = base::RepeatingCallback<void()>;
+
   SpeechRecognitionRecognizerImpl(
       mojo::PendingRemote<media::mojom::SpeechRecognitionRecognizerClient>
           remote,
@@ -71,12 +73,19 @@ class SpeechRecognitionRecognizerImpl
     return language_identification_event_callback_;
   }
 
+  OnSpeechRecognitionStoppedCallback speech_recognition_stopped_callback()
+      const {
+    return speech_recognition_stopped_callback_;
+  }
+
   // Convert the audio buffer into the appropriate format and feed the raw audio
   // into the speech recognition instance.
   void SendAudioToSpeechRecognitionService(
       media::mojom::AudioDataS16Ptr buffer) final;
 
   void OnSpeechRecognitionError();
+
+  void MarkDone() override;
 
  protected:
   virtual void SendAudioToSpeechRecognitionServiceInternal(
@@ -89,6 +98,8 @@ class SpeechRecognitionRecognizerImpl
   void OnLanguageIdentificationEvent(
       const std::string& language,
       const media::mojom::ConfidenceLevel confidence_level);
+
+  void OnRecognitionStoppedCallback();
 
   media::mojom::SpeechRecognitionOptionsPtr options_;
 
@@ -120,6 +131,8 @@ class SpeechRecognitionRecognizerImpl
   OnRecognitionEventCallback recognition_event_callback_;
 
   OnLanguageIdentificationEventCallback language_identification_event_callback_;
+
+  OnSpeechRecognitionStoppedCallback speech_recognition_stopped_callback_;
 
   base::FilePath config_path_;
   int sample_rate_ = 0;

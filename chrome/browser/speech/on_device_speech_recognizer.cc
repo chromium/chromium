@@ -123,7 +123,7 @@ void OnDeviceSpeechRecognizer::Start() {
 
 void OnDeviceSpeechRecognizer::Stop() {
   audio_source_fetcher_->Stop();
-  UpdateStatus(SpeechRecognizerStatus::SPEECH_RECOGNIZER_READY);
+  UpdateStatus(SpeechRecognizerStatus::SPEECH_RECOGNITION_STOPPING);
 }
 
 void OnDeviceSpeechRecognizer::OnSpeechRecognitionRecognitionEvent(
@@ -148,6 +148,11 @@ void OnDeviceSpeechRecognizer::OnSpeechRecognitionError() {
 void OnDeviceSpeechRecognizer::OnLanguageIdentificationEvent(
     media::mojom::LanguageIdentificationEventPtr event) {
   // Do nothing.
+}
+
+void OnDeviceSpeechRecognizer::OnSpeechRecognitionStopped() {
+  UpdateStatus(SpeechRecognizerStatus::SPEECH_RECOGNIZER_READY);
+  delegate()->OnSpeechRecognitionStopped();
 }
 
 void OnDeviceSpeechRecognizer::OnRecognizerBound(

@@ -46,6 +46,7 @@ class MockSpeechRecognizerDelegate : public SpeechRecognizerDelegate {
            const absl::optional<media::SpeechRecognitionResult>& timing));
   MOCK_METHOD1(OnSpeechSoundLevelChanged, void(int16_t));
   MOCK_METHOD1(OnSpeechRecognitionStateChanged, void(SpeechRecognizerStatus));
+  MOCK_METHOD0(OnSpeechRecognitionStopped, void());
 
  private:
   base::WeakPtrFactory<MockSpeechRecognizerDelegate> weak_factory_{this};

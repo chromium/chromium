@@ -23,6 +23,8 @@ SodaClient::SodaClient(base::FilePath library_path)
           lib_.GetFunctionPointer("DeleteExtendedSodaAsync"))),
       add_audio_func_(reinterpret_cast<AddAudioFunction>(
           lib_.GetFunctionPointer("ExtendedAddAudio"))),
+      mark_done_func_(reinterpret_cast<MarkDoneFunction>(
+          lib_.GetFunctionPointer("ExtendedSodaMarkDone"))),
       soda_start_func_(reinterpret_cast<SodaStartFunction>(
           lib_.GetFunctionPointer("ExtendedSodaStart"))),
       is_initialized_(false),
@@ -38,12 +40,13 @@ SodaClient::SodaClient(base::FilePath library_path)
   DCHECK(create_soda_func_);
   DCHECK(delete_soda_func_);
   DCHECK(add_audio_func_);
+  DCHECK(mark_done_func_);
   DCHECK(soda_start_func_);
 
   if (!lib_.is_valid()) {
     load_soda_result_ = LoadSodaResultValue::kBinaryInvalid;
   } else if (!(create_soda_func_ && delete_soda_func_ && add_audio_func_ &&
-               soda_start_func_)) {
+               soda_start_func_ && mark_done_func_)) {
     load_soda_result_ = LoadSodaResultValue::kFunctionPointerInvalid;
   } else {
     load_soda_result_ = LoadSodaResultValue::kSuccess;
@@ -85,6 +88,13 @@ void SodaClient::AddAudio(const char* audio_buffer, int audio_buffer_size) {
     return;
 
   add_audio_func_(soda_async_handle_, audio_buffer, audio_buffer_size);
+}
+
+NO_SANITIZE("cfi-icall")
+void SodaClient::MarkDone() {
+  if (load_soda_result_ != LoadSodaResultValue::kSuccess)
+    return;
+  mark_done_func_(soda_async_handle_);
 }
 
 bool SodaClient::DidAudioPropertyChange(int sample_rate, int channel_count) {
