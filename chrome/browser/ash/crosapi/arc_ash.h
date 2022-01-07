@@ -40,6 +40,10 @@ class ArcAsh : public mojom::Arc, public arc::ArcIntentHelperObserver {
                             RequestActivityIconsCallback callback) override;
   void RequestUrlHandlerList(const std::string& url,
                              RequestUrlHandlerListCallback callback) override;
+  void RequestTextSelectionActions(
+      const std::string& text,
+      mojom::ScaleFactor scale_factor,
+      RequestTextSelectionActionsCallback callback) override;
   void HandleUrl(const std::string& url,
                  const std::string& package_name) override;
 
@@ -55,6 +59,16 @@ class ArcAsh : public mojom::Arc, public arc::ArcIntentHelperObserver {
   void ConvertIntentHandlerInfo(
       RequestUrlHandlerListCallback callback,
       std::vector<arc::mojom::IntentHandlerInfoPtr> handlers);
+  // Called when actions for text selection are sent.
+  void ConvertTextSelectionActions(
+      RequestTextSelectionActionsCallback callback,
+      std::vector<arc::mojom::TextSelectionActionPtr> actions);
+  // Called when icon converted to ImageSkia is returned.
+  void ConvertTextSelectionAction(
+      mojom::TextSelectionActionPtr* converted_action,
+      arc::mojom::TextSelectionActionPtr action,
+      base::OnceClosure callback,
+      const gfx::ImageSkia& image);
 
   // This class supports any number of connections.
   mojo::ReceiverSet<mojom::Arc> receivers_;

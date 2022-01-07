@@ -9,8 +9,11 @@
 #include "ash/components/arc/mojom/scale_factor.mojom.h"
 #include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/arc/session/arc_service_manager.h"
+#include "base/barrier_closure.h"
 #include "base/bind.h"
+#include "chrome/browser/apps/app_service/app_icon/app_icon_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 
 // Check ScaleFactor values are the same for arc::mojom and crosapi::mojom.
@@ -26,6 +29,12 @@ STATIC_ASSERT_SCALE_FACTOR(SCALE_FACTOR_300P);
 namespace crosapi {
 
 namespace {
+
+// Used for converting RawIconPngData to ImageSkia.
+// These petemeters must be consistent with SmartSelection's icon configuration.
+constexpr size_t kBytesPerPixel = 4;  // BGRA
+constexpr size_t kSmallIconSizeInDip = 16;
+constexpr size_t kMaxIconSizeInPx = 200;
 
 // Retrurns IntentHelperHolder for getting mojom API.
 // Return nullptr if not ready or supported.
@@ -46,6 +55,18 @@ GetIntentHelperHolder() {
   }
 
   return intent_helper_holder;
+}
+
+mojom::ActivityNamePtr ConvertArcActivityName(
+    arc::mojom::ActivityNamePtr activity) {
+  return mojom::ActivityName::New(activity->package_name,
+                                  activity->activity_name);
+}
+
+mojom::IntentInfoPtr ConvertArcIntentInfo(arc::mojom::IntentInfoPtr intent) {
+  return mojom::IntentInfo::New(intent->action, intent->categories,
+                                intent->data, intent->type, intent->ui_bypassed,
+                                intent->extras);
 }
 
 }  // namespace
@@ -186,6 +207,98 @@ void ArcAsh::ConvertIntentHandlerInfo(
   }
   std::move(callback).Run(std::move(converted_handlers),
                           mojom::RequestUrlHandlerListStatus::kSuccess);
+}
+
+void ArcAsh::RequestTextSelectionActions(
+    const std::string& text,
+    mojom::ScaleFactor scale_factor,
+    RequestTextSelectionActionsCallback callback) {
+  auto* intent_helper_holder = GetIntentHelperHolder();
+  if (!intent_helper_holder) {
+    std::move(callback).Run(
+        mojom::RequestTextSelectionActionsStatus::kArcNotAvailable,
+        std::vector<mojom::TextSelectionActionPtr>());
+    return;
+  }
+
+  auto* instance = ARC_GET_INSTANCE_FOR_METHOD(intent_helper_holder,
+                                               RequestTextSelectionActions);
+  if (!instance) {
+    LOG(WARNING) << "RequestTextSelectionActions is not supported.";
+    std::move(callback).Run(
+        mojom::RequestTextSelectionActionsStatus::kArcNotAvailable,
+        std::vector<mojom::TextSelectionActionPtr>());
+    return;
+  }
+
+  instance->RequestTextSelectionActions(
+      text, arc::mojom::ScaleFactor(scale_factor),
+      base::BindOnce(&ArcAsh::ConvertTextSelectionActions,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ArcAsh::ConvertTextSelectionActions(
+    RequestTextSelectionActionsCallback callback,
+    std::vector<arc::mojom::TextSelectionActionPtr> actions) {
+  size_t actions_count = actions.size();
+  auto converted_actions =
+      std::vector<mojom::TextSelectionActionPtr>(actions_count);
+  auto* converted_actions_ptr = converted_actions.data();
+
+  base::RepeatingClosure barrier_closure = base::BarrierClosure(
+      actions_count,
+      base::BindOnce(
+          [](std::vector<mojom::TextSelectionActionPtr> actions,
+             RequestTextSelectionActionsCallback cb) {
+            std::move(cb).Run(
+                mojom::RequestTextSelectionActionsStatus::kSuccess,
+                std::move(actions));
+          },
+          std::move(converted_actions), std::move(callback)));
+
+  for (size_t idx = 0; idx < actions_count; ++idx) {
+    auto action = std::move(actions[idx]);
+    auto* converted_action = &converted_actions_ptr[idx];
+
+    // If actions[idx]->icon doesn't meet the size condition, skip generating
+    // image.
+    if (action->icon->width > kMaxIconSizeInPx ||
+        action->icon->height > kMaxIconSizeInPx || action->icon->width == 0 ||
+        action->icon->height == 0 ||
+        action->icon->icon.size() !=
+            (action->icon->width * action->icon->height * kBytesPerPixel)) {
+      ConvertTextSelectionAction(converted_action, std::move(action),
+                                 barrier_closure, gfx::ImageSkia());
+      continue;
+    }
+
+    // Generate ImageSkia icon.
+    apps::ArcRawIconPngDataToImageSkia(
+        std::move(action->icon->icon_png_data), kSmallIconSizeInDip,
+        base::BindOnce(&ArcAsh::ConvertTextSelectionAction,
+                       weak_ptr_factory_.GetWeakPtr(), converted_action,
+                       std::move(action), barrier_closure));
+  }
+}
+
+void ArcAsh::ConvertTextSelectionAction(
+    mojom::TextSelectionActionPtr* converted_action,
+    arc::mojom::TextSelectionActionPtr action,
+    base::OnceClosure callback,
+    const gfx::ImageSkia& image) {
+  // Convert actions to crosapi::mojom::TextSelectionActionPtr from
+  // arc::mojom::TextSelectionActionPtr and ImageSkia icon.
+
+  // Generate app_id by looking up ArcAppListPrefs.
+  std::string app_id = ArcAppListPrefs::Get(profile_)->GetAppIdByPackageName(
+      action->activity->package_name);
+  *converted_action = mojom::TextSelectionAction::New(
+      std::move(app_id), image,
+      ConvertArcActivityName(std::move(action->activity)),
+      std::move(action->title),
+      ConvertArcIntentInfo(std::move(action->action_intent)));
+
+  std::move(callback).Run();
 }
 
 void ArcAsh::HandleUrl(const std::string& url,

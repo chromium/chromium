@@ -4,6 +4,8 @@
 
 module crosapi.mojom;
 
+import "ui/gfx/image/mojom/image.mojom";
+
 // These interfaces let Lacros-chrome handle ARC's right click and smart
 // selection.
 // TODO(crbug.com/1268687): It should be migrated to AppService in the future.
@@ -18,7 +20,15 @@ enum RequestActivityIconsStatus {
   kArcNotAvailable,
 };
 
-// The status in ash-chrome side. Return with the result.
+[Stable]
+enum RequestTextSelectionActionsStatus {
+  // Connection established successfully in ash-chrome.
+  kSuccess,
+
+  // Ended with error to connect to ARC in ash-chrome.
+  kArcNotAvailable,
+};
+
 [Stable]
 enum RequestUrlHandlerListStatus {
   // Connection established successfully in ash-chrome.
@@ -86,6 +96,49 @@ struct IntentHandlerInfo {
   string activity_name@2;  // A hint for retrieving the package's icon.
 };
 
+// Describes an action that can handle an intent.
+// Removed unnecessary parameters: |clip_data_uri| and |uri_components| for
+// Lacros from IntentInfo declared in components/arc/mojom/intent_helper.mojom.
+[Stable]
+struct IntentInfo {
+  string action@0;
+  array<string>? categories@1;
+  string? data@2;  // URI
+  string? type@3;  // explicit MIME type for data
+  bool ui_bypassed@4; // Whether or not the user saw the UI.
+
+  // Optional string extras. These are the key-value pairs stored in android
+  // intents to carry additional data. See:
+  // https://developer.android.com/reference/android/content/Intent#putExtra(java.lang.String,%20java.lang.String)
+  map<string, string>? extras@5;
+};
+
+// Describe an action given by the android text selection delegate (e.g. open
+// maps).
+[Stable]
+struct TextSelectionAction {
+  // App ID of the package.
+  // This parameter is not set in arc::mojom::TextSelectionAction, but required
+  // in Lacros since Lacros cannot get app id from ActivityName.
+  string app_id@0;
+
+  // Icon of the package.
+  // This parameter is different from arc::mojom::TextSelectionAction.icon.
+  // Generate ImageSkia icon from RawIconPngData in ash-chrome, and send it to
+  // lacros-chrome as a ImageSkia.
+  gfx.mojom.ImageSkia icon@1;
+
+  // The activity and package name of the component that handle the intent.
+  ActivityName activity@2;
+
+  // The title of the action that will be shown in the UI, e.g. "Map", "Call",
+  // "Open".
+  string title@3;
+
+  // The intent to launch when the action is clicked.
+  IntentInfo action_intent@4;
+};
+
 // Observe ARC.
 // Next version: 1
 // Next method id: 1
@@ -97,7 +150,7 @@ interface ArcObserver {
 
 // Interacts with ARC.
 // Next version: 3
-// Next method id: 4
+// Next method id: 5
 [Stable, Uuid="a39a22dd-2f5c-4c99-b0ea-d83d5b1c987f"]
 interface Arc {
   // Registers ArcObserver in Lacros-chrome to Ash-chrome
@@ -123,6 +176,15 @@ interface Arc {
   RequestUrlHandlerList@2(string url)
       => (array<IntentHandlerInfo> handlers,
           [MinVersion=2] RequestUrlHandlerListStatus status);
+
+  // Request generated actions that can handle |text| from Lacros-chrome to
+  // Ash-chrome. Ash-chrome will request acions to ARC and send back the result
+  // attained from ARC with generating Skia icons.
+  // An arrya of TextSelectionAction will be returned.
+  [MinVersion=2] RequestTextSelectionActions@4(string text,
+                                               ScaleFactor scale_factor)
+      => (RequestTextSelectionActionsStatus status,
+          array<TextSelectionAction> actionos);
 
   // Handles the URL by sending an ACTION_VIEW intent to the package. The
   // most suitable activity for the URL within the package will be started.
