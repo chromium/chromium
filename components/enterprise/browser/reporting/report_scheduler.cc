@@ -65,6 +65,21 @@ void OnExtensionRequestEnqueued(bool success) {
     LOG(ERROR) << "Extension request failed to be added to the pipeline.";
 }
 
+ReportType TriggerToReportType(ReportScheduler::ReportTrigger trigger) {
+  switch (trigger) {
+    case ReportScheduler::kTriggerNone:
+    case ReportScheduler::kTriggerExtensionRequestRealTime:
+      NOTREACHED();
+      [[fallthrough]];
+    case ReportScheduler::kTriggerTimer:
+      return ReportType::kFull;
+    case ReportScheduler::kTriggerUpdate:
+      return ReportType::kBrowserVersion;
+    case ReportScheduler::kTriggerNewVersion:
+      return ReportType::kBrowserVersion;
+  }
+}
+
 }  // namespace
 
 ReportScheduler::Delegate::Delegate() = default;
@@ -229,28 +244,11 @@ void ReportScheduler::GenerateAndUploadReport(ReportTrigger trigger) {
   }
 
   active_trigger_ = trigger;
-  ReportType report_type = ReportType::kFull;
-  switch (trigger) {
-    case kTriggerNone:
-    case kTriggerExtensionRequestRealTime:
-      NOTREACHED();
-      [[fallthrough]];
-    case kTriggerTimer:
-      VLOG(1) << "Generating enterprise report.";
-      break;
-    case kTriggerUpdate:
-      VLOG(1) << "Generating basic enterprise report upon update.";
-      report_type = ReportType::kBrowserVersion;
-      break;
-    case kTriggerNewVersion:
-      VLOG(1) << "Generating basic enterprise report upon new version.";
-      report_type = ReportType::kBrowserVersion;
-      break;
-  }
 
   report_generator_->Generate(
-      report_type, base::BindOnce(&ReportScheduler::OnReportGenerated,
-                                  base::Unretained(this)));
+      TriggerToReportType(trigger),
+      base::BindOnce(&ReportScheduler::OnReportGenerated,
+                     base::Unretained(this)));
 }
 
 void ReportScheduler::GenerateAndUploadRealtimeReport(
@@ -280,8 +278,9 @@ void ReportScheduler::OnReportGenerated(ReportRequestQueue requests) {
   }
   RecordUploadTrigger(active_trigger_);
   report_uploader_->SetRequestAndUpload(
-      std::move(requests), base::BindOnce(&ReportScheduler::OnReportUploaded,
-                                          base::Unretained(this)));
+      TriggerToReportType(active_trigger_), std::move(requests),
+      base::BindOnce(&ReportScheduler::OnReportUploaded,
+                     base::Unretained(this)));
 }
 
 void ReportScheduler::OnReportUploaded(ReportUploader::ReportStatus status) {

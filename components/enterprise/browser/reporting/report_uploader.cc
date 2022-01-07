@@ -9,6 +9,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
+#include "components/enterprise/browser/reporting/report_type.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "device_management_backend.pb.h"
 
@@ -41,8 +42,10 @@ ReportUploader::ReportUploader(policy::CloudPolicyClient* client,
       maximum_number_of_retries_(maximum_number_of_retries) {}
 ReportUploader::~ReportUploader() = default;
 
-void ReportUploader::SetRequestAndUpload(ReportRequestQueue requests,
+void ReportUploader::SetRequestAndUpload(ReportType report_type,
+                                         ReportRequestQueue requests,
                                          ReportCallback callback) {
+  report_type_ = report_type;
   requests_ = std::move(requests);
   callback_ = std::move(callback);
   Upload();
@@ -52,17 +55,28 @@ void ReportUploader::Upload() {
   auto callback = base::BindRepeating(&ReportUploader::OnRequestFinished,
                                       weak_ptr_factory_.GetWeakPtr());
 
+  switch (report_type_) {
+    case ReportType::kFull:
+    case ReportType::kBrowserVersion: {
+      auto request = std::make_unique<ReportRequest::DeviceReportRequestProto>(
+          requests_.front()->GetDeviceReportRequest());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  auto request =
-      std::make_unique<enterprise_management::ChromeOsUserReportRequest>(
-          requests_.front()->GetDeviceReportRequest());
-  client_->UploadChromeOsUserReport(std::move(request), std::move(callback));
+      client_->UploadChromeOsUserReport(std::move(request),
+                                        std::move(callback));
 #else
-  auto request =
-      std::make_unique<enterprise_management::ChromeDesktopReportRequest>(
-          requests_.front()->GetDeviceReportRequest());
-  client_->UploadChromeDesktopReport(std::move(request), std::move(callback));
+      client_->UploadChromeDesktopReport(std::move(request),
+                                         std::move(callback));
 #endif
+      break;
+    }
+    case ReportType::kProfileReport: {
+      client_->UploadChromeProfileReport(
+          std::make_unique<em::ChromeProfileReportRequest>(
+              requests_.front()->GetChromeProfileReportRequest()),
+          std::move(callback));
+      break;
+    }
+  }
 }  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void ReportUploader::OnRequestFinished(bool status) {

@@ -53,7 +53,8 @@ class ReportUploader {
 
   // Sets a list of requests and upload it. Request will be uploaded one after
   // another.
-  virtual void SetRequestAndUpload(ReportRequestQueue requests,
+  virtual void SetRequestAndUpload(ReportType report_type,
+                                   ReportRequestQueue requests,
                                    ReportCallback callback);
 
  private:
@@ -77,6 +78,7 @@ class ReportUploader {
   raw_ptr<policy::CloudPolicyClient> client_;
   ReportCallback callback_;
   ReportRequestQueue requests_;
+  ReportType report_type_;
 
   net::BackoffEntry backoff_entry_;
   base::OneShotTimer backoff_request_timer_;

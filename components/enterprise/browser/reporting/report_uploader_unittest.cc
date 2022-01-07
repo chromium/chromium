@@ -13,6 +13,7 @@
 #include "components/enterprise/browser/reporting/report_request.h"
 #include "components/enterprise/browser/reporting/report_type.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
+#include "device_management_backend.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -59,18 +60,30 @@ class ReportUploaderTest : public ::testing::Test {
         << "Please update kBrowserVersionNames above.";
     ReportRequestQueue requests;
     for (int i = 0; i < number_of_request; i++) {
-      auto request = std::make_unique<ReportRequest>(ReportType::kFull);
-      request->GetDeviceReportRequest()
-          .mutable_browser_report()
-          ->set_browser_version(kBrowserVersionNames[i]);
+      auto request = std::make_unique<ReportRequest>(GetReportType());
+      em::BrowserReport* browser_report;
+      switch (GetReportType()) {
+        case ReportType::kFull:
+        case ReportType::kBrowserVersion:
+          browser_report =
+              request->GetDeviceReportRequest().mutable_browser_report();
+          break;
+        case ReportType::kProfileReport:
+          browser_report =
+              request->GetChromeProfileReportRequest().mutable_browser_report();
+          break;
+      }
+      browser_report->set_browser_version(kBrowserVersionNames[i]);
       requests.push(std::move(request));
     }
     has_responded_ = false;
     uploader_->SetRequestAndUpload(
-        std::move(requests),
+        GetReportType(), std::move(requests),
         base::BindOnce(&ReportUploaderTest::OnReportUploaded,
                        base::Unretained(this), expected_status));
   }
+
+  virtual ReportType GetReportType() { return ReportType::kFull; }
 
   void OnReportUploaded(ReportUploader::ReportStatus expected_status,
                         ReportUploader::ReportStatus actuall_status) {
@@ -104,7 +117,7 @@ class ReportUploaderTest : public ::testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   std::unique_ptr<ReportUploader> uploader_;
-  policy::MockCloudPolicyClient client_;
+  ::testing::StrictMock<policy::MockCloudPolicyClient> client_;
   bool has_responded_ = false;
   base::HistogramTester histogram_tester_;
 };
@@ -113,17 +126,12 @@ class ReportUploaderTestWithTransientError
     : public ReportUploaderTest,
       public ::testing::WithParamInterface<policy::DeviceManagementStatus> {};
 
-TEST_F(ReportUploaderTest, Success) {
-  EXPECT_CALL(client_, UploadReportProxy(_, _))
-      .WillOnce(WithArgs<1>(policy::ScheduleStatusCallback(true)));
-  UploadReportAndSetExpectation(/*number_of_request=*/1,
-                                ReportUploader::kSuccess);
-  RunNextTask();
-  EXPECT_TRUE(has_responded_);
-  histogram_tester_.ExpectUniqueSample(
-      kResponseMetricsName, ReportResponseMetricsStatus::kSuccess, 1);
-  ::testing::Mock::VerifyAndClearExpectations(&client_);
-}
+class ReportUploaderTestWithReportType
+    : public ReportUploaderTest,
+      public ::testing::WithParamInterface<ReportType> {
+ public:
+  ReportType GetReportType() override { return GetParam(); }
+};
 
 TEST_F(ReportUploaderTest, PersistentError) {
   CreateUploader(/* retry_count = */ 1);
@@ -303,5 +311,33 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Values(policy::DM_STATUS_REQUEST_FAILED,
                       policy::DM_STATUS_TEMPORARY_UNAVAILABLE,
                       policy::DM_STATUS_SERVICE_TOO_MANY_REQUESTS));
+
+TEST_P(ReportUploaderTestWithReportType, Success) {
+  switch (GetReportType()) {
+    case ReportType::kFull:
+    case ReportType::kBrowserVersion:
+      EXPECT_CALL(client_, UploadReportProxy(_, _))
+          .WillOnce(WithArgs<1>(policy::ScheduleStatusCallback(true)));
+      break;
+    case ReportType::kProfileReport:
+      EXPECT_CALL(client_, UploadChromeProfileReportProxy(_, _))
+          .WillOnce(WithArgs<1>(policy::ScheduleStatusCallback(true)));
+      break;
+  }
+
+  UploadReportAndSetExpectation(/*number_of_request=*/1,
+                                ReportUploader::kSuccess);
+  RunNextTask();
+  EXPECT_TRUE(has_responded_);
+  histogram_tester_.ExpectUniqueSample(
+      kResponseMetricsName, ReportResponseMetricsStatus::kSuccess, 1);
+  ::testing::Mock::VerifyAndClearExpectations(&client_);
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ReportUploaderTestWithReportType,
+                         ::testing::Values(ReportType::kFull,
+                                           ReportType::kBrowserVersion,
+                                           ReportType::kProfileReport));
 
 }  // namespace enterprise_reporting
