@@ -489,13 +489,21 @@ public class StartSurfaceTestUtils {
     public static void waitForDeferredStartup(ChromeTabbedActivityTestRule activityTestRule) {
         // Waits for the current Tab to complete loading. The deferred startup will be triggered
         // after the loading.
+        waitForCurrentTabLoaded(activityTestRule);
+        assertTrue("Deferred startup never completed", activityTestRule.waitForDeferredStartup());
+    }
+
+    /**
+     * Waits for the current Tab to complete loading.
+     * @param activityTestRule The ChromeTabbedActivityTestRule under test.
+     */
+    public static void waitForCurrentTabLoaded(ChromeTabbedActivityTestRule activityTestRule) {
         Tab tab = activityTestRule.getActivity().getActivityTab();
         if (tab != null && tab.isLoading()) {
             CriteriaHelper.pollUiThread(()
                                                 -> !tab.isLoading(),
                     MAX_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         }
-        assertTrue("Deferred startup never completed", activityTestRule.waitForDeferredStartup());
     }
 
     /**
