@@ -53,6 +53,7 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
   WorkerOrWorkletGlobalScope(
       v8::Isolate*,
       scoped_refptr<SecurityOrigin> origin,
+      bool is_creator_secure_context,
       Agent* agent,
       const String& name,
       const base::UnguessableToken& parent_devtools_token,
@@ -79,6 +80,7 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
   bool IsJSExecutionForbidden() const final;
   void DisableEval(const String& error_message) final;
   bool CanExecuteScripts(ReasonForCallingCanExecuteScripts) final;
+  bool HasInsecureContextInAncestors() const override;
 
   // scheduler::WorkerScheduler::Delegate
   void UpdateBackForwardCacheDisablingFeatures(
@@ -222,6 +224,8 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
   // change such that a different ThrottleOptionOverride should be applied.
   void UpdateFetcherThrottleOptionOverride();
 
+  bool IsCreatorSecureContext() const { return is_creator_secure_context_; }
+
  private:
   void InitializeWebFetchContextIfNeeded();
   ResourceFetcher* CreateFetcherInternal(const FetchClientSettingsObject&,
@@ -229,6 +233,9 @@ class CORE_EXPORT WorkerOrWorkletGlobalScope
                                          WorkerResourceTimingNotifier&);
 
   bool web_fetch_context_initialized_ = false;
+
+  // Whether the creator execution context is secure.
+  const bool is_creator_secure_context_ = false;
 
   const String name_;
   const base::UnguessableToken parent_devtools_token_;

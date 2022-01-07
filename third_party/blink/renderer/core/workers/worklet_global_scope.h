@@ -107,7 +107,7 @@ class CORE_EXPORT WorkletGlobalScope
   // For origin trials, instead consider the context of the document which
   // created the worklet, since the origin trial tokens are inherited from the
   // document.
-  bool DocumentSecureContext() const { return document_secure_context_; }
+  bool DocumentSecureContext() const { return IsCreatorSecureContext(); }
 
   void Trace(Visitor*) const override;
 
@@ -170,9 +170,6 @@ class CORE_EXPORT WorkletGlobalScope
   // Used for module fetch and origin trials, inherited from the parent
   // Document.
   const scoped_refptr<const SecurityOrigin> document_security_origin_;
-
-  // Used for origin trials, inherited from the parent Document.
-  const bool document_secure_context_;
 
   CrossThreadPersistent<WorkletModuleResponsesMap> module_responses_map_;
 

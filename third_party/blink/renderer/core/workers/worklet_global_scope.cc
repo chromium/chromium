@@ -75,6 +75,7 @@ WorkletGlobalScope::WorkletGlobalScope(
     : WorkerOrWorkletGlobalScope(
           isolate,
           SecurityOrigin::CreateUniqueOpaque(),
+          creation_params->starter_secure_context,
           MakeGarbageCollected<Agent>(
               isolate,
               creation_params->agent_cluster_id,
@@ -92,7 +93,6 @@ WorkletGlobalScope::WorkletGlobalScope(
       url_(creation_params->script_url),
       user_agent_(creation_params->user_agent),
       document_security_origin_(creation_params->starter_origin),
-      document_secure_context_(creation_params->starter_secure_context),
       module_responses_map_(creation_params->module_responses_map),
       // Step 4. "Let inheritedHTTPSState be outsideSettings's HTTPS state."
       https_state_(creation_params->starter_https_state),

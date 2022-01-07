@@ -235,6 +235,9 @@ void WebSharedWorkerImpl::StartWorkerContext(
               : mojom::blink::InsecureRequestPolicy::kBlockAllMixedContent,
           FetchClientSettingsObject::InsecureNavigationsSet());
 
+  // TODO(https://crbug.com/780031): This is incorrect, as the creator context
+  // may have a potentially-trustworthy origin yet be non-secure. This is the
+  // case for example when an https iframe is embedded in http document.
   bool constructor_secure_context =
       constructor_origin.IsPotentiallyTrustworthy() ||
       SchemeRegistry::SchemeShouldBypassSecureContextCheck(

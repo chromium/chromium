@@ -478,7 +478,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   bool IsLocalDOMWindow() const override { return true; }
   bool IsRemoteDOMWindow() const override { return false; }
 
-  bool HasInsecureContextInAncestors() override;
+  bool HasInsecureContextInAncestors() const override;
 
   void Dispose();
 

@@ -541,6 +541,7 @@ WorkerGlobalScope::WorkerGlobalScope(
     : WorkerOrWorkletGlobalScope(
           thread->GetIsolate(),
           CreateSecurityOrigin(creation_params.get(), GetExecutionContext()),
+          creation_params->starter_secure_context,
           MakeGarbageCollected<Agent>(
               thread->GetIsolate(),
               (creation_params->agent_cluster_id.is_empty()

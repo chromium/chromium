@@ -36643,6 +36643,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4100" label="LayerXYWithFrameTarget"/>
   <int value="4101" label="LayerXYWithSVGTarget"/>
   <int value="4102" label="HTMLObjectElementFallback"/>
+  <int value="4103" label="SecureContextIncorrectForWorker"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">

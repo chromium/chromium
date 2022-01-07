@@ -3409,7 +3409,7 @@ enum WebFeature {
   kLayerXYWithFrameTarget = 4100,
   kLayerXYWithSVGTarget = 4101,
   kHTMLObjectElementFallback = 4102,
-
+  kSecureContextIncorrectForWorker = 4103,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

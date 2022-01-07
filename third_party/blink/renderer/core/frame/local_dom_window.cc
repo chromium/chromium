@@ -692,7 +692,7 @@ void LocalDOMWindow::CountUseOnlyInCrossSiteIframe(
     CountUse(feature);
 }
 
-bool LocalDOMWindow::HasInsecureContextInAncestors() {
+bool LocalDOMWindow::HasInsecureContextInAncestors() const {
   for (Frame* parent = GetFrame()->Tree().Parent(); parent;
        parent = parent->Tree().Parent()) {
     auto* origin = parent->GetSecurityContext()->GetSecurityOrigin();

@@ -286,7 +286,7 @@ class CORE_EXPORT ExecutionContext : public Supplementable<ExecutionContext>,
   }
   bool IsSecureContext(String& error_message) const;
 
-  virtual bool HasInsecureContextInAncestors() { return false; }
+  virtual bool HasInsecureContextInAncestors() const { return false; }
 
   // Returns a referrer to be used in the "Determine request's Referrer"
   // algorithm defined in the Referrer Policy spec.

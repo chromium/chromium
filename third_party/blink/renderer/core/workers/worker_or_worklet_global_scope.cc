@@ -13,6 +13,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/content_security_notifier.mojom-blink.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-blink.h"
+#include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/platform/web_content_security_policy_struct.h"
@@ -43,6 +44,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_observer.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
@@ -186,6 +188,7 @@ class OutsideSettingsCSPDelegate final
 WorkerOrWorkletGlobalScope::WorkerOrWorkletGlobalScope(
     v8::Isolate* isolate,
     scoped_refptr<SecurityOrigin> origin,
+    bool is_creator_secure_context,
     Agent* agent,
     const String& name,
     const base::UnguessableToken& parent_devtools_token,
@@ -195,6 +198,7 @@ WorkerOrWorkletGlobalScope::WorkerOrWorkletGlobalScope(
     scoped_refptr<WebWorkerFetchContext> web_worker_fetch_context,
     WorkerReportingProxy& reporting_proxy)
     : ExecutionContext(isolate, agent),
+      is_creator_secure_context_(is_creator_secure_context),
       name_(name),
       parent_devtools_token_(parent_devtools_token),
       worker_clients_(worker_clients),
@@ -205,6 +209,14 @@ WorkerOrWorkletGlobalScope::WorkerOrWorkletGlobalScope(
       v8_cache_options_(v8_cache_options),
       reporting_proxy_(reporting_proxy) {
   GetSecurityContext().SetSecurityOrigin(std::move(origin));
+
+  // TODO(https://crbug.com/780031): When the right blink feature is disabled,
+  // we can incorrectly compute the secure context bit for this worker. It
+  // should never be true when the creator context was non-secure.
+  if (IsSecureContext() && !is_creator_secure_context_) {
+    CountUse(mojom::blink::WebFeature::kSecureContextIncorrectForWorker);
+  }
+
   SetPolicyContainer(PolicyContainer::CreateEmpty());
   if (worker_clients_)
     worker_clients_->ReattachThread();
@@ -403,6 +415,16 @@ void WorkerOrWorkletGlobalScope::DisableEval(const String& error_message) {
 bool WorkerOrWorkletGlobalScope::CanExecuteScripts(
     ReasonForCallingCanExecuteScripts) {
   return !IsJSExecutionForbidden();
+}
+
+bool WorkerOrWorkletGlobalScope::HasInsecureContextInAncestors() const {
+  if (RuntimeEnabledFeatures::SecureContextFixForWorkersEnabled()) {
+    return !is_creator_secure_context_;
+  }
+
+  // TODO(https://crbug.com/780031): Remove this branch once the feature is
+  // always enabled. This preserves previous functionality in the meantime.
+  return false;
 }
 
 void WorkerOrWorkletGlobalScope::Dispose() {

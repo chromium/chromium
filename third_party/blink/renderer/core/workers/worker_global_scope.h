@@ -101,9 +101,7 @@ class CORE_EXPORT WorkerGlobalScope
   WorkerLocation* location() const;
   WorkerNavigator* navigator() const override;
   void close();
-  bool isSecureContextForBindings() const {
-    return ExecutionContext::IsSecureContext();
-  }
+  bool isSecureContextForBindings() const { return IsSecureContext(); }
 
   String origin() const;
 
