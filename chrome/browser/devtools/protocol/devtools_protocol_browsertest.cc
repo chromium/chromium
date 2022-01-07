@@ -209,8 +209,8 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   EXPECT_EQ(nullptr, DevToolsWindow::FindDevToolsWindow(agent_host_.get()));
 }
 
-// Failing consistently on mac builds crbug.com/1284536
-#if defined(OS_MAC)
+// Flaky/failing on Linux/CrOS/Mac builds: crbug.com/1284536
+#if defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_MAC)
 #define MAYBE_NoPendingUrlShownWhenAttachedToBrowserInitiatedFailedNavigation \
   DISABLED_NoPendingUrlShownWhenAttachedToBrowserInitiatedFailedNavigation
 #else
