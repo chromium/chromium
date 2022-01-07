@@ -129,4 +129,14 @@ export function onboardingChooseWpDisableMethodPageTest() {
     assertEquals(callCounter, 1);
     assertDeepEquals(savedResult, expectedResult);
   });
+
+  test('ChooseWpDisableMethodDisableRadioGroup', async () => {
+    await initializeChooseWpDisableMethodPage();
+
+    const hwwpDisableMethodGroup =
+        component.shadowRoot.querySelector('#hwwpDisableMethod');
+    assertFalse(hwwpDisableMethodGroup.disabled);
+    component.allButtonsDisabled = true;
+    assertTrue(hwwpDisableMethodGroup.disabled);
+  });
 }

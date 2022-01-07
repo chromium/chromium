@@ -5,7 +5,7 @@
   <div slot="header">
     <h1>[[i18n('chooseWpDisableMethodPageTitleText')]]</h1>
     <cr-radio-group
-        id="hwwpDisableMethod"
+        id="hwwpDisableMethod" disabled="[[allButtonsDisabled]]"
         on-selected-changed="onHwwpDisableMethodSelectionChanged_">
       <cr-radio-button
           name="hwwpDisableMethodManual"

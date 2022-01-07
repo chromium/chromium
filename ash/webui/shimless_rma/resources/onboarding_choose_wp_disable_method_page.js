@@ -41,6 +41,12 @@ export class OnboardingChooseWpDisableMethodPage extends
 
   static get properties() {
     return {
+      /**
+       * Set by shimless_rma.js.
+       * @type {boolean}
+       */
+      allButtonsDisabled: Boolean,
+
       /** @private */
       hwwpMethod_: {
         type: String,
