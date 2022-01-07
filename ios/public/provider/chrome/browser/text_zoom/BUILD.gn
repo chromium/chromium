@@ -13,6 +13,6 @@ source_set("test_text_zoom") {
   sources = [ "test_text_zoom.mm" ]
   deps = [
     ":text_zoom_api",
-    "//ios/public/provider/chrome/browser:font_size_java_script_feature",
+    "//ios/chrome/browser/web/font_size",
   ]
 }

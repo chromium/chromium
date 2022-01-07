@@ -11,7 +11,6 @@ source_set("browser") {
     "chrome_browser_provider.mm",
   ]
   deps = [
-    ":font_size_java_script_feature",
     "//base",
     "//components/metrics",
     "//ios/public/provider/chrome/browser/mailto",
@@ -25,15 +24,8 @@ source_set("browser") {
 
 source_set("font_size_java_script_feature") {
   configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "font_size_java_script_feature.h",
-    "font_size_java_script_feature.mm",
-  ]
-  deps = [
-    "//base",
-    "//ios/web/public",
-  ]
-  public_deps = [ "//ios/web/public/js_messaging" ]
+  sources = [ "font_size_java_script_feature.h" ]
+  public_deps = [ "//ios/chrome/browser/web/font_size" ]
 }
 
 group("provider_api") {

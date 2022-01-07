@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/public/provider/chrome/browser/font_size_java_script_feature.h"
+#import "ios/chrome/browser/web/font_size/font_size_java_script_feature.h"
 
 #include "base/no_destructor.h"
 #include "base/values.h"
@@ -46,4 +46,5 @@ FontSizeJavaScriptFeature::FontSizeJavaScriptFeature()
               kFontSizeScript,
               FeatureScript::InjectionTime::kDocumentStart,
               FeatureScript::TargetFrames::kAllFrames)}) {}
+
 FontSizeJavaScriptFeature::~FontSizeJavaScriptFeature() = default;

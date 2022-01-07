@@ -21,8 +21,8 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/pref_names.h"
 #include "ios/chrome/browser/web/features.h"
+#import "ios/chrome/browser/web/font_size/font_size_java_script_feature.h"
 #include "ios/components/ui_util/dynamic_type_util.h"
-#import "ios/public/provider/chrome/browser/font_size_java_script_feature.h"
 #import "ios/public/provider/chrome/browser/text_zoom/text_zoom_api.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 

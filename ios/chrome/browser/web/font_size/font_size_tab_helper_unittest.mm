@@ -17,7 +17,7 @@
 #include "ios/chrome/browser/prefs/browser_prefs.h"
 #import "ios/chrome/browser/web/chrome_web_test.h"
 #include "ios/chrome/browser/web/features.h"
-#import "ios/public/provider/chrome/browser/font_size_java_script_feature.h"
+#import "ios/chrome/browser/web/font_size/font_size_java_script_feature.h"
 #import "ios/web/public/test/fakes/fake_web_client.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "testing/gtest/include/gtest/gtest.h"
