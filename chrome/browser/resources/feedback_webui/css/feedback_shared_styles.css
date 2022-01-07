@@ -1,0 +1,15 @@
+/* Copyright 2021 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+@import url(./feedback_shared_vars.css);
+
+html,
+body {
+  background-color: var(--feedback-bg-color);
+  color: var(--feedback-primary-color);
+}
+
+a[href] {
+  color: var(--feedback-link-color);
+}
