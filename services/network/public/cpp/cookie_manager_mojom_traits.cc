@@ -8,6 +8,7 @@
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_options.h"
 #include "net/cookies/same_party_context.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 
 namespace mojo {
 
