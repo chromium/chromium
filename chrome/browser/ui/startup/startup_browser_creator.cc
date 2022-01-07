@@ -367,10 +367,6 @@ bool IsSilentLaunchEnabled(const base::CommandLine& command_line,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return profile->GetPrefs()->GetBoolean(
       prefs::kStartupBrowserWindowLaunchSuppressed);
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  auto* service = chromeos::LacrosService::Get();
-  return service && service->init_params()->initial_browser_action ==
-                        crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow;
 #else
   return false;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
