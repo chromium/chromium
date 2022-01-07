@@ -337,10 +337,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // `was_zero_state` is true then we will expand the desks bar.
   void ShowDesksTemplatesGrid(bool was_zero_state);
 
-  // Hides the overview mode items that must be closed for the grid of desks
-  // templates to show.
-  void HideForDesksTemplatesGrid();
-
   // Hides the grid of desks templates and reshow the overview items. Updates
   // the templates button if we are not exiting overview.
   void HideDesksTemplatesGrid(bool exit_overview);
