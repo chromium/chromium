@@ -6602,6 +6602,18 @@
                     ]
                 },
                 {
+                    "name": "EnabledContextMenuWithRootAsDefault_20211206",
+                    "params": {
+                        "use_root_bookmark_as_default": "true"
+                    },
+                    "enable_features": [
+                        "ReadLater"
+                    ],
+                    "disable_features": [
+                        "BookmarkBottomSheet"
+                    ]
+                },
+                {
                     "name": "EnabledDedicatedSaveFlow",
                     "params": {
                         "autodismiss_enabled": "true",
