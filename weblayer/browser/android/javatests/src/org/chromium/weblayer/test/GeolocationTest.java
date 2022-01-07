@@ -37,7 +37,6 @@ import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.util.TestWebServer;
 import org.chromium.weblayer.Browser;
-import org.chromium.weblayer.Tab;
 import org.chromium.weblayer.TestWebLayer;
 import org.chromium.weblayer.shell.InstrumentationActivity;
 
@@ -242,8 +241,9 @@ public final class GeolocationTest {
                 false);
         CriteriaHelper.pollInstrumentationThread(() -> {
             try {
-                String result = mActivityTestRule.executeScriptSync("queryResult || ''", false)
-                                        .getString(Tab.SCRIPT_RESULT_KEY);
+                String result =
+                        mActivityTestRule.executeScriptSync("queryResult || ''", false)
+                                .getString(InstrumentationActivityTestRule.SCRIPT_RESULT_KEY);
                 Criteria.checkThat(result, Matchers.not(""));
             } catch (JSONException ex) {
                 throw new CriteriaNotSatisfiedException(ex);
@@ -251,7 +251,7 @@ public final class GeolocationTest {
         });
         Assert.assertEquals("prompt",
                 mActivityTestRule.executeScriptSync("queryResult", false)
-                        .getString(Tab.SCRIPT_RESULT_KEY));
+                        .getString(InstrumentationActivityTestRule.SCRIPT_RESULT_KEY));
         CriteriaHelper.pollInstrumentationThread(
                 () -> { return mTestWebLayer.isPermissionDialogShown(); });
     }
@@ -277,7 +277,7 @@ public final class GeolocationTest {
         int result = -1;
         try {
             result = mActivityTestRule.executeScriptSync(variableName, false)
-                             .getInt(Tab.SCRIPT_RESULT_KEY);
+                             .getInt(InstrumentationActivityTestRule.SCRIPT_RESULT_KEY);
         } catch (Exception e) {
             Assert.fail("Unable to get " + variableName);
         }
