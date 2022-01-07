@@ -32,6 +32,8 @@
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/permissions_updater.h"
 #include "chrome/browser/extensions/webstore_installer.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -1057,6 +1059,9 @@ void CrxInstaller::ReportInstallationStage(InstallationStage stage) {
 }
 
 void CrxInstaller::NotifyCrxInstallBegin() {
+  profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+      profile_, ProfileKeepAliveOrigin::kCrxInstaller);
+
   InstallTrackerFactory::GetForBrowserContext(profile())
       ->OnBeginCrxInstall(expected_id_);
 }
@@ -1121,6 +1126,8 @@ void CrxInstaller::NotifyCrxInstallComplete(
           FROM_HERE, base::BindOnce(std::move(installer_callback_), error))) {
     NOTREACHED();
   }
+
+  profile_keep_alive_.reset();
 }
 
 void CrxInstaller::CleanupTempFiles() {

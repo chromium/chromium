@@ -73001,6 +73001,8 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="20" label="kPendingNotificationCloseEvent"/>
   <int value="21" label="kFeedbackDialog"/>
   <int value="22" label="kWebAppUpdate"/>
+  <int value="23" label="kGettingWebAppInfo"/>
+  <int value="24" label="kCrxInstaller"/>
 </enum>
 
 <enum name="ProfileMenuActionableItem">

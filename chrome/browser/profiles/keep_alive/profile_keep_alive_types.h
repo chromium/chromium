@@ -104,7 +104,10 @@ enum class ProfileKeepAliveOrigin {
   // --list-apps switch.
   kGettingWebAppInfo = 23,
 
-  kMaxValue = kGettingWebAppInfo,
+  // An extension .crx is being installed.
+  kCrxInstaller = 24,
+
+  kMaxValue = kCrxInstaller,
 };
 
 std::ostream& operator<<(std::ostream& out,
