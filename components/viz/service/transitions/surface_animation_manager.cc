@@ -1187,11 +1187,11 @@ bool SurfaceAnimationManager::FilterSharedElementsWithRenderPassOrResource(
         shared_element_quad.resource_id);
 
     if (texture_it != saved_textures_->element_id_to_resource.end()) {
-      resource_list->push_back(saved_textures_->element_id_to_resource.at(
-          shared_element_quad.resource_id));
+      const auto& transferable_resource = texture_it->second;
+      resource_list->push_back(transferable_resource);
 
       // GPU textures are flipped but software bitmaps are not.
-      bool y_flipped = !saved_textures_->root.resource.is_software;
+      bool y_flipped = !transferable_resource.is_software;
       ReplaceSharedElementWithTexture(&copy_pass, shared_element_quad,
                                       y_flipped, resource_list->back().id);
       return true;

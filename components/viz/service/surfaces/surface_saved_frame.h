@@ -114,14 +114,12 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
 
   // Queues copy requests by creating a copy of the CompositorFrame as specified
   // in ScopedCleanSurface.
-  void CopyUsingCleanFrame(Surface* surface,
-                           std::unique_ptr<CopyOutputRequest> root_request);
+  void CopyUsingCleanFrame(Surface* surface);
 
   // Queues copy requests from the original CompositorFrame. This mode is used
   // when the frame produced by the renderer already has independent render
   // passes for each shared element.
-  void CopyUsingOriginalFrame(Surface* surface,
-                              std::unique_ptr<CopyOutputRequest> root_request);
+  void CopyUsingOriginalFrame(Surface* surface);
 
   std::unique_ptr<CopyOutputRequest> CreateCopyRequestIfNeeded(
       const CompositorRenderPass& render_pass,
@@ -176,6 +174,9 @@ class VIZ_SERVICE_EXPORT SurfaceSavedFrame {
   // smaller than the number of requests we made. This is used to determine
   // whether the SurfaceSavedFrame is "valid".
   size_t valid_result_count_ = 0;
+
+  // Tracks whether the root render pass should be copied.
+  bool copy_root_render_pass_ = true;
 
   absl::optional<ScopedCleanSurface> clean_surface_;
 
