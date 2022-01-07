@@ -72,12 +72,14 @@ window.addEventListener('message', event => {
       contentUrl = URL.createObjectURL(sourceContent.data);
       break;
     default:
-      contentUrl = '';
+      contentUrl = 'about:blank';
   }
   if (browsable && subtype === 'PDF') {
     contentUrl += '#view=FitH';
   }
 
   type = subtype;
+  contentUrl = contentUrl || 'about:blank';
+  console.log('Setting iframe.src to: ' + contentUrl);
   contentsIframe.src = contentUrl;
 });
