@@ -1489,6 +1489,14 @@ EVENT_TYPE(HTTP2_SESSION_SEND_SETTINGS)
 // On sending an HTTP/2 SETTINGS frame with ACK flag.
 EVENT_TYPE(HTTP2_SESSION_SEND_SETTINGS_ACK)
 
+// Receipt of an HTTP/2 ACCEPT_CH frame.
+// The following parameters are attached:
+//   {
+//     "origin": <The origin associated with the settings>,
+//     "accept_ch":  <the raw ACCEPT_CH setting for that origin>,
+//   }
+EVENT_TYPE(HTTP2_SESSION_RECV_ACCEPT_CH)
+
 // Receipt of an HTTP/2 SETTINGS frame without ACK flag.
 EVENT_TYPE(HTTP2_SESSION_RECV_SETTINGS)
 
@@ -2304,6 +2312,13 @@ EVENT_TYPE(QUIC_SESSION_MESSAGE_FRAME_RECEIVED)
 
 // Session received a HANDSHAKE_DONE frame.
 EVENT_TYPE(QUIC_SESSION_HANDSHAKE_DONE_FRAME_RECEIVED)
+
+// Session received an ACCEPT_CH frame
+// {
+//   "origin": <the origin the accept_ch settings apply to>
+//   "accept_ch": <the raw ACCEPT_CH data>
+// }
+EVENT_TYPE(QUIC_ACCEPT_CH_FRAME_RECEIVED)
 
 // Session sent a coalesced QUIC packet.
 // {

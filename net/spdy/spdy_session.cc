@@ -316,6 +316,13 @@ base::Value NetLogSpdySendSettingsParams(const spdy::SettingsMap* settings) {
   return dict;
 }
 
+base::Value NetLogSpdyRecvAcceptChParams(spdy::AcceptChOriginValuePair entry) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("origin", entry.origin);
+  dict.SetStringKey("accept_ch", entry.value);
+  return dict;
+}
+
 base::Value NetLogSpdyRecvSettingParams(spdy::SpdySettingsId id,
                                         uint32_t value) {
   base::Value dict(base::Value::Type::DICTIONARY);
@@ -1157,6 +1164,9 @@ int SpdySession::ParseAlps() {
     has_valid_entry = true;
     accept_ch_entries_received_via_alps_.insert(
         std::make_pair(std::move(scheme_host_port), entry.value));
+
+    net_log_.AddEvent(NetLogEventType::HTTP2_SESSION_RECV_ACCEPT_CH,
+                      [&] { return NetLogSpdyRecvAcceptChParams(entry); });
   }
 
   SpdyAcceptChEntries value;

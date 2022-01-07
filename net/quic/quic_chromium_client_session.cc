@@ -215,6 +215,14 @@ base::Value NetLogProbingResultParams(
   return dict;
 }
 
+base::Value NetLogAcceptChFrameReceivedParams(
+    spdy::AcceptChOriginValuePair entry) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("origin", entry.origin);
+  dict.SetStringKey("accept_ch", entry.value);
+  return dict;
+}
+
 // Histogram for recording the different reasons that a QUIC session is unable
 // to complete the handshake.
 enum HandshakeFailureReason {
@@ -1241,6 +1249,9 @@ void QuicChromiumClientSession::OnAcceptChFrameReceivedViaAlps(
     has_valid_entry = true;
     accept_ch_entries_received_via_alps_.insert(
         std::make_pair(std::move(scheme_host_port), entry.value));
+
+    net_log_.AddEvent(NetLogEventType::QUIC_ACCEPT_CH_FRAME_RECEIVED,
+                      [&] { return NetLogAcceptChFrameReceivedParams(entry); });
   }
   LogAcceptChFrameReceivedHistogram(has_valid_entry, has_invalid_entry);
 }
