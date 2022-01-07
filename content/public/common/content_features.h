@@ -202,7 +202,6 @@ CONTENT_EXPORT extern const base::Feature kWebLockScreenApi;
 #endif  // defined(OS_CHROMEOS)
 CONTENT_EXPORT extern const base::Feature kWebOTP;
 CONTENT_EXPORT extern const base::Feature kWebOTPAssertionFeaturePolicy;
-CONTENT_EXPORT extern const base::Feature kServiceWorkerSubresourceFilter;
 CONTENT_EXPORT extern const base::Feature kSpareRendererForSitePerProcess;
 CONTENT_EXPORT extern const base::Feature kStopVideoCaptureOnScreenLock;
 CONTENT_EXPORT extern const base::Feature kStorageServiceOutOfProcess;

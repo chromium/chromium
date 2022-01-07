@@ -875,8 +875,6 @@ class WebLocalFrame : public WebFrame {
   // Reset TextFinder state for the web test runner in between two tests.
   virtual void ClearActiveFindMatchForTesting() = 0;
 
-  virtual bool ServiceWorkerSubresourceFilterEnabled() = 0;
-
   // Sets a local storage area which can be used for this frame. This storage
   // area is ignored if a cached storage area already exists for the storage
   // key.

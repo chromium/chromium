@@ -2951,17 +2951,6 @@ void RenderFrameImpl::CommitNavigationWithParams(
                 new_loader_factories->Clone()));
   }
 
-  WebString subresource_filter = navigation_params->response.HttpHeaderField(
-      WebString::FromUTF8("Service-Worker-Subresource-Filter"));
-  if (!subresource_filter.IsEmpty()) {
-    ServiceWorkerNetworkProviderForFrame* provider =
-        static_cast<ServiceWorkerNetworkProviderForFrame*>(
-            navigation_params->service_worker_network_provider.get());
-    DCHECK(provider);
-
-    provider->context()->SetSubresourceFilter(subresource_filter.Utf8());
-  }
-
   DCHECK(!pending_loader_factories_);
   pending_loader_factories_ = std::move(new_loader_factories);
   pending_code_cache_host_ = std::move(code_cache_host);

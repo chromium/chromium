@@ -36429,7 +36429,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="3884" label="WebAppManifestProtocolHandlers"/>
   <int value="3885" label="RTCPeerConnectionOfferAllowExtmapMixedFalse"/>
   <int value="3886" label="NewCanvas2DAPI"/>
-  <int value="3887" label="ServiceWorkerSubresourceFilterBypassedRequest"/>
+  <int value="3887"
+      label="OBSOLETE_ServiceWorkerSubresourceFilterBypassedRequest"/>
   <int value="3888" label="WebGPU"/>
   <int value="3889" label="CSSFilterColorMatrix"/>
   <int value="3890" label="HTMLFencedFrameElement"/>

@@ -813,14 +813,6 @@ const base::Feature kWebLockScreenApi{"WebLockScreenApi",
                                       base::FEATURE_DISABLED_BY_DEFAULT};
 #endif
 
-// Experiment allowing control over what requests are intercepted by Service
-// Worker fetch events. By setting a Service-Worker-Subresource-Filter HTTP
-// header on the document to some string, only requests which contain a fragment
-// matching the header string will be intercepted. When not set, Service Workers
-// will intercept all requests, as normal.
-const base::Feature kServiceWorkerSubresourceFilter{
-    "ServiceWorkerSubresourceFilter", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Controls whether to isolate sites of documents that specify an eligible
 // Cross-Origin-Opener-Policy header.  Note that this is only intended to be
 // used on Android, which does not use strict site isolation. See

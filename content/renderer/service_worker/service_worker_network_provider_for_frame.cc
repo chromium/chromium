@@ -138,21 +138,6 @@ ServiceWorkerNetworkProviderForFrame::CreateURLLoader(
   if (request.GetSkipServiceWorker())
     return nullptr;
 
-  if (observer_ && observer_->render_frame()
-                       ->GetWebFrame()
-                       ->ServiceWorkerSubresourceFilterEnabled()) {
-    const std::string subresource_filter = context()->subresource_filter();
-    // If the document has a subresource filter set and the requested URL does
-    // not match it, do not intercept the request.
-    if (!subresource_filter.empty() &&
-        gurl.ref().find(subresource_filter) == std::string::npos) {
-      observer_->ReportFeatureUsage(
-          blink::mojom::WebFeature::
-              kServiceWorkerSubresourceFilterBypassedRequest);
-      return nullptr;
-    }
-  }
-
   // Record use counter for intercepting requests from opaque stylesheets.
   // TODO(crbug.com/898497): Remove this feature usage once we have enough data.
   if (observer_ && request.IsFromOriginDirtyStyleSheet()) {

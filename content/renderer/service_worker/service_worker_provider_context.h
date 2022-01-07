@@ -201,11 +201,6 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
       const override;
   const blink::WebString client_id() const override;
 
-  std::string subresource_filter() const { return subresource_filter_; }
-  void SetSubresourceFilter(const std::string& filter) {
-    subresource_filter_ = filter;
-  }
-
  private:
   friend class base::DeleteHelper<ServiceWorkerProviderContext>;
   friend class base::RefCountedThreadSafe<ServiceWorkerProviderContext,
@@ -335,8 +330,6 @@ class CONTENT_EXPORT ServiceWorkerProviderContext
       controller_connector_;
 
   bool sent_execution_ready_ = false;
-
-  std::string subresource_filter_;
 
   // Contains pending receivers whose corresponding requests are still
   // in-flight. The pending receivers are taken by
