@@ -410,8 +410,9 @@ class IdentityManagerTest : public testing::Test {
         PrimaryAccountManagerSetup::kWithAuthenticatedAccout) {
       CoreAccountId account_id =
           account_tracker_service->SeedAccountInfo(kTestGaiaId, kTestEmail);
-      primary_account_manager->SetSyncPrimaryAccountInfo(
-          account_tracker_service->GetAccountInfo(account_id));
+      primary_account_manager->SetPrimaryAccountInfo(
+          account_tracker_service->GetAccountInfo(account_id),
+          ConsentLevel::kSync);
     }
 
     IdentityManager::InitParameters init_params;

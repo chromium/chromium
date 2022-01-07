@@ -94,15 +94,12 @@ class PrimaryAccountManager : public ProfileOAuth2TokenServiceObserver {
   // convenience wrapper over GetPrimaryAccountInfo().account_id.
   CoreAccountId GetPrimaryAccountId(signin::ConsentLevel consent_level) const;
 
-  // Signs a user in. PrimaryAccountManager assumes that |username| can be used
-  // to look up the corresponding account_id and gaia_id for this email.
-  void SetSyncPrimaryAccountInfo(const CoreAccountInfo& account_info);
-
-  // Sets the unconsented primary account. The unconsented primary account can
-  // only be changed if the user has not consented for sync If the user has
-  // consented for sync already, then use ClearPrimaryAccount() or RevokeSync()
-  // instead.
-  void SetUnconsentedPrimaryAccountInfo(const CoreAccountInfo& account_info);
+  // Sets the primary account with the required consent level. The primary
+  // account can only be changed if the user has not consented for sync. If the
+  // user has consented for sync already, then use ClearPrimaryAccount() or
+  // RevokeSync() instead.
+  void SetPrimaryAccountInfo(const CoreAccountInfo& account_info,
+                             signin::ConsentLevel consent_level);
 
   // Updates the primary account information from AccountTrackerService.
   void UpdatePrimaryAccountInfo();

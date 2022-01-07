@@ -75,8 +75,7 @@ PrimaryAccountMutatorImpl::SetPrimaryAccount(const CoreAccountId& account_id,
       if (primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSync))
         return PrimaryAccountError::kSyncConsentAlreadySet;
 #endif
-      primary_account_manager_->SetSyncPrimaryAccountInfo(account_info);
-      return PrimaryAccountError::kNoError;
+      break;
     case ConsentLevel::kSignin:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
       // On Chrome OS the UPA can only be set once and never removed or changed.
@@ -84,10 +83,9 @@ PrimaryAccountMutatorImpl::SetPrimaryAccount(const CoreAccountId& account_id,
           !primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSignin));
 #endif
       DCHECK(!primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSync));
-      primary_account_manager_->SetUnconsentedPrimaryAccountInfo(account_info);
-      return PrimaryAccountError::kNoError;
+      break;
   }
-  CHECK(false) << "Unknown consent level: " << static_cast<int>(consent_level);
+  primary_account_manager_->SetPrimaryAccountInfo(account_info, consent_level);
   return PrimaryAccountError::kNoError;
 }
 
