@@ -22,6 +22,7 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
+#include "ash/system/tray/tray_background_view.h"
 #include "ash/wm/container_finder.h"
 #include "base/bind.h"
 #include "base/check.h"
@@ -302,7 +303,7 @@ void AppListBubblePresenter::Dismiss() {
     // Check for widget because the code could be waiting for zero-state search
     // results before first show.
     if (bubble_widget_)
-      bubble_widget_->Hide();
+      OnHideAnimationEnded();
   }
   controller_->OnVisibilityChanged(/*visible=*/false, display_id);
 
@@ -404,6 +405,10 @@ int64_t AppListBubblePresenter::GetDisplayId() const {
 }
 
 void AppListBubblePresenter::OnHideAnimationEnded() {
+  // Hiding the launcher causes a window activation change. If the launcher is
+  // hiding because the user opened a system tray bubble, don't immediately
+  // close the bubble in response.
+  auto lock = TrayBackgroundView::DisableCloseBubbleOnWindowActivated();
   bubble_widget_->Hide();
 
   controller_->MaybeCloseAssistant();

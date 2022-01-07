@@ -68,9 +68,16 @@ class ASH_EXPORT TrayBackgroundView : public ActionableView,
   // returns nullptr.
   virtual views::Widget* GetBubbleWidget() const;
 
+  // Returns a lock that prevents window activation from closing bubbles.
+  static base::ScopedClosureRunner DisableCloseBubbleOnWindowActivated()
+      WARN_UNUSED_RESULT;
+
+  // Whether a window activation change should close bubbles.
+  static bool ShouldCloseBubbleOnWindowActivated();
+
   // Closes the associated tray bubble view if it exists and is currently
   // showing.
-  virtual void CloseBubble();
+  virtual void CloseBubble() {}
 
   // Shows the associated tray bubble if one exists. |show_by_click| indicates
   // whether the showing operation is initiated by mouse or gesture click.

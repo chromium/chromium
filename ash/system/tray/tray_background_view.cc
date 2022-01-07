@@ -82,6 +82,9 @@ const float kAnimationBounceScaleFactor = 0.5;
 // TrayBackgroundView.
 const base::TimeDelta kShowAnimationDelayMs = base::Milliseconds(100);
 
+// Number of active requests to disable CloseBubble().
+int g_disable_close_bubble_on_window_activated = 0;
+
 // Switches left and right insets if RTL mode is active.
 void MirrorInsetsIfNecessary(gfx::Insets* insets) {
   if (base::i18n::IsRTL()) {
@@ -339,6 +342,18 @@ base::ScopedClosureRunner TrayBackgroundView::DisableShowAnimation() {
       weak_factory_.GetWeakPtr()));
 }
 
+base::ScopedClosureRunner
+TrayBackgroundView::DisableCloseBubbleOnWindowActivated() {
+  ++g_disable_close_bubble_on_window_activated;
+  return base::ScopedClosureRunner(
+      base::BindOnce([]() { --g_disable_close_bubble_on_window_activated; }));
+}
+
+// static
+bool TrayBackgroundView::ShouldCloseBubbleOnWindowActivated() {
+  return g_disable_close_bubble_on_window_activated == 0;
+}
+
 void TrayBackgroundView::UpdateStatusArea(bool should_log_visible_pod_count) {
   auto* status_area_widget = shelf_->GetStatusAreaWidget();
   if (status_area_widget) {
@@ -450,8 +465,6 @@ TrayBubbleView* TrayBackgroundView::GetBubbleView() {
 views::Widget* TrayBackgroundView::GetBubbleWidget() const {
   return nullptr;
 }
-
-void TrayBackgroundView::CloseBubble() {}
 
 void TrayBackgroundView::ShowBubble() {}
 

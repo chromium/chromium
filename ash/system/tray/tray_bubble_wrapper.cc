@@ -85,6 +85,10 @@ void TrayBubbleWrapper::OnWindowActivated(ActivationReason reason,
   if (!gained_active)
     return;
 
+  // Check for the CloseBubble() lock.
+  if (!TrayBackgroundView::ShouldCloseBubbleOnWindowActivated())
+    return;
+
   views::Widget* bubble_widget = bubble_view()->GetWidget();
   // Don't close the bubble if a transient child is gaining or losing
   // activation.

@@ -9,6 +9,7 @@
 #include "ash/shell.h"
 #include "ash/system/message_center/unified_message_center_bubble.h"
 #include "ash/system/status_area_widget.h"
+#include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_event_filter.h"
 #include "ash/system/tray/tray_utils.h"
@@ -278,6 +279,10 @@ void UnifiedSystemTrayBubble::OnWindowActivated(ActivationReason reason,
                                                 aura::Window* gained_active,
                                                 aura::Window* lost_active) {
   if (!gained_active || !bubble_widget_)
+    return;
+
+  // Check for the CloseBubble() lock.
+  if (!TrayBackgroundView::ShouldCloseBubbleOnWindowActivated())
     return;
 
   // Don't close the bubble if a transient child is gaining or losing

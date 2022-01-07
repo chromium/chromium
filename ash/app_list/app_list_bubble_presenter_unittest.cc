@@ -20,7 +20,9 @@
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
+#include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/layer_animation_stopped_waiter.h"
 #include "ash/test/test_widget_builder.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -488,6 +490,34 @@ TEST_F(AppListBubblePresenterTest, CreatingChildWidgetDoesNotCloseBubble) {
 
   // Bubble stays open.
   EXPECT_TRUE(presenter->IsShowing());
+}
+
+// Regression test for https://crbug.com/1285443.
+TEST_F(AppListBubblePresenterTest, CanOpenBubbleThenOpenSystemTray) {
+  // Enable animations.
+  base::test::ScopedFeatureList features(
+      features::kProductivityLauncherAnimation);
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Create a widget, which will activate itself when the launcher closes.
+  std::unique_ptr<views::Widget> widget =
+      TestWidgetBuilder().SetShow(true).BuildOwnsNativeWidget();
+
+  // Show the launcher.
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
+
+  // Click on the system tray.
+  LeftClickOn(GetPrimaryUnifiedSystemTray());
+
+  // Wait for launcher animations to end.
+  LayerAnimationStoppedWaiter().Wait(
+      presenter->bubble_view_for_test()->layer());
+
+  // Launcher is closed and system tray is open.
+  EXPECT_FALSE(presenter->IsShowing());
+  EXPECT_TRUE(GetPrimaryUnifiedSystemTray()->IsBubbleShown());
 }
 
 TEST_F(AppListBubblePresenterTest, BubbleOpensInBottomLeftForBottomShelf) {
