@@ -3561,6 +3561,10 @@ const char kUserMediaScreenCapturingName[] = "Screen Capture API";
 const char kUserMediaScreenCapturingDescription[] =
     "Allows sites to request a video stream of your screen.";
 
+const char kUseULPLanguagesInChromeName[] = "Use ULP languages in Chrome";
+const char kUseULPLanguagesInChromeDescription[] =
+    "Enables use of ULP language data in Chrome";
+
 const char kVideoTutorialsName[] = "Enable video tutorials";
 const char kVideoTutorialsDescription[] = "Show video tutorials in Chrome";
 const char kVideoTutorialsInstantFetchName[] =

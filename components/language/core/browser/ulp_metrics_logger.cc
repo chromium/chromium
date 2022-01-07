@@ -33,4 +33,35 @@ void ULPMetricsLogger::RecordInitiationAcceptLanguagesULPOverlap(
                            overlap_ratio_percent);
 }
 
+ULPLanguageStatus ULPMetricsLogger::DetermineLanguageStatus(
+    const std::string& language,
+    const std::vector<std::string>& ulp_languages) {
+  std::vector<std::string>::const_iterator i =
+      std::find(ulp_languages.begin(), ulp_languages.end(), language);
+  if (i == ulp_languages.end()) {
+    return ULPLanguageStatus::kLanguageNotInULP;
+  } else if (i == ulp_languages.begin()) {
+    return ULPLanguageStatus::kTopULPLanguage;
+  } else {
+    return ULPLanguageStatus::kNonTopULPLanguage;
+  }
+}
+
+int ULPMetricsLogger::ULPLanguagesInAcceptLanguagesRatio(
+    const std::vector<std::string> accept_languages,
+    const std::vector<std::string> ulp_languages) {
+  if (ulp_languages.size() <= 0) {
+    return 0;
+  }
+
+  int num_ulp_languages_also_in_accept_languages = 0;
+  for (const std::string& ulp_language : ulp_languages) {
+    if (std::find(accept_languages.begin(), accept_languages.end(),
+                  ulp_language) != accept_languages.end()) {
+      ++num_ulp_languages_also_in_accept_languages;
+    }
+  }
+  return (100 * num_ulp_languages_also_in_accept_languages) /
+         ulp_languages.size();
+}
 }  // namespace language

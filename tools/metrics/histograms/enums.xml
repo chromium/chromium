@@ -50691,6 +50691,7 @@ from previous Chrome versions.
   <int value="-1242867644" label="BorealisDiskManagement:enabled"/>
   <int value="-1241868814" label="WebAuthenticationPhoneSupport:disabled"/>
   <int value="-1241747717" label="enable-android-password-link"/>
+  <int value="-1241240800" label="UseULPLanguagesInChrome:enabled"/>
   <int value="-1241002324" label="FocusMode:enabled"/>
   <int value="-1239515260" label="OmniboxDisableCGIParamMatching:disabled"/>
   <int value="-1239262870" label="TextFragmentAnchor:enabled"/>
@@ -52993,6 +52994,7 @@ from previous Chrome versions.
   <int value="483155358" label="GlobalMediaControlsForChromeOS:disabled"/>
   <int value="484581911" label="ServiceWorkerSubresourceFilter:disabled"/>
   <int value="484596410" label="EnterpriseRealtimeExtensionRequest:disabled"/>
+  <int value="485652022" label="UseULPLanguagesInChrome:disabled"/>
   <int value="485957747" label="finch-seed-ignore-pending-download"/>
   <int value="487605950" label="PerformantSplitViewResizing:disabled"/>
   <int value="487810392" label="EnablePalmOnToolTypePalm:enabled"/>

@@ -25,6 +25,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/language/AppLanguagePromoDialog.java",
     "java/src/org/chromium/chrome/browser/language/LanguageAskPrompt.java",
+    "java/src/org/chromium/chrome/browser/language/LanguageBridge.java",
     "java/src/org/chromium/chrome/browser/language/settings/AlwaysTranslateListFragment.java",
     "java/src/org/chromium/chrome/browser/language/settings/AppLanguagePreferenceDelegate.java",
     "java/src/org/chromium/chrome/browser/language/settings/ContentLanguagesPreference.java",
@@ -56,6 +57,7 @@ android_library("java") {
     "//components/browser_ui/styles/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/language/android:java",
+    "//components/language/android:ulp_delegate_java",
     "//components/prefs/android:java",
     "//components/user_prefs/android:java",
     "//content/public/android:content_java",
@@ -74,8 +76,10 @@ android_library("java") {
 }
 
 generate_jni("jni_headers") {
-  sources =
-      [ "java/src/org/chromium/chrome/browser/translate/TranslateBridge.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/language/LanguageBridge.java",
+    "java/src/org/chromium/chrome/browser/translate/TranslateBridge.java",
+  ]
 }
 
 android_resources("java_resources") {

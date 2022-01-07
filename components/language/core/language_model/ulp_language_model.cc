@@ -18,7 +18,9 @@ std::vector<LanguageModel::LanguageDetails> ULPLanguageModel::GetLanguages() {
 
 void ULPLanguageModel::AddULPLanguage(std::string language, float score) {
   // Languages must be added in order by score.
-  DCHECK(lang_details_.back().score >= score);
+  if (!lang_details_.empty()) {
+    DCHECK(lang_details_.back().score >= score);
+  }
   lang_details_.emplace_back(language, score);
 }
 

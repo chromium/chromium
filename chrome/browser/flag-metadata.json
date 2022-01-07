@@ -5541,6 +5541,11 @@
     "expiry_milestone": -1
   },
   {
+    "name": "use-ulp-languages-in-chrome",
+    "owners": [ "chrome-language@google.com" ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "use-wallpaper-staging-url",
     "owners": [ "cros-customization@google.com", "hsuregan", "khorimoto" ],
     // This flag is required for QA and dogfood testing.

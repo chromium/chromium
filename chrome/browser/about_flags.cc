@@ -7660,6 +7660,13 @@ const FeatureEntry kFeatureEntries[] = {
      SINGLE_VALUE_TYPE(switches::kPervasiveSystemAccentColor)},
 #endif
 
+#if defined(OS_ANDROID)
+    {"use-ulp-languages-in-chrome",
+     flag_descriptions::kUseULPLanguagesInChromeName,
+     flag_descriptions::kUseULPLanguagesInChromeDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(language::kUseULPLanguagesInChrome)}
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
