@@ -189,6 +189,8 @@ source_set("formats") {
     "hls/parse_context.cc",
     "hls/parse_context.h",
     "hls/parse_status.h",
+    "hls/tags.cc",
+    "hls/tags.h",
     "hls/types.cc",
     "hls/types.h",
   ]
@@ -302,6 +304,7 @@ source_set("unit_tests") {
   # TODO(https://crbug.com/1266991): This should be gated behind `enable_hls_demuxer`, once that's enabled by default.
   sources += [
     "hls/items_unittest.cc",
+    "hls/tags_unittest.cc",
     "hls/types_unittest.cc",
   ]
 }

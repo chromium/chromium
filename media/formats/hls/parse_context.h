@@ -23,6 +23,7 @@ struct MEDIA_EXPORT SourceString {
   static SourceString Create(base::PassKey<SourceLineIterator>,
                              size_t line,
                              base::StringPiece str);
+  static SourceString CreateForTesting(base::StringPiece str);
   static SourceString CreateForTesting(size_t line,
                                        size_t column,
                                        base::StringPiece str);

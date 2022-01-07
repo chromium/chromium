@@ -18,6 +18,10 @@ SourceString SourceString::Create(base::PassKey<SourceLineIterator>,
   return SourceString(line, 1, str);
 }
 
+SourceString SourceString::CreateForTesting(base::StringPiece str) {
+  return SourceString::CreateForTesting(1, 1, str);
+}
+
 SourceString SourceString::CreateForTesting(size_t line,
                                             size_t column,
                                             base::StringPiece str) {
