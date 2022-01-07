@@ -29,28 +29,51 @@ public class RedirectHandler {
     public static final int INVALID_ENTRY_INDEX = -1;
     public static final long INVALID_TIME = -1;
 
-    private static final int NAVIGATION_TYPE_NONE = 0;
     private static final int NAVIGATION_TYPE_FROM_INTENT = 1;
     private static final int NAVIGATION_TYPE_FROM_USER_TYPING = 2;
     private static final int NAVIGATION_TYPE_FROM_LINK_WITHOUT_USER_GESTURE = 3;
     private static final int NAVIGATION_TYPE_FROM_RELOAD = 4;
     private static final int NAVIGATION_TYPE_OTHER = 5;
 
-    private Intent mInitialIntent;
-    // A resolver list which includes all resolvers of |mInitialIntent|.
-    private final HashSet<ComponentName> mCachedResolvers = new HashSet<ComponentName>();
-    private boolean mIsInitialIntentHeadingToChrome;
-    private boolean mIsCustomTabIntent;
+    private static class IntentState {
+        final Intent mInitialIntent;
+        final boolean mIsCustomTabIntent;
+        final boolean mIsInitialIntentHeadingToChrome;
+        final boolean mExternalIntentStartedTask;
+
+        // A resolver list which includes all resolvers of |mInitialIntent|.
+        HashSet<ComponentName> mCachedResolvers = new HashSet<ComponentName>();
+
+        IntentState(Intent initialIntent, boolean isInitialIntentHeadingToChrome,
+                boolean isCustomTabIntent, boolean externalIntentStartedTask) {
+            mInitialIntent = initialIntent;
+            mIsInitialIntentHeadingToChrome = isInitialIntentHeadingToChrome;
+            mIsCustomTabIntent = isCustomTabIntent;
+            mExternalIntentStartedTask = externalIntentStartedTask;
+        }
+    }
+
+    private static class NavigationState {
+        final int mInitialNavigationType;
+        final int mLastCommittedEntryIndexBeforeStartingNavigation;
+        final boolean mHasUserStartedNonInitialNavigation;
+        boolean mIsOnEffectiveRedirectChain;
+        boolean mShouldNotOverrideUrlLoadingOnCurrentRedirectChain;
+        boolean mShouldNotBlockOverrideUrlLoadingOnCurrentRedirectionChain;
+
+        NavigationState(int initialNavigationType,
+                int lastCommittedEntryIndexBeforeStartingNavigation,
+                boolean hasUserStartedNonInitialNavigation) {
+            mInitialNavigationType = initialNavigationType;
+            mLastCommittedEntryIndexBeforeStartingNavigation =
+                    lastCommittedEntryIndexBeforeStartingNavigation;
+            mHasUserStartedNonInitialNavigation = hasUserStartedNonInitialNavigation;
+        }
+    }
 
     private long mLastNewUrlLoadingTime = INVALID_TIME;
-    private boolean mIsOnEffectiveRedirectChain;
-    private int mInitialNavigationType;
-    private int mLastCommittedEntryIndexBeforeStartingNavigation;
-    private boolean mHasUserStartedNonInitialNavigation;
-
-    private boolean mShouldNotOverrideUrlLoadingOnCurrentRedirectChain;
-    private boolean mShouldNotBlockOverrideUrlLoadingOnCurrentRedirectionChain;
-    private boolean mExternalIntentStartedTask;
+    private IntentState mIntentState;
+    private NavigationState mNavigationState;
 
     public static RedirectHandler create() {
         return new RedirectHandler();
@@ -59,36 +82,31 @@ public class RedirectHandler {
     protected RedirectHandler() {}
 
     /**
-     * Updates |mIntentHistory| and |mLastIntentUpdatedTime|. If |intent| comes from chrome and
-     * currently |mIsOnEffectiveIntentRedirectChain| is true, that means |intent| was sent from
-     * this tab because only the front tab or a new tab can receive an intent from chrome. In that
-     * case, |intent| is added to |mIntentHistory|.
-     * Otherwise, |mIntentHistory| and |mPreviousResolvers| are cleared, and then |intent| is put
-     * into |mIntentHistory|.
+     * Resets |mIntentState| for the newly received Intent.
      */
     public void updateIntent(Intent intent, boolean isCustomTabIntent, boolean sendToExternalApps,
             boolean isCCTExternalLinkHandlingEnabled, boolean externalIntentStartedTask) {
-        clear();
-
         if (intent == null || !Intent.ACTION_VIEW.equals(intent.getAction())) {
+            mIntentState = null;
             return;
         }
 
-        mIsCustomTabIntent = isCustomTabIntent;
-        mExternalIntentStartedTask = externalIntentStartedTask;
+        boolean isInitialIntentHeadingToChrome = false;
         boolean checkIsToChrome = true;
         // All custom tabs VIEW intents are by design explicit intents, so the presence of package
         // name doesn't imply they have to be handled by Chrome explicitly. Check if external apps
         // should be checked for handling the initial redirect chain.
-        if (mIsCustomTabIntent) {
+        if (isCustomTabIntent) {
             checkIsToChrome = !(sendToExternalApps && isCCTExternalLinkHandlingEnabled);
         }
 
-        if (checkIsToChrome) mIsInitialIntentHeadingToChrome = isIntentToChrome(intent);
+        if (checkIsToChrome) isInitialIntentHeadingToChrome = isIntentToChrome(intent);
 
         // A sanitized copy of the initial intent for detecting if resolvers have changed.
-        mInitialIntent = new Intent(intent);
-        ExternalNavigationHandler.sanitizeQueryIntentActivitiesIntent(mInitialIntent);
+        Intent initialIntent = new Intent(intent);
+        ExternalNavigationHandler.sanitizeQueryIntentActivitiesIntent(initialIntent);
+        mIntentState = new IntentState(initialIntent, isInitialIntentHeadingToChrome,
+                isCustomTabIntent, externalIntentStartedTask);
     }
 
     private static boolean isIntentToChrome(Intent intent) {
@@ -98,25 +116,12 @@ public class RedirectHandler {
                         IntentUtils.safeGetStringExtra(intent, Browser.EXTRA_APPLICATION_ID));
     }
 
-    private void clearIntentHistory() {
-        mIsInitialIntentHeadingToChrome = false;
-        mIsCustomTabIntent = false;
-        mInitialIntent = null;
-        mExternalIntentStartedTask = false;
-        mCachedResolvers.clear();
-    }
-
     /**
      * Resets all variables except timestamps.
      */
     public void clear() {
-        clearIntentHistory();
-        mInitialNavigationType = NAVIGATION_TYPE_NONE;
-        mIsOnEffectiveRedirectChain = false;
-        mLastCommittedEntryIndexBeforeStartingNavigation = 0;
-        mHasUserStartedNonInitialNavigation = false;
-        mShouldNotOverrideUrlLoadingOnCurrentRedirectChain = false;
-        mShouldNotBlockOverrideUrlLoadingOnCurrentRedirectionChain = false;
+        mIntentState = null;
+        mNavigationState = null;
     }
 
     /**
@@ -124,7 +129,7 @@ public class RedirectHandler {
      * occurs.
      */
     public void setShouldNotOverrideUrlLoadingOnCurrentRedirectChain() {
-        mShouldNotOverrideUrlLoadingOnCurrentRedirectChain = true;
+        mNavigationState.mShouldNotOverrideUrlLoadingOnCurrentRedirectChain = true;
     }
 
     /**
@@ -132,7 +137,7 @@ public class RedirectHandler {
      * a new user-initiated navigation occurs.
      */
     public void setShouldNotBlockUrlLoadingOverrideOnCurrentRedirectionChain() {
-        mShouldNotBlockOverrideUrlLoadingOnCurrentRedirectionChain = true;
+        mNavigationState.mShouldNotBlockOverrideUrlLoadingOnCurrentRedirectionChain = true;
     }
 
     /**
@@ -142,7 +147,7 @@ public class RedirectHandler {
      *         swiped away or timed out).
      */
     public boolean wasTaskStartedByExternalIntent() {
-        return mExternalIntentStartedTask;
+        return mIntentState != null && mIntentState.mExternalIntentStartedTask;
     }
 
     /**
@@ -185,42 +190,39 @@ public class RedirectHandler {
                 isNewLoadingStartedByUser = true;
             }
         }
-
-        if (isNewLoadingStartedByUser) {
-            // Updates mInitialNavigationType for a new loading started by a user's gesture.
-            if (isFromIntent && mInitialIntent != null) {
-                mInitialNavigationType = NAVIGATION_TYPE_FROM_INTENT;
-            } else {
-                clearIntentHistory();
-                if (pageTransitionCore == PageTransition.TYPED) {
-                    mInitialNavigationType = NAVIGATION_TYPE_FROM_USER_TYPING;
-                } else if (pageTransitionCore == PageTransition.RELOAD
-                        || (pageTransType & PageTransition.FORWARD_BACK) != 0) {
-                    mInitialNavigationType = NAVIGATION_TYPE_FROM_RELOAD;
-                } else if (pageTransitionCore == PageTransition.LINK && !hasUserGesture) {
-                    mInitialNavigationType = NAVIGATION_TYPE_FROM_LINK_WITHOUT_USER_GESTURE;
-                } else {
-                    mInitialNavigationType = NAVIGATION_TYPE_OTHER;
-                }
-            }
-            mIsOnEffectiveRedirectChain = false;
-            mLastCommittedEntryIndexBeforeStartingNavigation = lastCommittedEntryIndex;
-            if (!isInitialNavigation) {
-                mHasUserStartedNonInitialNavigation = true;
-            }
-            mShouldNotOverrideUrlLoadingOnCurrentRedirectChain = false;
-            mShouldNotBlockOverrideUrlLoadingOnCurrentRedirectionChain = false;
-        } else if (mInitialNavigationType != NAVIGATION_TYPE_NONE) {
+        if (!isNewLoadingStartedByUser) {
             // Redirect chain starts from the second url loading.
-            mIsOnEffectiveRedirectChain = true;
+            mNavigationState.mIsOnEffectiveRedirectChain = true;
+            return;
         }
+
+        // Create the NavigationState for a new Navigation chain.
+        int mInitialNavigationType;
+        if (isFromIntent && mIntentState != null) {
+            mInitialNavigationType = NAVIGATION_TYPE_FROM_INTENT;
+        } else {
+            mIntentState = null;
+            if (pageTransitionCore == PageTransition.TYPED) {
+                mInitialNavigationType = NAVIGATION_TYPE_FROM_USER_TYPING;
+            } else if (pageTransitionCore == PageTransition.RELOAD
+                    || (pageTransType & PageTransition.FORWARD_BACK) != 0) {
+                mInitialNavigationType = NAVIGATION_TYPE_FROM_RELOAD;
+            } else if (pageTransitionCore == PageTransition.LINK && !hasUserGesture) {
+                mInitialNavigationType = NAVIGATION_TYPE_FROM_LINK_WITHOUT_USER_GESTURE;
+            } else {
+                mInitialNavigationType = NAVIGATION_TYPE_OTHER;
+            }
+        }
+        mNavigationState = new NavigationState(
+                mInitialNavigationType, lastCommittedEntryIndex, !isInitialNavigation);
     }
 
     /**
      * @return whether on effective intent redirect chain or not.
      */
     public boolean isOnEffectiveIntentRedirectChain() {
-        return mInitialNavigationType == NAVIGATION_TYPE_FROM_INTENT && mIsOnEffectiveRedirectChain;
+        return mNavigationState.mInitialNavigationType == NAVIGATION_TYPE_FROM_INTENT
+                && mNavigationState.mIsOnEffectiveRedirectChain;
     }
 
     /**
@@ -240,7 +242,8 @@ public class RedirectHandler {
     public boolean shouldStayInApp(boolean hasExternalProtocol, boolean isForTrustedCallingApp) {
         // http://crbug/424029 : Need to stay in Chrome for an intent heading explicitly to Chrome.
         // http://crbug/881740 : Relax stay in Chrome restriction for Custom Tabs.
-        return (mIsInitialIntentHeadingToChrome && !hasExternalProtocol)
+        return (mIntentState != null && mIntentState.mIsInitialIntentHeadingToChrome
+                       && !hasExternalProtocol)
                 || shouldNavigationTypeStayInApp(isForTrustedCallingApp);
     }
 
@@ -253,35 +256,36 @@ public class RedirectHandler {
 
     private boolean shouldNavigationTypeStayInApp(boolean isForTrustedCallingApp) {
         // http://crbug.com/162106: Never leave Chrome from a refresh.
-        if (mInitialNavigationType == NAVIGATION_TYPE_FROM_RELOAD) return true;
+        if (mNavigationState.mInitialNavigationType == NAVIGATION_TYPE_FROM_RELOAD) return true;
 
         // If the app we would navigate to is trusted and what launched Chrome, allow the
         // navigation.
         if (isForTrustedCallingApp) return false;
 
         // Otherwise allow navigation out of the app only with a user gesture.
-        return mInitialNavigationType == NAVIGATION_TYPE_FROM_LINK_WITHOUT_USER_GESTURE;
+        return mNavigationState.mInitialNavigationType
+                == NAVIGATION_TYPE_FROM_LINK_WITHOUT_USER_GESTURE;
     }
 
     /**
      * @return Whether this navigation is initiated by a Custom Tabs {@link Intent}.
      */
     public boolean isFromCustomTabIntent() {
-        return mIsCustomTabIntent;
+        return mIntentState != null && mIntentState.mIsCustomTabIntent;
     }
 
     /**
      * @return whether navigation is from a user's typing or not.
      */
     public boolean isNavigationFromUserTyping() {
-        return mInitialNavigationType == NAVIGATION_TYPE_FROM_USER_TYPING;
+        return mNavigationState.mInitialNavigationType == NAVIGATION_TYPE_FROM_USER_TYPING;
     }
 
     /**
      * @return whether we should stay in Chrome or not.
      */
     public boolean shouldNotOverrideUrlLoading() {
-        return mShouldNotOverrideUrlLoadingOnCurrentRedirectChain;
+        return mNavigationState.mShouldNotOverrideUrlLoadingOnCurrentRedirectChain;
     }
 
     /**
@@ -289,8 +293,8 @@ public class RedirectHandler {
      * chain.
      */
     public boolean getAndClearShouldNotBlockOverrideUrlLoadingOnCurrentRedirectionChain() {
-        boolean value = mShouldNotBlockOverrideUrlLoadingOnCurrentRedirectionChain;
-        mShouldNotBlockOverrideUrlLoadingOnCurrentRedirectionChain = false;
+        boolean value = mNavigationState.mShouldNotBlockOverrideUrlLoadingOnCurrentRedirectionChain;
+        mNavigationState.mShouldNotBlockOverrideUrlLoadingOnCurrentRedirectionChain = false;
         return value;
     }
 
@@ -298,21 +302,21 @@ public class RedirectHandler {
      * @return whether on navigation or not.
      */
     public boolean isOnNavigation() {
-        return mInitialNavigationType != NAVIGATION_TYPE_NONE;
+        return mNavigationState != null;
     }
 
     /**
      * @return the last committed entry index which was saved before starting this navigation.
      */
     public int getLastCommittedEntryIndexBeforeStartingNavigation() {
-        return mLastCommittedEntryIndexBeforeStartingNavigation;
+        return mNavigationState.mLastCommittedEntryIndexBeforeStartingNavigation;
     }
 
     /**
      * @return whether the user has started a non-initial navigation.
      */
     public boolean hasUserStartedNonInitialNavigation() {
-        return mHasUserStartedNonInitialNavigation;
+        return mNavigationState != null && mNavigationState.mHasUserStartedNonInitialNavigation;
     }
 
     /**
@@ -320,19 +324,17 @@ public class RedirectHandler {
      */
     public boolean hasNewResolver(List<ResolveInfo> resolvingInfos,
             Function<Intent, List<ResolveInfo>> queryIntentActivitiesFunction) {
-        if (mInitialIntent == null) {
-            return !resolvingInfos.isEmpty();
-        }
+        if (mIntentState == null) return !resolvingInfos.isEmpty();
 
-        if (mCachedResolvers.isEmpty()) {
-            for (ResolveInfo r : queryIntentActivitiesFunction.apply(mInitialIntent)) {
-                mCachedResolvers.add(
+        if (mIntentState.mCachedResolvers.isEmpty()) {
+            for (ResolveInfo r : queryIntentActivitiesFunction.apply(mIntentState.mInitialIntent)) {
+                mIntentState.mCachedResolvers.add(
                         new ComponentName(r.activityInfo.packageName, r.activityInfo.name));
             }
         }
-        if (resolvingInfos.size() > mCachedResolvers.size()) return true;
+        if (resolvingInfos.size() > mIntentState.mCachedResolvers.size()) return true;
         for (ResolveInfo r : resolvingInfos) {
-            if (!mCachedResolvers.contains(
+            if (!mIntentState.mCachedResolvers.contains(
                         new ComponentName(r.activityInfo.packageName, r.activityInfo.name))) {
                 return true;
             }
@@ -344,6 +346,6 @@ public class RedirectHandler {
      * @return The initial intent of a redirect chain, if available.
      */
     public Intent getInitialIntent() {
-        return mInitialIntent;
+        return mIntentState != null ? mIntentState.mInitialIntent : null;
     }
 }
