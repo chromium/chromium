@@ -36,6 +36,7 @@
 
       const renderCallback = function() {
         webGpuUtils.importExternalTextureTest(gpuDevice, gpuContext, frame);
+        frame.close();
         waitForFinish();
       };
 
@@ -44,7 +45,6 @@
 
     function waitForFinish() {
       if (g_swapsBeforeAck == 0) {
-        frame.close();
         domAutomationController.send("SUCCESS");
       } else {
         g_swapsBeforeAck--;

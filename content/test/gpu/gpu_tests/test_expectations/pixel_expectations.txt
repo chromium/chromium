@@ -447,9 +447,6 @@ crbug.com/1230743 [ linux skia-renderer-vulkan ] Pixel_* [ RetryOnFailure ]
 # WebGPU pixel tests flakily hang in the metal shader compiler on Mac.
 crbug.com/1268120 [ mac ] Pixel_WebGPUToDataURL [ Failure ]
 
-# NVIDIA Quadro P400 GPU has problem to generate correct rendering results.
-crbug.com/1238570 [ win nvidia-0x1cb3 ] Pixel_WebGPUImportVideoFrame [ Failure ]
-
 # Failures on Sherlock
 # These two tests causes a crash on Swarming. Skipping so that we have a signal for other tests.
 crbug.com/1268144 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] Pixel_BackgroundImage [ Skip ]
@@ -465,10 +462,7 @@ crbug.com/1261867 [ fuchsia fuchsia-board-astro skia-renderer-vulkan ] Pixel_Web
 crbug.com/1261867 [ fuchsia fuchsia-board-sherlock skia-renderer-vulkan ] Pixel_WebGLGreenTriangle_NoAA_NoAlpha [ Failure ]
 
 # Pixel_WebGPUImportVideoFrame hangs on Windows FYI bots
-crbug.com/1274796 [ win nvidia-0x2184 ] Pixel_WebGPUImportVideoFrame [ Failure ]
-crbug.com/1274796 [ win intel-0x5912 ] Pixel_WebGPUImportVideoFrame [ Failure ]
-crbug.com/1274796 [ win intel-0x3e92 ] Pixel_WebGPUImportVideoFrame [ Failure ]
-crbug.com/1274796 [ win amd-0x7340 ] Pixel_WebGPUImportVideoFrame [ Failure ]
+crbug.com/1274796 [ win skia-renderer-gl ] Pixel_WebGPUImportVideoFrame [ Failure ]
 
 # Pixel_Video_Media_Stream_Incompatible_Stride flakes with SkiaRenderer GL
 crbug.com/1213542 [ skia-renderer-gl linux nvidia-0x1cb3 ] Pixel_Video_Media_Stream_Incompatible_Stride [ RetryOnFailure ]
