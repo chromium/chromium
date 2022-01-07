@@ -1,8 +1,57 @@
 workspace(name = "org_tensorflow_lite_support")
 
 load("@bazel_tools//tools/build_defs/repo:java.bzl", "java_import_external")
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_file")
 load("@//third_party/py:python_configure.bzl", "python_configure")
+
+http_file(
+    name = "mobilebert_float",
+    sha256 = "883bf5d40f0b0ae435326bb21ed0f4c9004b22c3fd1539383fd16d68623696dd",
+    urls = ["https://tfhub.dev/tensorflow/lite-model/mobilebert/1/default/1?lite-format=tflite"],
+)
+
+http_file(
+    name = "mobilebert_with_metadata",
+    sha256 = "e79d3c70108bbdee02da657b679349cab46dbb859a05b599c76b53d98e82f272",
+    urls = ["https://tfhub.dev/tensorflow/lite-model/mobilebert/1/metadata/1?lite-format=tflite"],
+)
+
+http_file(
+    name = "30k-clean",
+    sha256 = "fefb02b667a6c5c2fe27602d28e5fb3428f66ab89c7d6f388e7c8d44a02d0336",
+    urls = ["https://storage.googleapis.com/download.tensorflow.org/models/tflite_support/bert_qa/30k-clean.model"],
+)
+
+http_file(
+    name = "mobilebert_vocab",
+    sha256 = "07eced375cec144d27c900241f3e339478dec958f92fddbc551f295c992038a3",
+    urls = ["https://storage.googleapis.com/download.tensorflow.org/models/tflite_support/bert_qa/mobilebert_vocab.txt"],
+)
+
+
+http_file(
+    name = "albert",
+    sha256 = "4a29c7063c518925960229f49dd03e8da5d6682001cf73037815dcd98afd728a",
+    urls = ["https://tfhub.dev/tensorflow/lite-model/albert_lite_base/squadv1/1?lite-format=tflite"],
+)
+
+http_file(
+    name = "albert_with_metadata",
+    sha256 = "8a8a91856b94b945e4a9f22f0332bbf105c3b6b878bb23abfc97eb89d3e8436a",
+    urls = ["https://tfhub.dev/tensorflow/lite-model/albert_lite_base/squadv1/metadata/1?lite-format=tflite"],
+)
+
+http_file(
+    name = "bert_nl_classifier",
+    sha256 = "1e5a550c09bff0a13e61858bcfac7654d7fcc6d42106b4f15e11117695069600",
+    urls = ["https://storage.googleapis.com/download.tensorflow.org/models/tflite_support/bert_nl_classifier/bert_nl_classifier.tflite"],
+)
+
+http_file(
+    name = "bert_nl_classifier_no_metadata",
+    sha256 = "9b4554f6e28a72a3f40511964eed1ccf4e74cc074f81543cacca4faf169a173e",
+    urls = ["https://storage.googleapis.com/download.tensorflow.org/models/tflite_support/bert_nl_classifier/bert_nl_classifier_no_metadata.tflite"],
+)
 
 http_archive(
     name = "io_bazel_rules_closure",
@@ -12,6 +61,14 @@ http_archive(
         "https://storage.googleapis.com/mirror.tensorflow.org/github.com/bazelbuild/rules_closure/archive/308b05b2419edb5c8ee0471b67a40403df940149.tar.gz",
         "https://github.com/bazelbuild/rules_closure/archive/308b05b2419edb5c8ee0471b67a40403df940149.tar.gz",  # 2019-06-13
     ],
+)
+
+# GoogleTest/GoogleMock framework. Used by most unit-tests.
+http_archive(
+    name = "com_google_googletest",
+    urls = ["https://github.com/google/googletest/archive/4ec4cd23f486bf70efcc5d2caa40f24368f752e3.zip"],
+    strip_prefix = "googletest-4ec4cd23f486bf70efcc5d2caa40f24368f752e3",
+    sha256 = "de682ea824bfffba05b4e33b67431c247397d6175962534305136aa06f92e049",
 )
 
 # Apple and Swift rules.
@@ -37,15 +94,21 @@ http_archive(
     ],
 )
 
-# tf-nightly-20200810
+# TF on 2021-11-09.
+TENSORFLOW_COMMIT = "6a144e7763914d3f6141a7cdc9cb116cc23425f9"
+TENSORFLOW_SHA256 = "cec9a514c09d2b171ad447f3413151b25a6c3d88d048148cced1e85db81f3617"
 http_archive(
     name = "org_tensorflow",
-    sha256 = "fc6d7c57cd9427e695a38ad00fb6ecc3f623bac792dd44ad73a3f85b338b68be",
-    strip_prefix = "tensorflow-8a4ffe2e1ae722cff5306778df0cfca8b7f503fe",
+    sha256 = TENSORFLOW_SHA256,
+    strip_prefix = "tensorflow-" + TENSORFLOW_COMMIT,
     urls = [
-        "https://github.com/tensorflow/tensorflow/archive/8a4ffe2e1ae722cff5306778df0cfca8b7f503fe.tar.gz",
+        "https://github.com/tensorflow/tensorflow/archive/" + TENSORFLOW_COMMIT
+        + ".tar.gz",
     ],
-    patches = ["@//third_party:tensorflow_lite_ios_build.patch"],
+    patches = [
+        # We need to rename lite/ios/BUILD.apple to lite/ios/BUILD.
+        "@//third_party:tensorflow_lite_ios_build.patch",
+    ],
     patch_args = ["-p1"],
 )
 
@@ -60,11 +123,11 @@ gflags()
 third_party_http_archive(
     name = "pybind11",
     urls = [
-        "https://storage.googleapis.com/mirror.tensorflow.org/github.com/pybind/pybind11/archive/v2.4.3.tar.gz",
-        "https://github.com/pybind/pybind11/archive/v2.4.3.tar.gz",
+        "https://storage.googleapis.com/mirror.tensorflow.org/github.com/pybind/pybind11/archive/v2.6.0.tar.gz",
+        "https://github.com/pybind/pybind11/archive/v2.6.0.tar.gz",
     ],
-    sha256 = "1eed57bc6863190e35637290f97a20c81cfe4d9090ac0a24f3bbf08f265eb71d",
-    strip_prefix = "pybind11-2.4.3",
+    sha256 = "90b705137b69ee3b5fc655eaca66d0dc9862ea1759226f7ccd3098425ae69571",
+    strip_prefix = "pybind11-2.6.0",
     build_file = "//third_party:pybind11.BUILD",
 )
 
@@ -119,13 +182,14 @@ http_archive(
     ],
 )
 
-# ABSL cpp library lts_2020_02_25
-# Needed for absl/status
+# ABSL cpp library lts_2021_03_24 Patch2
+# See https://github.com/abseil/abseil-cpp/releases for details.
+# Needed for absl/status and absl/status:statusor
 http_archive(
     name = "com_google_absl",
     build_file = "//third_party:com_google_absl.BUILD",
     urls = [
-        "https://github.com/abseil/abseil-cpp/archive/20200225.tar.gz",
+        "https://github.com/abseil/abseil-cpp/archive/20210324.2.tar.gz",
     ],
     # Remove after https://github.com/abseil/abseil-cpp/issues/326 is solved.
     patches = [
@@ -134,8 +198,8 @@ http_archive(
     patch_args = [
         "-p1",
     ],
-    strip_prefix = "abseil-cpp-20200225",
-    sha256 = "728a813291bdec2aa46eab8356ace9f75ac2ed9dfe2df5ab603c4e6c09f1c353"
+    strip_prefix = "abseil-cpp-20210324.2",
+    sha256 = "59b862f50e710277f8ede96f083a5bb8d7c9595376146838b9580be90374ee1f"
 )
 
 http_archive(
@@ -175,12 +239,12 @@ http_archive(
 
 http_archive(
     name = "libyuv",
-    urls = ["https://chromium.googlesource.com/libyuv/libyuv/+archive/6d603ec3f57dafddc424ef895e5d903915e94ba6.tar.gz"],
-    # Adding the constrain of sha256 and strip_prefix will cause failure.
-    # It seems that the downloaded libyuv was different every time, so that
-    # the specified sha256 and strip_prefix cannot match.
-    # sha256 = "ce196c72858456baa8022fa4a0dc18b77d619265dbc0e3d58e25ad15ca402522",
-    # strip_prefix = "libyuv-6d603ec3f57dafddc424ef895e5d903915e94ba6",
+    urls = ["https://chromium.googlesource.com/libyuv/libyuv/+archive/39240f7149cffde62e3620344d222c8ab2c21178.tar.gz"],
+    # Adding the constrain of sha256 and strip_prefix will cause failure as of
+    # Jan 2021. It seems that the downloaded libyuv was different every time,
+    # so that the specified sha256 and strip_prefix cannot match.
+    # sha256 = "01c2e30eb8e83880f9ba382f6bece9c38cd5b07f9cadae46ef1d5a69e07fafaf",
+    # strip_prefix = "libyuv-39240f7149cffde62e3620344d222c8ab2c21178",
     build_file = "//third_party:libyuv.BUILD",
 )
 
@@ -243,17 +307,17 @@ http_archive(
 )
 
 http_archive(
-    name = "com_google_protobuf",
-    sha256 = "a79d19dcdf9139fa4b81206e318e33d245c4c9da1ffed21c87288ed4380426f9",
-    strip_prefix = "protobuf-3.11.4",
-    urls = ["https://github.com/protocolbuffers/protobuf/archive/v3.11.4.tar.gz"],
-    patches = [
-        "@//third_party:com_google_protobuf_fixes.diff"
-    ],
-    patch_args = [
-        "-p1",
-    ],
+  name = "libedgetpu",
+  sha256 = "a179016a5874c58db969a5edd3fecf57610604e751b5c4d6d82ad58c383ffd64",
+  strip_prefix = "libedgetpu-ea1eaddbddece0c9ca1166e868f8fd03f4a3199e",
+  urls = [
+    "https://github.com/google-coral/libedgetpu/archive/ea1eaddbddece0c9ca1166e868f8fd03f4a3199e.tar.gz"
+  ],
 )
+
+# Set up TensorFlow version for Coral.
+load("@libedgetpu//:workspace.bzl", "libedgetpu_dependencies")
+libedgetpu_dependencies(TENSORFLOW_COMMIT, TENSORFLOW_SHA256)
 
 # AutoValue 1.6+ shades Guava, Auto Common, and JavaPoet. That's OK
 # because none of these jars become runtime dependencies.
@@ -317,12 +381,38 @@ java_import_external(
     default_visibility = ["@com_google_auto_value//:__pkg__"],
 )
 
+http_archive(
+    name = "robolectric",
+    urls = ["https://github.com/robolectric/robolectric-bazel/archive/4.4.tar.gz"],
+    strip_prefix = "robolectric-bazel-4.4",
+)
+load("@robolectric//bazel:robolectric.bzl", "robolectric_repositories")
+robolectric_repositories()
+
 load("//third_party/flatbuffers:workspace.bzl", flatbuffers = "repo")
 
 flatbuffers()
+
+RULES_JVM_EXTERNAL_TAG = "3.2"
+
+http_archive(
+    name = "rules_jvm_external",
+    strip_prefix = "rules_jvm_external-%s" % RULES_JVM_EXTERNAL_TAG,
+    sha256 = "82262ff4223c5fda6fb7ff8bd63db8131b51b413d26eb49e3131037e79e324af",
+    url = "https://github.com/bazelbuild/rules_jvm_external/archive/%s.zip" % RULES_JVM_EXTERNAL_TAG,
+)
+
+load("@rules_jvm_external//:defs.bzl", "maven_install")
+
 # Set up TF.
-load("@org_tensorflow//tensorflow:workspace.bzl", "tf_workspace")
-tf_workspace(tf_repo_name="@org_tensorflow")
+load("@org_tensorflow//tensorflow:workspace3.bzl", "workspace")
+workspace()
+load("@org_tensorflow//tensorflow:workspace2.bzl", "workspace")  # buildifier: disable=load
+workspace()
+load("@org_tensorflow//tensorflow:workspace1.bzl", "workspace")  # buildifier: disable=load
+workspace()
+load("@org_tensorflow//tensorflow:workspace0.bzl", "workspace")  # buildifier: disable=load
+workspace()
 
 load("//third_party/tensorflow:tf_configure.bzl", "tf_configure")
 tf_configure(name = "local_config_tf")
@@ -346,39 +436,62 @@ apple_support_dependencies()
 load("@upb//bazel:repository_defs.bzl", "bazel_version_repository")
 bazel_version_repository(name = "bazel_version")
 
-
-# Set up Android.
-load("//third_party/android:android_configure.bzl", "android_configure")
-android_configure(name="local_config_android")
-load("@local_config_android//:android.bzl", "android_workspace")
-android_workspace()
-
 python_configure(name = "local_config_python")
 
+ATS_TAG = "androidx-test-1.3.0"
+http_archive(
+    name = "android_test_support",
+    strip_prefix = "android-test-%s" % ATS_TAG,
+    urls = ["https://github.com/android/android-test/archive/%s.tar.gz" % ATS_TAG],
+)
+load("@android_test_support//:repo.bzl", "android_test_repositories")
+android_test_repositories()
 
 # Maven dependencies.
-
-RULES_JVM_EXTERNAL_TAG = "3.2"
-
-http_archive(
-    name = "rules_jvm_external",
-    strip_prefix = "rules_jvm_external-%s" % RULES_JVM_EXTERNAL_TAG,
-    sha256 = "82262ff4223c5fda6fb7ff8bd63db8131b51b413d26eb49e3131037e79e324af",
-    url = "https://github.com/bazelbuild/rules_jvm_external/archive/%s.zip" % RULES_JVM_EXTERNAL_TAG,
-)
-
-load("@rules_jvm_external//:defs.bzl", "maven_install")
 
 maven_install(
     artifacts = [
         "androidx.annotation:annotation:aar:1.1.0",
+        "androidx.annotation:annotation-experimental:1.1.0",
+        "androidx.multidex:multidex:jar:2.0.1",
+        "androidx.test:core:jar:1.3.0",
+        "androidx.test.ext:junit:jar:1.1.2",
+        "androidx.test:runner:jar:1.3.0",
+        "com.google.android.odml:image:aar:1.0.0-beta1",
+        "com.google.truth:truth:jar:1.1",
+        "commons-io:commons-io:jar:2.8.0",
+        # Mockito >= 3.4.6 cannot pass bazel desugar.
+        "org.mockito:mockito-android:jar:3.0.0",
+        "org.mockito:mockito-core:jar:3.0.0",
+        "org.mockito:mockito-inline:jar:3.0.0",
+        "org.robolectric:robolectric:jar:4.4",
+        "junit:junit:jar:4.13",
     ],
     repositories = [
-        "https://jcenter.bintray.com",
         "https://maven.google.com",
         "https://dl.google.com/dl/android/maven2",
         "https://repo1.maven.org/maven2",
     ],
     fetch_sources = True,
     version_conflict_policy = "pinned",
+)
+
+http_archive(
+    name = "tf_toolchains",
+    sha256 = "d72b2e52baf0592f5b94347b128ef75422fc22f63dfcf2d5fd46bc732cab052b",
+    strip_prefix = "toolchains-1.3.0",
+    urls = [
+        "http://mirror.tensorflow.org/github.com/tensorflow/toolchains/archive/v1.3.0.tar.gz",
+        "https://github.com/tensorflow/toolchains/archive/v1.3.0.tar.gz",
+    ],
+)
+
+load("@tf_toolchains//toolchains/embedded/arm-linux:arm_linux_toolchain_configure.bzl", "arm_linux_toolchain_configure")
+
+# TFLite crossbuild toolchain for embeddeds Linux
+arm_linux_toolchain_configure(
+    name = "local_config_embedded_arm",
+    build_file = "@tf_toolchains//toolchains/embedded/arm-linux:BUILD",
+    aarch64_repo = "../aarch64_linux_toolchain",
+    armhf_repo = "../armhf_linux_toolchain",
 )

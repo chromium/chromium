@@ -18,8 +18,9 @@ limitations under the License.
 #include <memory>
 #include <string>
 
-#include "absl/strings/str_cat.h"
+#include "absl/strings/str_cat.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/statusor.h"
+#include "tensorflow_lite_support/cc/task/core/proto/base_options_proto_inc.h"
 #include "tensorflow_lite_support/cc/task/vision/core/frame_buffer.h"
 #include "tensorflow_lite_support/cc/task/vision/image_segmenter.h"
 #include "tensorflow_lite_support/cc/task/vision/proto/image_segmenter_options_proto_inc.h"
@@ -28,16 +29,24 @@ limitations under the License.
 #include "tensorflow_lite_support/cc/utils/jni_utils.h"
 #include "tensorflow_lite_support/java/src/native/task/vision/jni_utils.h"
 
+namespace tflite {
+namespace task {
+// To be provided by a link-time library
+extern std::unique_ptr<OpResolver> CreateOpResolver();
+
+}  // namespace task
+}  // namespace tflite
+
 namespace {
 
 using ::tflite::support::StatusOr;
 using ::tflite::support::utils::CreateByteArray;
-using ::tflite::support::utils::GetMappedFileBuffer;
-using ::tflite::support::utils::kAssertionError;
+using ::tflite::support::utils::GetExceptionClassNameForStatusCode;
 using ::tflite::support::utils::kIllegalArgumentException;
+using ::tflite::support::utils::kIllegalStateException;
 using ::tflite::support::utils::kInvalidPointer;
 using ::tflite::support::utils::ThrowException;
-using ::tflite::task::vision::ConvertToFrameBufferOrientation;
+using ::tflite::task::core::BaseOptions;
 using ::tflite::task::vision::FrameBuffer;
 using ::tflite::task::vision::ImageSegmenter;
 using ::tflite::task::vision::ImageSegmenterOptions;
@@ -59,8 +68,15 @@ constexpr int kOutputTypeConfidenceMask = 1;
 // Creates an ImageSegmenterOptions proto based on the Java class.
 ImageSegmenterOptions ConvertToProtoOptions(JNIEnv* env,
                                             jstring display_names_locale,
-                                            jint output_type) {
+                                            jint output_type,
+                                            jlong base_options_handle) {
   ImageSegmenterOptions proto_options;
+
+  if (base_options_handle != kInvalidPointer) {
+    // proto_options will free the previous base_options and set the new one.
+    proto_options.set_allocated_base_options(
+        reinterpret_cast<BaseOptions*>(base_options_handle));
+  }
 
   const char* pchars = env->GetStringUTFChars(display_names_locale, nullptr);
   proto_options.set_display_names_locale(pchars);
@@ -82,15 +98,15 @@ ImageSegmenterOptions ConvertToProtoOptions(JNIEnv* env,
   return proto_options;
 }
 
-void ConvertToSegmentationResults(JNIEnv* env,
-                                  const SegmentationResult& results,
-                                  jobject jmask_buffers,
-                                  jintArray jmask_shape,
-                                  jobject jcolored_labels) {
+void ConvertFromSegmentationResults(JNIEnv* env,
+                                    const SegmentationResult& results,
+                                    jobject jmask_buffers,
+                                    jintArray jmask_shape,
+                                    jobject jcolored_labels) {
   if (results.segmentation_size() != 1) {
     // Should never happen.
     ThrowException(
-        env, kAssertionError,
+        env, kIllegalStateException,
         "ImageSegmenter only supports one segmentation result, getting %d",
         results.segmentation_size());
   }
@@ -157,6 +173,25 @@ void ConvertToSegmentationResults(JNIEnv* env,
   }
 }
 
+jlong CreateImageSegmenterFromOptions(JNIEnv* env,
+                                      const ImageSegmenterOptions& options) {
+  StatusOr<std::unique_ptr<ImageSegmenter>> image_segmenter_or =
+      ImageSegmenter::CreateFromOptions(options,
+                                        tflite::task::CreateOpResolver());
+  if (image_segmenter_or.ok()) {
+    return reinterpret_cast<jlong>(image_segmenter_or->release());
+  } else {
+    ThrowException(
+        env,
+        GetExceptionClassNameForStatusCode(image_segmenter_or.status().code()),
+        "Error occurred when initializing ImageSegmenter: %s",
+        image_segmenter_or.status().message().data());
+    return kInvalidPointer;
+  }
+}
+
+}  // namespace
+
 extern "C" JNIEXPORT void JNICALL
 Java_org_tensorflow_lite_task_vision_segmenter_ImageSegmenter_deinitJni(
     JNIEnv* env,
@@ -165,6 +200,9 @@ Java_org_tensorflow_lite_task_vision_segmenter_ImageSegmenter_deinitJni(
   delete reinterpret_cast<ImageSegmenter*>(native_handle);
 }
 
+// Creates an ImageSegmenter instance from the model file descriptor.
+// file_descriptor_length and file_descriptor_offset are optional. Non-possitive
+// values will be ignored.
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_tensorflow_lite_task_vision_segmenter_ImageSegmenter_initJniWithModelFdAndOptions(
     JNIEnv* env,
@@ -173,25 +211,37 @@ Java_org_tensorflow_lite_task_vision_segmenter_ImageSegmenter_initJniWithModelFd
     jlong file_descriptor_length,
     jlong file_descriptor_offset,
     jstring display_names_locale,
-    jint output_type) {
-  ImageSegmenterOptions proto_options =
-      ConvertToProtoOptions(env, display_names_locale, output_type);
-  auto file_descriptor_meta = proto_options.mutable_model_file_with_metadata()
+    jint output_type,
+    jlong base_options_handle) {
+  ImageSegmenterOptions proto_options = ConvertToProtoOptions(
+      env, display_names_locale, output_type, base_options_handle);
+  auto file_descriptor_meta = proto_options.mutable_base_options()
+                                  ->mutable_model_file()
                                   ->mutable_file_descriptor_meta();
   file_descriptor_meta->set_fd(file_descriptor);
-  file_descriptor_meta->set_length(file_descriptor_length);
-  file_descriptor_meta->set_offset(file_descriptor_offset);
-
-  StatusOr<std::unique_ptr<ImageSegmenter>> image_segmenter_or =
-      ImageSegmenter::CreateFromOptions(proto_options);
-  if (image_segmenter_or.ok()) {
-    return reinterpret_cast<jlong>(image_segmenter_or->release());
-  } else {
-    ThrowException(env, kAssertionError,
-                   "Error occurred when initializing ImageSegmenter: %s",
-                   image_segmenter_or.status().message().data());
-    return kInvalidPointer;
+  if (file_descriptor_length > 0) {
+    file_descriptor_meta->set_length(file_descriptor_length);
   }
+  if (file_descriptor_offset > 0) {
+    file_descriptor_meta->set_offset(file_descriptor_offset);
+  }
+  return CreateImageSegmenterFromOptions(env, proto_options);
+}
+
+extern "C" JNIEXPORT jlong JNICALL
+Java_org_tensorflow_lite_task_vision_segmenter_ImageSegmenter_initJniWithByteBuffer(
+    JNIEnv* env,
+    jclass thiz,
+    jobject model_buffer,
+    jstring display_names_locale,
+    jint output_type,
+    jlong base_options_handle) {
+  ImageSegmenterOptions proto_options = ConvertToProtoOptions(
+      env, display_names_locale, output_type, base_options_handle);
+  proto_options.mutable_base_options()->mutable_model_file()->set_file_content(
+      static_cast<char*>(env->GetDirectBufferAddress(model_buffer)),
+      static_cast<size_t>(env->GetDirectBufferCapacity(model_buffer)));
+  return CreateImageSegmenterFromOptions(env, proto_options);
 }
 
 extern "C" JNIEXPORT void JNICALL
@@ -199,28 +249,23 @@ Java_org_tensorflow_lite_task_vision_segmenter_ImageSegmenter_segmentNative(
     JNIEnv* env,
     jclass thiz,
     jlong native_handle,
-    jobject jimage_byte_buffer,
-    jint width,
-    jint height,
+    jlong frame_buffer_handle,
     jobject jmask_buffers,
     jintArray jmask_shape,
-    jobject jcolored_labels,
-    jint jorientation) {
+    jobject jcolored_labels) {
   auto* segmenter = reinterpret_cast<ImageSegmenter*>(native_handle);
-  absl::string_view image = GetMappedFileBuffer(env, jimage_byte_buffer);
-  std::unique_ptr<FrameBuffer> frame_buffer = CreateFromRgbRawBuffer(
-      reinterpret_cast<const uint8*>(image.data()),
-      FrameBuffer::Dimension{width, height},
-      ConvertToFrameBufferOrientation(env, jorientation));
+  // frame_buffer will be deleted after inference is done in
+  // base_vision_api_jni.cc.
+  auto* frame_buffer = reinterpret_cast<FrameBuffer*>(frame_buffer_handle);
+
   auto results_or = segmenter->Segment(*frame_buffer);
   if (results_or.ok()) {
-    ConvertToSegmentationResults(env, results_or.value(), jmask_buffers,
-                                 jmask_shape, jcolored_labels);
+    ConvertFromSegmentationResults(env, results_or.value(), jmask_buffers,
+                                   jmask_shape, jcolored_labels);
   } else {
-    ThrowException(env, kAssertionError,
-                   "Error occurred when segmenting the image: %s",
-                   results_or.status().message().data());
+    ThrowException(
+        env, GetExceptionClassNameForStatusCode(results_or.status().code()),
+        "Error occurred when segmenting the image: %s",
+        results_or.status().message().data());
   }
 }
-
-}  // namespace

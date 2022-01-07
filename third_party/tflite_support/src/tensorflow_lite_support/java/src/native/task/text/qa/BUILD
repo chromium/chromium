@@ -1,4 +1,4 @@
-load("@org_tensorflow//tensorflow/lite:build_def.bzl", "tflite_jni_binary")
+load("@org_tensorflow//tensorflow/lite/core/shims:cc_library_with_tflite.bzl", "cc_library_with_tflite", "jni_binary_with_tflite")
 
 package(
     default_visibility = ["//tensorflow_lite_support:users"],
@@ -9,22 +9,26 @@ exports_files([
     "bert_question_answerer_jni.cc",
 ])
 
-tflite_jni_binary(
+jni_binary_with_tflite(
     name = "libtask_text_jni.so",
     srcs = [
         "bert_question_answerer_jni.cc",
+        "//tensorflow_lite_support/java/src/native/task/core:task_jni_utils.cc",
     ],
     linkscript = "//tensorflow_lite_support/java:default_version_script.lds",
-    deps = [
-        "//tensorflow_lite_support/cc/task/text/qa:bert_question_answerer",
+    tflite_deps = [
+        "//tensorflow_lite_support/cc/task/text:bert_question_answerer",
         "//tensorflow_lite_support/cc/utils:jni_utils",
+    ],
+    deps = [
+        "//tensorflow_lite_support/cc/task/core/proto:base_options_proto_inc",
         "//tensorflow_lite_support/java/jni",
     ],
 )
 
-cc_library(
+cc_library_with_tflite(
     name = "bert_question_answerer_native",
-    srcs = [
+    tflite_jni_binaries = [
         ":libtask_text_jni.so",
     ],
 )

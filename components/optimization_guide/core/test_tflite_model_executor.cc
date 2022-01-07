@@ -11,14 +11,15 @@ namespace optimization_guide {
 absl::Status TestTFLiteModelExecutor::Preprocess(
     const std::vector<TfLiteTensor*>& input_tensors,
     const std::vector<float>& input) {
-  tflite::task::core::PopulateTensor<float>(input, input_tensors[0]);
-  return absl::OkStatus();
+  return tflite::task::core::PopulateTensor<float>(input, input_tensors[0]);
 }
 
 std::vector<float> TestTFLiteModelExecutor::Postprocess(
     const std::vector<const TfLiteTensor*>& output_tensors) {
   std::vector<float> data;
-  tflite::task::core::PopulateVector<float>(output_tensors[0], &data);
+  absl::Status status =
+      tflite::task::core::PopulateVector<float>(output_tensors[0], &data);
+  DCHECK(status.ok());
   return data;
 }
 

@@ -15,8 +15,8 @@ answer question based on context.
 Use the C++ API to answer questions as follows:
 
 ```cc
-using tflite::task::text::qa::BertQuestionAnswerer;
-using tflite::task::text::qa::QaAnswer;
+using tflite::task::text::BertQuestionAnswerer;
+using tflite::task::text::QaAnswer;
 // Create API handler with Mobile Bert model.
 auto qa_client = BertQuestionAnswerer::CreateBertQuestionAnswererFromFile("/path/to/mobileBertModel", "/path/to/vocab");
 // Or create API handler with Albert model.

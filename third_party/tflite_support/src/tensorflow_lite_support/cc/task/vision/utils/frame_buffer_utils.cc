@@ -22,9 +22,9 @@ limitations under the License.
 #include <utility>
 #include <vector>
 
-#include "absl/memory/memory.h"
-#include "absl/status/status.h"
-#include "absl/strings/str_format.h"
+#include "absl/memory/memory.h"       // from @com_google_absl
+#include "absl/status/status.h"       // from @com_google_absl
+#include "absl/strings/str_format.h"  // from @com_google_absl
 #include "tensorflow/lite/kernels/internal/compatibility.h"
 #include "tensorflow/lite/kernels/op_macros.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
@@ -331,6 +331,10 @@ FrameBuffer::Dimension FrameBufferUtils::GetSize(
   } else if (absl::holds_alternative<CropResizeOperation>(operation)) {
     const auto& crop_resize = absl::get<CropResizeOperation>(operation);
     dimension = crop_resize.resize_dimension;
+  } else if (absl::holds_alternative<UniformCropResizeOperation>(operation)) {
+    const auto& uniform_crop_resize =
+        absl::get<UniformCropResizeOperation>(operation);
+    dimension = uniform_crop_resize.output_dimension;
   }
   return dimension;
 }
@@ -361,9 +365,10 @@ std::vector<FrameBuffer::Plane> FrameBufferUtils::GetPlanes(
       planes.push_back(
           {buffer, /*stride=*/{/*row_stride_bytes=*/dimension.width,
                                /*pixel_stride_bytes=*/1}});
-      planes.push_back({buffer + (dimension.width * dimension.height),
-                        /*stride=*/{/*row_stride_bytes=*/dimension.width,
-                                    /*pixel_stride_bytes=*/2}});
+      planes.push_back(
+          {buffer + (dimension.width * dimension.height),
+           /*stride=*/{/*row_stride_bytes=*/(dimension.width + 1) / 2 * 2,
+                       /*pixel_stride_bytes=*/2}});
     } break;
     case FrameBuffer::Format::kYV12:
     case FrameBuffer::Format::kYV21: {
@@ -409,6 +414,13 @@ absl::Status FrameBufferUtils::Execute(const FrameBuffer& buffer,
                                        FrameBuffer* output_buffer) {
   if (absl::holds_alternative<CropResizeOperation>(operation)) {
     const auto& params = absl::get<CropResizeOperation>(operation);
+    RETURN_IF_ERROR(
+        Crop(buffer, params.crop_origin_x, params.crop_origin_y,
+             (params.crop_dimension.width + params.crop_origin_x - 1),
+             (params.crop_dimension.height + params.crop_origin_y - 1),
+             output_buffer));
+  } else if (absl::holds_alternative<UniformCropResizeOperation>(operation)) {
+    const auto& params = absl::get<UniformCropResizeOperation>(operation);
     RETURN_IF_ERROR(
         Crop(buffer, params.crop_origin_x, params.crop_origin_y,
              (params.crop_dimension.width + params.crop_origin_x - 1),
@@ -584,7 +596,8 @@ absl::Status FrameBufferUtils::Execute(
 absl::Status FrameBufferUtils::Preprocess(
     const FrameBuffer& buffer,
     absl::optional<BoundingBox> bounding_box,
-    FrameBuffer* output_buffer) {
+    FrameBuffer* output_buffer,
+    bool uniform_resizing) {
   std::vector<FrameBufferOperation> frame_buffer_operations;
   // Handle cropping and resizing.
   bool needs_dimension_swap =
@@ -596,29 +609,56 @@ absl::Status FrameBufferUtils::Preprocess(
     pre_orient_dimension.Swap();
   }
 
-  if (bounding_box.has_value()) {
-    // Cropping case.
+  if (uniform_resizing && bounding_box.has_value()) {
+    // Crop and uniform resize.
+    frame_buffer_operations.push_back(UniformCropResizeOperation(
+        bounding_box.value().origin_x(), bounding_box.value().origin_y(),
+        FrameBuffer::Dimension{bounding_box.value().width(),
+                               bounding_box.value().height()},
+        pre_orient_dimension));
+  } else if (uniform_resizing) {
+    // Uniform resize only.
+    frame_buffer_operations.push_back(UniformCropResizeOperation(
+        0, 0, buffer.dimension(), pre_orient_dimension));
+  } else if (bounding_box.has_value()) {
+    // Crop and non-uniform resize.
     frame_buffer_operations.push_back(CropResizeOperation(
         bounding_box.value().origin_x(), bounding_box.value().origin_y(),
         FrameBuffer::Dimension{bounding_box.value().width(),
                                bounding_box.value().height()},
         pre_orient_dimension));
   } else if (pre_orient_dimension != buffer.dimension()) {
-    // Resizing case.
+    // non-uniform resize.
     frame_buffer_operations.push_back(
         CropResizeOperation(0, 0, buffer.dimension(), pre_orient_dimension));
   }
 
-  // Handle color space conversion.
-  if (output_buffer->format() != buffer.format()) {
-    frame_buffer_operations.push_back(
-        ConvertOperation(output_buffer->format()));
-  }
-
-  // Handle orientation conversion.
-  if (output_buffer->orientation() != buffer.orientation()) {
-    frame_buffer_operations.push_back(
-        OrientOperation(output_buffer->orientation()));
+  // Handle color space conversion first if the input format is RGB or RGBA,
+  // because the rotation performance for RGB and RGBA formats are not optimzed
+  // in libyuv.
+  if (buffer.format() == FrameBuffer::Format::kRGB ||
+      buffer.format() == FrameBuffer::Format::kRGBA) {
+    if (output_buffer->format() != buffer.format()) {
+      frame_buffer_operations.push_back(
+          ConvertOperation(output_buffer->format()));
+    }
+    // Handle orientation conversion
+    if (output_buffer->orientation() != buffer.orientation()) {
+      frame_buffer_operations.push_back(
+          OrientOperation(output_buffer->orientation()));
+    }
+  } else {
+    // Handle orientation conversion first if the input format is not RGB or
+    // RGBA.
+    if (output_buffer->orientation() != buffer.orientation()) {
+      frame_buffer_operations.push_back(
+          OrientOperation(output_buffer->orientation()));
+    }
+    // Handle color space conversion
+    if (output_buffer->format() != buffer.format()) {
+      frame_buffer_operations.push_back(
+          ConvertOperation(output_buffer->format()));
+    }
   }
 
   // Execute the processing pipeline.

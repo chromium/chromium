@@ -22,7 +22,10 @@ limitations under the License.
 #include <string>
 #include <vector>
 
-#include "absl/strings/string_view.h"
+#include "absl/status/status.h"        // from @com_google_absl
+#include "absl/strings/string_view.h"  // from @com_google_absl
+#include "tensorflow_lite_support/cc/port/configuration_proto_inc.h"
+#include "tensorflow_lite_support/cc/port/statusor.h"
 
 namespace tflite {
 namespace support {
@@ -32,6 +35,8 @@ const char kIllegalArgumentException[] = "java/lang/IllegalArgumentException";
 const char kIllegalStateException[] = "java/lang/IllegalStateException";
 const char kNullPointerException[] = "java/lang/NullPointerException";
 const char kIndexOutOfBoundsException[] = "java/lang/IndexOutOfBoundsException";
+const char kIOException[] = "java/io/IOException";
+const char kRuntimeException[] = "java/lang/RuntimeException";
 const char kUnsupportedOperationException[] =
     "java/lang/UnsupportedOperationException";
 const char kAssertionError[] = "java/lang/AssertionError";
@@ -71,6 +76,10 @@ jobject ConvertVectorToArrayList(JNIEnv* env,
   return array_list_object;
 }
 
+// Converts delegate Java int type to delegate proto type.
+tflite::support::StatusOr<tflite::proto::Delegate> ConvertToProtoDelegate(
+    jint delegate);
+
 std::string JStringToString(JNIEnv* env, jstring jstr);
 
 std::vector<std::string> StringListToVector(JNIEnv* env, jobject list_object);
@@ -86,6 +95,8 @@ void ThrowException(JNIEnv* env, const char* clazz, const char* fmt, ...);
 void ThrowExceptionWithMessage(JNIEnv* env,
                                const char* clazz,
                                const char* message);
+
+const char* GetExceptionClassNameForStatusCode(absl::StatusCode status_code);
 
 }  // namespace utils
 }  // namespace support

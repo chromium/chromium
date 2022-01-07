@@ -1,7 +1,7 @@
 load("//tensorflow_lite_support/metadata:build_defs.bzl", "stamp_metadata_parser_version")
 
 package(
-    default_visibility = ["//tensorflow_lite_support:users"],
+    default_visibility = ["//tensorflow_lite_support:internal"],
     licenses = ["notice"],  # Apache 2.0
 )
 
@@ -15,7 +15,12 @@ cc_library(
     name = "metadata_extractor",
     srcs = ["metadata_extractor.cc"],
     hdrs = ["metadata_extractor.h"],
+    visibility = ["//visibility:public"],
     deps = [
+        "//tensorflow_lite_support/cc:common",
+        "//tensorflow_lite_support/cc/port:status_macros",
+        "//tensorflow_lite_support/cc/port:statusor",
+        "//tensorflow_lite_support/metadata:metadata_schema_cc",
         "@com_google_absl//absl/container:flat_hash_map",
         "@com_google_absl//absl/memory",
         "@com_google_absl//absl/status",
@@ -23,15 +28,7 @@ cc_library(
         "@com_google_absl//absl/strings:str_format",
         "@flatbuffers",
         "@org_libzip//:zip",
-    ] + select({
-        "//tensorflow_lite_support/cc:tflite_use_c_api": ["@org_tensorflow//tensorflow/lite/c:c_api"],
-        "//conditions:default": ["@org_tensorflow//tensorflow/lite:framework"],
-    }) + [
         "@org_tensorflow//tensorflow/lite/schema:schema_fbs",
-        "//tensorflow_lite_support/cc:common",
-        "//tensorflow_lite_support/cc/port:status_macros",
-        "//tensorflow_lite_support/cc/port:statusor",
-        "//tensorflow_lite_support/metadata:metadata_schema_cc",
     ],
 )
 
@@ -49,5 +46,24 @@ cc_library(
         "@org_tensorflow//tensorflow/lite/c:common",
         "@org_tensorflow//tensorflow/lite/kernels/internal:compatibility",
         "@org_tensorflow//tensorflow/lite/tools:logging",
+    ],
+)
+
+cc_library(
+    name = "metadata_populator",
+    srcs = ["metadata_populator.cc"],
+    hdrs = ["metadata_populator.h"],
+    visibility = ["//visibility:public"],
+    deps = [
+        "//tensorflow_lite_support/cc:common",
+        "//tensorflow_lite_support/cc/port:status_macros",
+        "//tensorflow_lite_support/cc/port:statusor",
+        "//tensorflow_lite_support/metadata:metadata_schema_cc",
+        "//tensorflow_lite_support/metadata/cc/utils:zip_mem_file",
+        "@com_google_absl//absl/container:flat_hash_map",
+        "@com_google_absl//absl/status",
+        "@flatbuffers//:runtime_cc",
+        "@org_tensorflow//tensorflow/lite/schema:schema_fbs",
+        "@zlib//:zlib_minizip",
     ],
 )

@@ -35,7 +35,7 @@ class RaggedTensorToTensorTest(tf.test.TestCase):
     concrete_function = ragged_tensor_function.get_concrete_function()
 
     converter = tf.lite.TFLiteConverter.from_concrete_functions(
-        [concrete_function])
+        [concrete_function], ragged_tensor_function)
     converter.allow_custom_ops = True
     tflite_model = converter.convert()
     interpreter = interpreter_wrapper.InterpreterWithCustomOps(

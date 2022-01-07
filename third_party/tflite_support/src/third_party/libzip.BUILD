@@ -2,7 +2,7 @@ package(
     default_visibility = ["//visibility:public"],
 )
 
-load("@org_tensorflow_lite_support//tensorflow_lite_support/tools:build_rules/expand_template.bzl", "cmake_substitutions", "expand_template")
+load("@org_tensorflow_lite_support//tensorflow_lite_support/tools/build_rules:expand_template.bzl", "cmake_substitutions", "expand_template")
 
 _CMAKE_VARIABLES = {
     "INT16_T_LIBZIP": 2,
@@ -34,12 +34,12 @@ _CMAKE_VARIABLES = {
 _CMAKE_VARIABLES.update(dict([
     (
         "ZIP_{sign}INT{size}_T".format(
-            sign = sign.upper(),
             size = size,
+            sign = sign.upper(),
         ),
         "{sign}int{size}_t".format(
-            sign = sign.lower(),
             size = size,
+            sign = sign.lower(),
         ),
     )
     for sign in ("U", "")
@@ -130,12 +130,12 @@ _VARS = {
 _VARS.update(dict([
     (
         "ZIP_{sign}INT{size}_T".format(
-            sign = sign.upper(),
             size = size,
+            sign = sign.upper(),
         ),
         "{sign}int{size}_t".format(
-            sign = sign.lower(),
             size = size,
+            sign = sign.lower(),
         ),
     )
     for sign in ("U", "")

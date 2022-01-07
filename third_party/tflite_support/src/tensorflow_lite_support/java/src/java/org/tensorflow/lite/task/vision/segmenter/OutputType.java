@@ -17,7 +17,7 @@ package org.tensorflow.lite.task.vision.segmenter;
 
 import static org.tensorflow.lite.DataType.FLOAT32;
 import static org.tensorflow.lite.DataType.UINT8;
-import static org.tensorflow.lite.support.common.SupportPreconditions.checkArgument;
+import static org.tensorflow.lite.support.common.internal.SupportPreconditions.checkArgument;
 import static org.tensorflow.lite.support.image.ColorSpaceType.GRAYSCALE;
 
 import org.tensorflow.lite.support.image.TensorImage;

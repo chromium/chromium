@@ -18,8 +18,9 @@ package org.tensorflow.lite.support.image.ops;
 import android.graphics.PointF;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.tensorflow.lite.support.common.SupportPreconditions;
 import org.tensorflow.lite.support.common.TensorOperator;
+import org.tensorflow.lite.support.common.internal.SupportPreconditions;
+import org.tensorflow.lite.support.image.ColorSpaceType;
 import org.tensorflow.lite.support.image.ImageOperator;
 import org.tensorflow.lite.support.image.TensorImage;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
@@ -52,9 +53,11 @@ public class TensorOperatorWrapper implements ImageOperator {
         SupportPreconditions.checkNotNull(image, "Op cannot apply on null image.");
         TensorBuffer resBuffer = tensorOp.apply(image.getTensorBuffer());
         // Some ops may change the data type of the underlying TensorBuffer, such as CastOp.
-        // Therefore, need to create a new TensorImage with the correct data type.
+        // Therefore, need to create a new TensorImage with the correct data type. However the
+        // underlying ops should not touch the color type.
+        ColorSpaceType colorSpaceType = image.getColorSpaceType();
         TensorImage resImage = new TensorImage(resBuffer.getDataType());
-        resImage.load(resBuffer);
+        resImage.load(resBuffer, colorSpaceType);
         return resImage;
     }
 

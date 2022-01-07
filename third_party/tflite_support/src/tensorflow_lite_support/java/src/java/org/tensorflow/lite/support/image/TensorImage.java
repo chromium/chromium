@@ -15,9 +15,10 @@ limitations under the License.
 
 package org.tensorflow.lite.support.image;
 
-import static org.tensorflow.lite.support.common.SupportPreconditions.checkArgument;
+import static org.tensorflow.lite.support.common.internal.SupportPreconditions.checkArgument;
 
 import android.graphics.Bitmap;
+import android.media.Image;
 
 import org.tensorflow.lite.DataType;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
@@ -32,15 +33,16 @@ import java.nio.ByteBuffer;
  * <p>At present, only RGB images are supported, and the A channel is always ignored.
  *
  * <p>Details of data storage: a {@link TensorImage} object may have 2 potential sources of truth: a
- * {@link Bitmap} or a {@link TensorBuffer}. {@link TensorImage} maintains the state and only
- * converts one to the other when needed. A typical use case of {@link TensorImage} is to first load
- * a {@link Bitmap} image, then process it using {@link ImageProcessor}, and finally get the
- * underlying {@link ByteBuffer} of the {@link TensorBuffer} and feed it into the TFLite
- * interpreter.
+ * {@link android.graphics.Bitmap} or a {@link TensorBuffer}. {@link TensorImage} maintains the
+ * state and only converts one to the other when needed. A typical use case of {@link TensorImage}
+ * is to first load a {@link android.graphics.Bitmap} image, then process it using {@link
+ * ImageProcessor}, and finally get the underlying {@link ByteBuffer} of the {@link TensorBuffer}
+ * and feed it into the TFLite interpreter.
  *
  * <p>IMPORTANT: to achieve the best performance, {@link TensorImage} avoids copying data whenever
  * it's possible. Therefore, it doesn't own its data. Callers should not modify data objects those
- * are passed to {@link TensorImage#load(Bitmap)} or {@link TensorImage#load(TensorBuffer)}.
+ * are passed to {@link TensorImage#load(Bitmap)} or {@link TensorImage#load(TensorBuffer,
+ * ColorSpaceType)}.
  *
  * <p>IMPORTANT: all methods are not proved thread-safe.
  *
@@ -87,10 +89,11 @@ public class TensorImage {
     }
 
     /**
-     * Initializes a {@link TensorImage} object of {@link DataType#UINT8} with a {@link Bitmap} .
+     * Initializes a {@link TensorImage} object of {@link DataType#UINT8} with a {@link
+     * android.graphics.Bitmap} .
      *
-     * @see TensorImage#load(Bitmap) for reusing the object when it's expensive to create objects
-     *     frequently, because every call of {@code fromBitmap} creates a new {@link TensorImage}.
+     * @see #load(Bitmap) for reusing the object when it's expensive to create objects frequently,
+     *     because every call of {@code fromBitmap} creates a new {@link TensorImage}.
      */
     public static TensorImage fromBitmap(Bitmap bitmap) {
         TensorImage image = new TensorImage();
@@ -113,11 +116,12 @@ public class TensorImage {
     }
 
     /**
-     * Loads a {@link Bitmap} image object into this {@link TensorImage}.
+     * Loads a {@link android.graphics.Bitmap} image object into this {@link TensorImage}.
      *
      * <p>Note: if the {@link TensorImage} has data type other than {@link DataType#UINT8}, numeric
      * casting and clamping will be applied when calling {@link #getTensorBuffer} and {@link
-     * #getBuffer}, where the {@link Bitmap} will be converted into a {@link TensorBuffer}.
+     * #getBuffer}, where the {@link android.graphics.Bitmap} will be converted into a {@link
+     * TensorBuffer}.
      *
      * <p>Important: when loading a bitmap, DO NOT MODIFY the bitmap from the caller side anymore.
      * The
@@ -187,21 +191,84 @@ public class TensorImage {
 
     /**
      * Loads a {@link TensorBuffer} containing pixel values with the specific {@link
-     * ColorSapceType}.
+     * ColorSpaceType}.
+     *
+     * <p>Only supports {@link ColorSpaceType#RGB} and {@link ColorSpaceType#GRAYSCALE}. Use {@link
+     * #load(TensorBuffer, ImageProperties)} for other color space types.
      *
      * <p>Note: if the data type of {@code buffer} does not match that of this {@link TensorImage},
      * numeric casting and clamping will be applied when calling {@link #getTensorBuffer} and {@link
      * #getBuffer}.
      *
-     * @throws IllegalArgumentException if the shape of buffer does not match the color space type
-     * @see ColorSpaceType#assertShape
+     * @param buffer the {@link TensorBuffer} to be loaded. Its shape should be either (h, w, 3) or
+     *     (1, h, w, 3) for RGB images, and either (h, w) or (1, h, w) for GRAYSCALE images
+     * @throws IllegalArgumentException if the shape of buffer does not match the color space type,
+     *         or
+     *     if the color space type is not supported
      */
     public void load(TensorBuffer buffer, ColorSpaceType colorSpaceType) {
+        checkArgument(
+                colorSpaceType == ColorSpaceType.RGB || colorSpaceType == ColorSpaceType.GRAYSCALE,
+                "Only ColorSpaceType.RGB and ColorSpaceType.GRAYSCALE are supported. Use"
+                        + " `load(TensorBuffer, ImageProperties)` for other color space types.");
+
         container = TensorBufferContainer.create(buffer, colorSpaceType);
     }
 
     /**
-     * Returns a {@link Bitmap} representation of this {@link TensorImage}.
+     * Loads a {@link TensorBuffer} containing pixel values with the specific {@link
+     * ImageProperties}.
+     *
+     * <p>The shape of the {@link TensorBuffer} will not be used to determine image height and
+     * width. Set image properties through {@link ImageProperties}.
+     *
+     * <p>Note: if the data type of {@code buffer} does not match that of this {@link TensorImage},
+     * numeric casting and clamping will be applied when calling {@link #getTensorBuffer} and {@link
+     * #getBuffer}.
+     *
+     * @throws IllegalArgumentException if buffer size is less than the image size indicated by
+     *         image
+     *     height, width, and color space type in {@link ImageProperties}
+     */
+    public void load(TensorBuffer buffer, ImageProperties imageProperties) {
+        container = TensorBufferContainer.create(buffer, imageProperties);
+    }
+
+    /**
+     * Loads a {@link ByteBuffer} containing pixel values with the specific {@link ImageProperties}.
+     *
+     * <p>Note: if the data type of {@code buffer} does not match that of this {@link TensorImage},
+     * numeric casting and clamping will be applied when calling {@link #getTensorBuffer} and {@link
+     * #getBuffer}.
+     *
+     * @throws IllegalArgumentException if buffer size is less than the image size indicated by
+     *         image
+     *     height, width, and color space type in {@link ImageProperties}
+     */
+    public void load(ByteBuffer buffer, ImageProperties imageProperties) {
+        TensorBuffer tensorBuffer = TensorBuffer.createDynamic(DataType.UINT8);
+        tensorBuffer.loadBuffer(buffer, new int[] {buffer.limit()});
+        container = TensorBufferContainer.create(tensorBuffer, imageProperties);
+    }
+
+    /**
+     * Loads an {@link android.media.Image} object into this {@link TensorImage}.
+     *
+     * <p>The main usage of this method is to load an {@link android.media.Image} object as model
+     * input to the <a href="TFLite Task
+     * Library">https://www.tensorflow.org/lite/inference_with_metadata/task_library/overview</a>.
+     * {@link TensorImage} backed by {@link android.media.Image} is not supported by {@link
+     * ImageProcessor}.
+     *
+     * <p>* @throws IllegalArgumentException if the {@link android.graphics.ImageFormat} of {@code
+     * image} is not YUV_420_888
+     */
+    public void load(Image image) {
+        container = MediaImageContainer.create(image);
+    }
+
+    /**
+     * Returns a {@link android.graphics.Bitmap} representation of this {@link TensorImage}.
      *
      * <p>Numeric casting and clamping will be applied if the stored data is not uint8.
      *
@@ -211,9 +278,9 @@ public class TensorImage {
      * <p>Important: it's only a reference. DO NOT MODIFY. We don't create a copy here for
      * performance concern, but if modification is necessary, please make a copy.
      *
-     * @return a reference to a {@link Bitmap} in {@code ARGB_8888} config ("A" channel is always
-     *     opaque) or in {@code ALPHA_8}, depending on the {@link ColorSpaceType} of this {@link
-     *     TensorBuffer}.
+     * @return a reference to a {@link android.graphics.Bitmap} in {@code ARGB_8888} config ("A"
+     *     channel is always opaque) or in {@code ALPHA_8}, depending on the {@link ColorSpaceType}
+     * of this {@link TensorBuffer}.
      * @throws IllegalStateException if the {@link TensorImage} never loads data
      */
     public Bitmap getBitmap() {
@@ -262,6 +329,29 @@ public class TensorImage {
         }
 
         return container.getTensorBuffer(dataType);
+    }
+
+    /**
+     * Returns an {@link android.media.Image} representation of this {@link TensorImage}.
+     *
+     * <p>This method only works when the {@link TensorImage} is backed by an {@link
+     * android.media.Image}, meaning you need to first load an {@link android.media.Image} through
+     * {@link #load(Image)}.
+     *
+     * <p>Important: it's only a reference. DO NOT MODIFY. We don't create a copy here for
+     * performance concern, but if modification is necessary, please make a copy.
+     *
+     * @return a reference to a {@link android.graphics.Bitmap} in {@code ARGB_8888} config ("A"
+     *     channel is always opaque) or in {@code ALPHA_8}, depending on the {@link ColorSpaceType}
+     * of this {@link TensorBuffer}.
+     * @throws IllegalStateException if the {@link TensorImage} never loads data
+     */
+    public Image getMediaImage() {
+        if (container == null) {
+            throw new IllegalStateException("No image has been loaded yet.");
+        }
+
+        return container.getMediaImage();
     }
 
     /**

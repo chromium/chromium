@@ -19,10 +19,11 @@ import android.content.Context;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.tensorflow.lite.Interpreter;
+import org.tensorflow.lite.InterpreterApi;
+import org.tensorflow.lite.InterpreterFactory;
 import org.tensorflow.lite.Tensor;
 import org.tensorflow.lite.support.common.FileUtil;
-import org.tensorflow.lite.support.common.SupportPreconditions;
+import org.tensorflow.lite.support.common.internal.SupportPreconditions;
 
 import java.io.IOException;
 import java.nio.MappedByteBuffer;
@@ -79,7 +80,7 @@ public class Model {
     }
 
     /** An instance of the driver class to run model inference with Tensorflow Lite. */
-    private final Interpreter interpreter;
+    private final InterpreterApi interpreter;
 
     /** Path to tflite model file in asset folder. */
     private final String modelPath;
@@ -104,8 +105,8 @@ public class Model {
         /**
          * Creates a builder which loads tflite model from asset folder using memory-mapped files.
          *
-         * @param context: Application context to access assets.
-         * @param modelPath: Asset path of the model (.tflite file).
+         * @param context Application context to access assets.
+         * @param modelPath Asset path of the model (.tflite file).
          * @throws IOException if an I/O error occurs when loading the tflite model.
          */
         @NonNull
@@ -182,7 +183,7 @@ public class Model {
      */
     public static Model createModel(@NonNull MappedByteBuffer byteModel, @NonNull String modelPath,
             @NonNull Options options) {
-        Interpreter.Options interpreterOptions = new Interpreter.Options();
+        InterpreterApi.Options interpreterOptions = new InterpreterApi.Options();
         GpuDelegateProxy gpuDelegateProxy = null;
         switch (options.device) {
             case NNAPI:
@@ -198,7 +199,7 @@ public class Model {
                 break;
         }
         interpreterOptions.setNumThreads(options.numThreads);
-        Interpreter interpreter = new Interpreter(byteModel, interpreterOptions);
+        InterpreterApi interpreter = new InterpreterFactory().create(byteModel, interpreterOptions);
         return new Model(modelPath, byteModel, interpreter, gpuDelegateProxy);
     }
 
@@ -215,7 +216,7 @@ public class Model {
     }
 
     /**
-     * Gets the Tensor associated with the provdied input index.
+     * Gets the Tensor associated with the provided input index.
      *
      * @throws IllegalStateException if the interpreter is closed.
      */
@@ -224,7 +225,7 @@ public class Model {
     }
 
     /**
-     * Gets the Tensor associated with the provdied output index.
+     * Gets the Tensor associated with the provided output index.
      *
      * @throws IllegalStateException if the interpreter is closed.
      */
@@ -269,7 +270,7 @@ public class Model {
     }
 
     private Model(@NonNull String modelPath, @NonNull MappedByteBuffer byteModel,
-            @NonNull Interpreter interpreter, @Nullable GpuDelegateProxy gpuDelegateProxy) {
+            @NonNull InterpreterApi interpreter, @Nullable GpuDelegateProxy gpuDelegateProxy) {
         this.modelPath = modelPath;
         this.byteModel = byteModel;
         this.interpreter = interpreter;

@@ -1,0 +1,64 @@
+{
+  "name": "AverageWordVec text classifier",
+  "description": "Classify text into predefined categories.",
+  "version": "v1",
+  "subgraph_metadata": [
+    {
+      "input_tensor_metadata": [
+        {
+          "name": "input_text",
+          "description": "Embedding vectors representing the input text to be classified. The input need to be converted from raw text to embedding vectors using the attached dictionary file.",
+          "content": {
+            "content_properties_type": "FeatureProperties",
+            "content_properties": {
+            }
+          },
+          "process_units": [
+            {
+              "options_type": "RegexTokenizerOptions",
+              "options": {
+                "delim_regex_pattern": "[^\\w\\']+",
+                "vocab_file": [
+                  {
+                    "name": "vocab.txt",
+                    "description": "Vocabulary file to convert natural language words to embedding vectors.",
+                    "type": "VOCABULARY"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "output_tensor_metadata": [
+        {
+          "name": "probability",
+          "description": "Probabilities of the labels respectively.",
+          "content": {
+            "content_properties_type": "FeatureProperties",
+            "content_properties": {
+            }
+          },
+          "stats": {
+            "max": [
+              1.0
+            ],
+            "min": [
+              0.0
+            ]
+          },
+          "associated_files": [
+            {
+              "name": "labels.txt",
+              "description": "Labels for the categories that the model can classify.",
+              "type": "TENSOR_AXIS_LABELS"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "author": "TensorFlow",
+  "license": "Apache License. Version 2.0 http://www.apache.org/licenses/LICENSE-2.0.",
+  "min_parser_version": "1.2.1"
+}

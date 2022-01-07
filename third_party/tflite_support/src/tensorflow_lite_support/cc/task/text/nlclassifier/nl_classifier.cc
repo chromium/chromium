@@ -21,10 +21,10 @@ limitations under the License.
 #include <utility>
 #include <vector>
 
-#include "absl/algorithm/container.h"
-#include "absl/status/status.h"
-#include "absl/strings/str_cat.h"
-#include "absl/strings/string_view.h"
+#include "absl/algorithm/container.h"  // from @com_google_absl
+#include "absl/status/status.h"        // from @com_google_absl
+#include "absl/strings/str_cat.h"      // from @com_google_absl
+#include "absl/strings/string_view.h"  // from @com_google_absl
 #include "flatbuffers/flatbuffers.h"  // from @flatbuffers
 #include "tensorflow/lite/c/common.h"
 #include "tensorflow/lite/core/api/op_resolver.h"
@@ -59,10 +59,23 @@ using ::tflite::task::core::Category;
 using ::tflite::task::core::Dequantize;
 using ::tflite::task::core::GetStringAtIndex;
 using ::tflite::task::core::PopulateTensor;
+using ::tflite::task::core::TaskAPIFactory;
+// To differenciate it with the struct option,
+// tflite::task::text::nl_classifier::NLClassifierOptions.
+using NLClassifierProtoOptions = ::tflite::task::text::NLClassifierOptions;
 
 namespace {
 constexpr int kRegexTokenizerInputTensorIndex = 0;
 constexpr int kRegexTokenizerProcessUnitIndex = 0;
+
+absl::Status SanityCheckOptions(const NLClassifierProtoOptions& options) {
+  if (!options.has_base_options()) {
+    return CreateStatusWithPayload(StatusCode::kInvalidArgument,
+                                   "Missing mandatory `base_options` field",
+                                   TfLiteSupportStatus::kInvalidArgumentError);
+  }
+  return absl::OkStatus();
+}
 
 StatusOr<absl::string_view> CheckAndLoadFirstAssociatedFile(
     const flatbuffers::Vector<flatbuffers::Offset<tflite::AssociatedFile>>*
@@ -133,13 +146,13 @@ StatusOr<std::unique_ptr<Tokenizer>> CreateRegexTokenizerFromProcessUnit(
         "RegexTokenizer doesn't have <PAD> token.",
         TfLiteSupportStatus::kMetadataInvalidTokenizerError);
   }
-  return regex_tokenizer;
+  return std::move(regex_tokenizer);
 }
 
 }  // namespace
 
 const NLClassifierOptions& NLClassifier::GetOptions() const {
-  return options_;
+  return struct_options_;
 }
 
 absl::Status NLClassifier::TrySetLabelFromMetadata(
@@ -191,7 +204,7 @@ absl::Status NLClassifier::Preprocess(
     const std::string& input) {
   TfLiteTensor* input_tensor = FindTensorWithNameOrIndex(
       input_tensors, GetMetadataExtractor()->GetInputTensorMetadata(),
-      options_.input_tensor_name, options_.input_tensor_index);
+      struct_options_.input_tensor_name, struct_options_.input_tensor_index);
   if (input_tensor == nullptr) {
     return CreateStatusWithPayload(
         absl::StatusCode::kInvalidArgument,
@@ -236,9 +249,9 @@ absl::Status NLClassifier::Preprocess(
       }
     }
 
-    PopulateTensor(input_tokens, input_tensor);
+    RETURN_IF_ERROR(PopulateTensor(input_tokens, input_tensor));
   } else {
-    PopulateTensor(input, input_tensor);
+    RETURN_IF_ERROR(PopulateTensor(input, input_tensor));
   }
   return absl::OkStatus();
 }
@@ -249,12 +262,12 @@ StatusOr<std::vector<Category>> NLClassifier::Postprocess(
   return BuildResults(
       FindTensorWithNameOrIndex(
           output_tensors, GetMetadataExtractor()->GetOutputTensorMetadata(),
-          options_.output_score_tensor_name,
-          options_.output_score_tensor_index),
+          struct_options_.output_score_tensor_name,
+          struct_options_.output_score_tensor_index),
       FindTensorWithNameOrIndex(
-          output_tensors, GetMetadataExtractor()->GetInputTensorMetadata(),
-          options_.output_label_tensor_name,
-          options_.output_label_tensor_index));
+          output_tensors, GetMetadataExtractor()->GetOutputTensorMetadata(),
+          struct_options_.output_label_tensor_name,
+          struct_options_.output_label_tensor_index));
 }
 
 std::vector<Category> NLClassifier::BuildResults(const TfLiteTensor* scores,
@@ -298,8 +311,23 @@ std::vector<Category> NLClassifier::BuildResults(const TfLiteTensor* scores,
 
   return predictions;
 }
+
+absl::Status NLClassifier::Initialize(
+    std::unique_ptr<tflite::task::text::NLClassifierOptions> options) {
+  proto_options_ = std::move(options);
+
+  RETURN_IF_ERROR(Initialize(NLClassifierOptions{
+      .input_tensor_index = proto_options_->input_tensor_index(),
+      .output_score_tensor_index = proto_options_->output_score_tensor_index(),
+      .output_label_tensor_index = proto_options_->output_label_tensor_index(),
+      .input_tensor_name = proto_options_->input_tensor_name(),
+      .output_score_tensor_name = proto_options_->output_score_tensor_name(),
+      .output_label_tensor_name = proto_options_->output_label_tensor_name()}));
+  return absl::OkStatus();
+}
+
 absl::Status NLClassifier::Initialize(const NLClassifierOptions& options) {
-  options_ = options;
+  struct_options_ = options;
   // input tensor should be type STRING
   auto input_tensor = FindTensorWithNameOrIndex(
       GetInputTensors(), GetMetadataExtractor()->GetInputTensorMetadata(),
@@ -397,6 +425,24 @@ absl::Status NLClassifier::Initialize(const NLClassifierOptions& options) {
     }
   }
   return absl::OkStatus();
+}
+
+/* static */
+StatusOr<std::unique_ptr<NLClassifier>> NLClassifier::CreateFromOptions(
+    const NLClassifierProtoOptions& options,
+    std::unique_ptr<tflite::OpResolver> resolver) {
+  RETURN_IF_ERROR(SanityCheckOptions(options));
+
+  // Copy options to ensure the ExternalFile outlives the duration of this
+  // created NLClassifier object.
+  auto options_copy = absl::make_unique<NLClassifierProtoOptions>(options);
+
+  ASSIGN_OR_RETURN(auto nl_classifier,
+                   TaskAPIFactory::CreateFromBaseOptions<NLClassifier>(
+                       &options_copy->base_options(), std::move(resolver)));
+  RETURN_IF_ERROR(nl_classifier->Initialize(std::move(options_copy)));
+
+  return nl_classifier;
 }
 
 StatusOr<std::unique_ptr<NLClassifier>>

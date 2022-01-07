@@ -18,8 +18,9 @@ limitations under the License.
 #include <memory>
 #include <string>
 
-#include "absl/strings/string_view.h"
+#include "absl/strings/string_view.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/port/statusor.h"
+#include "tensorflow_lite_support/cc/task/core/proto/base_options_proto_inc.h"
 #include "tensorflow_lite_support/cc/task/vision/core/frame_buffer.h"
 #include "tensorflow_lite_support/cc/task/vision/object_detector.h"
 #include "tensorflow_lite_support/cc/task/vision/proto/bounding_box_proto_inc.h"
@@ -29,25 +30,41 @@ limitations under the License.
 #include "tensorflow_lite_support/cc/utils/jni_utils.h"
 #include "tensorflow_lite_support/java/src/native/task/vision/jni_utils.h"
 
+namespace tflite {
+namespace task {
+// To be provided by a link-time library
+extern std::unique_ptr<OpResolver> CreateOpResolver();
+
+}  // namespace task
+}  // namespace tflite
+
 namespace {
 
 using ::tflite::support::StatusOr;
-using ::tflite::support::utils::GetMappedFileBuffer;
-using ::tflite::support::utils::kAssertionError;
+using ::tflite::support::utils::GetExceptionClassNameForStatusCode;
 using ::tflite::support::utils::kInvalidPointer;
 using ::tflite::support::utils::StringListToVector;
 using ::tflite::support::utils::ThrowException;
+using ::tflite::task::core::BaseOptions;
 using ::tflite::task::vision::BoundingBox;
 using ::tflite::task::vision::ConvertToCategory;
-using ::tflite::task::vision::ConvertToFrameBufferOrientation;
 using ::tflite::task::vision::DetectionResult;
 using ::tflite::task::vision::FrameBuffer;
 using ::tflite::task::vision::ObjectDetector;
 using ::tflite::task::vision::ObjectDetectorOptions;
 
 // Creates an ObjectDetectorOptions proto based on the Java class.
-ObjectDetectorOptions ConvertToProtoOptions(JNIEnv* env, jobject java_options) {
+ObjectDetectorOptions ConvertToProtoOptions(JNIEnv* env,
+                                            jobject java_options,
+                                            jlong base_options_handle) {
   ObjectDetectorOptions proto_options;
+
+  if (base_options_handle != kInvalidPointer) {
+    // proto_options will free the previous base_options and set the new one.
+    proto_options.set_allocated_base_options(
+        reinterpret_cast<BaseOptions*>(base_options_handle));
+  }
+
   jclass java_options_class = env->FindClass(
       "org/tensorflow/lite/task/vision/detector/"
       "ObjectDetector$ObjectDetectorOptions");
@@ -93,7 +110,6 @@ ObjectDetectorOptions ConvertToProtoOptions(JNIEnv* env, jobject java_options) {
   for (const auto& class_name : deny_list_vector) {
     proto_options.add_class_name_blacklist(class_name);
   }
-
   return proto_options;
 }
 
@@ -147,6 +163,25 @@ jobject ConvertToDetectionResults(JNIEnv* env, const DetectionResult& results) {
   return detections_list;
 }
 
+jlong CreateObjectDetectorFromOptions(JNIEnv* env,
+                                      const ObjectDetectorOptions& options) {
+  StatusOr<std::unique_ptr<ObjectDetector>> object_detector_or =
+      ObjectDetector::CreateFromOptions(options,
+                                        tflite::task::CreateOpResolver());
+  if (object_detector_or.ok()) {
+    return reinterpret_cast<jlong>(object_detector_or->release());
+  } else {
+    ThrowException(
+        env,
+        GetExceptionClassNameForStatusCode(object_detector_or.status().code()),
+        "Error occurred when initializing ObjectDetector: %s",
+        object_detector_or.status().message().data());
+    return kInvalidPointer;
+  }
+}
+
+}  // namespace
+
 extern "C" JNIEXPORT void JNICALL
 Java_org_tensorflow_lite_task_vision_detector_ObjectDetector_deinitJni(
     JNIEnv* env,
@@ -155,6 +190,9 @@ Java_org_tensorflow_lite_task_vision_detector_ObjectDetector_deinitJni(
   delete reinterpret_cast<ObjectDetector*>(native_handle);
 }
 
+// Creates an ObjectDetector instance from the model file descriptor.
+// file_descriptor_length and file_descriptor_offset are optional. Non-possitive
+// values will be ignored.
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_tensorflow_lite_task_vision_detector_ObjectDetector_initJniWithModelFdAndOptions(
     JNIEnv* env,
@@ -162,25 +200,36 @@ Java_org_tensorflow_lite_task_vision_detector_ObjectDetector_initJniWithModelFdA
     jint file_descriptor,
     jlong file_descriptor_length,
     jlong file_descriptor_offset,
-    jobject java_options) {
+    jobject java_options,
+    jlong base_options_handle) {
   ObjectDetectorOptions proto_options =
-      ConvertToProtoOptions(env, java_options);
-  auto file_descriptor_meta = proto_options.mutable_model_file_with_metadata()
+      ConvertToProtoOptions(env, java_options, base_options_handle);
+  auto file_descriptor_meta = proto_options.mutable_base_options()
+                                  ->mutable_model_file()
                                   ->mutable_file_descriptor_meta();
   file_descriptor_meta->set_fd(file_descriptor);
-  file_descriptor_meta->set_length(file_descriptor_length);
-  file_descriptor_meta->set_offset(file_descriptor_offset);
-
-  StatusOr<std::unique_ptr<ObjectDetector>> object_detector_or =
-      ObjectDetector::CreateFromOptions(proto_options);
-  if (object_detector_or.ok()) {
-    return reinterpret_cast<jlong>(object_detector_or->release());
-  } else {
-    ThrowException(env, kAssertionError,
-                   "Error occurred when initializing ObjectDetector: %s",
-                   object_detector_or.status().message().data());
-    return kInvalidPointer;
+  if (file_descriptor_length > 0) {
+    file_descriptor_meta->set_length(file_descriptor_length);
   }
+  if (file_descriptor_offset > 0) {
+    file_descriptor_meta->set_offset(file_descriptor_offset);
+  }
+  return CreateObjectDetectorFromOptions(env, proto_options);
+}
+
+extern "C" JNIEXPORT jlong JNICALL
+Java_org_tensorflow_lite_task_vision_detector_ObjectDetector_initJniWithByteBuffer(
+    JNIEnv* env,
+    jclass thiz,
+    jobject model_buffer,
+    jobject java_options,
+    jlong base_options_handle) {
+  ObjectDetectorOptions proto_options =
+      ConvertToProtoOptions(env, java_options, base_options_handle);
+  proto_options.mutable_base_options()->mutable_model_file()->set_file_content(
+      static_cast<char*>(env->GetDirectBufferAddress(model_buffer)),
+      static_cast<size_t>(env->GetDirectBufferCapacity(model_buffer)));
+  return CreateObjectDetectorFromOptions(env, proto_options);
 }
 
 extern "C" JNIEXPORT jobject JNICALL
@@ -188,24 +237,19 @@ Java_org_tensorflow_lite_task_vision_detector_ObjectDetector_detectNative(
     JNIEnv* env,
     jclass thiz,
     jlong native_handle,
-    jobject image_byte_buffer,
-    jint width,
-    jint height,
-    jint jorientation) {
+    jlong frame_buffer_handle) {
   auto* detector = reinterpret_cast<ObjectDetector*>(native_handle);
-  absl::string_view image = GetMappedFileBuffer(env, image_byte_buffer);
-  std::unique_ptr<FrameBuffer> frame_buffer = CreateFromRgbRawBuffer(
-      reinterpret_cast<const uint8*>(image.data()),
-      FrameBuffer::Dimension{width, height},
-      ConvertToFrameBufferOrientation(env, jorientation));
+  // frame_buffer will be deleted after inference is done in
+  // base_vision_api_jni.cc.
+  auto* frame_buffer = reinterpret_cast<FrameBuffer*>(frame_buffer_handle);
   auto results_or = detector->Detect(*frame_buffer);
   if (results_or.ok()) {
     return ConvertToDetectionResults(env, results_or.value());
   } else {
-    ThrowException(env, kAssertionError,
-                   "Error occurred when detecting the image: %s",
-                   results_or.status().message().data());
+    ThrowException(
+        env, GetExceptionClassNameForStatusCode(results_or.status().code()),
+        "Error occurred when detecting the image: %s",
+        results_or.status().message().data());
     return nullptr;
   }
 }
-}  // namespace

@@ -1,5 +1,7 @@
+load("@org_tensorflow//tensorflow/lite/core/shims:cc_library_with_tflite.bzl", "cc_library_with_tflite")
+
 package(
-    default_visibility = ["//tensorflow_lite_support:users"],
+    default_visibility = ["//tensorflow_lite_support:internal"],
     licenses = ["notice"],  # Apache 2.0
 )
 
@@ -8,8 +10,9 @@ cc_library(
     hdrs = [
         "statusor.h",
     ],
+    visibility = ["//visibility:public"],
     deps = [
-        "//tensorflow_lite_support/cc/port/default:statusor",
+        "@com_google_absl//absl/status:statusor",
     ],
 )
 
@@ -18,31 +21,54 @@ cc_library(
     hdrs = [
         "status_macros.h",
     ],
+    visibility = ["//visibility:public"],
     deps = [
         "//tensorflow_lite_support/cc/port/default:status_macros",
     ],
 )
 
 cc_library(
+    name = "configuration_proto_inc",
+    hdrs = ["configuration_proto_inc.h"],
+    deps = ["@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:configuration_cc_proto"],
+)
+
+cc_library_with_tflite(
     name = "tflite_wrapper",
     hdrs = ["tflite_wrapper.h"],
     deps = ["//tensorflow_lite_support/cc/port/default:tflite_wrapper"],
 )
 
-# This is identical to the rule above, except that it gets built with
-# '-DTFLITE_USE_C_API'. This rule is used for unit tests that verify things
-# work correctly when built with TFLITE_USE_C_API defined.
 cc_library(
-    name = "tflite_wrapper_with_c_api_for_test",
+    name = "integral_types",
+    hdrs = ["integral_types.h"],
+    visibility = ["//tensorflow_lite_support:users"],
+)
+
+cc_library(
+    name = "gtest_main",
     testonly = 1,
-    hdrs = ["tflite_wrapper.h"],
+    hdrs = [
+        "benchmark.h",
+        "gmock.h",
+        "gtest.h",
+        "status_matchers.h",
+    ],
+    visibility = [
+        "//tensorflow_lite_support:internal",
+    ],
     deps = [
-        "//intelligence/mobile_acceleration/proto:allowlist_portable_proto",
-        "//intelligence/mobile_acceleration/support_library:tflite_wrapper_with_c_api_for_test",
+        "//tensorflow_lite_support/cc/port/default:status_matchers",
+        "@com_google_googletest//:gtest_main",
     ],
 )
 
 cc_library(
-    name = "integral_types",
-    hdrs = ["integral_types.h"],
+    name = "proto2",
+    hdrs = [
+        "proto2.h",
+    ],
+    deps = [
+        "@com_google_protobuf//:protobuf",
+    ],
 )

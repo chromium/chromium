@@ -109,7 +109,6 @@ class ImageConversions {
         int[] intValues = new int[w * h];
         bitmap.getPixels(intValues, 0, w, 0, 0, w, h);
         // TODO(b/138904567): Find a way to avoid creating multiple intermediate buffers every time.
-        int flatSize = w * h * 3;
         int[] shape = new int[] {h, w, 3};
         switch (buffer.getDataType()) {
             case UINT8:
@@ -119,9 +118,8 @@ class ImageConversions {
                     byteArr[j++] = (byte) ((intValues[i] >> 8) & 0xff);
                     byteArr[j++] = (byte) (intValues[i] & 0xff);
                 }
-                ByteBuffer byteBuffer = ByteBuffer.allocateDirect(flatSize);
+                ByteBuffer byteBuffer = ByteBuffer.wrap(byteArr);
                 byteBuffer.order(ByteOrder.nativeOrder());
-                byteBuffer.put(byteArr);
                 buffer.loadBuffer(byteBuffer, shape);
                 break;
             case FLOAT32:

@@ -17,8 +17,6 @@ limitations under the License.
 
 #include <jni.h>
 
-#include <string>
-
 #include "tensorflow_lite_support/cc/text/tokenizers/tokenizer.h"
 #include "tensorflow_lite_support/cc/utils/jni_utils.h"
 

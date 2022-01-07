@@ -43,16 +43,18 @@ from setuptools.dist import Distribution
 # This version string is semver compatible, but incompatible with pip.
 # For pip, we will remove all '-' characters from this string, and use the
 # result for pip.
-_VERSION = '0.1.0'
+_VERSION = '0.3.0'
 
 SETUP_PACKAGES = [
-    'pybind11 >= 2.4',
+    'pybind11 >= 2.6.0',
 ]
 
 REQUIRED_PACKAGES = [
     'absl-py >= 0.7.0',
-    'numpy >= 1.16.0',
-    'flatbuffers >= 1.12',
+    'numpy >= 1.19.2',
+    # TODO(b/187981032): remove the constraint for 2.0 once the incompatibile
+    # issue is resolved.
+    'flatbuffers >= 1.12, <2',
 ] + SETUP_PACKAGES
 
 project_name = 'tflite-support'

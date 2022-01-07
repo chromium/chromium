@@ -5,8 +5,8 @@ models onto mobile devices. It works cross-Platform and is supported on Java,
 C++ (WIP), and Swift (WIP). The TFLite Support project consists of the following
 major components:
 
-*   **TFLite Support Library**: a cross-platform library that helps to
-    deploy TFLite models onto mobile devices.
+*   **TFLite Support Library**: a cross-platform library that helps to deploy
+    TFLite models onto mobile devices.
 *   **TFLite Model Metadata**: (metadata populator and metadata extractor
     library): includes both human and machine readable information about what a
     model does and how to use the model.
@@ -54,6 +54,11 @@ Utils, you need to set up following env variables correctly:
 *   `ANDROID_NDK_API_LEVEL`
 *   `ANDROID_SDK_API_LEVEL`
 *   `ANDROID_BUILD_TOOLS_VERSION`
+
+## How to contribute
+
+Please issue a pull request and assign @xunkai55 or @lu-wang-g for a code
+review.
 
 ## Contact us
 

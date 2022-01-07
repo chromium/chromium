@@ -1,6 +1,6 @@
 package(
     default_visibility = [
-        "//tensorflow_lite_support:users",
+        "//tensorflow_lite_support:internal",
     ],
     licenses = ["notice"],  # Apache 2.0
 )
@@ -9,6 +9,9 @@ cc_library(
     name = "image_utils",
     srcs = ["image_utils.cc"],
     hdrs = ["image_utils.h"],
+    visibility = [
+        "//tensorflow_lite_support:internal",
+    ],
     deps = [
         "//tensorflow_lite_support/cc/port:integral_types",
         "//tensorflow_lite_support/cc/port:status_macros",

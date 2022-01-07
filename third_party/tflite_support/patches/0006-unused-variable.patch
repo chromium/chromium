@@ -1,0 +1,29 @@
+From b2d06daf8ab5cff8748489407b6ad10ea600948d Mon Sep 17 00:00:00 2001
+From: Robert Ogden <robertogden@chromium.org>
+Date: Thu, 16 Dec 2021 08:35:07 -0800
+Subject: [PATCH 06/11] unused variable
+
+---
+ .../src/tensorflow_lite_support/cc/task/core/task_utils.h   | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_utils.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_utils.h
+index 03ef9ade9af41..e95ea73a4a812 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_utils.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/task_utils.h
+@@ -144,8 +144,10 @@ inline absl::Status PopulateVector(const TfLiteTensor* tensor,
+ template <>
+ inline absl::Status PopulateVector<std::string>(
+     const TfLiteTensor* tensor, std::vector<std::string>* data) {
+-  std::string* v;
+-  ASSIGN_OR_RETURN(v, AssertAndReturnTypedTensor<std::string>(tensor));
++  if (tensor->type != typeToTfLiteType<std::string>()) {
++    return absl::InvalidArgumentError("not of type string");
++  }
++
+   int num = GetStringCount(tensor);
+   data->reserve(num);
+   for (int i = 0; i < num; i++) {
+-- 
+2.34.1.307.g9b7440fafd-goog
+

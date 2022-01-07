@@ -14,16 +14,17 @@ limitations under the License.
 ==============================================================================*/
 #include "tensorflow_lite_support/cc/task/vision/utils/score_calibration.h"
 
+#include <algorithm>
 #include <cmath>
 #include <memory>
 #include <utility>
 #include <vector>
 
-#include "absl/status/status.h"
-#include "absl/strings/str_format.h"
-#include "absl/strings/str_split.h"
-#include "absl/strings/string_view.h"
-#include "absl/types/optional.h"
+#include "absl/status/status.h"        // from @com_google_absl
+#include "absl/strings/str_format.h"   // from @com_google_absl
+#include "absl/strings/str_split.h"    // from @com_google_absl
+#include "absl/strings/string_view.h"  // from @com_google_absl
+#include "absl/types/optional.h"       // from @com_google_absl
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 
@@ -95,6 +96,17 @@ StatusOr<Sigmoid> SigmoidFromLabelAndLine(absl::string_view label,
           TfLiteSupportStatus::kMetadataMalformedScoreCalibrationError);
     }
   }
+
+  // Verify if scale is a non-negative value.
+  if (float_params[0] < 0) {
+    return CreateStatusWithPayload(
+        StatusCode::kInvalidArgument,
+        absl::StrFormat(
+            "Expected scale to be a non-negative value, but got %f.",
+            float_params[0]),
+        TfLiteSupportStatus::kMetadataMalformedScoreCalibrationError);
+  }
+
   Sigmoid sigmoid;
   sigmoid.label = std::string(label);
   sigmoid.scale = float_params[0];
@@ -160,13 +172,20 @@ float ScoreCalibration::ComputeCalibratedScore(const std::string& label,
 
   // For numerical stability use 1 / (1+exp(-x)) when scale_shifted_score >= 0
   // and exp(x) / (1+exp(x)) when scale_shifted_score < 0.
+  float calibrated_score;
   if (scale_shifted_score >= 0.0) {
-    return sigmoid.value().scale /
-           (1.0 + std::exp(static_cast<double>(-scale_shifted_score)));
+    calibrated_score =
+        sigmoid.value().scale /
+        (1.0 + std::exp(static_cast<double>(-scale_shifted_score)));
   } else {
     float score_exp = std::exp(static_cast<double>(scale_shifted_score));
-    return sigmoid.value().scale * score_exp / (1.0 + score_exp);
+    calibrated_score = sigmoid.value().scale * score_exp / (1.0 + score_exp);
   }
+  // Scale is non-negative (checked in SigmoidFromLabelAndLine),
+  // thus calibrated_score should be in the range of [0, scale]. However, due to
+  // numberical stability issue, it may fall out of the boundary. Cap the value
+  // to [0, scale] instead.
+  return std::max(std::min(calibrated_score, sigmoid.value().scale), 0.0f);
 }
 
 absl::optional<Sigmoid> ScoreCalibration::FindSigmoidParameters(

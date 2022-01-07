@@ -29,7 +29,7 @@ import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
  * </pre>
  *
  * @see TensorProcessor.Builder to build a {@link TensorProcessor} instance.
- * @see TensorProcessor#process(TensorBuffer) to apply the processor on a {@link TensorBuffer}.
+ * @see TensorProcessor#process to apply the processor on a {@link TensorBuffer}.
  */
 public class TensorProcessor extends SequentialProcessor<TensorBuffer> {
     private TensorProcessor(Builder builder) {

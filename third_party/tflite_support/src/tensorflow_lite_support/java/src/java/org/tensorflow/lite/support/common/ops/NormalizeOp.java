@@ -17,8 +17,8 @@ package org.tensorflow.lite.support.common.ops;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tensorflow.lite.DataType;
-import org.tensorflow.lite.support.common.SupportPreconditions;
 import org.tensorflow.lite.support.common.TensorOperator;
+import org.tensorflow.lite.support.common.internal.SupportPreconditions;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 import org.tensorflow.lite.support.tensorbuffer.TensorBufferFloat;
 
@@ -49,9 +49,9 @@ public class NormalizeOp implements TensorOperator {
      * happen, and original input will be directly returned in execution.
      *
      * <p>Note: The returned {@link TensorBuffer} is always a {@link DataType#FLOAT32} tensor at
-     * present, except that the input is a {@link DataType#UINT8} tensor, {@code mean} is set to 0
+     * present, except when the input is a {@link DataType#UINT8} tensor, {@code mean} is set to 0
      * and
-     * {@code stddev} is set to 1.
+     * {@code stddev} is set to 1, so that the original {@link DataType#UINT8} tensor is returned.
      *
      * @param mean the mean value to be subtracted first.
      * @param stddev the standard deviation value to divide then.

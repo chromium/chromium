@@ -71,14 +71,12 @@ class NgramsTest(parameterized.TestCase):
         @tf.function(input_signature=input_signature)
         def __call__(self, values, *args):
           row_splits = list(args)
-          row_splits.reverse()
           input_tensor = tf.RaggedTensor.from_nested_row_splits(
               flat_values=values, nested_row_splits=tuple(row_splits))
           output_tensor = ngrams(
               input_tensor, width, reduction_type=tf_text.Reduction.STRING_JOIN)
           output = [output_tensor.flat_values]
           output.extend(list(output_tensor.nested_row_splits))
-          output.reverse()
           return tuple(output)
 
       tf.saved_model.save(Model(), temp_dir)
@@ -151,29 +149,21 @@ class NgramsTest(parameterized.TestCase):
     input_tensor = tf.ragged.constant(test_case)
     tf_output = tf_text.ngrams(
         input_tensor, 2, reduction_type=tf_text.Reduction.STRING_JOIN)
-
     rank = input_tensor.shape.rank
     model = self._make_model(rank, 2, ragged_tensor=True, flex=False)
     interpreter = interpreter_wrapper.InterpreterWithCustomOps(
         model_content=model, custom_op_registerers=['AddNgramsCustomOp'])
-    interpreter.resize_tensor_input(0, input_tensor.flat_values.shape)
+    signature_fn = interpreter.get_signature_runner()
+    signature_kwargs = {}
+    signature_kwargs['values'] = input_tensor.flat_values.numpy()
     for r in range(rank - 1):
-      interpreter.resize_tensor_input(r + 1,
-                                      input_tensor.nested_row_splits[r].shape)
-    interpreter.allocate_tensors()
-    interpreter.set_tensor(interpreter.get_input_details()[0]['index'],
-                           input_tensor.flat_values.numpy())
-    for r in range(rank - 1):
-      interpreter.set_tensor(interpreter.get_input_details()[r + 1]['index'],
-                             input_tensor.nested_row_splits[r].numpy())
-    interpreter.invoke()
-    tflite_output_values = interpreter.get_tensor(
-        interpreter.get_output_details()[0]['index'])
+      signature_kwargs[f'args_{r}'] = input_tensor.nested_row_splits[r].numpy()
+    output = signature_fn(**signature_kwargs)
+    tflite_output_values = output['output_0']
     self.assertEqual(tf_output.flat_values.numpy().tolist(),
                      tflite_output_values.tolist())
     for i in range(rank - 1):
-      tflite_output_cur_row_splits = interpreter.get_tensor(
-          interpreter.get_output_details()[i + 1]['index'])
+      tflite_output_cur_row_splits = output[f'output_{i + 1}']
       self.assertEqual(tf_output.nested_row_splits[i].numpy().tolist(),
                        tflite_output_cur_row_splits.tolist())
 
@@ -187,24 +177,18 @@ class NgramsTest(parameterized.TestCase):
     model = self._make_model(rank, 3, ragged_tensor=True, flex=False)
     interpreter = interpreter_wrapper.InterpreterWithCustomOps(
         model_content=model, custom_op_registerers=['AddNgramsCustomOp'])
-    interpreter.resize_tensor_input(0, input_tensor.flat_values.shape)
+    signature_fn = interpreter.get_signature_runner()
+    signature_kwargs = {}
+    signature_kwargs['values'] = (
+        input_tensor.flat_values.numpy().astype('bytes'))
     for r in range(rank - 1):
-      interpreter.resize_tensor_input(r + 1,
-                                      input_tensor.nested_row_splits[r].shape)
-    interpreter.allocate_tensors()
-    interpreter.set_tensor(interpreter.get_input_details()[0]['index'],
-                           input_tensor.flat_values.numpy())
-    for r in range(rank - 1):
-      interpreter.set_tensor(interpreter.get_input_details()[r + 1]['index'],
-                             input_tensor.nested_row_splits[r].numpy())
-    interpreter.invoke()
-    tflite_output_values = interpreter.get_tensor(
-        interpreter.get_output_details()[0]['index'])
+      signature_kwargs[f'args_{r}'] = input_tensor.nested_row_splits[r].numpy()
+    output = signature_fn(**signature_kwargs)
+    tflite_output_values = output['output_0']
     self.assertEqual(tf_output.flat_values.numpy().tolist(),
                      tflite_output_values.tolist())
     for i in range(rank - 1):
-      tflite_output_cur_row_splits = interpreter.get_tensor(
-          interpreter.get_output_details()[i + 1]['index'])
+      tflite_output_cur_row_splits = output[f'output_{i+1}']
       self.assertEqual(tf_output.nested_row_splits[i].numpy().tolist(),
                        tflite_output_cur_row_splits.tolist())
 
@@ -217,19 +201,14 @@ class NgramsTest(parameterized.TestCase):
       model = self._make_model(rank, 3, ragged_tensor=True, flex=False)
       interpreter = interpreter_wrapper.InterpreterWithCustomOps(
           model_content=model, custom_op_registerers=['AddNgramsCustomOp'])
-      interpreter.resize_tensor_input(0, input_tensor.flat_values.shape)
-      for r in range(rank - 1):
-        interpreter.resize_tensor_input(r + 1,
-                                        input_tensor.nested_row_splits[r].shape)
-      interpreter.allocate_tensors()
-      interpreter.set_tensor(interpreter.get_input_details()[0]['index'],
-                             input_tensor.flat_values.numpy())
-      for r in range(rank - 1):
-        interpreter.set_tensor(interpreter.get_input_details()[r + 1]['index'],
-                               input_tensor.nested_row_splits[r].numpy())
-      start_time = timeit.default_timer()
-      for _ in range(INVOKES_FOR_SINGLE_OP_BENCHMARK):
-        interpreter.invoke()
+    signature_fn = interpreter.get_signature_runner()
+    signature_kwargs = {}
+    signature_kwargs['values'] = input_tensor.flat_values.numpy()
+    for r in range(rank - 1):
+      signature_kwargs[f'args_{r}'] = input_tensor.nested_row_splits[r].numpy()
+    start_time = timeit.default_timer()
+    for _ in range(INVOKES_FOR_SINGLE_OP_BENCHMARK):
+      _ = signature_fn(**signature_kwargs)
       latency_op = latency_op + timeit.default_timer() - start_time
     latency_op = latency_op / (
         INVOKES_FOR_SINGLE_OP_BENCHMARK * len(TEST_CASES))
@@ -241,20 +220,17 @@ class NgramsTest(parameterized.TestCase):
       rank = input_tensor.shape.rank
       model = self._make_model(rank, 3, ragged_tensor=True, flex=True)
       interpreter = interpreter_wrapper.Interpreter(model_content=model)
-      interpreter.resize_tensor_input(0, input_tensor.flat_values.shape)
+      signature_fn = interpreter.get_signature_runner()
+      signature_kwargs = {}
+      signature_kwargs['values'] = input_tensor.flat_values.numpy()
+
       for r in range(rank - 1):
-        interpreter.resize_tensor_input(r + 1,
-                                        input_tensor.nested_row_splits[r].shape)
-      interpreter.allocate_tensors()
-      interpreter.set_tensor(interpreter.get_input_details()[0]['index'],
-                             input_tensor.flat_values.numpy())
-      for r in range(rank - 1):
-        interpreter.set_tensor(interpreter.get_input_details()[r + 1]['index'],
-                               input_tensor.nested_row_splits[r].numpy())
+        signature_kwargs[f'args_{r}'] = input_tensor.nested_row_splits[r].numpy(
+        )
       start_time = timeit.default_timer()
       for _ in range(INVOKES_FOR_FLEX_DELEGATE_BENCHMARK):
-        interpreter.invoke()
-      latency_flex = latency_flex + timeit.default_timer() - start_time
+        _ = signature_fn(**signature_kwargs)
+        latency_flex = latency_flex + timeit.default_timer() - start_time
     latency_flex = latency_flex / (
         INVOKES_FOR_FLEX_DELEGATE_BENCHMARK * len(TEST_CASES))
 

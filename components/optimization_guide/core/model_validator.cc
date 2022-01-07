@@ -64,7 +64,12 @@ absl::Status ModelValidatorExecutor::Preprocess(
 float ModelValidatorExecutor::Postprocess(
     const std::vector<const TfLiteTensor*>& output_tensors) {
   std::vector<float> data;
-  tflite::task::core::PopulateVector<float>(output_tensors[0], &data);
+  absl::Status status =
+      tflite::task::core::PopulateVector<float>(output_tensors[0], &data);
+  if (!status.ok()) {
+    NOTREACHED();
+    return -1;
+  }
   return data[0];
 }
 

@@ -16,8 +16,8 @@ limitations under the License.
 package org.tensorflow.lite.support.common.ops;
 
 import org.tensorflow.lite.DataType;
-import org.tensorflow.lite.support.common.SupportPreconditions;
 import org.tensorflow.lite.support.common.TensorOperator;
+import org.tensorflow.lite.support.common.internal.SupportPreconditions;
 import org.tensorflow.lite.support.tensorbuffer.TensorBuffer;
 
 /** Casts a {@link TensorBuffer} to a specified data type. */
@@ -33,9 +33,9 @@ public class CastOp implements TensorOperator {
      * <p>When this Op is executed, if the original {@link TensorBuffer} is already in {@code
      * destinationType}, the original buffer will be directly returned.
      *
-     * @param destinationType: The type of the casted {@link TensorBuffer}.
+     * @param destinationType The type of the casted {@link TensorBuffer}.
      * @throws IllegalArgumentException if {@code destinationType} is neither {@link DataType#UINT8}
-     * nor {@link DataType#FLOAT32}.
+     *     nor {@link DataType#FLOAT32}.
      */
     public CastOp(DataType destinationType) {
         SupportPreconditions.checkArgument(

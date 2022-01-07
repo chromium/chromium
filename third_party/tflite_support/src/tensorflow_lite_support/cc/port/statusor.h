@@ -16,5 +16,17 @@ limitations under the License.
 #ifndef TENSORFLOW_LITE_SUPPORT_CC_PORT_STATUSOR_H_
 #define TENSORFLOW_LITE_SUPPORT_CC_PORT_STATUSOR_H_
 
-#include "tensorflow_lite_support/cc/port/default/statusor.h"
+// This header file is used to manage the depended StatusOr library. It creates
+// an extra layer that makes it easier to switch between the desired version of
+// StatusOr.
+#include "absl/status/statusor.h"  // from @com_google_absl
+
+namespace tflite {
+namespace support {
+
+template <typename T>
+using StatusOr = absl::StatusOr<T>;
+
+}  // namespace support
+}  // namespace tflite
 #endif  // TENSORFLOW_LITE_SUPPORT_CC_PORT_STATUSOR_H_

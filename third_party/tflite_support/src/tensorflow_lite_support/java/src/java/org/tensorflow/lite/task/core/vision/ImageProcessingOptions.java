@@ -41,7 +41,8 @@ import com.google.auto.value.AutoValue;
  * expressed in the unrotated frame of reference coordinates system, i.e. in {@code [0,
  * TensorImage.getWidth()) x [0, TensorImage.getHeight())}, which are the dimensions of the
  * underlying image data before any orientation gets applied. If the region is out of these bounds,
- * the inference method, such as {@link ImageClassifier#classify}, will return error.
+ * the inference method, such as {@link
+ * org.tensorflow.lite.task.vision.classifier.ImageClassifier#classify}, will return error.
  */
 @AutoValue
 public abstract class ImageProcessingOptions {

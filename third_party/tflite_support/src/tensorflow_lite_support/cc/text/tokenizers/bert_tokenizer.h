@@ -20,7 +20,7 @@ limitations under the License.
 #include <string>
 #include <vector>
 
-#include "absl/container/flat_hash_map.h"
+#include "absl/container/flat_hash_map.h"  // from @com_google_absl
 #include "re2/re2.h"
 #include "tensorflow_lite_support/cc/text/tokenizers/tokenizer.h"
 #include "tensorflow_lite_support/cc/utils/common_utils.h"
@@ -115,7 +115,7 @@ class BertTokenizer : public tflite::support::text::tokenizer::Tokenizer {
 
   // Perform tokenization, return wordpiece-specific tokenized result including
   // subwords and offsets
-  WordpieceTokenizerResult TokenizeWordpiece(const std::string& input);
+  WordpieceTokenizerResult TokenizeWordpiece(const std::string& input) const;
 
   // Check if a certain key is included in the vocab.
   tensorflow::text::LookupStatus Contains(const absl::string_view key,

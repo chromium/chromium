@@ -27,7 +27,7 @@ gen_sentencepiece_detokenizer_op = load_library.load_op_library(resource_loader.
 from tensorflow.python.framework import load_library
 from tensorflow.python.platform import resource_loader
 gen_sentencepiece_tokenizer_op = load_library.load_op_library(resource_loader.get_path_to_datafile('../kernel/sentencepiece/sentencepiece_tokenizer_op.so'))
-from tensorflow_lite_support.custom_ops.kernel.sentencepiece import pywrap_model_converter as model_converter
+from tensorflow_lite_support.custom_ops.kernel.sentencepiece.py import pywrap_model_converter as model_converter
 
 
 class SentencepieceTokenizer:

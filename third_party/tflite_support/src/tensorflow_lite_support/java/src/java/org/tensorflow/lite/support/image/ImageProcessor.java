@@ -15,13 +15,16 @@ limitations under the License.
 
 package org.tensorflow.lite.support.image;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 import android.graphics.PointF;
 import android.graphics.RectF;
 
 import org.tensorflow.lite.support.common.Operator;
 import org.tensorflow.lite.support.common.SequentialProcessor;
-import org.tensorflow.lite.support.common.SupportPreconditions;
 import org.tensorflow.lite.support.common.TensorOperator;
+import org.tensorflow.lite.support.common.internal.SupportPreconditions;
 import org.tensorflow.lite.support.image.ops.Rot90Op;
 import org.tensorflow.lite.support.image.ops.TensorOperatorWrapper;
 
@@ -110,8 +113,17 @@ public class ImageProcessor extends SequentialProcessor<TensorImage> {
                 new PointF(rect.left, rect.top), inputImageHeight, inputImageWidth);
         PointF p2 = inverseTransform(
                 new PointF(rect.right, rect.bottom), inputImageHeight, inputImageWidth);
-        return new RectF(Math.min(p1.x, p2.x), Math.min(p1.y, p2.y), Math.max(p1.x, p2.x),
-                Math.max(p1.y, p2.y));
+        return new RectF(min(p1.x, p2.x), min(p1.y, p2.y), max(p1.x, p2.x), max(p1.y, p2.y));
+    }
+
+    /**
+     * Processes a {@link TensorImage} object with prepared {@link TensorOperator}.
+     *
+     * @throws IllegalArgumentException if the image is not supported by any op.
+     */
+    @Override
+    public TensorImage process(TensorImage image) {
+        return super.process(image);
     }
 
     /**

@@ -31,8 +31,7 @@ absl::Status SegmentationModelExecutor::Preprocess(
         "length of input data does not match length of tensor");
   }
 
-  tflite::task::core::PopulateTensor<float>(input, input_tensors[0]);
-  return absl::OkStatus();
+  return tflite::task::core::PopulateTensor<float>(input, input_tensors[0]);
 }
 
 float SegmentationModelExecutor::Postprocess(
@@ -43,7 +42,12 @@ float SegmentationModelExecutor::Postprocess(
   DCHECK_EQ(1u, output_tensors[0]->bytes / sizeof(output_tensors[0]->type));
 
   std::vector<float> data;
-  tflite::task::core::PopulateVector<float>(output_tensors[0], &data);
+  absl::Status status =
+      tflite::task::core::PopulateVector<float>(output_tensors[0], &data);
+  if (!status.ok()) {
+    NOTREACHED();
+    return -1;
+  }
   DCHECK_EQ(1u, data.size());
   return data[0];
 }
