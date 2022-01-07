@@ -20,6 +20,7 @@
 #include "tools/mac/power/power_sampler/battery_sampler.h"
 #include "tools/mac/power/power_sampler/csv_exporter.h"
 #include "tools/mac/power/power_sampler/json_exporter.h"
+#include "tools/mac/power/power_sampler/m1_sampler.h"
 #include "tools/mac/power/power_sampler/main_display_sampler.h"
 #include "tools/mac/power/power_sampler/resource_coalition_sampler.h"
 #include "tools/mac/power/power_sampler/sample_counter.h"
@@ -231,6 +232,13 @@ int main(int argc, char** argv) {
                          sampler_names) ||
       all_samplers) {
     if (!MaybeAddSamplerToController<power_sampler::SMCSampler>(controller)) {
+      return kStatusRuntimeError;
+    }
+  }
+  if (ConsumeSamplerName(power_sampler::M1Sampler::kSamplerName,
+                         sampler_names) ||
+      all_samplers) {
+    if (!MaybeAddSamplerToController<power_sampler::M1Sampler>(controller)) {
       return kStatusRuntimeError;
     }
   }

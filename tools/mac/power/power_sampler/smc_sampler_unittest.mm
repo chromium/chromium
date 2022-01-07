@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "tools/mac/power/power_sampler/smc_sampler.h"
+
 #include <memory>
 
 #include "base/containers/flat_map.h"
