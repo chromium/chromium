@@ -121,6 +121,19 @@ void StreamTextureProxy::ForwardStreamTextureForSurfaceRequest(
 }
 
 void StreamTextureProxy::UpdateRotatedVisibleSize(const gfx::Size& size) {
+  base::AutoLock lock(lock_);
+  if (!task_runner_)
+    return;
+
+  if (!task_runner_->BelongsToCurrentThread()) {
+    // Note that Unretained is safe here because this object is deleted
+    // exclusively by posting a task to the same task runner, after its owner
+    // has dropped the only reference to it.
+    task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&StreamTextureProxy::UpdateRotatedVisibleSize,
+                                  base::Unretained(this), size));
+    return;
+  }
   host_->UpdateRotatedVisibleSize(size);
 }
 
