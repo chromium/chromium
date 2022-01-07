@@ -136,13 +136,6 @@ void ScenicSurface::OnScenicEvents(
         UpdateViewHolderScene();
         break;
       }
-      case fuchsia::ui::gfx::Event::kViewDetachedFromScene: {
-        DCHECK(event.gfx().view_detached_from_scene().view_id == parent_->id());
-        // Present an empty frame to ensure that the outdated content doesn't
-        // become visible if the view is attached again.
-        PresentEmptyImage();
-        break;
-      }
       default:
         break;
     }
@@ -524,32 +517,6 @@ void ScenicSurface::UpdateViewHolderScene() {
   main_shape_.SetTranslation(0.f, 0.f, min_z_order * kElevationStep);
 
   safe_presenter_.QueuePresent();
-}
-
-void ScenicSurface::PresentEmptyImage() {
-  if (last_frame_present_time_ == base::TimeTicks())
-    return;
-
-  fuchsia::sysmem::BufferCollectionTokenSyncPtr dummy_collection_token;
-  zx_status_t status =
-      sysmem_buffer_manager_->GetAllocator()->AllocateSharedCollection(
-          dummy_collection_token.NewRequest());
-  if (status != ZX_OK) {
-    ZX_DLOG(ERROR, status)
-        << "fuchsia.sysmem.Allocator.AllocateSharedCollection()";
-    return;
-  }
-
-  const uint32_t image_id = ++next_unique_id_;
-  image_pipe_->AddBufferCollection(image_id, std::move(dummy_collection_token));
-  fuchsia::sysmem::ImageFormat_2 image_format;
-  image_format.coded_width = 1;
-  image_format.coded_height = 1;
-  image_pipe_->AddImage(image_id, image_id, 0, image_format);
-
-  image_pipe_->PresentImage(image_id, last_frame_present_time_.ToZxTime(), {},
-                            {}, [](fuchsia::images::PresentationInfo) {});
-  image_pipe_->RemoveBufferCollection(image_id);
 }
 
 ScenicSurface::PresentedFrame::PresentedFrame(
