@@ -153,6 +153,10 @@ BASE_EXPORT void SetBaseBundleID(const char* new_base_bundle_id);
 
 }  // namespace base::mac
 
+// These casting functions cannot be implemented in a way that will work with
+// ARC. Use the casting functions in base/mac/bridging.h instead.
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+
 #if !defined(__OBJC__)
 #define OBJC_CPP_CLASS_DECL(x) class x;
 #else  // __OBJC__
@@ -223,6 +227,8 @@ CF_TO_NS_CAST_DECL(CTFont, NSFont)
 #undef CF_TO_NS_CAST_DECL
 #undef CF_TO_NS_MUTABLE_CAST_DECL
 #undef OBJC_CPP_CLASS_DECL
+
+#endif  // !defined(__has_feature) || !__has_feature(objc_arc)
 
 namespace base::mac {
 

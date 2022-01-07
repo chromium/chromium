@@ -2230,6 +2230,7 @@ mixed_component("base") {
       "files/file_util_mac.mm",
       "mac/backup_util.h",
       "mac/backup_util.mm",
+      "mac/bridging.h",
       "mac/bundle_locations.h",
       "mac/bundle_locations.mm",
       "mac/call_with_eh_frame.cc",

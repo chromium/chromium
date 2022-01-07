@@ -6,7 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/mac/foundation_util.h"
+#include "base/mac/bridging.h"
 #import "ios/net/protocol_handler_util.h"
 #include "ios/web/test/test_url_constants.h"
 #import "net/base/mac/url_conversions.h"
@@ -74,7 +74,7 @@ TEST_F(ErrorTranslationUtilTest, MalformedError) {
 // underlying error.
 TEST_F(ErrorTranslationUtilTest, UnknownCFNetworkError) {
   NSError* error = [[NSError alloc]
-      initWithDomain:base::mac::CFToNSCast(kCFErrorDomainCFNetwork)
+      initWithDomain:base::mac::CFToNSPtrCast(kCFErrorDomainCFNetwork)
                 code:kCFURLErrorUnknown
             userInfo:nil];
   NSError* net_error = NetErrorFromError(error);
