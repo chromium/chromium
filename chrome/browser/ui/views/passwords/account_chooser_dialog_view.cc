@@ -119,8 +119,10 @@ void AccountChooserDialogView::InitWindow() {
                 &AccountChooserDialogView::CredentialsItemPressed,
                 base::Unretained(this), base::Unretained(form.get())),
             titles.first, titles.second, form.get(),
-            GetURLLoaderForMainFrame(web_contents_).get(),
-            web_contents_->GetMainFrame()->GetLastCommittedOrigin()));
+            web_contents_->GetBrowserContext()
+                ->GetDefaultStoragePartition()
+                ->GetURLLoaderFactoryForBrowserProcess()
+                .get()));
     credential_view->SetStoreIndicatorIcon(form->in_store);
     ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
     gfx::Insets insets =

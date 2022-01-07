@@ -54,7 +54,8 @@ ProfileAvatarDownloader::ProfileAvatarDownloader(size_t icon_index,
   fetcher_ = std::make_unique<BitmapFetcher>(url, this, traffic_annotation);
 }
 
-ProfileAvatarDownloader::~ProfileAvatarDownloader() = default;
+ProfileAvatarDownloader::~ProfileAvatarDownloader() {
+}
 
 void ProfileAvatarDownloader::Start() {
   SystemNetworkContextManager* system_network_context_manager =
@@ -66,6 +67,7 @@ void ProfileAvatarDownloader::Start() {
       system_network_context_manager->GetURLLoaderFactory();
   if (loader_factory) {
     fetcher_->Init(
+        std::string(),
         net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
         network::mojom::CredentialsMode::kInclude);
     fetcher_->Start(loader_factory);

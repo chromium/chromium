@@ -70,7 +70,6 @@ CredentialsItemView::CredentialsItemView(
     const std::u16string& lower_text,
     const password_manager::PasswordForm* form,
     network::mojom::URLLoaderFactory* loader_factory,
-    const url::Origin& initiator,
     int upper_text_style,
     int lower_text_style)
     : Button(std::move(callback)) {
@@ -97,7 +96,7 @@ CredentialsItemView::CredentialsItemView(
     // Fetch the actual avatar.
     AccountAvatarFetcher* fetcher = new AccountAvatarFetcher(
         form->icon_url, weak_ptr_factory_.GetWeakPtr());
-    fetcher->Start(loader_factory, initiator);
+    fetcher->Start(loader_factory);
   }
   AddChildView(std::move(image_view));
 

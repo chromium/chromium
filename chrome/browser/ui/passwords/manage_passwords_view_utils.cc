@@ -32,7 +32,6 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings.h"
 #include "components/url_formatter/elide_url.h"
-#include "content/public/browser/web_contents.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -239,12 +238,3 @@ void NavigateToPasswordCheckupPage(Profile* profile) {
   Navigate(&params);
 }
 #endif  // !defined(OS_ANDROID)
-
-mojo::Remote<network::mojom::URLLoaderFactory> GetURLLoaderForMainFrame(
-    content::WebContents* web_contents) {
-  content::RenderFrameHost* frame = web_contents->GetMainFrame();
-  mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory;
-  frame->CreateNetworkServiceDefaultFactory(
-      url_loader_factory.BindNewPipeAndPassReceiver());
-  return url_loader_factory;
-}

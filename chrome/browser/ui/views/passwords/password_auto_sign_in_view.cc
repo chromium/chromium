@@ -9,7 +9,6 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/passwords/manage_passwords_view_utils.h"
 #include "chrome/browser/ui/passwords/password_dialog_prompts.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -48,8 +47,10 @@ PasswordAutoSignInView::PasswordAutoSignInView(
           views::Button::PressedCallback(),
           l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_AUTO_SIGNIN_TITLE_MD),
           form.username_value, &form,
-          GetURLLoaderForMainFrame(web_contents).get(),
-          web_contents->GetMainFrame()->GetLastCommittedOrigin(),
+          controller_.GetProfile()
+              ->GetDefaultStoragePartition()
+              ->GetURLLoaderFactoryForBrowserProcess()
+              .get(),
           views::style::STYLE_HINT, views::style::STYLE_PRIMARY));
   credential->SetEnabled(false);
 

@@ -109,16 +109,19 @@ BitmapFetcherRequest::BitmapFetcherRequest(
     BitmapFetcherService::BitmapFetchedCallback callback)
     : request_id_(request_id), callback_(std::move(callback)) {}
 
-BitmapFetcherRequest::~BitmapFetcherRequest() = default;
+BitmapFetcherRequest::~BitmapFetcherRequest() {
+}
 
 void BitmapFetcherRequest::NotifyImageChanged(const SkBitmap* bitmap) {
   if (bitmap && !bitmap->empty())
     std::move(callback_).Run(*bitmap);
 }
 
-BitmapFetcherService::CacheEntry::CacheEntry() = default;
+BitmapFetcherService::CacheEntry::CacheEntry() {
+}
 
-BitmapFetcherService::CacheEntry::~CacheEntry() = default;
+BitmapFetcherService::CacheEntry::~CacheEntry() {
+}
 
 BitmapFetcherService::BitmapFetcherService(content::BrowserContext* context)
     : shared_data_decoder_(
@@ -209,6 +212,7 @@ std::unique_ptr<BitmapFetcher> BitmapFetcherService::CreateFetcher(
       url, this, traffic_annotation, shared_data_decoder_.get());
 
   new_fetcher->Init(
+      std::string(),
       net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
       network::mojom::CredentialsMode::kInclude);
   new_fetcher->Start(context_->GetDefaultStoragePartition()

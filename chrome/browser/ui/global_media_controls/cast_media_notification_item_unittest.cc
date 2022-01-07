@@ -56,10 +56,10 @@ class MockBitmapFetcher : public BitmapFetcher {
 
   MOCK_METHOD(void,
               Init,
-              (net::ReferrerPolicy referrer_policy,
+              (const std::string& referrer,
+               net::ReferrerPolicy referrer_policy,
                network::mojom::CredentialsMode credentials_mode,
-               const net::HttpRequestHeaders& additional_headers,
-               const url::Origin& initiator),
+               const net::HttpRequestHeaders& additional_headers),
               (override));
   MOCK_METHOD(void,
               Start,
@@ -293,7 +293,7 @@ TEST_F(CastMediaNotificationItemTest, DownloadImage) {
             bitmap_fetcher_delegate = delegate;
 
             EXPECT_EQ(url, image_url);
-            EXPECT_CALL(*bitmap_fetcher, Init);
+            EXPECT_CALL(*bitmap_fetcher, Init(_, _, _, _));
             EXPECT_CALL(*bitmap_fetcher, Start(_));
             return bitmap_fetcher;
           });

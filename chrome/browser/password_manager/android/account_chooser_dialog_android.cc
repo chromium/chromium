@@ -25,6 +25,7 @@
 #include "components/password_manager/core/browser/password_ui_utils.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "content/public/browser/storage_partition.h"
 #include "ui/android/window_android.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/android/java_bitmap.h"
@@ -91,14 +92,13 @@ void AvatarFetcherAndroid::OnFetchComplete(const GURL& url,
 void FetchAvatar(const base::android::ScopedJavaGlobalRef<jobject>& java_dialog,
                  const password_manager::PasswordForm* password_form,
                  int index,
-                 network::mojom::URLLoaderFactory* loader_factory,
-                 const url::Origin& initiator) {
+                 network::mojom::URLLoaderFactory* loader_factory) {
   if (!password_form->icon_url.is_valid())
     return;
   // Fetcher deletes itself once fetching is finished.
   auto* fetcher =
       new AvatarFetcherAndroid(password_form->icon_url, index, java_dialog);
-  fetcher->Start(loader_factory, initiator);
+  fetcher->Start(loader_factory);
 }
 
 }  // namespace
@@ -161,14 +161,14 @@ bool AccountChooserDialogAndroid::ShowDialog() {
       base::android::ConvertUTF16ToJavaString(env, title), 0, 0,
       base::android::ConvertUTF8ToJavaString(env, origin),
       base::android::ConvertUTF16ToJavaString(env, signin_button)));
-  mojo::Remote<network::mojom::URLLoaderFactory> loader_factory =
-      GetURLLoaderForMainFrame(web_contents_);
+  network::mojom::URLLoaderFactory* loader_factory =
+      web_contents_->GetBrowserContext()
+          ->GetDefaultStoragePartition()
+          ->GetURLLoaderFactoryForBrowserProcess()
+          .get();
   int avatar_index = 0;
-  for (const auto& form : local_credentials_forms()) {
-    FetchAvatar(dialog_jobject_, form.get(), avatar_index++,
-                loader_factory.get(),
-                web_contents_->GetMainFrame()->GetLastCommittedOrigin());
-  }
+  for (const auto& form : local_credentials_forms())
+    FetchAvatar(dialog_jobject_, form.get(), avatar_index++, loader_factory);
   return true;
 }
 

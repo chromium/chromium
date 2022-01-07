@@ -351,8 +351,10 @@ PasswordSaveUpdateView::PasswordSaveUpdateView(
     AddChildView(std::make_unique<CredentialsItemView>(
                      views::Button::PressedCallback(), titles.first,
                      titles.second, &password_form,
-                     GetURLLoaderForMainFrame(web_contents).get(),
-                     web_contents->GetMainFrame()->GetLastCommittedOrigin()))
+                     controller_.GetProfile()
+                         ->GetDefaultStoragePartition()
+                         ->GetURLLoaderFactoryForBrowserProcess()
+                         .get()))
         ->SetEnabled(false);
   } else {
     std::unique_ptr<views::EditableCombobox> username_dropdown =
