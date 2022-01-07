@@ -53,9 +53,6 @@ export enum State {
   RECORDING_PAUSED = 'recording-paused',
   // Controls appearance of paused/resumed UI.
   RECORDING_UI_PAUSED = 'recording-ui-paused',
-  REVIEW_PHOTO_RESULT = 'review-photo-result',
-  REVIEW_RESULT = 'review-result',
-  REVIEW_VIDEO_RESULT = 'review-video-result',
   SAVE_METADATA = 'save-metadata',
   SCREEN_OFF_AUTO = 'screen-off-auto',
   SHOULD_HANDLE_INTENT_RESULT = 'should-handle-intent-result',

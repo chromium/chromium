@@ -94,7 +94,6 @@ class CameraSuspendedError extends Error {
  */
 export class Camera extends View implements VideoHandler, PhotoHandler,
                                             ScanHandler {
-  private readonly review = new review.Review();
   private readonly cropDocument = new CropDocument();
   private readonly docModeDialogView =
       new Dialog(ViewName.DOCUMENT_MODE_DIALOG);
@@ -143,6 +142,7 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
    */
   private readonly modes: Modes;
 
+  protected readonly review = new review.Review();
   protected facingMode: Facing;
   protected shutterType = metrics.ShutterType.UNKNOWN;
   private locked = false;
@@ -708,7 +708,7 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
   /**
    * Opens review view to review input blob.
    */
-  private async prepareReview(doReview: () => Promise<void>): Promise<void> {
+  protected async prepareReview(doReview: () => Promise<void>): Promise<void> {
     // Because the review view will cover the whole camera view, prepare for
     // temporarily turn off camera by stopping preview.
     this.constraints = this.preview.getConstraints();
@@ -811,20 +811,22 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
           nav.close(ViewName.FLASH);
         }
 
-        const positive = new review.Options(
-            new review.Option(I18nString.LABEL_SAVE_PDF_DOCUMENT, {
+        const positive = new review.OptionGroup({
+          template: review.ButtonGroupTemplate.positive,
+          options: [
+            new review.Option({text: I18nString.LABEL_SAVE_PDF_DOCUMENT}, {
               callback: () => {
                 sendEvent(metrics.DocResultType.SAVE_AS_PDF);
               },
               exitValue: MimeType.PDF,
             }),
-            new review.Option(I18nString.LABEL_SAVE_PHOTO_DOCUMENT, {
+            new review.Option({text: I18nString.LABEL_SAVE_PHOTO_DOCUMENT}, {
               callback: () => {
                 sendEvent(metrics.DocResultType.SAVE_AS_PHOTO);
               },
               exitValue: MimeType.JPEG,
             }),
-            new review.Option(I18nString.LABEL_SHARE, {
+            new review.Option({text: I18nString.LABEL_SHARE}, {
               callback: async () => {
                 sendEvent(metrics.DocResultType.SHARE);
                 const type = MimeType.JPEG;
@@ -832,10 +834,11 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
                 await util.share(new File([docBlob], name, {type}));
               },
             }),
-        );
+          ],
+        });
 
-        const optionsArgs = [
-          new review.Option(I18nString.LABEL_RETAKE, {
+        const negOptions = [
+          new review.Option({text: I18nString.LABEL_RETAKE}, {
             callback: () => {
               sendEvent(metrics.DocResultType.CANCELED);
             },
@@ -843,14 +846,18 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
           }),
         ];
         if (allowRecrop) {
-          optionsArgs.unshift(new review.Option(I18nString.LABEL_FIX_DOCUMENT, {
-            callback: doRecrop,
-            hasPopup: true,
-          }));
+          negOptions.unshift(
+              new review.Option({text: I18nString.LABEL_FIX_DOCUMENT}, {
+                callback: doRecrop,
+                hasPopup: true,
+              }));
         }
-        const negative = new review.Options(...optionsArgs);
+        const negative = new review.OptionGroup({
+          template: review.ButtonGroupTemplate.negative,
+          options: negOptions,
+        });
 
-        const mimeType = await this.review.startReview({positive, negative});
+        const mimeType = await this.review.startReview(positive, negative);
         assert(mimeType !== undefined);
         if (mimeType !== null) {
           result = {docBlob, mimeType};
@@ -905,19 +912,25 @@ export class Camera extends View implements VideoHandler, PhotoHandler,
     let result = false;
     await this.prepareReview(async () => {
       await this.review.setReviewPhoto(blob);
-      const positive = new review.Options(
-          new review.Option(I18nString.LABEL_SAVE, {exitValue: true}),
-          new review.Option(I18nString.LABEL_SHARE, {
+      const positive = new review.OptionGroup({
+        template: review.ButtonGroupTemplate.positive,
+        options: [
+          new review.Option({text: I18nString.LABEL_SAVE}, {exitValue: true}),
+          new review.Option({text: I18nString.LABEL_SHARE}, {
             callback: async () => {
               sendEvent(metrics.GifResultType.SHARE);
               await util.share(new File([blob], name, {type: MimeType.GIF}));
             },
           }),
-      );
-      const negative = new review.Options(
-          new review.Option(I18nString.LABEL_RETAKE, {exitValue: null}));
+        ],
+      });
+      const negative = new review.OptionGroup({
+        template: review.ButtonGroupTemplate.negative,
+        options: [new review.Option(
+            {text: I18nString.LABEL_RETAKE}, {exitValue: null})],
+      });
       nav.close(ViewName.FLASH);
-      result = await this.review.startReview({positive, negative});
+      result = (await this.review.startReview(positive, negative)) as boolean;
     });
     if (result) {
       sendEvent(metrics.GifResultType.SAVE);

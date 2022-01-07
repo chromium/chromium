@@ -18,7 +18,8 @@
   top: 0;
 }
 
-.review-image {
+.review-image,
+.review-video {
   max-height: 100%;
   max-width: 100%;
 }
@@ -64,4 +65,25 @@
   line-height: normal;
   margin-inline-end: 5px;
   vertical-align: middle;
+}
+
+.review-views .review-intent-button-groups {
+  bottom: calc(var(--bottom-line) - 36px);
+  display: flex;
+  flex-direction: column;
+}
+
+.review-views .review-intent-button-groups>button {
+  height: 72px;
+  margin-bottom: 2px;
+  margin-top: 2px;
+  width: 72px;
+}
+
+.review-views .review-intent-button-groups button[i18n-label=confirm_review_button] {
+  background-image: url(/images/camera_intent_result_confirm.svg);
+}
+
+.review-views .review-intent-button-groups button[i18n-label=cancel_review_button] {
+  background-image: url(/images/camera_intent_result_cancel.svg);
 }

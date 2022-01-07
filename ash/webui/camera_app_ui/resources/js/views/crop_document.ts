@@ -10,7 +10,7 @@ import {speak} from '../toast.js';
 import {Rotation, ViewName} from '../type.js';
 import * as util from '../util.js';
 
-import {Option, Options, Review} from './review.js';
+import {ButtonGroupTemplate, Option, OptionGroup, Review} from './review.js';
 
 /**
  * Delay for movement announcer gathering user pressed key to announce first
@@ -117,7 +117,7 @@ interface Corner {
 /**
  * View controller for review document crop area page.
  */
-export class CropDocument extends Review {
+export class CropDocument extends Review<boolean> {
   private imageFrame: HTMLDivElement;
 
   /**
@@ -340,12 +340,11 @@ export class CropDocument extends Review {
       Promise<{corners: Point[], rotation: Rotation}> {
     this.initialCorners = corners;
     this.cornerSpaceSize = null;
-    await super.startReview({
-      positive: new Options(
-          new Option(I18nString.LABEL_CROP_DONE, {exitValue: true}),
-          ),
-      negative: new Options(),
-    });
+    await super.startReview(new OptionGroup({
+      template: ButtonGroupTemplate.positive,
+      options:
+          [new Option({text: I18nString.LABEL_CROP_DONE}, {exitValue: true})],
+    }));
     const newCorners = this.corners.map(
         ({pt: {x, y}}) => new Point(
             x / this.cornerSpaceSize.width, y / this.cornerSpaceSize.height));

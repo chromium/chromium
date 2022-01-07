@@ -127,7 +127,6 @@ const struct {
     {"pan_left_button", IDS_PAN_LEFT_BUTTON},
     {"pan_right_button", IDS_PAN_RIGHT_BUTTON},
     {"photo_resolution_button", IDS_PHOTO_RESOLUTION_BUTTON},
-    {"play_result_video_button", IDS_PLAY_RESULT_VIDEO_BUTTON},
     {"print_button", IDS_PRINT_BUTTON},
     {"ptz_reset_all_button", IDS_PTZ_RESET_ALL_BUTTON},
     {"record_gif_video_option", IDS_RECORD_GIF_VIDEO_OPTION},

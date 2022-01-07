@@ -25,13 +25,6 @@
     <div id="view-camera">
       <div id="preview-box">
         <div id="preview-viewport">
-          <img id="review-photo-result" class="preview-content"
-            aria-hidden="true">
-          <video id="review-video-result" class="preview-content"></video>
-          <div class="buttons circle centered-overlay">
-            <button id="play-result-video" tabindex="0"
-              i18n-label="play_result_video_button"></button>
-          </div>
           <video id="preview-video" class="preview-content"></video>
           <div id="expert-controls">
             <div id="preview-info" class="expert-control-row metadata-row
@@ -229,12 +222,6 @@
                aria-hidden="true"></div>
         </div>
       </div>
-      <div id="confirm-result-groups" class="buttons right-stripe circle">
-        <button id="confirm-result" tabindex="0"
-          i18n-label="confirm_review_button"></button>
-        <button id="cancel-result" tabindex="0"
-          i18n-label="cancel_review_button"></button>
-      </div>
       <div class="bottom-stripe left-stripe buttons circle">
         <button id="switch-device" tabindex="0"
                 i18n-label="switch_camera_button"></button>
@@ -282,10 +269,9 @@
     <div id="view-review" class="review-views">
       <div class="review-frame">
         <img class="review-image">
+        <video class="review-video" controls autoplay></video>
       </div>
       <div class="button-groups">
-        <div class="positive button-group"></div>
-        <div class="negative button-group"></div>
       </div>
     </div>
     <div id="view-crop-document" class="review-views">
@@ -297,16 +283,15 @@
             <polygon class="crop-area"></polygon>
           </svg>
         </div>
+        <video class="review-video"></video>
       </div>
       <div class="button-groups">
-        <div class="positive button-group"></div>
         <div class="button-group">
           <button class="icon-button dark inkdrop"
             i18n-aria="rotate_clockwise_button" tabindex="0"></button>
           <button class="icon-button dark inkdrop"
             i18n-aria="rotate_counterclockwise_button" tabindex="0"></button>
         </div>
-        <div class="negative button-group"></div>
       </div>
     </div>
     <div id="view-ptz-panel">
@@ -682,6 +667,19 @@
     </template>
     <template id="text-button-template">
       <button class="text-button pill dark inkdrop" tabindex="0"></button>
+    </template>
+    <template id="review-positive-button-group-template">
+      <div class="positive button-group"></div>
+    </template>
+    <template id="review-negative-button-group-template">
+      <div class="negative button-group"></div>
+    </template>
+    <template id="review-intent-button-group-template">
+      <div class="review-intent-button-groups buttons right-stripe circle">
+      </div>
+    </template>
+    <template id="review-intent-button-template">
+      <button tabindex="0"></button>
     </template>
   </body>
 </html>

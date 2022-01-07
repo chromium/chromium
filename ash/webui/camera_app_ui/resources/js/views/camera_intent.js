@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // eslint-disable-next-line no-unused-vars
-import {assertNotReached} from '../assert.js';
+import {assert, assertNotReached} from '../assert.js';
 import {
   PhotoConstraintsPreferrer,  // eslint-disable-line no-unused-vars
   VideoConstraintsPreferrer,  // eslint-disable-line no-unused-vars
@@ -21,17 +21,15 @@ import {ResultSaver} from '../models/result_saver.js';
 import {VideoSaver} from '../models/video_saver.js';
 // eslint-disable-next-line no-unused-vars
 import {PerfLogger} from '../perf.js';
-import * as state from '../state.js';
 import {scaleImage} from '../thumbnailer.js';
-import * as toast from '../toast.js';
 // eslint-disable-next-line no-unused-vars
-import {Mode} from '../type.js';
+import {Mode, Resolution} from '../type.js';
 import * as util from '../util.js';
 
 import {Camera} from './camera.js';
 // eslint-disable-next-line no-unused-vars
 import {PhotoResult, VideoResult} from './camera/mode/index.js';
-import {ReviewResult} from './camera/review_result.js';
+import * as review from './review.js';
 
 /**
  * The maximum number of pixels in the downscaled intent photo result. Reference
@@ -40,6 +38,14 @@ import {ReviewResult} from './camera/review_result.js';
  * @const
  */
 const DOWNSCALE_INTENT_MAX_PIXEL_NUM = 50 * 1024;
+
+/**
+ * @typedef {{
+ *   resolution: !Resolution,
+ *   duration?: number,
+ * }}
+ */
+let MetricArgs;  // eslint-disable-line no-unused-vars
 
 /**
  * Camera-intent-view controller.
@@ -95,87 +101,40 @@ export class CameraIntent extends Camera {
     this.photoResult_ = null;
 
     /**
-     * @type {?VideoResult}
-     * @private
-     */
-    this.videoResult_ = null;
-
-    /**
      * @type {?FileAccessEntry}
      * @private
      */
     this.videoResultFile_ = null;
-
-    /**
-     * @type {!ReviewResult}
-     * @private
-     */
-    this.reviewResult_ = new ReviewResult();
   }
 
   /**
-   * @override
+   * @param {!MetricArgs} metricArgs
+   * @return {!Promise<void>}
+   * @private
    */
-  async handlePhotoResult(result, name) {
-    this.photoResult_ = result;
-    try {
-      await this.resultSaver.savePhoto(result.blob, name, /* metadata */ null);
-    } catch (e) {
-      toast.show(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
-      throw e;
-    }
-  }
+  reviewIntentResult_(metricArgs) {
+    return this.prepareReview(async () => {
+      const confirmed = await this.review.startReview(new review.OptionGroup({
+        template: review.ButtonGroupTemplate.intent,
+        options: [
+          new review.Option(
+              {
+                label: I18nString.CONFIRM_REVIEW_BUTTON,
+                templateId: 'review-intent-button-template',
+              },
+              {exitValue: true}),
+          new review.Option(
+              {
+                label: I18nString.CANCEL_REVIEW_BUTTON,
+                templateId: 'review-intent-button-template',
+              },
+              {exitValue: false}),
+        ],
 
-  /**
-   * @override
-   */
-  async handleVideoResult(result) {
-    this.videoResult_ = result;
-    try {
-      await this.resultSaver.finishSaveVideo(result.videoSaver);
-    } catch (e) {
-      toast.show(I18nString.ERROR_MSG_SAVE_FILE_FAILED);
-      throw e;
-    }
-  }
-
-  /**
-   * @override
-   */
-  beginTake(shutterType) {
-    // TODO(inker): Clean unused photo result blob properly.
-    this.photoResult_ = null;
-    this.videoResult_ = null;
-
-    const take = super.beginTake(shutterType);
-    if (take === null) {
-      return null;
-    }
-    return (async () => {
-      await take;
-      if (this.photoResult_ === null && this.videoResultFile_ === null) {
-        // In case of take early finish without any result e.g. Timer canceled.
-        return;
-      }
-
-      state.set(state.State.SUSPEND, true);
-      await this.start();
-      const confirmed = await (() => {
-        if (this.photoResult_ !== null) {
-          return this.reviewResult_.openPhoto(this.photoResult_.blob);
-        } else if (this.videoResultFile_ !== null) {
-          return this.reviewResult_.openVideo(this.videoResultFile_);
-        } else {
-          assertNotReached('None of intent result.');
-        }
-      })();
-      const {resolution} = this.photoResult_ || this.videoResult_;
-      const duration =
-          this.videoResult_ === null ? undefined : this.videoResult_.duration;
+      }));
       metrics.sendCaptureEvent({
         facing: this.facingMode,
-        duration,
-        resolution,
+        ...metricArgs,
         intentResult: confirmed ? metrics.IntentResultType.CONFIRMED :
                                   metrics.IntentResultType.CANCELED,
         shutterType: this.shutterType,
@@ -191,13 +150,31 @@ export class CameraIntent extends Camera {
           // us.
           await appWindow.notifyClosingItself();
         }
-        return;
+      } else {
+        await this.intent_.clearData();
       }
-      this.focus();  // Refocus the visible shutter button for ChromeVox.
-      state.set(state.State.SUSPEND, false);
-      await this.intent_.clearData();
-      await this.start();
-    })();
+    });
+  }
+
+  /**
+   * @override
+   */
+  async onPhotoCaptureDone(pendingPhotoResult) {
+    await super.onPhotoCaptureDone(pendingPhotoResult);
+    const {blob, resolution} = await pendingPhotoResult;
+    await this.review.setReviewPhoto(blob);
+    await this.reviewIntentResult_({resolution});
+  }
+
+  /**
+   * @override
+   */
+  async onVideoCaptureDone(videoResult) {
+    await super.onVideoCaptureDone(videoResult);
+    assert(this.videoResultFile_ !== null);
+    await this.review.setReviewVideo(this.videoResultFile_);
+    await this.reviewIntentResult_(
+        {resolution: videoResult.resolution, duration: videoResult.duration});
   }
 
   /**

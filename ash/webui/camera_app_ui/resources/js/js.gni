@@ -82,7 +82,6 @@ compile_js_files = [
   "views/camera/document_corner_overlay.js",
   "views/camera/options.js",
   "views/camera/preview.js",
-  "views/camera/review_result.js",
   "views/camera/scan_options.js",
   "views/camera/timertick.js",
   "views/camera/video_encoder_options.js",

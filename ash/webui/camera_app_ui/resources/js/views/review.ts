@@ -5,12 +5,20 @@
 import {assertInstanceof} from '../assert.js';
 import * as dom from '../dom.js';
 import {I18nString} from '../i18n_string.js';
+import {pictureURL} from '../models/file_system.js';
+import {FileAccessEntry} from '../models/file_system_access_entry.js';
 import * as nav from '../nav.js';
 import {ViewName} from '../type.js';
 import {instantiateTemplate, setupI18nElements} from '../util.js';
 import {WaitableEvent} from '../waitable_event.js';
 
 import {View} from './view.js';
+
+interface UIArgs {
+  text?: I18nString;
+  label?: I18nString;
+  templateId?: string;
+}
 
 /**
  * Available option show in this view.
@@ -20,12 +28,12 @@ export class Option<T> {
   readonly hasPopup: boolean|null;
   readonly callback: (() => void)|null;
   /**
-   * @param text Text string show on the option button.
+   * @param UIArgs Arguments to create corresponding UI.
    * @param handlerParams Sets |exitValue| if the review page will exit with
    *     this value when option selected. Sets |callback| for the function get
    *     executed when option selected.
    */
-  constructor(readonly text: I18nString, {exitValue, callback, hasPopup}: {
+  constructor(readonly uiArgs: UIArgs, {exitValue, callback, hasPopup}: {
     exitValue?: (T|null);
     callback?: (() => void);
     hasPopup?: boolean;
@@ -37,24 +45,38 @@ export class Option<T> {
 }
 
 /**
- * Options for reviewing.
+ * Templates to create container of options button group.
  */
-export class Options<T> {
+export enum ButtonGroupTemplate {
+  positive = 'review-positive-button-group-template',
+  negative = 'review-negative-button-group-template',
+  intent = 'review-intent-button-group-template',
+}
+
+/**
+ * Group of review options.
+ */
+export class OptionGroup<T> {
   readonly options: Option<T|null>[];
+  readonly template: ButtonGroupTemplate;
 
   /** Constructs Options. */
-  constructor(...options: Option<T|null>[]) {
+  constructor({options, template}: {
+    options: Array<Option<T|null>>; template: ButtonGroupTemplate;
+  }) {
     this.options = options;
+    this.template = template;
   }
 }
 
 /**
  * View controller for review page.
  */
-export class Review extends View {
+export class Review<T> extends View {
   protected readonly image: HTMLElement;
-  private readonly positiveBtns: HTMLDivElement;
-  private readonly negativeBtns: HTMLDivElement;
+  protected readonly video: HTMLVideoElement;
+  private btnGroups: Array<{optionGroup: OptionGroup<T>, el: HTMLDivElement}> =
+      [];
   private primaryBtn: HTMLButtonElement|null;
 
   /**
@@ -64,10 +86,7 @@ export class Review extends View {
     super(viewName, {defaultFocusSelector: '.primary'});
 
     this.image = dom.getFrom(this.root, '.review-image', HTMLElement);
-    this.positiveBtns =
-        dom.getFrom(this.root, '.positive.button-group', HTMLDivElement);
-    this.negativeBtns =
-        dom.getFrom(this.root, '.negative.button-group', HTMLDivElement);
+    this.video = dom.getFrom(this.root, '.review-video', HTMLVideoElement);
     this.primaryBtn = null;
   }
 
@@ -93,33 +112,57 @@ export class Review extends View {
    * Sets the photo to be reviewed.
    */
   async setReviewPhoto(blob: Blob): Promise<void> {
+    this.image.hidden = false;
+    this.video.hidden = true;
     const image = assertInstanceof(this.image, HTMLImageElement);
     await this.loadImage(image, blob);
     URL.revokeObjectURL(image.src);
   }
 
   /**
+   * Sets the video to be reviewed.
+   */
+  async setReviewVideo(video: FileAccessEntry): Promise<void> {
+    this.image.hidden = true;
+    this.video.hidden = false;
+    const url = await pictureURL(video);
+    this.video.src = url;
+  }
+
+  /**
    * Starts review.
    */
-  async startReview<T>({positive, negative}: {
-    positive: Options<T|null>; negative: Options<T|null>;
-  }): Promise<T|null> {
-    // Remove all existing buttons.
-    for (const btnGroup of [this.positiveBtns, this.negativeBtns]) {
-      while (btnGroup.lastChild !== null) {
-        btnGroup.removeChild(btnGroup.lastChild);
-      }
+  async startReview(...optionGroups: Array<OptionGroup<T|null>>):
+      Promise<T|null> {
+    // Remove all existing button groups and buttons.
+    for (const group of this.btnGroups) {
+      group.el.remove();
     }
+    this.btnGroups = [];
 
+    // Create new button groups and buttons.
     this.primaryBtn = null;
     const onSelected = new WaitableEvent<T|null>();
-    for (const btnGroup of [this.positiveBtns, this.negativeBtns]) {
-      const options = (btnGroup === this.positiveBtns ? positive : negative);
+    for (const group of optionGroups) {
+      const templ = instantiateTemplate(`#${group.template}`);
+      this.btnGroups.push(
+          {optionGroup: group, el: dom.getFrom(templ, 'div', HTMLDivElement)});
+      this.root.appendChild(templ);
+    }
+    for (const btnGroup of this.btnGroups) {
       const addButton =
-          ({text, exitValue, callback, hasPopup}: Option<T|null>) => {
-            const templ = instantiateTemplate('#text-button-template');
+          ({uiArgs: {text, label, templateId}, exitValue, callback, hasPopup}:
+               Option<T|null>) => {
+            const templ = instantiateTemplate(
+                templateId !== undefined ? `#${templateId}` :
+                                           '#text-button-template');
             const btn = dom.getFrom(templ, 'button', HTMLButtonElement);
-            btn.setAttribute('i18n-text', text);
+            if (text !== undefined) {
+              btn.setAttribute('i18n-text', text);
+            }
+            if (label !== undefined) {
+              btn.setAttribute('i18n-label', label);
+            }
             if (this.primaryBtn === null) {
               btn.classList.add('primary');
               this.primaryBtn = btn;
@@ -137,12 +180,12 @@ export class Review extends View {
                 onSelected.signal(exitValue);
               }
             };
-            btnGroup.appendChild(templ);
+            btnGroup.el.appendChild(templ);
           };
-      for (const opt of options.options) {
+      for (const opt of btnGroup.optionGroup.options) {
         addButton(opt);
       }
-      setupI18nElements(btnGroup);
+      setupI18nElements(btnGroup.el);
     }
 
     nav.open(this.viewName);
