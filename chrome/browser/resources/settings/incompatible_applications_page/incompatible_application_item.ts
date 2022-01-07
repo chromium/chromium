@@ -44,7 +44,7 @@ import {ActionTypes, IncompatibleApplicationsBrowserProxy, IncompatibleApplicati
 
 const IncompatibleApplicationItemElementBase = I18nMixin(PolymerElement);
 
-class IncompatibleApplicationItemElement extends
+export class IncompatibleApplicationItemElement extends
     IncompatibleApplicationItemElementBase {
   static get is() {
     return 'incompatible-application-item';

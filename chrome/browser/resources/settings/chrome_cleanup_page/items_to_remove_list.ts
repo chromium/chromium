@@ -45,7 +45,7 @@ export const CHROME_CLEANUP_DEFAULT_ITEMS_TO_SHOW: number = 4;
  *    </items-to-remove-list>
  */
 
-class ItemsToRemoveListElement extends PolymerElement {
+export class ItemsToRemoveListElement extends PolymerElement {
   static get is() {
     return 'items-to-remove-list';
   }

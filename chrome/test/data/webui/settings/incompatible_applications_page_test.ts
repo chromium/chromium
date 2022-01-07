@@ -5,12 +5,17 @@
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {IncompatibleApplicationsBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
+import {ActionTypes, IncompatibleApplication, IncompatibleApplicationItemElement, IncompatibleApplicationsBrowserProxy, IncompatibleApplicationsBrowserProxyImpl, SettingsIncompatibleApplicationsPageElement} from 'chrome://settings/lazy_load.js';
+import {loadTimeData} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+
 // clang-format on
 
-/** @implements {IncompatibleApplicationsBrowserProxy} */
-class TestIncompatibleApplicationsBrowserProxy extends TestBrowserProxy {
+class TestIncompatibleApplicationsBrowserProxy extends TestBrowserProxy
+    implements IncompatibleApplicationsBrowserProxy {
+  private incompatibleApplications_: IncompatibleApplication[] = [];
+
   constructor() {
     super([
       'requestIncompatibleApplicationsList',
@@ -20,94 +25,82 @@ class TestIncompatibleApplicationsBrowserProxy extends TestBrowserProxy {
       'getSubtitleNoAdminRightsPluralString',
       'getListTitlePluralString',
     ]);
-
-    /** @private {!Array<!IncompatibleApplication>} */
-    this.incompatibleApplications_ = [];
   }
 
-  /** @override */
   requestIncompatibleApplicationsList() {
     this.methodCalled('requestIncompatibleApplicationsList');
     return Promise.resolve(this.incompatibleApplications_);
   }
 
-  /** @override */
-  startApplicationUninstallation(applicationName) {
+  startApplicationUninstallation(applicationName: string) {
     this.methodCalled('startApplicationUninstallation', applicationName);
   }
 
-  /** @override */
-  openURL(url) {
+  openURL(url: string) {
     this.methodCalled('openURL', url);
   }
 
-  /** @override */
-  getSubtitlePluralString(numApplications) {
-    this.methodCalled('getSubtitlePluralString');
+  getSubtitlePluralString(numApplications: number) {
+    this.methodCalled('getSubtitlePluralString', numApplications);
     return Promise.resolve('');
   }
 
-  /** @override */
-  getSubtitleNoAdminRightsPluralString(numApplications) {
-    this.methodCalled('getSubtitleNoAdminRightsPluralString');
+  getSubtitleNoAdminRightsPluralString(numApplications: number) {
+    this.methodCalled('getSubtitleNoAdminRightsPluralString', numApplications);
     return Promise.resolve('');
   }
 
-  /** @override */
-  getListTitlePluralString(numApplications) {
-    this.methodCalled('getListTitlePluralString');
+  getListTitlePluralString(numApplications: number) {
+    this.methodCalled('getListTitlePluralString', numApplications);
     return Promise.resolve('');
   }
 
   /**
    * Sets the list of incompatible applications returned by
    * requestIncompatibleApplicationsList().
-   * @param {!Array<!IncompatibleApplication>} incompatibleApplications
    */
-  setIncompatibleApplications(incompatibleApplications) {
+  setIncompatibleApplications(incompatibleApplications:
+                                  IncompatibleApplication[]) {
     this.incompatibleApplications_ = incompatibleApplications;
   }
 }
 
 suite('incompatibleApplicationsHandler', function() {
-  let incompatibleApplicationsPage = null;
-
-  /** @type {?TestIncompatibleApplicationsBrowserProxy} */
-  let incompatibleApplicationsBrowserProxy = null;
+  let incompatibleApplicationsPage: SettingsIncompatibleApplicationsPageElement;
+  let incompatibleApplicationsBrowserProxy:
+      TestIncompatibleApplicationsBrowserProxy;
 
   const incompatibleApplication1 = {
-    'name': 'Application 1',
-    'type': 0,
-    'url': '',
+    name: 'Application 1',
+    type: ActionTypes.UNINSTALL,
+    url: '',
   };
   const incompatibleApplication2 = {
-    'name': 'Application 2',
-    'type': 0,
-    'url': '',
+    name: 'Application 2',
+    type: ActionTypes.UNINSTALL,
+    url: '',
   };
   const incompatibleApplication3 = {
-    'name': 'Application 3',
-    'type': 0,
-    'url': '',
+    name: 'Application 3',
+    type: ActionTypes.UNINSTALL,
+    url: '',
   };
   const learnMoreIncompatibleApplication = {
-    'name': 'Update Application',
-    'type': 1,
-    'url': 'chrome://update-url',
+    name: 'Update Application',
+    type: ActionTypes.MORE_INFO,
+    url: 'chrome://update-url',
   };
   const updateIncompatibleApplication = {
-    'name': 'Update Application',
-    'type': 2,
-    'url': 'chrome://update-url',
+    name: 'Update Application',
+    type: ActionTypes.UPGRADE,
+    url: 'chrome://update-url',
   };
 
-  /**
-   * @param {!Array<IncompatibleApplication>}
-   */
-  function validateList(incompatibleApplications) {
+  function validateList(incompatibleApplications: IncompatibleApplication[]) {
     if (incompatibleApplications.length === 0) {
-      const list = incompatibleApplicationsPage.shadowRoot.querySelector(
-          '#incompatible-applications-list');
+      const list =
+          incompatibleApplicationsPage.shadowRoot!.querySelector<HTMLElement>(
+              '#incompatible-applications-list')!;
       assertEquals('none', list.style.display);
       // The contents of a dom-if that is false no longer receive updates. When
       // there are no applications the parent dom-if becomes false, so only
@@ -116,7 +109,7 @@ suite('incompatibleApplicationsHandler', function() {
       return;
     }
 
-    const list = incompatibleApplicationsPage.shadowRoot.querySelectorAll(
+    const list = incompatibleApplicationsPage.shadowRoot!.querySelectorAll(
         '.incompatible-application:not([hidden])');
 
     assertEquals(list.length, incompatibleApplications.length);
@@ -129,13 +122,9 @@ suite('incompatibleApplicationsHandler', function() {
         incompatibleApplicationsBrowserProxy);
   });
 
-  /**
-   * @param {boolean} hasAdminRights
-   * @return {!Promise}
-   */
-  function initPage(hasAdminRights) {
+  function initPage(hasAdminRights: boolean): Promise<void> {
     incompatibleApplicationsBrowserProxy.reset();
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
 
     loadTimeData.overrideValues({
       hasAdminRights: hasAdminRights,
@@ -180,9 +169,11 @@ suite('incompatibleApplicationsHandler', function() {
 
           // Retrieve the incompatible-application-item and tap it. It should be
           // visible.
-          const item = incompatibleApplicationsPage.shadowRoot.querySelector(
-              '.incompatible-application:not([hidden])');
-          item.shadowRoot.querySelector('.action-button').click();
+          const item = incompatibleApplicationsPage.shadowRoot!
+                           .querySelector<IncompatibleApplicationItemElement>(
+                               '.incompatible-application:not([hidden])')!;
+          item.shadowRoot!.querySelector<HTMLElement>(
+                              '.action-button')!.click();
 
           return incompatibleApplicationsBrowserProxy.whenCalled(
               'startApplicationUninstallation');
@@ -206,9 +197,11 @@ suite('incompatibleApplicationsHandler', function() {
 
           // Retrieve the incompatible-application-item and tap it. It should be
           // visible.
-          const item = incompatibleApplicationsPage.shadowRoot.querySelector(
-              '.incompatible-application:not([hidden])');
-          item.shadowRoot.querySelector('.action-button').click();
+          const item = incompatibleApplicationsPage.shadowRoot!
+                           .querySelector<IncompatibleApplicationItemElement>(
+                               '.incompatible-application:not([hidden])')!;
+          item.shadowRoot!.querySelector<HTMLElement>(
+                              '.action-button')!.click();
 
           return incompatibleApplicationsBrowserProxy.whenCalled('openURL');
         })
@@ -218,11 +211,12 @@ suite('incompatibleApplicationsHandler', function() {
   });
 
   test('noAdminRights', function() {
-    const eachTypeIncompatibleApplicationsTestList = [
-      incompatibleApplication1,
-      learnMoreIncompatibleApplication,
-      updateIncompatibleApplication,
-    ];
+    const eachTypeIncompatibleApplicationsTestList: IncompatibleApplication[] =
+        [
+          incompatibleApplication1,
+          learnMoreIncompatibleApplication,
+          updateIncompatibleApplication,
+        ];
 
     incompatibleApplicationsBrowserProxy.setIncompatibleApplications(
         eachTypeIncompatibleApplicationsTestList);
@@ -230,7 +224,7 @@ suite('incompatibleApplicationsHandler', function() {
     return initPage(false /* hasAdminRights */).then(function() {
       validateList(eachTypeIncompatibleApplicationsTestList);
 
-      const items = incompatibleApplicationsPage.shadowRoot.querySelectorAll(
+      const items = incompatibleApplicationsPage.shadowRoot!.querySelectorAll(
           '.incompatible-application:not([hidden])');
 
       assertEquals(items.length, 3);
@@ -238,8 +232,8 @@ suite('incompatibleApplicationsHandler', function() {
       items.forEach(function(item, index) {
         // Just the name of the incompatible application is displayed inside a
         // div node. The <incompatible-application-item> component is not used.
-        item.textContent.includes(
-            eachTypeIncompatibleApplicationsTestList[index].name);
+        item.textContent!.includes(
+            eachTypeIncompatibleApplicationsTestList[index]!.name);
         assertNotEquals(item.nodeName, 'INCOMPATIBLE-APPLICATION-ITEM');
       });
     });
@@ -258,8 +252,8 @@ suite('incompatibleApplicationsHandler', function() {
 
 
       const isDoneSection =
-          incompatibleApplicationsPage.shadowRoot.querySelector(
-              '#is-done-section');
+          incompatibleApplicationsPage.shadowRoot!.querySelector<HTMLElement>(
+              '#is-done-section')!;
       assertTrue(isDoneSection.hidden);
 
       // Send the event.

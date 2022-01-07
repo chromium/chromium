@@ -93,12 +93,12 @@ type ChromeCleanupCardComponents = {
  * Represents the file path structure of a base::FilePath.
  * dirname ends with a separator.
  */
-type ChromeCleanupFilePath = {
+export type ChromeCleanupFilePath = {
   dirname: string,
   basename: string,
 };
 
-type ChromeCleanerScannerResults = {
+export type ChromeCleanerScannerResults = {
   files: Array<ChromeCleanupFilePath>,
   registryKeys: Array<string>,
 };
@@ -116,7 +116,7 @@ type ChromeCleanerScannerResults = {
  *    </iron-animated-pages>
  */
 
-interface SettingsChromeCleanupPageElement {
+export interface SettingsChromeCleanupPageElement {
   $: {
     chromeCleanupLogsUploadControl: SettingsCheckboxElement,
     chromeCleanupShowNotificationControl: SettingsCheckboxElement,
@@ -126,7 +126,7 @@ interface SettingsChromeCleanupPageElement {
 const SettingsChromeCleanupPageElementBase =
     WebUIListenerMixin(I18nMixin(PolymerElement));
 
-class SettingsChromeCleanupPageElement extends
+export class SettingsChromeCleanupPageElement extends
     SettingsChromeCleanupPageElementBase {
   static get is() {
     return 'settings-chrome-cleanup-page';
@@ -251,6 +251,7 @@ class SettingsChromeCleanupPageElement extends
     };
   }
 
+  prefs: {software_reporter: {reporting: chrome.settingsPrivate.PrefObject}};
   private title_: string;
   private explanation_: string;
   private isWaitingForResult_: boolean;
@@ -715,6 +716,12 @@ class SettingsChromeCleanupPageElement extends
       Array<ChromeCleanupRemovalListItem> {
     return paths.map(
         path => ({text: path.dirname, highlightSuffix: path.basename}));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-chrome-cleanup-page': SettingsChromeCleanupPageElement;
   }
 }
 

@@ -26,7 +26,7 @@ import {IncompatibleApplication, IncompatibleApplicationsBrowserProxyImpl} from 
 const SettingsIncompatibleApplicationsPageElementBase =
     WebUIListenerMixin(PolymerElement);
 
-class SettingsIncompatibleApplicationsPageElement extends
+export class SettingsIncompatibleApplicationsPageElement extends
     SettingsIncompatibleApplicationsPageElementBase {
   static get is() {
     return 'settings-incompatible-applications-page';
@@ -153,6 +153,13 @@ class SettingsIncompatibleApplicationsPageElement extends
           this.subtitleNoAdminRightsText_ = strings[1];
           this.listTitleText_ = strings[2];
         });
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-incompatible-applications-page':
+        SettingsIncompatibleApplicationsPageElement;
   }
 }
 

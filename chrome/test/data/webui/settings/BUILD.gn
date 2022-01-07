@@ -165,8 +165,8 @@ if (is_chromeos_ash) {
 
 if (is_win && is_chrome_branded) {
   non_preprocessed_files += [
-    "chrome_cleanup_page_test.js",
-    "incompatible_applications_page_test.js",
+    "chrome_cleanup_page_test.ts",
+    "incompatible_applications_page_test.ts",
     "safety_check_chrome_cleaner_test.js",
     "test_chrome_cleanup_proxy.ts",
   ]
