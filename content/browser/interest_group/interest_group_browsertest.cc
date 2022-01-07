@@ -3543,8 +3543,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionBasicBypassBlink) {
 
   base::RunLoop run_loop;
 
+  auto auction_config = blink::mojom::AuctionAdConfig::New();
+  auction_config->shareable_auction_ad_config =
+      blink::mojom::ShareableAuctionAdConfig::New();
+
   auction_service->RunAdAuction(
-      blink::mojom::AuctionAdConfig::New(),
+      std::move(auction_config),
       base::BindLambdaForTesting([&run_loop](const absl::optional<GURL>& url) {
         EXPECT_THAT(url, Eq(absl::nullopt));
         run_loop.Quit();
@@ -3635,8 +3639,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
   config->seller = test_origin_b;
   config->decision_logic_url =
       https_server_->GetURL("b.test", "/interest_group/decision_logic.js");
-  config->interest_group_buyers = blink::mojom::InterestGroupBuyers::New();
-  config->interest_group_buyers->set_buyers({test_origin_a_});
+  config->shareable_auction_ad_config =
+      blink::mojom::ShareableAuctionAdConfig::New();
+  config->shareable_auction_ad_config->interest_group_buyers =
+      blink::mojom::InterestGroupBuyers::New();
+  config->shareable_auction_ad_config->interest_group_buyers->set_buyers(
+      {test_origin_a_});
 
   EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Optional(Eq(ad_url_)));
 }
@@ -3652,8 +3660,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
   config->decision_logic_url = embedded_test_server()->GetURL(
       "b.test", "/interest_group/decision_logic.js");
   ASSERT_TRUE(config->decision_logic_url.SchemeIs(url::kHttpScheme));
-  config->interest_group_buyers = blink::mojom::InterestGroupBuyers::New();
-  config->interest_group_buyers->set_buyers({test_origin_a_});
+  config->shareable_auction_ad_config =
+      blink::mojom::ShareableAuctionAdConfig::New();
+  config->shareable_auction_ad_config->interest_group_buyers =
+      blink::mojom::InterestGroupBuyers::New();
+  config->shareable_auction_ad_config->interest_group_buyers->set_buyers(
+      {test_origin_a_});
 
   EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(absl::nullopt));
 }
@@ -3665,8 +3677,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
   config->seller = test_origin_a_;
   config->decision_logic_url =
       https_server_->GetURL("b.test", "/interest_group/decision_logic.js");
-  config->interest_group_buyers = blink::mojom::InterestGroupBuyers::New();
-  config->interest_group_buyers->set_buyers({test_origin_a_});
+  config->shareable_auction_ad_config =
+      blink::mojom::ShareableAuctionAdConfig::New();
+  config->shareable_auction_ad_config->interest_group_buyers =
+      blink::mojom::InterestGroupBuyers::New();
+  config->shareable_auction_ad_config->interest_group_buyers->set_buyers(
+      {test_origin_a_});
 
   EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(absl::nullopt));
 }
@@ -3688,8 +3704,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
   config->seller = test_origin_b;
   config->decision_logic_url =
       https_server_->GetURL("b.test", "/interest_group/decision_logic.js");
-  config->interest_group_buyers = blink::mojom::InterestGroupBuyers::New();
-  config->interest_group_buyers->set_buyers({test_origin_a_http});
+  config->shareable_auction_ad_config =
+      blink::mojom::ShareableAuctionAdConfig::New();
+  config->shareable_auction_ad_config->interest_group_buyers =
+      blink::mojom::InterestGroupBuyers::New();
+  config->shareable_auction_ad_config->interest_group_buyers->set_buyers(
+      {test_origin_a_http});
 
   EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(absl::nullopt));
 }
@@ -3712,8 +3732,11 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
   config->seller = test_origin_b;
   config->decision_logic_url =
       https_server_->GetURL("b.test", "/interest_group/decision_logic.js");
-  config->interest_group_buyers = blink::mojom::InterestGroupBuyers::New();
-  config->interest_group_buyers->set_buyers(
+  config->shareable_auction_ad_config =
+      blink::mojom::ShareableAuctionAdConfig::New();
+  config->shareable_auction_ad_config->interest_group_buyers =
+      blink::mojom::InterestGroupBuyers::New();
+  config->shareable_auction_ad_config->interest_group_buyers->set_buyers(
       {test_origin_a_, test_origin_a_http});
 
   EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(absl::nullopt));
@@ -3737,8 +3760,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
   config->seller = test_origin_b;
   config->decision_logic_url =
       https_server_->GetURL("b.test", "/interest_group/decision_logic.js");
-  config->interest_group_buyers = blink::mojom::InterestGroupBuyers::New();
-  config->interest_group_buyers->set_buyers({test_origin_a_, test_origin_c});
+  config->shareable_auction_ad_config =
+      blink::mojom::ShareableAuctionAdConfig::New();
+  config->shareable_auction_ad_config->interest_group_buyers =
+      blink::mojom::InterestGroupBuyers::New();
+  config->shareable_auction_ad_config->interest_group_buyers->set_buyers(
+      {test_origin_a_, test_origin_c});
 
   EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Optional(Eq(ad_url_)));
 }
@@ -3754,8 +3781,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
   config->seller = test_origin_b;
   config->decision_logic_url =
       https_server_->GetURL("b.test", "/interest_group/decision_logic.js");
-  config->interest_group_buyers = blink::mojom::InterestGroupBuyers::New();
-  config->interest_group_buyers->set_all_buyers(blink::mojom::AllBuyers::New());
+  config->shareable_auction_ad_config =
+      blink::mojom::ShareableAuctionAdConfig::New();
+  config->shareable_auction_ad_config->interest_group_buyers =
+      blink::mojom::InterestGroupBuyers::New();
+  config->shareable_auction_ad_config->interest_group_buyers->set_all_buyers(
+      blink::mojom::AllBuyers::New());
 
   // All buyers isn't supported.
   EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(absl::nullopt));
@@ -3774,11 +3805,15 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
   config->seller = test_origin_b;
   config->decision_logic_url =
       https_server_->GetURL("b.test", "/interest_group/decision_logic.js");
-  config->interest_group_buyers = blink::mojom::InterestGroupBuyers::New();
-  config->interest_group_buyers->set_buyers({test_origin_a_});
-  config->per_buyer_signals.emplace();
-  config->per_buyer_signals.value()[test_origin_a_] =
-      "{\"even\": \"more\", \"x\": 4.5}";
+  config->shareable_auction_ad_config =
+      blink::mojom::ShareableAuctionAdConfig::New();
+  config->shareable_auction_ad_config->interest_group_buyers =
+      blink::mojom::InterestGroupBuyers::New();
+  config->shareable_auction_ad_config->interest_group_buyers->set_buyers(
+      {test_origin_a_});
+  config->shareable_auction_ad_config->per_buyer_signals.emplace();
+  config->shareable_auction_ad_config->per_buyer_signals
+      .value()[test_origin_a_] = "{\"even\": \"more\", \"x\": 4.5}";
 
   EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Optional(Eq(ad_url_)));
 }
@@ -3796,12 +3831,16 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
   config->seller = test_origin_b;
   config->decision_logic_url =
       https_server_->GetURL("b.test", "/interest_group/decision_logic.js");
-  config->interest_group_buyers = blink::mojom::InterestGroupBuyers::New();
-  config->interest_group_buyers->set_buyers({test_origin_a_});
-  config->per_buyer_signals.emplace();
+  config->shareable_auction_ad_config =
+      blink::mojom::ShareableAuctionAdConfig::New();
+  config->shareable_auction_ad_config->interest_group_buyers =
+      blink::mojom::InterestGroupBuyers::New();
+  config->shareable_auction_ad_config->interest_group_buyers->set_buyers(
+      {test_origin_a_});
+  config->shareable_auction_ad_config->per_buyer_signals.emplace();
   // `test_origin_b` isn't in `interest_group_buyers`.
-  config->per_buyer_signals.value()[test_origin_b] =
-      "{\"even\": \"more\", \"x\": 4.5}";
+  config->shareable_auction_ad_config->per_buyer_signals
+      .value()[test_origin_b] = "{\"even\": \"more\", \"x\": 4.5}";
 
   EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(absl::nullopt));
 }
@@ -3819,8 +3858,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTestRunAdAuctionBypassBlink,
       https_server_->GetURL("b.test", "/interest_group/decision_logic.js");
   config->trusted_scoring_signals_url = https_server_->GetURL(
       "not-b.test", "/interest_group/trusted_scoring_signals.json");
-  config->interest_group_buyers = blink::mojom::InterestGroupBuyers::New();
-  config->interest_group_buyers->set_buyers({test_origin_a_});
+  config->shareable_auction_ad_config =
+      blink::mojom::ShareableAuctionAdConfig::New();
+  config->shareable_auction_ad_config->interest_group_buyers =
+      blink::mojom::InterestGroupBuyers::New();
+  config->shareable_auction_ad_config->interest_group_buyers->set_buyers(
+      {test_origin_a_});
 
   EXPECT_THAT(RunAuctionBypassBlink(std::move(config)), Eq(absl::nullopt));
 }

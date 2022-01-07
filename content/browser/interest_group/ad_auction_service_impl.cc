@@ -140,22 +140,28 @@ bool IsAuctionValid(const blink::mojom::AuctionAdConfig& config) {
     return false;
   }
 
-  if (!config.interest_group_buyers ||
-      config.interest_group_buyers->is_all_buyers()) {
+  const auto& shareable_config = config.shareable_auction_ad_config;
+  // This isn't marked as optional in the Mojo struct, so Mojo should make sure
+  // it is non-null.
+  DCHECK(shareable_config);
+
+  if (!shareable_config->interest_group_buyers ||
+      shareable_config->interest_group_buyers->is_all_buyers()) {
     return false;
   }
-  DCHECK(config.interest_group_buyers->is_buyers());
+  DCHECK(shareable_config->interest_group_buyers->is_buyers());
 
   // All interest group owners must be HTTPS.
-  for (const url::Origin& buyer : config.interest_group_buyers->get_buyers()) {
+  for (const url::Origin& buyer :
+       shareable_config->interest_group_buyers->get_buyers()) {
     if (buyer.scheme() != url::kHttpsScheme)
       return false;
   }
 
   // All buyer signals must be for listed buyers.
-  if (config.per_buyer_signals) {
-    for (const auto& it : config.per_buyer_signals.value()) {
-      if (!base::Contains(config.interest_group_buyers->get_buyers(),
+  if (shareable_config->per_buyer_signals) {
+    for (const auto& it : shareable_config->per_buyer_signals.value()) {
+      if (!base::Contains(shareable_config->interest_group_buyers->get_buyers(),
                           it.first)) {
         return false;
       }
@@ -295,7 +301,8 @@ void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
 
   // Filter out buyers for whom the interest group API is not allowed.
   std::vector<url::Origin> filtered_buyers;
-  const auto& buyers = config->interest_group_buyers->get_buyers();
+  const auto& buyers =
+      config->shareable_auction_ad_config->interest_group_buyers->get_buyers();
   std::copy_if(
       buyers.begin(), buyers.end(), std::back_inserter(filtered_buyers),
       [browser_context, &frame_origin](const url::Origin& buyer) {

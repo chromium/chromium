@@ -15,6 +15,12 @@
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom.h"
 
+class GURL;
+
+namespace url {
+class Origin;
+}
+
 namespace auction_worklet {
 
 class BidderWorklet;
@@ -47,7 +53,9 @@ class AuctionWorkletServiceImpl : public mojom::AuctionWorkletService {
       bool pause_for_debugger_on_start,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_url_loader_factory,
-      const GURL& script_source_url,
+      const GURL& decision_logic_url,
+      const absl::optional<GURL>& trusted_scoring_signals_url,
+      const url::Origin& top_window_origin,
       LoadSellerWorkletCallback load_seller_worklet_callback) override;
 
  private:

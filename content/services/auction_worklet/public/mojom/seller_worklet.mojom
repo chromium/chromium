@@ -24,17 +24,19 @@ interface SellerWorklet {
   // leaked between consecutive invocations of this method, or between
   // invocations of this method and ReportResult().
   //
+  // In the case a worklet needs to fetch trusted scoring signals before
+  // running any Javascript, the method may wait so it can merge several signals
+  // fetched together. See SendPendingSignalsRequests() for more information.
+  //
   // Arguments:
   // `ad_metadata_json` JSON representation of the `ad` value returned by the
   //  BidderWorklet that offered the bid.
   //
   // `bid` The numeric value of the bid offered by the BidWorklet.
   //
-  // `auction_config` The configuration provided by client JavaScript in the
-  //  renderer in order to initiate the auction.
-  //
-  // `browser_signal_top_window_origin` The top-level origin of the window
-  //  running the auction.
+  // `shareable_auction_config` Subset of the blink.mojom.AuctionAdConfig that
+  //  excludes values that must be the same for all auctions using this
+  //  worklet.
   //
   // `browser_signal_interest_group_owner` The owner of the interest group
   //  that offered the bid.
@@ -60,13 +62,21 @@ interface SellerWorklet {
   //  `score` is 0.
   ScoreAd(string ad_metadata_json,
           double bid,
-          blink.mojom.AuctionAdConfig auction_config,
-          url.mojom.Origin browser_signal_top_window_origin,
+          blink.mojom.ShareableAuctionAdConfig shareable_auction_config,
           url.mojom.Origin browser_signal_interest_group_owner,
           url.mojom.Url browser_signal_render_url,
           array<url.mojom.Url> browser_signal_ad_component_render_urls,
           uint32 browser_signal_bidding_duration_msecs) =>
               (double score, array<string> errors);
+
+  // Hint to the worklet to send a network request for any needed trusted
+  // signals data now. SellerWorklets normally wait briefy for there to be a
+  // number of ScoreAd() calls before requesting trusted scoring signals so the
+  // request can be batched together. This method can be called once all bids
+  // have been generated to minimize the amount of time an auction spends
+  // waiting on trusted signals data once the final bid has been generated. Does
+  // nothing if no trusted scoring signals need to be fetched.
+  SendPendingSignalsRequests();
 
   // Calls the Javascript reportResult() function to get the information needed
   // to report the result of the auction to the seller. May only be called once
@@ -75,11 +85,9 @@ interface SellerWorklet {
   // method and ScoreAd().
   //
   // Arguments:
-  // `auction_config` The configuration provided by client JavaScript in the
-  //  renderer in order to initiate the auction.
-  //
-  // `browser_signal_top_window_origin` The top-level origin of the window
-  //  running the auction.
+  // `shareable_auction_config` Subset of the blink.mojom.AuctionAdConfig that
+  //  excludes values that must be the same for all auctions using this
+  //  worklet.
   //
   // `browser_signal_interest_group_owner` The owner of the interest group
   //  that offered the winning bid.
@@ -102,8 +110,7 @@ interface SellerWorklet {
   //  sensitive for the renderers to see. `errors` should not be assumed to be
   //  empty if the other values are populated, nor should it be assumed to be
   //  non-empty if the other values are null.
-  ReportResult(blink.mojom.AuctionAdConfig auction_config,
-               url.mojom.Origin browser_signal_top_window_origin,
+  ReportResult(blink.mojom.ShareableAuctionAdConfig shareable_auction_config,
                url.mojom.Origin browser_signal_interest_group_owner,
                url.mojom.Url browser_signal_render_url,
                double browser_signal_bid,

@@ -55,6 +55,12 @@ interface AuctionWorkletService {
       BiddingInterestGroup bidding_interest_group);
 
   // Attempts to load Javascript at the specified URL and loads a SellerWorklet.
+  // While a single SellerWorklet object can be used in auctions with different
+  // AuctionAdConfigs, the configs of all auctions using a single SellerWorklet
+  // object must share a `script_source_url` and `trusted_scoring_signals_url`,
+  // which match the ones passed in when creating the SellerWorklet. All
+  // auctions sharing a SellerWorklet must also have the same
+  // `top_window_origin`.
   //
   // Arguments:
   // `seller_worklet` The pipe to communicate with the SellerWorklet. Closing
@@ -73,6 +79,11 @@ interface AuctionWorkletService {
   //
   // `script_source_url` is the URL of the seller worklet script.
   //
+  // `trusted_scoring_signals_url` The trusted scoring signals URL for the
+  //  auction, if there is one.
+  //
+  // `top_window_origin` The origin of the top-level window running the auction.
+  //
   // Returns:
   // `success` is true if the worklet was successfully loaded.
   //
@@ -84,7 +95,9 @@ interface AuctionWorkletService {
       pending_receiver<SellerWorklet> seller_worklet,
       bool pause_for_debugger_on_start,
       pending_remote<network.mojom.URLLoaderFactory> url_loader_factory,
-      url.mojom.Url script_source_url) => (
+      url.mojom.Url script_source_url,
+      url.mojom.Url? trusted_scoring_signals_url,
+      url.mojom.Origin top_window_origin) => (
           bool success,
           array<string> errors);
 };

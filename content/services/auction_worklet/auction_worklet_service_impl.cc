@@ -44,12 +44,15 @@ void AuctionWorkletServiceImpl::LoadSellerWorklet(
     bool pause_for_debugger_on_start,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         pending_url_loader_factory,
-    const GURL& script_source_url,
+    const GURL& decision_logic_url,
+    const absl::optional<GURL>& trusted_scoring_signals_url,
+    const url::Origin& top_window_origin,
     LoadSellerWorkletCallback load_seller_worklet_callback) {
   seller_worklets_.Add(
       std::make_unique<SellerWorklet>(
           auction_v8_helper_, pause_for_debugger_on_start,
-          std::move(pending_url_loader_factory), script_source_url,
+          std::move(pending_url_loader_factory), decision_logic_url,
+          trusted_scoring_signals_url, top_window_origin,
           std::move(load_seller_worklet_callback)),
       std::move(seller_worklet_receiver));
 }

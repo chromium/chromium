@@ -463,19 +463,25 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
   MockSellerWorklet(const MockSellerWorklet&) = delete;
   const MockSellerWorklet& operator=(const MockSellerWorklet&) = delete;
 
-  ~MockSellerWorklet() override = default;
+  ~MockSellerWorklet() override {
+    EXPECT_EQ(expect_send_pending_signals_requests_called_,
+              send_pending_signals_requests_called_);
+  }
 
   // auction_worklet::mojom::SellerWorklet implementation:
 
   void ScoreAd(const std::string& ad_metadata_json,
                double bid,
-               blink::mojom::AuctionAdConfigPtr auction_config,
-               const url::Origin& browser_signal_top_window_origin,
+               blink::mojom::ShareableAuctionAdConfigPtr shareable_config,
                const url::Origin& browser_signal_interest_group_owner,
                const GURL& browser_signal_render_url,
                const std::vector<GURL>& browser_signal_ad_components,
                uint32_t browser_signal_bidding_duration_msecs,
                ScoreAdCallback score_ad_callback) override {
+    // SendPendingSignalsRequests() should only be called once all ads are
+    // scored.
+    EXPECT_FALSE(send_pending_signals_requests_called_);
+
     ScoreAdParams score_ad_params;
     score_ad_params.callback = std::move(score_ad_callback);
     score_ad_params.bid = bid;
@@ -485,8 +491,15 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
       score_ad_run_loop_->Quit();
   }
 
-  void ReportResult(blink::mojom::AuctionAdConfigPtr auction_config,
-                    const url::Origin& browser_signal_top_window_origin,
+  void SendPendingSignalsRequests() override {
+    // SendPendingSignalsRequests() should only be called once by a single
+    // AuctionRunner.
+    EXPECT_FALSE(send_pending_signals_requests_called_);
+
+    send_pending_signals_requests_called_ = true;
+  }
+
+  void ReportResult(blink::mojom::ShareableAuctionAdConfigPtr shareable_config,
                     const url::Origin& browser_signal_interest_group_owner,
                     const GURL& browser_signal_render_url,
                     double browser_signal_bid,
@@ -506,6 +519,13 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
   // Informs the consumer that the seller worklet has successfully loaded.
   void CompleteLoading() {
     DCHECK(load_worklet_callback_);
+
+    // If a worklet completes loading successfully,
+    // `send_pending_signals_requests_called_` is always called, unless the
+    // seller worklet crashes. This includes the case where no bidders
+    // successfully bid, though it's not strictly needed in that case.
+    expect_send_pending_signals_requests_called_ = true;
+
     std::move(load_worklet_callback_)
         .Run(true /* success */, std::vector<std::string>() /* errors */);
   }
@@ -554,6 +574,12 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
 
   void Flush() { receiver_.FlushForTesting(); }
 
+  // `expect_send_pending_signals_requests_called_` needs to be set to false in
+  // the case a SellerWorklet crash is simulated before the final bid is scored.
+  void set_expect_send_pending_signals_requests_called(bool value) {
+    expect_send_pending_signals_requests_called_ = value;
+  }
+
  private:
   auction_worklet::mojom::AuctionWorkletService::LoadSellerWorkletCallback
       load_worklet_callback_;
@@ -565,6 +591,9 @@ class MockSellerWorklet : public auction_worklet::mojom::SellerWorklet {
   ReportResultCallback report_result_callback_;
 
   mojo::Remote<network::mojom::URLLoaderFactory> url_loader_factory_;
+
+  bool expect_send_pending_signals_requests_called_ = false;
+  bool send_pending_signals_requests_called_ = false;
 
   // Receiver is last so that destroying `this` while there's a pending callback
   // over the pipe will not DCHECK.
@@ -649,6 +678,8 @@ class MockAuctionProcessManager
       mojo::PendingRemote<network::mojom::URLLoaderFactory>
           pending_url_loader_factory,
       const GURL& script_source_url,
+      const absl::optional<GURL>& trusted_scoring_signals_url,
+      const url::Origin& top_window_origin,
       LoadSellerWorkletCallback load_seller_worklet_callback) override {
     DCHECK(!seller_worklet_);
 
@@ -865,18 +896,23 @@ class AuctionRunnerTest : public testing::Test,
     auction_config->seller = url::Origin::Create(seller_decision_logic_url);
     auction_config->decision_logic_url = seller_decision_logic_url;
     auction_config->trusted_scoring_signals_url = trusted_scoring_signals_url_;
+    auction_config->shareable_auction_ad_config =
+        blink::mojom::ShareableAuctionAdConfig::New();
     // This is ignored by AuctionRunner, in favor of its `filtered_buyers`
     // parameter.
-    auction_config->interest_group_buyers =
+    auction_config->shareable_auction_ad_config->interest_group_buyers =
         blink::mojom::InterestGroupBuyers::NewAllBuyers(
             blink::mojom::AllBuyers::New());
-    auction_config->auction_signals = auction_signals_json;
-    auction_config->seller_signals = R"({"isSellerSignals": true})";
+    auction_config->shareable_auction_ad_config->auction_signals =
+        auction_signals_json;
+    auction_config->shareable_auction_ad_config->seller_signals =
+        R"({"isSellerSignals": true})";
 
     base::flat_map<url::Origin, std::string> per_buyer_signals;
     per_buyer_signals[kBidder1] = R"({"signalsFor": ")" + kBidder1Name + "\"}";
     per_buyer_signals[kBidder2] = R"({"signalsFor": ")" + kBidder2Name + "\"}";
-    auction_config->per_buyer_signals = std::move(per_buyer_signals);
+    auction_config->shareable_auction_ad_config->per_buyer_signals =
+        std::move(per_buyer_signals);
 
     interest_group_manager_ = std::make_unique<InterestGroupManager>(
         base::FilePath(), true /* in_memory */,
@@ -2190,21 +2226,18 @@ function scoreAd(adMetadata, bid, auctionConfig, trustedScoringSignals,
 }
                                          )") + kReportResultScript);
 
-  // Only accept first bidder's bid.
+  // Only accept first bidder's bid. Requests will always be batched non-racily,
+  // since a mock time is in use.
   auction_worklet::AddJsonResponse(
       &url_loader_factory_,
       GURL(trusted_scoring_signals_url_->spec() +
            "?hostname=publisher1.com"
-           "&renderUrls=https%3A%2F%2Fad1.com%2F"
-           "&adComponentRenderUrls=https%3A%2F%2Fad1.com-component1.com%2F"),
-      R"({"renderUrls":{"https://ad1.com/":"accept"}})");
-  auction_worklet::AddJsonResponse(
-      &url_loader_factory_,
-      GURL(trusted_scoring_signals_url_->spec() +
-           "?hostname=publisher1.com"
-           "&renderUrls=https%3A%2F%2Fad2.com%2F"
-           "&adComponentRenderUrls=https%3A%2F%2Fad2.com-component1.com%2F"),
-      R"({"renderUrls":{"https://ad2.com/":"reject"}})");
+           "&renderUrls=https%3A%2F%2Fad1.com%2F,https%3A%2F%2Fad2.com%2F"
+           "&adComponentRenderUrls=https%3A%2F%2Fad1.com-component1.com%2F,"
+           "https%3A%2F%2Fad2.com-component1.com%2F"),
+      R"(
+{"renderUrls":{"https://ad1.com/":"accept", "https://ad2.com/":"reject"}}
+      )");
 
   RunStandardAuction();
   EXPECT_EQ(GURL("https://ad1.com/"), result_.ad_url);

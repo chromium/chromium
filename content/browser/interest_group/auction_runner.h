@@ -335,10 +335,22 @@ class CONTENT_EXPORT AuctionRunner {
   const url::Origin frame_origin_;
   RunAuctionCallback callback_;
 
-  // Number of bids which the seller has not yet scored. These bids may be
-  // fetching URLs, generating bids, waiting for the seller worklet to load, or
-  // the seller worklet may be scoring their bids.
+  // Number of bids that have yet to be sent to the SellerWorklet. This
+  // includes BidderWorklets that have not yet been loaded, those whose
+  // GenerateBid() method is currently being run, and those that are waiting on
+  // the seller worklet to load. Decremented when GenerateBid() fails to
+  // generate a bid, or just after invoking the SellerWorklet's ScoreAd()
+  // method. When this reaches 0, the SellerWorklet's
+  // SendPendingSignalsRequests() should be invoked, so it can send any pending
+  // scoring signals requests.
+  int num_bids_not_sent_to_seller_worklet_;
+  // Number of bids which the seller has not yet finished scoring. These bids
+  // may be fetching URLs, generating bids, waiting for the seller worklet to
+  // load, or the seller worklet may be scoring their bids. When this reaches 0,
+  // the bid with the highest score is the winner, and the auction is completed,
+  // apart from reporting the result.
   int outstanding_bids_;
+
   // State of all loaded interest groups.
   std::vector<BidState> bid_states_;
   // The time the auction started. Use a single base time for all Worklets, to

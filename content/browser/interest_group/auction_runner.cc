@@ -219,7 +219,8 @@ void AuctionRunner::OnInterestGroupRead(
     return;
   }
 
-  outstanding_bids_ = bid_states_.size();
+  num_bids_not_sent_to_seller_worklet_ = bid_states_.size();
+  outstanding_bids_ = num_bids_not_sent_to_seller_worklet_;
   RequestSellerWorkletProcess();
 }
 
@@ -266,6 +267,8 @@ void AuctionRunner::OnSellerWorkletProcessReceived() {
       std::move(worklet_receiver),
       seller_worklet_debug_->should_pause_on_start(),
       std::move(url_loader_factory), seller_url,
+      auction_config_->trusted_scoring_signals_url,
+      browser_signals_->top_frame_origin,
       base::BindOnce(&AuctionRunner::OnSellerWorkletLoaded,
                      base::Unretained(this)));
   // Fail auction if the seller worklet pipe is disconnected.
@@ -303,9 +306,9 @@ void AuctionRunner::OnBidderWorkletProcessReceived(BidState* bid_state) {
                         &AuctionRunner::OnGenerateBidCrashed,
                         base::Unretained(this), bid_state));
   bid_state->bidder_worklet->GenerateBid(
-      auction_config_->auction_signals, PerBuyerSignals(bid_state),
-      browser_signals_->top_frame_origin, browser_signals_->seller,
-      auction_start_time_,
+      auction_config_->shareable_auction_ad_config->auction_signals,
+      PerBuyerSignals(bid_state), browser_signals_->top_frame_origin,
+      browser_signals_->seller, auction_start_time_,
       base::BindOnce(&AuctionRunner::OnGenerateBidComplete,
                      base::Unretained(this), bid_state));
 }
@@ -323,6 +326,7 @@ void AuctionRunner::OnGenerateBidComplete(
     auction_worklet::mojom::BidderWorkletBidPtr bid,
     const std::vector<std::string>& errors) {
   DCHECK(!state->bid_result);
+  DCHECK_GT(num_bids_not_sent_to_seller_worklet_, 0);
   DCHECK_GT(outstanding_bids_, 0);
   DCHECK_EQ(state->state, BidState::State::kGeneratingBid);
 
@@ -342,6 +346,16 @@ void AuctionRunner::OnGenerateBidComplete(
 
   if (!bid) {
     state->state = BidState::State::kScoringComplete;
+    --num_bids_not_sent_to_seller_worklet_;
+    // If this is the only bid that yet to be sent to the seller worklet, and
+    // the seller worklet has loaded, then need to tell the SellerWorklet that
+    // no more bids coming.
+    //
+    // Note that this is called even if the seller hasn't loaded yet (which is
+    // safe to do, but not useful). Calling unconditionally is currently needed
+    // for a couple unit tests to pass.
+    if (num_bids_not_sent_to_seller_worklet_ == 0)
+      seller_worklet_->SendPendingSignalsRequests();
     --outstanding_bids_;
     MaybeCompleteAuction();
     return;
@@ -379,17 +393,28 @@ void AuctionRunner::OnSellerWorkletLoaded(
 }
 
 void AuctionRunner::ScoreBid(BidState* state) {
+  DCHECK(seller_loaded_);
+  DCHECK_GT(num_bids_not_sent_to_seller_worklet_, 0);
+  DCHECK_GT(outstanding_bids_, 0);
   DCHECK_EQ(state->state, BidState::State::kWaitingOnSellerWorkletLoad);
   state->state = BidState::State::kSellerScoringBid;
+
   seller_worklet_->ScoreAd(
-      state->bid_result->ad, state->bid_result->bid, auction_config_.Clone(),
-      browser_signals_->top_frame_origin,
+      state->bid_result->ad, state->bid_result->bid,
+      auction_config_->shareable_auction_ad_config.Clone(),
       state->bidder.bidding_group->group.owner, state->bid_result->render_url,
       state->bid_result->ad_components ? *state->bid_result->ad_components
                                        : std::vector<GURL>(),
       state->bid_result->bid_duration.InMilliseconds(),
       base::BindOnce(&AuctionRunner::OnBidScored, base::Unretained(this),
                      state));
+
+  // If this was the last bid that needed to be passed to ScoreAd(), tell the
+  // SellerWorklet no more bids are coming, so it can send a request for any
+  // needed scoring signals now, if needed.
+  --num_bids_not_sent_to_seller_worklet_;
+  if (num_bids_not_sent_to_seller_worklet_ == 0)
+    seller_worklet_->SendPendingSignalsRequests();
 }
 
 void AuctionRunner::OnBidScored(BidState* state,
@@ -434,10 +459,12 @@ void AuctionRunner::OnBidScored(BidState* state,
 
 absl::optional<std::string> AuctionRunner::PerBuyerSignals(
     const BidState* state) {
-  if (auction_config_->per_buyer_signals.has_value()) {
-    auto it = auction_config_->per_buyer_signals.value().find(
+  const auto& per_buyer_signals =
+      auction_config_->shareable_auction_ad_config->per_buyer_signals;
+  if (per_buyer_signals.has_value()) {
+    auto it = per_buyer_signals.value().find(
         state->bidder.bidding_group->group.owner);
-    if (it != auction_config_->per_buyer_signals.value().end())
+    if (it != per_buyer_signals.value().end())
       return it->second;
   }
   return absl::nullopt;
@@ -446,6 +473,10 @@ absl::optional<std::string> AuctionRunner::PerBuyerSignals(
 void AuctionRunner::MaybeCompleteAuction() {
   if (!AllBidsScored())
     return;
+
+  // Since all bids have been scored, they also should have all been sent to the
+  // SellerWorklet by this point.
+  DCHECK_EQ(0, num_bids_not_sent_to_seller_worklet_);
 
   // Record which interest groups bid.
   //
@@ -478,7 +509,7 @@ void AuctionRunner::ReportSellerResult() {
   DCHECK_GT(top_bidder_->seller_score, 0);
 
   seller_worklet_->ReportResult(
-      auction_config_.Clone(), browser_signals_->top_frame_origin,
+      auction_config_->shareable_auction_ad_config.Clone(),
       top_bidder_->bidder.bidding_group->group.owner,
       top_bidder_->bid_result->render_url, top_bidder_->bid_result->bid,
       top_bidder_->seller_score,
@@ -548,10 +579,10 @@ void AuctionRunner::ReportBidWin(
               {top_bidder_->bidder.bidding_group->group.bidding_url->spec(),
                " crashed while trying to run reportWin()."})));
   top_bidder_->bidder_worklet->ReportWin(
-      auction_config_->auction_signals, PerBuyerSignals(top_bidder_),
-      browser_signals_->top_frame_origin, signals_for_winner_arg,
-      top_bidder_->bid_result->render_url, top_bidder_->bid_result->bid,
-      auction_config_->seller,
+      auction_config_->shareable_auction_ad_config->auction_signals,
+      PerBuyerSignals(top_bidder_), browser_signals_->top_frame_origin,
+      signals_for_winner_arg, top_bidder_->bid_result->render_url,
+      top_bidder_->bid_result->bid, auction_config_->seller,
       base::BindOnce(&AuctionRunner::OnReportBidWinComplete,
                      base::Unretained(this)));
 }

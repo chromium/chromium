@@ -119,6 +119,8 @@ class TrustedSignalsRequestManager {
   // Starts a single TrustedSignals request for all currently queued Requests.
   void StartBatchedTrustedSignalsRequest();
 
+  const GURL& trusted_signals_url() const { return trusted_signals_url_; }
+
  private:
   struct BatchedTrustedSignalsRequest;
 

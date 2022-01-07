@@ -2222,7 +2222,9 @@ function scoreAd(
   auto auction_config = blink::mojom::AuctionAdConfig::New();
   auction_config->seller = kOriginA;
   auction_config->decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
-  auction_config->interest_group_buyers =
+  auction_config->shareable_auction_ad_config =
+      blink::mojom::ShareableAuctionAdConfig::New();
+  auction_config->shareable_auction_ad_config->interest_group_buyers =
       blink::mojom::InterestGroupBuyers::NewBuyers({kOriginA});
   absl::optional<GURL> auction_result =
       RunAdAuctionAndFlush(std::move(auction_config));
@@ -2277,7 +2279,9 @@ function reportResult(auctionConfig, browserSignals) {
   auto auction_config = blink::mojom::AuctionAdConfig::New();
   auction_config->seller = kOriginA;
   auction_config->decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
-  auction_config->interest_group_buyers =
+  auction_config->shareable_auction_ad_config =
+      blink::mojom::ShareableAuctionAdConfig::New();
+  auction_config->shareable_auction_ad_config->interest_group_buyers =
       blink::mojom::InterestGroupBuyers::NewBuyers({kOriginA});
   absl::optional<GURL> auction_result =
       RunAdAuctionAndFlush(std::move(auction_config));
@@ -2355,14 +2359,18 @@ function reportResult() {}
   auto succeed_auction_config = blink::mojom::AuctionAdConfig::New();
   succeed_auction_config->seller = kOriginA;
   succeed_auction_config->decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
-  succeed_auction_config->interest_group_buyers =
+  succeed_auction_config->shareable_auction_ad_config =
+      blink::mojom::ShareableAuctionAdConfig::New();
+  succeed_auction_config->shareable_auction_ad_config->interest_group_buyers =
       blink::mojom::InterestGroupBuyers::NewBuyers({kOriginA});
 
   auto fail_auction_config = blink::mojom::AuctionAdConfig::New();
   fail_auction_config->seller = kOriginA;
   fail_auction_config->decision_logic_url =
       kUrlA.Resolve(kDecisionFailAllUrlPath);
-  fail_auction_config->interest_group_buyers =
+  fail_auction_config->shareable_auction_ad_config =
+      blink::mojom::ShareableAuctionAdConfig::New();
+  fail_auction_config->shareable_auction_ad_config->interest_group_buyers =
       blink::mojom::InterestGroupBuyers::NewBuyers({kOriginA});
 
   // 1st auction
@@ -2506,14 +2514,18 @@ function reportResult() {}
   auto succeed_auction_config = blink::mojom::AuctionAdConfig::New();
   succeed_auction_config->seller = kOriginA;
   succeed_auction_config->decision_logic_url = kUrlA.Resolve(kDecisionUrlPath);
-  succeed_auction_config->interest_group_buyers =
+  succeed_auction_config->shareable_auction_ad_config =
+      blink::mojom::ShareableAuctionAdConfig::New();
+  succeed_auction_config->shareable_auction_ad_config->interest_group_buyers =
       blink::mojom::InterestGroupBuyers::NewBuyers({kOriginA});
 
   auto fail_auction_config = blink::mojom::AuctionAdConfig::New();
   fail_auction_config->seller = kOriginA;
   fail_auction_config->decision_logic_url =
       kUrlA.Resolve(kDecisionFailAllUrlPath);
-  fail_auction_config->interest_group_buyers =
+  fail_auction_config->shareable_auction_ad_config =
+      blink::mojom::ShareableAuctionAdConfig::New();
+  fail_auction_config->shareable_auction_ad_config->interest_group_buyers =
       blink::mojom::InterestGroupBuyers::NewBuyers({kOriginA});
 
   // 1st auction
@@ -2810,6 +2822,8 @@ TEST_F(AdAuctionServiceImplTest, CreateAdRequestRejectsHttpFallback) {
 // An empty config will cause FinalizeAd to fail and run the supplied callback.
 TEST_F(AdAuctionServiceImplTest, FinalizeAdRejectsEmptyConfig) {
   auto mojo_config = blink::mojom::AuctionAdConfig::New();
+  mojo_config->shareable_auction_ad_config =
+      blink::mojom::ShareableAuctionAdConfig::New();
 
   bool callback_fired = false;
   FinalizeAd(
@@ -2823,6 +2837,8 @@ TEST_F(AdAuctionServiceImplTest, FinalizeAdRejectsEmptyConfig) {
 
 TEST_F(AdAuctionServiceImplTest, FinalizeAdRejectsHTTPDecisionUrl) {
   auto mojo_config = blink::mojom::AuctionAdConfig::New();
+  mojo_config->shareable_auction_ad_config =
+      blink::mojom::ShareableAuctionAdConfig::New();
   mojo_config->seller = url::Origin::Create(GURL("https://site.test"));
   mojo_config->decision_logic_url = GURL("http://site.test/");
 
@@ -2839,6 +2855,8 @@ TEST_F(AdAuctionServiceImplTest, FinalizeAdRejectsHTTPDecisionUrl) {
 // An empty GUID should trigger any FinalizeAd request to fail.
 TEST_F(AdAuctionServiceImplTest, FinalizeAdRejectsMissingGuid) {
   auto mojo_config = blink::mojom::AuctionAdConfig::New();
+  mojo_config->shareable_auction_ad_config =
+      blink::mojom::ShareableAuctionAdConfig::New();
   mojo_config->seller = url::Origin::Create(GURL("https://site.test"));
   mojo_config->decision_logic_url = GURL("https://site.test/");
 
