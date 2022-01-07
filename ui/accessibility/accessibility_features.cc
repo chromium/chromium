@@ -150,7 +150,7 @@ bool IsExperimentalAccessibilityDictationCommandsEnabled() {
 
 const base::Feature kExperimentalAccessibilityDictationExtension{
     "ExperimentalAccessibilityDictationExtension",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 bool IsExperimentalAccessibilityDictationExtensionEnabled() {
   return base::FeatureList::IsEnabled(

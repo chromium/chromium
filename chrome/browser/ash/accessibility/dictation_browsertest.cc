@@ -286,6 +286,12 @@ class DictationTest : public DictationBaseTest {
   DictationTest(const DictationTest&) = delete;
   DictationTest& operator=(const DictationTest&) = delete;
 
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    DictationBaseTest::SetUpCommandLine(command_line);
+    scoped_feature_list_.InitAndDisableFeature(
+        ::features::kExperimentalAccessibilityDictationExtension);
+  }
+
   void SetUpOnMainThread() override {
     DictationBaseTest::SetUpOnMainThread();
 
@@ -340,6 +346,7 @@ class DictationTest : public DictationBaseTest {
   std::unique_ptr<ui::MockIMEInputContextHandler> input_context_handler_;
   std::unique_ptr<ui::test::EventGenerator> generator_;
   ui::CompositionText empty_composition_text_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
