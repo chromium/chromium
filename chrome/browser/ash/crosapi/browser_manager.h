@@ -84,6 +84,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Virtual for testing.
   virtual bool IsRunningOrWillRun() const;
 
+  // Returns true if Lacros is terminated.
+  bool IsTerminated() const { return is_terminated_; }
+
   // Opens the browser window in lacros-chrome.
   // If lacros-chrome is not yet launched, it triggers to launch. If this is
   // called again during the setup phase of the launch process, it will be
@@ -442,6 +445,9 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   // Tracks whether an updated browser component is available. Used to determine
   // if an update should be loaded prior to starting the browser.
   bool update_available_ = false;
+
+  // Tracks whether lacros-chrome is terminated.
+  bool is_terminated_ = false;
 
   // Helps set up and manage the mojo connections between lacros-chrome and
   // ash-chrome in testing environment. Only applicable when

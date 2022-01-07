@@ -965,6 +965,8 @@ void BrowserManager::OnBrowserServiceConnected(
     return;
   }
 
+  is_terminated_ = false;
+
   DCHECK(!browser_service_.has_value());
   browser_service_ =
       BrowserServiceInfo{mojo_id, browser_service, browser_service_version};
@@ -1026,6 +1028,8 @@ void BrowserManager::OnLacrosChromeTerminated() {
   // TODO(https://crbug.com/1109366): Restart lacros-chrome if it exits
   // abnormally (e.g. crashes). For now, assume the user meant to close it.
   SetLaunchOnLoginPref(false);
+
+  is_terminated_ = true;
 
   if (!shutdown_requested_ && relaunch_requested_) {
     MaybeStart(browser_util::InitialBrowserAction(

@@ -103,6 +103,7 @@ class FullRestoreAppLaunchHandler : public AppLaunchHandler,
   void OnGotSession(Profile* profile, bool for_apps, int window_count) override;
 
   // crosapi::BrowserManagerObserver:
+  void OnMojoDisconnected() override;
   void OnStateChanged() override;
 
   // Force launch browser for testing.
