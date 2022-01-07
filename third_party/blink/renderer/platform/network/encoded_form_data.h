@@ -103,7 +103,6 @@ class PLATFORM_EXPORT EncodedFormData : public RefCounted<EncodedFormData> {
   static scoped_refptr<EncodedFormData> Create();
   static scoped_refptr<EncodedFormData> Create(const void*, wtf_size_t);
   static scoped_refptr<EncodedFormData> Create(base::span<const char>);
-  static scoped_refptr<EncodedFormData> Create(const Vector<char>&);
   scoped_refptr<EncodedFormData> Copy() const;
   scoped_refptr<EncodedFormData> DeepCopy() const;
   ~EncodedFormData();
