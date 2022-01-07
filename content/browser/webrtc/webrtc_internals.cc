@@ -193,7 +193,7 @@ void WebRTCInternals::OnPeerConnectionRemoved(GlobalRenderFrameHostId frame_id,
 
   auto it = FindRecord(frame_id, lid);
   if (it != peer_connection_data_.GetList().end()) {
-    MaybeClosePeerConnection(&*it);
+    MaybeClosePeerConnection(*it);
     peer_connection_data_.EraseListIter(it);
   }
 
@@ -217,13 +217,13 @@ void WebRTCInternals::OnPeerConnectionUpdated(GlobalRenderFrameHostId frame_id,
 
   if (type == "iceconnectionstatechange") {
     if (value == "connected" || value == "checking" || value == "completed") {
-      MaybeMarkPeerConnectionAsConnected(&*it);
+      MaybeMarkPeerConnectionAsConnected(*it);
     } else if (value == "failed" || value == "disconnected" ||
                value == "closed" || value == "new") {
-      MaybeMarkPeerConnectionAsNotConnected(&*it);
+      MaybeMarkPeerConnectionAsNotConnected(*it);
     }
   } else if (type == "close") {
-    MaybeClosePeerConnection(&*it);
+    MaybeClosePeerConnection(*it);
   } else if (type == "setConfiguration") {
     // Update the configuration we have for this connection.
     it->SetStringKey("rtcConfiguration", value);
@@ -605,13 +605,11 @@ void WebRTCInternals::OnRendererExit(int render_process_id) {
   // by the exiting renderer.
   base::Value::ListView peer_conn_view = peer_connection_data_.GetList();
   for (int i = peer_conn_view.size() - 1; i >= 0; --i) {
-    base::DictionaryValue* record = nullptr;
     DCHECK(peer_conn_view[i].is_dict());
-    peer_conn_view[i].GetAsDictionary(&record);
 
     absl::optional<int> this_rid, this_lid;
-    this_rid = record->FindIntKey("rid");
-    this_lid = record->FindIntKey("lid");
+    this_rid = peer_conn_view[i].FindIntKey("rid");
+    this_lid = peer_conn_view[i].FindIntKey("lid");
 
     if (this_rid.value_or(0) == render_process_id) {
       if (!observers_.empty()) {
@@ -620,7 +618,7 @@ void WebRTCInternals::OnRendererExit(int render_process_id) {
         update.SetIntKey("lid", this_lid.value_or(0));
         SendUpdate("remove-peer-connection", std::move(update));
       }
-      MaybeClosePeerConnection(record);
+      MaybeClosePeerConnection(peer_conn_view[i]);
       peer_connection_data_.EraseListIter(peer_conn_view.begin() + i);
     }
   }
@@ -632,11 +630,10 @@ void WebRTCInternals::OnRendererExit(int render_process_id) {
   base::Value::ListView get_user_media_requests_view =
       get_user_media_requests_.GetList();
   for (int i = get_user_media_requests_view.size() - 1; i >= 0; --i) {
-    base::DictionaryValue* record = nullptr;
     DCHECK(get_user_media_requests_view[i].is_dict());
-    get_user_media_requests_view[i].GetAsDictionary(&record);
 
-    absl::optional<int> this_rid = record->FindIntKey("rid");
+    absl::optional<int> this_rid =
+        get_user_media_requests_view[i].FindIntKey("rid");
 
     if (this_rid.value_or(0) == render_process_id) {
       get_user_media_requests_.EraseListIter(
@@ -669,21 +666,21 @@ void WebRTCInternals::EnableAudioDebugRecordingsOnAllRenderProcessHosts() {
   }
 }
 
-void WebRTCInternals::MaybeClosePeerConnection(base::Value* record) {
-  absl::optional<bool> is_open = record->FindBoolKey("isOpen");
+void WebRTCInternals::MaybeClosePeerConnection(base::Value& record) {
+  absl::optional<bool> is_open = record.FindBoolKey("isOpen");
   DCHECK(is_open.has_value());
   if (!*is_open)
     return;
 
-  record->SetBoolKey("isOpen", false);
+  record.SetBoolKey("isOpen", false);
   MaybeMarkPeerConnectionAsNotConnected(record);
 }
 
-void WebRTCInternals::MaybeMarkPeerConnectionAsConnected(base::Value* record) {
-  bool was_connected = record->FindBoolKey("connected").value_or(true);
+void WebRTCInternals::MaybeMarkPeerConnectionAsConnected(base::Value& record) {
+  bool was_connected = record.FindBoolKey("connected").value_or(true);
   if (!was_connected) {
     ++num_connected_connections_;
-    record->SetBoolKey("connected", true);
+    record.SetBoolKey("connected", true);
     UpdateWakeLock();
     for (auto& observer : connections_observers_)
       observer.OnConnectionsCountChange(num_connected_connections_);
@@ -691,10 +688,10 @@ void WebRTCInternals::MaybeMarkPeerConnectionAsConnected(base::Value* record) {
 }
 
 void WebRTCInternals::MaybeMarkPeerConnectionAsNotConnected(
-    base::Value* record) {
-  bool was_connected = record->FindBoolKey("connected").value_or(false);
+    base::Value& record) {
+  bool was_connected = record.FindBoolKey("connected").value_or(false);
   if (was_connected) {
-    record->SetBoolKey("connected", false);
+    record.SetBoolKey("connected", false);
     --num_connected_connections_;
     DCHECK_GE(num_connected_connections_, 0);
     UpdateWakeLock();
@@ -753,12 +750,10 @@ base::CheckedContiguousIterator<base::Value> WebRTCInternals::FindRecord(
 
   base::Value::ListView peer_conn_view = peer_connection_data_.GetList();
   for (auto it = peer_conn_view.begin(); it != peer_conn_view.end(); ++it) {
-    base::DictionaryValue* record = nullptr;
     DCHECK(it->is_dict());
-    it->GetAsDictionary(&record);
 
-    int this_rid = record->FindIntKey("rid").value_or(0);
-    int this_lid = record->FindIntKey("lid").value_or(0);
+    int this_rid = it->FindIntKey("rid").value_or(0);
+    int this_lid = it->FindIntKey("lid").value_or(0);
 
     if (this_rid == frame_id.child_id && this_lid == lid)
       return it;
