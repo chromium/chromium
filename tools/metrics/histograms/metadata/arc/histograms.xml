@@ -617,8 +617,8 @@ chromium-metrics-reviews@google.com.
 <histogram name="Arc.CompanionLibraryApisCounter"
     enum="CompanionLibraryApisList" expires_after="2022-04-10">
   <owner>sstan@google.com</owner>
-  <owner>bartfab@chromium.org</owner>
-  <owner>giovax@google.com</owner>
+  <owner>mhasank@google.com</owner>
+  <owner>arc-commercial@google.com</owner>
   <summary>
     Records the number of times ChromeOS Companion Library API called. Counter
     adding when its Stub library receive the call from applications.
@@ -1857,7 +1857,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Arc.Supervision.Transition.Result"
     enum="ArcSupervisionTransitionResult" expires_after="2022-08-03">
-  <owner>giovax@chromium.org</owner>
+  <owner>mhasank@chromium.org</owner>
   <owner>arc-commercial@google.com</owner>
   <summary>
     The result (success or the type of failure) of ARC supervision transition
