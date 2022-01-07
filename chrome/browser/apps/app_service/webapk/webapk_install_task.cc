@@ -132,7 +132,8 @@ bool DoesShareTargetDiffer(webapk::WebAppManifest manifest,
   }
 
   // Compare share files.
-  if (share_param.files_size() != share_info->file_names.size()) {
+  if (share_param.files_size() !=
+      static_cast<int>(share_info->file_names.size())) {
     return true;
   }
 
@@ -142,7 +143,7 @@ bool DoesShareTargetDiffer(webapk::WebAppManifest manifest,
     }
 
     if (share_param.files(i).accept_size() !=
-        share_info->file_accepts[i].size()) {
+        static_cast<int>(share_info->file_accepts[i].size())) {
       return true;
     }
 
