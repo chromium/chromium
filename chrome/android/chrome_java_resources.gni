@@ -547,8 +547,6 @@ chrome_java_resources = [
   "java/res/drawable/signin_header_animation.xml",
   "java/res/drawable/store_locally_tooltip_background.xml",
   "java/res/drawable/tab_indicator.xml",
-  "java/res/drawable/thumbnail_gradient_top_left.xml",
-  "java/res/drawable/thumbnail_gradient_top_right.xml",
   "java/res/drawable/tile_view_hairline_border_background.xml",
   "java/res/drawable/toolbar_shadow.xml",
   "java/res/drawable/visa_card.xml",

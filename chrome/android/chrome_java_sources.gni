@@ -1072,7 +1072,6 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/suggestions/SuggestionsOfflineModelObserver.java",
   "java/src/org/chromium/chrome/browser/suggestions/SuggestionsUiDelegate.java",
   "java/src/org/chromium/chrome/browser/suggestions/SuggestionsUiDelegateImpl.java",
-  "java/src/org/chromium/chrome/browser/suggestions/ThumbnailGradient.java",
   "java/src/org/chromium/chrome/browser/suggestions/mostvisited/MostVisitedSites.java",
   "java/src/org/chromium/chrome/browser/suggestions/mostvisited/MostVisitedSitesBridge.java",
   "java/src/org/chromium/chrome/browser/suggestions/mostvisited/MostVisitedSitesMetadataUtils.java",
