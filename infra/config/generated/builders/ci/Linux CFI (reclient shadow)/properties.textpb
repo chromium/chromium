@@ -3,7 +3,10 @@
     "ensure_verified": true,
     "instance": "rbe-chromium-trusted",
     "jobs": 400,
-    "metrics_project": "chromium-reclient-metrics"
+    "metrics_project": "chromium-reclient-metrics",
+    "rewrapper_env": {
+      "RBE_compare": "true"
+    }
   },
   "$recipe_engine/resultdb/test_presentation": {
     "column_keys": [],

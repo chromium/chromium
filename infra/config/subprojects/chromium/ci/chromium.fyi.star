@@ -649,6 +649,7 @@ ci.builder(
     reclient_jobs = 400,
     reclient_instance = rbe_instance.DEFAULT,
     reclient_ensure_verified = True,
+    reclient_rewrapper_env = {"RBE_compare": "true"},
 )
 # End - Reclient migration, phase 2, block 1 shadow builders
 
