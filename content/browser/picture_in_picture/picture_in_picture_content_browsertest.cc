@@ -303,16 +303,8 @@ IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
   EXPECT_FALSE(web_contents_delegate()->is_in_picture_in_picture());
 }
 
-// Flaky on Linux TSAN: https://crbug.com/1210955.
-#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
-#define MAYBE_EnterFullscreenThenPictureInPicture \
-  DISABLED_EnterFullscreenThenPictureInPicture
-#else
-#define MAYBE_EnterFullscreenThenPictureInPicture \
-  EnterFullscreenThenPictureInPicture
-#endif
 IN_PROC_BROWSER_TEST_F(PictureInPictureContentBrowserTest,
-                       MAYBE_EnterFullscreenThenPictureInPicture) {
+                       EnterFullscreenThenPictureInPicture) {
   ASSERT_TRUE(NavigateToURL(
       shell(), GetTestUrl("media/picture_in_picture", "one-video.html")));
 
