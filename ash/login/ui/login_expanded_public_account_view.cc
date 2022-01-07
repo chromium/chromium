@@ -505,21 +505,21 @@ class RightPaneView : public NonAccessibleView {
     }
 
     if (language_menu_view_) {
-      advanced_view_->RemoveChildView(language_menu_view_);
-      delete language_menu_view_;
+      advanced_view_->RemoveChildViewT(language_menu_view_);
+      language_menu_view_ = nullptr;
     }
-    language_menu_view_ = new PublicAccountMenuView(
+    auto language_menu_view = std::make_unique<PublicAccountMenuView>(
         language_items_, selected_language_index,
         base::BindRepeating(&RightPaneView::OnLanguageSelected,
                             weak_factory_.GetWeakPtr()));
-    language_menu_view_->SetTooltipTextAndAccessibleName(
+    language_menu_view->SetTooltipTextAndAccessibleName(
         l10n_util::GetStringUTF16(
             IDS_ASH_LOGIN_PUBLIC_ACCOUNT_LANGUAGE_MENU_ACCESSIBLE_NAME));
 
     int after_title_after_padding_index =
         advanced_view_->GetIndexOf(language_title_) + 2;
-    advanced_view_->AddChildViewAt(language_menu_view_,
-                                   after_title_after_padding_index);
+    language_menu_view_ = advanced_view_->AddChildViewAt(
+        std::move(language_menu_view), after_title_after_padding_index);
   }
 
   void PopulateKeyboardItems(
@@ -540,21 +540,21 @@ class RightPaneView : public NonAccessibleView {
     }
 
     if (keyboard_menu_view_) {
-      advanced_view_->RemoveChildView(keyboard_menu_view_);
-      delete keyboard_menu_view_;
+      advanced_view_->RemoveChildViewT(keyboard_menu_view_);
+      keyboard_menu_view_ = nullptr;
     }
-    keyboard_menu_view_ = new PublicAccountMenuView(
+    auto keyboard_menu_view = std::make_unique<PublicAccountMenuView>(
         keyboard_items_, selected_keyboard_index,
         base::BindRepeating(&RightPaneView::OnKeyboardSelected,
                             weak_factory_.GetWeakPtr()));
-    keyboard_menu_view_->SetTooltipTextAndAccessibleName(
+    keyboard_menu_view->SetTooltipTextAndAccessibleName(
         l10n_util::GetStringUTF16(
             IDS_ASH_LOGIN_PUBLIC_ACCOUNT_KEYBOARD_MENU_ACCESSIBLE_NAME));
 
     int after_title_after_padding_index =
         advanced_view_->GetIndexOf(keyboard_title_) + 2;
-    advanced_view_->AddChildViewAt(keyboard_menu_view_,
-                                   after_title_after_padding_index);
+    keyboard_menu_view_ = advanced_view_->AddChildViewAt(
+        std::move(keyboard_menu_view), after_title_after_padding_index);
   }
 
   PublicAccountMenuView* GetLanguageMenuView() { return language_menu_view_; }
