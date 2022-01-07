@@ -27,6 +27,7 @@ import org.chromium.base.task.TaskTraits;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -34,6 +35,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
+import java.nio.channels.FileChannel.MapMode;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -373,11 +375,14 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
         @Override
         public ByteBuffer executeSyncTask() {
             boolean success = false;
-            byte[] res = null;
+            ByteBuffer res = null;
+            FileInputStream fileInputStream = null;
             try {
                 long startTime = SystemClock.elapsedRealtime();
                 AtomicFile atomicFile = new AtomicFile(mFile);
-                res = atomicFile.readFully();
+                fileInputStream = atomicFile.openRead();
+                FileChannel channel = fileInputStream.getChannel();
+                res = channel.map(MapMode.READ_ONLY, channel.position(), channel.size());
                 success = true;
                 RecordHistogram.recordTimesHistogram(
                         String.format(Locale.US, "Tabs.PersistedTabData.Storage.LoadTime.%s",
@@ -398,7 +403,7 @@ public class FilePersistedTabDataStorage implements PersistedTabDataStorage {
             }
             RecordHistogram.recordBooleanHistogram(
                     "Tabs.PersistedTabData.Storage.Restore." + getUmaTag(), success);
-            return res == null ? null : ByteBuffer.wrap(res);
+            return res;
         }
 
         @Override

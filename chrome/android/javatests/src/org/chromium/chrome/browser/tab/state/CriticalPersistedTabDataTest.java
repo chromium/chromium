@@ -33,7 +33,8 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tab.TabUserAgent;
 import org.chromium.chrome.browser.tab.WebContentsState;
-import org.chromium.chrome.browser.tab.proto.CriticalPersistedTabData.CriticalPersistedTabDataProto;
+import org.chromium.chrome.browser.tab.flatbuffer.LaunchTypeAtCreation;
+import org.chromium.chrome.browser.tab.flatbuffer.UserAgentType;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -311,16 +312,31 @@ public class CriticalPersistedTabDataTest {
     @SmallTest
     @Test
     public void testWebContentsStateBug_crbug_1220839() throws InterruptedException {
+        PersistedTabDataConfiguration.setUseTestConfig(false);
         String url = mTestServer.getURL("/chrome/test/data/browsing_data/e.html");
         Tab tab = sActivityTestRule.loadUrlInNewTab(url);
+        final Semaphore semaphore = new Semaphore(0);
+        // Saving serialized CriticalPersistedTabData ensures we get a direct ByteBuffer
+        // which is assumed in the rest of Clank. See crbug.com/1220839 for more details.
         ThreadUtils.runOnUiThreadBlocking(() -> {
             CriticalPersistedTabData criticalPersistedTabData =
                     new CriticalPersistedTabData(tab, "", "", PARENT_ID, ROOT_ID, TIMESTAMP,
                             TabStateExtractor.getWebContentsState(tab), CONTENT_STATE_VERSION,
                             OPENER_APP_ID, THEME_COLOR, LAUNCH_TYPE_AT_CREATION, USER_AGENT_A);
-            ByteBuffer serialized = criticalPersistedTabData.getSerializeSupplier().get();
             PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
-                    ShoppingPersistedTabData.class, tab.isIncognito());
+                    CriticalPersistedTabData.class, tab.isIncognito());
+            FilePersistedTabDataStorage persistedTabDataStorage = new FilePersistedTabDataStorage();
+            persistedTabDataStorage.save(tab.getId(), config.getId(), () -> {
+                return criticalPersistedTabData.getSerializeSupplier().get();
+            }, semaphore::release);
+        });
+        semaphore.acquire();
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
+                    CriticalPersistedTabData.class, tab.isIncognito());
+
+            ByteBuffer serialized =
+                    CriticalPersistedTabData.restore(tab.getId(), tab.isIncognito());
             CriticalPersistedTabData deserialized = new CriticalPersistedTabData(
                     tab, serialized, config.getStorage(), config.getId());
             Assert.assertEquals(
@@ -581,9 +597,8 @@ public class CriticalPersistedTabDataTest {
     @SmallTest
     @Test
     public void testConvertProtoLaunchTypeToTabLaunchType() {
-        for (CriticalPersistedTabDataProto.LaunchTypeAtCreation type :
-                CriticalPersistedTabDataProto.LaunchTypeAtCreation.values()) {
-            if (type == CriticalPersistedTabDataProto.LaunchTypeAtCreation.UNKNOWN) continue;
+        for (int type = 0; type < LaunchTypeAtCreation.names.length; type++) {
+            if (type == LaunchTypeAtCreation.UNKNOWN) continue;
             CriticalPersistedTabData.getLaunchType(type);
         }
     }
@@ -593,37 +608,24 @@ public class CriticalPersistedTabDataTest {
     public void testConvertTabUserAgentToProtoUserAgentType() {
         for (@TabUserAgent int tabUserAgent = 0; tabUserAgent <= TabUserAgent.SIZE;
                 tabUserAgent++) {
-            CriticalPersistedTabDataProto.UserAgentType protoUserAgentType =
-                    CriticalPersistedTabData.getUserAgentType(tabUserAgent);
-            if (tabUserAgent == TabUserAgent.DEFAULT) {
-                Assert.assertEquals("TabUserAgent value is mapped incorrectly.", protoUserAgentType,
-                        CriticalPersistedTabDataProto.UserAgentType.DEFAULT);
-            } else {
-                Assert.assertNotEquals("TabUserAgent value is invalid.", protoUserAgentType,
-                        CriticalPersistedTabDataProto.UserAgentType.DEFAULT);
-            }
+            int flatBufferUserAgentType = CriticalPersistedTabData.getUserAgentType(tabUserAgent);
+            Assert.assertNotEquals("TabUserAgent value is invalid.", flatBufferUserAgentType,
+                    UserAgentType.USER_AGENT_UNKNOWN);
             if (tabUserAgent != TabUserAgent.SIZE) continue;
             Assert.assertEquals("TabUserAgent and ProtoUserAgentType should have the same size.",
-                    protoUserAgentType,
-                    CriticalPersistedTabDataProto.UserAgentType.USER_AGENT_SIZE);
+                    flatBufferUserAgentType, UserAgentType.USER_AGENT_SIZE);
         }
     }
 
     @SmallTest
     @Test
     public void testConvertProtoUserAgentTypeToTabUserAgent() {
-        for (CriticalPersistedTabDataProto.UserAgentType type :
-                CriticalPersistedTabDataProto.UserAgentType.values()) {
+        for (int type = 0; type < UserAgentType.names.length; type++) {
+            if (type == UserAgentType.USER_AGENT_UNKNOWN) continue;
             @TabUserAgent
-            int tabUserAgent = CriticalPersistedTabData.getUserAgentType(type);
-            if (type == CriticalPersistedTabDataProto.UserAgentType.DEFAULT) {
-                Assert.assertEquals("ProtoUserAgentType value is mapped incorrectly.", tabUserAgent,
-                        TabUserAgent.DEFAULT);
-            } else {
-                Assert.assertNotEquals(
-                        "ProtoUserAgentType value is invalid.", tabUserAgent, TabUserAgent.DEFAULT);
-            }
-            if (type != CriticalPersistedTabDataProto.UserAgentType.USER_AGENT_SIZE) continue;
+            int tabUserAgent = CriticalPersistedTabData.getTabUserAgentType(type);
+            Assert.assertNotNull("ProtoUserAgentType value is invalid.", tabUserAgent);
+            if (type != UserAgentType.USER_AGENT_SIZE) continue;
             Assert.assertEquals("TabUserAgent and ProtoUserAgentType should have the same size.",
                     tabUserAgent, TabUserAgent.SIZE);
         }
