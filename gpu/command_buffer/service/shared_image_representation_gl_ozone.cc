@@ -217,6 +217,7 @@ SharedImageRepresentationGLTexturePassthroughOzone::Create(
   GLuint internal_format = image->GetInternalFormat();
   GLenum gl_format = image->GetDataFormat();
   GLenum gl_type = image->GetDataType();
+
   scoped_refptr<gles2::TexturePassthrough> texture_passthrough =
       base::MakeRefCounted<gpu::gles2::TexturePassthrough>(
           *gl_texture_service_id, target, internal_format,
