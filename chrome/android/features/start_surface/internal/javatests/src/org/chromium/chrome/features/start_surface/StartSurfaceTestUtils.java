@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.tile.TileSectionType;
 import org.chromium.chrome.browser.suggestions.tile.TileSource;
 import org.chromium.chrome.browser.suggestions.tile.TileTitleSource;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
@@ -479,6 +480,22 @@ public class StartSurfaceTestUtils {
         }
 
         return siteSuggestions;
+    }
+
+    /**
+     * Wait for the deferred startup to be triggered.
+     * @param activityTestRule The ChromeTabbedActivityTestRule under test.
+     */
+    public static void waitForDeferredStartup(ChromeTabbedActivityTestRule activityTestRule) {
+        // Waits for the current Tab to complete loading. The deferred startup will be triggered
+        // after the loading.
+        Tab tab = activityTestRule.getActivity().getActivityTab();
+        if (tab != null && tab.isLoading()) {
+            CriteriaHelper.pollUiThread(()
+                                                -> !tab.isLoading(),
+                    MAX_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        }
+        assertTrue("Deferred startup never completed", activityTestRule.waitForDeferredStartup());
     }
 
     /**
