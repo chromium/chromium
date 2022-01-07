@@ -139,6 +139,10 @@ crbug.com/1237319 [ chromeos no-passthrough ] conformance2/textures/misc/origin-
 crbug.com/1237319 [ chromeos no-passthrough ] conformance2/textures/webgl_canvas/tex-3d-* [ Skip ]
 crbug.com/1237319 [ chromeos no-passthrough ] deqp/functional/gles3/clipping.html [ Skip ]
 
+# Parallel Shader compile/link is currently slower with Vulkan backend.
+crbug.com/angleproject/6748 [ angle-vulkan passthrough ] WebglExtension_KHR_parallel_shader_compile [ Skip ]
+crbug.com/angleproject/6748 [ angle-swiftshader passthrough ] WebglExtension_KHR_parallel_shader_compile [ Skip ]
+
 ###############################
 # Temporary Skip Expectations #
 ###############################

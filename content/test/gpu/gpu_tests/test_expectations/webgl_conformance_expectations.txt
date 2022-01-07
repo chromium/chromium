@@ -169,6 +169,8 @@ crbug.com/867718 [ win angle-d3d9 ] WebglExtension_EXT_disjoint_timer_query [ Sk
 # Extensions not available on angle-vulkan
 crbug.com/1187260 [ angle-vulkan passthrough ] WebglExtension_WEBGL_debug_shaders [ Skip ]
 crbug.com/1187260 [ angle-swiftshader passthrough ] WebglExtension_WEBGL_debug_shaders [ Skip ]
+crbug.com/angleproject/6748 [ angle-vulkan passthrough ] WebglExtension_KHR_parallel_shader_compile [ Skip ]
+crbug.com/angleproject/6748 [ angle-swiftshader passthrough ] WebglExtension_KHR_parallel_shader_compile [ Skip ]
 
 # Extensions not available on angle-metal
 crbug.com/angleproject/4846 [ mac angle-metal passthrough ] WebglExtension_EXT_disjoint_timer_query [ Skip ]
