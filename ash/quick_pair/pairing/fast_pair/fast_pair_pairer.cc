@@ -339,6 +339,7 @@ void FastPairPairer::DevicePairedChanged(device::BluetoothAdapter* adapter,
   if (device->GetAddress() == device_->ble_address ||
       device->GetAddress() == device_->classic_address()) {
     std::move(paired_callback_).Run(device_);
+    std::move(pairing_procedure_complete_).Run(device_);
   }
 }
 
