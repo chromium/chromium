@@ -19,6 +19,7 @@
 namespace {
 const char kPriceTrackingWithOptimizationGuideParam[] =
     "price_tracking_with_optimization_guide";
+const char kPriceTrackingOptOutParam[] = "price_tracking_opt_out";
 }  // namespace
 
 bool IsPriceAlertsEligible(web::BrowserState* browser_state) {
@@ -48,4 +49,11 @@ bool IsPriceAlertsEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kCommercePriceTracking, kPriceTrackingWithOptimizationGuideParam,
       /** default_value */ false);
+}
+
+bool IsPriceAlertsWithOptOutEnabled() {
+  return IsPriceAlertsEnabled() &&
+         base::GetFieldTrialParamByFeatureAsBool(kCommercePriceTracking,
+                                                 kPriceTrackingOptOutParam,
+                                                 /** default_value */ false);
 }

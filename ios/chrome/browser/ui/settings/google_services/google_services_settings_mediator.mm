@@ -446,7 +446,7 @@ bool GetStatusForSigninPolicy() {
           kBetterSearchAndBrowsingItemAccessibilityID;
       [items addObject:betterSearchAndBrowsingItem];
     }
-    if (IsPriceAlertsEnabled()) {
+    if (IsPriceAlertsWithOptOutEnabled()) {
       if (self.userPrefService->IsManagedPreference(
               prefs::kTrackPricesOnTabsEnabled)) {
         TableViewInfoButtonItem* trackPricesOnTabsItem = [self
