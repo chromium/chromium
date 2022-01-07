@@ -9,3 +9,10 @@ self.addEventListener("activate", (event) => {
   // Claim all clients so that the bridge script notices the activation.
   event.waitUntil(self.clients.claim());
 });
+
+self.addEventListener("fetch", (event) => {
+  const url = new URL(event.request.url).searchParams.get("proxied-url");
+  if (url) {
+    event.respondWith(fetch(url));
+  }
+});

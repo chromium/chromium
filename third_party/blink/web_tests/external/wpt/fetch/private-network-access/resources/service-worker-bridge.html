@@ -2,6 +2,10 @@
 <meta charset="utf-8">
 <title>ServiceWorker Bridge</title>
 <script>
+  // This bridge document exists to perform service worker commands on behalf
+  // of a test page. It lives within the same scope (including origin) as the
+  // service worker script, allowing it to be controlled by the service worker.
+
   async function register({ url, options }) {
     await navigator.serviceWorker.register(url, options);
     return { loaded: true };
@@ -61,6 +65,15 @@
     };
   }
 
+  async function doFetch({ url, options }) {
+    const response = await fetch(url, options);
+    const body = await response.text();
+    return {
+      ok: response.ok,
+      body,
+    };
+  }
+
   function getAction(action) {
     switch (action) {
       case "register":
@@ -71,6 +84,8 @@
         return wait;
       case "update":
         return update;
+      case "fetch":
+        return doFetch;
     }
   }
 
