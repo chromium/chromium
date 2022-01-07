@@ -730,7 +730,7 @@ TEST_F(PartitionAllocPCScanTest, PointersToGuardPages) {
   pointers->guard_page1 =
       static_cast<char*>(pointers->metadata_page) + SystemPageSize();
   pointers->scan_bitmap = SuperPageStateBitmap(super_page);
-  pointers->guard_page1 = reinterpret_cast<void*>(super_page + kSuperPageSize -
+  pointers->guard_page2 = reinterpret_cast<void*>(super_page + kSuperPageSize -
                                                   PartitionPageSize());
 
   // Simply run PCScan and expect no crashes.
