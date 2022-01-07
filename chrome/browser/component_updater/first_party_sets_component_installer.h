@@ -28,12 +28,10 @@ class ComponentUpdateService;
 
 class FirstPartySetsComponentInstallerPolicy : public ComponentInstallerPolicy {
  public:
-  using SetsReadyOnceCallback = base::OnceCallback<void(base::File)>;
-
   // |on_sets_ready| will be called on the UI thread when the sets are ready. It
   // is exposed here for testing.
   explicit FirstPartySetsComponentInstallerPolicy(
-      SetsReadyOnceCallback on_sets_ready);
+      base::RepeatingCallback<void(base::File)> on_sets_ready);
   ~FirstPartySetsComponentInstallerPolicy() override;
 
   FirstPartySetsComponentInstallerPolicy(
@@ -44,9 +42,7 @@ class FirstPartySetsComponentInstallerPolicy : public ComponentInstallerPolicy {
   // Calls the callback with the current First-Party Sets data, if the data
   // exists and can be read.
   static void ReconfigureAfterNetworkRestart(
-      SetsReadyOnceCallback on_sets_ready);
-
-  void OnRegistrationComplete();
+      base::OnceCallback<void(base::File)>);
 
   // Resets static state. Should only be used to clear state during testing.
   static void ResetForTesting();
@@ -63,13 +59,9 @@ class FirstPartySetsComponentInstallerPolicy : public ComponentInstallerPolicy {
   FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
                            NonexistentFile_OnComponentReady);
   FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
-                           NonexistentFile_OnRegistrationComplete);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
                            LoadsSets_OnComponentReady);
   FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
                            LoadsSets_OnNetworkRestart);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
-                           IgnoreNewSets_NoInitialComponent);
   FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
                            IgnoreNewSets_OnComponentReady);
   FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
@@ -106,9 +98,7 @@ class FirstPartySetsComponentInstallerPolicy : public ComponentInstallerPolicy {
 
   static base::FilePath GetInstalledPath(const base::FilePath& base);
 
-  // We use a OnceCallback to ensure we only pass along the sets file once
-  // during Chrome's lifetime (modulo reconfiguring the network service).
-  SetsReadyOnceCallback on_sets_ready_;
+  base::RepeatingCallback<void(base::File)> on_sets_ready_;
 };
 
 // Call once during startup to make the component update service aware of
