@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(MediaAccessExtensionAppsTest,
 
   // Request accessing the camera for |web_contents|.
   MediaRequestChangeForWebContent(
-      web_contents, web_contents->GetLastCommittedURL(),
+      web_contents, web_contents->GetVisibleURL(),
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       content::MEDIA_REQUEST_STATE_DONE);
 
@@ -297,7 +297,7 @@ IN_PROC_BROWSER_TEST_F(MediaAccessExtensionAppsTest,
 
   // Request accessing the microphone for |web_contents|.
   MediaRequestChangeForWebContent(
-      web_contents, web_contents->GetLastCommittedURL(),
+      web_contents, web_contents->GetVisibleURL(),
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
       content::MEDIA_REQUEST_STATE_DONE);
 
@@ -306,7 +306,7 @@ IN_PROC_BROWSER_TEST_F(MediaAccessExtensionAppsTest,
 
   // Stop accessing the microphone for |web_contents|.
   MediaRequestChangeForWebContent(
-      web_contents, web_contents->GetLastCommittedURL(),
+      web_contents, web_contents->GetVisibleURL(),
       blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
       content::MEDIA_REQUEST_STATE_CLOSING);
 
@@ -315,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(MediaAccessExtensionAppsTest,
 
   // Stop accessing the camera for |web_contents|.
   MediaRequestChangeForWebContent(
-      web_contents, web_contents->GetLastCommittedURL(),
+      web_contents, web_contents->GetVisibleURL(),
       blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE,
       content::MEDIA_REQUEST_STATE_CLOSING);
 
