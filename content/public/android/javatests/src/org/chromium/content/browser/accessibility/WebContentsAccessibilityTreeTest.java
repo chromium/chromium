@@ -454,6 +454,7 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1282189")
     public void test_ariaHiddenIframe() {
         performAriaTest("aria-hidden-iframe.html");
     }
