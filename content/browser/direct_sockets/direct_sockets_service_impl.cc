@@ -300,6 +300,13 @@ class DirectSocketsServiceImpl::ResolveHostAndOpenSocket final
           std::min(options_->receive_buffer_size, kMaxBufferSize);
     }
     tcp_connected_socket_options->no_delay = options_->no_delay;
+    if (options_->keep_alive_options) {
+      // options_->keep_alive_options will be invalidated.
+      tcp_connected_socket_options->keep_alive_options =
+          std::move(options_->keep_alive_options);
+    }
+    // invalidate options_.
+    options_.reset();
 
     network_context->CreateTCPConnectedSocket(
         local_addr, *resolved_addresses,

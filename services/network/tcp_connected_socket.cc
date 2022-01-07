@@ -14,6 +14,7 @@
 #include "net/log/net_log.h"
 #include "net/socket/client_socket_factory.h"
 #include "net/socket/client_socket_handle.h"
+#include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "services/network/tls_client_socket.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -31,9 +32,9 @@ int ClampTCPBufferSize(int requested_buffer_size) {
 // (TCPSocket::SetDefaultOptionsForClient()).
 int ConfigureSocket(
     net::TransportClientSocket* socket,
-    const mojom::TCPConnectedSocketOptions& tcp_connected_socket_options) {
+    const mojom::TCPConnectedSocketOptionsPtr tcp_connected_socket_options) {
   int send_buffer_size =
-      ClampTCPBufferSize(tcp_connected_socket_options.send_buffer_size);
+      ClampTCPBufferSize(tcp_connected_socket_options->send_buffer_size);
   if (send_buffer_size > 0) {
     int result = socket->SetSendBufferSize(send_buffer_size);
     DCHECK_NE(net::ERR_IO_PENDING, result);
@@ -42,7 +43,7 @@ int ConfigureSocket(
   }
 
   int receive_buffer_size =
-      ClampTCPBufferSize(tcp_connected_socket_options.receive_buffer_size);
+      ClampTCPBufferSize(tcp_connected_socket_options->receive_buffer_size);
   if (receive_buffer_size > 0) {
     int result = socket->SetReceiveBufferSize(receive_buffer_size);
     DCHECK_NE(net::ERR_IO_PENDING, result);
@@ -51,11 +52,22 @@ int ConfigureSocket(
   }
 
   // No delay is set by default, so only update the setting if it's false.
-  if (!tcp_connected_socket_options.no_delay) {
+  if (!tcp_connected_socket_options->no_delay) {
     // Unlike the above calls, TcpSocket::SetNoDelay() returns a bool rather
     // than a network error code.
     if (!socket->SetNoDelay(false))
       return net::ERR_FAILED;
+  }
+
+  const mojom::TCPKeepAliveOptionsPtr& keep_alive_options =
+      tcp_connected_socket_options->keep_alive_options;
+  if (keep_alive_options) {
+    // TcpSocket::SetKeepAlive(...) returns a bool rather than a network error
+    // code.
+    if (!socket->SetKeepAlive(/*enable=*/keep_alive_options->enable,
+                              /*delay_secs=*/keep_alive_options->delay)) {
+      return net::ERR_FAILED;
+    }
   }
 
   return net::OK;
@@ -142,8 +154,9 @@ void TCPConnectedSocket::ConnectWithSocket(
   connect_callback_ = std::move(callback);
 
   if (tcp_connected_socket_options) {
-    socket_->SetBeforeConnectCallback(base::BindRepeating(
-        &ConfigureSocket, socket_.get(), *tcp_connected_socket_options));
+    socket_->SetBeforeConnectCallback(
+        base::BindRepeating(&ConfigureSocket, socket_.get(),
+                            base::Passed(&tcp_connected_socket_options)));
   }
   int result = socket_->Connect(base::BindOnce(
       &TCPConnectedSocket::OnConnectCompleted, base::Unretained(this)));

@@ -25,6 +25,8 @@ class LocalDOMWindow;
 class Navigator;
 class ScriptState;
 class SocketOptions;
+class TCPSocketOptions;
+class UDPSocketOptions;
 
 class MODULES_EXPORT NavigatorSocket final
     : public GarbageCollected<NavigatorSocket>,
@@ -32,6 +34,8 @@ class MODULES_EXPORT NavigatorSocket final
       public ExecutionContextLifecycleStateObserver {
  public:
   static const char kSupplementName[];
+
+  enum class ProtocolType { kTcp, kUdp };
 
   explicit NavigatorSocket(ExecutionContext*);
   ~NavigatorSocket() override = default;
@@ -46,12 +50,12 @@ class MODULES_EXPORT NavigatorSocket final
   // Navigator partial interface
   static ScriptPromise openTCPSocket(ScriptState*,
                                      Navigator&,
-                                     const SocketOptions*,
+                                     const TCPSocketOptions*,
                                      ExceptionState&);
 
   static ScriptPromise openUDPSocket(ScriptState*,
                                      Navigator&,
-                                     const SocketOptions*,
+                                     const UDPSocketOptions*,
                                      ExceptionState&);
 
   // ExecutionContextLifecycleStateObserver:
@@ -65,14 +69,15 @@ class MODULES_EXPORT NavigatorSocket final
   void EnsureServiceConnected(LocalDOMWindow&);
 
   static mojom::blink::DirectSocketOptionsPtr CreateSocketOptions(
-      const SocketOptions&);
+      const SocketOptions*,
+      NavigatorSocket::ProtocolType);
 
   ScriptPromise openTCPSocket(ScriptState*,
-                              const SocketOptions*,
+                              const TCPSocketOptions*,
                               ExceptionState&);
 
   ScriptPromise openUDPSocket(ScriptState*,
-                              const SocketOptions*,
+                              const UDPSocketOptions*,
                               ExceptionState&);
 
   // Updates exception state whenever returning false.

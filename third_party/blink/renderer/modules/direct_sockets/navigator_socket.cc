@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/direct_sockets/navigator_socket.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/time/time.h"
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/tcp_socket.mojom-blink.h"
 #include "services/network/public/mojom/udp_socket.mojom-blink.h"
@@ -14,6 +15,8 @@
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_socket_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_tcp_socket_options.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_udp_socket_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -55,7 +58,7 @@ NavigatorSocket& NavigatorSocket::From(ScriptState* script_state) {
 // static
 ScriptPromise NavigatorSocket::openTCPSocket(ScriptState* script_state,
                                              Navigator& navigator,
-                                             const SocketOptions* options,
+                                             const TCPSocketOptions* options,
                                              ExceptionState& exception_state) {
   return From(script_state)
       .openTCPSocket(script_state, options, exception_state);
@@ -64,7 +67,7 @@ ScriptPromise NavigatorSocket::openTCPSocket(ScriptState* script_state,
 // static
 ScriptPromise NavigatorSocket::openUDPSocket(ScriptState* script_state,
                                              Navigator& navigator,
-                                             const SocketOptions* options,
+                                             const UDPSocketOptions* options,
                                              ExceptionState& exception_state) {
   return From(script_state)
       .openUDPSocket(script_state, options, exception_state);
@@ -103,32 +106,45 @@ void NavigatorSocket::EnsureServiceConnected(LocalDOMWindow& window) {
 
 // static
 mojom::blink::DirectSocketOptionsPtr NavigatorSocket::CreateSocketOptions(
-    const SocketOptions& options) {
+    const SocketOptions* options,
+    NavigatorSocket::ProtocolType socket_type) {
   auto socket_options = mojom::blink::DirectSocketOptions::New();
 
-  if (options.hasLocalAddress())
-    socket_options->local_hostname = options.localAddress();
-  if (options.hasLocalPort())
-    socket_options->local_port = options.localPort();
+  if (options->hasLocalAddress())
+    socket_options->local_hostname = options->localAddress();
+  if (options->hasLocalPort())
+    socket_options->local_port = options->localPort();
 
-  if (options.hasRemoteAddress())
-    socket_options->remote_hostname = options.remoteAddress();
-  if (options.hasRemotePort())
-    socket_options->remote_port = options.remotePort();
+  if (options->hasRemoteAddress())
+    socket_options->remote_hostname = options->remoteAddress();
+  if (options->hasRemotePort())
+    socket_options->remote_port = options->remotePort();
 
-  if (options.hasSendBufferSize())
-    socket_options->send_buffer_size = options.sendBufferSize();
-  if (options.hasReceiveBufferSize())
-    socket_options->receive_buffer_size = options.receiveBufferSize();
+  if (options->hasSendBufferSize())
+    socket_options->send_buffer_size = options->sendBufferSize();
+  if (options->hasReceiveBufferSize())
+    socket_options->receive_buffer_size = options->receiveBufferSize();
 
-  if (options.hasNoDelay())
-    socket_options->no_delay = options.noDelay();
+  if (socket_type == NavigatorSocket::ProtocolType::kTcp) {
+    const TCPSocketOptions* tcp_options =
+        static_cast<const TCPSocketOptions*>(options);
+    if (tcp_options->hasNoDelay()) {
+      socket_options->no_delay = tcp_options->noDelay();
+    }
+    if (tcp_options->hasKeepAlive()) {
+      socket_options->keep_alive_options =
+          network::mojom::blink::TCPKeepAliveOptions::New(
+              /*enable=*/tcp_options->keepAlive(),
+              /*delay=*/base::Milliseconds(tcp_options->getKeepAliveDelayOr(0))
+                  .InSeconds());
+    }
+  }
 
   return socket_options;
 }
 
 ScriptPromise NavigatorSocket::openTCPSocket(ScriptState* script_state,
-                                             const SocketOptions* options,
+                                             const TCPSocketOptions* options,
                                              ExceptionState& exception_state) {
   if (!OpenSocketPermitted(script_state, options, exception_state))
     return ScriptPromise();
@@ -139,7 +155,7 @@ ScriptPromise NavigatorSocket::openTCPSocket(ScriptState* script_state,
   ScriptPromise promise = resolver->Promise();
 
   service_remote_->OpenTcpSocket(
-      CreateSocketOptions(*options),
+      CreateSocketOptions(options, NavigatorSocket::ProtocolType::kTcp),
       pending->GetTCPSocketReceiver(), pending->GetTCPSocketObserver(),
       WTF::Bind(&NavigatorSocket::OnTcpOpen, WrapPersistent(this),
                 WrapPersistent(pending)));
@@ -147,7 +163,7 @@ ScriptPromise NavigatorSocket::openTCPSocket(ScriptState* script_state,
 }
 
 ScriptPromise NavigatorSocket::openUDPSocket(ScriptState* script_state,
-                                             const SocketOptions* options,
+                                             const UDPSocketOptions* options,
                                              ExceptionState& exception_state) {
   if (!OpenSocketPermitted(script_state, options, exception_state))
     return ScriptPromise();
@@ -159,8 +175,8 @@ ScriptPromise NavigatorSocket::openUDPSocket(ScriptState* script_state,
   ScriptPromise promise = resolver->Promise();
 
   service_remote_->OpenUdpSocket(
-      CreateSocketOptions(*options), pending->GetUDPSocketReceiver(),
-      pending->GetUDPSocketListener(),
+      CreateSocketOptions(options, NavigatorSocket::ProtocolType::kUdp),
+      pending->GetUDPSocketReceiver(), pending->GetUDPSocketListener(),
       WTF::Bind(&NavigatorSocket::OnUdpOpen, WrapPersistent(this),
                 WrapPersistent(pending)));
   return promise;

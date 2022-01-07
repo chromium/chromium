@@ -37,6 +37,8 @@ struct DirectSocketOptions {
 
   // Only relevant for TCP:
   bool no_delay = false;
+
+  network.mojom.TCPKeepAliveOptions? keep_alive_options;
 };
 
 // This wraps network.mojom.NetworkContext and handles extra work such as

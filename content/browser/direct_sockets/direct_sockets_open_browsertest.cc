@@ -62,6 +62,8 @@ struct RecordedCall {
   int32_t receive_buffer_size = 0;
 
   bool no_delay = false;
+
+  network::mojom::TCPKeepAliveOptionsPtr keep_alive_options;
 };
 
 constexpr char kPermissionDeniedHistogramName[] =
@@ -233,11 +235,13 @@ class MockNetworkContext : public network::TestNetworkContext {
       mojo::PendingRemote<network::mojom::SocketObserver> observer,
       CreateTCPConnectedSocketCallback callback) override {
     const net::IPEndPoint& peer_addr = remote_addr_list.front();
-    Record(RecordedCall{DirectSocketsServiceImpl::ProtocolType::kTcp,
-                        peer_addr.address().ToString(), peer_addr.port(),
-                        tcp_connected_socket_options->send_buffer_size,
-                        tcp_connected_socket_options->receive_buffer_size,
-                        tcp_connected_socket_options->no_delay});
+    Record(RecordedCall{
+        DirectSocketsServiceImpl::ProtocolType::kTcp,
+        peer_addr.address().ToString(), peer_addr.port(),
+        tcp_connected_socket_options->send_buffer_size,
+        tcp_connected_socket_options->receive_buffer_size,
+        tcp_connected_socket_options->no_delay,
+        std::move(tcp_connected_socket_options->keep_alive_options)});
 
     mojo::ScopedDataPipeProducerHandle producer;
     mojo::ScopedDataPipeConsumerHandle consumer;
@@ -316,11 +320,13 @@ class MockUDPSocket : public network::mojom::UDPSocket {
     const net::Error result = (remote_addr.port() == 0)
                                   ? net::ERR_INVALID_ARGUMENT
                                   : network_context_->result();
-    network_context_->Record(RecordedCall{
-        DirectSocketsServiceImpl::ProtocolType::kUdp,
-        remote_addr.address().ToString(), remote_addr.port(),
-        socket_options->send_buffer_size, socket_options->receive_buffer_size,
-        /*no_delay=*/false});
+    network_context_->Record(
+        RecordedCall{DirectSocketsServiceImpl::ProtocolType::kUdp,
+                     remote_addr.address().ToString(),
+                     remote_addr.port(),
+                     socket_options->send_buffer_size,
+                     socket_options->receive_buffer_size,
+                     {}});
 
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback), result,
@@ -650,6 +656,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsOne) {
   EXPECT_EQ(3456, call.send_buffer_size);
   EXPECT_EQ(7890, call.receive_buffer_size);
   EXPECT_EQ(false, call.no_delay);
+  EXPECT_FALSE(call.keep_alive_options);
 
   // To sync histograms from renderer.
   FetchHistogramsFromChildProcesses();
@@ -674,7 +681,9 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsTwo) {
             remotePort: 789,
             sendBufferSize: 0,
             receiveBufferSize: 1234,
-            noDelay: true
+            noDelay: true,
+            keepAlive: true,
+            keepAliveDelay: 100_000
           })
         )";
   EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
@@ -688,6 +697,44 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsTwo) {
   EXPECT_EQ(0, call.send_buffer_size);
   EXPECT_EQ(1234, call.receive_buffer_size);
   EXPECT_EQ(true, call.no_delay);
+  EXPECT_TRUE(call.keep_alive_options);
+  EXPECT_EQ(true, call.keep_alive_options->enable);
+  EXPECT_EQ(100U, call.keep_alive_options->delay);
+}
+
+IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenTcp_OptionsThree) {
+  EXPECT_TRUE(NavigateToURL(shell(), GetTestOpenPageURL()));
+
+  DirectSocketsServiceImpl::SetPermissionCallbackForTesting(
+      base::BindRepeating(&UnconditionallyPermitConnection));
+
+  MockNetworkContext mock_network_context(net::OK);
+  DirectSocketsServiceImpl::SetNetworkContextForTesting(&mock_network_context);
+
+  const std::string script =
+      R"(
+          openTcp({
+            remoteAddress: 'fedc:ba98:7654:3210:fedc:ba98:7654:3210',
+            remotePort: 789,
+            sendBufferSize: 0,
+            receiveBufferSize: 1234,
+            noDelay: true,
+            keepAlive: false
+          })
+        )";
+  EXPECT_THAT(EvalJs(shell(), script).ExtractString(),
+              StartsWith("openTcp succeeded"));
+
+  DCHECK_EQ(1U, mock_network_context.history().size());
+  const RecordedCall& call = mock_network_context.history()[0];
+  EXPECT_EQ(DirectSocketsServiceImpl::ProtocolType::kTcp, call.protocol_type);
+  EXPECT_EQ("fedc:ba98:7654:3210:fedc:ba98:7654:3210", call.remote_address);
+  EXPECT_EQ(789, call.remote_port);
+  EXPECT_EQ(0, call.send_buffer_size);
+  EXPECT_EQ(1234, call.receive_buffer_size);
+  EXPECT_EQ(true, call.no_delay);
+  EXPECT_TRUE(call.keep_alive_options);
+  EXPECT_EQ(false, call.keep_alive_options->enable);
 }
 
 IN_PROC_BROWSER_TEST_F(DirectSocketsOpenBrowserTest, OpenUdp_Success_Hostname) {

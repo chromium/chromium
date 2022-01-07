@@ -11,8 +11,8 @@
   DirectSocketEnabled
 ] partial interface Navigator {
   [SecureContext, RaisesException, CallWith=ScriptState, Measure]
-  Promise<TCPSocket> openTCPSocket(optional SocketOptions options = {});
+  Promise<TCPSocket> openTCPSocket(optional TCPSocketOptions options = {});
 
   [SecureContext, RaisesException, CallWith=ScriptState, Measure]
-  Promise<UDPSocket> openUDPSocket(optional SocketOptions options = {});
+  Promise<UDPSocket> openUDPSocket(optional UDPSocketOptions options = {});
 };

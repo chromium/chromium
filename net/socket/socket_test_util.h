@@ -254,13 +254,15 @@ class SocketDataProvider {
   bool no_delay() const { return no_delay_; }
   void set_no_delay(bool no_delay) { no_delay_ = no_delay; }
 
-  // Returns whether TCP keepalives were enabled or not. Returns 0 by default,
-  // which may not match the default behavior on all platforms.
-  bool keep_alive_enabled() const { return keep_alive_enabled_; }
+  // Returns whether TCP keepalives were enabled or not. Returns kDefault by
+  // default.
+  enum class KeepAliveState { kEnabled, kDisabled, kDefault };
+  KeepAliveState keep_alive_state() const { return keep_alive_state_; }
   // Last set TCP keepalive delay.
   int keep_alive_delay() const { return keep_alive_delay_; }
   void set_keep_alive(bool enable, int delay) {
-    keep_alive_enabled_ = enable;
+    keep_alive_state_ =
+        enable ? KeepAliveState::kEnabled : KeepAliveState::kDisabled;
     keep_alive_delay_ = delay;
   }
 
@@ -321,8 +323,8 @@ class SocketDataProvider {
   int send_buffer_size_ = -1;
   // This reflects the default state of TCPClientSockets.
   bool no_delay_ = true;
-  // Default varies by platform. Just pretend it's disabled.
-  bool keep_alive_enabled_ = false;
+
+  KeepAliveState keep_alive_state_ = KeepAliveState::kDefault;
   int keep_alive_delay_ = 0;
 
   int set_receive_buffer_size_result_ = net::OK;

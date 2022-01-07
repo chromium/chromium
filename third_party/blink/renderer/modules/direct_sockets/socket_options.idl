@@ -13,8 +13,14 @@ dictionary SocketOptions {
 
   unsigned long sendBufferSize;
   unsigned long receiveBufferSize;
+};
 
-  // These are only relevant for TCP:
-  boolean keepAlive;
+dictionary TCPSocketOptions : SocketOptions {
   boolean noDelay;
+  boolean keepAlive;
+  [Clamp] unsigned long keepAliveDelay;
+};
+
+dictionary UDPSocketOptions : SocketOptions {
+
 };
