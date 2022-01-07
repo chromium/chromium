@@ -5,10 +5,10 @@
 #include "chrome/browser/ui/commander/commander_controller.h"
 
 #include <string>
+#include <tuple>
 
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/ignore_result.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -139,7 +139,7 @@ TEST_F(CommanderControllerTest, PassesInputToCommandSourcesOnTextChanged) {
 
 TEST_F(CommanderControllerTest, ResultSetIdsDifferAcrossCalls) {
   std::vector<std::unique_ptr<CommandSource>> sources;
-  ignore_result(AddSource(&sources, CreateNoOpCommandSource()));
+  std::ignore = AddSource(&sources, CreateNoOpCommandSource());
   base::RunLoop run_loop;
   auto controller =
       CommanderController::CreateWithSourcesForTesting(std::move(sources));

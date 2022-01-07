@@ -6,10 +6,11 @@
 
 #include <ATLComTime.h>
 #include <wrl/client.h>
+
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/ignore_result.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util_win.h"
@@ -71,11 +72,11 @@ base::Time DateToTime(DATE date) {
   ::COleDateTime date_time(date);
   base::Time time;
   if (date_time.m_status == ::COleDateTime::valid) {
-    ignore_result(base::Time::FromLocalExploded(
+    std::ignore = base::Time::FromLocalExploded(
         {date_time.GetYear(), date_time.GetMonth(), date_time.GetDayOfWeek(),
          date_time.GetDay(), date_time.GetHour(), date_time.GetMinute(),
          date_time.GetSecond(), 0},
-        &time));
+        &time);
   }
   return time;
 }

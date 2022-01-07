@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ui/views/commander_frontend_views.h"
 
+#include <tuple>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/ignore_result.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -213,7 +214,7 @@ void CommanderFrontendViews::Hide() {
 
   focus_loss_watcher_.reset();
   widget_delegate_->SetOwnedByWidget(true);
-  ignore_result(widget_delegate_.release());
+  std::ignore = widget_delegate_.release();
   widget_->Close();
   widget_ = nullptr;
 }

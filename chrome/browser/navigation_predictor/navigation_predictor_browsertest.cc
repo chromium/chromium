@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <tuple>
 
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
@@ -750,8 +751,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPredictorFencedFrameBrowserTest,
   // Create a fenced frame.
   const GURL& fenced_frame_url =
       test_server()->GetURL("/fenced_frames/simple_page_with_anchors.html");
-  ignore_result(fenced_frame_test_helper().CreateFencedFrame(
-      web_contents()->GetMainFrame(), fenced_frame_url));
+  std::ignore = fenced_frame_test_helper().CreateFencedFrame(
+      web_contents()->GetMainFrame(), fenced_frame_url);
 
   // Make sure the fenced frame doesn't log any anchors.
   anchor_entries = test_ukm_recorder->GetEntriesByName(AnchorEntry::kEntryName);

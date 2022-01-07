@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -18,7 +19,6 @@
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/ignore_result.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -916,7 +916,7 @@ class CaptivePortalBrowserTest : public InProcessBrowserTest {
     EXPECT_EQ(expected_num_jobs,
               static_cast<int>(ongoing_mock_requests_.size()));
     for (auto& job : ongoing_mock_requests_)
-      ignore_result(job.client.Unbind().PassPipe().release());
+      std::ignore = job.client.Unbind().PassPipe().release();
     ongoing_mock_requests_.clear();
   }
 

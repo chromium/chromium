@@ -5,11 +5,11 @@
 #include "chrome/browser/ash/app_mode/kiosk_profile_loader.h"
 
 #include <memory>
+#include <tuple>
 
 #include "ash/components/login/auth/auth_status_consumer.h"
 #include "ash/components/login/auth/user_context.h"
 #include "base/bind.h"
-#include "base/ignore_result.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -179,7 +179,7 @@ void KioskProfileLoader::ReportLaunchResult(KioskAppLaunchError::Error error) {
 void KioskProfileLoader::OnAuthSuccess(const UserContext& user_context) {
   // LoginPerformer will delete itself.
   login_performer_->set_delegate(NULL);
-  ignore_result(login_performer_.release());
+  std::ignore = login_performer_.release();
 
   failed_mount_attempts_ = 0;
 

@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "ash/components/disks/disk_mount_manager.h"
@@ -15,7 +16,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
-#include "base/ignore_result.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
@@ -710,10 +710,10 @@ TEST_F(SmbServiceWithSmbfsTest, MountExcessiveShares) {
         std::string(kSharePath) + base::NumberToString(i);
     const std::string mount_path =
         std::string(kMountPath) + base::NumberToString(i);
-    ignore_result(MountBasicShare(share_path, mount_path,
+    std::ignore = MountBasicShare(share_path, mount_path,
                                   base::BindOnce([](SmbMountResult result) {
                                     EXPECT_EQ(SmbMountResult::kSuccess, result);
-                                  })));
+                                  }));
   }
 
   // Check: After mounting the maximum number of shares, requesting to mount an
@@ -722,24 +722,24 @@ TEST_F(SmbServiceWithSmbfsTest, MountExcessiveShares) {
       std::string(kSharePath) + base::NumberToString(kMaxSmbFsShares);
   const std::string mount_path =
       std::string(kMountPath) + base::NumberToString(kMaxSmbFsShares);
-  ignore_result(MountBasicShare(
+  std::ignore = MountBasicShare(
       share_path, mount_path, base::BindOnce([](SmbMountResult result) {
         EXPECT_EQ(SmbMountResult::kTooManyOpened, result);
-      })));
+      }));
 }
 
 TEST_F(SmbServiceWithSmbfsTest, GetSmbFsShareForPath) {
   CreateService(profile_);
   WaitForSetupComplete();
 
-  ignore_result(MountBasicShare(kSharePath, kMountPath,
+  std::ignore = MountBasicShare(kSharePath, kMountPath,
                                 base::BindOnce([](SmbMountResult result) {
                                   EXPECT_EQ(SmbMountResult::kSuccess, result);
-                                })));
-  ignore_result(MountBasicShare(kSharePath2, kMountPath2,
+                                }));
+  std::ignore = MountBasicShare(kSharePath2, kMountPath2,
                                 base::BindOnce([](SmbMountResult result) {
                                   EXPECT_EQ(SmbMountResult::kSuccess, result);
-                                })));
+                                }));
 
   SmbFsShare* share =
       smb_service_->GetSmbFsShareForPath(base::FilePath(kMountPath));
@@ -764,23 +764,23 @@ TEST_F(SmbServiceWithSmbfsTest, MountDuplicate) {
   CreateService(profile_);
   WaitForSetupComplete();
 
-  ignore_result(MountBasicShare(kSharePath, kMountPath,
+  std::ignore = MountBasicShare(kSharePath, kMountPath,
                                 base::BindOnce([](SmbMountResult result) {
                                   EXPECT_EQ(SmbMountResult::kSuccess, result);
-                                })));
+                                }));
 
   // A second mount with the same share path should fail.
-  ignore_result(MountBasicShare(
+  std::ignore = MountBasicShare(
       kSharePath, kMountPath2, base::BindOnce([](SmbMountResult result) {
         EXPECT_EQ(SmbMountResult::kMountExists, result);
-      })));
+      }));
 
   // Unmounting and mounting again should succeed.
   smb_service_->UnmountSmbFs(base::FilePath(kMountPath));
-  ignore_result(MountBasicShare(kSharePath, kMountPath2,
+  std::ignore = MountBasicShare(kSharePath, kMountPath2,
                                 base::BindOnce([](SmbMountResult result) {
                                   EXPECT_EQ(SmbMountResult::kSuccess, result);
-                                })));
+                                }));
 }
 
 }  // namespace smb_client

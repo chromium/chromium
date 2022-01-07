@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/ignore_result.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/sparse_histogram.h"
@@ -470,7 +470,7 @@ class ReporterRunner {
 
     // The reporter sequence has been scheduled to run, so don't notify that
     // it has not been scheduled.
-    ignore_result(scoped_runner.Release());
+    std::ignore = scoped_runner.Release();
   }
 
  private:
@@ -620,8 +620,8 @@ class ReporterRunner {
     if (!invocations_.container().empty()) {
       // If there are other invocations to start, then we shouldn't finalize
       // this object. ScopedClosureRunner::Release requires its return value to
-      // be used, so simply ignore_result it, since it will not be needed.
-      ignore_result(scoped_runner.Release());
+      // be used, so simply std::ignore it, since it will not be needed.
+      std::ignore = scoped_runner.Release();
       PostNextInvocation();
     }
 

@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include <cmath>
+#include <tuple>
 
-#include "base/ignore_result.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -465,7 +465,7 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
     helper()->SetupGeometryChangeCallback(web_contents);
     content::TitleWatcher title_watcher(web_contents, u"ongeometrychange");
     helper()->browser_view()->ToggleWindowControlsOverlayEnabled();
-    ignore_result(title_watcher.WaitAndGetTitle());
+    std::ignore = title_watcher.WaitAndGetTitle();
   }
 
   bool GetWindowControlOverlayVisibility() {
@@ -490,7 +490,7 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
                 ->app_browser()
                 ->tab_strip_model()
                 ->GetActiveWebContents()));
-    ignore_result(title_watcher.WaitAndGetTitle());
+    std::ignore = title_watcher.WaitAndGetTitle();
   }
 
   gfx::Rect GetWindowControlOverlayBoundingClientRect() {
@@ -532,7 +532,7 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
     helper()->SetupGeometryChangeCallback(web_contents);
     content::TitleWatcher title_watcher(web_contents, u"ongeometrychange");
     helper()->browser_view()->GetWidget()->SetBounds(new_bounds);
-    ignore_result(title_watcher.WaitAndGetTitle());
+    std::ignore = title_watcher.WaitAndGetTitle();
   }
 
   gfx::Rect GetWindowControlOverlayBoundingClientRectFromEvent() {

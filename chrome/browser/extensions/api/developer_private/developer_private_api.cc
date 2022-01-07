@@ -7,13 +7,13 @@
 #include <stddef.h>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/guid.h"
-#include "base/ignore_result.h"
 #include "base/lazy_instance.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
@@ -159,7 +159,7 @@ std::string ReadFileToString(const base::FilePath& path) {
   std::string data;
   // This call can fail, but it doesn't matter for our purposes. If it fails,
   // we simply return an empty string for the manifest, and ignore it.
-  ignore_result(base::ReadFileToString(path, &data));
+  std::ignore = base::ReadFileToString(path, &data);
   return data;
 }
 

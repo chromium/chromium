@@ -7,11 +7,12 @@
 #include <stdint.h>
 #include <windows.h>
 
+#include <tuple>
+
 #include "base/command_line.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/logging_win.h"
 #include "base/path_service.h"
@@ -126,7 +127,7 @@ base::FilePath GetLogFilePath(const installer::InitialPreferences& prefs) {
 
   // Fallback to current directory if getting the temp directory fails.
   base::FilePath tmp_path;
-  ignore_result(base::PathService::Get(base::DIR_TEMP, &tmp_path));
+  std::ignore = base::PathService::Get(base::DIR_TEMP, &tmp_path);
   return tmp_path.Append(kLogFilename);
 }
 

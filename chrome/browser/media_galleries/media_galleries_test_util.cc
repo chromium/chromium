@@ -7,12 +7,12 @@
 #include <stddef.h>
 
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/ignore_result.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_restrictions.h"
@@ -97,7 +97,7 @@ EnsureMediaDirectoriesExists::EnsureMediaDirectoriesExists()
 
 EnsureMediaDirectoriesExists::~EnsureMediaDirectoriesExists() {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  ignore_result(fake_dir_.Delete());
+  std::ignore = fake_dir_.Delete();
 }
 
 void EnsureMediaDirectoriesExists::ChangeMediaPathOverrides() {

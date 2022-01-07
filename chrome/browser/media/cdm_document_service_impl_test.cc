@@ -5,10 +5,10 @@
 #include "chrome/browser/media/cdm_document_service_impl.h"
 
 #include <memory>
+#include <tuple>
 
 #include "base/files/file.h"
 #include "base/files/file_util.h"
-#include "base/ignore_result.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
@@ -172,7 +172,7 @@ TEST_F(CdmDocumentServiceImplTest, SetClientToken) {
   // Call GetMediaFoundationCdmData to create the origin id first, otherwise
   // `SetCdmClientToken()` will assume the preference data associated with the
   // origin was recently cleared and will not save the client token.
-  ignore_result(GetMediaFoundationCdmData());
+  std::ignore = GetMediaFoundationCdmData();
 
   std::vector<uint8_t> expected_client_token = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
   SetCdmClientToken(expected_client_token);
@@ -192,12 +192,12 @@ TEST_F(CdmDocumentServiceImplTest, GetSameClientToken) {
   // Call GetMediaFoundationCdmData to create the origin id first, otherwise
   // `SetCdmClientToken()` will assume the preference data associated with the
   // origin was recently cleared and will not save the client token.
-  ignore_result(GetMediaFoundationCdmData());
+  std::ignore = GetMediaFoundationCdmData();
   std::vector<uint8_t> expected_client_token = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
   SetCdmClientToken(expected_client_token);
 
   NavigateToUrlAndCreateCdmDocumentService(GURL(kTestOrigin2));
-  ignore_result(GetMediaFoundationCdmData());
+  std::ignore = GetMediaFoundationCdmData();
   SetCdmClientToken({1, 2, 3, 4, 5});
 
   NavigateToUrlAndCreateCdmDocumentService(GURL(kTestOrigin));
@@ -210,7 +210,7 @@ TEST_F(CdmDocumentServiceImplTest, GetSameClientToken) {
 // remove that entry and return without saving the client token.
 TEST_F(CdmDocumentServiceImplTest, SetClientTokenAfterCorruption) {
   NavigateToUrlAndCreateCdmDocumentService(GURL(kTestOrigin));
-  ignore_result(GetMediaFoundationCdmData());
+  std::ignore = GetMediaFoundationCdmData();
   CorruptCdmPreference();
 
   std::vector<uint8_t> expected_client_token = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};

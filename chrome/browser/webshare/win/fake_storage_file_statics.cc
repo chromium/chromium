@@ -9,10 +9,10 @@
 #include <wrl/module.h>
 
 #include <memory>
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/ignore_result.h"
 #include "base/test/bind.h"
 #include "base/test/fake_iasync_operation_win.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -63,7 +63,7 @@ class FakeStorageFile final
     // and release ownership of the original 'back' to the caller.
     base::win::ScopedHString holder(display_name_with_extension);
     display_name_with_extension_ = holder.GetAsUTF8();
-    ignore_result(holder.release());
+    std::ignore = holder.release();
   }
   FakeStorageFile(const FakeStorageFile&) = delete;
   FakeStorageFile& operator=(const FakeStorageFile&) = delete;

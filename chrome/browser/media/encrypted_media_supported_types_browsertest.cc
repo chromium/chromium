@@ -5,11 +5,11 @@
 #include <stddef.h>
 
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "base/base_switches.h"
 #include "base/files/file_path.h"
-#include "base/ignore_result.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -76,7 +76,7 @@ const char16_t kUnexpectedResult16[] = u"unexpected result";
 // Any support is acceptable. This can be used around new CDM check-in time
 // where test expectations can change based on the new CDM's capability.
 // For any usage of EXPECT_ANY, add a TODO explaining the plan to fix it.
-#define EXPECT_ANY(test) ignore_result(test)
+#define EXPECT_ANY(test) std::ignore = test
 
 #if BUILDFLAG(ENABLE_AV1_DECODER)
 #define EXPECT_AV1 EXPECT_SUCCESS

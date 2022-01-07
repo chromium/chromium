@@ -4,10 +4,11 @@
 
 #include "chrome/browser/thumbnail/generator/android/thumbnail_media_parser_impl.h"
 
+#include <tuple>
+
 #include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
-#include "base/ignore_result.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/task_runner_util.h"
@@ -270,7 +271,7 @@ ThumbnailMediaParserImpl::GetMediaInterfaceFactory() {
     // ThumbnailMediaParser does not use them, but the Mojo argument is
     // currently marked as required so pass a remote but drop the other end.
     mojo::PendingRemote<media::mojom::FrameInterfaceFactory> interfaces;
-    ignore_result(interfaces.InitWithNewPipeAndPassReceiver());
+    std::ignore = interfaces.InitWithNewPipeAndPassReceiver();
     content::GetMediaService().CreateInterfaceFactory(
         media_interface_factory_.BindNewPipeAndPassReceiver(),
         std::move(interfaces));

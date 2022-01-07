@@ -4,7 +4,8 @@
 
 #include "chrome/browser/metrics/perf/windowed_incognito_observer.h"
 
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "base/no_destructor.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -30,7 +31,7 @@ bool WindowedIncognitoObserver::IncognitoActive() const {
 
 // static
 void WindowedIncognitoMonitor::Init() {
-  ignore_result(WindowedIncognitoMonitor::Get());
+  std::ignore = WindowedIncognitoMonitor::Get();
 }
 
 // static

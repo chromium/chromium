@@ -4,7 +4,8 @@
 
 #include <stddef.h>
 
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -709,8 +710,8 @@ IN_PROC_BROWSER_TEST_F(
 
     // WaitForLoadStop() will return false on a 404, but that can happen if we
     // navigate to a blocked or nonexistent extension page.
-    ignore_result(content::WaitForLoadStop(
-        browser()->tab_strip_model()->GetActiveWebContents()));
+    std::ignore = content::WaitForLoadStop(
+        browser()->tab_strip_model()->GetActiveWebContents());
 
     EXPECT_TRUE(content::ExecuteScriptAndExtractBool(web_contents, kGetAccess,
                                                      &can_access));

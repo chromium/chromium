@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <tuple>
 
 #include "base/callback.h"
-#include "base/ignore_result.h"
 #include "base/synchronization/lock.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -102,7 +102,7 @@ class SCTReportingServiceBrowserTest : public CertVerifierBrowserTest {
         true);
     // The report server must be initialized here so the reporting URL can be
     // set before the network service is initialized.
-    ignore_result(report_server()->InitializeAndListen());
+    std::ignore = report_server()->InitializeAndListen();
     SCTReportingService::GetReportURLInstance() = report_server()->GetURL("/");
   }
   ~SCTReportingServiceBrowserTest() override {

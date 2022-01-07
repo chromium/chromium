@@ -7,8 +7,8 @@
 #include <stddef.h>
 
 #include <limits>
+#include <tuple>
 
-#include "base/ignore_result.h"
 #include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
@@ -566,7 +566,7 @@ WebRtcTestBase::GetStatsReportDictionary(content::WebContents* tab) const {
   base::DictionaryValue* dictionary;
   CHECK(parsed_json);
   CHECK(parsed_json->GetAsDictionary(&dictionary));
-  ignore_result(parsed_json.release());
+  std::ignore = parsed_json.release();
   return scoped_refptr<content::TestStatsReportDictionary>(
       new content::TestStatsReportDictionary(
           std::unique_ptr<base::DictionaryValue>(dictionary)));

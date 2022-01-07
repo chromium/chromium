@@ -8,11 +8,11 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/ignore_result.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -161,7 +161,7 @@ class TestCloudPrintProxyService : public CloudPrintProxyService {
             &TestCloudPrintProxyService::HandleCloudPrintProxyRequest,
             base::Unretained(this)));
     mojo::PendingRemote<service_manager::mojom::InterfaceProvider> handle;
-    ignore_result(handle.InitWithNewPipeAndPassReceiver());
+    std::ignore = handle.InitWithNewPipeAndPassReceiver();
     process_control_.SetMojoHandle(std::move(handle));
   }
 

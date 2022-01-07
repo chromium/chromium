@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <numeric>
+#include <tuple>
 #include <vector>
 
 #include "ash/constants/ash_switches.h"
@@ -17,7 +18,6 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/ignore_result.h"
 #include "base/path_service.h"
 #include "base/strings/safe_sprintf.h"
 #include "build/chromeos_buildflags.h"
@@ -867,7 +867,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest,
   EXPECT_TRUE(bool_result);
   // Evaluate an empty sentence to make sure that the event processing is done
   // in the content.
-  ignore_result(content::EvalJs(contents, ";"));
+  std::ignore = content::EvalJs(contents, ";");
 
   SCOPED_TRACE("Scroll to hide should now work.");
   ScrollAndExpectTopChromeToBe(ScrollDirection::kDown,
@@ -1085,7 +1085,7 @@ IN_PROC_BROWSER_TEST_F(TopControlsSlideControllerTest, TestDropDowns) {
   send_key_event(ui::VKEY_RETURN);
   // Evaluate an empty sentence to make sure that the event processing is done
   // in the content.
-  ignore_result(content::EvalJs(contents, ";"));
+  std::ignore = content::EvalJs(contents, ";");
 
   // Verify that the selected option has changed and the fourth option is
   // selected.

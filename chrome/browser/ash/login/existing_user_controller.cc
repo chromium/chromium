@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/existing_user_controller.h"
 
 #include <memory>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -23,7 +24,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/scoped_observation.h"
@@ -911,7 +911,7 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
 
   // LoginPerformer instance will delete itself in case of successful auth.
   login_performer_->set_delegate(nullptr);
-  ignore_result(login_performer_.release());
+  std::ignore = login_performer_.release();
 
   if (user_context.GetAuthFlow() == UserContext::AUTH_FLOW_OFFLINE) {
     base::UmaHistogramCounts100("Login.OfflineSuccess.Attempts",

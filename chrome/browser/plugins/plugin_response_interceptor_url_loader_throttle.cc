@@ -4,12 +4,12 @@
 
 #include "chrome/browser/plugins/plugin_response_interceptor_url_loader_throttle.h"
 
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/guid.h"
-#include "base/ignore_result.h"
 #include "chrome/browser/extensions/api/streams_private/streams_private_api.h"
 #include "chrome/browser/plugins/plugin_utils.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -131,7 +131,7 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
   std::string payload = view_id;
 
   mojo::PendingRemote<network::mojom::URLLoader> dummy_new_loader;
-  ignore_result(dummy_new_loader.InitWithNewPipeAndPassReceiver());
+  std::ignore = dummy_new_loader.InitWithNewPipeAndPassReceiver();
   mojo::Remote<network::mojom::URLLoaderClient> new_client;
   mojo::PendingReceiver<network::mojom::URLLoaderClient> new_client_receiver =
       new_client.BindNewPipeAndPassReceiver();

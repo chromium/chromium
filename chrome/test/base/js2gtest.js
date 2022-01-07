@@ -168,7 +168,8 @@ ${argHint}
     addSetPreloadInfo = true;
   }
   output(`
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "url/gurl.h"
 #include "testing/gtest/include/gtest/gtest.h"`);
   // Add includes specified by test fixture.
@@ -473,7 +474,7 @@ class ${testFixture} : public ${typedefCppFixture} {
         }
         if (testServer) {
           output(`
-    ignore_result(embedded_test_server()->Start());`);
+    std::ignore = embedded_test_server()->Start();`);
         }
         output(`
   }`);

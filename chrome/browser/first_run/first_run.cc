@@ -6,13 +6,13 @@
 
 #include <algorithm>
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/ignore_result.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
@@ -344,7 +344,7 @@ void CreateSentinelIfNeeded() {
 
   // Causes the first run sentinel creation time to be read and cached, while
   // I/O is still allowed.
-  ignore_result(GetFirstRunSentinelCreationTime());
+  std::ignore = GetFirstRunSentinelCreationTime();
 }
 
 base::Time GetFirstRunSentinelCreationTime() {

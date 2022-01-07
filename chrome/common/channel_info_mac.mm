@@ -6,8 +6,9 @@
 
 #import <Foundation/Foundation.h>
 
+#include <tuple>
+
 #include "base/check.h"
-#include "base/ignore_result.h"
 #include "base/mac/bundle_locations.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
@@ -127,8 +128,8 @@ bool SideBySideCapable() {
 }  // namespace
 
 void CacheChannelInfo() {
-  ignore_result(GetChannelState());
-  ignore_result(SideBySideCapable());
+  std::ignore = GetChannelState();
+  std::ignore = SideBySideCapable();
 }
 
 std::string GetChannelName(WithExtendedStable with_extended_stable) {

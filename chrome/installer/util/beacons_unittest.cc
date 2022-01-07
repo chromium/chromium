@@ -7,7 +7,6 @@
 #include <memory>
 #include <tuple>
 
-#include "base/ignore_result.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
@@ -141,7 +140,7 @@ TEST_P(BeaconTest, Location) {
   //   Software\Chromium, so it always exists.
 
   // Silence unused variable warnings.
-  ignore_result(wrong_root);
+  std::ignore = wrong_root;
 #endif
 
   // The right key should exist.

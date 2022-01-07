@@ -4,9 +4,10 @@
 
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
 
+#include <tuple>
+
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/ignore_result.h"
 #include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -194,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(
   // In order to get the file handle without the file picker dialog in the
   // prerendered page, BroadcastChannel gets the file handle from the current
   // active page.
-  ignore_result(
+  std::ignore =
       content::ExecJs(prerendered_frame_host, R"(
             var createWritableAndClose = (async () => {
               let b = new BroadcastChannel('channel');
@@ -208,17 +209,17 @@ IN_PROC_BROWSER_TEST_F(
               await w.close();
               return "";})();
             )",
-                      content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
+                      content::EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
 
   // The active page picks files and sends it to the prerendered page to test
   // 'close()' in prerendering.
-  ignore_result(content::ExecJs(
+  std::ignore = content::ExecJs(
       GetWebContents(),
       "(async () => {"
       "  let [e] = await self.showOpenFilePicker();"
       "  self.entry = e;"
       "  new BroadcastChannel('channel').postMessage({entry: e});"
-      "  return e.name; })()"));
+      "  return e.name; })()");
 
   // PerformAfterWriteChecks() is not called in prerendering.
   EXPECT_FALSE(permission_context.performed_after_write_checks());

@@ -4,9 +4,10 @@
 
 #include "chrome/browser/ui/views/frame/glass_browser_frame_view.h"
 
+#include <tuple>
+
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/ignore_result.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -241,7 +242,7 @@ class WebAppGlassBrowserFrameViewWindowControlsOverlayTest
     web_app_frame_toolbar_helper_.SetupGeometryChangeCallback(web_contents);
     browser_view_->ToggleWindowControlsOverlayEnabled();
     content::TitleWatcher title_watcher(web_contents, u"ongeometrychange");
-    ignore_result(title_watcher.WaitAndGetTitle());
+    std::ignore = title_watcher.WaitAndGetTitle();
   }
 
   raw_ptr<BrowserView> browser_view_ = nullptr;

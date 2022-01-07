@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <set>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -25,7 +26,6 @@
 #include "base/containers/span.h"
 #include "base/feature_list.h"
 #include "base/format_macros.h"
-#include "base/ignore_result.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -162,7 +162,7 @@ void OnRemoveUserComplete(const AccountId& account_id,
 // Runs on SequencedWorkerPool thread. Passes resolved locale to UI thread.
 void ResolveLocale(const std::string& raw_locale,
                    std::string* resolved_locale) {
-  ignore_result(l10n_util::CheckAndResolveLocale(raw_locale, resolved_locale));
+  std::ignore = l10n_util::CheckAndResolveLocale(raw_locale, resolved_locale);
 }
 
 bool GetUserLockAttributes(const user_manager::User* user,

@@ -4,6 +4,7 @@
 
 #include <list>
 #include <memory>
+#include <tuple>
 
 #include "ash/clipboard/clipboard_history.h"
 #include "ash/clipboard/clipboard_history_controller_impl.h"
@@ -15,7 +16,6 @@
 #include "ash/public/cpp/clipboard_image_model_factory.h"
 #include "ash/shell.h"
 #include "base/bind.h"
-#include "base/ignore_result.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -805,8 +805,8 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
 
   // Wait for the paste event to propagate to the web contents.
   // The web contents will notify us a paste occurred by updating page title.
-  ignore_result(
-      content::TitleWatcher(web_contents, u"Paste 1").WaitAndGetTitle());
+  std::ignore =
+      content::TitleWatcher(web_contents, u"Paste 1").WaitAndGetTitle();
 
   // Confirm the expected paste data.
   base::ListValue last_paste = GetLastPaste();
@@ -825,8 +825,8 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryWithMultiProfileBrowserTest,
 
   // Wait for the paste event to propagate to the web contents.
   // The web contents will notify us a paste occurred by updating page title.
-  ignore_result(
-      content::TitleWatcher(web_contents, u"Paste 2").WaitAndGetTitle());
+  std::ignore =
+      content::TitleWatcher(web_contents, u"Paste 2").WaitAndGetTitle();
 
   // Confirm the expected paste data.
   last_paste = GetLastPaste();

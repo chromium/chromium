@@ -5,11 +5,11 @@
 #include "chrome/browser/extensions/api/messaging/native_messaging_test_util.h"
 
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/ignore_result.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/path_service.h"
 #include "base/strings/stringprintf.h"
@@ -126,7 +126,7 @@ void ScopedTestNativeMessagingHost::RegisterTestHost(bool user_level) {
 
 ScopedTestNativeMessagingHost::~ScopedTestNativeMessagingHost() {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  ignore_result(temp_dir_.Delete());
+  std::ignore = temp_dir_.Delete();
 }
 
 }  // namespace extensions

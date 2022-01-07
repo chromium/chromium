@@ -6,10 +6,10 @@
 
 #include <memory>
 #include <set>
+#include <tuple>
 #include <vector>
 
 #include "base/check.h"
-#include "base/ignore_result.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ref_counted.h"
 #include "base/values.h"
@@ -52,7 +52,7 @@ class TestStatsDictionaryTest : public testing::Test {
     CHECK(value);
     base::DictionaryValue* dictionary;
     CHECK(value->GetAsDictionary(&dictionary));
-    ignore_result(value.release());
+    std::ignore = value.release();
     report_ = new TestStatsReportDictionary(
         std::unique_ptr<base::DictionaryValue>(dictionary));
   }

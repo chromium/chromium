@@ -6,7 +6,8 @@
 
 #include <stdint.h>
 
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "base/notreached.h"
 #include "base/win/registry.h"
 #include "base/win/win_util.h"
@@ -16,7 +17,7 @@
 void UpdateDefaultBrowserBeaconForPath(const base::FilePath& chrome_exe) {
   // Getting Chrome's default state causes the beacon to be updated via a call
   // to UpdateDefaultBrowserBeaconWithState below.
-  ignore_result(ShellUtil::GetChromeDefaultStateFromPath(chrome_exe));
+  std::ignore = ShellUtil::GetChromeDefaultStateFromPath(chrome_exe);
 }
 
 void UpdateDefaultBrowserBeaconWithState(

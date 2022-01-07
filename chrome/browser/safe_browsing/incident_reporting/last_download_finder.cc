@@ -10,10 +10,10 @@
 #include <algorithm>
 #include <functional>
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/ignore_result.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -187,7 +187,7 @@ void PopulateDetailsFromRow(const history::DownloadRow& download,
   download_request->set_url(download.url_chain.back().spec());
   // digests is a required field, so force it to exist.
   // TODO(grt): Include digests in reports; http://crbug.com/389123.
-  ignore_result(download_request->mutable_digests());
+  std::ignore = download_request->mutable_digests();
   download_request->set_length(download.received_bytes);
   for (size_t i = 0; i < download.url_chain.size(); ++i) {
     const GURL& url = download.url_chain[i];

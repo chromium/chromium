@@ -18,7 +18,6 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/hash/hash.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -1183,7 +1182,7 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTestWithPartialLoading,
   // TODO(crbug.com/1228987): Load success or failure is non-deterministic
   // currently, due to races between viewport messages and loading. For this
   // test, we only care that loading terminated, not about success or failure.
-  ignore_result(pdf_extension_test_util::EnsurePDFHasLoaded(contents));
+  std::ignore = pdf_extension_test_util::EnsurePDFHasLoaded(contents);
 }
 
 IN_PROC_BROWSER_TEST_P(PDFExtensionJSTest, ViewerToolbar) {

@@ -5,8 +5,8 @@
 #include "chrome/browser/webshare/win/fake_uri_runtime_class_factory.h"
 
 #include <string>
+#include <tuple>
 
-#include "base/ignore_result.h"
 #include "base/notreached.h"
 #include "base/win/scoped_hstring.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -151,7 +151,7 @@ FakeUriRuntimeClassFactory::CreateUri(HSTRING uri,
   // and release ownership of the original 'back' to the caller.
   base::win::ScopedHString holder(uri);
   auto uri_string = holder.GetAsUTF8();
-  ignore_result(holder.release());
+  std::ignore = holder.release();
 
   if (uri_string.empty()) {
     ADD_FAILURE() << "CreateUri called with empty uri.";

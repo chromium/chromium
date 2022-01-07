@@ -6,9 +6,9 @@
 #include <stdint.h>
 
 #include <memory>
+#include <tuple>
 #include <vector>
 
-#include "base/ignore_result.h"
 #include "chrome/utility/safe_browsing/mac/hfs.h"
 #include "chrome/utility/safe_browsing/mac/read_stream.h"
 #include "testing/libfuzzer/libfuzzer_exports.h"
@@ -24,9 +24,9 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
 
   while (hfs_iterator.Next()) {
     // Test accessing properties.
-    ignore_result(hfs_iterator.IsSymbolicLink());
-    ignore_result(hfs_iterator.IsDecmpfsCompressed());
-    ignore_result(hfs_iterator.GetPath());
+    std::ignore = hfs_iterator.IsSymbolicLink();
+    std::ignore = hfs_iterator.IsDecmpfsCompressed();
+    std::ignore = hfs_iterator.GetPath();
 
     if (hfs_iterator.IsDirectory() || hfs_iterator.IsHardLink())
       continue;

@@ -9,11 +9,11 @@
 #include <wrl/client.h>
 
 #include <memory>
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
-#include "base/ignore_result.h"
 #include "base/json/json_writer.h"
 #include "base/memory/free_deleter.h"
 #include "base/memory/raw_ptr.h"
@@ -448,7 +448,7 @@ class JobSpoolerWin : public PrintSystem::JobSpooler {
                             /*autorotate=*/false, use_color,
                             printing::PdfRenderSettings::Mode::NORMAL))) {
         // The object will self-destruct when the child process dies.
-        ignore_result(utility_host.release());
+        std::ignore = utility_host.release();
       } else {
         client_task_runner->PostTask(
             FROM_HERE, base::BindOnce(&Core::PrintJobDone, this, false));
@@ -587,7 +587,7 @@ class PrinterCapsHandler : public ServiceUtilityProcessHost::Client {
         this, client_task_runner.get());
     if (utility_host->StartGetPrinterCapsAndDefaults(printer_name_)) {
       // The object will self-destruct when the child process dies.
-      ignore_result(utility_host.release());
+      std::ignore = utility_host.release();
     } else {
       client_task_runner->PostTask(
           FROM_HERE, base::BindOnce(&PrinterCapsHandler::OnChildDied, this));
@@ -601,7 +601,7 @@ class PrinterCapsHandler : public ServiceUtilityProcessHost::Client {
         this, client_task_runner.get());
     if (utility_host->StartGetPrinterSemanticCapsAndDefaults(printer_name_)) {
       // The object will self-destruct when the child process dies.
-      ignore_result(utility_host.release());
+      std::ignore = utility_host.release();
     } else {
       client_task_runner->PostTask(
           FROM_HERE, base::BindOnce(&PrinterCapsHandler::OnChildDied, this));

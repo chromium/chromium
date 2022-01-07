@@ -10,6 +10,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -24,7 +25,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
@@ -1867,7 +1867,7 @@ void ChromeBrowserMainParts::PostDestroyThreads() {
   // The below call to browser_shutdown::ShutdownPostThreadsStop() deletes
   // |browser_process_|. We release it so that we don't keep holding onto an
   // invalid reference.
-  ignore_result(browser_process_.release());
+  std::ignore = browser_process_.release();
 
 #if BUILDFLAG(ENABLE_DOWNGRADE_PROCESSING)
   if (result_code_ == chrome::RESULT_CODE_DOWNGRADE_AND_RELAUNCH) {
