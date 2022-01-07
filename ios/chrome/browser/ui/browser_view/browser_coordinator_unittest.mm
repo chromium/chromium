@@ -63,9 +63,11 @@ class BrowserCoordinatorTest : public PlatformTest {
     test_cbs_builder.AddTestingFactory(
         ios::FaviconServiceFactory::GetInstance(),
         ios::FaviconServiceFactory::GetDefaultFactory());
+    test_cbs_builder.AddTestingFactory(
+        ios::HistoryServiceFactory::GetInstance(),
+        ios::HistoryServiceFactory::GetDefaultFactory());
 
     chrome_browser_state_ = test_cbs_builder.Build();
-    CHECK(chrome_browser_state_->CreateHistoryService());
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
