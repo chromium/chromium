@@ -21,9 +21,9 @@
     <localized-link
         localized-string="[[i18nAdvanced('bluetoothPairingLearnMoreLabel')]]">
     </localized-link>
-    <div id="deviceListTitle" tabindex="0">
+    <h2 id="deviceListTitle" aria-live="polite">
       [[getDeviceListTitle_(devices.*, isBluetoothEnabled)]]
-    </div>
+    </h2>
     <template  is="dom-if" if="[[shouldShowDeviceList_(devices.*,
         isBluetoothEnabled)]]" restamp>
       <div id="container" class="layout vertical flex" scrollable
