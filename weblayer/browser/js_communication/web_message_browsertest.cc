@@ -134,6 +134,8 @@ IN_PROC_BROWSER_TEST_F(WebMessageTest, SendAndReceive) {
   ASSERT_EQ(2u, current_connection->messages().size());
   EXPECT_EQ(u"from page", current_connection->messages()[0]);
   EXPECT_EQ(u"bouncing from c++", current_connection->messages()[1]);
+  // WebLayer's Page has no functions, verify it can be requested.
+  current_connection->proxy()->GetPage();
 }
 
 class WebMessageTestWithBfCache : public WebLayerBrowserTest {
@@ -179,6 +181,7 @@ IN_PROC_BROWSER_TEST_F(WebMessageTestWithBfCache, Basic) {
   ASSERT_TRUE(web_message_host);
   EXPECT_FALSE(web_message_host->proxy()->IsInBackForwardCache());
   EXPECT_EQ(0, web_message_host->back_forward_cache_state_changed_call_count());
+  Page* original_page = &(web_message_host->proxy()->GetPage());
 
   // Navigate to a new host. The old page should go into the cache.
   OneShotNavigationObserver observer1(shell());
@@ -196,5 +199,7 @@ IN_PROC_BROWSER_TEST_F(WebMessageTestWithBfCache, Basic) {
   observer2.WaitForNavigation();
   web_message_host->WaitForBackForwardStateToBe(false);
   EXPECT_EQ(2, web_message_host->back_forward_cache_state_changed_call_count());
+  EXPECT_EQ(original_page, &(web_message_host->proxy()->GetPage()));
 }
+
 }  // namespace weblayer

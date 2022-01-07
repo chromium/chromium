@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.weblayer_private.interfaces.APICallException;
 import org.chromium.weblayer_private.interfaces.IClientNavigation;
+import org.chromium.weblayer_private.interfaces.IClientPage;
 import org.chromium.weblayer_private.interfaces.IContextMenuParams;
 import org.chromium.weblayer_private.interfaces.IErrorPageCallbackClient;
 import org.chromium.weblayer_private.interfaces.IExternalIntentInIncognitoCallbackClient;
@@ -835,6 +836,13 @@ public class Tab {
             WebMessageReplyProxy proxy = mProxyIdToProxy.get(proxyId);
             assert proxy != null;
             mCallback.onWebMessageReplyProxyActiveStateChanged(proxy);
+        }
+
+        @Override
+        public void onSetPage(int proxyId, IClientPage clientPage) {
+            StrictModeWorkaround.apply();
+            assert mProxyIdToProxy.get(proxyId) != null;
+            mProxyIdToProxy.get(proxyId).setPage((Page) clientPage);
         }
     }
 

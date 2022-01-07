@@ -25,12 +25,16 @@ public final class WebMessageReplyProxyImpl extends IWebMessageReplyProxy.Stub {
     private final int mId;
 
     private WebMessageReplyProxyImpl(long nativeWebMessageReplyProxyImpl, int id,
-            IWebMessageCallbackClient client, boolean isMainFrame, String sourceOrigin) {
+            IWebMessageCallbackClient client, boolean isMainFrame, String sourceOrigin,
+            PageImpl page) {
         mNativeWebMessageReplyProxyImpl = nativeWebMessageReplyProxyImpl;
         mClient = client;
         mId = id;
         try {
             client.onNewReplyProxy(this, mId, isMainFrame, sourceOrigin);
+            if (WebLayerFactoryImpl.getClientMajorVersion() >= 99) {
+                client.onSetPage(mId, page.getClientPage());
+            }
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
@@ -38,9 +42,10 @@ public final class WebMessageReplyProxyImpl extends IWebMessageReplyProxy.Stub {
 
     @CalledByNative
     private static WebMessageReplyProxyImpl create(long nativeWebMessageReplyProxyImpl, int id,
-            IWebMessageCallbackClient client, boolean isMainFrame, String sourceOrigin) {
+            IWebMessageCallbackClient client, boolean isMainFrame, String sourceOrigin,
+            PageImpl page) {
         return new WebMessageReplyProxyImpl(
-                nativeWebMessageReplyProxyImpl, id, client, isMainFrame, sourceOrigin);
+                nativeWebMessageReplyProxyImpl, id, client, isMainFrame, sourceOrigin, page);
     }
 
     @CalledByNative

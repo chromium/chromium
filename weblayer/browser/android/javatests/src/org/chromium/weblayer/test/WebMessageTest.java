@@ -99,7 +99,12 @@ public class WebMessageTest {
         assertNotNull(webMessageCallback.mLastMessage);
         assertNotNull(webMessageCallback.mLastProxy);
         assertEquals("from page", webMessageCallback.mLastMessage.getContents());
-        WebMessageReplyProxy lastProxy = webMessageCallback.mLastProxy;
+        final WebMessageReplyProxy lastProxy = webMessageCallback.mLastProxy;
+        int majorVersion = TestThreadUtils.runOnUiThreadBlockingNoException(
+                () -> WebLayer.getSupportedMajorVersion(mActivityTestRule.getActivity()));
+        if (majorVersion >= 99) {
+            assertNotNull(runOnUiThreadBlocking(() -> { return lastProxy.getPage(); }));
+        }
         webMessageCallback.reset();
 
         int currentCallCount = callbackHelper.getCallCount();

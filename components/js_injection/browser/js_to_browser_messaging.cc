@@ -56,6 +56,7 @@ class JsToBrowserMessaging::ReplyProxyImpl : public WebMessageReplyProxy {
     return render_frame_host_->GetLifecycleState() ==
            content::RenderFrameHost::LifecycleState::kInBackForwardCache;
   }
+  content::Page& GetPage() override { return render_frame_host_->GetPage(); }
 
  private:
   raw_ptr<content::RenderFrameHost> render_frame_host_;

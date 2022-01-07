@@ -23,6 +23,8 @@ public class WebMessageReplyProxy {
     private final boolean mIsMainFrame;
     private final String mSourceOrigin;
     private boolean mIsClosed;
+    // Added in 99.
+    private Page mPage;
 
     // Constructor for test mocking.
     protected WebMessageReplyProxy() {
@@ -100,5 +102,26 @@ public class WebMessageReplyProxy {
         } catch (RemoteException e) {
             throw new APICallException(e);
         }
+    }
+
+    /**
+     * Returns the Page associated with this proxy. For child frame, the Page of the main frame is
+     * returned.
+     *
+     * @return The Page.
+     *
+     * @since 99
+     */
+    public Page getPage() {
+        ThreadCheck.ensureOnUiThread();
+        if (WebLayer.getSupportedMajorVersionInternal() < 99) {
+            throw new UnsupportedOperationException();
+        }
+        return mPage;
+    }
+
+    // Only called in >= 99.
+    void setPage(Page page) {
+        mPage = page;
     }
 }
