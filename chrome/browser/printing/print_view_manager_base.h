@@ -119,10 +119,6 @@ class PrintViewManagerBase : public PrintManager, public PrintJob::Observer {
   // Helper method for checking whether the WebContents is crashed.
   bool IsCrashed();
 
-  // Helper method for Print*Now().
-  bool PrintNowInternal(content::RenderFrameHost* rfh,
-                        std::unique_ptr<IPC::Message> message);
-
   void SetPrintingRFH(content::RenderFrameHost* rfh);
 
   // content::WebContentsObserver implementation.

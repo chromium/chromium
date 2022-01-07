@@ -1021,15 +1021,6 @@ bool PrintViewManagerBase::IsCrashed() {
   return web_contents()->IsCrashed();
 }
 
-bool PrintViewManagerBase::PrintNowInternal(
-    content::RenderFrameHost* rfh,
-    std::unique_ptr<IPC::Message> message) {
-  // Don't print / print preview crashed tabs.
-  if (IsCrashed())
-    return false;
-  return rfh->Send(message.release());
-}
-
 void PrintViewManagerBase::SetPrintingRFH(content::RenderFrameHost* rfh) {
   // Do not allow any print operation during prerendering.
   if (rfh->GetLifecycleState() ==
