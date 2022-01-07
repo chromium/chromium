@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/containers/lru_cache.h"
 #include "base/threading/thread_checker.h"
 #include "ui/gfx/native_widget_types.h"
@@ -42,6 +43,12 @@ class DrmOverlayManager : public OverlayManagerOzone {
   // |candidates| to indicate if they can.
   void CheckOverlaySupport(std::vector<OverlaySurfaceCandidate>* candidates,
                            gfx::AcceleratedWidget widget);
+
+  // Should be called by the overlay processor to indicate if a widget has a
+  // candidate that requires an overlay. This is to prioritize which display
+  // gets the overlay in a multiple display environment.
+  void RegisterOverlayRequirement(gfx::AcceleratedWidget widget,
+                                  bool requires_overlay);
 
  protected:
   // Sends a request to see if overlay configuration will work. Implementations
@@ -88,6 +95,8 @@ class DrmOverlayManager : public OverlayManagerOzone {
   // instances which have been requested for validation and/or validated.
   std::map<gfx::AcceleratedWidget, OverlayCandidatesListCache>
       widget_cache_map_;
+
+  base::flat_set<gfx::AcceleratedWidget> widgets_with_required_overlays_;
 
   THREAD_CHECKER(thread_checker_);
 };

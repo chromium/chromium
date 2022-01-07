@@ -36,6 +36,7 @@ class VIZ_SERVICE_EXPORT OverlayProcessorOzone
       OverlayCandidateList* surfaces) override;
   gfx::Rect GetOverlayDamageRectForOutputSurface(
       const OverlayCandidate& candidate) const override;
+  void RegisterOverlayRequirement(bool requires_overlay) override;
 
  private:
   // Populates |native_pixmap| and |native_pixmap_unique_id| in |candidate|

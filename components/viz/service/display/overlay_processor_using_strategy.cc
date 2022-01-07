@@ -517,12 +517,15 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategiesPrioritized(
                                    render_pass, *candidates);
   }
 
+  bool has_required_overlay = false;
   for (auto&& candidate : proposed_candidates) {
     // Underlays change the material so we save it here to record proper UMA.
     DrawQuad::Material quad_material =
         candidate.strategy->GetUMAEnum() != OverlayStrategy::kUnknown
             ? candidate.quad_iter->material
             : DrawQuad::Material::kInvalid;
+    if (candidate.candidate.requires_overlay)
+      has_required_overlay = true;
 
     bool used_overlay = candidate.strategy->AttemptPrioritized(
         output_color_matrix, render_pass_backdrop_filters, resource_provider,
@@ -581,9 +584,11 @@ bool OverlayProcessorUsingStrategy::AttemptWithStrategiesPrioritized(
           UpdateDownscalingCapabilities(scale_factor, /*success=*/true);
         }
       }
+      RegisterOverlayRequirement(has_required_overlay);
       return true;
     }
   }
+  RegisterOverlayRequirement(has_required_overlay);
 
   if (proposed_candidates.size() == 0) {
     LogStrategyEnumUMA(num_proposed_pre_sort != 0

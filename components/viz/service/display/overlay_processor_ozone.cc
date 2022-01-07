@@ -245,6 +245,12 @@ gfx::Rect OverlayProcessorOzone::GetOverlayDamageRectForOutputSurface(
   return ToEnclosedRect(overlay.display_rect);
 }
 
+void OverlayProcessorOzone::RegisterOverlayRequirement(bool requires_overlay) {
+  // This can be null in unit tests.
+  if (overlay_candidates_)
+    overlay_candidates_->RegisterOverlayRequirement(requires_overlay);
+}
+
 bool OverlayProcessorOzone::SetNativePixmapForCandidate(
     ui::OverlaySurfaceCandidate* candidate,
     const gpu::Mailbox& mailbox,

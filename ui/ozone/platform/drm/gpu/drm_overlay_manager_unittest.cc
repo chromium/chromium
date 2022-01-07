@@ -271,4 +271,41 @@ TEST(DrmOverlayManagerTest, NonIntegerDisplayRect) {
   manager.CheckOverlaySupport(&candidates, kPrimaryWidget);
 }
 
+TEST(DrmOverlayManagerTest, RequiredOverlayMultiDisplay) {
+  TestDrmOverlayManager manager;
+
+  // Primary has a requirement, secondary does not, should only make a request
+  // on the primary.
+  std::vector<OverlaySurfaceCandidate> candidates1 = {
+      CreateCandidate(gfx::Rect(0, 0, 100, 100), 0)};
+
+  manager.RegisterOverlayRequirement(kPrimaryWidget, true);
+  manager.RegisterOverlayRequirement(kSecondaryWidget, false);
+  // Call 4 Times to go beyond the Throttle Request Size
+  for (int i = 0; i < 4; ++i)
+    manager.CheckOverlaySupport(&candidates1, kPrimaryWidget);
+  EXPECT_EQ(manager.requests().size(), 1u);
+  // Call 4 Times to go beyond the Throttle Request Size
+  for (int i = 0; i < 4; ++i)
+    manager.CheckOverlaySupport(&candidates1, kSecondaryWidget);
+  EXPECT_EQ(manager.requests().size(), 1u);
+  manager.requests().clear();
+
+  // Secondary has a requirement, primary does not, should only make a request
+  // on the secondary.
+  std::vector<OverlaySurfaceCandidate> candidates2 = {
+      CreateCandidate(gfx::Rect(0, 0, 200, 200), 0)};
+
+  manager.RegisterOverlayRequirement(kPrimaryWidget, false);
+  manager.RegisterOverlayRequirement(kSecondaryWidget, true);
+  // Call 4 Times to go beyond the Throttle Request Size
+  for (int i = 0; i < 4; ++i)
+    manager.CheckOverlaySupport(&candidates2, kPrimaryWidget);
+  EXPECT_TRUE(manager.requests().empty());
+  // Call 4 Times to go beyond the Throttle Request Size
+  for (int i = 0; i < 4; ++i)
+    manager.CheckOverlaySupport(&candidates2, kSecondaryWidget);
+  EXPECT_EQ(manager.requests().size(), 1u);
+}
+
 }  // namespace ui

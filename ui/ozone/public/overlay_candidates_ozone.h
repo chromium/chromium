@@ -27,6 +27,10 @@ class COMPONENT_EXPORT(OZONE_BASE) OverlayCandidatesOzone {
   // if necessary.
   virtual void CheckOverlaySupport(OverlaySurfaceCandidateList* surfaces);
 
+  // This should be invoked during overlay processing to indicate if there are
+  // any candidates for this processor that have an overlay requirement.
+  virtual void RegisterOverlayRequirement(bool requires_overlay) {}
+
   virtual ~OverlayCandidatesOzone();
 };
 

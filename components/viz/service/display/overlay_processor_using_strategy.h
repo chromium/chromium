@@ -183,6 +183,11 @@ class VIZ_SERVICE_EXPORT OverlayProcessorUsingStrategy
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
       OverlayCandidateList* candidate_list);
 
+  // This should be called during overlay processing to register whether or not
+  // there is a candidate that requires an overlay so that the manager can allow
+  // the overlay on the display with the requirement only.
+  virtual void RegisterOverlayRequirement(bool requires_overlay) {}
+
  protected:
   virtual gfx::Rect GetOverlayDamageRectForOutputSurface(
       const OverlayCandidate& overlay) const;
