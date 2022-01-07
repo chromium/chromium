@@ -64,8 +64,8 @@ public interface PasswordStoreAndroidBackend {
      *         org.chromium.components.sync.protocol.ListPasswordsResult} data.
      * @param failureCallback A callback that is called on failure for any reason. May return sync.
      */
-    default void getAllLogins(@PasswordStoreOperationTarget int target,
-            Callback<byte[]> loginsReply, Callback<Exception> failureCallback){};
+    void getAllLogins(@PasswordStoreOperationTarget int target, Callback<byte[]> loginsReply,
+            Callback<Exception> failureCallback);
 
     /**
      * Triggers an async list call to retrieve autofillable logins.
@@ -133,6 +133,6 @@ public interface PasswordStoreAndroidBackend {
      * @param successCallback Callback that is called on success.
      * @param failureCallback A callback that is called on failure for any reason. May return sync.
      */
-    default void removeLogin(byte[] pwdSpecificsData, @PasswordStoreOperationTarget int target,
-            Runnable successCallback, Callback<Exception> failureCallback){};
+    void removeLogin(byte[] pwdSpecificsData, @PasswordStoreOperationTarget int target,
+            Runnable successCallback, Callback<Exception> failureCallback);
 }
