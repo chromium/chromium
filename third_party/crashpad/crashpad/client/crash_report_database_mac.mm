@@ -25,8 +25,9 @@
 #include <unistd.h>
 #include <uuid/uuid.h>
 
+#include <tuple>
+
 #include "base/cxx17_backports.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/posix/eintr_wrapper.h"
@@ -385,14 +386,14 @@ CrashReportDatabaseMac::FinishedWritingCrashReport(
     PLOG(ERROR) << "rename " << path.value() << " to " << new_path.value();
     return kFileSystemError;
   }
-  ignore_result(report->file_remover_.release());
+  std::ignore = report->file_remover_.release();
 
   // Close all the attachments and disarm their removers too.
   for (auto& writer : report->attachment_writers_) {
     writer->Close();
   }
   for (auto& remover : report->attachment_removers_) {
-    ignore_result(remover.release());
+    std::ignore = remover.release();
   }
 
   Metrics::CrashReportPending(Metrics::PendingReportReason::kNewlyCreated);

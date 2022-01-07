@@ -16,7 +16,8 @@
 
 #include <unistd.h>
 
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "base/mac/scoped_mach_port.h"
 #include "gtest/gtest.h"
 #include "test/mac/mach_errors.h"
@@ -154,7 +155,7 @@ TEST(MachMessage, MachMessageDestroyReceivedPort) {
   ASSERT_EQ(right_type,
             implicit_cast<mach_msg_type_name_t>(MACH_MSG_TYPE_PORT_SEND));
   EXPECT_TRUE(MachMessageDestroyReceivedPort(port, MACH_MSG_TYPE_PORT_RECEIVE));
-  ignore_result(receive.release());
+  std::ignore = receive.release();
   EXPECT_TRUE(MachMessageDestroyReceivedPort(port, MACH_MSG_TYPE_PORT_SEND));
 }
 

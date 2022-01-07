@@ -18,9 +18,10 @@
 #include <paths.h>
 #include <unistd.h>
 
+#include <tuple>
+
 #include "base/check.h"
 #include "base/files/scoped_file.h"
-#include "base/ignore_result.h"
 #include "base/posix/eintr_wrapper.h"
 
 namespace crashpad {
@@ -32,7 +33,7 @@ void CloseStdioStream(int desired_fd, int oflag) {
       HANDLE_EINTR(open(_PATH_DEVNULL, oflag | O_NOCTTY | O_CLOEXEC)));
   if (fd == desired_fd) {
     // Weird, but play along.
-    ignore_result(fd.release());
+    std::ignore = fd.release();
   } else {
     PCHECK(fd.get() >= 0) << "open";
     PCHECK(HANDLE_EINTR(dup2(fd.get(), desired_fd)) != -1) << "dup2";

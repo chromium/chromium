@@ -21,9 +21,9 @@
 #include <time.h>
 #include <wchar.h>
 
+#include <tuple>
 #include <utility>
 
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/numerics/safe_math.h"
 #include "base/strings/utf_string_conversions.h"
@@ -735,14 +735,14 @@ OperationStatus CrashReportDatabaseWin::FinishedWritingCrashReport(
                                     time(nullptr),
                                     ReportState::kPending));
 
-  ignore_result(report->file_remover_.release());
+  std::ignore = report->file_remover_.release();
 
   // Close all the attachments and disarm their removers too.
   for (auto& writer : report->attachment_writers_) {
     writer->Close();
   }
   for (auto& remover : report->attachment_removers_) {
-    ignore_result(remover.release());
+    std::ignore = remover.release();
   }
 
   *uuid = report->ReportID();

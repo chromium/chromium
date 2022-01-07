@@ -663,7 +663,7 @@ crashpad_static_library("net") {
   if (crashpad_http_transport_impl == "socket") {
     sources += [ "net/http_transport_socket.cc" ]
     if (crashpad_use_boringssl_for_http_transport_socket) {
-      defines += [ "CRASHPAD_USE_BORINGSSL" ]
+      defines = [ "CRASHPAD_USE_BORINGSSL" ]
 
       if (crashpad_is_in_chromium || crashpad_is_in_fuchsia) {
         deps += [ "//third_party/boringssl" ]
