@@ -180,6 +180,10 @@ class IsolatedAppBrowserTest : public WebAppControllerBrowserTest {
     GURL app_url = https_server()->GetURL(host,
                                           "/banners/manifest_test_page.html"
                                           "?manifest=manifest_isolated.json");
+    return InstallIsolatedApp(app_url);
+  }
+
+  AppId InstallIsolatedApp(const GURL& app_url) {
     EXPECT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
         browser(), app_url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
         ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
@@ -334,7 +338,7 @@ class IsolatedAppBrowserServiceWorkerTest : public IsolatedAppBrowserTest {
   }
 
   int64_t InstallIsolatedAppAndWaitForServiceWorker() {
-    InstallIsolatedApp(kAppHost);
+    InstallIsolatedApp(app_url_);
 
     app_window_ = NavigateInNewWindowAndAwaitInstallabilityCheck(app_url_);
     app_web_contents_ = app_window_->tab_strip_model()->GetActiveWebContents();

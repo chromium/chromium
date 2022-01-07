@@ -2,3 +2,4 @@ HTTP/1.1 200 OK
 Content-Type: text/javascript
 Cross-Origin-Opener-Policy: same-origin
 Cross-Origin-Embedder-Policy: require-corp
+Service-Worker-Allowed: /
