@@ -268,6 +268,20 @@ message AudioTelemetry {
   optional string input_device_name = 6;
 }
 
+// Boot Performance telemetry data
+message BootPerformanceTelemetry {
+  // Total time when to boot up.
+  optional int64 boot_up_seconds = 1;
+  // The Timestamp when power came on.
+  optional int64 boot_up_timestamp_seconds = 2;
+  // Total time since shutdown start to power off.
+  optional int64 shutdown_seconds = 3;
+  // Timestamp when shutdown.
+  optional int64 shutdown_timestamp_seconds = 4;
+  // Shutdown reason.
+  optional string shutdown_reason = 5;
+}
+
 // Data that can change over time, collected and reported every specific period
 // of time or when an event occur.
 message TelemetryData {
@@ -279,6 +293,8 @@ message TelemetryData {
   optional AudioTelemetry audio_telemetry = 2;
   // Usb telemetry data
   optional UsbTelemetry usb_telemetry = 3;
+  // Boot Performance telemetry data.
+  optional BootPerformanceTelemetry boot_performance_telemetry = 4;
 }
 
 enum MetricEventType {
