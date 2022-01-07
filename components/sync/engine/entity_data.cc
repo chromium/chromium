@@ -51,7 +51,8 @@ std::unique_ptr<base::DictionaryValue> EntityData::ToDictionaryValue() {
   // title.
   dict->SetString("NON_UNIQUE_NAME", name);
   ADD_TO_DICT(dict, name);
-  ADD_TO_DICT(dict, legacy_parent_id);
+  // The string "PARENT_ID" is used in sync-internals to build the node tree.
+  dict->SetString("PARENT_ID", legacy_parent_id);
   ADD_TO_DICT_WITH_TRANSFORM(dict, ctime, GetTimeDebugString);
   ADD_TO_DICT_WITH_TRANSFORM(dict, mtime, GetTimeDebugString);
   return dict;
