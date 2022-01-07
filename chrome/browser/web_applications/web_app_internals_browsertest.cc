@@ -68,11 +68,11 @@ class WebAppInternalsBrowserTest : public InProcessBrowserTest {
   ~WebAppInternalsBrowserTest() override = default;
 
   void SetUp() override {
-    embedded_test_server_.AddDefaultHandlers(GetChromeTestDataDir());
-    embedded_test_server_.RegisterRequestHandler(
+    embedded_test_server()->AddDefaultHandlers(GetChromeTestDataDir());
+    embedded_test_server()->RegisterRequestHandler(
         base::BindRepeating(&WebAppInternalsBrowserTest::RequestHandlerOverride,
                             base::Unretained(this)));
-    ASSERT_TRUE(embedded_test_server_.Start());
+    ASSERT_TRUE(embedded_test_server()->Start());
 
     InProcessBrowserTest::SetUp();
   }
@@ -128,12 +128,7 @@ class WebAppInternalsBrowserTest : public InProcessBrowserTest {
         });
   }
 
-  net::EmbeddedTestServer& embedded_test_server() {
-    return embedded_test_server_;
-  }
-
  private:
-  net::EmbeddedTestServer embedded_test_server_;
   net::EmbeddedTestServer::HandleRequestCallback request_override_;
 
   OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
@@ -144,10 +139,10 @@ class WebAppInternalsBrowserTest : public InProcessBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(WebAppInternalsBrowserTest,
                        PRE_InstallManagerErrorsPersist) {
-  OverrideHttpRequest(embedded_test_server().GetURL("/banners/bad_icon.png"),
+  OverrideHttpRequest(embedded_test_server()->GetURL("/banners/bad_icon.png"),
                       net::HTTP_NOT_FOUND);
 
-  AppId app_id = InstallWebApp(embedded_test_server().GetURL(
+  AppId app_id = InstallWebApp(embedded_test_server()->GetURL(
       "/banners/manifest_test_page.html?manifest=manifest_bad_icon.json"));
 
   const WebApp* web_app = GetProvider().registrar().GetAppById(app_id);
@@ -155,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(WebAppInternalsBrowserTest,
   EXPECT_TRUE(web_app->is_generated_icon());
 
   const std::string expected_error = base::ReplaceStringPlaceholders(
-      kBadIconErrorTemplate, {embedded_test_server().base_url().spec()},
+      kBadIconErrorTemplate, {embedded_test_server()->base_url().spec()},
       nullptr);
 
   ASSERT_TRUE(GetProvider().install_manager().error_log());
