@@ -35,7 +35,7 @@ promise_test(async (t) => {
   t.step_timeout(() => t.done(), 3000);
   const frame = setupTest("no coep");
   const result = await nextValueFromServer(no_coep_key);
-  t.unreached_func("embedded page should not be loaded.");
+  assert_unreached("embedded page should not be loaded.");
 }, "Create fencedframe without COEP header");
 
 </script>
