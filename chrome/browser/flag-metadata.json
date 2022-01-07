@@ -1400,12 +1400,6 @@
     "expiry_milestone": 90
   },
   {
-    // See: https://crbug.com/993569.
-    "name": "dynamic-tcmalloc-tuning",
-    "owners": [ "bgeffon" ],
-    "expiry_milestone": 89
-  },
-  {
     "name": "eche-phone-hub-permissions-onboarding",
     "owners": [ "dhnishi" ],
     "expiry_milestone": 101

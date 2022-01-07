@@ -3126,10 +3126,6 @@ extern const char kDesktopDetailedLanguageSettingsDescription[];
         // (OS_FUCHSIA)
 
 #if defined(OS_CHROMEOS) || defined(OS_LINUX)
-#if BUILDFLAG(USE_TCMALLOC)
-extern const char kDynamicTcmallocName[];
-extern const char kDynamicTcmallocDescription[];
-#endif  // BUILDFLAG(USE_TCMALLOC)
 
 extern const char kImproveAccessibilityTreeUsingLocalMLName[];
 extern const char kImproveAccessibilityTreeUsingLocalMLDescription[];
