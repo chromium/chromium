@@ -27,6 +27,9 @@ base::Value ContentSettingToValue(ContentSetting setting);
 // Adaptor for converting from the new way of base::Value to the old one.
 // Like base::Value::ToUniquePtrValue but converts NONE-type values to nullptr.
 std::unique_ptr<base::Value> ToNullableUniquePtrValue(base::Value value);
+// Adaptor for converting from the old way of base::Value to the new one.
+// Like base::Value::FromUniquePtrValue but converts nullptr to NONE-type value.
+base::Value FromNullableUniquePtrValue(std::unique_ptr<base::Value> value);
 
 }  // namespace content_settings
 

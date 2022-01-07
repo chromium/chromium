@@ -39,14 +39,14 @@ void CheckRule(const content_settings::Rule& rule,
 // Helper class which returns monotonically-increasing base::Time objects.
 class FakeTimer {
  public:
-  FakeTimer() : internal_(0) {}
+  FakeTimer() = default;
 
   base::Time GetNext() {
     return base::Time::FromInternalValue(++internal_);
   }
 
  private:
-  int64_t internal_;
+  int64_t internal_ = 0;
 };
 
 class MockContentSettingsStoreObserver

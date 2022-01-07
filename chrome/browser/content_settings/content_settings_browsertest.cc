@@ -105,7 +105,7 @@ class CookieChangeObserver : public content::WebContentsObserver {
  public:
   explicit CookieChangeObserver(content::WebContents* web_contents)
       : content::WebContentsObserver(web_contents) {}
-  ~CookieChangeObserver() override {}
+  ~CookieChangeObserver() override = default;
 
   void Wait() { run_loop_.Run(); }
 
@@ -127,7 +127,7 @@ class MockWebContentsLoadFailObserver : public content::WebContentsObserver {
  public:
   explicit MockWebContentsLoadFailObserver(content::WebContents* web_contents)
       : content::WebContentsObserver(web_contents) {}
-  ~MockWebContentsLoadFailObserver() override {}
+  ~MockWebContentsLoadFailObserver() override = default;
 
   MOCK_METHOD1(DidFinishNavigation,
                void(content::NavigationHandle* navigation_handle));
@@ -411,7 +411,7 @@ IN_PROC_BROWSER_TEST_P(CookieSettingsTest, PRE_BlockCookies) {
 IN_PROC_BROWSER_TEST_P(CookieSettingsTest, BlockCookies) {
   ASSERT_EQ(CONTENT_SETTING_BLOCK,
             CookieSettingsFactory::GetForProfile(browser()->profile())
-                ->GetDefaultCookieSetting(NULL));
+                ->GetDefaultCookieSetting(nullptr));
 }
 
 // Verify that cookies can be allowed and set using exceptions for particular
@@ -1213,8 +1213,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWorkerModulesBrowserTest,
   content_settings_map->SetWebsiteSettingCustomScope(
       ContentSettingsPattern::FromURLNoWildcard(http_url),
       ContentSettingsPattern::FromURLNoWildcard(module_url),
-      ContentSettingsType::JAVASCRIPT,
-      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+      ContentSettingsType::JAVASCRIPT, base::Value(CONTENT_SETTING_BLOCK));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

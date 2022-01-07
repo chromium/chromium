@@ -421,9 +421,10 @@ void HostContentSettingsMap::SetDefaultContentSetting(
                ->IsDefaultSettingValid(setting));
     value = std::make_unique<base::Value>(setting);
   }
-  SetWebsiteSettingCustomScope(ContentSettingsPattern::Wildcard(),
-                               ContentSettingsPattern::Wildcard(), content_type,
-                               std::move(value));
+  SetWebsiteSettingCustomScope(
+      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
+      content_type,
+      content_settings::FromNullableUniquePtrValue(std::move(value)));
 }
 
 void HostContentSettingsMap::SetWebsiteSettingDefaultScope(
@@ -439,25 +440,23 @@ void HostContentSettingsMap::SetWebsiteSettingDefaultScope(
   if (!primary_pattern.IsValid() || !secondary_pattern.IsValid())
     return;
 
-  SetWebsiteSettingCustomScope(primary_pattern, secondary_pattern, content_type,
-                               std::move(value), constraints);
+  SetWebsiteSettingCustomScope(
+      primary_pattern, secondary_pattern, content_type,
+      content_settings::FromNullableUniquePtrValue(std::move(value)),
+      constraints);
 }
 
 void HostContentSettingsMap::SetWebsiteSettingCustomScope(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
-    std::unique_ptr<base::Value> value_ptr,
+    base::Value value,
     const content_settings::ContentSettingConstraints& constraints) {
   DCHECK(IsSecondaryPatternAllowed(primary_pattern, secondary_pattern,
-                                   content_type, value_ptr.get()));
+                                   content_type, value));
   // TODO(crbug.com/731126): Verify that assumptions for notification content
   // settings are met.
   UsedContentSettingsProviders();
-
-  base::Value value;
-  if (value_ptr)
-    value = std::move(*value_ptr);
 
 #if DCHECK_IS_ON()
   base::Value clone = value.Clone();
@@ -569,8 +568,10 @@ void HostContentSettingsMap::SetContentSettingCustomScope(
                ->IsSettingValid(setting));
     value = std::make_unique<base::Value>(setting);
   }
-  SetWebsiteSettingCustomScope(primary_pattern, secondary_pattern, content_type,
-                               std::move(value), constraints);
+  SetWebsiteSettingCustomScope(
+      primary_pattern, secondary_pattern, content_type,
+      content_settings::FromNullableUniquePtrValue(std::move(value)),
+      constraints);
 }
 
 void HostContentSettingsMap::SetContentSettingDefaultScope(
@@ -1059,7 +1060,7 @@ bool HostContentSettingsMap::IsSecondaryPatternAllowed(
     const ContentSettingsPattern& primary_pattern,
     const ContentSettingsPattern& secondary_pattern,
     ContentSettingsType content_type,
-    base::Value* value) {
+    const base::Value& value) {
   // A secondary pattern is normally only allowed if the content type supports
   // secondary patterns. One exception is made when deleting content settings
   // (aka setting them to CONTENT_SETTING_DEFAULT).

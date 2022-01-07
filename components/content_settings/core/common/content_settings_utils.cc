@@ -56,4 +56,10 @@ std::unique_ptr<base::Value> ToNullableUniquePtrValue(base::Value value) {
   return base::Value::ToUniquePtrValue(std::move(value));
 }
 
+base::Value FromNullableUniquePtrValue(std::unique_ptr<base::Value> value) {
+  if (!value)
+    return base::Value();
+  return base::Value::FromUniquePtrValue(std::move(value));
+}
+
 }  // namespace content_settings

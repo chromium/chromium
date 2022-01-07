@@ -227,13 +227,13 @@ class HostContentSettingsMap : public content_settings::Observer,
 
   // Sets a rule to apply the |value| for all sites matching |pattern|,
   // |content_type| applying any provided |constraints|. Setting the value to
-  // null removes the given pattern pair. Unless adding a custom-scoped setting,
+  // NONE removes the given pattern pair. Unless adding a custom-scoped setting,
   // most developers will want to use SetWebsiteSettingDefaultScope() instead.
   void SetWebsiteSettingCustomScope(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type,
-      std::unique_ptr<base::Value> value,
+      base::Value value,
       const content_settings::ContentSettingConstraints& constraints = {});
 
   // Check if a call to SetNarrowestContentSetting would succeed or if it would
@@ -425,7 +425,7 @@ class HostContentSettingsMap : public content_settings::Observer,
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type,
-      base::Value* value);
+      const base::Value& value);
 
 #ifndef NDEBUG
   // This starts as the thread ID of the thread that constructs this
