@@ -870,8 +870,10 @@ void IndexedDBContextImpl::BindIndexedDBWithBucket(
     const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver,
     storage::QuotaErrorOr<storage::BucketInfo> result) {
-  DCHECK(result.ok());
-  dispatcher_host_.AddReceiver(storage_key, std::move(receiver));
+  absl::optional<storage::BucketLocator> bucket =
+      result.ok() ? absl::make_optional(result->ToBucketLocator())
+                  : absl::nullopt;
+  dispatcher_host_.AddReceiver(storage_key, bucket, std::move(receiver));
 }
 
 void IndexedDBContextImpl::ShutdownOnIDBSequence() {

@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/sequence_checker.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom-forward.h"
 #include "components/services/storage/public/mojom/file_system_access_context.mojom-forward.h"
 #include "content/browser/indexed_db/indexed_db_external_object.h"
@@ -51,6 +52,7 @@ class CONTENT_EXPORT IndexedDBDispatcherHost : public blink::mojom::IDBFactory {
 
   void AddReceiver(
       const blink::StorageKey& storage_key,
+      absl::optional<storage::BucketLocator> bucket,
       mojo::PendingReceiver<blink::mojom::IDBFactory> pending_receiver);
 
   void AddDatabaseBinding(
@@ -136,7 +138,9 @@ class CONTENT_EXPORT IndexedDBDispatcherHost : public blink::mojom::IDBFactory {
   // Shared task runner used to read blob files on.
   const scoped_refptr<base::TaskRunner> file_task_runner_;
 
-  mojo::ReceiverSet<blink::mojom::IDBFactory, blink::StorageKey> receivers_;
+  mojo::ReceiverSet<blink::mojom::IDBFactory,
+                    absl::optional<storage::BucketLocator>>
+      receivers_;
   mojo::UniqueAssociatedReceiverSet<blink::mojom::IDBDatabase>
       database_receivers_;
   mojo::UniqueAssociatedReceiverSet<blink::mojom::IDBCursor> cursor_receivers_;
