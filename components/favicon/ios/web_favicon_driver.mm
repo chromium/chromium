@@ -36,30 +36,15 @@ void WebFaviconDriver::CreateForWebState(web::WebState* web_state,
 }
 
 gfx::Image WebFaviconDriver::GetFavicon() const {
-  web::NavigationItem* item = nil;
-  if (web_state_->IsRealized()) {
-    item = web_state_->GetNavigationManager()->GetLastCommittedItem();
-  }
-
-  return item ? item->GetFavicon().image : gfx::Image();
+  return web_state_->GetFaviconStatus().image;
 }
 
 bool WebFaviconDriver::FaviconIsValid() const {
-  web::NavigationItem* item = nil;
-  if (web_state_->IsRealized()) {
-    item = web_state_->GetNavigationManager()->GetLastCommittedItem();
-  }
-
-  return item ? item->GetFavicon().valid : false;
+  return web_state_->GetFaviconStatus().valid;
 }
 
 GURL WebFaviconDriver::GetActiveURL() {
-  web::NavigationItem* item = nil;
-  if (web_state_->IsRealized()) {
-    item = web_state_->GetNavigationManager()->GetLastCommittedItem();
-  }
-
-  return item ? item->GetURL() : GURL();
+  return web_state_->GetLastCommittedURL();
 }
 
 int WebFaviconDriver::DownloadImage(const GURL& url,
@@ -111,41 +96,20 @@ void WebFaviconDriver::OnFaviconUpdated(
     const GURL& icon_url,
     bool icon_url_changed,
     const gfx::Image& image) {
-  // Check whether the active URL has changed since FetchFavicon() was called.
-  // On iOS, the active URL can change between calls to FetchFavicon(). For
-  // instance, FetchFavicon() is not synchronously called when the active URL
-  // changes as a result of CRWSessionController::goToEntry().
-  web::NavigationItem* item =
-      web_state_->GetNavigationManager()->GetLastCommittedItem();
-  if (!item || item->GetURL() != page_url)
-    return;
-
-  web::FaviconStatus& favicon_status = item->GetFavicon();
+  web::FaviconStatus favicon_status;
   favicon_status.valid = true;
   favicon_status.image = image;
   favicon_status.url = icon_url;
 
-  NotifyFaviconUpdatedObservers(notification_icon_type, icon_url,
-                                icon_url_changed, image);
+  SetFaviconStatus(page_url, favicon_status, notification_icon_type,
+                   icon_url_changed);
 }
 
 void WebFaviconDriver::OnFaviconDeleted(
     const GURL& page_url,
     FaviconDriverObserver::NotificationIconType notification_icon_type) {
-  // Check whether the active URL has changed since FetchFavicon() was called.
-  // On iOS, the active URL can change between calls to FetchFavicon(). For
-  // instance, FetchFavicon() is not synchronously called when the active URL
-  // changes as a result of CRWSessionController::goToEntry().
-  web::NavigationItem* item =
-      web_state_->GetNavigationManager()->GetLastCommittedItem();
-  if (!item || item->GetURL() != page_url)
-    return;
-
-  item->GetFavicon() = web::FaviconStatus();
-
-  NotifyFaviconUpdatedObservers(notification_icon_type, /*icon_url=*/GURL(),
-                                /*icon_url_changed=*/true,
-                                item->GetFavicon().image);
+  SetFaviconStatus(page_url, web::FaviconStatus(), notification_icon_type,
+                   /*icon_url_changed=*/true);
 }
 
 WebFaviconDriver::WebFaviconDriver(web::WebState* web_state,
@@ -183,6 +147,23 @@ void WebFaviconDriver::WebStateDestroyed(web::WebState* web_state) {
   DCHECK_EQ(web_state_, web_state);
   web_state_->RemoveObserver(this);
   web_state_ = nullptr;
+}
+
+void WebFaviconDriver::SetFaviconStatus(
+    const GURL& page_url,
+    const web::FaviconStatus& favicon_status,
+    FaviconDriverObserver::NotificationIconType notification_icon_type,
+    bool icon_url_changed) {
+  // Check whether the active URL has changed since FetchFavicon() was called.
+  // On iOS, the active URL can change between calls to FetchFavicon(). For
+  // instance, FetchFavicon() is not synchronously called when the active URL
+  // changes as a result of CRWSessionController::goToEntry().
+  if (web_state_->GetLastCommittedURL() != page_url)
+    return;
+
+  web_state_->SetFaviconStatus(favicon_status);
+  NotifyFaviconUpdatedObservers(notification_icon_type, favicon_status.url,
+                                icon_url_changed, favicon_status.image);
 }
 
 WEB_STATE_USER_DATA_KEY_IMPL(WebFaviconDriver)

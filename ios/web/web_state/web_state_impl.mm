@@ -308,6 +308,7 @@ WebState* WebStateImpl::ForceRealized() {
     DCHECK(saved_);
     const CreateParams params = saved_->GetCreateParams();
     CRWSessionStorage* session_storage = saved_->GetSessionStorage();
+    FaviconStatus favicon_status = saved_->GetFaviconStatus();
     DCHECK(session_storage);
 
     // Create the RealizedWebState. At this point the WebStateImpl has
@@ -325,6 +326,7 @@ WebState* WebStateImpl::ForceRealized() {
     // code should be able to observe the WebStateImpl with both `saved_`
     // and `pimpl_` set.
     pimpl_->Init(params, session_storage);
+    pimpl_->SetFaviconStatus(favicon_status);
 
     // Notify all observers that the WebState has become realized.
     for (auto& observer : observers_)
@@ -474,6 +476,19 @@ bool WebStateImpl::IsEvicted() const {
 
 bool WebStateImpl::IsBeingDestroyed() const {
   return is_being_destroyed_;
+}
+
+const FaviconStatus& WebStateImpl::GetFaviconStatus() const {
+  return LIKELY(pimpl_) ? pimpl_->GetFaviconStatus()
+                        : saved_->GetFaviconStatus();
+}
+
+void WebStateImpl::SetFaviconStatus(const FaviconStatus& favicon_status) {
+  if (LIKELY(pimpl_)) {
+    pimpl_->SetFaviconStatus(favicon_status);
+  } else {
+    saved_->SetFaviconStatus(favicon_status);
+  }
 }
 
 const GURL& WebStateImpl::GetVisibleURL() const {

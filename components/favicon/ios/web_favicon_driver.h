@@ -11,6 +11,7 @@
 #import "ios/web/public/web_state_user_data.h"
 
 namespace web {
+struct FaviconStatus;
 class WebState;
 }
 
@@ -72,6 +73,13 @@ class WebFaviconDriver : public web::WebStateObserver,
   // Invoked when new favicon URL candidates are received.
   void FaviconUrlUpdatedInternal(
       const std::vector<favicon::FaviconURL>& candidates);
+
+  // Invoked to set the WebState's favicon and notify the observers.
+  void SetFaviconStatus(
+      const GURL& page_url,
+      const web::FaviconStatus& favicon_status,
+      FaviconDriverObserver::NotificationIconType notification_icon_type,
+      bool icon_url_changed);
 
   // Image Fetcher used to fetch favicon.
   image_fetcher::IOSImageDataFetcherWrapper image_fetcher_;

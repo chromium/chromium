@@ -292,6 +292,8 @@ class WebStateImpl final : public WebState {
   bool IsCrashed() const final;
   bool IsEvicted() const final;
   bool IsBeingDestroyed() const final;
+  const FaviconStatus& GetFaviconStatus() const final;
+  void SetFaviconStatus(const FaviconStatus& favicon_status) final;
   const GURL& GetVisibleURL() const final;
   const GURL& GetLastCommittedURL() const final;
   GURL GetCurrentURL(URLVerificationTrustLevel* trust_level) const final;

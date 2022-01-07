@@ -669,6 +669,19 @@ bool WebStateImpl::RealizedWebState::IsEvicted() const {
   return ![web_controller_ isViewAlive];
 }
 
+const FaviconStatus& WebStateImpl::RealizedWebState::GetFaviconStatus() const {
+  static const FaviconStatus missing_favicon_status;
+  NavigationItem* item = navigation_manager_->GetLastCommittedItem();
+  return item ? item->GetFaviconStatus() : missing_favicon_status;
+}
+
+void WebStateImpl::RealizedWebState::SetFaviconStatus(
+    const FaviconStatus& favicon_status) {
+  NavigationItem* item = navigation_manager_->GetLastCommittedItem();
+  if (item)
+    item->SetFaviconStatus(favicon_status);
+}
+
 const GURL& WebStateImpl::RealizedWebState::GetVisibleURL() const {
   NavigationItem* item = navigation_manager_->GetVisibleItem();
   return item ? item->GetVirtualURL() : GURL::EmptyGURL();

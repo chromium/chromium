@@ -832,7 +832,7 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
     } else {
       item.title =
           base::SysUTF16ToNSString(navigationItem->GetTitleForDisplay());
-      const gfx::Image& image = navigationItem->GetFavicon().image;
+      const gfx::Image& image = navigationItem->GetFaviconStatus().image;
       if (!image.IsEmpty())
         item.favicon = image.ToUIImage();
     }

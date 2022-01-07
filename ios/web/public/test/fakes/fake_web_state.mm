@@ -300,6 +300,14 @@ bool FakeWebState::IsBeingDestroyed() const {
   return false;
 }
 
+const FaviconStatus& FakeWebState::GetFaviconStatus() const {
+  return favicon_status_;
+}
+
+void FakeWebState::SetFaviconStatus(const FaviconStatus& favicon_status) {
+  favicon_status_ = favicon_status;
+}
+
 void FakeWebState::SetLoading(bool is_loading) {
   if (is_loading == is_loading_)
     return;

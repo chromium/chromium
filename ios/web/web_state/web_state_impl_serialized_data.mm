@@ -84,6 +84,15 @@ const std::u16string& WebStateImpl::SerializedData::GetTitle() const {
   return item ? item.title : kEmptyString16;
 }
 
+const FaviconStatus& WebStateImpl::SerializedData::GetFaviconStatus() const {
+  return favicon_status_;
+}
+
+void WebStateImpl::SerializedData::SetFaviconStatus(
+    const FaviconStatus& favicon_status) {
+  favicon_status_ = favicon_status;
+}
+
 const GURL& WebStateImpl::SerializedData::GetVisibleURL() const {
   // A restored WebState has no pending item. Thus the visible item is the
   // last committed item. This means that GetVisibleURL() must return the

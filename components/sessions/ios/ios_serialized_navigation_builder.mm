@@ -29,8 +29,10 @@ IOSSerializedNavigationBuilder::FromNavigationItem(
   navigation.title_ = item.GetTitle();
   navigation.transition_type_ = item.GetTransitionType();
   navigation.timestamp_ = item.GetTimestamp();
-  if (item.GetFavicon().valid)
-    navigation.favicon_url_ = item.GetFavicon().url;
+
+  const web::FaviconStatus& favicon_status = item.GetFaviconStatus();
+  if (favicon_status.valid)
+    navigation.favicon_url_ = favicon_status.url;
 
   return navigation;
 }
@@ -70,7 +72,9 @@ IOSSerializedNavigationBuilder::ToNavigationItem(
   item->SetTimestamp(navigation->timestamp_);
 
   if (navigation->favicon_url_.is_valid()) {
-    item->GetFavicon().url = navigation->favicon_url_;
+    web::FaviconStatus favicon_status = item->GetFaviconStatus();
+    favicon_status.url = navigation->favicon_url_;
+    item->SetFaviconStatus(favicon_status);
   }
 
   return item;

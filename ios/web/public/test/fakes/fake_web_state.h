@@ -13,6 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "ios/web/public/deprecated/url_verification_constants.h"
+#import "ios/web/public/favicon/favicon_status.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/navigation/web_state_policy_decider.h"
 #import "ios/web/public/permissions/permissions.h"
@@ -75,6 +76,8 @@ class FakeWebState : public WebState {
   bool IsCrashed() const override;
   bool IsEvicted() const override;
   bool IsBeingDestroyed() const override;
+  const FaviconStatus& GetFaviconStatus() const final;
+  void SetFaviconStatus(const FaviconStatus& favicon_status) final;
   const GURL& GetVisibleURL() const override;
   const GURL& GetLastCommittedURL() const override;
   GURL GetCurrentURL(URLVerificationTrustLevel* trust_level) const override;
@@ -175,6 +178,7 @@ class FakeWebState : public WebState {
   bool has_opener_ = false;
   bool can_take_snapshot_ = false;
   bool is_closed_ = false;
+  FaviconStatus favicon_status_;
   GURL url_;
   std::u16string title_;
   std::u16string last_executed_javascript_;

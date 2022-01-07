@@ -48,6 +48,7 @@ class RectF;
 namespace web {
 
 class BrowserState;
+struct FaviconStatus;
 class NavigationManager;
 enum class Permission;
 enum class PermissionState;
@@ -341,6 +342,10 @@ class WebState : public base::SupportsUserData {
 
   // Whether this instance is in the process of being destroyed.
   virtual bool IsBeingDestroyed() const = 0;
+
+  // Gets/Sets the favicon for the current page displayed by this WebState.
+  virtual const FaviconStatus& GetFaviconStatus() const = 0;
+  virtual void SetFaviconStatus(const FaviconStatus& favicon_status) = 0;
 
   // Gets the URL currently being displayed in the URL bar, if there is one.
   // This URL might be a pending navigation that hasn't committed yet, so it is
