@@ -234,6 +234,11 @@ void DesksTemplatesPresenter::OnGetTemplateForDeskLaunch(
   if (status != desks_storage::DeskModel::GetEntryByUuidStatus::kOk)
     return;
 
+  // `CreateAndActivateNewDeskForTemplate` may destroy `this`. Copy the member
+  // variables to a local to prevent UAF. See https://crbug.com/1284138.
+  base::OnceClosure on_update_ui_closure_for_testing =
+      std::move(on_update_ui_closure_for_testing_);
+
   // Launch the windows as specified in the template to a new desk.
   // Calling `CreateAndActivateNewDeskForTemplate` results in exiting overview
   // mode, which means the presenter doesn't exist anymore on callback (since it
@@ -244,8 +249,8 @@ void DesksTemplatesPresenter::OnGetTemplateForDeskLaunch(
       template_name,
       base::BindOnce(&OnNewDeskCreatedForTemplate, std::move(entry)));
 
-  if (on_update_ui_closure_for_testing_)
-    std::move(on_update_ui_closure_for_testing_).Run();
+  if (on_update_ui_closure_for_testing)
+    std::move(on_update_ui_closure_for_testing).Run();
 
   RecordLaunchTemplateHistogram();
 }
