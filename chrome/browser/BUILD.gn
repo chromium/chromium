@@ -1935,7 +1935,6 @@ static_library("browser") {
     "//base/allocator:buildflags",
     "//build:branding_buildflags",
     "//build:chromeos_buildflags",
-    "//build:os_buildflags",
     "//build/config/compiler:compiler_buildflags",
     "//cc",
     "//chrome:extra_resources",

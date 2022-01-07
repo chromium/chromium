@@ -28,7 +28,6 @@
 #include "base/task/common/task_annotator.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
-#include "build/os_buildflags.h"
 
 #if defined(OS_WIN)
 #include <io.h>

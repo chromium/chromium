@@ -107,7 +107,6 @@ blink_modules_sources("mediastream") {
   deps = [
     "//build:chromecast_buildflags",
     "//build:chromeos_buildflags",
-    "//build:os_buildflags",
     "//media/capture/mojom:image_capture_blink",
     "//media/webrtc",
     "//services/viz/public/cpp/gpu:gpu",

@@ -11,7 +11,7 @@
 #include "base/process/launch.h"
 #include "base/strings/string_util.h"
 #include "base/test/perf_log.h"
-#include "build/os_buildflags.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_FUCHSIA)

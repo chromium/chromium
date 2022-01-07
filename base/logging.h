@@ -20,7 +20,6 @@
 #include "base/strings/string_piece_forward.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "build/os_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS)
 #include <cstdio>

@@ -241,7 +241,6 @@ static_library("common") {
 
   deps = [
     "//build:chromeos_buildflags",
-    "//build:os_buildflags",
     "//components/google/core/common",
     "//components/live_caption:constants",
     "//components/metrics:call_stack_profile_builder",

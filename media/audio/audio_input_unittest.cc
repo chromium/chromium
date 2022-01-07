@@ -17,7 +17,6 @@
 #include "base/test/test_message_loop.h"
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
-#include "build/os_buildflags.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_device_info_accessor_for_tests.h"
 #include "media/audio/audio_io.h"
