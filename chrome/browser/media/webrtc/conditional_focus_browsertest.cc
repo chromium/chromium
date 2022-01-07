@@ -258,8 +258,16 @@ IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
             browser()->tab_strip_model()->GetWebContentsAt(0));
 }
 
+// TODO(crbug.com/1285418): Flaky on Win and Linux bots.
+#if defined(OS_WIN) || defined(OS_LINUX)
+#define MAYBE_ExceptionRaisedIfFocusCalledMultipleTimes \
+  DISABLED_ExceptionRaisedIfFocusCalledMultipleTimes
+#else
+#define MAYBE_ExceptionRaisedIfFocusCalledMultipleTimes \
+  ExceptionRaisedIfFocusCalledMultipleTimes
+#endif
 IN_PROC_BROWSER_TEST_F(ConditionalFocusBrowserTest,
-                       ExceptionRaisedIfFocusCalledMultipleTimes) {
+                       MAYBE_ExceptionRaisedIfFocusCalledMultipleTimes) {
   // Setup.
   SetUpTestTabs();
   Capture(0, FocusEnumValue::kFocusCapturedSurface);
