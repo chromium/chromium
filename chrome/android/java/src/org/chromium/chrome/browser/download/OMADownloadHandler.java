@@ -120,6 +120,25 @@ public class OMADownloadHandler extends BroadcastReceiver {
             "953 Non-Acceptable Content \n\r";
     private static final String DOWNLOAD_STATUS_LOADER_ERROR = "954 Loader Error \n\r";
 
+    private static final NetworkTrafficAnnotationTag TRAFFIC_ANNOTATION =
+            NetworkTrafficAnnotationTag.createComplete("oma_download_handler_android",
+                    "semantics {"
+                            + "  sender: 'OMA Download Handler (Android)'"
+                            + "  description: 'Uploads file download status to the server URL '"
+                            + "               'specified in the download descriptor XML, as ' "
+                            + "               'required by the OMA DRM specification.'"
+                            + "  trigger: 'After an OMA DRM file download completes.'"
+                            + "  data: 'Info related to the download.'"
+                            + "  destination: OTHER"
+                            + "}"
+                            + "policy {"
+                            + "  cookies_allowed: NO"
+                            + "  setting: 'This feature cannot be disabled by settings as it is '"
+                            + "           'part of the OMA DRM specification.'"
+                            + "  policy_exception_justification:"
+                            + "      'Not implemented.'"
+                            + "}");
+
     private final Context mContext;
     private final SharedPreferencesManager mSharedPrefs;
     private final LongSparseArray<DownloadItem> mSystemDownloadIdMap =
@@ -945,7 +964,7 @@ public class OMADownloadHandler extends BroadcastReceiver {
             try {
                 URL url = new URL(mOMAInfo.getValue(OMA_INSTALL_NOTIFY_URI));
                 urlConnection = (HttpURLConnection) ChromiumNetworkAdapter.openConnection(
-                        url, NetworkTrafficAnnotationTag.MISSING_TRAFFIC_ANNOTATION);
+                        url, TRAFFIC_ANNOTATION);
                 urlConnection.setDoOutput(true);
                 urlConnection.setUseCaches(false);
                 urlConnection.setRequestMethod("POST");

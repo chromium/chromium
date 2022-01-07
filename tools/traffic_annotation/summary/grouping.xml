@@ -36,6 +36,7 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="gstatic_onboarding_definition"/>
       <traffic_annotation unique_id="kids_chrome_management_client_classify_url"/>
       <traffic_annotation unique_id="minidump_uploader_android"/>
+      <traffic_annotation unique_id="oma_download_handler_android"/>
       <traffic_annotation unique_id="partner_bookmarks_reader_get_favicon"/>
       <traffic_annotation unique_id="permission_request_creator"/>
       <traffic_annotation unique_id="publish_note_request"/>
