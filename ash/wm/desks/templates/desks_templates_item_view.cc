@@ -331,8 +331,18 @@ void DesksTemplatesItemView::OnViewBlurred(views::View* observed_view) {
   updated_template->set_template_name(name_view_->GetText());
   OnTemplateNameChanged(updated_template->template_name());
 
-  DesksTemplatesPresenter::Get()->SaveOrUpdateDeskTemplate(
-      /*is_update=*/false, std::move(updated_template));
+  // Calling `SaveOrUpdateDeskTemplate` will trigger rebuilding the desks
+  // templates grid views hierarchy which includes `this`. Use a post task as
+  // some other `ViewObserver`'s may still be using `this`.
+  // TODO(crbug.com/1266552): Remove the post task once saving and updating does
+  // not cause a `this` to be deleted anymore.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](std::unique_ptr<DeskTemplate> desk_template) {
+                       DesksTemplatesPresenter::Get()->SaveOrUpdateDeskTemplate(
+                           /*is_update=*/false, std::move(desk_template));
+                     },
+                     std::move(updated_template)));
 }
 
 views::Button::KeyClickAction DesksTemplatesItemView::GetKeyClickActionForEvent(
