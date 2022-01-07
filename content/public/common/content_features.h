@@ -69,6 +69,9 @@ CONTENT_EXPORT extern const base::Feature kDesktopPWAsTabStrip;
 CONTENT_EXPORT extern const base::Feature kDevicePosture;
 CONTENT_EXPORT extern const base::Feature kDocumentPolicy;
 CONTENT_EXPORT extern const base::Feature kDocumentPolicyNegotiation;
+#if defined(OS_WIN)
+CONTENT_EXPORT extern const base::Feature kDWriteFontProxyOnIO;
+#endif
 CONTENT_EXPORT extern const base::Feature kEarlyEstablishGpuChannel;
 CONTENT_EXPORT extern const base::Feature kEarlyHintsPreloadForNavigation;
 CONTENT_EXPORT extern const base::Feature kEmbeddingRequiresOptIn;
