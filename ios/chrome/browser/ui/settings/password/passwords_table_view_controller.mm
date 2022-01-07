@@ -835,8 +835,6 @@ void RemoveFormsToBeDeleted(
       l10n_util::GetNSString(IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION);
   item.detailText = l10n_util::GetNSString(
       IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION_LEARN_MORE);
-  // TODO(crbug.com/1202088): Remove translateable="false" once the
-  // final string is decided. Then upload the screenshot.
   return item;
 }
 

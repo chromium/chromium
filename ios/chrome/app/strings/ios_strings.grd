@@ -1914,16 +1914,16 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         View Password
       </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION" desc="Section title in settings > password, about on-device Encryption. [iOS Only]">
-        On-device Encryption
+        On-Device Encryption
       </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION_OPT_IN" desc="Section title in settings > password, explaining to the user what they can opt-in. [iOS Only]">
-        Encrypt your passwords before they’re saved to your Google Account.
+        For added safety, encrypt passwords on your device before they’re saved to Google Password Manager.
       </message>
       <message name="IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION_SET_UP" desc="Section title in settings > password, allowing user to opt-in. [iOS Only]">
         Set Up…
       </message>
-      <message name="IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION_LEARN_MORE" desc="Section title in settings > password, allow to learn more about on-device. [iOS Only]"  translateable="false">
-        Your saved passwords are encrypted on your devices before they’re saved to your Google Account.
+      <message name="IDS_IOS_PASSWORD_SETTINGS_ON_DEVICE_ENCRYPTION_LEARN_MORE" desc="Section title in settings > password, allow to learn more about on-device. [iOS Only]">
+        Your passwords are encrypted on your device before they’re saved to Google Password Manager.
       </message>
       <message name="IDS_IOS_SETTINGS_ADD_PASSWORD_DESCRIPTION" desc="Footer text shown when the user is trying to add a new credential manually via settings [iOS only]" meaning="Telling user to ensure provided password matches password on the website.">
         Make sure you're saving your current password for this site.
