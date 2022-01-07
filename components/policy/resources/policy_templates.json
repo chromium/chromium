@@ -9453,7 +9453,7 @@
         'chrome_os:86-',
         'android:86-',
         'webview_android:86-',
-        'ios:91-',
+        'ios:98-',
       ],
       'features': {
         'dynamic_refresh': True,
@@ -9485,7 +9485,7 @@
         'chrome_os:86-',
         'android:86-',
         'webview_android:86-',
-        'ios:91-',
+        'ios:98-',
       ],
       'features': {
         'dynamic_refresh': True,
