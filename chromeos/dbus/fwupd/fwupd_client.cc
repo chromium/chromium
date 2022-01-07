@@ -101,8 +101,10 @@ class FwupdClientImpl : public FwupdClient {
     }
     writer.CloseContainer(&array_writer);
 
+  // TODO(michaelcheco): Investigate whether or not the estimated install time
+  // multiplied by some factor can be used in place of |TIMEOUT_INFINITE|.
     proxy_->CallMethodWithErrorResponse(
-        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        &method_call, dbus::ObjectProxy::TIMEOUT_INFINITE,
         base::BindOnce(&FwupdClientImpl::InstallUpdateCallback,
                        weak_ptr_factory_.GetWeakPtr()));
   }
