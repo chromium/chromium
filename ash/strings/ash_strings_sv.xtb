@@ -109,7 +109,6 @@ Det här är några saker du kan testa för att komma igång.</translation>
 <translation id="1570871743947603115">Aktivera och inaktivera Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Få tillgång till all aktivitet i sessionen</translation>
 <translation id="1611993646327628135">På</translation>
-<translation id="1615402009686901181">Skärmbilder inaktiveras av en administratörspolicy när konfidentiellt innehåll är synligt</translation>
 <translation id="1632985212731562677">Brytarstyrning kan inaktiveras under Inställningar &gt; Tillgänglighet</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> enheter</translation>
 <translation id="1654477262762802994">Säg en sökfråga</translation>
@@ -1189,7 +1188,6 @@ Nyligen installerad</translation>
 <translation id="9024331582947483881">helskärm</translation>
 <translation id="9047624247355796468">Öppnar inställningarna för <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Komprimera avisering</translation>
-<translation id="9063800855227801443">Det går inte att ta bilder på konfidentiellt innehåll</translation>
 <translation id="9065203028668620118">Redigera</translation>
 <translation id="9070640332319875144">Inställningar för Google-assistenten</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> tills batteriet är tomt.</translation>

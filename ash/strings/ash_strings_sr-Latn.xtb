@@ -53,6 +53,10 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1247519845643687288">Nedavne aplikacije</translation>
 <translation id="1252999807265626933">Punjenje iz uređaja <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Kakvo je vreme?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" />–
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Izaberite da biste videli više detalja u Google kalendaru.</translation>
 <translation id="1266097335951928626">Pokreni kameru za selfije</translation>
 <translation id="1267032506238418139">Promena prečice</translation>
 <translation id="1269405891096105529">Periferni uređaj nije podržan u režimu gosta</translation>
@@ -109,7 +113,6 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1570871743947603115">Uključite/isključite Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Pristupite svim aktivnostima u ovoj sesiji</translation>
 <translation id="1611993646327628135">Uključeno</translation>
-<translation id="1615402009686901181">Smernice administratora onemogućavaju snimanje ekrana kada je vidljiv poverljiv sadržaj</translation>
 <translation id="1632985212731562677">Pristup pomoću prekidača može da se onemogući u odeljku Podešavanja &gt; Pristupačnost.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> uređaja</translation>
 <translation id="1654477262762802994">Započnite glasovnu pretragu</translation>
@@ -998,6 +1001,8 @@ Novo instaliranje</translation>
 <translation id="7720410380936703141">PROBAJ PONOVO</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 obaveštenje}one{# obaveštenje}few{# obaveštenja}other{# obaveštenja}}</translation>
 <translation id="7724603315864178912">Iseci</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Prikaži aplikacije na polici</translation>
 <translation id="7749443890790263709">Dostigli ste maksimalan broj radnih površina.</translation>
 <translation id="7749640678855296659">Mikrofon je trenutno isključen</translation>
@@ -1189,7 +1194,6 @@ Novo instaliranje</translation>
 <translation id="9024331582947483881">ceo ekran</translation>
 <translation id="9047624247355796468">Otvorite podešavanja za <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Skupi obaveštenje</translation>
-<translation id="9063800855227801443">Snimanje poverljivog sadržaja nije uspelo</translation>
 <translation id="9065203028668620118">Izmeni</translation>
 <translation id="9070640332319875144">Podešavanja Pomoćnika</translation>
 <translation id="9072519059834302790">Još <ph name="TIME_LEFT" /> i baterija će biti prazna.</translation>

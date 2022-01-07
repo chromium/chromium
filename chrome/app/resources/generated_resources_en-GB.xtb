@@ -2710,7 +2710,6 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="3742666961763734085">Can’t find an organisational unit with that name. Please try again.</translation>
 <translation id="3743842571276656710">Enter PIN to pair with <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">To remove apps, go to Settings &gt; Google Play Store &gt; Manage Android preferences &gt; Apps or Application manager. Then tap the app that you want to uninstall (you may need to swipe right or left to find the app). Then tap Uninstall or Disable.</translation>
-<translation id="3747220812138541072">Show inline writing suggestions that appear as you type</translation>
 <translation id="3747603683749989726">Turn on enhanced security?</translation>
 <translation id="3748706263662799310">Report a bug</translation>
 <translation id="3750562496035670393">Chrome saved your password to this device, but you can save it to your Google Account instead. Then, all passwords in your Google Account will also be available while you're signed in.</translation>
@@ -3691,6 +3690,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="4785719467058219317">You're using a security key that's not registered with this website</translation>
 <translation id="478708757211772586">Use 'Next' to move forward on the screen</translation>
 <translation id="4788092183367008521">Please check your network connection and try again.</translation>
+<translation id="4789550509729954245">Show notification when devices are sharing nearby</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> photo</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Enable TrackPoint acceleration</translation>
@@ -4052,6 +4052,7 @@ and Ctrl+Alt+Brightness down to zoom out.</translation>
 <translation id="5171343362375269016">Swapped Memory</translation>
 <translation id="5172855596271336236">There is one managed printer.</translation>
 <translation id="5173668317844998239">Add and delete fingerprints saved on your security key</translation>
+<translation id="5174169235862638850">Password copied to clipboard</translation>
 <translation id="5175379009094579629">The device name is invalid. Enter a valid device name to try again.</translation>
 <translation id="5177479852722101802">Continue blocking camera and microphone access</translation>
 <translation id="5177549709747445269">You are using mobile data</translation>

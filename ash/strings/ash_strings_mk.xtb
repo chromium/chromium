@@ -53,6 +53,10 @@
 <translation id="1247519845643687288">Неодамнешни апликации</translation>
 <translation id="1252999807265626933">Се полни од <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Какво е времето?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> до 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Изберете за повеќе детали во „Календарот на Google“.</translation>
 <translation id="1266097335951928626">Стартувај ја камерата за селфи</translation>
 <translation id="1267032506238418139">Промена на кратенка</translation>
 <translation id="1269405891096105529">Периферниот уред не е поддржан во режим на гостин</translation>
@@ -109,7 +113,6 @@
 <translation id="1570871743947603115">Вклучи/исклучи Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Пристапете до целата ваша активност во сесијава</translation>
 <translation id="1611993646327628135">Вклучено</translation>
-<translation id="1615402009686901181">Администраторското правило оневозможува снимање на екранот кога се видливи доверливи содржини</translation>
 <translation id="1632985212731562677">Пристапот со прекинувачи може да се оневозможи во „Поставки &gt; Пристапност“.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> уреди</translation>
 <translation id="1654477262762802994">Започнете гласовно барање</translation>
@@ -999,6 +1002,8 @@
 <translation id="7720410380936703141">ОБИДЕТЕ СЕ ПОВТОРНО</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 известување}one{# известување}other{# известувања}}</translation>
 <translation id="7724603315864178912">Исечи</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Прикажи ги апликациите од полицата</translation>
 <translation id="7749443890790263709">Достигнат е максималниот број работни простори.</translation>
 <translation id="7749640678855296659">Микрофонот е исклучен во моментов</translation>
@@ -1190,7 +1195,6 @@
 <translation id="9024331582947483881">цел екран</translation>
 <translation id="9047624247355796468">Отвори поставки за <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Собери го известувањето</translation>
-<translation id="9063800855227801443">Не може да се сликаат доверливи содржини</translation>
 <translation id="9065203028668620118">Измени</translation>
 <translation id="9070640332319875144">Поставки за „Помошникот“</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> до празна батерија.</translation>

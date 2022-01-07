@@ -109,7 +109,6 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="1570871743947603115">Activar/desactivar o Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Acceder a toda a túa actividade nesta sesión</translation>
 <translation id="1611993646327628135">Activado</translation>
-<translation id="1615402009686901181">A política do administrador desactiva o modo de captura de pantalla cando nela se mostra contido confidencial</translation>
 <translation id="1632985212731562677">A función Acceso con interruptores pódese desactivar en Configuración &gt; Accesibilidade.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="1654477262762802994">Iniciar unha consulta de voz</translation>
@@ -1190,7 +1189,6 @@ Nova instalación</translation>
 <translation id="9024331582947483881">pantalla completa</translation>
 <translation id="9047624247355796468">Abrir a configuración de <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Contraer notificación</translation>
-<translation id="9063800855227801443">Non se pode realizar unha captura de contido confidencial</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9070640332319875144">Configuración do Asistente</translation>
 <translation id="9072519059834302790">Tempo que falta ata que a batería estea baleira: <ph name="TIME_LEFT" />.</translation>

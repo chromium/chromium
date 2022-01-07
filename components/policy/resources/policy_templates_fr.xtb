@@ -213,7 +213,6 @@
       Si cette règle n'est pas configurée ou que la valeur après remplacement ne forme pas un nom d'hôte valide, aucun nom d'hôte n'est alors défini dans la requête DHCP.</translation>
 <translation id="1257550411839719984">Définir le répertoire de téléchargement par défaut</translation>
 <translation id="1265053460044691532">Limiter la durée pendant laquelle un utilisateur authentifié via SAML peut se connecter hors connexion</translation>
-<translation id="1268548671627260798">Liste des URL exclues de la notification en plein écran</translation>
 <translation id="127264587838521316">Autorise les demandes d'installation d'extension de <ph name="PRODUCT_NAME" /></translation>
 <translation id="1272798957154751008">Activez la migration des appareils Chromad vers la gestion dans le cloud</translation>
 <translation id="1274997165432133392">Cookies et autres données des sites</translation>
@@ -2777,11 +2776,6 @@ Si elle est définie sur "False", <ph name="PRODUCT_NAME" /> n'utilise pas les n
       Si cette règle est désactivée ou qu'elle n'est pas configurée, les utilisateurs peuvent transférer des fichiers vers Google Drive même s'ils sont connectés à un réseau mobile.</translation>
 <translation id="4248277954659222481">Autoriser la lecture automatique des contenus multimédias pour les formats d'URL sur liste d'autorisation</translation>
 <translation id="4250680216510889253">Non</translation>
-<translation id="4257545866869267519">Configure une liste d'URL exclues de la notification en plein écran. La notification s'affiche lorsque l'appareil est réactivé après avoir été en mode veille, faible luminosité ou verrouillage de l'écran, et lorsqu'une fenêtre en mode plein écran est ouverte. Ainsi, les utilisateurs sont informés que le mode plein écran est activé, ce qui réduit le risque d'attaques par hameçonnage.
-
-          Cette règle permet de désactiver la notification pour des URL spécifiques considérées comme des sources de confiance. Pour la définir, vous devez spécifier une liste d'URL au format indiqué sur https://www.chromium.org/administrators/url-blocklist-filter-format. Par exemple, vous pouvez désactiver complètement les notifications en spécifiant le caractère générique <ph name="WILDCARD_VALUE" /> qui correspond à toutes les URL.
-
-          Si cette règle est associée à une liste vide ou si elle n'est pas définie, aucune URL n'est exclue de la notification en plein écran.</translation>
 <translation id="4260027436474745627">Si cette règle est configurée, chacune des origines définies dans une liste d'éléments séparés par une virgule exécute un processus dédié. Le processus de chaque origine définie ne pourra contenir que des documents de cette origine et de ses sous-domaines. Par exemple, spécifier https://a1.example.com/ autorise https://a2.a1.example.com/ dans le même processus, mais pas https://example.com ni https://b.example.com.
 
       Depuis <ph name="PRODUCT_NAME" /> 77, vous pouvez aussi spécifier une plage d'origines à isoler à l'aide d'un caractère générique. Par exemple, spécifier https://[*.]corp.example.com attribuera à chaque origine sous https://corp.example.com son propre processus dédié, y compris https://corp.example.com, https://a1.corp.example.com et https://a2.a1.corp.example.com.

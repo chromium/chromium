@@ -109,7 +109,6 @@
 <translation id="1570871743947603115">切換藍牙。<ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">存取此工作階段的所有活動紀錄</translation>
 <translation id="1611993646327628135">開啟</translation>
-<translation id="1615402009686901181">當畫面上出現機密內容時，管理員政策就會停用螢幕截圖擷取功能</translation>
 <translation id="1632985212731562677">您可在 [設定] &gt; [無障礙功能] 中停用「按鈕控制」。</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> 部裝置</translation>
 <translation id="1654477262762802994">開始語音查詢</translation>
@@ -1187,7 +1186,6 @@
 <translation id="9024331582947483881">全螢幕</translation>
 <translation id="9047624247355796468">打開<ph name="NETWORK_NAME" />設定</translation>
 <translation id="9059834730836941392">收合通知</translation>
-<translation id="9063800855227801443">無法擷取機密內容</translation>
 <translation id="9065203028668620118">編輯</translation>
 <translation id="9070640332319875144">Google 助理設定</translation>
 <translation id="9072519059834302790">電池使用時間剩番 <ph name="TIME_LEFT" /></translation>

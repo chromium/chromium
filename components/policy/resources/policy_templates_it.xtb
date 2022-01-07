@@ -214,7 +214,6 @@
       Se il criterio non viene configurato o se il valore dopo la sostituzione non è un nome host valido, non viene impostato nessun nome host nella richiesta DHCP.</translation>
 <translation id="1257550411839719984">Imposta directory di download predefinita</translation>
 <translation id="1265053460044691532">Limita il tempo per cui un utente autenticato tramite SAML può eseguire l'accesso offline</translation>
-<translation id="1268548671627260798">Elenco di URL esenti dalla notifica della modalità a schermo intero</translation>
 <translation id="127264587838521316">Attiva le richieste di installazione delle estensioni di <ph name="PRODUCT_NAME" /></translation>
 <translation id="1272798957154751008">Attiva la migrazione dei dispositivi Chromad nella gestione del cloud</translation>
 <translation id="1274997165432133392">Cookie e altri dati dei siti</translation>
@@ -2776,11 +2775,6 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
       Se il criterio viene impostato su Disattivato o se non viene configurato, gli utenti potranno trasferire i file su Drive tramite la connessione a una rete cellulare.</translation>
 <translation id="4248277954659222481">Consenti la riproduzione automatica dei contenuti multimediali per una lista consentita di pattern URL</translation>
 <translation id="4250680216510889253">No</translation>
-<translation id="4257545866869267519">Configura un elenco di URL esenti dalla notifica della modalità a schermo intero. La notifica viene mostrata quando un dispositivo torna attivo in seguito a sospensione, impostazione della bassa luminosità o schermata di blocco e presenta una finestra in modalità a schermo intero. In questo modo, gli utenti sono consapevoli di essere in modalità a schermo intero, riducendo il rischio di attacchi di phishing.
-
-          Questo criterio consente di disattivare la notifica per URL specifici che vengono considerati origini attendibili. Viene configurato tramite la specifica di un elenco di pattern URL formattati in base a questo formato ( https://www.chromium.org/administrators/url-blocklist-filter-format ). Ad esempio, è possibile disattivare tutte le notifiche contemporaneamente specificando il carattere jolly <ph name="WILDCARD_VALUE" /> che corrisponde a tutti gli URL.
-
-          Se il criterio viene impostato su un elenco vuoto o se non viene configurato, nessun URL è esente dalla notifica della modalità a schermo intero.</translation>
 <translation id="4260027436474745627">Se il criterio viene configurato, ciascuna delle origini denominate in un elenco separato da virgole viene eseguita in un processo dedicato. Il processo di ogni origine denominata potrà contenere solo documenti provenienti da tale origine e i relativi sottodomini. Ad esempio, specificare https://a1.example.com/ consente https://a2.a1.example.com/ nello stesso processo, ma non https://example.com o https://b.example.com.
 
       A partire da <ph name="PRODUCT_NAME" /> 77, puoi specificare anche un intervallo di origini da isolare utilizzando un carattere jolly. Ad esempio, specificare https://[*.]corp.example.com consentirà a ogni origine al di sotto di https://corp.example.com il proprio processo dedicato, inclusi https://corp.example.com stesso, https://a1.corp.example.com e https://a2.a1.corp.example.com.

@@ -60,6 +60,7 @@
 <translation id="1407135791313364759">Баарын ачуу</translation>
 <translation id="1430915738399379752">Басып чыгаруу</translation>
 <translation id="1434356225517321998">Серепчиңиз башкарылып жатат. <ph name="BEGIN_LINK" />Чоо-жайы<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">Түзмөктө шифрлөө</translation>
 <translation id="1449835205994625556">Сырсөздү жашыруу</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> нерсе</translation>
 <translation id="149095475893949513">Бул вебсайт конфигурациялык профилди жүктөп алууга аракет кылып жатат.</translation>
@@ -94,6 +95,7 @@
 <translation id="1690731385917361335">Эч нерсе жок</translation>
 <translation id="1692118695553449118">Шайкештештирүү күйүк</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> тандалды</translation>
+<translation id="1726573592754903697">Google Сырсөздөрдү башкаргыч</translation>
 <translation id="1740468249224277719">Орнотуу үчүн эки жолу таптап коюңуз.</translation>
 <translation id="1752547299766512813">Сырсздрдү сакт</translation>
 <translation id="1753905327828125965">Көп көрүлгөн</translation>
@@ -284,6 +286,7 @@
 <translation id="3529024052484145543">Кооптуу</translation>
 <translation id="3533202363250687977">Бардык жашыруун өтмөктөрдү жабуу</translation>
 <translation id="3533436815740441613">Жаңы өтмөк</translation>
+<translation id="3536487890564466894">Google аккаунтуңузга сактаардан мурда сырсөздөрүңүздү шифрлеңиз.</translation>
 <translation id="3551320343578183772">Өтмөктү жабуу</translation>
 <translation id="3581564640715911333">Башка тилдердеги барактарды которуу сунушталсын</translation>
 <translation id="3588820906588687999">Сүрөттү жаңы өтмөктө ачуу</translation>
@@ -502,6 +505,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="575902488528307720">Сүрөт издөө</translation>
 <translation id="5781453543752460388">Google Фотого кошуу</translation>
 <translation id="5782227691023083829">Которулууда...</translation>
+<translation id="5802829331520313983">Жөндөө…</translation>
 <translation id="5803566855766646066">Бул жаңы картаны чын эле өчүрөсүзбү?</translation>
 <translation id="5812974770859303494">Төмөнкүгө кошуу...</translation>
 <translation id="5816228676161003208">Бул үнүңүз менен издөөнү тездетүүгө жол ачат.</translation>
@@ -561,6 +565,7 @@ Handoff Жөндөөлөрдүн жалпы бөлүмүндө да иштети
 <translation id="6219688215832490856">Эч качан которулбасын</translation>
 <translation id="6223816392543092032">Бардык түзмөктөрүңүздөн кыстармаларды, таржымалды, сырсөздөрдү жана башка жөндөөлөрүңүздү алыңыз.</translation>
 <translation id="6232329973559504466">Жашыруун издөө</translation>
+<translation id="6232736989810857397">Google Lens аркылуу жылнаамада иш-чараларды оңой түзүү мүмкүнчүлүгүн берет.</translation>
 <translation id="6254066287920239840">Шилтемелерди серепчиден эмес, колдонмодон ачыңыз.</translation>
 <translation id="6255097610484507482">Насыя картсын түзтүү</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> тилин которууну сунуштоо</translation>

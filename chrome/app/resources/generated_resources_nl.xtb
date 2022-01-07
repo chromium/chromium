@@ -2694,7 +2694,6 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="3742666961763734085">Kan geen organisatie-eenheid met die naam vinden. Probeer het opnieuw.</translation>
 <translation id="3743842571276656710">Geef een pincode op om te koppelen met <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">Als je apps wilt verwijderen, ga je naar Instellingen &gt; Google Play Store &gt; Android-voorkeuren beheren &gt; Apps of App-beheer. Tik op de app die je wilt verwijderen (je moet mogelijk naar rechts of links swipen om de app te vinden). Tik vervolgens op Verwijderen of Uitzetten.</translation>
-<translation id="3747220812138541072">Inline schrijfsuggesties laten zien terwijl je typt</translation>
 <translation id="3747603683749989726">Uitgebreide beveiliging aanzetten?</translation>
 <translation id="3748706263662799310">Een fout melden</translation>
 <translation id="3750562496035670393">Chrome heeft je wachtwoord opgeslagen op dit apparaat, maar in plaats daarvan kun je het wachtwoord ook opslaan in je Google-account. Dan zijn alle wachtwoorden in je Google-account ook beschikbaar als je bent ingelogd.</translation>
@@ -3674,6 +3673,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="4785719467058219317">Je gebruikt een beveiligingssleutel die niet is geregistreerd voor deze website</translation>
 <translation id="478708757211772586">Gebruik Volgende om vooruit te gaan op het scherm</translation>
 <translation id="4788092183367008521">Controleer de netwerkverbinding en probeer het opnieuw.</translation>
+<translation id="4789550509729954245">Melding laten zien als apparaten in de buurt delen</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto('s)</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">TrackPoint-versnelling aanzetten</translation>
@@ -4033,6 +4033,7 @@ Als je later besluit dat je niet wilt dat je kind Voice Match gebruikt, verwijde
 <translation id="5171343362375269016">Wisselgeheugen</translation>
 <translation id="5172855596271336236">Er is 1 beheerde printer.</translation>
 <translation id="5173668317844998239">Vingerafdrukken toevoegen en verwijderen die zijn opgeslagen op je beveiligingssleutel</translation>
+<translation id="5174169235862638850">Wachtwoord gekopieerd naar klembord</translation>
 <translation id="5175379009094579629">De apparaatnaam is ongeldig. Geef een geldige apparaatnaam op of probeer het opnieuw.</translation>
 <translation id="5177479852722101802">Toegang tot de camera en microfoon blijven blokkeren</translation>
 <translation id="5177549709747445269">Je gebruikt mobiele data</translation>

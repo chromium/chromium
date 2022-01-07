@@ -109,7 +109,6 @@
 <translation id="1570871743947603115">Увімкнути/вимкнути Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">мати доступ до всіх ваших дій у цьому сеансі</translation>
 <translation id="1611993646327628135">Увімкнено</translation>
-<translation id="1615402009686901181">Адміністратор заборонив запис екрана, якщо видно конфіденційний контент</translation>
 <translation id="1632985212731562677">Щоб вимкнути кнопковий доступ, відкрийте "Налаштування" &gt; "Спеціальні можливості".</translation>
 <translation id="1637505162081889933">Пристроїв: <ph name="NUM_DEVICES" /></translation>
 <translation id="1654477262762802994">Ввести голосовий запит</translation>
@@ -1189,7 +1188,6 @@
 <translation id="9024331582947483881">усього екрана</translation>
 <translation id="9047624247355796468">Відкрити налаштування <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Згорнути сповіщення</translation>
-<translation id="9063800855227801443">Не вдається зробити знімок конфіденційного контенту</translation>
 <translation id="9065203028668620118">Редагувати</translation>
 <translation id="9070640332319875144">Налаштування Асистента</translation>
 <translation id="9072519059834302790">Акумулятор розрядиться повністю через <ph name="TIME_LEFT" />.</translation>

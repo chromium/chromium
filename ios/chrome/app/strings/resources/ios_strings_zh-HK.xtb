@@ -60,6 +60,7 @@
 <translation id="1407135791313364759">全部開啟</translation>
 <translation id="1430915738399379752">列印</translation>
 <translation id="1434356225517321998">您的瀏覽器受管理。<ph name="BEGIN_LINK" />詳情<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">裝置內置加密</translation>
 <translation id="1449835205994625556">隱藏密碼</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> 個項目</translation>
 <translation id="149095475893949513">此網站正嘗試下載設定描述檔。</translation>
@@ -284,6 +285,7 @@
 <translation id="3529024052484145543">不安全</translation>
 <translation id="3533202363250687977">關閉所有無痕式分頁</translation>
 <translation id="3533436815740441613">新分頁</translation>
+<translation id="3536487890564466894">先將密碼加密，然後才將密碼儲存至您的 Google 帳戶。</translation>
 <translation id="3551320343578183772">關閉分頁</translation>
 <translation id="3581564640715911333">詢問是否將網頁內容翻譯成其他語言</translation>
 <translation id="3588820906588687999">在新分頁中開啟圖片</translation>
@@ -502,6 +504,7 @@
 <translation id="575902488528307720">搜尋圖片</translation>
 <translation id="5781453543752460388">加入至相片</translation>
 <translation id="5782227691023083829">正在翻譯...</translation>
+<translation id="5802829331520313983">設定…</translation>
 <translation id="5803566855766646066">確定要捨棄這張新的信用卡嗎？</translation>
 <translation id="5812974770859303494">新增至…</translation>
 <translation id="5816228676161003208">這樣您便可使用語音更快速地搜尋內容。</translation>

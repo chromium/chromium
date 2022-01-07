@@ -213,7 +213,6 @@
       Si no se asigna ningún valor a esta política, o si el valor que se obtiene de la sustitución no es un nombre de host válido, no se establece ningún nombre de host en la solicitud DHCP.</translation>
 <translation id="1257550411839719984">Establecer directorio de descargas predeterminado</translation>
 <translation id="1265053460044691532">Limitar el tiempo durante el que un usuario autenticado a través de SAML puede iniciar sesión sin conexión</translation>
-<translation id="1268548671627260798">Lista de URLs exentas de la notificación de pantalla completa</translation>
 <translation id="127264587838521316">Habilita las solicitudes de instalación de extensiones de <ph name="PRODUCT_NAME" /></translation>
 <translation id="1272798957154751008">Habilitar la migración de dispositivos Chromad a la gestión en la nube</translation>
 <translation id="1274997165432133392">Cookies y otros datos de sitios</translation>
@@ -2798,11 +2797,6 @@ Si se le asigna el valor False, <ph name="PRODUCT_NAME" /> no utilizará notific
       Si se le asigna el valor "Inhabilitada" o no se le asigna ningún valor, los usuarios podrán transferir archivos a Drive con conexiones de datos móviles.</translation>
 <translation id="4248277954659222481">Permitir la reproducción automática de contenido multimedia en una lista de patrones de URL permitidos</translation>
 <translation id="4250680216510889253">No</translation>
-<translation id="4257545866869267519">Configura una lista de URLs exentas de la notificación de pantalla completa. La notificación se muestra cuando el dispositivo sale del modo de suspensión, el modo de brillo bajo o la pantalla de bloqueo, y aparece en una ventana en el modo de pantalla completa. Así, se avisa a los usuarios de que están en modo de pantalla completa, lo que reduce el riesgo de sufrir un ataque de suplantación de identidad (phishing).
-
-          Esta política permite inhabilitar la notificación en URLs específicas que se considerarán fuentes de confianza. Se establece definiendo una lista de patrones de URL con este formato: https://www.chromium.org/administrators/url-blocklist-filter-format. Por ejemplo, las notificaciones se pueden inhabilitar por completo especificando el carácter comodín <ph name="WILDCARD_VALUE" /> para todas las URL.
-
-          Si se configura esta política con una lista vacía o no se le asigna ningún valor, ninguna URL estará exenta de la notificación de pantalla completa.</translation>
 <translation id="4260027436474745627">Si se define esta política, cada uno de los orígenes especificados en una lista separada por comas se ejecutará en un proceso dedicado. El proceso de cada origen especificado solo podrá contener documentos de ese origen y de sus subdominios. Por ejemplo, si se especifica https://a1.example.com/, se permite https://a2.a1.example.com/ en el mismo proceso, pero no https://example.com o https://b.example.com.
 
       Desde <ph name="PRODUCT_NAME" /> 77, también puedes especificar un rango de orígenes para aislar usando un comodín. Por ejemplo, al especificar https://[*.]corp.example.com, se otorgará a cada origen inferior a https://corp.example.com su propio proceso dedicado, incluidos https://corp.example.com, https://a1.corp.example.com y https://a2.a1.corp.example.com.

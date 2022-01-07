@@ -53,6 +53,10 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1247519845643687288">Apps recentes</translation>
 <translation id="1252999807265626933">Carregando a partir de <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Como está o tempo?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> a 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Selecione para ver mais detalhes no Google Agenda.</translation>
 <translation id="1266097335951928626">Iniciar câmera para selfies</translation>
 <translation id="1267032506238418139">Mudança de atalho</translation>
 <translation id="1269405891096105529">O periférico não é compatível com o modo visitante</translation>
@@ -109,7 +113,6 @@ Veja o que você pode fazer para começar.</translation>
 <translation id="1570871743947603115">Alternar Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">acessar todas as suas atividades nesta sessão;</translation>
 <translation id="1611993646327628135">Ativado</translation>
-<translation id="1615402009686901181">A captura da tela é desativada pela política do administrador quando há conteúdo protegido visível</translation>
 <translation id="1632985212731562677">O "acesso com interruptor" pode ser desativado em Configurações &gt; Acessibilidade.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="1654477262762802994">Iniciar uma consulta por voz</translation>
@@ -998,6 +1001,8 @@ Nova instalação</translation>
 <translation id="7720410380936703141">TENTAR NOVAMENTE</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificação}one{# notificação}other{# notificações}}</translation>
 <translation id="7724603315864178912">Recortar</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Exibir apps na estante</translation>
 <translation id="7749443890790263709">O número máximo de áreas de trabalho foi atingido.</translation>
 <translation id="7749640678855296659">Seu microfone está desligado</translation>
@@ -1189,7 +1194,6 @@ Nova instalação</translation>
 <translation id="9024331582947483881">tela cheia</translation>
 <translation id="9047624247355796468">Abrir configurações de <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Recolher notificação</translation>
-<translation id="9063800855227801443">Não é possível fazer a captura de conteúdo confidencial</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9070640332319875144">Configurações do Google Assistente</translation>
 <translation id="9072519059834302790">Tempo restante de bateria: <ph name="TIME_LEFT" />.</translation>

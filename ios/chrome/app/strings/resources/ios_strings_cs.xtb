@@ -60,6 +60,7 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="1407135791313364759">Otevřít vše</translation>
 <translation id="1430915738399379752">Tisk</translation>
 <translation id="1434356225517321998">Váš prohlížeč je spravován. <ph name="BEGIN_LINK" />Podrobnosti<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">Šifrování v zařízení</translation>
 <translation id="1449835205994625556">Skrýt heslo</translation>
 <translation id="145015347812617860">Počet položek: <ph name="COUNT" /></translation>
 <translation id="149095475893949513">Tento web se pokouší stáhnout profil konfigurace.</translation>
@@ -94,6 +95,7 @@ Váš vyhledávač je <ph name="DSE_NAME" />. Prostudujte si pokyny vyhledávač
 <translation id="1690731385917361335">Žádné položky</translation>
 <translation id="1692118695553449118">Synchronizace je zapnuta</translation>
 <translation id="1700629756560807968">Počet vybraných položek: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="1726573592754903697">Správce hesel Google</translation>
 <translation id="1740468249224277719">Dvojitým klepnutím spustíte instalaci.</translation>
 <translation id="1752547299766512813">Ukládání hesel</translation>
 <translation id="1753905327828125965">Nejnavštěvovanější</translation>
@@ -284,6 +286,7 @@ Prostudujte si pokyny vyhledávače pro smazání historie vyhledávání (pokud
 <translation id="3529024052484145543">Nezabezpečeno</translation>
 <translation id="3533202363250687977">Zavřít všechny anonymní karty</translation>
 <translation id="3533436815740441613">Nová karta</translation>
+<translation id="3536487890564466894">Hesla se před uložením do účtu Google zašifrují.</translation>
 <translation id="3551320343578183772">Zavřít kartu</translation>
 <translation id="3581564640715911333">Nabízet překlad stránek v jiných jazycích</translation>
 <translation id="3588820906588687999">Otevřít obrázek na nové kartě</translation>
@@ -502,6 +505,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="575902488528307720">Hledat obrázek</translation>
 <translation id="5781453543752460388">Přidat do Fotek</translation>
 <translation id="5782227691023083829">Překládání...</translation>
+<translation id="5802829331520313983">Nastavit…</translation>
 <translation id="5803566855766646066">Opravdu tuto novou kartu chcete zahodit?</translation>
 <translation id="5812974770859303494">Přidat do…</translation>
 <translation id="5816228676161003208">Toto umožňuje vyhledávat rychleji hlasem.</translation>
@@ -561,6 +565,7 @@ Funkce Handoff musí být povolena také v Nastavení v sekci Obecné a zaříze
 <translation id="6219688215832490856">Nikdy nepřekládat</translation>
 <translation id="6223816392543092032">Synchronizujte záložky, historii, hesla a nastavení do všech svých zařízení.</translation>
 <translation id="6232329973559504466">Anonymní vyhledávání</translation>
+<translation id="6232736989810857397">Toto oprávnění vám umožní snadno vytvářet události v kalendáři pomocí aplikace Google Lens.</translation>
 <translation id="6254066287920239840">Namísto prohlížeče otevírat odkazy v aplikaci.</translation>
 <translation id="6255097610484507482">Upravit platební kartu</translation>
 <translation id="6284652193729350524">Nabízet překlad jazyka <ph name="LANGUAGE" /></translation>

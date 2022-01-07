@@ -2706,7 +2706,6 @@ na vitufe vya Ctrl, Alt pamoja na kitufe cha kupunguza Mwangaza ili usogeze mbal
 <translation id="3742666961763734085">Imeshindwa kupata kitengo cha shirika kinachotumia jina hilo. Tafadhali jaribu tena.</translation>
 <translation id="3743842571276656710">Weka PIN ili uoanishe na <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">Ili kuondoa programu, nenda kwenye Mipangilio &gt; Duka la Google Play &gt;Mapendeleo ya Kudhibiti Android &gt; Kidhibiti cha programu. Kisha uguse programu unayotaka kuondoa (huenda utahitaji kutelezesha kidole kulia au kushoto ili kupata programu). Kisha uguse 'Ondoa' au 'Zima'.</translation>
-<translation id="3747220812138541072">Onyesha mapendekezo ya maandishi yanayoonekana unapoandika</translation>
 <translation id="3747603683749989726">Ungependa kuwasha kipengele cha usalama kilichoboreshwa?</translation>
 <translation id="3748706263662799310">Ripoti hitilafu</translation>
 <translation id="3750562496035670393">Chrome imehifadhi nenosiri lako kwenye kifaa hiki, lakini unaweza kulihifadhi kwenye Akaunti yako ya Google badala yake. Ukishafanya hivyo, manenosiri yote yaliyo kwenye Akaunti yako ya Google pia yatapatikana ukiwa umeingia katika akaunti.</translation>
@@ -2897,6 +2896,7 @@ na vitufe vya Ctrl, Alt pamoja na kitufe cha kupunguza Mwangaza ili usogeze mbal
 <translation id="3916445069167113093">Aina hii ya faili inaweza kudhuru kompyuta yako. Je, unataka kuweka <ph name="FILE_NAME" /> licha ya hayo?</translation>
 <translation id="3918972485393593704">Ripoti maelezo kwa Google</translation>
 <translation id="3919145445993746351">Ili upate viendelezi vyako kwenye kompyuta zako zote, washa kipengele cha kusawazisha</translation>
+<translation id="3919229493046408863">Zima arifa wakati vifaa vipo karibu</translation>
 <translation id="3919798653937160644">Kurasa unazoangalia katika dirisha hili hazitaonekana katika historia ya kuvinjari na hazitaacha nyayo zingine kama vile vidakuzi, kwenye kompyuta ukishafunga madirisha yote ya Mgeni yaliyo wazi. Hata hivyo, faili zozote ulizopakua zitahifadhiwa.</translation>
 <translation id="3920504717067627103">Sera za Vyeti</translation>
 <translation id="392089482157167418">Washa ChromeVox (maoni yaliyotamkwa)</translation>
@@ -5929,6 +5929,7 @@ Unaweza kukabidhi kitendo hiki swichi nyingi.</translation>
 <translation id="7167486101654761064">&amp;Fungua faili za aina hii kila wakati</translation>
 <translation id="716810439572026343">Inapakua <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">Ukubwa wa chini wa fonti</translation>
+<translation id="7169122689956315694">Washa arifa wakati vifaa vipo karibu</translation>
 <translation id="7170236477717446850">Picha ya wasifu</translation>
 <translation id="7171000599584840888">Ongeza Wasifu...</translation>
 <translation id="7171259390164035663">Usiandikishe</translation>

@@ -53,6 +53,10 @@
 <translation id="1247519845643687288">તાજેતરની ઍપ</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> પરથી ચાર્જ કરી રહ્યાં છે</translation>
 <translation id="1255033239764210633">હવામાન કેવું છે?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" />થી 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Google Calendarમાં વધુ વિગતો માટે પસંદ કરો.</translation>
 <translation id="1266097335951928626">સેલ્ફી કૅમેરા ચાલુ કરો</translation>
 <translation id="1267032506238418139">શૉર્ટકટ ફેરફાર</translation>
 <translation id="1269405891096105529">અતિથિ મોડમાં પેરિફેરલને સપોર્ટ આપવામાં આવતો નથી</translation>
@@ -109,7 +113,6 @@
 <translation id="1570871743947603115">બ્લૂટૂથ ટૉગલ કરો. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">આ સત્રમાં તમારી બધી પ્રવૃત્તિને ઍક્સેસ કરો</translation>
 <translation id="1611993646327628135">ચાલુ</translation>
-<translation id="1615402009686901181">ગોપનીય કન્ટેન્ટ દેખાય ત્યારે વ્યવસ્થાપક પૉલિસીને કારણે સ્ક્રીન કૅપ્ચરની સુવિધા બંધ કરવામાં આવે છે</translation>
 <translation id="1632985212731562677">સ્વિચ ઍક્સેસને સેટિંગ &gt; ઍક્સેસિબિલિટીમાંથી બંધ કરી શકાય છે.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ડિવાઇસ</translation>
 <translation id="1654477262762802994">વૉઇસ ક્વેરી શરૂ કરો</translation>
@@ -998,6 +1001,8 @@
 <translation id="7720410380936703141">ફરી પ્રયાસ કરો</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 નોટિફિકેશન}one{# નોટિફિકેશન}other{# નોટિફિકેશન}}</translation>
 <translation id="7724603315864178912">કાપો</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">શેલ્ફમાં ઍપ બતાવો</translation>
 <translation id="7749443890790263709">ડેસ્કની મહત્તમ સંખ્યા પર પહોંચી ગયા.</translation>
 <translation id="7749640678855296659">તમારું માઇક્રોફોન હાલમાં બંધ છે</translation>
@@ -1189,7 +1194,6 @@
 <translation id="9024331582947483881">પૂર્ણ સ્ક્રીન</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> માટે સેટિંગ ખોલો</translation>
 <translation id="9059834730836941392">નોટિફિકેશન સંકુચિત કરો</translation>
-<translation id="9063800855227801443">ગોપનીય કન્ટેન્ટ કૅપ્ચર કરી શકાતું નથી</translation>
 <translation id="9065203028668620118">ફેરફાર કરો</translation>
 <translation id="9070640332319875144">Assistant સેટિંગ</translation>
 <translation id="9072519059834302790">બૅટરી ખલાસ થવામાં <ph name="TIME_LEFT" /> બાકી છે.</translation>

@@ -109,7 +109,6 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1570871743947603115">Activer/désactiver le Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Accédez à toute l'activité de votre session</translation>
 <translation id="1611993646327628135">Activé</translation>
-<translation id="1615402009686901181">La politique définie par l'administrateur désactive les captures d'écran lorsque du contenu confidentiel est visible</translation>
 <translation id="1632985212731562677">Switch Access peut être désactivé sous Paramètres &gt; Accessibilité.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> appareils</translation>
 <translation id="1654477262762802994">Démarrer une requête vocale</translation>
@@ -122,6 +121,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">La transcription instantanée est activée.</translation>
 <translation id="1720011244392820496">Activer la synchronisation Wi-Fi</translation>
+<translation id="1736898441010944794">« <ph name="NAME" /> » visible par les appareils Bluetooth.</translation>
 <translation id="1743570585616704562">Doigt non reconnu</translation>
 <translation id="1746730358044914197">Les méthodes d'entrée sont configurées par votre administrateur.</translation>
 <translation id="1747827819627189109">Clavier à l'écran activé</translation>
@@ -831,6 +831,7 @@ Nouvelle installation</translation>
 <translation id="6578407462441924264">Sans nom</translation>
 <translation id="6585808820553845416">Fin de la session dans <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">Votre connexion est passée à un réseau plus sécurisé</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, force du signal : <ph name="SIGNAL_STRENGTH" /> géré par votre administrateur</translation>
 <translation id="6612802754306526077">Mode d'enregistrement de l'écran sélectionné</translation>
 <translation id="6614169507485700968">L'écran de confidentialité est activé</translation>
@@ -1187,7 +1188,6 @@ Nouvelle installation</translation>
 <translation id="9024331582947483881">plein écran</translation>
 <translation id="9047624247355796468">Ouvrir les paramètres pour <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Réduire la notification</translation>
-<translation id="9063800855227801443">Impossible de capturer le contenu confidentiel</translation>
 <translation id="9065203028668620118">Modifier</translation>
 <translation id="9070640332319875144">Paramètres de l'Assistant</translation>
 <translation id="9072519059834302790">Il reste <ph name="TIME_LEFT" /> avant que la pile soit complètement épuisée.</translation>

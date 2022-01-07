@@ -212,7 +212,6 @@
       如果您未设置此政策，或替换后的值不是有效的主机名，系统便不会在 DHCP 请求中设置任何主机名。</translation>
 <translation id="1257550411839719984">设置默认下载目录</translation>
 <translation id="1265053460044691532">限制通过SAML验证身份的用户可离线登录的时长</translation>
-<translation id="1268548671627260798">免受全屏通知模式影响的网址的列表</translation>
 <translation id="127264587838521316">启用 <ph name="PRODUCT_NAME" /> 扩展程序安装请求</translation>
 <translation id="1272798957154751008">允许将 Chromad 设备迁移到云管理服务</translation>
 <translation id="1274997165432133392">Cookie 及其他网站数据</translation>
@@ -2560,6 +2559,7 @@
 <translation id="3964298692570794635">允许在这些网站上显示不安全内容</translation>
 <translation id="3965339130942650562">对待机用户执行退出操作前的超时时间</translation>
 <translation id="396536755218079668">受监管用户</translation>
+<translation id="3968218878014278212">允许启用 Eche。</translation>
 <translation id="3971673686578912106">如果此政策已启用，系统便会为相应设备开启 <ph name="PLUGIN_VM_NAME" />，但前提是其他设置也允许该设备运行它。若要允许 <ph name="PLUGIN_VM_NAME" /> 运行，必须将 <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> 和 <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> 设为 True，并且必须设置 <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> 或 <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" />。
 
       如果此政策已停用或未设置，系统便不会为相应设备开启 <ph name="PLUGIN_VM_NAME" />。</translation>
@@ -2752,11 +2752,6 @@
       如果此政策已停用或未设置，用户便可在使用移动网络连接时将文件传输到 Google 云端硬盘。</translation>
 <translation id="4248277954659222481">允许符合网址格式许可名单中所列格式的网页自动播放媒体内容</translation>
 <translation id="4250680216510889253">否</translation>
-<translation id="4257545866869267519">以列表形式配置一系列免受全屏通知模式影响的网址。当设备从休眠、低亮度或锁屏状态恢复时，系统会显示此类通知。这是为了让用户知道他们正处于全屏模式，从而降低遭遇钓鱼式攻击的风险。
-
-          此政策允许针对会被视为可信来源的特定网址停用通知功能。设置此政策时，必须根据这种格式 ( https://www.chromium.org/administrators/url-blocklist-filter-format ) 指定一系列网址格式。例如，可通过指定与所有网址匹配的通配符 <ph name="WILDCARD_VALUE" /> 来彻底停用通知功能。
-
-          如果此政策设为空列表或未设置，任何网址都不会免受全屏通知模式的影响。</translation>
 <translation id="4260027436474745627">如果您设置了此政策，逗号分隔列表中指定的每个来源都将在一个专用进程中运行。所指定的每个来源的进程都只能包含来自相应来源及其子网域的文档。例如，如果指定 https://a1.example.com/，则同一进程中可以包含 https://a2.a1.example.com/，但不可包含 https://example.com 或 https://b.example.com。
 
       从 <ph name="PRODUCT_NAME" /> 77 版起，您也可以使用通配符来指定一系列要隔离的来源。例如，如果指定 https://[*.]corp.example.com，则 https://corp.example.com 下的每个来源都会有自己的专用进程，包括 https://corp.example.com 本身、https://a1.corp.example.com 和 https://a2.a1.corp.example.com。
@@ -3394,6 +3389,7 @@
       如果此政策设为 False 或未设置，<ph name="PRODUCT_NAME" /> 会使用现有的在线撤消检查设置。</translation>
 <translation id="5078623750797048009">启用 PDF 注释</translation>
 <translation id="5081204761483900654">受限受管理访客会话</translation>
+<translation id="5082296146261894974">允许用户通过点击 Phone Hub 通知来启动 Eche 应用。</translation>
 <translation id="5082572440690475059">允许在这些网站上通过 File System API 读取内容</translation>
 <translation id="5085647276663819155">停用打印预览</translation>
 <translation id="5090791951240382356">允许合并来自多个不同来源的字典政策</translation>
@@ -4136,6 +4132,7 @@
 
       <ph name="RUN_ON_OS_LOGIN_FIELD" />字段用于指定 Web 应用能否在操作系统登录期间运行。如果此字段设为<ph name="BLOCKED" />，Web 应用将不会在操作系统登录期间运行，而且用户无法在日后启用此设置。如果此字段设为<ph name="RUN_WINDOWED" />，Web 应用将会在操作系统登录期间运行，但用户无法在日后停用此设置。如果此字段设为<ph name="ALLOWED" />，用户将能够配置 Web 应用是否可在操作系统登录期间运行。默认配置仅接受<ph name="ALLOWED" />值和<ph name="BLOCKED" />值。
       </translation>
+<translation id="5945312246863177268">禁止用户通过点击 Phone Hub 通知来启动 Eche 应用。</translation>
 <translation id="5946082169633555022">测试版</translation>
 <translation id="5946329690214660966">设置自定义时间表来指定何时检查是否有更新</translation>
 <translation id="5950069117106131681">如果此政策已启用，系统会在打印预览中开启页眉和页脚。如果此政策已停用，系统会在打印预览中关闭页眉和页脚。
@@ -4698,6 +4695,11 @@
 <translation id="66265932317331474">报告 CPU 信息</translation>
 <translation id="6628120204569232711">报告存储状态</translation>
 <translation id="663685822663765995">限制打印颜色模式</translation>
+<translation id="6640355849038068978">如果此设置已启用，用户将能够启动 Eche 应用（例如通过点击 Phone Hub 通知）。
+
+      如果此设置已停用，用户将无法启动 Eche 应用。
+
+      如果此政策未设置，默认情况下，受企业管理的用户和非受管用户都能选择启用该应用。</translation>
 <translation id="6641981670621198190">停用对 3D 图形 API 的支持</translation>
 <translation id="6642682198621199507">通过设置此政策，您可以罗列自动授权哪些网站访问所有可用的串行端口。
 

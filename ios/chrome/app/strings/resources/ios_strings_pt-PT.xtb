@@ -60,6 +60,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="1407135791313364759">Abrir tudo</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1434356225517321998">O seu navegador é gerido. <ph name="BEGIN_LINK" />Detalhes<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">Encriptação no dispositivo</translation>
 <translation id="1449835205994625556">Ocultar a palavra-passe</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> itens</translation>
 <translation id="149095475893949513">Este Website está a tentar transferir um perfil de configuração.</translation>
@@ -94,6 +95,7 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="1690731385917361335">Sem itens</translation>
 <translation id="1692118695553449118">A sincronização está ativada</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selecionados</translation>
+<translation id="1726573592754903697">Gestor de palavras-passe da Google</translation>
 <translation id="1740468249224277719">Toque duas vezes para instalar.</translation>
 <translation id="1752547299766512813">Guardar Palavras-passe</translation>
 <translation id="1753905327828125965">Mais visitados</translation>
@@ -284,6 +286,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="3529024052484145543">Inseguro</translation>
 <translation id="3533202363250687977">Fechar todos os separadores de navegação anónima</translation>
 <translation id="3533436815740441613">Novo separador</translation>
+<translation id="3536487890564466894">Encripte as suas palavras-passe antes de serem guardadas na sua Conta Google.</translation>
 <translation id="3551320343578183772">Fechar Separador</translation>
 <translation id="3581564640715911333">Proponha a tradução de páginas noutros idiomas</translation>
 <translation id="3588820906588687999">Abrir imagem num novo separador</translation>
@@ -502,6 +505,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="575902488528307720">Pesquisar imagem</translation>
 <translation id="5781453543752460388">Adicionar ao Fotos</translation>
 <translation id="5782227691023083829">A traduzir...</translation>
+<translation id="5802829331520313983">Configurar…</translation>
 <translation id="5803566855766646066">Tem a certeza de que pretende rejeitar o novo cartão?</translation>
 <translation id="5812974770859303494">Adicionar a…</translation>
 <translation id="5816228676161003208">Isto permite-lhe pesquisar mais rapidamente com a sua voz.</translation>
@@ -561,6 +565,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6219688215832490856">Nunca traduzir</translation>
 <translation id="6223816392543092032">Obtenha os seus marcadores, histórico, palavras-passe e outras definições em todos os dispositivos.</translation>
 <translation id="6232329973559504466">Pesquisa na Navegação anónima</translation>
+<translation id="6232736989810857397">Isto permite-lhe criar facilmente eventos de calendário com o Google Lens.</translation>
 <translation id="6254066287920239840">Abrir links na aplicação em vez de no navegador.</translation>
 <translation id="6255097610484507482">Editar cartão de crédito</translation>
 <translation id="6284652193729350524">Propor tradução de <ph name="LANGUAGE" /></translation>

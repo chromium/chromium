@@ -2711,7 +2711,6 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3742666961763734085">Der blev ikke fundet nogen organisationsenhed med det pågældende navn. Prøv igen.</translation>
 <translation id="3743842571276656710">Angiv pinkoden for at parre med <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">Hvis du vil fjerne apps, skal du gå til Indstillinger &gt; Google Play Butik &gt; Administrer dine Android-præferencer &gt; Apps eller Administration af apps. Tryk derefter på den app, du vil afinstallere (du skal muligvis stryge til højre eller venstre for at finde appen). Tryk derefter på Afinstaller eller Deaktiver.</translation>
-<translation id="3747220812138541072">Få vist skriveforslag på linjen, mens du indtaster</translation>
 <translation id="3747603683749989726">Vil du aktivere Udvidet beskyttet browsing?</translation>
 <translation id="3748706263662799310">Rapporter en fejl</translation>
 <translation id="3750562496035670393">Chrome har gemt din adgangskode på denne enhed, men du kan gemme den på din Google-konto i stedet. Dermed kan alle adgangskoderne på din Google-konto også bruges, når du er logget ind.</translation>
@@ -2902,6 +2901,7 @@ og tryk på Ctrl+Alt+lysstyrke ned for at zoome ud.</translation>
 <translation id="3916445069167113093">Denne filtype kan beskadige din computer. Vil du beholde <ph name="FILE_NAME" /> alligevel?</translation>
 <translation id="3918972485393593704">Rapportér detaljer til Google</translation>
 <translation id="3919145445993746351">Aktivér synkronisering for at få dine udvidelser på alle dine computere</translation>
+<translation id="3919229493046408863">Deaktiver notifikationer fra enheder i nærheden</translation>
 <translation id="3919798653937160644">De sider, du ser i dette vindue, vises ikke i browserhistorikken, og de efterlader ikke andre spor som f.eks. cookies på computeren, når du lukker alle åbne vinduer i gæstesessionen. Alle de filer, du downloader, vil dog blive gemt.</translation>
 <translation id="3920504717067627103">Certifikatpolitikker</translation>
 <translation id="392089482157167418">Aktivér ChromeVox (talefeedback)</translation>
@@ -5936,6 +5936,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="7167486101654761064">&amp;Åbn altid filer af denne type</translation>
 <translation id="716810439572026343">Downloader <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">Mindste skriftstørrelse</translation>
+<translation id="7169122689956315694">Aktivér notifikation fra enheder i nærheden</translation>
 <translation id="7170236477717446850">Profilbillede</translation>
 <translation id="7171000599584840888">Tilføj profil...</translation>
 <translation id="7171259390164035663">Jeg vil ikke tilmelde</translation>

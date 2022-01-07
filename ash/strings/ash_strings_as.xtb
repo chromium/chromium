@@ -109,7 +109,6 @@
 <translation id="1570871743947603115">ব্লুটুথ ট’গল কৰক। <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">এই ছেশ্বনত আপোনাৰ সকলো কার্যকলাপ এক্সেছ কৰে</translation>
 <translation id="1611993646327628135">অন আছে</translation>
-<translation id="1615402009686901181">প্ৰশাসকৰ নীতিয়ে গোপনীয় সমল দৃশ্যমান হৈ থাকোঁতে স্ক্ৰীন কেপচাৰ অক্ষম কৰে</translation>
 <translation id="1632985212731562677">ছুইচৰ দ্বাৰা এক্সেছ ছেটিংসমূহ ইয়াত অক্ষম কৰিব পৰা যায় &gt; সাধ্য সুবিধা।</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> টা ডিভাইচ</translation>
 <translation id="1654477262762802994">কণ্ঠধ্বনিৰদ্বাৰা সন্ধান আৰম্ভ কৰক</translation>
@@ -122,6 +121,7 @@
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">লাইভ কেপশ্বন অন আছে।</translation>
 <translation id="1720011244392820496">ৱাই-ফাই ছিংক অন কৰক</translation>
+<translation id="1736898441010944794">"<ph name="NAME" />" ব্লুটুথ ডিভাইচসমূহৰ বাবে দৃশ্যমান হ’ল।</translation>
 <translation id="1743570585616704562">চিনাক্ত কৰিব পৰা নাই</translation>
 <translation id="1746730358044914197">ইনপুট পদ্ধতিসমূহ আপোনাৰ প্ৰশাসকে কনফিগাৰ কৰে।</translation>
 <translation id="1747827819627189109">অন-স্ক্ৰীণ কীব‘র্ড সক্ষম কৰা হ‘ল</translation>
@@ -831,6 +831,7 @@
 <translation id="6578407462441924264">নামবিহীন</translation>
 <translation id="6585808820553845416"><ph name="SESSION_TIME_REMAINING" />ত ছেশ্বন অন্ত পৰিব।</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">আপোনাৰ সংযোগটো এটা অধিক সুৰক্ষিত নেটৱৰ্কলৈ সলনি কৰা হৈছে</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, ছিগনেলৰ ক্ষমতা <ph name="SIGNAL_STRENGTH" />, আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="6612802754306526077">স্ক্ৰীন ৰেকৰ্ডিঙৰ ম'ডটো বাছনি কৰা হ'ল</translation>
 <translation id="6614169507485700968">গোপনীয়তাৰ স্ক্ৰীনখন অন আছে</translation>
@@ -1187,7 +1188,6 @@
 <translation id="9024331582947483881">সম্পূৰ্ণ স্ক্ৰীন</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" />ৰ বাবে ছেটিংসমূহ খোলক</translation>
 <translation id="9059834730836941392">জাননী সংকোচন কৰক</translation>
-<translation id="9063800855227801443">গোপনীয় সমল কেপচাৰ কৰিব নোৱাৰি</translation>
 <translation id="9065203028668620118">সম্পাদনা কৰক</translation>
 <translation id="9070640332319875144">Assistantৰ ছেটিংসমূহ</translation>
 <translation id="9072519059834302790">বেটাৰী খালী হ’বলৈ <ph name="TIME_LEFT" /> বাকী আছে।</translation>

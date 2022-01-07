@@ -60,6 +60,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="1407135791313364759">Otvori sve</translation>
 <translation id="1430915738399379752">Štampaj</translation>
 <translation id="1434356225517321998">Vašim preglednikom se upravlja. <ph name="BEGIN_LINK" />Detalji<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">Šifriranje na uređaju</translation>
 <translation id="1449835205994625556">Sakrijte lozinku</translation>
 <translation id="145015347812617860">Broj stavki: <ph name="COUNT" /></translation>
 <translation id="149095475893949513">Ova web lokacija pokušava preuzeti profil konfiguracije.</translation>
@@ -94,6 +95,7 @@ Vaš pretraživač je <ph name="DSE_NAME" />. Ako je primjenjivo, pogledajte upu
 <translation id="1690731385917361335">Nema stavki</translation>
 <translation id="1692118695553449118">Sinhronizacija je uključena</translation>
 <translation id="1700629756560807968">Odabrano je <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="1726573592754903697">Googleov Upravitelj lozinki</translation>
 <translation id="1740468249224277719">Dodirnite dvaput da instalirate.</translation>
 <translation id="1752547299766512813">Sačuvaj lozinke</translation>
 <translation id="1753905327828125965">Najposjećenije</translation>
@@ -284,6 +286,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="3529024052484145543">Nije sigurno</translation>
 <translation id="3533202363250687977">Zatvori sve anonimne kartice</translation>
 <translation id="3533436815740441613">Nova kartica</translation>
+<translation id="3536487890564466894">Šifrirajte svoje zaporke prije nego što se spreme na vaš Google račun.</translation>
 <translation id="3551320343578183772">Zatvori karticu</translation>
 <translation id="3581564640715911333">Ponudi prevođenje stranica na drugim jezicima</translation>
 <translation id="3588820906588687999">Otvori sliku na novoj kartici</translation>
@@ -502,6 +505,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="575902488528307720">Pretražite sliku</translation>
 <translation id="5781453543752460388">Dodaj u Fotografije</translation>
 <translation id="5782227691023083829">Prevođenje...</translation>
+<translation id="5802829331520313983">Postavi…</translation>
 <translation id="5803566855766646066">Jeste li sigurni da želite odbaciti novu karticu?</translation>
 <translation id="5812974770859303494">Dodaj u...</translation>
 <translation id="5816228676161003208">To vam omogućava brže pretraživanje pomoću glasa.</translation>
@@ -561,6 +565,7 @@ Također, Handoff mora biti omogućen u odjeljku Opće u Postavkama, a vaši ure
 <translation id="6219688215832490856">Nikada ne prevodi</translation>
 <translation id="6223816392543092032">Preuzmite oznake, historiju, lozinke i druge postavke na svim svojim uređajima.</translation>
 <translation id="6232329973559504466">Pretraživanje u anonimnom načinu rada</translation>
+<translation id="6232736989810857397">Ovo vam omogućava da jednostavno kreirate događaje u kalendaru pomoću Google Objektiva.</translation>
 <translation id="6254066287920239840">Otvori linkove u aplikaciji umjesto u pregledniku.</translation>
 <translation id="6255097610484507482">Uredite kreditnu kart</translation>
 <translation id="6284652193729350524">Ponudi prijevod za <ph name="LANGUAGE" /></translation>

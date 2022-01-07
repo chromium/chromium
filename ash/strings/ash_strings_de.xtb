@@ -109,7 +109,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1570871743947603115">Bluetooth aktivieren/deaktivieren. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Auf alle Ihre Aktivitäten in dieser Sitzung zugreifen</translation>
 <translation id="1611993646327628135">An</translation>
-<translation id="1615402009686901181">Die Administratorrichtlinie blockiert die Bildschirmaufnahme, wenn vertrauliche Inhalte sichtbar sind</translation>
 <translation id="1632985212731562677">Der Schalterzugriff kann unter "Einstellungen" &gt; "Bedienungshilfen" deaktiviert werden.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> Geräte</translation>
 <translation id="1654477262762802994">Gesprochene Anfrage starten</translation>
@@ -1189,7 +1188,6 @@ Neuinstallation</translation>
 <translation id="9024331582947483881">Vollbild</translation>
 <translation id="9047624247355796468">Einstellungen für <ph name="NETWORK_NAME" /> öffnen</translation>
 <translation id="9059834730836941392">Benachrichtigung minimieren</translation>
-<translation id="9063800855227801443">Vertrauliche Inhalte können nicht aufgenommen werden</translation>
 <translation id="9065203028668620118">Bearbeiten</translation>
 <translation id="9070640332319875144">Assistant-Einstellungen</translation>
 <translation id="9072519059834302790">Noch <ph name="TIME_LEFT" />, bis der Akku leer ist.</translation>

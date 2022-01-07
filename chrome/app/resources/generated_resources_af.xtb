@@ -2710,7 +2710,6 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="3742666961763734085">Kan nie 'n organisatoriese eenheid met daardie naam kry nie. Probeer asseblief weer.</translation>
 <translation id="3743842571276656710">Voer PIN in om met <ph name="DEVICE_NAME" /> saam te bind</translation>
 <translation id="3747077776423672805">Gaan na Instellings &gt; Google Play Winkel &gt; Bestuur Android-voorkeure &gt; Programme of Programbestuurder om programme te verwyder. Tik dan op die program wat jy wil deïnstalleer (jy sal dalk links of regs moet swiep om die program te kry). Tik dan op Deïnstalleer of Deaktiveer.</translation>
-<translation id="3747220812138541072">Wys inlyn skryvoorstelle wat verskyn terwyl jy tik</translation>
 <translation id="3747603683749989726">Skakel verbeterde veiligheid aan?</translation>
 <translation id="3748706263662799310">Gee 'n fout aan</translation>
 <translation id="3750562496035670393">Chrome het jou wagwoord op hierdie toestel gestoor, maar jy kan pleks daarvan dit in jou Google-rekening stoor. Alle wagwoorde sal dan ook in jou Google-rekening beskikbaar wees terwyl jy aangemeld is</translation>
@@ -3691,6 +3690,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="4785719467058219317">Jy gebruik tans 'n sleutel wat nie by hierdie webwerf geregistreer is nie</translation>
 <translation id="478708757211772586">Gebruik “Volgende” om vorentoe te beweeg op die skerm</translation>
 <translation id="4788092183367008521">Gaan jou netwerkverbinding na en probeer weer.</translation>
+<translation id="4789550509729954245">Wys kennisgewing wanneer toestelle in die omtrek deel</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Aktiveer TrackPoint-versnelling</translation>
@@ -4052,6 +4052,7 @@ en Ctrl+Alt+Verlaag Helderheid om uit te zoem</translation>
 <translation id="5171343362375269016">Het geheue geruil</translation>
 <translation id="5172855596271336236">Daar is 1 bestuurde drukker.</translation>
 <translation id="5173668317844998239">Voeg vingerafdrukke by wat op jou sekuriteitsleutel geberg is en vee hulle uit</translation>
+<translation id="5174169235862638850">Wagwoord is na knipbord gekopieer</translation>
 <translation id="5175379009094579629">Die toestelnaam is ongeldig. Voer 'n geldige toestelnaam in en probeer weer.</translation>
 <translation id="5177479852722101802">Hou aan om kamera- en mikrofoontoegang te blokkeer</translation>
 <translation id="5177549709747445269">Jy gebruik tans mobiele data</translation>

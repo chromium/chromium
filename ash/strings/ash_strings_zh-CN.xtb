@@ -109,7 +109,6 @@
 <translation id="1570871743947603115">切换蓝牙设置。<ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">访问您在此次会话中的所有活动</translation>
 <translation id="1611993646327628135">开启</translation>
-<translation id="1615402009686901181">管理员政策禁止在屏幕显示机密内容时截取屏幕</translation>
 <translation id="1632985212731562677">您可在“设置”&gt;“无障碍”中停用“开关控制”功能。</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> 部设备</translation>
 <translation id="1654477262762802994">启动语音查询</translation>
@@ -122,6 +121,7 @@
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">“实时字幕”功能已开启。</translation>
 <translation id="1720011244392820496">开启 Wi-Fi 同步</translation>
+<translation id="1736898441010944794">“<ph name="NAME" />”对蓝牙设备可见。</translation>
 <translation id="1743570585616704562">无法识别</translation>
 <translation id="1746730358044914197">输入法是由您的管理员配置的。</translation>
 <translation id="1747827819627189109">屏幕键盘已启用</translation>
@@ -710,7 +710,7 @@
 <translation id="5744083938413354016">点按拖动</translation>
 <translation id="5745612484876805746">护眼模式会于日落时自动开启</translation>
 <translation id="5750765938512549687">蓝牙已关闭</translation>
-<translation id="576341972084747908">下载的文件 <ph name="FILENAME" /> 存在风险</translation>
+<translation id="576341972084747908">正在下载有风险的文件 <ph name="FILENAME" /></translation>
 <translation id="5763928712329149804">Shelf Party 模式已关闭。</translation>
 <translation id="576453121877257266">当前已开启护眼模式。</translation>
 <translation id="5769373120130404283">隐私保护屏</translation>
@@ -831,6 +831,7 @@
 <translation id="6578407462441924264">未命名</translation>
 <translation id="6585808820553845416">会话将在<ph name="SESSION_TIME_REMAINING" />后结束。</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />，<ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">您已切换到一个更安全的网络连接</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />，信号强度为 <ph name="SIGNAL_STRENGTH" />，由您的管理员管理</translation>
 <translation id="6612802754306526077">已选择录屏模式</translation>
 <translation id="6614169507485700968">已开启隐私保护屏</translation>
@@ -1187,7 +1188,6 @@
 <translation id="9024331582947483881">全屏</translation>
 <translation id="9047624247355796468">打开“<ph name="NETWORK_NAME" />”的设置。</translation>
 <translation id="9059834730836941392">收起通知</translation>
-<translation id="9063800855227801443">无法截取机密内容</translation>
 <translation id="9065203028668620118">编辑</translation>
 <translation id="9070640332319875144">Google 助理设置</translation>
 <translation id="9072519059834302790">电池电量将在 <ph name="TIME_LEFT" />后耗尽</translation>

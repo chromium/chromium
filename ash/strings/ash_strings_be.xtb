@@ -109,7 +109,6 @@
 <translation id="1570871743947603115">Уключыць або выключыць Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Атрымліваць доступ да ўсіх вашых дзеянняў у гэтым сеансе</translation>
 <translation id="1611993646327628135">Уключана</translation>
-<translation id="1615402009686901181">Палітыка, зададзеная адміністратарам, адключае здыманне экрана, калі на ім паказваецца прыватнае змесціва</translation>
 <translation id="1632985212731562677">Доступ праз пераключальнікі можна выключыць у раздзеле "Налады &gt; Спецыяльныя магчымасці".</translation>
 <translation id="1637505162081889933">Прылад: <ph name="NUM_DEVICES" /></translation>
 <translation id="1654477262762802994">Пачаць галасавы запыт</translation>
@@ -122,6 +121,7 @@
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">Імгненныя субцітры ўключаны.</translation>
 <translation id="1720011244392820496">Уключыце сінхранізацыю Wi-Fi</translation>
+<translation id="1736898441010944794">Прылада "<ph name="NAME" />" бачная прыладам з Bluetooth.</translation>
 <translation id="1743570585616704562">Не распазнана</translation>
 <translation id="1746730358044914197">Метады ўводу наладжаны адміністратарам.</translation>
 <translation id="1747827819627189109">Экранная клавіятура ўключана</translation>
@@ -831,6 +831,7 @@
 <translation id="6578407462441924264">Без назвы</translation>
 <translation id="6585808820553845416">Сеанс скончыцца праз <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">Вы пераключыліся на больш бяспечную сетку</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />, знаходзіцца пад кіраваннем адміністратара</translation>
 <translation id="6612802754306526077">Выбраны рэжым запісу экрана</translation>
 <translation id="6614169507485700968">Экран прыватнасці ўключаны</translation>
@@ -1187,7 +1188,6 @@
 <translation id="9024331582947483881">увесь экран</translation>
 <translation id="9047624247355796468">Адкрыць налады для сеткі <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Згарнуць апавяшчэнне</translation>
-<translation id="9063800855227801443">Здыманне немагчымае з-за наяўнасці на экране прыватнага змесціва</translation>
 <translation id="9065203028668620118">Змяніць</translation>
 <translation id="9070640332319875144">Налады Памочніка</translation>
 <translation id="9072519059834302790">Засталося часу да поўнай разрадкі акумулятара: <ph name="TIME_LEFT" />.</translation>

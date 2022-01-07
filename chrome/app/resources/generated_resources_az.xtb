@@ -2693,7 +2693,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3742666961763734085">Bu adda təşkilatı vahid tapılmadı. Yenidən cəhd edin.</translation>
 <translation id="3743842571276656710"><ph name="DEVICE_NAME" /> ilə birləşdirmək üçün PIN daxil edin</translation>
 <translation id="3747077776423672805">Tətbiqləri silmək üçün Ayarlar &gt; Google Play Market &gt; Android tərcihlərini idarə edin &gt; Tətbiqlər və ya Tətbiq meneceri bölməsinə daxil olun. Sonra quraşdırılmasını ləğv etmək istədiyiniz tətbiqə klikləyin (tətbiqi tapmaq üçün sağa və ya sola sürüşdürməlisiniz). Quraşdırılmanı Ləğv Edin və ya Deaktiv Edin seçiminə klikləyin.</translation>
-<translation id="3747220812138541072">Yazarkən görünən sətir içi yazı təkliflərini göstərin</translation>
 <translation id="3747603683749989726">Qabaqcıl güvənlik aktiv edilsin?</translation>
 <translation id="3748706263662799310">Baqı şikayət edin</translation>
 <translation id="3750562496035670393">Chrome parolunuzu bu cihazda saxlayıb, lakin siz onu Google Hesabınızda saxlaya bilərsiniz. Sonra, Google Hesabınızdakı bütün parollar da daxil olduğunuz halda əlçatan olacaq.</translation>
@@ -3671,6 +3670,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4785719467058219317">Bu veb saytda qeydiyyatda olmayan təhlükəsizlik açarından istifadə edirsiniz</translation>
 <translation id="478708757211772586">Ekranda irəliləmək üçün "Sonrakı" seçimini istifadə edin</translation>
 <translation id="4788092183367008521">Şəbəkə bağlantınızı yoxlayıb yenidən cəhd edin.</translation>
+<translation id="4789550509729954245">Cihazlar yaxınlıqda paylaşım edərkən bildiriş göstərin</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">TrackPoint sürətlənməsini aktiv edin</translation>
@@ -4032,6 +4032,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="5171343362375269016">Dəyişdirilmiş Yaddaş</translation>
 <translation id="5172855596271336236">1 idarə edilən printer var.</translation>
 <translation id="5173668317844998239">Təhlükəsizlik açarınızda saxlanılan barmaq izlərini əlavə edin və silin</translation>
+<translation id="5174169235862638850">Parol mübadilə buferinə kopyalandı</translation>
 <translation id="5175379009094579629">Cihazın adı yanlışdır. Yenidən cəhd etmək üçün düzgün cihaz adı daxil edin.</translation>
 <translation id="5177479852722101802">Kamera və mikrofon girişini blok etməyə davam edin</translation>
 <translation id="5177549709747445269">Mobil data istifadə edirsiniz</translation>

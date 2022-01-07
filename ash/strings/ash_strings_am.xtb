@@ -109,7 +109,6 @@
 <translation id="1570871743947603115">ብሉቱዝን አብራ ወይም አጥፋ። <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">በዚህ ክፍለ-ጊዜ ውስጥ ያለው ሁሉንም እንቅስቃሴዎን ይድረሱ</translation>
 <translation id="1611993646327628135">አብራ</translation>
-<translation id="1615402009686901181">ሚስጥራዊ ይዘት በሚታይበት ጊዜ የአስተዳዳሪ መመሪያ የማያ ገጽ ማንሳትን ያሰናክላል</translation>
 <translation id="1632985212731562677">የመዳረሻ መቀየሪያ በቅንብሮች &gt; ተደራሽነት ውስጥ ሊሰናከል ይችላል።</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> መሣሪያዎች</translation>
 <translation id="1654477262762802994">የድምጽ መጠይቅ ይጀምሩ</translation>
@@ -1189,7 +1188,6 @@
 <translation id="9024331582947483881">ሙሉ ገጽ ማያ</translation>
 <translation id="9047624247355796468">ለ <ph name="NETWORK_NAME" /> ቅንብሮችን ክፈት</translation>
 <translation id="9059834730836941392">ማሳወቂያን ሰብስብ</translation>
-<translation id="9063800855227801443">ሚስጥራዊ ይዘትን መቅረጽ አልተቻለም</translation>
 <translation id="9065203028668620118">አርትዕ</translation>
 <translation id="9070640332319875144">የረዳት ቅንብሮች</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> ባትሪ ባዶ እስከሚሆን ድረስ።</translation>

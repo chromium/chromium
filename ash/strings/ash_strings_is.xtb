@@ -109,7 +109,6 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="1570871743947603115">Kveikja/slökkva á Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Fengið aðgang að öllum aðgerðum þínum í þessari lotu</translation>
 <translation id="1611993646327628135">Kveikt</translation>
-<translation id="1615402009686901181">Slökkt er á skjáupptöku þegar trúnaðarefni er sýnilegt vegna reglu kerfisstjóra</translation>
 <translation id="1632985212731562677">Hægt er að slökkva á rofaaðgangi í Stillingar &gt; Aðgengi.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> tæki</translation>
 <translation id="1654477262762802994">Hefja raddfyrirspurn</translation>
@@ -1189,7 +1188,6 @@ Ný uppsetning</translation>
 <translation id="9024331582947483881">allur skjárinn</translation>
 <translation id="9047624247355796468">Opna stillingar fyrir <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Draga tilkynningu saman</translation>
-<translation id="9063800855227801443">Ekki hægt að taka skjámynd af trúnaðarefni</translation>
 <translation id="9065203028668620118">Breyta</translation>
 <translation id="9070640332319875144">Stillingar hjálpara</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> þar til rafhlaðan tæmist.</translation>

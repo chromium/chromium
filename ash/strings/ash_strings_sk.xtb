@@ -109,7 +109,6 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1570871743947603115">Prepnúť Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Získajte prístup k všetkej svojej aktivite v tejto relácii</translation>
 <translation id="1611993646327628135">Zapnuté</translation>
-<translation id="1615402009686901181">Pravidlo správcu zakazuje snímanie obrazovky, keď je viditeľný dôverný obsah</translation>
 <translation id="1632985212731562677">Ovládanie prepínačmi je možné deaktivovať v sekcii Nastavenia &gt; Dostupnosť.</translation>
 <translation id="1637505162081889933">Zariadenia: <ph name="NUM_DEVICES" /></translation>
 <translation id="1654477262762802994">Spustiť hlasový dopyt</translation>
@@ -122,6 +121,7 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">Živý prepis je zapnutý.</translation>
 <translation id="1720011244392820496">Zapnite Synchronizáciu Wi‑Fi</translation>
+<translation id="1736898441010944794">Adaptér <ph name="NAME" /> je viditeľný pre zariadenia s rozhraním Bluetooth.</translation>
 <translation id="1743570585616704562">Nerozpoznané</translation>
 <translation id="1746730358044914197">Metódy vstupu sú nakonfigurované vaším správcom.</translation>
 <translation id="1747827819627189109">Klávesnica na obrazovke je povolená</translation>
@@ -831,6 +831,7 @@ Nová inštalácia</translation>
 <translation id="6578407462441924264">Bez názvu</translation>
 <translation id="6585808820553845416">Relácia sa skončí o <ph name="SESSION_TIME_REMAINING" /></translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">Vaše pripojenie bolo prepnuté na bezpečnejšiu sieť</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, sila signálu <ph name="SIGNAL_STRENGTH" />, ovládané správcom</translation>
 <translation id="6612802754306526077">Bol vybraný režim nahrávania obrazovky</translation>
 <translation id="6614169507485700968">Obrazovka ochrany súkromia je zapnutá</translation>
@@ -1187,7 +1188,6 @@ Nová inštalácia</translation>
 <translation id="9024331582947483881">celá obrazovka</translation>
 <translation id="9047624247355796468">Otvoriť nastavenia siete <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Zbaliť upozornenie</translation>
-<translation id="9063800855227801443">Nie je možné nasnímať dôverný obsah</translation>
 <translation id="9065203028668620118">Upraviť</translation>
 <translation id="9070640332319875144">Nastavenia Asistenta</translation>
 <translation id="9072519059834302790">Zostávajúci čas do vybitia batérie: <ph name="TIME_LEFT" />.</translation>

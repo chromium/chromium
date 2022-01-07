@@ -109,7 +109,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="1570871743947603115">Włącz lub wyłącz Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">uzyskiwać dostęp do całej Twojej aktywności w tej sesji;</translation>
 <translation id="1611993646327628135">Włączono</translation>
-<translation id="1615402009686901181">Zasada administratora wyłącza zrzut ekranu, gdy widoczne są treści poufne</translation>
 <translation id="1632985212731562677">Funkcję Switch Access możesz wyłączyć, otwierając Ustawienia &gt; Ułatwienia dostępu.</translation>
 <translation id="1637505162081889933">Urządzenia: <ph name="NUM_DEVICES" /></translation>
 <translation id="1654477262762802994">Rozpocznij zapytanie głosowe</translation>
@@ -1188,7 +1187,6 @@ Oto kilka rzeczy, które możesz wypróbować na początek.</translation>
 <translation id="9024331582947483881">pełny ekran</translation>
 <translation id="9047624247355796468">Otwórz ustawienia sieci <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Zwiń powiadomienie</translation>
-<translation id="9063800855227801443">Nie można przechwycić obrazu poufnej treści</translation>
 <translation id="9065203028668620118">Edytuj</translation>
 <translation id="9070640332319875144">Ustawienia Asystenta</translation>
 <translation id="9072519059834302790">Czas pozostały do całkowitego rozładowania baterii: <ph name="TIME_LEFT" />.</translation>

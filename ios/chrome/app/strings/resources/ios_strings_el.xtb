@@ -60,6 +60,7 @@
 <translation id="1407135791313364759">Άνοιγμα όλων</translation>
 <translation id="1430915738399379752">Εκτύπωση</translation>
 <translation id="1434356225517321998">Το πρόγραμμα περιήγησής σας είναι διαχειριζόμενο. <ph name="BEGIN_LINK" />Λεπτομέρειες<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">Κρυπτογράφηση στη συσκευή</translation>
 <translation id="1449835205994625556">Απόκρυψη κωδικού πρόσβασης</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> στοιχεία</translation>
 <translation id="149095475893949513">Αυτός ο ιστότοπος προσπαθεί να κατεβάσει ένα προφίλ διαμόρφωσης.</translation>
@@ -284,6 +285,7 @@
 <translation id="3529024052484145543">Μη ασφαλής</translation>
 <translation id="3533202363250687977">Κλείσιμο όλων των καρτελών ανώνυμης περιήγησης</translation>
 <translation id="3533436815740441613">Νέα καρτέλα</translation>
+<translation id="3536487890564466894">Κρυπτογραφήστε τους κωδικούς πρόσβασης προτού αποθηκευτούν στον Λογαριασμό σας Google.</translation>
 <translation id="3551320343578183772">Κλείσιμο Καρτέλας</translation>
 <translation id="3581564640715911333">Προσφορά για μετάφραση σελίδων σε άλλες γλώσσες</translation>
 <translation id="3588820906588687999">Άνοιγμα εικόνας σε νέα καρτέλα</translation>
@@ -502,6 +504,7 @@
 <translation id="575902488528307720">Αναζήτηση για εικόνα</translation>
 <translation id="5781453543752460388">Προσθήκη στις Φωτογραφίες</translation>
 <translation id="5782227691023083829">Μετάφραση...</translation>
+<translation id="5802829331520313983">Ρύθμιση…</translation>
 <translation id="5803566855766646066">Είστε βέβαιοι ότι θέλετε να απορρίψετε αυτήν τη νέα κάρτα;</translation>
 <translation id="5812974770859303494">Προσθήκη σε…</translation>
 <translation id="5816228676161003208">Σας επιτρέπει να πραγματοποιείτε ταχύτερη αναζήτηση με φωνητικές εντολές.</translation>

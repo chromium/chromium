@@ -2696,7 +2696,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3742666961763734085">Organizační jednotku s daným názvem nelze najít. Zkuste to prosím znovu.</translation>
 <translation id="3743842571276656710">Zadejte PIN pro spárování se zařízením <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">Chcete-li odstranit aplikace, přejděte do Nastavení &gt; Obchod Google Play &gt; Spravovat nastavení aplikací Android &gt; Aplikace nebo Správce aplikací. Poté klepněte na aplikaci, kterou chcete odinstalovat (možná bude třeba aplikacemi listovat doprava či doleva). Následně klepněte na Odinstalovat nebo Deaktivovat.</translation>
-<translation id="3747220812138541072">Zobrazovat na řádku návrhy psaní, zatímco budete psát</translation>
 <translation id="3747603683749989726">Zapnout vylepšené zabezpečení?</translation>
 <translation id="3748706263662799310">Nahlásit chybu</translation>
 <translation id="3750562496035670393">Chrome heslo uložil do tohoto zařízení, ale můžete ho místo toho uložit do svého účtu Google. Když budete přihlášeni, budou pak k dispozici i všechna hesla ve vašem účtu Google.</translation>
@@ -3675,6 +3674,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4785719467058219317">Používáte bezpečnostní klíč, který pro tento web není zaregistrován</translation>
 <translation id="478708757211772586">Přecházet na obrazovce dopředu pomocí tlačítka Další</translation>
 <translation id="4788092183367008521">Zkontrolujte připojení k síti a zkuste to znovu.</translation>
+<translation id="4789550509729954245">Zobrazit oznámení, když zařízení v okolí sdílí obsah</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotka</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Povolit akceleraci TrackPointu</translation>
@@ -4036,6 +4036,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="5171343362375269016">Stránkovaná paměť</translation>
 <translation id="5172855596271336236">Máte jednu spravovanou tiskárnu.</translation>
 <translation id="5173668317844998239">Přidat nebo vymazat otisky prstů uložené na bezpečnostním klíči</translation>
+<translation id="5174169235862638850">Heslo bylo zkopírováno do schránky</translation>
 <translation id="5175379009094579629">Název zařízení je neplatný. Chcete-li to zkusit znovu, zadejte platný název zařízení.</translation>
 <translation id="5177479852722101802">Blokovat přístup k webové kameře a mikrofonu i nadále</translation>
 <translation id="5177549709747445269">Používáte mobilní datové připojení</translation>

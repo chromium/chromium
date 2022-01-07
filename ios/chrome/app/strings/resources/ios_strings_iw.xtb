@@ -60,6 +60,7 @@
 <translation id="1407135791313364759">פתיחת כל הכרטיסיות</translation>
 <translation id="1430915738399379752">הדפסה</translation>
 <translation id="1434356225517321998">הדפדפן שלך מנוהל. <ph name="BEGIN_LINK" />פרטים<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">הצפנה במכשיר</translation>
 <translation id="1449835205994625556">הסתרת סיסמה</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> פריטים</translation>
 <translation id="149095475893949513">האתר הזה מנסה להוריד פרופיל של הגדרות אישיות.</translation>
@@ -284,6 +285,7 @@
 <translation id="3529024052484145543">לא מאובטח</translation>
 <translation id="3533202363250687977">סגירה של כל כרטיסיות מצב אנונימי</translation>
 <translation id="3533436815740441613">כרטיסייה חדשה</translation>
+<translation id="3536487890564466894">‏הצפנת הסיסמאות מתבצעת לפני שהן נשמרות בחשבון Google.</translation>
 <translation id="3551320343578183772">סגירת כרטיסייה</translation>
 <translation id="3581564640715911333">הצעה לתרגם דפים בשפות אחרות</translation>
 <translation id="3588820906588687999">פתיחת התמונה בכרטיסייה חדשה</translation>
@@ -502,6 +504,7 @@
 <translation id="575902488528307720">חיפוש תמונה</translation>
 <translation id="5781453543752460388">‏הוספה ל-Photos</translation>
 <translation id="5782227691023083829">מתבצע תרגום...</translation>
+<translation id="5802829331520313983">הגדרה…</translation>
 <translation id="5803566855766646066">הכרטיס החדש יימחק. להמשיך?</translation>
 <translation id="5812974770859303494">הוספה אל…</translation>
 <translation id="5816228676161003208">אישור זה מאפשר לך לחפש מהר יותר בעזרת דיבור.</translation>

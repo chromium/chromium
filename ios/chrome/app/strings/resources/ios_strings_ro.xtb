@@ -60,6 +60,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="1407135791313364759">Deschideți-le pe toate</translation>
 <translation id="1430915738399379752">Printează</translation>
 <translation id="1434356225517321998">Browserul tău este gestionat. <ph name="BEGIN_LINK" />Detalii<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">Criptare pe dispozitiv</translation>
 <translation id="1449835205994625556">Ascunde parola</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> elemente</translation>
 <translation id="149095475893949513">Site-ul încearcă să descarce un profil de configurare.</translation>
@@ -284,6 +285,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3529024052484145543">Nesecurizat</translation>
 <translation id="3533202363250687977">Închide toate filele incognito</translation>
 <translation id="3533436815740441613">Filă nouă</translation>
+<translation id="3536487890564466894">Criptează-ți parolele înainte de a fi salvate în Contul tău Google.</translation>
 <translation id="3551320343578183772">Închide fila</translation>
 <translation id="3581564640715911333">Oferă traducerea paginilor în alte limbi</translation>
 <translation id="3588820906588687999">Deschide imaginea într-o filă nouă</translation>
@@ -502,6 +504,7 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="575902488528307720">Caută imaginea</translation>
 <translation id="5781453543752460388">Adaugă în fotografii</translation>
 <translation id="5782227691023083829">Se traduce...</translation>
+<translation id="5802829331520313983">Configurează…</translation>
 <translation id="5803566855766646066">Sigur dorești să elimini acest card nou?</translation>
 <translation id="5812974770859303494">Adaugă în…</translation>
 <translation id="5816228676161003208">Astfel, cauți mai rapid folosindu-ți vocea.</translation>

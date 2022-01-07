@@ -2692,7 +2692,6 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3742666961763734085">No se encontró ninguna unidad organizacional con ese nombre. Vuelve a intentarlo.</translation>
 <translation id="3743842571276656710">Ingresa el PIN para vincular con <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">Para quitar apps, ve a Configuración &gt; Google Play Store &gt; Administrar preferencias de Android &gt; Apps o Administrador de aplicaciones. Luego, presiona la app que quieras desinstalar (es posible que debas deslizar el dedo hacia la derecha o la izquierda para encontrarla). A continuación, presiona Desinstalar o Inhabilitar.</translation>
-<translation id="3747220812138541072">Mostrar sugerencias de escritura en la misma línea que aparecen mientras escribes</translation>
 <translation id="3747603683749989726">¿Quieres activar la seguridad mejorada?</translation>
 <translation id="3748706263662799310">Informar un error</translation>
 <translation id="3750562496035670393">Chrome guardó tu contraseña en este dispositivo, pero puedes guardarla en tu Cuenta de Google. Así, todas las contraseñas guardadas en tu Cuenta de Google estarán disponibles cuando accedas.</translation>
@@ -2883,6 +2882,7 @@ y Ctrl + Alt + Disminuir brillo para alejar.</translation>
 <translation id="3916445069167113093">Este tipo de archivo puede dañar tu computadora. ¿Quieres descargar <ph name="FILE_NAME" /> de todos modos?</translation>
 <translation id="3918972485393593704">Informar detalles a Google</translation>
 <translation id="3919145445993746351">Para que tus extensiones estén en todas tus computadoras, activa la sincronización</translation>
+<translation id="3919229493046408863">Desactivar notificaciones cuando haya dispositivos cercanos</translation>
 <translation id="3919798653937160644">Las páginas a las que accedas desde esta ventana no aparecerán en el historial del navegador ni dejarán rastros (por ejemplo, cookies) en la computadora después de cerrar todas las ventanas abiertas de la sesión de invitado. Los archivos descargados permanecerán intactos.</translation>
 <translation id="3920504717067627103">Directivas del certificado</translation>
 <translation id="392089482157167418">Habilitar ChromeVox (comentarios por voz)</translation>
@@ -5916,6 +5916,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="7167486101654761064">&amp;Abrir siempre archivos de este tipo</translation>
 <translation id="716810439572026343">Descargando <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">Tamaño de fuente mínimo</translation>
+<translation id="7169122689956315694">Activar notificaciones cuando haya dispositivos cercanos</translation>
 <translation id="7170236477717446850">Foto de perfil</translation>
 <translation id="7171000599584840888">Agregar perfil…</translation>
 <translation id="7171259390164035663">No inscribir</translation>

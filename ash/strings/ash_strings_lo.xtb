@@ -53,6 +53,10 @@
 <translation id="1247519845643687288">ແອັບຫຼ້າສຸດ</translation>
 <translation id="1252999807265626933">ກຳລັງສາກຈາກ <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">ສະພາບອາກາດເປັນແນວໃດ?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> ຫາ 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. ເລືອກສຳລັບລາຍລະອຽດເພີ່ມເຕີມໃນ Google ປະຕິທິນ.</translation>
 <translation id="1266097335951928626">ເລີ່ມກ້ອງຖ່າຍຮູບເຊວຟີ</translation>
 <translation id="1267032506238418139">ການປ່ຽນແປງທາງລັດ</translation>
 <translation id="1269405891096105529">ບໍ່ຮອງຮັບອຸປະກອນຕໍ່ພ່ວງໃນໂໝດແຂກ</translation>
@@ -109,7 +113,6 @@
 <translation id="1570871743947603115">ປິດເປີດ Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">ເຂົ້າເຖິງທຸກການເຄື່ອນໄຫວຂອງທ່ານໃນເຊດຊັນນີ້</translation>
 <translation id="1611993646327628135">ເປີດ</translation>
-<translation id="1615402009686901181">ນະໂຍບາຍຂອງຜູ້ເບິ່ງແຍງລະບົບປິດການນຳໃຊ້ການຖ່າຍຮູບໜ້າຈໍໄວ້ເມື່ອສະແດງເນື້ອຫາທີ່ເປັນຄວາມລັບຢູ່</translation>
 <translation id="1632985212731562677">ປິດການນຳໃຊ້ການເຂົ້າເຖິງດ້ວຍປຸ່ມກົດໄດ້ໃນການຕັ້ງຄ່າ &gt; ການຊ່ວຍເຂົ້າເຖິງ.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ອຸປະກອນ</translation>
 <translation id="1654477262762802994">ເລີ່ມຄຳຊອກຫາດ້ວຍສຽງ</translation>
@@ -998,6 +1001,8 @@
 <translation id="7720410380936703141">ລອງໃໝ່</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ການແຈ້ງເຕືອນ}other{# ການແຈ້ງເຕືອນ}}</translation>
 <translation id="7724603315864178912">ຕັດ</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">ສະແດງແອັບໃນຖ້ານ</translation>
 <translation id="7749443890790263709">ຮອດຈຳນວນສູງສຸດຂອງພື້ນທີ່ເຮັດວຽກແລ້ວ</translation>
 <translation id="7749640678855296659">ຕອນນີ້ໄມໂຄຣໂຟນຂອງທ່ານປິດໄວ້ຢູ່</translation>
@@ -1189,7 +1194,6 @@
 <translation id="9024331582947483881">ເຕັມຫນ້າ​ຈໍ​</translation>
 <translation id="9047624247355796468">ເປີດການຕັ້ງຄ່າສຳລັບ <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">ຫຍໍ້ການແຈ້ງເຕືອນລົງ</translation>
-<translation id="9063800855227801443">ບໍ່ສາມາດຖ່າຍຮູບເນື້ອຫາທີ່ເປັນຄວາມລັບໄດ້</translation>
 <translation id="9065203028668620118">ແກ້ໄຂ</translation>
 <translation id="9070640332319875144">ການຕັ້ງຄ່າຜູ້ຊ່ວຍ</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> ຈົນກວ່າວ່າແບັດເຕີຣີຈະໝົດ.</translation>

@@ -2697,7 +2697,6 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3742666961763734085">Nepodarilo sa nájsť organizačnú jednotku s daným názvom. Skúste to znova.</translation>
 <translation id="3743842571276656710">Zadajte PIN na spárovanie so zariadením <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">Ak chcete odstrániť aplikácie, prejdite do časti Nastavenia &gt; Obchod Google Play &gt; Spravovať predvoľby Androidu &gt; Aplikácie alebo Správca aplikácií. Potom klepnite na aplikáciu, ktorú chcete odinštalovať (možno budete musieť aplikáciu nájsť potiahnutím prstom doľava alebo doprava). Potom klepnite na možnosť Odinštalovať alebo Deaktivovať.</translation>
-<translation id="3747220812138541072">Zobrazovať v texte návrhy písania, kým píšete</translation>
 <translation id="3747603683749989726">Chcete zapnúť zlepšené zabezpečenie?</translation>
 <translation id="3748706263662799310">Nahlásiť chybu</translation>
 <translation id="3750562496035670393">Chrome uložil vaše heslo do tohto zariadenia, ale môžete si ho namiesto toho uložiť do účtu Google. Potom budete mať tiež k dispozícii všetky heslá zo svojho účtu Google, kým sa neodhlásite.</translation>
@@ -2888,6 +2887,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="3916445069167113093">Tento typ súboru môže poškodiť váš počítač. Chcete súbor <ph name="FILE_NAME" /> aj napriek tomu uložiť?</translation>
 <translation id="3918972485393593704">Hlásiť podrobnosti Googlu</translation>
 <translation id="3919145445993746351">Ak chcete získať svoje rozšírenia vo všetkých počítačoch, zapnite synchronizáciu</translation>
+<translation id="3919229493046408863">Vypnúť upozornenie na zariadenia v okolí</translation>
 <translation id="3919798653937160644">Stránky otvorené v tomto okne sa nezobrazia v histórii prehliadača. Po zavretí všetkých otvorených okien režimu hosťa nezanechajú v počítači žiadne ďalšie stopy, ako napríklad súbory cookie. Všetky stiahnuté súbory však zostanú zachované.</translation>
 <translation id="3920504717067627103">Certifikačné politiky</translation>
 <translation id="392089482157167418">Povoliť funkciu ChromeVox (hlasovú spätnú väzbu)</translation>
@@ -5921,6 +5921,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="7167486101654761064">&amp;Vždy otvárať súbory tohto typu</translation>
 <translation id="716810439572026343">Sťahuje sa súbor <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">Minimálna veľkosť písma</translation>
+<translation id="7169122689956315694">Zapnúť upozornenie na zariadenia v okolí</translation>
 <translation id="7170236477717446850">Profilová fotka</translation>
 <translation id="7171000599584840888">Pridať profil…</translation>
 <translation id="7171259390164035663">Nezaregistrovať</translation>

@@ -60,6 +60,7 @@
 <translation id="1407135791313364759">అన్నీ తెరువు</translation>
 <translation id="1430915738399379752">ప్రింట్</translation>
 <translation id="1434356225517321998">మీ బ్రౌజర్ మేనేజ్ చేయబడుతుంది. <ph name="BEGIN_LINK" />వివరాలు<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">పరికరంలో ఎన్‌క్రిప్షన్</translation>
 <translation id="1449835205994625556">పాస్‌వర్డ్‌ను దాచండి</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> అంశాలు</translation>
 <translation id="149095475893949513">ఈ వెబ్‌సైట్, కాన్ఫిగరేషన్ ప్రొఫైల్‌ను డౌన్‌లోడ్ చేయడానికి ప్రయత్నిస్తోంది.</translation>
@@ -94,6 +95,7 @@
 <translation id="1690731385917361335">అంశాలు లేవు</translation>
 <translation id="1692118695553449118">సింక్‌ ఆన్‌లో ఉంది</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ఎంచుకోబడ్డాయి</translation>
+<translation id="1726573592754903697">Google పాస్‌వర్డ్ మేనేజర్</translation>
 <translation id="1740468249224277719">ఇన్‌స్టాల్ చేయడానికి రెండుసార్లు నొక్కండి.</translation>
 <translation id="1752547299766512813">పాస్‌వర్డ్‌లను సేవ్ చేయి</translation>
 <translation id="1753905327828125965">అధికంగా సందర్శించేది</translation>
@@ -284,6 +286,7 @@
 <translation id="3529024052484145543">సురక్షితం కాదు</translation>
 <translation id="3533202363250687977">అజ్ఞాత ట్యాబ్‌లన్నీ మూసివేయి</translation>
 <translation id="3533436815740441613">కొత్త ట్యాబ్</translation>
+<translation id="3536487890564466894">మీ Google ఖాతాలో మీ పాస్‌వర్డ్‌లు సేవ్ కాక ముందే వాటిని ఎన్‌క్రిప్ట్ చేయండి.</translation>
 <translation id="3551320343578183772">ట్యాబ్‌ను మూసివేయి</translation>
 <translation id="3581564640715911333">ఇతర భాషలలో ఉన్న పేజీలను అనువదించడాన్ని ఆఫర్ చేస్తుంది</translation>
 <translation id="3588820906588687999">చిత్రాన్ని కొత్త ట్యాబ్‌లో తెరువు</translation>
@@ -502,6 +505,7 @@
 <translation id="575902488528307720">ఇమేజ్ కోసం సెర్చ్ చేయండి</translation>
 <translation id="5781453543752460388">ఫోటోలకు జోడించండి</translation>
 <translation id="5782227691023083829">అనువదిస్తోంది...</translation>
+<translation id="5802829331520313983">సెటప్ చేయండి…</translation>
 <translation id="5803566855766646066">మీరు ఈ కొత్త కార్డ్‌ను ఖచ్చితంగా విస్మరించాలనుకుంటున్నారా?</translation>
 <translation id="5812974770859303494">దీనికి జోడించండి...</translation>
 <translation id="5816228676161003208">దీని వలన మీ వాయిస్‌ను ఉపయోగించి వేగంగా వెతకగలుగుతారు.</translation>
@@ -561,6 +565,7 @@
 <translation id="6219688215832490856">ఎన్నటికీ అనువదించవద్దు</translation>
 <translation id="6223816392543092032">మీ బుక్‌మార్క్‌లు, హిస్టరీ, పాస్‌వర్డ్‌లు, అలాగే ఇతర సెట్టింగ్‌లను మీ అన్ని పరికరాల్లో పొందండి.</translation>
 <translation id="6232329973559504466">అజ్ఞాత సెర్చ్</translation>
+<translation id="6232736989810857397">Google Lensను ఉపయోగించి సులభంగా క్యాలెండర్ ఈవెంట్‌లను క్రియేట్ చేయడానికి ఇది మిమ్మల్ని అనుమతిస్తుంది.</translation>
 <translation id="6254066287920239840">లింక్‌లను బ్రౌజర్‌కు బదులుగా యాప్‌లో తెరవండి.</translation>
 <translation id="6255097610484507482">క్రెడిట్ కార్డ్‌ను సవరించు</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" />లోకి అనువాదం అందించే సూచన</translation>

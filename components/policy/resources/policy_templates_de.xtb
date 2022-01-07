@@ -213,7 +213,6 @@
       Wenn die Richtlinie nicht konfiguriert oder der Wert nach dem Ersetzen kein gültiger Hostname ist, wird in der DHCP-Anfrage kein Hostname festgelegt.</translation>
 <translation id="1257550411839719984">Standard-Downloadverzeichnis festlegen</translation>
 <translation id="1265053460044691532">Zeit beschränken, für die sich ein über SAML authentifizierter Nutzer offline anmelden kann</translation>
-<translation id="1268548671627260798">Liste der URLs, die von der Vollbildbenachrichtigung ausgenommen sind</translation>
 <translation id="127264587838521316">Mit dieser Richtlinie werden Anfragen für die Installation von Erweiterungen für <ph name="PRODUCT_NAME" /> aktiviert</translation>
 <translation id="1272798957154751008">Migration von Chromad-Geräten zur Cloud-Verwaltung aktivieren</translation>
 <translation id="1274997165432133392">Cookies und andere Websitedaten</translation>
@@ -2775,11 +2774,6 @@ Wird die Richtlinie auf „False“ gesetzt, verwendet <ph name="PRODUCT_NAME" /
       Wenn die Richtlinie deaktiviert oder nicht konfiguriert ist, können Nutzer Dateien auch über die Mobilfunkverbindung in Drive hochladen.</translation>
 <translation id="4248277954659222481">Autoplay von Medien für eine Zulassungsliste mit URL-Mustern erlauben</translation>
 <translation id="4250680216510889253">Nein</translation>
-<translation id="4257545866869267519">Sie können eine Liste mit URLs konfigurieren, die von der Vollbildbenachrichtigung ausgenommen sind. Die Benachrichtigung wird angezeigt, wenn der Ruhemodus, niedrige Bildschirmhelligkeit oder der Sperrbildschirm deaktiviert werden und ein Fenster im Vollbildmodus ist. Die Benachrichtigung informiert Nutzer darüber, dass sie sich im Vollbildmodus befinden, was das Risiko durch Phishing-Angriffe reduziert.
-
-          Mit dieser Richtlinie können Sie die Benachrichtigung für bestimmte URLs, die als vertrauenswürdige Quellen gelten, deaktivieren. Wenn Sie diese Richtlinie konfigurieren möchten, müssen Sie eine Liste von URL-Mustern angeben, die folgendermaßen formatiert ist ( https://www.chromium.org/administrators/url-blocklist-filter-format ). Sie können die Benachrichtigung auch durch das Platzhalterzeichen „<ph name="WILDCARD_VALUE" />“ deaktivieren, das allen URLs entspricht.
-
-          Ist diese Richtlinie nicht konfiguriert oder ist eine leere Liste festgelegt, sind keine URLs von der Vollbildbenachrichtigung ausgenommen.</translation>
 <translation id="4260027436474745627">Wenn die Richtlinie konfiguriert ist, wird für jeden der benannten Ursprünge in einer durch Kommas getrennten Liste ein eigener Prozess ausgeführt. Jeder Prozess darf nur Dokumente aus diesem Ursprung und den zugehörigen Subdomains enthalten. Wird zum Beispiel https://a1.beispiel.de/ angegeben, ist https://a2.a1.beispiel.de/ im selben Prozess zulässig, https://beispiel.de oder https://b.beispiel.de aber nicht.
 
       Seit <ph name="PRODUCT_NAME" />-Version 77 kann auch ein Ursprungsbereich für die Isolierung angegeben werden. Dazu wird ein Platzhalter verwendet. Wenn Sie z. B. https://[*.]firma.beispiel.de angeben, wird für jeden Ursprung unter https://firma.beispiel.de ein eigener Prozess ausgeführt, einschließlich https://firma.beispiel.de selbst, https://a1.firma.beispiel.de und https://a2.a1.firma.beispiel.de.

@@ -53,6 +53,10 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1247519845643687288">Apps recentes</translation>
 <translation id="1252999807265626933">A carregar a partir de <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Como está o tempo?</translation>
+<translation id="1262870540683925850">Da(s) <ph name="START_TIME" /> à(s) 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Selecione para obter mais detalhes no Calendário Google.</translation>
 <translation id="1266097335951928626">Iniciar câmara para selfies</translation>
 <translation id="1267032506238418139">Alteração do atalho</translation>
 <translation id="1269405891096105529">Periférico não suportado no Modo convidado</translation>
@@ -109,7 +113,6 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1570871743947603115">Ativar/desativar Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Aceda a toda a sua atividade nesta sessão.</translation>
 <translation id="1611993646327628135">Ativado</translation>
-<translation id="1615402009686901181">A política do administrador desativa a captura de ecrã quando existe conteúdo confidencial visível.</translation>
 <translation id="1632985212731562677">O acesso por comutador pode ser desativado em Definições &gt; Acessibilidade.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="1654477262762802994">Iniciar uma consulta de voz</translation>
@@ -998,6 +1001,8 @@ Nova instalação</translation>
 <translation id="7720410380936703141">TENTAR NOVAMENTE</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notificação}one{# notifications}other{# notificações}}</translation>
 <translation id="7724603315864178912">Cortar</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Mostrar apps na prateleira</translation>
 <translation id="7749443890790263709">Atingiu o número máximo de espaços de trabalho.</translation>
 <translation id="7749640678855296659">O seu microfone está atualmente desativado</translation>
@@ -1189,7 +1194,6 @@ Nova instalação</translation>
 <translation id="9024331582947483881">ecrã inteiro</translation>
 <translation id="9047624247355796468">Abrir as definições de <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Reduzir notificação</translation>
-<translation id="9063800855227801443">Não é possível capturar conteúdo confidencial</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9070640332319875144">Definições do Assistente</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> até a bateria terminar.</translation>

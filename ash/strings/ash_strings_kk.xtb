@@ -109,7 +109,6 @@
 <translation id="1570871743947603115">Bluetooth функциясын қосу/өшіру. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Осы сеанстағы барлық әрекеттеріңізге кіріңіз</translation>
 <translation id="1611993646327628135">Қосулы</translation>
-<translation id="1615402009686901181">Құпия мазмұн көрініп тұрғанда, әкімші саясаты экранды түсіру функциясын өшіреді.</translation>
 <translation id="1632985212731562677">Switch Access функциясын "Параметрлер &gt; Accessibility" бөлімінен өшіруге болады.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> құрылғы</translation>
 <translation id="1654477262762802994">Дауыстық сұрауды бастау</translation>
@@ -1189,7 +1188,6 @@
 <translation id="9024331582947483881">толық экран</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> желісіне арналған параметрлерді ашу</translation>
 <translation id="9059834730836941392">Хабарландыруды жию</translation>
-<translation id="9063800855227801443">Құпия мазмұнды түсіру мүмкін емес</translation>
 <translation id="9065203028668620118">Өзгерту</translation>
 <translation id="9070640332319875144">Assistant параметрлері</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> өткен соң, батареяңыздың қуаты таусылады.</translation>

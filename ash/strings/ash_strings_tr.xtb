@@ -109,7 +109,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1570871743947603115">Bluetooth'u aç/kapat. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Bu oturumdaki tüm etkinliğinize erişme</translation>
 <translation id="1611993646327628135">Açık</translation>
-<translation id="1615402009686901181">Yönetici politikası ekranda gizli içerik varken ekran görüntüsü almaya izin vermiyor</translation>
 <translation id="1632985212731562677">Anahtar Erişimi, Ayarlar &gt; Erişilebilirlik'te devre dışı bırakılabilir.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> cihaz</translation>
 <translation id="1654477262762802994">Sesli sorgu başlat</translation>
@@ -1189,7 +1188,6 @@ Yeni yüklenmiş</translation>
 <translation id="9024331582947483881">tam ekran</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> ayarlarını aç</translation>
 <translation id="9059834730836941392">Bildirimi daralt</translation>
-<translation id="9063800855227801443">Gizli içeriklerin ekran görüntüsü alınamaz</translation>
 <translation id="9065203028668620118">Düzenle</translation>
 <translation id="9070640332319875144">Asistan Ayarları</translation>
 <translation id="9072519059834302790">Şarjın bitmesine <ph name="TIME_LEFT" /> kaldı.</translation>

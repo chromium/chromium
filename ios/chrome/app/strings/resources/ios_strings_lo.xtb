@@ -60,6 +60,7 @@
 <translation id="1407135791313364759">ເປີດ​ທັງ​ຫມົດ</translation>
 <translation id="1430915738399379752">ພິມ</translation>
 <translation id="1434356225517321998">ມີການຈັດການໂປຣແກຣມທ່ອງເວັບຂອງທ່ານ. <ph name="BEGIN_LINK" />ລາຍລະອຽດ<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">ການເຂົ້າລະຫັດຢູ່ອຸປະກອນ</translation>
 <translation id="1449835205994625556">ເຊື່ອງລະຫັດຜ່ານ</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> ລາຍ​ການ</translation>
 <translation id="149095475893949513">ເວັບໄຊນີ້ກຳລັງພະຍາຍາມດາວໂຫຼດໂປຣໄຟລ໌ການຕັ້ງຄ່າຢູ່.</translation>
@@ -94,6 +95,7 @@
 <translation id="1690731385917361335">ບໍ່​ມີ​ລາຍ​ການ</translation>
 <translation id="1692118695553449118">ຊິງຄ໌ເປີດຢູ່</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ຖືກ​ເລືອກ​ແລ້ວ</translation>
+<translation id="1726573592754903697">ຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="1740468249224277719">ແຕະສອງຄັ້ງເພື່ອຕິດຕັ້ງ.</translation>
 <translation id="1752547299766512813">ບັນທຶກລະ​ຫັດ​ຜ່ານ</translation>
 <translation id="1753905327828125965">ເຂົ້າເບິ່ງ​ຫຼາຍ​ທີ່​ສຸດ</translation>
@@ -284,6 +286,7 @@
 <translation id="3529024052484145543">ບໍ່ປອດໄພ</translation>
 <translation id="3533202363250687977">ປິດແຖບທີ່ບໍ່ເຜີຍຕົວຕົນທັງໝົດ</translation>
 <translation id="3533436815740441613">ແຖບໃໝ່</translation>
+<translation id="3536487890564466894">ເຂົ້າລະຫັດລະຫັດຜ່ານຂອງທ່ານກ່ອນທີ່ຈະບັນທຶກພວກມັນໄປໃສ່ບັນຊີ Google ຂອງທ່ານ.</translation>
 <translation id="3551320343578183772">ປິດແຖບ</translation>
 <translation id="3581564640715911333">ໃຫ້ການແປໜ້າຕ່າງໆເປັນພາສາອື່ນ</translation>
 <translation id="3588820906588687999">ຮູບເປີດຢູ່ໃນແຖບໃໝ່</translation>
@@ -502,6 +505,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="575902488528307720">ຊອກຫາຮູບ</translation>
 <translation id="5781453543752460388">ເພີ່ມໃສ່ຮູບພາບ</translation>
 <translation id="5782227691023083829">ກໍາລັງແປ...</translation>
+<translation id="5802829331520313983">ຕັ້ງຄ່າ…</translation>
 <translation id="5803566855766646066">ທ່ານແນ່ໃຈບໍ່ວ່າທ່ານຕ້ອງການປະຖິ້ມບັດໃໝ່ນີ້?</translation>
 <translation id="5812974770859303494">ເພີ່ມໃສ່...</translation>
 <translation id="5816228676161003208">ນີ້ອະນຸຍາດໃຫ້ທ່ານຊອກຫາໄດ້ໄວຂຶ້ນໂດຍໃຊ້ສຽງຂອງທ່ານ.</translation>
@@ -561,6 +565,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="6219688215832490856">ຢ່າແປ</translation>
 <translation id="6223816392543092032">ໃຊ້ບຸກມາກ, ປະຫວັດ, ລະຫັດຜ່ານ ແລະ ການຕັ້ງຄ່າອື່ນຂອງທ່ານຢູ່ໃນທຸກອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="6232329973559504466">ການຊອກຫາແບບບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
+<translation id="6232736989810857397">ນີ້ຈະເຮັດໃຫ້ທ່ານສາມາດສ້າງນັດໝາຍປະຕິທິນໄດ້ຢ່າງງ່າຍດາຍໂດຍໃຊ້ Google Lens.</translation>
 <translation id="6254066287920239840">ເປີດລິ້ງຕ່າງໆໃນແອັບແທນໂປຣແກຣມທ່ອງເວັບ.</translation>
 <translation id="6255097610484507482">ແກ້ໄຂບັດເຄຣດິດ</translation>
 <translation id="6284652193729350524">ສະເໜີແປ <ph name="LANGUAGE" /></translation>

@@ -109,7 +109,6 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1570871743947603115">Preklop Bluetootha. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">dostop do vse dejavnosti v seji;</translation>
 <translation id="1611993646327628135">Vklopljeno</translation>
-<translation id="1615402009686901181">Pravilnik skrbnika onemogoča zajem zaslona, če je vidna zaupna vsebina.</translation>
 <translation id="1632985212731562677">Stikalni dostop lahko onemogočite v »Nastavitve &gt; Dostopnost«.</translation>
 <translation id="1637505162081889933">Št. naprav: <ph name="NUM_DEVICES" /></translation>
 <translation id="1654477262762802994">Začetek glasovne poizvedbe</translation>
@@ -122,6 +121,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">Samodejni podnapisi so vklopljeni.</translation>
 <translation id="1720011244392820496">Vklop sinhronizacije poverilnic za Wi-Fi</translation>
+<translation id="1736898441010944794">Naprava »<ph name="NAME" />« je vidna napravam Bluetooth.</translation>
 <translation id="1743570585616704562">Ni prepoznano</translation>
 <translation id="1746730358044914197">Načine vnosa konfigurira skrbnik.</translation>
 <translation id="1747827819627189109">Zaslonska tipkovnica omogočena</translation>
@@ -831,6 +831,7 @@ Nova namestitev</translation>
 <translation id="6578407462441924264">Neimenovano</translation>
 <translation id="6585808820553845416">Seja se konča čez <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">Vaša povezava je preklopila na varnejše omrežje.</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" />, upravlja ga vaš skrbnik</translation>
 <translation id="6612802754306526077">Način snemanja zaslona je izbran</translation>
 <translation id="6614169507485700968">Zaslon za zasebnost je vklopljen</translation>
@@ -1187,7 +1188,6 @@ Nova namestitev</translation>
 <translation id="9024331582947483881">celozaslonski način</translation>
 <translation id="9047624247355796468">Odpri nastavitve za <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Strni obvestilo</translation>
-<translation id="9063800855227801443">Ni mogoče zajeti zasebne vsebine</translation>
 <translation id="9065203028668620118">Uredi</translation>
 <translation id="9070640332319875144">Nastavitve Pomočnika</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> do izpraznjenosti akumulatorja.</translation>

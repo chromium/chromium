@@ -109,7 +109,6 @@
 <translation id="1570871743947603115">‏הפעלה או השבתה של Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">גישה לכל הפעילות שלך בסשן הזה</translation>
 <translation id="1611993646327628135">פועל</translation>
-<translation id="1615402009686901181">בהתאם למדיניות מנהל המערכת, צילום המסך מושבת כשמוצג תוכן סודי</translation>
 <translation id="1632985212731562677">ניתן להשבית את התכונה 'גישה באמצעות מתג' דרך 'הגדרות' &gt; 'נגישות'.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> מכשירים</translation>
 <translation id="1654477262762802994">הפעלה של שאילתה קולית</translation>
@@ -1191,7 +1190,6 @@
 <translation id="9024331582947483881">מסך מלא</translation>
 <translation id="9047624247355796468">פתיחת ההגדרות של <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">כיווץ ההודעה</translation>
-<translation id="9063800855227801443">לא ניתן לצלם תוכן סודי</translation>
 <translation id="9065203028668620118">עריכה</translation>
 <translation id="9070640332319875144">‏הגדרות Assistant</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> עד להתרוקנות הסוללה.</translation>

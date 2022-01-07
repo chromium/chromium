@@ -53,6 +53,10 @@
 <translation id="1247519845643687288">برنامه‌های اخیر</translation>
 <translation id="1252999807265626933">در حال شارژ شدن از <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">‏?‎What's the weather (آب‌وهوا چطور است؟)</translation>
+<translation id="1262870540683925850">‏<ph name="START_TIME" /> تا 
+        <ph name="END_TIME" />، 
+        <ph name="TIME_ZONE" />، 
+        <ph name="EVENT_SUMMARY" />. برای جزئیات بیشتر در «تقویم Google» انتخاب کنید.</translation>
 <translation id="1266097335951928626">اجرای دوربین خودگرفت</translation>
 <translation id="1267032506238418139">تغییر میان‌بر</translation>
 <translation id="1269405891096105529">دستگاه جانبی در «حالت مهمان» پشتیبانی نمی‌شود</translation>
@@ -109,7 +113,6 @@
 <translation id="1570871743947603115">روشن/خاموش کردن بلوتوث. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">به همه فعالیت‌هایتان در این جلسه دسترسی پیدا کنید</translation>
 <translation id="1611993646327628135">روشن</translation>
-<translation id="1615402009686901181">خط‌مشی سرپرست ضبط صفحه‌نمایش را هنگامی که محتوای محرمانه نمایان باشد غیرفعال می‌کند</translation>
 <translation id="1632985212731562677">می‌توانید «دسترسی کلیدی» را در «تنظیمات &gt; دسترس‌پذیری» غیرفعال کنید.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> دستگاه</translation>
 <translation id="1654477262762802994">شروع پُرسمان صوتی</translation>
@@ -998,6 +1001,8 @@
 <translation id="7720410380936703141">امتحان مجدد</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{۱ اعلان}one{# اعلان}other{# اعلان}}</translation>
 <translation id="7724603315864178912">برش</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />، 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">نمایش برنامه‌ها در قفسه</translation>
 <translation id="7749443890790263709">به حداکثر تعداد میز رسیده‌اید.</translation>
 <translation id="7749640678855296659">میکروفون شما درحال حاضر خاموش است</translation>
@@ -1189,7 +1194,6 @@
 <translation id="9024331582947483881">تمام‌صفحه</translation>
 <translation id="9047624247355796468">باز کردن تنظیمات <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">کوچک کردن اعلان</translation>
-<translation id="9063800855227801443">نمی‌توان محتوای محرمانه را ضبط کرد</translation>
 <translation id="9065203028668620118">ویرایش</translation>
 <translation id="9070640332319875144">تنظیمات «دستیار»</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> زمان تا تخلیه باتری باقی‌مانده است.</translation>

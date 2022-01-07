@@ -2698,7 +2698,6 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="3742666961763734085">Nije moguće pronaći organizacijsku jedinicu s tim nazivom. Pokušajte ponovo.</translation>
 <translation id="3743842571276656710">Unesite PIN za uparivanje s uređajem <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">Za uklanjanje aplikacija idite na Postavke &gt; Trgovina Play &gt; Upravljanje postavkama Androida &gt; Aplikacije ili Upravitelj aplikacija. Zatim dodirnite aplikaciju koju želite deinstalirati (možda ćete morati prijeći prstom udesno ili ulijevo kako biste pronašli aplikaciju). Zatim dodirnite Deinstaliraj ili Onemogući.</translation>
-<translation id="3747220812138541072">Prikazuje prijedloge za pisanje u tekstu koji se prikazuju dok tipkate</translation>
 <translation id="3747603683749989726">Uključiti poboljšanu sigurnost?</translation>
 <translation id="3748706263662799310">Prijava programske pogreške</translation>
 <translation id="3750562496035670393">Chrome je spremio vašu zaporku na ovaj uređaj, no možete je spremiti na svoj Google račun. Tada će i sve zaporke na vašem Google računu biti dostupne dok ste prijavljeni.</translation>
@@ -3678,6 +3677,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="4785719467058219317">Upotrebljavate sigurnosni ključ koji nije registriran na toj web-lokaciji</translation>
 <translation id="478708757211772586">Upotrijebite radnju Sljedeće da biste se pomaknuli unaprijed na zaslonu</translation>
 <translation id="4788092183367008521">Provjerite mrežnu vezu i pokušajte ponovo.</translation>
+<translation id="4789550509729954245">Prikaži obavijest kada uređaji dijele u blizini</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotografija</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Omogući TrackPoint ubrzanje</translation>
@@ -4039,6 +4039,7 @@ i Ctrl + Alt + Smanjivanje svjetline da biste smanjili prikaz.</translation>
 <translation id="5171343362375269016">Zamijenjena memorija</translation>
 <translation id="5172855596271336236">Postoji jedan upravljani pisač.</translation>
 <translation id="5173668317844998239">Dodavanje i brisanje otisaka prstiju spremljenih na sigurnosnom ključu</translation>
+<translation id="5174169235862638850">Zaporka je kopirana u međuspremnik</translation>
 <translation id="5175379009094579629">Naziv uređaja je nevažeći. Da biste pokušali ponovo, unesite važeći naziv.</translation>
 <translation id="5177479852722101802">Nastavi blokirati pristup kameri i mikrofonu</translation>
 <translation id="5177549709747445269">Upotrebljavate mobilne podatke</translation>

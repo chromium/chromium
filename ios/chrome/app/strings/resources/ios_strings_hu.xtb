@@ -60,6 +60,7 @@ Az Ön keresőmotorja a következő: <ph name="DSE_NAME" />. A keresési előzm�
 <translation id="1407135791313364759">Összes megnyitása</translation>
 <translation id="1430915738399379752">Nyomtatás</translation>
 <translation id="1434356225517321998">A böngésző felügyelet alatt áll. <ph name="BEGIN_LINK" />Részletek<ph name="END_LINK" />.</translation>
+<translation id="1442838519825026149">Eszközalapú titkosítás</translation>
 <translation id="1449835205994625556">Jelszó elrejtése</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> elem</translation>
 <translation id="149095475893949513">Ez a webhely konfigurációs profilt próbál letölteni.</translation>
@@ -94,6 +95,7 @@ Az Ön keresőmotorja a következő: <ph name="DSE_NAME" />. A keresési előzm�
 <translation id="1690731385917361335">Nincsenek elemek</translation>
 <translation id="1692118695553449118">Szinkronizálás bekapcsolva</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> kiválasztva</translation>
+<translation id="1726573592754903697">Google Jelszókezelő</translation>
 <translation id="1740468249224277719">A telepítéshez koppintson duplán.</translation>
 <translation id="1752547299766512813">Jelszómentés</translation>
 <translation id="1753905327828125965">Leggyakrabban látogatott</translation>
@@ -284,6 +286,7 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="3529024052484145543">Nem biztonságos</translation>
 <translation id="3533202363250687977">Összes inkognitó lap bezárása</translation>
 <translation id="3533436815740441613">Új lap</translation>
+<translation id="3536487890564466894">Titkosíthatja a jelszavait, mielőtt mentésre kerülnek a Google-fiókjába.</translation>
 <translation id="3551320343578183772">Lap bezárása</translation>
 <translation id="3581564640715911333">Más nyelvű oldalak fordításának felajánlása</translation>
 <translation id="3588820906588687999">Kép megnyitása új lapon</translation>
@@ -502,6 +505,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="575902488528307720">Képeket kereshet</translation>
 <translation id="5781453543752460388">Fotó hozzáadása</translation>
 <translation id="5782227691023083829">A fordítás folyamatban...</translation>
+<translation id="5802829331520313983">Beállítás…</translation>
 <translation id="5803566855766646066">Biztosan elveti ezt az új kártyát?</translation>
 <translation id="5812974770859303494">Hozzáadás…</translation>
 <translation id="5816228676161003208">Lehetővé teszi a gyorsabb keresést a hangalapú keresés használatával.</translation>
@@ -561,6 +565,7 @@ Az Átadást engedélyezni kell a Beállítások általános részében is, és 
 <translation id="6219688215832490856">Soha ne fordítsa le</translation>
 <translation id="6223816392543092032">Bármely eszközéről hozzáférhet könyvjelzőihez, előzményeihez, jelszavaihoz és egyéb beállításaihoz.</translation>
 <translation id="6232329973559504466">Keresés inkognitó módban</translation>
+<translation id="6232736989810857397">Ez lehetővé teszi, hogy könnyedén hozzon létre naptáreseményeket a Google Lens szolgáltatással.</translation>
 <translation id="6254066287920239840">Linkek megnyitása az alkalmazásban a böngésző helyett.</translation>
 <translation id="6255097610484507482">Hitelkártya módosítása</translation>
 <translation id="6284652193729350524">A(z) <ph name="LANGUAGE" /> nyelvű oldalak lefordításának felajánlása</translation>

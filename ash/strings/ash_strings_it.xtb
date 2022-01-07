@@ -109,7 +109,6 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1570871743947603115">Attiva/disattiva Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Accedere a tutte le tue attività in questa sessione.</translation>
 <translation id="1611993646327628135">On</translation>
-<translation id="1615402009686901181">Il criterio dell'amministratore disattiva l'acquisizione schermo se sono visibili contenuti riservati</translation>
 <translation id="1632985212731562677">È possibile disattivare Switch Access in Impostazioni &gt; Accessibilità.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivi</translation>
 <translation id="1654477262762802994">Avvia una query vocale</translation>
@@ -1190,7 +1189,6 @@ Nuova installazione</translation>
 <translation id="9024331582947483881">schermo intero</translation>
 <translation id="9047624247355796468">Apri Impostazioni per <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Comprimi la notifica</translation>
-<translation id="9063800855227801443">Impossibile acquisire contenuti riservati</translation>
 <translation id="9065203028668620118">Modifica</translation>
 <translation id="9070640332319875144">Impostazioni assistente</translation>
 <translation id="9072519059834302790">Tempo rimanente all'esaurimento completo della batteria: <ph name="TIME_LEFT" />.</translation>

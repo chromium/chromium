@@ -53,6 +53,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1247519845643687288">Recente apps</translation>
 <translation id="1252999807265626933">Opladen via <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Wat voor weer is het?</translation>
+<translation id="1262870540683925850">Van <ph name="START_TIME" /> tot <ph name="END_TIME" /> <ph name="TIME_ZONE" />, <ph name="EVENT_SUMMARY" />. Selecteer de afspraak voor meer informatie in Google Agenda.</translation>
 <translation id="1266097335951928626">Selfiecamera starten</translation>
 <translation id="1267032506238418139">Sneltoets gewijzigd</translation>
 <translation id="1269405891096105529">Randapparaat wordt niet ondersteund in de gastmodus</translation>
@@ -109,7 +110,6 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1570871743947603115">Bluetooth aan- of uitzetten. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Al je activiteit in deze sessie bekijken</translation>
 <translation id="1611993646327628135">Aan</translation>
-<translation id="1615402009686901181">Op basis van het beheerdersbeleid worden schermopnamen uitgezet als er vertrouwelijke content zichtbaar is</translation>
 <translation id="1632985212731562677">Je kunt Toegang via schakelaar uitzetten via Instellingen &gt; Toegankelijkheid.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> apparaten</translation>
 <translation id="1654477262762802994">Een gesproken zoekopdracht starten</translation>
@@ -998,6 +998,7 @@ Nieuwe installatie</translation>
 <translation id="7720410380936703141">OPNIEUW PROBEREN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{Eén melding}other{# meldingen}}</translation>
 <translation id="7724603315864178912">Knip</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Apps in plank bekijken</translation>
 <translation id="7749443890790263709">Maximum aantal bureaus bereikt.</translation>
 <translation id="7749640678855296659">Je microfoon staat momenteel uit</translation>
@@ -1189,7 +1190,6 @@ Nieuwe installatie</translation>
 <translation id="9024331582947483881">volledig scherm</translation>
 <translation id="9047624247355796468">Instellingen openen voor <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Melding samenvouwen</translation>
-<translation id="9063800855227801443">Kan geen opname van vertrouwelijke content maken</translation>
 <translation id="9065203028668620118">Bewerken</translation>
 <translation id="9070640332319875144">Instellingen voor Assistent</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> tot de batterij leeg is.</translation>

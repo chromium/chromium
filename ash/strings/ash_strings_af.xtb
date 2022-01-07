@@ -53,6 +53,10 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1247519845643687288">Onlangse programme</translation>
 <translation id="1252999807265626933">Laai vanaf <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Hoe lyk die weer?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> tot 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Kies om meer besonderhede in Google Kalender te kry.</translation>
 <translation id="1266097335951928626">Begin selfiekamera</translation>
 <translation id="1267032506238418139">Kortpadverandering</translation>
 <translation id="1269405891096105529">Randtoestel word nie in Gasmodus gesteun nie</translation>
@@ -109,7 +113,6 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="1570871743947603115">Wissel Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Kry toegang tot al jou aktiwiteit in hierdie sessie</translation>
 <translation id="1611993646327628135">Aan</translation>
-<translation id="1615402009686901181">Administrateursbeleid deaktiveer skermskote wanneer vertroulike inhoud sigbaar is</translation>
 <translation id="1632985212731562677">Skakelaartoegang kan in Instellings &gt; Toeganklikheid gedeaktiveer word.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> toestelle</translation>
 <translation id="1654477262762802994">Begin 'n stemnavraag</translation>
@@ -999,6 +1002,8 @@ Nuwe installasie</translation>
 <translation id="7720410380936703141">PROBEER WEER</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 kennisgewing}other{# kennisgewings}}</translation>
 <translation id="7724603315864178912">Knip</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Wys programme op rak</translation>
 <translation id="7749443890790263709">Maksimum aantal lessenaars is bereik.</translation>
 <translation id="7749640678855296659">Jou mikrofoon is tans afgeskakel</translation>
@@ -1190,7 +1195,6 @@ Nuwe installasie</translation>
 <translation id="9024331582947483881">volskerm</translation>
 <translation id="9047624247355796468">Maak instellings oop vir <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Vou kennisgewing in</translation>
-<translation id="9063800855227801443">Kan nie vertroulike inhoud vasvang nie</translation>
 <translation id="9065203028668620118">Wysig</translation>
 <translation id="9070640332319875144">Assistent-instellings</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> totdat battery leeg is.</translation>

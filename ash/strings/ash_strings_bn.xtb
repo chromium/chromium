@@ -53,6 +53,10 @@
 <translation id="1247519845643687288">সাম্প্রতিক অ্যাপ</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> থেকে চার্জ হচ্ছে</translation>
 <translation id="1255033239764210633">আবহাওয়া কি রকম?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> থেকে 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />। Google Calendar-এ আরও বিবরণ দেখতে বেছে নিন।</translation>
 <translation id="1266097335951928626">সেলফি ক্যামেরা চালু করুন</translation>
 <translation id="1267032506238418139">শর্টকাটে পরিবর্তন</translation>
 <translation id="1269405891096105529">গেস্ট মোডে পেরিফেরাল কাজ করে না</translation>
@@ -109,7 +113,6 @@
 <translation id="1570871743947603115">ব্লুটুথ টগল করুন। <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">এই সেশনে আপনার সব অ্যাক্টিভিটি অ্যাক্সেস করুন</translation>
 <translation id="1611993646327628135">চালু আছে</translation>
-<translation id="1615402009686901181">কোনও গোপনীয় কন্টেন্ট দেখা গেলে অ্যাডমিনিস্ট্রেটরের সেট করা নীতি অনুযায়ী স্ক্রিন ক্যাপচার করার সুবিধা বন্ধ করে দেওয়া হয়</translation>
 <translation id="1632985212731562677">সেটিংস &gt; অ্যাক্সেসিবিলিটি বিকল্পে গিয়ে 'অ্যাক্সেস পাল্টান' ফিচারটি বন্ধ করা করতে পারেন।</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" />টি ডিভাইস</translation>
 <translation id="1654477262762802994">ভয়েস কোয়েরি শুরু করুন</translation>
@@ -998,6 +1001,8 @@
 <translation id="7720410380936703141">আবার চেষ্টা করুন</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{১টি বিজ্ঞপ্তি}one{#টি বিজ্ঞপ্তি}other{#টি বিজ্ঞপ্তি}}</translation>
 <translation id="7724603315864178912">কাটুন</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">শেল্ফে অ্যাপ দেখুন</translation>
 <translation id="7749443890790263709">সর্বাধিক সংখ্যক ডেস্ক যোগ করা হয়ে গেছে।</translation>
 <translation id="7749640678855296659">বর্তমানে আপনার মাইক্রোফোন বন্ধ করা আছে</translation>
@@ -1189,7 +1194,6 @@
 <translation id="9024331582947483881">পূর্ণ স্ক্রিন</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> নেটওয়ার্কের জন্য সেটিংস খুলুন</translation>
 <translation id="9059834730836941392">বিজ্ঞপ্তি সঙ্কুচিত করুন</translation>
-<translation id="9063800855227801443">গোপনীয় কন্টেন্ট ক্যাপচার করা যাবে না</translation>
 <translation id="9065203028668620118">সম্পাদনা</translation>
 <translation id="9070640332319875144">অ্যাসিস্ট্যান্ট সেটিংস</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> পরে ব্যাটারির চার্জ শেষ হয়ে যাবে।</translation>

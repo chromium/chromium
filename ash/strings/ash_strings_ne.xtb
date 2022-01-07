@@ -53,6 +53,10 @@
 <translation id="1247519845643687288">हालसालै चलाइएका एपहरू</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> द्वारा चार्ज हुँदै</translation>
 <translation id="1255033239764210633">मौसम कस्तो छ?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> देखि 
+        <ph name="END_TIME" /> सम्म, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />। थप विवरण हेर्न Google पात्रोमा गई चयन गर्नुहोस्।</translation>
 <translation id="1266097335951928626">सेल्फी क्यामेरा अन गर्नुहोस्</translation>
 <translation id="1267032506238418139">सर्टकट परिवर्तन</translation>
 <translation id="1269405891096105529">गेस्ट मोड अन हुँदा सहायक डिभाइसहरूले काम गर्दैनन्</translation>
@@ -109,7 +113,6 @@
 <translation id="1570871743947603115">ब्लुटुथ टगल गर्नुहोस्। <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">यो सत्रअन्तर्गतका आफ्ना सबै क्रियाकलापमाथि पहुँच राख्नुहोस्</translation>
 <translation id="1611993646327628135">अन छ</translation>
-<translation id="1615402009686901181">तपाईंको स्क्रिनमा गोप्य सामग्री देखिएका बेला एड्मिनले तोक्नुभएको नीतिअनुसार स्क्रिन क्याप्चर गर्ने सुविधा अफ गरिन्छ</translation>
 <translation id="1632985212731562677">सेटिङ &gt; पहुँचमा गएर स्विचमार्फत पहुँच राख्ने सुविधा असक्षम पार्न सकिन्छ।</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> वटा डिभाइस</translation>
 <translation id="1654477262762802994">आवाजमार्फत गरिने क्वेरी सुरु गर्नुहोस्</translation>
@@ -998,6 +1001,8 @@
 <translation id="7720410380936703141">फेरि प्रयास गर्नुहोस्</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{१ सूचना}other{# सूचनाहरू}}</translation>
 <translation id="7724603315864178912">काट्नुहोस्</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">सेल्फमा एपहरू देखाउनुहोस्</translation>
 <translation id="7749443890790263709">डेस्कको अधिकतम सङ्ख्या पुगेको छ।</translation>
 <translation id="7749640678855296659">तपाईंको माइक्रोफोन अहिले अफ छ</translation>
@@ -1189,7 +1194,6 @@
 <translation id="9024331582947483881">फुल स्क्रिन</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> को सेटिङ खोल्नुहोस्</translation>
 <translation id="9059834730836941392">सूचना संक्षिप्त गर्नुहोस्</translation>
-<translation id="9063800855227801443">गोप्य सामग्रीको स्क्रिन क्याप्चर गर्न मिल्दैन</translation>
 <translation id="9065203028668620118">सम्पादन गर्नुहोस</translation>
 <translation id="9070640332319875144">सहायकका सेटिङहरू</translation>
 <translation id="9072519059834302790">ब्याट्री पूरै सकिन <ph name="TIME_LEFT" /> बाँकी छ।</translation>

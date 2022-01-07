@@ -109,7 +109,6 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1570871743947603115">Alihkan Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Akses semua aktivitas Anda di sesi ini</translation>
 <translation id="1611993646327628135">Aktif</translation>
-<translation id="1615402009686901181">Kebijakan administrator akan menonaktifkan tangkapan layar saat konten rahasia terlihat</translation>
 <translation id="1632985212731562677">Tombol Akses dapat dinonaktifkan di Setelan &gt; Aksesibilitas.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> perangkat</translation>
 <translation id="1654477262762802994">Mulai kueri suara</translation>
@@ -1189,7 +1188,6 @@ Baru diinstal</translation>
 <translation id="9024331582947483881">layar penuh</translation>
 <translation id="9047624247355796468">Buka setelan untuk <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Ciutkan notifikasi</translation>
-<translation id="9063800855227801443">Tidak dapat menangkap konten rahasia</translation>
 <translation id="9065203028668620118">Edit</translation>
 <translation id="9070640332319875144">Setelan Asisten</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> hingga baterai kosong.</translation>

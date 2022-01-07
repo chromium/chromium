@@ -109,7 +109,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1570871743947603115">Comută Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">să acceseze toată activitatea din această sesiune;</translation>
 <translation id="1611993646327628135">Activat</translation>
-<translation id="1615402009686901181">Politica implementată de administrator dezactivează capturarea ecranului atunci când se afișează conținut confidențial</translation>
 <translation id="1632985212731562677">Accesul prin comutare poate fi dezactivat din Setări &gt; Accesibilitate.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispozitive</translation>
 <translation id="1654477262762802994">Începe o interogare vocală</translation>
@@ -1189,7 +1188,6 @@ Instalare nouă</translation>
 <translation id="9024331582947483881">ecran complet</translation>
 <translation id="9047624247355796468">Deschide setările pentru <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Restrânge notificarea</translation>
-<translation id="9063800855227801443">Capturarea conținutului confidențial nu este permisă</translation>
 <translation id="9065203028668620118">Editează</translation>
 <translation id="9070640332319875144">Setări pentru Asistent</translation>
 <translation id="9072519059834302790">Timp rămas până la descărcarea bateriei: <ph name="TIME_LEFT" />.</translation>

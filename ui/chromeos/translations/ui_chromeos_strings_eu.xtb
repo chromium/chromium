@@ -113,7 +113,7 @@
 <translation id="1936717151811561466">Finlandiarra</translation>
 <translation id="1942765061641586207">Irudiaren bereizmena</translation>
 <translation id="1972984168337863910">Zabaldu fitxategien oharren panelak</translation>
-<translation id="1984456723671657197">Ez da onartzen mota horretako fitxategirik. <ph name="BEGIN_LINK_HELP" />Lortu informazio gehiago<ph name="END_LINK_HELP" /> fitxategiak Chrome OS-en irekitzeari buruz.</translation>
+<translation id="1984456723671657197">Ez da onartzen mota horretako fitxategirik. <ph name="BEGIN_LINK_HELP" />Lortu informazio gehiago<ph name="END_LINK_HELP" /> fitxategiak Chrome OS-n irekitzeari buruz.</translation>
 <translation id="1995337122023280937">Joan fitxategiaren kokapenera</translation>
 <translation id="2001796770603320721">Kudeatu Drive-n</translation>
 <translation id="2009067268969781306">Unitatea formateatuz gero, bertan gordetako datu guztiak ezabatuko dira. Ezin da desegin ekintza hori.</translation>
@@ -545,7 +545,7 @@
 <translation id="5700087501958648444">Audioari buruzko informazioa</translation>
 <translation id="5724172041621205163">Thailandiarra, Pattachote teklatuarekin</translation>
 <translation id="5731409020711461763">Argazki berri bat</translation>
-<translation id="5752453871435543420">Chrome OS-en hodeiko babeskopiak</translation>
+<translation id="5752453871435543420">Chrome OS-n hodeiko babeskopiak</translation>
 <translation id="5756666464756035725">QWERTY teklatu hungariarra</translation>
 <translation id="5763377084591234761">Alemana (Suitza)</translation>
 <translation id="5769519078756170258">Kanpoan utzi beharreko ostalaria edo domeinua</translation>
@@ -806,7 +806,7 @@
 <translation id="7972920761225148017">Frantsesa (Suitza)</translation>
 <translation id="7973962044839454485">Ezin izan da PPP bidez autentifikatu erabiltzaile-izena edo pasahitza okerra zelako</translation>
 <translation id="7980421588063892270">Ingelesa (AEB), Colemak teklatuarekin</translation>
-<translation id="79907182588096956">Windows-eko sistema eragile bat darabilen ordenagailu baterako dago diseinatuta fitxategi hori. Gailuak Chrome OS darabilenez, fitxategia ez da harekin bateragarria. <ph name="BEGIN_LINK_HELP" />Lortu informazio gehiago<ph name="END_LINK_HELP" /> fitxategiak Chrome OS-en irekitzeari buruz.</translation>
+<translation id="79907182588096956">Windows-eko sistema eragile bat darabilen ordenagailu baterako dago diseinatuta fitxategi hori. Gailuak Chrome OS darabilenez, fitxategia ez da harekin bateragarria. <ph name="BEGIN_LINK_HELP" />Lortu informazio gehiago<ph name="END_LINK_HELP" /> fitxategiak Chrome OS-n irekitzeari buruz.</translation>
 <translation id="8000066093800657092">Ez dago sarerik</translation>
 <translation id="8008366997883261463">Jack Russell Terrier arrazako zakurra</translation>
 <translation id="8028993641010258682">Tamaina</translation>
@@ -911,7 +911,7 @@
 <translation id="8912078710089354287">Buztanari eragiten ari dion txakurra</translation>
 <translation id="8919081441417203123">Daniarra</translation>
 <translation id="8965697826696209160">Ez dago memoria nahikorik.</translation>
-<translation id="8970501467542182729">Macintosh-eko sistema eragile bat darabilen ordenagailu baterako dago diseinatuta fitxategi hori. Gailuak Chrome OS darabilenez, fitxategia ez da harekin bateragarria. <ph name="BEGIN_LINK_HELP" />Lortu informazio gehiago<ph name="END_LINK_HELP" /> fitxategiak Chrome OS-en irekitzeari buruz.</translation>
+<translation id="8970501467542182729">Macintosh-eko sistema eragile bat darabilen ordenagailu baterako dago diseinatuta fitxategi hori. Gailuak Chrome OS darabilenez, fitxategia ez da harekin bateragarria. <ph name="BEGIN_LINK_HELP" />Lortu informazio gehiago<ph name="END_LINK_HELP" /> fitxategiak Chrome OS-n irekitzeari buruz.</translation>
 <translation id="8997962250644902079">Txinatarra (tradizionala, pinyin)</translation>
 <translation id="9003940392834790328"><ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" /> sarea. <ph name="NETWORK_NAME" /> (<ph name="CONNECTION_STATUS" />). Seinalearen indarra % <ph name="SIGNAL_STRENGTH" />. Administratzaileak kudeatua. Xehetasunak.</translation>
 <translation id="9017798300203431059">Fonetika errusiarra</translation>

@@ -109,7 +109,6 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="1570871743947603115">Activer/Désactiver le Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Accéder à toutes vos activités dans cette session</translation>
 <translation id="1611993646327628135">Activé</translation>
-<translation id="1615402009686901181">Une règle définie par l'administrateur a désactivé la capture d'écran lorsqu'un contenu confidentiel est affiché</translation>
 <translation id="1632985212731562677">Vous pouvez désactiver Switch Access en sélectionnant Paramètres &gt; Accessibilité.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> appareils</translation>
 <translation id="1654477262762802994">Soumettre une requête vocale</translation>
@@ -1189,7 +1188,6 @@ Nouvelle installation</translation>
 <translation id="9024331582947483881">plein écran</translation>
 <translation id="9047624247355796468">Ouvrir les paramètres du réseau <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Réduire la notification</translation>
-<translation id="9063800855227801443">Impossible de capturer un contenu confidentiel</translation>
 <translation id="9065203028668620118">Modifier</translation>
 <translation id="9070640332319875144">Paramètres de l'Assistant</translation>
 <translation id="9072519059834302790">Temps restant avant que la batterie soit déchargée : <ph name="TIME_LEFT" />.</translation>

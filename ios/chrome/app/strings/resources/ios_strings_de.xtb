@@ -60,6 +60,7 @@ Sie haben <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum 
 <translation id="1407135791313364759">Alle öffnen</translation>
 <translation id="1430915738399379752">Drucken</translation>
 <translation id="1434356225517321998">Ihr Browser wird verwaltet. <ph name="BEGIN_LINK" />Details<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">Verschlüsselung auf dem Gerät</translation>
 <translation id="1449835205994625556">Passwort ausblenden</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> Elemente</translation>
 <translation id="149095475893949513">Diese Website versucht, ein Konfigurationsprofil herunterzuladen.</translation>
@@ -284,6 +285,7 @@ Informationen zum Löschen Ihres Suchverlaufs finden Sie in der Anleitung Ihrer 
 <translation id="3529024052484145543">Nicht sicher</translation>
 <translation id="3533202363250687977">Alle Inkognito-Tabs schließen</translation>
 <translation id="3533436815740441613">Neuer Tab</translation>
+<translation id="3536487890564466894">Verschlüsseln Sie Ihre Passwörter, bevor sie in Ihrem Google-Konto gespeichert werden.</translation>
 <translation id="3551320343578183772">Tab schließen</translation>
 <translation id="3581564640715911333">Übersetzung für Seiten in andere Sprachen anbieten</translation>
 <translation id="3588820906588687999">Bild in neuem Tab öffnen</translation>
@@ -502,6 +504,7 @@ Handoff muss auch im Abschnitt "Allgemein" Ihrer Einstellungen aktiviert sein un
 <translation id="575902488528307720">Nach Bildern suchen</translation>
 <translation id="5781453543752460388">Zu Fotos hinzufügen</translation>
 <translation id="5782227691023083829">Wird übersetzt...</translation>
+<translation id="5802829331520313983">Einrichten…</translation>
 <translation id="5803566855766646066">Möchten Sie diese neue Karte wirklich verwerfen?</translation>
 <translation id="5812974770859303494">Hinzufügen zu…</translation>
 <translation id="5816228676161003208">Per Spracheingabe können Sie noch schneller suchen.</translation>

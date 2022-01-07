@@ -109,7 +109,6 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1570871743947603115">Washa au uzime Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Fikia shughuli zako zote katika kipindi hiki</translation>
 <translation id="1611993646327628135">Kimewashwa</translation>
-<translation id="1615402009686901181">Sera ya msimamizi huzuia kupiga picha ya skrini wakati maudhui ya siri yanaonekana</translation>
 <translation id="1632985212731562677">Unaweza kuzima Kipengele cha Kufikia Kupitia Swichi katika Mipangilio &gt; Ufikivu.</translation>
 <translation id="1637505162081889933">Vifaa <ph name="NUM_DEVICES" /></translation>
 <translation id="1654477262762802994">Anza kutamka hoja ya utafutaji</translation>
@@ -122,6 +121,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">Kipengele cha Manukuu Papo Hapo kimewashwa.</translation>
 <translation id="1720011244392820496">Washa kipengele cha Usawazishaji Wi-Fi</translation>
+<translation id="1736898441010944794">"<ph name="NAME" />" linaonekana kwenye vifaa vyenye Bluetooth.</translation>
 <translation id="1743570585616704562">Haikutambua alama ya kidole</translation>
 <translation id="1746730358044914197">Mbinu za kuingiza data zimewekwa na msimamizi wako.</translation>
 <translation id="1747827819627189109">Kibodi ya skrini imewashwa</translation>
@@ -831,6 +831,7 @@ Imesakinishwa hivi karibuni</translation>
 <translation id="6578407462441924264">Isiyo na jina</translation>
 <translation id="6585808820553845416">Kipindi kitakwisha baada ya <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">Muunganisho wako unatumia mtandao salama zaidi</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, Uthabiti wa Mtandao <ph name="SIGNAL_STRENGTH" />, Unadhibitiwa na Msimamizi wako</translation>
 <translation id="6612802754306526077">Umechagua hali ya kurekodi skrini</translation>
 <translation id="6614169507485700968">Skrini ya faragha imewashwa</translation>
@@ -1188,7 +1189,6 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="9024331582947483881">skrini nzima</translation>
 <translation id="9047624247355796468">Fungua mipangilio ya <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Kunja arifa</translation>
-<translation id="9063800855227801443">Huwezi kupiga picha maudhui ya siri</translation>
 <translation id="9065203028668620118">Badilisha</translation>
 <translation id="9070640332319875144">Mipangilio ya Mratibu</translation>
 <translation id="9072519059834302790">Zimebaki <ph name="TIME_LEFT" /> kabla ya chaji ya betri kuisha.</translation>

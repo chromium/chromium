@@ -109,7 +109,6 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1570871743947603115">Aktivizo/çaktivizo Bluetooth-in. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Qasu te të gjitha aktivitetet e tua në këtë sesion</translation>
 <translation id="1611993646327628135">Aktive</translation>
-<translation id="1615402009686901181">Politika e administratorit çaktivizon regjistrimin e ekranit kur përmbajtja konfidenciale është e dukshme</translation>
 <translation id="1632985212731562677">"Qasja me çelës" mund të çaktivizohet te Cilësimet &gt; Qasshmëria.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> pajisje</translation>
 <translation id="1654477262762802994">Nis një pyetje me zë</translation>
@@ -122,6 +121,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">"Titrat në çast" janë aktivë.</translation>
 <translation id="1720011244392820496">Aktivizo "Sinkronizimin e Wi-Fi"</translation>
+<translation id="1736898441010944794">"<ph name="NAME" />" i dukshëm për pajisjet me Bluetooth.</translation>
 <translation id="1743570585616704562">Nuk njihet</translation>
 <translation id="1746730358044914197">Metodat e hyrjes konfigurohen nga administratori yt.</translation>
 <translation id="1747827819627189109">Tastiera në ekran u aktivizua</translation>
@@ -831,6 +831,7 @@ Instalim i ri</translation>
 <translation id="6578407462441924264">Pa emër</translation>
 <translation id="6585808820553845416">Sesioni përfundon për <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">Lidhja jote kaloi te një rrjet më i sigurt</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, fuqia e sinjalit <ph name="SIGNAL_STRENGTH" />, menaxhuar nga administratori yt</translation>
 <translation id="6612802754306526077">U zgjodh modaliteti i regjistrimit të ekranit</translation>
 <translation id="6614169507485700968">Ekrani i privatësisë është aktiv</translation>
@@ -1187,7 +1188,6 @@ Instalim i ri</translation>
 <translation id="9024331582947483881">ekrani i plotë</translation>
 <translation id="9047624247355796468">Hap cilësimet për <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Palos njoftimin</translation>
-<translation id="9063800855227801443">Nuk mund të regjistrojë përmbajtje konfidenciale</translation>
 <translation id="9065203028668620118">Redakto</translation>
 <translation id="9070640332319875144">Cilësimet e "Asistentit"</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> derisa bateria të shkarkohet.</translation>

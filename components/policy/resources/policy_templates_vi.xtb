@@ -213,7 +213,6 @@
       Nếu bạn không đặt chính sách này hoặc giá trị sau khi thay thế không phải là tên máy chủ hợp lệ, thì tên máy chủ sẽ không được đặt trong yêu cầu DHCP.</translation>
 <translation id="1257550411839719984">Đặt thư mục tải xuống mặc định</translation>
 <translation id="1265053460044691532">Hạn chế thời gian người dùng được xác thực qua SAML có thể đăng nhập ngoại tuyến</translation>
-<translation id="1268548671627260798">Danh sách URL không áp dụng thông báo toàn màn hình</translation>
 <translation id="127264587838521316">Bật yêu cầu cài đặt tiện ích của <ph name="PRODUCT_NAME" /></translation>
 <translation id="1272798957154751008">Cho phép di chuyển các thiết bị Chromad sang chế độ quản lý qua đám mây</translation>
 <translation id="1274997165432133392">Cookie và các dữ liệu khác của trang web</translation>
@@ -2786,11 +2785,6 @@ Nếu bạn đặt chính sách này thành Tắt, thì <ph name="PRODUCT_NAME" 
       Nếu bạn đặt chính sách này thành Tắt hoặc không đặt chính sách này, thì người dùng có thể chuyển tệp sang Drive khi dùng kết nối di động.</translation>
 <translation id="4248277954659222481">Cho phép tự động phát nội dung nghe nhìn thuộc danh sách các mẫu URL được phép</translation>
 <translation id="4250680216510889253">Không</translation>
-<translation id="4257545866869267519">Định cấu hình danh sách URL không áp dụng thông báo toàn màn hình. Thông báo xuất hiện khi thiết bị thoát khỏi chế độ ngủ, độ sáng thấp hoặc màn hình khoá và có cửa sổ ở chế độ toàn màn hình. Thông báo giúp người dùng biết rằng họ đang ở chế độ toàn màn hình, giúp giảm nguy cơ bị tấn công lừa đảo.
-
-          Chính sách này cho phép tắt thông báo đối với một số URL cụ thể được coi là nguồn đáng tin cậy. Bạn có thể đặt chính sách này bằng cách chỉ định danh sách mẫu URL được định dạng theo định dạng này ( https://www.chromium.org/administrators/url-blocklist-filter-format ). Ví dụ: bạn có thể tắt hoàn toàn các thông báo bằng cách chỉ định ký tự đại diện <ph name="WILDCARD_VALUE" /> khớp với tất cả URL.
-
-          Nếu bạn đặt chính sách này thành một danh sách trống hoặc không đặt chính sách này, thì tức là không có URL nào không áp dụng thông báo toàn màn hình.</translation>
 <translation id="4260027436474745627">Nếu bạn đặt chính sách này, thì mỗi nguồn gốc có tên trong một danh sách phân tách bằng dấu phẩy sẽ chạy theo một quy trình riêng. Mỗi quy trình của nguồn gốc có tên sẽ chỉ được phép chứa các tài liệu và miền con của nguồn gốc đó. Ví dụ: việc chỉ định https://a1.example.com/ cho phép https://a2.a1.example.com/ nằm trong cùng một quy trình, nhưng không cho phép https://example.com hoặc https://b.example.com.
 
        Kể từ <ph name="PRODUCT_NAME" /> 77, bạn cũng có thể chỉ định một loạt nguồn gốc để tách biệt bằng cách dùng ký tự đại diện. Ví dụ: việc chỉ định https://[*.]corp.example.com sẽ cung cấp quy trình riêng cho mọi nguồn gốc bên dưới https://corp.example.com, bao gồm chính https://corp.example.com, https://a1.corp.example.com và https://a2.a1.corp.example.com.

@@ -2691,7 +2691,6 @@
 <translation id="3742666961763734085">找不到使用该名称的组织单元。请重试。</translation>
 <translation id="3743842571276656710">请输入 PIN 码以与“<ph name="DEVICE_NAME" />”配对</translation>
 <translation id="3747077776423672805">要想卸载应用，请依次转到“设置”&gt;“Google Play 商店”&gt;“管理 Android 偏好设置”&gt;“应用”或“应用管理器”，点按您要卸载的应用（您可能需要左右滑动才能找到相应的应用），然后点按“卸载”或“停用”。</translation>
-<translation id="3747220812138541072">在您输入内容的同时就地显示撰写建议</translation>
 <translation id="3747603683749989726">开启“增强型安全浏览”功能？</translation>
 <translation id="3748706263662799310">报告错误</translation>
 <translation id="3750562496035670393">Chrome 已将您的密码保存到此设备，但您可改为将其保存到自己的 Google 帐号。这样一来，在登录后，您也能获取您 Google 帐号中保存的所有密码。</translation>
@@ -2882,6 +2881,7 @@
 <translation id="3916445069167113093">此类型的文件可能会损害您的计算机。您仍然要保留 <ph name="FILE_NAME" /> 吗？</translation>
 <translation id="3918972485393593704">向 Google 报告详细信息</translation>
 <translation id="3919145445993746351">若想在您的所有计算机上使用您的扩展程序，请开启同步功能</translation>
+<translation id="3919229493046408863">附近有其他设备时关闭通知</translation>
 <translation id="3919798653937160644">当您关闭以访客身份打开的所有窗口后，您在此窗口中查看过的网页将不会显示在浏览器历史记录中，也不会在计算机上留下其他痕迹（例如 Cookie）。不过，系统会保留您下载的所有文件。</translation>
 <translation id="3920504717067627103">证书政策</translation>
 <translation id="392089482157167418">启用 ChromeVox（语音反馈）</translation>
@@ -5914,6 +5914,7 @@
 <translation id="7167486101654761064">总是打开此类文件(&amp;A)</translation>
 <translation id="716810439572026343">正在下载 <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">最小字号</translation>
+<translation id="7169122689956315694">附近有其他设备时开启通知</translation>
 <translation id="7170236477717446850">个人资料照片</translation>
 <translation id="7171000599584840888">添加个人资料…</translation>
 <translation id="7171259390164035663">不注册</translation>

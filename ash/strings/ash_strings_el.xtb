@@ -109,7 +109,6 @@
 <translation id="1570871743947603115">Εναλλαγή Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Αποκτήσει πρόσβαση σε όλη τη δραστηριότητά σας από αυτήν την περίοδο λειτουργίας</translation>
 <translation id="1611993646327628135">Ενεργό</translation>
-<translation id="1615402009686901181">Η πολιτική διαχειριστή απενεργοποιεί τη λήψη οθόνης όταν είναι ορατό εμπιστευτικό περιεχόμενο.</translation>
 <translation id="1632985212731562677">Η πρόσβαση με διακόπτη μπορεί να απενεργοποιηθεί από τις Ρυθμίσεις &gt; Προσβασιμότητα.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> συσκευές</translation>
 <translation id="1654477262762802994">Έναρξη φωνητικού ερωτήματος</translation>
@@ -1189,7 +1188,6 @@
 <translation id="9024331582947483881">πλήρης οθόνη</translation>
 <translation id="9047624247355796468">Άνοιγμα ρυθμίσεων για το δίκτυο <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Σύμπτυξη ειδοποίησης</translation>
-<translation id="9063800855227801443">Δεν είναι δυνατή η λήψη εμπιστευτικού περιεχομένου</translation>
 <translation id="9065203028668620118">Επεξεργασία</translation>
 <translation id="9070640332319875144">Ρυθμίσεις Βοηθού</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> μέχρι την εξάντληση της μπαταρίας.</translation>

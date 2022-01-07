@@ -60,6 +60,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1407135791313364759">Open all</translation>
 <translation id="1430915738399379752">Print</translation>
 <translation id="1434356225517321998">Your browser is managed. <ph name="BEGIN_LINK" />Details<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">On-device encryption</translation>
 <translation id="1449835205994625556">Hide password</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> items</translation>
 <translation id="149095475893949513">This website is trying to download a configuration profile.</translation>
@@ -94,6 +95,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="1690731385917361335">No items</translation>
 <translation id="1692118695553449118">Sync is on</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selected</translation>
+<translation id="1726573592754903697">Google Password Manager</translation>
 <translation id="1740468249224277719">Double tap to install.</translation>
 <translation id="1752547299766512813">Save Passwords</translation>
 <translation id="1753905327828125965">Most Visited</translation>
@@ -284,6 +286,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3529024052484145543">Not secure</translation>
 <translation id="3533202363250687977">Close all incognito tabs</translation>
 <translation id="3533436815740441613">New Tab</translation>
+<translation id="3536487890564466894">Encrypt your passwords before they’re saved to your Google Account.</translation>
 <translation id="3551320343578183772">Close Tab</translation>
 <translation id="3581564640715911333">Offer to translate pages in other languages</translation>
 <translation id="3588820906588687999">Open Image in New Tab</translation>
@@ -502,6 +505,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="575902488528307720">Search for image</translation>
 <translation id="5781453543752460388">Add to Photos</translation>
 <translation id="5782227691023083829">Translating...</translation>
+<translation id="5802829331520313983">Set up…</translation>
 <translation id="5803566855766646066">Are you sure that you want to discard this new card?</translation>
 <translation id="5812974770859303494">Add to…</translation>
 <translation id="5816228676161003208">This lets you search faster using your voice.</translation>
@@ -561,6 +565,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6219688215832490856">Never translate</translation>
 <translation id="6223816392543092032">Get your bookmarks, history, passwords and other settings on all your devices.</translation>
 <translation id="6232329973559504466">Incognito search</translation>
+<translation id="6232736989810857397">This allows you to easily create calendar events using Google Lens.</translation>
 <translation id="6254066287920239840">Open links in the app instead of the browser.</translation>
 <translation id="6255097610484507482">Edit credit card</translation>
 <translation id="6284652193729350524">Offer to translate <ph name="LANGUAGE" /></translation>

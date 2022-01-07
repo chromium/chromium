@@ -209,7 +209,6 @@
       このポリシーを未設定のままにした場合、または置き換えた後の値が有効なホスト名ではない場合、DHCP リクエストにホスト名は設定されません。</translation>
 <translation id="1257550411839719984">デフォルトのダウンロード ディレクトリを設定する</translation>
 <translation id="1265053460044691532">SAML 経由で認証されたユーザーがオフラインでログインできる時間を制限する</translation>
-<translation id="1268548671627260798">全画面表示の通知から除外する URL のリスト</translation>
 <translation id="127264587838521316"><ph name="PRODUCT_NAME" /> 拡張機能のインストールのリクエストを有効にする</translation>
 <translation id="1272798957154751008">Chromad デバイスのクラウド管理への移行を有効にします</translation>
 <translation id="1274997165432133392">Cookie と他のサイトデータ</translation>
@@ -472,6 +471,7 @@
       このポリシーを無効に設定した場合、保護されていない HTTP リクエストで <ph name="BASIC_AUTH" /> 認証スキームの使用を禁止し、安全な HTTPS のみが許可されます。
 
       <ph name="AUTH_SCHEMES_POLICY_NAME" /> ポリシーが設定されていて、<ph name="BASIC_AUTH" /> が含まれていない場合、このポリシーの設定は無視されます（また、<ph name="BASIC_AUTH" /> は常に禁止されます）。</translation>
+<translation id="1574258262373444557">ユーザー ストレージの暗号化で <ph name="AES_KL_NAME" /> を暗号化アルゴリズムとして使用しない</translation>
 <translation id="1575015449587326319">OnFileDownloaded Chrome Enterprise コネクタの設定ポリシー</translation>
 <translation id="1583248206450240930">デフォルトで <ph name="PRODUCT_FRAME_NAME" /> を使用する</translation>
 <translation id="1587042984081085960">このポリシーで、管理者はページの終了中にページから同期 XHR リクエストを送信するかどうかを指定できます。
@@ -590,6 +590,7 @@
 <translation id="167514072300004091">このポリシーを 3 に設定した場合、ウェブサイトに対して接続済み USB デバイスへのアクセスの要求が許可されます。このポリシーを 2 に設定した場合、接続済み USB デバイスへのアクセスは拒否されます。
 
       このポリシーを未設定のままにした場合、ウェブサイトに対してアクセスの要求は許可されますが、ユーザーはこの設定を変更できます。</translation>
+<translation id="1678137412645922426">サポートされている場合にユーザー ストレージの暗号化での <ph name="AES_KL_NAME" /> の使用を制御します</translation>
 <translation id="1682063842123336408"><ph name="PLUGIN_VM_NAME" /> のインストールに必要なディスクの空き容量（GB）です。
 
       このポリシーを未設定のままにした場合、デバイスで使用できるディスクの空き容量が 20 GB（デフォルト値）未満のときに <ph name="PLUGIN_VM_NAME" /> のインストールが失敗します。
@@ -2709,11 +2710,6 @@
       このポリシーを無効に設定するか未設定のままにした場合、ユーザーはモバイル接続時にドライブにファイルを転送できます。</translation>
 <translation id="4248277954659222481">メディアの自動再生を許可する URL パターンのリストを指定する</translation>
 <translation id="4250680216510889253">いいえ</translation>
-<translation id="4257545866869267519">全画面表示の通知から除外する URL のリストを設定します。この通知は、デバイスがスリープ画面、暗い画面、またはロック画面から復帰するときに、ウィンドウが全画面モードになっていると表示されます。これは全画面モードになっていることをユーザーに知らせるためのもので、これによりフィッシング攻撃のリスクを軽減します。
-
-          このポリシーを使用すると、信頼できる提供元と判断される特定の URL の通知を無効にできます。URL パターンのリストは、https://www.chromium.org/administrators/url-blocklist-filter-format で定められている形式で指定します。たとえば、すべての URL に一致するワイルドカード文字「<ph name="WILDCARD_VALUE" />」を指定すると、通知を一切無効にすることができます。
-
-          このポリシーを空のリストに設定するか未設定のままにした場合は、どの URL も全画面表示の通知から除外されません。</translation>
 <translation id="4260027436474745627">このポリシーを設定した場合、カンマ区切りのリストで指定した発行元はそれぞれ独自のプロセスで実行されます。指定した発行元のプロセスで使用できるのは、発行元およびそのサブドメインのドキュメントだけです。たとえば、https://a1.example.com/ を指定した場合、https://a2.a1.example.com/ は同一のプロセスで実行されますが、https://example.com や https://b.example.com はこの限りではありません。
 
       <ph name="PRODUCT_NAME" /> 77 以降であれば、ワイルドカードを使用し、分離する発行元の範囲を指定できます。たとえば、https://[*.]corp.example.com を指定した場合、https://corp.example.com 以下の発行元に対して同じ独自プロセスが適用されます。これには https://corp.example.com 自体が該当するほか、https://a1.corp.example.com や https://a2.a1.corp.example.com も含まれます。
@@ -3748,6 +3744,12 @@
 
       このポリシーが未設定の場合、デフォルトにより、企業の管理対象ユーザーは使用を許可されず、管理対象外のユーザーは使用を許可されます。</translation>
 <translation id="5584132346604748282">Android の Google 位置情報サービスを制御する</translation>
+<translation id="5585384603219625331">このポリシーでは、サポートされている場合に、Chrome OS の <ph name="DM_CRYPT" /> ユーザーホームにおけるユーザー ストレージの暗号化で <ph name="AES_KL_NAME" /> の実装を有効にします。
+
+       このポリシーは、暗号化に <ph name="DM_CRYPT" /> を使用するユーザーホームにのみ適用されます。<ph name="DM_CRYPT" /> を使用せず、<ph name="AES_KL_NAME" /> の使用がサポートされていない従来のユーザーホームでは、デフォルトで <ph name="AES_NI_NAME" /> が使用されます。
+
+       ポリシーの値を変更した場合、<ph name="AES_ALGORITHM_NAME" /> の実装がサポートされている、既存の <ph name="DM_CRYPT" /> ユーザーホームへのアクセスでは、ポリシーで設定された暗号化実装が使用されます。
+       ポリシーを無効または未設定のままにした場合、<ph name="DM_CRYPT" /> ユーザーホームにおけるユーザー ストレージの暗号化ではデフォルトで <ph name="AES_NI_NAME" /> が使用されます。</translation>
 <translation id="5586942249556966598">何もしない</translation>
 <translation id="5598417829613725146">キャンバス（バージョン 90 以降でサポート）</translation>
 <translation id="5599461642204007579"><ph name="MS_AD_NAME" /> 管理設定</translation>
@@ -6280,6 +6282,7 @@
 <translation id="8626826495474944836">すべてのサイトに対してサイト分離を必須にする</translation>
 <translation id="8631434304112909927">バージョン <ph name="UNTIL_VERSION" /> まで</translation>
 <translation id="8631437968147930597"><ph name="PRODUCT_OS_NAME" /> のロック画面で許可されるメモアプリのリスト</translation>
+<translation id="8634062512783775032">サポートされている場合にユーザー ストレージの暗号化で <ph name="AES_KL_NAME" /> を暗号化アルゴリズムとして使用する</translation>
 <translation id="8637566476051166626">明示的に許可するネットワーク ポートを指定する</translation>
 <translation id="8643838501942693770">サードパーティ Cookie を許可し、ユーザーはこの設定を変更できる</translation>
 <translation id="8648844602494595665">このポリシーでは、アドレスバーでの鍵アイコンの表示を管理します。

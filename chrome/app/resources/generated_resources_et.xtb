@@ -2701,7 +2701,6 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3742666961763734085">Selle nimega organisatsiooniüksust ei leitud. Proovige uuesti.</translation>
 <translation id="3743842571276656710">Sisestage PIN-kood, et seadmega <ph name="DEVICE_NAME" /> siduda</translation>
 <translation id="3747077776423672805">Rakenduste eemaldamiseks avage menüü Seaded&gt; Google Play pood &gt; Androidi eelistuste haldamine &gt; Rakendused või Rakenduste haldur. Seejärel puudutage rakendust, mille soovite desinstallida (rakenduse leidmiseks peate võib-olla paremale või vasakule pühkima). Seejärel puudutage käsku Desinstalli või Keela.</translation>
-<translation id="3747220812138541072">Teksti sisestamise ajal kuvatakse samas reas soovitused</translation>
 <translation id="3747603683749989726">Kas lülitada täiustatud kaitse sisse?</translation>
 <translation id="3748706263662799310">Teatage veast</translation>
 <translation id="3750562496035670393">Chrome salvestas teie parooli sellesse seadmesse, kuid saate selle salvestada hoopis oma Google'i kontole. Nii on kõik teie Google'i kontol olevad paroolid saadaval, kui olete sisse logitud.</translation>
@@ -2892,6 +2891,7 @@ väljasuumimiseks klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamine.</trans
 <translation id="3916445069167113093">Seda tüüpi fail võib teie arvutit kahjustada. Kas soovite faili <ph name="FILE_NAME" /> ikkagi alles hoida?</translation>
 <translation id="3918972485393593704">Teavita üksikasjadest Google'it</translation>
 <translation id="3919145445993746351">Oma laienduste nägemiseks kõigis arvutites lülitage sisse sünkroonimine</translation>
+<translation id="3919229493046408863">Lülita märguanne välja, kui seadmed on läheduses</translation>
 <translation id="3919798653937160644">Lehti, mida vaatate selles aknas, ei lisata teie brauseri ajalukku ja pärast kõikide avatud külalisrežiimi akende sulgemist ei jää neist arvutisse ka muid jälgi (nt küpsisefaile). Kõik allalaaditud failid siiski säilitatakse.</translation>
 <translation id="3920504717067627103">Sertifikaadi eeskirjad</translation>
 <translation id="392089482157167418">Luba ChromeVox (kõnena esitatud tagasiside)</translation>
@@ -5925,6 +5925,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="7167486101654761064">&amp;Ava alati seda tüüpi failid</translation>
 <translation id="716810439572026343">Faili <ph name="FILE_NAME" /> allalaadimine</translation>
 <translation id="7168109975831002660">Fondi miinimumsuurus</translation>
+<translation id="7169122689956315694">Lülita märguanne sisse, kui seadmed on läheduses</translation>
 <translation id="7170236477717446850">Profiilipilt</translation>
 <translation id="7171000599584840888">Lisa profiil …</translation>
 <translation id="7171259390164035663">Ära registreeri</translation>

@@ -53,6 +53,10 @@
 <translation id="1247519845643687288">Legutóbbi alkalmazások</translation>
 <translation id="1252999807265626933">Töltési forrás: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Milyen idő van?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> és 
+        <ph name="END_TIME" /> között, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Válassza ki a Google Naptárban található további részletek megtekintéséhez.</translation>
 <translation id="1266097335951928626">Szelfikamera indítása</translation>
 <translation id="1267032506238418139">Billentyűparancsot érintő módosítás</translation>
 <translation id="1269405891096105529">A periféria nem támogatott vendég módban</translation>
@@ -109,7 +113,6 @@
 <translation id="1570871743947603115">Bluetooth ki- és bekapcsolása. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Hozzáférés az Ön jelen munkamenetben végzett összes tevékenységéhez</translation>
 <translation id="1611993646327628135">Be</translation>
-<translation id="1615402009686901181">Rendszergazdai házirend tiltja képernyőfelvétel készítését, ha bizalmas tartalom látható a képernyőn.</translation>
 <translation id="1632985212731562677">A Kapcsolóalapú hozzáférés a Beállítások Kisegítő lehetőségek pontjában kapcsolható ki.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> eszköz</translation>
 <translation id="1654477262762802994">Hangalapú lekérdezés indítása</translation>
@@ -999,6 +1002,8 @@ Frissen telepítve</translation>
 <translation id="7720410380936703141">ÚJRA</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 értesítés}other{# értesítés}}</translation>
 <translation id="7724603315864178912">Kivágás</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">A polcon található alkalmazások megjelenítése</translation>
 <translation id="7749443890790263709">Elérte az asztalok maximális számát.</translation>
 <translation id="7749640678855296659">A mikrofonja jelenleg ki van kapcsolva</translation>
@@ -1190,7 +1195,6 @@ Frissen telepítve</translation>
 <translation id="9024331582947483881">teljes képernyő</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> beállításainak megnyitása</translation>
 <translation id="9059834730836941392">Értesítés összecsukása</translation>
-<translation id="9063800855227801443">Nem lehet rögzíteni bizalmas tartalmakat</translation>
 <translation id="9065203028668620118">Szerkesztés</translation>
 <translation id="9070640332319875144">A Segéd beállításai</translation>
 <translation id="9072519059834302790">Akkumulátor lemerüléséig hátralévő idő: <ph name="TIME_LEFT" />.</translation>

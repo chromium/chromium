@@ -53,6 +53,7 @@
 <translation id="1247519845643687288">แอปที่ใช้ล่าสุด</translation>
 <translation id="1252999807265626933">กำลังชาร์จจาก<ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">วันนี้อากาศเป็นยังไงบ้าง</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> ถึง <ph name="END_TIME" />, <ph name="TIME_ZONE" />, <ph name="EVENT_SUMMARY" /> เลือกกิจกรรมเพื่อดูรายละเอียดเพิ่มเติมใน Google ปฏิทิน</translation>
 <translation id="1266097335951928626">เริ่มกล้องเซลฟี</translation>
 <translation id="1267032506238418139">มีการเปลี่ยนแปลงทางลัด</translation>
 <translation id="1269405891096105529">ไม่รองรับอุปกรณ์ต่อพ่วงในโหมดผู้มาเยือน</translation>
@@ -109,7 +110,6 @@
 <translation id="1570871743947603115">เปิด/ปิดบลูทูธ <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">เข้าถึงกิจกรรมทั้งหมดของคุณในเซสชันนี้</translation>
 <translation id="1611993646327628135">เปิด</translation>
-<translation id="1615402009686901181">นโยบายของผู้ดูแลระบบปิดใช้การจับภาพหน้าจอเมื่อมีเนื้อหาที่เป็นความลับแสดงอยู่</translation>
 <translation id="1632985212731562677">ปิดใช้ "การเข้าถึงด้วยสวิตช์" ได้ในการตั้งค่า &gt; การช่วยเหลือพิเศษ</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> อุปกรณ์</translation>
 <translation id="1654477262762802994">เริ่มการค้นหาด้วยเสียง</translation>
@@ -998,6 +998,7 @@
 <translation id="7720410380936703141">ลองอีกครั้ง</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{การแจ้งเตือน 1 รายการ}other{การแจ้งเตือน # รายการ}}</translation>
 <translation id="7724603315864178912">ตัด</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">แสดงแอปในแถบ</translation>
 <translation id="7749443890790263709">มีพื้นที่ทำงานครบตามจำนวนสูงสุดแล้ว</translation>
 <translation id="7749640678855296659">ไมโครโฟนปิดอยู่ในขณะนี้</translation>
@@ -1189,7 +1190,6 @@
 <translation id="9024331582947483881">เต็มหน้าจอ</translation>
 <translation id="9047624247355796468">เปิดการตั้งค่าสำหรับ <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">ยุบการแจ้งเตือน</translation>
-<translation id="9063800855227801443">จับภาพเนื้อหาที่เป็นความลับไม่ได้</translation>
 <translation id="9065203028668620118">แก้ไข</translation>
 <translation id="9070640332319875144">การตั้งค่า Assistant</translation>
 <translation id="9072519059834302790">อีก <ph name="TIME_LEFT" />แบตเตอรี่จะหมด</translation>

@@ -53,6 +53,10 @@
 <translation id="1247519845643687288">ბოლოდროინდელი აპები</translation>
 <translation id="1252999807265626933">იტენება წყაროდან: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">რა ამინდია?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> — 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. დეტალური ინფორმაციისთვის აირჩიეთ Google Calendar.</translation>
 <translation id="1266097335951928626">სელფის კამერის გაშვება</translation>
 <translation id="1267032506238418139">მალსახმობის ცვლილება</translation>
 <translation id="1269405891096105529">პერიფერიული მოწყობილობა მხარდაუჭერელია სტუმრის რეჟიმში</translation>
@@ -109,7 +113,6 @@
 <translation id="1570871743947603115">Bluetooth-ის გადართვა. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">ამ სესიის დროს თქვენს მთელ აქტივობაზე წვდომა</translation>
 <translation id="1611993646327628135">ჩართული</translation>
-<translation id="1615402009686901181">ადმინისტრატორის წესების მიხედვით, ეკრანის აღბეჭდვა გათიშულია, როცა ხილულია კონფიდენციალური კონტენტი</translation>
 <translation id="1632985212731562677">გადამრთველით წვდომის გათიშვა შესაძლებელია აქ: პარამეტრები &gt; მარტივი წვდომა.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> მოწყობილობა</translation>
 <translation id="1654477262762802994">ხმოვანი მოთხოვნის დაწყება</translation>
@@ -998,6 +1001,8 @@
 <translation id="7720410380936703141">ხელახლა ცდა</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 შეტყობინება}other{# შეტყობინება}}</translation>
 <translation id="7724603315864178912">ამოჭრა</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">თაროზე აპების ჩვენება</translation>
 <translation id="7749443890790263709">მიღწეულია სამუშაო მაგიდების მაქსიმალური რაოდენობა.</translation>
 <translation id="7749640678855296659">თქვენი მიკროფონი ამჟამად გამორთულია</translation>
@@ -1189,7 +1194,6 @@
 <translation id="9024331582947483881">მთელ ეკრანზე</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" />-ის პარამეტრების გახსნა</translation>
 <translation id="9059834730836941392">შეტყობინების ჩაკეცვა</translation>
-<translation id="9063800855227801443">კონფიდენციალური კონტენტის აღბეჭდვა ვერ მოხერხდება</translation>
 <translation id="9065203028668620118">რედაქტირება</translation>
 <translation id="9070640332319875144">ასისტენტის პარამეტრები</translation>
 <translation id="9072519059834302790">ბატარეის დაცლამდე დარჩენილია <ph name="TIME_LEFT" />.</translation>

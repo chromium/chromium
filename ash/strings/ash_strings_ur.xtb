@@ -53,6 +53,10 @@
 <translation id="1247519845643687288">حالیہ ایپس</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> سے چارج ہو رہا ہے</translation>
 <translation id="1255033239764210633">موسم کیسا ہے؟</translation>
+<translation id="1262870540683925850">‏<ph name="START_TIME" /> سے 
+        <ph name="END_TIME" />، 
+        <ph name="TIME_ZONE" />، 
+        <ph name="EVENT_SUMMARY" />۔ Google کیلنڈر میں مزید تفصیلات کے لیے منتخب کریں۔</translation>
 <translation id="1266097335951928626">سیلفی کیمرا شروع کریں</translation>
 <translation id="1267032506238418139">شارکٹ میں تبدیلی</translation>
 <translation id="1269405891096105529">پیریفرل مہمان وضع میں تعاون یافتہ نہیں ہے</translation>
@@ -109,7 +113,6 @@
 <translation id="1570871743947603115">بلوٹوتھ ٹوگل کریں۔ <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">اس سیشن کی اپنی ہر سرگرمی تک رسائی حاصل کریں</translation>
 <translation id="1611993646327628135">آن</translation>
-<translation id="1615402009686901181">منتظم کی پالیسی کے تحت، رازدارانہ مواد کے مرئی ہونے پر اسکرین کیپچر کرنے کی سہولت غیر فعال ہو جاتی ہے</translation>
 <translation id="1632985212731562677">سوئچ رسائی کو ترتیبات &gt; ایکسیسبیلٹی میں غیر فعال کیا جا سکتا ہے۔</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> آلات</translation>
 <translation id="1654477262762802994">صوتی استفسار شروع کریں</translation>
@@ -997,6 +1000,8 @@
 <translation id="7720410380936703141">دوبارہ کوشش کریں</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 اطلاع}other{# اطلاعات}}</translation>
 <translation id="7724603315864178912">کٹ کریں</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />، 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">شیلف میں ایپس دکھائیں</translation>
 <translation id="7749443890790263709">ڈیسکس کی زیادہ سے زیادہ تعداد تک پہنچ گئی۔</translation>
 <translation id="7749640678855296659">آپ کا مائیکروفون فی الحال آف ہے</translation>
@@ -1188,7 +1193,6 @@
 <translation id="9024331582947483881">پوری اسکرین</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> کے لیے ترتیبات کھولیں</translation>
 <translation id="9059834730836941392">اطلاع سُکیڑیں</translation>
-<translation id="9063800855227801443">رازدارانہ مواد کو کیپچر نہیں کیا جا سکتا</translation>
 <translation id="9065203028668620118">تبدیل کریں</translation>
 <translation id="9070640332319875144">اسسٹنٹ کی ترتیبات</translation>
 <translation id="9072519059834302790">بیٹری خالی ہونے میں <ph name="TIME_LEFT" /> باقی ہے۔</translation>

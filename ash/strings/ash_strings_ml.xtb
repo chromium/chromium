@@ -109,7 +109,6 @@
 <translation id="1570871743947603115">Bluetooth മാറ്റുക. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">ഈ സെഷനിൽ നിങ്ങളുടെ എല്ലാ ആക്‌റ്റിവിറ്റികളും ആക്‌സസ് ചെയ്യുക</translation>
 <translation id="1611993646327628135">ഓണാണ്</translation>
-<translation id="1615402009686901181">രഹസ്യാത്മക ഉള്ളടക്കം ദൃശ്യമായിരിക്കുമ്പോൾ അഡ്‌മിൻ നയം സ്ക്രീൻ ക്യാപ്‌ചർ പ്രവർത്തനരഹിതമാക്കുന്നു</translation>
 <translation id="1632985212731562677">ക്രമീകരണം &gt; ഉപയോഗസഹായി എന്നതിൽ 'സ്വിച്ച് ആക്‌സസ്' പ്രവർത്തനരഹിതമാക്കാം.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> ഉപകരണങ്ങൾ</translation>
 <translation id="1654477262762802994">ഒരു ശബ്‌ദ ചോദ്യം ആരംഭിക്കുക</translation>
@@ -1189,7 +1188,6 @@
 <translation id="9024331582947483881">പൂര്‍ണ്ണ സ്‌ക്രീന്‍</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> എന്നതിനുള്ള ക്രമീകരണം തുറക്കുക</translation>
 <translation id="9059834730836941392">അറിയിപ്പ് ചുരുക്കുക</translation>
-<translation id="9063800855227801443">രഹസ്യാത്മക ഉള്ളടക്കം ക്യാപ്‌ചർ ചെയ്യാനാകില്ല</translation>
 <translation id="9065203028668620118">എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="9070640332319875144">അസി‌സ്‌റ്റന്റ് ക്രമീകരണം</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" />-ൽ ബാറ്ററി തീരും</translation>

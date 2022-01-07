@@ -109,7 +109,6 @@
 <translation id="1570871743947603115">Միացնել/անջատել Bluetooth-ը: <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Դիտեք այս աշխատաշրջանում ձեր գործողությունների վիճակագրությունը</translation>
 <translation id="1611993646327628135">Միացված է</translation>
-<translation id="1615402009686901181">Ըստ ադմինիստրատորի սահմանած կանոնի՝ էկրանի տեսագրման հնարավորությունն անջատվում է, երբ գաղտնի բովանդակություն է տեսանելի</translation>
 <translation id="1632985212731562677">Switch Access-ն անջատելու համար անցեք Կարգավորումներ &gt; Հատուկ գործառույթներ։</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> սարք</translation>
 <translation id="1654477262762802994">Հնչեցնել հարցում</translation>
@@ -1189,7 +1188,6 @@
 <translation id="9024331582947483881">լիաէկրան</translation>
 <translation id="9047624247355796468">Բացել «<ph name="NETWORK_NAME" />» ցանցի կարգավորումները</translation>
 <translation id="9059834730836941392">Կոծկել</translation>
-<translation id="9063800855227801443">Հնարավոր չէ տեսագրել գաղտնի բովանդակությունը</translation>
 <translation id="9065203028668620118">Փոփոխել</translation>
 <translation id="9070640332319875144">Օգնականի կարգավորումներ</translation>
 <translation id="9072519059834302790">Մարտկոցը կդատարկվի <ph name="TIME_LEFT" />ից։</translation>

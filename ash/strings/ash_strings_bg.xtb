@@ -109,7 +109,6 @@
 <translation id="1570871743947603115">Превключване на Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">да осъществява достъп до цялата ви активност в тази сесия;</translation>
 <translation id="1611993646327628135">Вкл.</translation>
-<translation id="1615402009686901181">Заснемането на екрана, когато се вижда поверително съдържание, е деактивирано чрез администраторско правило</translation>
 <translation id="1632985212731562677">Функцията „Достъп с превключване“ може да бъде деактивирана в „Настройки &gt; Достъпност“.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> устройства</translation>
 <translation id="1654477262762802994">Стартиране на гласова заявка</translation>
@@ -1189,7 +1188,6 @@
 <translation id="9024331582947483881">цял екран</translation>
 <translation id="9047624247355796468">Отваряне на настройките за <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Свиване на известието</translation>
-<translation id="9063800855227801443">Не е възможно заснемане на поверително съдържание</translation>
 <translation id="9065203028668620118">Редактиране</translation>
 <translation id="9070640332319875144">Настройки на Асистент</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> до изразходването на батерията.</translation>

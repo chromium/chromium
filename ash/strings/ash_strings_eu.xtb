@@ -53,6 +53,10 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1247519845643687288">Azken aplikazioak</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> gailutik kargatzen</translation>
 <translation id="1255033239764210633">Zer eguraldi dago?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> - 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Xehetasun gehiago lortzeko, hautatu gertaera bat Google Calendar-en.</translation>
 <translation id="1266097335951928626">Abiarazi autoargazkiak ateratzeko kamera</translation>
 <translation id="1267032506238418139">Aldatu egin da lasterbidea</translation>
 <translation id="1269405891096105529">Gailu periferikoa ez da onartzen gonbidatu moduan</translation>
@@ -109,7 +113,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1570871743947603115">Gaitu/Desgaitu Bluetooth-a. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Atzitu saio honetan egin dituzun jarduera guztiak</translation>
 <translation id="1611993646327628135">Aktibatuta</translation>
-<translation id="1615402009686901181">Administratzailearen gidalerroek pantaila-kapturak ateratzea eragozten dute isilpeko edukia ikusgai dagoenean</translation>
 <translation id="1632985212731562677">Ezarpenak &gt; Erabilerraztasuna atalean desgai dezakezu erabilerraztasun-osagarria.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> gailu</translation>
 <translation id="1654477262762802994">Sortu ahozko kontsulta bat</translation>
@@ -192,7 +195,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2222841058024245321">7. lan-eremua</translation>
 <translation id="2224075387478458881">Ezin da pantaila grabatu eduki babestua ikusgai dagoenean</translation>
 <translation id="225680501294068881">Gailuak bilatzen…</translation>
-<translation id="2257486738914982088">Arazoren bat izan da <ph name="FILENAME" /> deskargatzean</translation>
+<translation id="2257486738914982088">Arazo bat izan da <ph name="FILENAME" /> deskargatzean</translation>
 <translation id="2268130516524549846">Bluetooth-a desgaituta dago</translation>
 <translation id="2268813581635650749">Amaitu guztien saioa</translation>
 <translation id="2269016722240250274">Aplikazio bat mikrofonoa erabiltzen ari da</translation>
@@ -283,7 +286,7 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="2942516765047364088">Apalaren posizioa</translation>
 <translation id="2946119680249604491">Gehitu konexioa</translation>
 <translation id="2960314608273155470">Edukia kapturatzeko modua. Balio lehenetsia <ph name="TYPE" /> <ph name="SOURCE" /> da. Teklatuaren bidez nabigatzeko, sakatu tabuladorea.</translation>
-<translation id="2961963223658824723">Arazoren bat izan da. Saiatu berriro segundo batzuk barru.</translation>
+<translation id="2961963223658824723">Arazo bat izan da. Saiatu berriro segundo batzuk barru.</translation>
 <translation id="2963773877003373896">mod3</translation>
 <translation id="296762781903199866">Ezin izan dira deskargatu hizketa-fitxategiak (<ph name="LANGUAGE" />)</translation>
 <translation id="2970920913501714344">Instalatu aplikazioak, luzapenak eta gaiak</translation>
@@ -999,6 +1002,8 @@ Berriki instalatu da</translation>
 <translation id="7720410380936703141">SAIATU BERRIRO</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 jakinarazpen}other{# jakinarazpen}}</translation>
 <translation id="7724603315864178912">Ebaki</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Bistaratu aplikazioak apalean</translation>
 <translation id="7749443890790263709">Gehieneko lan-eremuen kopurura iritsi zara.</translation>
 <translation id="7749640678855296659">Mikrofonoa desaktibatuta dago</translation>
@@ -1033,11 +1038,11 @@ Berriki instalatu da</translation>
 <translation id="79341161159229895"><ph name="FIRST_PARENT_EMAIL" /> eta <ph name="SECOND_PARENT_EMAIL" /> kontuen bidez kudeatzen da kontu hau</translation>
 <translation id="793716872548410480">Sakatu <ph name="SHORTCUT_KEY_NAME" /> + V arbela ikusteko. Kopiatutako azken bost elementuak arbelean gordeta geratzen dira.</translation>
 <translation id="7942349550061667556">Gorria</translation>
-<translation id="7952747673138230804">Chrome OS-ek araka dezakezun eduki berriari buruzko iradokizunak erakusten ditu. Kalitatea hobetzeko balio duten estatistikak bidaltzen ditu, erabilera-datuak partekatzea aukeratu baduzu. <ph name="MANAGE_SETTINGS" /></translation>
+<translation id="7952747673138230804">Chrome OS-k araka dezakezun eduki berriari buruzko iradokizunak erakusten ditu. Kalitatea hobetzeko balio duten estatistikak bidaltzen ditu, erabilera-datuak partekatzea aukeratu baduzu. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7955885781510802139">Kontraste handiko modua</translation>
 <translation id="7968693143708939792">Hautatu karpeta bat…</translation>
 <translation id="7977927628060636163">Sare mugikorren bila…</translation>
-<translation id="7980780401175799550">Probatu Chrome OS-en nabigatzeko modu berriak</translation>
+<translation id="7980780401175799550">Probatu Chrome OS-n nabigatzeko modu berriak</translation>
 <translation id="7982789257301363584">Sarea</translation>
 <translation id="7984197416080286869">Saiakera gehiegi egin dira hatz-markarekin</translation>
 <translation id="7994370417837006925">Saio-hasiera anitza</translation>
@@ -1190,7 +1195,6 @@ Berriki instalatu da</translation>
 <translation id="9024331582947483881">pantaila osoa</translation>
 <translation id="9047624247355796468">Ireki <ph name="NETWORK_NAME" /> sarearen ezarpenak</translation>
 <translation id="9059834730836941392">Tolestu jakinarazpena</translation>
-<translation id="9063800855227801443">Ezin da kapturatu isilpeko edukia</translation>
 <translation id="9065203028668620118">Editatu</translation>
 <translation id="9070640332319875144">Laguntzailea zerbitzuaren ezarpenak</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> agortu arte.</translation>

@@ -2694,7 +2694,6 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="3742666961763734085">Ne možemo da pronađemo organizacionu jedinicu sa tim nazivom. Probajte ponovo.</translation>
 <translation id="3743842571276656710">Unesite PIN radi uparivanja sa uređajem <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">Da biste uklonili aplikacije, idite u odeljak Podešavanja &gt; Google Play prodavnica &gt; Upravljajte Android podešavanjima &gt; Aplikacije ili Menadžer aplikacija. Dodirnite aplikaciju koju želite da deinstalirate (možda ćete morati da prevučete nadesno ili nalevo da biste pronašli aplikaciju). Onda dodirnite Deinstaliraj ili Onemogući.</translation>
-<translation id="3747220812138541072">Prikazuje predloge za pisanje u tekstu koji se pojavljuju dok kucate</translation>
 <translation id="3747603683749989726">Želite li da uključite poboljšanu bezbednost?</translation>
 <translation id="3748706263662799310">Prijavite grešku</translation>
 <translation id="3750562496035670393">Chrome je sačuvao lozinku na ovaj uređaj, ali možete umesto toga da je sačuvate na Google nalog. Tada će sve lozinke na Google nalogu takođe biti dostupne dok ste prijavljeni.</translation>
@@ -3674,6 +3673,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="4785719467058219317">Koristite bezbednosni ključ koji nije registrovan za ovaj veb-sajt</translation>
 <translation id="478708757211772586">Pomoću radnje Sledeće pređite na sledeći ekran</translation>
 <translation id="4788092183367008521">Proverite mrežnu vezu i probajte ponovo.</translation>
+<translation id="4789550509729954245">Prikazuj obaveštenje kada uređaji dele sadržaj u blizini</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> slika</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Omogući ubrzanje TrackPoint-a</translation>
@@ -4035,6 +4035,7 @@ a Ctrl+Alt+taster za smanjivanje osvetljenosti da biste umanjili prikaz.</transl
 <translation id="5171343362375269016">Zamenjena memorija</translation>
 <translation id="5172855596271336236">Postoji 1 upravljani štampač.</translation>
 <translation id="5173668317844998239">Dodajte i brišite otiske prstiju sačuvane na bezbednosnom ključu</translation>
+<translation id="5174169235862638850">Lozinka je kopirana u privremenu memoriju</translation>
 <translation id="5175379009094579629">Naziv uređaja nije važeći. Unesite važeći naziv uređaja da biste probali ponovo.</translation>
 <translation id="5177479852722101802">Nastavi da blokiraš pristup kameri i mikrofonu</translation>
 <translation id="5177549709747445269">Koristite podatke na mreži operatera</translation>

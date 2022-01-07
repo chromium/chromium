@@ -2694,7 +2694,6 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3742666961763734085">No es troba cap unitat organitzativa amb aquest nom. Torna-ho a provar.</translation>
 <translation id="3743842571276656710">Escriu el PIN per completar la vinculació amb <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">Per suprimir una aplicació, ves a Configuració &gt; Google Play Store &gt; Gestiona les preferències d'Android &gt; Aplicacions o Gestor d'aplicacions. A continuació, toca l'aplicació que vulguis desinstal·lar (és possible que hagis de lliscar cap a la dreta o cap a l'esquerra per trobar-la). Tot seguit, toca Desinstal·la o Desactiva.</translation>
-<translation id="3747220812138541072">Mostra els suggeriments d'escriptura que apareixen entre línies mentre escrius</translation>
 <translation id="3747603683749989726">Vols activar la seguretat avançada?</translation>
 <translation id="3748706263662799310">Informa d'un error</translation>
 <translation id="3750562496035670393">Chrome ha desat la teva contrasenya en aquest dispositiu, però també pots desar-la al teu Compte de Google. En aquest cas, totes les contrasenyes del teu Compte de Google també estaran disponibles mentre tinguis la sessió iniciada.</translation>
@@ -2885,6 +2884,7 @@ i Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="3916445069167113093">Aquest tipus de fitxer pot malmetre el vostre equip. Voleu mantenir <ph name="FILE_NAME" /> igualment?</translation>
 <translation id="3918972485393593704">Informa dels detalls a Google</translation>
 <translation id="3919145445993746351">Per accedir a les extensions des de tots els ordinadors, activa la sincronització</translation>
+<translation id="3919229493046408863">Desactiva la notificació quan hi hagi dispositius a prop</translation>
 <translation id="3919798653937160644">Les pàgines que visualitzis en aquesta finestra no es mostraran a l'historial del navegador i no deixaran cap rastre a l'ordinador, com ara galetes, després de tancar totes les finestres obertes de la sessió de convidat. Tanmateix, es conservaran tots els fitxers que baixis.</translation>
 <translation id="3920504717067627103">Normes de certificats</translation>
 <translation id="392089482157167418">Activa ChromeVox (avisos de veu)</translation>
@@ -5919,6 +5919,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="7167486101654761064">&amp;Obre sempre els fitxers d'aquest tipus</translation>
 <translation id="716810439572026343">S'està baixant <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">Mida mínima de la font</translation>
+<translation id="7169122689956315694">Activa la notificació quan hi hagi dispositius a prop</translation>
 <translation id="7170236477717446850">Foto del perfil</translation>
 <translation id="7171000599584840888">Afegeix un perfil...</translation>
 <translation id="7171259390164035663">No inscriguis</translation>

@@ -53,6 +53,10 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1247519845643687288">Mga kamakailang app</translation>
 <translation id="1252999807265626933">Nagcha-charge mula sa <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Ano'ng lagay ng panahon?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> hanggang 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Piliin para sa higit pang detalye sa Google Calendar.</translation>
 <translation id="1266097335951928626">Simulan ang camera para sa selfie</translation>
 <translation id="1267032506238418139">Pagbabago ng shortcut</translation>
 <translation id="1269405891096105529">Hindi sinusuportahan ang peripheral sa Guest mode</translation>
@@ -109,7 +113,6 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="1570871743947603115">I-toggle ang Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">I-access ang lahat ng iyong aktibidad sa session na ito</translation>
 <translation id="1611993646327628135">Naka-on</translation>
-<translation id="1615402009686901181">Dini-disable ng patakaran ng administrator ang screen capture kapag may nakikitang kumpidensyal na content</translation>
 <translation id="1632985212731562677">Puwedeng i-disable ang Switch Access sa Mga Setting &gt; Accessibility.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> (na) device</translation>
 <translation id="1654477262762802994">Magsimula ng query gamit ang boses</translation>
@@ -998,6 +1001,8 @@ Kaka-install lang</translation>
 <translation id="7720410380936703141">SUBUKAN ULIT</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notification}one{# notification}other{# na notification}}</translation>
 <translation id="7724603315864178912">I-cut</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Ipakita ang mga app sa shelf</translation>
 <translation id="7749443890790263709">Naabot ang maximum na bilang ng desk.</translation>
 <translation id="7749640678855296659">Kasalukuyang naka-off ang iyong mikropono</translation>
@@ -1189,7 +1194,6 @@ Kaka-install lang</translation>
 <translation id="9024331582947483881">buong screen</translation>
 <translation id="9047624247355796468">Buksan ang mga setting para sa <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">I-collapse ang notification</translation>
-<translation id="9063800855227801443">Hindi puwedeng mag-capture ng kumpidensyal na content</translation>
 <translation id="9065203028668620118">I-edit</translation>
 <translation id="9070640332319875144">Mga Setting ng Assistant</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> bago maubos ang baterya.</translation>

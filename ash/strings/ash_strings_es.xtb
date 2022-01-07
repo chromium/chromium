@@ -109,7 +109,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1570871743947603115">Activa o desactiva el Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="1589090746204042747">Acceder a toda tu actividad de esta sesión</translation>
 <translation id="1611993646327628135">Sí</translation>
-<translation id="1615402009686901181">La política del administrador inhabilita la captura de pantalla cuando se muestra contenido confidencial</translation>
 <translation id="1632985212731562677">La accesibilidad con interruptores se puede inhabilitar en Configuración &gt; Accesibilidad.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="1654477262762802994">Iniciar una consulta por voz</translation>
@@ -1190,7 +1189,6 @@ Nueva instalación</translation>
 <translation id="9024331582947483881">pantalla completa</translation>
 <translation id="9047624247355796468">Abrir la configuración de <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Ocultar notificación</translation>
-<translation id="9063800855227801443">No se puede capturar contenido confidencial</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9070640332319875144">Ajustes del Asistente</translation>
 <translation id="9072519059834302790">Tiempo restante para que se agote la batería: <ph name="TIME_LEFT" />.</translation>

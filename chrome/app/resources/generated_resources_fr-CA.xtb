@@ -2697,7 +2697,6 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3742666961763734085">Impossible de trouver une unité organisationnelle qui porte ce nom. Veuillez réessayer.</translation>
 <translation id="3743842571276656710">Entrez le NIP pour effectuer l'association à <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">Pour supprimer des applications, sélectionnez Paramètres &gt; Google Play Store &gt; Gérer les préférences Android &gt; Applications ou Gestionnaire d'applications. Ensuite, touchez l'application que vous souhaitez désinstaller (vous devrez peut-être balayer l'écran à droite ou à gauche pour trouver l'application). Enfin, touchez Désinstaller ou Désactiver.</translation>
-<translation id="3747220812138541072">Afficher des suggestions écrites au fur et à mesure que vous écrivez</translation>
 <translation id="3747603683749989726">Activer la sécurité améliorée?</translation>
 <translation id="3748706263662799310">Signaler un bogue</translation>
 <translation id="3750562496035670393">Chrome a enregistré votre mot de passe sur cet appareil, mais vous pouvez l'enregistrer dans votre compte Google à la place. Ensuite, tous les mots de passe stockés dans votre compte Google seront également accessibles lorsque vous serez connecté.</translation>
@@ -2888,6 +2887,7 @@ et sur Ctrl+Alt+diminuer la luminosité pour effectuer un zoom arrière.</transl
 <translation id="3916445069167113093">Ce type de fichier risque d'endommager votre ordinateur. Voulez-vous vraiment télécharger <ph name="FILE_NAME" />?</translation>
 <translation id="3918972485393593704">Signaler les détails à Google</translation>
 <translation id="3919145445993746351">Pour utiliser vos extensions sur tous vos ordinateurs, activez la synchronisation</translation>
+<translation id="3919229493046408863">Désactiver les notifications lorsque des appareils se trouvent à proximité</translation>
 <translation id="3919798653937160644">Les pages que vous consultez dans cette fenêtre ne sont pas consignées dans l'historique du navigateur et ne laissent aucune autre trace sur votre ordinateur (comme des témoins) une fois que vous avez fermé toutes les fenêtres ouvertes en tant qu'invité. Tous les fichiers téléchargés sont toutefois conservés.</translation>
 <translation id="3920504717067627103">Politiques pour les certificats</translation>
 <translation id="392089482157167418">Activer ChromeVox (commentaires audio)</translation>
@@ -5921,6 +5921,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="7167486101654761064">&amp;Toujours ouvrir les fichiers de ce type</translation>
 <translation id="716810439572026343">Téléchargement de <ph name="FILE_NAME" /> en cours</translation>
 <translation id="7168109975831002660">Taille de police minimale</translation>
+<translation id="7169122689956315694">Activer les notifications lorsque des appareils se trouvent à proximité</translation>
 <translation id="7170236477717446850">Photo du profil</translation>
 <translation id="7171000599584840888">Ajouter un profil…</translation>
 <translation id="7171259390164035663">Ne pas s'inscrire</translation>

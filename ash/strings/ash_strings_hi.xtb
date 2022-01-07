@@ -53,6 +53,10 @@
 <translation id="1247519845643687288">हाल ही में इस्तेमाल किए गए ऐप्लिकेशन</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> से चार्ज हो रहा है</translation>
 <translation id="1255033239764210633">मौसम कैसा है?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> से 
+        <ph name="END_TIME" /> तक, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. ज़्यादा जानकारी के लिए, Google Calendar में जाकर चुनें.</translation>
 <translation id="1266097335951928626">सेल्फ़ी कैमरा चालू करें</translation>
 <translation id="1267032506238418139">शॉर्टकट में बदलाव</translation>
 <translation id="1269405891096105529">मेहमान मोड चालू होने पर, सहायक डिवाइस (जैसे, कीबोर्ड, माउस, मॉनिटर, वेबकैम वगैरह) काम नहीं करते.</translation>
@@ -109,7 +113,6 @@
 <translation id="1570871743947603115">ब्लूटूथ टॉगल करें. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">इस सत्र में अपनी सभी गतिविधि ऐक्सेस करें</translation>
 <translation id="1611993646327628135">चालू है</translation>
-<translation id="1615402009686901181">एडमिन नीति के तहत, गोपनीय कॉन्टेंट दिखने पर स्क्रीन कैप्चर की सुविधा बंद कर दी जाती है</translation>
 <translation id="1632985212731562677">ऐक्सेस करने का तरीका बदलने की सुविधा को सेटिंग &gt; सुलभता में जाकर, बंद किया जा सकता है.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> डिवाइस</translation>
 <translation id="1654477262762802994">बोलकर खोजना शुरू करें</translation>
@@ -999,6 +1002,8 @@
 <translation id="7720410380936703141">फिर से कोशिश करें</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 सूचना}one{# सूचना}other{# सूचनाएं}}</translation>
 <translation id="7724603315864178912">काटें</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">शेल्फ़ में मौजूद ऐप्लिकेशन दिखाएं</translation>
 <translation id="7749443890790263709">ज़्यादा से ज़्यादा इतने ही डेस्क जोड़े जा सकते हैं.</translation>
 <translation id="7749640678855296659">आपका माइक्रोफ़ोन अभी बंद है</translation>
@@ -1190,7 +1195,6 @@
 <translation id="9024331582947483881">फ़ुल स्क्रीन</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> के लिए सेटिंग खोलें</translation>
 <translation id="9059834730836941392">सूचना को छोटा करें</translation>
-<translation id="9063800855227801443">गोपनीय कॉन्टेंट को कैप्चर नहीं किया जा सकता</translation>
 <translation id="9065203028668620118">बदलाव करें</translation>
 <translation id="9070640332319875144">Assistant की सेटिंग</translation>
 <translation id="9072519059834302790">बैटरी खाली होने में<ph name="TIME_LEFT" /> का समय बाकी है.</translation>

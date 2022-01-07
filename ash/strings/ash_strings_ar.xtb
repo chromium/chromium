@@ -110,7 +110,6 @@
 <translation id="1570871743947603115">تبديل البلوتوث. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">الوصول إلى جميع أنشطتك في جلسة واحدة</translation>
 <translation id="1611993646327628135">مُفعَّل</translation>
-<translation id="1615402009686901181">تحظر سياسة المشرف إمكانية تصوير الشاشة عند عرض محتوى سري.</translation>
 <translation id="1632985212731562677">يمكن إيقاف ميزة "الوصول عبر مفتاح التحويل" في "الإعدادات" &gt; "أدوات تمكين الوصول".</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> جهاز</translation>
 <translation id="1654477262762802994">بدء طلب بحث صوتي</translation>
@@ -1190,7 +1189,6 @@
 <translation id="9024331582947483881">ملء الشاشة</translation>
 <translation id="9047624247355796468">فتح الإعدادات للشبكة <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">تصغير الإشعار</translation>
-<translation id="9063800855227801443">لا يمكن تصوير الشاشة بسبب المحتوى السري</translation>
 <translation id="9065203028668620118">تعديل</translation>
 <translation id="9070640332319875144">إعدادات المساعد</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> حتى تصبح البطارية فارغة.</translation>

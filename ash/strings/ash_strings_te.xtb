@@ -53,6 +53,10 @@
 <translation id="1247519845643687288">ఇటీవలి యాప్‌లు</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> నుండి ఛార్జ్ అవుతోంది</translation>
 <translation id="1255033239764210633">వాతావరణం ఎలా ఉంది?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> నుండి 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. మరిన్ని వివరాల కోసం Google Calendarలో ఎంచుకోండి.</translation>
 <translation id="1266097335951928626">సెల్ఫీ కెమెరాను ప్రారంభించు</translation>
 <translation id="1267032506238418139">షార్ట్‌కట్ మార్పు</translation>
 <translation id="1269405891096105529">గెస్ట్ మోడ్‌లో పెరిఫెరల్ సపోర్ట్ చేయదు</translation>
@@ -109,7 +113,6 @@
 <translation id="1570871743947603115">బ్లూటూత్‌ను టోగుల్ చేయండి. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">ఈ సెషన్‌లో మీ మొత్తం యాక్టివిటీని యాక్సెస్ చేయండి</translation>
 <translation id="1611993646327628135">ఆన్</translation>
-<translation id="1615402009686901181">గోప్యమైన కంటెంట్ కనిపించినప్పుడు, అడ్మినిస్ట్రేటర్ పాలసీ స్క్రీన్ క్యాప్చర్‌ను డిజేబుల్ చేస్తుంది</translation>
 <translation id="1632985212731562677">సెట్టింగ్‌లు &gt; యాక్సెసిబిలిటీలో స్విచ్ యాక్సెస్‌ను డిజేబుల్ చేయవచ్చు.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> పరికరాలు</translation>
 <translation id="1654477262762802994">వాయిస్ ప్రశ్నను ప్రారంభించు</translation>
@@ -999,6 +1002,8 @@
 <translation id="7720410380936703141">మళ్లీ ట్రై చేయండి</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 నోటిఫికేషన్‌}other{# నోటిఫికేషన్‌లు}}</translation>
 <translation id="7724603315864178912">కత్తిరించు</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">యాప్‌లను షెల్ఫ్‌లో చూపించు</translation>
 <translation id="7749443890790263709">గరిష్ట డెస్క్‌ల సంఖ్యను చేరుకుంది.</translation>
 <translation id="7749640678855296659">మీ మైక్రోఫోన్ ప్రస్తుతం ఆఫ్ చేయబడింది</translation>
@@ -1190,7 +1195,6 @@
 <translation id="9024331582947483881">పూర్తి స్క్రీన్</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="9059834730836941392">నోటిఫికేషన్‌ను కుదించు</translation>
-<translation id="9063800855227801443">గోప్యమైన కంటెంట్‌ను క్యాప్చర్ చేయడం సాధ్యం కాదు</translation>
 <translation id="9065203028668620118">ఎడిట్</translation>
 <translation id="9070640332319875144">అసిస్టెంట్ సెట్టింగ్‌లు</translation>
 <translation id="9072519059834302790">బ్యాటరీ ఛార్జ్ <ph name="TIME_LEFT" />లో ఖాళీ అవుతుంది.</translation>

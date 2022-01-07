@@ -2709,7 +2709,6 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="3742666961763734085">Tämännimistä organisaatioyksikköä ei löydy. Yritä uudelleen.</translation>
 <translation id="3743842571276656710">Lisää PIN-koodi, niin voit muodostaa laiteparin: <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">Jos haluat poistaa sovelluksia, valitse Asetukset &gt; Google Play Kauppa &gt; Hallitse Android-asetuksia &gt; Sovellukset tai Sovellusten hallinta. Valitse sitten sovellus, jonka haluat poistaa (jos sovellusta ei näy, pyyhkäise oikealle tai vasemmalle). Valitse sitten Poista tai Poista käytöstä.</translation>
-<translation id="3747220812138541072">Näytä tekstirivillä kirjoitusehdotuksia samalla kun kirjoitat</translation>
 <translation id="3747603683749989726">Laitetaanko parannettu suojaus päälle?</translation>
 <translation id="3748706263662799310">Ilmoita virheestä</translation>
 <translation id="3750562496035670393">Chrome tallensi salasanasi tälle laitteelle, mutta voit halutessasi tallentaa sen Google-tilillesi. Kaikki Google-tilillä olevat salasanat ovat käytettävissä, kun olet sisäänkirjautuneena.</translation>
@@ -2900,6 +2899,7 @@ ja loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="3916445069167113093">Tämäntyyppinen tiedosto voi vahingoittaa tietokonettasi. Haluatko säilyttää tiedoston <ph name="FILE_NAME" />?</translation>
 <translation id="3918972485393593704">Raportoi tiedot Googlelle</translation>
 <translation id="3919145445993746351">Ota synkronointi käyttöön, niin voit käyttää laajennuksia kaikilla tietokoneilla</translation>
+<translation id="3919229493046408863">Laita ilmoitukset lähellä olevista laitteista pois päältä</translation>
 <translation id="3919798653937160644">Tässä ikkunassa katsomasi sivut eivät näy selaushistoriassa, eikä niistä jää tietokoneelle muita jälkiä (esim. evästeitä) suljettuasi kaikki vierasikkunat. Kaikki lataamasi tiedostot kuitenkin säilytetään.</translation>
 <translation id="3920504717067627103">Varmennekäytännöt</translation>
 <translation id="392089482157167418">Ota ChromeVox käyttöön (äänipalaute)</translation>
@@ -5931,6 +5931,7 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="7167486101654761064">&amp;Avaa aina tämäntyyppiset tiedostot</translation>
 <translation id="716810439572026343">Ladataan tiedostoa <ph name="FILE_NAME" />.</translation>
 <translation id="7168109975831002660">Fontin vähimmäiskoko</translation>
+<translation id="7169122689956315694">Laita ilmoitukset lähellä olevista laitteista päälle</translation>
 <translation id="7170236477717446850">Profiilikuva</translation>
 <translation id="7171000599584840888">Lisää profiili…</translation>
 <translation id="7171259390164035663">Älä rekisteröi</translation>

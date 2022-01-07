@@ -53,6 +53,10 @@
 <translation id="1247519845643687288">最近使ったアプリ</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> から充電しています</translation>
 <translation id="1255033239764210633">今日の天気は？</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> から
+        <ph name="END_TIME" /> まで、
+        <ph name="TIME_ZONE" />、
+        <ph name="EVENT_SUMMARY" />。選択すると、Google カレンダーで詳細を確認できます。</translation>
 <translation id="1266097335951928626">自撮りカメラを開始</translation>
 <translation id="1267032506238418139">ショートカットの変更</translation>
 <translation id="1269405891096105529">ゲストモードでは周辺機器を使用できません</translation>
@@ -109,7 +113,6 @@
 <translation id="1570871743947603115">Bluetooth を切り替えます。<ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">このセッションのすべてのアクティビティにアクセスする</translation>
 <translation id="1611993646327628135">オン</translation>
-<translation id="1615402009686901181">管理者のポリシーによって、機密コンテンツが表示されているときは、スクリーン キャプチャが無効になります</translation>
 <translation id="1632985212731562677">スイッチ アクセスは [設定] &gt; [ユーザー補助機能] で無効にできます。</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> 台のデバイス</translation>
 <translation id="1654477262762802994">音声検索を開始</translation>
@@ -999,6 +1002,8 @@
 <translation id="7720410380936703141">再試行</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 件の通知}other{# 件の通知}}</translation>
 <translation id="7724603315864178912">切り取り</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />、
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">シェルフのアプリを表示</translation>
 <translation id="7749443890790263709">デスクの数が上限に達しました。</translation>
 <translation id="7749640678855296659">マイクは現在オフになっています</translation>
@@ -1190,7 +1195,6 @@
 <translation id="9024331582947483881">全画面表示</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> の設定を開く</translation>
 <translation id="9059834730836941392">通知を折りたたむ</translation>
-<translation id="9063800855227801443">機密コンテンツはキャプチャできません</translation>
 <translation id="9065203028668620118">編集</translation>
 <translation id="9070640332319875144">アシスタントの設定</translation>
 <translation id="9072519059834302790">あと <ph name="TIME_LEFT" />で電池がなくなります。</translation>

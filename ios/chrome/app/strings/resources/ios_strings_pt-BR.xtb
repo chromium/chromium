@@ -60,6 +60,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Veja as instruções para
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1434356225517321998">Seu navegador é gerenciado. <ph name="BEGIN_LINK" />Detalhes<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">Criptografia no dispositivo</translation>
 <translation id="1449835205994625556">Ocultar senha</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> itens</translation>
 <translation id="149095475893949513">O site está tentando fazer o download de um perfil de configuração.</translation>
@@ -94,6 +95,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Veja as instruções para
 <translation id="1690731385917361335">Nenhum item</translation>
 <translation id="1692118695553449118">Sincronização ativada</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> selecionados</translation>
+<translation id="1726573592754903697">Gerenciador de senhas do Google</translation>
 <translation id="1740468249224277719">Toque duas vezes para instalar.</translation>
 <translation id="1752547299766512813">Salvar senhas</translation>
 <translation id="1753905327828125965">Mais visitados</translation>
@@ -284,6 +286,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3529024052484145543">Não seguro</translation>
 <translation id="3533202363250687977">Fechar todas as guias anônimas</translation>
 <translation id="3533436815740441613">Nova guia</translation>
+<translation id="3536487890564466894">Criptografe suas senhas antes de elas serem salvas na Conta do Google.</translation>
 <translation id="3551320343578183772">Fechar guia</translation>
 <translation id="3581564640715911333">Oferecer para traduzir páginas em outros idiomas</translation>
 <translation id="3588820906588687999">Abrir imagem em "Nova guia"</translation>
@@ -502,6 +505,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="575902488528307720">Pesquisar imagem</translation>
 <translation id="5781453543752460388">Adicionar ao Fotos</translation>
 <translation id="5782227691023083829">Traduzindo...</translation>
+<translation id="5802829331520313983">Configurar…</translation>
 <translation id="5803566855766646066">Tem certeza de que você quer descartar este novo card?</translation>
 <translation id="5812974770859303494">Adicionar a…</translation>
 <translation id="5816228676161003208">Isso permite que você pesquise mais rapidamente usando sua voz.</translation>
@@ -561,6 +565,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6219688215832490856">Nunca traduzir</translation>
 <translation id="6223816392543092032">Tenha seus favoritos, seu histórico, suas senhas e outras configurações em todos os seus dispositivos.</translation>
 <translation id="6232329973559504466">Pesquisa anônima</translation>
+<translation id="6232736989810857397">Isso permite que você crie eventos da agenda de forma simples usando o Google Lens.</translation>
 <translation id="6254066287920239840">Abrir links no app em vez de abrir no navegador.</translation>
 <translation id="6255097610484507482">Editar cartão de crédito</translation>
 <translation id="6284652193729350524">Oferecer a opção de traduzir o <ph name="LANGUAGE" /></translation>

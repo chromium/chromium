@@ -2704,7 +2704,6 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3742666961763734085">Finner ikke noen organisasjonsenhet med det navnet. Prøv på nytt.</translation>
 <translation id="3743842571276656710">Oppgi PIN-koden for å koble til <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">For å fjerne apper, gå til Innstillinger &gt; Google Play Butikk &gt; Administrer Android-innstillinger &gt; Apper eller Appstyring. Trykk på appen du vil avinstallere (du må kanskje sveipe til høyre eller venstre for å finne den). Trykk deretter på Avinstaller eller Slå av.</translation>
-<translation id="3747220812138541072">Vis skriveforslag på linjen etter hvert som du skriver</translation>
 <translation id="3747603683749989726">Vil du slå på økt sikkerhet?</translation>
 <translation id="3748706263662799310">Rapporter feil</translation>
 <translation id="3750562496035670393">Chrome har lagret passordet ditt på denne enheten, men du kan lagre det i Google-kontoen din i stedet. Da blir alle passordene på Google-kontoen din også tilgjengelige mens du er pålogget.</translation>
@@ -2895,6 +2894,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="3916445069167113093">Denne filtypen kan skade datamaskinen. Ønsker du å beholde <ph name="FILE_NAME" /> likevel?</translation>
 <translation id="3918972485393593704">Rapportér detaljer til Google</translation>
 <translation id="3919145445993746351">For å få utvidelsene dine på alle datamaskinene dine, slå på synkronisering</translation>
+<translation id="3919229493046408863">Slå av varsler fra enheter i nærheten</translation>
 <translation id="3919798653937160644">Sider du åpner i dette vinduet, vises ikke i nettleserloggen, og de etterlater ingen andre spor (f.eks. informasjonskapsler) på datamaskinen etter at du har lukket alle åpne gjestevinduer. Derimot beholdes eventuelle filer du laster ned.</translation>
 <translation id="3920504717067627103">Administratorinnstillinger for sertifikater</translation>
 <translation id="392089482157167418">Slå på ChromeVox (taletilbakemelding)</translation>
@@ -5925,6 +5925,7 @@ og Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="7167486101654761064">Åpne &amp;alltid filer av denne typen</translation>
 <translation id="716810439572026343">Laster ned <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">Minste skriftstørrelse</translation>
+<translation id="7169122689956315694">Slå på varsler fra enheter i nærheten</translation>
 <translation id="7170236477717446850">Profilbilde</translation>
 <translation id="7171000599584840888">Legg til profil…</translation>
 <translation id="7171259390164035663">Ikke registrer</translation>

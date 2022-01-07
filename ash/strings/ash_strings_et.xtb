@@ -109,7 +109,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1570871743947603115">Lülitab Bluetoothi sisse või välja. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Juurdepääs kõigile teie tegevustele selle seansi ajal</translation>
 <translation id="1611993646327628135">Sees</translation>
-<translation id="1615402009686901181">Administraatori eeskirjad keelavad ekraanikuva jäädvustamise, kui konfidentsiaalne sisu on nähtaval</translation>
 <translation id="1632985212731562677">Lülitiga juurdepääsu saab keelata menüüs Seaded &gt; Juurdepääsetavus.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> seadet</translation>
 <translation id="1654477262762802994">Häälpäringu alustamine</translation>
@@ -122,6 +121,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">Reaalajas subtiitrid on sisse lülitatud.</translation>
 <translation id="1720011244392820496">Lülitage WiFi sünkroonimine sisse</translation>
+<translation id="1736898441010944794">„<ph name="NAME" />“ on Bluetooth-seadmetele nähtav.</translation>
 <translation id="1743570585616704562">Ei tuvastatud</translation>
 <translation id="1746730358044914197">Sisestusmeetodid seadistab teie administraator.</translation>
 <translation id="1747827819627189109">Ekraanil kuvatav klaviatuur on lubatud</translation>
@@ -832,6 +832,7 @@ Uus installimine</translation>
 <translation id="6578407462441924264">Nimetu</translation>
 <translation id="6585808820553845416">Seansi lõpuni on jäänud <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">Teie ühendus on lülitatud turvalisemale võrgule</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, signaalitugevus <ph name="SIGNAL_STRENGTH" />, võrku haldab teie administraator</translation>
 <translation id="6612802754306526077">Valitud on ekraanisalvestuse režiim</translation>
 <translation id="6614169507485700968">Privaatsuskuva on sees</translation>
@@ -1188,7 +1189,6 @@ Uus installimine</translation>
 <translation id="9024331582947483881">täisekraan</translation>
 <translation id="9047624247355796468">Ava võrgu <ph name="NETWORK_NAME" /> seaded</translation>
 <translation id="9059834730836941392">Ahenda märguannet</translation>
-<translation id="9063800855227801443">Konfidentsiaalset sisu ei saa jäädvustada</translation>
 <translation id="9065203028668620118">Muuda</translation>
 <translation id="9070640332319875144">Assistendi seaded</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> aku tühjenemiseni.</translation>

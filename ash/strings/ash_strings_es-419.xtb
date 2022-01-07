@@ -109,7 +109,6 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1570871743947603115">Activar o desactivar Bluetooth: <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Accede a toda tu actividad en esta sesión</translation>
 <translation id="1611993646327628135">Sí</translation>
-<translation id="1615402009686901181">La política del administrador inhabilita la captura de pantalla cuando hay contenido confidencial a la vista.</translation>
 <translation id="1632985212731562677">Accesibilidad con interruptores se puede inhabilitar en Configuración &gt; Accesibilidad.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> dispositivos</translation>
 <translation id="1654477262762802994">Iniciar una búsqueda por voz</translation>
@@ -122,6 +121,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">El Subtitulado instantáneo está activado.</translation>
 <translation id="1720011244392820496">Activa la Sincronización Wi-Fi</translation>
+<translation id="1736898441010944794">"<ph name="NAME" />" visible para dispositivos Bluetooth.</translation>
 <translation id="1743570585616704562">No se reconoció</translation>
 <translation id="1746730358044914197">Tu administrador configura los métodos de entrada.</translation>
 <translation id="1747827819627189109">Teclado en pantalla habilitado</translation>
@@ -832,6 +832,7 @@ Nueva instalación</translation>
 <translation id="6578407462441924264">Sin nombre</translation>
 <translation id="6585808820553845416">La sesión terminará en <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">Tu conexión se cambió a una red más segura</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" />, intensidad de la señal: <ph name="SIGNAL_STRENGTH" />, administrada por tu administrador</translation>
 <translation id="6612802754306526077">Se seleccionó el modo de grabación de pantalla</translation>
 <translation id="6614169507485700968">La pantalla de privacidad está activada</translation>
@@ -1188,7 +1189,6 @@ Nueva instalación</translation>
 <translation id="9024331582947483881">pantalla completa</translation>
 <translation id="9047624247355796468">Abrir la configuración para <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Contraer notificación</translation>
-<translation id="9063800855227801443">No se puede capturar contenido confidencial</translation>
 <translation id="9065203028668620118">Editar</translation>
 <translation id="9070640332319875144">Configuración de Asistente</translation>
 <translation id="9072519059834302790">Tiempo restante hasta que se agote la batería: <ph name="TIME_LEFT" />.</translation>

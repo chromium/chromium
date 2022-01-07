@@ -2708,7 +2708,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3742666961763734085">Nije moguće pronaći organizacionu jedinicu pod tim imenom. Pokušajte ponovo.</translation>
 <translation id="3743842571276656710">Unesite PIN da se uparite s uređajem <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">Za uklanjanje aplikacija idite na Postavke &gt; Trgovina Play &gt; Upravljanje postavkama Androida &gt; Aplikacije ili Upravitelj aplikacija. Zatim dodirnite aplikaciju koju želite deinstalirati (možda ćete morati prijeći prstom udesno ili ulijevo kako biste pronašli aplikaciju). Zatim dodirnite Deinstaliraj ili Onemogući.</translation>
-<translation id="3747220812138541072">Prikaz prijedloga za pisanje u ravni koji se prikazuju dok pišete</translation>
 <translation id="3747603683749989726">Uključiti poboljšanu sigurnost?</translation>
 <translation id="3748706263662799310">Prijava programske pogreške</translation>
 <translation id="3750562496035670393">Chrome je sačuvao vašu lozinku na ovaj uređaj, ali je umjesto toga možete sačuvati na svoj Google račun. Nakon toga će sve lozinke na vašem Google računu također biti dostupne dok ste prijavljeni.</translation>
@@ -3689,6 +3688,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4785719467058219317">Koristite sigurnosni ključ koji nije registriran na ovoj web lokaciji</translation>
 <translation id="478708757211772586">Koristite tipku "naprijed" da se pomjerite naprijed na ekranu</translation>
 <translation id="4788092183367008521">Provjerite mrežnu vezu i pokušajte ponovo.</translation>
+<translation id="4789550509729954245">Prikaz obavještenja kada uređaji dijele u blizini</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotografija</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Omogući ubrzanje TrackPointa</translation>
@@ -4050,6 +4050,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="5171343362375269016">Zamijenjena memorija</translation>
 <translation id="5172855596271336236">Postoji 1 upravljani štampač.</translation>
 <translation id="5173668317844998239">Dodajte i izbrišite otiske prsta koji su sačuvani na sigurnosnom ključu</translation>
+<translation id="5174169235862638850">Lozinka je kopirana u međumemoriju</translation>
 <translation id="5175379009094579629">Naziv uređaja je nevažeći. Unesite važeći naziv uređaja da pokušate ponovo.</translation>
 <translation id="5177479852722101802">Nastavi blokirati pristup kameri i mikrofonu</translation>
 <translation id="5177549709747445269">Koristite prijenos podataka na mobilnoj mreži</translation>

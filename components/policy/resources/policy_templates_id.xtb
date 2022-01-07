@@ -213,7 +213,6 @@
       Jika kebijakan tidak disetel atau jika nilai setelah substitusi bukan berupa hostname yang valid, tidak ada hostname yang akan disetel dalam permintaan DHCP.</translation>
 <translation id="1257550411839719984">Setel direktori download default</translation>
 <translation id="1265053460044691532">Batasi waktu bagi pengguna yang diautentikasi melalui SAML untuk dapat masuk saat offline.</translation>
-<translation id="1268548671627260798">Daftar URL yang dikecualikan dari notifikasi layar penuh</translation>
 <translation id="127264587838521316">Mengaktifkan permintaan penginstalan ekstensi <ph name="PRODUCT_NAME" /></translation>
 <translation id="1272798957154751008">Mengaktifkan migrasi perangkat Chromad ke pengelolaan cloud</translation>
 <translation id="1274997165432133392">Cookie dan data situs lainnya</translation>
@@ -2797,11 +2796,6 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
       Jika kebijakan disetel ke Nonaktif atau tidak disetel, pengguna akan dapat mentransfer file ke Drive melalui koneksi seluler.</translation>
 <translation id="4248277954659222481">Izinkan pemutaran otomatis media pada pola URL yang diizinkan</translation>
 <translation id="4250680216510889253">Tidak</translation>
-<translation id="4257545866869267519">Mengonfigurasi daftar URL yang dikecualikan dari notifikasi layar penuh. Notifikasi ditampilkan saat perangkat keluar dari mode tidur, kecerahan rendah, atau layar kunci dan memiliki jendela dalam mode layar penuh. Setelan ini memastikan pengguna mengetahui bahwa mereka sedang dalam mode layar penuh, yang mengurangi risiko serangan phishing.
-
-          Kebijakan ini memungkinkan penonaktifan notifikasi untuk URL tertentu yang akan dianggap sebagai sumber tepercaya. Kebijakan ini disetel dengan menentukan daftar pola URL yang diformat sesuai dengan format berikut ( https://www.chromium.org/administrators/url-blocklist-filter-format ). Misalnya, penonaktifan semua notifikasi dapat dilakukan dengan menentukan karakter pengganti <ph name="WILDCARD_VALUE" /> agar cocok dengan semua URL.
-
-          Jika kebijakan ini disetel ke daftar kosong atau tidak disetel, tidak ada URL yang akan dikecualikan dari notifikasi layar penuh.</translation>
 <translation id="4260027436474745627">Jika kebijakan ini disetel, setiap asal bernama dalam daftar yang dipisahkan koma akan berjalan dalam proses khusus. Setiap proses asal bernama hanya akan diizinkan untuk memuat dokumen dari asal tersebut dan subdomainnya. Misalnya, menentukan https://a1.example.com/ akan mengizinkan https://a2.a1.example.com/ dalam proses yang sama, tetapi tidak mengizinkan https://example.com atau https://b.example.com.
 
       Sejak <ph name="PRODUCT_NAME" /> 77, Anda juga dapat menentukan rentang asal yang akan diisolasi menggunakan karakter pengganti. Misalnya, menentukan https://[*.]corp.example.com akan memberi setiap asal di bawah https://corp.example.com proses khususnya sendiri, termasuk https://corp.example.com itu sendiri, https://a1.corp.example.com, dan https://a2.a1.corp.example.com.

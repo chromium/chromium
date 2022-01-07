@@ -209,7 +209,6 @@
       Se a política não for definida ou se o valor pós-substituição não for um nome de host válido, nenhum nome de host será definido na solicitação de DHCP.</translation>
 <translation id="1257550411839719984">Definir diretório de download padrão</translation>
 <translation id="1265053460044691532">Limite o tempo pelo qual um usuário autenticado via SAML pode fazer login off-line</translation>
-<translation id="1268548671627260798">Lista de URLs isentos de notificações sobre a tela cheia</translation>
 <translation id="127264587838521316">Ativa as solicitações de instalação de extensões do <ph name="PRODUCT_NAME" /></translation>
 <translation id="1272798957154751008">Ativar a migração de dispositivos Chromad no gerenciamento de nuvem.</translation>
 <translation id="1274997165432133392">Cookies e outros dados do site</translation>
@@ -472,6 +471,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
       Se a política for definida como "Desativada", solicitações HTTP não seguras não poderão usar o esquema de autenticação <ph name="BASIC_AUTH" />. Apenas conexões HTTPS seguras serão aceitas.
 
       Se a política <ph name="AUTH_SCHEMES_POLICY_NAME" /> for definida e não incluir o esquema <ph name="BASIC_AUTH" />, a definição da política será ignorada e o <ph name="BASIC_AUTH" /> será sempre proibido.</translation>
+<translation id="1574258262373444557">Não usar <ph name="AES_KL_NAME" /> como o algoritmo para a criptografia de armazenamento do usuário</translation>
 <translation id="1575015449587326319">Política de configuração para o conector OnFileDownloaded do Chrome Enterprise</translation>
 <translation id="1583248206450240930">Usar o <ph name="PRODUCT_FRAME_NAME" /> por padrão</translation>
 <translation id="1587042984081085960">Esta política permite que um administrador especifique que uma página pode enviar solicitações XHR síncronas durante a dispensa de páginas.
@@ -603,6 +603,7 @@ Se você desativar a política, essa rolagem será desativada.</translation>
 <translation id="167514072300004091">Se a política for definida como 3, os sites poderão solicitar acesso a dispositivos USB conectados. Se ela for definida como 2, será negado o acesso a dispositivos USB conectados.
 
       Se não for definida, os sites terão permissão para solicitar acesso, mas os usuários poderão mudar essa configuração.</translation>
+<translation id="1678137412645922426">Controla o uso de <ph name="AES_KL_NAME" /> na criptografia de armazenamento do usuário, se compatível</translation>
 <translation id="1682063842123336408">É necessário ter espaço livre em disco (em GB) para instalar o <ph name="PLUGIN_VM_NAME" />.
 
       Se esta política não for definida, haverá falha na instalação do <ph name="PLUGIN_VM_NAME" /> caso o espaço livre disponível em disco seja inferior a 20 GB (valor padrão).
@@ -2787,11 +2788,6 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
       Se a política for definida como desativada ou não for definida, o usuário poderá transferir arquivos para o Drive mesmo em conexões celulares.</translation>
 <translation id="4248277954659222481">Permitir reprodução automática de mídia em uma lista de permissões de padrões de URL</translation>
 <translation id="4250680216510889253">Não</translation>
-<translation id="4257545866869267519">Configurar uma lista de URLs isentos de notificação sobre a tela cheia. A notificação é mostrada quando o dispositivo retorna da suspensão, do modo de baixo brilho ou da tela de bloqueio e tem uma janela em tela cheia. Ela informa aos usuários que eles estão no modo de tela cheia, o que reduz o risco de ataques de phishing.
-
-          Esta política permite desativar a notificação para URLs específicos que serão considerados como fontes confiáveis. A definição dela é feita especificando uma lista de padrões de URL no formato explicado em https://www.chromium.org/administrators/url-blocklist-filter-format. Por exemplo, é possível desativar as notificações por completo especificando o caractere curinga <ph name="WILDCARD_VALUE" />, que corresponde a todos os URLs.
-
-           Se a política for definida como uma lista vazia ou for deixada sem definição, nenhum URL estará isento da notificação sobre a tela cheia.</translation>
 <translation id="4260027436474745627">Se a política for definida, cada uma das origens indicadas em uma lista separada por vírgulas será executada no próprio processo. Cada processo de uma origem indicada só poderá conter documentos da origem em questão e dos subdomínios dela. Por exemplo, se https://a1.example.com/ for especificada, https://a2.a1.example.com/ será permitida no mesmo processo, mas https://example.com ou https://b.example.com não serão.
 
       Desde o <ph name="PRODUCT_NAME" /> 77, também é possível especificar um intervalo de origens isoladas usando um caractere curinga. Por exemplo, se https://[*.]corp.example.com for especificada, todas as origens abaixo de https://corp.example.com ganharão um processo dedicado, incluindo a própria https://corp.example.com, a https://a1.corp.example.com e a https://a2.a1.corp.example.com.
@@ -3884,6 +3880,12 @@ Se esta política for definida como "Falsa", o <ph name="PRODUCT_NAME" /> não u
 
       Se esta política for deixada sem definição, o comportamento padrão será não permitir para usuários gerenciados por empresas e permitir para usuários não gerenciados.</translation>
 <translation id="5584132346604748282">Controla os serviços de localização do Google para Android</translation>
+<translation id="5585384603219625331">Esta política controla se a implementação de <ph name="AES_KL_NAME" /> está ativada para a criptografia de armazenamento do usuário em telas iniciais <ph name="DM_CRYPT" /> no Chrome OS, se compatível.
+
+       A política se aplica exclusivamente a telas iniciais do usuário que utilizam <ph name="DM_CRYPT" /> para a criptografia. Telas iniciais legadas (que não usam <ph name="DM_CRYPT" />) não têm suporte ao uso de <ph name="AES_KL_NAME" /> e utilizam <ph name="AES_NI_NAME" /> por padrão.
+
+       Se o valor da política mudar, as telas iniciais <ph name="DM_CRYPT" /> já existentes serão acessadas usando a implementação de criptografia configurada pela política. Isso ocorre porque as implementações de <ph name="AES_ALGORITHM_NAME" /> são compatíveis.
+       Se a política for desativada ou for deixada sem definição, a criptografia de armazenamento do usuário para telas iniciais <ph name="DM_CRYPT" /> vão usar <ph name="AES_NI_NAME" /> por padrão.</translation>
 <translation id="5586942249556966598">Não fazer nada</translation>
 <translation id="5598417829613725146">Canvas (compatível desde a versão 90)</translation>
 <translation id="5599461642204007579">Configurações de gerenciamento do <ph name="MS_AD_NAME" /></translation>
@@ -6536,6 +6538,7 @@ O modo recomendado para configurar políticas no Windows é por meio de GPO, emb
 <translation id="8626826495474944836">Exigir isolamento de sites para todos os sites</translation>
 <translation id="8631434304112909927">até a versão <ph name="UNTIL_VERSION" /></translation>
 <translation id="8631437968147930597">A lista de apps de anotação permitidos na tela de bloqueio do <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="8634062512783775032">Usar <ph name="AES_KL_NAME" /> como o algoritmo para a criptografia de armazenamento do usuário, se compatível</translation>
 <translation id="8637566476051166626">Portas de rede explicitamente permitidas</translation>
 <translation id="8643838501942693770">Permitir cookies de terceiros, mas deixar os usuários mudarem essa configuração</translation>
 <translation id="8648844602494595665">Esta política controla o uso do ícone de bloqueio na omnibox.

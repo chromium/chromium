@@ -212,7 +212,6 @@
       如果不設定這項政策，或是替換後的值不是有效的主機名稱，則系統不會在 DHCP 要求中設定主機名稱。</translation>
 <translation id="1257550411839719984">設定預設的下載目錄</translation>
 <translation id="1265053460044691532">限制透過 SAML 驗證的使用者可離線登入的時間</translation>
-<translation id="1268548671627260798">排除全螢幕通知的網址清單</translation>
 <translation id="127264587838521316">啟用 <ph name="PRODUCT_NAME" /> 擴充功能安裝要求</translation>
 <translation id="1272798957154751008">允許將 Chromad 裝置遷移至雲端管理服務</translation>
 <translation id="1274997165432133392">Cookie 和其他網站資料</translation>
@@ -2750,11 +2749,6 @@
       如果將這項政策設為停用或不設定，使用者可在使用行動網路連線時，將檔案傳輸至雲端硬碟。</translation>
 <translation id="4248277954659222481">允許符合網址模式許可清單的網頁自動播放媒體</translation>
 <translation id="4250680216510889253">否</translation>
-<translation id="4257545866869267519">設定要從全螢幕通知排除的網址清單。當裝置從休眠、低亮度或螢幕鎖定回到一般使用狀態，且視窗處於全螢幕模式時，系統將會顯示通知。這是為了讓使用者意識到自己處於全螢幕模式，用以減少網路詐騙攻擊的風險。
-
-          這項政策允許將特定網址視為信任來源時，為其停用通知。設定方式為根據這個格式 (https://www.chromium.org/administrators/url-blocklist-filter-format) 指定網址模式格式的清單。例如，可以透過指定萬用字元 <ph name="WILDCARD_VALUE" /> 比對所有網址，一併停用通知。
-
-          將這項政策設為空白清單或不設定，則表示不會從全螢幕通知排除任何網址。</translation>
 <translation id="4260027436474745627">如果設定這項政策，逗號分隔清單中指定的每個來源就會在獨立程序中執行。每個指定來源的程序都只能容納來自相同來源及其子網域的文件。舉例來說，如果指定 https://a1.example.com/，https://a2.a1.example.com/ 就能使用同一個程序，但是 https://example.com 和 https://b.example.com 並不能使用同一個程序。
 
       自 <ph name="PRODUCT_NAME" /> 第 77 版起，你也可以使用萬用字元來指定要隔離的來源範圍。舉例來說，如果指定 https://[*.]corp.example.com，則 https://corp.example.com 底下的每個來源都會在獨立程序中執行，其中包括 https://corp.example.com 本身、https://a1.corp.example.com 和 https://a2.a1.corp.example.com。

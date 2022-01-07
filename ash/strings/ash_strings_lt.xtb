@@ -109,7 +109,6 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1570871743947603115">Perjungti „Bluetooth“. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Pasiekti visą šios sesijos veiklą</translation>
 <translation id="1611993646327628135">Įjungta</translation>
-<translation id="1615402009686901181">Remiantis administratoriaus politika, negalima užfiksuoti ekrano, jei matomas konfidencialus turinys</translation>
 <translation id="1632985212731562677">Prieigos jungikliu funkciją galima išjungti skiltyje „Nustatymai“ &gt; „Pritaikomumas“.</translation>
 <translation id="1637505162081889933">Įrenginių: <ph name="NUM_DEVICES" /></translation>
 <translation id="1654477262762802994">Pradėti užklausą balsu</translation>
@@ -1189,7 +1188,6 @@ Naujas įdiegimas</translation>
 <translation id="9024331582947483881">visas ekranas</translation>
 <translation id="9047624247355796468">Atidaryti „<ph name="NETWORK_NAME" />“ nustatymus</translation>
 <translation id="9059834730836941392">Sutraukti pranešimą</translation>
-<translation id="9063800855227801443">Negalima užfiksuoti konfidencialaus turinio</translation>
 <translation id="9065203028668620118">Redaguoti</translation>
 <translation id="9070640332319875144">Padėjėjo nustatymai</translation>
 <translation id="9072519059834302790">Iki akumuliatoriaus išsikrovimo liko <ph name="TIME_LEFT" />.</translation>

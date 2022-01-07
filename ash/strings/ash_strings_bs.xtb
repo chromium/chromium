@@ -53,6 +53,10 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1247519845643687288">Nedavne aplikacije</translation>
 <translation id="1252999807265626933">Izvor punjenja: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Kakvo je vrijeme?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> do 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Odaberite za više detalja u Google Kalendaru.</translation>
 <translation id="1266097335951928626">Pokreni selfi kameru</translation>
 <translation id="1267032506238418139">Promjena prečice</translation>
 <translation id="1269405891096105529">Periferni uređaj nije podržan u Načinu rada za gosta</translation>
@@ -109,7 +113,6 @@ Možete isprobati ovih nekoliko stvari da započnete.</translation>
 <translation id="1570871743947603115">Uključivanje/isključivanje Bluetootha. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Pristupiti svim aktivnostima u ovoj sesiji</translation>
 <translation id="1611993646327628135">Uključeno</translation>
-<translation id="1615402009686901181">Administratorska pravila onemogućavaju snimanje ekrana kada je prisutan povjerljivi sadržaj</translation>
 <translation id="1632985212731562677">Prekidač za pristup se može onemogućiti u meniju Postavke &gt; Pristupačnost.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> uređaj(a)</translation>
 <translation id="1654477262762802994">Započni glasovni upit</translation>
@@ -998,6 +1001,8 @@ Nova instalacija</translation>
 <translation id="7720410380936703141">POKUŠAJTE PONOVO</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 obavještenje}one{# obavještenje}few{# obavještenja}other{# obavještenja}}</translation>
 <translation id="7724603315864178912">Izreži</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Pregledajte aplikacije na polici</translation>
 <translation id="7749443890790263709">Dostigli ste maksimalni broj radnih površina.</translation>
 <translation id="7749640678855296659">Mikrofon je trenutno isključen</translation>
@@ -1189,7 +1194,6 @@ Nova instalacija</translation>
 <translation id="9024331582947483881">cijeli zaslon</translation>
 <translation id="9047624247355796468">Otvorite postavke za mrežu <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Suzi obavještenje</translation>
-<translation id="9063800855227801443">Nije moguće snimiti povjerljivi sadržaj</translation>
 <translation id="9065203028668620118">Uredi</translation>
 <translation id="9070640332319875144">Postavke asistenta</translation>
 <translation id="9072519059834302790">Baterija će se isprazniti za <ph name="TIME_LEFT" />.</translation>

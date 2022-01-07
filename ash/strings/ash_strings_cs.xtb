@@ -53,6 +53,10 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1247519845643687288">Poslední aplikace</translation>
 <translation id="1252999807265626933">Zdroj nabíjení: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Jaké je počasí?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> až 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Výběrem zobrazíte další podrobnosti v Kalendáři Google.</translation>
 <translation id="1266097335951928626">Spustit fotoaparát pro selfie</translation>
 <translation id="1267032506238418139">Změna klávesové zkratky</translation>
 <translation id="1269405891096105529">Periferní zařízení není v režimu hosta podporováno</translation>
@@ -109,7 +113,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1570871743947603115">Přepnout Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Získat přístup k veškeré vaší aktivitě v této relaci</translation>
 <translation id="1611993646327628135">Zap</translation>
-<translation id="1615402009686901181">Zásady administrátora zakazují záznam obrazovky, když je viditelný důvěrný obsah</translation>
 <translation id="1632985212731562677">Přístup pomocí přepínačů lze vypnout v Nastavení &gt; Přístupnost.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> zařízení</translation>
 <translation id="1654477262762802994">Zahájit hlasový dotaz</translation>
@@ -998,6 +1001,8 @@ Nová instalace</translation>
 <translation id="7720410380936703141">ZKUSIT ZNOVU</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 oznámení}few{# oznámení}many{# oznámení}other{# oznámení}}</translation>
 <translation id="7724603315864178912">Vyjmout</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Zobrazit aplikace v poličce</translation>
 <translation id="7749443890790263709">Byl dosažen maximální počet ploch.</translation>
 <translation id="7749640678855296659">Mikrofon je momentálně vypnutý</translation>
@@ -1189,7 +1194,6 @@ Nová instalace</translation>
 <translation id="9024331582947483881">celá obrazovka</translation>
 <translation id="9047624247355796468">Otevřít nastavení sítě <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Sbalit oznámení</translation>
-<translation id="9063800855227801443">Snímek důvěrného obsahu pořídit nelze</translation>
 <translation id="9065203028668620118">Upravit</translation>
 <translation id="9070640332319875144">Nastavení Asistenta</translation>
 <translation id="9072519059834302790">Do vybití baterie zbývá: <ph name="TIME_LEFT" />.</translation>

@@ -60,6 +60,7 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="1407135791313364759">Alles openen</translation>
 <translation id="1430915738399379752">Afdrukken</translation>
 <translation id="1434356225517321998">Je browser wordt beheerd. <ph name="BEGIN_LINK" />Details<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">Versleuteling op het apparaat</translation>
 <translation id="1449835205994625556">Wachtwoord verbergen</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> items</translation>
 <translation id="149095475893949513">Deze website probeert een configuratieprofiel te downloaden.</translation>
@@ -94,6 +95,7 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="1690731385917361335">Geen items</translation>
 <translation id="1692118695553449118">Synchronisatie staat aan</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> geselecteerd</translation>
+<translation id="1726573592754903697">Google Wachtwoordmanager</translation>
 <translation id="1740468249224277719">Dubbeltik om te installeren.</translation>
 <translation id="1752547299766512813">Wachtwoorden opslaan</translation>
 <translation id="1753905327828125965">Meest bezocht</translation>
@@ -284,6 +286,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3529024052484145543">Niet beveiligd</translation>
 <translation id="3533202363250687977">Alle incognitotabbladen sluiten</translation>
 <translation id="3533436815740441613">Nieuw tabblad</translation>
+<translation id="3536487890564466894">Versleutel je wachtwoorden voordat ze worden opgeslagen in je Google-account.</translation>
 <translation id="3551320343578183772">Tabblad sluiten</translation>
 <translation id="3581564640715911333">Aanbieden pagina's in andere talen te vertalen</translation>
 <translation id="3588820906588687999">Afbeelding openen op nieuw tabblad</translation>
@@ -502,6 +505,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="575902488528307720">Zoeken naar afbeeldingen</translation>
 <translation id="5781453543752460388">Toevoegen aan Foto's</translation>
 <translation id="5782227691023083829">Vertalen...</translation>
+<translation id="5802829331520313983">Instellen…</translation>
 <translation id="5803566855766646066">Weet je zeker dat je deze nieuwe kaart wilt sluiten?</translation>
 <translation id="5812974770859303494">Toevoegen aan…</translation>
 <translation id="5816228676161003208">Hiermee kun je sneller zoeken met je stem.</translation>
@@ -561,6 +565,7 @@ Handoff moet ook aanstaan in het gedeelte Algemeen van Instellingen en je appara
 <translation id="6219688215832490856">Nooit vertalen</translation>
 <translation id="6223816392543092032">Je bookmarks, geschiedenis, wachtwoorden en andere instellingen beschikbaar maken op al je apparaten.</translation>
 <translation id="6232329973559504466">Incognito zoeken</translation>
+<translation id="6232736989810857397">Hiermee kun je makkelijk agenda-afspraken maken via Google Lens.</translation>
 <translation id="6254066287920239840">Open links in de app in plaats van in de browser.</translation>
 <translation id="6255097610484507482">Creditcard bewerken</translation>
 <translation id="6284652193729350524">Aanbieden om <ph name="LANGUAGE" /> te vertalen</translation>

@@ -213,7 +213,6 @@
       Als je het beleid niet instelt of als de waarde na vervanging geen geldige hostnaam is, wordt er geen hostnaam ingesteld in het DHCP-verzoek.</translation>
 <translation id="1257550411839719984">Standaardmap voor downloads instellen</translation>
 <translation id="1265053460044691532">De offline inlogtijd beperken voor een gebruiker die is geverifieerd via SAML</translation>
-<translation id="1268548671627260798">Lijst met URL's die zijn vrijgesteld van de melding over volledig scherm</translation>
 <translation id="127264587838521316">Hiermee worden installatieverzoeken voor <ph name="PRODUCT_NAME" />-extensies aangezet</translation>
 <translation id="1272798957154751008">De migratie van Chromad-apparatten naar cloudbeheer aanzetten</translation>
 <translation id="1274997165432133392">Cookies en andere sitegegevens</translation>
@@ -476,6 +475,7 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
       Als je het beleid uitzet, mogen niet-beveiligde HTTP-verzoeken het <ph name="BASIC_AUTH" />-verificatieschema niet gebruiken. Alleen beveiligde HTTPS is toegestaan.
 
       De instelling voor dit beleid wordt genegeerd (en <ph name="BASIC_AUTH" /> is altijd verboden) als het beleid <ph name="AUTH_SCHEMES_POLICY_NAME" /> is ingesteld en niet <ph name="BASIC_AUTH" /> bevat.</translation>
+<translation id="1574258262373444557"><ph name="AES_KL_NAME" /> niet gebruiken als het versleutelingsalgoritme voor versleuteling van gebruikersopslag</translation>
 <translation id="1575015449587326319">Configuratiebeleid voor de Chrome Enterprise-connector OnFileDownloaded</translation>
 <translation id="1583248206450240930"><ph name="PRODUCT_FRAME_NAME" /> standaard gebruiken</translation>
 <translation id="1587042984081085960">Via dit beleid kan een beheerder opgeven dat een pagina synchrone XHR-verzoeken mag sturen tijdens de afwijzing van de pagina.
@@ -597,6 +597,7 @@ Als je dit beleid niet toepast, wordt op de webpagina naar specifieke tekstfragm
 <translation id="167514072300004091">Als je het beleid instelt op 3, kunnen websites vragen om toegang tot aangesloten USB-apparaten. Als je het beleid instelt op 2, wordt de toegang tot aangesloten USB-apparaten geblokkeerd.
 
       Als je het beleid niet instelt, vragen websites om toegang maar kunnen gebruikers deze instelling wijzigen.</translation>
+<translation id="1678137412645922426">Beheert het gebruik van <ph name="AES_KL_NAME" /> voor versleuteling van gebruikersopslag (als dit wordt ondersteund)</translation>
 <translation id="1682063842123336408">Dvrije opslagruimte (in GB) die is vereist om <ph name="PLUGIN_VM_NAME" /> te installeren.
 
       Als dit beleid niet is ingesteld, mislukt de installatie van <ph name="PLUGIN_VM_NAME" /> als de beschikbare vrije opslagruimte op het apparaat minder is dan 20 GB (standaardwaarde).
@@ -2759,11 +2760,6 @@ Als dit beleid is ingesteld op False, gebruikt <ph name="PRODUCT_NAME" /> geen s
       Als je het beleid niet toepast of niet instelt, kunnen gebruikers bestanden overzetten naar Drive via een mobiele verbinding.</translation>
 <translation id="4248277954659222481">Automatisch afspelen van media toestaan op een toelatingslijst met URL-patronen</translation>
 <translation id="4250680216510889253">Nee</translation>
-<translation id="4257545866869267519">Hiermee kun je een lijst met URL's instellen die zijn vrijgesteld van de melding over volledig scherm. De melding wordt getoond als het apparaat uit de slaapstand wordt gehaald, de helderheid wordt verhoogd of het vergrendelscherm wordt ontgrendeld en het apparaat een venster in de modus voor volledig scherm heeft. De bedoeling is om gebruikers ervan bewust te maken dat de modus voor volledig scherm aanstaat. Dit verkleint het risico op phishingaanvallen.
-
-          Met dit beleid kun je de melding uitzetten voor specifieke URL's die als vertrouwde bronnen worden beschouwd. Het beleid wordt ingesteld door een lijst met URL-patronen op te geven die zijn ingedeeld volgens https://www.chromium.org/administrators/url-blocklist-filter-format. Het is bijvoorbeeld mogelijk om de meldingen helemaal uit te zetten door het jokerteken <ph name="WILDCARD_VALUE" /> op te geven dat overeenkomt met alle URL's.
-
-Als je dit beleid instelt voor een lege lijst of niet instelt, zijn er geen URL's vrijgesteld van de melding over volledig scherm.</translation>
 <translation id="4260027436474745627">Als je dit beleid toepast, wordt elk van de benoemde herkomsten in een door komma's gescheiden lijst uitgevoerd in een eigen proces. Elk proces van een benoemde herkomst mag alleen documenten bevatten van de betreffende herkomst en de subdomeinen daarvan. Als je bijvoorbeeld https://a1.example.com/ opgeeft, valt https://a2.a1.example.com/ onder hetzelfde proces, maar https://example.com of https://b.example.com niet.
 
 Sinds <ph name="PRODUCT_NAME" /> 77 kun je met een jokerteken een herkomstbereik opgeven om te isoleren. Als je bijvoorbeeld https://[*.]corp.example.com opgeeft, wordt elke herkomst onder https://corp.example.com uitgevoerd in een eigen proces, waaronder https://corp.example.com zelf, https://a1.corp.example.com en https://a2.a1.corp.example.com.
@@ -3856,6 +3852,12 @@ Opmerking: Als iOS wordt gebruikt en het beleid wordt aangepast tijdens een sess
 
       Als dit beleid niet wordt ingesteld, geldt de standaardwaarde 'niet toegestaan' voor beheerde zakelijke gebruikers en 'toegestaan' voor niet-beheerde gebruikers.</translation>
 <translation id="5584132346604748282">Beheer van Google-locatieservices op Android</translation>
+<translation id="5585384603219625331">Dit beleid bepaalt of de implementatie van <ph name="AES_KL_NAME" /> wordt aangezet voor versleuteling van gebruikersopslag voor <ph name="DM_CRYPT" />-basismappen voor de gebruiker in Chrome OS (als dit wordt ondersteund).
+
+       Dit beleid is alleen van toepassing op basismappen voor gebruikers die <ph name="DM_CRYPT" /> gebruiken voor versleuteling. Verouderde basismappen voor gebruikers (die <ph name="DM_CRYPT" /> niet gebruiken) ondersteunen het gebruik van <ph name="AES_KL_NAME" /> niet en gebruiken standaard <ph name="AES_NI_NAME" />.
+
+       Als de waarde van het beleid verandert, kunnen bestaande <ph name="DM_CRYPT" />-basismappen voor gebruikers worden geopend via de versleutelingsimplementatie die door het beleid is ingesteld, omdat de <ph name="AES_ALGORITHM_NAME" />-implementaties compatibel zijn.
+       Als het beleid uitstaat of niet is ingesteld, maakt versleuteling van gebruikersopslag voor <ph name="DM_CRYPT" />-basismappen voor gebruikers standaard gebruik van <ph name="AES_NI_NAME" />.</translation>
 <translation id="5586942249556966598">Niets doen</translation>
 <translation id="5598417829613725146">Canvas (ondersteund vanaf versie 90)</translation>
 <translation id="5599461642204007579">Beheerinstellingen voor <ph name="MS_AD_NAME" /></translation>
@@ -6470,6 +6472,7 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 <translation id="8626826495474944836">Site-isolatie verplichten voor elke site</translation>
 <translation id="8631434304112909927">tot versie <ph name="UNTIL_VERSION" /></translation>
 <translation id="8631437968147930597">De lijst met notitie-apps die zijn toegestaan op het <ph name="PRODUCT_OS_NAME" />-vergrendelscherm</translation>
+<translation id="8634062512783775032"><ph name="AES_KL_NAME" /> gebruiken als het versleutelingsalgoritme voor versleuteling van gebruikersopslag (als dit wordt ondersteund)</translation>
 <translation id="8637566476051166626">Expliciet toegestane netwerkpoorten</translation>
 <translation id="8643838501942693770">Cookies van derden toestaan, maar toestaan dat gebruikers deze instelling wijzigen</translation>
 <translation id="8648844602494595665">Dit beleid bepaalt hoe er wordt omgegaan met het hangsloticoon in de omnibox.

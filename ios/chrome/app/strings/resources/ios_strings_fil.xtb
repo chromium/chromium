@@ -60,6 +60,7 @@
 <translation id="1407135791313364759">Buksan lahat</translation>
 <translation id="1430915738399379752">I-print</translation>
 <translation id="1434356225517321998">Pinapamahalaan ang iyong browser. <ph name="BEGIN_LINK" />Mga Detalye<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">On-device na Pag-encrypt</translation>
 <translation id="1449835205994625556">Itago ang Password</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> (na) item</translation>
 <translation id="149095475893949513">Sinusubukan ng website na ito na mag-download ng profile ng configuration.</translation>
@@ -94,6 +95,7 @@
 <translation id="1690731385917361335">Walang mga item</translation>
 <translation id="1692118695553449118">Naka-on ang pag-sync</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ang napili</translation>
+<translation id="1726573592754903697">Google Password Manager</translation>
 <translation id="1740468249224277719">I-double tap upang i-install.</translation>
 <translation id="1752547299766512813">I-save ang Mga Password</translation>
 <translation id="1753905327828125965">Most Visited</translation>
@@ -284,6 +286,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3529024052484145543">Hindi secure</translation>
 <translation id="3533202363250687977">Isara ang Lahat ng Tab na Incognito</translation>
 <translation id="3533436815740441613">Bagong Tab</translation>
+<translation id="3536487890564466894">I-encrypt ang iyong mga password bago ma-save ang mga ito sa iyong Google Account.</translation>
 <translation id="3551320343578183772">Isara ang Tab</translation>
 <translation id="3581564640715911333">Mag-alok na mag-translate ng mga page sa iba pang wika</translation>
 <translation id="3588820906588687999">Buksan ang Larawan sa Bagong Tab</translation>
@@ -502,6 +505,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="575902488528307720">Maghanap ng Larawan</translation>
 <translation id="5781453543752460388">Idagdag sa Photos</translation>
 <translation id="5782227691023083829">Tina-translate...</translation>
+<translation id="5802829331520313983">I-set Up…</translation>
 <translation id="5803566855766646066">Sigurado ka bang gusto mong i-discard ang bagong card na ito?</translation>
 <translation id="5812974770859303494">Idagdag Sa...</translation>
 <translation id="5816228676161003208">Binibigyang-daan ka nito upang mas mabilis na makapaghanap gamit ang iyong boses.</translation>
@@ -561,6 +565,7 @@ Dapat ding naka-enable ang handoff sa Pangkalahatang seksyon ng Mga Setting, at 
 <translation id="6219688215832490856">Huwag Kailanman I-translate</translation>
 <translation id="6223816392543092032">Kunin ang iyong mga bookmark, history, password, at iba pang setting sa lahat ng device mo.</translation>
 <translation id="6232329973559504466">Paghahanap na Incognito</translation>
+<translation id="6232736989810857397">Nagbibigay-daan ito sa iyong gumawa ng mga event sa kalendaryo gamit ang Google Lens nang walang kahirap-hirap.</translation>
 <translation id="6254066287920239840">Buksan ang mga link sa app sa halip na sa browser.</translation>
 <translation id="6255097610484507482">I-edit ang Credit Card</translation>
 <translation id="6284652193729350524">Mag-alok na isalin ang <ph name="LANGUAGE" /></translation>

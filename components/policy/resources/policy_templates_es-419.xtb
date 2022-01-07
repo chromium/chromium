@@ -213,7 +213,6 @@
       Si no estableces la política o el valor que genera la sustitución no es un nombre de host válido, no se configurará ningún nombre de host en la solicitud de DHCP.</translation>
 <translation id="1257550411839719984">Establecer el directorio de descarga predeterminado</translation>
 <translation id="1265053460044691532">Permite limitar el tiempo durante el cual un usuario autenticado mediante SAML puede acceder sin conexión.</translation>
-<translation id="1268548671627260798">Lista de URLs que están exentas de la notificación sobre la pantalla completa</translation>
 <translation id="127264587838521316">Habilita las solicitudes de instalación de extensiones de <ph name="PRODUCT_NAME" /></translation>
 <translation id="1272798957154751008">Habilitar la migración de los dispositivos Chromad a la administración de la nube</translation>
 <translation id="1274997165432133392">Cookies y otros datos de sitios</translation>
@@ -2597,6 +2596,7 @@ Si no la estableces, inicialmente se inhabilitará la pantalla de privacidad, pe
 <translation id="3964298692570794635">Permite contenido no seguro en estos sitios</translation>
 <translation id="3965339130942650562">Está ejecutado el tiempo de espera para salir del navegador cuando el usuario se encuentre inactivo</translation>
 <translation id="396536755218079668">Usuarios supervisados</translation>
+<translation id="3968218878014278212">Permitir la habilitación de Eche</translation>
 <translation id="3971673686578912106">Si habilitas la política, se activará <ph name="PLUGIN_VM_NAME" /> para el dispositivo, siempre y cuando lo permitan otras opciones de configuración. Para ejecutar <ph name="PLUGIN_VM_NAME" />, <ph name="PLUGIN_VM_ALLOWED_POLICY_NAME" /> y <ph name="USER_PLUGIN_VM_ALLOWED_POLICY_NAME" /> deben ser verdaderos, y se debe establecer <ph name="PLUGIN_VM_LICENSE_KEY_POLICY_NAME" /> o <ph name="PLUGIN_VM_USER_ID_POLICY_NAME" />.
 
       Si inhabilitas la política o no la estableces, no se activará <ph name="PLUGIN_VM_NAME" /> para el dispositivo.</translation>
@@ -2789,11 +2789,6 @@ Si la estableces como falsa, <ph name="PRODUCT_NAME" /> no podrá usar notificac
       Si inhabilitas la política o no la estableces, los usuarios podrán transferir archivos a Drive por conexión móvil.</translation>
 <translation id="4248277954659222481">Permite la reproducción automática de contenido multimedia en una lista de patrones de URL permitidos</translation>
 <translation id="4250680216510889253">No</translation>
-<translation id="4257545866869267519">Configura una lista de direcciones URL que estén exentas de la notificación sobre la pantalla completa. La notificación se muestra cuando el dispositivo sale del modo de suspensión, aumenta el brillo o se desbloquea la pantalla y una ventana está en modo de pantalla completa. De esta forma, los usuarios sabrán que están en modo de pantalla completa, lo que reduce el riesgo de una suplantación de identidad.
-
-          Esta política permite desactivar la notificación para direcciones URL específicas que se consideran fuentes confiables. Se establece al especificar una lista de patrones de URL que cumplen con el siguiente formato ( https://www.chromium.org/administrators/url-blocklist-filter-format ). P. ej., es posible inhabilitar las notificaciones por completo al especificar el carácter comodín <ph name="WILDCARD_VALUE" /> que coincida con todas las URLs.
-
-          Si estableces esta política como una lista vacía o no la estableces, ninguna URL queda exenta de la notificación sobre la pantalla completa.</translation>
 <translation id="4260027436474745627">Si estableces la política, cada uno de los orígenes designados en una lista de elementos separados por comas se ejecutará en un proceso dedicado. El proceso de cada origen designado solo podrá incluir documentos de ese origen y sus subdominios. Por ejemplo, si especificas https://a1.example.com/, se permitirá https://a2.a1.example.com/ en el mismo proceso, pero no así https://example.com o https://b.example.com.
 
       A partir de <ph name="PRODUCT_NAME" /> 77, también puedes especificar un rango de orígenes para aislarlos mediante un comodín. Por ejemplo, si especificas https://[*.]corp.example.com, se otorgará su propio proceso dedicado a cada origen dentro de https://corp.example.com, incluidos https://corp.example.com, https://a1.corp.example.com y https://a2.a1.corp.example.com.
@@ -3433,6 +3428,7 @@ Si estableces esta política, <ph name="PRODUCT_OS_NAME" /> solo permitirá que 
       Si estableces la política como falsa o no la estableces, <ph name="PRODUCT_NAME" /> utilizará la configuración para comprobar la actual revocación en línea.</translation>
 <translation id="5078623750797048009">Habilitar las anotaciones en archivos PDF</translation>
 <translation id="5081204761483900654">Sesiones de invitado administradas y restringidas</translation>
+<translation id="5082296146261894974">Permitir a los usuarios hacer clic en la notificación de Phone Hub para iniciar la aplicación Eche</translation>
 <translation id="5082572440690475059">Permite el acceso de lectura a través de la API de File System en estos sitios</translation>
 <translation id="5085647276663819155">Inhabilitar vista previa de impresión</translation>
 <translation id="5090791951240382356">Permitir la combinación de políticas de diccionarios con diferentes fuentes</translation>
@@ -4186,6 +4182,7 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 
       El campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> especifica si se puede ejecutar una aplicación web durante el acceso al SO. Si este campo se establece como <ph name="BLOCKED" />, no se ejecutará la aplicación web durante el acceso al SO, y el usuario no podrá habilitar esta acción más tarde. Si este campo se establece como <ph name="RUN_WINDOWED" />, se ejecutará la aplicación web durante el acceso al SO, y el usuario no podrá inhabilitar esta acción más tarde. Si este campo se establece como <ph name="ALLOWED" />, el usuario podrá configurar la aplicación web para que se ejecute durante el acceso al SO. La configuración determinada solo permite los valores <ph name="ALLOWED" /> y <ph name="BLOCKED" />.
       </translation>
+<translation id="5945312246863177268">No permitir a los usuarios hacer clic en la notificación de Phone Hub para iniciar la aplicación Eche</translation>
 <translation id="5946082169633555022">Canal beta</translation>
 <translation id="5946329690214660966">Establecer un cronograma personalizado para buscar actualizaciones</translation>
 <translation id="5950069117106131681">Si habilitas la política, se activarán los encabezados y pies de página en la vista previa de impresión. Si inhabilitas la política, se desactivarán en la vista previa de impresión.
@@ -4767,6 +4764,11 @@ Si ninguna de las entradas tiene un valor de <ph name="CHROMEOS_VERSION_PROPERTY
 <translation id="66265932317331474">Envía información de la CPU</translation>
 <translation id="6628120204569232711">Informar el estado de almacenamiento</translation>
 <translation id="663685822663765995">Restringir el modo de impresión a color</translation>
+<translation id="6640355849038068978">Si habilitas esta configuración, los usuarios podrán iniciar la aplicación Eche, por ejemplo, haciendo clic en una notificación de Phone Hub.
+
+      Si inhabilitas esta configuración, los usuarios no podrán iniciar la aplicación Eche.
+
+      Si no estableces esta política, se podrá utilizar el valor predeterminado tanto para usuarios administrados por una empresa como para aquellos no administrados.</translation>
 <translation id="6641981670621198190">Inhabilitar la admisión de API gráficas en 3D</translation>
 <translation id="6642682198621199507">Si estableces la política, podrás crear una lista de los sitios que reciben automáticamente permiso para acceder a todos los puertos en serie disponibles.
 

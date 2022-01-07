@@ -53,6 +53,10 @@
 <translation id="1247519845643687288">Саяхны аппууд</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" />-с цэнэглэж байна</translation>
 <translation id="1255033239764210633">Цаг агаар ямар байна вэ?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" />-с 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Дэлгэрэнгүй мэдээллийг Google Календариас сонгоно уу.</translation>
 <translation id="1266097335951928626">Сельфи камерыг эхлүүлэх</translation>
 <translation id="1267032506238418139">Товчлолыг өөрчлөх</translation>
 <translation id="1269405891096105529">Зочны горимд нэмэлтийг дэмждэггүй</translation>
@@ -109,7 +113,6 @@
 <translation id="1570871743947603115">Bluetooth-г унтрааж/асаана уу. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Энэ харилцан үйлдлийн бүх үйл ажиллагаандаа хандах</translation>
 <translation id="1611993646327628135">Асаалттай</translation>
-<translation id="1615402009686901181">Администраторын бодлого нь нууцлалтай контентыг харагдаж байх үед дэлгэцийн зураг авахыг идэвхгүй болгодог</translation>
 <translation id="1632985212731562677">Сэлгүүрийг Тохиргоо &gt; Хандалт хэсэгт идэвхгүй болгох боломжтой.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> төхөөрөмж</translation>
 <translation id="1654477262762802994">Дуут асуулга эхлүүлэх</translation>
@@ -999,6 +1002,8 @@
 <translation id="7720410380936703141">ДАХИН ОРОЛДОХ</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 мэдэгдэл}other{# мэдэгдэл}}</translation>
 <translation id="7724603315864178912">Хайчлах</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Аппуудыг тавиур дээр харуулах</translation>
 <translation id="7749443890790263709">Дэлгэцийн тоо хамгийн дээд хэмжээнд хүрлээ.</translation>
 <translation id="7749640678855296659">Таны микрофон одоогоор унтраалттай байна</translation>
@@ -1191,7 +1196,6 @@
 <translation id="9024331582947483881">бүтэн дэлгэц</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" />-н тохиргоог нээх</translation>
 <translation id="9059834730836941392">Мэдэгдлийг буулгах</translation>
-<translation id="9063800855227801443">Нууцлалтай контентын зургийг авах боломжгүй</translation>
 <translation id="9065203028668620118">Засварлах</translation>
 <translation id="9070640332319875144">Туслагчийн тохиргоо</translation>
 <translation id="9072519059834302790">Батарей дуусахад <ph name="TIME_LEFT" /> үлдлээ.</translation>

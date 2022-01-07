@@ -213,7 +213,6 @@
       Politika ayarlanmadan bırakılırsa veya değişiklikten sonraki değer geçerli bir ana makine adı değilse DHCP isteğinde ana makine adı ayarlanmaz.</translation>
 <translation id="1257550411839719984">Varsayılan indirme dizinini ayarlama</translation>
 <translation id="1265053460044691532">SAML kullanarak kimlik doğrulaması yapmış kullanıcının çevrimdışı olarak giriş yapabileceği süreyi sınırla</translation>
-<translation id="1268548671627260798">Tam ekran bildiriminden muaf olan URL'lerin listesi</translation>
 <translation id="127264587838521316"><ph name="PRODUCT_NAME" /> uzantı yükleme isteklerini etkinleştirir</translation>
 <translation id="1272798957154751008">Chromad cihazların bulut yönetimine taşınmasını etkinleştir</translation>
 <translation id="1274997165432133392">Çerezler ve diğer site verileri</translation>
@@ -2781,11 +2780,6 @@ Bu politika Yanlış değerine ayarlanırsa <ph name="PRODUCT_NAME" /> yerel bil
       Politika Devre dışı değerine ayarlanır veya ayarlanmadan bırakılırsa kullanıcılar hücresel bağlantı kullanırken Drive'a dosya aktarabilir.</translation>
 <translation id="4248277954659222481">URL kalıpları izin verilenler listesinde medyanın otomatik olarak oynatılmasına izin ver</translation>
 <translation id="4250680216510889253">Hayır</translation>
-<translation id="4257545866869267519">Tam ekran bildiriminden muaf olan URL'lerin listesini yapılandırır. Bildirim, cihaz uykudan, düşük parlaklıktan veya kilit ekranından döndüğünde ve tam ekran modunda penceresi varken gösterilir. Bunun nedeni kullanıcıların tam ekran modunda olduklarını anlamalarını sağlayıp kimlik avı saldırıları riskini azaltmaktır.
-
-          Bu politika sayesinde güvenilir kaynak olarak kabul edilecek belirli URL'ler için bildirimin devre dışı bırakılması sağlanır. Politika bu biçime (https://www.chromium.org/administrators/url-blocklist-filter-format) göre biçimlendirilmiş bir URL kalıpları listesi belirtilerek ayarlanır. Örneğin, tüm URL'lerle eşleşen <ph name="WILDCARD_VALUE" /> joker karakterini belirterek bildirimleri tamamen devre dışı bırakmak mümkündür.
-
-          Bu politikanın boş bir listeye ayarlanması veya ayarlamadan bırakılması hiçbir URL'nin tam ekran bildiriminden muaf olmadığı anlamına gelir.</translation>
 <translation id="4260027436474745627">Bu politika ayarlanırsa virgülle ayrılmış listede adı verilen her kaynak özel işlem içinde çalışır. Adı verilen her kaynağın işleminde yalnızca o kaynaktan ve kaynağın alt alan adlarından dokümanlar bulunabilir. Örneğin, https://a1.example.com/ alan adı tanımlandığında aynı işlem içerisinde https://a2.a1.example.com/ bulunabilir ancak https://example.com veya https://b.example.com bulunamaz.
 
       77. <ph name="PRODUCT_NAME" /> sürümünden itibaren, joker karakter kullanarak izole edilecek bir kaynak aralığı belirlemek mümkündür. Örneğin, https://[*.]corp.example.com alan adı belirlenirse, https://corp.example.com alan adının kendisi, https://a1.corp.example.com ve https://a2.a1.corp.example.com dahil olmak üzere https://corp.example.com alan adının altında bulunan her bir kaynak kendi özel işlemi içinde çalışır.

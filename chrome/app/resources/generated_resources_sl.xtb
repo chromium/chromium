@@ -2713,7 +2713,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3742666961763734085">Organizacijske enote s tem imenom ni mogoče najti. Poskusite znova.</translation>
 <translation id="3743842571276656710">Vnesite kodo PIN, če želite izvesti seznanitev z napravo <ph name="DEVICE_NAME" />.</translation>
 <translation id="3747077776423672805">Če želite odstraniti aplikacije, pojdite v »Nastavitve« &gt; »Trgovina Google Play« &gt; »Upravljanje nastavitev Androida« &gt; »Aplikacije« ali odprite Upravitelja aplikacij. Nato se dotaknite aplikacije, ki jo želite odmestiti (morda boste morali s prstom povleči v desno ali levo, da jo boste našli). Nato se dotaknite »Odmesti« ali »Onemogoči«.</translation>
-<translation id="3747220812138541072">Prikaz sprotnih predlogov besedila, ki se prikažejo med vnašanjem.</translation>
 <translation id="3747603683749989726">Želite vklopiti izboljšano varnost?</translation>
 <translation id="3748706263662799310">Obvestite nas o napaki</translation>
 <translation id="3750562496035670393">Chrome je vaše geslo shranil v to napravo, vendar ga lahko po želji shranite v svoj račun Google. Nato bodo vsa gesla v računu Google na voljo tudi, ko ste prijavljeni.</translation>
@@ -2904,6 +2903,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3916445069167113093">Ta vrsta datoteke lahko poškoduje vaš računalnik. Ali želite vseeno obdržati datoteko <ph name="FILE_NAME" />?</translation>
 <translation id="3918972485393593704">Sporoči podrobnosti Googlu</translation>
 <translation id="3919145445993746351">Če želite dostopati do razširitev v vseh računalnikih, vklopite sinhronizacijo</translation>
+<translation id="3919229493046408863">Izklop obvestila, ko so v bližini druge naprave</translation>
 <translation id="3919798653937160644">Strani, ki si jih ogledujete v tem oknu, ne bodo prikazane v zgodovini brskanja in v računalniku ne bodo pustile drugih sledi, na primer piškotkov, ko boste zaprli vsa odprta okna načina za goste. Datoteke, ki jih prenesete, se bodo ohranile.</translation>
 <translation id="3920504717067627103">Pravilniki potrdila</translation>
 <translation id="392089482157167418">Omogoči ChromeVox (izgovarjava povratnih informacij)</translation>
@@ -5940,6 +5940,7 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="7167486101654761064">&amp;Vedno odpri to vrsto datotek</translation>
 <translation id="716810439572026343">Prenos datoteke <ph name="FILE_NAME" /></translation>
 <translation id="7168109975831002660">Najmanjša velikost pisave</translation>
+<translation id="7169122689956315694">Vklop obvestila, ko so v bližini druge naprave</translation>
 <translation id="7170236477717446850">Profilna slika</translation>
 <translation id="7171000599584840888">Dodajanje profila …</translation>
 <translation id="7171259390164035663">Brez včlanitve</translation>

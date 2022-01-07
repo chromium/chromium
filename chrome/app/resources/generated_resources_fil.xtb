@@ -2711,7 +2711,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3742666961763734085">Hindi makahanap ng unit ng organisasyon na may ganyang pangalan. Pakisubukang muli.</translation>
 <translation id="3743842571276656710">Ilagay ang PIN para maipares sa <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">Para mag-alis ng mga app, pumunta sa Mga Setting &gt; Google Play Store &gt; Pamahalaan ang mga kagustuhan sa Android &gt; Mga App o Application manager. Pagkatapos ay i-tap ang app na gusto mong i-uninstall (maaaring kailanganin mong mag-swipe pakanan o pakaliwa para mahanap ang app). Pagkatapos, i-tap ang I-uninstall o I-disable.</translation>
-<translation id="3747220812138541072">Magpakita ng inline na mga suhestyon sa pagsusulat na lalabas habang nagta-type ka</translation>
 <translation id="3747603683749989726">I-on ang pinahusay na seguridad?</translation>
 <translation id="3748706263662799310">Mag-ulat ng bug</translation>
 <translation id="3750562496035670393">Na-save ng Chrome ang iyong password sa device na ito, pero puwede mong i-save na lang ito sa iyong Google Account. Pagkatapos ay magiging available rin ang lahat ng iyong password sa Google Account mo habang naka-sign in ka.</translation>
@@ -3692,6 +3691,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4785719467058219317">Gumagamit ka ng security key na hindi nakarehistro sa website na ito</translation>
 <translation id="478708757211772586">Gamitin ang “Susunod” para lumipat sa susunod na item sa screen</translation>
 <translation id="4788092183367008521">Pakisuri ang iyong koneksyon sa network at subukang muli.</translation>
+<translation id="4789550509729954245">Magpakita ng notification kapag nagbabahagi ang mga kalapit na device</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> larawan</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">I-enable ang pag-accelerate ng TrackPoint</translation>
@@ -4053,6 +4053,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="5171343362375269016">Swapped Memory</translation>
 <translation id="5172855596271336236">May 1 pinapamahalaang printer.</translation>
 <translation id="5173668317844998239">Magdagdag at mag-delete ng mga fingerprint na naka-save sa iyong security key</translation>
+<translation id="5174169235862638850">Nakopya sa clipboard ang password</translation>
 <translation id="5175379009094579629">Invalid ang pangalan ng device. Maglagay ng valid na pangalan ng device para subukang muli.</translation>
 <translation id="5177479852722101802">Ipagpatuloy ang pag-block ng access sa camera at mikropono</translation>
 <translation id="5177549709747445269">Gumagamit ka ng mobile data</translation>

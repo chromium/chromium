@@ -109,7 +109,6 @@
 <translation id="1570871743947603115">Изменить настройки Bluetooth. <ph name="STATE_TEXT" />.</translation>
 <translation id="1589090746204042747">Получать доступ к данным о ваших действиях во время этого сеанса.</translation>
 <translation id="1611993646327628135">Включено</translation>
-<translation id="1615402009686901181">Администратор запретил запись экрана, когда видны конфиденциальные данные.</translation>
 <translation id="1632985212731562677">Функцию Switch Access можно отключить в разделе "Настройки &gt; Специальные возможности".</translation>
 <translation id="1637505162081889933">Устройств: <ph name="NUM_DEVICES" /></translation>
 <translation id="1654477262762802994">Произнесите запрос</translation>
@@ -122,6 +121,7 @@
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">Автоматические субтитры включены</translation>
 <translation id="1720011244392820496">Включить синхронизацию Wi-Fi</translation>
+<translation id="1736898441010944794">"<ph name="NAME" />": видно устройствам Bluetooth.</translation>
 <translation id="1743570585616704562">Не распознано</translation>
 <translation id="1746730358044914197">Способы ввода настраиваются администратором</translation>
 <translation id="1747827819627189109">Экранная клавиатура включена</translation>
@@ -831,6 +831,7 @@
 <translation id="6578407462441924264">Без имени</translation>
 <translation id="6585808820553845416">Сеанс закончится через <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">Вы были подключены к более безопасной сети.</translation>
 <translation id="661203523074512333">Статус защиты – "<ph name="SECURITY_STATUS" />", уровень сигнала – <ph name="SIGNAL_STRENGTH" />, под управлением администратора</translation>
 <translation id="6612802754306526077">Выбран режим записи видео с экрана</translation>
 <translation id="6614169507485700968">Экран конфиденциальности включен</translation>
@@ -1187,7 +1188,6 @@
 <translation id="9024331582947483881">полноэкранный режим</translation>
 <translation id="9047624247355796468">Открыть настройки сети "<ph name="NETWORK_NAME" />"</translation>
 <translation id="9059834730836941392">Свернуть уведомление</translation>
-<translation id="9063800855227801443">Не удается сделать снимок конфиденциального контента</translation>
 <translation id="9065203028668620118">Изменить</translation>
 <translation id="9070640332319875144">Настройки Ассистента</translation>
 <translation id="9072519059834302790">Оставшееся время работы от батареи: <ph name="TIME_LEFT" />.</translation>

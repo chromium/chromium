@@ -2697,7 +2697,6 @@ Pretende pará-lo?</translation>
 <translation id="3742666961763734085">Não é possível encontrar uma unidade organizacional com esse nome. Tente novamente.</translation>
 <translation id="3743842571276656710">Introduza o PIN para sincronizar com o dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">Para remover aplicações, aceda a Definições &gt; Google Play Store &gt; Gerir preferências do Android &gt; Apps ou Gestor de aplicações. Toque na aplicação que pretende desinstalar (pode ter de deslizar rapidamente para a direita ou para a esquerda para encontrar a aplicação). Em seguida, toque em Desinstalar ou em Desativar.</translation>
-<translation id="3747220812138541072">Mostrar sugestões de escrita inline que surgem à medida que escreve</translation>
 <translation id="3747603683749989726">Ativar a segurança melhorada?</translation>
 <translation id="3748706263662799310">Comunicar um erro</translation>
 <translation id="3750562496035670393">O Chrome guardou a sua palavra-passe neste dispositivo, mas pode guardá-la na sua Conta Google em alternativa. Assim, todas as palavras-passe na sua Conta Google também estarão disponíveis enquanto tiver sessão iniciada.</translation>
@@ -3677,6 +3676,7 @@ Pretende pará-lo?</translation>
 <translation id="4785719467058219317">Está a utilizar uma chave de segurança que não está registada neste Website.</translation>
 <translation id="478708757211772586">Utilize "Seguinte" para avançar no ecrã</translation>
 <translation id="4788092183367008521">Verifique a sua ligação à rede e tente novamente.</translation>
+<translation id="4789550509729954245">Mostrar notificação quando os dispositivos estiverem a partilhar nas proximidades</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Ativar aceleração do TrackPoint</translation>
@@ -4038,6 +4038,7 @@ Pretende pará-lo?</translation>
 <translation id="5171343362375269016">Memória trocada</translation>
 <translation id="5172855596271336236">Existe 1 impressora gerida.</translation>
 <translation id="5173668317844998239">Adicionar e eliminar as impressões digitais guardadas na sua chave de segurança</translation>
+<translation id="5174169235862638850">Palavra-passe copiada para a área de transferência</translation>
 <translation id="5175379009094579629">O nome do dispositivo é inválido. Introduza um nome do dispositivo válido e tente novamente.</translation>
 <translation id="5177479852722101802">Continuar a bloquear o acesso à câmara e ao microfone</translation>
 <translation id="5177549709747445269">Está a utilizar dados móveis</translation>

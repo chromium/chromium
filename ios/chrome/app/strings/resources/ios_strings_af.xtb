@@ -60,6 +60,7 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="1407135791313364759">Maak alles oop</translation>
 <translation id="1430915738399379752">Druk uit</translation>
 <translation id="1434356225517321998">Jou blaaier word bestuur. <ph name="BEGIN_LINK" />Besonderhede<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">Enkripsie op toestel</translation>
 <translation id="1449835205994625556">Versteek wagwoord</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> items</translation>
 <translation id="149095475893949513">Hierdie webwerf probeer tans om 'n opstellingprofiel af te laai.</translation>
@@ -94,6 +95,7 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="1690731385917361335">Geen items nie</translation>
 <translation id="1692118695553449118">Sinkronisering is aan</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> gekies</translation>
+<translation id="1726573592754903697">Google Wagwoordbestuurder</translation>
 <translation id="1740468249224277719">Dubbeltik om te installeer.</translation>
 <translation id="1752547299766512813">Stoor wagwoorde</translation>
 <translation id="1753905327828125965">Meeste besoek</translation>
@@ -284,6 +286,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3529024052484145543">Nie veilig nie</translation>
 <translation id="3533202363250687977">Maak alle incognito-oortjies toe</translation>
 <translation id="3533436815740441613">Nuwe oortjie</translation>
+<translation id="3536487890564466894">Enkripteer jou wagwoorde voordat hulle in jou Google-rekening gestoor word.</translation>
 <translation id="3551320343578183772">Maak oortjie toe</translation>
 <translation id="3581564640715911333">Aanbieding om bladsye in ander tale te vertaal</translation>
 <translation id="3588820906588687999">Maak prent in nuwe oortjie oop</translation>
@@ -502,6 +505,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="575902488528307720">Soek prent</translation>
 <translation id="5781453543752460388">Voeg by foto's</translation>
 <translation id="5782227691023083829">Vertaal tans …</translation>
+<translation id="5802829331520313983">Stel op …</translation>
 <translation id="5803566855766646066">Is jy seker jy wil hierdie nuwe kaart weggooi?</translation>
 <translation id="5812974770859303494">Voeg by …</translation>
 <translation id="5816228676161003208">Dit laat jou vinniger soek met jou stem.</translation>
@@ -561,6 +565,7 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6219688215832490856">Moet nooit vertaal nie</translation>
 <translation id="6223816392543092032">Kry jou boekmerke, geskiedenis, wagwoorde en ander instellings op al jou toestelle.</translation>
 <translation id="6232329973559504466">Incognito-soektog</translation>
+<translation id="6232736989810857397">Dit maak dit vir jou moontlik om Google Lens te gebruik om kalendergeleenthede maklik te skep.</translation>
 <translation id="6254066287920239840">Maak skakels in die program oop, in plaas van die blaaier.</translation>
 <translation id="6255097610484507482">Wysig kredietkaart</translation>
 <translation id="6284652193729350524">Bied aan om <ph name="LANGUAGE" /> te vertaal</translation>

@@ -109,7 +109,6 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1570871743947603115">Slå av/på Bluetooth. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">se all aktiviteten din i denne økten</translation>
 <translation id="1611993646327628135">På</translation>
-<translation id="1615402009686901181">På grunn av en administratorregel er skjermdumper deaktivert når konfidensielt innhold er synlig</translation>
 <translation id="1632985212731562677">Brytertilgang kan slås av i Innstillinger &gt; Tilgjengelighet.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> enheter</translation>
 <translation id="1654477262762802994">Start et talesøk</translation>
@@ -122,6 +121,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1715874602234207">F</translation>
 <translation id="1719094688023114093">Direkteteksting er på.</translation>
 <translation id="1720011244392820496">Slå på Wi-Fi-synkronisering</translation>
+<translation id="1736898441010944794">«<ph name="NAME" />» er synlig for Bluetooth-enheter.</translation>
 <translation id="1743570585616704562">Ikke gjenkjent</translation>
 <translation id="1746730358044914197">Inndatametoder konfigureres av administratoren din.</translation>
 <translation id="1747827819627189109">Skjermtastaturet er aktivert</translation>
@@ -831,6 +831,7 @@ Nylig installert</translation>
 <translation id="6578407462441924264">Uten navn</translation>
 <translation id="6585808820553845416">Økten slutter om <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" /> <ph name="SECONDARY_TEXT" /></translation>
+<translation id="6602800870584047641">Tilkoblingen din byttet til et sikrere nettverk</translation>
 <translation id="661203523074512333"><ph name="SECURITY_STATUS" /> – signalstyrke <ph name="SIGNAL_STRENGTH" /> – administreres av administratoren din</translation>
 <translation id="6612802754306526077">Skjermopptaksmodus er valgt</translation>
 <translation id="6614169507485700968">Personvernskjermen er på</translation>
@@ -1187,7 +1188,6 @@ Nylig installert</translation>
 <translation id="9024331582947483881">full skjerm</translation>
 <translation id="9047624247355796468">Åpne innstillinger for <ph name="NETWORK_NAME" /></translation>
 <translation id="9059834730836941392">Skjul varselet</translation>
-<translation id="9063800855227801443">Kan ikke ta bilde av konfidensielt innhold</translation>
 <translation id="9065203028668620118">Endre</translation>
 <translation id="9070640332319875144">Assistent-innstillinger</translation>
 <translation id="9072519059834302790"><ph name="TIME_LEFT" /> til batteriet er tomt.</translation>

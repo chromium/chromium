@@ -109,7 +109,6 @@
 <translation id="1570871743947603115">블루투스를 전환합니다. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">이 세션의 모든 활동에 액세스</translation>
 <translation id="1611993646327628135">켜짐</translation>
-<translation id="1615402009686901181">기밀 콘텐츠가 보일 때 관리자 정책에서 화면 캡처를 사용 중지합니다.</translation>
 <translation id="1632985212731562677">설정 &gt; 접근성에서 스위치 제어를 사용 중지할 수 있습니다.</translation>
 <translation id="1637505162081889933">기기 <ph name="NUM_DEVICES" />대</translation>
 <translation id="1654477262762802994">음성 검색 시작</translation>
@@ -1189,7 +1188,6 @@
 <translation id="9024331582947483881">전체화면</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> 설정 열기</translation>
 <translation id="9059834730836941392">알림 접기</translation>
-<translation id="9063800855227801443">기밀 콘텐츠는 캡처할 수 없음</translation>
 <translation id="9065203028668620118">수정</translation>
 <translation id="9070640332319875144">어시스턴트 설정</translation>
 <translation id="9072519059834302790">남은 배터리 사용 시간은 <ph name="TIME_LEFT" />입니다.</translation>

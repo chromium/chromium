@@ -60,6 +60,7 @@
 <translation id="1407135791313364759">সব খুলুন</translation>
 <translation id="1430915738399379752">প্রিন্ট</translation>
 <translation id="1434356225517321998">আপনার ব্রাউজার ম্যানেজ করা হয়। <ph name="BEGIN_LINK" />বিবরণ<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">অন-ডিভাইস এনক্রিপশন</translation>
 <translation id="1449835205994625556">পাসওয়ার্ড লুকান</translation>
 <translation id="145015347812617860"><ph name="COUNT" />টি আইটেম</translation>
 <translation id="149095475893949513">এই ওয়েবসাইটটি একটি কনফিগারেশন প্রোফাইল ডাউনলোড করার চেষ্টা করছে।</translation>
@@ -94,6 +95,7 @@
 <translation id="1690731385917361335">কোনো আইটেম নেই</translation>
 <translation id="1692118695553449118">সিঙ্ক চালু রয়েছে</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" />টি নির্বাচিত</translation>
+<translation id="1726573592754903697">Google পাসওয়ার্ড ম্যানেজার</translation>
 <translation id="1740468249224277719">ইনস্টল করতে দুবার আলতো চাপুন।</translation>
 <translation id="1752547299766512813">পাসওয়ার্ডগুলি সেভ করুন</translation>
 <translation id="1753905327828125965">সর্বাধিক দেখা</translation>
@@ -284,6 +286,7 @@
 <translation id="3529024052484145543">সুরক্ষিত নয়</translation>
 <translation id="3533202363250687977">সব ছদ্মবেশী ট্যাব বন্ধ করুন</translation>
 <translation id="3533436815740441613">নতুন ট্যাব খুলুন</translation>
+<translation id="3536487890564466894">Google অ্যাকাউন্টে আপনার পাসওয়ার্ড সেভ হওয়ার আগে সেটি এনক্রিপ্ট করে নিন।</translation>
 <translation id="3551320343578183772">ট্যাব বন্ধ করুন</translation>
 <translation id="3581564640715911333">অন্য ভাষাতে পৃষ্ঠা অনুবাদ করার প্রস্তাব দিন</translation>
 <translation id="3588820906588687999">নতুন ট্যাবে ছবি খুলুন</translation>
@@ -503,6 +506,7 @@
 <translation id="575902488528307720">ছবি সার্চ করুন</translation>
 <translation id="5781453543752460388">Photos-এ যোগ করুন</translation>
 <translation id="5782227691023083829">অনুবাদ হচ্ছে...</translation>
+<translation id="5802829331520313983">সেট-আপ করুন…</translation>
 <translation id="5803566855766646066">আপনি কি সত্যিই এই নতুন কার্ড বাতিল করতে চান?</translation>
 <translation id="5812974770859303494">এতে যোগ করুন...</translation>
 <translation id="5816228676161003208">এটি আপনাকে আপনার ভয়েস ব্যবহার করে আরও দ্রুত সার্চ করতে দেয়।</translation>
@@ -562,6 +566,7 @@
 <translation id="6219688215832490856">কখনও অনুবাদ করবেন না</translation>
 <translation id="6223816392543092032">আপনার সবকটি ডিভাইসে বুকমার্ক, ইতিহাস, পাসওয়ার্ড এবং অন্যান্য সেটিংস পান।</translation>
 <translation id="6232329973559504466">ছদ্মবেশী সার্চ</translation>
+<translation id="6232736989810857397">এর ফলে, আপনি সহজেই Google Lens ব্যবহার করে ক্যালেন্ডার ইভেন্ট তৈরি করতে পারবেন।</translation>
 <translation id="6254066287920239840">ব্রাউজারের পরিবর্তে অ্যাপটিতে লিঙ্কগুলি খুলুন।</translation>
 <translation id="6255097610484507482">ক্রেডিট কার্ড সম্পাদনা করুন</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> ভাষায় অনুবাদ করার প্রস্তাব দিন</translation>

@@ -2712,7 +2712,6 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="3742666961763734085">Não foi possível encontrar uma unidade organizacional com esse nome. Tente novamente.</translation>
 <translation id="3743842571276656710">Digite o PIN para parear com o dispositivo <ph name="DEVICE_NAME" /></translation>
 <translation id="3747077776423672805">Para remover apps, acesse "Configurações" &gt; "Google Play Store" &gt; "Gerenciar preferências do Android" &gt; "Apps" ou "Gerenciador de aplicativos". Depois, toque no app que você quer desinstalar (talvez seja necessário deslizar para a direita ou esquerda para encontrar o app). Em seguida, toque em "Desinstalar" ou "Desativar".</translation>
-<translation id="3747220812138541072">Mostrar sugestões de escrita in-line enquanto você digita</translation>
 <translation id="3747603683749989726">Ativar a segurança aprimorada?</translation>
 <translation id="3748706263662799310">Informar um bug</translation>
 <translation id="3750562496035670393">O Chrome salvou sua senha neste dispositivo, mas ela pode ser salva na sua Conta do Google, se preferir. Assim, todas as senhas na sua conta ficarão disponíveis quando ela estiver conectada.</translation>
@@ -3693,6 +3692,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="4785719467058219317">Você está usando uma chave de segurança que não está registrada neste site</translation>
 <translation id="478708757211772586">Use "Próxima" para avançar na tela</translation>
 <translation id="4788092183367008521">Verifique sua conexão de rede e tente novamente.</translation>
+<translation id="4789550509729954245">Mostrar notificação quando dispositivos estiverem compartilhando itens por perto</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> foto</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Ativar aceleração do TrackPoint</translation>
@@ -4054,6 +4054,7 @@ e Ctrl + Alt + Diminuir brilho para diminuí-lo.</translation>
 <translation id="5171343362375269016">Memória trocada</translation>
 <translation id="5172855596271336236">Há 1 impressora gerenciada.</translation>
 <translation id="5173668317844998239">Adicionar e excluir as impressões digitais salvas na chave de segurança</translation>
+<translation id="5174169235862638850">Senha copiada para a área de transferência</translation>
 <translation id="5175379009094579629">O nome do dispositivo é inválido. Digite um nome de dispositivo válido para tentar novamente.</translation>
 <translation id="5177479852722101802">Continuar bloqueando acesso à câmera e ao microfone</translation>
 <translation id="5177549709747445269">Você está usando dados móveis</translation>

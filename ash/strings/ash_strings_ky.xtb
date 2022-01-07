@@ -53,6 +53,10 @@
 <translation id="1247519845643687288">Акыркы колдонмолор</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> аркылуу кубатталууда</translation>
 <translation id="1255033239764210633">Аба ырайы кандай?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> – 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Google Жылнаамада толук маалыматты көрүү үчүн тандаңыз.</translation>
 <translation id="1266097335951928626">Селфи камераны баштоо</translation>
 <translation id="1267032506238418139">Кыска жол өзгөртүлдү</translation>
 <translation id="1269405891096105529">Сырткы түзмөктөр Конок режиминде колдоого алынбайт</translation>
@@ -109,7 +113,6 @@
 <translation id="1570871743947603115">Bluetooth'ду өчүрүү/күйгүзүү. <ph name="STATE_TEXT" /></translation>
 <translation id="1589090746204042747">Бул сеанста аткарган иш-аракеттериңизди көрөт</translation>
 <translation id="1611993646327628135">Күйүк</translation>
-<translation id="1615402009686901181">Купуя нерселер көрүнүп турганда, Администратордун саясатына ылайык экрандагыны сүрөткө тартып алууга болбойт</translation>
 <translation id="1632985212731562677">Switch Access функциясын Жөндөөлөр &gt; Атайын мүмкүнчүлүктөр бөлүмүнөн өчүрүүгө болот.</translation>
 <translation id="1637505162081889933"><ph name="NUM_DEVICES" /> түзмөк</translation>
 <translation id="1654477262762802994">Айтып издеп баштоо</translation>
@@ -998,6 +1001,8 @@
 <translation id="7720410380936703141">КАЙТАЛОО</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 билдирме}other{# билдирме}}</translation>
 <translation id="7724603315864178912">Кесүү</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Текчедеги колдонмолорду көрсөтүү</translation>
 <translation id="7749443890790263709">Иш такталардын саны эң жогорку чегине жетти.</translation>
 <translation id="7749640678855296659">Микрофонуңуз учурда өчүк</translation>
@@ -1189,7 +1194,6 @@
 <translation id="9024331582947483881">толук экран</translation>
 <translation id="9047624247355796468"><ph name="NETWORK_NAME" /> тармагынын жөндөөлөрүн ачуу</translation>
 <translation id="9059834730836941392">Эскертмени жыйыштыруу</translation>
-<translation id="9063800855227801443">Купуя мазмунду сүрөткө тартып алууга болбойт</translation>
 <translation id="9065203028668620118">Түзөтүү</translation>
 <translation id="9070640332319875144">Жардамчынын жөндөөлөрү</translation>
 <translation id="9072519059834302790">Батарея <ph name="TIME_LEFT" /> кийин отуруп калат.</translation>
