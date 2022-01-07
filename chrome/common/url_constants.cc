@@ -292,6 +292,9 @@ const char kSyncTrustedVaultOptInURL[] =
     "utm_source=chrome&utm_medium=desktop&utm_campaign=encryption_enroll";
 #endif
 
+const char kSyncTrustedVaultLearnMoreURL[] =
+    "https://support.google.com/accounts?p=settings_password_ode";
+
 const char kUpgradeHelpCenterBaseURL[] =
     "https://support.google.com/installer/?product="
     "{8A69D345-D564-463c-AFF1-A69D9E530F96}&error=";

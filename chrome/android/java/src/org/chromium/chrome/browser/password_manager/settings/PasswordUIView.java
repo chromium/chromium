@@ -120,6 +120,15 @@ public final class PasswordUIView implements PasswordManagerHandler {
         return PasswordUIViewJni.get().getAccountDashboardURL();
     }
 
+    /**
+     * Returns the URL of the help center article about trusted vault encryption.
+     *
+     * @return The string with the URL.
+     */
+    public static String getTrustedVaultLearnMoreURL() {
+        return PasswordUIViewJni.get().getTrustedVaultLearnMoreURL();
+    }
+
     public static boolean hasAccountForLeakCheckRequest() {
         return PasswordUIViewJni.get().hasAccountForLeakCheckRequest();
     }
@@ -149,6 +158,7 @@ public final class PasswordUIView implements PasswordManagerHandler {
         void handleRemoveSavedPasswordException(
                 long nativePasswordUIViewAndroid, PasswordUIView caller, int index);
         String getAccountDashboardURL();
+        String getTrustedVaultLearnMoreURL();
         boolean hasAccountForLeakCheckRequest();
         void destroy(long nativePasswordUIViewAndroid, PasswordUIView caller);
         void handleSerializePasswords(long nativePasswordUIViewAndroid, PasswordUIView caller,

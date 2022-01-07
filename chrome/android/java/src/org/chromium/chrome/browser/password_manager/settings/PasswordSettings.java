@@ -672,9 +672,8 @@ public class PasswordSettings extends PreferenceFragmentCompat
     }
 
     private boolean openTrustedVaultInfoPage(Preference unused) {
-        // TODO(crbug.com/1202088): Use correct help center URL here.
-        Intent intent =
-                new Intent(Intent.ACTION_VIEW, Uri.parse(PasswordUIView.getAccountDashboardURL()));
+        Intent intent = new Intent(
+                Intent.ACTION_VIEW, Uri.parse(PasswordUIView.getTrustedVaultLearnMoreURL()));
         intent.setPackage(getActivity().getPackageName());
         getActivity().startActivity(intent);
         // Return true to notify the click was handled.

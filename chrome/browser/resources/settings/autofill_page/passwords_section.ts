@@ -494,9 +494,8 @@ export class PasswordsSectionElement extends PasswordsSectionElementBase {
   private onTrustedVaultBannerClick_() {
     switch (this.trustedVaultBannerState_) {
       case TrustedVaultBannerState.OPTED_IN:
-        // TODO(crbug.com/1202088): Use correct help center URL here.
         OpenWindowProxyImpl.getInstance().openURL(
-            loadTimeData.getString('passwordManagerLearnMoreURL'));
+            loadTimeData.getString('trustedVaultLearnMoreUrl'));
         break;
       case TrustedVaultBannerState.OFFER_OPT_IN:
         OpenWindowProxyImpl.getInstance().openURL(

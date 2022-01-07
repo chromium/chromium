@@ -256,6 +256,9 @@ extern const char kSyncLearnMoreURL[];
 extern const char kSyncTrustedVaultOptInURL[];
 #endif
 
+// The URL for the "Learn more" link for the trusted vault sync passphrase.
+extern const char kSyncTrustedVaultLearnMoreURL[];
+
 extern const char kUpgradeHelpCenterBaseURL[];
 
 // The URL for the "Learn more" link for nearby share.

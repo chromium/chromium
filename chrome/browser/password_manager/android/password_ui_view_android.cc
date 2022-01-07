@@ -25,6 +25,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "chrome/android/chrome_jni_headers/PasswordUIView_jni.h"
+#include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/password_manager/core/browser/export/password_csv_writer.h"
 #include "components/password_manager/core/browser/form_parsing/form_parser.h"
@@ -251,6 +252,11 @@ ScopedJavaLocalRef<jstring> JNI_PasswordUIView_GetAccountDashboardURL(
     JNIEnv* env) {
   return ConvertUTF16ToJavaString(
       env, l10n_util::GetStringUTF16(IDS_PASSWORDS_WEB_LINK));
+}
+
+ScopedJavaLocalRef<jstring> JNI_PasswordUIView_GetTrustedVaultLearnMoreURL(
+    JNIEnv* env) {
+  return ConvertUTF8ToJavaString(env, chrome::kSyncTrustedVaultLearnMoreURL);
 }
 
 jboolean JNI_PasswordUIView_HasAccountForLeakCheckRequest(JNIEnv* env) {
