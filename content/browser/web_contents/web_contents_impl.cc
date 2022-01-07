@@ -5263,7 +5263,8 @@ int WebContentsImpl::DownloadImageInFrame(
 
 void WebContentsImpl::Find(int request_id,
                            const std::u16string& search_text,
-                           blink::mojom::FindOptionsPtr options) {
+                           blink::mojom::FindOptionsPtr options,
+                           bool skip_delay) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::Find");
   // Cowardly refuse to search for no text.
   if (search_text.empty()) {
@@ -5272,7 +5273,7 @@ void WebContentsImpl::Find(int request_id,
   }
 
   GetOrCreateFindRequestManager()->Find(request_id, search_text,
-                                        std::move(options));
+                                        std::move(options), skip_delay);
 }
 
 void WebContentsImpl::StopFinding(StopFindAction action) {

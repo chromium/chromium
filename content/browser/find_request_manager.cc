@@ -174,6 +174,16 @@ bool IsFindInPageDisabled(RenderFrameHost* rfh) {
                     rfh->GetLastCommittedOrigin());
 }
 
+// kMinKeystrokesWithoutDelay should be high enough that script in the page
+// can't provide every possible search result at the same time.
+constexpr int kMinKeystrokesWithoutDelay = 4;
+
+// The delay for very short queries, before sending find requests. This should
+// be higher than the duration in between two keystrokes. This is based on
+// WebCore.FindInPage.DurationBetweenKeystrokes metrics, this is higher than
+// 90% of them.
+constexpr int kDelayMs = 400;
+
 }  // namespace
 
 // Observes searched WebContentses for RenderFrameHost state updates, including
@@ -286,7 +296,8 @@ FindRequestManager::~FindRequestManager() = default;
 
 void FindRequestManager::Find(int request_id,
                               const std::u16string& search_text,
-                              blink::mojom::FindOptionsPtr options) {
+                              blink::mojom::FindOptionsPtr options,
+                              bool skip_delay) {
   // Every find request must have a unique ID, and these IDs must strictly
   // increase so that newer requests always have greater IDs than older
   // requests.
@@ -311,6 +322,41 @@ void FindRequestManager::Find(int request_id,
     last_searched_text_ = search_text;
   }
 
+  if (skip_delay) {
+    delayed_find_task_.Cancel();
+    EmitFindRequest(request_id, search_text, std::move(options));
+    return;
+  }
+
+  if (!options->new_session) {
+    // If the user presses enter while we are waiting for a delayed find, then
+    // run the find now to improve responsiveness.
+    if (!delayed_find_task_.IsCancelled()) {
+      delayed_find_task_.callback().Run();
+    } else {
+      EmitFindRequest(request_id, search_text, std::move(options));
+    }
+    return;
+  }
+
+  if (search_text.length() < kMinKeystrokesWithoutDelay) {
+    delayed_find_task_.Reset(base::BindOnce(
+        &FindRequestManager::EmitFindRequest, weak_factory_.GetWeakPtr(),
+        request_id, search_text, std::move(options)));
+    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE, delayed_find_task_.callback(), base::Milliseconds(kDelayMs));
+    return;
+  }
+
+  // If we aren't going to delay, then clear any previous attempts to delay.
+  delayed_find_task_.Cancel();
+
+  EmitFindRequest(request_id, search_text, std::move(options));
+}
+
+void FindRequestManager::EmitFindRequest(int request_id,
+                                         const std::u16string& search_text,
+                                         blink::mojom::FindOptionsPtr options) {
   // If this is a new find session, clear any queued requests from last session.
   if (options->new_session)
     find_request_queue_ = base::queue<FindRequest>();

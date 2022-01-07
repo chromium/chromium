@@ -10,6 +10,7 @@
 #include <unordered_set>
 #include <vector>
 
+#include "base/cancelable_callback.h"
 #include "base/containers/queue.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
@@ -45,7 +46,8 @@ class FindRequestManager {
   // |options|. |request_id| uniquely identifies the find request.
   void Find(int request_id,
             const std::u16string& search_text,
-            blink::mojom::FindOptionsPtr options);
+            blink::mojom::FindOptionsPtr options,
+            bool skip_delay = false);
 
   // Stops the active find session and clears the general highlighting of the
   // matches. |action| determines whether the last active match (if any) will be
@@ -216,6 +218,10 @@ class FindRequestManager {
   // callback if the each RenderFrameHost is alive and active.
   void ForEachAddedFindInPageRenderFrameHost(FrameIterationCallback callback);
 
+  void EmitFindRequest(int request_id,
+                       const std::u16string& search_text,
+                       blink::mojom::FindOptionsPtr options);
+
 #if defined(OS_ANDROID)
   // Called when a nearest find result reply is no longer pending for a frame.
   void RemoveNearestFindResultPendingReply(RenderFrameHost* rfh);
@@ -364,8 +370,12 @@ class FindRequestManager {
   base::TimeTicks last_time_typed_;
   std::u16string last_searched_text_;
 
+  base::CancelableOnceClosure delayed_find_task_;
+
   CreateFindInPageClientFunction create_find_in_page_client_for_testing_ =
       nullptr;
+
+  base::WeakPtrFactory<FindRequestManager> weak_factory_{this};
 };
 
 }  // namespace content

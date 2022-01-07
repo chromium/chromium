@@ -137,7 +137,7 @@ void WebViewFindHelper::Find(
   }
 
   guest_web_contents->Find(current_find_request_id_, search_text,
-                           std::move(full_options));
+                           std::move(full_options), /*skip_delay=*/true);
 }
 
 void WebViewFindHelper::FindReply(int request_id,

@@ -1121,10 +1121,13 @@ class WebContents : public PageNavigator,
       bool bypass_cache,
       ImageDownloadCallback callback) = 0;
 
-  // Finds text on a page. |search_text| should not be empty.
+  // Finds text on a page. |search_text| should not be empty. |skip_delay|
+  // indicates that the find request should be sent to the renderer immediately
+  // instead of waiting for privacy/performance mitigations.
   virtual void Find(int request_id,
                     const std::u16string& search_text,
-                    blink::mojom::FindOptionsPtr options) = 0;
+                    blink::mojom::FindOptionsPtr options,
+                    bool skip_delay = false) = 0;
 
   // Notifies the renderer that the user has closed the FindInPage window
   // (and what action to take regarding the selection).

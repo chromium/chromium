@@ -527,7 +527,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
       WebContents::ImageDownloadCallback callback) override;
   void Find(int request_id,
             const std::u16string& search_text,
-            blink::mojom::FindOptionsPtr options) override;
+            blink::mojom::FindOptionsPtr options,
+            bool skip_delay = false) override;
   void StopFinding(StopFindAction action) override;
   bool WasEverAudible() override;
   bool IsFullscreen() override;
