@@ -47,6 +47,7 @@ _CONFIG = [
             'base::AutoReset',
             'base::Contains',
             'base::CreateSequencedTaskRunner',
+            'base::ValuesEquivalent',
             'base::Days',
             'base::DefaultTickClock',
             'base::ElapsedTimer',

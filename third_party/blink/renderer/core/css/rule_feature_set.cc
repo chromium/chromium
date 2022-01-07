@@ -33,6 +33,7 @@
 #include <algorithm>
 #include <bitset>
 #include "base/auto_reset.h"
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
 #include "third_party/blink/renderer/core/css/css_function_value.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
@@ -45,7 +46,6 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
-#include "third_party/blink/renderer/core/style/data_equivalency.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
 namespace blink {
@@ -272,7 +272,7 @@ bool InvalidationSetMapsEqual(const MapType& a, const MapType& b) {
     auto it = b.find(entry.key);
     if (it == b.end())
       return false;
-    if (!DataEquivalent(entry.value, it->value))
+    if (!base::ValuesEquivalent(entry.value, it->value))
       return false;
   }
   return true;
@@ -429,13 +429,14 @@ bool RuleFeatureSet::operator==(const RuleFeatureSet& other) const {
              other.attribute_invalidation_sets_) &&
          InvalidationSetMapsEqual<CSSSelector::PseudoType>(
              pseudo_invalidation_sets_, other.pseudo_invalidation_sets_) &&
-         DataEquivalent(universal_sibling_invalidation_set_,
-                        other.universal_sibling_invalidation_set_) &&
-         DataEquivalent(nth_invalidation_set_, other.nth_invalidation_set_) &&
-         DataEquivalent(universal_sibling_invalidation_set_,
-                        other.universal_sibling_invalidation_set_) &&
-         DataEquivalent(type_rule_invalidation_set_,
-                        other.type_rule_invalidation_set_) &&
+         base::ValuesEquivalent(universal_sibling_invalidation_set_,
+                                other.universal_sibling_invalidation_set_) &&
+         base::ValuesEquivalent(nth_invalidation_set_,
+                                other.nth_invalidation_set_) &&
+         base::ValuesEquivalent(universal_sibling_invalidation_set_,
+                                other.universal_sibling_invalidation_set_) &&
+         base::ValuesEquivalent(type_rule_invalidation_set_,
+                                other.type_rule_invalidation_set_) &&
          viewport_dependent_media_query_results_ ==
              other.viewport_dependent_media_query_results_ &&
          device_dependent_media_query_results_ ==

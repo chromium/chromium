@@ -1052,15 +1052,15 @@ CSSValue* ComputedStyleUtils::ValueForFont(const ComputedStyle& style) {
   CSSValue* east_asian_value = ValueForFontVariantEastAsian(style);
   // FIXME: Use DataEquivalent<CSSValue>(...) once http://crbug.com/729447 is
   // resolved.
-  if (!DataEquivalent(ligatures_value,
-                      static_cast<CSSValue*>(
-                          CSSIdentifierValue::Create(CSSValueID::kNormal))) ||
-      !DataEquivalent(numeric_value,
-                      static_cast<CSSValue*>(
-                          CSSIdentifierValue::Create(CSSValueID::kNormal))) ||
-      !DataEquivalent(east_asian_value,
-                      static_cast<CSSValue*>(
-                          CSSIdentifierValue::Create(CSSValueID::kNormal))))
+  if (!base::ValuesEquivalent(ligatures_value,
+                              static_cast<CSSValue*>(CSSIdentifierValue::Create(
+                                  CSSValueID::kNormal))) ||
+      !base::ValuesEquivalent(numeric_value,
+                              static_cast<CSSValue*>(CSSIdentifierValue::Create(
+                                  CSSValueID::kNormal))) ||
+      !base::ValuesEquivalent(east_asian_value,
+                              static_cast<CSSValue*>(CSSIdentifierValue::Create(
+                                  CSSValueID::kNormal))))
     return nullptr;
 
   if (!ValueForFontStretchAsKeyword(style))
@@ -2746,9 +2746,11 @@ CSSValueList* ComputedStyleUtils::ValuesForSidesShorthand(
   if (!top_value || !right_value || !bottom_value || !left_value)
     return nullptr;
 
-  bool show_left = !DataEquivalent(right_value, left_value);
-  bool show_bottom = !DataEquivalent(top_value, bottom_value) || show_left;
-  bool show_right = !DataEquivalent(top_value, right_value) || show_bottom;
+  bool show_left = !base::ValuesEquivalent(right_value, left_value);
+  bool show_bottom =
+      !base::ValuesEquivalent(top_value, bottom_value) || show_left;
+  bool show_right =
+      !base::ValuesEquivalent(top_value, right_value) || show_bottom;
 
   list->Append(*top_value);
   if (show_right)

@@ -40,8 +40,8 @@ String CSSReflectValue::CustomCSSText() const {
 
 bool CSSReflectValue::Equals(const CSSReflectValue& other) const {
   return direction_ == other.direction_ &&
-         DataEquivalent(offset_, other.offset_) &&
-         DataEquivalent(mask_, other.mask_);
+         base::ValuesEquivalent(offset_, other.offset_) &&
+         base::ValuesEquivalent(mask_, other.mask_);
 }
 
 void CSSReflectValue::TraceAfterDispatch(blink::Visitor* visitor) const {

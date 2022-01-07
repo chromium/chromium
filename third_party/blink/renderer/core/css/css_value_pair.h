@@ -59,8 +59,8 @@ class CORE_EXPORT CSSValuePair : public CSSValue {
   }
 
   bool Equals(const CSSValuePair& other) const {
-    return DataEquivalent(first_, other.first_) &&
-           DataEquivalent(second_, other.second_) &&
+    return base::ValuesEquivalent(first_, other.first_) &&
+           base::ValuesEquivalent(second_, other.second_) &&
            identical_values_policy_ == other.identical_values_policy_;
   }
 

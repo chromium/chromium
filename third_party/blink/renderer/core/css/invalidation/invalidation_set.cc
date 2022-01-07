@@ -33,10 +33,10 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
-#include "third_party/blink/renderer/core/style/data_equivalency.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -82,10 +82,10 @@ bool InvalidationSet::operator==(const InvalidationSet& other) const {
     const auto& other_sibling = To<SiblingInvalidationSet>(other);
     if ((this_sibling.MaxDirectAdjacentSelectors() !=
          other_sibling.MaxDirectAdjacentSelectors()) ||
-        !DataEquivalent(this_sibling.Descendants(),
-                        other_sibling.Descendants()) ||
-        !DataEquivalent(this_sibling.SiblingDescendants(),
-                        other_sibling.SiblingDescendants())) {
+        !base::ValuesEquivalent(this_sibling.Descendants(),
+                                other_sibling.Descendants()) ||
+        !base::ValuesEquivalent(this_sibling.SiblingDescendants(),
+                                other_sibling.SiblingDescendants())) {
       return false;
     }
   }

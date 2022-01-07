@@ -26,6 +26,7 @@
 #include <bitset>
 
 #include "base/cxx17_backports.h"
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation_data.h"
 #include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
@@ -387,7 +388,7 @@ String StylePropertySerializer::CommonShorthandChecks(
       longhands[0]->IsPendingSubstitutionValue()) {
     bool success = true;
     for (int i = 1; i < longhand_count; i++) {
-      if (!DataEquivalent(longhands[i], longhands[0])) {
+      if (!base::ValuesEquivalent(longhands[i], longhands[0])) {
         // This should just return emptyString but some shorthands currently
         // allow 'initial' for their longhands.
         success = false;
@@ -779,7 +780,7 @@ String StylePropertySerializer::FontValue() const {
           DynamicTo<cssvalue::CSSPendingSystemFontValue>(first)) {
     for (unsigned i = 1; i < length; i++) {
       const CSSValue* value = property_set_.GetPropertyCSSValue(*longhands[i]);
-      if (!DataEquivalent(first, value))
+      if (!base::ValuesEquivalent(first, value))
         return g_empty_string;
     }
     return getValueName(system_font->SystemFontId());
@@ -987,7 +988,7 @@ String StylePropertySerializer::Get2Values(
       property_set_.PropertyAt(start_value_index);
   PropertyValueForSerializer end = property_set_.PropertyAt(end_value_index);
 
-  bool show_end = !DataEquivalent(start.Value(), end.Value());
+  bool show_end = !base::ValuesEquivalent(start.Value(), end.Value());
 
   StringBuilder result;
   result.Append(start.Value()->CssText());
@@ -1021,9 +1022,11 @@ String StylePropertySerializer::Get4Values(
       property_set_.PropertyAt(bottom_value_index);
   PropertyValueForSerializer left = property_set_.PropertyAt(left_value_index);
 
-  bool show_left = !DataEquivalent(right.Value(), left.Value());
-  bool show_bottom = !DataEquivalent(top.Value(), bottom.Value()) || show_left;
-  bool show_right = !DataEquivalent(top.Value(), right.Value()) || show_bottom;
+  bool show_left = !base::ValuesEquivalent(right.Value(), left.Value());
+  bool show_bottom =
+      !base::ValuesEquivalent(top.Value(), bottom.Value()) || show_left;
+  bool show_right =
+      !base::ValuesEquivalent(top.Value(), right.Value()) || show_bottom;
 
   StringBuilder result;
   result.Append(top.Value()->CssText());

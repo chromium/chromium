@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
+#include "base/memory/values_equivalent.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
@@ -316,7 +317,7 @@ TEST_F(ComputedStyleTest, CursorList) {
   auto* other_image_value =
       MakeGarbageCollected<StyleGeneratedImage>(*gradient);
 
-  EXPECT_TRUE(DataEquivalent(image_value, other_image_value));
+  EXPECT_TRUE(base::ValuesEquivalent(image_value, other_image_value));
 
   style->AddCursor(image_value, false);
   other->AddCursor(other_image_value, false);

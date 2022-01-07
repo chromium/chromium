@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/cxx17_backports.h"
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/css/css_content_distribution_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_initial_value.h"
@@ -308,7 +309,7 @@ const CSSValue* BorderBlock::CSSValueFromComputedStyleInternal(
   const CSSValue* value_end =
       GetCSSPropertyBorderBlockEnd().CSSValueFromComputedStyle(
           style, layout_object, allow_visited_style);
-  if (!DataEquivalent(value_start, value_end)) {
+  if (!base::ValuesEquivalent(value_start, value_end)) {
     return nullptr;
   }
   return value_start;
@@ -446,7 +447,7 @@ const CSSValue* Border::CSSValueFromComputedStyleInternal(
   for (size_t i = 0; i < base::size(kProperties); ++i) {
     const CSSValue* value_for_side = kProperties[i]->CSSValueFromComputedStyle(
         style, layout_object, allow_visited_style);
-    if (!DataEquivalent(value, value_for_side)) {
+    if (!base::ValuesEquivalent(value, value_for_side)) {
       return nullptr;
     }
   }
@@ -569,7 +570,7 @@ const CSSValue* BorderInline::CSSValueFromComputedStyleInternal(
   const CSSValue* value_end =
       GetCSSPropertyBorderInlineEnd().CSSValueFromComputedStyle(
           style, layout_object, allow_visited_style);
-  if (!DataEquivalent(value_start, value_end)) {
+  if (!base::ValuesEquivalent(value_start, value_end)) {
     return nullptr;
   }
   return value_start;

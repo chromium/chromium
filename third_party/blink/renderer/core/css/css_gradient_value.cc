@@ -31,6 +31,7 @@
 #include <utility>
 
 #include "base/cxx17_backports.h"
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
@@ -1039,29 +1040,34 @@ bool CSSLinearGradientValue::Equals(const CSSLinearGradientValue& other) const {
     return false;
 
   if (gradient_type_ == kCSSDeprecatedLinearGradient) {
-    return DataEquivalent(first_x_, other.first_x_) &&
-           DataEquivalent(first_y_, other.first_y_) &&
-           DataEquivalent(second_x_, other.second_x_) &&
-           DataEquivalent(second_y_, other.second_y_) && stops_ == other.stops_;
+    return base::ValuesEquivalent(first_x_, other.first_x_) &&
+           base::ValuesEquivalent(first_y_, other.first_y_) &&
+           base::ValuesEquivalent(second_x_, other.second_x_) &&
+           base::ValuesEquivalent(second_y_, other.second_y_) &&
+           stops_ == other.stops_;
   }
 
   if (repeating_ != other.repeating_)
     return false;
 
-  if (angle_)
-    return DataEquivalent(angle_, other.angle_) && stops_ == other.stops_;
+  if (angle_) {
+    return base::ValuesEquivalent(angle_, other.angle_) &&
+           stops_ == other.stops_;
+  }
 
   if (other.angle_)
     return false;
 
   bool equal_xand_y = false;
   if (first_x_ && first_y_) {
-    equal_xand_y = DataEquivalent(first_x_, other.first_x_) &&
-                   DataEquivalent(first_y_, other.first_y_);
+    equal_xand_y = base::ValuesEquivalent(first_x_, other.first_x_) &&
+                   base::ValuesEquivalent(first_y_, other.first_y_);
   } else if (first_x_) {
-    equal_xand_y = DataEquivalent(first_x_, other.first_x_) && !other.first_y_;
+    equal_xand_y =
+        base::ValuesEquivalent(first_x_, other.first_x_) && !other.first_y_;
   } else if (first_y_) {
-    equal_xand_y = DataEquivalent(first_y_, other.first_y_) && !other.first_x_;
+    equal_xand_y =
+        base::ValuesEquivalent(first_y_, other.first_y_) && !other.first_x_;
   } else {
     equal_xand_y = !other.first_x_ && !other.first_y_;
   }
@@ -1447,27 +1453,28 @@ bool EqualIdentifiersWithDefault(const CSSIdentifierValue* id_a,
 bool CSSRadialGradientValue::Equals(const CSSRadialGradientValue& other) const {
   if (gradient_type_ == kCSSDeprecatedRadialGradient)
     return other.gradient_type_ == gradient_type_ &&
-           DataEquivalent(first_x_, other.first_x_) &&
-           DataEquivalent(first_y_, other.first_y_) &&
-           DataEquivalent(second_x_, other.second_x_) &&
-           DataEquivalent(second_y_, other.second_y_) &&
-           DataEquivalent(first_radius_, other.first_radius_) &&
-           DataEquivalent(second_radius_, other.second_radius_) &&
+           base::ValuesEquivalent(first_x_, other.first_x_) &&
+           base::ValuesEquivalent(first_y_, other.first_y_) &&
+           base::ValuesEquivalent(second_x_, other.second_x_) &&
+           base::ValuesEquivalent(second_y_, other.second_y_) &&
+           base::ValuesEquivalent(first_radius_, other.first_radius_) &&
+           base::ValuesEquivalent(second_radius_, other.second_radius_) &&
            stops_ == other.stops_;
 
   if (repeating_ != other.repeating_)
     return false;
 
-  if (!DataEquivalent(first_x_, other.first_x_) ||
-      !DataEquivalent(first_y_, other.first_y_))
+  if (!base::ValuesEquivalent(first_x_, other.first_x_) ||
+      !base::ValuesEquivalent(first_y_, other.first_y_))
     return false;
 
   // There's either a size keyword or an explicit size specification.
   if (end_horizontal_size_) {
     // Explicit size specification. One <length> or two <length-percentage>.
-    if (!DataEquivalent(end_horizontal_size_, other.end_horizontal_size_))
+    if (!base::ValuesEquivalent(end_horizontal_size_,
+                                other.end_horizontal_size_))
       return false;
-    if (!DataEquivalent(end_vertical_size_, other.end_vertical_size_))
+    if (!base::ValuesEquivalent(end_vertical_size_, other.end_vertical_size_))
       return false;
   } else {
     if (other.end_horizontal_size_)
@@ -1564,9 +1571,10 @@ scoped_refptr<Gradient> CSSConicGradientValue::CreateGradient(
 }
 
 bool CSSConicGradientValue::Equals(const CSSConicGradientValue& other) const {
-  return repeating_ == other.repeating_ && DataEquivalent(x_, other.x_) &&
-         DataEquivalent(y_, other.y_) &&
-         DataEquivalent(from_angle_, other.from_angle_) &&
+  return repeating_ == other.repeating_ &&
+         base::ValuesEquivalent(x_, other.x_) &&
+         base::ValuesEquivalent(y_, other.y_) &&
+         base::ValuesEquivalent(from_angle_, other.from_angle_) &&
          stops_ == other.stops_;
 }
 

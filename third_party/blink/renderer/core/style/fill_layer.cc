@@ -21,9 +21,9 @@
 
 #include "third_party/blink/renderer/core/style/fill_layer.h"
 
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/core/style/data_equivalency.h"
 #include "third_party/blink/renderer/core/style/style_generated_image.h"
 #include "third_party/blink/renderer/platform/wtf/size_assertions.h"
 
@@ -171,8 +171,8 @@ FillLayer& FillLayer::operator=(const FillLayer& o) {
 }
 
 bool FillLayer::LayerPropertiesEqual(const FillLayer& o) const {
-  return DataEquivalent(image_, o.image_) && position_x_ == o.position_x_ &&
-         position_y_ == o.position_y_ &&
+  return base::ValuesEquivalent(image_, o.image_) &&
+         position_x_ == o.position_x_ && position_y_ == o.position_y_ &&
          background_x_origin_ == o.background_x_origin_ &&
          background_y_origin_ == o.background_y_origin_ &&
          attachment_ == o.attachment_ && clip_ == o.clip_ &&

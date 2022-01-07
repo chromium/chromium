@@ -21,8 +21,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VALUE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VALUE_H_
 
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/style/data_equivalency.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/custom_spaces.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
@@ -331,7 +331,7 @@ inline bool CompareCSSValueVector(
   }
 
   for (wtf_size_t i = 0; i < size; i++) {
-    if (!DataEquivalent(first_vector[i], second_vector[i])) {
+    if (!base::ValuesEquivalent(first_vector[i], second_vector[i])) {
       return false;
     }
   }

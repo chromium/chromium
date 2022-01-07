@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/style/style_initial_data.h"
 
 #include "third_party/blink/renderer/core/css/property_registry.h"
-#include "third_party/blink/renderer/core/style/data_equivalency.h"
 
 namespace blink {
 

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/css/properties/css_property.h"
+#include "base/memory/values_equivalent.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
@@ -14,7 +15,6 @@
 #include "third_party/blink/renderer/core/css/scoped_css_value.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/core/style/data_equivalency.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 
 namespace blink {
@@ -107,7 +107,8 @@ TEST_F(CSSPropertyTest, VisitedPropertiesCanParseValues) {
         GetDocument(), *visited, initial_value->CssText());
 
     // The properties should have identical parsing behavior.
-    EXPECT_TRUE(DataEquivalent(parsed_regular_value, parsed_visited_value));
+    EXPECT_TRUE(
+        base::ValuesEquivalent(parsed_regular_value, parsed_visited_value));
 
     num_visited++;
   }

@@ -118,7 +118,7 @@ String CSSMathFunctionValue::CustomCSSText() const {
 }
 
 bool CSSMathFunctionValue::Equals(const CSSMathFunctionValue& other) const {
-  return DataEquivalent(expression_, other.expression_);
+  return base::ValuesEquivalent(expression_, other.expression_);
 }
 
 double CSSMathFunctionValue::ClampToPermittedRange(double value) const {

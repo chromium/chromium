@@ -2,6 +2,7 @@ include_rules = [
     "+base/atomic_sequence_num.h",
     "+base/barrier_closure.h",
     "+base/cancelable_callback.h",
+    "+base/memory/values_equivalent.h",
     "+base/files/file.h",
     "+base/guid.h",
     "+base/mac/foundation_util.h",

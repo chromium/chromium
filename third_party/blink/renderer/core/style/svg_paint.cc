@@ -27,7 +27,7 @@
 
 #include "third_party/blink/renderer/core/style/svg_paint.h"
 
-#include "third_party/blink/renderer/core/style/data_equivalency.h"
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/style/style_svg_resource.h"
 
 namespace blink {
@@ -42,7 +42,7 @@ SVGPaint& SVGPaint::operator=(const SVGPaint& paint) = default;
 
 bool SVGPaint::operator==(const SVGPaint& other) const {
   return type == other.type && color == other.color &&
-         DataEquivalent(resource, other.resource);
+         base::ValuesEquivalent(resource, other.resource);
 }
 
 const AtomicString& SVGPaint::GetUrl() const {

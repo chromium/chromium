@@ -4,8 +4,8 @@
 
 #include "third_party/blink/renderer/core/style/style_highlight_data.h"
 
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
-#include "third_party/blink/renderer/core/style/data_equivalency.h"
 
 namespace blink {
 
@@ -25,8 +25,8 @@ StyleHighlightData::StyleHighlightData(const StyleHighlightData& other)
       grammar_error_(other.grammar_error_),
       custom_highlights_(other.custom_highlights_) {}
 
-// Compares two CustomHighlightsStyleMaps with DataEquivalent as comparison
-// function on the values.
+// Compares two CustomHighlightsStyleMaps with base::ValuesEquivalent as
+// comparison function on the values.
 bool HighlightStyleMapEquals(const CustomHighlightsStyleMap& a,
                              const CustomHighlightsStyleMap& b) {
   if (a.size() != b.size())
@@ -37,7 +37,7 @@ bool HighlightStyleMapEquals(const CustomHighlightsStyleMap& a,
   for (CustomHighlightsStyleMap::const_iterator it = a.begin(); it != a_end;
        ++it) {
     CustomHighlightsStyleMap::const_iterator b_pos = b.find(it->key);
-    if (b_pos == b_end || !DataEquivalent(it->value, b_pos->value))
+    if (b_pos == b_end || !base::ValuesEquivalent(it->value, b_pos->value))
       return false;
   }
 
@@ -45,10 +45,10 @@ bool HighlightStyleMapEquals(const CustomHighlightsStyleMap& a,
 }
 
 bool StyleHighlightData::operator==(const StyleHighlightData& other) const {
-  return DataEquivalent(selection_, other.selection_) &&
-         DataEquivalent(target_text_, other.target_text_) &&
-         DataEquivalent(spelling_error_, other.spelling_error_) &&
-         DataEquivalent(grammar_error_, other.grammar_error_) &&
+  return base::ValuesEquivalent(selection_, other.selection_) &&
+         base::ValuesEquivalent(target_text_, other.target_text_) &&
+         base::ValuesEquivalent(spelling_error_, other.spelling_error_) &&
+         base::ValuesEquivalent(grammar_error_, other.grammar_error_) &&
          HighlightStyleMapEquals(custom_highlights_, other.custom_highlights_);
 }
 

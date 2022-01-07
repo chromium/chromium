@@ -63,8 +63,8 @@ struct CSSGradientColorStop {
   DISALLOW_NEW();
 
   bool operator==(const CSSGradientColorStop& other) const {
-    return DataEquivalent(color_, other.color_) &&
-           DataEquivalent(offset_, other.offset_);
+    return base::ValuesEquivalent(color_, other.color_) &&
+           base::ValuesEquivalent(offset_, other.offset_);
   }
 
   bool IsHint() const {

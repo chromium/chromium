@@ -4,13 +4,14 @@
 
 #include "third_party/blink/renderer/core/style/style_inherited_variables.h"
 
-#include "third_party/blink/renderer/core/style/data_equivalency.h"
+#include "base/memory/values_equivalent.h"
 
 namespace blink {
 
 bool StyleInheritedVariables::operator==(
     const StyleInheritedVariables& other) const {
-  return DataEquivalent(root_, other.root_) && variables_ == other.variables_;
+  return base::ValuesEquivalent(root_, other.root_) &&
+         variables_ == other.variables_;
 }
 
 StyleInheritedVariables::StyleInheritedVariables() : root_(nullptr) {}

@@ -24,7 +24,6 @@ blink_core_sources_style = [
   "counter_directives.h",
   "cursor_data.h",
   "cursor_list.h",
-  "data_equivalency.h",
   "data_ref.h",
   "fill_layer.cc",
   "fill_layer.h",

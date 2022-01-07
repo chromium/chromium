@@ -138,9 +138,9 @@ String CSSBasicShapeCircleValue::CustomCSSText() const {
 
 bool CSSBasicShapeCircleValue::Equals(
     const CSSBasicShapeCircleValue& other) const {
-  return DataEquivalent(center_x_, other.center_x_) &&
-         DataEquivalent(center_y_, other.center_y_) &&
-         DataEquivalent(radius_, other.radius_);
+  return base::ValuesEquivalent(center_x_, other.center_x_) &&
+         base::ValuesEquivalent(center_y_, other.center_y_) &&
+         base::ValuesEquivalent(radius_, other.radius_);
 }
 
 void CSSBasicShapeCircleValue::TraceAfterDispatch(
@@ -221,10 +221,10 @@ String CSSBasicShapeEllipseValue::CustomCSSText() const {
 
 bool CSSBasicShapeEllipseValue::Equals(
     const CSSBasicShapeEllipseValue& other) const {
-  return DataEquivalent(center_x_, other.center_x_) &&
-         DataEquivalent(center_y_, other.center_y_) &&
-         DataEquivalent(radius_x_, other.radius_x_) &&
-         DataEquivalent(radius_y_, other.radius_y_);
+  return base::ValuesEquivalent(center_x_, other.center_x_) &&
+         base::ValuesEquivalent(center_y_, other.center_y_) &&
+         base::ValuesEquivalent(radius_x_, other.radius_x_) &&
+         base::ValuesEquivalent(radius_y_, other.radius_y_);
 }
 
 void CSSBasicShapeEllipseValue::TraceAfterDispatch(
@@ -428,14 +428,15 @@ String CSSBasicShapeInsetValue::CustomCSSText() const {
 
 bool CSSBasicShapeInsetValue::Equals(
     const CSSBasicShapeInsetValue& other) const {
-  return DataEquivalent(top_, other.top_) &&
-         DataEquivalent(right_, other.right_) &&
-         DataEquivalent(bottom_, other.bottom_) &&
-         DataEquivalent(left_, other.left_) &&
-         DataEquivalent(top_left_radius_, other.top_left_radius_) &&
-         DataEquivalent(top_right_radius_, other.top_right_radius_) &&
-         DataEquivalent(bottom_right_radius_, other.bottom_right_radius_) &&
-         DataEquivalent(bottom_left_radius_, other.bottom_left_radius_);
+  return base::ValuesEquivalent(top_, other.top_) &&
+         base::ValuesEquivalent(right_, other.right_) &&
+         base::ValuesEquivalent(bottom_, other.bottom_) &&
+         base::ValuesEquivalent(left_, other.left_) &&
+         base::ValuesEquivalent(top_left_radius_, other.top_left_radius_) &&
+         base::ValuesEquivalent(top_right_radius_, other.top_right_radius_) &&
+         base::ValuesEquivalent(bottom_right_radius_,
+                                other.bottom_right_radius_) &&
+         base::ValuesEquivalent(bottom_left_radius_, other.bottom_left_radius_);
 }
 
 void CSSBasicShapeInsetValue::TraceAfterDispatch(

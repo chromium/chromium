@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/values_equivalent.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -254,7 +255,7 @@ TEST_F(CrossThreadStyleValueTest, ComparingNullValues) {
   // Two null values are equal to each other.
   std::unique_ptr<CrossThreadStyleValue> null_value1(nullptr);
   std::unique_ptr<CrossThreadStyleValue> null_value2(nullptr);
-  EXPECT_TRUE(DataEquivalent(null_value1, null_value2));
+  EXPECT_TRUE(base::ValuesEquivalent(null_value1, null_value2));
 
   // If one argument is null and the other isn't they are never equal.
   std::unique_ptr<CrossThreadStyleValue> keyword_value(
@@ -264,12 +265,12 @@ TEST_F(CrossThreadStyleValueTest, ComparingNullValues) {
   std::unique_ptr<CrossThreadStyleValue> unsupported_value(
       new CrossThreadUnsupportedValue("unsupported"));
 
-  EXPECT_FALSE(DataEquivalent(null_value1, keyword_value));
-  EXPECT_FALSE(DataEquivalent(null_value1, unit_value));
-  EXPECT_FALSE(DataEquivalent(null_value1, unsupported_value));
-  EXPECT_FALSE(DataEquivalent(keyword_value, null_value1));
-  EXPECT_FALSE(DataEquivalent(unit_value, null_value1));
-  EXPECT_FALSE(DataEquivalent(unsupported_value, null_value1));
+  EXPECT_FALSE(base::ValuesEquivalent(null_value1, keyword_value));
+  EXPECT_FALSE(base::ValuesEquivalent(null_value1, unit_value));
+  EXPECT_FALSE(base::ValuesEquivalent(null_value1, unsupported_value));
+  EXPECT_FALSE(base::ValuesEquivalent(keyword_value, null_value1));
+  EXPECT_FALSE(base::ValuesEquivalent(unit_value, null_value1));
+  EXPECT_FALSE(base::ValuesEquivalent(unsupported_value, null_value1));
 }
 
 TEST_F(CrossThreadStyleValueTest, ComparingDifferentTypes) {
@@ -281,12 +282,12 @@ TEST_F(CrossThreadStyleValueTest, ComparingDifferentTypes) {
   std::unique_ptr<CrossThreadStyleValue> unsupported_value(
       new CrossThreadUnsupportedValue("unsupported"));
 
-  EXPECT_FALSE(DataEquivalent(keyword_value, unit_value));
-  EXPECT_FALSE(DataEquivalent(keyword_value, unsupported_value));
-  EXPECT_FALSE(DataEquivalent(unit_value, unsupported_value));
-  EXPECT_FALSE(DataEquivalent(unit_value, keyword_value));
-  EXPECT_FALSE(DataEquivalent(unsupported_value, keyword_value));
-  EXPECT_FALSE(DataEquivalent(unsupported_value, unit_value));
+  EXPECT_FALSE(base::ValuesEquivalent(keyword_value, unit_value));
+  EXPECT_FALSE(base::ValuesEquivalent(keyword_value, unsupported_value));
+  EXPECT_FALSE(base::ValuesEquivalent(unit_value, unsupported_value));
+  EXPECT_FALSE(base::ValuesEquivalent(unit_value, keyword_value));
+  EXPECT_FALSE(base::ValuesEquivalent(unsupported_value, keyword_value));
+  EXPECT_FALSE(base::ValuesEquivalent(unsupported_value, unit_value));
 }
 
 TEST_F(CrossThreadStyleValueTest, ComparingCrossThreadKeywordValue) {
@@ -299,8 +300,8 @@ TEST_F(CrossThreadStyleValueTest, ComparingCrossThreadKeywordValue) {
   std::unique_ptr<CrossThreadStyleValue> keyword_value_3(
       new CrossThreadKeywordValue("different"));
 
-  EXPECT_TRUE(DataEquivalent(keyword_value_1, keyword_value_2));
-  EXPECT_FALSE(DataEquivalent(keyword_value_1, keyword_value_3));
+  EXPECT_TRUE(base::ValuesEquivalent(keyword_value_1, keyword_value_2));
+  EXPECT_FALSE(base::ValuesEquivalent(keyword_value_1, keyword_value_3));
 }
 
 TEST_F(CrossThreadStyleValueTest, ComparingCrossThreadUnitValue) {
@@ -312,17 +313,17 @@ TEST_F(CrossThreadStyleValueTest, ComparingCrossThreadUnitValue) {
   // Same value, same unit.
   std::unique_ptr<CrossThreadStyleValue> unit_value_2(
       new CrossThreadUnitValue(1, CSSPrimitiveValue::UnitType::kDegrees));
-  EXPECT_TRUE(DataEquivalent(unit_value_1, unit_value_2));
+  EXPECT_TRUE(base::ValuesEquivalent(unit_value_1, unit_value_2));
 
   // Same value, different unit.
   std::unique_ptr<CrossThreadStyleValue> unit_value_3(
       new CrossThreadUnitValue(1, CSSPrimitiveValue::UnitType::kPoints));
-  EXPECT_FALSE(DataEquivalent(unit_value_1, unit_value_3));
+  EXPECT_FALSE(base::ValuesEquivalent(unit_value_1, unit_value_3));
 
   // Different value, same unit.
   std::unique_ptr<CrossThreadStyleValue> unit_value_4(
       new CrossThreadUnitValue(2, CSSPrimitiveValue::UnitType::kDegrees));
-  EXPECT_FALSE(DataEquivalent(unit_value_1, unit_value_4));
+  EXPECT_FALSE(base::ValuesEquivalent(unit_value_1, unit_value_4));
 }
 
 TEST_F(CrossThreadStyleValueTest, ComparingCrossThreadColorValue) {
@@ -335,8 +336,8 @@ TEST_F(CrossThreadStyleValueTest, ComparingCrossThreadColorValue) {
   std::unique_ptr<CrossThreadStyleValue> color_value_3(
       new CrossThreadColorValue(Color(0, 255, 0)));
 
-  EXPECT_TRUE(DataEquivalent(color_value_1, color_value_2));
-  EXPECT_FALSE(DataEquivalent(color_value_1, color_value_3));
+  EXPECT_TRUE(base::ValuesEquivalent(color_value_1, color_value_2));
+  EXPECT_FALSE(base::ValuesEquivalent(color_value_1, color_value_3));
 }
 
 TEST_F(CrossThreadStyleValueTest, ComparingCrossThreadUnsupportedValue) {
@@ -349,8 +350,9 @@ TEST_F(CrossThreadStyleValueTest, ComparingCrossThreadUnsupportedValue) {
   std::unique_ptr<CrossThreadStyleValue> unsupported_value_3(
       new CrossThreadUnsupportedValue("different"));
 
-  EXPECT_TRUE(DataEquivalent(unsupported_value_1, unsupported_value_2));
-  EXPECT_FALSE(DataEquivalent(unsupported_value_1, unsupported_value_3));
+  EXPECT_TRUE(base::ValuesEquivalent(unsupported_value_1, unsupported_value_2));
+  EXPECT_FALSE(
+      base::ValuesEquivalent(unsupported_value_1, unsupported_value_3));
 }
 
 }  // namespace blink

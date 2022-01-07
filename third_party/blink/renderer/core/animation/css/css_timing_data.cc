@@ -40,8 +40,8 @@ bool CSSTimingData::TimingMatchForStyleRecalc(
     return false;
 
   for (wtf_size_t i = 0; i < timing_function_list_.size(); i++) {
-    if (!DataEquivalent(timing_function_list_.at(i),
-                        other.timing_function_list_.at(i))) {
+    if (!ValuesEquivalent(timing_function_list_.at(i),
+                          other.timing_function_list_.at(i))) {
       return false;
     }
   }

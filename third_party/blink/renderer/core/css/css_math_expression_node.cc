@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value_mappings.h"
 #include "third_party/blink/renderer/core/css/css_value_clamping_utils.h"
@@ -313,8 +314,8 @@ bool CSSMathExpressionNumericLiteral::operator==(
   if (!other.IsNumericLiteral())
     return false;
 
-  return DataEquivalent(value_,
-                        To<CSSMathExpressionNumericLiteral>(other).value_);
+  return base::ValuesEquivalent(
+      value_, To<CSSMathExpressionNumericLiteral>(other).value_);
 }
 
 CSSPrimitiveValue::UnitType CSSMathExpressionNumericLiteral::ResolvedUnitType()
@@ -725,8 +726,8 @@ bool CSSMathExpressionBinaryOperation::operator==(
 
   const CSSMathExpressionBinaryOperation& other =
       To<CSSMathExpressionBinaryOperation>(exp);
-  return DataEquivalent(left_side_, other.left_side_) &&
-         DataEquivalent(right_side_, other.right_side_) &&
+  return base::ValuesEquivalent(left_side_, other.left_side_) &&
+         base::ValuesEquivalent(right_side_, other.right_side_) &&
          operator_ == other.operator_;
 }
 
@@ -1003,7 +1004,7 @@ bool CSSMathExpressionVariadicOperation::operator==(
   if (operands_.size() != other.operands_.size())
     return false;
   for (wtf_size_t i = 0; i < operands_.size(); ++i) {
-    if (!DataEquivalent(operands_[i], other.operands_[i]))
+    if (!base::ValuesEquivalent(operands_[i], other.operands_[i]))
       return false;
   }
   return true;

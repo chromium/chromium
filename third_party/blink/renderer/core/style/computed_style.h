@@ -30,6 +30,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/values_equivalent.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -517,7 +518,8 @@ class ComputedStyle : public ComputedStyleBase,
       MutableBackdropFilterInternal()->operations_ = ops;
   }
   bool BackdropFilterDataEquivalent(const ComputedStyle& o) const {
-    return DataEquivalent(BackdropFilterInternal(), o.BackdropFilterInternal());
+    return base::ValuesEquivalent(BackdropFilterInternal(),
+                                  o.BackdropFilterInternal());
   }
 
   // filter (aka -webkit-filter)
@@ -541,7 +543,7 @@ class ComputedStyle : public ComputedStyleBase,
       MutableFilterInternal()->operations_ = v;
   }
   bool FilterDataEquivalent(const ComputedStyle& o) const {
-    return DataEquivalent(FilterInternal(), o.FilterInternal());
+    return base::ValuesEquivalent(FilterInternal(), o.FilterInternal());
   }
 
 
@@ -632,7 +634,7 @@ class ComputedStyle : public ComputedStyleBase,
 
   // box-shadow (aka -webkit-box-shadow)
   bool BoxShadowDataEquivalent(const ComputedStyle& other) const {
-    return DataEquivalent(BoxShadow(), other.BoxShadow());
+    return base::ValuesEquivalent(BoxShadow(), other.BoxShadow());
   }
 
   // clip-path
@@ -921,7 +923,7 @@ class ComputedStyle : public ComputedStyleBase,
   // shape-outside (aka -webkit-shape-outside)
   ShapeValue* ShapeOutside() const { return ShapeOutsideInternal().Get(); }
   bool ShapeOutsideDataEquivalent(const ComputedStyle& other) const {
-    return DataEquivalent(ShapeOutside(), other.ShapeOutside());
+    return base::ValuesEquivalent(ShapeOutside(), other.ShapeOutside());
   }
 
   // touch-action
@@ -961,7 +963,7 @@ class ComputedStyle : public ComputedStyleBase,
 
   // -webkit-clip-path
   bool ClipPathDataEquivalent(const ComputedStyle& other) const {
-    return DataEquivalent(ClipPath(), other.ClipPath());
+    return base::ValuesEquivalent(ClipPath(), other.ClipPath());
   }
 
   // Mask properties.
@@ -1016,7 +1018,7 @@ class ComputedStyle : public ComputedStyleBase,
   // list-style-type
   const AtomicString& ListStyleStringValue() const;
   bool ListStyleTypeDataEquivalent(const ComputedStyle& other) const {
-    return DataEquivalent(ListStyleType(), other.ListStyleType());
+    return base::ValuesEquivalent(ListStyleType(), other.ListStyleType());
   }
 
   // quotes
@@ -1190,8 +1192,8 @@ class ComputedStyle : public ComputedStyleBase,
   bool CounterDirectivesEqual(const ComputedStyle& other) const {
     // If the counter directives change, trigger a relayout to re-calculate
     // counter values and rebuild the counter node tree.
-    return DataEquivalent(CounterDirectivesInternal().get(),
-                          other.CounterDirectivesInternal().get());
+    return base::ValuesEquivalent(CounterDirectivesInternal().get(),
+                                  other.CounterDirectivesInternal().get());
   }
   void ClearIncrementDirectives();
   void ClearResetDirectives();
@@ -1292,7 +1294,7 @@ class ComputedStyle : public ComputedStyleBase,
   }
   bool HasBoxReflect() const { return BoxReflect(); }
   bool ReflectionDataEquivalent(const ComputedStyle& other) const {
-    return DataEquivalent(BoxReflect(), other.BoxReflect());
+    return base::ValuesEquivalent(BoxReflect(), other.BoxReflect());
   }
   float ResolvedFlexGrow(const ComputedStyle& box_style) const {
     if (box_style.IsDeprecatedWebkitBox())
@@ -2079,7 +2081,7 @@ class ComputedStyle : public ComputedStyleBase,
 
   // Content utility functions.
   bool ContentDataEquivalent(const ComputedStyle& other) const {
-    return DataEquivalent(GetContentData(), other.GetContentData());
+    return base::ValuesEquivalent(GetContentData(), other.GetContentData());
   }
 
   // Contain utility functions.

@@ -28,6 +28,7 @@
 #include <utility>
 
 #include "base/cxx17_backports.h"
+#include "base/memory/values_equivalent.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/clamped_math.h"
 #include "build/build_config.h"
@@ -57,7 +58,6 @@
 #include "third_party/blink/renderer/core/style/computed_style_initial_values.h"
 #include "third_party/blink/renderer/core/style/content_data.h"
 #include "third_party/blink/renderer/core/style/cursor_data.h"
-#include "third_party/blink/renderer/core/style/data_equivalency.h"
 #include "third_party/blink/renderer/core/style/quotes_data.h"
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 #include "third_party/blink/renderer/core/style/style_difference.h"
@@ -979,12 +979,12 @@ bool ComputedStyle::CustomPropertiesEqual(
     return true;
 
   for (const AtomicString& property_name : properties) {
-    if (!DataEquivalent(GetVariableData(property_name),
-                        other.GetVariableData(property_name))) {
+    if (!base::ValuesEquivalent(GetVariableData(property_name),
+                                other.GetVariableData(property_name))) {
       return false;
     }
-    if (!DataEquivalent(GetVariableValue(property_name),
-                        other.GetVariableValue(property_name))) {
+    if (!base::ValuesEquivalent(GetVariableValue(property_name),
+                                other.GetVariableValue(property_name))) {
       return false;
     }
   }
@@ -1113,7 +1113,7 @@ void ComputedStyle::SetCursorList(CursorList* other) {
 }
 
 bool ComputedStyle::QuotesDataEquivalent(const ComputedStyle& other) const {
-  return DataEquivalent(Quotes(), other.Quotes());
+  return base::ValuesEquivalent(Quotes(), other.Quotes());
 }
 
 void ComputedStyle::ClearCursorList() {
@@ -1428,7 +1428,7 @@ void ComputedStyle::ApplyMotionPathTransform(
 }
 
 bool ComputedStyle::TextShadowDataEquivalent(const ComputedStyle& other) const {
-  return DataEquivalent(TextShadow(), other.TextShadow());
+  return base::ValuesEquivalent(TextShadow(), other.TextShadow());
 }
 
 StyleImage* ComputedStyle::ListStyleImage() const {

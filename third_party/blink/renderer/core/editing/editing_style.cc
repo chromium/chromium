@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/editing/editing_style.h"
 
+#include "base/memory/values_equivalent.h"
 #include "base/stl_util.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
@@ -340,7 +341,7 @@ bool HTMLAttributeEquivalent::ValueIsPresentInStyle(
   const CSSValue* value = AttributeValueAsCSSValue(element);
   const CSSValue* style_value = style->GetPropertyCSSValue(property_id_);
 
-  return DataEquivalent(value, style_value);
+  return base::ValuesEquivalent(value, style_value);
 }
 
 void HTMLAttributeEquivalent::AddToStyle(Element* element,

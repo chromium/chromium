@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 
 #include "base/cxx17_backports.h"
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/css/computed_style_css_value_mapping.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
@@ -361,7 +362,7 @@ bool CSSComputedStyleDeclaration::CssPropertyMatches(
     }
   }
   const CSSValue* value = GetPropertyCSSValue(property_id);
-  return DataEquivalent(value, &property_value);
+  return base::ValuesEquivalent(value, &property_value);
 }
 
 MutableCSSPropertyValueSet* CSSComputedStyleDeclaration::CopyProperties()
