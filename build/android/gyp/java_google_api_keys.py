@@ -95,8 +95,6 @@ def _DoMain(argv):
 
   values = {}
   values['GOOGLE_API_KEY'] = google_api_keys.GetAPIKey()
-  values['GOOGLE_API_KEY_PHYSICAL_WEB_TEST'] = (
-      google_api_keys.GetAPIKeyAndroidNonStable())
   values['GOOGLE_API_KEY_ANDROID_NON_STABLE'] = (
       google_api_keys.GetAPIKeyAndroidNonStable())
   values['GOOGLE_CLIENT_ID_MAIN'] = google_api_keys.GetClientID('MAIN')

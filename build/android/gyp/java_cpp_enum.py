@@ -96,7 +96,7 @@ class EnumDefinition:
                   'k' + self.original_enum_name]
 
       for prefix in prefixes:
-        if all([w.startswith(prefix) for w in self.entries.keys()]):
+        if all(w.startswith(prefix) for w in self.entries.keys()):
           prefix_to_strip = prefix
           break
       else:

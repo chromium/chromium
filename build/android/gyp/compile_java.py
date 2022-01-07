@@ -482,7 +482,7 @@ def _RunCompiler(changes,
 
       if enable_partial_javac:
         all_changed_paths_are_java = all(
-            [p.endswith(".java") for p in changes.IterChangedPaths()])
+            p.endswith(".java") for p in changes.IterChangedPaths())
         if (all_changed_paths_are_java and not changes.HasStringChanges()
             and os.path.exists(jar_path)
             and (jar_info_path is None or os.path.exists(jar_info_path))):
