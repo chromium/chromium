@@ -356,12 +356,12 @@ void TailoredSecurityService::OnTailoredSecurityBitRetrieved(
     bool is_enabled,
     base::Time previous_update) {
   if (is_tailored_security_enabled_ != is_enabled) {
-    is_tailored_security_enabled_ = is_enabled;
-    last_updated_ = base::Time::Now();
     for (auto& observer : observer_list_) {
       observer.OnTailoredSecurityBitChanged(is_enabled, previous_update);
     }
   }
+  is_tailored_security_enabled_ = is_enabled;
+  last_updated_ = base::Time::Now();
 }
 
 void TailoredSecurityService::QueryTailoredSecurityBitCompletionCallback(
