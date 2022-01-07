@@ -649,6 +649,7 @@ void BlobRegistryImpl::URLStoreForOrigin(
     mojo::ReportBadMessage(
         "Cannot access data for origin passed to "
         "BlobRegistryImpl::URLStoreForOrigin");
+    return;
   }
   auto self_owned_associated_receiver = mojo::MakeSelfOwnedAssociatedReceiver(
       std::make_unique<BlobURLStoreImpl>(origin, url_registry_),
