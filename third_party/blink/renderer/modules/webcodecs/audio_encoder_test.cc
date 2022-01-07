@@ -11,26 +11,11 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_encoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_encoder_init.h"
+#include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 
 namespace blink {
 
 namespace {
-
-class MockFunction : public ScriptFunction {
- public:
-  static testing::StrictMock<MockFunction>* Create(ScriptState* script_state) {
-    return MakeGarbageCollected<testing::StrictMock<MockFunction>>(
-        script_state);
-  }
-
-  v8::Local<v8::Function> Bind() { return BindToV8Function(); }
-
-  MOCK_METHOD1(Call, ScriptValue(ScriptValue));
-
- protected:
-  explicit MockFunction(ScriptState* script_state)
-      : ScriptFunction(script_state) {}
-};
 
 class AudioEncoderTest : public testing::Test {
  public:
@@ -53,12 +38,11 @@ AudioEncoder* CreateEncoder(ScriptState* script_state,
                                             exception_state);
 }
 
-AudioEncoderInit* CreateInit(MockFunction* output_callback,
-                             MockFunction* error_callback) {
+AudioEncoderInit* CreateInit(v8::Local<v8::Function> output_callback,
+                             v8::Local<v8::Function> error_callback) {
   auto* init = MakeGarbageCollected<AudioEncoderInit>();
-  init->setOutput(
-      V8EncodedAudioChunkOutputCallback::Create(output_callback->Bind()));
-  init->setError(V8WebCodecsErrorCallback::Create(error_callback->Bind()));
+  init->setOutput(V8EncodedAudioChunkOutputCallback::Create(output_callback));
+  init->setError(V8WebCodecsErrorCallback::Create(error_callback));
   return init;
 }
 
@@ -67,11 +51,11 @@ TEST_F(AudioEncoderTest, CodecReclamation) {
   auto& es = v8_scope.GetExceptionState();
   auto* script_state = v8_scope.GetScriptState();
 
-  // Create an audio encoder.
-  auto* output_callback = MockFunction::Create(script_state);
-  auto* error_callback = MockFunction::Create(script_state);
+  MockFunctionScope mock_function_scope(script_state);
 
-  auto* init = CreateInit(output_callback, error_callback);
+  // Create an audio encoder.
+  auto* init = CreateInit(mock_function_scope.ExpectNoCall(),
+                          mock_function_scope.ExpectCall());
   auto* encoder = CreateEncoder(script_state, init, es);
   ASSERT_FALSE(es.HadException());
 
@@ -97,11 +81,8 @@ TEST_F(AudioEncoderTest, CodecReclamation) {
   ASSERT_TRUE(encoder->IsReclamationTimerActiveForTesting());
 
   // Resetting the encoder should prevent codec reclamation, silently.
-  EXPECT_CALL(*error_callback, Call(testing::_)).Times(0);
   encoder->reset(es);
   ASSERT_FALSE(encoder->IsReclamationTimerActiveForTesting());
-
-  testing::Mock::VerifyAndClearExpectations(error_callback);
 
   // Reconfiguring the encoder should restart the reclamation timer.
   encoder->configure(config, es);
@@ -117,11 +98,8 @@ TEST_F(AudioEncoderTest, CodecReclamation) {
   ASSERT_TRUE(encoder->IsReclamationTimerActiveForTesting());
 
   // Reclaiming a configured encoder should call the error callback.
-  EXPECT_CALL(*error_callback, Call(testing::_)).Times(1);
   encoder->SimulateCodecReclaimedForTesting();
   ASSERT_FALSE(encoder->IsReclamationTimerActiveForTesting());
-
-  testing::Mock::VerifyAndClearExpectations(error_callback);
 }
 
 }  // namespace

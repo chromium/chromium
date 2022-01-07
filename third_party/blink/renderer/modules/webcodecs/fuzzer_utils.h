@@ -30,14 +30,11 @@ namespace blink {
 class DOMRectInit;
 class PlaneLayout;
 
-class FakeFunction : public ScriptFunction {
+class FakeFunction : public NewScriptFunction::Callable {
  public:
-  static FakeFunction* Create(ScriptState* script_state, std::string name);
+  explicit FakeFunction(std::string name);
 
-  explicit FakeFunction(ScriptState* script_state, std::string name);
-
-  v8::Local<v8::Function> Bind();
-  ScriptValue Call(ScriptValue) override;
+  ScriptValue Call(ScriptState*, ScriptValue) override;
 
  private:
   const std::string name_;

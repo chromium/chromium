@@ -51,20 +51,9 @@ constexpr uint32_t kMaxVideoFrameDimension = 1024;
 
 }  // namespace
 
-// static
-FakeFunction* FakeFunction::Create(ScriptState* script_state,
-                                   std::string name) {
-  return MakeGarbageCollected<FakeFunction>(script_state, name);
-}
+FakeFunction::FakeFunction(std::string name) : name_(std::move(name)) {}
 
-FakeFunction::FakeFunction(ScriptState* script_state, std::string name)
-    : ScriptFunction(script_state), name_(name) {}
-
-v8::Local<v8::Function> FakeFunction::Bind() {
-  return BindToV8Function();
-}
-
-ScriptValue FakeFunction::Call(ScriptValue) {
+ScriptValue FakeFunction::Call(ScriptState*, ScriptValue) {
   return ScriptValue();
 }
 

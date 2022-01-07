@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame_init.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
+#include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_encoder.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -23,22 +24,6 @@
 namespace blink {
 
 namespace {
-
-class MockFunction : public ScriptFunction {
- public:
-  static testing::StrictMock<MockFunction>* Create(ScriptState* script_state) {
-    return MakeGarbageCollected<testing::StrictMock<MockFunction>>(
-        script_state);
-  }
-
-  v8::Local<v8::Function> Bind() { return BindToV8Function(); }
-
-  MOCK_METHOD1(Call, ScriptValue(ScriptValue));
-
- protected:
-  explicit MockFunction(ScriptState* script_state)
-      : ScriptFunction(script_state) {}
-};
 
 class VideoEncoderTest : public testing::Test {
  public:
@@ -61,12 +46,11 @@ VideoEncoder* CreateEncoder(ScriptState* script_state,
                                             exception_state);
 }
 
-VideoEncoderInit* CreateInit(MockFunction* output_callback,
-                             MockFunction* error_callback) {
+VideoEncoderInit* CreateInit(v8::Local<v8::Function> output_callback,
+                             v8::Local<v8::Function> error_callback) {
   auto* init = MakeGarbageCollected<VideoEncoderInit>();
-  init->setOutput(
-      V8EncodedVideoChunkOutputCallback::Create(output_callback->Bind()));
-  init->setError(V8WebCodecsErrorCallback::Create(error_callback->Bind()));
+  init->setOutput(V8EncodedVideoChunkOutputCallback::Create(output_callback));
+  init->setError(V8WebCodecsErrorCallback::Create(error_callback));
   return init;
 }
 
@@ -102,8 +86,9 @@ TEST_F(VideoEncoderTest, RejectFlushAfterClose) {
   auto& es = v8_scope.GetExceptionState();
   auto* script_state = v8_scope.GetScriptState();
 
-  auto* init = CreateInit(MockFunction::Create(script_state),
-                          MockFunction::Create(script_state));
+  MockFunctionScope mock_function(script_state);
+  auto* init =
+      CreateInit(mock_function.ExpectNoCall(), mock_function.ExpectNoCall());
   auto* encoder = CreateEncoder(script_state, init, es);
   ASSERT_FALSE(es.HadException());
 
@@ -141,11 +126,11 @@ TEST_F(VideoEncoderTest, CodecReclamation) {
   auto& es = v8_scope.GetExceptionState();
   auto* script_state = v8_scope.GetScriptState();
 
-  // Create a video encoder.
-  auto* output_callback = MockFunction::Create(script_state);
-  auto* error_callback = MockFunction::Create(script_state);
+  MockFunctionScope mock_function(script_state);
 
-  auto* init = CreateInit(output_callback, error_callback);
+  // Create a video encoder.
+  auto* init =
+      CreateInit(mock_function.ExpectNoCall(), mock_function.ExpectCall());
   auto* encoder = CreateEncoder(script_state, init, es);
   ASSERT_FALSE(es.HadException());
 
@@ -171,11 +156,8 @@ TEST_F(VideoEncoderTest, CodecReclamation) {
   ASSERT_TRUE(encoder->IsReclamationTimerActiveForTesting());
 
   // Resetting the encoder should prevent codec reclamation, silently.
-  EXPECT_CALL(*error_callback, Call(testing::_)).Times(0);
   encoder->reset(es);
   ASSERT_FALSE(encoder->IsReclamationTimerActiveForTesting());
-
-  testing::Mock::VerifyAndClearExpectations(error_callback);
 
   // Reconfiguring the encoder should restart the reclamation timer.
   encoder->configure(config, es);
@@ -191,11 +173,8 @@ TEST_F(VideoEncoderTest, CodecReclamation) {
   ASSERT_TRUE(encoder->IsReclamationTimerActiveForTesting());
 
   // Reclaiming a configured encoder should call the error callback.
-  EXPECT_CALL(*error_callback, Call(testing::_)).Times(1);
   encoder->SimulateCodecReclaimedForTesting();
   ASSERT_FALSE(encoder->IsReclamationTimerActiveForTesting());
-
-  testing::Mock::VerifyAndClearExpectations(error_callback);
 }
 
 }  // namespace

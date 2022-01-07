@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_audio_decoder_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_config.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_decoder_init.h"
+#include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/modules/webcodecs/audio_decoder.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_decoder.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -21,22 +22,6 @@ namespace blink {
 
 namespace {
 
-class MockFunction : public ScriptFunction {
- public:
-  static testing::StrictMock<MockFunction>* Create(ScriptState* script_state) {
-    return MakeGarbageCollected<testing::StrictMock<MockFunction>>(
-        script_state);
-  }
-
-  v8::Local<v8::Function> Bind() { return BindToV8Function(); }
-
-  MOCK_METHOD1(Call, ScriptValue(ScriptValue));
-
- protected:
-  explicit MockFunction(ScriptState* script_state)
-      : ScriptFunction(script_state) {}
-};
-
 template <class T>
 class DecoderTemplateTest : public testing::Test {
  public:
@@ -44,8 +29,8 @@ class DecoderTemplateTest : public testing::Test {
   ~DecoderTemplateTest() override = default;
 
   typename T::ConfigType* CreateConfig();
-  typename T::InitType* CreateInit(MockFunction* output_callback,
-                                   MockFunction* error_callback);
+  typename T::InitType* CreateInit(v8::Local<v8::Function> output_callback,
+                                   v8::Local<v8::Function> error_callback);
 
   T* CreateDecoder(ScriptState*, const typename T::InitType*, ExceptionState&);
 };
@@ -70,11 +55,11 @@ AudioDecoder* DecoderTemplateTest<AudioDecoder>::CreateDecoder(
 
 template <>
 AudioDecoderInit* DecoderTemplateTest<AudioDecoder>::CreateInit(
-    MockFunction* output_callback,
-    MockFunction* error_callback) {
+    v8::Local<v8::Function> output_callback,
+    v8::Local<v8::Function> error_callback) {
   auto* init = MakeGarbageCollected<AudioDecoderInit>();
-  init->setOutput(V8AudioDataOutputCallback::Create(output_callback->Bind()));
-  init->setError(V8WebCodecsErrorCallback::Create(error_callback->Bind()));
+  init->setOutput(V8AudioDataOutputCallback::Create(output_callback));
+  init->setError(V8WebCodecsErrorCallback::Create(error_callback));
   return init;
 }
 
@@ -87,11 +72,11 @@ VideoDecoderConfig* DecoderTemplateTest<VideoDecoder>::CreateConfig() {
 
 template <>
 VideoDecoderInit* DecoderTemplateTest<VideoDecoder>::CreateInit(
-    MockFunction* output_callback,
-    MockFunction* error_callback) {
+    v8::Local<v8::Function> output_callback,
+    v8::Local<v8::Function> error_callback) {
   auto* init = MakeGarbageCollected<VideoDecoderInit>();
-  init->setOutput(V8VideoFrameOutputCallback::Create(output_callback->Bind()));
-  init->setError(V8WebCodecsErrorCallback::Create(error_callback->Bind()));
+  init->setOutput(V8VideoFrameOutputCallback::Create(output_callback));
+  init->setError(V8WebCodecsErrorCallback::Create(error_callback));
   return init;
 }
 
@@ -112,12 +97,11 @@ TYPED_TEST_SUITE(DecoderTemplateTest, DecoderTemplateImplementations);
 TYPED_TEST(DecoderTemplateTest, BasicConstruction) {
   V8TestingScope v8_scope;
 
-  auto* output_callback = MockFunction::Create(v8_scope.GetScriptState());
-  auto* error_callback = MockFunction::Create(v8_scope.GetScriptState());
-
+  MockFunctionScope mock_function(v8_scope.GetScriptState());
   auto* decoder =
       this->CreateDecoder(v8_scope.GetScriptState(),
-                          this->CreateInit(output_callback, error_callback),
+                          this->CreateInit(mock_function.ExpectNoCall(),
+                                           mock_function.ExpectNoCall()),
                           v8_scope.GetExceptionState());
   ASSERT_TRUE(decoder);
   EXPECT_FALSE(v8_scope.GetExceptionState().HadException());
@@ -127,12 +111,11 @@ TYPED_TEST(DecoderTemplateTest, ResetDuringFlush) {
   V8TestingScope v8_scope;
 
   // Create a decoder.
-  auto* output_callback = MockFunction::Create(v8_scope.GetScriptState());
-  auto* error_callback = MockFunction::Create(v8_scope.GetScriptState());
-
+  MockFunctionScope mock_function(v8_scope.GetScriptState());
   auto* decoder =
       this->CreateDecoder(v8_scope.GetScriptState(),
-                          this->CreateInit(output_callback, error_callback),
+                          this->CreateInit(mock_function.ExpectNoCall(),
+                                           mock_function.ExpectNoCall()),
                           v8_scope.GetExceptionState());
   ASSERT_TRUE(decoder);
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
@@ -175,12 +158,11 @@ TYPED_TEST(DecoderTemplateTest, MAYBE_CodecReclamation) {
   V8TestingScope v8_scope;
 
   // Create a decoder.
-  auto* output_callback = MockFunction::Create(v8_scope.GetScriptState());
-  auto* error_callback = MockFunction::Create(v8_scope.GetScriptState());
-
+  MockFunctionScope mock_function(v8_scope.GetScriptState());
   auto* decoder =
       this->CreateDecoder(v8_scope.GetScriptState(),
-                          this->CreateInit(output_callback, error_callback),
+                          this->CreateInit(mock_function.ExpectNoCall(),
+                                           mock_function.ExpectCall()),
                           v8_scope.GetExceptionState());
   ASSERT_TRUE(decoder);
   ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
@@ -203,11 +185,8 @@ TYPED_TEST(DecoderTemplateTest, MAYBE_CodecReclamation) {
   ASSERT_TRUE(decoder->IsReclamationTimerActiveForTesting());
 
   // Reclaiming a reset decoder should not call the error callback.
-  EXPECT_CALL(*error_callback, Call(testing::_)).Times(0);
   decoder->SimulateCodecReclaimedForTesting();
   ASSERT_FALSE(decoder->IsReclamationTimerActiveForTesting());
-
-  testing::Mock::VerifyAndClearExpectations(error_callback);
 
   // Configure the decoder once more.
   decoder->configure(this->CreateConfig(), v8_scope.GetExceptionState());
@@ -215,11 +194,8 @@ TYPED_TEST(DecoderTemplateTest, MAYBE_CodecReclamation) {
   ASSERT_TRUE(decoder->IsReclamationTimerActiveForTesting());
 
   // Reclaiming a configured decoder should call the error callback.
-  EXPECT_CALL(*error_callback, Call(testing::_)).Times(1);
   decoder->SimulateCodecReclaimedForTesting();
   ASSERT_FALSE(decoder->IsReclamationTimerActiveForTesting());
-
-  testing::Mock::VerifyAndClearExpectations(error_callback);
 }
 
 }  // namespace
