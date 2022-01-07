@@ -12,6 +12,7 @@
 #include "chrome/browser/android/autofill_assistant/assistant_field_trial_util.h"
 #include "components/metrics/metrics_service_accessor.h"
 #include "components/variations/service/variations_service.h"
+#include "content/public/browser/web_contents.h"
 
 namespace autofill_assistant {
 
@@ -26,6 +27,9 @@ class DependenciesChrome : public Dependencies {
       const override;
 
   variations::VariationsService* GetVariationsService() const override;
+
+  std::string GetChromeSignedInEmailAddress(
+      content::WebContents* web_contents) const override;
 };
 
 }  // namespace autofill_assistant

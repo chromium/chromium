@@ -10,6 +10,7 @@
 #include "base/strings/string_piece.h"
 #include "chrome/browser/android/autofill_assistant/assistant_field_trial_util.h"
 #include "components/variations/service/variations_service.h"
+#include "content/public/browser/web_contents.h"
 
 namespace autofill_assistant {
 
@@ -33,6 +34,9 @@ class Dependencies {
       const = 0;
 
   virtual variations::VariationsService* GetVariationsService() const = 0;
+
+  virtual std::string GetChromeSignedInEmailAddress(
+      content::WebContents* web_contents) const = 0;
 
  protected:
   Dependencies(JNIEnv* env,

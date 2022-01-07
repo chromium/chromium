@@ -10,10 +10,16 @@
 #include "chrome/browser/android/autofill_assistant/assistant_field_trial_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/web_contents.h"
 
 using ::base::StringPiece;
 using ::base::android::JavaParamRef;
 using ::base::android::ScopedJavaGlobalRef;
+using ::content::WebContents;
 using ::variations::VariationsService;
 
 namespace autofill_assistant {
@@ -45,6 +51,15 @@ DependenciesChrome::CreateFieldTrialUtil() const {
 variations::VariationsService* DependenciesChrome::GetVariationsService()
     const {
   return g_browser_process->variations_service();
+}
+
+std::string DependenciesChrome::GetChromeSignedInEmailAddress(
+    WebContents* web_contents) const {
+  CoreAccountInfo account_info =
+      IdentityManagerFactory::GetForProfile(
+          Profile::FromBrowserContext(web_contents->GetBrowserContext()))
+          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
+  return account_info.email;
 }
 
 }  // namespace autofill_assistant

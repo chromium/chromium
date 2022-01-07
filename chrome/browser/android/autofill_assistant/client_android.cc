@@ -24,9 +24,7 @@
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
 #include "chrome/browser/autofill/personal_data_manager_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/channel_info.h"
 #include "components/autofill_assistant/browser/autofill_assistant_tts_controller.h"
 #include "components/autofill_assistant/browser/controller.h"
@@ -37,8 +35,6 @@
 #include "components/autofill_assistant/browser/switches.h"
 #include "components/autofill_assistant/browser/website_login_manager_impl.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
-#include "components/signin/public/identity_manager/account_info.h"
-#include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/variations/service/variations_service.h"
 #include "components/version_info/android/channel_getter.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -471,11 +467,7 @@ std::string ClientAndroid::GetEmailAddressForAccessTokenAccount() const {
 }
 
 std::string ClientAndroid::GetChromeSignedInEmailAddress() const {
-  CoreAccountInfo account_info =
-      IdentityManagerFactory::GetForProfile(
-          Profile::FromBrowserContext(GetWebContents()->GetBrowserContext()))
-          ->GetPrimaryAccountInfo(signin::ConsentLevel::kSync);
-  return account_info.email;
+  return dependencies_->GetChromeSignedInEmailAddress(GetWebContents());
 }
 
 absl::optional<std::pair<int, int>> ClientAndroid::GetWindowSize() const {
