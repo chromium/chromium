@@ -112,11 +112,8 @@ export class BrowserProxy {
       this.fakeHandler.setApps(appList);
 
     } else {
-      this.handler = new appManagement.mojom.PageHandlerRemote();
-      const factory = appManagement.mojom.PageHandlerFactory.getRemote();
-      factory.createPageHandler(
-          this.callbackRouter.$.bindNewPipeAndPassRemote(),
-          this.handler.$.bindNewPipeAndPassReceiver());
+      this.handler = ComponentBrowserProxy.getInstance().handler;
+      this.callbackRouter = ComponentBrowserProxy.getInstance().callbackRouter;
     }
   }
 }
