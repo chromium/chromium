@@ -770,6 +770,12 @@ This file contains the strings for ash.
       <message name="IDS_ASH_STATUS_TRAY_MIC_STATE_MUTED_BY_HW_SWITCH" desc="The text used as a tooltip for microphone mute button in Chrome OS quick settings when the mic gain button is muted because the device microphone mute switch is turned on. Used as a status text for IDS_ASH_STATUS_TRAY_MIC_GAIN.">
         Device's microphone button is turned off.
       </message>
+      <message name="IDS_ASH_STATUS_AREA_TOAST_KBL_OFF" desc="The text in the toast that shows up when the keyboard backlight is toggled off using a physical key or shortcut.">
+        Keyboard backlight is off
+      </message>
+      <message name="IDS_ASH_STATUS_AREA_TOAST_KBL_ON" desc="The text in the toast that shows up when the keyboard backlight is toggled on using a physical key or shortcut.">
+        Keyboard backlight is on
+      </message>
       <message name="IDS_ASH_STATUS_AREA_TOAST_MIC_OFF" desc="The text in the toast that shows up when the mic is muted using a physical key or shortcut.">
         Microphone is off
       </message>

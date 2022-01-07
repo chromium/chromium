@@ -490,6 +490,10 @@ const base::Feature kEnableInputInDiagnosticsApp{
 const base::Feature kEnableInputNoiseCancellationUi{
     "EnableInputNoiseCancellationUi", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables or disables keyboard backlight toggle.
+const base::Feature kEnableKeyboardBacklightToggle{
+    "EnableKeyboardBacklightToggle", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // Login WebUI was always loaded for legacy reasons even when it was not needed.
 // When enabled, it will make login WebUI loaded only before showing it.
 const base::Feature kEnableLazyLoginWebUILoading{
@@ -1585,6 +1589,10 @@ bool IsInputNoiseCancellationUiEnabled() {
 bool IsInstantTetheringBackgroundAdvertisingSupported() {
   return base::FeatureList::IsEnabled(
       kInstantTetheringBackgroundAdvertisementSupport);
+}
+
+bool IsKeyboardBacklightToggleEnabled() {
+  return base::FeatureList::IsEnabled(kEnableKeyboardBacklightToggle);
 }
 
 bool IsKeyboardBasedDisplayArrangementInSettingsEnabled() {

@@ -50661,6 +50661,7 @@ from previous Chrome versions.
   <int value="-2036149591" label="FaviconsFromWebManifest:disabled"/>
   <int value="-2036127998" label="LocalWebApprovals:disabled"/>
   <int value="-2035126988" label="enabled-new-style-notification"/>
+  <int value="-2034064186" label="EnableKeyboardBacklightToggle:disabled"/>
   <int value="-2033950090" label="AutofillNoLocalSaveOnUploadSuccess:disabled"/>
   <int value="-2033908928" label="NightLight:enabled"/>
   <int value="-2033853607" label="ShimlessRMAFlow:disabled"/>
@@ -53368,6 +53369,7 @@ from previous Chrome versions.
   <int value="-78035185" label="custom_summary"/>
   <int value="-77872983" label="BookmarkAppsMac:disabled"/>
   <int value="-77789682" label="SharingPreferVapid:disabled"/>
+  <int value="-77713912" label="EnableKeyboardBacklightToggle:enabled"/>
   <int value="-77328559" label="IncognitoReauthenticationForAndroid:enabled"/>
   <int value="-77230883"
       label="OmniboxOnFocusSuggestionsContextualWebAllowSRP:enabled"/>

@@ -1111,6 +1111,8 @@ component("ash") {
     "system/ime_menu/ime_list_view.h",
     "system/ime_menu/ime_menu_tray.cc",
     "system/ime_menu/ime_menu_tray.h",
+    "system/keyboard_brightness/keyboard_backlight_toggle_controller.cc",
+    "system/keyboard_brightness/keyboard_backlight_toggle_controller.h",
     "system/keyboard_brightness/keyboard_brightness_controller.cc",
     "system/keyboard_brightness/keyboard_brightness_controller.h",
     "system/keyboard_brightness/unified_keyboard_brightness_slider_controller.cc",

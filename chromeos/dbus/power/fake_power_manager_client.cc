@@ -160,6 +160,11 @@ void FakePowerManagerClient::GetKeyboardBrightnessPercent(
       base::BindOnce(std::move(callback), keyboard_brightness_percent_));
 }
 
+void FakePowerManagerClient::SetKeyboardBacklightToggledOff(bool toggled_off) {}
+
+void FakePowerManagerClient::GetKeyboardBacklightToggledOff(
+    DBusMethodCallback<bool> callback) {}
+
 const absl::optional<power_manager::PowerSupplyProperties>&
 FakePowerManagerClient::GetLastStatus() {
   return props_;

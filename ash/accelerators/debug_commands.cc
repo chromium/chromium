@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/accelerators/accelerator_commands.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/hud_display/hud_display.h"
 #include "ash/public/cpp/accelerators.h"
@@ -101,8 +102,10 @@ void HandleToggleWallpaperMode() {
 }
 
 void HandleToggleKeyboardBacklight() {
-  base::RecordAction(base::UserMetricsAction("Accel_Keyboard_Backlight"));
-  accelerators::ToggleKeyboardBacklight();
+  if (ash::features::IsKeyboardBacklightToggleEnabled()) {
+    base::RecordAction(base::UserMetricsAction("Accel_Keyboard_Backlight"));
+    accelerators::ToggleKeyboardBacklight();
+  }
 }
 
 void HandleToggleMicrophoneMute() {

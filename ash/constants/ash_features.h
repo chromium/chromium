@@ -195,6 +195,8 @@ extern const base::Feature kEnableInputInDiagnosticsApp;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableInputNoiseCancellationUi;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kEnableKeyboardBacklightToggle;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableLazyLoginWebUILoading;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kEnableLocalSearchService;
@@ -569,6 +571,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsInputInDiagnosticsAppEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsInputNoiseCancellationUiEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsInstantTetheringBackgroundAdvertisingSupported();
+COMPONENT_EXPORT(ASH_CONSTANTS)
+bool IsKeyboardBacklightToggleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsKeyboardBasedDisplayArrangementInSettingsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsLauncherAppSortEnabled();

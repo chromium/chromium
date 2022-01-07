@@ -7,6 +7,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/system/unified/unified_system_tray_model.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 
 namespace ash {
 
@@ -25,7 +26,8 @@ class UnifiedKeyboardBrightnessView : public UnifiedSliderView,
                           true /* readonly*/),
         model_(model) {
     model_->AddObserver(this);
-    OnKeyboardBrightnessChanged(false /* by_user */);
+    OnKeyboardBrightnessChanged(
+        power_manager::BacklightBrightnessChange_Cause_OTHER);
   }
 
   UnifiedKeyboardBrightnessView(const UnifiedKeyboardBrightnessView&) = delete;
@@ -35,8 +37,11 @@ class UnifiedKeyboardBrightnessView : public UnifiedSliderView,
   ~UnifiedKeyboardBrightnessView() override { model_->RemoveObserver(this); }
 
   // UnifiedSystemTrayModel::Observer:
-  void OnKeyboardBrightnessChanged(bool by_user) override {
-    SetSliderValue(model_->keyboard_brightness(), by_user);
+  void OnKeyboardBrightnessChanged(
+      power_manager::BacklightBrightnessChange_Cause cause) override {
+    SetSliderValue(
+        model_->keyboard_brightness(),
+        cause == power_manager::BacklightBrightnessChange_Cause_USER_REQUEST);
   }
 
  private:

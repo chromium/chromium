@@ -4538,6 +4538,12 @@ const char kEnableInputNoiseCancellationUiDescription[] =
     "Enable toggling input noise cancellation through the Quick Settings. By "
     "default, this flag is disabled.";
 
+const char kEnableKeyboardBacklightToggleName[] =
+    "Enable Keyboard Backlight Toggle.";
+const char kEnableKeyboardBacklightToggleDescription[] =
+    "Enable toggling of the keyboard backlight. By "
+    "default, this flag is enabled.";
+
 const char kEnableLauncherSearchNormalizationName[] =
     "Enable normalization of launcher search results";
 const char kEnableLauncherSearchNormalizationDescription[] =

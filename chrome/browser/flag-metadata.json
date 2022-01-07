@@ -2210,6 +2210,11 @@
     "expiry_milestone": 105
   },
   {
+    "name": "enable-keyboard-backlight-toggle",
+    "owners": [ "rtinkoff" ],
+    "expiry_milestone": 105
+  },
+  {
     "name": "enable-lacros-in-web-kiosk",
     "owners": ["anqing", "apotapchuk"],
     "expiry_milestone": 100

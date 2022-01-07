@@ -2139,8 +2139,10 @@ void AcceleratorControllerImpl::PerformAction(
       accelerators::FocusPip();
       break;
     case KEYBOARD_BACKLIGHT_TOGGLE:
-      base::RecordAction(base::UserMetricsAction("Accel_Keyboard_Backlight"));
-      accelerators::ToggleKeyboardBacklight();
+      if (ash::features::IsKeyboardBacklightToggleEnabled()) {
+        base::RecordAction(base::UserMetricsAction("Accel_Keyboard_Backlight"));
+        accelerators::ToggleKeyboardBacklight();
+      }
       break;
     case KEYBOARD_BRIGHTNESS_DOWN: {
       KeyboardBrightnessControlDelegate* delegate =

@@ -233,6 +233,8 @@ class DummyKeyboardBrightnessControlDelegate
     last_accelerator_ = accelerator;
   }
 
+  void HandleToggleKeyboardBacklight() override {}
+
   int handle_keyboard_brightness_down_count() const {
     return handle_keyboard_brightness_down_count_;
   }

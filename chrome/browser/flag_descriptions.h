@@ -2605,6 +2605,9 @@ extern const char kEnableInputInDiagnosticsAppDescription[];
 extern const char kEnableInputNoiseCancellationUiName[];
 extern const char kEnableInputNoiseCancellationUiDescription[];
 
+extern const char kEnableKeyboardBacklightToggleName[];
+extern const char kEnableKeyboardBacklightToggleDescription[];
+
 extern const char kEnableLauncherSearchNormalizationName[];
 extern const char kEnableLauncherSearchNormalizationDescription[];
 

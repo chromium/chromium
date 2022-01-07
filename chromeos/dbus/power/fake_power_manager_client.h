@@ -102,6 +102,9 @@ class COMPONENT_EXPORT(DBUS_POWER) FakePowerManagerClient
   void IncreaseKeyboardBrightness() override;
   void GetKeyboardBrightnessPercent(
       DBusMethodCallback<double> callback) override;
+  void SetKeyboardBacklightToggledOff(bool toggled_off) override;
+  void GetKeyboardBacklightToggledOff(
+      DBusMethodCallback<bool> callback) override;
   const absl::optional<power_manager::PowerSupplyProperties>& GetLastStatus()
       override;
   void RequestStatusUpdate() override;

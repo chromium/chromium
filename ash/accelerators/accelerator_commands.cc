@@ -15,6 +15,7 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
+#include "ash/system/keyboard_brightness_control_delegate.h"
 #include "ash/wm/float/float_controller.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/screen_pinning_controller.h"
@@ -219,7 +220,9 @@ void ToggleFullscreen() {
 }
 
 void ToggleKeyboardBacklight() {
-  // TODO: b/194146863 Add KBL toggle implementation 
+  KeyboardBrightnessControlDelegate* delegate =
+      Shell::Get()->keyboard_brightness_control_delegate();
+  delegate->HandleToggleKeyboardBacklight();
 }
 
 void ToggleMaximized() {

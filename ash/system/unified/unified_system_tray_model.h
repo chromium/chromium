@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "chromeos/dbus/power_manager/backlight.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace display {
@@ -64,7 +65,8 @@ class ASH_EXPORT UnifiedSystemTrayModel
 
     // |by_user| is true when brightness is changed by user action.
     virtual void OnDisplayBrightnessChanged(bool by_user) {}
-    virtual void OnKeyboardBrightnessChanged(bool by_user) {}
+    virtual void OnKeyboardBrightnessChanged(
+        power_manager::BacklightBrightnessChange_Cause cause) {}
     virtual void OnSystemTrayButtonSizeChanged(
         SystemTrayButtonSize system_tray_size) {}
   };
@@ -145,7 +147,9 @@ class ASH_EXPORT UnifiedSystemTrayModel
   ~UnifiedSystemTrayModel();
 
   void DisplayBrightnessChanged(float brightness, bool by_user);
-  void KeyboardBrightnessChanged(float brightness, bool by_user);
+  void KeyboardBrightnessChanged(
+      float brightness,
+      power_manager::BacklightBrightnessChange_Cause cause);
   void SystemTrayButtonSizeChanged(SystemTrayButtonSize system_tray_size);
 
   // Get the display that owns the tray.
