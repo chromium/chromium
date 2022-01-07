@@ -49,6 +49,7 @@ source_set("google_services") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/commerce:commerce",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/policy:policy_util",
     "//ios/chrome/browser/signin",

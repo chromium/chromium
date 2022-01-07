@@ -9,6 +9,7 @@
 #include "components/unified_consent/pref_names.h"
 #include "components/unified_consent/unified_consent_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -50,6 +51,11 @@ class PriceAlertUtilTest : public PlatformTest {
     browser_state_->GetPrefs()->SetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled,
         enabled);
+  }
+
+  void SetUserSetting(bool enabled) {
+    browser_state_->GetPrefs()->SetBoolean(prefs::kTrackPricesOnTabsEnabled,
+                                           enabled);
   }
 
   void SetFeatureFlag(bool enabled) {
@@ -122,4 +128,20 @@ TEST_F(PriceAlertUtilTest, TestIncognito) {
   SetFeatureFlag(true);
   SetMSBB(true);
   EXPECT_FALSE(IsPriceAlertsEligible(&fake_browser_state));
+}
+
+TEST_F(PriceAlertUtilTest, TestUserSettingOn) {
+  SignIn();
+  SetFeatureFlag(true);
+  SetMSBB(true);
+  SetUserSetting(true);
+  EXPECT_TRUE(IsPriceAlertsEligible(browser_state_.get()));
+}
+
+TEST_F(PriceAlertUtilTest, TestUserSettingOff) {
+  SignIn();
+  SetFeatureFlag(true);
+  SetMSBB(true);
+  SetUserSetting(false);
+  EXPECT_FALSE(IsPriceAlertsEligible(browser_state_.get()));
 }
