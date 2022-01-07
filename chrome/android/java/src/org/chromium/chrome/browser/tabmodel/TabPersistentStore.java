@@ -41,9 +41,9 @@ import org.chromium.chrome.browser.tab.HistoricalTabSaver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabIdManager;
-import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab.TabStateExtractor;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
 import org.chromium.chrome.browser.tab.state.FilePersistedTabDataStorage;
@@ -130,6 +130,9 @@ public class TabPersistentStore {
         new TabModelSelectorTabObserver(mTabModelSelector) {
             @Override
             public void onNavigationEntriesDeleted(Tab tab) {
+                if (!tab.isDestroyed()) {
+                    TabStateAttributes.from(tab).setIsTabStateDirty(true);
+                }
                 addTabToSaveQueue(tab);
             }
 
@@ -141,6 +144,20 @@ public class TabPersistentStore {
             @Override
             public void onRootIdChanged(Tab tab, int newRootId) {
                 addTabToSaveQueue(tab);
+            }
+
+            @Override
+            public void onPageLoadFinished(Tab tab, GURL url) {
+                if (!tab.isDestroyed()) {
+                    TabStateAttributes.from(tab).setIsTabStateDirty(true);
+                }
+            }
+
+            @Override
+            public void onTitleUpdated(Tab tab) {
+                if (!tab.isDestroyed()) {
+                    TabStateAttributes.from(tab).setIsTabStateDirty(true);
+                }
             }
         };
 
@@ -808,8 +825,8 @@ public class TabPersistentStore {
     }
 
     private void addTabToSaveQueueIfApplicable(Tab tab) {
-        if (tab == null) return;
-        if (mTabsToSave.contains(tab) || !((TabImpl) tab).isTabStateDirty()
+        if (tab == null || tab.isDestroyed()) return;
+        if (mTabsToSave.contains(tab) || !TabStateAttributes.from(tab).isTabStateDirty()
                 || isTabUrlContentScheme(tab)) {
             return;
         }
@@ -1250,7 +1267,9 @@ public class TabPersistentStore {
         protected void onPostExecute(Void v) {
             if (mDestroyed || isCancelled()) return;
             if (mStateSaved) {
-                ((TabImpl) mTab).setIsTabStateDirty(false);
+                if (!mTab.isDestroyed()) {
+                    TabStateAttributes.from(mTab).setIsTabStateDirty(false);
+                }
                 mTab.setIsTabSaveEnabled(isCriticalPersistedTabDataEnabled());
             }
             mSaveTabTask = null;

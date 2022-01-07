@@ -135,9 +135,6 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     private boolean mIsClosing;
     private boolean mIsShowingErrorPage;
 
-    /** Whether or not the TabState has changed. */
-    private boolean mIsTabStateDirty = true;
-
     /**
      * Saves how this tab was launched (from a link, external app, etc) so that
      * we can determine the different circumstances in which it should be
@@ -785,18 +782,6 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
         return !(activity instanceof ChromeActivity);
     }
 
-    /**
-     * @return Whether the TabState representing this Tab has been updated.
-     */
-    public boolean isTabStateDirty() {
-        return mIsTabStateDirty;
-    }
-
-    @Override
-    public void setIsTabStateDirty(boolean isDirty) {
-        mIsTabStateDirty = isDirty;
-    }
-
     @Override
     public void setIsTabSaveEnabled(boolean isTabSaveEnabled) {
         mIsTabSaveEnabledSupplier.set(isTabSaveEnabled);
@@ -1058,7 +1043,6 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
      * @param url URL that was loaded.
      */
     void didFinishPageLoad(GURL url) {
-        mIsTabStateDirty = true;
         updateTitle();
 
         for (TabObserver observer : mObservers) observer.onPageLoadFinished(this, url);
@@ -1119,7 +1103,6 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
      * Called when navigation entries were removed.
      */
     void notifyNavigationEntriesDeleted() {
-        mIsTabStateDirty = true;
         for (TabObserver observer : mObservers) observer.onNavigationEntriesDeleted(this);
     }
 
@@ -1215,7 +1198,6 @@ public class TabImpl implements Tab, TabObscuringHandler.Observer {
     void updateTitle(String title) {
         if (TextUtils.equals(CriticalPersistedTabData.from(this).getTitle(), title)) return;
 
-        mIsTabStateDirty = true;
         CriticalPersistedTabData.from(this).setTitle(title);
         notifyPageTitleChanged();
     }
