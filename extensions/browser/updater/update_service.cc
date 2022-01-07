@@ -8,6 +8,8 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback.h"
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -26,6 +28,7 @@
 #include "extensions/browser/notification_types.h"
 #include "extensions/browser/updater/extension_downloader.h"
 #include "extensions/browser/updater/extension_update_data.h"
+#include "extensions/browser/updater/scoped_extension_updater_keep_alive.h"
 #include "extensions/browser/updater/update_data_provider.h"
 #include "extensions/browser/updater/update_service_factory.h"
 #include "extensions/common/extension_features.h"
@@ -39,8 +42,6 @@ UpdateService* update_service_override = nullptr;
 // This set contains all Omaha attributes that is associated with extensions.
 constexpr const char* kOmahaAttributes[] = {
     "_malware", "_esbAllowlist", "_potentially_uws", "_policy_violation"};
-
-void SendUninstallPingCompleteCallback(update_client::Error error) {}
 
 }  // namespace
 
@@ -85,8 +86,14 @@ void UpdateService::SendUninstallPing(const std::string& id,
   update_client::CrxComponent crx;
   crx.app_id = id;
   crx.version = version;
+  // A ScopedExtensionUpdaterKeepAlive is bound into the callback to keep the
+  // context alive throughout the operation.
   update_client_->SendUninstallPing(
-      crx, reason, base::BindOnce(&SendUninstallPingCompleteCallback));
+      crx, reason,
+      base::BindOnce([](std::unique_ptr<ScopedExtensionUpdaterKeepAlive>,
+                        update_client::Error) {},
+                     ExtensionsBrowserClient::Get()->CreateUpdaterKeepAlive(
+                         browser_context_)));
 }
 
 void UpdateService::OnEvent(Events event, const std::string& extension_id) {

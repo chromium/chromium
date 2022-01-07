@@ -40,7 +40,9 @@
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service.h"
 #include "chrome/browser/safe_browsing/extension_telemetry/extension_telemetry_service_factory.h"
@@ -65,6 +67,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_interface_binders.h"
 #include "extensions/browser/pref_names.h"
+#include "extensions/browser/updater/scoped_extension_updater_keep_alive.h"
 #include "extensions/browser/url_request_util.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/features/feature_channel.h"
@@ -96,6 +99,16 @@ bool ExtensionsDisabled(const base::CommandLine& command_line) {
   return command_line.HasSwitch(::switches::kDisableExtensions) ||
          command_line.HasSwitch(::switches::kDisableExtensionsExcept);
 }
+
+class UpdaterKeepAlive : public ScopedExtensionUpdaterKeepAlive {
+ public:
+  UpdaterKeepAlive(Profile* profile, ProfileKeepAliveOrigin origin)
+      : profile_keep_alive_(profile, origin) {}
+  ~UpdaterKeepAlive() override = default;
+
+ private:
+  ScopedProfileKeepAlive profile_keep_alive_;
+};
 
 }  // namespace
 
@@ -461,6 +474,14 @@ ChromeExtensionsBrowserClient::CreateUpdateClient(
   }
   return update_client::UpdateClientFactory(
       ChromeUpdateClientConfig::Create(context, override_url));
+}
+
+std::unique_ptr<ScopedExtensionUpdaterKeepAlive>
+ChromeExtensionsBrowserClient::CreateUpdaterKeepAlive(
+    content::BrowserContext* context) {
+  return std::make_unique<UpdaterKeepAlive>(
+      Profile::FromBrowserContext(context),
+      ProfileKeepAliveOrigin::kExtensionUpdater);
 }
 
 bool ChromeExtensionsBrowserClient::IsActivityLoggingEnabled(

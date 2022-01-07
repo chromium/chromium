@@ -564,6 +564,7 @@ source_set("browser_sources") {
     "//extensions:extensions_browser_resources",
     "//extensions/browser/api/virtual_keyboard_private:virtual_keyboard_delegate",
     "//extensions/browser/guest_view/web_view/web_ui",
+    "//extensions/browser/updater:keepalive",
     "//extensions/buildflags",
     "//extensions/common",
     "//extensions/common:mojom",

@@ -892,6 +892,7 @@ static_library("extensions") {
     "//extensions/browser:core_api_provider",
     "//extensions/browser/api:api_implementations",
     "//extensions/browser/updater",
+    "//extensions/browser/updater:keepalive",
     "//extensions/buildflags",
     "//extensions/common",
     "//extensions/common:mojom",

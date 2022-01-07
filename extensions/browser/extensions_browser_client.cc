@@ -4,11 +4,14 @@
 
 #include "extensions/browser/extensions_browser_client.h"
 
+#include <memory>
+
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "components/update_client/update_client.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
 #include "extensions/browser/extension_error.h"
+#include "extensions/browser/updater/scoped_extension_updater_keep_alive.h"
 
 namespace extensions {
 
@@ -43,6 +46,12 @@ void ExtensionsBrowserClient::AddAPIProvider(
 scoped_refptr<update_client::UpdateClient>
 ExtensionsBrowserClient::CreateUpdateClient(content::BrowserContext* context) {
   return scoped_refptr<update_client::UpdateClient>(nullptr);
+}
+
+std::unique_ptr<ScopedExtensionUpdaterKeepAlive>
+ExtensionsBrowserClient::CreateUpdaterKeepAlive(
+    content::BrowserContext* context) {
+  return nullptr;
 }
 
 void ExtensionsBrowserClient::ReportError(
