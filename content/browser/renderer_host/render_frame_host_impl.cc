@@ -9589,6 +9589,16 @@ void RenderFrameHostImpl::BindSerialService(
     return;
   }
 
+  // Powerful features like Serial API for FencedFrames are blocked by
+  // PermissionsPolicy. But as the interface is still exposed to the renderer,
+  // still good to have a secondary check per-API basis to handle compromised
+  // renderers. Ignore the request and mark it as bad to kill the initiating
+  // renderer if it happened for some reason.
+  if (IsNestedWithinFencedFrame()) {
+    mojo::ReportBadMessage("Web Serial is not allowed in fences frames.");
+    return;
+  }
+
   SerialService::GetOrCreateForCurrentDocument(this)->Bind(std::move(receiver));
 }
 
