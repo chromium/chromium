@@ -361,14 +361,8 @@ constexpr size_t kBitsPerSizeT = sizeof(void*) * CHAR_BIT;
 // PartitionPurgeDecommitEmptySlotSpans flag will eagerly decommit all entries
 // in the ring buffer, so with periodic purge enabled, this typically happens
 // every few seconds.
-#if defined(OS_LINUX) || defined(OS_APPLE)
-// Set to a higher value on Linux and macOS, to assess impact on performance
-// bots. This roughly halves the number of syscalls done during a speedometer
-// 2.0 run on these platforms.
 constexpr size_t kMaxFreeableSpans = std::numeric_limits<int8_t>::max();
-#else
-constexpr size_t kMaxFreeableSpans = 16;
-#endif
+constexpr size_t kDefaultEmptySlotSpanRingSize = 16;
 
 constexpr int kEmptyCacheIndexBits = 8;
 // Has to fit into SlotSpanMetadata::empty_cache_index.

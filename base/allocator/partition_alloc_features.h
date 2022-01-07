@@ -25,6 +25,7 @@ extern const BASE_EXPORT Feature kPartitionAllocPCScanBrowserOnly;
 extern const BASE_EXPORT Feature kPartitionAllocPCScanRendererOnly;
 extern const BASE_EXPORT Feature kPartitionAllocBackupRefPtrControl;
 extern const BASE_EXPORT Feature kPartitionAllocLargeThreadCacheSize;
+extern const BASE_EXPORT Feature kPartitionAllocLargeEmptySlotSpanRing;
 
 enum class BackupRefPtrEnabledProcesses {
   // BRP enabled only in the browser process.

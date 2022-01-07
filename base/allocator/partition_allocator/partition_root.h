@@ -326,6 +326,8 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
   SlotSpan* global_empty_slot_span_ring[kMaxFreeableSpans] GUARDED_BY(
       lock_) = {};
   int16_t global_empty_slot_span_ring_index GUARDED_BY(lock_) = 0;
+  int16_t global_empty_slot_span_ring_size GUARDED_BY(lock_) =
+      kDefaultEmptySlotSpanRingSize;
 
   // Integrity check = ~reinterpret_cast<uintptr_t>(this).
   uintptr_t inverted_self = 0;
@@ -463,6 +465,13 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
   // Reduces the size of the empty slot spans ring, until the dirty size is <=
   // |limit|.
   void ShrinkEmptySlotSpansRing(size_t limit) EXCLUSIVE_LOCKS_REQUIRED(lock_);
+  // The empty slot span ring starts "small", can be enlarged later. This
+  // improves performance by performing fewer system calls, at the cost of more
+  // memory usage.
+  void EnableLargeEmptySlotSpanRing() {
+    ScopedGuard locker{lock_};
+    global_empty_slot_span_ring_size = kMaxFreeableSpans;
+  }
 
   void DumpStats(const char* partition_name,
                  bool is_light_dump,

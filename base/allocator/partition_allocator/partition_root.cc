@@ -969,6 +969,10 @@ void PartitionRoot<thread_safe>::ShrinkEmptySlotSpansRing(size_t limit) {
       global_empty_slot_span_ring[index] = nullptr;
     }
     index += 1;
+    // Walk through the entirety of possible slots, even though the last ones
+    // are unused, if global_empty_slot_span_ring_size is smaller than
+    // kMaxFreeableSpans. It's simpler, and does not cost anything, since all
+    // the pointers are going to be nullptr.
     if (index == kMaxFreeableSpans)
       index = 0;
 

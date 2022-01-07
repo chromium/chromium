@@ -3836,9 +3836,7 @@ TEST_F(PartitionAllocTest, EmptySlotSpanSizeIsCapped) {
   // To create empty slot spans, allocate from single-slot slot spans, 128kiB at
   // a time.
   std::vector<void*> single_slot_allocated_memory;
-  constexpr size_t single_slot_count = 15;
-  static_assert(single_slot_count < kMaxFreeableSpans,
-                "Should do fewer allocations than the ring size.");
+  constexpr size_t single_slot_count = kDefaultEmptySlotSpanRingSize - 1;
   const size_t single_slot_size = MaxRegularSlotSpanSize() + 1;
   // Make sure that even with allocation size rounding up, a single allocation
   // is still below the threshold.
@@ -3868,6 +3866,70 @@ TEST_F(PartitionAllocTest, EmptySlotSpanSizeIsCapped) {
 
   for (void* ptr : allocated_memory)
     root.Free(ptr);
+}
+
+TEST_F(PartitionAllocTest, IncreaseEmptySlotSpanRingSize) {
+  PartitionRoot<ThreadSafe> root({
+      PartitionOptions::AlignedAlloc::kDisallowed,
+      PartitionOptions::ThreadCache::kDisabled,
+      PartitionOptions::Quarantine::kDisallowed,
+      PartitionOptions::Cookie::kAllowed,
+      PartitionOptions::BackupRefPtr::kDisabled,
+      PartitionOptions::UseConfigurablePool::kIfAvailable,
+  });
+  root.UncapEmptySlotSpanMemoryForTesting();
+
+  std::vector<void*> single_slot_allocated_memory;
+  constexpr size_t single_slot_count = kDefaultEmptySlotSpanRingSize + 10;
+  const size_t single_slot_size = MaxRegularSlotSpanSize() + 1;
+  const size_t bucket_size =
+      root.buckets[SizeToIndex(single_slot_size)].slot_size;
+
+  for (size_t i = 0; i < single_slot_count; i++) {
+    void* ptr = root.Alloc(single_slot_size, "");
+    single_slot_allocated_memory.push_back(ptr);
+  }
+
+  // Free everything at once, creating as many empty slot spans as there are
+  // allocations (since they are from single-slot slot spans).
+  for (void* ptr : single_slot_allocated_memory)
+    root.Free(ptr);
+  single_slot_allocated_memory.clear();
+
+  // Some of the free()-s above overflowed the slot span ring.
+  EXPECT_EQ(TS_UNCHECKED_READ(root.empty_slot_spans_dirty_bytes),
+            kDefaultEmptySlotSpanRingSize * bucket_size);
+
+  // Now can cache more slot spans.
+  root.EnableLargeEmptySlotSpanRing();
+
+  constexpr size_t single_slot_large_count = kDefaultEmptySlotSpanRingSize + 10;
+  for (size_t i = 0; i < single_slot_large_count; i++) {
+    void* ptr = root.Alloc(single_slot_size, "");
+    single_slot_allocated_memory.push_back(ptr);
+  }
+
+  for (void* ptr : single_slot_allocated_memory)
+    root.Free(ptr);
+  single_slot_allocated_memory.clear();
+
+  // No overflow this time.
+  EXPECT_EQ(TS_UNCHECKED_READ(root.empty_slot_spans_dirty_bytes),
+            single_slot_large_count * bucket_size);
+
+  constexpr size_t single_slot_too_many_count = kMaxFreeableSpans + 10;
+  for (size_t i = 0; i < single_slot_too_many_count; i++) {
+    void* ptr = root.Alloc(single_slot_size, "");
+    single_slot_allocated_memory.push_back(ptr);
+  }
+
+  for (void* ptr : single_slot_allocated_memory)
+    root.Free(ptr);
+  single_slot_allocated_memory.clear();
+
+  // Overflow still works.
+  EXPECT_EQ(TS_UNCHECKED_READ(root.empty_slot_spans_dirty_bytes),
+            kMaxFreeableSpans * bucket_size);
 }
 
 #if defined(OS_ANDROID) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \

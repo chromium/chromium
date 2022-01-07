@@ -117,7 +117,7 @@ ALWAYS_INLINE void PartitionRegisterEmptySlotSpan(
   root->global_empty_slot_span_ring[current_index] = slot_span;
   slot_span->empty_cache_index = current_index;
   ++current_index;
-  if (current_index == kMaxFreeableSpans)
+  if (current_index == root->global_empty_slot_span_ring_size)
     current_index = 0;
   root->global_empty_slot_span_ring_index = current_index;
 

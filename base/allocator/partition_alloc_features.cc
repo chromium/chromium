@@ -34,6 +34,9 @@ const Feature kPartitionAllocBackupRefPtrControl{
 const Feature kPartitionAllocLargeThreadCacheSize{
     "PartitionAllocLargeThreadCacheSize", FEATURE_ENABLED_BY_DEFAULT};
 
+const BASE_EXPORT Feature kPartitionAllocLargeEmptySlotSpanRing{
+    "PartitionAllocLargeEmptySlotSpanRing", FEATURE_DISABLED_BY_DEFAULT};
+
 const Feature kPartitionAllocBackupRefPtr{"PartitionAllocBackupRefPtr",
                                           FEATURE_DISABLED_BY_DEFAULT};
 

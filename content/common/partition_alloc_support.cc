@@ -337,7 +337,15 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
     base::internal::PartitionAllocMalloc::Allocator()
         ->EnableThreadCacheIfSupported();
   }
-#endif
+
+  if (base::FeatureList::IsEnabled(
+          base::features::kPartitionAllocLargeEmptySlotSpanRing)) {
+    base::internal::PartitionAllocMalloc::Allocator()
+        ->EnableLargeEmptySlotSpanRing();
+    base::internal::PartitionAllocMalloc::AlignedAllocator()
+        ->EnableLargeEmptySlotSpanRing();
+  }
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 }
 
 void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
