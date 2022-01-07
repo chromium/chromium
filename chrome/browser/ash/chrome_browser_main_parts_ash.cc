@@ -87,6 +87,7 @@
 #include "chrome/browser/ash/dbus/smb_fs_service_provider.h"
 #include "chrome/browser/ash/dbus/virtual_file_request_service_provider.h"
 #include "chrome/browser/ash/dbus/vm/vm_disk_management_service_provider.h"
+#include "chrome/browser/ash/dbus/vm/vm_launch_service_provider.h"
 #include "chrome/browser/ash/dbus/vm/vm_permission_service_provider.h"
 #include "chrome/browser/ash/dbus/vm/vm_sk_forwarding_service_provider.h"
 #include "chrome/browser/ash/dbus/vm_applications_service_provider.h"
@@ -241,6 +242,7 @@
 #include "rlz/buildflags/buildflags.h"
 #include "services/audio/public/cpp/sounds/sounds_manager.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
+#include "third_party/cros_system_api/dbus/vm_launch/dbus-constants.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 #include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/ash/input_method_manager.h"
@@ -380,6 +382,12 @@ class DBusServices {
         CrosDBusService::CreateServiceProviderList(
             std::make_unique<VmDiskManagementServiceProvider>()));
 
+    vm_launch_service_ = CrosDBusService::Create(
+        system_bus, vm_tools::launch::kVmLaunchServiceName,
+        dbus::ObjectPath(vm_tools::launch::kVmLaunchServicePath),
+        CrosDBusService::CreateServiceProviderList(
+            std::make_unique<VmLaunchServiceProvider>()));
+
     vm_sk_forwarding_service_ = CrosDBusService::Create(
         system_bus, vm_tools::sk_forwarding::kVmSKForwardingServiceName,
         dbus::ObjectPath(vm_tools::sk_forwarding::kVmSKForwardingServicePath),
@@ -496,6 +504,7 @@ class DBusServices {
     chrome_features_service_.reset();
     vm_applications_service_.reset();
     vm_disk_management_service_.reset();
+    vm_launch_service_.reset();
     vm_sk_forwarding_service_.reset();
     vm_permission_service_.reset();
     drive_file_stream_service_.reset();
@@ -526,6 +535,7 @@ class DBusServices {
   std::unique_ptr<CrosDBusService> chrome_features_service_;
   std::unique_ptr<CrosDBusService> vm_applications_service_;
   std::unique_ptr<CrosDBusService> vm_disk_management_service_;
+  std::unique_ptr<CrosDBusService> vm_launch_service_;
   std::unique_ptr<CrosDBusService> vm_sk_forwarding_service_;
   std::unique_ptr<CrosDBusService> vm_permission_service_;
   std::unique_ptr<CrosDBusService> drive_file_stream_service_;
