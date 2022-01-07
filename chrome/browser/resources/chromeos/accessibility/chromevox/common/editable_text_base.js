@@ -516,11 +516,6 @@ ChromeVoxEditableTextBase = class {
     }
 
     if (this.multiline) {
-      // Fall back to announce deleted but omit the text that was deleted.
-      if (evt.value.length < prev.value.length) {
-        this.speak(
-            Msgs.getMsg('text_deleted'), evt.triggeredByUser, personality);
-      }
       // The below is a somewhat loose way to deal with non-standard
       // insertions/deletions. Intentionally skip for multiline since deletion
       // announcements are covered above and insertions are non-standard

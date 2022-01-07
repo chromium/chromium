@@ -460,3 +460,13 @@ TEST_F('ChromeVoxEditableTextUnitTest', 'TypingNonBreakingSpaces', function() {
   obj.changed(new TextChangeEvent('hi t', 4, 4));
   assertEqualStringArrays(['h', 'i', 'hi ', 't'], tts.get());
 });
+TEST_F('ChromeVoxEditableTextUnitTest', 'DoesNotSpeakDeleted', function() {
+  var tts = new TestTts();
+  var obj = new ChromeVoxEditableTextBase('Hello', 0, 0, false, tts);
+  obj.multiline = true;
+
+  obj.changed(new TextChangeEvent('wor', 0, 0));
+
+  // This was once ['text_deleted'], but that is undesirable and mostly noise.
+  assertEqualStringArrays([], tts.get());
+});
