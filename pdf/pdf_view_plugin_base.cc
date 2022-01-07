@@ -567,8 +567,6 @@ void PdfViewPluginBase::SetLinkUnderCursor(
   NotifyLinkUnderCursor();
 }
 
-// TODO(crbug.com/1191817): Add tests for input events. Unit testing should be
-// feasible now that the Pepper dependency is removed for input events.
 bool PdfViewPluginBase::HandleInputEvent(const blink::WebInputEvent& event) {
   // Ignore user input in read-only mode.
   if (engine()->IsReadOnly())

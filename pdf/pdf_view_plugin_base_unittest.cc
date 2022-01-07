@@ -31,7 +31,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/input/web_input_event.h"
+#include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace chrome_pdf {
@@ -160,6 +163,7 @@ class FakePdfViewPluginBase : public PdfViewPluginBase {
   using PdfViewPluginBase::accessibility_state;
   using PdfViewPluginBase::engine;
   using PdfViewPluginBase::full_frame;
+  using PdfViewPluginBase::HandleInputEvent;
   using PdfViewPluginBase::HandleMessage;
   using PdfViewPluginBase::LoadUrl;
   using PdfViewPluginBase::SetZoom;
@@ -778,6 +782,25 @@ TEST_F(PdfViewPluginBaseTest, DocumentHasUnsupportedFeatureWithoutFullFrame) {
   EXPECT_TRUE(fake_plugin_.UnsupportedFeatureIsReportedForTesting(kMetric));
   EXPECT_FALSE(
       fake_plugin_.GetNotifiedBrowserAboutUnsupportedFeatureForTesting());
+}
+
+TEST_F(PdfViewPluginBaseWithEngineTest, HandleInputEvent) {
+  auto* engine = static_cast<TestPDFiumEngine*>(fake_plugin_.engine());
+  EXPECT_CALL(*engine, HandleInputEvent)
+      .WillRepeatedly([](const blink::WebInputEvent& event) {
+        const auto& mouse_event =
+            static_cast<const blink::WebMouseEvent&>(event);
+        EXPECT_EQ(blink::WebInputEvent::Type::kMouseDown,
+                  mouse_event.GetType());
+        EXPECT_EQ(gfx::PointF(10.0f, 20.0f), mouse_event.PositionInWidget());
+        return true;
+      });
+
+  blink::WebMouseEvent mouse_event;
+  mouse_event.SetType(blink::WebInputEvent::Type::kMouseDown);
+  mouse_event.SetPositionInWidget(10.0f, 20.0f);
+
+  EXPECT_TRUE(fake_plugin_.HandleInputEvent(mouse_event));
 }
 
 TEST_F(PdfViewPluginBaseTest, EnteredEditMode) {
