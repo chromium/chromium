@@ -131,7 +131,10 @@ class SessionRestoreInteractiveTest : public InProcessBrowserTest {
 };
 
 // TODO(https://crbug.com/1152160): Enable FocusOnLaunch on Lacros builds.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(https://crbug.com/1284590): Flaky on Linux ASAN/TSAN builders.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || \
+    (defined(OS_LINUX) &&            \
+     (defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)))
 #define MAYBE_FocusOnLaunch DISABLED_FocusOnLaunch
 #else
 #define MAYBE_FocusOnLaunch FocusOnLaunch
