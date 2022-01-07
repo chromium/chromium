@@ -11,6 +11,7 @@
 #include "ash/system/time/calendar_view_controller.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "base/i18n/time_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -45,9 +46,13 @@ constexpr int kFocusCirclePadding = 4;
 void MoveToNextDay(int& column,
                    base::Time& current_date,
                    base::Time::Exploded& current_date_exploded) {
-  current_date += base::Days(1);
+  // Using 30 hours to make sure the date is moved to the next day, since there
+  // are daylight saving days which have more than 24 hours in a day.
+  // `base::Days(1)` cannot be used, because it is 24 hours.
+  current_date = current_date.LocalMidnight() + base::Hours(30);
   current_date.LocalExplode(&current_date_exploded);
   column = (column + 1) % calendar_utils::kDateInOneWeek;
+  DCHECK_EQ(column, current_date_exploded.day_of_week);
 }
 
 }  // namespace
