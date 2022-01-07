@@ -53,7 +53,8 @@ generate_grd("build_print_preview_grdp") {
   input_files =
       print_preview_non_webcomponents_files + shared_non_webcomponents_files +
       print_preview_webcomponents_files + shared_webcomponents_files
-  input_files_base_dir = rebase_path("$target_gen_dir/$preprocess_folder", "//")
+  input_files_base_dir =
+      rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
   deps = [
     ":preprocess",
     ":preprocess_generated",
