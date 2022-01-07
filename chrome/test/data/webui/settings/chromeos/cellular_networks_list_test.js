@@ -353,9 +353,14 @@ suite('CellularNetworksList', function() {
     };
     await flushAsync();
 
-    // When policy is enabled add cellular button should not be shown.
+    // When policy is enabled add cellular button should be disabled, and policy
+    // indicator should be shown.
     let addESimButton = cellularNetworkList.$$('#addESimButton');
-    assertFalse(!!addESimButton);
+    assertTrue(!!addESimButton);
+    assertTrue(addESimButton.disabled);
+    let policyIcon = cellularNetworkList.$$('cr-policy-indicator');
+    assertTrue(!!policyIcon);
+    assertFalse(policyIcon.hidden);
 
     cellularNetworkList.globalPolicy = {
       allowOnlyPolicyCellularNetworks: false,
@@ -365,6 +370,9 @@ suite('CellularNetworksList', function() {
     addESimButton = cellularNetworkList.$$('#addESimButton');
     assertTrue(!!addESimButton);
     assertFalse(addESimButton.disabled);
+    policyIcon = cellularNetworkList.$$('cr-policy-indicator');
+    assertTrue(!!policyIcon);
+    assertTrue(policyIcon.hidden);
 
     // When device is inhibited add cellular button should be disabled.
     cellularNetworkList.cellularDeviceState = {
