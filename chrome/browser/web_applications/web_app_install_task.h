@@ -259,7 +259,7 @@ class WebAppInstallTask : content::WebContentsObserver {
                         const AppId& app_id,
                         const OsHooksErrors os_hook_errors);
 
-  void RecordDownloadedIconsHttpResultsCodeClassForSyncOrCreate(
+  void RecordDownloadedIconsResultAndHttpStatusCodes(
       IconsDownloadedResult result,
       const DownloadedIconsHttpResults& icons_http_results);
 

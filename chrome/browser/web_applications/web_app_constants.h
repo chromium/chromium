@@ -303,6 +303,9 @@ enum class OsIntegrationState {
 using LaunchHandler = blink::Manifest::LaunchHandler;
 
 // A result how `WebAppIconDownloader` processed the list of icon urls.
+//
+// Entries should not be renumbered and numeric values should never be reused.
+// Update corresponding enums.xml entry when making changes here.
 enum class IconsDownloadedResult {
   // All the requested icon urls have been processed and `icons_map` populated
   // for successful http responses. `icons_http_results` contains success and
@@ -317,6 +320,7 @@ enum class IconsDownloadedResult {
   // `WebAppIconDownloader::FailAllIfAnyFail()` flag was specified.
   // `icons_http_results` contains the failed url and http status code.
   kAbortedDueToFailure,
+  kMaxValue = kAbortedDueToFailure,
 };
 
 const char* IconsDownloadedResultToString(IconsDownloadedResult result);

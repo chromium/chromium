@@ -40,6 +40,8 @@ void AddIconToIconsMap(const GURL& icon_url,
                        SkColor solid_color,
                        IconsMap* icons_map);
 
+void AddEmptyIconToIconsMap(const GURL& icon_url, IconsMap* icons_map);
+
 bool AreColorsEqual(SkColor expected_color,
                     SkColor actual_color,
                     int threshold);

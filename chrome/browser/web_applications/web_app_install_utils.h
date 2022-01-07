@@ -84,6 +84,11 @@ void RecordDownloadedIconsHttpResultsCodeClass(
     IconsDownloadedResult result,
     const DownloadedIconsHttpResults& icons_http_results);
 
+// Records http status code for each processed icon url.
+void RecordDownloadedIconHttpStatusCodes(
+    base::StringPiece histogram_name,
+    const DownloadedIconsHttpResults& icons_http_results);
+
 webapps::WebappInstallSource ConvertExternalInstallSourceToInstallSource(
     ExternalInstallSource external_install_source);
 

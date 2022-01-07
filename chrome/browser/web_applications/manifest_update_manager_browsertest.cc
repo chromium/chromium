@@ -2684,6 +2684,14 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerIconUpdatingBrowserTest,
             ManifestUpdateResult::kAppUpdated);
   histogram_tester_.ExpectBucketCount(kUpdateHistogramName,
                                       ManifestUpdateResult::kAppUpdated, 1);
+
+  histogram_tester_.ExpectBucketCount("WebApp.Icon.DownloadedResultOnUpdate",
+                                      IconsDownloadedResult::kCompleted, 1);
+
+  histogram_tester_.ExpectBucketCount(
+      "WebApp.Icon.DownloadedHttpStatusCodeOnUpdate",
+      net::HttpStatusCode::HTTP_OK, 1);
+
   // The icon should have changed.
   CheckShortcutInfoUpdated(app_id, kAnotherInstallableIconTopLeftColor);
 }
@@ -2713,6 +2721,13 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerIconUpdatingBrowserTest,
   OverrideManifest(kManifest, {});
   AppId app_id = InstallWebApp();
 
+  histogram_tester_.ExpectBucketCount("WebApp.Icon.DownloadedResultOnCreate",
+                                      IconsDownloadedResult::kCompleted, 1);
+
+  histogram_tester_.ExpectBucketCount(
+      "WebApp.Icon.DownloadedHttpStatusCodeOnCreate",
+      net::HttpStatusCode::HTTP_OK, 1);
+
   // Make basic-48.png fail to download.
   // Replace the contents of basic-192.png with blue-192.png without changing
   // the URL.
@@ -2738,6 +2753,12 @@ IN_PROC_BROWSER_TEST_F(ManifestUpdateManagerIconUpdatingBrowserTest,
             ManifestUpdateResult::kIconDownloadFailed);
   histogram_tester_.ExpectBucketCount(
       kUpdateHistogramName, ManifestUpdateResult::kIconDownloadFailed, 1);
+
+  // The `url_interceptor` above can't simulate net::HttpStatusCode error
+  // properly, WebApp.Icon.DownloadedHttpStatusCodeOnUpdate left untested here.
+  histogram_tester_.ExpectBucketCount(
+      "WebApp.Icon.DownloadedResultOnUpdate",
+      IconsDownloadedResult::kAbortedDueToFailure, 1);
 
   // Since one request failed, none of the icons should be updated. So the '192'
   // size here is not updated to blue.

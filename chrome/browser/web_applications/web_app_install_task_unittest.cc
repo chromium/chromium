@@ -229,20 +229,22 @@ class WebAppInstallTaskTest : public WebAppTest {
     return *fake_install_finalizer_;
   }
 
-  // Sets IconsMap, IconsDownloadedResult and corresponding HTTP_OK
-  // DownloadedIconsHttpResults.
-  void SetIconsMapToRetrieve(IconsMap icons_map) {
+  // Sets IconsMap, IconsDownloadedResult and corresponding `http_status_codes`
+  // to populate DownloadedIconsHttpResults.
+  void SetIconsMapToRetrieve(IconsMap icons_map,
+                             IconsDownloadedResult result,
+                             const std::vector<int>& http_status_codes) {
+    DCHECK_EQ(icons_map.size(), http_status_codes.size());
     DCHECK(data_retriever_);
 
-    data_retriever_->SetIconsDownloadedResult(
-        icons_map.empty() ? IconsDownloadedResult::kPrimaryPageChanged
-                          : IconsDownloadedResult::kCompleted);
+    data_retriever_->SetIconsDownloadedResult(result);
 
-    // Uses `icons_map` to infer HTTP_OK for each icon.
+    int icon_index = 0;
     DownloadedIconsHttpResults http_results;
-    for (const auto& url_and_bitmap : icons_map)
-      http_results[url_and_bitmap.first] = net::HttpStatusCode::HTTP_OK;
-
+    for (const auto& url_and_bitmap : icons_map) {
+      http_results[url_and_bitmap.first] = http_status_codes[icon_index];
+      ++icon_index;
+    }
     data_retriever_->SetDownloadedIconsHttpResults(std::move(http_results));
 
     // Moves `icons_map` last.
@@ -330,8 +332,11 @@ class WebAppInstallTaskTest : public WebAppTest {
 
     SetInstallFinalizerForTesting();
 
-    IconsMap icons_map;
-    SetIconsMapToRetrieve(std::move(icons_map));
+    data_retriever_->SetIconsDownloadedResult(
+        IconsDownloadedResult::kPrimaryPageChanged);
+    data_retriever_->SetDownloadedIconsHttpResults(
+        DownloadedIconsHttpResults{});
+    data_retriever_->SetIcons(IconsMap{});
   }
 
  protected:
@@ -666,7 +671,8 @@ TEST_F(WebAppInstallTaskTest, GetIcons) {
   IconsMap icons_map;
   AddIconToIconsMap(icon_url, icon_size::k128, color, &icons_map);
 
-  SetIconsMapToRetrieve(std::move(icons_map));
+  SetIconsMapToRetrieve(std::move(icons_map), IconsDownloadedResult::kCompleted,
+                        {net::HttpStatusCode::HTTP_OK});
 
   InstallWebAppFromManifestWithFallback();
 
@@ -687,9 +693,16 @@ TEST_F(WebAppInstallTaskTest, GetIcons) {
       "WebApp.Icon.HttpStatusCodeClassOnCreate", http_code_class_ok, 1);
   histogram_tester().ExpectTotalCount("WebApp.Icon.HttpStatusCodeClassOnSync",
                                       0);
+
+  histogram_tester().ExpectBucketCount("WebApp.Icon.DownloadedResultOnCreate",
+                                       IconsDownloadedResult::kCompleted, 1);
+
+  histogram_tester().ExpectBucketCount(
+      "WebApp.Icon.DownloadedHttpStatusCodeOnCreate",
+      net::HttpStatusCode::HTTP_OK, 1);
 }
 
-TEST_F(WebAppInstallTaskTest, GetIcons_NoIconsProvided) {
+TEST_F(WebAppInstallTaskTest, GetIcons_PrimaryPageChanged) {
   const GURL url = GURL("https://example.com/path");
   CreateDefaultDataToRetrieve(url);
   CreateRendererAppInfo(url, "Name", "Description");
@@ -697,7 +710,9 @@ TEST_F(WebAppInstallTaskTest, GetIcons_NoIconsProvided) {
   SetInstallFinalizerForTesting();
 
   IconsMap icons_map;
-  SetIconsMapToRetrieve(std::move(icons_map));
+  SetIconsMapToRetrieve(std::move(icons_map),
+                        IconsDownloadedResult::kPrimaryPageChanged,
+                        /*http_status_codes=*/{});
 
   InstallWebAppFromManifestWithFallback();
 
@@ -717,6 +732,47 @@ TEST_F(WebAppInstallTaskTest, GetIcons_NoIconsProvided) {
                                       0);
   histogram_tester().ExpectTotalCount("WebApp.Icon.HttpStatusCodeClassOnSync",
                                       0);
+
+  histogram_tester().ExpectBucketCount(
+      "WebApp.Icon.DownloadedResultOnCreate",
+      IconsDownloadedResult::kPrimaryPageChanged, 1);
+  histogram_tester().ExpectTotalCount("WebApp.Icon.DownloadedResultOnSync", 0);
+
+  histogram_tester().ExpectTotalCount(
+      "WebApp.Icon.DownloadedHttpStatusCodeOnCreate", 0);
+  histogram_tester().ExpectTotalCount(
+      "WebApp.Icon.DownloadedHttpStatusCodeOnSync", 0);
+}
+
+TEST_F(WebAppInstallTaskTest, GetIcons_IconNotFound) {
+  const GURL url = GURL("https://example.com/path");
+  CreateDefaultDataToRetrieve(url);
+  CreateRendererAppInfo(url, "Name", "Description");
+
+  SetInstallFinalizerForTesting();
+
+  IconsMap icons_map;
+  AddEmptyIconToIconsMap(GURL("https://example.com/app.ico"), &icons_map);
+  SetIconsMapToRetrieve(std::move(icons_map), IconsDownloadedResult::kCompleted,
+                        {net::HttpStatusCode::HTTP_NOT_FOUND});
+
+  InstallWebAppFromManifestWithFallback();
+
+  std::unique_ptr<WebApplicationInfo> web_app_info =
+      fake_install_finalizer().web_app_info();
+  EXPECT_TRUE(ContainsOneIconOfEachSize(web_app_info->icon_bitmaps.any));
+  EXPECT_TRUE(web_app_info->manifest_icons.empty());
+  EXPECT_TRUE(web_app_info->shortcuts_menu_item_infos.empty());
+
+  histogram_tester().ExpectBucketCount("WebApp.Icon.DownloadedResultOnCreate",
+                                       IconsDownloadedResult::kCompleted, 1);
+  histogram_tester().ExpectTotalCount("WebApp.Icon.DownloadedResultOnSync", 0);
+
+  histogram_tester().ExpectBucketCount(
+      "WebApp.Icon.DownloadedHttpStatusCodeOnCreate",
+      net::HttpStatusCode::HTTP_NOT_FOUND, 1);
+  histogram_tester().ExpectTotalCount(
+      "WebApp.Icon.DownloadedHttpStatusCodeOnSync", 0);
 }
 
 TEST_F(WebAppInstallTaskTest, WriteDataToDisk) {
@@ -842,7 +898,8 @@ TEST_F(WebAppInstallTaskTest, WriteDataToDiskFailed) {
   IconsMap icons_map;
   AddIconToIconsMap(GURL("https://example.com/app.ico"), icon_size::k512,
                     SK_ColorBLUE, &icons_map);
-  SetIconsMapToRetrieve(std::move(icons_map));
+  SetIconsMapToRetrieve(std::move(icons_map), IconsDownloadedResult::kCompleted,
+                        {net::HttpStatusCode::HTTP_OK});
 
   const base::FilePath web_apps_dir = GetWebAppsRootDirectory(profile());
   const base::FilePath manifest_resources_directory =

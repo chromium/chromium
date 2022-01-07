@@ -92140,6 +92140,12 @@ others/histograms.xml -->
   <int value="6" label="Tabbed"/>
 </enum>
 
+<enum name="WebAppIconsDownloadedResult">
+  <int value="0" label="Completed"/>
+  <int value="1" label="PrimaryPageChanged"/>
+  <int value="2" label="AbortedDueToFailure"/>
+</enum>
+
 <enum name="WebAppInstallIphResult">
   <int value="0" label="Installed"/>
   <int value="1" label="Clicked Install icon then canceled install"/>

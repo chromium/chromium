@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_features.h"
@@ -460,13 +461,17 @@ void ManifestUpdateTask::OnIconsDownloaded(
     DownloadedIconsHttpResults icons_http_results) {
   DCHECK_EQ(stage_, Stage::kPendingIconDownload);
 
+  // TODO(crbug.com/1238622): Report `result` and `icons_http_results` in
+  // internals.
+  UMA_HISTOGRAM_ENUMERATION("WebApp.Icon.DownloadedResultOnUpdate", result);
+  RecordDownloadedIconHttpStatusCodes(
+      "WebApp.Icon.DownloadedHttpStatusCodeOnUpdate", icons_http_results);
+
   if (result != IconsDownloadedResult::kCompleted) {
     DestroySelf(ManifestUpdateResult::kIconDownloadFailed);
     return;
   }
 
-  // TODO(crbug.com/1238622): Report `result` and `DownloadedIconsHttpResults`in
-  // UMA and internals.
   RecordDownloadedIconsHttpResultsCodeClass(
       "WebApp.Icon.HttpStatusCodeClassOnUpdate", result, icons_http_results);
 

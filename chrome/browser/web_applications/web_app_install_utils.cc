@@ -14,6 +14,8 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
+#include "base/metrics/histogram.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_piece.h"
@@ -34,6 +36,7 @@
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "components/webapps/browser/installable/installable_manager.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "net/http/http_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom-shared.h"
@@ -619,6 +622,32 @@ void RecordDownloadedIconsHttpResultsCodeClass(
                                     http_status_code / 100, 5);
     }
   }
+}
+
+void RecordDownloadedIconHttpStatusCodes(
+    base::StringPiece histogram_name,
+    const DownloadedIconsHttpResults& icons_http_results) {
+  if (icons_http_results.empty())
+    return;
+
+  // Do not use UMA_HISTOGRAM_... macros here, as it caches the Histogram
+  // instance and thus only works if |histogram_name| is constant.
+  base::HistogramBase* counter = base::CustomHistogram::FactoryGet(
+      histogram_name.data(), net::HttpUtil::GetStatusCodesForHistogram(),
+      base::HistogramBase::kUmaTargetedHistogramFlag);
+
+  // A web app may contain arbitrary number of icons. The histogram assumes that
+  // most of them fail with same http status codes and counts each http status
+  // code only once.
+  std::vector<int> http_status_codes;
+  http_status_codes.reserve(icons_http_results.size());
+  for (const auto& url_and_http_status_code : icons_http_results)
+    http_status_codes.push_back(url_and_http_status_code.second);
+
+  base::flat_set<int> unique_http_status_codes{std::move(http_status_codes)};
+
+  for (int http_status_code : unique_http_status_codes)
+    counter->Add(net::HttpUtil::MapStatusCodeForHistogram(http_status_code));
 }
 
 webapps::WebappInstallSource ConvertExternalInstallSourceToInstallSource(

@@ -58,6 +58,13 @@ void AddIconToIconsMap(const GURL& icon_url,
   icons_map->emplace(icon_url, std::move(bitmaps));
 }
 
+void AddEmptyIconToIconsMap(const GURL& icon_url, IconsMap* icons_map) {
+  std::vector<SkBitmap> bitmaps;
+  bitmaps.emplace_back(SkBitmap{});
+
+  icons_map->emplace(icon_url, std::move(bitmaps));
+}
+
 bool AreColorsEqual(SkColor expected_color,
                     SkColor actual_color,
                     int threshold) {

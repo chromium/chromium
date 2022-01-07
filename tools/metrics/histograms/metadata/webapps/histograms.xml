@@ -226,6 +226,78 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.Icon.DownloadedHttpStatusCodeOnCreate"
+    enum="HttpResponseCode" expires_after="2024-01-01">
+  <owner>alancutter@chromium.org</owner>
+  <owner>mgiuca@chromium.org</owner>
+  <owner>loyso@chromium.org</owner>
+  <summary>
+    The HTTP status code returned for a list of icons when installing single
+    WebApp. Recorded when WebAppInstallTask finishes downloading icons for
+    non-sync installs. Icon download attempts with identical codes produce only
+    one event for this histogram.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Icon.DownloadedHttpStatusCodeOnSync"
+    enum="HttpResponseCode" expires_after="2024-01-01">
+  <owner>alancutter@chromium.org</owner>
+  <owner>mgiuca@chromium.org</owner>
+  <owner>loyso@chromium.org</owner>
+  <summary>
+    The HTTP status code returned for a list of icons when installing single
+    WebApp. Recorded when WebAppInstallTask finishes downloading icons for web
+    apps from sync. Icon download attempts with identical codes produce only one
+    event for this histogram.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Icon.DownloadedHttpStatusCodeOnUpdate"
+    enum="HttpResponseCode" expires_after="2024-01-01">
+  <owner>alancutter@chromium.org</owner>
+  <owner>mgiuca@chromium.org</owner>
+  <owner>loyso@chromium.org</owner>
+  <summary>
+    The HTTP status code returned for a list of icons when updating single
+    WebApp. Recorded when ManifestUpdateTask finishes downloading icons for
+    update. Icon download attempts with identical codes produce only one event
+    for this histogram.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Icon.DownloadedResultOnCreate"
+    enum="WebAppIconsDownloadedResult" expires_after="2024-01-01">
+  <owner>alancutter@chromium.org</owner>
+  <owner>mgiuca@chromium.org</owner>
+  <owner>loyso@chromium.org</owner>
+  <summary>
+    The overall result returned by WebAppIconDownloader. Recorded when
+    WebAppInstallTask finishes downloading icons for non-sync installs.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Icon.DownloadedResultOnSync"
+    enum="WebAppIconsDownloadedResult" expires_after="2024-01-01">
+  <owner>alancutter@chromium.org</owner>
+  <owner>mgiuca@chromium.org</owner>
+  <owner>loyso@chromium.org</owner>
+  <summary>
+    The overall result returned by WebAppIconDownloader. Recorded when
+    WebAppInstallTask finishes downloading icons for web aps from sync.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.Icon.DownloadedResultOnUpdate"
+    enum="WebAppIconsDownloadedResult" expires_after="2024-01-01">
+  <owner>alancutter@chromium.org</owner>
+  <owner>mgiuca@chromium.org</owner>
+  <owner>loyso@chromium.org</owner>
+  <summary>
+    The overall result returned by WebAppIconDownloader. Recorded when
+    ManifestUpdateTask finishes downloading icons.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Icon.HttpStatusCodeClassOnCreate"
     enum="HttpStatusCodeClass" expires_after="2024-01-01">
   <owner>alancutter@chromium.org</owner>
@@ -233,10 +305,7 @@ chromium-metrics-reviews@google.com.
   <owner>loyso@chromium.org</owner>
   <summary>
     The HTTP status code class returned for each icon loaded during a WebApp's
-    creation. See corresponding
-    Extensions.BookmarkApp.Icon.HttpStatusCodeClassOnCreate histogram for legacy
-    extension-based system. Recorded when WebAppDataRetriever starts downloading
-    icons.
+    creation. Recorded when WebAppInstallTask finishes downloading icons.
   </summary>
 </histogram>
 
@@ -247,9 +316,7 @@ chromium-metrics-reviews@google.com.
   <owner>loyso@chromium.org</owner>
   <summary>
     The HTTP status code class returned for each icon loaded when syncing a
-    WebApp. See Extensions.BookmarkApp.Icon.HttpStatusCodeClassOnSync histogram
-    for legacy extension-based system. Recorded when WebAppDataRetriever starts
-    downloading icons.
+    WebApp. Recorded when WebAppInstallTask finishes downloading icons on sync.
   </summary>
 </histogram>
 
@@ -260,7 +327,7 @@ chromium-metrics-reviews@google.com.
   <owner>loyso@chromium.org</owner>
   <summary>
     The HTTP status code class returned for each icon loaded when updating a
-    WebApp. Recorded when WebAppDataRetriever starts downloading icons.
+    WebApp. Recorded when ManifestUpdateTask finishes downloading icons.
   </summary>
 </histogram>
 
