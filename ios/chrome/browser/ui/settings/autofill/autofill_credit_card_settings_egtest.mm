@@ -189,7 +189,7 @@ id<GREYMatcher> BottomToolbar() {
       performAction:grey_tap()];
 
   // Check the Autofill credit card switch is disabled.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
                                           kAutofillCreditCardSwitchViewId, YES,
                                           NO)] assertWithMatcher:grey_notNil()];
 
@@ -204,9 +204,9 @@ id<GREYMatcher> BottomToolbar() {
 
   // Toggle the Autofill credit cards switch off.
   [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
                                    kAutofillCreditCardSwitchViewId, YES, YES)]
-      performAction:chrome_test_util::TurnSettingsSwitchOn(NO)];
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
 
   // Expect Autofill credit cards to remain visible.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(
@@ -215,9 +215,9 @@ id<GREYMatcher> BottomToolbar() {
 
   // Toggle the Autofill credit cards switch back on.
   [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
                                    kAutofillCreditCardSwitchViewId, NO, YES)]
-      performAction:chrome_test_util::TurnSettingsSwitchOn(YES)];
+      performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
 
   // Expect Autofill credit cards to remain visible.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(
@@ -234,9 +234,9 @@ id<GREYMatcher> BottomToolbar() {
 
   // Toggle the Autofill credit cards switch off.
   [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
                                    kAutofillCreditCardSwitchViewId, YES, YES)]
-      performAction:chrome_test_util::TurnSettingsSwitchOn(NO)];
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
 
   // Expect Add Payment Method button to be disabled.
   [[EarlGrey
@@ -245,9 +245,9 @@ id<GREYMatcher> BottomToolbar() {
 
   // Toggle the Autofill credit cards switch back on.
   [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
                                    kAutofillCreditCardSwitchViewId, NO, YES)]
-      performAction:chrome_test_util::TurnSettingsSwitchOn(YES)];
+      performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
 
   // Expect Add Payment Method button to be visible.
   [[EarlGrey
@@ -266,9 +266,9 @@ id<GREYMatcher> BottomToolbar() {
 
   // Toggle the Autofill credit cards switch off.
   [[EarlGrey
-      selectElementWithMatcher:chrome_test_util::SettingsSwitchCell(
+      selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
                                    kAutofillCreditCardSwitchViewId, YES, YES)]
-      performAction:chrome_test_util::TurnSettingsSwitchOn(NO)];
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
 
   // Open Edit Mode.
   [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]

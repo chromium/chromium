@@ -18,8 +18,6 @@
 #import "ios/chrome/browser/main/browser.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_feature.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/content_settings/block_popups_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/content_settings/default_page_mode_coordinator.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
@@ -28,6 +26,8 @@
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_multi_detail_text_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_cell.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -77,7 +77,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, strong, readonly) PrefBackedBoolean* linkPreviewEnabled;
 
 // The item related to the switch for the "Show Link Preview" setting.
-@property(nonatomic, strong) SettingsSwitchItem* linkPreviewItem;
+@property(nonatomic, strong) TableViewSwitchItem* linkPreviewItem;
 
 // The coordinator showing the view to choose the defaultMode.
 @property(nonatomic, strong)
@@ -260,9 +260,9 @@ typedef NS_ENUM(NSInteger, ItemType) {
   return _openedInAnotherWindowItem;
 }
 
-- (SettingsSwitchItem*)linkPreviewItem {
+- (TableViewSwitchItem*)linkPreviewItem {
   if (!_linkPreviewItem) {
-    _linkPreviewItem = [[SettingsSwitchItem alloc]
+    _linkPreviewItem = [[TableViewSwitchItem alloc]
         initWithType:ItemTypeSettingsShowLinkPreview];
 
     _linkPreviewItem.text = l10n_util::GetNSString(IDS_IOS_SHOW_LINK_PREVIEWS);
@@ -281,8 +281,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
 
   if (itemType == ItemTypeSettingsShowLinkPreview) {
-    SettingsSwitchCell* switchCell =
-        base::mac::ObjCCastStrict<SettingsSwitchCell>(cell);
+    TableViewSwitchCell* switchCell =
+        base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
     [switchCell.switchView addTarget:self
                               action:@selector(showLinkPreviewSwitchToggled:)
                     forControlEvents:UIControlEventValueChanged];

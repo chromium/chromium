@@ -79,8 +79,8 @@ const CGFloat kVerticalPadding = 16;
 
     _switchView = [[UISwitch alloc] initWithFrame:CGRectZero];
     _switchView.translatesAutoresizingMaskIntoConstraints = NO;
-    _switchView.accessibilityHint = l10n_util::GetNSString(
-        IDS_IOS_TOGGLE_SETTING_SWITCH_ACCESSIBILITY_HINT);
+    _switchView.accessibilityHint =
+        l10n_util::GetNSString(IDS_IOS_TOGGLE_SWITCH_ACCESSIBILITY_HINT);
     [self.contentView addSubview:_switchView];
 
     [self useScaledFont:NO];

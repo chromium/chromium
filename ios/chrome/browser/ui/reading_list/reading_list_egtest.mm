@@ -1168,7 +1168,7 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
   id<GREYMatcher> matcher = grey_allOf(
       chrome_test_util::StaticTextWithAccessibilityLabel(
           l10n_util::GetNSString(IDS_IOS_READING_LIST_MESSAGES_SETTING_TITLE)),
-      grey_ancestor(grey_kindOfClassName(@"SettingsSwitchCell")),
+      grey_ancestor(grey_kindOfClassName(@"TableViewSwitchCell")),
       grey_sufficientlyVisible(), nil);
   [[[EarlGrey selectElementWithMatcher:matcher]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 100)

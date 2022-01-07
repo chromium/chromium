@@ -150,14 +150,14 @@ id<GREYMatcher> AddToReadingListButton();
 // Matcher for Add to bookmarks button.
 id<GREYMatcher> AddToBookmarksButton();
 
-// Matcher for SettingsSwitchCell.
-id<GREYMatcher> SettingsSwitchCell(NSString* accessibility_identifier,
-                                   BOOL is_toggled_on);
+// Matcher for TableViewSwitchCell.
+id<GREYMatcher> TableViewSwitchCell(NSString* accessibility_identifier,
+                                    BOOL is_toggled_on);
 
-// Matcher for SettingsSwitchCell.
-id<GREYMatcher> SettingsSwitchCell(NSString* accessibility_identifier,
-                                   BOOL is_toggled_on,
-                                   BOOL is_enabled);
+// Matcher for TableViewSwitchCell.
+id<GREYMatcher> TableViewSwitchCell(NSString* accessibility_identifier,
+                                    BOOL is_toggled_on,
+                                    BOOL is_enabled);
 
 // Matcher for LegacySyncSwitchCell.
 id<GREYMatcher> SyncSwitchCell(NSString* accessibility_label,

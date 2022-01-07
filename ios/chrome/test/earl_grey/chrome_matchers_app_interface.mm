@@ -36,8 +36,6 @@
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/cells/clear_browsing_data_constants.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_ui_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
@@ -49,6 +47,8 @@
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_cell.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/ui/toolbar/primary_toolbar_view.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
@@ -73,17 +73,17 @@ NSString* IdentifierForCellAtIndex(unsigned int index) {
   return [NSString stringWithFormat:@"%@%u", kGridCellIdentifierPrefix, index];
 }
 
-id<GREYMatcher> SettingsSwitchIsToggledOn(BOOL is_toggled_on) {
+id<GREYMatcher> TableViewSwitchIsToggledOn(BOOL is_toggled_on) {
   GREYMatchesBlock matches = ^BOOL(id element) {
-    SettingsSwitchCell* switch_cell =
-        base::mac::ObjCCastStrict<SettingsSwitchCell>(element);
+    TableViewSwitchCell* switch_cell =
+        base::mac::ObjCCastStrict<TableViewSwitchCell>(element);
     UISwitch* switch_view = switch_cell.switchView;
     return (switch_view.on && is_toggled_on) ||
            (!switch_view.on && !is_toggled_on);
   };
   GREYDescribeToBlock describe = ^void(id<GREYDescription> description) {
     NSString* name =
-        [NSString stringWithFormat:@"settingsSwitchToggledState(%@)",
+        [NSString stringWithFormat:@"tableViewSwitchToggledState(%@)",
                                    is_toggled_on ? @"ON" : @"OFF"];
     [description appendText:name];
   };
@@ -91,17 +91,17 @@ id<GREYMatcher> SettingsSwitchIsToggledOn(BOOL is_toggled_on) {
                                               descriptionBlock:describe];
 }
 
-id<GREYMatcher> SettingsSwitchIsEnabled(BOOL is_enabled) {
+id<GREYMatcher> TableViewSwitchIsEnabled(BOOL is_enabled) {
   GREYMatchesBlock matches = ^BOOL(id element) {
-    SettingsSwitchCell* switch_cell =
-        base::mac::ObjCCastStrict<SettingsSwitchCell>(element);
+    TableViewSwitchCell* switch_cell =
+        base::mac::ObjCCastStrict<TableViewSwitchCell>(element);
     UISwitch* switch_view = switch_cell.switchView;
     return (switch_view.enabled && is_enabled) ||
            (!switch_view.enabled && !is_enabled);
   };
   GREYDescribeToBlock describe = ^void(id<GREYDescription> description) {
     NSString* name =
-        [NSString stringWithFormat:@"settingsSwitchEnabledState(%@)",
+        [NSString stringWithFormat:@"tableViewSwitchEnabledState(%@)",
                                    is_enabled ? @"YES" : @"NO"];
     [description appendText:name];
   };
@@ -409,19 +409,19 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
       grey_sufficientlyVisible(), nil);
 }
 
-+ (id<GREYMatcher>)settingsSwitchCell:(NSString*)accessibilityIdentifier
-                          isToggledOn:(BOOL)isToggledOn {
-  return [ChromeMatchersAppInterface settingsSwitchCell:accessibilityIdentifier
-                                            isToggledOn:isToggledOn
-                                              isEnabled:YES];
++ (id<GREYMatcher>)tableViewSwitchCell:(NSString*)accessibilityIdentifier
+                           isToggledOn:(BOOL)isToggledOn {
+  return [ChromeMatchersAppInterface tableViewSwitchCell:accessibilityIdentifier
+                                             isToggledOn:isToggledOn
+                                               isEnabled:YES];
 }
 
-+ (id<GREYMatcher>)settingsSwitchCell:(NSString*)accessibilityIdentifier
-                          isToggledOn:(BOOL)isToggledOn
-                            isEnabled:(BOOL)isEnabled {
++ (id<GREYMatcher>)tableViewSwitchCell:(NSString*)accessibilityIdentifier
+                           isToggledOn:(BOOL)isToggledOn
+                             isEnabled:(BOOL)isEnabled {
   return grey_allOf(grey_accessibilityID(accessibilityIdentifier),
-                    SettingsSwitchIsToggledOn(isToggledOn),
-                    SettingsSwitchIsEnabled(isEnabled),
+                    TableViewSwitchIsToggledOn(isToggledOn),
+                    TableViewSwitchIsEnabled(isEnabled),
                     grey_sufficientlyVisible(), nil);
 }
 

@@ -25,8 +25,8 @@ id<GREYAction> ScrollElementToVisible(ElementSelector* selector) {
   return [ChromeActionsAppInterface scrollElementToVisible:selector];
 }
 
-id<GREYAction> TurnSettingsSwitchOn(BOOL on) {
-  return [ChromeActionsAppInterface turnSettingsSwitchOn:on];
+id<GREYAction> TurnTableViewSwitchOn(BOOL on) {
+  return [ChromeActionsAppInterface turnTableViewSwitchOn:on];
 }
 
 id<GREYAction> TurnSyncSwitchOn(BOOL on) {

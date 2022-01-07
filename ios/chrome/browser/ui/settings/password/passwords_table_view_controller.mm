@@ -38,8 +38,6 @@
 #import "ios/chrome/browser/ui/elements/home_waiting_view.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/password/password_exporter.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
@@ -56,6 +54,8 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_cell.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_navigation_controller_constants.h"
@@ -238,7 +238,7 @@ void RemoveFormsToBeDeleted(
   // The header for save passwords switch section.
   TableViewLinkHeaderFooterItem* _manageAccountLinkItem;
   // The item related to the switch for the password manager setting.
-  SettingsSwitchItem* _savePasswordsItem;
+  TableViewSwitchItem* _savePasswordsItem;
   // The item that shows the current Auto-fill state and opens an
   // autofill settings tutorial
   TableViewDetailIconItem* _passwordsInOtherAppsItem;
@@ -731,9 +731,9 @@ void RemoveFormsToBeDeleted(
   return footerItem;
 }
 
-- (SettingsSwitchItem*)savePasswordsItem {
-  SettingsSwitchItem* savePasswordsItem =
-      [[SettingsSwitchItem alloc] initWithType:ItemTypeSavePasswordsSwitch];
+- (TableViewSwitchItem*)savePasswordsItem {
+  TableViewSwitchItem* savePasswordsItem =
+      [[TableViewSwitchItem alloc] initWithType:ItemTypeSavePasswordsSwitch];
   if (base::FeatureList::IsEnabled(
           password_manager::features::kSupportForAddPasswordsInSettings)) {
     savePasswordsItem.text =
@@ -1836,8 +1836,8 @@ void RemoveFormsToBeDeleted(
                      cellForRowAtIndexPath:indexPath];
   switch ([self.tableViewModel itemTypeForIndexPath:indexPath]) {
     case ItemTypeSavePasswordsSwitch: {
-      SettingsSwitchCell* switchCell =
-          base::mac::ObjCCastStrict<SettingsSwitchCell>(cell);
+      TableViewSwitchCell* switchCell =
+          base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
       [switchCell.switchView addTarget:self
                                 action:@selector(savePasswordsSwitchChanged:)
                       forControlEvents:UIControlEventValueChanged];

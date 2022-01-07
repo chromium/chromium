@@ -2,18 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_SETTINGS_CELLS_SETTINGS_SWITCH_CELL_H_
-#define IOS_CHROME_BROWSER_UI_SETTINGS_CELLS_SETTINGS_SWITCH_CELL_H_
+#ifndef IOS_CHROME_BROWSER_UI_TABLE_VIEW_CELLS_TABLE_VIEW_SWITCH_CELL_H_
+#define IOS_CHROME_BROWSER_UI_TABLE_VIEW_CELLS_TABLE_VIEW_SWITCH_CELL_H_
 
 #import <UIKit/UIKit.h>
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cell.h"
 
-// SettingsSwitchCell implements a TableViewCell subclass containing an icon,
-// a text label, a detail text and a switch.
-// If the preferred content size category is an accessibility category, the
-// switch is displayed below the label. Otherwise, it is on the trailing side.
-@interface SettingsSwitchCell : TableViewCell
+// A TableViewCell that contains an icon, a text label, a detail text and a
+// switch. If the preferred content size category is an accessibility category,
+// the switch is displayed below the label. Otherwise, it is on the trailing
+// side.
+@interface TableViewSwitchCell : TableViewCell
 
 // UILabel corresponding to |text| from the item.
 @property(nonatomic, readonly, strong) UILabel* textLabel;
@@ -34,4 +34,4 @@
 
 @end
 
-#endif  // IOS_CHROME_BROWSER_UI_SETTINGS_CELLS_SETTINGS_SWITCH_CELL_H_
+#endif  // IOS_CHROME_BROWSER_UI_TABLE_VIEW_CELLS_TABLE_VIEW_SWITCH_CELL_H_

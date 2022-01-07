@@ -29,8 +29,8 @@ id<GREYAction> LongPressElementForContextMenu(ElementSelector* selector,
 // on the current web state.
 id<GREYAction> ScrollElementToVisible(ElementSelector* selector);
 
-// Action to turn the switch of a SettingsSwitchCell to the given |on| state.
-id<GREYAction> TurnSettingsSwitchOn(BOOL on);
+// Action to turn the switch of a TableViewSwitchCell to the given |on| state.
+id<GREYAction> TurnTableViewSwitchOn(BOOL on);
 
 // Action to turn the switch of a SyncSwitchCell to the given |on| state.
 id<GREYAction> TurnSyncSwitchOn(BOOL on);

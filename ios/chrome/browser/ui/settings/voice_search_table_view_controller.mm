@@ -11,9 +11,9 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_text_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_cell.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #include "ios/chrome/browser/voice/speech_input_locale_config.h"
@@ -82,8 +82,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   // TTS section.
   [model addSectionWithIdentifier:SectionIdentifierTTS];
-  SettingsSwitchItem* tts =
-      [[SettingsSwitchItem alloc] initWithType:ItemTypeTTSEnabled];
+  TableViewSwitchItem* tts =
+      [[TableViewSwitchItem alloc] initWithType:ItemTypeTTSEnabled];
   tts.text = l10n_util::GetNSString(IDS_IOS_VOICE_SEARCH_SETTING_TTS);
   BOOL enabled = [self currentLanguageSupportsTTS];
   tts.on = enabled && _ttsEnabled.GetValue();
@@ -147,8 +147,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
 
   if (itemType == ItemTypeTTSEnabled) {
     // Have the switch send a message on UIControlEventValueChanged.
-    SettingsSwitchCell* switchCell =
-        base::mac::ObjCCastStrict<SettingsSwitchCell>(cell);
+    TableViewSwitchCell* switchCell =
+        base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
     switchCell.selectionStyle = UITableViewCellSelectionStyleNone;
     [switchCell.switchView addTarget:self
                               action:@selector(ttsToggled:)
@@ -194,11 +194,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [self.tableViewModel indexPathForItemType:ItemTypeTTSEnabled
                               sectionIdentifier:SectionIdentifierTTS];
 
-  SettingsSwitchItem* switchItem =
-      base::mac::ObjCCastStrict<SettingsSwitchItem>(
+  TableViewSwitchItem* switchItem =
+      base::mac::ObjCCastStrict<TableViewSwitchItem>(
           [self.tableViewModel itemAtIndexPath:switchPath]);
-  SettingsSwitchCell* switchCell =
-      base::mac::ObjCCastStrict<SettingsSwitchCell>(
+  TableViewSwitchCell* switchCell =
+      base::mac::ObjCCastStrict<TableViewSwitchCell>(
           [self.tableView cellForRowAtIndexPath:switchPath]);
 
   // Update the model and the preference with the current value of the switch.
@@ -234,8 +234,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
   NSIndexPath* switchPath =
       [self.tableViewModel indexPathForItemType:ItemTypeTTSEnabled
                               sectionIdentifier:SectionIdentifierTTS];
-  SettingsSwitchCell* switchCell =
-      base::mac::ObjCCastStrict<SettingsSwitchCell>(
+  TableViewSwitchCell* switchCell =
+      base::mac::ObjCCastStrict<TableViewSwitchCell>(
           [self.tableView cellForRowAtIndexPath:switchPath]);
 
   BOOL enabled = [self currentLanguageSupportsTTS];
@@ -244,13 +244,13 @@ typedef NS_ENUM(NSInteger, ItemType) {
   UISwitch* switchView = switchCell.switchView;
   switchView.enabled = enabled;
   switchCell.textLabel.textColor =
-      [SettingsSwitchCell defaultTextColorForState:switchView.state];
+      [TableViewSwitchCell defaultTextColorForState:switchView.state];
   if (on != switchView.isOn) {
     [switchView setOn:on animated:YES];
   }
   // Also update the switch item.
-  SettingsSwitchItem* switchItem =
-      base::mac::ObjCCastStrict<SettingsSwitchItem>(
+  TableViewSwitchItem* switchItem =
+      base::mac::ObjCCastStrict<TableViewSwitchItem>(
           [self.tableViewModel itemAtIndexPath:switchPath]);
   switchItem.enabled = enabled;
   switchItem.on = on;

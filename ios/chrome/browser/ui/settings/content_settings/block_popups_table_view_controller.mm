@@ -16,14 +16,14 @@
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #import "ios/chrome/browser/net/crurl.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/settings/utils/content_setting_backed_boolean.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_cell.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -68,7 +68,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ContentSettingBackedBoolean* _disablePopupsSetting;
 
   // The item related to the switch for the "Disable Popups" setting.
-  SettingsSwitchItem* _blockPopupsItem;
+  TableViewSwitchItem* _blockPopupsItem;
 
   // The managed item for the "Disable Popups" setting.
   TableViewInfoButtonItem* _blockPopupsManagedItem;
@@ -125,7 +125,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
         toSectionWithIdentifier:SectionIdentifierMainSwitch];
   } else {
     _blockPopupsItem =
-        [[SettingsSwitchItem alloc] initWithType:ItemTypeMainSwitch];
+        [[TableViewSwitchItem alloc] initWithType:ItemTypeMainSwitch];
     _blockPopupsItem.text = l10n_util::GetNSString(IDS_IOS_BLOCK_POPUPS);
     _blockPopupsItem.on = [_disablePopupsSetting value];
     _blockPopupsItem.accessibilityIdentifier = @"blockPopupsContentView_switch";
@@ -181,8 +181,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
     case ItemTypeException:
       break;
     case ItemTypeMainSwitch: {
-      SettingsSwitchCell* switchCell =
-          base::mac::ObjCCastStrict<SettingsSwitchCell>(cell);
+      TableViewSwitchCell* switchCell =
+          base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
       [switchCell.switchView addTarget:self
                                 action:@selector(blockPopupsSwitchChanged:)
                       forControlEvents:UIControlEventValueChanged];

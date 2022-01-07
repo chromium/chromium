@@ -34,9 +34,9 @@
 #import "ios/chrome/browser/ui/reading_list/reading_list_menu_provider.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_toolbar_button_commands.h"
 #import "ios/chrome/browser/ui/reading_list/reading_list_toolbar_button_manager.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
@@ -277,10 +277,10 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
-  if ([cell isKindOfClass:[SettingsSwitchCell class]]) {
+  if ([cell isKindOfClass:[TableViewSwitchCell class]]) {
     DCHECK(IsReadingListMessagesEnabled());
-    SettingsSwitchCell* switchCell =
-        base::mac::ObjCCastStrict<SettingsSwitchCell>(cell);
+    TableViewSwitchCell* switchCell =
+        base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
     [switchCell.switchView addTarget:self
                               action:@selector(switchAction:)
                     forControlEvents:UIControlEventValueChanged];
@@ -312,7 +312,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
             removeEmptySections:NO];
 }
 
-#pragma mark - SettingsSwitchCell action
+#pragma mark - TableViewSwitchCell action
 
 - (void)switchAction:(UISwitch*)sender {
   PrefService* user_prefs = self.browser->GetBrowserState()->GetPrefs();
@@ -349,7 +349,7 @@ ReadingListSelectionState GetSelectionStateForSelectedCounts(
     didSelectRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [self tableView:tableView
                     cellForRowAtIndexPath:indexPath];
-  if ([cell isKindOfClass:[SettingsSwitchCell class]]) {
+  if ([cell isKindOfClass:[TableViewSwitchCell class]]) {
     DCHECK(IsReadingListMessagesEnabled());
     return;
   }

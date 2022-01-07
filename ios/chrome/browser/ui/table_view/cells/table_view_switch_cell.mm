@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_cell.h"
 
-#import "ios/chrome/browser/ui/settings/cells/settings_cells_constants.h"
 #include "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -23,7 +22,7 @@ const CGFloat kSwitchTrailingPadding = 22;
 
 }  // namespace
 
-@interface SettingsSwitchCell ()
+@interface TableViewSwitchCell ()
 
 // The image view for the leading icon.
 @property(nonatomic, readonly, strong) UIImageView* iconImageView;
@@ -41,7 +40,7 @@ const CGFloat kSwitchTrailingPadding = 22;
 
 @end
 
-@implementation SettingsSwitchCell
+@implementation TableViewSwitchCell
 
 @synthesize textLabel = _textLabel;
 @synthesize detailTextLabel = _detailTextLabel;
@@ -83,8 +82,8 @@ const CGFloat kSwitchTrailingPadding = 22;
         setContentCompressionResistancePriority:UILayoutPriorityDefaultHigh + 1
                                         forAxis:
                                             UILayoutConstraintAxisHorizontal];
-    _switchView.accessibilityHint = l10n_util::GetNSString(
-        IDS_IOS_TOGGLE_SETTING_SWITCH_ACCESSIBILITY_HINT);
+    _switchView.accessibilityHint =
+        l10n_util::GetNSString(IDS_IOS_TOGGLE_SWITCH_ACCESSIBILITY_HINT);
     [self.contentView addSubview:_switchView];
 
     // Set up the constraints assuming that the icon image is hidden.

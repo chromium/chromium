@@ -67,10 +67,10 @@
   // Toggle the passwords switch off and on.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kSavePasswordSwitchTableViewId)]
-      performAction:chrome_test_util::TurnSettingsSwitchOn(NO)];
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kSavePasswordSwitchTableViewId)]
-      performAction:chrome_test_util::TurnSettingsSwitchOn(YES)];
+      performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
 
   // Close the settings menu.
   [[EarlGrey

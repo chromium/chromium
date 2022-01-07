@@ -63,8 +63,6 @@
 #import "ios/chrome/browser/ui/settings/cells/account_sign_in_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/content_settings/content_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/default_browser/default_browser_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
@@ -89,6 +87,8 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_cell.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
@@ -228,7 +228,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   // PrefBackedBoolean for ArticlesForYou switch enabling.
   PrefBackedBoolean* _contentSuggestionPolicyEnabled;
   // The item related to the switch for the show suggestions setting.
-  SettingsSwitchItem* _showMemoryDebugToolsItem;
+  TableViewSwitchItem* _showMemoryDebugToolsItem;
   // The item related to the safety check.
   SettingsCheckItem* _safetyCheckItem;
 
@@ -275,7 +275,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 }
 
 // The item related to the switch for the show suggestions setting.
-@property(nonatomic, strong, readonly) SettingsSwitchItem* articlesForYouItem;
+@property(nonatomic, strong, readonly) TableViewSwitchItem* articlesForYouItem;
 // The item related to the enterprise managed show suggestions setting.
 @property(nonatomic, strong, readonly)
     TableViewInfoButtonItem* managedArticlesForYouItem;
@@ -925,8 +925,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
           accessibilityIdentifier:kSettingsAboutCellId];
 }
 
-- (SettingsSwitchItem*)showMemoryDebugSwitchItem {
-  SettingsSwitchItem* showMemoryDebugSwitchItem =
+- (TableViewSwitchItem*)showMemoryDebugSwitchItem {
+  TableViewSwitchItem* showMemoryDebugSwitchItem =
       [self switchItemWithType:SettingsItemTypeMemoryDebugging
                             title:@"Show memory debug tools"
                     iconImageName:kSettingsDebugImageName
@@ -937,7 +937,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   return showMemoryDebugSwitchItem;
 }
 
-- (SettingsSwitchItem*)articlesForYouItem {
+- (TableViewSwitchItem*)articlesForYouItem {
   if (!_articlesForYouItem) {
     NSString* settingTitle =
         IsDiscoverFeedEnabled()
@@ -980,7 +980,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
 #if BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
 
-- (SettingsSwitchItem*)viewSourceSwitchItem {
+- (TableViewSwitchItem*)viewSourceSwitchItem {
   return [self switchItemWithType:SettingsItemTypeViewSource
                             title:@"View source menu"
                     iconImageName:kSettingsDebugImageName
@@ -1017,13 +1017,13 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   return detailItem;
 }
 
-- (SettingsSwitchItem*)switchItemWithType:(NSInteger)type
-                                    title:(NSString*)title
-                            iconImageName:(NSString*)iconImageName
-                          withDefaultsKey:(NSString*)key
-                  accessibilityIdentifier:(NSString*)accessibilityIdentifier {
-  SettingsSwitchItem* switchItem =
-      [[SettingsSwitchItem alloc] initWithType:type];
+- (TableViewSwitchItem*)switchItemWithType:(NSInteger)type
+                                     title:(NSString*)title
+                             iconImageName:(NSString*)iconImageName
+                           withDefaultsKey:(NSString*)key
+                   accessibilityIdentifier:(NSString*)accessibilityIdentifier {
+  TableViewSwitchItem* switchItem =
+      [[TableViewSwitchItem alloc] initWithType:type];
   switchItem.text = title;
   switchItem.iconImageName = iconImageName;
   switchItem.accessibilityIdentifier = accessibilityIdentifier;
@@ -1070,16 +1070,16 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
   switch (itemType) {
     case SettingsItemTypeMemoryDebugging: {
-      SettingsSwitchCell* switchCell =
-          base::mac::ObjCCastStrict<SettingsSwitchCell>(cell);
+      TableViewSwitchCell* switchCell =
+          base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
       [switchCell.switchView addTarget:self
                                 action:@selector(memorySwitchToggled:)
                       forControlEvents:UIControlEventValueChanged];
       break;
     }
     case SettingsItemTypeArticlesForYou: {
-      SettingsSwitchCell* switchCell =
-          base::mac::ObjCCastStrict<SettingsSwitchCell>(cell);
+      TableViewSwitchCell* switchCell =
+          base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
       [switchCell.switchView addTarget:self
                                 action:@selector(articlesForYouSwitchToggled:)
                       forControlEvents:UIControlEventValueChanged];
@@ -1087,8 +1087,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     }
     case SettingsItemTypeViewSource: {
 #if BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
-      SettingsSwitchCell* switchCell =
-          base::mac::ObjCCastStrict<SettingsSwitchCell>(cell);
+      TableViewSwitchCell* switchCell =
+          base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
       [switchCell.switchView addTarget:self
                                 action:@selector(viewSourceSwitchToggled:)
                       forControlEvents:UIControlEventValueChanged];
@@ -1354,8 +1354,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       [self.tableViewModel indexPathForItemType:SettingsItemTypeMemoryDebugging
                               sectionIdentifier:SettingsSectionIdentifierDebug];
 
-  SettingsSwitchItem* switchItem =
-      base::mac::ObjCCastStrict<SettingsSwitchItem>(
+  TableViewSwitchItem* switchItem =
+      base::mac::ObjCCastStrict<TableViewSwitchItem>(
           [self.tableViewModel itemAtIndexPath:switchPath]);
 
   BOOL newSwitchValue = sender.isOn;
@@ -1368,8 +1368,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       indexPathForItemType:SettingsItemTypeArticlesForYou
          sectionIdentifier:SettingsSectionIdentifierAdvanced];
 
-  SettingsSwitchItem* switchItem =
-      base::mac::ObjCCastStrict<SettingsSwitchItem>(
+  TableViewSwitchItem* switchItem =
+      base::mac::ObjCCastStrict<TableViewSwitchItem>(
           [self.tableViewModel itemAtIndexPath:switchPath]);
 
   BOOL newSwitchValue = sender.isOn;
@@ -1383,8 +1383,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       [self.tableViewModel indexPathForItemType:SettingsItemTypeViewSource
                               sectionIdentifier:SettingsSectionIdentifierDebug];
 
-  SettingsSwitchItem* switchItem =
-      base::mac::ObjCCastStrict<SettingsSwitchItem>(
+  TableViewSwitchItem* switchItem =
+      base::mac::ObjCCastStrict<TableViewSwitchItem>(
           [self.tableViewModel itemAtIndexPath:switchPath]);
 
   BOOL newSwitchValue = sender.isOn;

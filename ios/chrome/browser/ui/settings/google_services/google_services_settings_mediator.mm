@@ -27,7 +27,6 @@
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/settings/cells/account_sign_in_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/google_services/google_services_settings_constants.h"
@@ -36,6 +35,7 @@
 #import "ios/chrome/browser/ui/settings/utils/observable_boolean.h"
 #import "ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -158,7 +158,7 @@ bool GetStatusForSigninPolicy() {
 // The item related to the switch for the automatic password leak detection
 // setting.
 @property(nonatomic, strong, null_resettable)
-    SettingsSwitchItem* passwordLeakCheckItem;
+    TableViewSwitchItem* passwordLeakCheckItem;
 
 // All the items for the non-personalized section.
 @property(nonatomic, strong, readonly) ItemArray nonPersonalizedItems;
@@ -469,9 +469,9 @@ bool GetStatusForSigninPolicy() {
   return _nonPersonalizedItems;
 }
 
-- (SettingsSwitchItem*)passwordLeakCheckItem {
+- (TableViewSwitchItem*)passwordLeakCheckItem {
   if (!_passwordLeakCheckItem) {
-    SettingsSwitchItem* passwordLeakCheckItem = [[SettingsSwitchItem alloc]
+    TableViewSwitchItem* passwordLeakCheckItem = [[TableViewSwitchItem alloc]
         initWithType:PasswordLeakCheckSwitchItemType];
     passwordLeakCheckItem.text =
         l10n_util::GetNSString(IDS_IOS_LEAK_CHECK_SWITCH);

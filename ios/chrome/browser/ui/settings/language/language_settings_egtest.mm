@@ -27,9 +27,9 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
 using chrome_test_util::ButtonWithAccessibilityLabelId;
 using chrome_test_util::NavigationBarDoneButton;
 using chrome_test_util::SettingsMenuBackButton;
-using chrome_test_util::SettingsSwitchCell;
 using chrome_test_util::TabGridEditButton;
-using chrome_test_util::TurnSettingsSwitchOn;
+using chrome_test_util::TableViewSwitchCell;
+using chrome_test_util::TurnTableViewSwitchOn;
 
 namespace {
 
@@ -205,10 +205,10 @@ id<GREYMatcher> NavigationBarEditButton() {
 
   // Verify that the Translate switch is on and enabled. Toggle it off.
   [[EarlGrey
-      selectElementWithMatcher:SettingsSwitchCell(
+      selectElementWithMatcher:TableViewSwitchCell(
                                    kTranslateSwitchAccessibilityIdentifier, YES,
                                    YES)]
-      performAction:TurnSettingsSwitchOn(NO)];
+      performAction:TurnTableViewSwitchOn(NO)];
 
   // Verify the prefs are up-to-date.
   GREYAssertFalse([LanguageSettingsAppInterface offersTranslation],
@@ -225,10 +225,10 @@ id<GREYMatcher> NavigationBarEditButton() {
 
   // Verify that the Translate switch is off and enabled. Toggle it on.
   [[EarlGrey
-      selectElementWithMatcher:SettingsSwitchCell(
+      selectElementWithMatcher:TableViewSwitchCell(
                                    kTranslateSwitchAccessibilityIdentifier, NO,
                                    YES)]
-      performAction:TurnSettingsSwitchOn(YES)];
+      performAction:TurnTableViewSwitchOn(YES)];
 
   // Verify the prefs are up-to-date.
   GREYAssertTrue([LanguageSettingsAppInterface offersTranslation],
@@ -506,7 +506,7 @@ id<GREYMatcher> NavigationBarEditButton() {
 
   // Verify that the Translate switch is on and disabled.
   [[EarlGrey
-      selectElementWithMatcher:SettingsSwitchCell(
+      selectElementWithMatcher:TableViewSwitchCell(
                                    kTranslateSwitchAccessibilityIdentifier, YES,
                                    NO)] assertWithMatcher:grey_notNil()];
 }

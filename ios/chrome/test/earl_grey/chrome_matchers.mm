@@ -198,18 +198,20 @@ id<GREYMatcher> CloseTabMenuButton() {
   return [ChromeMatchersAppInterface closeTabMenuButton];
 }
 
-id<GREYMatcher> SettingsSwitchCell(NSString* accessibility_identifier,
-                                   BOOL is_toggled_on) {
-  return [ChromeMatchersAppInterface settingsSwitchCell:accessibility_identifier
-                                            isToggledOn:is_toggled_on];
+id<GREYMatcher> TableViewSwitchCell(NSString* accessibility_identifier,
+                                    BOOL is_toggled_on) {
+  return
+      [ChromeMatchersAppInterface tableViewSwitchCell:accessibility_identifier
+                                          isToggledOn:is_toggled_on];
 }
 
-id<GREYMatcher> SettingsSwitchCell(NSString* accessibility_identifier,
-                                   BOOL is_toggled_on,
-                                   BOOL is_enabled) {
-  return [ChromeMatchersAppInterface settingsSwitchCell:accessibility_identifier
-                                            isToggledOn:is_toggled_on
-                                              isEnabled:is_enabled];
+id<GREYMatcher> TableViewSwitchCell(NSString* accessibility_identifier,
+                                    BOOL is_toggled_on,
+                                    BOOL is_enabled) {
+  return
+      [ChromeMatchersAppInterface tableViewSwitchCell:accessibility_identifier
+                                          isToggledOn:is_toggled_on
+                                            isEnabled:is_enabled];
 }
 
 id<GREYMatcher> SyncSwitchCell(NSString* accessibility_label,
