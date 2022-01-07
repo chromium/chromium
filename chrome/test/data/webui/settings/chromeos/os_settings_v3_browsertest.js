@@ -243,6 +243,22 @@ TEST_F('OSSettingsOsBluetoothDeviceDetailSubpageV3Test', 'AllJsTests', () => {
   mocha.run();
 });
 
+var OSSettingsSearchEngineV3Test = class extends OSSettingsV3BrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://os-settings/test_loader.html?module=settings/chromeos/search_engine_test.m.js';
+  }
+
+  /** @override */
+  get featureList() {
+    return {disabled: ['chromeos::features::kSyncSettingsCategorization']};
+  }
+};
+
+TEST_F('OSSettingsSearchEngineV3Test', 'AllJsTests', () => {
+  mocha.run();
+});
+
 [['AccessibilityPage', 'os_a11y_page_tests.m.js'],
  ['AboutPage', 'os_about_page_tests.m.js'],
  ['AccountsPage', 'add_users_tests.m.js'],
@@ -370,7 +386,6 @@ TEST_F('OSSettingsOsBluetoothDeviceDetailSubpageV3Test', 'AllJsTests', () => {
  ['PrivacyPage', 'os_privacy_page_test.m.js'],
  ['ResetPage', 'os_reset_page_test.m.js'],
  ['SettingsSchedulerSlider', 'settings_scheduler_slider_test.m.js'],
- ['SearchEngine', 'search_engine_test.m.js'],
  ['SearchSubpage', 'search_subpage_test.m.js'],
  ['SmartInputsPage', 'smart_inputs_page_test.m.js'],
  ['SmbPage', 'smb_shares_page_tests.m.js'],

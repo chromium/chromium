@@ -63,7 +63,7 @@
 <!-- After SyncSettingsCategorization, OS settings show a link to the browser
      settings instead. -->
 <template is="dom-if" if="[[syncSettingsCategorizationEnabled_]]" restamp>
-  <cr-link-row class="hr"
+  <cr-link-row id="browserSearchSettingsLink" class="hr"
       label="$i18n{osSearchEngineLabel}"
       sub-label="[[currentSearchEngine_.name]]"
       on-click="onSearchEngineLinkClick_" external>

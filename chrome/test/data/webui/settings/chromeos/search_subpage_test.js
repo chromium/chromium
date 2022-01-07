@@ -194,8 +194,16 @@ suite('SearchSubpage', function() {
     settings.Router.getInstance().navigateTo(
         settings.routes.SEARCH_SUBPAGE, params);
 
-    const deepLinkElement =
-        page.$$('settings-search-engine').$$('#searchSelectionDialogButton');
+    let deepLinkElement;
+    if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
+      const browserSearchSettingsLink =
+          page.$$('settings-search-engine').$$('#browserSearchSettingsLink');
+      deepLinkElement =
+          browserSearchSettingsLink.shadowRoot.querySelector('cr-icon-button');
+    } else {
+      deepLinkElement =
+          page.$$('settings-search-engine').$$('#searchSelectionDialogButton');
+    }
     assertTrue(!!deepLinkElement);
     await test_util.waitAfterNextRender(deepLinkElement);
     assertEquals(

@@ -80,7 +80,11 @@ Polymer({
 
   /** @override */
   focus() {
-    this.$$('#searchSelectionDialogButton').focus();
+    if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
+      this.$$('#browserSearchSettingsLink').focus();
+    } else {
+      this.$$('#searchSelectionDialogButton').focus();
+    }
   },
 
   /** @private */
