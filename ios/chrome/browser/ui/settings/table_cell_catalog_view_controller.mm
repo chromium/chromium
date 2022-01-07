@@ -558,35 +558,36 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewURLItem* item =
       [[TableViewURLItem alloc] initWithType:ItemTypeURLNoMetadata];
   item.title = @"Google Design";
-  item.URL = GURL("https://design.google.com");
+  item.URL = [[CrURL alloc] initWithGURL:GURL("https://design.google.com")];
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
 
   item = [[TableViewURLItem alloc] initWithType:ItemTypeURLNoMetadata];
-  item.URL = GURL("https://notitle.google.com");
+  item.URL = [[CrURL alloc] initWithGURL:GURL("https://notitle.google.com")];
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
 
   item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithTimestamp];
   item.title = @"Google";
-  item.URL = GURL("https://www.google.com");
+  item.URL = [[CrURL alloc] initWithGURL:GURL("https://www.google.com")];
   item.metadata = @"3:42 PM";
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
 
   item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithSize];
   item.title = @"World Series 2017: Houston Astros Defeat Someone Else";
-  item.URL = GURL("https://m.bbc.com");
+  item.URL = [[CrURL alloc] initWithGURL:GURL("https://m.bbc.com")];
   item.metadata = @"176 KB";
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
 
   item =
       [[TableViewURLItem alloc] initWithType:ItemTypeURLWithSupplementalText];
   item.title = @"Chrome | Google Blog";
-  item.URL = GURL("https://blog.google/products/chrome/");
+  item.URL =
+      [[CrURL alloc] initWithGURL:GURL("https://blog.google/products/chrome/")];
   item.supplementalURLText = @"Read 4 days ago";
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
 
   item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithBadgeImage];
   item.title = @"Photos - Google Photos";
-  item.URL = GURL("https://photos.google.com/");
+  item.URL = [[CrURL alloc] initWithGURL:GURL("https://photos.google.com/")];
   item.badgeImage = [UIImage imageNamed:@"table_view_cell_check_mark"];
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
 }

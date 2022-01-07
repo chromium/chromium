@@ -358,7 +358,8 @@ const int kRecentlyClosedTabsSectionIndex = 0;
     TableViewURLItem* recentlyClosedTab =
         [[TableViewURLItem alloc] initWithType:ItemTypeRecentlyClosed];
     recentlyClosedTab.title = base::SysUTF16ToNSString(navigationEntry.title());
-    recentlyClosedTab.URL = navigationEntry.virtual_url();
+    recentlyClosedTab.URL =
+        [[CrURL alloc] initWithGURL:navigationEntry.virtual_url()];
     [self.tableViewModel addItem:recentlyClosedTab
          toSectionWithIdentifier:SectionIdentifierRecentlyClosedTabs];
   }
@@ -437,7 +438,7 @@ const int kRecentlyClosedTabsSectionIndex = 0;
     TableViewURLItem* sessionTabItem =
         [[TableViewURLItem alloc] initWithType:ItemTypeSessionTabData];
     sessionTabItem.title = title;
-    sessionTabItem.URL = sessionTab->virtual_url;
+    sessionTabItem.URL = [[CrURL alloc] initWithGURL:sessionTab->virtual_url];
     [model addItem:sessionTabItem
         toSectionWithIdentifier:[self sectionIdentifierForSession:session]];
   }
@@ -970,7 +971,10 @@ const int kRecentlyClosedTabsSectionIndex = 0;
       TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
       TableViewURLItem* URLItem =
           base::mac::ObjCCastStrict<TableViewURLItem>(item);
-      return [[URLInfo alloc] initWithURL:URLItem.URL title:URLItem.title];
+      GURL gurl;
+      if (URLItem.URL)
+        gurl = URLItem.URL.gurl;
+      return [[URLInfo alloc] initWithURL:gurl title:URLItem.title];
     }
 
     case ItemTypeRecentlyClosedHeader:
@@ -1027,9 +1031,8 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   TableViewURLCell* URLCell = base::mac::ObjCCastStrict<TableViewURLCell>(cell);
 
   NSString* itemIdentifier = URLItem.uniqueIdentifier;
-  CrURL* crurl = [[CrURL alloc] initWithGURL:URLItem.URL];
   [self.imageDataSource
-      faviconForURL:crurl
+      faviconForURL:URLItem.URL
          completion:^(FaviconAttributes* attributes) {
            // Only set favicon if the cell hasn't been reused.
            if ([URLCell.cellUniqueIdentifier isEqualToString:itemIdentifier]) {

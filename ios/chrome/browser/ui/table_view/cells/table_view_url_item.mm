@@ -6,6 +6,7 @@
 
 #include "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/elements/favicon_container_view.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_cell_favicon_badge_view.h"
@@ -71,21 +72,24 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
 }
 
 - (NSString*)uniqueIdentifier {
-  return base::SysUTF8ToNSString(self.URL.host());
+  if (!self.URL)
+    return @"";
+  return base::SysUTF8ToNSString(self.URL.gurl.host());
 }
 
 #pragma mark Private
 
 // Returns the text to use when configuring a TableViewURLCell's title label.
 - (NSString*)titleLabelText {
-  if (self.title.length) {
+  if (self.title.length)
     return self.title;
-  } else if (base::SysUTF8ToNSString(self.URL.host()).length) {
-    return base::SysUTF8ToNSString(self.URL.host());
-  } else {
-    // Backup in case host returns nothing (e.g. about:blank).
-    return base::SysUTF8ToNSString(self.URL.spec());
-  }
+  if (!self.URL)
+    return @"";
+  NSString* hostname = base::SysUTF8ToNSString(self.URL.gurl.host());
+  if (hostname.length)
+    return hostname;
+  // Backup in case host returns nothing (e.g. about:blank).
+  return base::SysUTF8ToNSString(self.URL.gurl.spec());
 }
 
 // Returns the text to use when configuring a TableViewURLCell's URL label.
@@ -96,7 +100,9 @@ const char kDefaultSupplementalURLTextDelimiter[] = "•";
     return self.supplementalURLText;
 
   // Append the hostname with the supplemental text.
-  NSString* hostname = base::SysUTF8ToNSString(self.URL.host());
+  if (!self.URL)
+    return @"";
+  NSString* hostname = base::SysUTF8ToNSString(self.URL.gurl.host());
   if (self.supplementalURLText.length) {
     NSString* delimeter =
         self.supplementalURLTextDelimiter.length
