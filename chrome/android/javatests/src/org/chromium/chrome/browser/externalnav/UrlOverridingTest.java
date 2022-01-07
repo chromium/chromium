@@ -156,6 +156,7 @@ public class UrlOverridingTest {
         ai.packageName = packageName;
         ai.name = "Name: " + packageName;
         ai.applicationInfo = new ApplicationInfo();
+        ai.exported = true;
         ResolveInfo ri = new ResolveInfo();
         ri.activityInfo = ai;
         return ri;

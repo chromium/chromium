@@ -1379,6 +1379,10 @@ public class ExternalNavigationHandler {
             return handleUnresolvableIntent(params, targetIntent, browserFallbackUrl);
         }
 
+        if (resolvesToNonExportedActivity(resolvingInfos.get())) {
+            return OverrideUrlLoadingResult.forNoOverride();
+        }
+
         if (!browserFallbackUrl.isEmpty()) targetIntent.removeExtra(EXTRA_BROWSER_FALLBACK_URL);
 
         boolean hasSpecializedHandler = countSpecializedHandlers(resolvingInfos.get()) > 0;
@@ -1448,6 +1452,18 @@ public class ExternalNavigationHandler {
         return startActivityIfNeeded(targetIntent, shouldProxyForInstantApps, resolvingInfos.get(),
                 resolveActivity, requiresIntentChooser, browserFallbackUrl, intentDataUrl,
                 params.getReferrerUrl());
+    }
+
+    // https://crbug.com/1249964
+    private boolean resolvesToNonExportedActivity(List<ResolveInfo> infos) {
+        for (ResolveInfo info : infos) {
+            if (info.activityInfo != null && !info.activityInfo.exported) {
+                Log.w(TAG, "Web Intent resolves to non-exported Activity.");
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private boolean shouldAvoidShowingDisambiguationPrompt(Intent intent,
