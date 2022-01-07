@@ -310,7 +310,13 @@ def _CheckTextAppearance(input_api, output_api):
   namespace = {'android': 'http://schemas.android.com/apk/res/android'}
   errors = []
   for f in IncludedFiles(input_api):
-    root = ET.fromstring(input_api.ReadFile(f))
+    try:
+      root = ET.fromstring(input_api.ReadFile(f))
+    except ET.ParseError:
+      print('*' * 80)
+      print('Parse error processing file:', f)
+      print('*' * 80)
+      raise
     # Check if there are text attributes defined outside text appearances.
     for attribute in text_attributes:
       # Get style name that contains text attributes but is not text appearance.
