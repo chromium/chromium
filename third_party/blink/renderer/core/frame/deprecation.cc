@@ -686,9 +686,11 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
     case WebFeature::kWebCodecsVideoFrameDefaultTimestamp:
       return DeprecationInfo::WithDetails(
           "WebCodecsVideoFrameDefaultTimestamp", kUnknown,
-          "A VideoFrame was constructed without a timestamp. Support for this  "
-          "may be removed in the future. Please provide an explicit timestamp "
-          "via VideoFrameInit.");
+          "Constructing a VideoFrame without a timestamp is deprecated and "
+          "support will be removed in M99. Please provide a timestamp via "
+          "VideoFrameInit. See "
+          "https://www.chromestatus.com/feature/5667793157488640 for more "
+          "details.");
 
     case WebFeature::kDocumentDomainSettingWithoutOriginAgentClusterHeader:
       return DeprecationInfo::WithDetails(
