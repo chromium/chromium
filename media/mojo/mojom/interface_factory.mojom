@@ -5,6 +5,7 @@
 module media.mojom;
 
 import "media/mojo/mojom/audio_decoder.mojom";
+import "media/mojo/mojom/audio_encoder.mojom";
 import "media/mojo/mojom/decryptor.mojom";
 import "media/mojo/mojom/content_decryption_module.mojom";
 import "media/mojo/mojom/media_log.mojom";
@@ -19,6 +20,9 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 interface InterfaceFactory {
   CreateAudioDecoder(pending_receiver<AudioDecoder> audio_decoder);
   CreateVideoDecoder(pending_receiver<VideoDecoder> video_decoder);
+
+  // Creates an AudioEncoder bound to a given receiver.
+  CreateAudioEncoder(pending_receiver<AudioEncoder> audio_encoder);
 
   // Creates a regular media::Renderer (DefaultRendererFactory).
   // TODO(guohuideng): remove |audio_device_id|, it's not used.

@@ -261,6 +261,14 @@ void MediaInterfaceProxy::CreateVideoDecoder(
     factory->CreateVideoDecoder(std::move(receiver));
 }
 
+void MediaInterfaceProxy::CreateAudioEncoder(
+    mojo::PendingReceiver<media::mojom::AudioEncoder> receiver) {
+  DCHECK(thread_checker_.CalledOnValidThread());
+  InterfaceFactory* factory = media_interface_factory_ptr_->Get();
+  if (factory)
+    factory->CreateAudioEncoder(std::move(receiver));
+}
+
 void MediaInterfaceProxy::CreateDefaultRenderer(
     const std::string& audio_device_id,
     mojo::PendingReceiver<media::mojom::Renderer> receiver) {

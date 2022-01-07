@@ -49,6 +49,15 @@ void FramelessMediaInterfaceProxy::CreateVideoDecoder(
     factory->CreateVideoDecoder(std::move(receiver));
 }
 
+void FramelessMediaInterfaceProxy::CreateAudioEncoder(
+    mojo::PendingReceiver<media::mojom::AudioEncoder> receiver) {
+  DVLOG(2) << __func__;
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  InterfaceFactory* factory = GetMediaInterfaceFactory();
+  if (factory)
+    factory->CreateAudioEncoder(std::move(receiver));
+}
+
 void FramelessMediaInterfaceProxy::CreateDefaultRenderer(
     const std::string& audio_device_id,
     mojo::PendingReceiver<media::mojom::Renderer> receiver) {}

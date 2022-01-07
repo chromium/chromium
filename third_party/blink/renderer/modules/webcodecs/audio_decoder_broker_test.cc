@@ -112,6 +112,8 @@ class FakeInterfaceFactory : public media::mojom::InterfaceFactory {
             &cdm_service_context_, std::make_unique<FakeAudioDecoder>()),
         std::move(receiver));
   }
+  void CreateAudioEncoder(
+      mojo::PendingReceiver<media::mojom::AudioEncoder> receiver) override {}
 
   // Stub out other mojom::InterfaceFactory interfaces.
   void CreateVideoDecoder(

@@ -118,6 +118,11 @@ void AudioOpusEncoder::Initialize(const Options& options,
     return;
   }
 
+  if (options.codec != AudioCodec::kOpus) {
+    std::move(done_cb).Run(EncoderStatus::Codes::kEncoderInitializationError);
+    return;
+  }
+
   options_ = options;
   input_params_ = CreateInputParams(options);
   if (!input_params_.IsValid()) {

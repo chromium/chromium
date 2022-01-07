@@ -221,6 +221,10 @@ if (enable_library_cdms) {
   _default_mojo_media_services += [ "cdm" ]
 }
 
+if (is_win) {
+  _default_mojo_media_services += [ "audio_encoder" ]
+}
+
 declare_args() {
   # A list of mojo media services that should be used in the media pipeline.
   # Valid entries in the list are:

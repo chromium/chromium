@@ -6,6 +6,7 @@
 
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/audio_decoder.h"
+#include "media/base/audio_encoder.h"
 #include "media/base/cdm_factory.h"
 #include "media/base/media_log.h"
 #include "media/base/renderer.h"
@@ -21,6 +22,11 @@ void MojoMediaClient::Initialize() {}
 
 std::unique_ptr<AudioDecoder> MojoMediaClient::CreateAudioDecoder(
     scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+  return nullptr;
+}
+
+std::unique_ptr<AudioEncoder> MojoMediaClient::CreateAudioEncoder(
+    scoped_refptr<base::SequencedTaskRunner> task_runner) {
   return nullptr;
 }
 

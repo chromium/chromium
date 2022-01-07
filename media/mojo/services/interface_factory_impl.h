@@ -15,6 +15,7 @@
 #include "media/media_buildflags.h"
 #include "media/mojo/buildflags.h"
 #include "media/mojo/mojom/audio_decoder.mojom.h"
+#include "media/mojo/mojom/audio_encoder.mojom.h"
 #include "media/mojo/mojom/content_decryption_module.mojom.h"
 #include "media/mojo/mojom/decryptor.mojom.h"
 #include "media/mojo/mojom/frame_interface_factory.mojom.h"
@@ -53,6 +54,10 @@ class InterfaceFactoryImpl final
       mojo::PendingReceiver<mojom::AudioDecoder> receiver) final;
   void CreateVideoDecoder(
       mojo::PendingReceiver<mojom::VideoDecoder> receiver) final;
+
+  void CreateAudioEncoder(
+      mojo::PendingReceiver<mojom::AudioEncoder> receiver) final;
+
   void CreateDefaultRenderer(
       const std::string& audio_device_id,
       mojo::PendingReceiver<mojom::Renderer> receiver) final;
@@ -123,6 +128,10 @@ class InterfaceFactoryImpl final
 #if BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
   mojo::UniqueReceiverSet<mojom::VideoDecoder> video_decoder_receivers_;
 #endif  // BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
+
+#if BUILDFLAG(ENABLE_MOJO_AUDIO_ENCODER)
+  mojo::UniqueReceiverSet<mojom::AudioEncoder> audio_encoder_receivers_;
+#endif  // BUILDFLAG(ENABLE_MOJO_VIDEO_ENCODER)
 
 #if BUILDFLAG(ENABLE_MOJO_RENDERER) || BUILDFLAG(ENABLE_CAST_RENDERER) || \
     defined(OS_WIN)

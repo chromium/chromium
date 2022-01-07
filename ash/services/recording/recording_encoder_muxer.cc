@@ -234,6 +234,7 @@ RecordingEncoderMuxer::RecordingEncoderMuxer(
 
   if (audio_input_params) {
     media::AudioEncoder::Options audio_encoder_options;
+    audio_encoder_options.codec = media::AudioCodec::kOpus;
     audio_encoder_options.channels = audio_input_params->channels();
     audio_encoder_options.sample_rate = audio_input_params->sample_rate();
     InitializeAudioEncoder(audio_encoder_options);

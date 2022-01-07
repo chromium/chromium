@@ -32,6 +32,7 @@ class ColorSpace;
 namespace media {
 
 class AudioDecoder;
+class AudioEncoder;
 class CdmFactory;
 class MediaLog;
 class Renderer;
@@ -53,6 +54,9 @@ class MEDIA_MOJO_EXPORT MojoMediaClient {
 
   virtual std::unique_ptr<AudioDecoder> CreateAudioDecoder(
       scoped_refptr<base::SingleThreadTaskRunner> task_runner);
+
+  virtual std::unique_ptr<AudioEncoder> CreateAudioEncoder(
+      scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   virtual std::vector<SupportedVideoDecoderConfig>
   GetSupportedVideoDecoderConfigs();

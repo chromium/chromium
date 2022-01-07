@@ -19,6 +19,10 @@
 #include "media/mojo/services/mojo_audio_decoder_service.h"
 #endif  // BUILDFLAG(ENABLE_MOJO_AUDIO_DECODER)
 
+#if BUILDFLAG(ENABLE_MOJO_AUDIO_ENCODER)
+#include "media/mojo/services/mojo_audio_encoder_service.h"
+#endif  // BUILDFLAG(ENABLE_MOJO_AUDIO_ENCODER)
+
 #if BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
 #include "media/mojo/services/mojo_video_decoder_service.h"
 #endif  // BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
@@ -83,6 +87,23 @@ void InterfaceFactoryImpl::CreateVideoDecoder(
                                    mojo_media_client_, &cdm_service_context_),
                                std::move(receiver));
 #endif  // BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
+}
+
+void InterfaceFactoryImpl::CreateAudioEncoder(
+    mojo::PendingReceiver<mojom::AudioEncoder> receiver) {
+#if BUILDFLAG(ENABLE_MOJO_AUDIO_ENCODER)
+  auto runner = base::ThreadTaskRunnerHandle::Get();
+
+  auto underlying_encoder = mojo_media_client_->CreateAudioEncoder(runner);
+  if (!underlying_encoder) {
+    DLOG(ERROR) << "AudioEncoder creation failed.";
+    return;
+  }
+
+  audio_encoder_receivers_.Add(
+      std::make_unique<MojoAudioEncoderService>(std::move(underlying_encoder)),
+      std::move(receiver));
+#endif  // BUILDFLAG(ENABLE_MOJO_AUDIO_ENCODER)
 }
 
 void InterfaceFactoryImpl::CreateDefaultRenderer(
@@ -204,6 +225,11 @@ bool InterfaceFactoryImpl::IsEmpty() {
     return false;
 #endif  // BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
 
+#if BUILDFLAG(ENABLE_MOJO_AUDIO_ENCODER)
+  if (!audio_encoder_receivers_.empty())
+    return false;
+#endif  // BUILDFLAG(ENABLE_MOJO_AUDIO_ENCODER)
+
 #if BUILDFLAG(ENABLE_MOJO_RENDERER)
   if (!renderer_receivers_.empty())
     return false;
@@ -234,6 +260,10 @@ void InterfaceFactoryImpl::SetReceiverDisconnectHandler() {
 #if BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
   video_decoder_receivers_.set_disconnect_handler(disconnect_cb);
 #endif  // BUILDFLAG(ENABLE_MOJO_VIDEO_DECODER)
+
+#if BUILDFLAG(ENABLE_MOJO_AUDIO_ENCODER)
+  audio_encoder_receivers_.set_disconnect_handler(disconnect_cb);
+#endif  // BUILDFLAG(ENABLE_MOJO_AUDIO_ENCODER)
 
 #if BUILDFLAG(ENABLE_MOJO_RENDERER)
   renderer_receivers_.set_disconnect_handler(disconnect_cb);

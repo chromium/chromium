@@ -61,6 +61,7 @@ class AudioEncodersTest : public ::testing::TestWithParam<TestAudioParams> {
       : audio_source_(GetParam().channels,
                       /*freq=*/440,
                       GetParam().sample_rate) {
+    options_.codec = AudioCodec::kOpus;
     options_.sample_rate = GetParam().sample_rate;
     options_.channels = GetParam().channels;
   }
