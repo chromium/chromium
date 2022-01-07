@@ -526,21 +526,6 @@
             ]
         }
     ],
-    "AndroidMessagesNearOomReduction": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_2021-10-06",
-                    "enable_features": [
-                        "MessagesForAndroidNearOomReduction"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidMessagesPWAInstall": [
         {
             "platforms": [
