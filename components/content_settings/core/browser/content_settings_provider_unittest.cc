@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "base/values.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
@@ -26,18 +27,18 @@ TEST(ContentSettingsProviderTest, Mock) {
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&mock_provider, url, url,
                                    ContentSettingsType::NOTIFICATIONS, false));
-  std::unique_ptr<base::Value> value_ptr(TestUtils::GetContentSettingValue(
-      &mock_provider, url, url, ContentSettingsType::NOTIFICATIONS, false));
+  base::Value value = TestUtils::GetContentSettingValue(
+      &mock_provider, url, url, ContentSettingsType::NOTIFICATIONS, false);
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            IntToContentSetting(value_ptr->GetIfInt().value_or(-1)));
+            IntToContentSetting(value.GetIfInt().value_or(-1)));
 
   EXPECT_EQ(
       CONTENT_SETTING_DEFAULT,
       TestUtils::GetContentSetting(&mock_provider, url, url,
                                    ContentSettingsType::GEOLOCATION, false));
-  EXPECT_EQ(nullptr, TestUtils::GetContentSettingValue(
-                         &mock_provider, url, url,
-                         ContentSettingsType::GEOLOCATION, false));
+  EXPECT_EQ(base::Value(), TestUtils::GetContentSettingValue(
+                               &mock_provider, url, url,
+                               ContentSettingsType::GEOLOCATION, false));
 
   bool owned = mock_provider.SetWebsiteSetting(
       pattern, pattern, ContentSettingsType::NOTIFICATIONS,

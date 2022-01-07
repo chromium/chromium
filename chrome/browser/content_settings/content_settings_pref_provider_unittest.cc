@@ -283,9 +283,9 @@ TEST_F(PrefProviderTest, GetContentSettingsValue) {
             TestUtils::GetContentSetting(&provider, primary_url, primary_url,
                                          ContentSettingsType::COOKIES, false));
 
-  EXPECT_EQ(nullptr, TestUtils::GetContentSettingValue(
-                         &provider, primary_url, primary_url,
-                         ContentSettingsType::COOKIES, false));
+  EXPECT_EQ(base::Value(), TestUtils::GetContentSettingValue(
+                               &provider, primary_url, primary_url,
+                               ContentSettingsType::COOKIES, false));
 
   provider.SetWebsiteSetting(primary_pattern, primary_pattern,
                              ContentSettingsType::COOKIES,
@@ -293,17 +293,16 @@ TEST_F(PrefProviderTest, GetContentSettingsValue) {
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
             TestUtils::GetContentSetting(&provider, primary_url, primary_url,
                                          ContentSettingsType::COOKIES, false));
-  std::unique_ptr<base::Value> value_ptr(
-      TestUtils::GetContentSettingValue(&provider, primary_url, primary_url,
-                                        ContentSettingsType::COOKIES, false));
+  base::Value value = TestUtils::GetContentSettingValue(
+      &provider, primary_url, primary_url, ContentSettingsType::COOKIES, false);
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            IntToContentSetting(value_ptr->GetIfInt().value_or(-1)));
+            IntToContentSetting(value.GetIfInt().value_or(-1)));
 
   provider.SetWebsiteSetting(primary_pattern, primary_pattern,
                              ContentSettingsType::COOKIES, base::Value(), {});
-  EXPECT_EQ(nullptr, TestUtils::GetContentSettingValue(
-                         &provider, primary_url, primary_url,
-                         ContentSettingsType::COOKIES, false));
+  EXPECT_EQ(base::Value(), TestUtils::GetContentSettingValue(
+                               &provider, primary_url, primary_url,
+                               ContentSettingsType::COOKIES, false));
   provider.ShutdownOnUIThread();
 }
 
@@ -651,9 +650,10 @@ TEST_F(PrefProviderTest, SessionScopeSettingsDontPersist) {
   ContentSettingsPattern primary_pattern =
       ContentSettingsPattern::FromString("[*.]example.com");
 
-  EXPECT_EQ(NULL, TestUtils::GetContentSetting(
-                      &provider, primary_url, primary_url,
-                      ContentSettingsType::STORAGE_ACCESS, false));
+  EXPECT_EQ(
+      CONTENT_SETTING_DEFAULT,
+      TestUtils::GetContentSetting(&provider, primary_url, primary_url,
+                                   ContentSettingsType::STORAGE_ACCESS, false));
 
   provider.SetWebsiteSetting(primary_pattern, primary_pattern,
                              ContentSettingsType::STORAGE_ACCESS,
@@ -663,11 +663,11 @@ TEST_F(PrefProviderTest, SessionScopeSettingsDontPersist) {
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&provider, primary_url, primary_url,
                                    ContentSettingsType::STORAGE_ACCESS, false));
-  std::unique_ptr<base::Value> value_ptr(TestUtils::GetContentSettingValue(
+  base::Value value = TestUtils::GetContentSettingValue(
       &provider, primary_url, primary_url, ContentSettingsType::STORAGE_ACCESS,
-      false));
+      false);
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            IntToContentSetting(value_ptr->GetIfInt().value_or(-1)));
+            IntToContentSetting(value.GetIfInt().value_or(-1)));
 
   // Now if we create a new provider, it should not be able to read our setting
   // back.
@@ -697,9 +697,10 @@ TEST_F(PrefProviderTest, SessionScopeSettingsRestoreSession) {
   ContentSettingsPattern primary_pattern =
       ContentSettingsPattern::FromString("[*.]example.com");
 
-  EXPECT_EQ(NULL, TestUtils::GetContentSetting(
-                      &provider, primary_url, primary_url,
-                      ContentSettingsType::STORAGE_ACCESS, false));
+  EXPECT_EQ(
+      CONTENT_SETTING_DEFAULT,
+      TestUtils::GetContentSetting(&provider, primary_url, primary_url,
+                                   ContentSettingsType::STORAGE_ACCESS, false));
 
   provider.SetWebsiteSetting(primary_pattern, primary_pattern,
                              ContentSettingsType::STORAGE_ACCESS,
@@ -709,11 +710,11 @@ TEST_F(PrefProviderTest, SessionScopeSettingsRestoreSession) {
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&provider, primary_url, primary_url,
                                    ContentSettingsType::STORAGE_ACCESS, false));
-  std::unique_ptr<base::Value> value_ptr(TestUtils::GetContentSettingValue(
+  base::Value value(TestUtils::GetContentSettingValue(
       &provider, primary_url, primary_url, ContentSettingsType::STORAGE_ACCESS,
       false));
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            IntToContentSetting(value_ptr->GetIfInt().value_or(-1)));
+            IntToContentSetting(value.GetIfInt().value_or(-1)));
 
   // Now if we create a new provider, it should be able to read our setting
   // back.
@@ -750,19 +751,19 @@ TEST_F(PrefProviderTest, GetContentSettingsExpiry) {
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&provider, primary_url, primary_url,
                                    ContentSettingsType::STORAGE_ACCESS, false));
-  std::unique_ptr<base::Value> value_ptr(TestUtils::GetContentSettingValue(
+  base::Value value = TestUtils::GetContentSettingValue(
       &provider, primary_url, primary_url, ContentSettingsType::STORAGE_ACCESS,
-      false));
+      false);
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            IntToContentSetting(value_ptr->GetIfInt().value_or(-1)));
+            IntToContentSetting(value.GetIfInt().value_or(-1)));
 
   // Now if we skip ahead our time our setting should be expired and no longer
   // valid.
   FastForwardTime(base::Seconds(200));
 
-  EXPECT_EQ(nullptr, TestUtils::GetContentSettingValue(
-                         &provider, primary_url, primary_url,
-                         ContentSettingsType::STORAGE_ACCESS, false));
+  EXPECT_EQ(base::Value(), TestUtils::GetContentSettingValue(
+                               &provider, primary_url, primary_url,
+                               ContentSettingsType::STORAGE_ACCESS, false));
   EXPECT_EQ(
       CONTENT_SETTING_DEFAULT,
       TestUtils::GetContentSetting(&provider, primary_url, primary_url,
@@ -790,11 +791,11 @@ TEST_F(PrefProviderTest, GetContentSettingsExpiryPersists) {
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&provider, primary_url, primary_url,
                                    ContentSettingsType::STORAGE_ACCESS, false));
-  std::unique_ptr<base::Value> value_ptr(TestUtils::GetContentSettingValue(
+  base::Value value = TestUtils::GetContentSettingValue(
       &provider, primary_url, primary_url, ContentSettingsType::STORAGE_ACCESS,
-      false));
+      false);
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            IntToContentSetting(value_ptr->GetIfInt().value_or(-1)));
+            IntToContentSetting(value.GetIfInt().value_or(-1)));
 
   // Shutdown our provider and we should still have a setting present.
   provider.ShutdownOnUIThread();
@@ -811,9 +812,9 @@ TEST_F(PrefProviderTest, GetContentSettingsExpiryPersists) {
   // valid.
   FastForwardTime(base::Seconds(200));
 
-  EXPECT_EQ(nullptr, TestUtils::GetContentSettingValue(
-                         &provider2, primary_url, primary_url,
-                         ContentSettingsType::STORAGE_ACCESS, false));
+  EXPECT_EQ(base::Value(), TestUtils::GetContentSettingValue(
+                               &provider2, primary_url, primary_url,
+                               ContentSettingsType::STORAGE_ACCESS, false));
   EXPECT_EQ(
       CONTENT_SETTING_DEFAULT,
       TestUtils::GetContentSetting(&provider2, primary_url, primary_url,
@@ -841,11 +842,11 @@ TEST_F(PrefProviderTest, GetContentSettingsExpiryAfterRestore) {
       CONTENT_SETTING_BLOCK,
       TestUtils::GetContentSetting(&provider, primary_url, primary_url,
                                    ContentSettingsType::STORAGE_ACCESS, false));
-  std::unique_ptr<base::Value> value_ptr(TestUtils::GetContentSettingValue(
+  base::Value value = TestUtils::GetContentSettingValue(
       &provider, primary_url, primary_url, ContentSettingsType::STORAGE_ACCESS,
-      false));
+      false);
   EXPECT_EQ(CONTENT_SETTING_BLOCK,
-            IntToContentSetting(value_ptr->GetIfInt().value_or(-1)));
+            IntToContentSetting(value.GetIfInt().value_or(-1)));
 
   provider.ShutdownOnUIThread();
   PrefProvider provider2(testing_profile.GetPrefs(), /*off_the_record=*/false,
@@ -856,9 +857,9 @@ TEST_F(PrefProviderTest, GetContentSettingsExpiryAfterRestore) {
   // valid.
   FastForwardTime(base::Seconds(200));
 
-  EXPECT_EQ(nullptr, TestUtils::GetContentSettingValue(
-                         &provider2, primary_url, primary_url,
-                         ContentSettingsType::STORAGE_ACCESS, false));
+  EXPECT_EQ(base::Value(), TestUtils::GetContentSettingValue(
+                               &provider2, primary_url, primary_url,
+                               ContentSettingsType::STORAGE_ACCESS, false));
   EXPECT_EQ(
       CONTENT_SETTING_DEFAULT,
       TestUtils::GetContentSetting(&provider2, primary_url, primary_url,

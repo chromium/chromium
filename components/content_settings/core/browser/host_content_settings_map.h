@@ -378,7 +378,7 @@ class HostContentSettingsMap : public content_settings::Observer,
 
   // Returns the single content setting |value| with a toggle for if it
   // takes the global on/off switch into account.
-  std::unique_ptr<base::Value> GetWebsiteSettingInternal(
+  base::Value GetWebsiteSettingInternal(
       const GURL& primary_url,
       const GURL& secondary_url,
       ContentSettingsType content_type,
@@ -390,7 +390,7 @@ class HostContentSettingsMap : public content_settings::Observer,
       const GURL& secondary_url,
       ContentSettingsType type) const;
 
-  static std::unique_ptr<base::Value> GetContentSettingValueAndPatterns(
+  static base::Value GetContentSettingValueAndPatterns(
       const content_settings::ProviderInterface* provider,
       const GURL& primary_url,
       const GURL& secondary_url,
@@ -400,7 +400,7 @@ class HostContentSettingsMap : public content_settings::Observer,
       ContentSettingsPattern* secondary_pattern,
       content_settings::SessionModel* session_model);
 
-  static std::unique_ptr<base::Value> GetContentSettingValueAndPatterns(
+  static base::Value GetContentSettingValueAndPatterns(
       content_settings::RuleIterator* rule_iterator,
       const GURL& primary_url,
       const GURL& secondary_url,

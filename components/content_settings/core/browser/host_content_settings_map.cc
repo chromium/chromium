@@ -384,10 +384,10 @@ ContentSetting HostContentSettingsMap::GetUserModifiableContentSetting(
     ContentSettingsType content_type) const {
   DCHECK(content_settings::ContentSettingsRegistry::GetInstance()->Get(
       content_type));
-  std::unique_ptr<base::Value> value =
+  const base::Value value =
       GetWebsiteSettingInternal(primary_url, secondary_url, content_type,
                                 kFirstUserModifiableProvider, nullptr);
-  return content_settings::ValueToContentSetting(value.get());
+  return content_settings::ValueToContentSetting(value);
 }
 
 void HostContentSettingsMap::GetSettingsForOneType(
@@ -525,8 +525,8 @@ content_settings::PatternPair HostContentSettingsMap::GetNarrowestPatterns (
   // the existing rule is more specific, than change the existing rule instead
   // of creating a new rule that would be hidden behind the existing rule.
   content_settings::SettingInfo info;
-  std::unique_ptr<base::Value> v = GetWebsiteSettingInternal(
-      primary_url, secondary_url, type, kFirstProvider, &info);
+  GetWebsiteSettingInternal(primary_url, secondary_url, type, kFirstProvider,
+                            &info);
   if (info.source != content_settings::SETTING_SOURCE_USER) {
     // Return an invalid pattern if the current setting is not a user setting
     // and thus can't be changed.
@@ -858,8 +858,8 @@ std::unique_ptr<base::Value> HostContentSettingsMap::GetWebsiteSetting(
     }
   }
 
-  return GetWebsiteSettingInternal(primary_url, secondary_url, content_type,
-                                   kFirstProvider, info);
+  return content_settings::ToNullableUniquePtrValue(GetWebsiteSettingInternal(
+      primary_url, secondary_url, content_type, kFirstProvider, info));
 }
 
 // static
@@ -886,7 +886,7 @@ HostContentSettingsMap::GetSettingSourceFromProviderName(
   return content_settings::SETTING_SOURCE_NONE;
 }
 
-std::unique_ptr<base::Value> HostContentSettingsMap::GetWebsiteSettingInternal(
+base::Value HostContentSettingsMap::GetWebsiteSettingInternal(
     const GURL& primary_url,
     const GURL& secondary_url,
     ContentSettingsType content_type,
@@ -906,10 +906,10 @@ std::unique_ptr<base::Value> HostContentSettingsMap::GetWebsiteSettingInternal(
   // precedence.
   auto it = content_settings_providers_.lower_bound(first_provider_to_search);
   for (; it != content_settings_providers_.end(); ++it) {
-    std::unique_ptr<base::Value> value = GetContentSettingValueAndPatterns(
+    base::Value value = GetContentSettingValueAndPatterns(
         it->second.get(), primary_url, secondary_url, content_type,
         is_off_the_record_, primary_pattern, secondary_pattern, session_model);
-    if (value) {
+    if (!value.is_none()) {
       if (info)
         info->source = kProviderNamesSourceMap[it->first].provider_source;
       return value;
@@ -921,12 +921,11 @@ std::unique_ptr<base::Value> HostContentSettingsMap::GetWebsiteSettingInternal(
     info->primary_pattern = ContentSettingsPattern();
     info->secondary_pattern = ContentSettingsPattern();
   }
-  return nullptr;
+  return base::Value();
 }
 
 // static
-std::unique_ptr<base::Value>
-HostContentSettingsMap::GetContentSettingValueAndPatterns(
+base::Value HostContentSettingsMap::GetContentSettingValueAndPatterns(
     const content_settings::ProviderInterface* provider,
     const GURL& primary_url,
     const GURL& secondary_url,
@@ -941,29 +940,26 @@ HostContentSettingsMap::GetContentSettingValueAndPatterns(
     // normal mode.
     std::unique_ptr<content_settings::RuleIterator> incognito_rule_iterator(
         provider->GetRuleIterator(content_type, true /* incognito */));
-    std::unique_ptr<base::Value> value = GetContentSettingValueAndPatterns(
+    base::Value value = GetContentSettingValueAndPatterns(
         incognito_rule_iterator.get(), primary_url, secondary_url,
         primary_pattern, secondary_pattern, session_model);
-    if (value)
+    if (!value.is_none())
       return value;
   }
   // No settings from the incognito; use the normal mode.
   std::unique_ptr<content_settings::RuleIterator> rule_iterator(
       provider->GetRuleIterator(content_type, false /* incognito */));
-  std::unique_ptr<base::Value> value = GetContentSettingValueAndPatterns(
+  base::Value value = GetContentSettingValueAndPatterns(
       rule_iterator.get(), primary_url, secondary_url, primary_pattern,
       secondary_pattern, session_model);
-  if (value && include_incognito) {
-    value = content_settings::ToNullableUniquePtrValue(
-        ProcessIncognitoInheritanceBehavior(
-            content_type, base::Value::FromUniquePtrValue(std::move(value))));
+  if (!value.is_none() && include_incognito) {
+    value = ProcessIncognitoInheritanceBehavior(content_type, std::move(value));
   }
   return value;
 }
 
 // static
-std::unique_ptr<base::Value>
-HostContentSettingsMap::GetContentSettingValueAndPatterns(
+base::Value HostContentSettingsMap::GetContentSettingValueAndPatterns(
     content_settings::RuleIterator* rule_iterator,
     const GURL& primary_url,
     const GURL& secondary_url,
@@ -983,11 +979,11 @@ HostContentSettingsMap::GetContentSettingValueAndPatterns(
           *secondary_pattern = rule.secondary_pattern;
         if (session_model)
           *session_model = rule.session_model;
-        return base::Value::ToUniquePtrValue(rule.value.Clone());
+        return rule.value.Clone();
       }
     }
   }
-  return nullptr;
+  return base::Value();
 }
 
 void HostContentSettingsMap::

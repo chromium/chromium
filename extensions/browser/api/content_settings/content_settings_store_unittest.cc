@@ -63,10 +63,10 @@ ContentSetting GetContentSettingFromStore(
     bool incognito) {
   std::unique_ptr<content_settings::RuleIterator> rule_iterator(
       store->GetRuleIterator(content_type, incognito));
-  std::unique_ptr<base::Value> setting(
+  const base::Value setting =
       content_settings::TestUtils::GetContentSettingValueAndPatterns(
-          rule_iterator.get(), primary_url, secondary_url, nullptr, nullptr));
-  return content_settings::ValueToContentSetting(setting.get());
+          rule_iterator.get(), primary_url, secondary_url, nullptr, nullptr);
+  return content_settings::ValueToContentSetting(setting);
 }
 
 std::vector<content_settings::Rule> GetSettingsForOneTypeFromStore(

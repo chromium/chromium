@@ -63,10 +63,10 @@ TEST_F(ContentSettingsDefaultProviderTest, DefaultValues) {
       TestUtils::GetContentSetting(&provider_, GURL(), GURL(),
                                    ContentSettingsType::GEOLOCATION, false));
 
-  std::unique_ptr<base::Value> value(TestUtils::GetContentSettingValue(
+  base::Value value = TestUtils::GetContentSettingValue(
       &provider_, GURL("http://example.com/"), GURL("http://example.com/"),
-      ContentSettingsType::AUTO_SELECT_CERTIFICATE, false));
-  EXPECT_FALSE(value.get());
+      ContentSettingsType::AUTO_SELECT_CERTIFICATE, false);
+  EXPECT_TRUE(value.is_none());
 }
 
 TEST_F(ContentSettingsDefaultProviderTest, IgnoreNonDefaultSettings) {
