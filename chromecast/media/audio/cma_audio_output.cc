@@ -83,7 +83,12 @@ void CmaAudioOutput::Initialize(
 
   auto cma_backend_task_runner = std::make_unique<TaskRunnerImpl>();
   MediaPipelineDeviceParams device_params(
-      MediaPipelineDeviceParams::kModeIgnorePts,
+      // If AUDIO_PREFETCH is enabled, we're able to push audio ahead of
+      // realtime. Set the sync mode to kModeSyncPts to allow cma backend to
+      // buffer the early pushed data, instead of dropping them.
+      audio_params_.effects() & ::media::AudioParameters::AUDIO_PREFETCH
+          ? MediaPipelineDeviceParams::kModeSyncPts
+          : MediaPipelineDeviceParams::kModeIgnorePts,
       MediaPipelineDeviceParams::kAudioStreamNormal,
       cma_backend_task_runner.get(), GetContentType(device_id), device_id);
   device_params.session_id = application_session_id;
