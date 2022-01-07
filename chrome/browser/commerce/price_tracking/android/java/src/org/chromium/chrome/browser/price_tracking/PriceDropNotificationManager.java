@@ -21,7 +21,6 @@ import android.text.TextUtils;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
@@ -63,8 +62,6 @@ public class PriceDropNotificationManager {
             "org.chromium.chrome.browser.price_tracking.DESTINATION_URL";
     static final String EXTRA_ACTION_ID = "org.chromium.chrome.browser.price_tracking.ACTION_ID";
     static final String EXTRA_OFFER_ID = "org.chromium.chrome.browser.price_tracking.OFFER_ID";
-    static final String EXTRA_PRODUCT_CLUSTER_ID =
-            "org.chromium.chrome.browser.price_tracking.PRODUCT_CLUSTER_ID";
 
     private static NotificationManagerProxy sNotificationManagerForTesting;
 
@@ -79,7 +76,6 @@ public class PriceDropNotificationManager {
             String destinationUrl = IntentUtils.safeGetStringExtra(intent, EXTRA_DESTINATION_URL);
             String actionId = IntentUtils.safeGetStringExtra(intent, EXTRA_ACTION_ID);
             String offerId = IntentUtils.safeGetStringExtra(intent, EXTRA_OFFER_ID);
-            String clusterId = IntentUtils.safeGetStringExtra(intent, EXTRA_PRODUCT_CLUSTER_ID);
 
             if (TextUtils.isEmpty(offerId)) {
                 Log.e(TAG, "No offer id is provided when handling turn off alert action.");
@@ -94,7 +90,7 @@ public class PriceDropNotificationManager {
                 assert ACTION_ID_TURN_OFF_ALERT.equals(actionId)
                     : "Currently only turn off alert action uses this activity.";
                 priceDropNotificationManager.onNotificationActionClicked(
-                        actionId, destinationUrl, offerId, clusterId, /*recordMetrics=*/false);
+                        actionId, destinationUrl, offerId, /*recordMetrics=*/false);
                 // Finish immediately. Could be better to have a callback from shopping backend.
                 finish();
             });
@@ -193,43 +189,33 @@ public class PriceDropNotificationManager {
      * @param actionId the id used to identify certain action.
      * @param url of the tab which triggered the notification.
      * @param offerId the id of the offer associated with this notification.
-     * @param clusterId The id of the cluster associated with the product notification.
      * @param recordMetrics Whether to record metrics using {@link NotificationUmaTracker}. Only
      *         Chime notification code path should set this to true.
      */
-    public void onNotificationActionClicked(String actionId, String url, @Nullable String offerId,
-            @Nullable String clusterId, boolean recordMetrics) {
+    public void onNotificationActionClicked(
+            String actionId, String url, @Nullable String offerId, boolean recordMetrics) {
         if (actionId.equals(ACTION_ID_VISIT_SITE) && recordMetrics) {
             NotificationUmaTracker.getInstance().onNotificationActionClick(
                     NotificationUmaTracker.ActionType.PRICE_DROP_VISIT_SITE,
                     NotificationUmaTracker.SystemNotificationType.PRICE_DROP_ALERTS,
                     NotificationIntentInterceptor.INVALID_CREATE_TIME);
         } else if (actionId.equals(ACTION_ID_TURN_OFF_ALERT)) {
-            if (offerId == null && clusterId == null) return;
+            if (offerId == null) return;
             SubscriptionsManagerImpl subscriptionsManager =
                     (new CommerceSubscriptionsServiceFactory())
                             .getForLastUsedProfile()
                             .getSubscriptionsManager();
-            Callback<Integer> callback = (status) -> {
-                assert status
-                        == SubscriptionsManager.StatusCode.OK : "Failed to remove subscriptions.";
-                Log.e(TAG,
-                        String.format(
-                                Locale.US, "Failed to remove subscriptions. Status: %d", status));
-            };
-            if (offerId != null) {
-                subscriptionsManager.unsubscribe(
-                        new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK, offerId,
-                                SubscriptionManagementType.CHROME_MANAGED, TrackingIdType.OFFER_ID),
-                        callback);
-            }
-            if (clusterId != null) {
-                subscriptionsManager.unsubscribe(
-                        new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK, clusterId,
-                                SubscriptionManagementType.USER_MANAGED,
-                                TrackingIdType.PRODUCT_CLUSTER_ID),
-                        callback);
-            }
+            subscriptionsManager.unsubscribe(
+                    new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK, offerId,
+                            SubscriptionManagementType.CHROME_MANAGED, TrackingIdType.OFFER_ID),
+                    (status) -> {
+                        assert status
+                                == SubscriptionsManager.StatusCode.OK
+                            : "Failed to remove subscriptions.";
+                        Log.e(TAG,
+                                String.format(Locale.US,
+                                        "Failed to remove subscriptions. Status: %d", status));
+                    });
             if (recordMetrics) {
                 NotificationUmaTracker.getInstance().onNotificationActionClick(
                         NotificationUmaTracker.ActionType.PRICE_DROP_TURN_OFF_ALERT,
@@ -264,17 +250,14 @@ public class PriceDropNotificationManager {
      * @param actionId the id used to identify certain action.
      * @param url of the tab which triggered the notification.
      * @param offerId The offer id of the product.
-     * @param clusterId The cluster id of the product.
      */
-    public Intent getNotificationActionClickIntent(
-            String actionId, String url, String offerId, String clusterId) {
+    public Intent getNotificationActionClickIntent(String actionId, String url, String offerId) {
         if (ACTION_ID_VISIT_SITE.equals(actionId)) return getNotificationClickIntent(url);
         if (ACTION_ID_TURN_OFF_ALERT.equals(actionId)) {
             Intent intent = new Intent(mContext, TrampolineActivity.class);
             intent.putExtra(EXTRA_DESTINATION_URL, url);
             intent.putExtra(EXTRA_ACTION_ID, actionId);
             intent.putExtra(EXTRA_OFFER_ID, offerId);
-            intent.putExtra(EXTRA_PRODUCT_CLUSTER_ID, clusterId);
             return intent;
         }
         return null;
