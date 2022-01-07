@@ -176,6 +176,9 @@ COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordMessageStreamConnectToServiceTime(
     base::TimeDelta total_connect_time);
 
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordDeviceMetadataFetchResult(bool success);
+
 }  // namespace quick_pair
 }  // namespace ash
 

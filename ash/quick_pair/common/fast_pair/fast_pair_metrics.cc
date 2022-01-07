@@ -138,6 +138,8 @@ const char kMessageStreamConnectToServiceResult[] =
 const char kMessageStreamConnectToServiceTime[] =
     "Bluetooth.ChromeOS.FastPair.MessageStream.ConnectToService."
     "TotalConnectTime";
+const char kDeviceMetadataFetchResult[] =
+    "Bluetooth.ChromeOS.FastPair.DeviceMetadataFetcher.Result";
 
 }  // namespace
 
@@ -377,6 +379,10 @@ void RecordMessageStreamConnectToServiceTime(
     base::TimeDelta total_connect_time) {
   base::UmaHistogramTimes(kMessageStreamConnectToServiceTime,
                           total_connect_time);
+}
+
+void RecordDeviceMetadataFetchResult(bool success) {
+  base::UmaHistogramBoolean(kDeviceMetadataFetchResult, success);
 }
 
 }  // namespace quick_pair

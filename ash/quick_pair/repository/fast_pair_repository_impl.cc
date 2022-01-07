@@ -4,6 +4,7 @@
 
 #include "ash/quick_pair/repository/fast_pair_repository_impl.h"
 
+#include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "ash/quick_pair/proto/fastpair_data.pb.h"
@@ -61,6 +62,8 @@ void FastPairRepositoryImpl::OnMetadataFetched(
     const std::string& normalized_model_id,
     DeviceMetadataCallback callback,
     absl::optional<nearby::fastpair::GetObservedDeviceResponse> response) {
+  RecordDeviceMetadataFetchResult(/*success=*/response.has_value());
+
   if (!response) {
     std::move(callback).Run(nullptr);
     return;
