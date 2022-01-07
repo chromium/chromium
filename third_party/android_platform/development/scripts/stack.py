@@ -50,12 +50,11 @@ def PrintUsage():
   print("  usage: " + sys.argv[0] + " [options] [FILE]")
   print()
   print("  --symbols-dir=path")
-  print("       the path to a symbols dir, such as")
+  print("       path to the Android OS symbols dir, such as")
   print("       =/tmp/out/target/product/dream/symbols")
   print()
   print("  --chrome-symbols-dir=path")
-  print("       the path to a Chrome symbols dir (can be absolute or relative")
-  print("       to src), such as =out/Debug/lib.unstripped")
+  print("       path to a Chrome symbols dir. E.g.: out/Debug/lib.unstripped")
   print()
   print("  --output-directory=path")
   print("       the path to the build output directory, such as out/Debug.")
@@ -169,8 +168,7 @@ def main(argv, test_symbolizer=None):
       symbol.ARCH = value
       arch_defined = True
     elif option == "--chrome-symbols-dir":
-      symbol.CHROME_SYMBOLS_DIR = os.path.join(constants.DIR_SOURCE_ROOT,
-                                               value)
+      symbol.CHROME_SYMBOLS_DIR = value
     elif option == "--output-directory":
       constants.SetOutputDirectory(os.path.abspath(value))
     elif option == "--apks-directory":
