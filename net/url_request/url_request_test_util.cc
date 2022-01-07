@@ -29,6 +29,7 @@
 #include "net/proxy_resolution/proxy_retry_info.h"
 #include "net/quic/quic_context.h"
 #include "net/url_request/static_http_user_agent_settings.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_filter.h"
 #include "net/url_request/url_request_job.h"
 #include "net/url_request/url_request_job_factory.h"
@@ -127,7 +128,7 @@ void TestURLRequestContext::Init() {
         nullptr /* store */, nullptr /* netlog */));
   }
 
-  if (!http_user_agent_settings() && create_default_http_user_agent_settings_) {
+  if (!http_user_agent_settings()) {
     context_storage_.set_http_user_agent_settings(
         std::make_unique<StaticHttpUserAgentSettings>("en-us,fr",
                                                       std::string()));
@@ -141,8 +142,6 @@ void TestURLRequestContext::Init() {
       session_params = *http_network_session_params_;
 
     HttpNetworkSessionContext session_context;
-    if (http_network_session_context_)
-      session_context = *http_network_session_context_;
     session_context.client_socket_factory = client_socket_factory();
     session_context.host_resolver = host_resolver();
     session_context.cert_verifier = cert_verifier();
@@ -179,6 +178,28 @@ std::unique_ptr<URLRequest> TestURLRequestContext::CreateFirstPartyRequest(
   auto req = CreateRequest(url, priority, delegate, traffic_annotation);
   req->set_site_for_cookies(SiteForCookies::FromUrl(url));
   return req;
+}
+
+std::unique_ptr<URLRequestContextBuilder> CreateTestURLRequestContextBuilder() {
+  auto builder = std::make_unique<URLRequestContextBuilder>();
+  builder->set_host_resolver(std::make_unique<MockCachingHostResolver>(
+      /*cache_invalidation_num=*/0,
+      /*default_result=*/MockHostResolverBase::RuleResolver::
+          GetLocalhostResult()));
+  builder->set_proxy_resolution_service(
+      ConfiguredProxyResolutionService::CreateDirect());
+  builder->SetCertVerifier(
+      CertVerifier::CreateDefault(/*cert_net_fetcher=*/nullptr));
+  builder->set_ct_policy_enforcer(std::make_unique<DefaultCTPolicyEnforcer>());
+  builder->set_ssl_config_service(std::make_unique<SSLConfigServiceDefaults>());
+  builder->SetHttpAuthHandlerFactory(HttpAuthHandlerFactory::CreateDefault());
+  builder->SetHttpServerProperties(std::make_unique<HttpServerProperties>());
+  builder->set_quic_context(std::make_unique<QuicContext>());
+  builder->SetCookieStore(std::make_unique<CookieMonster>(/*store=*/nullptr,
+                                                          /*netlog=*/nullptr));
+  builder->set_http_user_agent_settings(
+      std::make_unique<StaticHttpUserAgentSettings>("en-us,fr", std::string()));
+  return builder;
 }
 
 TestURLRequestContextGetter::TestURLRequestContextGetter(

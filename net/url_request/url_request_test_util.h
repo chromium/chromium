@@ -52,6 +52,8 @@
 
 namespace net {
 
+class URLRequestContextBuilder;
+
 //-----------------------------------------------------------------------------
 
 class TestURLRequestContext : public URLRequestContext {
@@ -78,18 +80,9 @@ class TestURLRequestContext : public URLRequestContext {
     http_network_session_params_ = std::move(session_params);
   }
 
-  void set_http_network_session_context(
-      std::unique_ptr<HttpNetworkSessionContext> session_context) {
-    http_network_session_context_ = std::move(session_context);
-  }
-
   void SetCTPolicyEnforcer(
       std::unique_ptr<CTPolicyEnforcer> ct_policy_enforcer) {
     context_storage_.set_ct_policy_enforcer(std::move(ct_policy_enforcer));
-  }
-
-  void set_create_default_http_user_agent_settings(bool value) {
-    create_default_http_user_agent_settings_ = value;
   }
 
   // Like CreateRequest, but also updates |site_for_cookies| to give the request
@@ -103,20 +96,19 @@ class TestURLRequestContext : public URLRequestContext {
  private:
   bool initialized_ = false;
 
-  // Optional parameters to override default values.  Note that values in the
-  // HttpNetworkSessionContext that point to other objects the
-  // TestURLRequestContext creates will be overwritten.
+  // Optional parameters to override default values.
   std::unique_ptr<HttpNetworkSessionParams> http_network_session_params_;
-  std::unique_ptr<HttpNetworkSessionContext> http_network_session_context_;
 
   // Not owned:
   raw_ptr<ClientSocketFactory> client_socket_factory_ = nullptr;
 
-  bool create_default_http_user_agent_settings_ = true;
-
  protected:
   URLRequestContextStorage context_storage_;
 };
+
+// Creates a URLRequestContextBuilder with some members configured for the
+// testing purpose.
+std::unique_ptr<URLRequestContextBuilder> CreateTestURLRequestContextBuilder();
 
 //-----------------------------------------------------------------------------
 

@@ -150,7 +150,8 @@ class NET_EXPORT URLRequestContextBuilder {
   // associated HttpNetworkSession are consistent.
   static void SetHttpNetworkSessionComponents(
       const URLRequestContext* request_context,
-      HttpNetworkSessionContext* session_context);
+      HttpNetworkSessionContext* session_context,
+      bool suppress_setting_socket_performance_watcher_factory = false);
 
   // These functions are mutually exclusive.  The ProxyConfigService, if
   // set, will be used to construct a ConfiguredProxyResolutionService.
@@ -319,6 +320,10 @@ class NET_EXPORT URLRequestContextBuilder {
   // safely destroyed.
   std::unique_ptr<URLRequestContext> Build();
 
+  void SuppressSettingSocketPerformanceWatcherFactoryForTesting() {
+    suppress_setting_socket_performance_watcher_factory_for_testing_ = true;
+  }
+
  protected:
   // Lets subclasses override ProxyResolutionService creation, using a
   // ProxyResolutionService that uses the URLRequestContext itself to get PAC
@@ -343,6 +348,7 @@ class NET_EXPORT URLRequestContextBuilder {
   bool http_cache_enabled_ = true;
   bool throttling_enabled_ = false;
   bool cookie_store_set_by_client_ = false;
+  bool suppress_setting_socket_performance_watcher_factory_for_testing_ = false;
 
   HttpCacheParams http_cache_params_;
   HttpNetworkSessionParams http_network_session_params_;

@@ -127,7 +127,8 @@ URLRequestContextBuilder::~URLRequestContextBuilder() = default;
 
 void URLRequestContextBuilder::SetHttpNetworkSessionComponents(
     const URLRequestContext* request_context,
-    HttpNetworkSessionContext* session_context) {
+    HttpNetworkSessionContext* session_context,
+    bool suppress_setting_socket_performance_watcher_factory) {
   session_context->host_resolver = request_context->host_resolver();
   session_context->cert_verifier = request_context->cert_verifier();
   session_context->transport_security_state =
@@ -149,7 +150,8 @@ void URLRequestContextBuilder::SetHttpNetworkSessionComponents(
   session_context->net_log = request_context->net_log();
   session_context->network_quality_estimator =
       request_context->network_quality_estimator();
-  if (request_context->network_quality_estimator()) {
+  if (request_context->network_quality_estimator() &&
+      !suppress_setting_socket_performance_watcher_factory) {
     session_context->socket_performance_watcher_factory =
         request_context->network_quality_estimator()
             ->GetSocketPerformanceWatcherFactory();
@@ -480,7 +482,9 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
   }
 
   HttpNetworkSessionContext network_session_context;
-  SetHttpNetworkSessionComponents(context.get(), &network_session_context);
+  SetHttpNetworkSessionComponents(
+      context.get(), &network_session_context,
+      suppress_setting_socket_performance_watcher_factory_for_testing_);
   // Unlike the other fields of HttpNetworkSession::Context,
   // |client_socket_factory| is not mirrored in URLRequestContext.
   network_session_context.client_socket_factory =
