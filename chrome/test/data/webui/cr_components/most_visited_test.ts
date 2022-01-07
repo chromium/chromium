@@ -81,9 +81,7 @@ function assertAddShortcutShown() {
 }
 
 function createBrowserProxy() {
-  handler = TestBrowserProxy.fromClass(MostVisitedPageHandlerRemote) as
-          unknown as MostVisitedPageHandlerRemote &
-      TestBrowserProxy;
+  handler = TestBrowserProxy.fromClass(MostVisitedPageHandlerRemote);
   const callbackRouter = new MostVisitedPageCallbackRouter();
   MostVisitedBrowserProxy.setInstance(
       new MostVisitedBrowserProxy(handler, callbackRouter));
@@ -115,9 +113,7 @@ class FakeMediaQueryList extends EventTarget implements MediaQueryList {
 }
 
 function createWindowProxy() {
-  windowProxy = TestBrowserProxy.fromClass(MostVisitedWindowProxy) as unknown as
-          MostVisitedWindowProxy &
-      TestBrowserProxy;
+  windowProxy = TestBrowserProxy.fromClass(MostVisitedWindowProxy);
   windowProxy.setResultMapperFor('matchMedia', (query: string) => {
     const mediaListenerList = new FakeMediaQueryList(query);
     if (query === '(min-width: 672px)') {
