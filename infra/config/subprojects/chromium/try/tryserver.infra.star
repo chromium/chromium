@@ -23,7 +23,6 @@ consoles.list_view(
 
 try_.builder(
     name = "linux-bootstrap",
-    bootstrap = True,
     mirrors = [
         "ci/linux-bootstrap",
         "ci/linux-bootstrap-tests",
@@ -33,7 +32,6 @@ try_.builder(
 
 try_.builder(
     name = "win-bootstrap",
-    bootstrap = True,
     builderless = True,
     os = os.WINDOWS_10,
 )
