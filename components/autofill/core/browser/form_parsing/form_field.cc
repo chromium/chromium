@@ -277,20 +277,8 @@ bool FormField::ParseFieldSpecifics(
     int match_type,
     const std::vector<MatchingPattern>& patterns,
     AutofillField** match,
-    const RegExLogging& logging,
-    MatchFieldBitmasks match_field_bitmasks) {
+    const RegExLogging& logging) {
   if (base::FeatureList::IsEnabled(features::kAutofillParsingPatternProvider)) {
-    // TODO(crbug/1142936): This hack is to allow
-    // AddressField::ParseNameAndLabelSeparately().
-    if (match_field_bitmasks.restrict_attributes != ~0 ||
-        match_field_bitmasks.augment_types != 0) {
-      std::vector<MatchingPattern> modified_patterns = patterns;
-      for (MatchingPattern& mp : modified_patterns) {
-        mp.match_field_attributes &= match_field_bitmasks.restrict_attributes;
-        mp.match_field_input_types |= match_field_bitmasks.augment_types;
-      }
-      return ParseFieldSpecifics(scanner, modified_patterns, match, logging);
-    }
     return ParseFieldSpecifics(scanner, patterns, match, logging);
   } else {
     return ParseFieldSpecificsWithLegacyPattern(scanner, pattern, match_type,
