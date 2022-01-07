@@ -68,9 +68,3 @@ function createFrame(width, height, ts) {
   putBlackDots(ctx, width, height, ts);
   return new VideoFrame(cnv, { timestamp: ts });
 }
-
-function delay(time_ms) {
-  return new Promise((resolve, reject) => {
-    setTimeout(resolve, time_ms);
-  });
-};

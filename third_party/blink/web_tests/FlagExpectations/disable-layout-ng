@@ -1371,10 +1371,6 @@ crbug.com/591099 external/wpt/css/css-counter-styles/counter-style-at-rule/overr
 ### wpt_internal/webcodecs/
 crbug.com/591099 wpt_internal/webcodecs/annexb_decoding.https.any.html [ Failure ]
 crbug.com/591099 wpt_internal/webcodecs/annexb_decoding.https.any.worker.html [ Failure ]
-crbug.com/591099 wpt_internal/webcodecs/basic_video_encoding.https.any.html [ Failure ]
-crbug.com/591099 wpt_internal/webcodecs/basic_video_encoding.https.any.worker.html [ Failure ]
-crbug.com/591099 wpt_internal/webcodecs/reconfiguring_encoder.https.any.html [ Failure ]
-crbug.com/591099 wpt_internal/webcodecs/reconfiguring_encoder.https.any.worker.html [ Failure ]
 
 # broken by https://chromium-review.googlesource.com/c/chromium/src/+/2392444
 crbug.com/958381 external/wpt/css/css-flexbox/table-as-item-wide-content.html [ Failure ]
@@ -1472,8 +1468,6 @@ crbug.com/591099 virtual/oopr-canvas2d/fast/canvas/canvas-composite-video.html [
 crbug.com/591099 virtual/oopr-canvas2d/fast/canvas/image-object-in-canvas.html [ Failure ]
 crbug.com/591099 virtual/oopr-canvas2d/fast/canvas/patternfill-repeat.html [ Failure ]
 crbug.com/591099 wpt_internal/mediastream/mediastreamtrackprocessor-transfer-to-worker.html [ Failure ]
-crbug.com/591099 wpt_internal/webcodecs/temporal_svc.https.any.html [ Failure ]
-crbug.com/591099 wpt_internal/webcodecs/temporal_svc.https.any.worker.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-contain/contain-body-t-o-001.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-contain/contain-body-t-o-002.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-flexbox/flex-aspect-ratio-img-row-013.html [ Failure ]
