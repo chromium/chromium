@@ -40,6 +40,11 @@ void ImageBitmapRenderingContextBase::Stop() {
   image_layer_bridge_->Dispose();
 }
 
+void ImageBitmapRenderingContextBase::Dispose() {
+  Stop();
+  CanvasRenderingContext::Dispose();
+}
+
 void ImageBitmapRenderingContextBase::ResetInternalBitmapToBlackTransparent(
     int width,
     int height) {

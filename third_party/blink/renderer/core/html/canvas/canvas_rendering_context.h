@@ -287,9 +287,9 @@ class CORE_EXPORT CanvasRenderingContext
     return CanvasColorParams();
   }
 
- private:
-  void Dispose();
+  virtual void Dispose();
 
+ private:
   Member<CanvasRenderingContextHost> host_;
   CanvasColorParams color_params_;
   CanvasContextCreationAttributesCore creation_attributes_;

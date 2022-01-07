@@ -64,6 +64,8 @@ class MODULES_EXPORT ImageBitmapRenderingContextBase
   bool IsPaintable() const final;
 
  protected:
+  void Dispose() override;
+
   Member<ImageLayerBridge> image_layer_bridge_;
 
   // This function resets the internal image resource to a image of the same
