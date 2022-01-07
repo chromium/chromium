@@ -226,7 +226,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 
 <histogram
     name="BackForwardCache.Experimental.UnexpectedIPCMessagePostedToCachedFrame.MethodHash"
-    enum="MojoInterfaceName" expires_after="2021-10-04">
+    enum="MojoInterfaceName" expires_after="2023-01-06">
   <owner>hbolaria@chromium.org</owner>
   <owner>altimin@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
@@ -244,7 +244,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 
 <histogram
     name="BackForwardCache.Experimental.UnexpectedIPCMessagePostedToCachedFrame.TimeUntilIPCReceived"
-    units="ms" expires_after="2021-10-04">
+    units="ms" expires_after="2023-01-06">
   <owner>hbolaria@chromium.org</owner>
   <owner>altimin@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
