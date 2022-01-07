@@ -3,18 +3,17 @@
 // found in the LICENSE file.
 
 // clang-format off
-import {isChromeOS} from 'chrome://resources/js/cr.m.js';
-import {buildRouter, pageVisibility, Route, Router, routes, setPageVisibilityForTesting} from 'chrome://settings/settings.js';
+import {buildRouter, Route, Router, routes, setPageVisibilityForTesting} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 // clang-format on
 
 suite('route', function() {
   /**
    * Returns a new promise that resolves after a window 'popstate' event.
-   * @return {!Promise}
    */
-  function whenPopState(causeEvent) {
-    const promise = new Promise(function(resolve) {
+  function whenPopState(causeEvent: () => void): Promise<void> {
+    const promise = new Promise<void>(function(resolve) {
       window.addEventListener('popstate', function callback() {
         window.removeEventListener('popstate', callback);
         resolve();
@@ -26,18 +25,15 @@ suite('route', function() {
   }
 
   teardown(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
   });
 
   /**
    * Tests a specific navigation situation.
-   * @param {!Route} previousRoute
-   * @param {!Route} currentRoute
-   * @param {!Route} expectedNavigatePreviousResult
-   * @return {!Promise}
    */
   function testNavigateBackUsesHistory(
-      previousRoute, currentRoute, expectedNavigatePreviousResult) {
+      previousRoute: Route, currentRoute: Route,
+      expectedNavigatePreviousResult: Route): Promise<void> {
     Router.getInstance().navigateTo(previousRoute);
     Router.getInstance().navigateTo(currentRoute);
 
@@ -55,15 +51,15 @@ suite('route', function() {
    * Tests that |routeParamUpdate()| sets URL parameters as expected, doesn't
    * change the current or previous route, and that a back navigation still
    * works afterwards as expected.
-   * @param {!Route} route0 1st route that the test navigates to.
-   * @param {!Route} route1 2nd route that the test navigates to.
-   * @param {!URLSearchParams} params Get applied after the 2nd navigation
-   * @param {!Route} expectedRoute Route on which a back navigation should land
+   * @param route0 1st route that the test navigates to.
+   * @param route1 2nd route that the test navigates to.
+   * @param params Get applied after the 2nd navigation
+   * @param expectedRoute Route on which a back navigation should land
    *     after the 1st and 2nd navigation.
-   * @return {!Promise}
    */
   async function testUpdateRouteParamsNavigation(
-      route0, route1, params, expectedRoute) {
+      route0: Route, route1: Route, params: URLSearchParams,
+      expectedRoute: Route): Promise<void> {
     Router.getInstance().navigateTo(route0);
     Router.getInstance().navigateTo(route1);
     Router.getInstance().updateRouteParams(params);
@@ -103,7 +99,6 @@ suite('route', function() {
     assertEquals('/siteSettings', SITE_SETTINGS.path);
     assertEquals(PRIVACY, SITE_SETTINGS.parent);
     assertEquals(2, SITE_SETTINGS.depth);
-    assertFalse(!!SITE_SETTINGS.dialog);
     assertTrue(SITE_SETTINGS.isSubpage());
     assertEquals('privacy', SITE_SETTINGS.section);
     assertFalse(BASIC.contains(SITE_SETTINGS));
@@ -192,14 +187,14 @@ suite('route', function() {
         Router.getInstance().getQueryParameters().toString());
 
     Router.getInstance().navigateTo(
-        routes.SITE_SETTINGS, null,
+        routes.SITE_SETTINGS, undefined,
         /* removeSearch */ false);
     assertEquals(
         params.toString(),
         Router.getInstance().getQueryParameters().toString());
 
     Router.getInstance().navigateTo(
-        routes.SEARCH_ENGINES, null,
+        routes.SEARCH_ENGINES, undefined,
         /* removeSearch */ true);
     assertEquals('', Router.getInstance().getQueryParameters().toString());
   });
@@ -261,10 +256,10 @@ suite('route', function() {
     assertTrue(routes.SIGN_OUT.isNavigableDialog);
     assertTrue(routes.SIGN_OUT.parent === routes.PEOPLE);
 
-    if (!isChromeOS) {
-      assertTrue(routes.IMPORT_DATA.isNavigableDialog);
-      assertTrue(routes.IMPORT_DATA.parent === routes.PEOPLE);
-    }
+    // <if expr="not chromeos">
+    assertTrue(routes.IMPORT_DATA.isNavigableDialog);
+    assertTrue(routes.IMPORT_DATA.parent === routes.PEOPLE);
+    // </if>
 
     assertFalse(routes.PRIVACY.isNavigableDialog);
     // <if expr="not chromeos and not lacros">
@@ -282,7 +277,8 @@ suite('route', function() {
     });
 
     const router = buildRouter();
-    const hasRoute = route => router.getRoutes().hasOwnProperty(route);
+    const hasRoute = (route: string) =>
+        router.getRoutes().hasOwnProperty(route);
 
     assertTrue(hasRoute('BASIC'));
 
@@ -316,7 +312,7 @@ suite('route', function() {
 
 suite('DynamicParameters', function() {
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     window.history.replaceState({}, '', 'search?guid=a%2Fb&foo=42');
     const settingsUi = document.createElement('settings-ui');
     document.body.appendChild(settingsUi);
@@ -336,7 +332,7 @@ suite('DynamicParameters', function() {
     assertEquals('3', Router.getInstance().getQueryParameters().get('biz'));
     assertEquals('?bar=b%3Dz&biz=3', window.location.search);
 
-    window.addEventListener('popstate', function(event) {
+    window.addEventListener('popstate', function() {
       assertEquals('/search', Router.getInstance().getCurrentRoute().path);
       assertEquals(routes.SEARCH, Router.getInstance().getCurrentRoute());
       assertEquals(
@@ -350,7 +346,7 @@ suite('DynamicParameters', function() {
 
 suite('NonExistentRoute', function() {
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     window.history.replaceState({}, '', 'non/existent/route');
     const settingsUi = document.createElement('settings-ui');
     document.body.appendChild(settingsUi);

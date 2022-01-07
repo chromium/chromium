@@ -101,6 +101,9 @@ export {SettingsDownloadsPageElement} from './downloads_page/downloads_page.js';
 // <if expr="_google_chrome and is_win">
 export {IncompatibleApplication, IncompatibleApplicationsBrowserProxyImpl} from './incompatible_applications_page/incompatible_applications_browser_proxy.js';
 // </if>
+// <if expr="not chromeos and not is_macosx">
+export {SettingsEditDictionaryPageElement} from './languages_page/edit_dictionary_page.js';
+// </if>
 // <if expr="not chromeos">
 export {LanguagesBrowserProxy, LanguagesBrowserProxyImpl} from './languages_page/languages_browser_proxy.js';
 export {LanguageSettingsActionType, LanguageSettingsMetricsProxy, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType} from './languages_page/languages_settings_metrics_proxy.js';
@@ -108,7 +111,8 @@ export {kMenuCloseDelay, SettingsLanguagesSubpageElement} from './languages_page
 export {LanguageHelper, LanguagesModel} from './languages_page/languages_types.js';
 // </if>
 // <if expr="not chromeos and not lacros">
-export {ImportDataBrowserProxyImpl, ImportDataStatus} from './people_page/import_data_browser_proxy.js';
+export {BrowserProfile, ImportDataBrowserProxy, ImportDataBrowserProxyImpl, ImportDataStatus} from './people_page/import_data_browser_proxy.js';
+export {SettingsImportDataDialogElement} from './people_page/import_data_dialog.js';
 // </if>
 // <if expr="not chromeos">
 export {SettingsManageProfileElement} from './people_page/manage_profile.js';

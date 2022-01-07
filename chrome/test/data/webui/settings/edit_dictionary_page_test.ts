@@ -4,8 +4,10 @@
 
 // clang-format off
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {LanguagesBrowserProxyImpl} from 'chrome://settings/lazy_load.js';
-import {CrSettingsPrefs} from 'chrome://settings/settings.js';
+import {LanguagesBrowserProxyImpl, SettingsEditDictionaryPageElement} from 'chrome://settings/lazy_load.js';
+import {CrSettingsPrefs, SettingsPrefsElement} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+
 import {FakeLanguageSettingsPrivate} from './fake_language_settings_private.js';
 import {FakeSettingsPrivate} from './fake_settings_private.js';
 import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.js';
@@ -39,28 +41,28 @@ suite('settings-edit-dictionary-page', function() {
     return fakePrefs;
   }
 
-  /** @type {?SettingsEditDictionaryPageElement} */
-  let editDictPage;
-  /** @type {?FakeLanguageSettingsPrivate} */
-  let languageSettingsPrivate;
-  /** @type {?FakeSettingsPrivate} */
-  let settingsPrefs;
+  let editDictPage: SettingsEditDictionaryPageElement;
+  let languageSettingsPrivate: FakeLanguageSettingsPrivate;
+  let settingsPrefs: SettingsPrefsElement;
 
   suiteSetup(function() {
     CrSettingsPrefs.deferInitialization = true;
   });
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     settingsPrefs = document.createElement('settings-prefs');
-    const settingsPrivate = new FakeSettingsPrivate(getFakePrefs());
+    const settingsPrivate = new FakeSettingsPrivate(getFakePrefs()) as
+        unknown as typeof chrome.settingsPrivate;
     settingsPrefs.initialize(settingsPrivate);
 
     languageSettingsPrivate = new FakeLanguageSettingsPrivate();
     languageSettingsPrivate.setSettingsPrefs(settingsPrefs);
     const browserProxy = new TestLanguagesBrowserProxy();
     LanguagesBrowserProxyImpl.setInstance(browserProxy);
-    browserProxy.setLanguageSettingsPrivate(languageSettingsPrivate);
+    browserProxy.setLanguageSettingsPrivate(
+        languageSettingsPrivate as unknown as
+        typeof chrome.languageSettingsPrivate);
 
     editDictPage = document.createElement('settings-edit-dictionary-page');
 
@@ -81,7 +83,8 @@ suite('settings-edit-dictionary-page', function() {
     editDictPage.$.newWord.value = 'valid word';
     assertFalse(addWordButton.disabled);
     assertFalse(
-        window.getComputedStyle(addWordButton)['pointer-events'] ===
+        window.getComputedStyle(addWordButton)
+            .getPropertyValue('pointer-events') ===
         'none');  // Make sure add-word button actually clickable.
   });
 
@@ -108,12 +111,12 @@ suite('settings-edit-dictionary-page', function() {
           flush();
 
           assertFalse(editDictPage.$.noWordsLabel.hidden);
-          assertFalse(!!editDictPage.shadowRoot.querySelector('#list'));
+          assertFalse(!!editDictPage.shadowRoot!.querySelector('iron-list'));
         });
   });
 
   test('spellcheck edit dictionary page list has words', function() {
-    const addWordButton = editDictPage.shadowRoot.querySelector('#addWord');
+    const addWordButton = editDictPage.$.addWord;
     editDictPage.$.newWord.value = 'valid word';
     addWordButton.click();
     editDictPage.$.newWord.value = 'valid word2';
@@ -121,24 +124,24 @@ suite('settings-edit-dictionary-page', function() {
     flush();
 
     assertTrue(editDictPage.$.noWordsLabel.hidden);
-    assertTrue(!!editDictPage.shadowRoot.querySelector('#list'));
+    assertTrue(!!editDictPage.shadowRoot!.querySelector('iron-list'));
     assertEquals(
-        2, editDictPage.shadowRoot.querySelector('#list').items.length);
+        2, editDictPage.shadowRoot!.querySelector('iron-list')!.items!.length);
   });
 
   test('spellcheck edit dictionary page remove is in tab order', function() {
-    const addWordButton = editDictPage.shadowRoot.querySelector('#addWord');
+    const addWordButton = editDictPage.$.addWord;
     editDictPage.$.newWord.value = 'valid word';
     addWordButton.click();
     flush();
 
     assertTrue(editDictPage.$.noWordsLabel.hidden);
-    assertTrue(!!editDictPage.shadowRoot.querySelector('#list'));
+    assertTrue(!!editDictPage.shadowRoot!.querySelector('iron-list'));
     assertEquals(
-        1, editDictPage.shadowRoot.querySelector('#list').items.length);
+        1, editDictPage.shadowRoot!.querySelector('iron-list')!.items!.length);
 
     const removeWordButton =
-        editDictPage.shadowRoot.querySelector('cr-icon-button');
+        editDictPage.shadowRoot!.querySelector('cr-icon-button')!;
     // Button should be reachable in the tab order.
     assertEquals('0', removeWordButton.getAttribute('tabindex'));
     removeWordButton.click();
@@ -151,11 +154,11 @@ suite('settings-edit-dictionary-page', function() {
     flush();
 
     assertTrue(editDictPage.$.noWordsLabel.hidden);
-    assertTrue(!!editDictPage.shadowRoot.querySelector('#list'));
+    assertTrue(!!editDictPage.shadowRoot!.querySelector('iron-list'));
     assertEquals(
-        1, editDictPage.shadowRoot.querySelector('#list').items.length);
+        1, editDictPage.shadowRoot!.querySelector('iron-list')!.items!.length);
     const newRemoveWordButton =
-        editDictPage.shadowRoot.querySelector('cr-icon-button');
+        editDictPage.shadowRoot!.querySelector('cr-icon-button')!;
     // Button should be reachable in the tab order.
     assertEquals('0', newRemoveWordButton.getAttribute('tabindex'));
   });

@@ -16,7 +16,7 @@ preprocessed_files = [
   "people_page_sync_page_test.ts",
   "personalization_options_test.ts",
   "privacy_page_test.ts",
-  "route_tests.js",
+  "route_tests.ts",
   "security_page_test.ts",
   "settings_menu_test.ts",
   "settings_toggle_button_tests.ts",
@@ -26,6 +26,10 @@ preprocessed_files = [
   "test_lifetime_browser_proxy.ts",
   "test_sync_browser_proxy.ts",
 ]
+
+if (!is_chromeos_ash) {
+  preprocessed_files += [ "test_languages_browser_proxy.ts" ]
+}
 
 # Test files that do not require preprocessing. If adding // <if expr> to any
 # file below, move it to the list above.
@@ -59,10 +63,6 @@ non_preprocessed_files = [
   "fake_settings_private.js",
   "help_page_test.ts",
   "idle_load_tests.ts",
-  "languages_page_metrics_test_browser.js",
-  "languages_page_tests.js",
-  "languages_subpage_details_tests.js",
-  "languages_subpage_tests.js",
   "multi_store_exception_entry_test.js",
   "multi_store_password_ui_entry_test.js",
   "on_startup_page_tests.ts",
@@ -77,7 +77,7 @@ non_preprocessed_files = [
   "people_page_sync_controls_test.ts",
   "people_page_sync_page_interactive_test.ts",
   "prefs_test_cases.ts",
-  "prefs_tests.js",
+  "prefs_tests.ts",
   "pref_util_tests.ts",
   "privacy_review_page_test.ts",
   "privacy_sandbox_test.ts",
@@ -114,7 +114,6 @@ non_preprocessed_files = [
   "test_clear_browsing_data_browser_proxy.ts",
   "test_extension_control_browser_proxy.ts",
   "test_hats_browser_proxy.ts",
-  "test_languages_browser_proxy.js",
   "test_local_data_browser_proxy.ts",
   "test_metrics_browser_proxy.ts",
   "test_open_window_proxy.ts",
@@ -131,7 +130,7 @@ non_preprocessed_files = [
 if (!is_chromeos_ash && !is_chromeos_lacros) {
   non_preprocessed_files += [
     "default_browser_test.ts",
-    "import_data_dialog_test.js",
+    "import_data_dialog_test.ts",
     "system_page_tests.ts",
   ]
 } else {
@@ -141,7 +140,7 @@ if (!is_chromeos_ash && !is_chromeos_lacros) {
 if (!is_mac && !is_chromeos_ash) {
   non_preprocessed_files += [
     "a11y/edit_dictionary_a11y_test.js",
-    "edit_dictionary_page_test.js",
+    "edit_dictionary_page_test.ts",
   ]
 }
 
@@ -153,6 +152,10 @@ if (is_chromeos_ash) {
   ]
 } else {
   non_preprocessed_files += [
+    "languages_page_metrics_test_browser.js",
+    "languages_page_tests.js",
+    "languages_subpage_details_tests.js",
+    "languages_subpage_tests.js",
     "languages_tests.js",
     "metrics_reporting_tests.ts",
     "people_page_manage_profile_test.ts",

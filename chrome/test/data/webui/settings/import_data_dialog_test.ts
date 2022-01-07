@@ -5,48 +5,44 @@
 // clang-format off
 import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {dashToCamelCase, flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {ImportDataBrowserProxyImpl, ImportDataStatus} from 'chrome://settings/lazy_load.js';
+import {BrowserProfile, ImportDataBrowserProxy, ImportDataBrowserProxyImpl, ImportDataStatus, SettingsCheckboxElement, SettingsImportDataDialogElement} from 'chrome://settings/lazy_load.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
+
 // clang-format on
 
-/** @implements {ImportDataBrowserProxy} */
-class TestImportDataBrowserProxy extends TestBrowserProxy {
+class TestImportDataBrowserProxy extends TestBrowserProxy implements
+    ImportDataBrowserProxy {
+  private browserProfiles_: BrowserProfile[] = [];
+
   constructor() {
     super([
       'initializeImportDialog',
       'importFromBookmarksFile',
       'importData',
     ]);
-
-    /** @private {!Array<!BrowserProfile} */
-    this.browserProfiles_ = [];
   }
 
-  /** @param {!Array<!BrowserProfile} browserProfiles */
-  setBrowserProfiles(browserProfiles) {
+  setBrowserProfiles(browserProfiles: BrowserProfile[]) {
     this.browserProfiles_ = browserProfiles;
   }
 
-  /** @override */
   initializeImportDialog() {
     this.methodCalled('initializeImportDialog');
     return Promise.resolve(this.browserProfiles_.slice());
   }
 
-  /** @override */
   importFromBookmarksFile() {
     this.methodCalled('importFromBookmarksFile');
   }
 
-  /** @override */
-  importData(browserProfileIndex, types) {
+  importData(browserProfileIndex: number, types: {[type: string]: boolean}) {
     this.methodCalled('importData', [browserProfileIndex, types]);
   }
 }
 
 suite('ImportDataDialog', function() {
-  /** @type {!Array<!BrowserProfile} */
-  const browserProfiles = [
+  const browserProfiles: BrowserProfile[] = [
     {
       autofillFormData: true,
       favorites: true,
@@ -54,6 +50,7 @@ suite('ImportDataDialog', function() {
       index: 0,
       name: 'Mozilla Firefox',
       passwords: true,
+      profileName: '',
       search: true
     },
     {
@@ -73,11 +70,12 @@ suite('ImportDataDialog', function() {
       index: 2,
       name: 'Bookmarks HTML File',
       passwords: false,
+      profileName: '',
       search: false
     },
   ];
 
-  function createBooleanPref(name) {
+  function createBooleanPref(name: string): chrome.settingsPrivate.PrefObject {
     return {
       key: name,
       type: chrome.settingsPrivate.PrefType.BOOLEAN,
@@ -85,7 +83,7 @@ suite('ImportDataDialog', function() {
     };
   }
 
-  const prefs = {};
+  const prefs: {[key: string]: chrome.settingsPrivate.PrefObject} = {};
   ['import_dialog_history',
    'import_dialog_bookmarks',
    'import_dialog_saved_passwords',
@@ -95,15 +93,14 @@ suite('ImportDataDialog', function() {
     prefs[name] = createBooleanPref(name);
   });
 
-  let dialog = null;
-
-  let browserProxy = null;
+  let dialog: SettingsImportDataDialogElement;
+  let browserProxy: TestImportDataBrowserProxy;
 
   setup(function() {
     browserProxy = new TestImportDataBrowserProxy();
     browserProxy.setBrowserProfiles(browserProfiles);
     ImportDataBrowserProxyImpl.setInstance(browserProxy);
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     dialog = document.createElement('settings-import-data-dialog');
     dialog.set('prefs', prefs);
     document.body.appendChild(dialog);
@@ -113,9 +110,11 @@ suite('ImportDataDialog', function() {
     });
   });
 
-  function ensureSettingsCheckboxCheckedStatus(prefName, checked) {
+  function ensureSettingsCheckboxCheckedStatus(
+      prefName: string, checked: boolean) {
+    const id = dashToCamelCase(prefName.replace(/_/g, '-'));
     const settingsCheckbox =
-        dialog.$[dashToCamelCase(prefName.replace(/_/g, '-'))];
+        dialog.shadowRoot!.querySelector<SettingsCheckboxElement>(`#${id}`)!;
 
     if (settingsCheckbox.checked !== checked) {
       // Use click operation to produce a 'change' event.
@@ -123,7 +122,7 @@ suite('ImportDataDialog', function() {
     }
   }
 
-  function simulateBrowserProfileChange(index) {
+  function simulateBrowserProfileChange(index: number) {
     dialog.$.browserSelect.selectedIndex = index;
     dialog.$.browserSelect.dispatchEvent(new CustomEvent('change'));
   }
@@ -134,7 +133,7 @@ suite('ImportDataDialog', function() {
     assertFalse(dialog.$.cancel.hidden);
     assertFalse(dialog.$.cancel.disabled);
     assertTrue(dialog.$.done.hidden);
-    assertTrue(dialog.$.successIcon.parentElement.hidden);
+    assertTrue(dialog.$.successIcon.parentElement!.hidden);
 
     // Check that the displayed text correctly combines browser name and profile
     // name (if any).
@@ -145,7 +144,7 @@ suite('ImportDataDialog', function() {
     ];
 
     Array.from(dialog.$.browserSelect.options).forEach((option, i) => {
-      assertEquals(expectedText[i], option.textContent.trim());
+      assertEquals(expectedText[i], option.textContent!.trim());
     });
   });
 
@@ -176,20 +175,21 @@ suite('ImportDataDialog', function() {
     assertFalse(dialog.$.cancel.hidden);
     assertTrue(dialog.$.cancel.disabled);
     assertTrue(dialog.$.done.hidden);
-    assertTrue(dialog.shadowRoot.querySelector('paper-spinner-lite').active);
-    assertFalse(dialog.shadowRoot.querySelector('paper-spinner-lite').hidden);
+    const spinner = dialog.shadowRoot!.querySelector('paper-spinner-lite')!;
+    assertTrue(spinner.active);
+    assertFalse(spinner.hidden);
   }
 
   function assertSucceededButtons() {
     assertTrue(dialog.$.import.hidden);
     assertTrue(dialog.$.cancel.hidden);
     assertFalse(dialog.$.done.hidden);
-    assertFalse(dialog.shadowRoot.querySelector('paper-spinner-lite').active);
-    assertTrue(dialog.shadowRoot.querySelector('paper-spinner-lite').hidden);
+    const spinner = dialog.shadowRoot!.querySelector('paper-spinner-lite')!;
+    assertFalse(spinner.active);
+    assertTrue(spinner.hidden);
   }
 
-  /** @param {!ImportDataStatus} status */
-  function simulateImportStatusChange(status) {
+  function simulateImportStatusChange(status: ImportDataStatus) {
     webUIListenerCallback('import-data-status-changed', status);
   }
 
@@ -203,9 +203,9 @@ suite('ImportDataDialog', function() {
       simulateImportStatusChange(ImportDataStatus.SUCCEEDED);
       assertSucceededButtons();
 
-      assertFalse(dialog.$.successIcon.parentElement.hidden);
-      assertFalse(dialog.shadowRoot.querySelector('settings-toggle-button')
-                      .parentElement.hidden);
+      assertFalse(dialog.$.successIcon.parentElement!.hidden);
+      assertFalse(dialog.shadowRoot!.querySelector('settings-toggle-button')!
+                      .parentElement!.hidden);
     });
   });
 
@@ -229,9 +229,9 @@ suite('ImportDataDialog', function() {
       simulateImportStatusChange(ImportDataStatus.SUCCEEDED);
       assertSucceededButtons();
 
-      assertFalse(dialog.$.successIcon.parentElement.hidden);
-      assertTrue(dialog.shadowRoot.querySelector('settings-toggle-button')
-                     .parentElement.hidden);
+      assertFalse(dialog.$.successIcon.parentElement!.hidden);
+      assertTrue(dialog.shadowRoot!.querySelector('settings-toggle-button')!
+                     .parentElement!.hidden);
     });
   });
 

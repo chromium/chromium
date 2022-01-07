@@ -17,6 +17,7 @@ import '../prefs/prefs.js';
 import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {IronA11yKeysElement} from 'chrome://resources/polymer/v3_0/iron-a11y-keys/iron-a11y-keys.js';
 import {flush, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -32,10 +33,12 @@ import {LanguagesBrowserProxyImpl} from './languages_browser_proxy.js';
 // https://cs.chromium.org/chromium/src/components/spellcheck/common/spellcheck_common.h?l=28
 const MAX_CUSTOM_DICTIONARY_WORD_BYTES = 99;
 
-interface SettingsEditDictionaryPageElement {
+export interface SettingsEditDictionaryPageElement {
   $: {
+    addWord: CrButtonElement,
     keys: IronA11yKeysElement,
-    newWord: HTMLElement,
+    newWord: CrInputElement,
+    noWordsLabel: HTMLElement,
   };
 }
 
@@ -43,7 +46,7 @@ const SettingsEditDictionaryPageElementBase =
     GlobalScrollTargetMixin(PolymerElement) as unknown as
     {new (): PolymerElement};
 
-class SettingsEditDictionaryPageElement extends
+export class SettingsEditDictionaryPageElement extends
     SettingsEditDictionaryPageElementBase {
   static get is() {
     return 'settings-edit-dictionary-page';
@@ -224,6 +227,12 @@ class SettingsEditDictionaryPageElement extends
    */
   private onRemoveWordTap_(e: {model: {item: string}}) {
     this.languageSettingsPrivate_!.removeSpellcheckWord(e.model.item);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-edit-dictionary-page': SettingsEditDictionaryPageElement;
   }
 }
 
