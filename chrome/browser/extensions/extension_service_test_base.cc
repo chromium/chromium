@@ -53,6 +53,7 @@
 #include "extensions/common/extensions_client.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/chromeos/extensions/install_limiter.h"
 #endif
 
@@ -153,7 +154,12 @@ ExtensionServiceTestBase::ExtensionServiceTestBase(
 ExtensionServiceTestBase::~ExtensionServiceTestBase() {
   // Why? Because |profile_| has to be destroyed before |at_exit_manager_|, but
   // is declared above it in the class definition since it's protected.
+  // TODO(1269752): Since we're getting rid of at_exit_manager_, perhaps
+  // we don't need this call?
   profile_.reset();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::KioskAppManager::ResetForTesting();
+#endif
 }
 
 ExtensionServiceTestBase::ExtensionServiceInitParams

@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/at_exit.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ptr.h"
@@ -170,10 +169,6 @@ class ExtensionServiceTestBase : public testing::Test {
   // Must be declared before anything that may make use of the
   // directory so as to ensure files are closed before cleanup.
   base::ScopedTempDir temp_dir_;
-
-  // Destroying at_exit_manager_ will delete all LazyInstances, so it must come
-  // after task_environment_ in the destruction order.
-  base::ShadowingAtExitManager at_exit_manager_;
 
   // The MessageLoop is used by RenderViewHostTestEnabler, so this must be
   // created before it.

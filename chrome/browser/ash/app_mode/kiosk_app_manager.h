@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
@@ -88,7 +88,7 @@ class KioskAppManager : public KioskAppManagerBase,
   static const char kKioskDictionaryName[];
   static const char kKeyAutoLoginState[];
 
-  // Gets the KioskAppManager instance, which is lazily created on first call.
+  // Gets the KioskAppManager instance, which is created on first call.
   static KioskAppManager* Get();
 
   // Initializes KioskAppManager for testing, injecting the provided overrides.
@@ -99,6 +99,9 @@ class KioskAppManager : public KioskAppManagerBase,
 
   // Prepares for shutdown and calls CleanUp() if needed.
   static void Shutdown();
+
+  // Clears the global KioskAppManager.
+  static void ResetForTesting();
 
   // Registers kiosk app entries in local state.
   static void RegisterPrefs(PrefRegistrySimple* registry);
@@ -244,8 +247,7 @@ class KioskAppManager : public KioskAppManagerBase,
                      const std::string& required_platform_version);
 
  private:
-  friend struct base::LazyInstanceTraitsBase<KioskAppManager>;
-  friend std::default_delete<KioskAppManager>;
+  friend class GlobalManager;
   friend class KioskAppManagerTest;
   friend class KioskAutoLaunchViewsTest;
   friend class KioskTest;
