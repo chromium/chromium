@@ -74,7 +74,8 @@ void ProjectorClientImpl::StartSpeechRecognition() {
 }
 
 void ProjectorClientImpl::StopSpeechRecognition() {
-  speech_recognizer_->Stop();
+  speech_recognizer_.reset();
+  recognizer_status_ = SPEECH_RECOGNIZER_OFF;
 }
 
 void ProjectorClientImpl::ShowSelfieCam() {
@@ -114,12 +115,6 @@ void ProjectorClientImpl::OnSpeechRecognitionStateChanged(
   }
 
   recognizer_status_ = new_state;
-}
-
-void ProjectorClientImpl::OnSpeechRecognitionStopped() {
-  speech_recognizer_.reset();
-  recognizer_status_ = SPEECH_RECOGNIZER_OFF;
-  controller_->OnSpeechRecognitionStopped();
 }
 
 bool ProjectorClientImpl::GetDriveFsMountPointPath(

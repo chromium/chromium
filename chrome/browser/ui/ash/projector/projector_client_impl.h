@@ -60,7 +60,6 @@ class ProjectorClientImpl : public ash::ProjectorClient,
   void OnSpeechSoundLevelChanged(int16_t level) override {}
   void OnSpeechRecognitionStateChanged(
       SpeechRecognizerStatus new_state) override;
-  void OnSpeechRecognitionStopped() override;
 
  private:
   ash::ProjectorController* const controller_;

@@ -80,12 +80,6 @@ interface SpeechRecognitionRecognizer {
   // to the originating media.
   SendAudioToSpeechRecognitionService(AudioDataS16 buffer);
 
-  // Mark audio stream done. This informs the speech recognition client to stop
-  // speech recognition after it finishes processing the audio it has received
-  // already. This will eventually trigger the
-  // SpeechRecognitionRecognizerClient::OnSpeechRecognitionStopped callback.
-  MarkDone();
-
   // Notify the speech recognition recognizer that the language changed. Takes
   // in the locale string (e.g. "en-US").
   OnLanguageChanged(string language);
@@ -101,9 +95,6 @@ interface SpeechRecognitionRecognizerClient {
   // will halt if this returns false.
   OnSpeechRecognitionRecognitionEvent(SpeechRecognitionResult result)
       => (bool success);
-
-  // Called when speech recognition stops.
-  OnSpeechRecognitionStopped();
 
   // Triggered by an error within the speech recognition service.
   OnSpeechRecognitionError();

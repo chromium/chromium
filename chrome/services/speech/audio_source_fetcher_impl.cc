@@ -87,7 +87,6 @@ void AudioSourceFetcherImpl::Stop() {
   }
   send_audio_callback_.Reset();
   is_started_ = false;
-  speech_recognition_recognizer_->MarkDone();
 }
 
 void AudioSourceFetcherImpl::Capture(const media::AudioBus* audio_source,

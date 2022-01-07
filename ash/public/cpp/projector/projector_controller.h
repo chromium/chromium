@@ -71,9 +71,6 @@ class ASH_PUBLIC_EXPORT ProjectorController {
   // Called when there is an error in transcription.
   virtual void OnTranscriptionError() = 0;
 
-  // Called when speech recognition stopped.
-  virtual void OnSpeechRecognitionStopped() = 0;
-
   // Returns true if Projector screen recording feature is available on the
   // device. If on device speech recognition is not available on device, then
   // Projector is not eligible.
