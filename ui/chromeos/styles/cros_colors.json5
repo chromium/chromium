@@ -238,6 +238,11 @@
     button_ripple_color_primary: { light: "$white", dark: "$black" },
     /* button-primary:hover */
     button_background_color_primary_hover: "rgba($black_rgb, 0.08)",
+    /* the _preblended variant can be used directly as hover background color
+    because it's already blended on top of the background color, the above
+    _hover variable is still required because it's being used on google3 side */
+    button_background_color_primary_hover_preblended:
+      "blend($button_background_color_primary_hover, $button_background_color_primary)",
     /* button-primary:active */
     button_active_shadow_color_ambient_primary: {
       light: "rgba($google_blue_500_rgb, 0.15)",
@@ -314,6 +319,9 @@
       light: "rgba($black_rgb, 0.05)",
       dark: "rgba($white_rgb, 0.1)",
     },
+    /* when icon button is pressed, we layer the $ripple_color on top of the
+    hover color (which is also $ripple_color) */
+    icon_button_pressed_color: "blend($ripple_color, $ripple_color)",
 
     /* menu */
     menu_label_color: {

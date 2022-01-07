@@ -20,10 +20,7 @@
   }
 
   cr-icon-button {
-    /* TODO(crbug.com/1275388): use blend() instead */
-    --cr-active-bg-color: linear-gradient(var(--cros-ripple-color),
-                                          var(--cros-ripple-color)),
-                          var(--cros-ripple-color);
+    --cr-active-bg-color: var(--cros-icon-button-pressed-color);
     --cr-focus-outline-color: var(--cros-focus-ring-color);
     --cr-hover-background-color: var(--cros-ripple-color);
     --cr-icon-button-fill-color: var(--cros-icon-color-primary);
