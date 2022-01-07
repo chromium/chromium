@@ -1135,7 +1135,8 @@ void CaptureModeController::OnVideoFileSaved(
     }
     DCHECK(!recording_start_time_.is_null());
     RecordCaptureModeRecordTime(
-        (base::TimeTicks::Now() - recording_start_time_).InSeconds());
+        (base::TimeTicks::Now() - recording_start_time_).InSeconds(),
+        in_projector_mode);
   }
   if (Shell::Get()->session_controller()->IsActiveUserSessionStarted())
     RecordSaveToLocation(GetSaveToOption(saved_video_file_path));
@@ -1579,9 +1580,9 @@ void CaptureModeController::
 
   // Since this doesn't create a capture mode session, log metrics here.
   RecordCaptureModeEntryType(CaptureModeEntryType::kCaptureAllDisplays);
-  RecordCaptureModeConfiguration(CaptureModeType::kImage,
-                                 CaptureModeSource::kFullscreen,
-                                 /*audio_on=*/false);
+  RecordCaptureModeConfiguration(
+      CaptureModeType::kImage, CaptureModeSource::kFullscreen,
+      /*audio_on=*/false, /*is_in_projector_mode=*/false);
 }
 
 CaptureModeSaveToLocation CaptureModeController::GetSaveToOption(

@@ -5291,6 +5291,114 @@ TEST_P(ProjectorCaptureModeIntegrationTests,
   EXPECT_TRUE(holding_space_api.GetScreenCaptureViews().empty());
 }
 
+// Tests that metrics are recorded correctly for capture configuration entering
+// from projector in both clamshell and tablet mode.
+TEST_P(ProjectorCaptureModeIntegrationTests,
+       ProjectorCaptureConfigurationMetrics) {
+  const auto capture_source = GetParam();
+  base::HistogramTester histogram_tester;
+  constexpr char kProjectorCaptureConfigurationHistogramBase[] =
+      "Ash.CaptureModeController.Projector.CaptureConfiguration";
+  ash::CaptureModeTestApi test_api;
+
+  const bool kTabletEnabledStates[]{false, true};
+
+  for (const bool tablet_enabled : kTabletEnabledStates) {
+    if (tablet_enabled) {
+      SwitchToTabletMode();
+      EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+    } else {
+      EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+    }
+
+    histogram_tester.ExpectBucketCount(
+        GetCaptureModeHistogramName(
+            kProjectorCaptureConfigurationHistogramBase),
+        GetConfiguration(CaptureModeType::kVideo, capture_source), 0);
+
+    StartRecordingForProjectorFromSource(capture_source);
+    WaitForSeconds(1);
+    test_api.StopVideoRecording();
+    EXPECT_FALSE(CaptureModeController::Get()->is_recording_in_progress());
+
+    histogram_tester.ExpectBucketCount(
+        GetCaptureModeHistogramName(
+            kProjectorCaptureConfigurationHistogramBase),
+        GetConfiguration(CaptureModeType::kVideo, capture_source), 1);
+
+    WaitForCaptureFileToBeSaved();
+  }
+}
+
+// Tests that metrics are recorded correctly for capture region adjustment
+// entering from projector in both clamshell and tablet mode.
+TEST_F(ProjectorCaptureModeIntegrationTests,
+       ProjectorCaptureRegionAdjustmentTest) {
+  base::HistogramTester histogram_tester;
+  constexpr char kProjectorCaptureRegionAdjustmentHistogramBase[] =
+      "Ash.CaptureModeController.Projector.CaptureRegionAdjusted";
+  auto histogram_name = GetCaptureModeHistogramName(
+      kProjectorCaptureRegionAdjustmentHistogramBase);
+  histogram_tester.ExpectBucketCount(
+      GetCaptureModeHistogramName(
+          kProjectorCaptureRegionAdjustmentHistogramBase),
+      0, 0);
+
+  auto resize_and_reset_region = [](ui::test::EventGenerator* event_generator,
+                                    const gfx::Point& top_right) {
+    // Enlarges the region and then resize it back to its original size.
+    event_generator->set_current_screen_location(top_right);
+    event_generator->DragMouseTo(top_right + gfx::Vector2d(50, 50));
+    event_generator->DragMouseTo(top_right);
+  };
+
+  auto move_and_reset_region = [](ui::test::EventGenerator* event_generator,
+                                  const gfx::Point& drag_point) {
+    // Moves the region and then moves it back to its original position.
+    event_generator->set_current_screen_location(drag_point);
+    event_generator->DragMouseTo(drag_point + gfx::Vector2d(-50, -50));
+    event_generator->DragMouseTo(drag_point);
+  };
+
+  ash::CaptureModeTestApi test_api;
+  auto* event_generator = GetEventGenerator();
+  const gfx::Rect target_region(gfx::Rect(100, 100, 200, 200));
+  auto top_right = target_region.top_right();
+
+  const bool kTabletEnabledStates[] = {false, true};
+  for (const bool tablet_enabled : kTabletEnabledStates) {
+    if (tablet_enabled) {
+      SwitchToTabletMode();
+      EXPECT_TRUE(Shell::Get()->IsInTabletMode());
+    } else {
+      EXPECT_FALSE(Shell::Get()->IsInTabletMode());
+    }
+
+    StartProjectorModeSession();
+    test_api.SetUserSelectedRegion(target_region);
+
+    // Resize the region twice by dragging the top right of the region out and
+    // then back again.
+    resize_and_reset_region(event_generator, top_right);
+
+    // Move the region twice by dragging within the region.
+    const gfx::Point drag_point(300, 300);
+    move_and_reset_region(event_generator, drag_point);
+
+    test_api.PerformCapture();
+    WaitForSeconds(1);
+    test_api.StopVideoRecording();
+    EXPECT_FALSE(CaptureModeController::Get()->is_recording_in_progress());
+
+    histogram_tester.ExpectBucketCount(
+        GetCaptureModeHistogramName(
+            kProjectorCaptureRegionAdjustmentHistogramBase),
+        4, 1);
+
+    WaitForCaptureFileToBeSaved();
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All,
                          ProjectorCaptureModeIntegrationTests,
                          testing::Values(CaptureModeSource::kFullscreen,

@@ -736,13 +736,16 @@ void CaptureModeSession::OnMicrophoneChanged(bool microphone_enabled) {
 }
 
 void CaptureModeSession::ReportSessionHistograms() {
-  if (controller_->source() == CaptureModeSource::kRegion)
-    RecordNumberOfCaptureRegionAdjustments(num_capture_region_adjusted_);
+  if (controller_->source() == CaptureModeSource::kRegion) {
+    RecordNumberOfCaptureRegionAdjustments(num_capture_region_adjusted_,
+                                           is_in_projector_mode_);
+  }
   num_capture_region_adjusted_ = 0;
 
   RecordCaptureModeSwitchesFromInitialMode(capture_source_changed_);
   RecordCaptureModeConfiguration(controller_->type(), controller_->source(),
-                                 controller_->enable_audio_recording());
+                                 controller_->enable_audio_recording(),
+                                 is_in_projector_mode_);
 }
 
 void CaptureModeSession::StartCountDown(

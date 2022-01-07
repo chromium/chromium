@@ -551,6 +551,49 @@ chromium-metrics-reviews@google.com.
   <token key="TabletOrClamshell" variants="DisplayModes"/>
 </histogram>
 
+<histogram
+    name="Ash.CaptureModeController.Projector.CaptureConfiguration.{TabletOrClamshell}"
+    enum="CaptureModeConfiguration" expires_after="2022-09-29">
+  <owner>michelefan@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Within a {TabletOrClamshell} capture session entered from the projector app,
+    the histogram records the number of times a user adjusts a capture region,
+    which includes the moving and resizing. The count is recorded and reset when
+    a user performs a capture.The count is only reset when a user creates a new
+    region or switches capture sources.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram
+    name="Ash.CaptureModeController.Projector.CaptureRegionAdjusted.{TabletOrClamshell}"
+    units="adjustments" expires_after="2022-09-29">
+  <owner>michelefan@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Recorded whenever a user is in a region capture session in
+    {TabletOrClamshell} entered from the projector app and performs a capture or
+    they switch the capture source. The recorded count indicates the number of
+    times the user adjusts the region. This counts each time they move the
+    region or resize it. It is reset whenever a user creates a new region or the
+    count is recorded.
+  </summary>
+  <token key="TabletOrClamshell" variants="DisplayModes"/>
+</histogram>
+
+<histogram name="Ash.CaptureModeController.Projector.ScreenRecordingLength"
+    units="seconds" expires_after="2022-09-09">
+  <owner>afakhry@chromium.org</owner>
+  <owner>michelefan@chromium.org</owner>
+  <owner>gzadina@google.com</owner>
+  <summary>
+    Records the time of a successful video recording in capture mode entered
+    from the projector app. This metric will not be recorded if a file was not
+    successfully saved. The upper limit of this histogram is 3 hours.
+  </summary>
+</histogram>
+
 <histogram name="Ash.CaptureModeController.QuickAction"
     enum="CaptureQuickAction" expires_after="2022-09-09">
   <owner>shidi@chromium.org</owner>
