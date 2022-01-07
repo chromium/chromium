@@ -1778,15 +1778,8 @@ IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest, CheckUniqueStorage) {
   EXPECT_TRUE(ExecJs(root, "localStorage[\"foo\"] = \"c\""));
   EXPECT_EQ("c", EvalJs(root, "localStorage[\"foo\"]"));
 
-  // TODO(crbug.com/1199077) This should return "a" once StorageKey starts
-  // using the nonce for partitioning. Also remove the shadowDOM specific check
-  // once nonce support is complete (for MPArch, possibly due to a separate
-  // process and incomplete nonce support, it is returning "a" on some
-  // platforms).
-  if (GetParam() ==
-      blink::features::FencedFramesImplementationType::kShadowDOM) {
-    EXPECT_EQ("c", EvalJs(fenced_frame, "localStorage[\"foo\"]"));
-  }
+  // This shouldn't impact the fenced frame's local storage:
+  EXPECT_EQ("a", EvalJs(fenced_frame, "localStorage[\"foo\"]"));
 }
 
 IN_PROC_BROWSER_TEST_P(FencedFrameTreeBrowserTest,
