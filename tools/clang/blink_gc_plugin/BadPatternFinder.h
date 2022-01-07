@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-struct BlinkGCPluginOptions;
 class DiagnosticsReporter;
 
 namespace clang {
@@ -11,6 +10,4 @@ class ASTContext;
 
 // Detects and reports use of banned patterns, such as applying
 // std::make_unique to a garbage-collected type.
-void FindBadPatterns(clang::ASTContext& ast_context,
-                     DiagnosticsReporter&,
-                     const BlinkGCPluginOptions&);
+void FindBadPatterns(clang::ASTContext& ast_context, DiagnosticsReporter&);

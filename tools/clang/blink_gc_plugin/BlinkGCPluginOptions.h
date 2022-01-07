@@ -37,18 +37,6 @@ struct BlinkGCPluginOptions {
   // TODO(chromium:1283867): Enable this checks once all violations are handled.
   bool enable_persistent_in_unique_ptr_check = false;
 
-  // On stack references to garbage collected objects should use raw pointers.
-  // Although using Members/WeakMembers on stack is not strictly incorrect, it
-  // is redundant and incurs additional costs that can mount up and become
-  // significant. Enabling this flag lets the plugin to check for instances of
-  // using Member/WeakMember on stack. These would include variable
-  // declarations, method arguments and return types.
-  //
-  // This check is disabled by default since there currently are violations
-  // of this rule in the code base, leading to compilation failures.
-  // TODO(chromium:1283720): Enable this checks once all violations are handled.
-  bool enable_members_on_stack_check = false;
-
   std::set<std::string> ignored_classes;
   std::set<std::string> checked_namespaces;
   std::vector<std::string> ignored_directories;
