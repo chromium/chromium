@@ -654,7 +654,7 @@ Status ConvertKeyActionToKeyEvent(const base::DictionaryValue* action_object,
   base::DictionaryValue* pressed;
   if (!input_state->GetDictionary("pressed", &pressed))
     return Status(kUnknownError, "missing 'pressed'");
-  bool already_pressed = pressed->HasKey(key);
+  bool already_pressed = pressed->FindKey(key);
   if (!is_key_down && !already_pressed)
     return Status(kOk);
 

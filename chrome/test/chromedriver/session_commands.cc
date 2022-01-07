@@ -432,9 +432,8 @@ bool MergeCapabilities(const base::DictionaryValue* always_match,
   CHECK(merged);
   merged->DictClear();
 
-  for (base::DictionaryValue::Iterator it(*first_match); !it.IsAtEnd();
-       it.Advance()) {
-    if (always_match->HasKey(it.key())) {
+  for (auto kv : first_match->DictItems()) {
+    if (always_match->FindKey(kv.first)) {
       // firstMatch cannot have the same |keys| as alwaysMatch.
       return false;
     }
@@ -929,7 +928,7 @@ Status ExecuteSetTimeouts(Session* session,
   // TODO(crbug.com/chromedriver/2596): Remove legacy version support when we
   // stop supporting non-W3C protocol. At that time, we can delete the legacy
   // function and merge the W3C function into this function.
-  if (params.HasKey("ms")) {
+  if (params.FindKey("ms")) {
     return ExecuteSetTimeoutLegacy(session, params, value);
   } else {
     return ExecuteSetTimeoutsW3C(session, params, value);

@@ -642,9 +642,10 @@ absl::optional<T> ParseIfInDictionary(
     base::StringPiece key,
     T default_value,
     absl::optional<T> (base::Value::*getterIfType)() const) {
-  if (!dict->HasKey(key))
+  const auto* val = dict->FindKey(key);
+  if (!val)
     return absl::make_optional(default_value);
-  return (dict->FindKey(key)->*getterIfType)();
+  return (val->*getterIfType)();
 }
 
 absl::optional<double> ParseDoubleIfInDictionary(
@@ -2536,15 +2537,15 @@ Status ExecuteSetNetworkConditions(Session* session,
 
     // Either |throughput| or the pair |download_throughput| and
     // |upload_throughput| is required.
-    if (conditions->HasKey("throughput")) {
+    if (conditions->FindKey("throughput")) {
       absl::optional<double> maybe_throughput =
           conditions->FindDoubleKey("throughput");
       if (!maybe_throughput.has_value())
         return Status(kInvalidArgument, "invalid 'throughput'");
       network_conditions->upload_throughput = maybe_throughput.value();
       network_conditions->download_throughput = maybe_throughput.value();
-    } else if (conditions->HasKey("download_throughput") &&
-               conditions->HasKey("upload_throughput")) {
+    } else if (conditions->FindKey("download_throughput") &&
+               conditions->FindKey("upload_throughput")) {
       absl::optional<double> maybe_download_throughput =
           conditions->FindDoubleKey("download_throughput");
       absl::optional<double> maybe_upload_throughput =

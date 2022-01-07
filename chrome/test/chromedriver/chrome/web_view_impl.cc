@@ -1401,9 +1401,12 @@ Status EvaluateScript(DevToolsClient* client,
   if (status.IsError())
     return status;
 
-  if (cmd_result.HasKey("exceptionDetails")) {
+  if (cmd_result.FindKey("exceptionDetails")) {
     std::string description = "unknown";
-    cmd_result.GetString("result.description", &description);
+    if (const std::string* maybe_description =
+            cmd_result.FindStringPath("result.description")) {
+      description = *maybe_description;
+    }
     return Status(kUnknownError,
                   "Runtime.evaluate threw exception: " + description);
   }
@@ -1427,12 +1430,14 @@ Status EvaluateScriptAndGetObject(DevToolsClient* client,
                                  timeout, awaitPromise, &result);
   if (status.IsError())
     return status;
-  if (!result->HasKey("objectId")) {
+  const base::Value* object_id_val = result->FindKey("objectId");
+  if (!object_id_val) {
     *got_object = false;
     return Status(kOk);
   }
-  if (!result->GetString("objectId", object_id))
+  if (!object_id_val->is_string())
     return Status(kUnknownError, "evaluate has invalid 'objectId'");
+  *object_id = object_id_val->GetString();
   *got_object = true;
   return Status(kOk);
 }
