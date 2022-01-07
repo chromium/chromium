@@ -351,10 +351,9 @@ void NaClHostMessageFilter::OnMissingArchError(int render_view_id) {
 
 void NaClHostMessageFilter::OnOpenNaClExecutable(int render_frame_id,
                                                  const GURL& file_url,
-                                                 bool enable_validation_caching,
                                                  IPC::Message* reply_msg) {
   nacl_file_host::OpenNaClExecutable(this, render_frame_id, file_url,
-                                     enable_validation_caching, reply_msg);
+                                     reply_msg);
 }
 
 void NaClHostMessageFilter::OnNaClDebugEnabledForURL(const GURL& nmf_url,

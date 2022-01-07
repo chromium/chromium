@@ -110,10 +110,9 @@ IPC_MESSAGE_CONTROL1(NaClHostMsg_MissingArchError,
 
 // A renderer sends this to the browser process when it wants to
 // open a NaCl executable file from an installed application directory.
-IPC_SYNC_MESSAGE_CONTROL3_3(NaClHostMsg_OpenNaClExecutable,
+IPC_SYNC_MESSAGE_CONTROL2_3(NaClHostMsg_OpenNaClExecutable,
                             int /* render_frame_id */,
                             GURL /* URL of NaCl executable file */,
-                            bool /* enable_validation_caching */,
                             IPC::PlatformFileForTransit /* output file */,
                             uint64_t /* file_token_lo */,
                             uint64_t /* file_token_hi */)

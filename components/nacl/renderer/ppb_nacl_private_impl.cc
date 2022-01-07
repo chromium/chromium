@@ -798,11 +798,8 @@ PP_FileHandle OpenNaClExecutable(PP_Instance instance,
   *nonce_hi = 0;
   base::FilePath file_path;
   if (!sender->Send(new NaClHostMsg_OpenNaClExecutable(
-          GetFrameRoutingID(instance), GURL(file_url),
-          // TODO(b/200965779): drop enable_validation_caching param because
-          // this param was needed for nonsfi mode supporting, which is being
-          // removed.
-          /*enable_validation_caching=*/true, &out_fd, nonce_lo, nonce_hi))) {
+          GetFrameRoutingID(instance), GURL(file_url), &out_fd, nonce_lo,
+          nonce_hi))) {
     return PP_kInvalidFileHandle;
   }
 
