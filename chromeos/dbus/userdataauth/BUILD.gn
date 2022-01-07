@@ -52,6 +52,7 @@ proto_library("userdataauth_proto") {
 
   sources = [
     "//third_party/cros_system_api/dbus/cryptohome/UserDataAuth.proto",
+    "//third_party/cros_system_api/dbus/cryptohome/auth_factor.proto",
     "//third_party/cros_system_api/dbus/cryptohome/fido.proto",
   ]
 
