@@ -154,6 +154,7 @@ const char* const kKnownSettings[] = {
     kReportDeviceSystemInfo,
     kReportDevicePrintJobs,
     kReportDeviceLoginLogout,
+    kReportCRDSessions,
     kReportOsUpdateStatus,
     kReportRunningKioskApp,
     kReportUploadFrequency,

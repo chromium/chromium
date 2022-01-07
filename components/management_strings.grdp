@@ -137,6 +137,9 @@
     <message name="IDS_MANAGEMENT_REPORT_LOGIN_LOGOUT" desc="Message stating that administrators can see device Login and Logout events.">
       Device login/logout history, including timestamps and failed attempts
     </message>
+    <message name="IDS_MANAGEMENT_REPORT_CRD_SESSIONS" desc="Message stating that administrators can see Chrome Remote Desktop events.">
+      Chrome Remote Desktop history, including timestamps, hosts and client session ids
+    </message>
     <message name="IDS_MANAGEMENT_CROSTINI" desc="Message stating that administrators can see Crostini usage">
       Linux apps installed and when they were last used
     </message>

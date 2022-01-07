@@ -72,6 +72,7 @@ content::WebUIDataSource* CreateManagementUIHtmlSource(Profile* profile) {
     {kManagementPrinting, IDS_MANAGEMENT_REPORT_PRINTING},
     {kManagementReportPrintJobs, IDS_MANAGEMENT_REPORT_PRINT_JOBS},
     {kManagementReportLoginLogout, IDS_MANAGEMENT_REPORT_LOGIN_LOGOUT},
+    {kManagementReportCRDSessions, IDS_MANAGEMENT_REPORT_CRD_SESSIONS},
     {kManagementCrostini, IDS_MANAGEMENT_CROSTINI},
     {kManagementCrostiniContainerConfiguration,
      IDS_MANAGEMENT_CROSTINI_CONTAINER_CONFIGURATION},

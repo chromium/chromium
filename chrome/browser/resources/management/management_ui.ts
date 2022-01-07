@@ -280,6 +280,8 @@ class ManagementUiElement extends ManagementUiElementBase {
         return 'management:play-store';
       case DeviceReportingType.LOGIN_LOGOUT:
         return 'management:timelapse';
+      case DeviceReportingType.CRD_SESSIONS:
+        return 'management:timelapse';
       default:
         return 'cr:computer';
     }

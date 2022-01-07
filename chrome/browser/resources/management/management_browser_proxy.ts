@@ -68,6 +68,7 @@ export enum DeviceReportingType {
   EXTENSION = 'extension',
   ANDROID_APPLICATION = 'android application',
   LOGIN_LOGOUT = 'login-logout',
+  CRD_SESSIONS = 'crd sessions',
 }
 
 
