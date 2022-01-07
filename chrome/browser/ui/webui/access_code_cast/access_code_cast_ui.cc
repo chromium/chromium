@@ -71,7 +71,9 @@ void AccessCodeCastDialog::OnDialogShown(content::WebUI* webui) {
   webui_ = webui;
 }
 
-void AccessCodeCastDialog::OnDialogClosed(const std::string& json_retval) {}
+void AccessCodeCastDialog::OnDialogClosed(const std::string& json_retval) {
+  delete this;
+}
 
 void AccessCodeCastDialog::OnCloseContents(content::WebContents* source,
                                            bool* out_close_dialog) {

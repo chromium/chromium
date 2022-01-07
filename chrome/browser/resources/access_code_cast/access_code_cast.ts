@@ -63,6 +63,10 @@ class AccessCodeCastElement extends PolymerElement {
     this.router = BrowserProxy.getInstance().callbackRouter;
 
     this.accessCode = '';
+
+    window.onblur = () => {
+      this.close();
+    };
   }
 
   ready() {
