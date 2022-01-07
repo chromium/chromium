@@ -32,6 +32,9 @@ class ChromeHidDelegate
       content::RenderFrameHost* render_frame_host) override;
   bool HasDevicePermission(content::RenderFrameHost* render_frame_host,
                            const device::mojom::HidDeviceInfo& device) override;
+  void RevokeDevicePermission(
+      content::RenderFrameHost* render_frame_host,
+      const device::mojom::HidDeviceInfo& device) override;
   device::mojom::HidManager* GetHidManager(
       content::RenderFrameHost* render_frame_host) override;
   void AddObserver(content::RenderFrameHost* render_frame_host,

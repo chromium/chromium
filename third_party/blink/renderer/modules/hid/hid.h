@@ -68,6 +68,8 @@ class HID : public EventTargetWithInlineData,
                mojo::PendingRemote<device::mojom::blink::HidConnectionClient>
                    connection_client,
                device::mojom::blink::HidManager::ConnectCallback callback);
+  void Forget(device::mojom::blink::HidDeviceInfoPtr device_info,
+              mojom::blink::HidService::ForgetCallback callback);
 
   void Trace(Visitor*) const override;
 

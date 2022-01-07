@@ -257,6 +257,12 @@ void HID::Connect(
   service_->Connect(device_guid, std::move(client), std::move(callback));
 }
 
+void HID::Forget(device::mojom::blink::HidDeviceInfoPtr device_info,
+                 mojom::blink::HidService::ForgetCallback callback) {
+  EnsureServiceConnection();
+  service_->Forget(std::move(device_info), std::move(callback));
+}
+
 HIDDevice* HID::GetOrCreateDevice(device::mojom::blink::HidDeviceInfoPtr info) {
   auto it = device_cache_.find(info->guid);
   if (it != device_cache_.end()) {

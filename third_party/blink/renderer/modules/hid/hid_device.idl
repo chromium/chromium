@@ -37,6 +37,10 @@
     // device is closed.
     [CallWith=ScriptState, MeasureAs=HidDeviceClose] Promise<void> close();
 
+    // Revoke permission to the device. The promise is resolved once the
+    // device is forgotten.
+    [CallWith=ScriptState, RuntimeEnabled=HidDeviceForget] Promise<void> forget();
+
     // Send an output report to the device. Set |reportId| to the first byte of
     // the report and |data| to the remaining bytes. Set |reportId| to zero if
     // the device does not use report IDs. The promise is resolved once the

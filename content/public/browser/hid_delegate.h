@@ -57,6 +57,11 @@ class CONTENT_EXPORT HidDelegate {
       RenderFrameHost* render_frame_host,
       const device::mojom::HidDeviceInfo& device) = 0;
 
+  // Revoke `device` access permission to the main frame of `render_frame_host`.
+  virtual void RevokeDevicePermission(
+      RenderFrameHost* render_frame_host,
+      const device::mojom::HidDeviceInfo& device) = 0;
+
   // Returns an open connection to the HidManager interface owned by the
   // embedder and being used to serve requests from |render_frame_host|.
   //

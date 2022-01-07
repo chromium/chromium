@@ -24,6 +24,7 @@ namespace {
 
 const char kDeviceStateChangeInProgress[] =
     "An operation that changes the device state is in progress.";
+const char kDeviceIsForgotten[] = "The device is forgotten.";
 const char kOpenRequired[] = "The device must be opened first.";
 const char kOpenFailed[] = "Failed to open the device.";
 const char kSendReportFailed[] = "Failed to write the report.";
@@ -246,8 +247,10 @@ ScriptPromise HIDDevice::open(ScriptState* script_state) {
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-  if (!EnsureNoDeviceChangeInProgress(resolver))
+  if (!EnsureNoDeviceChangeInProgress(resolver) ||
+      !EnsureDeviceIsNotForgotten(resolver)) {
     return promise;
+  }
 
   if (opened()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -272,12 +275,28 @@ ScriptPromise HIDDevice::close(ScriptState* script_state) {
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-  if (!EnsureNoDeviceChangeInProgress(resolver))
+  if (!EnsureNoDeviceChangeInProgress(resolver) ||
+      !EnsureDeviceIsNotForgotten(resolver)) {
     return promise;
+  }
 
   connection_.reset();
   receiver_.reset();
   resolver->Resolve();
+  return promise;
+}
+
+ScriptPromise HIDDevice::forget(ScriptState* script_state) {
+  ScriptPromiseResolver* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+  if (!EnsureNoDeviceChangeInProgress(resolver))
+    return promise;
+
+  device_state_change_in_progress_ = true;
+  parent_->Forget(device_info_.Clone(),
+                  WTF::Bind(&HIDDevice::FinishForget, WrapPersistent(this),
+                            WrapPersistent(resolver)));
   return promise;
 }
 
@@ -287,8 +306,10 @@ ScriptPromise HIDDevice::sendReport(ScriptState* script_state,
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-  if (!EnsureNoDeviceChangeInProgress(resolver))
+  if (!EnsureNoDeviceChangeInProgress(resolver) ||
+      !EnsureDeviceIsNotForgotten(resolver)) {
     return promise;
+  }
 
   if (!opened()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -318,8 +339,10 @@ ScriptPromise HIDDevice::sendFeatureReport(ScriptState* script_state,
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-  if (!EnsureNoDeviceChangeInProgress(resolver))
+  if (!EnsureNoDeviceChangeInProgress(resolver) ||
+      !EnsureDeviceIsNotForgotten(resolver)) {
     return promise;
+  }
 
   if (!opened()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -349,8 +372,10 @@ ScriptPromise HIDDevice::receiveFeatureReport(ScriptState* script_state,
   ScriptPromiseResolver* resolver =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise promise = resolver->Promise();
-  if (!EnsureNoDeviceChangeInProgress(resolver))
+  if (!EnsureNoDeviceChangeInProgress(resolver) ||
+      !EnsureDeviceIsNotForgotten(resolver)) {
     return promise;
+  }
 
   if (!opened()) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -406,6 +431,16 @@ bool HIDDevice::EnsureNoDeviceChangeInProgress(
   return true;
 }
 
+bool HIDDevice::EnsureDeviceIsNotForgotten(
+    ScriptPromiseResolver* resolver) const {
+  if (device_is_forgotten_) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError, kDeviceIsForgotten));
+    return false;
+  }
+  return true;
+}
+
 void HIDDevice::FinishOpen(
     ScriptPromiseResolver* resolver,
     mojo::PendingRemote<device::mojom::blink::HidConnection> connection) {
@@ -425,6 +460,14 @@ void HIDDevice::FinishOpen(
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError, kOpenFailed));
   }
+}
+
+void HIDDevice::FinishForget(ScriptPromiseResolver* resolver) {
+  device_state_change_in_progress_ = false;
+  device_is_forgotten_ = true;
+  connection_.reset();
+  receiver_.reset();
+  resolver->Resolve();
 }
 
 void HIDDevice::OnServiceConnectionError() {

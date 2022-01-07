@@ -77,6 +77,15 @@ bool ChromeHidDelegate::HasDevicePermission(
   return chooser_context->HasDevicePermission(origin, device);
 }
 
+void ChromeHidDelegate::RevokeDevicePermission(
+    content::RenderFrameHost* render_frame_host,
+    const device::mojom::HidDeviceInfo& device) {
+  auto* chooser_context = GetChooserContext(render_frame_host);
+  const auto& origin =
+      render_frame_host->GetMainFrame()->GetLastCommittedOrigin();
+  return chooser_context->RevokeDevicePermission(origin, device);
+}
+
 device::mojom::HidManager* ChromeHidDelegate::GetHidManager(
     content::RenderFrameHost* render_frame_host) {
   auto* chooser_context = GetChooserContext(render_frame_host);

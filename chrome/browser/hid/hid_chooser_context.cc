@@ -215,6 +215,56 @@ void HidChooserContext::GrantDevicePermission(
   }
 }
 
+void HidChooserContext::RevokeDevicePermission(
+    const url::Origin& origin,
+    const device::mojom::HidDeviceInfo& device) {
+  DCHECK(base::Contains(devices_, device.guid));
+  if (CanStorePersistentEntry(device)) {
+    RevokePersistentDevicePermission(origin, device);
+  } else {
+    RevokeEphemeralDevicePermission(origin, device);
+  }
+}
+
+void HidChooserContext::RevokePersistentDevicePermission(
+    const url::Origin& origin,
+    const device::mojom::HidDeviceInfo& device) {
+  std::vector<std::unique_ptr<Object>> object_list = GetGrantedObjects(origin);
+  for (const auto& object : object_list) {
+    const base::Value& device_value = object->value;
+    DCHECK(IsValidObject(device_value));
+
+    const auto* serial_number = device_value.FindStringKey(kHidSerialNumberKey);
+    if (device.vendor_id == *device_value.FindIntKey(kHidVendorIdKey) &&
+        device.product_id == *device_value.FindIntKey(kHidProductIdKey) &&
+        serial_number && device.serial_number == *serial_number) {
+      RevokeObjectPermission(origin, device_value);
+    }
+  }
+}
+
+void HidChooserContext::RevokeEphemeralDevicePermission(
+    const url::Origin& origin,
+    const device::mojom::HidDeviceInfo& device) {
+  auto it = ephemeral_devices_.find(origin);
+  if (it != ephemeral_devices_.end()) {
+    std::set<std::string>& devices = it->second;
+    for (auto guid = devices.begin(); guid != devices.end();) {
+      DCHECK(base::Contains(devices_, *guid));
+
+      if (devices_[*guid]->physical_device_id != device.physical_device_id) {
+        ++guid;
+        continue;
+      }
+
+      guid = devices.erase(guid);
+      if (devices.empty())
+        ephemeral_devices_.erase(it);
+      NotifyPermissionRevoked(origin);
+    }
+  }
+}
+
 bool HidChooserContext::HasDevicePermission(
     const url::Origin& origin,
     const device::mojom::HidDeviceInfo& device) {

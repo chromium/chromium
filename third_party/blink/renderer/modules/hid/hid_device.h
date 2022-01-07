@@ -62,6 +62,7 @@ class MODULES_EXPORT HIDDevice
 
   ScriptPromise open(ScriptState*);
   ScriptPromise close(ScriptState*);
+  ScriptPromise forget(ScriptState*);
   ScriptPromise sendReport(ScriptState*,
                            uint8_t report_id,
                            const DOMArrayPiece& data);
@@ -85,11 +86,13 @@ class MODULES_EXPORT HIDDevice
 
  private:
   bool EnsureNoDeviceChangeInProgress(ScriptPromiseResolver* resolver) const;
+  bool EnsureDeviceIsNotForgotten(ScriptPromiseResolver* resolver) const;
 
   void OnServiceConnectionError();
 
   void FinishOpen(ScriptPromiseResolver*,
                   mojo::PendingRemote<device::mojom::blink::HidConnection>);
+  void FinishForget(ScriptPromiseResolver*);
   void FinishSendReport(ScriptPromiseResolver*, bool success);
   void FinishReceiveReport(ScriptPromiseResolver*,
                            bool success,
@@ -110,6 +113,7 @@ class MODULES_EXPORT HIDDevice
   HeapHashSet<Member<ScriptPromiseResolver>> device_requests_;
   HeapVector<Member<HIDCollectionInfo>> collections_;
   bool device_state_change_in_progress_ = false;
+  bool device_is_forgotten_ = false;
 };
 
 }  // namespace blink

@@ -52,6 +52,9 @@ class MockHidDelegate : public HidDelegate {
   MOCK_METHOD2(HasDevicePermission,
                bool(RenderFrameHost* render_frame_host,
                     const device::mojom::HidDeviceInfo& device));
+  MOCK_METHOD2(RevokeDevicePermission,
+               void(RenderFrameHost* render_frame_host,
+                    const device::mojom::HidDeviceInfo& device));
   MOCK_METHOD1(GetHidManager,
                device::mojom::HidManager*(RenderFrameHost* render_frame_host));
   MOCK_METHOD2(

@@ -73,9 +73,11 @@ class HidChooserContext : public permissions::ObjectPermissionContextBase,
                               const base::Value& object) override;
   std::u16string GetObjectDisplayName(const base::Value& object) override;
 
-  // HID-specific interface for granting and checking permissions.
+  // HID-specific interface for granting, revoking and checking permissions.
   void GrantDevicePermission(const url::Origin& origin,
                              const device::mojom::HidDeviceInfo& device);
+  void RevokeDevicePermission(const url::Origin& origin,
+                              const device::mojom::HidDeviceInfo& device);
   bool HasDevicePermission(const url::Origin& origin,
                            const device::mojom::HidDeviceInfo& device);
 
@@ -116,6 +118,14 @@ class HidChooserContext : public permissions::ObjectPermissionContextBase,
       device::mojom::HidManager::GetDevicesCallback callback,
       std::vector<device::mojom::HidDeviceInfoPtr> devices);
   void OnHidManagerConnectionError();
+
+  // HID-specific interface for revoking device permissions.
+  void RevokePersistentDevicePermission(
+      const url::Origin& origin,
+      const device::mojom::HidDeviceInfo& device);
+  void RevokeEphemeralDevicePermission(
+      const url::Origin& origin,
+      const device::mojom::HidDeviceInfo& device);
 
   const bool is_incognito_;
   bool is_initialized_ = false;

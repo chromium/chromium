@@ -103,9 +103,9 @@ hid_test(async (t, fake) => {
   fake.removeDevice(key);
   await watcher.wait_for('disconnect');
 
-  // Check that the device was removed.
+  // Check that the device is not removed.
   devices = await navigator.hid.getDevices();
-  assert_equals(devices.length, 0);
+  assert_equals(devices.length, 1);
 }, 'HID dispatches connect for DeviceChanged without DeviceAdded');
 
 </script>

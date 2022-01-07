@@ -81,9 +81,23 @@ class HidChooserContextTest : public testing::Test {
         /*serial_number=*/"", device::mojom::HidBusType::kHIDBusTypeUSB);
   }
 
+  device::mojom::HidDeviceInfoPtr ConnectEphemeralDevice(
+      std::string product_name) {
+    return hid_manager_.CreateAndAddDevice(
+        "physical-device-id", 0x1234, 0xabcd, product_name,
+        /*serial_number=*/"", device::mojom::HidBusType::kHIDBusTypeUSB);
+  }
+
   device::mojom::HidDeviceInfoPtr ConnectPersistentUsbDevice() {
     return hid_manager_.CreateAndAddDevice(
         "physical-device-id", 0x1234, 0xabcd, "product-name", "serial-number",
+        device::mojom::HidBusType::kHIDBusTypeUSB);
+  }
+
+  device::mojom::HidDeviceInfoPtr ConnectPersistentUsbDevice(
+      std::string product_name) {
+    return hid_manager_.CreateAndAddDevice(
+        "physical-device-id", 0x1234, 0xabcd, product_name, "serial-number",
         device::mojom::HidBusType::kHIDBusTypeUSB);
   }
 
@@ -166,6 +180,66 @@ TEST_F(HidChooserContextTest, GrantAndRevokeEphemeralDevice) {
   permission_revoked_loop.Run();
 
   EXPECT_FALSE(context->HasDevicePermission(origin(), *device));
+  origin_objects = context->GetGrantedObjects(origin());
+  EXPECT_EQ(0u, origin_objects.size());
+  objects = context->GetAllGrantedObjects();
+  EXPECT_EQ(0u, objects.size());
+}
+
+TEST_F(HidChooserContextTest, GrantAndForgetEphemeralDevice) {
+  base::RunLoop devices_added_loop;
+  EXPECT_CALL(device_observer(), OnDeviceAdded(_))
+      .WillOnce([] {})
+      .WillOnce(RunClosure(devices_added_loop.QuitClosure()));
+
+  base::RunLoop permission_granted_loop;
+  EXPECT_CALL(permission_observer(),
+              OnObjectPermissionChanged(
+                  absl::make_optional(ContentSettingsType::HID_GUARD),
+                  ContentSettingsType::HID_CHOOSER_DATA))
+      .WillOnce([]() {})
+      .WillOnce(RunClosure(permission_granted_loop.QuitClosure()))
+      .WillOnce([]() {})
+      .WillOnce([]() {});
+
+  base::RunLoop permission_revoked_loop;
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin()))
+      .WillOnce([]() {})
+      .WillOnce(RunClosure(permission_revoked_loop.QuitClosure()));
+
+  HidChooserContext* context = GetContext();
+
+  // 1. Connect a device with multiple HID interfaces that is only eligible for
+  // ephemeral permissions.
+  auto device1 = ConnectEphemeralDevice("product_name1");
+  auto device2 = ConnectEphemeralDevice("product_name2");
+  devices_added_loop.Run();
+
+  EXPECT_FALSE(context->HasDevicePermission(origin(), *device1));
+  EXPECT_FALSE(context->HasDevicePermission(origin(), *device2));
+
+  // 2. Grant ephemeral permission.
+  context->GrantDevicePermission(origin(), *device1);
+  context->GrantDevicePermission(origin(), *device2);
+  permission_granted_loop.Run();
+
+  EXPECT_TRUE(context->HasDevicePermission(origin(), *device1));
+  EXPECT_TRUE(context->HasDevicePermission(origin(), *device2));
+
+  std::vector<std::unique_ptr<HidChooserContext::Object>> origin_objects =
+      context->GetGrantedObjects(origin());
+  ASSERT_EQ(2u, origin_objects.size());
+
+  std::vector<std::unique_ptr<HidChooserContext::Object>> objects =
+      context->GetAllGrantedObjects();
+  ASSERT_EQ(2u, objects.size());
+
+  // 3. Forget the ephemeral device.
+  context->RevokeDevicePermission(origin(), *device1);
+  permission_revoked_loop.Run();
+
+  EXPECT_FALSE(context->HasDevicePermission(origin(), *device1));
+  EXPECT_FALSE(context->HasDevicePermission(origin(), *device2));
   origin_objects = context->GetGrantedObjects(origin());
   EXPECT_EQ(0u, origin_objects.size());
   objects = context->GetAllGrantedObjects();
@@ -293,6 +367,64 @@ TEST_F(HidChooserContextTest, GrantDisconnectRevokeUsbPersistentDevice) {
   permission_revoked_loop.Run();
 
   EXPECT_FALSE(context->HasDevicePermission(origin(), *device));
+  origin_objects = context->GetGrantedObjects(origin());
+  EXPECT_EQ(0u, origin_objects.size());
+  objects = context->GetAllGrantedObjects();
+  EXPECT_EQ(0u, objects.size());
+}
+
+TEST_F(HidChooserContextTest, GrantForgetUsbPersistentDevice) {
+  base::RunLoop devices_added_loop;
+  EXPECT_CALL(device_observer(), OnDeviceAdded(_))
+      .WillOnce([]() {})
+      .WillOnce(RunClosure(devices_added_loop.QuitClosure()));
+
+  base::RunLoop permission_granted_loop;
+  EXPECT_CALL(permission_observer(),
+              OnObjectPermissionChanged(
+                  absl::make_optional(ContentSettingsType::HID_GUARD),
+                  ContentSettingsType::HID_CHOOSER_DATA))
+      .WillOnce([]() {})
+      .WillOnce(RunClosure(permission_granted_loop.QuitClosure()))
+      .WillOnce([]() {});
+
+  base::RunLoop permission_revoked_loop;
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin()))
+      .WillOnce(RunClosure(permission_revoked_loop.QuitClosure()));
+
+  HidChooserContext* context = GetContext();
+
+  // 1. Connect a USB device with multiple HID interfaces eligible for
+  // persistent permissions.
+  auto device1 = ConnectPersistentUsbDevice("product_name1");
+  auto device2 = ConnectPersistentUsbDevice("product_name2");
+  devices_added_loop.Run();
+
+  EXPECT_FALSE(context->HasDevicePermission(origin(), *device1));
+  EXPECT_FALSE(context->HasDevicePermission(origin(), *device2));
+
+  // 2. Grant a persistent permission.
+  context->GrantDevicePermission(origin(), *device1);
+  context->GrantDevicePermission(origin(), *device2);
+  permission_granted_loop.Run();
+
+  EXPECT_TRUE(context->HasDevicePermission(origin(), *device1));
+  EXPECT_TRUE(context->HasDevicePermission(origin(), *device2));
+
+  std::vector<std::unique_ptr<HidChooserContext::Object>> origin_objects =
+      context->GetGrantedObjects(origin());
+  ASSERT_EQ(1u, origin_objects.size());
+
+  std::vector<std::unique_ptr<HidChooserContext::Object>> objects =
+      context->GetAllGrantedObjects();
+  ASSERT_EQ(1u, objects.size());
+
+  // 3. Forget the device by revoking the persistent permission.
+  context->RevokeDevicePermission(origin(), *device1);
+  permission_revoked_loop.Run();
+
+  EXPECT_FALSE(context->HasDevicePermission(origin(), *device1));
+  EXPECT_FALSE(context->HasDevicePermission(origin(), *device2));
   origin_objects = context->GetGrantedObjects(origin());
   EXPECT_EQ(0u, origin_objects.size());
   objects = context->GetAllGrantedObjects();

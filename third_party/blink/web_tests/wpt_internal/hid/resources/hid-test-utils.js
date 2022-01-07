@@ -139,7 +139,7 @@ class FakeHidConnection {
 // The fake implementation allows tests to simulate connected devices. It also
 // skips the chooser dialog and instead allows tests to specify which device
 // should be selected. All devices are treated as if the user had already
-// granted permission.
+// granted permission. It is possible to revoke permission with forget() later.
 class FakeHidService {
   constructor() {
     this.interceptor_ = new MojoInterfaceInterceptor(HidService.$interfaceName);
@@ -160,6 +160,7 @@ class FakeHidService {
 
   reset() {
     this.devices_ = new Map();
+    this.allowedDevices_ = new Map();
     this.fakeConnections_ = new Map();
     this.selectedDevices_ = [];
   }
@@ -180,18 +181,24 @@ class FakeHidService {
     return info;
   }
 
-  // Simulates a connected device. Returns the key used to store the device in
-  // the map. The key is either the physical device ID, or the device GUID if it
-  // has no physical device ID.
-  addDevice(deviceInfo) {
+  // Simulates a connected device the client has already been granted permission
+  // to. Returns the key used to store the device in the map. The key is either
+  // the physical device ID, or the device GUID if it has no physical device ID.
+  addDevice(deviceInfo, grantPermission = true) {
     let key = deviceInfo.physicalDeviceId;
     if (key.length === 0)
       key = deviceInfo.guid;
-    let devices = this.devices_.get(key);
-    if (devices === undefined)
-      devices = [];
+
+    let devices = this.devices_.get(key) || [];
     devices.push(deviceInfo);
     this.devices_.set(key, devices);
+
+    if (grantPermission) {
+      let allowedDevices = this.allowedDevices_.get(key) || [];
+      allowedDevices.push(deviceInfo);
+      this.allowedDevices_.set(key, allowedDevices);
+    }
+
     if (this.client_)
       this.client_.deviceAdded(deviceInfo);
     return key;
@@ -213,9 +220,8 @@ class FakeHidService {
     let key = deviceInfo.physicalDeviceId;
     if (key.length === 0)
       key = deviceInfo.guid;
-    let devices = this.devices_.get(key);
-    if (devices === undefined)
-      devices = [];
+
+    let devices = this.devices_.get(key) || [];
     let i = devices.length;
     while (i--) {
       if (devices[i].guid == deviceInfo.guid)
@@ -223,6 +229,16 @@ class FakeHidService {
     }
     devices.push(deviceInfo);
     this.devices_.set(key, devices);
+
+    let allowedDevices = this.allowedDevices_.get(key) || [];
+    let j = allowedDevices.length;
+    while (j--) {
+      if (allowedDevices[j].guid == deviceInfo.guid)
+        allowedDevices.splice(j, 1);
+    }
+    allowedDevices.push(deviceInfo);
+    this.allowedDevices_.set(key, allowedDevices);
+
     if (this.client_)
       this.client_.deviceChanged(deviceInfo);
     return key;
@@ -254,12 +270,11 @@ class FakeHidService {
     this.client_ = client;
   }
 
-  // Returns an array of connected devices. Normally this would only include
-  // devices that the client has already been granted permission to access, but
-  // for the fake implementation all simulated devices are returned.
+  // Returns an array of connected devices the client has already been granted
+  // permission to access.
   async getDevices() {
     let devices = [];
-    this.devices_.forEach((value) => {
+    this.allowedDevices_.forEach((value) => {
       devices = devices.concat(value);
     });
     return {devices};
@@ -283,6 +298,19 @@ class FakeHidService {
     const fakeConnection = new FakeHidConnection(connectionClient);
     this.fakeConnections_.set(guid, fakeConnection);
     return {connection: fakeConnection.bindNewPipeAndPassRemote()};
+  }
+
+  // Removes the allowed device.
+  async forget(deviceInfo) {
+    for (const [key, value] of this.allowedDevices_) {
+      for (const device of value) {
+        if (device.guid == deviceInfo.guid) {
+          this.allowedDevices_.delete(key);
+          break;
+        }
+      }
+    }
+    return {success: true};
   }
 }
 

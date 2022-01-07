@@ -184,6 +184,13 @@ void HidService::Connect(
                          std::move(callback)));
 }
 
+void HidService::Forget(device::mojom::HidDeviceInfoPtr device_info,
+                        ForgetCallback callback) {
+  auto* delegate = GetContentClient()->browser()->GetHidDelegate();
+  delegate->RevokeDevicePermission(render_frame_host(), *device_info);
+  std::move(callback).Run();
+}
+
 void HidService::OnWatcherRemoved(bool cleanup_watcher_ids) {
   if (watchers_.empty())
     DecrementActiveFrameCount();
