@@ -79,6 +79,9 @@ void SearchControllerImplNew::StartSearch(const std::u16string& query) {
   for (Observer& observer : observer_list_)
     observer.OnResultsCleared();
 
+  burnin_iteration_counter_ = 0;
+  ids_to_burnin_iteration_.clear();
+
   session_start_ = base::Time::Now();
   last_query_ = query;
 
@@ -221,9 +224,32 @@ void SearchControllerImplNew::SetResults(const SearchProvider* provider,
 
 void SearchControllerImplNew::SetSearchResults(const SearchProvider* provider) {
   Rank(provider->ResultType());
+
+  // From here below is logic concerning the burn-in period.
+  const bool is_post_burnin =
+      base::Time::Now() - session_start_ > burnin_period_;
+  if (is_post_burnin)
+    ++burnin_iteration_counter_;
+
+  const auto it = results_.find(provider->ResultType());
+  DCHECK(it != results_.end());
+
+  for (const auto& result : it->second) {
+    const std::string result_id = result->id();
+    if (ids_to_burnin_iteration_.find(result_id) !=
+        ids_to_burnin_iteration_.end()) {
+      // Result has been seen before. Set burnin_iteration, since the result
+      // object has changed since last seen.
+      result->scoring().burnin_iteration = ids_to_burnin_iteration_[result_id];
+    } else {
+      result->scoring().burnin_iteration = burnin_iteration_counter_;
+      ids_to_burnin_iteration_[result_id] = burnin_iteration_counter_;
+    }
+  }
+
   // If the burn-in period has not yet elapsed, don't call Publish here. This
   // case is covered by a call scheduled from within Start().
-  if (base::Time::Now() - session_start_ > burnin_period_)
+  if (is_post_burnin)
     Publish();
 }
 

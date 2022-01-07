@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/app_list/search/mixer.h"
@@ -89,6 +90,8 @@ class SearchControllerImplNew : public SearchController {
   }
 
  private:
+  friend class SearchControllerImplNewTest;
+
   // Rank the results of |provider_type|.
   void Rank(ash::AppListSearchResultType provider_type);
 
@@ -146,6 +149,29 @@ class SearchControllerImplNew : public SearchController {
   // collected from search providers. Publication of results to the model
   // updater is delayed until the burn-in period has elapsed.
   base::OneShotTimer burn_in_timer_;
+
+  // Counter for burn-in iterations. Useful for query search only.
+  //
+  // Zero signifies pre-burn-in state. After burn-in period has elapsed, counter
+  // is incremented by one each time SetResults() is called. This information is
+  // useful because:
+  //
+  // (1) It allows post-burn-in results to be ranked by different rules to
+  // pre-burn-in results, for normal categories as well as special categories
+  // such as Best Match.
+  // (2) It allows for sorting stability across multiple post-burn-in result
+  // updates.
+  int burnin_iteration_counter_ = 0;
+
+  // Store the ID of each result we encounter in a given query, along with the
+  // burn-in iteration during which it arrived. This storage is necessary
+  // because:
+  //
+  // Some providers may return more than once, and on each successive return,
+  // the previous results are swapped for new ones within SetResults(). Result
+  // meta-information we wish to persist across multiple calls to SetResults
+  // must therefore be stored separately.
+  base::flat_map<std::string, int> ids_to_burnin_iteration_;
 
   std::unique_ptr<SearchMetricsObserver> metrics_observer_;
   using Providers = std::vector<std::unique_ptr<SearchProvider>>;

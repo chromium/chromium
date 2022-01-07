@@ -33,6 +33,12 @@ struct Scoring {
   double category_usage_score = 0.0f;
   double usage_score = 0.0f;
 
+  // A counter for the burn-in iteration number, where 0 signifies the
+  // pre-burn-in state, and 1 and above signify the post-burn-in state.
+  // Incremented during the post-burn-in period each time a provider
+  // returns. Not applicable to zero-state search.
+  int burnin_iteration = 0;
+
   Scoring() {}
 
   Scoring(const Scoring&) = delete;
