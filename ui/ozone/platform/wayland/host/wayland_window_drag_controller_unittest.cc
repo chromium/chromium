@@ -572,7 +572,9 @@ TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop) {
 // 5. Drag it a bit more (within window 2) and then calls EndMoveLoop(),
 //    emulating a window snap), and then
 // 6. With the window in "snapped" state, drag it further and then drop.
-TEST_P(WaylandWindowDragControllerTest, DragToOtherWindowSnapDragDrop_TOUCH) {
+// TODO(crbug.com/1285380): Reenable test when flakiness is fixed.
+TEST_P(WaylandWindowDragControllerTest,
+       DISABLED_DragToOtherWindowSnapDragDrop_TOUCH) {
   // Init and open |target_window|.
   PlatformWindowInitProperties properties{gfx::Rect{80, 80}};
   properties.type = PlatformWindowType::kWindow;
