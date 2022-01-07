@@ -69,8 +69,8 @@ source_set("unit_tests") {
 fuzzer_test("variable_expander_fuzzer") {
   sources = [ "variable_expander_fuzzer.cc" ]
   seed_corpus =
-      "//chromeos/components/test/data/variable_expander/fuzzer_corpus"
-  dict = "//chromeos/components/test/data/variable_expander/fuzzer.dict"
+      "//chromeos/components/test/data/onc/variable_expander/fuzzer_corpus"
+  dict = "//chromeos/components/test/data/onc/variable_expander/fuzzer.dict"
   deps = [
     ":onc",
     "//base/test:test_support",
