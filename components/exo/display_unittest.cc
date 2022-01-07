@@ -84,15 +84,15 @@ class DisplayTest : public test::ExoTestBase {
 };
 
 TEST_F(DisplayTest, CreateSurface) {
-  std::unique_ptr<Display> display(new Display);
+  Display display;
 
   // Creating a surface should succeed.
-  std::unique_ptr<Surface> surface = display->CreateSurface();
+  std::unique_ptr<Surface> surface = display.CreateSurface();
   EXPECT_TRUE(surface);
 }
 
 TEST_F(DisplayTest, CreateSharedMemory) {
-  std::unique_ptr<Display> display(new Display);
+  Display display;
 
   int shm_size = 8192;
   base::UnsafeSharedMemoryRegion shared_memory =
@@ -101,12 +101,12 @@ TEST_F(DisplayTest, CreateSharedMemory) {
 
   // Creating a shared memory instance from a valid region should succeed.
   std::unique_ptr<SharedMemory> shm1 =
-      display->CreateSharedMemory(std::move(shared_memory));
+      display.CreateSharedMemory(std::move(shared_memory));
   EXPECT_TRUE(shm1);
 
   // Creating a shared memory instance from a invalid region should fail.
   std::unique_ptr<SharedMemory> shm2 =
-      display->CreateSharedMemory(base::UnsafeSharedMemoryRegion());
+      display.CreateSharedMemory(base::UnsafeSharedMemoryRegion());
   EXPECT_FALSE(shm2);
 }
 
@@ -115,7 +115,7 @@ TEST_F(DisplayTest, CreateSharedMemory) {
 TEST_F(DisplayTest, DISABLED_CreateLinuxDMABufBuffer) {
   const gfx::Size buffer_size(256, 256);
 
-  std::unique_ptr<Display> display(new Display);
+  Display display;
   // Creating a prime buffer from a native pixmap handle should succeed.
   scoped_refptr<gfx::NativePixmap> pixmap =
       ui::OzonePlatform::GetInstance()
@@ -124,9 +124,9 @@ TEST_F(DisplayTest, DISABLED_CreateLinuxDMABufBuffer) {
                                buffer_size, gfx::BufferFormat::RGBA_8888,
                                gfx::BufferUsage::GPU_READ);
   gfx::NativePixmapHandle native_pixmap_handle = pixmap->ExportHandle();
-  std::unique_ptr<Buffer> buffer1 = display->CreateLinuxDMABufBuffer(
-      buffer_size, gfx::BufferFormat::RGBA_8888,
-      std::move(native_pixmap_handle), false);
+  std::unique_ptr<Buffer> buffer1 =
+      display.CreateLinuxDMABufBuffer(buffer_size, gfx::BufferFormat::RGBA_8888,
+                                      std::move(native_pixmap_handle), false);
   EXPECT_TRUE(buffer1);
 
   // Create a handle without a file descriptor.
@@ -134,9 +134,9 @@ TEST_F(DisplayTest, DISABLED_CreateLinuxDMABufBuffer) {
   native_pixmap_handle.planes[0].fd.reset();
 
   // Creating a prime buffer using an invalid fd should fail.
-  std::unique_ptr<Buffer> buffer2 = display->CreateLinuxDMABufBuffer(
-      buffer_size, gfx::BufferFormat::RGBA_8888,
-      std::move(native_pixmap_handle), false);
+  std::unique_ptr<Buffer> buffer2 =
+      display.CreateLinuxDMABufBuffer(buffer_size, gfx::BufferFormat::RGBA_8888,
+                                      std::move(native_pixmap_handle), false);
   EXPECT_FALSE(buffer2);
 }
 
@@ -146,37 +146,37 @@ TEST_F(DisplayTest, DISABLED_CreateLinuxDMABufBuffer) {
 #endif
 
 TEST_F(DisplayTest, CreateShellSurface) {
-  std::unique_ptr<Display> display(new Display);
+  Display display;
 
   // Create two surfaces.
-  std::unique_ptr<Surface> surface1 = display->CreateSurface();
+  std::unique_ptr<Surface> surface1 = display.CreateSurface();
   ASSERT_TRUE(surface1);
-  std::unique_ptr<Surface> surface2 = display->CreateSurface();
+  std::unique_ptr<Surface> surface2 = display.CreateSurface();
   ASSERT_TRUE(surface2);
 
   // Create a shell surface for surface1.
   std::unique_ptr<ShellSurface> shell_surface1 =
-      display->CreateShellSurface(surface1.get());
+      display.CreateShellSurface(surface1.get());
   EXPECT_TRUE(shell_surface1);
 
   // Create a shell surface for surface2.
   std::unique_ptr<ShellSurface> shell_surface2 =
-      display->CreateShellSurface(surface2.get());
+      display.CreateShellSurface(surface2.get());
   EXPECT_TRUE(shell_surface2);
 }
 
 TEST_F(DisplayTest, CreateClientControlledShellSurface) {
-  std::unique_ptr<Display> display(new Display);
+  Display display;
 
   // Create two surfaces.
-  std::unique_ptr<Surface> surface1 = display->CreateSurface();
+  std::unique_ptr<Surface> surface1 = display.CreateSurface();
   ASSERT_TRUE(surface1);
-  std::unique_ptr<Surface> surface2 = display->CreateSurface();
+  std::unique_ptr<Surface> surface2 = display.CreateSurface();
   ASSERT_TRUE(surface2);
 
   // Create a remote shell surface for surface1.
   std::unique_ptr<ClientControlledShellSurface> shell_surface1 =
-      display->CreateOrGetClientControlledShellSurface(
+      display.CreateOrGetClientControlledShellSurface(
           surface1.get(), ash::kShellWindowId_SystemModalContainer,
           /*default_scale_factor=*/2.0,
           /*default_scale_cancellation=*/true);
@@ -185,7 +185,7 @@ TEST_F(DisplayTest, CreateClientControlledShellSurface) {
 
   // Create a remote shell surface for surface2.
   std::unique_ptr<ShellSurfaceBase> shell_surface2 =
-      display->CreateOrGetClientControlledShellSurface(
+      display.CreateOrGetClientControlledShellSurface(
           surface2.get(), ash::desks_util::GetActiveDeskContainerId(),
           /*default_scale_factor=*/1.0,
           /*default_scale_cancellation=*/true);
@@ -193,25 +193,26 @@ TEST_F(DisplayTest, CreateClientControlledShellSurface) {
 }
 
 TEST_F(DisplayTest, GetClientControlledShellSurface) {
-  std::unique_ptr<Display> display(new Display);
+  Display display;
 
   // Create a external surface, bind with a window id.
+  std::unique_ptr<Surface> surface = display.CreateSurface();
   ClientControlledShellSurface* external_shell_surface =
       new ClientControlledShellSurface(
-          new Surface,
+          surface.get(),
           /*can_minimize=*/true, ash::desks_util::GetActiveDeskContainerId(),
           /*default_scale_cancellation=*/true);
   property_resolver()->PutClientControlledShellSurface(
       /*window_session_id=*/10001, base::WrapUnique(external_shell_surface));
 
   // Create surface with specific window id.
-  std::unique_ptr<Surface> surface_with_id = display->CreateSurface();
+  std::unique_ptr<Surface> surface_with_id = display.CreateSurface();
   ASSERT_TRUE(surface_with_id);
   surface_with_id->SetWindowSessionId(10001);
 
   // Get a remote shell surface by external source.
   std::unique_ptr<ClientControlledShellSurface> shell_surface =
-      display->CreateOrGetClientControlledShellSurface(
+      display.CreateOrGetClientControlledShellSurface(
           surface_with_id.get(), ash::desks_util::GetActiveDeskContainerId(),
           /*default_scale_factor=*/2.0,
           /*default_scale_cancellation=*/true);
@@ -220,68 +221,68 @@ TEST_F(DisplayTest, GetClientControlledShellSurface) {
 }
 
 TEST_F(DisplayTest, CreateSubSurface) {
-  std::unique_ptr<Display> display(new Display);
+  Display display;
 
   // Create child, parent and toplevel surfaces.
-  std::unique_ptr<Surface> child = display->CreateSurface();
+  std::unique_ptr<Surface> child = display.CreateSurface();
   ASSERT_TRUE(child);
-  std::unique_ptr<Surface> parent = display->CreateSurface();
+  std::unique_ptr<Surface> parent = display.CreateSurface();
   ASSERT_TRUE(parent);
-  std::unique_ptr<Surface> toplevel = display->CreateSurface();
+  std::unique_ptr<Surface> toplevel = display.CreateSurface();
   ASSERT_TRUE(toplevel);
 
   // Attempting to create a sub surface for child with child as its parent
   // should fail.
-  EXPECT_FALSE(display->CreateSubSurface(child.get(), child.get()));
+  EXPECT_FALSE(display.CreateSubSurface(child.get(), child.get()));
 
   // Create a sub surface for child.
   std::unique_ptr<SubSurface> child_sub_surface =
-      display->CreateSubSurface(child.get(), toplevel.get());
+      display.CreateSubSurface(child.get(), toplevel.get());
   EXPECT_TRUE(child_sub_surface);
 
   // Attempting to create another sub surface when already assigned the role of
   // sub surface should fail.
-  EXPECT_FALSE(display->CreateSubSurface(child.get(), parent.get()));
+  EXPECT_FALSE(display.CreateSubSurface(child.get(), parent.get()));
 
   // Deleting the sub surface should allow a new sub surface to be created.
   child_sub_surface.reset();
-  child_sub_surface = display->CreateSubSurface(child.get(), parent.get());
+  child_sub_surface = display.CreateSubSurface(child.get(), parent.get());
   EXPECT_TRUE(child_sub_surface);
 
-  std::unique_ptr<Surface> sibling = display->CreateSurface();
+  std::unique_ptr<Surface> sibling = display.CreateSurface();
   ASSERT_TRUE(sibling);
 
   // Create a sub surface for sibiling.
   std::unique_ptr<SubSurface> sibling_sub_surface =
-      display->CreateSubSurface(sibling.get(), parent.get());
+      display.CreateSubSurface(sibling.get(), parent.get());
   EXPECT_TRUE(sibling_sub_surface);
 
   // Create a shell surface for toplevel surface.
   std::unique_ptr<ShellSurface> shell_surface =
-      display->CreateShellSurface(toplevel.get());
+      display.CreateShellSurface(toplevel.get());
   EXPECT_TRUE(shell_surface);
 
   // Attempting to create a sub surface when already assigned the role of
   // shell surface should fail.
-  EXPECT_FALSE(display->CreateSubSurface(toplevel.get(), parent.get()));
+  EXPECT_FALSE(display.CreateSubSurface(toplevel.get(), parent.get()));
 
-  std::unique_ptr<Surface> grandchild = display->CreateSurface();
+  std::unique_ptr<Surface> grandchild = display.CreateSurface();
   ASSERT_TRUE(grandchild);
   // Create a sub surface for grandchild.
   std::unique_ptr<SubSurface> grandchild_sub_surface =
-      display->CreateSubSurface(grandchild.get(), child.get());
+      display.CreateSubSurface(grandchild.get(), child.get());
   EXPECT_TRUE(grandchild_sub_surface);
 
   // Attempting to create a sub surface for parent with child as its parent
   // should fail.
-  EXPECT_FALSE(display->CreateSubSurface(parent.get(), child.get()));
+  EXPECT_FALSE(display.CreateSubSurface(parent.get(), child.get()));
 
   // Attempting to create a sub surface for parent with grandchild as its parent
   // should fail.
-  EXPECT_FALSE(display->CreateSubSurface(parent.get(), grandchild.get()));
+  EXPECT_FALSE(display.CreateSubSurface(parent.get(), grandchild.get()));
 
   // Create a sub surface for parent.
-  EXPECT_TRUE(display->CreateSubSurface(parent.get(), toplevel.get()));
+  EXPECT_TRUE(display.CreateSubSurface(parent.get(), toplevel.get()));
 }
 
 class TestDataDeviceDelegate : public DataDeviceDelegate {
