@@ -5,9 +5,12 @@
 #include "ash/app_list/app_list_bubble_event_filter.h"
 
 #include "ash/bubble/bubble_utils.h"
+#include "ash/shelf/hotseat_widget.h"
+#include "ash/shelf/shelf.h"
 #include "ash/shell.h"
 #include "base/callback.h"
 #include "base/check.h"
+#include "ui/aura/window.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -64,6 +67,16 @@ void AppListBubbleEventFilter::ProcessPressedEvent(
     views::View::ConvertPointFromScreen(button_, &point_in_button);
     if (button_->HitTestPoint(point_in_button))
       return;
+  }
+
+  // Ignore clicks in the shelf area containing app icons.
+  aura::Window* target = static_cast<aura::Window*>(event.target());
+  if (target) {
+    Shelf* shelf = Shelf::ForWindow(target);
+    if (target == shelf->hotseat_widget()->GetNativeWindow() &&
+        shelf->hotseat_widget()->EventTargetsShelfView(event)) {
+      return;
+    }
   }
 
   on_click_outside_.Run();

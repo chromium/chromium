@@ -3829,8 +3829,12 @@ TEST_F(AppListPresenterTest, TapAutoHideShelfWithAppListOpened) {
   EXPECT_EQ(SHELF_AUTO_HIDE_SHOWN, shelf->GetAutoHideState());
 }
 
-// TODO(crbug.com/1273162): Fix for ProductivityLauncher.
-TEST_F(AppListPresenterTest, ClickingShelfArrowDoesNotHideAppList) {
+TEST_P(AppListPresenterTest, ClickingShelfArrowDoesNotHideAppList) {
+  // Parameterize by ProductivityLauncher.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(features::kProductivityLauncher,
+                                    GetParam());
+
   // Add enough shelf items for the shelf to enter overflow.
   Shelf* const shelf = GetPrimaryShelf();
   ScrollableShelfView* const scrollable_shelf_view =
