@@ -589,7 +589,7 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     this.browserProxy_.setDecryptionPassphrase(this.existingPassphrase_)
         .then(
             sucessfullySet => this.handlePageStatusChanged_(
-                sucessfullySet ? PageStatus.DONE :
+                sucessfullySet ? PageStatus.CONFIGURE :
                                  PageStatus.PASSPHRASE_FAILED));
 
     this.existingPassphrase_ = '';
@@ -597,7 +597,8 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
 
   private onPassphraseChanged_(e: CustomEvent<{didChange: boolean}>) {
     this.handlePageStatusChanged_(
-        e.detail.didChange ? PageStatus.DONE : PageStatus.PASSPHRASE_FAILED);
+        e.detail.didChange ? PageStatus.CONFIGURE :
+                             PageStatus.PASSPHRASE_FAILED);
   }
 
   /**

@@ -702,7 +702,7 @@ suite('SyncSettingsTests', function() {
   });
 
   // On Lacros, turning off sync is not supported yet.
-  // TODO(https://crbug.com/1217645): Enable this test after adding support.
+  // TODO(https://crbug.com/1217645): Enable these tests after adding support.
   // <if expr="not chromeos_lacros">
   test('SyncSetupLeavePage', async function() {
     syncPage.syncStatus = {
@@ -749,6 +749,99 @@ suite('SyncSettingsTests', function() {
         .querySelector<HTMLElement>('.action-button')!.click();
     const abort = await browserProxy.whenCalled('didNavigateAwayFromSyncPage');
     assertTrue(abort);
+  });
+
+  // Tests that entering existing passhrase doesn't abort the sync setup.
+  // Regression test for https://crbug.com/1279483.
+  test('SyncSetupEnterExistingCorrectPassphrase', async function() {
+    // Simulate sync setup in progress.
+    syncPage.syncStatus = {
+      syncSystemEnabled: true,
+      firstSetupInProgress: true,
+      signedIn: true,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    flush();
+    simulateStoredAccounts([{email: 'foo@foo.com'}]);
+
+    // Simulate passphrase enabled.
+    const prefs = getSyncAllPrefs();
+    prefs.encryptAllData = true;
+    prefs.passphraseRequired = true;
+    webUIListenerCallback('sync-prefs-changed', prefs);
+    flush();
+
+    // Enter and submit an existing passphrase.
+    const existingPassphraseInput =
+        syncPage.shadowRoot!.querySelector<CrInputElement>(
+            '#existingPassphraseInput');
+    existingPassphraseInput!.value = 'right';
+    browserProxy.decryptionPassphraseSuccess = true;
+    const submitExistingPassphrase =
+        syncPage.shadowRoot!.querySelector<CrButtonElement>(
+            '#submitExistingPassphrase');
+    submitExistingPassphrase!.click();
+
+    await browserProxy.whenCalled('setDecryptionPassphrase');
+    // The sync setup cancel dialog would appear on next render if the sync
+    // setup was stopped.
+    await waitBeforeNextRender(syncPage);
+
+    // Entering passphrase should not display the cancel dialog and should not
+    // abort the sync setup.
+    const router = Router.getInstance();
+    assertEquals(
+        (router.getRoutes() as SyncRoutes).SYNC, router.getCurrentRoute());
+    const setupCancelDialog =
+        syncPage.shadowRoot!.querySelector<CrDialogElement>(
+            '#setupCancelDialog');
+    assertFalse(!!setupCancelDialog);
+  });
+
+  // Tests that creating a new passhrase doesn't abort the sync setup.
+  // Regression test for https://crbug.com/1279483.
+  test('SyncSetupCreatingValidPassphrase', async function() {
+    // Simulate sync setup in progress.
+    syncPage.syncStatus = {
+      syncSystemEnabled: true,
+      firstSetupInProgress: true,
+      signedIn: true,
+      statusAction: StatusAction.NO_ACTION,
+    };
+    flush();
+    simulateStoredAccounts([{email: 'foo@foo.com'}]);
+
+    // Create and submit a new passphrase.
+    encryptWithPassphrase.click();
+    flush();
+    const passphraseInput =
+        encryptionElement.shadowRoot!.querySelector<CrInputElement>(
+            '#passphraseInput')!;
+    const passphraseConfirmationInput =
+        encryptionElement.shadowRoot!.querySelector<CrInputElement>(
+            '#passphraseConfirmationInput')!;
+    passphraseInput.value = 'foo';
+    passphraseConfirmationInput.value = 'foo';
+    browserProxy.encryptionPassphraseSuccess = true;
+    const saveNewPassphrase =
+        encryptionElement.shadowRoot!.querySelector<CrButtonElement>(
+            '#saveNewPassphrase');
+    saveNewPassphrase!.click();
+
+    await browserProxy.whenCalled('setEncryptionPassphrase');
+    // The sync setup cancel dialog would appear on next render if the sync
+    // setup was stopped.
+    await waitBeforeNextRender(syncPage);
+
+    // Creating passphrase should not display the cancel dialog and should not
+    // abort the sync setup.
+    const router = Router.getInstance();
+    assertEquals(
+        (router.getRoutes() as SyncRoutes).SYNC, router.getCurrentRoute());
+    const setupCancelDialog =
+        syncPage.shadowRoot!.querySelector<CrDialogElement>(
+            '#setupCancelDialog');
+    assertFalse(!!setupCancelDialog);
   });
   // </if>
 
