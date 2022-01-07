@@ -55,8 +55,7 @@ TEST(LanguageDetectionModelTest, EmptyFileProvided) {
       LanguageDetectionModelState::kModelFileInvalid, 1);
 }
 
-// TODO(crbug.com/1240561): Fix flaky test.
-TEST(LanguageDetectionModelTest, DISABLED_UnsupportedModelFileProvided) {
+TEST(LanguageDetectionModelTest, UnsupportedModelFileProvided) {
   base::HistogramTester histogram_tester;
 
   base::File file = CreateInvalidModelFile();
