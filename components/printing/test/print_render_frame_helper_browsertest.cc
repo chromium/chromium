@@ -118,6 +118,29 @@ const char kLongPageHTML[] =
 // A web page to simulate the print preview page.
 const char kPrintPreviewHTML[] =
     "<body><p id=\"pdf-viewer\">Hello World!</p></body>";
+
+const char kHTMLWithManyLinesOfText[] =
+    "<html><head><style>"
+    "p { font-size: 24px; }"
+    "</style></head><body>"
+    "<p>The quick brown fox jumped over the lazy dog.</p>"
+    "<p>The quick brown fox jumped over the lazy dog.</p>"
+    "<p>The quick brown fox jumped over the lazy dog.</p>"
+    "<p>The quick brown fox jumped over the lazy dog.</p>"
+    "<p>The quick brown fox jumped over the lazy dog.</p>"
+    "<p>The quick brown fox jumped over the lazy dog.</p>"
+    "<p>The quick brown fox jumped over the lazy dog.</p>"
+    "<p>The quick brown fox jumped over the lazy dog.</p>"
+    "<p>The quick brown fox jumped over the lazy dog.</p>"
+    "<p>The quick brown fox jumped over the lazy dog.</p>"
+    "<p>The quick brown fox jumped over the lazy dog.</p>"
+    "<p>The quick brown fox jumped over the lazy dog.</p>"
+    "<p>The quick brown fox jumped over the lazy dog.</p>"
+    "<p>The quick brown fox jumped over the lazy dog.</p>"
+    "<p>The quick brown fox jumped over the lazy dog.</p>"
+    "<p>The quick brown fox jumped over the lazy dog.</p>"
+    "<p>The quick brown fox jumped over the lazy dog.</p>"
+    "</body></html>";
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -1022,6 +1045,13 @@ class PrintRenderFrameHelperPreviewTest
               preview_ui()->has_custom_page_size_style());
   }
 
+  void SetLetterMediaSize() {
+    base::Value* media_size_value = print_settings().SetKey(
+        kSettingMediaSize, base::Value(base::Value::Type::DICTIONARY));
+    media_size_value->SetIntKey(kSettingMediaSizeWidthMicrons, 215900);
+    media_size_value->SetIntKey(kSettingMediaSizeHeightMicrons, 279400);
+  }
+
   base::Value& print_settings() { return print_settings_; }
 
  private:
@@ -1518,6 +1548,91 @@ TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewForSelectedText2) {
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
   VerifyDidPreviewPage(true, 0);
   VerifyPreviewPageCount(2);
+  VerifyPrintPreviewCancelled(false);
+  VerifyPrintPreviewFailed(false);
+  VerifyPrintPreviewGenerated(true);
+  VerifyPagesPrinted(false);
+
+  OnClosePrintPreviewDialog();
+}
+
+TEST_F(PrintRenderFrameHelperPreviewTest, PrintPreviewForManyLinesOfText) {
+  LoadHTML(kHTMLWithManyLinesOfText);
+
+  SetLetterMediaSize();
+
+  OnPrintPreview();
+
+  EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
+  VerifyDidPreviewPage(true, 0);
+  VerifyPreviewPageCount(1);
+  VerifyPrintPreviewCancelled(false);
+  VerifyPrintPreviewFailed(false);
+  VerifyPrintPreviewGenerated(true);
+  VerifyPagesPrinted(false);
+
+  OnClosePrintPreviewDialog();
+}
+
+TEST_F(PrintRenderFrameHelperPreviewTest,
+       PrintPreviewForManyLinesOfTextWithScaling) {
+  LoadHTML(kHTMLWithManyLinesOfText);
+
+  SetLetterMediaSize();
+  print_settings().SetIntKey(kSettingScaleFactor, 200);
+
+  OnPrintPreview();
+
+  constexpr int kExpectedPageCount = 3;
+  EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
+  for (int i = 0; i < kExpectedPageCount; ++i)
+    VerifyDidPreviewPage(true, i);
+  VerifyPreviewPageCount(kExpectedPageCount);
+  VerifyPrintPreviewCancelled(false);
+  VerifyPrintPreviewFailed(false);
+  VerifyPrintPreviewGenerated(true);
+  VerifyPagesPrinted(false);
+
+  OnClosePrintPreviewDialog();
+}
+
+TEST_F(PrintRenderFrameHelperPreviewTest,
+       PrintPreviewForManyLinesOfTextWithTextSelection) {
+  LoadHTML(kHTMLWithManyLinesOfText);
+  GetMainFrame()->ExecuteCommand("SelectAll");
+
+  SetLetterMediaSize();
+  print_settings().SetBoolKey(kSettingShouldPrintSelectionOnly, true);
+
+  OnPrintPreview();
+
+  EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
+  VerifyDidPreviewPage(true, 0);
+  VerifyPreviewPageCount(1);
+  VerifyPrintPreviewCancelled(false);
+  VerifyPrintPreviewFailed(false);
+  VerifyPrintPreviewGenerated(true);
+  VerifyPagesPrinted(false);
+
+  OnClosePrintPreviewDialog();
+}
+
+TEST_F(PrintRenderFrameHelperPreviewTest,
+       PrintPreviewForManyLinesOfTextWithTextSelectionAndScaling) {
+  LoadHTML(kHTMLWithManyLinesOfText);
+  GetMainFrame()->ExecuteCommand("SelectAll");
+
+  SetLetterMediaSize();
+  print_settings().SetBoolKey(kSettingShouldPrintSelectionOnly, true);
+  print_settings().SetIntKey(kSettingScaleFactor, 200);
+
+  OnPrintPreview();
+
+  EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
+  VerifyDidPreviewPage(true, 0);
+  // TODO(crbug.com/1023416): The preview should contain 3 pages, like the
+  // PrintPreviewForManyLinesOfTextWithScaling test case.
+  VerifyPreviewPageCount(1);
   VerifyPrintPreviewCancelled(false);
   VerifyPrintPreviewFailed(false);
   VerifyPrintPreviewGenerated(true);
