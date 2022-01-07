@@ -60,14 +60,14 @@ Polymer({
   },
 
   /** @private */
-  format_: async function() {
+  format_: function() {
     try {
-      await validateExternalDriveName(
+      validateExternalDriveName(
           this.label_,
           /** @type {!VolumeManagerCommon.FileSystemType} */
           (this.formatType_));
-    } catch (errorMessage) {
-      this.$.label.setAttribute('error-message', errorMessage);
+    } catch (error) {
+      this.$.label.setAttribute('error-message', error.message);
       this.$.label.invalid = true;
       return;
     }

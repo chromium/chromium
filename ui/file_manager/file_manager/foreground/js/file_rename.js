@@ -7,47 +7,39 @@
  * by the files app frontend.
  */
 
+import {getEntry, getParentEntry, moveEntryTo, validatePathNameLength} from '../../common/js/api.js';
 import {str, strf, util} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 
 /**
  * Renames the entry to newName.
- * @param {Entry} entry The entry to be renamed.
+ * @param {!Entry} entry The entry to be renamed.
  * @param {string} newName The new name.
- * @param {function(Entry)} successCallback Callback invoked when the rename
- *     is successfully done.
- * @param {function(DOMError)} errorCallback Callback invoked when an error
- *     is found.
+ * @return {Promise<!Entry>} The renamed entry.
  */
-export function renameEntry(entry, newName, successCallback, errorCallback) {
-  entry.getParent(parentEntry => {
-    const parent = /** @type {!DirectoryEntry} */ (parentEntry);
+export async function renameEntry(entry, newName) {
+  // Before moving, we need to check if there is an existing entry at
+  // parent/newName, since moveTo will overwrite it.
+  // Note that this way has some timing issue. After existing check,
+  // a new entry may be created in the background. However, there is no way not
+  // to overwrite the existing file, unfortunately. The risk should be low,
+  // assuming the unsafe period is very short.
 
-    // Before moving, we need to check if there is an existing entry at
-    // parent/newName, since moveTo will overwrite it.
-    // Note that this way has some timing issue. After existing check,
-    // a new entry may be create on background. However, there is no way not to
-    // overwrite the existing file, unfortunately. The risk should be low,
-    // assuming the unsafe period is very short.
-    (entry.isFile ? parent.getFile : parent.getDirectory)
-        .call(
-            parent, newName, {create: false},
-            entry => {
-              // The entry with the name already exists.
-              errorCallback(
-                  util.createDOMError(util.FileError.PATH_EXISTS_ERR));
-            },
-            error => {
-              if (error.name != util.FileError.NOT_FOUND_ERR) {
-                // Unexpected error is found.
-                errorCallback(error);
-                return;
-              }
+  const parent = await getParentEntry(entry);
 
-              // No existing entry is found.
-              entry.moveTo(parent, newName, successCallback, errorCallback);
-            });
-  }, errorCallback);
+  try {
+    await getEntry(parent, newName, entry.isFile, {create: false});
+  } catch (error) {
+    if (error.name == util.FileError.NOT_FOUND_ERR) {
+      return moveEntryTo(entry, parent, newName);
+    }
+
+    // Unexpected error found.
+    throw error;
+  }
+
+  // The entry with the name already exists.
+  throw util.createDOMError(util.FileError.PATH_EXISTS_ERR);
 }
 
 /**
@@ -93,35 +85,33 @@ export function getRenameErrorMessage(error, entry, newName) {
  *
  * @param {!DirectoryEntry} parentEntry The entry of the parent directory.
  * @param {string} name New file or folder name.
- * @param {boolean} filterHiddenOn Whether to report the hidden file name error
- *     or not.
- * @return {Promise} Promise fulfilled on success, or rejected with the error
- *     message.
+ * @param {boolean} areHiddenFilesVisible Whether to report the hidden file name
+ *     error or not.
+ * @return {Promise} Fulfills on success, throws error message otherwise.
  */
-export function validateFileName(parentEntry, name, filterHiddenOn) {
+export async function validateFileName(
+    parentEntry, name, areHiddenFilesVisible) {
   const testResult = /[\/\\\<\>\:\?\*\"\|]/.exec(name);
   if (testResult) {
-    return Promise.reject(strf('ERROR_INVALID_CHARACTER', testResult[0]));
-  } else if (/^\s*$/i.test(name)) {
-    return Promise.reject(str('ERROR_WHITESPACE_NAME'));
-  } else if (/^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])$/i.test(name)) {
-    return Promise.reject(str('ERROR_RESERVED_NAME'));
-  } else if (filterHiddenOn && /\.crdownload$/i.test(name)) {
-    return Promise.reject(str('ERROR_RESERVED_NAME'));
-  } else if (filterHiddenOn && name[0] == '.') {
-    return Promise.reject(str('ERROR_HIDDEN_NAME'));
+    throw Error(strf('ERROR_INVALID_CHARACTER', testResult[0]));
+  }
+  if (/^\s*$/i.test(name)) {
+    throw Error(str('ERROR_WHITESPACE_NAME'));
+  }
+  if (/^(CON|PRN|AUX|NUL|COM[1-9]|LPT[1-9])$/i.test(name)) {
+    throw Error(str('ERROR_RESERVED_NAME'));
+  }
+  if (!areHiddenFilesVisible && /\.crdownload$/i.test(name)) {
+    throw Error(str('ERROR_RESERVED_NAME'));
+  }
+  if (!areHiddenFilesVisible && name[0] == '.') {
+    throw Error(str('ERROR_HIDDEN_NAME'));
   }
 
-  return new Promise((fulfill, reject) => {
-    chrome.fileManagerPrivate.validatePathNameLength(
-        parentEntry, name, valid => {
-          if (valid) {
-            fulfill(null);
-          } else {
-            reject(str('ERROR_LONG_NAME'));
-          }
-        });
-  });
+  const isValid = await validatePathNameLength(parentEntry, name);
+  if (!isValid) {
+    throw Error(str('ERROR_LONG_NAME'));
+  }
 }
 
 /**
@@ -131,10 +121,10 @@ export function validateFileName(parentEntry, name, filterHiddenOn) {
  *
  * It also verifies that name length is in the limits of the filesystem.
  *
+ * This function throws if the new label is invalid, else it completes.
+ *
  * @param {string} name New external drive name.
  * @param {!VolumeManagerCommon.FileSystemType} fileSystem
- * @return {Promise} Promise fulfilled on success, or rejected with the error
- *     message.
  */
 export function validateExternalDriveName(name, fileSystem) {
   // Verify if entered name for external drive respects restrictions provided by
@@ -146,20 +136,17 @@ export function validateExternalDriveName(name, fileSystem) {
   // Verify length for the target file system type
   if (lengthLimit.hasOwnProperty(fileSystem) &&
       nameLength > lengthLimit[fileSystem]) {
-    return Promise.reject(
+    throw Error(
         strf('ERROR_EXTERNAL_DRIVE_LONG_NAME', lengthLimit[fileSystem]));
   }
 
-  // Checks if the name contains only alphanumeric characters or allowed special
-  // characters. This needs to stay in sync with cros-disks/filesystem_label.cc
-  // on the ChromeOS side.
+  // Checks if the name contains only alphanumeric characters or allowed
+  // special characters. This needs to stay in sync with
+  // cros-disks/filesystem_label.cc on the ChromeOS side.
   const validCharRegex = /[a-zA-Z0-9 \!\#\$\%\&\(\)\-\@\^\_\`\{\}\~]/;
   for (let i = 0; i < nameLength; i++) {
     if (!validCharRegex.test(name[i])) {
-      return Promise.reject(
-          strf('ERROR_EXTERNAL_DRIVE_INVALID_CHARACTER', name[i]));
+      throw Error(strf('ERROR_EXTERNAL_DRIVE_INVALID_CHARACTER', name[i]));
     }
   }
-
-  return Promise.resolve();
 }

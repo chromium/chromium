@@ -4,6 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {AlertDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
+import {getParentEntry} from '../../common/js/api.js';
 
 import {util} from '../../common/js/util.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
@@ -123,7 +124,7 @@ export class DirectoryTreeNamingController {
    * Commits rename.
    * @private
    */
-  commitRename_() {
+  async commitRename_() {
     const contextMenu = this.inputElement_.contextMenu;
     if (!this.editing_ || (contextMenu && !contextMenu.hidden)) {
       return;
@@ -139,32 +140,22 @@ export class DirectoryTreeNamingController {
       return;
     }
 
-    if (this.isRemovableRoot_) {
-      // Validate new name.
-      validateExternalDriveName(
-          newName,
-          assert(this.volumeInfo_ && this.volumeInfo_.diskFileSystemType))
-          .then(
-              this.performExternalDriveRename_.bind(this, entry, newName),
-              errorMessage => {
-                this.alertDialog_.show(
-                    /** @type {string} */ (errorMessage),
-                    this.detach_.bind(this));
-              });
-    } else {
-      // Validate new name.
-      new Promise(entry.getParent.bind(entry))
-          .then(parentEntry => {
-            return validateFileName(
-                parentEntry, newName,
-                !this.directoryModel_.getFileFilter().isHiddenFilesVisible());
-          })
-          .then(
-              this.performRename_.bind(this, entry, newName), errorMessage => {
-                this.alertDialog_.show(
-                    /** @type {string} */ (errorMessage),
-                    this.detach_.bind(this));
-              });
+    try {
+      if (this.isRemovableRoot_) {
+        validateExternalDriveName(
+            newName,
+            assert(this.volumeInfo_ && this.volumeInfo_.diskFileSystemType));
+        this.performExternalDriveRename_(entry, newName);
+        return;
+      }
+      const parentEntry = await getParentEntry(entry);
+      await validateFileName(
+          parentEntry, newName,
+          this.directoryModel_.getFileFilter().isHiddenFilesVisible());
+      await this.performRename_(entry, newName);
+    } catch (error) {
+      this.alertDialog_.show(
+          /** @type {string} */ (error.message), this.detach_.bind(this));
     }
   }
 
@@ -174,7 +165,7 @@ export class DirectoryTreeNamingController {
    * @param {string} newName Validated name.
    * @private
    */
-  performRename_(entry, newName) {
+  async performRename_(entry, newName) {
     const renamingCurrentDirectory =
         util.isSameEntry(entry, this.directoryModel_.getCurrentDirEntry());
     if (renamingCurrentDirectory) {
@@ -184,36 +175,32 @@ export class DirectoryTreeNamingController {
 
     // TODO(yawano): Rename might take time on some volumes. Optimistically show
     // new name in the UI before actual rename is completed.
-    new Promise(renameEntry.bind(null, entry, newName))
-        .then(
-            newEntry => {
-              // Put the new name in the .label element before detaching the
-              // <input> to prevent showing the old name.
-              this.getLabelElement_().textContent = newName;
+    try {
+      const newEntry = await renameEntry(entry, newName);
 
-              this.currentDirectoryItem_.entry = newEntry;
-              this.currentDirectoryItem_.updateSubDirectories(
-                  true /* recursive */);
+      // Put the new name in the .label element before detaching the
+      // <input> to prevent showing the old name.
+      this.getLabelElement_().textContent = newName;
 
-              this.detach_();
+      this.currentDirectoryItem_.entry = newEntry;
+      this.currentDirectoryItem_.updateSubDirectories(/* recursive= */ true);
 
-              // If renamed directory was current directory, change it to new
-              // one.
-              if (renamingCurrentDirectory) {
-                this.directoryModel_.changeDirectoryEntry(
-                    newEntry,
-                    this.directoryModel_.setIgnoringCurrentDirectoryDeletion
-                        .bind(this.directoryModel_, false /* not ignore */));
-              }
-            },
-            error => {
-              this.directoryModel_.setIgnoringCurrentDirectoryDeletion(
-                  false /* not ignore */);
-              this.detach_();
+      // If renamed directory was current directory, change it to new one.
+      if (renamingCurrentDirectory) {
+        this.directoryModel_.changeDirectoryEntry(
+            /** @type {!DirectoryEntry} */ (newEntry),
+            this.directoryModel_.setIgnoringCurrentDirectoryDeletion.bind(
+                this.directoryModel_, /* ignore= */ false));
+      }
+    } catch (error) {
+      this.directoryModel_.setIgnoringCurrentDirectoryDeletion(
+          /* ignore= */ false);
 
-              this.alertDialog_.show(getRenameErrorMessage(
-                  /** @type {DOMError} */ (error), entry, newName));
-            });
+      this.alertDialog_.show(getRenameErrorMessage(
+          /** @type {DOMError} */ (error), entry, newName));
+    }
+
+    this.detach_();
   }
 
   /**

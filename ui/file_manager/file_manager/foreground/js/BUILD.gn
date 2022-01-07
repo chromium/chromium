@@ -455,6 +455,7 @@ js_library("directory_tree_naming_controller") {
   deps = [
     ":directory_model",
     "ui:directory_tree",
+    "//ui/file_manager/file_manager/common/js:api",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/externs:volume_info",
     "//ui/file_manager/file_manager/foreground/js:file_rename",
@@ -603,6 +604,7 @@ js_library("file_manager") {
 
 js_library("file_rename") {
   deps = [
+    "//ui/file_manager/file_manager/common/js:api",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
   ]
@@ -1005,6 +1007,7 @@ js_library("naming_controller") {
     ":directory_model",
     ":file_selection",
     "ui:list_container",
+    "//ui/file_manager/file_manager/common/js:api",
     "//ui/file_manager/file_manager/common/js:util",
     "//ui/file_manager/file_manager/foreground/js:file_rename",
     "//ui/webui/resources/js:assert.m",

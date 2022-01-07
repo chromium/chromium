@@ -4,6 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {AlertDialog, ConfirmDialog} from 'chrome://resources/js/cr/ui/dialogs.m.js';
+import {getFile} from '../../common/js/api.js';
 
 import {strf, util} from '../../common/js/util.js';
 import {VolumeInfo} from '../../externs/volume_info.js';
@@ -67,83 +68,74 @@ export class NamingController {
   /**
    * Verifies the user entered name for file or folder to be created or
    * renamed to. See also validateFileName.
+   * Returns true immediately if the name is valid, else returns false
+   * after the user has dismissed the error dialog.
    *
    * @param {!DirectoryEntry} parentEntry The URL of the parent directory entry.
    * @param {string} name New file or folder name.
-   * @param {function(boolean)} onDone Function to invoke when user closes the
-   *    warning box or immediately if file name is correct. If the name was
-   *    valid it is passed true, and false otherwise.
+   * @return {!Promise<boolean>} True if valid.
+   * @private
    */
-  validateFileName(parentEntry, name, onDone) {
-    const fileNameErrorPromise = validateFileName(
-        parentEntry, name, !this.fileFilter_.isHiddenFilesVisible());
-    fileNameErrorPromise
-        .then(
-            onDone.bind(null, true),
-            message => {
-              this.alertDialog_.show(
-                  /** @type {string} */ (message), onDone.bind(null, false));
-            })
-        .catch(error => {
-          console.error(error.stack || error);
-        });
+  async validateFileName(parentEntry, name) {
+    try {
+      await validateFileName(
+          parentEntry, name, this.fileFilter_.isHiddenFilesVisible());
+    } catch (error) {
+      await new Promise(
+          (resolve) => this.alertDialog_.show(
+              /** @type {string} */ (error), resolve));
+      return false;
+    }
+    return true;
   }
 
   /**
    * @param {string} filename
    * @return {Promise<string>}
    */
-  validateFileNameForSaving(filename) {
+  async validateFileNameForSaving(filename) {
     const directory =
         /** @type {DirectoryEntry} */ (
             this.directoryModel_.getCurrentDirEntry());
     const currentDirUrl = directory.toURL().replace(/\/?$/, '/');
     const fileUrl = currentDirUrl + encodeURIComponent(filename);
 
-    return new Promise(this.validateFileName.bind(this, directory, filename))
-        .then(isValid => {
-          if (!isValid) {
-            return Promise.reject('Invalid filename.');
-          }
+    try {
+      const isValid = await this.validateFileName(directory, filename);
+      if (!isValid) {
+        throw 'Invalid filename.';
+      }
 
-          if (directory && util.isFakeEntry(directory)) {
-            // Can't save a file into a fake directory.
-            return Promise.reject('Cannot save into fake entry.');
-          }
+      if (directory && util.isFakeEntry(directory)) {
+        // Can't save a file into a fake directory.
+        throw 'Cannot save into fake entry.';
+      }
 
-          return new Promise(
-              directory.getFile.bind(directory, filename, {create: false}));
-        })
-        .then(
-            () => {
-              // An existing file is found. Show confirmation dialog to
-              // overwrite it. If the user select "OK" on the dialog, save it.
-              return new Promise((fulfill, reject) => {
-                this.confirmDialog_.show(
-                    strf('CONFIRM_OVERWRITE_FILE', filename),
-                    fulfill.bind(null, fileUrl), reject.bind(null, 'Cancelled'),
-                    () => {});
-              });
-            },
-            error => {
-              if (error.name == util.FileError.NOT_FOUND_ERR) {
-                // The file does not exist, so it should be ok to create a
-                // new file.
-                return fileUrl;
-              }
+      await getFile(directory, filename, {create: false});
+    } catch (error) {
+      if (error.name == util.FileError.NOT_FOUND_ERR) {
+        // The file does not exist, so it should be ok to create a new file.
+        return fileUrl;
+      }
 
-              if (error.name == util.FileError.TYPE_MISMATCH_ERR) {
-                // An directory is found.
-                // Do not allow to overwrite directory.
-                this.alertDialog_.show(
-                    strf('DIRECTORY_ALREADY_EXISTS', filename));
-                return Promise.reject(error);
-              }
+      if (error.name == util.FileError.TYPE_MISMATCH_ERR) {
+        // A directory is found. Do not allow to overwrite directory.
+        this.alertDialog_.show(strf('DIRECTORY_ALREADY_EXISTS', filename));
+        throw error;
+      }
 
-              // Unexpected error.
-              console.error('File save failed: ' + error.code);
-              return Promise.reject(error);
-            });
+      // Unexpected error.
+      console.error('File save failed: ' + error.code);
+      throw error;
+    }
+
+    // An existing file is found. Show confirmation dialog to overwrite it.
+    // If the user selects "OK", save it.
+    return new Promise((fulfill, reject) => {
+      this.confirmDialog_.show(
+          strf('CONFIRM_OVERWRITE_FILE', filename), fulfill.bind(null, fileUrl),
+          reject.bind(null, 'Cancelled'));
+    });
   }
 
   /**
@@ -272,8 +264,10 @@ export class NamingController {
 
   /**
    * @private
+   * @return {!Promise} Resolves when done renaming - both when renaming is
+   * successful and when it fails.
    */
-  commitRename_() {
+  async commitRename_() {
     const input = this.listContainer_.renameInput;
     const entry = input.currentEntry;
     const newName = input.value;
@@ -288,94 +282,83 @@ export class NamingController {
 
     const volumeInfo = this.volumeInfo_;
     const isRemovableRoot = this.isRemovableRoot_;
+    let isValid = false;
     input.validation_ = true;
-    const validationDone = valid => {
-      input.validation_ = false;
-
-      if (!valid) {
-        // Cancel rename if it fails to restore focus from alert dialog.
-        // Otherwise, just cancel the commitment and continue to rename.
-        if (document.activeElement != input) {
-          this.cancelRename_();
-        }
-        return;
-      }
-
-      // Validation succeeded. Do renaming.
-      this.listContainer_.renameInput.currentEntry = null;
-      if (this.listContainer_.renameInput.parentNode) {
-        this.listContainer_.renameInput.parentNode.removeChild(
-            this.listContainer_.renameInput);
-      }
-
-      // Optimistically apply new name immediately to avoid flickering in
-      // case of success.
-      nameNode.textContent = newName;
-
-      if (isRemovableRoot) {
-        chrome.fileManagerPrivate.renameVolume(volumeInfo.volumeId, newName);
-
-        // Select new entry.
-        this.listContainer_.currentList.selectionModel.selectedIndex =
-            this.directoryModel_.getFileList().indexOf(entry);
-        // Force to update selection immediately.
-        this.selectionHandler_.onFileSelectionChanged();
-
-        renamedItemElement.removeAttribute('renaming');
-        this.listContainer_.endBatchUpdates();
-
-        // Focus may go out of the list. Back it to the list.
-        this.listContainer_.currentList.focus();
-      } else {
-        renameEntry(
-            entry, newName,
-            newEntry => {
-              this.directoryModel_.onRenameEntry(
-                  entry, assert(newEntry), () => {
-                    // Select new entry.
-                    this.listContainer_.currentList.selectionModel
-                        .selectedIndex =
-                        this.directoryModel_.getFileList().indexOf(newEntry);
-                    // Force to update selection immediately.
-                    this.selectionHandler_.onFileSelectionChanged();
-
-                    renamedItemElement.removeAttribute('renaming');
-                    this.listContainer_.endBatchUpdates();
-
-                    // Focus may go out of the list. Back it to the list.
-                    this.listContainer_.currentList.focus();
-                  });
-            },
-            error => {
-              // Write back to the old name.
-              nameNode.textContent = entry.name;
-              renamedItemElement.removeAttribute('renaming');
-              this.listContainer_.endBatchUpdates();
-
-              // Show error dialog.
-              const message = getRenameErrorMessage(error, entry, newName);
-              this.alertDialog_.show(message);
-            });
-      }
-    };
 
     if (isRemovableRoot) {
-      // Validate new name.
-      validateExternalDriveName(
-          newName, assert(volumeInfo && volumeInfo.diskFileSystemType))
-          .then(validationDone.bind(this, true), errorMessage => {
-            this.alertDialog_.show(
-                /** @type {string} */ (errorMessage),
-                validationDone.bind(this, false));
-          });
+      try {
+        const diskFileSystemType =
+            assert(volumeInfo && volumeInfo.diskFileSystemType);
+        validateExternalDriveName(newName, diskFileSystemType);
+        isValid = true;
+      } catch (error) {
+        isValid = false;
+        await new Promise(
+            (resolve) => this.alertDialog_.show(
+                /** @type {string} */ (error.message), resolve));
+      }
     } else {
       // TODO(mtomasz): this.getCurrentDirectoryEntry() might not return the
       // actual parent if the directory content is a search result. Fix it to do
       // proper validation.
-      this.validateFileName(
+      isValid = await this.validateFileName(
           /** @type {!DirectoryEntry} */ (
               this.directoryModel_.getCurrentDirEntry()),
-          newName, validationDone.bind(this));
+          newName);
+    }
+
+    input.validation_ = false;
+
+    if (!isValid) {
+      // Cancel rename if it fails to restore focus from alert dialog.
+      // Otherwise, just cancel the commitment and continue to rename.
+      if (document.activeElement != input) {
+        this.cancelRename_();
+      }
+      return;
+    }
+
+    // Validation succeeded. Do renaming.
+    this.listContainer_.renameInput.currentEntry = null;
+    if (this.listContainer_.renameInput.parentNode) {
+      this.listContainer_.renameInput.parentNode.removeChild(
+          this.listContainer_.renameInput);
+    }
+
+    // Optimistically apply new name immediately to avoid flickering in
+    // case of success.
+    nameNode.textContent = newName;
+
+    try {
+      let newEntry;
+      if (isRemovableRoot) {
+        newEntry = entry;
+        chrome.fileManagerPrivate.renameVolume(volumeInfo.volumeId, newName);
+      } else {
+        newEntry = await renameEntry(entry, newName);
+        await this.directoryModel_.onRenameEntry(entry, assert(newEntry));
+      }
+
+      // Select new entry.
+      this.listContainer_.currentList.selectionModel.selectedIndex =
+          this.directoryModel_.getFileList().indexOf(newEntry);
+      // Force to update selection immediately.
+      this.selectionHandler_.onFileSelectionChanged();
+
+      renamedItemElement.removeAttribute('renaming');
+      this.listContainer_.endBatchUpdates();
+
+      // Focus may go out of the list. Back it to the list.
+      this.listContainer_.currentList.focus();
+    } catch (error) {
+      // Write back to the old name.
+      nameNode.textContent = entry.name;
+      renamedItemElement.removeAttribute('renaming');
+      this.listContainer_.endBatchUpdates();
+
+      // Show error dialog.
+      const message = getRenameErrorMessage(error, entry, newName);
+      this.alertDialog_.show(message);
     }
   }
 

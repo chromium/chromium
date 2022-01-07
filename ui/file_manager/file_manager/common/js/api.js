@@ -57,3 +57,76 @@ export async function resolveIsolatedEntries(isolatedEntries) {
 export async function getPreferences() {
   return promisify(chrome.fileManagerPrivate.getPreferences);
 }
+
+/**
+ * @param {!DirectoryEntry} parentEntry
+ * @param {string} name
+ * @return {!Promise<boolean>} True if valid, else throws.
+ */
+export async function validatePathNameLength(parentEntry, name) {
+  return promisify(
+      chrome.fileManagerPrivate.validatePathNameLength, parentEntry, name);
+}
+
+
+/*
+ * FileSystemEntry helpers
+ */
+
+/**
+ * @param {!Entry} entry
+ * @return {!Promise<!DirectoryEntry>}
+ */
+export async function getParentEntry(entry) {
+  return new Promise((resolve, reject) => {
+    entry.getParent(resolve, reject);
+  });
+}
+
+/**
+ * @param {!Entry} entry
+ * @param {!DirectoryEntry} parent
+ * @param {string} newName
+ * @return {!Promise<!Entry>}
+ */
+export async function moveEntryTo(entry, parent, newName) {
+  return new Promise((resolve, reject) => {
+    entry.moveTo(parent, newName, resolve, reject);
+  });
+}
+
+/**
+ * @param {!DirectoryEntry} directory
+ * @param {string} filename
+ * @param {!Object=} options
+ * @return {!Promise<!FileEntry>}
+ */
+export async function getFile(directory, filename, options) {
+  return new Promise((resolve, reject) => {
+    directory.getFile(filename, options, resolve, reject);
+  });
+}
+
+/**
+ * @param {!DirectoryEntry} directory
+ * @param {string} filename
+ * @param {!Object=} options
+ * @return {!Promise<!DirectoryEntry>}
+ */
+export async function getDirectory(directory, filename, options) {
+  return new Promise((resolve, reject) => {
+    directory.getDirectory(filename, options, resolve, reject);
+  });
+}
+
+/**
+ * @param {!DirectoryEntry} directory
+ * @param {string} filename
+ * @param {boolean} isFile Whether to retrieve a file or a directory.
+ * @param {!Object=} options
+ * @return {!Promise<!Entry>}
+ */
+export async function getEntry(directory, filename, isFile, options) {
+  const getEntry = isFile ? getFile : getDirectory;
+  return getEntry(directory, filename, options);
+}
