@@ -5,6 +5,7 @@
 #include "components/history_clusters/core/on_device_clustering_util.h"
 
 #include "base/containers/contains.h"
+#include "components/history_clusters/core/on_device_clustering_features.h"
 
 namespace history_clusters {
 
@@ -107,6 +108,12 @@ void SortClusters(std::vector<history::Cluster>* clusters) {
     // Use c1 > c2 to get more recent clusters BEFORE older clusters.
     return c1_time > c2_time;
   });
+}
+
+bool IsNoisyVisit(const history::ClusterVisit& visit) {
+  return visit.engagement_score >
+             features::NoisyClusterVisitEngagementThreshold() &&
+         !visit.is_search_visit;
 }
 
 }  // namespace history_clusters

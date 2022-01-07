@@ -125,5 +125,15 @@ int ClusterIntersectionThreshold() {
       kOnDeviceClustering, "content_clustering_intersection_threshold", 2);
 }
 
+bool ShouldIncludeCategoriesInKeywords() {
+  return GetFieldTrialParamByFeatureAsBool(
+      kOnDeviceClustering, "include_categories_in_keywords", true);
+}
+
+bool ShouldExcludeKeywordsFromNoisyVisits() {
+  return GetFieldTrialParamByFeatureAsBool(
+      kOnDeviceClustering, "exclude_keywords_from_noisy_visits", false);
+}
+
 }  // namespace features
 }  // namespace history_clusters

@@ -92,6 +92,13 @@ bool ContentClusterOnIntersectionSimilarity();
 // when clustering based on intersection score.
 int ClusterIntersectionThreshold();
 
+// Whether to include category names in the keywords for a cluster.
+bool ShouldIncludeCategoriesInKeywords();
+
+// Whether to exclude keywords from visits that may be considered "noisy" to the
+// user (i.e. highly engaged, non-SRP).
+bool ShouldExcludeKeywordsFromNoisyVisits();
+
 }  // namespace features
 }  // namespace history_clusters
 

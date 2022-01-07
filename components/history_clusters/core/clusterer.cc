@@ -4,31 +4,10 @@
 
 #include "components/history_clusters/core/clusterer.h"
 
-#include "base/strings/utf_string_conversions.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 
 namespace history_clusters {
-
-namespace {
-
-void AddKeywordsForVisitToCluster(history::Cluster& cluster,
-                                  const history::ClusterVisit& visit) {
-  base::flat_set<std::u16string> keywords_set(cluster.keywords.begin(),
-                                              cluster.keywords.end());
-  for (const auto& entity :
-       visit.annotated_visit.content_annotations.model_annotations.entities) {
-    keywords_set.insert(base::UTF8ToUTF16(entity.id));
-  }
-  for (const auto& category :
-       visit.annotated_visit.content_annotations.model_annotations.categories) {
-    keywords_set.insert(base::UTF8ToUTF16(category.id));
-  }
-  cluster.keywords =
-      std::vector<std::u16string>(keywords_set.begin(), keywords_set.end());
-}
-
-}  // namespace
 
 Clusterer::Clusterer() = default;
 Clusterer::~Clusterer() = default;
@@ -98,15 +77,12 @@ std::vector<history::Cluster> Clusterer::CreateInitialClustersFromVisits(
     default_scored_visit.score = 1.0;
     if (cluster_idx) {
       clusters[*cluster_idx].visits.push_back(default_scored_visit);
-      AddKeywordsForVisitToCluster(clusters[*cluster_idx],
-                                   default_scored_visit);
     } else {
       // Add to new cluster.
       cluster_idx = clusters.size();
 
       history::Cluster new_cluster;
       new_cluster.visits = {default_scored_visit};
-      AddKeywordsForVisitToCluster(new_cluster, default_scored_visit);
       clusters.push_back(std::move(new_cluster));
     }
     visit_id_to_cluster_map[visit.annotated_visit.visit_row.visit_id] =

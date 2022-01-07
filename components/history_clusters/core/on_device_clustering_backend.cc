@@ -18,6 +18,7 @@
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/content_annotations_cluster_processor.h"
 #include "components/history_clusters/core/content_visibility_cluster_finalizer.h"
+#include "components/history_clusters/core/keyword_cluster_finalizer.h"
 #include "components/history_clusters/core/noisy_cluster_finalizer.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
 #include "components/history_clusters/core/on_device_clustering_util.h"
@@ -272,6 +273,7 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
   if (engagement_score_provider_ && features::ShouldFilterNoisyClusters()) {
     cluster_finalizers.push_back(std::make_unique<NoisyClusterFinalizer>());
   }
+  cluster_finalizers.push_back(std::make_unique<KeywordClusterFinalizer>());
 
   // Group visits into clusters.
   std::vector<history::Cluster> clusters =

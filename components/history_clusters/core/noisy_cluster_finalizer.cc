@@ -15,8 +15,7 @@ NoisyClusterFinalizer::~NoisyClusterFinalizer() = default;
 void NoisyClusterFinalizer::FinalizeCluster(history::Cluster& cluster) {
   size_t interesting_visit_cnt = 0;
   for (const auto& visit : cluster.visits) {
-    if (visit.engagement_score <
-        features::NoisyClusterVisitEngagementThreshold()) {
+    if (!IsNoisyVisit(visit)) {
       interesting_visit_cnt += 1;
     }
     if (interesting_visit_cnt >=

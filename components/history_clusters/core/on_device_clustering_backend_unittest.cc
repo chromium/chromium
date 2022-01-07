@@ -72,7 +72,9 @@ class OnDeviceClusteringWithoutContentBackendTest : public ::testing::Test {
         features::kOnDeviceClustering,
         {{"content_clustering_enabled", "false"},
          {"dedupe_similar_visits", "false"},
-         {"min_page_topics_model_version_for_visibility", "125"}});
+         {"min_page_topics_model_version_for_visibility", "125"},
+         {"include_categories_in_keywords", "true"},
+         {"exclude_keywords_from_noisy_visits", "false"}});
   }
 
   void SetUp() override {
@@ -356,8 +358,11 @@ class OnDeviceClusteringWithContentBackendTest
  public:
   OnDeviceClusteringWithContentBackendTest() {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kOnDeviceClustering, {{"content_clustering_enabled", "true"},
-                                        {"dedupe_similar_visits", "false"}});
+        features::kOnDeviceClustering,
+        {{"content_clustering_enabled", "true"},
+         {"dedupe_similar_visits", "false"},
+         {"include_categories_in_keywords", "true"},
+         {"exclude_keywords_from_noisy_visits", "false"}});
   }
 
  private:

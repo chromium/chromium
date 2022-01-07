@@ -140,5 +140,33 @@ TEST_F(OnDeviceClusteringUtilTest, SortClusters) {
   EXPECT_FLOAT_EQ(visits[1].score, 0.5);
 }
 
+TEST_F(OnDeviceClusteringUtilTest, IsNoisyVisitSearchHighEngagementVisit) {
+  history::ClusterVisit visit;
+  visit.is_search_visit = true;
+  visit.engagement_score = 90.0;
+  EXPECT_FALSE(IsNoisyVisit(visit));
+}
+
+TEST_F(OnDeviceClusteringUtilTest, IsNoisyVisitNotSearchHighEngagementVisit) {
+  history::ClusterVisit visit;
+  visit.is_search_visit = false;
+  visit.engagement_score = 90.0;
+  EXPECT_TRUE(IsNoisyVisit(visit));
+}
+
+TEST_F(OnDeviceClusteringUtilTest, IsNoisyVisitNotSearchLowEngagementVisit) {
+  history::ClusterVisit visit;
+  visit.is_search_visit = false;
+  visit.engagement_score = 1.0;
+  EXPECT_FALSE(IsNoisyVisit(visit));
+}
+
+TEST_F(OnDeviceClusteringUtilTest, IsNoisyVisitSearchLowEngagementVisit) {
+  history::ClusterVisit visit;
+  visit.is_search_visit = true;
+  visit.engagement_score = 1.0;
+  EXPECT_FALSE(IsNoisyVisit(visit));
+}
+
 }  // namespace
 }  // namespace history_clusters
