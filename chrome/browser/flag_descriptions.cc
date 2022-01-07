@@ -4435,12 +4435,6 @@ const char kEnableAppReinstallZeroStateDescription[] =
     "Enable Zero State App Reinstall Suggestions feature in launcher, which "
     "will show app reinstall recommendations at end of zero state list.";
 
-const char kEnableAssistantLauncherIntegrationName[] =
-    "Assistant & Launcher integration";
-const char kEnableAssistantLauncherIntegrationDescription[] =
-    "Combine Launcher search with the power of Assistant to provide the most "
-    "useful answer for each query. Requires Assistant to be enabled.";
-
 const char kEnableAssistantRoutinesName[] = "Assistant Routines";
 const char kEnableAssistantRoutinesDescription[] = "Enable Assistant Routines.";
 

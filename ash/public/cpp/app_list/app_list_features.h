@@ -43,9 +43,6 @@ ASH_PUBLIC_EXPORT extern const base::Feature kEnableSuggestedFiles;
 // Enables local file suggestions in the suggestion chips.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableSuggestedLocalFiles;
 
-// Enables the Assistant search redirection in the app list.
-ASH_PUBLIC_EXPORT extern const base::Feature kEnableAssistantSearch;
-
 // Enables hashed recording of a app list launches.
 ASH_PUBLIC_EXPORT extern const base::Feature kEnableAppListLaunchRecording;
 
@@ -79,7 +76,6 @@ ASH_PUBLIC_EXPORT bool IsZeroStateMixedTypesRankerEnabled();
 ASH_PUBLIC_EXPORT bool IsAppReinstallZeroStateEnabled();
 ASH_PUBLIC_EXPORT bool IsSuggestedFilesEnabled();
 ASH_PUBLIC_EXPORT bool IsSuggestedLocalFilesEnabled();
-ASH_PUBLIC_EXPORT bool IsAssistantSearchEnabled();
 ASH_PUBLIC_EXPORT bool IsAppListLaunchRecordingEnabled();
 ASH_PUBLIC_EXPORT bool IsFuzzyAppSearchEnabled();
 ASH_PUBLIC_EXPORT bool IsExactMatchForNonLatinLocaleEnabled();

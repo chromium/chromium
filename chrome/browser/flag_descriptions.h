@@ -2551,9 +2551,6 @@ extern const char kCrOSEnforceSystemAecNsAgcDescription[];
 extern const char kEnableAppReinstallZeroStateName[];
 extern const char kEnableAppReinstallZeroStateDescription[];
 
-extern const char kEnableAssistantLauncherIntegrationName[];
-extern const char kEnableAssistantLauncherIntegrationDescription[];
-
 extern const char kEnableAssistantRoutinesName[];
 extern const char kEnableAssistantRoutinesDescription[];
 

@@ -106,11 +106,9 @@ std::unique_ptr<SearchController> CreateSearchController(
   controller->AddProvider(omnibox_group_id, std::make_unique<OmniboxProvider>(
                                                 profile, list_controller));
 
-  if (app_list_features::IsAssistantSearchEnabled()) {
-    size_t assistant_group_id = controller->AddGroup(kMaxAssistantTextResults);
-    controller->AddProvider(assistant_group_id,
-                            std::make_unique<AssistantTextSearchProvider>());
-  }
+  size_t assistant_group_id = controller->AddGroup(kMaxAssistantTextResults);
+  controller->AddProvider(assistant_group_id,
+                          std::make_unique<AssistantTextSearchProvider>());
 
   // File search providers are added only when not in guest session and running
   // on Chrome OS.

@@ -5677,13 +5677,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFileHandlingIconsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(blink::features::kFileHandlingIcons)},
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    {"enable-assistant-launcher-integration",
-     flag_descriptions::kEnableAssistantLauncherIntegrationName,
-     flag_descriptions::kEnableAssistantLauncherIntegrationDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(app_list_features::kEnableAssistantSearch)},
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
     {"strict-origin-isolation", flag_descriptions::kStrictOriginIsolationName,
      flag_descriptions::kStrictOriginIsolationDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kStrictOriginIsolation)},

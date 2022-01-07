@@ -2715,11 +2715,6 @@ TEST_P(AppListViewTabletTest, PagePersistanceTabletModeTest) {
 // TODO(https://crbug.com/1280300): Figure out if ProductivityLauncher needs a
 // version of this test. ProductivityLauncherSearchView has its own test suite.
 TEST_F(AppListViewPeekingFocusTest, ShowEmbeddedAssistantUI) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {app_list_features::kEnableAssistantSearch}, {});
-  ASSERT_TRUE(app_list_features::IsAssistantSearchEnabled());
-
   Show();
 
   // Initially the search box is inactive, hitting Enter to activate it.
