@@ -94,14 +94,10 @@ gfx::Size CalculateBestFitSize(const gfx::Size& page_size,
 
 }  // namespace
 
-Thumbnail::Thumbnail() = default;
-
-Thumbnail::Thumbnail(const gfx::Size& page_size, float device_pixel_ratio) {
-  DCHECK_GE(device_pixel_ratio, kMinDevicePixelRatio);
-  DCHECK_LE(device_pixel_ratio, kMaxDevicePixelRatio);
-  device_pixel_ratio_ = base::clamp(device_pixel_ratio, kMinDevicePixelRatio,
-                                    kMaxDevicePixelRatio);
-
+Thumbnail::Thumbnail(const gfx::Size& page_size, float device_pixel_ratio)
+    : device_pixel_ratio_(base::clamp(device_pixel_ratio,
+                                      kMinDevicePixelRatio,
+                                      kMaxDevicePixelRatio)) {
   const gfx::Size thumbnail_size_device_pixels =
       CalculateBestFitSize(page_size, device_pixel_ratio_);
 

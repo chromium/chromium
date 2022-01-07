@@ -15,7 +15,6 @@ namespace chrome_pdf {
 
 class Thumbnail final {
  public:
-  Thumbnail();
   Thumbnail(const gfx::Size& page_size, float device_pixel_ratio);
   Thumbnail(Thumbnail&& other);
   Thumbnail& operator=(Thumbnail&& other);
@@ -33,7 +32,7 @@ class Thumbnail final {
   // are the dimensions of the thumbnail in CSS pixels multiplied by
   // `device_pixel_ratio_`.
   // Only values between 0.25 and 2 are supported.
-  float device_pixel_ratio_ = 1;
+  float device_pixel_ratio_;
 };
 
 }  // namespace chrome_pdf
