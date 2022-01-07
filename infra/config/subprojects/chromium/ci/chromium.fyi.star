@@ -38,6 +38,7 @@ consoles.console_view(
             "network",
             "viz",
             "win10",
+            "win11",
             "win32",
             "paeverywhere",
             "backuprefptr",
@@ -1144,6 +1145,18 @@ ci.builder(
     ),
     os = os.WINDOWS_10,
     notifies = ["Win 10 Fast Ring"],
+)
+
+ci.builder(
+    name = "Win11 Tests x64",
+    builderless = True,
+    console_view_entry = consoles.console_view_entry(
+        category = "win11",
+    ),
+    goma_backend = None,
+    main_console_view = None,
+    os = os.WINDOWS_10,
+    triggered_by = ["ci/Win x64 Builder"],
 )
 
 ci.builder(

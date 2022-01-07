@@ -106,6 +106,14 @@ try_.builder(
 )
 
 try_.builder(
+    name = "win11-x64-fyi-rel",
+    builderless = True,
+    use_clang_coverage = True,
+    coverage_test_types = ["unit", "overall"],
+    os = os.WINDOWS_10,
+)
+
+try_.builder(
     name = "win10_chromium_inverse_fieldtrials_x64_fyi_rel_ng",
     os = os.WINDOWS_10,
 )

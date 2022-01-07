@@ -1194,6 +1194,7 @@
       'win10_chromium_x64_rel_ng_exp': 'release_trybot',
       'win10_chromium_x64_rel_ng_rts': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage',
       'win10-rel-orchestrator': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage',
+      'win11-x64-fyi-rel': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage',
       'win-annotator-rel': 'release_trybot',
       'win-asan': 'asan_clang_fuzzer_static_v8_heap_minimal_symbols_release',
       'win-celab-try-rel': 'release_bot_minimal_symbols',

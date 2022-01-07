@@ -376,6 +376,15 @@
           'Debug_x64',
         ],
       },
+      'Win11 Tests x64': {
+        'args': [
+          '--target',
+          'Release_x64',
+        ],
+        'swarming': {
+          "shards": 28
+        },
+      },
       'Win7 Tests (dbg)(1)': {
         'args': [
           '--debug',
@@ -662,6 +671,18 @@
         },
       },
       'Win10 Tests x64': {
+        # crbug.com/868082
+        'args': [
+          '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
+        ],
+        'swarming': {
+          # This is for slow test execution that often becomes a critical path of
+          # swarming jobs. crbug.com/868114
+          'shards': 15,
+          'quickrun_shards': 30,
+        }
+      },
+      'Win11 Tests x64': {
         # crbug.com/868082
         'args': [
           '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
@@ -1232,6 +1253,12 @@
       },
       'Win10 Tests x64 (dbg)': {
         'experiment_percentage': 100,
+        # crbug.com/868082
+        'args': [
+          '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
+        ],
+      },
+      'Win11 Tests x64': {
         # crbug.com/868082
         'args': [
           '--disable-features=WebRTC-H264WithOpenH264FFmpeg',
@@ -2963,6 +2990,7 @@
       'Linux - Future (dbg)',  # client.v8.chromium
       'Win10 Tests x64',
       'Win10 Tests x64 (dbg)',
+      'Win11 Tests x64',
     ],
   },
   'telemetry_unittests': {
@@ -2980,6 +3008,7 @@
       'Mac10.11 Tests',
 
       'Win10 Tests x64',
+      'Win11 Tests x64',
 
       # TODO(https://crbug.com/1267161): Re-enable when platform is supported.
       'mac11-arm64-rel-tests',

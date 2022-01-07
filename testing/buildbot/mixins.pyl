@@ -1106,6 +1106,13 @@
       ],
     },
   },
+  'win11': {
+    'swarming': {
+      'dimensions': {
+        'os': 'Windows-11-22000',
+      },
+    },
+  },
   'win7': {
     'swarming': {
       'dimensions': {
