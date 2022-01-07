@@ -283,8 +283,10 @@ def generate_callback_interface(callback_interface_identifier):
         "third_party/blink/renderer/platform/bindings/callback_interface_base.h",
         "third_party/blink/renderer/platform/bindings/v8_value_or_script_wrappable_adapter.h",
     ])
+    source_node.accumulator.add_stdcpp_include_headers([
+        "tuple",
+    ])
     source_node.accumulator.add_include_headers([
-        "base/ignore_result.h",
         "third_party/blink/renderer/bindings/core/v8/callback_invoke_helper.h",
         "third_party/blink/renderer/bindings/core/v8/generated_code_helper.h",
         "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h",

@@ -55,10 +55,21 @@ def make_header_include_directives(accumulator):
             self._accumulator = accumulator
 
         def __str__(self):
-            return "\n".join([
+            lines = []
+
+            if self._accumulator.stdcpp_include_headers:
+                lines.extend([
+                    "#include <{}>".format(header) for header in sorted(
+                        self._accumulator.stdcpp_include_headers)
+                ])
+                lines.append("")
+
+            lines.extend([
                 "#include \"{}\"".format(header)
                 for header in sorted(self._accumulator.include_headers)
             ])
+
+            return "\n".join(lines)
 
     return LiteralNode(HeaderIncludeDirectives(accumulator))
 
