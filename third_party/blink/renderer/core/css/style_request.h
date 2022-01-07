@@ -64,7 +64,10 @@ class StyleRequest {
       : parent_override(parent_override),
         layout_parent_override(parent_override),
         pseudo_id(pseudo_id),
-        pseudo_argument(pseudo_argument) {}
+        pseudo_argument(pseudo_argument) {
+    DCHECK(!IsTransitionPseudoElement(pseudo_id) ||
+           pseudo_id == kPseudoIdTransition || pseudo_argument);
+  }
 
   StyleRequest(PseudoId pseudo_id,
                CustomScrollbar* scrollbar,

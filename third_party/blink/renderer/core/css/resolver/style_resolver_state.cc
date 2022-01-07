@@ -55,7 +55,9 @@ StyleResolverState::StyleResolverState(
       layout_parent_style_(style_request.layout_parent_override),
       pseudo_request_type_(style_request.type),
       font_builder_(&document),
-      pseudo_element_(element.GetPseudoElement(style_request.pseudo_id)),
+      pseudo_element_(
+          element.GetNestedPseudoElement(style_request.pseudo_id,
+                                         style_request.pseudo_argument)),
       element_style_resources_(GetElement(),
                                document.DevicePixelRatio(),
                                pseudo_element_),

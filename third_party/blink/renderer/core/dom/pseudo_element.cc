@@ -28,7 +28,9 @@
 
 #include <utility>
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_pseudo_element_base.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -44,12 +46,20 @@
 
 namespace blink {
 
-PseudoElement* PseudoElement::Create(Element* parent, PseudoId pseudo_id) {
-  if (pseudo_id == kPseudoIdFirstLetter)
+PseudoElement* PseudoElement::Create(
+    Element* parent,
+    PseudoId pseudo_id,
+    const AtomicString& document_transition_tag) {
+  if (pseudo_id == kPseudoIdFirstLetter) {
     return MakeGarbageCollected<FirstLetterPseudoElement>(parent);
+  } else if (IsTransitionPseudoElement(pseudo_id)) {
+    return MakeGarbageCollected<DocumentTransitionPseudoElementBase>(
+        parent, pseudo_id, document_transition_tag);
+  }
   DCHECK(pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdBefore ||
          pseudo_id == kPseudoIdBackdrop || pseudo_id == kPseudoIdMarker);
-  return MakeGarbageCollected<PseudoElement>(parent, pseudo_id);
+  return MakeGarbageCollected<PseudoElement>(parent, pseudo_id,
+                                             document_transition_tag);
 }
 
 const QualifiedName& PseudoElementTagName(PseudoId pseudo_id) {
@@ -79,6 +89,30 @@ const QualifiedName& PseudoElementTagName(PseudoId pseudo_id) {
                           (g_null_atom, "::marker", g_null_atom));
       return marker;
     }
+    case kPseudoIdTransition: {
+      DEFINE_STATIC_LOCAL(QualifiedName, transition,
+                          (g_null_atom, "::transition", g_null_atom));
+      return transition;
+    }
+    case kPseudoIdTransitionContainer: {
+      // TODO(khushalsagar) : Update these tag names to include the additional
+      // ID.
+      DEFINE_STATIC_LOCAL(QualifiedName, transition_container,
+                          (g_null_atom, "::transition-container", g_null_atom));
+      return transition_container;
+    }
+    case kPseudoIdTransitionNewContent: {
+      DEFINE_STATIC_LOCAL(
+          QualifiedName, transition_new_content,
+          (g_null_atom, "::transition-new-content", g_null_atom));
+      return transition_new_content;
+    }
+    case kPseudoIdTransitionOldContent: {
+      DEFINE_STATIC_LOCAL(
+          QualifiedName, transition_old_content,
+          (g_null_atom, "::transition-old-content", g_null_atom));
+      return transition_old_content;
+    }
     default:
       NOTREACHED();
   }
@@ -101,16 +135,27 @@ bool PseudoElement::IsWebExposed(PseudoId pseudo_id, const Node* parent) {
       if (parent && parent->IsPseudoElement())
         return RuntimeEnabledFeatures::CSSMarkerNestedPseudoElementEnabled();
       return true;
+    case kPseudoIdTransition:
+    case kPseudoIdTransitionContainer:
+    case kPseudoIdTransitionNewContent:
+    case kPseudoIdTransitionOldContent:
+      return RuntimeEnabledFeatures::DocumentTransitionEnabled(
+                 parent->GetExecutionContext()) &&
+             base::FeatureList::IsEnabled(
+                 features::kDocumentTransitionRenderer);
     default:
       return true;
   }
 }
 
-PseudoElement::PseudoElement(Element* parent, PseudoId pseudo_id)
+PseudoElement::PseudoElement(Element* parent,
+                             PseudoId pseudo_id,
+                             const AtomicString& document_transition_tag)
     : Element(PseudoElementTagName(pseudo_id),
               &parent->GetDocument(),
               kCreateElement),
-      pseudo_id_(pseudo_id) {
+      pseudo_id_(pseudo_id),
+      document_transition_tag_(document_transition_tag) {
   DCHECK_NE(pseudo_id, kPseudoIdNone);
   parent->GetTreeScope().AdoptIfNeeded(*this);
   SetParentOrShadowHostNode(parent);
@@ -126,8 +171,8 @@ scoped_refptr<ComputedStyle> PseudoElement::CustomStyleForLayoutObject(
     const StyleRecalcContext& style_recalc_context) {
   Element* parent = ParentOrShadowHostElement();
   return parent->StyleForPseudoElement(
-      style_recalc_context,
-      StyleRequest(pseudo_id_, parent->GetComputedStyle()));
+      style_recalc_context, StyleRequest(pseudo_id_, parent->GetComputedStyle(),
+                                         document_transition_tag_));
 }
 
 scoped_refptr<ComputedStyle> PseudoElement::LayoutStyleForDisplayContents(
@@ -262,6 +307,15 @@ Node* PseudoElement::InnerNodeForHitTesting() const {
   return parent;
 }
 
+Element* PseudoElement::OriginatingElement() const {
+  auto* parent = parentElement();
+
+  while (parent && parent->IsPseudoElement())
+    parent = parent->parentElement();
+
+  return parent;
+}
+
 bool PseudoElementLayoutObjectIsNeeded(const ComputedStyle* pseudo_style,
                                        const Element* originating_element) {
   if (!pseudo_style)
@@ -271,6 +325,10 @@ bool PseudoElementLayoutObjectIsNeeded(const ComputedStyle* pseudo_style,
   switch (pseudo_style->StyleType()) {
     case kPseudoIdFirstLetter:
     case kPseudoIdBackdrop:
+    case kPseudoIdTransition:
+    case kPseudoIdTransitionContainer:
+    case kPseudoIdTransitionNewContent:
+    case kPseudoIdTransitionOldContent:
       return true;
     case kPseudoIdBefore:
     case kPseudoIdAfter:

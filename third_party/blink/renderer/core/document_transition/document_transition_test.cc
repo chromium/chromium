@@ -12,8 +12,13 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_prepare_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_start_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_root_transition_type.h"
+#include "third_party/blink/renderer/core/css/style_change_reason.h"
+#include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_utils.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
+#include "third_party/blink/renderer/core/dom/node_computed_style.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -549,6 +554,83 @@ TEST_P(DocumentTransitionTest, AbortSignal) {
   prepare_tester.WaitUntilSettled();
   EXPECT_TRUE(prepare_tester.IsRejected());
   EXPECT_EQ(GetState(transition), State::kIdle);
+}
+
+// Checks that the pseudo element tree is correctly build for ::transition*
+// pseudo elements.
+TEST_P(DocumentTransitionTest, DocumentTransitionPseudoTree) {
+  SetHtmlInnerHTML(R"HTML(
+    <style>
+      html::transition {
+        display: block;
+      }
+      html::transition-container(*) {
+        display: block;
+      }
+      html::transition-old-content(*) {
+        display: block;
+      }
+      html::transition-new-content(*) {
+        display: block;
+      }
+    </style>
+  )HTML");
+
+  Vector<AtomicString> document_transition_tags = {"foo", "bar", "baz"};
+  GetDocument().GetStyleEngine().SetDocumentTransitionTags(
+      document_transition_tags);
+  GetDocument().documentElement()->SetNeedsStyleRecalc(
+      kLocalStyleChange, StyleChangeReasonForTracing::Create("Test"));
+  auto invalidate_style = [](PseudoElement* pseudo_element) {
+    pseudo_element->SetNeedsStyleRecalc(
+        kLocalStyleChange, StyleChangeReasonForTracing::Create("Test"));
+  };
+  DocumentTransitionUtils::ForEachTransitionPseudo(GetDocument(),
+                                                   invalidate_style);
+  GetDocument().UpdateStyleAndLayoutTreeForThisDocument();
+
+  auto* transition_pseudo =
+      GetDocument().documentElement()->GetPseudoElement(kPseudoIdTransition);
+  ASSERT_TRUE(transition_pseudo);
+  EXPECT_TRUE(transition_pseudo->GetComputedStyle());
+  EXPECT_TRUE(transition_pseudo->GetLayoutObject());
+
+  PseudoElement* previous_container = nullptr;
+  for (const auto& document_transition_tag : document_transition_tags) {
+    auto* container_pseudo = transition_pseudo->GetPseudoElement(
+        kPseudoIdTransitionContainer, document_transition_tag);
+    ASSERT_TRUE(container_pseudo);
+    EXPECT_TRUE(container_pseudo->GetComputedStyle());
+    EXPECT_TRUE(container_pseudo->GetLayoutObject());
+
+    if (previous_container) {
+      EXPECT_EQ(LayoutTreeBuilderTraversal::NextSibling(*previous_container),
+                container_pseudo);
+    }
+    previous_container = container_pseudo;
+
+    auto* old_content = container_pseudo->GetPseudoElement(
+        kPseudoIdTransitionOldContent, document_transition_tag);
+    ASSERT_TRUE(old_content);
+    EXPECT_TRUE(old_content->GetComputedStyle());
+    EXPECT_TRUE(old_content->GetLayoutObject());
+
+    auto* new_content = container_pseudo->GetPseudoElement(
+        kPseudoIdTransitionNewContent, document_transition_tag);
+    ASSERT_TRUE(new_content);
+    EXPECT_TRUE(new_content->GetComputedStyle());
+    EXPECT_TRUE(new_content->GetLayoutObject());
+  }
+
+  GetDocument().GetStyleEngine().SetDocumentTransitionTags({});
+  GetDocument().documentElement()->SetNeedsStyleRecalc(
+      kLocalStyleChange, StyleChangeReasonForTracing::Create("Test"));
+  DocumentTransitionUtils::ForEachTransitionPseudo(GetDocument(),
+                                                   invalidate_style);
+  GetDocument().UpdateStyleAndLayoutTreeForThisDocument();
+  transition_pseudo =
+      GetDocument().documentElement()->GetPseudoElement(kPseudoIdTransition);
+  EXPECT_FALSE(transition_pseudo);
 }
 
 }  // namespace blink

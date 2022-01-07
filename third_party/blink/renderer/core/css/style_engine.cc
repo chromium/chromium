@@ -2361,7 +2361,7 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
       DCHECK(FlatTreeTraversal::ContainsIncludingPseudoElement(
           container, *layout_tree_rebuild_root_.GetRootNode()));
     }
-    RebuildLayoutTree();
+    RebuildLayoutTree(RebuildTransitionPseudoTree::kNo);
   }
 
   if (container == GetDocument().documentElement()) {
@@ -2396,6 +2396,15 @@ void StyleEngine::RecalcStyle(StyleRecalcChange change,
     PropagateWritingModeAndDirectionToHTMLRoot();
 }
 
+void StyleEngine::RecalcTransitionPseudoStyle() {
+  // TODO(khushalsagar) : This forces a style recalc and layout tree rebuild
+  // for the pseudo element tree each time we do a style recalc phase. See if
+  // we can optimize this to only when the pseudo element tree is dirtied.
+  SelectorFilterRootScope filter_scope(nullptr);
+  document_->documentElement()->RecalcTransitionPseudoTreeStyle(
+      document_transition_tags_);
+}
+
 void StyleEngine::RecalcStyle() {
   Element& root_element = style_recalc_root_.RootElement();
 
@@ -2405,6 +2414,7 @@ void StyleEngine::RecalcStyle() {
           : StyleRecalcContext();
 
   RecalcStyle({}, style_recalc_context);
+  RecalcTransitionPseudoStyle();
 }
 
 void StyleEngine::ClearEnsuredDescendantStyles(Element& root) {
@@ -2433,7 +2443,8 @@ void StyleEngine::RebuildLayoutTreeForTraversalRootAncestors(Element* parent) {
   }
 }
 
-void StyleEngine::RebuildLayoutTree() {
+void StyleEngine::RebuildLayoutTree(
+    RebuildTransitionPseudoTree rebuild_transition_pseudo_tree) {
   bool propagate_to_root = false;
   {
     DCHECK(GetDocument().documentElement());
@@ -2452,6 +2463,10 @@ void StyleEngine::RebuildLayoutTree() {
 
     RebuildLayoutTreeForTraversalRootAncestors(
         root_element.GetReattachParent());
+    if (rebuild_transition_pseudo_tree == RebuildTransitionPseudoTree::kYes) {
+      document_->documentElement()->RebuildTransitionPseudoLayoutTree(
+          document_transition_tags_);
+    }
     layout_tree_rebuild_root_.Clear();
     propagate_to_root = IsA<HTMLHtmlElement>(root_element) ||
                         IsA<HTMLBodyElement>(root_element);
@@ -2459,7 +2474,7 @@ void StyleEngine::RebuildLayoutTree() {
   if (propagate_to_root) {
     PropagateWritingModeAndDirectionToHTMLRoot();
     if (NeedsLayoutTreeRebuild())
-      RebuildLayoutTree();
+      RebuildLayoutTree(rebuild_transition_pseudo_tree);
   }
 }
 
@@ -2496,7 +2511,7 @@ void StyleEngine::UpdateStyleAndLayoutTree() {
     if (NeedsLayoutTreeRebuild()) {
       TRACE_EVENT0("blink,blink_style", "Document::rebuildLayoutTree");
       SCOPED_BLINK_UMA_HISTOGRAM_TIMER_HIGHRES("Style.RebuildLayoutTreeTime");
-      RebuildLayoutTree();
+      RebuildLayoutTree(RebuildTransitionPseudoTree::kYes);
     }
   } else {
     style_recalc_root_.Clear();

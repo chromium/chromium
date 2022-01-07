@@ -73,6 +73,7 @@
 #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_utils.h"
 #include "third_party/blink/renderer/core/dom/attr.h"
 #include "third_party/blink/renderer/core/dom/dataset_dom_string_map.h"
 #include "third_party/blink/renderer/core/dom/document.h"
@@ -161,6 +162,7 @@
 #include "third_party/blink/renderer/core/scroll/scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/svg/svg_a_element.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_href.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
@@ -179,6 +181,7 @@
 #include "third_party/blink/renderer/platform/region_capture_crop_id.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_functions.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_position.h"
 #include "ui/accessibility/ax_mode.h"
@@ -5699,20 +5702,21 @@ void Element::UpdateFirstLetterPseudoElement(
   }
 }
 
-void Element::UpdatePseudoElement(
+PseudoElement* Element::UpdatePseudoElement(
     PseudoId pseudo_id,
     const StyleRecalcChange change,
-    const StyleRecalcContext& style_recalc_context) {
-  PseudoElement* element = GetPseudoElement(pseudo_id);
+    const StyleRecalcContext& style_recalc_context,
+    const AtomicString& document_transition_tag) {
+  PseudoElement* element = GetPseudoElement(pseudo_id, document_transition_tag);
   if (!element) {
-    if ((element =
-             CreatePseudoElementIfNeeded(pseudo_id, style_recalc_context))) {
+    if ((element = CreatePseudoElementIfNeeded(pseudo_id, style_recalc_context,
+                                               document_transition_tag))) {
       // ::before and ::after can have a nested ::marker
       element->CreatePseudoElementIfNeeded(kPseudoIdMarker,
                                            style_recalc_context);
       element->SetNeedsReattachLayoutTree();
     }
-    return;
+    return element;
   }
 
   if (change.ShouldUpdatePseudoElement(*element)) {
@@ -5726,15 +5730,20 @@ void Element::UpdatePseudoElement(
       }
     }
     if (!generate_pseudo) {
-      GetElementRareData()->SetPseudoElement(pseudo_id, nullptr);
+      GetElementRareData()->SetPseudoElement(pseudo_id, nullptr,
+                                             document_transition_tag);
       GetDocument().GetStyleEngine().PseudoElementRemoved(*this);
+      element = nullptr;
     }
   }
+
+  return element;
 }
 
 PseudoElement* Element::CreatePseudoElementIfNeeded(
     PseudoId pseudo_id,
-    const StyleRecalcContext& style_recalc_context) {
+    const StyleRecalcContext& style_recalc_context,
+    const AtomicString& document_transition_tag) {
   if (!CanGeneratePseudoElement(pseudo_id))
     return nullptr;
   if (pseudo_id == kPseudoIdFirstLetter) {
@@ -5742,19 +5751,24 @@ PseudoElement* Element::CreatePseudoElementIfNeeded(
       return nullptr;
   }
 
-  PseudoElement* pseudo_element = PseudoElement::Create(this, pseudo_id);
-  EnsureElementRareData().SetPseudoElement(pseudo_id, pseudo_element);
+  PseudoElement* pseudo_element =
+      PseudoElement::Create(this, pseudo_id, document_transition_tag);
+  EnsureElementRareData().SetPseudoElement(pseudo_id, pseudo_element,
+                                           document_transition_tag);
   pseudo_element->InsertedInto(*this);
 
   scoped_refptr<ComputedStyle> pseudo_style =
       pseudo_element->StyleForLayoutObject(style_recalc_context);
   if (!PseudoElementLayoutObjectIsNeeded(pseudo_style.get(), this)) {
-    GetElementRareData()->SetPseudoElement(pseudo_id, nullptr);
+    GetElementRareData()->SetPseudoElement(pseudo_id, nullptr,
+                                           document_transition_tag);
     return nullptr;
   }
 
   if (pseudo_id == kPseudoIdBackdrop)
     GetDocument().AddToTopLayer(pseudo_element, this);
+  else if (pseudo_id == kPseudoIdTransition)
+    GetDocument().AddToTopLayer(pseudo_element);
 
   pseudo_element->SetComputedStyle(pseudo_style);
 
@@ -5781,9 +5795,39 @@ void Element::DetachPseudoElement(PseudoId pseudo_id,
     pseudo_element->DetachLayoutTree(performing_reattach);
 }
 
-PseudoElement* Element::GetPseudoElement(PseudoId pseudo_id) const {
-  return HasRareData() ? GetElementRareData()->GetPseudoElement(pseudo_id)
+PseudoElement* Element::GetPseudoElement(
+    PseudoId pseudo_id,
+    const AtomicString& document_transition_tag) const {
+  return HasRareData() ? GetElementRareData()->GetPseudoElement(
+                             pseudo_id, document_transition_tag)
                        : nullptr;
+}
+
+PseudoElement* Element::GetNestedPseudoElement(
+    PseudoId pseudo_id,
+    const AtomicString& document_transition_tag) const {
+  if (!IsTransitionPseudoElement(pseudo_id))
+    return GetPseudoElement(pseudo_id, document_transition_tag);
+
+  // This traverses the pseudo element hierarchy generated in
+  // RecalcTransitionPseudoTreeStyle to query nested ::transition-container and
+  // ::transition-*-content pseudo elements.
+  DCHECK_EQ(this, GetDocument().documentElement());
+  auto* transition_pseudo = GetPseudoElement(kPseudoIdTransition);
+  if (pseudo_id == kPseudoIdTransition)
+    return transition_pseudo;
+
+  auto* container_pseudo =
+      transition_pseudo
+          ? transition_pseudo->GetPseudoElement(kPseudoIdTransitionContainer,
+                                                document_transition_tag)
+          : nullptr;
+  if (pseudo_id == kPseudoIdTransitionContainer)
+    return container_pseudo;
+
+  return container_pseudo ? container_pseudo->GetPseudoElement(
+                                pseudo_id, document_transition_tag)
+                          : nullptr;
 }
 
 LayoutObject* Element::PseudoElementLayoutObject(PseudoId pseudo_id) const {
@@ -5901,11 +5945,21 @@ scoped_refptr<ComputedStyle> Element::StyleForPseudoElement(
     return result;
   }
 
+  // Use the originating DOM element when resolving style for ::transition*
+  // pseudo elements instead of the element's direct ancestor (which could
+  // itself be a pseudo element).
+  auto* originating_element = IsTransitionPseudoElement(GetPseudoId())
+                                  ? GetDocument().documentElement()
+                                  : this;
   return GetDocument().GetStyleResolver().ResolveStyle(
-      this, style_recalc_context, request);
+      originating_element, style_recalc_context, request);
 }
 
 bool Element::CanGeneratePseudoElement(PseudoId pseudo_id) const {
+  if (pseudo_id == kPseudoIdTransition) {
+    DCHECK_EQ(this, GetDocument().documentElement());
+    return !GetDocument().GetStyleEngine().DocumentTransitionTags().IsEmpty();
+  }
   if (pseudo_id == kPseudoIdBackdrop && !IsInTopLayer())
     return false;
   if (pseudo_id == kPseudoIdFirstLetter && IsSVGElement())
@@ -7004,6 +7058,59 @@ void Element::InvalidateStyleAttribute() {
                           style_change_reason::kInlineCSSStyleMutated));
   GetDocument().GetStyleEngine().AttributeChangedForElement(
       html_names::kStyleAttr, *this);
+}
+
+void Element::RecalcTransitionPseudoTreeStyle(
+    const Vector<AtomicString>& document_transition_tags) {
+  DCHECK_EQ(this, GetDocument().documentElement());
+
+  if (document_transition_tags.IsEmpty() &&
+      !GetPseudoElement(kPseudoIdTransition))
+    return;
+
+  const StyleRecalcChange style_recalc_change;
+  const StyleRecalcContext style_recalc_context =
+      StyleRecalcContext::FromInclusiveAncestors(
+          *GetDocument().documentElement());
+
+  auto* transition_pseudo =
+      UpdatePseudoElement(kPseudoIdTransition, style_recalc_change,
+                          style_recalc_context, g_null_atom);
+  if (!transition_pseudo)
+    return;
+
+  for (const auto& document_transition_tag : document_transition_tags) {
+    auto* container_pseudo = transition_pseudo->UpdatePseudoElement(
+        kPseudoIdTransitionContainer, style_recalc_change, style_recalc_context,
+        document_transition_tag);
+    if (!container_pseudo)
+      continue;
+
+    container_pseudo->UpdatePseudoElement(
+        kPseudoIdTransitionOldContent, style_recalc_change,
+        style_recalc_context, document_transition_tag);
+    container_pseudo->UpdatePseudoElement(
+        kPseudoIdTransitionNewContent, style_recalc_change,
+        style_recalc_context, document_transition_tag);
+  }
+}
+
+void Element::RebuildTransitionPseudoLayoutTree(
+    const Vector<AtomicString>& document_transition_tags) {
+  DCHECK_EQ(this, GetDocument().documentElement());
+
+  if (document_transition_tags.IsEmpty()) {
+    DCHECK(!GetPseudoElement(kPseudoIdTransition));
+    return;
+  }
+
+  WhitespaceAttacher whitespace_attacher;
+  auto rebuild_pseudo_tree =
+      [&whitespace_attacher](PseudoElement* pseudo_element) {
+        pseudo_element->RebuildLayoutTree(whitespace_attacher);
+      };
+  DocumentTransitionUtils::ForEachTransitionPseudo(GetDocument(),
+                                                   rebuild_pseudo_tree);
 }
 
 }  // namespace blink

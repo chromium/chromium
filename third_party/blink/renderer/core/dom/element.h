@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string_table.h"
 #include "ui/gfx/geometry/rect_f.h"
 
@@ -782,7 +783,15 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   virtual void BeginParsingChildren() { SetIsFinishedParsingChildren(false); }
 
-  PseudoElement* GetPseudoElement(PseudoId) const;
+  // Returns the pseudo element for the given PseudoId type.
+  // |document_transition_tag| is used to uniquely identify a pseudo element
+  // from a set of pseudo elements which share the same |pseudo_id|. The current
+  // usage of this ID is limited to pseudo elements generated for a
+  // DocumentTransition. See
+  // third_party/blink/renderer/core/document_transition/README.md
+  PseudoElement* GetPseudoElement(
+      PseudoId,
+      const AtomicString& document_transition_tag = g_null_atom) const;
   LayoutObject* PseudoElementLayoutObject(PseudoId) const;
 
   bool PseudoElementStylesDependOnFontMetrics() const;
@@ -1027,6 +1036,19 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   void SaveIntrinsicSize(ResizeObserverSize* size);
   const ResizeObserverSize* LastIntrinsicSize() const;
 
+  // Returns a unique pseudo element for the given |pseudo_id| and
+  // |document_transition_tag| originating from this DOM element.
+  // This pseudo element may be directly associated with this element or nested
+  // inside a hierarchy of pseudo elements.
+  PseudoElement* GetNestedPseudoElement(
+      PseudoId pseudo_id,
+      const AtomicString& document_transition_tag) const;
+
+  void RecalcTransitionPseudoTreeStyle(
+      const Vector<AtomicString>& document_transition_tags);
+  void RebuildTransitionPseudoLayoutTree(
+      const Vector<AtomicString>& document_transition_tags);
+
  protected:
   const ElementData* GetElementData() const { return element_data_.Get(); }
   UniqueElementData& EnsureUniqueElementData();
@@ -1184,9 +1206,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   inline void CheckForEmptyStyleChange(const Node* node_before_change,
                                        const Node* node_after_change);
 
-  void UpdatePseudoElement(PseudoId,
-                           const StyleRecalcChange,
-                           const StyleRecalcContext&);
+  PseudoElement* UpdatePseudoElement(
+      PseudoId,
+      const StyleRecalcChange,
+      const StyleRecalcContext&,
+      const AtomicString& document_transition_tag = g_null_atom);
 
   enum class StyleUpdatePhase {
     kRecalc,
@@ -1201,8 +1225,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // when there is no StyleRecalcContext available.
   void UpdateFirstLetterPseudoElement(StyleUpdatePhase);
 
-  inline PseudoElement* CreatePseudoElementIfNeeded(PseudoId,
-                                                    const StyleRecalcContext&);
+  inline PseudoElement* CreatePseudoElementIfNeeded(
+      PseudoId,
+      const StyleRecalcContext&,
+      const AtomicString& document_transition_tag = g_null_atom);
   void AttachPseudoElement(PseudoId, AttachContext&);
   void DetachPseudoElement(PseudoId, bool performing_reattach);
 

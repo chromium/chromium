@@ -1363,11 +1363,14 @@ bool StyleResolver::ApplyAnimatedStyle(StyleResolverState& state,
   if (!animating_element)
     return false;
 
-  DCHECK(animating_element == &element ||
-         animating_element->ParentOrShadowHostElement() == element);
-
   if (!HasAnimationsOrTransitions(state))
     return false;
+
+  // TODO(crbug.com/1276575) : This assert is currently hit for nested ::marker
+  // pseudo elements.
+  DCHECK(animating_element == &element ||
+         DynamicTo<PseudoElement>(animating_element)->OriginatingElement() ==
+             &element);
 
   if (!IsAnimationStyleChange(*animating_element) ||
       !state.StyleRef().BaseData()) {

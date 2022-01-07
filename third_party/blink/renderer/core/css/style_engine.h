@@ -485,7 +485,9 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void RecalcStyle();
 
   void ClearEnsuredDescendantStyles(Element& element);
-  void RebuildLayoutTree();
+  enum class RebuildTransitionPseudoTree { kYes, kNo };
+  void RebuildLayoutTree(
+      RebuildTransitionPseudoTree rebuild_transition_pseudo_tree);
   bool InRebuildLayoutTree() const { return in_layout_tree_rebuild_; }
   bool InDOMRemoval() const { return in_dom_removal_; }
   bool InContainerQueryStyleRecalc() const {
@@ -516,6 +518,13 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void UpdateColorSchemeBackground(bool color_scheme_changed = false);
   Color ForcedBackgroundColor() const { return forced_background_color_; }
   Color ColorAdjustBackgroundColor() const;
+
+  void SetDocumentTransitionTags(const Vector<AtomicString>& tags) {
+    document_transition_tags_ = tags;
+  }
+  const Vector<AtomicString>& DocumentTransitionTags() const {
+    return document_transition_tags_;
+  }
 
   void Trace(Visitor*) const override;
   const char* NameInHeapSnapshot() const override { return "StyleEngine"; }
@@ -646,6 +655,7 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   void PropagateWritingModeAndDirectionToHTMLRoot();
 
   void RecalcStyle(StyleRecalcChange, const StyleRecalcContext&);
+  void RecalcTransitionPseudoStyle();
 
   // We may need to update whitespaces in the layout tree after a flat tree
   // removal which caused a layout subtree to be detached.
@@ -816,6 +826,10 @@ class CORE_EXPORT StyleEngine final : public GarbageCollected<StyleEngine>,
   // subtree is stored here during in_dom_removal_ and is marked for whitespace
   // re-attachment after the removal.
   Member<LayoutObject> parent_for_detached_subtree_;
+
+  // The set of IDs for which ::transition-container pseudo elements are
+  // generated during a DocumentTransition.
+  Vector<AtomicString> document_transition_tags_;
 };
 
 }  // namespace blink
