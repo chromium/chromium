@@ -144,7 +144,11 @@ IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, MAYBE_UnloadPageAction) {
 }
 
 // Regression test for crbug.com/44415.
-IN_PROC_BROWSER_TEST_P(PageActionBrowserTest, PageActionRefreshCrash) {
+// TODO(crbug.com/1284555): Re-enable test to run with service workers after
+// fixing flakiness.
+using PageActionWithoutServiceWorkerTest = ExtensionBrowserTest;
+IN_PROC_BROWSER_TEST_F(PageActionWithoutServiceWorkerTest,
+                       PageActionRefreshCrash) {
   ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(browser()->profile());
 
