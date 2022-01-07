@@ -13,9 +13,15 @@
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace chromeos {
+namespace bluetooth_config {
+class DeviceImageInfo;
+}  // namespace bluetooth_config
+}  // namespace chromeos
+
 namespace device {
 class BluetoothDevice;
-}
+}  // namespace device
 
 namespace nearby {
 namespace fastpair {
@@ -52,6 +58,11 @@ class FastPairRepositoryImpl : public FastPairRepository {
   void AssociateAccountKey(scoped_refptr<Device> device,
                            const std::vector<uint8_t>& account_key) override;
   bool DeleteAssociatedDevice(const device::BluetoothDevice* device) override;
+  void FetchDeviceImages(scoped_refptr<Device> device) override;
+  bool PersistDeviceImages(scoped_refptr<Device> device) override;
+  bool EvictDeviceImages(const device::BluetoothDevice* device) override;
+  absl::optional<const chromeos::bluetooth_config::DeviceImageInfo>
+  GetImagesForDevice(const std::string& device_id) override;
 
  private:
   void CheckAccountKeysImpl(const AccountKeyFilter& account_key_filter,
@@ -81,6 +92,10 @@ class FastPairRepositoryImpl : public FastPairRepository {
   void OnAddToFootprintsComplete(const std::string& mac_address,
                                  const std::vector<uint8_t>& account_key,
                                  bool success);
+  // Fethces the |device_metadata| images to the DeviceImageStore for
+  // |hex_model_id|.
+  void CompleteFetchDeviceImages(const std::string& hex_model_id,
+                                 DeviceMetadata* device_metadata);
 
   std::unique_ptr<DeviceMetadataFetcher> device_metadata_fetcher_;
   std::unique_ptr<FootprintsFetcher> footprints_fetcher_;

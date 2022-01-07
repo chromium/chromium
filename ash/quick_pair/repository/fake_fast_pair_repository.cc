@@ -6,6 +6,7 @@
 
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "base/strings/string_util.h"
+#include "chromeos/services/bluetooth_config/public/cpp/device_image_info.h"
 #include "device/bluetooth/bluetooth_device.h"
 
 namespace ash {
@@ -72,6 +73,28 @@ void FakeFastPairRepository::AssociateAccountKey(
 bool FakeFastPairRepository::DeleteAssociatedDevice(
     const device::BluetoothDevice* device) {
   return saved_account_keys_.erase(device->GetAddress()) == 1;
+}
+
+// Unimplemented.
+void FakeFastPairRepository::FetchDeviceImages(scoped_refptr<Device> device) {
+  return;
+}
+
+// Unimplemented.
+bool FakeFastPairRepository::PersistDeviceImages(scoped_refptr<Device> device) {
+  return true;
+}
+
+// Unimplemented.
+bool FakeFastPairRepository::EvictDeviceImages(
+    const device::BluetoothDevice* device) {
+  return true;
+}
+
+// Unimplemented.
+absl::optional<const chromeos::bluetooth_config::DeviceImageInfo>
+FakeFastPairRepository::GetImagesForDevice(const std::string& device_id) {
+  return absl::nullopt;
 }
 
 }  // namespace quick_pair

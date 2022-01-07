@@ -66,5 +66,16 @@ TEST_F(FastPairUnpairHandlerTest, DeletesExpectedDevice) {
   NotifyPairChanged(/*new_pair_state=*/false);
 }
 
+TEST_F(FastPairUnpairHandlerTest, DoesntEvictIfDevicePaired) {
+  EXPECT_CALL(*(mock_repository_.get()), EvictDeviceImages).Times(0);
+  NotifyPairChanged(/*new_pair_state=*/true);
+}
+
+TEST_F(FastPairUnpairHandlerTest, EvictsExpectedDevice) {
+  EXPECT_CALL(*(mock_repository_.get()), EvictDeviceImages(device_.get()))
+      .Times(1);
+  NotifyPairChanged(/*new_pair_state=*/false);
+}
+
 }  // namespace quick_pair
 }  // namespace ash

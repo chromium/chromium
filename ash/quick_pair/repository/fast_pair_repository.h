@@ -11,11 +11,18 @@
 #include "ash/quick_pair/repository/fast_pair/pairing_metadata.h"
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
+#include "chromeos/services/bluetooth_config/public/cpp/device_image_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace chromeos {
+namespace bluetooth_config {
+class DeviceImageInfo;
+}  // namespace bluetooth_config
+}  // namespace chromeos
 
 namespace device {
 class BluetoothDevice;
-}
+}  // namespace device
 
 namespace ash {
 namespace quick_pair {
@@ -61,6 +68,22 @@ class FastPairRepository {
   // otherwise.
   virtual bool DeleteAssociatedDevice(
       const device::BluetoothDevice* device) = 0;
+
+  // Fetches the |device| images and a record of the device ID -> model ID
+  // mapping to memory.
+  virtual void FetchDeviceImages(scoped_refptr<Device> device) = 0;
+
+  // Persists the images and device ID belonging to |device| to
+  // disk, if model ID is not already persisted.
+  virtual bool PersistDeviceImages(scoped_refptr<Device> device) = 0;
+
+  // Evicts the images and device ID belonging to |device| from
+  // disk, if model ID is not in use by other device IDs.
+  virtual bool EvictDeviceImages(const device::BluetoothDevice* device) = 0;
+
+  // Returns device images belonging to |device_id|, if found.
+  virtual absl::optional<const chromeos::bluetooth_config::DeviceImageInfo>
+  GetImagesForDevice(const std::string& device_id) = 0;
 
  protected:
   static void SetInstance(FastPairRepository* instance);

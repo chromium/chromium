@@ -31,6 +31,14 @@ void FastPairUnpairHandler::DevicePairedChanged(
   if (new_paired_status)
     return;
 
+  if (FastPairRepository::Get()->EvictDeviceImages(device)) {
+    QP_LOG(INFO) << __func__ << ": Repository evicted device images.";
+  } else {
+    QP_LOG(INFO) << __func__
+                 << ": Repository did not evict device images (no images found "
+                    "or other matching device IDs still paired).";
+  }
+
   if (FastPairRepository::Get()->DeleteAssociatedDevice(device)) {
     QP_LOG(INFO) << __func__ << ": Repository is processing the delete";
   } else {

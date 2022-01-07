@@ -18,7 +18,7 @@
 #include "ash/quick_pair/pairing/mock_pairer_broker.h"
 #include "ash/quick_pair/pairing/pairer_broker.h"
 #include "ash/quick_pair/pairing/retroactive_pairing_detector.h"
-#include "ash/quick_pair/repository/fast_pair_repository.h"
+#include "ash/quick_pair/repository/mock_fast_pair_repository.h"
 #include "ash/quick_pair/scanning/mock_scanner_broker.h"
 #include "ash/quick_pair/scanning/scanner_broker.h"
 #include "ash/quick_pair/ui/mock_ui_broker.h"
@@ -72,11 +72,16 @@ class MediatorTest : public testing::Test {
     std::unique_ptr<UIBroker> ui_broker = std::make_unique<MockUIBroker>();
     mock_ui_broker_ = static_cast<MockUIBroker*>(ui_broker.get());
 
+    std::unique_ptr<FastPairRepository> fast_pair_repository =
+        std::make_unique<MockFastPairRepository>();
+    mock_fast_pair_repository_ =
+        static_cast<MockFastPairRepository*>(fast_pair_repository.get());
+
     mediator_ = std::make_unique<Mediator>(
         std::move(tracker), std::move(scanner_broker),
         std::move(retroactive_pairing_detector),
         std::make_unique<FakeMessageStreamLookup>(), std::move(pairer_broker),
-        std::move(ui_broker), std::unique_ptr<FastPairRepository>(),
+        std::move(ui_broker), std::move(fast_pair_repository),
         std::make_unique<QuickPairProcessManagerImpl>());
 
     device_ = base::MakeRefCounted<Device>(kTestMetadataId, kTestAddress,
@@ -91,6 +96,7 @@ class MediatorTest : public testing::Test {
   FakeRetroactivePairingDetector* fake_retroactive_pairing_detector_;
   MockPairerBroker* mock_pairer_broker_;
   MockUIBroker* mock_ui_broker_;
+  MockFastPairRepository* mock_fast_pair_repository_;
   std::unique_ptr<Mediator> mediator_;
   base::test::SingleThreadTaskEnvironment task_environment_;
 };

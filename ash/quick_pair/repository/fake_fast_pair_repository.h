@@ -13,9 +13,15 @@
 #include "base/containers/flat_map.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace chromeos {
+namespace bluetooth_config {
+class DeviceImageInfo;
+}  // namespace bluetooth_config
+}  // namespace chromeos
+
 namespace device {
 class BluetoothDevice;
-}
+}  // namespace device
 
 namespace ash {
 namespace quick_pair {
@@ -49,6 +55,11 @@ class FakeFastPairRepository : public FastPairRepository {
   void AssociateAccountKey(scoped_refptr<Device> device,
                            const std::vector<uint8_t>& account_key) override;
   bool DeleteAssociatedDevice(const device::BluetoothDevice* device) override;
+  void FetchDeviceImages(scoped_refptr<Device> device) override;
+  bool PersistDeviceImages(scoped_refptr<Device> device) override;
+  bool EvictDeviceImages(const device::BluetoothDevice* device) override;
+  absl::optional<const chromeos::bluetooth_config::DeviceImageInfo>
+  GetImagesForDevice(const std::string& device_id) override;
 
  private:
   static void SetInstance(FastPairRepository* instance);

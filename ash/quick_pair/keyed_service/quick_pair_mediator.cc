@@ -131,7 +131,9 @@ void Mediator::OnFastPairEnabledChanged(bool is_enabled) {
 
 void Mediator::OnDeviceFound(scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": " << device;
+  // On discovery, download and decode device images.
   ui_broker_->ShowDiscovery(device);
+  fast_pair_repository_->FetchDeviceImages(device);
 }
 
 void Mediator::OnDeviceLost(scoped_refptr<Device> device) {
@@ -156,7 +158,8 @@ void Mediator::SetFastPairState(bool is_enabled) {
 
 void Mediator::OnDevicePaired(scoped_refptr<Device> device) {
   QP_LOG(INFO) << __func__ << ": Device=" << device;
-  ui_broker_->RemoveNotifications(std::move(device));
+  ui_broker_->RemoveNotifications(device);
+  fast_pair_repository_->PersistDeviceImages(device);
 }
 
 void Mediator::OnPairFailure(scoped_refptr<Device> device,

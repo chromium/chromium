@@ -79,6 +79,7 @@ static_library("test_support") {
     "//ash/quick_pair/proto:fastpair_proto",
     "//base",
     "//base/test:test_support",
+    "//chromeos/services/bluetooth_config/public/cpp",
     "//device/bluetooth",
     "//net/traffic_annotation:test_support",
     "//testing/gtest",
