@@ -341,6 +341,19 @@ void SearchControllerImplNew::Publish() {
                 // in |categories_|.
                 NOTREACHED();
                 return false;
+              } else if (a->scoring().burnin_iteration !=
+                         b->scoring().burnin_iteration) {
+                // Next, sort by burn-in iteration number. This has no effect on
+                // results which arrive pre-burn-in. For post-burn-in results
+                // for a given category, later-arriving results are placed below
+                // earlier-arriving results.
+                // This happens before sorting on display_score, as a trade-off
+                // between ranking accuracy and UX pop-in mitigation.
+                //
+                // TODO(crbug.com/1279686): Special case handling for special
+                // categories such as Best Match.
+                return a->scoring().burnin_iteration <
+                       b->scoring().burnin_iteration;
               } else {
                 // Lastly, sort by display score.
                 return a->display_score() > b->display_score();
