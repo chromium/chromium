@@ -52,6 +52,11 @@ const base::Feature kAllowTouchpadHapticClickSettings{
 const base::Feature kAlwaysReinstallSystemWebApps{
     "ReinstallSystemWebApps", base::FEATURE_DISABLED_BY_DEFAULT};
 
+#if defined(OS_ANDROID)
+const base::Feature kAnonymousUpdateChecks{"AnonymousUpdateChecks",
+                                           base::FEATURE_ENABLED_BY_DEFAULT};
+#endif
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Controls whether web apps can be installed via APKs on Chrome OS.
 const base::Feature kApkWebAppInstalls{"ApkWebAppInstalls",

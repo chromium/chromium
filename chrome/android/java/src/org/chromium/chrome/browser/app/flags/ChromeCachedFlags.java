@@ -67,6 +67,7 @@ public class ChromeCachedFlags {
         // Workaround for crbug.com/1223545: Do not use Arrays.asList().
         List<String> featuresToCache = new ArrayList<String>() {
             {
+                add(ChromeFeatureList.ANONYMOUS_UPDATE_CHECKS);
                 add(ChromeFeatureList.APP_MENU_MOBILE_SITE_OPTION);
                 add(ChromeFeatureList.APP_TO_WEB_ATTRIBUTION);
                 add(ChromeFeatureList.BOOKMARK_BOTTOM_SHEET);

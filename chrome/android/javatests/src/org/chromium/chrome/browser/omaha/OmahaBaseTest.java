@@ -18,8 +18,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.base.FeatureList;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.omaha.MockRequestGenerator;
 import org.chromium.chrome.test.omaha.MockRequestGenerator.DeviceType;
@@ -188,10 +190,14 @@ public class OmahaBaseTest {
         Context targetContext = InstrumentationRegistry.getTargetContext();
         OmahaBase.setIsDisabledForTesting(false);
         mContext = new AdvancedMockContext(targetContext);
+        FeatureList.TestValues overrides = new FeatureList.TestValues();
+        overrides.addFeatureFlagOverride(ChromeFeatureList.ANONYMOUS_UPDATE_CHECKS, true);
+        FeatureList.setTestValues(overrides);
     }
 
     @After
     public void tearDown() {
+        FeatureList.setTestValues(null);
         OmahaBase.setIsDisabledForTesting(true);
     }
 
