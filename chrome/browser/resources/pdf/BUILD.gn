@@ -10,6 +10,7 @@ import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("../tools/optimize_webui.gni")
+import("./pdf.gni")
 
 preprocess_folder = "preprocessed"
 preprocess_manifest = "preprocessed_manifest.json"
@@ -22,28 +23,7 @@ preprocess_if_expr("preprocess") {
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_manifest"
   defines = [ "enable_ink=$enable_ink" ]
-  in_files = [
-    "bookmark_type.js",
-    "constants.js",
-    "controller.js",
-    "gesture_detector.js",
-    "internal_plugin.js",
-    "local_storage_proxy.js",
-    "metrics.js",
-    "navigator.js",
-    "open_pdf_params_parser.js",
-    "pdf_scripting_api.js",
-    "pdf_viewer_base.js",
-    "pdf_viewer_utils.js",
-    "pdf_viewer_wrapper.js",
-    "viewport.js",
-    "viewport_scroller.js",
-    "zoom_manager.js",
-  ]
-
-  if (enable_ink) {
-    in_files += [ "ink_controller.js" ]
-  }
+  in_files = pdf_non_webcomponents_files + shared_non_webcomponents_files
 }
 
 preprocess_if_expr("preprocess_generated") {
@@ -52,33 +32,46 @@ preprocess_if_expr("preprocess_generated") {
   out_folder = "$target_gen_dir/$preprocess_folder"
   out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
   defines = [ "enable_ink=$enable_ink" ]
-  in_files = [
-    "elements/icons.js",
-    "elements/shared-css.js",
-    "elements/shared-vars.js",
-    "elements/viewer-bookmark.js",
-    "elements/viewer-document-outline.js",
-    "elements/viewer-download-controls.js",
-    "elements/viewer-error-dialog.js",
-    "elements/viewer-page-selector.js",
-    "elements/viewer-password-dialog.js",
-    "elements/viewer-pdf-sidenav.js",
-    "elements/viewer-properties-dialog.js",
-    "elements/viewer-thumbnail-bar.js",
-    "elements/viewer-thumbnail.js",
-    "elements/viewer-toolbar.js",
-    "pdf_viewer.js",
-    "pdf_viewer_shared_style.js",
+  in_files = pdf_webcomponents_files + shared_webcomponents_files
+}
+
+# Extra files that are needed by Print Preview.
+preprocess_if_expr("preprocess_print_preview") {
+  in_folder = "./"
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = print_preview_non_webcomponents_files
+}
+
+preprocess_if_expr("preprocess_print_preview_generated") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = print_preview_webcomponents_files
+}
+
+generate_grd("build_print_preview_grdp") {
+  input_files =
+      print_preview_non_webcomponents_files + shared_non_webcomponents_files +
+      print_preview_webcomponents_files + shared_webcomponents_files
+  input_files_base_dir = rebase_path("$target_gen_dir/$preprocess_folder", "//")
+  deps = [
+    ":preprocess",
+    ":preprocess_generated",
+    ":preprocess_print_preview",
+    ":preprocess_print_preview_generated",
   ]
-  if (enable_ink) {
-    in_files += [
-      "elements/viewer-annotations-bar.js",
-      "elements/viewer-annotations-mode-dialog.js",
-      "elements/viewer-ink-host.js",
-      "elements/viewer-pen-options.js",
-      "elements/viewer-toolbar-dropdown.js",
-    ]
-  }
+  resource_path_rewrites = [
+    "index_pp.html|index.html",
+
+    # Expose pdf_viewer_pp.js as pdf_viewer_wrapper.js so that the PDF viewer
+    # and Print Preview viewer can use the same main.js source.
+    "pdf_viewer_pp.js|pdf_viewer_wrapper.js",
+  ]
+  grd_prefix = "print_preview_pdf"
+
+  # Print Preview expects to import from "pdf/" relative path
+  resource_path_prefix = "pdf"
+  out_grd = "$target_gen_dir/${grd_prefix}_resources.grdp"
 }
 
 # Just copy to $preprocess_folder.
@@ -187,19 +180,9 @@ grit("resources") {
 
 assert(enable_pdf, "enable_pdf check failed")
 
-group("web_components") {
-  public_deps = [
-    ":web_components_local",
-    "elements:web_components",
-  ]
-}
-
-html_to_js("web_components_local") {
-  js_files = [
-    "pdf_viewer.js",
-    "pdf_viewer_pp.js",
-    "pdf_viewer_shared_style.js",
-  ]
+html_to_js("web_components") {
+  js_files = pdf_webcomponents_files + print_preview_webcomponents_files +
+             shared_webcomponents_files
 }
 
 group("closure_compile") {

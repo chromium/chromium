@@ -16,8 +16,6 @@ import("./print_preview.gni")
 assert(enable_print_preview, "enable_print_preview check failed")
 
 preprocess_folder = "preprocessed"
-preprocess_pdf_manifest = "preprocessed_pdf_manifest.json"
-preprocess_pdf_gen_manifest = "preprocessed_pdf_gen_manifest.json"
 
 if (optimize_webui) {
   build_manifest = "build_manifest.json"
@@ -43,28 +41,15 @@ if (optimize_webui) {
 generate_grd("build_grd") {
   input_files = [ "print_preview.html" ]
   input_files_base_dir = rebase_path(".", "//")
-  deps = [
-    ":preprocess_pdf",
-    ":preprocess_pdf_generated",
-  ]
-  manifest_files = [
-    "$target_gen_dir/$preprocess_pdf_manifest",
-    "$target_gen_dir/$preprocess_pdf_gen_manifest",
-  ]
-  resource_path_rewrites = [
-    "pdf/index_pp.html|pdf/index.html",
-
-    # Expose pdf_viewer_pp.js as pdf_viewer_wrapper.js so that the PDF viewer
-    # and Print Preview viewer can use the same main.js source.
-    "pdf/pdf_viewer_pp.js|pdf/pdf_viewer_wrapper.js",
-  ]
+  deps = [ "../pdf:build_print_preview_grdp" ]
+  grdp_files = [ "$root_gen_dir/chrome/browser/resources/pdf/print_preview_pdf_resources.grdp" ]
   if (optimize_webui) {
     deps += [ ":build" ]
-    resource_path_rewrites += [ "print_preview.rollup.js|print_preview.js" ]
-    manifest_files += [ "$target_gen_dir/$build_manifest" ]
+    resource_path_rewrites = [ "print_preview.rollup.js|print_preview.js" ]
+    manifest_files = [ "$target_gen_dir/$build_manifest" ]
   } else {
     deps += [ ":build_ts" ]
-    manifest_files += [ "$target_gen_dir/tsconfig.manifest" ]
+    manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
   }
   grd_prefix = "print_preview"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
@@ -85,48 +70,6 @@ preprocess_if_expr("preprocess_generated") {
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
   in_files = web_component_files
-}
-
-preprocess_if_expr("preprocess_pdf") {
-  in_folder = "../"
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_pdf_manifest"
-  in_files = [
-    "pdf/browser_api.js",
-    "pdf/constants.js",
-    "pdf/controller.js",
-    "pdf/gesture_detector.js",
-    "pdf/index.css",
-    "pdf/index_pp.html",
-    "pdf/internal_plugin.js",
-    "pdf/main.js",
-    "pdf/metrics.js",
-    "pdf/open_pdf_params_parser.js",
-    "pdf/pdf_scripting_api.js",
-    "pdf/pdf_viewer_utils.js",
-    "pdf/pdf_viewer_base.js",
-    "pdf/toolbar_manager.js",
-    "pdf/viewport.js",
-    "pdf/viewport_scroller.js",
-    "pdf/zoom_manager.js",
-  ]
-}
-
-preprocess_if_expr("preprocess_pdf_generated") {
-  deps = [ "../pdf:web_components" ]
-  in_folder = get_path_info("..", "gen_dir")
-  out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_pdf_gen_manifest"
-  in_files = [
-    "pdf/elements/icons.js",
-    "pdf/elements/shared-vars.js",
-    "pdf/elements/viewer-error-dialog.js",
-    "pdf/elements/viewer-page-indicator.js",
-    "pdf/elements/viewer-zoom-button.js",
-    "pdf/elements/viewer-zoom-toolbar.js",
-    "pdf/pdf_viewer_pp.js",
-    "pdf/pdf_viewer_shared_style.js",
-  ]
 }
 
 grit("resources") {
@@ -172,6 +115,5 @@ ts_library("build_ts") {
     ":copy_pdf_definitions",
     ":preprocess",
     ":preprocess_generated",
-    ":preprocess_pdf",
   ]
 }
