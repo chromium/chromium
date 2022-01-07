@@ -142,10 +142,23 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
             @Override
             public void onLayoutChange(View v, int left, int top, int right, int bottom,
                     int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                // // If the layout size does not change (e.g. call due to #forceLayout), do nothing
+                // // because we don't want to dismiss the context menu.
+                if (left == oldLeft && right == oldRight && top == oldTop && bottom == oldBottom) {
+                    return;
+                }
+
                 if (mIsPopup) {
                     // If the menu is a popup, wait for the layout to be measured, then proceed with
                     // showing the popup window.
                     if (v.getMeasuredHeight() == 0) return;
+
+                    // If dialog is showing and the layout changes, we might lost the anchor point.
+                    // We'll dismiss the context menu and remove the listener.
+                    if (mPopupWindow != null && mPopupWindow.isShowing()) {
+                        dismiss();
+                        return;
+                    }
 
                     final int posX = (int) mTouchPointXPx;
                     final int posY = (int) (mTouchPointYPx + mTopContentOffsetPx);
@@ -167,9 +180,9 @@ public class ContextMenuDialog extends AlwaysDismissedDialog {
                     if (v.getMeasuredHeight() == 0) return;
 
                     startEnterAnimation();
+                    v.removeOnLayoutChangeListener(this);
+                    mOnLayoutChangeListener = null;
                 }
-                v.removeOnLayoutChangeListener(this);
-                mOnLayoutChangeListener = null;
             }
         };
         (mIsPopup ? mLayout : mContentView).addOnLayoutChangeListener(mOnLayoutChangeListener);
