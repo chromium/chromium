@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/ignore_result.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_table.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
@@ -117,10 +116,6 @@ void PredictorDatabaseInternal::Initialize() {
 
   autocomplete_table_->Initialize(db_.get());
   resource_prefetch_tables_->Initialize(db_.get());
-
-  // The logged_in_predictor table is obsolete as of Chrome 44.
-  // TODO(davidben): Remove this after April 16, 2016.
-  ignore_result(db_->Execute("DROP TABLE IF EXISTS logged_in_predictor"));
 
   LogDatabaseStats();
 }
