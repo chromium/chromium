@@ -82,16 +82,16 @@ public class CommerceSubscription {
     }
 
     @TrackingIdType
-    String getTrackingIdType() {
+    public String getTrackingIdType() {
         return mTrackingIdType;
     }
 
-    String getTrackingId() {
+    public String getTrackingId() {
         return mTrackingId;
     }
 
     @SubscriptionManagementType
-    String getManagementType() {
+    public String getManagementType() {
         return mManagementType;
     }
 

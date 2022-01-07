@@ -11,6 +11,7 @@ import android.util.Pair;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import com.google.common.primitives.UnsignedLongs;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 import org.chromium.base.ContextUtils;
@@ -20,11 +21,16 @@ import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
+import org.chromium.chrome.browser.commerce.shopping_list.ShoppingFeatures;
 import org.chromium.chrome.browser.partnerbookmarks.PartnerBookmarksShim;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkMeta;
 import org.chromium.chrome.browser.power_bookmarks.PowerBookmarkType;
+import org.chromium.chrome.browser.power_bookmarks.ShoppingSpecifics;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.read_later.ReadingListUtils;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
+import org.chromium.chrome.browser.subscriptions.CommerceSubscriptionsServiceFactory;
+import org.chromium.chrome.browser.subscriptions.SubscriptionsManager;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.bookmarks.BookmarkId;
 import org.chromium.components.bookmarks.BookmarkType;
@@ -36,6 +42,7 @@ import org.chromium.url.GURL;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -52,6 +59,8 @@ public class BookmarkBridge {
             new ArrayList<DelayedBookmarkCallback>();
     private final ObserverList<BookmarkModelObserver> mObservers =
             new ObserverList<BookmarkModelObserver>();
+    private SubscriptionsManager mSubscriptionManager;
+    private SubscriptionsManager.SubscriptionObserver mSubscriptionsObserver;
 
     /**
      * Interface for callback object for fetching bookmarks and folder hierarchy.
@@ -306,6 +315,25 @@ public class BookmarkBridge {
         mNativeBookmarkBridge = BookmarkBridgeJni.get().init(BookmarkBridge.this, profile);
         mIsDoingExtensiveChanges = BookmarkBridgeJni.get().isDoingExtensiveChanges(
                 mNativeBookmarkBridge, BookmarkBridge.this);
+        mSubscriptionsObserver = new SubscriptionsManager.SubscriptionObserver() {
+            @Override
+            public void onSubscribe(List<CommerceSubscription> subscriptions) {}
+
+            @Override
+            public void onUnsubscribe(List<CommerceSubscription> subscriptions) {
+                removeExplicitShoppingSubscriptions(subscriptions);
+            }
+        };
+        if (ShoppingFeatures.isShoppingListEnabled()) {
+            mSubscriptionManager = new CommerceSubscriptionsServiceFactory()
+                                           .getForLastUsedProfile()
+                                           .getSubscriptionsManager();
+        }
+    }
+
+    @VisibleForTesting
+    SubscriptionsManager.SubscriptionObserver getSubscriptionObserver() {
+        return mSubscriptionsObserver;
     }
 
     /**
@@ -320,6 +348,10 @@ public class BookmarkBridge {
             mDelayedBookmarkCallbacks.clear();
         }
         mObservers.clear();
+
+        if (mSubscriptionManager != null) {
+            mSubscriptionManager.removeObserver(mSubscriptionsObserver);
+        }
     }
 
     /** Returns whether the bridge has been destroyed. */
@@ -618,6 +650,61 @@ public class BookmarkBridge {
         BookmarkBridgeJni.get().getChildIDs(
                 mNativeBookmarkBridge, BookmarkBridge.this, id.getId(), id.getType(), result);
         return result;
+    }
+
+    /**
+     * Disable price tracking for the list of subscriptions. This flips the bit in ShoppingSpecifics
+     * but does not actually unsubscribe from the subscription service -- this assumes that is
+     * already done.
+     * TODO(1284730): This should live somewhere other than BookmarkBridge.
+     *
+     * @param subscriptions The list of subscriptions to disable.
+     */
+    private void removeExplicitShoppingSubscriptions(List<CommerceSubscription> subscriptions) {
+        if (subscriptions == null) return;
+
+        List<BookmarkId> products = searchBookmarks("", null, PowerBookmarkType.SHOPPING, -1);
+        if (products == null || products.size() == 0) return;
+
+        // Put the offer and cluster IDs into a map so they can be quickly checked.
+        HashSet<Long> offerIdMap = new HashSet<>();
+        HashSet<Long> clusterIdMap = new HashSet<>();
+        for (CommerceSubscription c : subscriptions) {
+            // Ensure the subscription is explicit.
+            if (c == null
+                    || !c.getManagementType().equals(
+                            CommerceSubscription.SubscriptionManagementType.USER_MANAGED)) {
+                continue;
+            }
+
+            if (c.getTrackingIdType().equals(CommerceSubscription.TrackingIdType.OFFER_ID)) {
+                offerIdMap.add(UnsignedLongs.parseUnsignedLong(c.getTrackingId()));
+            } else if (c.getTrackingIdType().equals(
+                               CommerceSubscription.TrackingIdType.PRODUCT_CLUSTER_ID)) {
+                clusterIdMap.add(UnsignedLongs.parseUnsignedLong(c.getTrackingId()));
+            }
+        }
+
+        // Look at all the products the user has saved to find any of the above product or cluster
+        // IDs.
+        for (BookmarkId product : products) {
+            PowerBookmarkMeta meta = getPowerBookmarkMeta(product);
+            if (meta.getType() != PowerBookmarkType.SHOPPING) continue;
+
+            ShoppingSpecifics specifics = meta.getShoppingSpecifics();
+            if (offerIdMap.contains(specifics.getOfferId())
+                    || clusterIdMap.contains(specifics.getProductClusterId())) {
+                // Reset the meta using a copy of the existing one, but set the price tracking flag
+                // to false.
+                setPowerBookmarkMeta(product,
+                        PowerBookmarkMeta.newBuilder(meta)
+                                .setShoppingSpecifics(
+                                        ShoppingSpecifics.newBuilder(meta.getShoppingSpecifics())
+                                                .setIsPriceTracked(false)
+                                                .build())
+                                .build());
+            }
+        }
     }
 
     /**
