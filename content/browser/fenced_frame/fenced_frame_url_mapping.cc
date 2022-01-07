@@ -64,7 +64,7 @@ std::vector<GURL> FencedFrameURLMapping::PendingAdComponentsMap::GetURNs()
 void FencedFrameURLMapping::PendingAdComponentsMap::ExportToMapping(
     FencedFrameURLMapping& mapping) const {
   for (const auto& component_ad : component_ads_) {
-    CHECK(!mapping.IsPresent(component_ad.urn));
+    DCHECK(!mapping.IsMapped(component_ad.urn));
 
     UrnUuidToUrlMap::iterator it =
         mapping.urn_uuid_to_url_map_
@@ -108,22 +108,6 @@ FencedFrameURLMapping::MapInfo& FencedFrameURLMapping::MapInfo::operator=(
 FencedFrameURLMapping::FencedFrameURLMapping() = default;
 FencedFrameURLMapping::~FencedFrameURLMapping() = default;
 
-absl::optional<GURL> FencedFrameURLMapping::ConvertFencedFrameURNToURL(
-    const GURL& urn_uuid,
-    absl::optional<PendingAdComponentsMap>& out_ad_components) const {
-  CHECK(IsValidUrnUuidURL(urn_uuid));
-
-  auto it = urn_uuid_to_url_map_.find(urn_uuid);
-  if (it == urn_uuid_to_url_map_.end())
-    return absl::nullopt;
-
-  if (it->second.ad_component_urls) {
-    out_ad_components.emplace(
-        PendingAdComponentsMap(*it->second.ad_component_urls));
-  }
-  return it->second.mapped_url;
-}
-
 GURL FencedFrameURLMapping::AddFencedFrameURL(const GURL& url) {
   DCHECK(url.is_valid());
   DCHECK(network::IsUrlPotentiallyTrustworthy(url));
@@ -143,13 +127,95 @@ FencedFrameURLMapping::UrnUuidToUrlMap::iterator
 FencedFrameURLMapping::AddMappingForUrl(const GURL& url) {
   // Create a urn::uuid.
   GURL urn_uuid = GenerateURN();
-  CHECK(!IsPresent(urn_uuid));
+  DCHECK(!IsMapped(urn_uuid));
 
   return urn_uuid_to_url_map_.emplace(urn_uuid, MapInfo(url)).first;
 }
 
-bool FencedFrameURLMapping::IsPresent(const GURL& urn_uuid) {
+GURL FencedFrameURLMapping::GeneratePendingMappedURN() {
+  GURL urn_uuid = GenerateURN();
+  DCHECK(!IsMapped(urn_uuid));
+  DCHECK(!IsPendingMapped(urn_uuid));
+  pending_urn_uuid_to_url_map_.emplace(
+      urn_uuid, std::set<raw_ptr<MappingResultObserver>>());
+  return urn_uuid;
+}
+
+void FencedFrameURLMapping::ConvertFencedFrameURNToURL(
+    const GURL& urn_uuid,
+    MappingResultObserver* observer) {
+  DCHECK(IsValidUrnUuidURL(urn_uuid));
+
+  if (IsPendingMapped(urn_uuid)) {
+    DCHECK(!pending_urn_uuid_to_url_map_.at(urn_uuid).count(observer));
+    pending_urn_uuid_to_url_map_.at(urn_uuid).emplace(observer);
+    return;
+  }
+
+  absl::optional<GURL> result_url;
+  absl::optional<PendingAdComponentsMap> result_ad_components;
+
+  auto it = urn_uuid_to_url_map_.find(urn_uuid);
+  if (it != urn_uuid_to_url_map_.end()) {
+    if (it->second.ad_component_urls) {
+      result_ad_components.emplace(
+          PendingAdComponentsMap(*it->second.ad_component_urls));
+    }
+    result_url = it->second.mapped_url;
+  }
+
+  observer->OnFencedFrameURLMappingComplete(std::move(result_url),
+                                            std::move(result_ad_components));
+}
+
+void FencedFrameURLMapping::RemoveObserverForURN(
+    const GURL& urn_uuid,
+    MappingResultObserver* observer) {
+  auto it = pending_urn_uuid_to_url_map_.find(urn_uuid);
+  DCHECK(it != pending_urn_uuid_to_url_map_.end());
+
+  auto observer_it = it->second.find(observer);
+  DCHECK(observer_it != it->second.end());
+
+  it->second.erase(observer_it);
+}
+
+void FencedFrameURLMapping::OnURNMappingResultDetermined(
+    const GURL& urn_uuid,
+    const absl::optional<GURL>& mapped_url) {
+  auto it = pending_urn_uuid_to_url_map_.find(urn_uuid);
+  DCHECK(it != pending_urn_uuid_to_url_map_.end());
+
+  DCHECK(!IsMapped(urn_uuid));
+
+  if (mapped_url)
+    urn_uuid_to_url_map_.emplace(urn_uuid, mapped_url.value());
+
+  std::set<raw_ptr<MappingResultObserver>>& observers = it->second;
+
+  for (raw_ptr<MappingResultObserver> observer : observers) {
+    observer->OnFencedFrameURLMappingComplete(
+        mapped_url,
+        /*pending_ad_components_map=*/absl::nullopt);
+  }
+
+  pending_urn_uuid_to_url_map_.erase(it);
+}
+
+bool FencedFrameURLMapping::HasObserverForTesting(
+    const GURL& urn_uuid,
+    MappingResultObserver* observer) {
+  return IsPendingMapped(urn_uuid) &&
+         pending_urn_uuid_to_url_map_.at(urn_uuid).count(observer);
+}
+
+bool FencedFrameURLMapping::IsMapped(const GURL& urn_uuid) const {
   return urn_uuid_to_url_map_.find(urn_uuid) != urn_uuid_to_url_map_.end();
+}
+
+bool FencedFrameURLMapping::IsPendingMapped(const GURL& urn_uuid) const {
+  return pending_urn_uuid_to_url_map_.find(urn_uuid) !=
+         pending_urn_uuid_to_url_map_.end();
 }
 
 }  // namespace content

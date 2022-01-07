@@ -38,6 +38,7 @@
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/test/test_content_browser_client.h"
+#include "content/test/test_fenced_frame_url_mapping_result_observer.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -410,13 +411,14 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
   }
 
   absl::optional<GURL> ConvertFencedFrameURNToURL(const GURL& urn_url) {
-    const FencedFrameURLMapping& fenced_frame_urls_map =
+    TestFencedFrameURLMappingResultObserver observer;
+    FencedFrameURLMapping& fenced_frame_urls_map =
         static_cast<RenderFrameHostImpl*>(main_rfh())
             ->GetPage()
             .fenced_frame_urls_map();
     absl::optional<FencedFrameURLMapping::PendingAdComponentsMap> ignored;
-    return fenced_frame_urls_map.ConvertFencedFrameURNToURL(
-        const_cast<GURL&>(urn_url), ignored);
+    fenced_frame_urls_map.ConvertFencedFrameURNToURL(urn_url, &observer);
+    return observer.mapped_url();
   }
 
   // Create a new AdAuctionServiceImpl and use it to try and join

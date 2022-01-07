@@ -368,6 +368,8 @@ static_library("test_support") {
     "test_content_browser_client.h",
     "test_content_client.cc",
     "test_content_client.h",
+    "test_fenced_frame_url_mapping_result_observer.cc",
+    "test_fenced_frame_url_mapping_result_observer.h",
     "test_navigation_url_loader.cc",
     "test_navigation_url_loader.h",
     "test_navigation_url_loader_delegate.cc",

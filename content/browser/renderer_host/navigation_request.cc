@@ -1699,6 +1699,11 @@ NavigationRequest::~NavigationRequest() {
     navigation_handle_proxy_->DidFinish();
 #endif
 
+  if (is_deferred_on_fenced_frame_url_mapping_) {
+    CHECK(NeedFencedFrameURLMapping());
+    GetFencedFrameURLMap().RemoveObserverForURN(common_params_->url, this);
+  }
+
   if (IsNavigationStarted()) {
     GetDelegate()->DidFinishNavigation(this);
     ProcessOriginAgentClusterEndResult();
@@ -1752,8 +1757,34 @@ void NavigationRequest::BeginNavigation() {
   DCHECK(!render_frame_host_);
   ScopedCrashKeys crash_keys(*this);
 
+  if (begin_navigation_callback_for_testing_) {
+    std::move(begin_navigation_callback_for_testing_).Run();
+  }
+
   if (MaybeStartPrerenderingActivationChecks()) {
     // BeginNavigationImpl() will be called after the checks.
+    return;
+  }
+
+  MaybeAssignInvalidPrerenderFrameTreeNodeId();
+
+  // If this is a fenced frame with a urn:uuid, then convert it to a url before
+  // starting the navigation; otherwise, proceed directly with the navigation.
+  if (NeedFencedFrameURLMapping()) {
+    FencedFrameURLMapping& fenced_frame_urls_map = GetFencedFrameURLMap();
+
+    // If the mapping finishes synchronously, OnFencedFrameURLMappingComplete
+    // will be synchronously called and will reset
+    // `is_deferred_on_fenced_frame_url_mapping_` to false.
+    is_deferred_on_fenced_frame_url_mapping_ = true;
+
+    // OnFencedFrameURLMappingComplete() and BeginNavigationImpl() will be
+    // invoked after this.
+    fenced_frame_urls_map.ConvertFencedFrameURNToURL(common_params_->url,
+                                                     /*observer=*/this);
+    // DO NOT ADD CODE after this. The previous call to
+    // ConvertFencedFrameURNToURL may cause the destruction of the
+    // NavigationRequest.
     return;
   }
 
@@ -1831,46 +1862,53 @@ void NavigationRequest::OnPrerenderingActivationChecksComplete(
   is_potentially_prerendered_page_activation_for_testing_ = false;
   commit_deferrer_.reset();
 
+  // We can only activate top-level pages, which can never be at a fenced frame
+  // URN that needs to be mapped.
+  CHECK(!NeedFencedFrameURLMapping());
+
   BeginNavigationImpl();
-  // DO NOT ADD CODE after this. The previous call to BeginNavigationImpl may
-  // cause the destruction of the NavigationRequest.
+  // DO NOT ADD CODE after this. The previous call to
+  // BeginNavigationImpl may cause the destruction of the NavigationRequest.
 }
 
-void NavigationRequest::BeginNavigationImpl() {
-  base::ElapsedTimer timer;
-  SetState(WILL_START_NAVIGATION);
+FencedFrameURLMapping& NavigationRequest::GetFencedFrameURLMap() {
+  // `inner_frame_tree` is true for navigations inside the main frame of a
+  // nested fenced frame's `FrameTree`, and false otherwise. This is only the
+  // case for the MPArch implementation of fenced frames.
+  bool is_inner_frame_tree =
+      frame_tree_node_->frame_tree()->type() == FrameTree::Type::kFencedFrame;
+  FrameTreeNode* node_to_use =
+      is_inner_frame_tree
+          ? frame_tree_node_->render_manager()->GetOuterDelegateNode()
+          : frame_tree_node_;
 
-  bool convert_urn_uuid_urls = frame_tree_node_->IsFencedFrameRoot() ||
-                               (!frame_tree_node_->IsMainFrame() &&
-                                blink::features::IsAllowURNsInIframeEnabled());
-  // If this is a fenced frame or iframe with a urn:uuid then convert it to a
-  // url before starting the request.
-  if (convert_urn_uuid_urls &&
-      FencedFrameURLMapping::IsValidUrnUuidURL(common_params_->url)) {
-    // `inner_frame_tree` is true for navigations inside the main frame of a
-    // nested fenced frame's `FrameTree`, and false otherwise. This is only the
-    // case for the MPArch implementation of fenced frames.
-    bool is_inner_frame_tree =
-        frame_tree_node_->frame_tree()->type() == FrameTree::Type::kFencedFrame;
-    FrameTreeNode* node_to_use =
-        is_inner_frame_tree
-            ? frame_tree_node_->render_manager()->GetOuterDelegateNode()
-            : frame_tree_node_;
+  return node_to_use->current_frame_host()->GetPage().fenced_frame_urls_map();
+}
 
+bool NavigationRequest::NeedFencedFrameURLMapping() {
+  bool need_convert_urn_uuid_urls =
+      frame_tree_node_->IsFencedFrameRoot() ||
+      (!frame_tree_node_->IsMainFrame() &&
+       blink::features::IsAllowURNsInIframeEnabled());
+
+  return need_convert_urn_uuid_urls &&
+         FencedFrameURLMapping::IsValidUrnUuidURL(common_params_->url);
+}
+
+void NavigationRequest::OnFencedFrameURLMappingComplete(
+    absl::optional<GURL> mapped_url,
     absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>
-        pending_ad_components_map;
-    absl::optional<GURL> mapped_url =
-        node_to_use->current_frame_host()
-            ->GetPage()
-            .fenced_frame_urls_map()
-            .ConvertFencedFrameURNToURL(common_params_->url,
-                                        pending_ad_components_map);
+        pending_ad_components_map) {
+  is_deferred_on_fenced_frame_url_mapping_ = false;
 
-    if (mapped_url) {
-      common_params_->url = *mapped_url;
-      commit_params_->original_url = *mapped_url;
-      pending_ad_components_map_ = std::move(pending_ad_components_map);
-    } else if (frame_tree_node_->IsFencedFrameRoot()) {
+  if (mapped_url) {
+    common_params_->url = mapped_url.value();
+    commit_params_->original_url = mapped_url.value();
+    // TODO(crbug/1281643): move into commit_params_->ad_auction_components
+    // directly.
+    pending_ad_components_map_ = std::move(pending_ad_components_map);
+  } else {
+    if (frame_tree_node_->IsFencedFrameRoot()) {
       StartNavigation();
       OnRequestFailedInternal(
           network::URLLoaderCompletionStatus(net::ERR_INVALID_URL),
@@ -1880,6 +1918,14 @@ void NavigationRequest::BeginNavigationImpl() {
     }  // else (for iframes) try the urn as-is to maintain existing behavior.
   }
 
+  BeginNavigationImpl();
+  // DO NOT ADD CODE after this. The previous call to BeginNavigationImpl may
+  // cause the destruction of the NavigationRequest.
+}
+
+void NavigationRequest::BeginNavigationImpl() {
+  base::ElapsedTimer timer;
+  SetState(WILL_START_NAVIGATION);
 #if defined(OS_ANDROID)
   base::WeakPtr<NavigationRequest> this_ptr(weak_factory_.GetWeakPtr());
   bool should_override_url_loading = false;
@@ -2065,13 +2111,7 @@ void NavigationRequest::StartNavigation() {
          is_synchronous_renderer_commit_);
   FrameTreeNode* frame_tree_node = frame_tree_node_;
 
-  if (blink::features::IsPrerender2Enabled() &&
-      !prerender_frame_tree_node_id_.has_value()) {
-    // This navigation won't activate a prerendered page. Otherwise,
-    // `prerender_frame_tree_node_id_` should have already been set before this
-    // in OnPrerenderingActivationChecksComplete().
-    prerender_frame_tree_node_id_ = RenderFrameHost::kNoFrameTreeNodeId;
-  }
+  MaybeAssignInvalidPrerenderFrameTreeNodeId();
 
   // This is needed to get site URLs and assign the expected RenderProcessHost.
   // This is not always the same as |source_site_instance_|, as it only depends
@@ -6989,6 +7029,7 @@ void NavigationRequest::CheckStateTransition(NavigationState state) const {
           }},
           {WAITING_FOR_RENDERER_RESPONSE, {
               WILL_START_NAVIGATION,
+              WILL_START_REQUEST,
           }},
           {WILL_START_NAVIGATION, {
               WILL_START_REQUEST,
@@ -7277,6 +7318,16 @@ NavigationRequest::ComputeWebExposedIsolationInfo() {
              GetNavigationController()->GetBrowserContext(), url)
              ? WebExposedIsolationInfo::CreateIsolatedApplication(origin)
              : WebExposedIsolationInfo::CreateIsolated(origin);
+}
+
+void NavigationRequest::MaybeAssignInvalidPrerenderFrameTreeNodeId() {
+  if (blink::features::IsPrerender2Enabled() &&
+      !prerender_frame_tree_node_id_.has_value()) {
+    // This navigation won't activate a prerendered page. Otherwise,
+    // `prerender_frame_tree_node_id_` should have already been set before this
+    // in OnPrerenderingActivationChecksComplete().
+    prerender_frame_tree_node_id_ = RenderFrameHost::kNoFrameTreeNodeId;
+  }
 }
 
 NavigationRequest::ScopedCrashKeys::ScopedCrashKeys(

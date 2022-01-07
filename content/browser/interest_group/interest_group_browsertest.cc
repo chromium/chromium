@@ -43,6 +43,7 @@
 #include "content/public/test/url_loader_monitor.h"
 #include "content/shell/browser/shell.h"
 #include "content/test/test_content_browser_client.h"
+#include "content/test/test_fenced_frame_url_mapping_result_observer.h"
 #include "net/base/isolation_info.h"
 #include "net/base/network_isolation_key.h"
 #include "net/dns/mock_host_resolver.h"
@@ -462,9 +463,11 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     GURL urn_url = GURL(result.ExtractString());
     EXPECT_TRUE(urn_url.is_valid());
     EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
-    absl::optional<GURL> maybe_url = ConvertFencedFrameURNToURL(urn_url);
-    EXPECT_TRUE(maybe_url) << urn_url;
-    return maybe_url->spec();
+
+    TestFencedFrameURLMappingResultObserver observer;
+    ConvertFencedFrameURNToURL(urn_url, &observer);
+    EXPECT_TRUE(observer.mapped_url()) << urn_url;
+    return observer.mapped_url()->spec();
   }
 
   // Navigates an iframe with the id="test_iframe" to the provided URL and
@@ -494,10 +497,13 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
     GURL urn_url = GURL(result.ExtractString());
     EXPECT_TRUE(urn_url.is_valid());
     EXPECT_EQ(url::kUrnScheme, urn_url.scheme_piece());
-    absl::optional<GURL> maybe_url = ConvertFencedFrameURNToURL(urn_url);
-    EXPECT_TRUE(maybe_url) << urn_url;
+
+    TestFencedFrameURLMappingResultObserver observer;
+    ConvertFencedFrameURNToURL(urn_url, &observer);
+    EXPECT_TRUE(observer.mapped_url()) << urn_url;
+
     NavigateIframeAndCheckURL(web_contents(), urn_url, expected_url);
-    EXPECT_EQ(expected_url, maybe_url);
+    EXPECT_EQ(expected_url, observer.mapped_url());
   }
 
   // If `execution_target` is non-null, uses it as the target. Otherwise, uses
@@ -691,18 +697,18 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
         feature.c_str(), api.c_str());
   }
 
-  absl::optional<GURL> ConvertFencedFrameURNToURL(
+  void ConvertFencedFrameURNToURL(
       const GURL& urn_url,
+      TestFencedFrameURLMappingResultObserver* observer,
       const absl::optional<ToRenderFrameHost> execution_target =
           absl::nullopt) {
     ToRenderFrameHost adapter(execution_target ? *execution_target : shell());
-    const FencedFrameURLMapping& fenced_frame_urls_map =
+    FencedFrameURLMapping& fenced_frame_urls_map =
         static_cast<RenderFrameHostImpl*>(adapter.render_frame_host())
             ->GetPage()
             .fenced_frame_urls_map();
     absl::optional<FencedFrameURLMapping::PendingAdComponentsMap> ignored;
-    return fenced_frame_urls_map.ConvertFencedFrameURNToURL(
-        const_cast<GURL&>(urn_url), ignored);
+    fenced_frame_urls_map.ConvertFencedFrameURNToURL(urn_url, observer);
   }
 
   WebContentsImpl* web_contents() const {
@@ -975,9 +981,11 @@ interestGroupBuyers: [$1]
         EXPECT_NE((*all_component_urls)[i], (*all_component_urls)[j]);
 
       // Check URNs are mapped to the values in `expected_ad_component_urls`.
-      absl::optional<GURL> mapped_url = ConvertFencedFrameURNToURL(
-          (*all_component_urls)[i], render_frame_host);
-      EXPECT_EQ(expected_ad_component_urls[i], mapped_url);
+      TestFencedFrameURLMappingResultObserver observer;
+      ConvertFencedFrameURNToURL((*all_component_urls)[i], &observer,
+                                 render_frame_host);
+      EXPECT_TRUE(observer.mapped_url());
+      EXPECT_EQ(expected_ad_component_urls[i], observer.mapped_url());
     }
 
     // Make sure smaller values passed to GetAdAuctionComponentsInJS() return
@@ -3137,12 +3145,12 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateWorkletParameters) {
       NavigateToURL(shell(), https_server_->GetURL(kTopFrameHost, "/echo")));
   GURL seller_script_url = https_server_->GetURL(
       kSellerHost, "/interest_group/decision_argument_validator.js");
-  EXPECT_EQ(
-      "https://example.com/render",
-      ConvertFencedFrameURNToURL(
-          GURL(EvalJs(shell(),
-                      JsReplace(
-                          R"(
+
+  TestFencedFrameURLMappingResultObserver observer;
+  ConvertFencedFrameURNToURL(
+      GURL(EvalJs(shell(),
+                  JsReplace(
+                      R"(
 (async function() {
   return await navigator.runAdAuction({
     seller: $1,
@@ -3154,14 +3162,14 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, ValidateWorkletParameters) {
     perBuyerSignals: {$4: {signalsForBuyer: 1}, $5: {signalsForBuyer: 2}}
   });
 })())",
-                          url::Origin::Create(seller_script_url),
-                          seller_script_url,
-                          https_server_->GetURL(
-                              kSellerHost,
-                              "/interest_group/trusted_scoring_signals.json"),
-                          bidder_origin, second_bidder_origin))
-                   .ExtractString()))
-          ->spec());
+                      url::Origin::Create(seller_script_url), seller_script_url,
+                      https_server_->GetURL(
+                          kSellerHost,
+                          "/interest_group/trusted_scoring_signals.json"),
+                      bidder_origin, second_bidder_origin))
+               .ExtractString()),
+      &observer);
+  EXPECT_EQ(GURL("https://example.com/render"), observer.mapped_url());
 }
 
 IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
@@ -3333,10 +3341,11 @@ function validateAuctionConfig(auctionConfig) {
                  https_server_->GetURL("a.test", kTrustedBiddingSignalsPath),
                  https_server_->GetURL("a.test", kBiddingLogicPath))));
 
-  EXPECT_EQ("https://example.com/render",
-            ConvertFencedFrameURNToURL(
-                GURL(EvalJs(shell(), JsReplace(
-                                         R"(
+  TestFencedFrameURLMappingResultObserver observer;
+  ConvertFencedFrameURNToURL(
+      GURL(EvalJs(shell(),
+                  JsReplace(
+                      R"(
 (async function() {
   return await navigator.runAdAuction({
     seller: $1,
@@ -3347,11 +3356,12 @@ function validateAuctionConfig(auctionConfig) {
     perBuyerSignals: {$1: 5}
   });
 })())",
-                                         test_origin,
-                                         https_server_->GetURL(
-                                             "a.test", kDecisionLogicPath)))
-                         .ExtractString()))
-                ->spec());
+                      test_origin,
+                      https_server_->GetURL("a.test", kDecisionLogicPath)))
+               .ExtractString()),
+      &observer);
+
+  EXPECT_EQ(GURL("https://example.com/render"), observer.mapped_url());
 }
 
 // Make sure that qutting with a live auction doesn't crash.
@@ -3616,10 +3626,12 @@ class InterestGroupBrowserTestRunAdAuctionBypassBlink
             }));
     run_loop.Run();
     if (maybe_url) {
-      absl::optional<GURL> decoded_URL = ConvertFencedFrameURNToURL(*maybe_url);
+      TestFencedFrameURLMappingResultObserver observer;
+      ConvertFencedFrameURNToURL(*maybe_url, &observer);
+      EXPECT_TRUE(observer.mapped_url());
       NavigateIframeAndCheckURL(web_contents(), *maybe_url,
-                                decoded_URL.value_or(GURL()));
-      return decoded_URL;
+                                *observer.mapped_url());
+      return *observer.mapped_url();
     }
     return absl::nullopt;
   }

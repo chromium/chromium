@@ -699,6 +699,11 @@ void NavigationSimulatorImpl::Commit() {
     browser_interface_broker_receiver_.reset();
   }
 
+  // The initial `navigation_url_` may have been mapped to a new URL at this
+  // point. Overwrite it here with the desired value to correctly mock the
+  // DidCommitProvisionalLoadParams.
+  navigation_url_ = request_->GetURL();
+
   auto params = BuildDidCommitProvisionalLoadParams(
       same_document_ /* same_document */, false /* failed_navigation */,
       render_frame_host_->last_http_status_code());
@@ -1331,10 +1336,15 @@ bool NavigationSimulatorImpl::SimulateRendererInitiatedStart() {
   if (!request)
     return false;
 
-  // Prerendered page activation can be deferred by CommitDeferringConditions in
-  // BeginNavigation(), and `request_` hasn't been set by DidStartNavigation()
-  // yet. In that case, we set it here.
-  if (request->is_potentially_prerendered_page_activation_for_testing()) {
+  // `request_` may not have been set by DidStartNavigation() yet, due to
+  // either:
+  // 1) Prerendered page activation can be deferred by CommitDeferringConditions
+  //    in BeginNavigation().
+  // 2) Fenced frame navigation can be deferred on pending URL mapping.
+  //
+  // In these cases, we set the `request_` here.
+  if (request->is_potentially_prerendered_page_activation_for_testing() ||
+      request->is_deferred_on_fenced_frame_url_mapping_for_testing()) {
     DCHECK(!request_);
     request_ = request;
   }
