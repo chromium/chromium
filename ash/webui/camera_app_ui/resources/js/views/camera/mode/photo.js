@@ -108,7 +108,7 @@ export class Photo extends ModeBase {
      * @protected
      */
     this.crosImageCapture_ =
-        new CrosImageCapture(this.stream_.getVideoTracks()[0]);
+        new CrosImageCapture(this.stream.getVideoTracks()[0]);
 
     /**
      * The observer endpoint for saving metadata.
@@ -130,9 +130,9 @@ export class Photo extends ModeBase {
    * @param {!MediaStream} stream
    */
   updatePreview(stream) {
-    this.stream_ = stream;
+    this.stream = stream;
     this.crosImageCapture_ =
-        new CrosImageCapture(this.stream_.getVideoTracks()[0]);
+        new CrosImageCapture(this.stream.getVideoTracks()[0]);
   }
 
   /**
@@ -212,7 +212,7 @@ export class Photo extends ModeBase {
    * @return {!Promise} Promise for the operation.
    */
   async addMetadataObserver() {
-    if (!this.stream_) {
+    if (!this.stream) {
       return;
     }
 
@@ -245,7 +245,7 @@ export class Photo extends ModeBase {
       this.pendingResultForMetadata_.shift()?.signal(parsedMetadata);
     };
 
-    const deviceId = this.stream_.getVideoTracks()[0].getSettings().deviceId;
+    const deviceId = this.stream.getVideoTracks()[0].getSettings().deviceId;
     this.metadataObserver_ = await deviceOperator.addMetadataObserver(
         deviceId, callback, StreamType.JPEG_OUTPUT);
   }
@@ -255,7 +255,7 @@ export class Photo extends ModeBase {
    * @return {!Promise} Promise for the operation.
    */
   async removeMetadataObserver() {
-    if (!this.stream_ || this.metadataObserver_ === null) {
+    if (!this.stream || this.metadataObserver_ === null) {
       return;
     }
 

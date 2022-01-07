@@ -78,7 +78,7 @@ export class Portrait extends Photo {
     const timestamp = Date.now();
     if (this.crosImageCapture_ === null) {
       this.crosImageCapture_ =
-          new CrosImageCapture(this.stream_.getVideoTracks()[0]);
+          new CrosImageCapture(this.stream.getVideoTracks()[0]);
     }
 
     let photoSettings;
