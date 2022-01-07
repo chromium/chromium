@@ -191,7 +191,8 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
   DCHECK_EQ(request.video_type,
             blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE);
 
-  UpdateExtensionTrusted(request, extension);
+  UpdateExtensionTrusted(request,
+                         IsExtensionAllowedForScreenCapture(extension));
 
   const bool screen_capture_enabled =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -464,7 +465,8 @@ void DesktopCaptureAccessHandler::HandleRequest(
       request.disable_local_echo,
       (display_notification_ && ShouldDisplayNotification(extension)),
       GetApplicationTitle(web_contents, extension), &devices);
-  UpdateExtensionTrusted(request, extension);
+  UpdateExtensionTrusted(request,
+                         IsExtensionAllowedForScreenCapture(extension));
   std::move(callback).Run(devices, blink::mojom::MediaStreamRequestResult::OK,
                           std::move(ui));
 }

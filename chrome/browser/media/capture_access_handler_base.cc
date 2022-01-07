@@ -180,8 +180,8 @@ void CaptureAccessHandlerBase::UpdateMediaRequestState(
 
 void CaptureAccessHandlerBase::UpdateExtensionTrusted(
     const content::MediaStreamRequest& request,
-    const extensions::Extension* extension) {
-  UpdateTrusted(request, IsExtensionAllowedForScreenCapture(extension) ||
+    bool is_allowlisted_extension) {
+  UpdateTrusted(request, is_allowlisted_extension ||
                              IsBuiltInFeedbackUI(request.security_origin));
 }
 

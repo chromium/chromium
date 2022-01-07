@@ -27,8 +27,12 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_warn_notifier.h"
 #include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/mock_dlp_warn_notifier.h"
+#include "chrome/browser/extensions/api/tab_capture/tab_capture_registry.h"
+#include "chrome/browser/media/media_access_handler.h"
 #include "chrome/browser/media/webrtc/desktop_capture_access_handler.h"
 #include "chrome/browser/media/webrtc/fake_desktop_media_picker_factory.h"
+#include "chrome/browser/media/webrtc/tab_capture_access_handler.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/printing/print_view_manager.h"
 #include "chrome/browser/printing/print_view_manager_common.h"
@@ -47,6 +51,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/desktop_media_id.h"
 #include "content/public/browser/desktop_streams_registry.h"
+#include "content/public/browser/media_stream_request.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -128,6 +133,21 @@ constexpr char kGoogleUrl[] = "https://google.com";
 constexpr char kSrcPattern[] = "example.com";
 constexpr char kLabel[] = "label";
 const std::u16string kApplicationTitle = u"example.com";
+
+content::MediaStreamRequest CreateMediaStreamRequest(
+    content::WebContents* web_contents,
+    std::string requested_video_device_id,
+    blink::mojom::MediaStreamType video_type) {
+  return content::MediaStreamRequest(
+      web_contents->GetMainFrame()->GetProcess()->GetID(),
+      web_contents->GetMainFrame()->GetRoutingID(), /*page_request_id=*/0,
+      GURL(kExampleUrl), /*user_gesture=*/false, blink::MEDIA_GENERATE_STREAM,
+      /*requested_audio_device_id=*/std::string(), requested_video_device_id,
+      blink::mojom::MediaStreamType::NO_SERVICE, video_type,
+      /*disable_local_echo=*/false,
+      /*request_pan_tilt_zoom_permission=*/false,
+      /*region_capture_capable=*/false);
+}
 
 }  // namespace
 
@@ -853,7 +873,86 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest,
   EXPECT_EQ(helper_->ActiveWarningDialogsCount(), 0);
 }
 
-IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest, ScreenShareRestricted) {
+class DlpContentManagerAshScreenShareBrowserTest
+    : public DlpContentManagerAshBrowserTest {
+ public:
+  MockDlpWarnNotifier* CreateAndSetMockDlpWarnNotifier(bool should_proceed) {
+    std::unique_ptr<MockDlpWarnNotifier> mock_notifier =
+        std::make_unique<MockDlpWarnNotifier>(should_proceed);
+    MockDlpWarnNotifier* mock_notifier_ptr = mock_notifier.get();
+    helper_->SetWarnNotifierForTesting(std::move(mock_notifier));
+    return mock_notifier_ptr;
+  }
+
+  void StartDesktopScreenShare(
+      content::WebContents* web_contents,
+      blink::mojom::MediaStreamRequestResult expected_result) {
+    const std::string requested_video_device_id =
+        content::DesktopStreamsRegistry::GetInstance()->RegisterStream(
+            web_contents->GetMainFrame()->GetProcess()->GetID(),
+            web_contents->GetMainFrame()->GetRoutingID(),
+            url::Origin::Create(GURL(kExampleUrl)),
+            content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
+                                    content::DesktopMediaID::kFakeId),
+            /*extension_name=*/"",
+            content::DesktopStreamRegistryType::kRegistryStreamTypeDesktop);
+
+    StartScreenShare(
+        std::make_unique<DesktopCaptureAccessHandler>(
+            std::make_unique<FakeDesktopMediaPickerFactory>()),
+        web_contents,
+        CreateMediaStreamRequest(
+            web_contents, requested_video_device_id,
+            blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE),
+        expected_result);
+  }
+
+  void StartTabScreenShare(
+      content::WebContents* web_contents,
+      blink::mojom::MediaStreamRequestResult expected_result) {
+    const content::DesktopMediaID media_id(
+        content::DesktopMediaID::TYPE_WEB_CONTENTS,
+        content::DesktopMediaID::kNullId,
+        content::WebContentsMediaCaptureId(
+            web_contents->GetMainFrame()->GetProcess()->GetID(),
+            web_contents->GetMainFrame()->GetRoutingID()));
+    extensions::TabCaptureRegistry::Get(browser()->profile())
+        ->AddRequest(web_contents, /*extension_id=*/"", /*is_anonymous=*/false,
+                     GURL(kExampleUrl), media_id, /*extension_name=*/"",
+                     web_contents);
+
+    StartScreenShare(
+        std::make_unique<TabCaptureAccessHandler>(), web_contents,
+        CreateMediaStreamRequest(
+            web_contents, /*requested_video_device_id=*/std::string(),
+            blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE),
+        expected_result);
+  }
+
+ private:
+  void StartScreenShare(
+      std::unique_ptr<MediaAccessHandler> handler,
+      content::WebContents* web_contents,
+      content::MediaStreamRequest request,
+      blink::mojom::MediaStreamRequestResult expected_result) {
+    base::test::TestFuture<
+        std::reference_wrapper<const blink::MediaStreamDevices>,
+        blink::mojom::MediaStreamRequestResult,
+        std::unique_ptr<content::MediaStreamUI>>
+        test_future;
+    handler->HandleRequest(
+        web_contents, request,
+        test_future.GetCallback<const blink::MediaStreamDevices&,
+                                blink::mojom::MediaStreamRequestResult,
+                                std::unique_ptr<content::MediaStreamUI>>(),
+        /*extension=*/nullptr);
+    ASSERT_TRUE(test_future.Wait()) << "MediaResponseCallback timed out.";
+    EXPECT_EQ(test_future.Get<1>(), expected_result);
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
+                       ScreenShareRestricted) {
   SetupReporting();
   const GURL origin(kExampleUrl);
   NotificationDisplayServiceTester display_service_tester(browser()->profile());
@@ -876,9 +975,60 @@ IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest, ScreenShareRestricted) {
       GetDlpHistogramPrefix() + dlp::kScreenShareBlockedUMA, false, 0);
 }
 
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
+                       TabScreenShareWarnedAllowed) {
+  helper_->EnableScreenShareWarningMode();
+  MockDlpWarnNotifier* mock_dlp_warn_notifier =
+      CreateAndSetMockDlpWarnNotifier(/*should_proceed=*/true);
+  EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog(_, _)).Times(1);
+
+  SetupReporting();
+  const GURL origin(kExampleUrl);
+  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), origin));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);
+
+  StartTabScreenShare(web_contents, blink::mojom::MediaStreamRequestResult::OK);
+
+  EXPECT_FALSE(display_service_tester.GetNotification(
+      kScreenShareBlockedNotificationId));
+  EXPECT_TRUE(helper_->HasContentCachedForRestriction(
+      web_contents, DlpRulesManager::Restriction::kScreenShare));
+
+  helper_->ResetWarnNotifierForTesting();
+}
+
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
+                       TabScreenShareWarnedCancelled) {
+  helper_->EnableScreenShareWarningMode();
+  MockDlpWarnNotifier* mock_dlp_warn_notifier =
+      CreateAndSetMockDlpWarnNotifier(/*should_proceed=*/false);
+  EXPECT_CALL(*mock_dlp_warn_notifier, ShowDlpWarningDialog(_, _)).Times(1);
+
+  SetupReporting();
+  const GURL origin(kExampleUrl);
+  NotificationDisplayServiceTester display_service_tester(browser()->profile());
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), origin));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  helper_->ChangeConfidentiality(web_contents, kScreenShareWarned);
+
+  StartTabScreenShare(
+      web_contents, blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED);
+
+  EXPECT_FALSE(display_service_tester.GetNotification(
+      kScreenShareBlockedNotificationId));
+  EXPECT_FALSE(helper_->HasAnyContentCached());
+
+  helper_->ResetWarnNotifierForTesting();
+}
+
 // Starting screen sharing and navigating other tabs should create exactly one
 // reporting event.
-IN_PROC_BROWSER_TEST_F(DlpContentManagerAshBrowserTest, ScreenShareReporting) {
+IN_PROC_BROWSER_TEST_F(DlpContentManagerAshScreenShareBrowserTest,
+                       ScreenShareReporting) {
   SetupReporting();
   const GURL origin(kExampleUrl);
   NotificationDisplayServiceTester display_service_tester(browser()->profile());

@@ -83,7 +83,7 @@ class CaptureAccessHandlerBase : public MediaAccessHandler {
   static bool IsBuiltInFeedbackUI(const GURL& origin);
 
   void UpdateExtensionTrusted(const content::MediaStreamRequest& request,
-                              const extensions::Extension* extension);
+                              bool is_allowlisted_extension);
 
   void UpdateTrusted(const content::MediaStreamRequest& request,
                      bool is_trusted);
