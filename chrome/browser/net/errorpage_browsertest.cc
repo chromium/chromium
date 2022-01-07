@@ -1082,7 +1082,8 @@ class ErrorPageOfflineAppLaunchTest
       : web_app::SystemWebAppBrowserTestBase(true) {}
 };
 
-IN_PROC_BROWSER_TEST_F(ErrorPageOfflineAppLaunchTest, DiagnosticsConnectivity) {
+IN_PROC_BROWSER_TEST_F(ErrorPageOfflineAppLaunchTest,
+                       DISABLED_DiagnosticsConnectivity) {
   WaitForTestSystemAppInstall();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(),
