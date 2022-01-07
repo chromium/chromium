@@ -10,10 +10,7 @@ import org.chromium.base.BundleUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.SysUtils;
-import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill_assistant.metrics.FeatureModuleInstallation;
-import org.chromium.chrome.browser.modules.ModuleInstallUi;
-import org.chromium.chrome.browser.tab.Tab;
 
 /**
  * Manages the loading of autofill assistant DFM, and provides implementation of
@@ -46,13 +43,14 @@ public class AutofillAssistantModuleEntryProvider {
 
     /** Gets the AA module entry, installing it if necessary. */
     /* package */
-    void getModuleEntry(Tab tab, Callback<AutofillAssistantModuleEntry> callback, boolean showUi) {
+    void getModuleEntry(Callback<AutofillAssistantModuleEntry> callback,
+            AssistantModuleInstallUi.Provider moduleInstallUiProvider, boolean showUi) {
         AutofillAssistantModuleEntry entry = getModuleEntryIfInstalled();
         if (entry != null) {
             callback.onResult(entry);
             return;
         }
-        loadDynamicModule(tab, callback, showUi);
+        loadDynamicModule(callback, moduleInstallUiProvider, showUi);
     }
 
     /**
@@ -85,19 +83,16 @@ public class AutofillAssistantModuleEntryProvider {
         AutofillAssistantModule.installDeferred();
     }
 
-    private static void loadDynamicModule(
-            Tab tab, Callback<AutofillAssistantModuleEntry> callback, boolean showUi) {
-        ModuleInstallUi ui = new ModuleInstallUi(tab, R.string.autofill_assistant_module_title,
-                new ModuleInstallUi.FailureUiListener() {
-                    @Override
-                    public void onFailureUiResponse(boolean retry) {
-                        if (retry) {
-                            loadDynamicModule(tab, callback, showUi);
-                        } else {
-                            callback.onResult(null);
-                        }
-                    }
-                });
+    private static void loadDynamicModule(Callback<AutofillAssistantModuleEntry> callback,
+            AssistantModuleInstallUi.Provider moduleInstallUiProvider, boolean showUi) {
+        AssistantModuleInstallUi ui = moduleInstallUiProvider.create((Boolean retry) -> {
+            if (retry) {
+                loadDynamicModule(callback, moduleInstallUiProvider, showUi);
+            } else {
+                callback.onResult(null);
+            }
+        });
+
         if (showUi) {
             // Shows toast informing user about install start.
             ui.showInstallStartUi();

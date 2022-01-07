@@ -32,6 +32,7 @@ public class Starter extends EmptyTabObserver implements UserData {
 
     private final AssistantIsGsaFunction mIsGsaFunction;
     private final AssistantIsMsbbEnabledFunction mIsMsbbEnabledFunction;
+    private final AssistantModuleInstallUi.Provider mModuleInstallUiProvider;
 
     /**
      * The WebContents associated with the Tab which this starter is monitoring, unless detached.
@@ -65,10 +66,12 @@ public class Starter extends EmptyTabObserver implements UserData {
      * This will wait for dependencies to become available and then create the native-side starter.
      */
     public Starter(Tab tab, AssistantIsGsaFunction isGsaFunction,
-            AssistantIsMsbbEnabledFunction isMsbbEnabledFunction) {
+            AssistantIsMsbbEnabledFunction isMsbbEnabledFunction,
+            AssistantModuleInstallUi.Provider moduleInstallUiProvider) {
         mTab = tab;
         mIsGsaFunction = isGsaFunction;
         mIsMsbbEnabledFunction = isMsbbEnabledFunction;
+        mModuleInstallUiProvider = moduleInstallUiProvider;
         detectWebContentsChange(tab);
     }
 
@@ -202,14 +205,14 @@ public class Starter extends EmptyTabObserver implements UserData {
             return;
         }
 
-        AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntry(mTab,
+        AutofillAssistantModuleEntryProvider.INSTANCE.getModuleEntry(
                 (moduleEntry)
                         -> safeNativeOnFeatureModuleInstalled(moduleEntry != null
                                         ? FeatureModuleInstallation
                                                   .DFM_FOREGROUND_INSTALLATION_SUCCEEDED
                                         : FeatureModuleInstallation
                                                   .DFM_FOREGROUND_INSTALLATION_FAILED),
-                showUi);
+                mModuleInstallUiProvider, showUi);
     }
 
     @CalledByNative

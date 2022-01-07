@@ -11,7 +11,6 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.autofill_assistant.onboarding.OnboardingCoordinatorFactory;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.WebContents;
 
@@ -108,13 +107,13 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
     }
 
     @Override
-    public void getModuleEntry(
-            Tab tab, Callback<AutofillAssistantModuleEntry> callback, boolean showUi) {
+    public void getModuleEntry(Callback<AutofillAssistantModuleEntry> callback,
+            AssistantModuleInstallUi.Provider moduleInstallUiProvider, boolean showUi) {
         if (mCannotInstall) {
             callback.onResult(null);
             return;
         }
         mNotInstalled = false;
-        super.getModuleEntry(tab, callback, showUi);
+        super.getModuleEntry(callback, moduleInstallUiProvider, showUi);
     }
 }

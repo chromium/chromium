@@ -12,6 +12,8 @@ public_autofill_assistant_java_sources = [
   "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantInfoPageUtil.java",
   "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantIsGsaFunction.java",
   "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantIsMsbbEnabledFunction.java",
+  "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantModuleInstallUi.java",
+  "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantModuleInstallUiProviderChrome.java",
   "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantOnboardingHelper.java",
   "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantProfileImageUtil.java",
   "//chrome/android/features/autofill_assistant/public/java/src/org/chromium/chrome/browser/autofill_assistant/AssistantSnackbar.java",
