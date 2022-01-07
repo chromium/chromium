@@ -466,6 +466,16 @@ class AutotestPrivateImportCrostiniFunction : public ExtensionFunction {
   void CrostiniImported(crostini::CrostiniResult);
 };
 
+class AutotestPrivateCouldAllowCrostiniFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.couldAllowCrostini",
+                             AUTOTESTPRIVATE_COULDALLOWCROSTINI)
+
+ private:
+  ~AutotestPrivateCouldAllowCrostiniFunction() override;
+  ResponseAction Run() override;
+};
+
 class AutotestPrivateSetPluginVMPolicyFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("autotestPrivate.setPluginVMPolicy",

@@ -1670,6 +1670,7 @@ enum HistogramValue {
   ACCESSIBILITY_PRIVATE_UPDATEDICTATIONBUBBLE = 1607,
   TERMINALPRIVATE_GETOSINFO = 1608,
   OS_TELEMETRY_GETMEMORYINFO = 1609,
+  AUTOTESTPRIVATE_COULDALLOWCROSTINI = 1610,
   // Last entry: Add new entries above, then run:
   // python tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

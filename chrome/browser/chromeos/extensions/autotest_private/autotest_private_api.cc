@@ -2291,6 +2291,22 @@ ExtensionFunction::ResponseAction AutotestPrivateImportCrostiniFunction::Run() {
   return RespondLater();
 }
 
+///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateCouldAllowCrostiniFunction
+///////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateCouldAllowCrostiniFunction::
+    ~AutotestPrivateCouldAllowCrostiniFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateCouldAllowCrostiniFunction::Run() {
+  DVLOG(1) << "AutotestPrivateCouldAllowCrostiniFunction";
+
+  Profile* profile = Profile::FromBrowserContext(browser_context());
+  return RespondNow(OneArgument(
+      base::Value(crostini::CrostiniFeatures::Get()->CouldBeAllowed(profile))));
+}
+
 void AutotestPrivateImportCrostiniFunction::CrostiniImported(
     crostini::CrostiniResult result) {
   if (result == crostini::CrostiniResult::SUCCESS) {

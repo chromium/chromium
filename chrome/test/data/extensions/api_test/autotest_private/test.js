@@ -251,6 +251,12 @@ var defaultTests = [
     chrome.autotestPrivate.importCrostini('backup', chrome.test.callbackFail(
         'Crostini is not available for the current user'));
   },
+  function couldAllowCrostini() {
+    chrome.autotestPrivate.couldAllowCrostini(chrome.test.callbackPass(
+        result => {
+          chrome.test.assertFalse(result);
+        }));
+  },
   function takeScreenshot() {
     chrome.autotestPrivate.takeScreenshot(
       function(base64Png) {

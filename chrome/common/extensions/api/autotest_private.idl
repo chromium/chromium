@@ -595,6 +595,8 @@ namespace autotestPrivate {
     boolean markTimeOfFirstAdd;
   };
 
+  callback CouldAllowCrostiniCallback = void (boolean canBeAllowed);
+
   interface Functions {
     // Must be called to allow autotestPrivateAPI events to be fired.
     static void initializeEvents();
@@ -796,6 +798,12 @@ namespace autotestPrivate {
     // |callback|: Called when the operation has completed.
     [supportsPromises] static void importCrostini(DOMString path,
                                                   VoidCallback callback);
+
+    // Returns whether crostini could ever be allowed.
+    // |callback|: Called with a boolean indicating if crostini can ever be
+    // allowed in the current profile.
+    [supportsPromises] static void couldAllowCrostini(
+        CouldAllowCrostiniCallback callback);
 
     // Sets mock Plugin VM policy.
     // |imageUrl|: URL to the image to install.
