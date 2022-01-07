@@ -446,7 +446,8 @@ bool TaskTracker::CanRunPriority(TaskPriority priority) const {
 }
 
 RegisteredTaskSource TaskTracker::RunAndPopNextTask(
-    RegisteredTaskSource task_source) {
+    RegisteredTaskSource task_source,
+    base::Location* posted_from) {
   DCHECK(task_source);
 
   const bool should_run_tasks = BeforeRunTask(task_source->shutdown_behavior());
@@ -462,6 +463,8 @@ RegisteredTaskSource TaskTracker::RunAndPopNextTask(
   }
 
   if (task) {
+    if (posted_from)
+      *posted_from = task->posted_from;
     // Run the |task| (whether it's a worker task or the Clear() closure).
     RunTask(std::move(task.value()), task_source.get(), traits);
   }

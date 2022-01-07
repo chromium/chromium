@@ -118,7 +118,11 @@ class BASE_EXPORT TaskTracker {
   // (which indicates that it should be reenqueued). WillPostTask() must have
   // allowed the task in front of |task_source| to be posted before this is
   // called.
-  RegisteredTaskSource RunAndPopNextTask(RegisteredTaskSource task_source);
+  // |posted_from| is optionally used to capture base::Location of the task ran
+  // for investigation of memory corruption.
+  // TODO(crbug.com/1218384): Remove |posted_from| once resolved.
+  RegisteredTaskSource RunAndPopNextTask(RegisteredTaskSource task_source,
+                                         base::Location* posted_from = nullptr);
 
   // Returns true once shutdown has started (StartShutdown() was called).
   // Note: sequential consistency with the thread calling StartShutdown() isn't

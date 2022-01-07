@@ -375,12 +375,15 @@ void WorkerThread::RunWorker() {
     // Alias pointer for investigation of memory corruption. crbug.com/1218384
     TaskSource* task_source_before_run = task_source.get();
     base::debug::Alias(&task_source_before_run);
+    base::Location posted_from;
+    task_source =
+        task_tracker_->RunAndPopNextTask(std::move(task_source), &posted_from);
 
-    task_source = task_tracker_->RunAndPopNextTask(std::move(task_source));
-
-    // Alias pointer for investigation of memory corruption. crbug.com/1218384
+    // Alias pointer and posted_from for investigation of memory corruption.
+    // crbug.com/1218384
     TaskSource* task_source_before_move = task_source.get();
     base::debug::Alias(&task_source_before_move);
+    DEBUG_ALIAS_FOR_CSTR(posted_from_str, posted_from.ToString().c_str(), 128);
 
     delegate_->DidProcessTask(std::move(task_source));
 
