@@ -990,7 +990,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFromBucket(
 
 // static
 template <bool thread_safe>
-ALWAYS_INLINE void PartitionRoot<thread_safe>::Free(void* ptr) {
+NOINLINE void PartitionRoot<thread_safe>::Free(void* ptr) {
 #if defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
   free(ptr);
 #else
@@ -1804,23 +1804,22 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AlignedAllocFlags(
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE void* PartitionRoot<thread_safe>::Alloc(size_t requested_size,
-                                                      const char* type_name) {
+NOINLINE void* PartitionRoot<thread_safe>::Alloc(size_t requested_size,
+                                                 const char* type_name) {
   return AllocFlags(0, requested_size, type_name);
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE void* PartitionRoot<thread_safe>::Realloc(void* ptr,
-                                                        size_t new_size,
-                                                        const char* type_name) {
+NOINLINE void* PartitionRoot<thread_safe>::Realloc(void* ptr,
+                                                   size_t new_size,
+                                                   const char* type_name) {
   return ReallocFlags(0, ptr, new_size, type_name);
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE void* PartitionRoot<thread_safe>::TryRealloc(
-    void* ptr,
-    size_t new_size,
-    const char* type_name) {
+NOINLINE void* PartitionRoot<thread_safe>::TryRealloc(void* ptr,
+                                                      size_t new_size,
+                                                      const char* type_name) {
   return ReallocFlags(PartitionAllocReturnNull, ptr, new_size, type_name);
 }
 
