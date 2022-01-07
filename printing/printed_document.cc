@@ -187,17 +187,18 @@ const MetafilePlayer* PrintedDocument::GetMetafile() {
 
 mojom::ResultCode PrintedDocument::RenderPrintedDocument(
     PrintingContext* context) {
-  mojom::ResultCode result = context->NewPage();
+  base::AutoLock lock(lock_);
+  mojom::ResultCode result = context->PrintDocument(
+      *GetMetafile(), *immutable_.settings_, mutable_.expected_page_count_);
   if (result != mojom::ResultCode::kSuccess)
     return result;
-  {
-    base::AutoLock lock(lock_);
-    result = context->PrintDocument(*GetMetafile(), *immutable_.settings_,
-                                    mutable_.expected_page_count_);
-    if (result != mojom::ResultCode::kSuccess)
-      return result;
-  }
-  return context->PageDone();
+
+  // Beware of any asynchronous aborts of the print job that happened during
+  // printing.
+  if (context->PrintingAborted())
+    return mojom::ResultCode::kCanceled;
+
+  return mojom::ResultCode::kSuccess;
 }
 
 bool PrintedDocument::IsComplete() const {

@@ -115,7 +115,6 @@ TEST_F(EmfPrintingTest, Enumerate) {
   // current directory.
   // TODO(maruel):  Clean the .PRN file generated in current directory.
   context.NewDocument(u"EmfTest.Enumerate");
-  context.NewPage();
   // Process one at a time.
   RECT page_bounds = emf.GetPageBounds(1).ToRECT();
   Emf::Enumerator emf_enum(emf, context.context(), &page_bounds);
@@ -129,7 +128,6 @@ TEST_F(EmfPrintingTest, Enumerate) {
     EXPECT_TRUE(itr->SafePlayback(&emf_enum.context_))
         << " index: " << index << " type: " << itr->record()->iType;
   }
-  context.PageDone();
   context.DocumentDone();
 }
 

@@ -98,26 +98,6 @@ mojom::ResultCode PrintingContextNoSystemDialog::NewDocument(
   return mojom::ResultCode::kSuccess;
 }
 
-mojom::ResultCode PrintingContextNoSystemDialog::NewPage() {
-  if (abort_printing_)
-    return mojom::ResultCode::kCanceled;
-  DCHECK(in_print_job_);
-
-  // Intentional No-op.
-
-  return mojom::ResultCode::kSuccess;
-}
-
-mojom::ResultCode PrintingContextNoSystemDialog::PageDone() {
-  if (abort_printing_)
-    return mojom::ResultCode::kCanceled;
-  DCHECK(in_print_job_);
-
-  // Intentional No-op.
-
-  return mojom::ResultCode::kSuccess;
-}
-
 mojom::ResultCode PrintingContextNoSystemDialog::PrintDocument(
     const MetafilePlayer& metafile,
     const PrintSettings& settings,
