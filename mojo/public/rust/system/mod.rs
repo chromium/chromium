@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 mod ffi;
-mod mojo_types;
 mod handle;
+mod mojo_types;
 
 pub mod core;
 pub mod data_pipe;

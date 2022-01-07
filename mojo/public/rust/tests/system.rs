@@ -15,12 +15,12 @@ extern crate mojo;
 mod util;
 
 use mojo::system;
-use mojo::system::{CastHandle, Handle};
 use mojo::system::core;
 use mojo::system::data_pipe;
 use mojo::system::message_pipe;
 use mojo::system::shared_buffer;
 use mojo::system::wait_set;
+use mojo::system::{CastHandle, Handle};
 
 use std::string::String;
 use std::thread;

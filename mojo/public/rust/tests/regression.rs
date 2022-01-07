@@ -13,7 +13,7 @@ extern crate mojo;
 
 use mojo::bindings::decoding::{Decoder, ValidationError};
 use mojo::bindings::encoding;
-use mojo::bindings::encoding::{Encoder, DataHeaderValue, Context};
+use mojo::bindings::encoding::{Context, DataHeaderValue, Encoder};
 use mojo::bindings::mojom::{MojomEncodable, MojomPointer, MojomStruct};
 use mojo::system;
 use mojo::system::UntypedHandle;
@@ -56,8 +56,8 @@ impl<T: MojomEncodable> MojomPointer for StructA<T> {
 impl<T: MojomEncodable> MojomEncodable for StructA<T> {
     impl_encodable_for_pointer!();
     fn compute_size(&self, context: Context) -> usize {
-        encoding::align_default(self.serialized_size(&context)) +
-        self.param0.compute_size(context.clone())
+        encoding::align_default(self.serialized_size(&context))
+            + self.param0.compute_size(context.clone())
     }
 }
 
@@ -104,4 +104,3 @@ tests! {
         }
     }
 }
-

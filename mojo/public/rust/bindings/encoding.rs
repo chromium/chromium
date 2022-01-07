@@ -6,8 +6,8 @@ use bindings::mojom::MOJOM_NULL_POINTER;
 use bindings::util;
 
 use std::mem;
+use std::ops::{Add, AddAssign, Div, Mul, Rem, Sub};
 use std::ptr;
-use std::ops::{Add, AddAssign, Sub, Mul, Div, Rem};
 use std::vec::Vec;
 
 use system::UntypedHandle;
@@ -76,10 +76,19 @@ impl Mul<usize> for Bits {
 
 /// This trait is intended to be used by Mojom primitive values
 /// in order to be identified in generic contexts.
-pub trait MojomNumeric: Copy + Clone + Sized + Add<Self> + Sub<Self, Output=Self> + Mul<Self> +
-    Div<Self, Output=Self> + Rem<Self, Output=Self> + PartialEq<Self> + Default {
-
-/// Converts the primitive to a little-endian representation (the mojom endianness).
+pub trait MojomNumeric:
+    Copy
+    + Clone
+    + Sized
+    + Add<Self>
+    + Sub<Self, Output = Self>
+    + Mul<Self>
+    + Div<Self, Output = Self>
+    + Rem<Self, Output = Self>
+    + PartialEq<Self>
+    + Default
+{
+    /// Converts the primitive to a little-endian representation (the mojom endianness).
     fn to_mojom_endian(self) -> Self;
 }
 
@@ -151,10 +160,7 @@ pub struct DataHeader {
 impl DataHeader {
     /// Create a new DataHeader.
     pub fn new(size: usize, data: DataHeaderValue) -> DataHeader {
-        DataHeader {
-            size: size as u32,
-            data: data.as_raw(),
-        }
+        DataHeader { size: size as u32, data: data.as_raw() }
     }
 
     /// Getter for size.
@@ -182,10 +188,7 @@ pub struct Context {
 impl Context {
     /// Create a new context with all data default.
     pub fn new(id: usize) -> Context {
-        Context {
-            id: id,
-            is_union: false,
-        }
+        Context { id: id, is_union: false }
     }
 
     /// Getter for the encoding state ID.
@@ -228,16 +231,13 @@ impl<'slice> EncodingState<'slice> {
     ///
     /// Note: the encoder will not allocate a buffer for you, rather
     /// a pre-allocated buffer must be passed in.
-    pub fn new(buffer: &'slice mut [u8],
-               header: &DataHeader,
-               offset: usize)
-               -> EncodingState<'slice> {
-        let mut state = EncodingState {
-            data: buffer,
-            global_offset: offset,
-            offset: 0,
-            bit_offset: Bits(0),
-        };
+    pub fn new(
+        buffer: &'slice mut [u8],
+        header: &DataHeader,
+        offset: usize,
+    ) -> EncodingState<'slice> {
+        let mut state =
+            EncodingState { data: buffer, global_offset: offset, offset: 0, bit_offset: Bits(0) };
         state.write(header.size());
         state.write(header.data());
         state
@@ -262,9 +262,11 @@ impl<'slice> EncodingState<'slice> {
         let bytes = data.to_mojom_endian();
         debug_assert!(num_bytes + self.offset <= self.data.len());
         unsafe {
-            ptr::copy_nonoverlapping(mem::transmute::<&T, *const u8>(&bytes),
-                                     (&mut self.data[self.offset..]).as_mut_ptr(),
-                                     num_bytes);
+            ptr::copy_nonoverlapping(
+                mem::transmute::<&T, *const u8>(&bytes),
+                (&mut self.data[self.offset..]).as_mut_ptr(),
+                num_bytes,
+            );
         }
         self.bit_offset = Bits(0);
         self.offset += num_bytes;
@@ -338,12 +340,7 @@ pub struct Encoder<'slice> {
 impl<'slice> Encoder<'slice> {
     /// Create a new Encoder.
     pub fn new(buffer: &'slice mut [u8]) -> Encoder<'slice> {
-        Encoder {
-            bytes: 0,
-            buffer: Some(buffer),
-            states: Vec::new(),
-            handles: Vec::new(),
-        }
+        Encoder { bytes: 0, buffer: Some(buffer), states: Vec::new(), handles: Vec::new() }
     }
 
     /// Get the current encoded size (useful for writing pointers).

@@ -16,26 +16,21 @@ mod macros {
         ( $fn_main:ident ) => {
             #[allow(bad_style)]
             #[no_mangle]
-            pub fn MojoMain(app_request_handle: mojo::system::MojoHandle) -> mojo::MojoResult
-            {
-                use std::panic;
+            pub fn MojoMain(app_request_handle: mojo::system::MojoHandle) -> mojo::MojoResult {
                 use mojo::system::CastHandle;
+                use std::panic;
                 let handle = unsafe {
                     mojo::system::message_pipe::MessageEndpoint::from_untyped(
-                        mojo::system::acquire(app_request_handle)
+                        mojo::system::acquire(app_request_handle),
                     )
                 };
-                let result = panic::catch_unwind(|| {
-                    $fn_main(handle)
-                });
+                let result = panic::catch_unwind(|| $fn_main(handle));
                 match result {
                     Ok(value) => value,
-                    Err(_) => {
-                        mojo::MojoResult::Aborted
-                    },
+                    Err(_) => mojo::MojoResult::Aborted,
                 }
             }
-        }
+        };
     }
 
     /// This macro assists in generating flags for

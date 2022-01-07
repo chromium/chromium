@@ -14,9 +14,9 @@ extern crate mojo;
 #[macro_use]
 mod util;
 
-use mojo::system::{Handle, MOJO_INDEFINITE};
+use mojo::bindings::mojom::{MojomInterface, MojomInterfaceRecv, MojomInterfaceSend};
 use mojo::system::message_pipe;
-use mojo::bindings::mojom::{MojomInterface, MojomInterfaceSend, MojomInterfaceRecv};
+use mojo::system::{Handle, MOJO_INDEFINITE};
 
 use std::thread;
 

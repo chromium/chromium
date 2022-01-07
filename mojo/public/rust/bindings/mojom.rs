@@ -4,7 +4,7 @@
 
 use bindings::decoding::{Decoder, ValidationError};
 use bindings::encoding;
-use bindings::encoding::{Bits, Encoder, Context, DATA_HEADER_SIZE, DataHeader, DataHeaderValue};
+use bindings::encoding::{Bits, Context, DataHeader, DataHeaderValue, Encoder, DATA_HEADER_SIZE};
 use bindings::message::MessageHeader;
 
 use std::cmp::Eq;
@@ -15,11 +15,11 @@ use std::panic;
 use std::ptr;
 use std::vec::Vec;
 
-use system::{MojoResult, CastHandle, Handle, UntypedHandle};
 use system::data_pipe;
 use system::message_pipe;
 use system::shared_buffer;
 use system::wait_set;
+use system::{CastHandle, Handle, MojoResult, UntypedHandle};
 
 /// The size of a Mojom map plus header in bytes.
 const MAP_SIZE: usize = 24;
@@ -95,7 +95,11 @@ pub trait MojomPointer: MojomEncodable {
 
     /// Reads a pointer inlined into the current context before calling
     /// decode_value.
-    fn decode_new(decoder: &mut Decoder, _context: Context, pointer: u64) -> Result<Self, ValidationError> {
+    fn decode_new(
+        decoder: &mut Decoder,
+        _context: Context,
+        pointer: u64,
+    ) -> Result<Self, ValidationError> {
         match decoder.claim(pointer as usize) {
             Ok(new_context) => Self::decode_value(decoder, new_context),
             Err(err) => Err(err),
@@ -289,11 +293,9 @@ pub trait MojomInterfaceRecv: MojomInterface {
     /// Tries to read a message from a pipe and decodes it.
     fn recv_response(&self) -> Result<(u64, Self::Container), MojomRecvError> {
         match self.pipe().read(mpflags!(Read::None)) {
-            Ok((buffer, handles)) => {
-                match Self::Container::decode_message(buffer, handles) {
-                    Ok((req_id, val)) => Ok((req_id, val)),
-                    Err(err) => Err(MojomRecvError::FailedValidation(err)),
-                }
+            Ok((buffer, handles)) => match Self::Container::decode_message(buffer, handles) {
+                Ok((req_id, val)) => Ok((req_id, val)),
+                Err(err) => Err(MojomRecvError::FailedValidation(err)),
             },
             Err(err) => Err(MojomRecvError::FailedRead(err)),
         }
@@ -345,11 +347,18 @@ pub trait MojomMessageOption: Sized {
     /// Decodes the actual payload of the message.
     ///
     /// Implemented by a code generator.
-    fn decode_payload(header: MessageHeader, buffer: &[u8], handles: Vec<UntypedHandle>) -> Result<Self, ValidationError>;
+    fn decode_payload(
+        header: MessageHeader,
+        buffer: &[u8],
+        handles: Vec<UntypedHandle>,
+    ) -> Result<Self, ValidationError>;
 
     /// Decodes the message header and then the payload, returning a new
     /// copy of itself and the request ID found in the header.
-    fn decode_message(buffer: Vec<u8>, handles: Vec<UntypedHandle>) -> Result<(u64, Self), ValidationError> {
+    fn decode_message(
+        buffer: Vec<u8>,
+        handles: Vec<UntypedHandle>,
+    ) -> Result<(u64, Self), ValidationError> {
         let header = try!(MessageHeader::deserialize(&buffer[..], Vec::new()));
         let payload_buffer = &buffer[header.serialized_size(&Default::default())..];
         let req_id = header.request_id;
@@ -447,10 +456,10 @@ impl<T: MojomEncodable> MojomEncodable for Option<T> {
                     MojomType::Interface => {
                         state.encode_null_handle();
                         state.encode(0 as u32);
-                    },
+                    }
                     MojomType::Simple => panic!("Unexpected simple type in Option!"),
                 }
-            },
+            }
         }
     }
     fn decode(decoder: &mut Decoder, context: Context) -> Result<Self, ValidationError> {
@@ -481,13 +490,10 @@ macro_rules! impl_pointer_for_array {
             DataHeaderValue::Elements(self.len() as u32)
         }
         fn serialized_size(&self, context: &Context) -> usize {
-            DATA_HEADER_SIZE + if self.len() > 0 {
-                (T::embed_size(context) * self.len()).as_bytes()
-            } else {
-                0
-            }
+            DATA_HEADER_SIZE
+                + if self.len() > 0 { (T::embed_size(context) * self.len()).as_bytes() } else { 0 }
         }
-    }
+    };
 }
 
 macro_rules! impl_encodable_for_array {
@@ -500,7 +506,7 @@ macro_rules! impl_encodable_for_array {
             }
             size
         }
-    }
+    };
 }
 
 impl<T: MojomEncodable> MojomPointer for Vec<T> {
@@ -649,11 +655,10 @@ macro_rules! impl_encodable_for_fixed_array {
 // even though its part of the type (this will hopefully be added in the
 // future) so for now we implement encodable for only the first 33 fixed
 // size array types.
-impl_encodable_for_fixed_array!( 0,  1,  2,  3,  4,  5,  6,  7,
-                                 8,  9, 10, 11, 12, 13, 14, 15,
-                                16, 17, 18, 19, 20, 21, 22, 23,
-                                24, 25, 26, 27, 28, 29, 30, 31,
-                                32);
+impl_encodable_for_fixed_array!(
+    0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25,
+    26, 27, 28, 29, 30, 31, 32
+);
 
 impl<T: MojomEncodable> MojomPointer for Box<[T]> {
     impl_pointer_for_array!();
@@ -713,7 +718,10 @@ impl MojomEncodable for String {
 }
 
 /// Helper function to clean up duplicate code in HashMap.
-fn array_claim_and_decode_header<T: MojomEncodable>(decoder: &mut Decoder, offset: usize) -> Result<(Context, usize), ValidationError> {
+fn array_claim_and_decode_header<T: MojomEncodable>(
+    decoder: &mut Decoder,
+    offset: usize,
+) -> Result<(Context, usize), ValidationError> {
     let context = match decoder.claim(offset) {
         Ok(new_context) => new_context,
         Err(err) => return Err(err),
@@ -761,7 +769,10 @@ impl<K: MojomEncodable + Eq + Hash, V: MojomEncodable> MojomPointer for HashMap<
         // Encode vals
         vals_vec.encode(encoder, context.clone())
     }
-    fn decode_value(decoder: &mut Decoder, context: Context) -> Result<HashMap<K, V>, ValidationError> {
+    fn decode_value(
+        decoder: &mut Decoder,
+        context: Context,
+    ) -> Result<HashMap<K, V>, ValidationError> {
         let (keys_offset, vals_offset) = {
             let state = decoder.get_mut(&context);
             match state.decode_struct_header(&MAP_VERSIONS) {
@@ -783,10 +794,11 @@ impl<K: MojomEncodable + Eq + Hash, V: MojomEncodable> MojomPointer for HashMap<
             }
             (keys_offset as usize, vals_offset as usize)
         };
-        let (keys_context, keys_elems) = match array_claim_and_decode_header::<K>(decoder, keys_offset) {
-            Ok((context, elems)) => (context, elems),
-            Err(err) => return Err(err),
-        };
+        let (keys_context, keys_elems) =
+            match array_claim_and_decode_header::<K>(decoder, keys_offset) {
+                Ok((context, elems)) => (context, elems),
+                Err(err) => return Err(err),
+            };
         let mut keys_vec: Vec<K> = Vec::with_capacity(keys_elems as usize);
         for _ in 0..keys_elems {
             let key = match K::decode(decoder, keys_context.clone()) {
@@ -795,10 +807,11 @@ impl<K: MojomEncodable + Eq + Hash, V: MojomEncodable> MojomPointer for HashMap<
             };
             keys_vec.push(key);
         }
-        let (vals_context, vals_elems) = match array_claim_and_decode_header::<V>(decoder, vals_offset) {
-            Ok((context, elems)) => (context, elems),
-            Err(err) => return Err(err),
-        };
+        let (vals_context, vals_elems) =
+            match array_claim_and_decode_header::<V>(decoder, vals_offset) {
+                Ok((context, elems)) => (context, elems),
+                Err(err) => return Err(err),
+            };
         if keys_elems != vals_elems {
             return Err(ValidationError::DifferentSizedArraysInMap);
         }
@@ -862,14 +875,17 @@ macro_rules! impl_encodable_for_handle {
             let mut state = encoder.get_mut(&context);
             state.encode(pos as i32);
         }
-        fn decode(decoder: &mut Decoder, context: Context) -> Result<$handle_type, ValidationError> {
+        fn decode(
+            decoder: &mut Decoder,
+            context: Context,
+        ) -> Result<$handle_type, ValidationError> {
             let handle_index = {
                 let mut state = decoder.get_mut(&context);
                 state.decode::<i32>()
             };
             decoder.claim_handle::<$handle_type>(handle_index)
         }
-    }
+    };
 }
 
 impl MojomEncodable for UntypedHandle {

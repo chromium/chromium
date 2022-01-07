@@ -61,12 +61,13 @@ impl WaitSet {
     /// One can pass in a unique cookie value which is used to identify the
     /// handle in the wait result. Currently there are no supported flags,
     /// but the argument is kept for future usage.
-    pub fn add(&mut self,
-               handle: &Handle,
-               signals: mojo_types::HandleSignals,
-               cookie: u64,
-               flags: mojo_types::AddFlags)
-               -> MojoResult {
+    pub fn add(
+        &mut self,
+        handle: &Handle,
+        signals: mojo_types::HandleSignals,
+        cookie: u64,
+        flags: mojo_types::AddFlags,
+    ) -> MojoResult {
         let opts = ffi::MojoWaitSetAddOptions {
             struct_size: mem::size_of::<ffi::MojoWaitSetAddOptions>() as u32,
             flags: flags,
@@ -74,11 +75,13 @@ impl WaitSet {
         };
         let raw_opts = &opts as *const ffi::MojoWaitSetAddOptions;
         MojoResult::from_code(unsafe {
-            ffi::MojoWaitSetAdd(self.handle.get_native_handle(),
-                                handle.get_native_handle(),
-                                signals,
-                                cookie,
-                                raw_opts)
+            ffi::MojoWaitSetAdd(
+                self.handle.get_native_handle(),
+                handle.get_native_handle(),
+                signals,
+                cookie,
+                raw_opts,
+            )
         })
     }
 
@@ -102,10 +105,11 @@ impl WaitSet {
     /// that completed waiting.
     ///
     /// On a failed wait, we return the result code.
-    pub fn wait_on_set(&self,
-                       deadline: mojo_types::MojoDeadline,
-                       output: &mut Vec<mojo_types::WaitSetResult>)
-                       -> Result<u32, MojoResult> {
+    pub fn wait_on_set(
+        &self,
+        deadline: mojo_types::MojoDeadline,
+        output: &mut Vec<mojo_types::WaitSetResult>,
+    ) -> Result<u32, MojoResult> {
         assert!((output.capacity() as u64) <= ((1 as u64) << 32));
         let mut num_results = output.capacity() as u32;
         let mut max_results: u32 = 0;
@@ -114,11 +118,13 @@ impl WaitSet {
             output_ptr = ptr::null_mut();
         }
         let r = MojoResult::from_code(unsafe {
-            ffi::MojoWaitSetWait(self.handle.get_native_handle(),
-                                 deadline,
-                                 &mut num_results as *mut u32,
-                                 output_ptr,
-                                 &mut max_results as *mut u32)
+            ffi::MojoWaitSetWait(
+                self.handle.get_native_handle(),
+                deadline,
+                &mut num_results as *mut u32,
+                output_ptr,
+                &mut max_results as *mut u32,
+            )
         });
         unsafe {
             output.set_len(num_results as usize);

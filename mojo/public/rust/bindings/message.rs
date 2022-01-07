@@ -4,7 +4,7 @@
 
 use bindings::decoding::{Decoder, ValidationError};
 use bindings::encoding;
-use bindings::encoding::{Context, DATA_HEADER_SIZE, DataHeaderValue, Encoder};
+use bindings::encoding::{Context, DataHeaderValue, Encoder, DATA_HEADER_SIZE};
 use bindings::mojom::{MojomEncodable, MojomPointer, MojomStruct};
 
 /// A flag for the message header indicating that no flag has been set.
@@ -31,12 +31,7 @@ pub struct MessageHeader {
 impl MessageHeader {
     /// Create a new MessageHeader.
     pub fn new(version: u32, name: u32, flags: u32) -> MessageHeader {
-        MessageHeader {
-            version: version,
-            name: name,
-            flags: flags,
-            request_id: 0,
-        }
+        MessageHeader { version: version, name: name, flags: flags, request_id: 0 }
     }
 }
 
@@ -80,12 +75,7 @@ impl MojomPointer for MessageHeader {
             if flags == MESSAGE_HEADER_IS_RESPONSE || flags == MESSAGE_HEADER_EXPECT_RESPONSE {
                 return Err(ValidationError::MessageHeaderMissingRequestId);
             }
-            Ok(MessageHeader {
-                version: version,
-                name: name,
-                flags: flags,
-                request_id: 0,
-            })
+            Ok(MessageHeader { version: version, name: name, flags: flags, request_id: 0 })
         } else if version == 1 {
             Ok(MessageHeader {
                 version: version,
@@ -107,4 +97,3 @@ impl MojomEncodable for MessageHeader {
 }
 
 impl MojomStruct for MessageHeader {}
-

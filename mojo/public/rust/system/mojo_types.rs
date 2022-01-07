@@ -192,11 +192,7 @@ pub struct SignalsState {
 impl SignalsState {
     /// Generates a new SignalsState
     pub fn new(satisfied: HandleSignals, satisfiable: HandleSignals) -> SignalsState {
-        SignalsState {
-            satisfied: satisfied,
-            satisfiable: satisfiable,
-            _align: [],
-        }
+        SignalsState { satisfied: satisfied, satisfiable: satisfiable, _align: [] }
     }
     /// Gets a reference to the satisfied signals
     pub fn satisfied(&self) -> &HandleSignals {

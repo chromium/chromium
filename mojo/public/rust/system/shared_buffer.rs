@@ -3,14 +3,14 @@
 // found in the LICENSE file.
 
 use std::mem;
-use std::slice;
 use std::ptr;
+use std::slice;
 
 use system::ffi;
 // This full import is intentional; nearly every type in mojo_types needs to be used.
-use system::mojo_types::*;
 use system::handle;
 use system::handle::{CastHandle, Handle};
+use system::mojo_types::*;
 
 #[repr(u32)]
 /// Create flags for shared buffers
@@ -156,9 +156,11 @@ impl SharedBuffer {
         let raw_opts = &opts as *const ffi::MojoDuplicateBufferHandleOptions;
         let mut dup_h: MojoHandle = 0;
         let r = MojoResult::from_code(unsafe {
-            ffi::MojoDuplicateBufferHandle(self.handle.get_native_handle(),
-                                           raw_opts,
-                                           &mut dup_h as *mut MojoHandle)
+            ffi::MojoDuplicateBufferHandle(
+                self.handle.get_native_handle(),
+                raw_opts,
+                &mut dup_h as *mut MojoHandle,
+            )
         });
         if r != MojoResult::Okay {
             Err(r)
@@ -169,18 +171,21 @@ impl SharedBuffer {
 
     /// Map the shared buffer into local memory. Generates a MappedBuffer
     /// structure. See MappedBuffer for more information on how to use it.
-    pub fn map<'a>(&self,
-                   offset: u64,
-                   num_bytes: u64,
-                   flags: MapFlags)
-                   -> Result<MappedBuffer<'a>, MojoResult> {
+    pub fn map<'a>(
+        &self,
+        offset: u64,
+        num_bytes: u64,
+        flags: MapFlags,
+    ) -> Result<MappedBuffer<'a>, MojoResult> {
         unsafe {
             let mut ptr: *mut ffi::c_void = mem::uninitialized();
-            let r = MojoResult::from_code(ffi::MojoMapBuffer(self.handle.get_native_handle(),
-                                                             offset,
-                                                             num_bytes,
-                                                             &mut ptr,
-                                                             flags));
+            let r = MojoResult::from_code(ffi::MojoMapBuffer(
+                self.handle.get_native_handle(),
+                offset,
+                num_bytes,
+                &mut ptr,
+                flags,
+            ));
             if r != MojoResult::Okay {
                 Err(r)
             } else {
@@ -202,9 +207,11 @@ impl SharedBuffer {
             _align: [],
         };
         let r = MojoResult::from_code(unsafe {
-            ffi::MojoGetBufferInformation(self.handle.get_native_handle(),
-                                          &mut info as *mut ffi::MojoBufferInformation,
-                                          info_size)
+            ffi::MojoGetBufferInformation(
+                self.handle.get_native_handle(),
+                &mut info as *mut ffi::MojoBufferInformation,
+                info_size,
+            )
         });
         if r != MojoResult::Okay {
             Err(r)

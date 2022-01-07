@@ -13,7 +13,7 @@ extern crate mojo;
 
 use mojo::bindings::encoding::Context;
 use mojo::bindings::message::MessageHeader;
-use mojo::bindings::mojom::{MojomUnion, MojomPointer, MojomStruct, MojomInterface};
+use mojo::bindings::mojom::{MojomInterface, MojomPointer, MojomStruct, MojomUnion};
 
 use mojo::system;
 use mojo::system::Handle;

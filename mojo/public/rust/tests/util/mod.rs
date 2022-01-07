@@ -8,8 +8,8 @@ pub mod mojom_validation;
 
 use std::ffi::{CStr, CString};
 use std::os::raw::c_char;
-use std::slice;
 use std::ptr;
+use std::slice;
 
 /// This macro sets up tests by adding in Mojo embedder
 /// initialization.
@@ -48,11 +48,12 @@ extern "C" {
 #[link(name = "validation_parser")]
 extern "C" {
     #[allow(dead_code)]
-    fn ParseValidationTest(input: *const c_char,
-                           num_handles: *mut usize,
-                           data: *mut *mut u8,
-                           data_len: *mut usize)
-                           -> *mut c_char;
+    fn ParseValidationTest(
+        input: *const c_char,
+        num_handles: *mut usize,
+        data: *mut *mut u8,
+        data_len: *mut usize,
+    ) -> *mut c_char;
 }
 
 #[allow(dead_code)]
@@ -62,10 +63,12 @@ pub fn parse_validation_test(input: &str) -> Result<(Vec<u8>, usize), String> {
     let mut data: *mut u8 = ptr::null_mut();
     let mut data_len: usize = 0;
     let error = unsafe {
-        ParseValidationTest(input_c.as_ptr(),
-                            &mut num_handles as *mut usize,
-                            &mut data as *mut *mut u8,
-                            &mut data_len as *mut usize)
+        ParseValidationTest(
+            input_c.as_ptr(),
+            &mut num_handles as *mut usize,
+            &mut data as *mut *mut u8,
+            &mut data_len as *mut usize,
+        )
     };
     if error == ptr::null_mut() {
         if data == ptr::null_mut() || data_len == 0 {
@@ -85,9 +88,9 @@ pub fn parse_validation_test(input: &str) -> Result<(Vec<u8>, usize), String> {
         unsafe {
             // Copy the error string
             err_str = CStr::from_ptr(error)
-                           .to_str()
-                           .expect("Could not convert error message to UTF-8!")
-                           .to_owned();
+                .to_str()
+                .expect("Could not convert error message to UTF-8!")
+                .to_owned();
             free(error as *mut u8);
         }
         Err(err_str)

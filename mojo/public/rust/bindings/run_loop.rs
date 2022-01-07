@@ -20,7 +20,7 @@
 //! Rust should complain loudly when you try to do any threading here.
 
 use std::cell::RefCell;
-use std::cmp::{PartialEq, Eq, PartialOrd, Ord, Ordering};
+use std::cmp::{Eq, Ord, Ordering, PartialEq, PartialOrd};
 use std::collections::BinaryHeap;
 use std::collections::HashMap;
 use std::i64;
@@ -28,9 +28,9 @@ use std::u32;
 use std::vec::Vec;
 
 use system;
-use system::{Handle, MOJO_INDEFINITE, MojoResult};
 use system::core;
 use system::wait_set;
+use system::{Handle, MojoResult, MOJO_INDEFINITE};
 
 /// Define the equivalent of MOJO_INDEFINITE for absolute deadlines
 const MOJO_INDEFINITE_ABSOLUTE: system::MojoTimeTicks = 0;
@@ -268,9 +268,10 @@ fn absolute_deadline(deadline: system::MojoDeadline) -> system::MojoTimeTicks {
 /// notion of "now".
 ///
 /// If the deadline is earlier than "now", this routine rounds up to "now".
-fn relative_deadline(deadline: system::MojoTimeTicks,
-                     now: system::MojoTimeTicks)
-                     -> system::MojoDeadline {
+fn relative_deadline(
+    deadline: system::MojoTimeTicks,
+    now: system::MojoTimeTicks,
+) -> system::MojoDeadline {
     if deadline == MOJO_INDEFINITE_ABSOLUTE {
         MOJO_INDEFINITE
     } else if now >= deadline {
@@ -338,29 +339,29 @@ impl<'h, 't> RunLoop<'h, 't> {
     }
 
     /// Adds a new entry to the runloop queue.
-    pub fn register<H>(&mut self,
-                       handle: &Handle,
-                       signals: system::HandleSignals,
-                       deadline: system::MojoDeadline,
-                       handler: H)
-                       -> Token
-        where H: Handler + 'h
+    pub fn register<H>(
+        &mut self,
+        handle: &Handle,
+        signals: system::HandleSignals,
+        deadline: system::MojoDeadline,
+        handler: H,
+    ) -> Token
+    where
+        H: Handler + 'h,
     {
-
         let token = self.generate_token();
         let abs_deadline = absolute_deadline(deadline);
         self.handle_set.add(handle, signals, token.as_cookie(), wsflags!(Add::None));
-        self.deadlines.push(DeadlineInfo {
-            token: token.clone(),
-            deadline: abs_deadline,
-        });
+        self.deadlines.push(DeadlineInfo { token: token.clone(), deadline: abs_deadline });
         debug_assert!(!self.handlers.contains_key(&token));
-        self.handlers.insert(token.clone(),
-                             HandlerInfo {
-                                 handle: handle.get_native_handle(),
-                                 handler: Some(Box::new(handler)),
-                                 deadline: abs_deadline,
-                             });
+        self.handlers.insert(
+            token.clone(),
+            HandlerInfo {
+                handle: handle.get_native_handle(),
+                handler: Some(Box::new(handler)),
+                deadline: abs_deadline,
+            },
+        );
         token
     }
 
@@ -369,12 +370,12 @@ impl<'h, 't> RunLoop<'h, 't> {
     ///
     /// Returns true on a successful update and false if the token was not
     /// found.
-    pub fn reregister(&mut self,
-                      token: &Token,
-                      signals: system::HandleSignals,
-                      deadline: system::MojoDeadline)
-                      -> bool {
-
+    pub fn reregister(
+        &mut self,
+        token: &Token,
+        signals: system::HandleSignals,
+        deadline: system::MojoDeadline,
+    ) -> bool {
         match self.handlers.get_mut(&token) {
             Some(info) => {
                 let _result = self.handle_set.remove(token.as_cookie());
@@ -384,10 +385,7 @@ impl<'h, 't> RunLoop<'h, 't> {
                 // all previously set deadlines "stale".
                 info.set_deadline(abs_deadline);
                 // Add a new deadline
-                self.deadlines.push(DeadlineInfo {
-                    token: token.clone(),
-                    deadline: abs_deadline,
-                });
+                self.deadlines.push(DeadlineInfo { token: token.clone(), deadline: abs_deadline });
                 // Acquire the raw handle held by the HandlerInfo in order to
                 // call the wait_set's add method. Invalidate it immediately after
                 // in order to prevent the handle from being closed.
@@ -426,17 +424,15 @@ impl<'h, 't> RunLoop<'h, 't> {
     ///
     /// Returns a token if the delay is valid, otherwise returns None.
     pub fn post_task<F>(&mut self, task: F, delay: system::MojoTimeTicks) -> Result<(), ()>
-        where F: FnMut(&mut RunLoop) + 't
+    where
+        F: FnMut(&mut RunLoop) + 't,
     {
         let now = core::get_time_ticks_now();
         if delay > i64::MAX - now {
             return Err(());
         }
         let deadline = now + delay;
-        self.tasks.push(TaskInfo {
-            closure: Box::new(task),
-            deadline: deadline,
-        });
+        self.tasks.push(TaskInfo { closure: Box::new(task), deadline: deadline });
         Ok(())
     }
 
@@ -461,8 +457,7 @@ impl<'h, 't> RunLoop<'h, 't> {
                 None => return MOJO_INDEFINITE_ABSOLUTE,
             }
         }
-        if top_task_deadline != MOJO_INDEFINITE_ABSOLUTE &&
-           top_task_deadline < top.deadline() {
+        if top_task_deadline != MOJO_INDEFINITE_ABSOLUTE && top_task_deadline < top.deadline() {
             top_task_deadline
         } else {
             top.deadline()
@@ -475,10 +470,8 @@ impl<'h, 't> RunLoop<'h, 't> {
     /// it in a manner that avoids a borrow cycle, that is, it take()s the handler
     /// out of the HashMap, and returns it when manipulation has completed.
     fn get_handler_with<F>(&mut self, token: &Token, invoker: F)
-        where F: FnOnce(&mut Self,
-                        &mut Box<Handler + 'h>,
-                        Token,
-                        system::MojoTimeTicks)
+    where
+        F: FnOnce(&mut Self, &mut Box<Handler + 'h>, Token, system::MojoTimeTicks),
     {
         // Logic for pulling out the handler as well as its current deadline.
         //
@@ -495,13 +488,13 @@ impl<'h, 't> RunLoop<'h, 't> {
         // from the RunLoop. I could just enable nesting with this one restriction, that
         // the handler calling run() will always be ignored, but this is unintuitive.
         let (mut handler, deadline) = match self.handlers.get_mut(&token) {
-            Some(ref_info) => {
-                (match ref_info.take() {
+            Some(ref_info) => (
+                match ref_info.take() {
                     Some(handler) => handler,
                     None => return,
                 },
-                 ref_info.deadline())
-            }
+                ref_info.deadline(),
+            ),
             None => return,
         };
         // Call the closure that will invoke the callbacks.
@@ -554,13 +547,15 @@ impl<'h, 't> RunLoop<'h, 't> {
         };
         while expired_deadline >= top.deadline() {
             let next_deadline = top.deadline();
-            self.get_handler_with(top.token(),
-                                  move |runloop, boxed_handler, token, expected_dl| {
-                                      let handler = boxed_handler.as_mut();
-                                      if next_deadline == expected_dl {
-                                          handler.on_timeout(runloop, token);
-                                      }
-                                  });
+            self.get_handler_with(
+                top.token(),
+                move |runloop, boxed_handler, token, expected_dl| {
+                    let handler = boxed_handler.as_mut();
+                    if next_deadline == expected_dl {
+                        handler.on_timeout(runloop, token);
+                    }
+                },
+            );
             // In order to quit as soon as possible, we should check to quit after every
             // potential handler call, as any of them could have signaled to quit.
             if self.should_quit {
@@ -663,7 +658,8 @@ impl<'h, 't> RunLoop<'h, 't> {
 
 /// Provides a scope to modify the current thread's runloop.
 pub fn with_current<F>(modifier: F)
-    where F: FnOnce(&mut RunLoop)
+where
+    F: FnOnce(&mut RunLoop),
 {
     TL_RUN_LOOP.with(|ref_runloop| {
         let mut runloop = ref_runloop.borrow_mut();

@@ -15,9 +15,9 @@ extern crate mojo;
 mod util;
 
 use mojo::bindings::run_loop;
-use mojo::bindings::run_loop::{RunLoop, Token, Handler, WaitError};
-use mojo::system::MOJO_INDEFINITE;
+use mojo::bindings::run_loop::{Handler, RunLoop, Token, WaitError};
 use mojo::system::message_pipe;
+use mojo::system::MOJO_INDEFINITE;
 
 use std::cell::Cell;
 use std::rc::Rc;
@@ -84,7 +84,12 @@ struct HandlerRegister {}
 impl Handler for HandlerRegister {
     fn on_ready(&mut self, runloop: &mut RunLoop, token: Token) {
         let (_, endpt1) = message_pipe::create(mpflags!(Create::None)).unwrap();
-        let _ = runloop.register(&endpt1, signals!(Signals::Writable), MOJO_INDEFINITE, HandlerDeregisterOther { other: token });
+        let _ = runloop.register(
+            &endpt1,
+            signals!(Signals::Writable),
+            MOJO_INDEFINITE,
+            HandlerDeregisterOther { other: token },
+        );
     }
     fn on_timeout(&mut self, _runloop: &mut RunLoop, _token: Token) {
         panic!("Timed-out when expected error");
@@ -184,10 +189,13 @@ struct HandlerTasks {
 impl Handler for HandlerTasks {
     fn on_ready(&mut self, runloop: &mut RunLoop, token: Token) {
         let r = self.count.clone();
-        let _ = runloop.post_task(move |_runloop| {
-            let val = (*r).get();
-            (*r).set(val+1);
-        }, 10);
+        let _ = runloop.post_task(
+            move |_runloop| {
+                let val = (*r).get();
+                (*r).set(val + 1);
+            },
+            10,
+        );
         if (*self.count).get() > 10 {
             runloop.deregister(token);
         }
@@ -209,22 +217,28 @@ impl Handler for NestedTasks {
     fn on_ready(&mut self, runloop: &mut RunLoop, token: Token) {
         let r = self.count.clone();
         let quit = self.quitter;
-        let _ = runloop.post_task(move |runloop| {
-            let r2 = r.clone();
-            let tk = token.clone();
-            if (*r).get() < 10 {
-                let _ = runloop.post_task(move |_runloop| {
-                    let val = (*r2).get();
-                    (*r2).set(val+1);
-                }, 0);
-            } else {
-                if quit {
-                    runloop.quit();
+        let _ = runloop.post_task(
+            move |runloop| {
+                let r2 = r.clone();
+                let tk = token.clone();
+                if (*r).get() < 10 {
+                    let _ = runloop.post_task(
+                        move |_runloop| {
+                            let val = (*r2).get();
+                            (*r2).set(val + 1);
+                        },
+                        0,
+                    );
                 } else {
-                    runloop.deregister(tk);
+                    if quit {
+                        runloop.quit();
+                    } else {
+                        runloop.deregister(tk);
+                    }
                 }
-            }
-        }, 0);
+            },
+            0,
+        );
     }
     fn on_timeout(&mut self, _runloop: &mut RunLoop, _token: Token) {
         panic!("Timed-out when expected error");
