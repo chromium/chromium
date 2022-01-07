@@ -154,8 +154,7 @@ void OmniboxAnswerResult::FetchImage(const GURL& url) {
     bitmap_fetcher_ =
         std::make_unique<BitmapFetcher>(url, this, kOmniboxTrafficAnnotation);
   }
-  bitmap_fetcher_->Init(/*referrer=*/std::string(),
-                        net::ReferrerPolicy::NEVER_CLEAR,
+  bitmap_fetcher_->Init(net::ReferrerPolicy::NEVER_CLEAR,
                         network::mojom::CredentialsMode::kOmit);
   bitmap_fetcher_->Start(profile_->GetURLLoaderFactory().get());
 }

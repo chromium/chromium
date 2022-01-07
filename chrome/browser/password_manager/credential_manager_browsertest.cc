@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -48,10 +49,6 @@ class CredentialManagerBrowserTest : public PasswordManagerBrowserTestBase {
   bool IsShowingAccountChooser() {
     return PasswordsModelDelegateFromWebContents(WebContents())->GetState() ==
            password_manager::ui::CREDENTIAL_REQUEST_STATE;
-  }
-
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    PasswordManagerBrowserTestBase::SetUpCommandLine(command_line);
   }
 
   // Similarly to PasswordManagerBrowserTestBase::NavigateToFile this is a
@@ -1003,6 +1000,100 @@ IN_PROC_BROWSER_TEST_F(CredentialManagerBrowserTest, CredentialsAutofilled) {
       WebContents(), 0, blink::WebMouseEvent::Button::kLeft, gfx::Point(1, 1));
   WaitForElementValue("username_field", "user");
   WaitForElementValue("password_field", "12345");
+}
+
+class CredentialManagerAvatarTest : public PasswordManagerBrowserTestBase {
+ public:
+  static const char kAvatarOrigin[];
+  static const char kAvatarPath[];
+  static const char kLoginPath[];
+
+  CredentialManagerAvatarTest() {
+    https_test_server().RegisterRequestHandler(base::BindRepeating(
+        &CredentialManagerAvatarTest::HandleRequest, base::Unretained(this)));
+  }
+
+  // Add a Credential Management API password with an icon to the store.
+  void AddPasswordForURL(const GURL& url);
+
+  // A counter for requests made to fetch the avatar.
+  size_t avatar_request_counter() const { return avatar_request_counter_; }
+
+ private:
+  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+      const net::test_server::HttpRequest& request);
+
+  size_t avatar_request_counter_ = 0;
+};
+
+const char CredentialManagerAvatarTest::kAvatarOrigin[] = "avatarserver.com";
+const char CredentialManagerAvatarTest::kAvatarPath[] = "/image.png";
+const char CredentialManagerAvatarTest::kLoginPath[] = "/login";
+
+void CredentialManagerAvatarTest::AddPasswordForURL(const GURL& url) {
+  password_manager::PasswordForm form;
+  form.url = url;
+  form.signon_realm = form.url.GetWithEmptyPath().spec();
+  form.username_value = u"User";
+  form.password_value = u"12345";
+  form.type = password_manager::PasswordForm::Type::kApi;
+  form.skip_zero_click = true;
+  form.icon_url = https_test_server().GetURL(kAvatarOrigin, kAvatarPath);
+
+  scoped_refptr<password_manager::PasswordStoreInterface> password_store =
+      PasswordStoreFactory::GetForProfile(browser()->profile(),
+                                          ServiceAccessType::EXPLICIT_ACCESS);
+  password_store->AddLogin(form);
+}
+
+std::unique_ptr<net::test_server::HttpResponse>
+CredentialManagerAvatarTest::HandleRequest(
+    const net::test_server::HttpRequest& request) {
+  auto http_response = std::make_unique<net::test_server::BasicHttpResponse>();
+  if (request.relative_url == kAvatarPath) {
+    http_response->set_code(net::HTTP_OK);
+    http_response->set_content_type("image/gif");
+    http_response->AddCustomHeader("Cache-Control", "max-age=100000");
+    avatar_request_counter_++;
+  } else if (request.relative_url == kLoginPath) {
+    http_response->set_code(net::HTTP_OK);
+    http_response->set_content_type("text/plain");
+    http_response->set_content("Login now");
+  }
+  return http_response;
+}
+
+// Test that the avatar is requested in the context of the main frame. Thus,
+// it should not be cached by one origin for another origin.
+IN_PROC_BROWSER_TEST_F(CredentialManagerAvatarTest,
+                       AvatarFetchIsolatedPerOrigin) {
+  const GURL a_url = https_test_server().GetURL("a.com", kLoginPath);
+  const GURL b_url = https_test_server().GetURL("b.com", kLoginPath);
+
+  AddPasswordForURL(a_url);
+  AddPasswordForURL(b_url);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
+  ASSERT_TRUE(content::ExecuteScript(
+      WebContents(), "navigator.credentials.get({password: true})"));
+
+  // The account chooser UI requested the avatar.
+  BubbleObserver(WebContents()).WaitForAccountChooser();
+  EXPECT_EQ(avatar_request_counter(), 1u);
+
+  // Navigate to the second site, the icon is requested again.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), b_url));
+  ASSERT_TRUE(content::ExecuteScript(
+      WebContents(), "navigator.credentials.get({password: true})"));
+  BubbleObserver(WebContents()).WaitForAccountChooser();
+  EXPECT_EQ(avatar_request_counter(), 2u);
+
+  // Navigate back to the first site, the icon is already cached.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), a_url));
+  ASSERT_TRUE(content::ExecuteScript(
+      WebContents(), "navigator.credentials.get({password: true})"));
+  BubbleObserver(WebContents()).WaitForAccountChooser();
+  EXPECT_EQ(avatar_request_counter(), 2u);
 }
 
 }  // namespace

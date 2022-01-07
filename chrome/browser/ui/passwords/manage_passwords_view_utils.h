@@ -10,6 +10,12 @@
 
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/origin_credential_store.h"
+#include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/mojom/url_loader_factory.mojom.h"
+
+namespace content {
+class WebContents;
+}  // namespace content
 
 namespace gfx {
 class ImageSkia;
@@ -104,5 +110,8 @@ void NavigateToManagePasswordsPage(
 
 // Navigates to Passwords Checkup page.
 void NavigateToPasswordCheckupPage(Profile* profile);
+
+mojo::Remote<network::mojom::URLLoaderFactory> GetURLLoaderForMainFrame(
+    content::WebContents* web_contents);
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_MANAGE_PASSWORDS_VIEW_UTILS_H_

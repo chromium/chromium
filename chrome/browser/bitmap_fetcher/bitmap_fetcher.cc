@@ -33,19 +33,19 @@ BitmapFetcher::BitmapFetcher(
 
 BitmapFetcher::~BitmapFetcher() = default;
 
-void BitmapFetcher::Init(const std::string& referrer,
-                         net::ReferrerPolicy referrer_policy,
+void BitmapFetcher::Init(net::ReferrerPolicy referrer_policy,
                          network::mojom::CredentialsMode credentials_mode,
-                         const net::HttpRequestHeaders& additional_headers) {
+                         const net::HttpRequestHeaders& additional_headers,
+                         const url::Origin& initiator) {
   if (simple_loader_ != nullptr)
     return;
 
   auto resource_request = std::make_unique<network::ResourceRequest>();
   resource_request->url = url_;
-  resource_request->referrer = GURL(referrer);
   resource_request->referrer_policy = referrer_policy;
   resource_request->credentials_mode = credentials_mode;
   resource_request->headers.MergeFrom(additional_headers);
+  resource_request->request_initiator = initiator;
   simple_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
                                                     traffic_annotation_);
 }
