@@ -47,14 +47,6 @@ import string_extract
 import zip_util
 
 
-# Holds computation state that is live only when an output directory exists.
-_OutputDirectoryContext = collections.namedtuple('_OutputDirectoryContext', [
-    'elf_object_paths',  # Only when elf_path is also provided.
-    'known_inputs',  # Only when elf_path is also provided.
-    'output_directory',
-    'thin_archives',
-])
-
 # When ensuring matching section sizes between .elf and .map files, these
 # sections should be ignored. When lld creates a combined library with
 # partitions, some sections (like .text) exist in each partition, but the ones
@@ -79,15 +71,33 @@ _SECTION_SIZE_BLOCKLIST = ['.symtab', '.shstrtab', '.strtab']
 _MAX_SAME_NAME_ALIAS_COUNT = 40  # 50kb is basically negligible.
 
 
+# Holds computation state that is live only when an output directory exists.
+@dataclasses.dataclass
+class _OutputDirectoryContext:
+  elf_object_paths: list  # Non-None only when elf_path is.
+  known_inputs: list  # Non-None only when elf_path is.
+  output_directory: str
+  thin_archives: list
+
+
 @dataclasses.dataclass
 class NativeSpec:
   # One (or more) of apk_so_path, map_path, elf_path must be non-None.
   tool_prefix: str  # Never None.
+  # Path within the .apk of the .so file. Non-None only when apk_spec is.
   apk_so_path: str = None
   map_path: str = None
   elf_path: str = None  # Unstripped .so path.
-  linker_name: str = None
+  linker_name: str = None  # Requires map_path. Either 'gold' or 'lld'.
   track_string_literals: bool = True
+
+  @property
+  def algorithm(self):
+    if self.map_path:
+      return 'linker_map'
+    if self.elf_path:
+      return 'dwarf'
+    return 'sections'
 
 
 @dataclasses.dataclass
@@ -700,13 +710,7 @@ def CreateMetadata(*, build_config, apk_spec, native_spec, source_directory,
         native_spec.tool_prefix)
     update_build_config(models.BUILD_CONFIG_TOOL_PREFIX, relative_tool_prefix)
 
-    if native_spec.map_path:
-      metadata[models.METADATA_ELF_ALGORITHM] = 'linker_map'
-    elif native_spec.elf_path:
-      metadata[models.METADATA_ELF_ALGORITHM] = 'dwarf'
-    else:
-      metadata[models.METADATA_ELF_ALGORITHM] = 'sections'
-
+    metadata[models.METADATA_ELF_ALGORITHM] = native_spec.algorithm
     if native_spec.linker_name:
       update_build_config(models.BUILD_CONFIG_LINKER_NAME,
                           native_spec.linker_name)
@@ -1029,69 +1033,6 @@ class _ResourcePathDeobfuscator:
     return path
 
 
-def _ParseApkOtherSymbols(*, apk_spec, native_spec, section_ranges,
-                          resources_pathmap_path, metadata):
-  apk_so_path = native_spec and native_spec.apk_so_path
-  res_source_mapper = _ResourceSourceMapper(apk_spec.size_info_prefix,
-                                            apk_spec.path_defaults)
-  resource_deobfuscator = _ResourcePathDeobfuscator(resources_pathmap_path)
-  apk_symbols = []
-  dex_size = 0
-  zip_info_total = 0
-  zipalign_total = 0
-  with zipfile.ZipFile(apk_spec.apk_path) as z:
-    signing_block_size = zip_util.MeasureApkSignatureBlock(z)
-    for zip_info in z.infolist():
-      zip_info_total += zip_info.compress_size
-      # Account for zipalign overhead that exists in local file header.
-      zipalign_total += zip_util.ReadZipInfoExtraFieldLength(z, zip_info)
-      # Account for zipalign overhead that exists in central directory header.
-      # Happens when python aligns entries in apkbuilder.py, but does not
-      # exist when using Android's zipalign. E.g. for bundle .apks files.
-      zipalign_total += len(zip_info.extra)
-      # Skip files that we explicitly analyze: .so, .dex, and .pak.
-      if zip_info.filename == apk_so_path:
-        continue
-      if apk_spec.analyze_dex and zip_info.filename.endswith('.dex'):
-        dex_size += zip_info.file_size
-        continue
-      if zip_info.filename.endswith('.pak'):
-        continue
-
-      resource_filename = resource_deobfuscator.MaybeRemapPath(
-          zip_info.filename)
-      source_path = res_source_mapper.FindSourceForPath(resource_filename)
-      if source_path is None:
-        source_path = os.path.join(models.APK_PREFIX_PATH, resource_filename)
-      apk_symbols.append(
-          models.Symbol(
-              models.SECTION_OTHER,
-              zip_info.compress_size,
-              source_path=source_path,
-              full_name=resource_filename))  # Full name must disambiguate
-
-  # Store zipalign overhead and signing block size as metadata rather than an
-  # "Overhead:" symbol because they fluctuate in size, and would be a source of
-  # noise in symbol diffs if included as symbols (http://crbug.com/1130754).
-  # Might be even better if we had an option in Tiger Viewer to ignore certain
-  # symbols, but taking this as a short-cut for now.
-  metadata[models.METADATA_ZIPALIGN_OVERHEAD] = zipalign_total
-  metadata[models.METADATA_SIGNING_BLOCK_SIZE] = signing_block_size
-
-  # Overhead includes:
-  #  * Size of all local zip headers (minus zipalign padding).
-  #  * Size of central directory & end of central directory.
-  overhead_size = (os.path.getsize(apk_spec.apk_path) - zip_info_total -
-                   zipalign_total - signing_block_size)
-  assert overhead_size >= 0, 'Apk overhead must be non-negative'
-  zip_overhead_symbol = models.Symbol(
-      models.SECTION_OTHER, overhead_size, full_name='Overhead: APK file')
-  apk_symbols.append(zip_overhead_symbol)
-  _ExtendSectionRange(section_ranges, models.SECTION_OTHER,
-                      sum(s.size for s in apk_symbols))
-  return dex_size, apk_symbols
-
-
 def _CalculateElfOverhead(section_ranges, elf_path):
   if elf_path:
     section_sizes_total_without_bss = sum(
@@ -1192,98 +1133,85 @@ def _ParseNinjaFiles(output_directory, elf_path=None):
   return source_mapper, ninja_elf_object_paths
 
 
-def CreateContainerSymbols(*,
-                           container_name,
-                           metadata,
-                           apk_spec,
-                           pak_spec,
-                           native_spec,
-                           source_directory,
-                           output_directory=None,
-                           resources_pathmap_path=None,
-                           pak_id_map=None):
-  """Creates a Container (with sections sizes) and symbols for a SizeInfo.
+def _CreateNativeSymbols(*,
+                         metadata,
+                         apk_spec,
+                         native_spec,
+                         output_directory=None,
+                         pak_id_map=None):
+  """Creates native symbols for the given native_spec.
 
   Args:
-    container_name: Name for the created Container. May be '' if only one
-        Container exists.
     metadata: Metadata dict from CreateMetadata().
     apk_spec: Instance of ApkSpec, or None.
-    pak_spec: Instance of PakSpec, or None.
-    native_spec: Instance of NativeSpec, or None.
+    native_spec: Instance of NativeSpec.
     output_directory: Build output directory. If None, source_paths and symbol
         alias information will not be recorded.
-    source_directory: Path to source root.
-    resources_pathmap_path: Path to the pathmap file that maps original
-        resource paths to shortened resource paths.
-    pak_id_map: Instance of PakIdMap, or None.
+    pak_id_map: Instance of PakIdMap.
 
   Returns:
-    List of symbols.
+    A tuple of (section_ranges, raw_symbols).
   """
   apk_elf_result = None
-  if apk_spec and native_spec and native_spec.apk_so_path:
+  if apk_spec and native_spec.apk_so_path:
     # Extraction takes around 1 second, so do it in parallel.
     apk_elf_result = parallel.ForkAndCall(
         _ElfInfoFromApk,
         (apk_spec.apk_path, native_spec.apk_so_path, native_spec.tool_prefix))
 
+  raw_symbols = []
   ninja_source_mapper = None
   dwarf_source_mapper = None
   section_ranges = {}
-  raw_symbols = []
-  object_paths_by_name = None
-  if native_spec:
-    ninja_elf_object_paths = None
-    if output_directory and native_spec.map_path:
-      # Finds all objects passed to the linker and creates a map of .o -> .cc.
-      ninja_source_mapper, ninja_elf_object_paths = _ParseNinjaFiles(
-          output_directory, native_spec.elf_path)
-    elif native_spec.elf_path:
-      logging.info('Parsing source path info via dwarfdump')
-      dwarf_source_mapper = dwarfdump.CreateAddressSourceMapper(
-          native_spec.elf_path, native_spec.tool_prefix)
-      logging.info('Found %d source paths across %s ranges',
-                   dwarf_source_mapper.NumberOfPaths(),
-                   dwarf_source_mapper.num_ranges)
+  ninja_elf_object_paths = None
+  if output_directory and native_spec.map_path:
+    # Finds all objects passed to the linker and creates a map of .o -> .cc.
+    ninja_source_mapper, ninja_elf_object_paths = _ParseNinjaFiles(
+        output_directory, native_spec.elf_path)
+  elif native_spec.elf_path:
+    logging.info('Parsing source path info via dwarfdump')
+    dwarf_source_mapper = dwarfdump.CreateAddressSourceMapper(
+        native_spec.elf_path, native_spec.tool_prefix)
+    logging.info('Found %d source paths across %s ranges',
+                 dwarf_source_mapper.NumberOfPaths(),
+                 dwarf_source_mapper.num_ranges)
 
-    # Start by finding elf_object_paths so that nm can run on them while the
-    # linker .map is being parsed.
-    if ninja_elf_object_paths:
-      elf_object_paths, thin_archives = ar.ExpandThinArchives(
-          ninja_elf_object_paths, output_directory)
-      known_inputs = set(elf_object_paths)
-      known_inputs.update(ninja_elf_object_paths)
+  # Start by finding elf_object_paths so that nm can run on them while the
+  # linker .map is being parsed.
+  if ninja_elf_object_paths:
+    elf_object_paths, thin_archives = ar.ExpandThinArchives(
+        ninja_elf_object_paths, output_directory)
+    known_inputs = set(elf_object_paths)
+    known_inputs.update(ninja_elf_object_paths)
+  else:
+    elf_object_paths = []
+    known_inputs = None
+    # When we don't know which elf file is used, just search all paths.
+    # TODO(agrieve): Seems to be used only for tests. Remove?
+    if ninja_source_mapper:
+      thin_archives = set(
+          p for p in ninja_source_mapper.IterAllPaths() if p.endswith('.a')
+          and ar.IsThinArchive(os.path.join(output_directory, p)))
     else:
-      elf_object_paths = []
-      known_inputs = None
-      # When we don't know which elf file is used, just search all paths.
-      # TODO(agrieve): Seems to be used only for tests. Remove?
-      if ninja_source_mapper:
-        thin_archives = set(
-            p for p in ninja_source_mapper.IterAllPaths() if p.endswith('.a')
-            and ar.IsThinArchive(os.path.join(output_directory, p)))
-      else:
-        thin_archives = None
+      thin_archives = None
 
-    outdir_context = None
-    if output_directory:
-      outdir_context = _OutputDirectoryContext(
-          elf_object_paths=elf_object_paths,
-          known_inputs=known_inputs,
-          output_directory=output_directory,
-          thin_archives=thin_archives)
+  outdir_context = None
+  if output_directory:
+    outdir_context = _OutputDirectoryContext(elf_object_paths=elf_object_paths,
+                                             known_inputs=known_inputs,
+                                             output_directory=output_directory,
+                                             thin_archives=thin_archives)
 
-    if native_spec.elf_path or native_spec.map_path:
-      section_ranges, raw_symbols, object_paths_by_name = _ParseElfInfo(
-          native_spec, outdir_context=outdir_context)
-
-      if pak_id_map and native_spec.map_path:
-        # For trichrome, pak files are in different apks than native library,
-        # so need to pass along pak_id_map separately and ensure
-        # TrichromeLibrary appears first in .ssargs file.
-        logging.debug('Extracting pak IDs from symbol names')
-        pak_id_map.Update(object_paths_by_name, ninja_source_mapper)
+  object_paths_by_name = None
+  if native_spec.elf_path or native_spec.map_path:
+    section_ranges, raw_symbols, object_paths_by_name = _ParseElfInfo(
+        native_spec, outdir_context=outdir_context)
+    if pak_id_map and native_spec.map_path:
+      # For trichrome, pak files are in different apks than native library,
+      # so need to pass along pak_id_map separately and ensure
+      # TrichromeLibrary appears first in .ssargs file.
+      logging.debug('Extracting pak IDs from symbol names')
+      pak_id_map.Update(object_paths_by_name, ninja_source_mapper)
 
   if apk_elf_result:
     logging.debug('Extracting section sizes from .so within .apk')
@@ -1291,7 +1219,7 @@ def CreateContainerSymbols(*,
     if metadata and models.METADATA_ELF_BUILD_ID in metadata:
       assert apk_build_id == metadata[models.METADATA_ELF_BUILD_ID], (
           'BuildID from apk_elf_result did not match')
-  elif native_spec and native_spec.elf_path:
+  elif native_spec.elf_path:
     # Strip ELF before capturing section information to avoid recording
     # debug sections.
     with tempfile.NamedTemporaryFile(
@@ -1303,79 +1231,16 @@ def CreateContainerSymbols(*,
                                                   native_spec.tool_prefix)
       elf_overhead_size = _CalculateElfOverhead(section_ranges, f.name)
 
-  if native_spec:
-    raw_symbols, other_elf_symbols = _AddUnattributedSectionSymbols(
-        raw_symbols, section_ranges)
+  raw_symbols, other_elf_symbols = _AddUnattributedSectionSymbols(
+      raw_symbols, section_ranges)
 
-  other_symbols = []
-  if apk_spec and apk_spec.size_info_prefix:
-    # Can modify |section_ranges|.
-    dex_size, other_symbols = _ParseApkOtherSymbols(
-        apk_spec=apk_spec,
-        native_spec=native_spec,
-        section_ranges=section_ranges,
-        resources_pathmap_path=resources_pathmap_path,
-        metadata=metadata)
-
-    if apk_spec.analyze_dex:
-      logging.info('Analyzing Dex')
-      dex_symbols = apkanalyzer.CreateDexSymbols(apk_spec.apk_path,
-                                                 apk_spec.mapping_path,
-                                                 apk_spec.size_info_prefix)
-
-      # We can't meaningfully track section size of dex methods vs other, so
-      # just fake the size of dex methods as the sum of symbols, and make
-      # "dex other" responsible for any unattributed bytes.
-      dex_method_size = int(
-          round(
-              sum(s.pss for s in dex_symbols
-                  if s.section_name == models.SECTION_DEX_METHOD)))
-      section_ranges[models.SECTION_DEX_METHOD] = (0, dex_method_size)
-      section_ranges[models.SECTION_DEX] = (0, dex_size - dex_method_size)
-
-      dex_other_size = int(
-          round(
-              sum(s.pss for s in dex_symbols
-                  if s.section_name == models.SECTION_DEX)))
-      unattributed_dex = section_ranges[models.SECTION_DEX][1] - dex_other_size
-      # Compare against -5 instead of 0 to guard against round-off errors.
-      assert unattributed_dex >= -5, ('Dex symbols take up more space than '
-                                      'the dex sections have available')
-      if unattributed_dex > 0:
-        dex_symbols.append(
-            models.Symbol(
-                models.SECTION_DEX,
-                unattributed_dex,
-                full_name='** .dex (unattributed - includes string literals)'))
-      raw_symbols.extend(dex_symbols)
-
-  if pak_spec:
-    logging.debug('Creating Pak symbols')
-    if pak_spec.apk_pak_paths:
-      assert apk_spec.size_info_prefix
-      # Can modify |section_ranges|.
-      raw_symbols += pakfile.CreatePakSymbolsFromApk(section_ranges,
-                                                     apk_spec.apk_path,
-                                                     pak_spec.apk_pak_paths,
-                                                     apk_spec.size_info_prefix,
-                                                     pak_id_map)
-    else:
-      # Can modify |section_ranges|.
-      raw_symbols += pakfile.CreatePakSymbolsFromFiles(section_ranges,
-                                                       pak_spec.pak_paths,
-                                                       pak_spec.pak_info_path,
-                                                       output_directory,
-                                                       pak_id_map)
-
-  if native_spec:
-    other_symbols.extend(other_elf_symbols)
-    if native_spec.elf_path:
-      elf_overhead_symbol = models.Symbol(models.SECTION_OTHER,
-                                          elf_overhead_size,
-                                          full_name='Overhead: ELF file')
-      _ExtendSectionRange(section_ranges, models.SECTION_OTHER,
-                          elf_overhead_size)
-      other_symbols.append(elf_overhead_symbol)
+  other_symbols = other_elf_symbols
+  if native_spec.elf_path:
+    elf_overhead_symbol = models.Symbol(models.SECTION_OTHER,
+                                        elf_overhead_size,
+                                        full_name='Overhead: ELF file')
+    _ExtendSectionRange(section_ranges, models.SECTION_OTHER, elf_overhead_size)
+    other_symbols.append(elf_overhead_symbol)
 
   # Always have .other come last.
   other_symbols.sort(key=lambda s: (s.IsOverhead(), s.full_name.startswith(
@@ -1386,20 +1251,226 @@ def CreateContainerSymbols(*,
     _AddSourcePathsUsingObjectPaths(ninja_source_mapper, raw_symbols)
   elif dwarf_source_mapper:
     _AddSourcePathsUsingAddress(dwarf_source_mapper, raw_symbols)
+
+  # Path normalization must come before compacting aliases so that
+  # ancestor paths do not mix generated and non-generated paths.
   _NormalizePaths(raw_symbols)
+
+  logging.info('Converting excessive aliases into shared-path symbols')
+  _CompactLargeAliasesIntoSharedSymbols(raw_symbols)
+
+  if native_spec.elf_path or native_spec.map_path:
+    logging.debug('Connecting nm aliases')
+    _ConnectNmAliases(raw_symbols)
+
+  return section_ranges, raw_symbols
+
+
+def _CreatePakSymbols(*, pak_spec, pak_id_map, apk_spec, output_directory):
+  logging.debug('Creating Pak symbols')
+  section_ranges = {}
+  if apk_spec:
+    assert apk_spec.size_info_prefix
+    # Can modify |section_ranges|.
+    raw_symbols = pakfile.CreatePakSymbolsFromApk(section_ranges,
+                                                  apk_spec.apk_path,
+                                                  pak_spec.apk_pak_paths,
+                                                  apk_spec.size_info_prefix,
+                                                  pak_id_map)
+  else:
+    # Can modify |section_ranges|.
+    raw_symbols = pakfile.CreatePakSymbolsFromFiles(section_ranges,
+                                                    pak_spec.pak_paths,
+                                                    pak_spec.pak_info_path,
+                                                    output_directory,
+                                                    pak_id_map)
+  return section_ranges, raw_symbols
+
+
+def _CreateDexSymbols(*, apk_spec):
+  """Create dex symbols for the given apk_spec.
+
+  Args:
+    apk_spec: Instance of ApkSpec or None.
+
+  Returns:
+    A tuple of (section_ranges, raw_symbols).
+  """
+  logging.info('Analyzing classes.dex for %s', apk_spec.split_name
+               or apk_spec.apk_path)
+
+  def compute_dex_size():
+    with zipfile.ZipFile(apk_spec.apk_path) as z:
+      return sum(i.file_size for i in z.infolist()
+                 if i.filename.endswith('.dex'))
+
+  dex_size_result = parallel.CallOnThread(compute_dex_size)
+  raw_symbols = apkanalyzer.CreateDexSymbols(apk_spec.apk_path,
+                                             apk_spec.mapping_path,
+                                             apk_spec.size_info_prefix)
+  dex_size = dex_size_result.get()
+
+  sizes = collections.Counter()
+  for s in raw_symbols:
+    sizes[s.section_name] += s.pss
+  assert len(sizes) <= 2, 'Unexpected: ' + str(sizes)
+  dex_method_size = round(sizes[models.SECTION_DEX_METHOD])
+  dex_other_size = round(sizes[models.SECTION_DEX])
+
+  unattributed_dex = dex_size - dex_method_size - dex_other_size
+  # Compare against -5 instead of 0 to guard against round-off errors.
+  assert unattributed_dex >= -5, (
+      'sum(dex_symbols.size) > filesize(classes.dex). {} vs {}'.format(
+          dex_method_size + dex_other_size, dex_size))
+
+  if unattributed_dex > 0:
+    raw_symbols.append(
+        models.Symbol(
+            models.SECTION_DEX,
+            unattributed_dex,
+            full_name='** .dex (unattributed - includes string literals)'))
+
+  # We can't meaningfully track section size of dex methods vs other, so
+  # just fake the size of dex methods as the sum of symbols, and make
+  # "dex other" responsible for any unattributed bytes.
+  section_ranges = {
+      models.SECTION_DEX_METHOD: (0, dex_method_size),
+      models.SECTION_DEX: (0, dex_size - dex_method_size),
+  }
+
+  return section_ranges, raw_symbols
+
+
+def _CreateApkOtherSymbols(*,
+                           metadata,
+                           apk_spec,
+                           native_spec,
+                           resources_pathmap_path=None):
+  """Creates a Container (with sections sizes) and symbols for a SizeInfo.
+
+  Args:
+    metadata: Metadata dict from CreateMetadata().
+    apk_spec: Instance of ApkSpec or None.
+    native_spec: Instance of NativeSpec or None.
+    resources_pathmap_path: Path to the pathmap file that maps original
+        resource paths to shortened resource paths.
+
+  Returns:
+    A tuple of (section_ranges, raw_symbols).
+  """
+  logging.info('Creating symbols for other APK entries')
+  apk_so_path = native_spec and native_spec.apk_so_path
+  res_source_mapper = _ResourceSourceMapper(apk_spec.size_info_prefix,
+                                            apk_spec.path_defaults)
+  resource_deobfuscator = _ResourcePathDeobfuscator(resources_pathmap_path)
+  raw_symbols = []
+  zip_info_total = 0
+  zipalign_total = 0
+  with zipfile.ZipFile(apk_spec.apk_path) as z:
+    signing_block_size = zip_util.MeasureApkSignatureBlock(z)
+    for zip_info in z.infolist():
+      zip_info_total += zip_info.compress_size
+      # Account for zipalign overhead that exists in local file header.
+      zipalign_total += zip_util.ReadZipInfoExtraFieldLength(z, zip_info)
+      # Account for zipalign overhead that exists in central directory header.
+      # Happens when python aligns entries in apkbuilder.py, but does not
+      # exist when using Android's zipalign. E.g. for bundle .apks files.
+      zipalign_total += len(zip_info.extra)
+      # Skip files that we explicitly analyze: .so, .dex, and .pak.
+      if zip_info.filename == apk_so_path:
+        continue
+      if apk_spec.analyze_dex and zip_info.filename.endswith('.dex'):
+        continue
+      if zip_info.filename.endswith('.pak'):
+        continue
+
+      resource_filename = resource_deobfuscator.MaybeRemapPath(
+          zip_info.filename)
+      source_path = res_source_mapper.FindSourceForPath(resource_filename)
+      if source_path is None:
+        source_path = os.path.join(models.APK_PREFIX_PATH, resource_filename)
+      raw_symbols.append(
+          models.Symbol(
+              models.SECTION_OTHER,
+              zip_info.compress_size,
+              source_path=source_path,
+              full_name=resource_filename))  # Full name must disambiguate
+
+  # Store zipalign overhead and signing block size as metadata rather than an
+  # "Overhead:" symbol because they fluctuate in size, and would be a source of
+  # noise in symbol diffs if included as symbols (http://crbug.com/1130754).
+  # Might be even better if we had an option in Tiger Viewer to ignore certain
+  # symbols, but taking this as a short-cut for now.
+  metadata[models.METADATA_ZIPALIGN_OVERHEAD] = zipalign_total
+  metadata[models.METADATA_SIGNING_BLOCK_SIZE] = signing_block_size
+
+  # Overhead includes:
+  #  * Size of all local zip headers (minus zipalign padding).
+  #  * Size of central directory & end of central directory.
+  overhead_size = (os.path.getsize(apk_spec.apk_path) - zip_info_total -
+                   zipalign_total - signing_block_size)
+  assert overhead_size >= 0, 'Apk overhead must be non-negative'
+  zip_overhead_symbol = models.Symbol(models.SECTION_OTHER,
+                                      overhead_size,
+                                      full_name='Overhead: APK file')
+  raw_symbols.append(zip_overhead_symbol)
+
+  section_ranges = {}
+  _ExtendSectionRange(section_ranges, models.SECTION_OTHER,
+                      sum(s.size for s in raw_symbols))
+  return section_ranges, raw_symbols
+
+
+def CreateContainerSymbols(*, container_name, metadata, apk_spec, pak_spec,
+                           native_spec, source_directory, output_directory,
+                           resources_pathmap_path, pak_id_map):
+  raw_symbols = []
+  section_sizes = {}
+
+  def add_syms(section_ranges, new_raw_symbols):
+    new_section_sizes = {
+        k: size
+        for k, (address, size) in section_ranges.items()
+    }
+    if models.SECTION_OTHER in new_section_sizes:
+      section_sizes[models.SECTION_OTHER] = section_sizes.get(
+          models.SECTION_OTHER, 0) + new_section_sizes[models.SECTION_OTHER]
+      del new_section_sizes[models.SECTION_OTHER]
+
+    assert not (set(section_sizes) & set(new_section_sizes)), (
+        'Section collision: {}\n\n {}'.format(section_sizes, new_section_sizes))
+    section_sizes.update(new_section_sizes)
+
+    # _CreateNativeSymbols() already calls _NormalizePaths().
+    if new_raw_symbols and not new_raw_symbols[0].IsNative():
+      _NormalizePaths(new_raw_symbols)
+    raw_symbols.extend(new_raw_symbols)
+
+  if native_spec:
+    add_syms(*_CreateNativeSymbols(metadata=metadata,
+                                   apk_spec=apk_spec,
+                                   native_spec=native_spec,
+                                   output_directory=output_directory,
+                                   pak_id_map=pak_id_map))
+
+  if pak_spec:
+    add_syms(*_CreatePakSymbols(pak_spec=pak_spec,
+                                pak_id_map=pak_id_map,
+                                apk_spec=apk_spec,
+                                output_directory=output_directory))
+  if apk_spec:
+    if apk_spec.analyze_dex:
+      add_syms(*_CreateDexSymbols(apk_spec=apk_spec))
+    add_syms(
+        *_CreateApkOtherSymbols(metadata=metadata,
+                                apk_spec=apk_spec,
+                                native_spec=native_spec,
+                                resources_pathmap_path=resources_pathmap_path))
 
   default_component = apk_spec.default_component if apk_spec else ''
   dir_metadata.PopulateComponents(raw_symbols,
                                   source_directory,
                                   default_component=default_component)
-  logging.info('Converting excessive aliases into shared-path symbols')
-  _CompactLargeAliasesIntoSharedSymbols(raw_symbols)
-
-  if native_spec:
-    logging.debug('Connecting nm aliases')
-    _ConnectNmAliases(raw_symbols)
-
-  section_sizes = {k: size for k, (address, size) in section_ranges.items()}
   container = models.Container(name=container_name,
                                metadata=metadata,
                                section_sizes=section_sizes)
@@ -1828,6 +1899,8 @@ def _ProcessContainerArgs(top_args,
                                or top_args.output_directory)
   analyze_native = not (sub_args.java_only or sub_args.no_native
                         or top_args.java_only or top_args.no_native)
+  analyze_dex = not (sub_args.native_only or sub_args.no_java
+                     or top_args.native_only or top_args.no_java)
 
   apk_path = apk_path or sub_args.apk_file
   if split_name:
@@ -1856,8 +1929,7 @@ def _ProcessContainerArgs(top_args,
       apk_spec.size_info_prefix = os.path.join(top_args.output_directory,
                                                'size-info',
                                                os.path.basename(apk_prefix))
-    apk_spec.analyze_dex = not (sub_args.native_only or sub_args.no_java
-                                or top_args.native_only or top_args.no_java)
+    apk_spec.analyze_dex = bool(analyze_dex and apk_spec.size_info_prefix)
     apk_spec.path_defaults = {
         k: v['source_path']
         for k, v in json_config.get('apk_files', {}).items()
