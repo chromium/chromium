@@ -73,7 +73,7 @@ const net::BackoffEntry::Policy SCTAuditingReporter::kDefaultBackoffPolicy = {
 // roughly the next five days.
 // See more discussion in the SCT Auditing Retry and Persistence design doc:
 // https://docs.google.com/document/d/1YTUzoG6BDF1QIxosaQDp2H5IzYY7_fwH8qNJXSVX8OQ/edit
-constexpr size_t kMaxRetries = 15;
+constexpr int kMaxRetries = 15;
 
 SCTAuditingReporter::SCTAuditingReporter(
     net::HashValue reporter_key,
@@ -81,13 +81,15 @@ SCTAuditingReporter::SCTAuditingReporter(
     mojom::URLLoaderFactory* url_loader_factory,
     const GURL& report_uri,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-    ReporterDoneCallback done_callback)
+    ReporterUpdatedCallback update_callback,
+    ReporterDoneCallback done_callback,
+    std::unique_ptr<net::BackoffEntry> persisted_backoff_entry)
     : reporter_key_(reporter_key),
       report_(std::move(report)),
       traffic_annotation_(traffic_annotation),
       report_uri_(report_uri),
+      update_callback_(std::move(update_callback)),
       done_callback_(std::move(done_callback)),
-      num_retries_(0),
       max_retries_(kMaxRetries) {
   // Clone the URLLoaderFactory to avoid any dependencies on its lifetime. The
   // Reporter instance can maintain its own copy.
@@ -104,34 +106,31 @@ SCTAuditingReporter::SCTAuditingReporter(
     backoff_policy_.initial_delay_ms =
         g_retry_delay_for_testing->InMilliseconds();
   }
-  backoff_entry_ = std::make_unique<net::BackoffEntry>(&backoff_policy_);
+
+  // `persisted_backoff_entry` is only non-null when persistence is enabled and
+  // this SCTAuditingReporter is being created from a reporter that had been
+  // persisted to disk.
+  if (persisted_backoff_entry) {
+    backoff_entry_ = std::move(persisted_backoff_entry);
+  } else {
+    backoff_entry_ = std::make_unique<net::BackoffEntry>(&backoff_policy_);
+    // Informing the backoff entry of a success will force it to use the initial
+    // delay (and jitter) for the first attempt. Otherwise,
+    // ShouldRejectRequest() will return `true` despite the policy specifying
+    // `always_use_initial_delay = true`.
+    backoff_entry_->InformOfRequest(true);
+  }
 }
 
 SCTAuditingReporter::~SCTAuditingReporter() = default;
 
 void SCTAuditingReporter::Start() {
-  // Informing the backoff entry of a success will force it to use the initial
-  // delay (and jitter) for the first attempt. Otherwise, ShouldRejectRequest()
-  // will return `true` despite the policy specifying
-  // `always_use_initial_delay = true`.
-  backoff_entry_->InformOfRequest(true);
-
-  // Start sending the report.
-  ScheduleReport();
-}
-
-void SCTAuditingReporter::SetRetryDelayForTesting(
-    absl::optional<base::TimeDelta> delay) {
-  g_retry_delay_for_testing = delay;
-}
-
-void SCTAuditingReporter::ScheduleReport() {
   if (base::FeatureList::IsEnabled(
           features::kSCTAuditingRetryAndPersistReports) &&
       backoff_entry_->ShouldRejectRequest()) {
     // TODO(crbug.com/1199827): Investigate if explicit task traits should be
     // used for these tasks (e.g., BEST_EFFORT and SKIP_ON_SHUTDOWN).
-    base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&SCTAuditingReporter::SendReport,
                        weak_factory_.GetWeakPtr()),
@@ -139,6 +138,11 @@ void SCTAuditingReporter::ScheduleReport() {
   } else {
     SendReport();
   }
+}
+
+void SCTAuditingReporter::SetRetryDelayForTesting(
+    absl::optional<base::TimeDelta> delay) {
+  g_retry_delay_for_testing = delay;
 }
 
 void SCTAuditingReporter::SendReport() {
@@ -191,7 +195,7 @@ void SCTAuditingReporter::OnSendReportComplete(
           features::kSCTAuditingRetryAndPersistReports)) {
     if (success) {
       // Report succeeded.
-      if (num_retries_ == 0) {
+      if (backoff_entry_->failure_count() == 0) {
         ReportSCTAuditingCompletionStatusMetrics(
             CompletionStatus::kSuccessFirstTry);
       } else {
@@ -205,7 +209,7 @@ void SCTAuditingReporter::OnSendReportComplete(
       return;
     }
     // Sending the report failed.
-    if (num_retries_ >= max_retries_) {
+    if (backoff_entry_->failure_count() >= max_retries_) {
       // Retry limit reached.
       ReportSCTAuditingCompletionStatusMetrics(
           CompletionStatus::kRetriesExhausted);
@@ -215,10 +219,11 @@ void SCTAuditingReporter::OnSendReportComplete(
       std::move(done_callback_).Run(reporter_key_);
       return;
     } else {
-      // Schedule a retry.
-      ++num_retries_;
+      // Schedule a retry and alert the SCTAuditingHandler to trigger a write so
+      // it can persist the updated backoff entry.
       backoff_entry_->InformOfRequest(false);
-      ScheduleReport();
+      update_callback_.Run();
+      Start();
     }
   } else {
     // Retry is not enabled, so just notify the Cache that this Reporter is

@@ -253,6 +253,11 @@ struct NetworkContextFilePaths {
   // flag is false.
   mojo_base.mojom.FilePath? reporting_and_nel_store_database_name;
 
+  // The name of the file to store pending SCT auditing reports inside
+  // `data_path`. If empty, or `data_path` is empty, or the file can't be
+  // opened, pending reports will instead be stored in-memory only.
+  mojo_base.mojom.FilePath? sct_auditing_pending_reports_file_name;
+
   // Specifies whether or not a migration of existing data should occur from
   // `unsandboxed_data_path` to `data_path`. It is not valid to set this to true
   // if an `unsandboxed_data_path` is not specified.

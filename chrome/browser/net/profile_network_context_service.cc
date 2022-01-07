@@ -747,6 +747,8 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
 
     network_context_params->file_paths->transport_security_persister_file_name =
         base::FilePath(chrome::kTransportSecurityPersisterFilename);
+    network_context_params->file_paths->sct_auditing_pending_reports_file_name =
+        base::FilePath(chrome::kSCTAuditingPendingReportsFileName);
   }
   const base::Value* hsts_policy_bypass_list =
       g_browser_process->local_state()->GetList(prefs::kHSTSPolicyBypassList);

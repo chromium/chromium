@@ -43,6 +43,13 @@ class NetworkContext;
 //
 // The SCTAuditingCache allows the embedder to configure SCT auditing via the
 // network service's ConfigureSCTAuditing() API.
+//
+// Note: The SCTAuditingCache's deduplication cache is not persisted to disk.
+// Pending reports that are persisted to disk by SCTAuditingHandler do not
+// repopulate the deduplication cache when loaded. Not persisting the dedupe
+// cache slightly increases the probability weight of sampling and sending SCTs
+// from sites a user commonly visits (i.e., those they are likely to visit in
+// every session).
 class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingCache {
  public:
   explicit SCTAuditingCache(size_t cache_size = 1024);

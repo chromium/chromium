@@ -67,6 +67,7 @@ extern const base::FilePath::CharType kPreviewsOptOutDBFilename[];
 extern const base::FilePath::CharType kQueryTileStorageDirname[];
 extern const base::FilePath::CharType kReadmeFilename[];
 extern const base::FilePath::CharType kReportingAndNelStoreFilename[];
+extern const base::FilePath::CharType kSCTAuditingPendingReportsFileName[];
 extern const base::FilePath::CharType kSecurePreferencesFilename[];
 extern const base::FilePath::CharType kSegmentationPlatformStorageDirName[];
 extern const base::FilePath::CharType kServiceStateFileName[];

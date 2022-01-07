@@ -45,6 +45,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingReporter {
   // The SHA256HashValue `reporter_key` is passed to uniquely identify this
   // reporter instance.
   using ReporterDoneCallback = base::OnceCallback<void(net::HashValue)>;
+  // Callback to notify the SCTAuditingHandler that the reporter has updated
+  // (e.g., the retry counter has been incremented).
+  using ReporterUpdatedCallback = base::RepeatingCallback<void()>;
 
   SCTAuditingReporter(
       net::HashValue reporter_key,
@@ -52,7 +55,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingReporter {
       mojom::URLLoaderFactory* url_loader_factory,
       const GURL& report_uri,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-      ReporterDoneCallback done_callback);
+      ReporterUpdatedCallback update_callback,
+      ReporterDoneCallback done_callback,
+      std::unique_ptr<net::BackoffEntry> backoff_entry = nullptr);
   ~SCTAuditingReporter();
 
   SCTAuditingReporter(const SCTAuditingReporter&) = delete;
@@ -64,6 +69,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingReporter {
 
   net::HashValue key() { return reporter_key_; }
   sct_auditing::SCTClientReport* report() { return report_.get(); }
+  net::BackoffEntry* backoff_entry() { return backoff_entry_.get(); }
 
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
@@ -77,7 +83,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingReporter {
   static void SetRetryDelayForTesting(absl::optional<base::TimeDelta> delay);
 
  private:
-  void ScheduleReport();
   void SendReport();
   void OnSendReportComplete(scoped_refptr<net::HttpResponseHeaders> headers);
 
@@ -87,13 +92,13 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SCTAuditingReporter {
   std::unique_ptr<SimpleURLLoader> url_loader_;
   net::NetworkTrafficAnnotationTag traffic_annotation_;
   GURL report_uri_;
+  ReporterUpdatedCallback update_callback_;
   ReporterDoneCallback done_callback_;
 
   net::BackoffEntry::Policy backoff_policy_;
   std::unique_ptr<net::BackoffEntry> backoff_entry_;
 
-  size_t num_retries_;
-  size_t max_retries_;
+  int max_retries_;
 
   base::WeakPtrFactory<SCTAuditingReporter> weak_factory_{this};
 };

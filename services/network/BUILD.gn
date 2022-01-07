@@ -456,6 +456,7 @@ source_set("tests") {
       "ct_log_list_distributor_unittest.cc",
       "expect_ct_reporter_unittest.cc",
       "sct_auditing/sct_auditing_cache_unittest.cc",
+      "sct_auditing/sct_auditing_handler_unittest.cc",
     ]
     deps += [ "//components/certificate_transparency" ]
   }

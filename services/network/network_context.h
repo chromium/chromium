@@ -72,10 +72,6 @@
 #include "net/reporting/reporting_report.h"
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
-#if BUILDFLAG(IS_CT_SUPPORTED)
-#include "services/network/sct_auditing/sct_auditing_handler.h"
-#endif  // BUILDFLAG(IS_CT_SUPPORTED)
-
 namespace base {
 class UnguessableToken;
 }  // namespace base
@@ -115,6 +111,7 @@ class PendingTrustTokenStore;
 class ProxyLookupRequest;
 class ResourceScheduler;
 class ResourceSchedulerClient;
+class SCTAuditingHandler;
 class SessionCleanupCookieStore;
 class SQLiteTrustTokenPersister;
 class WebSocketFactory;
@@ -303,7 +300,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   void OnCTLogListUpdated(
       const std::vector<network::mojom::CTLogInfoPtr>& log_list,
       base::Time update_time);
-  SCTAuditingHandler* sct_auditing_handler() { return &sct_auditing_handler_; }
+  SCTAuditingHandler* sct_auditing_handler() {
+    return sct_auditing_handler_.get();
+  }
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
   void CreateUDPSocket(
       mojo::PendingReceiver<mojom::UDPSocket> receiver,
@@ -751,7 +750,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
   raw_ptr<certificate_transparency::ChromeCTPolicyEnforcer>
       ct_policy_enforcer_ = nullptr;
 
-  SCTAuditingHandler sct_auditing_handler_{this};
+  std::unique_ptr<SCTAuditingHandler> sct_auditing_handler_;
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
