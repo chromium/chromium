@@ -26,4 +26,10 @@ public class MenuButtonState {
      * this object is not {@code null}.
      */
     public @DrawableRes int lightBadgeIcon;
+
+    /**
+     * An icon resource for the badge for the menu button that adapts to light and dark modes.
+     * Always set (not {@code 0}) if this object is not {@code null}.
+     */
+    public @DrawableRes int adaptiveBadgeIcon;
 }

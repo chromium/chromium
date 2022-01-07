@@ -225,6 +225,69 @@ public class OmniboxResourceProvider {
     }
 
     /**
+     * Returns the separator line color for the status view.
+     *
+     * @param context The context to retrieve the resources from.
+     * @param brandedColorScheme The {@link BrandedColorScheme}.
+     * @return Status view separator color.
+     */
+    public static @ColorInt int getStatusSeparatorColor(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        if (brandedColorScheme == BrandedColorScheme.LIGHT_BRANDED_THEME) {
+            return context.getColor(R.color.locationbar_status_separator_color_dark);
+        }
+        if (brandedColorScheme == BrandedColorScheme.DARK_BRANDED_THEME) {
+            return context.getColor(R.color.locationbar_status_separator_color_light);
+        }
+        if (brandedColorScheme == BrandedColorScheme.INCOGNITO) {
+            return context.getColor(R.color.locationbar_status_separator_color_incognito);
+        }
+        return MaterialColors.getColor(context, R.attr.colorOutline, TAG);
+    }
+
+    /**
+     * Returns the preview text color for the status view.
+     *
+     * @param context The context to retrieve the resources from.
+     * @param brandedColorScheme The {@link BrandedColorScheme}.
+     * @return Status view preview text color.
+     */
+    public static @ColorInt int getStatusPreviewTextColor(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        if (brandedColorScheme == BrandedColorScheme.LIGHT_BRANDED_THEME) {
+            return context.getColor(R.color.locationbar_status_preview_color_dark);
+        }
+        if (brandedColorScheme == BrandedColorScheme.DARK_BRANDED_THEME) {
+            return context.getColor(R.color.locationbar_status_preview_color_light);
+        }
+        if (brandedColorScheme == BrandedColorScheme.INCOGNITO) {
+            return context.getColor(R.color.locationbar_status_preview_color_incognito);
+        }
+        return MaterialColors.getColor(context, R.attr.colorPrimary, TAG);
+    }
+
+    /**
+     * Returns the offline text color for the status view.
+     *
+     * @param context The context to retrieve the resources from.
+     * @param brandedColorScheme The {@link BrandedColorScheme}.
+     * @return Status view offline text color.
+     */
+    public static @ColorInt int getStatusOfflineTextColor(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        if (brandedColorScheme == BrandedColorScheme.LIGHT_BRANDED_THEME) {
+            return context.getColor(R.color.locationbar_status_offline_color_dark);
+        }
+        if (brandedColorScheme == BrandedColorScheme.DARK_BRANDED_THEME) {
+            return context.getColor(R.color.locationbar_status_offline_color_light);
+        }
+        if (brandedColorScheme == BrandedColorScheme.INCOGNITO) {
+            return context.getColor(R.color.locationbar_status_offline_color_incognito);
+        }
+        return context.getColor(R.color.default_text_color_secondary_list);
+    }
+
+    /**
      * Wraps the context if necessary to force dark resources for incognito.
      *
      * @param context The {@link Context} to be wrapped.

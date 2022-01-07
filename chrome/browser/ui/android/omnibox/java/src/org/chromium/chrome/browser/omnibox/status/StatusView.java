@@ -12,7 +12,6 @@ import android.graphics.drawable.TransitionDrawable;
 import android.util.AttributeSet;
 import android.view.TouchDelegate;
 import android.view.View;
-import android.view.View.AccessibilityDelegate;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -21,13 +20,12 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.ColorRes;
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.SearchEngineLogoUtils;
@@ -357,17 +355,15 @@ public class StatusView extends LinearLayout {
     /**
      * Select color of Separator view.
      */
-    void setSeparatorColor(@ColorRes int separatorColor) {
-        mSeparatorView.setBackgroundColor(
-                ApiCompatibilityUtils.getColor(getResources(), separatorColor));
+    void setSeparatorColor(@ColorInt int separatorColor) {
+        mSeparatorView.setBackgroundColor(separatorColor);
     }
 
     /**
      * Select color of verbose status text.
      */
-    void setVerboseStatusTextColor(@ColorRes int textColor) {
-        mVerboseStatusTextView.setTextColor(
-                ApiCompatibilityUtils.getColor(getResources(), textColor));
+    void setVerboseStatusTextColor(@ColorInt int textColor) {
+        mVerboseStatusTextView.setTextColor(textColor);
     }
 
     /**

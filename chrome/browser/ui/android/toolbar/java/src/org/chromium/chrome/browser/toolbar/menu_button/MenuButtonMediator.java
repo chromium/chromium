@@ -32,6 +32,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuObserver;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -231,8 +232,10 @@ class MenuButtonMediator implements AppMenuObserver {
         updateContentDescription(false, 0);
     }
 
-    private void onTintChanged(ColorStateList tintList, boolean useLight) {
-        mPropertyModel.set(MenuButtonProperties.THEME, new ThemeProperty(tintList, useLight));
+    private void onTintChanged(
+            ColorStateList tintList, @BrandedColorScheme int brandedColorScheme) {
+        mPropertyModel.set(
+                MenuButtonProperties.THEME, new ThemeProperty(tintList, brandedColorScheme));
     }
 
     /**

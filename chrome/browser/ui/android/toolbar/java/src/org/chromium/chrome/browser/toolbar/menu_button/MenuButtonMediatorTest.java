@@ -88,7 +88,7 @@ public class MenuButtonMediatorTest {
                                          new ShowBadgeProperty(false, false))
                                  .with(MenuButtonProperties.THEME,
                                          new ThemeProperty(mThemeColorProvider.getTint(),
-                                                 mThemeColorProvider.useLight()))
+                                                 mThemeColorProvider.getBrandedColorScheme()))
                                  .with(MenuButtonProperties.IS_VISIBLE, true)
                                  .build();
         doReturn(mAppMenuHandler).when(mAppMenuCoordinator).getAppMenuHandler();

@@ -235,4 +235,74 @@ public class OmniboxResourceProviderTest {
                 OmniboxResourceProvider.getSuggestionUrlTextColor(
                         mActivity, BrandedColorScheme.APP_DEFAULT));
     }
+
+    @Test
+    public void getStatusSeparatorColor() {
+        final Resources resources = mActivity.getResources();
+        final int darkColor = resources.getColor(R.color.locationbar_status_separator_color_dark);
+        final int lightColor = resources.getColor(R.color.locationbar_status_separator_color_light);
+        final int incognitoColor =
+                resources.getColor(R.color.locationbar_status_separator_color_incognito);
+        final int defaultColor = MaterialColors.getColor(mActivity, R.attr.colorOutline, TAG);
+
+        assertEquals("Wrong status separator color for LIGHT_THEME.", darkColor,
+                OmniboxResourceProvider.getStatusSeparatorColor(
+                        mActivity, BrandedColorScheme.LIGHT_BRANDED_THEME));
+        assertEquals("Wrong status separator color for DARK_THEME.", lightColor,
+                OmniboxResourceProvider.getStatusSeparatorColor(
+                        mActivity, BrandedColorScheme.DARK_BRANDED_THEME));
+        assertEquals("Wrong status separator color for INCOGNITO.", incognitoColor,
+                OmniboxResourceProvider.getStatusSeparatorColor(
+                        mActivity, BrandedColorScheme.INCOGNITO));
+        assertEquals("Wrong status separator color for DEFAULT.", defaultColor,
+                OmniboxResourceProvider.getStatusSeparatorColor(
+                        mActivity, BrandedColorScheme.APP_DEFAULT));
+    }
+
+    @Test
+    public void getStatusPreviewTextColor() {
+        final Resources resources = mActivity.getResources();
+        final int darkColor = resources.getColor(R.color.locationbar_status_preview_color_dark);
+        final int lightColor = resources.getColor(R.color.locationbar_status_preview_color_light);
+        final int incognitoColor =
+                resources.getColor(R.color.locationbar_status_preview_color_incognito);
+        final int defaultColor = MaterialColors.getColor(mActivity, R.attr.colorPrimary, TAG);
+
+        assertEquals("Wrong status preview text color for LIGHT_THEME.", darkColor,
+                OmniboxResourceProvider.getStatusPreviewTextColor(
+                        mActivity, BrandedColorScheme.LIGHT_BRANDED_THEME));
+        assertEquals("Wrong status preview text color for DARK_THEME.", lightColor,
+                OmniboxResourceProvider.getStatusPreviewTextColor(
+                        mActivity, BrandedColorScheme.DARK_BRANDED_THEME));
+        assertEquals("Wrong status preview text color for INCOGNITO.", incognitoColor,
+                OmniboxResourceProvider.getStatusPreviewTextColor(
+                        mActivity, BrandedColorScheme.INCOGNITO));
+        assertEquals("Wrong status preview text color for DEFAULT.", defaultColor,
+                OmniboxResourceProvider.getStatusPreviewTextColor(
+                        mActivity, BrandedColorScheme.APP_DEFAULT));
+    }
+
+    @Test
+    public void getStatusOfflineTextColor() {
+        final Resources resources = mActivity.getResources();
+        final int darkColor = resources.getColor(R.color.locationbar_status_offline_color_dark);
+        final int lightColor = resources.getColor(R.color.locationbar_status_offline_color_light);
+        final int incognitoColor =
+                resources.getColor(R.color.locationbar_status_offline_color_incognito);
+        final int defaultColor =
+                MaterialColors.getColor(mActivity, R.attr.colorOnSurfaceVariant, TAG);
+
+        assertEquals("Wrong status offline text color for LIGHT_THEME.", darkColor,
+                OmniboxResourceProvider.getStatusOfflineTextColor(
+                        mActivity, BrandedColorScheme.LIGHT_BRANDED_THEME));
+        assertEquals("Wrong status offline text color for DARK_THEME.", lightColor,
+                OmniboxResourceProvider.getStatusOfflineTextColor(
+                        mActivity, BrandedColorScheme.DARK_BRANDED_THEME));
+        assertEquals("Wrong status offline text color for INCOGNITO.", incognitoColor,
+                OmniboxResourceProvider.getStatusOfflineTextColor(
+                        mActivity, BrandedColorScheme.INCOGNITO));
+        assertEquals("Wrong status offline text color for DEFAULT.", defaultColor,
+                OmniboxResourceProvider.getStatusOfflineTextColor(
+                        mActivity, BrandedColorScheme.APP_DEFAULT));
+    }
 }

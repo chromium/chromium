@@ -66,6 +66,7 @@ import org.chromium.chrome.browser.toolbar.TabCountProvider.TabCountObserver;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.UrlExpansionObserver;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.animation.CancelAwareAnimatorListener;
 import org.chromium.components.browser_ui.widget.animation.Interpolators;
@@ -147,7 +148,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     @ViewDebug.ExportedProperty(category = "chrome")
     protected boolean mTextureCaptureMode;
     private boolean mForceTextureCapture;
-    private boolean mLightDrawablesUsedForLastTextureCapture;
+    private int mTintUsedForLastTextureCapture;
     private int mTabCountForLastTextureCapture;
 
     @ViewDebug.ExportedProperty(category = "chrome")
@@ -1326,7 +1327,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
                     mToolbarButtonsContainer, canvas, rgbAlpha);
         }
 
-        mLightDrawablesUsedForLastTextureCapture = useLight();
+        mTintUsedForLastTextureCapture = getTint().getDefaultColor();
 
         if (mTabSwitcherAnimationTabStackDrawable != null && mToggleTabStackButton != null) {
             mTabCountForLastTextureCapture = mTabSwitcherAnimationTabStackDrawable.getTabCount();
@@ -1557,7 +1558,7 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
         if (forceTextureCapture) {
             // Only force a texture capture if the tint for the toolbar drawables is changing or
             // if the tab count has changed since the last texture capture.
-            mForceTextureCapture = mLightDrawablesUsedForLastTextureCapture != useLight();
+            mForceTextureCapture = mTintUsedForLastTextureCapture != getTint().getDefaultColor();
 
             if (mTabSwitcherAnimationTabStackDrawable != null && mToggleTabStackButton != null) {
                 mForceTextureCapture = mForceTextureCapture
@@ -1635,16 +1636,21 @@ public class ToolbarPhone extends ToolbarLayout implements OnClickListener, TabC
     }
 
     @Override
-    public void onTintChanged(ColorStateList tint, boolean useLight) {
+    public void onThemeColorChanged(int color, boolean shouldAnimate) {
+        if (mToggleTabStackButton != null) {
+            final boolean useLight = ColorUtils.shouldUseLightForegroundOnBackground(color);
+            mToggleTabStackButton.setUseLightDrawables(useLight);
+        }
+    }
+
+    @Override
+    public void onTintChanged(ColorStateList tint, @BrandedColorScheme int brandedColorScheme) {
         if (mHomeButton != null) {
             ApiCompatibilityUtils.setImageTintList(mHomeButton, tint);
         }
 
-        if (mToggleTabStackButton != null) {
-            mToggleTabStackButton.setUseLightDrawables(useLight);
-            if (mTabSwitcherAnimationTabStackDrawable != null) {
-                mTabSwitcherAnimationTabStackDrawable.setTint(tint);
-            }
+        if (mToggleTabStackButton != null && mTabSwitcherAnimationTabStackDrawable != null) {
+            mTabSwitcherAnimationTabStackDrawable.setTint(tint);
         }
 
         if (mOptionalButton != null && mOptionalButtonUsesTint) {

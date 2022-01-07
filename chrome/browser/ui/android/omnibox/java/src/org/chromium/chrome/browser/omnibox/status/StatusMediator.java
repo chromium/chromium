@@ -11,6 +11,7 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.view.View;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.Nullable;
@@ -29,9 +30,11 @@ import org.chromium.chrome.browser.omnibox.UrlBarEditingTextStateProvider;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.PermissionIconResource;
 import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconResource;
 import org.chromium.chrome.browser.omnibox.status.StatusView.IconTransitionType;
+import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.theme.ThemeUtils;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.site_settings.ContentSettingsResources;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsUtil;
 import org.chromium.components.content_settings.ContentSettingValues;
@@ -61,7 +64,6 @@ public class StatusMediator implements PermissionDialogController.Observer,
     private final Supplier<Profile> mProfileSupplier;
     private final Supplier<MerchantTrustSignalsCoordinator>
             mMerchantTrustSignalsCoordinatorSupplier;
-    private boolean mDarkTheme;
     private boolean mUrlHasFocus;
     private boolean mVerboseStatusSpaceAvailable;
     private boolean mPageIsPaintPreview;
@@ -78,10 +80,11 @@ public class StatusMediator implements PermissionDialogController.Observer,
 
     private @ConnectionSecurityLevel int mPageSecurityLevel;
 
+    private @BrandedColorScheme int mBrandedColorScheme = BrandedColorScheme.APP_DEFAULT;
     private @DrawableRes int mSecurityIconRes;
     private @DrawableRes int mSecurityIconTintRes;
     private @StringRes int mSecurityIconDescriptionRes;
-    private @DrawableRes int mNavigationIconTintRes;
+    private @ColorRes int mNavigationIconTintRes;
 
     private Resources mResources;
     private Context mContext;
@@ -148,9 +151,8 @@ public class StatusMediator implements PermissionDialogController.Observer,
             templateUrlService.addObserver(this);
             updateLocationBarIcon(IconTransitionType.CROSSFADE);
         });
-        mProfileSupplier = profileSupplier;
-        updateColorTheme();
 
+        mProfileSupplier = profileSupplier;
         mResources = resources;
         mContext = context;
         mUrlBarEditingTextStateProvider = urlBarEditingTextStateProvider;
@@ -170,6 +172,7 @@ public class StatusMediator implements PermissionDialogController.Observer,
         mPermissionDialogController = permissionDialogController;
         mPermissionDialogController.addObserver(this);
 
+        updateColorTheme();
         setStatusIconShown(/* show= */ !mLocationBarDataProvider.isIncognito());
         updateLocationBarIcon(IconTransitionType.CROSSFADE);
     }
@@ -389,11 +392,11 @@ public class StatusMediator implements PermissionDialogController.Observer,
     }
 
     /**
-     * Toggle between dark and light UI color theme.
+     * Set the {@link BrandedColorScheme}.
      */
-    void setUseDarkColors(boolean useDarkColors) {
-        if (mDarkTheme != useDarkColors) {
-            mDarkTheme = useDarkColors;
+    void setBrandedColorScheme(@BrandedColorScheme int brandedColorScheme) {
+        if (mBrandedColorScheme != brandedColorScheme) {
+            mBrandedColorScheme = brandedColorScheme;
             updateColorTheme();
         }
     }
@@ -435,28 +438,27 @@ public class StatusMediator implements PermissionDialogController.Observer,
      * Update color theme for all status components.
      */
     private void updateColorTheme() {
-        @ColorRes
-        int separatorColor = mDarkTheme ? R.color.divider_line_bg_color_dark
-                                        : R.color.divider_line_bg_color_light;
+        final @ColorInt int separatorColor =
+                OmniboxResourceProvider.getStatusSeparatorColor(mContext, mBrandedColorScheme);
+        mModel.set(StatusProperties.SEPARATOR_COLOR, separatorColor);
+        mNavigationIconTintRes = ThemeUtils.getThemedToolbarIconTintRes(mBrandedColorScheme);
 
-        @ColorRes
-        int textColor = 0;
-        if (mPageIsPaintPreview) {
-            textColor = mDarkTheme ? R.color.locationbar_status_preview_color
-                                   : R.color.locationbar_status_preview_color_light;
-        } else if (mPageIsOffline) {
-            textColor = mDarkTheme ? R.color.locationbar_status_offline_color
-                                   : R.color.locationbar_status_offline_color_light;
+        final @ColorInt int textColor = getTextColor();
+        if (textColor != 0) {
+            mModel.set(StatusProperties.VERBOSE_STATUS_TEXT_COLOR, textColor);
         }
 
-        @ColorRes
-        int tintColor = ThemeUtils.getThemedToolbarIconTintRes(!mDarkTheme);
-
-        mModel.set(StatusProperties.SEPARATOR_COLOR_RES, separatorColor);
-        mNavigationIconTintRes = tintColor;
-        if (textColor != 0) mModel.set(StatusProperties.VERBOSE_STATUS_TEXT_COLOR_RES, textColor);
-
         updateLocationBarIcon(IconTransitionType.CROSSFADE);
+    }
+
+    private @ColorInt int getTextColor() {
+        if (mPageIsPaintPreview) {
+            return OmniboxResourceProvider.getStatusPreviewTextColor(mContext, mBrandedColorScheme);
+        }
+        if (mPageIsOffline) {
+            return OmniboxResourceProvider.getStatusOfflineTextColor(mContext, mBrandedColorScheme);
+        }
+        return 0;
     }
 
     /**
@@ -577,9 +579,9 @@ public class StatusMediator implements PermissionDialogController.Observer,
         // If the current url text is a valid url, then swap the dse icon for a globe.
         if (!mUrlBarTextIsSearch) {
             resourceCallback.onResult(new StatusIconResource(R.drawable.ic_globe_24dp,
-                    ThemeUtils.getThemedToolbarIconTintRes(/* useLight= */ !mDarkTheme)));
+                    ThemeUtils.getThemedToolbarIconTintRes(mBrandedColorScheme)));
         } else {
-            mSearchEngineLogoUtils.getSearchEngineLogo(mResources, mDarkTheme,
+            mSearchEngineLogoUtils.getSearchEngineLogo(mResources, mBrandedColorScheme,
                     mProfileSupplier.get(), mTemplateUrlServiceSupplier.get(), resourceCallback);
         }
     }

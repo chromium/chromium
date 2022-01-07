@@ -21,8 +21,8 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
             view.setAnimationsEnabled(model.get(StatusProperties.ANIMATIONS_ENABLED));
         } else if (StatusProperties.INCOGNITO_BADGE_VISIBLE.equals(propertyKey)) {
             view.setIncognitoBadgeVisibility(model.get(StatusProperties.INCOGNITO_BADGE_VISIBLE));
-        } else if (StatusProperties.SEPARATOR_COLOR_RES.equals(propertyKey)) {
-            view.setSeparatorColor(model.get(StatusProperties.SEPARATOR_COLOR_RES));
+        } else if (StatusProperties.SEPARATOR_COLOR.equals(propertyKey)) {
+            view.setSeparatorColor(model.get(StatusProperties.SEPARATOR_COLOR));
         } else if (StatusProperties.SHOW_STATUS_ICON.equals(propertyKey)) {
             view.setStatusIconShown(model.get(StatusProperties.SHOW_STATUS_ICON));
         } else if (StatusProperties.STATUS_CLICK_LISTENER.equals(propertyKey)) {
@@ -46,9 +46,8 @@ class StatusViewBinder implements ViewBinder<PropertyModel, StatusView, Property
             }
             view.setStatusIconResources(res.getDrawable(view.getContext(), view.getResources()),
                     res.getTransitionType(), res.getAnimationFinishedCallback());
-        } else if (StatusProperties.VERBOSE_STATUS_TEXT_COLOR_RES.equals(propertyKey)) {
-            view.setVerboseStatusTextColor(
-                    model.get(StatusProperties.VERBOSE_STATUS_TEXT_COLOR_RES));
+        } else if (StatusProperties.VERBOSE_STATUS_TEXT_COLOR.equals(propertyKey)) {
+            view.setVerboseStatusTextColor(model.get(StatusProperties.VERBOSE_STATUS_TEXT_COLOR));
         } else if (StatusProperties.VERBOSE_STATUS_TEXT_STRING_RES.equals(propertyKey)) {
             view.setVerboseStatusTextContent(
                     model.get(StatusProperties.VERBOSE_STATUS_TEXT_STRING_RES));

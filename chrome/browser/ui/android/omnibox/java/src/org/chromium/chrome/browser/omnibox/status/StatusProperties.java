@@ -207,7 +207,7 @@ public class StatusProperties {
             new WritableBooleanPropertyKey();
 
     /** The status separator color. */
-    static final WritableIntPropertyKey SEPARATOR_COLOR_RES = new WritableIntPropertyKey();
+    static final WritableIntPropertyKey SEPARATOR_COLOR = new WritableIntPropertyKey();
 
     /** Whether the icon is shown. */
     static final WritableBooleanPropertyKey SHOW_STATUS_ICON = new WritableBooleanPropertyKey();
@@ -235,8 +235,7 @@ public class StatusProperties {
             new WritableObjectPropertyKey<>();
 
     /** Text color of the verbose status text field. */
-    static final WritableIntPropertyKey VERBOSE_STATUS_TEXT_COLOR_RES =
-            new WritableIntPropertyKey();
+    static final WritableIntPropertyKey VERBOSE_STATUS_TEXT_COLOR = new WritableIntPropertyKey();
 
     /** The string resource used for the content of the verbose status text field. */
     static final WritableIntPropertyKey VERBOSE_STATUS_TEXT_STRING_RES =
@@ -253,7 +252,7 @@ public class StatusProperties {
     public static final PropertyKey[] ALL_KEYS = new PropertyKey[] {
             ANIMATIONS_ENABLED,
             INCOGNITO_BADGE_VISIBLE,
-            SEPARATOR_COLOR_RES,
+            SEPARATOR_COLOR,
             SHOW_STATUS_ICON,
             STATUS_CLICK_LISTENER,
             STATUS_ACCESSIBILITY_TOAST_RES,
@@ -261,7 +260,7 @@ public class StatusProperties {
             STATUS_ICON_ALPHA,
             STATUS_ICON_DESCRIPTION_RES,
             STATUS_ICON_RESOURCE,
-            VERBOSE_STATUS_TEXT_COLOR_RES,
+            VERBOSE_STATUS_TEXT_COLOR,
             VERBOSE_STATUS_TEXT_STRING_RES,
             VERBOSE_STATUS_TEXT_VISIBLE,
             VERBOSE_STATUS_TEXT_WIDTH,

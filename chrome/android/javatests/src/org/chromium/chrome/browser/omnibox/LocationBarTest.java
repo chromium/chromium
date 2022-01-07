@@ -15,7 +15,7 @@ import static junit.framework.Assert.assertFalse;
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.Matchers.not;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 
@@ -205,7 +205,7 @@ public class LocationBarTest {
             };
             doAnswer(logoAnswer)
                     .when(mSearchEngineLogoUtils)
-                    .getSearchEngineLogo(any(), anyBoolean(), any(), any(), any());
+                    .getSearchEngineLogo(any(), anyInt(), any(), any(), any());
         });
     }
 

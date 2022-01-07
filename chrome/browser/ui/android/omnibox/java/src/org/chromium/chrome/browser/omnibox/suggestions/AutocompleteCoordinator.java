@@ -300,8 +300,8 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
      * Update the visuals of the autocomplete UI.
      * @param brandedColorScheme The {@link @BrandedColorScheme}.
      */
-    public void updateVisualsForState(@BrandedColorScheme int colorScheme) {
-        mMediator.updateVisualsForState(colorScheme);
+    public void updateVisualsForState(@BrandedColorScheme int brandedColorScheme) {
+        mMediator.updateVisualsForState(brandedColorScheme);
     }
 
     /**
