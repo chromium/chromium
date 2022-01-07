@@ -7880,3 +7880,7 @@ crbug.com/1283865 external/wpt/webmessaging/without-ports/020.html [ Failure Pas
 
 # Sheriff 2022-01-05
 crbug.com/1284572 [ Linux ] virtual/threaded/http/tests/devtools/isolated-code-cache/same-origin-module-test.js [ Failure Pass ]
+
+# Sheriff 2022-01-07
+crbug.com/1285348 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/hidpi/canvas-transform.https.html [ Failure Pass ]
+crbug.com/1285350 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/parse-input-arguments-011.https.html [ Failure Pass ]
