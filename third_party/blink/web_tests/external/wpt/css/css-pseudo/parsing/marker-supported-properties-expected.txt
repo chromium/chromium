@@ -49,10 +49,10 @@ PASS Property text-transform value 'uppercase' in ::marker
 PASS Property word-break value 'break-word' in ::marker
 PASS Property word-spacing value '10px' in ::marker
 PASS Property text-decoration-skip-ink value 'none' in ::marker
-PASS Property text-emphasis value 'filled dot rgb(0, 255, 0)' in ::marker
+PASS Property text-emphasis value 'dot rgb(0, 255, 0)' in ::marker
 PASS Property text-emphasis-color value 'rgb(0, 255, 0)' in ::marker
 PASS Property text-emphasis-position value 'under left' in ::marker
-PASS Property text-emphasis-style value 'filled dot' in ::marker
+PASS Property text-emphasis-style value 'dot' in ::marker
 PASS Property text-shadow value 'rgb(0, 255, 0) 1px 2px 3px' in ::marker
 PASS Property display value 'none' in ::marker
 PASS Property position value 'absolute' in ::marker

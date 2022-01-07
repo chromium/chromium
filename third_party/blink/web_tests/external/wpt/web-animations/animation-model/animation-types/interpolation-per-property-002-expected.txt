@@ -235,9 +235,9 @@ PASS text-emphasis-position uses discrete animation when animating between "over
 PASS text-emphasis-position uses discrete animation when animating between "over right" and "under left" with effect easing
 PASS text-emphasis-position uses discrete animation when animating between "over right" and "under left" with keyframe easing
 PASS text-emphasis-style (type: discrete) has testInterpolation function
-PASS text-emphasis-style uses discrete animation when animating between "filled circle" and "open dot" with linear easing
-PASS text-emphasis-style uses discrete animation when animating between "filled circle" and "open dot" with effect easing
-PASS text-emphasis-style uses discrete animation when animating between "filled circle" and "open dot" with keyframe easing
+PASS text-emphasis-style uses discrete animation when animating between "circle" and "open dot" with linear easing
+PASS text-emphasis-style uses discrete animation when animating between "circle" and "open dot" with effect easing
+PASS text-emphasis-style uses discrete animation when animating between "circle" and "open dot" with keyframe easing
 PASS text-overflow (type: discrete) has testInterpolation function
 PASS text-overflow uses discrete animation when animating between "clip" and "ellipsis" with linear easing
 PASS text-overflow uses discrete animation when animating between "clip" and "ellipsis" with effect easing

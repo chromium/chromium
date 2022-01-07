@@ -197,8 +197,8 @@ PASS text-emphasis-position (type: discrete) has testAddition function
 PASS text-emphasis-position: "under left" onto "over right"
 PASS text-emphasis-position: "over right" onto "under left"
 PASS text-emphasis-style (type: discrete) has testAddition function
-PASS text-emphasis-style: "open dot" onto "filled circle"
-PASS text-emphasis-style: "filled circle" onto "open dot"
+PASS text-emphasis-style: "open dot" onto "circle"
+PASS text-emphasis-style: "circle" onto "open dot"
 PASS text-overflow (type: discrete) has testAddition function
 PASS text-overflow: "ellipsis" onto "clip"
 PASS text-overflow: "clip" onto "ellipsis"

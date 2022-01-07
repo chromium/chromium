@@ -8325,7 +8325,8 @@ const CSSValue* TextEmphasisStyle::CSSValueFromComputedStyleInternal(
     case TextEmphasisMark::kTriangle:
     case TextEmphasisMark::kSesame: {
       CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-      list->Append(*CSSIdentifierValue::Create(style.GetTextEmphasisFill()));
+      if (style.GetTextEmphasisFill() != TextEmphasisFill::kFilled)
+        list->Append(*CSSIdentifierValue::Create(style.GetTextEmphasisFill()));
       list->Append(*CSSIdentifierValue::Create(style.GetTextEmphasisMark()));
       return list;
     }

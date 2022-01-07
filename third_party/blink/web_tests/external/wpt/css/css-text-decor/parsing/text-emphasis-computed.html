@@ -20,12 +20,12 @@
 'use strict';
 const currentColor = "rgb(0, 0, 255)";
 test_computed_value("text-emphasis", "none", `none ${currentColor}`);
-test_computed_value("text-emphasis", "dot", `filled dot ${currentColor}`);
+test_computed_value("text-emphasis", "dot", `dot ${currentColor}`);
 test_computed_value("text-emphasis", "open sesame", `open sesame ${currentColor}`);
 test_computed_value("text-emphasis", "'*'", `"*" ${currentColor}`);
 
 test_computed_value("text-emphasis", "currentColor", `none ${currentColor}`);
 test_computed_value("text-emphasis", "black", `none rgb(0, 0, 0)`);
 
-test_computed_value("text-emphasis", "dot red", `filled dot rgb(255, 0, 0)`);
+test_computed_value("text-emphasis", "dot red", `dot rgb(255, 0, 0)`);
 </script>
