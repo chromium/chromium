@@ -6,12 +6,12 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("types") {
   sources = [ "types.mojom" ]
+  webui_module_path = "/"
 
   public_deps = [
     "//mojo/public/mojom/base",
     "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
-    "//ui/gfx/image/mojom",
     "//ui/gfx/image/mojom",
     "//ui/gfx/mojom",
     "//ui/gfx/range/mojom",
@@ -21,6 +21,7 @@ mojom("types") {
 
 mojom("mojom") {
   sources = [ "app_service.mojom" ]
+  webui_module_path = "/"
 
   public_deps = [ ":types" ]
 }

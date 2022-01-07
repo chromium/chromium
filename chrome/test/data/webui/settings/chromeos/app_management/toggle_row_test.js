@@ -31,13 +31,13 @@ suite('<app-management-toggle-row', () => {
   test('Toggle disabled by policy', async () => {
     toggleRow.setToggle(false);
     assertFalse(toggleRow.isChecked());
-    assertFalse(!!toggleRow.$$('cr-toggle').disabled);
-    assertFalse(!!toggleRow.$$('cr-policy-indicator'));
+    assertFalse(!!toggleRow.shadowRoot.querySelector('cr-toggle').disabled);
+    assertFalse(!!toggleRow.shadowRoot.querySelector('cr-policy-indicator'));
 
     toggleRow.managed = true;
     await test_util.flushTasks();
-    assertTrue(!!toggleRow.$$('cr-toggle').disabled);
-    assertTrue(!!toggleRow.$$('cr-policy-indicator'));
+    assertTrue(!!toggleRow.shadowRoot.querySelector('cr-toggle').disabled);
+    assertTrue(!!toggleRow.shadowRoot.querySelector('cr-policy-indicator'));
 
     toggleRow.click();
     await test_util.flushTasks();

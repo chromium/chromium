@@ -46,6 +46,7 @@ if (optimize_webui) {
       ":preprocess_v3",
       "../../../../../ui/webui/resources:preprocess",
       "../../nearby_share/shared:preprocess_v3",
+      "//ui/webui/resources/cr_components/app_management:build_ts",
     ]
     excludes = [
       "chrome://resources/mojo/chromeos/services/cellular_setup/public/mojom/cellular_setup.mojom-lite.js",
@@ -61,10 +62,8 @@ if (optimize_webui) {
       "chrome://resources/cr_components/chromeos/cellular_setup/mojo_interface_provider.m.js",
       "chrome://resources/cr_components/chromeos/network/mojo_interface_provider.m.js",
       "chrome://resources/cr_components/app_management/app_management.mojom-lite.js",
-      "chrome://resources/cr_components/app_management/file_path.mojom-lite.js",
-      "chrome://resources/cr_components/app_management/image.mojom-lite.js",
-      "chrome://resources/cr_components/app_management/safe_base_name.mojom-lite.js",
-      "chrome://resources/cr_components/app_management/types.mojom-lite.js",
+      "chrome://resources/cr_components/app_management/app_management.mojom-webui.js",
+      "chrome://resources/cr_components/app_management/types.mojom-webui.js",
       "chrome://resources/js/cr.m.js",
       "chrome://resources/chromeos/colors/cros_styles.css",
       "chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js",
@@ -220,6 +219,7 @@ generate_grd("build_grd") {
       ":preprocess_mojo_v3",
       ":preprocess_v3",
       "../../nearby_share/shared:build_v3_grdp",
+      "//ui/webui/resources/cr_components/app_management:build_ts",
     ]
     grdp_files += [ "$root_gen_dir/chrome/browser/resources/nearby_share/shared/nearby_share_resources_v3.grdp" ]
     manifest_files += [
@@ -267,6 +267,7 @@ preprocess_if_expr("preprocess_v3") {
     "chromeos/os_apps_page/app_management_page/store.js",
     "chromeos/os_apps_page/app_management_page/store_client.js",
     "chromeos/os_apps_page/app_management_page/util.js",
+    "chromeos/os_apps_page/app_management_page/types.js",
     "chromeos/os_apps_page/app_notifications_page/mojo_interface_provider.js",
     "chromeos/os_languages_page/input_method_settings.js",
     "chromeos/os_languages_page/languages_browser_proxy.js",

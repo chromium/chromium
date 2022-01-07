@@ -19,7 +19,6 @@ js_library("borealis_detail_view") {
     "../:util",
     "../../..:os_route.m",
     "../../../..:router",
-    "//ui/webui/resources/cr_components/app_management:permission_item",
   ]
 }
 

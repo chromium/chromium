@@ -87,7 +87,10 @@ Polymer({
   toggleSetting_() {
     const newState = assert(toggleOptionalBool(this.app.isPinned));
     const newStateBool = convertOptionalBoolToBool(newState);
-    assert(newStateBool === this.$['toggle-row'].isChecked());
+    assert(
+        newStateBool ===
+        (/** @type {AppManagementToggleRowElement} */ (this.$['toggle-row']))
+            .isChecked());
     BrowserProxy.getInstance().handler.setPinned(
         this.app.id,
         newState,

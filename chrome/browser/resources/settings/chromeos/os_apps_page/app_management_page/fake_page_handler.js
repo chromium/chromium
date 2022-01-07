@@ -70,7 +70,7 @@ export class FakePageHandler {
   }
 
   /**
-   * @param {AppType} appType
+   * @param {apps.mojom.AppType} appType
    * @return {!Object<number, Permission>}
    */
   static createPermissions(appType) {
@@ -211,7 +211,7 @@ export class FakePageHandler {
 
   /**
    * @param {string} appId
-   * @param {OptionalBool} pinnedValue
+   * @param {apps.mojom.OptionalBool} pinnedValue
    */
   setPinned(appId, pinnedValue) {
     const app = AppManagementStore.getInstance().data.apps[appId];

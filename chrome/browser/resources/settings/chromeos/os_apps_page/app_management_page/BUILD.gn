@@ -38,6 +38,9 @@ js_type_check("closure_compile_module") {
   ]
 }
 
+js_library("types") {
+}
+
 js_library("actions") {
   deps = [
     "//ui/webui/resources/cr_components/app_management:mojo_bindings_js_library_for_compile",
@@ -75,6 +78,7 @@ js_library("app_item") {
     ":util",
     "//ui/webui/resources/js:load_time_data.m",
   ]
+  externs_list = [ "./types.js" ]
 }
 
 js_library("app_management_page") {
@@ -97,8 +101,6 @@ js_library("arc_detail_view") {
     ":store_client",
     ":supported_links_item",
     ":util",
-    "//ui/webui/resources/cr_components/app_management:constants",
-    "//ui/webui/resources/cr_components/app_management:permission_item",
   ]
 }
 
@@ -133,6 +135,7 @@ js_library("fake_page_handler") {
     "//ui/webui/resources/cr_components/app_management:mojo_bindings_js_library_for_compile",
     "//ui/webui/resources/js:promise_resolver.m",
   ]
+  externs_list = [ "./types.js" ]
 }
 
 js_library("icons") {
@@ -148,7 +151,6 @@ js_library("main_view") {
     "../..:os_route.m",
     "../..:route_observer_behavior",
     "../../..:router",
-    "//ui/webui/resources/cr_components/app_management:constants",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:load_time_data.m",
   ]
@@ -163,9 +165,7 @@ js_library("pin_to_shelf_item") {
     ":browser_proxy",
     ":util",
     "../..:metrics_recorder.m",
-    "//ui/webui/resources/cr_components/app_management:constants",
-    "//ui/webui/resources/cr_components/app_management:toggle_row",
-    "//ui/webui/resources/cr_components/app_management:types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:assert.m",
   ]
 }
@@ -178,15 +178,12 @@ js_library("pwa_detail_view") {
     ":store_client",
     ":supported_links_item",
     ":util",
-    "//ui/webui/resources/cr_components/app_management:constants",
-    "//ui/webui/resources/cr_components/app_management:permission_item",
   ]
 }
 
 js_library("reducers") {
   deps = [
     ":util",
-    "//ui/webui/resources/cr_components/app_management:types",
     "//ui/webui/resources/js:cr.m",
   ]
 }
@@ -195,15 +192,12 @@ js_library("resize_lock_item") {
   deps = [
     ":browser_proxy",
     ":util",
-    "//ui/webui/resources/cr_components/app_management:constants",
-    "//ui/webui/resources/cr_components/app_management:toggle_row",
-    "//ui/webui/resources/cr_components/app_management:types",
     "//ui/webui/resources/js:assert.m",
   ]
 }
 
 js_library("shared_style") {
-  deps = [ "//ui/webui/resources/cr_components/app_management:shared_style" ]
+  deps = []
 }
 
 js_library("store") {
@@ -216,11 +210,12 @@ js_library("store") {
 js_library("store_client") {
   deps = [
     ":store",
-    "//ui/webui/resources/cr_components/app_management:types",
+    "//ui/webui/resources/cr_components/app_management:mojo_bindings_js_library_for_compile",
     "//ui/webui/resources/js:cr.m",
     "//ui/webui/resources/js/cr/ui:store",
     "//ui/webui/resources/js/cr/ui:store_client",
   ]
+  externs_list = [ "./types.js" ]
 }
 
 js_library("supported_links_overlapping_apps_dialog") {
@@ -249,7 +244,6 @@ js_library("supported_links_item") {
     ":supported_links_overlapping_apps_dialog",
     ":util",
     "../..:metrics_recorder.m",
-    "//ui/webui/resources/cr_components/app_management:constants",
     "//ui/webui/resources/cr_components/chromeos/localized_link:localized_link",
     "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button.m",
     "//ui/webui/resources/cr_elements/cr_radio_group:cr_radio_group.m",

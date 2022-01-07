@@ -5,85 +5,83 @@ import './shared_style.js';
 import './toggle_row.js';
 
 import {assert, assertNotReached} from '//resources/js/assert.m.js';
-import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {App} from './app_management.mojom-webui.js';
 import {BrowserProxy} from './browser_proxy.js';
 import {AppManagementUserAction} from './constants.js';
-import {PermissionType, PermissionValue, TriState} from './permission_constants.js';
+import {PermissionType, PermissionTypeIndex, TriState} from './permission_constants.js';
 import {createBoolPermission, createTriStatePermission, getBoolPermissionValue, getTriStatePermissionValue, isBoolValue, isTriStateValue} from './permission_util.js';
-import {getPermission, getPermissionValueBool, getSelectedApp, recordAppManagementUserAction} from './util.js';
+import {AppManagementToggleRowElement} from './toggle_row.js';
+import {Permission} from './types.mojom-webui.js';
+import {getPermission, getPermissionValueBool, recordAppManagementUserAction} from './util.js';
 
-Polymer({
-  _template: html`{__html_template__}`,
-  is: 'app-management-permission-item',
+export class AppManamentPermissionItemElement extends PolymerElement {
+  static get is() {
+    return 'app-management-permission-item';
+  }
+
+  static get template() {
+    return html`{__html_template__}`;
+  }
+
+  static get properties() {
+    return {
+      /**
+       * The name of the permission, to be displayed to the user.
+       */
+      permissionLabel: String,
+
+      /**
+       * A string version of the permission type. Must be a value of the
+       * permission type enum in apps.mojom.PermissionType.
+       */
+      permissionType: String,
+
+      icon: String,
+
+      /**
+       * If set to true, toggling the permission item will not set the
+       * permission in the backend. Call `syncPermission()` to set the
+       * permission to reflect the current UI state.
+       */
+      syncPermissionManually: Boolean,
+
+      app_: Object,
+
+      /**
+       * True if the permission type is available for the app.
+       */
+      available_: {
+        type: Boolean,
+        computed: 'isAvailable_(app_, permissionType)',
+        reflectToAttribute: true,
+      },
+
+      disabled_: {
+        type: Boolean,
+        computed: 'isManaged_(app_, permissionType)',
+        reflectToAttribute: true,
+      },
+    };
+  }
+
+  private permissionLabel: string;
+  private permissionType: PermissionTypeIndex;
+  private icon: string;
+  private syncPermissionManually: boolean;
+  private app_: App;
+  private available_: boolean;
+  private disabled_: boolean;
 
 
-  properties: {
-    /**
-     * The name of the permission, to be displayed to the user.
-     * @type {string}
-     */
-    permissionLabel: String,
+  ready() {
+    super.ready();
+    this.addEventListener('click', this.onClick_);
+    this.addEventListener('change', this.togglePermission_);
+  }
 
-    /**
-     * A string version of the permission type. Must be a value of the
-     * permission type enum in apps.mojom.PermissionType.
-     * @type {string}
-     */
-    permissionType: String,
-
-    /**
-     * @type {string}
-     */
-    icon: String,
-
-    /**
-     * If set to true, toggling the permission item will not set the permission
-     * in the backend. Call `syncPermission()` to set the permission to reflect
-     * the current UI state.
-     *
-     * @type {boolean}
-     */
-    syncPermissionManually: Boolean,
-
-    /**
-     * @type {App}
-     */
-    app_: Object,
-
-    /**
-     * True if the permission type is available for the app.
-     * @type {boolean}
-     * @private
-     */
-    available_: {
-      type: Boolean,
-      computed: 'isAvailable_(app_, permissionType)',
-      reflectToAttribute: true,
-    },
-
-    /**
-     * @type {boolean}
-     * @private
-     */
-    disabled_: {
-      type: Boolean,
-      computed: 'isManaged_(app_, permissionType)',
-      reflectToAttribute: true,
-    },
-  },
-
-
-  listeners: {click: 'onClick_', change: 'togglePermission_'},
-
-  /**
-   * Returns true if the permission type is available for the app.
-   *
-   * @param {App} app
-   * @param {string} permissionType
-   * @private
-   */
-  isAvailable_(app, permissionType) {
+  private isAvailable_(app: App, permissionType: PermissionTypeIndex): boolean {
     if (app === undefined || permissionType === undefined) {
       return false;
     }
@@ -91,14 +89,9 @@ Polymer({
     assert(app);
 
     return getPermission(app, permissionType) !== undefined;
-  },
+  }
 
-  /**
-   * @param {App} app
-   * @param {string} permissionType
-   * @return {boolean}
-   */
-  isManaged_(app, permissionType) {
+  private isManaged_(app: App, permissionType: PermissionTypeIndex): boolean {
     if (app === undefined || permissionType === undefined ||
         !this.isAvailable_(app, permissionType)) {
       return false;
@@ -109,42 +102,34 @@ Polymer({
 
     assert(permission);
     return permission.isManaged;
-  },
+  }
 
-  /**
-   * @param {App} app
-   * @param {string} permissionType
-   * @return {boolean}
-   */
-  getValue_(app, permissionType) {
+  private getValue_(app: App, permissionType: PermissionTypeIndex): boolean {
     if (app === undefined || permissionType === undefined) {
       return false;
     }
     assert(app);
 
     return getPermissionValueBool(app, permissionType);
-  },
+  }
 
   resetToggle() {
     const currentValue = this.getValue_(this.app_, this.permissionType);
-    this.$$('#toggle-row').setToggle(currentValue);
-  },
+    this.shadowRoot!
+        .querySelector<AppManagementToggleRowElement>('#toggle-row')!.setToggle(
+            currentValue);
+  }
 
-  /**
-   * @private
-   */
-  onClick_() {
-    this.$$('#toggle-row').click();
-  },
+  private onClick_() {
+    this.shadowRoot!
+        .querySelector<AppManagementToggleRowElement>('#toggle-row')!.click();
+  }
 
-  /**
-   * @private
-   */
-  togglePermission_() {
+  private togglePermission_() {
     if (!this.syncPermissionManually) {
       this.syncPermission();
     }
-  },
+  }
 
   /**
    * Set the permission to match the current UI state. This only needs to be
@@ -153,8 +138,7 @@ Polymer({
   syncPermission() {
     assert(this.app_);
 
-    /** @type {!Permission} */
-    let newPermission;
+    let newPermission: Permission|undefined = undefined;
 
     let newBoolState = false;  // to keep the closure compiler happy.
     const permissionValue = getPermission(this.app_, this.permissionType).value;
@@ -173,23 +157,19 @@ Polymer({
     }
 
     BrowserProxy.getInstance().handler.setPermission(
-        this.app_.id, newPermission);
+        this.app_.id, newPermission!);
 
     recordAppManagementUserAction(
         this.app_.type,
         this.getUserMetricActionForPermission_(
             newBoolState, this.permissionType));
-  },
+  }
 
   /**
    * Gets the permission boolean based on the toggle's UI state.
-   *
-   * @param {App} app
-   * @param {string} permissionType
-   * @return {!Permission}
-   * @private
    */
-  getUIPermissionBoolean_(app, permissionType) {
+  private getUIPermissionBoolean_(
+      app: App, permissionType: PermissionTypeIndex): Permission {
     const currentPermission = getPermission(app, permissionType);
 
     assert(isBoolValue(currentPermission.value));
@@ -199,17 +179,13 @@ Polymer({
     return createBoolPermission(
         PermissionType[permissionType], newPermissionValue,
         currentPermission.isManaged);
-  },
+  }
 
   /**
    * Gets the permission tristate based on the toggle's UI state.
-   *
-   * @param {App} app
-   * @param {string} permissionType
-   * @return {!Permission}
-   * @private
    */
-  getUIPermissionTriState_(app, permissionType) {
+  private getUIPermissionTriState_(
+      app: App, permissionType: PermissionTypeIndex): Permission {
     let newPermissionValue;
     const currentPermission = getPermission(app, permissionType);
 
@@ -231,21 +207,18 @@ Polymer({
         break;
       default:
         assertNotReached();
+        newPermissionValue = TriState.kBlock;
     }
 
     assert(newPermissionValue !== undefined);
     return createTriStatePermission(
         PermissionType[permissionType], newPermissionValue,
         currentPermission.isManaged);
-  },
+  }
 
-  /**
-   * @param {boolean} permissionValue
-   * @param {string} permissionType
-   * @return {AppManagementUserAction}
-   * @private
-   */
-  getUserMetricActionForPermission_(permissionValue, permissionType) {
+  private getUserMetricActionForPermission_(
+      permissionValue: boolean,
+      permissionType: PermissionTypeIndex): AppManagementUserAction {
     switch (permissionType) {
       case 'kNotifications':
         return permissionValue ? AppManagementUserAction.NotificationsTurnedOn :
@@ -277,6 +250,10 @@ Polymer({
 
       default:
         assertNotReached();
+        return AppManagementUserAction.NotificationsTurnedOn;
     }
-  },
-});
+  }
+}
+
+customElements.define(
+    AppManamentPermissionItemElement.is, AppManamentPermissionItemElement);

@@ -38,6 +38,7 @@ namespace {
 const std::set<int> GetContentResourceIds() {
   return std::set<int>{
       IDR_GEOMETRY_MOJOM_WEBUI_JS,
+      IDR_IMAGE_MOJOM_WEBUI_JS,
       IDR_ORIGIN_MOJO_HTML,
       IDR_ORIGIN_MOJO_JS,
       IDR_ORIGIN_MOJO_WEBUI_JS,

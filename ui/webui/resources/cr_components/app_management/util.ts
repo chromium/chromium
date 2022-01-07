@@ -2,33 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 
+import {App} from './app_management.mojom-webui.js';
 import {AppManagementUserAction, AppType, OptionalBool} from './constants.js';
-import {PermissionType} from './permission_constants.js';
+import {PermissionType, PermissionTypeIndex} from './permission_constants.js';
 import {isPermissionEnabled} from './permission_util.js';
-
 
 /**
  * @fileoverview Utility functions for the App Management page.
  */
 
-/**
- * @return {!AppManagementPageState}
- */
-export function createEmptyState() {
+type AppManagementPageState = {
+  apps: Record<string, App>,
+  selectedAppId: string|null,
+};
+
+export function createEmptyState(): AppManagementPageState {
   return {
     apps: {},
     selectedAppId: null,
   };
 }
 
-/**
- * @param {!Array<App>} apps
- * @return {!AppManagementPageState}
- */
-export function createInitialState(apps) {
+export function createInitialState(apps: Array<App>): AppManagementPageState {
   const initialState = createEmptyState();
 
   for (const app of apps) {
@@ -38,52 +35,12 @@ export function createInitialState(apps) {
   return initialState;
 }
 
-/**
- * @param {App} app
- * @return {string}
- */
-export function getAppIcon(app) {
+export function getAppIcon(app: App): string {
   return `chrome://app-icon/${app.id}/64`;
 }
 
-/**
- * If the given value is not in the set, returns a new set with the value
- * added, otherwise returns the old set.
- * @template T
- * @param {!Set<T>} set
- * @param {T} value
- * @return {!Set<T>}
- */
-export function addIfNeeded(set, value) {
-  if (!set.has(value)) {
-    set = new Set(set);
-    set.add(value);
-  }
-  return set;
-}
-
-/**
- * If the given value is in the set, returns a new set without the value,
- * otherwise returns the old set.
- * @template T
- * @param {!Set<T>} set
- * @param {T} value
- * @return {!Set<T>}
- */
-export function removeIfNeeded(set, value) {
-  if (set.has(value)) {
-    set = new Set(set);
-    set.delete(value);
-  }
-  return set;
-}
-
-/**
- * @param {App} app
- * @param {string} permissionType
- * @return {boolean}
- */
-export function getPermissionValueBool(app, permissionType) {
+export function getPermissionValueBool(
+    app: App, permissionType: PermissionTypeIndex): boolean {
   const permission = getPermission(app, permissionType);
   assert(permission);
 
@@ -92,41 +49,27 @@ export function getPermissionValueBool(app, permissionType) {
 
 /**
  * Undefined is returned when the app does not request a permission.
- *
- * @param {App} app
- * @param {string} permissionType
- * @return {Permission|undefined}
  */
-export function getPermission(app, permissionType) {
+export function getPermission(app: App, permissionType: PermissionTypeIndex) {
   return app.permissions[PermissionType[permissionType]];
 }
 
-/**
- * @param {AppManagementPageState} state
- * @return {?App}
- */
-export function getSelectedApp(state) {
+export function getSelectedApp(state: AppManagementPageState): App|null {
   const selectedAppId = state.selectedAppId;
   return selectedAppId ? state.apps[selectedAppId] : null;
 }
 
 /**
  * A comparator function to sort strings alphabetically.
- *
- * @param {string} a
- * @param {string} b
  */
-export function alphabeticalSort(a, b) {
+export function alphabeticalSort(a: string, b: string) {
   return a.localeCompare(b);
 }
 
 /**
  * Toggles an OptionalBool
- *
- * @param {OptionalBool} bool
- * @return {OptionalBool}
  */
-export function toggleOptionalBool(bool) {
+export function toggleOptionalBool(bool: OptionalBool): OptionalBool {
   switch (bool) {
     case OptionalBool.kFalse:
       return OptionalBool.kTrue;
@@ -134,14 +77,11 @@ export function toggleOptionalBool(bool) {
       return OptionalBool.kFalse;
     default:
       assertNotReached();
+      return OptionalBool.kFalse;
   }
 }
 
-/**
- * @param {OptionalBool} optionalBool
- * @returns {boolean}
- */
-export function convertOptionalBoolToBool(optionalBool) {
+export function convertOptionalBoolToBool(optionalBool: OptionalBool): boolean {
   switch (optionalBool) {
     case OptionalBool.kTrue:
       return true;
@@ -149,15 +89,12 @@ export function convertOptionalBoolToBool(optionalBool) {
       return false;
     default:
       assertNotReached();
+      return false;
   }
 }
 
-/**
- * @param {AppType} appType
- * @return {string}
- * @private
- */
-export function getUserActionHistogramNameForAppType_(appType) {
+export function getUserActionHistogramNameForAppType_(appType: AppType):
+    string {
   switch (appType) {
     case AppType.kArc:
       return 'AppManagement.AppDetailViews.ArcApp';
@@ -175,14 +112,12 @@ export function getUserActionHistogramNameForAppType_(appType) {
       return 'AppManagement.AppDetailViews.BorealisApp';
     default:
       assertNotReached();
+      return '';
   }
 }
 
-/**
- * @param {AppType} appType
- * @param {AppManagementUserAction} userAction
- */
-export function recordAppManagementUserAction(appType, userAction) {
+export function recordAppManagementUserAction(
+    appType: AppType, userAction: AppManagementUserAction) {
   const histogram = getUserActionHistogramNameForAppType_(appType);
   const enumLength = Object.keys(AppManagementUserAction).length;
   chrome.metricsPrivate.recordEnumerationValue(

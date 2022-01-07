@@ -75,7 +75,8 @@ Polymer({
    * @private
    */
   onPermissionChanged_: async function(e) {
-    this.pendingPermissionItem_ = /** @type {Element} */ (e.target);
+    this.pendingPermissionItem_ =
+        /** @type {AppManamentPermissionItemElement} */ (e.target);
     switch (e.target.permissionType) {
       case 'kCamera':
         this.dialogText_ =

@@ -95,7 +95,7 @@ async function navigateTo(route) {
  */
 /* #export */ function getPermissionToggleByType(view, permissionType) {
   return getPermissionItemByType(view, permissionType)
-      .$$('app-management-toggle-row');
+      .shadowRoot.querySelector('app-management-toggle-row');
 }
 
 /**
@@ -104,7 +104,8 @@ async function navigateTo(route) {
  * @return {Element}
  */
 /* #export */ function getPermissionCrToggleByType(view, permissionType) {
-  return getPermissionToggleByType(view, permissionType).$$('cr-toggle');
+  return getPermissionToggleByType(view, permissionType)
+      .shadowRoot.querySelector('cr-toggle');
 }
 
 /**
