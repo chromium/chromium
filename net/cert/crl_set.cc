@@ -223,10 +223,8 @@ bool CRLSet::Parse(base::StringPiece data, scoped_refptr<CRLSet>* out_crl_set) {
   if (!header_dict.get())
     return false;
 
-  std::string contents;
-  if (!header_dict->GetString("ContentType", &contents))
-    return false;
-  if (contents != "CRLSet")
+  std::string* contents = header_dict->FindStringKey("ContentType");
+  if (!contents || (*contents != "CRLSet"))
     return false;
 
   if (header_dict->FindIntKey("Version") != kCurrentFileVersion)
