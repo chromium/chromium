@@ -639,6 +639,7 @@ class CORE_EXPORT Document : public ContainerNode,
     kRunPostLayoutTasksSynchronously,
   };
   void UpdateStyleAndLayoutForNode(const Node*, DocumentUpdateReason);
+  void UpdateStyleAndLayoutForRange(const Range*, DocumentUpdateReason);
   void IncLayoutCallsCounter() { ++layout_calls_counter_; }
   void IncLayoutCallsCounterNG() { ++layout_calls_counter_ng_; }
   void IncLayoutBlockCounter() { ++layout_blocks_counter_; }

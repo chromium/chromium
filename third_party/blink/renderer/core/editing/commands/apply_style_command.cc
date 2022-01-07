@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/node_list.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
@@ -965,7 +966,10 @@ void ApplyStyleCommand::ApplyInlineStyleToNodeRange(
   if (remove_only_)
     return;
 
-  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+  Range* range = MakeGarbageCollected<Range>(GetDocument(), StartPosition(),
+                                             EndPosition());
+  GetDocument().UpdateStyleAndLayoutForRange(range,
+                                             DocumentUpdateReason::kEditing);
 
   HeapVector<InlineRunToApplyStyle> runs;
   Node* node = start_node;
@@ -1041,7 +1045,8 @@ void ApplyStyleCommand::ApplyInlineStyleToNodeRange(
     }
   }
 
-  GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kEditing);
+  GetDocument().UpdateStyleAndLayoutForRange(range,
+                                             DocumentUpdateReason::kEditing);
 
   for (auto& run : runs) {
     if (run.position_for_style_computation.IsNotNull())

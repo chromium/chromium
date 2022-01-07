@@ -2322,6 +2322,13 @@ void Document::UpdateStyleAndLayoutTreeForSubtree(const Node* node) {
   }
 }
 
+void Document::UpdateStyleAndLayoutForRange(const Range* range,
+                                            DocumentUpdateReason reason) {
+  DisplayLockUtilities::ScopedForcedUpdate scoped_update_forced(
+      range, DisplayLockContext::ForcedPhase::kLayout);
+  UpdateStyleAndLayout(reason);
+}
+
 void Document::UpdateStyleAndLayoutForNode(const Node* node,
                                            DocumentUpdateReason reason) {
   DCHECK(node);
