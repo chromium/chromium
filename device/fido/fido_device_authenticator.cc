@@ -206,7 +206,7 @@ void FidoDeviceAuthenticator::DoGetAssertion(CtapGetAssertionRequest request,
 void FidoDeviceAuthenticator::GetNextAssertion(GetAssertionCallback callback) {
   RunOperation<CtapGetNextAssertionRequest, AuthenticatorGetAssertionResponse>(
       CtapGetNextAssertionRequest(), std::move(callback),
-      base::BindOnce(&ReadCTAPGetAssertionResponse),
+      base::BindOnce(&ReadCTAPGetAssertionResponse, device_->DeviceTransport()),
       GetAssertionTask::StringFixupPredicate);
 }
 

@@ -173,7 +173,9 @@ void GetAssertionTask::GetAssertion() {
         device(), request_,
         base::BindOnce(&GetAssertionTask::HandleResponse,
                        weak_factory_.GetWeakPtr(), request_.allow_list),
-        base::BindOnce(&ReadCTAPGetAssertionResponse), StringFixupPredicate);
+        base::BindOnce(&ReadCTAPGetAssertionResponse,
+                       device()->DeviceTransport()),
+        StringFixupPredicate);
     sign_operation_->Start();
     return;
   }
@@ -214,7 +216,9 @@ void GetAssertionTask::GetAssertion() {
         device(), std::move(request),
         base::BindOnce(&GetAssertionTask::HandleResponse,
                        weak_factory_.GetWeakPtr(), request.allow_list),
-        base::BindOnce(&ReadCTAPGetAssertionResponse), StringFixupPredicate);
+        base::BindOnce(&ReadCTAPGetAssertionResponse,
+                       device()->DeviceTransport()),
+        StringFixupPredicate);
     sign_operation_->Start();
     return;
   }
@@ -228,7 +232,8 @@ void GetAssertionTask::GetAssertion() {
           device(), NextSilentRequest(),
           base::BindOnce(&GetAssertionTask::HandleResponseToSilentRequest,
                          weak_factory_.GetWeakPtr()),
-          base::BindOnce(&ReadCTAPGetAssertionResponse),
+          base::BindOnce(&ReadCTAPGetAssertionResponse,
+                         device()->DeviceTransport()),
           /*string_fixup_predicate=*/nullptr);
   sign_operation_->Start();
 }
@@ -339,7 +344,8 @@ void GetAssertionTask::HandleResponseToSilentRequest(
         device(), std::move(request),
         base::BindOnce(&GetAssertionTask::HandleResponse,
                        weak_factory_.GetWeakPtr(), request.allow_list),
-        base::BindOnce(&ReadCTAPGetAssertionResponse),
+        base::BindOnce(&ReadCTAPGetAssertionResponse,
+                       device()->DeviceTransport()),
         /*string_fixup_predicate=*/nullptr);
     sign_operation_->Start();
     return;
@@ -353,7 +359,8 @@ void GetAssertionTask::HandleResponseToSilentRequest(
         device(), NextSilentRequest(),
         base::BindOnce(&GetAssertionTask::HandleResponseToSilentRequest,
                        weak_factory_.GetWeakPtr()),
-        base::BindOnce(&ReadCTAPGetAssertionResponse),
+        base::BindOnce(&ReadCTAPGetAssertionResponse,
+                       device()->DeviceTransport()),
         /*string_fixup_predicate=*/nullptr);
     sign_operation_->Start();
     return;

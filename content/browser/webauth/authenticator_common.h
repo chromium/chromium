@@ -234,9 +234,6 @@ class CONTENT_EXPORT AuthenticatorCommon {
   blink::mojom::Authenticator::GetAssertionCallback
       get_assertion_response_callback_;
   std::string client_data_json_;
-  // Transport used during authentication. May be empty if unknown, e.g. on old
-  // Windows.
-  absl::optional<device::FidoTransportProtocol> transport_;
   // empty_allow_list_ is true iff a GetAssertion is currently pending and the
   // request did not list any credential IDs in the allow list.
   bool empty_allow_list_ = false;

@@ -247,7 +247,8 @@ void MakeCredentialTask::MakeCredential() {
           device(), NextSilentRequest(),
           base::BindOnce(&MakeCredentialTask::HandleResponseToSilentSignRequest,
                          weak_factory_.GetWeakPtr()),
-          base::BindOnce(&ReadCTAPGetAssertionResponse),
+          base::BindOnce(&ReadCTAPGetAssertionResponse,
+                         device()->DeviceTransport()),
           /*string_fixup_predicate=*/nullptr);
   silent_sign_operation_->Start();
 }
@@ -301,7 +302,8 @@ void MakeCredentialTask::HandleResponseToSilentSignRequest(
         device(), NextSilentRequest(),
         base::BindOnce(&MakeCredentialTask::HandleResponseToSilentSignRequest,
                        weak_factory_.GetWeakPtr()),
-        base::BindOnce(&ReadCTAPGetAssertionResponse),
+        base::BindOnce(&ReadCTAPGetAssertionResponse,
+                       device()->DeviceTransport()),
         /*string_fixup_predicate=*/nullptr);
     silent_sign_operation_->Start();
     return;

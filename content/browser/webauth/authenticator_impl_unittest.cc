@@ -62,6 +62,7 @@
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_test_data.h"
+#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
 #include "device/fido/filter.h"
 #include "device/fido/hid/fake_hid_impl_for_testing.h"
@@ -4150,6 +4151,10 @@ TEST_F(AuthenticatorImplTest, TestAuthenticationTransport) {
         device::FidoTransportProtocol::kBluetoothLowEnergy,
         device::FidoTransportProtocol::kNearFieldCommunication,
         device::FidoTransportProtocol::kInternal}) {
+    device::AuthenticatorAttachment attachment =
+        (transport == device::FidoTransportProtocol::kInternal
+             ? device::AuthenticatorAttachment::kPlatform
+             : device::AuthenticatorAttachment::kCrossPlatform);
     ResetVirtualDevice();
     virtual_device_factory_->SetSupportedProtocol(
         device::ProtocolVersion::kCtap2);
@@ -4161,7 +4166,7 @@ TEST_F(AuthenticatorImplTest, TestAuthenticationTransport) {
     MakeCredentialResult create_result =
         AuthenticatorMakeCredential(std::move(create_options));
     ASSERT_EQ(create_result.status, AuthenticatorStatus::SUCCESS);
-    EXPECT_EQ(create_result.response->transport, transport);
+    EXPECT_EQ(create_result.response->authenticator_attachment, attachment);
 
     PublicKeyCredentialRequestOptionsPtr get_options =
         GetTestPublicKeyCredentialRequestOptions();
@@ -4172,7 +4177,7 @@ TEST_F(AuthenticatorImplTest, TestAuthenticationTransport) {
     GetAssertionResult get_result =
         AuthenticatorGetAssertion(std::move(get_options));
     ASSERT_EQ(get_result.status, AuthenticatorStatus::SUCCESS);
-    EXPECT_EQ(get_result.response->transport, transport);
+    EXPECT_EQ(get_result.response->authenticator_attachment, attachment);
   }
 }
 

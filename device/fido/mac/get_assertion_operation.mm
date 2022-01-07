@@ -6,6 +6,7 @@
 
 #include <set>
 #include <string>
+#include "device/fido/fido_transport_protocol.h"
 
 #import <Foundation/Foundation.h>
 
@@ -140,6 +141,7 @@ GetAssertionOperation::ResponseForCredential(const Credential& credential) {
   }
   AuthenticatorGetAssertionResponse response(std::move(authenticator_data),
                                              std::move(*signature));
+  response.transport_used = FidoTransportProtocol::kInternal;
   response.credential = PublicKeyCredentialDescriptor(
       CredentialType::kPublicKey, credential.credential_id);
   response.user_entity = metadata->ToPublicKeyCredentialUserEntity();

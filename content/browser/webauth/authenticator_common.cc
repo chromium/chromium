@@ -45,6 +45,7 @@
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "device/fido/fido_types.h"
 #include "device/fido/filter.h"
 #include "device/fido/get_assertion_request_handler.h"
 #include "device/fido/make_credential_request_handler.h"
@@ -1290,14 +1291,15 @@ void AuthenticatorCommon::OnRegisterResponse(
       DCHECK(response_data.has_value());
       DCHECK(authenticator);
 
-      transport_ = authenticator->AuthenticatorTransport();
+      absl::optional<device::FidoTransportProtocol> transport =
+          authenticator->AuthenticatorTransport();
       bool is_transport_used_internal = false;
       bool is_transport_used_cable = false;
-      if (transport_) {
+      if (transport) {
         is_transport_used_internal =
-            *transport_ == device::FidoTransportProtocol::kInternal;
+            *transport == device::FidoTransportProtocol::kInternal;
         is_transport_used_cable =
-            *transport_ ==
+            *transport ==
             device::FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy;
       }
 
@@ -1505,7 +1507,6 @@ void AuthenticatorCommon::OnSignResponse(
     case device::GetAssertionStatus::kSuccess:
       DCHECK(response_data.has_value());
       DCHECK(authenticator);
-      transport_ = authenticator->AuthenticatorTransport();
 
       // Show an account picker for requests with empty allow lists.
       // Authenticators may omit the identifying information in the user entity
@@ -1614,6 +1615,12 @@ AuthenticatorCommon::CreateMakeCredentialResponse(
   common_info->id = Base64UrlEncode(common_info->raw_id);
   response->info = std::move(common_info);
 
+  response->authenticator_attachment =
+      response_data.transport_used()
+          ? device::AuthenticatorAttachmentFromTransport(
+                *response_data.transport_used())
+          : device::AuthenticatorAttachment::kAny;
+
   // The transport list must not contain duplicates but the order doesn't matter
   // because Blink will sort the resulting strings before returning them.
   std::vector<device::FidoTransportProtocol> transports;
@@ -1631,9 +1638,6 @@ AuthenticatorCommon::CreateMakeCredentialResponse(
   }
 
   response->transports = std::move(transports);
-  response->has_transport = transport_.has_value();
-  if (response->has_transport)
-    response->transport = *transport_;
 
   bool did_create_hmac_secret = false;
   bool did_store_cred_blob = false;
@@ -1759,9 +1763,11 @@ AuthenticatorCommon::CreateGetAssertionResponse(
   response->info->authenticator_data =
       response_data.authenticator_data.SerializeToByteArray();
   response->signature = response_data.signature;
-  response->has_transport = transport_.has_value();
-  if (response->has_transport)
-    response->transport = *transport_;
+  response->authenticator_attachment =
+      response_data.transport_used
+          ? device::AuthenticatorAttachmentFromTransport(
+                *response_data.transport_used)
+          : device::AuthenticatorAttachment::kAny;
   response_data.user_entity
       ? response->user_handle.emplace(response_data.user_entity->id)
       : response->user_handle.emplace();

@@ -69,6 +69,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) AuthenticatorGetAssertionResponse {
   // Whether a large blob was successfully written as part of this GetAssertion
   // request.
   bool large_blob_written = false;
+
+  // The transport used to generate this response. This is unknown when using
+  // the Windows WebAuthn API.
+  absl::optional<FidoTransportProtocol> transport_used;
 };
 
 }  // namespace device

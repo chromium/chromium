@@ -40,6 +40,7 @@ ReadCTAPMakeCredentialResponse(FidoTransportProtocol transport_used,
 // |AuthenticatorGetAssertionResponse|.
 COMPONENT_EXPORT(DEVICE_FIDO)
 absl::optional<AuthenticatorGetAssertionResponse> ReadCTAPGetAssertionResponse(
+    FidoTransportProtocol transport_used,
     const absl::optional<cbor::Value>& cbor);
 
 // De-serializes CBOR encoded response to AuthenticatorGetInfo request to

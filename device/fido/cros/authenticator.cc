@@ -18,6 +18,7 @@
 #include "device/fido/attestation_statement_formats.h"
 #include "device/fido/authenticator_data.h"
 #include "device/fido/fido_parsing_utils.h"
+#include "device/fido/fido_transport_protocol.h"
 #include "device/fido/opaque_attestation_statement.h"
 #include "third_party/cros_system_api/dbus/u2f/dbus-constants.h"
 
@@ -255,6 +256,7 @@ void ChromeOSAuthenticator::OnGetAssertionResponse(
                                  assertion.signature().end());
   AuthenticatorGetAssertionResponse authenticator_response(
       std::move(*authenticator_data), std::move(signature));
+  authenticator_response.transport_used = FidoTransportProtocol::kInternal;
   const std::string& credential_id = assertion.credential_id();
   authenticator_response.credential = PublicKeyCredentialDescriptor(
       CredentialType::kPublicKey,
