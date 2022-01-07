@@ -3214,9 +3214,8 @@
   },
   'webgl2_conformance_gles_passthrough_tests': {
     'remove_from': [
-      # Not enough CrOS hardware capacity to run on anything other than VMs.
-      # See https://crbug.com/1238070.
-      'ChromeOS FYI Release (kevin)',
+      # Not enough CrOS hardware capacity to run both on anything other than
+      # VMs. See https://crbug.com/1238070.
       'Lacros FYI x64 Release (Intel)',
     ],
     'modifications': {
@@ -3254,6 +3253,9 @@
   },
   'webgl2_conformance_validating_tests': {
     'remove_from': [
+      # Passthrough version run on this configuration, not enough capacity for
+      # both. See https://crbug.com/1238070.
+      'ChromeOS FYI Release (kevin)',
       # The Mac NVIDIA Retina bots don't have the capacity to run
       # this test suite on mac_optional_gpu_tests_rel.
       'Optional Mac Retina Release (NVIDIA)',
