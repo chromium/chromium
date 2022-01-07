@@ -8,7 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/files/scoped_temp_dir.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_ids_provider.h"
@@ -17,6 +16,7 @@
 #include "ios/chrome/browser/favicon/favicon_service_factory.h"
 #include "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #include "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
+#include "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
@@ -74,9 +74,6 @@ class LocationBarCoordinatorTest : public PlatformTest {
 
     TestChromeBrowserState::Builder test_cbs_builder;
 
-    ASSERT_TRUE(state_dir_.CreateUniqueTempDir());
-    test_cbs_builder.SetPath(state_dir_.GetPath());
-
     test_cbs_builder.AddTestingFactory(
         ios::TemplateURLServiceFactory::GetInstance(),
         ios::TemplateURLServiceFactory::GetDefaultFactory());
@@ -92,9 +89,11 @@ class LocationBarCoordinatorTest : public PlatformTest {
     test_cbs_builder.AddTestingFactory(
         ios::FaviconServiceFactory::GetInstance(),
         ios::FaviconServiceFactory::GetDefaultFactory());
+    test_cbs_builder.AddTestingFactory(
+        ios::HistoryServiceFactory::GetInstance(),
+        ios::HistoryServiceFactory::GetDefaultFactory());
 
     browser_state_ = test_cbs_builder.Build();
-    ASSERT_TRUE(browser_state_->CreateHistoryService());
 
     browser_ =
         std::make_unique<TestBrowser>(browser_state_.get(), &web_state_list_);
@@ -124,11 +123,6 @@ class LocationBarCoordinatorTest : public PlatformTest {
 
     PlatformTest::TearDown();
   }
-
-  // A state directory that outlives |task_environment_| is needed because
-  // CreateHistoryService/CreateBookmarkModel use the directory to host
-  // databases. See https://crbug.com/546640 for more details.
-  base::ScopedTempDir state_dir_;
 
   web::WebTaskEnvironment task_environment_;
   variations::ScopedVariationsIdsProvider scoped_variations_ids_provider_{

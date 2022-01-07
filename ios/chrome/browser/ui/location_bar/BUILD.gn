@@ -160,6 +160,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/autocomplete",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/history",
     "//ios/chrome/browser/main:test_support",
     "//ios/chrome/browser/overlays",
     "//ios/chrome/browser/overlays/public/web_content_area",
