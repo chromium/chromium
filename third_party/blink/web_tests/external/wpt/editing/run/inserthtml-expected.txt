@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 1498 tests; 1444 PASS, 54 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 1516 tests; 1460 PASS, 56 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS [["stylewithcss","true"],["inserthtml","ab<b>c</b>d"]] "foo[]bar": execCommand("stylewithcss", false, "true") return value
 PASS [["stylewithcss","true"],["inserthtml","ab<b>c</b>d"]] "foo[]bar": execCommand("inserthtml", false, "ab<b>c</b>d") return value
 PASS [["stylewithcss","true"],["inserthtml","ab<b>c</b>d"]] "foo[]bar" checks for modifications to non-editable content
@@ -1498,5 +1498,23 @@ PASS [["inserthtml","<pre>abc</pre>"]] "<pre contenteditable=\"false\"><span con
 PASS [["inserthtml","<pre>abc</pre>"]] "<pre contenteditable=\"false\"><span contenteditable>[1234]</span></pre>" queryCommandIndeterm("inserthtml") after
 PASS [["inserthtml","<pre>abc</pre>"]] "<pre contenteditable=\"false\"><span contenteditable>[1234]</span></pre>" queryCommandState("inserthtml") after
 PASS [["inserthtml","<pre>abc</pre>"]] "<pre contenteditable=\"false\"><span contenteditable>[1234]</span></pre>" queryCommandValue("inserthtml") after
+PASS [["inserthtml","<span></span>"]] "<div>a[]b</div>": execCommand("inserthtml", false, "<span></span>") return value
+PASS [["inserthtml","<span></span>"]] "<div>a[]b</div>" checks for modifications to non-editable content
+FAIL [["inserthtml","<span></span>"]] "<div>a[]b</div>" compare innerHTML assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div>ab</div>" not in array ["<div>a<span></span>b</div>", "<div>a<span></span>b<br></div>"]
+PASS [["inserthtml","<span></span>"]] "<div>a[]b</div>" queryCommandIndeterm("inserthtml") before
+PASS [["inserthtml","<span></span>"]] "<div>a[]b</div>" queryCommandState("inserthtml") before
+PASS [["inserthtml","<span></span>"]] "<div>a[]b</div>" queryCommandValue("inserthtml") before
+PASS [["inserthtml","<span></span>"]] "<div>a[]b</div>" queryCommandIndeterm("inserthtml") after
+PASS [["inserthtml","<span></span>"]] "<div>a[]b</div>" queryCommandState("inserthtml") after
+PASS [["inserthtml","<span></span>"]] "<div>a[]b</div>" queryCommandValue("inserthtml") after
+PASS [["inserthtml","<span class=\"s1\"></span>b<span class=\"s2\"></span>"]] "<div>a[]c</div>": execCommand("inserthtml", false, "<span class=\"s1\"></span>b<span class=\"s2\"></span>") return value
+PASS [["inserthtml","<span class=\"s1\"></span>b<span class=\"s2\"></span>"]] "<div>a[]c</div>" checks for modifications to non-editable content
+FAIL [["inserthtml","<span class=\"s1\"></span>b<span class=\"s2\"></span>"]] "<div>a[]c</div>" compare innerHTML assert_in_array: Unexpected innerHTML (after normalizing inline style) value "<div>ab</div><span class=\"s1\"></span><span class=\"s2\"></span><div>c<br></div>" not in array ["<div>a<span class=\"s1\"></span>b<span class=\"s2\"></span>c</div>", "<div>a<span class=\"s1\"></span>b<span class=\"s2\"></span>c<br></div>"]
+PASS [["inserthtml","<span class=\"s1\"></span>b<span class=\"s2\"></span>"]] "<div>a[]c</div>" queryCommandIndeterm("inserthtml") before
+PASS [["inserthtml","<span class=\"s1\"></span>b<span class=\"s2\"></span>"]] "<div>a[]c</div>" queryCommandState("inserthtml") before
+PASS [["inserthtml","<span class=\"s1\"></span>b<span class=\"s2\"></span>"]] "<div>a[]c</div>" queryCommandValue("inserthtml") before
+PASS [["inserthtml","<span class=\"s1\"></span>b<span class=\"s2\"></span>"]] "<div>a[]c</div>" queryCommandIndeterm("inserthtml") after
+PASS [["inserthtml","<span class=\"s1\"></span>b<span class=\"s2\"></span>"]] "<div>a[]c</div>" queryCommandState("inserthtml") after
+PASS [["inserthtml","<span class=\"s1\"></span>b<span class=\"s2\"></span>"]] "<div>a[]c</div>" queryCommandValue("inserthtml") after
 Harness: the test ran to completion.
 

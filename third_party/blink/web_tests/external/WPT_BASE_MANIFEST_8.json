@@ -136080,6 +136080,45 @@
        {}
       ]
      ],
+     "overflow-auto-scrollbar-gutter-intrinsic-001.html": [
+      "061339b49cd29b0f68d53c5ecce6d2eb03fdaa6c",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/overflow-auto-scrollbar-gutter-intrinsic-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "overflow-auto-scrollbar-gutter-intrinsic-002.html": [
+      "535f2c4d5298df70e2eb417531093bb7fa753cbd",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/overflow-auto-scrollbar-gutter-intrinsic-002-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "overflow-auto-scrollbar-gutter-intrinsic-003.html": [
+      "ab247d9ca5a7cac660200cb475feb6b69093e520",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/overflow-auto-scrollbar-gutter-intrinsic-003-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "overflow-body-propagation-001.html": [
       "0998fe68e007d5a46ff11d5ff87fdbad12d1dfe2",
       [
@@ -136490,6 +136529,19 @@
        [
         [
          "/css/css-overflow/overflow-scroll-big-border-small-content-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "overflow-scroll-intrinsic-001.html": [
+      "093fd283c77b71e7f73914761cc086e10c12a0d6",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/overflow-scroll-intrinsic-001-ref.html",
          "=="
         ]
        ],
@@ -259441,6 +259493,18 @@
       "59864d0f4d185ece259879a299f597b80f9babdc",
       []
      ],
+     "overflow-auto-scrollbar-gutter-intrinsic-001-ref.html": [
+      "8c092bd0c876bc328919f4b39358110dd902c726",
+      []
+     ],
+     "overflow-auto-scrollbar-gutter-intrinsic-002-ref.html": [
+      "bb0742bfd0f130021ed4234920365aa83a2efed5",
+      []
+     ],
+     "overflow-auto-scrollbar-gutter-intrinsic-003-ref.html": [
+      "2fb2eb4479a876fb2c990b5a16d1cbbd44aade37",
+      []
+     ],
      "overflow-body-propagation-007-ref.html": [
       "66f9b1c3b0098c0cc448775cde0d94b4325a94a8",
       []
@@ -259515,6 +259579,10 @@
      ],
      "overflow-scroll-big-border-small-content-ref.html": [
       "c7ea1807443ef1b2d454edd547e65c89a59cea16",
+      []
+     ],
+     "overflow-scroll-intrinsic-001-ref.html": [
+      "8870d339196d8ccc14db575437190c728fa7e49c",
       []
      ],
      "overflow-scroll-resize-visibility-hidden-ref.html": [
@@ -261011,7 +261079,7 @@
      ],
      "parsing": {
       "marker-supported-properties-expected.txt": [
-       "b599ad933fc63e2535c7740ac8cca8e933e17883",
+       "3b1189ccdf31f07452875606ebf38a736363409b",
        []
       ],
       "marker-supported-properties-in-animation-expected.txt": [
@@ -278108,7 +278176,7 @@
       []
      ],
      "inserthtml.js": [
-      "376d988bec125d1272a8137b34220facf69b006d",
+      "1f0a8f588dd630e3bcdcccc37d6ba3d021cab084",
       []
      ],
      "insertimage.js": [
@@ -278494,7 +278562,7 @@
       []
      ],
      "inserthtml-expected.txt": [
-      "2cae0dffb68410e3daf9c4e94b92bbe9dcee1605",
+      "06c23700443abaff3eb0e9e872ee308d5befa517",
       []
      ],
      "insertimage-expected.txt": [
@@ -282137,11 +282205,15 @@
        []
       ],
       "preflight.py": [
-       "8accc689f3bffe38dca735361ea8f7f582ccf682",
+       "bc2250456e04dbb35edb0496685d0af698fded6b",
        []
       ],
-      "service-worker-fetcher.html": [
-       "d9c0df30fd4bfcc2eb780a839037d0c2ab88af4b",
+      "service-worker-bridge.html": [
+       "9bee90d210580b371dfadbff3061b666b0b83dbe",
+       []
+      ],
+      "service-worker.js": [
+       "bca71ad910cb189c2de6298b4ea59b5594aba637",
        []
       ],
       "shared-worker-fetcher.html": [
@@ -282165,8 +282237,16 @@
        []
       ]
      },
+     "service-worker-fetch.https.window-expected.txt": [
+      "716cc67bdef69bfb4a99cafcc8e0af6c16e94787",
+      []
+     ],
+     "service-worker-update.https.window-expected.txt": [
+      "2884c271eecfd46ee3fee89707cbd5c81c624939",
+      []
+     ],
      "service-worker.https.window-expected.txt": [
-      "862f41ae97d255c84fe160a70cb5d2eb14e72f39",
+      "6c834a89c8d481231d211249ff5451aaa9164f5b",
       []
      ],
      "shared-worker.https.window-expected.txt": [
@@ -284059,6 +284139,12 @@
         "5f10361d5cffd939d1cc12c73cf49218098d7351",
         []
        ],
+       "eligibility": {
+        "broadcast-channel-expected.txt": [
+         "307bd14234d626c558b4070b1f9225ae6b722981",
+         []
+        ]
+       },
        "events-expected.txt": [
         "6dad05534728dc6a05db46b5c112a2fd9546e8ce",
         []
@@ -315781,7 +315867,7 @@
        []
       ],
       "accumulation-per-property-002-expected.txt": [
-       "b477cd5cfb940ffef79b82973abbec1c049b66e8",
+       "357a3c326e931046ef5cf8a67898fc67f44c2804",
        []
       ],
       "addition-per-property-001-expected.txt": [
@@ -315789,7 +315875,7 @@
        []
       ],
       "addition-per-property-002-expected.txt": [
-       "9a5c6364dc42aa14461a5be0b67cc8eb49593b09",
+       "0e7f2b0b8eee56f51b02421646784b1ce4ea540c",
        []
       ],
       "interpolation-per-property-001-expected.txt": [
@@ -315797,11 +315883,11 @@
        []
       ],
       "interpolation-per-property-002-expected.txt": [
-       "c4a07ae6b232dd902c94032bc86803073cfc67ad",
+       "74ac012b78c356fe0337d24f7d54e680834e2d7a",
        []
       ],
       "property-list.js": [
-       "60b0b595150cd92486d3ed41abba6188fd4d4011",
+       "e9b7c524a749f2a8372868a1245224cf0f7d01d5",
        []
       ],
       "property-types.js": [
@@ -369216,14 +369302,14 @@
        ]
       ],
       "marker-supported-properties-in-animation.html": [
-       "259a5b84eb5122c309294973b5ad745da11216e5",
+       "e581a786367ac13a90f95cb043b95c629babd9ab",
        [
         null,
         {}
        ]
       ],
       "marker-supported-properties.html": [
-       "ddcf98bfcf283fbb72d08396a6676a686bf02da5",
+       "ab03b9825deee02142bd0a03a21e9ff95feaa82f",
        [
         null,
         {}
@@ -375228,7 +375314,7 @@
     },
     "css-text-decor": {
      "inheritance.html": [
-      "b106343742e03aa305a3017610272c8692b2a428",
+      "9ee65b4e5926f043b4841bc1f5a7cf84e214ce49",
       [
        null,
        {}
@@ -375348,7 +375434,7 @@
        ]
       ],
       "text-emphasis-computed.html": [
-       "460035a55179ada38a78be2dd7a280c8a0bd3518",
+       "7765f87d5b1eef59e9ae05f00de11daebeda038c",
        [
         null,
         {}
@@ -375362,7 +375448,7 @@
        ]
       ],
       "text-emphasis-style-computed.html": [
-       "5aa84ab08b615568b96812670674caade7b663ab",
+       "9153e82c30a43b88596ef239c30bf6b1fe095edf",
        [
         null,
         {}
@@ -415327,8 +415413,44 @@
        }
       ]
      ],
+     "service-worker-fetch.https.window.js": [
+      "edb20c04940e3fa76a2dd99e71785f97285c31c6",
+      [
+       "fetch/private-network-access/service-worker-fetch.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
+     "service-worker-update.https.window.js": [
+      "703c7650b0dbeeb4559a74e3557a91bf6b484e19",
+      [
+       "fetch/private-network-access/service-worker-update.https.window.html",
+       {
+        "script_metadata": [
+         [
+          "script",
+          "/common/utils.js"
+         ],
+         [
+          "script",
+          "resources/support.sub.js"
+         ]
+        ]
+       }
+      ]
+     ],
      "service-worker.https.window.js": [
-      "969f359700e4c1c145743eb4c826973e7400a3af",
+      "3d3845b4d7cb832dcc4ad7238c54d655c84656fc",
       [
        "fetch/private-network-access/service-worker.https.window.html",
        {
@@ -418160,6 +418282,15 @@
     "browsers": {
      "browsing-the-web": {
       "back-forward-cache": {
+       "eligibility": {
+        "broadcast-channel.html": [
+         "bc04a5ed7f1c1feea66a6db74d6537ea3f48b577",
+         [
+          null,
+          {}
+         ]
+        ]
+       },
        "events.html": [
         "4b1d3e408ebc25a4bf5f18087fc9bac67b2a1889",
         [
