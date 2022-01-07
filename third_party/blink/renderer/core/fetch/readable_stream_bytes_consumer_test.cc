@@ -468,6 +468,29 @@ TEST(ReadableStreamBytesConsumerTest, EnqueueString) {
   EXPECT_EQ(Result::kError, consumer->BeginRead(&buffer, &available));
 }
 
+TEST(ReadableStreamBytesConsumerTest, Cancel) {
+  V8TestingScope scope;
+  ScriptState* script_state = scope.GetScriptState();
+
+  auto* underlying_source =
+      MakeGarbageCollected<TestUnderlyingSource>(script_state);
+  auto* stream = ReadableStream::CreateWithCountQueueingStrategy(
+      script_state, underlying_source, 0);
+  underlying_source->Enqueue(ScriptValue(script_state->GetIsolate(),
+                                         v8::Null(script_state->GetIsolate())));
+  underlying_source->Close();
+
+  Persistent<BytesConsumer> consumer =
+      MakeGarbageCollected<ReadableStreamBytesConsumer>(script_state, stream);
+  Persistent<MockClient> client = MakeGarbageCollected<MockClient>();
+  consumer->SetClient(client);
+
+  consumer->Cancel();
+
+  EXPECT_TRUE(underlying_source->IsCancelled());
+  EXPECT_TRUE(underlying_source->IsCancelledWithUndefined());
+}
+
 }  // namespace
 
 }  // namespace blink

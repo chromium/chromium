@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_iterator_result_value.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
+#include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding_macros.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -174,6 +175,16 @@ void ReadableStreamBytesConsumer::ClearClient() {
 void ReadableStreamBytesConsumer::Cancel() {
   if (state_ == PublicState::kClosed || state_ == PublicState::kErrored)
     return;
+  // BytesConsumer::Cancel can be called with ScriptForbiddenScope (e.g.,
+  // in ExecutionContextLifecycleObserver::ContextDestroyed()). We don't run
+  // ReadableStreamDefaultReader::cancel in such a case.
+  if (!ScriptForbiddenScope::IsScriptForbidden()) {
+    ScriptState::Scope scope(script_state_);
+    ExceptionState exception_state(script_state_->GetIsolate(),
+                                   ExceptionState::kUnknownContext, "", "");
+    reader_->cancel(script_state_, exception_state);
+    // We ignore exceptions as we can do nothing here.
+  }
   state_ = PublicState::kClosed;
   ClearClient();
   reader_ = nullptr;
