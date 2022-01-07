@@ -9,7 +9,6 @@
 -DownloadFile/DownloadFileTestWithRename.RenameError*
 -DownloadFile/DownloadFileTestWithRename.RenameWith*
 -DownloadPathReservationTrackerTest.UnwriteableDirectory
--EncryptedReportingJobConfigurationTest.Validate*
 -FilesystemProxyTest.DeleteFile*
 -FilesystemProxyTest.OpenFileAppend*
 -FilesystemProxyTest.OpenFileWrite*
@@ -19,6 +18,5 @@
 -PaintPreviewSerialUtils.TestSerialTypeface
 -PaintPreviewSubsetFontTest.TestBasicSubset
 -ProfilingJsonExporterTest.MemoryMaps
--RealtimeReportingJobConfigurationTest.ValidatePayload
 -SslCastSocketTest.TestConnectEndToEndWithRealSSL
 -UIDevToolsServerTest.ConnectionToViewsServer
