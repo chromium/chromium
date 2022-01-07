@@ -10,6 +10,7 @@ import android.text.SpannableString;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
@@ -65,6 +66,7 @@ public class PrivacySettings
 
     private ManagedPreferenceDelegate mManagedPreferenceDelegate;
     private IncognitoLockSettings mIncognitoLockSettings;
+    private ViewGroup mDialogContainer;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -89,8 +91,10 @@ public class PrivacySettings
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_REVIEW)) {
             getPreferenceScreen().removePreference(privacyReviewPreference);
         } else {
+            // Display the privacy review dialog when the menu item is clicked.
             privacyReviewPreference.setOnPreferenceClickListener(preference -> {
-                PrivacyReviewDialog dialog = new PrivacyReviewDialog(getContext());
+                PrivacyReviewDialog dialog =
+                        new PrivacyReviewDialog(getContext(), mDialogContainer);
                 dialog.show();
                 return true;
             });
@@ -275,5 +279,9 @@ public class PrivacySettings
             return true;
         }
         return false;
+    }
+
+    public void setDialogContainer(ViewGroup dialogContainer) {
+        mDialogContainer = dialogContainer;
     }
 }

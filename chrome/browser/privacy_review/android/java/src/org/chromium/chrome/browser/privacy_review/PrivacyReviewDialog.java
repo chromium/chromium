@@ -4,10 +4,11 @@
 
 package org.chromium.chrome.browser.privacy_review;
 
-import android.app.Dialog;
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
 import androidx.appcompat.widget.Toolbar;
@@ -18,24 +19,38 @@ import org.chromium.ui.widget.ButtonCompat;
 /**
  * UI for the Privacy Review dialog in Privacy and security settings.
  */
-public class PrivacyReviewDialog extends Dialog {
+public class PrivacyReviewDialog {
+    private LayoutInflater mLayoutInflater;
+    private ViewGroup mContainer;
     private View mDialogView;
     private ViewPager2 mViewPager;
     private PrivacyReviewPagerAdapter mPagerAdapter;
     private ButtonCompat mNextButton;
     private ButtonCompat mBackButton;
 
-    public PrivacyReviewDialog(Context context) {
-        super(context, R.style.ThemeOverlay_BrowserUI_Fullscreen);
-        mDialogView = getLayoutInflater().inflate(R.layout.privacy_review_dialog, null);
+    public PrivacyReviewDialog(Context context, ViewGroup container) {
+        mContainer = container;
+        mLayoutInflater = LayoutInflater.from(context);
+        mDialogView = mLayoutInflater.inflate(R.layout.privacy_review_dialog, null);
 
         Toolbar toolbar = (Toolbar) mDialogView.findViewById(R.id.toolbar);
         toolbar.setTitle(R.string.prefs_privacy_review_title);
         toolbar.inflateMenu(R.menu.privacy_review_toolbar_menu);
         toolbar.setOnMenuItemClickListener(this::onMenuItemClick);
 
-        setContentView(mDialogView);
         displayWelcomePage();
+    }
+
+    /** Displays the dialog in a container given at construction time. */
+    public void show() {
+        mContainer.addView(mDialogView);
+        mContainer.setVisibility(View.VISIBLE);
+    }
+
+    /** Hides the dialog. */
+    public void dismiss() {
+        mContainer.removeView(mDialogView);
+        mContainer.setVisibility(View.GONE);
     }
 
     private boolean onMenuItemClick(MenuItem menuItem) {
@@ -49,7 +64,7 @@ public class PrivacyReviewDialog extends Dialog {
     private void displayWelcomePage() {
         FrameLayout content = mDialogView.findViewById(R.id.dialog_content);
         content.removeAllViews();
-        getLayoutInflater().inflate(R.layout.privacy_review_welcome, content);
+        mLayoutInflater.inflate(R.layout.privacy_review_welcome, content);
 
         ButtonCompat welcomeButton = (ButtonCompat) mDialogView.findViewById(R.id.start_button);
         welcomeButton.setOnClickListener((View v) -> displayMainFlow());
@@ -58,7 +73,7 @@ public class PrivacyReviewDialog extends Dialog {
     private void displayMainFlow() {
         FrameLayout content = mDialogView.findViewById(R.id.dialog_content);
         content.removeAllViews();
-        getLayoutInflater().inflate(R.layout.privacy_review_steps, content);
+        mLayoutInflater.inflate(R.layout.privacy_review_steps, content);
 
         mViewPager = (ViewPager2) mDialogView.findViewById(R.id.review_viewpager);
         mPagerAdapter = new PrivacyReviewPagerAdapter();

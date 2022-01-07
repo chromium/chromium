@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.password_check.PasswordCheckFragmentView;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEditUiFactory;
 import org.chromium.chrome.browser.password_entry_edit.CredentialEntryFragmentViewBase;
+import org.chromium.chrome.browser.privacy.settings.PrivacySettings;
 import org.chromium.chrome.browser.privacy_sandbox.FlocSettingsFragment;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSettingsFragment;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -413,6 +414,9 @@ public class SettingsActivity extends ChromeBaseAppCompatActivity
             ((ClearBrowsingDataFragmentBasic) fragment)
                     .setCustomTabIntentHelper(
                             LaunchIntentDispatcher::createCustomTabActivityIntent);
+        }
+        if (fragment instanceof PrivacySettings) {
+            ((PrivacySettings) fragment).setDialogContainer(findViewById(R.id.dialog_container));
         }
     }
 

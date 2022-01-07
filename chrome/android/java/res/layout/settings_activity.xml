@@ -30,6 +30,14 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
     </FrameLayout>
 
+    <!-- Container for displaying dialogs. -->
+    <FrameLayout
+        android:id="@+id/dialog_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" />
+
+    <!-- Container for displaying a bottom sheet. -->
     <FrameLayout
         android:id="@+id/sheet_container"
         android:layout_width="match_parent"
