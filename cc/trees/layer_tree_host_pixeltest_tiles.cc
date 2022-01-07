@@ -230,10 +230,10 @@ std::vector<RasterTestConfig> const kTestCases = {
     {viz::RendererType::kSkiaGL, TestRasterType::kGpu},
 #endif  // BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
 #if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
-    {viz::RendererType::kSkiaVk, TestRasterType::kOop},
+    {viz::RendererType::kSkiaVk, TestRasterType::kGpu},
 #endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
 #if BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
-    {viz::RendererType::kSkiaDawn, TestRasterType::kOop},
+    {viz::RendererType::kSkiaDawn, TestRasterType::kGpu},
 #endif  // BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
 };
 
@@ -273,10 +273,10 @@ std::vector<RasterTestConfig> const kTestCasesMultiThread = {
 #if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
     // TODO(rivr): Switch this to one copy raster once is is supported for
     // Vulkan in these tests.
-    {viz::RendererType::kSkiaVk, TestRasterType::kOop},
+    {viz::RendererType::kSkiaVk, TestRasterType::kGpu},
 #endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
 #if BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
-    {viz::RendererType::kSkiaDawn, TestRasterType::kOop},
+    {viz::RendererType::kSkiaDawn, TestRasterType::kGpu},
 #endif  // BUILDFLAG(ENABLE_DAWN_BACKEND_TESTS)
 };
 

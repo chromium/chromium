@@ -42,7 +42,7 @@ std::vector<RasterTestConfig> const kTestCases = {
     {viz::RendererType::kSkiaGL, TestRasterType::kZeroCopy},
 #endif  // BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
 #if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
-    {viz::RendererType::kSkiaVk, TestRasterType::kOop},
+    {viz::RendererType::kSkiaVk, TestRasterType::kGpu},
     {viz::RendererType::kSkiaVk, TestRasterType::kZeroCopy},
 #endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
 };
@@ -575,11 +575,11 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(LayerTreeHostMasksForBackdropFiltersPixelTestWithLayerList, Test) {
   base::FilePath image_name =
-      (raster_type() == TestRasterType::kGpu)
+      (use_accelerated_raster())
           ? base::FilePath(FILE_PATH_LITERAL("mask_of_backdrop_filter_gpu.png"))
           : base::FilePath(FILE_PATH_LITERAL("mask_of_backdrop_filter.png"));
 
-  if (use_skia_vulkan() && raster_type() == TestRasterType::kOop) {
+  if (use_skia_vulkan() && use_accelerated_raster()) {
     // Vulkan with OOP raster has 3 pixels errors (the circle mask shape is
     // slightly different).
     float percentage_pixels_large_error = 0.031f;  // 3px / (100*100)
@@ -635,11 +635,11 @@ TEST_P(LayerTreeHostMasksForBackdropFiltersPixelTestWithLayerTree, Test) {
   blur->SetMaskLayer(mask);
 
   base::FilePath image_name =
-      (raster_type() == TestRasterType::kGpu)
+      (use_accelerated_raster())
           ? base::FilePath(FILE_PATH_LITERAL("mask_of_backdrop_filter_gpu.png"))
           : base::FilePath(FILE_PATH_LITERAL("mask_of_backdrop_filter.png"));
 
-  if (use_skia_vulkan() && raster_type() == TestRasterType::kOop) {
+  if (use_skia_vulkan() && use_accelerated_raster()) {
     // Vulkan with OOP raster has 3 pixels errors (the circle mask shape is
     // slightly different).
     float percentage_pixels_large_error = 0.031f;  // 3px / (100*100)

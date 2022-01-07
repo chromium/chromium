@@ -46,7 +46,7 @@ TestRasterType GetDefaultRasterType(viz::RendererType renderer_type) {
       return TestRasterType::kBitmap;
     case viz::RendererType::kSkiaVk:
     case viz::RendererType::kSkiaDawn:
-      return TestRasterType::kOop;
+      return TestRasterType::kGpu;
     default:
       return TestRasterType::kOneCopy;
   }
@@ -78,11 +78,8 @@ LayerTreePixelTest::CreateLayerTreeFrameSink(
 
     viz::RasterInterfaceType worker_ri_type;
     switch (raster_type()) {
-      case TestRasterType::kOop:
-        worker_ri_type = viz::RasterInterfaceType::OOPR;
-        break;
       case TestRasterType::kGpu:
-        worker_ri_type = viz::RasterInterfaceType::GPU;
+        worker_ri_type = viz::RasterInterfaceType::OOPR;
         break;
       case TestRasterType::kOneCopy:
         worker_ri_type = viz::RasterInterfaceType::Software;
@@ -132,7 +129,7 @@ void LayerTreePixelTest::DrawLayersOnThread(LayerTreeHostImpl* host_impl) {
     EXPECT_EQ(use_accelerated_raster(),
               worker_context_provider->ContextCapabilities().gpu_rasterization);
     EXPECT_EQ(
-        raster_type() == TestRasterType::kOop,
+        raster_type() == TestRasterType::kGpu,
         worker_context_provider->ContextCapabilities().supports_oop_raster);
   } else {
     EXPECT_EQ(TestRasterType::kBitmap, raster_type());

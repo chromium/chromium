@@ -15,8 +15,6 @@ const char* RasterTypeTestSuffix(TestRasterType type) {
       return "Bitmap";
     case TestRasterType::kGpu:
       return "GPU";
-    case TestRasterType::kOop:
-      return "OOP";
     case TestRasterType::kOneCopy:
       return "OneCopy";
     case TestRasterType::kZeroCopy:

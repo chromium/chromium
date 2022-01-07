@@ -77,14 +77,13 @@ LayerTreeHostPixelResourceTest::CreateRasterBufferProvider(
       return std::make_unique<BitmapRasterBufferProvider>(
           host_impl->layer_tree_frame_sink());
     case TestRasterType::kGpu:
-    case TestRasterType::kOop:
       EXPECT_TRUE(compositor_context_provider);
       EXPECT_TRUE(worker_context_provider);
       EXPECT_FALSE(use_software_renderer());
       return std::make_unique<GpuRasterBufferProvider>(
           compositor_context_provider, worker_context_provider, false,
           gpu_raster_format, gfx::Size(), true,
-          /*enable_oop_rasterization=*/raster_type() == TestRasterType::kOop,
+          /*enable_oop_rasterization=*/true,
           host_impl->GetRasterQueryQueueForTesting());
     case TestRasterType::kZeroCopy:
       EXPECT_TRUE(compositor_context_provider);

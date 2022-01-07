@@ -127,8 +127,7 @@ class LayerTreePixelTest : public LayerTreeTest {
 
   TestRasterType raster_type() const { return raster_type_; }
   bool use_accelerated_raster() const {
-    return raster_type_ == TestRasterType::kGpu ||
-           raster_type_ == TestRasterType::kOop;
+    return raster_type_ == TestRasterType::kGpu;
   }
 
   // Common CSS colors defined for tests to use.
