@@ -170,7 +170,8 @@ bool RenderSurfaceImpl::ShouldCacheRenderSurface() const {
 
 bool RenderSurfaceImpl::CopyOfOutputRequired() const {
   return HasCopyRequest() || ShouldCacheRenderSurface() ||
-         SubtreeCaptureId().is_valid();
+         SubtreeCaptureId().is_valid() ||
+         OwningEffectNode()->shared_element_resource_id.IsValid();
 }
 
 int RenderSurfaceImpl::TransformTreeIndex() const {

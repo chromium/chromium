@@ -1262,14 +1262,12 @@ DrawResult LayerTreeHostImpl::CalculateRenderPasses(FrameData* frame) {
     const size_t surface_index = render_surface_list_size - 1 - i;
     RenderSurfaceImpl* render_surface =
         (*frame->render_surface_list)[surface_index];
-    const auto& shared_element_id =
-        render_surface->GetDocumentTransitionSharedElementId();
 
     const bool is_root_surface =
         render_surface->EffectTreeIndex() == EffectTree::kContentsRootNodeId;
     const bool should_draw_into_render_pass =
         is_root_surface || render_surface->contributes_to_drawn_surface() ||
-        render_surface->CopyOfOutputRequired() || shared_element_id.valid();
+        render_surface->CopyOfOutputRequired();
     if (should_draw_into_render_pass)
       frame->render_passes.push_back(render_surface->CreateRenderPass());
   }
