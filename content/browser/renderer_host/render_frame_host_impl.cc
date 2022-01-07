@@ -6919,9 +6919,8 @@ void RenderFrameHostImpl::CreateFencedFrame(
     mojo::PendingAssociatedReceiver<blink::mojom::FencedFrameOwnerHost>
         pending_receiver,
     CreateFencedFrameCallback callback) {
-  // TODO(btiszka): Add blink::features::IsFencedFramesEnabled() check
-  // after kFencedFrames has been switched to FEATURE_DISABLED_BY_DEFAULT
-  if (!blink::features::IsFencedFramesMPArchBased()) {
+  if (!blink::features::IsFencedFramesEnabled() ||
+      !blink::features::IsFencedFramesMPArchBased()) {
     bad_message::ReceivedBadMessage(
         GetProcess(), bad_message::RFH_FENCED_FRAME_MOJO_WHEN_DISABLED);
     return;

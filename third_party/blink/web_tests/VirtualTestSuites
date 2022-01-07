@@ -1032,7 +1032,7 @@
       "http/tests/inspector-protocol/target/auto-attach-auction-worklet.js"
     ],
     "args": [
-      "--enable-features=InterestGroupStorage,AdInterestGroupAPI,Fledge"
+      "--enable-features=InterestGroupStorage,AdInterestGroupAPI,Fledge,FencedFrames:implementation_type/shadow_dom"
     ]
   },
   {
@@ -1070,6 +1070,14 @@
       "http/tests/inspector-protocol/fenced-frame"
     ],
     "args": ["--enable-features=FencedFrames:implementation_type/mparch,Prerender2"]
+  },
+  {
+    "prefix": "fenced-frame-shadow-dom",
+    "bases": [
+      "fenced_frame",
+      "wpt_internal/fenced_frame"
+    ],
+    "args": ["--enable-features=FencedFrames:implementation_type/shadow_dom,Prerender2"]
   },
   {
     "prefix": "disable-custom-element-default-style",

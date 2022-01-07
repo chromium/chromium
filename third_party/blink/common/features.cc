@@ -190,7 +190,7 @@ const base::Feature kPortalsCrossOrigin{"PortalsCrossOrigin",
 // allows the element to be enabled by the runtime enabled feature, for origin
 // trials.
 const base::Feature kFencedFrames{"FencedFrames",
-                                  base::FEATURE_ENABLED_BY_DEFAULT};
+                                  base::FEATURE_DISABLED_BY_DEFAULT};
 const base::FeatureParam<FencedFramesImplementationType>::Option
     fenced_frame_implementation_types[] = {
         {FencedFramesImplementationType::kShadowDOM, "shadow_dom"},
