@@ -27,9 +27,34 @@ function compareDefault(a, b) {
 
 /**
  * @template T
- * @template V
+ * @abstract
  */
 class Column {
+  constructor() {
+    /** @type {?function(!T, !T): number} */
+    this.compare;
+  }
+
+  /**
+   * @param {!Element} td
+   * @param {!T} row
+   * @abstract
+   */
+  render(td, row) {}
+
+  /**
+   * @param {!Element} th
+   * @abstract
+   */
+  renderHeader(th) {}
+}
+
+/**
+ * @template T
+ * @template V
+ * @extends {Column<T>}
+ */
+class ValueColumn extends Column {
   /**
    * @param {string} header
    * @param {function(!T): !V} getValue
@@ -38,6 +63,8 @@ class Column {
   constructor(
       header, getValue,
       compare = (a, b) => compareDefault(getValue(a), getValue(b))) {
+    super();
+
     this.header = header;
 
     /** @protected */
@@ -46,20 +73,22 @@ class Column {
     this.compare = compare;
   }
 
-  /**
-   * @param {!Element} td
-   * @param {!T} row
-   */
+  /** @override */
   render(td, row) {
     td.innerText = this.getValue(row);
+  }
+
+  /** @override */
+  renderHeader(th) {
+    th.innerText = this.header;
   }
 }
 
 /**
  * @template T
- * @extends {Column<T, Date>}
+ * @extends {ValueColumn<T, Date>}
  */
-class DateColumn extends Column {
+class DateColumn extends ValueColumn {
   /**
    * @param {string} header
    * @param {function(!T): Date} getValue
@@ -76,9 +105,9 @@ class DateColumn extends Column {
 
 /**
  * @template T
- * @extends {Column<T, string>}
+ * @extends {ValueColumn<T, string>}
  */
-class CodeColumn extends Column {
+class CodeColumn extends ValueColumn {
   /**
    * @param {string} header
    * @param {function(!T): string} getValue
@@ -105,10 +134,7 @@ class CodeColumn extends Column {
  */
 class TableModel {
   constructor() {
-    /** @type {?Table<T>} */
-    this.table;
-
-    /** @type {!Array<Column<T, ?>>} */
+    /** @type {!Array<Column<T>>} */
     this.cols;
 
     /** @type {string} */
@@ -116,6 +142,9 @@ class TableModel {
 
     /** @type {number} */
     this.sortIdx = -1;
+
+    /** @type {!Set<function()>} */
+    this.rowsChangedListeners = new Set();
   }
 
   /**
@@ -129,6 +158,95 @@ class TableModel {
    * @return {!Array<!T>}
    */
   getRows() {}
+
+  notifyRowsChanged() {
+    this.rowsChangedListeners.forEach((f) => f());
+  }
+}
+
+class Selectable {
+  constructor() {
+    this.input = document.createElement('input');
+    this.input.type = 'checkbox';
+  }
+}
+
+/**
+ * @template T
+ * @extends {Column<T>}
+ */
+class SelectionColumn extends Column {
+  /**
+   * @param {!TableModel<T>} model
+   */
+  constructor(model) {
+    super();
+
+    this.model = model;
+
+    this.selectAll = document.createElement('input');
+    this.selectAll.type = 'checkbox';
+    this.selectAll.addEventListener('input', () => {
+      const checked = this.selectAll.checked;
+      this.model.getRows().forEach((row) => {
+        if (!row.input.disabled) {
+          row.input.checked = checked;
+        }
+      });
+      this.notifySelectionChanged(checked);
+    });
+
+    this.listener = () => this.onChange();
+    this.model.rowsChangedListeners.add(this.listener);
+
+    /** @type {!Set<function(boolean)>} */
+    this.selectionChangedListeners = new Set();
+  }
+
+  /** @override */
+  render(td, row) {
+    td.appendChild(row.input);
+  }
+
+  /** @override */
+  renderHeader(th) {
+    th.appendChild(this.selectAll);
+  }
+
+  onChange() {
+    let anySelectable = false;
+    let anySelected = false;
+    let anyUnselected = false;
+
+    this.model.getRows().forEach((row) => {
+      // addEventListener deduplicates, so only one event will be fired per
+      // input.
+      row.input.addEventListener('input', this.listener);
+
+      if (row.input.disabled) {
+        return;
+      }
+
+      anySelectable = true;
+
+      if (row.input.checked) {
+        anySelected = true;
+      } else {
+        anyUnselected = true;
+      }
+    });
+
+    this.selectAll.disabled = !anySelectable;
+    this.selectAll.checked = anySelected && !anyUnselected;
+    this.selectAll.indeterminate = anySelected && anyUnselected;
+
+    this.notifySelectionChanged(anySelected);
+  }
+
+  /** @param {boolean} anySelected */
+  notifySelectionChanged(anySelected) {
+    this.selectionChangedListeners.forEach((f) => f(anySelected));
+  }
 }
 
 /**
@@ -162,8 +280,6 @@ class Table {
     self.__proto__ = Table.prototype;
     self = /** @type {!Table} */ (self);
 
-    model.table = self;
-
     self.model = model;
     self.sortDesc = false;
 
@@ -171,7 +287,7 @@ class Table {
     self.model.cols.forEach((col, idx) => {
       const th = self.ownerDocument.createElement('th');
       th.scope = 'col';
-      th.innerText = col.header;
+      col.renderHeader(th);
 
       if (col.compare) {
         th.role = 'button';
@@ -193,6 +309,8 @@ class Table {
     table.appendChild(self.tbody);
 
     self.appendChild(table);
+
+    self.model.rowsChangedListeners.add(() => self.updateTbody());
   }
 
   /**
@@ -319,16 +437,16 @@ class SourceTableModel extends TableModel {
     super();
 
     this.cols = [
-      new Column('Source Event ID', (e) => e.sourceEventId),
-      new Column('Source Origin', (e) => e.impressionOrigin),
-      new Column('Destination', (e) => e.attributionDestination),
-      new Column('Report To', (e) => e.reportingOrigin),
+      new ValueColumn('Source Event ID', (e) => e.sourceEventId),
+      new ValueColumn('Source Origin', (e) => e.impressionOrigin),
+      new ValueColumn('Destination', (e) => e.attributionDestination),
+      new ValueColumn('Report To', (e) => e.reportingOrigin),
       new DateColumn('Source Registration Time', (e) => e.impressionTime),
       new DateColumn('Expiry Time', (e) => e.expiryTime),
-      new Column('Source Type', (e) => e.sourceType),
-      new Column('Priority', (e) => e.priority),
-      new Column('Dedup Keys', (e) => e.dedupKeys, /*compare=*/ null),
-      new Column('Status', (e) => e.status),
+      new ValueColumn('Source Type', (e) => e.sourceType),
+      new ValueColumn('Priority', (e) => e.priority),
+      new ValueColumn('Dedup Keys', (e) => e.dedupKeys, /*compare=*/ null),
+      new ValueColumn('Status', (e) => e.status),
     ];
 
     this.emptyRowText = 'No sources.';
@@ -351,7 +469,7 @@ class SourceTableModel extends TableModel {
   /** @param {!Array<!Source>} storedSources */
   setStoredSources(storedSources) {
     this.storedSources = storedSources;
-    this.table.updateTbody();
+    this.notifyRowsChanged();
   }
 
   /** @param {!Source} source */
@@ -363,21 +481,24 @@ class SourceTableModel extends TableModel {
     }
 
     this.deactivatedSources.push(source);
-    this.table.updateTbody();
+    this.notifyRowsChanged();
   }
 
   clear() {
     this.storedSources = [];
     this.deactivatedSources = [];
-    this.table.updateTbody();
+    this.notifyRowsChanged();
   }
 }
 
-class Report {
+class Report extends Selectable {
   /**
    * @param {!WebUIAttributionReport} mojo
    */
   constructor(mojo) {
+    super();
+
+    this.id = mojo.id;
     this.reportBody = mojo.reportBody;
     this.attributionDestination = mojo.attributionDestination;
     this.reportUrl = mojo.reportUrl.url;
@@ -385,6 +506,12 @@ class Report {
     this.reportTime = new Date(mojo.reportTime);
     this.reportPriority = mojo.priority;
     this.attributedTruthfully = mojo.attributedTruthfully;
+
+    // Only pending reports are selectable.
+    if (this.id === null ||
+        mojo.status !== WebUIAttributionReport_Status.kPending) {
+      this.input.disabled = true;
+    }
 
     switch (mojo.status) {
       case WebUIAttributionReport_Status.kSent:
@@ -418,21 +545,25 @@ class ReportTableModel extends TableModel {
   constructor() {
     super();
 
+    this.selectionColumn = new SelectionColumn(this);
+
     this.cols = [
+      this.selectionColumn,
       new CodeColumn('Report Body', (e) => e.reportBody),
-      new Column('Destination', (e) => e.attributionDestination),
-      new Column('Report URL', (e) => e.reportUrl),
+      new ValueColumn('Destination', (e) => e.attributionDestination),
+      new ValueColumn('Report URL', (e) => e.reportUrl),
       new DateColumn('Trigger Time', (e) => e.triggerTime),
       new DateColumn('Report Time', (e) => e.reportTime),
-      new Column('Report Priority', (e) => e.reportPriority),
-      new Column('Fake Report', (e) => e.attributedTruthfully ? 'no' : 'yes'),
-      new Column('Status', (e) => e.status),
+      new ValueColumn('Report Priority', (e) => e.reportPriority),
+      new ValueColumn(
+          'Fake Report', (e) => e.attributedTruthfully ? 'no' : 'yes'),
+      new ValueColumn('Status', (e) => e.status),
     ];
 
     this.emptyRowText = 'No sent or pending reports.';
 
     // Sort by report time by default.
-    this.sortIdx = 4;
+    this.sortIdx = 5;
 
     /** @type {!Array<!Report>} */
     this.sentOrDroppedReports = [];
@@ -456,7 +587,7 @@ class ReportTableModel extends TableModel {
   /** @param {!Array<!Report>} storedReports */
   setStoredReports(storedReports) {
     this.storedReports = storedReports;
-    this.table.updateTbody();
+    this.notifyRowsChanged();
   }
 
   /** @param {!Report} report */
@@ -468,13 +599,13 @@ class ReportTableModel extends TableModel {
     }
 
     this.sentOrDroppedReports.push(report);
-    this.table.updateTbody();
+    this.notifyRowsChanged();
   }
 
   clear() {
     this.storedReports = [];
     this.sentOrDroppedReports = [];
-    this.table.updateTbody();
+    this.notifyRowsChanged();
   }
 }
 
@@ -605,13 +736,24 @@ function clearStorage() {
  * the data on completion.
  */
 function sendReports() {
+  const ids = [];
+  reportTableModel.storedReports.forEach((report) => {
+    if (!report.input.disabled && report.input.checked && report.id !== null) {
+      ids.push(report.id);
+    }
+  });
+
+  if (ids.length === 0) {
+    return;
+  }
+
   const button = $('send-reports');
   const previousText = $('send-reports').innerText;
 
   button.disabled = true;
   button.innerText = 'Sending...';
-  pageHandler.sendPendingReports().then(() => {
-    button.disabled = false;
+
+  pageHandler.sendReports(ids).then(() => {
     button.innerText = previousText;
   });
 }
@@ -653,7 +795,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
   $('refresh').addEventListener('click', updatePageData);
   $('clear-data').addEventListener('click', clearStorage);
-  $('send-reports').addEventListener('click', sendReports);
+
+  const sendReportsButton = $('send-reports');
+  sendReportsButton.addEventListener('click', sendReports);
+  reportTableModel.selectionColumn.selectionChangedListeners.add(
+      (anySelected) => {
+        sendReportsButton.disabled = !anySelected;
+      });
 
   Table.decorate(getRequiredElement('source-table-wrapper'), sourceTableModel);
   Table.decorate(getRequiredElement('report-table-wrapper'), reportTableModel);

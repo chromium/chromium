@@ -91,9 +91,11 @@ class AttributionManager {
       base::OnceCallback<void(std::vector<EventAttributionReport>)>
           callback) = 0;
 
-  // Sends all pending reports immediately, and runs |done| once they have all
+  // Sends the given reports immediately, and runs |done| once they have all
   // been sent.
-  virtual void SendReportsForWebUI(base::OnceClosure done) = 0;
+  virtual void SendReportsForWebUI(
+      const std::vector<EventAttributionReport::Id>& ids,
+      base::OnceClosure done) = 0;
 
   // Returns the AttributionPolicy that is used to control API policies such
   // as noise.

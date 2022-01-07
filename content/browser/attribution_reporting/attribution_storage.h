@@ -222,6 +222,12 @@ class AttributionStorage {
   virtual absl::optional<base::Time> GetNextReportTime(base::Time time)
       WARN_UNUSED_RESULT = 0;
 
+  // Returns the reports with the given IDs. This call is logically const, and
+  // does not modify the underlying storage.
+  virtual std::vector<EventAttributionReport> GetReports(
+      const std::vector<EventAttributionReport::Id>& ids)
+      WARN_UNUSED_RESULT = 0;
+
   // Returns all active sources in storage. Active sources are all
   // sources that can still convert. Sources that: are past expiry,
   // reached the attribution limit, or was marked inactive due to having

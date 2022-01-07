@@ -82,7 +82,8 @@ mojom::WebUIAttributionReportPtr WebUIAttributionReport(
     int http_response_code,
     mojom::WebUIAttributionReport::Status status) {
   return mojom::WebUIAttributionReport::New(
-      report.source().ConversionDestination().Serialize(), report.ReportURL(),
+      report.report_id(), report.source().ConversionDestination().Serialize(),
+      report.ReportURL(),
       /*trigger_time=*/report.conversion_time().ToJsTime(),
       /*report_time=*/report.report_time().ToJsTime(), report.priority(),
       report.ReportBody(/*pretty_print=*/true),
@@ -154,11 +155,12 @@ void AttributionInternalsHandlerImpl::GetReports(
   }
 }
 
-void AttributionInternalsHandlerImpl::SendPendingReports(
-    mojom::AttributionInternalsHandler::SendPendingReportsCallback callback) {
+void AttributionInternalsHandlerImpl::SendReports(
+    const std::vector<EventAttributionReport::Id>& ids,
+    mojom::AttributionInternalsHandler::SendReportsCallback callback) {
   if (AttributionManager* manager =
           manager_provider_->GetManager(web_ui_->GetWebContents())) {
-    manager->SendReportsForWebUI(std::move(callback));
+    manager->SendReportsForWebUI(ids, std::move(callback));
   } else {
     std::move(callback).Run();
   }

@@ -87,6 +87,8 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       base::Time max_report_time,
       int limit = -1) override;
   absl::optional<base::Time> GetNextReportTime(base::Time time) override;
+  std::vector<EventAttributionReport> GetReports(
+      const std::vector<EventAttributionReport::Id>& ids) override;
   std::vector<StorableSource> GetActiveSources(int limit = -1) override;
   bool DeleteReport(EventAttributionReport::Id report_id) override;
   bool UpdateReportForSendFailure(EventAttributionReport::Id report_id,

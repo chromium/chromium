@@ -738,9 +738,12 @@ TEST_F(AttributionManagerImplTest, ConversionsSentFromUI_ReportedImmediately) {
   attribution_manager_->HandleSource(
       SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
+  std::vector<EventAttributionReport> reports = StoredReports();
+  EXPECT_THAT(reports, SizeIs(1));
   EXPECT_THAT(network_sender_->calls(), IsEmpty());
 
-  attribution_manager_->SendReportsForWebUI(base::DoNothing());
+  attribution_manager_->SendReportsForWebUI({*reports.front().report_id()},
+                                            base::DoNothing());
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_THAT(network_sender_->calls(), SizeIs(1));
 }
@@ -753,9 +756,12 @@ TEST_F(AttributionManagerImplTest,
       SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
   attribution_manager_->HandleTrigger(DefaultTrigger());
+  std::vector<EventAttributionReport> reports = StoredReports();
+  EXPECT_THAT(reports, SizeIs(2));
   EXPECT_THAT(network_sender_->calls(), IsEmpty());
 
   attribution_manager_->SendReportsForWebUI(
+      {*reports.front().report_id(), *reports.back().report_id()},
       base::BindLambdaForTesting([&]() { callback_calls++; }));
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_THAT(network_sender_->calls(), SizeIs(2));
@@ -1163,7 +1169,8 @@ TEST_F(AttributionManagerImplTest, SendReportsFromWebUI_DoesNotRecordMetrics) {
       SourceBuilder().SetExpiry(kImpressionExpiry).Build());
   attribution_manager_->HandleTrigger(DefaultTrigger());
 
-  attribution_manager_->SendReportsForWebUI(base::DoNothing());
+  attribution_manager_->SendReportsForWebUI({EventAttributionReport::Id(1)},
+                                            base::DoNothing());
   task_environment_.FastForwardBy(base::TimeDelta());
   EXPECT_THAT(network_sender_->calls(), SizeIs(1));
 

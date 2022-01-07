@@ -13,9 +13,16 @@ enum SourceType {
   kEvent,
 };
 
+struct AttributionReportID {
+  int64 value;
+};
+
 // Struct containing stored data that will be sent in a future attribution
 // report.
 struct WebUIAttributionReport {
+  // Allows the WebUI to issue commands for individual reports.
+  // Not intended to be displayed.
+  AttributionReportID? id;
   string attribution_destination;
   url.mojom.Url report_url;
   double trigger_time;
@@ -100,10 +107,10 @@ interface AttributionInternalsHandler {
   // being sent.
   GetReports() => (array<WebUIAttributionReport> reports);
 
-  // Sends all stored reports, ignoring delay, returning when the
-  // operation has been completed and all reports have been cleared from
+  // Sends the given reports, ignoring delay, returning when the
+  // operation has been completed and the reports have been cleared from
   // storage.
-  SendPendingReports() => ();
+  SendReports(array<AttributionReportID> ids) => ();
 
   // Deletes all persisted data for the attribution reporting API, returning when the
   // operation has been completed.

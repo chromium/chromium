@@ -10,6 +10,7 @@
 #include "content/browser/attribution_reporting/attribution_internals.mojom.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
+#include "content/browser/attribution_reporting/event_attribution_report.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -49,9 +50,9 @@ class AttributionInternalsHandlerImpl
       override;
   void GetReports(
       mojom::AttributionInternalsHandler::GetReportsCallback callback) override;
-  void SendPendingReports(
-      mojom::AttributionInternalsHandler::SendPendingReportsCallback callback)
-      override;
+  void SendReports(const std::vector<EventAttributionReport::Id>& ids,
+                   mojom::AttributionInternalsHandler::SendReportsCallback
+                       callback) override;
   void ClearStorage(mojom::AttributionInternalsHandler::ClearStorageCallback
                         callback) override;
   void AddObserver(

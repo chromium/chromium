@@ -178,7 +178,11 @@ class MockAttributionManager : public AttributionManager {
       (base::OnceCallback<void(std::vector<EventAttributionReport>)> callback),
       (override));
 
-  MOCK_METHOD(void, SendReportsForWebUI, (base::OnceClosure done), (override));
+  MOCK_METHOD(void,
+              SendReportsForWebUI,
+              (const std::vector<EventAttributionReport::Id>& ids,
+               base::OnceClosure done),
+              (override));
 
   MOCK_METHOD(void,
               ClearData,

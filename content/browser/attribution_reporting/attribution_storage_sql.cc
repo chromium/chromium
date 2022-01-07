@@ -924,6 +924,21 @@ absl::optional<base::Time> AttributionStorageSql::GetNextReportTime(
   return absl::nullopt;
 }
 
+std::vector<EventAttributionReport> AttributionStorageSql::GetReports(
+    const std::vector<EventAttributionReport::Id>& ids) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
+    return {};
+
+  std::vector<EventAttributionReport> reports;
+  for (EventAttributionReport::Id id : ids) {
+    absl::optional<EventAttributionReport> report = GetReport(id);
+    if (report.has_value())
+      reports.push_back(std::move(*report));
+  }
+  return reports;
+}
+
 absl::optional<EventAttributionReport> AttributionStorageSql::GetReport(
     EventAttributionReport::Id conversion_id) {
   static constexpr char kGetReportSql[] =

@@ -5,9 +5,13 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_INTERNALS_MOJOM_TRAITS_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_INTERNALS_MOJOM_TRAITS_H_
 
+#include <stdint.h>
+
 #include "content/browser/attribution_reporting/attribution_internals.mojom.h"
+#include "content/browser/attribution_reporting/event_attribution_report.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
+#include "mojo/public/cpp/bindings/struct_traits.h"
 
 namespace mojo {
 
@@ -38,6 +42,18 @@ class EnumTraits<content::mojom::SourceType,
 
     return true;
   }
+};
+
+template <>
+class StructTraits<content::mojom::AttributionReportIDDataView,
+                   content::EventAttributionReport::Id> {
+ public:
+  static int64_t value(const content::EventAttributionReport::Id& id) {
+    return *id;
+  }
+
+  static bool Read(content::mojom::AttributionReportIDDataView data,
+                   content::EventAttributionReport::Id* out);
 };
 
 }  // namespace mojo

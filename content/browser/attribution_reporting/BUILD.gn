@@ -13,11 +13,19 @@ mojom("mojo_bindings") {
     {
       types = [
         {
+          mojom = "content.mojom.AttributionReportID"
+          cpp = "::content::EventAttributionReport::Id"
+        },
+        {
           mojom = "content.mojom.SourceType"
           cpp = "::content::StorableSource::SourceType"
         },
       ]
-      traits_headers = [ "attribution_internals_mojom_traits.h" ]
+      traits_headers = [
+        "attribution_internals_mojom_traits.h",
+        "event_attribution_report.h",
+      ]
+      traits_sources = [ "attribution_internals_mojom_traits.cc" ]
     },
   ]
 }

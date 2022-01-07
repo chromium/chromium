@@ -112,7 +112,8 @@ class CONTENT_EXPORT AttributionManagerImpl
   void GetPendingReportsForWebUI(
       base::OnceCallback<void(std::vector<EventAttributionReport>)> callback)
       override;
-  void SendReportsForWebUI(base::OnceClosure done) override;
+  void SendReportsForWebUI(const std::vector<EventAttributionReport::Id>& ids,
+                           base::OnceClosure done) override;
   const AttributionPolicy& GetAttributionPolicy() const override;
   void ClearData(base::Time delete_begin,
                  base::Time delete_end,

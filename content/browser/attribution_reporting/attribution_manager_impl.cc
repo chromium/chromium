@@ -288,12 +288,13 @@ void AttributionManagerImpl::GetPendingReportsForWebUI(
                       /*max_report_time=*/base::Time::Max(), /*limit=*/1000);
 }
 
-void AttributionManagerImpl::SendReportsForWebUI(base::OnceClosure done) {
-  GetAndHandleReports(
-      base::BindOnce(&AttributionManagerImpl::OnGetReportsToSendFromWebUI,
-                     weak_factory_.GetWeakPtr(), std::move(done)),
-      /*max_report_time=*/base::Time::Max(),
-      /*limit=*/-1);
+void AttributionManagerImpl::SendReportsForWebUI(
+    const std::vector<EventAttributionReport::Id>& ids,
+    base::OnceClosure done) {
+  attribution_storage_.AsyncCall(&AttributionStorage::GetReports)
+      .WithArgs(ids)
+      .Then(base::BindOnce(&AttributionManagerImpl::OnGetReportsToSendFromWebUI,
+                           weak_factory_.GetWeakPtr(), std::move(done)));
 }
 
 const AttributionPolicy& AttributionManagerImpl::GetAttributionPolicy() const {
