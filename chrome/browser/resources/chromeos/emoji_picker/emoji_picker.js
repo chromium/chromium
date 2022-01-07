@@ -12,7 +12,7 @@ import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {EMOJI_GROUP_SIZE_PX, EMOJI_ICON_SIZE, EMOJI_PER_ROW, EMOJI_PICKER_HEIGHT_PX, EMOJI_PICKER_SIDE_PADDING_PX, EMOJI_PICKER_TOP_PADDING_PX, EMOJI_PICKER_TOTAL_EMOJI_WIDTH, EMOJI_PICKER_TOTAL_EMOJI_WIDTH_PX, EMOJI_PICKER_WIDTH, EMOJI_PICKER_WIDTH_PX, EMOJI_SIZE_PX, EMOJI_SPACING_PX, GROUP_ICON_SIZE, GROUP_PER_ROW} from './constants.js';
+import {EMOJI_GROUP_SIZE_PX, EMOJI_ICON_SIZE, EMOJI_PER_ROW, EMOJI_PICKER_HEIGHT_PX, EMOJI_PICKER_SIDE_PADDING, EMOJI_PICKER_SIDE_PADDING_PX, EMOJI_PICKER_TOP_PADDING_PX, EMOJI_PICKER_TOTAL_EMOJI_WIDTH, EMOJI_PICKER_TOTAL_EMOJI_WIDTH_PX, EMOJI_PICKER_WIDTH, EMOJI_PICKER_WIDTH_PX, EMOJI_SIZE_PX, EMOJI_SPACING_PX, GROUP_ICON_SIZE, GROUP_PER_ROW} from './constants.js';
 import {EmojiButton} from './emoji_button.js';
 import {Feature} from './emoji_picker.mojom-webui.js';
 import {EmojiPickerApiProxy, EmojiPickerApiProxyImpl} from './emoji_picker_api_proxy.js';
@@ -513,34 +513,58 @@ export class EmojiPicker extends PolymerElement {
     if (!this.highlightBarMoving && !this.groupTabsMoving) {
       // Update the scroll position of the emoji groups so that active group is
       // visible.
-      let tabscrollLeft = this.$.tabs.scrollLeft;
-      if (tabscrollLeft > EMOJI_PICKER_TOTAL_EMOJI_WIDTH * (index - 0.5)) {
-        tabscrollLeft = 0;
-      }
-      if (tabscrollLeft + EMOJI_PICKER_TOTAL_EMOJI_WIDTH * (GROUP_PER_ROW - 2) <
-          GROUP_ICON_SIZE * index) {
-        // 5 = We want the seventh icon to be first. Then -1 for chevron, -1 for
-        // 1 based indexing.
-        tabscrollLeft = EMOJI_PICKER_TOTAL_EMOJI_WIDTH * (7);
-      }
+      if (!this.textSubcategoryBarEnabled) {
+        // for emoji group buttons, their highlighter always has a fixed width.
+        const emojiHighlighterWidth = 24;
+        this.$.bar.style.width = `${emojiHighlighterWidth}px`;
 
-      if (updateTabsScroll) {
-        this.$.bar.style.left =
-            ((index * EMOJI_PICKER_TOTAL_EMOJI_WIDTH - tabscrollLeft)) + 'px';
+        // TODO(b/213120632): Convert the following number literals into
+        // contextualized constants.
+        let tabscrollLeft = this.$.tabs.scrollLeft;
+        if (tabscrollLeft > EMOJI_PICKER_TOTAL_EMOJI_WIDTH * (index - 0.5)) {
+          tabscrollLeft = 0;
+        }
+        if (tabscrollLeft +
+                EMOJI_PICKER_TOTAL_EMOJI_WIDTH * (GROUP_PER_ROW - 2) <
+            GROUP_ICON_SIZE * index) {
+          // 5 = We want the seventh icon to be first. Then -1 for chevron, -1
+          // for 1 based indexing.
+          tabscrollLeft = EMOJI_PICKER_TOTAL_EMOJI_WIDTH * (7);
+        }
+
+        if (updateTabsScroll) {
+          this.$.bar.style.left =
+              ((index * EMOJI_PICKER_TOTAL_EMOJI_WIDTH - tabscrollLeft)) + 'px';
+        } else {
+          this.$.bar.style.left = ((index * EMOJI_PICKER_TOTAL_EMOJI_WIDTH -
+                                    this.$.tabs.scrollLeft)) +
+              'px';
+        }
+
+        // only update tab scroll when using emoji-based subcategory, because
+        // the scroll position of the text-based subcategory bar is controlled
+        // differently.
+        if (updateTabsScroll && !this.textSubcategoryBarEnabled) {
+          this.$.tabs.scrollLeft = tabscrollLeft;
+        }
       } else {
-        this.$.bar.style.left = ((index * EMOJI_PICKER_TOTAL_EMOJI_WIDTH -
-                                  this.$.tabs.scrollLeft)) +
-            'px';
-      }
+        const subcategoryTabs =
+            Array.from(this.$.tabs.getElementsByClassName('tab'));
 
-      // only update tab scroll when using emoji-based subcategory, because the
-      // scroll position of the text subcategory bar is controlled differently.
-      if (updateTabsScroll && !this.textSubcategoryBarEnabled) {
-        this.$.tabs.scrollLeft = tabscrollLeft;
+        // for text group button, the highlight bar only spans its inner width,
+        // which excludes both padding and margin.
+        const barInlineGap = 9;
+        this.$.bar.style.left = `${
+            subcategoryTabs[index].offsetLeft - EMOJI_PICKER_SIDE_PADDING -
+            this.$.tabs.scrollLeft}px`;
+        this.$.bar.style.width =
+            `${subcategoryTabs[index].clientWidth - barInlineGap * 2}px`;
+
+        // TODO(b/213230435): fix the bar width and left position when the
+        // history tab is active
       }
     }
   }
-
 
   hideDialogs() {
     this.hideEmojiVariants();
