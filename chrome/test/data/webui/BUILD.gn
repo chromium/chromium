@@ -134,7 +134,7 @@ if (include_js_tests) {
       deps += [ ":modulize" ]
     }
 
-    if (is_chromeos_ash || is_win) {
+    if (is_chromeos_ash || is_win || is_mac) {
       sources += [ "inline_login/inline_login_browsertest.js" ]
       deps += [ "//build:chromeos_buildflags" ]
     }
