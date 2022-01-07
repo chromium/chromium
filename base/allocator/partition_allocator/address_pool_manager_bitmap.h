@@ -125,9 +125,7 @@ class BASE_EXPORT AddressPoolManagerBitmap {
 #endif  // BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
   }
 
-  static bool IsAllowedSuperPageForBRPPool(const void* address) {
-    uintptr_t address_as_uintptr = reinterpret_cast<uintptr_t>(address);
-
+  static bool IsAllowedSuperPageForBRPPool(uintptr_t address) {
     // The only potentially dangerous scenario, in which this check is used, is
     // when the assignment of the first raw_ptr<T> object for a non-GigaCage
     // address is racing with the allocation of a new GigCage super-page at the
@@ -141,10 +139,10 @@ class BASE_EXPORT AddressPoolManagerBitmap {
     // Since we rely on that external synchronization, the relaxed memory
     // ordering should be sufficient.
 #if BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
-    return !brp_forbidden_super_page_map_[address_as_uintptr >> kSuperPageShift]
-                .load(std::memory_order_relaxed);
+    return !brp_forbidden_super_page_map_[address >> kSuperPageShift].load(
+        std::memory_order_relaxed);
 #else
-    return super_page_refcount_map_[address_as_uintptr >> kSuperPageShift].load(
+    return super_page_refcount_map_[address >> kSuperPageShift].load(
                std::memory_order_relaxed) == 0;
 #endif  // BUILDFLAG(NEVER_REMOVE_FROM_BRP_POOL_BLOCKLIST)
   }

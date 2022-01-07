@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
+#include <cstdint>
 
 #include "base/allocator/buildflags.h"
 
@@ -25,7 +26,7 @@ void BackupRefPtrImpl::AcquireInternal(uintptr_t address) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   CHECK(IsManagedByPartitionAllocBRPPool(address));
 #endif
-  void* slot_start = PartitionAllocGetSlotStartInBRPPool(address);
+  uintptr_t slot_start = PartitionAllocGetSlotStartInBRPPool(address);
   PartitionRefCountPointer(slot_start)->Acquire();
 }
 
@@ -33,7 +34,7 @@ void BackupRefPtrImpl::ReleaseInternal(uintptr_t address) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   CHECK(IsManagedByPartitionAllocBRPPool(address));
 #endif
-  void* slot_start = PartitionAllocGetSlotStartInBRPPool(address);
+  uintptr_t slot_start = PartitionAllocGetSlotStartInBRPPool(address);
   if (PartitionRefCountPointer(slot_start)->Release())
     PartitionAllocFreeForRefCounting(slot_start);
 }
@@ -42,7 +43,7 @@ bool BackupRefPtrImpl::IsPointeeAlive(uintptr_t address) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   CHECK(IsManagedByPartitionAllocBRPPool(address));
 #endif
-  void* slot_start = PartitionAllocGetSlotStartInBRPPool(address);
+  uintptr_t slot_start = PartitionAllocGetSlotStartInBRPPool(address);
   return PartitionRefCountPointer(slot_start)->IsAlive();
 }
 

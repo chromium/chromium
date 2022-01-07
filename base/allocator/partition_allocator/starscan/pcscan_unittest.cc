@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <cstdint>
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
@@ -94,9 +95,8 @@ class PartitionAllocPCScanTestBase : public testing::Test {
   void FinishPCScanAsScanner() { PCScan::FinishScanForTesting(); }
 
   bool IsInQuarantine(void* ptr) const {
-    auto* unmasked = memory::UnmaskPtr(ptr);
-    return StateBitmapFromPointer(unmasked)->IsQuarantined(
-        reinterpret_cast<uintptr_t>(unmasked));
+    uintptr_t address = memory::UnmaskPtr(reinterpret_cast<uintptr_t>(ptr));
+    return StateBitmapFromPointer(address)->IsQuarantined(address);
   }
 
   ThreadSafePartitionRoot& root() { return *allocator_.root(); }
@@ -336,8 +336,7 @@ TEST_F(PartitionAllocPCScanTest, DanglingReferenceDifferentBucketsAligned) {
     void* first_slot_span_end = nullptr;
     void* second_slot_span_start = nullptr;
     IterateSlotSpans<ThreadSafe>(
-        reinterpret_cast<char*>(super_page), true,
-        [&](SlotSpan* slot_span) -> bool {
+        super_page, true, [&](SlotSpan* slot_span) -> bool {
           if (i == 0) {
             first_slot_span_end = reinterpret_cast<char*>(
                                       SlotSpan::ToSlotSpanStartPtr(slot_span)) +
@@ -711,7 +710,7 @@ TEST_F(PartitionAllocPCScanTest, DontScanUnusedRawSize) {
 
 TEST_F(PartitionAllocPCScanTest, PointersToGuardPages) {
   struct Pointers {
-    void* super_page_base;
+    void* super_page;
     void* metadata_page;
     void* guard_page1;
     void* scan_bitmap;
@@ -721,17 +720,18 @@ TEST_F(PartitionAllocPCScanTest, PointersToGuardPages) {
   auto* const pointers = static_cast<Pointers*>(
       root().AllocFlagsNoHooks(0, sizeof(Pointers), PartitionPageSize()));
 
-  char* const super_page = reinterpret_cast<char*>(
-      reinterpret_cast<uintptr_t>(pointers) & kSuperPageBaseMask);
+  const uintptr_t super_page =
+      reinterpret_cast<uintptr_t>(pointers) & kSuperPageBaseMask;
 
   // Initialize scannable pointers with addresses of guard pages and metadata.
-  pointers->super_page_base = super_page;
+  pointers->super_page = reinterpret_cast<void*>(super_page);
   pointers->metadata_page =
-      PartitionSuperPageToMetadataArea(reinterpret_cast<uintptr_t>(super_page));
+      PartitionSuperPageToMetadataArea<ThreadSafe>(super_page);
   pointers->guard_page1 =
       static_cast<char*>(pointers->metadata_page) + SystemPageSize();
   pointers->scan_bitmap = SuperPageStateBitmap(super_page);
-  pointers->guard_page1 = super_page + kSuperPageSize - PartitionPageSize();
+  pointers->guard_page1 = reinterpret_cast<void*>(super_page + kSuperPageSize -
+                                                  PartitionPageSize());
 
   // Simply run PCScan and expect no crashes.
   RunPCScan();

@@ -113,16 +113,17 @@ void PartitionAddressSpace::Init() {
 
 #if PA_STARSCAN_USE_CARD_TABLE
   // Reserve memory for PCScan quarantine card table.
-  void* requested_address =
-      reinterpret_cast<void*>(setup_.regular_pool_base_address_);
-  char* actual_address = internal::AddressPoolManager::GetInstance()->Reserve(
-      setup_.regular_pool_, requested_address, kSuperPageSize);
+  uintptr_t requested_address = setup_.regular_pool_base_address_;
+  uintptr_t actual_address =
+      internal::AddressPoolManager::GetInstance()->Reserve(
+          setup_.regular_pool_, requested_address, kSuperPageSize);
   PA_CHECK(requested_address == actual_address)
       << "QuarantineCardTable is required to be allocated at the beginning of "
          "the regular pool";
 #endif  // PA_STARSCAN_USE_CARD_TABLE
 }
 
+// TODO(bartekn): Consider void* -> uintptr_t
 void PartitionAddressSpace::InitConfigurablePool(void* address, size_t size) {
   // The ConfigurablePool must only be initialized once.
   PA_CHECK(!IsConfigurablePoolInitialized());

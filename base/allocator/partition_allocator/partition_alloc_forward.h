@@ -47,7 +47,7 @@ constexpr bool NotThreadSafe = false;
 
 #if (DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)) && \
     BUILDFLAG(USE_BACKUP_REF_PTR)
-BASE_EXPORT void CheckThatSlotOffsetIsZero(void*);
+BASE_EXPORT void CheckThatSlotOffsetIsZero(uintptr_t address);
 #endif
 
 }  // namespace internal

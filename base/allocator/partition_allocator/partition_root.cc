@@ -733,18 +733,17 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
 
   // bucket->slot_size is the currently committed size of the allocation.
   size_t current_slot_size = slot_span->bucket->slot_size;
-  char* slot_start =
-      static_cast<char*>(SlotSpan::ToSlotSpanStartPtr(slot_span));
-  uintptr_t slot_start_as_uintptr = reinterpret_cast<uintptr_t>(slot_start);
+  uintptr_t slot_start =
+      reinterpret_cast<uintptr_t>(SlotSpan::ToSlotSpanStartPtr(slot_span));
   // This is the available part of the reservation up to which the new
   // allocation can grow.
   size_t available_reservation_size =
       current_reservation_size - extent->padding_for_alignment -
       PartitionRoot<thread_safe>::GetDirectMapMetadataAndGuardPagesSize();
 #if DCHECK_IS_ON()
-  uintptr_t reservation_start = slot_start_as_uintptr & kSuperPageBaseMask;
+  uintptr_t reservation_start = slot_start & kSuperPageBaseMask;
   PA_DCHECK(internal::IsReservationStart(reservation_start));
-  PA_DCHECK(slot_start_as_uintptr + available_reservation_size ==
+  PA_DCHECK(slot_start + available_reservation_size ==
             reservation_start + current_reservation_size -
                 GetDirectMapMetadataAndGuardPagesSize() + PartitionPageSize());
 #endif
@@ -755,15 +754,15 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
   } else if (new_slot_size < current_slot_size) {
     // Shrink by decommitting unneeded pages and making them inaccessible.
     size_t decommit_size = current_slot_size - new_slot_size;
-    DecommitSystemPagesForData(slot_start_as_uintptr + new_slot_size,
-                               decommit_size, PageUpdatePermissions);
+    DecommitSystemPagesForData(slot_start + new_slot_size, decommit_size,
+                               PageUpdatePermissions);
     // Since the decommited system pages are still reserved, we don't need to
     // change the entries for decommitted pages in the reservation offset table.
   } else if (new_slot_size <= available_reservation_size) {
     // Grow within the actually reserved address space. Just need to make the
     // pages accessible again.
     size_t recommit_slot_size_growth = new_slot_size - current_slot_size;
-    RecommitSystemPagesForData(slot_start_as_uintptr + current_slot_size,
+    RecommitSystemPagesForData(slot_start + current_slot_size,
                                recommit_slot_size_growth,
                                PageUpdatePermissions);
     // The recommited system pages had been already reserved and all the
@@ -771,8 +770,8 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
     // region) have been already initialized.
 
 #if DCHECK_IS_ON()
-    memset(slot_start + current_slot_size, kUninitializedByte,
-           recommit_slot_size_growth);
+    memset(reinterpret_cast<void*>(slot_start + current_slot_size),
+           kUninitializedByte, recommit_slot_size_growth);
 #endif
   } else {
     // We can't perform the realloc in-place.
@@ -790,8 +789,7 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
 #if DCHECK_IS_ON()
   // Write a new trailing cookie.
   if (allow_cookie) {
-    char* user_data_start =
-        static_cast<char*>(AdjustPointerForExtrasAdd(slot_start));
+    uintptr_t user_data_start = AdjustPointerForExtrasAdd(slot_start);
     size_t usable_size = slot_span->GetUsableSize(this);
     internal::PartitionCookieWriteValue(user_data_start + usable_size);
   }
@@ -805,8 +803,8 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForNormalBuckets(
     void* ptr,
     SlotSpan* slot_span,
     size_t new_size) {
-  PA_DCHECK(
-      internal::IsManagedByNormalBuckets(reinterpret_cast<uintptr_t>(ptr)));
+  uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
+  PA_DCHECK(internal::IsManagedByNormalBuckets(address));
 
   // TODO: note that tcmalloc will "ignore" a downsizing realloc() unless the
   // new size is a significant percentage smaller. We could do the same if we
@@ -820,7 +818,7 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForNormalBuckets(
   // statistics (and cookie, if present).
   if (slot_span->CanStoreRawSize()) {
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && DCHECK_IS_ON()
-    void* slot_start = AdjustPointerForExtrasSubtract(ptr);
+    uintptr_t slot_start = AdjustPointerForExtrasSubtract(address);
     internal::PartitionRefCount* old_ref_count;
     if (brp_enabled()) {
       old_ref_count = internal::PartitionRefCountPointer(slot_start);
@@ -840,8 +838,7 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForNormalBuckets(
     // raw size (otherwise we wouldn't know where to look for it later).
     if (allow_cookie) {
       size_t usable_size = slot_span->GetUsableSize(this);
-      internal::PartitionCookieWriteValue(static_cast<char*>(ptr) +
-                                          usable_size);
+      internal::PartitionCookieWriteValue(address + usable_size);
     }
 #endif  // DCHECK_IS_ON()
   }

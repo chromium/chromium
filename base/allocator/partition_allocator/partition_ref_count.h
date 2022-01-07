@@ -187,25 +187,23 @@ static_assert((sizeof(PartitionRefCount) * (kSuperPageSize / SystemPageSize()) *
               "PartitionRefCount Bitmap size must be smaller than or equal to "
               "<= SystemPageSize().");
 
-ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(void* slot_start) {
+ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(
+    uintptr_t slot_start) {
   PA_DCHECK(slot_start == memory::RemaskPtr(slot_start));
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   CheckThatSlotOffsetIsZero(slot_start);
 #endif
-  uintptr_t slot_start_as_uintptr = reinterpret_cast<uintptr_t>(slot_start);
-  if (LIKELY(slot_start_as_uintptr & SystemPageOffsetMask())) {
-    uintptr_t refcount_ptr_as_uintptr =
-        slot_start_as_uintptr - sizeof(PartitionRefCount);
+  if (LIKELY(slot_start & SystemPageOffsetMask())) {
+    uintptr_t refcount_address = slot_start - sizeof(PartitionRefCount);
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
-    PA_CHECK(refcount_ptr_as_uintptr % alignof(PartitionRefCount) == 0);
+    PA_CHECK(refcount_address % alignof(PartitionRefCount) == 0);
 #endif
-    return reinterpret_cast<PartitionRefCount*>(refcount_ptr_as_uintptr);
+    return reinterpret_cast<PartitionRefCount*>(refcount_address);
   } else {
     PartitionRefCount* bitmap_base = reinterpret_cast<PartitionRefCount*>(
-        (slot_start_as_uintptr & kSuperPageBaseMask) + SystemPageSize() * 2);
-    size_t index =
-        ((slot_start_as_uintptr & kSuperPageOffsetMask) >> SystemPageShift()) *
-        kPartitionRefCountIndexMultiplier;
+        (slot_start & kSuperPageBaseMask) + SystemPageSize() * 2);
+    size_t index = ((slot_start & kSuperPageOffsetMask) >> SystemPageShift()) *
+                   kPartitionRefCountIndexMultiplier;
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     PA_CHECK(sizeof(PartitionRefCount) * index <= SystemPageSize());
 #endif
@@ -225,7 +223,8 @@ constexpr size_t kPartitionRefCountOffsetAdjustment = kInSlotRefCountBufferSize;
 // only then we'll be able to find ref-count in that slot.
 constexpr size_t kPartitionPastAllocationAdjustment = 1;
 
-ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(void* slot_start) {
+ALWAYS_INLINE PartitionRefCount* PartitionRefCountPointer(
+    uintptr_t slot_start) {
 #if DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
   CheckThatSlotOffsetIsZero(slot_start);
 #endif

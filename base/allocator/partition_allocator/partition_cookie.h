@@ -23,14 +23,14 @@ static constexpr unsigned char kCookieValue[kCookieSize] = {
 
 constexpr size_t kPartitionCookieSizeAdjustment = kCookieSize;
 
-ALWAYS_INLINE void PartitionCookieCheckValue(void* ptr) {
-  unsigned char* cookie_ptr = reinterpret_cast<unsigned char*>(ptr);
+ALWAYS_INLINE void PartitionCookieCheckValue(uintptr_t address) {
+  unsigned char* cookie_ptr = reinterpret_cast<unsigned char*>(address);
   for (size_t i = 0; i < kCookieSize; ++i, ++cookie_ptr)
     PA_DCHECK(*cookie_ptr == kCookieValue[i]);
 }
 
-ALWAYS_INLINE void PartitionCookieWriteValue(void* ptr) {
-  unsigned char* cookie_ptr = reinterpret_cast<unsigned char*>(ptr);
+ALWAYS_INLINE void PartitionCookieWriteValue(uintptr_t address) {
+  unsigned char* cookie_ptr = reinterpret_cast<unsigned char*>(address);
   for (size_t i = 0; i < kCookieSize; ++i, ++cookie_ptr)
     *cookie_ptr = kCookieValue[i];
 }
@@ -39,9 +39,10 @@ ALWAYS_INLINE void PartitionCookieWriteValue(void* ptr) {
 
 constexpr size_t kPartitionCookieSizeAdjustment = 0;
 
-ALWAYS_INLINE void PartitionCookieCheckValue(void* ptr) {}
+ALWAYS_INLINE void PartitionCookieCheckValue(uintptr_t address) {}
 
-ALWAYS_INLINE void PartitionCookieWriteValue(void* ptr) {}
+ALWAYS_INLINE void PartitionCookieWriteValue(uintptr_t address) {}
+
 #endif  // DCHECK_IS_ON()
 
 }  // namespace internal

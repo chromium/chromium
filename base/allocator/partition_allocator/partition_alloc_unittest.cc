@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <cstddef>
+#include <cstdint>
 #include <limits>
 #include <memory>
 #include <random>
@@ -61,6 +62,10 @@
   { EXPECT_EQ(memory::UnmaskPtr(ptr1), memory::UnmaskPtr(ptr2)); }
 #define PA_EXPECT_PTR_NE(ptr1, ptr2) \
   { EXPECT_NE(memory::UnmaskPtr(ptr1), memory::UnmaskPtr(ptr2)); }
+#define PA_EXPECT_ADDR_EQ(addr1, addr2) \
+  { EXPECT_EQ(memory::UnmaskPtr(addr1), memory::UnmaskPtr(addr2)); }
+#define PA_EXPECT_ADDR_NE(addr1, addr2) \
+  { EXPECT_NE(memory::UnmaskPtr(addr1), memory::UnmaskPtr(addr2)); }
 
 #if !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
 
@@ -957,10 +962,11 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
   EXPECT_EQ(predicted_capacity, actual_capacity);
   EXPECT_LT(requested_size, actual_capacity);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
+  uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
   for (size_t offset = 0; offset < requested_size; ++offset) {
-    PA_EXPECT_PTR_EQ(PartitionAllocGetSlotStartInBRPPool(
-                         reinterpret_cast<uintptr_t>(ptr) + offset),
-                     allocator.root()->AdjustPointerForExtrasSubtract(ptr));
+    PA_EXPECT_ADDR_EQ(
+        PartitionAllocGetSlotStartInBRPPool(address + offset),
+        allocator.root()->AdjustPointerForExtrasSubtract(address));
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   allocator.root()->Free(ptr);
@@ -976,10 +982,10 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
   EXPECT_EQ(predicted_capacity, actual_capacity);
   EXPECT_EQ(requested_size, actual_capacity);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
+  address = reinterpret_cast<uintptr_t>(ptr);
   for (size_t offset = 0; offset < requested_size; offset += 877) {
-    PA_EXPECT_PTR_EQ(PartitionAllocGetSlotStartInBRPPool(
-                         reinterpret_cast<uintptr_t>(ptr) + offset),
-                     allocator.root()->AdjustPointerForExtrasSubtract(ptr));
+    PA_EXPECT_PTR_EQ(PartitionAllocGetSlotStartInBRPPool(address + offset),
+                     allocator.root()->AdjustPointerForExtrasSubtract(address));
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   allocator.root()->Free(ptr);
@@ -1000,10 +1006,10 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
   EXPECT_EQ(predicted_capacity, actual_capacity);
   EXPECT_EQ(requested_size + SystemPageSize(), actual_capacity);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
+  address = reinterpret_cast<uintptr_t>(ptr);
   for (size_t offset = 0; offset < requested_size; offset += 4999) {
-    PA_EXPECT_PTR_EQ(PartitionAllocGetSlotStartInBRPPool(
-                         reinterpret_cast<uintptr_t>(ptr) + offset),
-                     allocator.root()->AdjustPointerForExtrasSubtract(ptr));
+    PA_EXPECT_PTR_EQ(PartitionAllocGetSlotStartInBRPPool(address + offset),
+                     allocator.root()->AdjustPointerForExtrasSubtract(address));
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
@@ -1017,10 +1023,10 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
   EXPECT_EQ(predicted_capacity, actual_capacity);
   EXPECT_EQ(requested_size, actual_capacity);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
+  address = reinterpret_cast<uintptr_t>(ptr);
   for (size_t offset = 0; offset < requested_size; offset += 4999) {
-    PA_EXPECT_PTR_EQ(PartitionAllocGetSlotStartInBRPPool(
-                         reinterpret_cast<uintptr_t>(ptr) + offset),
-                     allocator.root()->AdjustPointerForExtrasSubtract(ptr));
+    PA_EXPECT_PTR_EQ(PartitionAllocGetSlotStartInBRPPool(address + offset),
+                     allocator.root()->AdjustPointerForExtrasSubtract(address));
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
@@ -1040,10 +1046,11 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
     EXPECT_EQ(predicted_capacity, actual_capacity);
     EXPECT_LT(requested_size, actual_capacity);
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
+    address = reinterpret_cast<uintptr_t>(ptr);
     for (size_t offset = 0; offset < requested_size; offset += 16111) {
-      PA_EXPECT_PTR_EQ(PartitionAllocGetSlotStartInBRPPool(
-                           reinterpret_cast<uintptr_t>(ptr) + offset),
-                       allocator.root()->AdjustPointerForExtrasSubtract(ptr));
+      PA_EXPECT_PTR_EQ(
+          PartitionAllocGetSlotStartInBRPPool(address + offset),
+          allocator.root()->AdjustPointerForExtrasSubtract(address));
     }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
     allocator.root()->Free(ptr);
@@ -1153,13 +1160,13 @@ TEST_F(PartitionAllocTest, GetSlotStartMultiplePages) {
   for (size_t i = 0; i < num_slots; ++i) {
     ptrs.push_back(allocator.root()->Alloc(requested_size, type_name));
   }
-  for (size_t i = 0; i < num_slots; ++i) {
-    char* ptr = static_cast<char*>(ptrs[i]);
+  for (void* ptr : ptrs) {
+    uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
     EXPECT_EQ(allocator.root()->AllocationCapacityFromPtr(ptr), requested_size);
     for (size_t offset = 0; offset < requested_size; offset += 13) {
-      PA_EXPECT_PTR_EQ(PartitionAllocGetSlotStartInBRPPool(
-                           reinterpret_cast<uintptr_t>(ptr) + offset),
-                       allocator.root()->AdjustPointerForExtrasSubtract(ptr));
+      PA_EXPECT_PTR_EQ(
+          PartitionAllocGetSlotStartInBRPPool(address + offset),
+          allocator.root()->AdjustPointerForExtrasSubtract(address));
     }
     allocator.root()->Free(ptr);
   }
@@ -3325,8 +3332,8 @@ TEST_F(PartitionAllocTest, RefCountBasic) {
 
   *ptr1 = kCookie;
 
-  auto* ref_count =
-      PartitionRefCountPointer(reinterpret_cast<char*>(ptr1) - kPointerOffset);
+  auto* ref_count = PartitionRefCountPointer(reinterpret_cast<uintptr_t>(ptr1) -
+                                             kPointerOffset);
   EXPECT_TRUE(ref_count->IsAliveWithNoKnownRefs());
 
   ref_count->Acquire();
@@ -3355,7 +3362,7 @@ TEST_F(PartitionAllocTest, RefCountBasic) {
   // Remask ref_count because PartitionAlloc retags ptr to enforce quarantine.
   ref_count = memory::RemaskPtr(ref_count);
   EXPECT_TRUE(ref_count->Release());
-  PartitionAllocFreeForRefCounting(reinterpret_cast<char*>(ptr1) -
+  PartitionAllocFreeForRefCounting(reinterpret_cast<uintptr_t>(ptr1) -
                                    kPointerOffset);
   uint64_t* ptr3 = reinterpret_cast<uint64_t*>(
       allocator.root()->Alloc(alloc_size, type_name));
@@ -3368,8 +3375,8 @@ void PartitionAllocTest::RunRefCountReallocSubtest(size_t orig_size,
   void* ptr1 = allocator.root()->Alloc(orig_size, type_name);
   EXPECT_TRUE(ptr1);
 
-  auto* ref_count1 =
-      PartitionRefCountPointer(reinterpret_cast<char*>(ptr1) - kPointerOffset);
+  auto* ref_count1 = PartitionRefCountPointer(
+      reinterpret_cast<uintptr_t>(ptr1) - kPointerOffset);
   EXPECT_TRUE(ref_count1->IsAliveWithNoKnownRefs());
 
   ref_count1->Acquire();
@@ -3383,8 +3390,8 @@ void PartitionAllocTest::RunRefCountReallocSubtest(size_t orig_size,
   ref_count1 = memory::RemaskPtr(ref_count1);
 
   // Re-query ref-count. It may have moved if Realloc changed the slot.
-  auto* ref_count2 =
-      PartitionRefCountPointer(reinterpret_cast<char*>(ptr2) - kPointerOffset);
+  auto* ref_count2 = PartitionRefCountPointer(
+      reinterpret_cast<uintptr_t>(ptr2) - kPointerOffset);
 
   if (memory::UnmaskPtr(ptr1) == memory::UnmaskPtr(ptr2)) {
     // If the slot didn't change, ref-count should stay the same.

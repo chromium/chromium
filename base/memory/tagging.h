@@ -9,6 +9,7 @@
 // extension.
 #include <stddef.h>
 #include <stdint.h>
+#include <cstdint>
 #include "base/base_export.h"
 #include "base/compiler_specific.h"
 #include "build/build_config.h"
@@ -69,6 +70,7 @@ BASE_EXPORT void InitializeMTESupportIfNeeded();
 // solution should be good enough for fuzzing/debug, ideally needs fixing for
 // async deployment on end-user devices.
 namespace internal {
+// TODO(bartekn): void* -> uintptr_t
 using RemaskPtrInternalFn = void*(void* ptr);
 using TagMemoryRangeIncrementInternalFn = void*(void* ptr, size_t size);
 
@@ -85,6 +87,7 @@ extern BASE_EXPORT RemaskPtrInternalFn* global_remask_void_ptr_fn;
 // Increments the tag of the memory range ptr. Useful for provable revocations
 // (e.g. free). Returns the pointer with the new tag. Ensures that the entire
 // range is set to the same tag.
+// TODO(bartekn): Remove the T* variant.
 template <typename T>
 ALWAYS_INLINE T* TagMemoryRangeIncrement(T* ptr, size_t size) {
 #if defined(HAS_MEMORY_TAGGING)
@@ -94,10 +97,15 @@ ALWAYS_INLINE T* TagMemoryRangeIncrement(T* ptr, size_t size) {
   return ptr;
 #endif
 }
+ALWAYS_INLINE uintptr_t TagMemoryRangeIncrement(uintptr_t ptr, size_t size) {
+  return reinterpret_cast<uintptr_t>(
+      TagMemoryRangeIncrement(reinterpret_cast<void*>(ptr), size));
+}
 
 // Randomly changes the tag of the ptr memory range. Useful for initial random
 // initialization. Returns the pointer with the new tag. Ensures that the entire
 // range is set to the same tag.
+// TODO(bartekn): Remove the T* variant.
 template <typename T>
 ALWAYS_INLINE T* TagMemoryRangeRandomly(T* ptr,
                                         size_t size,
@@ -109,8 +117,15 @@ ALWAYS_INLINE T* TagMemoryRangeRandomly(T* ptr,
   return ptr;
 #endif
 }
+ALWAYS_INLINE uintptr_t TagMemoryRangeRandomly(uintptr_t ptr,
+                                               size_t size,
+                                               uint64_t mask = 0u) {
+  return reinterpret_cast<uintptr_t>(
+      TagMemoryRangeRandomly(reinterpret_cast<void*>(ptr), size, mask));
+}
 
 // Gets a version of ptr that's safe to dereference.
+// TODO(bartekn): Remove the T* variant.
 template <typename T>
 ALWAYS_INLINE T* RemaskPtr(T* ptr) {
 #if defined(HAS_MEMORY_TAGGING)
@@ -119,16 +134,22 @@ ALWAYS_INLINE T* RemaskPtr(T* ptr) {
   return ptr;
 #endif
 }
-
-ALWAYS_INLINE uintptr_t UnmaskPtr(uintptr_t ptr) {
-#if defined(HAS_MEMORY_TAGGING)
-  return ptr & kMemTagUnmask;
-#else
-  return ptr;
-#endif
+// Gets a version of address that's safe to dereference, if cast to a pointer.
+ALWAYS_INLINE uintptr_t RemaskPtr(uintptr_t address) {
+  return reinterpret_cast<uintptr_t>(
+      RemaskPtr(reinterpret_cast<void*>(address)));
 }
 
+// Strips the tag bits off address.
+ALWAYS_INLINE uintptr_t UnmaskPtr(uintptr_t address) {
+#if defined(HAS_MEMORY_TAGGING)
+  return address & kMemTagUnmask;
+#else
+  return address;
+#endif
+}
 // Strips the tag bits off ptr.
+// TODO(bartekn): Remove the T* variant.
 template <typename T>
 ALWAYS_INLINE T* UnmaskPtr(T* ptr) {
   return reinterpret_cast<T*>(UnmaskPtr(reinterpret_cast<uintptr_t>(ptr)));

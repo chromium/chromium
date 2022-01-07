@@ -353,7 +353,7 @@ void UnmapNow(uintptr_t reservation_start,
 
   // After resetting the table entries, unreserve and decommit the memory.
   AddressPoolManager::GetInstance()->UnreserveAndDecommit(
-      pool, reinterpret_cast<void*>(reservation_start), reservation_size);
+      pool, reservation_start, reservation_size);
 }
 }  // namespace
 

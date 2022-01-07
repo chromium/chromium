@@ -42,11 +42,11 @@ AddressPoolManager* AddressPoolManager::GetInstance() {
 namespace {
 
 // This will crash if the range cannot be decommitted.
-void DecommitPages(void* address, size_t size) {
+void DecommitPages(uintptr_t address, size_t size) {
   // Callers rely on the pages being zero-initialized when recommitting them.
   // |DecommitSystemPages| doesn't guarantee this on all operating systems, in
   // particular on macOS, but |DecommitAndZeroSystemPages| does.
-  DecommitAndZeroSystemPages(address, size);
+  DecommitAndZeroSystemPages(reinterpret_cast<void*>(address), size);
 }
 
 }  // namespace
@@ -94,27 +94,26 @@ void AddressPoolManager::Remove(pool_handle handle) {
   pool->Reset();
 }
 
-char* AddressPoolManager::Reserve(pool_handle handle,
-                                  void* requested_address,
-                                  size_t length) {
+uintptr_t AddressPoolManager::Reserve(pool_handle handle,
+                                      uintptr_t requested_address,
+                                      size_t length) {
   Pool* pool = GetPool(handle);
   if (!requested_address)
-    return reinterpret_cast<char*>(pool->FindChunk(length));
-  const bool is_available = pool->TryReserveChunk(
-      reinterpret_cast<uintptr_t>(requested_address), length);
+    return pool->FindChunk(length);
+  const bool is_available = pool->TryReserveChunk(requested_address, length);
   if (is_available)
-    return static_cast<char*>(requested_address);
-  return reinterpret_cast<char*>(pool->FindChunk(length));
+    return requested_address;
+  return pool->FindChunk(length);
 }
 
 void AddressPoolManager::UnreserveAndDecommit(pool_handle handle,
-                                              void* ptr,
+                                              uintptr_t address,
                                               size_t length) {
   PA_DCHECK(0 < handle && handle <= kNumPools);
   Pool* pool = GetPool(handle);
   PA_DCHECK(pool->IsInitialized());
-  DecommitPages(ptr, length);
-  pool->FreeChunk(reinterpret_cast<uintptr_t>(ptr), length);
+  DecommitPages(address, length);
+  pool->FreeChunk(address, length);
 }
 
 void AddressPoolManager::Pool::Initialize(uintptr_t ptr, size_t length) {
@@ -298,25 +297,22 @@ void ResetBitmap(std::bitset<bitsize>& bitmap,
   }
 }
 
-char* AddressPoolManager::Reserve(pool_handle handle,
-                                  void* requested_address,
-                                  size_t length) {
+uintptr_t AddressPoolManager::Reserve(pool_handle handle,
+                                      uintptr_t requested_address,
+                                      size_t length) {
   PA_DCHECK(!(length & DirectMapAllocationGranularityOffsetMask()));
-  char* ptr = reinterpret_cast<char*>(
-      AllocPages(requested_address, length, kSuperPageSize, PageInaccessible,
-                 PageTag::kPartitionAlloc));
-  if (UNLIKELY(!ptr))
-    return nullptr;
-  return ptr;
+  uintptr_t address = reinterpret_cast<uintptr_t>(
+      AllocPages(reinterpret_cast<void*>(requested_address), length,
+                 kSuperPageSize, PageInaccessible, PageTag::kPartitionAlloc));
+  return address;
 }
 
 void AddressPoolManager::UnreserveAndDecommit(pool_handle handle,
-                                              void* ptr,
+                                              uintptr_t address,
                                               size_t length) {
-  uintptr_t ptr_as_uintptr = reinterpret_cast<uintptr_t>(ptr);
-  PA_DCHECK(!(ptr_as_uintptr & kSuperPageOffsetMask));
+  PA_DCHECK(!(address & kSuperPageOffsetMask));
   PA_DCHECK(!(length & DirectMapAllocationGranularityOffsetMask()));
-  FreePages(ptr, length);
+  FreePages(reinterpret_cast<void*>(address), length);
 }
 
 void AddressPoolManager::MarkUsed(pool_handle handle,

@@ -102,13 +102,11 @@ template void PartitionAllocator<internal::ThreadSafe>::init(PartitionOptions);
 
 #if (DCHECK_IS_ON() || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)) && \
     BUILDFLAG(USE_BACKUP_REF_PTR)
-// TODO(bartekn): void* -> uintptr_t
-void CheckThatSlotOffsetIsZero(void* ptr) {
+void CheckThatSlotOffsetIsZero(uintptr_t address) {
   // Add kPartitionPastAllocationAdjustment, because
   // PartitionAllocGetSlotStartInBRPPool will subtract it.
   PA_CHECK(PartitionAllocGetSlotStartInBRPPool(
-               reinterpret_cast<uintptr_t>(ptr) +
-               kPartitionPastAllocationAdjustment) == ptr);
+               address + kPartitionPastAllocationAdjustment) == address);
 }
 #endif
 
