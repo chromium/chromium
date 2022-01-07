@@ -484,7 +484,11 @@ static_library("tflite") {
   }
 
   if (is_ios) {
-    sources += [ "src/tensorflow/lite/minimal_logging_ios.cc" ]
+    sources += [
+      "src/tensorflow/lite/minimal_logging_ios.cc",
+      "src/tensorflow/lite/profiling/signpost_profiler.h",
+      "src/tensorflow/lite/profiling/signpost_profiler.mm",
+    ]
   } else if (is_android) {
     sources += [
       "src/tensorflow/lite/minimal_logging_android.cc",
