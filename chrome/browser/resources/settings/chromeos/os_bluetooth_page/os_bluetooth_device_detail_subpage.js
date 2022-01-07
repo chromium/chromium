@@ -26,6 +26,7 @@ import {loadTimeData} from '../../i18n_setup.js';
 import {Route, Router} from '../../router.js';
 import {routes} from '../os_route.m.js';
 import {RouteObserverBehavior, RouteObserverBehaviorInterface} from '../route_observer_behavior.js';
+import {RouteOriginBehavior, RouteOriginBehaviorInterface} from '../route_origin_behavior.m.js';
 
 const mojom = chromeos.bluetoothConfig.mojom;
 
@@ -42,10 +43,11 @@ const PageState = {
  * @constructor
  * @extends {PolymerElement}
  * @implements {RouteObserverBehaviorInterface}
+ * @implements {RouteOriginBehaviorInterface}
  * @implements {I18nBehaviorInterface}
  */
-const SettingsBluetoothDeviceDetailSubpageElementBase =
-    mixinBehaviors([RouteObserverBehavior, I18nBehavior], PolymerElement);
+const SettingsBluetoothDeviceDetailSubpageElementBase = mixinBehaviors(
+    [RouteObserverBehavior, RouteOriginBehavior, I18nBehavior], PolymerElement);
 
 /** @polymer */
 class SettingsBluetoothDeviceDetailSubpageElement extends
@@ -112,12 +114,30 @@ class SettingsBluetoothDeviceDetailSubpageElement extends
     ];
   }
 
+  constructor() {
+    super();
+
+    /** RouteOriginBehaviorInterface override */
+    this.route_ = routes.BLUETOOTH_DEVICE_DETAIL;
+  }
+
+  /** @override */
+  ready() {
+    super.ready();
+
+    this.addFocusConfig(routes.POINTERS, '#changeMouseSettings');
+    this.addFocusConfig(routes.KEYBOARD, '#changeKeyboardSettings');
+  }
+
   /**
    * RouteObserverBehaviorInterface override
    * @param {!Route} route
+   * @param {!Route=} opt_oldRoute
    */
-  currentRouteChanged(route) {
-    if (route !== routes.BLUETOOTH_DEVICE_DETAIL) {
+  currentRouteChanged(route, opt_oldRoute) {
+    super.currentRouteChanged(route, opt_oldRoute);
+
+    if (route !== this.route_) {
       this.deviceId_ = '';
       this.pageState_ = PageState.DISCONNECTED;
       return;

@@ -9,11 +9,10 @@
 
 // #import {Router, Route, routes} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {flush, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-// #import {eventToPromise} from 'chrome://test/test_util.js';
-// #import {assertTrue, assertEquals, assertFalse} from '../../../chai_assert.js';
+// #import {waitAfterNextRender, eventToPromise} from 'chrome://test/test_util.js';
+// #import {assertTrue, assertEquals, assertFalse, assertNotEquals} from '../../../chai_assert.js';
 // #import {createDefaultBluetoothDevice, FakeBluetoothConfig} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
 // #import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
-// #import {waitAfterNextRender} from 'chrome://test/test_util.js';
 // clang-format on
 
 suite('OsBluetoothDeviceDetailPageTest', function() {
@@ -159,7 +158,6 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     assertFalse(!!getManagedIcon());
   });
 
-
   test('Show change settings row, and navigate to subpages', async function() {
     init();
     bluetoothConfig.setBluetoothEnabledState(/*enabled=*/ true);
@@ -205,6 +203,19 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
         settings.Router.getInstance().getCurrentRoute(),
         settings.routes.POINTERS);
 
+    // Navigate back to the detail page.
+    assertNotEquals(
+        getChangeMouseSettings(),
+        bluetoothDeviceDetailPage.shadowRoot.activeElement);
+    let windowPopstatePromise = test_util.eventToPromise('popstate', window);
+    settings.Router.getInstance().navigateToPreviousRoute();
+    await windowPopstatePromise;
+
+    // Check that |#changeMouseSettings| has been focused.
+    assertEquals(
+        getChangeMouseSettings(),
+        bluetoothDeviceDetailPage.shadowRoot.activeElement);
+
     device1.deviceProperties.deviceType = mojom.DeviceType.kKeyboard;
     bluetoothConfig.updatePairedDevice(device1);
     await flushAsync();
@@ -224,6 +235,24 @@ suite('OsBluetoothDeviceDetailPageTest', function() {
     assertEquals(
         settings.Router.getInstance().getCurrentRoute(),
         settings.routes.KEYBOARD);
+
+    // Navigate back to the detail page.
+    assertNotEquals(
+        getChangeKeyboardSettings(),
+        bluetoothDeviceDetailPage.shadowRoot.activeElement);
+    windowPopstatePromise = test_util.eventToPromise('popstate', window);
+    settings.Router.getInstance().navigateToPreviousRoute();
+    await windowPopstatePromise;
+
+    // Check that |#changeKeyboardSettings| has been focused.
+    assertEquals(
+        getChangeKeyboardSettings(),
+        bluetoothDeviceDetailPage.shadowRoot.activeElement);
+
+    // This is needed or other tests will fail.
+    // TODO(gordonseto): Figure out how to remove this.
+    getChangeKeyboardSettings().click();
+    await flushAsync();
   });
 
   test('Device becomes unavailable while viewing page.', async function() {

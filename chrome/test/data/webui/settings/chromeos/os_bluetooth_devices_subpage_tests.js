@@ -12,7 +12,7 @@
 // #import {assertTrue, assertEquals, assertNotEquals} from '../../../chai_assert.js';
 // #import {createDefaultBluetoothDevice, FakeBluetoothConfig} from 'chrome://test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
 // #import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
-// #import {waitAfterNextRender} from 'chrome://test/test_util.js';
+// #import {waitAfterNextRender, eventToPromise} from 'chrome://test/test_util.js';
 // clang-format on
 
 suite('OsBluetoothDevicesSubpageTest', function() {
@@ -217,24 +217,14 @@ suite('OsBluetoothDevicesSubpageTest', function() {
             settings.routes.BLUETOOTH_DEVICE_DETAIL, params);
         await flushAsync();
 
-        // Create a promise that is resolved when
-        // |bluetoothDevicesSubpage.currentRouteChanged| is called.
-        let currentRouteChangedFinished;
-        let currentRouteChangedPromise = new Promise((resolve) => {
-          currentRouteChangedFinished = resolve;
-        });
-        const currentRouteChanged = bluetoothDevicesSubpage.currentRouteChanged;
-        bluetoothDevicesSubpage.currentRouteChanged = (route, oldRoute) => {
-          currentRouteChanged.call(bluetoothDevicesSubpage, route, oldRoute);
-          currentRouteChangedFinished();
-        };
-
         // Navigate backwards.
         assertNotEquals(
             getDeviceListItem(/*connected=*/ true, /*index=*/ 0),
             getDeviceList(/*connected=*/ true).shadowRoot.activeElement);
+        let windowPopstatePromise =
+            test_util.eventToPromise('popstate', window);
         settings.Router.getInstance().navigateToPreviousRoute();
-        await currentRouteChangedPromise;
+        await windowPopstatePromise;
 
         // The first connected device list item should be focused.
         assertEquals(
@@ -248,17 +238,13 @@ suite('OsBluetoothDevicesSubpageTest', function() {
             settings.routes.BLUETOOTH_DEVICE_DETAIL, params);
         await flushAsync();
 
-        // Reset the promise.
-        currentRouteChangedPromise = new Promise((resolve) => {
-          currentRouteChangedFinished = resolve;
-        });
-
         // Navigate backwards.
         assertNotEquals(
             getDeviceListItem(/*connected=*/ false, /*index=*/ 0),
             getDeviceList(/*connected=*/ false).shadowRoot.activeElement);
+        windowPopstatePromise = test_util.eventToPromise('popstate', window);
         settings.Router.getInstance().navigateToPreviousRoute();
-        await currentRouteChangedPromise;
+        await windowPopstatePromise;
 
         // The first unconnected device list item should be focused.
         assertEquals(
