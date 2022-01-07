@@ -162,6 +162,7 @@ public class ChromeProvidedSharingOptionsProviderTest {
 
     @Test
     @MediumTest
+    @DisabledTest(message = "http://crbug/1285362")
     @Features.EnableFeatures({ChromeFeatureList.LIGHTWEIGHT_REACTIONS})
     public void getPropertyModels_lightweightReactionsEnabled() {
         setUpChromeProvidedSharingOptionsProviderTest(
