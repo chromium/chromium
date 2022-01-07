@@ -230,7 +230,8 @@
       "is_component_build": false,
       "is_debug": false,
       "symbol_level": 1,
-      "use_goma": true
+      "use_rbe": true,
+      "use_remoteexec": true
     }
   },
   "Mac Builder (reclient compare)": {

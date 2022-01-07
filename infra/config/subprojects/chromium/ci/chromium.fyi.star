@@ -86,7 +86,10 @@ ci.builder(
     console_view_entry = consoles.console_view_entry(
         category = "viz",
     ),
+    goma_backend = None,
     os = os.LINUX_BIONIC_SWITCH_TO_DEFAULT,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 ci.builder(

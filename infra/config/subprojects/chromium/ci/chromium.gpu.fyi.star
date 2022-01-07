@@ -204,6 +204,9 @@ ci.gpu.linux_builder(
         category = "Linux",
         short_name = "tsn",
     ),
+    goma_backend = None,
+    reclient_jobs = rbe_jobs.DEFAULT,
+    reclient_instance = rbe_instance.DEFAULT,
 )
 
 # Builder + tester.

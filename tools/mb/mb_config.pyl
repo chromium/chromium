@@ -291,7 +291,7 @@
       'Linux Builder (j-500) (reclient)': 'gpu_tests_release_bot_reclient',
       'Linux CFI (reclient shadow)': 'cfi_full_cfi_icall_cfi_diag_thin_lto_release_static_dcheck_always_on_reclient',
       'Linux Builder (j-500) (reclient)': 'gpu_tests_release_bot_reclient',
-      'Linux Viz': 'release_trybot_minimal_symbols',
+      'Linux Viz': 'release_trybot_minimal_symbols_reclient',
       'lacros-amd64-generic-rel-fyi': 'chromeos_amd64-generic_lacros_rel',
       'linux-ash-chromium-builder-fyi-rel': 'chromeos_with_codecs_release_bot',
       'linux-lacros-builder-fyi-rel': 'lacros_on_linux_release_bot',
@@ -453,7 +453,7 @@
       'GPU Mac Builder': 'gpu_tests_release_trybot_minimal_symbols',
       'GPU Mac Builder (dbg)': 'gpu_tests_debug_bot',
       'GPU Linux Builder': 'gpu_tests_release_trybot_minimal_symbols',
-      'GPU Linux Builder (dbg)': 'gpu_tests_debug_bot',
+      'GPU Linux Builder (dbg)': 'gpu_tests_debug_bot_reclient',
       'GPU Win x64 Builder': 'gpu_tests_release_bot_dcheck_always_on_resource_allowlisting',
       'GPU Win x64 Builder Code Coverage': 'gpu_tests_release_trybot_resource_allowlisting_code_coverage',
       'GPU Win x64 Builder (dbg)': 'gpu_tests_debug_bot',
@@ -480,7 +480,7 @@
       'GPU FYI Win x64 DX12 Vulkan Builder': 'gpu_fyi_tests_dx12vk_release_trybot',
       'GPU FYI Win x64 DX12 Vulkan Builder (dbg)': 'gpu_fyi_tests_dx12vk_debug_trybot',
       'GPU FYI XR Win x64 Builder': 'gpu_fyi_tests_release_trybot',
-      'Linux FYI GPU TSAN Release': 'gpu_fyi_tests_release_trybot_tsan',
+      'Linux FYI GPU TSAN Release': 'gpu_fyi_tests_release_trybot_tsan_reclient',
       'Linux FYI SkiaRenderer Dawn Release (Intel HD 630)': 'gpu_tests_sk_dawn_release_trybot',
       'Optional Android Release (Nexus 5X)': 'gpu_tests_android_release_trybot_arm64',
       'Optional Android Release (Pixel 4)': 'gpu_tests_android_release_trybot',
@@ -2234,6 +2234,10 @@
 
     'gpu_fyi_tests_release_trybot_tsan': [
       'gpu_fyi_tests', 'release_trybot_minimal_symbols', 'tsan', 'disable_nacl',
+    ],
+
+    'gpu_fyi_tests_release_trybot_tsan_reclient': [
+      'gpu_fyi_tests', 'release_trybot_minimal_symbols_reclient', 'tsan', 'disable_nacl',
     ],
 
     'gpu_fyi_tests_release_trybot_x86': [
