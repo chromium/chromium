@@ -884,6 +884,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Platform.StatefulFormat" enum="StatefulFormat"
+    expires_after="2022-10-21">
+  <owner>sarthakkukreti@chromium.org</owner>
+  <owner>gwendal@chromium.org</owner>
+  <summary>Chrome OS stateful partition format. Sampled once per boot.</summary>
+</histogram>
+
 <histogram name="Platform.StatefulFreeSpace" units="MB"
     expires_after="2022-10-21">
   <owner>asavery@chromium.org</owner>

@@ -84010,6 +84010,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="9" label="Failed"/>
 </enum>
 
+<enum name="StatefulFormat">
+  <summary>ChromeOS Stateful Partition Format</summary>
+  <int value="0" label="Raw partition"/>
+  <int value="1" label="Logical volume"/>
+</enum>
+
 <enum name="StateStoreInitResult">
   <int value="0"
       label="Kept pref: platform-specific store non-existent or not
