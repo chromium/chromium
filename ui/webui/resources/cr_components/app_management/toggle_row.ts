@@ -4,6 +4,7 @@
 import './shared_style.js';
 import '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import '//resources/cr_elements/policy/cr_policy_indicator.m.js';
+import '//resources/cr_elements/icons.m.js';
 
 import {CrToggleElement} from '//resources/cr_elements/cr_toggle/cr_toggle.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';

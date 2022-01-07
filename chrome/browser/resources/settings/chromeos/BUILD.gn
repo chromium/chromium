@@ -494,7 +494,6 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/os_apps_page/app_management_page/borealis_page/borealis_detail_view.js",
     "chromeos/os_apps_page/app_management_page/chrome_app_detail_view.js",
     "chromeos/os_apps_page/app_management_page/dom_switch.js",
-    "chromeos/os_apps_page/app_management_page/icons.js",
     "chromeos/os_apps_page/app_management_page/main_view.js",
     "chromeos/os_apps_page/app_management_page/more_permissions_item.js",
     "chromeos/os_apps_page/app_management_page/pin_to_shelf_item.js",

@@ -20,7 +20,6 @@ js_type_check("closure_compile_module") {
     ":chrome_app_detail_view",
     ":dom_switch",
     ":fake_page_handler",
-    ":icons",
     ":main_view",
     ":more_permissions_item",
     ":pin_to_shelf_item",
@@ -136,10 +135,6 @@ js_library("fake_page_handler") {
     "//ui/webui/resources/js:promise_resolver.m",
   ]
   externs_list = [ "./types.js" ]
-}
-
-js_library("icons") {
-  deps = []
 }
 
 js_library("main_view") {
@@ -277,7 +272,6 @@ html_to_js("web_components") {
     "arc_detail_view.js",
     "chrome_app_detail_view.js",
     "dom_switch.js",
-    "icons.js",
     "main_view.js",
     "more_permissions_item.js",
     "pin_to_shelf_item.js",

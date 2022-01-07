@@ -6,9 +6,9 @@ const kBorealisClientAppId = 'epfhbkiklgmlkhfpbcdleadnhcfdjfmo';
 
 import {Polymer, html} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import '../icons.js';
 import '../pin_to_shelf_item.js';
 import '../shared_style.js';
+import '//resources/cr_components/app_management/icons.js';
 import '//resources/cr_components/app_management/permission_item.js';
 import '//resources/cr_elements/icons.m.js';
 
