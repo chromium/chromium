@@ -18,6 +18,7 @@
 #include "components/sync/driver/sync_service_impl.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/favicon/favicon_service_factory.h"
+#include "ios/chrome/browser/history/history_service_factory.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -32,8 +33,10 @@ class SyncServiceFactoryTest : public PlatformTest {
     browser_state_builder.AddTestingFactory(
         ios::FaviconServiceFactory::GetInstance(),
         ios::FaviconServiceFactory::GetDefaultFactory());
+    browser_state_builder.AddTestingFactory(
+        ios::HistoryServiceFactory::GetInstance(),
+        ios::HistoryServiceFactory::GetDefaultFactory());
     chrome_browser_state_ = browser_state_builder.Build();
-    CHECK(chrome_browser_state_->CreateHistoryService());
   }
 
   void SetUp() override {
