@@ -51,8 +51,15 @@ class FirstPartySets {
   // record is a set declaration in the format specified here:
   // https://github.com/privacycg/first-party-sets.
   //
-  // In case of invalid input, the members-to-owners map is cleared, but keeps
-  // any manually-specified set (i.e. a set provided on the command line).
+  // Only the first call to ParseAndSet can have any effect; subsequent
+  // invocations are ignored.
+  //
+  // If `sets_file.IsValid()` is false, then the set of sets is considered
+  // empty.
+  //
+  // In case of invalid input, the set of sets provided by the file is
+  // considered empty. Note that the FirstPartySets instance may still have some
+  // sets, from the command line or enterprise policies.
   //
   // Has no effect if `kFirstPartySets` is disabled.
   void ParseAndSet(base::File sets_file);
@@ -159,8 +166,15 @@ class FirstPartySets {
 
   std::string raw_persisted_sets_ GUARDED_BY_CONTEXT(sequence_checker_);
 
+  enum Progress {
+    kNotStarted,
+    kStarted,
+    kFinished,
+  };
+
   bool persisted_sets_ready_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
-  bool component_sets_ready_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+  Progress component_sets_parse_progress_
+      GUARDED_BY_CONTEXT(sequence_checker_) = kNotStarted;
   bool manual_sets_ready_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   bool enabled_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   // The callback runs after the site state clearing is completed.

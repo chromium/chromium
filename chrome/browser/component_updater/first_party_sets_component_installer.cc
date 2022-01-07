@@ -4,9 +4,13 @@
 
 #include "chrome/browser/component_updater/first_party_sets_component_installer.h"
 
+#include <utility>
+
 #include "base/bind.h"
+#include "base/callback.h"
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
+#include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -17,17 +21,20 @@
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
+#include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "net/base/features.h"
 #include "net/cookies/cookie_util.h"
 #include "services/network/public/mojom/network_service.mojom.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using component_updater::ComponentUpdateService;
 
 namespace {
+
+using SetsReadyOnceCallback = component_updater::
+    FirstPartySetsComponentInstallerPolicy::SetsReadyOnceCallback;
 
 constexpr base::FilePath::CharType kFirstPartySetsSetsFileName[] =
     FILE_PATH_LITERAL("sets.json");
@@ -61,6 +68,10 @@ bool IsFirstPartySetsEnabled() {
   if (!base::FeatureList::IsEnabled(net::features::kFirstPartySets)) {
     return false;
   }
+  // Some java tests start the browser in minimal mode, in which
+  // `g_browser_process` is unset.
+  if (!g_browser_process)
+    return false;
   auto* local_state = g_browser_process->local_state();
   if (!local_state ||
       !local_state->HasPrefPath(first_party_sets::kFirstPartySetsEnabled)) {
@@ -69,14 +80,21 @@ bool IsFirstPartySetsEnabled() {
   return local_state->GetBoolean(first_party_sets::kFirstPartySetsEnabled);
 }
 
-// Invokes `on_sets_ready` with the contents of the component, if:
-// * the component has been installed; and
+// Invokes `on_sets_ready`, if:
 // * First-Party Sets is enabled; and
-// * the component was read successfully.
-void SetFirstPartySetsConfig(
-    base::OnceCallback<void(base::File)> on_sets_ready) {
+// * `on_sets_ready` is not null.
+//
+// If the component has been installed and can be read, we pass the component
+// file; otherwise, we pass an invalid file.
+void SetFirstPartySetsConfig(SetsReadyOnceCallback on_sets_ready) {
+  if (!IsFirstPartySetsEnabled() || on_sets_ready.is_null()) {
+    return;
+  }
+
   const base::FilePath instance_path = GetConfigPathInstance();
-  if (instance_path.empty() || !IsFirstPartySetsEnabled()) {
+  if (instance_path.empty()) {
+    // Registration is complete, but no component version exists on disk.
+    std::move(on_sets_ready).Run(base::File());
     return;
   }
 
@@ -95,12 +113,16 @@ namespace component_updater {
 
 // static
 void FirstPartySetsComponentInstallerPolicy::ReconfigureAfterNetworkRestart(
-    base::OnceCallback<void(base::File)> on_sets_ready) {
+    SetsReadyOnceCallback on_sets_ready) {
   SetFirstPartySetsConfig(std::move(on_sets_ready));
 }
 
+void FirstPartySetsComponentInstallerPolicy::OnRegistrationComplete() {
+  SetFirstPartySetsConfig(std::move(on_sets_ready_));
+}
+
 FirstPartySetsComponentInstallerPolicy::FirstPartySetsComponentInstallerPolicy(
-    base::RepeatingCallback<void(base::File)> on_sets_ready)
+    SetsReadyOnceCallback on_sets_ready)
     : on_sets_ready_(std::move(on_sets_ready)) {}
 
 FirstPartySetsComponentInstallerPolicy::
@@ -150,7 +172,7 @@ void FirstPartySetsComponentInstallerPolicy::ComponentReady(
 
   GetConfigPathInstance() = GetInstalledPath(install_dir);
 
-  SetFirstPartySetsConfig(on_sets_ready_);
+  SetFirstPartySetsConfig(std::move(on_sets_ready_));
 }
 
 // Called during startup and installation before ComponentReady().
@@ -201,14 +223,23 @@ void FirstPartySetsComponentInstallerPolicy::ResetForTesting() {
 void RegisterFirstPartySetsComponent(ComponentUpdateService* cus) {
   VLOG(1) << "Registering First-Party Sets component.";
 
-  base::MakeRefCounted<ComponentInstaller>(
-      std::make_unique<FirstPartySetsComponentInstallerPolicy>(
-          /*on_sets_ready=*/base::BindRepeating([](base::File sets_file) {
-            VLOG(1) << "Received First-Party Sets";
-            content::GetNetworkService()->SetFirstPartySets(
-                std::move(sets_file));
-          })))
-      ->Register(cus, base::OnceClosure());
+  auto policy = std::make_unique<FirstPartySetsComponentInstallerPolicy>(
+      /*on_sets_ready=*/base::BindOnce([](base::File sets_file) {
+        VLOG(1) << "Received First-Party Sets";
+        content::GetNetworkService()->SetFirstPartySets(std::move(sets_file));
+      }));
+
+  FirstPartySetsComponentInstallerPolicy* raw_policy = policy.get();
+  // Dereferencing `raw_policy` this way is safe because the closure is invoked
+  // by the ComponentInstaller instance, which owns `policy` (so they have the
+  // same lifetime). Therefore if/when the closure is invoked, `policy` is still
+  // alive.
+  base::MakeRefCounted<ComponentInstaller>(std::move(policy))
+      ->Register(cus, base::BindOnce(
+                          [](FirstPartySetsComponentInstallerPolicy* policy) {
+                            policy->OnRegistrationComplete();
+                          },
+                          raw_policy));
 }
 
 // static

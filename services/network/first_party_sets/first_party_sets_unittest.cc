@@ -4,6 +4,8 @@
 
 #include "services/network/first_party_sets/first_party_sets.h"
 
+#include <string>
+
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_reader.h"
@@ -61,6 +63,8 @@ class FirstPartySetsTest : public ::testing::Test {
   }
 
   FirstPartySets& sets() { return sets_; }
+
+  base::test::TaskEnvironment& env() { return env_; }
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -155,6 +159,21 @@ TEST_F(FirstPartySetsEnabledTest, Sets_IsEmpty) {
   EXPECT_THAT(sets().Sets(), IsEmpty());
 }
 
+TEST_F(FirstPartySetsEnabledTest, IgnoresInvalidFile) {
+  sets().ParseAndSet(base::File());
+  env().RunUntilIdle();
+  EXPECT_THAT(sets().Sets(), IsEmpty());
+
+  const std::string input =
+      "{\"owner\": \"https://example.test\",\"members\": "
+      "[\"https://aaaa.test\",],}";
+
+  // Subsequent ParseAndSet calls should be ignored, because the instance has
+  // already received sets from component updater.
+  SetComponentSetsAndWait(input);
+  EXPECT_THAT(sets().Sets(), IsEmpty());
+}
+
 TEST_F(FirstPartySetsEnabledTest, ParsesJSON) {
   SetComponentSetsAndWait("[]");
   EXPECT_THAT(sets().Sets(), IsEmpty());
@@ -236,8 +255,8 @@ TEST_F(FirstPartySetsEnabledTest, V2_AcceptsMultipleSets) {
                                     SerializesTo("https://member2.test")))));
 }
 
-TEST_F(FirstPartySetsEnabledTest, ClearsPreloadedOnError) {
-  const std::string input = R"(
+TEST_F(FirstPartySetsEnabledTest, ParseAndSet_Idempotent) {
+  std::string input = R"(
   [
     {
       "owner": "https://example.test",
@@ -262,9 +281,31 @@ TEST_F(FirstPartySetsEnabledTest, ClearsPreloadedOnError) {
                UnorderedElementsAre(SerializesTo("https://foo.test"),
                                     SerializesTo("https://member2.test")))));
 
-  SetComponentSetsAndWait("{}");
+  input = R"(
+  [
+    {
+      "owner": "https://example2.test",
+      "members": ["https://member1.test"]
+    },
+    {
+      "owner": "https://foo2.test",
+      "members": ["https://member2.test"]
+    }
+  ]
+  )";
+  ASSERT_TRUE(base::JSONReader::Read(input));
+  SetComponentSetsAndWait(input);
 
-  EXPECT_THAT(sets().Sets(), IsEmpty());
+  // The second call to ParseAndSet should have had no effect.
+  EXPECT_THAT(
+      sets().Sets(),
+      UnorderedElementsAre(
+          Pair(SerializesTo("https://example.test"),
+               UnorderedElementsAre(SerializesTo("https://example.test"),
+                                    SerializesTo("https://member1.test"))),
+          Pair(SerializesTo("https://foo.test"),
+               UnorderedElementsAre(SerializesTo("https://foo.test"),
+                                    SerializesTo("https://member2.test")))));
 }
 
 TEST_F(FirstPartySetsEnabledTest, OwnerIsOnlyMember) {
@@ -565,42 +606,6 @@ TEST_F(FirstPartySetsEnabledTest,
           Pair(SerializesTo("https://bar.test"),
                UnorderedElementsAre(SerializesTo("https://bar.test"),
                                     SerializesTo("https://member4.test")))));
-}
-
-TEST_F(FirstPartySetsEnabledTest,
-       SetsManuallySpecified_ClearsPreloadedOnError) {
-  const std::string input = R"(
-  [
-    {
-      "owner": "https://bar.test",
-      "members": ["https://member3.test"]
-    }
-  ]
-  )";
-  ASSERT_TRUE(base::JSONReader::Read(input));
-  SetComponentSetsAndWait(input);
-
-  sets().SetManuallySpecifiedSet(
-      "https://example.test,https://member1.test,https://member2.test");
-  EXPECT_THAT(
-      sets().Sets(),
-      UnorderedElementsAre(
-          Pair(SerializesTo("https://example.test"),
-               UnorderedElementsAre(SerializesTo("https://example.test"),
-                                    SerializesTo("https://member1.test"),
-                                    SerializesTo("https://member2.test"))),
-          Pair(SerializesTo("https://bar.test"),
-               UnorderedElementsAre(SerializesTo("https://bar.test"),
-                                    SerializesTo("https://member3.test")))));
-
-  SetComponentSetsAndWait("{}");
-
-  EXPECT_THAT(sets().Sets(),
-              UnorderedElementsAre(Pair(
-                  SerializesTo("https://example.test"),
-                  UnorderedElementsAre(SerializesTo("https://example.test"),
-                                       SerializesTo("https://member1.test"),
-                                       SerializesTo("https://member2.test")))));
 }
 
 TEST_F(FirstPartySetsEnabledTest,

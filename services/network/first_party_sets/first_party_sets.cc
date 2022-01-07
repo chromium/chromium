@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -100,8 +101,17 @@ void FirstPartySets::SetManuallySpecifiedSet(const std::string& flag_value) {
 
 void FirstPartySets::ParseAndSet(base::File sets_file) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!enabled_)
+  if (!enabled_ || component_sets_parse_progress_ != Progress::kNotStarted) {
     return;
+  }
+
+  component_sets_parse_progress_ = Progress::kStarted;
+
+  if (!sets_file.IsValid()) {
+    OnReadSetsFile("");
+    return;
+  }
+
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&ReadSetsFile, std::move(sets_file)),
@@ -111,8 +121,8 @@ void FirstPartySets::ParseAndSet(base::File sets_file) {
 
 void FirstPartySets::OnReadSetsFile(const std::string& raw_sets) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!enabled_)
-    return;
+  DCHECK_EQ(component_sets_parse_progress_, Progress::kStarted);
+  DCHECK(enabled_);
 
   bool is_v1_format = raw_sets.find('[') < raw_sets.find('{');
   if (is_v1_format) {
@@ -128,7 +138,7 @@ void FirstPartySets::OnReadSetsFile(const std::string& raw_sets) {
                             is_v1_format);
 
   ApplyManuallySpecifiedSet();
-  component_sets_ready_ = true;
+  component_sets_parse_progress_ = Progress::kFinished;
   ClearSiteDataOnChangedSetsIfReady();
 }
 
@@ -345,8 +355,9 @@ base::flat_set<net::SchemefulSite> FirstPartySets::ComputeSetsDiff(
 
 void FirstPartySets::ClearSiteDataOnChangedSetsIfReady() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!persisted_sets_ready_ || !component_sets_ready_ || !manual_sets_ready_ ||
-      on_site_data_cleared_.is_null())
+  if (!persisted_sets_ready_ ||
+      component_sets_parse_progress_ != Progress::kFinished ||
+      !manual_sets_ready_ || on_site_data_cleared_.is_null())
     return;
 
   base::flat_set<net::SchemefulSite> diff = ComputeSetsDiff(
