@@ -35,6 +35,7 @@ class ViewsDelegate;
 #endif  // defined(USE_AURA)
 
 namespace chromecast {
+class CastFeatureUpdateObserver;
 class CastSystemMemoryPressureEvaluatorAdjuster;
 class CastWebService;
 class DisplaySettingsManager;
@@ -176,6 +177,8 @@ class CastBrowserMainParts : public content::BrowserMainParts {
 #if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_OZONE)
   std::unique_ptr<WaylandServerController> wayland_server_controller_;
 #endif
+
+  std::unique_ptr<CastFeatureUpdateObserver> feature_update_observer_;
 
 #if defined(USE_AURA) && !defined(OS_FUCHSIA)
   // Only used when running with --enable-ui-devtools.

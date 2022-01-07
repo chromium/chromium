@@ -41,6 +41,7 @@
 #include "chromecast/browser/cast_content_browser_client.h"
 #include "chromecast/browser/cast_extension_url_loader_factory.h"
 #include "chromecast/browser/cast_feature_list_creator.h"
+#include "chromecast/browser/cast_feature_update_observer.h"
 #include "chromecast/browser/cast_system_memory_pressure_evaluator.h"
 #include "chromecast/browser/cast_system_memory_pressure_evaluator_adjuster.h"
 #include "chromecast/browser/cast_web_service.h"
@@ -768,6 +769,12 @@ int CastBrowserMainParts::PreMainMessageLoopRun() {
   content::RenderFrameHost::AllowInjectingJavaScript();
 
   cast_browser_process_->cast_service()->Start();
+
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          switches::kUseCastBrowserPrefConfig)) {
+    feature_update_observer_ = std::make_unique<CastFeatureUpdateObserver>(
+        connector(), cast_browser_process_->pref_service());
+  }
 
   return content::RESULT_CODE_NORMAL_EXIT;
 }
