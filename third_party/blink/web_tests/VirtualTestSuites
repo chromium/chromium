@@ -417,11 +417,6 @@
     "args": ["--autoplay-policy=document-user-activation-required"]
   },
   {
-    "prefix": "sxg-subresource-disabled",
-    "bases": ["http/tests/loading/sxg/sxg-subresource-origin-trial.https.html"],
-    "args": ["--disable-blink-features=SignedExchangeSubresourcePrefetch"]
-  },
-  {
     "prefix": "wbn-from-network",
     "bases": ["external/wpt/web-bundle"],
     "args": ["--enable-features=WebBundlesFromNetwork"]
