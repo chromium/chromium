@@ -77,6 +77,7 @@ class FakeIGamepad final
   bool has_paddles_ = false;
 
   ABI::Windows::Gaming::Input::GamepadReading fake_gamepad_reading_;
+  ABI::Windows::Gaming::Input::GamepadVibration fake_gamepad_vibration_;
 };
 
 }  // namespace device

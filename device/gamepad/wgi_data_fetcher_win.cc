@@ -7,10 +7,12 @@
 #include <stdint.h>
 #include <wrl/event.h>
 
+#include <algorithm>
+#include <memory>
 #include <string>
-#include <vector>
 
 #include "base/containers/cxx20_erase.h"
+#include "base/containers/flat_map.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_util_win.h"
 #include "base/strings/utf_string_conversions.h"
@@ -23,6 +25,8 @@
 #include "device/gamepad/gamepad_id_list.h"
 #include "device/gamepad/gamepad_standard_mappings.h"
 #include "device/gamepad/nintendo_controller.h"
+#include "device/gamepad/wgi_gamepad_device.h"
+
 namespace device {
 
 namespace {
@@ -150,6 +154,11 @@ WgiDataFetcherWin::WgiDataFetcherWin() {
 
 WgiDataFetcherWin::~WgiDataFetcherWin() {
   UnregisterEventHandlers();
+  for (auto& map_entry : devices_) {
+    if (map_entry.second) {
+      map_entry.second->Shutdown();
+    }
+  }
 }
 
 GamepadSource WgiDataFetcherWin::source() {
@@ -211,7 +220,7 @@ void WgiDataFetcherWin::OnGamepadAdded(
   // gamepad polling thread when the callback is returned on a different thread
   // from the IGamepadStatics COM API. Thus `OnGamepadAdded` is also running on
   // gamepad polling thread, it is the only thread that is able to access the
-  // `gamepads_` object, making it thread-safe.
+  // `devices_` object, making it thread-safe.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (initialization_state_ != InitializationState::kInitialized)
@@ -232,9 +241,9 @@ void WgiDataFetcherWin::OnGamepadAdded(
   pad.SetID(display_name);
   pad.connected = true;
   pad.vibration_actuator.type = GamepadHapticActuatorType::kDualRumble;
-  pad.vibration_actuator.not_null = false;
+  pad.vibration_actuator.not_null = true;
   pad.mapping = GamepadMapping::kStandard;
-  gamepads_.push_back({source_id, gamepad});
+  devices_[source_id] = std::make_unique<WgiGamepadDevice>(gamepad);
 }
 
 void WgiDataFetcherWin::OnGamepadRemoved(
@@ -245,26 +254,29 @@ void WgiDataFetcherWin::OnGamepadRemoved(
   // gamepad polling thread when the callback is returned on a different thread
   // from the IGamepadStatics COM API. Thus `OnGamepadRemoved` is also running
   // on gamepad polling thread, it is the only thread that is able to access the
-  // `gamepads_` object, making it thread-safe.
+  // `devices_` object, making it thread-safe.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(initialization_state_, InitializationState::kInitialized);
 
-  base::EraseIf(gamepads_,
-                [=](const WindowsGamingInputControllerMapping& mapping) {
-                  return mapping.gamepad.Get() == gamepad;
-                });
+  base::EraseIf(devices_, [=](const auto& map_entry) {
+    if (map_entry.second->GetGamepad().Get() == gamepad) {
+      map_entry.second->Shutdown();
+      return true;
+    }
+    return false;
+  });
 }
 
 void WgiDataFetcherWin::GetGamepadData(bool devices_changed_hint) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  for (const auto& gamepad_mapping : gamepads_) {
-    PadState* state = GetPadState(gamepad_mapping.source_id);
+  for (const auto& map_entry : devices_) {
+    PadState* state = GetPadState(map_entry.first);
     if (!state)
       continue;
 
     ABI::Windows::Gaming::Input::GamepadReading reading;
     Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad> gamepad =
-        gamepad_mapping.gamepad;
+        map_entry.second->GetGamepad();
     if (FAILED(gamepad->GetCurrentReading(&reading)))
       continue;
 
@@ -345,6 +357,44 @@ void WgiDataFetcherWin::GetGamepadData(bool devices_changed_hint) {
   }
 }
 
+void WgiDataFetcherWin::PlayEffect(
+    int source_id,
+    mojom::GamepadHapticEffectType type,
+    mojom::GamepadEffectParametersPtr params,
+    mojom::GamepadHapticsManager::PlayVibrationEffectOnceCallback callback,
+    scoped_refptr<base::SequencedTaskRunner> callback_runner) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto map_entry = devices_.find(source_id);
+  if (map_entry == devices_.end()) {
+    RunVibrationCallback(
+        std::move(callback), std::move(callback_runner),
+        mojom::GamepadHapticsResult::GamepadHapticsResultNotSupported);
+    return;
+  }
+
+  map_entry->second->PlayEffect(type, std::move(params), std::move(callback),
+                                std::move(callback_runner));
+}
+
+void WgiDataFetcherWin::ResetVibration(
+    int source_id,
+    mojom::GamepadHapticsManager::ResetVibrationActuatorCallback callback,
+    scoped_refptr<base::SequencedTaskRunner> callback_runner) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  auto map_entry = devices_.find(source_id);
+  if (map_entry == devices_.end()) {
+    RunVibrationCallback(
+        std::move(callback), std::move(callback_runner),
+        mojom::GamepadHapticsResult::GamepadHapticsResultNotSupported);
+    return;
+  }
+
+  map_entry->second->ResetVibration(std::move(callback),
+                                    std::move(callback_runner));
+}
+
 // static
 void WgiDataFetcherWin::OverrideActivationFactoryFunctionForTesting(
     WgiDataFetcherWin::ActivationFactoryFunctionCallback callback) {
@@ -358,11 +408,6 @@ WgiDataFetcherWin::GetActivationFactoryFunctionCallback() {
       WgiDataFetcherWin::ActivationFactoryFunctionCallback>
       instance;
   return *instance;
-}
-
-const std::vector<WgiDataFetcherWin::WindowsGamingInputControllerMapping>&
-WgiDataFetcherWin::GetGamepadsForTesting() const {
-  return gamepads_;
 }
 
 WgiDataFetcherWin::InitializationState
@@ -415,35 +460,5 @@ void WgiDataFetcherWin::UnregisterEventHandlers() {
     }
   }
 }
-
-WgiDataFetcherWin::WindowsGamingInputControllerMapping::
-    WindowsGamingInputControllerMapping(
-        int input_source_id,
-        Microsoft::WRL::ComPtr<ABI::Windows::Gaming::Input::IGamepad>
-            input_gamepad)
-    : source_id(input_source_id), gamepad(input_gamepad) {}
-
-WgiDataFetcherWin::WindowsGamingInputControllerMapping::
-    WindowsGamingInputControllerMapping(
-        const WgiDataFetcherWin::WindowsGamingInputControllerMapping& other) =
-        default;
-
-WgiDataFetcherWin::WindowsGamingInputControllerMapping&
-WgiDataFetcherWin::WindowsGamingInputControllerMapping::
-    WindowsGamingInputControllerMapping::operator=(
-        const WgiDataFetcherWin::WindowsGamingInputControllerMapping& other) =
-        default;
-
-WgiDataFetcherWin::WindowsGamingInputControllerMapping::
-    WindowsGamingInputControllerMapping(
-        WgiDataFetcherWin::WindowsGamingInputControllerMapping&& other) =
-        default;
-
-WgiDataFetcherWin::WindowsGamingInputControllerMapping&
-WgiDataFetcherWin::WindowsGamingInputControllerMapping::operator=(
-    WgiDataFetcherWin::WindowsGamingInputControllerMapping&&) = default;
-
-WgiDataFetcherWin::WindowsGamingInputControllerMapping::
-    ~WindowsGamingInputControllerMapping() = default;
 
 }  // namespace device

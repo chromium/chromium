@@ -81,6 +81,8 @@ component("gamepad") {
       "raw_input_gamepad_device_win.h",
       "wgi_data_fetcher_win.cc",
       "wgi_data_fetcher_win.h",
+      "wgi_gamepad_device.cc",
+      "wgi_gamepad_device.h",
       "xinput_data_fetcher_win.cc",
       "xinput_data_fetcher_win.h",
       "xinput_haptic_gamepad_win.cc",

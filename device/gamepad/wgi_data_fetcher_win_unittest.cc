@@ -4,7 +4,9 @@
 
 #include "device/gamepad/wgi_data_fetcher_win.h"
 
+#include "base/bind.h"
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/run_loop.h"
@@ -18,10 +20,13 @@
 #include "device/gamepad/gamepad_provider.h"
 #include "device/gamepad/gamepad_standard_mappings.h"
 #include "device/gamepad/public/cpp/gamepad.h"
+#include "device/gamepad/public/mojom/gamepad.mojom.h"
 #include "device/gamepad/public/mojom/gamepad_hardware_buffer.h"
 #include "device/gamepad/test_support/fake_igamepad.h"
 #include "device/gamepad/test_support/fake_igamepad_statics.h"
 #include "device/gamepad/test_support/fake_winrt_wgi_environment.h"
+#include "device/gamepad/wgi_data_fetcher_win.h"
+#include "device/gamepad/wgi_gamepad_device.h"
 #include "services/device/device_service_test_base.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -41,6 +46,11 @@ constexpr unsigned int kGamepadButtonsLength = 16;
 // 16 buttons + 1 null button + 4 paddles = 21 buttons.
 constexpr unsigned int kGamepadWithPaddlesButtonsLength = 21;
 constexpr unsigned int kGamepadAxesLength = 4;
+
+constexpr double kDurationMillis = 1.0;
+constexpr double kZeroStartDelayMillis = 0.0;
+constexpr double kStrongMagnitude = 1.0;  // 100% intensity.
+constexpr double kWeakMagnitude = 0.5;    // 50% intensity.
 
 constexpr ErrorCode kErrors[] = {
     ErrorCode::kErrorWgiRawGameControllerActivateFailed,
@@ -140,7 +150,7 @@ class WgiDataFetcherWinTest : public DeviceServiceTestBase {
     EXPECT_TRUE(pad_state->is_initialized);
     Gamepad& pad = pad_state->data;
     EXPECT_TRUE(pad.connected);
-    EXPECT_FALSE(pad.vibration_actuator.not_null);
+    EXPECT_TRUE(pad.vibration_actuator.not_null);
   }
 
   void CheckGamepadRemoved() {
@@ -286,7 +296,41 @@ class WgiDataFetcherWinTest : public DeviceServiceTestBase {
 
   WgiDataFetcherWin& fetcher() const { return *fetcher_; }
 
+  // Gets called after PlayEffect or ResetVibration.
+  void HapticsCallback(mojom::GamepadHapticsResult result) {
+    haptics_callback_count_++;
+    haptics_callback_result_ = result;
+  }
+
+  void SimulateDualRumbleEffect(int pad_index) {
+    base::RunLoop run_loop;
+    provider_->PlayVibrationEffectOnce(
+        pad_index,
+        mojom::GamepadHapticEffectType::GamepadHapticEffectTypeDualRumble,
+        mojom::GamepadEffectParameters::New(kDurationMillis,
+                                            kZeroStartDelayMillis,
+                                            kStrongMagnitude, kWeakMagnitude),
+        base::BindOnce(&WgiDataFetcherWinTest::HapticsCallback,
+                       base::Unretained(this))
+            .Then(run_loop.QuitClosure()));
+    FlushPollingThread();
+    run_loop.Run();
+  }
+
+  void SimulateResetVibration(int pad_index) {
+    base::RunLoop run_loop;
+    provider_->ResetVibrationActuator(
+        pad_index, base::BindOnce(&WgiDataFetcherWinTest::HapticsCallback,
+                                  base::Unretained(this))
+                       .Then(run_loop.QuitClosure()));
+    FlushPollingThread();
+    run_loop.Run();
+  }
+
  protected:
+  int haptics_callback_count_ = 0;
+  mojom::GamepadHapticsResult haptics_callback_result_ =
+      mojom::GamepadHapticsResult::GamepadHapticsResultError;
   std::unique_ptr<GamepadProvider> provider_;
   std::unique_ptr<FakeWinrtWgiEnvironment> wgi_environment_;
 
@@ -300,7 +344,7 @@ TEST_F(WgiDataFetcherWinTest, AddAndRemoveWgiGamepad) {
 
   // Check initial number of connected gamepad and WGI initialization status.
   EXPECT_EQ(fetcher().GetInitializationState(),
-            device::WgiDataFetcherWin::InitializationState::kInitialized);
+            WgiDataFetcherWin::InitializationState::kInitialized);
   EXPECT_TRUE(fetcher().GetGamepadsForTesting().empty());
 
   const auto fake_gamepad = Microsoft::WRL::Make<FakeIGamepad>();
@@ -321,10 +365,10 @@ TEST_F(WgiDataFetcherWinTest, AddAndRemoveWgiGamepad) {
   FlushPollingThread();
 
   // Assert that the gamepad has been added to the DataFetcher.
-  const std::vector<WgiDataFetcherWin::WindowsGamingInputControllerMapping>&
-      gamepads = fetcher().GetGamepadsForTesting();
+  const base::flat_map<int, std::unique_ptr<WgiGamepadDevice>>& gamepads =
+      fetcher().GetGamepadsForTesting();
   ASSERT_EQ(gamepads.size(), 1u);
-  CheckGamepadAdded(fetcher().GetPadState(gamepads.front().source_id));
+  CheckGamepadAdded(fetcher().GetPadState(gamepads.begin()->first));
 
   // Simulate the gamepad removing behavior, and make the gamepad-removing
   // callback return on a different thread, demonstrated the multi-threaded
@@ -344,9 +388,8 @@ TEST_F(WgiDataFetcherWinTest, AddGamepadAddedEventHandlerErrorHandling) {
   SetUpTestEnv(ErrorCode::kGamepadAddGamepadAddedFailed);
 
   // Check WGI initialization status.
-  EXPECT_EQ(
-      fetcher().GetInitializationState(),
-      device::WgiDataFetcherWin::InitializationState::kAddGamepadAddedFailed);
+  EXPECT_EQ(fetcher().GetInitializationState(),
+            WgiDataFetcherWin::InitializationState::kAddGamepadAddedFailed);
   auto* gamepad_statics = FakeIGamepadStatics::GetInstance();
   EXPECT_EQ(gamepad_statics->GetGamepadAddedEventHandlerCount(), 0u);
 }
@@ -357,9 +400,8 @@ TEST_F(WgiDataFetcherWinTest, AddGamepadRemovedEventHandlerErrorHandling) {
   SetUpTestEnv(ErrorCode::kGamepadAddGamepadRemovedFailed);
 
   // Check WGI initialization status.
-  EXPECT_EQ(
-      fetcher().GetInitializationState(),
-      device::WgiDataFetcherWin::InitializationState::kAddGamepadRemovedFailed);
+  EXPECT_EQ(fetcher().GetInitializationState(),
+            WgiDataFetcherWin::InitializationState::kAddGamepadRemovedFailed);
   auto* gamepad_statics = FakeIGamepadStatics::GetInstance();
   EXPECT_EQ(gamepad_statics->GetGamepadRemovedEventHandlerCount(), 0u);
 }
@@ -370,9 +412,9 @@ TEST_F(WgiDataFetcherWinTest, WgiGamepadActivationFactoryErrorHandling) {
   SetUpTestEnv(ErrorCode::kErrorWgiGamepadActivateFailed);
 
   // Check WGI initialization status.
-  EXPECT_EQ(fetcher().GetInitializationState(),
-            device::WgiDataFetcherWin::InitializationState::
-                kRoGetActivationFactoryFailed);
+  EXPECT_EQ(
+      fetcher().GetInitializationState(),
+      WgiDataFetcherWin::InitializationState::kRoGetActivationFactoryFailed);
 }
 
 // If RawGameController2::get_DisplayName fails when calling
@@ -392,10 +434,10 @@ TEST_F(WgiDataFetcherWinTest, FailuretoGetDisplayNameOnGamepadAdded) {
   FlushPollingThread();
 
   // Assert that the gamepad has not been added to the DataFetcher.
-  const std::vector<WgiDataFetcherWin::WindowsGamingInputControllerMapping>&
-      gamepads = fetcher().GetGamepadsForTesting();
+  const base::flat_map<int, std::unique_ptr<WgiGamepadDevice>>& gamepads =
+      fetcher().GetGamepadsForTesting();
   ASSERT_EQ(gamepads.size(), 1u);
-  PadState* pad = fetcher().GetPadState(gamepads.front().source_id);
+  PadState* pad = fetcher().GetPadState(gamepads.begin()->first);
   std::u16string display_id(pad->data.id);
   EXPECT_EQ(kDefaultDisplayName, display_id);
   CheckGamepadAdded(pad);
@@ -406,7 +448,7 @@ TEST_F(WgiDataFetcherWinTest, VerifyGamepadInput) {
 
   // Check initial number of connected gamepad and WGI initialization status.
   EXPECT_EQ(fetcher().GetInitializationState(),
-            device::WgiDataFetcherWin::InitializationState::kInitialized);
+            WgiDataFetcherWin::InitializationState::kInitialized);
 
   auto* fake_gamepad_statics = FakeIGamepadStatics::GetInstance();
   const auto fake_gamepad = Microsoft::WRL::Make<FakeIGamepad>();
@@ -449,6 +491,55 @@ TEST_F(WgiDataFetcherWinTest, VerifyGamepadInput) {
                           /*has_paddles*/ true);
 }
 
+TEST_F(WgiDataFetcherWinTest, PlayDualRumbleEffect) {
+  SetUpTestEnv();
+  // Check initial number of connected gamepad and WGI initialization status.
+  EXPECT_EQ(fetcher().GetInitializationState(),
+            WgiDataFetcherWin::InitializationState::kInitialized);
+
+  auto* fake_gamepad_statics = FakeIGamepadStatics::GetInstance();
+  const auto fake_gamepad = Microsoft::WRL::Make<FakeIGamepad>();
+
+  // Add a simulated WGI device.
+  provider_->Resume();
+  fake_gamepad_statics->SimulateGamepadAdded(
+      fake_gamepad, kHardwareProductId, kHardwareVendorId, kGamepadDisplayName);
+
+  SimulateDualRumbleEffect(/*pad_index=*/0);
+  EXPECT_EQ(haptics_callback_count_, 1);
+  EXPECT_EQ(haptics_callback_result_,
+            mojom::GamepadHapticsResult::GamepadHapticsResultComplete);
+  ABI::Windows::Gaming::Input::GamepadVibration fake_gamepad_vibration;
+  fake_gamepad->get_Vibration(&fake_gamepad_vibration);
+  EXPECT_EQ(fake_gamepad_vibration.LeftMotor, kStrongMagnitude);
+  EXPECT_EQ(fake_gamepad_vibration.RightMotor, kWeakMagnitude);
+  EXPECT_EQ(fake_gamepad_vibration.LeftTrigger, 0.0f);
+  EXPECT_EQ(fake_gamepad_vibration.RightTrigger, 0.0f);
+
+  // Calling ResetVibration sets the vibration intensity to 0 for both motors.
+  SimulateResetVibration(/*pad_index=*/0);
+  EXPECT_EQ(haptics_callback_count_, 2);
+  EXPECT_EQ(haptics_callback_result_,
+            mojom::GamepadHapticsResult::GamepadHapticsResultComplete);
+  fake_gamepad->get_Vibration(&fake_gamepad_vibration);
+  EXPECT_EQ(fake_gamepad_vibration.LeftMotor, 0.0f);
+  EXPECT_EQ(fake_gamepad_vibration.RightMotor, 0.0f);
+  EXPECT_EQ(fake_gamepad_vibration.LeftTrigger, 0.0f);
+  EXPECT_EQ(fake_gamepad_vibration.RightTrigger, 0.0f);
+
+  // Attempting to call haptics methods on invalid pad_id's will return a result
+  // of type GamepadHapticsResultNotSupported.
+  fake_gamepad_statics->SimulateGamepadRemoved(fake_gamepad);
+  SimulateDualRumbleEffect(/*pad_index=*/0);
+  EXPECT_EQ(haptics_callback_count_, 3);
+  EXPECT_EQ(haptics_callback_result_,
+            mojom::GamepadHapticsResult::GamepadHapticsResultNotSupported);
+  SimulateResetVibration(/*pad_index=*/0);
+  EXPECT_EQ(haptics_callback_count_, 4);
+  EXPECT_EQ(haptics_callback_result_,
+            mojom::GamepadHapticsResult::GamepadHapticsResultNotSupported);
+}
+
 // When an error happens when calling GamepadGetCurrentReading, the state in
 // the shared buffer will not be modified.
 TEST_F(WgiDataFetcherWinTest, WgiGamepadGetCurrentReadingError) {
@@ -456,7 +547,7 @@ TEST_F(WgiDataFetcherWinTest, WgiGamepadGetCurrentReadingError) {
 
   // Check initial number of connected gamepad and WGI initialization status.
   EXPECT_EQ(fetcher().GetInitializationState(),
-            device::WgiDataFetcherWin::InitializationState::kInitialized);
+            WgiDataFetcherWin::InitializationState::kInitialized);
 
   auto* fake_gamepad_statics = FakeIGamepadStatics::GetInstance();
   const auto fake_gamepad = Microsoft::WRL::Make<FakeIGamepad>();
@@ -502,7 +593,7 @@ TEST_F(WgiDataFetcherWinTest, WgiGamepadGetButtonLabelError) {
 
   // Check initial number of connected gamepad and WGI initialization status.
   EXPECT_EQ(fetcher().GetInitializationState(),
-            device::WgiDataFetcherWin::InitializationState::kInitialized);
+            WgiDataFetcherWin::InitializationState::kInitialized);
 
   auto* fake_gamepad_statics = FakeIGamepadStatics::GetInstance();
   const auto fake_gamepad_with_paddles = Microsoft::WRL::Make<FakeIGamepad>();
@@ -564,8 +655,8 @@ TEST_F(WgiDataFetcherWinTest, ShouldNotEnumerateControllers) {
   FlushPollingThread();
 
   // Assert that the gamepad has not been added to the DataFetcher.
-  const std::vector<WgiDataFetcherWin::WindowsGamingInputControllerMapping>&
-      gamepads = fetcher().GetGamepadsForTesting();
+  const base::flat_map<int, std::unique_ptr<WgiGamepadDevice>>& gamepads =
+      fetcher().GetGamepadsForTesting();
   EXPECT_EQ(gamepads.size(), 0u);
 }
 
@@ -589,8 +680,8 @@ TEST_P(WgiDataFetcherWinErrorTest, GamepadShouldNotbeEnumerated) {
   FlushPollingThread();
 
   // Assert that the gamepad has not been added to the DataFetcher.
-  const std::vector<WgiDataFetcherWin::WindowsGamingInputControllerMapping>&
-      gamepads = fetcher().GetGamepadsForTesting();
+  const base::flat_map<int, std::unique_ptr<WgiGamepadDevice>>& gamepads =
+      fetcher().GetGamepadsForTesting();
   EXPECT_EQ(gamepads.size(), 0u);
 }
 INSTANTIATE_TEST_SUITE_P(WgiDataFetcherWinErrorTests,

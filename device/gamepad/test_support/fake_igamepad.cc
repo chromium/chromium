@@ -24,14 +24,17 @@ FakeIGamepad::~FakeIGamepad() = default;
 
 HRESULT WINAPI FakeIGamepad::get_Vibration(
     ABI::Windows::Gaming::Input::GamepadVibration* gamepad_vibration) {
-  NOTIMPLEMENTED();
-  return E_NOTIMPL;
+  gamepad_vibration->LeftMotor = fake_gamepad_vibration_.LeftMotor;
+  gamepad_vibration->LeftTrigger = fake_gamepad_vibration_.LeftTrigger;
+  gamepad_vibration->RightMotor = fake_gamepad_vibration_.RightMotor;
+  gamepad_vibration->RightTrigger = fake_gamepad_vibration_.RightTrigger;
+  return S_OK;
 }
 
 HRESULT WINAPI FakeIGamepad::put_Vibration(
     ABI::Windows::Gaming::Input::GamepadVibration gamepad_vibration) {
-  NOTIMPLEMENTED();
-  return E_NOTIMPL;
+  fake_gamepad_vibration_ = gamepad_vibration;
+  return S_OK;
 }
 
 HRESULT WINAPI FakeIGamepad::GetCurrentReading(
