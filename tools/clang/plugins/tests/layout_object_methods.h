@@ -15,7 +15,7 @@ class LayoutObject {
  public:
   // These methods should be ignored.
   static void StaticMethod() {}
-  void CheckIsNotDestroyed() {}
+  void CheckIsNotDestroyed() const {}
   void Trace(Visitor*) const {}
 
   int ShouldPass1() {
@@ -28,19 +28,24 @@ class LayoutObject {
     foo();
     return 0;
   }
+
+  virtual void VirtualEmptyMethod() = 0;
+  void EmptyMethod() {}
 };
 
 class LayoutBoxModelObject : public LayoutObject {
  public:
-  int ShouldPass2() {
+  int ShouldPass2() const {
     CheckIsNotDestroyed();
     return 0;
   }
-  int ShouldFail2() {
+  int ShouldFail2() const {
     ShouldPass2();
     CheckIsNotDestroyed();  // This should be the first statement.
     return 0;
   }
+
+  void VirtualEmptyMethod() override {}
 };
 
 class LayoutBox : public LayoutBoxModelObject {
@@ -54,6 +59,8 @@ class LayoutBox : public LayoutBoxModelObject {
     CheckIsNotDestroyed();  // This should be the first statement.
     return 0;
   }
+
+  void VirtualEmptyMethod() override {}
 };
 
 }  // namespace blink
