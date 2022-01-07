@@ -4,11 +4,12 @@
 
 #include "content/browser/indexed_db/indexed_db_dispatcher_host.h"
 
+#include <tuple>
+
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/ignore_result.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -535,7 +536,7 @@ TEST_F(IndexedDBDispatcherHostTest, DISABLED_PutWithInvalidBlob) {
         mojo::PendingRemote<blink::mojom::Blob> blob;
         // Ignore the result of InitWithNewPipeAndPassReceiver, to end up with
         // an invalid blob.
-        ignore_result(blob.InitWithNewPipeAndPassReceiver());
+        std::ignore = blob.InitWithNewPipeAndPassReceiver();
         external_objects.push_back(
             blink::mojom::IDBExternalObject::NewBlobOrFile(
                 blink::mojom::IDBBlobInfo::New(std::move(blob), "fakeUUID",

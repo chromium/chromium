@@ -6,11 +6,11 @@
 
 #include <iterator>
 #include <string>
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/ignore_result.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -211,7 +211,7 @@ TEST_F(FileSystemAccessDirectoryHandleImplTest, GetEntries) {
     // ignore any failures writing these files to disk.
     EXPECT_TRUE(success) << "Failed to create file " << file_path;
 #else
-    ignore_result(success);
+    std::ignore = success;
 #endif
   }
 

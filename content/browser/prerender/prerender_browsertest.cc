@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <cstdint>
+#include <tuple>
 
 #include "base/barrier_closure.h"
 #include "base/base_switches.h"
@@ -11,7 +12,6 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/ignore_result.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/metrics_hashes.h"
@@ -579,10 +579,10 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CancelOnAuthRequestedSubframe) {
   // Fetch a subframe that requires authentication.
   const GURL kAuthIFrameUrl = GetUrl("/auth-basic");
   RenderFrameHost* prerender_rfh = GetPrerenderedMainFrameHost(host_id);
-  ignore_result(ExecJs(prerender_rfh,
-                       "var i = document.createElement('iframe'); i.src = '" +
-                           kAuthIFrameUrl.spec() +
-                           "'; document.body.appendChild(i);"));
+  std::ignore =
+      ExecJs(prerender_rfh,
+             "var i = document.createElement('iframe'); i.src = '" +
+                 kAuthIFrameUrl.spec() + "'; document.body.appendChild(i);");
 
   // The prerender should be destroyed.
   host_observer.WaitForDestroyed();
@@ -618,8 +618,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, CancelOnAuthRequestedSubResource) {
         imgElement.src = '/auth-basic/favicon.gif';
         document.body.appendChild(imgElement);
   )";
-  ignore_result(
-      ExecJs(GetPrerenderedMainFrameHost(host_id), fetch_subresource_script));
+  std::ignore =
+      ExecJs(GetPrerenderedMainFrameHost(host_id), fetch_subresource_script);
 
   // The prerender should be destroyed.
   host_observer.WaitForDestroyed();
@@ -2143,8 +2143,8 @@ IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
         imgElement.src = '/load_image/image.png';
         document.body.appendChild(imgElement);
   )";
-  ignore_result(ExecJs(prerender_helper()->GetPrerenderedMainFrameHost(host_id),
-                       fetch_subresource_script));
+  std::ignore = ExecJs(prerender_helper()->GetPrerenderedMainFrameHost(host_id),
+                       fetch_subresource_script);
 
   // The prerender should be destroyed.
   host_observer.WaitForDestroyed();
@@ -2215,8 +2215,8 @@ IN_PROC_BROWSER_TEST_P(SSLPrerenderBrowserTest,
   // server should ask for a client certificate or respond with an expired
   // certificate, which leads to the cancellation of prerendering.
   std::string resource_url = GetUrl("/workers/empty.js?intercept").spec();
-  ignore_result(ExecJs(prerender_helper()->GetPrerenderedMainFrameHost(host_id),
-                       JsReplace("fetch($1);", resource_url)));
+  std::ignore = ExecJs(prerender_helper()->GetPrerenderedMainFrameHost(host_id),
+                       JsReplace("fetch($1);", resource_url));
 
   // Check the prerender was destroyed.
   host_observer.WaitForDestroyed();
@@ -2609,8 +2609,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, GamepadMonitorCancelPrerendering) {
 
   // Executing `navigator.getGamepads()` to start binding the GamepadMonitor
   // interface.
-  ignore_result(EvalJs(prerender_render_frame_host, "navigator.getGamepads()",
-                       EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  std::ignore = EvalJs(prerender_render_frame_host, "navigator.getGamepads()",
+                       EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
   // Verify Mojo capability control cancels prerendering.
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
   histogram_tester.ExpectUniqueSample(
@@ -2883,8 +2883,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderBrowserTest, RequestAudioOutputDevice) {
   // Whether using the EXECUTE_SCRIPT_NO_USER_GESTURE flag or not does not
   // affect the test result. The purpose of using it is to simulate real
   // scenarios since prerendering pages cannot have user gestures.
-  ignore_result(ExecJs(prerender_rfh, "const context = new AudioContext();",
-                       EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  std::ignore = ExecJs(prerender_rfh, "const context = new AudioContext();",
+                       EvalJsOptions::EXECUTE_SCRIPT_NO_USER_GESTURE);
   host_observer.WaitForDestroyed();
   EXPECT_FALSE(HasHostForUrl(kPrerenderingUrl));
   histogram_tester.ExpectUniqueSample(

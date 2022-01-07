@@ -4,6 +4,7 @@
 
 #include <algorithm>
 #include <array>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -13,7 +14,6 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
-#include "base/ignore_result.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -4959,7 +4959,7 @@ class WebContentsImplBrowserTestWindowControlsOverlay
 
     web_contents->UpdateWindowControlsOverlay(bounding_client_rect);
     TitleWatcher title_watcher(web_contents, u"ongeometrychange");
-    ignore_result(title_watcher.WaitAndGetTitle());
+    std::ignore = title_watcher.WaitAndGetTitle();
   }
 
  private:
@@ -5039,7 +5039,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestWindowControlsOverlay,
   gfx::Rect bounding_client_rect = gfx::Rect(2, 3, 4, 5);
   web_contents->UpdateWindowControlsOverlay(bounding_client_rect);
   TitleWatcher title_watcher(web_contents, u"ongeometrychange1");
-  ignore_result(title_watcher.WaitAndGetTitle());
+  std::ignore = title_watcher.WaitAndGetTitle();
 
   // Expect the "geometrychange" event to have fired once.
   EXPECT_EQ(1, EvalJs(web_contents, "geometrychangeCount"));
@@ -5082,7 +5082,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplBrowserTestWindowControlsOverlay,
              "}"));
   content::HostZoomMap::SetZoomLevel(web_contents, 1.5);
   TitleWatcher title_watcher(web_contents, u"ongeometrychangefromzoomlevel");
-  ignore_result(title_watcher.WaitAndGetTitle());
+  std::ignore = title_watcher.WaitAndGetTitle();
 
   // Validate the event payload.
   double zoom_factor = blink::PageZoomLevelToZoomFactor(
@@ -5435,8 +5435,8 @@ IN_PROC_BROWSER_TEST_F(WebContentsImplStarScanPrerenderBrowserTest,
   // now disabled.
   {
     PCScanReadyToCommitObserver observer(shell()->web_contents());
-    ignore_result(ExecJs(shell()->web_contents()->GetMainFrame(),
-                         JsReplace("location = $1", prendering_url)));
+    std::ignore = ExecJs(shell()->web_contents()->GetMainFrame(),
+                         JsReplace("location = $1", prendering_url));
     observer.Wait();
     EXPECT_FALSE(observer.WasPCScanEnabled());
   }

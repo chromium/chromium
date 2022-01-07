@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
-#include "base/ignore_result.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/memory_pressure_monitor.h"
@@ -1178,15 +1178,15 @@ void BrowserMainLoop::ShutdownThreadsAndCleanUp() {
     if (audio_manager_ && !audio_manager_->Shutdown()) {
       // Intentionally leak AudioManager if shutdown failed.
       // We might run into various CHECK(s) in AudioManager destructor.
-      ignore_result(audio_manager_.release());
+      std::ignore = audio_manager_.release();
       // |user_input_monitor_| may be in use by stray streams in case
       // AudioManager shutdown failed.
-      ignore_result(user_input_monitor_.release());
+      std::ignore = user_input_monitor_.release();
     }
 
     // Leaking AudioSystem: we cannot correctly destroy it since Audio service
     // connection in there is bound to IO thread.
-    ignore_result(audio_system_.release());
+    std::ignore = audio_system_.release();
   }
 
   if (parts_) {

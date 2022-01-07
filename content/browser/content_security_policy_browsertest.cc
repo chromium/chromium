@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <tuple>
+
 #include "base/files/file_path.h"
-#include "base/ignore_result.h"
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
@@ -200,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(ContentSecurityPolicyBrowserTest, FileURLs) {
     // On windows, if `document_url` contains the host part "localhost", the
     // actual committed URL does not. So we omit EXPECT_TRUE and ignore the
     // result value here.
-    ignore_result(NavigateToURL(shell(), document_url));
+    std::ignore = NavigateToURL(shell(), document_url);
 
     GURL element_url = net::FilePathToFileURL(TestFilePath(
         testCase.element_name == "iframe" ? "empty.html" : "blank.jpg"));

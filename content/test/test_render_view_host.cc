@@ -5,8 +5,8 @@
 #include "content/test/test_render_view_host.h"
 
 #include <memory>
+#include <tuple>
 
-#include "base/ignore_result.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/parent_local_surface_id_allocator.h"
@@ -406,7 +406,7 @@ bool TestRenderViewHost::CreateRenderView(
     // Pretend that mojo connections of the RemoteFrame is transferred to
     // renderer process and bound in blink.
     mojo::AssociatedRemote<blink::mojom::RemoteMainFrame> remote_main_frame;
-    ignore_result(remote_main_frame.BindNewEndpointAndPassDedicatedReceiver());
+    std::ignore = remote_main_frame.BindNewEndpointAndPassDedicatedReceiver();
     proxy_host->BindRemoteMainFrameInterfaces(
         remote_main_frame.Unbind(),
         mojo::AssociatedRemote<blink::mojom::RemoteMainFrameHost>()

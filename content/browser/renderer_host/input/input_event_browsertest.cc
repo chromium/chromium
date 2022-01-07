@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <tuple>
+
 #include "base/command_line.h"
-#include "base/ignore_result.h"
 #include "base/json/json_reader.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -95,7 +96,7 @@ class InputEventBrowserTest : public ContentBrowserTest {
 
     std::u16string ready_title(u"ready");
     TitleWatcher watcher(shell()->web_contents(), ready_title);
-    ignore_result(watcher.WaitAndGetTitle());
+    std::ignore = watcher.WaitAndGetTitle();
 
     // We need to wait until hit test data is available. We use our own
     // HitTestRegionObserver here because we have the RenderWidgetHostImpl

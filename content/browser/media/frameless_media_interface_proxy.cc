@@ -4,8 +4,9 @@
 
 #include "content/browser/media/frameless_media_interface_proxy.h"
 
+#include <tuple>
+
 #include "base/bind.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "content/public/browser/media_service.h"
 #include "media/base/cdm_context.h"
@@ -114,7 +115,7 @@ void FramelessMediaInterfaceProxy::ConnectToMediaService() {
   DCHECK(!interface_factory_remote_);
 
   mojo::PendingRemote<media::mojom::FrameInterfaceFactory> interfaces;
-  ignore_result(interfaces.InitWithNewPipeAndPassReceiver());
+  std::ignore = interfaces.InitWithNewPipeAndPassReceiver();
 
   GetMediaService().CreateInterfaceFactory(
       interface_factory_remote_.BindNewPipeAndPassReceiver(),

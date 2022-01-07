@@ -5,13 +5,13 @@
 #include "content/browser/indexed_db/indexed_db_backing_store.h"
 
 #include <algorithm>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/dcheck_is_on.h"
 #include "base/files/file_path.h"
 #include "base/format_macros.h"
-#include "base/ignore_result.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -713,11 +713,11 @@ leveldb::Status IndexedDBBackingStore::Initialize(bool clean_active_journal) {
   if (!found) {
     // Initialize new backing store.
     db_schema_version = indexed_db::kLatestKnownSchemaVersion;
-    ignore_result(
-        PutInt(write_batch.get(), schema_version_key, db_schema_version));
+    std::ignore =
+        PutInt(write_batch.get(), schema_version_key, db_schema_version);
     db_data_version = latest_known_data_version;
-    ignore_result(
-        PutInt(write_batch.get(), data_version_key, db_data_version.Encode()));
+    std::ignore =
+        PutInt(write_batch.get(), data_version_key, db_data_version.Encode());
     // If a blob directory already exists for this database, blow it away.  It's
     // leftover from a partially-purged previous generation of data.
     if (filesystem_proxy_ &&
@@ -775,8 +775,8 @@ leveldb::Status IndexedDBBackingStore::Initialize(bool clean_active_journal) {
     // Up to date. Nothing to do.
   } else if (latest_known_data_version.IsAtLeast(db_data_version)) {
     db_data_version = latest_known_data_version;
-    ignore_result(
-        PutInt(write_batch.get(), data_version_key, db_data_version.Encode()));
+    std::ignore =
+        PutInt(write_batch.get(), data_version_key, db_data_version.Encode());
   } else {
     // |db_data_version| is in the future according to at least one component.
     INTERNAL_CONSISTENCY_ERROR(SET_UP_METADATA);
@@ -3071,7 +3071,7 @@ Status IndexedDBBackingStore::MigrateToV1(LevelDBWriteBatch* write_batch) {
   const std::string data_version_key = DataVersionKey::Encode();
   Status s;
 
-  ignore_result(PutInt(write_batch, schema_version_key, db_schema_version));
+  std::ignore = PutInt(write_batch, schema_version_key, db_schema_version);
   const std::string start_key =
       DatabaseNameKey::EncodeMinKeyForOrigin(origin_identifier_);
   const std::string stop_key =
@@ -3094,8 +3094,8 @@ Status IndexedDBBackingStore::MigrateToV1(LevelDBWriteBatch* write_batch) {
     }
     std::string version_key = DatabaseMetaDataKey::Encode(
         database_id, DatabaseMetaDataKey::USER_VERSION);
-    ignore_result(PutVarInt(write_batch, version_key,
-                            IndexedDBDatabaseMetadata::DEFAULT_VERSION));
+    std::ignore = PutVarInt(write_batch, version_key,
+                            IndexedDBDatabaseMetadata::DEFAULT_VERSION);
   }
 
   return s;
@@ -3109,9 +3109,9 @@ Status IndexedDBBackingStore::MigrateToV2(LevelDBWriteBatch* write_batch) {
   const std::string data_version_key = DataVersionKey::Encode();
   Status s;
 
-  ignore_result(PutInt(write_batch, schema_version_key, db_schema_version));
-  ignore_result(PutInt(write_batch, data_version_key,
-                       IndexedDBDataFormatVersion::GetCurrent().Encode()));
+  std::ignore = PutInt(write_batch, schema_version_key, db_schema_version);
+  std::ignore = PutInt(write_batch, data_version_key,
+                       IndexedDBDataFormatVersion::GetCurrent().Encode());
   return s;
 }
 
@@ -3146,7 +3146,7 @@ Status IndexedDBBackingStore::MigrateToV3(LevelDBWriteBatch* write_batch) {
     if (storage_key_.origin().host() != "docs.google.com")
       return InternalInconsistencyStatus();
   } else {
-    ignore_result(PutInt(write_batch, schema_version_key, db_schema_version));
+    std::ignore = PutInt(write_batch, schema_version_key, db_schema_version);
   }
 
   return s;
@@ -3165,7 +3165,7 @@ Status IndexedDBBackingStore::MigrateToV4(LevelDBWriteBatch* write_batch) {
     INTERNAL_CONSISTENCY_ERROR(SET_UP_METADATA);
     return InternalInconsistencyStatus();
   }
-  ignore_result(PutInt(write_batch, schema_version_key, db_schema_version));
+  std::ignore = PutInt(write_batch, schema_version_key, db_schema_version);
 
   // Delete all empty files that resulted from the migration to v4. If this
   // fails it's not a big deal.
@@ -3196,7 +3196,7 @@ Status IndexedDBBackingStore::MigrateToV5(LevelDBWriteBatch* write_batch) {
       return InternalInconsistencyStatus();
     }
   }
-  ignore_result(PutInt(write_batch, schema_version_key, db_schema_version));
+  std::ignore = PutInt(write_batch, schema_version_key, db_schema_version);
 
   return s;
 }

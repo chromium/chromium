@@ -8,7 +8,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
-#include "base/ignore_result.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -46,9 +45,9 @@ class AttributionStorageSqlMigrationsTest : public testing::Test {
         std::make_unique<ConfigurableStorageDelegate>());
 
     // We need to run an operation on storage to force the lazy initialization.
-    ignore_result(
+    std::ignore =
         static_cast<AttributionStorage*>(&storage)->GetAttributionsToReport(
-            base::Time::Min()));
+            base::Time::Min());
   }
 
   base::FilePath DbPath() {

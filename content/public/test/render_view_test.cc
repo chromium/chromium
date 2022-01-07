@@ -7,10 +7,10 @@
 #include <stddef.h>
 
 #include <cctype>
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/ignore_result.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -514,8 +514,8 @@ void RenderViewTest::SetUp() {
   main_frame_params->routing_id = render_thread_->GetNextRoutingID();
   main_frame_params->frame = TestRenderFrame::CreateStubFrameReceiver();
   // Ignoring the returned PendingReceiver because it is not bound to anything
-  ignore_result(
-      main_frame_params->interface_broker.InitWithNewPipeAndPassReceiver());
+  std::ignore =
+      main_frame_params->interface_broker.InitWithNewPipeAndPassReceiver();
   policy_container_host_ = std::make_unique<MockPolicyContainerHost>();
   main_frame_params->policy_container =
       policy_container_host_->CreatePolicyContainerForBlink();
@@ -561,7 +561,7 @@ void RenderViewTest::TearDown() {
   mojo::Remote<blink::mojom::LeakDetector> leak_detector;
   mojo::GenericPendingReceiver receiver(
       leak_detector.BindNewPipeAndPassReceiver());
-  ignore_result(binders_.TryBind(&receiver));
+  std::ignore = binders_.TryBind(&receiver);
 
   // Close the main |view_| as well as any other windows that might have been
   // opened by the test.

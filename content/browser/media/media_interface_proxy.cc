@@ -7,9 +7,9 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <tuple>
 
 #include "base/bind.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
@@ -118,7 +118,7 @@ void MaybeLaunchSecondaryMediaService(
   } else {
     // The embedder doesn't provide a secondary Media Service instance. Bind
     // permanently to a disconnected pipe which discards all calls.
-    ignore_result(remote->BindNewPipeAndPassReceiver());
+    std::ignore = remote->BindNewPipeAndPassReceiver();
   }
 }
 

@@ -5,8 +5,8 @@
 #include "content/public/test/mock_render_thread.h"
 
 #include <memory>
+#include <tuple>
 
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -310,13 +310,13 @@ void MockRenderThread::OnCreateWindow(
       blink_frame_widget_receiver =
           blink_frame_widget.BindNewEndpointAndPassDedicatedReceiver();
   mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> blink_frame_widget_host;
-  ignore_result(
-      blink_frame_widget_host.BindNewEndpointAndPassDedicatedReceiver());
+  std::ignore =
+      blink_frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
   mojo::AssociatedRemote<blink::mojom::Widget> blink_widget;
   mojo::PendingAssociatedReceiver<blink::mojom::Widget> blink_widget_receiver =
       blink_widget.BindNewEndpointAndPassDedicatedReceiver();
   mojo::AssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
-  ignore_result(blink_widget_host.BindNewEndpointAndPassDedicatedReceiver());
+  std::ignore = blink_widget_host.BindNewEndpointAndPassDedicatedReceiver();
 
   widget_params->frame_widget = std::move(blink_frame_widget_receiver);
   widget_params->frame_widget_host = blink_frame_widget_host.Unbind();

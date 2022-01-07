@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "base/memory/ptr_util.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
@@ -46,7 +47,7 @@ class StreamTextureProxyTest : public testing::Test {
     // Create the StreamTextureHost with a valid |channel_|. Note that route_id
     // does not matter here for the test we are writing.
     mojo::PendingAssociatedRemote<gpu::mojom::StreamTexture> texture;
-    ignore_result(texture.InitWithNewEndpointAndPassReceiver());
+    std::ignore = texture.InitWithNewEndpointAndPassReceiver();
     texture.EnableUnassociatedUsage();
     auto host = std::make_unique<StreamTextureHost>(channel_, 1 /* route_id */,
                                                     std::move(texture));

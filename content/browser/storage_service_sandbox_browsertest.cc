@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -96,8 +97,8 @@ IN_PROC_BROWSER_TEST_F(StorageServiceSandboxBrowserTest, BasicLaunch) {
 
 IN_PROC_BROWSER_TEST_F(StorageServiceSandboxBrowserTest, PRE_DomStorage) {
   EXPECT_TRUE(NavigateToURL(shell(), GetTestUrl(nullptr, "empty.html")));
-  ignore_result(
-      EvalJs(shell()->web_contents(), R"(window.localStorage.yeet = 42)"));
+  std::ignore =
+      EvalJs(shell()->web_contents(), R"(window.localStorage.yeet = 42)");
   WaitForAnyLocalStorageData();
   FlushLocalStorage();
 }

@@ -13,7 +13,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
-#include "base/ignore_result.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
@@ -273,7 +272,7 @@ mojom::RemoteMainFrameInterfacesPtr CreateStubRemoteFrameInterfaces() {
   interfaces->main_frame = main_frame.BindNewEndpointAndPassDedicatedReceiver();
 
   mojo::AssociatedRemote<blink::mojom::RemoteMainFrameHost> main_frame_host;
-  ignore_result(main_frame_host.BindNewEndpointAndPassDedicatedReceiver());
+  std::ignore = main_frame_host.BindNewEndpointAndPassDedicatedReceiver();
   interfaces->main_frame_host = main_frame_host.Unbind();
 
   return interfaces;
@@ -1107,7 +1106,7 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
       blink_widget.BindNewEndpointAndPassDedicatedReceiver();
 
   mojo::AssociatedRemote<blink::mojom::WidgetHost> blink_widget_host;
-  ignore_result(blink_widget_host.BindNewEndpointAndPassDedicatedReceiver());
+  std::ignore = blink_widget_host.BindNewEndpointAndPassDedicatedReceiver();
 
   mojo::AssociatedRemote<blink::mojom::FrameWidget> blink_frame_widget;
   mojo::PendingAssociatedReceiver<blink::mojom::FrameWidget>
@@ -1115,8 +1114,8 @@ TEST_F(RenderViewImplEnableZoomForDSFTest,
           blink_frame_widget.BindNewEndpointAndPassDedicatedReceiver();
 
   mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> blink_frame_widget_host;
-  ignore_result(
-      blink_frame_widget_host.BindNewEndpointAndPassDedicatedReceiver());
+  std::ignore =
+      blink_frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
 
   widget_params->frame_widget = std::move(blink_frame_widget_receiver);
   widget_params->frame_widget_host = blink_frame_widget_host.Unbind();

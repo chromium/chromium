@@ -10,12 +10,12 @@
 #include <iterator>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/ignore_result.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "content/browser/presentation/presentation_test_utils.h"
@@ -251,8 +251,7 @@ TEST_F(PresentationServiceImplTest, SetDefaultPresentationUrls) {
 
   mojo::PendingRemote<PresentationConnection> presentation_connection_remote;
   mojo::Remote<PresentationConnection> controller_remote;
-  ignore_result(
-      presentation_connection_remote.InitWithNewPipeAndPassReceiver());
+  std::ignore = presentation_connection_remote.InitWithNewPipeAndPassReceiver();
   std::move(callback).Run(PresentationConnectionResult::New(
       blink::mojom::PresentationInfo::New(presentation_url2_, kPresentationId),
       std::move(presentation_connection_remote),

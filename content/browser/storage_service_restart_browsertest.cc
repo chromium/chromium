@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -115,8 +116,8 @@ IN_PROC_BROWSER_TEST_F(StorageServiceRestartBrowserTest,
   // operation after a Storage Service crash.
   EXPECT_TRUE(
       NavigateToURL(shell(), GetTestUrl("dom_storage", "crash_recovery.html")));
-  ignore_result(
-      EvalJs(shell()->web_contents(), R"(setSessionStorageValue("foo", 42))"));
+  std::ignore =
+      EvalJs(shell()->web_contents(), R"(setSessionStorageValue("foo", 42))");
 
   // Note that for Session Storage we don't need to wait for a commit. This is
   // racy, but that's the point: whether or not a commit happens in time, the
@@ -140,8 +141,8 @@ IN_PROC_BROWSER_TEST_F(StorageServiceRestartBrowserTest,
   // after a Storage Service crash.
   EXPECT_TRUE(
       NavigateToURL(shell(), GetTestUrl("dom_storage", "crash_recovery.html")));
-  ignore_result(
-      EvalJs(shell()->web_contents(), R"(setLocalStorageValue("foo", 42))"));
+  std::ignore =
+      EvalJs(shell()->web_contents(), R"(setLocalStorageValue("foo", 42))");
 
   // We wait for the above storage request to be fully committed to disk. This
   // ensures that renderer gets the correct value when recovering from the

@@ -10,6 +10,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -25,7 +26,6 @@
 #include "base/debug/stack_trace.h"
 #include "base/files/file_path.h"
 #include "base/i18n/icu_util.h"
-#include "base/ignore_result.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -1044,7 +1044,7 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
       base::FieldTrialList* leaked_field_trial_list =
           SetUpFieldTrialsAndFeatureList().release();
       ANNOTATE_LEAKING_OBJECT_PTR(leaked_field_trial_list);
-      ignore_result(leaked_field_trial_list);
+      std::ignore = leaked_field_trial_list;
       delegate_->PostFieldTrialInitialization();
       mojo::core::InitFeatures();
     }

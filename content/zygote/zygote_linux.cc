@@ -14,11 +14,11 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+#include <tuple>
 #include <utility>
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
-#include "base/ignore_result.h"
 #include "base/linux_util.h"
 #include "base/logging.h"
 #include "base/pickle.h"
@@ -591,7 +591,7 @@ base::ProcessId Zygote::ReadArgsAndFork(base::PickleIterator iter,
 
     // Pass ownership of file descriptors from fds to GlobalDescriptors.
     for (base::ScopedFD& fd : fds)
-      ignore_result(fd.release());
+      std::ignore = fd.release();
     base::GlobalDescriptors::GetInstance()->Reset(mapping);
 
     // Reset the process-wide command line to our new command line.

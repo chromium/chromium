@@ -9,7 +9,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/ignore_result.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -810,7 +809,7 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest, NavigateToChrome) {
       portal));
   RenderProcessHostBadIpcMessageWaiter kill_waiter(main_frame->GetProcess());
   GURL a_url(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  ignore_result(ExecJs(main_frame, JsReplace("portal.src = $1;", a_url)));
+  std::ignore = ExecJs(main_frame, JsReplace("portal.src = $1;", a_url));
 
   EXPECT_EQ(bad_message::RPH_MOJO_PROCESS_ERROR, kill_waiter.Wait());
 }

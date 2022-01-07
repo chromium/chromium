@@ -6,11 +6,11 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/ignore_result.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -217,7 +217,7 @@ TEST_F(RenderFrameAudioOutputStreamFactoryTest,
       kDefaultDeviceId, mock_callback.Get());
   {
     mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient> client;
-    ignore_result(client.InitWithNewPipeAndPassReceiver());
+    std::ignore = client.InitWithNewPipeAndPassReceiver();
     provider_remote->Acquire(kParams, std::move(client));
   }
 
@@ -256,7 +256,7 @@ TEST_F(RenderFrameAudioOutputStreamFactoryTest,
   // Now factory is destructed. Trying to create a stream should fail.
   {
     mojo::PendingRemote<media::mojom::AudioOutputStreamProviderClient> client;
-    ignore_result(client.InitWithNewPipeAndPassReceiver());
+    std::ignore = client.InitWithNewPipeAndPassReceiver();
     provider_remote->Acquire(kParams, std::move(client));
   }
 

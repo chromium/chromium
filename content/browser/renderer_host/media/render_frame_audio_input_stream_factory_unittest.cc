@@ -5,11 +5,11 @@
 #include "content/browser/renderer_host/media/render_frame_audio_input_stream_factory.h"
 
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/ignore_result.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -217,7 +217,7 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
 
   mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
       client;
-  ignore_result(client.InitWithNewPipeAndPassReceiver());
+  std::ignore = client.InitWithNewPipeAndPassReceiver();
   factory_remote->CreateStream(std::move(client), session_id, kParams, kAGC,
                                kSharedMemoryCount);
 
@@ -245,7 +245,7 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
 
   mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
       client;
-  ignore_result(client.InitWithNewPipeAndPassReceiver());
+  std::ignore = client.InitWithNewPipeAndPassReceiver();
   factory_remote->CreateStream(std::move(client), session_id, kParams, kAGC,
                                kSharedMemoryCount);
 
@@ -274,7 +274,7 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
   source_contents.reset();
   mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
       client;
-  ignore_result(client.InitWithNewPipeAndPassReceiver());
+  std::ignore = client.InitWithNewPipeAndPassReceiver();
   factory_remote->CreateStream(std::move(client), session_id, kParams, kAGC,
                                kSharedMemoryCount);
 
@@ -293,7 +293,7 @@ TEST_F(MAYBE_RenderFrameAudioInputStreamFactoryTest,
   base::UnguessableToken session_id = base::UnguessableToken::Create();
   mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
       client;
-  ignore_result(client.InitWithNewPipeAndPassReceiver());
+  std::ignore = client.InitWithNewPipeAndPassReceiver();
   factory_remote->CreateStream(std::move(client), session_id, kParams, kAGC,
                                kSharedMemoryCount);
 

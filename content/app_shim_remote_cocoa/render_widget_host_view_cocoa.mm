@@ -5,13 +5,14 @@
 #import "content/app_shim_remote_cocoa/render_widget_host_view_cocoa.h"
 
 #include <Carbon/Carbon.h>  // for <HIToolbox/Events.h>
+
 #include <limits>
+#include <tuple>
 #include <utility>
 
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "base/debug/crash_logging.h"
-#include "base/ignore_result.h"
 #import "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "content/browser/accessibility/browser_accessibility_cocoa.h"
@@ -619,7 +620,7 @@ void ExtractUnderlines(NSAttributedString* string,
 - (void)setHostDisconnected {
   // Set the host to be an abandoned message pipe, and set the hostHelper
   // to forward messages to that host.
-  ignore_result(_dummyHost.BindNewPipeAndPassReceiver());
+  std::ignore = _dummyHost.BindNewPipeAndPassReceiver();
   _dummyHostHelper = std::make_unique<DummyHostHelper>();
   _host = _dummyHost.get();
   _hostHelper = _dummyHostHelper.get();

@@ -3,11 +3,13 @@
 // found in the LICENSE file.
 
 #include "content/child/field_trial.h"
+
+#include <tuple>
+
 #include "base/base_switches.h"
 #include "base/command_line.h"
 #include "base/debug/leak_annotations.h"
 #include "base/feature_list.h"
-#include "base/ignore_result.h"
 #include "base/metrics/field_trial.h"
 #include "build/build_config.h"
 #include "content/public/common/content_descriptors.h"
@@ -30,7 +32,7 @@ void InitializeFieldTrialAndFeatureList() {
   base::FieldTrialList* leaked_field_trial_list =
       new base::FieldTrialList(nullptr);
   ANNOTATE_LEAKING_OBJECT_PTR(leaked_field_trial_list);
-  ignore_result(leaked_field_trial_list);
+  std::ignore = leaked_field_trial_list;
 
   // Ensure any field trials in browser are reflected into the child process.
   base::FieldTrialList::CreateTrialsFromCommandLine(command_line,

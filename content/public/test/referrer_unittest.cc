@@ -4,7 +4,8 @@
 
 #include "content/public/common/referrer.h"
 
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "base/test/gtest_util.h"
 #include "net/url_request/referrer_policy.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,16 +17,18 @@ namespace content {
 using ReferrerSanitizerTest = testing::Test;
 
 TEST_F(ReferrerSanitizerTest, SanitizesPolicyForEmptyReferrers) {
-  EXPECT_DCHECK_DEATH(ignore_result(Referrer::SanitizeForRequest(
-      GURL("https://a"),
-      Referrer(GURL(), static_cast<network::mojom::ReferrerPolicy>(200)))));
+  EXPECT_DCHECK_DEATH(
+      std::ignore = Referrer::SanitizeForRequest(
+          GURL("https://a"),
+          Referrer(GURL(), static_cast<network::mojom::ReferrerPolicy>(200))));
 }
 
 TEST_F(ReferrerSanitizerTest, SanitizesPolicyForNonEmptyReferrers) {
-  EXPECT_DCHECK_DEATH(ignore_result(Referrer::SanitizeForRequest(
-      GURL("https://a"),
-      Referrer(GURL("http://b"),
-               static_cast<network::mojom::ReferrerPolicy>(200)))));
+  EXPECT_DCHECK_DEATH(
+      std::ignore = Referrer::SanitizeForRequest(
+          GURL("https://a"),
+          Referrer(GURL("http://b"),
+                   static_cast<network::mojom::ReferrerPolicy>(200))));
 }
 
 TEST_F(ReferrerSanitizerTest, SanitizeOriginForRequest) {

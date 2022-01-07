@@ -25,7 +25,6 @@
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
-#include "base/ignore_result.h"
 #include "base/json/json_reader.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
@@ -4309,7 +4308,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
       main_frame.BindNewEndpointAndPassReceiver();
 
   mojo::AssociatedRemote<blink::mojom::RemoteMainFrameHost> main_frame_host;
-  ignore_result(main_frame_host.BindNewEndpointAndPassReceiver());
+  std::ignore = main_frame_host.BindNewEndpointAndPassReceiver();
   remote_main_frame_interfaces->main_frame_host = main_frame_host.Unbind();
 
   // Send the message to create a proxy for B's new child frame in A.  This
@@ -4389,7 +4388,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
     mojom::CreateFrameParamsPtr params = mojom::CreateFrameParams::New();
     params->routing_id = frame_routing_id;
     params->frame = pending_frame.InitWithNewEndpointAndPassReceiver();
-    ignore_result(params->interface_broker.InitWithNewPipeAndPassReceiver());
+    std::ignore = params->interface_broker.InitWithNewPipeAndPassReceiver();
     params->previous_routing_id = previous_routing_id;
     params->opener_frame_token = absl::nullopt;
     params->parent_routing_id =
@@ -4472,7 +4471,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ParentDetachRemoteChild) {
     mojom::CreateFrameParamsPtr params = mojom::CreateFrameParams::New();
     params->routing_id = frame_routing_id;
     params->frame = pending_frame.InitWithNewEndpointAndPassReceiver();
-    ignore_result(params->interface_broker.InitWithNewPipeAndPassReceiver());
+    std::ignore = params->interface_broker.InitWithNewPipeAndPassReceiver();
     params->previous_routing_id = IPC::mojom::kRoutingIdNone;
     params->opener_frame_token = absl::nullopt;
     params->parent_routing_id = parent_routing_id;
@@ -4484,10 +4483,10 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, ParentDetachRemoteChild) {
         blink_frame_widget.InitWithNewEndpointAndPassReceiver();
     params->widget_params->widget =
         blink_widget.InitWithNewEndpointAndPassReceiver();
-    ignore_result(params->widget_params->frame_widget_host
-                      .InitWithNewEndpointAndPassReceiver());
-    ignore_result(params->widget_params->widget_host
-                      .InitWithNewEndpointAndPassReceiver());
+    std::ignore = params->widget_params->frame_widget_host
+                      .InitWithNewEndpointAndPassReceiver();
+    std::ignore =
+        params->widget_params->widget_host.InitWithNewEndpointAndPassReceiver();
     params->widget_params->visual_properties.screen_infos =
         display::ScreenInfos(display::ScreenInfo());
     params->replication_state = blink::mojom::FrameReplicationState::New();

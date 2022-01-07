@@ -7,12 +7,12 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
-#include "base/ignore_result.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
@@ -3133,7 +3133,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   // soon, let's wait until the document.readyState finalizes. We don't really
   // care if that succeeds since, in the failing case, the renderer is crashing.
   EXPECT_TRUE(NavigateToURL(shell(), url));
-  ignore_result(WaitForRenderFrameReady(web_contents()->GetMainFrame()));
+  std::ignore = WaitForRenderFrameReady(web_contents()->GetMainFrame());
 
   EXPECT_TRUE(crash_observer.did_exit_normally());
 }

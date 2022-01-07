@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <stdint.h>
+
 #include <tuple>
 #include <utility>
 
@@ -10,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/debug/leak_annotations.h"
-#include "base/ignore_result.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -138,7 +138,7 @@ class RenderFrameImplTest : public RenderViewTest {
         main_frame.BindNewEndpointAndPassDedicatedReceiver();
 
     mojo::AssociatedRemote<blink::mojom::RemoteMainFrameHost> main_frame_host;
-    ignore_result(main_frame_host.BindNewEndpointAndPassDedicatedReceiver());
+    std::ignore = main_frame_host.BindNewEndpointAndPassDedicatedReceiver();
     remote_main_frame_interfaces->main_frame_host = main_frame_host.Unbind();
 
     RenderFrameImpl::FromWebFrame(

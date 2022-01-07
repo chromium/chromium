@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/ignore_result.h"
 #include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
@@ -89,7 +89,7 @@ class FileTraceDataEndpoint : public TracingController::TraceDataEndpoint {
   void ReceiveTraceChunkOnBlockingThread(std::unique_ptr<std::string> chunk) {
     if (!OpenFileIfNeededOnBlockingThread())
       return;
-    ignore_result(fwrite(chunk->c_str(), chunk->size(), 1, file_));
+    std::ignore = fwrite(chunk->c_str(), chunk->size(), 1, file_);
   }
 
   bool OpenFileIfNeededOnBlockingThread() {

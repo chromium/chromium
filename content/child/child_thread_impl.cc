@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/base_switches.h"
@@ -19,7 +20,6 @@
 #include "base/debug/leak_annotations.h"
 #include "base/debug/profiler.h"
 #include "base/files/file.h"
-#include "base/ignore_result.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -154,7 +154,7 @@ bool CreateWaitAndExitThread(base::TimeDelta duration) {
   // delegate object alive for the lifetime of the process.
   WaitAndExitDelegate* leaking_delegate = delegate.release();
   ANNOTATE_LEAKING_OBJECT_PTR(leaking_delegate);
-  ignore_result(leaking_delegate);
+  std::ignore = leaking_delegate;
   return true;
 }
 #endif

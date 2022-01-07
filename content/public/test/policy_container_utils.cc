@@ -4,7 +4,8 @@
 
 #include "content/public/test/policy_container_utils.h"
 
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "third_party/blink/public/mojom/frame/policy_container.mojom.h"
 
 namespace content {
@@ -12,8 +13,8 @@ namespace content {
 blink::mojom::PolicyContainerPtr CreateStubPolicyContainer() {
   mojo::PendingAssociatedRemote<blink::mojom::PolicyContainerHost>
       stub_policy_container_remote;
-  ignore_result(
-      stub_policy_container_remote.InitWithNewEndpointAndPassReceiver());
+  std::ignore =
+      stub_policy_container_remote.InitWithNewEndpointAndPassReceiver();
   return blink::mojom::PolicyContainer::New(
       blink::mojom::PolicyContainerPolicies::New(),
       std::move(stub_policy_container_remote));

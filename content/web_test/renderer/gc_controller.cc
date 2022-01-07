@@ -4,8 +4,9 @@
 
 #include "content/web_test/renderer/gc_controller.h"
 
+#include <tuple>
+
 #include "base/bind.h"
-#include "base/ignore_result.h"
 #include "gin/arguments.h"
 #include "gin/handle.h"
 #include "gin/object_template_builder.h"
@@ -103,7 +104,7 @@ void GCController::AsyncCollectAllWithEmptyStack(
       isolate, v8::MicrotasksScope::kDoNotRunMicrotasks);
   auto result = func->Call(context, context->Global(), 0, nullptr);
   // Swallow potential exception.
-  ignore_result(result);
+  std::ignore = result;
 }
 
 void GCController::MinorCollect(const gin::Arguments& args) {

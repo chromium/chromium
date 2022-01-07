@@ -8,13 +8,13 @@
 
 #include <limits>
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
@@ -226,7 +226,7 @@ RenderWidgetHostViewMac::RenderWidgetHostViewMac(RenderWidgetHost* widget)
     // first to rebaseline some unreliable web tests.
     // NOTE: This will not be run for child frame widgets, which do not have
     // an owner delegate and won't get a RenderViewHost here.
-    ignore_result(owner_delegate->GetWebkitPreferencesForWidget());
+    std::ignore = owner_delegate->GetWebkitPreferencesForWidget();
   }
 
   cursor_manager_ = std::make_unique<CursorManager>(this);

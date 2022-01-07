@@ -4,8 +4,9 @@
 
 #include "content/public/test/prerender_test_util.h"
 
+#include <tuple>
+
 #include "base/callback_helpers.h"
-#include "base/ignore_result.h"
 #include "base/trace_event/typed_macros.h"
 #include "content/browser/prerender/prerender_host_registry.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -346,8 +347,8 @@ void PrerenderTestHelper::NavigatePrerenderedPage(int host_id,
   // approach just to ignore it instead of fixing the timing issue. When
   // ExecJs() actually fails, the remaining test steps should fail, so it
   // should be safe to ignore it.
-  ignore_result(
-      ExecJs(prerender_render_frame_host, JsReplace("location = $1", gurl)));
+  std::ignore =
+      ExecJs(prerender_render_frame_host, JsReplace("location = $1", gurl));
 }
 
 // static
@@ -380,8 +381,8 @@ void PrerenderTestHelper::NavigatePrimaryPage(WebContents& web_contents,
   // approach just to ignore it instead of fixing the timing issue. When
   // ExecJs() actually fails, the remaining test steps should fail, so it
   // should be safe to ignore it.
-  ignore_result(
-      ExecJs(web_contents.GetMainFrame(), JsReplace("location = $1", gurl)));
+  std::ignore =
+      ExecJs(web_contents.GetMainFrame(), JsReplace("location = $1", gurl));
   observer.Wait();
 }
 

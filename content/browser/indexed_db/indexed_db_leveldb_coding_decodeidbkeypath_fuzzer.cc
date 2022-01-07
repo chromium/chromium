@@ -5,7 +5,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
 #include "third_party/blink/public/common/indexeddb/indexeddb_key_path.h"
 
@@ -13,8 +14,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   base::StringPiece key_path_str_piece(reinterpret_cast<const char*>(data),
                                        size);
   blink::IndexedDBKeyPath indexed_db_key_path;
-  ignore_result(
-      content::DecodeIDBKeyPath(&key_path_str_piece, &indexed_db_key_path));
+  std::ignore =
+      content::DecodeIDBKeyPath(&key_path_str_piece, &indexed_db_key_path);
 
   // Ensure that encoding |indexed_db_key_path| produces the same result.
   std::string result;

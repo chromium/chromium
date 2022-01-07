@@ -4,9 +4,9 @@
 
 #include "content/test/test_navigation_url_loader.h"
 
+#include <tuple>
 #include <utility>
 
-#include "base/ignore_result.h"
 #include "content/browser/loader/navigation_early_hints_manager.h"
 #include "content/browser/loader/navigation_url_loader_delegate.h"
 #include "content/browser/navigation_subresource_loader_params.h"
@@ -97,7 +97,7 @@ void TestNavigationURLLoader::CallOnResponseStarted(
   // purpose of this is not to violate some DCHECKs when the navigation commits.
   mojo::PendingRemote<network::mojom::URLLoaderClient> url_loader_client_remote;
   mojo::PendingRemote<network::mojom::URLLoader> url_loader_remote;
-  ignore_result(url_loader_remote.InitWithNewPipeAndPassReceiver());
+  std::ignore = url_loader_remote.InitWithNewPipeAndPassReceiver();
   auto url_loader_client_endpoints =
       network::mojom::URLLoaderClientEndpoints::New(
           std::move(url_loader_remote),

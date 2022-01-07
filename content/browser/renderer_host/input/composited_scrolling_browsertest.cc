@@ -2,11 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/ignore_result.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -107,7 +107,7 @@ class CompositedScrollingBrowserTest : public ContentBrowserTest {
 
     std::u16string ready_title(u"ready");
     TitleWatcher watcher(shell()->web_contents(), ready_title);
-    ignore_result(watcher.WaitAndGetTitle());
+    std::ignore = watcher.WaitAndGetTitle();
 
     // Wait for the hit test data to be ready after initiating URL loading
     // before returning

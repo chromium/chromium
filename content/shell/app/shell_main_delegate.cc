@@ -5,6 +5,7 @@
 #include "content/shell/app/shell_main_delegate.h"
 
 #include <iostream>
+#include <tuple>
 #include <utility>
 
 #include "base/base_paths.h"
@@ -13,7 +14,6 @@
 #include "base/cpu.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
-#include "base/ignore_result.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -262,7 +262,7 @@ absl::variant<int, MainFunctionParams> ShellMainDelegate::RunProcess(
       main_runner->Initialize(std::move(main_function_params));
   DCHECK_LT(initialize_exit_code, 0)
       << "BrowserMainRunner::Initialize failed in ShellMainDelegate";
-  ignore_result(main_runner.release());
+  std::ignore = main_runner.release();
   // Return 0 as BrowserMain() should not be called after this, bounce up to
   // the system message loop for ContentShell, and we're already done thanks
   // to the |ui_task| for browser tests.

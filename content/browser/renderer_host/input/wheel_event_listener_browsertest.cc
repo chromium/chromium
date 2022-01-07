@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/common/content_features.h"
@@ -79,7 +80,7 @@ class WheelEventListenerBrowserTest : public ContentBrowserTest {
 
     std::u16string ready_title(u"ready");
     TitleWatcher watcher(shell()->web_contents(), ready_title);
-    ignore_result(watcher.WaitAndGetTitle());
+    std::ignore = watcher.WaitAndGetTitle();
 
     MainThreadFrameObserver main_thread_sync(host);
     main_thread_sync.Wait();

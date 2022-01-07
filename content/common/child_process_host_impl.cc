@@ -5,6 +5,7 @@
 #include "content/common/child_process_host_impl.h"
 
 #include <limits>
+#include <tuple>
 
 #include "base/atomic_sequence_num.h"
 #include "base/clang_profiling_buildflags.h"
@@ -12,7 +13,6 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/hash/hash.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
@@ -123,7 +123,7 @@ ChildProcessHostImpl::ChildProcessHostImpl(ChildProcessHostDelegate* delegate,
   if (ipc_mode_ == IpcMode::kLegacy) {
     // In legacy mode, we only have an IPC Channel. Bind ChildProcess to a
     // disconnected pipe so it quietly discards messages.
-    ignore_result(child_process_.BindNewPipeAndPassReceiver());
+    std::ignore = child_process_.BindNewPipeAndPassReceiver();
     channel_ = IPC::ChannelMojo::Create(
         mojo_invitation_->AttachMessagePipe(
             kChildProcessReceiverAttachmentName),

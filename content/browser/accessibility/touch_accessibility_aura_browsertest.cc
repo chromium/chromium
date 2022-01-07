@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "base/strings/string_number_conversions.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/renderer_host/render_widget_host_view_child_frame.h"
@@ -58,7 +59,7 @@ class TouchAccessibilityBrowserTest : public ContentBrowserTest {
     std::unique_ptr<ui::Event> mouse_move_event(
         new ui::MouseEvent(ui::ET_MOUSE_MOVED, location, location,
                            ui::EventTimeForNow(), flags, 0));
-    ignore_result(sink->OnEventFromSource(mouse_move_event.get()));
+    std::ignore = sink->OnEventFromSource(mouse_move_event.get());
   }
 };
 

@@ -5,10 +5,10 @@
 #include "content/browser/renderer_host/pepper/quota_reservation.h"
 
 #include <memory>
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/ignore_result.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
@@ -75,7 +75,7 @@ int64_t QuotaReservation::OpenFile(int32_t id,
       files_.insert(std::make_pair(id, file_handle.get()));
   if (insert_result.second) {
     int64_t max_written_offset = file_handle->GetMaxWrittenOffset();
-    ignore_result(file_handle.release());
+    std::ignore = file_handle.release();
     return max_written_offset;
   }
   NOTREACHED();

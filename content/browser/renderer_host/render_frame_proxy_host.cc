@@ -5,6 +5,7 @@
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 
 #include <memory>
+#include <tuple>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -13,7 +14,6 @@
 #include "base/containers/circular_deque.h"
 #include "base/containers/contains.h"
 #include "base/hash/hash.h"
-#include "base/ignore_result.h"
 #include "base/lazy_instance.h"
 #include "base/no_destructor.h"
 #include "base/stl_util.h"
@@ -345,8 +345,7 @@ RenderFrameProxyHost::GetRemoteAssociatedInterfaces() {
     } else {
       // The channel may not be initialized in some tests environments. In this
       // case we set up a dummy interface provider.
-      ignore_result(
-          remote_interfaces.BindNewEndpointAndPassDedicatedReceiver());
+      std::ignore = remote_interfaces.BindNewEndpointAndPassDedicatedReceiver();
     }
     remote_associated_interfaces_ =
         std::make_unique<blink::AssociatedInterfaceProvider>(

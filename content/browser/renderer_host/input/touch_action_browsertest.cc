@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <tuple>
 #include <utility>
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/ignore_result.h"
 #include "base/json/json_reader.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -170,7 +170,7 @@ class TouchActionBrowserTest : public ContentBrowserTest {
 
     std::u16string ready_title(u"ready");
     TitleWatcher watcher(shell()->web_contents(), ready_title);
-    ignore_result(watcher.WaitAndGetTitle());
+    std::ignore = watcher.WaitAndGetTitle();
 
     // We need to wait until hit test data is available. We use our own
     // HitTestRegionObserver here because we have the RenderWidgetHostImpl

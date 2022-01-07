@@ -4,12 +4,12 @@
 
 #include "content/browser/media/key_system_support_impl.h"
 
+#include <tuple>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
@@ -265,9 +265,8 @@ void KeySystemSupportImpl::OnHardwareSecureCapability(
   // parallel `IsKeySystemSupported()` calls from different renderer processes.
   // This is okay and won't cause collision or corruption of data.
   if (lazy_initialize) {
-    ignore_result(CdmRegistryImpl::GetInstance()->FinalizeCdmCapability(
-        key_system, CdmInfo::Robustness::kHardwareSecure,
-        hw_secure_capability));
+    std::ignore = CdmRegistryImpl::GetInstance()->FinalizeCdmCapability(
+        key_system, CdmInfo::Robustness::kHardwareSecure, hw_secure_capability);
   }
 
   auto capability = media::mojom::KeySystemCapability::New();

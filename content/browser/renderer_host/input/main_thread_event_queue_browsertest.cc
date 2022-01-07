@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <tuple>
 #include <utility>
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/ignore_result.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -105,7 +105,7 @@ class MainThreadEventQueueBrowserTest : public ContentBrowserTest {
 
     std::u16string ready_title(u"ready");
     TitleWatcher watcher(shell()->web_contents(), ready_title);
-    ignore_result(watcher.WaitAndGetTitle());
+    std::ignore = watcher.WaitAndGetTitle();
 
     HitTestRegionObserver observer(host->GetFrameSinkId());
     observer.WaitForHitTestData();

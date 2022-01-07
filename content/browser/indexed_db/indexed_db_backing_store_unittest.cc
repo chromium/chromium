@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/barrier_closure.h"
@@ -19,7 +20,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/guid.h"
-#include "base/ignore_result.h"
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
@@ -1786,7 +1786,7 @@ TEST_F(IndexedDBBackingStoreTest, SchemaUpgradeWithoutBlobsSurvives) {
   // Set the schema to 2, which was before blob support.
   std::unique_ptr<LevelDBWriteBatch> write_batch = LevelDBWriteBatch::Create();
   const std::string schema_version_key = SchemaVersionKey::Encode();
-  ignore_result(indexed_db::PutInt(write_batch.get(), schema_version_key, 2));
+  std::ignore = indexed_db::PutInt(write_batch.get(), schema_version_key, 2);
   ASSERT_TRUE(backing_store()->db()->Write(write_batch.get()).ok());
   task_environment_.RunUntilIdle();
 
@@ -1902,7 +1902,7 @@ TEST_F(IndexedDBBackingStoreTestWithBlobs, SchemaUpgradeWithBlobsCorrupt) {
   // Set the schema to 2, which was before blob support.
   std::unique_ptr<LevelDBWriteBatch> write_batch = LevelDBWriteBatch::Create();
   const std::string schema_version_key = SchemaVersionKey::Encode();
-  ignore_result(indexed_db::PutInt(write_batch.get(), schema_version_key, 2));
+  std::ignore = indexed_db::PutInt(write_batch.get(), schema_version_key, 2);
   ASSERT_TRUE(backing_store()->db()->Write(write_batch.get()).ok());
 
   // Clean up on the IDB sequence.
