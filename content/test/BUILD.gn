@@ -1062,6 +1062,7 @@ test("content_browsertests") {
 
   sources = [
     "../app/mojo/mojo_browsertest.cc",
+    "../app_shim_remote_cocoa/window_occlusion_browsertest_mac.mm",
     "../browser/accessibility/accessibility_action_browsertest.cc",
     "../browser/accessibility/accessibility_content_browsertest.cc",
     "../browser/accessibility/accessibility_content_browsertest.h",

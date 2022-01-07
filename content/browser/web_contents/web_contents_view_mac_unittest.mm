@@ -60,14 +60,28 @@ class WebContentsViewMacTest : public RenderViewHostTestHarness {
 }  // namespace
 
 TEST_F(WebContentsViewMacTest, ShowHideParent) {
-  EXPECT_EQ(Visibility::VISIBLE, web_contents()->GetVisibility());
+  // A web contents that has never become visible starts off with a VISIBLE
+  // visibility state. Until it's made visible for the first time the flag
+  // `did_first_set_visible_` remains false, causing it to ignore all visibility
+  // state changes other than VISIBLE. This means if we don't order the window
+  // front before starting our test the web contents will report VISIBLE at all
+  // three checks.
+  [window_ orderFront:nil];
+  EXPECT_EQ(content::Visibility::VISIBLE, web_contents()->GetVisibility());
   [[window_ contentView] setHidden:YES];
-  EXPECT_EQ(Visibility::HIDDEN, web_contents()->GetVisibility());
+  EXPECT_EQ(content::Visibility::HIDDEN, web_contents()->GetVisibility());
   [[window_ contentView] setHidden:NO];
-  EXPECT_EQ(Visibility::VISIBLE, web_contents()->GetVisibility());
+  EXPECT_EQ(content::Visibility::VISIBLE, web_contents()->GetVisibility());
 }
 
 TEST_F(WebContentsViewMacTest, OccludeView) {
+  // A web contents that has never become visible starts off with a VISIBLE
+  // visibility state. Until it's made visible for the first time the flag
+  // `did_first_set_visible_` remains false, causing it to ignore all visibility
+  // state changes other than VISIBLE. This means if we don't order the window
+  // front before starting our test the web contents will report VISIBLE at all
+  // three checks.
+  [window_ orderFront:nil];
   EXPECT_EQ(Visibility::VISIBLE, web_contents()->GetVisibility());
   [window_ setPretendIsOccluded:YES];
   EXPECT_EQ(Visibility::OCCLUDED, web_contents()->GetVisibility());

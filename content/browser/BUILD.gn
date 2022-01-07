@@ -2921,6 +2921,8 @@ source_set("browser") {
       "../app_shim_remote_cocoa/render_widget_host_view_cocoa.mm",
       "../app_shim_remote_cocoa/sharing_service_picker.h",
       "../app_shim_remote_cocoa/sharing_service_picker.mm",
+      "../app_shim_remote_cocoa/web_contents_occlusion_checker_mac.h",
+      "../app_shim_remote_cocoa/web_contents_occlusion_checker_mac.mm",
       "../app_shim_remote_cocoa/web_contents_view_cocoa.h",
       "../app_shim_remote_cocoa/web_contents_view_cocoa.mm",
     ]
