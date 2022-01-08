@@ -37,10 +37,10 @@ class PLATFORM_EXPORT RefCountedPropertyTreeState {
     return PropertyTreeStateOrAlias(Transform(), Clip(), Effect());
   }
 
-  void ClearChangedTo(const PropertyTreeStateOrAlias& to) const {
-    Transform().ClearChangedTo(&to.Transform());
-    Clip().ClearChangedTo(&to.Clip());
-    Effect().ClearChangedTo(&to.Effect());
+  void ClearChangedToRoot(int sequence_number) const {
+    Transform().ClearChangedToRoot(sequence_number);
+    Clip().ClearChangedToRoot(sequence_number);
+    Effect().ClearChangedToRoot(sequence_number);
   }
 
   String ToString() const { return GetPropertyTreeState().ToString(); }

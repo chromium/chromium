@@ -100,10 +100,14 @@ class PaintPropertyNode
     return true;
   }
 
-  void ClearChangedToRoot() const { ClearChangedTo(nullptr); }
-  void ClearChangedTo(const NodeTypeOrAlias* node) const {
-    for (auto* n = this; n && n != node; n = n->Parent())
-      n->changed_ = PaintPropertyChangeType::kUnchanged;
+  // Clear changed flags along the path to the root, and set sequence number.
+  // If a subclass needs to clear changed flags along additional paths, the
+  // subclass must override this.
+  // For information about |sequence_number|, see: |changed_sequence_number_|.
+  void ClearChangedToRoot(int sequence_number) const {
+    for (auto* n = this; n && n->changed_sequence_number_ != sequence_number;
+         n = n->Parent())
+      n->ClearChanged(sequence_number);
   }
 
   // Returns true if this node is an alias for its parent. A parent alias is a
@@ -218,6 +222,15 @@ class PaintPropertyNode
     changed_ = std::max(changed_, changed);
   }
 
+  // For information about |sequence_number|, see: |changed_sequence_number_|.
+  void ClearChanged(int sequence_number) const {
+    DCHECK_NE(changed_sequence_number_, sequence_number);
+    changed_ = PaintPropertyChangeType::kUnchanged;
+    changed_sequence_number_ = sequence_number;
+  }
+
+  int ChangedSequenceNumber() const { return changed_sequence_number_; }
+
   std::unique_ptr<JSONObject> ToJSONBase() const {
     auto json = std::make_unique<JSONObject>();
     if (Parent())
@@ -241,16 +254,22 @@ class PaintPropertyNode
 
   // Indicates that the paint property value changed in the last update in the
   // prepaint lifecycle step. This is used for raster invalidation and damage
-  // in the compositor. This value is cleared through |ClearChangedTo*|. This is
-  // cleared through PaintController::FinishCycle.
+  // in the compositor. This value is cleared through ClearChangedToRoot()
+  // called by PaintArtifactCompositor::ClearPropertyTreeChangedState().
   mutable PaintPropertyChangeType changed_;
-
-  scoped_refptr<const NodeTypeOrAlias> parent_;
+  // The changed sequence number is an optimization to avoid an O(n^2) to O(n^4)
+  // treewalk when clearing the changed bits for the entire tree. When starting
+  // to clear the changed bits, a new (unique) number is selected for the entire
+  // tree, and |changed_sequence_number_| is set to this number if the node (and
+  // ancestors) have already been visited for clearing.
+  mutable int changed_sequence_number_ = 0;
 
   // Caches the id of the associated cc property node. It's valid only when
   // cc_sequence_number_ matches the sequence number of the cc property tree.
   mutable int cc_node_id_ = -1;
   mutable int cc_sequence_number_ = 0;
+
+  scoped_refptr<const NodeTypeOrAlias> parent_;
 
 #if DCHECK_IS_ON()
   String debug_name_;

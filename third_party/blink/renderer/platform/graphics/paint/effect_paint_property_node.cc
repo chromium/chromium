@@ -130,6 +130,20 @@ bool EffectPaintPropertyNodeOrAlias::Changed(
   return false;
 }
 
+void EffectPaintPropertyNodeOrAlias::ClearChangedToRoot(
+    int sequence_number) const {
+  for (auto* n = this; n && n->ChangedSequenceNumber() != sequence_number;
+       n = n->Parent()) {
+    n->ClearChanged(sequence_number);
+    if (n->IsParentAlias())
+      continue;
+    const auto* unaliased = static_cast<const EffectPaintPropertyNode*>(n);
+    unaliased->LocalTransformSpace().ClearChangedToRoot(sequence_number);
+    if (const auto* output_clip = unaliased->OutputClip())
+      output_clip->ClearChangedToRoot(sequence_number);
+  }
+}
+
 gfx::RectF EffectPaintPropertyNode::MapRect(const gfx::RectF& rect) const {
   if (state_.filter.IsEmpty())
     return rect;

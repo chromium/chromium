@@ -149,6 +149,10 @@ class PaintArtifactCompositorTest : public testing::Test,
     layer_tree_->layer_tree_host()->LayoutAndUpdateLayers();
   }
 
+  void ClearPropertyTreeChangedState() {
+    paint_artifact_compositor_->ClearPropertyTreeChangedState();
+  }
+
   void WillBeRemovedFromFrame() {
     paint_artifact_compositor_->WillBeRemovedFromFrame();
   }
@@ -4414,7 +4418,7 @@ TEST_P(PaintArtifactCompositorTest, TransformChange) {
 
   // Change t1 but not t2.
   layer->ClearSubtreePropertyChangedForTesting();
-  t2->ClearChangedToRoot();
+  ClearPropertyTreeChangedState();
   t1->Update(t0(), TransformPaintPropertyNode::State{gfx::Vector2dF(20, 30)});
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlySimpleValues,
             t1->NodeChanged());
@@ -4439,7 +4443,7 @@ TEST_P(PaintArtifactCompositorTest, TransformChange) {
 
   // Change t2 but not t1.
   layer->ClearSubtreePropertyChangedForTesting();
-  t2->ClearChangedToRoot();
+  ClearPropertyTreeChangedState();
   t2->Update(*t1, Transform3dState(TransformationMatrix().Rotate(135)));
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, t1->NodeChanged());
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlySimpleValues,
@@ -4462,7 +4466,7 @@ TEST_P(PaintArtifactCompositorTest, TransformChange) {
 
   // Change t2 to be 2d translation which will be decomposited.
   layer->ClearSubtreePropertyChangedForTesting();
-  t2->ClearChangedToRoot();
+  ClearPropertyTreeChangedState();
   t2->Update(*t1, Transform3dState(gfx::Vector2dF(20, 30)));
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, t1->NodeChanged());
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyValues, t2->NodeChanged());
@@ -4484,7 +4488,7 @@ TEST_P(PaintArtifactCompositorTest, TransformChange) {
 
   // Change no transform nodes, but invalidate client.
   layer->ClearSubtreePropertyChangedForTesting();
-  t2->ClearChangedToRoot();
+  ClearPropertyTreeChangedState();
   client.Invalidate(PaintInvalidationReason::kBackground);
   Update(TestPaintArtifact()
              .Chunk(1)
@@ -4513,7 +4517,7 @@ TEST_P(PaintArtifactCompositorTest, EffectChange) {
 
   // Change e1 but not e2.
   layer->ClearSubtreePropertyChangedForTesting();
-  e2->ClearChangedToRoot();
+  ClearPropertyTreeChangedState();
 
   EffectPaintPropertyNode::State e1_state{&t0()};
   e1_state.opacity = 0.8f;
@@ -4541,7 +4545,7 @@ TEST_P(PaintArtifactCompositorTest, EffectChange) {
 
   // Change e2 but not e1.
   layer->ClearSubtreePropertyChangedForTesting();
-  e2->ClearChangedToRoot();
+  ClearPropertyTreeChangedState();
   EffectPaintPropertyNode::State e2_state{&t0()};
   e2_state.opacity = 0.9f;
   e2_state.direct_compositing_reasons = CompositingReason::kWillChangeOpacity;
@@ -4645,10 +4649,38 @@ TEST_P(PaintArtifactCompositorTest, RepaintIndirectScrollHitTest) {
   CreateScrollableChunk(test_artifact, *scroll_translation, c0(), e0());
   auto artifact = test_artifact.Build();
   Update(artifact);
-  scroll_translation->ClearChangedToRoot();
+  ClearPropertyTreeChangedState();
 
   GetPaintArtifactCompositor().UpdateRepaintedLayers(artifact);
   // This test passes if no CHECK occurs.
+}
+
+TEST_P(PaintArtifactCompositorTest, ClearChangedStateWithIndirectTransform) {
+  // t1 and t2 are siblings.
+  auto t1 = Create2DTranslation(t0(), 1, 1);
+  auto t2 = Create2DTranslation(t0(), 2, 2);
+  // c1 and c2 are parent and child, referencing t1 and t2, respectively.
+  auto c1 = CreateClip(c0(), *t1, FloatRoundedRect(1, 1, 1, 1));
+  auto c2 = CreateClip(*c1, *t2, FloatRoundedRect(2, 2, 2, 2));
+  EXPECT_EQ(PaintPropertyChangeType::kNodeAddedOrRemoved, t1->NodeChanged());
+  EXPECT_EQ(PaintPropertyChangeType::kNodeAddedOrRemoved, t2->NodeChanged());
+  EXPECT_EQ(PaintPropertyChangeType::kNodeAddedOrRemoved, c1->NodeChanged());
+  EXPECT_EQ(PaintPropertyChangeType::kNodeAddedOrRemoved, c2->NodeChanged());
+
+  auto artifact = TestPaintArtifact()
+                      .Chunk(1)
+                      .Properties(*t2, *c2, e0())
+                      .RectDrawing(gfx::Rect(2, 2, 2, 2), Color::kBlack)
+                      .Build();
+  Update(artifact);
+  ClearPropertyTreeChangedState();
+  EXPECT_EQ(PaintPropertyChangeType::kUnchanged, t1->NodeChanged());
+  EXPECT_EQ(PaintPropertyChangeType::kUnchanged, t2->NodeChanged());
+  EXPECT_EQ(PaintPropertyChangeType::kUnchanged, c1->NodeChanged());
+  EXPECT_EQ(PaintPropertyChangeType::kUnchanged, c2->NodeChanged());
+
+  GetPaintArtifactCompositor().UpdateRepaintedLayers(artifact);
+  // This test passes if no DCHECK occurs.
 }
 
 }  // namespace blink

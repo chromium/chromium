@@ -53,6 +53,19 @@ bool ClipPaintPropertyNodeOrAlias::Changed(
   return false;
 }
 
+void ClipPaintPropertyNodeOrAlias::ClearChangedToRoot(
+    int sequence_number) const {
+  for (auto* n = this; n && n->ChangedSequenceNumber() != sequence_number;
+       n = n->Parent()) {
+    n->ClearChanged(sequence_number);
+    if (n->IsParentAlias())
+      continue;
+    static_cast<const ClipPaintPropertyNode*>(n)
+        ->LocalTransformSpace()
+        .ClearChangedToRoot(sequence_number);
+  }
+}
+
 std::unique_ptr<JSONObject> ClipPaintPropertyNode::ToJSON() const {
   auto json = ToJSONBase();
   if (NodeChanged() != PaintPropertyChangeType::kUnchanged)

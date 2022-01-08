@@ -41,9 +41,10 @@ class RasterInvalidatorTest : public testing::Test,
 
   void FinishCycle(const PaintChunkSubset& chunks) {
     ClearGeometryMapperCache();
+    ++sequence_number_;
     for (const auto& chunk : chunks) {
       const_cast<PaintChunk&>(chunk).client_is_just_created = false;
-      chunk.properties.ClearChangedTo(PropertyTreeState::Root());
+      chunk.properties.ClearChangedToRoot(sequence_number_);
     }
   }
 
@@ -53,6 +54,7 @@ class RasterInvalidatorTest : public testing::Test,
   }
 
   RasterInvalidator invalidator_;
+  int sequence_number_ = 1;
 };
 
 INSTANTIATE_PAINT_TEST_SUITE_P(RasterInvalidatorTest);

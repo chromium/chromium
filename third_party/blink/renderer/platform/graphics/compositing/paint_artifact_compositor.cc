@@ -1265,6 +1265,10 @@ Vector<cc::Layer*> PaintArtifactCompositor::SynthesizedClipLayersForTesting()
 }
 
 void PaintArtifactCompositor::ClearPropertyTreeChangedState() {
+  // For information about |sequence_number|, see:
+  // PaintPropertyNode::changed_sequence_number_|;
+  static int changed_sequence_number = 1;
+
   for (auto& layer : pending_layers_) {
     // The chunks ref-counted property tree state keeps the |layer|'s non-ref
     // property tree pointers alive and all chunk property tree states should
@@ -1279,15 +1283,12 @@ void PaintArtifactCompositor::ClearPropertyTreeChangedState() {
     CHECK(layer_state.Clip().IsAncestorOf(first_chunk_state.Clip()));
     CHECK(layer_state.Effect().IsAncestorOf(first_chunk_state.Effect()));
 
-    layer.GetPropertyTreeState().ClearChangedTo(PropertyTreeState::Root());
     for (auto& chunk : layer.Chunks()) {
-      // Calling |ClearChangedTo| for every chunk could be O(|property nodes|^2)
-      // in the worst case and could be optimized by caching which nodes that
-      // have already been cleared.
-      chunk.properties.GetPropertyTreeState().ClearChangedTo(
-          layer.GetPropertyTreeState());
+      chunk.properties.GetPropertyTreeState().ClearChangedToRoot(
+          changed_sequence_number);
     }
   }
+  changed_sequence_number++;
 }
 
 size_t PaintArtifactCompositor::ApproximateUnsharedMemoryUsage() const {

@@ -65,11 +65,12 @@ class PaintPropertyNodeTest : public testing::Test {
 
   template <typename NodeType>
   void ResetAllChanged(Tree<NodeType>& tree) {
-    tree.grandchild1->ClearChangedToRoot();
-    tree.grandchild2->ClearChangedToRoot();
+    tree.grandchild1->ClearChangedToRoot(sequence_number);
+    tree.grandchild2->ClearChangedToRoot(sequence_number);
   }
 
   void ResetAllChanged() {
+    sequence_number++;
     ResetAllChanged(transform);
     ResetAllChanged(clip);
     ResetAllChanged(effect);
@@ -117,6 +118,7 @@ class PaintPropertyNodeTest : public testing::Test {
   Tree<TransformPaintPropertyNode> transform;
   Tree<ClipPaintPropertyNode> clip;
   Tree<EffectPaintPropertyNode> effect;
+  int sequence_number = 1;
 };
 
 #define STATE(node) PropertyTreeState(*transform.node, *clip.node, *effect.node)
@@ -745,7 +747,7 @@ TEST_F(PaintPropertyNodeTest, EffectLocalTransformSpaceChange) {
 TEST_F(PaintPropertyNodeTest, TransformChange2dAxisAlignment) {
   auto t = Create2DTranslation(t0(), 10, 20);
   EXPECT_EQ(PaintPropertyChangeType::kNodeAddedOrRemoved, NodeChanged(*t));
-  t->ClearChangedToRoot();
+  t->ClearChangedToRoot(++sequence_number);
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, NodeChanged(*t));
 
   // Translation doesn't affect 2d axis alignment.
@@ -753,7 +755,7 @@ TEST_F(PaintPropertyNodeTest, TransformChange2dAxisAlignment) {
             t->Update(t0(), TransformPaintPropertyNode::State{
                                 gfx::Vector2dF(30, 40)}));
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlySimpleValues, NodeChanged(*t));
-  t->ClearChangedToRoot();
+  t->ClearChangedToRoot(++sequence_number);
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, NodeChanged(*t));
 
   // Scale doesn't affect 2d axis alignment.
@@ -761,7 +763,7 @@ TEST_F(PaintPropertyNodeTest, TransformChange2dAxisAlignment) {
             t->Update(t0(), TransformPaintPropertyNode::State{
                                 TransformationMatrix().Scale3d(2, 3, 4)}));
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlySimpleValues, NodeChanged(*t));
-  t->ClearChangedToRoot();
+  t->ClearChangedToRoot(++sequence_number);
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, NodeChanged(*t));
 
   // Rotation affects 2d axis alignment.
@@ -769,7 +771,7 @@ TEST_F(PaintPropertyNodeTest, TransformChange2dAxisAlignment) {
             t->Update(t0(), TransformPaintPropertyNode::State{
                                 TransformationMatrix(t->Matrix()).Rotate(45)}));
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyValues, NodeChanged(*t));
-  t->ClearChangedToRoot();
+  t->ClearChangedToRoot(++sequence_number);
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, NodeChanged(*t));
 
   // Changing scale but keeping original rotation doesn't change 2d axis
@@ -779,7 +781,7 @@ TEST_F(PaintPropertyNodeTest, TransformChange2dAxisAlignment) {
       t->Update(t0(), TransformPaintPropertyNode::State{
                           TransformationMatrix(t->Matrix()).Scale3d(3, 4, 5)}));
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlySimpleValues, NodeChanged(*t));
-  t->ClearChangedToRoot();
+  t->ClearChangedToRoot(++sequence_number);
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, NodeChanged(*t));
 
   // Change rotation rotation again changes 2d axis alignment.
@@ -787,7 +789,7 @@ TEST_F(PaintPropertyNodeTest, TransformChange2dAxisAlignment) {
             t->Update(t0(), TransformPaintPropertyNode::State{
                                 TransformationMatrix(t->Matrix()).Rotate(10)}));
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyValues, NodeChanged(*t));
-  t->ClearChangedToRoot();
+  t->ClearChangedToRoot(++sequence_number);
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, NodeChanged(*t));
 
   // Reset the transform back to simple translation changes 2d axis alignment.
@@ -795,7 +797,7 @@ TEST_F(PaintPropertyNodeTest, TransformChange2dAxisAlignment) {
       PaintPropertyChangeType::kChangedOnlyValues,
       t->Update(t0(), TransformPaintPropertyNode::State{gfx::Vector2dF(1, 2)}));
   EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyValues, NodeChanged(*t));
-  t->ClearChangedToRoot();
+  t->ClearChangedToRoot(++sequence_number);
   EXPECT_EQ(PaintPropertyChangeType::kUnchanged, NodeChanged(*t));
 }
 

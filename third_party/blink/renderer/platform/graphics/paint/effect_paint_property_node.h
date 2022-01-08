@@ -47,6 +47,8 @@ class PLATFORM_EXPORT EffectPaintPropertyNodeOrAlias
       const PropertyTreeState& relative_to_state,
       const TransformPaintPropertyNodeOrAlias* transform_not_to_check) const;
 
+  void ClearChangedToRoot(int sequence_number) const;
+
  protected:
   using PaintPropertyNode::PaintPropertyNode;
 };
