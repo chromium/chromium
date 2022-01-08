@@ -665,14 +665,14 @@ def main(argv):
 
   header_file_name = 'vulkan_function_pointers.h'
   header_file = open(
-      os.path.join(output_dir, header_file_name), 'w')
+      os.path.join(output_dir, header_file_name), 'w', newline='\n')
   GenerateHeaderFile(header_file)
   header_file.close()
   ClangFormat(header_file.name)
 
   source_file_name = 'vulkan_function_pointers.cc'
   source_file = open(
-      os.path.join(output_dir, source_file_name), 'w')
+      os.path.join(output_dir, source_file_name), 'w', newline='\n')
   GenerateSourceFile(source_file)
   source_file.close()
   ClangFormat(source_file.name)
