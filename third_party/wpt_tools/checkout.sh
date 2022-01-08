@@ -11,7 +11,12 @@ cd $DIR
 
 TARGET_DIR=$DIR/wpt
 REMOTE_REPO="https://github.com/web-platform-tests/wpt.git"
-WPT_HEAD=1408b119ac563b427a3e00a5514eef697c8da268
+if [ "$1" == "" ]
+then
+  echo "Remote head is empty!"
+  exit 1
+fi
+WPT_HEAD=$1
 
 function clone {
   # Remove existing repo if already exists.
@@ -20,7 +25,6 @@ function clone {
   # Clone the main repository.
   git clone $REMOTE_REPO $TARGET_DIR
   cd $TARGET_DIR && git checkout $WPT_HEAD
-  echo "WPTHead: " `git rev-parse HEAD`
 }
 
 function reduce {
@@ -34,7 +38,7 @@ function reduce {
 }
 
 actions="clone reduce"
-[ "$1" != "" ] && actions="$@"
+[ "$2" != "" ] && actions="$@"
 
 for action in $actions; do
   type -t $action >/dev/null || (echo "Unknown action: $action" 1>&2 && exit 1)
