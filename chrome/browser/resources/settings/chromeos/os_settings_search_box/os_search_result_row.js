@@ -728,20 +728,46 @@ function longestCommonSubstrings(string1, string2) {
         return '';
       }
 
+      const PERSONALIZATION_ROOT_URL = 'chrome://personalization';
+      const PERSONALIZATION_AMBIENT_URL = PERSONALIZATION_ROOT_URL + '/ambient';
+      const PERSONALIZATION_USER_URL = PERSONALIZATION_ROOT_URL + '/user';
+      const PERSONALIZATION_WALLPAPER_URL =
+          PERSONALIZATION_ROOT_URL + '/wallpaper';
+
       const SearchResultType = chromeos.settings.mojom.SearchResultType;
       const Setting = chromeos.settings.mojom.Setting;
       const Section = chromeos.settings.mojom.Section;
+      const Subpage = chromeos.settings.mojom.Subpage;
       switch (this.searchResult.type) {
         case SearchResultType.kSection: {
           switch (this.searchResult.id.section) {
             case Section.kPersonalization:
-              return 'chrome://personalization';
+              return PERSONALIZATION_ROOT_URL;
           }
         }
         case SearchResultType.kSetting: {
           switch (this.searchResult.id.setting) {
+            case Setting.kDarkModeOnOff:
+              return PERSONALIZATION_ROOT_URL;
+            case Setting.kAmbientModeOnOff:
+            case Setting.kAmbientModeSource:
+              return PERSONALIZATION_AMBIENT_URL;
+            case Setting.kChangeDeviceAccountImage:
+              return PERSONALIZATION_USER_URL;
             case Setting.kOpenWallpaper:
-              return 'chrome://personalization/wallpaper';
+              return PERSONALIZATION_WALLPAPER_URL;
+          }
+        }
+        case SearchResultType.kSubpage: {
+          switch (this.searchResult.id.subpage) {
+            case Subpage.kDarkMode:
+              return PERSONALIZATION_ROOT_URL;
+            case Subpage.kAmbientMode:
+            case Subpage.kAmbientModeArtGalleryAlbum:
+            case Subpage.kAmbientModeGooglePhotosAlbum:
+              return PERSONALIZATION_AMBIENT_URL;
+            case Subpage.kChangePicture:
+              return PERSONALIZATION_USER_URL;
           }
         }
       }
