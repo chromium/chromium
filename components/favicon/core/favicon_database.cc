@@ -8,13 +8,13 @@
 #include <stdint.h>
 #include <algorithm>
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/bits.h"
 #include "base/debug/alias.h"
 #include "base/files/file_util.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
@@ -223,7 +223,7 @@ void DatabaseErrorCallback(sql::Database* db,
     // or hardware issues, not coding errors at the client level, so displaying
     // the error would probably lead to confusion.  The ignored call signals the
     // test-expectation framework that the error was handled.
-    ignore_result(sql::Database::IsExpectedSqliteError(extended_error));
+    std::ignore = sql::Database::IsExpectedSqliteError(extended_error);
     return;
   }
 
@@ -368,7 +368,7 @@ void FaviconDatabase::RollbackTransaction() {
 void FaviconDatabase::Vacuum() {
   DCHECK(db_.transaction_nesting() == 0)
       << "Can not have a transaction when vacuuming.";
-  ignore_result(db_.Execute("VACUUM"));
+  std::ignore = db_.Execute("VACUUM");
 }
 
 void FaviconDatabase::TrimMemory() {
@@ -1086,7 +1086,7 @@ sql::InitStatus FaviconDatabase::InitImpl(const base::FilePath& db_name) {
 #endif
 
   // thumbnails table has been obsolete for a long time, remove any detritus.
-  ignore_result(db_.Execute("DROP TABLE IF EXISTS thumbnails"));
+  std::ignore = db_.Execute("DROP TABLE IF EXISTS thumbnails");
 
   // At some point, operations involving temporary tables weren't done
   // atomically and users have been stranded.  Drop those tables and
@@ -1094,9 +1094,9 @@ sql::InitStatus FaviconDatabase::InitImpl(const base::FilePath& db_name) {
   // TODO(shess): Prove it?  Audit all cases and see if it's possible
   // that this implies non-atomic update, and should thus be handled
   // via the corruption handler.
-  ignore_result(db_.Execute("DROP TABLE IF EXISTS temp_favicons"));
-  ignore_result(db_.Execute("DROP TABLE IF EXISTS temp_favicon_bitmaps"));
-  ignore_result(db_.Execute("DROP TABLE IF EXISTS temp_icon_mapping"));
+  std::ignore = db_.Execute("DROP TABLE IF EXISTS temp_favicons");
+  std::ignore = db_.Execute("DROP TABLE IF EXISTS temp_favicon_bitmaps");
+  std::ignore = db_.Execute("DROP TABLE IF EXISTS temp_icon_mapping");
 
   // Create the tables.
   if (!meta_table_.Init(&db_, kCurrentVersionNumber,

@@ -7,13 +7,13 @@
 #include <list>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "base/atomic_ref_count.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/span.h"
-#include "base/ignore_result.h"
 #include "base/memory/ptr_util.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -903,7 +903,7 @@ TEST_F(StorageAreaImplTest, GetAllWhenCacheOnlyKeys) {
         MakeSuccessCallback(barrier.AddClosure(), &put_result1));
 
     mojo::PendingRemote<blink::mojom::StorageAreaObserver> unused_observer;
-    ignore_result(unused_observer.InitWithNewPipeAndPassReceiver());
+    std::ignore = unused_observer.InitWithNewPipeAndPassReceiver();
     storage_area()->GetAll(std::move(unused_observer),
                            MakeGetAllCallback(barrier.AddClosure(), &data));
     storage_area()->Put(
@@ -974,7 +974,7 @@ TEST_F(StorageAreaImplTest, GetAllAfterSetCacheMode) {
     upgrade_loop.Run();
 
     mojo::PendingRemote<blink::mojom::StorageAreaObserver> unused_observer;
-    ignore_result(unused_observer.InitWithNewPipeAndPassReceiver());
+    std::ignore = unused_observer.InitWithNewPipeAndPassReceiver();
     storage_area()->GetAll(
         std::move(unused_observer),
         MakeGetAllCallback(upgrade_loop.QuitClosure(), &data));

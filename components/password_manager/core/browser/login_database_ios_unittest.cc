@@ -7,9 +7,10 @@
 #include <Security/Security.h>
 #include <stddef.h>
 
+#include <tuple>
+
 #include "base/cxx17_backports.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/ignore_result.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/task_environment.h"
@@ -144,7 +145,7 @@ TEST_F(LoginDatabaseIOSTest, UpdateLogin) {
   form.password_element = u"pwd";
   form.password_value = u"example";
 
-  ignore_result(login_db_->AddLogin(form));
+  std::ignore = login_db_->AddLogin(form);
 
   form.password_value = u"secret";
 
@@ -169,7 +170,7 @@ TEST_F(LoginDatabaseIOSTest, RemoveLogin) {
 
   ASSERT_THAT(login_db_->AddLogin(form), testing::SizeIs(1));
 
-  ignore_result(login_db_->RemoveLogin(form, /*changes=*/nullptr));
+  std::ignore = login_db_->RemoveLogin(form, /*changes=*/nullptr);
 
   std::vector<std::unique_ptr<PasswordForm>> forms;
   EXPECT_TRUE(login_db_->GetLogins(PasswordFormDigest(form), true, &forms));
@@ -199,7 +200,7 @@ TEST_F(LoginDatabaseIOSTest, RemoveLoginsCreatedBetween) {
   forms[2].password_value = u"pass2";
 
   for (size_t i = 0; i < base::size(forms); i++) {
-    ignore_result(login_db_->AddLogin(forms[i]));
+    std::ignore = login_db_->AddLogin(forms[i]);
   }
 
   login_db_->RemoveLoginsCreatedBetween(base::Time::FromDoubleT(150),

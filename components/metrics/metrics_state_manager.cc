@@ -10,6 +10,7 @@
 #include <memory>
 #include <random>
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/base_switches.h"
@@ -19,7 +20,6 @@
 #include "base/compiler_specific.h"
 #include "base/debug/leak_annotations.h"
 #include "base/guid.h"
-#include "base/ignore_result.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -350,7 +350,7 @@ void MetricsStateManager::InstantiateFieldTrialList(
     base::FieldTrialList* leaked_field_trial_list =
         new base::FieldTrialList(std::move(entropy_provider));
     ANNOTATE_LEAKING_OBJECT_PTR(leaked_field_trial_list);
-    ignore_result(leaked_field_trial_list);
+    std::ignore = leaked_field_trial_list;
   }
 
   // TODO(crbug/1257204): Some FieldTrial-setup-related code is here and some is

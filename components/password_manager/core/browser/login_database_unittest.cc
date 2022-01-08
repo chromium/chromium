@@ -8,13 +8,13 @@
 #include <stdint.h>
 
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/ignore_result.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -2191,7 +2191,7 @@ TEST_F(LoginDatabaseTest, EncryptedPasswordAddWithReplaceSemantics) {
   form.password_element = u"pwd";
   form.password_value = u"example";
 
-  ignore_result(db().AddLogin(form));
+  std::ignore = db().AddLogin(form);
 
   form.password_value = u"secret";
 
@@ -2211,7 +2211,7 @@ TEST_F(LoginDatabaseTest, EncryptedPasswordUpdate) {
   form.password_element = u"pwd";
   form.password_value = u"example";
 
-  ignore_result(db().AddLogin(form));
+  std::ignore = db().AddLogin(form);
 
   form.password_value = u"secret";
 
@@ -2242,8 +2242,7 @@ TEST_F(LoginDatabaseTest, GetLoginsEncryptedPassword) {
 
 TEST_F(LoginDatabaseTest, RetrievesInsecureDataWithLogins) {
   PasswordForm form = GenerateExamplePasswordForm();
-  ignore_result(db().AddLogin(form));
-
+  std::ignore = db().AddLogin(form);
 
   base::flat_map<InsecureType, InsecurityMetadata> issues;
   issues[InsecureType::kLeaked] =
@@ -2268,7 +2267,7 @@ TEST_F(LoginDatabaseTest, RetrievesInsecureDataWithLogins) {
 TEST_F(LoginDatabaseTest, RemovingLoginRemovesInsecureCredentials) {
   PasswordForm form = GenerateExamplePasswordForm();
 
-  ignore_result(db().AddLogin(form));
+  std::ignore = db().AddLogin(form);
   InsecureCredential credential1{form.signon_realm, form.username_value,
                                  base::Time(), InsecureType::kLeaked,
                                  IsMuted(false)};
@@ -2334,7 +2333,7 @@ TEST_F(LoginDatabaseTest, GetLoginsBySignonRealmAndUsername) {
 
 TEST_F(LoginDatabaseTest, UpdateLoginWithAddedInsecureCredential) {
   PasswordForm form = GenerateExamplePasswordForm();
-  ignore_result(db().AddLogin(form));
+  std::ignore = db().AddLogin(form);
   InsecureCredential insecure_credential{form.signon_realm, form.username_value,
                                          base::Time(), InsecureType::kLeaked,
                                          IsMuted(false)};
@@ -2352,7 +2351,7 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithAddedInsecureCredential) {
 
 TEST_F(LoginDatabaseTest, UpdateLoginWithUpdatedInsecureCredential) {
   PasswordForm form = GenerateExamplePasswordForm();
-  ignore_result(db().AddLogin(form));
+  std::ignore = db().AddLogin(form);
   InsecureCredential insecure_credential{form.signon_realm, form.username_value,
                                          base::Time(), InsecureType::kLeaked,
                                          IsMuted(false)};
@@ -2378,7 +2377,7 @@ TEST_F(LoginDatabaseTest, UpdateLoginWithUpdatedInsecureCredential) {
 
 TEST_F(LoginDatabaseTest, UpdateLoginWithRemovedInsecureCredentialEntry) {
   PasswordForm form = GenerateExamplePasswordForm();
-  ignore_result(db().AddLogin(form));
+  std::ignore = db().AddLogin(form);
   InsecureCredential leaked{form.signon_realm, form.username_value,
                             base::Time(), InsecureType::kLeaked,
                             IsMuted(false)};
@@ -2414,7 +2413,7 @@ TEST_F(LoginDatabaseTest,
        AddLoginWithDifferentPasswordRemovesInsecureCredentials) {
   PasswordForm form = GenerateExamplePasswordForm();
 
-  ignore_result(db().AddLogin(form));
+  std::ignore = db().AddLogin(form);
   InsecureCredential credential1{form.signon_realm, form.username_value,
                                  base::Time(), InsecureType::kLeaked,
                                  IsMuted(false)};
@@ -2468,7 +2467,7 @@ TEST_F(LoginDatabaseTest, RemoveLoginRemovesInsecureCredentials) {
   form.password_issues = {
       {InsecureType::kLeaked,
        InsecurityMetadata(base::Time::FromTimeT(1), IsMuted(false))}};
-  ignore_result(db().AddLogin(form));
+  std::ignore = db().AddLogin(form);
 
   InsecureCredential leaked{form.signon_realm, form.username_value,
                             base::Time::FromTimeT(1), InsecureType::kLeaked,

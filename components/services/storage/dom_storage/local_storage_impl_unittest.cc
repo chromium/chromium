@@ -4,13 +4,14 @@
 
 #include "components/services/storage/dom_storage/local_storage_impl.h"
 
+#include <tuple>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/containers/span.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/ignore_result.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -256,7 +257,7 @@ class LocalStorageImplTest : public testing::Test {
     base::RunLoop run_loop;
     std::vector<blink::mojom::KeyValuePtr> data;
     mojo::PendingRemote<blink::mojom::StorageAreaObserver> unused_observer;
-    ignore_result(unused_observer.InitWithNewPipeAndPassReceiver());
+    std::ignore = unused_observer.InitWithNewPipeAndPassReceiver();
     area->GetAll(std::move(unused_observer),
                  test::MakeGetAllCallback(run_loop.QuitClosure(), &data));
     run_loop.Run();

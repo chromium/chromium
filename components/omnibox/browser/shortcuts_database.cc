@@ -5,10 +5,10 @@
 #include "components/omnibox/browser/shortcuts_database.h"
 
 #include <string>
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/guid.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -76,7 +76,7 @@ void DatabaseErrorCallback(sql::Database* db,
     // or hardware issues, not coding errors at the client level, so displaying
     // the error would probably lead to confusion.  The ignored call signals the
     // test-expectation framework that the error was handled.
-    ignore_result(sql::Database::IsExpectedSqliteError(extended_error));
+    std::ignore = sql::Database::IsExpectedSqliteError(extended_error);
     return;
   }
 
@@ -222,7 +222,7 @@ bool ShortcutsDatabase::DeleteAllShortcuts() {
   if (!db_.Execute("DELETE FROM omni_box_shortcuts"))
     return false;
 
-  ignore_result(db_.Execute("VACUUM"));
+  std::ignore = db_.Execute("VACUUM");
   return true;
 }
 

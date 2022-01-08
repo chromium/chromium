@@ -10,6 +10,7 @@
 #include <memory>
 #include <numeric>
 #include <string>
+#include <tuple>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -19,7 +20,6 @@
 #include "base/command_line.h"
 #include "base/cpu.h"
 #include "base/files/file.h"
-#include "base/ignore_result.h"
 #include "base/json/json_reader.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
@@ -1598,8 +1598,8 @@ class PexeDownloader : public blink::WebAssociatedURLLoaderClient {
     std::string last_modified =
         response.HttpHeaderField("last-modified").Utf8();
     base::Time last_modified_time;
-    ignore_result(
-        base::Time::FromString(last_modified.c_str(), &last_modified_time));
+    std::ignore =
+        base::Time::FromString(last_modified.c_str(), &last_modified_time);
 
     bool has_no_store_header = false;
     std::string cache_control =

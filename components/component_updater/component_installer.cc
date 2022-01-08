@@ -6,6 +6,7 @@
 
 #include <cstdint>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -15,7 +16,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/ignore_result.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -155,7 +155,7 @@ Result ComponentInstaller::InstallHelper(const base::FilePath& unpack_path,
 
   // Acquire the ownership of the |local_install_path|.
   base::ScopedTempDir install_path_owner;
-  ignore_result(install_path_owner.Set(local_install_path));
+  std::ignore = install_path_owner.Set(local_install_path);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!base::SetPosixFilePermissions(local_install_path, 0755)) {

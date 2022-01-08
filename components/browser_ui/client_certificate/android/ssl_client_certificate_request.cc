@@ -5,6 +5,8 @@
 #include "components/browser_ui/client_certificate/android/ssl_client_certificate_request.h"
 
 #include <stddef.h>
+
+#include <tuple>
 #include <utility>
 
 #include "base/android/jni_array.h"
@@ -14,7 +16,6 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/containers/queue.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "components/browser_ui/client_certificate/android/jni_headers/SSLClientCertificateRequest_jni.h"
@@ -211,7 +212,7 @@ static void StartClientCertificateRequest(
   }
 
   // Ownership was transferred to Java.
-  ignore_result(request.release());
+  std::ignore = request.release();
 }
 
 void SSLClientCertPendingRequests::AddRequest(

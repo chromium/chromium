@@ -8,12 +8,12 @@
 #include <string.h>
 
 #include <map>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/guid.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/pickle.h"
@@ -680,7 +680,7 @@ bool CreateTabsAndWindows(
         // The |is_collapsed| boolean was added in M88 to save the collapsed
         // state, so previous versions may not have this stored.
         bool is_collapsed = false;
-        ignore_result(!iter.ReadBool(&is_collapsed));
+        std::ignore = iter.ReadBool(&is_collapsed);
         group->visual_data =
             tab_groups::TabGroupVisualData(title, color_int, is_collapsed);
         break;

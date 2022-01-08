@@ -9,11 +9,11 @@
 #include <algorithm>
 #include <set>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/files/file_util.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -262,7 +262,7 @@ int HistoryDatabase::CountUniqueDomainsVisited(base::Time begin_time,
 
 void HistoryDatabase::BeginExclusiveMode() {
   // We need to use a PRAGMA statement here as the DB has already been created.
-  ignore_result(db_.Execute("PRAGMA locking_mode=EXCLUSIVE"));
+  std::ignore = db_.Execute("PRAGMA locking_mode=EXCLUSIVE");
 }
 
 // static
@@ -315,7 +315,7 @@ bool HistoryDatabase::RecreateAllTablesButURL() {
 void HistoryDatabase::Vacuum() {
   DCHECK_EQ(0, db_.transaction_nesting()) <<
       "Can not have a transaction when vacuuming.";
-  ignore_result(db_.Execute("VACUUM"));
+  std::ignore = db_.Execute("VACUUM");
 }
 
 void HistoryDatabase::TrimMemory() {
@@ -694,18 +694,18 @@ sql::InitStatus HistoryDatabase::EnsureCurrentVersion() {
 #if !defined(OS_WIN)
 void HistoryDatabase::MigrateTimeEpoch() {
   // Update all the times in the URLs and visits table in the main database.
-  ignore_result(db_.Execute(
+  std::ignore = db_.Execute(
       "UPDATE urls "
       "SET last_visit_time = last_visit_time + 11644473600000000 "
-      "WHERE id IN (SELECT id FROM urls WHERE last_visit_time > 0);"));
-  ignore_result(db_.Execute(
+      "WHERE id IN (SELECT id FROM urls WHERE last_visit_time > 0);");
+  std::ignore = db_.Execute(
       "UPDATE visits "
       "SET visit_time = visit_time + 11644473600000000 "
-      "WHERE id IN (SELECT id FROM visits WHERE visit_time > 0);"));
-  ignore_result(db_.Execute(
+      "WHERE id IN (SELECT id FROM visits WHERE visit_time > 0);");
+  std::ignore = db_.Execute(
       "UPDATE segment_usage "
       "SET time_slot = time_slot + 11644473600000000 "
-      "WHERE id IN (SELECT id FROM segment_usage WHERE time_slot > 0);"));
+      "WHERE id IN (SELECT id FROM segment_usage WHERE time_slot > 0);");
 }
 #endif
 

@@ -10,12 +10,12 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
-#include "base/ignore_result.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/logging.h"
@@ -743,14 +743,14 @@ void PrintRenderFrameHelper::PrintHeaderAndFooter(
           frame_widget.BindNewEndpointAndPassDedicatedReceiver();
 
   mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> frame_widget_host;
-  ignore_result(frame_widget_host.BindNewEndpointAndPassDedicatedReceiver());
+  std::ignore = frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
 
   mojo::AssociatedRemote<blink::mojom::Widget> widget_remote;
   mojo::PendingAssociatedReceiver<blink::mojom::Widget> widget_receiver =
       widget_remote.BindNewEndpointAndPassDedicatedReceiver();
 
   mojo::AssociatedRemote<blink::mojom::WidgetHost> widget_host_remote;
-  ignore_result(widget_host_remote.BindNewEndpointAndPassDedicatedReceiver());
+  std::ignore = widget_host_remote.BindNewEndpointAndPassDedicatedReceiver();
 
   blink::WebNonCompositedWidgetClient client;
   blink::WebFrameWidget* web_frame_widget = frame->InitializeFrameWidget(
@@ -1008,14 +1008,14 @@ void PrepareFrameAndViewForPrint::CopySelection(
           frame_widget.BindNewEndpointAndPassDedicatedReceiver();
 
   mojo::AssociatedRemote<blink::mojom::FrameWidgetHost> frame_widget_host;
-  ignore_result(frame_widget_host.BindNewEndpointAndPassDedicatedReceiver());
+  std::ignore = frame_widget_host.BindNewEndpointAndPassDedicatedReceiver();
 
   mojo::AssociatedRemote<blink::mojom::Widget> widget_remote;
   mojo::PendingAssociatedReceiver<blink::mojom::Widget> widget_receiver =
       widget_remote.BindNewEndpointAndPassDedicatedReceiver();
 
   mojo::AssociatedRemote<blink::mojom::WidgetHost> widget_host_remote;
-  ignore_result(widget_host_remote.BindNewEndpointAndPassDedicatedReceiver());
+  std::ignore = widget_host_remote.BindNewEndpointAndPassDedicatedReceiver();
 
   blink::WebFrameWidget* main_frame_widget = main_frame->InitializeFrameWidget(
       frame_widget_host.Unbind(), std::move(frame_widget_receiver),

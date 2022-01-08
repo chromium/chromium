@@ -5,6 +5,7 @@
 #include "components/update_client/component.h"
 
 #include <algorithm>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
@@ -13,7 +14,6 @@
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/ignore_result.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -112,7 +112,7 @@ void InstallOnBlockingTaskRunner(
 
   // Acquire the ownership of the |unpack_path|.
   base::ScopedTempDir unpack_path_owner;
-  ignore_result(unpack_path_owner.Set(unpack_path));
+  std::ignore = unpack_path_owner.Set(unpack_path);
 
   if (static_cast<int>(fingerprint.size()) !=
       base::WriteFile(

@@ -5,12 +5,12 @@
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
 
 #include <memory>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/ignore_result.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -279,7 +279,7 @@ void SkiaOutputSurfaceImpl::RecreateRootRecorder() {
   root_recorder_.emplace(characterization_);
 
   // This will trigger the lazy initialization of the recorder
-  ignore_result(root_recorder_->getCanvas());
+  std::ignore = root_recorder_->getCanvas();
 }
 
 void SkiaOutputSurfaceImpl::Reshape(const gfx::Size& size,

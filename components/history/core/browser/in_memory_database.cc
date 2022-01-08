@@ -4,8 +4,9 @@
 
 #include "components/history/core/browser/in_memory_database.h"
 
+#include <tuple>
+
 #include "base/files/file_path.h"
-#include "base/ignore_result.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -26,7 +27,7 @@ bool InMemoryDatabase::InitDB() {
   }
 
   // No reason to leave data behind in memory when rows are removed.
-  ignore_result(db_.Execute("PRAGMA auto_vacuum=1"));
+  std::ignore = db_.Execute("PRAGMA auto_vacuum=1");
 
   // Create the URL table, but leave it empty for now.
   if (!CreateURLTable(false)) {

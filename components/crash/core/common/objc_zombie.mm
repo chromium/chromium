@@ -11,9 +11,9 @@
 #import <objc/runtime.h>
 
 #include <algorithm>
+#include <tuple>
 
 #include "base/debug/stack_trace.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/posix/eintr_wrapper.h"
@@ -196,7 +196,7 @@ BOOL GetZombieRecord(id object, ZombieRecord* record) {
 BOOL DumpDeallocTrace(const void* const* array, int size) {
   // Async-signal safe version of fputs, consistent with StackTrace::Print().
   const char message[] = "Backtrace from -dealloc:\n";
-  ignore_result(HANDLE_EINTR(write(STDERR_FILENO, message, strlen(message))));
+  std::ignore = HANDLE_EINTR(write(STDERR_FILENO, message, strlen(message)));
   base::debug::StackTrace(array, size).Print();
 
   return YES;

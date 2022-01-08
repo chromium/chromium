@@ -6,9 +6,9 @@
 
 #include <algorithm>
 #include <memory>
+#include <tuple>
 #include <utility>
 
-#include "base/ignore_result.h"
 #include "base/ranges/algorithm.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -62,7 +62,7 @@ void FakeAffiliationAPI::FailNextRequest() {
 void FakeAffiliationAPI::IgnoreNextRequest() {
   if (!fake_fetcher_factory_->has_pending_fetchers())
     return;
-  ignore_result(fake_fetcher_factory_->PopNextFetcher());
+  std::ignore = fake_fetcher_factory_->PopNextFetcher();
 }
 
 }  // namespace password_manager
