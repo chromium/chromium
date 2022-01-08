@@ -86,7 +86,7 @@ std::unique_ptr<ProofSource> CreateDefaultProofSourceImpl() {
   proof_source->SetTicketCrypter(
       std::make_unique<SimpleTicketCrypter>(QuicChromiumClock::GetInstance()));
   CHECK(proof_source->Initialize(
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       base::FilePath(base::UTF8ToWide(GetQuicFlag(FLAGS_certificate_file))),
       base::FilePath(base::UTF8ToWide(GetQuicFlag(FLAGS_key_file))),
       base::FilePath()));

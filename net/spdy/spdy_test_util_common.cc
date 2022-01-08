@@ -319,11 +319,11 @@ SpdySessionDependencies::SpdySessionDependencies(
       enable_early_data(false),
       key_auth_cache_server_entries_by_network_isolation_key(false),
       enable_priority_update(false),
-#if defined(OS_ANDROID) || defined(OS_WIN) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
       go_away_on_ip_change(true) {
 #else
       go_away_on_ip_change(false) {
-#endif  // defined(OS_ANDROID) || defined(OS_WIN) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
   http2_settings[spdy::SETTINGS_INITIAL_WINDOW_SIZE] =
       kDefaultInitialWindowSize;
 }

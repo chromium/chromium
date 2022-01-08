@@ -9,7 +9,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "net/android/network_library.h"
 #else
 #include "base/nix/mime_util_xdg.h"
@@ -17,7 +17,7 @@
 
 namespace net {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool PlatformMimeUtil::GetPlatformMimeTypeFromExtension(
     const base::FilePath::StringType& ext,
     std::string* result) const {
@@ -53,7 +53,7 @@ bool PlatformMimeUtil::GetPlatformMimeTypeFromExtension(
   return true;
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 bool PlatformMimeUtil::GetPlatformPreferredExtensionForMimeType(
     const std::string& mime_type,

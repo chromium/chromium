@@ -150,7 +150,7 @@ const NetLogWithSource& UDPClientSocket::NetLog() const {
 }
 
 void UDPClientSocket::UseNonBlockingIO() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   socket_.UseNonBlockingIO();
 #endif
 }
@@ -184,13 +184,13 @@ int UDPClientSocket::SetMulticastInterface(uint32_t interface_index) {
 }
 
 void UDPClientSocket::EnableRecvOptimization() {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   socket_.enable_experimental_recv_optimization();
 #endif
 }
 
 void UDPClientSocket::SetIOSNetworkServiceType(int ios_network_service_type) {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   socket_.SetIOSNetworkServiceType(ios_network_service_type);
 #endif
 }

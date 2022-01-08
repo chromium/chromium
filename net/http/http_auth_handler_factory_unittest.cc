@@ -201,7 +201,7 @@ TEST(HttpAuthHandlerFactoryTest, DefaultFactory) {
         NetworkIsolationKey(), server_scheme_host_port, NetLogWithSource(),
         host_resolver.get(), &handler);
 // Note the default factory doesn't support Kerberos on Android
-#if BUILDFLAG(USE_KERBEROS) && !defined(OS_ANDROID)
+#if BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID)
     EXPECT_THAT(rv, IsOk());
     ASSERT_FALSE(handler.get() == nullptr);
     EXPECT_EQ(HttpAuth::AUTH_SCHEME_NEGOTIATE, handler->auth_scheme());
@@ -212,7 +212,7 @@ TEST(HttpAuthHandlerFactoryTest, DefaultFactory) {
 #else
     EXPECT_THAT(rv, IsError(ERR_UNSUPPORTED_AUTH_SCHEME));
     EXPECT_TRUE(handler.get() == nullptr);
-#endif  // BUILDFLAG(USE_KERBEROS) && !defined(OS_ANDROID)
+#endif  // BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID)
   }
 }
 
@@ -252,7 +252,7 @@ TEST(HttpAuthHandlerFactoryTest, BasicFactoryRespectsHTTPEnabledPref) {
     {OK, nonsecure_scheme_host_port, "Digest realm=\"FooBar\", nonce=\"xyz\""},
     {OK, secure_scheme_host_port, "Ntlm"},
     {OK, nonsecure_scheme_host_port, "Ntlm"},
-#if BUILDFLAG(USE_KERBEROS) && !defined(OS_ANDROID)
+#if BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID)
     {OK, secure_scheme_host_port, "Negotiate"},
     {OK, nonsecure_scheme_host_port, "Negotiate"},
 #endif

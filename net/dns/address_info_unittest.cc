@@ -109,7 +109,7 @@ TEST(AddressInfoTest, Failure) {
   EXPECT_NE(os_error, 0);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Note: this test is descriptive, not prescriptive.
 TEST(AddressInfoTest, FailureWin) {
   absl::optional<AddressInfo> ai;
@@ -126,7 +126,7 @@ TEST(AddressInfoTest, FailureWin) {
 }
 #endif  // OS_WIN
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Note: this test is descriptive, not prescriptive.
 TEST(AddressInfoTest, FailureAndroid) {
   absl::optional<AddressInfo> ai;

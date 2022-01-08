@@ -69,7 +69,7 @@ using testing::Contains;
 using testing::Eq;
 using testing::Field;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_handle.h"
 
 #include <windows.h>
@@ -121,7 +121,7 @@ std::unique_ptr<disk_cache::BackendImpl> CreateExistingEntryCache(
   return cache;
 }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 // Load tests with large numbers of file descriptors perform poorly on
 // virtualized test execution environments.
 // TODO(807882): Remove this workaround when virtualized test performance
@@ -905,7 +905,7 @@ void DiskCacheBackendTest::BackendShutdownWithPendingFileIO(bool fast) {
 
   base::RunLoop().RunUntilIdle();
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // Wait for the actual operation to complete, or we'll keep a file handle that
   // may cause issues later. Note that on iOS systems even though this test
   // uses a single thread, the actual IO is posted to a worker thread and the
@@ -931,7 +931,7 @@ TEST_F(DiskCacheBackendTest, ShutdownWithPendingFileIO_Fast) {
 #endif
 
 // See crbug.com/330074
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 // Tests that one cache instance is not affected by another one going away.
 TEST_F(DiskCacheBackendTest, MultipleInstancesWithPendingFileIO) {
   base::ScopedTempDir store;
@@ -1079,7 +1079,7 @@ TEST_F(DiskCacheBackendTest, ShutdownWithPendingDoom) {
 
 // Disabled on android since this test requires cache creator to create
 // blockfile caches.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(DiskCacheTest, TruncatedIndex) {
   ASSERT_TRUE(CleanupCacheDir());
   base::FilePath index = cache_path_.AppendASCII("index");
@@ -2445,7 +2445,7 @@ void DiskCacheBackendTest::BackendRecoverRemove() {
   ASSERT_TRUE(success_) << "remove_head4";
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // http://crbug.com/396392
 #define MAYBE_RecoverRemove DISABLED_RecoverRemove
 #else
@@ -2455,7 +2455,7 @@ TEST_F(DiskCacheBackendTest, MAYBE_RecoverRemove) {
   BackendRecoverRemove();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // http://crbug.com/396392
 #define MAYBE_NewEvictionRecoverRemove DISABLED_NewEvictionRecoverRemove
 #else
@@ -2504,7 +2504,7 @@ TEST_F(DiskCacheTest, WrongVersion) {
 // existing cache in favour of a new empty cache.
 // Disabled on android since this test requires cache creator to create
 // blockfile caches.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(DiskCacheTest, SimpleCacheControlJoin) {
   std::unique_ptr<disk_cache::BackendImpl> cache =
       CreateExistingEntryCache(cache_path_);
@@ -2596,7 +2596,7 @@ TEST_F(DiskCacheTest, SimpleCacheControlLeave) {
 // Tests that the cache is properly restarted on recovery error.
 // Disabled on android since this test requires cache creator to create
 // blockfile caches.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(DiskCacheBackendTest, DeleteOld) {
   ASSERT_TRUE(CopyTestCache("wrong_version"));
   SetNewEviction();
@@ -3862,7 +3862,7 @@ TEST_F(DiskCacheBackendTest, FileSharing) {
   scoped_refptr<disk_cache::File> file(new disk_cache::File(false));
   file->Init(name);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DWORD sharing = FILE_SHARE_READ | FILE_SHARE_WRITE;
   DWORD access = GENERIC_READ | GENERIC_WRITE;
   base::win::ScopedHandle file2(CreateFile(name.value().c_str(), access,
@@ -4490,11 +4490,11 @@ TEST_F(DiskCacheBackendTest, SimpleCacheLateDoom) {
   // Ensure that the directory mtime is flushed to disk before serializing the
   // index.
   disk_cache::FlushCacheThreadForTesting();
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   base::File cache_dir(cache_path_,
                        base::File::FLAG_OPEN | base::File::FLAG_READ);
   EXPECT_TRUE(cache_dir.Flush());
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
   cache_.reset();
   disk_cache::FlushCacheThreadForTesting();
 

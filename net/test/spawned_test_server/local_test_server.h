@@ -14,7 +14,7 @@
 #include "net/test/spawned_test_server/base_test_server.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_handle.h"
 #endif
 
@@ -83,7 +83,7 @@ class LocalTestServer : public BaseTestServer {
   // The Python process running the test server.
   base::Process process_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The pipe file handle we read from.
   base::win::ScopedHandle child_read_fd_;
 
@@ -91,7 +91,7 @@ class LocalTestServer : public BaseTestServer {
   base::win::ScopedHandle child_write_fd_;
 #endif
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   // The file descriptor the child writes to when it starts.
   base::ScopedFD child_fd_;
 #endif

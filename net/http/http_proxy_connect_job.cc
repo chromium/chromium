@@ -49,7 +49,7 @@ namespace {
 
 // HttpProxyConnectJobs will time out after this many seconds.  Note this is in
 // addition to the timeout for the transport socket.
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 constexpr base::TimeDelta kHttpProxyConnectJobTunnelTimeout = base::Seconds(10);
 #else
 constexpr base::TimeDelta kHttpProxyConnectJobTunnelTimeout = base::Seconds(30);
@@ -287,9 +287,9 @@ base::TimeDelta HttpProxyConnectJob::AlternateNestedConnectionTimeout(
 
   // On Android and iOS, a default proxy connection timeout is used instead of
   // the actual TCP/SSL timeouts of nested jobs.
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   default_alternate_timeout = kHttpProxyConnectJobTunnelTimeout;
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   bool is_https = params.ssl_params() != nullptr;
   // HTTP proxy connections can't be on top of proxy connections.

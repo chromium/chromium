@@ -49,7 +49,7 @@ NET_EXPORT_PRIVATE bool IfaddrsToNetworkInterfaceList(
     IPAttributesGetter* ip_attributes_getter,
     NetworkInterfaceList* networks);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // A version of GetNetworkList() that uses getifaddrs(). Only callable on
 // Android N+ where getifaddrs() was available.
 bool GetNetworkListUsingGetifaddrs(NetworkInterfaceList* networks, int policy);

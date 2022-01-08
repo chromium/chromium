@@ -14,7 +14,7 @@ namespace net {
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kFakePolicyStr[] = "2.16.840.1.42";
 const char kCabEvPolicyStr[] = "2.23.140.1.1";
 const char kStarfieldPolicyStr[] = "2.16.840.1.114414.1.7.23.3";
@@ -55,7 +55,7 @@ class EVOidData {
 
 #endif  // defined(PLATFORM_USES_CHROMIUM_EV_METADATA)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 EVOidData::EVOidData()
     : fake_policy(kFakePolicyStr),

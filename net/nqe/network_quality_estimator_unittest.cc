@@ -1271,7 +1271,7 @@ TEST_F(NetworkQualityEstimatorTest, TestGetMetricsSince) {
   }
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // Flaky on iOS: crbug.com/672917.
 #define MAYBE_TestThroughputNoRequestOverlap \
   DISABLED_TestThroughputNoRequestOverlap
@@ -1334,7 +1334,7 @@ TEST_F(NetworkQualityEstimatorTest, MAYBE_TestThroughputNoRequestOverlap) {
   }
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // Flaky on iOS: crbug.com/672917.
 #define MAYBE_TestEffectiveConnectionTypeObserver \
   DISABLED_TestEffectiveConnectionTypeObserver
@@ -2012,10 +2012,10 @@ TEST_F(NetworkQualityEstimatorTest, TestGlobalSocketWatcherThrottle) {
 // ChromeOS is disabled due to crbug.com/986904
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if (defined(TCP_INFO) ||                                    \
-     (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
-     defined(OS_ANDROID)) &&                                 \
-    !defined(OS_CHROMEOS)
+#if (defined(TCP_INFO) ||                                      \
+     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || \
+     BUILDFLAG(IS_ANDROID)) &&                                 \
+    !BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TestTCPSocketRTT TestTCPSocketRTT
 #else
 #define MAYBE_TestTCPSocketRTT DISABLED_TestTCPSocketRTT

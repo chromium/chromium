@@ -14,7 +14,7 @@
 #include "net/dns/dns_config_service_posix.h"
 #include "net/dns/system_dns_config_change_notifier.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "net/android/network_change_notifier_android.h"
 #endif
 
@@ -100,7 +100,7 @@ NetworkChangeNotifierPosix::NetworkChangeCalculatorParamsPosix() {
   params.ip_address_online_delay_ = base::Milliseconds(1000);
   params.connection_type_offline_delay_ = base::Milliseconds(500);
   params.connection_type_online_delay_ = base::Milliseconds(500);
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   params =
       net::NetworkChangeNotifierAndroid::NetworkChangeCalculatorParamsAndroid();
 #else

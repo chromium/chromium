@@ -35,11 +35,11 @@ NET_EXPORT std::string EscapeQueryParamValue(base::StringPiece text,
 // non-printable, non-7bit, and (including space)  "#%:<>?[\]^`{|}
 NET_EXPORT std::string EscapePath(base::StringPiece path);
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 // Escapes characters as per expectations of NSURL. This includes:
 // non-printable, non-7bit, and (including space)  "#%<>[\]^`{|}
 NET_EXPORT std::string EscapeNSURLPrecursor(base::StringPiece precursor);
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
 // Escapes application/x-www-form-urlencoded content.  This includes:
 // non-printable, non-7bit, and (including space)  ?>=<;+'&%$#"![\]^`{|}

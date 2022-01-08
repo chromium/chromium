@@ -18,7 +18,7 @@
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <netdb.h>
 #endif  // defined (OS_POSIX)
 

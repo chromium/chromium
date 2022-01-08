@@ -14,6 +14,7 @@
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/base/net_errors.h"
@@ -158,14 +159,14 @@ class NET_EXPORT NSSCertDatabase {
   // deleted.
   virtual void ListCertsInfo(ListCertsInfoCallback callback);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Get the slot for system-wide key data. May be NULL if the system token was
   // not enabled for this database.
   virtual crypto::ScopedPK11Slot GetSystemSlot() const;
 
   // Checks whether |cert| is stored on |slot|.
   static bool IsCertificateOnSlot(CERTCertificate* cert, PK11SlotInfo* slot);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Get the default slot for public key data.
   crypto::ScopedPK11Slot GetPublicSlot() const;

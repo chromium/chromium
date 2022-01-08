@@ -15029,7 +15029,7 @@ TEST_P(QuicStreamFactoryTest, Tag) {
     socket_data2.AddWrite(SYNCHRONOUS, ConstructInitialSettingsPacket());
   socket_data2.AddSocketDataToFactory(socket_factory_.get());
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SocketTag tag1(SocketTag::UNSET_UID, 0x12345678);
   SocketTag tag2(getuid(), 0x87654321);
 #else
@@ -15085,7 +15085,7 @@ TEST_P(QuicStreamFactoryTest, Tag) {
       request3.ReleaseSessionHandle();
   EXPECT_TRUE(stream3);
   EXPECT_TRUE(stream3->IsConnected());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(stream3->SharesSameSession(*stream1));
 #else
   // Same tag should reuse session.

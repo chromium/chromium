@@ -7,11 +7,12 @@
 #include <memory>
 
 #include "base/check.h"
+#include "build/build_config.h"
 
 namespace net {
 
 ScopedResState::ScopedResState() {
-#if defined(OS_OPENBSD) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_OPENBSD) || BUILDFLAG(IS_FUCHSIA)
   // Note: res_ninit in glibc always returns 0 and sets RES_INIT.
   // res_init behaves the same way.
   memset(&_res, 0, sizeof(_res));
@@ -19,20 +20,20 @@ ScopedResState::ScopedResState() {
 #else
   memset(&res_, 0, sizeof(res_));
   res_init_result_ = res_ninit(&res_);
-#endif  // defined(OS_OPENBSD) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_OPENBSD) || BUILDFLAG(IS_FUCHSIA)
 }
 
 ScopedResState::~ScopedResState() {
-#if !defined(OS_OPENBSD) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_OPENBSD) && !BUILDFLAG(IS_FUCHSIA)
 
   // Prefer res_ndestroy where available.
-#if defined(OS_APPLE) || defined(OS_FREEBSD)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FREEBSD)
   res_ndestroy(&res_);
 #else
   res_nclose(&res_);
-#endif  // defined(OS_APPLE) || defined(OS_FREEBSD)
+#endif  // BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FREEBSD)
 
-#endif  // !defined(OS_OPENBSD) && !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_OPENBSD) && !BUILDFLAG(IS_FUCHSIA)
 }
 
 bool ScopedResState::IsValid() const {
@@ -41,11 +42,11 @@ bool ScopedResState::IsValid() const {
 
 const struct __res_state& ScopedResState::state() const {
   DCHECK(IsValid());
-#if defined(OS_OPENBSD) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_OPENBSD) || BUILDFLAG(IS_FUCHSIA)
   return _res;
 #else
   return res_;
-#endif  // defined(OS_OPENBSD) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_OPENBSD) || BUILDFLAG(IS_FUCHSIA)
 }
 
 }  // namespace net

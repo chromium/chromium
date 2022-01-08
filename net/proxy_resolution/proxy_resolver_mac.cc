@@ -25,7 +25,7 @@
 #include "net/proxy_resolution/proxy_resolver.h"
 #include "url/gurl.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include <CFNetwork/CFProxySupport.h>
 #else
 #include <CoreServices/CoreServices.h>

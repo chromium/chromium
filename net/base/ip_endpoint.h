@@ -24,7 +24,7 @@
 // Similarly, just pull in the minimal header necessary on non-Windows platforms
 // to help with build performance.
 struct sockaddr;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 typedef int socklen_t;
 #else
 #include <sys/socket.h>

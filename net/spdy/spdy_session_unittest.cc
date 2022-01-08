@@ -1090,7 +1090,7 @@ TEST_F(SpdySessionTest, NetworkChangeWithActiveStreams) {
 
   // The SpdySessionPool behavior differs based on how the OSs reacts to
   // network changes; see comment in SpdySessionPool::OnIPAddressChanged().
-#if defined(OS_ANDROID) || defined(OS_WIN) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
   // For OSs where the TCP connections will close upon relevant network
   // changes, SpdySessionPool doesn't need to force them to close, so in these
   // cases verify the session has become unavailable but remains open and the

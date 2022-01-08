@@ -15,8 +15,8 @@
 #include "net/base/net_export.h"
 #include "net/cert/x509_certificate.h"
 
-#if defined(USE_NSS_CERTS) || defined(OS_WIN) || defined(OS_APPLE) || \
-    defined(OS_FUCHSIA)
+#if defined(USE_NSS_CERTS) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || \
+    BUILDFLAG(IS_FUCHSIA)
 // When not defined, the EVRootCAMetadata singleton is a dumb placeholder
 // implementation that will fail all EV lookup operations.
 #define PLATFORM_USES_CHROMIUM_EV_METADATA
@@ -37,7 +37,7 @@ class Input;
 // extended-validation (EV) certificates.
 class NET_EXPORT_PRIVATE EVRootCAMetadata {
  public:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   typedef const char* PolicyOID;
 #else
   // DER-encoded OID value (no tag or length).
@@ -86,7 +86,7 @@ class NET_EXPORT_PRIVATE EVRootCAMetadata {
   EVRootCAMetadata();
   ~EVRootCAMetadata();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   using ExtraEVCAMap = std::map<SHA256HashValue, std::string>;
 
   // extra_cas_ contains any EV CA metadata that was added at runtime.

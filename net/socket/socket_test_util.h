@@ -1408,7 +1408,7 @@ int64_t CountReadBytes(base::span<const MockRead> reads);
 // Helper function to get the total data size of the MockWrites in |writes|.
 int64_t CountWriteBytes(base::span<const MockWrite> writes);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Returns whether the device supports calling GetTaggedBytes().
 bool CanGetTaggedBytes();
 

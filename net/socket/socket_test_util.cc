@@ -26,6 +26,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "net/base/address_family.h"
 #include "net/base/address_list.h"
 #include "net/base/auth.h"
@@ -49,7 +50,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
@@ -2239,7 +2240,7 @@ int64_t CountWriteBytes(base::span<const MockWrite> writes) {
   return total;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool CanGetTaggedBytes() {
   // In Android P, /proc/net/xt_qtaguid/stats is no longer guaranteed to be
   // present, and has been replaced with eBPF Traffic Monitoring in netd. See:

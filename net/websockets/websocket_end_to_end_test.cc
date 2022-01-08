@@ -373,7 +373,7 @@ TEST_F(WebSocketEndToEndTest, DISABLED_HttpsProxyUnauthedFails) {
 // These test are not compatible with RemoteTestServer because RemoteTestServer
 // doesn't support TYPE_BASIC_AUTH_PROXY.
 // TODO(ricea): Make these tests work. See crbug.com/441711.
-#if defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_HttpsWssProxyUnauthedFails DISABLED_HttpsWssProxyUnauthedFails
 #define MAYBE_HttpsProxyUsed DISABLED_HttpsProxyUsed
 #else
@@ -462,7 +462,7 @@ std::unique_ptr<HttpResponse> ProxyPacHandler(const HttpRequest& request) {
 // TODO(ricea): Remove this test if --winhttp-proxy-resolver flag is removed.
 // See crbug.com/644030.
 
-#if defined(OS_WIN) || defined(OS_APPLE)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 #define MAYBE_ProxyPacUsed ProxyPacUsed
 #else
 #define MAYBE_ProxyPacUsed DISABLED_ProxyPacUsed

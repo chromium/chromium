@@ -7,6 +7,7 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/sys_byteorder.h"
+#include "build/build_config.h"
 #include "net/base/address_list.h"
 #include "net/base/net_errors.h"
 #include "net/base/sys_addrinfo.h"
@@ -60,15 +61,15 @@ AddressInfo::AddressInfoAndResult AddressInfo::Get(
 
     // If the call to getaddrinfo() failed because of a system error, report
     // it separately from ERR_NAME_NOT_RESOLVED.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     if (os_error != WSAHOST_NOT_FOUND && os_error != WSANO_DATA)
       err = ERR_NAME_RESOLUTION_FAILED;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
     // Workaround for Android's getaddrinfo leaving ai==nullptr without an
     // error.
     // http://crbug.com/134142
     err = ERR_NAME_NOT_RESOLVED;
-#elif defined(OS_POSIX) && !defined(OS_FREEBSD)
+#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_FREEBSD)
     if (os_error != EAI_NONAME && os_error != EAI_NODATA)
       err = ERR_NAME_RESOLUTION_FAILED;
 #endif
@@ -182,7 +183,7 @@ addrinfo* AddrInfoGetter::getaddrinfo(const std::string& host,
   *out_os_error = ::getaddrinfo(host.c_str(), nullptr, hints, &ai);
 
   if (*out_os_error) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     *out_os_error = WSAGetLastError();
 #endif
     return nullptr;

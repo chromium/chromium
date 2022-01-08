@@ -68,7 +68,7 @@ constexpr uint64_t kMaxControlFramePayload = 125;
 //     around
 //  4. We would like to hit any sweet-spots that might exist in terms of network
 //     packet sizes / encryption block sizes / IPC alignment issues, etc.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 constexpr size_t kReadBufferSize = 32 * 1024;
 #else
 // |2^n - delta| is better than 2^n on Linux. See crrev.com/c/1792208.

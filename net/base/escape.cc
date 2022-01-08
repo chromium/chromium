@@ -118,13 +118,13 @@ static const Charmap kPathCharmap = {{
   0xffffffffL, 0xffffffffL, 0xffffffffL, 0xffffffffL
 }};
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 // non-printable, non-7bit, and (including space)  "#%<>[\]^`{|}
 static const Charmap kNSURLCharmap = {{
   0xffffffffL, 0x5000002dL, 0x78000000L, 0xb8000001L,
   0xffffffffL, 0xffffffffL, 0xffffffffL, 0xffffffffL
 }};
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
 // non-printable, non-7bit, and (including space) ?>=<;+'&%$#"![\]^`{|}
 static const Charmap kUrlEscape = {{
@@ -163,11 +163,11 @@ std::string EscapePath(base::StringPiece path) {
   return Escape(path, kPathCharmap, false);
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 std::string EscapeNSURLPrecursor(base::StringPiece precursor) {
   return Escape(precursor, kNSURLCharmap, false, true);
 }
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
 std::string EscapeUrlEncodedData(base::StringPiece path, bool use_plus) {
   return Escape(path, kUrlEscape, use_plus);

@@ -10,7 +10,7 @@
 #include "net/proxy_resolution/proxy_config_service_common_unittest.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // On Windows, "loopback" resolves to localhost and is implicitly bypassed to
 // match WinInet.
 #define BYPASS_LOOPBACK

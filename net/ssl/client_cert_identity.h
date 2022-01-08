@@ -10,7 +10,7 @@
 #include "net/base/net_export.h"
 #include "net/cert/x509_certificate.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include <Security/SecBase.h>
 #endif
 
@@ -40,7 +40,7 @@ class NET_EXPORT ClientCertIdentity {
       base::OnceCallback<void(scoped_refptr<SSLPrivateKey>)>
           private_key_callback) = 0;
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // Returns the SecIdentityRef for this identity.
   virtual SecIdentityRef sec_identity_ref() const = 0;
 #endif

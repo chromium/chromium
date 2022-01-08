@@ -119,7 +119,7 @@ class NET_EXPORT URLRequestContextBuilder {
     // The cache path (when type is DISK).
     base::FilePath path;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // If this is set, will override the default ApplicationStatusListener. This
     // is useful if the cache will not be in the main process.
     raw_ptr<base::android::ApplicationStatusListener> app_status_listener =

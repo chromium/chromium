@@ -101,7 +101,7 @@ perf_test::PerfResultReporter SetUpSimpleIndexReporter(
 }
 
 void MaybeIncreaseFdLimitTo(unsigned int max_descriptors) {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   base::IncreaseFdLimitTo(max_descriptors);
 #endif
 }
@@ -461,7 +461,7 @@ void DiskCachePerfTest::ResetAndEvictSystemDiskCache() {
        file_path = enumerator.Next()) {
     ASSERT_TRUE(base::EvictFileFromSystemCache(file_path));
   }
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   // And, cache directories, on platforms where the eviction utility supports
   // this (currently Linux and Android only).
   if (simple_cache_mode_) {

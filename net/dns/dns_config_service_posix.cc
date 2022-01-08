@@ -29,7 +29,7 @@
 #include "net/dns/serial_worker.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "net/dns/dns_config_watcher_mac.h"
 #endif
 
@@ -42,7 +42,7 @@ namespace {
 const base::FilePath::CharType kFilePathHosts[] =
     FILE_PATH_LITERAL("/etc/hosts");
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // There is no public API to watch the DNS configuration on iOS.
 class DnsConfigWatcher {
  public:
@@ -53,11 +53,11 @@ class DnsConfigWatcher {
   }
 };
 
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 
 // DnsConfigWatcher for OS_MAC is in dns_config_watcher_mac.{hh,cc}.
 
-#else  // !defined(OS_IOS) && !defined(OS_MAC)
+#else  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_MAC)
 
 #ifndef _PATH_RESCONF  // Normally defined in <resolv.h>
 #define _PATH_RESCONF "/etc/resolv.conf"
@@ -86,7 +86,7 @@ class DnsConfigWatcher {
   base::FilePathWatcher watcher_;
   CallbackType callback_;
 };
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
 absl::optional<DnsConfig> ReadDnsConfig() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -104,12 +104,12 @@ absl::optional<DnsConfig> ReadDnsConfig() {
   if (!dns_config.has_value())
     return dns_config;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (!DnsConfigWatcher::CheckDnsConfig(
           dns_config->unhandled_options /* out_unhandled_options */)) {
     return absl::nullopt;
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   // Override |fallback_period| value to match default setting on Windows.
   dns_config->fallback_period = kDnsDefaultFallbackPeriod;
   return dns_config;
@@ -137,7 +137,7 @@ class DnsConfigServicePosix::Watcher : public DnsConfigService::Watcher {
       success = false;
     }
 // Hosts file should never change on iOS, so don't watch it there.
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
     if (!hosts_watcher_.Watch(
             base::FilePath(kFilePathHosts),
             base::FilePathWatcher::Type::kNonRecursive,
@@ -146,21 +146,21 @@ class DnsConfigServicePosix::Watcher : public DnsConfigService::Watcher {
       LOG(ERROR) << "DNS hosts watch failed to start.";
       success = false;
     }
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
     return success;
   }
 
  private:
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   void OnHostsFilePathWatcherChange(const base::FilePath& path, bool error) {
     OnHostsChanged(!error);
   }
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
   DnsConfigWatcher config_watcher_;
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   base::FilePathWatcher hosts_watcher_;
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 };
 
 // A SerialWorker that uses libresolv to initialize res_state and converts
@@ -311,10 +311,10 @@ std::unique_ptr<DnsConfigService> DnsConfigService::CreateSystemService() {
   // DnsConfigs.
 #ifdef OS_IOS
   return nullptr;
-#else   // defined(OS_IOS)
+#else   // BUILDFLAG(IS_IOS)
   return std::unique_ptr<DnsConfigService>(
       new internal::DnsConfigServicePosix());
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 }  // namespace net

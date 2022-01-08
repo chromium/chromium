@@ -4,7 +4,9 @@
 
 #include "net/cert/ev_root_ca_metadata.h"
 
-#if defined(OS_WIN)
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_WIN)
 #include <stdlib.h>
 #endif
 
@@ -52,7 +54,7 @@ EVRootCAMetadata* EVRootCAMetadata::GetInstance() {
   return g_ev_root_ca_metadata.Pointer();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -267,7 +269,7 @@ bool EVRootCAMetadata::RemoveEVCA(const SHA256HashValue& fingerprint) {
 
 EVRootCAMetadata::EVRootCAMetadata() {
 // Constructs the object from the raw metadata in kEvRootCaMetadata.
-#if defined(PLATFORM_USES_CHROMIUM_EV_METADATA) && !defined(OS_WIN)
+#if defined(PLATFORM_USES_CHROMIUM_EV_METADATA) && !BUILDFLAG(IS_WIN)
   for (const auto& ev_root : kEvRootCaMetadata) {
     for (const auto& policy : ev_root.policy_oids) {
       if (policy.empty())

@@ -36,20 +36,20 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/radio_utils.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "net/android/radio_activity_tracker.h"
 #include "net/base/features.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // For getsockopt() call.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <winsock2.h>
-#else  // !defined(OS_WIN)
+#else  // !BUILDFLAG(IS_WIN)
 #include <sys/socket.h>
-#endif  //  !defined(OS_WIN)
+#endif  //  !BUILDFLAG(IS_WIN)
 
 using net::test::IsError;
 using net::test::IsOk;
@@ -159,7 +159,7 @@ class TCPSocketTest : public PlatformTest, public WithTaskEnvironment {
     EXPECT_EQ(accepted_address.address(), local_address_.address());
   }
 
-#if defined(TCP_INFO) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if defined(TCP_INFO) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Tests that notifications to Socket Performance Watcher (SPW) are delivered
   // correctly. |should_notify_updated_rtt| is true if the SPW is interested in
   // receiving RTT notifications. |num_messages| is the number of messages that
@@ -230,7 +230,7 @@ class TCPSocketTest : public PlatformTest, public WithTaskEnvironment {
     EXPECT_EQ(expect_rtt_notification_count,
               watcher_ptr->rtt_notification_count());
   }
-#endif  // defined(TCP_INFO) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // defined(TCP_INFO) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   AddressList local_address_list() const {
     return AddressList(local_address_);
@@ -722,12 +722,12 @@ TEST_F(TCPSocketTest, BeforeConnectCallback) {
   ASSERT_EQ(0, os_result);
 // Linux platforms generally allocate twice as much buffer size is requested to
 // account for internal kernel data structures.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(2 * kReceiveBufferSize, actual_size);
 // Unfortunately, Apple platform behavior doesn't seem to be documented, and
 // doesn't match behavior on any other platforms.
 // Fuchsia doesn't currently implement SO_RCVBUF.
-#elif !defined(OS_APPLE) && !defined(OS_FUCHSIA)
+#elif !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_FUCHSIA)
   EXPECT_EQ(kReceiveBufferSize, actual_size);
 #endif
 }
@@ -825,7 +825,7 @@ TEST_F(TCPSocketTest, SetNoDelay) {
 
 // These tests require kernel support for tcp_info struct, and so they are
 // enabled only on certain platforms.
-#if defined(TCP_INFO) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if defined(TCP_INFO) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // If SocketPerformanceWatcher::ShouldNotifyUpdatedRTT always returns false,
 // then the wtatcher should not receive any notifications.
 TEST_F(TCPSocketTest, SPWNotInterested) {
@@ -837,11 +837,11 @@ TEST_F(TCPSocketTest, SPWNotInterested) {
 TEST_F(TCPSocketTest, SPWNoAdvance) {
   TestSPWNotifications(true, 2u, 0u, 3u);
 }
-#endif  // defined(TCP_INFO) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // defined(TCP_INFO) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 // On Android, where socket tagging is supported, verify that TCPSocket::Tag
 // works as expected.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(TCPSocketTest, Tag) {
   if (!CanGetTaggedBytes()) {
     DVLOG(0) << "Skipping test - GetTaggedBytes unsupported.";
@@ -1012,7 +1012,7 @@ TEST_F(TCPSocketTest, RecordRadioWakeUpTrigger) {
       android::kUmaNamePossibleWakeupTriggerTCPWriteAnnotationId, 1);
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 }  // namespace net

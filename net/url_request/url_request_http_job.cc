@@ -90,7 +90,7 @@
 #include "url/origin.h"
 #include "url/url_constants.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "net/android/network_library.h"
 #endif
 
@@ -205,7 +205,7 @@ std::unique_ptr<URLRequestJob> URLRequestHttpJob::Create(URLRequest* request) {
           RedirectUtil::ResponseCode::REDIRECT_307_TEMPORARY_REDIRECT, "HSTS");
     }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Check whether the app allows cleartext traffic to this host, and return
     // ERR_CLEARTEXT_NOT_PERMITTED if not.
     if (request->context()->check_cleartext_permitted() &&

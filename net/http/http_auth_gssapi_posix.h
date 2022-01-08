@@ -17,9 +17,9 @@
 #include "net/http/http_auth.h"
 #include "net/http/http_auth_mechanism.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include <GSS/gssapi.h>
-#elif defined(OS_FREEBSD)
+#elif BUILDFLAG(IS_FREEBSD)
 #include <gssapi/gssapi.h>
 #else
 #include <gssapi.h>

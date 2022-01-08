@@ -28,7 +28,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/multiprocess_func_list.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
@@ -698,7 +698,7 @@ TEST_F(AddressTrackerLinuxTest, NonTrackingMode) {
 }
 
 TEST_F(AddressTrackerLinuxTest, NonTrackingModeInit) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Calling Init() on Android P+ isn't supported.
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
       base::android::SDK_VERSION_P)
@@ -740,7 +740,7 @@ class GetCurrentConnectionTypeRunner
 };
 
 TEST_F(AddressTrackerLinuxTest, BroadcastInit) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Calling Init() on Android P+ isn't supported.
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
       base::android::SDK_VERSION_P)
@@ -781,7 +781,7 @@ TEST_F(AddressTrackerLinuxTest, TunnelInterfaceName) {
 // Note: consumers generally should not need to create two tracking instances of
 // `AddressTrackerLinux` in the same process.
 TEST(AddressTrackerLinuxNetlinkTest, TestInitializeTwoTrackers) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Calling Init() on Android P+ isn't supported.
   if (base::android::BuildInfo::GetInstance()->sdk_int() >=
       base::android::SDK_VERSION_P)
@@ -802,7 +802,7 @@ TEST(AddressTrackerLinuxNetlinkTest, TestInitializeTwoTrackers) {
 // These tests use `base::LaunchOptions::clone_flags` for fine-grained control
 // over the clone syscall, but the field is only defined on Linux and ChromeOS.
 // Unfortunately, this means these tests do not have coverage on Android.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // These tests require specific flag values defined in <sched.h>.
 #if defined(CLONE_NEWUSER) && defined(CLONE_NEWPID)
 
@@ -936,7 +936,7 @@ MULTIPROCESS_TEST_MAIN(ChildProcessInitializeTrackerForTesting) {
   return 0;
 }
 
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #endif  // defined(CLONE_NEWUSER) && defined(CLONE_NEWPID)
 
 }  // namespace internal

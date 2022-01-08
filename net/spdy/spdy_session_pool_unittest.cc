@@ -1100,7 +1100,7 @@ TEST_F(SpdySessionPoolTest, HandleIPAddressChangeThenShutdown) {
 
   spdy_session_pool_->OnIPAddressChanged();
 
-#if defined(OS_ANDROID) || defined(OS_WIN) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
   EXPECT_EQ(1u, num_active_streams(session));
   EXPECT_TRUE(session->IsGoingAway());
   EXPECT_FALSE(session->IsDraining());
@@ -1108,7 +1108,7 @@ TEST_F(SpdySessionPoolTest, HandleIPAddressChangeThenShutdown) {
   EXPECT_EQ(0u, num_active_streams(session));
   EXPECT_FALSE(session->IsGoingAway());
   EXPECT_TRUE(session->IsDraining());
-#endif  // defined(OS_ANDROID) || defined(OS_WIN) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
 
   http_session_.reset();
 

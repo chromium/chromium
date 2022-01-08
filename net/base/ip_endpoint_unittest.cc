@@ -21,13 +21,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <winsock2.h>
 #include <ws2bth.h>
 
 #include "base/test/gtest_util.h"   // For EXPECT_DCHECK_DEATH
 #include "net/base/winsock_util.h"  // For kBluetoothAddressSize
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 #include <netinet/in.h>
 #endif
 
@@ -162,7 +162,7 @@ TEST_F(IPEndPointTest, FromSockAddrBufTooSmall) {
   EXPECT_FALSE(ip_endpoint.FromSockAddr(sockaddr, sizeof(addr) - 1));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 namespace {
 constexpr uint8_t kBluetoothAddrBytes[kBluetoothAddressSize] = {1, 2, 3,

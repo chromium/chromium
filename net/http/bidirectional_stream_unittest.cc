@@ -1776,7 +1776,7 @@ TEST_F(BidirectionalStreamTest, Tagging) {
       MockRead(ASYNC, ERR_IO_PENDING, 2),  // Force a pause.
       CreateMockRead(response_body_frame, 4), MockRead(ASYNC, 0, 5),
   };
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SocketTag tag(0x12345678, 0x87654321);
 #else
   SocketTag tag;

@@ -13,7 +13,7 @@
 
 // This contains the portable and the SSPI implementations for NTLM.
 // We use NTLM_SSPI for Windows, and NTLM_PORTABLE for other platforms.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define NTLM_SSPI
 #else
 #define NTLM_PORTABLE

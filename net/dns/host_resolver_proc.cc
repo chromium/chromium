@@ -19,7 +19,7 @@
 #include "net/dns/dns_util.h"
 #include "net/dns/host_resolver.h"
 
-#if defined(OS_OPENBSD)
+#if BUILDFLAG(IS_OPENBSD)
 #define AI_ADDRCONFIG 0
 #endif
 
@@ -122,7 +122,7 @@ int SystemHostResolverCall(const std::string& host,
   struct addrinfo hints = {0};
   hints.ai_family = AddressFamilyToAF(address_family);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // DO NOT USE AI_ADDRCONFIG ON WINDOWS.
   //
   // The following comment in <winsock2.h> is the best documentation I found
@@ -159,13 +159,13 @@ int SystemHostResolverCall(const std::string& host,
   if (host_resolver_flags & HOST_RESOLVER_CANONNAME)
     hints.ai_flags |= AI_CANONNAME;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // See crbug.com/1176970. Flag not documented (other than the declaration
   // comment in ws2def.h) but confirmed by Microsoft to work for this purpose
   // and be safe.
   if (host_resolver_flags & HOST_RESOLVER_AVOID_MULTICAST)
     hints.ai_flags |= AI_DNS_ONLY;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Restrict result set to only this socket type to avoid duplicates.
   hints.ai_socktype = SOCK_STREAM;
@@ -176,8 +176,8 @@ int SystemHostResolverCall(const std::string& host,
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
 
-#if defined(OS_POSIX) && \
-    !(defined(OS_APPLE) || defined(OS_OPENBSD) || defined(OS_ANDROID))
+#if BUILDFLAG(IS_POSIX) && \
+    !(BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OPENBSD) || BUILDFLAG(IS_ANDROID))
   DnsReloaderMaybeReload();
 #endif
   absl::optional<AddressInfo> ai;

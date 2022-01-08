@@ -273,19 +273,19 @@ NET_EXPORT extern const base::Feature kSameSiteDefaultChecksMethodRigorously;
 #if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
 // When enabled, use the builtin cert verifier instead of the platform verifier.
 NET_EXPORT extern const base::Feature kCertVerifierBuiltinFeature;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 NET_EXPORT extern const base::FeatureParam<int> kCertVerifierBuiltinImpl;
 NET_EXPORT extern const base::FeatureParam<int> kCertVerifierBuiltinCacheSize;
-#endif /* defined(OS_MAC) */
+#endif /* BUILDFLAG(IS_MAC) */
 #endif /* BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED) */
 
 #if BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED)
 NET_EXPORT extern const base::Feature kCertDualVerificationTrialFeature;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 NET_EXPORT extern const base::FeatureParam<int> kCertDualVerificationTrialImpl;
 NET_EXPORT extern const base::FeatureParam<int>
     kCertDualVerificationTrialCacheSize;
-#endif /* defined(OS_MAC) */
+#endif /* BUILDFLAG(IS_MAC) */
 #endif /* BUILDFLAG(TRIAL_COMPARISON_CERT_VERIFIER_SUPPORTED) */
 
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -349,14 +349,14 @@ NET_EXPORT extern const base::FeatureParam<bool> kFirstPartySetsIsDogfooder;
 NET_EXPORT extern const base::Feature kDocumentReporting;
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // When enabled, UDPSocketPosix increments the global counter of bytes received
 // every time bytes are received, instead of using a timer to batch updates.
 // This should reduce the number of wake ups and improve battery consumption.
 // TODO(https://crbug.com/1189805): Cleanup the feature after verifying that it
 // doesn't negatively affect performance.
 NET_EXPORT extern const base::Feature kUdpSocketPosixAlwaysUpdateBytesReceived;
-#endif  // defined(OS_POSIX) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 // When this feature is enabled, redirected requests will be considered
 // cross-site for the purpose of SameSite cookies if any redirect hop was

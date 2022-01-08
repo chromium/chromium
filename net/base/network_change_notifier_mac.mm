@@ -16,7 +16,7 @@
 #include "build/build_config.h"
 #include "net/dns/dns_config_service.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #import <CoreTelephony/CTTelephonyNetworkInfo.h>
 #endif
 
@@ -117,7 +117,7 @@ NetworkChangeNotifierMac::CalculateConnectionType(
   if (!reachable)
     return CONNECTION_NONE;
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   if (!(flags & kSCNetworkReachabilityFlagsIsWWAN)) {
     return CONNECTION_WIFI;
   }
@@ -265,7 +265,7 @@ void NetworkChangeNotifierMac::StartReachabilityNotifications() {
 
 void NetworkChangeNotifierMac::SetDynamicStoreNotificationKeys(
     SCDynamicStoreRef store) {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // SCDynamicStore API does not exist on iOS.
   NOTREACHED();
 #else
@@ -287,11 +287,11 @@ void NetworkChangeNotifierMac::SetDynamicStoreNotificationKeys(
       SCDynamicStoreSetNotificationKeys(store, notification_keys.get(), NULL);
   // TODO(willchan): Figure out a proper way to handle this rather than crash.
   CHECK(ret);
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 void NetworkChangeNotifierMac::OnNetworkConfigChange(CFArrayRef changed_keys) {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // SCDynamicStore API does not exist on iOS.
   NOTREACHED();
 #else
@@ -312,7 +312,7 @@ void NetworkChangeNotifierMac::OnNetworkConfigChange(CFArrayRef changed_keys) {
       NOTREACHED();
     }
   }
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 // static
@@ -340,11 +340,11 @@ void NetworkChangeNotifierMac::ReachabilityCallback(
     NotifyObserversOfMaxBandwidthChange(max_bandwidth_mbps, new_type);
   }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // On iOS, the SCDynamicStore API does not exist, and we use the reachability
   // API to detect IP address changes instead.
   NotifyObserversOfIPAddressChange();
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 }
 
 }  // namespace net

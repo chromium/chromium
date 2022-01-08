@@ -6,9 +6,9 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <netinet/in.h>
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include <ws2tcpip.h>
 #endif
 

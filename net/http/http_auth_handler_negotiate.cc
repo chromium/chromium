@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/address_family.h"
 #include "net/base/address_list.h"
@@ -50,19 +51,19 @@ base::Value NetLogParameterChannelBindings(
 // Uses |negotiate_auth_system_factory| to create the auth system, otherwise
 // creates the default auth system for each platform.
 std::unique_ptr<HttpAuthMechanism> CreateAuthSystem(
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     HttpAuthHandlerNegotiate::AuthLibrary* auth_library,
 #endif
     const HttpAuthPreferences* prefs,
     HttpAuthMechanismFactory negotiate_auth_system_factory) {
   if (negotiate_auth_system_factory)
     return negotiate_auth_system_factory.Run(prefs);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return std::make_unique<net::android::HttpAuthNegotiateAndroid>(prefs);
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return std::make_unique<HttpAuthSSPI>(auth_library,
                                         HttpAuth::AUTH_SCHEME_NEGOTIATE);
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   return std::make_unique<HttpAuthGSSAPI>(auth_library,
                                           CHROME_GSS_SPNEGO_MECH_OID_DESC);
 #endif
@@ -76,12 +77,12 @@ HttpAuthHandlerNegotiate::Factory::Factory(
 
 HttpAuthHandlerNegotiate::Factory::~Factory() = default;
 
-#if !defined(OS_ANDROID) && defined(OS_POSIX)
+#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(IS_POSIX)
 const std::string& HttpAuthHandlerNegotiate::Factory::GetLibraryNameForTesting()
     const {
   return auth_library_->GetLibraryNameForTesting();
 }
-#endif  // !defined(OS_ANDROID) && defined(OS_POSIX)
+#endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(IS_POSIX)
 
 int HttpAuthHandlerNegotiate::Factory::CreateAuthHandler(
     HttpAuthChallengeTokenizer* challenge,
@@ -94,7 +95,7 @@ int HttpAuthHandlerNegotiate::Factory::CreateAuthHandler(
     const NetLogWithSource& net_log,
     HostResolver* host_resolver,
     std::unique_ptr<HttpAuthHandler>* handler) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (is_unsupported_ || reason == CREATE_PREEMPTIVE)
     return ERR_UNSUPPORTED_AUTH_SCHEME;
   // TODO(cbentzel): Move towards model of parsing in the factory
@@ -103,7 +104,7 @@ int HttpAuthHandlerNegotiate::Factory::CreateAuthHandler(
       CreateAuthSystem(auth_library_.get(), http_auth_preferences(),
                        negotiate_auth_system_factory_),
       http_auth_preferences(), host_resolver));
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   if (is_unsupported_ || !http_auth_preferences() ||
       http_auth_preferences()->AuthAndroidNegotiateAccountType().empty() ||
       reason == CREATE_PREEMPTIVE)
@@ -113,7 +114,7 @@ int HttpAuthHandlerNegotiate::Factory::CreateAuthHandler(
   std::unique_ptr<HttpAuthHandler> tmp_handler(new HttpAuthHandlerNegotiate(
       CreateAuthSystem(http_auth_preferences(), negotiate_auth_system_factory_),
       http_auth_preferences(), host_resolver));
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   if (is_unsupported_)
     return ERR_UNSUPPORTED_AUTH_SCHEME;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -180,7 +181,7 @@ bool HttpAuthHandlerNegotiate::Init(
     const SSLInfo& ssl_info,
     const NetworkIsolationKey& network_isolation_key) {
   network_isolation_key_ = network_isolation_key;
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   if (!auth_system_->Init(net_log())) {
     VLOG(1) << "can't initialize GSSAPI library";
     return false;
@@ -280,9 +281,9 @@ std::string HttpAuthHandlerNegotiate::CreateSPN(
   // and IE. Users can override the behavior so aliases are allowed and
   // non-standard ports are included.
   int port = scheme_host_port.port();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   static const char kSpnSeparator = '/';
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   static const char kSpnSeparator = '@';
 #endif
   if (port != 80 && port != 443 &&

@@ -87,7 +87,7 @@ int HttpAuthHandlerFactory::CreatePreemptiveAuthHandlerFromString(
 namespace {
 
 const char* const kDefaultAuthSchemes[] = {kBasicAuthScheme, kDigestAuthScheme,
-#if BUILDFLAG(USE_KERBEROS) && !defined(OS_ANDROID)
+#if BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID)
                                            kNegotiateAuthScheme,
 #endif
                                            kNtlmAuthScheme};
@@ -187,10 +187,10 @@ HttpAuthHandlerRegistryFactory::Create(
   if (base::Contains(auth_schemes_set, kNtlmAuthScheme)) {
     HttpAuthHandlerNTLM::Factory* ntlm_factory =
         new HttpAuthHandlerNTLM::Factory();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     ntlm_factory->set_sspi_library(
         std::make_unique<SSPILibraryDefault>(NTLMSP_NAME));
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
     registry_factory->RegisterSchemeFactory(kNtlmAuthScheme, ntlm_factory);
   }
 
@@ -198,7 +198,7 @@ HttpAuthHandlerRegistryFactory::Create(
   if (base::Contains(auth_schemes_set, kNegotiateAuthScheme)) {
     HttpAuthHandlerNegotiate::Factory* negotiate_factory =
         new HttpAuthHandlerNegotiate::Factory(negotiate_auth_system_factory);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     negotiate_factory->set_library(
         std::make_unique<SSPILibraryDefault>(NEGOSSP_NAME));
 #elif BUILDFLAG(USE_EXTERNAL_GSSAPI)

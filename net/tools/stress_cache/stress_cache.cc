@@ -47,7 +47,7 @@
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/disk_cache_test_util.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/logging_win.h"
 #endif
 
@@ -388,7 +388,7 @@ void CrashHandler(const char* file,
 
 // -----------------------------------------------------------------------
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // {B9A153D4-31C3-48e4-9ABF-D54383F14A0D}
 const GUID kStressCacheTraceProviderName = {
     0xb9a153d4, 0x31c3, 0x48e4,
@@ -405,7 +405,7 @@ int main(int argc, const char* argv[]) {
   logging::ScopedLogAssertHandler scoped_assert_handler(
       base::BindRepeating(CrashHandler));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   logging::LogEventProvider::Initialize(kStressCacheTraceProviderName);
 #else
   base::CommandLine::Init(argc, argv);

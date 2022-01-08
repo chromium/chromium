@@ -43,18 +43,18 @@
 #include "net/proxy_resolution/proxy_resolver_factory.h"
 #include "net/url_request/url_request_context.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "net/proxy_resolution/win/proxy_config_service_win.h"
 #include "net/proxy_resolution/win/proxy_resolver_winhttp.h"
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
 #include "net/proxy_resolution/proxy_config_service_ios.h"
 #include "net/proxy_resolution/proxy_resolver_mac.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "net/proxy_resolution/proxy_config_service_mac.h"
 #include "net/proxy_resolution/proxy_resolver_mac.h"
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
 #include "net/proxy_resolution/proxy_config_service_linux.h"
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 #include "net/proxy_resolution/proxy_config_service_android.h"
 #endif
 
@@ -64,7 +64,7 @@ namespace net {
 
 namespace {
 
-#if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX)
 constexpr net::NetworkTrafficAnnotationTag kSystemProxyConfigTrafficAnnotation =
     net::DefineNetworkTrafficAnnotation("proxy_config_system", R"(
       semantics {
@@ -262,9 +262,9 @@ class ProxyResolverFactoryForSystem : public MultiThreadedProxyResolverFactory {
       const ProxyResolverFactoryForSystem&) = delete;
 
   std::unique_ptr<ProxyResolverFactory> CreateProxyResolverFactory() override {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     return std::make_unique<ProxyResolverFactoryWinHttp>();
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
     return std::make_unique<ProxyResolverFactoryMac>();
 #else
     NOTREACHED();
@@ -273,7 +273,7 @@ class ProxyResolverFactoryForSystem : public MultiThreadedProxyResolverFactory {
   }
 
   static bool IsSupported() {
-#if defined(OS_WIN) || defined(OS_APPLE)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
     return true;
 #else
     return false;
@@ -1408,13 +1408,13 @@ bool ConfiguredProxyResolutionService::CastToConfiguredProxyResolutionService(
 std::unique_ptr<ProxyConfigService>
 ConfiguredProxyResolutionService::CreateSystemProxyConfigService(
     const scoped_refptr<base::SequencedTaskRunner>& main_task_runner) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return std::make_unique<ProxyConfigServiceWin>(
       kSystemProxyConfigTrafficAnnotation);
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
   return std::make_unique<ProxyConfigServiceIOS>(
       kSystemProxyConfigTrafficAnnotation);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return std::make_unique<ProxyConfigServiceMac>(
       main_task_runner, kSystemProxyConfigTrafficAnnotation);
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
@@ -1422,7 +1422,7 @@ ConfiguredProxyResolutionService::CreateSystemProxyConfigService(
              << "profile_io_data.cc::CreateProxyConfigService and this should "
              << "be used only for examples.";
   return std::make_unique<UnsetProxyConfigService>();
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
   std::unique_ptr<ProxyConfigServiceLinux> linux_config_service(
       new ProxyConfigServiceLinux());
 
@@ -1441,10 +1441,10 @@ ConfiguredProxyResolutionService::CreateSystemProxyConfigService(
       kSystemProxyConfigTrafficAnnotation);
 
   return std::move(linux_config_service);
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   return std::make_unique<ProxyConfigServiceAndroid>(
       main_task_runner, base::ThreadTaskRunnerHandle::Get());
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   // TODO(crbug.com/889195): Implement a system proxy service for Fuchsia.
   return std::make_unique<ProxyConfigServiceDirect>();
 #else

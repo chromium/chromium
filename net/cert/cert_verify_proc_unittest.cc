@@ -62,17 +62,17 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #include "net/cert/cert_verify_proc_android.h"
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
 #include "base/ios/ios_util.h"
 #include "net/cert/cert_verify_proc_ios.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #include "net/cert/cert_verify_proc_mac.h"
 #include "net/cert/internal/trust_store_mac.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #include "net/cert/cert_verify_proc_win.h"
 #endif
@@ -155,7 +155,7 @@ enum CertVerifyProcType {
 
 // Wrapper for base::mac::IsAtLeastOS10_12() to avoid littering ifdefs.
 bool IsMacAtLeastOS10_12() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return base::mac::IsAtLeastOS10_12();
 #else
   return false;
@@ -187,16 +187,16 @@ scoped_refptr<CertVerifyProc> CreateCertVerifyProc(
     CertVerifyProcType type,
     scoped_refptr<CertNetFetcher> cert_net_fetcher) {
   switch (type) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     case CERT_VERIFY_PROC_ANDROID:
       return new CertVerifyProcAndroid(std::move(cert_net_fetcher));
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
     case CERT_VERIFY_PROC_IOS:
       return new CertVerifyProcIOS();
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
     case CERT_VERIFY_PROC_MAC:
       return new CertVerifyProcMac();
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     case CERT_VERIFY_PROC_WIN:
       return new CertVerifyProcWin();
 #endif
@@ -215,15 +215,15 @@ scoped_refptr<CertVerifyProc> CreateCertVerifyProc(
 // now this is gated on having CertVerifyProcBuiltin understand the roots added
 // via TestRootCerts.
 const std::vector<CertVerifyProcType> kAllCertVerifiers = {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     CERT_VERIFY_PROC_ANDROID
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
     CERT_VERIFY_PROC_IOS
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
     CERT_VERIFY_PROC_MAC, CERT_VERIFY_PROC_BUILTIN
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     CERT_VERIFY_PROC_WIN
-#elif defined(OS_FUCHSIA) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     CERT_VERIFY_PROC_BUILTIN
 #else
 #error Unsupported platform
@@ -254,7 +254,7 @@ bool ScopedTestRootCanTrustIntermediateCert(
 // because the CertVerifyProc::Verify() does this unconditionally based on the
 // platform.
 bool AreSHA1IntermediatesAllowed() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(rsleevi): Remove this once https://crbug.com/588789 is resolved
   // for Windows 7/2008 users.
   // Note: This must be kept in sync with cert_verify_proc.cc
@@ -322,7 +322,7 @@ class CertVerifyProcInternalTest
   }
 
   bool SupportsReturningVerifiedChain() const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Before API level 17 (SDK_VERSION_JELLY_BEAN_MR1), Android does
     // not expose the APIs necessary to get at the verified
     // certificate chain.
@@ -338,14 +338,14 @@ class CertVerifyProcInternalTest
   // platform. IsInvalidRsaDsaKeySize should be checked prior, since some very
   // weak keys may be considered invalid.
   bool IsWeakRsaDsaKeySize(int size) const {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     // Beginning with iOS 13, the minimum key size for RSA/DSA algorithms is
     // 2048 bits. See https://support.apple.com/en-us/HT210176
     if (verify_proc_type() == CERT_VERIFY_PROC_IOS &&
         base::ios::IsRunningOnIOS13OrLater()) {
       return size < 2048;
     }
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
     // Beginning with macOS 10.15, the minimum key size for RSA/DSA algorithms
     // is 2048 bits. See https://support.apple.com/en-us/HT210176
     if (verify_proc_type() == CERT_VERIFY_PROC_MAC &&
@@ -360,13 +360,13 @@ class CertVerifyProcInternalTest
   // Returns true if the RSA/DSA keysize will be considered invalid on the
   // current platform.
   bool IsInvalidRsaDsaKeySize(int size) const {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     if (base::ios::IsRunningOnIOS12OrLater()) {
       // On iOS using SecTrustEvaluateWithError it is not possible to
       // distinguish between weak and invalid key sizes.
       return IsWeakRsaDsaKeySize(size);
     }
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
     // Starting with Mac OS 10.12, certs with keys < 1024 are invalid.
     if (verify_proc_type() == CERT_VERIFY_PROC_MAC &&
         base::mac::IsAtLeastOS10_12()) {
@@ -1108,11 +1108,11 @@ class CertVerifyProcInspectSignatureAlgorithmsTest : public ::testing::Test {
   // On some platforms trying to import a certificate with mismatched signature
   // will fail. Consequently the rest of the tests can't be performed.
   WARN_UNUSED_RESULT bool SupportsImportingMismatchedAlgorithms() const {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     LOG(INFO) << "Skipping test on iOS because certs with mismatched "
                  "algorithms cannot be imported";
     return false;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
     if (base::mac::IsAtLeastOS10_12()) {
       LOG(INFO) << "Skipping test on macOS >= 10.12 because certs with "
                    "mismatched algorithms cannot be imported";
@@ -1601,7 +1601,7 @@ TEST_P(CertVerifyProcInternalTest, TestKnownRoot) {
                              << "that date, please disable and file a bug "
                              << "against rsleevi.";
   EXPECT_TRUE(verify_result.is_issued_by_known_root);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (verify_proc_type() == CERT_VERIFY_PROC_BUILTIN) {
     auto* mac_trust_debug_info =
         net::TrustStoreMac::ResultDebugData::Get(&verify_result);
@@ -1674,7 +1674,7 @@ TEST_P(CertVerifyProcInternalTest, PublicKeyHashes) {
 // that tests only the desired case.
 //
 // Disabled on Android, crbug.com/1167663.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_WrongKeyPurpose DISABLED_WrongKeyPurpose
 #else
 #define MAYBE_WrongKeyPurpose WrongKeyPurpose
@@ -1694,7 +1694,7 @@ TEST_P(CertVerifyProcInternalTest, MAYBE_WrongKeyPurpose) {
 
   EXPECT_TRUE(verify_result.cert_status & CERT_STATUS_COMMON_NAME_INVALID);
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   if (verify_proc_type() == CERT_VERIFY_PROC_IOS) {
     if (base::ios::IsRunningOnIOS13OrLater() ||
         !base::ios::IsRunningOnIOS12OrLater()) {
@@ -3202,7 +3202,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 // needs to be used to avoid having the result depend on globally cached success
 // or failure of the fetch.
 // Test is flaky on iOS crbug.com/860189
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #define MAYBE_IntermediateFromAia404 DISABLED_IntermediateFromAia404
 #else
 #define MAYBE_IntermediateFromAia404 IntermediateFromAia404
@@ -3253,7 +3253,7 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest, MAYBE_IntermediateFromAia404) 
 // Tries verifying a certificate chain that is missing an intermediate. The
 // intermediate is available via AIA.
 // TODO(crbug.com/860189): Failing on iOS
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #define MAYBE_IntermediateFromAia200Der DISABLED_IntermediateFromAia200Der
 #else
 #define MAYBE_IntermediateFromAia200Der IntermediateFromAia200Der
@@ -3299,7 +3299,7 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
 // intermediate is available via AIA, however is served as a PEM file rather
 // than DER.
 // TODO(crbug.com/860189): Failing on iOS
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #define MAYBE_IntermediateFromAia200Pem DISABLED_IntermediateFromAia200Pem
 #else
 #define MAYBE_IntermediateFromAia200Pem IntermediateFromAia200Pem
@@ -3351,7 +3351,7 @@ TEST_P(CertVerifyProcInternalWithNetFetchingTest,
 // formatting on the PEM data.
 //
 // TODO(crbug.com/860189): Failing on iOS
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #define MAYBE_IntermediateFromAia200Pem2 DISABLED_IntermediateFromAia200Pem2
 #else
 #define MAYBE_IntermediateFromAia200Pem2 IntermediateFromAia200Pem2

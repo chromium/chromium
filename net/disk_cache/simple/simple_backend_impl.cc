@@ -3,15 +3,17 @@
 // found in the LICENSE file.
 
 #include "net/disk_cache/simple/simple_backend_impl.h"
-#include "base/callback_helpers.h"
-#include "base/task/thread_pool.h"
 
 #include <algorithm>
 #include <cstdlib>
 #include <functional>
 #include <limits>
 
-#if defined(OS_POSIX)
+#include "base/callback_helpers.h"
+#include "base/task/thread_pool.h"
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_POSIX)
 #include <sys/resource.h>
 #endif
 
@@ -651,7 +653,7 @@ void SimpleBackendImpl::InitializeIndex(CompletionOnceCallback callback,
                                         const DiskStatResult& result) {
   if (result.net_error == net::OK) {
     index_->SetMaxSize(result.max_size);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (app_status_listener_)
       index_->set_app_status_listener(app_status_listener_);
 #endif

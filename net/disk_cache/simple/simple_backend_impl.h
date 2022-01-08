@@ -135,7 +135,7 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
     return prioritized_task_runner_.get();
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void set_app_status_listener(
       base::android::ApplicationStatusListener* app_status_listener) {
     app_status_listener_ = app_status_listener;
@@ -280,7 +280,7 @@ class NET_EXPORT_PRIVATE SimpleBackendImpl : public Backend,
 
   uint32_t entry_count_ = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   raw_ptr<base::android::ApplicationStatusListener> app_status_listener_ =
       nullptr;
 #endif

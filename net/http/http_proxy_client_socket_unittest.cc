@@ -31,7 +31,7 @@ TEST(HttpProxyClientSocketTest, Tag) {
                                false, nullptr, TRAFFIC_ANNOTATION_FOR_TESTS);
 
   EXPECT_EQ(tagging_sock->tag(), SocketTag());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SocketTag tag(0x12345678, 0x87654321);
   socket.ApplySocketTag(tag);
   EXPECT_EQ(tagging_sock->tag(), tag);

@@ -29,7 +29,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/ranges/algorithm.h"
 #include "base/win/wincrypt_shim.h"
 #include "crypto/scoped_capi_types.h"
@@ -793,7 +793,7 @@ TEST_F(PathBuilderMultiRootTest, TestDeadline) {
       result.paths[0]->errors.ContainsError(cert_errors::kDeadlineExceeded));
 }
 
-#if defined(OS_WIN) && BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 void AddToStoreWithEKURestriction(HCERTSTORE store,
                                   const scoped_refptr<ParsedCertificate>& cert,
@@ -892,7 +892,7 @@ TEST_F(PathBuilderMultiRootTest, TrustStoreWinNoPathEKURestrictions) {
   auto result = path_builder.Run();
   ASSERT_FALSE(result.HasValidPath());
 }
-#endif  // defined(OS_WIN) && BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 class PathBuilderKeyRolloverTest : public ::testing::Test {
  public:

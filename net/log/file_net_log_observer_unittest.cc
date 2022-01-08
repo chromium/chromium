@@ -583,7 +583,7 @@ TEST_P(FileNetLogObserverTest, AddEventsFromMultipleThreads) {
   const size_t kNumThreads = 10;
   std::vector<std::unique_ptr<base::Thread>> threads(kNumThreads);
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // TODO(https://crbug.com/959245): Diagnosting logging to determine where
   // this test sometimes hangs.
   LOG(ERROR) << "Create and start threads.";
@@ -598,7 +598,7 @@ TEST_P(FileNetLogObserverTest, AddEventsFromMultipleThreads) {
     threads[i]->WaitUntilThreadStarted();
   }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   LOG(ERROR) << "Create and start observing.";
 #endif
 
@@ -606,7 +606,7 @@ TEST_P(FileNetLogObserverTest, AddEventsFromMultipleThreads) {
 
   const size_t kNumEventsAddedPerThread = 200;
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   LOG(ERROR) << "Posting tasks.";
 #endif
 
@@ -617,14 +617,14 @@ TEST_P(FileNetLogObserverTest, AddEventsFromMultipleThreads) {
                                   kNumEventsAddedPerThread, kDummyEventSize));
   }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   LOG(ERROR) << "Joining all threads.";
 #endif
 
   // Join all the threads.
   threads.clear();
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   LOG(ERROR) << "Stop observing.";
 #endif
 
@@ -633,7 +633,7 @@ TEST_P(FileNetLogObserverTest, AddEventsFromMultipleThreads) {
   logger_->StopObserving(nullptr, closure.closure());
   closure.WaitForResult();
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   LOG(ERROR) << "Read log from disk and verify.";
 #endif
 
@@ -644,7 +644,7 @@ TEST_P(FileNetLogObserverTest, AddEventsFromMultipleThreads) {
   EXPECT_EQ(kNumEventsAddedPerThread * kNumThreads,
             log->events->GetList().size());
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   LOG(ERROR) << "Teardown.";
 #endif
 }

@@ -27,13 +27,13 @@ bool HttpAuthPreferences::NegotiateEnablePort() const {
   return negotiate_enable_port_;
 }
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 bool HttpAuthPreferences::NtlmV2Enabled() const {
   return ntlm_v2_enabled_;
 }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 std::string HttpAuthPreferences::AuthAndroidNegotiateAccountType() const {
   return auth_android_negotiate_account_type_;
 }

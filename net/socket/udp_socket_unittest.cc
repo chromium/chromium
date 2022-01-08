@@ -43,7 +43,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #include "base/android/radio_utils.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -52,7 +52,7 @@
 #include "net/base/network_change_notifier.h"
 #endif
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include <TargetConditionals.h>
 #endif
 
@@ -279,7 +279,7 @@ TEST_F(UDPSocketTest, Connect) {
   ConnectTest(false);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST_F(UDPSocketTest, ConnectNonBlocking) {
   ConnectTest(true);
 }
@@ -324,7 +324,7 @@ TEST_F(UDPSocketTest, PartialRecv) {
   EXPECT_EQ(second_packet, received);
 }
 
-#if defined(OS_APPLE) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_ANDROID)
 // - MacOS: requires root permissions on OSX 10.7+.
 // - Android: devices attached to testbots don't have default network, so
 // broadcasting to 255.255.255.255 returns error -109 (Address not reachable).
@@ -498,7 +498,7 @@ TEST_F(UDPSocketTest, ClientGetLocalPeerAddresses) {
   } tests[] = {
     {"127.0.00.1", "127.0.0.1", false},
     {"::1", "::1", true},
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     // Addresses below are disabled on Android. See crbug.com/161248
     // They are also disabled on iOS. See https://crbug.com/523225
     {"192.168.1.1", "127.0.0.1", false},
@@ -584,7 +584,7 @@ TEST_F(UDPSocketTest, ClientSetDoNotFragment) {
     EXPECT_THAT(rv, IsOk());
 
     rv = client.SetDoNotFragment();
-#if defined(OS_APPLE) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FUCHSIA)
     // TODO(crbug.com/945590): IP_MTU_DISCOVER is not implemented on Fuchsia.
     EXPECT_THAT(rv, IsError(ERR_NOT_IMPLEMENTED));
 #else
@@ -606,7 +606,7 @@ TEST_F(UDPSocketTest, ServerSetDoNotFragment) {
     EXPECT_THAT(rv, IsOk());
 
     rv = server.SetDoNotFragment();
-#if defined(OS_APPLE) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FUCHSIA)
     // TODO(crbug.com/945590): IP_MTU_DISCOVER is not implemented on Fuchsia.
     EXPECT_THAT(rv, IsError(ERR_NOT_IMPLEMENTED));
 #else
@@ -635,7 +635,7 @@ TEST_F(UDPSocketTest, CloseWithPendingRead) {
 // Some Android devices do not support multicast.
 // The ones supporting multicast need WifiManager.MulitcastLock to enable it.
 // http://goo.gl/jjAk9
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(UDPSocketTest, JoinMulticastGroup) {
   const char kGroup[] = "237.132.100.17";
 
@@ -643,11 +643,11 @@ TEST_F(UDPSocketTest, JoinMulticastGroup) {
   EXPECT_TRUE(group_ip.AssignFromIPLiteral(kGroup));
 // TODO(https://github.com/google/gvisor/issues/3839): don't guard on
 // OS_FUCHSIA.
-#if defined(OS_WIN) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
   IPEndPoint bind_address(IPAddress::AllZeros(group_ip.size()), 0 /* port */);
 #else
   IPEndPoint bind_address(group_ip, 0 /* port */);
-#endif  // defined(OS_WIN) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 
   UDPSocket socket(DatagramSocket::DEFAULT_BIND, nullptr, NetLogSource());
   EXPECT_THAT(socket.Open(bind_address.GetFamily()), IsOk());
@@ -663,9 +663,9 @@ TEST_F(UDPSocketTest, JoinMulticastGroup) {
   socket.Close();
 }
 
-// TODO(https://crbug.com/947115): failing on device on iOS 12.2. 
+// TODO(https://crbug.com/947115): failing on device on iOS 12.2.
 // TODO(https://crbug.com/1227554): flaky on Mac 11.
-#if defined(OS_IOS) || defined (OS_MAC)
+#if BUILDFLAG(IS_IOS) || defined(OS_MAC)
 #define MAYBE_SharedMulticastAddress DISABLED_SharedMulticastAddress
 #else
 #define MAYBE_SharedMulticastAddress SharedMulticastAddress
@@ -677,12 +677,12 @@ TEST_F(UDPSocketTest, MAYBE_SharedMulticastAddress) {
   ASSERT_TRUE(group_ip.AssignFromIPLiteral(kGroup));
 // TODO(https://github.com/google/gvisor/issues/3839): don't guard on
 // OS_FUCHSIA.
-#if defined(OS_WIN) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
   IPEndPoint receive_address(IPAddress::AllZeros(group_ip.size()),
                              0 /* port */);
 #else
   IPEndPoint receive_address(group_ip, 0 /* port */);
-#endif  // defined(OS_WIN) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 
   NetworkInterfaceList interfaces;
   ASSERT_TRUE(GetNetworkList(&interfaces, 0));
@@ -731,7 +731,7 @@ TEST_F(UDPSocketTest, MAYBE_SharedMulticastAddress) {
   EXPECT_EQ(kMessage, RecvFromSocket(&socket2));
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(UDPSocketTest, MulticastOptions) {
   IPEndPoint bind_address;
@@ -786,7 +786,7 @@ TEST_F(UDPSocketTest, SetDSCP) {
 
 TEST_F(UDPSocketTest, TestBindToNetwork) {
   UDPSocket socket(DatagramSocket::RANDOM_BIND, nullptr, NetLogSource());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   NetworkChangeNotifierFactoryAndroid ncn_factory;
   NetworkChangeNotifier::DisableForTest ncn_disable_for_test;
   std::unique_ptr<NetworkChangeNotifier> ncn(ncn_factory.CreateInstance());
@@ -794,7 +794,7 @@ TEST_F(UDPSocketTest, TestBindToNetwork) {
   ASSERT_EQ(OK, socket.Open(ADDRESS_FAMILY_IPV4));
   // Test unsuccessful binding, by attempting to bind to a bogus NetworkHandle.
   int rv = socket.BindToNetwork(65536);
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(ERR_NOT_IMPLEMENTED, rv);
 #else
   if (base::android::BuildInfo::GetInstance()->sdk_int() <
@@ -836,7 +836,7 @@ TEST_F(UDPSocketTest, TestBindToNetwork) {
 
 }  // namespace
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -1308,7 +1308,7 @@ TEST_F(UDPSocketTest, ReadWithSocketOptimizationTruncation) {
   // |ERR_MSG_TOO_BIG|.
   rv = client.Read(buffer_.get(), kMaxRead, callback.callback());
   rv = callback.GetResult(rv);
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   EXPECT_EQ(ERR_MSG_TOO_BIG, rv);
 #else
   EXPECT_EQ(static_cast<int>(exact_length_message.length()), rv);
@@ -1320,7 +1320,7 @@ TEST_F(UDPSocketTest, ReadWithSocketOptimizationTruncation) {
 
 // On Android, where socket tagging is supported, verify that UDPSocket::Tag
 // works as expected.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(UDPSocketTest, Tag) {
   if (!CanGetTaggedBytes()) {
     DVLOG(0) << "Skipping test - GetTaggedBytes unsupported.";
@@ -1413,7 +1413,7 @@ TEST_F(UDPSocketTest, RecordRadioWakeUpTrigger) {
       android::kUmaNamePossibleWakeupTriggerUDPWriteAnnotationId, 1);
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Scoped helper to override the process-wide UDP socket limit.
 class OverrideUDPSocketLimit {

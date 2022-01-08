@@ -129,10 +129,10 @@ bool DelayedCacheCleanup(const base::FilePath& full_path) {
 
   base::FilePath path = current_path.DirName();
   base::FilePath name = current_path.BaseName();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // We created this file so it should only contain ASCII.
   std::string name_str = base::WideToASCII(name.value());
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   std::string name_str = name.value();
 #endif
 

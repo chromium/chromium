@@ -83,14 +83,16 @@ TEST(HttpAuthTest, ChooseBestChallenge) {
           "Y: Digest realm=\"X\", nonce=\"aaaaaaaaaa\"\n"
           "www-authenticate: Basic realm=\"BasicRealm\"\n",
 
-          HttpAuth::AUTH_SCHEME_BASIC, "BasicRealm",
+          HttpAuth::AUTH_SCHEME_BASIC,
+          "BasicRealm",
       },
       {
           // Fake is the only challenge type, but it is unsupported.
           "Y: Digest realm=\"FooBar\", nonce=\"aaaaaaaaaa\"\n"
           "www-authenticate: Fake realm=\"FooBar\"\n",
 
-          HttpAuth::AUTH_SCHEME_MAX, "",
+          HttpAuth::AUTH_SCHEME_MAX,
+          "",
       },
       {
           // Pick Digest over Basic.
@@ -100,23 +102,25 @@ TEST(HttpAuthTest, ChooseBestChallenge) {
           "www-authenticate: Digest realm=\"DigestRealm\", "
           "nonce=\"aaaaaaaaaa\"\n",
 
-          HttpAuth::AUTH_SCHEME_DIGEST, "DigestRealm",
+          HttpAuth::AUTH_SCHEME_DIGEST,
+          "DigestRealm",
       },
       {
           // Handle an empty header correctly.
           "Y: Digest realm=\"X\", nonce=\"aaaaaaaaaa\"\n"
           "www-authenticate:\n",
 
-          HttpAuth::AUTH_SCHEME_MAX, "",
+          HttpAuth::AUTH_SCHEME_MAX,
+          "",
       },
       {
           "WWW-Authenticate: Negotiate\n"
           "WWW-Authenticate: NTLM\n",
 
-#if BUILDFLAG(USE_KERBEROS) && !defined(OS_ANDROID)
+#if BUILDFLAG(USE_KERBEROS) && !BUILDFLAG(IS_ANDROID)
           // Choose Negotiate over NTLM on all platforms.
-          // TODO(ahendrickson): This may be flaky on Linux and OSX as it
-          // relies on being able to load one of the known .so files
+          // TODO(ahendrickson): This may be flaky on Linux and OSX as
+          // it relies on being able to load one of the known .so files
           // for gssapi.
           HttpAuth::AUTH_SCHEME_NEGOTIATE,
 #else
@@ -124,7 +128,8 @@ TEST(HttpAuthTest, ChooseBestChallenge) {
           HttpAuth::AUTH_SCHEME_NTLM,
 #endif  // BUILDFLAG(USE_KERBEROS)
           "",
-      }};
+      },
+  };
   url::SchemeHostPort scheme_host_port(GURL("http://www.example.com"));
   std::set<HttpAuth::Scheme> disabled_schemes;
   MockAllowHttpAuthPreferences http_auth_preferences;

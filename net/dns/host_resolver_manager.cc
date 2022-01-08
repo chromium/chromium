@@ -107,21 +107,21 @@
 #include "net/dns/mdns_client_impl.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <Winsock2.h>
 #include "net/base/winsock_init.h"
 #endif
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <net/if.h>
 #include "net/base/sys_addrinfo.h"
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #include "net/android/network_library.h"
-#else  // !defined(OS_ANDROID)
+#else  // !BUILDFLAG(IS_ANDROID)
 #include <ifaddrs.h>
-#endif  // defined(OS_ANDROID)
-#endif  // defined(OS_POSIX) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 namespace net {
 
@@ -244,13 +244,13 @@ bool IsAllIPv4Loopback(const AddressList& addresses) {
 bool HaveOnlyLoopbackAddresses() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(wtc): implement with the GetAdaptersAddresses function.
   NOTIMPLEMENTED();
   return false;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   return android::HaveOnlyLoopbackAddresses();
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   struct ifaddrs* interface_addr = NULL;
   int rv = getifaddrs(&interface_addr);
   if (rv != 0) {
@@ -299,7 +299,7 @@ base::Value NetLogProcTaskFailedParams(uint32_t attempt_number,
 
   if (os_error) {
     dict.SetIntKey("os_error", os_error);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Map the error code to a human-readable string.
     LPWSTR error_string = nullptr;
     FormatMessage(FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM,
@@ -311,7 +311,7 @@ base::Value NetLogProcTaskFailedParams(uint32_t attempt_number,
                   nullptr);  // Arguments (unused).
     dict.SetStringKey("os_error_string", base::WideToUTF8(error_string));
     LocalFree(error_string);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     dict.SetStringKey("os_error_string", gai_strerror(os_error));
 #endif
   }
@@ -2962,19 +2962,19 @@ HostResolverManager::HostResolverManager(
       {base::MayBlock(), priority_mode.Get(),
        base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN});
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EnsureWinsockInit();
 #endif
-#if (defined(OS_POSIX) && !defined(OS_APPLE) && !defined(OS_ANDROID)) || \
-    defined(OS_FUCHSIA)
+#if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID)) || \
+    BUILDFLAG(IS_FUCHSIA)
   RunLoopbackProbeJob();
 #endif
   NetworkChangeNotifier::AddIPAddressObserver(this);
   NetworkChangeNotifier::AddConnectionTypeObserver(this);
   if (system_dns_config_notifier_)
     system_dns_config_notifier_->AddObserver(this);
-#if defined(OS_POSIX) && !defined(OS_APPLE) && !defined(OS_OPENBSD) && \
-    !defined(OS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_OPENBSD) && \
+    !BUILDFLAG(IS_ANDROID)
   EnsureDnsReloaderInit();
 #endif
 
@@ -3995,8 +3995,8 @@ void HostResolverManager::OnIPAddressChanged() {
   // Abandon all ProbeJobs.
   probe_weak_ptr_factory_.InvalidateWeakPtrs();
   InvalidateCaches();
-#if (defined(OS_POSIX) && !defined(OS_APPLE) && !defined(OS_ANDROID)) || \
-    defined(OS_FUCHSIA)
+#if (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_ANDROID)) || \
+    BUILDFLAG(IS_FUCHSIA)
   RunLoopbackProbeJob();
 #endif
   AbortAllJobs(true /* in_progress_only */);

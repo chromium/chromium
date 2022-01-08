@@ -115,7 +115,7 @@ absl::optional<RootStore> ReadTextRootStore(
 }
 
 void AppendMakefilePath(std::string* out, const base::FilePath& path) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::string path_str = base::WideToUTF8(path.value());
 #else
   std::string path_str = path.value();

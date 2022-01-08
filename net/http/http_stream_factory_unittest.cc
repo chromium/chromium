@@ -2384,7 +2384,7 @@ TEST_F(HttpStreamFactoryTest, RequestBidirectionalStreamImplFailure) {
              HttpNetworkSession::NORMAL_SOCKET_POOL, ProxyServer::Direct())));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Verify HttpStreamFactory::Job passes socket tag along properly and that
 // SpdySessions have unique socket tags (e.g. one sessions should not be shared
 // amongst streams with different socket tags).

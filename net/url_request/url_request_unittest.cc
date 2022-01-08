@@ -20,7 +20,7 @@
 #include "net/log/net_log.h"
 #include "url/url_constants.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <objbase.h>
 #include <shlobj.h>
 #include <windows.h>
@@ -157,11 +157,11 @@
 #include "url/url_constants.h"
 #include "url/url_util.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -668,7 +668,7 @@ class OCSPErrorTestDelegate : public TestDelegate {
   SSLInfo ssl_info_;
 };
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 // Compute the root cert's SPKI hash on the fly, to avoid hardcoding it within
 // tests.
 bool GetTestRootCertSPKIHash(SHA256HashValue* root_hash) {
@@ -2263,7 +2263,7 @@ TEST_F(URLRequestTest, DoNotSendCookies_ViaPolicy) {
 }
 
 // TODO(crbug.com/564656) This test is flaky on iOS.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #define MAYBE_DoNotSaveCookies_ViaPolicy FLAKY_DoNotSaveCookies_ViaPolicy
 #else
 #define MAYBE_DoNotSaveCookies_ViaPolicy DoNotSaveCookies_ViaPolicy
@@ -6142,7 +6142,7 @@ TEST_F(URLRequestTestHTTP, ResponseHeadersTest) {
 
 // TODO(svaldez): iOS tests are flaky with EmbeddedTestServer and transport
 // security state. (see http://crbug.com/550977).
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 TEST_F(URLRequestTestHTTP, ProcessSTS) {
   EmbeddedTestServer https_test_server(net::EmbeddedTestServer::TYPE_HTTPS);
   https_test_server.SetSSLConfig(
@@ -6171,7 +6171,7 @@ TEST_F(URLRequestTestHTTP, ProcessSTS) {
             sts_state.upgrade_mode);
   EXPECT_TRUE(sts_state.include_subdomains);
   EXPECT_FALSE(pkp_state.include_subdomains);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Android's CertVerifyProc does not (yet) handle pins.
 #else
   EXPECT_FALSE(pkp_state.HasPublicKeyPins());
@@ -6654,7 +6654,7 @@ TEST_F(URLRequestTestHTTP, MultipleExpectCTHeaders) {
   EXPECT_EQ(GURL("https://example.test"), state.report_uri);
 }
 
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(ENABLE_REPORTING)
 
@@ -9042,7 +9042,7 @@ TEST_F(URLRequestTestHTTP, DefaultUserAgent) {
 // Check that if request overrides the User-Agent header,
 // the default is not appended.
 // TODO(crbug.com/564656) This test is flaky on iOS.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #define MAYBE_OverrideUserAgent FLAKY_OverrideUserAgent
 #else
 #define MAYBE_OverrideUserAgent OverrideUserAgent
@@ -9802,7 +9802,7 @@ TEST_F(HTTPSRequestTest, SSLNetErrorReportedToDelegate) {
 
 // TODO(svaldez): iOS tests are flaky with EmbeddedTestServer and transport
 // security state. (see http://crbug.com/550977).
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 // This tests that a load of a domain with preloaded HSTS and HPKP with a
 // certificate error sets the |certificate_errors_are_fatal| flag correctly.
 // This flag will cause the interstitial to be fatal.
@@ -10829,7 +10829,7 @@ class HTTPSOCSPTest : public HTTPSCertNetFetchingTest {
 };
 
 static bool UsingBuiltinCertVerifier() {
-#if defined(OS_FUCHSIA) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return true;
 #else
 #if BUILDFLAG(BUILTIN_CERT_VERIFIER_FEATURE_SUPPORTED)
@@ -10850,7 +10850,7 @@ static bool UsingBuiltinCertVerifier() {
 static bool SystemSupportsHardFailRevocationChecking() {
   if (UsingBuiltinCertVerifier())
     return true;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return true;
 #else
   return false;
@@ -10872,7 +10872,7 @@ static bool SystemUsesChromiumEVMetadata() {
 }
 
 static bool SystemSupportsOCSP() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // TODO(jnd): http://crbug.com/117478 - EV verification is not yet supported.
   return false;
 #else
@@ -10883,9 +10883,9 @@ static bool SystemSupportsOCSP() {
 static bool SystemSupportsOCSPStapling() {
   if (UsingBuiltinCertVerifier())
     return true;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return false;
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   // The SecTrustSetOCSPResponse function exists since macOS 10.9+, but does
   // not actually do anything until 10.12.
   if (base::mac::IsAtLeastOS10_12())
@@ -10899,7 +10899,7 @@ static bool SystemSupportsOCSPStapling() {
 static bool SystemSupportsCRLSets() {
   if (UsingBuiltinCertVerifier())
     return true;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return false;
 #else
   return true;
@@ -11078,7 +11078,7 @@ TEST_F(HTTPSOCSPTest, IntermediateRevoked) {
   CertStatus cert_status;
   DoConnection(cert_config, &cert_status);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(mattm): Seems to be flaky on Windows. Either returns
   // CERT_STATUS_UNABLE_TO_CHECK_REVOCATION (which gets masked off due to
   // soft-fail), or CERT_STATUS_REVOKED.
@@ -11559,7 +11559,7 @@ TEST_F(HTTPSEVCRLSetTest, MissingCRLSetAndRevokedOCSP) {
     // TODO(https://crbug.com/410574): Handle this in builtin verifier too?
     EXPECT_EQ(0u, cert_status & CERT_STATUS_ALL_ERRORS);
   } else {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     if (!base::mac::IsAtLeastOS10_12()) {
       // On older macOS versions, revocation failures might also end up with
       // CERT_STATUS_NO_REVOCATION_MECHANISM status added. (See comment for
@@ -11571,7 +11571,7 @@ TEST_F(HTTPSEVCRLSetTest, MissingCRLSetAndRevokedOCSP) {
     } else {
       EXPECT_EQ(CERT_STATUS_REVOKED, cert_status & CERT_STATUS_ALL_ERRORS);
     }
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     EXPECT_EQ(CERT_STATUS_REVOKED, cert_status & CERT_STATUS_ALL_ERRORS);
 #else
     EXPECT_EQ(0u, cert_status & CERT_STATUS_ALL_ERRORS);
@@ -12049,7 +12049,7 @@ TEST_F(HTTPSLocalCRLSetTest, InterceptionBlockedAllowOverrideOnHSTS) {
                 CERT_STATUS_KNOWN_INTERCEPTION_BLOCKED);
   }
 }
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
 TEST_F(URLRequestTest, NetworkAccessedSetOnHostResolutionFailure) {
   MockHostResolver host_resolver;
@@ -12096,7 +12096,7 @@ TEST_F(URLRequestTest, URLRequestRedirectJobCancelRequest) {
   EXPECT_EQ(0, d.received_redirect_count());
 }
 
-#if defined(OS_LINUX) || defined(OS_ANDROID) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_HeadersCallbacks DISABLED_HeadersCallbacks
 #else
 #define MAYBE_HeadersCallbacks HeadersCallbacks
@@ -12390,7 +12390,7 @@ TEST_F(URLRequestTest, UpgradeIfInsecureFlagNotSet) {
 }
 
 // Test that URLRequests get properly tagged.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(URLRequestTestHTTP, TestTagging) {
   if (!CanGetTaggedBytes()) {
     DVLOG(0) << "Skipping test - GetTaggedBytes unsupported.";

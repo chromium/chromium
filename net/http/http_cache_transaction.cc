@@ -6,7 +6,7 @@
 
 #include "build/build_config.h"  // For OS_POSIX
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <unistd.h>
 #endif
 

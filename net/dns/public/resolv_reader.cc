@@ -35,7 +35,7 @@ absl::optional<std::vector<IPEndPoint>> GetNameservers(
   if (!(res.options & RES_INIT))
     return absl::nullopt;
 
-#if defined(OS_APPLE) || defined(OS_FREEBSD)
+#if BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FREEBSD)
   union res_sockaddr_union addresses[MAXNS];
   int nscount = res_getservers(const_cast<res_state>(&res), addresses, MAXNS);
   DCHECK_GE(nscount, 0);
@@ -49,7 +49,7 @@ absl::optional<std::vector<IPEndPoint>> GetNameservers(
     }
     nameservers.push_back(ipe);
   }
-#elif defined(OS_CHROMEOS) || defined(OS_LINUX)
+#elif BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   static_assert(std::extent<decltype(res.nsaddr_list)>() >= MAXNS &&
                     std::extent<decltype(res._u._ext.nsaddrs)>() >= MAXNS,
                 "incompatible libresolv res_state");
@@ -74,8 +74,8 @@ absl::optional<std::vector<IPEndPoint>> GetNameservers(
       return absl::nullopt;
     nameservers.push_back(ipe);
   }
-#else  // !(defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_APPLE) ||
-       //   defined(OS_FREEBSD))
+#else  // !(BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_APPLE)
+       // || BUILDFLAG(IS_FREEBSD))
   DCHECK_LE(res.nscount, MAXNS);
   for (int i = 0; i < res.nscount; ++i) {
     IPEndPoint ipe;

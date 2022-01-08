@@ -85,7 +85,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
                               std::unique_ptr<disk_cache::Backend>* backend,
                               CompletionOnceCallback callback) = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     virtual void SetAppStatusListener(
         base::android::ApplicationStatusListener* app_status_listener) {}
 #endif
@@ -111,7 +111,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
                       std::unique_ptr<disk_cache::Backend>* backend,
                       CompletionOnceCallback callback) override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     void SetAppStatusListener(
         base::android::ApplicationStatusListener* app_status_listener) override;
 #endif
@@ -122,7 +122,7 @@ class NET_EXPORT HttpCache : public HttpTransactionFactory {
     const base::FilePath path_;
     int max_bytes_;
     bool hard_reset_;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     raw_ptr<base::android::ApplicationStatusListener> app_status_listener_ =
         nullptr;
 #endif

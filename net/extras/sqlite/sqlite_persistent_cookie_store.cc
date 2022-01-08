@@ -99,7 +99,7 @@ void RecordCookieCommitProblem(CookieCommitProblem event) {
 // The persistent cookie store is loaded into memory on eTLD at a time. This
 // variable controls the delay between loading eTLDs, so as to not overload the
 // CPU or I/O with these low priority requests immediately after start up.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // TODO(ellyjones): This should be 200ms, but currently CookieStoreIOS is
 // waiting for -FinishedLoadingCookies to be called after all eTLD cookies are
 // loaded before making any network requests.  Changing to 0ms for now.
@@ -1189,7 +1189,7 @@ SQLitePersistentCookieStore::Backend::DoMigrateDatabaseSchema() {
     if (!transaction.Begin())
       return absl::nullopt;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Migration is only needed on Windows. On other platforms, this is a no-op.
     if (crypto_ && crypto_->ShouldEncrypt()) {
       sql::Statement select_statement, update_statement;

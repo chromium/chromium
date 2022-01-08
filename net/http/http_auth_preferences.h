@@ -43,10 +43,10 @@ class NET_EXPORT HttpAuthPreferences {
 
   virtual bool NegotiateDisableCnameLookup() const;
   virtual bool NegotiateEnablePort() const;
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   virtual bool NtlmV2Enabled() const;
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   virtual std::string AuthAndroidNegotiateAccountType() const;
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -79,7 +79,7 @@ class NET_EXPORT HttpAuthPreferences {
     basic_over_http_enabled_ = allow_http;
   }
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   void set_ntlm_v2_enabled(bool ntlm_v2_enabled) {
     ntlm_v2_enabled_ = ntlm_v2_enabled;
   }
@@ -97,7 +97,7 @@ class NET_EXPORT HttpAuthPreferences {
 
   void SetAllowDefaultCredentials(DefaultCredentials creds);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void set_auth_android_negotiate_account_type(
       const std::string& account_type) {
     auth_android_negotiate_account_type_ = account_type;
@@ -112,11 +112,11 @@ class NET_EXPORT HttpAuthPreferences {
 
   DefaultCredentials allow_default_credentials_ = ALLOW_DEFAULT_CREDENTIALS;
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   bool ntlm_v2_enabled_ = true;
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::string auth_android_negotiate_account_type_;
 #endif
 

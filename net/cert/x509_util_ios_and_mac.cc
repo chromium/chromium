@@ -7,7 +7,7 @@
 #include "base/logging.h"
 #include "build/build_config.h"
 #include "net/cert/x509_certificate.h"
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "net/cert/x509_util_ios.h"
 #else
 #include "net/cert/x509_util_mac.h"

@@ -16,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "crypto/sha2.h"
 #include "net/base/features.h"
 #include "net/base/net_errors.h"
@@ -47,17 +48,17 @@
 #include "third_party/boringssl/src/include/openssl/pool.h"
 #include "url/url_canon.h"
 
-#if defined(OS_FUCHSIA) || defined(USE_NSS_CERTS) || defined(OS_MAC)
+#if BUILDFLAG(IS_FUCHSIA) || defined(USE_NSS_CERTS) || BUILDFLAG(IS_MAC)
 #include "net/cert/cert_verify_proc_builtin.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "net/cert/cert_verify_proc_android.h"
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
 #include "net/cert/cert_verify_proc_ios.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "net/cert/cert_verify_proc_mac.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #include "net/cert/cert_verify_proc_win.h"
 #endif
@@ -289,7 +290,7 @@ void RecordTrustAnchorHistogram(const HashValueVector& spki_hashes,
 }
 
 bool AreSHA1IntermediatesAllowed() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(rsleevi): Remove this once https://crbug.com/588789 is resolved
   // for Windows 7/2008 users.
   // Note: This must be kept in sync with cert_verify_proc_unittest.cc
@@ -468,17 +469,17 @@ base::Value CertVerifyParams(X509Certificate* cert,
 
 }  // namespace
 
-#if !(defined(OS_FUCHSIA) || defined(OS_LINUX) || defined(OS_CHROMEOS))
+#if !(BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 // static
 scoped_refptr<CertVerifyProc> CertVerifyProc::CreateSystemVerifyProc(
     scoped_refptr<CertNetFetcher> cert_net_fetcher) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return new CertVerifyProcAndroid(std::move(cert_net_fetcher));
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
   return new CertVerifyProcIOS();
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return new CertVerifyProcMac();
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return new CertVerifyProcWin();
 #else
 #error Unsupported platform
@@ -486,7 +487,7 @@ scoped_refptr<CertVerifyProc> CertVerifyProc::CreateSystemVerifyProc(
 }
 #endif
 
-#if defined(OS_FUCHSIA) || defined(USE_NSS_CERTS) || defined(OS_MAC)
+#if BUILDFLAG(IS_FUCHSIA) || defined(USE_NSS_CERTS) || BUILDFLAG(IS_MAC)
 // static
 scoped_refptr<CertVerifyProc> CertVerifyProc::CreateBuiltinVerifyProc(
     scoped_refptr<CertNetFetcher> cert_net_fetcher) {

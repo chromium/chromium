@@ -60,7 +60,7 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "net/net_test_jni_headers/AndroidNetworkLibraryTestUtil_jni.h"
 #endif
@@ -1391,7 +1391,7 @@ TEST_F(URLRequestHttpJobWithBrotliSupportTest, DefaultAcceptEncodingOverriden) {
   }
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(URLRequestHttpJobTest, AndroidCleartextPermittedTest) {
   context_.set_check_cleartext_permitted(true);
 

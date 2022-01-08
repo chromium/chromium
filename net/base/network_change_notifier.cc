@@ -30,17 +30,17 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "net/base/network_change_notifier_win.h"
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "net/base/network_change_notifier_linux.h"
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 #include "net/base/network_change_notifier_mac.h"
-#elif BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
+#elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
 #include "net/base/network_change_notifier_posix.h"
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 #include "net/base/network_change_notifier_fuchsia.h"
 #endif
 
@@ -292,12 +292,12 @@ std::unique_ptr<NetworkChangeNotifier> NetworkChangeNotifier::CreateIfNeeded(
   if (g_network_change_notifier_factory)
     return g_network_change_notifier_factory->CreateInstance();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::unique_ptr<NetworkChangeNotifierWin> network_change_notifier =
       std::make_unique<NetworkChangeNotifierWin>();
   network_change_notifier->WatchForAddressChange();
   return network_change_notifier;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   // Fallback to use NetworkChangeNotifierPosix if NetworkChangeNotifierFactory
   // is not set. Currently used for tests and when running network
   // service in a separate process.
@@ -306,12 +306,12 @@ std::unique_ptr<NetworkChangeNotifier> NetworkChangeNotifier::CreateIfNeeded(
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   return std::make_unique<NetworkChangeNotifierPosix>(initial_type,
                                                       initial_subtype);
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return std::make_unique<NetworkChangeNotifierLinux>(
       std::unordered_set<std::string>());
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   return std::make_unique<NetworkChangeNotifierMac>();
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   return std::make_unique<NetworkChangeNotifierFuchsia>(
       /*require_wlan=*/false);
 #else
@@ -497,7 +497,7 @@ const char* NetworkChangeNotifier::ConnectionTypeToString(
   return kConnectionTypeNames[type];
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // static
 const internal::AddressTrackerLinux*
 NetworkChangeNotifier::GetAddressTracker() {
@@ -548,11 +548,11 @@ NetworkChangeNotifier::ConnectionTypeFromInterfaceList(
   bool first = true;
   ConnectionType result = CONNECTION_NONE;
   for (size_t i = 0; i < interfaces.size(); ++i) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     if (interfaces[i].friendly_name == "Teredo Tunneling Pseudo-Interface")
       continue;
 #endif
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     // Ignore link-local addresses as they aren't globally routable.
     // Mac assigns these to disconnected interfaces like tunnel interfaces
     // ("utun"), airdrop interfaces ("awdl"), and ethernet ports ("en").
@@ -805,7 +805,7 @@ NetworkChangeNotifier::NetworkChangeNotifier(
   }
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 const internal::AddressTrackerLinux*
 NetworkChangeNotifier::GetAddressTrackerInternal() const {
   return NULL;

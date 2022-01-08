@@ -9,14 +9,14 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 /* Structure for scatter/gather I/O.  */
 struct iovec {
   void* iov_base; /* Pointer to data.  */
   size_t iov_len; /* Length of data.  */
 };
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <sys/uio.h>
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #endif  // NET_QUIC_PLATFORM_IMPL_QUIC_IOVEC_IMPL_H_

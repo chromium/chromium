@@ -150,7 +150,7 @@ void ProcessEntryFile(net::CacheType cache_type,
   }
 
   base::Time last_used_time;
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   // For POSIX systems, a last access time is available. However, it's not
   // guaranteed to be more accurate than mtime. It is no worse though.
   last_used_time = last_accessed;

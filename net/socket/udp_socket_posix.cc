@@ -50,20 +50,20 @@
 #include "net/socket/udp_net_log_parameters.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <dlfcn.h>
 #include "base/android/build_info.h"
 #include "base/native_library.h"
 #include "base/strings/utf_string_conversions.h"
 #include "net/android/radio_activity_tracker.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // This was needed to debug crbug.com/640281.
 // TODO(zhongyi): Remove once the bug is resolved.
 #include <dlfcn.h>
 #include <pthread.h>
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace net {
 
@@ -76,7 +76,7 @@ const int kActivityMonitorBytesThreshold = 65535;
 const int kActivityMonitorMinimumSamplesForThroughputEstimate = 2;
 const base::TimeDelta kActivityMonitorMsThreshold = base::Milliseconds(100);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 // On OSX the file descriptor is guarded to detect the cause of
 // crbug.com/640281. guarded API is supported only on newer versions of OSX,
@@ -142,7 +142,7 @@ const unsigned int GUARD_DUP = 1u << 1;
 
 const guardid_t kSocketFdGuard = 0xD712BC0BC9A4EAD4;
 
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 int GetSocketFDHash(int fd) {
   return fd ^ 1595649551;
@@ -200,10 +200,10 @@ int UDPSocketPosix::Open(AddressFamily address_family) {
   socket_ = CreatePlatformSocket(addr_family_, SOCK_DGRAM, 0);
   if (socket_ == kInvalidSocket)
     return MapSystemError(errno);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   PCHECK(change_fdguard_np(socket_, nullptr, 0, &kSocketFdGuard,
                            GUARD_CLOSE | GUARD_DUP, nullptr) == 0);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   socket_hash_ = GetSocketFDHash(socket_);
   if (!base::SetNonBlocking(socket_)) {
     const int err = MapSystemError(errno);
@@ -288,7 +288,7 @@ void UDPSocketPosix::Close() {
   // Verify that |socket_| hasn't been corrupted. Needed to debug
   // crbug.com/906005.
   CHECK_EQ(socket_hash_, GetSocketFDHash(socket_));
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Attempt to clear errors on the socket so that they are not returned by
   // close(). See https://crbug.com/1151048.
   // TODO(ricea): Remove this if it doesn't work, or when the OS bug is fixed.
@@ -299,7 +299,7 @@ void UDPSocketPosix::Close() {
   PCHECK(IGNORE_EINTR(guarded_close_np(socket_, &kSocketFdGuard)) == 0);
 #else
   PCHECK(IGNORE_EINTR(close(socket_)) == 0);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   socket_ = kInvalidSocket;
   addr_family_ = 0;
@@ -395,9 +395,9 @@ int UDPSocketPosix::Write(
     int buf_len,
     CompletionOnceCallback callback,
     const NetworkTrafficAnnotationTag& traffic_annotation) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   android::MaybeRecordUDPWriteForWakeupTrigger(traffic_annotation);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   return SendToOrWrite(buf, buf_len, nullptr, std::move(callback));
 }
 
@@ -515,7 +515,7 @@ int UDPSocketPosix::BindToNetwork(
   DCHECK(!is_connected());
   if (network == NetworkChangeNotifier::kInvalidNetworkHandle)
     return ERR_INVALID_ARGUMENT;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Android prior to Lollipop didn't have support for binding sockets to
   // networks.
   if (base::android::BuildInfo::GetInstance()->sdk_int() <
@@ -629,13 +629,13 @@ int UDPSocketPosix::SetDoNotFragment() {
 }
 
 void UDPSocketPosix::SetMsgConfirm(bool confirm) {
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
   if (confirm) {
     sendto_flags_ |= MSG_CONFIRM;
   } else {
     sendto_flags_ &= ~MSG_CONFIRM;
   }
-#endif  // !defined(OS_APPLE)
+#endif  // !BUILDFLAG(IS_APPLE)
 }
 
 int UDPSocketPosix::AllowAddressReuse() {
@@ -650,7 +650,7 @@ int UDPSocketPosix::SetBroadcast(bool broadcast) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   int value = broadcast ? 1 : 0;
   int rv;
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // SO_REUSEPORT on OSX permits multiple processes to each receive
   // UDP multicast or broadcast datagrams destined for the bound
   // port.
@@ -660,7 +660,7 @@ int UDPSocketPosix::SetBroadcast(bool broadcast) {
   rv = setsockopt(socket_, SOL_SOCKET, SO_REUSEPORT, &value, sizeof(value));
   if (rv != 0)
     return MapSystemError(errno);
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
   rv = setsockopt(socket_, SOL_SOCKET, SO_BROADCAST, &value, sizeof(value));
 
   return rv == 0 ? OK : MapSystemError(errno);
@@ -963,7 +963,7 @@ int UDPSocketPosix::DoBind(const IPEndPoint& address) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (last_error == EINVAL)
     return ERR_ADDRESS_IN_USE;
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   if (last_error == EADDRNOTAVAIL)
     return ERR_ADDRESS_IN_USE;
 #endif
@@ -1046,11 +1046,11 @@ int UDPSocketPosix::LeaveGroup(const IPAddress& group_address) const {
       if (addr_family_ != AF_INET6)
         return ERR_ADDRESS_INVALID;
       ipv6_mreq mreq;
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
       mreq.ipv6mr_interface = multicast_interface_;
-#else   // defined(OS_FUCHSIA)
+#else   // BUILDFLAG(IS_FUCHSIA)
       mreq.ipv6mr_interface = 0;  // 0 indicates default multicast interface.
-#endif  // !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
       memcpy(&mreq.ipv6mr_multiaddr, group_address.bytes().data(),
              IPAddress::kIPv6AddressSize);
       int rv = setsockopt(socket_, IPPROTO_IPV6, IPV6_LEAVE_GROUP,
@@ -1467,12 +1467,12 @@ int UDPSocketPosix::SetIOSNetworkServiceType(int ios_network_service_type) {
   if (ios_network_service_type == 0) {
     return OK;
   }
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   if (setsockopt(socket_, SOL_SOCKET, SO_NET_SERVICE_TYPE,
                  &ios_network_service_type, sizeof(ios_network_service_type))) {
     return MapSystemError(errno);
   }
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
   return OK;
 }
 

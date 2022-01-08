@@ -18,7 +18,7 @@
 #include "net/base/ip_address.h"
 #include "net/base/sys_addrinfo.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <winsock2.h>
 #include <ws2bth.h>
 
@@ -37,7 +37,7 @@ IPEndPoint::IPEndPoint(const IPAddress& address, uint16_t port)
 IPEndPoint::IPEndPoint(const IPEndPoint& endpoint) = default;
 
 uint16_t IPEndPoint::port() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DCHECK_NE(address_.size(), kBluetoothAddressSize);
 #endif
   return port_;
@@ -53,7 +53,7 @@ int IPEndPoint::GetSockAddrFamily() const {
       return AF_INET;
     case IPAddress::kIPv6AddressSize:
       return AF_INET6;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     case kBluetoothAddressSize:
       return AF_BTH;
 #endif
@@ -73,7 +73,7 @@ bool IPEndPoint::ToSockAddr(struct sockaddr* address,
 
   DCHECK(address);
   DCHECK(address_length);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DCHECK_NE(address_.size(), kBluetoothAddressSize);
 #endif
   switch (address_.size()) {
@@ -134,7 +134,7 @@ bool IPEndPoint::FromSockAddr(const struct sockaddr* sock_addr,
           base::NetToHost16(addr->sin6_port));
       return true;
     }
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     case AF_BTH: {
       if (sock_addr_len < static_cast<socklen_t>(sizeof(SOCKADDR_BTH)))
         return false;
@@ -153,14 +153,14 @@ bool IPEndPoint::FromSockAddr(const struct sockaddr* sock_addr,
 }
 
 std::string IPEndPoint::ToString() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DCHECK_NE(address_.size(), kBluetoothAddressSize);
 #endif
   return IPAddressToStringWithPort(address_, port_);
 }
 
 std::string IPEndPoint::ToStringWithoutPort() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DCHECK_NE(address_.size(), kBluetoothAddressSize);
 #endif
   return address_.ToString();

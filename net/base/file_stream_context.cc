@@ -14,9 +14,10 @@
 #include "base/task/task_runner_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "net/base/net_errors.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/content_uri_utils.h"
 #endif
 
@@ -74,7 +75,7 @@ void FileStream::Context::Orphan() {
   if (!async_in_progress_) {
     CloseAndDelete();
   } else if (file_.IsValid()) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     CancelIo(file_.GetPlatformFile());
 #endif
   }
@@ -159,19 +160,19 @@ bool FileStream::Context::IsOpen() const {
 
 FileStream::Context::OpenResult FileStream::Context::OpenFileImpl(
     const base::FilePath& path, int open_flags) {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   // Always use blocking IO.
   open_flags &= ~base::File::FLAG_ASYNC;
 #endif
   base::File file;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (path.IsContentUri()) {
     // Check that only Read flags are set.
     DCHECK_EQ(open_flags & ~base::File::FLAG_ASYNC,
               base::File::FLAG_OPEN | base::File::FLAG_READ);
     file = base::OpenContentUriForRead(path);
   } else {
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
     // FileStream::Context actually closes the file asynchronously,
     // independently from FileStream's destructor. It can cause problems for
     // users wanting to delete the file right after FileStream deletion. Thus
@@ -180,9 +181,9 @@ FileStream::Context::OpenResult FileStream::Context::OpenFileImpl(
     // presumably happen on the wrong thread. There should be an async delete.
     open_flags |= base::File::FLAG_WIN_SHARE_DELETE;
     file.Initialize(path, open_flags);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   if (!file.IsValid()) {
     return OpenResult(base::File(),
                       IOResult::FromOSError(logging::GetLastSystemErrorCode()));

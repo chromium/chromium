@@ -152,7 +152,7 @@ TrialComparisonResult IsSynchronouslyIgnorableDifference(
     return TrialComparisonResult::kIgnoredSHA1SignaturePresent;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // cert_verify_proc_win has some oddities around revocation checking
   // and EV certs; if the only difference is the primary windows verifier
   // had CERT_STATUS_REV_CHECKING_ENABLED in addition then we can ignore.

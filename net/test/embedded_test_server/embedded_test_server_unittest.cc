@@ -344,7 +344,7 @@ TEST_P(EmbeddedTestServerTest, ConnectionListenerRead) {
 }
 
 // TODO(http://crbug.com/1166868): Flaky on ChromeOS.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ConnectionListenerComplete DISABLED_ConnectionListenerComplete
 #else
 #define MAYBE_ConnectionListenerComplete ConnectionListenerComplete

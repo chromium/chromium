@@ -1605,7 +1605,7 @@ TEST_P(QuicChromiumClientSessionTest, CanPool) {
       "www.example.org",
       QuicSessionKey("foo", 1234, PRIVACY_MODE_DISABLED, SocketTag(),
                      NetworkIsolationKey(), SecureDnsPolicy::kDisable)));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SocketTag tag1(SocketTag::UNSET_UID, 0x12345678);
   SocketTag tag2(getuid(), 0x87654321);
   EXPECT_FALSE(session_->CanPool(
@@ -1777,7 +1777,7 @@ TEST_P(QuicChromiumClientSessionTest, CanPoolWithNetworkIsolationKey) {
       "www.example.org",
       QuicSessionKey("foo", 1234, PRIVACY_MODE_ENABLED, SocketTag(),
                      kNetworkIsolationKey1, SecureDnsPolicy::kAllow)));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SocketTag tag1(SocketTag::UNSET_UID, 0x12345678);
   SocketTag tag2(getuid(), 0x87654321);
   EXPECT_FALSE(session_->CanPool(

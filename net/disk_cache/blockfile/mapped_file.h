@@ -57,7 +57,7 @@ class NET_EXPORT_PRIVATE MappedFile : public File {
   ~MappedFile() override;
 
   bool init_;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   HANDLE section_;
 #endif
   void* buffer_;  // Address of the memory mapped buffer.

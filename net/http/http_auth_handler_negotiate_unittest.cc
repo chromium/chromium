@@ -38,9 +38,9 @@
 #error "use_kerberos should be true to use Negotiate authentication scheme."
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "net/android/dummy_spnego_authenticator.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include "net/http/mock_sspi_library_win.h"
 #elif BUILDFLAG(USE_EXTERNAL_GSSAPI)
 #include "net/http/mock_gssapi_library_posix.h"
@@ -62,7 +62,7 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
     scoped_feature_list_.InitAndEnableFeature(
         features::kSplitHostCacheByNetworkIsolationKey);
     network_isolation_key_ = NetworkIsolationKey::CreateTransient();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     auth_library_ = new MockAuthLibrary(const_cast<wchar_t*>(NEGOSSP_NAME));
 #else
     auth_library_ = new MockAuthLibrary();
@@ -78,7 +78,7 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
     factory_ = std::make_unique<HttpAuthHandlerNegotiate::Factory>(
         HttpAuthMechanismFactory());
     factory_->set_http_auth_preferences(http_auth_preferences_.get());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     http_auth_preferences_->set_auth_android_negotiate_account_type(
         "org.chromium.test.DummySpnegoAuthenticator");
     MockAuthLibrary::EnsureTestAccountExists();
@@ -87,12 +87,12 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
 #endif  // !OS_ANDROID
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void TearDown() override { MockAuthLibrary::RemoveTestAccounts(); }
 #endif
 
   void SetupMocks(MockAuthLibrary* mock_library) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     security_package_ = std::make_unique<SecPkgInfoW>();
     memset(security_package_.get(), 0x0, sizeof(SecPkgInfoW));
     security_package_->cbMaxToken = 1337;
@@ -190,7 +190,7 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
 #endif  // !OS_WIN
   }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   void SetupErrorMocks(MockAuthLibrary* mock_library,
                        int major_status,
                        int minor_status) {
@@ -218,7 +218,7 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
                                         query.expected_input_token,
                                         query.output_token);
   }
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
   int CreateHandler(bool disable_cname_lookup,
                     bool use_port,
@@ -265,7 +265,7 @@ class HttpAuthHandlerNegotiateTest : public PlatformTest,
 
   NetworkIsolationKey network_isolation_key_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::unique_ptr<SecPkgInfoW> security_package_;
 #endif
   // |auth_library_| is passed to |factory_|, which assumes ownership of it, but
@@ -289,7 +289,7 @@ TEST_F(HttpAuthHandlerNegotiateTest, DisableCname) {
   std::string token;
   EXPECT_EQ(OK, callback.GetResult(auth_handler->GenerateAuthToken(
                     nullptr, &request_info, callback.callback(), &token)));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ("HTTP/alias", auth_handler->spn_for_testing());
 #else
   EXPECT_EQ("HTTP@alias", auth_handler->spn_for_testing());
@@ -307,7 +307,7 @@ TEST_F(HttpAuthHandlerNegotiateTest, DisableCnameStandardPort) {
   std::string token;
   EXPECT_EQ(OK, callback.GetResult(auth_handler->GenerateAuthToken(
                     nullptr, &request_info, callback.callback(), &token)));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ("HTTP/alias", auth_handler->spn_for_testing());
 #else
   EXPECT_EQ("HTTP@alias", auth_handler->spn_for_testing());
@@ -325,7 +325,7 @@ TEST_F(HttpAuthHandlerNegotiateTest, DisableCnameNonstandardPort) {
   std::string token;
   EXPECT_EQ(OK, callback.GetResult(auth_handler->GenerateAuthToken(
                     nullptr, &request_info, callback.callback(), &token)));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ("HTTP/alias:500", auth_handler->spn_for_testing());
 #else
   EXPECT_EQ("HTTP@alias:500", auth_handler->spn_for_testing());
@@ -343,7 +343,7 @@ TEST_F(HttpAuthHandlerNegotiateTest, CnameSync) {
   std::string token;
   EXPECT_EQ(OK, callback.GetResult(auth_handler->GenerateAuthToken(
                     nullptr, &request_info, callback.callback(), &token)));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ("HTTP/canonical.example.com", auth_handler->spn_for_testing());
 #else
   EXPECT_EQ("HTTP@canonical.example.com", auth_handler->spn_for_testing());
@@ -385,7 +385,7 @@ TEST_F(HttpAuthHandlerNegotiateTest, CnameAsync) {
             auth_handler->GenerateAuthToken(nullptr, &request_info,
                                             callback.callback(), &token));
   EXPECT_THAT(callback.WaitForResult(), IsOk());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ("HTTP/canonical.example.com", auth_handler->spn_for_testing());
 #else
   EXPECT_EQ("HTTP@canonical.example.com", auth_handler->spn_for_testing());
@@ -414,7 +414,7 @@ TEST_F(HttpAuthHandlerNegotiateTest, CnameAsync) {
   EXPECT_EQ(OK, callback3.GetResult(result));
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 
 // This test is only for GSSAPI, as we can't use explicit credentials with
 // that library.
@@ -488,7 +488,7 @@ TEST_F(HttpAuthHandlerNegotiateTest, AllowGssapiLibraryLoad) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 class TestAuthSystem : public HttpAuthMechanism {
  public:
@@ -525,10 +525,10 @@ TEST_F(HttpAuthHandlerNegotiateTest, OverrideAuthSystem) {
             return std::make_unique<TestAuthSystem>();
           }));
   negotiate_factory->set_http_auth_preferences(http_auth_preferences());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   negotiate_factory->set_library(
       std::make_unique<MockAuthLibrary>(NEGOSSP_NAME));
-#elif !defined(OS_ANDROID)
+#elif !BUILDFLAG(IS_ANDROID)
   negotiate_factory->set_library(std::make_unique<MockAuthLibrary>());
 #endif
 

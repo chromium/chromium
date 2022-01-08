@@ -39,7 +39,7 @@ const char* const kNameserversIPv4[] = {
     "1.0.0.1",
 };
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 const char* const kNameserversIPv6[] = {
     nullptr,
     "2001:db8::42",
@@ -62,7 +62,7 @@ void InitializeResState(res_state res) {
     ++res->nscount;
   }
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   // Install IPv6 addresses, replacing the corresponding IPv4 addresses.
   unsigned nscount6 = 0;
   for (unsigned i = 0; i < base::size(kNameserversIPv6) && i < MAXNS; ++i) {
@@ -84,7 +84,7 @@ void InitializeResState(res_state res) {
 }
 
 void FreeResState(struct __res_state* res) {
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   for (int i = 0; i < res->nscount; ++i) {
     if (res->_u._ext.nsaddrs[i] != nullptr)
       free(res->_u._ext.nsaddrs[i]);
@@ -100,7 +100,7 @@ TEST(ResolvReaderTest, GetNameservers) {
       GetNameservers(*res.get());
   EXPECT_TRUE(nameservers.has_value());
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   EXPECT_EQ(kNameserversIPv4[0], nameservers->at(0).ToStringWithoutPort());
   EXPECT_EQ(kNameserversIPv6[1], nameservers->at(1).ToStringWithoutPort());
   EXPECT_EQ(kNameserversIPv4[2], nameservers->at(2).ToStringWithoutPort());

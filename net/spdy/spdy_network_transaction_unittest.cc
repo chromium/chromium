@@ -3974,7 +3974,7 @@ TEST_F(SpdyNetworkTransactionTest, ConnectionPoolingSessionClosedBeforeUse) {
   helper.VerifyDataConsumed();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 // Test this if two HttpNetworkTransactions try to repurpose the same
 // SpdySession with two different SocketTags, only one request gets the session,
@@ -4486,7 +4486,7 @@ TEST_F(SpdyNetworkTransactionTest,
   helper.VerifyDataConsumed();
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Regression test for https://crbug.com/727653.
 TEST_F(SpdyNetworkTransactionTest, RejectServerPushWithNoMethod) {

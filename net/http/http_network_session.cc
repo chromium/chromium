@@ -91,11 +91,11 @@ HttpNetworkSessionParams::HttpNetworkSessionParams()
 // attempt to preserve active streams by marking all sessions as going
 // away, rather than explicitly closing them. Streams may still fail due
 // to a generated TCP reset.
-#if defined(OS_ANDROID) || defined(OS_WIN) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
       spdy_go_away_on_ip_change(true),
 #else
       spdy_go_away_on_ip_change(false),
-#endif  // defined(OS_ANDROID) || defined(OS_WIN) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS)
       enable_http2_settings_grease(false),
       http2_end_stream_with_data_frame(false),
       time_func(&base::TimeTicks::Now),

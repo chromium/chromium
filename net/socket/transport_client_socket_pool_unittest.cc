@@ -2000,7 +2000,7 @@ TEST_F(TransportClientSocketPoolTest, NetworkIsolationKeySocks5Proxy) {
 
 // Test that SocketTag passed into TransportClientSocketPool is applied to
 // returned sockets.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(TransportClientSocketPoolTest, Tag) {
   if (!CanGetTaggedBytes()) {
     DVLOG(0) << "Skipping test - GetTaggedBytes unsupported.";
@@ -2570,7 +2570,7 @@ TEST_F(TransportClientSocketPoolTest, TagHttpProxyTunnel) {
   handle.Reset();
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Class that enables tests to set mock time.
 class TransportClientSocketPoolMockNowSourceTest

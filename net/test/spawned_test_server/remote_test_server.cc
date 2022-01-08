@@ -50,7 +50,7 @@ std::string GetServerTypeString(BaseTestServer::Type type) {
 // Returns platform-specific path to the config file for the test server.
 base::FilePath GetTestServerConfigFilePath() {
   base::FilePath dir;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::PathService::Get(base::DIR_ANDROID_EXTERNAL_STORAGE, &dir);
 #else
   base::PathService::Get(base::DIR_TEMP, &dir);

@@ -4,8 +4,10 @@
 
 #include "net/dns/dns_reloader.h"
 
-#if defined(OS_POSIX) && !defined(OS_APPLE) && !defined(OS_OPENBSD) && \
-    !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_OPENBSD) && \
+    !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 
 #include <resolv.h>
 
@@ -111,5 +113,5 @@ void DnsReloaderMaybeReload() {
 
 }  // namespace net
 
-#endif  // defined(OS_POSIX) && !defined(OS_APPLE) && !defined(OS_OPENBSD) &&
-        // !defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_OPENBSD)
+        // && !BUILDFLAG(IS_ANDROID)

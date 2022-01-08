@@ -33,7 +33,7 @@ TEST(HttpAuthPreferencesTest, NegotiateEnablePort) {
   EXPECT_TRUE(http_auth_preferences.NegotiateEnablePort());
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 TEST(HttpAuthPreferencesTest, DisableNtlmV2) {
   HttpAuthPreferences http_auth_preferences;
   EXPECT_TRUE(http_auth_preferences.NtlmV2Enabled());
@@ -42,7 +42,7 @@ TEST(HttpAuthPreferencesTest, DisableNtlmV2) {
 }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST(HttpAuthPreferencesTest, AuthAndroidhNegotiateAccountType) {
   HttpAuthPreferences http_auth_preferences;
   EXPECT_EQ(std::string(),

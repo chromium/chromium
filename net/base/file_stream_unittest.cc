@@ -36,7 +36,7 @@
 using net::test::IsError;
 using net::test::IsOk;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/test/test_file_util.h"
 #endif
 
@@ -820,7 +820,7 @@ TEST_F(FileStreamTest, ReadError) {
   base::RunLoop().RunUntilIdle();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Verifies that a FileStream will close itself if it receives a File whose
 // async flag doesn't match the async state of the underlying handle.
 TEST_F(FileStreamTest, AsyncFlagMismatch) {
@@ -841,7 +841,7 @@ TEST_F(FileStreamTest, AsyncFlagMismatch) {
 }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // TODO(https://crbug.com/894599): flaky on both android and cronet bots.
 TEST_F(FileStreamTest, DISABLED_ContentUriRead) {
   base::FilePath test_dir;

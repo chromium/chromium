@@ -55,7 +55,7 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "url/scheme_host_port.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "net/base/winsock_init.h"
 #endif
 
@@ -1300,7 +1300,7 @@ int RuleBasedHostResolverProc::Resolve(const std::string& host,
           return ERR_DNS_NAME_HTTPS_ONLY;
         }
         case Rule::kResolverTypeSystem:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
           EnsureWinsockInit();
 #endif
           return SystemHostResolverCall(effective_host, address_family,

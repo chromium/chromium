@@ -182,7 +182,7 @@ void ParseHostsWithCommaModeForTesting(const std::string& contents,
 
 void ParseHosts(const std::string& contents, DnsHosts* dns_hosts) {
   ParseHostsCommaMode comma_mode;
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // Mac OS X allows commas to separate hostnames.
   comma_mode = PARSE_HOSTS_COMMA_IS_WHITESPACE;
 #else

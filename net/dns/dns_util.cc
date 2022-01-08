@@ -29,15 +29,15 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/url_canon.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <netinet/in.h>
 #include <net/if.h>
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include <ifaddrs.h>
-#endif  // !defined(OS_ANDROID)
-#endif  // defined(OS_POSIX)
+#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_POSIX)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "net/android/network_library.h"
 #endif
 

@@ -32,7 +32,7 @@ class CacheCreator {
                int64_t max_bytes,
                net::CacheType type,
                net::BackendType backend_type,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
                base::android::ApplicationStatusListener* app_status_listener,
 #endif
                net::NetLog* net_log,
@@ -62,7 +62,7 @@ class CacheCreator {
   int64_t max_bytes_;
   net::CacheType type_;
   net::BackendType backend_type_;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   raw_ptr<base::android::ApplicationStatusListener> app_status_listener_;
 #endif
   raw_ptr<std::unique_ptr<disk_cache::Backend>> backend_;
@@ -79,7 +79,7 @@ CacheCreator::CacheCreator(
     int64_t max_bytes,
     net::CacheType type,
     net::BackendType backend_type,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     base::android::ApplicationStatusListener* app_status_listener,
 #endif
     net::NetLog* net_log,
@@ -92,7 +92,7 @@ CacheCreator::CacheCreator(
       max_bytes_(max_bytes),
       type_(type),
       backend_type_(backend_type),
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       app_status_listener_(app_status_listener),
 #endif
       backend_(backend),
@@ -104,7 +104,7 @@ CacheCreator::CacheCreator(
 CacheCreator::~CacheCreator() = default;
 
 net::Error CacheCreator::Run() {
-#if defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
   static const bool kSimpleBackendIsDefault = true;
 #else
   static const bool kSimpleBackendIsDefault = false;
@@ -123,7 +123,7 @@ net::Error CacheCreator::Run() {
                                           /* file_tracker = */ nullptr,
                                           max_bytes_, type_, net_log_);
     created_cache_.reset(simple_cache);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (app_status_listener_)
       simple_cache->set_app_status_listener(app_status_listener_);
 #endif
@@ -132,7 +132,7 @@ net::Error CacheCreator::Run() {
   }
 
 // Avoid references to blockfile functions on Android to reduce binary size.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return net::ERR_FAILED;
 #else
   disk_cache::BackendImpl* new_cache =
@@ -219,7 +219,7 @@ net::Error CreateCacheBackendImpl(
     const base::FilePath& path,
     int64_t max_bytes,
     ResetHandling reset_handling,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     base::android::ApplicationStatusListener* app_status_listener,
 #endif
     net::NetLog* net_log,
@@ -247,7 +247,7 @@ net::Error CreateCacheBackendImpl(
   bool had_post_cleanup_callback = !post_cleanup_callback.is_null();
   CacheCreator* creator = new CacheCreator(
       path, reset_handling, max_bytes, type, backend_type,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       std::move(app_status_listener),
 #endif
       net_log, backend, std::move(post_cleanup_callback), std::move(callback));
@@ -269,13 +269,13 @@ net::Error CreateCacheBackend(net::CacheType type,
                               net::CompletionOnceCallback callback) {
   return CreateCacheBackendImpl(
       type, backend_type, path, max_bytes, reset_handling,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       nullptr,
 #endif
       net_log, backend, base::OnceClosure(), std::move(callback));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 NET_EXPORT net::Error CreateCacheBackend(
     net::CacheType type,
     net::BackendType backend_type,
@@ -304,7 +304,7 @@ net::Error CreateCacheBackend(net::CacheType type,
                               net::CompletionOnceCallback callback) {
   return CreateCacheBackendImpl(
       type, backend_type, path, max_bytes, reset_handling,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       nullptr,
 #endif
       net_log, backend, std::move(post_cleanup_callback), std::move(callback));

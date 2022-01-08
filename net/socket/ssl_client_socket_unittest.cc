@@ -5121,7 +5121,7 @@ TEST_F(SSLClientSocketTest, Tag) {
                             host_port_pair(), SSLConfig()));
 
   EXPECT_EQ(tagging_sock->tag(), SocketTag());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SocketTag tag(0x12345678, 0x87654321);
   sock->ApplySocketTag(tag);
   EXPECT_EQ(tagging_sock->tag(), tag);

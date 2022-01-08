@@ -21,6 +21,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "crypto/nss_util_internal.h"
 #include "crypto/scoped_nss_types.h"
@@ -132,7 +133,7 @@ void NSSCertDatabase::ListCertsInfo(ListCertsInfoCallback callback) {
       std::move(callback));
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 crypto::ScopedPK11Slot NSSCertDatabase::GetSystemSlot() const {
   return crypto::ScopedPK11Slot();
 }
@@ -145,7 +146,7 @@ bool NSSCertDatabase::IsCertificateOnSlot(CERTCertificate* cert,
 
   return PK11_FindCertInSlot(slot, cert, nullptr) != CK_INVALID_HANDLE;
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 crypto::ScopedPK11Slot NSSCertDatabase::GetPublicSlot() const {
   return crypto::ScopedPK11Slot(PK11_ReferenceSlot(public_slot_.get()));

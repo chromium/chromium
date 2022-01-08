@@ -15,7 +15,7 @@
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <Security/Security.h>
 
 #include "base/strings/sys_string_conversions.h"
@@ -74,7 +74,7 @@ void ExtractCertificatesFromData(const std::string& data_string,
   certs->push_back(cert);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 std::string SecErrorStr(OSStatus err) {
   base::ScopedCFTypeRef<CFStringRef> cfstr(
       SecCopyErrorMessageString(err, nullptr));
@@ -160,7 +160,7 @@ void PrintCertError(const std::string& error, const CertInput& cert) {
 }
 
 void PrintDebugData(const base::SupportsUserData* debug_data) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   auto* mac_platform_debug_info =
       net::CertVerifyProcMac::ResultDebugData::Get(debug_data);
   if (mac_platform_debug_info) {

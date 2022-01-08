@@ -45,7 +45,7 @@ class FakeClientCertIdentity : public ClientCertIdentity {
   // ClientCertIdentity implementation:
   void AcquirePrivateKey(base::OnceCallback<void(scoped_refptr<SSLPrivateKey>)>
                              private_key_callback) override;
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   SecIdentityRef sec_identity_ref() const override;
 #endif
 
