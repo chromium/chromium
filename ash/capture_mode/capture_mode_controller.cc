@@ -1380,7 +1380,14 @@ void CaptureModeController::OnDlpRestrictionCheckedAtPerformingCapture(
   DCHECK(IsActive());
 
   pending_dlp_check_ = false;
-  capture_mode_session_->OnWaitingForDlpConfirmationEnded(proceed);
+
+  // We don't need to bring capture mode UIs back if `proceed` is false or if
+  // `type_` is `CaptureModeType::kImage`, since the session is about to
+  // shutdown anyways at these use cases, so it's better to avoid any wasted
+  // effort. In the case of video recording, we need to reshow the UIs so that
+  // we can start the 3-second count down animation.
+  capture_mode_session_->OnWaitingForDlpConfirmationEnded(
+      /*reshow_uis=*/proceed && type_ != CaptureModeType::kImage);
 
   if (!proceed) {
     Stop();
@@ -1415,7 +1422,11 @@ void CaptureModeController::OnDlpRestrictionCheckedAtCountDownFinished(
   DCHECK(IsActive());
 
   pending_dlp_check_ = false;
-  capture_mode_session_->OnWaitingForDlpConfirmationEnded(proceed);
+
+  // We don't need to bring back capture mode UIs on 3-second count down
+  // finished, since the session is about to shutdown anyways for starting the
+  // video recording.
+  capture_mode_session_->OnWaitingForDlpConfirmationEnded(/*reshow_uis=*/false);
 
   if (!proceed) {
     Stop();

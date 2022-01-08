@@ -660,21 +660,11 @@ void CaptureModeSession::OnWaitingForDlpConfirmationStarted() {
   HideAllUis();
 }
 
-void CaptureModeSession::OnWaitingForDlpConfirmationEnded(bool will_proceed) {
+void CaptureModeSession::OnWaitingForDlpConfirmationEnded(bool reshow_uis) {
   is_waiting_for_dlp_confirmation_ = false;
 
-  if (!will_proceed) {
-    // If the capture operation is aborting, we don't need to undo the work done
-    // in OnWaitingForDlpConfirmationStarted(). The session is about to shutdown
-    // anyways, so it's better to avoid any wasted effort.
-    return;
-  }
-
-  // If `will_proceed` is true, which means we'll soon end the session to
-  // continue the capture operation, it doesn't always mean the session is
-  // ending immediately, since we may proceed to the 3-second countdown, for
-  // which the capture mode UIs need to be returned back to normal.
-  ShowAllUis();
+  if (reshow_uis)
+    ShowAllUis();
 }
 
 void CaptureModeSession::SetSettingsMenuShown(bool shown) {

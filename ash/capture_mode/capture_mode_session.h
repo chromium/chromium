@@ -115,11 +115,10 @@ class ASH_EXPORT CaptureModeSession
   // events, so users can interact with the dialog.
   void OnWaitingForDlpConfirmationStarted();
 
-  // This function is called when the DLP manager replies back, so we can undo
-  // the operations done in the above function. `will_proceed` is true when when
-  // the capture operation will continue (i.e. there are no restricted content
-  // found, or the user has accepted the dialog).
-  void OnWaitingForDlpConfirmationEnded(bool will_proceed);
+  // This function is called when the DLP manager replies back. If `reshow_uis`
+  // is true, then we'll undo the hiding of all the capture mode UIs done in
+  // OnWaitingForDlpConfirmationStarted().
+  void OnWaitingForDlpConfirmationEnded(bool reshow_uis);
 
   // Called when the settings menu is toggled.
   void SetSettingsMenuShown(bool shown);
