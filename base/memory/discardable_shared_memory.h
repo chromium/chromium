@@ -26,7 +26,7 @@
 // and Android to indicate that this type of behavior can be expected on
 // those platforms. Note that madvise() will still be used on other POSIX
 // platforms but doesn't provide the zero-fill-on-demand pages guarantee.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #define DISCARDABLE_SHARED_MEMORY_ZERO_FILL_ON_DEMAND_PAGES_AFTER_PURGE
 #endif
 
@@ -159,7 +159,7 @@ class BASE_EXPORT DiscardableSharedMemory {
       trace_event::ProcessMemoryDump* pmd,
       bool is_owned) const;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns true if the Ashmem device is supported on this system.
   // Only use this for unit-testing.
   static bool IsAshmemDeviceSupportedForTesting();

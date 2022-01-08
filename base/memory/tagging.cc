@@ -26,7 +26,7 @@
 #define PR_MTE_TAG_MASK (0xffffUL << PR_MTE_TAG_SHIFT)
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/native_library.h"
 #define M_BIONIC_SET_HEAP_TAGGING_LEVEL (-204)
 
@@ -57,12 +57,12 @@ enum HeapTaggingLevel {
    */
   M_HEAP_TAGGING_LEVEL_SYNC = 3,
 };
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace base {
 namespace memory {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void ChangeMemoryTaggingModeForAllThreadsPerProcess(
     TagViolationReportingMode m) {
 #if defined(HAS_MEMORY_TAGGING)
@@ -106,7 +106,7 @@ void ChangeMemoryTaggingModeForAllThreadsPerProcess(
   }
 #endif  // defined(HAS_MEMORY_TAGGING)
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if defined(HAS_MEMORY_TAGGING)
 namespace {

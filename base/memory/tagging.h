@@ -15,7 +15,7 @@
 #include "build/build_config.h"
 
 #if defined(ARCH_CPU_ARM64) && defined(__clang__) && \
-    (defined(OS_LINUX) || defined(OS_ANDROID))
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID))
 #define HAS_MEMORY_TAGGING 1
 #endif
 
@@ -42,7 +42,7 @@ enum class TagViolationReportingMode {
   kAsynchronous,
 };
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Changes the memory tagging mode for all threads in the current process.
 BASE_EXPORT void ChangeMemoryTaggingModeForAllThreadsPerProcess(
     TagViolationReportingMode);

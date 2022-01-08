@@ -30,11 +30,11 @@ MappedReadOnlyRegion ReadOnlySharedMemoryRegion::Create(size_t size) {
 
   WritableSharedMemoryMapping mapping(memory_ptr, size, mapped_size,
                                       handle.GetGUID());
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   handle.ConvertToReadOnly(memory_ptr);
 #else
   handle.ConvertToReadOnly();
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   ReadOnlySharedMemoryRegion region(std::move(handle));
 
   if (!region.IsValid() || !mapping.IsValid())

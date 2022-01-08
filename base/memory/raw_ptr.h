@@ -29,7 +29,7 @@
 #include "base/base_export.h"
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
 #endif
 
@@ -332,7 +332,7 @@ struct IsSupportedType<T,
 };
 #endif  // __OBJC__
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // raw_ptr<HWND__> is unsafe at runtime - if the handle happens to also
 // represent a valid pointer into a PartitionAlloc-managed region then it can
 // lead to manipulating random memory when treating it as BackupRefPtr

@@ -15,16 +15,16 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <mach/mach_vm.h>
 #include <sys/mman.h>
-#elif defined(OS_POSIX) && !defined(OS_IOS)
+#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
 #include <sys/mman.h>
 #include "base/debug/proc_maps_linux.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "base/logging.h"
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/object.h>
 #include <lib/zx/process.h>
 #include "base/fuchsia/fuchsia_logging.h"
@@ -211,7 +211,7 @@ TEST_F(PlatformSharedMemoryRegionTest, MapAtWithOverflowTest) {
   EXPECT_FALSE(mapping.IsValid());
 }
 
-#if defined(OS_POSIX) && !defined(OS_ANDROID) && !defined(OS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
 // Tests that the second handle is closed after a conversion to read-only on
 // POSIX.
 TEST_F(PlatformSharedMemoryRegionTest,
@@ -237,7 +237,7 @@ TEST_F(PlatformSharedMemoryRegionTest, ConvertToUnsafeInvalidatesSecondHandle) {
 #endif
 
 void CheckReadOnlyMapProtection(void* addr) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   vm_region_basic_info_64 basic_info;
   mach_vm_size_t dummy_size = 0;
   void* temp_addr = addr;
@@ -247,7 +247,7 @@ void CheckReadOnlyMapProtection(void* addr) {
   ASSERT_EQ(result, MachVMRegionResult::Success);
   EXPECT_EQ(basic_info.protection & VM_PROT_ALL, VM_PROT_READ);
   EXPECT_EQ(basic_info.max_protection & VM_PROT_ALL, VM_PROT_READ);
-#elif defined(OS_POSIX) && !defined(OS_IOS)
+#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
   std::string proc_maps;
   ASSERT_TRUE(base::debug::ReadProcMaps(&proc_maps));
   std::vector<base::debug::MappedMemoryRegion> regions;
@@ -260,7 +260,7 @@ void CheckReadOnlyMapProtection(void* addr) {
   // PROT_READ may imply PROT_EXEC on some architectures, so just check that
   // permissions don't contain PROT_WRITE bit.
   EXPECT_FALSE(it->permissions & base::debug::MappedMemoryRegion::WRITE);
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   MEMORY_BASIC_INFORMATION memory_info;
   size_t result = VirtualQueryEx(GetCurrentProcess(), addr, &memory_info,
                                  sizeof(memory_info));
@@ -270,7 +270,7 @@ void CheckReadOnlyMapProtection(void* addr) {
                                  logging::GetLastSystemErrorCode());
   EXPECT_EQ(memory_info.AllocationProtect, static_cast<DWORD>(PAGE_READONLY));
   EXPECT_EQ(memory_info.Protect, static_cast<DWORD>(PAGE_READONLY));
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 // TODO(alexilin): We cannot call zx_object_get_info ZX_INFO_PROCESS_MAPS in
 // this process. Consider to create an auxiliary process that will read the
 // test process maps.
@@ -278,13 +278,13 @@ void CheckReadOnlyMapProtection(void* addr) {
 }
 
 bool TryToRestoreWritablePermissions(void* addr, size_t len) {
-#if defined(OS_POSIX) && !defined(OS_IOS)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_IOS)
   int result = mprotect(addr, len, PROT_READ | PROT_WRITE);
   return result != -1;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   DWORD old_protection;
   return VirtualProtect(addr, len, PAGE_READWRITE, &old_protection);
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   zx_status_t status =
       zx::vmar::root_self()->protect(ZX_VM_PERM_READ | ZX_VM_PERM_WRITE,
                                      reinterpret_cast<uintptr_t>(addr), len);
