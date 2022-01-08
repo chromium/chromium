@@ -35,7 +35,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <Windows.h>
 #include "rlz/win/lib/machine_deal.h"
 #endif
@@ -58,13 +58,13 @@
 #endif
 
 class MachineDealCodeHelper
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     : public rlz_lib::MachineDealCode
 #endif
-    {
+{
  public:
   static bool Clear() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     return rlz_lib::MachineDealCode::Clear();
 #else
     return true;
@@ -335,7 +335,7 @@ TEST_F(RlzLibTest, GetPingParams) {
                                      cgi, 2048));
   EXPECT_STREQ("rep=2&rlz=T4:TbRlzValue", cgi);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_TRUE(rlz_lib::MachineDealCode::Set("dcc_value"));
 #define DCC_PARAM "&dcc=dcc_value"
 #else
@@ -455,7 +455,7 @@ TEST_F(RlzLibTest, ParsePingResponse) {
     "dcc: dcc_value\r\n"
     "crc32: F9070F81";
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_TRUE(rlz_lib::MachineDealCode::Set("dcc_value2"));
 #endif
 
@@ -465,7 +465,7 @@ TEST_F(RlzLibTest, ParsePingResponse) {
   EXPECT_TRUE(rlz_lib::RecordProductEvent(rlz_lib::TOOLBAR_NOTIFIER,
       rlz_lib::IE_HOME_PAGE, rlz_lib::INSTALL));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_TRUE(rlz_lib::MachineDealCode::Set("dcc_value"));
 #endif
   EXPECT_TRUE(rlz_lib::ParsePingResponse(rlz_lib::TOOLBAR_NOTIFIER,
@@ -574,7 +574,7 @@ TEST_F(RlzLibTest, SendFinancialPing) {
     return;
 
 #if defined(RLZ_NETWORK_IMPLEMENTATION_CHROME_NET)
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   base::mac::ScopedNSAutoreleasePool pool;
 #endif
 
@@ -585,7 +585,7 @@ TEST_F(RlzLibTest, SendFinancialPing) {
 #endif
 
   MachineDealCodeHelper::Clear();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_TRUE(rlz_lib::MachineDealCode::Set("dcc_value"));
 #endif
 
@@ -625,7 +625,7 @@ TEST_F(RlzLibTest, SendFinancialPingDuringShutdown) {
   if (!rlz_lib::SupplementaryBranding::GetBrand().empty())
     return;
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   base::mac::ScopedNSAutoreleasePool pool;
 #endif
 
@@ -703,7 +703,7 @@ TEST_F(RlzLibTest, ClearProductState) {
   EXPECT_STREQ("", cgi);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 template<class T>
 class typed_buffer_ptr {
   std::unique_ptr<char[]> buffer_;
@@ -970,7 +970,7 @@ TEST_F(RlzLibTest, BrandingWithStatefulEvents) {
   EXPECT_STREQ("events=I7S", value);
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 class ReadonlyRlzDirectoryTest : public RlzLibTestNoMachineState {
  protected:
   void SetUp() override;
