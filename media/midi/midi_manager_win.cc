@@ -16,13 +16,13 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
@@ -538,7 +538,7 @@ class MidiManagerWin::OutPort final : public Port {
         midiOutUnprepareHeader(out_handle_, hdr.get(), sizeof(*hdr));
       } else {
         // MIDIHDR will be released on MOM_DONE.
-        ignore_result(hdr.release());
+        std::ignore = hdr.release();
       }
     }
   }

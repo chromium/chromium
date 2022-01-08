@@ -6,12 +6,13 @@
 
 #include <Audioclient.h>
 #include <mferror.h>
+
 #include <memory>
 #include <string>
+#include <tuple>
 
 #include "base/callback_helpers.h"
 #include "base/guid.h"
-#include "base/ignore_result.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -235,7 +236,7 @@ HRESULT MediaFoundationRenderer::CreateMediaEngine(
       &mf_source_, media_resource, media_log_.get(), task_runner_));
 
   if (force_dcomp_mode_for_testing_)
-    ignore_result(SetDCompModeInternal());
+    std::ignore = SetDCompModeInternal();
 
   if (!mf_source_->HasEncryptedStream()) {
     // Supports clear stream for testing.
@@ -779,7 +780,7 @@ void MediaFoundationRenderer::OnVideoNaturalSizeChange() {
     // This invokes IMFMediaEngineEx::UpdateVideoStream() for video frames to
     // be presented. Otherwise, the Media Foundation video renderer will not
     // request video samples from our source.
-    ignore_result(UpdateVideoStream(test_rect));
+    std::ignore = UpdateVideoStream(test_rect);
   }
 
   if (in_frame_server_mode_) {

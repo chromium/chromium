@@ -4,8 +4,9 @@
 
 #include "media/mojo/services/mojo_cdm_helper.h"
 
+#include <tuple>
+
 #include "base/containers/cxx20_erase.h"
-#include "base/ignore_result.h"
 #include "media/base/cdm_context.h"
 #include "media/cdm/cdm_helpers.h"
 #include "media/mojo/services/mojo_cdm_allocator.h"
@@ -45,7 +46,7 @@ url::Origin MojoCdmHelper::GetCdmOrigin() {
   // Since the CDM is created asynchronously, by the time this function is
   // called, the render frame host in the browser process may already be gone.
   // It's safe to ignore the error since the origin is used for crash reporting.
-  ignore_result(frame_interfaces_->GetCdmOrigin(&cdm_origin));
+  std::ignore = frame_interfaces_->GetCdmOrigin(&cdm_origin);
   return cdm_origin;
 }
 

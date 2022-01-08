@@ -6,9 +6,9 @@
 #include <stdint.h>
 
 #include <memory>
+#include <tuple>
 
 #include "base/check.h"
-#include "base/ignore_result.h"
 #include "media/base/media_util.h"
 #include "media/formats/mp4/box_reader.h"
 
@@ -19,7 +19,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   if (media::mp4::BoxReader::ReadTopLevelBox(data, size, &media_log, &reader) ==
       media::mp4::ParseResult::kOk) {
     CHECK(reader);
-    ignore_result(reader->ScanChildren());
+    std::ignore = reader->ScanChildren();
   }
   return 0;
 }

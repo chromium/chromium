@@ -5,11 +5,11 @@
 #include <stdint.h>
 
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/ignore_result.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -108,7 +108,7 @@ class MediaServiceTest : public testing::Test {
 
   void SetUp() override {
     mojo::PendingRemote<mojom::FrameInterfaceFactory> frame_interfaces;
-    ignore_result(frame_interfaces.InitWithNewPipeAndPassReceiver());
+    std::ignore = frame_interfaces.InitWithNewPipeAndPassReceiver();
 
     media_service_impl_ = CreateMediaServiceForTesting(
         media_service_.BindNewPipeAndPassReceiver());

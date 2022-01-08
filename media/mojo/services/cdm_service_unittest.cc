@@ -5,10 +5,10 @@
 #include "media/mojo/services/cdm_service.h"
 
 #include <memory>
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
-#include "base/ignore_result.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -115,7 +115,7 @@ class CdmServiceTest : public testing::Test {
                                                base::Unretained(this)));
 
     mojo::PendingRemote<mojom::FrameInterfaceFactory> interfaces;
-    ignore_result(interfaces.InitWithNewPipeAndPassReceiver());
+    std::ignore = interfaces.InitWithNewPipeAndPassReceiver();
 
     ASSERT_FALSE(cdm_factory_remote_);
     cdm_service_remote_->CreateCdmFactory(

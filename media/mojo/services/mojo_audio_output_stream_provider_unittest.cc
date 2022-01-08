@@ -4,11 +4,11 @@
 
 #include "media/mojo/services/mojo_audio_output_stream_provider.h"
 
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/ignore_result.h"
 #include "base/run_loop.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
@@ -92,12 +92,12 @@ TEST(MojoAudioOutputStreamProviderTest, AcquireTwice_BadMessage) {
       std::make_unique<FakeObserver>());
 
   mojo::PendingRemote<mojom::AudioOutputStreamProviderClient> client_1;
-  ignore_result(client_1.InitWithNewPipeAndPassReceiver());
+  std::ignore = client_1.InitWithNewPipeAndPassReceiver();
   provider_remote->Acquire(media::AudioParameters::UnavailableDeviceParams(),
                            std::move(client_1));
 
   mojo::PendingRemote<mojom::AudioOutputStreamProviderClient> client_2;
-  ignore_result(client_2.InitWithNewPipeAndPassReceiver());
+  std::ignore = client_2.InitWithNewPipeAndPassReceiver();
   provider_remote->Acquire(media::AudioParameters::UnavailableDeviceParams(),
                            std::move(client_2));
 
@@ -130,7 +130,7 @@ TEST(MojoAudioOutputStreamProviderTest,
       std::make_unique<FakeObserver>());
 
   mojo::PendingRemote<mojom::AudioOutputStreamProviderClient> client;
-  ignore_result(client.InitWithNewPipeAndPassReceiver());
+  std::ignore = client.InitWithNewPipeAndPassReceiver();
   provider_remote->Acquire(params, std::move(client));
 
 #if defined(OS_ANDROID)

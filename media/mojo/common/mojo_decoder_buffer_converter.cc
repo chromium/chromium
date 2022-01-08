@@ -5,9 +5,9 @@
 #include "media/mojo/common/mojo_decoder_buffer_converter.h"
 
 #include <memory>
+#include <tuple>
 
 #include "base/bind.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/task/single_thread_task_runner.h"
@@ -79,7 +79,7 @@ std::unique_ptr<MojoDecoderBufferReader> MojoDecoderBufferReader::Create(
   // `ReadDecoderBuffer()` below will fail.
   // TODO(xhwang): Update callers to handle failure so we can return null.
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
-  ignore_result(CreateDataPipe(capacity, producer_handle, &consumer_handle));
+  std::ignore = CreateDataPipe(capacity, producer_handle, &consumer_handle);
   return std::make_unique<MojoDecoderBufferReader>(std::move(consumer_handle));
 }
 
@@ -311,7 +311,7 @@ std::unique_ptr<MojoDecoderBufferWriter> MojoDecoderBufferWriter::Create(
   // `WriteDecoderBuffer()` below will fail.
   // TODO(xhwang): Update callers to handle failure so we can return null.
   mojo::ScopedDataPipeProducerHandle producer_handle;
-  ignore_result(CreateDataPipe(capacity, &producer_handle, consumer_handle));
+  std::ignore = CreateDataPipe(capacity, &producer_handle, consumer_handle);
   return std::make_unique<MojoDecoderBufferWriter>(std::move(producer_handle));
 }
 
