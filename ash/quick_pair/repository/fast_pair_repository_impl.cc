@@ -36,12 +36,7 @@ FastPairRepositoryImpl::FastPairRepositoryImpl()
       device_id_map_(std::make_unique<DeviceIdMap>()),
       device_image_store_(std::make_unique<DeviceImageStore>()),
       saved_device_registry_(std::make_unique<SavedDeviceRegistry>()),
-      footprints_last_updated_(base::Time::UnixEpoch()) {
-  // TODO(crbug/1270534): Determine the best place to make this call.
-  // footprints_fetcher_->GetUserDevices(
-  //     base::BindOnce(&FastPairRepositoryImpl::UpdateUserDevicesCache,
-  //                    weak_ptr_factory_.GetWeakPtr()));
-}
+      footprints_last_updated_(base::Time::UnixEpoch()) {}
 
 FastPairRepositoryImpl::~FastPairRepositoryImpl() = default;
 
