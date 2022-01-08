@@ -193,9 +193,8 @@ ScopedFPDFDocument CreateNupPdfDocument(ScopedFPDFDocument doc,
   int page_size_width = page_size.width();
   int page_size_height = page_size.height();
 
-  printing::NupParameters nup_params;
-  bool is_landscape = PDFiumPrint::IsSourcePdfLandscape(doc.get());
-  nup_params.SetParameters(pages_per_sheet, is_landscape);
+  printing::NupParameters nup_params(
+      pages_per_sheet, PDFiumPrint::IsSourcePdfLandscape(doc.get()));
   bool paper_is_landscape = page_size_width > page_size_height;
   if (nup_params.landscape() != paper_is_landscape)
     std::swap(page_size_width, page_size_height);
