@@ -14,7 +14,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/gfx/geometry/rect.h"
 #endif
 
@@ -104,7 +104,7 @@ TEST(PrintingUtilsTest, SizesEqualWithinEpsilon) {
       SizesEqualWithinEpsilon(kIsoA4Microns, gfx::Size(210500, 296500), 500));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST(PrintingUtilsTest, GetCenteredPageContentRect) {
   gfx::Rect page_content;
 
@@ -145,6 +145,6 @@ TEST(PrintingUtilsTest, GetCenteredPageContentRect) {
   EXPECT_EQ(400, page_content.width());
   EXPECT_EQ(1100, page_content.height());
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace printing

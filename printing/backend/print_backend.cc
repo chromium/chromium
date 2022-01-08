@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/memory/scoped_refptr.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
 namespace {
@@ -45,7 +46,7 @@ bool PrinterBasicInfo::operator==(const PrinterBasicInfo& other) const {
          is_default == other.is_default && options == other.options;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 
 AdvancedCapabilityValue::AdvancedCapabilityValue() = default;
 
@@ -93,7 +94,7 @@ bool AdvancedCapability::operator==(const AdvancedCapability& other) const {
          values == other.values;
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 bool PrinterSemanticCapsAndDefaults::Paper::operator==(
     const PrinterSemanticCapsAndDefaults::Paper& other) const {

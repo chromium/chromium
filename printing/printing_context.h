@@ -24,7 +24,7 @@ namespace printing {
 class MetafilePlayer;
 class PrintingContextFactoryForTest;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class PageSetup;
 class PrintedPage;
 #endif
@@ -49,7 +49,7 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
   };
 
   struct PrinterSettings {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // True if the to-be-printed PDF is going to be opened in external
     // preview. Used by macOS only to open Preview.app.
     bool external_preview;
@@ -58,7 +58,7 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
     // Whether to show the system dialog.
     bool show_system_dialog;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // If showing the system dialog, the number of pages in the to-be-printed
     // PDF. Only used on Windows.
     int page_count;
@@ -103,7 +103,7 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
   // settings information.
   mojom::ResultCode UpdatePrintSettings(base::Value job_settings);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Updates Print Settings.
   mojom::ResultCode UpdatePrintSettingsFromPOD(
       std::unique_ptr<PrintSettings> job_settings);
@@ -122,7 +122,7 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
   virtual mojom::ResultCode NewDocument(
       const std::u16string& document_name) = 0;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Renders a page.
   virtual mojom::ResultCode RenderPage(const PrintedPage& page,
                                        const PageSetup& page_setup) = 0;
@@ -147,7 +147,7 @@ class COMPONENT_EXPORT(PRINTING) PrintingContext {
   // Returns the native context used to print.
   virtual printing::NativeDrawingContext context() const = 0;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Initializes with predefined settings.
   virtual mojom::ResultCode InitWithSettingsForTest(
       std::unique_ptr<PrintSettings> settings) = 0;

@@ -58,7 +58,7 @@ class TestPrintingContext : public PrintingContext {
   mojom::ResultCode UpdatePrinterSettings(
       const PrinterSettings& printer_settings) override;
   mojom::ResultCode NewDocument(const std::u16string& document_name) override;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   mojom::ResultCode RenderPage(const PrintedPage& page,
                                const PageSetup& page_setup) override;
 #endif
@@ -69,7 +69,7 @@ class TestPrintingContext : public PrintingContext {
   void Cancel() override;
   void ReleaseContext() override;
   NativeDrawingContext context() const override;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   mojom::ResultCode InitWithSettingsForTest(
       std::unique_ptr<PrintSettings> settings) override;
 #endif

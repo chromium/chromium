@@ -18,6 +18,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
+#include "build/build_config.h"
 #include "cc/paint/paint_record.h"
 #include "cc/paint/paint_recorder.h"
 #include "cc/paint/skia_paint_canvas.h"
@@ -32,17 +33,17 @@
 #include "third_party/skia/src/utils/SkMultiPictureDocument.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "printing/pdf_metafile_cg_mac.h"
 #endif
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/file_descriptor_posix.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/files/file_util.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -93,7 +94,7 @@ struct MetafileSkiaData {
   SkSize size;
   mojom::SkiaDocumentType type;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   PdfMetafileCg pdf_cg;
 #endif
 };
@@ -297,7 +298,7 @@ printing::NativeDrawingContext MetafileSkia::context() const {
   return nullptr;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool MetafileSkia::Playback(printing::NativeDrawingContext hdc,
                             const RECT* rect) const {
   NOTREACHED();
@@ -309,7 +310,7 @@ bool MetafileSkia::SafePlayback(printing::NativeDrawingContext hdc) const {
   return false;
 }
 
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 /* TODO(caryclark): The set up of PluginInstance::PrintPDFOutput may result in
    rasterized output.  Even if that flow uses PdfMetafileCg::RenderPage,
    the drawing of the PDF into the canvas may result in a rasterized output.
@@ -336,7 +337,7 @@ bool MetafileSkia::RenderPage(unsigned int page_number,
 }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool MetafileSkia::SaveToFileDescriptor(int fd) const {
   if (GetDataSize() == 0u)
     return false;
@@ -380,7 +381,7 @@ bool MetafileSkia::SaveTo(base::File* file) const {
 
   return true;
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 std::unique_ptr<MetafileSkia> MetafileSkia::GetMetafileForCurrentPage(
     mojom::SkiaDocumentType type) {

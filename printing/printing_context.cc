@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "printing/mojom/print.mojom.h"
@@ -166,19 +167,19 @@ mojom::ResultCode PrintingContext::UpdatePrintSettings(
   }
 
   PrinterSettings printer_settings {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     .external_preview = open_in_external_preview,
 #endif
     .show_system_dialog =
         job_settings.FindBoolKey(kSettingShowSystemDialog).value_or(false),
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     .page_count = job_settings.FindIntKey(kSettingPreviewPageCount).value_or(0)
 #endif
   };
   return UpdatePrinterSettings(printer_settings);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 mojom::ResultCode PrintingContext::UpdatePrintSettingsFromPOD(
     std::unique_ptr<PrintSettings> job_settings) {
   ResetSettings();

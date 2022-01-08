@@ -43,7 +43,7 @@ class COMPONENT_EXPORT(PRINTING) PrintedDocument
   PrintedDocument(const PrintedDocument&) = delete;
   PrintedDocument& operator=(const PrintedDocument&) = delete;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Indicates that the PDF has been generated and the document is waiting for
   // conversion for printing. This is needed on Windows so that the print job
   // is not cancelled if the web contents dies before PDF conversion finishes.
@@ -65,7 +65,7 @@ class COMPONENT_EXPORT(PRINTING) PrintedDocument
   // Removes reference to a particular `page` based on its page number.
   // Note: locks for a short amount of time.
   void RemovePage(const PrintedPage* page);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Sets the document data. Note: locks for a short amount of time.
   void SetDocument(std::unique_ptr<MetafilePlayer> metafile);
@@ -76,7 +76,7 @@ class COMPONENT_EXPORT(PRINTING) PrintedDocument
 
 // Draws the page in the context.
 // Note: locks for a short amount of time in debug only.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // This is applicable when using the Windows GDI print API.
   mojom::ResultCode RenderPrintedPage(const PrintedPage& page,
                                       PrintingContext* context) const;
@@ -153,7 +153,7 @@ class COMPONENT_EXPORT(PRINTING) PrintedDocument
 
     std::unique_ptr<MetafilePlayer> metafile_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Contains the pages' representation. This is a collection of PrintedPage.
     // Warning: Lock must be held when accessing this member.
     // This is applicable when using the Windows GDI print API which has the

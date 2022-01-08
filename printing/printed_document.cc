@@ -26,6 +26,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "printing/metafile.h"
 #include "printing/page_number.h"
 #include "printing/print_settings_conversion.h"
@@ -34,7 +35,7 @@
 #include "ui/gfx/font.h"
 #include "ui/gfx/text_elider.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "printing/printed_page_win.h"
 #endif
 
@@ -45,7 +46,7 @@ namespace {
 base::LazyInstance<base::FilePath>::Leaky g_debug_dump_info =
     LAZY_INSTANCE_INITIALIZER;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void DebugDumpPageTask(const std::u16string& doc_name,
                        const PrintedPage* page) {
   DCHECK(PrintedDocument::HasDebugDumpPath());
@@ -60,7 +61,7 @@ void DebugDumpPageTask(const std::u16string& doc_name,
                   base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
   page->metafile()->SaveTo(&file);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 void DebugDumpTask(const std::u16string& doc_name,
                    const MetafilePlayer* metafile) {
@@ -73,11 +74,11 @@ void DebugDumpTask(const std::u16string& doc_name,
   base::FilePath path = PrintedDocument::CreateDebugDumpPath(name, kExtension);
   base::File file(path,
                   base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   metafile->SaveToFileDescriptor(file.GetPlatformFile());
 #else
   metafile->SaveTo(&file);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void DebugDumpDataTask(const std::u16string& doc_name,
@@ -120,7 +121,7 @@ PrintedDocument::PrintedDocument(std::unique_ptr<PrintSettings> settings,
 
 PrintedDocument::~PrintedDocument() = default;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void PrintedDocument::SetConvertingPdf() {
   base::AutoLock lock(lock_);
   mutable_.converting_pdf_ = true;
@@ -166,7 +167,7 @@ void PrintedDocument::RemovePage(const PrintedPage* page) {
   DCHECK_EQ(page, it->second.get());
   mutable_.pages_.erase(it);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 void PrintedDocument::SetDocument(std::unique_ptr<MetafilePlayer> metafile) {
   {
@@ -205,7 +206,7 @@ bool PrintedDocument::IsComplete() const {
   base::AutoLock lock(lock_);
   if (!mutable_.page_count_)
     return false;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (mutable_.converting_pdf_)
     return true;
 
@@ -273,7 +274,7 @@ base::FilePath PrintedDocument::CreateDebugDumpPath(
   filename += u"_";
   filename += document_name;
   base::FilePath::StringType system_filename;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   system_filename = base::UTF16ToWide(filename);
 #else   // OS_WIN
   system_filename = base::UTF16ToUTF8(filename);

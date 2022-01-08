@@ -7,17 +7,17 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 typedef struct CGContext* CGContextRef;
 #endif
 
 namespace printing {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 typedef HDC NativeDrawingContext;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 typedef CGContextRef NativeDrawingContext;
 #else
 typedef void* NativeDrawingContext;

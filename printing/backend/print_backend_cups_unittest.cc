@@ -52,7 +52,7 @@ TEST(PrintBackendCupsTest, PrinterBasicInfoFromCUPS) {
 
   int num_options = 0;
   cups_option_t* options = nullptr;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   constexpr char kInfo[] = "info";
   num_options =
       cupsAddOption(kCUPSOptPrinterInfo, kInfo, num_options, &options);
@@ -75,7 +75,7 @@ TEST(PrintBackendCupsTest, PrinterBasicInfoFromCUPS) {
   cupsFreeDests(/*num_dests=*/1, printer);
 
   EXPECT_EQ(kName, printer_info.printer_name);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   EXPECT_EQ(kInfo, printer_info.display_name);
 #else
   EXPECT_EQ(kName, printer_info.display_name);
@@ -85,7 +85,7 @@ TEST(PrintBackendCupsTest, PrinterBasicInfoFromCUPS) {
   // The option value of `kCUPSOptPrinterMakeAndModel` is used to set the value
   // for `kDriverInfoTagName`.
   auto driver = printer_info.options.find(kDriverInfoTagName);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ASSERT_NE(driver, printer_info.options.end());
   EXPECT_EQ(kDescription, driver->second);
 #else

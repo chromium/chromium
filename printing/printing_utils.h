@@ -13,7 +13,7 @@
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/gfx/geometry/rect.h"
 #endif
 
@@ -53,7 +53,7 @@ bool SizesEqualWithinEpsilon(const gfx::Size& lhs,
                              const gfx::Size& rhs,
                              int epsilon);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Get page content rect adjusted based on
 // http://dev.w3.org/csswg/css3-page/#positioning-page-box
 COMPONENT_EXPORT(PRINTING_BASE)

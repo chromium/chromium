@@ -18,7 +18,7 @@
 #include "printing/printing_context.h"
 #include "ui/gfx/geometry/size.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "printing/printed_page_win.h"
 #endif
 
@@ -73,7 +73,7 @@ gfx::Size TestPrintingContext::GetPdfPaperSizeDeviceUnits() {
 mojom::ResultCode TestPrintingContext::UpdatePrinterSettings(
     const PrinterSettings& printer_settings) {
   DCHECK(!in_print_job_);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   DCHECK(!printer_settings.external_preview) << "Not implemented";
 #endif
   DCHECK(!printer_settings.show_system_dialog) << "Not implemented";
@@ -94,7 +94,7 @@ mojom::ResultCode TestPrintingContext::UpdatePrinterSettings(
   std::unique_ptr<PrintSettings> existing_settings = std::move(settings_);
   settings_ = std::make_unique<PrintSettings>(*found->second);
   settings_->set_dpi(existing_settings->dpi());
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   for (const auto& item : existing_settings->advanced_settings())
     settings_->advanced_settings().emplace(item.first, item.second.Clone());
 #endif
@@ -116,7 +116,7 @@ mojom::ResultCode TestPrintingContext::NewDocument(
   return mojom::ResultCode::kSuccess;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 mojom::ResultCode TestPrintingContext::RenderPage(const PrintedPage& page,
                                                   const PageSetup& page_setup) {
   if (abort_printing_)
@@ -127,7 +127,7 @@ mojom::ResultCode TestPrintingContext::RenderPage(const PrintedPage& page,
   // No-op.
   return mojom::ResultCode::kSuccess;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 mojom::ResultCode TestPrintingContext::PrintDocument(
     const MetafilePlayer& metafile,
@@ -162,12 +162,12 @@ printing::NativeDrawingContext TestPrintingContext::context() const {
   return nullptr;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 mojom::ResultCode TestPrintingContext::InitWithSettingsForTest(
     std::unique_ptr<PrintSettings> settings) {
   NOTIMPLEMENTED();
   return mojom::ResultCode::kFailed;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace printing

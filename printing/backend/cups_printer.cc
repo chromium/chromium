@@ -92,7 +92,7 @@ class CupsPrinterImpl : public CupsPrinter {
     const std::string info = GetInfo();
     const std::string make_and_model = GetMakeAndModel();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // On Mac, "printer-info" option specifies the human-readable printer name,
     // while "printer-make-and-model" specifies the printer description.
     printer_info->display_name = info;
@@ -101,7 +101,7 @@ class CupsPrinterImpl : public CupsPrinter {
     // On other platforms, "printer-info" specifies the printer description.
     printer_info->display_name = printer->name;
     printer_info->printer_description = info;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
     const char* state = cupsGetOption(kCUPSOptPrinterState,
                                       printer->num_options, printer->options);

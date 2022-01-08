@@ -107,7 +107,7 @@ bool SizesEqualWithinEpsilon(const gfx::Size& lhs,
          std::abs(lhs.height() - rhs.height()) <= epsilon;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 gfx::Rect GetCenteredPageContentRect(const gfx::Size& paper_size,
                                      const gfx::Size& page_size,
                                      const gfx::Rect& page_content_rect) {
@@ -122,6 +122,6 @@ gfx::Rect GetCenteredPageContentRect(const gfx::Size& paper_size,
   }
   return content_rect;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace printing
