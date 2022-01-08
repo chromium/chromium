@@ -72,5 +72,6 @@ source_set("unit_tests") {
     "//content/test:test_support",
     "//testing/gtest",
     "//ui/aura:test_support",
+    "//ui/views:test_support",
   ]
 }

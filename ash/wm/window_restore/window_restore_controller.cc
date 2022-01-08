@@ -66,8 +66,8 @@ constexpr ShellWindowId kAppParentContainers[10] = {
 // TODO(crbug.com/1164472): Checking app type is temporary solution until we
 // can get windows which are allowed to window restore from the
 // FullRestoreService.
-constexpr AppType kSupportedAppTypes[3] = {
-    AppType::BROWSER, AppType::CHROME_APP, AppType::ARC_APP};
+constexpr AppType kSupportedAppTypes[4] = {
+    AppType::BROWSER, AppType::CHROME_APP, AppType::ARC_APP, AppType::LACROS};
 
 // Delay for certain app types before activation is allowed. This is because
 // some apps' client request activation after creation, which can break user

@@ -13,21 +13,29 @@
 
 namespace full_restore {
 
+namespace {
+
+const std::string GetLacrosWindowId(aura::Window* window) {
+  const std::string* lacros_window_id =
+      window->GetProperty(app_restore::kLacrosWindowId);
+  DCHECK(lacros_window_id);
+  return *lacros_window_id;
+}
+
+}  // namespace
+
 LacrosSaveHandler::LacrosSaveHandler(const base::FilePath& profile_path)
     : profile_path_(profile_path) {}
 
 LacrosSaveHandler::~LacrosSaveHandler() = default;
 
 void LacrosSaveHandler::OnWindowInitialized(aura::Window* window) {
-  const std::string* lacros_window_id =
-      window->GetProperty(app_restore::kLacrosWindowId);
-  DCHECK(lacros_window_id);
-
+  const std::string lacros_window_id = GetLacrosWindowId(window);
   std::string app_id;
   int32_t window_id = ++window_id_;
   std::unique_ptr<app_restore::AppLaunchInfo> app_launch_info;
 
-  auto it = lacros_window_id_to_app_id_.find(*lacros_window_id);
+  auto it = lacros_window_id_to_app_id_.find(lacros_window_id);
   if (it != lacros_window_id_to_app_id_.end()) {
     // For Chrome app windows, get the app launch info and set the Chrome app
     // id.
@@ -41,20 +49,18 @@ void LacrosSaveHandler::OnWindowInitialized(aura::Window* window) {
         std::make_unique<app_restore::AppLaunchInfo>(app_id, window_id);
   }
 
-  window_candidates_[*lacros_window_id].app_id = app_id;
-  window_candidates_[*lacros_window_id].window_id = window_id;
+  window_candidates_[lacros_window_id].app_id = app_id;
+  window_candidates_[lacros_window_id].window_id = window_id;
 
   FullRestoreSaveHandler::GetInstance()->AddAppLaunchInfo(
       profile_path_, std::move(app_launch_info));
 }
 
 void LacrosSaveHandler::OnWindowDestroyed(aura::Window* window) {
-  const std::string* lacros_window_id =
-      window->GetProperty(app_restore::kLacrosWindowId);
-  DCHECK(lacros_window_id);
-  lacros_window_id_to_app_id_.erase(*lacros_window_id);
+  const std::string lacros_window_id = GetLacrosWindowId(window);
+  lacros_window_id_to_app_id_.erase(lacros_window_id);
 
-  auto it = window_candidates_.find(*lacros_window_id);
+  auto it = window_candidates_.find(lacros_window_id);
   if (it == window_candidates_.end())
     return;
 
@@ -92,13 +98,28 @@ void LacrosSaveHandler::OnAppWindowAdded(const std::string& app_id,
   app_launch_info->window_id = it->second.window_id;
 
   save_handler->AddAppLaunchInfo(profile_path_, std::move(app_launch_info));
-  save_handler->SaveWindowInfo(*window_info);
+  save_handler->ModifyWindowInfo(profile_path_, app_id, it->second.window_id,
+                                 *window_info);
 }
 
 void LacrosSaveHandler::OnAppWindowRemoved(
     const std::string& app_id,
     const std::string& lacros_window_id) {
   lacros_window_id_to_app_id_.erase(lacros_window_id);
+}
+
+void LacrosSaveHandler::ModifyWindowInfo(
+    const app_restore::WindowInfo& window_info) {
+  auto it = window_candidates_.find(GetLacrosWindowId(window_info.window));
+  if (it != window_candidates_.end()) {
+    FullRestoreSaveHandler::GetInstance()->ModifyWindowInfo(
+        profile_path_, it->second.app_id, it->second.window_id, window_info);
+  }
+}
+
+std::string LacrosSaveHandler::GetAppId(aura::Window* window) {
+  auto it = window_candidates_.find(GetLacrosWindowId(window));
+  return it != window_candidates_.end() ? it->second.app_id : std::string();
 }
 
 }  // namespace full_restore

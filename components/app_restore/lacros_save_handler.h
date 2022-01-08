@@ -10,9 +10,13 @@
 #include "base/component_export.h"
 #include "base/files/file_path.h"
 
+namespace app_restore {
+struct WindowInfo;
+}  // namespace app_restore
+
 namespace aura {
 class Window;
-}
+}  // namespace aura
 
 namespace full_restore {
 
@@ -45,7 +49,15 @@ class COMPONENT_EXPORT(APP_RESTORE) LacrosSaveHandler {
   void OnAppWindowRemoved(const std::string& app_id,
                           const std::string& lacros_window_id);
 
+  // Saves `window_info`.
+  void ModifyWindowInfo(const app_restore::WindowInfo& window_info);
+
+  // Returns the app id that associates with `window`.
+  std::string GetAppId(aura::Window* window);
+
  private:
+  friend class FullRestoreSaveHandlerTestApi;
+
   struct WindowData {
     std::string app_id;
     int32_t window_id;

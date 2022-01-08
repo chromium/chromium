@@ -317,6 +317,13 @@ void FullRestoreSaveHandler::SaveWindowInfo(
     return;
   }
 
+  if (window_info.window->GetProperty(aura::client::kAppType) ==
+      static_cast<int>(ash::AppType::LACROS)) {
+    if (lacros_save_handler_)
+      lacros_save_handler_->ModifyWindowInfo(window_info);
+    return;
+  }
+
   int32_t window_id =
       window_info.window->GetProperty(app_restore::kWindowIdKey);
 
@@ -514,6 +521,10 @@ std::string FullRestoreSaveHandler::GetAppId(aura::Window* window) {
       static_cast<int>(ash::AppType::ARC_APP)) {
     return arc_save_handler_ ? arc_save_handler_->GetAppId(window)
                              : std::string();
+  } else if (window->GetProperty(aura::client::kAppType) ==
+             static_cast<int>(ash::AppType::LACROS)) {
+    return lacros_save_handler_ ? lacros_save_handler_->GetAppId(window)
+                                : std::string();
   } else {
     // For other window types (browser, PWAs, SWAs, Chrome apps), get its
     // corresponding app id from |window_id_to_app_restore_info_|.
