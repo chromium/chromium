@@ -23,6 +23,8 @@ class DesksTemplatesIconView;
 
 // This class for determines which app icons/favicons to show for a desk
 // template and creates the according DesksTemplatesIconView's for them.
+// The last DesksTemplatesIconView in the layout is used for storing the
+// overflow count of icons. Not every view in the container is visible.
 class DesksTemplatesIconContainer : public views::BoxLayoutView {
  public:
   METADATA_HEADER(DesksTemplatesIconContainer);
@@ -59,13 +61,6 @@ class DesksTemplatesIconContainer : public views::BoxLayoutView {
   // identifier and the second entry is its count, create views for them.
   void CreateIconViewsFromIconIdentifiers(
       const std::vector<std::pair<std::string, int>>& identifiers_and_counts);
-
-  // A vector of the `DesksTemplatesIconView`s stored in this. They
-  // are owned by the views hierarchy but store pointers to them here as well.
-  // The last element of `icon_views_` is always an `DesksTemplatesIconView`
-  // used for storing the overflow count of icons. Not every View in this
-  // vector is visible.
-  std::vector<DesksTemplatesIconView*> icon_views_;
 
   // If `this` is created with an incognito window, store the ui::ColorProvider
   // of one of the incognito windows to retrieve its icon's color.

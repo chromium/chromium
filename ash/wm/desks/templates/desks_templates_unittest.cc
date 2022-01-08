@@ -790,7 +790,7 @@ TEST_F(DesksTemplatesTest, IconsOrder) {
   DesksTemplatesItemView* item_view = GetItemViewFromTemplatesGrid(
       /*grid_item_index=*/0);
   const std::vector<DesksTemplatesIconView*>& icon_views =
-      DesksTemplatesItemViewTestApi(item_view).icon_views();
+      DesksTemplatesItemViewTestApi(item_view).GetIconViews();
 
   // The items previews should be ordered by activation index. Exclude the
   // final DesksTemplatesIconView since it will be the overflow counter.
@@ -855,7 +855,7 @@ TEST_F(DesksTemplatesTest, IconsOrderWithInactiveTabs) {
   DesksTemplatesItemView* item_view = GetItemViewFromTemplatesGrid(
       /*grid_item_index=*/0);
   const std::vector<DesksTemplatesIconView*>& icon_views =
-      DesksTemplatesItemViewTestApi(item_view).icon_views();
+      DesksTemplatesItemViewTestApi(item_view).GetIconViews();
 
   // Check the icon views. The first two items should be the active tabs,
   // ordered by activation index. The next two items should be the inactive tabs
@@ -885,7 +885,7 @@ TEST_F(DesksTemplatesTest, OverflowIconView) {
   DesksTemplatesItemView* item_view = GetItemViewFromTemplatesGrid(
       /*grid_item_index=*/0);
   const std::vector<DesksTemplatesIconView*>& icon_views =
-      DesksTemplatesItemViewTestApi(item_view).icon_views();
+      DesksTemplatesItemViewTestApi(item_view).GetIconViews();
 
   // There should only be the max number of icons plus the overflow icon.
   EXPECT_EQ(DesksTemplatesIconContainer::kMaxIcons + 1,
@@ -922,7 +922,7 @@ TEST_F(DesksTemplatesTest, OverflowIconViewIncrementsForHiddenIcons) {
   DesksTemplatesItemView* item_view = GetItemViewFromTemplatesGrid(
       /*grid_item_index=*/0);
   const std::vector<DesksTemplatesIconView*>& icon_views =
-      DesksTemplatesItemViewTestApi(item_view).icon_views();
+      DesksTemplatesItemViewTestApi(item_view).GetIconViews();
 
   // Even though there are more than `DesksTemplatesIconContainer::kMaxIcons`,
   // there should still be `DesksTemplatesIconContainer::kMaxIcons`+ 1
@@ -975,7 +975,7 @@ TEST_F(DesksTemplatesTest, IconViewMoreThan9Windows) {
   DesksTemplatesItemView* item_view = GetItemViewFromTemplatesGrid(
       /*grid_item_index=*/0);
   const std::vector<DesksTemplatesIconView*>& icon_views =
-      DesksTemplatesItemViewTestApi(item_view).icon_views();
+      DesksTemplatesItemViewTestApi(item_view).GetIconViews();
 
   // There should only be 1 icon view for the app and 1 icon view for the
   // overflow.
@@ -1006,7 +1006,7 @@ TEST_F(DesksTemplatesTest, OverflowIconViewHiddenOnNoOverflow) {
   DesksTemplatesItemView* item_view = GetItemViewFromTemplatesGrid(
       /*grid_item_index=*/0);
   const std::vector<DesksTemplatesIconView*>& icon_views =
-      DesksTemplatesItemViewTestApi(item_view).icon_views();
+      DesksTemplatesItemViewTestApi(item_view).GetIconViews();
 
   // All the icon views should be visible and the overflow icon view should be
   // invisible.

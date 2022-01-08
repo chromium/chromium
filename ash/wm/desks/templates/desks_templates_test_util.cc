@@ -58,6 +58,16 @@ DesksTemplatesItemViewTestApi::DesksTemplatesItemViewTestApi(
 
 DesksTemplatesItemViewTestApi::~DesksTemplatesItemViewTestApi() = default;
 
+std::vector<DesksTemplatesIconView*>
+DesksTemplatesItemViewTestApi::GetIconViews() const {
+  std::vector<DesksTemplatesIconView*> casted_icon_views;
+  for (auto* icon_view : item_view_->icon_container_view_->children()) {
+    casted_icon_views.push_back(
+        static_cast<DesksTemplatesIconView*>(icon_view));
+  }
+  return casted_icon_views;
+}
+
 DesksTemplatesIconViewTestApi::DesksTemplatesIconViewTestApi(
     const DesksTemplatesIconView* desks_templates_icon_view)
     : desks_templates_icon_view_(desks_templates_icon_view) {

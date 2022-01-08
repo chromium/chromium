@@ -187,21 +187,23 @@ void DesksTemplatesIconContainer::PopulateIconContainerFromWindows(
 void DesksTemplatesIconContainer::Layout() {
   views::BoxLayoutView::Layout();
 
-  if (icon_views_.empty())
+  auto icon_views = children();
+  if (icon_views.empty())
     return;
 
   const int available_horizontal_space = bounds().width();
   // Use the preferred size of this since this will provide the width as if
-  // every view in `icon_views_` is shown.
+  // every view in `icon_views` is shown.
   int used_horizontal_space = GetPreferredSize().width();
-  DesksTemplatesIconView* overflow_icon_view = icon_views_.back();
+  auto* overflow_icon_view =
+      static_cast<DesksTemplatesIconView*>(icon_views.back());
   if (used_horizontal_space > available_horizontal_space) {
-    // Reverse iterate through `icon_views_` starting with the first
+    // Reverse iterate through `icon_views` starting with the first
     // non-overflow icon view (i.e. the second-last element). Hide as many icons
     // we need to fit `available_horizontal_space` and then update the overflow
     // icon view.
     int num_hidden_icons = 0;
-    for (auto it = ++icon_views_.rbegin(); it != icon_views_.rend(); ++it) {
+    for (auto it = ++icon_views.rbegin(); it != icon_views.rend(); ++it) {
       if ((*it)->GetVisible()) {
         used_horizontal_space -= (*it)->GetPreferredSize().width();
         (*it)->SetVisible(false);
@@ -221,7 +223,7 @@ void DesksTemplatesIconContainer::Layout() {
 
 void DesksTemplatesIconContainer::CreateIconViewsFromIconIdentifiers(
     const std::vector<std::pair<std::string, int>>& identifiers_and_counts) {
-  DCHECK(icon_views_.empty());
+  DCHECK(children().empty());
 
   if (identifiers_and_counts.empty())
     return;
@@ -237,7 +239,6 @@ void DesksTemplatesIconContainer::CreateIconViewsFromIconIdentifiers(
                          .Build());
     icon_view->SetIconIdentifierAndCount(identifiers_and_counts[i].first,
                                          identifiers_and_counts[i].second);
-    icon_views_.push_back(icon_view);
   }
 
   // Always add a `DesksTemplatesIconView` overflow counter in case the width
@@ -253,7 +254,6 @@ void DesksTemplatesIconContainer::CreateIconViewsFromIconIdentifiers(
                        .Build());
   overflow_icon_view->SetIconIdentifierAndCount(
       std::string(), identifiers_and_counts.size() - num_added_icons);
-  icon_views_.push_back(overflow_icon_view);
 }
 
 BEGIN_METADATA(DesksTemplatesIconContainer, views::BoxLayoutView)
