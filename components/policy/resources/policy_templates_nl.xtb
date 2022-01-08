@@ -130,6 +130,7 @@
             * ntlm
             Als je deze optie leeg laat, kunnen alle 3 de schema's worden gebruikt.</translation>
 <translation id="1153306961094113710">Foutopsporing op afstand toestaan</translation>
+<translation id="115699958189272121"><ph name="CHROME_REMOTE_DESKTOP_PRODUCT_NAME" />-gebeurtenissen rapporteren</translation>
 <translation id="1158844608156732189">Kerberos-configuratie (één regel per matrixitem), zie https://web.mit.edu/kerberos/krb5-1.12/doc/admin/conf_files/krb5_conf.html.</translation>
 <translation id="1160479894929412407">QUIC-protocol toestaan</translation>
 <translation id="1160939557934457296">Doorgaan vanaf de Safe Browsing-waarschuwingspagina uitzetten</translation>
@@ -3949,6 +3950,7 @@ Opmerking: Als iOS wordt gebruikt en het beleid wordt aangepast tijdens een sess
       Als je het beleid niet toepast, worden pdf-bestanden geopend, tenzij gebruikers de pdf-plug-in uitzetten.
 
       Als je het beleid instelt, kunnen gebruikers dit niet wijzigen in <ph name="PRODUCT_NAME" />. Als je het beleid niet instelt, kunnen gebruikers kiezen of ze pdf-bestanden extern willen openen.</translation>
+<translation id="5705828032077475554">CRD-sessies rapporteren</translation>
 <translation id="5708969689202733975">Toegestane modi voor snel ontgrendelen configureren</translation>
 <translation id="5714563837055244378">Delen van Android-apps naar web-apps aanzetten.</translation>
 <translation id="5715617256528927547">Als je dit beleid instelt, geef je aan hoeveel uur het Group Policy Object (GPO) in het cachegeheugen wordt bewaard. Dit is de maximale periode dat GPO's kunnen worden gebruikt tot ze opnieuw worden gedownload. Het systeem gebruikt de in het cachegeheugen opgeslagen GPO's opnieuw in plaats van die opnieuw te moeten downloaden bij het ophalen van elk beleid, zolang de versie van de GPO's niet is gewijzigd.
@@ -4510,6 +4512,7 @@ Bekijk <ph name="PINNED_LAUNCHER_APPS_POLICY_NAME" /> voor het vastzetten van ap
       Als je het beleid instelt op True of niet instelt, wordt de netwerkconfiguratie van het apparaat gerapporteerd.</translation>
 <translation id="6401669939808766804">De gebruiker uitloggen</translation>
 <translation id="640244877779556713">Suggestie voor emoji's aanzetten</translation>
+<translation id="6404064917675764807">CRD-sessiegebeurtenissen niet rapporteren</translation>
 <translation id="6407093060083181305">Blokkeringslijst voor installatie van extensies configureren</translation>
 <translation id="640827304541402854">Firewallpassage vanaf host voor externe toegang uitzetten</translation>
 <translation id="6412352702230183710">Alleen hosts voor native berichten op systeemniveau toestaan</translation>
@@ -4872,6 +4875,11 @@ Als je het beleid niet toepast, wordt het icoon voor experimentele browserfuncti
       Als je dit beleid niet instelt, staat de modus voor hoog contrast uit op het inlogscherm. Gebruikers kunnen deze functionaliteit op elk moment aanzetten en de status daarvan op het inlogscherm is van toepassing op alle gebruikers.
 
           Opmerking: <ph name="DEVICE_LOGIN_SCREEN_HIGH_CONTRAST_ENABLED_POLICY_NAME" /> overschrijft dit beleid als het is opgegeven.</translation>
+<translation id="6833462729740272863">Stel een lijst in met URL's die in de modus voor volledig scherm mogen blijven zonder een melding te tonen als het apparaat terugkeert van het vergrendelscherm.
+
+          Normaal gesproken staat de modus voor volledig scherm uit als het apparaat terugkeert van het vergrendelscherm om het risico op phishingaanvallen te verminderen. Met dit beleid kun je URL's opgeven die worden beschouwd als vertrouwde bronnen en die bij ontgrendeling in de modus voor volledig scherm mogen blijven. Het beleid wordt ingesteld door een lijst met URL-patronen op te geven die zijn ingedeeld volgens https://www.chromium.org/administrators/url-blocklist-filter-format. Het is bijvoorbeeld mogelijk om de modus voor volledig scherm altijd te behouden bij ontgrendeling en de meldingen helemaal uit te zetten door het jokerteken <ph name="WILDCARD_VALUE" /> op te geven dat overeenkomt met alle URL's.
+
+Als je dit beleid instelt op een lege lijst of niet instelt, zijn er geen URL's die in de modus voor volledig scherm mogen blijven zonder een melding te tonen.</translation>
 <translation id="6833988859168635883">Startpagina, homepage en pagina 'Nieuw tabblad'</translation>
 <translation id="6835883744948188639">Toon de gebruiker een terugkerende prompt om aan te geven dat opnieuw opstarten wordt aanbevolen</translation>
 <translation id="683688607121170501">Deze instelling biedt gebruikers de mogelijkheid om in het contentgedeelte van hun browservenster tussen Google-accounts te schakelen nadat ze zijn ingelogd bij hun <ph name="PRODUCT_OS_NAME" />-apparaat.
@@ -6088,6 +6096,7 @@ Als dit beleid niet is ingesteld, wordt het privacyscherm in eerste instantie ui
 <translation id="8219813789911069300">Schadelijke downloads blokkeren. Aanbevolen.</translation>
 <translation id="8220023426952118761">Gewenste downloadsnelheid in kbits/s.</translation>
 <translation id="8220156281401380422">Toelatingslijst voor systeemeigen berichten configureren</translation>
+<translation id="822055204938220476">Lijst met URL's die in de modus voor volledig scherm mogen blijven zonder een melding te tonen</translation>
 <translation id="8229912067600517877">Developer Tools aanzetten</translation>
 <translation id="8238421250255592181">Een Booleaanse markering die aangeeft of het schermtoetsenbord de optie voor automatisch aanvullen heeft.</translation>
 <translation id="8239109177194627162">Automatisch invullen uitzetten voor creditcards</translation>
@@ -6420,6 +6429,10 @@ Dit beleid geldt per frame en is niet alleen gebaseerd op de oorspronkelijke URL
 <translation id="8544465954173828789">Toestaan dat sms-berichten worden gesynchroniseerd tussen telefoon en Chromebook.</translation>
 <translation id="8566842294717252664">De Web Store verbergen op de pagina 'Nieuw tabblad' en in de App Launcher</translation>
 <translation id="8571314270766672278">Een rollback uitvoeren en het apparaat resetten bij een kanaaldowngrade en de inschrijving proberen te behouden</translation>
+<translation id="8571871284943706125">CRD-sessiegebeurtenissen rapporteren op ingeschreven apparaten voor aangesloten gebruikers.
+
+      Als je het beleid niet toepast of niet instelt, wordt de informatie niet gerapporteerd.
+      Als je het beleid toepast, worden de CRD-gebeurtenissen gerapporteerd als het een aangesloten gebruiker betreft.</translation>
 <translation id="857369585509260201">Dit beleid is verouderd. Je kunt in plaats daarvan BrowserSignin gebruiken.
 
       Als dit beleid is ingesteld op 'True', moet de gebruiker inloggen bij <ph name="PRODUCT_NAME" /> met zijn profiel voordat hij de browser gebruikt. De standaardwaarde van BrowserGuestModeEnabled wordt ingesteld op 'False'. Houd er rekening mee dat bestaande, niet-ingelogde profielen worden vergrendeld en niet toegankelijk zijn na inschakeling van dit beleid. Bekijk het Helpcentrum-artikel voor meer informatie.

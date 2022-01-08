@@ -53,6 +53,10 @@
 <translation id="1247519845643687288">അടുത്തിടെ ലോഞ്ച് ചെയ്ത ആപ്പുകൾ</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> എന്നതിൽ നിന്നും ചാർജ് ചെയ്യുന്നു</translation>
 <translation id="1255033239764210633">കാലാവസ്ഥ എങ്ങനെയുണ്ട്?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> മുതൽ 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" /> വരെ, 
+        <ph name="EVENT_SUMMARY" />. കൂടുതൽ വിശദാംശങ്ങൾക്ക് Google Calendar-ൽ തിരഞ്ഞെടുക്കുക.</translation>
 <translation id="1266097335951928626">സെൽഫി ക്യാമറ ആരംഭിക്കുക</translation>
 <translation id="1267032506238418139">കുറുക്കുവഴി മാറ്റം</translation>
 <translation id="1269405891096105529">അതിഥി മോഡിൽ പെരിഫറൽ പിന്തുണയ്‌ക്കുന്നില്ല</translation>
@@ -997,6 +1001,8 @@
 <translation id="7720410380936703141">വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{ഒരു അറിയിപ്പ്}other{# അറിയിപ്പുകൾ}}</translation>
 <translation id="7724603315864178912">മുറിക്കുക</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">ഷെൽഫിലെ ആപ്പുകൾ കാണിക്കുക</translation>
 <translation id="7749443890790263709">ഡെസ്‌ക്കുകളുടെ പരമാവധി എണ്ണത്തിൽ എത്തിയിരിക്കുന്നു.</translation>
 <translation id="7749640678855296659">നിങ്ങളുടെ മൈക്രോഫോൺ നിലവിൽ ഓഫാണ്</translation>

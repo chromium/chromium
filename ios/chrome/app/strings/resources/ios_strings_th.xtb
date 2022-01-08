@@ -60,6 +60,7 @@
 <translation id="1407135791313364759">เปิดทั้งหมด</translation>
 <translation id="1430915738399379752">พิมพ์</translation>
 <translation id="1434356225517321998">เบราว์เซอร์ของคุณมีการจัดการ <ph name="BEGIN_LINK" />รายละเอียด<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">การเข้ารหัสในอุปกรณ์</translation>
 <translation id="1449835205994625556">ซ่อนรหัสผ่าน</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> รายการ</translation>
 <translation id="149095475893949513">เว็บไซต์นี้พยายามดาวน์โหลดโปรไฟล์การกำหนดค่า</translation>
@@ -285,6 +286,7 @@
 <translation id="3529024052484145543">ไม่ปลอดภัย</translation>
 <translation id="3533202363250687977">ปิดแท็บไม่ระบุตัวตนทั้งหมด</translation>
 <translation id="3533436815740441613">แท็บใหม่</translation>
+<translation id="3536487890564466894">เข้ารหัสให้กับรหัสผ่านก่อนบันทึกไว้ในบัญชี Google</translation>
 <translation id="3551320343578183772">ปิดแท็บ</translation>
 <translation id="3581564640715911333">เสนอที่จะแปลหน้าเว็บในภาษาอื่นๆ</translation>
 <translation id="3588820906588687999">เปิดภาพในแท็บใหม่</translation>
@@ -474,7 +476,6 @@
 <translation id="5489208564673669003">ดู<ph name="BEGIN_LINK" />การตั้งค่าคุกกี้<ph name="END_LINK" />เพื่อจัดการคุกกี้สำหรับทุกเว็บไซต์</translation>
 <translation id="5490005495580364134">บล็อกคุกกี้ทั้งหมด (ไม่แนะนำ)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> ชม. ที่ผ่านมา</translation>
-<translation id="5523579157975978438">หากต้องการปิด ให้เปิด<ph name="BEGIN_LINK" />การตั้งค่า<ph name="END_LINK" />แล้วไปที่ "รหัสผ่าน"</translation>
 <translation id="5525269841082836315">สร้างข้อความรหัสผ่าน</translation>
 <translation id="5548760955356983418">Handoff ช่วยให้คุณสามารถเริ่มการท่องเว็บไซต์บนอุปกรณ์นี้และใช้งานต่อบน Mac ได้อย่างง่ายดาย เว็บไซต์ที่เปิดอยู่ในปัจจุบันจะปรากฏในแท่นชาร์จของ Mac
 
@@ -503,6 +504,7 @@
 <translation id="575902488528307720">ค้นหารูปภาพ</translation>
 <translation id="5781453543752460388">เพิ่มในไฟล์รูปภาพ</translation>
 <translation id="5782227691023083829">กำลังแปล...</translation>
+<translation id="5802829331520313983">ตั้งค่า…</translation>
 <translation id="5803566855766646066">คุณแน่ใจไหมว่าต้องการทิ้งบัตรใบใหม่นี้</translation>
 <translation id="5812974770859303494">เพิ่มใน…</translation>
 <translation id="5816228676161003208">ช่วยให้คุณค้นหาได้เร็วขึ้นโดยใช้เสียง</translation>

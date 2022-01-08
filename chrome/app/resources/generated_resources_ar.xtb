@@ -3677,6 +3677,7 @@
 <translation id="4785719467058219317">أنت تستخدم مفتاح أمان غير مُسجَّل مع هذا الموقع الإلكتروني</translation>
 <translation id="478708757211772586">استخدام الزر "التالي" لنقل التركيز إلى العنصر التالي على الشاشة</translation>
 <translation id="4788092183367008521">يُرجى التحقُّق من الاتصال بالشبكة وإعادة المحاولة.</translation>
+<translation id="4789550509729954245">عرض الإشعارات عند محاولة الأجهزة المجاورة مشاركة محتوى</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> صورة</translation>
 <translation id="4791037424585594169">‏بروتوكول (UDP)</translation>
 <translation id="4792290259143007505">‏تفعيل تسارع TrackPoint</translation>
@@ -4038,6 +4039,7 @@
 <translation id="5171343362375269016">ذاكرة مساحة التبديل</translation>
 <translation id="5172855596271336236">تتوفّر طابعة واحدة مُدارة.</translation>
 <translation id="5173668317844998239">يمكنك إضافة بصمات الأصابع المحفوظة على مفتاح الأمان وحذفها.</translation>
+<translation id="5174169235862638850">تم نسخ كلمة المرور إلى الحافظة.</translation>
 <translation id="5175379009094579629">اسم الجهاز غير صالح. يُرجى إدخال اسم جهاز صالح لإعادة المحاولة.</translation>
 <translation id="5177479852722101802">متابعة حظر الدخول إلى الكاميرا والميكروفون</translation>
 <translation id="5177549709747445269">أنت تستخدم بيانات الجوّال</translation>
@@ -4099,6 +4101,7 @@
 <translation id="523505283826916779">إعدادات إمكانية الدخول</translation>
 <translation id="5235750401727657667">استبدال الصفحة التي تشاهدها عند فتح علامة تبويب جديدة</translation>
 <translation id="5236374273162681467">‏لاستخدام كلمات المرور على كل أجهزتك بسهولة، يمكنك نقل هذه الكلمات إلى حسابك على Google.</translation>
+<translation id="523862956770478816">أذونات الموقع الإلكتروني</translation>
 <translation id="5242724311594467048">تفعيل "<ph name="EXTENSION_NAME" />"؟</translation>
 <translation id="5243522832766285132">يُرجى إعادة المحاولة بعد بضع لحظات</translation>
 <translation id="5244474230056479698">المزامنة مع <ph name="EMAIL" /></translation>

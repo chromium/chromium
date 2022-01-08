@@ -60,6 +60,7 @@
 <translation id="1407135791313364759">എല്ലാം തുറക്കുക</translation>
 <translation id="1430915738399379752">പ്രിന്റ് ചെയ്യുക</translation>
 <translation id="1434356225517321998">നിങ്ങളുടെ ബ്രൗസർ മാനേജ് ചെയ്യപ്പെടുന്നു. <ph name="BEGIN_LINK" />വിശദാംശങ്ങൾ<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">ഉപകരണത്തിലെ എൻക്രിപ്ഷൻ</translation>
 <translation id="1449835205994625556">പാസ്‍വേഡ് അദൃശ്യമാക്കുക</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> ഇനങ്ങൾ</translation>
 <translation id="149095475893949513">കോൺഫിഗറേഷൻ പ്രൊഫൈൽ ഡൗൺലോഡ് ചെയ്യാൻ ഈ വെബ്സൈറ്റ് ശ്രമിക്കുന്നു.</translation>
@@ -94,6 +95,7 @@
 <translation id="1690731385917361335">ഇനങ്ങളൊന്നുമില്ല</translation>
 <translation id="1692118695553449118">സമന്വയം ഓണാണ്</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> തിരഞ്ഞെടുത്തു</translation>
+<translation id="1726573592754903697">Google പാസ്‌വേഡ് മാനേജർ</translation>
 <translation id="1740468249224277719">ഇൻസ്‌റ്റാൾ ചെയ്യാൻ രണ്ടുതവണ ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="1752547299766512813">സംരക്ഷിച്ച പാസ്‌വേഡുകള്‍</translation>
 <translation id="1753905327828125965">കൂടുതൽ‍ സന്ദര്‍ശിച്ചത്</translation>
@@ -284,6 +286,7 @@
 <translation id="3529024052484145543">സുരക്ഷിതമല്ല</translation>
 <translation id="3533202363250687977">എല്ലാ അദൃശ്യ ടാബുകളും അവസാനിപ്പിക്കുക</translation>
 <translation id="3533436815740441613">പുതിയ ടാബ്</translation>
+<translation id="3536487890564466894">നിങ്ങളുടെ Google അക്കൗണ്ടിൽ സംരക്ഷിക്കുന്നതിന് മുമ്പ് നിങ്ങളുടെ പാസ്‌വേഡുകൾ എൻക്രിപ്റ്റ് ചെയ്യുക.</translation>
 <translation id="3551320343578183772">ടാബ് അടയ്‌ക്കുക</translation>
 <translation id="3581564640715911333">പേജുകൾ മറ്റ് ഭാഷകളിലേക്ക് വിവർത്തനം ചെയ്യാനുള്ള ഓഫർ</translation>
 <translation id="3588820906588687999">ചിത്രം പുതിയ ടാബിൽ തുറക്കുക</translation>
@@ -473,7 +476,6 @@
 <translation id="5489208564673669003">എല്ലാ സൈറ്റുകൾക്കുമുള്ള കുക്കികൾ മാനേജ് ചെയ്യാൻ, <ph name="BEGIN_LINK" />കുക്കി ക്രമീകരണം<ph name="END_LINK" /> കാണുക.</translation>
 <translation id="5490005495580364134">എല്ലാ കുക്കികളും ബ്ലോക്ക് ചെയ്യുക (ശുപാർശ ചെയ്യുന്നില്ല)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> മണിക്കൂർ മുമ്പ്</translation>
-<translation id="5523579157975978438">ഓഫാക്കാൻ, <ph name="BEGIN_LINK" />ക്രമീകരണം<ph name="END_LINK" /> തുറന്ന് പാസ്‌വേഡുകൾ എന്നതിലേക്ക് പോകുക.</translation>
 <translation id="5525269841082836315">പാസ്‌ഫ്രെയ്‌സ് സൃഷ്‌ടിക്കുക</translation>
 <translation id="5548760955356983418">ഈ ഉപകരണത്തിൽ ഒരു വെബ്‌സൈറ്റ് ബ്രൗസ് ചെയ്യാൻ ആരംഭിച്ചതിനുശേഷം Mac-ൽ എളുപ്പത്തിൽ തുടരാൻ 'ഹാൻഡ്ഓഫ്' അനുവദിക്കുന്നു. നിലവിൽ തുറന്ന വെബ്‌സൈറ്റ് നിങ്ങളുടെ Mac-ന്റെ ഡോക്കിൽ ദൃശ്യമാകും.
 
@@ -502,6 +504,7 @@
 <translation id="575902488528307720">ചിത്രം തിരയുക</translation>
 <translation id="5781453543752460388">Photos-ലേക്ക് ചേർക്കുക</translation>
 <translation id="5782227691023083829">വിവര്‍‌ത്തനം ചെയ്യുന്നു...</translation>
+<translation id="5802829331520313983">സജ്ജീകരിക്കുക…</translation>
 <translation id="5803566855766646066">ഈ പുതിയ കാർഡ് റദ്ദാക്കണമെന്ന് തീർച്ചയാണോ?</translation>
 <translation id="5812974770859303494">ഇതിലേക്ക് ചേർക്കുക…</translation>
 <translation id="5816228676161003208">നിങ്ങളുടെ ശബ്‌ദം ഉപയോഗിച്ച് കൂടുതൽ വേഗത്തിൽ തിരയാൻ ഇത് നിങ്ങളെ അനുവദിക്കുന്നു.</translation>
@@ -561,6 +564,7 @@
 <translation id="6219688215832490856">ഒരിക്കലും വിവർത്തനം ചെയ്യരുത്</translation>
 <translation id="6223816392543092032">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും ബുക്ക്‌മാർക്കുകളും ചരിത്രവും പാസ്‌വേഡുകളും മറ്റ് ക്രമീകരണവും നേടുക.</translation>
 <translation id="6232329973559504466">അദൃശ്യ മോഡിലെ തിരയൽ</translation>
+<translation id="6232736989810857397">Google Lens ഉപയോഗിച്ച് കലണ്ടർ ഇവന്റുകൾ എളുപ്പത്തിൽ സൃഷ്ടിക്കാൻ ഇത് നിങ്ങളെ അനുവദിക്കുന്നു.</translation>
 <translation id="6254066287920239840">ബ്രൗസറിന് പകരം ആപ്പിൽ ലിങ്കുകൾ തുറക്കുക.</translation>
 <translation id="6255097610484507482">ക്രെഡിറ്റ് കാര്‍ഡ് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> വിവർത്തനം ചെയ്യാനുള്ള അനുമതി</translation>

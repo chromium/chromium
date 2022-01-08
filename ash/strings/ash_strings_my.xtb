@@ -53,6 +53,10 @@
 <translation id="1247519845643687288">လတ်တလောသုံး အက်ပ်များ</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" />မှ အားသွင်းနေပါသည်</translation>
 <translation id="1255033239764210633">မိုးလေဝသအခြေအနေ ဘယ်လိုရှိလဲ။</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> မှ 
+        <ph name="END_TIME" /> အထိ၊ 
+        <ph name="TIME_ZONE" />၊ 
+        <ph name="EVENT_SUMMARY" />။ နောက်ထပ်အသေးစိတ်များအတွက် Google Calendar တွင်ရွေးပါ။</translation>
 <translation id="1266097335951928626">ဆယ်လ်ဖီ ကင်မရာ စတင်ရန်</translation>
 <translation id="1267032506238418139">ဖြတ်လမ်းလင့်ခ် ပြောင်းလဲခြင်း</translation>
 <translation id="1269405891096105529">‘ဧည့်သည်မုဒ်’ တွင် ချိတ်ဆက်ပစ္စည်းကို မပံ့ပိုးပါ</translation>
@@ -997,6 +1001,8 @@
 <translation id="7720410380936703141">ထပ်စမ်းကြည့်ရန်</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{အကြောင်းကြားချက် ၁ ခု}other{အကြောင်းကြားချက် # ခု}}</translation>
 <translation id="7724603315864178912">ဖြတ်တောက်</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />၊ 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">အက်ပ်များကို စင်တွင်ပြရန်</translation>
 <translation id="7749443890790263709">အများဆုံးသတ်မှတ်ထားသည့် စားပွဲအရေအတွက် ပြည့်သွားပါပြီ။</translation>
 <translation id="7749640678855296659">သင့်မိုက်ခရိုဖုန်းကို လက်ရှိတွင် ပိတ်ထားသည်</translation>

@@ -60,6 +60,7 @@
 <translation id="1407135791313364759">Отвори ги сите</translation>
 <translation id="1430915738399379752">Печати</translation>
 <translation id="1434356225517321998">Прелистувачот е управуван. <ph name="BEGIN_LINK" />Детали<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">Шифрирање на уред</translation>
 <translation id="1449835205994625556">Сокријте ја лозинката</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> ставки</translation>
 <translation id="149095475893949513">Веб-сајтов се обидува да преземе профил за конфигурација.</translation>
@@ -285,6 +286,7 @@
 <translation id="3529024052484145543">Небезбедно</translation>
 <translation id="3533202363250687977">Затвори ги сите инкогнито картички</translation>
 <translation id="3533436815740441613">Нова картичка</translation>
+<translation id="3536487890564466894">Шифрирајте ги лозинките пред да се зачуваат на вашата сметка на Google.</translation>
 <translation id="3551320343578183772">Затвори ја картичката</translation>
 <translation id="3581564640715911333">Понудувај превод на страниците на други јазици</translation>
 <translation id="3588820906588687999">Отворете ја сликата во нова картичка</translation>
@@ -474,7 +476,6 @@
 <translation id="5489208564673669003">За да управувате со колачињата за сите сајтови, погледнете ги <ph name="BEGIN_LINK" />Поставките за колачиња<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Блокирај ги сите колачиња (не се препорачува)</translation>
 <translation id="5513681519188741830">пред <ph name="TIME" /> ч.</translation>
-<translation id="5523579157975978438">За да исклучите, отворете ги <ph name="BEGIN_LINK" />Поставките<ph name="END_LINK" /> и одете на „Лозинки“.</translation>
 <translation id="5525269841082836315">Создај пристапна фраза</translation>
 <translation id="5548760955356983418">Handoff ви овозможува да започнете со прелистување на веб-локација на уредот и потоа лесно да продолжите на Mac. Моментално отворената веб-локација ќе се појави во Dock на Mac.
 
@@ -503,6 +504,7 @@ Handoff мора да биде овозможен и во Општиот дел 
 <translation id="575902488528307720">Пребарај слика</translation>
 <translation id="5781453543752460388">Додај во „Фотографии“</translation>
 <translation id="5782227691023083829">Се преведува…</translation>
+<translation id="5802829331520313983">Поставете…</translation>
 <translation id="5803566855766646066">Дали сигурно сакате да ја отфрлите новава картичка?</translation>
 <translation id="5812974770859303494">Додај во…</translation>
 <translation id="5816228676161003208">Ова ви овозможува да пребарувате побрзо со глас.</translation>

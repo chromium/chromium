@@ -53,6 +53,10 @@
 <translation id="1247519845643687288">التطبيقات المستخدمة مؤخرًا</translation>
 <translation id="1252999807265626933">جارٍ الشحن من <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">ما حالة الطقس؟</translation>
+<translation id="1262870540683925850">‏من <ph name="START_TIME" /> إلى 
+        <ph name="END_TIME" />، 
+         بتوقيت <ph name="TIME_ZONE" />، 
+        <ph name="EVENT_SUMMARY" />. اختَر حدثًا لعرض مزيد من التفاصيل في "تقويم Google".</translation>
 <translation id="1266097335951928626">تفعيل كاميرا الصور الذاتية</translation>
 <translation id="1267032506238418139">تغيير الاختصار</translation>
 <translation id="1269405891096105529">الأجهزة الملحقة غير متاحة للاستخدام في وضع الضيف.</translation>
@@ -998,6 +1002,8 @@
 <translation id="7720410380936703141">إعادة المحاولة</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{إشعار واحد}zero{# إشعار}two{إشعاران (#)}few{# إشعارات}many{# إشعارًا}other{# إشعار}}</translation>
 <translation id="7724603315864178912">قص</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />، 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">عرض التطبيقات في الرفّ</translation>
 <translation id="7749443890790263709">تم تجاوز أقصى عدد مسموح به من محطات الإرساء.</translation>
 <translation id="7749640678855296659">الميكروفون متوقّف في الوقت الحالي.</translation>

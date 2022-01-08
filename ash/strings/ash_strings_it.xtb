@@ -53,6 +53,7 @@ Ecco alcune cose che puoi provare per iniziare.</translation>
 <translation id="1247519845643687288">App recenti</translation>
 <translation id="1252999807265626933">In carica da: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Che tempo fa?</translation>
+<translation id="1262870540683925850">Dalle ore <ph name="START_TIME" /> alle ore <ph name="END_TIME" />, <ph name="TIME_ZONE" />, <ph name="EVENT_SUMMARY" />. Seleziona per avere maggiori dettagli in Google Calendar.</translation>
 <translation id="1266097335951928626">Apri fotocamera per selfie</translation>
 <translation id="1267032506238418139">Modifica alla scorciatoia</translation>
 <translation id="1269405891096105529">Periferica non supportata in modalità Ospite</translation>
@@ -998,6 +999,7 @@ Nuova installazione</translation>
 <translation id="7720410380936703141">RIPROVA</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notifica}one{# notifications}other{# notifiche}}</translation>
 <translation id="7724603315864178912">Taglia</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Mostra app nella barra delle app</translation>
 <translation id="7749443890790263709">Numero massimo di scrivanie raggiunto.</translation>
 <translation id="7749640678855296659">Al momento il microfono non è attivo</translation>

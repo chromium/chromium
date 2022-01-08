@@ -60,6 +60,7 @@ Injini yakho yokusesha iyi-<ph name="DSE_NAME" />. Bona imiyalelo yabo yokusula 
 <translation id="1407135791313364759">Vula konke</translation>
 <translation id="1430915738399379752">Phrinta</translation>
 <translation id="1434356225517321998">Isiphequluli sakho siphethwe. <ph name="BEGIN_LINK" />Imininingwane<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">Ukubethela kudivayisi</translation>
 <translation id="1449835205994625556">Fihla iphasiwedi</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> izinto</translation>
 <translation id="149095475893949513">Le webhusayithi izama ukudawuniloda iphrofayela yokulungiselela.</translation>
@@ -284,6 +285,7 @@ Bona imiyalelo yenjini yakho yokusesha yokusula umlando wakho wosesho, uma kuseb
 <translation id="3529024052484145543">Akuphephile</translation>
 <translation id="3533202363250687977">Vala wonke amathebhu e-incognito</translation>
 <translation id="3533436815740441613">Ithebhu entsha</translation>
+<translation id="3536487890564466894">Bethela amaphasiwedi wakho ngaphambi kokuthi alondolozwe ku-Google Account yakho</translation>
 <translation id="3551320343578183772">Vala ithebhu</translation>
 <translation id="3581564640715911333">Nikeza ngokuhumusha amakhasi ngezinye izilimi</translation>
 <translation id="3588820906588687999">Vula isithombe kuthebhu entsha</translation>
@@ -473,7 +475,6 @@ Ukuze ushintshe lesi silungiselelo, <ph name="BEGIN_LINK" />setha kabusha ukuvum
 <translation id="5489208564673669003">Ukuze uphathe amakhukhi awo wonke amasayithi, bona okuthi<ph name="BEGIN_LINK" />Amasethingi wekhukhi<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Vimbela Wonke Amakhukhi (Akunconywa)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> ihora eledlule</translation>
-<translation id="5523579157975978438">Cisha, vula <ph name="BEGIN_LINK" />Amasethingi<ph name="END_LINK" /> bese uya Kumaphasiwedi.</translation>
 <translation id="5525269841082836315">Dala umushwana wokungena</translation>
 <translation id="5548760955356983418">I-Handoff ikuvumela ukuthi uqale ukuphequlula iwebhusayithi kule divayisi bese uqhubeke kalula ku-Mac yakho. Iwebhusayithi evulekile yamanje izobonakala kudokhu ye-Mac yakho.
 
@@ -502,6 +503,7 @@ I-Handoff futhi kufanele inikwe amandla esigabeni sokuvamile zezilungiselelo, fu
 <translation id="575902488528307720">Sesha Umfanekiso</translation>
 <translation id="5781453543752460388">Engeza Kuzithombe</translation>
 <translation id="5782227691023083829">Iyahumusha...</translation>
+<translation id="5802829331520313983">Setha…</translation>
 <translation id="5803566855766646066">Ingabe uqinisekile ukuthi ufuna ukulahla leli khadi elisha?</translation>
 <translation id="5812974770859303494">Engeza Ku...</translation>
 <translation id="5816228676161003208">Lokhu kukuvumela ukuthi useshe ngokushesha usebenzisa izwi lakho.</translation>

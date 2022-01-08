@@ -53,6 +53,10 @@
 <translation id="1247519845643687288">ਹਾਲੀਆ ਐਪਾਂ</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> ਤੋਂ ਚਾਰਜ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ</translation>
 <translation id="1255033239764210633">ਮੌਸਮ ਕਿਹੋ ਜਿਹਾ ਹੈ?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> ਤੋਂ 
+        <ph name="END_TIME" /> ਤੱਕ, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />। Google Calendar ਵਿੱਚ ਹੋਰ ਵੇਰਵੇ ਦੇਖਣ ਲਈ ਚੁਣੋ।</translation>
 <translation id="1266097335951928626">ਸੈਲਫ਼ੀ ਕੈਮਰਾ ਸ਼ੁਰੂ ਕਰੋ</translation>
 <translation id="1267032506238418139">ਸ਼ਾਰਟਕੱਟ ਵਿੱਚ ਬਦਲਾਅ</translation>
 <translation id="1269405891096105529">ਮਹਿਮਾਨ ਮੋਡ ਵਿੱਚ ਪੈਰੀਫੈਰਲ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ</translation>
@@ -998,6 +1002,8 @@
 <translation id="7720410380936703141">ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ਸੂਚਨਾ}one{# ਸੂਚਨਾ}other{# ਸੂਚਨਾਵਾਂ}}</translation>
 <translation id="7724603315864178912">ਕੱਟੋ</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">ਐਪਾਂ ਨੂੰ ਸ਼ੈਲਫ ਵਿੱਚ ਦਿਖਾਓ</translation>
 <translation id="7749443890790263709">ਡੈਸਕਾਂ ਦੀ ਅਧਿਕਤਮ ਸੰਖਿਆ ਪੂਰੀ ਹੋ ਗਈ।</translation>
 <translation id="7749640678855296659">ਤੁਹਾਡਾ ਮਾਈਕ੍ਰੋਫ਼ੋਨ ਫਿਲਹਾਲ ਬੰਦ ਹੈ</translation>

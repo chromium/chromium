@@ -95,6 +95,7 @@
 <translation id="1690731385917361335">কোনো বস্তু নাই</translation>
 <translation id="1692118695553449118">ছিংক অন হৈ আছে</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> বাছনি কৰা হ’ল</translation>
+<translation id="1726573592754903697">Google পাছৱৰ্ড পৰিচালক</translation>
 <translation id="1740468249224277719">ইনষ্টল কৰিবলৈ দুবাৰ টিপক।</translation>
 <translation id="1752547299766512813">পাছৱর্ডসমূহ ছেভ কৰক</translation>
 <translation id="1753905327828125965">সকলোতকৈ বেছিকৈ চোৱা</translation>
@@ -475,7 +476,6 @@
 <translation id="5489208564673669003">সকলো ছাইটৰ কুকিসমূহ পৰিচালনা কৰিবলৈ <ph name="BEGIN_LINK" />কুকিৰ ছেটিংসমূহ<ph name="END_LINK" /> চাওক।</translation>
 <translation id="5490005495580364134">সকলো কুকি অৱৰোধ কৰক (চুপাৰিছ কৰা নহয়)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> ঘণ্টা আগতে</translation>
-<translation id="5523579157975978438">অফ কৰিবলৈ<ph name="BEGIN_LINK" />ছেটিং<ph name="END_LINK" /> খোলক আৰু পাছৱৰ্ডলৈ যাওক।</translation>
 <translation id="5525269841082836315">পাছফ্ৰেজ সৃষ্টি কৰক</translation>
 <translation id="5548760955356983418">Handoff সুবিধাটোৱে এই ডিভাইচটোত এটা ৱেবছাইট ব্ৰাউজ কৰা আৰম্ভ কৰি সেইটো ছাইটৰ বাকীখিনি আপোনাৰ Macত ব্ৰাউজ কৰাৰ সুবিধা আগবঢ়ায়। বৰ্তমান খোল খাই থকা ৱেবছাইটসমূহ আপোনাৰ Macৰ Dockত দেখা পোৱা যাব।
 
@@ -564,6 +564,7 @@
 <translation id="6219688215832490856">কেতিয়াও অনুবাদ নকৰিব</translation>
 <translation id="6223816392543092032">আপোনাৰ আটাইবোৰ ডিভাইচত নিজৰ বুকমাৰ্ক, ব্ৰাউজিঙৰ ইতিহাস, পাছৱৰ্ড আৰু আন ছেটিংসমূহ পাওক।</translation>
 <translation id="6232329973559504466">ইনক’গনিট’ টেবত সন্ধান কৰা</translation>
+<translation id="6232736989810857397">এইটোৱে আপোনাক Google Lens ব্যৱহাৰ কৰি সহজে কেলেণ্ডাৰৰ অনুষ্ঠান সৃষ্টি কৰিবলৈ দিয়ে।</translation>
 <translation id="6254066287920239840">ব্ৰাউজাৰৰ পৰিৱৰ্তে এপত লিংকসমূহ খোলক৷</translation>
 <translation id="6255097610484507482">ক্ৰেডিট কাৰ্ড সম্পাদনা কৰক</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> অনুবাদ কৰাৰ প্ৰস্তাৱ দিয়ক</translation>

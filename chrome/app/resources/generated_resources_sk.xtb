@@ -3676,6 +3676,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="4785719467058219317">Používate bezpečnostný kľúč, ktorý nie je registrovaný s týmto webom</translation>
 <translation id="478708757211772586">Prechádzajte na obrazovke dopredu tlačidlom Ďalej</translation>
 <translation id="4788092183367008521">Skontrolujte pripojenie k sieti a skúste to znova.</translation>
+<translation id="4789550509729954245">Zobrazovať upozornenie pri zdieľaní zariadení nablízku</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> fotka</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">Povoliť akceleráciu zariadenia TrackPoint</translation>
@@ -4037,6 +4038,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="5171343362375269016">Swapovaná pamäť</translation>
 <translation id="5172855596271336236">K dispozícii je jedna spravovaná tlačiareň.</translation>
 <translation id="5173668317844998239">Pridať a odstrániť odtlačky prstov uložené v bezpečnostnom kľúči</translation>
+<translation id="5174169235862638850">Heslo bolo skopírované do schránky</translation>
 <translation id="5175379009094579629">Názov zariadenia je neplatný. Skúste to znova zadaním platného názvu zariadenia.</translation>
 <translation id="5177479852722101802">Aj naďalej blokovať prístup ku kamere a mikrofónu</translation>
 <translation id="5177549709747445269">Využívate mobilné dáta</translation>
@@ -4098,6 +4100,7 @@ stlačením klávesov Ctrl + Alt + zníženie jasu zobrazenie oddialite.</tr
 <translation id="523505283826916779">Nastavenia zjednodušenia prístupu</translation>
 <translation id="5235750401727657667">Nahradiť stránku, ktorá sa zobrazí pri otvorení novej karty</translation>
 <translation id="5236374273162681467">Ak ich chcete ľahko používať vo všetkých svojich zariadeniach, môžete si ich presunúť do účtu Google</translation>
+<translation id="523862956770478816">Povolenia webu</translation>
 <translation id="5242724311594467048">Povoliť rozšírenie <ph name="EXTENSION_NAME" />?</translation>
 <translation id="5243522832766285132">Skúste to znova o chvíľu</translation>
 <translation id="5244474230056479698">Synchronizácia do účtu <ph name="EMAIL" /></translation>

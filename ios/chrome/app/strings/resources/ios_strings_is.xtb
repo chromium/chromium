@@ -60,6 +60,7 @@ Leitarvélin þín er <ph name="DSE_NAME" />. Skoðaðu leiðbeiningar hennar um
 <translation id="1407135791313364759">Opna alla</translation>
 <translation id="1430915738399379752">Prenta</translation>
 <translation id="1434356225517321998">Vafranum þínum er stjórnað. <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">Dulkóðun í tækinu</translation>
 <translation id="1449835205994625556">Fela aðgangsorð</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> atriði</translation>
 <translation id="149095475893949513">Þetta vefsvæði er að reyna að sækja stillingasnið.</translation>
@@ -94,6 +95,7 @@ Leitarvélin þín er <ph name="DSE_NAME" />. Skoðaðu leiðbeiningar hennar um
 <translation id="1690731385917361335">Engin atriði</translation>
 <translation id="1692118695553449118">Kveikt er á samstillingu</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> valin</translation>
+<translation id="1726573592754903697">Aðgangsorðastjórnun Google</translation>
 <translation id="1740468249224277719">Ýttu tvisvar til að setja upp.</translation>
 <translation id="1752547299766512813">Vista aðgangsorð</translation>
 <translation id="1753905327828125965">Oftast heimsótt</translation>
@@ -284,6 +286,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3529024052484145543">Ekki öruggt</translation>
 <translation id="3533202363250687977">Loka öllum huliðsflipum</translation>
 <translation id="3533436815740441613">Nýr flipi</translation>
+<translation id="3536487890564466894">Dulkóðaðu aðgangsorðin þín áður en þú vistar þau á Google reikningnum.</translation>
 <translation id="3551320343578183772">Loka flipa</translation>
 <translation id="3581564640715911333">Bjóðast til að þýða síður á önnur tungumál</translation>
 <translation id="3588820906588687999">Opna mynd í nýjum flipa</translation>
@@ -473,7 +476,6 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />endurstilla sam
 <translation id="5489208564673669003">Fyrir upplýsingar um stjórnun fótspora fyrir öll vefsvæði, sjá <ph name="BEGIN_LINK" />Fótsporastillingar<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Loka á öll fótspor (ekki mælt með)</translation>
 <translation id="5513681519188741830">Fyrir <ph name="TIME" /> klst.</translation>
-<translation id="5523579157975978438">Opnaðu <ph name="BEGIN_LINK" />Stillingar<ph name="END_LINK" /> og síðan „Aðgangsorð“ til að slökkva.</translation>
 <translation id="5525269841082836315">Búa til aðgangsorð</translation>
 <translation id="5548760955356983418">Handoff gerir þér kleift að byrja að skoða vefsvæði í þessu tæki og halda því síðan áfram á einfaldan hátt í Mac-tölvunni. Vefsvæðið sem er opið birtist í kvínni í Mac-tölvunni.
 
@@ -502,6 +504,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="575902488528307720">Leita að mynd</translation>
 <translation id="5781453543752460388">Bæta við Myndir</translation>
 <translation id="5782227691023083829">Þýðir...</translation>
+<translation id="5802829331520313983">Setja upp…</translation>
 <translation id="5803566855766646066">Ertu viss um að þú viljir fleygja þessu nýja korti?</translation>
 <translation id="5812974770859303494">Bæta við...</translation>
 <translation id="5816228676161003208">Með þessu móti geturðu notað röddina til að leita hraðar.</translation>
@@ -561,6 +564,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6219688215832490856">Þýða aldrei</translation>
 <translation id="6223816392543092032">Fáðu bókamerkin, ferilinn, aðgangsorðin og aðrar stillingar í öll tækin þín.</translation>
 <translation id="6232329973559504466">Leit í huliðsstillingu</translation>
+<translation id="6232736989810857397">Þetta gerir þér kleift að nota Google linsu til að búa til dagatalsviðburði á einfaldan hátt.</translation>
 <translation id="6254066287920239840">Opna tengla í forritinu í stað vafrans.</translation>
 <translation id="6255097610484507482">Breyta kreditkorti</translation>
 <translation id="6284652193729350524">Bjóðast til að þýða <ph name="LANGUAGE" /></translation>

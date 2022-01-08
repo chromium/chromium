@@ -53,6 +53,10 @@
 <translation id="1247519845643687288">ବର୍ତ୍ତମାନର ଆପଗୁଡ଼ିକ</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" />ରୁ ଚାର୍ଜ ହେଉଛି</translation>
 <translation id="1255033239764210633">ପାଣିପାଗ କିପରି ଅଛି?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" />ରୁ 
+<ph name="END_TIME" />, 
+<ph name="TIME_ZONE" />, 
+<ph name="EVENT_SUMMARY" />। Google Calendarରେ ଅଧିକ ବିବରଣୀ ପାଇଁ ଚୟନ କରନ୍ତୁ।</translation>
 <translation id="1266097335951928626">ସେଲ୍ଫି କ୍ୟାମେରା ଆରମ୍ଭ କରନ୍ତୁ</translation>
 <translation id="1267032506238418139">ସର୍ଟକଟ୍‍ ପରିବର୍ତ୍ତନ</translation>
 <translation id="1269405891096105529">ଅତିଥି ମୋଡରେ ପେରିଫେରାଲ୍ ସମର୍ଥିତ ନୁହେଁ</translation>
@@ -996,6 +1000,8 @@
 <translation id="7720410380936703141">ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1ଟି ବିଜ୍ଞପ୍ତି}other{#ଟି ବିଜ୍ଞପ୍ତି}}</translation>
 <translation id="7724603315864178912">Cut</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+<ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">ସେଲ୍ଫରେ ଥିବା ଆପଗୁଡ଼ିକୁ ଦେଖାନ୍ତୁ</translation>
 <translation id="7749443890790263709">ସର୍ବାଧିକ ସଂଖ୍ୟକ ଡେସ୍କରେ ପହଞ୍ଚିଯାଇଛି।</translation>
 <translation id="7749640678855296659">ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନକୁ ବର୍ତ୍ତମାନ ବନ୍ଦ କରାଯାଇଛି</translation>

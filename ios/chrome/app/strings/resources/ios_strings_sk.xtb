@@ -60,6 +60,7 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="1407135791313364759">Otvoriť všetko</translation>
 <translation id="1430915738399379752">Tlačiť</translation>
 <translation id="1434356225517321998">Váš prehliadač je spravovaný. <ph name="BEGIN_LINK" />Podrobnosti<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">Šifrovanie v zariadení</translation>
 <translation id="1449835205994625556">Skryť heslo</translation>
 <translation id="145015347812617860">Počet položiek: <ph name="COUNT" /></translation>
 <translation id="149095475893949513">Tento web sa pokúša stiahnuť profil konfigurácie.</translation>
@@ -94,6 +95,7 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="1690731385917361335">Žiadne položky</translation>
 <translation id="1692118695553449118">Synchronizácia je zapnutá</translation>
 <translation id="1700629756560807968">Počet vybraných záložiek: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="1726573592754903697">Správca hesiel Google</translation>
 <translation id="1740468249224277719">Dvojitým klepnutím spustíte inštaláciu.</translation>
 <translation id="1752547299766512813">Ukladať heslá</translation>
 <translation id="1753905327828125965">Najviac navšt.</translation>
@@ -284,6 +286,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3529024052484145543">Nezabezpečené</translation>
 <translation id="3533202363250687977">Zavrieť všetky karty inkognito</translation>
 <translation id="3533436815740441613">Nová karta</translation>
+<translation id="3536487890564466894">Šifrujte svoje heslá pred ich uložením do účtu Google.</translation>
 <translation id="3551320343578183772">Zatvoriť kartu</translation>
 <translation id="3581564640715911333">Ponúkať preklad stránok v ďalších jazykoch</translation>
 <translation id="3588820906588687999">Otvoriť obrázok na novej karte</translation>
@@ -473,7 +476,6 @@ Ak chcete toto nastavenie zmeniť, <ph name="BEGIN_LINK" />resetujte synchroniz�
 <translation id="5489208564673669003">Ak chcete spravovať súbory cookie pre všetky weby, prejdite do <ph name="BEGIN_LINK" />Nastavení súborov cookie<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokovať všetky súbory cookie (neodporúča sa)</translation>
 <translation id="5513681519188741830">Pred <ph name="TIME" /> h</translation>
-<translation id="5523579157975978438">Túto funkciu môžete vypnúť tak, že otvoríte <ph name="BEGIN_LINK" />Nastavenia<ph name="END_LINK" /> a prejdete do sekcie Heslá.</translation>
 <translation id="5525269841082836315">Vytv. prístup. frázu</translation>
 <translation id="5548760955356983418">Funkcia Handoff umožňuje začať prehliadanie webových stránok na tomto zariadení a potom jednoducho pokračovať na počítači Mac. Aktuálne otvorené stránky sa zobrazia v doku na počítači Mac.
 
@@ -502,6 +504,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="575902488528307720">Hľadať obrázok</translation>
 <translation id="5781453543752460388">Pridať do fotiek</translation>
 <translation id="5782227691023083829">Prebieha preklad...</translation>
+<translation id="5802829331520313983">Nastaviť…</translation>
 <translation id="5803566855766646066">Naozaj chcete zahodiť túto novú kartu?</translation>
 <translation id="5812974770859303494">Pridať do…</translation>
 <translation id="5816228676161003208">Umožňuje rýchlejšie vyhľadávania pomocou hlasu.</translation>
@@ -561,6 +564,7 @@ Funkciu Handoff musíte povoliť v nastaveniach v časti Všeobecné a vaše zar
 <translation id="6219688215832490856">Nikdy neprekladať</translation>
 <translation id="6223816392543092032">Používajte svoje záložky, históriu, heslá a ďalšie nastavenia vo všetkých svojich zariadeniach.</translation>
 <translation id="6232329973559504466">Vyhľadávanie v režime inkognito</translation>
+<translation id="6232736989810857397">Budete tak môcť jednoducho vytvárať udalosti v kalendári pomocou funkcie Google Lens.</translation>
 <translation id="6254066287920239840">Otvárať odkazy v aplikácii namiesto prehliadača.</translation>
 <translation id="6255097610484507482">Upraviť platobnú kartu</translation>
 <translation id="6284652193729350524">Ponúkať preklad jazyka <ph name="LANGUAGE" /></translation>

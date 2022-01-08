@@ -60,6 +60,7 @@
 <translation id="1407135791313364759">အားလုံး ဖွင့်ရန်</translation>
 <translation id="1430915738399379752">ပရင့်</translation>
 <translation id="1434356225517321998">သင်၏ဘရောင်ဇာကို စီမံခန့်ခွဲထားသည်။ <ph name="BEGIN_LINK" />အသေးစိတ်<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">စက်တွင်ပါသော အသွင်ဝှက်စနစ်</translation>
 <translation id="1449835205994625556">စကားဝှက် ဖျောက်ထားရန်</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> အကြောင်းအရာများ</translation>
 <translation id="149095475893949513">ဤဝဘ်ဆိုက်သည် စီစဉ်သတ်မှတ်ချက် ပရိုဖိုင်ကို ဒေါင်းလုဒ်လုပ်ရန် ကြိုးစားနေသည်။</translation>
@@ -94,6 +95,7 @@
 <translation id="1690731385917361335">အကြောင်းအရာမရှိပါ</translation>
 <translation id="1692118695553449118">စင့်က်ကို ဖွင့်ထား</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ရွေးချယ်ထားသည်</translation>
+<translation id="1726573592754903697">Google စကားဝှက် မန်နေဂျာ</translation>
 <translation id="1740468249224277719">ထည့်သွင်းရန် နှစ်ချက်တို့ပါ။</translation>
 <translation id="1752547299766512813">စကားဝှက်များ သိမ်ဆည်းမည်</translation>
 <translation id="1753905327828125965">အများဆုံး ဝင်ကြည့်ခံခဲ့ရ</translation>
@@ -284,6 +286,7 @@
 <translation id="3529024052484145543">လုံခြုံမှုမရှိပါ</translation>
 <translation id="3533202363250687977">ရုပ်ဖျက်တဘ်များအားလုံး ပိတ်ရန်</translation>
 <translation id="3533436815740441613">တဘ်အသစ်</translation>
+<translation id="3536487890564466894">စကားဝှက်များကို Google Account သို့မသိမ်းမီ အသွင်ဝှက်ပါ။</translation>
 <translation id="3551320343578183772">တဘ် ပိတ်ရန်</translation>
 <translation id="3581564640715911333">စာမျက်နှာများကို အခြားဘာသာစကားများဖြင့် ပြန်ဆိုရန် ကမ်းလှမ်းသည်</translation>
 <translation id="3588820906588687999">ရုပ်ပုံကို တက်ဘ်အသစ်တွင်ဖွင့်ရန်</translation>
@@ -473,7 +476,6 @@
 <translation id="5489208564673669003">ဝဘ်ဆိုက်အားလုံးအတွက် ကွတ်ကီးများကို စီမံရန် <ph name="BEGIN_LINK" />ကွတ်ကီးဆက်တင်များ<ph name="END_LINK" /> ကို ကြည့်ပါ။</translation>
 <translation id="5490005495580364134">ကွတ်ကီးအားလုံး ပိတ်ရန် (အကြံမပြုပါ)</translation>
 <translation id="5513681519188741830">ပြီးခဲ့သော <ph name="TIME" /> h</translation>
-<translation id="5523579157975978438">ပိတ်ရန်အတွက် <ph name="BEGIN_LINK" />ဆက်တင်များ<ph name="END_LINK" /> ဖွင့်ပြီး ‘စကားဝှက်များ’ သို့သွားပါ။</translation>
 <translation id="5525269841082836315">စကားစုဝှက် ဖန်တီးမည်</translation>
 <translation id="5548760955356983418">Handoff သည် သင့်အားဤကိရိယာပေါ်တွင် ဝက်ဆိုက်ရွေးချယ်ခြင်းကို စတင်ခွင့်ပြုမည်ဖြစ်ပြီး သင့် Mac ပေါ်တွင်လွယ်ကူစွာ ဆက်လက်လုပ်ဆောင်နိုင်ပါသည်။ လက်ရှိဖွင့်ထားသော ဝက်ဆိုက်သည် သင့်Mac၏ အထိုင်ပေါ်တွင် ပေါ်လာပါလိမ့်မည်။
 Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိုင်းတွင် ဖွင့်ထားရမည်ဖြစ်ပြီး၊ သင့်ကိရိယာများသည်လည်း တူညီသော iCloud အကောင့်ကို အသုံးပြုရမည်ဖြစ်သည်။</translation>
@@ -501,6 +503,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="575902488528307720">‘ပုံ’ ရှာဖွေရန်</translation>
 <translation id="5781453543752460388">‘ဓာတ်ပုံများ’ သို့ထည့်ရန်</translation>
 <translation id="5782227691023083829">ဘာသာပြန်နေသည်...</translation>
+<translation id="5802829331520313983">စနစ်ထည့်ရန်…</translation>
 <translation id="5803566855766646066">ဤကတ်အသစ်ကို ဖယ်ပစ်လိုသည်မှာ သေချာသလား။</translation>
 <translation id="5812974770859303494">ထည့်မည့်နေရာ...</translation>
 <translation id="5816228676161003208">၎င်းသည် သင့်အသံကို အသုံးပြု၍ ရှာဖွေရာတွင် ပိုမိုမြန်ဆန်စေပါသည်။</translation>
@@ -560,6 +563,7 @@ Handoff ကို ဆက်တင်များ၏ ယေဘူယျအပိ�
 <translation id="6219688215832490856">ဘယ်တော့မှ ဘာသာမပြန်ပါနှင့်</translation>
 <translation id="6223816392543092032">သင်၏စက်အားလုံးတွင် လိပ်စာများ၊ မှတ်တမ်း၊ စကားဝှက်များနှင့် အခြားဆက်တင်များ ရယူပါ။</translation>
 <translation id="6232329973559504466">ရုပ်ဖျက်မုဒ်ဖြင့် ရှာရန်</translation>
+<translation id="6232736989810857397">ဤနည်းအားဖြင့် Google Lens သုံး၍ ပြက္ခဒိန်အစီအစဉ်များကို အလွယ်တကူပြုလုပ်နိုင်မည်။</translation>
 <translation id="6254066287920239840">ဘရောင်ဇာတွင် ဖွင့်မည့်အစား လင့်ခ်ကို အက်ပ်အတွင်းတွင် ဖွင့်ပါ။</translation>
 <translation id="6255097610484507482">အကြွေးဝယ်ကဒ် တည်းဖြတ်မည်</translation>
 <translation id="6284652193729350524"><ph name="LANGUAGE" /> သို့ ဘာသာပြန်ဆိုရန်အတွက် ကမ်းလှမ်းရန်</translation>

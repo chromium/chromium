@@ -53,6 +53,10 @@
 <translation id="1247519845643687288">මෑත යෙදුම්</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> වෙතින් ආරෝපණය වෙමින්</translation>
 <translation id="1255033239764210633">කාලගුණය කෙසේද?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> සිට 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Google දින දර්ශනය තුළ වැඩි විස්තර සඳහා තෝරන්න.</translation>
 <translation id="1266097335951928626">සෙල්ෆි කැමරාව ආරම්භ කරන්න</translation>
 <translation id="1267032506238418139">කෙටිමඟ වෙනස් කිරීම</translation>
 <translation id="1269405891096105529">උපාංගය ආගන්තුක ප්‍රකාරය තුළ සහාය නොදක්වයි</translation>
@@ -997,6 +1001,8 @@
 <translation id="7720410380936703141">නැවත උත්සාහ කරන්න</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{දැනුම්දීම් 1ක්}one{දැනුම්දීම් #ක්}other{දැනුම්දීම් #ක්}}</translation>
 <translation id="7724603315864178912">කැපීම</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">රාක්කය තුළ යෙදුම් පෙන්වන්න</translation>
 <translation id="7749443890790263709">උපරිම මේස ගණන ළඟා විය.</translation>
 <translation id="7749640678855296659">ඔබගේ මයික්‍රෆෝනය දැනට ක්‍රියාවිරහිතයි</translation>

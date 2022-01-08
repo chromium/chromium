@@ -475,6 +475,7 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
       Se il criterio viene impostato su Disattivato, per le richieste HTTP non sicure non è consentito usare lo schema di autenticazione <ph name="BASIC_AUTH" />; sono consentite soltanto le connessioni HTTPS sicure.
 
       L'impostazione di questo criterio viene ignorata (e il valore <ph name="BASIC_AUTH" /> è sempre vietato) se il criterio <ph name="AUTH_SCHEMES_POLICY_NAME" /> viene impostato e non include il valore <ph name="BASIC_AUTH" />.</translation>
+<translation id="1574258262373444557">Non usare <ph name="AES_KL_NAME" /> come algoritmo di crittografia per la crittografia dello spazio di archiviazione degli utenti</translation>
 <translation id="1575015449587326319">Criterio di configurazione per il connettore OnFileDownloaded di Chrome Enterprise</translation>
 <translation id="1583248206450240930">Utilizza <ph name="PRODUCT_FRAME_NAME" /> per impostazione predefinita</translation>
 <translation id="1587042984081085960">Questo criterio consente a un amministratore di specificare che una pagina potrebbe inviare richieste XHR sincrone durante l'uscita dalla pagina.
@@ -591,6 +592,7 @@ Se disattivi questo criterio, lo scorrimento della pagina web ai frammenti di te
 <translation id="167514072300004091">Se il criterio è impostato su 3, i siti web possono richiedere l'accesso ai dispositivi USB connessi. Se il criterio è impostato su 2, l'accesso ai dispositivi USB connessi viene negato.
 
       Se non viene configurato, i siti web possono richiedere l'accesso, ma gli utenti possono modificare l'impostazione.</translation>
+<translation id="1678137412645922426">Controlla l'uso di <ph name="AES_KL_NAME" /> per la crittografia dello spazio di archiviazione degli utenti, se è supportata</translation>
 <translation id="1682063842123336408">Spazio libero su disco (in GB) necessario per installare <ph name="PLUGIN_VM_NAME" />.
 
       Se il criterio non viene configurato, l'installazione di <ph name="PLUGIN_VM_NAME" /> non va a buon fine se lo spazio libero disponibile sul dispositivo è inferiore a 20 GB (valore predefinito).
@@ -3872,6 +3874,12 @@ Se questo criterio viene impostato su Falso, <ph name="PRODUCT_NAME" /> non util
 
       Se questa norma non è impostata, per impostazione predefinita la funzione non è consentita per gli utenti gestiti dall'azienda ed è consentita per gli utenti non gestiti.</translation>
 <translation id="5584132346604748282">Controlla i servizi di geolocalizzazione di Google per Android</translation>
+<translation id="5585384603219625331">Questo criterio consente di stabilire se attivare o meno l'implementazione di <ph name="AES_KL_NAME" /> per la crittografia dello spazio di archiviazione degli utenti, se è supportata, per le home page degli utenti <ph name="DM_CRYPT" /> su Chrome OS.
+
+       Questo criterio viene applicato soltanto alle home page degli utenti che usano <ph name="DM_CRYPT" /> per la crittografia. Le home page degli utenti precedenti (che non usano <ph name="DM_CRYPT" />) non supportano l'uso di <ph name="AES_KL_NAME" /> e per impostazione predefinita useranno <ph name="AES_NI_NAME" />.
+
+       Se il valore di questo criterio cambia, sarà possibile accedere alle home page degli utenti <ph name="DM_CRYPT" /> esistenti usando l'implementazione della crittografia configurata nel criterio perché le implementazioni <ph name="AES_ALGORITHM_NAME" /> sono compatibili.
+       Se il criterio viene disattivato o se non viene configurato, per la crittografia dello spazio di archiviazione degli utenti per le home page degli utenti <ph name="DM_CRYPT" /> verrà usato <ph name="AES_NI_NAME" /> per impostazione predefinita.</translation>
 <translation id="5586942249556966598">Non fare niente</translation>
 <translation id="5598417829613725146">Canvas (supportata dalla versione 90)</translation>
 <translation id="5599461642204007579">Impostazioni di gestione di <ph name="MS_AD_NAME" /></translation>
@@ -6513,6 +6521,7 @@ Se questa norma non viene impostata, le pagine saranno sottoposte a scansione pe
 <translation id="8626826495474944836">Richiedi isolamento dei siti per ogni sito</translation>
 <translation id="8631434304112909927">fino alla versione <ph name="UNTIL_VERSION" /></translation>
 <translation id="8631437968147930597">L'elenco delle app per scrivere note consentite nella schermata di blocco di <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="8634062512783775032">Usa <ph name="AES_KL_NAME" /> come algoritmo di crittografia per la crittografia dello spazio di archiviazione degli utenti, se è supportata</translation>
 <translation id="8637566476051166626">Porte di rete esplicitamente consentite</translation>
 <translation id="8643838501942693770">Consente i cookie di terze parti, ma l'utente può modificare questa impostazione</translation>
 <translation id="8648844602494595665">Questo criterio consente di stabilire il trattamento dell'icona lucchetto nella omnibox.

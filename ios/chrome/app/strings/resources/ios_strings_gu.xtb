@@ -60,6 +60,7 @@
 <translation id="1407135791313364759">બધું ખોલો</translation>
 <translation id="1430915738399379752">પ્રિન્ટ</translation>
 <translation id="1434356225517321998">તમારું બ્રાઉઝર મેનેજ કરવામાં આવી રહ્યું છે. <ph name="BEGIN_LINK" />વિગતો<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">ડિવાઇસ પર એન્ક્રિપ્શન</translation>
 <translation id="1449835205994625556">પાસવર્ડ છુપાવો</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> આઇટમ્સ</translation>
 <translation id="149095475893949513">આ વેબસાઇટ કન્ફિગ્યુરેશન પ્રોફાઇલ ડાઉનલોડ કરવાનો પ્રયાસ કરી રહી છે.</translation>
@@ -285,6 +286,7 @@
 <translation id="3529024052484145543">સુરક્ષિત નથી</translation>
 <translation id="3533202363250687977">બધાં છૂપા ટૅબ બંધ કરો</translation>
 <translation id="3533436815740441613">નવું ટૅબ</translation>
+<translation id="3536487890564466894">તમારા પાસવર્ડ તમારા Google એકાઉન્ટમાં સાચવવામાં આવે, તે પહેલાં તેમને એન્ક્રિપ્ટ કરો.</translation>
 <translation id="3551320343578183772">ટૅબ બંધ કરો</translation>
 <translation id="3581564640715911333">પેજનો અન્ય ભાષાઓમાં અનુવાદ કરવાનું ઑફર કરો</translation>
 <translation id="3588820906588687999">નવા ટેબમાં છબી ખોલો</translation>
@@ -474,7 +476,6 @@
 <translation id="5489208564673669003">બધી સાઇટ માટે કુકી મેનેજ કરવા, <ph name="BEGIN_LINK" />કુકી સેટિંગ જુઓ<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">બધી કુકીને બ્લૉક કરો (સુઝાવ આપતા નથી)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> કલાક પહેલાં</translation>
-<translation id="5523579157975978438">બંધ કરવા માટે, <ph name="BEGIN_LINK" />સેટિંગ<ph name="END_LINK" /> ખોલો અને પાસવર્ડ પર જાઓ.</translation>
 <translation id="5525269841082836315">પાસફ્રેઝ બનાવો</translation>
 <translation id="5548760955356983418">હેન્ડઓફ તમને આ ડિવાઇસ પર વેબસાઇટ બ્રાઉઝ કરવાનું શરૂ કરવા અને પછી તમારા Mac પર સરળતાથી ચાલુ રાખવા દે છે. વર્તમાનમાં ખુલ્લી છે તે વેબસાઇટ તમારા Mac ના ડૉક પર દેખાશે.
 
@@ -503,6 +504,7 @@
 <translation id="575902488528307720">છબી શોધો</translation>
 <translation id="5781453543752460388">Photosમાં ઉમેરો</translation>
 <translation id="5782227691023083829">ભાષાંતર કરી રહ્યું છે...</translation>
+<translation id="5802829331520313983">સેટઅપ કરો…</translation>
 <translation id="5803566855766646066">શું તમે ખરેખર આ નવું કાર્ડ કાઢી નાખવા માગો છો?</translation>
 <translation id="5812974770859303494">આમાં ઉમેરો...</translation>
 <translation id="5816228676161003208">આ તમને તમારા અવાજનો ઉપયોગ કરીને વધુ ઝડપથી શોધવા દે છે.</translation>

@@ -60,6 +60,7 @@ Jūsų paieškos variklis yra „<ph name="DSE_NAME" />“. Peržiūrėkite jo i
 <translation id="1407135791313364759">Atidaryti viską</translation>
 <translation id="1430915738399379752">Spausdinti</translation>
 <translation id="1434356225517321998">Jūsų naršyklė tvarkoma. <ph name="BEGIN_LINK" />Išsami informacija<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">Šifruotė įrenginyje</translation>
 <translation id="1449835205994625556">Slėpti slaptažodį</translation>
 <translation id="145015347812617860">Elementų: <ph name="COUNT" /></translation>
 <translation id="149095475893949513">Ši svetainė bando atsisiųsti konfigūracijos profilį.</translation>
@@ -284,6 +285,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3529024052484145543">Nesaugu</translation>
 <translation id="3533202363250687977">Uždaryti visus inkognito skirtukus</translation>
 <translation id="3533436815740441613">Naujas skirtukas</translation>
+<translation id="3536487890564466894">Šifruokite slaptažodžius prieš išsaugodami juos „Google“ paskyroje.</translation>
 <translation id="3551320343578183772">Uždaryti skirtuką</translation>
 <translation id="3581564640715911333">Siūlyti versti puslapius į kitas kalbas</translation>
 <translation id="3588820906588687999">Atidaryti vaizdą naujo skirtuko lape</translation>
@@ -473,7 +475,6 @@ Jei norite pakeisti šį nustatymą, <ph name="BEGIN_LINK" />iš naujo nustatyki
 <translation id="5489208564673669003">Jei norite tvarkyti visų svetainių slapukus, žr. <ph name="BEGIN_LINK" />„Slapukų nustatymai“<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">Blokuoti visus slapukus (nerekomenduojama)</translation>
 <translation id="5513681519188741830">Prieš <ph name="TIME" /> val.</translation>
-<translation id="5523579157975978438">Norėdami išjungti, atidarykite skiltį <ph name="BEGIN_LINK" />„Settings“<ph name="END_LINK" /> ir eikite į skiltį „Passwords“.</translation>
 <translation id="5525269841082836315">Kurti slaptafrazę</translation>
 <translation id="5548760955356983418">Naudodami „Handoff“ galite pradėti naršyti svetainę šiame įrenginyje ir lengvai tęsti darbą „Mac“ įrenginiu. Dabartinė atidaryta svetainė bus rodoma „Mac“ įrenginio doke.
 
@@ -502,6 +503,7 @@ Be to, reikia įgalinti „Handoff“ nustatymų skiltyje „Bendrieji“, o įr
 <translation id="575902488528307720">Ieškoti vaizdo</translation>
 <translation id="5781453543752460388">Pridėti prie Nuotraukų</translation>
 <translation id="5782227691023083829">Verčiama...</translation>
+<translation id="5802829331520313983">Nustatyti…</translation>
 <translation id="5803566855766646066">Ar tikrai norite atmesti šią naują kortelę?</translation>
 <translation id="5812974770859303494">Pridėjimas prie...</translation>
 <translation id="5816228676161003208">Galite ieškoti greičiau balsu.</translation>

@@ -53,6 +53,10 @@ Na začiatok môžete vyskúšať niektoré z týchto vecí.</translation>
 <translation id="1247519845643687288">Nedávne aplikácie</translation>
 <translation id="1252999807265626933">Nabíja sa zo <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Aké je počasie?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> až 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Výberom zobrazíte v Kalendári Google ďalšie podrobnosti.</translation>
 <translation id="1266097335951928626">Spustiť selfie fotoaparát</translation>
 <translation id="1267032506238418139">Zmena skratky</translation>
 <translation id="1269405891096105529">Periféria nie je v režime pre hostí podporovaná</translation>
@@ -997,6 +1001,8 @@ Nová inštalácia</translation>
 <translation id="7720410380936703141">SKÚSIŤ ZNOVA</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 upozornenie}few{# upozornenia}many{# notifications}other{# upozornení}}</translation>
 <translation id="7724603315864178912">Vystrihnúť</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Zobraziť aplikácie na poličke</translation>
 <translation id="7749443890790263709">Dosiahli ste maximálny počet pracovných prostredí.</translation>
 <translation id="7749640678855296659">Mikrofón je momentálne vypnutý</translation>

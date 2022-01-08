@@ -60,6 +60,7 @@
 <translation id="1407135791313364759">Открыть все</translation>
 <translation id="1430915738399379752">Печать</translation>
 <translation id="1434356225517321998">Этот браузер управляется администратором. <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">Шифрование на устройстве</translation>
 <translation id="1449835205994625556">Скрыть пароль</translation>
 <translation id="145015347812617860">Закладок: <ph name="COUNT" /></translation>
 <translation id="149095475893949513">Этот сайт пытается скачать профиль конфигурации.</translation>
@@ -94,6 +95,7 @@
 <translation id="1690731385917361335">Закладок нет</translation>
 <translation id="1692118695553449118">Синхронизация включена</translation>
 <translation id="1700629756560807968">Выбрано закладок: <ph name="NUMBER_OF_SELECTED_BOOKMARKS" /></translation>
+<translation id="1726573592754903697">Диспетчер паролей Google</translation>
 <translation id="1740468249224277719">Нажмите дважды, чтобы установить</translation>
 <translation id="1752547299766512813">Сохр. пароли</translation>
 <translation id="1753905327828125965">Наиболее посещаемые</translation>
@@ -284,6 +286,7 @@
 <translation id="3529024052484145543">Автозаполнение не используется</translation>
 <translation id="3533202363250687977">Закрыть все вкладки инкогнито</translation>
 <translation id="3533436815740441613">Новая вкладка</translation>
+<translation id="3536487890564466894">Зашифруйте свои пароли, прежде чем они будут сохранены в аккаунте Google.</translation>
 <translation id="3551320343578183772">Закрыть вкладку</translation>
 <translation id="3581564640715911333">Предлагать перевести страницы на других языках.</translation>
 <translation id="3588820906588687999">Открыть изображение в новой вкладке</translation>
@@ -473,7 +476,6 @@
 <translation id="5489208564673669003">Вы можете <ph name="BEGIN_LINK" />настроить файлы cookie<ph name="END_LINK" /> для разных сайтов.</translation>
 <translation id="5490005495580364134">Блокировать все файлы cookie (не рекомендуется)</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> ч. назад</translation>
-<translation id="5523579157975978438">Чтобы отключить автозаполнение, выберите <ph name="BEGIN_LINK" />Настройки<ph name="END_LINK" /> и перейдите в раздел "Пароли".</translation>
 <translation id="5525269841082836315">Создание код. фразы</translation>
 <translation id="5548760955356983418">Функция Handoff позволит начать просмотр веб-сайта на одном устройстве и продолжить на другом. Открытый сайт появится на панели Dock вашего компьютера Mac.
 
@@ -502,6 +504,7 @@
 <translation id="575902488528307720">Найти изображение</translation>
 <translation id="5781453543752460388">Добавить в Фото</translation>
 <translation id="5782227691023083829">Перевод...</translation>
+<translation id="5802829331520313983">Настроить</translation>
 <translation id="5803566855766646066">Удалить новую карту?</translation>
 <translation id="5812974770859303494">Добавить…</translation>
 <translation id="5816228676161003208">Это нужно, чтобы использовать голосовой поиск</translation>
@@ -561,6 +564,7 @@
 <translation id="6219688215832490856">Никогда не переводить</translation>
 <translation id="6223816392543092032">Синхронизировать закладки, историю, пароли и другие настройки на всех ваших устройствах</translation>
 <translation id="6232329973559504466">Поиск в режиме инкогнито</translation>
+<translation id="6232736989810857397">Вы сможете создавать мероприятия в календаре с помощью Google Объектива.</translation>
 <translation id="6254066287920239840">Открывать ссылки в приложении, а не в браузере.</translation>
 <translation id="6255097610484507482">Изменение данных кредитной карты</translation>
 <translation id="6284652193729350524">Предлагать перевести страницы на этом языке (<ph name="LANGUAGE" />)</translation>

@@ -60,6 +60,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. Se din søgemaskines vejledn
 <translation id="1407135791313364759">Åbn alle</translation>
 <translation id="1430915738399379752">Udskriv</translation>
 <translation id="1434356225517321998">Din browser administreres. <ph name="BEGIN_LINK" />Info<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">Kryptering på enheden</translation>
 <translation id="1449835205994625556">Skjul adgangskode</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> elementer</translation>
 <translation id="149095475893949513">Dette website forsøger at downloade en konfigurationsprofil.</translation>
@@ -284,6 +285,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3529024052484145543">Ikke sikker</translation>
 <translation id="3533202363250687977">Luk alle inkognitofaner</translation>
 <translation id="3533436815740441613">Ny fane</translation>
+<translation id="3536487890564466894">Kryptér dine adgangskoder, inden de gemmes på din Google-konto.</translation>
 <translation id="3551320343578183772">Luk fanen</translation>
 <translation id="3581564640715911333">Tilbyd at oversætte sider på andre sprog</translation>
 <translation id="3588820906588687999">Åbn billede på ny fane</translation>
@@ -473,7 +475,6 @@ Hvis du vil ændre denne indstilling, skal du <ph name="BEGIN_LINK" />nulstille 
 <translation id="5489208564673669003">Gå til <ph name="BEGIN_LINK" />indstillingerne for cookies<ph name="END_LINK" /> for at administrere cookies for alle websites.</translation>
 <translation id="5490005495580364134">Bloker alle cookies (anbefales ikke)</translation>
 <translation id="5513681519188741830">For <ph name="TIME" /> t. siden</translation>
-<translation id="5523579157975978438">Du kan deaktivere funktionen ved at åbne <ph name="BEGIN_LINK" />Indstillinger<ph name="END_LINK" /> og gå til Adgangskoder.</translation>
 <translation id="5525269841082836315">Opret adgangssætning</translation>
 <translation id="5548760955356983418">Med Handoff kan du begynde at se på et website på denne enhed og derefter nemt fortsætte på din Mac. Det website, du har åbent, vises i docken på din Mac.
 
@@ -502,6 +503,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="575902488528307720">Søg efter Billede</translation>
 <translation id="5781453543752460388">Føj til Fotos</translation>
 <translation id="5782227691023083829">Oversætter ...</translation>
+<translation id="5802829331520313983">Konfigurer…</translation>
 <translation id="5803566855766646066">Er du sikker på, at du vil kassere dette nye kort?</translation>
 <translation id="5812974770859303494">Føj til...</translation>
 <translation id="5816228676161003208">Dette gør søgning ved hjælp af din stemme hurtigere.</translation>

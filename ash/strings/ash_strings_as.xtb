@@ -53,6 +53,10 @@
 <translation id="1247519845643687288">শেহতীয়া এপ্</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" />ৰ পৰা চাৰ্জ কৰি থকা হৈছে</translation>
 <translation id="1255033239764210633">বতৰ কেনে?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" />ৰ পৰা 
+        <ph name="END_TIME" />লৈ, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />। Google Calendarত অধিক সবিশেষৰ বাবে বাছনি কৰক।</translation>
 <translation id="1266097335951928626">ছেল্ফী কেমেৰা আৰম্ভ কৰক</translation>
 <translation id="1267032506238418139">শ্বৰ্টকাটৰ সলনিকৰণ</translation>
 <translation id="1269405891096105529">অতিথি ম’ডত পৰিধীয় সমর্থিত নহয়</translation>
@@ -997,6 +1001,8 @@
 <translation id="7720410380936703141">পুনৰ চেষ্টা কৰক</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{১টা জাননী}one{#টা জাননী}other{#টা জাননী}}</translation>
 <translation id="7724603315864178912">কাট কৰক</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">শ্বেল্‌ফত এপ্‌সমূহ দেখুৱাওক</translation>
 <translation id="7749443890790263709">ডেস্কৰ সৰ্বাধিক সংখ্যাত উপনীত হৈছে।</translation>
 <translation id="7749640678855296659">বৰ্তমান আপোনাৰ মাইক্ৰ’ফ’নটো অফ কৰা হৈছে</translation>
