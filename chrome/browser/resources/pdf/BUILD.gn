@@ -299,7 +299,11 @@ js_library("internal_plugin") {
 }
 
 js_library("pdf_internal_plugin_wrapper") {
-  deps = [ ":gesture_detector" ]
+  deps = [
+    ":constants",
+    ":gesture_detector",
+    ":viewport_scroller",
+  ]
 }
 
 js_library("pdf_viewer_base") {

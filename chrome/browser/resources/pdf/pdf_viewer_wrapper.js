@@ -4,7 +4,7 @@
 
 export {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 export {BrowserApi, ZoomBehavior} from './browser_api.js';
-export {FittingType, SaveRequestType} from './constants.js';
+export {FittingType, Point, SaveRequestType} from './constants.js';
 export {PluginController} from './controller.js';
 export {ViewerBookmarkElement} from './elements/viewer-bookmark.js';
 export {ViewerDocumentOutlineElement} from './elements/viewer-document-outline.js';
@@ -28,4 +28,5 @@ export {PDFScriptingAPI} from './pdf_scripting_api.js';
 export {getFilenameFromURL, PDFViewerElement} from './pdf_viewer.js';
 export {shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
 export {LayoutOptions, PAGE_SHADOW, Viewport} from './viewport.js';
+export {ViewportScroller} from './viewport_scroller.js';
 export {ZoomManager} from './zoom_manager.js';

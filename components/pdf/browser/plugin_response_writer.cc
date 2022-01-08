@@ -69,7 +69,7 @@ $3
   // TODO(crbug.com/1252096): We should load the injected scripts as network
   // resources instead. Until then, feel free to raise this limit as necessary.
   if (stream_info.injected_script)
-    DCHECK_LE(stream_info.injected_script->size(), 8'192u);
+    DCHECK_LE(stream_info.injected_script->size(), 16'384u);
 
   return base::ReplaceStringPlaceholders(
       kResponseTemplate,

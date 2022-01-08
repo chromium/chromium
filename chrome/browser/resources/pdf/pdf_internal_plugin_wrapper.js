@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Point} from './constants.js';
 import {GestureDetector, PinchEventDetail} from './gesture_detector.js';
+import {ViewportScroller} from './viewport_scroller.js';
 
 const channel = new MessageChannel();
 
@@ -17,6 +19,24 @@ if (parentOrigin === 'chrome-untrusted://print') {
   parentOrigin = 'chrome://print';
 }
 
+/**
+ * {@link Viewport}-compatible wrapper around the window's scroll position
+ * operations.
+ */
+class SimulatedViewport {
+  /** @return {!Point} */
+  get position() {
+    return {x: window.scrollX, y: window.scrollY};
+  }
+
+  /** @param {!Point} point */
+  setPosition(point) {
+    window.scrollTo(point.x, point.y);
+  }
+}
+const viewportScroller =
+    new ViewportScroller(new SimulatedViewport(), plugin, window);
+
 // Plugin-to-parent message handlers. All messages are passed through, but some
 // messages may affect this frame, too.
 let isFormFieldFocused = false;
@@ -26,6 +46,11 @@ plugin.addEventListener('message', e => {
       // TODO(crbug.com/1279516): Ideally, the plugin would just consume
       // interesting keyboard events first.
       isFormFieldFocused = /** @type {{focused:boolean}} */ (e.data).focused;
+      break;
+
+    case 'setIsSelecting':
+      viewportScroller.setEnableScrolling(
+          /** @type {{ isSelecting: boolean }} */ (e.data).isSelecting);
       break;
   }
 
