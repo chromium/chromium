@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
+#include "build/build_config.h"
 #include "pdf/pdfium/pdfium_api_string_buffer_adapter.h"
 #include "pdf/pdfium/pdfium_mem_buffer_file_write.h"
 #include "pdf/pdfium/pdfium_print.h"
@@ -227,7 +228,7 @@ PDFiumEngineExports::PDFiumEngineExports() {}
 
 PDFiumEngineExports::~PDFiumEngineExports() {}
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 std::vector<uint8_t> PDFiumEngineExports::CreateFlattenedPdf(
     base::span<const uint8_t> input_buffer) {
   ScopedUnsupportedFeature scoped_unsupported_feature(
@@ -237,9 +238,9 @@ std::vector<uint8_t> PDFiumEngineExports::CreateFlattenedPdf(
     return std::vector<uint8_t>();
   return PDFiumPrint::CreateFlattenedPdf(std::move(doc));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool PDFiumEngineExports::RenderPDFPageToDC(
     base::span<const uint8_t> pdf_buffer,
     int page_number,
@@ -320,7 +321,7 @@ void PDFiumEngineExports::SetPDFEnsureTypefaceCharactersAccessible(
 void PDFiumEngineExports::SetPDFUsePrintMode(int mode) {
   FPDF_SetPrintMode(mode);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 bool PDFiumEngineExports::RenderPDFPageToBitmap(
     base::span<const uint8_t> pdf_buffer,

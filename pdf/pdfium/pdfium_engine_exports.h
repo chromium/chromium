@@ -21,11 +21,11 @@ class PDFiumEngineExports : public PDFEngineExports {
   ~PDFiumEngineExports() override;
 
 // PDFEngineExports:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   std::vector<uint8_t> CreateFlattenedPdf(
       base::span<const uint8_t> input_buffer) override;
-#endif  // defined(OS_CHROMEOS)
-#if defined(OS_WIN)
+#endif  // BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_WIN)
   bool RenderPDFPageToDC(base::span<const uint8_t> pdf_buffer,
                          int page_number,
                          const RenderingSettings& settings,
@@ -34,7 +34,7 @@ class PDFiumEngineExports : public PDFEngineExports {
       PDFEnsureTypefaceCharactersAccessible func) override;
 
   void SetPDFUsePrintMode(int mode) override;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   bool RenderPDFPageToBitmap(base::span<const uint8_t> pdf_buffer,
                              int page_number,
                              const RenderingSettings& settings,

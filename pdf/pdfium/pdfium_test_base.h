@@ -76,7 +76,7 @@ class PDFiumTestBase : public testing::Test {
  private:
   void InitializePDFium();
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   base::FilePath test_fonts_path_;
 #endif
 

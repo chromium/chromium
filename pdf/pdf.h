@@ -12,11 +12,11 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 typedef void (*PDFEnsureTypefaceCharactersAccessible)(const LOGFONT* font,
                                                       const wchar_t* text,
                                                       size_t text_length);
@@ -30,14 +30,14 @@ class SizeF;
 
 namespace chrome_pdf {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Create a flattened PDF document from an existing PDF document.
 // `input_buffer` is the buffer that contains the entire PDF document to be
 // flattened.
 std::vector<uint8_t> CreateFlattenedPdf(base::span<const uint8_t> input_buffer);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Printing modes - type to convert PDF to for printing. See PDFium's
 // FPDF_SetPrintMode() for details.
 enum PrintingMode {
@@ -99,7 +99,7 @@ void SetPDFEnsureTypefaceCharactersAccessible(
     PDFEnsureTypefaceCharactersAccessible func);
 
 void SetPDFUsePrintMode(int mode);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // `page_count` and `max_page_width` are optional and can be NULL.
 // Returns false if the document is not valid.

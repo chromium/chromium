@@ -32,12 +32,12 @@ class PDFiumPrint {
   PDFiumPrint& operator=(const PDFiumPrint&) = delete;
   ~PDFiumPrint();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Flattens the `doc`.
   // On success, returns the flattened version of `doc` as a vector.
   // On failure, returns an empty vector.
   static std::vector<uint8_t> CreateFlattenedPdf(ScopedFPDFDocument doc);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Performs N-up PDF generation for `doc` based on `pages_per_sheet`,
   // `page_size`, and `printable_area`.

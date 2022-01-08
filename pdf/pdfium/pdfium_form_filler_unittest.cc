@@ -117,7 +117,7 @@ TEST_F(FormFillerTest, DoURIActionWithKeyboardModifier) {
   }
 
   constexpr blink::WebInputEvent::Modifiers kModifierKey =
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       blink::WebInputEvent::Modifiers::kMetaKey;
 #else
       blink::WebInputEvent::Modifiers::kControlKey;

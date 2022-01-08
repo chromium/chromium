@@ -662,7 +662,7 @@ TEST_F(PDFiumEngineTest, SelectText) {
   EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
 
   engine->SelectAll();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   constexpr char kExpectedText[] =
       "Hello, world!\r\nGoodbye, world!\r\nHello, world!\r\nGoodbye, world!";
 #else
@@ -681,7 +681,7 @@ TEST_F(PDFiumEngineTest, SelectCroppedText) {
   EXPECT_THAT(engine->GetSelectedText(), IsEmpty());
 
   engine->SelectAll();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   constexpr char kExpectedText[] = "world!\r\n";
 #else
   constexpr char kExpectedText[] = "world!\n";
