@@ -7,7 +7,7 @@ Metadata:
 Container1:
 apk_file_name=test.apk
 apk_signature_block_size=0
-apk_size=147858911
+apk_size=147858981
 elf_algorithm=linker_map
 elf_arch=arm
 elf_build_id=WhatAnAmazingBuildId
@@ -495,8 +495,8 @@ Symbols:
 <Container1:>.pak.translations@6918(size_without_padding=9,padding=0,full_name=../../ui/strings/app_locale_settings.grd: IDS_WEB_FONT_SIZE,object_path=,source_path=,flags={},num_aliases=1,component=)
 <Container1:>.pak.translations@0(size_without_padding=0,padding=18,full_name=Overhead: assets/en-US.pak,object_path=,source_path=,flags={},num_aliases=1,component=)
 <Container1:>.other@0(size_without_padding=1048576,padding=0,full_name=assets/icudtl.dat,object_path=,source_path=third_party/icu/android/icudtl.dat,flags={},num_aliases=1,component=Internal>Android)
+<Container1:>.other@0(size_without_padding=4194304,padding=0,full_name=lib/armeabi-v7a/smalltest.so,object_path=,source_path=$APK/lib/armeabi-v7a/smalltest.so,flags={gen},num_aliases=1,component=)
 <Container1:>.other@0(size_without_padding=1024,padding=0,full_name=res/drawable-v13/test.xml,object_path=,source_path=chrome/android/res/drawable/test.xml,flags={},num_aliases=1,component=)
-<Container1:>.other@0(size_without_padding=4194304,padding=0,full_name=smalltest.so,object_path=,source_path=$APK/smalltest.so,flags={gen},num_aliases=1,component=)
 <Container1:>.other@0(size_without_padding=60,padding=0,full_name=** ELF Section: .ARM.attributes,object_path=,source_path=,flags={},num_aliases=1,component=)
 <Container1:>.other@0(size_without_padding=1536456,padding=0,full_name=** ELF Section: .ARM.exidx,object_path=,source_path=,flags={},num_aliases=1,component=)
 <Container1:>.other@0(size_without_padding=183632,padding=0,full_name=** ELF Section: .ARM.extab,object_path=,source_path=,flags={},num_aliases=1,component=)
@@ -519,7 +519,7 @@ Symbols:
 <Container1:>.other@0(size_without_padding=436,padding=0,full_name=** ELF Section: .shstrtab,object_path=,source_path=,flags={},num_aliases=1,component=)
 <Container1:>.other@0(size_without_padding=34841854,padding=0,full_name=** ELF Section: .strtab,object_path=,source_path=,flags={},num_aliases=1,component=)
 <Container1:>.other@0(size_without_padding=17166112,padding=0,full_name=** ELF Section: .symtab,object_path=,source_path=,flags={},num_aliases=1,component=)
-<Container1:>.other@0(size_without_padding=0,padding=764,full_name=Overhead: APK file,object_path=,source_path=,flags={},num_aliases=1,component=)
+<Container1:>.other@0(size_without_padding=0,padding=834,full_name=Overhead: APK file,object_path=,source_path=,flags={},num_aliases=1,component=)
 <Container1:>.other@0(size_without_padding=0,padding=33902635,full_name=Overhead: ELF file,object_path=,source_path=,flags={},num_aliases=1,component=)
 <Container2:>.text@28d900(size_without_padding=16,padding=0,full_name=_GLOBAL__sub_I_page_allocator.cc,object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={startup},num_aliases=1,component=Blink>Internal)
 <Container2:>.text@28d910(size_without_padding=56,padding=0,full_name=_GLOBAL__sub_I_bbr_sender.cc,object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={startup},num_aliases=1,component=Blink>Internal)

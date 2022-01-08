@@ -1752,11 +1752,14 @@ def ParseSsargs(lines):
   return sub_args_list
 
 
-def _UpdateLinkerNameAndToolPrefix(tentative_output_dir, native_spec):
+def _MakeNativeSpec(tentative_output_dir, **kwargs):
+  native_spec = NativeSpec(**kwargs)
   if not native_spec.map_path:
+    # TODO(crbug.com/1193507): Implement string literal tracking without map
+    #     files. nm emits some string literal symbols, but most are missing.
+    native_spec.track_string_literals = False
     return native_spec
   native_spec.linker_name = _DetectLinkerName(native_spec.map_path)
-  logging.info('Linker name: %s', native_spec.linker_name)
 
   tool_prefix_finder = path_util.ToolPrefixFinder(
       value=native_spec.tool_prefix,
@@ -1766,78 +1769,103 @@ def _UpdateLinkerNameAndToolPrefix(tentative_output_dir, native_spec):
   return native_spec
 
 
-def _CreateNativeSpecs(*, tentative_output_dir, apk_path, elf_path, map_path,
-                       abi_filters, track_string_literals, ignore_linker_map,
-                       tool_prefix, on_config_error):
-  if (map_path and not map_path.endswith('.map')
-      and not map_path.endswith('.map.gz')):
-    on_config_error('Expected --map-file to end with .map or .map.gz')
+def _DeduceMapPath(elf_path, tool_prefix):
+  if _ElfIsMainPartition(elf_path, tool_prefix):
+    map_path = elf_path.replace('.so', '__combined.so') + '.map'
+  else:
+    map_path = elf_path + '.map'
+  if not os.path.exists(map_path):
+    map_path += '.gz'
+    if not os.path.exists(map_path):
+      map_path = None
 
-  apk_so_path = None
-  if apk_path:
-    with zipfile.ZipFile(apk_path) as z:
-      lib_infos = [
-          f for f in z.infolist()
-          if f.filename.endswith('.so') and f.file_size > 0
-      ]
-    if abi_filters:
-      lib_infos = [
-          l for l in lib_infos if any(f in l.filename for f in abi_filters)
-      ]
-    if lib_infos:
-      # TODO(agrieve): Analyze more than just one library.
-      apk_so_path = max(lib_infos, key=lambda x: x.file_size).filename
+  if map_path:
+    logging.debug('Detected map_path=%s', map_path)
+  return map_path
 
-    if apk_so_path:
-      if apk_so_path.endswith('_partition.so'):
-        # TODO(agrieve): Support symbol breakdowns for partitions (they exist in
-        #     the __combined .map file. Debug information (nm output) is shared
-        #     with base partition.
-        logging.debug('Not breaking down %s: partitioned library', apk_so_path)
-        return []
 
-      if not elf_path and tentative_output_dir:
-        elf_path = os.path.join(
-            tentative_output_dir, 'lib.unstripped',
-            posixpath.basename(apk_so_path.replace('crazy.', '')))
-        # E.g. libcrashpad_handler_trampoline.so is missing from lib.unstripped.
-        if not os.path.exists(elf_path):
-          elf_path = None
-          logging.debug('Not breaking down %s: missing in lib.unstripped',
-                        apk_so_path)
-        else:
-          logging.debug('Detected --elf-file=%s', elf_path)
-
-  if not tentative_output_dir:
-    logging.warning('Cannot break down native symbols without output_dir')
-
+def _CreateNativeSpecs(*, tentative_output_dir, apk_infolist, elf_path,
+                       map_path, abi_filters, auto_abi_filters,
+                       track_string_literals, ignore_linker_map, tool_prefix,
+                       on_config_error):
   if ignore_linker_map:
     map_path = None
+  elif (map_path and not map_path.endswith('.map')
+        and not map_path.endswith('.map.gz')):
+    on_config_error('Expected --map-file to end with .map or .map.gz')
   elif elf_path and not map_path:
-    if _ElfIsMainPartition(elf_path, tool_prefix):
-      map_path = elf_path.replace('.so', '__combined.so') + '.map'
+    map_path = _DeduceMapPath(elf_path, tool_prefix)
+
+  ret = []
+  # if --elf-path or --map-path (rather than --aux-elf-path, --aux-map-path):
+  if not apk_infolist:
+    if map_path or elf_path:
+      ret.append(
+          _MakeNativeSpec(tentative_output_dir,
+                          tool_prefix=tool_prefix,
+                          apk_so_path=None,
+                          map_path=map_path,
+                          elf_path=elf_path,
+                          track_string_literals=track_string_literals))
+    return abi_filters, ret
+
+  lib_infos = [
+      f for f in apk_infolist if f.filename.endswith('.so') and f.file_size > 0
+  ]
+
+  # Sort so elf_path/map_path applies largest non-filtered library.
+  matches_abi = lambda n: not abi_filters or any(f in n for f in abi_filters)
+  lib_infos.sort(key=lambda x: (not matches_abi(x.filename), -x.file_size))
+
+  for lib_info in lib_infos:
+    apk_so_path = lib_info.filename
+    cur_elf_path = None
+    cur_map_path = None
+    if not matches_abi(apk_so_path):
+      logging.debug('Not breaking down %s: secondary ABI', apk_so_path)
+    elif apk_so_path.endswith('_partition.so'):
+      # TODO(agrieve): Support symbol breakdowns for partitions (they exist in
+      #     the __combined .map file. Debug information (nm output) is shared
+      #     with base partition.
+      logging.debug('Not breaking down %s: partitioned library', apk_so_path)
     else:
-      map_path = elf_path + '.map'
-    if not os.path.exists(map_path):
-      map_path += '.gz'
-      if not os.path.exists(map_path):
+      if elf_path:
+        # Consume --aux-elf-file for the largest matching binary.
+        cur_elf_path = elf_path
+        elf_path = None
+      elif tentative_output_dir:
+        cur_elf_path = os.path.join(
+            tentative_output_dir, 'lib.unstripped',
+            posixpath.basename(apk_so_path.replace('crazy.', '')))
+        if os.path.exists(cur_elf_path):
+          logging.debug('Detected elf_path=%s', cur_elf_path)
+        else:
+          # TODO(agrieve): Not able to find libcrashpad_handler_trampoline.so.
+          logging.debug('Not breaking down %s because file does not exist: %s',
+                        apk_so_path, cur_elf_path)
+          cur_elf_path = None
+
+      if map_path:
+        # Consume --aux-map-file for first non-skipped elf.
+        cur_map_path = map_path
         map_path = None
+      elif cur_elf_path and not ignore_linker_map:
+        cur_map_path = _DeduceMapPath(cur_elf_path, tool_prefix)
 
-    if map_path:
-      logging.debug('Detected --map-file=%s', map_path)
+      if auto_abi_filters:
+        abi_filters = [posixpath.basename(posixpath.dirname(apk_so_path))]
+        logging.info('Detected --abi-filter %s', abi_filters[0])
+        auto_abi_filters = False
 
-  if not (apk_so_path or map_path or elf_path):
-    return []
+    ret.append(
+        _MakeNativeSpec(tentative_output_dir,
+                        tool_prefix=tool_prefix,
+                        apk_so_path=apk_so_path,
+                        map_path=cur_map_path,
+                        elf_path=cur_elf_path,
+                        track_string_literals=track_string_literals))
 
-  # TODO(crbug.com/1193507): Implement string literal tracking without map
-  #     files. nm emits some string literal symbols, but most are missing.
-  track_string_literals = bool(track_string_literals and map_path)
-  native_spec = NativeSpec(tool_prefix=tool_prefix,
-                           apk_so_path=apk_so_path,
-                           map_path=map_path,
-                           elf_path=elf_path,
-                           track_string_literals=track_string_literals)
-  return [_UpdateLinkerNameAndToolPrefix(tentative_output_dir, native_spec)]
+  return abi_filters, ret
 
 
 def _DeduceAuxPaths(args, apk_prefix):
@@ -1920,7 +1948,11 @@ def _ProcessContainerArgs(top_args,
   mapping_path, resources_pathmap_path = _DeduceAuxPaths(sub_args, apk_prefix)
 
   apk_spec = None
+  apk_infolist = None
   if apk_prefix:
+    with zipfile.ZipFile(apk_path) as z:
+      apk_infolist = z.infolist()
+
     apk_spec = ApkSpec(apk_path=apk_path,
                        minimal_apks_path=sub_args.minimal_apks_file,
                        mapping_path=mapping_path,
@@ -1963,12 +1995,14 @@ def _ProcessContainerArgs(top_args,
       aux_elf_file = None
       aux_map_file = None
 
-    native_specs = _CreateNativeSpecs(
+    auto_abi_filters = not abi_filters and split_name == 'base'
+    abi_filters, native_specs = _CreateNativeSpecs(
         tentative_output_dir=top_args.output_directory,
-        apk_path=apk_path,
+        apk_infolist=apk_infolist,
         elf_path=sub_args.elf_file or aux_elf_file,
         map_path=sub_args.map_file or aux_map_file,
         abi_filters=abi_filters,
+        auto_abi_filters=auto_abi_filters,
         track_string_literals=(top_args.track_string_literals
                                and sub_args.track_string_literals),
         ignore_linker_map=(top_args.ignore_linker_map
@@ -1977,10 +2011,8 @@ def _ProcessContainerArgs(top_args,
         on_config_error=on_config_error)
 
     # For app bundles, use a consistent ABI for all splits.
-    if split_name == 'base' and native_specs and not abi_filters:
-      abi = posixpath.basename(posixpath.dirname(native_specs[0].apk_so_path))
-      logging.info('Detected --abi-filter %s', abi)
-      top_args.abi_filters = [abi]
+    if auto_abi_filters:
+      top_args.abi_filters = abi_filters
   else:
     native_specs = []
 
@@ -2097,9 +2129,16 @@ def Run(top_args, on_config_error):
   # Iterate over each container.
   for (sub_args, apk_spec, pak_spec, native_specs, container_name,
        resources_pathmap_path) in _IterSubArgs(top_args, on_config_error):
+    # TODO(https://crbug.com/1193507): Filter out "sections", until we're ready
+    # to create symbols for all native libraryes. As of now, these specs occur
+    # for splits with only secondary-abit .so files. We aren't ready to show
+    # them yet because the section symbols have no source paths.
+    native_specs = [s for s in native_specs if s.algorithm != 'sections']
     if not native_specs:
       native_specs = [None]
-    for native_spec in native_specs:
+
+    # TODO(https://crbug.com/1193507): Break down all libraries.
+    for native_spec in native_specs[:1]:
       if container_name in seen_container_names:
         raise ValueError('Duplicate container name: {}'.format(container_name))
       seen_container_names.add(container_name)

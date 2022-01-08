@@ -59,9 +59,9 @@ _TEST_MINIMAL_APKS_PATH = os.path.join(_TEST_OUTPUT_DIR, 'Bundle.minimal.apks')
 _TEST_SSARGS_PATH = os.path.join(_TEST_OUTPUT_DIR, 'test.ssargs')
 
 # Generated file paths relative to apk
-_TEST_APK_SO_PATH = 'test.so'
-_TEST_APK_SMALL_SO_PATH = 'smalltest.so'
-_TEST_APK_DEX_PATH = 'test.dex'
+_TEST_APK_SO_PATH = 'lib/armeabi-v7a/test.so'
+_TEST_APK_SMALL_SO_PATH = 'lib/armeabi-v7a/smalltest.so'
+_TEST_APK_DEX_PATH = 'classes.dex'
 _TEST_APK_OTHER_FILE_PATH = 'assets/icudtl.dat'
 _TEST_APK_RES_FILE_PATH = 'res/drawable-v13/test.xml'
 
