@@ -74,9 +74,6 @@ void MediaRouterCastUiForTest::ChooseSourceType(
     case CastDialogView::kDesktop:
       source_index = 1;
       break;
-    case CastDialogView::kLocalFile:
-      source_index = 2;
-      break;
   }
   dialog_view->sources_menu_model_for_test()->ActivatedAt(source_index);
 }

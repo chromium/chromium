@@ -118,9 +118,6 @@ std::u16string CastDialogView::GetWindowTitle() const {
     case SourceType::kDesktop:
       return l10n_util::GetStringUTF16(
           IDS_MEDIA_ROUTER_DESKTOP_MIRROR_CAST_MODE);
-    case SourceType::kLocalFile:
-      return l10n_util::GetStringFUTF16(IDS_MEDIA_ROUTER_CAST_LOCAL_MEDIA_TITLE,
-                                        local_file_name_.value());
     default:
       NOTREACHED();
       return std::u16string();
@@ -174,18 +171,7 @@ bool CastDialogView::IsCommandIdEnabled(int command_id) const {
 }
 
 void CastDialogView::ExecuteCommand(int command_id, int event_flags) {
-  // This method is called when the user selects a source in the source picker.
-  if (command_id == SourceType::kLocalFile) {
-    // When the file picker dialog opens, the Cast dialog loses focus. So we
-    // must temporarily prevent it from closing when losing focus.
-    set_close_on_deactivate(false);
-    controller_->ChooseLocalFile(base::BindOnce(
-        &CastDialogView::OnFilePickerClosed, weak_factory_.GetWeakPtr()));
-  } else {
-    if (local_file_name_)
-      local_file_name_.reset();
-    SelectSource(static_cast<SourceType>(command_id));
-  }
+  SelectSource(static_cast<SourceType>(command_id));
 }
 
 void CastDialogView::AddObserver(Observer* observer) {
@@ -283,11 +269,7 @@ void CastDialogView::ShowAccessCodeCastDialog() {
     case SourceType::kDesktop:
       preferred_cast_mode = MediaCastMode::DESKTOP_MIRROR;
       break;
-    case SourceType::kLocalFile:
-      preferred_cast_mode = MediaCastMode::LOCAL_FILE;
-      break;
   }
-
   AccessCodeCastDialog::Show(preferred_cast_mode);
 }
 
@@ -381,8 +363,6 @@ void CastDialogView::ShowSourcesMenu() {
         SourceType::kTab, IDS_MEDIA_ROUTER_TAB_MIRROR_CAST_MODE);
     sources_menu_model_->AddCheckItemWithStringId(
         SourceType::kDesktop, IDS_MEDIA_ROUTER_DESKTOP_MIRROR_CAST_MODE);
-    sources_menu_model_->AddCheckItemWithStringId(
-        SourceType::kLocalFile, IDS_MEDIA_ROUTER_LOCAL_FILE_CAST_MODE);
   }
 
   sources_menu_runner_ = std::make_unique<views::MenuRunner>(
@@ -417,16 +397,7 @@ void CastDialogView::SinkPressed(size_t index) {
   } else {
     absl::optional<MediaCastMode> cast_mode = GetCastModeToUse(sink);
     if (cast_mode) {
-      // Starting local file casting may open a new tab synchronously on the UI
-      // thread, which deactivates the dialog. So we must prevent it from
-      // closing and getting destroyed.
-      if (cast_mode.value() == LOCAL_FILE)
-        set_close_on_deactivate(false);
       controller_->StartCasting(sink.id, cast_mode.value());
-      // Re-enable close on deactivate so the user can click elsewhere to close
-      // the dialog.
-      if (cast_mode.value() == LOCAL_FILE)
-        set_close_on_deactivate(!keep_shown_for_testing_);
       metrics_.OnStartCasting(base::Time::Now(), index, cast_mode.value(),
                               sink.icon_type, HasCastAndDialSinks());
     }
@@ -453,10 +424,6 @@ absl::optional<MediaCastMode> CastDialogView::GetCastModeToUse(
     case SourceType::kDesktop:
       if (base::Contains(sink.cast_modes, DESKTOP_MIRROR))
         return absl::make_optional<MediaCastMode>(DESKTOP_MIRROR);
-      break;
-    case SourceType::kLocalFile:
-      if (base::Contains(sink.cast_modes, LOCAL_FILE))
-        return absl::make_optional<MediaCastMode>(LOCAL_FILE);
       break;
   }
   return absl::nullopt;
@@ -485,19 +452,6 @@ void CastDialogView::RecordSinkCountWithDelay() {
 
 void CastDialogView::RecordSinkCount() {
   metrics_.OnRecordSinkCount(sink_buttons_);
-}
-
-void CastDialogView::OnFilePickerClosed(const ui::SelectedFileInfo* file_info) {
-  // Re-enable the setting to close the dialog when it loses focus.
-  set_close_on_deactivate(!keep_shown_for_testing_);
-  if (file_info) {
-#if defined(OS_WIN)
-    local_file_name_ = base::WideToUTF16(file_info->display_name);
-#else
-    local_file_name_ = base::UTF8ToUTF16(file_info->display_name);
-#endif  // defined(OS_WIN)
-    SelectSource(SourceType::kLocalFile);
-  }
 }
 
 bool CastDialogView::HasCastAndDialSinks() const {

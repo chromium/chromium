@@ -18,7 +18,6 @@
 #include "chrome/browser/ui/views/media_router/cast_dialog_metrics.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/models/simple_menu_model.h"
-#include "ui/shell_dialogs/selected_file_info.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/controls/menu/menu_runner.h"
@@ -51,7 +50,7 @@ class CastDialogView : public views::BubbleDialogDelegateView,
     virtual void OnDialogWillClose(CastDialogView* dialog_view) = 0;
   };
 
-  enum SourceType { kTab, kDesktop, kLocalFile };
+  enum SourceType { kTab, kDesktop };
 
   CastDialogView(const CastDialogView&) = delete;
   CastDialogView& operator=(const CastDialogView&) = delete;
@@ -134,8 +133,6 @@ class CastDialogView : public views::BubbleDialogDelegateView,
  private:
   friend class CastDialogViewTest;
   friend class MediaRouterCastUiForTest;
-  FRIEND_TEST_ALL_PREFIXES(CastDialogViewTest, CancelLocalFileSelection);
-  FRIEND_TEST_ALL_PREFIXES(CastDialogViewTest, CastLocalFile);
   FRIEND_TEST_ALL_PREFIXES(CastDialogViewTest, DisableUnsupportedSinks);
   FRIEND_TEST_ALL_PREFIXES(CastDialogViewTest, ShowAndHideDialog);
   FRIEND_TEST_ALL_PREFIXES(CastDialogViewTest, ShowSourcesMenu);
@@ -199,9 +196,6 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   // Records the number of sinks shown with the metrics recorder.
   void RecordSinkCount();
 
-  // Sets local file as the selected source if |file_info| is not null.
-  void OnFilePickerClosed(const ui::SelectedFileInfo* file_info);
-
   // Returns true if there are active Cast and DIAL sinks.
   bool HasCastAndDialSinks() const;
 
@@ -250,9 +244,6 @@ class CastDialogView : public views::BubbleDialogDelegateView,
   // The sink that the user has selected to cast to. If the user is using
   // multiple sinks at the same time, the last activated sink is used.
   absl::optional<size_t> selected_sink_index_;
-
-  // This value is set if the user has chosen a local file to cast.
-  absl::optional<std::u16string> local_file_name_;
 
   base::ObserverList<Observer> observers_;
 

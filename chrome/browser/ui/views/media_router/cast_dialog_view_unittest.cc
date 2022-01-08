@@ -228,13 +228,11 @@ TEST_F(CastDialogViewTest, ShowSourcesMenu) {
   InitializeDialogWithModel(model);
   // Press the button to show the sources menu.
   views::test::ButtonTestApi(sources_button()).NotifyClick(CreateMouseEvent());
-  // The items should be "tab" (includes tab mirroring and presentation),
-  // "desktop", and "local file".
-  EXPECT_EQ(3, sources_menu_model()->GetItemCount());
+  // The items should be "tab" (includes tab mirroring and presentation) and
+  // "desktop".
+  EXPECT_EQ(2, sources_menu_model()->GetItemCount());
   EXPECT_EQ(CastDialogView::kTab, sources_menu_model()->GetCommandIdAt(0));
   EXPECT_EQ(CastDialogView::kDesktop, sources_menu_model()->GetCommandIdAt(1));
-  EXPECT_EQ(CastDialogView::kLocalFile,
-            sources_menu_model()->GetCommandIdAt(2));
 
   // When there are no sinks, the sources button should be disabled.
   model.set_media_sinks({});
@@ -249,8 +247,8 @@ TEST_F(CastDialogViewTest, CastAlternativeSources) {
   InitializeDialogWithModel(model);
   // Press the button to show the sources menu.
   views::test::ButtonTestApi(sources_button()).NotifyClick(CreateMouseEvent());
-  // There should be three sources: tab, desktop, and local file.
-  ASSERT_EQ(3, sources_menu_model()->GetItemCount());
+  // There should be two sources: tab and desktop.
+  ASSERT_EQ(2, sources_menu_model()->GetItemCount());
 
   EXPECT_CALL(controller_, StartCasting(model.media_sinks()[0].id, TAB_MIRROR));
   sources_menu_model()->ActivatedAt(0);
@@ -260,67 +258,6 @@ TEST_F(CastDialogViewTest, CastAlternativeSources) {
   EXPECT_CALL(controller_,
               StartCasting(model.media_sinks()[0].id, DESKTOP_MIRROR));
   sources_menu_model()->ActivatedAt(1);
-  SinkPressedAtIndex(0);
-}
-
-TEST_F(CastDialogViewTest, CastLocalFile) {
-  const std::string file_name = "example.mp4";
-  const std::string file_path = "path/to/" + file_name;
-  std::vector<UIMediaSink> media_sinks = {CreateAvailableSink()};
-  media_sinks[0].cast_modes = {TAB_MIRROR, LOCAL_FILE};
-  CastDialogModel model = CreateModelWithSinks(std::move(media_sinks));
-  InitializeDialogWithModel(model);
-  views::test::ButtonTestApi(sources_button()).NotifyClick(CreateMouseEvent());
-
-#if defined(OS_WIN)
-  ui::SelectedFileInfo file_info{base::FilePath(base::UTF8ToWide(file_name)),
-                                 base::FilePath(base::UTF8ToWide(file_path))};
-#else
-  ui::SelectedFileInfo file_info{base::FilePath(file_name),
-                                 base::FilePath(file_path)};
-#endif  // defined(OS_WIN)
-  EXPECT_CALL(controller_, ChooseLocalFile(_))
-      .WillOnce(
-          [file_info](base::OnceCallback<void(const ui::SelectedFileInfo*)>
-                          file_callback) {
-            std::move(file_callback).Run(&file_info);
-          });
-  ASSERT_EQ(CastDialogView::kLocalFile,
-            sources_menu_model()->GetCommandIdAt(2));
-  sources_menu_model()->ActivatedAt(2);
-  EXPECT_EQ(dialog_->GetWindowTitle(),
-            l10n_util::GetStringFUTF16(IDS_MEDIA_ROUTER_CAST_LOCAL_MEDIA_TITLE,
-                                       base::UTF8ToUTF16(file_name)));
-
-  EXPECT_CALL(controller_, StartCasting(model.media_sinks()[0].id, LOCAL_FILE));
-  SinkPressedAtIndex(0);
-}
-
-TEST_F(CastDialogViewTest, CancelLocalFileSelection) {
-  std::vector<UIMediaSink> media_sinks = {CreateAvailableSink()};
-  media_sinks[0].cast_modes = {TAB_MIRROR, LOCAL_FILE};
-  CastDialogModel model = CreateModelWithSinks(std::move(media_sinks));
-  InitializeDialogWithModel(model);
-  views::test::ButtonTestApi(sources_button()).NotifyClick(CreateMouseEvent());
-
-  // The tab source should be selected by default.
-  ASSERT_EQ(CastDialogView::kTab, sources_menu_model()->GetCommandIdAt(0));
-  ASSERT_TRUE(sources_menu_model()->IsItemCheckedAt(0));
-
-  // Select the local file source, then cancel file selection by passing a
-  // nullptr into the callback.
-  EXPECT_CALL(controller_, ChooseLocalFile(_))
-      .WillOnce(
-          [](base::OnceCallback<void(const ui::SelectedFileInfo*)>
-                 file_callback) { std::move(file_callback).Run(nullptr); });
-  ASSERT_EQ(CastDialogView::kLocalFile,
-            sources_menu_model()->GetCommandIdAt(2));
-  sources_menu_model()->ActivatedAt(2);
-
-  // Since we cancelled file selection, "tab" should still be the selected
-  // source.
-  EXPECT_TRUE(sources_menu_model()->IsItemCheckedAt(0));
-  EXPECT_CALL(controller_, StartCasting(model.media_sinks()[0].id, TAB_MIRROR));
   SinkPressedAtIndex(0);
 }
 
