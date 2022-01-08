@@ -881,12 +881,10 @@ bool ParseKeyUsage(const der::Input& key_usage_tlv, der::BitString* key_usage) {
 
 bool ParseAuthorityInfoAccess(
     const der::Input& authority_info_access_tlv,
-    std::vector<base::StringPiece>* out_ca_issuers_uris,
-    std::vector<base::StringPiece>* out_ocsp_uris) {
+    std::vector<AuthorityInfoAccessDescription>* out_access_descriptions) {
   der::Parser parser(authority_info_access_tlv);
 
-  out_ca_issuers_uris->clear();
-  out_ocsp_uris->clear();
+  out_access_descriptions->clear();
 
   //    AuthorityInfoAccessSyntax  ::=
   //            SEQUENCE SIZE (1..MAX) OF AccessDescription
@@ -897,23 +895,52 @@ bool ParseAuthorityInfoAccess(
     return false;
 
   while (sequence_parser.HasMore()) {
+    AuthorityInfoAccessDescription access_description;
+
     //    AccessDescription  ::=  SEQUENCE {
     der::Parser access_description_sequence_parser;
     if (!sequence_parser.ReadSequence(&access_description_sequence_parser))
       return false;
 
     //            accessMethod          OBJECT IDENTIFIER,
-    der::Input access_method_oid;
-    if (!access_description_sequence_parser.ReadTag(der::kOid,
-                                                    &access_method_oid))
+    if (!access_description_sequence_parser.ReadTag(
+            der::kOid, &access_description.access_method_oid)) {
       return false;
+    }
 
     //            accessLocation        GeneralName  }
+    if (!access_description_sequence_parser.ReadRawTLV(
+            &access_description.access_location)) {
+      return false;
+    }
+
+    if (access_description_sequence_parser.HasMore())
+      return false;
+
+    out_access_descriptions->push_back(access_description);
+  }
+
+  return true;
+}
+
+bool ParseAuthorityInfoAccessURIs(
+    const der::Input& authority_info_access_tlv,
+    std::vector<base::StringPiece>* out_ca_issuers_uris,
+    std::vector<base::StringPiece>* out_ocsp_uris) {
+  std::vector<AuthorityInfoAccessDescription> access_descriptions;
+  if (!ParseAuthorityInfoAccess(authority_info_access_tlv,
+                                &access_descriptions)) {
+    return false;
+  }
+
+  for (const auto& access_description : access_descriptions) {
+    der::Parser access_location_parser(access_description.access_location);
     der::Tag access_location_tag;
     der::Input access_location_value;
-    if (!access_description_sequence_parser.ReadTagAndValue(
-            &access_location_tag, &access_location_value))
+    if (!access_location_parser.ReadTagAndValue(&access_location_tag,
+                                                &access_location_value)) {
       return false;
+    }
 
     // GeneralName ::= CHOICE {
     if (access_location_tag == der::ContextSpecificPrimitive(6)) {
@@ -922,13 +949,12 @@ bool ParseAuthorityInfoAccess(
       if (!base::IsStringASCII(uri))
         return false;
 
-      if (access_method_oid == AdCaIssuersOid())
+      if (access_description.access_method_oid == AdCaIssuersOid())
         out_ca_issuers_uris->push_back(uri);
-      else if (access_method_oid == AdOcspOid())
+      else if (access_description.access_method_oid == AdOcspOid())
         out_ocsp_uris->push_back(uri);
     }
   }
-
   return true;
 }
 

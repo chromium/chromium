@@ -496,7 +496,27 @@ enum KeyUsageBit {
 NET_EXPORT bool ParseKeyUsage(const der::Input& key_usage_tlv,
                               der::BitString* key_usage) WARN_UNUSED_RESULT;
 
+struct AuthorityInfoAccessDescription {
+  // The accessMethod DER OID value.
+  der::Input access_method_oid;
+  // The accessLocation DER TLV.
+  der::Input access_location;
+};
 // Parses the Authority Information Access extension defined by RFC 5280.
+// Returns true on success, and |out_access_descriptions| will alias data
+// in |authority_info_access_tlv|.On failure returns false, and
+// out_access_descriptions may have been partially filled.
+//
+// No validation is performed on the contents of the
+// AuthorityInfoAccessDescription fields.
+NET_EXPORT bool ParseAuthorityInfoAccess(
+    const der::Input& authority_info_access_tlv,
+    std::vector<AuthorityInfoAccessDescription>* out_access_descriptions)
+    WARN_UNUSED_RESULT;
+
+// Parses the Authority Information Access extension defined by RFC 5280,
+// extracting the caIssuers URIs and OCSP URIs.
+//
 // Returns true on success, and |out_ca_issuers_uris| and |out_ocsp_uris| will
 // alias data in |authority_info_access_tlv|. On failure returns false, and
 // |out_ca_issuers_uris| and |out_ocsp_uris| may have been partially filled.
@@ -512,7 +532,7 @@ NET_EXPORT bool ParseKeyUsage(const der::Input& key_usage_tlv,
 // accessMethods other than id-ad-caIssuers and id-ad-ocsp are silently ignored.
 // accessLocation types other than uniformResourceIdentifier are silently
 // ignored.
-NET_EXPORT bool ParseAuthorityInfoAccess(
+NET_EXPORT bool ParseAuthorityInfoAccessURIs(
     const der::Input& authority_info_access_tlv,
     std::vector<base::StringPiece>* out_ca_issuers_uris,
     std::vector<base::StringPiece>* out_ocsp_uris) WARN_UNUSED_RESULT;

@@ -209,7 +209,7 @@ scoped_refptr<ParsedCertificate> ParsedCertificate::Create(
     if (result->GetExtension(AuthorityInfoAccessOid(),
                              &result->authority_info_access_extension_)) {
       result->has_authority_info_access_ = true;
-      if (!ParseAuthorityInfoAccess(
+      if (!ParseAuthorityInfoAccessURIs(
               result->authority_info_access_extension_.value,
               &result->ca_issuers_uris_, &result->ocsp_uris_)) {
         errors->AddError(kFailedParsingAia);
