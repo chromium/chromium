@@ -39,9 +39,9 @@
 #include "v8/include/v8-snapshot.h"
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/apk_assets.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "base/mac/foundation_util.h"
 #endif
 #endif  // V8_USE_EXTERNAL_STARTUP_DATA
@@ -75,7 +75,7 @@ void GetMappedFileData(base::MemoryMappedFile* mapped_file,
 
 #if defined(V8_USE_EXTERNAL_STARTUP_DATA)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const char kV8ContextSnapshotFileName64[] = "v8_context_snapshot_64.bin";
 const char kV8ContextSnapshotFileName32[] = "v8_context_snapshot_32.bin";
 const char kSnapshotFileName64[] = "snapshot_blob_64.bin";
@@ -89,12 +89,12 @@ const char kSnapshotFileName32[] = "snapshot_blob_32.bin";
 #define kSnapshotFileName kSnapshotFileName32
 #endif
 
-#else  // defined(OS_ANDROID)
+#else  // BUILDFLAG(IS_ANDROID)
 #if defined(USE_V8_CONTEXT_SNAPSHOT)
 const char kV8ContextSnapshotFileName[] = V8_CONTEXT_SNAPSHOT_FILENAME;
 #endif
 const char kSnapshotFileName[] = "snapshot_blob.bin";
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 const char* GetSnapshotFileName(const V8SnapshotFileType file_type) {
   switch (file_type) {
@@ -113,11 +113,11 @@ const char* GetSnapshotFileName(const V8SnapshotFileType file_type) {
 }
 
 void GetV8FilePath(const char* file_name, base::FilePath* path_out) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // This is the path within the .apk.
   *path_out =
       base::FilePath(FILE_PATH_LITERAL("assets")).AppendASCII(file_name);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   base::ScopedCFTypeRef<CFStringRef> bundle_resource(
       base::SysUTF8ToCFStringRef(file_name));
   *path_out = base::mac::PathForFrameworkBundleResource(bundle_resource);
@@ -158,7 +158,7 @@ base::File OpenV8File(const char* file_name,
   base::FilePath path;
   GetV8FilePath(file_name, &path);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::File file(base::android::OpenApkAsset(path.value(), region_out));
   OpenV8FileResult result = file.IsValid() ? OpenV8FileResult::OPENED
                                            : OpenV8FileResult::FAILED_OTHER;
@@ -189,7 +189,7 @@ base::File OpenV8File(const char* file_name,
       base::PlatformThread::Sleep(base::Milliseconds(kOpenRetryDelayMillis));
     }
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   UMA_HISTOGRAM_ENUMERATION("V8.Initializer.OpenV8File.Result", result,
                             OpenV8FileResult::MAX_VALUE);
@@ -428,7 +428,7 @@ void V8Initializer::Initialize(IsolateHolder::ScriptMode mode,
     const size_t min_pool_size =
         base::internal::PartitionAddressSpace::ConfigurablePoolMinSize();
     size_t pool_size = max_pool_size;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // On Windows prior to 8.1 we allocate a smaller Pool since reserving
     // virtual memory is expensive on these OSes.
     if (base::win::GetVersion() < base::win::Version::WIN8_1) {
@@ -519,7 +519,7 @@ void V8Initializer::LoadV8SnapshotFromFile(
   }
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // static
 base::FilePath V8Initializer::GetSnapshotFilePath(
     bool abi_32_bit,
@@ -540,7 +540,7 @@ base::FilePath V8Initializer::GetSnapshotFilePath(
   GetV8FilePath(filename, &path);
   return path;
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 V8SnapshotFileType GetLoadedSnapshotFileType() {
   DCHECK(g_snapshot_file_type.has_value());

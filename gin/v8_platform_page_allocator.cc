@@ -3,12 +3,12 @@
 // found in the LICENSE file.
 
 #include "v8_platform_page_allocator.h"
-
 #include "base/allocator/partition_allocator/address_space_randomization.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
 #include "base/allocator/partition_allocator/random.h"
 #include "base/check_op.h"
 #include "base/cpu.h"
+#include "build/build_config.h"
 
 namespace {
 
@@ -85,10 +85,10 @@ bool PageAllocator::ReleasePages(void* address,
   DCHECK_LT(new_length, length);
   uint8_t* release_base = reinterpret_cast<uint8_t*>(address) + new_length;
   size_t release_size = length - new_length;
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // On POSIX, we can unmap the trailing pages.
   base::FreePages(release_base, release_size);
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   // On Windows, we can only de-commit the trailing pages. FreePages() will
   // still free all pages in the region including the released tail, so it's
   // safe to just decommit the tail.

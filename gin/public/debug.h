@@ -23,7 +23,7 @@ class GIN_EXPORT Debug {
    */
   static void SetJitCodeEventHandler(v8::JitCodeEventHandler event_handler);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   /* Sets a callback that is invoked for exceptions that arise in V8-generated
    * code (jitted code or embedded builtins).
    */

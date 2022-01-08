@@ -5,7 +5,7 @@
 #include "gin/v8_platform_page_allocator.h"
 
 #include "base/cpu.h"
-
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // includes for Branch Target Instruction tests
@@ -14,7 +14,7 @@
 
 #include "base/allocator/partition_allocator/arm_bti_test_functions.h"
 #include "base/allocator/partition_allocator/page_allocator_constants.h"
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <signal.h>
 #include "testing/gtest/include/gtest/gtest-death-test.h"
 #endif
@@ -98,11 +98,11 @@ TEST(V8PlatformPageAllocatorBTITest, VerifyReadExecutePagesAreProtected) {
   // the actual CPU we are running on. The code that were are trying to execute
   // is assembly code and always has BTI enabled.
   if (base::CPU::GetInstanceNoAllocation().has_bti()) {
-#if defined(OS_POSIX)  // signal handling is available on POSIX compliant
-                       // systems only
+#if BUILDFLAG(IS_POSIX)  // signal handling is available on POSIX compliant
+                         // systems only
     EXPECT_EXIT({ bti_invalid_fn(15); }, testing::KilledBySignal(SIGILL),
                 "");  // Should crash with SIGILL.
-#endif                // defined(OS_POSIX)
+#endif                // BUILDFLAG(IS_POSIX)
   } else {
     EXPECT_EQ(bti_invalid_fn(15), 17);
   }

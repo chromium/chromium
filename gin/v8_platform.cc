@@ -127,7 +127,7 @@ class TimeClamper {
  public:
 // As site isolation is enabled on desktop platforms, we can safely provide
 // more timing resolution. Jittering is still enabled everywhere.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   static constexpr double kResolutionSeconds = 100e-6;
 #else
   static constexpr double kResolutionSeconds = 5e-6;
@@ -371,7 +371,7 @@ PageAllocator* V8Platform::GetPageAllocator() {
 void V8Platform::OnCriticalMemoryPressure() {
 // We only have a reservation on 32-bit Windows systems.
 // TODO(bbudge) Make the #if's in BlinkInitializer match.
-#if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_32_BITS)
   base::ReleaseReservation();
 #endif
 }

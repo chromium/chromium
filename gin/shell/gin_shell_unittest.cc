@@ -7,12 +7,13 @@
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/strings/string_util.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 base::FilePath GinShellPath() {
   base::FilePath dir;
   base::PathService::Get(base::DIR_EXE, &dir);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return dir.AppendASCII("gin_shell.exe");
 #else
   return dir.AppendASCII("gin_shell");
