@@ -1424,6 +1424,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         if (mWebContents == null || !isActionModeSupported()) return;
         mWebContents.collapseSelection();
         mClassificationResult = null;
+        mHasSelection = false;
     }
 
     private PopupController getPopupController() {
