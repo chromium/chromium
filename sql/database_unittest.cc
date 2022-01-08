@@ -96,7 +96,7 @@ void RazeErrorCallback(Database* db,
   db->RazeAndClose();
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 // Set a umask and restore the old mask on destruction.  Cribbed from
 // shared_memory_unittest.cc.  Used by POSIX-only UserPermission test.
 class ScopedUmaskSetter {
@@ -112,7 +112,7 @@ class ScopedUmaskSetter {
  private:
   mode_t old_umask_;
 };
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 }  // namespace
 
@@ -140,12 +140,12 @@ class SQLDatabaseTest : public testing::Test,
     // TODO(crbug.com/1120969): Remove after switching to exclusive mode on by
     // default.
     options.exclusive_locking = false;
-#if defined(OS_FUCHSIA)  // Exclusive mode needs to be enabled to enter WAL mode
-                         // on Fuchsia
+#if BUILDFLAG(IS_FUCHSIA)  // Exclusive mode needs to be enabled to enter WAL
+                           // mode on Fuchsia
     if (IsWALEnabled()) {
       options.exclusive_locking = true;
     }
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
     return options;
   }
 
@@ -1028,7 +1028,7 @@ TEST_P(SQLDatabaseTest, RazeAndCloseDiagnostics) {
   db_->Close();
 
 // DEATH tests not supported on Android, iOS, or Fuchsia.
-#if !defined(OS_ANDROID) && !defined(OS_IOS) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_FUCHSIA)
   // Once the real Close() has been called, various calls enforce API
   // usage by becoming fatal in debug mode.  Since DEATH tests are
   // expensive, just test one of them.
@@ -1036,7 +1036,8 @@ TEST_P(SQLDatabaseTest, RazeAndCloseDiagnostics) {
     ASSERT_DEATH({ db_->IsSQLValid(kSimpleSql); },
                  "Illegal use of Database without a db");
   }
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS) && !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&
+        // !BUILDFLAG(IS_FUCHSIA)
 }
 
 // TODO(shess): Spin up a background thread to hold other_db, to more
@@ -1084,7 +1085,7 @@ TEST_P(SQLDatabaseTest, RazeTruncate) {
   ASSERT_EQ(expected_size, db_size);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_P(SQLDatabaseTest, SetTempDirForSQL) {
   MetaTable meta_table;
   // Below call needs a temporary directory in sqlite3
@@ -1094,7 +1095,7 @@ TEST_P(SQLDatabaseTest, SetTempDirForSQL) {
   // database file'.
   ASSERT_TRUE(meta_table.Init(db_.get(), 4, 4));
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_P(SQLDatabaseTest, Delete) {
   EXPECT_TRUE(db_->Execute("CREATE TABLE x (x)"));
@@ -1116,7 +1117,7 @@ TEST_P(SQLDatabaseTest, Delete) {
   EXPECT_FALSE(base::PathExists(wal_path));
 }
 
-#if defined(OS_POSIX)  // This test operates on POSIX file permissions.
+#if BUILDFLAG(IS_POSIX)  // This test operates on POSIX file permissions.
 TEST_P(SQLDatabaseTest, PosixFilePermissions) {
   db_->Close();
   Database::Delete(db_path_);
@@ -1163,7 +1164,7 @@ TEST_P(SQLDatabaseTest, PosixFilePermissions) {
     ASSERT_EQ(mode, 0600);
   }
 }
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 // Test that errors start happening once Poison() is called.
 TEST_P(SQLDatabaseTest, Poison) {
@@ -1778,7 +1779,7 @@ TEST_P(SQLDatabaseTest, CorruptSizeInHeaderTest) {
 }
 
 // WAL mode is currently not supported on Fuchsia.
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
 INSTANTIATE_TEST_SUITE_P(JournalMode, SQLDatabaseTest, testing::Bool());
 INSTANTIATE_TEST_SUITE_P(JournalMode,
                          SQLDatabaseTestExclusiveMode,

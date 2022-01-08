@@ -17,11 +17,11 @@
 #include "base/strings/string_piece.h"
 #include "build/build_config.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/backup_util.h"
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include "sql/vfs_wrapper_fuchsia.h"
 #endif
 
@@ -54,7 +54,7 @@ int Close(sqlite3_file* sqlite_file)
 {
   VfsFile* file = AsVfsFile(sqlite_file);
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   FuchsiaVfsUnlock(sqlite_file, SQLITE_LOCK_NONE);
 #endif
 
@@ -99,7 +99,7 @@ int FileSize(sqlite3_file* sqlite_file, sqlite3_int64* size)
   return wrapped_file->pMethods->xFileSize(wrapped_file, size);
 }
 
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
 
 int Lock(sqlite3_file* sqlite_file, int file_lock)
 {
@@ -119,7 +119,7 @@ int CheckReservedLock(sqlite3_file* sqlite_file, int* result)
   return wrapped_file->pMethods->xCheckReservedLock(wrapped_file, result);
 }
 
-#endif  // !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 int FileControl(sqlite3_file* sqlite_file, int op, void* arg)
 {
@@ -192,7 +192,7 @@ int Open(sqlite3_vfs* vfs, const char* file_name, sqlite3_file* wrapper_file,
   // NOTE(shess): Any early exit from here needs to call xClose() on
   // |wrapped_file|.
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // When opening journal files, propagate backup exclusion from db.
   static int kJournalFlags =
       SQLITE_OPEN_MAIN_JOURNAL | SQLITE_OPEN_TEMP_JOURNAL |
@@ -232,7 +232,7 @@ int Open(sqlite3_vfs* vfs, const char* file_name, sqlite3_file* wrapper_file,
 
   file->wrapped_file = wrapped_file;
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   file->file_name = file_name;
   file->lock_level = SQLITE_LOCK_NONE;
 #endif
@@ -246,7 +246,7 @@ int Open(sqlite3_vfs* vfs, const char* file_name, sqlite3_file* wrapper_file,
       Truncate,
       Sync,
       FileSize,
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
       Lock,
       Unlock,
       CheckReservedLock,
@@ -269,7 +269,7 @@ int Open(sqlite3_vfs* vfs, const char* file_name, sqlite3_file* wrapper_file,
       Truncate,
       Sync,
       FileSize,
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
       Lock,
       Unlock,
       CheckReservedLock,
@@ -297,7 +297,7 @@ int Open(sqlite3_vfs* vfs, const char* file_name, sqlite3_file* wrapper_file,
       Truncate,
       Sync,
       FileSize,
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
       Lock,
       Unlock,
       CheckReservedLock,
@@ -374,7 +374,7 @@ sqlite3_vfs* VFSWrapper() {
 
   // Get the default VFS on all platforms except Fuchsia.
   const char* base_vfs_name = nullptr;
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   base_vfs_name = "unix-none";
 #endif
   sqlite3_vfs* wrapped_vfs = sqlite3_vfs_find(base_vfs_name);

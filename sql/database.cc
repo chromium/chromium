@@ -153,9 +153,9 @@ int GetSqlite3FileAndSize(sqlite3* db,
 }
 
 std::string AsUTF8ForSQL(const base::FilePath& path) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::WideToUTF8(path.value());
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return path.value();
 #endif
 }
@@ -455,9 +455,9 @@ base::FilePath Database::DbPath() const {
   if (!path)
     return base::FilePath();
   const base::StringPiece db_path(path);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::FilePath(base::UTF8ToWide(db_path));
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return base::FilePath(db_path);
 #else
   NOTREACHED();
@@ -484,9 +484,9 @@ std::string Database::CollectErrorInfo(int error, Statement* stmt) const {
 
 // System error information.  Interpretation of Windows errors is different
 // from posix.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::StringAppendF(&debug_info, "LastError: %d\n", GetLastErrno());
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   base::StringAppendF(&debug_info, "errno: %d\n", GetLastErrno());
 #else
   NOTREACHED();  // Add appropriate log info.
@@ -809,7 +809,7 @@ bool Database::Raze() {
     return false;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Android compiles with SQLITE_DEFAULT_AUTOVACUUM.  Unfortunately,
   // in-memory databases do not respect this define.
   // TODO(shess): Figure out a way to set this without using platform
@@ -841,7 +841,7 @@ bool Database::Raze() {
   // page_size" can be used to query such a database.
   ScopedWritableSchema writable_schema(db_);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, truncate silently fails when applied to memory-mapped files.
   // Disable memory-mapping so that the truncate succeeds.  Note that other
   // Database connections may have memory-mapped the file, so this may not
@@ -1880,7 +1880,7 @@ bool Database::ReportMemoryUsage(base::trace_event::ProcessMemoryDump* pmd,
 }
 
 bool Database::UseWALMode() const {
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // WAL mode is only enabled on Fuchsia for databases with exclusive
   // locking, because this case does not require shared memory support.
   // At the time this was implemented (May 2020), Fuchsia's shared
@@ -1888,7 +1888,7 @@ bool Database::UseWALMode() const {
   return options_.wal_mode && options_.exclusive_locking;
 #else
   return options_.wal_mode;
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
 bool Database::CheckpointDatabase() {

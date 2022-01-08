@@ -286,7 +286,7 @@ bool IsExclusiveLockMode(int sqlite_lock_mode) {
 }  // namespace
 
 int SandboxedVfsFile::Lock(int mode) {
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   return SQLITE_IOERR_LOCK;
 #else
   base::File::LockMode file_lock_mode = base::File::LockMode::kExclusive;
@@ -356,7 +356,7 @@ int SandboxedVfsFile::Lock(int mode) {
 
   sqlite_lock_mode_ = mode;
   return SQLITE_OK;
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
 int SandboxedVfsFile::Unlock(int mode) {
@@ -364,7 +364,7 @@ int SandboxedVfsFile::Unlock(int mode) {
   if (sqlite_lock_mode_ == mode || sqlite_lock_mode_ == SQLITE_LOCK_NONE)
     return SQLITE_OK;
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   return SQLITE_IOERR_UNLOCK;
 #else
   // On POSIX, it is possible to downgrade atomically from an exclusive lock to
@@ -393,7 +393,7 @@ int SandboxedVfsFile::Unlock(int mode) {
   vfs_->SetLastError(base::File::GetLastFileError());
   sqlite_lock_mode_ = SQLITE_LOCK_NONE;
   return SQLITE_IOERR_UNLOCK;
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
 int SandboxedVfsFile::CheckReservedLock(int* has_reserved_lock) {
@@ -410,7 +410,7 @@ int SandboxedVfsFile::CheckReservedLock(int* has_reserved_lock) {
     return SQLITE_OK;
   }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   return SQLITE_IOERR_CHECKRESERVEDLOCK;
 #else
   // On POSIX, it's possible to query the existing lock state of a file. The
@@ -430,7 +430,7 @@ int SandboxedVfsFile::CheckReservedLock(int* has_reserved_lock) {
   // We acquired a shared lock that we can't get rid of.
   sqlite_lock_mode_ = SQLITE_LOCK_SHARED;
   return SQLITE_IOERR_CHECKRESERVEDLOCK;
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
 int SandboxedVfsFile::FileControl(int opcode, void* data) {
@@ -449,7 +449,7 @@ int SandboxedVfsFile::SectorSize() {
 
 int SandboxedVfsFile::DeviceCharacteristics() {
   // TODO(pwnall): Figure out if we can get away with returning 0 on Windows.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return SQLITE_IOCAP_UNDELETABLE_WHEN_OPEN;
 #else
   // NOTE: SQLite's unix VFS attempts to detect the underlying filesystem and
