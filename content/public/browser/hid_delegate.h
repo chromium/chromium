@@ -81,7 +81,8 @@ class CONTENT_EXPORT HidDelegate {
 
   // Returns true if |origin| is allowed to bypass the HID blocklist and
   // access reports contained in FIDO collections.
-  virtual bool IsFidoAllowedForOrigin(const url::Origin& origin) = 0;
+  virtual bool IsFidoAllowedForOrigin(RenderFrameHost* render_frame_host,
+                                      const url::Origin& origin) = 0;
 
   // Gets the device info for a particular device, identified by its guid.
   virtual const device::mojom::HidDeviceInfo* GetDeviceInfo(

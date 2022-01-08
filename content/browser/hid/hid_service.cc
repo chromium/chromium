@@ -179,7 +179,7 @@ void HidService::Connect(
       ->Connect(
           device_guid, std::move(client), std::move(watcher),
           /*allow_protected_reports=*/false,
-          delegate->IsFidoAllowedForOrigin(origin_),
+          delegate->IsFidoAllowedForOrigin(render_frame_host(), origin_),
           base::BindOnce(&HidService::FinishConnect, weak_factory_.GetWeakPtr(),
                          std::move(callback)));
 }
@@ -216,8 +216,9 @@ void HidService::OnDeviceAdded(
     return;
 
   auto filtered_device_info = device_info.Clone();
-  RemoveProtectedReports(*filtered_device_info,
-                         delegate->IsFidoAllowedForOrigin(origin_));
+  RemoveProtectedReports(
+      *filtered_device_info,
+      delegate->IsFidoAllowedForOrigin(render_frame_host(), origin_));
   if (filtered_device_info->collections.empty())
     return;
 
@@ -233,8 +234,9 @@ void HidService::OnDeviceRemoved(
   }
 
   auto filtered_device_info = device_info.Clone();
-  RemoveProtectedReports(*filtered_device_info,
-                         delegate->IsFidoAllowedForOrigin(origin_));
+  RemoveProtectedReports(
+      *filtered_device_info,
+      delegate->IsFidoAllowedForOrigin(render_frame_host(), origin_));
   if (filtered_device_info->collections.empty())
     return;
 
@@ -251,8 +253,9 @@ void HidService::OnDeviceChanged(
   device::mojom::HidDeviceInfoPtr filtered_device_info;
   if (has_device_permission) {
     filtered_device_info = device_info.Clone();
-    RemoveProtectedReports(*filtered_device_info,
-                           delegate->IsFidoAllowedForOrigin(origin_));
+    RemoveProtectedReports(
+        *filtered_device_info,
+        delegate->IsFidoAllowedForOrigin(render_frame_host(), origin_));
   }
 
   if (!has_device_permission || filtered_device_info->collections.empty()) {
@@ -315,7 +318,8 @@ void HidService::FinishGetDevices(
     std::vector<device::mojom::HidDeviceInfoPtr> devices) {
   auto* delegate = GetContentClient()->browser()->GetHidDelegate();
 
-  bool is_fido_allowed = delegate->IsFidoAllowedForOrigin(origin_);
+  bool is_fido_allowed =
+      delegate->IsFidoAllowedForOrigin(render_frame_host(), origin_);
   std::vector<device::mojom::HidDeviceInfoPtr> result;
   for (auto& device : devices) {
     RemoveProtectedReports(*device, is_fido_allowed);

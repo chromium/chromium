@@ -61,7 +61,9 @@ class MockHidDelegate : public HidDelegate {
       GetDeviceInfo,
       const device::mojom::HidDeviceInfo*(RenderFrameHost* render_frame_host,
                                           const std::string& guid));
-  MOCK_METHOD1(IsFidoAllowedForOrigin, bool(const url::Origin& origin));
+  MOCK_METHOD2(IsFidoAllowedForOrigin,
+               bool(RenderFrameHost* render_frame_host,
+                    const url::Origin& origin));
 
  private:
   base::ObserverList<Observer> observer_list_;

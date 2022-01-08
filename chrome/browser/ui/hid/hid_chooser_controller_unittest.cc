@@ -13,6 +13,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/hid/mock_hid_device_observer.h"
@@ -22,7 +23,10 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/permissions/mock_chooser_controller_view.h"
 #include "content/public/browser/hid_chooser.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/web_contents_tester.h"
+#include "services/device/hid/test_report_descriptors.h"
+#include "services/device/hid/test_util.h"
 #include "services/device/public/cpp/hid/fake_hid_manager.h"
 #include "services/device/public/cpp/hid/hid_switches.h"
 #include "services/device/public/mojom/hid.mojom.h"
@@ -31,6 +35,7 @@
 #include "url/gurl.h"
 
 using ::base::test::RunClosure;
+using ::base::test::TestFuture;
 using ::testing::_;
 
 namespace {
@@ -901,3 +906,69 @@ TEST_F(HidChooserControllerTest, DeviceChangedToBlockedDevice) {
   // Check that the option has been removed.
   EXPECT_EQ(hid_chooser_controller->NumOptions(), 0u);
 }
+
+class HidChooserControllerFidoTest : public HidChooserControllerTest,
+                                     public testing::WithParamInterface<bool> {
+};
+
+TEST_P(HidChooserControllerFidoTest, FidoDeviceShownWithPrivilegedOrigin) {
+  const bool is_fido_allowed = GetParam();
+  if (is_fido_allowed) {
+    // Use the gnubbyd-v3 dev key for testing since it is already on the
+    // allowlist.
+    OverrideLastCommittedOrigin(
+        main_rfh(),
+        url::Origin::Create(
+            GURL("chrome-extension://ckcendljdlmgnhghiaomidhiiclmapok/")));
+  }
+
+  // Connect a FIDO device.
+  TestFuture<device::mojom::HidDeviceInfoPtr> connected_device;
+  EXPECT_CALL(device_observer(), OnDeviceAdded).WillOnce([&](const auto& d) {
+    connected_device.SetValue(d.Clone());
+  });
+  auto device = device::CreateDeviceFromReportDescriptor(
+      /*vendor_id=*/0x1234,
+      /*product_id=*/0xabcd, device::TestReportDescriptors::FidoU2fHid());
+  ConnectDevice(*device);
+  ASSERT_EQ(1u, connected_device.Get()->collections.size());
+  ASSERT_TRUE(connected_device.Get()->collections[0]->usage);
+  EXPECT_EQ(device::mojom::kPageFido,
+            connected_device.Get()->collections[0]->usage->usage_page);
+
+  // Create the HidChooserController.
+  TestFuture<bool> options_initialized;
+  EXPECT_CALL(view(), OnOptionsInitialized).WillOnce([&]() {
+    options_initialized.SetValue(true);
+  });
+  TestFuture<std::vector<device::mojom::HidDeviceInfoPtr>> selected_devices;
+  auto hid_chooser_controller =
+      CreateHidChooserController({}, selected_devices.GetCallback());
+  EXPECT_TRUE(options_initialized.Get());
+
+  // If the origin is not allowed to access FIDO reports there should be no
+  // devices in the chooser.
+  if (!is_fido_allowed) {
+    EXPECT_EQ(0u, hid_chooser_controller->NumOptions());
+    return;
+  }
+
+  // If the origin is allowed to access FIDO reports there should be one option.
+  ASSERT_EQ(1u, hid_chooser_controller->NumOptions());
+  EXPECT_EQ(u"Test Device", hid_chooser_controller->GetOption(0));
+
+  // Select the option and check that the returned device contains FIDO reports.
+  hid_chooser_controller->Select({0});
+  ASSERT_EQ(1u, selected_devices.Get().size());
+  EXPECT_EQ(device->guid, selected_devices.Get()[0]->guid);
+  ASSERT_EQ(1u, selected_devices.Get()[0]->collections.size());
+  const auto& collection = selected_devices.Get()[0]->collections[0];
+  ASSERT_TRUE(collection->usage);
+  EXPECT_EQ(device::mojom::kPageFido, collection->usage->usage_page);
+  EXPECT_EQ(1u, collection->input_reports.size());
+  EXPECT_EQ(1u, collection->output_reports.size());
+}
+
+INSTANTIATE_TEST_SUITE_P(HidChooserControllerFidoTests,
+                         HidChooserControllerFidoTest,
+                         testing::Values(false, true));

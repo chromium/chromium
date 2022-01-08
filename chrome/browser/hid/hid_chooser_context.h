@@ -81,6 +81,9 @@ class HidChooserContext : public permissions::ObjectPermissionContextBase,
   bool HasDevicePermission(const url::Origin& origin,
                            const device::mojom::HidDeviceInfo& device);
 
+  // Returns true if `origin` is allowed to access FIDO reports.
+  bool IsFidoAllowedForOrigin(const url::Origin& origin);
+
   // For ScopedObserver.
   void AddDeviceObserver(DeviceObserver* observer);
   void RemoveDeviceObserver(DeviceObserver* observer);

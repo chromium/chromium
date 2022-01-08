@@ -17,8 +17,16 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "content/public/browser/device_service.h"
+#include "extensions/buildflags/buildflags.h"
 #include "services/device/public/cpp/hid/hid_blocklist.h"
 #include "ui/base/l10n/l10n_util.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "base/containers/contains.h"
+#include "base/containers/fixed_flat_set.h"
+#include "base/strings/string_piece.h"
+#include "extensions/common/constants.h"
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 namespace {
 
@@ -294,6 +302,23 @@ bool HidChooserContext::HasDevicePermission(
     if (serial_number && device.serial_number == *serial_number)
       return true;
   }
+  return false;
+}
+
+bool HidChooserContext::IsFidoAllowedForOrigin(const url::Origin& origin) {
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  static constexpr auto kPrivilegedExtensionIds =
+      base::MakeFixedFlatSet<base::StringPiece>({
+          "ckcendljdlmgnhghiaomidhiiclmapok",  // gnubbyd-v3 dev
+          "lfboplenmmjcmpbkeemecobbadnmpfhi",  // gnubbyd-v3 prod
+      });
+
+  if (origin.scheme() == extensions::kExtensionScheme &&
+      base::Contains(kPrivilegedExtensionIds, origin.host())) {
+    return true;
+  }
+#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+
   return false;
 }
 
