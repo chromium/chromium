@@ -8,9 +8,9 @@
 
 #include "ui/base/clipboard/custom_data_helper.h"
 
+#include <tuple>
 #include <utility>
 
-#include "base/ignore_result.h"
 #include "base/pickle.h"
 
 namespace ui {
@@ -68,7 +68,7 @@ void ReadCustomDataForType(const void* data,
     if (!iter.ReadString16(&deserialized_type))
       return;
     if (deserialized_type == type) {
-      ignore_result(iter.ReadString16(result));
+      std::ignore = iter.ReadString16(result);
       return;
     }
     if (!SkipString16(&iter))

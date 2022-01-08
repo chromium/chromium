@@ -4,10 +4,10 @@
 
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 
+#include <tuple>
 #include <utility>
 
 #include "base/base64.h"
-#include "base/ignore_result.h"
 #include "base/mac/foundation_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
@@ -771,8 +771,8 @@ id NativeWidgetMacNSWindowHost::GetNativeViewAccessible() {
 }
 
 void NativeWidgetMacNSWindowHost::DispatchKeyEvent(ui::KeyEvent* event) {
-  ignore_result(
-      root_view_->GetWidget()->GetInputMethod()->DispatchKeyEvent(event));
+  std::ignore =
+      root_view_->GetWidget()->GetInputMethod()->DispatchKeyEvent(event);
 }
 
 bool NativeWidgetMacNSWindowHost::DispatchKeyEventToMenuController(

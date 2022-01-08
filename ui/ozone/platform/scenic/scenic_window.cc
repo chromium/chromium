@@ -9,12 +9,12 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
-#include "base/ignore_result.h"
 #include "base/memory/scoped_refptr.h"
 #include "ui/base/cursor/platform_cursor.h"
 #include "ui/events/event.h"
@@ -345,7 +345,7 @@ void ScenicWindow::OnInputEvent(const fuchsia::ui::input::InputEvent& event) {
   } else {
     // Scenic doesn't care if the input event was handled, so ignore the
     // "handled" status.
-    ignore_result(event_dispatcher_.ProcessEvent(event));
+    std::ignore = event_dispatcher_.ProcessEvent(event);
   }
 }
 

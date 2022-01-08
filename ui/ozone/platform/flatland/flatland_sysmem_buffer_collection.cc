@@ -6,9 +6,10 @@
 
 #include <lib/zx/eventpair.h>
 
+#include <tuple>
+
 #include "base/bits.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/ignore_result.h"
 #include "build/build_config.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
@@ -453,7 +454,7 @@ bool FlatlandSysmemBufferCollection::InitializeInternal(
   }
 
   // vkCreateBufferCollectionFUCHSIA() takes ownership of the token on success.
-  ignore_result(token_channel.release());
+  std::ignore = token_channel.release();
 
   VkImageCreateInfo image_create_info;
   InitializeImageCreateInfo(&image_create_info, min_size_);

@@ -4,7 +4,8 @@
 
 #include "ui/aura/window_targeter.h"
 
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "build/chromeos_buildflags.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/event_client.h"
@@ -174,7 +175,7 @@ bool WindowTargeter::ProcessEventIfTargetsDifferentRootWindow(
         window_tree_host->GetRootTransform(),
         window_tree_host->GetRootTransformForLocalEventCoordinates());
   }
-  ignore_result(new_root->GetHost()->GetEventSink()->OnEventFromSource(event));
+  std::ignore = new_root->GetHost()->GetEventSink()->OnEventFromSource(event);
   return true;
 }
 

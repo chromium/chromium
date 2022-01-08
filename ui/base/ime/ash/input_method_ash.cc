@@ -9,13 +9,13 @@
 #include <algorithm>
 #include <cstring>
 #include <set>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/i18n/char_iterator.h"
-#include "base/ignore_result.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/third_party/icu/icu_utf.h"
@@ -175,8 +175,8 @@ void InputMethodAsh::ProcessKeyEventDone(ui::KeyEvent* event, bool is_handled) {
     }
   }
   if (event->type() == ET_KEY_PRESSED || event->type() == ET_KEY_RELEASED) {
-    ignore_result(ProcessKeyEventPostIME(event, is_handled,
-                                         /* stopped_propagation */ false));
+    std::ignore = ProcessKeyEventPostIME(event, is_handled,
+                                         /* stopped_propagation */ false);
   }
   handling_key_event_ = false;
 }
