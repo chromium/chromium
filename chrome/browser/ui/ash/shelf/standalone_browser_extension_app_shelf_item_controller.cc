@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
@@ -339,6 +340,10 @@ void StandaloneBrowserExtensionAppShelfItemController::InitWindowStatus(
   }
   window_status_[window] = state;
   UpdateInstance(window, state);
+
+  // Also update the window properties in exo.
+  window->SetProperty(ash::kAppIDKey, shelf_id().app_id);
+  window->SetProperty(ash::kShelfIDKey, shelf_id().Serialize());
 }
 
 void StandaloneBrowserExtensionAppShelfItemController::UpdateInstance(
