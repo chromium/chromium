@@ -22,12 +22,12 @@ import noop_merge
 class NoopMergeTest(unittest.TestCase):
 
   def setUp(self):
-    super().setUp()
+    super(NoopMergeTest, self).setUp()
     self.temp_dir = tempfile.mkdtemp()
 
   def tearDown(self):
     shutil.rmtree(self.temp_dir)
-    super().tearDown()
+    super(NoopMergeTest, self).tearDown()
 
   def test_copies_first_json(self):
     input_json = os.path.join(self.temp_dir, 'input.json')
@@ -62,7 +62,7 @@ class NoopMergeTest(unittest.TestCase):
 class CommandLineTest(common_merge_script_tests.CommandLineTest):
 
   def __init__(self, methodName='runTest'):
-    super().__init__(methodName, noop_merge)
+    super(CommandLineTest, self).__init__(methodName, noop_merge)
 
 
 if __name__ == '__main__':

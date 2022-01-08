@@ -29,11 +29,7 @@ def CommonChecks(input_api, output_api):
       [r'^.+_unittest\.py$'],
       env=testing_env))
   output.extend(input_api.canned_checks.RunPylint(
-      input_api, output_api, files_to_skip=[r'gmock.*', r'gtest.*',
-          r'merge_scripts.*']))
-  output.extend(input_api.canned_checks.RunPylint(
-      input_api, output_api, files_to_skip=[r'gmock.*', r'gtest.*',
-          r'(?!merge_scripts).*'], version='2.6'))
+      input_api, output_api, files_to_skip=[r'gmock.*', r'gtest.*']))
   return output
 
 

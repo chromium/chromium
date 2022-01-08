@@ -20,7 +20,7 @@ import merge_lib as merger
 class MergeProfilesTest(unittest.TestCase):
 
   def __init__(self, *args, **kwargs):
-    super().__init__(*args, **kwargs)
+    super(MergeProfilesTest, self).__init__(*args, **kwargs)
     self.maxDiff = None
 
   def test_merge_script_api_parameters(self):

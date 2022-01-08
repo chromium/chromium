@@ -102,7 +102,6 @@ def _convert_to_disjoint_segments(ranges):
   stack = []
   segments = []
 
-  # pylint: disable=unsupported-assignment-operation
   def _append(end, count):
     """Append a new range segment to |segments|.
 
@@ -149,9 +148,7 @@ def _convert_to_disjoint_segments(ranges):
     _append(top['endOffset'], top['count'])
 
   return segments
-  # pylint: enable=unsupported-assignment-operation
 
-# pylint: disable=unsupported-assignment-operation
 def _merge_segments(segments_a, segments_b):
   """Merges 2 lists of disjoint segments into one
 
@@ -203,7 +200,6 @@ def _merge_segments(segments_a, segments_b):
     j += 1
 
   return segments
-# pylint: enable=unsupported-assignment-operation
 
 
 def _get_paths_with_suffix(input_dir, suffix):
@@ -237,14 +233,14 @@ def merge_coverage_files(coverage_dir, output_path):
 
   if not json_files:
     logging.info('No JavaScript coverage files found in %s', coverage_dir)
-    return None
+    return
 
   for file_path in json_files:
     coverage_data = _parse_json_file(file_path)
 
     if 'result' not in coverage_data:
       raise RuntimeError('%r does not have a result field' %
-                        file_path)
+                        json_file_path)
 
     for script_coverage in coverage_data['result']:
       script_url = script_coverage['url']

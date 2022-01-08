@@ -16,7 +16,7 @@ import merge_lib as merger
 class MergeLibTest(unittest.TestCase):
 
   def __init__(self, *args, **kwargs):
-    super().__init__(*args, **kwargs)
+    super(MergeLibTest, self).__init__(*args, **kwargs)
     self.maxDiff = None
 
   @mock.patch.object(subprocess, 'check_output')

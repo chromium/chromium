@@ -124,7 +124,7 @@ def main():
         javascript_merger.merge_istanbul_reports(
             istanbul_coverage_dir, parsed_scripts, coverage_file_path)
       except RuntimeError as e:
-        logging.warn('Failed executing istanbul tasks: %s', e)
+        logging.warn('Failed executing istanbul tasks: %s', e.message)
 
     # Ensure JavaScript coverage dir exists.
     if not os.path.exists(params.javascript_coverage_dir):
