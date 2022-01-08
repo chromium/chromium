@@ -46,7 +46,7 @@ class HEADLESS_EXPORT HeadlessContentMainDelegate
   absl::variant<int, content::MainFunctionParams> RunProcess(
       const std::string& process_type,
       content::MainFunctionParams main_function_params) override;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void PreBrowserMain() override;
 #endif
   content::ContentClient* CreateContentClient() override;
@@ -58,7 +58,7 @@ class HEADLESS_EXPORT HeadlessContentMainDelegate
 
   HeadlessBrowserImpl* browser() const { return browser_.get(); }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   void ZygoteForked() override;
 #endif
 

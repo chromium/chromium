@@ -72,7 +72,7 @@ class HeadlessBrowserTest : public content::BrowserTestBase {
   void SetUp() override;
   void PreRunTestOnMainThread() override;
   void PostRunTestOnMainThread() override;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void CreatedBrowserMainParts(content::BrowserMainParts* parts) override;
 #endif
 

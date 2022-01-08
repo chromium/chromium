@@ -65,11 +65,11 @@ void SetCryptKeyOnce(const base::FilePath& user_data_path) {
     return;
   done_once = true;
 
-#if (defined(OS_WIN) || defined(OS_LINUX)) && defined(HEADLESS_USE_PREFS)
+#if (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)) && defined(HEADLESS_USE_PREFS)
   // The OSCrypt keys are process bound, so if network service is out of
   // process, send it the required key if it is available.
   if (content::IsOutOfProcessNetworkService()
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       && OSCrypt::IsEncryptionAvailable()
 #endif
   ) {
@@ -204,7 +204,7 @@ HeadlessRequestContextManager::HeadlessRequestContextManager(
     base::FilePath user_data_path)
     :
 // On Windows, Cookie encryption requires access to local_state prefs.
-#if defined(OS_WIN) && !defined(HEADLESS_USE_PREFS)
+#if BUILDFLAG(IS_WIN) && !defined(HEADLESS_USE_PREFS)
       cookie_encryption_enabled_(false),
 #else
       cookie_encryption_enabled_(

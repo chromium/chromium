@@ -17,9 +17,9 @@
 #include "headless/lib/utility/headless_content_utility_client.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace headless {
 namespace {
@@ -76,7 +76,7 @@ int main(int argc, char** argv) {
   if (parallel_jobs == 0U)
     return 1;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Load and pin user32.dll to avoid having to load it once tests start while
   // on the main thread loop where blocking calls are disallowed.
   base::win::PinUser32();

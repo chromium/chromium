@@ -29,7 +29,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 #include <unistd.h>
 #endif
 
@@ -119,7 +119,7 @@ namespace {
 class CaptureStdErr {
  public:
   CaptureStdErr() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     CHECK_EQ(_pipe(pipes_, 4096, O_BINARY), 0);
 #else
     CHECK_EQ(pipe(pipes_), 0);
@@ -224,7 +224,7 @@ INSTANTIATE_TEST_CASE_P(HeadlessBrowserTestWithRemoteDebuggingAllowedPolicy,
 
 // Remote debugging with ephemeral port is not working on Fuchsia, see
 // crbug.com/1209251.
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_RemoteDebuggingDisallowed DISABLED_RemoteDebuggingDisallowed
 #else
 #define MAYBE_RemoteDebuggingDisallowed RemoteDebuggingDisallowed

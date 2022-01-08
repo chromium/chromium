@@ -8,7 +8,7 @@
 #include "build/chromeos_buildflags.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 #include "base/command_line.h"
 #include "components/os_crypt/key_storage_config_linux.h"
 #include "components/os_crypt/os_crypt.h"
@@ -19,7 +19,7 @@
 
 namespace headless {
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 constexpr char kProductName[] = "HeadlessChrome";
 #endif
 
@@ -28,7 +28,7 @@ void HeadlessBrowserMainParts::PostCreateMainMessageLoop() {
   bluez::BluezDBusManager::Initialize(/*system_bus=*/nullptr);
 #endif
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Set up crypt config. This needs to be done before anything starts the
   // network service, as the raw encryption key needs to be shared with the
   // network service for encrypted cookie storage.
@@ -46,7 +46,7 @@ void HeadlessBrowserMainParts::PostCreateMainMessageLoop() {
   config->should_use_preference = false;
   config->user_data_path = base::FilePath();
   OSCrypt::SetConfig(std::move(config));
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 }
 
 }  // namespace headless

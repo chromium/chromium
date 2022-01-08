@@ -47,15 +47,15 @@ class HEADLESS_EXPORT HeadlessBrowserMainParts
   void WillRunMainMessageLoop(
       std::unique_ptr<base::RunLoop>& run_loop) override;
   void PostMainMessageLoopRun() override;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void PreCreateMainMessageLoop() override;
 #endif
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   void PostCreateMainMessageLoop() override;
 #endif
   void QuitMainMessageLoop();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   device::GeolocationManager* GetGeolocationManager();
   void SetGeolocationManagerForTesting(
       std::unique_ptr<device::GeolocationManager> fake_geolocation_manager);
@@ -88,7 +88,7 @@ class HEADLESS_EXPORT HeadlessBrowserMainParts
 
   bool devtools_http_handler_started_ = false;
   base::OnceClosure quit_main_message_loop_;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   std::unique_ptr<device::GeolocationManager> geolocation_manager_;
 #endif
 };

@@ -24,7 +24,7 @@
 #include "ui/gfx/font_render_params.h"
 #include "ui/gfx/geometry/size.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "sandbox/win/src/sandbox_types.h"
 #endif
 
@@ -116,7 +116,7 @@ struct HEADLESS_EXPORT HeadlessBrowser::Options {
   int argc;
   raw_ptr<const char*> argv;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Set hardware instance if available, otherwise it defaults to 0.
   HINSTANCE instance = 0;
 
@@ -249,7 +249,7 @@ class HEADLESS_EXPORT HeadlessBrowser::Options::Builder {
   Builder& SetANGLEImplementation(const std::string& implementation);
   Builder& SetAppendCommandLineFlagsCallback(
       const Options::AppendCommandLineFlagsCallback& callback);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   Builder& SetInstance(HINSTANCE hinstance);
   Builder& SetSandboxInfo(sandbox::SandboxInterfaceInfo* info);
 #endif
@@ -278,7 +278,7 @@ class HEADLESS_EXPORT HeadlessBrowser::Options::Builder {
   Options options_;
 };
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 // The headless browser may need to create child processes (e.g., a renderer
 // which runs web content). This is done by re-executing the parent process as
 // a zygote[1] and forking each child process from that zygote.
@@ -307,7 +307,7 @@ void RunChildProcessIfNeeded(int argc, const char** argv);
 // the child process.
 void RunChildProcessIfNeeded(HINSTANCE instance,
                              sandbox::SandboxInterfaceInfo* sandbox_info);
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
 // Main entry point for running the headless browser. This function constructs
 // the headless browser instance, passing it to the given

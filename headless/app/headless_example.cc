@@ -21,7 +21,7 @@
 #include "headless/public/headless_web_contents.h"
 #include "ui/gfx/geometry/size.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
 #include "content/public/app/sandbox_helper_win.h"
 #include "sandbox/win/src/sandbox_types.h"
@@ -149,7 +149,7 @@ void OnHeadlessBrowserStarted(headless::HeadlessBrowser* browser) {
     browser->Shutdown();
     return;
   }
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   GURL url(base::WideToUTF16(args[0]));
 #else
   GURL url(args[0]);
@@ -171,7 +171,7 @@ void OnHeadlessBrowserStarted(headless::HeadlessBrowser* browser) {
 }
 
 int main(int argc, const char** argv) {
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   // This function must be the first thing we call to make sure child processes
   // such as the renderer are started properly. The headless library starts
   // child processes by forking and exec'ing the main application.
@@ -182,7 +182,7 @@ int main(int argc, const char** argv) {
   // and it can only be initialized once.
   headless::HeadlessBrowser::Options::Builder builder(argc, argv);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // In windows, you must initialize and set the sandbox, or pass it along
   // if it has already been initialized.
   sandbox::SandboxInterfaceInfo sandbox_info = {nullptr};

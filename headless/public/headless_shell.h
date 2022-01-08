@@ -5,9 +5,10 @@
 #ifndef HEADLESS_PUBLIC_HEADLESS_SHELL_H_
 #define HEADLESS_PUBLIC_HEADLESS_SHELL_H_
 
+#include "build/build_config.h"
 #include "content/public/app/content_main.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "sandbox/win/src/sandbox_types.h"
 #endif
 
@@ -20,12 +21,12 @@ int HeadlessShellMain(const content::ContentMainParams& params);
 
 // Start the Headless Shell application. Intended to be called early in main().
 // Returns the exit code for the process.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 int HeadlessShellMain(HINSTANCE instance,
                       sandbox::SandboxInterfaceInfo* sandbox_info);
 #else
 int HeadlessShellMain(int argc, const char** argv);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }  // namespace headless
 
 #endif  // HEADLESS_PUBLIC_HEADLESS_SHELL_H_

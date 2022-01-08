@@ -52,7 +52,7 @@
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/gfx/geometry/size.h"
 
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
 #include "third_party/crashpad/crashpad/client/crash_report_database.h"  // nogncheck
 #endif
 
@@ -223,7 +223,7 @@ class HeadlessBrowserTestWithProxy : public HeadlessBrowserTest {
   net::EmbeddedTestServer proxy_server_;
 };
 
-#if defined(OS_MAC) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
 // TODO(crbug.com/1086872): Disabled due to flakiness on Mac ASAN.
 #define MAYBE_SetProxyConfig DISABLED_SetProxyConfig
 #else
@@ -300,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, DefaultSizes) {
   HeadlessBrowser::Options::Builder builder;
   const HeadlessBrowser::Options kDefaultOptions = builder.Build();
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // On Mac headless does not override the screen dimensions, so they are
   // left with the actual screen values.
   EXPECT_EQ(kDefaultOptions.window_size.width(),
@@ -313,7 +313,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, DefaultSizes) {
                 ->GetResult()
                 ->GetValue()
                 ->GetInt());
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
   EXPECT_EQ(kDefaultOptions.window_size.width(),
             EvaluateScript(web_contents, "window.innerWidth")
                 ->GetResult()
@@ -371,7 +371,7 @@ class CookieSetter {
 
 // TODO(skyostil): This test currently relies on being able to run a shell
 // script.
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 class HeadlessBrowserRendererCommandPrefixTest : public HeadlessBrowserTest {
  public:
   const base::FilePath& launcher_stamp() const { return launcher_stamp_; }
@@ -386,11 +386,11 @@ class HeadlessBrowserRendererCommandPrefixTest : public HeadlessBrowserTest {
             launcher_stamp_.value().c_str());
     fprintf(launcher_file.get(), "exec $@\n");
     launcher_file.reset();
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
     base::SetPosixFilePermissions(launcher_script_,
                                   base::FILE_PERMISSION_READ_BY_USER |
                                       base::FILE_PERMISSION_EXECUTE_BY_USER);
-#endif  // !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
     HeadlessBrowserTest::SetUp();
   }
@@ -431,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(HeadlessBrowserRendererCommandPrefixTest, Prefix) {
   EXPECT_TRUE(base::ReadFileToString(launcher_stamp(), &stamp));
   EXPECT_GE(stamp.find("--type=renderer"), 0u);
 }
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 class CrashReporterTest : public HeadlessBrowserTest,
                           public HeadlessWebContents::Observer,
@@ -473,7 +473,7 @@ class CrashReporterTest : public HeadlessBrowserTest,
   base::FilePath crash_dumps_dir_;
 };
 
-#if !defined(OS_FUCHSIA) && !defined(OS_WIN)
+#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(CrashReporterTest, GenerateMinidump) {
   content::ScopedAllowRendererCrashes scoped_allow_renderer_crashes;
 
@@ -513,7 +513,7 @@ IN_PROC_BROWSER_TEST_F(CrashReporterTest, GenerateMinidump) {
   browser_context_->Close();
   browser_context_ = nullptr;
 }
-#endif  // !defined(OS_FUCHSIA) && !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_WIN)
 
 IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest, PermissionManagerAlwaysASK) {
   GURL url("https://example.com");
@@ -599,12 +599,12 @@ class TraceHelper : public tracing::ExperimentalObserver {
 }  // namespace
 
 // Flaky, http://crbug.com/1269261.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TraceUsingBrowserDevToolsTarget \
   DISABLED_TraceUsingBrowserDevToolsTarget
 #else
 #define MAYBE_TraceUsingBrowserDevToolsTarget TraceUsingBrowserDevToolsTarget
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(HeadlessBrowserTest,
                        MAYBE_TraceUsingBrowserDevToolsTarget) {
   HeadlessDevToolsTarget* target = browser()->GetDevToolsTarget();

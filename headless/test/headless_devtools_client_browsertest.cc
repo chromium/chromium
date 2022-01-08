@@ -140,10 +140,10 @@ class HeadlessDevToolsClientWindowManagementTest
       std::unique_ptr<browser::GetWindowBoundsResult> result) {
     const browser::Bounds* actual_bounds = result->GetBounds();
 // Mac does not support repositioning, as we don't show any actual window.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
     EXPECT_EQ(bounds.x(), actual_bounds->GetLeft());
     EXPECT_EQ(bounds.y(), actual_bounds->GetTop());
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
     EXPECT_EQ(bounds.width(), actual_bounds->GetWidth());
     EXPECT_EQ(bounds.height(), actual_bounds->GetHeight());
     EXPECT_EQ(state, actual_bounds->GetWindowState());
@@ -175,7 +175,7 @@ class HeadlessDevToolsClientChangeWindowBoundsTest
   }
 };
 
-#if defined(OS_MAC) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
 // TODO(crbug.com/1086872): Disabled due to flakiness on Mac ASAN.
 DISABLED_HEADLESS_ASYNC_DEVTOOLED_TEST_F(
     HeadlessDevToolsClientChangeWindowBoundsTest);
@@ -506,12 +506,12 @@ class HeadlessCrashObserverTest : public HeadlessAsyncDevTooledBrowserTest,
   // Make sure we don't fail because the renderer crashed!
   void RenderProcessExited(base::TerminationStatus status,
                            int exit_code) override {
-#if defined(OS_WIN) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
     // TODO(crbug.com/845011): Make ASan not interfere and expect a crash.
     // ASan's normal error exit code is 1, which base categorizes as the process
     // being killed.
     EXPECT_EQ(base::TERMINATION_STATUS_PROCESS_WAS_KILLED, status);
-#elif defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     EXPECT_EQ(base::TERMINATION_STATUS_PROCESS_CRASHED, status);
 #else
     EXPECT_EQ(base::TERMINATION_STATUS_ABNORMAL_TERMINATION, status);
@@ -894,7 +894,7 @@ class DomTreeExtractionBrowserTest : public HeadlessAsyncDevTooledBrowserTest,
       dom_nodes_result += result_json;
     }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     ASSERT_TRUE(base::RemoveChars(dom_nodes_result, "\r", &dom_nodes_result));
 #endif
 
@@ -917,7 +917,7 @@ class DomTreeExtractionBrowserTest : public HeadlessAsyncDevTooledBrowserTest,
       computed_styles_result += result_json;
     }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     ASSERT_TRUE(base::RemoveChars(computed_styles_result, "\r",
                                   &computed_styles_result));
 #endif
@@ -1120,7 +1120,7 @@ class DevtoolsInterceptionWithAuthProxyTest
   std::set<std::string> files_loaded_;
 };
 
-#if defined(OS_MAC) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
 // TODO(crbug.com/1086872): Disabled due to flakiness on Mac ASAN.
 DISABLED_HEADLESS_ASYNC_DEVTOOLED_TEST_F(DevtoolsInterceptionWithAuthProxyTest);
 #else

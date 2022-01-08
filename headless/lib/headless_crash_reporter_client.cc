@@ -19,7 +19,7 @@ namespace headless {
 
 namespace {
 
-#if defined(OS_POSIX) && !defined(OS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 
 constexpr char kChromeHeadlessProductName[] = "Chrome_Headless";
 
@@ -30,7 +30,7 @@ constexpr char kChromeHeadlessProductName[] = "Chrome_Headless";
 HeadlessCrashReporterClient::HeadlessCrashReporterClient() = default;
 HeadlessCrashReporterClient::~HeadlessCrashReporterClient() = default;
 
-#if defined(OS_POSIX) && !defined(OS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 void HeadlessCrashReporterClient::GetProductNameAndVersion(
     std::string* product_name,
     std::string* version,
@@ -39,10 +39,10 @@ void HeadlessCrashReporterClient::GetProductNameAndVersion(
   *version = PRODUCT_VERSION;
   *channel = "";
 }
-#endif  // defined(OS_POSIX) && !defined(OS_MAC)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 
 bool HeadlessCrashReporterClient::GetCrashDumpLocation(
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     std::wstring* crash_dir
 #else
     base::FilePath* crash_dir
@@ -57,7 +57,7 @@ bool HeadlessCrashReporterClient::GetCrashDumpLocation(
   if (crash_dumps_dir_.empty()) {
     crash_directory = crash_directory.Append(FILE_PATH_LITERAL("Crashpad"));
   }
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   *crash_dir = crash_directory.value();
 #else
   *crash_dir = std::move(crash_directory);

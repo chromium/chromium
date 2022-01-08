@@ -7,6 +7,7 @@
 #include <stdio.h>
 
 #include "base/debug/alias.h"
+#include "build/build_config.h"
 #include "content/public/common/result_codes.h"
 #include "headless/app/headless_shell_switches.h"
 #include "headless/lib/browser/headless_browser_context_impl.h"
@@ -28,11 +29,11 @@
 #include "headless/lib/browser/policy/headless_policies.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "services/device/public/cpp/geolocation/geolocation_manager.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/command_line.h"
 #endif
 
@@ -88,7 +89,7 @@ void HeadlessBrowserMainParts::PostMainMessageLoopRun() {
 #endif
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 device::GeolocationManager* HeadlessBrowserMainParts::GetGeolocationManager() {
   return geolocation_manager_.get();
 }
@@ -148,7 +149,7 @@ void HeadlessBrowserMainParts::CreatePrefService() {
   }
 
   auto pref_registry = base::MakeRefCounted<user_prefs::PrefRegistrySyncable>();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   OSCrypt::RegisterLocalPrefs(pref_registry.get());
 #endif
 
@@ -170,13 +171,13 @@ void HeadlessBrowserMainParts::CreatePrefService() {
   factory.set_user_prefs(pref_store);
   local_state_ = factory.Create(std::move(pref_registry));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
   if (!command_line->HasSwitch(switches::kDisableCookieEncryption) &&
       OSCrypt::InitWithExistingKey(local_state_.get()) != OSCrypt::kSuccess) {
     command_line->AppendSwitch(switches::kDisableCookieEncryption);
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 #endif  // defined(HEADLESS_USE_PREFS)
 

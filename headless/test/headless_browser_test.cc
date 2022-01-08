@@ -34,7 +34,7 @@
 #include "ui/gl/gl_switches.h"
 #include "url/gurl.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "services/device/public/cpp/test/fake_geolocation_manager.h"
 #endif
 
@@ -137,14 +137,14 @@ void LoadObserver::OnResponseReceived(
 }
 
 HeadlessBrowserTest::HeadlessBrowserTest() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On Mac the source root is not set properly. We override it by assuming
   // that is two directories up from the execution test file.
   base::FilePath dir_exe_path;
   CHECK(base::PathService::Get(base::DIR_EXE, &dir_exe_path));
   dir_exe_path = dir_exe_path.Append("../../");
   CHECK(base::PathService::Override(base::DIR_SOURCE_ROOT, dir_exe_path));
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   base::FilePath headless_test_data(FILE_PATH_LITERAL("headless/test/data"));
   CreateTestServer(headless_test_data);
 }
@@ -194,7 +194,7 @@ void HeadlessBrowserTest::PostRunTestOnMainThread() {
   base::RunLoop().RunUntilIdle();
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void HeadlessBrowserTest::CreatedBrowserMainParts(
     content::BrowserMainParts* parts) {
   auto fake_geolocation_manager =
@@ -273,7 +273,7 @@ HeadlessAsyncDevTooledBrowserTest::~HeadlessAsyncDevTooledBrowserTest() =
 void HeadlessAsyncDevTooledBrowserTest::DevToolsTargetReady() {
   EXPECT_TRUE(web_contents_->GetDevToolsTarget());
   web_contents_->GetDevToolsTarget()->AttachClient(devtools_client_.get());
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   devtools_client_->GetEmulation()->SetDeviceMetricsOverride(
       emulation::SetDeviceMetricsOverrideParams::Builder()
           .SetWidth(0)
