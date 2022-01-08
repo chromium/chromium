@@ -43,7 +43,6 @@
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
 #include "base/strings/strcat.h"
@@ -528,7 +527,7 @@ bool ExecuteSession(std::string user,
     if (pam_handle.CloseSession(0) != PAM_SUCCESS) {
       LOG(WARNING) << "Failed to close PAM session";
     }
-    ignore_result(pam_handle.SetCredentials(PAM_DELETE_CRED));
+    std::ignore = pam_handle.SetCredentials(PAM_DELETE_CRED);
 
     return relaunch;
   }
@@ -603,8 +602,8 @@ void HandleInterrupt(int signal) {
   static const char kInterruptedMessage[] =
       "Interrupted. The daemon is still running in the background.\n";
   // Use write since fputs isn't async-signal-handler safe.
-  ignore_result(write(STDERR_FILENO, kInterruptedMessage,
-                      base::size(kInterruptedMessage) - 1));
+  std::ignore = write(STDERR_FILENO, kInterruptedMessage,
+                      base::size(kInterruptedMessage) - 1);
   raise(signal);
 }
 
@@ -614,8 +613,8 @@ void HandleAlarm(int) {
       "Timeout waiting for session to start. It may have crashed, or may still "
       "be running in the background.\n";
   // Use write since fputs isn't async-signal-handler safe.
-  ignore_result(
-      write(STDERR_FILENO, kTimeoutMessage, base::size(kTimeoutMessage) - 1));
+  std::ignore =
+      write(STDERR_FILENO, kTimeoutMessage, base::size(kTimeoutMessage) - 1);
   // A slow system or directory replication delay may cause the host to take
   // longer than expected to start. Since it may still succeed, optimistically
   // return success to prevent the host from being automatically unregistered.

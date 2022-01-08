@@ -11,12 +11,12 @@
 
 #include <list>
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_descriptor_watcher_posix.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/threading/platform_thread.h"
@@ -70,7 +70,7 @@ SignalListener* g_signal_listener = nullptr;
 
 void GlobalSignalHandler(int signal) {
   char byte = signal;
-  ignore_result(write(g_write_fd, &byte, 1));
+  std::ignore = write(g_write_fd, &byte, 1);
 }
 
 }  // namespace
