@@ -10,8 +10,9 @@
 #include <map>
 
 #include "base/files/file_util.h"
+#include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 #include <windows.h>
 

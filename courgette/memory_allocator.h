@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/memory.h"
+#include "build/build_config.h"
 
 #ifndef NDEBUG
 
@@ -86,7 +87,7 @@ struct UncheckedDeleter {
   inline void operator()(T* ptr) const { UncheckedDelete(ptr); }
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // Manages a read/write virtual mapping of a physical file.
 class FileMapping {

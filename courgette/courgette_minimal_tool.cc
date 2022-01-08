@@ -8,6 +8,7 @@
 
 #include <string>
 
+#include "build/build_config.h"
 #include "courgette/courgette.h"
 #include "courgette/streams.h"
 #include "courgette/third_party/bsdiff/bsdiff.h"
@@ -31,7 +32,7 @@ void Problem(const char* message) {
   exit(1);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 int wmain(int argc, const wchar_t* argv[]) {
 #else
 int main(int argc, const char* argv[]) {
