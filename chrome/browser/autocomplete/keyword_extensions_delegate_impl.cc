@@ -10,11 +10,8 @@
 #include "chrome/browser/extensions/api/omnibox/omnibox_api.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_source.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
-#include "extensions/browser/notification_types.h"
 
 namespace omnibox_api = extensions::api::omnibox;
 
@@ -29,11 +26,6 @@ KeywordExtensionsDelegateImpl::KeywordExtensionsDelegateImpl(
   DCHECK(provider_);
 
   current_input_id_ = 0;
-
-  registrar_.Add(
-      this,
-      extensions::NOTIFICATION_EXTENSION_OMNIBOX_DEFAULT_SUGGESTION_CHANGED,
-      content::Source<Profile>(profile_->GetOriginalProfile()));
 
   omnibox_input_observation_.Observe(
       OmniboxInputWatcher::GetForBrowserContext(profile_));
@@ -196,37 +188,24 @@ void KeywordExtensionsDelegateImpl::OnOmniboxSuggestionsReady(
   OnProviderUpdate(!extension_suggest_matches_.empty());
 }
 
-void KeywordExtensionsDelegateImpl::Observe(
-    int type,
-    const content::NotificationSource& source,
-    const content::NotificationDetails& details) {
+void KeywordExtensionsDelegateImpl::OnOmniboxDefaultSuggestionChanged() {
   TemplateURLService* model = provider_->GetTemplateURLService();
+  DCHECK(model);
+
   const AutocompleteInput& input = extension_suggest_last_input_;
 
-  switch (type) {
-    case extensions::NOTIFICATION_EXTENSION_OMNIBOX_DEFAULT_SUGGESTION_CHANGED
-        : {
-      DCHECK(model);
-      // It's possible to change the default suggestion while not in an editing
-      // session.
-      std::u16string keyword, remaining_input;
-      if (matches()->empty() || current_keyword_extension_id_.empty() ||
-          !KeywordProvider::ExtractKeywordFromInput(input, model, &keyword,
-                                                    &remaining_input))
-        return;
+  // It's possible to change the default suggestion while not in an editing
+  // session.
+  std::u16string keyword, remaining_input;
+  if (matches()->empty() || current_keyword_extension_id_.empty() ||
+      !KeywordProvider::ExtractKeywordFromInput(input, model, &keyword,
+                                                &remaining_input))
+    return;
 
-      const TemplateURL* template_url(
-          model->GetTemplateURLForKeyword(keyword));
-      extensions::ApplyDefaultSuggestionForExtensionKeyword(
-          profile_, template_url, remaining_input, &matches()->front());
-      OnProviderUpdate(true);
-      return;
-    }
-
-    default:
-      NOTREACHED();
-      return;
-  }
+  const TemplateURL* template_url(model->GetTemplateURLForKeyword(keyword));
+  extensions::ApplyDefaultSuggestionForExtensionKeyword(
+      profile_, template_url, remaining_input, &matches()->front());
+  OnProviderUpdate(true);
 }
 
 void KeywordExtensionsDelegateImpl::OnProviderUpdate(bool updated_matches) {

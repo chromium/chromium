@@ -26,12 +26,16 @@ struct Params;
 
 // This KeyedService is meant to observe omnibox suggestions and provide
 // notifications to observers on suggestion changes.
+//
+// This watcher is part of the Omnibox Extensions API.
 class OmniboxSuggestionsWatcher : public KeyedService {
  public:
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnOmniboxSuggestionsReady(
         extensions::api::omnibox::SendSuggestions::Params* suggestions) {}
+
+    virtual void OnOmniboxDefaultSuggestionChanged() {}
   };
 
 #if !defined(OS_IOS)
@@ -47,6 +51,7 @@ class OmniboxSuggestionsWatcher : public KeyedService {
 
   void NotifySuggestionsReady(
       extensions::api::omnibox::SendSuggestions::Params* suggestions);
+  void NotifyDefaultSuggestionChanged();
 
   // Add/remove observer.
   void AddObserver(Observer* observer);

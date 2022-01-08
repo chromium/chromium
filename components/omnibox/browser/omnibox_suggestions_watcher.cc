@@ -72,3 +72,8 @@ void OmniboxSuggestionsWatcher::NotifySuggestionsReady(
   for (auto& observer : observers_)
     observer.OnOmniboxSuggestionsReady(suggestions);
 }
+
+void OmniboxSuggestionsWatcher::NotifyDefaultSuggestionChanged() {
+  for (auto& observer : observers_)
+    observer.OnOmniboxDefaultSuggestionChanged();
+}

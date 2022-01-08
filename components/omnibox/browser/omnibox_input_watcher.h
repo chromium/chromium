@@ -14,7 +14,10 @@
 #include "content/public/browser/browser_context.h"
 #endif  // !defined(OS_IOS)
 
-// This KeyedService is meant to observe omnibox input and provide notifications
+// This KeyedService is meant to observe omnibox input and provide
+// notifications.
+//
+// This watcher is part of the Omnibox Extensions API.
 class OmniboxInputWatcher : public KeyedService {
  public:
   class Observer : public base::CheckedObserver {

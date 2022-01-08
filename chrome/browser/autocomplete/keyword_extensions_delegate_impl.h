@@ -19,8 +19,6 @@
 #include "components/omnibox/browser/keyword_provider.h"
 #include "components/omnibox/browser/omnibox_input_watcher.h"
 #include "components/omnibox/browser/omnibox_suggestions_watcher.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "extensions/buildflags/buildflags.h"
 
 #if !BUILDFLAG(ENABLE_EXTENSIONS)
@@ -31,7 +29,6 @@ class Profile;
 
 class KeywordExtensionsDelegateImpl
     : public KeywordExtensionsDelegate,
-      public content::NotificationObserver,
       public OmniboxInputWatcher::Observer,
       public OmniboxSuggestionsWatcher::Observer {
  public:
@@ -63,11 +60,7 @@ class KeywordExtensionsDelegateImpl
   // OmniboxSuggestionsWatcher::Observer:
   void OnOmniboxSuggestionsReady(
       extensions::api::omnibox::SendSuggestions::Params* suggestions) override;
-
-  // content::NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
+  void OnOmniboxDefaultSuggestionChanged() override;
 
   ACMatches* matches() { return &provider_->matches_; }
   void set_done(bool done) {
@@ -98,8 +91,6 @@ class KeywordExtensionsDelegateImpl
 
   // The owner of this class.
   raw_ptr<KeywordProvider> provider_;
-
-  content::NotificationRegistrar registrar_;
 
   // We need our input IDs to be unique across all profiles, so we keep a global
   // UID that each provider uses.

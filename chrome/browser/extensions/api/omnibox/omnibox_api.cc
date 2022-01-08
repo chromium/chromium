@@ -25,12 +25,9 @@
 #include "components/omnibox/browser/omnibox_suggestions_watcher.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
-#include "content/public/browser/notification_details.h"
-#include "content/public/browser/notification_service.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
-#include "extensions/browser/notification_types.h"
 #include "ui/gfx/image/image.h"
 
 namespace extensions {
@@ -294,10 +291,9 @@ ExtensionFunction::ResponseAction OmniboxSetDefaultSuggestionFunction::Run() {
   Profile* profile = Profile::FromBrowserContext(browser_context());
   if (SetOmniboxDefaultSuggestion(profile, extension_id(),
                                   params->suggestion)) {
-    content::NotificationService::current()->Notify(
-        extensions::NOTIFICATION_EXTENSION_OMNIBOX_DEFAULT_SUGGESTION_CHANGED,
-        content::Source<Profile>(profile->GetOriginalProfile()),
-        content::NotificationService::NoDetails());
+    OmniboxSuggestionsWatcher::GetForBrowserContext(
+        profile->GetOriginalProfile())
+        ->NotifyDefaultSuggestionChanged();
   }
 
   return RespondNow(NoArguments());
