@@ -25,7 +25,8 @@
 
 #include "third_party/blink/renderer/modules/speech/speech_synthesis.h"
 
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "build/build_config.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
@@ -65,7 +66,7 @@ SpeechSynthesis* SpeechSynthesis::speechSynthesis(LocalDOMWindow& window) {
     // TODO(crbug/811929): Consider moving this logic into the Android-
     // specific backend implementation.
 #else
-    ignore_result(synthesis->TryEnsureMojomSynthesis());
+    std::ignore = synthesis->TryEnsureMojomSynthesis();
 #endif
   }
   return synthesis;
@@ -97,7 +98,7 @@ void SpeechSynthesis::OnSetVoiceList(
 
 const HeapVector<Member<SpeechSynthesisVoice>>& SpeechSynthesis::getVoices() {
   // Kick off initialization here to ensure voice list gets populated.
-  ignore_result(TryEnsureMojomSynthesis());
+  std::ignore = TryEnsureMojomSynthesis();
   RecordVoicesForIdentifiability();
   return voice_list_;
 }

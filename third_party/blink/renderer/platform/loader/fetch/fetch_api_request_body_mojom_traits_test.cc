@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_api_request_body_mojom_traits.h"
 
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "base/test/task_environment.h"
 #include "mojo/public/cpp/base/file_mojom_traits.h"
 #include "mojo/public/cpp/base/file_path_mojom_traits.h"
@@ -116,7 +117,7 @@ TEST_F(FetchApiRequestBodyMojomTraitsTest, RoundTripBlobWithOpionalHandle) {
 TEST_F(FetchApiRequestBodyMojomTraitsTest, RoundTripDataPipeGetter) {
   ResourceRequestBody src(EncodedFormData::Create());
   mojo::PendingRemote<network::mojom::blink::DataPipeGetter> data_pipe_getter;
-  ignore_result(data_pipe_getter.InitWithNewPipeAndPassReceiver());
+  std::ignore = data_pipe_getter.InitWithNewPipeAndPassReceiver();
   src.FormBody()->AppendDataPipe(
       base::MakeRefCounted<blink::WrappedDataPipeGetter>(
           std::move(data_pipe_getter)));
@@ -135,7 +136,7 @@ TEST_F(FetchApiRequestBodyMojomTraitsTest, RoundTripDataPipeGetter) {
 TEST_F(FetchApiRequestBodyMojomTraitsTest, RoundTripStreamBody) {
   mojo::PendingRemote<network::mojom::blink::ChunkedDataPipeGetter>
       chunked_data_pipe_getter;
-  ignore_result(chunked_data_pipe_getter.InitWithNewPipeAndPassReceiver());
+  std::ignore = chunked_data_pipe_getter.InitWithNewPipeAndPassReceiver();
   ResourceRequestBody src(std::move(chunked_data_pipe_getter));
 
   ResourceRequestBody dest;

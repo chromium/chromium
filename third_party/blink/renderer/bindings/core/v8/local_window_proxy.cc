@@ -30,8 +30,9 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/local_window_proxy.h"
 
+#include <tuple>
+
 #include "base/debug/dump_without_crashing.h"
-#include "base/ignore_result.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/single_sample_metrics.h"
 #include "third_party/blink/renderer/bindings/core/v8/isolated_world_csp.h"
@@ -299,8 +300,8 @@ void LocalWindowProxy::InstallConditionalFeatures() {
   }
 
   V8PerContextData* per_context_data = script_state_->PerContextData();
-  ignore_result(
-      per_context_data->ConstructorForType(V8Window::GetWrapperTypeInfo()));
+  std::ignore =
+      per_context_data->ConstructorForType(V8Window::GetWrapperTypeInfo());
   // Inform V8 that origin trial information is now connected with the context,
   // and V8 can extend the context with origin trial features.
   script_state_->GetIsolate()->InstallConditionalFeatures(

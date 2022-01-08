@@ -5,11 +5,11 @@
 #include "third_party/blink/renderer/platform/graphics/video_frame_submitter.h"
 
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/ignore_result.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/test/bind.h"
@@ -187,7 +187,7 @@ class VideoFrameSubmitterTest : public testing::Test {
     submitter_->remote_frame_sink_.Bind(std::move(submitter_sink));
     submitter_->compositor_frame_sink_ = submitter_->remote_frame_sink_.get();
     mojo::Remote<mojom::blink::SurfaceEmbedder> embedder;
-    ignore_result(embedder.BindNewPipeAndPassReceiver());
+    std::ignore = embedder.BindNewPipeAndPassReceiver();
     submitter_->surface_embedder_ = std::move(embedder);
     auto surface_id = viz::SurfaceId(
         viz::FrameSinkId(1, 1),

@@ -31,8 +31,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/worker_or_worklet_script_controller.h"
 
 #include <memory>
+#include <tuple>
 
-#include "base/ignore_result.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/core/execution_context/agent.h"
@@ -255,8 +255,8 @@ void WorkerOrWorkletScriptController::PrepareForEvaluation() {
   v8::HandleScope handle_scope(isolate_);
 
   V8PerContextData* per_context_data = script_state_->PerContextData();
-  ignore_result(per_context_data->ConstructorForType(
-      global_scope_->GetWrapperTypeInfo()));
+  std::ignore =
+      per_context_data->ConstructorForType(global_scope_->GetWrapperTypeInfo());
   // Inform V8 that origin trial information is now connected with the context,
   // and V8 can extend the context with origin trial features.
   isolate_->InstallConditionalFeatures(script_state_->GetContext());

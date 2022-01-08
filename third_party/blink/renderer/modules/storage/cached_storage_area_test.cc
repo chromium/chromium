@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/modules/storage/cached_storage_area.h"
 
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "base/memory/scoped_refptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -885,7 +886,7 @@ TEST_F(CachedStorageAreaTest, RecoveryWhenNoLocalDOMWindowPresent) {
   auto* source_area = MakeGarbageCollected<FakeAreaSource>(
       CachedStorageAreaTest::kPageUrl, local_dom_window);
   StorageController::DomStorageConnection connection;
-  ignore_result(connection.dom_storage_remote.BindNewPipeAndPassReceiver());
+  std::ignore = connection.dom_storage_remote.BindNewPipeAndPassReceiver();
   auto task_runner = scheduler::GetSingleThreadTaskRunnerForTesting();
   StorageController controller(std::move(connection), task_runner, 100);
   auto* sessionStorage =

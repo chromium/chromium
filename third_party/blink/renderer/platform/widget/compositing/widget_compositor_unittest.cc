@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/platform/widget/compositing/widget_compositor.h"
 
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "base/test/task_environment.h"
 #include "cc/test/layer_tree_test.h"
 #include "cc/trees/layer_tree_host.h"
@@ -78,7 +79,7 @@ class WidgetCompositorTest : public cc::LayerTreeTest {
         widget_remote.BindNewEndpointAndPassDedicatedReceiver();
 
     mojo::AssociatedRemote<mojom::blink::WidgetHost> widget_host_remote;
-    ignore_result(widget_host_remote.BindNewEndpointAndPassDedicatedReceiver());
+    std::ignore = widget_host_remote.BindNewEndpointAndPassDedicatedReceiver();
 
     widget_base_ = std::make_unique<WidgetBase>(
         /*widget_base_client=*/&client_, widget_host_remote.Unbind(),

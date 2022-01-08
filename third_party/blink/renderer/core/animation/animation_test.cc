@@ -31,9 +31,9 @@
 #include "third_party/blink/renderer/core/animation/animation.h"
 
 #include <memory>
+#include <tuple>
 
 #include "base/bits.h"
-#include "base/ignore_result.h"
 #include "build/build_config.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -441,7 +441,7 @@ TEST_P(AnimationAnimationTestCompositing, SetCurrentTimeAboveMaxTimeDelta) {
   double limit = 1e30;
   animation->setCurrentTime(MakeGarbageCollected<V8CSSNumberish>(limit),
                             ASSERT_NO_EXCEPTION);
-  ignore_result(animation->currentTime());
+  std::ignore = animation->currentTime();
   EXPECT_TRUE(animation->CheckCanStartAnimationOnCompositor(nullptr) &
               CompositorAnimations::kEffectHasUnsupportedTimingParameters);
 }

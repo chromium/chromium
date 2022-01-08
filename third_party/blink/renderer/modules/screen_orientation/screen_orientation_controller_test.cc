@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/modules/screen_orientation/screen_orientation_controller.h"
 
 #include <memory>
+#include <tuple>
 
-#include "base/ignore_result.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/web/web_local_frame.h"
@@ -65,7 +65,7 @@ class ScreenOrientationControllerTest : public PageTestBase {
     PageTestBase::SetUp(gfx::Size());
     HeapMojoAssociatedRemote<device::mojom::blink::ScreenOrientation>
         screen_orientation(GetFrame().DomWindow());
-    ignore_result(screen_orientation.BindNewEndpointAndPassDedicatedReceiver());
+    std::ignore = screen_orientation.BindNewEndpointAndPassDedicatedReceiver();
     Controller()->SetScreenOrientationAssociatedRemoteForTests(
         std::move(screen_orientation));
   }

@@ -33,10 +33,10 @@
 #include <initializer_list>
 #include <limits>
 #include <memory>
+#include <tuple>
 
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
-#include "base/ignore_result.h"
 #include "base/strings/stringprintf.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
@@ -9291,7 +9291,7 @@ TEST_F(WebFrameSwapTest, SwapMainFrameWithPageScaleReset) {
   MainFrame()->Swap(remote_frame);
 
   mojo::AssociatedRemote<mojom::blink::RemoteMainFrameHost> main_frame_host;
-  ignore_result(main_frame_host.BindNewEndpointAndPassDedicatedReceiver());
+  std::ignore = main_frame_host.BindNewEndpointAndPassDedicatedReceiver();
   WebView()->DidAttachRemoteMainFrame(
       main_frame_host.Unbind(),
       mojo::AssociatedRemote<mojom::blink::RemoteMainFrame>()

@@ -26,7 +26,8 @@
 
 #include "third_party/blink/renderer/core/editing/ime/input_method_controller.h"
 
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
@@ -597,7 +598,7 @@ bool InputMethodController::FinishComposingText(
     RevealSelectionScope reveal_selection_scope(GetFrame());
 
     if (is_too_long) {
-      ignore_result(ReplaceComposition(ComposingText()));
+      std::ignore = ReplaceComposition(ComposingText());
     } else {
       Clear();
       DispatchCompositionEndEvent(GetFrame(), composing);
@@ -1411,7 +1412,7 @@ void InputMethodController::ExtendSelectionAndDelete(int before, int after) {
                                    .End() &&
            before <= static_cast<int>(selection_offsets.Start()));
   // TODO(editing-dev): Find a way to distinguish Forward and Backward.
-  ignore_result(DeleteSelection());
+  std::ignore = DeleteSelection();
 }
 
 // TODO(ctzsm): We should reduce the number of selectionchange events.

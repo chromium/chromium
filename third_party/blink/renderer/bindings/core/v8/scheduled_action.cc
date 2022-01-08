@@ -30,6 +30,8 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/scheduled_action.h"
 
+#include <tuple>
+
 #include "third_party/blink/public/mojom/web_feature/web_feature.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_evaluation_result.h"
@@ -150,8 +152,8 @@ void ScheduledAction::Execute(ExecutionContext* context) {
       ClassicScript::Create(code_, KURL(), KURL(), ScriptFetchOptions(),
                             ScriptSourceLocationType::kEvalForScheduledAction,
                             SanitizeScriptErrors::kDoNotSanitize);
-  ignore_result(
-      script->RunScriptOnScriptStateAndReturnValue(script_state_->Get()));
+  std::ignore =
+      script->RunScriptOnScriptStateAndReturnValue(script_state_->Get());
 }
 
 void ScheduledAction::Trace(Visitor* visitor) const {

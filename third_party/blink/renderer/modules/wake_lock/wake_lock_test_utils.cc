@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/modules/wake_lock/wake_lock_test_utils.h"
 
+#include <tuple>
 #include <utility>
 
 #include "base/check.h"
-#include "base/ignore_result.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -173,7 +173,7 @@ void MockPermissionService::SetPermissionResponse(WakeLockType type,
 }
 
 void MockPermissionService::OnConnectionError() {
-  ignore_result(receiver_.Unbind());
+  std::ignore = receiver_.Unbind();
 }
 
 bool MockPermissionService::GetWakeLockTypeFromDescriptor(

@@ -25,7 +25,8 @@
 
 #include "third_party/blink/public/web/web_testing_support.h"
 
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "third_party/blink/renderer/bindings/core/v8/window_proxy_manager.h"
 #include "third_party/blink/renderer/bindings/modules/v8/init_idl_interfaces_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/properties_per_feature_installer_for_testing.h"
@@ -61,7 +62,7 @@ bool EnsureV8BindingsForTestingInternal() {
 
 void EnsureV8BindingsForTesting() {
   static bool unused = EnsureV8BindingsForTestingInternal();
-  ignore_result(unused);
+  std::ignore = unused;
 }
 
 }  // namespace

@@ -4,7 +4,8 @@
 
 #include "third_party/blink/renderer/core/frame/policy_container.h"
 
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "third_party/blink/renderer/core/frame/csp/conversion_util.h"
 
 namespace blink {
@@ -20,7 +21,7 @@ std::unique_ptr<PolicyContainer> PolicyContainer::CreateEmpty() {
   // Create a dummy PolicyContainerHost remote. All the messages will be
   // ignored.
   mojo::AssociatedRemote<mojom::blink::PolicyContainerHost> dummy_host;
-  ignore_result(dummy_host.BindNewEndpointAndPassDedicatedReceiver());
+  std::ignore = dummy_host.BindNewEndpointAndPassDedicatedReceiver();
 
   return std::make_unique<PolicyContainer>(
       dummy_host.Unbind(), mojom::blink::PolicyContainerPolicies::New());

@@ -4,10 +4,10 @@
 
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote_set.h"
 
+#include <string>
+#include <tuple>
 #include <utility>
 
-#include <string>
-#include "base/ignore_result.h"
 #include "base/test/null_task_runner.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
@@ -92,7 +92,7 @@ class HeapMojoAssociatedRemoteSetGCWithoutContextObserverTest
 TEST_F(HeapMojoAssociatedRemoteSetGCWithContextObserverTest, RemovesRemote) {
   auto& remote_set = owner()->associated_remote_set();
   mojo::PendingAssociatedRemote<sample::blink::Service> remote;
-  ignore_result(remote.InitWithNewEndpointAndPassReceiver());
+  std::ignore = remote.InitWithNewEndpointAndPassReceiver();
 
   mojo::RemoteSetElementId rid =
       remote_set.Add(std::move(remote), task_runner());
@@ -111,7 +111,7 @@ TEST_F(HeapMojoAssociatedRemoteSetGCWithContextObserverTest,
   auto* wrapper = owner_->associated_remote_set().wrapper_.Get();
 
   mojo::PendingAssociatedRemote<sample::blink::Service> remote;
-  ignore_result(remote.InitWithNewEndpointAndPassReceiver());
+  std::ignore = remote.InitWithNewEndpointAndPassReceiver();
 
   mojo::RemoteSetElementId rid =
       owner()->associated_remote_set().Add(std::move(remote), task_runner());
@@ -131,7 +131,7 @@ TEST_F(HeapMojoAssociatedRemoteSetGCWithContextObserverTest,
 TEST_F(HeapMojoAssociatedRemoteSetGCWithoutContextObserverTest, RemovesRemote) {
   auto& remote_set = owner()->associated_remote_set();
   mojo::PendingAssociatedRemote<sample::blink::Service> remote;
-  ignore_result(remote.InitWithNewEndpointAndPassReceiver());
+  std::ignore = remote.InitWithNewEndpointAndPassReceiver();
 
   mojo::RemoteSetElementId rid =
       remote_set.Add(std::move(remote), task_runner());
@@ -148,7 +148,7 @@ TEST_F(HeapMojoAssociatedRemoteSetGCWithContextObserverTest,
        ClearLeavesSetEmpty) {
   auto& remote_set = owner()->associated_remote_set();
   mojo::PendingAssociatedRemote<sample::blink::Service> remote;
-  ignore_result(remote.InitWithNewEndpointAndPassReceiver());
+  std::ignore = remote.InitWithNewEndpointAndPassReceiver();
 
   mojo::RemoteSetElementId rid =
       remote_set.Add(std::move(remote), task_runner());
@@ -165,7 +165,7 @@ TEST_F(HeapMojoAssociatedRemoteSetGCWithoutContextObserverTest,
        ClearLeavesSetEmpty) {
   auto& remote_set = owner()->associated_remote_set();
   mojo::PendingAssociatedRemote<sample::blink::Service> remote;
-  ignore_result(remote.InitWithNewEndpointAndPassReceiver());
+  std::ignore = remote.InitWithNewEndpointAndPassReceiver();
 
   mojo::RemoteSetElementId rid =
       remote_set.Add(std::move(remote), task_runner());
@@ -185,7 +185,7 @@ TEST_F(HeapMojoAssociatedRemoteSetGCWithContextObserverTest,
   EXPECT_EQ(remote_set.size(), 0u);
 
   mojo::PendingAssociatedRemote<sample::blink::Service> remote_1;
-  ignore_result(remote_1.InitWithNewEndpointAndPassReceiver());
+  std::ignore = remote_1.InitWithNewEndpointAndPassReceiver();
 
   mojo::RemoteSetElementId rid_1 =
       remote_set.Add(std::move(remote_1), task_runner());
@@ -194,7 +194,7 @@ TEST_F(HeapMojoAssociatedRemoteSetGCWithContextObserverTest,
   EXPECT_EQ(remote_set.size(), 1u);
 
   mojo::PendingAssociatedRemote<sample::blink::Service> remote_2;
-  ignore_result(remote_2.InitWithNewEndpointAndPassReceiver());
+  std::ignore = remote_2.InitWithNewEndpointAndPassReceiver();
 
   mojo::RemoteSetElementId rid_2 =
       remote_set.Add(std::move(remote_2), task_runner());

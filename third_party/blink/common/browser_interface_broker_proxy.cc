@@ -4,7 +4,8 @@
 
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "base/threading/sequence_local_storage_slot.h"
 
 namespace blink {
@@ -65,7 +66,7 @@ BrowserInterfaceBrokerProxy& GetEmptyBrowserInterfaceBroker() {
   if (!proxy_slot.GetValuePointer()) {
     auto& proxy = proxy_slot.GetOrCreateValue();
     mojo::PendingRemote<blink::mojom::BrowserInterfaceBroker> remote;
-    ignore_result(remote.InitWithNewPipeAndPassReceiver());
+    std::ignore = remote.InitWithNewPipeAndPassReceiver();
     proxy.Bind(std::move(remote), base::ThreadTaskRunnerHandle::Get());
   }
 
