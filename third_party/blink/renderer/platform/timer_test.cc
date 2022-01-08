@@ -62,9 +62,10 @@ class TimerTest : public testing::Test {
   // fire.
   bool TimeTillNextDelayedTask(base::TimeDelta* time) const {
     base::sequence_manager::LazyNow lazy_now(platform_->NowTicks());
-    auto wake_up = platform_->GetMainThreadScheduler()
-                       ->GetSchedulerHelperForTesting()
-                       ->GetNextWakeUp();
+    auto* scheduler_helper =
+        platform_->GetMainThreadScheduler()->GetSchedulerHelperForTesting();
+    scheduler_helper->ReclaimMemory();
+    auto wake_up = scheduler_helper->GetNextWakeUp();
     if (!wake_up)
       return false;
     *time = wake_up->time - lazy_now.Now();
@@ -219,7 +220,7 @@ TEST_F(TimerTest, StartOneShot_NonZeroAndCancel) {
   EXPECT_EQ(base::Seconds(10), run_time);
 
   timer.Stop();
-  EXPECT_TRUE(TimeTillNextDelayedTask(&run_time));
+  EXPECT_FALSE(TimeTillNextDelayedTask(&run_time));
 
   platform_->RunUntilIdle();
   EXPECT_FALSE(run_times_.size());
@@ -235,7 +236,7 @@ TEST_F(TimerTest, StartOneShot_NonZeroAndCancelThenRepost) {
   EXPECT_EQ(base::Seconds(10), run_time);
 
   timer.Stop();
-  EXPECT_TRUE(TimeTillNextDelayedTask(&run_time));
+  EXPECT_FALSE(TimeTillNextDelayedTask(&run_time));
 
   platform_->RunUntilIdle();
   EXPECT_FALSE(run_times_.size());
