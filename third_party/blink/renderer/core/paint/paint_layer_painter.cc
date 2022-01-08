@@ -33,8 +33,7 @@ namespace blink {
 void PaintLayerPainter::Paint(GraphicsContext& context,
                               const GlobalPaintFlags global_paint_flags,
                               PaintLayerFlags paint_flags) {
-  PaintLayerPaintingInfo painting_info(&paint_layer_, global_paint_flags,
-                                       PhysicalOffset());
+  PaintLayerPaintingInfo painting_info(&paint_layer_, global_paint_flags);
   Paint(context, painting_info, paint_flags);
 }
 
@@ -278,11 +277,6 @@ void PaintLayerPainter::AdjustForPaintProperties(
   painting_info.root_layer = &paint_layer_;
   // This flag no longer applies for the new root layer.
   paint_flags &= ~kPaintLayerPaintingOverflowContents;
-
-  if (first_fragment.PaintProperties() &&
-      first_fragment.PaintProperties()->PaintOffsetTranslation()) {
-    painting_info.sub_pixel_accumulation = first_fragment.PaintOffset();
-  }
 }
 
 static gfx::Rect FirstFragmentVisualRect(const LayoutBoxModelObject& object) {
@@ -353,13 +347,6 @@ PaintResult PaintLayerPainter::PaintLayerContents(
       // is primary, not auxiliary.
       !paint_layer_.IsUnderSVGHiddenContainer() && is_self_painting_layer &&
       !is_painting_overlay_overflow_controls;
-
-  // TODO(paint-dev): Become block fragmentation aware. Unconditionally using
-  // the first fragment doesn't seem right.
-  PhysicalOffset offset_from_root = object.FirstFragment().PaintOffset();
-  if (const PaintLayer* root = painting_info.root_layer)
-    offset_from_root -= root->GetLayoutObject().FirstFragment().PaintOffset();
-  offset_from_root += painting_info.sub_pixel_accumulation;
 
   if (object.FirstFragment().NextFragment() ||
       IsUnclippedLayoutView(paint_layer_)) {
@@ -496,16 +483,8 @@ PaintResult PaintLayerPainter::PaintLayerContents(
         PaintWithPhase(PaintPhase::kMask, context, local_painting_info,
                        paint_flags);
       }
-      if (properties->ClipPathMask()) {
-        PhysicalOffset visual_offset_from_root =
-            paint_layer_.EnclosingPaginationLayer()
-                ? paint_layer_.VisualOffsetFromAncestor(
-                      local_painting_info.root_layer,
-                      local_painting_info.sub_pixel_accumulation)
-                : offset_from_root;
-        ClipPathClipper::PaintClipPathAsMaskImage(context, object, object,
-                                                  visual_offset_from_root);
-      }
+      if (properties->ClipPathMask())
+        ClipPathClipper::PaintClipPathAsMaskImage(context, object, object);
     }
   }
 

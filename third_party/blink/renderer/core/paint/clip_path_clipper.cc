@@ -204,8 +204,7 @@ static absl::optional<Path> PathBasedClipInternal(
 void ClipPathClipper::PaintClipPathAsMaskImage(
     GraphicsContext& context,
     const LayoutObject& layout_object,
-    const DisplayItemClient& display_item_client,
-    const PhysicalOffset& paint_offset) {
+    const DisplayItemClient& display_item_client) {
   const auto* properties = layout_object.FirstFragment().PaintProperties();
   DCHECK(properties);
   DCHECK(properties->MaskClip());
@@ -227,6 +226,7 @@ void ClipPathClipper::PaintClipPathAsMaskImage(
       context, display_item_client, DisplayItem::kSVGClip,
       gfx::ToEnclosingRect(properties->MaskClip()->PaintClipRect().Rect()));
   context.Save();
+  PhysicalOffset paint_offset = layout_object.FirstFragment().PaintOffset();
   context.Translate(paint_offset.left, paint_offset.top);
 
   bool uses_zoomed_reference_box = UsesZoomedReferenceBox(layout_object);

@@ -46,7 +46,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_PAINTING_INFO_H_
 
 #include "base/dcheck_is_on.h"
-#include "third_party/blink/renderer/core/layout/geometry/physical_offset.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 #if DCHECK_IS_ON()
@@ -74,17 +73,13 @@ struct PaintLayerPaintingInfo {
 
  public:
   PaintLayerPaintingInfo(PaintLayer* root_layer,
-                         GlobalPaintFlags global_paint_flags,
-                         const PhysicalOffset& sub_pixel_accumulation)
-      : root_layer(root_layer),
-        sub_pixel_accumulation(sub_pixel_accumulation),
-        global_paint_flags_(global_paint_flags) {}
+                         GlobalPaintFlags global_paint_flags)
+      : root_layer(root_layer), global_paint_flags_(global_paint_flags) {}
 
   GlobalPaintFlags GetGlobalPaintFlags() const { return global_paint_flags_; }
 
   // TODO(jchaffraix): We should encapsulate all these fields.
   const PaintLayer* root_layer;
-  PhysicalOffset sub_pixel_accumulation;
 
  private:
   const GlobalPaintFlags global_paint_flags_;

@@ -43,8 +43,8 @@ ScopedSVGPaintState::~ScopedSVGPaintState() {
     SVGMaskPainter::Paint(paint_info_.context, object_, display_item_client_);
 
   if (should_paint_clip_path_as_mask_image_) {
-    ClipPathClipper::PaintClipPathAsMaskImage(
-        paint_info_.context, object_, display_item_client_, PhysicalOffset());
+    ClipPathClipper::PaintClipPathAsMaskImage(paint_info_.context, object_,
+                                              display_item_client_);
   }
 }
 
