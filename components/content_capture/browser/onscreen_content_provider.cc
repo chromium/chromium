@@ -256,7 +256,8 @@ void OnscreenContentProvider::BuildContentCaptureSession(
   if (!ancestor_only)
     session->push_back(content_capture_receiver->GetContentCaptureFrame());
 
-  content::RenderFrameHost* rfh = content_capture_receiver->rfh()->GetParent();
+  content::RenderFrameHost* rfh =
+      content_capture_receiver->rfh()->GetParentOrOuterDocument();
   while (rfh) {
     ContentCaptureReceiver* receiver = ContentCaptureReceiverForFrame(rfh);
     // TODO(michaelbai): Only creates ContentCaptureReceiver here, clean up the
@@ -267,7 +268,7 @@ void OnscreenContentProvider::BuildContentCaptureSession(
       DCHECK(receiver);
     }
     session->push_back(receiver->GetContentCaptureFrame());
-    rfh = receiver->rfh()->GetParent();
+    rfh = receiver->rfh()->GetParentOrOuterDocument();
   }
 }
 
@@ -276,13 +277,14 @@ bool OnscreenContentProvider::BuildContentCaptureSessionLastSeen(
     ContentCaptureSession* session) {
   session->push_back(
       content_capture_receiver->GetContentCaptureFrameLastSeen());
-  content::RenderFrameHost* rfh = content_capture_receiver->rfh()->GetParent();
+  content::RenderFrameHost* rfh =
+      content_capture_receiver->rfh()->GetParentOrOuterDocument();
   while (rfh) {
     ContentCaptureReceiver* receiver = ContentCaptureReceiverForFrame(rfh);
     if (!receiver)
       return false;
     session->push_back(receiver->GetContentCaptureFrameLastSeen());
-    rfh = receiver->rfh()->GetParent();
+    rfh = receiver->rfh()->GetParentOrOuterDocument();
   }
   return true;
 }

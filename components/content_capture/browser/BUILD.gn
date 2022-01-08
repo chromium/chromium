@@ -47,3 +47,19 @@ source_set("unit_tests") {
     "//content/test:test_support",
   ]
 }
+
+source_set("browser_tests") {
+  testonly = true
+  sources = [ "content_capture_receiver_browsertest.cc" ]
+
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+
+  public_deps = [
+    ":test_support",
+    "//base/test:test_support",
+    "//content/public/browser",
+    "//content/shell:content_shell_lib",
+    "//content/test:browsertest_support",
+    "//content/test:test_support",
+  ]
+}

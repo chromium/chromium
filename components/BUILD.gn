@@ -716,6 +716,7 @@ if (!is_ios) {
       "//components/autofill/content/renderer:test_support",
       "//components/autofill/core/browser",
       "//components/browsing_data/content",
+      "//components/content_capture/browser:browser_tests",
       "//components/content_settings/core/common",
       "//components/content_settings/renderer",
       "//components/continuous_search/common/public/mojom",
