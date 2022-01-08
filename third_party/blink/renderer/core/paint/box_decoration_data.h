@@ -78,14 +78,8 @@ class BoxDecorationData {
         should_paint_shadow_(ComputeShouldPaintShadow()) {}
 
   bool ComputeShouldPaintBackground() const {
-    if (!style_.HasBackground())
-      return false;
-    if (layout_box_.BackgroundTransfersToView())
-      return false;
-    if (paint_info_.ShouldSkipBackground() &&
-        paint_info_.PaintContainer() == &layout_box_)
-      return false;
-    return true;
+    return style_.HasBackground() && !layout_box_.BackgroundTransfersToView() &&
+           !paint_info_.ShouldSkipBackground();
   }
 
   bool ComputeShouldPaintBorder(

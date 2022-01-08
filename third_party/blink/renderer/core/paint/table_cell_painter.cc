@@ -34,7 +34,9 @@ void TableCellPainter::PaintContainerBackgroundBehindCell(
       !layout_table_cell_.FirstChild())
     return;
 
-  ScopedPaintState paint_state(layout_table_cell_, paint_info);
+  ScopedPaintState paint_state(
+      layout_table_cell_, paint_info,
+      /*painting_legacy_table_part_in_ancestor_layer*/ true);
   auto paint_rect =
       PaintRectNotIncludingVisualOverflow(paint_state.PaintOffset());
   PaintBackground(paint_state.GetPaintInfo(), paint_rect, background_object);

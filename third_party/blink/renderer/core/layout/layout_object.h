@@ -1022,6 +1022,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectTableSection);
   }
+  bool IsLegacyTableSection() const {
+    NOT_DESTROYED();
+    return IsTableSection() && !IsLayoutNGObject();
+  }
   bool IsTextAreaIncludingNG() const {
     NOT_DESTROYED();
     return IsOfType(kLayoutObjectTextControlMultiLine) ||

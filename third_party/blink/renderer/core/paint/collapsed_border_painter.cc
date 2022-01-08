@@ -351,7 +351,8 @@ void CollapsedBorderPainter::PaintCollapsedBorders(
   // Now left=start_, right=end_, before_=top, after_=bottom.
 
   // Collapsed borders are half inside and half outside of |rect|.
-  ScopedPaintState paint_state(cell_, paint_info);
+  ScopedPaintState paint_state(
+      cell_, paint_info, /*painting_legacy_table_part_in_ancestor_layer*/ true);
   gfx::Rect rect = ToPixelSnappedRect(
       TableCellPainter(cell_).PaintRectNotIncludingVisualOverflow(
           paint_state.PaintOffset()));

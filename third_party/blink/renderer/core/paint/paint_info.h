@@ -48,8 +48,6 @@
 
 namespace blink {
 
-class LayoutBoxModelObject;
-
 struct CORE_EXPORT PaintInfo {
   STACK_ALLOCATED();
 
@@ -58,12 +56,10 @@ struct CORE_EXPORT PaintInfo {
             const CullRect& cull_rect,
             PaintPhase phase,
             GlobalPaintFlags global_paint_flags,
-            PaintLayerFlags paint_flags,
-            const LayoutBoxModelObject* paint_container = nullptr)
+            PaintLayerFlags paint_flags)
       : context(context),
         phase(phase),
         cull_rect_(cull_rect),
-        paint_container_(paint_container),
         paint_flags_(paint_flags),
         global_paint_flags_(global_paint_flags) {}
 
@@ -72,7 +68,6 @@ struct CORE_EXPORT PaintInfo {
       : context(new_context),
         phase(copy_other_fields_from.phase),
         cull_rect_(copy_other_fields_from.cull_rect_),
-        paint_container_(copy_other_fields_from.paint_container_),
         fragment_id_(copy_other_fields_from.fragment_id_),
         paint_flags_(copy_other_fields_from.paint_flags_),
         global_paint_flags_(copy_other_fields_from.global_paint_flags_) {
@@ -118,10 +113,6 @@ struct CORE_EXPORT PaintInfo {
 
   DisplayItem::Type DisplayItemTypeForClipping() const {
     return DisplayItem::PaintPhaseToClipType(phase);
-  }
-
-  const LayoutBoxModelObject* PaintContainer() const {
-    return paint_container_;
   }
 
   GlobalPaintFlags GetGlobalPaintFlags() const { return global_paint_flags_; }
@@ -212,9 +203,6 @@ struct CORE_EXPORT PaintInfo {
 
  private:
   CullRect cull_rect_;
-
-  // The box model object that originates the current painting.
-  const LayoutBoxModelObject* paint_container_;
 
   // The ID of the fragment that we're currently painting.
   //

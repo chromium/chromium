@@ -134,7 +134,9 @@ void TableSectionPainter::PaintCollapsedSectionBorders(
       !layout_table_section_.Table()->EffectiveColumns().size())
     return;
 
-  ScopedPaintState paint_state(layout_table_section_, paint_info);
+  ScopedPaintState paint_state(
+      layout_table_section_, paint_info,
+      /*painting_legacy_table_part_in_ancestor_layer*/ true);
   absl::optional<ScopedBoxContentsPaintState> contents_paint_state;
   if (paint_info.phase != PaintPhase::kMask)
     contents_paint_state.emplace(paint_state, layout_table_section_);
@@ -302,8 +304,11 @@ void TableSectionPainter::PaintBoxDecorationBackground(
       absl::optional<ScopedPaintState> row_paint_state;
       for (auto c = dirtied_columns.Start(); c < dirtied_columns.End(); c++) {
         if (const auto* cell = layout_table_section_.OriginatingCellAt(r, c)) {
-          if (!row_paint_state)
-            row_paint_state.emplace(*cell->Row(), paint_info_for_cells);
+          if (!row_paint_state) {
+            row_paint_state.emplace(
+                *cell->Row(), paint_info_for_cells,
+                /*painting_legacy_table_part_in_ancestor_layer*/ true);
+          }
           PaintBackgroundsBehindCell(*cell, row_paint_state->GetPaintInfo());
         }
       }

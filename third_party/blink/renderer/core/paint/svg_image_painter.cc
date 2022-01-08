@@ -100,7 +100,6 @@ void SVGImagePainter::PaintForeground(const PaintInfo& paint_info) {
   if (image_content->IsLoaded()) {
     LocalDOMWindow* window = layout_svg_image_.GetDocument().domWindow();
     DCHECK(window);
-    DCHECK(paint_info.PaintContainer());
     ImageElementTiming::From(*window).NotifyImagePainted(
         layout_svg_image_, *image_content,
         paint_info.context.GetPaintController().CurrentPaintChunkProperties(),

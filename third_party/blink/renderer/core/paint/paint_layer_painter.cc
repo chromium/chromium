@@ -595,8 +595,7 @@ void PaintLayerPainter::PaintFragmentWithPhase(
       DisplayItem::PaintPhaseToDrawingType(phase));
 
   PaintInfo paint_info(context, cull_rect, phase,
-                       painting_info.GetGlobalPaintFlags(), paint_flags,
-                       &painting_info.root_layer->GetLayoutObject());
+                       painting_info.GetGlobalPaintFlags(), paint_flags);
   if (paint_layer_.GetLayoutObject().ChildPaintBlockedByDisplayLock())
     paint_info.SetDescendantPaintingBlocked(true);
 

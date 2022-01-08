@@ -186,7 +186,6 @@ void ImagePainter::PaintReplaced(const PaintInfo& paint_info,
 
   BoxDrawingRecorder recorder(context, layout_image_, paint_info.phase,
                               paint_offset);
-  DCHECK(paint_info.PaintContainer());
   PaintIntoRect(context, paint_rect, content_rect);
 }
 

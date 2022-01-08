@@ -37,8 +37,7 @@ void SVGObjectPainter::PaintResourceSubtree(GraphicsContext& context) {
 
   PaintInfo info(context, CullRect::Infinite(), PaintPhase::kForeground,
                  kGlobalPaintNormalPhase | kGlobalPaintFlattenCompositingLayers,
-                 kPaintLayerPaintingRenderingResourceSubtree,
-                 &layout_object_.PaintingLayer()->GetLayoutObject());
+                 kPaintLayerPaintingRenderingResourceSubtree);
   layout_object_.Paint(info);
 }
 

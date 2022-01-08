@@ -12,6 +12,38 @@
 
 namespace blink {
 
+ScopedPaintState::ScopedPaintState(
+    const LayoutObject& object,
+    const PaintInfo& paint_info,
+    const FragmentData* fragment_data,
+    bool painting_legacy_table_part_in_ancestor_layer)
+    : fragment_to_paint_(fragment_data), input_paint_info_(paint_info) {
+  if (!fragment_to_paint_) {
+    // The object has nothing to paint in the current fragment.
+    // TODO(wangxianzhu): Use DCHECK(fragment_to_paint_) in PaintOffset()
+    // when all painters check FragmentToPaint() before painting.
+    paint_offset_ =
+        PhysicalOffset(LayoutUnit::NearlyMax(), LayoutUnit::NearlyMax());
+    return;
+  }
+
+  paint_offset_ = fragment_to_paint_->PaintOffset();
+  if (painting_legacy_table_part_in_ancestor_layer) {
+    DCHECK(object.IsTableCellLegacy() || object.IsLegacyTableRow() ||
+           object.IsLegacyTableSection());
+  } else if (object.HasLayer() &&
+             To<LayoutBoxModelObject>(object).Layer()->IsSelfPaintingLayer()) {
+    // PaintLayerPainter already adjusted for PaintOffsetTranslation for
+    // PaintContainer.
+    return;
+  }
+
+  if (const auto* properties = fragment_to_paint_->PaintProperties()) {
+    if (const auto* translation = properties->PaintOffsetTranslation())
+      AdjustForPaintOffsetTranslation(object, *translation);
+  }
+}
+
 void ScopedPaintState::AdjustForPaintOffsetTranslation(
     const LayoutObject& object,
     const TransformPaintPropertyNode& paint_offset_translation) {
