@@ -27,7 +27,7 @@ zipalign_padding=0
 Container <Bundle.minimal.apks/base.apk>
 Section .text: has 100.0% of 35982248 bytes accounted for from 22 symbols. 0 bytes are unaccounted for.
 * Padding accounts for 13808 bytes (0.0%)
-* 16 have source paths. Accounts for 73986 bytes (0.2%).
+* 17 have source paths. Accounts for 35972442 bytes (100.0%).
 * 16 have a component assigned. Accounts for 73986 bytes (0.2%).
 * 5 placeholders exist (symbols that start with **). Accounts for 35912296 bytes (99.8%).
 * 8 aliases exist, mapped to 3 unique addresses (100 bytes saved)
@@ -38,7 +38,7 @@ Section .text: has 100.0% of 35982248 bytes accounted for from 22 symbols. 0 byt
 * 5 symbols are from generated sources. Accounts for 69660 bytes (0.2%).
 Section .rodata: has 100.0% of 5927636 bytes accounted for from 12 symbols. 16 bytes are unaccounted for.
 * Padding accounts for 2637946 bytes (44.5%)
-* 8 have source paths. Accounts for 676149 bytes (11.4%).
+* 9 have source paths. Accounts for 3962245 bytes (66.8%).
 * 8 have a component assigned. Accounts for 676149 bytes (11.4%).
 * 4 placeholders exist (symbols that start with **). Accounts for 5251487 bytes (88.6%).
 * 3 string literals exist. Accounts for 21 bytes (0.0%) padding is 0 bytes.
@@ -50,13 +50,13 @@ Large padding of 675992 between:
   B) <Bundle.minimal.apks/base.apk>.rodata@28f3450(size_without_padding=48,padding=675992,full_name=kAnimationFrameTimeHistogramClassPath,object_path=third_party/sub/PaintChunker.o,source_path=third_party/paint.cc,flags={anon},num_aliases=1,component=Internal>Android)
 Section .data.rel.ro: has 100.0% of 1065224 bytes accounted for from 4 symbols. 0 bytes are unaccounted for.
 * Padding accounts for 0 bytes (0.0%)
-* 3 have source paths. Accounts for 92 bytes (0.0%).
+* 4 have source paths. Accounts for 1065224 bytes (100.0%).
 * 3 have a component assigned. Accounts for 92 bytes (0.0%).
 * 1 placeholders exist (symbols that start with **). Accounts for 1065132 bytes (100.0%).
 * 0 symbols have shared ownership.
 Section .data: has 100.0% of 101768 bytes accounted for from 6 symbols. 0 bytes are unaccounted for.
 * Padding accounts for 0 bytes (0.0%)
-* 5 have source paths. Accounts for 168 bytes (0.2%).
+* 6 have source paths. Accounts for 101768 bytes (100.0%).
 * 5 have a component assigned. Accounts for 168 bytes (0.2%).
 * 1 placeholders exist (symbols that start with **). Accounts for 101600 bytes (99.8%).
 * 0 symbols have shared ownership.
@@ -91,11 +91,10 @@ Section .pak.nontranslated: has 100.0% of 737 bytes accounted for from 3 symbols
 * 0 symbols have shared ownership.
 Section .other: has 100.0% of 95595867 bytes accounted for from 27 symbols. 0 bytes are unaccounted for.
 * Padding accounts for 33903469 bytes (35.5%)
-* 3 have source paths. Accounts for 5243904 bytes (5.5%).
+* 26 have source paths. Accounts for 95595033 bytes (100.0%).
 * 1 have a component assigned. Accounts for 1048576 bytes (1.1%).
 * 22 placeholders exist (symbols that start with **). Accounts for 56448494 bytes (59.0%).
 * 0 symbols have shared ownership.
-* 1 symbols are from generated sources. Accounts for 4194304 bytes (4.4%).
 
 Container <Bundle.minimal.apks/not_on_demand.apk>
 Section .text: 0 bytes from 0 symbols.
@@ -149,7 +148,6 @@ Section .other: has 100.0% of 696 bytes accounted for from 2 symbols. 0 bytes ar
 * 1 have source paths. Accounts for 560 bytes (80.5%).
 * 0 have a component assigned. Accounts for 0 bytes (0.0%).
 * 0 symbols have shared ownership.
-* 1 symbols are from generated sources. Accounts for 560 bytes (80.5%).
 
 Container <Bundle.minimal.apks/on_demand.apk?>
 Section .text: 0 bytes from 0 symbols.
@@ -203,7 +201,6 @@ Section .other: has 100.0% of 695 bytes accounted for from 2 symbols. 0 bytes ar
 * 1 have source paths. Accounts for 559 bytes (80.4%).
 * 1 have a component assigned. Accounts for 559 bytes (80.4%).
 * 0 symbols have shared ownership.
-* 1 symbols are from generated sources. Accounts for 559 bytes (80.4%).
 <Bundle.minimal.apks/base.apk>.text@28d900(size_without_padding=16,padding=0,full_name=_GLOBAL__sub_I_page_allocator.cc,object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={startup},num_aliases=1,component=Blink>Internal)
 <Bundle.minimal.apks/base.apk>.text@28d910(size_without_padding=56,padding=0,full_name=_GLOBAL__sub_I_bbr_sender.cc,object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={startup},num_aliases=1,component=Blink>Internal)
 <Bundle.minimal.apks/base.apk>.text@28d948(size_without_padding=28,padding=0,full_name=_GLOBAL__sub_I_pacing_sender.cc,object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={startup},num_aliases=1,component=Blink>Internal)
@@ -225,7 +222,7 @@ Section .other: has 100.0% of 695 bytes accounted for from 2 symbols. 0 bytes ar
 <Bundle.minimal.apks/base.apk>.text@2a2000(size_without_padding=32,padding=4002,full_name=** outlined function,object_path=third_party/sub/ContiguousContainer.o,source_path=third_party/container/container.c,flags={},num_aliases=1,component=UI>Browser)
 <Bundle.minimal.apks/base.apk>.text@2a2020(size_without_padding=48,padding=0,full_name=aliasedWithOutlinedFunction(),object_path=,source_path=,flags={},num_aliases=2,component=)
 <Bundle.minimal.apks/base.apk>.text@2a2020(size_without_padding=48,padding=0,full_name=** outlined function * 2,object_path=,source_path=,flags={},num_aliases=2,component=)
-<Bundle.minimal.apks/base.apk>.text@2a2050(size_without_padding=35898456,padding=0,full_name=** .text (unattributed),object_path=,source_path=,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.text@2a2050(size_without_padding=35898456,padding=0,full_name=** .text (unattributed),object_path=,source_path=$APK/lib/armeabi-v7a/test.so,flags={},num_aliases=1,component=)
 <Bundle.minimal.apks/base.apk>.rodata@266e600(size_without_padding=5,padding=0,full_name="Str1",object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={},num_aliases=2,component=Blink>Internal)
 <Bundle.minimal.apks/base.apk>.rodata@266e600(size_without_padding=5,padding=0,full_name="Str1",object_path=third_party/icu/icuuc/ucnv_ext.o,source_path=third_party/icu/ucnv_ext.c,flags={gen},num_aliases=2,component=Internal>Android)
 <Bundle.minimal.apks/base.apk>.rodata@266e605(size_without_padding=16,padding=0,full_name="String literal2",object_path=third_party/icu/icuuc/ucnv_ext.o,source_path=third_party/icu/ucnv_ext.c,flags={gen},num_aliases=1,component=Internal>Android)
@@ -237,7 +234,7 @@ Section .other: has 100.0% of 695 bytes accounted for from 2 symbols. 0 bytes ar
 <Bundle.minimal.apks/base.apk>.rodata@284e398(size_without_padding=32,padding=0,full_name=chrome::mojom::FilePatcher::Name_,object_path=third_party/sub/ContiguousContainer.o,source_path=third_party/container/container.c,flags={},num_aliases=1,component=UI>Browser)
 <Bundle.minimal.apks/base.apk>.rodata@28f3450(size_without_padding=48,padding=675992,full_name=kAnimationFrameTimeHistogramClassPath,object_path=third_party/sub/PaintChunker.o,source_path=third_party/paint.cc,flags={anon},num_aliases=1,component=Internal>Android)
 <Bundle.minimal.apks/base.apk>.rodata@28f3480(size_without_padding=4,padding=0,full_name=blink::CSSValueKeywordsHash::findValueImpl(char const*, unsigned int)::value_word_list,object_path=third_party/sub/PaintChunker.o,source_path=third_party/paint.cc,flags={anon},num_aliases=1,component=Internal>Android)
-<Bundle.minimal.apks/base.apk>.rodata@28f3484(size_without_padding=3286096,padding=0,full_name=** .rodata (unattributed),object_path=,source_path=,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.rodata@28f3484(size_without_padding=3286096,padding=0,full_name=** .rodata (unattributed),object_path=,source_path=$APK/lib/armeabi-v7a/test.so,flags={},num_aliases=1,component=)
 <Bundle.minimal.apks/base.apk>.data.rel.ro.local@2c176f0(size_without_padding=56,padding=0,full_name=ChromeMainDelegate [vtable],object_path=third_party/icu/icuuc/ucnv_ext.o,source_path=third_party/icu/ucnv_ext.c,flags={gen},num_aliases=1,component=Internal>Android)
 <Bundle.minimal.apks/base.apk>.data.rel.ro.local@2c17728(size_without_padding=24,padding=0,full_name=chrome::mojom::FieldTrialRecorder [vtable],object_path=third_party/icu/icuuc/ucnv_ext.o,source_path=third_party/icu/ucnv_ext.c,flags={gen},num_aliases=1,component=Internal>Android)
 <Bundle.minimal.apks/base.apk>.data.rel.ro.local@2c17740(size_without_padding=789904,padding=0,full_name=chrome::mojom::FieldTrialRecorderProxy [vtable],object_path=third_party/sub/ContiguousContainer.o,source_path=third_party/container/container.c,flags={},num_aliases=1,component=UI>Browser)
@@ -246,13 +243,13 @@ Section .other: has 100.0% of 695 bytes accounted for from 2 symbols. 0 bytes ar
 <Bundle.minimal.apks/base.apk>.data.rel.ro@2cd8500(size_without_padding=56,padding=0,full_name=ChromeMainDelegateAndroid [vtable],object_path=third_party/sub/PaintChunker.o,source_path=third_party/paint.cc,flags={},num_aliases=1,component=Internal>Android)
 <Bundle.minimal.apks/base.apk>.data.rel.ro@2cd8538(size_without_padding=24,padding=0,full_name=mojo::MessageReceiver [vtable],object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={},num_aliases=1,component=Blink>Internal)
 <Bundle.minimal.apks/base.apk>.data.rel.ro@2cd8550(size_without_padding=12,padding=0,full_name=kMethodsAnimationFrameTimeHistogram,object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={},num_aliases=1,component=Blink>Internal)
-<Bundle.minimal.apks/base.apk>.data.rel.ro@2cd855c(size_without_padding=1065132,padding=0,full_name=** .data.rel.ro (unattributed),object_path=,source_path=,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.data.rel.ro@2cd855c(size_without_padding=1065132,padding=0,full_name=** .data.rel.ro (unattributed),object_path=,source_path=$APK/lib/armeabi-v7a/test.so,flags={},num_aliases=1,component=)
 <Bundle.minimal.apks/base.apk>.data@2de7000(size_without_padding=4,padding=0,full_name=google::protobuf::internal::pLinuxKernelCmpxchg,object_path=base/base/page_allocator.o,source_path=base/page_allocator.cc,flags={},num_aliases=1,component=Blink>Internal)
 <Bundle.minimal.apks/base.apk>.data@2de7004(size_without_padding=4,padding=0,full_name=google::protobuf::internal::pLinuxKernelMemoryBarrier,object_path=third_party/sub/ContiguousContainer.o,source_path=third_party/container/container.c,flags={},num_aliases=1,component=UI>Browser)
 <Bundle.minimal.apks/base.apk>.data@2de7008(size_without_padding=152,padding=0,full_name=base::android::kBaseRegisteredMethods,object_path=third_party/sub/ContiguousContainer.o,source_path=third_party/container/container.c,flags={rel},num_aliases=1,component=UI>Browser)
 <Bundle.minimal.apks/base.apk>.data@2de70a0(size_without_padding=4,padding=0,full_name=base::android::g_renderer_histogram_code,object_path=third_party/sub/ContiguousContainer.o,source_path=third_party/container/container.c,flags={anon},num_aliases=1,component=UI>Browser)
 <Bundle.minimal.apks/base.apk>.data@2de70a4(size_without_padding=4,padding=0,full_name=base::android::g_library_version_number,object_path=third_party/sub/ContiguousContainer.o,source_path=third_party/container/container.c,flags={anon,rel.loc},num_aliases=1,component=UI>Browser)
-<Bundle.minimal.apks/base.apk>.data@2de70a8(size_without_padding=101600,padding=0,full_name=** .data (unattributed),object_path=,source_path=,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.data@2de70a8(size_without_padding=101600,padding=0,full_name=** .data (unattributed),object_path=,source_path=$APK/lib/armeabi-v7a/test.so,flags={},num_aliases=1,component=)
 <Bundle.minimal.apks/base.apk>.bss@0(size_without_padding=262144,padding=0,full_name=ff_cos_131072,object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_float.o,source_path=third_party/fft_float.cc,flags={},num_aliases=1,component=Internal>Android)
 <Bundle.minimal.apks/base.apk>.bss@0(size_without_padding=131072,padding=0,full_name=ff_cos_131072_fixed,object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_fixed.o,source_path=third_party/fft_fixed.cc,flags={},num_aliases=1,component=Internal>Android)
 <Bundle.minimal.apks/base.apk>.bss@0(size_without_padding=131072,padding=0,full_name=ff_cos_65536,object_path=third_party/ffmpeg/libffmpeg_internal.a/fft_float.o,source_path=third_party/fft_float.cc,flags={},num_aliases=1,component=Internal>Android)
@@ -674,33 +671,33 @@ Section .other: has 100.0% of 695 bytes accounted for from 2 symbols. 0 bytes ar
 <Bundle.minimal.apks/base.apk>.pak.translations@6918(size_without_padding=9,padding=0,full_name=../../ui/strings/app_locale_settings.grd: IDS_WEB_FONT_SIZE,object_path=,source_path=,flags={},num_aliases=1,component=)
 <Bundle.minimal.apks/base.apk>.pak.translations@0(size_without_padding=0,padding=18,full_name=Overhead: assets/en-US.pak,object_path=,source_path=,flags={},num_aliases=1,component=)
 <Bundle.minimal.apks/base.apk>.other@0(size_without_padding=1048576,padding=0,full_name=assets/icudtl.dat,object_path=,source_path=third_party/icu/android/icudtl.dat,flags={},num_aliases=1,component=Internal>Android)
-<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=4194304,padding=0,full_name=lib/armeabi-v7a/smalltest.so,object_path=,source_path=$APK/lib/armeabi-v7a/smalltest.so,flags={gen},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=4194304,padding=0,full_name=lib/armeabi-v7a/smalltest.so,object_path=,source_path=$APK/lib/armeabi-v7a/smalltest.so,flags={},num_aliases=1,component=)
 <Bundle.minimal.apks/base.apk>.other@0(size_without_padding=1024,padding=0,full_name=res/drawable-v13/test.xml,object_path=,source_path=chrome/android/res/drawable/test.xml,flags={},num_aliases=1,component=)
-<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=60,padding=0,full_name=** ELF Section: .ARM.attributes,object_path=,source_path=,flags={},num_aliases=1,component=)
-<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=1536456,padding=0,full_name=** ELF Section: .ARM.exidx,object_path=,source_path=,flags={},num_aliases=1,component=)
-<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=183632,padding=0,full_name=** ELF Section: .ARM.extab,object_path=,source_path=,flags={},num_aliases=1,component=)
-<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=304,padding=0,full_name=** ELF Section: .dynamic,object_path=,source_path=,flags={},num_aliases=1,component=)
-<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=4025,padding=0,full_name=** ELF Section: .dynstr,object_path=,source_path=,flags={},num_aliases=1,component=)
-<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=6496,padding=0,full_name=** ELF Section: .dynsym,object_path=,source_path=,flags={},num_aliases=1,component=)
-<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=8,padding=0,full_name=** ELF Section: .fini_array,object_path=,source_path=,flags={},num_aliases=1,component=)
-<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=812,padding=0,full_name=** ELF Section: .gnu.version,object_path=,source_path=,flags={},num_aliases=1,component=)
-<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=28,padding=0,full_name=** ELF Section: .gnu.version_d,object_path=,source_path=,flags={},num_aliases=1,component=)
-<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=96,padding=0,full_name=** ELF Section: .gnu.version_r,object_path=,source_path=,flags={},num_aliases=1,component=)
-<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=42956,padding=0,full_name=** ELF Section: .got,object_path=,source_path=,flags={},num_aliases=1,component=)
-<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=2684,padding=0,full_name=** ELF Section: .hash,object_path=,source_path=,flags={},num_aliases=1,component=)
-<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=8,padding=0,full_name=** ELF Section: .init_array,object_path=,source_path=,flags={},num_aliases=1,component=)
-<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=19,padding=0,full_name=** ELF Section: .interp,object_path=,source_path=,flags={},num_aliases=1,component=)
-<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=36,padding=0,full_name=** ELF Section: .note.gnu.build-id,object_path=,source_path=,flags={},num_aliases=1,component=)
-<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=28,padding=0,full_name=** ELF Section: .note.gnu.gold-version,object_path=,source_path=,flags={},num_aliases=1,component=)
-<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=4244,padding=0,full_name=** ELF Section: .plt,object_path=,source_path=,flags={},num_aliases=1,component=)
-<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=2655384,padding=0,full_name=** ELF Section: .rel.dyn,object_path=,source_path=,flags={},num_aliases=1,component=)
-<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=2816,padding=0,full_name=** ELF Section: .rel.plt,object_path=,source_path=,flags={},num_aliases=1,component=)
-<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=436,padding=0,full_name=** ELF Section: .shstrtab,object_path=,source_path=,flags={},num_aliases=1,component=)
-<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=34841854,padding=0,full_name=** ELF Section: .strtab,object_path=,source_path=,flags={},num_aliases=1,component=)
-<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=17166112,padding=0,full_name=** ELF Section: .symtab,object_path=,source_path=,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=60,padding=0,full_name=** ELF Section: .ARM.attributes,object_path=,source_path=$APK/lib/armeabi-v7a/test.so,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=1536456,padding=0,full_name=** ELF Section: .ARM.exidx,object_path=,source_path=$APK/lib/armeabi-v7a/test.so,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=183632,padding=0,full_name=** ELF Section: .ARM.extab,object_path=,source_path=$APK/lib/armeabi-v7a/test.so,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=304,padding=0,full_name=** ELF Section: .dynamic,object_path=,source_path=$APK/lib/armeabi-v7a/test.so,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=4025,padding=0,full_name=** ELF Section: .dynstr,object_path=,source_path=$APK/lib/armeabi-v7a/test.so,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=6496,padding=0,full_name=** ELF Section: .dynsym,object_path=,source_path=$APK/lib/armeabi-v7a/test.so,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=8,padding=0,full_name=** ELF Section: .fini_array,object_path=,source_path=$APK/lib/armeabi-v7a/test.so,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=812,padding=0,full_name=** ELF Section: .gnu.version,object_path=,source_path=$APK/lib/armeabi-v7a/test.so,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=28,padding=0,full_name=** ELF Section: .gnu.version_d,object_path=,source_path=$APK/lib/armeabi-v7a/test.so,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=96,padding=0,full_name=** ELF Section: .gnu.version_r,object_path=,source_path=$APK/lib/armeabi-v7a/test.so,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=42956,padding=0,full_name=** ELF Section: .got,object_path=,source_path=$APK/lib/armeabi-v7a/test.so,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=2684,padding=0,full_name=** ELF Section: .hash,object_path=,source_path=$APK/lib/armeabi-v7a/test.so,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=8,padding=0,full_name=** ELF Section: .init_array,object_path=,source_path=$APK/lib/armeabi-v7a/test.so,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=19,padding=0,full_name=** ELF Section: .interp,object_path=,source_path=$APK/lib/armeabi-v7a/test.so,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=36,padding=0,full_name=** ELF Section: .note.gnu.build-id,object_path=,source_path=$APK/lib/armeabi-v7a/test.so,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=28,padding=0,full_name=** ELF Section: .note.gnu.gold-version,object_path=,source_path=$APK/lib/armeabi-v7a/test.so,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=4244,padding=0,full_name=** ELF Section: .plt,object_path=,source_path=$APK/lib/armeabi-v7a/test.so,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=2655384,padding=0,full_name=** ELF Section: .rel.dyn,object_path=,source_path=$APK/lib/armeabi-v7a/test.so,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=2816,padding=0,full_name=** ELF Section: .rel.plt,object_path=,source_path=$APK/lib/armeabi-v7a/test.so,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=436,padding=0,full_name=** ELF Section: .shstrtab,object_path=,source_path=$APK/lib/armeabi-v7a/test.so,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=34841854,padding=0,full_name=** ELF Section: .strtab,object_path=,source_path=$APK/lib/armeabi-v7a/test.so,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=17166112,padding=0,full_name=** ELF Section: .symtab,object_path=,source_path=$APK/lib/armeabi-v7a/test.so,flags={},num_aliases=1,component=)
 <Bundle.minimal.apks/base.apk>.other@0(size_without_padding=0,padding=834,full_name=Overhead: APK file,object_path=,source_path=,flags={},num_aliases=1,component=)
-<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=0,padding=33902635,full_name=Overhead: ELF file,object_path=,source_path=,flags={},num_aliases=1,component=)
-<Bundle.minimal.apks/not_on_demand.apk>.other@0(size_without_padding=560,padding=0,full_name=AndroidManifest.xml,object_path=,source_path=$APK/AndroidManifest.xml,flags={gen},num_aliases=1,component=)
+<Bundle.minimal.apks/base.apk>.other@0(size_without_padding=0,padding=33902635,full_name=Overhead: ELF file,object_path=,source_path=$APK/lib/armeabi-v7a/test.so,flags={},num_aliases=1,component=)
+<Bundle.minimal.apks/not_on_demand.apk>.other@0(size_without_padding=560,padding=0,full_name=AndroidManifest.xml,object_path=,source_path=$APK/AndroidManifest.xml,flags={},num_aliases=1,component=)
 <Bundle.minimal.apks/not_on_demand.apk>.other@0(size_without_padding=0,padding=136,full_name=Overhead: APK file,object_path=,source_path=,flags={},num_aliases=1,component=)
-<Bundle.minimal.apks/on_demand.apk?>.other@0(size_without_padding=559,padding=0,full_name=AndroidManifest.xml,object_path=,source_path=$APK/AndroidManifest.xml,flags={gen},num_aliases=1,component=DEFAULT)
+<Bundle.minimal.apks/on_demand.apk?>.other@0(size_without_padding=559,padding=0,full_name=AndroidManifest.xml,object_path=,source_path=$APK/AndroidManifest.xml,flags={},num_aliases=1,component=DEFAULT)
 <Bundle.minimal.apks/on_demand.apk?>.other@0(size_without_padding=0,padding=136,full_name=Overhead: APK file,object_path=,source_path=,flags={},num_aliases=1,component=)

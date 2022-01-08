@@ -255,6 +255,8 @@ def _NormalizeObjectPath(path):
 
 def _NormalizeSourcePath(path):
   """Returns (is_generated, normalized_path)"""
+  if path.startswith('$'):  # E.g. $APK, $GOOGLE3
+    return False, path
   if path.startswith('gen/'):
     # Convert gen/third_party/... -> third_party/...
     return True, path[4:]
@@ -1046,7 +1048,9 @@ def _CalculateElfOverhead(section_ranges, elf_path):
   return 0
 
 
-def _AddUnattributedSectionSymbols(raw_symbols, section_ranges):
+def _AddUnattributedSectionSymbols(raw_symbols,
+                                   section_ranges,
+                                   source_path=None):
   # Create symbols for ELF sections not covered by existing symbols.
   logging.info('Searching for symbol gaps...')
   new_syms_by_section = collections.defaultdict(list)
@@ -1070,7 +1074,8 @@ def _AddUnattributedSectionSymbols(raw_symbols, section_ranges):
           models.Symbol(section_name,
                         overhead,
                         address=end_address,
-                        full_name='** {} (unattributed)'.format(section_name)))
+                        full_name='** {} (unattributed)'.format(section_name),
+                        source_path=source_path))
       logging.info('Last symbol in %s does not reach end of section, gap=%d',
                    section_name, overhead)
 
@@ -1089,13 +1094,15 @@ def _AddUnattributedSectionSymbols(raw_symbols, section_ranges):
       other_elf_symbols.append(
           models.Symbol(models.SECTION_OTHER,
                         section_size,
-                        full_name='** ELF Section: {}'.format(section_name)))
+                        full_name='** ELF Section: {}'.format(section_name),
+                        source_path=source_path))
       _ExtendSectionRange(section_ranges, models.SECTION_OTHER, section_size)
     else:
       ret.append(
           models.Symbol(section_name,
                         section_size,
-                        full_name='** ELF Section: {}'.format(section_name)))
+                        full_name='** ELF Section: {}'.format(section_name),
+                        source_path=source_path))
   other_elf_symbols.sort(key=lambda s: (s.address, s.full_name))
 
   # TODO(agrieve): It would probably simplify things to use a dict of
@@ -1231,14 +1238,21 @@ def _CreateNativeSymbols(*,
                                                   native_spec.tool_prefix)
       elf_overhead_size = _CalculateElfOverhead(section_ranges, f.name)
 
+  source_path = None
+  if native_spec.apk_so_path:
+    # Put section symbols under $APK/lib/abi/libfoo.so.
+    source_path = posixpath.join(models.APK_PREFIX_PATH,
+                                 native_spec.apk_so_path)
+
   raw_symbols, other_elf_symbols = _AddUnattributedSectionSymbols(
-      raw_symbols, section_ranges)
+      raw_symbols, section_ranges, source_path)
 
   other_symbols = other_elf_symbols
   if native_spec.elf_path:
     elf_overhead_symbol = models.Symbol(models.SECTION_OTHER,
                                         elf_overhead_size,
-                                        full_name='Overhead: ELF file')
+                                        full_name='Overhead: ELF file',
+                                        source_path=source_path)
     _ExtendSectionRange(section_ranges, models.SECTION_OTHER, elf_overhead_size)
     other_symbols.append(elf_overhead_symbol)
 
@@ -1388,7 +1402,7 @@ def _CreateApkOtherSymbols(*,
           zip_info.filename)
       source_path = res_source_mapper.FindSourceForPath(resource_filename)
       if source_path is None:
-        source_path = os.path.join(models.APK_PREFIX_PATH, resource_filename)
+        source_path = posixpath.join(models.APK_PREFIX_PATH, resource_filename)
       raw_symbols.append(
           models.Symbol(
               models.SECTION_OTHER,
@@ -2129,11 +2143,6 @@ def Run(top_args, on_config_error):
   # Iterate over each container.
   for (sub_args, apk_spec, pak_spec, native_specs, container_name,
        resources_pathmap_path) in _IterSubArgs(top_args, on_config_error):
-    # TODO(https://crbug.com/1193507): Filter out "sections", until we're ready
-    # to create symbols for all native libraryes. As of now, these specs occur
-    # for splits with only secondary-abit .so files. We aren't ready to show
-    # them yet because the section symbols have no source paths.
-    native_specs = [s for s in native_specs if s.algorithm != 'sections']
     if not native_specs:
       native_specs = [None]
 
