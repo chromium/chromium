@@ -288,6 +288,9 @@ HEADLESS_PROTOCOL_TEST(BrowserSetInitialProxyConfig,
 HEADLESS_PROTOCOL_TEST(BrowserUniversalNetworkAccess,
                        "sanity/universal-network-access.js")
 
+HEADLESS_PROTOCOL_TEST(ShowDirectoryPickerNoCrash,
+                       "sanity/show-directory-picker-no-crash.js")
+
 class HeadlessProtocolBrowserTestWithProxy
     : public HeadlessProtocolBrowserTest {
  public:
