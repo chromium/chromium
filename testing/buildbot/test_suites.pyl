@@ -7498,6 +7498,7 @@
       'lacros_skylab_arm_tests': {
         'variants': [
           'CROS_KEVIN_LKGM',
+          'CROS_HANA_LKGM',
         ]
       },
     },

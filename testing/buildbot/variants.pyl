@@ -641,6 +641,15 @@
     'enabled': True,
     'identifier': 'KEVIN_LKGM',
   },
+  'CROS_HANA_LKGM': {
+    'skylab': {
+      'cros_board': 'hana',
+      'cros_chrome_version': '99.0.4803.0',
+      'cros_img': 'hana-release/R99-14436.0.0',
+    },
+    'enabled': True,
+    'identifier': 'HANA_LKGM',
+  },
   'CROS_OCTOPUS_LKGM': {
     'skylab': {
       'cros_board': 'octopus',
