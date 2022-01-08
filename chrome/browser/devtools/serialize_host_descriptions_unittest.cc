@@ -38,10 +38,10 @@ const base::Value* GetChildren(const base::Value& arg) {
 bool CheckLabel(const base::Value& arg, int l) {
   const base::DictionaryValue* dict = nullptr;
   EXPECT_TRUE(arg.GetAsDictionary(&dict));
-  int result = 0;
-  if (!dict->GetInteger("label", &result))
+  absl::optional<int> result = dict->FindIntKey("label");
+  if (!result)
     return false;
-  return l == result;
+  return l == *result;
 }
 
 // Matches every |arg| with label |label| and checks that it has no children.
