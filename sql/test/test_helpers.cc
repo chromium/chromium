@@ -9,12 +9,12 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
-#include "base/ignore_result.h"
 #include "base/threading/thread_restrictions.h"
 #include "sql/database.h"
 #include "sql/statement.h"
@@ -305,7 +305,7 @@ bool CreateDatabaseFromSQL(const base::FilePath& db_path,
   // Unfortunately, this makes certain kinds of tests which manipulate
   // the raw database hard/impossible to write.
   // http://crbug.com/307303 is for exploring this test issue.
-  ignore_result(db.Execute("PRAGMA auto_vacuum = 0"));
+  std::ignore = db.Execute("PRAGMA auto_vacuum = 0");
 
   return db.Execute(sql.c_str());
 }

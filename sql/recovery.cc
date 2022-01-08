@@ -8,13 +8,13 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/check_op.h"
 #include "base/files/file_path.h"
 #include "base/format_macros.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -111,9 +111,9 @@ bool Recovery::Init(const base::FilePath& db_path) {
   // TODO(shess): It would be better to just close the handle, but it
   // is necessary for the final backup which rewrites things.  It
   // might be reasonable to close then re-open the handle.
-  ignore_result(db_->Execute("PRAGMA writable_schema=1"));
-  ignore_result(db_->Execute("PRAGMA locking_mode=NORMAL"));
-  ignore_result(db_->Execute("SELECT COUNT(*) FROM sqlite_schema"));
+  std::ignore = db_->Execute("PRAGMA writable_schema=1");
+  std::ignore = db_->Execute("PRAGMA locking_mode=NORMAL");
+  std::ignore = db_->Execute("SELECT COUNT(*) FROM sqlite_schema");
 
   // TODO(shess): If this is a common failure case, it might be
   // possible to fall back to a memory database.  But it probably
@@ -359,7 +359,7 @@ bool Recovery::AutoRecoverTable(const char* table_name,
     return false;
 
   if (!db()->Execute(recover_insert.c_str())) {
-    ignore_result(db()->Execute(recover_drop.c_str()));
+    std::ignore = db()->Execute(recover_drop.c_str());
     return false;
   }
 
@@ -542,7 +542,7 @@ std::unique_ptr<Recovery> Recovery::BeginRecoverDatabase(
 
   // Overwrite any sequences created.
   if (recovery->db()->DoesTableExist("corrupt.sqlite_sequence")) {
-    ignore_result(recovery->db()->Execute("DELETE FROM main.sqlite_sequence"));
+    std::ignore = recovery->db()->Execute("DELETE FROM main.sqlite_sequence");
     size_t rows_recovered;
     if (!recovery->AutoRecoverTable("sqlite_sequence", &rows_recovered)) {
       Recovery::Rollback(std::move(recovery));
@@ -568,7 +568,7 @@ void Recovery::RecoverDatabase(Database* db, const base::FilePath& db_path) {
   std::unique_ptr<sql::Recovery> recovery = BeginRecoverDatabase(db, db_path);
 
   if (recovery)
-    ignore_result(Recovery::Recovered(std::move(recovery)));
+    std::ignore = Recovery::Recovered(std::move(recovery));
 }
 
 void Recovery::RecoverDatabaseWithMetaVersion(Database* db,
@@ -583,7 +583,7 @@ void Recovery::RecoverDatabaseWithMetaVersion(Database* db,
     return;
   }
 
-  ignore_result(Recovery::Recovered(std::move(recovery)));
+  std::ignore = Recovery::Recovered(std::move(recovery));
 }
 
 // static

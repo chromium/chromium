@@ -11,13 +11,13 @@
 
 #include <algorithm>
 #include <memory>
+#include <tuple>
 
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/format_macros.h"
-#include "base/ignore_result.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -847,7 +847,7 @@ bool Database::Raze() {
   // Database connections may have memory-mapped the file, so this may not
   // entirely prevent the problem.
   // [Source: <https://sqlite.org/mmap.html> plus experiments.]
-  ignore_result(Execute("PRAGMA mmap_size = 0"));
+  std::ignore = Execute("PRAGMA mmap_size = 0");
 #endif
 
   const char* kMain = "main";
@@ -888,17 +888,17 @@ bool Database::Raze() {
     // Enter TRUNCATE mode to change page size.
     // TODO(shuagga@microsoft.com): Need a guarantee here that there is no other
     // database connection open.
-    ignore_result(Execute("PRAGMA journal_mode=TRUNCATE;"));
+    std::ignore = Execute("PRAGMA journal_mode=TRUNCATE;");
     const std::string page_size_sql = base::StrCat(
         {"PRAGMA page_size=", base::NumberToString(options_.page_size)});
     if (!Execute(page_size_sql.c_str())) {
       return false;
     }
     // Page size isn't changed until the database is vacuumed.
-    ignore_result(Execute("VACUUM"));
+    std::ignore = Execute("VACUUM");
     // Re-enter WAL mode.
     if (UseWALMode()) {
-      ignore_result(Execute("PRAGMA journal_mode=WAL;"));
+      std::ignore = Execute("PRAGMA journal_mode=WAL;");
     }
 
     rc = BackupDatabase(null_db.db_, db_, kMain);
@@ -1640,7 +1640,7 @@ bool Database::OpenInternal(const std::string& file_name,
   // time the database is being opened in WAL mode.
   const std::string page_size_sql =
       base::StringPrintf("PRAGMA page_size=%d", options_.page_size);
-  ignore_result(ExecuteWithTimeout(page_size_sql.c_str(), kBusyTimeout));
+  std::ignore = ExecuteWithTimeout(page_size_sql.c_str(), kBusyTimeout);
 
   // http://www.sqlite.org/pragma.html#pragma_journal_mode
   // WAL - Use a write-ahead log instead of a journal file.
@@ -1660,21 +1660,21 @@ bool Database::OpenInternal(const std::string& file_name,
     // loss (but still durable after an application crash).
     // TODO(shuagga@microsoft.com): Evaluate if this loss of durability is a
     // concern.
-    ignore_result(Execute("PRAGMA synchronous=NORMAL"));
+    std::ignore = Execute("PRAGMA synchronous=NORMAL");
 
     // Opening the db in WAL mode can fail (eg if the underlying VFS doesn't
     // support shared memory and we are not in exclusive locking mode).
     //
     // TODO(shuagga@microsoft.com): We should probably catch a failure here.
-    ignore_result(Execute("PRAGMA journal_mode=WAL"));
+    std::ignore = Execute("PRAGMA journal_mode=WAL");
   } else {
-    ignore_result(Execute("PRAGMA journal_mode=TRUNCATE"));
+    std::ignore = Execute("PRAGMA journal_mode=TRUNCATE");
   }
 
   if (options_.cache_size != 0) {
     const std::string cache_size_sql =
         base::StringPrintf("PRAGMA cache_size=%d", options_.cache_size);
-    ignore_result(ExecuteWithTimeout(cache_size_sql.c_str(), kBusyTimeout));
+    std::ignore = ExecuteWithTimeout(cache_size_sql.c_str(), kBusyTimeout);
   }
 
   static_assert(SQLITE_SECURE_DELETE == 1,
@@ -1705,7 +1705,7 @@ bool Database::OpenInternal(const std::string& file_name,
   size_t mmap_size = mmap_disabled_ ? 0 : GetAppropriateMmapSize();
   std::string mmap_sql =
       base::StringPrintf("PRAGMA mmap_size=%" PRIuS, mmap_size);
-  ignore_result(Execute(mmap_sql.c_str()));
+  std::ignore = Execute(mmap_sql.c_str());
 
   // Determine if memory-mapping has actually been enabled.  The Execute() above
   // can succeed without changing the amount mapped.
@@ -1868,7 +1868,7 @@ bool Database::IntegrityCheckHelper(const char* pragma_sql,
 
   // Best effort to put things back as they were before.
   static const char kNoWritableSchemaSql[] = "PRAGMA writable_schema=OFF";
-  ignore_result(Execute(kNoWritableSchemaSql));
+  std::ignore = Execute(kNoWritableSchemaSql);
 
   return ret;
 }

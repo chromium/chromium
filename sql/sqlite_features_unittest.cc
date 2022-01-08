@@ -6,13 +6,13 @@
 #include <stdint.h>
 
 #include <string>
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/ignore_result.h"
 #include "build/build_config.h"
 #include "sql/database.h"
 #include "sql/statement.h"
@@ -195,7 +195,7 @@ TEST_F(SQLiteFeaturesTest, IcuEnabled) {
 // be disabled on this platform using SQLITE_MAX_MMAP_SIZE=0.
 TEST_F(SQLiteFeaturesTest, Mmap) {
   // Try to turn on mmap'ed I/O.
-  ignore_result(db_.Execute("PRAGMA mmap_size = 1048576"));
+  std::ignore = db_.Execute("PRAGMA mmap_size = 1048576");
   {
     sql::Statement s(db_.GetUniqueStatement("PRAGMA mmap_size"));
 
