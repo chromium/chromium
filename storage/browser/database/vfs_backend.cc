@@ -12,7 +12,7 @@
 #include "build/build_config.h"
 #include "third_party/sqlite/sqlite3.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -129,7 +129,7 @@ int VfsBackend::DeleteFile(const base::FilePath& file_path, bool sync_dir) {
     return SQLITE_IOERR_DELETE;
 
   int error_code = SQLITE_OK;
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   if (sync_dir) {
     base::File dir(file_path.DirName(), base::File::FLAG_READ);
     if (dir.IsValid()) {
@@ -145,9 +145,9 @@ int VfsBackend::DeleteFile(const base::FilePath& file_path, bool sync_dir) {
 
 // static
 uint32_t VfsBackend::GetFileAttributes(const base::FilePath& file_path) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   uint32_t attributes = ::GetFileAttributes(file_path.value().c_str());
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   uint32_t attributes = 0;
   if (!access(file_path.value().c_str(), R_OK))
     attributes |= static_cast<uint32_t>(R_OK);

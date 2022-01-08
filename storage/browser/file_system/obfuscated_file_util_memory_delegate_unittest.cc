@@ -488,7 +488,7 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, MoveDirectoryOverDirectory) {
 
   base::File::Error result = file_util()->CopyOrMoveFile(
       dir, dir2, FileSystemOperation::CopyOrMoveOptionSet(), move);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(base::File::FILE_ERROR_NOT_A_FILE, result);
 #else
   EXPECT_EQ(base::File::FILE_OK, result);
@@ -578,7 +578,7 @@ TEST_F(ObfuscatedFileUtilMemoryDelegateTest, MoveFile_Directory) {
   EXPECT_EQ(1020, GetSize(to_file));
 }
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 TEST_F(ObfuscatedFileUtilMemoryDelegateTest, MoveFile_OverwriteEmptyDirectory) {
   base::FilePath from_directory = Path("fromdirectory");
   base::FilePath to_directory = Path("todirectory");

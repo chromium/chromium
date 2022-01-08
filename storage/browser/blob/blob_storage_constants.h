@@ -20,7 +20,7 @@ constexpr size_t kDefaultMaxBlobInMemorySpace = 500u * 1024 * 1024;
 constexpr uint64_t kDefaultMaxBlobDiskSpace = 0ull;
 constexpr uint64_t kDefaultMaxPageFileSize = 100ull * 1024 * 1024;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // On minimal Android maximum in-memory space can be as low as 5MB.
 constexpr uint64_t kDefaultMinPageFileSize = 5ull * 1024 * 1024 / 2;
 const float kDefaultMaxBlobInMemorySpaceUnderPressureRatio = 0.02f;

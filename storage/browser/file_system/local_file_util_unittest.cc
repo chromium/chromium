@@ -136,7 +136,7 @@ TEST_F(LocalFileUtilTest, CreateAndClose) {
 }
 
 // base::CreateSymbolicLink is supported on most POSIX, but not on Fuchsia.
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 TEST_F(LocalFileUtilTest, CreateFailForSymlink) {
   // Create symlink target file.
   const char* target_name = "symlink_target";

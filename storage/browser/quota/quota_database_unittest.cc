@@ -426,7 +426,7 @@ TEST_P(QuotaDatabaseTest, GetBucketWithNoDb) {
 
 // TODO(crbug.com/1216094): Update test to have its behavior on Fuchsia/Win
 // match with other platforms, and enable test on all platforms.
-#if !defined(OS_FUCHSIA) && !defined(OS_WIN)
+#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_WIN)
 TEST_F(QuotaDatabaseTest, GetBucketWithOpenDatabaseError) {
   base::HistogramTester histograms;
   sql::test::ScopedErrorExpecter expecter;
@@ -449,7 +449,7 @@ TEST_F(QuotaDatabaseTest, GetBucketWithOpenDatabaseError) {
   histograms.ExpectBucketCount("Quota.QuotaDatabaseReset",
                                DatabaseResetReason::kOpenDatabase, 1);
 }
-#endif  // !defined(OS_FUCHSIA) && !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_WIN)
 
 TEST_P(QuotaDatabaseTest, DeleteStorageKeyInfo) {
   QuotaDatabase db(use_in_memory_db() ? base::FilePath() : DbPath());

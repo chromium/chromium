@@ -372,7 +372,7 @@ TEST_F(DraggedFileUtilTest, ReadDirectoryTest) {
       entry.name = current.BaseName();
       expected_entry_map[entry.name.value()] = entry;
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
       // Creates a symlink for each file/directory.
       // They should be ignored by ReadDirectory, so we don't add them
       // to expected_entry_map.

@@ -2043,7 +2043,7 @@ TEST_P(ObfuscatedFileUtilTest, TestFileEnumeratorTimestamp) {
 }
 
 // crbug.com/176470
-#if defined(OS_WIN) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_TestQuotaOnCopyFile DISABLED_TestQuotaOnCopyFile
 #else
 #define MAYBE_TestQuotaOnCopyFile TestQuotaOnCopyFile
