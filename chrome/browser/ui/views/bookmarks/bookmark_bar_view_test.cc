@@ -1256,14 +1256,7 @@ class BookmarkBarViewTest11 : public BookmarkBarViewEventTestBase {
   BookmarkContextMenuNotificationObserver observer_;
 };
 
-// TODO(https://crbug.com/1281220): Flaky on Linux
-#if defined(OS_LINUX)
-#define MAYBE_CloseMenuAfterClosingContextMenu \
-  DISABLED_CloseMenuAfterClosingContextMenu
-#else
-#define MAYBE_CloseMenuAfterClosingContextMenu CloseMenuAfterClosingContextMenu
-#endif
-VIEW_TEST(BookmarkBarViewTest11, MAYBE_CloseMenuAfterClosingContextMenu)
+VIEW_TEST(BookmarkBarViewTest11, CloseMenuAfterClosingContextMenu)
 
 // Tests showing a modal dialog from a context menu.
 class BookmarkBarViewTest12 : public BookmarkBarViewEventTestBase {
