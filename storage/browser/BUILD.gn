@@ -380,6 +380,8 @@ static_library("test_support") {
     "test/mock_file_update_observer.h",
     "test/mock_quota_client.cc",
     "test/mock_quota_client.h",
+    "test/mock_quota_database.cc",
+    "test/mock_quota_database.h",
     "test/mock_quota_manager.cc",
     "test/mock_quota_manager.h",
     "test/mock_quota_manager_proxy.cc",

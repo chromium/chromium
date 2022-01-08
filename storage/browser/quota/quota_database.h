@@ -56,7 +56,8 @@ enum class DatabaseResetReason {
 //
 // Instances are owned by QuotaManagerImpl. There is one instance per
 // QuotaManagerImpl instance. All the methods of this class, except the
-// constructor, must called on the DB thread.
+// constructor, must called on the DB thread. QuotaDatabase should only be
+// subclassed in tests.
 class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
  public:
   struct COMPONENT_EXPORT(STORAGE_BROWSER) BucketTableEntry {
@@ -88,7 +89,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
   QuotaDatabase(const QuotaDatabase&) = delete;
   QuotaDatabase& operator=(const QuotaDatabase&) = delete;
 
-  ~QuotaDatabase();
+  virtual ~QuotaDatabase();
 
   // Returns quota if entry is found. Returns QuotaError::kNotFound no entry if
   // found.
@@ -177,16 +178,16 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
       const std::set<blink::StorageKey>& storage_keys,
       blink::mojom::StorageType type);
 
-  // Gets the table entry for `bucket`. Returns whether the record for an
-  // origin bucket can be found.
-  bool GetBucketInfo(BucketId bucket_id, BucketTableEntry* entry);
+  // Returns the BucketTableEntry for `bucket` if one exists. Returns a
+  // QuotaError if not found or the operation has failed.
+  QuotaErrorOr<BucketTableEntry> GetBucketInfo(BucketId bucket_id);
 
   // Removes all buckets for `storage_key` with `type`.
   QuotaError DeleteStorageKeyInfo(const blink::StorageKey& storage_key,
                                   blink::mojom::StorageType type);
 
-  // Deletes the specified bucket.
-  QuotaError DeleteBucketInfo(BucketId bucket_id);
+  // Deletes the specified bucket. This method is virtual for testing.
+  virtual QuotaError DeleteBucketInfo(BucketId bucket_id);
 
   // Returns the BucketLocator for the least recently used bucket. Will exclude
   // buckets with ids in `bucket_exceptions` and origins that have the special

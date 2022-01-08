@@ -504,10 +504,11 @@ TEST_P(QuotaDatabaseTest, SetStorageKeyLastModifiedTime) {
   EXPECT_EQ(db.SetStorageKeyLastModifiedTime(storage_key, kTemp, now),
             QuotaError::kNone);
 
-  QuotaDatabase::BucketTableEntry info;
-  EXPECT_TRUE(db.GetBucketInfo(bucket->id, &info));
-  EXPECT_EQ(now, info.last_modified);
-  EXPECT_EQ(0, info.use_count);
+  QuotaErrorOr<QuotaDatabase::BucketTableEntry> info =
+      db.GetBucketInfo(bucket->id);
+  EXPECT_TRUE(info.ok());
+  EXPECT_EQ(now, info->last_modified);
+  EXPECT_EQ(0, info->use_count);
 }
 
 TEST_P(QuotaDatabaseTest, BucketLastAccessTimeLRU) {
@@ -627,10 +628,11 @@ TEST_P(QuotaDatabaseTest, SetStorageKeyLastAccessTime) {
   EXPECT_EQ(db.SetStorageKeyLastAccessTime(storage_key, kTemp, now),
             QuotaError::kNone);
 
-  QuotaDatabase::BucketTableEntry info;
-  EXPECT_TRUE(db.GetBucketInfo(bucket->id, &info));
-  EXPECT_EQ(now, info.last_accessed);
-  EXPECT_EQ(2, info.use_count);
+  QuotaErrorOr<QuotaDatabase::BucketTableEntry> info =
+      db.GetBucketInfo(bucket->id);
+  EXPECT_TRUE(info.ok());
+  EXPECT_EQ(now, info->last_accessed);
+  EXPECT_EQ(2, info->use_count);
 }
 
 TEST_P(QuotaDatabaseTest, GetStorageKeysForType) {
@@ -789,24 +791,24 @@ TEST_P(QuotaDatabaseTest, RegisterInitialStorageKeyInfo) {
                    kDefaultBucketName, kTemp);
   ASSERT_TRUE(bucket_result.ok());
 
-  QuotaDatabase::BucketTableEntry info;
-  info.use_count = -1;
-  EXPECT_TRUE(db.GetBucketInfo(bucket_result->id, &info));
-  EXPECT_EQ(0, info.use_count);
+  QuotaErrorOr<QuotaDatabase::BucketTableEntry> info =
+      db.GetBucketInfo(bucket_result->id);
+  EXPECT_TRUE(info.ok());
+  EXPECT_EQ(0, info->use_count);
 
   EXPECT_EQ(db.SetStorageKeyLastAccessTime(
                 StorageKey::CreateFromStringForTesting("http://a/"), kTemp,
                 base::Time::FromDoubleT(1.0)),
             QuotaError::kNone);
-  info.use_count = -1;
-  EXPECT_TRUE(db.GetBucketInfo(bucket_result->id, &info));
-  EXPECT_EQ(1, info.use_count);
+  info = db.GetBucketInfo(bucket_result->id);
+  EXPECT_TRUE(info.ok());
+  EXPECT_EQ(1, info->use_count);
 
   EXPECT_TRUE(db.RegisterInitialStorageKeyInfo(storage_keys, kTemp));
 
-  info.use_count = -1;
-  EXPECT_TRUE(db.GetBucketInfo(bucket_result->id, &info));
-  EXPECT_EQ(1, info.use_count);
+  info = db.GetBucketInfo(bucket_result->id);
+  EXPECT_TRUE(info.ok());
+  EXPECT_EQ(1, info->use_count);
 }
 
 TEST_P(QuotaDatabaseTest, DumpQuotaTable) {
@@ -864,21 +866,23 @@ TEST_P(QuotaDatabaseTest, GetBucketInfo) {
   AssignBucketTable(&db, kTableEntries);
 
   {
-    Entry entry;
-    EXPECT_TRUE(db.GetBucketInfo(kTableEntries[0].bucket_id, &entry));
-    EXPECT_EQ(kTableEntries[0].bucket_id, entry.bucket_id);
-    EXPECT_EQ(kTableEntries[0].type, entry.type);
-    EXPECT_EQ(kTableEntries[0].storage_key, entry.storage_key);
-    EXPECT_EQ(kTableEntries[0].name, entry.name);
-    EXPECT_EQ(kTableEntries[0].use_count, entry.use_count);
-    EXPECT_EQ(kTableEntries[0].last_accessed, entry.last_accessed);
-    EXPECT_EQ(kTableEntries[0].last_modified, entry.last_modified);
+    QuotaErrorOr<QuotaDatabase::BucketTableEntry> entry =
+        db.GetBucketInfo(kTableEntries[0].bucket_id);
+    EXPECT_TRUE(entry.ok());
+    EXPECT_EQ(kTableEntries[0].bucket_id, entry->bucket_id);
+    EXPECT_EQ(kTableEntries[0].type, entry->type);
+    EXPECT_EQ(kTableEntries[0].storage_key, entry->storage_key);
+    EXPECT_EQ(kTableEntries[0].name, entry->name);
+    EXPECT_EQ(kTableEntries[0].use_count, entry->use_count);
+    EXPECT_EQ(kTableEntries[0].last_accessed, entry->last_accessed);
+    EXPECT_EQ(kTableEntries[0].last_modified, entry->last_modified);
   }
 
   {
     // BucketId 456 is not in the database.
-    Entry entry;
-    EXPECT_FALSE(db.GetBucketInfo(BucketId(456), &entry));
+    QuotaErrorOr<QuotaDatabase::BucketTableEntry> entry =
+        db.GetBucketInfo(BucketId(456));
+    EXPECT_FALSE(entry.ok());
   }
 }
 

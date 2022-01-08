@@ -41,6 +41,7 @@
 #include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/quota/quota_override_handle.h"
 #include "storage/browser/test/mock_quota_client.h"
+#include "storage/browser/test/mock_quota_database.h"
 #include "storage/browser/test/mock_special_storage_policy.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -384,11 +385,13 @@ class QuotaManagerImplTest : public testing::Test {
 
   void DeleteBucketData(const BucketLocator& bucket,
                         QuotaClientTypes quota_client_types) {
+    base::RunLoop run_loop;
     quota_status_ = QuotaStatusCode::kUnknown;
     quota_manager_impl_->DeleteBucketData(
         bucket, std::move(quota_client_types),
-        base::BindOnce(&QuotaManagerImplTest::StatusCallback,
-                       weak_factory_.GetWeakPtr()));
+        base::BindOnce(&QuotaManagerImplTest::StatusCallbackSync,
+                       weak_factory_.GetWeakPtr(), run_loop.QuitClosure()));
+    run_loop.Run();
   }
 
   void DeleteHostData(const std::string& host,
@@ -442,10 +445,6 @@ class QuotaManagerImplTest : public testing::Test {
 
   void NotifyBucketAccessed(BucketId bucket_id) {
     quota_manager_impl_->NotifyBucketAccessed(bucket_id, IncrementMockTime());
-  }
-
-  void DeleteBucketFromDatabase(BucketId bucket_id) {
-    quota_manager_impl_->DeleteBucketFromDatabase(bucket_id, false);
   }
 
   void GetEvictionBucket(StorageType type) {
@@ -646,6 +645,10 @@ class QuotaManagerImplTest : public testing::Test {
     quota_manager_impl_->SetQuotaChangeCallbackForTesting(std::move(cb));
   }
 
+  void SetQuotaDatabase(std::unique_ptr<QuotaDatabase> database) {
+    quota_manager_impl_->SetQuotaDatabaseForTesting(std::move(database));
+  }
+
   bool is_db_disabled() {
     return quota_manager_impl_->is_db_disabled_for_testing();
   }
@@ -682,14 +685,13 @@ class QuotaManagerImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   QuotaErrorOr<BucketInfo> bucket_;
   QuotaErrorOr<std::set<StorageKey>> storage_keys_;
+  base::ScopedTempDir data_dir_;
 
  private:
   base::Time IncrementMockTime() {
     ++mock_time_counter_;
     return base::Time::FromDoubleT(mock_time_counter_ * 10.0);
   }
-
-  base::ScopedTempDir data_dir_;
 
   scoped_refptr<QuotaManagerImpl> quota_manager_impl_;
   scoped_refptr<MockSpecialStoragePolicy> mock_special_storage_policy_;
@@ -1967,13 +1969,13 @@ TEST_F(QuotaManagerImplTest, EvictBucketDataWithDeletionError) {
                                blink::mojom::StorageType::kPersistent});
 
   GetGlobalUsage(kTemp);
-  int64_t predelete_global_tmp = usage();
+  EXPECT_EQ((1 + 20 + 4000), usage());
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  int64_t predelete_host_tmp = usage();
+  EXPECT_EQ((1 + 20), usage());
 
   GetHostUsageWithBreakdown("foo.com", kPerm);
-  int64_t predelete_host_pers = usage();
+  EXPECT_EQ(300, usage());
 
   for (const MockStorageKeyData& data : kData)
     NotifyStorageAccessed(ToStorageKey(data.origin), data.type);
@@ -2012,8 +2014,7 @@ TEST_F(QuotaManagerImplTest, EvictBucketDataWithDeletionError) {
     // "http://foo.com/" should not be in the LRU list.
     EXPECT_NE(std::string("http://foo.com/"),
               eviction_bucket()->storage_key.origin().GetURL().spec());
-    DeleteBucketFromDatabase(eviction_bucket()->id);
-    task_environment_.RunUntilIdle();
+    DeleteBucketData(*eviction_bucket(), AllQuotaClientTypes());
   }
 
   // Now the LRU list must be empty.
@@ -2021,16 +2022,14 @@ TEST_F(QuotaManagerImplTest, EvictBucketDataWithDeletionError) {
   task_environment_.RunUntilIdle();
   EXPECT_FALSE(eviction_bucket().has_value());
 
-  // Deleting buckets from the database should not affect the results of the
-  // following checks.
   GetGlobalUsage(kTemp);
-  EXPECT_EQ(predelete_global_tmp, usage());
+  EXPECT_EQ(1, usage());
 
   GetHostUsageWithBreakdown("foo.com", kTemp);
-  EXPECT_EQ(predelete_host_tmp, usage());
+  EXPECT_EQ(1, usage());
 
   GetHostUsageWithBreakdown("foo.com", kPerm);
-  EXPECT_EQ(predelete_host_pers, usage());
+  EXPECT_EQ(300, usage());
 }
 
 TEST_F(QuotaManagerImplTest, GetEvictionRoundInfo) {
@@ -2529,6 +2528,47 @@ TEST_F(QuotaManagerImplTest, FindAndDeleteBucketData) {
   EXPECT_EQ(0, usage());
 }
 
+TEST_F(QuotaManagerImplTest, FindAndDeleteBucketDataWithDBError) {
+  static const MockStorageKeyData kData[] = {
+      {"http://foo.com/", kTemp, 123},
+  };
+  CreateAndRegisterClient(kData, QuotaClientType::kFileSystem,
+                          {blink::mojom::StorageType::kTemporary,
+                           blink::mojom::StorageType::kPersistent});
+
+  auto quota_db = std::make_unique<MockQuotaDatabase>(
+      data_dir_.GetPath().AppendASCII("QuotaManager"));
+  MockQuotaDatabase* mock_database = quota_db.get();
+  SetQuotaDatabase(std::move(quota_db));
+
+  CreateBucketForTesting(ToStorageKey("http://foo.com"), kDefaultBucketName,
+                         kTemp);
+  ASSERT_TRUE(bucket_.ok());
+  BucketInfo foo_bucket = bucket_.value();
+
+  // Check usage data before deletion.
+  GetHostUsageWithBreakdown("foo.com", kTemp);
+  ASSERT_EQ(123, usage());
+
+  EXPECT_CALL(*mock_database, DeleteBucketInfo)
+      .Times(1)
+      .WillOnce(testing::Return(QuotaError::kDatabaseError));
+
+  // Try to delete bucket for "http://foo.com/".
+  reset_status_callback_count();
+  FindAndDeleteBucketData(foo_bucket.storage_key, foo_bucket.name);
+
+  // Should return error if database deletion failed.
+  EXPECT_EQ(1, status_callback_count());
+  EXPECT_EQ(QuotaStatusCode::kErrorInvalidModification, status());
+
+  GetGlobalUsage(kTemp);
+  EXPECT_EQ(0, usage());
+
+  GetHostUsageWithBreakdown("foo.com", kTemp);
+  EXPECT_EQ(0, usage());
+}
+
 TEST_F(QuotaManagerImplTest, GetCachedStorageKeys) {
   static const MockStorageKeyData kData[] = {
       {"http://a.com/", kTemp, 1},
@@ -2596,13 +2636,13 @@ TEST_F(QuotaManagerImplTest, NotifyAndLRUBucket) {
   EXPECT_EQ("http://a.com/",
             eviction_bucket()->storage_key.origin().GetURL().spec());
 
-  DeleteBucketFromDatabase(eviction_bucket()->id);
+  DeleteBucketData(*eviction_bucket(), AllQuotaClientTypes());
   GetEvictionBucket(kTemp);
   task_environment_.RunUntilIdle();
   EXPECT_EQ("https://a.com/",
             eviction_bucket()->storage_key.origin().GetURL().spec());
 
-  DeleteBucketFromDatabase(eviction_bucket()->id);
+  DeleteBucketData(*eviction_bucket(), AllQuotaClientTypes());
   GetEvictionBucket(kTemp);
   task_environment_.RunUntilIdle();
   EXPECT_EQ("http://c.com/",
@@ -2797,24 +2837,20 @@ TEST_F(QuotaManagerImplTest, DeleteSpecificClientTypeSingleBucket) {
 
   DeleteBucketData(foo_bucket.ToBucketLocator(),
                    {QuotaClientType::kFileSystem});
-  task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
   EXPECT_EQ(predelete_foo_tmp - 1, usage());
 
   DeleteBucketData(foo_bucket.ToBucketLocator(),
                    {QuotaClientType::kServiceWorkerCache});
-  task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
   EXPECT_EQ(predelete_foo_tmp - 2 - 1, usage());
 
   DeleteBucketData(foo_bucket.ToBucketLocator(), {QuotaClientType::kDatabase});
-  task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
   EXPECT_EQ(predelete_foo_tmp - 4 - 2 - 1, usage());
 
   DeleteBucketData(foo_bucket.ToBucketLocator(),
                    {QuotaClientType::kIndexedDatabase});
-  task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
   EXPECT_EQ(predelete_foo_tmp - 8 - 4 - 2 - 1, usage());
 }
@@ -2897,14 +2933,12 @@ TEST_F(QuotaManagerImplTest, DeleteMultipleClientTypesSingleBucket) {
 
   DeleteBucketData(foo_bucket.ToBucketLocator(),
                    {QuotaClientType::kFileSystem, QuotaClientType::kDatabase});
-  task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
   EXPECT_EQ(predelete_foo_tmp - 4 - 1, usage());
 
   DeleteBucketData(foo_bucket.ToBucketLocator(),
                    {QuotaClientType::kServiceWorkerCache,
                     QuotaClientType::kIndexedDatabase});
-  task_environment_.RunUntilIdle();
   GetHostUsageWithBreakdown("foo.com", kTemp);
   EXPECT_EQ(predelete_foo_tmp - 8 - 4 - 2 - 1, usage());
 }

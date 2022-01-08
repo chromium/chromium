@@ -418,6 +418,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
     eviction_disabled_ = disable;
   }
 
+  void SetQuotaDatabaseForTesting(std::unique_ptr<QuotaDatabase> database);
+
  protected:
   ~QuotaManagerImpl() override;
   void SetQuotaChangeCallbackForTesting(
@@ -513,16 +515,19 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // bucket from the bucket table.
   void DeleteBucketDataInternal(const BucketLocator& bucket,
                                 QuotaClientTypes quota_client_types,
-                                bool is_eviction,
                                 StatusCallback callback);
+  // Cleans up BucketDataDeleter tasks that have completed.
+  void DidDeleteBucketData();
 
   // Methods for eviction logic.
   void StartEviction();
   void DeleteStorageKeyFromDatabase(const blink::StorageKey& storage_key,
                                     blink::mojom::StorageType type);
-  void DeleteBucketFromDatabase(BucketId bucket_id, bool is_eviction);
+  void DeleteBucketFromDatabase(BucketId bucket_id,
+                                base::OnceCallback<void(QuotaError)> callback);
 
-  void DidBucketDataEvicted(blink::mojom::QuotaStatusCode status);
+  void DidBucketDataEvicted(QuotaDatabase::BucketTableEntry entry,
+                            blink::mojom::QuotaStatusCode status);
 
   void ReportHistogram();
   void DidGetTemporaryGlobalUsageForHistogram(int64_t usage,
@@ -547,6 +552,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void EvictBucketData(const BucketLocator& bucket,
                        StatusCallback callback) override;
   void GetEvictionRoundInfo(EvictionRoundInfoCallback callback) override;
+
+  void DidGetBucketInfoForEviction(
+      const BucketLocator& bucket,
+      QuotaErrorOr<QuotaDatabase::BucketTableEntry> result);
 
   void DidGetEvictionRoundInfo();
 
@@ -720,6 +729,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   GetVolumeInfoFn get_volume_info_fn_;
 
   std::unique_ptr<EvictionRoundInfoHelper> eviction_helper_;
+  std::vector<std::unique_ptr<BucketDataDeleter>> bucket_data_deleters_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
