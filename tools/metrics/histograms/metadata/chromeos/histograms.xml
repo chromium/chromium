@@ -651,6 +651,22 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </summary>
 </histogram>
 
+<histogram name="ChromeOS.Debugd.Perf.{FunctionName}" units="ms"
+    expires_after="2023-01-01">
+  <owner>enlightened@google.com</owner>
+  <owner>jorgelo@google.com</owner>
+  <owner>chromeos-security-core@google.com</owner>
+  <summary>
+    Records the total time it takes for each call to LogTool::{FunctionName} to
+    complete. Recording happens on each D-Bus call to debugd.
+  </summary>
+  <token key="FunctionName">
+    <variant name="GetAllDebugLogs"/>
+    <variant name="GetAllLogs"/>
+    <variant name="GetBigFeedbackLogs"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.DeviceSettings.FeatureFlagsMigration"
     enum="DeviceSettingsFeatureFlagsMigrationStatus" expires_after="2022-04-10">
   <owner>mnissler@chromium.org</owner>
