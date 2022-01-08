@@ -190,7 +190,8 @@ suite(key_event_test.suiteName, function() {
           promise = nativeLayer.whenCalled('showSystemDialog');
         }
         const modifiers = isMac ? ['meta', 'alt'] : ['ctrl', 'shift'];
-        keyEventOn(page, 'keydown', 0, modifiers, 'p');
+        const key = isMac ? '\u03c0' : 'P';
+        keyEventOn(page, 'keydown', 0, modifiers, key);
         return promise;
       });
 });
