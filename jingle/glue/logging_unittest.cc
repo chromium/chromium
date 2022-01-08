@@ -9,9 +9,10 @@
 
 // We must include Chromium headers before including the overrides header
 // since webrtc's logging.h file may conflict with chromium.
+#include "base/logging.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
-#include "base/logging.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 // The following include come before including logging.h. It ensures that
@@ -21,7 +22,7 @@
 #include "build/build_config.h"
 #include "third_party/webrtc_overrides/rtc_base/logging.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 static const wchar_t* const log_file_name = L"libjingle_logging.log";
 #else
 static const char* const log_file_name = "libjingle_logging.log";
