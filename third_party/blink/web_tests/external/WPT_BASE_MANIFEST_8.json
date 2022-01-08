@@ -299551,6 +299551,10 @@
        ],
        "event-handler-processing-algorithm-error": {
         "resources": {
+         "frameset-frame.html": [
+          "028be4919e0db1cb2d6c3eafd007054668229cbb",
+          []
+         ],
          "no-op-worker.js": [
           "3918c74e446336be4151ea3bdad00f4d9e6df47a",
           []
@@ -462899,6 +462903,20 @@
         ]
        ],
        "event-handler-processing-algorithm-error": {
+        "body-element-synthetic-errorevent.html": [
+         "9ab0020ec382af2d6a265a951d1a1f8f725891c3",
+         [
+          null,
+          {}
+         ]
+        ],
+        "body-element-synthetic-event.html": [
+         "9ed26384163af734f1ad46b061d9b9d1cc82ad63",
+         [
+          null,
+          {}
+         ]
+        ],
         "document-synthetic-errorevent.html": [
          "8b1b3cfb5b2c33c07da64e02f3c160cce748e2f7",
          [
@@ -462908,6 +462926,20 @@
         ],
         "document-synthetic-event.html": [
          "6cf44e9d35fc11c003264fdc834c7432378d4863",
+         [
+          null,
+          {}
+         ]
+        ],
+        "frameset-element-synthetic-errorevent.html": [
+         "20d87dbacf92a033a8f409d66e6bb5b53abe4423",
+         [
+          null,
+          {}
+         ]
+        ],
+        "frameset-element-synthetic-event.html": [
+         "2fdca3ad8601b1113b3d483415446ebdf860a9ef",
          [
           null,
           {}
