@@ -188,6 +188,10 @@ if (is_chromeos_ash && is_chromeos_device) {
     enable_tast_informational_tests = true
   }
 
+  tast_test("chrome_variations_tast_tests") {
+    tast_tests = [ "ui.ChromeVariationsSmoke" ]
+  }
+
   group("cros_chrome_deploy") {
     # The following run-time dependencies are needed to deploy chrome to a
     # ChromeOS device. See the link for the full list:

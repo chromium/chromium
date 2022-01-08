@@ -640,6 +640,18 @@
       'chromedriver_replay_unittests': {},
     },
 
+    'chromeos_browser_finch_tests': {
+      'chrome_variations_tast_tests': {
+        'swarming': {
+          'idempotent': False,  # https://crbug.com/923426#c27
+        },
+        'resultdb': {
+          'enable': True,
+        },
+        'experiment_percentage': 100,
+      },
+    },
+
     'chromeos_browser_integration_tests': {
       'chrome_all_tast_tests': {
         'swarming': {
@@ -5998,6 +6010,7 @@
     ],
 
     'chromeos_vm_gtests': [
+      'chromeos_browser_finch_tests',
       'chromeos_browser_integration_tests',
       'chromeos_system_friendly_gtests',
     ],
