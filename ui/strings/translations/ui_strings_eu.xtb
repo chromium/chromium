@@ -190,7 +190,7 @@
 <translation id="6430678249303439055">Blokeatu aplikazio honen jakinarazpen guztiak</translation>
 <translation id="6483402905448010557">{SECONDS,plural, =1{Duela 1 segundo}other{Duela # segundo}}</translation>
 <translation id="6503257047630241175">RTF fitxategiko edukia</translation>
-<translation id="6539092367496845964">Arazoren bat izan da. Saiatu berriro geroago.</translation>
+<translation id="6539092367496845964">Arazo bat izan da. Saiatu berriro geroago.</translation>
 <translation id="654149438358937226">Blokeatu jakinarazpen guztiak</translation>
 <translation id="6567071839949112727">egin klik aurreko bertsioan</translation>
 <translation id="6578407462441924264">Izengabea</translation>
@@ -230,7 +230,7 @@
 <translation id="7848989271541991537"><ph name="PAGE_NUMBER" />. orriko <ph name="ROW_NUMBER" />. errenkadako <ph name="COLUMN_NUMBER" /> zutabera eraman da.</translation>
 <translation id="7879499977785298635">Ez blokeatu</translation>
 <translation id="7907591526440419938">Ireki fitxategia</translation>
-<translation id="7952747673138230804">Chrome OS-ek araka dezakezun eduki berriari buruzko iradokizunak erakusten ditu. Kalitatea hobetzeko balio duten estatistikak bidaltzen ditu, erabilera-datuak partekatzea aukeratu baduzu. <ph name="MANAGE_SETTINGS" /></translation>
+<translation id="7952747673138230804">Chrome OS-k araka dezakezun eduki berriari buruzko iradokizunak erakusten ditu. Kalitatea hobetzeko balio duten estatistikak bidaltzen ditu, erabilera-datuak partekatzea aukeratu baduzu. <ph name="MANAGE_SETTINGS" /></translation>
 <translation id="7969046989155602842">Command</translation>
 <translation id="8074552109918343525">{MAX_UNREAD_NOTIFICATIONS,plural, =1{Irakurri gabeko jakinarazpen bat baino gehiago dago}other{Irakurri gabeko # jakinarazpen baino gehiago daude}}</translation>
 <translation id="8086866675552927481">{MINUTES,plural, =1{1 min barru}other{# min barru}}</translation>

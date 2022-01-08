@@ -61,7 +61,7 @@
 <translation id="1901646112321215184">Ez dago DNS zerbitzaririk konfiguratuta</translation>
 <translation id="1905710495812624430">Saiakera-muga gainditu da.</translation>
 <translation id="1908234395526491708">UDP bidezko eskaeren hutsegiteak</translation>
-<translation id="1930797645656624981">Chrome OS-en idazketa-metodoaren zerbitzua</translation>
+<translation id="1930797645656624981">Chrome OS-n idazketa-metodoaren zerbitzua</translation>
 <translation id="1947737735496445907">Inprimatuta</translation>
 <translation id="197386857804679933">Berriro konektatzeko, joan ezarpenetara</translation>
 <translation id="1979103255016296513">Pasahitza iraungita dago eta aldatu egin behar da</translation>
@@ -75,7 +75,7 @@
 <translation id="2141644705054017895">% <ph name="PERCENTAGE_VALUE" /></translation>
 <translation id="2157959690810728433">ILARAN</translation>
 <translation id="2161394479394250669">Utzi bertan behera inprimatze-lana</translation>
-<translation id="2180197493692062006">Arazoren bat izan da. Ireki berriro aplikazioa.</translation>
+<translation id="2180197493692062006">Arazo bat izan da. Ireki berriro aplikazioa.</translation>
 <translation id="2209788852729124853">Berrezarri trafiko-kontagailuak</translation>
 <translation id="2212733584906323460">Izenen ebazpena</translation>
 <translation id="2217935453350629363">Une honetako abiadura</translation>
@@ -99,7 +99,7 @@
 <translation id="2505327257735685095">Freskatu oraingo horma-paperaren irudia</translation>
 <translation id="2517472476991765520">Bilatu</translation>
 <translation id="2570743873672969996">Abian da <ph name="TEST_NAME" /> proba…</translation>
-<translation id="2585245331261708204">Chrome OS-en berritasunak</translation>
+<translation id="2585245331261708204">Chrome OS-n berritasunak</translation>
 <translation id="2619761439309613843">Freskatu egunero</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2740531572673183784">Ados</translation>
@@ -218,7 +218,7 @@
 <translation id="469379815867856270">Seinalearen indarra</translation>
 <translation id="4707579418881001319">L2TP/IPsec + erabiltzaile-ziurtagiria</translation>
 <translation id="4731797938093519117">Gurasoen sarbidea</translation>
-<translation id="475869545581454722">Chrome OS-eko pasahitza eguneratu egin da</translation>
+<translation id="475869545581454722">Chrome OS-ko pasahitza eguneratu egin da</translation>
 <translation id="4773299976671772492">Gelditu egin da</translation>
 <translation id="4794140124556169553">Baliteke PUZaren proba bat egiteak sistemaren errendimenduan eragina izatea</translation>
 <translation id="4808449224298348341"><ph name="DOCUMENT_TITLE" /> inprimatze-lana bertan behera utzi da</translation>

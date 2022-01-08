@@ -646,7 +646,7 @@
 <translation id="5744083938413354016">点按拖动</translation>
 <translation id="5745612484876805746">护眼模式会于日落时自动开启</translation>
 <translation id="5750765938512549687">蓝牙已关闭</translation>
-<translation id="576341972084747908">下载的文件 <ph name="FILENAME" /> 存在风险</translation>
+<translation id="576341972084747908">正在下载有风险的文件 <ph name="FILENAME" /></translation>
 <translation id="576453121877257266">当前已开启护眼模式。</translation>
 <translation id="5769373120130404283">隐私保护屏</translation>
 <translation id="5777841717266010279">要停止屏幕共享吗？</translation>
