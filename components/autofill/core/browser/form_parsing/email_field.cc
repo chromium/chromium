@@ -17,7 +17,8 @@ std::unique_ptr<FormField> EmailField::Parse(AutofillScanner* scanner,
   const std::vector<MatchingPattern>& email_patterns =
       PatternProvider::GetInstance().GetMatchPatterns("EMAIL_ADDRESS",
                                                       page_language);
-  if (ParseFieldSpecifics(scanner, kEmailRe, MATCH_DEFAULT | MATCH_EMAIL,
+  if (ParseFieldSpecifics(scanner, kEmailRe,
+                          kDefaultMatchParamsWith<MatchFieldType::kEmail>,
                           email_patterns, &field, {log_manager, "kEmailRe"})) {
     return std::make_unique<EmailField>(field);
   }

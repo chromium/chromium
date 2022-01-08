@@ -228,7 +228,7 @@ FirstTwoLastNamesField::ParseComponentNames(AutofillScanner* scanner,
   while (!scanner->IsEnd()) {
     // Skip over address label fields, which can have misleading names
     // e.g. "title" or "name".
-    if (ParseFieldSpecifics(scanner, kAddressNameIgnoredRe, MATCH_DEFAULT,
+    if (ParseFieldSpecifics(scanner, kAddressNameIgnoredRe, kDefaultMatchParams,
                             address_name_ignored_patterns, nullptr,
                             {log_manager, "kAddressNameIgnoredRe"})) {
       continue;
@@ -248,7 +248,8 @@ FirstTwoLastNamesField::ParseComponentNames(AutofillScanner* scanner,
 
     // Skip over any unrelated fields, e.g. "username" or "nickname".
     if (ParseFieldSpecifics(scanner, kNameIgnoredRe,
-                            MATCH_DEFAULT | MATCH_SELECT | MATCH_SEARCH,
+                            kDefaultMatchParamsWith<MatchFieldType::kSelect,
+                                                    MatchFieldType::kSearch>,
                             name_ignored_patterns, nullptr,
                             {log_manager, "kNameIgnoredRe"})) {
       continue;
@@ -436,7 +437,7 @@ FirstLastNameField::ParseSpecificComponentSequence(
   while (!scanner->IsEnd()) {
     // Skip over address label fields, which can have misleading names
     // e.g. "title" or "name".
-    if (ParseFieldSpecifics(scanner, kAddressNameIgnoredRe, MATCH_DEFAULT,
+    if (ParseFieldSpecifics(scanner, kAddressNameIgnoredRe, kDefaultMatchParams,
                             address_name_ignored_patterns, nullptr,
                             {log_manager, "kAddressNameIgnoredRe"})) {
       continue;
@@ -459,7 +460,8 @@ FirstLastNameField::ParseSpecificComponentSequence(
 
     // Skip over any unrelated name fields, e.g. "username" or "nickname".
     if (ParseFieldSpecifics(scanner, kNameIgnoredRe,
-                            MATCH_DEFAULT | MATCH_SELECT | MATCH_SEARCH,
+                            kDefaultMatchParamsWith<MatchFieldType::kSelect,
+                                                    MatchFieldType::kSearch>,
                             name_ignored_patterns, nullptr,
                             {log_manager, "kNameIgnoredRe"})) {
       continue;

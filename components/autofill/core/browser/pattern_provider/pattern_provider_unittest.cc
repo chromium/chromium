@@ -44,8 +44,8 @@ MatchingPattern GetCompanyPatternEn() {
   m_p.positive_pattern = u"company|business|organization|organisation";
   m_p.positive_score = 1.1;
   m_p.negative_pattern = u"";
-  m_p.match_field_attributes = MATCH_NAME;
-  m_p.match_field_input_types = MATCH_TEXT;
+  m_p.match_field_attributes = {MatchAttribute::kName};
+  m_p.match_field_input_types = {MatchFieldType::kText};
   m_p.language = kLanguageEn;
   return m_p;
 }
@@ -55,8 +55,8 @@ MatchingPattern GetCompanyPatternDe() {
   m_p.positive_pattern = u"|(?<!con)firma|firmenname";
   m_p.positive_score = 1.1;
   m_p.negative_pattern = u"";
-  m_p.match_field_attributes = MATCH_LABEL | MATCH_NAME;
-  m_p.match_field_input_types = MATCH_TEXT;
+  m_p.match_field_attributes = {MatchAttribute::kLabel, MatchAttribute::kName};
+  m_p.match_field_input_types = {MatchFieldType::kText};
   m_p.language = kLanguageDe;
   return m_p;
 }

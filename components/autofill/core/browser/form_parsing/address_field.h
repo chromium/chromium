@@ -44,11 +44,6 @@ class AddressField : public FormField {
     RESULT_MATCH_NAME_LABEL  // Name and label both match the pattern.
   };
 
-  static const int kZipCodeMatchType;
-  static const int kCityMatchType;
-  static const int kStateMatchType;
-  static const int kDependentLocalityMatchType;
-
   explicit AddressField(LogManager* log_manager);
 
   bool ParseCompany(AutofillScanner* scanner,
@@ -91,7 +86,7 @@ class AddressField : public FormField {
   ParseNameLabelResult ParseNameAndLabelSeparately(
       AutofillScanner* scanner,
       const std::u16string& pattern,
-      int match_type,
+      MatchParams match_type,
       const std::vector<MatchingPattern>& patterns,
       AutofillField** match,
       const RegExLogging& logging);

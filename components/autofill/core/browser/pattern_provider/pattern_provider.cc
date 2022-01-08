@@ -22,7 +22,7 @@ namespace autofill {
 namespace {
 const char* kSourceCodeLanguage = "en";
 
-// Adds the English patterns, restricted to MatchFieldType MATCH_NAME, to
+// Adds the English patterns, restricted to MatchAttribute::kName, to
 // every other language.
 void EnrichPatternsWithEnVersion(
     PatternProvider::Map* type_and_lang_to_patterns) {
@@ -36,7 +36,7 @@ void EnrichPatternsWithEnVersion(
       continue;
     std::vector<MatchingPattern> en_patterns = it->second;
     for (MatchingPattern& en_pattern : en_patterns) {
-      en_pattern.match_field_attributes = MATCH_NAME;
+      en_pattern.match_field_attributes = {MatchAttribute::kName};
     }
 
     for (auto& q : lang_to_patterns) {

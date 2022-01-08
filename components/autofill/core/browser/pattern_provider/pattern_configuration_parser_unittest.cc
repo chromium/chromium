@@ -33,8 +33,8 @@ TEST(PatternConfigurationParserTest, WellFormedParsedCorrectly) {
             "positive_pattern": "name|full name",
             "positive_score": 2.0,
             "negative_pattern": "company",
-            "match_field_attributes": 2,
-            "match_field_input_types": 3
+            "match_field_attributes": [1],
+            "match_field_input_types": [0,1]
           }
         ],
         "fr": [
@@ -43,8 +43,8 @@ TEST(PatternConfigurationParserTest, WellFormedParsedCorrectly) {
             "positive_pattern": "nom|prenom",
             "positive_score": 2.0,
             "negative_pattern": "compagne",
-            "match_field_attributes": 2,
-            "match_field_input_types": 3
+            "match_field_attributes": [1],
+            "match_field_input_types": [0,1]
           }
         ]
       },
@@ -55,8 +55,8 @@ TEST(PatternConfigurationParserTest, WellFormedParsedCorrectly) {
             "positive_pattern": "address",
             "positive_score": 2.0,
             "negative_pattern": "email",
-            "match_field_attributes": 4,
-            "match_field_input_types": 3
+            "match_field_attributes": [1],
+            "match_field_input_types": [0,1]
           }
         ]
       }
@@ -94,8 +94,6 @@ TEST(PatternConfigurationParserTest, WellFormedParsedCorrectly) {
   ASSERT_EQ(u"compagne", pattern->negative_pattern);
   ASSERT_EQ(LanguageCode("fr"), pattern->language);
   ASSERT_NEAR(2.0, pattern->positive_score, 1e-6);
-  ASSERT_EQ(2, pattern->match_field_attributes);
-  ASSERT_EQ(3 << 2, pattern->match_field_input_types);
 }
 
 // Test that the parser does not return anything if some |MatchingPattern|
@@ -111,8 +109,8 @@ TEST(PatternConfigurationParserTest, MalformedMissingProperty) {
             "positive_pattern": "name|full name",
             "positive_score": 2.0,
             "negative_pattern": "company",
-            "match_field_attributes": 2,
-            "match_field_input_types": 3
+            "match_field_attributes": [1],
+            "match_field_input_types": [0,1]
           }
         ],
         "fr": [
@@ -120,8 +118,8 @@ TEST(PatternConfigurationParserTest, MalformedMissingProperty) {
             "pattern_identifier": "Name_fr",
             "positive_pattern": "nom|prenom",
             "negative_pattern": "compagne",
-            "match_field_attributes": 2,
-            "match_field_input_types": 3
+            "match_field_attributes": [1],
+            "match_field_input_types": [0,1]
           }
         ]
       }
@@ -148,8 +146,8 @@ TEST(PatternConfigurationParserTest, MalformedMissingVersion) {
             "positive_pattern": "name|full name",
             "positive_score": 2.0,
             "negative_pattern": "company",
-            "match_field_attributes": 2,
-            "match_field_input_types": 3
+            "match_field_attributes": [1],
+            "match_field_input_types": [0,1]
           }
         ]
       }
@@ -166,7 +164,7 @@ TEST(PatternConfigurationParserTest, MalformedMissingVersion) {
 
 // Test that the parser does not return anything if the inner key points
 // to a single object instead of a list.
-TEST(PatternConfigurationParserTest, MalformedNotList) {
+TEST(PatternConfigurationParserTest, MalformedNotListPerLanguage) {
   std::string json_message = R"(
     {
       "FULL_NAME": {
@@ -174,8 +172,112 @@ TEST(PatternConfigurationParserTest, MalformedNotList) {
           "positive_pattern": "name|full name",
           "positive_score": 2.0,
           "negative_pattern": "company",
-          "match_field_attributes": 2,
-          "match_field_input_types": 3
+          "match_field_attributes": [1],
+          "match_field_input_types": [0,1]
+        }
+      }
+    })";
+  absl::optional<base::Value> json_object =
+      base::JSONReader::Read(json_message);
+
+  ASSERT_TRUE(json_object) << "Incorrectly formatted JSON string.";
+
+  absl::optional<PatternProvider::Map> optional_patterns =
+      GetConfigurationFromJsonObject(json_object.value());
+
+  ASSERT_FALSE(optional_patterns);
+}
+
+// Test that the parser does not return anything if the match_field_attributes
+// are not a list.
+TEST(PatternConfigurationParserTest, MalformedNotListMatchFieldAttributes) {
+  std::string json_message = R"(
+    {
+      "FULL_NAME": {
+        "en": {
+          "positive_pattern": "name|full name",
+          "positive_score": 2.0,
+          "negative_pattern": "company",
+          "match_field_attributes": 1,
+          "match_field_input_types": [0,1]
+        }
+      }
+    })";
+  absl::optional<base::Value> json_object =
+      base::JSONReader::Read(json_message);
+
+  ASSERT_TRUE(json_object) << "Incorrectly formatted JSON string.";
+
+  absl::optional<PatternProvider::Map> optional_patterns =
+      GetConfigurationFromJsonObject(json_object.value());
+
+  ASSERT_FALSE(optional_patterns);
+}
+
+// Test that the parser does not return anything if the match_field_attributes
+// are not a list.
+TEST(PatternConfigurationParserTest, MalformedNotListMatchFieldInputTypes) {
+  std::string json_message = R"(
+    {
+      "FULL_NAME": {
+        "en": {
+          "positive_pattern": "name|full name",
+          "positive_score": 2.0,
+          "negative_pattern": "company",
+          "match_field_attributes": [0],
+          "match_field_input_types": 0
+        }
+      }
+    })";
+  absl::optional<base::Value> json_object =
+      base::JSONReader::Read(json_message);
+
+  ASSERT_TRUE(json_object) << "Incorrectly formatted JSON string.";
+
+  absl::optional<PatternProvider::Map> optional_patterns =
+      GetConfigurationFromJsonObject(json_object.value());
+
+  ASSERT_FALSE(optional_patterns);
+}
+
+// Test that the parser does not return anything if the match_field_attributes
+// are out of bounds.
+TEST(PatternConfigurationParserTest, MalformedInvalidMatchingAttributes) {
+  std::string json_message = R"(
+    {
+      "FULL_NAME": {
+        "en": {
+          "positive_pattern": "name|full name",
+          "positive_score": 2.0,
+          "negative_pattern": "company",
+          "match_field_attributes": [-1],
+          "match_field_input_types": [0,1]
+        }
+      }
+    })";
+  absl::optional<base::Value> json_object =
+      base::JSONReader::Read(json_message);
+
+  ASSERT_TRUE(json_object) << "Incorrectly formatted JSON string.";
+
+  absl::optional<PatternProvider::Map> optional_patterns =
+      GetConfigurationFromJsonObject(json_object.value());
+
+  ASSERT_FALSE(optional_patterns);
+}
+
+// Test that the parser does not return anything if the match_field_input_types
+// are out of bounds.
+TEST(PatternConfigurationParserTest, MalformedInvalidMatchingFieldTypes) {
+  std::string json_message = R"(
+    {
+      "FULL_NAME": {
+        "en": {
+          "positive_pattern": "name|full name",
+          "positive_score": 2.0,
+          "negative_pattern": "company",
+          "match_field_attributes": [0],
+          "match_field_input_types": [0,999]
         }
       }
     })";

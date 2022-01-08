@@ -108,7 +108,7 @@ class FormField {
   static bool ParseFieldSpecificsWithLegacyPattern(
       AutofillScanner* scanner,
       base::StringPiece16 pattern,
-      int match_type,
+      const MatchParams& match_type,
       AutofillField** match,
       const RegExLogging& logging = {});
 
@@ -118,18 +118,18 @@ class FormField {
                                   const RegExLogging& logging = {});
 
   // The same as ParseFieldSpecifics but with splitted match_types into
-  // MatchAttributes and MatchFieldTypes.
+  // MatchAttribute and MatchFieldType.
   static bool ParseFieldSpecificsWithLegacyPattern(
       AutofillScanner* scanner,
       base::StringPiece16 pattern,
-      int match_field_attributes,
-      int match_field_input_types,
+      const DenseSet<MatchAttribute>& match_field_attributes,
+      const DenseSet<MatchFieldType>& match_field_input_types,
       AutofillField** match,
       const RegExLogging& logging = {});
 
   static bool ParseFieldSpecifics(AutofillScanner* scanner,
                                   base::StringPiece16 pattern,
-                                  int match_type,
+                                  const MatchParams& match_type,
                                   const std::vector<MatchingPattern>& patterns,
                                   AutofillField** match,
                                   const RegExLogging& logging);
@@ -147,7 +147,9 @@ class FormField {
                                 FieldCandidatesMap* field_candidates);
 
   // Returns true iff |type| matches |match_type|.
-  static bool MatchesFormControlType(const std::string& type, int match_type);
+  static bool MatchesFormControlType(
+      const std::string& type,
+      const DenseSet<MatchFieldType>& match_type);
 
   // Derived classes must implement this interface to supply field type
   // information.  |ParseFormFields| coordinates the parsing and extraction
@@ -178,32 +180,33 @@ class FormField {
   // otherwise.
   static bool MatchAndAdvance(AutofillScanner* scanner,
                               base::StringPiece16 pattern,
-                              int match_type,
+                              const MatchParams& match_type,
                               AutofillField** match,
                               const RegExLogging& logging = {});
 
   // The same as MatchAndAdvance but with splitted match_types into
-  // MatchAttributes and MatchFieldTypes.
-  static bool MatchAndAdvance(AutofillScanner* scanner,
-                              base::StringPiece16 pattern,
-                              int match_field_attributes,
-                              int match_field_input_types,
-                              AutofillField** match,
-                              const RegExLogging& logging = {});
+  // MatchAttribute and MatchFieldType.
+  static bool MatchAndAdvance(
+      AutofillScanner* scanner,
+      base::StringPiece16 pattern,
+      const DenseSet<MatchAttribute>& match_field_attributes,
+      const DenseSet<MatchFieldType>& match_field_input_types,
+      AutofillField** match,
+      const RegExLogging& logging = {});
 
   // Matches the regular expression |pattern| against the components of
   // |field| as specified in the |match_type| bit field (see |MatchType|).
   static bool Match(const AutofillField* field,
                     base::StringPiece16 pattern,
-                    int match_type,
+                    const MatchParams& match_type,
                     const RegExLogging& logging = {});
 
-  // The same as Match but with splitted match_types into MatchAttributes
-  // and MatchFieldTypes.
+  // The same as Match but with splitted match_types into MatchAttribute
+  // and MatchFieldType.
   static bool Match(const AutofillField* field,
                     base::StringPiece16 pattern,
-                    int match_field_attributes,
-                    int match_field_input_types,
+                    const DenseSet<MatchAttribute>& match_field_attributes,
+                    const DenseSet<MatchFieldType>& match_field_input_types,
                     const RegExLogging& logging = {});
 
   // Perform a "pass" over the |fields| where each pass uses the supplied
