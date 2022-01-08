@@ -82,15 +82,6 @@ void MediaRouterGmcUiForTest::WaitForDialogHidden() {
   NOTIMPLEMENTED();
 }
 
-void MediaRouterGmcUiForTest::SetLocalFile(const GURL& file_url) {
-  NOTIMPLEMENTED();
-}
-
-void MediaRouterGmcUiForTest::SetLocalFileSelectionIssue(
-    const IssueInfo& issue) {
-  NOTIMPLEMENTED();
-}
-
 MediaRouterGmcUiForTest::MediaRouterGmcUiForTest(
     content::WebContents* web_contents)
     : MediaRouterUiForTestBase(web_contents),

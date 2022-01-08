@@ -20,7 +20,6 @@
 #include "chrome/browser/media/router/mojo/media_router_desktop.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/media_router/media_cast_mode.h"
-#include "chrome/browser/ui/media_router/media_router_file_dialog.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/url_constants.h"
@@ -245,31 +244,6 @@ MediaRouterIntegrationBrowserTest::StartSessionWithTestPageAndChooseSink() {
   return web_contents;
 }
 
-void MediaRouterIntegrationBrowserTest::OpenDialogAndCastFile() {
-  GURL file_url = net::FilePathToFileURL(
-      media::GetTestDataFilePath("butterfly-853x480.webm"));
-  test_ui_->ShowDialog();
-  // Mock out file dialog operations, as those can't be simulated.
-  test_ui_->SetLocalFile(file_url);
-  test_ui_->WaitForSink(receiver_);
-  test_ui_->ChooseSourceType(CastDialogView::kLocalFile);
-  ASSERT_EQ(CastDialogView::kLocalFile, test_ui_->GetChosenSourceType());
-  test_ui_->WaitForSinkAvailable(receiver_);
-  test_ui_->StartCasting(receiver_);
-  ASSERT_EQ(file_url, GetActiveWebContents()->GetVisibleURL());
-}
-
-void MediaRouterIntegrationBrowserTest::OpenDialogAndCastFileFails() {
-  GURL file_url =
-      net::FilePathToFileURL(media::GetTestDataFilePath("easy.webm"));
-  test_ui_->ShowDialog();
-  // Mock out file dialog operations, as those can't be simulated.
-  test_ui_->SetLocalFileSelectionIssue(IssueInfo());
-  test_ui_->WaitForSink(receiver_);
-  test_ui_->ChooseSourceType(CastDialogView::kLocalFile);
-  test_ui_->WaitForAnyIssue();
-}
-
 void MediaRouterIntegrationBrowserTest::OpenTestPage(
     base::FilePath::StringPieceType file_name) {
   base::FilePath full_path = GetResourceFile(file_name);
@@ -489,134 +463,6 @@ void MediaRouterIntegrationBrowserTest::RunReconnectSessionSameTabTest() {
 IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest, MAYBE_Basic) {
   MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
   RunBasicTest();
-}
-
-// Tests that creating a route with a local file opens the file in a new tab.
-//
-// This test was disabled because the test needs to wait until navigation is
-// complete before looking for the route, but it's not clear how to do that
-// without deadlocking the test.
-// This test passed locally when running with native test provider, so it
-// is updated to MANUAL and is allowed to run on private waterfall.
-IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
-                       MANUAL_OpenLocalMediaFileInCurrentTab) {
-  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
-  // Start at a new tab, the file should open in the same tab.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUINewTabURL)));
-  // Make sure there is 1 tab.
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
-
-  OpenDialogAndCastFile();
-
-  // Expect that no new tab has been opened.
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
-
-  // The dialog will close from navigating to the local file within the tab, so
-  // open it again after it closes.
-  test_ui_->WaitForDialogHidden();
-  test_ui_->ShowDialog();
-
-  // Wait for a route to be created.
-  test_ui_->WaitForAnyRoute();
-}
-
-// TODO(http://crbug.com/1095068): There maybe a crash on Linux and ChromeOS.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#define MAYBE_OpenLocalMediaFileInNewTab MANUAL_OpenLocalMediaFileInNewTab
-#else
-#define MAYBE_OpenLocalMediaFileInNewTab OpenLocalMediaFileInNewTab
-#endif
-
-// Tests that creating a route with a local file opens the file in a new tab.
-IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
-                       MAYBE_OpenLocalMediaFileInNewTab) {
-  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
-  // Start at a tab with content in it, the file will open in a new tab.
-  ASSERT_TRUE(
-      ui_test_utils::NavigateToURL(browser(), GURL("https://google.com")));
-  // Make sure there is 1 tab.
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
-
-  OpenDialogAndCastFile();
-
-  // Expect that a new tab has been opened.
-  ASSERT_EQ(2, browser()->tab_strip_model()->count());
-
-  test_ui_->ShowDialog();
-
-  // Wait for a route to be created.
-  test_ui_->WaitForAnyRoute();
-}
-
-// Tests that failing to create a route with a local file shows an issue.
-// TODO(https://crbug.com/907539): Make the Views dialog show the issue.
-IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
-                       DISABLED_OpenLocalMediaFileFailsAndShowsIssue) {
-  OpenDialogAndCastFileFails();
-  // Expect that the issue is showing.
-  ASSERT_TRUE(IsUIShowingIssue());
-}
-
-// Tests that creating a route with a local file opens in fullscreen.
-// TODO(https://crbug.com/903016) Disabled for being flaky in entering
-// fullscreen.
-IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
-                       DISABLED_OpenLocalMediaFileFullscreen) {
-  // Start at a new tab, the file should open in the same tab.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUINewTabURL)));
-  // Make sure there is 1 tab.
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
-
-  OpenDialogAndCastFile();
-
-  // Increment web contents capturer count so it thinks capture has started.
-  // This will allow the file tab to go fullscreen.
-  content::WebContents* web_contents = GetActiveWebContents();
-  auto capture_handle =
-      web_contents->IncrementCapturerCount(gfx::Size(), /*stay_hidden=*/false,
-                                           /*stay_awake=*/true);
-
-  // Wait for capture poll timer to pick up change.
-  Wait(base::Seconds(3));
-
-  // Expect that fullscreen was entered.
-  ASSERT_TRUE(
-      web_contents->GetDelegate()->IsFullscreenForTabOrPending(web_contents));
-}
-
-// Flaky on MSan bots: http://crbug.com/879885
-#if defined(MEMORY_SANITIZER)
-#define MAYBE_OpenLocalMediaFileCastFailNoFullscreen \
-  MANUAL_OpenLocalMediaFileCastFailNoFullscreen
-#else
-#define MAYBE_OpenLocalMediaFileCastFailNoFullscreen \
-  OpenLocalMediaFileCastFailNoFullscreen
-#endif
-// Tests that failed route creation of local file does not enter fullscreen.
-IN_PROC_BROWSER_TEST_P(MediaRouterIntegrationBrowserTest,
-                       MAYBE_OpenLocalMediaFileCastFailNoFullscreen) {
-  MEDIA_ROUTER_INTEGRATION_BROWER_TEST_CAST_ONLY();
-  test_provider_->set_route_error_message("Unknown error");
-  // Start at a new tab, the file should open in the same tab.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(),
-                                           GURL(chrome::kChromeUINewTabURL)));
-  // Make sure there is 1 tab.
-  ASSERT_EQ(1, browser()->tab_strip_model()->count());
-
-  OpenDialogAndCastFile();
-
-  // Wait for file to start playing (but not being captured).
-  Wait(base::Seconds(3));
-
-  // Expect no capture is ongoing.
-  content::WebContents* web_contents = GetActiveWebContents();
-  ASSERT_FALSE(web_contents->IsBeingCaptured());
-
-  // Expect that fullscreen is not entered.
-  ASSERT_FALSE(
-      web_contents->GetDelegate()->IsFullscreenForTabOrPending(web_contents));
 }
 
 // TODO(crbug.com/1238728): Test is flaky on Windows and Linux.

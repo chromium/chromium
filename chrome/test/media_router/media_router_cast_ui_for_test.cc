@@ -6,7 +6,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/media/router/media_router_feature.h"
-#include "chrome/browser/ui/media_router/media_router_file_dialog.h"
 #include "chrome/browser/ui/media_router/media_router_ui.h"
 #include "chrome/browser/ui/views/media_router/cast_dialog_sink_button.h"
 #include "chrome/browser/ui/views/media_router/media_router_dialog_controller_views.h"
@@ -26,41 +25,6 @@ ui::MouseEvent CreateMousePressedEvent() {
                         gfx::Point(0, 0), ui::EventTimeForNow(),
                         ui::EF_LEFT_MOUSE_BUTTON, 0);
 }
-
-// File dialog with a preset file URL.
-class TestMediaRouterFileDialog : public MediaRouterFileDialog {
- public:
-  TestMediaRouterFileDialog(MediaRouterFileDialogDelegate* delegate, GURL url)
-      : MediaRouterFileDialog(nullptr), delegate_(delegate), file_url_(url) {}
-  ~TestMediaRouterFileDialog() override = default;
-
-  GURL GetLastSelectedFileUrl() override { return file_url_; }
-
-  void OpenFileDialog(Browser* browser) override {
-    delegate_->FileDialogFileSelected(ui::SelectedFileInfo());
-  }
-
- private:
-  raw_ptr<MediaRouterFileDialogDelegate> delegate_;
-  GURL file_url_;
-};
-
-// File dialog which fails on open.
-class TestFailMediaRouterFileDialog : public MediaRouterFileDialog {
- public:
-  TestFailMediaRouterFileDialog(MediaRouterFileDialogDelegate* delegate,
-                                const IssueInfo& issue)
-      : MediaRouterFileDialog(nullptr), delegate_(delegate), issue_(issue) {}
-  ~TestFailMediaRouterFileDialog() override = default;
-
-  void OpenFileDialog(Browser* browser) override {
-    delegate_->FileDialogSelectionFailed(issue_);
-  }
-
- private:
-  raw_ptr<MediaRouterFileDialogDelegate> delegate_;
-  const IssueInfo issue_;
-};
 
 }  // namespace
 
@@ -155,19 +119,6 @@ void MediaRouterCastUiForTest::WaitForDialogHidden() {
     return;
 
   ObserveDialog(WatchType::kDialogHidden);
-}
-
-void MediaRouterCastUiForTest::SetLocalFile(const GURL& file_url) {
-  dialog_controller_->ui()->set_media_router_file_dialog_for_test(
-      std::make_unique<TestMediaRouterFileDialog>(dialog_controller_->ui(),
-                                                  file_url));
-}
-
-void MediaRouterCastUiForTest::SetLocalFileSelectionIssue(
-    const IssueInfo& issue) {
-  dialog_controller_->ui()->set_media_router_file_dialog_for_test(
-      std::make_unique<TestFailMediaRouterFileDialog>(dialog_controller_->ui(),
-                                                      issue));
 }
 
 void MediaRouterCastUiForTest::OnDialogCreated() {

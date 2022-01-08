@@ -56,11 +56,6 @@ class MediaRouterUiForTestBase {
   std::string GetStatusTextForSink(const std::string& sink_name) const;
   std::string GetIssueTextForSink(const std::string& sink_name) const;
 
-  // Sets up a mock file picker that returns |file_url| as the selected file.
-  virtual void SetLocalFile(const GURL& file_url) = 0;
-  // Sets up a mock file picker that fails with |issue|.
-  virtual void SetLocalFileSelectionIssue(const IssueInfo& issue) = 0;
-
   // Called by MediaRouterDialogControllerViews.
   virtual void OnDialogCreated();
 

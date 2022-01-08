@@ -116,17 +116,6 @@ class MediaRouterIntegrationBrowserTest
   // |should_succeed| is true.
   virtual content::WebContents* StartSessionWithTestPageAndChooseSink();
 
-  // Opens the MR dialog and clicks through the motions of casting a
-  // file. Sets up the route provider to succeed or otherwise based on
-  // |route_success|. Note: The system dialog portion has to be mocked
-  // out as it cannot be simulated.
-  void OpenDialogAndCastFile();
-
-  // Opens the MR dialog and clicks through the motions of choosing to
-  // cast file, file returns an issue. Note: The system dialog portion
-  // has to be mocked out as it cannot be simulated.
-  void OpenDialogAndCastFileFails();
-
   void OpenTestPage(base::FilePath::StringPieceType file);
   void OpenTestPageInNewTab(base::FilePath::StringPieceType file);
   virtual GURL GetTestPageUrl(const base::FilePath& full_path);
