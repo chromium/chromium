@@ -116,8 +116,15 @@ std::unique_ptr<ImageProcessor> CreateV4L2ImageProcessorWithInputCandidates(
     if (!base::Contains(supported_input_pixfmts, input_fourcc.ToV4L2PixFmt()))
       continue;
 
-    // Try to get an image size as close as possible to the final size.
-    gfx::Size output_size = visible_size;
+    // Some Image Processors (e.g. MTK8183) are not able to produce the ideal
+    // output resolution (which would be the |visible_size|) -- and the call to
+    // TryOutputFormat() doesn't return a "corrected" |output_size| in those
+    // cases (see b/213396803). To avoid those situations, we set here the
+    // |output_size| to be the same as the |input_size|, and will let the
+    // |visible_size| carry the information of exactly what part of the output
+    // video frame contains meaningful pixels.
+    // TODO(b/191450183): Use a gfx::Rect instead of |visible_size|.
+    gfx::Size output_size = input_size;
     size_t num_planes = 0;
     if (!V4L2ImageProcessorBackend::TryOutputFormat(
             input_fourcc.ToV4L2PixFmt(), output_fourcc->ToV4L2PixFmt(),
