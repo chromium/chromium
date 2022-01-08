@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "build/build_config.h"
 #include "crypto/apple_keychain.h"
 
 namespace crypto {
@@ -54,9 +55,9 @@ class CRYPTO_EXPORT MockAppleKeychain : public AppleKeychain {
   // Returns the password that OSCrypt uses to generate its encryption key.
   std::string GetEncryptionPassword() const;
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   OSStatus ItemDelete(SecKeychainItemRef itemRef) const override;
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
   // |FindGenericPassword()| can return different results depending on user
   // interaction with the system Keychain.  For mocking purposes we allow the

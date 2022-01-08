@@ -12,7 +12,7 @@
 
 namespace crypto {
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 using AppleSecKeychainItemRef = void*;
 #else
 using AppleSecKeychainItemRef = SecKeychainItemRef;
@@ -53,9 +53,9 @@ class CRYPTO_EXPORT AppleKeychain {
                                       const void* passwordData,
                                       AppleSecKeychainItemRef* itemRef) const;
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   virtual OSStatus ItemDelete(AppleSecKeychainItemRef itemRef) const;
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 };
 
 }  // namespace crypto

@@ -12,7 +12,7 @@ namespace crypto {
 UnexportableSigningKey::~UnexportableSigningKey() = default;
 UnexportableKeyProvider::~UnexportableKeyProvider() = default;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProviderWin();
 #endif
 
@@ -23,7 +23,7 @@ std::unique_ptr<UnexportableKeyProvider> GetUnexportableKeyProvider() {
     return g_mock_provider();
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return GetUnexportableKeyProviderWin();
 #else
   return nullptr;
