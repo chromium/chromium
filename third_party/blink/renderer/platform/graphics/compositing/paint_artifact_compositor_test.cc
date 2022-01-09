@@ -4149,8 +4149,10 @@ TEST_P(PaintArtifactCompositorTest, WillChangeOpacityRenderSurfaceWithLayer) {
   ASSERT_EQ(2u, LayerCount());
 
   int layer0_effect_id = LayerAt(0)->effect_tree_index();
-  EXPECT_OPACITY(layer0_effect_id, 1.f, kHasRenderSurface);
+  EXPECT_OPACITY(layer0_effect_id, 1.f, kNoRenderSurface);
   int layer1_effect_id = LayerAt(1)->effect_tree_index();
+  // TODO(crbug.com/1285498): Optimize for will-change: opacity.
+  // EXPECT_OPACITY(layer1_effect_id, 1.f, kHasRenderSurface);
   EXPECT_OPACITY(layer1_effect_id, 1.f, kNoRenderSurface);
 }
 
@@ -4180,10 +4182,13 @@ TEST_P(PaintArtifactCompositorTest,
   EXPECT_OPACITY(layer0_effect_id, 1.f, kNoRenderSurface);
   int layer1_effect_id = LayerAt(1)->effect_tree_index();
   EXPECT_OPACITY(layer1_effect_id, 1.f, kNoRenderSurface);
-  // |opacity| affects both layer0 and layer1 which don't have render surfaces,
-  // so it should have a render surface.
   int opacity_id = effect_tree.Node(layer0_effect_id)->parent_id;
-  EXPECT_OPACITY(opacity_id, 1.f, kHasRenderSurface);
+  // TODO(crbug.com/1285498): Optimize for will-change: opacity.
+  // |opacity| affects both layer0 and layer1 which don't have render surfaces,
+  // so it should have a render surface if we have the optimization for
+  // will-change:opacity.
+  // EXPECT_OPACITY(opacity_id, 1.f, kHasRenderSurface);
+  EXPECT_OPACITY(opacity_id, 1.f, kNoRenderSurface);
 }
 
 TEST_P(PaintArtifactCompositorTest,

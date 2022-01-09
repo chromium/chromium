@@ -1157,10 +1157,9 @@ static cc::RenderSurfaceReason ConditionalRenderSurfaceReasonForEffect(
     const EffectPaintPropertyNode& effect) {
   if (effect.BlendMode() == SkBlendMode::kDstIn)
     return cc::RenderSurfaceReason::kBlendModeDstIn;
-  if (effect.Opacity() != 1.f ||
-      effect.RequiresCompositingForWillChangeOpacity()) {
+  if (effect.Opacity() != 1.f)
     return cc::RenderSurfaceReason::kOpacity;
-  }
+  // TODO(crbug.com/1285498): Optimize for will-change: opacity.
   if (effect.HasActiveOpacityAnimation())
     return cc::RenderSurfaceReason::kOpacityAnimation;
   return cc::RenderSurfaceReason::kNone;

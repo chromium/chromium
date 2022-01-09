@@ -92,8 +92,11 @@ EffectPaintPropertyNode::State FrameCaret::CaretEffectNodeState(
       (CompositorElementIdFromUniqueObjectId(
           NewUniqueObjectId(), CompositorElementIdNamespace::kPrimaryEffect)));
   state.compositor_element_id = element_id;
-  if (is_composited_caret_enabled_)
-    state.direct_compositing_reasons = CompositingReason::kWillChangeOpacity;
+  if (is_composited_caret_enabled_) {
+    state.direct_compositing_reasons =
+        CompositingReason::kActiveOpacityAnimation;
+    state.has_active_opacity_animation = true;
+  }
   return state;
 }
 

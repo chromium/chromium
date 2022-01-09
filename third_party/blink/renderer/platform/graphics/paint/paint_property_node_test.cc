@@ -358,6 +358,7 @@ TEST_F(PaintPropertyNodeTest, EffectOpacityChangesToOneAndFromOne) {
 }
 
 TEST_F(PaintPropertyNodeTest, EffectWillChangeOpacityChangesToAndFromOne) {
+  // TODO(crbug.com/1285498): Optimize for will-change: opacity.
   {
     EffectPaintPropertyNode::State state{transform.ancestor.get(),
                                          clip.ancestor.get()};
@@ -372,7 +373,7 @@ TEST_F(PaintPropertyNodeTest, EffectWillChangeOpacityChangesToAndFromOne) {
     // Change only opacity to 1.
     state.opacity = 1.f;
     state.direct_compositing_reasons = CompositingReason::kWillChangeOpacity;
-    EXPECT_EQ(PaintPropertyChangeType::kChangedOnlySimpleValues,
+    EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyValues,
               effect.ancestor->Update(*effect.root, std::move(state)));
   }
   {
@@ -381,7 +382,7 @@ TEST_F(PaintPropertyNodeTest, EffectWillChangeOpacityChangesToAndFromOne) {
     state.direct_compositing_reasons = CompositingReason::kWillChangeOpacity;
     // Change only opacity to 0.7f.
     state.opacity = 0.7f;
-    EXPECT_EQ(PaintPropertyChangeType::kChangedOnlySimpleValues,
+    EXPECT_EQ(PaintPropertyChangeType::kChangedOnlyValues,
               effect.ancestor->Update(*effect.root, std::move(state)));
   }
 }
