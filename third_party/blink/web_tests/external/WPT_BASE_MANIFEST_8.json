@@ -82862,6 +82862,32 @@
        {}
       ]
      ],
+     "color-mix-basic-001.html": [
+      "c69a292159003c578918bd1be9e495c6cbdb094e",
+      [
+       null,
+       [
+        [
+         "/css/css-color/color-mix-basic-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "color-mix-non-srgb-001.html": [
+      "7563581a4cf6f8438e1ad9a8a25671c3f052ce79",
+      [
+       null,
+       [
+        [
+         "/css/css-color/color-mix-non-srgb-001-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "color-mix-percents-01.html": [
       "425ef9a63621ef635fc3e800ee92a59dd32978d0",
       [
@@ -242218,12 +242244,20 @@
       "3ec831c4d314ef9ba6df43839779a35784210359",
       []
      ],
+     "color-mix-basic-001-ref.html": [
+      "7296d17fba3bd7b45769cbed12e954509ee85eac",
+      []
+     ],
      "color-mix-basic-001.tentative-expected.txt": [
       "3ec831c4d314ef9ba6df43839779a35784210359",
       []
      ],
      "color-mix-non-srgb-001-expected.txt": [
       "77ccec0d3adfc6bb9840f529ad5e574792c96cef",
+      []
+     ],
+     "color-mix-non-srgb-001-ref.html": [
+      "15556737c7f8b10e80bcaec6bf550403050dd990",
       []
      ],
      "color-mix-non-srgb-001.tentative-expected.txt": [
@@ -358543,20 +358577,6 @@
      ],
      "color-initial-canvastext.html": [
       "97ea2b7b68f899c1385b490c745ef69201460f63",
-      [
-       null,
-       {}
-      ]
-     ],
-     "color-mix-basic-001.html": [
-      "38e3504d5e2fced107c3c67f1587ffa26c92f67a",
-      [
-       null,
-       {}
-      ]
-     ],
-     "color-mix-non-srgb-001.html": [
-      "b38923fe23ee7ec5ba1c6877a15fa6faf74fc3d3",
       [
        null,
        {}
