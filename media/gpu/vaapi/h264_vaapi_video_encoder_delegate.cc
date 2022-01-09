@@ -85,12 +85,6 @@ void FillVAEncRateControlParams(
   hrd_param.initial_buffer_fullness = buffer_size / 2;
 }
 
-static scoped_refptr<base::RefCountedBytes> MakeRefCountedBytes(void* ptr,
-                                                                size_t size) {
-  return base::MakeRefCounted<base::RefCountedBytes>(
-      reinterpret_cast<uint8_t*>(ptr), size);
-}
-
 static void InitVAPictureH264(VAPictureH264* va_pic) {
   *va_pic = {};
   va_pic->picture_id = VA_INVALID_ID;
