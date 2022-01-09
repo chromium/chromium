@@ -160,6 +160,12 @@
     width: var(--emoji-picker-width);
   }
 
+  :host([v2-enabled]) {
+    height:
+      calc(var(--v2-emoji-picker-height) - var(--emoji-picker-top-padding));
+    width: var(--v2-emoji-picker-width);
+  }
+
   /* Center vertically the history icon and text buttons.*/
   :host([text-subcategory-bar-enabled]) #tabs {
     align-items: center;

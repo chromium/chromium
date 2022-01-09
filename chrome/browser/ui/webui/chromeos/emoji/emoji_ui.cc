@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/emoji/emoji_ui.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
@@ -26,6 +27,7 @@
 
 namespace {
 constexpr gfx::Size kDefaultWindowSize(396, 454);
+constexpr gfx::Size kExtensionWindowSize(420, 480);
 constexpr int kPaddingAroundCursor = 8;
 
 class EmojiiBubbleDialogView : public WebUIBubbleDialogView {
@@ -89,12 +91,17 @@ void EmojiUI::Show(Profile* profile) {
     caret_bounds.set_y(0);
   }
 
+  gfx::Size window_size =
+      base::FeatureList::IsEnabled(
+          chromeos::features::kImeSystemEmojiPickerExtension)
+          ? kExtensionWindowSize
+          : kDefaultWindowSize;
   // This rect is used for positioning the emoji picker. It anchors either top
   // right / bottom left of the emoji picker window depending on where the text
   // field is. 8px padding around cursor is applied so that the emoji picker
   // does not cramp existing text.
   auto anchor_rect =
-      gfx::Rect(caret_bounds.x() + kDefaultWindowSize.width(),
+      gfx::Rect(caret_bounds.x() + window_size.width(),
                 caret_bounds.y() - kPaddingAroundCursor, 0,
                 caret_bounds.height() + kPaddingAroundCursor * 2);
 

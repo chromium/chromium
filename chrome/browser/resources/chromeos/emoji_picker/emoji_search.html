@@ -96,6 +96,8 @@
 
   :host([v2-enabled]) #search-shadow {
     display: flex;
+    width:
+    calc(var(--v2-emoji-picker-width) - 2*var(--emoji-picker-side-padding));
   }
 
   #results {
@@ -114,6 +116,7 @@
     display: flex;
     justify-content: space-between;
     margin-inline-start: 20px;
+    width: 120px;
   }
 
   :host([v2-enabled]) #search {
