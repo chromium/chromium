@@ -36,18 +36,10 @@ AllowStatus BorealisFeatures::GetAllowanceForProfile(Profile* profile) {
 
 BorealisFeatures::BorealisFeatures(Profile* profile) : profile_(profile) {}
 
-namespace {
-
-bool g_should_show_reason = true;
-
-}  // namespace
-
 bool BorealisFeatures::IsAllowed() {
   AllowStatus reason = GetAllowanceForProfile(profile_);
   if (reason != AllowStatus::kAllowed) {
-    LOG_IF(ERROR, g_should_show_reason)
-        << "Borealis is not allowed: " << reason;
-    g_should_show_reason = false;
+    LOG(ERROR) << "Borealis is not allowed: " << reason;
     return false;
   }
   return true;

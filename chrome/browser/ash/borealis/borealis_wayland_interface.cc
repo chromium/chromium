@@ -6,6 +6,8 @@
 
 #include "base/callback.h"
 #include "chrome/browser/ash/borealis/borealis_capabilities.h"
+#include "chrome/browser/ash/borealis/borealis_features.h"
+#include "chrome/browser/ash/borealis/borealis_service.h"
 #include "components/exo/server/wayland_server_controller.h"
 
 namespace borealis {
@@ -23,6 +25,13 @@ BorealisWaylandInterface::~BorealisWaylandInterface() {
 void BorealisWaylandInterface::GetWaylandServer(
     base::OnceCallback<void(BorealisCapabilities*, const base::FilePath&)>
         callback) {
+  // The custom wayland server will be mandatory for borealis going forward, so
+  // it is a good place to guard against unauthorized launches.
+  if (!BorealisService::GetForProfile(profile_)->Features().IsAllowed()) {
+    std::move(callback).Run(nullptr, {});
+    return;
+  }
+
   if (capabilities_) {
     // If there is a current operation in-progress we will just bail out. Its
     // very unlikely that the user can run into this and if they do a retry will
