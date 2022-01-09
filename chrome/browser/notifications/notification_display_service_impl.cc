@@ -30,8 +30,8 @@
 #include "chrome/browser/extensions/api/notifications/extension_notification_handler.h"
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
-    defined(OS_WIN) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 #include "chrome/browser/send_tab_to_self/desktop_notification_handler.h"
 #include "chrome/browser/sharing/sharing_notification_handler.h"
 #endif
@@ -41,7 +41,7 @@
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/notifications/muted_notification_handler.h"
 #include "chrome/browser/notifications/screen_capture_notification_blocker.h"
 #endif
@@ -64,7 +64,7 @@ NotificationDisplayServiceImpl* NotificationDisplayServiceImpl::GetForProfile(
 // static
 void NotificationDisplayServiceImpl::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   registry->RegisterBooleanPref(prefs::kAllowNativeNotifications, true);
   registry->RegisterBooleanPref(prefs::kAllowSystemNotifications, true);
 #endif
@@ -80,16 +80,16 @@ NotificationDisplayServiceImpl::NotificationDisplayServiceImpl(Profile* profile)
     AddNotificationHandler(NotificationHandler::Type::WEB_PERSISTENT,
                            std::make_unique<PersistentNotificationHandler>());
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
-    defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
     AddNotificationHandler(
         NotificationHandler::Type::SEND_TAB_TO_SELF,
         std::make_unique<send_tab_to_self::DesktopNotificationHandler>(
             profile_));
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
-    defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
     AddNotificationHandler(
         NotificationHandler::Type::TAILORED_SECURITY,
         std::make_unique<safe_browsing::TailoredSecurityNotificationHandler>());
@@ -101,7 +101,7 @@ NotificationDisplayServiceImpl::NotificationDisplayServiceImpl(Profile* profile)
         std::make_unique<extensions::ExtensionNotificationHandler>());
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     AddNotificationHandler(NotificationHandler::Type::SHARING,
                            std::make_unique<SharingNotificationHandler>());
     AddNotificationHandler(NotificationHandler::Type::ANNOUNCEMENT,

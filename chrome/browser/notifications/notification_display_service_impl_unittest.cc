@@ -37,7 +37,7 @@
 #include "chrome/browser/nearby_sharing/nearby_sharing_service_factory.h"
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/notifications/muted_notification_handler.h"
 #include "chrome/browser/notifications/screen_capture_notification_blocker.h"
 #endif
@@ -276,7 +276,7 @@ TEST_F(NotificationDisplayServiceImplTest, NearbyNotificationHandler) {
 }
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 // Desktop specific test class that uses the default NotificationBlockers.
 class DesktopNotificationDisplayServiceImplTest
@@ -350,4 +350,4 @@ TEST_F(DesktopNotificationDisplayServiceImplTest, SnoozeDuringScreenCapture) {
   EXPECT_EQ(1u, GetDisplayedPlatformSync().count(notification_id_2));
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)

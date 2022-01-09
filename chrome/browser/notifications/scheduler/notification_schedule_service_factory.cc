@@ -22,13 +22,13 @@
 #include "components/keyed_service/core/simple_dependency_manager.h"
 #include "content/public/browser/storage_partition.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/reading_list/reading_list_notification_service_factory.h"
 #include "chrome/browser/notifications/scheduler/display_agent_android.h"
 #include "chrome/browser/notifications/scheduler/notification_background_task_scheduler_android.h"
 #include "chrome/browser/reading_list/android/reading_list_notification_client.h"
 #include "chrome/browser/reading_list/android/reading_list_notification_service.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -36,7 +36,7 @@ std::unique_ptr<notifications::NotificationSchedulerClientRegistrar>
 RegisterClients(ProfileKey* key) {
   auto client_registrar =
       std::make_unique<notifications::NotificationSchedulerClientRegistrar>();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Register reading list client.
   if (ReadingListNotificationService::IsEnabled()) {
     Profile* profile = ProfileManager::GetProfileFromProfileKey(key);
@@ -63,7 +63,7 @@ RegisterClients(ProfileKey* key) {
             feature_guide_service_getter));
   }
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   return client_registrar;
 }
 
@@ -96,7 +96,7 @@ NotificationScheduleServiceFactory::BuildServiceInstanceFor(
   base::FilePath storage_dir = profile_key->GetPath().Append(
       chrome::kNotificationSchedulerStorageDirname);
   auto client_registrar = RegisterClients(profile_key);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   auto display_agent = std::make_unique<DisplayAgentAndroid>();
   auto background_task_scheduler =
       std::make_unique<NotificationBackgroundTaskSchedulerAndroid>();
@@ -104,7 +104,7 @@ NotificationScheduleServiceFactory::BuildServiceInstanceFor(
   auto display_agent = notifications::DisplayAgent::Create();
   auto background_task_scheduler =
       std::make_unique<NotificationBackgroundTaskSchedulerImpl>();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   auto* db_provider = profile_key->GetProtoDatabaseProvider();
   return notifications::CreateNotificationScheduleService(
       std::move(client_registrar), std::move(background_task_scheduler),

@@ -27,7 +27,7 @@
 #include "chrome/browser/notifications/notification_platform_bridge_message_center.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/notifications/notification_platform_bridge_win.h"
 #endif
 
@@ -52,12 +52,12 @@ namespace {
 // the platforms supported by the browser.
 bool SystemNotificationsEnabled(Profile* profile) {
 #if BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS)
-#if defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   return true;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return NotificationPlatformBridgeWin::SystemNotificationEnabled();
 #else
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   if (profile) {
     // Prefs take precedence over flags.
     PrefService* prefs = profile->GetPrefs();
@@ -66,10 +66,10 @@ bool SystemNotificationsEnabled(Profile* profile) {
       return false;
     }
   }
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
   return base::FeatureList::IsEnabled(features::kNativeNotifications) &&
          base::FeatureList::IsEnabled(features::kSystemNotifications);
-#endif  // defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #else
   return false;
 #endif  // BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS)

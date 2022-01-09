@@ -51,7 +51,7 @@
 #include "extensions/common/value_builder.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/test/web_app_icon_test_utils.h"
 #include "chrome/browser/web_applications/test/web_app_test_utils.h"
@@ -417,7 +417,7 @@ TEST_F(PlatformNotificationServiceTest, CreateNotificationFromData) {
 
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 class PlatformNotificationServiceTest_WebAppNotificationIconAndTitle
     : public PlatformNotificationServiceTest {
@@ -473,4 +473,4 @@ TEST_F(PlatformNotificationServiceTest_WebAppNotificationIconAndTitle,
       icon_and_title->icon.GetRepresentation(1.0f).GetBitmap().getColor(0, 0));
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)

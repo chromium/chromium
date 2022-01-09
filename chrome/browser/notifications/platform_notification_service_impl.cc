@@ -50,7 +50,7 @@
 #include "ui/message_center/public/cpp/notifier_id.h"
 #include "url/origin.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -76,7 +76,7 @@ namespace {
 // screen mode.
 static bool ShouldDisplayWebNotificationOnFullScreen(Profile* profile,
                                                      const GURL& origin) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   NOTIMPLEMENTED();
   return false;
 #else
@@ -533,7 +533,7 @@ std::u16string PlatformNotificationServiceImpl::DisplayNameForContextMessage(
 absl::optional<PlatformNotificationServiceImpl::WebAppIconAndTitle>
 PlatformNotificationServiceImpl::FindWebAppIconAndTitle(
     const GURL& web_app_hint_url) const {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   web_app::WebAppProvider* web_app_provider =
       web_app::WebAppProvider::GetForLocalAppsUnchecked(profile_);
   if (web_app_provider) {
