@@ -47,7 +47,7 @@ const char* kSwitchesToCopy[] = {
 
 // TODO(jackhou): Enable this test once it works on OSX. It currently does not
 // work for the same reason --app-id doesn't. See http://crbug.com/148465
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_LoadAndLaunchAppChromeRunning \
         DISABLED_LoadAndLaunchAppChromeRunning
 #else
@@ -85,7 +85,7 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest,
 
 // TODO(jackhou): Enable this test once it works on OSX. It currently does not
 // work for the same reason --app-id doesn't. See http://crbug.com/148465.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_LoadAndLaunchAppWithFile DISABLED_LoadAndLaunchAppWithFile
 #else
 #define MAYBE_LoadAndLaunchAppWithFile LoadAndLaunchAppWithFile
@@ -192,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(LoadAndLaunchPlatformAppBrowserTest,
 }
 
 // TODO(https://crbug.com/988160): Test is flaky on Windows.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_LoadAndLaunchExtension DISABLED_LoadAndLaunchExtension
 #else
 #define MAYBE_LoadAndLaunchExtension LoadAndLaunchExtension
