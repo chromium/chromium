@@ -58,6 +58,8 @@ class ASH_EXPORT AshColorProvider : public SessionObserver,
   SkColor GetBaseLayerColor(BaseLayerType type) const override;
   SkColor GetControlsLayerColor(ControlsLayerType type) const override;
   SkColor GetContentLayerColor(ContentLayerType type) const override;
+  SkColor GetActiveDialogTitleBarColor() const override;
+  SkColor GetInactiveDialogTitleBarColor() const override;
   std::pair<SkColor, float> GetInkDropBaseColorAndOpacity(
       SkColor background_color = gfx::kPlaceholderColor) const override;
   void AddObserver(ColorModeObserver* observer) override;

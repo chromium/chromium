@@ -145,6 +145,11 @@ class ASH_PUBLIC_EXPORT ColorProvider {
   virtual SkColor GetControlsLayerColor(ControlsLayerType type) const = 0;
   virtual SkColor GetContentLayerColor(ContentLayerType type) const = 0;
 
+  // Gets the active or inactive dialog title bar color in the current color
+  // mode.
+  virtual SkColor GetActiveDialogTitleBarColor() const = 0;
+  virtual SkColor GetInactiveDialogTitleBarColor() const = 0;
+
   // Gets the ink drop base color and opacity. Since the inkdrop ripple and
   // highlight have the same opacity, we are keeping only one opacity here. The
   // base color will be gotten based on current color mode, which will be WHITE

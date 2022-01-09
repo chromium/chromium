@@ -7,7 +7,9 @@
 #include <memory>
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
+#include "ash/public/cpp/style/color_provider.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
@@ -31,7 +33,9 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/test/base/chrome_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_frame_host.h"
@@ -200,9 +204,12 @@ class BaseSelectFileDialogExtensionBrowserTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     if (GetParam().app_mode == SYSTEM_FILES_APP_MODE) {
-      feature_list_.InitWithFeatures({chromeos::features::kFilesSWA}, {});
+      feature_list_.InitWithFeatures(
+          {chromeos::features::kFilesSWA, chromeos::features::kDarkLightMode},
+          {});
     } else {
-      feature_list_.InitWithFeatures({}, {chromeos::features::kFilesSWA});
+      feature_list_.InitWithFeatures({chromeos::features::kDarkLightMode},
+                                     {chromeos::features::kFilesSWA});
     }
     extensions::ExtensionBrowserTest::SetUpCommandLine(command_line);
   }
@@ -645,19 +652,42 @@ IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionFlagTest, DialogColoredTitle) {
   content::RenderFrameHost* frame_host = dialog_->GetMainFrame();
   aura::Window* dialog_window =
       frame_host->GetNativeView()->GetToplevelWindow();
-  SkColor active_color =
-      dialog_window->GetProperty(chromeos::kFrameActiveColorKey);
-  SkColor inactive_color =
-      dialog_window->GetProperty(chromeos::kFrameInactiveColorKey);
+  auto* color_provider = ash::ColorProvider::Get();
+  EXPECT_EQ(dialog_window->GetProperty(chromeos::kFrameActiveColorKey),
+            color_provider->GetActiveDialogTitleBarColor());
+  EXPECT_EQ(dialog_window->GetProperty(chromeos::kFrameInactiveColorKey),
+            color_provider->GetInactiveDialogTitleBarColor());
 
-  constexpr SkColor kFilesNgTitleColor = gfx::kGoogleGrey200;
-  // TODO(b/194970433): Enable these checks.
-  if (GetParam().app_mode != SYSTEM_FILES_APP_MODE) {
-    // FilesNG enabled the title should be Google Grey 200.
-    EXPECT_EQ(active_color, kFilesNgTitleColor);
-    // Active and Inactive should have the same color.
-    EXPECT_EQ(active_color, inactive_color);
-  }
+  CloseDialog(DIALOG_BTN_CANCEL, owning_window);
+}
+
+IN_PROC_BROWSER_TEST_P(SelectFileDialogExtensionFlagTest, ColorModeChange) {
+  gfx::NativeWindow owning_window = browser()->window()->GetNativeWindow();
+  ASSERT_NE(nullptr, owning_window);
+
+  // Open the file dialog on the default path.
+  ASSERT_NO_FATAL_FAILURE(OpenDialog(ui::SelectFileDialog::SELECT_OPEN_FILE,
+                                     base::FilePath(), owning_window, ""));
+  content::RenderFrameHost* frame_host = dialog_->GetMainFrame();
+  aura::Window* dialog_window =
+      frame_host->GetNativeView()->GetToplevelWindow();
+
+  auto* color_provider = ash::ColorProvider::Get();
+  EXPECT_FALSE(color_provider->IsDarkModeEnabled());
+  SkColor light_active_color =
+      dialog_window->GetProperty(chromeos::kFrameActiveColorKey);
+  SkColor light_inactive_color =
+      dialog_window->GetProperty(chromeos::kFrameInactiveColorKey);
+  // Switch on dark mode.
+  Profile* profile = chrome_test_utils::GetProfile(this);
+  PrefService* prefs = profile->GetPrefs();
+  prefs->SetBoolean(ash::prefs::kDarkModeEnabled, true);
+  EXPECT_TRUE(color_provider->IsDarkModeEnabled());
+  // Check active/invactive color in Dark mode should be different.
+  EXPECT_NE(dialog_window->GetProperty(chromeos::kFrameActiveColorKey),
+            light_active_color);
+  EXPECT_NE(dialog_window->GetProperty(chromeos::kFrameInactiveColorKey),
+            light_inactive_color);
 
   CloseDialog(DIALOG_BTN_CANCEL, owning_window);
 }

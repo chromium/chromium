@@ -434,6 +434,9 @@
       light:"$google_grey_100",
       dark:"$google_grey_900",
     },
+    /* TODO(crbug.com/1284178) waiting for UX input to see how to combine
+    this variable together with `dialog_title_background_color` */
+    dialog_title_bar_color: "blend($highlight_color_hover, $bg_color)",
 
     /* toast */
     /* Toast colors are inverted for contrast. */

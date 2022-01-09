@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/public/cpp/style/color_mode_observer.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ui/views/extensions/extension_dialog_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -36,7 +37,8 @@ class SelectFilePolicy;
 // Shows a dialog box for selecting a file or a folder, using the
 // file manager extension implementation.
 class SelectFileDialogExtension : public ui::SelectFileDialog,
-                                  public ExtensionDialogObserver {
+                                  public ExtensionDialogObserver,
+                                  public ash::ColorModeObserver {
  public:
   // Opaque ID type for identifying the tab spawned each dialog, unique for
   // every WebContents or every Android task ID.
@@ -49,13 +51,16 @@ class SelectFileDialogExtension : public ui::SelectFileDialog,
       ui::SelectFileDialog::Listener* listener,
       std::unique_ptr<ui::SelectFilePolicy> policy);
 
-  // BaseShellDialog implementation.
+  // ui::SelectFileDialog:
   bool IsRunning(gfx::NativeWindow owner_window) const override;
   void ListenerDestroyed() override;
 
-  // ExtensionDialog::Observer implementation.
+  // ExtensionDialogObserver:
   void ExtensionDialogClosing(ExtensionDialog* dialog) override;
   void ExtensionTerminated(ExtensionDialog* dialog) override;
+
+  // ash::ColorModeObserver:
+  void OnColorModeChanged(bool dark_mode_enabled) override;
 
   // Routes callback to appropriate SelectFileDialog::Listener based on the
   // owning |web_contents|.
@@ -107,7 +112,7 @@ class SelectFileDialogExtension : public ui::SelectFileDialog,
                                        bool show_android_picker_apps);
 
  protected:
-  // SelectFileDialog implementation.
+  // ui::SelectFileDialog:
   void SelectFileImpl(Type type,
                       const std::u16string& title,
                       const base::FilePath& default_path,
