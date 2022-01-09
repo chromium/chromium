@@ -1529,7 +1529,7 @@ TEST_F(AppListViewFocusTest, CtrlASelectsAllTextInSearchbox) {
 // Tests that the first search result's view is selected after search results
 // are updated when the focus is on search box.
 // crbug.com/1242053: flaky on chromeos
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_FirstResultSelectedAfterSearchResultsUpdated \
   DISABLED_FirstResultSelectedAfterSearchResultsUpdated
 #else

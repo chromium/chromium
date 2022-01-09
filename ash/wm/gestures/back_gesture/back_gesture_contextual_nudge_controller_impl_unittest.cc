@@ -395,7 +395,7 @@ TEST_F(BackGestureContextualNudgeControllerTest, GesturePerformedMetricTest) {
 }
 
 // crbug.com/1239200: flaky on linux.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_TimeoutMetricsTest DISABLED_TimeoutMetricsTest
 #else
 #define MAYBE_TimeoutMetricsTest TimeoutMetricsTest
