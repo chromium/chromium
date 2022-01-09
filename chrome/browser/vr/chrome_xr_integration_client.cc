@@ -17,9 +17,9 @@
 #include "device/vr/public/cpp/vr_device_provider.h"
 #include "device/vr/public/mojom/vr_service.mojom-shared.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/vr/ui_host/vr_ui_host_impl.h"
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/vr/gvr_install_helper.h"
 #include "device/vr/android/gvr/gvr_device_provider.h"
 #if BUILDFLAG(ENABLE_ARCORE)
@@ -36,7 +36,7 @@ std::unique_ptr<content::XrInstallHelper>
 ChromeXrIntegrationClient::GetInstallHelper(
     device::mojom::XRDeviceId device_id) {
   switch (device_id) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     case device::mojom::XRDeviceId::GVR_DEVICE_ID:
       return std::make_unique<GvrInstallHelper>();
 #if BUILDFLAG(ENABLE_ARCORE)
@@ -52,7 +52,7 @@ ChromeXrIntegrationClient::GetInstallHelper(
 content::XRProviderList ChromeXrIntegrationClient::GetAdditionalProviders() {
   content::XRProviderList providers;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   providers.push_back(std::make_unique<device::GvrDeviceProvider>());
 #if BUILDFLAG(ENABLE_ARCORE)
   // TODO(https://crbug.com/966647) remove this check.
@@ -67,12 +67,12 @@ content::XRProviderList ChromeXrIntegrationClient::GetAdditionalProviders() {
             std::move(j_ar_compositor_delegate_provider))));
   }
 #endif  // BUILDFLAG(ENABLE_ARCORE)
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   return providers;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 std::unique_ptr<content::VrUiHost> ChromeXrIntegrationClient::CreateVrUiHost(
     device::mojom::XRDeviceId device_id,
     mojo::PendingRemote<device::mojom::XRCompositorHost> compositor) {

@@ -16,7 +16,7 @@
 #include "device/vr/buildflags/buildflags.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "sandbox/policy/features.h"
 #endif
 

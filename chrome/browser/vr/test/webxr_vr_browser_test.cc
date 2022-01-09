@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/vr/test/webxr_vr_browser_test.h"
+
 #include <cstring>
 
-#include "chrome/browser/vr/test/webxr_vr_browser_test.h"
+#include "build/build_config.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -40,7 +42,7 @@ void WebXrVrBrowserTestBase::EnterSessionWithUserGestureOrFail(
       "sessionInfos[sessionTypes.IMMERSIVE].currentSession != null",
       kPollTimeoutLong, web_contents);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Creating a session may take foreground from us, and Windows may not return
   // it when the session terminates. This means subsequent requests to enter an
   // immersive session may fail. The fix for testing is to call

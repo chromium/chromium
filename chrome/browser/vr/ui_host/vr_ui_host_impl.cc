@@ -32,7 +32,7 @@ namespace vr {
 namespace {
 static constexpr base::TimeDelta kPermissionPromptTimeout = base::Seconds(5);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Some runtimes on Windows have quite lengthy lengthy startup animations that
 // may cause indicators/permissions to not be visible during the normal timeout.
 static constexpr base::TimeDelta kFirstWindowsPermissionPromptTimeout =
@@ -40,7 +40,7 @@ static constexpr base::TimeDelta kFirstWindowsPermissionPromptTimeout =
 #endif
 
 base::TimeDelta GetPermissionPromptTimeout(bool first_time) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (first_time)
     return kFirstWindowsPermissionPromptTimeout;
 #endif

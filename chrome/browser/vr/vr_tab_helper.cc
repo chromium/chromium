@@ -10,7 +10,7 @@
 #include "device/vr/buildflags/buildflags.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/feature_list.h"
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #else
@@ -80,7 +80,7 @@ void VrTabHelper::SetIsContentDisplayedInHeadset(content::WebContents* contents,
   bool old_state = vr_tab_helper->IsContentDisplayedInHeadset(contents);
   vr_tab_helper->SetIsContentDisplayedInHeadset(state);
   if (old_state != state) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     Browser* browser = chrome::FindBrowserWithWebContents(contents);
     if (browser) {
       TabStripModel* tab_strip_model = browser->tab_strip_model();
@@ -96,7 +96,7 @@ void VrTabHelper::SetIsContentDisplayedInHeadset(content::WebContents* contents,
 
 /* static */
 void VrTabHelper::ExitVrPresentation() {
-#if defined(OS_WIN) && BUILDFLAG(ENABLE_VR)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_VR)
   content::XRRuntimeManager::ExitImmersivePresentation();
 #endif
 }

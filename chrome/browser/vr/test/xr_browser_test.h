@@ -22,7 +22,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -219,7 +219,7 @@ class XrBrowserTestBase : public InProcessBrowserTest {
   std::vector<XrTestRequirement> runtime_requirements_;
   std::unordered_set<std::string> ignored_requirements_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   HWND hwnd_;
 #endif
 

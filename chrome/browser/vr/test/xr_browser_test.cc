@@ -53,19 +53,19 @@ XrBrowserTestBase::XrBrowserTestBase() : env_(base::Environment::Create()) {
 XrBrowserTestBase::~XrBrowserTestBase() = default;
 
 base::FilePath::StringType UTF8ToWideIfNecessary(std::string input) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::UTF8ToWide(input);
 #else
   return input;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 std::string WideToUTF8IfNecessary(base::FilePath::StringType input) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::WideToUTF8(input);
 #else
   return input;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 // Returns an std::string consisting of the given path relative to the test
@@ -189,7 +189,7 @@ void XrBrowserTestBase::LoadFileAndAwaitInitialization(
                                     GetCurrentWebContents()))
       << "Timed out waiting for JavaScript test initialization.";
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Now that the browser is opened and has focus, keep track of this window so
   // that we can restore the proper focus after entering each session. This is
   // required for tests that create multiple sessions to work properly.
