@@ -12,8 +12,8 @@
 
 class GURL;
 
-namespace content {
-class WebContents;
+namespace aura {
+class Window;
 }
 
 namespace views {
@@ -25,7 +25,7 @@ namespace ash {
 // The external protocol dialog for Chrome OS shown when there are no handlers.
 class ExternalProtocolNoHandlersDialog : public views::DialogDelegate {
  public:
-  ExternalProtocolNoHandlersDialog(content::WebContents* web_contents,
+  ExternalProtocolNoHandlersDialog(aura::Window* parent_window,
                                    const GURL& url);
 
   ExternalProtocolNoHandlersDialog(const ExternalProtocolNoHandlersDialog&) =

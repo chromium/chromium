@@ -17,6 +17,7 @@
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/weak_document_ptr.h"
 #include "content/public/browser/web_contents.h"
+#include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -45,6 +46,11 @@ void OnArcHandled(const GURL& url,
   if (!web_contents)
     return;
 
+  aura::Window* parent_window = web_contents->GetTopLevelNativeWindow();
+  // If WebContents has been detached from window tree, do not show any dialog.
+  if (!parent_window || !parent_window->GetRootWindow())
+    return;
+
   // Display the standard ExternalProtocolDialog if Guest OS has a handler.
   absl::optional<guest_os::GuestOsRegistryService::Registration> registration =
       guest_os::GetHandler(
@@ -54,7 +60,7 @@ void OnArcHandled(const GURL& url,
                                base::UTF8ToUTF16(registration->Name()),
                                initiating_origin, initiator_document);
   } else {
-    new ash::ExternalProtocolNoHandlersDialog(web_contents, url);
+    new ash::ExternalProtocolNoHandlersDialog(parent_window, url);
   }
 }
 
@@ -93,9 +99,10 @@ namespace ash {
 // ExternalProtocolNoHandlersDialog
 
 ExternalProtocolNoHandlersDialog::ExternalProtocolNoHandlersDialog(
-    WebContents* web_contents,
+    aura::Window* parent_window,
     const GURL& url)
     : creation_time_(base::TimeTicks::Now()), scheme_(url.scheme()) {
+  DCHECK(parent_window);
   SetOwnedByWidget(true);
 
   views::DialogDelegate::SetButtons(ui::DIALOG_BUTTON_OK);
@@ -106,13 +113,6 @@ ExternalProtocolNoHandlersDialog::ExternalProtocolNoHandlersDialog(
   message_box_view_ = new views::MessageBoxView();
   message_box_view_->SetMessageWidth(kMessageWidth);
 
-  gfx::NativeWindow parent_window;
-  if (web_contents) {
-    parent_window = web_contents->GetTopLevelNativeWindow();
-  } else {
-    // Dialog is top level if we don't have a web_contents associated with us.
-    parent_window = nullptr;
-  }
   views::DialogDelegate::CreateDialogWidget(this, nullptr, parent_window)
       ->Show();
   chrome::RecordDialogCreation(
