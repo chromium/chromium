@@ -82954,7 +82954,7 @@
       ]
      ],
      "display-p3-003.html": [
-      "697d164a0b2663906808461095eafee4434ea5b4",
+      "122c0f0a13946dc8e3cebb3ae4862f233e3936ec",
       [
        null,
        [
@@ -97679,6 +97679,19 @@
      ],
      "dynamic-stretch-change.html": [
       "f2fdf1b24f4acd733b0623034494e46e61d16259",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "fieldset-as-item-dynamic.html": [
+      "814b228e3650a65b742ae9c0f2fd6e9fc5b2a4cd",
       [
        null,
        [
