@@ -575,7 +575,7 @@ IN_PROC_BROWSER_TEST_F(OAuth2Test, PRE_MergeSession) {
 // that was generated in PRE_PRE_MergeSession test. This attempt should fail
 // since FakeGaia instance isn't configured to return relevant tokens/cookies.
 // TODO(crbug.com/1249863): Test is flaky on chromeos
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_MergeSession DISABLED_MergeSession
 #else
 #define MAYBE_MergeSession MergeSession

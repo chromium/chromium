@@ -699,7 +699,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, CancelHint) {
   ASSERT_TRUE(IdleDetectionCancelledForTesting());
 }
 
-#if defined(OS_CHROMEOS) && !defined(NDEBUG)
+#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
 #define MAYBE_ActivateChromeVoxBeforeHint DISABLED_ActivateChromeVoxBeforeHint
 #else
 #define MAYBE_ActivateChromeVoxBeforeHint ActivateChromeVoxBeforeHint

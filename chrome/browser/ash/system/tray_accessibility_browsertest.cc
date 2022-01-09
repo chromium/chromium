@@ -222,7 +222,7 @@ class TrayAccessibilityTest
 };
 
 // Fails on linux-chromeos-dbg see crbug/1027919.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ShowMenu DISABLED_ShowMenu
 #else
 #define MAYBE_ShowMenu ShowMenu
@@ -397,7 +397,7 @@ IN_PROC_BROWSER_TEST_P(TrayAccessibilityTest, MAYBE_ShowMenu) {
 }
 
 // Fails on linux-chromeos-dbg see crbug/1027919.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ShowMenuWithShowMenuOption DISABLED_ShowMenuWithShowMenuOption
 #else
 #define MAYBE_ShowMenuWithShowMenuOption ShowMenuWithShowMenuOption

@@ -1046,7 +1046,7 @@ IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest, EnrollmentForced) {
 }
 
 // This test is flaky on ChromeOS. https://crbug.com/1231472
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_ZeroTouchForcedAttestationFail \
   DISABLED_ZeroTouchForcedAttestationFail
 #else
