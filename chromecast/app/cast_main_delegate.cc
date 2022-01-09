@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "base/command_line.h"
@@ -14,7 +15,6 @@
 #include "base/files/file.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
 #include "base/no_destructor.h"
@@ -270,7 +270,7 @@ void CastMainDelegate::PostEarlyInitialization(bool is_running_tests) {
     base::FieldTrialList* leaked_field_trial_list =
         new base::FieldTrialList(nullptr);
     ANNOTATE_LEAKING_OBJECT_PTR(leaked_field_trial_list);
-    ignore_result(leaked_field_trial_list);
+    std::ignore = leaked_field_trial_list;
   }
 
   // Initialize the base::FeatureList and the PrefService (which it depends on),

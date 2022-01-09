@@ -4,10 +4,10 @@
 
 #include "chromecast/renderer/cast_window_manager_bindings.h"
 
+#include <tuple>
 #include <vector>
 
 #include "base/check.h"
-#include "base/ignore_result.h"
 #include "build/build_config.h"
 #include "chromecast/base/cast_features.h"
 #include "chromecast/common/feature_constants.h"
@@ -238,7 +238,7 @@ void CastWindowManagerBindings::InvokeV8Callback(
   *callback_function = v8::UniquePersistent<v8::Function>(isolate, handler);
 
   v8::Local<v8::Value> result;
-  ignore_result(maybe_result.ToLocal(&result));
+  std::ignore = maybe_result.ToLocal(&result);
 }
 
 void CastWindowManagerBindings::InvokeV8Callback(
@@ -267,7 +267,7 @@ void CastWindowManagerBindings::InvokeV8Callback(
   *callback_function = v8::UniquePersistent<v8::Function>(isolate, handler);
 
   v8::Local<v8::Value> result;
-  ignore_result(maybe_result.ToLocal(&result));
+  std::ignore = maybe_result.ToLocal(&result);
 }
 
 void CastWindowManagerBindings::OnBackGesture(

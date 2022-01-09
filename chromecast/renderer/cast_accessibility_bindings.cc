@@ -4,10 +4,10 @@
 
 #include "chromecast/renderer/cast_accessibility_bindings.h"
 
+#include <tuple>
 #include <vector>
 
 #include "base/bind.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "chromecast/common/feature_constants.h"
 #include "chromecast/renderer/feature_manager.h"
@@ -216,7 +216,7 @@ void CastAccessibilityBindings::AccessibilitySettingChanged(
   *handler_function = v8::UniquePersistent<v8::Function>(isolate, handler);
 
   v8::Local<v8::Value> result;
-  ignore_result(maybe_result.ToLocal(&result));
+  std::ignore = maybe_result.ToLocal(&result);
 }
 
 void CastAccessibilityBindings::ScreenReaderSettingChanged(bool new_value) {

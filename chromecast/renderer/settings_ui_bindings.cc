@@ -4,11 +4,11 @@
 
 #include "chromecast/renderer/settings_ui_bindings.h"
 
+#include <tuple>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/ignore_result.h"
 #include "base/location.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
@@ -70,7 +70,7 @@ void SettingsUiBindings::HandleSideSwipe(
   side_swipe_handler_ = v8::UniquePersistent<v8::Function>(isolate, handler);
 
   v8::Local<v8::Value> result;
-  ignore_result(maybe_result.ToLocal(&result));
+  std::ignore = maybe_result.ToLocal(&result);
 }
 
 void SettingsUiBindings::SendPlatformInfo(
@@ -103,7 +103,7 @@ void SettingsUiBindings::SendPlatformInfo(
   platform_info_handler_ = v8::UniquePersistent<v8::Function>(isolate, handler);
 
   v8::Local<v8::Value> result;
-  ignore_result(maybe_result.ToLocal(&result));
+  std::ignore = maybe_result.ToLocal(&result);
 }
 
 void SettingsUiBindings::Install(v8::Local<v8::Object> cast_platform,

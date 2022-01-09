@@ -2,10 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <tuple>
+
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check_op.h"
-#include "base/ignore_result.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "chromecast/base/chromecast_switches.h"
 #include "chromecast/browser/cast_browser_process.h"
@@ -145,12 +146,12 @@ class WebviewTest : public content::BrowserTestBase {
                         const std::string& path) {
     GURL url = embedded_test_server()->GetURL("foo.com", path);
     content::GetUIThreadTaskRunner({})->PostTask(
-        FROM_HERE,
-        base::BindOnce(
-            [](content::WebContents* web_contents, const GURL& url) {
-              ignore_result(content::NavigateToURL(web_contents, url));
-            },
-            web_contents, url));
+        FROM_HERE, base::BindOnce(
+                       [](content::WebContents* web_contents, const GURL& url) {
+                         std::ignore =
+                             content::NavigateToURL(web_contents, url);
+                       },
+                       web_contents, url));
   }
 
   std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
