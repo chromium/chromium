@@ -106,13 +106,13 @@ class SyncServiceFactoryTest : public testing::Test {
     datatypes.push_back(syncer::WEB_APPS);
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     datatypes.push_back(syncer::THEMES);
     datatypes.push_back(syncer::READING_LIST);
     datatypes.push_back(syncer::SEARCH_ENGINES);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
     datatypes.push_back(syncer::DICTIONARY);
 #endif
 

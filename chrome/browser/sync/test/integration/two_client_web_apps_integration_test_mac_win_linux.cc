@@ -20,7 +20,7 @@ using TwoClientWebAppsIntegrationTestMacWinLinux =
 
 // TODO(crbug.com/1273666): Test failed on Mac.
 // TODO(crbug.com/1281950): Browsers size failure on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_InstLocallySiteA_InListWinSiteA_NavSiteA_InstIconNotShown_LaunchIconShown \
   DISABLED_WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_InstLocallySiteA_InListWinSiteA_NavSiteA_InstIconNotShown_LaunchIconShown
 #else
@@ -47,7 +47,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // TODO(crbug.com/1273666): Test failed on Mac.
 // TODO(crbug.com/1281950): Browsers size failure on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_InstLocallySiteA_InListWinSiteA_LaunchFromListSiteA_WindowCreated \
   DISABLED_WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_InstLocallySiteA_InListWinSiteA_LaunchFromListSiteA_WindowCreated
 #else
@@ -73,7 +73,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // TODO(crbug.com/1273666): Test failed on Mac.
 // TODO(crbug.com/1281950): Browsers size failure on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_LaunchFromListSiteA_TabCreated \
   DISABLED_WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_LaunchFromListSiteA_TabCreated
 #else
@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // TODO(crbug.com/1273666): Test failed on Mac.
 // TODO(crbug.com/1281950): Browsers size failure on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_NavSiteA_InstIconShown_LaunchIconNotShown \
   DISABLED_WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_NavSiteA_InstIconShown_LaunchIconNotShown
 #else
@@ -122,7 +122,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // TODO(crbug.com/1273666): Test failed on Mac.
 // TODO(crbug.com/1281950): Browsers size failure on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_InstLocallySiteA_InListWinSiteA_NavSiteA_InstIconNotShown_LaunchIconShown \
   DISABLED_WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_InstLocallySiteA_InListWinSiteA_NavSiteA_InstIconNotShown_LaunchIconShown
 #else
@@ -149,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // TODO(crbug.com/1273666): Test failed on Mac.
 // TODO(crbug.com/1281950): Browsers size failure on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_InstLocallySiteA_InListWinSiteA_LaunchFromListSiteA_WindowCreated \
   DISABLED_WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_InstLocallySiteA_InListWinSiteA_LaunchFromListSiteA_WindowCreated
 #else
@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // TODO(crbug.com/1273666): Test failed on Mac.
 // TODO(crbug.com/1281950): Browsers size failure on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_LaunchFromListSiteA_TabCreated \
   DISABLED_WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_LaunchFromListSiteA_TabCreated
 #else
@@ -198,7 +198,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/1273666): Test failed on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_NavSiteA_InstIconShown_LaunchIconNotShown \
   DISABLED_WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_NavSiteA_InstIconShown_LaunchIconNotShown
 #else
@@ -223,7 +223,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // TODO(crbug.com/1273666): Test failed on Mac.
 // TODO(crbug.com/1281950): Browsers size failure on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_InstLocallySiteA_InListWinSiteA_NavSiteA_InstIconNotShown_LaunchIconShown \
   DISABLED_WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_InstLocallySiteA_InListWinSiteA_NavSiteA_InstIconNotShown_LaunchIconShown
 #else
@@ -250,7 +250,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // TODO(crbug.com/1273666): Test failed on Mac.
 // TODO(crbug.com/1281950): Browsers size failure on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_InstLocallySiteA_InListWinSiteA_LaunchFromListSiteA_WindowCreated \
   DISABLED_WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_InstLocallySiteA_InListWinSiteA_LaunchFromListSiteA_WindowCreated
 #else
@@ -276,7 +276,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // TODO(crbug.com/1273666): Test failed on Mac.
 // TODO(crbug.com/1281950): Browsers size failure on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_LaunchFromListSiteA_TabCreated \
   DISABLED_WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_LaunchFromListSiteA_TabCreated
 #else
@@ -300,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // TODO(crbug.com/1273666): Test failed on Mac.
 // TODO(crbug.com/1281950): Browsers size failure on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_NavSiteA_InstIconShown_LaunchIconNotShown \
   DISABLED_WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_NavSiteA_InstIconShown_LaunchIconNotShown
 #else
@@ -430,7 +430,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/1282608): Test is flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_TurnSyncOff_InstMenuOptionSiteA_TurnSyncOn_SwitchProfileClientClient2_InListNotLclyInstSiteA \
   DISABLED_WebAppIntegration_TurnSyncOff_InstMenuOptionSiteA_TurnSyncOn_SwitchProfileClientClient2_InListNotLclyInstSiteA
 #else
@@ -464,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/1273666): Test failed on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_TurnSyncOff_InstCrtShctWindowedSiteC_TurnSyncOn_SwitchProfileClientClient2_InListNotLclyInstSiteC \
   DISABLED_WebAppIntegration_TurnSyncOff_InstCrtShctWindowedSiteC_TurnSyncOn_SwitchProfileClientClient2_InListNotLclyInstSiteC
 #else
@@ -499,7 +499,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // TODO(crbug.com/1273666): Test failed on Mac.
 // TODO(crbug.com/1281950): Browsers size failure on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_InstLocallySiteA_InListWinSiteA_LaunchFromIconSiteA_WindowCreated \
   DISABLED_WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_InstLocallySiteA_InListWinSiteA_LaunchFromIconSiteA_WindowCreated
 #else
@@ -525,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // TODO(crbug.com/1273666): Test failed on Mac.
 // TODO(crbug.com/1281950): Browsers size failure on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_InstLocallySiteA_InListWinSiteA_LaunchFromIconSiteA_WindowCreated \
   DISABLED_WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_InstLocallySiteA_InListWinSiteA_LaunchFromIconSiteA_WindowCreated
 #else
@@ -551,7 +551,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // TODO(crbug.com/1273666): Test failed on Mac.
 // TODO(crbug.com/1281950): Browsers size failure on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_InstLocallySiteA_InListWinSiteA_LaunchFromIconSiteA_WindowCreated \
   DISABLED_WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_InstLocallySiteA_InListWinSiteA_LaunchFromIconSiteA_WindowCreated
 #else
@@ -577,7 +577,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // TODO(crbug.com/1273666): Test failed on Mac.
 // TODO(crbug.com/1281950): Browsers size failure on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_UninstallFromListSiteA_NotInListSiteA_SwitchProfileClientClient1_NotInListSiteA \
   DISABLED_WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_UninstallFromListSiteA_NotInListSiteA_SwitchProfileClientClient1_NotInListSiteA
 #else
@@ -603,7 +603,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // TODO(crbug.com/1273666): Test failed on Mac.
 // TODO(crbug.com/1281950): Browsers size failure on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_UninstallFromListSiteA_NotInListSiteA_SwitchProfileClientClient1_NotInListSiteA \
   DISABLED_WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_UninstallFromListSiteA_NotInListSiteA_SwitchProfileClientClient1_NotInListSiteA
 #else
@@ -629,7 +629,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // TODO(crbug.com/1273666): Test failed on Mac.
 // TODO(crbug.com/1281950): Browsers size failure on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_UninstallFromListSiteA_NotInListSiteA_SwitchProfileClientClient1_NotInListSiteA \
   DISABLED_WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_UninstallFromListSiteA_NotInListSiteA_SwitchProfileClientClient1_NotInListSiteA
 #else
@@ -671,7 +671,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // TODO(crbug.com/1273666): Test failed on Mac.
 // TODO(crbug.com/1281950): Browsers size failure on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_TurnSyncOff_UninstallFromListSiteA_TurnSyncOn_InListNotLclyInstSiteA \
   DISABLED_WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_TurnSyncOff_UninstallFromListSiteA_TurnSyncOn_InListNotLclyInstSiteA
 #else
@@ -697,7 +697,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // TODO(crbug.com/1273666): Test failed on Mac.
 // TODO(crbug.com/1281950): Browsers size failure on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_TurnSyncOff_UninstallFromListSiteA_TurnSyncOn_InListNotLclyInstSiteA \
   DISABLED_WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_TurnSyncOff_UninstallFromListSiteA_TurnSyncOn_InListNotLclyInstSiteA
 #else
@@ -722,7 +722,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/1273666): Test failed on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_TurnSyncOff_UninstallFromListSiteA_TurnSyncOn_InListNotLclyInstSiteA \
   DISABLED_WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_TurnSyncOff_UninstallFromListSiteA_TurnSyncOn_InListNotLclyInstSiteA
 #else
@@ -764,7 +764,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // TODO(crbug.com/1273666): Test failed on Mac.
 // TODO(crbug.com/1281950): Browsers size failure on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_TurnSyncOff_UninstallFromMenuSiteA_TurnSyncOn_InListNotLclyInstSiteA \
   DISABLED_WebAppIntegration_InstCrtShctWindowedSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_TurnSyncOff_UninstallFromMenuSiteA_TurnSyncOn_InListNotLclyInstSiteA
 #else
@@ -790,7 +790,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // TODO(crbug.com/1273666): Test failed on Mac.
 // TODO(crbug.com/1281950): Browsers size failure on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_TurnSyncOff_UninstallFromMenuSiteA_TurnSyncOn_InListNotLclyInstSiteA \
   DISABLED_WebAppIntegration_InstOmniboxSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_TurnSyncOff_UninstallFromMenuSiteA_TurnSyncOn_InListNotLclyInstSiteA
 #else
@@ -816,7 +816,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // TODO(crbug.com/1273666): Test failed on Mac.
 // TODO(crbug.com/1281950): Browsers size failure on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_TurnSyncOff_UninstallFromMenuSiteA_TurnSyncOn_InListNotLclyInstSiteA \
   DISABLED_WebAppIntegration_InstMenuOptionSiteA_WindowCreated_InListWinSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_TurnSyncOff_UninstallFromMenuSiteA_TurnSyncOn_InListNotLclyInstSiteA
 #else
@@ -841,7 +841,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // TODO(crbug.com/1273666): Test failing frequently on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebAppIntegration_InstCrtShctTabbedSiteA_InListTabbedSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_TurnSyncOff_UninstallFromMenuSiteA_TurnSyncOn_InListNotLclyInstSiteA \
   DISABLED_WebAppIntegration_InstCrtShctTabbedSiteA_InListTabbedSiteA_SwitchProfileClientClient2_InListNotLclyInstSiteA_TurnSyncOff_UninstallFromMenuSiteA_TurnSyncOn_InListNotLclyInstSiteA
 #else

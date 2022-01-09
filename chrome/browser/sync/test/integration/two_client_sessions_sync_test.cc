@@ -262,7 +262,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsWithoutDestroyProfileSyncTest,
       WaitForForeignSessionsToSync(/*local_index=*/0, /*non_local_index=*/1));
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 class TwoClientSessionsWithDestroyProfileSyncTest
     : public TwoClientSessionsSyncTest {
  public:
@@ -312,6 +312,6 @@ IN_PROC_BROWSER_TEST_F(TwoClientSessionsWithDestroyProfileSyncTest,
   ASSERT_TRUE(
       WindowsMatch(local_map_before_closing, sessions.front()->windows));
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace

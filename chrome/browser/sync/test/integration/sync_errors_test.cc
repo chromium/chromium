@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest,
   }
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // https://crbug.com/1223092
 #define MAYBE_ShouldResendUncommittedEntitiesAfterBrowserRestart \
   DISABLED_ShouldResendUncommittedEntitiesAfterBrowserRestart

@@ -55,7 +55,7 @@ class SyncSessionsWebContentsRouterTest
 // Disabled on android due to complexity of creating a full TabAndroid object
 // for a unit test. The logic being tested here isn't directly affected by
 // platform-specific peculiarities.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(SyncSessionsWebContentsRouterTest, FlareNotRun) {
   StartSyncFlareMock mock;
   router()->InjectStartSyncFlare(base::BindRepeating(
@@ -91,6 +91,6 @@ TEST_F(SyncSessionsWebContentsRouterTest, FlareRunsForLoadCompleted) {
   router()->NotifyTabModified(web_contents(), true);
   EXPECT_TRUE(mock.was_run());
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace sync_sessions

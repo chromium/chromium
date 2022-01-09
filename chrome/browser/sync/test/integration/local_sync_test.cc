@@ -75,8 +75,8 @@ class LocalSyncTest : public InProcessBrowserTest {
 // TODO(crbug.com/1052397): Reassess whether the following block needs to be
 // included in lacros-chrome once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
   SyncServiceImpl* service =
       SyncServiceFactory::GetAsSyncServiceImplForProfile(browser()->profile());
@@ -110,7 +110,7 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
   // in lacros-chrome once build flag switch of lacros-chrome is
   // complete.
 
-#if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   expected_active_data_types.Put(syncer::DICTIONARY);
 #endif
 
@@ -128,7 +128,7 @@ IN_PROC_BROWSER_TEST_F(LocalSyncTest, ShouldStart) {
   EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::SHARING_MESSAGE));
   EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::SEND_TAB_TO_SELF));
 }
-#endif  // defined(OS_WIN) || defined(OS_MAC) || (defined(OS_LINUX) ||
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS_LACROS))
 
 }  // namespace

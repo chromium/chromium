@@ -36,7 +36,7 @@
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
 #else
 #include "chrome/browser/extensions/install_verifier.h"
@@ -215,7 +215,7 @@ class SyncTest : public PlatformBrowserTest {
   // owns the objects and manages its lifetime.
   std::vector<Profile*> GetAllProfiles();
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Returns a pointer to a particular browser. Callee owns the object
   // and manages its lifetime. The called browser must not be closed before.
   Browser* GetBrowser(int index);
@@ -403,7 +403,7 @@ class SyncTest : public PlatformBrowserTest {
       std::vector<syncer::FCMHandler*>* sync_invalidations_fcm_handlers,
       content::BrowserContext* context);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Called when the |browser| was removed externally. This just marks the
   // |browser| in the |browsers_| list as nullptr to keep indexes in |browsers_|
   // and |profiles_| in sync. It is used when the |browser| is removed within a
@@ -490,7 +490,7 @@ class SyncTest : public PlatformBrowserTest {
   // completed, used for two-client tests with external server.
   std::vector<std::unique_ptr<base::ScopedTempDir>> scoped_temp_dirs_;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Collection of pointers to the browser objects used by a test. One browser
   // instance is created for each sync profile. Browser object lifetime is
   // managed by BrowserList, so we don't use a std::vector<std::unique_ptr<>>
@@ -543,7 +543,7 @@ class SyncTest : public PlatformBrowserTest {
   // The feature list to override features for all sync tests.
   base::test::ScopedFeatureList feature_list_;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Disable extension install verification.
   extensions::ScopedInstallVerifierBypassForTest ignore_install_verification_;
 #endif

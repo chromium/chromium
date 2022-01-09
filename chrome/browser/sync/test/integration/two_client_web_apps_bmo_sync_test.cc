@@ -244,7 +244,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
 }
 
 // Flaky, see crbug.com/1126404.
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_SyncDoubleInstallationDifferentUserDisplayMode \
   DISABLED_SyncDoubleInstallationDifferentUserDisplayMode
 #else
@@ -319,7 +319,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, DisplayMode) {
 
 // Although the logic is allowed to be racy, the profiles should still end up
 // with the same web app ids.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Flaky on windows, https://crbug.com/1111533
 #define MAYBE_DoubleInstallWithUninstall DISABLED_DoubleInstallWithUninstall
 #else
@@ -535,7 +535,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest, AppSortingFixCollisions) {
 }
 
 // Flaky on Linux TSan (crbug.com/1108172).
-#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
     defined(THREAD_SANITIZER)
 #define MAYBE_UninstallSynced DISABLED_UninstallSynced
 #else

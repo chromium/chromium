@@ -278,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
 }
 
 // PRE_* tests aren't supported on Android browser tests.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Populates custom passphrase Nigori without keystore keys to the client.
 IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
                        PRE_CanDecryptWithKeystoreKeys) {
@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
       PasswordFormsChecker(/*index=*/0, /*expected_forms=*/{password_form})
           .Wait());
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(SingleClientCustomPassphraseSyncTest,
                        DoesNotLeakUnencryptedData) {

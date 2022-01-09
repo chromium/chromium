@@ -4,6 +4,7 @@
 
 #include "base/feature_list.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/test/integration/encryption_helper.h"
@@ -394,7 +395,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
 // The unconsented primary account isn't supported on ChromeOS so Sync won't
 // start up for an unconsented account.
 // Signing out on Lacros is not possible.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
                        ClearsAccountDBOnSignout) {
   AddTestPasswordToFakeServer();
@@ -424,7 +425,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
   // Make sure the password is gone from the store.
   ASSERT_EQ(passwords_helper::GetAllLogins(account_store).size(), 0u);
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(SingleClientPasswordsWithAccountStorageSyncTest,
                        SwitchesStoresOnEnablingSync) {

@@ -117,11 +117,11 @@
 #include "components/spellcheck/browser/pref_names.h"
 #endif  // BUILDFLAG(ENABLE_SPELLCHECK)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/sync/trusted_vault_client_android.h"
 #else
 #include "components/sync/trusted_vault/standalone_trusted_vault_client.h"  // nogncheck
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/components/arc/arc_util.h"
@@ -156,15 +156,15 @@ namespace browser_sync {
 
 namespace {
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 const base::FilePath::CharType kTrustedVaultFilename[] =
     FILE_PATH_LITERAL("Trusted Vault");
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const base::FilePath::CharType kLoopbackServerBackendFilename[] =
     FILE_PATH_LITERAL("profile.pb");
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 syncer::ModelTypeSet GetDisabledTypesFromCommandLine() {
   std::string disabled_types_str =
@@ -225,7 +225,7 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile) : profile_(profile) {
       account_password_store_,
       BookmarkSyncServiceFactory::GetForProfile(profile_));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   trusted_vault_client_ = std::make_unique<TrustedVaultClientAndroid>();
 #else
   // TODO(crbug.com/1113597): consider destroying/notifying
@@ -240,7 +240,7 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile) : profile_(profile) {
           IdentityManagerFactory::GetForProfile(profile_),
           profile_->GetDefaultStoragePartition()
               ->GetURLLoaderFactoryForBrowserProcess());
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 ChromeSyncClient::~ChromeSyncClient() = default;
@@ -259,7 +259,7 @@ base::FilePath ChromeSyncClient::GetLocalSyncBackendFolder() {
   base::FilePath local_sync_backend_folder =
       GetPrefService()->GetFilePath(syncer::prefs::kLocalSyncBackendDir);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (local_sync_backend_folder.empty()) {
     if (!base::PathService::Get(chrome::DIR_ROAMING_USER_DATA,
                                 &local_sync_backend_folder)) {
@@ -279,7 +279,7 @@ base::FilePath ChromeSyncClient::GetLocalSyncBackendFolder() {
       local_sync_backend_folder.Append(profile_->GetBaseName());
   local_sync_backend_folder =
       local_sync_backend_folder.Append(kLoopbackServerBackendFilename);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   return local_sync_backend_folder;
 }
@@ -419,7 +419,7 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
   }
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Theme sync is enabled by default.  Register unless explicitly disabled.
   if (!disabled_types.Has(syncer::THEMES)) {
     controllers.push_back(std::make_unique<ExtensionModelTypeController>(
@@ -435,7 +435,7 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
             syncer::SEARCH_ENGINES, model_type_store_factory,
             GetSyncableServiceForType(syncer::SEARCH_ENGINES), dump_stack));
   }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Some profile types (e.g. sign-in screen) don't support app list.
@@ -462,7 +462,7 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
 
 // Chrome prefers OS provided spell checkers where they exist. So only sync the
 // custom dictionary on platforms that typically don't provide one.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   // Dictionary sync is enabled by default.
   if (!disabled_types.Has(syncer::DICTIONARY) &&
       GetPrefService()->GetBoolean(spellcheck::prefs::kSpellCheckEnable)) {
@@ -471,7 +471,7 @@ ChromeSyncClient::CreateDataTypeControllers(syncer::SyncService* sync_service) {
             syncer::DICTIONARY, model_type_store_factory,
             GetSyncableServiceForType(syncer::DICTIONARY), dump_stack));
   }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (arc::IsArcAllowedForProfile(profile_) &&
@@ -601,12 +601,12 @@ ChromeSyncClient::GetSyncableServiceForType(syncer::ModelType type) {
       return GetWeakPtrOrNull(
           app_list::AppListSyncableServiceFactory::GetForProfile(profile_));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     case syncer::THEMES:
       return ThemeServiceFactory::GetForProfile(profile_)
           ->GetThemeSyncableService()
           ->AsWeakPtr();
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(ENABLE_SPELLCHECK)
     case syncer::DICTIONARY: {
       SpellcheckService* spellcheck_service =

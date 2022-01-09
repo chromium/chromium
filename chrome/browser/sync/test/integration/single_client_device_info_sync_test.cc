@@ -258,7 +258,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
 
 // CommitLocalDevice_TransportOnly and DownloadRemoteDevices_TransportOnly are
 // flaky on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
                        CommitLocalDevice_TransportOnly) {
   ASSERT_TRUE(SetupClients());
@@ -311,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
               IsSupersetOf({HasCacheGuid(CacheGuidForSuffix(1)),
                             HasCacheGuid(CacheGuidForSuffix(2))}));
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
                        ShouldSetTheOnlyClientFlag) {
@@ -388,7 +388,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
 }
 
 // PRE_* tests aren't supported on Android browser tests.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
                        PRE_ShouldNotSendDeviceInfoAfterBrowserRestart) {
   ASSERT_TRUE(SetupSync());
@@ -425,6 +425,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientDeviceInfoSyncTest,
   EXPECT_FALSE(has_local_changes);
   EXPECT_EQ(entities_before.front().mtime(), entities_after.front().mtime());
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace

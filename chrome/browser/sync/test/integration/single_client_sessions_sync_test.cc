@@ -995,7 +995,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsWithoutDestroyProfileSyncTest,
   WaitForHierarchyOnServer(SessionsHierarchy());
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 class SingleClientSessionsWithDestroyProfileSyncTest
     : public SingleClientSessionsSyncTest {
  public:
@@ -1035,6 +1035,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientSessionsWithDestroyProfileSyncTest,
   fake_server::FakeServerVerifier verifier(GetFakeServer());
   EXPECT_TRUE(verifier.VerifySessions(SessionsHierarchy({{kURL2}})));
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
