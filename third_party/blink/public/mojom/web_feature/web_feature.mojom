@@ -3410,6 +3410,7 @@ enum WebFeature {
   kLayerXYWithSVGTarget = 4101,
   kHTMLObjectElementFallback = 4102,
   kSecureContextIncorrectForWorker = 4103,
+  kV8UDPSocket_Close_Method = 4104,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

@@ -36657,6 +36657,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4101" label="LayerXYWithSVGTarget"/>
   <int value="4102" label="HTMLObjectElementFallback"/>
   <int value="4103" label="SecureContextIncorrectForWorker"/>
+  <int value="4104" label="V8UDPSocket_Close_Method"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
