@@ -42,7 +42,7 @@ class AccessibilityIpcErrorBrowserTest : public ContentBrowserTest {
 };
 
 // Failed on Android x86 in crbug.com/1123641.
-#if defined(OS_ANDROID) && defined(ARCH_CPU_X86)
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_X86)
 #define MAYBE_ResetBrowserAccessibilityManager \
   DISABLED_ResetBrowserAccessibilityManager
 #else
@@ -142,7 +142,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityIpcErrorBrowserTest,
   EXPECT_EQ(ax::mojom::Role::kButton, button->GetRole());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // http://crbug.com/542704
 #define MAYBE_MultipleBadAccessibilityIPCsKillsRenderer \
   DISABLED_MultipleBadAccessibilityIPCsKillsRenderer

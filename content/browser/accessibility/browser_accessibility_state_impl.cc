@@ -69,7 +69,7 @@ BrowserAccessibilityState* BrowserAccessibilityState::GetInstance() {
 }
 
 // On Android, Mac, and Windows there are platform-specific subclasses.
-#if !defined(OS_ANDROID) && !defined(OS_WIN) && !defined(OS_MAC)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_MAC)
 // static
 BrowserAccessibilityStateImpl* BrowserAccessibilityStateImpl::GetInstance() {
   static base::NoDestructor<BrowserAccessibilityStateImpl> instance;
@@ -188,7 +188,7 @@ void BrowserAccessibilityStateImpl::UpdateHistogramsOnUIThread() {
 
   UMA_HISTOGRAM_BOOLEAN("Accessibility.ManuallyEnabled",
                         force_renderer_accessibility_);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   UMA_HISTOGRAM_ENUMERATION(
       "Accessibility.WinHighContrastTheme",
       ui::NativeTheme::GetInstanceForNativeUi()
@@ -308,7 +308,7 @@ void BrowserAccessibilityStateImpl::OnAccessibilityApiUsage() {
 
 void BrowserAccessibilityStateImpl::UpdateUniqueUserHistograms() {}
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void BrowserAccessibilityStateImpl::SetImageLabelsModeForProfile(
     bool enabled,
     BrowserContext* profile) {}

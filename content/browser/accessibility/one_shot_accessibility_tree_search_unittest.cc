@@ -133,7 +133,7 @@ void OneShotAccessibilityTreeSearchTest::SetUp() {
 
 TEST_F(OneShotAccessibilityTreeSearchTest, GetAll) {
   OneShotAccessibilityTreeSearch search(tree_->GetRoot());
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ASSERT_EQ(13U, search.CountMatches());
 #else
   ASSERT_EQ(10U, search.CountMatches());
@@ -145,7 +145,7 @@ TEST_F(OneShotAccessibilityTreeSearchTest, BackwardsWrapFromRoot) {
   search.SetDirection(OneShotAccessibilityTreeSearch::BACKWARDS);
   search.SetResultLimit(100);
   search.SetCanWrapToLastElement(true);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ASSERT_EQ(13U, search.CountMatches());
 #else
   ASSERT_EQ(10U, search.CountMatches());
@@ -155,7 +155,7 @@ TEST_F(OneShotAccessibilityTreeSearchTest, BackwardsWrapFromRoot) {
   EXPECT_EQ(9, search.GetMatchAtIndex(2)->GetId());
   EXPECT_EQ(8, search.GetMatchAtIndex(3)->GetId());
   EXPECT_EQ(7, search.GetMatchAtIndex(4)->GetId());
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   EXPECT_EQ(-3, search.GetMatchAtIndex(5)->GetId());
   EXPECT_EQ(-2, search.GetMatchAtIndex(6)->GetId());
   EXPECT_EQ(-1, search.GetMatchAtIndex(7)->GetId());

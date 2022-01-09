@@ -70,7 +70,7 @@ TEST_F(BrowserAccessibilityTest, TestCanFireEvents) {
 
   BrowserAccessibility* para_obj = root_obj->PlatformGetChild(0);
   EXPECT_TRUE(para_obj->CanFireEvents());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(para_obj->IsLeaf());
 #else
   EXPECT_FALSE(para_obj->IsLeaf());
@@ -78,7 +78,7 @@ TEST_F(BrowserAccessibilityTest, TestCanFireEvents) {
 
   BrowserAccessibility* text_obj = manager->GetFromID(111);
   EXPECT_TRUE(text_obj->IsLeaf());
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(text_obj->CanFireEvents());
 #endif
   BrowserAccessibility* retarget = manager->RetargetForEvents(
@@ -89,7 +89,7 @@ TEST_F(BrowserAccessibilityTest, TestCanFireEvents) {
   manager.reset();
 }
 
-#if defined(OS_WIN) || BUILDFLAG(USE_ATK)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(USE_ATK)
 TEST_F(BrowserAccessibilityTest, PlatformChildIterator) {
   // (i) => node is ignored
   // Parent Tree
@@ -273,7 +273,7 @@ TEST_F(BrowserAccessibilityTest, PlatformChildIterator) {
   }
   ASSERT_EQ(platform_iterator, platform_iterator2);
 }
-#endif  // defined(OS_WIN) || BUILDFLAG(USE_ATK)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(USE_ATK)
 
 TEST_F(BrowserAccessibilityTest, GetInnerTextRangeBoundsRect) {
   ui::AXNodeData root;

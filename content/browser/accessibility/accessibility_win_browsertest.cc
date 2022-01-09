@@ -1200,7 +1200,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityWinBrowserTest, NoFocusEventOnRootChange) {
 }
 
 // Flaky on win crbug.com/979741
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_FocusEventOnFocusedIframeAddedAndRemoved \
   DISABLED_FocusEventOnFocusedIframeAddedAndRemoved
 #else

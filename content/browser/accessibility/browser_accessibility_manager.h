@@ -46,13 +46,13 @@ namespace content {
 
 class BrowserAccessibilityDelegate;
 class BrowserAccessibilityManager;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class BrowserAccessibilityManagerAndroid;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 class BrowserAccessibilityManagerWin;
 #elif BUILDFLAG(USE_ATK)
 class BrowserAccessibilityManagerAuraLinux;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 class BrowserAccessibilityManagerMac;
 #endif
 class RenderFrameHostImpl;
@@ -359,11 +359,11 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   // highlighted matches are deactivated.
   virtual void OnFindInPageTermination() {}
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   BrowserAccessibilityManagerWin* ToBrowserAccessibilityManagerWin();
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   BrowserAccessibilityManagerAndroid* ToBrowserAccessibilityManagerAndroid();
 #endif
 
@@ -372,7 +372,7 @@ class CONTENT_EXPORT BrowserAccessibilityManager
   ToBrowserAccessibilityManagerAuraLinux();
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   BrowserAccessibilityManagerMac* ToBrowserAccessibilityManagerMac();
 #endif
 

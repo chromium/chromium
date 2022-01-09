@@ -33,7 +33,7 @@
 #include "third_party/blink/public/common/renderer_preferences/renderer_preferences.h"
 #include "ui/accessibility/platform/inspect/ax_api_type.h"
 #include "ui/accessibility/platform/inspect/ax_tree_formatter.h"
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "content/browser/accessibility/browser_accessibility_manager_win.h"
 #endif
 
@@ -196,7 +196,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define DISABLED_ON_LINUX_TSAN_MSAN(name) DISABLED_##name
 #else
 #define DISABLED_ON_LINUX_TSAN_MSAN(name) name
@@ -234,7 +234,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("aria-current-changed.html"));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_AccessibilityEventsAriaDisabledChanged \
   DISABLED_AccessibilityEventsAriaDisabledChanged
 #else
@@ -361,7 +361,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 
 // TODO(crbug.com/835455): Fails on Windows.
 // TODO(crbug.com/945193): Flaky on Mac.
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_AccessibilityEventsAriaComboBoxDelayAddList \
   DISABLED_AccessibilityEventsAriaComboBoxDelayAddList
 #else
@@ -494,7 +494,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 // Flaky on Windows, disabled on Linux: https://crbug.com/1186887
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_AccessibilityEventsCaretMoveHiddenInput \
   DISABLED_AccessibilityEventsCaretMoveHiddenInput
 #else
@@ -635,7 +635,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 // Flaky on Windows: https://crbug.com/1078490.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_AccessibilityEventsFocusListbox \
   DISABLED_AccessibilityEventsFocusListbox
 #else
@@ -662,7 +662,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 // Flaky on Windows: https://crbug.com/1078490.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_AccessibilityEventsListboxFocus \
   DISABLED_AccessibilityEventsListboxFocus
 #else
@@ -679,7 +679,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 // TODO(https://crbug.com/1123394): This is failing on Windows.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_AccessibilityEventsLiveRegionAdd \
   DISABLED_AccessibilityEventsLiveRegionAdd
 #else
@@ -701,7 +701,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 // Flaky on Windows: https://crbug.com/1078490.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_AccessibilityEventsLiveRegionCreate \
   DISABLED_AccessibilityEventsLiveRegionCreate
 #else
@@ -746,7 +746,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 // TODO(crbug/1232295): Flaky on Linux and Win.
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_AccessibilityEventsMenuListExpand \
   DISABLED_AccessibilityEventsMenuListExpand
 #else
@@ -778,7 +778,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 // Flaky on Windows: https://crbug.com/1078490.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_AccessibilityEventsNameChange \
   DISABLED_AccessibilityEventsNameChange
 #else
@@ -810,7 +810,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 // TODO(aboxhall): Fix flakiness on Windows and Mac
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_AccessibilityEventsReportValidityInvalidField \
   DISABLED_AccessibilityEventsReportValidityInvalidField
 #else
@@ -829,7 +829,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsSamePageLinkNavigation) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!BrowserAccessibilityManagerWin::
           IsUiaActiveTextPositionChangedEventSupported())
     return;
@@ -966,7 +966,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("tbody-focus.html"));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // TODO(crbug.com/1084871) Flaky on Windows https://crbug.com/1084871#c33
 #define MAYBE_AccessibilityEventsVisibilityHiddenChanged \
   DISABLED_AccessibilityEventsVisibilityHiddenChanged
@@ -1033,7 +1033,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
   RunEventTest(FILE_PATH_LITERAL("menu-opened-closed-via-inner-text.html"));
 }
 
-#if defined(OS_WIN) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
 // TODO(crbug.com/1198056#c16): Test is flaky on Windows ASAN.
 #define MAYBE_AccessibilityEventsMenubarShowHideMenus \
   DISABLED_AccessibilityEventsMenubarShowHideMenus
@@ -1059,7 +1059,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
 }
 
 // Test is flaky on Linux. See crbug.com/990847 for more details.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_DeleteSubtree DISABLED_DeleteSubtree
 #else
 #define MAYBE_DeleteSubtree DeleteSubtree

@@ -31,7 +31,7 @@
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
 #include "ui/base/buildflags.h"
 
-#if defined(OS_MAC) && __OBJC__
+#if BUILDFLAG(IS_MAC) && __OBJC__
 @class BrowserAccessibilityCocoa;
 #endif
 

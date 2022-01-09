@@ -19,7 +19,7 @@ using ui::AXPropertyFilter;
 using ui::AXScriptInstruction;
 using ui::AXTreeFormatter;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 constexpr const char kMacAction[]{"mac/action"};
 constexpr const char kMacAttributes[]{"mac/attributes"};
@@ -134,7 +134,7 @@ struct TestPassToString {
 // Scripting supported on Mac only.
 //
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 INSTANTIATE_TEST_SUITE_P(All,
                          DumpAccessibilityScriptTest,
