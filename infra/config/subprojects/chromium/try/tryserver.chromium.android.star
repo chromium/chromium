@@ -35,9 +35,10 @@ try_.orchestrator_pair_builders(
     #branch_selector = branches.STANDARD_MILESTONE,
     main_list_view = "try",
     orchestrator_cores = 4,
-    # TODO(crbug.com/1137474): Enable it 5% experimentally once it works fine
-    # under orchestrator.
-    orchestrator_tryjob = None,
+    # TODO(crbug.com/1137474): Fully enable once it works fine
+    orchestrator_tryjob = try_.job(
+        experiment_percentage = 5,
+    ),
     compilator_cores = 32,
     compilator_goma_jobs = goma.jobs.J300,
     compilator_name = "android-11-x86-rel-compilator",
