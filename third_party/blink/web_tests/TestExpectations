@@ -818,6 +818,8 @@ crbug.com/1251634 external/wpt/css/css-text-decor/text-underline-offset-zero-pos
 crbug.com/1008951 external/wpt/css/css-text-decor/text-decoration-subelements-002.html [ Failure ]
 crbug.com/1008951 external/wpt/css/css-text-decor/text-decoration-subelements-003.html [ Failure ]
 crbug.com/1008951 external/wpt/css/css-text-decor/text-decoration-color.html [ Failure ]
+crbug.com/1284170 external/wpt/css/css-text-decor/text-decoration-dotted-001.html [ Failure ]
+crbug.com/1284170 external/wpt/css/css-text-decor/text-decoration-dotted-002.html [ Failure ]
 
 #### Unprefix and update the implementation for text-emphasis
 crbug.com/666433 external/wpt/css/css-text-decor/text-emphasis-color-001.xht [ Failure ]
@@ -3037,7 +3039,6 @@ crbug.com/626703 [ Mac10.14 ] virtual/system-color-compute/external/wpt/css/css-
 crbug.com/626703 [ Mac11-arm64 ] virtual/system-color-compute/external/wpt/css/css-color/color-mix-non-srgb-001.html [ Failure ]
 crbug.com/626703 [ Win ] virtual/system-color-compute/external/wpt/css/css-color/color-mix-non-srgb-001.html [ Failure ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-color/tagged-images-003.html [ Failure ]
-crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-021.html [ Failure ]
 crbug.com/626703 [ Mac10.14 ] virtual/portals/external/wpt/portals/no-portal-in-sandboxed-popup.html [ Timeout ]
 crbug.com/626703 [ Linux ] external/wpt/css/css-color/tagged-images-003.html [ Failure ]
 crbug.com/626703 [ Mac10.12 ] external/wpt/css/css-color/tagged-images-003.html [ Failure ]
@@ -3067,15 +3068,12 @@ crbug.com/626703 [ Mac11-arm64 ] wpt_internal/css/selectors/focus-visible-select
 crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/parse-input-arguments-012.https.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/invalid-image-constructor-error.https.html [ Failure ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-022.html [ Crash Failure ]
-crbug.com/626703 external/wpt/css/css-text-decor/text-decoration-dotted-001.html [ Failure ]
-crbug.com/626703 external/wpt/css/css-text-decor/text-decoration-dotted-002.html [ Failure ]
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/fetch/private-network-access/fetch.https.window.html?include=from-treat-as-public [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/plz-dedicated-worker/external/wpt/fetch/private-network-access/fetch.window.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/without-coep-for-shared-worker/external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Skip Timeout ]
 crbug.com/626703 [ Mac11 ] external/wpt/css/css-color/color-resolving-hwb.html [ Failure Skip Timeout ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/css/css-color/color-resolving-hwb.html [ Failure Skip Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/system-color-compute/external/wpt/css/css-color/color-resolving-hwb.html [ Failure Skip Timeout ]
-crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-025.html [ Failure ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/html/cross-origin-embedder-policy/reporting-subresource-corp.https.html [ Skip Timeout ]
 crbug.com/626703 external/wpt/css/css-text/hyphens/hyphenate-character-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/hyphens/hyphenate-character-002.html [ Failure ]
@@ -7428,6 +7426,8 @@ crbug.com/1249176 [ Mac11-arm64 ] external/wpt/websockets/stream/tentative/backp
 crbug.com/1249176 [ Mac11-arm64 ] fast/forms/color/color-picker-escape-cancellation-revert.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] fast/css/focus-display-block-inline.html [ Failure ]
 crbug.com/1249176 [ Mac11-arm64 ] fast/dom/geometry-interfaces-dom-matrix-rotate.html [ Failure ]
+crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-021.html [ Failure ]
+crbug.com/1249176 [ Mac11-arm64 ] external/wpt/css/css-shapes/shape-outside/shape-image/shape-image-025.html [ Failure ]
 
 # Following tests timeout on mac11-arm64
 crbug.com/1249176 [ Mac11-arm64 ] external/wpt/focus/focus-already-focused-iframe-deep-same-site.html [ Timeout ]
