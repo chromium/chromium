@@ -380,18 +380,6 @@ class MockBidderWorklet : public auction_worklet::mojom::BidderWorklet {
              /*errors=*/std::vector<std::string>());
   }
 
-  // Returns the GenerateBidCallback for a worklet. Needed for cases when the
-  // BidderWorklet is destroyed (to close its pipe) before the
-  // AuctionWorkletService is destroyed, since Mojo DCHECKs if a callback is
-  // destroyed when the pipe its over is still live.
-  //
-  // TODO(mmenke): To better simulate real crashes, give worklets their own
-  // AuctionWorkletService pipes, and remove this method.
-  GenerateBidCallback TakeLoadCallback() {
-    WaitForGenerateBid();
-    return std::move(generate_bid_callback_);
-  }
-
   void WaitForReportWin() {
     DCHECK(!generate_bid_callback_);
     DCHECK(!report_win_run_loop_);
@@ -2387,13 +2375,6 @@ TEST_F(AuctionRunnerTest, AllBiddersCrashBeforeBidding) {
                     "https://anotheradthing.com/bids.js",
                     "https://adstuff.publisher1.com/auction.js"));
 
-    // Have to keep the callbacks around, since the AuctionWorkletService is
-    // still live. Closing it here causes more issues than its worth (seller
-    // worklet can't complete loading if it hasn't already). In production,
-    // there would be multiple service processes in this case, with different
-    // pipes.
-    auto bidder1_callback = bidder1_worklet->TakeLoadCallback();
-    auto bidder2_callback = bidder2_worklet->TakeLoadCallback();
     bidder1_worklet.reset();
     bidder2_worklet.reset();
 
@@ -2472,8 +2453,7 @@ TEST_F(AuctionRunnerTest, BidderCrashBeforeBidding) {
 
       ASSERT_FALSE(auction_complete_);
 
-      // Close Bidder1's pipe, keeping its callback alive to avoid a DCHECK.
-      auto bidder1_callback = bidder1_worklet->TakeLoadCallback();
+      // Close Bidder1's pipe.
       bidder1_worklet.reset();
       // Can't flush the closed pipe without reaching into AuctionRunner, so use
       // RunUntilIdle() instead.

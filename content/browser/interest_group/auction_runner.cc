@@ -426,15 +426,12 @@ void AuctionRunner::OnBidScored(BidState* state,
   state->state = BidState::State::kScoringComplete;
   errors_.insert(errors_.end(), errors.begin(), errors.end());
 
-  if (score <= 0) {
-    // If the worklet didn't bid, destroy the worklet.
-    state->ClosePipes();
-  } else {
-    bool replace_top_bidder = false;
+  // A score <= 0 means the seller rejected the bid.
+  if (score > 0) {
     if (!top_bidder_ || score > top_bidder_->seller_score) {
       // If there's no previous top bidder, or the bidder has the highest score,
       // need to replace the previous top bidder.
-      replace_top_bidder = true;
+      top_bidder_ = state;
       num_top_bidders_ = 1;
     } else if (score == top_bidder_->seller_score) {
       // If there's a tie, replace the top-bidder with 1-in-`num_top_bidders_`
@@ -442,15 +439,7 @@ void AuctionRunner::OnBidScored(BidState* state,
       // storage problem.
       ++num_top_bidders_;
       if (1 == base::RandInt(1, num_top_bidders_))
-        replace_top_bidder = true;
-    }
-
-    if (replace_top_bidder) {
-      if (top_bidder_)
-        top_bidder_->ClosePipes();
-      top_bidder_ = state;
-    } else {
-      state->ClosePipes();
+        top_bidder_ = state;
     }
   }
 
