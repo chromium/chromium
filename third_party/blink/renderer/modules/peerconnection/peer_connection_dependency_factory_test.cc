@@ -61,9 +61,11 @@ class PeerConnectionDependencyFactoryTest : public ::testing::Test {
             /*force_encoded_video_insertable_streams=*/false);
     MediaConstraints constraints;
     DummyExceptionStateForTesting exception_state;
-    handler->InitializeForTest(
-        webrtc::PeerConnectionInterface::RTCConfiguration(), constraints,
-        /*peer_connection_tracker=*/nullptr, exception_state);
+    webrtc::PeerConnectionInterface::RTCConfiguration config;
+    config.sdp_semantics = webrtc::SdpSemantics::kUnifiedPlan;
+    handler->InitializeForTest(config, constraints,
+                               /*peer_connection_tracker=*/nullptr,
+                               exception_state);
     return handler;
   }
 
