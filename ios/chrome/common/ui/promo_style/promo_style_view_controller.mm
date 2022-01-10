@@ -28,7 +28,7 @@ constexpr CGFloat kActionsBottomMargin = 10;
 constexpr CGFloat kTallBannerMultiplier = 0.35;
 constexpr CGFloat kDefaultBannerMultiplier = 0.25;
 constexpr CGFloat kContentWidthMultiplier = 0.65;
-constexpr CGFloat kContentMaxWidth = 327;
+constexpr CGFloat kContentOptimalWidth = 327;
 constexpr CGFloat kMoreArrowMargin = 4;
 constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
 constexpr CGFloat kSeparatorHeight = 1;
@@ -259,10 +259,15 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
                                  constant:-extraBottomMargin],
   ]];
 
-  // Also constrain the width layout guide to a maximum constant, but at a lower
-  // priority so that it only applies in compact screens.
+  // This constraint is added to enforce that the content width should be as
+  // close to the optimal width as possible, within the range already activated
+  // for "widthLayoutGuide.widthAnchor" previously, with a higher priority.
+  // In this case, the content width in iPad and iPhone landscape mode should be
+  // the safe layout width multiplied by kContentWidthMultiplier, while the
+  // content width for a iPhone portrait mode should be kContentOptimalWidth.
   NSLayoutConstraint* contentLayoutGuideWidthConstraint =
-      [widthLayoutGuide.widthAnchor constraintEqualToConstant:kContentMaxWidth];
+      [widthLayoutGuide.widthAnchor
+          constraintEqualToConstant:kContentOptimalWidth];
   contentLayoutGuideWidthConstraint.priority = UILayoutPriorityRequired - 1;
   contentLayoutGuideWidthConstraint.active = YES;
 

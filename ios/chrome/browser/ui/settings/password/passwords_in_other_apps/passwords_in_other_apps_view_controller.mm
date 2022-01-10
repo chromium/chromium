@@ -36,7 +36,9 @@ CGFloat const kTitleTopMinimumMargin = 48;
 CGFloat const kTitleHorizontalMargin = 18;
 CGFloat const kDefaultBannerMultiplier = 0.25;
 CGFloat const kContentWidthMultiplier = 0.65;
+CGFloat const kBottomMargin = 10;
 CGFloat const kButtonHorizontalMargin = 4;
+CGFloat const kContentOptimalWidth = 327;
 
 BOOL isPasswordManagerBrandingUpdateEnabled() {
   return base::FeatureList::IsEnabled(
@@ -236,6 +238,18 @@ BOOL isPasswordManagerBrandingUpdateEnabled() {
     [self.specificContentView.bottomAnchor
         constraintEqualToAnchor:self.scrollContentView.bottomAnchor],
   ]];
+
+  // This constraint is added to enforce that the content width should be as
+  // close to the optimal width as possible, within the range already activated
+  // for "widthLayoutGuide.widthAnchor" previously, with a higher priority.
+  // In this case, the content width in iPad and iPhone landscape mode should be
+  // the safe layout width multiplied by kContentWidthMultiplier, while the
+  // content width for a iPhone portrait mode should be kContentOptimalWidth.
+  NSLayoutConstraint* contentLayoutGuideWidthConstraint =
+      [widthLayoutGuide.widthAnchor
+          constraintEqualToConstant:kContentOptimalWidth];
+  contentLayoutGuideWidthConstraint.priority = UILayoutPriorityRequired - 1;
+  contentLayoutGuideWidthConstraint.active = YES;
 
   // In iPhone landscape mode, the top image is removed. In that case, we should
   // make sure there is enough distance between the title label and the top edge
@@ -493,7 +507,7 @@ BOOL isPasswordManagerBrandingUpdateEnabled() {
               constraintEqualToAnchor:self.specificContentView.topAnchor],
           [_turnOnInstructionView.bottomAnchor
               constraintEqualToAnchor:self.specificContentView.bottomAnchor
-                             constant:-kDefaultMargin],
+                             constant:-kBottomMargin],
           [_turnOnInstructionView.centerXAnchor
               constraintEqualToAnchor:self.specificContentView.centerXAnchor],
           [_turnOnInstructionView.widthAnchor
@@ -512,7 +526,8 @@ BOOL isPasswordManagerBrandingUpdateEnabled() {
         [self.actionButton.centerXAnchor
             constraintEqualToAnchor:_turnOnInstructionView.centerXAnchor],
         [self.actionButton.bottomAnchor
-            constraintEqualToAnchor:_turnOnInstructionView.bottomAnchor],
+            constraintEqualToAnchor:_turnOnInstructionView.bottomAnchor
+                           constant:-kBottomMargin],
         [instructionLayoutGuide.bottomAnchor
             constraintEqualToAnchor:self.actionButton.topAnchor
                            constant:-kDefaultMargin],
