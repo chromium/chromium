@@ -30,6 +30,11 @@ ASH_EXPORT void PlayHapticTouchpadEffect(
     ui::HapticTouchpadEffect effect,
     ui::HapticTouchpadEffectStrength strength);
 
+// Plays a `ToggleOn` or `ToggleOff` haptic effect based on the `on` bool value.
+ASH_EXPORT void PlayHapticToggleEffect(
+    bool on,
+    ui::HapticTouchpadEffectStrength strength);
+
 }  // namespace haptics_util
 }  // namespace ash
 

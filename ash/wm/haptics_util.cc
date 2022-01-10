@@ -31,5 +31,12 @@ void PlayHapticTouchpadEffect(ui::HapticTouchpadEffect effect,
   input_controller->PlayHapticTouchpadEffect(effect, strength);
 }
 
+void PlayHapticToggleEffect(bool on,
+                            ui::HapticTouchpadEffectStrength strength) {
+  PlayHapticTouchpadEffect(on ? ui::HapticTouchpadEffect::kToggleOn
+                              : ui::HapticTouchpadEffect::kToggleOff,
+                           strength);
+}
+
 }  // namespace haptics_util
 }  // namespace ash

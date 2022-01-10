@@ -12,6 +12,10 @@ namespace gfx {
 struct VectorIcon;
 }  // namespace gfx
 
+namespace ui {
+class Event;
+}  // namespace ui
+
 namespace ash {
 
 // A circular ImageButton that can have small/medium/large different sizes. Each
@@ -83,6 +87,7 @@ class IconButton : public views::ImageButton {
   void PaintButtonContents(gfx::Canvas* canvas) override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   void OnThemeChanged() override;
+  void NotifyClick(const ui::Event& event) override;
 
  protected:
   void UpdateVectorIcon();

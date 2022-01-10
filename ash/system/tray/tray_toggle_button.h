@@ -7,6 +7,10 @@
 
 #include "ui/views/controls/button/toggle_button.h"
 
+namespace ui {
+class Event;
+}  // namespace ui
+
 namespace ash {
 
 // A toggle button configured for the system tray menu's layout. Also gets the
@@ -20,6 +24,7 @@ class TrayToggleButton : public views::ToggleButton {
 
   // views::ToggleButton:
   void OnThemeChanged() override;
+  void NotifyClick(const ui::Event& event) override;
 };
 
 }  // namespace ash

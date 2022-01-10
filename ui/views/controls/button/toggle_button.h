@@ -10,6 +10,10 @@
 #include "ui/gfx/animation/slide_animation.h"
 #include "ui/views/controls/button/button.h"
 
+namespace ui {
+class Event;
+}  // namespace ui
+
 namespace views {
 
 // This view presents a button that has two states: on and off. This is similar
@@ -52,6 +56,9 @@ class VIEWS_EXPORT ToggleButton : public Button {
   // views::View:
   void OnThemeChanged() override;
 
+  // views::Button:
+  void NotifyClick(const ui::Event& event) override;
+
   // Returns the path to draw the focus ring around for this ToggleButton.
   SkPath GetFocusRingPath() const;
 
@@ -79,7 +86,6 @@ class VIEWS_EXPORT ToggleButton : public Button {
   void OnBlur() override;
 
   // Button:
-  void NotifyClick(const ui::Event& event) override;
   void PaintButtonContents(gfx::Canvas* canvas) override;
 
   // gfx::AnimationDelegate:
