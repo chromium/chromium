@@ -52,16 +52,6 @@ namespace page_load_metrics {
 namespace internal {
 
 const char kErrorEvents[] = "PageLoad.Internal.ErrorCode";
-const char kAbortChainSizeReload[] =
-    "PageLoad.Internal.ProvisionalAbortChainSize.Reload";
-const char kAbortChainSizeForwardBack[] =
-    "PageLoad.Internal.ProvisionalAbortChainSize.ForwardBack";
-const char kAbortChainSizeNewNavigation[] =
-    "PageLoad.Internal.ProvisionalAbortChainSize.NewNavigation";
-const char kAbortChainSizeSameURL[] =
-    "PageLoad.Internal.ProvisionalAbortChainSize.SameURL";
-const char kAbortChainSizeNoCommit[] =
-    "PageLoad.Internal.ProvisionalAbortChainSize.NoCommit";
 const char kPageLoadCompletedAfterAppBackground[] =
     "PageLoad.Internal.PageLoadCompleted.AfterAppBackground";
 const char kPageLoadStartedInForeground[] =
@@ -93,13 +83,6 @@ PageEndReason EndReasonForPageTransition(ui::PageTransition transition) {
       << "EndReasonForPageTransition received unexpected ui::PageTransition: "
       << transition;
   return END_OTHER;
-}
-
-void LogAbortChainSameURLHistogram(int aborted_chain_size_same_url) {
-  if (aborted_chain_size_same_url > 0) {
-    UMA_HISTOGRAM_COUNTS_1M(internal::kAbortChainSizeSameURL,
-                            aborted_chain_size_same_url);
-  }
 }
 
 bool IsNavigationUserInitiated(content::NavigationHandle* handle) {
@@ -225,9 +208,7 @@ PageLoadTracker::PageLoadTracker(
     const GURL& currently_committed_url,
     bool is_first_navigation_in_web_contents,
     content::NavigationHandle* navigation_handle,
-    UserInitiatedInfo user_initiated_info,
-    int aborted_chain_size,
-    int aborted_chain_size_same_url)
+    UserInitiatedInfo user_initiated_info)
     : did_stop_tracking_(false),
       app_entered_background_(false),
       navigation_start_(navigation_handle->NavigationStart()),
@@ -240,8 +221,6 @@ PageLoadTracker::PageLoadTracker(
       started_in_foreground_(in_foreground),
       last_dispatched_merged_page_timing_(CreatePageLoadTiming()),
       user_initiated_info_(user_initiated_info),
-      aborted_chain_size_(aborted_chain_size),
-      aborted_chain_size_same_url_(aborted_chain_size_same_url),
       embedder_interface_(embedder_interface),
       metrics_update_dispatcher_(this, navigation_handle, embedder_interface),
       web_contents_(navigation_handle->GetWebContents()),
@@ -289,14 +268,6 @@ PageLoadTracker::~PageLoadTracker() {
   if (!did_commit_) {
     if (!failed_provisional_load_info_)
       RecordInternalError(ERR_NO_COMMIT_OR_FAILED_PROVISIONAL_LOAD);
-
-    // Don't include any aborts that resulted in a new navigation, as the chain
-    // length will be included in the aborter PageLoadTracker.
-    if (page_end_reason_ != END_RELOAD &&
-        page_end_reason_ != END_FORWARD_BACK &&
-        page_end_reason_ != END_NEW_NAVIGATION) {
-      LogAbortChainHistograms(nullptr);
-    }
   } else if (page_load_metrics::IsEmpty(metrics_update_dispatcher_.timing())) {
     RecordInternalError(ERR_NO_IPCS_RECEIVED);
   }
@@ -307,57 +278,6 @@ PageLoadTracker::~PageLoadTracker() {
     } else if (did_commit_) {
       observer->OnComplete(metrics_update_dispatcher_.timing());
     }
-  }
-}
-
-void PageLoadTracker::LogAbortChainHistograms(
-    content::NavigationHandle* final_navigation) {
-  if (aborted_chain_size_ == 0)
-    return;
-  // Note that this could be broken out by this navigation's abort type, if more
-  // granularity is needed. Add one to the chain size to count the current
-  // navigation. In the other cases, the current navigation is the final
-  // navigation (which commits).
-  if (!final_navigation) {
-    UMA_HISTOGRAM_COUNTS_1M(internal::kAbortChainSizeNoCommit,
-                            aborted_chain_size_ + 1);
-    LogAbortChainSameURLHistogram(aborted_chain_size_same_url_ + 1);
-    return;
-  }
-
-  // The following is only executed for committing trackers.
-  DCHECK(did_commit_);
-
-  // Note that histograms could be separated out by this commit's transition
-  // type, but for simplicity they will all be bucketed together.
-  LogAbortChainSameURLHistogram(aborted_chain_size_same_url_);
-
-  ui::PageTransition committed_transition =
-      final_navigation->GetPageTransition();
-  switch (EndReasonForPageTransition(committed_transition)) {
-    case END_RELOAD:
-      UMA_HISTOGRAM_COUNTS_1M(internal::kAbortChainSizeReload,
-                              aborted_chain_size_);
-      return;
-    case END_FORWARD_BACK:
-      UMA_HISTOGRAM_COUNTS_1M(internal::kAbortChainSizeForwardBack,
-                              aborted_chain_size_);
-      return;
-    // TODO(csharrison): Refactor this code so it is based on the WillStart*
-    // code path instead of the committed load code path. Then, for every abort
-    // chain, log a histogram of the counts of each of these metrics. For now,
-    // merge client redirects with new navigations, which was (basically) the
-    // previous behavior.
-    case END_CLIENT_REDIRECT:
-    case END_NEW_NAVIGATION:
-      UMA_HISTOGRAM_COUNTS_1M(internal::kAbortChainSizeNewNavigation,
-                              aborted_chain_size_);
-      return;
-    default:
-      NOTREACHED()
-          << "LogAbortChainHistograms received unexpected ui::PageTransition: "
-          << committed_transition;
-      return;
   }
 }
 
@@ -451,7 +371,6 @@ void PageLoadTracker::Commit(content::NavigationHandle* navigation_handle) {
   INVOKE_AND_PRUNE_OBSERVERS(observers_, ShouldObserveMimeType, mime_type);
   INVOKE_AND_PRUNE_OBSERVERS(observers_, OnCommit, navigation_handle,
                              source_id_);
-  LogAbortChainHistograms(navigation_handle);
 }
 
 void PageLoadTracker::DidActivatePrerenderedPage(
@@ -677,14 +596,6 @@ bool PageLoadTracker::IsLikelyProvisionalAbort(
   // Note that |abort_cause_time - page_end_time_| can be negative.
   return page_end_reason_ == END_OTHER &&
          (abort_cause_time - page_end_time_).InMilliseconds() < 100;
-}
-
-bool PageLoadTracker::MatchesOriginalNavigation(
-    content::NavigationHandle* navigation_handle) {
-  // Neither navigation should have committed.
-  DCHECK(!navigation_handle->HasCommitted());
-  DCHECK(!did_commit_);
-  return navigation_handle->GetURL() == start_url_;
 }
 
 void PageLoadTracker::UpdatePageEndInternal(

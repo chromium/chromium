@@ -255,18 +255,6 @@ void MetricsWebContentsObserver::WillStartNavigationRequestImpl(
       NotifyAbortedProvisionalLoadsNewNavigation(navigation_handle,
                                                  user_initiated_info);
 
-  int chain_size_same_url = 0;
-  int chain_size = 0;
-  if (last_aborted) {
-    if (last_aborted->MatchesOriginalNavigation(navigation_handle)) {
-      chain_size_same_url = last_aborted->aborted_chain_size_same_url() + 1;
-    } else if (last_aborted->aborted_chain_size_same_url() > 0) {
-      LogAbortChainSameURLHistogram(
-          last_aborted->aborted_chain_size_same_url());
-    }
-    chain_size = last_aborted->aborted_chain_size() + 1;
-  }
-
   if (!ShouldTrackMainFrameNavigation(navigation_handle))
     return;
 
@@ -294,8 +282,7 @@ void MetricsWebContentsObserver::WillStartNavigationRequestImpl(
       navigation_handle,
       std::make_unique<PageLoadTracker>(
           in_foreground, embedder_interface_.get(), currently_committed_url,
-          !has_navigated_, navigation_handle, user_initiated_info, chain_size,
-          chain_size_same_url)));
+          !has_navigated_, navigation_handle, user_initiated_info)));
   DCHECK(insertion_result.second)
       << "provisional_loads_ already contains NavigationHandle.";
   for (auto& observer : testing_observers_)
