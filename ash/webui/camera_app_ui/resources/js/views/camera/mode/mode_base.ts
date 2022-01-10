@@ -27,8 +27,7 @@ export abstract class ModeBase {
    * @param facing Camera facing of current mode.
    */
   constructor(
-      protected readonly stream: MediaStream,
-      protected readonly facing: Facing) {}
+      protected stream: MediaStream, protected readonly facing: Facing) {}
 
   /**
    * Initiates video/photo capture operation.
