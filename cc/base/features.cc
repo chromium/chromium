@@ -56,7 +56,7 @@ const base::Feature kJankInjectionAblationFeature{
 
 const base::Feature kPreferNewContentForCheckerboardedScrolls{
     "PreferNewContentForCheckerboardedScrolls",
-    base::FEATURE_DISABLED_BY_DEFAULT};
+    base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kDurationEstimatesInCompositorTimingHistory{
     "DurationEstimatesInCompositorTimingHistory",
