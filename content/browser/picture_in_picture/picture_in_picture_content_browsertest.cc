@@ -5,7 +5,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/build_config.h"
 #include "content/browser/picture_in_picture/picture_in_picture_service_impl.h"
 #include "content/browser/picture_in_picture/picture_in_picture_window_controller_impl.h"
 #include "content/public/browser/content_browser_client.h"
@@ -148,6 +147,11 @@ class TestWebContentsDelegate : public WebContentsDelegate {
 
 class PictureInPictureContentBrowserTest : public ContentBrowserTest {
  public:
+  ~PictureInPictureContentBrowserTest() override {
+    if (old_browser_client_.has_value())
+      SetBrowserClientForTesting(old_browser_client_.value());
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     ContentBrowserTest::SetUpCommandLine(command_line);
 
@@ -164,12 +168,6 @@ class PictureInPictureContentBrowserTest : public ContentBrowserTest {
 
     web_contents_delegate_ = std::make_unique<TestWebContentsDelegate>(shell());
     shell()->web_contents()->SetDelegate(web_contents_delegate_.get());
-  }
-
-  void TearDownOnMainThread() override {
-    SetBrowserClientForTesting(old_browser_client_);
-
-    ContentBrowserTest::TearDownOnMainThread();
   }
 
   void WaitForPlaybackState(OverlayWindow::PlaybackState playback_state,
@@ -210,7 +208,7 @@ class PictureInPictureContentBrowserTest : public ContentBrowserTest {
 
  private:
   std::unique_ptr<TestWebContentsDelegate> web_contents_delegate_;
-  raw_ptr<ContentBrowserClient> old_browser_client_ = nullptr;
+  absl::optional<raw_ptr<ContentBrowserClient>> old_browser_client_;
   TestContentBrowserClient content_browser_client_;
 };
 
@@ -539,15 +537,8 @@ IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureContentBrowserTest,
 // Tests Media Session action availability upon reaching the end of stream by
 // verifying that the "nexttrack" action can be invoked after playing through
 // to the end of media.
-#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
-#define MAYBE_ActionAvailableAfterEndOfStreamAndSrcUpdate \
-  DISABLED_ActionAvailableAfterEndOfStreamAndSrcUpdate
-#else
-#define MAYBE_ActionAvailableAfterEndOfStreamAndSrcUpdate \
-  ActionAvailableAfterEndOfStreamAndSrcUpdate
-#endif
 IN_PROC_BROWSER_TEST_F(MediaSessionPictureInPictureContentBrowserTest,
-                       MAYBE_ActionAvailableAfterEndOfStreamAndSrcUpdate) {
+                       ActionAvailableAfterEndOfStreamAndSrcUpdate) {
   ASSERT_TRUE(NavigateToURL(
       shell(), GetTestUrl("media/picture_in_picture", "one-video.html")));
 
