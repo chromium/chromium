@@ -62,6 +62,8 @@ class WaitForDocumentActionTest : public testing::Test {
   MockWebController mock_web_controller_;
   WaitForDocumentProto proto_;
   ProcessedActionProto processed_action_;
+
+ private:
   std::unique_ptr<WaitForDocumentAction> action_;
 };
 
