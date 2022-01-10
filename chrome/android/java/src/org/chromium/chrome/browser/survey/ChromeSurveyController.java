@@ -50,6 +50,7 @@ import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
+import org.chromium.components.messages.MessageScopeType;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -229,6 +230,11 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
      */
     @VisibleForTesting
     void showSurveyPrompt(@NonNull Tab tab, String siteId) {
+        String debugMessage =
+                "Logging invocation of #showSurveyPrompt to investigate crbug.com/1249055.";
+        String callTrace = Log.getStackTraceString(new Throwable(debugMessage));
+        Log.i(TAG, callTrace);
+
         mSurveyPromptTab = tab;
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.MESSAGES_FOR_ANDROID_CHROME_SURVEY)
@@ -299,8 +305,7 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
                 mLifecycleObserver = new PauseResumeWithNativeObserver() {
                     @Override
                     public void onResumeWithNative() {
-                        if (SurveyController.getInstance().isSurveyExpired(siteId)
-                                && message != null) {
+                        if (SurveyController.getInstance().isSurveyExpired(siteId)) {
                             String logMessage = String.format(
                                     "The survey message prompt was dismissed on activity resumption"
                                             + " because the survey with ID %s has expired.",
@@ -321,7 +326,8 @@ public class ChromeSurveyController implements InfoBarAnimationListener {
                 mLifecycleDispatcher.register(mLifecycleObserver);
             }
 
-            mMessageDispatcher.enqueueWindowScopedMessage(message, false);
+            mMessageDispatcher.enqueueMessage(
+                    message, mSurveyPromptTab.getWebContents(), MessageScopeType.NAVIGATION, false);
         } else {
             InfoBarContainer.get(tab).addAnimationListener(this);
 
