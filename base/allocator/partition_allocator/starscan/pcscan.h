@@ -248,7 +248,7 @@ ALWAYS_INLINE void PCScan::MoveToQuarantine(void* ptr,
   }
 
   uintptr_t unmasked_slot_start = memory::UnmaskPtr(slot_start);
-  auto* state_bitmap = StateBitmapFromPointer(unmasked_slot_start);
+  auto* state_bitmap = StateBitmapFromAddr(unmasked_slot_start);
 
   // Mark the state in the state bitmap as quarantined. Make sure to do it after
   // the clearing to avoid racing with *Scan Sweeper.

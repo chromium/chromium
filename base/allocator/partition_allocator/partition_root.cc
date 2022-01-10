@@ -4,6 +4,8 @@
 
 #include "base/allocator/partition_allocator/partition_root.h"
 
+#include <cstdint>
+
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/address_pool_manager_bitmap.h"
 #include "base/allocator/partition_allocator/oom.h"
@@ -789,9 +791,10 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForDirectMap(
 #if DCHECK_IS_ON()
   // Write a new trailing cookie.
   if (allow_cookie) {
-    uintptr_t user_data_start = AdjustPointerForExtrasAdd(slot_start);
-    size_t usable_size = slot_span->GetUsableSize(this);
-    internal::PartitionCookieWriteValue(user_data_start + usable_size);
+    auto* object =
+        reinterpret_cast<unsigned char*>(AdjustPointerForExtrasAdd(slot_start));
+    internal::PartitionCookieWriteValue(object +
+                                        slot_span->GetUsableSize(this));
   }
 #endif
 
@@ -818,7 +821,7 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForNormalBuckets(
   // statistics (and cookie, if present).
   if (slot_span->CanStoreRawSize()) {
 #if BUILDFLAG(PUT_REF_COUNT_IN_PREVIOUS_SLOT) && DCHECK_IS_ON()
-    uintptr_t slot_start = AdjustPointerForExtrasSubtract(address);
+    uintptr_t slot_start = AdjustPointerForExtrasSubtract(ptr);
     internal::PartitionRefCount* old_ref_count;
     if (brp_enabled()) {
       old_ref_count = internal::PartitionRefCountPointer(slot_start);
@@ -837,8 +840,9 @@ bool PartitionRoot<thread_safe>::TryReallocInPlaceForNormalBuckets(
     // Write a new trailing cookie only when it is possible to keep track
     // raw size (otherwise we wouldn't know where to look for it later).
     if (allow_cookie) {
-      size_t usable_size = slot_span->GetUsableSize(this);
-      internal::PartitionCookieWriteValue(address + usable_size);
+      internal::PartitionCookieWriteValue(
+          reinterpret_cast<unsigned char*>(address) +
+          slot_span->GetUsableSize(this));
     }
 #endif  // DCHECK_IS_ON()
   }
@@ -1115,7 +1119,7 @@ void PartitionRoot<thread_safe>::ResetBookkeepingForTesting() {
 }
 
 template <>
-void* PartitionRoot<internal::ThreadSafe>::MaybeInitThreadCacheAndAlloc(
+uintptr_t PartitionRoot<internal::ThreadSafe>::MaybeInitThreadCacheAndAlloc(
     uint16_t bucket_index,
     size_t* slot_size) {
   auto* tcache = internal::ThreadCache::Get();
@@ -1130,7 +1134,7 @@ void* PartitionRoot<internal::ThreadSafe>::MaybeInitThreadCacheAndAlloc(
     //    be us, in which case we are re-entering and should not create a thread
     //    cache. If it is not us, then this merely delays thread cache
     //    construction a bit, which is not an issue.
-    return nullptr;
+    return 0;
   }
 
   // There is no per-thread ThreadCache allocated here yet, and this partition

@@ -6,6 +6,7 @@
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_THREAD_CACHE_H_
 
 #include <atomic>
+#include <cstdint>
 #include <limits>
 #include <memory>
 
@@ -275,14 +276,14 @@ class BASE_EXPORT ThreadCache {
   // Returns true if the slot was put in the cache, and false otherwise. This
   // can happen either because the cache is full or the allocation was too
   // large.
-  ALWAYS_INLINE bool MaybePutInCache(void* slot_start, size_t bucket_index);
+  ALWAYS_INLINE bool MaybePutInCache(uintptr_t slot_start, size_t bucket_index);
 
   // Tries to allocate a memory slot from the cache.
-  // Returns nullptr on failure.
+  // Returns 0 on failure.
   //
   // Has the same behavior as RawAlloc(), that is: no cookie nor ref-count
   // handling. Sets |slot_size| to the allocated size upon success.
-  ALWAYS_INLINE void* GetFromCache(size_t bucket_index, size_t* slot_size);
+  ALWAYS_INLINE uintptr_t GetFromCache(size_t bucket_index, size_t* slot_size);
 
   // Asks this cache to trigger |Purge()| at a later point. Can be called from
   // any thread.
@@ -344,7 +345,7 @@ class BASE_EXPORT ThreadCache {
   void FillBucket(size_t bucket_index);
   // Empties the |bucket| until there are at most |limit| objects in it.
   void ClearBucket(Bucket& bucket, size_t limit);
-  ALWAYS_INLINE void PutInBucket(Bucket& bucket, void* slot_start);
+  ALWAYS_INLINE void PutInBucket(Bucket& bucket, uintptr_t slot_start);
   void ResetForTesting();
   // Releases the entire freelist starting at |head| to the root.
   void FreeAfter(PartitionFreelistEntry* head, size_t slot_size);
@@ -430,7 +431,7 @@ class BASE_EXPORT ThreadCache {
   FRIEND_TEST_ALL_PREFIXES(PartitionAllocThreadCacheTest, ClearFromTail);
 };
 
-ALWAYS_INLINE bool ThreadCache::MaybePutInCache(void* slot_start,
+ALWAYS_INLINE bool ThreadCache::MaybePutInCache(uintptr_t slot_start,
                                                 size_t bucket_index) {
   PA_REENTRANCY_GUARD(is_in_thread_cache_);
   INCREMENT_COUNTER(stats_.cache_fill_count);
@@ -464,8 +465,8 @@ ALWAYS_INLINE bool ThreadCache::MaybePutInCache(void* slot_start,
   return true;
 }
 
-ALWAYS_INLINE void* ThreadCache::GetFromCache(size_t bucket_index,
-                                              size_t* slot_size) {
+ALWAYS_INLINE uintptr_t ThreadCache::GetFromCache(size_t bucket_index,
+                                                  size_t* slot_size) {
 #if defined(PA_THREAD_CACHE_ALLOC_STATS)
   stats_.allocs_per_bucket_[bucket_index]++;
 #endif
@@ -476,7 +477,7 @@ ALWAYS_INLINE void* ThreadCache::GetFromCache(size_t bucket_index,
   if (UNLIKELY(bucket_index > largest_active_bucket_index_)) {
     INCREMENT_COUNTER(stats_.alloc_miss_too_large);
     INCREMENT_COUNTER(stats_.alloc_misses);
-    return nullptr;
+    return 0;
   }
 
   auto& bucket = buckets_[bucket_index];
@@ -490,9 +491,9 @@ ALWAYS_INLINE void* ThreadCache::GetFromCache(size_t bucket_index,
     FillBucket(bucket_index);
 
     // Very unlikely, means that the central allocator is out of memory. Let it
-    // deal with it (may return nullptr, may crash).
+    // deal with it (may return 0, may crash).
     if (UNLIKELY(!bucket.freelist_head))
-      return nullptr;
+      return 0;
   }
 
   PA_DCHECK(bucket.count != 0);
@@ -510,10 +511,11 @@ ALWAYS_INLINE void* ThreadCache::GetFromCache(size_t bucket_index,
 
   PA_DCHECK(cached_memory_ >= bucket.slot_size);
   cached_memory_ -= bucket.slot_size;
-  return result;
+  return reinterpret_cast<uintptr_t>(result);
 }
 
-ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket, void* slot_start) {
+ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
+                                            uintptr_t slot_start) {
 #if defined(PA_HAS_FREELIST_HARDENING) && defined(ARCH_CPU_X86_64) && \
     defined(PA_HAS_64_BITS_POINTERS)
   // We see freelist corruption crashes happening in the wild.  These are likely
@@ -532,10 +534,10 @@ ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket, void* slot_start) {
   static_assert(kAlignment == 16, "");
 
 #if HAS_BUILTIN(__builtin_assume_aligned)
-  uintptr_t address = reinterpret_cast<uintptr_t>(
-      __builtin_assume_aligned(slot_start, kAlignment));
+  uintptr_t address = reinterpret_cast<uintptr_t>(__builtin_assume_aligned(
+      reinterpret_cast<void*>(slot_start), kAlignment));
 #else
-  uintptr_t address = reinterpret_cast<uintptr_t>(slot_start);
+  uintptr_t address = slot_start;
 #endif
 
   // The pointer is always 16 bytes aligned, so its start address is always == 0

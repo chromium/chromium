@@ -67,7 +67,7 @@ class PartitionFreelistEntry {
 
   // Creates a new entry, with |next| following it.
   static ALWAYS_INLINE PartitionFreelistEntry* InitForThreadCache(
-      void* slot_start,
+      uintptr_t slot_start,
       PartitionFreelistEntry* next) {
     auto* entry = reinterpret_cast<PartitionFreelistEntry*>(slot_start);
     // ThreadCache freelists can point to entries across superpage boundaries,

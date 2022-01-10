@@ -96,7 +96,7 @@ class PartitionAllocPCScanTestBase : public testing::Test {
 
   bool IsInQuarantine(void* ptr) const {
     uintptr_t address = memory::UnmaskPtr(reinterpret_cast<uintptr_t>(ptr));
-    return StateBitmapFromPointer(address)->IsQuarantined(address);
+    return StateBitmapFromAddr(address)->IsQuarantined(address);
   }
 
   ThreadSafePartitionRoot& root() { return *allocator_.root(); }
@@ -138,8 +138,8 @@ FullSlotSpanAllocation GetFullSlotSpan(ThreadSafePartitionRoot& root,
   ThreadSafePartitionRoot::Bucket& bucket = root.buckets[bucket_index];
   const size_t num_slots = (bucket.get_bytes_per_span()) / bucket.slot_size;
 
-  void* first = nullptr;
-  void* last = nullptr;
+  uintptr_t first = 0;
+  uintptr_t last = 0;
   for (size_t i = 0; i < num_slots; ++i) {
     void* ptr = root.AllocFlagsNoHooks(0, object_size, PartitionPageSize());
     EXPECT_TRUE(ptr);
@@ -165,12 +165,12 @@ FullSlotSpanAllocation GetFullSlotSpan(ThreadSafePartitionRoot& root,
           root.AdjustPointerForExtrasAdd(last)};
 }
 
-bool IsInFreeList(void* slot_start) {
+bool IsInFreeList(uintptr_t slot_start) {
   slot_start = memory::RemaskPtr(slot_start);
   auto* slot_span = SlotSpan::FromSlotStartPtr(slot_start);
   for (auto* entry = slot_span->get_freelist_head(); entry;
        entry = entry->GetNext(slot_span->bucket->slot_size)) {
-    if (entry == slot_start)
+    if (reinterpret_cast<uintptr_t>(entry) == slot_start)
       return true;
   }
   return false;
@@ -692,14 +692,13 @@ TEST_F(PartitionAllocPCScanTest, DontScanUnusedRawSize) {
   // Make sure to commit more memory than requested and have slack for storing
   // dangling reference outside of the raw size.
   const size_t big_size = kMaxBucketed - SystemPageSize() + 1;
-  uint8_t* source = static_cast<uint8_t*>(root().Alloc(big_size, nullptr));
+  void* ptr = root().Alloc(big_size, nullptr);
 
-  auto* slot_span = SlotSpanMetadata<ThreadSafe>::FromSlotInnerPtr(source);
+  auto* slot_span = SlotSpanMetadata<ThreadSafe>::FromSlotInnerPtr(ptr);
   ASSERT_TRUE(slot_span->CanStoreRawSize());
 
-  uint8_t* source_end =
-      static_cast<uint8_t*>(root().AdjustPointerForExtrasSubtract(source)) +
-      slot_span->GetRawSize();
+  uintptr_t source_end =
+      root().AdjustPointerForExtrasSubtract(ptr) + slot_span->GetRawSize();
 
   auto* value = ValueList::Create(root());
 
@@ -837,11 +836,11 @@ TEST_F(PartitionAllocPCScanWithMTETest, QuarantineOnlyOnTagOverflow) {
     // Check if the tag overflows. If so, the object must be in quarantine.
     if (HasOverflowTag(reinterpret_cast<uintptr_t>(obj))) {
       EXPECT_TRUE(IsInQuarantine(obj));
-      EXPECT_FALSE(IsInFreeList(obj));
+      EXPECT_FALSE(IsInFreeList(root().AdjustPointerForExtrasSubtract(obj)));
       return;
     } else {
       EXPECT_FALSE(IsInQuarantine(obj));
-      EXPECT_TRUE(IsInFreeList(obj));
+      EXPECT_TRUE(IsInFreeList(root().AdjustPointerForExtrasSubtract(obj)));
     }
   }
 

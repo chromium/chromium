@@ -649,7 +649,7 @@ PA_SCAN_INLINE AllocationStateMap* PCScanTask::TryFindScannerBitmapForPointer(
 #endif  // defined(PA_HAS_64_BITS_POINTERS)
 
   // We are certain here that |maybe_ptr| points to an allocated super-page.
-  return StateBitmapFromPointer(maybe_ptr);
+  return StateBitmapFromAddr(maybe_ptr);
 }
 
 // Looks up and marks a potential dangling pointer. Returns the size of the slot
@@ -726,7 +726,7 @@ void PCScanTask::ClearQuarantinedObjectsAndPrepareCardTable() {
 
   StarScanSnapshot::ClearingView view(*snapshot_);
   view.VisitConcurrently([clear_type](uintptr_t super_page) {
-    auto* bitmap = StateBitmapFromPointer(super_page);
+    auto* bitmap = StateBitmapFromAddr(super_page);
     auto* root = Root::FromFirstSuperPage(super_page);
     bitmap->IterateQuarantined([root, clear_type](uintptr_t address) {
       auto* object = memory::RemaskPtr(reinterpret_cast<void*>(address));
@@ -866,7 +866,7 @@ void PCScanTask::ScanLargeArea(PCScanInternal& pcscan,
   pcscan.ProtectPages(reinterpret_cast<uintptr_t>(begin),
                       (end - begin) * sizeof(uintptr_t));
 
-  auto* bitmap = StateBitmapFromPointer(reinterpret_cast<uintptr_t>(begin));
+  auto* bitmap = StateBitmapFromAddr(reinterpret_cast<uintptr_t>(begin));
   const size_t slot_size_in_words = slot_size / sizeof(uintptr_t);
 
   for (uintptr_t* current_slot = begin; current_slot < end;
@@ -949,7 +949,8 @@ void UnmarkInCardTable(uintptr_t object,
     uintptr_t object) {
   object = memory::RemaskPtr(object);
   const size_t slot_size = slot_span->bucket->slot_size;
-  uintptr_t slot_start = root->AdjustPointerForExtrasSubtract(object);
+  uintptr_t slot_start =
+      root->AdjustPointerForExtrasSubtract(reinterpret_cast<void*>(object));
   root->FreeNoHooksImmediate(object, slot_span, slot_start);
   UnmarkInCardTable(object, slot_span);
   return slot_size;
@@ -959,7 +960,7 @@ void UnmarkInCardTable(uintptr_t object,
                                      uintptr_t super_page,
                                      size_t epoch,
                                      SweepStat& stat) {
-  auto* bitmap = StateBitmapFromPointer(super_page);
+  auto* bitmap = StateBitmapFromAddr(super_page);
   ThreadSafePartitionRoot::FromFirstSuperPage(super_page);
   bitmap->IterateUnmarkedQuarantined(epoch, [root, &stat](uintptr_t object) {
     auto* slot_span = SlotSpanMetadata<ThreadSafe>::FromSlotInnerPtr(
@@ -973,7 +974,7 @@ void UnmarkInCardTable(uintptr_t object,
     uintptr_t super_page,
     size_t epoch,
     SweepStat& stat) {
-  auto* bitmap = StateBitmapFromPointer(super_page);
+  auto* bitmap = StateBitmapFromAddr(super_page);
   bitmap->IterateQuarantined(epoch, [root, &stat](uintptr_t object,
                                                   bool is_marked) {
     auto* slot_span = SlotSpanMetadata<ThreadSafe>::FromSlotInnerPtr(
@@ -1009,7 +1010,7 @@ void UnmarkInCardTable(uintptr_t object,
     SweepStat& stat) {
   using SlotSpan = SlotSpanMetadata<ThreadSafe>;
 
-  auto* bitmap = StateBitmapFromPointer(super_page);
+  auto* bitmap = StateBitmapFromAddr(super_page);
   SlotSpan* previous_slot_span = nullptr;
   internal::PartitionFreelistEntry* freelist_tail = nullptr;
   internal::PartitionFreelistEntry* freelist_head = nullptr;

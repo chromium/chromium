@@ -482,12 +482,12 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
 
   static uint16_t SizeToBucketIndex(size_t size);
 
-  ALWAYS_INLINE void FreeInSlotSpan(void* slot_start, SlotSpan* slot_span)
+  ALWAYS_INLINE void FreeInSlotSpan(uintptr_t slot_start, SlotSpan* slot_span)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   // Frees memory, with |slot_start| as returned by |RawAlloc()|.
-  ALWAYS_INLINE void RawFree(void* slot_start);
-  ALWAYS_INLINE void RawFree(void* slot_start, SlotSpan* slot_span)
+  ALWAYS_INLINE void RawFree(uintptr_t slot_start);
+  ALWAYS_INLINE void RawFree(uintptr_t slot_start, SlotSpan* slot_span)
       LOCKS_EXCLUDED(lock_);
 
   ALWAYS_INLINE void RawFreeBatch(FreeListEntry* head,
@@ -495,7 +495,7 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
                                   size_t size,
                                   SlotSpan* slot_span) LOCKS_EXCLUDED(lock_);
 
-  ALWAYS_INLINE void RawFreeWithThreadCache(void* slot_start,
+  ALWAYS_INLINE void RawFreeWithThreadCache(uintptr_t slot_start,
                                             SlotSpan* slot_span);
 
   internal::ThreadCache* thread_cache_for_testing() const {
@@ -641,24 +641,13 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
   }
 
   // TODO(bartekn): Consider |void* SlotStartToObjectStart(uintptr_t)|.
-  ALWAYS_INLINE uintptr_t AdjustPointerForExtrasAdd(uintptr_t address) const {
-    return address + extras_offset;
-  }
-  // TODO(bartekn): Remove the |void*| variant.
-  ALWAYS_INLINE void* AdjustPointerForExtrasAdd(void* ptr) const {
-    return reinterpret_cast<void*>(
-        AdjustPointerForExtrasAdd(reinterpret_cast<uintptr_t>(ptr)));
+  ALWAYS_INLINE void* AdjustPointerForExtrasAdd(uintptr_t address) const {
+    return reinterpret_cast<void*>(address + extras_offset);
   }
 
   // TODO(bartekn): Consider |uintptr_t ObjectStartToSlotStart(void*)|.
-  ALWAYS_INLINE uintptr_t
-  AdjustPointerForExtrasSubtract(uintptr_t address) const {
-    return address - extras_offset;
-  }
-  // TODO(bartekn): Remove the |void*| variant.
-  ALWAYS_INLINE void* AdjustPointerForExtrasSubtract(void* ptr) const {
-    return reinterpret_cast<void*>(
-        AdjustPointerForExtrasSubtract(reinterpret_cast<uintptr_t>(ptr)));
+  ALWAYS_INLINE uintptr_t AdjustPointerForExtrasSubtract(void* ptr) const {
+    return reinterpret_cast<uintptr_t>(ptr) - extras_offset;
   }
 
   bool brp_enabled() const {
@@ -725,20 +714,18 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
   //   |requested_size|.
   // - |usable_size| and |is_already_zeroed| are output only. |usable_size| is
   //   guaranteed to be larger or equal to AllocFlags()'s |requested_size|.
-  //
-  // TODO(bartekn): void* -> uintptr_t
-  ALWAYS_INLINE void* RawAlloc(Bucket* bucket,
-                               int flags,
-                               size_t raw_size,
-                               size_t slot_span_alignment,
-                               size_t* usable_size,
-                               bool* is_already_zeroed);
-  ALWAYS_INLINE void* AllocFromBucket(Bucket* bucket,
-                                      int flags,
-                                      size_t raw_size,
-                                      size_t slot_span_alignment,
-                                      size_t* usable_size,
-                                      bool* is_already_zeroed)
+  ALWAYS_INLINE uintptr_t RawAlloc(Bucket* bucket,
+                                   int flags,
+                                   size_t raw_size,
+                                   size_t slot_span_alignment,
+                                   size_t* usable_size,
+                                   bool* is_already_zeroed);
+  ALWAYS_INLINE uintptr_t AllocFromBucket(Bucket* bucket,
+                                          int flags,
+                                          size_t raw_size,
+                                          size_t slot_span_alignment,
+                                          size_t* usable_size,
+                                          bool* is_already_zeroed)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   bool TryReallocInPlaceForNormalBuckets(void* ptr,
@@ -748,9 +735,10 @@ struct alignas(64) BASE_EXPORT PartitionRoot {
       internal::SlotSpanMetadata<thread_safe>* slot_span,
       size_t requested_size) EXCLUSIVE_LOCKS_REQUIRED(lock_);
   void DecommitEmptySlotSpans() EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  ALWAYS_INLINE void RawFreeLocked(void* slot_start)
+  ALWAYS_INLINE void RawFreeLocked(uintptr_t slot_start)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
-  void* MaybeInitThreadCacheAndAlloc(uint16_t bucket_index, size_t* slot_size);
+  uintptr_t MaybeInitThreadCacheAndAlloc(uint16_t bucket_index,
+                                         size_t* slot_size);
 
   friend class internal::ThreadCache;
 };
@@ -893,22 +881,19 @@ ALWAYS_INLINE bool PartitionAllocIsValidPtrDelta(uintptr_t address,
   // Double check that ref-count is indeed present.
   PA_DCHECK(root->brp_enabled());
 
-  // TODO(bartekn): Remove reinterpret_casts.
-  uintptr_t user_data_start = reinterpret_cast<uintptr_t>(
-      root->AdjustPointerForExtrasAdd(reinterpret_cast<void*>(slot_start)));
-  size_t user_data_size = slot_span->GetUsableSize(root);
+  uintptr_t object_start =
+      reinterpret_cast<uintptr_t>(root->AdjustPointerForExtrasAdd(slot_start));
   uintptr_t new_address = address + delta_in_bytes;
-  return user_data_start <= new_address &&
+  return object_start <= new_address &&
          // We use "greater then or equal" below because we want to include
          // pointers right past the end of an allocation.
-         new_address <= user_data_start + user_data_size;
+         new_address <= object_start + slot_span->GetUsableSize(root);
 }
 
 ALWAYS_INLINE void PartitionAllocFreeForRefCounting(uintptr_t slot_start) {
   PA_DCHECK(!internal::PartitionRefCountPointer(slot_start)->IsAlive());
 
-  auto* slot_span = SlotSpanMetadata<ThreadSafe>::FromSlotStartPtr(
-      reinterpret_cast<void*>(slot_start));
+  auto* slot_span = SlotSpanMetadata<ThreadSafe>::FromSlotStartPtr(slot_start);
   auto* root = PartitionRoot<ThreadSafe>::FromSlotSpan(slot_span);
   // PartitionRefCount is required to be allocated inside a `PartitionRoot` that
   // supports reference counts.
@@ -929,20 +914,20 @@ ALWAYS_INLINE void PartitionAllocFreeForRefCounting(uintptr_t slot_start) {
   root->total_count_of_brp_quarantined_slots.fetch_sub(
       1, std::memory_order_relaxed);
 
-  root->RawFreeWithThreadCache(reinterpret_cast<void*>(slot_start), slot_span);
+  root->RawFreeWithThreadCache(slot_start, slot_span);
 }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
 }  // namespace internal
 
 template <bool thread_safe>
-ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFromBucket(
-    Bucket* bucket,
-    int flags,
-    size_t raw_size,
-    size_t slot_span_alignment,
-    size_t* usable_size,
-    bool* is_already_zeroed) {
+ALWAYS_INLINE uintptr_t
+PartitionRoot<thread_safe>::AllocFromBucket(Bucket* bucket,
+                                            int flags,
+                                            size_t raw_size,
+                                            size_t slot_span_alignment,
+                                            size_t* usable_size,
+                                            bool* is_already_zeroed) {
   PA_DCHECK((slot_span_alignment >= PartitionPageSize()) &&
             bits::IsPowerOfTwo(slot_span_alignment));
   SlotSpan* slot_span = bucket->active_slot_spans_head;
@@ -950,7 +935,8 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFromBucket(
   PA_DCHECK(slot_span);
   PA_DCHECK(slot_span->num_allocated_slots >= 0);
 
-  void* slot_start = slot_span->get_freelist_head();
+  uintptr_t slot_start =
+      reinterpret_cast<uintptr_t>(slot_span->get_freelist_head());
   // Use the fast path when a slot is readily available on the free list of the
   // first active slot span. However, fall back to the slow path if a
   // higher-order alignment is requested, because an inner slot of an existing
@@ -971,14 +957,14 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFromBucket(
     PA_DCHECK(!slot_span->CanStoreRawSize());
     PA_DCHECK(!slot_span->bucket->is_direct_mapped());
     void* entry = slot_span->PopForAlloc(bucket->slot_size);
-    PA_DCHECK(entry == slot_start);
+    PA_DCHECK(reinterpret_cast<uintptr_t>(entry) == slot_start);
 
     PA_DCHECK(slot_span->bucket == bucket);
   } else {
     slot_start = bucket->SlowPathAlloc(this, flags, raw_size,
                                        slot_span_alignment, is_already_zeroed);
     if (UNLIKELY(!slot_start))
-      return nullptr;
+      return 0;
 
     slot_span = SlotSpan::FromSlotStartPtr(slot_start);
     // TODO(crbug.com/1257655): See if we can afford to make this a CHECK.
@@ -1075,7 +1061,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooks(void* ptr) {
   PA_DCHECK(FromSlotSpan(slot_span) == root);
 
   const size_t slot_size = slot_span->bucket->slot_size;
-  uintptr_t slot_start = root->AdjustPointerForExtrasSubtract(address);
+  uintptr_t slot_start = root->AdjustPointerForExtrasSubtract(ptr);
   if (LIKELY(slot_size <= kMaxMemoryTaggingSize)) {
     // Incrementing the memory range returns the true underlying tag, so
     // RemaskPtr is not required here.
@@ -1135,8 +1121,9 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   if (allow_cookie) {
     // Verify the cookie after the allocated region.
     // If this assert fires, you probably corrupted memory.
-    internal::PartitionCookieCheckValue(address +
-                                        slot_span->GetUsableSize(this));
+    internal::PartitionCookieCheckValue(
+        reinterpret_cast<unsigned char*>(address) +
+        slot_span->GetUsableSize(this));
   }
 #endif
 
@@ -1146,7 +1133,7 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
     if (LIKELY(internal::IsManagedByNormalBuckets(address))) {
       uintptr_t unmasked_slot_start = memory::UnmaskPtr(slot_start);
       // Mark the state in the state bitmap as freed.
-      internal::StateBitmapFromPointer(unmasked_slot_start)
+      internal::StateBitmapFromAddr(unmasked_slot_start)
           ->Free(unmasked_slot_start);
     }
   }
@@ -1195,12 +1182,12 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeNoHooksImmediate(
   }
 #endif  // defined(PA_ZERO_RANDOMLY_ON_FREE)
 
-  RawFreeWithThreadCache(reinterpret_cast<void*>(slot_start), slot_span);
+  RawFreeWithThreadCache(slot_start, slot_span);
 }
 
 template <bool thread_safe>
 ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeInSlotSpan(
-    void* slot_start,
+    uintptr_t slot_start,
     SlotSpan* slot_span) {
   // An underflow here means we've miscounted |total_size_of_allocated_bytes|
   // somewhere.
@@ -1211,13 +1198,13 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::FreeInSlotSpan(
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFree(void* slot_start) {
+ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFree(uintptr_t slot_start) {
   SlotSpan* slot_span = SlotSpan::FromSlotStartPtr(slot_start);
   RawFree(slot_start, slot_span);
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFree(void* slot_start,
+ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFree(uintptr_t slot_start,
                                                        SlotSpan* slot_span) {
   // At this point we are about to acquire the lock, so we try to minimize the
   // risk of blocking inside the locked section.
@@ -1275,10 +1262,9 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFreeBatch(
   slot_span->AppendFreeList(head, tail, size);
 }
 
-// TODO(bartekn): void* -> uintptr_t
 template <bool thread_safe>
 ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFreeWithThreadCache(
-    void* slot_start,
+    uintptr_t slot_start,
     SlotSpan* slot_span) {
   // TLS access can be expensive, do a cheap local check first.
   //
@@ -1301,7 +1287,8 @@ ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFreeWithThreadCache(
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFreeLocked(void* slot_start) {
+ALWAYS_INLINE void PartitionRoot<thread_safe>::RawFreeLocked(
+    uintptr_t slot_start) {
   SlotSpan* slot_span = SlotSpan::FromSlotStartPtr(slot_start);
   // Direct-mapped deallocation releases then re-acquires the lock. The caller
   // may not expect that, but we never call this function on direct-mapped
@@ -1454,10 +1441,9 @@ ALWAYS_INLINE size_t PartitionRoot<thread_safe>::GetUsableSize(void* ptr) {
 template <bool thread_safe>
 ALWAYS_INLINE size_t
 PartitionRoot<thread_safe>::AllocationCapacityFromPtr(void* ptr) const {
-  ptr = AdjustPointerForExtrasSubtract(ptr);
+  uintptr_t address = AdjustPointerForExtrasSubtract(ptr);
   auto* slot_span =
-      internal::PartitionAllocGetSlotSpanForSizeQuery<thread_safe>(
-          reinterpret_cast<uintptr_t>(ptr));
+      internal::PartitionAllocGetSlotSpanForSizeQuery<thread_safe>(address);
   size_t size = AdjustSizeForExtrasSubtract(slot_span->bucket->slot_size);
   return size;
 }
@@ -1546,8 +1532,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
   uint16_t bucket_index = SizeToBucketIndex(raw_size);
   size_t usable_size;
   bool is_already_zeroed = false;
-  // TODO(bartekn): void* -> uintptr_t
-  void* slot_start = nullptr;
+  uintptr_t slot_start = 0;
   size_t slot_size;
 
   const bool is_quarantine_enabled = IsQuarantineEnabled();
@@ -1672,8 +1657,8 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
 #if DCHECK_IS_ON()
   // Add the cookie after the allocation.
   if (allow_cookie) {
-    uintptr_t address = reinterpret_cast<uintptr_t>(ret);
-    internal::PartitionCookieWriteValue(address + usable_size);
+    internal::PartitionCookieWriteValue(static_cast<unsigned char*>(ret) +
+                                        usable_size);
   }
 #endif
 
@@ -1707,7 +1692,7 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
       uintptr_t unmasked_slot_start =
           memory::UnmaskPtr(reinterpret_cast<uintptr_t>(slot_start));
       // Mark the corresponding bits in the state bitmap as allocated.
-      internal::StateBitmapFromPointer(unmasked_slot_start)
+      internal::StateBitmapFromAddr(unmasked_slot_start)
           ->Allocate(unmasked_slot_start);
     }
   }
@@ -1716,13 +1701,13 @@ ALWAYS_INLINE void* PartitionRoot<thread_safe>::AllocFlagsNoHooks(
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE void* PartitionRoot<thread_safe>::RawAlloc(
-    Bucket* bucket,
-    int flags,
-    size_t raw_size,
-    size_t slot_span_alignment,
-    size_t* usable_size,
-    bool* is_already_zeroed) {
+ALWAYS_INLINE uintptr_t
+PartitionRoot<thread_safe>::RawAlloc(Bucket* bucket,
+                                     int flags,
+                                     size_t raw_size,
+                                     size_t slot_span_alignment,
+                                     size_t* usable_size,
+                                     bool* is_already_zeroed) {
   internal::ScopedGuard<thread_safe> guard{lock_};
   return AllocFromBucket(bucket, flags, raw_size, slot_span_alignment,
                          usable_size, is_already_zeroed);

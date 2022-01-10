@@ -717,7 +717,8 @@ ALWAYS_INLINE void PartitionBucket<thread_safe>::InitializeSlotSpan(
 }
 
 template <bool thread_safe>
-ALWAYS_INLINE char* PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
+ALWAYS_INLINE uintptr_t
+PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
     PartitionRoot<thread_safe>* root,
     SlotSpanMetadata<thread_safe>* slot_span) {
   PA_DCHECK(slot_span !=
@@ -733,15 +734,16 @@ ALWAYS_INLINE char* PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
   PA_DCHECK(slot_span->num_allocated_slots >= 0);
 
   size_t size = slot_size;
-  char* base = reinterpret_cast<char*>(
+  uintptr_t slot_span_start = reinterpret_cast<uintptr_t>(
       SlotSpanMetadata<thread_safe>::ToSlotSpanStartPtr(slot_span));
   // If we got here, the first unallocated slot is either partially or fully on
   // an uncommitted page. If the latter, it must be at the start of that page.
-  char* return_slot = base + (size * slot_span->num_allocated_slots);
-  char* next_slot = return_slot + size;
-  char* commit_start = bits::AlignUp(return_slot, SystemPageSize());
+  uintptr_t return_slot =
+      slot_span_start + (size * slot_span->num_allocated_slots);
+  uintptr_t next_slot = return_slot + size;
+  uintptr_t commit_start = bits::AlignUp(return_slot, SystemPageSize());
   PA_DCHECK(next_slot > commit_start);
-  char* commit_end = bits::AlignUp(next_slot, SystemPageSize());
+  uintptr_t commit_end = bits::AlignUp(next_slot, SystemPageSize());
   // If the slot was partially committed, |return_slot| and |next_slot| fall
   // in different pages. If the slot was fully uncommitted, |return_slot| points
   // to the page start and |next_slot| doesn't, thus only the latter gets
@@ -777,13 +779,14 @@ ALWAYS_INLINE char* PartitionBucket<thread_safe>::ProvisionMoreSlotsAndAllocOne(
 
   // Add all slots that fit within so far committed pages to the free list.
   PartitionFreelistEntry* prev_entry = nullptr;
-  char* next_slot_end = next_slot + size;
+  uintptr_t next_slot_end = next_slot + size;
   size_t free_list_entries_added = 0;
   while (next_slot_end <= commit_end) {
     if (LIKELY(size <= kMaxMemoryTaggingSize)) {
       next_slot = memory::TagMemoryRangeRandomly(next_slot, size);
     }
-    auto* entry = new (next_slot) PartitionFreelistEntry();
+    auto* entry = new (reinterpret_cast<PartitionFreelistEntry*>(next_slot))
+        PartitionFreelistEntry();
     if (!slot_span->get_freelist_head()) {
       PA_DCHECK(!prev_entry);
       PA_DCHECK(!free_list_entries_added);
@@ -884,7 +887,7 @@ void PartitionBucket<thread_safe>::SortSlotSpanFreelists() {
 }
 
 template <bool thread_safe>
-void* PartitionBucket<thread_safe>::SlowPathAlloc(
+uintptr_t PartitionBucket<thread_safe>::SlowPathAlloc(
     PartitionRoot<thread_safe>* root,
     int flags,
     size_t raw_size,
@@ -925,7 +928,7 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
 
     // No fast path for direct-mapped allocations.
     if (flags & PartitionAllocFastPathOrReturnNull)
-      return nullptr;
+      return 0;
 
     new_slot_span =
         PartitionDirectMap(root, flags, raw_size, slot_span_alignment);
@@ -969,7 +972,7 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
         LIKELY(decommitted_slot_spans_head != nullptr)) {
       // Commit can be expensive, don't do it.
       if (flags & PartitionAllocFastPathOrReturnNull)
-        return nullptr;
+        return 0;
 
       new_slot_span = decommitted_slot_spans_head;
       PA_DCHECK(new_slot_span->bucket == this);
@@ -998,7 +1001,7 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
   } else {
     // Getting a new slot span is expensive, don't do it.
     if (flags & PartitionAllocFastPathOrReturnNull)
-      return nullptr;
+      return 0;
 
     // Third. If we get here, we need a brand new slot span.
     // TODO(bartekn): For single-slot slot spans, we can use rounded raw_size
@@ -1013,7 +1016,7 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
     PA_DCHECK(active_slot_spans_head ==
               SlotSpanMetadata<thread_safe>::get_sentinel_slot_span());
     if (flags & PartitionAllocReturnNull)
-      return nullptr;
+      return 0;
     // See comment in PartitionDirectMap() for unlocking.
     ScopedUnlockGuard<thread_safe> unlock{root->lock_};
     root->OutOfMemory(raw_size);
@@ -1033,7 +1036,7 @@ void* PartitionBucket<thread_safe>::SlowPathAlloc(
 
     // We likely set *is_already_zeroed to true above, make sure that the
     // freelist entry doesn't contain data.
-    return entry->ClearForAllocation();
+    return reinterpret_cast<uintptr_t>(entry->ClearForAllocation());
   }
 
   // Otherwise, we need to provision more slots by committing more pages. Build

@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <cstdint>
 
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -63,11 +64,11 @@ struct PartitionBucket {
   // them. (See |PartitionRoot::AllocFromBucket|.)
   //
   // Note the matching Free() functions are in SlotSpanMetadata.
-  BASE_EXPORT NOINLINE void* SlowPathAlloc(PartitionRoot<thread_safe>* root,
-                                           int flags,
-                                           size_t raw_size,
-                                           size_t slot_span_alignment,
-                                           bool* is_already_zeroed)
+  BASE_EXPORT NOINLINE uintptr_t SlowPathAlloc(PartitionRoot<thread_safe>* root,
+                                               int flags,
+                                               size_t raw_size,
+                                               size_t slot_span_alignment,
+                                               bool* is_already_zeroed)
       EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
 
   ALWAYS_INLINE bool CanStoreRawSize() const {
@@ -184,9 +185,9 @@ struct PartitionBucket {
   //
   // If |slot_span| was freshly allocated, it must have been passed through
   // InitializeSlotSpan() first.
-  ALWAYS_INLINE char* ProvisionMoreSlotsAndAllocOne(
-      PartitionRoot<thread_safe>* root,
-      SlotSpanMetadata<thread_safe>* slot_span)
+  ALWAYS_INLINE uintptr_t
+  ProvisionMoreSlotsAndAllocOne(PartitionRoot<thread_safe>* root,
+                                SlotSpanMetadata<thread_safe>* slot_span)
       EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
 };
 

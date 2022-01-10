@@ -282,8 +282,8 @@ class PartitionAllocTest : public testing::Test {
     size_t num_slots =
         (bucket->num_system_pages_per_slot_span * SystemPageSize()) /
         bucket->slot_size;
-    void* first = nullptr;
-    void* last = nullptr;
+    uintptr_t first = 0;
+    uintptr_t last = 0;
     size_t i;
     for (i = 0; i < num_slots; ++i) {
       void* ptr = allocator.root()->Alloc(size, type_name);
@@ -297,10 +297,8 @@ class PartitionAllocTest : public testing::Test {
               SlotSpan::FromSlotStartPtr(base::memory::UnmaskPtr(last)));
     if (bucket->num_system_pages_per_slot_span ==
         NumSystemPagesPerPartitionPage())
-      EXPECT_EQ(reinterpret_cast<size_t>(base::memory::UnmaskPtr(first)) &
-                    PartitionPageBaseMask(),
-                reinterpret_cast<size_t>(base::memory::UnmaskPtr(last)) &
-                    PartitionPageBaseMask());
+      EXPECT_EQ(base::memory::UnmaskPtr(first) & PartitionPageBaseMask(),
+                base::memory::UnmaskPtr(last) & PartitionPageBaseMask());
     EXPECT_EQ(num_slots,
               static_cast<size_t>(
                   bucket->active_slot_spans_head->num_allocated_slots));
@@ -964,9 +962,8 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
   uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
   for (size_t offset = 0; offset < requested_size; ++offset) {
-    PA_EXPECT_ADDR_EQ(
-        PartitionAllocGetSlotStartInBRPPool(address + offset),
-        allocator.root()->AdjustPointerForExtrasSubtract(address));
+    PA_EXPECT_ADDR_EQ(PartitionAllocGetSlotStartInBRPPool(address + offset),
+                      allocator.root()->AdjustPointerForExtrasSubtract(ptr));
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   allocator.root()->Free(ptr);
@@ -985,7 +982,7 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
   address = reinterpret_cast<uintptr_t>(ptr);
   for (size_t offset = 0; offset < requested_size; offset += 877) {
     PA_EXPECT_PTR_EQ(PartitionAllocGetSlotStartInBRPPool(address + offset),
-                     allocator.root()->AdjustPointerForExtrasSubtract(address));
+                     allocator.root()->AdjustPointerForExtrasSubtract(ptr));
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
   allocator.root()->Free(ptr);
@@ -1009,7 +1006,7 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
   address = reinterpret_cast<uintptr_t>(ptr);
   for (size_t offset = 0; offset < requested_size; offset += 4999) {
     PA_EXPECT_PTR_EQ(PartitionAllocGetSlotStartInBRPPool(address + offset),
-                     allocator.root()->AdjustPointerForExtrasSubtract(address));
+                     allocator.root()->AdjustPointerForExtrasSubtract(ptr));
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
@@ -1026,7 +1023,7 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
   address = reinterpret_cast<uintptr_t>(ptr);
   for (size_t offset = 0; offset < requested_size; offset += 4999) {
     PA_EXPECT_PTR_EQ(PartitionAllocGetSlotStartInBRPPool(address + offset),
-                     allocator.root()->AdjustPointerForExtrasSubtract(address));
+                     allocator.root()->AdjustPointerForExtrasSubtract(ptr));
   }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
 
@@ -1048,9 +1045,8 @@ TEST_F(PartitionAllocTest, AllocGetSizeAndStart) {
 #if BUILDFLAG(USE_BACKUP_REF_PTR)
     address = reinterpret_cast<uintptr_t>(ptr);
     for (size_t offset = 0; offset < requested_size; offset += 16111) {
-      PA_EXPECT_PTR_EQ(
-          PartitionAllocGetSlotStartInBRPPool(address + offset),
-          allocator.root()->AdjustPointerForExtrasSubtract(address));
+      PA_EXPECT_PTR_EQ(PartitionAllocGetSlotStartInBRPPool(address + offset),
+                       allocator.root()->AdjustPointerForExtrasSubtract(ptr));
     }
 #endif  // BUILDFLAG(USE_BACKUP_REF_PTR)
     allocator.root()->Free(ptr);
@@ -1164,9 +1160,8 @@ TEST_F(PartitionAllocTest, GetSlotStartMultiplePages) {
     uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
     EXPECT_EQ(allocator.root()->AllocationCapacityFromPtr(ptr), requested_size);
     for (size_t offset = 0; offset < requested_size; offset += 13) {
-      PA_EXPECT_PTR_EQ(
-          PartitionAllocGetSlotStartInBRPPool(address + offset),
-          allocator.root()->AdjustPointerForExtrasSubtract(address));
+      PA_EXPECT_PTR_EQ(PartitionAllocGetSlotStartInBRPPool(address + offset),
+                       allocator.root()->AdjustPointerForExtrasSubtract(ptr));
     }
     allocator.root()->Free(ptr);
   }
@@ -1184,7 +1179,7 @@ TEST_F(PartitionAllocTest, Realloc) {
   void* ptr2 = allocator.root()->Realloc(ptr, 0, type_name);
   EXPECT_EQ(nullptr, ptr2);
   PA_EXPECT_PTR_EQ(allocator.root()->AdjustPointerForExtrasSubtract(ptr),
-                   slot_span->get_freelist_head());
+                   reinterpret_cast<uintptr_t>(slot_span->get_freelist_head()));
 
   // Test that growing an allocation with realloc() copies everything from the
   // old allocation.
@@ -3479,15 +3474,14 @@ TEST_F(PartitionAllocTest, GetReservationStart) {
   ASSERT_GT(large_size, kMaxBucketed);
   void* ptr = allocator.root()->Alloc(large_size, type_name);
   EXPECT_TRUE(ptr);
-  void* slot_start = allocator.root()->AdjustPointerForExtrasSubtract(ptr);
-  uintptr_t reservation_start =
-      reinterpret_cast<uintptr_t>(slot_start) - PartitionPageSize();
+  uintptr_t slot_start = allocator.root()->AdjustPointerForExtrasSubtract(ptr);
+  uintptr_t reservation_start = slot_start - PartitionPageSize();
   EXPECT_EQ(0U, reservation_start & DirectMapAllocationGranularityOffsetMask());
 
   uintptr_t address = reinterpret_cast<uintptr_t>(ptr);
   for (uintptr_t a = address; a < address + large_size; ++a) {
     uintptr_t address2 = GetDirectMapReservationStart(a) + PartitionPageSize();
-    EXPECT_EQ(reinterpret_cast<uintptr_t>(slot_start), address2);
+    EXPECT_EQ(slot_start, address2);
   }
 
   EXPECT_EQ(reservation_start, GetDirectMapReservationStart(

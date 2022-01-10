@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <algorithm>
 #include <atomic>
+#include <cstdint>
 
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
@@ -438,10 +439,10 @@ ThreadCache* ThreadCache::Create(PartitionRoot<internal::ThreadSafe>* root) {
   auto* bucket =
       root->buckets +
       PartitionRoot<internal::ThreadSafe>::SizeToBucketIndex(raw_size);
-  void* buffer =
+  uintptr_t buffer =
       root->RawAlloc(bucket, PartitionAllocZeroFill, raw_size,
                      PartitionPageSize(), &usable_size, &already_zeroed);
-  ThreadCache* tcache = new (buffer) ThreadCache(root);
+  ThreadCache* tcache = new (reinterpret_cast<void*>(buffer)) ThreadCache(root);
 
   // This may allocate.
   PartitionTlsSet(g_thread_cache_key, tcache);
@@ -495,14 +496,14 @@ ThreadCache::~ThreadCache() {
 
 // static
 void ThreadCache::Delete(void* tcache_ptr) {
-  auto* tcache = reinterpret_cast<ThreadCache*>(tcache_ptr);
+  auto* tcache = static_cast<ThreadCache*>(tcache_ptr);
 #if defined(PA_THREAD_CACHE_FAST_TLS)
   g_thread_cache = nullptr;
 #endif
 
   auto* root = tcache->root_;
-  reinterpret_cast<ThreadCache*>(tcache_ptr)->~ThreadCache();
-  root->RawFree(tcache_ptr);
+  tcache->~ThreadCache();
+  root->RawFree(reinterpret_cast<uintptr_t>(tcache_ptr));
 
 #if defined(OS_WIN)
   // On Windows, allocations do occur during thread/process teardown, make sure
@@ -580,7 +581,7 @@ void ThreadCache::FillBucket(size_t bucket_index) {
     // |raw_size| is set to the slot size, as we don't know it. However, it is
     // only used for direct-mapped allocations and single-slot ones anyway,
     // which are not handled here.
-    void* ptr = root_->AllocFromBucket(
+    uintptr_t slot_start = root_->AllocFromBucket(
         &root_->buckets[bucket_index],
         PartitionAllocFastPathOrReturnNull | PartitionAllocReturnNull,
         root_->buckets[bucket_index].slot_size /* raw_size */,
@@ -591,11 +592,11 @@ void ThreadCache::FillBucket(size_t bucket_index) {
     // some objects, then the allocation will be handled normally. Otherwise,
     // this goes to the central allocator, which will service the allocation,
     // return nullptr or crash.
-    if (!ptr)
+    if (!slot_start)
       break;
 
     allocated_slots++;
-    PutInBucket(bucket, ptr);
+    PutInBucket(bucket, slot_start);
   }
 
   cached_memory_ += allocated_slots * bucket.slot_size;
@@ -650,9 +651,9 @@ void ThreadCache::FreeAfter(PartitionFreelistEntry* head, size_t slot_size) {
   // acquisitions can be expensive.
   internal::ScopedGuard<internal::ThreadSafe> guard(root_->lock_);
   while (head) {
-    void* ptr = head;
+    uintptr_t slot_start = reinterpret_cast<uintptr_t>(head);
     head = head->GetNextForThreadCache(slot_size);
-    root_->RawFreeLocked(ptr);
+    root_->RawFreeLocked(slot_start);
   }
 }
 
