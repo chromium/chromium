@@ -26,7 +26,6 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.mockito.quality.Strictness;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
@@ -135,13 +134,8 @@ public class SigninPromoControllerTest {
 
     @Test
     public void shouldShowNTPSyncPromoWhenCountLimitIsNotExceeded() {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFieldTrialParamOverride(ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD,
-                "MaxSigninPromoImpressions", Integer.toString(MAX_SIGN_IN_PROMO_IMPRESSIONS));
-        testValues.addFeatureFlagOverride(ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD, true);
-        testValues.addFeatureFlagOverride(
-                ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS, false);
-        FeatureList.setTestValues(testValues);
+        StartSurfaceConfiguration.SIGNIN_PROMO_NTP_COUNT_LIMIT.setForTesting(
+                MAX_SIGN_IN_PROMO_IMPRESSIONS);
         mSharedPreferencesManager.writeInt(SigninPromoController.getPromoShowCountPreferenceName(
                                                    SigninAccessPoint.NTP_CONTENT_SUGGESTIONS),
                 MAX_SIGN_IN_PROMO_IMPRESSIONS - 1);
@@ -152,13 +146,8 @@ public class SigninPromoControllerTest {
 
     @Test
     public void shouldHideNTPSyncPromoWhenCountLimitIsExceeded() {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFieldTrialParamOverride(ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD,
-                "MaxSigninPromoImpressions", Integer.toString(MAX_SIGN_IN_PROMO_IMPRESSIONS));
-        testValues.addFeatureFlagOverride(ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD, true);
-        testValues.addFeatureFlagOverride(
-                ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS, false);
-        FeatureList.setTestValues(testValues);
+        StartSurfaceConfiguration.SIGNIN_PROMO_NTP_COUNT_LIMIT.setForTesting(
+                MAX_SIGN_IN_PROMO_IMPRESSIONS);
         mSharedPreferencesManager.writeInt(SigninPromoController.getPromoShowCountPreferenceName(
                                                    SigninAccessPoint.NTP_CONTENT_SUGGESTIONS),
                 MAX_SIGN_IN_PROMO_IMPRESSIONS);
@@ -210,7 +199,7 @@ public class SigninPromoControllerTest {
         final long firstShownTime =
                 System.currentTimeMillis() - TIME_SINCE_FIRST_SHOWN_LIMIT_MS - 1;
         final long lastShownTime = System.currentTimeMillis() - RESET_AFTER_MS - 1;
-        setNTPSyncPromoLimitsAndValues(
+        disableNTPSyncPromoBySettingLimits(
                 firstShownTime, lastShownTime, /*signinPromoResetAfterHours=*/-1);
         Assert.assertFalse(
                 SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
@@ -236,7 +225,7 @@ public class SigninPromoControllerTest {
         final long firstShownTime =
                 System.currentTimeMillis() - TIME_SINCE_FIRST_SHOWN_LIMIT_MS - 1;
         final long lastShownTime = System.currentTimeMillis();
-        setNTPSyncPromoLimitsAndValues(firstShownTime, lastShownTime, RESET_AFTER_HOURS);
+        disableNTPSyncPromoBySettingLimits(firstShownTime, lastShownTime, RESET_AFTER_HOURS);
         Assert.assertFalse(
                 SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
 
@@ -261,7 +250,7 @@ public class SigninPromoControllerTest {
         final long firstShownTime =
                 System.currentTimeMillis() - TIME_SINCE_FIRST_SHOWN_LIMIT_MS - 1;
         final long lastShownTime = System.currentTimeMillis() - RESET_AFTER_MS - 1;
-        setNTPSyncPromoLimitsAndValues(firstShownTime, lastShownTime, RESET_AFTER_HOURS);
+        disableNTPSyncPromoBySettingLimits(firstShownTime, lastShownTime, RESET_AFTER_HOURS);
         Assert.assertFalse(
                 SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
 
@@ -299,16 +288,8 @@ public class SigninPromoControllerTest {
                 SigninPromoController.canShowSyncPromo(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS));
     }
 
-    private void setNTPSyncPromoLimitsAndValues(
+    private void disableNTPSyncPromoBySettingLimits(
             long firstShownTime, long lastShownTime, int signinPromoResetAfterHours) {
-        FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFieldTrialParamOverride(ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD,
-                "MaxSigninPromoImpressions", Integer.toString(MAX_SIGN_IN_PROMO_IMPRESSIONS));
-        testValues.addFeatureFlagOverride(ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD, true);
-        testValues.addFeatureFlagOverride(
-                ChromeFeatureList.FORCE_DISABLE_EXTENDED_SYNC_PROMOS, false);
-        FeatureList.setTestValues(testValues);
-
         StartSurfaceConfiguration.SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS.setForTesting(
                 TIME_SINCE_FIRST_SHOWN_LIMIT_HOURS);
         StartSurfaceConfiguration.SIGNIN_PROMO_NTP_RESET_AFTER_HOURS.setForTesting(

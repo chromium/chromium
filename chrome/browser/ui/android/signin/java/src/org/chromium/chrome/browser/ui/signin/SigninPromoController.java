@@ -192,13 +192,12 @@ public class SigninPromoController {
     }
 
     private static boolean canShowNTPPromo() {
-        int maxImpressions = ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
-                ChromeFeatureList.ENHANCED_PROTECTION_PROMO_CARD, "MaxSigninPromoImpressions",
-                Integer.MAX_VALUE);
-        if (SharedPreferencesManager.getInstance().readInt(
-                    getPromoShowCountPreferenceName(SigninAccessPoint.NTP_CONTENT_SUGGESTIONS))
-                        >= maxImpressions
-                || timeElapsedSinceFirstShownExceedsLimit()) {
+        final int maxImpressions =
+                StartSurfaceConfiguration.SIGNIN_PROMO_NTP_COUNT_LIMIT.getValue();
+        if (timeElapsedSinceFirstShownExceedsLimit()
+                || SharedPreferencesManager.getInstance().readInt(getPromoShowCountPreferenceName(
+                           SigninAccessPoint.NTP_CONTENT_SUGGESTIONS))
+                        >= maxImpressions) {
             return false;
         }
 
@@ -250,6 +249,8 @@ public class SigninPromoController {
                 return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(
                         AccessPointId.BOOKMARKS);
             case SigninAccessPoint.NTP_CONTENT_SUGGESTIONS:
+                // This preference may get reset while the other ones are never reset unless device
+                // data is wiped.
                 return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(AccessPointId.NTP);
             case SigninAccessPoint.SETTINGS:
                 return ChromePreferenceKeys.SYNC_PROMO_SHOW_COUNT.createKey(AccessPointId.SETTINGS);

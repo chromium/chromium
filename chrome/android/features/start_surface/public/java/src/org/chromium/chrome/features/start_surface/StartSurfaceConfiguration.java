@@ -136,6 +136,11 @@ public class StartSurfaceConfiguration {
             new IntCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
                     NUM_DAYS_USER_CLICK_BELOW_THRESHOLD_PARAM, 7);
 
+    private static final String SIGNIN_PROMO_NTP_COUNT_LIMIT_PARAM = "signin_promo_NTP_count_limit";
+    public static final IntCachedFieldTrialParameter SIGNIN_PROMO_NTP_COUNT_LIMIT =
+            new IntCachedFieldTrialParameter(ChromeFeatureList.START_SURFACE_ANDROID,
+                    SIGNIN_PROMO_NTP_COUNT_LIMIT_PARAM, Integer.MAX_VALUE);
+
     private static final String SIGNIN_PROMO_NTP_SINCE_FIRST_TIME_SHOWN_LIMIT_HOURS_PARAM =
             "signin_promo_NTP_since_first_time_shown_limit_hours";
     public static final IntCachedFieldTrialParameter
