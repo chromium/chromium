@@ -140,10 +140,9 @@ Profile* SharingHubBubbleController::GetProfile() const {
 }
 
 bool SharingHubBubbleController::ShouldOfferOmniboxIcon() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   if (GetProfile()->IsIncognitoProfile() || GetProfile()->IsGuestSession())
     return false;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
   return base::FeatureList::IsEnabled(features::kChromeOSSharingHub);
 #else
   return SharingHubOmniboxEnabled(GetWebContents().GetBrowserContext());
