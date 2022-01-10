@@ -672,7 +672,7 @@ const DeprecationInfo GetDeprecationInfo(const WebFeature feature) {
 
     case WebFeature::kPaymentRequestShowWithoutGesture:
       return DeprecationInfo::WithFeatureAndChromeStatusID(
-          "PaymentRequestShowWithoutGesture", kM99,
+          "PaymentRequestShowWithoutGesture", kM100,
           "Calling PaymentRequest.show() without user activation",
           "5948593429020672");
 
