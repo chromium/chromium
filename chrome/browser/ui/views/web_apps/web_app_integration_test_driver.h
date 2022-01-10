@@ -158,6 +158,7 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
   void NavigateNotfoundUrl();
   void NavigateTabbedBrowserToSite(const GURL& url);
   void ManifestUpdateDisplayMinimal(const std::string& site_mode);
+  void ManifestUpdateScopeSiteAFooTo(const std::string& scope_mode);
   void SetOpenInTab(const std::string& site_mode);
   void SetOpenInWindow(const std::string& site_mode);
   void SwitchProfileClients(const std::string& client_mode);
@@ -213,8 +214,6 @@ class WebAppIntegrationTestDriver : AppRegistrarObserver {
 
   std::unique_ptr<StateSnapshot> ConstructStateSnapshot();
 
-  GURL GetAppURLForManifest(const std::string& site_mode,
-                            DisplayMode display_mode);
   content::WebContents* GetCurrentTab(Browser* browser);
   GURL GetInScopeURL(const std::string& site_mode);
   GURL GetScopeForSiteMode(const std::string& site_mode);

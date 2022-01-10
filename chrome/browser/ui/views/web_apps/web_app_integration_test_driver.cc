@@ -59,6 +59,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_web_ui.h"
 #include "extensions/browser/extension_dialog_auto_confirm.h"
@@ -101,12 +103,38 @@ namespace web_app {
 
 namespace {
 
-const base::flat_map<std::string, std::string> g_site_mode_to_path = {
-    {"SiteA", "site_a"},
-    {"SiteB", "site_b"},
-    {"SiteC", "site_c"},
-    {"SiteAFoo", "site_a/foo"},
-    {"SiteABar", "site_a/bar"}};
+// Flushes the shortcuts tasks, which seem to sometimes still hang around after
+// our tasks are done.
+// TODO(crbug.com/1273568): Investigate the true source of flakiness instead of
+// papering over it here.
+void FlushShortcutTasks() {
+  // Execute the UI thread task runner before and after the shortcut task runner
+  // to ensure that tasks get to the shortcut runner, and then any scheduled
+  // replies on the UI thread get run.
+  {
+    base::RunLoop loop;
+    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, loop.QuitClosure());
+    loop.Run();
+  }
+  {
+    base::RunLoop loop;
+    internals::GetShortcutIOTaskRunner()->PostTask(FROM_HERE,
+                                                   loop.QuitClosure());
+    loop.Run();
+  }
+  {
+    base::RunLoop loop;
+    content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, loop.QuitClosure());
+    loop.Run();
+  }
+}
+
+const base::flat_map<std::string, std::string>
+    g_site_mode_to_relative_scope_url = {{"SiteA", "site_a"},
+                                         {"SiteB", "site_b"},
+                                         {"SiteC", "site_c"},
+                                         {"SiteAFoo", "site_a/foo"},
+                                         {"SiteABar", "site_a/bar"}};
 
 #if !defined(OS_CHROMEOS)
 class TestAppLauncherHandler : public AppLauncherHandler {
@@ -409,7 +437,9 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
         run_loop.Run();
       }
     }
-    content::RunAllTasksUntilIdle();
+    // TODO(crbug.com/1273568): Investigate the true source of flakiness instead
+    // of papering over it here.
+    FlushShortcutTasks();
   }
 // TODO(crbug.com/1273568): Investigate the true source of flakiness instead of
 // papering over it here.
@@ -670,12 +700,31 @@ void WebAppIntegrationTestDriver::NavigateTabbedBrowserToSite(const GURL& url) {
 void WebAppIntegrationTestDriver::ManifestUpdateDisplayMinimal(
     const std::string& site_mode) {
   BeforeStateChangeAction();
-  // TODO(dmurph): Create a map of supported manifest updates keyed on site
-  // mode.
-  ASSERT_EQ("SiteA", site_mode);
-  ForceUpdateManifestContents(
-      site_mode,
-      GetAppURLForManifest(site_mode, blink::mojom::DisplayMode::kMinimalUi));
+  ASSERT_EQ("SiteA", site_mode) << "Only site mode of 'SiteA' is supported";
+  auto scope_url_path =
+      g_site_mode_to_relative_scope_url.find(site_mode)->second;
+  std::string str_template =
+      "/web_apps/%s/basic.html?manifest=manifest_minimal_ui.json";
+  GURL url = embedded_test_server()->GetURL(
+      base::StringPrintf(str_template.c_str(), scope_url_path.c_str()));
+  ForceUpdateManifestContents(site_mode, url);
+  AfterStateChangeAction();
+}
+
+void WebAppIntegrationTestDriver::ManifestUpdateScopeSiteAFooTo(
+    const std::string& scope_mode) {
+  BeforeStateChangeAction();
+  // The `scope_mode` would be changing the scope set in the manifest file. For
+  // simplicity, right now only SiteA is supported, so that is just hardcoded in
+  // manifest_scope_site_a.json, which is specified in the URL.
+  ASSERT_EQ("SiteA", scope_mode) << "Only scope mode of 'SiteA' is supported";
+  auto scope_url_path =
+      g_site_mode_to_relative_scope_url.find("SiteAFoo")->second;
+  std::string str_template =
+      "/web_apps/%s/basic.html?manifest=manifest_scope_site_a.json";
+  GURL url = embedded_test_server()->GetURL(
+      base::StringPrintf(str_template.c_str(), scope_url_path.c_str()));
+  ForceUpdateManifestContents("SiteAFoo", url);
   AfterStateChangeAction();
 }
 
@@ -1112,7 +1161,8 @@ void WebAppIntegrationTestDriver::OnWebAppManifestUpdated(
   DCHECK_EQ(1ul, delegate_->GetAllProfiles().size())
       << "Manifest update waiting only supported on single profile tests.";
   bool is_waiting = app_ids_with_pending_manifest_updates_.erase(app_id);
-  ASSERT_TRUE(is_waiting) << "Received manifest update that was unexpected";
+  ASSERT_TRUE(is_waiting) << "Received manifest update that was unexpected "
+                          << old_name;
   if (waiting_for_update_id_ && app_id == waiting_for_update_id_.value()) {
     DCHECK(waiting_for_update_run_loop_);
     waiting_for_update_run_loop_->Quit();
@@ -1157,12 +1207,7 @@ void WebAppIntegrationTestDriver::AfterStateChangeAction() {
     }
   }
 #endif
-  content::RunAllTasksUntilIdle();
-  base::RunLoop run_loop;
-  internals::GetShortcutIOTaskRunner()->PostTask(
-      FROM_HERE, base::BindLambdaForTesting([&] { run_loop.Quit(); }));
-  run_loop.Run();
-  content::RunAllTasksUntilIdle();
+  FlushShortcutTasks();
   after_state_change_action_state_ = ConstructStateSnapshot();
   MaybeWaitForManifestUpdates();
 }
@@ -1181,8 +1226,9 @@ void WebAppIntegrationTestDriver::AfterStateCheckAction() {
 }
 
 GURL WebAppIntegrationTestDriver::GetAppStartURL(const std::string& site_mode) {
-  DCHECK(g_site_mode_to_path.contains(site_mode));
-  auto scope_url_path = g_site_mode_to_path.find(site_mode)->second;
+  DCHECK(g_site_mode_to_relative_scope_url.contains(site_mode));
+  auto scope_url_path =
+      g_site_mode_to_relative_scope_url.find(site_mode)->second;
   return embedded_test_server()->GetURL(
       base::StringPrintf("/web_apps/%s/basic.html", scope_url_path.c_str()));
 }
@@ -1274,19 +1320,6 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
   return std::make_unique<StateSnapshot>(std::move(profile_state_map));
 }
 
-GURL WebAppIntegrationTestDriver::GetAppURLForManifest(
-    const std::string& site_mode,
-    DisplayMode display_mode) {
-  DCHECK(g_site_mode_to_path.contains(site_mode));
-  auto scope_url_path = g_site_mode_to_path.find(site_mode)->second;
-  std::string str_template = "/web_apps/%s/basic.html";
-  if (display_mode == blink::mojom::DisplayMode::kMinimalUi) {
-    str_template += "?manifest=manifest_minimal_ui.json";
-  }
-  return embedded_test_server()->GetURL(
-      base::StringPrintf(str_template.c_str(), scope_url_path.c_str()));
-}
-
 content::WebContents* WebAppIntegrationTestDriver::GetCurrentTab(
     Browser* browser) {
   return browser->tab_strip_model()->GetActiveWebContents();
@@ -1298,8 +1331,9 @@ GURL WebAppIntegrationTestDriver::GetInScopeURL(const std::string& site_mode) {
 
 GURL WebAppIntegrationTestDriver::GetScopeForSiteMode(
     const std::string& site_mode) {
-  DCHECK(g_site_mode_to_path.contains(site_mode));
-  auto scope_url_path = g_site_mode_to_path.find(site_mode)->second;
+  DCHECK(g_site_mode_to_relative_scope_url.contains(site_mode));
+  auto scope_url_path =
+      g_site_mode_to_relative_scope_url.find(site_mode)->second;
   return embedded_test_server()->GetURL(
       base::StringPrintf("/web_apps/%s/", scope_url_path.c_str()));
 }
@@ -1395,12 +1429,12 @@ void WebAppIntegrationTestDriver::ForceUpdateManifestContents(
   ASSERT_TRUE(app_state.has_value());
   auto app_id = app_state->id;
   active_app_id_ = app_id;
+  app_ids_with_pending_manifest_updates_.insert(app_id);
 
   // Manifest updates must occur as the first navigation after a webapp is
   // installed, otherwise the throttle is tripped.
   ASSERT_FALSE(provider()->manifest_update_manager().IsUpdateConsumed(app_id));
   NavigateTabbedBrowserToSite(app_url_with_manifest_param);
-  app_ids_with_pending_manifest_updates_.insert(app_id);
 }
 
 void WebAppIntegrationTestDriver::MaybeWaitForManifestUpdates() {

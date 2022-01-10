@@ -16,6 +16,6 @@ function addManifestLinkTag(optionalCustomUrl) {
   document.head.append(linkTag);
 }
 
-function startWorker(worker) {
-  navigator.serviceWorker.register(worker);
+function startWorker(worker, options) {
+  navigator.serviceWorker.register(worker, options);
 }

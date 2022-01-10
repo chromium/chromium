@@ -17,6 +17,14 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest, UninstallFromList) {
   helper_.CheckAppNotInList("SiteA");
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest, ManifestUpdateScope) {
+  helper_.InstallOmniboxIcon("SiteAFoo");
+  helper_.ClosePwa();
+  helper_.ManifestUpdateScopeSiteAFooTo("SiteA");
+  helper_.NavigateBrowser("SiteA");
+  helper_.CheckLaunchIconShown();
+}
+
 // Automated tests:
 
 // TODO(crbug.com/1279704): Test is consistently failing on Mac and Win7.
