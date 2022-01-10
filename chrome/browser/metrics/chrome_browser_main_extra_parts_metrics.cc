@@ -220,20 +220,13 @@ void RecordStartupMetrics() {
   base::UmaHistogramBoolean("Windows.ApplockerRunning", IsApplockerRunning());
 #endif  // defined(OS_WIN)
 
-  // TODO(crbug.com/1216328) Remove logging.
-  LOG(ERROR) << "START: ReportBluetoothAvailability(). "
-                "If you don't see the END: message, this is crbug.com/1216328.";
   bluetooth_utility::ReportBluetoothAvailability();
-  LOG(ERROR) << "END: ReportBluetoothAvailability()";
 
   // Record whether Chrome is the default browser or not.
   // Disabled on Linux due to hanging browser tests, see crbug.com/1216328.
 #if !BUILDFLAG(IS_LINUX)
-  LOG(ERROR) << "START: GetDefaultBrowser(). "
-                "If you don't see the END: message, this is crbug.com/1216328.";
   shell_integration::DefaultWebClientState default_state =
       shell_integration::GetDefaultBrowser();
-  LOG(ERROR) << "END: GetDefaultBrowser()";
   base::UmaHistogramEnumeration("DefaultBrowser.State", default_state,
                                 shell_integration::NUM_DEFAULT_STATES);
 #endif  // !BUILDFLAG(IS_LINUX)
