@@ -617,8 +617,11 @@ void DemoSession::OnAppWindowActivated(extensions::AppWindow* app_window) {
 }
 
 void DemoSession::OnAppUpdate(const apps::AppUpdate& update) {
-  if (update.AppId() != GetHighlightsAppId())
+  if (update.AppId() != GetHighlightsAppId() ||
+      !(update.GetPriorReadiness() == apps::Readiness::kUnknown &&
+        update.GetReadiness() == apps::Readiness::kReady)) {
     return;
+  }
   Profile* profile = ProfileManager::GetActiveUserProfile();
   DCHECK(profile);
   apps::AppServiceProxyFactory::GetForProfile(profile)->LaunchAppWithParams(
