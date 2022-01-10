@@ -28,6 +28,7 @@ import time
 import urllib.request
 import urllib.error
 import zipfile
+import zlib
 
 
 # Do NOT CHANGE this if you don't know what you're doing -- see
@@ -96,16 +97,27 @@ def DownloadUrl(url, output_file):
     try:
       sys.stdout.write('Downloading %s ' % url)
       sys.stdout.flush()
-      response = urllib.request.urlopen(url)
+      request = urllib.request.Request(url)
+      request.add_header('Accept-Encoding', 'gzip')
+      response = urllib.request.urlopen(request)
       total_size = int(response.info().get('Content-Length').strip())
+
+      is_gzipped = response.info().get('Content-Encoding', '').strip() == 'gzip'
+      if is_gzipped:
+        gzip_decode = zlib.decompressobj(zlib.MAX_WBITS + 16)
+
       bytes_done = 0
       dots_printed = 0
       while True:
         chunk = response.read(CHUNK_SIZE)
         if not chunk:
           break
-        output_file.write(chunk)
         bytes_done += len(chunk)
+
+        if is_gzipped:
+          chunk = gzip_decode.decompress(chunk)
+        output_file.write(chunk)
+
         num_dots = TOTAL_DOTS * bytes_done // total_size
         sys.stdout.write('.' * (num_dots - dots_printed))
         sys.stdout.flush()
@@ -113,6 +125,8 @@ def DownloadUrl(url, output_file):
       if bytes_done != total_size:
         raise urllib.error.URLError("only got %d of %d bytes" %
                                     (bytes_done, total_size))
+      if is_gzipped:
+        output_file.write(gzip_decode.flush())
       print(' Done.')
       return
     except urllib.error.URLError as e:
