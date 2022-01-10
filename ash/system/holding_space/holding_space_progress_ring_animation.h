@@ -7,19 +7,14 @@
 
 #include <memory>
 
-#include "base/callback_list.h"
-#include "base/time/time.h"
-#include "ui/gfx/animation/animation_delegate.h"
-
-namespace gfx {
-class SlideAnimation;
-}  // namespace gfx
+#include "ash/system/holding_space/holding_space_progress_indicator_animation.h"
 
 namespace ash {
 
-// An animation for a `HoldingSpaceProgressRing` to be painted in lieu of the
-// determinate progress ring that would otherwise be painted.
-class HoldingSpaceProgressRingAnimation : public gfx::AnimationDelegate {
+// An animation for a `HoldingSpaceProgressIndicator` to be painted in lieu of
+// the determinate progress ring that would otherwise be painted.
+class HoldingSpaceProgressRingAnimation
+    : public HoldingSpaceProgressIndicatorAnimation {
  public:
   enum class Type {
     kIndeterminate,  // See `HoldingSpaceProgressRingIndeterminateAnimation`.
@@ -36,20 +31,8 @@ class HoldingSpaceProgressRingAnimation : public gfx::AnimationDelegate {
   static std::unique_ptr<HoldingSpaceProgressRingAnimation> CreateOfType(
       Type type);
 
-  // Adds the specified `callback` to be notified of animation updates. The
-  // `callback` will continue to receive events so long as both `this` and the
-  // returned subscription exist.
-  base::RepeatingClosureList::Subscription AddAnimationUpdatedCallback(
-      base::RepeatingClosureList::CallbackType callback);
-
-  // Immediately starts this animation.
-  void Start();
-
-  // Returns whether this animation is currently running.
-  bool IsAnimating() const;
-
+  // Returns the specific type of this animation.
   Type type() const { return type_; }
-  base::TimeTicks start_time() const { return start_time_; }
 
   // Returns animatable properties.
   float start_position() const { return start_position_; }
@@ -69,38 +52,16 @@ class HoldingSpaceProgressRingAnimation : public gfx::AnimationDelegate {
                                           float* opacity) = 0;
 
  private:
-  // gfx::AnimationDelegate:
-  void AnimationProgressed(const gfx::Animation* animation) override;
-  void AnimationEnded(const gfx::Animation* animation) override;
-
-  // Immediately start this animation. If `is_cyclic_restart` is `true`, this
-  // animation is being restarted after completion of a full animation cycle.
-  void StartInternal(bool is_cyclic_restart);
+  // HoldingSpaceProgressIndicatorAnimation:
+  void UpdateAnimatableProperties(double fraction) override;
 
   // The specific type of this animation.
   const Type type_;
-
-  // The duration for this animation.
-  const base::TimeDelta duration_;
-
-  // Whether or not this animation should loop on completion.
-  const bool is_cyclic_;
-
-  // The underlying animator which drives animation progress.
-  std::unique_ptr<gfx::SlideAnimation> animator_;
-
-  // The time at which this animation was `Start()`-ed.
-  base::TimeTicks start_time_;
 
   // Animatable properties.
   float start_position_ = 0.f;
   float end_position_ = 1.f;
   float opacity_ = 1.f;
-
-  // The list of callbacks for which to notify animation updates.
-  base::RepeatingClosureList animation_updated_callback_list_;
-
-  base::WeakPtrFactory<HoldingSpaceProgressRingAnimation> weak_factory_{this};
 };
 
 }  // namespace ash
