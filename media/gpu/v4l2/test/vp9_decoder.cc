@@ -156,6 +156,9 @@ std::unique_ptr<Vp9Decoder> Vp9Decoder::Create(
   LOG(INFO) << "Ivf file header: " << file_header.width << " x "
             << file_header.height;
 
+  // TODO(stevecho): might need to consider using more than 1 file descriptor
+  // (fd) & buffer with the output queue for 4K60 requirement.
+  // https://buganizer.corp.google.com/issues/202214561#comment31
   auto OUTPUT_queue = std::make_unique<V4L2Queue>(
       V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE, kDriverCodecFourcc,
       gfx::Size(file_header.width, file_header.height), /*num_planes=*/1,
@@ -371,6 +374,20 @@ void Vp9Decoder::SetupFrameParams(
   FillV4L2VP9SegmentationParams(segm_params, &v4l2_frame_params->seg);
 }
 
+bool Vp9Decoder::CopyFrameData(const Vp9FrameHeader& frame_hdr,
+                               std::unique_ptr<V4L2Queue>& queue) {
+  LOG_ASSERT(queue->num_buffers() == 1)
+      << "Only 1 buffer is expected to be used for OUTPUT queue for now.";
+
+  LOG_ASSERT(queue->num_planes() == 1)
+      << "Number of planes is expected to be 1 for OUTPUT queue.";
+
+  scoped_refptr<MmapedBuffer> buffer = queue->GetBuffer(0);
+
+  return memcpy(static_cast<uint8_t*>(buffer->mmaped_planes()[0].start_addr),
+                frame_hdr.data, frame_hdr.frame_size);
+}
+
 Vp9Decoder::Result Vp9Decoder::DecodeNextFrame() {
   gfx::Size size;
   Vp9FrameHeader frame_hdr{};
@@ -388,6 +405,9 @@ Vp9Decoder::Result Vp9Decoder::DecodeNextFrame() {
     case Vp9Parser::kOk:
       break;
   }
+
+  if (!CopyFrameData(frame_hdr, OUTPUT_queue_))
+    LOG(FATAL) << "Failed to copy the frame data into the V4L2 buffer.";
 
   if (!v4l2_ioctl_->QBuf(OUTPUT_queue_, 0))
     LOG(ERROR) << "VIDIOC_QBUF failed for OUTPUT queue.";
