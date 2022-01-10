@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/format_macros.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -19,13 +20,16 @@
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "media/base/audio_buffer_converter.h"
+#include "media/base/audio_bus.h"
 #include "media/base/fake_audio_renderer_sink.h"
 #include "media/base/media_client.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_audio_renderer_sink.h"
 #include "media/base/mock_filters.h"
+#include "media/base/speech_recognition_client.h"
 #include "media/base/test_helpers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -84,7 +88,9 @@ ACTION_P(AssertNotYetEnded, test) {
   ASSERT_FALSE(test->ended());
 }
 
-class AudioRendererImplTest : public ::testing::Test, public RendererClient {
+class AudioRendererImplTest : public ::testing::Test,
+                              public RendererClient,
+                              public SpeechRecognitionClient {
  public:
   std::vector<std::unique_ptr<AudioDecoder>> CreateAudioDecoderForTest() {
     auto decoder = std::make_unique<MockAudioDecoder>();
@@ -133,7 +139,7 @@ class AudioRendererImplTest : public ::testing::Test, public RendererClient {
         main_thread_task_runner_, sink_.get(),
         base::BindRepeating(&AudioRendererImplTest::CreateAudioDecoderForTest,
                             base::Unretained(this)),
-        &media_log_, nullptr);
+        &media_log_, this);
     renderer_->tick_clock_ = &tick_clock_;
     tick_clock_.Advance(base::Seconds(1));
   }
@@ -208,6 +214,8 @@ class AudioRendererImplTest : public ::testing::Test, public RendererClient {
     ConfigureDemuxerStream(true);
   }
 
+  void EnableSpeechRecognition() { renderer_->EnableSpeechRecognition(); }
+
   // RendererClient implementation.
   MOCK_METHOD1(OnError, void(PipelineStatus));
   void OnEnded() override {
@@ -227,7 +235,13 @@ class AudioRendererImplTest : public ::testing::Test, public RendererClient {
   MOCK_METHOD1(OnVideoFrameRateChange, void(absl::optional<int>));
   MOCK_METHOD1(OnDurationChange, void(base::TimeDelta));
   MOCK_METHOD1(OnRemotePlayStateChange, void(MediaStatus::State state));
-  MOCK_METHOD1(TranscribeAudioCallback, void(scoped_refptr<AudioBuffer>));
+  MOCK_METHOD1(TranscribeAudio, void(scoped_refptr<AudioBuffer>));
+
+  // SpeechRecognitionClient implementation.
+  MOCK_METHOD1(AddAudio, void(scoped_refptr<AudioBuffer>));
+  MOCK_METHOD3(AddAudio, void(std::unique_ptr<AudioBus>, int, ChannelLayout));
+  MOCK_METHOD0(IsSpeechRecognitionAvailable, bool());
+  MOCK_METHOD1(SetOnReadyCallback, void(OnReadyCallback));
 
   void InitializeRenderer(DemuxerStream* demuxer_stream,
                           PipelineStatusCallback pipeline_status_cb) {
@@ -265,7 +279,7 @@ class AudioRendererImplTest : public ::testing::Test, public RendererClient {
         main_thread_task_runner_, sink_.get(),
         base::BindRepeating(&AudioRendererImplTest::CreateAudioDecoderForTest,
                             base::Unretained(this)),
-        &media_log_, nullptr);
+        &media_log_, this);
 
     Initialize();
   }
@@ -680,14 +694,6 @@ TEST_F(AudioRendererImplTest, StartTicking) {
   // Drain internal buffer, we should have a pending read.
   EXPECT_TRUE(ConsumeBufferedData(frames_buffered()));
   WaitForPendingRead();
-}
-
-TEST_F(AudioRendererImplTest, TranscribeAudioCallback) {
-  Initialize();
-  EXPECT_CALL(*this, TranscribeAudioCallback(_)).Times(0);
-
-  Preroll();
-  StartTicking();
 }
 
 TEST_F(AudioRendererImplTest, EndOfStream) {
@@ -1743,5 +1749,67 @@ TEST_F(AudioRendererImplTest, DecodeAudioReadyPreemptsFlush) {
   // This shouldn't cause a deadlock.
   renderer_->decoded_audio_ready_for_testing();
 }
+
+#if !defined(OS_ANDROID)
+TEST_F(AudioRendererImplTest,
+       TranscribeAudioCallback_SpeechRecognitionDisabled) {
+  EXPECT_CALL(*this, SetOnReadyCallback(_));
+  Initialize();
+
+  EXPECT_CALL(*this, AddAudio(_)).Times(0);
+  Preroll();
+
+  StartTicking();
+}
+
+TEST_F(AudioRendererImplTest,
+       TranscribeAudioCallback_Muted_WithoutUserActivation) {
+  EnableSpeechRecognition();
+  EXPECT_CALL(*this, SetOnReadyCallback(_));
+  Initialize();
+
+  EXPECT_CALL(*this, AddAudio(_)).Times(0);
+  Preroll();
+
+  StartTicking();
+}
+
+TEST_F(AudioRendererImplTest,
+       TranscribeAudioCallback_Unmuted_WithoutUserActivation) {
+  EnableSpeechRecognition();
+
+  EXPECT_CALL(*this, SetOnReadyCallback(_));
+  Initialize();
+
+  EXPECT_CALL(*this, AddAudio(_)).Times(3);
+  next_timestamp_->SetBaseTimestamp(base::TimeDelta());
+  renderer_->SetMediaTime(base::TimeDelta());
+  renderer_->StartPlaying();
+  renderer_->SetVolume(1);
+  WaitForPendingRead();
+
+  EXPECT_CALL(*this, OnBufferingStateChange(BUFFERING_HAVE_ENOUGH,
+                                            BUFFERING_CHANGE_REASON_UNKNOWN));
+  DeliverRemainingAudio();
+  StartTicking();
+
+  EXPECT_EQ(renderer_->was_unmuted_for_testing(), 1);
+}
+
+TEST_F(AudioRendererImplTest,
+       TranscribeAudioCallback_Muted_WithUserActivation) {
+  EnableSpeechRecognition();
+  renderer_->SetWasPlayedWithUserActivation(true);
+
+  EXPECT_CALL(*this, SetOnReadyCallback(_));
+  Initialize();
+
+  EXPECT_CALL(*this, AddAudio(_)).Times(3);
+  Preroll();
+
+  StartTicking();
+  EXPECT_EQ(renderer_->was_unmuted_for_testing(), 1);
+}
+#endif
 
 }  // namespace media
