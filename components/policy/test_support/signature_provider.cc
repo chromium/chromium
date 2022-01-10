@@ -199,10 +199,15 @@ SignatureProvider::~SignatureProvider() = default;
 const SignatureProvider::SigningKey* SignatureProvider::GetKeyByVersion(
     int key_version) const {
   // |key_version| is 1-based.
-  return key_version > 0 &&
-                 static_cast<size_t>(key_version) <= signing_keys_.size()
-             ? &signing_keys_[key_version - 1]
-             : nullptr;
+  if (key_version < 1)
+    return nullptr;
+  size_t key_index = static_cast<size_t>(key_version) - 1;
+  if (key_index >= signing_keys_.size()) {
+    if (!rotate_keys())
+      return nullptr;
+    key_index %= signing_keys_.size();
+  }
+  return &signing_keys_[key_index];
 }
 
 const SignatureProvider::SigningKey* SignatureProvider::GetCurrentKey() const {

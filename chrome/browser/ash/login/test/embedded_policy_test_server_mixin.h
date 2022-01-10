@@ -5,10 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_TEST_EMBEDDED_POLICY_TEST_SERVER_MIXIN_H_
 #define CHROME_BROWSER_ASH_LOGIN_TEST_EMBEDDED_POLICY_TEST_SERVER_MIXIN_H_
 
+#include <initializer_list>
 #include <memory>
 #include <string>
 
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chromeos/system/fake_statistics_provider.h"
@@ -28,7 +30,18 @@ namespace ash {
 // Server is started after SetUp execution.
 class EmbeddedPolicyTestServerMixin : public InProcessBrowserTestMixin {
  public:
-  explicit EmbeddedPolicyTestServerMixin(InProcessBrowserTestMixinHost* host);
+  enum Capabilities {
+    // Enables the usage of keys canned into the policy test server, instead of
+    // the default key returned by PolicyBuilder::CreateTestSigningKey().
+    ENABLE_CANNED_SIGNING_KEYS,
+    // Enables the automatic rotation of the policy signing keys with each
+    // policy fetch request.
+    ENABLE_AUTOMATIC_ROTATION_OF_SIGNINGKEYS
+  };
+
+  explicit EmbeddedPolicyTestServerMixin(
+      InProcessBrowserTestMixinHost* host,
+      std::initializer_list<Capabilities> capabilities = {});
 
   EmbeddedPolicyTestServerMixin(const EmbeddedPolicyTestServerMixin&) = delete;
   EmbeddedPolicyTestServerMixin& operator=(
@@ -44,15 +57,28 @@ class EmbeddedPolicyTestServerMixin : public InProcessBrowserTestMixin {
   void SetUp() override;
   void SetUpCommandLine(base::CommandLine* command_line) override;
 
-  // Updates the device policy blob served by the local policy test server.
+  // Updates the device policy blob served by the embedded policy test server.
+  // This does not trigger policy invalidation, hence test authors must manually
+  // trigger a policy fetch.
   void UpdateDevicePolicy(
       const enterprise_management::ChromeDeviceSettingsProto& policy);
 
   // Updates user policy blob served by the embedded policy test server.
-  // `policy_user` - the policy user's email.
+  // `policy_user` - the policy user's email. This does not trigger policy
+  // invalidation, hence test authors must manually trigger a policy fetch.
   void UpdateUserPolicy(
       const enterprise_management::CloudPolicySettings& policy,
       const std::string& policy_user);
+
+  // Updates policy selected by |type| and optional |entity_id|. The policy is
+  // set to the proto serialized in |serialized_policy|. This does not trigger
+  // policy invalidation, hence test authors must manually trigger a policy
+  // fetch.
+  void UpdatePolicy(const std::string& type,
+                    const std::string& serialized_policy);
+  void UpdatePolicy(const std::string& type,
+                    const std::string& entity_id,
+                    const std::string& serialized_policy);
 
   // Configures whether the server should indicate that the client is
   // allowed to update device attributes in response to
@@ -109,6 +135,7 @@ class EmbeddedPolicyTestServerMixin : public InProcessBrowserTestMixin {
 
  private:
   std::unique_ptr<policy::EmbeddedPolicyTestServer> policy_test_server_;
+  base::flat_set<Capabilities> capabilities_;
 };
 
 }  // namespace ash
