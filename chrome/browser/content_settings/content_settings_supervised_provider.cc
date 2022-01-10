@@ -62,8 +62,7 @@ SupervisedProvider::SupervisedProvider(
                               base::Unretained(this)));
 }
 
-SupervisedProvider::~SupervisedProvider() {
-}
+SupervisedProvider::~SupervisedProvider() = default;
 
 std::unique_ptr<RuleIterator> SupervisedProvider::GetRuleIterator(
     ContentSettingsType content_type,
@@ -80,7 +79,7 @@ void SupervisedProvider::OnSupervisedSettingsAvailable(
     base::AutoLock auto_lock(lock_);
     for (const auto& entry : kContentSettingsFromSupervisedSettingsMap) {
       ContentSetting new_setting = CONTENT_SETTING_DEFAULT;
-      if (settings && settings->HasKey(entry.setting_name)) {
+      if (settings && settings->FindKey(entry.setting_name)) {
         DCHECK(settings->FindKey(entry.setting_name)->is_bool());
         if (settings->FindBoolKey(entry.setting_name).value_or(false))
           new_setting = entry.content_setting;

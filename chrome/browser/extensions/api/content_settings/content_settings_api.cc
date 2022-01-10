@@ -171,14 +171,13 @@ ContentSettingsContentSettingGetFunction::Run() {
                                               nullptr)
           : map->GetContentSetting(primary_url, secondary_url, content_type);
 
-  std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
+  base::Value result(base::Value::Type::DICTIONARY);
   std::string setting_string =
       content_settings::ContentSettingToString(setting);
   DCHECK(!setting_string.empty());
-  result->SetString(ContentSettingsStore::kContentSettingKey, setting_string);
+  result.SetStringKey(ContentSettingsStore::kContentSettingKey, setting_string);
 
-  return RespondNow(
-      OneArgument(base::Value::FromUniquePtrValue(std::move(result))));
+  return RespondNow(OneArgument(std::move(result)));
 }
 
 ExtensionFunction::ResponseAction

@@ -193,11 +193,11 @@ TEST_F(PolicyProviderTest, AutoSelectCertificateList) {
       cert_filter_setting.FindKeyOfType("filters", base::Value::Type::LIST);
   ASSERT_TRUE(cert_filters);
   ASSERT_FALSE(cert_filters->GetList().empty());
-  base::DictionaryValue* filter;
-  ASSERT_TRUE(cert_filters->GetList().front().GetAsDictionary(&filter));
-  std::string actual_common_name;
-  ASSERT_TRUE(filter->GetString("ISSUER.CN", &actual_common_name));
-  EXPECT_EQ("issuer name", actual_common_name);
+  auto& filter = cert_filters->GetList().front();
+  ASSERT_TRUE(filter.is_dict());
+  const std::string* actual_common_name = filter.FindStringPath("ISSUER.CN");
+  ASSERT_TRUE(actual_common_name);
+  EXPECT_EQ("issuer name", *actual_common_name);
   provider.ShutdownOnUIThread();
 }
 

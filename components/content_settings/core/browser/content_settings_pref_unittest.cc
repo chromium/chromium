@@ -114,16 +114,17 @@ TEST(ContentSettingsPref, CanonicalizationWhileReadingFromPrefs) {
       {kTestPatternCanonicalBeta, kTestPatternCanonicalBeta},
   };
 
-  auto original_pref_value = std::make_unique<base::DictionaryValue>();
+  base::Value original_pref_value(base::Value::Type::DICTIONARY);
   for (const auto* pattern : kTestOriginalPatterns) {
-    original_pref_value->SetKey(
+    original_pref_value.SetKey(
         pattern, CreateDummyContentSettingValue(pattern, /*expired=*/false));
   }
 
   TestingPrefServiceSimple prefs;
   prefs.registry()->RegisterDictionaryPref(kTestContentSettingPrefName);
-  prefs.SetUserPref(kTestContentSettingPrefName,
-                    std::move(original_pref_value));
+  prefs.SetUserPref(
+      kTestContentSettingPrefName,
+      base::Value::ToUniquePtrValue(std::move(original_pref_value)));
 
   PrefChangeRegistrar registrar;
   registrar.Init(&prefs);
@@ -177,20 +178,21 @@ TEST(ContentSettingsPref, ExpirationWhileReadingFromPrefs) {
 
   // Create two pre-existing entries, one that is expired and one that never
   // expires.
-  auto original_pref_value = std::make_unique<base::DictionaryValue>();
-  original_pref_value->SetKey(
+  base::Value original_pref_value(base::Value::Type::DICTIONARY);
+  original_pref_value.SetKey(
       kTestPatternCanonicalAlpha,
       CreateDummyContentSettingValue(kTestPatternCanonicalAlpha,
                                      /*expired=*/true));
-  original_pref_value->SetKey(
+  original_pref_value.SetKey(
       kTestPatternCanonicalBeta,
       CreateDummyContentSettingValue(kTestPatternCanonicalBeta,
                                      /*expired=*/false));
 
   TestingPrefServiceSimple prefs;
   prefs.registry()->RegisterDictionaryPref(kTestContentSettingPrefName);
-  prefs.SetUserPref(kTestContentSettingPrefName,
-                    std::move(original_pref_value));
+  prefs.SetUserPref(
+      kTestContentSettingPrefName,
+      base::Value::ToUniquePtrValue(std::move(original_pref_value)));
 
   PrefChangeRegistrar registrar;
   registrar.Init(&prefs);
@@ -232,7 +234,7 @@ TEST(ContentSettingsPref, ExpirationWhileReadingFromPrefs) {
 TEST(ContentSettingsPref, LegacyLastModifiedLoad) {
   constexpr char kPatternPair[] = "http://example.com,*";
 
-  auto original_pref_value = std::make_unique<base::DictionaryValue>();
+  base::Value original_pref_value(base::Value::Type::DICTIONARY);
   const base::Time last_modified =
       base::Time::FromInternalValue(13189876543210000);
 
@@ -244,12 +246,13 @@ TEST(ContentSettingsPref, LegacyLastModifiedLoad) {
   pref_value.SetKey(kSettingKey, base::Value(CONTENT_SETTING_BLOCK));
   pref_value.SetKey(kExpirationKey, base::Value("0"));
 
-  original_pref_value->SetKey(kPatternPair, std::move(pref_value));
+  original_pref_value.SetKey(kPatternPair, std::move(pref_value));
 
   TestingPrefServiceSimple prefs;
   prefs.registry()->RegisterDictionaryPref(kTestContentSettingPrefName);
-  prefs.SetUserPref(kTestContentSettingPrefName,
-                    std::move(original_pref_value));
+  prefs.SetUserPref(
+      kTestContentSettingPrefName,
+      base::Value::ToUniquePtrValue(std::move(original_pref_value)));
 
   PrefChangeRegistrar registrar;
   registrar.Init(&prefs);
