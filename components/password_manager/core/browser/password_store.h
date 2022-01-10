@@ -153,9 +153,14 @@ class PasswordStore : public PasswordStoreInterface {
   // |init_status_|.
   void OnInitCompleted(bool success);
 
-  // Notifies observers that password store data may have been changed.
+  // Notifies observers that password store data may have been changed. If
+  // available, it forwards the changes to observers. Otherwise, all logins are
+  // requested and forwarded to `NotifyLoginsRetainedOnMainSequence`.
   void NotifyLoginsChangedOnMainSequence(
       absl::optional<PasswordStoreChangeList> changes);
+
+  // Notifies observers with all logins remaining after a modifying operation.
+  void NotifyLoginsRetainedOnMainSequence(LoginsResultOrError result);
 
   // Called when the backend reports that sync has been enabled or disabled.
   void NotifySyncEnabledOrDisabledOnMainSequence();

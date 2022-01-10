@@ -365,18 +365,52 @@ void PasswordStore::NotifyLoginsChangedOnMainSequence(
     absl::optional<PasswordStoreChangeList> changes) {
   DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
 
-  // TODO(crbug.com/1267912): Rerequest full list if `!changes.has_value()`.
-
-  if (changes->empty())
-    return;
-
   // Don't propagate reference to this store after its shutdown. No caller
   // should expect any notifications from a shut down store in any case.
   if (!backend_)
     return;
 
+#if defined(OS_ANDROID)
+  if (!changes.has_value()) {
+    // If the changes aren't provided, the store propagates the latest logins.
+    backend_->GetAllLoginsAsync(base::BindOnce(
+        &PasswordStore::NotifyLoginsRetainedOnMainSequence, this));
+    return;
+  }
+#else
+  DCHECK(changes.has_value())
+      << "Non-Android platforms can always compute changes!";
+#endif
+
+  if (changes->empty())
+    return;
+
   for (auto& observer : observers_) {
     observer.OnLoginsChanged(this, changes.value());
+  }
+}
+
+void PasswordStore::NotifyLoginsRetainedOnMainSequence(
+    LoginsResultOrError result) {
+  DCHECK(main_task_runner_->RunsTasksInCurrentSequence());
+  // Don't propagate reference to this store after its shutdown. No caller
+  // should expect any notifications from a shut down store in any case.
+  if (!backend_)
+    return;
+
+  // Clients don't expect errors yet, so just wait for the next notification.
+  if (absl::holds_alternative<PasswordStoreBackendError>(result)) {
+    return;
+  }
+
+  std::vector<PasswordForm> retained_logins;
+  retained_logins.reserve(absl::get<LoginsResult>(result).size());
+  for (auto& login : absl::get<LoginsResult>(result)) {
+    retained_logins.push_back(std::move(*login));
+  }
+
+  for (auto& observer : observers_) {
+    observer.OnLoginsRetained(this, retained_logins);
   }
 }
 

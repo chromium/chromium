@@ -1099,6 +1099,46 @@ TEST_F(PasswordStoreTest, CallOnLoginsChangedIfUpdateProvidesChanges) {
   store->ShutdownOnUIThread();
 }
 
+#if defined(OS_ANDROID)
+TEST_F(PasswordStoreTest, CallOnLoginsRetainedIfUpdateProvidesNoChanges) {
+  std::vector<std::unique_ptr<PasswordForm>> all_credentials;
+  all_credentials.push_back(FillPasswordFormWithData(
+      CreateTestPasswordFormDataByOrigin(kTestWebRealm1)));
+  all_credentials.push_back(FillPasswordFormWithData(
+      CreateTestPasswordFormDataByOrigin(kTestAndroidRealm1)));
+  const PasswordForm kTestForm = *all_credentials[0];
+  const PasswordForm kOtherForm = *all_credentials[1];
+  MockPasswordStoreObserver mock_observer;
+  scoped_refptr<PasswordStore> store;
+  MockPasswordStoreBackend* mock_backend;
+  std::tie(store, mock_backend) = CreateUnownedStoreWithOwnedMockBackend();
+  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+  store->AddObserver(&mock_observer);
+
+  // Expect that observers receive the full list if the backend invokes the
+  // reply with a nullopt.
+  EXPECT_CALL(*mock_backend, UpdateLoginAsync(Eq(kTestForm), _))
+      .WillOnce(
+          WithArg<1>(Invoke([](PasswordStoreChangeListReply reply) -> void {
+            std::move(reply).Run(absl::nullopt);
+          })));
+  EXPECT_CALL(*mock_backend, GetAllLoginsAsync(_))
+      .WillOnce(WithArg<0>(
+          Invoke([&all_credentials](LoginsOrErrorReply reply) -> void {
+            std::move(reply).Run(std::move(all_credentials));
+          })));
+  EXPECT_CALL(mock_observer, OnLoginsChanged).Times(0);
+  EXPECT_CALL(mock_observer,
+              OnLoginsRetained(store.get(),
+                               UnorderedElementsAre(kTestForm, kOtherForm)));
+  store->UpdateLogin(kTestForm);
+  WaitForPasswordStore();
+
+  store->RemoveObserver(&mock_observer);
+  store->ShutdownOnUIThread();
+}
+#endif  // OS_ANDROID
+
 TEST_F(PasswordStoreTest, GetAllLogins) {
   static constexpr PasswordFormData kTestCredentials[] = {
       {PasswordForm::Scheme::kHtml, kTestAndroidRealm1, "", "", u"", u"", u"",
@@ -1205,7 +1245,6 @@ TEST_F(PasswordStoreTest, GetAllLoginsWithAffiliationAndBrandingInformation) {
   EXPECT_CALL(mock_consumer,
               OnGetPasswordStoreResultsConstRef(
                   UnorderedPasswordFormElementsAre(&expected_results)));
-  LoginsOrErrorReply callback;
   EXPECT_CALL(*mock_backend, GetAllLoginsAsync)
       .WillOnce([&all_credentials](LoginsOrErrorReply callback) {
         std::move(callback).Run(std::move(all_credentials));
