@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_DIRECT_SOCKETS_DIRECT_UDP_SOCKET_IMPL_H_
 #define CONTENT_BROWSER_DIRECT_SOCKETS_DIRECT_UDP_SOCKET_IMPL_H_
 
+#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/ip_endpoint.h"
@@ -17,7 +18,8 @@ namespace content {
 // Forwards requests from the Renderer to the connected UDPSocket.
 // We do not expose the UDPSocket directly to the Renderer, as that
 // would allow a compromised Renderer to contact other end points.
-class DirectUDPSocketImpl : public blink::mojom::DirectUDPSocket {
+class CONTENT_EXPORT DirectUDPSocketImpl
+    : public blink::mojom::DirectUDPSocket {
  public:
   typedef network::mojom::UDPSocket::ConnectCallback ConnectCallback;
 
@@ -31,15 +33,14 @@ class DirectUDPSocketImpl : public blink::mojom::DirectUDPSocket {
                network::mojom::UDPSocketOptionsPtr options,
                ConnectCallback callback);
 
- protected:
-  // blink:mojom::DirectUDPSocket:
+  // blink::mojom::DirectUDPSocket:
   void ReceiveMore(uint32_t num_additional_datagrams) override;
   void Send(base::span<const uint8_t> data, SendCallback callback) override;
   void Close() override;
 
+ private:
   void OnDisconnect();
 
- private:
   mojo::Remote<network::mojom::UDPSocket> remote_;
 };
 
