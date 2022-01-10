@@ -1640,6 +1640,8 @@ void AppListControllerImpl::RemoveObserver(
 
 void AppListControllerImpl::OnVisibilityChanged(bool visible,
                                                 int64_t display_id) {
+  DVLOG(1) << __PRETTY_FUNCTION__ << " visible " << visible << " display_id "
+           << display_id;
   // Focus and app visibility changes while finishing home launcher state
   // animation may cause OnVisibilityChanged() to be called before the home
   // launcher state transition finished - delay the visibility change until
