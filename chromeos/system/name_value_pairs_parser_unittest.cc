@@ -95,6 +95,22 @@ name4="value4"
   EXPECT_EQ("value3", map["name3"]);
 }
 
+TEST(NameValuePairsParser, TestParseErrorInVpdDumpFormat) {
+  constexpr NameValuePairsFormat format = NameValuePairsFormat::kVpdDump;
+  NameValuePairsParser::NameValueMap map;
+  NameValuePairsParser parser(&map);
+
+  // Names must be quoted in VPD dump format. Unquoted names are ignored.
+  const std::string contents1 = R"(
+"name1"="value1"
+# RW_VPD execute error.
+)";
+  EXPECT_FALSE(parser.ParseNameValuePairs(contents1, format,
+                                          /*debug_source=*/"unit test"));
+  EXPECT_EQ(1U, map.size());
+  EXPECT_EQ("value1", map["name1"]);
+}
+
 TEST(NameValuePairsParser, TestParseNameValuePairsInMachineInfoFormat) {
   constexpr NameValuePairsFormat format = NameValuePairsFormat::kMachineInfo;
   NameValuePairsParser::NameValueMap map;

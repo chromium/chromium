@@ -72,6 +72,7 @@ class COMPONENT_EXPORT(CHROMEOS_SYSTEM) NameValuePairsParser {
                            TestParseNameValuePairs);
   FRIEND_TEST_ALL_PREFIXES(NameValuePairsParser,
                            TestParseNameValuePairsInVpdDumpFormat);
+  FRIEND_TEST_ALL_PREFIXES(NameValuePairsParser, TestParseErrorInVpdDumpFormat);
   FRIEND_TEST_ALL_PREFIXES(NameValuePairsParser,
                            TestParseNameValuePairsInMachineInfoFormat);
   FRIEND_TEST_ALL_PREFIXES(NameValuePairsParser,
