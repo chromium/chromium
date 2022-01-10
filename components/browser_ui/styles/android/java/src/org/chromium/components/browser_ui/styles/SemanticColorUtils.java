@@ -61,6 +61,12 @@ public class SemanticColorUtils {
         return resolve(R.attr.colorOnSurface, R.color.default_icon_color_baseline, context);
     }
 
+    /** Returns the semantic color value that corresponds to default_icon_color_inverse. */
+    public static @ColorInt int getDefaultIconColorInverse(Context context) {
+        return resolve(
+                R.attr.colorOnSurfaceInverse, R.color.default_icon_color_inverse_baseline, context);
+    }
+
     /** Returns the semantic color value that corresponds to default_icon_color_accent1. */
     public static @ColorInt int getDefaultIconColorAccent1(Context context) {
         return resolve(R.attr.colorPrimary, R.color.default_icon_color_accent1_baseline, context);

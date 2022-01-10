@@ -192,11 +192,6 @@ public class TabUiThemeProvider {
      */
     public static ColorStateList getToggleActionButtonCheckedDrawableTintList(
             Context context, boolean isIncognito) {
-        if (!themeRefactorEnabled()) {
-            return AppCompatResources.getColorStateList(context,
-                    isIncognito ? R.color.default_icon_color_dark
-                                : R.color.default_icon_color_inverse);
-        }
         if (isIncognito) {
             return AppCompatResources.getColorStateList(
                     context, R.color.incognito_tab_bg_selected_color);

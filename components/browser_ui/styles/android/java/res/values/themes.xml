@@ -59,7 +59,6 @@
         <item name="default_bg_color_dynamic">?attr/colorSurface</item>
         <item name="divider_line_bg_color_dynamic">?attr/colorSurfaceVariant</item>
         <!-- Common icon colors for drawables. -->
-        <item name="default_icon_color_inverse">@color/default_icon_color_light</item>
         <item name="default_icon_color_secondary">@color/default_icon_color_secondary_dark</item>
         <item name="default_icon_color_disabled">@color/default_icon_color_disabled_dark</item>
         <item name="default_icon_color_disabled_inverse">@color/default_icon_color_disabled_light</item>
@@ -122,7 +121,6 @@
         <item name="default_bg_color_dynamic">?attr/colorSurface</item>
         <item name="divider_line_bg_color_dynamic">?attr/colorSurfaceVariant</item>
         <!-- Common icon colors for drawables. -->
-        <item name="default_icon_color_inverse">@color/default_icon_color_light</item>
         <item name="default_icon_color_secondary">@color/default_icon_color_secondary_dark</item>
         <item name="default_icon_color_disabled">@color/default_icon_color_disabled_dark</item>
         <item name="default_icon_color_disabled_inverse">@color/default_icon_color_disabled_light</item>

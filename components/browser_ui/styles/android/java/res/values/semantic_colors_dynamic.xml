@@ -11,6 +11,8 @@
     <macro name="default_control_color_normal">?attr/colorOnSurfaceVariant</macro>
     <macro name="default_icon_color">?attr/colorOnSurface</macro>
     <macro name="default_icon_color_accent1">?attr/colorPrimary</macro>
+    <macro name="default_icon_color_inverse">?attr/colorOnSurfaceInverse</macro>
+    <macro name="default_icon_color_on_accent1">?attr/colorOnPrimary</macro>
     <macro name="default_text_color">?attr/colorOnSurface</macro>
     <macro name="default_text_color_accent1">?attr/colorPrimary</macro>
     <macro name="default_text_color_on_accent1">?attr/colorOnPrimary</macro>
@@ -25,6 +27,8 @@
     <macro name="default_control_color_normal">@color/default_control_color_normal_baseline</macro>
     <macro name="default_icon_color">@color/default_icon_color_baseline</macro>
     <macro name="default_icon_color_accent1">@color/default_icon_color_accent1_baseline</macro>
+    <macro name="default_icon_color_inverse">@color/default_icon_color_inverse_baseline</macro>
+    <macro name="default_icon_color_on_accent1">@color/default_icon_color_on_accent1_baseline</macro>
     <macro name="default_text_color">@color/default_text_color_baseline</macro>
     <macro name="default_text_color_accent1">@color/default_text_color_blue_baseline</macro>
     <macro name="default_text_color_on_accent1">@color/default_text_color_on_accent1_baseline</macro>
