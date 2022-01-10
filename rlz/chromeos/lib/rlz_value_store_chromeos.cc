@@ -4,6 +4,8 @@
 
 #include "rlz/chromeos/lib/rlz_value_store_chromeos.h"
 
+#include <tuple>
+
 #include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
@@ -11,7 +13,6 @@
 #include "base/cxx17_backports.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
-#include "base/ignore_result.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/lazy_instance.h"
@@ -556,7 +557,7 @@ ScopedRlzValueStoreLock::~ScopedRlzValueStoreLock() {
 
   if (g_lock_depth > 0) {
     // Other locks are still using store_, so don't free it yet.
-    ignore_result(store_.release());
+    std::ignore = store_.release();
     return;
   }
 

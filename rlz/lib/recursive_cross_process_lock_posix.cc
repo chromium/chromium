@@ -11,8 +11,9 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <tuple>
+
 #include "base/files/file_path.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 
@@ -72,7 +73,7 @@ bool RecursiveCrossProcessLock::TryGetCrossProcessLock(
 
 void RecursiveCrossProcessLock::ReleaseLock() {
   if (file_lock_ != -1) {
-    ignore_result(HANDLE_EINTR(flock(file_lock_, LOCK_UN)));
+    std::ignore = HANDLE_EINTR(flock(file_lock_, LOCK_UN));
     close(file_lock_);
     file_lock_ = -1;
   }
