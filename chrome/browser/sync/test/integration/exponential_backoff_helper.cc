@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/sync/test/integration/retry_verifier.h"
+#include "chrome/browser/sync/test/integration/exponential_backoff_helper.h"
 
 #include <string.h>
 
 #include <algorithm>
+#include <ostream>
 
 #include "base/logging.h"
 #include "components/sync/engine/cycle/sync_cycle_snapshot.h"
 #include "components/sync/engine/polling_constants.h"
+
+namespace exponential_backoff_helper {
 
 namespace {
 
@@ -107,3 +110,23 @@ void RetryVerifier::VerifyRetryInterval(const syncer::SyncCycleSnapshot& snap) {
     return;
   }
 }
+
+ExponentialBackoffChecker::ExponentialBackoffChecker(
+    syncer::SyncServiceImpl* sync_service)
+    : SingleClientStatusChangeChecker(sync_service) {
+  const syncer::SyncCycleSnapshot& snap =
+      service()->GetLastCycleSnapshotForDebugging();
+  retry_verifier_.Initialize(snap);
+}
+
+bool ExponentialBackoffChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Verifying backoff intervals (" << retry_verifier_.retry_count() << "/"
+      << RetryVerifier::kMaxRetry << ")";
+
+  const syncer::SyncCycleSnapshot& snap =
+      service()->GetLastCycleSnapshotForDebugging();
+  retry_verifier_.VerifyRetryInterval(snap);
+  return (retry_verifier_.done() && retry_verifier_.Succeeded());
+}
+
+}  // namespace exponential_backoff_helper

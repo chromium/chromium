@@ -5,8 +5,7 @@
 #include "base/bind.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/test/integration/bookmarks_helper.h"
-#include "chrome/browser/sync/test/integration/retry_verifier.h"
-#include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
+#include "chrome/browser/sync/test/integration/exponential_backoff_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/sync/test/integration/updated_progress_marker_checker.h"
 #include "components/sync/driver/sync_service_impl.h"
@@ -19,7 +18,7 @@ namespace {
 
 using bookmarks_helper::AddFolder;
 using bookmarks_helper::ServerBookmarksEqualityChecker;
-using syncer::SyncCycleSnapshot;
+using exponential_backoff_helper::ExponentialBackoffChecker;
 
 class SyncExponentialBackoffTest : public SyncTest {
  public:
@@ -36,39 +35,6 @@ class SyncExponentialBackoffTest : public SyncTest {
     net::NetworkChangeNotifier::SetTestNotificationsOnly(true);
     SyncTest::SetUp();
   }
-};
-
-// Helper class that checks if a sync client has successfully gone through
-// exponential backoff after it encounters an error.
-class ExponentialBackoffChecker : public SingleClientStatusChangeChecker {
- public:
-  explicit ExponentialBackoffChecker(syncer::SyncServiceImpl* sync_service)
-      : SingleClientStatusChangeChecker(sync_service) {
-    const SyncCycleSnapshot& snap =
-        service()->GetLastCycleSnapshotForDebugging();
-    retry_verifier_.Initialize(snap);
-  }
-
-  ExponentialBackoffChecker(const ExponentialBackoffChecker&) = delete;
-  ExponentialBackoffChecker& operator=(const ExponentialBackoffChecker&) =
-      delete;
-
-  // Checks if backoff is complete. Called repeatedly each time SyncServiceImpl
-  // notifies observers of a state change.
-  bool IsExitConditionSatisfied(std::ostream* os) override {
-    *os << "Verifying backoff intervals (" << retry_verifier_.retry_count()
-        << "/" << RetryVerifier::kMaxRetry << ")";
-
-    const SyncCycleSnapshot& snap =
-        service()->GetLastCycleSnapshotForDebugging();
-    retry_verifier_.VerifyRetryInterval(snap);
-    return (retry_verifier_.done() && retry_verifier_.Succeeded());
-  }
-
- private:
-  // Keeps track of the number of attempts at exponential backoff and its
-  // related bookkeeping information for verification.
-  RetryVerifier retry_verifier_;
 };
 
 // Flaky on ChromeOS, crbug.com/1170609
