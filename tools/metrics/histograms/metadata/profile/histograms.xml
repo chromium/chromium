@@ -682,6 +682,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Profile.SyncCustomizationBubbleDelay" units="ms"
     expires_after="2022-02-01">
+  <obsolete>
+    Removed 2021-12.
+  </obsolete>
   <owner>jkrcal@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
   <summary>

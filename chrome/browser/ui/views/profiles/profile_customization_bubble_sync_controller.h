@@ -8,7 +8,6 @@
 #include "base/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/time/time.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/themes/theme_syncable_service.h"
@@ -107,7 +106,6 @@ class ProfileCustomizationBubbleSyncController
   const raw_ptr<ThemeService> theme_service_;
   ShowBubbleCallback show_bubble_callback_;
   SkColor const suggested_profile_color_;
-  base::TimeTicks observation_start_time_;
 
   base::ScopedObservation<Profile, ProfileObserver> profile_observation_{this};
   base::ScopedObservation<views::View, views::ViewObserver> view_observation_{

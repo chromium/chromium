@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ui/views/profiles/profile_customization_bubble_sync_controller.h"
 
-#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
@@ -107,8 +106,7 @@ ProfileCustomizationBubbleSyncController::
     : sync_service_(sync_service),
       theme_service_(theme_service),
       show_bubble_callback_(std::move(show_bubble_callback)),
-      suggested_profile_color_(suggested_profile_color),
-      observation_start_time_(base::TimeTicks::Now()) {
+      suggested_profile_color_(suggested_profile_color) {
   CHECK(profile);
   CHECK(anchor_view);
   CHECK(sync_service_);
@@ -120,10 +118,7 @@ ProfileCustomizationBubbleSyncController::
 }
 
 ProfileCustomizationBubbleSyncController::
-    ~ProfileCustomizationBubbleSyncController() {
-  base::UmaHistogramTimes("Profile.SyncCustomizationBubbleDelay",
-                          base::TimeTicks::Now() - observation_start_time_);
-}
+    ~ProfileCustomizationBubbleSyncController() = default;
 
 void ProfileCustomizationBubbleSyncController::Init() {
   if (!CanSyncStart(sync_service_)) {
