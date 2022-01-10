@@ -119,9 +119,9 @@ TEST_F(WebEngineIntegrationLoggingTest, SetJavaScriptLogLevel_DEBUG) {
   log_listener.ListenToLog(log(), nullptr);
 
   // Create the Context & Frame with all log severities enabled.
+  CreateContext(TestContextParams());
   fuchsia::web::CreateFrameParams frame_params;
   frame_params.set_debug_name(kFrameLogTag);
-  CreateContext(TestContextParams());
   CreateFrameWithParams(std::move(frame_params));
   frame_->SetJavaScriptLogLevel(fuchsia::web::ConsoleLogLevel::DEBUG);
 
