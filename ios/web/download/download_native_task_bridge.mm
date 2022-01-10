@@ -4,6 +4,8 @@
 
 #import "ios/web/download/download_native_task_bridge.h"
 
+#import "base/check.h"
+
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
@@ -13,6 +15,7 @@
   id<DownloadNativeTaskBridgeReadyDelegate> _readyDelegate;
   void (^_progressionHandler)();
   void (^_completionHandler)(int error_code);
+  BOOL _observingDownloadProgress;
 }
 
 - (instancetype)initWithDownload:(WKDownload*)download
@@ -25,6 +28,10 @@
     _download.delegate = self;
   }
   return self;
+}
+
+- (void)dealloc {
+  [self stopObservingDownloadProgress];
 }
 
 - (void)cancel {
@@ -54,6 +61,8 @@
     });
   }
 
+  [self stopObservingDownloadProgress];
+
   [_download cancel:^(NSData* data){/* do nothing */}];
   _download = nil;
 }
@@ -64,10 +73,7 @@
   _progressionHandler = progressionHandler;
   _completionHandler = completionHandler;
 
-  [_download.progress addObserver:self
-                       forKeyPath:@"fractionCompleted"
-                          options:NSKeyValueObservingOptionNew
-                          context:nil];
+  [self startObservingDownloadProgress];
 
   _urlForDownload = [url copy];
 
@@ -100,11 +106,15 @@
           resumeData:(NSData*)resumeData API_AVAILABLE(ios(15)) {
   if (_completionHandler)
     (_completionHandler)(error.code);
+
+  [self stopObservingDownloadProgress];
 }
 
 - (void)downloadDidFinish:(WKDownload*)download API_AVAILABLE(ios(15)) {
   if (_completionHandler)
     (_completionHandler)(0);
+
+  [self stopObservingDownloadProgress];
 }
 
 #pragma mark - KVO
@@ -115,6 +125,27 @@
                        context:(void*)context API_AVAILABLE(ios(15)) {
   if (_progressionHandler)
     _progressionHandler();
+}
+
+#pragma mark - Private methods
+
+- (void)startObservingDownloadProgress {
+  DCHECK(!_observingDownloadProgress);
+
+  _observingDownloadProgress = YES;
+  [_download.progress addObserver:self
+                       forKeyPath:@"fractionCompleted"
+                          options:NSKeyValueObservingOptionNew
+                          context:nil];
+}
+
+- (void)stopObservingDownloadProgress {
+  if (_observingDownloadProgress) {
+    _observingDownloadProgress = NO;
+    [_download.progress removeObserver:self
+                            forKeyPath:@"fractionCompleted"
+                               context:nil];
+  }
 }
 
 @end
