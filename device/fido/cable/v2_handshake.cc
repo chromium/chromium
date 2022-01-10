@@ -16,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/sys_byteorder.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -47,16 +48,24 @@ namespace {
 // will ever reach.
 constexpr uint32_t kMaxSequence = (1 << 24) - 1;
 
-bool ConstructNonce(uint32_t counter, base::span<uint8_t, 12> out_nonce) {
+bool ConstructNonce(uint32_t counter,
+                    bool big_endian,
+                    base::span<uint8_t, 12> out_nonce) {
   if (counter > kMaxSequence) {
     return false;
   }
 
-  // Nonce is just a little-endian counter.
   std::array<uint8_t, sizeof(counter)> counter_bytes;
-  memcpy(counter_bytes.data(), &counter, sizeof(counter));
-  std::copy(counter_bytes.begin(), counter_bytes.end(), out_nonce.begin());
-  std::fill(out_nonce.begin() + counter_bytes.size(), out_nonce.end(), 0);
+  if (big_endian) {
+    std::fill(out_nonce.begin(), out_nonce.end(), 0);
+    counter = base::ByteSwap(counter);
+    memcpy(out_nonce.data() + out_nonce.size() - sizeof(counter), &counter,
+           sizeof(counter));
+  } else {
+    memcpy(counter_bytes.data(), &counter, sizeof(counter));
+    std::copy(counter_bytes.begin(), counter_bytes.end(), out_nonce.begin());
+    std::fill(out_nonce.begin() + counter_bytes.size(), out_nonce.end(), 0);
+  }
   return true;
 }
 
@@ -98,6 +107,11 @@ bssl::UniquePtr<EC_KEY> ECKeyFromSeed(
   return bssl::UniquePtr<EC_KEY>(
       EC_KEY_derive_from_secret(p256.get(), seed.data(), seed.size()));
 }
+
+// kAdditionalDataBytes is the AD input to the AEAD used in caBLEv2. We're
+// transitioning away from this towards not supplying an AD in order to better
+// match Noise.
+const uint8_t kAdditionalDataBytes[1] = {/*version=*/2};
 
 }  // namespace
 
@@ -717,7 +731,7 @@ bool Crypter::Encrypt(std::vector<uint8_t>* message_to_encrypt) {
   padded_message[padded_message.size() - 1] = static_cast<uint8_t>(num_zeros);
 
   std::array<uint8_t, 12> nonce;
-  if (!ConstructNonce(write_sequence_num_++, nonce)) {
+  if (!ConstructNonce(write_sequence_num_++, new_construction_, nonce)) {
     return false;
   }
 
@@ -725,7 +739,11 @@ bool Crypter::Encrypt(std::vector<uint8_t>* message_to_encrypt) {
   aes_key.Init(write_key_);
   DCHECK_EQ(nonce.size(), aes_key.NonceLength());
 
-  const uint8_t additional_data[1] = {/*version=*/2};
+  base::span<const uint8_t> additional_data;
+  if (!new_construction_) {
+    additional_data = kAdditionalDataBytes;
+  }
+
   std::vector<uint8_t> ciphertext =
       aes_key.Seal(padded_message, nonce, additional_data);
   message_to_encrypt->swap(ciphertext);
@@ -735,7 +753,7 @@ bool Crypter::Encrypt(std::vector<uint8_t>* message_to_encrypt) {
 bool Crypter::Decrypt(base::span<const uint8_t> ciphertext,
                       std::vector<uint8_t>* out_plaintext) {
   std::array<uint8_t, 12> nonce;
-  if (!ConstructNonce(read_sequence_num_, nonce)) {
+  if (!ConstructNonce(read_sequence_num_, new_construction_, nonce)) {
     return false;
   }
 
@@ -743,11 +761,21 @@ bool Crypter::Decrypt(base::span<const uint8_t> ciphertext,
   aes_key.Init(read_key_);
   DCHECK_EQ(nonce.size(), aes_key.NonceLength());
 
-  const uint8_t additional_data[1] = {/*version=*/2};
+  base::span<const uint8_t> additional_data;
+  if (!new_construction_) {
+    additional_data = kAdditionalDataBytes;
+  }
+
   absl::optional<std::vector<uint8_t>> plaintext =
       aes_key.Open(ciphertext, nonce, additional_data);
 
   if (!plaintext) {
+    // We're transitioning to a different construction. If we failed to decrypt
+    // the first message with the old one, try again with the new.
+    if (!new_construction_ && read_sequence_num_ == 0) {
+      new_construction_ = true;
+      return Decrypt(ciphertext, out_plaintext);
+    }
     return false;
   }
   read_sequence_num_++;
@@ -770,6 +798,10 @@ bool Crypter::Decrypt(base::span<const uint8_t> ciphertext,
 
 bool Crypter::IsCounterpartyOfForTesting(const Crypter& other) const {
   return read_key_ == other.write_key_ && write_key_ == other.read_key_;
+}
+
+bool& Crypter::GetNewConstructionFlagForTesting() {
+  return new_construction_;
 }
 
 HandshakeInitiator::HandshakeInitiator(

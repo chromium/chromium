@@ -359,6 +359,43 @@ TEST_F(CableV2HandshakeTest, KNHandshake) {
   }
 }
 
+TEST_F(CableV2HandshakeTest, ConstructionTransition) {
+  std::array<uint8_t, 32> key1, key2;
+  std::fill(key1.begin(), key1.end(), 1);
+  std::fill(key2.begin(), key2.end(), 2);
+
+  Crypter a(key1, key2);
+  Crypter b(key2, key1);
+
+  std::vector<uint8_t> message, ciphertext, plaintext;
+  message.resize(100);
+  std::fill(message.begin(), message.end(), 42);
+
+  // Encrypt a message using the new construction.
+  a.GetNewConstructionFlagForTesting() = true;
+  ciphertext = message;
+  ASSERT_TRUE(a.Encrypt(&ciphertext));
+
+  // The new construction should be automatically detected so this should work
+  // and should cause the flag to be set.
+  EXPECT_FALSE(b.GetNewConstructionFlagForTesting());
+  ASSERT_TRUE(b.Decrypt(ciphertext, &plaintext));
+  ASSERT_TRUE(plaintext == message);
+  EXPECT_TRUE(b.GetNewConstructionFlagForTesting());
+
+  // Sending messages still works.
+  ciphertext = message;
+  ASSERT_TRUE(a.Encrypt(&ciphertext));
+  ASSERT_TRUE(b.Decrypt(ciphertext, &plaintext));
+  ASSERT_TRUE(plaintext == message);
+
+  // But old-construction messages will no longer be accepted.
+  ciphertext = message;
+  a.GetNewConstructionFlagForTesting() = false;
+  ASSERT_TRUE(a.Encrypt(&ciphertext));
+  ASSERT_FALSE(b.Decrypt(ciphertext, &plaintext));
+}
+
 }  // namespace
 }  // namespace cablev2
 }  // namespace device
