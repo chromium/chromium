@@ -89,6 +89,9 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
     // Toast at the top of the screen that is shown when user enters fullscreen for the
     // first time.
     private View mNotificationToast;
+    private long mNotificationStartTimestamp;
+    private long mNotificationRemainingTimeMs;
+    private final Runnable mHideNotificationToastRunnable;
 
     private OnLayoutChangeListener mFullscreenOnLayoutChangeListener;
 
@@ -199,6 +202,7 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
         mPersistentModeSupplier = new ObservableSupplierImpl<>();
         mPersistentModeSupplier.set(false);
         mExitFullscreenOnStop = exitFullscreenOnStop;
+        mHideNotificationToastRunnable = this::hideNotificationToast;
     }
 
     /**
@@ -524,7 +528,11 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
         mNotificationToast.setAlpha(0);
         parent.addView(mNotificationToast);
         mNotificationToast.animate().alpha(1).setDuration(TOAST_FADE_MS).start();
-        mHandler.postDelayed(this::hideNotificationToast, 5000);
+        mNotificationRemainingTimeMs = 5000;
+        if (parent.hasWindowFocus()) {
+            mNotificationStartTimestamp = System.currentTimeMillis();
+            mHandler.postDelayed(mHideNotificationToastRunnable, mNotificationRemainingTimeMs);
+        }
     }
 
     /**
@@ -570,7 +578,16 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
     @Override
     public void onWindowFocusChanged(Activity activity, boolean hasWindowFocus) {
         if (mActivity != activity) return;
-        if (!hasWindowFocus) hideNotificationToast();
+        if (mNotificationToast != null) {
+            if (hasWindowFocus) {
+                mNotificationStartTimestamp = System.currentTimeMillis();
+                mHandler.postDelayed(mHideNotificationToastRunnable, mNotificationRemainingTimeMs);
+            } else {
+                mHandler.removeCallbacks(mHideNotificationToastRunnable);
+                mNotificationRemainingTimeMs -=
+                        System.currentTimeMillis() - mNotificationStartTimestamp;
+            }
+        }
 
         mHandler.removeMessages(MSG_ID_SET_FULLSCREEN_SYSTEM_UI_FLAGS);
         mHandler.removeMessages(MSG_ID_CLEAR_LAYOUT_FULLSCREEN_FLAG);
