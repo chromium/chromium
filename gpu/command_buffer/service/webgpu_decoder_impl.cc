@@ -124,39 +124,20 @@ bool WireServerCommandSerializer::Flush() {
   return true;
 }
 
-dawn_native::DeviceType PowerPreferenceToDawnDeviceType(
+WGPUAdapterType PowerPreferenceToDawnAdapterType(
     PowerPreference power_preference) {
   switch (power_preference) {
     case PowerPreference::kLowPower:
-      return dawn_native::DeviceType::IntegratedGPU;
+      return WGPUAdapterType_IntegratedGPU;
     case PowerPreference::kHighPerformance:
     // Currently for simplicity we always choose discrete GPU as the device
     // related to default power preference.
     case PowerPreference::kDefault:
-      return dawn_native::DeviceType::DiscreteGPU;
+      return WGPUAdapterType_DiscreteGPU;
     default:
       NOTREACHED();
-      return dawn_native::DeviceType::CPU;
+      return WGPUAdapterType_CPU;
   }
-}
-
-WGPUBackendType ToWGPUBackendType(dawn_native::BackendType type) {
-  switch (type) {
-    case dawn_native::BackendType::D3D12:
-      return WGPUBackendType_D3D12;
-    case dawn_native::BackendType::Metal:
-      return WGPUBackendType_Metal;
-    case dawn_native::BackendType::Null:
-      return WGPUBackendType_Null;
-    case dawn_native::BackendType::OpenGL:
-      return WGPUBackendType_OpenGL;
-    case dawn_native::BackendType::OpenGLES:
-      return WGPUBackendType_OpenGLES;
-    case dawn_native::BackendType::Vulkan:
-      return WGPUBackendType_Vulkan;
-  }
-  DCHECK(false);
-  return WGPUBackendType_Null;
 }
 
 }  // namespace
@@ -702,9 +683,9 @@ void WebGPUDecoderImpl::OnRequestDeviceCallback(
     // will be checked in PerformPollingWork to tick all the live devices and
     // remove all the dead ones.
     known_devices_.emplace_back(device_id, device_generation);
-    dawn_native::BackendType type =
-        dawn_adapters_[requested_adapter_index].GetBackendType();
-    device_backend_types_[device_id] = ToWGPUBackendType(type);
+    WGPUAdapterProperties adapterProperties = {};
+    dawn_adapters_[requested_adapter_index].GetProperties(&adapterProperties);
+    device_backend_types_[device_id] = adapterProperties.backendType;
   }
 
   size_t error_message_size =
@@ -785,12 +766,15 @@ void WebGPUDecoderImpl::DiscoverAdapters() {
     if (!adapter.SupportsExternalImages()) {
       continue;
     }
+
+    WGPUAdapterProperties adapterProperties = {};
+    adapter.GetProperties(&adapterProperties);
     if (force_webgpu_compat_) {
-      if (adapter.GetBackendType() == dawn_native::BackendType::OpenGLES) {
+      if (adapterProperties.backendType == WGPUBackendType_OpenGLES) {
         dawn_adapters_.push_back(adapter);
       }
-    } else if (adapter.GetBackendType() != dawn_native::BackendType::Null &&
-               adapter.GetBackendType() != dawn_native::BackendType::OpenGL) {
+    } else if (adapterProperties.backendType != WGPUBackendType_Null &&
+               adapterProperties.backendType != WGPUBackendType_OpenGL) {
       dawn_adapters_.push_back(adapter);
     }
   }
@@ -798,8 +782,8 @@ void WebGPUDecoderImpl::DiscoverAdapters() {
 
 int32_t WebGPUDecoderImpl::GetPreferredAdapterIndex(
     PowerPreference power_preference) const {
-  dawn_native::DeviceType preferred_device_type =
-      PowerPreferenceToDawnDeviceType(power_preference);
+  WGPUAdapterType preferred_adapter_type =
+      PowerPreferenceToDawnAdapterType(power_preference);
 
   int32_t discrete_gpu_adapter_index = -1;
   int32_t integrated_gpu_adapter_index = -1;
@@ -808,20 +792,23 @@ int32_t WebGPUDecoderImpl::GetPreferredAdapterIndex(
 
   for (int32_t i = 0; i < static_cast<int32_t>(dawn_adapters_.size()); ++i) {
     const dawn_native::Adapter& adapter = dawn_adapters_[i];
-    if (adapter.GetDeviceType() == preferred_device_type) {
+    WGPUAdapterProperties adapterProperties = {};
+    adapter.GetProperties(&adapterProperties);
+
+    if (adapterProperties.adapterType == preferred_adapter_type) {
       return i;
     }
-    switch (adapter.GetDeviceType()) {
-      case dawn_native::DeviceType::DiscreteGPU:
+    switch (adapterProperties.adapterType) {
+      case WGPUAdapterType_DiscreteGPU:
         discrete_gpu_adapter_index = i;
         break;
-      case dawn_native::DeviceType::IntegratedGPU:
+      case WGPUAdapterType_IntegratedGPU:
         integrated_gpu_adapter_index = i;
         break;
-      case dawn_native::DeviceType::CPU:
+      case WGPUAdapterType_CPU:
         cpu_adapter_index = i;
         break;
-      case dawn_native::DeviceType::Unknown:
+      case WGPUAdapterType_Unknown:
         unknown_adapter_index = i;
         break;
       default:

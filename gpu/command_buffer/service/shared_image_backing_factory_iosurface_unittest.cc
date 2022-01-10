@@ -378,7 +378,9 @@ TEST_F(SharedImageBackingFactoryIOSurfaceTest, Dawn_SkiaGL) {
   std::vector<dawn_native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = std::find_if(
       adapters.begin(), adapters.end(), [](dawn_native::Adapter adapter) {
-        return adapter.GetBackendType() == dawn_native::BackendType::Metal;
+        wgpu::AdapterProperties properties;
+        adapter.GetProperties(&properties);
+        return properties.backendType == wgpu::BackendType::Metal;
       });
   ASSERT_NE(adapter_it, adapters.end());
 
@@ -527,7 +529,9 @@ TEST_F(SharedImageBackingFactoryIOSurfaceTest, GL_Dawn_Skia_UnclearTexture) {
   std::vector<dawn_native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = std::find_if(
       adapters.begin(), adapters.end(), [](dawn_native::Adapter adapter) {
-        return adapter.GetBackendType() == dawn_native::BackendType::Metal;
+        wgpu::AdapterProperties properties;
+        adapter.GetProperties(&properties);
+        return properties.backendType == wgpu::BackendType::Metal;
       });
   ASSERT_NE(adapter_it, adapters.end());
 
@@ -615,7 +619,9 @@ TEST_F(SharedImageBackingFactoryIOSurfaceTest, UnclearDawn_SkiaFails) {
   std::vector<dawn_native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = std::find_if(
       adapters.begin(), adapters.end(), [](dawn_native::Adapter adapter) {
-        return adapter.GetBackendType() == dawn_native::BackendType::Metal;
+        wgpu::AdapterProperties properties;
+        adapter.GetProperties(&properties);
+        return properties.backendType == wgpu::BackendType::Metal;
       });
   ASSERT_NE(adapter_it, adapters.end());
 

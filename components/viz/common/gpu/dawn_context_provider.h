@@ -31,7 +31,7 @@ class VIZ_DAWN_CONTEXT_PROVIDER_EXPORT DawnContextProvider {
  private:
   DawnContextProvider();
 
-  wgpu::Device CreateDevice(dawn_native::BackendType type);
+  wgpu::Device CreateDevice(wgpu::BackendType type);
 
   dawn_native::Instance instance_;
   wgpu::Device device_;

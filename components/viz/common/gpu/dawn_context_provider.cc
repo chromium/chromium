@@ -17,14 +17,14 @@ namespace viz {
 
 namespace {
 
-dawn_native::BackendType GetDefaultBackendType() {
+wgpu::BackendType GetDefaultBackendType() {
 #if defined(OS_WIN)
-  return dawn_native::BackendType::D3D12;
+  return wgpu::BackendType::D3D12;
 #elif defined(OS_LINUX) || defined(OS_CHROMEOS)
-  return dawn_native::BackendType::Vulkan;
+  return wgpu::BackendType::Vulkan;
 #else
   NOTREACHED();
-  return dawn_native::BackendType::Null;
+  return wgpu::BackendType::Null;
 #endif
 }
 
@@ -49,7 +49,7 @@ DawnContextProvider::DawnContextProvider() {
 
 DawnContextProvider::~DawnContextProvider() = default;
 
-wgpu::Device DawnContextProvider::CreateDevice(dawn_native::BackendType type) {
+wgpu::Device DawnContextProvider::CreateDevice(wgpu::BackendType type) {
   instance_.DiscoverDefaultAdapters();
   DawnProcTable backend_procs = dawn_native::GetProcs();
   dawnProcSetProcs(&backend_procs);
@@ -65,7 +65,9 @@ wgpu::Device DawnContextProvider::CreateDevice(dawn_native::BackendType type) {
 
   std::vector<dawn_native::Adapter> adapters = instance_.GetAdapters();
   for (dawn_native::Adapter adapter : adapters) {
-    if (adapter.GetBackendType() == type)
+    wgpu::AdapterProperties properties;
+    adapter.GetProperties(&properties);
+    if (properties.backendType == type)
       return adapter.CreateDevice(&descriptor);
   }
   return nullptr;

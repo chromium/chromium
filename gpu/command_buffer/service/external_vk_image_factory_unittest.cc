@@ -96,7 +96,9 @@ class ExternalVkImageFactoryTest : public testing::Test {
     std::vector<dawn_native::Adapter> adapters = dawn_instance_.GetAdapters();
     auto adapter_it = std::find_if(
         adapters.begin(), adapters.end(), [](dawn_native::Adapter adapter) {
-          return adapter.GetBackendType() == dawn_native::BackendType::Vulkan;
+          wgpu::AdapterProperties properties;
+          adapter.GetProperties(&properties);
+          return properties.backendType == wgpu::BackendType::Vulkan;
         });
     ASSERT_NE(adapter_it, adapters.end());
 

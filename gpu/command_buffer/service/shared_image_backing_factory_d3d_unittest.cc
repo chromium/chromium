@@ -601,7 +601,9 @@ TEST_F(SharedImageBackingFactoryD3DTest, Dawn_SkiaGL) {
   std::vector<dawn_native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = std::find_if(
       adapters.begin(), adapters.end(), [](dawn_native::Adapter adapter) {
-        return adapter.GetBackendType() == dawn_native::BackendType::D3D12;
+        wgpu::AdapterProperties properties;
+        adapter.GetProperties(&properties);
+        return properties.backendType == wgpu::BackendType::D3D12;
       });
   ASSERT_NE(adapter_it, adapters.end());
 
@@ -744,7 +746,9 @@ TEST_F(SharedImageBackingFactoryD3DTest, GL_Dawn_Skia_UnclearTexture) {
   std::vector<dawn_native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = std::find_if(
       adapters.begin(), adapters.end(), [](dawn_native::Adapter adapter) {
-        return adapter.GetBackendType() == dawn_native::BackendType::D3D12;
+        wgpu::AdapterProperties properties;
+        adapter.GetProperties(&properties);
+        return properties.backendType == wgpu::BackendType::D3D12;
       });
   ASSERT_NE(adapter_it, adapters.end());
 
@@ -834,7 +838,9 @@ TEST_F(SharedImageBackingFactoryD3DTest, UnclearDawn_SkiaFails) {
   std::vector<dawn_native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = std::find_if(
       adapters.begin(), adapters.end(), [](dawn_native::Adapter adapter) {
-        return adapter.GetBackendType() == dawn_native::BackendType::D3D12;
+        wgpu::AdapterProperties properties;
+        adapter.GetProperties(&properties);
+        return properties.backendType == wgpu::BackendType::D3D12;
       });
   ASSERT_NE(adapter_it, adapters.end());
 
@@ -1104,7 +1110,9 @@ TEST_F(SharedImageBackingFactoryD3DTest, Dawn_ReuseExternalImage) {
   std::vector<dawn_native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = std::find_if(
       adapters.begin(), adapters.end(), [](dawn_native::Adapter adapter) {
-        return adapter.GetBackendType() == dawn_native::BackendType::D3D12;
+        wgpu::AdapterProperties properties;
+        adapter.GetProperties(&properties);
+        return properties.backendType == wgpu::BackendType::D3D12;
       });
   ASSERT_NE(adapter_it, adapters.end());
 
@@ -1232,7 +1240,9 @@ TEST_F(SharedImageBackingFactoryD3DTest, Dawn_HasLastRef) {
   std::vector<dawn_native::Adapter> adapters = instance.GetAdapters();
   auto adapter_it = std::find_if(
       adapters.begin(), adapters.end(), [](dawn_native::Adapter adapter) {
-        return adapter.GetBackendType() == dawn_native::BackendType::D3D12;
+        wgpu::AdapterProperties properties;
+        adapter.GetProperties(&properties);
+        return properties.backendType == wgpu::BackendType::D3D12;
       });
   ASSERT_NE(adapter_it, adapters.end());
 
