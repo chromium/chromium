@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/scoped_observation.h"
+#include "chrome/common/extensions/api/web_authentication_proxy.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/web_authentication_request_proxy.h"
@@ -45,13 +46,24 @@ class WebAuthenticationProxyService
   // Unregisters the currently active request proxy extension, if any.
   void ClearActiveRequestProxy();
 
-  // CompleteIsUvpaaRequest injects the result for the
+  // Injects the result for the
+  // `events::WEB_AUTHENTICATION_PROXY_CREATE_REQUEST` with `EventId` matching
+  // the one in `details`.
+  //
+  // Returns whether completing the request succeeded. If it didn't, `error_out`
+  // contains an error message.
+  bool CompleteCreateRequest(
+      const api::web_authentication_proxy::CreateResponseDetails& details,
+      std::string* error_out);
+
+  // Injects the result for the
   // `events::WEB_AUTHENTICATION_PROXY_ON_ISUVPAA_REQUEST` event with
   // `event_id`. `is_uvpaa` is the result to be returned to the original caller
   // of the PublicKeyCredential.IsUserPlatformAuthenticatorAvailable().
   //
-  // Returns whether an event matching `event_id` was found.
-  bool CompleteIsUvpaaRequest(EventId event_id, bool is_uvpaa);
+  // Returns whether the ID was valid.
+  bool CompleteIsUvpaaRequest(
+      const api::web_authentication_proxy::IsUvpaaResponseDetails& details);
 
  private:
   friend class WebAuthenticationProxyServiceFactory;
@@ -64,6 +76,9 @@ class WebAuthenticationProxyService
 
   // content::WebAuthnRequestProxy:
   bool IsActive() override;
+  void SignalCreateRequest(
+      const blink::mojom::PublicKeyCredentialCreationOptionsPtr& options,
+      CreateCallback callback) override;
   void SignalIsUvpaaRequest(IsUvpaaCallback callback) override;
 
   // ExtensionRegistryObserver:
@@ -83,6 +98,7 @@ class WebAuthenticationProxyService
   absl::optional<std::string> active_request_proxy_extension_id_;
 
   std::map<EventId, IsUvpaaCallback> pending_is_uvpaa_callbacks_;
+  std::map<EventId, CreateCallback> pending_create_callbacks_;
 };
 
 // WebAuthenticationProxyServiceFactory creates instances of

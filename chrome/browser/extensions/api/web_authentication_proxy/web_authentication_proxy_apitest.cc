@@ -10,10 +10,15 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
 namespace {
+
+MATCHER_P(IsDomError, name, "") {
+  return arg.error.find(name) != std::string::npos;
+}
 
 class WebAuthenticationProxyApiTest : public ExtensionApiTest {
  protected:
@@ -36,6 +41,25 @@ class WebAuthenticationProxyApiTest : public ExtensionApiTest {
                            "PublicKeyCredential."
                            "isUserVerifyingPlatformAuthenticatorAvailable();")
         .ExtractBool();
+  }
+
+  content::EvalJsResult NavigateAndCallMakeCredential() {
+    if (!ui_test_utils::NavigateToURL(
+            browser(), https_test_server_.GetURL("/page.html"))) {
+      ADD_FAILURE() << "Failed to navigate to test URL";
+    }
+    constexpr char kMakeCredentialJs[] =
+        R"((async () => {
+              let credential = await navigator.credentials.create({publicKey: {
+                rp: {'name': 'A'},
+                challenge: new ArrayBuffer(),
+                user: {displayName : 'A', name: 'A', id: new ArrayBuffer()},
+                pubKeyCredParams: [],
+              }});
+              return credential.id;
+            })();)";
+    return content::EvalJs(browser()->tab_strip_model()->GetActiveWebContents(),
+                           kMakeCredentialJs);
   }
 
   base::FilePath extension_dir_;
@@ -139,6 +163,72 @@ IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, IsUVPAAResolvesOnDetach) {
   // Call isUvpaa() and tell the extension that there is a result. The extension
   // never resolves the request but detaches itself.
   EXPECT_EQ(false, NavigateAndCallIsUVPAA());
+  ready_listener.Reply("");
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, MakeCredential) {
+  SetJsTestName("makeCredential");
+  ResultCatcher result_catcher;
+
+  ExtensionTestMessageListener ready_listener("ready", false);
+  ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  //  base64url('test') = 'dGVzdA'. This matches the credential ID passed to
+  //  `MAKE_CREDENTIAL_RESPONSE_JSON ` in the JS test.
+  constexpr char kCredentialId[] = "dGVzdA";
+  EXPECT_EQ(NavigateAndCallMakeCredential().ExtractString(), kCredentialId);
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest, MakeCredentialError) {
+  SetJsTestName("makeCredentialError");
+  ResultCatcher result_catcher;
+
+  ExtensionTestMessageListener ready_listener("ready", false);
+  ExtensionTestMessageListener error_listener("nextError", true);
+  ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  // The JS side listens for DOMError names to pass to completeCreateRequest().
+  // The DOMError observed by the client-side JS that made the WebAuthn request
+  // should match.
+  constexpr const char* kDomErrorNames[] = {
+      // clang-format off
+      "NotAllowedError",
+      "InvalidStateError",
+      "OperationError",
+      "NotSupportedError",
+      "AbortError",
+      "NotReadableError",
+      "SecurityError",
+  };
+  for (auto* error_name : kDomErrorNames) {
+    ASSERT_TRUE(error_listener.WaitUntilSatisfied());
+    error_listener.Reply(error_name);
+    error_listener.Reset();
+    EXPECT_THAT(NavigateAndCallMakeCredential(), IsDomError(error_name));
+  }
+
+  // Tell the JS side to stop expecting more errors and end the test.
+  ASSERT_TRUE(error_listener.WaitUntilSatisfied());
+  error_listener.Reply("");
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAuthenticationProxyApiTest,
+                       MakeCredentialResolvesOnDetach) {
+  SetJsTestName("makeCredentialResolvesOnDetach");
+  ResultCatcher result_catcher;
+
+  ExtensionTestMessageListener ready_listener("ready", true);
+  ASSERT_TRUE(LoadExtension(extension_dir_)) << message_;
+  ASSERT_TRUE(ready_listener.WaitUntilSatisfied());
+
+  // Call makeCredential() and tell the extension that there is a result. The
+  // extension never resolves the request but detaches itself.
+  EXPECT_THAT(NavigateAndCallMakeCredential(), IsDomError("NotAllowedError"));
   ready_listener.Reply("");
   EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }

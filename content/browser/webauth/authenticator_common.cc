@@ -11,6 +11,7 @@
 
 #include "base/base64url.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/check.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -513,7 +514,7 @@ void AuthenticatorCommon::StartMakeCredentialRequest(
                 GetRenderFrameHost(), discovery_factory(),
                 UsesDiscoverableCreds(*make_credential_options_));
 
-  request_ = std::make_unique<device::MakeCredentialRequestHandler>(
+  request_handler_ = std::make_unique<device::MakeCredentialRequestHandler>(
       discovery_factory(), transports, *ctap_make_credential_request_,
       *make_credential_options_,
       base::BindOnce(&AuthenticatorCommon::OnRegisterResponse,
@@ -528,11 +529,12 @@ void AuthenticatorCommon::StartMakeCredentialRequest(
           /*allow_skipping_pin_touch=*/false) /* start_over_callback */,
       base::BindRepeating(
           &device::FidoRequestHandlerBase::StartAuthenticatorRequest,
-          request_->GetWeakPtr()) /* request_callback */,
+          request_handler_->GetWeakPtr()) /* request_callback */,
       base::BindRepeating(
           &device::FidoRequestHandlerBase::PowerOnBluetoothAdapter,
-          request_->GetWeakPtr()) /* bluetooth_adapter_power_on_callback */);
-  request_->set_observer(request_delegate_.get());
+          request_handler_
+              ->GetWeakPtr()) /* bluetooth_adapter_power_on_callback */);
+  request_handler_->set_observer(request_delegate_.get());
 }
 
 void AuthenticatorCommon::StartGetAssertionRequest(
@@ -561,7 +563,7 @@ void AuthenticatorCommon::StartGetAssertionRequest(
                 GetRenderFrameHost(), discovery_factory(),
                 UsesDiscoverableCreds(*ctap_get_assertion_request_));
 
-  request_ = std::make_unique<device::GetAssertionRequestHandler>(
+  request_handler_ = std::make_unique<device::GetAssertionRequestHandler>(
       discovery_factory(), transports, *ctap_get_assertion_request_,
       *ctap_get_assertion_options_, allow_skipping_pin_touch,
       base::BindOnce(&AuthenticatorCommon::OnSignResponse,
@@ -576,12 +578,13 @@ void AuthenticatorCommon::StartGetAssertionRequest(
           /*allow_skipping_pin_touch=*/false) /* start_over_callback */,
       base::BindRepeating(
           &device::FidoRequestHandlerBase::StartAuthenticatorRequest,
-          request_->GetWeakPtr()) /* request_callback */,
+          request_handler_->GetWeakPtr()) /* request_callback */,
       base::BindRepeating(
           &device::FidoRequestHandlerBase::PowerOnBluetoothAdapter,
-          request_->GetWeakPtr()) /* bluetooth_adapter_power_on_callback */);
+          request_handler_
+              ->GetWeakPtr()) /* bluetooth_adapter_power_on_callback */);
 
-  request_->set_observer(request_delegate_.get());
+  request_handler_->set_observer(request_delegate_.get());
 }
 
 bool AuthenticatorCommon::IsFocused() const {
@@ -611,7 +614,7 @@ void AuthenticatorCommon::MakeCredential(
     url::Origin caller_origin,
     blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
     blink::mojom::Authenticator::MakeCredentialCallback callback) {
-  if (request_) {
+  if (has_pending_request_) {
     if (WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
             caller_origin)) {
       // Requests originating from cryptotoken will generally outlive any
@@ -626,9 +629,12 @@ void AuthenticatorCommon::MakeCredential(
       return;
     }
   }
-  DCHECK(!request_);
+  has_pending_request_ = true;
+
   DCHECK(make_credential_response_callback_.is_null());
   make_credential_response_callback_ = std::move(callback);
+
+  BeginRequestTimeout(options->timeout);
 
   WebAuthRequestSecurityChecker::RequestType request_type =
       options->is_payment_credential_creation
@@ -655,6 +661,15 @@ void AuthenticatorCommon::MakeCredential(
   if (!request_delegate_) {
     CompleteMakeCredentialRequest(
         blink::mojom::AuthenticatorStatus::PENDING_REQUEST);
+    return;
+  }
+
+  WebAuthenticationRequestProxy* proxy = GetWebAuthnRequestProxyIfActive();
+  if (proxy) {
+    proxy->SignalCreateRequest(
+        options,
+        base::BindOnce(&AuthenticatorCommon::OnMakeCredentialProxyResponse,
+                       weak_factory_.GetWeakPtr()));
     return;
   }
 
@@ -801,10 +816,6 @@ void AuthenticatorCommon::MakeCredential(
         {*cred_protect_request, options->enforce_protection_policy}};
   }
 
-  timer_->Start(
-      FROM_HERE, AdjustTimeout(options->timeout, GetRenderFrameHost()),
-      base::BindOnce(&AuthenticatorCommon::OnTimeout, base::Unretained(this)));
-
   // Cryptotoken requests and Touch-to-Autofill should be proxied without UI.
   const bool origin_is_crypto_token_extension =
       WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
@@ -887,13 +898,12 @@ void AuthenticatorCommon::MakeCredential(
   StartMakeCredentialRequest(/*allow_skipping_pin_touch=*/true);
 }
 
-// mojom:Authenticator
 void AuthenticatorCommon::GetAssertion(
     url::Origin caller_origin,
     blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
     blink::mojom::PaymentOptionsPtr payment,
     blink::mojom::Authenticator::GetAssertionCallback callback) {
-  if (request_) {
+  if (has_pending_request_) {
     if (WebAuthRequestSecurityChecker::OriginIsCryptoTokenExtension(
             caller_origin)) {
       // Requests originating from cryptotoken will generally outlive any
@@ -908,7 +918,8 @@ void AuthenticatorCommon::GetAssertion(
       return;
     }
   }
-  DCHECK(!request_);
+  has_pending_request_ = true;
+
   DCHECK(get_assertion_response_callback_.is_null());
   get_assertion_response_callback_ = std::move(callback);
 
@@ -1048,10 +1059,7 @@ void AuthenticatorCommon::GetAssertion(
   }
 
   if (!options->is_conditional) {
-    timer_->Start(FROM_HERE,
-                  AdjustTimeout(options->timeout, GetRenderFrameHost()),
-                  base::BindOnce(&AuthenticatorCommon::OnTimeout,
-                                 base::Unretained(this)));
+    BeginRequestTimeout(options->timeout);
   }
 
   ctap_get_assertion_request_ =
@@ -1170,15 +1178,14 @@ void AuthenticatorCommon::Cancel() {
   CancelWithStatus(blink::mojom::AuthenticatorStatus::ABORT_ERROR);
 }
 
-// Callback to handle the async registration response from a U2fDevice.
 void AuthenticatorCommon::OnRegisterResponse(
     device::MakeCredentialStatus status_code,
     absl::optional<device::AuthenticatorMakeCredentialResponse> response_data,
     const device::FidoAuthenticator* authenticator) {
-  if (!request_) {
-    // Either the callback was called immediately and |request_| has not yet
-    // been assigned (this is a bug), or a navigation caused the request to be
-    // canceled while a callback was enqueued.
+  if (!request_handler_) {
+    // Either the callback was called immediately and |request_handler_| has not
+    // yet been assigned (this is a bug), or a navigation caused the request to
+    // be canceled while a callback was enqueued.
     return;
   }
 
@@ -1388,7 +1395,7 @@ void AuthenticatorCommon::OnRegisterResponseAttestationDecided(
     device::AuthenticatorMakeCredentialResponse response_data,
     bool attestation_permitted) {
   awaiting_attestation_response_ = false;
-  if (!request_) {
+  if (!request_handler_) {
     // The request has already been cleaned up, probably because a navigation
     // occurred while the permissions prompt was pending.
     return;
@@ -1434,11 +1441,10 @@ void AuthenticatorCommon::OnSignResponse(
         response_data,
     const device::FidoAuthenticator* authenticator) {
   DCHECK(!response_data || !response_data->empty());  // empty vector is invalid
-
-  if (!request_) {
-    // Either the callback was called immediately and |request_| has not yet
-    // been assigned (this is a bug), or a navigation caused the request to be
-    // canceled while a callback was enqueued.
+  if (!request_handler_) {
+    // Either the callback was called immediately and |request_handler_| has not
+    // yet been assigned (this is a bug), or a navigation caused the request to
+    // be canceled while a callback was enqueued.
     return;
   }
 
@@ -1556,29 +1562,36 @@ void AuthenticatorCommon::SignalFailureToRequestDelegate(
     blink::mojom::AuthenticatorStatus status) {
   error_awaiting_user_acknowledgement_ = status;
 
-  // The request has failed, but the UI may delay resolution of the request
-  // callback and cleanup of the FidoRequestHandler and its associated
-  // discoveries and authenticators. Tell them to stop processing the request in
-  // the meantime.
-  request_->StopDiscoveries();
-  request_->CancelActiveAuthenticators();
-
-  // If WebAuthnUi is enabled, this error blocks until after receiving user
-  // acknowledgement. Otherwise, the error is returned right away.
-  if (request_delegate_->DoesBlockRequestOnFailure(reason)) {
+  if (!request_delegate_->DoesBlockRequestOnFailure(reason)) {
+    // Resolve the failed request right away.
+    CancelWithStatus(error_awaiting_user_acknowledgement_);
     return;
   }
-  CancelWithStatus(error_awaiting_user_acknowledgement_);
-}  // namespace content
+
+  // The UI blocks resolution of the failed request until it receives user
+  // acknowledgement. Tell the active FidoRequestHandler to stop processing in
+  // the meantime.
+  if (request_handler_) {
+    request_handler_->StopDiscoveries();
+    request_handler_->CancelActiveAuthenticators();
+  }
+}
+
+void AuthenticatorCommon::BeginRequestTimeout(
+    absl::optional<base::TimeDelta> timeout) {
+  timer_->Start(FROM_HERE, AdjustTimeout(timeout, GetRenderFrameHost()),
+                base::BindOnce(&AuthenticatorCommon::OnTimeout,
+                               weak_factory_.GetWeakPtr()));
+}
 
 // TODO(crbug.com/814418): Add web tests to verify timeouts are
 // indistinguishable from NOT_ALLOWED_ERROR cases.
 void AuthenticatorCommon::OnTimeout() {
-  DCHECK(request_delegate_);
   if (awaiting_attestation_response_) {
     awaiting_attestation_response_ = false;
   }
 
+  DCHECK(request_delegate_);
   SignalFailureToRequestDelegate(
       /*authenticator=*/nullptr,
       AuthenticatorRequestClientDelegate::InterestingFailureReason::kTimeout,
@@ -1850,7 +1863,8 @@ void AuthenticatorCommon::Cleanup() {
   }
 
   timer_->Stop();
-  request_.reset();
+  has_pending_request_ = false;
+  request_handler_.reset();
   discovery_factory_.reset();
   discovery_factory_testing_override_ = nullptr;
   ctap_make_credential_request_.reset();
@@ -1905,11 +1919,34 @@ void AuthenticatorCommon::InitDiscoveryFactory(bool is_u2f_api_request) {
           ->MaybeGetDiscoveryFactoryTestOverride();
 }
 
+void AuthenticatorCommon::EnableRequestProxyExtensionsAPISupport() {
+  enable_request_proxy_api_ = true;
+}
+
 WebAuthenticationRequestProxy*
 AuthenticatorCommon::GetWebAuthnRequestProxyIfActive() {
+  if (!enable_request_proxy_api_) {
+    return nullptr;
+  }
   WebAuthenticationRequestProxy* proxy =
       GetWebAuthenticationDelegate()->MaybeGetRequestProxy(GetBrowserContext());
   return proxy && proxy->IsActive() ? proxy : nullptr;
+}
+
+void AuthenticatorCommon::OnMakeCredentialProxyResponse(
+    blink::mojom::AuthenticatorStatus status,
+    blink::mojom::MakeCredentialAuthenticatorResponsePtr response) {
+  if (!make_credential_response_callback_) {
+    // The caller may have cancelled the request, or it timed out. But the
+    // WebAuthenticationProxyService doesn't know that.
+    // TODO(https://crbug.com/1231802): Raise request cancellation as an
+    // webAuthenticationRequestProxy extension API event. Note that currently
+    // the response can race against a subsequent request following
+    // cancellation, which can lead to the wrong response callback being
+    // invoked.
+    return;
+  }
+  CompleteMakeCredentialRequest(status, std::move(response), Focus::kDoCheck);
 }
 
 }  // namespace content

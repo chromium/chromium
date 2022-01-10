@@ -41,6 +41,7 @@ AuthenticatorImpl::AuthenticatorImpl(
     std::unique_ptr<AuthenticatorCommon> authenticator_common)
     : DocumentService(render_frame_host, std::move(receiver)),
       authenticator_common_(std::move(authenticator_common)) {
+  authenticator_common_->EnableRequestProxyExtensionsAPISupport();
   DCHECK(authenticator_common_);
 }
 

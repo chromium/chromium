@@ -29508,6 +29508,7 @@ Called by update_extension_histograms.py.-->
   <int value="483" label="SPEECH_RECOGNITION_PRIVATE_ON_ERROR"/>
   <int value="484" label="FILE_MANAGER_PRIVATE_ON_IO_TASK_PROGRESS_STATUS"/>
   <int value="485" label="INPUT_METHOD_PRIVATE_ON_TOUCH"/>
+  <int value="486" label="WEB_AUTHENTICATION_PROXY_ON_CREATE_REQUEST"/>
 </enum>
 
 <enum name="ExtensionFileWriteResult">
@@ -31195,6 +31196,7 @@ Called by update_extension_histograms.py.-->
   <int value="1608" label="TERMINALPRIVATE_GETOSINFO"/>
   <int value="1609" label="OS_TELEMETRY_GETMEMORYINFO"/>
   <int value="1610" label="AUTOTESTPRIVATE_COULDALLOWCROSTINI"/>
+  <int value="1611" label="WEB_AUTHENTICATION_PROXY_COMPLETE_CREATE_REQUEST"/>
 </enum>
 
 <enum name="ExtensionIconState">

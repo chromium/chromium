@@ -82,7 +82,9 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom-shared.h"
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/ec_key.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
@@ -115,7 +117,9 @@ using blink::mojom::AuthenticatorStatus;
 using blink::mojom::AuthenticatorTransport;
 using blink::mojom::CableAuthentication;
 using blink::mojom::CableAuthenticationPtr;
+using blink::mojom::CommonCredentialInfo;
 using blink::mojom::GetAssertionAuthenticatorResponsePtr;
+using blink::mojom::MakeCredentialAuthenticatorResponse;
 using blink::mojom::MakeCredentialAuthenticatorResponsePtr;
 using blink::mojom::PublicKeyCredentialCreationOptions;
 using blink::mojom::PublicKeyCredentialCreationOptionsPtr;
@@ -1682,11 +1686,24 @@ TEST_F(AuthenticatorImplTest, IsUVPAA) {
 class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
  public:
   struct Config {
+    // If true, resolves all request event callbacks instantly.
+    bool resolve_callbacks = true;
+
+    // The return value of IsActive().
     bool is_active = true;
+
+    // The fake response to SignalIsUVPAARequest().
     bool is_uvpaa = true;
+
+    // Fake response values to SignalCreateRequest().
+    blink::mojom::AuthenticatorStatus make_credential_status =
+        blink::mojom::AuthenticatorStatus::NOT_ALLOWED_ERROR;
+    blink::mojom::MakeCredentialAuthenticatorResponsePtr
+        make_credential_response = nullptr;
   };
 
   struct CallCounts {
+    size_t signal_create_request;
     size_t signal_is_uvpaa_request;
   };
 
@@ -1696,14 +1713,46 @@ class TestWebAuthenticationRequestProxy : public WebAuthenticationRequestProxy {
 
   bool IsActive() override { return config_.is_active; }
 
+  void SignalCreateRequest(const PublicKeyCredentialCreationOptionsPtr& options,
+                           CreateCallback callback) override {
+    call_counts_.signal_create_request++;
+    if (config_.resolve_callbacks) {
+      std::move(callback).Run(config_.make_credential_status,
+                              config_.make_credential_response.Clone());
+      return;
+    }
+    DCHECK(!pending_create_callback_);
+    pending_create_callback_ = std::move(callback);
+  }
+
   void SignalIsUvpaaRequest(IsUvpaaCallback callback) override {
     call_counts_.signal_is_uvpaa_request++;
-    std::move(callback).Run(config_.is_uvpaa);
+    if (config_.resolve_callbacks) {
+      std::move(callback).Run(config_.is_uvpaa);
+      return;
+    }
+    DCHECK(!pending_is_uvpaa_callback_);
+    pending_is_uvpaa_callback_ = std::move(callback);
+  }
+
+  void RunPendingCreateCallback() {
+    DCHECK(pending_create_callback_);
+    std::move(pending_create_callback_)
+        .Run(config_.make_credential_status,
+             config_.make_credential_response.Clone());
+  }
+
+  void RunPendingIsUvpaaCallback() {
+    DCHECK(pending_is_uvpaa_callback_);
+    std::move(pending_is_uvpaa_callback_).Run(config_.is_uvpaa);
   }
 
  private:
   Config config_;
   CallCounts call_counts_;
+
+  CreateCallback pending_create_callback_;
+  IsUvpaaCallback pending_is_uvpaa_callback_;
 };
 
 // TestWebAuthenticationDelegate is a test fake implementation of the
@@ -8117,6 +8166,17 @@ class AuthenticatorImplWithRequestProxyTest : public AuthenticatorImplTest {
   TestAuthenticatorContentBrowserClient test_client_;
 };
 
+TEST_F(AuthenticatorImplWithRequestProxyTest, Inactive) {
+  request_proxy().config().is_active = false;
+  NavigateAndCommit(GURL(kTestOrigin1));
+  mojo::Remote<blink::mojom::Authenticator> authenticator =
+      ConnectToAuthenticator();
+  TestIsUvpaaCallback cb;
+  authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(cb.callback());
+  cb.WaitForCallback();
+  EXPECT_EQ(request_proxy().call_counts().signal_is_uvpaa_request, 0u);
+}
+
 TEST_F(AuthenticatorImplWithRequestProxyTest, IsUVPAA) {
   size_t i = 0;
   for (const bool is_uvpaa : {false, true}) {
@@ -8133,15 +8193,40 @@ TEST_F(AuthenticatorImplWithRequestProxyTest, IsUVPAA) {
   }
 }
 
-TEST_F(AuthenticatorImplWithRequestProxyTest, Inactive) {
-  request_proxy().config().is_active = false;
+TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredential) {
+  request_proxy().config().make_credential_status =
+      blink::mojom::AuthenticatorStatus::SUCCESS;
+  request_proxy().config().make_credential_response =
+      MakeCredentialAuthenticatorResponse::New();
+  request_proxy().config().make_credential_response->info =
+      CommonCredentialInfo::New();
+
   NavigateAndCommit(GURL(kTestOrigin1));
-  mojo::Remote<blink::mojom::Authenticator> authenticator =
-      ConnectToAuthenticator();
-  TestIsUvpaaCallback cb;
-  authenticator->IsUserVerifyingPlatformAuthenticatorAvailable(cb.callback());
-  cb.WaitForCallback();
-  EXPECT_EQ(request_proxy().call_counts().signal_is_uvpaa_request, 0u);
+  MakeCredentialResult result =
+      AuthenticatorMakeCredential(GetTestPublicKeyCredentialCreationOptions());
+
+  EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+  EXPECT_EQ(request_proxy().call_counts().signal_create_request, 1u);
 }
 
+TEST_F(AuthenticatorImplWithRequestProxyTest, MakeCredential_Timeout) {
+  request_proxy().config().resolve_callbacks = false;
+  request_proxy().config().make_credential_status =
+      blink::mojom::AuthenticatorStatus::SUCCESS;
+  request_proxy().config().make_credential_response =
+      MakeCredentialAuthenticatorResponse::New();
+  request_proxy().config().make_credential_response->info =
+      CommonCredentialInfo::New();
+
+  NavigateAndCommit(GURL(kTestOrigin1));
+  MakeCredentialResult result = AuthenticatorMakeCredentialAndWaitForTimeout(
+      GetTestPublicKeyCredentialCreationOptions());
+
+  EXPECT_EQ(result.status, AuthenticatorStatus::NOT_ALLOWED_ERROR);
+  EXPECT_EQ(request_proxy().call_counts().signal_create_request, 1u);
+
+  // Proxy should still be able to run the callback after a timeout. But it does
+  // nothing.
+  request_proxy().RunPendingCreateCallback();
+}
 }  // namespace content
