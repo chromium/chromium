@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/app_list/search/common/string_util.h"
 #include "chrome/browser/ui/app_list/search/cros_action_history/cros_action_recorder.h"
 #include "chrome/browser/ui/app_list/search/ranking/ranker_delegate.h"
+#include "chrome/browser/ui/app_list/search/ranking/util.h"
 #include "chrome/browser/ui/app_list/search/search_features.h"
 #include "chrome/browser/ui/app_list/search/search_metrics_observer.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
@@ -231,6 +232,16 @@ void SearchControllerImplNew::SetSearchResults(const SearchProvider* provider) {
   if (is_post_burnin)
     ++burnin_iteration_counter_;
 
+  // Record the burn-in iteration number for categories we are seeing for the
+  // first time in this search.
+  for (auto& category : categories_) {
+    if (category.category == ResultTypeToCategory(provider->ResultType()) &&
+        category.burnin_iteration == -1) {
+      category.burnin_iteration = burnin_iteration_counter_;
+    }
+  }
+
+  // Record-keeping for the burn-in iteration number of individual results.
   const auto it = results_.find(provider->ResultType());
   DCHECK(it != results_.end());
 

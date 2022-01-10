@@ -34,15 +34,14 @@ double Scoring::FinalScore() const {
 }
 
 CategoriesList CreateAllCategories() {
-  CategoriesList res(
-      {{.category = Category::kApps, .score = 0.0},
-       {.category = Category::kAppShortcuts, .score = 0.0},
-       {.category = Category::kWeb, .score = 0.0},
-       {.category = Category::kFiles, .score = 0.0},
-       {.category = Category::kSettings, .score = 0.0},
-       {.category = Category::kHelp, .score = 0.0},
-       {.category = Category::kPlayStore, .score = 0.0},
-       {.category = Category::kSearchAndAssistant, .score = 0.0}});
+  CategoriesList res({{.category = Category::kApps},
+                      {.category = Category::kAppShortcuts},
+                      {.category = Category::kWeb},
+                      {.category = Category::kFiles},
+                      {.category = Category::kSettings},
+                      {.category = Category::kHelp},
+                      {.category = Category::kPlayStore},
+                      {.category = Category::kSearchAndAssistant}});
   DCHECK_EQ(res.size(), static_cast<size_t>(Category::kMaxValue));
   return res;
 }

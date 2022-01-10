@@ -203,6 +203,27 @@ class SearchControllerImplNewTest : public testing::Test {
     EXPECT_THAT(actual_ids, ElementsAreArray(expected_ids));
   }
 
+  // Compares expected category burn-in iteration numbers to those recorded
+  // within the search controller. The expected list should not include
+  // categories for which burn-in number is unset (i.e. = -1).
+  void ExpectCategoriesToBurnInIterations(
+      std::vector<std::pair<Category, int>>
+          expected_categories_to_burnin_iteration) {
+    const auto& actual_categories_list = search_controller_->categories_;
+    std::vector<std::pair<Category, int>> actual_categories_to_burnin_iteration;
+
+    for (const auto& category : actual_categories_list) {
+      if (category.burnin_iteration != -1) {
+        actual_categories_to_burnin_iteration.push_back(
+            {category.category, category.burnin_iteration});
+      }
+    }
+
+    EXPECT_THAT(
+        actual_categories_to_burnin_iteration,
+        UnorderedElementsAreArray(expected_categories_to_burnin_iteration));
+  }
+
   void ExpectIdsToBurnInIterations(std::vector<std::pair<std::string, int>>
                                        expected_ids_to_burnin_iteration) {
     const auto& actual_ids_to_burnin_iteration =
@@ -278,10 +299,10 @@ TEST_F(SearchControllerImplNewTest, BestMatchesOrderedAboveOtherResults) {
 }
 
 TEST_F(SearchControllerImplNewTest,
-       BurnInIterationNumbersTrackedInQuerySearch) {
-  // This test focuses on the book-keeping of burn-in iteration numbers, and
-  // ignores the effect that these numbers can have on final sorting of the
-  // results list.
+       BurnInIterationNumbersTrackedInQuerySearch_Results) {
+  // This test focuses on the book-keeping of burn-in iteration numbers for
+  // individual results, and ignores the effect that these numbers can have on
+  // final sorting of the categories or results lists.
 
   ranker_delegate_->SetCategoryRanks({{Category::kFiles, 0.1}});
 
@@ -321,6 +342,64 @@ TEST_F(SearchControllerImplNewTest,
                                  std::move(web_results_second_arrival));
   ExpectIdsToBurnInIterations(
       {{"a", 0}, {"b", 0}, {"c", 1}, {"d", 1}, {"e", 2}});
+}
+
+TEST_F(SearchControllerImplNewTest,
+       BurnInIterationNumbersTrackedInQuerySearch_Categories) {
+  // This test focuses on the book-keeping of burn-in iteration numbers for
+  // categories, and ignores the effect that these numbers can have on final
+  // sorting of the categories or results lists.
+
+  ranker_delegate_->SetCategoryRanks({{Category::kFiles, 0.1}});
+
+  // Set up some results from four different providers. Only their categories
+  // are relevant, and individual result scores are not.
+  auto file_results = MakeResults({"a"}, {Category::kFiles}, {false}, {0.9});
+  auto app_results = MakeResults({"b"}, {Category::kApps}, {false}, {0.1});
+  // This provider will first return one set of results, then later return an
+  // updated set of results.
+  auto web_results_first_arrival = MakeResults(
+      {"c", "d"}, {Category::kWeb, Category::kWeb}, {false, false}, {0.2, 0.1});
+  auto web_results_second_arrival = MakeResults(
+      {"c", "d", "e"}, {Category::kWeb, Category::kWeb, Category::kWeb},
+      {false, false, false}, {0.2, 0.1, 0.4});
+  auto settings_results =
+      MakeResults({"f"}, {Category::kSettings}, {false}, {0.8});
+
+  // Simulate starting a search.
+  search_controller_->StartSearch(u"abc");
+
+  // Simulate providers returning results within the burn-in period.
+  search_controller_->SetResults(SimpleProvider(Result::kFileSearch),
+                                 std::move(file_results));
+  ExpectCategoriesToBurnInIterations({{Category::kFiles, 0}});
+
+  search_controller_->SetResults(SimpleProvider(Result::kInstalledApp),
+                                 std::move(app_results));
+  ExpectCategoriesToBurnInIterations(
+      {{Category::kFiles, 0}, {Category::kApps, 0}});
+
+  // Simulate a third provider returning results after the burn-in period.
+  ElapseBurnInPeriod();
+  search_controller_->SetResults(SimpleProvider(Result::kOmnibox),
+                                 std::move(web_results_first_arrival));
+  ExpectCategoriesToBurnInIterations(
+      {{Category::kFiles, 0}, {Category::kApps, 0}, {Category::kWeb, 1}});
+
+  // Simulate the third provider returning for a second time. The burn-in
+  // iteration number for that category is not updated.
+  search_controller_->SetResults(SimpleProvider(Result::kOmnibox),
+                                 std::move(web_results_second_arrival));
+  ExpectCategoriesToBurnInIterations(
+      {{Category::kFiles, 0}, {Category::kApps, 0}, {Category::kWeb, 1}});
+
+  // Simulate a fourth provider returning for the first time.
+  search_controller_->SetResults(SimpleProvider(Result::kOsSettings),
+                                 std::move(settings_results));
+  ExpectCategoriesToBurnInIterations({{Category::kFiles, 0},
+                                      {Category::kApps, 0},
+                                      {Category::kWeb, 1},
+                                      {Category::kSettings, 3}});
 }
 
 TEST_F(SearchControllerImplNewTest,

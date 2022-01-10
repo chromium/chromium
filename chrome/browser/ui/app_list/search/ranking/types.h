@@ -56,6 +56,12 @@ using Category = ash::AppListSearchResultCategory;
 struct CategoryMetadata {
   Category category = Category::kUnknown;
   double score = 0.0;
+
+  // Same purpose, meaning, and incrementing rules as the burnin_iteration
+  // member of the Scoring struct above, except this member is for categories
+  // rather than individual results. Additionally, -1 signifies that the
+  // category has not yet been seen in the current search.
+  int burnin_iteration = -1;
 };
 
 using CategoriesList = std::vector<CategoryMetadata>;
