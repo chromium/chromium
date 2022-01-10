@@ -6,7 +6,6 @@
 
 #include "base/check_op.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
-#include "content/public/browser/navigation_handle.h"
 
 FramebustBlockTabHelper::~FramebustBlockTabHelper() = default;
 
@@ -40,16 +39,7 @@ FramebustBlockTabHelper::FramebustBlockTabHelper(
     : content::WebContentsObserver(web_contents),
       content::WebContentsUserData<FramebustBlockTabHelper>(*web_contents) {}
 
-void FramebustBlockTabHelper::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted() ||
-      navigation_handle->IsSameDocument()) {
-    return;
-  }
+void FramebustBlockTabHelper::PrimaryPageChanged(content::Page& page) {
   blocked_urls_.clear();
   callbacks_.clear();
 
