@@ -55,8 +55,11 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
     del executor_kwargs["capabilities"]["goog:chromeOptions"]["prefs"]
 
     assert kwargs["package_name"], "missing --package-name"
-    executor_kwargs["capabilities"]["goog:chromeOptions"]["androidPackage"] = \
+    capabilities = executor_kwargs["capabilities"]
+    capabilities["goog:chromeOptions"]["androidPackage"] = \
         kwargs["package_name"]
+    capabilities["goog:chromeOptions"]["androidKeepAppDataDir"] = \
+        kwargs.get("keep_app_data_directory")
 
     return executor_kwargs
 

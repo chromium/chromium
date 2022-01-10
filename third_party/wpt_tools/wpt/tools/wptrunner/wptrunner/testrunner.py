@@ -293,7 +293,7 @@ class TestRunnerManager(threading.Thread):
         if self.browser_kwargs.get("device_serial"):
             # Assign Android device to runner according to manager_number
             self.browser_kwargs["device_serial"] = (
-                self.browser_kwargs["device_serial"][self.manager_number-1])
+                self.browser_kwargs["device_serial"][self.manager_number - 1])
 
         self.executor_cls = executor_cls
         self.executor_kwargs = executor_kwargs

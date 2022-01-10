@@ -553,9 +553,11 @@ def check_args(kwargs):
     if kwargs["device_serial"]:
         if kwargs["processes"] is None:
             kwargs["processes"] = len(kwargs["device_serial"])
-            print("Set --processes to match with number of devices provided")
         elif len(kwargs["device_serial"]) != kwargs["processes"]:
             print("--processes does not match number of devices")
+            sys.exit(1)
+        elif len(set(kwargs["device_serial"])) != len(kwargs["device_serial"]):
+            print("Got duplicate --device-serial value")
             sys.exit(1)
 
     if kwargs["processes"] is None:

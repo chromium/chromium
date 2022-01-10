@@ -55,6 +55,8 @@ def executor_kwargs(logger, test_type, test_environment, run_info_data,
     capabilities["goog:chromeOptions"]["androidPackage"] = \
         "org.chromium.weblayer.shell"
     capabilities["goog:chromeOptions"]["androidActivity"] = ".WebLayerShellActivity"
+    capabilities["goog:chromeOptions"]["androidKeepAppDataDir"] = \
+        kwargs.get("keep_app_data_directory")
 
     # Workaround: driver.quit() cannot quit WeblayerShell.
     executor_kwargs["pause_after_test"] = False
