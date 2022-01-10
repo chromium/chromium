@@ -22,4 +22,7 @@ const char kDelayThresholdMinutesToUpdateGaiaCookie[] =
 const char kWaitThresholdMillisecondsForCapabilitiesApi[] =
     "wait-threshold-milliseconds-for-capabilities-api";
 
+const base::Feature kEnableUnicornAccountSupport{
+    "EnableUnicornAccountSupport", base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace signin

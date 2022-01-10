@@ -218,6 +218,11 @@ const char kEnableOptimizationHintsFetchingMSBBDescription[] =
     "Enable optimization hints fetching for users who have enabled the 'Make "
     "Searches and Browsing Better' setting.";
 
+const char kEnableUnicornAccountSupportName[] =
+    "Enable Unicorn account support";
+const char kEnableUnicornAccountSupportDescription[] =
+    "Allows users to sign-in with their Unicorn account.";
+
 const char kEnableShortenedPasswordAutoFillInstructionName[] =
     "Enable shortened instructions to turn on Password AutoFill for Chrome";
 const char kEnableShortenedPasswordAutoFillInstructionDescription[] =

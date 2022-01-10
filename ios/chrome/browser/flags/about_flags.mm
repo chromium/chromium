@@ -788,6 +788,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"use-new-popup-menu", flag_descriptions::kUseUIKitPopupMenuName,
      flag_descriptions::kUseUIKitPopupMenuDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kUseUIKitPopupMenu)},
+    {"enable-unicorn-account-support",
+     flag_descriptions::kEnableUnicornAccountSupportName,
+     flag_descriptions::kEnableUnicornAccountSupportDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(signin::kEnableUnicornAccountSupport)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
