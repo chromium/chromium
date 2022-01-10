@@ -146,8 +146,8 @@ void AccessibilityEventRecorderWin::OnWinEventHook(HWINEVENTHOOK handle,
                                                    DWORD event_thread,
                                                    DWORD event_time) {
   Microsoft::WRL::ComPtr<IAccessible> browser_accessible;
-  HRESULT hr = AccessibleObjectFromWindowWrapper(
-      hwnd, obj_id, IID_PPV_ARGS(&browser_accessible));
+  HRESULT hr = ::AccessibleObjectFromWindow(hwnd, obj_id,
+                                            IID_PPV_ARGS(&browser_accessible));
   if (FAILED(hr)) {
     // Note: our event hook will pick up some superfluous events we
     // don't care about, so it's safe to just ignore these failures.
@@ -339,40 +339,6 @@ void AccessibilityEventRecorderWin::OnWinEventHook(HWINEVENTHOOK handle,
   log =
       base::UTF16ToUTF8(base::CollapseWhitespace(base::UTF8ToUTF16(log), true));
   OnEvent(log);
-}
-
-HRESULT AccessibilityEventRecorderWin::AccessibleObjectFromWindowWrapper(
-    HWND hwnd,
-    DWORD dw_id,
-    REFIID riid,
-    void** ppv_object) {
-  HRESULT hr = ::AccessibleObjectFromWindow(hwnd, dw_id, riid, ppv_object);
-  if (SUCCEEDED(hr))
-    return hr;
-
-  // There used to be a use after free error here, because manager_ is a raw
-  // pointer but the manager's owner RenderFrameHostImpl would release it when
-  // RenderFrameHostImpl::AccessibilityFatalError() tried to gracefully reset
-  // accessibility. However, it is no longer possible to reach here after an
-  // AccessibilityFatalError(), because that code will force a crash when
-  // developer features such as AccessibleEventRecorder is used.
-
-  // The above call to ::AccessibleObjectFromWindow fails for unknown
-  // reasons every once in a while on the bots.  Work around it by grabbing
-  // the object directly from the BrowserAccessibilityManager.
-
-  if (!manager_)  // No manager when outside of Chrome tests.
-    return E_FAIL;
-
-  HWND accessibility_hwnd =
-      manager_->delegate()->AccessibilityGetAcceleratedWidget();
-  if (accessibility_hwnd != hwnd)
-    return E_FAIL;
-
-  IAccessible* obj = ToBrowserAccessibilityComWin(manager_->GetRoot());
-  obj->AddRef();
-  *ppv_object = obj;
-  return S_OK;
 }
 
 }  // namespace content
