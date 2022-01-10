@@ -164,11 +164,11 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   // Called when a URL is opened from the Omnibox.
   void OnURLOpenedFromOmnibox(OmniboxLog* log);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Counts (and removes) the browser crash dump attempt signals left behind by
   // any previous browser processes which generated a crash dump.
   void CountBrowserCrashDumpAttempts();
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   // Check if an extension is installed via the Web Store.
   static bool IsWebstoreExtension(base::StringPiece id);
@@ -214,7 +214,7 @@ class ChromeMetricsServiceClient : public metrics::MetricsServiceClient,
   // omnibox.
   base::CallbackListSubscription omnibox_url_opened_subscription_;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<BrowserActivityWatcher> browser_activity_watcher_;
 #endif
 

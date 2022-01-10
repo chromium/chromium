@@ -17,6 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/chrome_metrics_service_client.h"
@@ -39,21 +40,21 @@
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/metrics/uma_session_stats.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else
 #include "chrome/browser/ui/browser_list.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/registry.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/install_static/install_util.h"
 #include "components/crash/core/app/crash_export_thunks.h"
 #include "components/crash/core/app/crashpad.h"
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
@@ -134,7 +135,7 @@ void OnCrosMetricsReportingSettingChange() {
 // Returns the name of a key under HKEY_CURRENT_USER that can be used to store
 // backups of metrics data. Unused except on Windows.
 std::wstring GetRegistryBackupKey() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return install_static::GetRegistryPath().append(L"\\StabilityMetrics");
 #else
   return std::wstring();
@@ -296,13 +297,13 @@ ChromeMetricsServicesManagerClient::GetMetricsStateManager() {
     base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir);
 
     metrics::StartupVisibility startup_visibility;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     startup_visibility = UmaSessionStats::HasVisibleActivity()
                              ? metrics::StartupVisibility::kForeground
                              : metrics::StartupVisibility::kBackground;
 #else
     startup_visibility = metrics::StartupVisibility::kForeground;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
     std::string client_id;
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -337,7 +338,7 @@ bool ChromeMetricsServicesManagerClient::IsMetricsConsentGiven() {
 }
 
 bool ChromeMetricsServicesManagerClient::IsOffTheRecordSessionActive() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // This differs from TabModelList::IsOffTheRecordSessionActive in that it
   // does not ignore TabModels that have no open tabs, because it may be checked
   // before tabs get added to the TabModel. This means it may be more
@@ -358,7 +359,7 @@ bool ChromeMetricsServicesManagerClient::IsOffTheRecordSessionActive() {
 #endif
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void ChromeMetricsServicesManagerClient::UpdateRunningServices(
     bool may_record,
     bool may_upload) {
@@ -372,4 +373,4 @@ void ChromeMetricsServicesManagerClient::UpdateRunningServices(
   // This isn't a problem though, since they will be consistent.
   SetUploadConsent_ExportThunk(may_record && may_upload);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)

@@ -216,7 +216,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
 
   performance_monitor::ProcessMonitor::Metrics fake_metrics = {};
   fake_metrics.cpu_usage = ++fake_value * 0.01;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   fake_metrics.idle_wakeups = ++fake_value;
   fake_metrics.package_idle_wakeups = ++fake_value;
   fake_metrics.energy_impact = ++fake_value;
@@ -244,7 +244,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMs) {
       entries[0], UkmEntry::kCPUTimeMsName,
       kExpectedMetricsCollectionInterval.InSeconds() * 1000 *
           fake_metrics.cpu_usage);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   test_ukm_recorder_.ExpectEntryMetric(entries[0], UkmEntry::kIdleWakeUpsName,
                                        fake_metrics.idle_wakeups);
   test_ukm_recorder_.ExpectEntryMetric(entries[0], UkmEntry::kPackageExitsName,
@@ -330,7 +330,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsBrowserShuttingDown) {
 
   performance_monitor::ProcessMonitor::Metrics fake_metrics = {};
   fake_metrics.cpu_usage = 0.5;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   fake_metrics.idle_wakeups = 42;
   fake_metrics.package_idle_wakeups = 43;
   fake_metrics.energy_impact = 44;
@@ -475,13 +475,13 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsNoBattery) {
       PowerMetricsReporterAccess::BatteryDischargeMode::kNoBattery, 1);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Tests that on MacOS, a full |charge_level| while not plugged does not result
 // in a kDischarging value emitted. See https://crbug.com/1249830.
 TEST_F(PowerMetricsReporterUnitTest, UKMsMacFullyCharged) {
   // Set the initial battery level at 100%.
   power_metrics_reporter_->battery_state_for_testing().charge_level = 1.0;
-  
+
   task_environment_.FastForwardBy(kExpectedMetricsCollectionInterval);
   battery_states_.push(BatteryLevelProvider::BatteryState{
       0, 1, 1.0, true, base::TimeTicks::Now()});
@@ -508,7 +508,7 @@ TEST_F(PowerMetricsReporterUnitTest, UKMsMacFullyCharged) {
       kBatteryDischargeModeHistogramName,
       PowerMetricsReporterAccess::BatteryDischargeMode::kMacFullyCharged, 1);
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 TEST_F(PowerMetricsReporterUnitTest, UKMsBatteryStateIncrease) {
   // Set the initial battery level at 50%.

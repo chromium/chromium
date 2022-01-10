@@ -660,14 +660,14 @@ void EmitProcessUmaAndUkm(const GlobalMemoryDump::ProcessDump& pmd,
     }
   }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // Resident set is not populated on Mac.
   builder->SetResident(pmd.os_dump().resident_set_kb / kKiB);
 #endif
 
   builder->SetPrivateMemoryFootprint(pmd.os_dump().private_footprint_kb / kKiB);
   builder->SetSharedMemoryFootprint(pmd.os_dump().shared_footprint_kb / kKiB);
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   builder->SetPrivateSwapFootprint(pmd.os_dump().private_footprint_swap_kb /
                                    kKiB);
 #endif
@@ -677,7 +677,7 @@ void EmitProcessUmaAndUkm(const GlobalMemoryDump::ProcessDump& pmd,
     return;
 
   const char* process_name = HistogramProcessTypeToString(process_type);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Resident set is not populated on Mac.
   DCHECK_EQ(pmd.os_dump().resident_set_kb, 0U);
 #else
@@ -698,7 +698,7 @@ void EmitProcessUmaAndUkm(const GlobalMemoryDump::ProcessDump& pmd,
   MEMORY_METRICS_HISTOGRAM_MB(std::string(kMemoryHistogramPrefix) +
                                   process_name + ".SharedMemoryFootprint",
                               pmd.os_dump().shared_footprint_kb / kKiB);
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   MEMORY_METRICS_HISTOGRAM_MB(std::string(kMemoryHistogramPrefix) +
                                   process_name + ".PrivateSwapFootprint",
                               pmd.os_dump().private_footprint_swap_kb / kKiB);
@@ -1108,7 +1108,7 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
     UMA_HISTOGRAM_MEMORY_LARGE_MB(
         "Memory.Experimental.Total2.PrivateMemoryFootprint",
         private_footprint_total_kb / kKiB);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // Resident set is not populated on Mac.
     DCHECK_EQ(resident_set_total_kb, 0U);
 #else

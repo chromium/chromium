@@ -7,7 +7,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 TEST(BatteryLevelProviderTest, Brightness) {
   auto provider = PowerDetailsProvider::Create();
   // There isn't much to test as test bots are usually not using a display.

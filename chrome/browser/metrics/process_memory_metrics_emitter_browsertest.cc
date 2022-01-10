@@ -176,7 +176,7 @@ void CheckExperimentalMemoryMetricsForProcessType(
     int count,
     const char* process_type,
     int number_of_processes) {
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   CheckMemoryMetric(
       std::string("Memory.Experimental.") + process_type + "2.Malloc",
       histogram_tester, count, ValueRestriction::ABOVE_ZERO,
@@ -221,7 +221,7 @@ void CheckExperimentalMemoryMetrics(
     int count,
     int number_of_renderer_processes,
     int number_of_extension_processes) {
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   CheckMemoryMetric("Memory.Experimental.Browser2.Malloc", histogram_tester,
                     count, ValueRestriction::ABOVE_ZERO);
 #endif
@@ -242,13 +242,13 @@ void CheckStableMemoryMetrics(const base::HistogramTester& histogram_tester,
                               int number_of_renderer_processes,
                               int number_of_extension_processes) {
   const int count_for_resident_set =
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       0;
 #else
       count;
 #endif
   const int count_for_private_swap_footprint =
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
       count;
 #else
       0;
@@ -451,11 +451,11 @@ class ProcessMemoryMetricsEmitterTest
   }
 
   void CheckUkmRendererEntry(const ukm::mojom::UkmEntry* entry) {
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
     CheckMemoryMetricWithName(entry, UkmEntry::kMallocName,
                               ValueRestriction::ABOVE_ZERO);
 #endif
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
     CheckMemoryMetricWithName(entry, UkmEntry::kResidentName,
                               ValueRestriction::ABOVE_ZERO);
 #endif
@@ -481,11 +481,11 @@ class ProcessMemoryMetricsEmitterTest
   }
 
   void CheckUkmBrowserEntry(const ukm::mojom::UkmEntry* entry) {
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
     CheckMemoryMetricWithName(entry, UkmEntry::kMallocName,
                               ValueRestriction::ABOVE_ZERO);
 #endif
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
     CheckMemoryMetricWithName(entry, UkmEntry::kResidentName,
                               ValueRestriction::ABOVE_ZERO);
 #endif
@@ -581,7 +581,7 @@ class ProcessMemoryMetricsEmitterTest
 };
 
 // TODO(crbug.com/732501): Re-enable on Win once not flaky.
-#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || defined(OS_WIN)
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || BUILDFLAG(IS_WIN)
 #define MAYBE_FetchAndEmitMetrics DISABLED_FetchAndEmitMetrics
 #else
 #define MAYBE_FetchAndEmitMetrics FetchAndEmitMetrics
@@ -616,9 +616,9 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
   CheckPageInfoUkmMetrics(url, true);
 }
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // TODO(crbug.com/732501): Re-enable on Win once not flaky.
-#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || defined(OS_WIN)
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || BUILDFLAG(IS_WIN)
 #define MAYBE_HasZombieProfile DISABLED_HasZombieProfile
 #else
 #define MAYBE_HasZombieProfile HasZombieProfile
@@ -669,7 +669,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
 // TODO(https://crbug.com/990148): Re-enable on Win and Linux once not flaky.
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
-    defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_FetchAndEmitMetricsWithExtensions \
   DISABLED_FetchAndEmitMetricsWithExtensions
 #else
@@ -772,7 +772,7 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
 
 // TODO(crbug.com/989810): Re-enable on Win and Mac once not flaky.
 #if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) || \
-    defined(OS_WIN) || defined(OS_MAC)
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_FetchDuringTrace DISABLED_FetchDuringTrace
 #else
 #define MAYBE_FetchDuringTrace FetchDuringTrace
@@ -866,9 +866,9 @@ IN_PROC_BROWSER_TEST_F(ProcessMemoryMetricsEmitterTest,
 
 // Test is flaky on chromeos and linux. https://crbug.com/938054.
 // Test is flaky on mac and win: https://crbug.com/948674.
-#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) ||      \
-    defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_MAC) || \
-    defined(OS_WIN)
+#if defined(ADDRESS_SANITIZER) || defined(MEMORY_SANITIZER) ||            \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
 #define MAYBE_ForegroundAndBackgroundPages DISABLED_ForegroundAndBackgroundPages
 #else
 #define MAYBE_ForegroundAndBackgroundPages ForegroundAndBackgroundPages

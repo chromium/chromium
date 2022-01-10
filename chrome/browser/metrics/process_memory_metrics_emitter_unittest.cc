@@ -40,7 +40,7 @@ using UkmEntry = ukm::builders::Memory_Experimental;
 using MetricMap = base::flat_map<const char*, int64_t>;
 
 int GetResidentValue(const MetricMap& metric_map) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Resident set is not populated on Mac.
   return 0;
 #else
@@ -121,7 +121,7 @@ void SetAllocatorDumpMetric(ProcessMemoryDumpPtr& pmd,
 OSMemDumpPtr GetFakeOSMemDump(uint32_t resident_set_kb,
                               uint32_t private_footprint_kb,
                               uint32_t shared_footprint_kb
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
                               ,
                               uint32_t private_swap_footprint_kb
 #endif
@@ -132,7 +132,7 @@ OSMemDumpPtr GetFakeOSMemDump(uint32_t resident_set_kb,
       resident_set_kb, resident_set_kb /* peak_resident_set_kb */,
       true /* is_peak_rss_resettable */, private_footprint_kb,
       shared_footprint_kb
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
       ,
       private_swap_footprint_kb
 #endif
@@ -163,7 +163,7 @@ void PopulateBrowserMetrics(GlobalMemoryDumpPtr& global_dump,
   OSMemDumpPtr os_dump =
       GetFakeOSMemDump(GetResidentValue(metrics_mb) * 1024,
                        metrics_mb["PrivateMemoryFootprint"] * 1024,
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
                        // accessing PrivateSwapFootprint on other OSes will
                        // modify metrics_mb to create the value, which leads to
                        // expectation failures.
@@ -180,13 +180,13 @@ void PopulateBrowserMetrics(GlobalMemoryDumpPtr& global_dump,
 MetricMap GetExpectedBrowserMetrics() {
   return MetricMap({
     {"ProcessType", static_cast<int64_t>(ProcessType::BROWSER)},
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
         {"Resident", 10},
 #endif
         {"Malloc", 20}, {"PrivateMemoryFootprint", 30},
         {"SharedMemoryFootprint", 35}, {"Uptime", 42},
         {"GpuMemory", kGpuTotalMemory * 1024 * 1024},
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
         {"PrivateSwapFootprint", 50},
 #endif
   });
@@ -327,7 +327,7 @@ void PopulateRendererMetrics(GlobalMemoryDumpPtr& global_dump,
   OSMemDumpPtr os_dump =
       GetFakeOSMemDump(GetResidentValue(metrics_mb_or_count) * 1024,
                        metrics_mb_or_count["PrivateMemoryFootprint"] * 1024,
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
                        // accessing PrivateSwapFootprint on other OSes will
                        // modify metrics_mb_or_count to create the value, which
                        // leads to expectation failures.
@@ -349,7 +349,7 @@ constexpr int kNativeLibraryResidentMemoryFootprint = 27560;
 constexpr int kNativeLibraryResidentNotOrderedCodeFootprint = 12345;
 constexpr int kNativeLibraryNotResidentOrderedCodeFootprint = 23456;
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 constexpr int kTestRendererResidentSet = 110;
 #endif
 
@@ -360,7 +360,7 @@ constexpr base::ProcessId kTestRendererPid203 = 203;
 MetricMap GetExpectedRendererMetrics() {
   return MetricMap({
     {"ProcessType", static_cast<int64_t>(ProcessType::RENDERER)},
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
         {"Resident", kTestRendererResidentSet},
 #endif
         {"Malloc", kTestRendererMalloc},
@@ -388,7 +388,7 @@ MetricMap GetExpectedRendererMetrics() {
         {"V8.Main.Malloc", 2}, {"V8.Workers", 60},
         {"V8.Workers.AllocatedObjects", 40}, {"NumberOfExtensions", 0},
         {"Uptime", 42},
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
         {"PrivateSwapFootprint", 50},
 #endif
         {"NumberOfAdSubframes", 28}, {"NumberOfDetachedScriptStates", 11},
@@ -422,7 +422,7 @@ void PopulateGpuMetrics(GlobalMemoryDumpPtr& global_dump,
   OSMemDumpPtr os_dump =
       GetFakeOSMemDump(GetResidentValue(metrics_mb) * 1024,
                        metrics_mb["PrivateMemoryFootprint"] * 1024,
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
                        // accessing PrivateSwapFootprint on other OSes will
                        // modify metrics_mb to create the value, which leads to
                        // expectation failures.
@@ -439,13 +439,13 @@ void PopulateGpuMetrics(GlobalMemoryDumpPtr& global_dump,
 MetricMap GetExpectedGpuMetrics() {
   return MetricMap({
     {"ProcessType", static_cast<int64_t>(ProcessType::GPU)},
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
         {"Resident", 210},
 #endif
         {"Malloc", 220}, {"PrivateMemoryFootprint", 230},
         {"SharedMemoryFootprint", 235}, {"CommandBuffer", kGpuCommandBufferMB},
         {"Uptime", 42}, {"GpuMemory", kGpuTotalMemory * 1024 * 1024},
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
         {"PrivateSwapFootprint", 50},
 #endif
   });
@@ -461,7 +461,7 @@ void PopulateAudioServiceMetrics(GlobalMemoryDumpPtr& global_dump,
   OSMemDumpPtr os_dump =
       GetFakeOSMemDump(GetResidentValue(metrics_mb) * 1024,
                        metrics_mb["PrivateMemoryFootprint"] * 1024,
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
                        // accessing PrivateSwapFootprint on other OSes will
                        // modify metrics_mb to create the value, which leads to
                        // expectation failures.
@@ -478,12 +478,12 @@ void PopulateAudioServiceMetrics(GlobalMemoryDumpPtr& global_dump,
 MetricMap GetExpectedAudioServiceMetrics() {
   return MetricMap({
     {"ProcessType", static_cast<int64_t>(ProcessType::UTILITY)},
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
         {"Resident", 10},
 #endif
         {"Malloc", 20}, {"PrivateMemoryFootprint", 30},
         {"SharedMemoryFootprint", 35}, {"Uptime", 42},
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
         {"PrivateSwapFootprint", 50},
 #endif
   });
@@ -501,7 +501,7 @@ void PopulatePaintPreviewCompositorMetrics(GlobalMemoryDumpPtr& global_dump,
       GetFakeOSMemDump(GetResidentValue(metrics_mb) * 1024,
                        metrics_mb["PrivateMemoryFootprint"] * 1024,
                        metrics_mb["SharedMemoryFootprint"] * 1024
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
                        // accessing PrivateSwapFootprint on other OSes will
                        // modify metrics_mb to create the value, which leads to
                        // expectation failures.
@@ -516,11 +516,11 @@ void PopulatePaintPreviewCompositorMetrics(GlobalMemoryDumpPtr& global_dump,
 MetricMap GetExpectedPaintPreviewCompositorMetrics() {
   return MetricMap({
     {"ProcessType", static_cast<int64_t>(ProcessType::UTILITY)},
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
         {"Resident", 10},
 #endif
         {"PrivateMemoryFootprint", 30}, {"SharedMemoryFootprint", 35},
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
         {"PrivateSwapFootprint", 50},
 #endif
   });
@@ -958,7 +958,7 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
                                 kTestRendererPrivateMemoryFootprint, 2);
   histograms.ExpectUniqueSample("Memory.Renderer.SharedMemoryFootprint",
                                 kTestRendererSharedMemoryFootprint, 2);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   histograms.ExpectTotalCount("Memory.Renderer.ResidentSet", 0);
 #else
   histograms.ExpectUniqueSample("Memory.Renderer.ResidentSet",
@@ -975,7 +975,7 @@ TEST_F(ProcessMemoryMetricsEmitterTest, RendererAndTotalHistogramsAreRecorded) {
                                 2 * kTestRendererMalloc, 1);
   histograms.ExpectUniqueSample("Memory.Total.SharedMemoryFootprint",
                                 2 * kTestRendererSharedMemoryFootprint, 1);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   histograms.ExpectTotalCount("Memory.Total.ResidentSet", 0);
 #else
   histograms.ExpectUniqueSample("Memory.Total.ResidentSet",

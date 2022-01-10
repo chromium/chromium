@@ -409,7 +409,7 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest, FullScreenVideo) {
 }
 
 // TODO(1183746): Fix the flakiness on MacOS and re-enable the test.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_FullScreenVideoClosed DISABLED_FullScreenVideoClosed
 #else
 #define MAYBE_FullScreenVideoClosed FullScreenVideoClosed
@@ -466,7 +466,7 @@ IN_PROC_BROWSER_TEST_F(TabUsageScenarioTrackerBrowserTest,
 }
 
 // TODO(1183746): Fix the flakiness on MacOS and re-enable the test.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_FullScreenVideoCrash DISABLED_FullScreenVideoCrash
 #else
 #define MAYBE_FullScreenVideoCrash FullScreenVideoCrash

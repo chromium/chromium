@@ -17,9 +17,9 @@
 #include "chrome/browser/performance_monitor/process_monitor.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "components/power_metrics/iopm_power_source_sampling_event_source.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 // Reports metrics related to power (battery discharge, cpu time, etc.) to
 // understand what impacts Chrome's power consumption over an interval of time.
@@ -131,9 +131,9 @@ class PowerMetricsReporter
       const BatteryLevelProvider::BatteryState& new_battery_state,
       base::TimeDelta interval_duration);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void OnIOPMPowerSourceSamplingEvent();
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   // The data store used to get the usage scenario data, it needs to outlive
   // this class.
@@ -153,13 +153,13 @@ class PowerMetricsReporter
 
   base::OnceClosure on_battery_sampled_for_testing_;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   power_metrics::IOPMPowerSourceSamplingEventSource
       iopm_power_source_sampling_event_source_;
 
   // The time ticks from when the last IOPMPowerSource event was received.
   absl::optional<base::TimeTicks> last_event_time_ticks_;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   SEQUENCE_CHECKER(sequence_checker_);
 

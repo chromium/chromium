@@ -91,7 +91,7 @@ class MockTabStatsTrackerDelegate : public TabStatsTrackerDelegate {
   MockTabStatsTrackerDelegate() = default;
   ~MockTabStatsTrackerDelegate() override = default;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   OcclusionStatusMap CallComputeNativeWindowOcclusionStatus(
       std::vector<aura::WindowTreeHost*> hosts) override {
     // Checking that the hosts are not nullptr, because of a bug where nullptr
@@ -284,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
   EXPECT_EQ(0U, interval_map->size());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
                        TestCalculateAndRecordNativeWindowVisibilities) {
   std::unique_ptr<MockTabStatsTrackerDelegate> mock_delegate =
@@ -364,7 +364,7 @@ IN_PROC_BROWSER_TEST_F(TabStatsTrackerBrowserTest,
                                       5, 1);
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -396,7 +396,7 @@ using MockTabStatsObserver = testing::NiceMock<LenientMockTabStatsObserver>;
 }  // namespace
 
 // TODO(1183746): Fix the flakiness on MacOS and re-enable the test.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_TabStatsObserverBasics DISABLED_TabStatsObserverBasics
 #else
 #define MAYBE_TabStatsObserverBasics TabStatsObserverBasics

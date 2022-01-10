@@ -13,9 +13,9 @@
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace bluetooth_utility {
 
@@ -40,13 +40,13 @@ void OnGetAdapter(scoped_refptr<device::BluetoothAdapter> adapter) {
 
 void ReportBluetoothAvailability() {
   // This is only relevant for desktop platforms.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // TODO(kenrb): This is separate from other platforms because we get a
   // little bit of extra information from the Mac-specific code. It might not
   // be worth having the extra code path, and we should consider whether to
   // combine them (https://crbug.com/907279).
   ReportAvailability(bluetooth_utility::GetBluetoothAvailability());
-#elif defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // GetAdapter must be called on the UI thread, because it creates a
   // WeakPtr, which is checked from that thread on future calls.
   if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
@@ -55,12 +55,12 @@ void ReportBluetoothAvailability() {
     return;
   }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // This is for tests that have not initialized bluez or dbus thread manager.
   // Outside of tests these are initialized earlier during browser startup.
   if (!bluez::BluezDBusManager::IsInitialized())
     return;
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   if (!device::BluetoothAdapterFactory::Get()->IsBluetoothSupported()) {
     ReportAvailability(BLUETOOTH_NOT_SUPPORTED);

@@ -75,7 +75,7 @@ class TabStatsTracker : public TabStripModelObserver,
  protected:
   FRIEND_TEST_ALL_PREFIXES(TabStatsTrackerBrowserTest,
                            TabDeletionGetsHandledProperly);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   FRIEND_TEST_ALL_PREFIXES(TabStatsTrackerBrowserTest,
                            TestCalculateAndRecordNativeWindowVisibilities);
 #endif
@@ -167,7 +167,7 @@ class TabStatsTracker : public TabStripModelObserver,
   // Functions to call when a WebContents get destroyed.
   void OnWebContentsDestroyed(content::WebContents* web_contents);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Function to call aura_extra::ComputeNativeWindowOcclusionStatus() and
   // record the Visibility of all Chrome browser windows on Windows.
   void CalculateAndRecordNativeWindowVisibilities();
@@ -206,7 +206,7 @@ class TabStatsTracker : public TabStripModelObserver,
   // triggered.
   base::RepeatingTimer daily_event_timer_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The timer used to periodically calculate the occlusion status of native
   // windows on Windows.
   base::RepeatingTimer native_window_occlusion_timer_;
@@ -286,7 +286,7 @@ class TabStatsTracker::UmaStatsReportingDelegate {
       const TabStatsDataStore::TabsStateDuringIntervalMap& interval_map,
       base::TimeDelta interval);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void RecordNativeWindowVisibilities(size_t num_occluded,
                                       size_t num_visible,
                                       size_t num_hidden);

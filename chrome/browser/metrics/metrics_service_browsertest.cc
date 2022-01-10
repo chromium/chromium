@@ -46,15 +46,15 @@
 #include "ui/base/window_open_disposition.h"
 #include "url/gurl.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <sys/wait.h>
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "sandbox/win/src/sandbox_types.h"
 #endif
 
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 namespace {
 
 // Check CrashExitCodes.Renderer histogram for a single bucket entry and then
@@ -72,7 +72,7 @@ void VerifyRendererExitCodeIsSignal(
 }
 
 }  // namespace
-#endif  // defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 // This test class verifies that metrics reporting works correctly for various
 // renderer behaviors such as page loads, recording crashed tabs, and browser
@@ -170,7 +170,7 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, CloseRenderersNormally) {
 // Flaky on Linux. See http://crbug.com/131094
 // Child crashes fail the process on ASan (see crbug.com/411251,
 // crbug.com/368525).
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || defined(ADDRESS_SANITIZER)
 #define MAYBE_CrashRenderers DISABLED_CrashRenderers
 #define MAYBE_CheckCrashRenderers DISABLED_CheckCrashRenderers
 #else
@@ -190,13 +190,13 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, MAYBE_CrashRenderers) {
   EXPECT_EQ(4, prefs->GetInteger(metrics::prefs::kStabilityPageLoadCount));
   EXPECT_EQ(1, prefs->GetInteger(metrics::prefs::kStabilityRendererCrashCount));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Consult Stability Team before changing this test as it's recorded to
   // histograms and used for stability measurement.
   histogram_tester.ExpectUniqueSample(
       "CrashExitCodes.Renderer",
       std::abs(static_cast<int32_t>(STATUS_ACCESS_VIOLATION)), 1);
-#elif defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   VerifyRendererExitCodeIsSignal(histogram_tester, SIGSEGV);
 #endif
   histogram_tester.ExpectUniqueSample("Tabs.SadTab.CrashCreated", 1, 1);
@@ -208,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, MAYBE_CrashRenderers) {
 //
 // This test is disabled on Windows because it flakes.
 // See: https://crbug.com/1277825
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest,
                        DISABLED_HeapCorruptionInRenderer) {
   base::HistogramTester histogram_tester;
@@ -243,20 +243,20 @@ IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, MAYBE_CheckCrashRenderers) {
   EXPECT_EQ(4, prefs->GetInteger(metrics::prefs::kStabilityPageLoadCount));
   EXPECT_EQ(1, prefs->GetInteger(metrics::prefs::kStabilityRendererCrashCount));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Consult Stability Team before changing this test as it's recorded to
   // histograms and used for stability measurement.
   histogram_tester.ExpectUniqueSample(
       "CrashExitCodes.Renderer",
       std::abs(static_cast<int32_t>(STATUS_BREAKPOINT)), 1);
-#elif defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   VerifyRendererExitCodeIsSignal(histogram_tester, SIGTRAP);
 #endif
   histogram_tester.ExpectUniqueSample("Tabs.SadTab.CrashCreated", 1, 1);
 }
 
 // OOM code only works on Windows.
-#if defined(OS_WIN) && !defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_WIN) && !defined(ADDRESS_SANITIZER)
 IN_PROC_BROWSER_TEST_F(MetricsServiceBrowserTest, OOMRenderers) {
   // Disable stack traces during this test since DbgHelp is unreliable in
   // low-memory conditions (see crbug.com/692564).

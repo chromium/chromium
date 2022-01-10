@@ -47,39 +47,39 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/display/screen.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/metrics/first_web_contents_profiler.h"
 #include "chrome/browser/metrics/tab_stats/tab_stats_tracker.h"
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_ANDROID) && defined(__arm__)
+#if BUILDFLAG(IS_ANDROID) && defined(__arm__)
 #include <cpu-features.h>
-#endif  // defined(OS_ANDROID) && defined(__arm__)
+#endif  // BUILDFLAG(IS_ANDROID) && defined(__arm__)
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include <gnu/libc-version.h>
 
 #include "base/linux_util.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/version.h"
-#endif  // defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 #if defined(USE_OZONE)
 #include "ui/events/devices/device_data_manager.h"
 #include "ui/events/devices/input_device_event_observer.h"
 #endif  // defined(USE_OZONE)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "base/win/base_win_buildflags.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
 #include "chrome/browser/shell_integration_win.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
@@ -186,14 +186,14 @@ void RecordMicroArchitectureStats() {
                            base::SysInfo::NumberOfProcessors());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool IsApplockerRunning();
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // Called on a background thread, with low priority to avoid slowing down
 // startup with metrics that aren't trivial to compute.
 void RecordStartupMetrics() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   const base::win::OSInfo& os_info = *base::win::OSInfo::GetInstance();
   int patch = os_info.version_number().patch;
   int build = os_info.version_number().build;
@@ -218,7 +218,7 @@ void RecordStartupMetrics() {
   // Determine if Applocker is enabled and running. This does not check if
   // Applocker rules are being enforced.
   base::UmaHistogramBoolean("Windows.ApplockerRunning", IsApplockerRunning());
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   bluetooth_utility::ReportBluetoothAvailability();
 
@@ -238,7 +238,7 @@ void RecordStartupMetrics() {
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void RecordLinuxDistroSpecific(const std::string& version_string,
                                size_t parts,
                                const char* histogram_name) {
@@ -316,12 +316,12 @@ void RecordLinuxDistro() {
 
   base::UmaHistogramSparse("Linux.Distro2", distro_result);
 }
-#endif  // defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 void RecordLinuxGlibcVersion() {
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   base::Version version(gnu_get_libc_version());
 
   UMALinuxGlibcVersion glibc_version_result = UMA_LINUX_GLIBC_NOT_PARSEABLE;
@@ -411,7 +411,7 @@ void AsynchronousTouchEventStateRecorder::OnDeviceListsComplete() {
 
 #endif  // defined(USE_OZONE)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void RecordPinnedToTaskbarProcessError(bool error) {
   base::UmaHistogramBoolean("Windows.IsPinnedToTaskbar.ProcessError", error);
 }
@@ -493,9 +493,9 @@ bool IsApplockerRunning() {
   return status.dwCurrentState == SERVICE_RUNNING;
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Returns whether the instance has an enterprise brand code.
 bool HasEnterpriseBrandCode() {
   std::string brand;
@@ -510,7 +510,7 @@ bool IsDomainJoined() {
       ->HasManagementAuthority(
           policy::EnterpriseManagementAuthority::DOMAIN_LOCAL);
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void RecordDisplayHDRStatus(const display::Display& display) {
   base::UmaHistogramBoolean("Hardware.Display.SupportsHDR",
@@ -548,7 +548,7 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
   );
 
   // Records whether or not the Segment heap is in use.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
   if (base::win::GetVersion() >= base::win::Version::WIN10_20H1) {
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial("WinSegmentHeap",
@@ -573,9 +573,9 @@ void ChromeBrowserMainExtraPartsMetrics::PreBrowserStart() {
 #endif
   );
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // No need to filter out on Android, because it doesn't support
   // ChromeVariations policy.
   constexpr bool is_enterprise = false;
@@ -613,7 +613,7 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN};
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   base::ThreadPool::PostTask(FROM_HERE, kBestEffortTaskTraits,
                              base::BindOnce(&RecordLinuxDistro));
 #endif
@@ -632,11 +632,11 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
   RecordTouchEventState();
 #endif  // defined(USE_OZONE)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   RecordMacMetrics();
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // RecordStartupMetrics calls into shell_integration::GetDefaultBrowser(),
   // which requires a COM thread on Windows.
   base::ThreadPool::CreateCOMSTATaskRunner(kBestEffortTaskTraits)
@@ -644,9 +644,9 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
 #else
   base::ThreadPool::PostTask(FROM_HERE, kBestEffortTaskTraits,
                              base::BindOnce(&RecordStartupMetrics));
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // TODO(isherman): The delay below is currently needed to avoid (flakily)
   // breaking some tests, including all of the ProcessMemoryMetricsEmitterTest
   // tests. Figure out why there is a dependency and fix the tests.
@@ -661,7 +661,7 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
         FROM_HERE, base::BindOnce(&RecordIsPinnedToTaskbarHistogram),
         base::Seconds(45));
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   auto* screen = display::Screen::GetScreen();
   display_count_ = screen->GetNumDisplays();
@@ -674,7 +674,7 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
 
   display_observer_.emplace(this);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   metrics::BeginFirstWebContentsProfiling();
   // Only instantiate the tab stats tracker if a local state exists. This is
   // always the case for Chrome but not for the unittests.
@@ -684,8 +684,8 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
         std::make_unique<metrics::TabStatsTracker>(
             g_browser_process->local_state()));
   }
-#endif  // !defined(OS_ANDROID)
-#if defined(OS_MAC) || defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   // BatteryLevelProvider is supported on mac and windows only, thus we report
   // power metrics only on those platforms.
   if (performance_monitor::ProcessMonitor::Get()) {
@@ -694,7 +694,7 @@ void ChromeBrowserMainExtraPartsMetrics::PostBrowserStart() {
     power_metrics_reporter_ = std::make_unique<PowerMetricsReporter>(
         usage_scenario_tracker_->data_store(), BatteryLevelProvider::Create());
   }
-#endif  // defined(OS_MAC) || defined (OS_WIN)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 }
 
 void ChromeBrowserMainExtraPartsMetrics::PreMainMessageLoopRun() {

@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
@@ -63,7 +64,7 @@ constexpr base::TimeDelta kTabUsageReportingIntervals[] = {
     base::Seconds(30), base::Minutes(1), base::Minutes(10),
     base::Hours(1),    base::Hours(5),   base::Hours(12)};
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const base::TimeDelta kNativeWindowOcclusionCalculationInterval =
     base::Minutes(10);
 #endif
@@ -193,7 +194,7 @@ TabStatsTracker::TabStatsTracker(PrefService* pref_service)
   }
 
 // The native window occlusion calculation is specific to Windows.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   native_window_occlusion_timer_.Start(
       FROM_HERE, kNativeWindowOcclusionCalculationInterval,
       base::BindRepeating(

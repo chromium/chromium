@@ -13,7 +13,7 @@
 #include "components/startup_metric_utils/browser/startup_metric_utils.h"
 #include "content/public/test/browser_test.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
 #else
 #include "chrome/test/base/in_process_browser_test.h"
@@ -29,22 +29,22 @@ constexpr const char* kStartupMetrics[] = {
 
 // Not Desktop specific but flaky on some Android bots.
 // TODO(crbug.com/1252126): Figure out why.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     "Startup.LoadTime.ApplicationStartToChromeMain",
     "Startup.LoadTime.ProcessCreateToApplicationStart",
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // Desktop specific metrics
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     "Startup.BrowserWindow.FirstPaint",
     "Startup.BrowserWindowDisplay",
     "Startup.FirstWebContents.MainNavigationFinished",
     "Startup.FirstWebContents.MainNavigationStart",
     "Startup.FirstWebContents.NonEmptyPaint3",
     "Startup.FirstWebContents.RenderProcessHostInit.ToNonEmptyPaint",
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     "Startup.Temperature",
 #endif
 };

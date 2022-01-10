@@ -118,7 +118,7 @@
 #include "printing/buildflags/buildflags.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/metrics/chrome_android_metrics_provider.h"
 #include "chrome/browser/metrics/page_load_metrics_provider.h"
 #include "components/metrics/android_metrics_provider.h"
@@ -126,7 +126,7 @@
 #include "chrome/browser/metrics/browser_activity_watcher.h"
 #endif
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <signal.h>
 #endif
 
@@ -158,7 +158,7 @@
 #include "components/metrics/structured/structured_metrics_provider.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "chrome/browser/metrics/antivirus_metrics_provider_win.h"
@@ -168,7 +168,7 @@
 #include "chrome/notification_helper/notification_helper_constants.h"
 #endif
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 #include "third_party/crashpad/crashpad/client/crashpad_info.h"
 #endif
 
@@ -178,17 +178,17 @@
 #include "components/signin/core/browser/signin_status_metrics_provider.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/metrics/upgrade_metrics_provider.h"
-#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/browser/metrics/power/power_metrics_provider_mac.h"
 #endif
 
 namespace {
 
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 const int kMaxHistogramStorageKiB = 100 << 10;  // 100 MiB
 #else
 const int kMaxHistogramStorageKiB = 500 << 10;  // 500 MiB
@@ -202,7 +202,7 @@ const int kMaxHistogramGatheringWaitDuration = 60000;  // 60 seconds.
 // third_party/crashpad/crashpad/handler/handler_main.cc.
 const char kCrashpadHistogramAllocatorName[] = "CrashpadMetrics";
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 // The stream type assigned to the minidump stream that holds the serialized
 // system profile proto.
 const uint32_t kSystemProfileMinidumpStreamType = 0x4B6B0003;
@@ -213,7 +213,7 @@ const uint32_t kSystemProfileMinidumpStreamType = 0x4B6B0003;
 // not assume it.
 // TODO(manzagop): revisit this if the Crashpad API evolves.
 base::LazyInstance<std::string>::Leaky g_environment_for_crash_reporter;
-#endif  // defined(OS_WIN) || defined(OS_MAC) || defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 
 void RegisterFileMetricsPreferences(PrefRegistrySimple* registry) {
   metrics::FileMetricsProvider::RegisterSourcePrefs(registry,
@@ -222,7 +222,7 @@ void RegisterFileMetricsPreferences(PrefRegistrySimple* registry) {
   metrics::FileMetricsProvider::RegisterSourcePrefs(
       registry, kCrashpadHistogramAllocatorName);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   metrics::FileMetricsProvider::RegisterSourcePrefs(
       registry, installer::kSetupHistogramAllocatorName);
 
@@ -313,7 +313,7 @@ std::unique_ptr<metrics::FileMetricsProvider> CreateFileMetricsProvider(
     }
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Read metrics file from setup.exe.
   base::FilePath program_dir;
   base::PathService::Get(base::DIR_EXE, &program_dir);
@@ -360,7 +360,7 @@ bool IsProcessRunning(base::ProcessId pid) {
   if (g_is_process_running)
     return g_is_process_running(pid);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   HANDLE process = OpenProcess(SYNCHRONIZE, FALSE, pid);
   if (process) {
     DWORD ret = WaitForSingleObject(process, 0);
@@ -368,12 +368,12 @@ bool IsProcessRunning(base::ProcessId pid) {
     if (ret == WAIT_TIMEOUT)
       return true;
   }
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   // Sending a signal value of 0 will cause error checking to be performed
   // with no signal being sent.
   if (kill(pid, 0) == 0 || errno != ESRCH)
     return true;
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   // TODO(crbug.com/1235293)
   NOTIMPLEMENTED_LOG_ONCE();
 #else
@@ -492,9 +492,9 @@ void ChromeMetricsServiceClient::RegisterPrefs(PrefRegistrySimple* registry) {
 
   metrics::RegisterMetricsReportingStatePrefs(registry);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ChromeAndroidMetricsProvider::RegisterPrefs(registry);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   PluginMetricsProvider::RegisterPrefs(registry);
@@ -549,7 +549,7 @@ std::string ChromeMetricsServiceClient::GetVersionString() {
 }
 
 void ChromeMetricsServiceClient::OnEnvironmentUpdate(std::string* environment) {
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
   DCHECK(environment);
 
   // Register the environment with the crash reporter. Note this only registers
@@ -724,29 +724,29 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<safe_browsing::SafeBrowsingMetricsProvider>());
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<metrics::AndroidMetricsProvider>());
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<ChromeAndroidMetricsProvider>(local_state));
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<PageLoadMetricsProvider>());
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<GoogleUpdateMetricsProviderWin>());
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<AntiVirusMetricsProvider>());
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<DesktopPlatformFeaturesMetricsProvider>());
-#endif  // defined(OS_WIN) || defined(OS_MAC) || (defined(OS_LINUX) ||
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS_LACROS))
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -828,20 +828,20 @@ void ChromeMetricsServiceClient::RegisterMetricsServiceProviders() {
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<CertificateReportingMetricsProvider>());
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<UpgradeMetricsProvider>());
-#endif  //! defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  //! BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   metrics_service_->RegisterMetricsProvider(
       std::make_unique<PowerMetricsProvider>());
 #endif
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   metrics_service_->RegisterMetricsProvider(
       metrics::CreateDesktopSessionMetricsProvider());
-#endif  // defined(OS_WIN) || defined(OS_MAC) || (defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX)
 }
 
 void ChromeMetricsServiceClient::RegisterUKMProviders() {
@@ -971,7 +971,7 @@ bool ChromeMetricsServiceClient::RegisterForNotifications() {
               &ChromeMetricsServiceClient::OnURLOpenedFromOmnibox,
               base::Unretained(this)));
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   browser_activity_watcher_ = std::make_unique<BrowserActivityWatcher>(
       base::BindRepeating(&metrics::MetricsService::OnApplicationNotIdle,
                           base::Unretained(metrics_service_.get())));
@@ -1014,8 +1014,8 @@ bool ChromeMetricsServiceClient::RegisterForProfileEvents(Profile* profile) {
 #endif
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   // This creates the DesktopProfileSessionDurationsServices if it didn't exist
   // already.
   metrics::DesktopProfileSessionDurationsServiceFactory::GetForBrowserContext(

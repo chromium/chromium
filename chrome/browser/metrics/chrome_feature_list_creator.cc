@@ -16,6 +16,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "cc/base/switches.h"
 #include "chrome/browser/about_flags.h"
@@ -92,7 +93,7 @@ ChromeFeatureListCreator::TakeChromeBrowserPolicyConnector() {
   return std::move(browser_policy_connector_);
 }
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 std::unique_ptr<installer::InitialPreferences>
 ChromeFeatureListCreator::TakeInitialPrefs() {
   return std::move(installer_initial_prefs_);
@@ -105,10 +106,10 @@ void ChromeFeatureListCreator::CreatePrefService() {
       base::PathService::Get(chrome::FILE_LOCAL_STATE, &local_state_file);
   DCHECK(result);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::UmaHistogramBoolean("UMA.Startup.LocalStateFileExistence",
                             base::PathExists(local_state_file));
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   auto pref_registry = base::MakeRefCounted<PrefRegistrySimple>();
   RegisterLocalState(pref_registry.get());
@@ -130,7 +131,7 @@ void ChromeFeatureListCreator::CreatePrefService() {
 // TODO(asvitkine): This is done here so that the pref is set before
 // VariationsService queries the locale. This should potentially be moved to
 // somewhere better, e.g. as a helper in first_run namespace.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (first_run::IsChromeFirstRun()) {
     // During first run we read the google_update registry key to find what
     // language the user selected when downloading the installer. This
@@ -142,7 +143,7 @@ void ChromeFeatureListCreator::CreatePrefService() {
                               base::WideToASCII(install_lang));
     }
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void ChromeFeatureListCreator::ConvertFlagsToSwitches() {
@@ -211,7 +212,7 @@ void ChromeFeatureListCreator::CreateMetricsServices() {
 void ChromeFeatureListCreator::SetupInitialPrefs() {
 // Android does first run in Java instead of native.
 // Chrome OS has its own out-of-box-experience code.
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // On first run, we need to process the predictor preferences before the
   // browser's profile_manager object is created, but after ResourceBundle
   // is initialized.
@@ -246,5 +247,5 @@ void ChromeFeatureListCreator::SetupInitialPrefs() {
     local_state_->SetInt64(variations::prefs::kVariationsSeedDate,
                            base::Time::Now().ToInternalValue());
   }
-#endif  // !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 }

@@ -8,6 +8,7 @@
 #include "base/debug/debugger.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 
 namespace metrics {
 
@@ -35,7 +36,7 @@ NOINLINE NOT_TAIL_CALLED void ReportThreadHang() {
 #endif
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 NOINLINE void StartupHang() {
   // TODO(rtenneti): http://crbug.com/440885 enable crashing after fixing false
@@ -51,7 +52,7 @@ NOINLINE void ShutdownHang() {
   ALLOW_UNUSED_LOCAL(inhibit_comdat);
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 NOINLINE void ThreadUnresponsive_UI() {
   ReportThreadHang();

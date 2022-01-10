@@ -4,12 +4,13 @@
 
 #include "chrome/browser/metrics/shutdown_watcher_helper.h"
 
+#include "build/build_config.h"
 #include "chrome/browser/metrics/thread_watcher_report_hang.h"
 #include "chrome/common/channel_info.h"
 #include "components/version_info/channel.h"
 
 // ShutdownWatcherHelper is not available on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -77,4 +78,4 @@ base::TimeDelta ShutdownWatcherHelper::GetPerChannelTimeout(
   return actual_duration;
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)

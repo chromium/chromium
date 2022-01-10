@@ -94,10 +94,10 @@ class ChromeMetricsServicesManagerClient
   bool IsMetricsReportingEnabled() override;
   bool IsMetricsConsentGiven() override;
   bool IsOffTheRecordSessionActive() override;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, the client controls whether Crashpad can upload crash reports.
   void UpdateRunningServices(bool may_record, bool may_upload) override;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // MetricsStateManager which is passed as a parameter to service constructors.
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;

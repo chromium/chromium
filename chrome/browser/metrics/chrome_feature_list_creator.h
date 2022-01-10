@@ -65,7 +65,7 @@ class ChromeFeatureListCreator {
   std::unique_ptr<policy::ChromeBrowserPolicyConnector>
   TakeChromeBrowserPolicyConnector();
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<installer::InitialPreferences> TakeInitialPrefs();
 #endif
 
@@ -119,7 +119,7 @@ class ChromeFeatureListCreator {
 
   std::unique_ptr<ChromeBrowserFieldTrials> browser_field_trials_;
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<installer::InitialPreferences> installer_initial_prefs_;
 #endif
 

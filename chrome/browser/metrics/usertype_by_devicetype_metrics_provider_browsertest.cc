@@ -400,7 +400,7 @@ class UserTypeByDeviceTypeMetricsProviderTest
 };
 
 // Flacky on CrOS (http://crbug.com/1248669).
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_Uma DISABLED_Uma
 #else
 #define MAYBE_Uma Uma

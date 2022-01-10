@@ -7,7 +7,7 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #endif
@@ -17,13 +17,13 @@ class TabStatsTrackerDelegate {
   TabStatsTrackerDelegate() {}
   virtual ~TabStatsTrackerDelegate() {}
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   using OcclusionStatusMap =
       base::flat_map<aura::WindowTreeHost*, aura::Window::OcclusionState>;
 
   virtual OcclusionStatusMap CallComputeNativeWindowOcclusionStatus(
       std::vector<aura::WindowTreeHost*> hosts);
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 #endif  // CHROME_BROWSER_METRICS_TAB_STATS_TAB_STATS_TRACKER_DELEGATE_H_

@@ -41,7 +41,7 @@ using ui_test_utils::NavigateToURL;
 
 // No current reliable way to determine OOM on Linux/Mac. Sanitizers also
 // interfere with the exit code on OOM, making this detection unreliable.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     defined(ADDRESS_SANITIZER)
 #define MAYBE_OutOfMemoryReporterBrowserTest \
   DISABLED_OutOfMemoryReporterBrowserTest
@@ -100,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_OutOfMemoryReporterBrowserTest, MemoryExhaust) {
 
 // No current reliable way to determine OOM on Linux/Mac. Sanitizers also
 // interfere with the exit code on OOM, making this detection unreliable.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     defined(ADDRESS_SANITIZER)
 #define MAYBE_PortalOutOfMemoryReporterBrowserTest \
   DISABLED_PortalOutOfMemoryReporterBrowserTest
@@ -210,7 +210,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_PortalOutOfMemoryReporterBrowserTest,
 
 // No current reliable way to determine OOM on Linux/Mac. Sanitizers also
 // interfere with the exit code on OOM, making this detection unreliable.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
     defined(ADDRESS_SANITIZER)
 #define MAYBE_OutOfMemoryReporterPrerenderBrowserTest \
   DISABLED_OutOfMemoryReporterPrerenderBrowserTest

@@ -45,10 +45,10 @@ class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
   void PreMainMessageLoopRun() override;
 
  private:
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Records Mac specific metrics.
   void RecordMacMetrics();
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   // DisplayObserver overrides.
   void OnDisplayAdded(const display::Display& new_display) override;
@@ -68,7 +68,7 @@ class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
   std::unique_ptr<ui::InputDeviceEventObserver> input_device_event_observer_;
 #endif  // defined(USE_OZONE)
 
-#if defined(OS_MAC) || defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   // Tracks coarse usage scenarios that affect performance during a given
   // interval of time (e.g. navigating to a new page, watching a video). The
   // data tracked by this is used by other classes (see below) to report metrics
@@ -80,7 +80,7 @@ class ChromeBrowserMainExtraPartsMetrics : public ChromeBrowserMainExtraParts,
   // |usage_scenario_tracker_|, used to analyze the correlation between usage
   // scenarios and power consumption.
   std::unique_ptr<PowerMetricsReporter> power_metrics_reporter_;
-#endif  // defined(OS_MAC) || defined (OS_WIN)
+#endif  // BUILDFLAG(IS_MAC) || defined (OS_WIN)
 };
 
 #endif  // CHROME_BROWSER_METRICS_CHROME_BROWSER_MAIN_EXTRA_PARTS_METRICS_H_

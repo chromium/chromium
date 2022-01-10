@@ -11,7 +11,7 @@
 
 namespace metrics {
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 // This function makes it possible to tell from the callstack why startup is
 // taking too long.
@@ -21,7 +21,7 @@ NOINLINE void StartupHang();
 // taking too long.
 NOINLINE void ShutdownHang();
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // This function makes it possible to tell from the callstack alone what thread
 // was unresponsive.
