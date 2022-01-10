@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #include "ios/chrome/common/string_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/highlight_button.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
@@ -57,7 +58,7 @@ BOOL isPasswordManagerBrandingUpdateEnabled() {
 @property(nonatomic, strong) UILabel* subtitleLabel;
 @property(nonatomic, strong) UIView* turnOnInstructionView;
 @property(nonatomic, strong) UIView* turnOffInstructionView;
-@property(nonatomic, strong) UIButton* actionButton;
+@property(nonatomic, strong) HighlightButton* actionButton;
 
 @property(nonatomic, strong) UIActivityIndicatorView* spinner;
 // Views that are used to format the layout of visible UI components.
@@ -411,7 +412,7 @@ BOOL isPasswordManagerBrandingUpdateEnabled() {
 
 - (UIButton*)actionButton {
   if (!_actionButton) {
-    _actionButton = [[UIButton alloc] initWithFrame:CGRectZero];
+    _actionButton = [[HighlightButton alloc] initWithFrame:CGRectZero];
     _actionButton.contentEdgeInsets =
         UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
     [_actionButton

@@ -43,6 +43,7 @@ source_set("passwords_in_other_apps_ui") {
     "//ios/chrome/browser/ui/util",
     "//ios/chrome/common",
     "//ios/chrome/common/ui/colors",
+    "//ios/chrome/common/ui/elements",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/common/ui/util:image_util",
     "//ios/public/provider/chrome/browser/password_auto_fill:password_auto_fill_api",
