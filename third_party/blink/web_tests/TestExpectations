@@ -3669,7 +3669,6 @@ crbug.com/626703 [ Mac11-arm64 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/R
 crbug.com/626703 [ Mac11-arm64 ] virtual/webrtc-wpt-plan-b/external/wpt/webrtc/RTCPeerConnection-onsignalingstatechanged.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/streams/piping/abort.any.html [ Failure Timeout ]
 crbug.com/626703 [ Mac10.15 ] external/wpt/streams/piping/abort.any.sharedworker.html [ Crash Failure ]
-crbug.com/626703 [ Mac11-arm64 ] virtual/consume-code-cache-off-thread/external/wpt/html/semantics/scripting-1/the-script-element/json-module/parse-error.html [ Timeout ]
 crbug.com/626703 [ Mac11-arm64 ] virtual/css-calc-infinity-and-nan-disabled/external/wpt/css/css-values/ch-unit-011.html [ Failure ]
 crbug.com/626703 [ Win10.20h2 ] external/wpt/html/cross-origin-embedder-policy/cross-origin-isolated-permission.https.html [ Timeout ]
 crbug.com/626703 [ Win10.20h2 ] virtual/without-coep-for-shared-worker/external/wpt/html/cross-origin-embedder-policy/credentialless/cache-storage.tentative.https.window.html?service_worker [ Skip Timeout ]
