@@ -9,7 +9,7 @@
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 
-struct WebApplicationInfo;
+struct WebAppInstallInfo;
 
 #if defined(OFFICIAL_BUILD)
 #error Demo Mode should only be included in unofficial builds.
@@ -20,7 +20,7 @@ class SampleSystemAppDelegate : public web_app::SystemWebAppDelegate {
   explicit SampleSystemAppDelegate(Profile* profile);
 
   // web_app::SystemWebAppDelegate overrides:
-  std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
+  std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldCaptureNavigations() const override;
   bool ShouldReuseExistingWindow() const override;
   bool ShouldShowNewWindowMenuOption() const override;
@@ -28,7 +28,7 @@ class SampleSystemAppDelegate : public web_app::SystemWebAppDelegate {
       const override;
 };
 
-// Return a WebApplicationInfo used to install the app.
-std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForSampleSystemWebApp();
+// Return a WebAppInstallInfo used to install the app.
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForSampleSystemWebApp();
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_SAMPLE_SYSTEM_WEB_APP_INFO_H_

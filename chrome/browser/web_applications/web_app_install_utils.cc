@@ -240,7 +240,7 @@ std::vector<apps::ProtocolHandlerInfo> ToWebAppProtocolHandlers(
   return protocol_handlers;
 }
 
-void PopulateShortcutItemIcons(WebApplicationInfo* web_app_info,
+void PopulateShortcutItemIcons(WebAppInstallInfo* web_app_info,
                                const IconsMap& icons_map) {
   web_app_info->shortcuts_menu_icon_bitmaps.clear();
   for (auto& shortcut : web_app_info->shortcuts_menu_item_infos) {
@@ -272,7 +272,7 @@ void PopulateShortcutItemIcons(WebApplicationInfo* web_app_info,
 // Reconcile the file handling icons that were specified in the manifest with
 // the icons we were successfully able to download. Store the actual bitmaps and
 // update the icon metadata in `web_app_info`.
-void PopulateFileHandlingIcons(WebApplicationInfo* web_app_info,
+void PopulateFileHandlingIcons(WebAppInstallInfo* web_app_info,
                                const IconsMap& icons_map) {
   IconsMap& other_icon_bitmaps = web_app_info->other_icon_bitmaps;
   other_icon_bitmaps.clear();
@@ -362,7 +362,7 @@ apps::FileHandlers CreateFileHandlersFromManifest(
 
 void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
                                   const GURL& manifest_url,
-                                  WebApplicationInfo* web_app_info) {
+                                  WebAppInstallInfo* web_app_info) {
   // Give the full length name priority if it's not empty.
   std::u16string name = manifest.name.value_or(std::u16string());
   if (!name.empty())
@@ -413,7 +413,7 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
   if (!manifest.display_override.empty())
     web_app_info->display_override = manifest.display_override;
 
-  // Create the WebApplicationInfo icons list *outside* of |web_app_info|, so
+  // Create the WebAppInstallInfo icons list *outside* of |web_app_info|, so
   // that we can decide later whether or not to replace the existing icons.
   std::vector<apps::IconInfo> web_app_icons;
   for (const auto& icon : manifest.icons) {
@@ -490,7 +490,7 @@ void UpdateWebAppInfoFromManifest(const blink::mojom::Manifest& manifest,
 }
 
 std::vector<GURL> GetValidIconUrlsToDownload(
-    const WebApplicationInfo& web_app_info) {
+    const WebAppInstallInfo& web_app_info) {
   std::vector<GURL> web_app_info_icon_urls;
   // App icons.
   for (const apps::IconInfo& info : web_app_info.manifest_icons) {
@@ -523,13 +523,13 @@ std::vector<GURL> GetValidIconUrlsToDownload(
   return web_app_info_icon_urls;
 }
 
-void PopulateOtherIcons(WebApplicationInfo* web_app_info,
+void PopulateOtherIcons(WebAppInstallInfo* web_app_info,
                         const IconsMap& icons_map) {
   PopulateShortcutItemIcons(web_app_info, icons_map);
   PopulateFileHandlingIcons(web_app_info, icons_map);
 }
 
-void PopulateProductIcons(WebApplicationInfo* web_app_info,
+void PopulateProductIcons(WebAppInstallInfo* web_app_info,
                           const IconsMap* icons_map) {
   std::vector<apps::IconInfo> manifest_icons_any;
   std::vector<apps::IconInfo> manifest_icons_maskable;

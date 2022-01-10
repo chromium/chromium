@@ -9,7 +9,7 @@
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 
-struct WebApplicationInfo;
+struct WebAppInstallInfo;
 
 class ConnectivityDiagnosticsSystemAppDelegate
     : public web_app::SystemWebAppDelegate {
@@ -17,13 +17,13 @@ class ConnectivityDiagnosticsSystemAppDelegate
   explicit ConnectivityDiagnosticsSystemAppDelegate(Profile* profile);
 
   // web_app::SystemWebAppDelegate overrides:
-  std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
+  std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldShowInLauncher() const override;
   bool ShouldShowInSearch() const override;
 };
 
-// Returns a WebApplicationInfo used to install the app.
-std::unique_ptr<WebApplicationInfo>
+// Returns a WebAppInstallInfo used to install the app.
+std::unique_ptr<WebAppInstallInfo>
 CreateWebAppInfoForConnectivityDiagnosticsSystemWebApp();
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_CONNECTIVITY_DIAGNOSTICS_SYSTEM_WEB_APP_INFO_H_

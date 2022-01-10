@@ -123,7 +123,7 @@ class MockOsIntegrationManager : public OsIntegrationManager {
               (override));
   MOCK_METHOD(void,
               UpdateShortcutsMenu,
-              (const AppId& app_id, const WebApplicationInfo& web_app_info),
+              (const AppId& app_id, const WebAppInstallInfo& web_app_info),
               (override));
   MOCK_METHOD(void,
               UpdateUrlHandlers,

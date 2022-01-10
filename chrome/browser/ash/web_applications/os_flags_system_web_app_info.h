@@ -22,7 +22,7 @@ class OsFlagsSystemWebAppDelegate : public web_app::SystemWebAppDelegate {
   ~OsFlagsSystemWebAppDelegate() override;
 
   // web_app::SystemWebAppDelegate:
-  std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
+  std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
 
   // TODO(crbug/1260386) - Add override for GetAdditionalSearchTerms() to allow
   // capturing the os:// search tearms to be used.

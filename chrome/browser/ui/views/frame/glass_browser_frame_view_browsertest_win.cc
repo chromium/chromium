@@ -57,7 +57,7 @@ class WebAppGlassBrowserFrameViewTest : public InProcessBrowserTest {
   // TODO(https://crbug.com/863278): Force Aero glass on Windows 7 for this
   // test.
   bool InstallAndLaunchWebApp() {
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = GetStartURL();
     web_app_info->scope = GetStartURL().GetWithoutFilename();
     if (theme_color_)
@@ -196,7 +196,7 @@ class WebAppGlassBrowserFrameViewWindowControlsOverlayTest
 
     std::vector<blink::mojom::DisplayMode> display_overrides = {
         blink::mojom::DisplayMode::kWindowControlsOverlay};
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->display_mode = blink::mojom::DisplayMode::kStandalone;

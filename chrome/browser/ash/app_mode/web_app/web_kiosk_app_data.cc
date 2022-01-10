@@ -214,7 +214,7 @@ GURL WebKioskAppData::GetLaunchableUrl() const {
 }
 
 void WebKioskAppData::UpdateFromWebAppInfo(
-    std::unique_ptr<WebApplicationInfo> app_info) {
+    std::unique_ptr<WebAppInstallInfo> app_info) {
   DCHECK(app_info);
   name_ = base::UTF16ToUTF8(app_info->title);
   base::FilePath cache_dir;

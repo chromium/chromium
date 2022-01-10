@@ -72,7 +72,7 @@ enum class InstallResultCode {
 
   // Failure category:
   // An inter-process request to blink renderer failed.
-  kGetWebApplicationInfoFailed = 3,
+  kGetWebAppInstallInfoFailed = 3,
   // A user previously uninstalled the app, user doesn't want to see it again.
   kPreviouslyUninstalled = 4,
   // The blink renderer used to install the app was destroyed.

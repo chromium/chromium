@@ -71,7 +71,7 @@ class ExternallyManagedAppInstallTask {
   const ExternalInstallOptions& install_options() { return install_options_; }
 
  private:
-  // Install directly from a fully specified WebApplicationInfo struct. Used
+  // Install directly from a fully specified WebAppInstallInfo struct. Used
   // by system apps.
   void InstallFromInfo(ResultCallback result_callback);
 

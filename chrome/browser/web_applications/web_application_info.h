@@ -165,17 +165,17 @@ struct WebAppShortcutsMenuItemInfo {
 };
 
 // Structure used when installing a web page as an app.
-struct WebApplicationInfo {
+struct WebAppInstallInfo {
   enum MobileCapable {
     MOBILE_CAPABLE_UNSPECIFIED,
     MOBILE_CAPABLE,
     MOBILE_CAPABLE_APPLE
   };
 
-  WebApplicationInfo();
-  WebApplicationInfo(const WebApplicationInfo& other);
-  explicit WebApplicationInfo(const webapps::mojom::WebPageMetadata& metadata);
-  ~WebApplicationInfo();
+  WebAppInstallInfo();
+  WebAppInstallInfo(const WebAppInstallInfo& other);
+  explicit WebAppInstallInfo(const webapps::mojom::WebPageMetadata& metadata);
+  ~WebAppInstallInfo();
 
   // Id specified in the manifest.
   absl::optional<std::string> manifest_id;

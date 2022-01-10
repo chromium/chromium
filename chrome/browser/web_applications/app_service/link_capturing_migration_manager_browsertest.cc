@@ -36,7 +36,7 @@ IN_PROC_BROWSER_TEST_F(LinkCapturingMigrationManagerBrowserTest,
   Profile* profile = browser()->profile();
   auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile);
 
-  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->title = u"Test app";
   web_app_info->start_url = GURL("https://example.org");
   web_app_info->capture_links =

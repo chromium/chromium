@@ -62,7 +62,7 @@ std::vector<IconSizes> GetDownloadedShortcutsMenuIconsSizes(
 
 }  // namespace
 
-void SetWebAppManifestFields(const WebApplicationInfo& web_app_info,
+void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
                              WebApp& web_app) {
   DCHECK(!web_app_info.title.empty());
   web_app.SetName(base::UTF16ToUTF8(web_app_info.title));

@@ -301,7 +301,7 @@ void WebAppMover::OnAllUninstalled(
       web_contents, true, webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
       base::BindOnce(
           [](content::WebContents* initiator_web_contents,
-             std::unique_ptr<WebApplicationInfo> web_app_info,
+             std::unique_ptr<WebAppInstallInfo> web_app_info,
              ForInstallableSite for_installable_site,
              WebAppInstallationAcceptanceCallback acceptance_callback) {
             // Note: |open_as_window| is set to false here (which it should be

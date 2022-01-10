@@ -41,7 +41,7 @@ void StandaloneBrowserTestController::InstallWebApp(
     const std::string& start_url,
     apps::mojom::WindowMode window_mode,
     InstallWebAppCallback callback) {
-  auto info = std::make_unique<WebApplicationInfo>();
+  auto info = std::make_unique<WebAppInstallInfo>();
   info->title = u"Test Web App";
   info->start_url = GURL(start_url);
   info->display_mode = WindowModeToDisplayMode(window_mode);

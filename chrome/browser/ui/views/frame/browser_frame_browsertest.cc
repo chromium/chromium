@@ -48,7 +48,7 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameTest, DevToolsHasBoundsOnOpen) {
 
 // Verifies that the web app is loaded with initial bounds.
 IN_PROC_BROWSER_TEST_F(BrowserFrameTest, WebAppsHasBoundsOnOpen) {
-  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = GURL("http://example.org/");
   web_app::AppId app_id = web_app::test::InstallWebApp(browser()->profile(),
                                                        std::move(web_app_info));

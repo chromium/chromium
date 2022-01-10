@@ -648,7 +648,7 @@ IN_PROC_BROWSER_TEST_F(PreinstalledWebAppMigrationBrowserTest,
   options.uninstall_and_replace.push_back(kExtensionId);
   options.only_use_app_info_factory = true;
   options.app_info_factory = base::BindLambdaForTesting([&]() {
-    auto info = std::make_unique<WebApplicationInfo>();
+    auto info = std::make_unique<WebAppInstallInfo>();
     info->start_url = GetWebAppUrl();
     info->title = u"Test app";
     return info;

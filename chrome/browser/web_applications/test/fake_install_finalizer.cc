@@ -32,7 +32,7 @@ FakeInstallFinalizer::FakeInstallFinalizer()
 FakeInstallFinalizer::~FakeInstallFinalizer() = default;
 
 void FakeInstallFinalizer::FinalizeInstall(
-    const WebApplicationInfo& web_app_info,
+    const WebAppInstallInfo& web_app_info,
     const FinalizeOptions& options,
     InstallFinalizedCallback callback) {
   finalize_options_list_.push_back(options);
@@ -40,9 +40,8 @@ void FakeInstallFinalizer::FinalizeInstall(
            std::move(callback));
 }
 
-void FakeInstallFinalizer::FinalizeUpdate(
-    const WebApplicationInfo& web_app_info,
-    InstallFinalizedCallback callback) {
+void FakeInstallFinalizer::FinalizeUpdate(const WebAppInstallInfo& web_app_info,
+                                          InstallFinalizedCallback callback) {
   Finalize(web_app_info, InstallResultCode::kSuccessAlreadyInstalled,
            std::move(callback));
 }
@@ -136,7 +135,7 @@ void FakeInstallFinalizer::SimulateExternalAppUninstalledByUser(
   user_uninstalled_external_apps_.insert(app_id);
 }
 
-void FakeInstallFinalizer::Finalize(const WebApplicationInfo& web_app_info,
+void FakeInstallFinalizer::Finalize(const WebAppInstallInfo& web_app_info,
                                     InstallResultCode code,
                                     InstallFinalizedCallback callback) {
   AppId app_id = GetAppIdForUrl(web_app_info.start_url);
@@ -151,7 +150,7 @@ void FakeInstallFinalizer::Finalize(const WebApplicationInfo& web_app_info,
   }
 
   // Store input data copies for inspecting in tests.
-  web_app_info_copy_ = std::make_unique<WebApplicationInfo>(web_app_info);
+  web_app_info_copy_ = std::make_unique<WebAppInstallInfo>(web_app_info);
 
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), app_id, code));

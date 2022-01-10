@@ -16,9 +16,9 @@
 #include "ui/base/ui_base_features.h"
 
 // TODO(jimmyxgong): Update to correct icon and app sizes.
-std::unique_ptr<WebApplicationInfo>
+std::unique_ptr<WebAppInstallInfo>
 CreateWebAppInfoForShortcutCustomizationSystemWebApp() {
-  auto info = std::make_unique<WebApplicationInfo>();
+  auto info = std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL(ash::kChromeUIShortcutCustomizationAppURL);
   info->scope = GURL(ash::kChromeUIShortcutCustomizationAppURL);
   info->title =
@@ -48,7 +48,7 @@ ShortcutCustomizationSystemAppDelegate::ShortcutCustomizationSystemAppDelegate(
           GURL(ash::kChromeUIShortcutCustomizationAppURL),
           profile) {}
 
-std::unique_ptr<WebApplicationInfo>
+std::unique_ptr<WebAppInstallInfo>
 ShortcutCustomizationSystemAppDelegate::GetWebAppInfo() const {
   return CreateWebAppInfoForShortcutCustomizationSystemWebApp();
 }

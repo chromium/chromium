@@ -60,9 +60,9 @@ ExternalInstallOptions GetInstallOptions(
   return options;
 }
 
-std::unique_ptr<WebApplicationInfo> GetWebApplicationInfo(const GURL& url) {
-  std::unique_ptr<WebApplicationInfo> info =
-      std::make_unique<WebApplicationInfo>();
+std::unique_ptr<WebAppInstallInfo> GetWebAppInstallInfo(const GURL& url) {
+  std::unique_ptr<WebAppInstallInfo> info =
+      std::make_unique<WebAppInstallInfo>();
   info->start_url = url;
   info->scope = url.GetWithoutFilename();
   info->title = u"Foo Web App";
@@ -78,8 +78,8 @@ ExternalInstallOptions GetInstallOptionsWithWebAppInfo(
   options.only_use_app_info_factory = true;
   // Static to ensure re-use across multiple function calls for
   // ExternalInstallOptions equality checking.
-  static WebApplicationInfoFactory app_info_factory =
-      base::BindRepeating(&GetWebApplicationInfo, url);
+  static WebAppInstallInfoFactory app_info_factory =
+      base::BindRepeating(&GetWebAppInstallInfo, url);
   options.app_info_factory = app_info_factory;
 
   if (override_previous_user_uninstall.has_value())

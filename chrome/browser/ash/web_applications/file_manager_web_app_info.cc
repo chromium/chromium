@@ -29,7 +29,7 @@ namespace {
 // The handler action has the format: chrome://file-manager/?${ACTION_NAME}
 // This means: For files with the given `file_extensions` or `mime_type` the
 // Files SWA is a candidate app to open/handle such files.
-void AppendFileHandler(WebApplicationInfo& info,
+void AppendFileHandler(WebAppInstallInfo& info,
                        const std::string& action_name,
                        const base::flat_set<std::string>& file_extensions,
                        const std::string& mime_type = "") {
@@ -50,8 +50,8 @@ void AppendFileHandler(WebApplicationInfo& info,
 
 }  // namespace
 
-std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForFileManager() {
-  auto info = std::make_unique<WebApplicationInfo>();
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForFileManager() {
+  auto info = std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL(kChromeUIFileManagerURL);
   info->scope = GURL(kChromeUIFileManagerURL);
   info->title = l10n_util::GetStringUTF16(IDS_FILEMANAGER_APP_NAME);
@@ -118,8 +118,8 @@ FileManagerSystemAppDelegate::FileManagerSystemAppDelegate(Profile* profile)
               {{web_app::GetOrigin(kChromeUIFileManagerURL),
                 {"FileHandling"}}})) {}
 
-std::unique_ptr<WebApplicationInfo>
-FileManagerSystemAppDelegate::GetWebAppInfo() const {
+std::unique_ptr<WebAppInstallInfo> FileManagerSystemAppDelegate::GetWebAppInfo()
+    const {
   return CreateWebAppInfoForFileManager();
 }
 

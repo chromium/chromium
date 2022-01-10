@@ -36,7 +36,7 @@ void OnWebAppInstallShowInstallDialog(
     webapps::WebappInstallSource install_source,
     chrome::PwaInProductHelpState iph_state,
     content::WebContents* initiator_web_contents,
-    std::unique_ptr<WebApplicationInfo> web_app_info,
+    std::unique_ptr<WebAppInstallInfo> web_app_info,
     ForInstallableSite for_installable_site,
     WebAppInstallationAcceptanceCallback web_app_acceptance_callback) {
   DCHECK(web_app_info);

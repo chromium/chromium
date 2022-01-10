@@ -222,13 +222,13 @@ void AwaitWebAppQuiescence(std::vector<Profile*> profiles) {
   }
 }
 
-web_app::AppId InstallWebApp(Profile* profile, const WebApplicationInfo& info) {
+web_app::AppId InstallWebApp(Profile* profile, const WebAppInstallInfo& info) {
   DCHECK(info.start_url.is_valid());
   base::RunLoop run_loop;
   web_app::AppId app_id;
   auto* provider = web_app::WebAppProvider::GetForTest(profile);
   provider->install_manager().InstallWebAppFromInfo(
-      std::make_unique<WebApplicationInfo>(info),
+      std::make_unique<WebAppInstallInfo>(info),
       /*overwrite_existing_manifest_fields=*/true,
       web_app::ForInstallableSite::kYes,
       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,

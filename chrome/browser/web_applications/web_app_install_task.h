@@ -27,7 +27,7 @@
 
 class GURL;
 class Profile;
-struct WebApplicationInfo;
+struct WebAppInstallInfo;
 
 namespace content {
 class WebContents;
@@ -46,8 +46,8 @@ class WebAppRegistrar;
 // WebAppInstallTask is an implementation detail of WebAppInstallManager.
 class WebAppInstallTask : content::WebContentsObserver {
  public:
-  using RetrieveWebApplicationInfoWithIconsCallback =
-      base::OnceCallback<void(std::unique_ptr<WebApplicationInfo>)>;
+  using RetrieveWebAppInstallInfoWithIconsCallback =
+      base::OnceCallback<void(std::unique_ptr<WebAppInstallInfo>)>;
 
   WebAppInstallTask(Profile* profile,
                     OsIntegrationManager* os_integration_manager,
@@ -119,7 +119,7 @@ class WebAppInstallTask : content::WebContentsObserver {
   // entire web app installation data.
   void InstallWebAppFromInfoRetrieveIcons(
       content::WebContents* web_contents,
-      std::unique_ptr<WebApplicationInfo> web_application_info,
+      std::unique_ptr<WebAppInstallInfo> web_application_info,
       WebAppInstallFinalizer::FinalizeOptions finalize_options,
       OnceInstallCallback callback);
 
@@ -127,7 +127,7 @@ class WebAppInstallTask : content::WebContentsObserver {
   // |web_application_info| which holds all the data needed for installation.
   // WebAppInstallManager doesn't fetch a manifest.
   void InstallWebAppFromInfo(
-      std::unique_ptr<WebApplicationInfo> web_application_info,
+      std::unique_ptr<WebAppInstallInfo> web_application_info,
       bool overwrite_existing_manifest_fields,
       ForInstallableSite for_installable_site,
       webapps::WebappInstallSource install_source,
@@ -142,12 +142,12 @@ class WebAppInstallTask : content::WebContentsObserver {
                                webapps::WebappInstallSource install_source,
                                OnceInstallCallback callback);
 
-  // Obtains WebApplicationInfo about web app located at |start_url|, fallbacks
+  // Obtains WebAppInstallInfo about web app located at |start_url|, fallbacks
   // to title/favicon if manifest is not present.
-  void LoadAndRetrieveWebApplicationInfoWithIcons(
+  void LoadAndRetrieveWebAppInstallInfoWithIcons(
       const GURL& start_url,
       WebAppUrlLoader* url_loader,
-      RetrieveWebApplicationInfoWithIconsCallback callback);
+      RetrieveWebAppInstallInfoWithIconsCallback callback);
 
   static std::unique_ptr<content::WebContents> CreateWebContents(
       Profile* profile);
@@ -184,8 +184,8 @@ class WebAppInstallTask : content::WebContentsObserver {
   // install_callback_.
   bool ShouldStopInstall() const;
 
-  void OnWebAppUrlLoadedGetWebApplicationInfo(const GURL& url_to_load,
-                                              WebAppUrlLoader::Result result);
+  void OnWebAppUrlLoadedGetWebAppInstallInfo(const GURL& url_to_load,
+                                             WebAppUrlLoader::Result result);
 
   void OnWebAppUrlLoadedCheckAndRetrieveManifest(
       const GURL& url_to_load,
@@ -196,18 +196,16 @@ class WebAppInstallTask : content::WebContentsObserver {
                                      bool valid_manifest_for_web_app,
                                      bool is_installable);
 
-  void OnGetWebApplicationInfo(
-      bool force_shortcut_app,
-      std::unique_ptr<WebApplicationInfo> web_app_info);
+  void OnGetWebAppInstallInfo(bool force_shortcut_app,
+                              std::unique_ptr<WebAppInstallInfo> web_app_info);
 
   // Makes amendments to |web_app_info| based on the options set in
   // |install_params|.
-  void ApplyParamsToWebApplicationInfo(
-      const WebAppInstallParams& install_params,
-      WebApplicationInfo& web_app_info);
+  void ApplyParamsToWebAppInstallInfo(const WebAppInstallParams& install_params,
+                                      WebAppInstallInfo& web_app_info);
 
   void OnDidPerformInstallableCheck(
-      std::unique_ptr<WebApplicationInfo> web_app_info,
+      std::unique_ptr<WebAppInstallInfo> web_app_info,
       bool force_shortcut_app,
       blink::mojom::ManifestPtr opt_manifest,
       const GURL& manifest_url,
@@ -220,7 +218,7 @@ class WebAppInstallTask : content::WebContentsObserver {
   // check if it cannot be made.
   void CheckForPlayStoreIntentOrGetIcons(
       blink::mojom::ManifestPtr opt_manifest,
-      std::unique_ptr<WebApplicationInfo> web_app_info,
+      std::unique_ptr<WebAppInstallInfo> web_app_info,
       std::vector<GURL> icon_urls,
       ForInstallableSite for_installable_site,
       bool skip_page_favicons);
@@ -228,7 +226,7 @@ class WebAppInstallTask : content::WebContentsObserver {
   // Called when the asynchronous check for whether an intent to the Play Store
   // should be made returns.
   void OnDidCheckForIntentToPlayStore(
-      std::unique_ptr<WebApplicationInfo> web_app_info,
+      std::unique_ptr<WebAppInstallInfo> web_app_info,
       std::vector<GURL> icon_urls,
       ForInstallableSite for_installable_site,
       bool skip_page_favicons,
@@ -236,23 +234,23 @@ class WebAppInstallTask : content::WebContentsObserver {
       bool should_intent_to_store);
 
   void OnIconsRetrieved(
-      std::unique_ptr<WebApplicationInfo> web_app_info,
+      std::unique_ptr<WebAppInstallInfo> web_app_info,
       WebAppInstallFinalizer::FinalizeOptions finalize_options,
       IconsDownloadedResult result,
       IconsMap icons_map,
       DownloadedIconsHttpResults icons_http_results);
   void OnIconsRetrievedShowDialog(
-      std::unique_ptr<WebApplicationInfo> web_app_info,
+      std::unique_ptr<WebAppInstallInfo> web_app_info,
       ForInstallableSite for_installable_site,
       IconsDownloadedResult result,
       IconsMap icons_map,
       DownloadedIconsHttpResults icons_http_results);
   void OnDialogCompleted(ForInstallableSite for_installable_site,
                          bool user_accepted,
-                         std::unique_ptr<WebApplicationInfo> web_app_info);
+                         std::unique_ptr<WebAppInstallInfo> web_app_info);
   void OnInstallFinalized(const AppId& app_id, InstallResultCode code);
   void OnInstallFinalizedCreateShortcuts(
-      std::unique_ptr<WebApplicationInfo> web_app_info,
+      std::unique_ptr<WebAppInstallInfo> web_app_info,
       const AppId& app_id,
       InstallResultCode code);
   void OnOsHooksCreated(DisplayMode user_display_mode,
@@ -275,7 +273,7 @@ class WebAppInstallTask : content::WebContentsObserver {
                              const std::string& url,
                              const AppId& app_id);
   void LogDownloadedIconsErrors(
-      const WebApplicationInfo& web_app_info,
+      const WebAppInstallInfo& web_app_info,
       IconsDownloadedResult icons_downloaded_result,
       const IconsMap& icons_map,
       const DownloadedIconsHttpResults& icons_http_results);
@@ -284,13 +282,13 @@ class WebAppInstallTask : content::WebContentsObserver {
   // methods.
   bool initiated_ = false;
 
-  // Whether we should just obtain WebApplicationInfo instead of the actual
+  // Whether we should just obtain WebAppInstallInfo instead of the actual
   // installation.
   bool only_retrieve_web_application_info_ = false;
 
   WebAppInstallDialogCallback dialog_callback_;
   OnceInstallCallback install_callback_;
-  RetrieveWebApplicationInfoWithIconsCallback retrieve_info_callback_;
+  RetrieveWebAppInstallInfoWithIconsCallback retrieve_info_callback_;
   absl::optional<WebAppInstallParams> install_params_;
   absl::optional<AppId> expected_app_id_;
   bool background_installation_ = false;
@@ -302,7 +300,7 @@ class WebAppInstallTask : content::WebContentsObserver {
   webapps::WebappInstallSource install_source_ = kNoInstallSource;
 
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
-  std::unique_ptr<WebApplicationInfo> web_application_info_;
+  std::unique_ptr<WebAppInstallInfo> web_application_info_;
   std::unique_ptr<content::WebContents> web_contents_;
   content::WebContents* installing_web_contents_ = nullptr;
 

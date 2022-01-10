@@ -47,9 +47,9 @@ std::string InstallPlatformApp(Profile* profile, int index);
 // verifier), and returns the extension ID of the new app.
 std::string InstallHostedAppForAllProfiles(int index);
 
-// Installs the web app for the given WebApplicationInfo and profile. This does
+// Installs the web app for the given WebAppInstallInfo and profile. This does
 // not download icons or run OS integration installs.
-web_app::AppId InstallWebApp(Profile* profile, const WebApplicationInfo& info);
+web_app::AppId InstallWebApp(Profile* profile, const WebAppInstallInfo& info);
 
 // Uninstalls the app for the given index from |profile|. Assumes that it was
 // previously installed.

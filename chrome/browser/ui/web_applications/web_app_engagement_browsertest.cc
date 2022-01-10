@@ -209,7 +209,7 @@ class WebAppEngagementBrowserTest : public WebAppControllerBrowserTest {
   }
 
   AppId InstallWebAppAndCountApps(
-      std::unique_ptr<WebApplicationInfo> web_app_info) {
+      std::unique_ptr<WebAppInstallInfo> web_app_info) {
     AppId app_id = InstallWebApp(std::move(web_app_info));
     CountUserInstalledApps();
     return app_id;
@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, AppInWindow) {
 
   const GURL example_url = GURL("http://example.org/");
 
-  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = example_url;
   web_app_info->scope = example_url;
   web_app_info->user_display_mode = DisplayMode::kStandalone;
@@ -255,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, AppInTab) {
 
   const GURL example_url = GURL("http://example.org/");
 
-  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = example_url;
   web_app_info->scope = example_url;
   web_app_info->user_display_mode = DisplayMode::kBrowser;
@@ -280,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, AppWithoutScope) {
 
   const GURL example_url = GURL("http://example.org/");
 
-  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = example_url;
   // If app has no scope then UrlHandlers::GetUrlHandlers are empty. Therefore,
   // the app is counted as installed via the Create Shortcut button.
@@ -314,13 +314,13 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, TwoApps) {
 
   // Install two apps.
   {
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = example_url1;
     web_app_info->scope = example_url1;
     app_id1 = InstallWebAppAndCountApps(std::move(web_app_info));
   }
   {
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = example_url2;
     web_app_info->scope = example_url2;
     app_id2 = InstallWebAppAndCountApps(std::move(web_app_info));
@@ -365,7 +365,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, ManyUserApps) {
   for (int i = 0; i < num_user_apps; ++i) {
     const GURL url = GetUrlForSuffix(base_url, i);
 
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = url;
     web_app_info->scope = url;
     AppId app_id = InstallWebAppAndCountApps(std::move(web_app_info));
@@ -425,7 +425,7 @@ IN_PROC_BROWSER_TEST_F(WebAppEngagementBrowserTest, NavigateAwayFromAppTab) {
   const GURL start_url = GURL("http://example.org/app/");
   const GURL outer_url = GURL("http://example.org/");
 
-  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = start_url;
   web_app_info->scope = start_url;
   web_app_info->user_display_mode = DisplayMode::kBrowser;

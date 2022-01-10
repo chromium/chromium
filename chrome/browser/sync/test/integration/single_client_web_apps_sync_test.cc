@@ -192,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
                        AppInstallDoNotSyncBookmarkApp) {
   ASSERT_TRUE(SetupSync());
-  WebApplicationInfo info;
+  WebAppInstallInfo info;
   std::string name = "Test name";
   info.title = base::UTF8ToUTF16(name);
   info.description = u"Test description";
@@ -237,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
 
   EXPECT_TRUE(web_app_registrar.IsInstalled(app_id));
 
-  WebApplicationInfo info;
+  WebAppInstallInfo info;
   std::string name = "Test name";
   info.title = base::UTF8ToUTF16(app_id);
   info.description = u"Test description";
@@ -267,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
 
   EXPECT_TRUE(web_app_registrar.IsInstalled(app_id));
 
-  WebApplicationInfo info;
+  WebAppInstallInfo info;
   std::string name = "Test name";
   info.title = base::UTF8ToUTF16(app_id);
   info.description = u"Test description";

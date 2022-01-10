@@ -14,9 +14,9 @@
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 
-std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForSampleSystemWebApp() {
-  std::unique_ptr<WebApplicationInfo> info =
-      std::make_unique<WebApplicationInfo>();
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForSampleSystemWebApp() {
+  std::unique_ptr<WebAppInstallInfo> info =
+      std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL(ash::kChromeUISampleSystemWebAppURL);
   info->scope = GURL(ash::kChromeUISampleSystemWebAppURL);
   // |title| should come from a resource string, but this is the sample app, and
@@ -68,7 +68,7 @@ SampleSystemAppDelegate::SampleSystemAppDelegate(Profile* profile)
                {web_app::GetOrigin("chrome-untrusted://sample-system-web-app"),
                 {"Frobulate"}}})) {}
 
-std::unique_ptr<WebApplicationInfo> SampleSystemAppDelegate::GetWebAppInfo()
+std::unique_ptr<WebAppInstallInfo> SampleSystemAppDelegate::GetWebAppInfo()
     const {
   return CreateWebAppInfoForSampleSystemWebApp();
 }

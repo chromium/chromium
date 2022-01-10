@@ -11,21 +11,20 @@
 
 #include "ui/gfx/geometry/rect.h"
 
-struct WebApplicationInfo;
+struct WebAppInstallInfo;
 
 class DiagnosticsSystemAppDelegate : public web_app::SystemWebAppDelegate {
  public:
   explicit DiagnosticsSystemAppDelegate(Profile* profile);
 
   // web_app::SystemWebAppDelegate overrides:
-  std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
+  std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldShowInLauncher() const override;
   gfx::Size GetMinimumWindowSize() const override;
   bool IsAppEnabled() const override;
 };
 
-// Returns a WebApplicationInfo used to install the app.
-std::unique_ptr<WebApplicationInfo>
-CreateWebAppInfoForDiagnosticsSystemWebApp();
+// Returns a WebAppInstallInfo used to install the app.
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForDiagnosticsSystemWebApp();
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_DIAGNOSTICS_SYSTEM_WEB_APP_INFO_H_

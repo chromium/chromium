@@ -35,9 +35,9 @@ WebAppDataRetriever::WebAppDataRetriever() = default;
 
 WebAppDataRetriever::~WebAppDataRetriever() = default;
 
-void WebAppDataRetriever::GetWebApplicationInfo(
+void WebAppDataRetriever::GetWebAppInstallInfo(
     content::WebContents* web_contents,
-    GetWebApplicationInfoCallback callback) {
+    GetWebAppInstallInfoCallback callback) {
   Observe(web_contents);
 
   // Concurrent calls are not allowed.
@@ -55,7 +55,7 @@ void WebAppDataRetriever::GetWebApplicationInfo(
 
   // Makes a copy of WebContents fields right after Commit but before a mojo
   // request to the renderer process.
-  preinstalled_web_application_info_ = std::make_unique<WebApplicationInfo>();
+  preinstalled_web_application_info_ = std::make_unique<WebAppInstallInfo>();
   preinstalled_web_application_info_->start_url =
       web_contents->GetLastCommittedURL();
   preinstalled_web_application_info_->title = web_contents->GetTitle();
@@ -154,14 +154,14 @@ void WebAppDataRetriever::OnGetWebPageMetadata(
   content::WebContents* contents = web_contents();
   Observe(nullptr);
 
-  std::unique_ptr<WebApplicationInfo> info;
+  std::unique_ptr<WebAppInstallInfo> info;
 
   content::NavigationEntry* entry =
       contents->GetController().GetLastCommittedEntry();
 
   if (!entry->IsInitialEntry()) {
     if (entry->GetUniqueID() == last_committed_nav_entry_unique_id) {
-      info = std::make_unique<WebApplicationInfo>(*web_page_metadata);
+      info = std::make_unique<WebAppInstallInfo>(*web_page_metadata);
       if (info->start_url.is_empty())
         info->start_url =
             std::move(preinstalled_web_application_info_->start_url);

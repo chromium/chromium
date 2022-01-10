@@ -193,7 +193,7 @@ TEST_F(OsIntegrationManagerTest, UpdateOsHooksEverything) {
   const AppId app_id = "test";
   testing::StrictMock<MockOsIntegrationManager> manager;
 
-  WebApplicationInfo web_app_info;
+  WebAppInstallInfo web_app_info;
   base::StringPiece old_name = "test-name";
 
   EXPECT_CALL(

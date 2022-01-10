@@ -158,7 +158,7 @@ void OsIntegrationManager::Start() {
 void OsIntegrationManager::InstallOsHooks(
     const AppId& app_id,
     InstallOsHooksCallback callback,
-    std::unique_ptr<WebApplicationInfo> web_app_info,
+    std::unique_ptr<WebAppInstallInfo> web_app_info,
     InstallOsHooksOptions options) {
   if (g_suppress_os_hooks_for_testing_) {
     OsHooksErrors os_hooks_errors;
@@ -272,7 +272,7 @@ void OsIntegrationManager::UpdateOsHooks(
     const AppId& app_id,
     base::StringPiece old_name,
     FileHandlerUpdateAction file_handlers_need_os_update,
-    const WebApplicationInfo& web_app_info,
+    const WebAppInstallInfo& web_app_info,
     UpdateOsHooksCallback callback) {
   if (g_suppress_os_hooks_for_testing_) {
     OsHooksErrors os_hooks_errors;
@@ -603,7 +603,7 @@ void OsIntegrationManager::UpdateShortcuts(const AppId& app_id,
 
 void OsIntegrationManager::UpdateShortcutsMenu(
     const AppId& app_id,
-    const WebApplicationInfo& web_app_info) {
+    const WebAppInstallInfo& web_app_info) {
   DCHECK(shortcut_manager_);
   if (web_app_info.shortcuts_menu_item_infos.empty()) {
     shortcut_manager_->UnregisterShortcutsMenuWithOs(app_id);
@@ -750,7 +750,7 @@ std::unique_ptr<ShortcutInfo> OsIntegrationManager::BuildShortcutInfo(
 
 void OsIntegrationManager::OnShortcutsCreated(
     const AppId& app_id,
-    std::unique_ptr<WebApplicationInfo> web_app_info,
+    std::unique_ptr<WebAppInstallInfo> web_app_info,
     InstallOsHooksOptions options,
     scoped_refptr<OsHooksBarrier> barrier,
     bool shortcuts_created) {

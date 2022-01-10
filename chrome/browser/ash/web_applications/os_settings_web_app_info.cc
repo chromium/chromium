@@ -30,10 +30,9 @@ SkColor GetBgColor(bool use_dark_mode) {
 
 }  // namespace
 
-std::unique_ptr<WebApplicationInfo>
-CreateWebAppInfoForOSSettingsSystemWebApp() {
-  std::unique_ptr<WebApplicationInfo> info =
-      std::make_unique<WebApplicationInfo>();
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForOSSettingsSystemWebApp() {
+  std::unique_ptr<WebAppInstallInfo> info =
+      std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL(chrome::kChromeUIOSSettingsURL);
   info->scope = GURL(chrome::kChromeUIOSSettingsURL);
   info->title = l10n_util::GetStringUTF16(IDS_SETTINGS_SETTINGS);
@@ -59,7 +58,7 @@ OSSettingsSystemAppDelegate::OSSettingsSystemAppDelegate(Profile* profile)
                                     GURL(chrome::kChromeUISettingsURL),
                                     profile) {}
 
-std::unique_ptr<WebApplicationInfo> OSSettingsSystemAppDelegate::GetWebAppInfo()
+std::unique_ptr<WebAppInstallInfo> OSSettingsSystemAppDelegate::GetWebAppInfo()
     const {
   return CreateWebAppInfoForOSSettingsSystemWebApp();
 }

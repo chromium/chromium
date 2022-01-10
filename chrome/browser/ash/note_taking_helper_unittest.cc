@@ -748,7 +748,7 @@ TEST_F(NoteTakingHelperTest, CustomWebApps_FlagEnabled) {
   Init(ENABLE_PALETTE);
 
   {
-    auto app_info = std::make_unique<WebApplicationInfo>();
+    auto app_info = std::make_unique<WebAppInstallInfo>();
     app_info->start_url = GURL("http://some1.url");
     app_info->scope = GURL("http://some1.url");
     app_info->title = u"Web App 1";
@@ -756,7 +756,7 @@ TEST_F(NoteTakingHelperTest, CustomWebApps_FlagEnabled) {
   }
   std::string app2_id;
   {
-    auto app_info = std::make_unique<WebApplicationInfo>();
+    auto app_info = std::make_unique<WebAppInstallInfo>();
     app_info->start_url = GURL("http://some2.url");
     app_info->scope = GURL("http://some2.url");
     app_info->title = u"Web App 2";
@@ -833,7 +833,7 @@ TEST_F(NoteTakingHelperTest, LaunchHardcodedWebApp) {
   GURL app_url("https://yielding-large-chef.glitch.me/");
   // Install a default-allowed web app corresponding to ID of
   // |NoteTakingHelper::kNoteTakingWebAppIdTest|.
-  auto app_info = std::make_unique<WebApplicationInfo>();
+  auto app_info = std::make_unique<WebAppInstallInfo>();
   app_info->start_url = app_url;
   app_info->title = u"Default Allowed Web App";
   std::string app_id =
@@ -866,7 +866,7 @@ TEST_F(NoteTakingHelperTest, LaunchWebApp) {
 
   // Install a web app with a note_taking_new_note_url.
   GURL new_note_url("http://some.url/new-note");
-  auto app_info = std::make_unique<WebApplicationInfo>();
+  auto app_info = std::make_unique<WebAppInstallInfo>();
   app_info->start_url = GURL("http://some.url");
   app_info->scope = GURL("http://some.url");
   app_info->title = u"Web App 2";
@@ -903,7 +903,7 @@ TEST_F(NoteTakingHelperTest, FallBackIfPreferredAppUnavailable) {
   {
     // Install a default-allowed web app corresponding to ID of
     // |NoteTakingHelper::kNoteTakingWebAppIdTest|.
-    auto app_info = std::make_unique<WebApplicationInfo>();
+    auto app_info = std::make_unique<WebAppInstallInfo>();
     app_info->start_url = GURL("https://yielding-large-chef.glitch.me/");
     app_info->title = u"Default Allowed Web App";
     std::string app_id =

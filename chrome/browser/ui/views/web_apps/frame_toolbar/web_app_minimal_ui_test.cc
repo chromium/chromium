@@ -20,7 +20,7 @@ class WebAppMinimalUITest : public WebAppControllerBrowserTest {
   WebAppMinimalUITest& operator=(const WebAppMinimalUITest&) = delete;
 
   BrowserView* CreateBrowserView(blink::mojom::DisplayMode display_mode) {
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = GURL("https://example.org");
     web_app_info->display_mode = display_mode;
     web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;

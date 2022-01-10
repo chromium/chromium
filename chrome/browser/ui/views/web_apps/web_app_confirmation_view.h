@@ -26,7 +26,7 @@ class WebAppConfirmationView : public views::DialogDelegateView,
                                public views::TextfieldController {
  public:
   METADATA_HEADER(WebAppConfirmationView);
-  WebAppConfirmationView(std::unique_ptr<WebApplicationInfo> web_app_info,
+  WebAppConfirmationView(std::unique_ptr<WebAppInstallInfo> web_app_info,
                          chrome::AppInstallationAcceptanceCallback callback);
   WebAppConfirmationView(const WebAppConfirmationView&) = delete;
   WebAppConfirmationView& operator=(const WebAppConfirmationView&) = delete;
@@ -49,9 +49,9 @@ class WebAppConfirmationView : public views::DialogDelegateView,
   // Get the trimmed contents of the title text field.
   std::u16string GetTrimmedTitle() const;
 
-  // The WebApplicationInfo that the user is editing.
+  // The WebAppInstallInfo that the user is editing.
   // Cleared when the dialog completes (Accept/WindowClosing).
-  std::unique_ptr<WebApplicationInfo> web_app_info_;
+  std::unique_ptr<WebAppInstallInfo> web_app_info_;
 
   // The callback to be invoked when the dialog is completed.
   chrome::AppInstallationAcceptanceCallback callback_;

@@ -50,7 +50,7 @@ class AddToHomescreenDataFetcher {
 
   // Initialize the fetcher by requesting the information about the page from
   // the renderer process. The initialization is asynchronous and
-  // OnDidGetWebApplicationInfo is expected to be called when finished.
+  // OnDidGetWebAppInstallInfo is expected to be called when finished.
   // |observer| must outlive AddToHomescreenDataFetcher.
   AddToHomescreenDataFetcher(content::WebContents* web_contents,
                              int data_timeout_ms,

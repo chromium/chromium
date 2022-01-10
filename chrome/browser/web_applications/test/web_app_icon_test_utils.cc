@@ -218,8 +218,8 @@ apps::IconInfo CreateIconInfo(const GURL& icon_base_url,
   return apps_icon_info;
 }
 
-void AddIconsToWebApplicationInfo(
-    WebApplicationInfo* web_application_info,
+void AddIconsToWebAppInstallInfo(
+    WebAppInstallInfo* web_application_info,
     const GURL& icons_base_url,
     const std::vector<GeneratedIconsInfo>& icons_info) {
   for (const GeneratedIconsInfo& info : icons_info) {

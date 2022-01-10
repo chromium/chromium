@@ -86,7 +86,7 @@ constexpr FileHandlerConfig kAudioFileHandlers[] = {
 };
 
 // Converts a FileHandlerConfig constexpr into the type needed to populate the
-// WebApplicationInfo's `accept` property.
+// WebAppInstallInfo's `accept` property.
 std::vector<apps::FileHandler::AcceptEntry> MakeFileHandlerAccept(
     base::span<const FileHandlerConfig> config) {
   std::vector<apps::FileHandler::AcceptEntry> result;
@@ -116,9 +116,9 @@ MediaSystemAppDelegate::MediaSystemAppDelegate(Profile* profile)
               {{web_app::GetOrigin("chrome://media-app"), {"FileHandling"}}})) {
 }
 
-std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForMediaWebApp() {
-  std::unique_ptr<WebApplicationInfo> info =
-      std::make_unique<WebApplicationInfo>();
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForMediaWebApp() {
+  std::unique_ptr<WebAppInstallInfo> info =
+      std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL(ash::kChromeUIMediaAppURL);
   info->scope = GURL(ash::kChromeUIMediaAppURL);
 
@@ -157,7 +157,7 @@ std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForMediaWebApp() {
   return info;
 }
 
-std::unique_ptr<WebApplicationInfo> MediaSystemAppDelegate::GetWebAppInfo()
+std::unique_ptr<WebAppInstallInfo> MediaSystemAppDelegate::GetWebAppInfo()
     const {
   return CreateWebAppInfoForMediaWebApp();
 }

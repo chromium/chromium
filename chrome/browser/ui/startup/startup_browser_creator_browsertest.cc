@@ -1623,7 +1623,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
 web_app::AppId InstallPWAWithName(Profile* profile,
                                   const GURL& start_url,
                                   const std::string& app_name) {
-  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = start_url;
   web_app_info->scope = start_url.GetWithoutFilename();
   web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
@@ -1856,7 +1856,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 web_app::AppId InstallPWA(Profile* profile, const GURL& start_url) {
-  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = start_url;
   web_app_info->scope = start_url.GetWithoutFilename();
   web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
@@ -2097,7 +2097,7 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserWithWebAppTest,
   // Install web app set to open as a tab.
   {
     base::RunLoop run_loop;
-    WebApplicationInfo info;
+    WebAppInstallInfo info;
     info.start_url = GURL(kStartUrl);
     info.title = kAppName;
     info.user_display_mode = blink::mojom::DisplayMode::kStandalone;
@@ -2725,8 +2725,8 @@ class StartupBrowserWebAppProtocolHandlingTest : public InProcessBrowserTest {
   web_app::AppId InstallWebAppWithProtocolHandlers(
       const std::vector<apps::ProtocolHandlerInfo>& protocol_handlers,
       const std::vector<apps::FileHandler>& file_handlers = {}) {
-    std::unique_ptr<WebApplicationInfo> info =
-        std::make_unique<WebApplicationInfo>();
+    std::unique_ptr<WebAppInstallInfo> info =
+        std::make_unique<WebAppInstallInfo>();
     info->start_url = GURL(kStartUrl);
     info->title = kAppName;
     info->user_display_mode = blink::mojom::DisplayMode::kStandalone;

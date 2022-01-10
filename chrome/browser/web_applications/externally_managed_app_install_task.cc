@@ -234,7 +234,7 @@ void ExternallyManagedAppInstallTask::InstallPlaceholder(
     return;
   }
 
-  WebApplicationInfo web_app_info;
+  WebAppInstallInfo web_app_info;
   web_app_info.title =
       install_options_.placeholder_name
           ? base::UTF8ToUTF16(install_options_.placeholder_name.value())

@@ -284,7 +284,7 @@ class BrowserAppInstanceTrackerTest : public InProcessBrowserTest {
 
   web_app::AppId InstallWebApp(const std::string& start_url,
                                blink::mojom::DisplayMode user_display_mode) {
-    auto info = std::make_unique<WebApplicationInfo>();
+    auto info = std::make_unique<WebAppInstallInfo>();
     info->start_url = GURL(start_url);
     info->user_display_mode = user_display_mode;
     Profile* profile = ProfileManager::GetPrimaryUserProfile();

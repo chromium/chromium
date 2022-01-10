@@ -15,9 +15,9 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
-std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForPersonalizationApp() {
-  std::unique_ptr<WebApplicationInfo> info =
-      std::make_unique<WebApplicationInfo>();
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForPersonalizationApp() {
+  std::unique_ptr<WebAppInstallInfo> info =
+      std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL(ash::kChromeUIPersonalizationAppURL);
   info->scope = GURL(ash::kChromeUIPersonalizationAppURL);
   info->title = l10n_util::GetStringUTF16(IDS_PERSONALIZATION_APP_TITLE);
@@ -38,7 +38,7 @@ PersonalizationSystemAppDelegate::PersonalizationSystemAppDelegate(
                                     GURL(ash::kChromeUIPersonalizationAppURL),
                                     profile) {}
 
-std::unique_ptr<WebApplicationInfo>
+std::unique_ptr<WebAppInstallInfo>
 PersonalizationSystemAppDelegate::GetWebAppInfo() const {
   return CreateWebAppInfoForPersonalizationApp();
 }

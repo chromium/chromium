@@ -12,21 +12,21 @@
 #include "ui/gfx/geometry/rect.h"
 
 class Browser;
-struct WebApplicationInfo;
+struct WebAppInstallInfo;
 
 class CameraSystemAppDelegate : public web_app::SystemWebAppDelegate {
  public:
   explicit CameraSystemAppDelegate(Profile* profile);
 
   // web_app::SystemWebAppDelegate overrides
-  std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
+  std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldCaptureNavigations() const override;
   gfx::Size GetMinimumWindowSize() const override;
   gfx::Rect GetDefaultBounds(Browser* browser) const override;
 };
 
-// Return a WebApplicationInfo used to install the app.
-std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForCameraSystemWebApp();
+// Return a WebAppInstallInfo used to install the app.
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForCameraSystemWebApp();
 
 // Returns the default bounds.
 gfx::Rect GetDefaultBoundsForCameraApp(Browser*);

@@ -35,7 +35,7 @@ class Browser;
 class GURL;
 class LoginHandler;
 class Profile;
-struct WebApplicationInfo;
+struct WebAppInstallInfo;
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 class SettingsOverriddenDialogController;
@@ -148,18 +148,18 @@ void ShowBluetoothDeviceCredentialsDialog(
 
 // Callback used to indicate whether a user has accepted the installation of a
 // web app. The boolean parameter is true when the user accepts the dialog. The
-// WebApplicationInfo parameter contains the information about the app,
+// WebAppInstallInfo parameter contains the information about the app,
 // possibly modified by the user.
 using AppInstallationAcceptanceCallback =
-    base::OnceCallback<void(bool, std::unique_ptr<WebApplicationInfo>)>;
+    base::OnceCallback<void(bool, std::unique_ptr<WebAppInstallInfo>)>;
 
 // Shows the Web App install bubble.
 //
-// |web_app_info| is the WebApplicationInfo being converted into an app.
+// |web_app_info| is the WebAppInstallInfo being converted into an app.
 // |web_app_info.app_url| should contain a start url from a web app manifest
 // (for a Desktop PWA), or the current url (when creating a shortcut app).
 void ShowWebAppInstallDialog(content::WebContents* web_contents,
-                             std::unique_ptr<WebApplicationInfo> web_app_info,
+                             std::unique_ptr<WebAppInstallInfo> web_app_info,
                              AppInstallationAcceptanceCallback callback);
 
 // When an app changes its icon or name, that is considered an app identity
@@ -245,13 +245,13 @@ enum class PwaInProductHelpState {
 // Shows the PWA installation confirmation bubble anchored off the PWA install
 // icon in the omnibox.
 //
-// |web_app_info| is the WebApplicationInfo to be installed.
+// |web_app_info| is the WebAppInstallInfo to be installed.
 // |callback| is called when install bubble closed.
 // |iph_state| records whether PWA install iph is shown before Install bubble is
 // shown.
 void ShowPWAInstallBubble(
     content::WebContents* web_contents,
-    std::unique_ptr<WebApplicationInfo> web_app_info,
+    std::unique_ptr<WebAppInstallInfo> web_app_info,
     AppInstallationAcceptanceCallback callback,
     PwaInProductHelpState iph_state = PwaInProductHelpState::kNotShown);
 

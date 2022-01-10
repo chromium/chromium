@@ -192,7 +192,7 @@ class BrowserNonClientFrameViewChromeOSTestBackgroundColorChange
       CHECK(test_server_->Start());
     }
     const GURL app_url = test_server_->GetURL("app.com", "/ssl/google.html");
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = app_url;
     web_app_info->scope = app_url.GetWithoutFilename();
     web_app_info->theme_color = SK_ColorBLUE;
@@ -596,7 +596,7 @@ class WebAppNonClientFrameViewAshTest
   // |SetUpWebApp()| must be called after |SetUpOnMainThread()| to make sure
   // the Network Service process has been setup properly.
   void SetUpWebApp() {
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = GetAppURL();
     web_app_info->scope = GetAppURL().GetWithoutFilename();
     web_app_info->display_mode = blink::mojom::DisplayMode::kStandalone;

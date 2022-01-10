@@ -87,8 +87,8 @@ std::ostream& operator<<(std::ostream& os, InstallResultCode code) {
       return os << "kSuccessNewInstall";
     case InstallResultCode::kSuccessAlreadyInstalled:
       return os << "kSuccessAlreadyInstalled";
-    case InstallResultCode::kGetWebApplicationInfoFailed:
-      return os << "kGetWebApplicationInfoFailed";
+    case InstallResultCode::kGetWebAppInstallInfoFailed:
+      return os << "kGetWebAppInstallInfoFailed";
     case InstallResultCode::kPreviouslyUninstalled:
       return os << "kPreviouslyUninstalled";
     case InstallResultCode::kWebContentsDestroyed:

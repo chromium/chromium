@@ -20,9 +20,9 @@ FakeDataRetriever::~FakeDataRetriever() {
     std::move(destruction_callback_).Run();
 }
 
-void FakeDataRetriever::GetWebApplicationInfo(
+void FakeDataRetriever::GetWebAppInstallInfo(
     content::WebContents* web_contents,
-    GetWebApplicationInfoCallback callback) {
+    GetWebAppInstallInfoCallback callback) {
   DCHECK(web_contents);
 
   completion_callback_ =
@@ -58,13 +58,13 @@ void FakeDataRetriever::GetIcons(content::WebContents* web_contents,
   icons_http_results_.clear();
 }
 
-void FakeDataRetriever::SetRendererWebApplicationInfo(
-    std::unique_ptr<WebApplicationInfo> web_app_info) {
+void FakeDataRetriever::SetRendererWebAppInstallInfo(
+    std::unique_ptr<WebAppInstallInfo> web_app_info) {
   web_app_info_ = std::move(web_app_info);
 }
 
-void FakeDataRetriever::SetEmptyRendererWebApplicationInfo() {
-  SetRendererWebApplicationInfo(std::make_unique<WebApplicationInfo>());
+void FakeDataRetriever::SetEmptyRendererWebAppInstallInfo() {
+  SetRendererWebAppInstallInfo(std::make_unique<WebAppInstallInfo>());
 }
 
 void FakeDataRetriever::SetManifest(blink::mojom::ManifestPtr manifest,
@@ -101,7 +101,7 @@ void FakeDataRetriever::SetDestructionCallback(base::OnceClosure callback) {
 
 void FakeDataRetriever::BuildDefaultDataToRetrieve(const GURL& url,
                                                    const GURL& scope) {
-  SetEmptyRendererWebApplicationInfo();
+  SetEmptyRendererWebAppInstallInfo();
 
   auto manifest = blink::mojom::Manifest::New();
   manifest->start_url = url;

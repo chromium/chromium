@@ -23,13 +23,13 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   UnittestingSystemAppDelegate(SystemAppType type,
                                const std::string& name,
                                const GURL& url,
-                               WebApplicationInfoFactory info_factory);
+                               WebAppInstallInfoFactory info_factory);
   UnittestingSystemAppDelegate(const UnittestingSystemAppDelegate&) = delete;
   UnittestingSystemAppDelegate& operator=(const UnittestingSystemAppDelegate&) =
       delete;
   ~UnittestingSystemAppDelegate() override;
 
-  std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
+  std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
 
   std::vector<AppId> GetAppIdsToUninstallAndReplace() const override;
   gfx::Size GetMinimumWindowSize() const override;
@@ -73,7 +73,7 @@ class UnittestingSystemAppDelegate : public SystemWebAppDelegate {
   void SetUrlInSystemAppScope(const GURL& url);
 
  private:
-  WebApplicationInfoFactory info_factory_;
+  WebAppInstallInfoFactory info_factory_;
 
   std::vector<AppId> uninstall_and_replace_;
   gfx::Size minimum_window_size_;

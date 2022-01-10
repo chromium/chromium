@@ -77,7 +77,7 @@ class TwoClientWebAppsBMOSyncTest : public WebAppsSyncTestBase {
   AppId InstallDummyAppAndWaitForSync(const GURL& url,
                                       Profile* profile1,
                                       Profile* profile2) {
-    WebApplicationInfo info = WebApplicationInfo();
+    WebAppInstallInfo info = WebAppInstallInfo();
     info.title = base::UTF8ToUTF16(url.spec());
     info.start_url = url;
     AppId dummy_app_id = InstallApp(info, profile1);
@@ -123,12 +123,12 @@ class TwoClientWebAppsBMOSyncTest : public WebAppsSyncTestBase {
     return app_id;
   }
 
-  AppId InstallApp(const WebApplicationInfo& info, Profile* profile) {
+  AppId InstallApp(const WebAppInstallInfo& info, Profile* profile) {
     return InstallApp(info, profile,
                       webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
   }
 
-  AppId InstallApp(const WebApplicationInfo& info,
+  AppId InstallApp(const WebAppInstallInfo& info,
                    Profile* profile,
                    webapps::WebappInstallSource source) {
     DCHECK(info.start_url.is_valid());
@@ -139,7 +139,7 @@ class TwoClientWebAppsBMOSyncTest : public WebAppsSyncTestBase {
     WebAppProvider::GetForTest(profile)
         ->install_manager()
         .InstallWebAppFromInfo(
-            std::make_unique<WebApplicationInfo>(info),
+            std::make_unique<WebAppInstallInfo>(info),
             /*overwrite_existing_manifest_fields=*/true,
             ForInstallableSite::kYes, source,
             base::BindLambdaForTesting(
@@ -215,7 +215,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
                        SyncDoubleInstallationDifferentNames) {
   ASSERT_TRUE(SetupClients());
-  WebApplicationInfo info;
+  WebAppInstallInfo info;
   info.title = u"Test name";
   info.start_url = GURL("http://www.chromium.org/path");
 
@@ -256,7 +256,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsBMOSyncTest,
   ASSERT_TRUE(SetupClients());
   ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
 
-  WebApplicationInfo info;
+  WebAppInstallInfo info;
   info.title = u"Test name";
   info.start_url = GURL("http://www.chromium.org/path");
   info.user_display_mode = DisplayMode::kStandalone;

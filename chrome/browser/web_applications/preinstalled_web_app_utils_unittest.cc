@@ -57,17 +57,17 @@ class PreinstalledWebAppUtilsTest : public testing::Test {
     return absl::nullopt;
   }
 
-  absl::optional<WebApplicationInfoFactory> ParseOfflineManifest(
+  absl::optional<WebAppInstallInfoFactory> ParseOfflineManifest(
       const char* offline_manifest_string) {
     absl::optional<base::Value> offline_manifest =
         base::JSONReader::Read(offline_manifest_string);
     DCHECK(offline_manifest);
-    WebApplicationInfoFactoryOrError result = ::web_app::ParseOfflineManifest(
+    WebAppInstallInfoFactoryOrError result = ::web_app::ParseOfflineManifest(
         *file_utils_, base::FilePath(FILE_PATH_LITERAL("test_dir")),
         base::FilePath(FILE_PATH_LITERAL("test_dir/test.json")),
         *offline_manifest);
-    if (WebApplicationInfoFactory* factory =
-            absl::get_if<WebApplicationInfoFactory>(&result)) {
+    if (WebAppInstallInfoFactory* factory =
+            absl::get_if<WebAppInstallInfoFactory>(&result)) {
       return std::move(*factory);
     }
     return absl::nullopt;
@@ -186,7 +186,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 #define MAYBE_OfflineManifestValid OfflineManifestValid
 #endif
 TEST_F(PreinstalledWebAppUtilsTest, MAYBE_OfflineManifestValid) {
-  std::unique_ptr<WebApplicationInfo> app_info = ParseOfflineManifest(R"(
+  std::unique_ptr<WebAppInstallInfo> app_info = ParseOfflineManifest(R"(
     {
       "name": "Test App",
       "start_url": "https://test.org/start.html",
@@ -196,8 +196,8 @@ TEST_F(PreinstalledWebAppUtilsTest, MAYBE_OfflineManifestValid) {
       "theme_color_argb_hex": "AABBCCDD"
     }
   )")
-                                                     .value()
-                                                     .Run();
+                                                    .value()
+                                                    .Run();
   EXPECT_TRUE(app_info);
   EXPECT_EQ(app_info->title, u"Test App");
   EXPECT_EQ(app_info->start_url, GURL("https://test.org/start.html"));

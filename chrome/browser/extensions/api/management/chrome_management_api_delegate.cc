@@ -261,7 +261,7 @@ class ChromeAppForLinkDelegate : public extensions::AppForLinkDelegate {
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->title = base::UTF8ToUTF16(title);
     web_app_info->start_url = launch_url;
     web_app_info->display_mode = web_app::DisplayMode::kBrowser;

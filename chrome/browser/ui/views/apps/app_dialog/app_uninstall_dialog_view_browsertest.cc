@@ -169,7 +169,7 @@ class WebAppsUninstallDialogViewBrowserTest
   }
 
   void CreateApp() {
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = GetAppURL();
     web_app_info->scope = GetAppURL().GetWithoutFilename();
 

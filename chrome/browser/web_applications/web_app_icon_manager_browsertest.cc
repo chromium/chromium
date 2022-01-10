@@ -73,8 +73,8 @@ IN_PROC_BROWSER_TEST_F(WebAppIconManagerBrowserTest, SingleIcon) {
 
   AppId app_id;
   {
-    std::unique_ptr<WebApplicationInfo> web_application_info =
-        std::make_unique<WebApplicationInfo>();
+    std::unique_ptr<WebAppInstallInfo> web_application_info =
+        std::make_unique<WebAppInstallInfo>();
     web_application_info->start_url = start_url;
     web_application_info->scope = start_url.GetWithoutFilename();
     web_application_info->title = u"App Name";

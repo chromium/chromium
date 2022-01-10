@@ -29,10 +29,10 @@ OptionsOrError ParseConfig(FileUtilsWrapper& file_utils,
                            const base::FilePath& file,
                            const base::Value& app_config);
 
-using WebApplicationInfoFactoryOrError =
-    absl::variant<WebApplicationInfoFactory, std::string>;
+using WebAppInstallInfoFactoryOrError =
+    absl::variant<WebAppInstallInfoFactory, std::string>;
 
-WebApplicationInfoFactoryOrError ParseOfflineManifest(
+WebAppInstallInfoFactoryOrError ParseOfflineManifest(
     FileUtilsWrapper& file_utils,
     const base::FilePath& dir,
     const base::FilePath& file,

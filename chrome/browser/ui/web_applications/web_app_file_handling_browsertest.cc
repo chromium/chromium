@@ -94,7 +94,7 @@ class WebAppFileHandlingTestBase : public WebAppControllerBrowserTest {
   void InstallFileHandlingPWA() {
     GURL url = GetSecureAppURL();
 
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = url;
     web_app_info->scope = url.GetWithoutFilename();
     web_app_info->title = u"A Hosted App";
@@ -130,7 +130,7 @@ class WebAppFileHandlingTestBase : public WebAppControllerBrowserTest {
   }
 
   AppId InstallAnotherFileHandlingPwa(const GURL& start_url) {
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->title = u"A second app";
@@ -345,7 +345,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        LaunchQueueSetOnRedirect) {
   // Install an app where the file handling action page redirects.
-  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url =
       https_server()->GetURL("app.com", "/web_app_file_handling/index.html");
   web_app_info->scope = web_app_info->start_url.GetWithoutFilename();
@@ -381,7 +381,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest, LaunchQueueSetOnReload) {
-  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url =
       https_server()->GetURL("app.com", "/web_app_file_handling/index.html");
   web_app_info->scope = web_app_info->start_url.GetWithoutFilename();
@@ -418,7 +418,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        LaunchQueueNotSetOnCrossOriginRedirect) {
   // Install an app where the file handling action page redirects to a page on a
   // different origin.
-  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url =
       https_server()->GetURL("app.com", "/web_app_file_handling/index.html");
   web_app_info->scope = web_app_info->start_url.GetWithoutFilename();
@@ -457,7 +457,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFileHandlingBrowserTest,
                        LaunchQueueNotSetOnNavigate) {
   GURL start_url =
       https_server()->GetURL("app.com", "/web_app_file_handling/index.html");
-  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = start_url;
   web_app_info->scope = web_app_info->start_url.GetWithoutFilename();
   web_app_info->title = u"An app that will be navigated";

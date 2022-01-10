@@ -69,7 +69,7 @@ class FileHandlerLaunchDialogTest : public InProcessBrowserTest {
 
   void InstallTestWebApp() {
     const GURL example_url = GURL(kStartUrl);
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->title = u"Test app";
     web_app_info->start_url = example_url;
     web_app_info->scope = example_url;

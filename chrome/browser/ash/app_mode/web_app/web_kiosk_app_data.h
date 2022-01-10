@@ -13,7 +13,7 @@
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
-struct WebApplicationInfo;
+struct WebAppInstallInfo;
 
 namespace ash {
 
@@ -56,7 +56,7 @@ class WebKioskAppData : public KioskAppDataBase {
   // update.
   void SetStatus(Status status, bool notify = true);
 
-  void UpdateFromWebAppInfo(std::unique_ptr<WebApplicationInfo> app_info);
+  void UpdateFromWebAppInfo(std::unique_ptr<WebAppInstallInfo> app_info);
 
   void SetOnLoadedCallbackForTesting(base::OnceClosure callback);
 

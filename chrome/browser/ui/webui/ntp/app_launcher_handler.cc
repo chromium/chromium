@@ -1170,7 +1170,7 @@ void AppLauncherHandler::HandleRunOnOsLogin(const base::ListValue* args) {
 void AppLauncherHandler::OnFaviconForAppInstallFromLink(
     std::unique_ptr<AppInstallInfo> install_info,
     const favicon_base::FaviconImageResult& image_result) {
-  auto web_app = std::make_unique<WebApplicationInfo>();
+  auto web_app = std::make_unique<WebAppInstallInfo>();
   web_app->title = install_info->title;
   web_app->start_url = install_info->app_url;
 

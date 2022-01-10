@@ -11,7 +11,7 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "content/public/browser/web_contents.h"
 
-struct WebApplicationInfo;
+struct WebAppInstallInfo;
 class Browser;
 class BrowserNonClientFrameView;
 class BrowserView;
@@ -42,7 +42,7 @@ class WebAppFrameToolbarTestHelper {
                                         const GURL& start_url);
   web_app::AppId InstallAndLaunchCustomWebApp(
       Browser* browser,
-      std::unique_ptr<WebApplicationInfo> web_app_info,
+      std::unique_ptr<WebAppInstallInfo> web_app_info,
       const GURL& start_url);
 
   GURL LoadWindowControlsOverlayTestPageWithDataAndGetURL(

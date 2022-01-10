@@ -232,7 +232,7 @@ class ContextMenuBrowserTest : public InProcessBrowserTest {
   }
 
   AppId InstallTestWebApp(const GURL& start_url, bool open_as_window = true) {
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url;
     web_app_info->title = u"Test app 🐐";

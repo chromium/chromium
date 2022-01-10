@@ -33,9 +33,9 @@ OsFlagsSystemWebAppDelegate::OsFlagsSystemWebAppDelegate(Profile* profile)
 
 OsFlagsSystemWebAppDelegate::~OsFlagsSystemWebAppDelegate() = default;
 
-std::unique_ptr<WebApplicationInfo> OsFlagsSystemWebAppDelegate::GetWebAppInfo()
+std::unique_ptr<WebAppInstallInfo> OsFlagsSystemWebAppDelegate::GetWebAppInfo()
     const {
-  auto info = std::make_unique<WebApplicationInfo>();
+  auto info = std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL(chrome::kChromeUIFlagsURL);
   info->scope = GURL(chrome::kChromeUIFlagsURL);
 

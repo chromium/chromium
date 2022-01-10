@@ -410,7 +410,7 @@ TEST_F(WebAppShimManagerDelegateTest, GetAppShortcutsMenuItemInfos) {
         features::kDesktopPWAsAppIconShortcutsMenuUI);
 
     // Install a dummy app with shortcut menu items
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     WebAppShortcutsMenuItemInfo shortcut_info1;
     WebAppShortcutsMenuItemInfo shortcut_info2;
     WebAppShortcutsMenuItemInfo shortcut_info3;

@@ -34,7 +34,7 @@ class WebAppDarkModeBrowserTest : public WebAppControllerBrowserTest {
   ~WebAppDarkModeBrowserTest() override = default;
 
   AppId InstallWebAppFromInfo() {
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     // We want to hang so WebContents does not update the background color.
     web_app_info->start_url = https_server()->GetURL("/hung");
     web_app_info->title = u"A Web App";

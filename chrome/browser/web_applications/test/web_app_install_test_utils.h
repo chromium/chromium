@@ -45,7 +45,7 @@ AppId InstallDummyWebApp(Profile* profile,
 // Synchronous version of WebAppInstallManager::InstallWebAppFromInfo. May be
 // used in unit tests and browser tests.
 AppId InstallWebApp(Profile* profile,
-                    std::unique_ptr<WebApplicationInfo> web_app_info,
+                    std::unique_ptr<WebAppInstallInfo> web_app_info,
                     bool overwrite_existing_manifest_fields = false,
                     webapps::WebappInstallSource install_source =
                         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);

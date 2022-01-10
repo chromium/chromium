@@ -54,7 +54,7 @@ class WebAppOpaqueBrowserFrameViewTest : public InProcessBrowserTest {
 
   bool InstallAndLaunchWebApp(
       absl::optional<SkColor> theme_color = absl::nullopt) {
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = GetAppURL();
     web_app_info->scope = GetAppURL().GetWithoutFilename();
     web_app_info->theme_color = theme_color;
@@ -309,7 +309,7 @@ class WebAppOpaqueBrowserFrameViewWindowControlsOverlayTest
                          .LoadWindowControlsOverlayTestPageWithDataAndGetURL(
                              embedded_test_server(), &temp_dir_);
 
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->display_mode = blink::mojom::DisplayMode::kStandalone;

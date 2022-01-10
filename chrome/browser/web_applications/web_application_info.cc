@@ -212,13 +212,12 @@ base::Value WebAppShortcutsMenuItemInfo::AsDebugValue() const {
   return root;
 }
 
-// WebApplicationInfo
-WebApplicationInfo::WebApplicationInfo() = default;
+// WebAppInstallInfo
+WebAppInstallInfo::WebAppInstallInfo() = default;
 
-WebApplicationInfo::WebApplicationInfo(const WebApplicationInfo& other) =
-    default;
+WebAppInstallInfo::WebAppInstallInfo(const WebAppInstallInfo& other) = default;
 
-WebApplicationInfo::WebApplicationInfo(
+WebAppInstallInfo::WebAppInstallInfo(
     const webapps::mojom::WebPageMetadata& metadata)
     : title(metadata.application_name),
       description(metadata.description),
@@ -243,7 +242,7 @@ WebApplicationInfo::WebApplicationInfo(
   }
 }
 
-WebApplicationInfo::~WebApplicationInfo() = default;
+WebAppInstallInfo::~WebAppInstallInfo() = default;
 
 bool operator==(const IconSizes& icon_sizes1, const IconSizes& icon_sizes2) {
   return std::tie(icon_sizes1.any, icon_sizes1.maskable,

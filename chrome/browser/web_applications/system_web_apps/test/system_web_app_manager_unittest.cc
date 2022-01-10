@@ -71,24 +71,24 @@ GURL AppUrl2() {
   return GURL(content::GetWebUIURL("system-app2"));
 }
 
-std::unique_ptr<WebApplicationInfo> GetWebApplicationInfo(const GURL& url) {
-  std::unique_ptr<WebApplicationInfo> info =
-      std::make_unique<WebApplicationInfo>();
+std::unique_ptr<WebAppInstallInfo> GetWebAppInstallInfo(const GURL& url) {
+  std::unique_ptr<WebAppInstallInfo> info =
+      std::make_unique<WebAppInstallInfo>();
   info->start_url = url;
   info->scope = url.GetWithoutFilename();
   info->title = u"Web App";
   return info;
 }
 
-WebApplicationInfoFactory GetApp1WebAppInfoFactory() {
+WebAppInstallInfoFactory GetApp1WebAppInfoFactory() {
   // "static" so that ExternalInstallOptions comparisons in tests work.
-  static auto factory = base::BindRepeating(&GetWebApplicationInfo, AppUrl1());
+  static auto factory = base::BindRepeating(&GetWebAppInstallInfo, AppUrl1());
   return factory;
 }
 
-WebApplicationInfoFactory GetApp2WebAppInfoFactory() {
+WebAppInstallInfoFactory GetApp2WebAppInfoFactory() {
   // "static" so that ExternalInstallOptions comparisons in tests work.
-  static auto factory = base::BindRepeating(&GetWebApplicationInfo, AppUrl2());
+  static auto factory = base::BindRepeating(&GetWebAppInstallInfo, AppUrl2());
   return factory;
 }
 
@@ -459,7 +459,7 @@ TEST_F(SystemWebAppManagerTest, UpdateOnVersionChange) {
         SystemAppType::SETTINGS,
         std::make_unique<UnittestingSystemAppDelegate>(
             SystemAppType::SETTINGS, kSettingsAppInternalName, kAppUrl3,
-            base::BindRepeating(&GetWebApplicationInfo, kAppUrl3)));
+            base::BindRepeating(&GetWebAppInstallInfo, kAppUrl3)));
 
     system_apps.emplace(SystemAppType::CAMERA,
                         std::make_unique<UnittestingSystemAppDelegate>(
@@ -1046,7 +1046,7 @@ class TimerSystemAppDelegate : public UnittestingSystemAppDelegate {
   TimerSystemAppDelegate(SystemAppType type,
                          const std::string& name,
                          const GURL& url,
-                         WebApplicationInfoFactory info_factory,
+                         WebAppInstallInfoFactory info_factory,
                          absl::optional<base::TimeDelta> period,
                          bool open_immediately)
       : UnittestingSystemAppDelegate(type, name, url, info_factory),
@@ -1363,7 +1363,7 @@ TEST_F(SystemWebAppManagerTest,
       SystemAppType::SETTINGS,
       std::make_unique<UnittestingSystemAppDelegate>(
           SystemAppType::SETTINGS, kSettingsAppInternalName, AppUrl1(),
-          base::BindRepeating(&GetWebApplicationInfo, AppUrl1())));
+          base::BindRepeating(&GetWebAppInstallInfo, AppUrl1())));
   system_web_app_manager().SetSystemAppsForTesting(std::move(system_apps));
 
   base::RunLoop run_loop;

@@ -29,7 +29,7 @@ class AppPlatformMetricsBrowserTest : public InProcessBrowserTest {
   AppId InstallWebApp(const GURL& start_url,
                       blink::mojom::DisplayMode display_mode,
                       blink::mojom::DisplayMode user_display_mode) {
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->display_mode = display_mode;

@@ -78,7 +78,7 @@ void ApkWebAppInstaller::Start(arc::mojom::WebAppInfoPtr web_app_info,
   }
 
   DCHECK(!web_app_info_);
-  web_app_info_ = std::make_unique<WebApplicationInfo>();
+  web_app_info_ = std::make_unique<WebAppInstallInfo>();
 
   web_app_info_->title = base::UTF8ToUTF16(web_app_info->title);
 

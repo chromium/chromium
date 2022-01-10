@@ -71,7 +71,7 @@ namespace {
 
 void AutoAcceptDialogCallback(
     content::WebContents* initiator_web_contents,
-    std::unique_ptr<WebApplicationInfo> web_app_info,
+    std::unique_ptr<WebAppInstallInfo> web_app_info,
     ForInstallableSite for_installable_site,
     WebAppInstallationAcceptanceCallback acceptance_callback) {
   web_app_info->user_display_mode = DisplayMode::kStandalone;

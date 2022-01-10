@@ -63,9 +63,9 @@ namespace {
 constexpr SquareSizePx kDefaultImageSize = 100;
 constexpr char kIconUrl[] = "https://example.com/app.ico";
 
-std::unique_ptr<WebApplicationInfo> ConvertWebAppToRendererWebApplicationInfo(
+std::unique_ptr<WebAppInstallInfo> ConvertWebAppToRendererWebAppInstallInfo(
     const WebApp& app) {
-  auto web_application_info = std::make_unique<WebApplicationInfo>();
+  auto web_application_info = std::make_unique<WebAppInstallInfo>();
   // Most fields are expected to be populated by a manifest data in a subsequent
   // override install process data flow. TODO(loyso): Make it more robust.
   web_application_info->description = base::UTF8ToUTF16(app.description());
@@ -120,8 +120,8 @@ std::unique_ptr<WebAppDataRetriever> ConvertWebAppToDataRetriever(
     const WebApp& app) {
   auto data_retriever = std::make_unique<FakeDataRetriever>();
 
-  data_retriever->SetRendererWebApplicationInfo(
-      ConvertWebAppToRendererWebApplicationInfo(app));
+  data_retriever->SetRendererWebAppInstallInfo(
+      ConvertWebAppToRendererWebAppInstallInfo(app));
   data_retriever->SetManifest(ConvertWebAppToManifest(app),
                               /*is_installable=*/true);
   data_retriever->SetIcons(ConvertWebAppIconsToIconsMap(app));
@@ -339,7 +339,7 @@ class WebAppInstallManagerTest
   }
 
   InstallResult InstallWebAppFromInfo(
-      std::unique_ptr<WebApplicationInfo> web_application_info,
+      std::unique_ptr<WebAppInstallInfo> web_application_info,
       bool overwrite_existing_manifest_fields,
       webapps::WebappInstallSource install_source) {
     InstallResult result;
@@ -976,7 +976,7 @@ TEST_P(WebAppInstallManagerTest, InstallWebAppFromInfo) {
   const AppId expected_app_id =
       GenerateAppId(/*manifest_id=*/absl::nullopt, url);
 
-  auto server_web_app_info = std::make_unique<WebApplicationInfo>();
+  auto server_web_app_info = std::make_unique<WebAppInstallInfo>();
   server_web_app_info->start_url = url;
   server_web_app_info->scope = url;
   server_web_app_info->title = u"Test web app";
@@ -1088,7 +1088,7 @@ TEST_P(WebAppInstallManagerTest_SyncOnly,
   const AppId app_id = GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
 
   // Reproduces `ApkWebAppInstaller` install parameters.
-  auto apk_web_application_info = std::make_unique<WebApplicationInfo>();
+  auto apk_web_application_info = std::make_unique<WebAppInstallInfo>();
   apk_web_application_info->start_url = start_url;
   apk_web_application_info->scope = GURL("https://example.com/apk_scope");
   apk_web_application_info->title = u"Name from APK";

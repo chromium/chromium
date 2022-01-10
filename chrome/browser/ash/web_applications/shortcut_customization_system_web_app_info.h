@@ -10,7 +10,7 @@
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "ui/gfx/geometry/size.h"
 
-struct WebApplicationInfo;
+struct WebAppInstallInfo;
 
 class ShortcutCustomizationSystemAppDelegate
     : public web_app::SystemWebAppDelegate {
@@ -18,12 +18,12 @@ class ShortcutCustomizationSystemAppDelegate
   explicit ShortcutCustomizationSystemAppDelegate(Profile* profile);
 
   // web_app::SystemWebAppDelegate overrides:
-  std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
+  std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
   gfx::Size GetMinimumWindowSize() const override;
   bool IsAppEnabled() const override;
 };
-// Returns a WebApplicationInfo used to install the app.
-std::unique_ptr<WebApplicationInfo>
+// Returns a WebAppInstallInfo used to install the app.
+std::unique_ptr<WebAppInstallInfo>
 CreateWebAppInfoForShortcutCustomizationSystemWebApp();
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_SHORTCUT_CUSTOMIZATION_SYSTEM_WEB_APP_INFO_H_

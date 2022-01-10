@@ -116,7 +116,7 @@ ExternalInstallOptions GetConfigForGoogleCalendar() {
 
   options.only_use_app_info_factory = true;
   options.app_info_factory = base::BindRepeating([]() {
-    auto info = std::make_unique<WebApplicationInfo>();
+    auto info = std::make_unique<WebAppInstallInfo>();
     info->title = base::UTF8ToUTF16(
         GetTranslatedName("Google Calendar", kNameTranslations));
     info->start_url = GURL("https://calendar.google.com/calendar/r");

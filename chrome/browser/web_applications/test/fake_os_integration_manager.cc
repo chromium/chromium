@@ -56,7 +56,7 @@ void FakeOsIntegrationManager::SetNextCreateShortcutsResult(const AppId& app_id,
 void FakeOsIntegrationManager::InstallOsHooks(
     const AppId& app_id,
     InstallOsHooksCallback callback,
-    std::unique_ptr<WebApplicationInfo> web_app_info,
+    std::unique_ptr<WebAppInstallInfo> web_app_info,
     InstallOsHooksOptions options) {
   OsHooksErrors os_hooks_errors;
 
@@ -117,7 +117,7 @@ void FakeOsIntegrationManager::UpdateOsHooks(
     const AppId& app_id,
     base::StringPiece old_name,
     FileHandlerUpdateAction file_handlers_need_os_update,
-    const WebApplicationInfo& web_app_info,
+    const WebAppInstallInfo& web_app_info,
     UninstallOsHooksCallback callback) {
   if (file_handlers_need_os_update != FileHandlerUpdateAction::kNoUpdate)
     ++num_update_file_handlers_calls_;

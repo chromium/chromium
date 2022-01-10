@@ -197,7 +197,7 @@ void WebAppInstallManager::InstallSubApp(const AppId& parent_app_id,
 }
 
 void WebAppInstallManager::InstallWebAppFromInfo(
-    std::unique_ptr<WebApplicationInfo> web_application_info,
+    std::unique_ptr<WebAppInstallInfo> web_application_info,
     bool overwrite_existing_manifest_fields,
     ForInstallableSite for_installable_site,
     webapps::WebappInstallSource install_source,
@@ -208,7 +208,7 @@ void WebAppInstallManager::InstallWebAppFromInfo(
 }
 
 void WebAppInstallManager::InstallWebAppFromInfo(
-    std::unique_ptr<WebApplicationInfo> web_application_info,
+    std::unique_ptr<WebAppInstallInfo> web_application_info,
     bool overwrite_existing_manifest_fields,
     ForInstallableSite for_installable_site,
     const absl::optional<WebAppInstallParams>& install_params,
@@ -257,7 +257,7 @@ base::WeakPtr<WebAppInstallManager> WebAppInstallManager::GetWeakPtr() {
 
 void WebAppInstallManager::EnqueueInstallAppFromSync(
     const AppId& sync_app_id,
-    std::unique_ptr<WebApplicationInfo> web_application_info,
+    std::unique_ptr<WebAppInstallInfo> web_application_info,
     OnceInstallCallback callback) {
   DCHECK(started_);
 #if defined(OS_CHROMEOS)
@@ -351,7 +351,7 @@ void WebAppInstallManager::InstallWebAppsAfterSync(
   for (WebApp* web_app : web_apps) {
     DCHECK(web_app->is_from_sync_and_pending_installation());
 
-    auto web_application_info = std::make_unique<WebApplicationInfo>();
+    auto web_application_info = std::make_unique<WebAppInstallInfo>();
     web_application_info->manifest_id = web_app->manifest_id();
     web_application_info->start_url = web_app->start_url();
     web_application_info->title =
@@ -399,7 +399,7 @@ void WebAppInstallManager::SetUrlLoaderForTesting(
 void WebAppInstallManager::
     LoadAndInstallWebAppFromManifestWithFallbackCompleted_ForAppSync(
         const AppId& sync_app_id,
-        std::unique_ptr<WebApplicationInfo> web_application_info,
+        std::unique_ptr<WebAppInstallInfo> web_application_info,
         OnceInstallCallback callback,
         const AppId& web_app_id,
         InstallResultCode code) {

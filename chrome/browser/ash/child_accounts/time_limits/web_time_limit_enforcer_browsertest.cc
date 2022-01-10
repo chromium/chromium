@@ -178,7 +178,7 @@ WebTimeLimitEnforcerThrottleTest::GetWebTimeLimitEnforcer() {
 content::WebContents* WebTimeLimitEnforcerThrottleTest::InstallAndLaunchWebApp(
     const GURL& url,
     bool allowlisted_app) {
-  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->title = base::UTF8ToUTF16(url.host());
   web_app_info->description = u"Web app";
   web_app_info->start_url = url;

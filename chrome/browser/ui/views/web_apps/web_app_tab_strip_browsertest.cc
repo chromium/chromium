@@ -66,7 +66,7 @@ class WebAppTabStripBrowserTest : public InProcessBrowserTest {
     Profile* profile = browser()->profile();
     GURL start_url = embedded_test_server()->GetURL(kAppPath);
 
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->title = u"Test app";
@@ -151,7 +151,7 @@ IN_PROC_BROWSER_TEST_F(WebAppTabStripBrowserTest, PopOutTabOnInstall) {
         /*dialog_callback=*/
         base::BindLambdaForTesting(
             [](content::WebContents*,
-               std::unique_ptr<WebApplicationInfo> web_app_info,
+               std::unique_ptr<WebAppInstallInfo> web_app_info,
                ForInstallableSite,
                WebAppInstallationAcceptanceCallback acceptance_callback) {
               web_app_info->user_display_mode = DisplayMode::kTabbed;

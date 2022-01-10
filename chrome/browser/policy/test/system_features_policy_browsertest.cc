@@ -143,7 +143,7 @@ class SystemFeaturesPolicyTest : public PolicyTest {
   }
 
   void InstallPWA(const GURL& app_url, const char* app_id) {
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = app_url;
     web_app_info->scope = app_url.GetWithoutFilename();
     web_app::AppId installed_app_id = web_app::test::InstallWebApp(

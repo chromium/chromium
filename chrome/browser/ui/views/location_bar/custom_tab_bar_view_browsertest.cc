@@ -208,7 +208,7 @@ class CustomTabBarViewBrowserTest
   }
 
   void InstallPWA(const GURL& start_url) {
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
@@ -216,7 +216,7 @@ class CustomTabBarViewBrowserTest
   }
 
   void InstallBookmark(const GURL& start_url) {
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.DeprecatedGetOriginAsURL();
     web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
@@ -230,7 +230,7 @@ class CustomTabBarViewBrowserTest
   raw_ptr<web_app::AppBrowserController> app_controller_ = nullptr;
 
  private:
-  void Install(std::unique_ptr<WebApplicationInfo> web_app_info) {
+  void Install(std::unique_ptr<WebAppInstallInfo> web_app_info) {
     const GURL start_url = web_app_info->start_url;
     web_app::AppId app_id = InstallWebApp(std::move(web_app_info));
 

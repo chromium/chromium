@@ -26,7 +26,7 @@ struct IconResourceInfo {
 void CreateIconInfoForSystemWebApp(
     const GURL& app_url,
     const std::initializer_list<IconResourceInfo>& manifest_icons,
-    WebApplicationInfo& web_app);
+    WebAppInstallInfo& web_app);
 
 // Get correct ChromeOS background color based on if dark mode is requested and
 // if kSemanticColorsDebugOverride is enabled.

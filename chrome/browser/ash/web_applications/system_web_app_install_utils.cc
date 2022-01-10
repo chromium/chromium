@@ -15,7 +15,7 @@ namespace web_app {
 void CreateIconInfoForSystemWebApp(
     const GURL& app_url,
     const std::initializer_list<IconResourceInfo>& manifest_icons,
-    WebApplicationInfo& web_app) {
+    WebAppInstallInfo& web_app) {
   for (const auto& info : manifest_icons) {
     web_app.manifest_icons.emplace_back(app_url.Resolve(info.icon_name),
                                         info.size);

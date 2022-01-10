@@ -66,7 +66,7 @@ class ChromeAshMessageCenterClientBrowserTest : public InProcessBrowserTest {
   }
 
   std::string InstallTestPWA() {
-    auto web_application_info = std::make_unique<WebApplicationInfo>();
+    auto web_application_info = std::make_unique<WebAppInstallInfo>();
     web_application_info->start_url = GURL(kUrlString);
     web_application_info->display_mode = blink::mojom::DisplayMode::kMinimalUi;
     Profile* profile = browser()->profile();

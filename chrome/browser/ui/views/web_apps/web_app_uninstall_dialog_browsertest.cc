@@ -37,7 +37,7 @@ namespace {
 AppId InstallTestWebApp(Profile* profile) {
   const GURL example_url = GURL("http://example.org/");
 
-  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = example_url;
   web_app_info->scope = example_url;
   web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;

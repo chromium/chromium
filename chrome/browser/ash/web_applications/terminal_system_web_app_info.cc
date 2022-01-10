@@ -31,8 +31,8 @@ constexpr gfx::Rect TERMINAL_DEFAULT_BOUNDS(gfx::Point(64, 64),
 constexpr gfx::Size TERMINAL_SETTINGS_DEFAULT_SIZE(768, 512);
 }  // namespace
 
-std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForTerminalSystemWebApp() {
-  auto info = std::make_unique<WebApplicationInfo>();
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForTerminalSystemWebApp() {
+  auto info = std::make_unique<WebAppInstallInfo>();
   // URL used for crostini::kCrostiniTerminalSystemAppId.
   const GURL terminal_url("chrome-untrusted://terminal/html/terminal.html");
   info->start_url = terminal_url;
@@ -72,7 +72,7 @@ TerminalSystemAppDelegate::TerminalSystemAppDelegate(Profile* profile)
                                     GURL(chrome::kChromeUIUntrustedTerminalURL),
                                     profile) {}
 
-std::unique_ptr<WebApplicationInfo> TerminalSystemAppDelegate::GetWebAppInfo()
+std::unique_ptr<WebAppInstallInfo> TerminalSystemAppDelegate::GetWebAppInfo()
     const {
   return CreateWebAppInfoForTerminalSystemWebApp();
 }

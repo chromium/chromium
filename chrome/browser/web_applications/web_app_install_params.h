@@ -17,7 +17,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-struct WebApplicationInfo;
+struct WebAppInstallInfo;
 
 namespace content {
 class WebContents;
@@ -35,13 +35,13 @@ using OnceUninstallCallback =
 // web app.
 using WebAppInstallationAcceptanceCallback =
     base::OnceCallback<void(bool user_accepted,
-                            std::unique_ptr<WebApplicationInfo>)>;
+                            std::unique_ptr<WebAppInstallInfo>)>;
 
 // Callback to show the WebApp installation confirmation bubble in UI.
-// |web_app_info| is the WebApplicationInfo to be installed.
+// |web_app_info| is the WebAppInstallInfo to be installed.
 using WebAppInstallDialogCallback = base::OnceCallback<void(
     content::WebContents* initiator_web_contents,
-    std::unique_ptr<WebApplicationInfo> web_app_info,
+    std::unique_ptr<WebAppInstallInfo> web_app_info,
     ForInstallableSite for_installable_site,
     WebAppInstallationAcceptanceCallback acceptance_callback)>;
 

@@ -18,9 +18,9 @@
 #include "ui/base/ui_base_features.h"
 
 // TODO(michaelcheco): Update to correct icon.
-std::unique_ptr<WebApplicationInfo>
+std::unique_ptr<WebAppInstallInfo>
 CreateWebAppInfoForFirmwareUpdateSystemWebApp() {
-  auto info = std::make_unique<WebApplicationInfo>();
+  auto info = std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL(ash::kChromeUIFirmwareUpdateAppURL);
   info->scope = GURL(ash::kChromeUIFirmwareUpdateAppURL);
   info->title = l10n_util::GetStringUTF16(IDS_ASH_FIRMWARE_UPDATE_APP_TITLE);
@@ -41,7 +41,7 @@ FirmwareUpdateSystemAppDelegate::FirmwareUpdateSystemAppDelegate(
                                     GURL(ash::kChromeUIFirmwareUpdateAppURL),
                                     profile) {}
 
-std::unique_ptr<WebApplicationInfo>
+std::unique_ptr<WebAppInstallInfo>
 FirmwareUpdateSystemAppDelegate::GetWebAppInfo() const {
   return CreateWebAppInfoForFirmwareUpdateSystemWebApp();
 }

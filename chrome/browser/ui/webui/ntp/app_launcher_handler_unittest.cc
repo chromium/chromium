@@ -64,8 +64,8 @@ class TestAppLauncherHandler : public AppLauncherHandler {
   }
 };
 
-std::unique_ptr<WebApplicationInfo> BuildWebAppInfo() {
-  auto app_info = std::make_unique<WebApplicationInfo>();
+std::unique_ptr<WebAppInstallInfo> BuildWebAppInfo() {
+  auto app_info = std::make_unique<WebAppInstallInfo>();
   app_info->start_url = GURL(kTestAppUrl);
   app_info->scope = GURL(kTestAppUrl);
   app_info->title = kTestAppTitle;

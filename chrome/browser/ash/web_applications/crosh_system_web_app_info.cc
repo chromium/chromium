@@ -16,8 +16,8 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "url/gurl.h"
 
-std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForCroshSystemWebApp() {
-  auto info = std::make_unique<WebApplicationInfo>();
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForCroshSystemWebApp() {
+  auto info = std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL(chrome::kChromeUIUntrustedCroshURL);
   info->scope = GURL(chrome::kChromeUIUntrustedCroshURL);
   info->title = std::u16string(u"crosh");
@@ -34,7 +34,7 @@ CroshSystemAppDelegate::CroshSystemAppDelegate(Profile* profile)
                                     GURL(chrome::kChromeUIUntrustedCroshURL),
                                     profile) {}
 
-std::unique_ptr<WebApplicationInfo> CroshSystemAppDelegate::GetWebAppInfo()
+std::unique_ptr<WebAppInstallInfo> CroshSystemAppDelegate::GetWebAppInfo()
     const {
   return CreateWebAppInfoForCroshSystemWebApp();
 }

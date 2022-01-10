@@ -15,9 +15,9 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 
-std::unique_ptr<WebApplicationInfo>
+std::unique_ptr<WebAppInstallInfo>
 CreateWebAppInfoForShimlessRMASystemWebApp() {
-  auto info = std::make_unique<WebApplicationInfo>();
+  auto info = std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL(ash::kChromeUIShimlessRMAUrl);
   info->scope = GURL(ash::kChromeUIShimlessRMAUrl);
   info->title = l10n_util::GetStringUTF16(IDS_ASH_SHIMLESS_RMA_APP_TITLE);
@@ -39,8 +39,8 @@ ShimlessRMASystemAppDelegate::ShimlessRMASystemAppDelegate(Profile* profile)
                                     GURL(ash::kChromeUIShimlessRMAUrl),
                                     profile) {}
 
-std::unique_ptr<WebApplicationInfo>
-ShimlessRMASystemAppDelegate::GetWebAppInfo() const {
+std::unique_ptr<WebAppInstallInfo> ShimlessRMASystemAppDelegate::GetWebAppInfo()
+    const {
   return CreateWebAppInfoForShimlessRMASystemWebApp();
 }
 

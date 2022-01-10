@@ -1069,7 +1069,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest {
   }
 
   void AddWebApp(const char* web_app_id) {
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     if (web_app_id == web_app::kGmailAppId) {
       web_app_info->start_url =
           GURL("https://mail.google.com/mail/?usp=installed_webapp");
@@ -3073,7 +3073,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
   // *   the primary user has a test app pinned to shelf, and
   // *   secondary user has a tab with the URL associated with the app open (but
   //      does not have the app installed).
-  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = GURL(kWebAppUrl);
   web_app::AppId installed_app_id =
       web_app::test::InstallWebApp(profile(), std::move(web_app_info));
@@ -4875,7 +4875,7 @@ class ChromeShelfControllerDemoModeTest : public ChromeShelfControllerTestBase {
   }
 
   web_app::AppId InstallExternalWebApp(std::string start_url) {
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = GURL(start_url);
     web_app::AppId web_app_id =
         web_app::test::InstallWebApp(profile(), std::move(web_app_info));

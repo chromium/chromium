@@ -76,7 +76,7 @@ std::u16string NormalizeSuggestedAppTitle(const std::u16string& title) {
 WebAppConfirmationView::~WebAppConfirmationView() {}
 
 WebAppConfirmationView::WebAppConfirmationView(
-    std::unique_ptr<WebApplicationInfo> web_app_info,
+    std::unique_ptr<WebAppInstallInfo> web_app_info,
     chrome::AppInstallationAcceptanceCallback callback)
     : web_app_info_(std::move(web_app_info)), callback_(std::move(callback)) {
   DCHECK(web_app_info_);
@@ -241,7 +241,7 @@ END_METADATA
 namespace chrome {
 
 void ShowWebAppInstallDialog(content::WebContents* web_contents,
-                             std::unique_ptr<WebApplicationInfo> web_app_info,
+                             std::unique_ptr<WebAppInstallInfo> web_app_info,
                              AppInstallationAcceptanceCallback callback) {
   auto* dialog =
       new WebAppConfirmationView(std::move(web_app_info), std::move(callback));

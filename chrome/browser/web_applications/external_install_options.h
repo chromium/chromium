@@ -19,8 +19,8 @@
 
 namespace web_app {
 
-using WebApplicationInfoFactory =
-    base::RepeatingCallback<std::unique_ptr<WebApplicationInfo>()>;
+using WebAppInstallInfoFactory =
+    base::RepeatingCallback<std::unique_ptr<WebAppInstallInfo>()>;
 
 enum class ExternalInstallSource;
 
@@ -176,9 +176,9 @@ struct ExternalInstallOptions {
   // |service_worker_registration_url| will not be loaded.
   bool only_use_app_info_factory = false;
 
-  // A factory callback that returns a unique_ptr<WebApplicationInfo> to be used
+  // A factory callback that returns a unique_ptr<WebAppInstallInfo> to be used
   // as the app's installation metadata.
-  WebApplicationInfoFactory app_info_factory;
+  WebAppInstallInfoFactory app_info_factory;
 
   // The type of SystemWebApp, if this app is a System Web App.
   absl::optional<SystemAppType> system_app_type = absl::nullopt;

@@ -31,7 +31,7 @@ class PWAConfirmationBubbleView : public LocationBarBubbleDelegateView {
 
   PWAConfirmationBubbleView(views::View* anchor_view,
                             views::Button* highlight_button,
-                            std::unique_ptr<WebApplicationInfo> web_app_info,
+                            std::unique_ptr<WebAppInstallInfo> web_app_info,
                             chrome::AppInstallationAcceptanceCallback callback,
                             chrome::PwaInProductHelpState iph_state,
                             PrefService* prefs,
@@ -50,7 +50,7 @@ class PWAConfirmationBubbleView : public LocationBarBubbleDelegateView {
   bool Accept() override;
 
  private:
-  std::unique_ptr<WebApplicationInfo> web_app_info_;
+  std::unique_ptr<WebAppInstallInfo> web_app_info_;
   chrome::AppInstallationAcceptanceCallback callback_;
 
   // Checkbox to launch window with tab strip.

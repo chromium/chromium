@@ -14,9 +14,9 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForPrintManagementApp() {
-  std::unique_ptr<WebApplicationInfo> info =
-      std::make_unique<WebApplicationInfo>();
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForPrintManagementApp() {
+  std::unique_ptr<WebAppInstallInfo> info =
+      std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL(ash::kChromeUIPrintManagementAppUrl);
   info->scope = GURL(ash::kChromeUIPrintManagementAppUrl);
   info->title = l10n_util::GetStringUTF16(IDS_PRINT_MANAGEMENT_TITLE);
@@ -43,7 +43,7 @@ PrintManagementSystemAppDelegate::PrintManagementSystemAppDelegate(
                                     GURL("chrome://print-management/pwa.html"),
                                     profile) {}
 
-std::unique_ptr<WebApplicationInfo>
+std::unique_ptr<WebAppInstallInfo>
 PrintManagementSystemAppDelegate::GetWebAppInfo() const {
   return CreateWebAppInfoForPrintManagementApp();
 }

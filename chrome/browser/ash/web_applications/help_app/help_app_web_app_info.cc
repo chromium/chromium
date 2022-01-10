@@ -23,9 +23,9 @@ namespace {
 constexpr gfx::Size HELP_DEFAULT_SIZE(960, 600);
 }  // namespace
 
-std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForHelpWebApp() {
-  std::unique_ptr<WebApplicationInfo> info =
-      std::make_unique<WebApplicationInfo>();
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForHelpWebApp() {
+  std::unique_ptr<WebAppInstallInfo> info =
+      std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL(kChromeUIHelpAppURL);
   info->scope = GURL(kChromeUIHelpAppURL);
 
@@ -86,7 +86,7 @@ HelpAppSystemAppDelegate::GetTimerInfo() const {
   }
 }
 
-std::unique_ptr<WebApplicationInfo> HelpAppSystemAppDelegate::GetWebAppInfo()
+std::unique_ptr<WebAppInstallInfo> HelpAppSystemAppDelegate::GetWebAppInfo()
     const {
   return CreateWebAppInfoForHelpWebApp();
 }

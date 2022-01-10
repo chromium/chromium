@@ -112,7 +112,7 @@ class OsIntegrationManager : public AppRegistrarObserver {
   // virtual for testing
   virtual void InstallOsHooks(const AppId& app_id,
                               InstallOsHooksCallback callback,
-                              std::unique_ptr<WebApplicationInfo> web_app_info,
+                              std::unique_ptr<WebAppInstallInfo> web_app_info,
                               InstallOsHooksOptions options);
 
   // Uninstall specific OS hooks for the web app.
@@ -136,7 +136,7 @@ class OsIntegrationManager : public AppRegistrarObserver {
       const AppId& app_id,
       base::StringPiece old_name,
       FileHandlerUpdateAction file_handlers_need_os_update,
-      const WebApplicationInfo& web_app_info,
+      const WebAppInstallInfo& web_app_info,
       UpdateOsHooksCallback callback);
 
   // Proxy calls for WebAppShortcutManager.
@@ -274,7 +274,7 @@ class OsIntegrationManager : public AppRegistrarObserver {
                                base::StringPiece old_name,
                                base::OnceClosure callback);
   virtual void UpdateShortcutsMenu(const AppId& app_id,
-                                   const WebApplicationInfo& web_app_info);
+                                   const WebAppInstallInfo& web_app_info);
 
   // Utility methods:
   virtual std::unique_ptr<ShortcutInfo> BuildShortcutInfo(const AppId& app_id);
@@ -283,7 +283,7 @@ class OsIntegrationManager : public AppRegistrarObserver {
   class OsHooksBarrier;
 
   void OnShortcutsCreated(const AppId& app_id,
-                          std::unique_ptr<WebApplicationInfo> web_app_info,
+                          std::unique_ptr<WebAppInstallInfo> web_app_info,
                           InstallOsHooksOptions options,
                           scoped_refptr<OsHooksBarrier> barrier,
                           bool shortcuts_created);

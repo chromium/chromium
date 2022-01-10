@@ -126,7 +126,7 @@ WebAppInstallFinalizer::WebAppInstallFinalizer(
 WebAppInstallFinalizer::~WebAppInstallFinalizer() = default;
 
 void WebAppInstallFinalizer::FinalizeInstall(
-    const WebApplicationInfo& web_app_info,
+    const WebAppInstallInfo& web_app_info,
     const FinalizeOptions& options,
     InstallFinalizedCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -404,7 +404,7 @@ void WebAppInstallFinalizer::ReparentTab(const AppId& app_id,
 }
 
 void WebAppInstallFinalizer::FinalizeUpdate(
-    const WebApplicationInfo& web_app_info,
+    const WebAppInstallInfo& web_app_info,
     InstallFinalizedCallback callback) {
   CHECK(started_);
 
@@ -541,7 +541,7 @@ void WebAppInstallFinalizer::OnMaybeRegisterOsUninstall(
 }
 
 void WebAppInstallFinalizer::SetWebAppManifestFieldsAndWriteData(
-    const WebApplicationInfo& web_app_info,
+    const WebAppInstallInfo& web_app_info,
     std::unique_ptr<WebApp> web_app,
     CommitCallback commit_callback) {
   SetWebAppManifestFields(web_app_info, *web_app);
@@ -614,7 +614,7 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForUpdate(
     std::string old_name,
     bool should_update_os_hooks,
     FileHandlerUpdateAction file_handlers_need_os_update,
-    const WebApplicationInfo& web_app_info,
+    const WebAppInstallInfo& web_app_info,
     bool success) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!success) {
@@ -653,7 +653,7 @@ const WebAppRegistrar& WebAppInstallFinalizer::GetWebAppRegistrar() const {
 
 FileHandlerUpdateAction WebAppInstallFinalizer::GetFileHandlerUpdateAction(
     const AppId& app_id,
-    const WebApplicationInfo& new_web_app_info) {
+    const WebAppInstallInfo& new_web_app_info) {
   if (!os_integration_manager_->IsFileHandlingAPIAvailable(app_id))
     return FileHandlerUpdateAction::kNoUpdate;
 

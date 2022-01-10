@@ -7,7 +7,7 @@
 
 #include "chrome/browser/web_applications/web_app_id.h"
 
-struct WebApplicationInfo;
+struct WebAppInstallInfo;
 
 namespace web_app {
 
@@ -16,7 +16,7 @@ class WebAppRegistrar;
 class WebApp;
 
 // Updates |web_app| using |web_app_info|
-void SetWebAppManifestFields(const WebApplicationInfo& web_app_info,
+void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
                              WebApp& web_app);
 
 // Possibly updates |options| to disable OS-integrations based on the

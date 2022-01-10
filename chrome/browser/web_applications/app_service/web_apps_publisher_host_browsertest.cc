@@ -216,7 +216,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, ManifestUpdate) {
   AppId app_id;
   {
     const std::u16string original_description = u"Original Web App";
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = app_url;
     web_app_info->scope = app_url;
     web_app_info->title = original_description;
@@ -230,7 +230,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, ManifestUpdate) {
 
   {
     const std::u16string updated_description = u"Updated Web App";
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = app_url;
     web_app_info->scope = app_url;
     web_app_info->title = updated_description;
@@ -259,7 +259,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, LocallyInstalledState) {
   AppId app_id;
   {
     const std::u16string description = u"Web App";
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = app_url;
     web_app_info->scope = app_url;
     web_app_info->title = description;
@@ -325,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, ContentSettings) {
 
   // Install an additional app from a different host.
   {
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = GURL("https://example.com:8080/");
     web_app_info->scope = web_app_info->start_url;
     web_app_info->title = u"Unrelated Web App";
@@ -647,7 +647,7 @@ IN_PROC_BROWSER_TEST_F(WebAppsPublisherHostBrowserTest, DisabledState) {
   AppId app2_id;
   {
     const std::u16string description = u"Uninstalled Web App";
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url =
         embedded_test_server()->GetURL("app.site.com", "/simple.html");
     web_app_info->scope = web_app_info->start_url.GetWithoutFilename();

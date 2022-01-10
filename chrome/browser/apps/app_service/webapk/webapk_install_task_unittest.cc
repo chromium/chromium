@@ -41,8 +41,8 @@ constexpr char kTestManifestUrl[] = "https://www.example.com/manifest.json";
 constexpr char kTestShareTextParam[] = "share_text";
 const std::u16string kTestAppTitle = u"Test App";
 
-std::unique_ptr<WebApplicationInfo> BuildDefaultWebAppInfo() {
-  auto app_info = std::make_unique<WebApplicationInfo>();
+std::unique_ptr<WebAppInstallInfo> BuildDefaultWebAppInfo() {
+  auto app_info = std::make_unique<WebAppInstallInfo>();
   app_info->start_url = GURL(kTestAppUrl);
   app_info->scope = GURL(kTestAppUrl);
   app_info->title = kTestAppTitle;
@@ -265,7 +265,7 @@ TEST_F(WebApkInstallTaskTest, ShareTarget) {
 }
 
 TEST_F(WebApkInstallTaskTest, NoIconInManifest) {
-  auto app_info = std::make_unique<WebApplicationInfo>();
+  auto app_info = std::make_unique<WebAppInstallInfo>();
   app_info->start_url = GURL(kTestAppUrl);
   app_info->scope = GURL(kTestAppUrl);
   app_info->title = kTestAppTitle;

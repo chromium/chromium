@@ -2042,7 +2042,7 @@ class WebAppPictureInPictureWindowControllerBrowserTest
   }
 
   Browser* InstallAndLaunchPWA(const GURL& start_url) {
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.DeprecatedGetOriginAsURL();
     web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;

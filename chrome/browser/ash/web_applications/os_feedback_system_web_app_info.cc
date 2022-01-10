@@ -23,9 +23,8 @@ constexpr int kFeedbackAppDefaultWidth = 600;
 constexpr int kFeedbackAppDefaultHeight = 640;
 }  // namespace
 
-std::unique_ptr<WebApplicationInfo>
-CreateWebAppInfoForOSFeedbackSystemWebApp() {
-  auto info = std::make_unique<WebApplicationInfo>();
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForOSFeedbackSystemWebApp() {
+  auto info = std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL(ash::kChromeUIOSFeedbackUrl);
   info->scope = GURL(ash::kChromeUIOSFeedbackUrl);
   info->title = l10n_util::GetStringUTF16(IDS_FEEDBACK_REPORT_APP_TITLE);
@@ -56,7 +55,7 @@ OSFeedbackAppDelegate::OSFeedbackAppDelegate(Profile* profile)
                                     GURL(ash::kChromeUIOSFeedbackUrl),
                                     profile) {}
 
-std::unique_ptr<WebApplicationInfo> OSFeedbackAppDelegate::GetWebAppInfo()
+std::unique_ptr<WebAppInstallInfo> OSFeedbackAppDelegate::GetWebAppInfo()
     const {
   return CreateWebAppInfoForOSFeedbackSystemWebApp();
 }
