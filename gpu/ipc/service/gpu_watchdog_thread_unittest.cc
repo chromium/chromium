@@ -19,6 +19,14 @@ namespace gpu {
 namespace {
 constexpr auto kGpuWatchdogTimeoutForTesting = base::Milliseconds(1000);
 
+// This is the extra time the gpu main/test thread spends after
+// GpuWatchdogTimeout. Theoretically, any extra time such as 1 ms should be
+// enough to trigger the watchdog kill. However, more time is added to fix the
+// flakiness in CQ.
+base::TimeDelta ExtraGPUJobTimeMSForTesting(int milliseconds) {
+  return base::Milliseconds(milliseconds);
+}
+
 // This task will run for duration_ms milliseconds.
 void SimpleTask(base::TimeDelta duration) {
   base::PlatformThread::Sleep(duration);
@@ -109,7 +117,7 @@ void GpuWatchdogTest::LongTaskFromBackgroundToForeground(
   base::PlatformThread::Sleep(time_to_switch_to_foreground);
   // Now switch Chrome to the foreground after the specified time
   watchdog_thread_->OnForegrounded();
-  base::PlatformThread::Sleep(duration - time_to_switch_to_foreground);
+  base::PlatformThread::Sleep(duration);
 }
 
 void GpuWatchdogPowerTest::LongTaskOnResume(
@@ -123,7 +131,7 @@ void GpuWatchdogPowerTest::LongTaskOnResume(
   // Now wake up on power resume.
   power_monitor_source_.GenerateResumeEvent();
   // Continue the GPU task for the remaining time.
-  base::PlatformThread::Sleep(duration - time_to_power_resume);
+  base::PlatformThread::Sleep(duration);
 }
 
 // GPU Hang In Initialization
@@ -133,10 +141,10 @@ TEST_F(GpuWatchdogTest, GpuInitializationHang) {
   SimpleTask(kGpuWatchdogTimeoutForTesting * kInitFactor +
              kGpuWatchdogTimeoutForTesting *
                  kMaxCountOfMoreGpuThreadTimeAllowed +
-             base::Milliseconds(3000));
+             ExtraGPUJobTimeMSForTesting(3000));
 #else
   SimpleTask(kGpuWatchdogTimeoutForTesting * kInitFactor +
-             base::Milliseconds(3000));
+             ExtraGPUJobTimeMSForTesting(3000));
 #endif
 
   // Gpu hangs. OnInitComplete() is not called
@@ -188,11 +196,12 @@ TEST_F(GpuWatchdogTest, GpuRunningATaskHang) {
       base::BindOnce(&SimpleTask, kGpuWatchdogTimeoutForTesting * 2 +
                                       kGpuWatchdogTimeoutForTesting *
                                           kMaxCountOfMoreGpuThreadTimeAllowed +
-                                      base::Milliseconds(4000)));
+                                      ExtraGPUJobTimeMSForTesting(4000)));
 #else
   task_environment_.GetMainThreadTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&SimpleTask, kGpuWatchdogTimeoutForTesting * 2 +
-                                                 base::Milliseconds(4000)));
+      FROM_HERE,
+      base::BindOnce(&SimpleTask, kGpuWatchdogTimeoutForTesting * 2 +
+                                      ExtraGPUJobTimeMSForTesting(4000)));
 #endif
 
   task_environment_.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
@@ -210,15 +219,16 @@ TEST_F(GpuWatchdogTest, ChromeInBackground) {
 
   // Gpu init (3000 ms) takes longer than timeout (2000 ms).
   SimpleTask(kGpuWatchdogTimeoutForTesting * kInitFactor +
-             base::Milliseconds(1000));
+             ExtraGPUJobTimeMSForTesting(1000));
 
   // Report GPU init complete.
   watchdog_thread_->OnInitComplete();
 
   // Run a task that takes longer (3000 milliseconds) than timeout.
   task_environment_.GetMainThreadTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&SimpleTask, kGpuWatchdogTimeoutForTesting * 2 +
-                                                 base::Milliseconds(1000)));
+      FROM_HERE,
+      base::BindOnce(&SimpleTask, kGpuWatchdogTimeoutForTesting * 2 +
+                                      ExtraGPUJobTimeMSForTesting(1000)));
   task_environment_.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
                                                         run_loop.QuitClosure());
   run_loop.Run();
@@ -243,7 +253,7 @@ TEST_F(GpuWatchdogTest, GpuSwitchingToForegroundHang) {
                      /*duration*/ kGpuWatchdogTimeoutForTesting * 2 +
                          kGpuWatchdogTimeoutForTesting *
                              kMaxCountOfMoreGpuThreadTimeAllowed +
-                         base::Milliseconds(4200),
+                         ExtraGPUJobTimeMSForTesting(4000),
                      /*time_to_switch_to_foreground*/
                      base::Milliseconds(200)));
 #else
@@ -252,9 +262,8 @@ TEST_F(GpuWatchdogTest, GpuSwitchingToForegroundHang) {
       base::BindOnce(&GpuWatchdogTest::LongTaskFromBackgroundToForeground,
                      base::Unretained(this),
                      /*duration*/ kGpuWatchdogTimeoutForTesting * 2 +
-                         base::Milliseconds(4200),
-                     /*time_to_switch_to_foreground*/
-                     base::Milliseconds(200)));
+                         ExtraGPUJobTimeMSForTesting(4000),
+                     /*time_to_switch_to_foreground*/ base::Milliseconds(200)));
 #endif
 
   task_environment_.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
@@ -274,7 +283,7 @@ TEST_F(GpuWatchdogTest, GpuInitializationPause) {
 
   // The Gpu init continues for another (init timeout + 1000) ms after the pause
   SimpleTask(kGpuWatchdogTimeoutForTesting * kInitFactor +
-             base::Milliseconds(1000));
+             ExtraGPUJobTimeMSForTesting(1000));
 
   // No GPU hang is detected when the watchdog is paused.
   bool result = watchdog_thread_->IsGpuHangDetectedForTesting();
@@ -287,10 +296,10 @@ TEST_F(GpuWatchdogTest, GpuInitializationPause) {
   SimpleTask(kGpuWatchdogTimeoutForTesting * kInitFactor +
              kGpuWatchdogTimeoutForTesting *
                  kMaxCountOfMoreGpuThreadTimeAllowed +
-             base::Milliseconds(4000));
+             ExtraGPUJobTimeMSForTesting(4000));
 #else
   SimpleTask(kGpuWatchdogTimeoutForTesting * kInitFactor +
-             base::Milliseconds(4000));
+             ExtraGPUJobTimeMSForTesting(4000));
 #endif
 
   // A GPU hang should be detected.
@@ -306,8 +315,9 @@ TEST_F(GpuWatchdogPowerTest, GpuOnSuspend) {
 
   // Run a task that takes longer (5000 milliseconds) than timeout.
   task_environment_.GetMainThreadTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&SimpleTask, kGpuWatchdogTimeoutForTesting * 2 +
-                                                 base::Milliseconds(3000)));
+      FROM_HERE,
+      base::BindOnce(&SimpleTask, kGpuWatchdogTimeoutForTesting * 2 +
+                                      ExtraGPUJobTimeMSForTesting(3000)));
   task_environment_.GetMainThreadTaskRunner()->PostTask(FROM_HERE,
                                                         run_loop.QuitClosure());
   run_loop.Run();
@@ -332,7 +342,7 @@ TEST_F(GpuWatchdogPowerTest, GpuOnResumeHang) {
           /*duration*/ kGpuWatchdogTimeoutForTesting * kRestartFactor +
               kGpuWatchdogTimeoutForTesting *
                   kMaxCountOfMoreGpuThreadTimeAllowed +
-              base::Milliseconds(4200),
+              ExtraGPUJobTimeMSForTesting(4000),
           /*time_to_power_resume*/
           base::Milliseconds(200)));
 #else
@@ -341,7 +351,7 @@ TEST_F(GpuWatchdogPowerTest, GpuOnResumeHang) {
       base::BindOnce(
           &GpuWatchdogPowerTest::LongTaskOnResume, base::Unretained(this),
           /*duration*/ kGpuWatchdogTimeoutForTesting * kRestartFactor +
-              base::Milliseconds(4200),
+              ExtraGPUJobTimeMSForTesting(4000),
           /*time_to_power_resume*/
           base::Milliseconds(200)));
 #endif
