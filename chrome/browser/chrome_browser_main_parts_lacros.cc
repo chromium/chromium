@@ -41,6 +41,17 @@ int ChromeBrowserMainPartsLacros::PreEarlyInitialization() {
   return content::RESULT_CODE_NORMAL_EXIT;
 }
 
+int ChromeBrowserMainPartsLacros::PreCreateThreads() {
+  const crosapi::mojom::BrowserInitParams* init_params =
+      chromeos::LacrosService::Get()->init_params();
+  if (init_params->initial_browser_action ==
+      crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow) {
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kNoStartupWindow);
+  }
+  return ChromeBrowserMainPartsLinux::PreCreateThreads();
+}
+
 void ChromeBrowserMainPartsLacros::PreProfileInit() {
   ChromeBrowserMainPartsLinux::PreProfileInit();
 

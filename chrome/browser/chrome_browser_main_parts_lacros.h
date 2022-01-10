@@ -24,6 +24,7 @@ class ChromeBrowserMainPartsLacros : public ChromeBrowserMainPartsLinux {
 
   // ChromeBrowserMainParts:
   int PreEarlyInitialization() override;
+  int PreCreateThreads() override;
   void PreProfileInit() override;
   void PostDestroyThreads() override;
 

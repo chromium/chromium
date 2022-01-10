@@ -22,6 +22,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
@@ -44,6 +45,7 @@
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_impl.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_window.h"
 #include "chrome/browser/search/search.h"
 #include "chrome/browser/sessions/app_session_service.h"
 #include "chrome/browser/sessions/app_session_service_factory.h"
@@ -126,6 +128,10 @@
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_types.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif
 
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
 #include "base/json/json_string_value_serializer.h"
@@ -4287,3 +4293,81 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+class StartupBrowserCreatorLacrosNoWindowTest
+    : public StartupBrowserCreatorPickerTestBase {
+ public:
+  StartupBrowserCreatorLacrosNoWindowTest() = default;
+
+  void CreatedBrowserMainParts(
+      content::BrowserMainParts* browser_main_parts) override {
+    if (!content::IsPreTest()) {
+      crosapi::mojom::BrowserInitParamsPtr init_params =
+          crosapi::mojom::BrowserInitParams::New();
+      init_params->initial_browser_action =
+          crosapi::mojom::InitialBrowserAction::kDoNotOpenWindow;
+      chromeos::LacrosService::Get()->SetInitParamsForTests(
+          std::move(init_params));
+    }
+
+    StartupBrowserCreatorPickerTestBase::CreatedBrowserMainParts(
+        browser_main_parts);
+  }
+
+  base::FilePath GetDefaultProfileDir() const {
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+    return profile_manager->user_data_dir().Append(
+        profile_manager->GetInitialProfileDir());
+  }
+};
+
+// Create a secondary profile in a separate PRE run because the existence of
+// profiles is checked during startup in the actual test.
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorLacrosNoWindowTest,
+                       PRE_MultiProfile) {
+  CreateMultipleProfiles();
+  // Need to close the browser window manually so that the real test does not
+  // treat it as session restore.
+  CloseAllBrowsers();
+}
+
+// Checks that no picker and no browser window are open when there are multiple
+// profiles.
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorLacrosNoWindowTest, MultiProfile) {
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+}
+
+// Checks that no picker and no browser window are open when there is a single
+// profile.
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorLacrosNoWindowTest, SingleProfile) {
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+  EXPECT_EQ(0u, chrome::GetTotalBrowserCount());
+
+  // Checks that it's possible to open a profile after startup.
+  // Regression test for https://crbug.com/1278549
+  base::test::TestFuture<Profile*, Profile::CreateStatus> future;
+  ProfileManager::CreateCallback created_callback = base::BindLambdaForTesting(
+      [&future](Profile* profile, Profile::CreateStatus status) {
+        future.GetCallback().Run(profile, status);
+      });
+  profiles::SwitchToProfile(GetDefaultProfileDir(),
+                            /*always_create=*/false, created_callback);
+  Profile* profile = future.Get<0>();
+  Profile::CreateStatus status = future.Get<1>();
+  EXPECT_NE(profile, nullptr);
+  EXPECT_EQ(status, Profile::CREATE_STATUS_INITIALIZED);
+  EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
+
+  // Checks that it's possible to open the profile picker.
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+  base::RunLoop run_loop;
+  ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
+      run_loop.QuitClosure());
+  ProfilePicker::Show(ProfilePicker::EntryPoint::kProfileMenuManageProfiles);
+  run_loop.Run();
+  EXPECT_TRUE(ProfilePicker::IsOpen());
+}
+
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
