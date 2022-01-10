@@ -70,7 +70,7 @@ struct SetupModeParams {
 }  // namespace
 
 TEST_F(BackgroundTracingTest, GetBackgroundTracingSetupMode) {
-  const std::vector<const SetupModeParams> kParams = {
+  const std::vector<SetupModeParams> kParams = {
       // No config file param.
       {nullptr, nullptr, BackgroundTracingSetupMode::kFromFieldTrial},
       // Empty config filename.
