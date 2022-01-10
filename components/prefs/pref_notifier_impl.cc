@@ -48,9 +48,7 @@ PrefNotifierImpl::~PrefNotifierImpl() {
           // For DbusAppmenu, crbug.com/946668
           pref_name == "bookmark_bar.show_on_all_tabs" ||
           // For BrowserWindowPropertyManager, crbug.com/942491
-          pref_name == "profile.icon_version" ||
-          // For BrowserWindowDefaultTouchBar, crbug.com/945772
-          pref_name == "default_search_provider_data.template_url_data") {
+          pref_name == "profile.icon_version") {
         base::debug::DumpWithoutCrashing();
       }
     }
