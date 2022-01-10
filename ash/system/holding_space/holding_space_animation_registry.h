@@ -39,8 +39,7 @@ class HoldingSpaceAnimationRegistry : public ShellObserver {
   // ring animation associated with the specified `key`. The `callback` will
   // continue to receive events so long as both `this` and the returned
   // subscription exist.
-  ProgressRingAnimationChangedCallbackList::Subscription
-  AddProgressRingAnimationChangedCallbackForKey(
+  base::CallbackListSubscription AddProgressRingAnimationChangedCallbackForKey(
       const void* key,
       ProgressRingAnimationChangedCallbackList::CallbackType callback);
 
@@ -58,11 +57,11 @@ class HoldingSpaceAnimationRegistry : public ShellObserver {
   // ShellObserver:
   void OnShellDestroying() override;
 
-  // The delegate responsible for creating and curating progress ring animations
-  // based on holding space model state.
-  class ProgressRingAnimationDelegate;
-  std::unique_ptr<ProgressRingAnimationDelegate>
-      progress_ring_animation_delegate_;
+  // The delegate responsible for creating and curating progress indicator
+  // animations based on holding space model state.
+  class ProgressIndicatorAnimationDelegate;
+  std::unique_ptr<ProgressIndicatorAnimationDelegate>
+      progress_indicator_animation_delegate_;
 
   base::ScopedObservation<Shell,
                           ShellObserver,
