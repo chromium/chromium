@@ -1092,7 +1092,9 @@ void NativeInputMethodEngine::ImeObserver::UpdateCandidatesWindow(
   }
 
   ui::CandidateWindow::CandidateWindowProperty property;
-  property.cursor_position = window->highlighted_candidate;
+  property.cursor_position = window->highlighted_candidate
+                                 ? window->highlighted_candidate->index
+                                 : window->DEPRECATED_highlighted_candidate;
   property.page_size = window->candidates.size();
   property.is_vertical = true;
   property.is_auxiliary_text_visible =
