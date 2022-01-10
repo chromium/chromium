@@ -753,6 +753,12 @@ public final class ChromePreferenceKeys {
     public static final String QUERY_TILES_SHOW_ON_NTP = "Chrome.Querytiles.ShowOnNTP";
 
     /**
+     * Keys used to store result from segmentation model of showing query tiles on NTP.
+     */
+    public static final String QUERY_TILES_SHOW_SEGMENTATION_RESULT =
+            "Chrome.QueryTiles.ShowSegmentationResult";
+
+    /**
      * Keys used to store user actions for behavioral targeting of showing Start surface on startup.
      */
     public static final String PRIMARY_ACCOUNT_SYNC = "Chrome.StartSurface.PrimaryAccountSync";
@@ -1105,6 +1111,7 @@ public final class ChromePreferenceKeys {
                 QUERY_TILES_NUM_RECENT_MV_TILE_CLICKS,
                 QUERY_TILES_NUM_RECENT_QUERY_TILE_CLICKS,
                 QUERY_TILES_SHOW_ON_NTP,
+                QUERY_TILES_SHOW_SEGMENTATION_RESULT,
                 REGULAR_TAB_COUNT,
                 SETTINGS_SAFETY_CHECK_LAST_RUN_TIMESTAMP,
                 SETTINGS_SAFETY_CHECK_RUN_COUNTER,

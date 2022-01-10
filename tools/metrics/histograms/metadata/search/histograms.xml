@@ -1409,6 +1409,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Search.QueryTiles.ShowQueryTilesSegmentationResult"
+    enum="ShowQueryTilesSegmentationResult" expires_after="2022-08-09">
+  <owner>haileywang@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>
+    Records the result from segmentation platform that determines whether or not
+    to show Query Tiles on NTP. When segmentation model is finch enabled, this
+    is recorded every time the user navigates to NTP and the current Query Tiles
+    decision is inexistant or expired. For cases where segmentation model is not
+    finch enabled see ShowQueryTilesSegmentationResultComparison.
+  </summary>
+</histogram>
+
+<histogram name="Search.QueryTiles.ShowQueryTilesSegmentationResultComparison"
+    enum="ShowQueryTilesSegmentationResultComparison"
+    expires_after="2022-08-09">
+  <owner>haileywang@chromium.org</owner>
+  <owner>ssid@chromium.org</owner>
+  <summary>
+    Records the comparison of result from segmentation model and code logic for
+    when to show Query Tiles on NTP. When segmentation model is not finch
+    enabled, this is recorded every time the user navigates to NTP and the
+    current Query Tiles decision is inexistant or expired. For cases where
+    segmentation model is finch enabled see ShowQueryTilesSegmentationResult.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Search.QueryTiles.Tile.Clicked" units="index"
     expires_after="2022-04-01">
 <!-- Name completed by histogram_suffixes name="TileUiSurface" -->

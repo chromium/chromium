@@ -16,6 +16,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -40,6 +41,7 @@ public class QueryTileUtilsTest {
     @Before
     public void setUp() {
         mActivityTestRule.startMainActivityOnBlankPage();
+        QueryTileUtils.setSegmentationResultsForTesting(0 /*UNINITIALIZED*/);
     }
 
     @Test
@@ -135,6 +137,68 @@ public class QueryTileUtilsTest {
         nextDecisionTimeReached();
         Assert.assertTrue(QueryTileUtils.shouldShowQueryTiles());
         nextDecisionTimeStampInDays(10);
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.QUERY_TILES_GEO_FILTER, ChromeFeatureList.QUERY_TILES,
+            ChromeFeatureList.QUERY_TILES_IN_NTP, ChromeFeatureList.QUERY_TILES_SEGMENTATION})
+    public void
+    testShowQueryTilesSegmentationResultComparison() {
+        QueryTileUtils.setSegmentationResultsForTesting(1 /*DONT_SHOW*/);
+        Assert.assertEquals(0,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Search.QueryTiles.ShowQueryTilesSegmentationResultComparison"));
+
+        nextDecisionTimeReached();
+        Assert.assertTrue(QueryTileUtils.shouldShowQueryTiles());
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Search.QueryTiles.ShowQueryTilesSegmentationResultComparison"));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Search.QueryTiles.ShowQueryTilesSegmentationResultComparison",
+                        QueryTileUtils.ShowQueryTilesSegmentationResultComparison
+                                .SEGMENTATION_DISABLED_LOGIC_ENABLED));
+
+        nextDecisionTimeReached();
+        QueryTileUtils.onMostVisitedTileClicked();
+        Assert.assertFalse(QueryTileUtils.shouldShowQueryTiles());
+        Assert.assertEquals(2,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        "Search.QueryTiles.ShowQueryTilesSegmentationResultComparison"));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        "Search.QueryTiles.ShowQueryTilesSegmentationResultComparison",
+                        QueryTileUtils.ShowQueryTilesSegmentationResultComparison
+                                .SEGMENTATION_DISABLED_LOGIC_DISABLED));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures({ChromeFeatureList.QUERY_TILES_SEGMENTATION + "<Study"})
+    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
+            "force-fieldtrial-params=Study.Group:behavioural_targeting/model"})
+    public void
+    testShouldUseSegmentationModel() {
+        // Set segmentation model to show query tiles.
+        SharedPreferencesManager.getInstance().writeBoolean(
+                ChromePreferenceKeys.QUERY_TILES_SHOW_ON_NTP, false);
+        QueryTileUtils.setSegmentationResultsForTesting(2 /*SHOW*/);
+
+        // Verify that query tiles is shown via segmentation model when no previous history.
+        Assert.assertTrue(QueryTileUtils.shouldShowQueryTiles());
+
+        // Verify that query tiles is shown via segmentation model when previous decision time
+        // expired.
+        nextDecisionTimeReached();
+        Assert.assertTrue(QueryTileUtils.shouldShowQueryTiles());
+
+        // Verify that segmentation is not used when previous decision time did not expire.
+        SharedPreferencesManager.getInstance().writeLong(
+                ChromePreferenceKeys.QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS,
+                System.currentTimeMillis() + QueryTileUtils.MILLISECONDS_PER_DAY);
+        Assert.assertFalse(QueryTileUtils.shouldShowQueryTiles());
     }
 
     /**

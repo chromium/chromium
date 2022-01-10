@@ -80778,6 +80778,20 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   </int>
 </enum>
 
+<enum name="ShowQueryTilesSegmentationResult">
+  <int value="0" label="Uninitialized"/>
+  <int value="1" label="Dont show Start surface"/>
+  <int value="2" label="Show Start surface"/>
+</enum>
+
+<enum name="ShowQueryTilesSegmentationResultComparison">
+  <int value="0" label="Uninitialized."/>
+  <int value="1" label="Segmentation enabled and logic enabled."/>
+  <int value="2" label="Segmentation enabled and logic disabled."/>
+  <int value="3" label="Segmentation disabled and logic enabled."/>
+  <int value="4" label="Segmentation disabled and logic disabled."/>
+</enum>
+
 <enum name="ShowTabSwitcherSnapshotResult">
   <obsolete>
     Removed 2019-01.
