@@ -16,8 +16,8 @@ import java.util.Map;
 public enum PersistedTabDataConfiguration {
     // TODO(crbug.com/1059650) investigate should this go in the app code?
     // Also investigate if the storage instance should be shared.
-    CRITICAL_PERSISTED_TAB_DATA("CPTD"),
-    ENCRYPTED_CRITICAL_PERSISTED_TAB_DATA("ECPTD"),
+    CRITICAL_PERSISTED_TAB_DATA("CPTDFB"),
+    ENCRYPTED_CRITICAL_PERSISTED_TAB_DATA("ECPTDFB"),
     MOCK_PERSISTED_TAB_DATA("MPTD"),
     ENCRYPTED_MOCK_PERSISTED_TAB_DATA("EMPTD"),
     SHOPPING_PERSISTED_TAB_DATA("SPTD"),

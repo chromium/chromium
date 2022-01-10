@@ -1388,6 +1388,7 @@ android_library("chrome_test_java") {
     "//chrome/browser/signin/services/android:javatests",
     "//chrome/browser/sync/android:java",
     "//chrome/browser/sync/test/android:test_support_java",
+    "//chrome/browser/tab:critical_persisted_tab_data_flatbuffer_java",
     "//chrome/browser/tab:critical_persisted_tab_data_proto_java",
     "//chrome/browser/tab:java",
     "//chrome/browser/tab_group:java",

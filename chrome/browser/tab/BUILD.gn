@@ -60,6 +60,7 @@ android_library("java") {
   ]
 
   deps = [
+    ":critical_persisted_tab_data_flatbuffer_java",
     ":critical_persisted_tab_data_proto_java",
     ":java_resources",
     "//base:base_java",
@@ -89,6 +90,7 @@ android_library("java") {
     "//components/strings:components_strings_grd",
     "//content/public/android:content_java",
     "//net/android:net_java",
+    "//third_party/android_deps:com_google_flatbuffers_flatbuffers_java_java",
     "//third_party/android_deps:guava_android_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -129,6 +131,11 @@ proto_java_library("critical_persisted_tab_data_proto_java") {
     "$proto_path/shopping_persisted_tab_data.proto",
     "$proto_path/store_persisted_tab_data.proto",
   ]
+}
+
+flatbuffer_java_library("critical_persisted_tab_data_flatbuffer_java") {
+  root_dir = "java/src/org/chromium/chrome/browser/tab/state/flatbuffer"
+  sources = [ "$root_dir/critical_persisted_tab_data.fbs" ]
 }
 
 android_library("junit") {
