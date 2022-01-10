@@ -19,14 +19,16 @@ TEST(OriginIdentifierValueMapTest, SetGetValue) {
   EXPECT_EQ(nullptr, map.GetValue(GURL("http://www.google.com"),
                                   GURL("http://www.google.com"),
                                   ContentSettingsType::COOKIES));
+
   map.SetValue(ContentSettingsPattern::FromString("[*.]google.com"),
                ContentSettingsPattern::FromString("[*.]google.com"),
                ContentSettingsType::COOKIES, base::Time(), base::Value(1), {});
 
-  std::unique_ptr<base::Value> expected_value(new base::Value(1));
-  EXPECT_TRUE(expected_value->Equals(
+  const base::Value* value =
       map.GetValue(GURL("http://www.google.com"), GURL("http://www.google.com"),
-                   ContentSettingsType::COOKIES)));
+                   ContentSettingsType::COOKIES);
+  ASSERT_TRUE(value);
+  EXPECT_EQ(base::Value(1), *value);
 
   EXPECT_EQ(nullptr, map.GetValue(GURL("http://www.google.com"),
                                   GURL("http://www.youtube.com"),

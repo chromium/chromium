@@ -36,10 +36,9 @@ void ValidatePrimarySettingPrefValue(
     CookiePrimarySetting pref_value,
     ContentSetting expected_content_setting,
     CookieControlsMode expected_cookie_controls_mode) {
-  EXPECT_EQ(
-      generated_pref->SetPref(
-          std::make_unique<base::Value>(static_cast<int>(pref_value)).get()),
-      extensions::settings_private::SetPrefResult::SUCCESS);
+  base::Value pref(static_cast<int>(pref_value));
+  EXPECT_EQ(generated_pref->SetPref(&pref),
+            extensions::settings_private::SetPrefResult::SUCCESS);
   EXPECT_EQ(
       map->GetDefaultContentSetting(ContentSettingsType::COOKIES, nullptr),
       expected_content_setting);

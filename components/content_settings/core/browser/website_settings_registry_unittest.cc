@@ -48,8 +48,8 @@ TEST_F(WebsiteSettingsRegistryTest, GetByName) {
             info);
 
   // Register a new setting.
-  registry()->Register(static_cast<ContentSettingsType>(10), "test", nullptr,
-                       WebsiteSettingsInfo::UNSYNCABLE,
+  registry()->Register(static_cast<ContentSettingsType>(10), "test",
+                       base::Value(), WebsiteSettingsInfo::UNSYNCABLE,
                        WebsiteSettingsInfo::LOSSY,
                        WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE,
                        WebsiteSettingsRegistry::ALL_PLATFORMS,
@@ -83,24 +83,24 @@ TEST_F(WebsiteSettingsRegistryTest, Properties) {
             info->pref_name());
   EXPECT_EQ("profile.default_content_setting_values.auto_select_certificate",
             info->default_value_pref_name());
-  ASSERT_FALSE(info->initial_default_value());
+  ASSERT_TRUE(info->initial_default_value().is_none());
   EXPECT_EQ(PrefRegistry::NO_REGISTRATION_FLAGS,
             info->GetPrefRegistrationFlags());
 
   // Register a new setting.
-  registry()->Register(
-      static_cast<ContentSettingsType>(10), "test",
-      std::make_unique<base::Value>(999), WebsiteSettingsInfo::SYNCABLE,
-      WebsiteSettingsInfo::LOSSY, WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE,
-      WebsiteSettingsRegistry::ALL_PLATFORMS,
-      WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
+  registry()->Register(static_cast<ContentSettingsType>(10), "test",
+                       base::Value(999), WebsiteSettingsInfo::SYNCABLE,
+                       WebsiteSettingsInfo::LOSSY,
+                       WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE,
+                       WebsiteSettingsRegistry::ALL_PLATFORMS,
+                       WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
   info = registry()->Get(static_cast<ContentSettingsType>(10));
   ASSERT_TRUE(info);
   EXPECT_EQ("profile.content_settings.exceptions.test", info->pref_name());
   EXPECT_EQ("profile.default_content_setting_values.test",
             info->default_value_pref_name());
-  ASSERT_TRUE(info->initial_default_value()->is_int());
-  EXPECT_EQ(999, info->initial_default_value()->GetInt());
+  ASSERT_TRUE(info->initial_default_value().is_int());
+  EXPECT_EQ(999, info->initial_default_value().GetInt());
 #if defined(OS_ANDROID) || defined(OS_IOS)
   EXPECT_EQ(PrefRegistry::LOSSY_PREF, info->GetPrefRegistrationFlags());
 #else
@@ -115,12 +115,12 @@ TEST_F(WebsiteSettingsRegistryTest, Properties) {
 }
 
 TEST_F(WebsiteSettingsRegistryTest, Iteration) {
-  registry()->Register(
-      static_cast<ContentSettingsType>(10), "test",
-      std::make_unique<base::Value>(999), WebsiteSettingsInfo::SYNCABLE,
-      WebsiteSettingsInfo::LOSSY, WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE,
-      WebsiteSettingsRegistry::ALL_PLATFORMS,
-      WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
+  registry()->Register(static_cast<ContentSettingsType>(10), "test",
+                       base::Value(999), WebsiteSettingsInfo::SYNCABLE,
+                       WebsiteSettingsInfo::LOSSY,
+                       WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE,
+                       WebsiteSettingsRegistry::ALL_PLATFORMS,
+                       WebsiteSettingsInfo::INHERIT_IN_INCOGNITO);
 
   bool found = false;
   for (const WebsiteSettingsInfo* info : *registry()) {

@@ -136,8 +136,9 @@ base::Value ProcessIncognitoInheritanceBehavior(
         return value;
       case ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE:
         ContentSetting setting = content_settings::ValueToContentSetting(value);
-        const base::Value* initial_value = content_settings_info
-            ->website_settings_info()->initial_default_value();
+        const base::Value& initial_value =
+            content_settings_info->website_settings_info()
+                ->initial_default_value();
         ContentSetting initial_setting =
             content_settings::ValueToContentSetting(initial_value);
         if (content_settings::IsMorePermissive(setting, initial_setting))
@@ -413,18 +414,17 @@ void HostContentSettingsMap::GetSettingsForOneType(
 void HostContentSettingsMap::SetDefaultContentSetting(
     ContentSettingsType content_type,
     ContentSetting setting) {
-  std::unique_ptr<base::Value> value;
+  base::Value value;
   // A value of CONTENT_SETTING_DEFAULT implies deleting the content setting.
   if (setting != CONTENT_SETTING_DEFAULT) {
     DCHECK(content_settings::ContentSettingsRegistry::GetInstance()
                ->Get(content_type)
                ->IsDefaultSettingValid(setting));
-    value = std::make_unique<base::Value>(setting);
+    value = base::Value(setting);
   }
-  SetWebsiteSettingCustomScope(
-      ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      content_type,
-      content_settings::FromNullableUniquePtrValue(std::move(value)));
+  SetWebsiteSettingCustomScope(ContentSettingsPattern::Wildcard(),
+                               ContentSettingsPattern::Wildcard(), content_type,
+                               std::move(value));
 }
 
 void HostContentSettingsMap::SetWebsiteSettingDefaultScope(

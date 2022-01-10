@@ -134,7 +134,7 @@ bool HasNonDefaultPrivacySetting(Profile* profile) {
         content_settings::WebsiteSettingsRegistry::GetInstance()
             ->Get(content_setting_type)
             ->initial_default_value()
-            ->GetInt());
+            .GetInt());
 
     if (current_value != default_value && user_controlled) {
       has_non_default_content_setting = true;

@@ -84,9 +84,9 @@ TEST_F(ContentSettingsRegistryTest, Properties) {
             website_settings_info->pref_name());
   EXPECT_EQ("profile.default_content_setting_values.cookies",
             website_settings_info->default_value_pref_name());
-  ASSERT_TRUE(website_settings_info->initial_default_value()->is_int());
+  ASSERT_TRUE(website_settings_info->initial_default_value().is_int());
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            website_settings_info->initial_default_value()->GetInt());
+            website_settings_info->initial_default_value().GetInt());
 #if defined(OS_ANDROID) || defined(OS_IOS)
   EXPECT_EQ(PrefRegistry::NO_REGISTRATION_FLAGS,
             website_settings_info->GetPrefRegistrationFlags());

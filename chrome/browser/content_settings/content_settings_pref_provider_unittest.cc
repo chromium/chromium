@@ -496,7 +496,7 @@ TEST_F(PrefProviderTest, ClearAllContentSettingsRules) {
   ContentSettingsPattern pattern =
       ContentSettingsPattern::FromString("google.com");
   ContentSettingsPattern wildcard = ContentSettingsPattern::FromString("*");
-  std::unique_ptr<base::Value> value(new base::Value(CONTENT_SETTING_ALLOW));
+  base::Value value(CONTENT_SETTING_ALLOW);
 
   PrefProvider provider(&prefs, /*off_the_record=*/false,
                         /*store_last_modified=*/true,
@@ -505,21 +505,20 @@ TEST_F(PrefProviderTest, ClearAllContentSettingsRules) {
   // Non-empty pattern, syncable, empty resource identifier.
   provider.SetWebsiteSetting(pattern, wildcard, ContentSettingsType::JAVASCRIPT,
 
-                             value->Clone(), {});
+                             value.Clone(), {});
 
   // Non-empty pattern, non-syncable, empty resource identifier.
   provider.SetWebsiteSetting(
-      pattern, wildcard, ContentSettingsType::GEOLOCATION, value->Clone(), {});
+      pattern, wildcard, ContentSettingsType::GEOLOCATION, value.Clone(), {});
 
   // Non-empty pattern, syncable, empty resource identifier.
   provider.SetWebsiteSetting(pattern, wildcard, ContentSettingsType::COOKIES,
 
-                             value->Clone(), {});
+                             value.Clone(), {});
 
   // Non-empty pattern, non-syncable, empty resource identifier.
-  provider.SetWebsiteSetting(pattern, wildcard,
-                             ContentSettingsType::NOTIFICATIONS, value->Clone(),
-                             {});
+  provider.SetWebsiteSetting(
+      pattern, wildcard, ContentSettingsType::NOTIFICATIONS, value.Clone(), {});
 
   // Test that the preferences for images, geolocation and plugins get cleared.
   WebsiteSettingsRegistry* registry = WebsiteSettingsRegistry::GetInstance();

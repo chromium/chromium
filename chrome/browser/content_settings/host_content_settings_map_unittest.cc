@@ -1113,15 +1113,17 @@ TEST_F(HostContentSettingsMapTest, CanonicalizeExceptionsUnicodeOnly) {
 TEST_F(HostContentSettingsMapTest, CanonicalizeExceptionsUnicodeAndPunycode) {
   TestingProfile profile;
 
-  std::unique_ptr<base::Value> value = base::JSONReader::ReadDeprecated(
-      "{\"[*.]\\xC4\\x87ira.com,*\":{\"setting\":1}}");
-  profile.GetPrefs()->Set(GetPrefName(ContentSettingsType::COOKIES), *value);
+  base::Value value =
+      base::JSONReader::Read("{\"[*.]\\xC4\\x87ira.com,*\":{\"setting\":1}}")
+          .value();
+  profile.GetPrefs()->Set(GetPrefName(ContentSettingsType::COOKIES), value);
 
   // Set punycode equivalent, with different setting.
-  std::unique_ptr<base::Value> puny_value = base::JSONReader::ReadDeprecated(
-      "{\"[*.]xn--ira-ppa.com,*\":{\"setting\":2}}");
+  base::Value puny_value =
+      base::JSONReader::Read("{\"[*.]xn--ira-ppa.com,*\":{\"setting\":2}}")
+          .value();
   profile.GetPrefs()->Set(GetPrefName(ContentSettingsType::COOKIES),
-                          *puny_value);
+                          puny_value);
 
   // Initialize the content map.
   HostContentSettingsMapFactory::GetForProfile(&profile);

@@ -55,10 +55,10 @@ const char kDeprecatedEnableDRM[] = "settings.privacy.drm_enabled";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
 
 ContentSetting GetDefaultValue(const WebsiteSettingsInfo* info) {
-  const base::Value* initial_default = info->initial_default_value();
-  if (!initial_default)
+  const base::Value& initial_default = info->initial_default_value();
+  if (initial_default.is_none())
     return CONTENT_SETTING_DEFAULT;
-  return static_cast<ContentSetting>(initial_default->GetInt());
+  return static_cast<ContentSetting>(initial_default.GetInt());
 }
 
 ContentSetting GetDefaultValue(ContentSettingsType type) {
