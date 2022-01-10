@@ -5,15 +5,12 @@
 #ifndef BASE_THREADING_THREAD_CHECKER_H_
 #define BASE_THREADING_THREAD_CHECKER_H_
 
-#include "base/check.h"
+#include "base/base_export.h"
 #include "base/compiler_specific.h"
+#include "base/dcheck_is_on.h"
 #include "base/strings/string_piece.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker_impl.h"
-
-#if DCHECK_IS_ON()
-#include "base/debug/stack_trace.h"
-#endif
 
 // ThreadChecker is a helper class used to help verify that some methods of a
 // class are called from the same thread (for thread-affinity).  It supports
@@ -140,31 +137,19 @@ class ThreadChecker : public ThreadCheckerDoNothing {
 #endif  // DCHECK_IS_ON()
 
 #if DCHECK_IS_ON()
-class SCOPED_LOCKABLE ScopedValidateThreadChecker {
+class BASE_EXPORT SCOPED_LOCKABLE ScopedValidateThreadChecker {
  public:
   explicit ScopedValidateThreadChecker(const ThreadChecker& checker)
-      EXCLUSIVE_LOCK_FUNCTION(checker) {
-    std::unique_ptr<debug::StackTrace> bound_at;
-    DCHECK(checker.CalledOnValidThread(&bound_at))
-        << (bound_at ? "\nWas attached to thread at:\n" + bound_at->ToString()
-                     : "");
-  }
-
-  explicit ScopedValidateThreadChecker(const ThreadChecker& checker,
-                                       const StringPiece& msg)
-      EXCLUSIVE_LOCK_FUNCTION(checker) {
-    std::unique_ptr<debug::StackTrace> bound_at;
-    DCHECK(checker.CalledOnValidThread(&bound_at))
-        << msg
-        << (bound_at ? "\nWas attached to thread at:\n" + bound_at->ToString()
-                     : "");
-  }
+      EXCLUSIVE_LOCK_FUNCTION(checker);
+  ScopedValidateThreadChecker(const ThreadChecker& checker,
+                              const StringPiece& msg)
+      EXCLUSIVE_LOCK_FUNCTION(checker);
 
   ScopedValidateThreadChecker(const ScopedValidateThreadChecker&) = delete;
   ScopedValidateThreadChecker& operator=(const ScopedValidateThreadChecker&) =
       delete;
 
-  ~ScopedValidateThreadChecker() UNLOCK_FUNCTION() {}
+  ~ScopedValidateThreadChecker() UNLOCK_FUNCTION();
 };
 #endif
 

@@ -842,6 +842,7 @@ mixed_component("base") {
     "threading/simple_thread.h",
     "threading/thread.cc",
     "threading/thread.h",
+    "threading/thread_checker.cc",
     "threading/thread_checker.h",
     "threading/thread_checker_impl.cc",
     "threading/thread_checker_impl.h",
