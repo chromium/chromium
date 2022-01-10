@@ -5,6 +5,7 @@
 #include "weblayer/app/content_main_delegate_impl.h"
 
 #include <iostream>
+#include <tuple>
 
 #include "base/base_switches.h"
 #include "base/command_line.h"
@@ -12,7 +13,6 @@
 #include "base/containers/flat_set.h"
 #include "base/cpu.h"
 #include "base/files/file_util.h"
-#include "base/ignore_result.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/path_service.h"
@@ -324,7 +324,7 @@ ContentMainDelegateImpl::RunProcess(
       main_runner->Initialize(std::move(main_function_params));
   DCHECK_LT(initialize_exit_code, 0)
       << "BrowserMainRunner::Initialize failed in MainDelegate";
-  ignore_result(main_runner.release());
+  std::ignore = main_runner.release();
   // Return 0 as BrowserMain() should not be called after this, bounce up to
   // the system message loop for ContentShell, and we're already done thanks
   // to the |ui_task| for browser tests.
