@@ -228,9 +228,9 @@ FirstTwoLastNamesField::ParseComponentNames(AutofillScanner* scanner,
   while (!scanner->IsEnd()) {
     // Skip over address label fields, which can have misleading names
     // e.g. "title" or "name".
-    if (ParseFieldSpecifics(scanner, kAddressNameIgnoredRe, kDefaultMatchParams,
-                            address_name_ignored_patterns, nullptr,
-                            {log_manager, "kAddressNameIgnoredRe"})) {
+    if (ParseField(scanner, kAddressNameIgnoredRe,
+                   address_name_ignored_patterns, nullptr,
+                   {log_manager, "kAddressNameIgnoredRe"})) {
       continue;
     }
 
@@ -437,9 +437,9 @@ FirstLastNameField::ParseSpecificComponentSequence(
   while (!scanner->IsEnd()) {
     // Skip over address label fields, which can have misleading names
     // e.g. "title" or "name".
-    if (ParseFieldSpecifics(scanner, kAddressNameIgnoredRe, kDefaultMatchParams,
-                            address_name_ignored_patterns, nullptr,
-                            {log_manager, "kAddressNameIgnoredRe"})) {
+    if (ParseField(scanner, kAddressNameIgnoredRe,
+                   address_name_ignored_patterns, nullptr,
+                   {log_manager, "kAddressNameIgnoredRe"})) {
       continue;
     }
 
