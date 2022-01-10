@@ -81,10 +81,9 @@ TEST_P(NGBoxFragmentPainterTest, ScrollHitTestOrder) {
       ContentPaintChunks(),
       ElementsAre(
           VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-          IsPaintChunk(
-              1, 1,
-              PaintChunk::Id(scroller.Layer()->Id(), DisplayItem::kLayerChunk),
-              scroller.FirstFragment().LocalBorderBoxProperties()),
+          IsPaintChunk(1, 1,
+                       PaintChunk::Id(scroller.Id(), kBackgroundChunkType),
+                       scroller.FirstFragment().LocalBorderBoxProperties()),
           IsPaintChunk(
               1, 1,
               PaintChunk::Id(root_fragment.Id(), DisplayItem::kScrollHitTest),

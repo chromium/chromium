@@ -209,10 +209,9 @@ TEST_P(BoxPainterTest, ScrollHitTestProperties) {
       paint_chunks,
       ElementsAre(
           VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-          IsPaintChunk(
-              1, 2,
-              PaintChunk::Id(container.Layer()->Id(), DisplayItem::kLayerChunk),
-              container.FirstFragment().LocalBorderBoxProperties()),
+          IsPaintChunk(1, 2,
+                       PaintChunk::Id(container.Id(), kBackgroundChunkType),
+                       container.FirstFragment().LocalBorderBoxProperties()),
           IsPaintChunk(
               2, 2, PaintChunk::Id(container.Id(), DisplayItem::kScrollHitTest),
               container.FirstFragment().LocalBorderBoxProperties(),

@@ -1570,13 +1570,14 @@ crbug.com/626703 external/wpt/css/CSS2/borders/border-right-applies-to-014.xht [
 crbug.com/626703 external/wpt/css/CSS2/borders/border-right-color-applies-to-014.xht [ Failure ]
 crbug.com/626703 external/wpt/css/CSS2/borders/border-right-width-applies-to-014.xht [ Failure ]
 
-# Failures when enabling CompositeAfter
+# Failures when enabling CompositeAfterPaint
 crbug.com/591099 fast/block/float/float-change-composited-scrolling.html [ Failure ]
 crbug.com/591099 svg/dom/viewspec-aspectparams.html [ Failure ]
 crbug.com/591099 svg/dom/viewspec-transformparams.html [ Failure ]
 crbug.com/591099 svg/dom/viewspec-viewboxparams.html [ Failure ]
 crbug.com/591099 svg/dom/viewspec-viewtargetparams.html [ Failure ]
 crbug.com/591099 svg/dom/viewspec-zoomandpanparams.html [ Failure ]
+crbug.com/591099 external/wpt/css/css-multicol/multicol-scroll-content.html [ Failure ]
 
 # Fails with ForceSynchronousHTMLParsing enabled, might be a fluke:
 crbug.com/1254921 svg/as-image/image-respects-deviceScaleFactor.html [ Failure ]
