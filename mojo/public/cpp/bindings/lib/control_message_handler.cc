@@ -6,9 +6,10 @@
 
 #include <stddef.h>
 #include <stdint.h>
+
+#include <tuple>
 #include <utility>
 
-#include "base/ignore_result.h"
 #include "base/notreached.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/lib/message_fragment.h"
@@ -120,7 +121,7 @@ bool ControlMessageHandler::Run(
       response_fragment(response_message);
   Serialize<interface_control::RunResponseMessageParamsDataView>(
       response_params_ptr, response_fragment);
-  ignore_result(responder->Accept(&response_message));
+  std::ignore = responder->Accept(&response_message);
   return true;
 }
 

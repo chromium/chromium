@@ -4,7 +4,8 @@
 
 #include "mojo/public/cpp/platform/platform_handle.h"
 
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "base/logging.h"
 #include "build/build_config.h"
 
@@ -245,16 +246,16 @@ void PlatformHandle::release() {
   type_ = Type::kNone;
 
 #if defined(OS_WIN)
-  ignore_result(handle_.Take());
+  std::ignore = handle_.Take();
 #elif defined(OS_FUCHSIA)
-  ignore_result(handle_.release());
+  std::ignore = handle_.release();
 #elif defined(OS_MAC)
-  ignore_result(mach_send_.release());
-  ignore_result(mach_receive_.release());
+  std::ignore = mach_send_.release();
+  std::ignore = mach_receive_.release();
 #endif
 
 #if defined(OS_POSIX) || defined(OS_FUCHSIA)
-  ignore_result(fd_.release());
+  std::ignore = fd_.release();
 #endif
 }
 

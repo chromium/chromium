@@ -7,12 +7,12 @@
 
 #include <algorithm>
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/ignore_result.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -828,7 +828,7 @@ TEST_F(AssociatedInterfaceTest, RemoteFlushForTesting) {
 
 TEST_F(AssociatedInterfaceTest, RemoteFlushForTestingWithClosedPeer) {
   Remote<IntegerSenderConnection> remote;
-  ignore_result(remote.BindNewPipeAndPassReceiver());
+  std::ignore = remote.BindNewPipeAndPassReceiver();
   bool called = false;
   remote.set_disconnect_handler(
       base::BindLambdaForTesting([&] { called = true; }));

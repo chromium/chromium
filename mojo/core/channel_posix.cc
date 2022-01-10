@@ -11,10 +11,10 @@
 #include <atomic>
 #include <limits>
 #include <memory>
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/containers/queue.h"
-#include "base/ignore_result.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
@@ -253,11 +253,11 @@ void ChannelPosix::ShutDownOnIOThread() {
   read_watcher_.reset();
   write_watcher_.reset();
   if (leak_handle_) {
-    ignore_result(socket_.release());
+    std::ignore = socket_.release();
     server_.TakePlatformHandle().release();
   } else {
     socket_.reset();
-    ignore_result(server_.TakePlatformHandle());
+    std::ignore = server_.TakePlatformHandle();
   }
 #if defined(OS_IOS)
   fds_to_close_.clear();
@@ -281,7 +281,7 @@ void ChannelPosix::OnFileCanReadWithoutBlocking(int fd) {
     base::CurrentThread::Get()->RemoveDestructionObserver(this);
 
     AcceptSocketConnection(server_.platform_handle().GetFD().get(), &socket_);
-    ignore_result(server_.TakePlatformHandle());
+    std::ignore = server_.TakePlatformHandle();
     if (!socket_.is_valid()) {
       OnError(Error::kConnectionFailed);
       return;

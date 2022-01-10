@@ -6,12 +6,12 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_REMOTE_H_
 
 #include <cstdint>
+#include <tuple>
 #include <utility>
 
 #include "base/callback_forward.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/ignore_result.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -284,7 +284,7 @@ class Remote {
     // binding to a SequencedTaskRunner and observing pipe handle state. This
     // allows for e.g. |is_connected()| to be a more reliable API than
     // |InterfacePtr::encountered_error()|.
-    ignore_result(internal_state_.instance());
+    std::ignore = internal_state_.instance();
   }
 
   // Unbinds this Remote, rendering it unable to issue further Interface method

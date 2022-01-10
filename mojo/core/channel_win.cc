@@ -10,11 +10,11 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/containers/queue.h"
 #include "base/debug/activity_tracker.h"
-#include "base/ignore_result.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -243,7 +243,7 @@ class ChannelWin : public Channel,
     CHECK(handle_.IsValid());
     CancelIo(handle_.Get());
     if (leak_handle_)
-      ignore_result(handle_.Take());
+      std::ignore = handle_.Take();
     else
       handle_.Close();
 

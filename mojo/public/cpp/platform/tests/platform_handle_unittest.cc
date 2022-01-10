@@ -4,11 +4,12 @@
 
 #include "mojo/public/cpp/platform/platform_handle.h"
 
+#include <tuple>
+
 #include "base/check.h"
 #include "base/files/file.h"
 #include "base/files/platform_file.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/ignore_result.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/notreached.h"
 #include "base/rand_util.h"
@@ -186,7 +187,7 @@ class PlatformHandleTest : public testing::Test,
     generic_region = base::UnsafeSharedMemoryRegion::TakeHandleForSerialization(
         std::move(region));
     region_handle = generic_region.PassPlatformHandle();
-    ignore_result(region_handle.release());
+    std::ignore = region_handle.release();
 
     return contents;
   }

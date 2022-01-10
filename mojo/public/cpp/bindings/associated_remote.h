@@ -6,12 +6,12 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_ASSOCIATED_REMOTE_H_
 
 #include <cstdint>
+#include <tuple>
 #include <utility>
 
 #include "base/callback_forward.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
-#include "base/ignore_result.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "mojo/public/cpp/bindings/associated_interface_ptr_info.h"
@@ -218,7 +218,7 @@ class AssociatedRemote {
     // do not use AssociatedRemote in transit, so binding to a pipe handle can
     // also imply binding to a SequencedTaskRunner and observing pipe handle
     // state.
-    ignore_result(internal_state_.instance());
+    std::ignore = internal_state_.instance();
   }
 
   // Binds this AssociatedRemote with the returned PendingAssociatedReceiver

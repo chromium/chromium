@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -17,7 +18,6 @@
 #include "base/containers/buffer_iterator.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/span.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/mac/mach_logging.h"
 #include "base/mac/scoped_mach_msg_destroy.h"
@@ -212,8 +212,8 @@ class ChannelMac : public Channel,
     incoming_handles_.clear();
 
     if (leak_handles_) {
-      ignore_result(receive_port_.release());
-      ignore_result(send_port_.release());
+      std::ignore = receive_port_.release();
+      std::ignore = send_port_.release();
     } else {
       receive_port_.reset();
       send_port_.reset();

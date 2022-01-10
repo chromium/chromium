@@ -7,9 +7,9 @@
 #include <cstddef>
 #include <cstdint>
 #include <string>
+#include <tuple>
 #include <utility>
 
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -270,7 +270,7 @@ void PlatformChannel::RemoteProcessLaunchAttempted() {
   // process, rather than duplicating it. For consistency the process-launch
   // call will have consumed the handle regardless of whether launch succeeded.
   DCHECK(remote_endpoint_.platform_handle().is_valid_handle());
-  ignore_result(remote_endpoint_.TakePlatformHandle().ReleaseHandle());
+  std::ignore = remote_endpoint_.TakePlatformHandle().ReleaseHandle();
 #else
   remote_endpoint_.reset();
 #endif

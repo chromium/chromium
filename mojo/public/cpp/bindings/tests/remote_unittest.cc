@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#include <tuple>
 #include <utility>
 
 #include "base/barrier_closure.h"
@@ -11,7 +12,6 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/ignore_result.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -780,7 +780,7 @@ TEST_P(RemoteTest, FlushAsyncForTesting) {
 
 TEST_P(RemoteTest, FlushForTestingWithClosedPeer) {
   Remote<math::Calculator> calc;
-  ignore_result(calc.BindNewPipeAndPassReceiver());
+  std::ignore = calc.BindNewPipeAndPassReceiver();
   bool called = false;
   calc.set_disconnect_handler(
       base::BindLambdaForTesting([&] { called = true; }));
@@ -791,7 +791,7 @@ TEST_P(RemoteTest, FlushForTestingWithClosedPeer) {
 
 TEST_P(RemoteTest, FlushAsyncForTestingWithClosedPeer) {
   Remote<math::Calculator> calc;
-  ignore_result(calc.BindNewPipeAndPassReceiver());
+  std::ignore = calc.BindNewPipeAndPassReceiver();
   bool called = false;
   calc.set_disconnect_handler(
       base::BindLambdaForTesting([&] { called = true; }));

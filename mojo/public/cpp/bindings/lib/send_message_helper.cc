@@ -5,8 +5,8 @@
 #include "mojo/public/cpp/bindings/lib/send_message_helper.h"
 
 #include <cstring>
+#include <tuple>
 
-#include "base/ignore_result.h"
 #include "base/trace_event/typed_macros.h"
 
 namespace mojo {
@@ -19,7 +19,7 @@ void SendMessage(MessageReceiver& receiver, Message& message) {
   TRACE_EVENT_INSTANT("toplevel.flow", "Send mojo message",
                       perfetto::Flow::Global(flow_id));
 
-  ignore_result(receiver.Accept(&message));
+  std::ignore = receiver.Accept(&message);
 
   // If this is a sync message which has received just received a reply, connect
   // the point which received the sync reply (us) to the flow.
@@ -38,7 +38,7 @@ void SendMessage(MessageReceiverWithResponder& receiver,
   TRACE_EVENT_INSTANT("toplevel.flow", "Send mojo message",
                       perfetto::Flow::Global(flow_id));
 
-  ignore_result(receiver.AcceptWithResponder(&message, std::move(responder)));
+  std::ignore = receiver.AcceptWithResponder(&message, std::move(responder));
 
   // If this is a sync message which has received just received a reply, connect
   // the point which received the sync reply (us) to the flow.

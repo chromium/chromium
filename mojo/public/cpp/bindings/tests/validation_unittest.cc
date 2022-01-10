@@ -7,10 +7,10 @@
 #include <stdio.h>
 #include <algorithm>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
-#include "base/ignore_result.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_math.h"
 #include "base/run_loop.h"
@@ -197,7 +197,7 @@ void RunValidationTests(const std::string& prefix,
     base::RunLoop run_loop;
     mojo::internal::ValidationErrorObserverForTesting observer(
         run_loop.QuitClosure());
-    ignore_result(test_message_receiver->Accept(&message));
+    std::ignore = test_message_receiver->Accept(&message);
     if (expected != "PASS")  // Observer only gets called on errors.
       run_loop.Run();
     if (observer.last_error() == mojo::internal::VALIDATION_ERROR_NONE)
