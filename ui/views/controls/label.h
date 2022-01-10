@@ -117,6 +117,9 @@ class VIEWS_EXPORT Label : public View,
   // that vary from the global text style by anything besides weight.
   void SetTextStyleRange(int style, const gfx::Range& range);
 
+  // Apply the baseline style range across the entire label.
+  void ApplyBaselineTextStyle();
+
   // Enables or disables auto-color-readability (enabled by default).  If this
   // is enabled, then calls to set any foreground or background color will
   // trigger an automatic mapper that uses color_utils::BlendForMinContrast()

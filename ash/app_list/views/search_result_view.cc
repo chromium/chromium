@@ -328,7 +328,6 @@ void SearchResultView::UpdateDetailsText() {
         break;
       case SearchResultViewType::kClassic:
       case SearchResultViewType::kAnswerCard:
-
         separator_label_->SetVisible(false);
     }
   }
@@ -350,6 +349,8 @@ void SearchResultView::UpdateRating() {
 void SearchResultView::StyleLabel(views::Label* label,
                                   bool is_title_label,
                                   const SearchResult::Tags& tags) {
+  // Reset font weight styling for label.
+  label->ApplyBaselineTextStyle();
   // Apply font weight styles.
   bool is_url = false;
   for (const auto& tag : tags) {
