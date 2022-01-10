@@ -13,6 +13,7 @@ group("polymer3_elements") {
     ":demo_preferences_module",
     ":demo_setup_module",
     ":enable_debugging_module",
+    ":enterprise_enrollment_module",
     ":hid_detection_module",
     ":oobe_eula_module",
     ":oobe_network_module",
@@ -32,6 +33,7 @@ js_type_check("closure_compile_module") {
     ":demo_preferences.m",
     ":demo_setup.m",
     ":enable_debugging.m",
+    ":enterprise_enrollment.m",
     ":hid_detection.m",
     ":oobe_eula.m",
     ":oobe_network.m",
@@ -98,6 +100,25 @@ js_library("enable_debugging.m") {
     "../../components/dialogs:oobe_loading_dialog.m",
   ]
   extra_deps = [ ":enable_debugging_module" ]
+}
+
+js_library("enterprise_enrollment.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/oobe/enterprise_enrollment.m.js" ]
+  deps = [
+    "../../../keyboard:keyboard_utils.m",
+    "../../components:display_manager_types.m",
+    "../../components:gaia_dialog.m",
+    "../../components:keyboard_utils_for_injection",
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/buttons:oobe_back_button.m",
+    "../../components/buttons:oobe_next_button.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../common:offline_ad_login.m",
+    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
+    "//ui/webui/resources/js:cr.m",
+  ]
+  extra_deps = [ ":enterprise_enrollment_module" ]
 }
 
 js_library("hid_detection.m") {
@@ -247,6 +268,14 @@ polymer_modulizer("demo_setup") {
 polymer_modulizer("enable_debugging") {
   js_file = "enable_debugging.js"
   html_file = "enable_debugging.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("enterprise_enrollment") {
+  js_file = "enterprise_enrollment.js"
+  html_file = "enterprise_enrollment.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites

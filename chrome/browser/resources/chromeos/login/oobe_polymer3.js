@@ -50,6 +50,7 @@ import 'chrome://oobe/screens/oobe/auto_enrollment_check.m.js';
 import 'chrome://oobe/screens/oobe/demo_preferences.m.js';
 import 'chrome://oobe/screens/oobe/demo_setup.m.js';
 import 'chrome://oobe/screens/oobe/enable_debugging.m.js';
+import 'chrome://oobe/screens/oobe/enterprise_enrollment.m.js';
 import 'chrome://oobe/screens/oobe/hid_detection.m.js';
 import 'chrome://oobe/screens/oobe/oobe_eula.m.js';
 import 'chrome://oobe/screens/oobe/oobe_network.m.js';

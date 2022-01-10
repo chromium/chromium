@@ -4,4 +4,3 @@
 
 // clang-format off
 
-// <include src="../enterprise_enrollment.js">
