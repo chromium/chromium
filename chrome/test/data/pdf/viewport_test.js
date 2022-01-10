@@ -1343,9 +1343,9 @@ const tests = [
 
     const {width, height} = mockPlugin.findMessage('updateSize');
     chrome.test.assertEq(20, width);
-    chrome.test.assertEq(20, viewport.contentSizeForTesting.width);
+    chrome.test.assertEq(20, viewport.contentSize.width);
     chrome.test.assertEq(30, height);
-    chrome.test.assertEq(30, viewport.contentSizeForTesting.height);
+    chrome.test.assertEq(30, viewport.contentSize.height);
     chrome.test.succeed();
   },
 

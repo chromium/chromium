@@ -18,8 +18,8 @@ const tests = [
     chrome.test.assertTrue(viewer.viewport.getZoom() <= 1);
 
     viewer.viewport.setZoom(1);
-    chrome.test.assertEq(826, viewer.viewport.contentSizeForTesting.width);
-    chrome.test.assertEq(1066, viewer.viewport.contentSizeForTesting.height);
+    chrome.test.assertEq(826, viewer.viewport.contentSize.width);
+    chrome.test.assertEq(1066, viewer.viewport.contentSize.height);
     chrome.test.succeed();
   },
 

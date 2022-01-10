@@ -504,11 +504,11 @@ export class Viewport {
   }
 
   /**
-   * Exposes the current content size for testing.
+   * Gets the content size.
    * @return {!Size}
    */
-  get contentSizeForTesting() {
-    return this.scrollContent_.sizeForTesting;
+  get contentSize() {
+    return this.scrollContent_.size;
   }
 
   /** @return {number} The current zoom. */
@@ -1752,10 +1752,10 @@ class ScrollContent {
   }
 
   /**
-   * Exposes the current content size for testing.
+   * Gets the content size.
    * @return {!Size}
    */
-  get sizeForTesting() {
+  get size() {
     return {
       width: this.width_,
       height: this.height_,
