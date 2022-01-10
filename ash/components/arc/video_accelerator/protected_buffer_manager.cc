@@ -460,6 +460,18 @@ ProtectedBufferManager::GetProtectedNativePixmapFor(
   return iter->second->GetNativePixmap();
 }
 
+bool ProtectedBufferManager::IsProtectedNativePixmapHandle(
+    base::ScopedFD dummy_fd) {
+  uint32_t id = 0;
+  auto pixmap = ImportDummyFd(std::move(dummy_fd), &id);
+  if (!pixmap)
+    return false;
+
+  base::AutoLock lock(buffer_map_lock_);
+  const auto& iter = buffer_map_.find(id);
+  return iter != buffer_map_.end();
+}
+
 scoped_refptr<gfx::NativePixmap> ProtectedBufferManager::ImportDummyFd(
     base::ScopedFD dummy_fd,
     uint32_t* id) const {

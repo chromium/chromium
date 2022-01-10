@@ -2896,6 +2896,7 @@ static_library("ui") {
       "//ash/assistant/util",
       "//ash/components/account_manager",
       "//ash/components/arc",
+      "//ash/components/arc/video_accelerator:protected_native_pixmap_query_client",
       "//ash/components/audio",
       "//ash/components/disks",
       "//ash/components/drivefs",

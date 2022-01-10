@@ -64,4 +64,13 @@ void GpuArcProtectedBufferManagerProxy::
   std::move(callback).Run(std::move(native_pixmap_handle));
 }
 
+void GpuArcProtectedBufferManagerProxy::IsProtectedNativePixmapHandle(
+    mojo::ScopedHandle dummy_handle,
+    IsProtectedNativePixmapHandleCallback callback) {
+  base::ScopedFD unwrapped_fd = UnwrapFdFromMojoHandle(std::move(dummy_handle));
+  std::move(callback).Run(
+      protected_buffer_manager_->IsProtectedNativePixmapHandle(
+          std::move(unwrapped_fd)));
+}
+
 }  // namespace arc

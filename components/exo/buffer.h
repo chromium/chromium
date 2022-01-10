@@ -12,7 +12,9 @@
 #include "base/containers/flat_map.h"
 #include "base/files/file_descriptor_watcher_posix.h"
 #include "base/memory/weak_ptr.h"
+#include "components/exo/protected_native_pixmap_query_delegate.h"
 #include "components/viz/common/resources/transferable_resource.h"
+#include "media/media_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence.h"
@@ -62,6 +64,7 @@ class Buffer : public base::SupportsWeakPtr<Buffer> {
       std::unique_ptr<gfx::GpuFence> acquire_fence,
       bool secure_output_only,
       viz::TransferableResource* resource,
+      ProtectedNativePixmapQueryDelegate* protected_native_pixmap_query,
       PerCommitExplicitReleaseCallback per_commit_explicit_release_callback);
 
   // This should be called when the buffer is attached to a Surface.
@@ -78,6 +81,13 @@ class Buffer : public base::SupportsWeakPtr<Buffer> {
 
   // The default color to be used should transferable resource production fail.
   virtual SkColor4f GetColor() const;
+
+#if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
+  // Returns true if the underlying buffer is hardware protected. This should
+  // only be checked if the corresponding surface requires secure output,
+  // otherwise it will yield false positives.
+  bool NeedsHardwareProtection();
+#endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 
   // Set the amount of time to wait for buffer release.
   void set_wait_for_release_delay_for_testing(
@@ -108,6 +118,13 @@ class Buffer : public base::SupportsWeakPtr<Buffer> {
     base::OnceClosure buffer_release_callback;
   };
 
+#if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
+  // For ARC protected content support this tracks the state of the
+  // asynchronous query to determine if the GMB is using a protected buffer or
+  // not.
+  enum class ProtectedBufferState { UNKNOWN, QUERYING, PROTECTED, UNPROTECTED };
+#endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
+
   // This should be called when buffer is released and will notify the
   // client that buffer has been released.
   void Release();
@@ -134,6 +151,10 @@ class Buffer : public base::SupportsWeakPtr<Buffer> {
                                 base::OnceClosure buffer_release_callback);
 
   void FenceSignalled(uint64_t commit_id);
+
+#if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
+  void OnIsProtectedNativePixmapHandle(bool is_protected);
+#endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 
   // The GPU memory buffer that contains the contents of this buffer.
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
@@ -187,6 +208,10 @@ class Buffer : public base::SupportsWeakPtr<Buffer> {
   // Even if we send explicit synchronization release information, Wayland
   // protocol requires us to send regular buffer release events.
   base::flat_map<uint64_t, BufferRelease> buffer_releases_;
+
+#if BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
+  ProtectedBufferState protected_buffer_state_ = ProtectedBufferState::UNKNOWN;
+#endif  // BUILDFLAG(USE_ARC_PROTECTED_MEDIA)
 };
 
 class SolidColorBuffer : public Buffer {
@@ -203,6 +228,7 @@ class SolidColorBuffer : public Buffer {
       std::unique_ptr<gfx::GpuFence> acquire_fence,
       bool secure_output_only,
       viz::TransferableResource* resource,
+      ProtectedNativePixmapQueryDelegate* protected_native_pixmap_query,
       PerCommitExplicitReleaseCallback per_commit_explicit_release_callback)
       override;
 

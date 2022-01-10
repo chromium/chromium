@@ -11,6 +11,7 @@ include_rules = [
   "+components/viz/host",
   "+device/gamepad",
   "+gpu",
+  "+media/media_buildflags.h",
   "+mojo/core/embedder/embedder.h",
   "+mojo/public/cpp",
   "+net/base",

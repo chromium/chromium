@@ -70,7 +70,7 @@ TEST_F(BufferTest, ReleaseCallback) {
   // Produce a transferable resource for the contents of the buffer.
   int release_resource_count = 0;
   bool rv = buffer->ProduceTransferableResource(
-      frame_sink_holder->resource_manager(), nullptr, false, &resource,
+      frame_sink_holder->resource_manager(), nullptr, false, &resource, nullptr,
       base::BindOnce(&ExplicitRelease,
                      base::Unretained(&release_resource_count)));
   ASSERT_TRUE(rv);
@@ -106,7 +106,7 @@ TEST_F(BufferTest, IsLost) {
   // Acquire a texture transferable resource for the contents of the buffer.
   viz::TransferableResource resource;
   bool rv = buffer->ProduceTransferableResource(
-      frame_sink_holder->resource_manager(), nullptr, false, &resource,
+      frame_sink_holder->resource_manager(), nullptr, false, &resource, nullptr,
       base::DoNothing());
   ASSERT_TRUE(rv);
 
@@ -133,7 +133,7 @@ TEST_F(BufferTest, IsLost) {
   viz::TransferableResource new_resource;
   rv = buffer->ProduceTransferableResource(
       frame_sink_holder->resource_manager(), nullptr, false, &new_resource,
-      base::DoNothing());
+      nullptr, base::DoNothing());
   ASSERT_TRUE(rv);
   buffer->OnDetach();
 
@@ -160,7 +160,7 @@ TEST_F(BufferTest, OnLostResources) {
   // Acquire a texture transferable resource for the contents of the buffer.
   viz::TransferableResource resource;
   bool rv = buffer->ProduceTransferableResource(
-      frame_sink_holder->resource_manager(), nullptr, false, &resource,
+      frame_sink_holder->resource_manager(), nullptr, false, &resource, nullptr,
       base::DoNothing());
   ASSERT_TRUE(rv);
 
@@ -195,7 +195,7 @@ TEST_F(BufferTest, SurfaceTreeHostDestruction) {
   // Produce a transferable resource for the contents of the buffer.
   int release_resource_count = 0;
   bool rv = buffer->ProduceTransferableResource(
-      frame_sink_holder->resource_manager(), nullptr, false, &resource,
+      frame_sink_holder->resource_manager(), nullptr, false, &resource, nullptr,
       base::BindOnce(&ExplicitRelease,
                      base::Unretained(&release_resource_count)));
   ASSERT_TRUE(rv);
@@ -252,7 +252,7 @@ TEST_F(BufferTest, SurfaceTreeHostLastFrame) {
   // Produce a transferable resource for the contents of the buffer.
   int release_resource_count = 0;
   bool rv = buffer->ProduceTransferableResource(
-      frame_sink_holder->resource_manager(), nullptr, false, &resource,
+      frame_sink_holder->resource_manager(), nullptr, false, &resource, nullptr,
       base::BindOnce(&ExplicitRelease,
                      base::Unretained(&release_resource_count)));
   ASSERT_TRUE(rv);

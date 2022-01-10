@@ -97,6 +97,10 @@ class ProtectedBufferManager : public DecoderProtectedBufferManager {
   scoped_refptr<gfx::NativePixmap> GetProtectedNativePixmapFor(
       const gfx::NativePixmapHandle& handle);
 
+  // Returns true if dummy |handle| corresponds to a protected native pixmap,
+  // false otherwise.
+  bool IsProtectedNativePixmapHandle(base::ScopedFD dummy_fd);
+
  private:
   // Used internally to maintain the association between the dummy handle and
   // the underlying buffer.

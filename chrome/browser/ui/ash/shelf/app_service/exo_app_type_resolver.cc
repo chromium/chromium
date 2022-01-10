@@ -76,6 +76,11 @@ void ExoAppTypeResolver::PopulateProperties(
   out_properties_container.SetProperty(aura::client::kAppType,
                                        static_cast<int>(ash::AppType::ARC_APP));
 
+  out_properties_container.SetProperty(
+      exo::kProtectedNativePixmapQueryDelegate,
+      reinterpret_cast<exo::ProtectedNativePixmapQueryDelegate*>(
+          &protected_native_pixmap_query_client_));
+
   if (task_id.has_value())
     out_properties_container.SetProperty(app_restore::kWindowIdKey, *task_id);
 

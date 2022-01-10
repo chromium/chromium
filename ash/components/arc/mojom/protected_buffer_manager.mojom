@@ -4,6 +4,7 @@
 
 // The original version of this file lives in the Chromium repository at:
 // src/components/arc/mojom/protected_buffer_manager.mojom
+// Next Version: 3
 
 module arc.mojom;
 import "media/mojo/mojom/stable/native_pixmap_handle.mojom";
@@ -11,7 +12,7 @@ import "sandbox/policy/mojom/sandbox.mojom";
 
 // This interface is exposed by the GPU process for translating dummy handles
 // for secure buffers into usable shared memory buffer or native pixmap handles.
-// Next Method ID: 3
+// Next Method ID: 4
 [Stable, Uuid="560fada2-b6b8-4b06-a337-188381028495",
  ServiceSandbox=sandbox.mojom.Sandbox.kGpu]
 interface ProtectedBufferManager {
@@ -50,4 +51,10 @@ interface ProtectedBufferManager {
   [MinVersion=1]
   GetProtectedNativePixmapHandleFromHandle@2(handle dummy_handle)
       => (media.stable.mojom.NativePixmapHandle? native_pixmap_handle);
+
+  // This is used by exo in the browser process to determine if a GMB refers to
+  // a protected native pixmap so it can set the HW protection properly in the
+  // quad if the platform supports HWDRM.
+  [MinVersion=2]
+  IsProtectedNativePixmapHandle@3(handle dummy_handle) => (bool is_protected);
 };

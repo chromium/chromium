@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "components/exo/protected_native_pixmap_query_delegate.h"
 #include "ui/base/class_property.h"
 
 namespace exo {
@@ -20,6 +21,10 @@ extern const ui::ClassProperty<std::string*>* const kApplicationIdKey;
 // Currently only set to true for Lacros windows.
 extern const ui::ClassProperty<bool>* const kRestoreOrMaximizeExitsFullscreen;
 
+// Provides access to a delegate for determining if a native pixmap corresponds
+// to a HW protected buffer.
+extern const ui::ClassProperty<ProtectedNativePixmapQueryDelegate*>* const
+    kProtectedNativePixmapQueryDelegate;
 }  // namespace exo
 
 #endif  // COMPONENTS_EXO_WINDOW_PROPERTIES_H_

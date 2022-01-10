@@ -58,3 +58,16 @@ source_set("common") {
     deps += [ "//media/gpu/chromeos:chromeos" ]
   }
 }
+
+source_set("protected_native_pixmap_query_client") {
+  sources = [
+    "protected_native_pixmap_query_client.cc",
+    "protected_native_pixmap_query_client.h",
+  ]
+
+  deps = [
+    "//ash/components/arc/mojom:media",
+    "//components/exo",
+    "//content/public/browser:browser",
+  ]
+}
