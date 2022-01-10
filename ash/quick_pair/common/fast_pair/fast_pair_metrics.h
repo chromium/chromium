@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/time/time.h"
 #include "device/bluetooth/bluetooth_device.h"
+#include "device/bluetooth/bluetooth_low_energy_scan_session.h"
 #include "device/bluetooth/bluetooth_socket.h"
 
 namespace ash {
@@ -212,6 +213,13 @@ void RecordHandshakeFailureReason(HandshakeFailureReason failure_reason);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordBluetoothLowEnergyScannerStartSessionResult(bool success);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordBluetoothLowEnergyScannerStartSessionErrorReason(
+    device::BluetoothLowEnergyScanSession::ErrorCode error_code);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordBluetoothLowEnergyScanFilterResult(bool success);
 
 }  // namespace quick_pair
 }  // namespace ash

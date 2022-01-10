@@ -153,6 +153,8 @@ const char kHandshakeFailureReason[] =
     "Bluetooth.ChromeOS.FastPair.Handshake.FailureReason";
 const char kBleScanSessionResult[] =
     "Bluetooth.ChromeOS.FastPair.Scanner.StartSession.Result";
+const char kBleScanFilterResult[] =
+    "Bluetooth.ChromeOS.FastPair.CreateScanFilter.Result";
 
 }  // namespace
 
@@ -423,6 +425,10 @@ void RecordHandshakeFailureReason(HandshakeFailureReason failure_reason) {
 
 void RecordBluetoothLowEnergyScannerStartSessionResult(bool success) {
   base::UmaHistogramBoolean(kBleScanSessionResult, success);
+}
+
+void RecordBluetoothLowEnergyScanFilterResult(bool success) {
+  base::UmaHistogramBoolean(kBleScanFilterResult, success);
 }
 
 }  // namespace quick_pair

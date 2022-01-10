@@ -317,6 +317,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.FastPair.CreateScanFilter.Result"
+    enum="BooleanSuccess" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the success or failure of creating a BLE scan filter, which we use
+    to scan for Fast Pair devices. Emitted when the scan filter is created.
+    Creating a scan filter can fail if the provided parameters are invalid.
+  </summary>
+</histogram>
+
 <histogram name="Bluetooth.ChromeOS.FastPair.DeviceMetadataFetcher.Result"
     enum="BooleanSuccess" expires_after="2022-09-20">
   <owner>shanefitz@google.com</owner>
