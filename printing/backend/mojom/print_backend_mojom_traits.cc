@@ -8,7 +8,6 @@
 
 #include "base/logging.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom-shared.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 

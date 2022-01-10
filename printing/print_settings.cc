@@ -7,7 +7,6 @@
 #include "base/atomic_sequence_num.h"
 #include "base/notreached.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "printing/units.h"
 
 #if defined(USE_CUPS) && (BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS))

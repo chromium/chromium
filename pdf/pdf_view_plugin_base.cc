@@ -37,7 +37,6 @@
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "build/chromeos_buildflags.h"
 #include "net/base/escape.h"
 #include "pdf/accessibility.h"
 #include "pdf/accessibility_structs.h"

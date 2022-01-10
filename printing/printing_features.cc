@@ -5,7 +5,6 @@
 #include "printing/printing_features.h"
 
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "printing/buildflags/buildflags.h"
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \

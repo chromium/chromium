@@ -8,7 +8,6 @@
 #include "base/json/json_reader.h"
 #include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
 #include "printing/print_settings.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

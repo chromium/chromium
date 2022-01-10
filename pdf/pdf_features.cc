@@ -4,8 +4,6 @@
 
 #include "pdf/pdf_features.h"
 
-#include "build/chromeos_buildflags.h"
-
 namespace chrome_pdf {
 namespace features {
 
