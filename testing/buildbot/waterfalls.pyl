@@ -1139,7 +1139,7 @@
           'walleye',
         ],
         'test_suites': {
-          'isolated_scripts': 'android_wpt_scripts',
+          'isolated_scripts': 'system_webview_wpt',
         },
         'use_swarming': True,
         'os_type': 'android',

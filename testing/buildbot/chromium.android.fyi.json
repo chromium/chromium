@@ -5413,49 +5413,9 @@
           "expiration": 18000,
           "hard_timeout": 14400,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 15
+          "shards": 18
         },
         "test_id_prefix": "ninja://android_webview/test:system_webview_wpt/"
-      },
-      {
-        "experiment_percentage": 100,
-        "isolate_name": "weblayer_shell_wpt",
-        "merge": {
-          "args": [
-            "--verbose"
-          ],
-          "script": "//third_party/blink/tools/merge_web_test_results.py"
-        },
-        "name": "weblayer_shell_wpt",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "results_handler": "layout tests",
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "cipd_packages": [
-            {
-              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
-              "location": "bin",
-              "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
-            }
-          ],
-          "dimension_sets": [
-            {
-              "device_os": "PQ3A.190801.002",
-              "device_os_flavor": "google",
-              "device_os_type": "userdebug",
-              "device_type": "walleye",
-              "os": "Android"
-            }
-          ],
-          "expiration": 18000,
-          "hard_timeout": 14400,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 15
-        },
-        "test_id_prefix": "ninja://weblayer/shell/android:weblayer_shell_wpt/"
       }
     ]
   },
@@ -5463,6 +5423,8 @@
     "isolated_scripts": [
       {
         "args": [
+          "--log-wptreport",
+          "--processes=2",
           "--avd-config=../../tools/android/avd/proto/generic_android28.textpb"
         ],
         "experiment_percentage": 100,
@@ -6131,6 +6093,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "--processes=2",
           "--avd-config=../../tools/android/avd/proto/generic_android28.textpb"
         ],
         "experiment_percentage": 100,
@@ -6196,6 +6159,7 @@
     "isolated_scripts": [
       {
         "args": [
+          "--processes=2",
           "--avd-config=../../tools/android/avd/proto/generic_android28.textpb",
           "--default-exclude",
           "--include-file=../../third_party/blink/web_tests/android/WPTSmokeTestCases"
@@ -6252,8 +6216,7 @@
               }
             ]
           },
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 3
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
         "test_id_prefix": "ninja://weblayer/shell/android:weblayer_shell_wpt/"
       }
@@ -6264,7 +6227,8 @@
       {
         "args": [
           "--avd-config=../../tools/android/avd/proto/generic_android28.textpb",
-          "--log-wptreport"
+          "--log-wptreport",
+          "--processes=2"
         ],
         "experiment_percentage": 100,
         "isolate_name": "system_webview_wpt",

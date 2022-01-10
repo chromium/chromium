@@ -1071,15 +1071,6 @@
       }
     }
   },
-  'chrome_public_wpt': {
-    'modifications': {
-      'android-web-platform-pie-x86-fyi-rel': {
-        'swarming': {
-          'shards': 18,
-        },
-      },
-    },
-  },
   'chrome_sizes': {
     'modifications': {
       'lacros-amd64-generic-chrome': {
@@ -2864,10 +2855,8 @@
       'android-webview-pie-x86-wpt-fyi-rel': {
         'args': [
           '--log-wptreport',
+          '--processes=2',
         ],
-        'swarming': {
-          'shards': 18,
-        },
       },
     },
   },
@@ -3489,19 +3478,13 @@
   },
   'weblayer_shell_wpt': {
     'modifications': {
-      # TODO(crbug.com/1171555): remove this when test can run with more emulators
-      'android-weblayer-pie-x86-wpt-fyi-rel': {
-        'swarming': {
-          'shards': 18,
-        },
-      },
       'android-weblayer-pie-x86-wpt-smoketest': {
         'args': [
           '--default-exclude',
-          '--include-file=../../third_party/blink/web_tests/android/WPTSmokeTestCases'
+          '--include-file=../../third_party/blink/web_tests/android/WPTSmokeTestCases',
         ],
         'swarming': {
-          'shards': 3,
+          'shards': 1,
         },
       },
     },
