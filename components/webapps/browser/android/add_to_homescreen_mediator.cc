@@ -105,7 +105,7 @@ void AddToHomescreenMediator::StartForAppMenu(
 void AddToHomescreenMediator::AddToHomescreen(
     JNIEnv* env,
     const JavaParamRef<jstring>& j_user_title) {
-  if (!params_)
+  if (!params_ || GetWebContents() == nullptr)
     return;
 
   if (params_->app_type == AddToHomescreenParams::AppType::SHORTCUT) {
