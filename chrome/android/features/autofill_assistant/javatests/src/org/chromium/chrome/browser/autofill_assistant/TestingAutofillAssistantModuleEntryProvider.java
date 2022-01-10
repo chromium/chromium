@@ -8,7 +8,7 @@ import android.content.Context;
 import android.view.View;
 
 import org.chromium.base.Callback;
-import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.autofill_assistant.onboarding.OnboardingCoordinatorFactory;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -36,13 +36,13 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
         public MockAutofillAssistantActionHandler(Context context,
                 BottomSheetController bottomSheetController,
                 BrowserControlsStateProvider browserControls, View rootView,
-                ActivityTabProvider activityTabProvider,
+                Supplier<WebContents> webContentsSupplier,
                 AssistantDependenciesFactory dependenciesFactory) {
             super(new OnboardingCoordinatorFactory(context, bottomSheetController, browserControls,
                           rootView,
                           dependenciesFactory.createStaticDependencies().getAccessibilityUtil(),
                           dependenciesFactory.createStaticDependencies().getInfoPageUtil()),
-                    activityTabProvider, dependenciesFactory);
+                    webContentsSupplier, dependenciesFactory);
         }
 
         @Override
@@ -75,10 +75,10 @@ class TestingAutofillAssistantModuleEntryProvider extends AutofillAssistantModul
         public AutofillAssistantActionHandler createActionHandler(Context context,
                 BottomSheetController bottomSheetController,
                 BrowserControlsStateProvider browserControls, View rootView,
-                ActivityTabProvider activityTabProvider,
+                Supplier<WebContents> webContentsSupplier,
                 AssistantDependenciesFactory dependenciesFactory) {
             return new MockAutofillAssistantActionHandler(context, bottomSheetController,
-                    browserControls, rootView, activityTabProvider, dependenciesFactory);
+                    browserControls, rootView, webContentsSupplier, dependenciesFactory);
         }
     }
 

@@ -17,6 +17,7 @@ import androidx.annotation.Nullable;
 import org.chromium.base.Callback;
 import org.chromium.base.Function;
 import org.chromium.base.Log;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
@@ -26,6 +27,7 @@ import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.external_intents.ExternalNavigationDelegate.IntentToAutofillAllowingAppResult;
+import org.chromium.content_public.browser.WebContents;
 
 /** Facade for starting Autofill Assistant on a tab. */
 public class AutofillAssistantFacade {
@@ -121,8 +123,10 @@ public class AutofillAssistantFacade {
             BottomSheetController bottomSheetController,
             BrowserControlsStateProvider browserControls, View rootView,
             ActivityTabProvider activityTabProvider) {
+        Supplier<WebContents> webContentsSupplier = () -> getWebContents(activityTabProvider);
+
         return new AutofillAssistantDirectActionHandler(context, bottomSheetController,
-                browserControls, rootView, activityTabProvider,
+                browserControls, rootView, activityTabProvider, webContentsSupplier,
                 AutofillAssistantModuleEntryProvider.INSTANCE);
     }
 
@@ -143,6 +147,16 @@ public class AutofillAssistantFacade {
                 callback.onResult(tab);
             }
         });
+    }
+
+    @Nullable
+    private static WebContents getWebContents(ActivityTabProvider activityTabProvider) {
+        Tab tab = activityTabProvider.get();
+        if (tab == null) {
+            return null;
+        }
+
+        return tab.getWebContents();
     }
 
     public static boolean isAutofillAssistantEnabled(Intent intent) {

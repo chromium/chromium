@@ -8,7 +8,7 @@ import android.content.Context;
 import android.view.View;
 
 import org.chromium.base.annotations.UsedByReflection;
-import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.autofill_assistant.onboarding.OnboardingCoordinatorFactory;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
@@ -35,7 +35,7 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
     public AutofillAssistantActionHandler createActionHandler(Context context,
             BottomSheetController bottomSheetController,
             BrowserControlsStateProvider browserControls, View rootView,
-            ActivityTabProvider activityTabProvider,
+            Supplier<WebContents> webContentsSupplier,
             AssistantDependenciesFactory dependenciesFactory) {
         AssistantStaticDependencies staticDependencies =
                 dependenciesFactory.createStaticDependencies();
@@ -43,6 +43,6 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
                 new OnboardingCoordinatorFactory(context, bottomSheetController, browserControls,
                         rootView, staticDependencies.getAccessibilityUtil(),
                         staticDependencies.getInfoPageUtil()),
-                activityTabProvider, dependenciesFactory);
+                webContentsSupplier, dependenciesFactory);
     }
 }

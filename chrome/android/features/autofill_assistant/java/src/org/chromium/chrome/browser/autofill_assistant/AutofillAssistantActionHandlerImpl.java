@@ -11,12 +11,11 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
-import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.autofill_assistant.onboarding.AssistantOnboardingResult;
 import org.chromium.chrome.browser.autofill_assistant.onboarding.BaseOnboardingCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.onboarding.OnboardingCoordinatorFactory;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -31,13 +30,13 @@ import java.util.Map;
 class AutofillAssistantActionHandlerImpl implements AutofillAssistantActionHandler {
     private final OnboardingCoordinatorFactory mOnboardingCoordinatorFactory;
     private final AssistantDependenciesFactory mDependenciesFactory;
-    private final ActivityTabProvider mActivityTabProvider;
+    private final Supplier<WebContents> mWebContentsSupplier;
 
     AutofillAssistantActionHandlerImpl(OnboardingCoordinatorFactory onboardingCoordinatorFactory,
-            ActivityTabProvider activityTabProvider,
+            Supplier<WebContents> webContentsSupplier,
             AssistantDependenciesFactory dependenciesFactory) {
         mOnboardingCoordinatorFactory = onboardingCoordinatorFactory;
-        mActivityTabProvider = activityTabProvider;
+        mWebContentsSupplier = webContentsSupplier;
         mDependenciesFactory = dependenciesFactory;
     }
 
@@ -128,31 +127,6 @@ class AutofillAssistantActionHandlerImpl implements AutofillAssistantActionHandl
         client.showFatalError();
     }
 
-    @Nullable
-    private WebContents getWebContents() {
-        Tab tab = mActivityTabProvider.get();
-        if (tab == null) {
-            return null;
-        }
-
-        return tab.getWebContents();
-    }
-
-    @Nullable
-    private Activity getActivity() {
-        Tab tab = mActivityTabProvider.get();
-        if (tab == null) {
-            return null;
-        }
-
-        WindowAndroid windowAndroid = tab.getWindowAndroid();
-        if (windowAndroid == null) {
-            return null;
-        }
-
-        return windowAndroid.getActivity().get();
-    }
-
     /**
      * Returns a client for the current tab or {@code null} if there's no current tab or the current
      * tab doesn't have an associated browser content.
@@ -161,14 +135,33 @@ class AutofillAssistantActionHandlerImpl implements AutofillAssistantActionHandl
     private AutofillAssistantClient getOrCreateClient() {
         ThreadUtils.assertOnUiThread();
 
-        WebContents webContents = getWebContents();
-        Activity activity = getActivity();
+        WebContents webContents = mWebContentsSupplier.get();
+        Activity activity = getActivityFromWebContents(webContents);
         if (webContents == null || activity == null) {
             return null;
         }
 
         return AutofillAssistantClient.createForWebContents(
                 webContents, mDependenciesFactory.createDependencies(activity));
+    }
+
+    /**
+     * Looks up the Activity of the given web contents. This can be null. Should never be cached,
+     * because web contents can change activities, e.g., when user selects "Open in Chrome" menu
+     * item.
+     *
+     * @param webContents The web contents for which to lookup the Activity.
+     * @return Activity currently related to webContents. Could be <c>null</c> and could change,
+     *         therefore do not cache.
+     */
+    @Nullable
+    private static Activity getActivityFromWebContents(@Nullable WebContents webContents) {
+        if (webContents == null || webContents.isDestroyed()) return null;
+
+        WindowAndroid window = webContents.getTopLevelNativeWindow();
+        if (window == null) return null;
+
+        return window.getActivity().get();
     }
 
     /** Extracts string arguments from a bundle. */
