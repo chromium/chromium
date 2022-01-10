@@ -26,7 +26,7 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 #include "third_party/re2/src/re2/re2.h"
 
-#if defined(USE_OZONE)
+#if defined(OS_POSIX)
 #include <sys/utsname.h>
 #endif
 
@@ -50,6 +50,19 @@ namespace {
 // second capture is the {minor_version}.
 static constexpr char kChromeProductVersionRegex[] =
     "Chrome/([0-9]+).([0-9]+).([0-9]+).([0-9]+)";
+
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+std::string GetMachine() {
+  struct utsname unixinfo;
+  uname(&unixinfo);
+  std::string machine = unixinfo.machine;
+  if (strcmp(unixinfo.machine, "x86_64") == 0 &&
+      sizeof(void*) == sizeof(int32_t)) {
+    machine = "i686 (x86_64)";
+  }
+  return machine;
+}
+#endif
 
 void CheckUserAgentStringOrdering(bool mobile_device) {
   std::vector<std::string> pieces;
@@ -131,42 +144,33 @@ void CheckUserAgentStringOrdering(bool mobile_device) {
   ASSERT_LE(0, value);
   ASSERT_TRUE(base::StringToInt(pieces[2], &value));
   ASSERT_LE(0, value);
-#elif defined(USE_OZONE)
-  // X11; Linux x86_64
+#elif defined(OS_CHROMEOS)
   // X11; CrOS armv7l 4537.56.0
-  struct utsname unixinfo;
-  uname(&unixinfo);
-  std::string machine = unixinfo.machine;
-  if (strcmp(unixinfo.machine, "x86_64") == 0 &&
-      sizeof(void*) == sizeof(int32_t)) {
-    machine = "i686 (x86_64)";
-  }
   ASSERT_EQ(2u, pieces.size());
   ASSERT_EQ("X11", pieces[0]);
   pieces = base::SplitStringUsingSubstr(pieces[1], " ", base::KEEP_WHITESPACE,
                                         base::SPLIT_WANT_ALL);
-#if defined(OS_CHROMEOS)
-  // X11; CrOS armv7l 4537.56.0
-  //      ^^
   ASSERT_EQ(3u, pieces.size());
   ASSERT_EQ("CrOS", pieces[0]);
-  ASSERT_EQ(machine, pieces[1]);
+  ASSERT_EQ(GetMachine(), pieces[1]);
   pieces = base::SplitStringUsingSubstr(pieces[2], ".", base::KEEP_WHITESPACE,
                                         base::SPLIT_WANT_ALL);
   for (unsigned int i = 1; i < pieces.size(); ++i) {
     int value;
     ASSERT_TRUE(base::StringToInt(pieces[i], &value));
   }
-#else
+#elif defined(OS_LINUX)
   // X11; Linux x86_64
-  //      ^^
+  ASSERT_EQ(2u, pieces.size());
+  ASSERT_EQ("X11", pieces[0]);
+  pieces = base::SplitStringUsingSubstr(pieces[1], " ", base::KEEP_WHITESPACE,
+                                        base::SPLIT_WANT_ALL);
   ASSERT_EQ(2u, pieces.size());
   // This may not be Linux in all cases in the wild, but it is on the bots.
   ASSERT_EQ("Linux", pieces[0]);
-  ASSERT_EQ(machine, pieces[1]);
-#endif
+  ASSERT_EQ(GetMachine(), pieces[1]);
 #elif defined(OS_ANDROID)
-  // Linux; Android 7.1.1; Samsung Chromebook 3
+  // Linux; Android 7.1.1; Pixel 2
   ASSERT_GE(3u, pieces.size());
   ASSERT_EQ("Linux", pieces[0]);
   std::string model;
@@ -195,6 +199,8 @@ void CheckUserAgentStringOrdering(bool mobile_device) {
   ASSERT_EQ(2u, pieces.size());
   ASSERT_EQ("X11", pieces[0]);
   ASSERT_EQ("Fuchsia", pieces[1]);
+#else
+#error Unsupported platform
 #endif
 
   // Check that the version numbers match.
