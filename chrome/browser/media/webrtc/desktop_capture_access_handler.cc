@@ -390,25 +390,11 @@ void DesktopCaptureAccessHandler::HandleRequest(
   }
 
   // Resolve DesktopMediaID for the specified device id.
-  content::DesktopMediaID media_id;
-  // TODO(miu): Replace "main RenderFrame" IDs with the request's actual
-  // RenderFrame IDs once the desktop capture extension API implementation is
-  // fixed.  http://crbug.com/304341
-  content::WebContents* const web_contents_for_stream =
-      content::WebContents::FromRenderFrameHost(
-          content::RenderFrameHost::FromID(request.render_process_id,
-                                           request.render_frame_id));
-  content::RenderFrameHost* const main_frame =
-      web_contents_for_stream ? web_contents_for_stream->GetMainFrame()
-                              : nullptr;
-  if (main_frame) {
-    media_id =
-        content::DesktopStreamsRegistry::GetInstance()->RequestMediaForStreamId(
-            request.requested_video_device_id,
-            main_frame->GetProcess()->GetID(), main_frame->GetRoutingID(),
-            url::Origin::Create(request.security_origin), nullptr,
-            content::kRegistryStreamTypeDesktop);
-  }
+  content::DesktopMediaID media_id =
+      content::DesktopStreamsRegistry::GetInstance()->RequestMediaForStreamId(
+          request.requested_video_device_id, request.render_process_id,
+          request.render_frame_id, url::Origin::Create(request.security_origin),
+          nullptr, content::kRegistryStreamTypeDesktop);
 
   // Received invalid device id.
   if (media_id.type == content::DesktopMediaID::TYPE_NONE) {

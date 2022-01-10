@@ -53,10 +53,11 @@ class DesktopCaptureChooseDesktopMediaFunctionBase : public ExtensionFunction {
   int request_id_;
 
  private:
-  void OnPickerDialogResults(const GURL& origin,
-                             content::WebContents* web_contents,
-                             const std::string& err,
-                             content::DesktopMediaID source);
+  void OnPickerDialogResults(
+      const GURL& origin,
+      const content::GlobalRenderFrameHostId& render_frame_host_id,
+      const std::string& err,
+      content::DesktopMediaID source);
 
   std::unique_ptr<DesktopMediaPickerController> picker_controller_;
 };
