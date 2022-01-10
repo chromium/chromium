@@ -285,7 +285,6 @@ crbug.com/976497 [ android ] Pixel_WebGPU* [ Skip ]
 crbug.com/852089 [ chromeos ] Pixel_WebGPU* [ Skip ]
 crbug.com/852089 [ fuchsia ] Pixel_WebGPU* [ Skip ]
 crbug.com/852089 [ win7 ] Pixel_WebGPU* [ Skip ]
-crbug.com/852089 [ win10 skia-renderer-gl ] Pixel_WebGPUCopyExternalImage* [ Skip ]
 
 ###############################
 # Temporary Skip Expectations #

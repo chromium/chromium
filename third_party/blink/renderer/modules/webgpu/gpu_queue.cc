@@ -206,11 +206,12 @@ scoped_refptr<Image> GetImageFromExternalImage(
     return nullptr;
   }
 
-  if (canvas && !(canvas->IsWebGL() || canvas->IsRenderingContext2D())) {
+  if (canvas && !(canvas->IsWebGL() || canvas->IsRenderingContext2D() ||
+                  canvas->IsWebGPU())) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kOperationError,
-        "CopyExternalImageToTexture doesn't support canvas without 2d, webgl "
-        "or webgl2 context");
+        "CopyExternalImageToTexture doesn't support canvas without 2d, webgl,"
+        " webgl2 or webgpu context");
     return nullptr;
   }
 
