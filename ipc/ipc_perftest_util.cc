@@ -4,7 +4,8 @@
 
 #include "ipc/ipc_perftest_util.h"
 
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "ipc/ipc_channel_proxy.h"
@@ -129,7 +130,7 @@ ReflectorImpl::ReflectorImpl(mojo::ScopedMessagePipeHandle handle,
           mojo::PendingReceiver<IPC::mojom::Reflector>(std::move(handle))) {}
 
 ReflectorImpl::~ReflectorImpl() {
-  ignore_result(receiver_.Unbind().PassPipe().release());
+  std::ignore = receiver_.Unbind().PassPipe().release();
 }
 
 void ReflectorImpl::Ping(const std::string& value, PingCallback callback) {
