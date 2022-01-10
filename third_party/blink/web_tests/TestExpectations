@@ -7885,6 +7885,8 @@ crbug.com/1281782 [ Mac ] virtual/no-alloc-direct-call/external/wpt/html/canvas/
 crbug.com/1281782 [ Mac ] virtual/no-alloc-direct-call/external/wpt/html/canvas/offscreen/drawing-images-to-the-canvas/2d.drawImage.5arg.html [ Crash Pass ]
 crbug.com/1281792 external/wpt/event-timing/min-duration-threshold.html [ Failure Pass ]
 
+crbug.com/1285857 plugins/plugin-destroyed-enumerate.html [ Failure Pass ]
+
 # Sheriff 2021-12-22
 crbug.com/1179857 [ Linux ] http/tests/inspector-protocol/dom/dom-getFrameOwner.js [ Failure Pass ]
 crbug.com/1179857 [ Mac10.13 ] http/tests/inspector-protocol/dom/dom-getFrameOwner.js [ Failure Pass ]
