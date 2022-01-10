@@ -35,7 +35,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.StrictModeContext;
-import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.test.metrics.HistogramTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -100,6 +100,9 @@ public class PageInfoAboutThisSiteTest {
     public EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
 
     @Rule
+    public HistogramTestRule mHistogramTester = new HistogramTestRule();
+
+    @Rule
     public JniMocker mMocker = new JniMocker();
 
     @Rule
@@ -115,11 +118,6 @@ public class PageInfoAboutThisSiteTest {
         mMocker.mock(PageInfoAboutThisSiteControllerJni.TEST_HOOKS, mMockAboutThisSiteJni);
         mTestServerRule.setServerUsesHttps(true);
         sActivityTestRule.loadUrl(mTestServerRule.getServer().getURL(sSimpleHtml));
-
-        RecordHistogram.forgetHistogramForTesting("Security.PageInfo.TimeOpen.AboutThisSiteShown");
-        RecordHistogram.forgetHistogramForTesting(
-                "Security.PageInfo.TimeOpen.AboutThisSiteNotShown");
-        RecordHistogram.forgetHistogramForTesting("WebsiteSettings.Action");
     }
 
     private void openPageInfo() {
@@ -181,10 +179,10 @@ public class PageInfoAboutThisSiteTest {
 
         dismissPageInfo();
         assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
+                mHistogramTester.getHistogramTotalCount(
                         "Security.PageInfo.TimeOpen.AboutThisSiteShown"));
         assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
+                mHistogramTester.getHistogramTotalCount(
                         "Security.PageInfo.TimeOpen.AboutThisSiteNotShown"));
     }
 
@@ -207,10 +205,10 @@ public class PageInfoAboutThisSiteTest {
 
         dismissPageInfo();
         assertEquals(0,
-                RecordHistogram.getHistogramTotalCountForTesting(
+                mHistogramTester.getHistogramTotalCount(
                         "Security.PageInfo.TimeOpen.AboutThisSiteShown"));
         assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
+                mHistogramTester.getHistogramTotalCount(
                         "Security.PageInfo.TimeOpen.AboutThisSiteNotShown"));
     }
 
@@ -239,18 +237,18 @@ public class PageInfoAboutThisSiteTest {
     @MediumTest
     public void testAboutThisSiteSubPageSourceClicked()
             throws ExecutionException, TimeoutException {
-        assertEquals(0, RecordHistogram.getHistogramTotalCountForTesting("WebsiteSettings.Action"));
+        assertEquals(0, mHistogramTester.getHistogramTotalCount("WebsiteSettings.Action"));
         mockResponse(createDescription());
         openPageInfo();
-        assertEquals(1, RecordHistogram.getHistogramTotalCountForTesting("WebsiteSettings.Action"));
+        assertEquals(1, mHistogramTester.getHistogramTotalCount("WebsiteSettings.Action"));
         assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
+                mHistogramTester.getHistogramValueCount(
                         "WebsiteSettings.Action", PageInfoAction.PAGE_INFO_OPENED));
 
         onView(withId(PageInfoAboutThisSiteController.ROW_ID)).perform(click());
-        assertEquals(2, RecordHistogram.getHistogramTotalCountForTesting("WebsiteSettings.Action"));
+        assertEquals(2, mHistogramTester.getHistogramTotalCount("WebsiteSettings.Action"));
         assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting("WebsiteSettings.Action",
+                mHistogramTester.getHistogramValueCount("WebsiteSettings.Action",
                         PageInfoAction.PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED));
         final CallbackHelper onTabAdded = new CallbackHelper();
         final TabModelObserver observer = new TabModelObserver() {
@@ -266,9 +264,9 @@ public class PageInfoAboutThisSiteTest {
         onView(withText(containsString("Example Source"))).perform(click());
         onTabAdded.waitForCallback(callCount);
         TestThreadUtils.runOnUiThreadBlocking(() -> tabModel.removeObserver(observer));
-        assertEquals(3, RecordHistogram.getHistogramTotalCountForTesting("WebsiteSettings.Action"));
+        assertEquals(3, mHistogramTester.getHistogramTotalCount("WebsiteSettings.Action"));
         assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting("WebsiteSettings.Action",
+                mHistogramTester.getHistogramValueCount("WebsiteSettings.Action",
                         PageInfoAction.PAGE_INFO_ABOUT_THIS_SITE_SOURCE_LINK_CLICKED));
     }
 }

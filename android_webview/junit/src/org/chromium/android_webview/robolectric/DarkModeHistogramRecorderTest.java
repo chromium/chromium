@@ -35,21 +35,7 @@ import org.chromium.testing.local.LocalRobolectricTestRunner;
 public class DarkModeHistogramRecorderTest {
     @Before
     public void setUp() {
-        RecordHistogram.forgetHistogramForTesting("Android.WebView.DarkMode.ForceDarkBehavior");
-        RecordHistogram.forgetHistogramForTesting("Android.WebView.DarkMode.ForceDarkMode");
-        RecordHistogram.forgetHistogramForTesting("Android.WebView.DarkMode.InDarkMode");
-        RecordHistogram.forgetHistogramForTesting(
-                "Android.WebView.DarkMode.InDarkModeVsLightTheme");
-        RecordHistogram.forgetHistogramForTesting("Android.WebView.DarkMode.InDarkModeVsNightMode");
-        RecordHistogram.forgetHistogramForTesting("Android.WebView.DarkMode.LightTheme");
-        RecordHistogram.forgetHistogramForTesting(
-                "Android.WebView.DarkMode.PrimaryTextLuminanceVsLightTheme");
-        RecordHistogram.forgetHistogramForTesting(
-                "Android.WebView.DarkMode.PrimaryTextLuminanceVsNightMode");
-        RecordHistogram.forgetHistogramForTesting("Android.WebView.DarkMode.NightMode");
-        RecordHistogram.forgetHistogramForTesting("Android.WebView.DarkMode.NightModeVsLightTheme");
-        RecordHistogram.forgetHistogramForTesting("Android.WebView.ForceDarkMode");
-        RecordHistogram.forgetHistogramForTesting("Android.WebView.ForceDarkBehavior");
+        ShadowRecordHistogram.reset();
     }
 
     @Test

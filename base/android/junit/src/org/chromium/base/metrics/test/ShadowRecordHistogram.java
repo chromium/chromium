@@ -14,11 +14,12 @@ import org.chromium.base.metrics.RecordHistogram;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Implementation of RecordHistogram which does not rely on native and still enables testing of
  * histogram counts.
+ * ShadowRecordHistogram.reset() should be called in the @Before method of test cases using this
+ * class.
  */
 @Implements(RecordHistogram.class)
 public class ShadowRecordHistogram {
@@ -158,15 +159,6 @@ public class ShadowRecordHistogram {
     public static int getHistogramTotalCountForTesting(String name) {
         Integer i = sTotals.get(name);
         return (i != null) ? i : 0;
-    }
-
-    @Implementation
-    protected static void forgetHistogramForTesting(String name) {
-        Set<Pair<String, Integer>> keySet = sSamples.keySet();
-        for (Pair<String, Integer> key : keySet) {
-            if (name.equals(key.first)) sSamples.put(key, 0);
-        }
-        sTotals.put(name, 0);
     }
 
     private static void recordSample(Pair<String, Integer> key) {

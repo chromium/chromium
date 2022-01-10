@@ -16,6 +16,9 @@
 namespace base {
 namespace android {
 
+using HistogramsSnapshot =
+    std::map<std::string, std::unique_ptr<HistogramSamples>>;
+
 // This backs a Java test util for testing histograms -
 // MetricsUtils.HistogramDelta. It should live in a test-specific file, but we
 // currently can't have test-specific native code packaged in test-specific Java
@@ -23,36 +26,59 @@ namespace android {
 jint JNI_RecordHistogram_GetHistogramValueCountForTesting(
     JNIEnv* env,
     const JavaParamRef<jstring>& histogram_name,
-    jint sample) {
-  HistogramBase* histogram = StatisticsRecorder::FindHistogram(
-      android::ConvertJavaStringToUTF8(env, histogram_name));
+    jint sample,
+    jlong snapshot_ptr) {
+  std::string name = android::ConvertJavaStringToUTF8(env, histogram_name);
+  HistogramBase* histogram = StatisticsRecorder::FindHistogram(name);
   if (histogram == nullptr) {
     // No samples have been recorded for this histogram (yet?).
     return 0;
   }
 
-  std::unique_ptr<HistogramSamples> samples = histogram->SnapshotSamples();
-  return samples->GetCount(static_cast<int>(sample));
+  int actual_count = histogram->SnapshotSamples()->GetCount(sample);
+  if (snapshot_ptr) {
+    auto* snapshot = reinterpret_cast<HistogramsSnapshot*>(snapshot_ptr);
+    auto snapshot_data = snapshot->find(name);
+    if (snapshot_data != snapshot->end())
+      actual_count -= snapshot_data->second->GetCount(sample);
+  }
+
+  return actual_count;
 }
 
 jint JNI_RecordHistogram_GetHistogramTotalCountForTesting(
     JNIEnv* env,
-    const JavaParamRef<jstring>& histogram_name) {
-  HistogramBase* histogram = StatisticsRecorder::FindHistogram(
-      android::ConvertJavaStringToUTF8(env, histogram_name));
+    const JavaParamRef<jstring>& histogram_name,
+    jlong snapshot_ptr) {
+  std::string name = android::ConvertJavaStringToUTF8(env, histogram_name);
+  HistogramBase* histogram = StatisticsRecorder::FindHistogram(name);
   if (histogram == nullptr) {
     // No samples have been recorded for this histogram.
     return 0;
   }
 
-  return histogram->SnapshotSamples()->TotalCount();
+  int actual_count = histogram->SnapshotSamples()->TotalCount();
+  if (snapshot_ptr) {
+    auto* snapshot = reinterpret_cast<HistogramsSnapshot*>(snapshot_ptr);
+    auto snapshot_data = snapshot->find(name);
+    if (snapshot_data != snapshot->end())
+      actual_count -= snapshot_data->second->TotalCount();
+  }
+  return actual_count;
 }
 
-void JNI_RecordHistogram_ForgetHistogramForTesting(
+jlong JNI_RecordHistogram_CreateHistogramSnapshotForTesting(JNIEnv* env) {
+  HistogramsSnapshot* snapshot = new HistogramsSnapshot();
+  for (const auto* const histogram : StatisticsRecorder::GetHistograms()) {
+    (*snapshot)[histogram->histogram_name()] = histogram->SnapshotSamples();
+  }
+  return reinterpret_cast<intptr_t>(snapshot);
+}
+
+void JNI_RecordHistogram_DestroyHistogramSnapshotForTesting(
     JNIEnv* env,
-    const JavaParamRef<jstring>& histogram_name) {
-  StatisticsRecorder::ForgetHistogramForTesting(
-      android::ConvertJavaStringToUTF8(env, histogram_name));
+    jlong snapshot_ptr) {
+  delete reinterpret_cast<HistogramsSnapshot*>(snapshot_ptr);
 }
 
 }  // namespace android
