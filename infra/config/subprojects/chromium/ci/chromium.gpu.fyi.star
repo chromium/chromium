@@ -110,6 +110,15 @@ ci.thin_tester(
 )
 
 ci.thin_tester(
+    name = "Android FYI Release (Pixel 6)",
+    console_view_entry = consoles.console_view_entry(
+        category = "Android|S64|ARM",
+        short_name = "P6",
+    ),
+    triggered_by = ["GPU FYI Android arm64 Builder"],
+)
+
+ci.thin_tester(
     name = "Android FYI SkiaRenderer GL (Nexus 5X)",
     console_view_entry = consoles.console_view_entry(
         category = "Android|skgl|M64",

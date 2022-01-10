@@ -857,6 +857,7 @@
       'gpu-fyi-try-android-p-pixel-2-32': 'gpu_tests_android_release_trybot',
       'gpu-fyi-try-android-p-pixel-2-skv-32': 'gpu_tests_android_release_trybot',
       'gpu-fyi-try-android-r-pixel-4-32': 'gpu_tests_android_release_trybot',
+      'gpu-fyi-try-android-pixel-6-64': 'gpu_tests_android_release_trybot_arm64',
       'gpu-try-android-m-nexus-5x-64': 'gpu_tests_android_release_trybot_arm64',
       'linux_android_dbg_ng': 'android_debug_bot',
       'try-nougat-phone-tester': 'android_debug_trybot_arm64',

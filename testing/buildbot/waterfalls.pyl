@@ -4085,6 +4085,20 @@
           'android_webview_gpu_telemetry_tests': 'android_webview_gpu_telemetry_tests',
         },
       },
+      'Android FYI Release (Pixel 6)': {
+        'browser_config': 'android-chromium',
+        'os_type': 'android',
+        'skip_merge_script': True,
+        'mixins': [
+          'android_s',
+          'has_native_resultdb_integration',
+          'oriole',
+          'gpu-swarming-pool',
+        ],
+        'test_suites': {
+          'gpu_telemetry_tests': 'gpu_noop_sleep_telemetry_test'
+        },
+      },
       'Android FYI SkiaRenderer GL (Nexus 5X)': {
         'os_type': 'android',
         'browser_config': 'android-chromium',

@@ -4655,6 +4655,54 @@
       }
     ]
   },
+  "Android FYI Release (Pixel 6)": {
+    "isolated_scripts": [
+      {
+        "args": [
+          "noop_sleep",
+          "--show-stdout",
+          "--browser=android-chromium",
+          "--passthrough",
+          "-v",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
+        ],
+        "isolate_name": "telemetry_gpu_integration_test_android_chrome",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "noop_sleep_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "should_retry_with_patch": false,
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "cipd_packages": [
+            {
+              "cipd_package": "infra/tools/luci/logdog/butler/${platform}",
+              "location": "bin",
+              "revision": "git_revision:ff387eadf445b24c935f1cf7d6ddd279f8a6b04c"
+            }
+          ],
+          "containment_type": "AUTO",
+          "dimension_sets": [
+            {
+              "device_os": "S",
+              "device_os_type": "userdebug",
+              "device_type": "oriole",
+              "os": "Android",
+              "pool": "chromium.tests.gpu"
+            }
+          ],
+          "idempotent": false,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_android_chrome/"
+      }
+    ]
+  },
   "Android FYI SkiaRenderer GL (Nexus 5X)": {
     "isolated_scripts": [
       {

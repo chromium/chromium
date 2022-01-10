@@ -214,6 +214,13 @@
       },
     },
   },
+  'android_s': {
+    'swarming': {
+      'dimensions': {
+        'device_os': 'S',
+      },
+    },
+  },
   'arm64': {
     'swarming': {
       'dimensions': {
@@ -918,6 +925,15 @@
       'dimensions': {
         'device_os': 'OPM4.171019.021.P2',
         'device_os_flavor': 'google',
+      },
+    },
+  },
+  'oriole': {
+    # Pixel 6
+    'swarming': {
+      'dimensions': {
+        'device_type': 'oriole',
+        'os': 'Android',
       },
     },
   },
