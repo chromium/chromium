@@ -26,7 +26,6 @@
 
       <!-- Hangout Services extension, included in Google Chrome builds only. -->
       <if expr="_google_chrome or enable_hangout_services_extension">
-        <include name="IDR_HANGOUT_SERVICES_BACKGROUND_HTML" file="hangout_services/background.html" type="BINDATA" />
         <include name="IDR_HANGOUT_SERVICES_THUNK_JS" file="hangout_services/thunk.js" type="BINDATA" />
       </if>
       <if expr="not is_android">
