@@ -24,6 +24,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.FeatureList;
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.uid.SettingsSecureBasedIdentificationGenerator;
@@ -139,6 +140,7 @@ public class RequestGeneratorTest {
 
     @Test
     @SmallTest
+    @FlakyTest(message = "crbug.com/1285536")
     @Feature({"Omaha"})
     public void testXMLCreationWithUID() {
         FeatureList.TestValues overrides = new FeatureList.TestValues();
