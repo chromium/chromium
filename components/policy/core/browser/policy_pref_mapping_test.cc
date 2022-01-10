@@ -153,9 +153,9 @@ class PrefTestCase {
 
     pref_ = name;
     if (value)
-      value_ = value->CreateDeepCopy();
+      value_ = value->Clone();
     if (default_value)
-      default_value_ = default_value->CreateDeepCopy();
+      default_value_ = default_value->Clone();
 
     if (value && default_value) {
       ADD_FAILURE()
@@ -170,8 +170,16 @@ class PrefTestCase {
 
   const std::string& pref() const { return pref_; }
 
-  const base::Value* value() const { return value_.get(); }
-  const base::Value* default_value() const { return default_value_.get(); }
+  const base::Value* value() const {
+    if (value_.is_none())
+      return nullptr;
+    return &value_;
+  }
+  const base::Value* default_value() const {
+    if (default_value_.is_none())
+      return nullptr;
+    return &default_value_;
+  }
 
   PrefLocation location() const { return location_; }
 
@@ -185,8 +193,8 @@ class PrefTestCase {
   bool check_for_recommended_;
 
   // At most one of these will be set.
-  std::unique_ptr<base::Value> value_;
-  std::unique_ptr<base::Value> default_value_;
+  base::Value value_;
+  base::Value default_value_;
 };
 
 // Contains the testing details for a single pref affected by a policy. This is
