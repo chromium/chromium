@@ -183,14 +183,13 @@ bool VariationsFieldTrialCreator::SetUpFieldTrials(
     metrics::MetricsStateManager* metrics_state_manager,
     PlatformFieldTrials* platform_field_trials,
     SafeSeedManager* safe_seed_manager,
-    absl::optional<int> low_entropy_source_value,
-    bool extend_variations_safe_mode) {
+    absl::optional<int> low_entropy_source_value) {
   DCHECK(feature_list);
   DCHECK(metrics_state_manager);
   DCHECK(platform_field_trials);
   DCHECK(safe_seed_manager);
 
-  if (extend_variations_safe_mode &&
+  if (base::FieldTrialList::IsTrialActive(kExtendedSafeModeTrial) &&
       !metrics_state_manager->is_background_session()) {
     // If the session is expected to be a background session, then do not extend
     // Variations Safe Mode. Extending Safe Mode involves monitoring for crashes
@@ -449,7 +448,9 @@ void VariationsFieldTrialCreator::MaybeExtendVariationsSafeMode(
     metrics::MetricsStateManager* metrics_state_manager) {
   const std::string group_name =
       base::FieldTrialList::FindFullName(kExtendedSafeModeTrial);
-  if (group_name.empty() || group_name == kDefaultGroup)
+  DCHECK(!group_name.empty());
+
+  if (group_name == kDefaultGroup)
     return;
 
   if (group_name == kControlGroup) {

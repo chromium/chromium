@@ -19,8 +19,6 @@
 #include "weblayer/browser/browser_list_observer.h"
 #include "weblayer/browser/profile_impl.h"
 
-class PrefService;
-
 namespace weblayer {
 
 class WebLayerMetricsServiceClient
@@ -41,9 +39,6 @@ class WebLayerMetricsServiceClient
   ~WebLayerMetricsServiceClient() override;
 
   void RegisterExternalExperiments(const std::vector<int>& experiment_ids);
-
-  // Initializes, but does not necessarily start, the MetricsService.
-  void Initialize(PrefService* pref_service);
 
   // metrics::MetricsServiceClient
   int32_t GetProduct() override;

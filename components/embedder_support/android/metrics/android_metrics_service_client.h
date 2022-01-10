@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
@@ -107,11 +106,7 @@ class AndroidMetricsServiceClient : public MetricsServiceClient,
 
   // Initializes, but does not necessarily start, the MetricsService. See the
   // documentation at the top of the file for more details.
-  //
-  // |user_data_dir| is the path to the client's user data directory. If empty,
-  // a separate file will not be used for Variations Safe Mode prefs.
-  void Initialize(const base::FilePath& user_data_dir,
-                  PrefService* pref_service);
+  void Initialize(PrefService* pref_service);
   void SetHaveMetricsConsent(bool user_consent, bool app_consent);
   void SetFastStartupForTesting(bool fast_startup_for_testing);
   void SetUploadIntervalForTesting(const base::TimeDelta& upload_interval);

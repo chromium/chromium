@@ -14,7 +14,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"
-#include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/time/time.h"
@@ -81,13 +80,6 @@ AwMetricsServiceClient::AwMetricsServiceClient(
     : time_created_(base::Time::Now()), delegate_(std::move(delegate)) {}
 
 AwMetricsServiceClient::~AwMetricsServiceClient() = default;
-
-void AwMetricsServiceClient::Initialize(PrefService* pref_service) {
-  // Pass an empty file path since the path is for the Extended Variations Safe
-  // Mode experiment and Android WebView is excluded from this experiment.
-  AndroidMetricsServiceClient::Initialize(/*user_data_dir=*/base::FilePath(),
-                                          pref_service);
-}
 
 int32_t AwMetricsServiceClient::GetProduct() {
   return metrics::ChromeUserMetricsExtension::ANDROID_WEBVIEW;

@@ -120,11 +120,6 @@ class VariationsFieldTrialCreator {
   // value is true). Must not be null.
   // |low_entropy_source_value| contains the low entropy source value that was
   // used for client-side randomization of variations.
-  // |extend_variations_safe_mode| indicates whether the client should
-  // participate in the extended variations safe mode field trial. This should
-  // be the case for all platforms that use a VariationsSeed with the exception
-  // of Android WebView, which has its own safe mode mechanism: crbug/1220131.
-  // TODO(crbug/1245646): Remove |extend_variations_safe_mode| param.
   //
   // NOTE: The ordering of the FeatureList method calls is such that the
   // explicit --disable-features and --enable-features from the command line
@@ -140,8 +135,7 @@ class VariationsFieldTrialCreator {
       metrics::MetricsStateManager* metrics_state_manager,
       PlatformFieldTrials* platform_field_trials,
       SafeSeedManager* safe_seed_manager,
-      absl::optional<int> low_entropy_source_value,
-      bool extend_variations_safe_mode = true);
+      absl::optional<int> low_entropy_source_value);
 
   // Returns all of the client state used for filtering studies.
   // As a side-effect, may update the stored permanent consistency country.

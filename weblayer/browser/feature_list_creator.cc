@@ -75,15 +75,11 @@ void FeatureListCreator::SetUpFieldTrials() {
   std::vector<std::string> variation_ids;
   auto feature_list = std::make_unique<base::FeatureList>();
 
-  // Pass false for |extend_variations_safe_mode| to temporarily opt out of the
-  // Extended Variations Safe Mode experiment.
-  // TODO(crbug/1245347): Enable the experiment on Android WebLayer.
   variations_service_->SetUpFieldTrials(
       variation_ids,
       content::GetSwitchDependentFeatureOverrides(
           *base::CommandLine::ForCurrentProcess()),
-      std::move(feature_list), &weblayer_field_trials_,
-      /*extend_variations_safe_mode=*/false);
+      std::move(feature_list), &weblayer_field_trials_);
   variations::InitCrashKeys();
 #else
   // TODO(weblayer-dev): Support variations on desktop.

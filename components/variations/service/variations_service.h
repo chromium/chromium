@@ -187,14 +187,12 @@ class VariationsService
   }
 
   // Wrapper around VariationsFieldTrialCreator::SetUpFieldTrials().
-  // TODO(crbug/1245646): Remove |extend_variations_safe_mode| param.
   bool SetUpFieldTrials(
       const std::vector<std::string>& variation_ids,
       const std::vector<base::FeatureList::FeatureOverrideInfo>&
           extra_overrides,
       std::unique_ptr<base::FeatureList> feature_list,
-      variations::PlatformFieldTrials* platform_field_trials,
-      bool extend_variations_safe_mode = true);
+      variations::PlatformFieldTrials* platform_field_trials);
 
   // Overrides cached UI strings on the resource bundle once it is initialized.
   void OverrideCachedUIStrings();

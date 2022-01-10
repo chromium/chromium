@@ -296,15 +296,14 @@ class TestVariationsFieldTrialCreator : public VariationsFieldTrialCreator {
 
   // A convenience wrapper around SetUpFieldTrials() which passes default values
   // for uninteresting params.
-  bool SetUpFieldTrials(bool extend_variations_safe_mode = true) {
+  bool SetUpFieldTrials() {
     TestPlatformFieldTrials platform_field_trials;
     return VariationsFieldTrialCreator::SetUpFieldTrials(
         /*variation_ids=*/std::vector<std::string>(),
         std::vector<base::FeatureList::FeatureOverrideInfo>(),
         /*low_entropy_provider=*/nullptr, std::make_unique<base::FeatureList>(),
         metrics_state_manager_.get(), &platform_field_trials,
-        safe_seed_manager_, /*low_entropy_source_value=*/absl::nullopt,
-        extend_variations_safe_mode);
+        safe_seed_manager_, /*low_entropy_source_value=*/absl::nullopt);
   }
 
   TestVariationsSeedStore* seed_store() { return &seed_store_; }
@@ -914,31 +913,35 @@ TEST_F(FieldTrialCreatorTest, ClientFilterableState_HardwareClass) {
 }
 #endif  // defined(OS_ANDROID)
 
+// Verify that providing an empty user data directory opts the client out of the
+// Extended Variations Safe Mode experiment.
 TEST_F(FieldTrialCreatorSafeModeExperimentTest, OptOutOfExperiment) {
   // Ensure that variations safe mode is not triggered.
   NiceMock<MockSafeSeedManager> safe_seed_manager(local_state());
   ON_CALL(safe_seed_manager, ShouldRunInSafeMode())
       .WillByDefault(Return(false));
 
+  // Specify a channel on which the Extended Variations Safe Mode experiment is
+  // running.
   version_info::Channel channel = version_info::Channel::DEV;
   NiceMock<MockVariationsServiceClient> variations_service_client;
   ON_CALL(variations_service_client, GetChannel())
       .WillByDefault(Return(channel));
 
   TestVariationsFieldTrialCreator field_trial_creator(
-      local_state(), &variations_service_client, &safe_seed_manager, channel);
+      local_state(), &variations_service_client, &safe_seed_manager, channel,
+      base::FilePath());
 
   base::HistogramTester histogram_tester;
-  ASSERT_TRUE(field_trial_creator.SetUpFieldTrials(
-      /*extend_variations_safe_mode=*/false));
+  ASSERT_TRUE(field_trial_creator.SetUpFieldTrials());
 
-  // Verify that the experiment is not active and that the WritePrefsTime metric
-  // was not recorded.
+  // Verify that the experiment is not active and that Variations Safe Mode was
+  // not extended.
   EXPECT_FALSE(base::FieldTrialList::IsTrialActive(kExtendedSafeModeTrial));
+  EXPECT_FALSE(
+      field_trial_creator.was_maybe_extend_variations_safe_mode_called());
   histogram_tester.ExpectTotalCount(
       "Variations.ExtendedSafeMode.WritePrefsTime", 0);
-
-  base::FeatureList::ClearInstanceForTesting();
 }
 
 INSTANTIATE_TEST_SUITE_P(
@@ -976,9 +979,13 @@ TEST_P(FieldTrialCreatorTestWithStartupVisibility,
   StartupVisibilityTestParams params = GetParam();
   TestVariationsFieldTrialCreator field_trial_creator(
       local_state(), &variations_service_client, &safe_seed_manager, channel,
-      base::FilePath(), params.startup_visibility);
-  ASSERT_TRUE(field_trial_creator.SetUpFieldTrials());
+      user_data_dir_path(), params.startup_visibility);
 
+  // Verify that the Extended Variations Safe Mode experiment is active to be
+  // certain that Safe Mode is (or isn't) extended due to the StartupVisibility.
+  ASSERT_TRUE(base::FieldTrialList::IsTrialActive(kExtendedSafeModeTrial));
+
+  ASSERT_TRUE(field_trial_creator.SetUpFieldTrials());
   // Verify that MaybeExtendVariationsSafeMode() was (or wasn't) called.
   EXPECT_EQ(field_trial_creator.was_maybe_extend_variations_safe_mode_called(),
             params.extend_safe_mode);
