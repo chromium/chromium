@@ -19531,7 +19531,7 @@
     },
     {
       'name': 'SharedArrayBufferUnrestrictedAccessAllowed',
-      'owners': ['bbudge@chromium.org', 'vahl@chromium.org'],
+      'owners': ['arthursonzogni@chromium.org', 'vahl@chromium.org'],
       'type': 'main',
       'schema': { 'type': 'boolean' },
       'supported_on': ['chrome.*:91-', 'chrome_os:91-'],
