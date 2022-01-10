@@ -7,6 +7,8 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "ui/gfx/image/image.h"
 
 namespace ash {
@@ -43,6 +45,14 @@ class COMPONENT_EXPORT(QUICK_PAIR_UI) FastPairNotificationController {
                             base::RepeatingClosure on_learn_more_clicked,
                             base::OnceCallback<void(bool)> on_close);
   void RemoveNotifications();
+
+ private:
+  // This timer is used for Discovery and Associate Account notifications to
+  // remove them from the Message Center if the user does not elect to begin
+  // pairing/saving to their account.
+  base::OneShotTimer expire_notification_timer_;
+
+  base::WeakPtrFactory<FastPairNotificationController> weak_ptr_factory_{this};
 };
 
 }  // namespace quick_pair
