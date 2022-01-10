@@ -121,10 +121,6 @@ class ASH_EXPORT SearchResultListView : public SearchResultContainerView {
 
   views::Label* title_label_for_test() { return title_label_; }
 
- protected:
-  // Overridden from views::View:
-  void VisibilityChanged(View* starting_from, bool is_visible) override;
-
  private:
   friend class test::SearchResultListViewTest;
 

@@ -505,14 +505,6 @@ void SearchResultListView::SearchResultActionActivated(
   }
 }
 
-void SearchResultListView::VisibilityChanged(View* starting_from,
-                                             bool is_visible) {
-  SearchResultContainerView::VisibilityChanged(starting_from, is_visible);
-  // We only do this work when is_visible is false.
-  if (is_visible)
-    return;
-}
-
 std::vector<SearchResult*> SearchResultListView::GetAssistantResults() {
   // Only show Assistant results if there are no tiles. There is not enough
   // room in launcher to display Assistant results if there are tiles visible.
