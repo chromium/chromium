@@ -114,9 +114,10 @@ class TextFragmentsManagerImplTest : public WebTest {
                                           bool is_same_document,
                                           bool feature_color_change,
                                           bool add_web_frame) {
-    if (feature_color_change) {
+    if (!feature_color_change) {
       feature_list_.InitWithFeatures(
-          {features::kIOSSharedHighlightingColorChange}, {});
+          /*enabled_features=*/{},
+          /*disabled_features=*/{features::kIOSSharedHighlightingColorChange});
     }
     web_state_->SetHasOpener(has_opener);
     context_.SetHasUserGesture(has_user_gesture);
