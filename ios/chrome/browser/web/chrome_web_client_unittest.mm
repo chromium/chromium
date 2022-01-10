@@ -14,7 +14,6 @@
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #include "base/test/scoped_feature_list.h"
-#include "base/test/task_environment.h"
 #include "base/version.h"
 #include "components/captive_portal/core/captive_portal_detector.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
@@ -29,8 +28,8 @@
 #import "ios/chrome/browser/safe_browsing/safe_browsing_blocking_page.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_error.h"
 #import "ios/chrome/browser/safe_browsing/safe_browsing_unsafe_resource_container.h"
-#import "ios/chrome/browser/ssl/captive_portal_detector_tab_helper.h"
-#import "ios/chrome/browser/ssl/captive_portal_detector_tab_helper_delegate.h"
+#import "ios/chrome/browser/ssl/captive_portal_tab_helper.h"
+#import "ios/chrome/browser/ssl/captive_portal_tab_helper_delegate.h"
 #include "ios/chrome/browser/web/error_page_controller_bridge.h"
 #import "ios/chrome/browser/web/error_page_util.h"
 #include "ios/chrome/browser/web/features.h"
@@ -45,11 +44,13 @@
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/js_test_util.h"
 #include "ios/web/public/test/scoped_testing_web_client.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 #include "net/ssl/ssl_info.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -82,7 +83,8 @@ NSError* CreateTestError() {
 
 class ChromeWebClientTest : public PlatformTest {
  public:
-  ChromeWebClientTest() {
+  ChromeWebClientTest()
+      : environment_(web::WebTaskEnvironment::Options::IO_MAINLOOP) {
     browser_state_ = TestChromeBrowserState::Builder().Build();
   }
 
@@ -93,9 +95,9 @@ class ChromeWebClientTest : public PlatformTest {
 
   ChromeBrowserState* browser_state() { return browser_state_.get(); }
 
- private:
-  base::test::TaskEnvironment environment_;
-  std::unique_ptr<ChromeBrowserState> browser_state_;
+ protected:
+  web::WebTaskEnvironment environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
 };
 
 TEST_F(ChromeWebClientTest, UserAgent) {
@@ -336,11 +338,14 @@ TEST_F(ChromeWebClientTest, PrepareErrorPageWithSSLInfo) {
   test_loader_factory.AddResponse(
       captive_portal::CaptivePortalDetector::kDefaultURL, "",
       net::HTTP_NO_CONTENT);
-  id captive_portal_detector_tab_helper_delegate = [OCMockObject
-      mockForProtocol:@protocol(CaptivePortalDetectorTabHelperDelegate)];
-  CaptivePortalDetectorTabHelper::CreateForWebState(
-      &web_state, captive_portal_detector_tab_helper_delegate,
-      &test_loader_factory);
+  browser_state_->SetSharedURLLoaderFactory(
+      base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(
+          &test_loader_factory));
+
+  id captive_portal_tab_helper_delegate =
+      [OCMockObject mockForProtocol:@protocol(CaptivePortalTabHelperDelegate)];
+  CaptivePortalTabHelper::CreateForWebState(&web_state,
+                                            captive_portal_tab_helper_delegate);
 
   web_state.SetBrowserState(browser_state());
   web_client.PrepareErrorPage(&web_state, GURL(kTestUrl), error,

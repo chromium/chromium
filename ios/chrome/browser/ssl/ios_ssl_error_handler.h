@@ -107,6 +107,9 @@ class IOSSSLErrorHandler : public web::WebStateUserData<IOSSSLErrorHandler> {
   // A timer to display the SSL interstitial if the captive portal detection
   // takes too long.
   base::OneShotTimer timer_;
+  // The underlying CaptivePortalDetector.
+  std::unique_ptr<captive_portal::CaptivePortalDetector>
+      captive_portal_detector_;
 
   base::WeakPtrFactory<IOSSSLErrorHandler> weak_factory_;
 

@@ -56,8 +56,8 @@
 #include "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
-#import "ios/chrome/browser/ssl/captive_portal_detector_tab_helper.h"
-#import "ios/chrome/browser/ssl/captive_portal_detector_tab_helper_delegate.h"
+#import "ios/chrome/browser/ssl/captive_portal_tab_helper.h"
+#import "ios/chrome/browser/ssl/captive_portal_tab_helper_delegate.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
@@ -274,7 +274,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
 #pragma mark - BVC
 
 @interface BrowserViewController () <BubblePresenterDelegate,
-                                     CaptivePortalDetectorTabHelperDelegate,
+                                     CaptivePortalTabHelperDelegate,
                                      ChromeLensControllerDelegate,
                                      CRWWebStateObserver,
                                      FindBarPresentationDelegate,
@@ -2611,7 +2611,7 @@ NSString* const kBrowserViewControllerSnackbarCategory =
                                              self.sideSwipeController);
   SadTabTabHelper::FromWebState(webState)->SetDelegate(_sadTabCoordinator);
   NetExportTabHelper::CreateForWebState(webState, self);
-  CaptivePortalDetectorTabHelper::CreateForWebState(webState, self);
+  CaptivePortalTabHelper::CreateForWebState(webState, self);
 
   OfflinePageTabHelper::CreateForWebState(
       webState, ReadingListModelFactory::GetForBrowserState(self.browserState));
@@ -4550,11 +4550,10 @@ NSString* const kBrowserViewControllerSnackbarCategory =
   return nil;
 }
 
-#pragma mark - CaptivePortalDetectorTabHelperDelegate
+#pragma mark - CaptivePortalTabHelperDelegate
 
-- (void)captivePortalDetectorTabHelper:
-            (CaptivePortalDetectorTabHelper*)tabHelper
-                 connectWithLandingURL:(const GURL&)landingURL {
+- (void)captivePortalTabHelper:(CaptivePortalTabHelper*)tabHelper
+         connectWithLandingURL:(const GURL&)landingURL {
   TabInsertionBrowserAgent* insertionAgent =
       TabInsertionBrowserAgent::FromBrowser(self.browser);
   insertionAgent->InsertWebState(
