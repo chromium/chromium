@@ -150,7 +150,7 @@ DWriteFontLookupTableBuilder::~DWriteFontLookupTableBuilder() = default;
 
 base::ReadOnlySharedMemoryRegion
 DWriteFontLookupTableBuilder::DuplicateMemoryRegion() {
-  DCHECK(!TableCacheFilePath().empty())
+  DCHECK(!table_cache_path_.empty())
       << "Ensure that a cache_directory_ is set (see "
          "InitializeCacheDirectoryFromProfile())";
   DCHECK(FontUniqueNameTableReady());
@@ -267,12 +267,6 @@ void DWriteFontLookupTableBuilder::PostCallbacks() {
       }));
 }
 
-base::FilePath DWriteFontLookupTableBuilder::TableCacheFilePath() {
-  if (!EnsureCacheDirectory(cache_directory_))
-    return base::FilePath();
-  return cache_directory_.Append(kProtobufFilename);
-}
-
 bool DWriteFontLookupTableBuilder::PersistToFile() {
   DCHECK(caching_enabled_);
 
@@ -280,14 +274,14 @@ bool DWriteFontLookupTableBuilder::PersistToFile() {
     return false;
 
   return blink::font_table_persistence::PersistToFile(font_table_memory_,
-                                                      TableCacheFilePath());
+                                                      table_cache_path_);
 }
 
 bool DWriteFontLookupTableBuilder::LoadFromFile() {
   DCHECK(caching_enabled_);
   DCHECK(!IsFontUniqueNameTableValid());
 
-  return blink::font_table_persistence::LoadFromFile(TableCacheFilePath(),
+  return blink::font_table_persistence::LoadFromFile(table_cache_path_,
                                                      &font_table_memory_);
 }
 
@@ -342,11 +336,14 @@ void DWriteFontLookupTableBuilder::
   if (HasDWriteUniqueFontLookups())
     return;
 
+  if (EnsureCacheDirectory(cache_directory_))
+    table_cache_path_ = cache_directory_.Append(kProtobufFilename);
+
   // Do not schedule indexing if we do not have a profile or temporary directory
   // to store the cached table. This prevents repetitive and redundant scanning
   // when the ContentBrowserClient did not provide a cache directory, as is the
   // case in content_unittests.
-  if (TableCacheFilePath().empty())
+  if (table_cache_path_.empty())
     return;
 
   start_time_table_ready_ = base::TimeTicks::Now();

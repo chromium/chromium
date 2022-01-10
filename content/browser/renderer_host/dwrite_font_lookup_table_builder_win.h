@@ -188,8 +188,6 @@ class CONTENT_EXPORT DWriteFontLookupTableBuilder {
 
   void InitializeDirectWrite();
 
-  base::FilePath TableCacheFilePath();
-
   // Returns true if IDWriteFactory3 is available, which means that we can
   // access IDWriteFontSet API which provides direct lookup by PostScript name
   // and full font name, in which case we do not need to build this table.
@@ -235,6 +233,7 @@ class CONTENT_EXPORT DWriteFontLookupTableBuilder {
   base::TimeTicks start_time_table_ready_;
   base::TimeTicks start_time_table_build_;
   base::FilePath cache_directory_;
+  base::FilePath table_cache_path_;
 
   bool caching_enabled_ = true;
   absl::optional<base::WaitableEvent> hang_event_for_testing_;
