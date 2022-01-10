@@ -403,7 +403,8 @@ TEST_F(DesktopCaptureAccessHandlerTest, ScreenCaptureAccessDlpRestricted) {
   primary_root_window->Init(ui::LAYER_NOT_DRAWN);
   SetPrimaryRootWindow(primary_root_window.get());
 
-  blink::mojom::MediaStreamRequestResult result;
+  blink::mojom::MediaStreamRequestResult result =
+      blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED;
   blink::MediaStreamDevices devices;
 
   ProcessGenerateStreamRequest(/*requested_video_device_id=*/std::string(),
@@ -412,6 +413,39 @@ TEST_F(DesktopCaptureAccessHandlerTest, ScreenCaptureAccessDlpRestricted) {
 
   EXPECT_EQ(blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED, result);
   EXPECT_EQ(0u, devices.size());
+}
+
+TEST_F(DesktopCaptureAccessHandlerTest, ScreenCaptureAccessDlpNotRestricted) {
+  // Setup Data Leak Prevention restriction.
+  policy::MockDlpContentManagerAsh mock_dlp_content_manager;
+  policy::ScopedDlpContentManagerAshForTesting scoped_dlp_content_manager(
+      &mock_dlp_content_manager);
+  EXPECT_CALL(mock_dlp_content_manager, IsScreenCaptureRestricted(testing::_))
+      .Times(1)
+      .WillOnce(testing::Return(false));
+
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      switches::kEnableUserMediaScreenCapturing);
+
+  extensions::ExtensionBuilder extensionBuilder(kComponentExtension);
+  extensionBuilder.SetLocation(extensions::mojom::ManifestLocation::kComponent);
+  auto extension = extensionBuilder.Build();
+
+  std::unique_ptr<aura::Window> primary_root_window =
+      std::make_unique<aura::Window>(/*delegate=*/nullptr);
+  primary_root_window->Init(ui::LAYER_NOT_DRAWN);
+  SetPrimaryRootWindow(primary_root_window.get());
+
+  blink::mojom::MediaStreamRequestResult result =
+      blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED;
+  blink::MediaStreamDevices devices;
+
+  ProcessGenerateStreamRequest(/*requested_video_device_id=*/std::string(),
+                               GURL(kOrigin), extension.get(), &result,
+                               &devices);
+
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, result);
+  EXPECT_EQ(1u, devices.size());
 }
 
 TEST_F(DesktopCaptureAccessHandlerTest, GenerateStreamDlpRestricted) {
@@ -443,6 +477,35 @@ TEST_F(DesktopCaptureAccessHandlerTest, GenerateStreamDlpRestricted) {
   EXPECT_EQ(0u, devices.size());
 }
 
+TEST_F(DesktopCaptureAccessHandlerTest, GenerateStreamDlpNotRestricted) {
+  // Setup Data Leak Prevention restriction.
+  policy::MockDlpContentManagerAsh mock_dlp_content_manager;
+  policy::ScopedDlpContentManagerAshForTesting scoped_dlp_content_manager(
+      &mock_dlp_content_manager);
+  EXPECT_CALL(mock_dlp_content_manager, IsScreenCaptureRestricted(testing::_))
+      .Times(1)
+      .WillOnce(testing::Return(false));
+
+  const std::string id =
+      content::DesktopStreamsRegistry::GetInstance()->RegisterStream(
+          web_contents()->GetMainFrame()->GetProcess()->GetID(),
+          web_contents()->GetMainFrame()->GetRoutingID(),
+          url::Origin::Create(GURL(kOrigin)),
+          content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
+                                  content::DesktopMediaID::kFakeId),
+          /*extension_name=*/"",
+          content::DesktopStreamRegistryType::kRegistryStreamTypeDesktop);
+  blink::mojom::MediaStreamRequestResult result =
+      blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED;
+  blink::MediaStreamDevices devices;
+
+  ProcessGenerateStreamRequest(id, GURL(kOrigin), /*extension=*/nullptr,
+                               &result, &devices);
+
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, result);
+  EXPECT_EQ(1u, devices.size());
+}
+
 TEST_F(DesktopCaptureAccessHandlerTest, ChangeSourceDlpRestricted) {
   // Setup Data Leak Prevention restriction.
   policy::MockDlpContentManagerAsh mock_dlp_content_manager;
@@ -461,5 +524,25 @@ TEST_F(DesktopCaptureAccessHandlerTest, ChangeSourceDlpRestricted) {
       &result, &devices, blink::MEDIA_DEVICE_UPDATE, /*request audio=*/false);
   EXPECT_EQ(blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED, result);
   EXPECT_EQ(0u, devices.size());
+}
+
+TEST_F(DesktopCaptureAccessHandlerTest, ChangeSourceDlpNotRestricted) {
+  // Setup Data Leak Prevention restriction.
+  policy::MockDlpContentManagerAsh mock_dlp_content_manager;
+  policy::ScopedDlpContentManagerAshForTesting scoped_dlp_content_manager(
+      &mock_dlp_content_manager);
+  EXPECT_CALL(mock_dlp_content_manager, IsScreenCaptureRestricted(testing::_))
+      .Times(1)
+      .WillOnce(testing::Return(false));
+
+  blink::mojom::MediaStreamRequestResult result =
+      blink::mojom::MediaStreamRequestResult::NOT_SUPPORTED;
+  blink::MediaStreamDevices devices;
+  ProcessDeviceUpdateRequest(
+      content::DesktopMediaID(content::DesktopMediaID::TYPE_SCREEN,
+                              content::DesktopMediaID::kFakeId),
+      &result, &devices, blink::MEDIA_DEVICE_UPDATE, /*request audio=*/false);
+  EXPECT_EQ(blink::mojom::MediaStreamRequestResult::OK, result);
+  EXPECT_EQ(1u, devices.size());
 }
 #endif
