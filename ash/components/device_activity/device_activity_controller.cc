@@ -26,8 +26,7 @@ DeviceActivityController* g_ash_device_activity_controller = nullptr;
 
 // Production edge server for reporting device actives.
 // TODO(https://crbug.com/1267432): Enable passing base url as a runtime flag.
-const char kFresnelBaseUrl[] =
-    "https://autopush-crosfresnel-pa.sandbox.googleapis.com";
+const char kFresnelBaseUrl[] = "https://crosfresnel-pa.googleapis.com";
 
 class PsmDelegateImpl : public PsmDelegate {
  public:
