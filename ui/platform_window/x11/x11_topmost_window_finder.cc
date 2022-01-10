@@ -61,9 +61,9 @@ bool EnumerateAllWindows(ShouldStopIteratingCallback should_stop_iterating,
 
 void EnumerateTopLevelWindows(
     ui::ShouldStopIteratingCallback should_stop_iterating) {
-  // Some WMs parent 'top-level' windows in unnamed actual top-level windows
-  // (ion WM), so extend the search depth to all children of top-level windows.
-  const int kMaxSearchDepth = 1;
+  // WMs may reparent toplevel windows inside their own containers, so extend
+  // the search to all grandchildren of all toplevel windows.
+  const int kMaxSearchDepth = 2;
   ui::EnumerateAllWindows(should_stop_iterating, kMaxSearchDepth);
 }
 
