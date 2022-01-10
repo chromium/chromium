@@ -75,8 +75,8 @@ CanvasRenderingContext2DState::CanvasRenderingContext2DState()
       unparsed_font_(defaultFont),
       unparsed_css_filter_(defaultFilter),
       text_align_(kStartTextAlign),
-      unparsed_letter_spacing_(defaultSpacing),
-      unparsed_word_spacing_(defaultSpacing),
+      parsed_letter_spacing_(defaultSpacing),
+      parsed_word_spacing_(defaultSpacing),
       realized_font_(false),
       is_transform_invertible_(true),
       has_clip_(false),
@@ -771,7 +771,7 @@ bool CanvasRenderingContext2DState::PatternIsAccelerated(
 void CanvasRenderingContext2DState::SetLetterSpacing(
     const String& letter_spacing) {
   DCHECK(realized_font_);
-  if (unparsed_letter_spacing_ == letter_spacing)
+  if (parsed_letter_spacing_ == letter_spacing)
     return;
   float num_spacing;
   CSSPrimitiveValue::UnitType unit;
@@ -783,13 +783,16 @@ void CanvasRenderingContext2DState::SetLetterSpacing(
 
   letter_spacing_unit_ = unit;
   letter_spacing_ = num_spacing;
-  unparsed_letter_spacing_ = letter_spacing;
+  StringBuilder builder;
+  builder.AppendNumber(num_spacing);
+  builder.Append(CSSPrimitiveValue::UnitTypeToString(unit));
+  parsed_letter_spacing_ = builder.ToString();
   SetFont(GetFontDescription(), font_.GetFontSelector());
 }
 
 void CanvasRenderingContext2DState::SetWordSpacing(const String& word_spacing) {
   DCHECK(realized_font_);
-  if (unparsed_word_spacing_ == word_spacing)
+  if (parsed_word_spacing_ == word_spacing)
     return;
   float num_spacing;
   CSSPrimitiveValue::UnitType unit;
@@ -801,7 +804,10 @@ void CanvasRenderingContext2DState::SetWordSpacing(const String& word_spacing) {
 
   word_spacing_unit_ = unit;
   word_spacing_ = num_spacing;
-  unparsed_word_spacing_ = word_spacing;
+  StringBuilder builder;
+  builder.AppendNumber(num_spacing);
+  builder.Append(CSSPrimitiveValue::UnitTypeToString(unit));
+  parsed_word_spacing_ = builder.ToString();
   SetFont(GetFontDescription(), font_.GetFontSelector());
 }
 

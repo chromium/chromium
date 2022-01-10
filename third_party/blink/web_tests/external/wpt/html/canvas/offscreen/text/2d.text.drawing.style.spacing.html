@@ -35,6 +35,11 @@ ctx.letterSpacing = '-1px';
 ctx.wordSpacing = '-1px';
 _assertSame(ctx.letterSpacing, '-1px', "ctx.letterSpacing", "'-1px'");
 _assertSame(ctx.wordSpacing, '-1px', "ctx.wordSpacing", "'-1px'");
+
+ctx.letterSpacing = '1PX';
+ctx.wordSpacing = '1EM';
+_assertSame(ctx.letterSpacing, '1px', "ctx.letterSpacing", "'1px'");
+_assertSame(ctx.wordSpacing, '1em', "ctx.wordSpacing", "'1em'");
 t.done();
 
 });

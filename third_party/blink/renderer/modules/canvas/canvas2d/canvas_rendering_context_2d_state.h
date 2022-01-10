@@ -160,10 +160,10 @@ class CanvasRenderingContext2DState final
   TextBaseline GetTextBaseline() const { return text_baseline_; }
 
   void SetLetterSpacing(const String& letter_spacing);
-  String GetLetterSpacing() const { return unparsed_letter_spacing_; }
+  String GetLetterSpacing() const { return parsed_letter_spacing_; }
 
   void SetWordSpacing(const String& word_spacing);
-  String GetWordSpacing() const { return unparsed_word_spacing_; }
+  String GetWordSpacing() const { return parsed_word_spacing_; }
 
   void SetTextRendering(TextRenderingMode text_rendering,
                         FontSelector* selector);
@@ -305,12 +305,12 @@ class CanvasRenderingContext2DState final
   float letter_spacing_{0};
   CSSPrimitiveValue::UnitType letter_spacing_unit_{
       CSSPrimitiveValue::UnitType::kPixels};
-  String unparsed_letter_spacing_;
+  String parsed_letter_spacing_;
 
   float word_spacing_{0};
   CSSPrimitiveValue::UnitType word_spacing_unit_{
       CSSPrimitiveValue::UnitType::kPixels};
-  String unparsed_word_spacing_;
+  String parsed_word_spacing_;
   TextRenderingMode text_rendering_mode_{TextRenderingMode::kAutoTextRendering};
   FontDescription::Kerning font_kerning_{FontDescription::kAutoKerning};
   FontSelectionValue font_stretch_{NormalWidthValue()};

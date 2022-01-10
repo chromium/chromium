@@ -759,6 +759,11 @@
     @assert ctx.letterSpacing === '-1px';
     @assert ctx.wordSpacing === '-1px';
 
+    ctx.letterSpacing = '1PX';
+    ctx.wordSpacing = '1EM';
+    @assert ctx.letterSpacing === '1px';
+    @assert ctx.wordSpacing === '1em';
+
 - name: 2d.text.drawing.style.nonfinite.spacing
   desc: Testing letter spacing and word spacing with nonfinite inputs
   testing:

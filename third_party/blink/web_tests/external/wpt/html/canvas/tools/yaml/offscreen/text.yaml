@@ -1278,6 +1278,11 @@
     ctx.wordSpacing = '-1px';
     @assert ctx.letterSpacing === '-1px';
     @assert ctx.wordSpacing === '-1px';
+
+    ctx.letterSpacing = '1PX';
+    ctx.wordSpacing = '1EM';
+    @assert ctx.letterSpacing === '1px';
+    @assert ctx.wordSpacing === '1em';
     t.done();
 
 - name: 2d.text.drawing.style.nonfinite.spacing
