@@ -327,13 +327,13 @@ void PolicyApplicator::ApplyNewPolicy(const std::string& entry_identifier,
   if (old_guid == new_guid &&
       shill_property_util::DoIdentifyingPropertiesMatch(
           new_shill_properties, *entry_properties_as_dict)) {
-    VLOG(1) << "Updating previously managed configuration with the "
-            << "updated policy " << new_guid << ".";
+    NET_LOG(EVENT) << "Updating previously managed configuration with the "
+                   << "updated policy " << new_guid << ".";
     WriteNewShillConfiguration(std::move(new_shill_properties),
                                new_policy.Clone(), std::move(callback));
   } else {
-    VLOG(1) << "Deleting profile entry before writing new policy " << new_guid
-            << " because of identifying properties changed.";
+    NET_LOG(EVENT) << "Deleting profile entry before writing new policy "
+                   << new_guid << " because of identifying properties changed.";
     // In general, old entries should at first be deleted before new
     // configurations are written to prevent inconsistencies. Therefore, we
     // delay the writing of the new config here until ~PolicyApplicator.
@@ -368,7 +368,8 @@ void PolicyApplicator::ApplyGlobalPolicyOnUnmanagedEntry(
     std::move(callback).Run();
     return;
   }
-  VLOG(2) << "Apply global network config to unmanaged entry.";
+  NET_LOG(EVENT) << "Apply global network config to unmanaged entry "
+                 << entry_identifier << ".";
   const base::DictionaryValue* entry_properties_as_dict = nullptr;
   entry_properties.GetAsDictionary(&entry_properties_as_dict);
   DCHECK(entry_properties_as_dict);
@@ -446,8 +447,8 @@ void PolicyApplicator::ApplyRemainingPolicies() {
         GetByGUID(all_policies_, guid);
     DCHECK(network_policy);
 
-    VLOG(1) << "Creating new configuration managed by policy " << *it
-            << " in profile " << profile_.ToDebugString() << ".";
+    NET_LOG(EVENT) << "Creating new configuration managed by policy " << guid
+                   << " in profile " << profile_.ToDebugString() << ".";
 
     if (IsCellularPolicy(*network_policy)) {
       const std::string* smdp_address = GetSMDPAddressFromONC(*network_policy);
