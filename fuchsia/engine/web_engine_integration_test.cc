@@ -78,8 +78,7 @@ class WebEngineIntegrationMediaTest : public WebEngineIntegrationTest {
   fuchsia::web::CreateContextParams ContextParamsWithAudioAndTestData() {
     fuchsia::web::CreateContextParams create_params =
         TestContextParamsWithTestData();
-    *create_params.mutable_features() |=
-        fuchsia::web::ContextFeatureFlags::AUDIO;
+    create_params.set_features(fuchsia::web::ContextFeatureFlags::AUDIO);
     return create_params;
   }
 
@@ -534,8 +533,7 @@ class MAYBE_VulkanWebEngineIntegrationTest
 TEST_F(MAYBE_VulkanWebEngineIntegrationTest,
        WebGLContextPresentWithVulkanFeature) {
   fuchsia::web::CreateContextParams create_params = TestContextParams();
-  *create_params.mutable_features() |=
-      fuchsia::web::ContextFeatureFlags::VULKAN;
+  create_params.set_features(fuchsia::web::ContextFeatureFlags::VULKAN);
   CreateContextAndFrame(std::move(create_params));
 
   ASSERT_NO_FATAL_FAILURE(LoadUrlAndExpectResponse(
@@ -611,9 +609,10 @@ TEST_F(MAYBE_VulkanWebEngineIntegrationTest,
   // The VULKAN flag is required for hardware video decoders to be available.
   fuchsia::web::CreateContextParams create_params =
       ContextParamsWithAudioAndTestData();
-  *create_params.mutable_features() |=
+  create_params.set_features(
       fuchsia::web::ContextFeatureFlags::VULKAN |
-      fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER;
+      fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER |
+      fuchsia::web::ContextFeatureFlags::AUDIO);
   CreateContextAndFrame(std::move(create_params));
 
   static const uint16_t kTestMediaSessionId = 1;

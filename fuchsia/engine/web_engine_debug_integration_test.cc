@@ -133,7 +133,6 @@ struct TestContextAndFrame {
       return;
 
     fuchsia::web::CreateContextParams create_params;
-    create_params.set_features(fuchsia::web::ContextFeatureFlags::NETWORK);
     create_params.set_service_directory(std::move(directory));
     if (user_mode_debugging == UserModeDebugging::kEnabled)
       create_params.set_remote_debugging_port(0);

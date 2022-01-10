@@ -572,6 +572,9 @@ test("web_engine_unittests") {
     "//build/config/fuchsia/test/vulkan_capabilities.test-cmx",
   ]
   additional_manifests = [
+    # Required by ContextProvider to determine the services list.
+    "web_instance.cmx",
+
     # Required by ContextProvider unit-tests to launch the FakeContext process.
     "$target_gen_dir/web_engine_unittests_fake_instance.cmx",
   ]
@@ -617,6 +620,9 @@ test("web_engine_integration_tests") {
     "//build/config/fuchsia/test/web_engine_required_capabilities.test-cmx",
     "//build/config/fuchsia/test/web_instance_host_capabilities.test-cmx",
   ]
+
+  # Required by web_instance_host.
+  additional_manifests = [ "//fuchsia/engine/web_instance.cmx" ]
 }
 
 cr_fuchsia_package("web_engine_shell_pkg") {

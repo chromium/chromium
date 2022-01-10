@@ -73,10 +73,6 @@ WebEngineIntegrationTestBase::CreateNavigationController() {
 fuchsia::web::CreateContextParams
 WebEngineIntegrationTestBase::TestContextParams() {
   fuchsia::web::CreateContextParams create_params;
-
-  // Most integration tests require networking, to load test web content.
-  create_params.set_features(fuchsia::web::ContextFeatureFlags::NETWORK);
-
   zx_status_t status = filtered_service_directory_.ConnectClient(
       create_params.mutable_service_directory()->NewRequest());
   ZX_CHECK(status == ZX_OK, status)
