@@ -21,7 +21,8 @@ namespace ash {
 // calls the ObserverStateChangedCallback when there is a change.
 class ThrottleObserver {
  public:
-  using ObserverStateChangedCallback = base::RepeatingCallback<void()>;
+  using ObserverStateChangedCallback =
+      base::RepeatingCallback<void(const ThrottleObserver*)>;
   enum class PriorityLevel { UNKNOWN, LOW, NORMAL, IMPORTANT, CRITICAL };
 
   ThrottleObserver(PriorityLevel level, const std::string& name);

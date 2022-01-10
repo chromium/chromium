@@ -26,7 +26,7 @@ class ThrottleObserverTest
   ThrottleObserverTest(const ThrottleObserverTest&) = delete;
   ThrottleObserverTest& operator=(const ThrottleObserverTest&) = delete;
 
-  void OnObserverStateChanged() { notify_count_++; }
+  void OnObserverStateChanged(const ThrottleObserver*) { notify_count_++; }
 
  protected:
   ThrottleObserver* observer() { return &observer_; }

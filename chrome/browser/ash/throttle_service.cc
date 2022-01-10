@@ -25,7 +25,7 @@ void ThrottleService::RemoveServiceObserver(ServiceObserver* observer) {
 }
 
 void ThrottleService::NotifyObserverStateChangedForTesting() {
-  OnObserverStateChanged();
+  OnObserverStateChanged(nullptr);
 }
 
 void ThrottleService::SetObserversForTesting(
@@ -60,10 +60,14 @@ void ThrottleService::SetEnforced(ThrottleObserver::PriorityLevel level) {
   if (enforced_level_ == level)
     return;
   enforced_level_ = level;
-  OnObserverStateChanged();
+  OnObserverStateChanged(nullptr);
 }
 
-void ThrottleService::OnObserverStateChanged() {
+void ThrottleService::OnObserverStateChanged(
+    const ThrottleObserver* changed_observer) {
+  DVLOG(1) << "OnObserverStateChanged: changed throttle observer is "
+           << (changed_observer ? changed_observer->name() : "none");
+
   ThrottleObserver::PriorityLevel max_level =
       ThrottleObserver::PriorityLevel::LOW;
   ThrottleObserver* effective_observer = nullptr;

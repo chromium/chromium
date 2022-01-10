@@ -63,7 +63,7 @@ class ThrottleService {
   void AddObserver(std::unique_ptr<ThrottleObserver> observer);
   void StartObservers();
   void StopObservers();
-  void OnObserverStateChanged();
+  void OnObserverStateChanged(const ThrottleObserver* changed_observer);
   void SetLevel(ThrottleObserver::PriorityLevel level);
 
   // This function is called whenever there is a new level to which the

@@ -63,7 +63,9 @@ TEST_F(ArcKioskModeThrottleObserverTest, Default) {
   int call_count = 0;
   observer.StartObserving(
       nullptr /* context */,
-      base::BindRepeating([](int* counter) { (*counter)++; }, &call_count));
+      base::BindRepeating(
+          [](int* counter, const ash::ThrottleObserver*) { (*counter)++; },
+          &call_count));
 
   EXPECT_EQ(0, call_count);
   EXPECT_FALSE(observer.active());
@@ -75,7 +77,9 @@ TEST_F(ArcKioskModeThrottleObserverTest, Active) {
   int call_count = 0;
   observer.StartObserving(
       nullptr /* context */,
-      base::BindRepeating([](int* counter) { (*counter)++; }, &call_count));
+      base::BindRepeating(
+          [](int* counter, const ash::ThrottleObserver*) { (*counter)++; },
+          &call_count));
 
   EXPECT_EQ(1, call_count);
   EXPECT_TRUE(observer.active());

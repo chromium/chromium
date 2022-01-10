@@ -78,7 +78,9 @@ TEST_F(ArcPowerThrottleObserverTest, Default) {
   int call_count = 0;
   observer.StartObserving(
       profile(),
-      base::BindRepeating([](int* counter) { (*counter)++; }, &call_count));
+      base::BindRepeating(
+          [](int* counter, const ash::ThrottleObserver*) { (*counter)++; },
+          &call_count));
 
   EXPECT_EQ(0, call_count);
   EXPECT_FALSE(observer.active());
@@ -126,7 +128,9 @@ TEST_F(ArcPowerThrottleObserverTest, ActiveTimeExtended) {
   int call_count = 0;
   observer.StartObserving(
       profile(),
-      base::BindRepeating([](int* counter) { (*counter)++; }, &call_count));
+      base::BindRepeating(
+          [](int* counter, const ash::ThrottleObserver*) { (*counter)++; },
+          &call_count));
 
   observer.OnPreAnr(mojom::AnrType::PROCESS);
   EXPECT_EQ(1, call_count);
@@ -159,7 +163,9 @@ TEST_F(ArcPowerThrottleObserverTest, ActiveTimePreserved) {
   int call_count = 0;
   observer.StartObserving(
       profile(),
-      base::BindRepeating([](int* counter) { (*counter)++; }, &call_count));
+      base::BindRepeating(
+          [](int* counter, const ash::ThrottleObserver*) { (*counter)++; },
+          &call_count));
 
   observer.OnPreAnr(mojom::AnrType::FOREGROUND_SERVICE);
   EXPECT_EQ(1, call_count);

@@ -50,7 +50,7 @@ void ThrottleObserver::SetActive(bool active) {
     return;
   active_ = active;
   if (callback_)
-    callback_.Run();
+    callback_.Run(this);
 }
 
 std::string ThrottleObserver::GetDebugDescription() const {
