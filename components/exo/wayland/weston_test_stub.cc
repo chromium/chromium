@@ -6,10 +6,11 @@
 
 namespace exo {
 namespace wayland {
+class Server;
 
 struct WestonTest::WestonTestState {};
 
-WestonTest::WestonTest(wl_display* display) {}
+WestonTest::WestonTest(Server* server) {}
 
 WestonTest::~WestonTest() = default;
 

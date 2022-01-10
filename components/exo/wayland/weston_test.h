@@ -9,13 +9,13 @@
 
 #include "base/component_export.h"
 
-struct wl_display;
 namespace exo {
 namespace wayland {
+class Server;
 
 class COMPONENT_EXPORT(WESTON_TEST) WestonTest {
  public:
-  explicit WestonTest(wl_display* display);
+  explicit WestonTest(Server* server);
   WestonTest(const WestonTest&) = delete;
   WestonTest& operator=(const WestonTest&) = delete;
   ~WestonTest();

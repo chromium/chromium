@@ -13,11 +13,10 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/time/time.h"
-#include "components/exo/wayland/scoped_wl.h"
-#include "ui/display/display_observer.h"
-
 #include "build/chromeos_buildflags.h"
 #include "components/exo/buildflags.h"
+#include "components/exo/wayland/scoped_wl.h"
+#include "ui/display/display_observer.h"
 
 struct wl_resource;
 struct wl_client;
@@ -109,11 +108,14 @@ class Server : public display::DisplayObserver {
   const base::FilePath& socket_path() const { return socket_path_; }
 
  protected:
+  friend class WestonTest;
   void AddWaylandOutput(int64_t id,
                         std::unique_ptr<WaylandDisplayOutput> output);
   wl_display* GetWaylandDisplay() const { return wl_display_.get(); }
 
  private:
+  friend class ScopedEventDispatchDisabler;
+
   // This has the server's socket inside it, so it must be deleted last.
   base::ScopedTempDir socket_dir_;
   Display* const display_;

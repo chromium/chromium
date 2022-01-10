@@ -385,7 +385,7 @@ void Server::Initialize() {
                      1, display_, bind_zwp_idle_inhibit_manager);
   }
 
-  weston_test_holder_ = std::make_unique<WestonTest>(wl_display_.get());
+  weston_test_holder_ = std::make_unique<WestonTest>(this);
 
   zcr_keyboard_extension_data_ =
       std::make_unique<WaylandKeyboardExtension>(serial_tracker_.get());
