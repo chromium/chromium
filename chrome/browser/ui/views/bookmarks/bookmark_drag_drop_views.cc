@@ -6,6 +6,7 @@
 #include "chrome/browser/ui/bookmarks/bookmark_drag_drop.h"
 
 #include "base/bind.h"
+#include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
@@ -185,7 +186,7 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
                      DoBookmarkDragCallback do_drag_callback)
       : model_(BookmarkModelFactory::GetForBrowserContext(profile)),
         count_(params.nodes.size()),
-        web_contents_(params.web_contents),
+        web_contents_(params.web_contents->GetWeakPtr()),
         source_(params.source),
         start_point_(params.start_point),
         do_drag_callback_(std::move(do_drag_callback)),
@@ -226,30 +227,33 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
 
   void OnBookmarkIconLoaded(const BookmarkNode* drag_node,
                             const ui::ImageModel& icon) {
-    auto* widget =
-        views::Widget::GetWidgetForNativeView(web_contents_->GetNativeView());
-    const ui::ColorProvider* color_provider =
-        widget ? widget->GetColorProvider() : nullptr;
-    gfx::ImageSkia drag_image(
-        std::make_unique<BookmarkDragImageSource>(
-            drag_node->GetTitle(),
-            // It's not clear if the "generator without color provider" case can
-            // occur, but if it can, better to wrongly show the default favicon
-            // than to crash.
-            (icon.IsEmpty() || (icon.IsImageGenerator() && !color_provider))
-                ? *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-                      IDR_DEFAULT_FAVICON)
-                : views::GetImageSkiaFromImageModel(icon, color_provider),
-            count_),
-        BookmarkDragImageSource::kBookmarkDragImageSize);
+    if (web_contents_) {
+      auto* widget =
+          views::Widget::GetWidgetForNativeView(web_contents_->GetNativeView());
+      const ui::ColorProvider* color_provider =
+          widget ? widget->GetColorProvider() : nullptr;
+      gfx::ImageSkia drag_image(
+          std::make_unique<BookmarkDragImageSource>(
+              drag_node->GetTitle(),
+              // It's not clear if the "generator without color provider" case
+              // can occur, but if it can, better to wrongly show the default
+              // favicon than to crash.
+              (icon.IsEmpty() || (icon.IsImageGenerator() && !color_provider))
+                  ? *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+                        IDR_DEFAULT_FAVICON)
+                  : views::GetImageSkiaFromImageModel(icon, color_provider),
+              count_),
+          BookmarkDragImageSource::kBookmarkDragImageSize);
 
-    drag_data_->provider().SetDragImage(
-        drag_image, gfx::Vector2d(BookmarkDragImageSource::kDragImageOffsetX,
-                                  BookmarkDragImageSource::kDragImageOffsetY));
+      drag_data_->provider().SetDragImage(
+          drag_image,
+          gfx::Vector2d(BookmarkDragImageSource::kDragImageOffsetX,
+                        BookmarkDragImageSource::kDragImageOffsetY));
 
-    std::move(do_drag_callback_)
-        .Run(std::move(drag_data_), web_contents_->GetNativeView(), source_,
-             start_point_, operation_);
+      std::move(do_drag_callback_)
+          .Run(std::move(drag_data_), web_contents_->GetNativeView(), source_,
+               start_point_, operation_);
+    }
 
     delete this;
   }
@@ -279,7 +283,7 @@ class BookmarkDragHelper : public bookmarks::BaseBookmarkModelObserver {
 
   int64_t drag_node_id_ = -1;
   int count_;
-  raw_ptr<content::WebContents> web_contents_;
+  base::WeakPtr<content::WebContents> web_contents_;
   ui::mojom::DragEventSource source_;
   const gfx::Point start_point_;
   int operation_;
