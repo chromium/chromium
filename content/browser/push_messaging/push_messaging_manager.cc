@@ -132,7 +132,7 @@ struct PushMessagingManager::RegisterData {
   RegisterData();
   RegisterData(RegisterData&& other) = default;
 
-  GURL requesting_origin;
+  url::Origin requesting_origin;
   int64_t service_worker_registration_id;
   absl::optional<std::string> existing_subscription_id;
   blink::mojom::PushSubscriptionOptionsPtr options;
@@ -193,10 +193,11 @@ void PushMessagingManager::Subscribe(
     return;
   }
 
-  GURL origin = service_worker_registration->scope().DeprecatedGetOriginAsURL();
+  url::Origin origin =
+      url::Origin::Create(service_worker_registration->scope());
 
   if (!ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessDataForOrigin(
-          render_process_host_.GetID(), url::Origin::Create(origin))) {
+          render_process_host_.GetID(), origin)) {
     bad_message::ReceivedBadMessage(&render_process_host_,
                                     bad_message::PMM_SUBSCRIBE_INVALID_ORIGIN);
     return;
@@ -330,12 +331,12 @@ void PushMessagingManager::Register(PushMessagingManager::RegisterData data) {
           // Request notifications permission (which will fail, since
           // notifications aren't supported in incognito), so the website can't
           // detect whether incognito is active.
-          GURL requesting_origin = data.requesting_origin;
+          url::Origin requesting_origin = data.requesting_origin;
           bool user_gesture = data.user_gesture;
           PermissionControllerImpl::FromBrowserContext(browser_context)
               ->RequestPermission(
                   PermissionType::NOTIFICATIONS, render_frame_host,
-                  requesting_origin, user_gesture,
+                  requesting_origin.GetURL(), user_gesture,
                   base::BindOnce(
                       &PushMessagingManager::DidRequestPermissionInIncognito,
                       AsWeakPtr(), std::move(data)));
@@ -346,19 +347,20 @@ void PushMessagingManager::Register(PushMessagingManager::RegisterData data) {
   }
 
   int64_t registration_id = data.service_worker_registration_id;
-  GURL requesting_origin = data.requesting_origin;
+  url::Origin requesting_origin = data.requesting_origin;
   bool user_gesture = data.user_gesture;
 
   auto options = data.options->Clone();
   if (IsRequestFromDocument(render_frame_id_)) {
     push_service->SubscribeFromDocument(
-        requesting_origin, registration_id, render_process_host_.GetID(),
-        render_frame_id_, std::move(options), user_gesture,
+        requesting_origin.GetURL(), registration_id,
+        render_process_host_.GetID(), render_frame_id_, std::move(options),
+        user_gesture,
         base::BindOnce(&PushMessagingManager::DidRegister, AsWeakPtr(),
                        std::move(data)));
   } else {
     push_service->SubscribeFromWorker(
-        requesting_origin, registration_id, std::move(options),
+        requesting_origin.GetURL(), registration_id, std::move(options),
         base::BindOnce(&PushMessagingManager::DidRegister, AsWeakPtr(),
                        std::move(data)));
   }
@@ -420,14 +422,14 @@ void PushMessagingManager::PersistRegistration(
     const std::vector<uint8_t>& auth,
     blink::mojom::PushRegistrationStatus status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  url::Origin requesting_origin = url::Origin::Create(data.requesting_origin);
+  blink::StorageKey storage_key = blink::StorageKey(data.requesting_origin);
   int64_t registration_id = data.service_worker_registration_id;
   std::string application_server_key(
       std::string(data.options->application_server_key.begin(),
                   data.options->application_server_key.end()));
 
   service_worker_context_->StoreRegistrationUserData(
-      registration_id, blink::StorageKey(requesting_origin),
+      registration_id, std::move(storage_key),
       {{kPushRegistrationIdServiceWorkerKey, push_subscription_id},
        {kPushSenderIdServiceWorkerKey, application_server_key}},
       base::BindOnce(&PushMessagingManager::DidPersistRegistration,
@@ -503,10 +505,11 @@ void PushMessagingManager::Unsubscribe(int64_t service_worker_registration_id,
     return;
   }
 
-  GURL origin = service_worker_registration->scope().DeprecatedGetOriginAsURL();
+  url::Origin origin =
+      url::Origin::Create(service_worker_registration->scope());
 
   if (!ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessDataForOrigin(
-          render_process_host_.GetID(), url::Origin::Create(origin))) {
+          render_process_host_.GetID(), origin)) {
     bad_message::ReceivedBadMessage(
         &render_process_host_, bad_message::PMM_UNSUBSCRIBE_INVALID_ORIGIN);
     return;
@@ -522,7 +525,7 @@ void PushMessagingManager::Unsubscribe(int64_t service_worker_registration_id,
 void PushMessagingManager::UnsubscribeHavingGottenSenderId(
     UnsubscribeCallback callback,
     int64_t service_worker_registration_id,
-    const GURL& requesting_origin,
+    const url::Origin& requesting_origin,
     const std::vector<std::string>& sender_ids,
     blink::ServiceWorkerStatusCode service_worker_status) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -545,8 +548,8 @@ void PushMessagingManager::UnsubscribeHavingGottenSenderId(
   }
 
   push_service->Unsubscribe(
-      blink::mojom::PushUnregistrationReason::JAVASCRIPT_API, requesting_origin,
-      service_worker_registration_id, sender_id,
+      blink::mojom::PushUnregistrationReason::JAVASCRIPT_API,
+      requesting_origin.GetURL(), service_worker_registration_id, sender_id,
       base::BindOnce(&PushMessagingManager::DidUnregister, AsWeakPtr(),
                      std::move(callback)));
 }
@@ -595,10 +598,10 @@ void PushMessagingManager::GetSubscription(
       service_worker_context_->GetLiveRegistration(
           service_worker_registration_id);
   if (registration) {
-    const GURL origin = registration->scope().DeprecatedGetOriginAsURL();
+    url::Origin origin = url::Origin::Create(registration->scope());
 
     if (!ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessDataForOrigin(
-            render_process_host_.GetID(), url::Origin::Create(origin))) {
+            render_process_host_.GetID(), std::move(origin))) {
       bad_message::ReceivedBadMessage(
           &render_process_host_,
           bad_message::PMM_GET_SUBSCRIPTION_INVALID_ORIGIN);
@@ -649,7 +652,7 @@ void PushMessagingManager::DidGetSubscription(
         break;
       }
 
-      const GURL origin = registration->scope().DeprecatedGetOriginAsURL();
+      const url::Origin origin = url::Origin::Create(registration->scope());
 
       GetSubscriptionInfo(
           origin, service_worker_registration_id, application_server_key,
@@ -701,7 +704,7 @@ void PushMessagingManager::DidGetSubscription(
 
 void PushMessagingManager::GetSubscriptionDidGetInfo(
     GetSubscriptionCallback callback,
-    const GURL& origin,
+    const url::Origin& origin,
     int64_t service_worker_registration_id,
     const std::string& application_server_key,
     bool is_valid,
@@ -751,7 +754,7 @@ void PushMessagingManager::GetSubscriptionDidGetInfo(
     push_service->Unsubscribe(
         blink::mojom::PushUnregistrationReason::
             GET_SUBSCRIPTION_STORAGE_CORRUPT,
-        origin, service_worker_registration_id, application_server_key,
+        origin.GetURL(), service_worker_registration_id, application_server_key,
         base::BindOnce(&PushMessagingManager::GetSubscriptionDidUnsubscribe,
                        AsWeakPtr(), std::move(callback), status));
 
@@ -768,7 +771,7 @@ void PushMessagingManager::GetSubscriptionDidUnsubscribe(
 }
 
 void PushMessagingManager::GetSubscriptionInfo(
-    const GURL& origin,
+    const url::Origin& origin,
     int64_t service_worker_registration_id,
     const std::string& sender_id,
     const std::string& push_subscription_id,
@@ -783,9 +786,9 @@ void PushMessagingManager::GetSubscriptionInfo(
     return;
   }
 
-  push_service->GetSubscriptionInfo(origin, service_worker_registration_id,
-                                    sender_id, push_subscription_id,
-                                    std::move(callback));
+  push_service->GetSubscriptionInfo(origin.GetURL(),
+                                    service_worker_registration_id, sender_id,
+                                    push_subscription_id, std::move(callback));
 }
 
 PushMessagingService* PushMessagingManager::GetService() {

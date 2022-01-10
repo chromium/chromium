@@ -28,6 +28,10 @@ enum class PushUnregistrationStatus;
 }  // namespace mojom
 }  // namespace blink
 
+namespace url {
+class Origin;
+}  // namespace url
+
 namespace content {
 
 class RenderProcessHost;
@@ -127,7 +131,7 @@ class PushMessagingManager : public blink::mojom::PushMessaging {
 
   void GetSubscriptionDidGetInfo(
       GetSubscriptionCallback callback,
-      const GURL& origin,
+      const url::Origin& origin,
       int64_t service_worker_registration_id,
       const std::string& application_server_key,
       bool is_valid,
@@ -137,7 +141,7 @@ class PushMessagingManager : public blink::mojom::PushMessaging {
       const std::vector<uint8_t>& auth);
 
   void GetSubscriptionInfo(
-      const GURL& origin,
+      const url::Origin& origin,
       int64_t service_worker_registration_id,
       const std::string& sender_id,
       const std::string& push_subscription_id,
@@ -146,7 +150,7 @@ class PushMessagingManager : public blink::mojom::PushMessaging {
   void UnsubscribeHavingGottenSenderId(
       UnsubscribeCallback callback,
       int64_t service_worker_registration_id,
-      const GURL& requesting_origin,
+      const url::Origin& requesting_origin,
       const std::vector<std::string>& sender_id,
       blink::ServiceWorkerStatusCode service_worker_status);
 
