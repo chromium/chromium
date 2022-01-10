@@ -255,11 +255,14 @@ void CheckInstallation(UpdaterScope scope,
     }
   }
 
-  std::unique_ptr<TaskScheduler> task_scheduler =
-      TaskScheduler::CreateInstance();
-  const std::wstring task_name = GetTaskName(scope);
-  EXPECT_EQ(is_installed, task_scheduler->IsTaskRegistered(task_name.c_str()));
   if (is_installed) {
+    std::unique_ptr<TaskScheduler> task_scheduler =
+        TaskScheduler::CreateInstance();
+    const std::wstring task_name =
+        task_scheduler->FindFirstTaskName(GetTaskNamePrefix(scope));
+    EXPECT_TRUE(!task_name.empty());
+    EXPECT_TRUE(task_scheduler->IsTaskRegistered(task_name.c_str()));
+
     TaskScheduler::TaskInfo task_info;
     ASSERT_TRUE(task_scheduler->GetTaskInfo(task_name.c_str(), &task_info));
     ASSERT_EQ(task_info.exec_actions.size(), 1u);
@@ -353,7 +356,12 @@ void Clean(UpdaterScope scope) {
 
   std::unique_ptr<TaskScheduler> task_scheduler =
       TaskScheduler::CreateInstance();
-  task_scheduler->DeleteTask(GetTaskName(scope).c_str());
+  const std::wstring task_name =
+      task_scheduler->FindFirstTaskName(GetTaskNamePrefix(scope));
+  if (!task_name.empty())
+    task_scheduler->DeleteTask(task_name.c_str());
+  EXPECT_TRUE(
+      task_scheduler->FindFirstTaskName(GetTaskNamePrefix(scope)).empty());
 
   absl::optional<base::FilePath> path = GetProductPath(scope);
   EXPECT_TRUE(path);

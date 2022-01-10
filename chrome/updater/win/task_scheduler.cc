@@ -12,7 +12,9 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -20,6 +22,7 @@
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/win/scoped_bstr.h"
@@ -262,6 +265,21 @@ class TaskSchedulerV2 final : public TaskScheduler {
     return true;
   }
 
+  std::wstring FindFirstTaskName(const std::wstring& task_prefix) override {
+    DCHECK(!task_prefix.empty());
+
+    std::vector<std::wstring> task_names;
+    if (!GetTaskNameList(&task_names))
+      return std::wstring();
+
+    for (const std::wstring& task_name : task_names) {
+      if (base::StartsWith(task_name, task_prefix))
+        return task_name;
+    }
+
+    return std::wstring();
+  }
+
   bool GetTaskInfo(const wchar_t* task_name, TaskInfo* info) override {
     DCHECK(task_name);
     DCHECK(info);
@@ -359,8 +377,6 @@ class TaskSchedulerV2 final : public TaskScheduler {
                     bool hidden) override {
     DCHECK(task_name);
     DCHECK(task_description);
-    if (!DeleteTask(task_name))
-      return false;
 
     // Create the task definition object to create the task.
     Microsoft::WRL::ComPtr<ITaskDefinition> task;
@@ -618,7 +634,8 @@ class TaskSchedulerV2 final : public TaskScheduler {
 
     DCHECK(task_folder_);
     hr = task_folder_->RegisterTaskDefinition(
-        base::win::ScopedBstr(task_name).Get(), task.Get(), TASK_CREATE,
+        base::win::ScopedBstr(task_name).Get(), task.Get(),
+        TASK_CREATE_OR_UPDATE,
         *user.AsInput(),  // Not really input, but API expect non-const.
         base::win::ScopedVariant::kEmptyVariant,
         scope == UpdaterScope::kSystem ? TASK_LOGON_SERVICE_ACCOUNT

@@ -36,23 +36,71 @@
 #include "chrome/updater/win/win_util.h"
 
 namespace updater {
+namespace {
+
+std::wstring GetTaskName(UpdaterScope scope) {
+  return TaskScheduler::CreateInstance()->FindFirstTaskName(
+      GetTaskNamePrefix(scope));
+}
+
+std::wstring CreateRandomTaskName(UpdaterScope scope) {
+  GUID random_guid = {0};
+  return SUCCEEDED(::CoCreateGuid(&random_guid))
+             ? base::StrCat({GetTaskNamePrefix(scope),
+                             base::win::WStringFromGUID(random_guid)})
+             : std::wstring();
+}
+
+}  // namespace
 
 bool RegisterWakeTask(const base::CommandLine& run_command,
                       UpdaterScope scope) {
   auto task_scheduler = TaskScheduler::CreateInstance();
-  if (!task_scheduler->RegisterTask(
-          scope, GetTaskName(scope).c_str(), GetTaskDisplayName(scope).c_str(),
-          run_command, TaskScheduler::TriggerType::TRIGGER_TYPE_HOURLY, true)) {
-    LOG(ERROR) << "RegisterWakeTask failed.";
+
+  std::wstring task_name = GetTaskName(scope);
+  if (!task_name.empty()) {
+    // Update the currently installed scheduled task.
+    if (task_scheduler->RegisterTask(
+            scope, task_name.c_str(), GetTaskDisplayName(scope).c_str(),
+            run_command, TaskScheduler::TriggerType::TRIGGER_TYPE_HOURLY,
+            true)) {
+      VLOG(1) << "RegisterWakeTask succeeded." << task_name;
+      return true;
+    } else {
+      task_scheduler->DeleteTask(task_name.c_str());
+    }
+  }
+
+  // Create a new task name and fall through to install that.
+  task_name = CreateRandomTaskName(scope);
+  if (task_name.empty()) {
+    LOG(ERROR) << "Unexpected empty task name.";
     return false;
   }
-  VLOG(1) << "RegisterWakeTask succeeded.";
-  return true;
+
+  DCHECK(!task_scheduler->IsTaskRegistered(task_name.c_str()));
+
+  if (task_scheduler->RegisterTask(
+          scope, task_name.c_str(), GetTaskDisplayName(scope).c_str(),
+          run_command, TaskScheduler::TriggerType::TRIGGER_TYPE_HOURLY, true)) {
+    VLOG(1) << "RegisterWakeTask succeeded: " << task_name;
+    return true;
+  }
+
+  LOG(ERROR) << "RegisterWakeTask failed: " << task_name;
+  return false;
 }
 
 void UnregisterWakeTask(UpdaterScope scope) {
   auto task_scheduler = TaskScheduler::CreateInstance();
-  task_scheduler->DeleteTask(GetTaskName(scope).c_str());
+
+  const std::wstring task_name = GetTaskName(scope);
+  if (task_name.empty()) {
+    LOG(ERROR) << "Empty task name during uninstall.";
+    return;
+  }
+
+  task_scheduler->DeleteTask(task_name.c_str());
 }
 
 std::vector<IID> GetSideBySideInterfaces() {

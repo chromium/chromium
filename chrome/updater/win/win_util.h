@@ -172,16 +172,6 @@ std::wstring GetServiceName(bool is_internal_service);
 // For instance: "ChromiumUpdater InternalService 92.0.0.1".
 std::wstring GetServiceDisplayName(bool is_internal_service);
 
-// Returns the versioned task name in the following format:
-// "{ProductName}Task{System/User}{UpdaterVersion}".
-// For instance: "ChromiumUpdaterTaskSystem92.0.0.1".
-std::wstring GetTaskName(UpdaterScope scope);
-
-// Returns the versioned task display name in the following format:
-// "{ProductName} Task {System/User} {UpdaterVersion}".
-// For instance: "ChromiumUpdater Task System 92.0.0.1".
-std::wstring GetTaskDisplayName(UpdaterScope scope);
-
 // Returns `KEY_WOW64_32KEY | access`. All registry access under the Updater key
 // should use `Wow6432(access)` as the `REGSAM`.
 REGSAM Wow6432(REGSAM access);

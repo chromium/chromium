@@ -5,6 +5,8 @@
 #ifndef CHROME_UPDATER_UTIL_H_
 #define CHROME_UPDATER_UTIL_H_
 
+#include <string>
+
 #include "base/files/file_path.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -150,6 +152,20 @@ absl::optional<base::FilePath> GetKeystoneFolderPath(UpdaterScope scope);
 bool ConfirmFilePermissions(const base::FilePath& root_path,
                             int kPermissionsMask);
 #endif  // defined(OS_MAC)
+
+#if defined(OS_WIN)
+
+// Returns the versioned task name prefix in the following format:
+// "{ProductName}Task{System/User}{UpdaterVersion}".
+// For instance: "ChromiumUpdaterTaskSystem92.0.0.1".
+std::wstring GetTaskNamePrefix(UpdaterScope scope);
+
+// Returns the versioned task display name in the following format:
+// "{ProductName} Task {System/User} {UpdaterVersion}".
+// For instance: "ChromiumUpdater Task System 92.0.0.1".
+std::wstring GetTaskDisplayName(UpdaterScope scope);
+
+#endif  // OS_WIN
 
 }  // namespace updater
 

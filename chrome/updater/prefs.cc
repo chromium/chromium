@@ -61,7 +61,7 @@ std::string UpdaterPrefsImpl::GetActiveVersion() const {
   return prefs_->GetString(kPrefActiveVersion);
 }
 
-void UpdaterPrefsImpl::SetActiveVersion(std::string value) {
+void UpdaterPrefsImpl::SetActiveVersion(const std::string& value) {
   prefs_->SetString(kPrefActiveVersion, value);
 }
 

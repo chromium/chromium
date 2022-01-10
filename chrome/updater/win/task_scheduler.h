@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -114,6 +115,10 @@ class TaskScheduler {
 
   // List all currently registered scheduled tasks.
   virtual bool GetTaskNameList(std::vector<std::wstring>* task_names) = 0;
+
+  // Returns the first instance of a scheduled task installed with the given
+  // `task_prefix`.
+  virtual std::wstring FindFirstTaskName(const std::wstring& task_prefix) = 0;
 
   // Return detailed information about a task. Return true if no errors were
   // encountered. On error, the struct is left unmodified.

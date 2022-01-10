@@ -4,6 +4,10 @@
 
 #include "chrome/updater/util.h"
 
+#include <algorithm>
+#include <cctype>
+#include <string>
+
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
@@ -11,7 +15,9 @@
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/version.h"
 #include "build/build_config.h"
 #include "chrome/updater/constants.h"
@@ -232,4 +238,22 @@ bool PathOwnedByUser(const base::FilePath& path) {
 }
 
 #endif  // OS_LINUX
+
+#if defined(OS_WIN)
+
+std::wstring GetTaskNamePrefix(UpdaterScope scope) {
+  std::wstring task_name = GetTaskDisplayName(scope);
+  task_name.erase(std::remove_if(task_name.begin(), task_name.end(), isspace),
+                  task_name.end());
+  return task_name;
+}
+
+std::wstring GetTaskDisplayName(UpdaterScope scope) {
+  return base::StrCat({base::ASCIIToWide(PRODUCT_FULLNAME_STRING), L" Task ",
+                       scope == UpdaterScope::kSystem ? L"System " : L"User ",
+                       kUpdaterVersionUtf16});
+}
+
+#endif  // OS_WIN
+
 }  // namespace updater
