@@ -4897,17 +4897,32 @@ bool Element::ForceLegacyLayoutInFragmentationContext(
   for (legacy_root = this;; legacy_root = parent) {
     parent =
         DynamicTo<Element>(LayoutTreeBuilderTraversal::Parent(*legacy_root));
-    if (legacy_root->ShouldForceLegacyLayoutForChild())
-      return false;
 
+    // Note that even if we also previously forced legacy layout, we may need to
+    // introduce forced legacy layout in the ancestry, e.g. if legacy_root no
+    // longer establishes a new formatting context. It is therefore important
+    // that we first check if we reached the root, and potentially continue the
+    // journey in search of a formatting context root.
     if (!parent ||
         !parent->GetComputedStyle()
              ->InsideFragmentationContextWithNondeterministicEngine())
       break;
+
+    // Otherwise, if this element is always marked for legacy fallback, we can
+    // bail.
+    if (legacy_root->ShouldForceLegacyLayoutForChild())
+      return false;
   }
 
-  legacy_root->SetShouldForceLegacyLayoutForChild(true);
-  legacy_root->SetNeedsReattachLayoutTree();
+  // Only mark for reattachment if needed. Unnecessary reattachments may lead to
+  // over-invalidation and also printing problems; if we re-attach a frameset
+  // when printing, the frames will show up blank.
+  bool needs_reattach = false;
+  if (!legacy_root->ShouldForceLegacyLayoutForChild()) {
+    legacy_root->SetShouldForceLegacyLayoutForChild(true);
+    legacy_root->SetNeedsReattachLayoutTree();
+    needs_reattach = true;
+  }
 
   // When we have found the outermost fragmentation context candidate, we need
   // to make sure to mark for legacy all the way up to the element that we can
@@ -4917,10 +4932,11 @@ bool Element::ForceLegacyLayoutInFragmentationContext(
   // positive). When this happens, we need to walk all the way up to the
   // ancestor that establishes a formatting context, and this is the subtree
   // that will force legacy layout.
-  legacy_root->ForceLegacyLayoutInFormattingContext(
-      *legacy_root->GetComputedStyle());
+  if (legacy_root->ForceLegacyLayoutInFormattingContext(
+          *legacy_root->GetComputedStyle()))
+    needs_reattach = true;
 
-  return true;
+  return needs_reattach;
 }
 
 bool Element::IsFocusedElementInDocument() const {
