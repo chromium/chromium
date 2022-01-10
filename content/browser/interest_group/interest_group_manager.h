@@ -106,6 +106,10 @@ class CONTENT_EXPORT InterestGroupManager {
   void ClaimInterestGroupsForUpdate(
       const url::Origin& owner,
       base::OnceCallback<void(std::vector<StorageInterestGroup>)> callback);
+  // Gets a list of all interest group joining origins. Each joining origin
+  // will only appear once.
+  void GetAllInterestGroupJoiningOrigins(
+      base::OnceCallback<void(std::vector<url::Origin>)> callback);
   // Clear out storage for the matching owning origin. If the callback is empty
   // then apply to all origins.
   void DeleteInterestGroupData(

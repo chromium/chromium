@@ -142,6 +142,12 @@ void InterestGroupManager::ClaimInterestGroupsForUpdate(
       .Then(std::move(callback));
 }
 
+void InterestGroupManager::GetAllInterestGroupJoiningOrigins(
+    base::OnceCallback<void(std::vector<url::Origin>)> callback) {
+  impl_.AsyncCall(&InterestGroupStorage::GetAllInterestGroupJoiningOrigins)
+      .Then(std::move(callback));
+}
+
 void InterestGroupManager::DeleteInterestGroupData(
     base::RepeatingCallback<bool(const url::Origin&)> origin_matcher) {
   impl_.AsyncCall(&InterestGroupStorage::DeleteInterestGroupData)

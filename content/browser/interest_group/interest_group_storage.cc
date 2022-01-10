@@ -1752,6 +1752,18 @@ InterestGroupStorage::ClaimInterestGroupsForUpdate(const url::Origin& owner) {
   return std::move(maybe_result.value());
 }
 
+std::vector<url::Origin>
+InterestGroupStorage::GetAllInterestGroupJoiningOrigins() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!EnsureDBInitialized())
+    return {};
+  absl::optional<std::vector<url::Origin>> maybe_result =
+      DoGetAllInterestGroupJoiningOrigins(*db_, base::Time::Now());
+  if (!maybe_result)
+    return {};
+  return std::move(maybe_result.value());
+}
+
 void InterestGroupStorage::DeleteInterestGroupData(
     const base::RepeatingCallback<bool(const url::Origin&)>& origin_matcher) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

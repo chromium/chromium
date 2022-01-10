@@ -106,6 +106,9 @@ class CONTENT_EXPORT InterestGroupStorage {
   // anything until after the success rate limit period passes.
   std::vector<StorageInterestGroup> ClaimInterestGroupsForUpdate(
       const url::Origin& owner);
+  // Gets a list of all interest group joining origins. Each joining origin
+  // will only appear once.
+  std::vector<url::Origin> GetAllInterestGroupJoiningOrigins();
 
   // Clear out storage for the matching owning origin. If the callback is empty
   // then apply to all origins.

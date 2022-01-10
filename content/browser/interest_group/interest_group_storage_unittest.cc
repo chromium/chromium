@@ -34,6 +34,7 @@
 namespace content {
 
 using blink::InterestGroup;
+using testing::UnorderedElementsAre;
 using testing::UnorderedElementsAreArray;
 
 class InterestGroupStorageTest : public testing::Test {
@@ -755,7 +756,12 @@ TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
                              joining_originB.GetURL());
 
   std::vector<url::Origin> origins = storage->GetAllInterestGroupOwners();
-  EXPECT_EQ(3u, origins.size());
+  EXPECT_THAT(origins, UnorderedElementsAre(owner_originA, owner_originB,
+                                            owner_originC));
+  std::vector<url::Origin> joining_origins =
+      storage->GetAllInterestGroupJoiningOrigins();
+  EXPECT_THAT(joining_origins,
+              UnorderedElementsAre(joining_originA, joining_originB));
 
   storage->DeleteInterestGroupData(
       base::BindLambdaForTesting([&owner_originA](const url::Origin& origin) {
@@ -763,7 +769,10 @@ TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
       }));
 
   origins = storage->GetAllInterestGroupOwners();
-  EXPECT_EQ(2u, origins.size());
+  EXPECT_THAT(origins, UnorderedElementsAre(owner_originB, owner_originC));
+  joining_origins = storage->GetAllInterestGroupJoiningOrigins();
+  EXPECT_THAT(joining_origins,
+              UnorderedElementsAre(joining_originA, joining_originB));
 
   // Delete all interest groups that joined on joining_origin A. We expect that
   // we will be left with the one that joined on joining_origin B.
@@ -773,7 +782,9 @@ TEST_F(InterestGroupStorageTest, DeleteOriginDeleteAll) {
       }));
 
   origins = storage->GetAllInterestGroupOwners();
-  EXPECT_EQ(1u, origins.size());
+  EXPECT_THAT(origins, UnorderedElementsAre(owner_originB));
+  joining_origins = storage->GetAllInterestGroupJoiningOrigins();
+  EXPECT_THAT(joining_origins, UnorderedElementsAre(joining_originB));
 
   storage->DeleteInterestGroupData({});
 
