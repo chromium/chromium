@@ -1628,11 +1628,11 @@ TEST_F(PrintRenderFrameHelperPreviewTest,
 
   OnPrintPreview();
 
+  constexpr int kExpectedPageCount = 3;
   EXPECT_EQ(0u, preview_ui()->print_preview_pages_remaining());
-  VerifyDidPreviewPage(true, 0);
-  // TODO(crbug.com/1023416): The preview should contain 3 pages, like the
-  // PrintPreviewForManyLinesOfTextWithScaling test case.
-  VerifyPreviewPageCount(1);
+  for (int i = 0; i < kExpectedPageCount; ++i)
+    VerifyDidPreviewPage(true, i);
+  VerifyPreviewPageCount(kExpectedPageCount);
   VerifyPrintPreviewCancelled(false);
   VerifyPrintPreviewFailed(false);
   VerifyPrintPreviewGenerated(true);

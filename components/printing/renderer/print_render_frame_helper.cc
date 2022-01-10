@@ -869,12 +869,18 @@ class PrepareFrameAndViewForPrint : public blink::WebViewClient,
   void ResizeForPrinting();
   void RestoreSize();
   void CopySelection(const WebPreferences& preferences);
+  void ComputeScalingAndPrintParams(blink::WebLocalFrame* frame,
+                                    mojom::PrintParamsPtr& print_params,
+                                    bool is_pdf,
+                                    bool ignore_css_margins,
+                                    bool fit_to_page);
 
   FrameReference frame_;
   FrameReference original_frame_;
   blink::WebNavigationControl* navigation_control_ = nullptr;
   blink::WebNode node_to_print_;
   bool owns_web_view_ = false;
+  mojom::PrintParamsPtr selection_only_print_params_;
   blink::WebPrintParams web_print_params_;
   gfx::Size prev_view_size_;
   uint32_t expected_pages_count_ = 0;
@@ -902,21 +908,18 @@ PrepareFrameAndViewForPrint::PrepareFrameAndViewForPrint(
 
   mojom::PrintParamsPtr print_params = params.Clone();
   bool source_is_pdf = IsPrintingNodeOrPdfFrame(frame, node_to_print_);
-  if (!should_print_selection_only_) {
+  if (should_print_selection_only_) {
+    // Save the parameters for use in `CopySelection()`.
+    selection_only_print_params_ = std::move(print_params);
+
+    // Printing selection not an option for PDF.
+    DCHECK(!source_is_pdf);
+  } else {
     bool fit_to_page =
         ignore_css_margins && IsPrintScalingOptionFitToPage(*print_params);
-    ComputeWebKitPrintParamsInDesiredDpi(params, source_is_pdf,
-                                         &web_print_params_);
-    frame->PrintBegin(web_print_params_, node_to_print_);
-    double scale_factor = PrintRenderFrameHelper::GetScaleFactor(
-        print_params->scale_factor, source_is_pdf);
-    print_params =
-        CalculatePrintParamsForCss(frame, 0, *print_params, ignore_css_margins,
-                                   fit_to_page, &scale_factor);
-    frame->PrintEnd();
+    ComputeScalingAndPrintParams(frame, print_params, source_is_pdf,
+                                 ignore_css_margins, fit_to_page);
   }
-  ComputeWebKitPrintParamsInDesiredDpi(*print_params, source_is_pdf,
-                                       &web_print_params_);
 }
 
 PrepareFrameAndViewForPrint::~PrepareFrameAndViewForPrint() {
@@ -975,9 +978,11 @@ void PrepareFrameAndViewForPrint::CopySelectionIfNeeded(
 void PrepareFrameAndViewForPrint::CopySelection(
     const WebPreferences& preferences) {
   ResizeForPrinting();
-  frame()->PrintBegin(web_print_params_, node_to_print_);
+  ComputeScalingAndPrintParams(frame(), selection_only_print_params_,
+                               /*is_pdf=*/false,
+                               /*ignore_css_margins=*/false,
+                               /*fit_to_page=*/false);
   std::string html = frame()->SelectionAsMarkup().Utf8();
-  frame()->PrintEnd();
   RestoreSize();
 
   // Create a new WebView with the same settings as the current display one.
@@ -1036,6 +1041,25 @@ void PrepareFrameAndViewForPrint::CopySelection(
                                                  "UTF-8", std::move(html));
   navigation_control_->CommitNavigation(std::move(params),
                                         /*extra_data=*/nullptr);
+}
+
+void PrepareFrameAndViewForPrint::ComputeScalingAndPrintParams(
+    blink::WebLocalFrame* frame,
+    mojom::PrintParamsPtr& print_params,
+    bool is_pdf,
+    bool ignore_css_margins,
+    bool fit_to_page) {
+  ComputeWebKitPrintParamsInDesiredDpi(*print_params, is_pdf,
+                                       &web_print_params_);
+  frame->PrintBegin(web_print_params_, node_to_print_);
+  double scale_factor = PrintRenderFrameHelper::GetScaleFactor(
+      print_params->scale_factor, is_pdf);
+  print_params = CalculatePrintParamsForCss(frame, /*page_index=*/0,
+                                            *print_params, ignore_css_margins,
+                                            fit_to_page, &scale_factor);
+  frame->PrintEnd();
+  ComputeWebKitPrintParamsInDesiredDpi(*print_params, is_pdf,
+                                       &web_print_params_);
 }
 
 void PrepareFrameAndViewForPrint::DidStopLoading() {
