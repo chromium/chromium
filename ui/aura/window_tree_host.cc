@@ -655,7 +655,11 @@ void WindowTreeHost::OnHostResizedInPixels(
 
   display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window());
-  device_scale_factor_ = display.device_scale_factor();
+  // If we don't have the actual display, don't overwrite the scale factor with
+  // the default value. See https://crbug.com/1285476 for details.
+  if (display.is_valid())
+    device_scale_factor_ = display.device_scale_factor();
+
   UpdateRootWindowSizeInPixels();
 
   // Passing |new_size_in_pixels| to set compositor size. It could be different
