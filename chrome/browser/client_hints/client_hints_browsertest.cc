@@ -1548,7 +1548,9 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTestWithThirdPartyDelegation,
             third_party_client_hints_count_seen());
 }
 
-IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, DelegateToFoo_MetaName) {
+// Flaky on all platforms. https://crbug.com/1285479.
+IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest,
+                       DISABLED_DelegateToFoo_MetaName) {
   // Go to a page which delegates hints to `foo.com`.
   GURL gurl = meta_name_accept_ch_delegation_foo();
   SetClientHintExpectationsOnMainFrame(false);
@@ -1560,9 +1562,8 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest, DelegateToFoo_MetaName) {
   EXPECT_EQ(expected_default_third_party_client_hints_number * 7,
             third_party_client_hints_count_seen());
 }
-// Flaky on all platforms. https://crbug.com/1285479.
 IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTestWithThirdPartyDelegation,
-                       DISABLED_DelegateToFoo_MetaName) {
+                       DelegateToFoo_MetaName) {
   // Go to a page which delegates hints to `foo.com`.
   GURL gurl = meta_name_accept_ch_delegation_foo();
   SetClientHintExpectationsOnMainFrame(false);
