@@ -97,8 +97,6 @@ enum PageLoadTimingStatus {
 };
 
 extern const char kPageLoadTimingStatus[];
-extern const char kHistogramOutOfOrderTiming[];
-extern const char kHistogramOutOfOrderTimingBuffered[];
 
 }  // namespace internal
 

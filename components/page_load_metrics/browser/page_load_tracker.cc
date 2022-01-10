@@ -62,15 +62,10 @@ const char kAbortChainSizeSameURL[] =
     "PageLoad.Internal.ProvisionalAbortChainSize.SameURL";
 const char kAbortChainSizeNoCommit[] =
     "PageLoad.Internal.ProvisionalAbortChainSize.NoCommit";
-const char kClientRedirectFirstPaintToNavigation[] =
-    "PageLoad.Internal.ClientRedirect.FirstPaintToNavigation";
-const char kClientRedirectWithoutPaint[] =
-    "PageLoad.Internal.ClientRedirect.NavigationWithoutPaint";
 const char kPageLoadCompletedAfterAppBackground[] =
     "PageLoad.Internal.PageLoadCompleted.AfterAppBackground";
 const char kPageLoadStartedInForeground[] =
     "PageLoad.Internal.NavigationStartedInForeground";
-const char kPageLoadPrerender[] = "PageLoad.Internal.Prerender";
 const char kPageLoadPrerender2Event[] = "PageLoad.Internal.Prerender2.Event";
 
 }  // namespace internal
@@ -270,9 +265,6 @@ PageLoadTracker::PageLoadTracker(
 
   UMA_HISTOGRAM_BOOLEAN(internal::kPageLoadStartedInForeground,
                         started_in_foreground_);
-  if (embedder_interface_->IsNoStatePrefetch(
-          navigation_handle->GetWebContents()))
-    UMA_HISTOGRAM_BOOLEAN(internal::kPageLoadPrerender, true);
 }
 
 PageLoadTracker::~PageLoadTracker() {
@@ -542,23 +534,6 @@ void PageLoadTracker::FlushMetricsOnAppEnterBackground() {
 
   INVOKE_AND_PRUNE_OBSERVERS(observers_, FlushMetricsOnAppEnterBackground,
                              metrics_update_dispatcher_.timing());
-}
-
-void PageLoadTracker::NotifyClientRedirectTo(
-    content::NavigationHandle* destination) {
-  if (metrics_update_dispatcher_.timing().paint_timing->first_paint) {
-    base::TimeTicks first_paint_time =
-        navigation_start() +
-        metrics_update_dispatcher_.timing().paint_timing->first_paint.value();
-    base::TimeDelta first_paint_to_navigation;
-    if (destination->NavigationStart() > first_paint_time)
-      first_paint_to_navigation =
-          destination->NavigationStart() - first_paint_time;
-    PAGE_LOAD_HISTOGRAM(internal::kClientRedirectFirstPaintToNavigation,
-                        first_paint_to_navigation);
-  } else {
-    UMA_HISTOGRAM_BOOLEAN(internal::kClientRedirectWithoutPaint, true);
-  }
 }
 
 void PageLoadTracker::OnLoadedResource(

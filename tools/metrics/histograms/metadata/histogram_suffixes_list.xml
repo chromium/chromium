@@ -10904,6 +10904,9 @@ chromium-metrics-reviews@google.com.
 </histogram_suffixes>
 
 <histogram_suffixes name="PageLoadMetricsAfterBuffering" separator=".">
+  <obsolete>
+    Removed 12/2021.
+  </obsolete>
   <suffix name="AfterBuffering"
       label="Recorded after buffering of timing updates in the browser
              process has completed."/>

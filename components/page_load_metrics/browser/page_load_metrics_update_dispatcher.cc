@@ -27,10 +27,6 @@ namespace internal {
 const char kPageLoadTimingStatus[] = "PageLoad.Internal.PageLoadTimingStatus";
 const char kPageLoadTimingDispatchStatus[] =
     "PageLoad.Internal.PageLoadTimingStatus.AtTimingCallbackDispatch";
-const char kHistogramOutOfOrderTiming[] =
-    "PageLoad.Internal.OutOfOrderInterFrameTiming";
-const char kHistogramOutOfOrderTimingBuffered[] =
-    "PageLoad.Internal.OutOfOrderInterFrameTiming.AfterBuffering";
 
 }  // namespace internal
 
@@ -237,19 +233,6 @@ internal::PageLoadTimingStatus IsValidPageLoadTiming(
   return internal::VALID;
 }
 
-// If the updated value has an earlier time than the current value, log so we
-// can keep track of how often this happens.
-void LogIfOutOfOrderTiming(const absl::optional<base::TimeDelta>& current,
-                           const absl::optional<base::TimeDelta>& update) {
-  if (!current || !update)
-    return;
-
-  if (update < current) {
-    PAGE_LOAD_HISTOGRAM(internal::kHistogramOutOfOrderTimingBuffered,
-                        current.value() - update.value());
-  }
-}
-
 // PageLoadTimingMerger merges timing values received from different frames
 // together.
 class PageLoadTimingMerger {
@@ -318,8 +301,6 @@ class PageLoadTimingMerger {
       // to happen occasionally, as inter-frame updates can arrive out of order.
       // Record a histogram to track how frequently it happens, along with the
       // magnitude of the delta.
-      PAGE_LOAD_HISTOGRAM(internal::kHistogramOutOfOrderTiming,
-                          inout_existing_value->value() - candidate_new_value);
     } else {
       // We only want to set this for new updates. If there's already a value,
       // then the window during which we buffer updates is over. We'll still
@@ -883,15 +864,6 @@ void PageLoadMetricsUpdateDispatcher::DispatchTimingUpdates() {
   }
   if (current_merged_page_timing_->Equals(*pending_merged_page_timing_))
     return;
-
-  LogIfOutOfOrderTiming(current_merged_page_timing_->paint_timing->first_paint,
-                        pending_merged_page_timing_->paint_timing->first_paint);
-  LogIfOutOfOrderTiming(
-      current_merged_page_timing_->paint_timing->first_image_paint,
-      pending_merged_page_timing_->paint_timing->first_image_paint);
-  LogIfOutOfOrderTiming(
-      current_merged_page_timing_->paint_timing->first_contentful_paint,
-      pending_merged_page_timing_->paint_timing->first_contentful_paint);
 
   current_merged_page_timing_ = pending_merged_page_timing_->Clone();
 

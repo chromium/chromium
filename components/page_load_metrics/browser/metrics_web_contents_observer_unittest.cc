@@ -808,9 +808,6 @@ TEST_F(MetricsWebContentsObserverTest, OutOfOrderCrossFrameTiming2) {
       GURL(kDefaultTestUrl2), subframe);
   SimulateTimingUpdateWithoutFiringDispatchTimer(subframe_timing, subframe);
 
-  histogram_tester_.ExpectTotalCount(
-      page_load_metrics::internal::kHistogramOutOfOrderTiming, 1);
-
   EXPECT_TRUE(GetMostRecentTimer()->IsRunning());
   ASSERT_EQ(0, CountUpdatedTimingReported());
 
@@ -858,12 +855,6 @@ TEST_F(MetricsWebContentsObserverTest, OutOfOrderCrossFrameTiming2) {
   EXPECT_FALSE(GetMostRecentTimer()->IsRunning());
   ASSERT_EQ(2, CountUpdatedTimingReported());
   EXPECT_LT(updated_first_paint, initial_first_paint);
-
-  histogram_tester_.ExpectTotalCount(
-      page_load_metrics::internal::kHistogramOutOfOrderTimingBuffered, 1);
-  histogram_tester_.ExpectBucketCount(
-      page_load_metrics::internal::kHistogramOutOfOrderTimingBuffered,
-      (initial_first_paint - updated_first_paint).InMilliseconds(), 1);
 
   CheckNoErrorEvents();
 }

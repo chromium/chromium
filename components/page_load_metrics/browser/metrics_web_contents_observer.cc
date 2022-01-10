@@ -746,14 +746,6 @@ void MetricsWebContentsObserver::FinalizeCurrentlyCommittedLoad(
       /*is_certainly_browser_timestamp=*/false);
 
   if (committed_load_) {
-    bool is_non_user_initiated_client_redirect =
-        !IsNavigationUserInitiated(newly_committed_navigation) &&
-        (newly_committed_navigation->GetPageTransition() &
-         ui::PAGE_TRANSITION_CLIENT_REDIRECT) != 0;
-    if (is_non_user_initiated_client_redirect) {
-      committed_load_->NotifyClientRedirectTo(newly_committed_navigation);
-    }
-
     // Ensure that any pending update gets dispatched.
     committed_load_->metrics_update_dispatcher()->FlushPendingTimingUpdates();
   }
