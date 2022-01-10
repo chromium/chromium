@@ -85,6 +85,15 @@ generate_grd("build_oobe_grd") {
     "$target_gen_dir/$existing_unconditional_files_manifest",
   ]
   input_files = [
+    # Lottie animation resources
+    "animations/all_set.json",
+    "animations/downloading_apps.json",
+    "animations/gesture_go_back.json",
+    "animations/gesture_go_home.json",
+    "animations/gesture_hotseat_overview.json",
+    "animations/welcome_screen_animation.json",
+
+    # Vector resources
     "images/arc_sideloading_illustration.svg",
     "images/browser_sync.svg",
     "images/device-disabled.svg",
