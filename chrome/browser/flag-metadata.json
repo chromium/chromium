@@ -981,7 +981,7 @@
   {
     "name": "crosh-swa",
     "owners": [ "joelhockey", "benwells" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 110
   },
   {
       "name": "cross-origin-embedder-policy-credentialless",
