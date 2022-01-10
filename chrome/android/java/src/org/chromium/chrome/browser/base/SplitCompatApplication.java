@@ -206,11 +206,11 @@ public class SplitCompatApplication extends Application {
             // Incremental install disables process isolation, so things in this block will
             // actually be run for incremental apks, but not normal apks.
             PureJavaExceptionHandler.installHandler(() -> {
-                // PureJavaExceptionReporter may be in the chrome module, so load by reflection
-                // from there.
+                // ChromePureJavaExceptionReporter may be in the chrome module, so load by
+                // reflection from there.
                 return (JavaExceptionReporter) SplitCompatUtils.newInstance(
                         SplitCompatUtils.createChromeContext(ContextUtils.getApplicationContext()),
-                        "org.chromium.chrome.browser.crash.PureJavaExceptionReporter");
+                        "org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter");
             });
         }
 

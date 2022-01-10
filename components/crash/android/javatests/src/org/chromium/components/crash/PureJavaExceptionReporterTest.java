@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.crash;
+package org.chromium.components.crash;
 
 import androidx.test.filters.SmallTest;
 
@@ -12,9 +12,6 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.components.crash.CrashKeyIndex;
-import org.chromium.components.crash.CrashKeys;
-import org.chromium.components.crash.LogcatCrashExtractor;
 import org.chromium.components.minidump_uploader.CrashTestRule;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -32,20 +29,26 @@ public class PureJavaExceptionReporterTest {
     public CrashTestRule mTestRule = new CrashTestRule();
 
     private static class TestPureJavaExceptionReporter extends PureJavaExceptionReporter {
-        boolean mReportUploaded;
+        private boolean mReportUploaded;
+        private File mMinidump;
 
         @Override
-        public void uploadReport() {
-            if (mMinidumpFile == null) {
-                mReportUploaded = false;
-                return;
-            }
-            mMinidumpFile = new LogcatCrashExtractor().attachLogcatToMinidump(mMinidumpFile);
-            mReportUploaded = true;
+        protected String getProductName() {
+            return "Test";
+        }
+
+        @Override
+        protected void uploadMinidump(File minidump) {
+            mMinidump = minidump;
+            mReportUploaded = (minidump != null);
         }
 
         public boolean reportUploaded() {
             return mReportUploaded;
+        }
+
+        public File getMinidumpFile() {
+            return mMinidump;
         }
     }
 

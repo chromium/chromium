@@ -24,6 +24,7 @@ android_library("java") {
   deps = [
     "//base:base_java",
     "//components/minidump_uploader:minidump_uploader_java",
+    "//components/version_info/android:version_constants_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
@@ -31,8 +32,22 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/components/crash/LogcatCrashExtractor.java",
     "java/src/org/chromium/components/crash/MinidumpLogcatPrepender.java",
+    "java/src/org/chromium/components/crash/PureJavaExceptionReporter.java",
   ]
   sources += _jni_sources
+}
+
+android_library("javatests") {
+  testonly = true
+  sources = [ "javatests/src/org/chromium/components/crash/PureJavaExceptionReporterTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java_test_support",
+    "//components/minidump_uploader:minidump_uploader_java_test_support",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit",
+  ]
 }
 
 java_library("junit") {

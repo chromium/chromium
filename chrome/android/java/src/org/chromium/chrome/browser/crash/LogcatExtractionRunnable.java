@@ -41,24 +41,25 @@ public class LogcatExtractionRunnable implements Runnable {
 
     @Override
     public void run() {
-        uploadMinidumpWithLogcat(false);
+        File fileToUpload = mLogcatExtractor.attachLogcatToMinidump(mMinidumpFile);
+        uploadMinidump(fileToUpload, false);
     }
 
     /**
+     * @param minidump the minidump file to be uploaded.
      * @param uploadNow If this flag is set to true, we will upload the minidump immediately,
      * otherwise the upload is controlled by the job scheduler.
      */
-    /* package */ void uploadMinidumpWithLogcat(boolean uploadNow) {
-        File fileToUpload = mLogcatExtractor.attachLogcatToMinidump(mMinidumpFile);
+    /* package */ static void uploadMinidump(File minidump, boolean uploadNow) {
         // Regardless of success, initiate the upload. That way, even if there are errors augmenting
         // the minidump with logcat data, the service can still upload the unaugmented minidump.
         try {
             if (uploadNow) {
-                MinidumpUploadServiceImpl.tryUploadCrashDumpNow(fileToUpload);
+                MinidumpUploadServiceImpl.tryUploadCrashDumpNow(minidump);
             } else if (MinidumpUploadServiceImpl.shouldUseJobSchedulerForUploads()) {
                 MinidumpUploadServiceImpl.scheduleUploadJob();
             } else {
-                MinidumpUploadServiceImpl.tryUploadCrashDump(fileToUpload);
+                MinidumpUploadServiceImpl.tryUploadCrashDump(minidump);
             }
         } catch (SecurityException e) {
             Log.w(TAG, e.toString());
