@@ -257,13 +257,14 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
     FilesAppBrowserTest,
     ::testing::Values(
         TestCase("fileDisplayDownloads"),
-        TestCase("fileDisplayDownloads").InGuestMode(),
-        TestCase("fileDisplayDownloads").TabletMode(),
         TestCase("fileDisplayDownloads").FilesSwa(),
-        TestCase("fileDisplayDownloads").FilesSwa().InGuestMode(),
-        TestCase("fileDisplayDownloads").FilesSwa().TabletMode(),
-        TestCase("fileDisplayLaunchOnLocalFolder").DontObserveFileTasks(),
+        TestCase("fileDisplayDownloads").InGuestMode(),
+        TestCase("fileDisplayDownloads").InGuestMode().FilesSwa(),
+        TestCase("fileDisplayDownloads").TabletMode(),
+        TestCase("fileDisplayDownloads").TabletMode().FilesSwa(),
         TestCase("fileDisplayLaunchOnDrive").DontObserveFileTasks(),
+        TestCase("fileDisplayLaunchOnDrive").DontObserveFileTasks().FilesSwa(),
+        TestCase("fileDisplayLaunchOnLocalFolder").DontObserveFileTasks(),
         TestCase("fileDisplayLaunchOnLocalFolder")
             .DontObserveFileTasks()
             .FilesSwa(),
@@ -272,7 +273,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .DontObserveFileTasks()
             .FilesSwa(),
         TestCase("fileDisplayDrive").TabletMode(),
+        TestCase("fileDisplayDrive").TabletMode().FilesSwa(),
         TestCase("fileDisplayDrive"),
+        TestCase("fileDisplayDrive").FilesSwa(),
         TestCase("fileDisplayDriveOffline").Offline(),
         TestCase("fileDisplayDriveOffline").Offline().FilesSwa(),
         TestCase("fileDisplayDriveOnline"),
@@ -282,13 +285,23 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
             .DontObserveFileTasks()
             .FilesSwa(),
         TestCase("fileDisplayComputers"),
+        TestCase("fileDisplayComputers").FilesSwa(),
         TestCase("fileDisplayMtp"),
+        TestCase("fileDisplayMtp").FilesSwa(),
         TestCase("fileDisplayUsb"),
+        TestCase("fileDisplayUsb").FilesSwa(),
         TestCase("fileDisplayUsbPartition"),
+        TestCase("fileDisplayUsbPartition").FilesSwa(),
         TestCase("fileDisplayUsbPartition").EnableSinglePartitionFormat(),
+        TestCase("fileDisplayUsbPartition")
+            .EnableSinglePartitionFormat()
+            .FilesSwa(),
         TestCase("fileDisplayUsbPartitionSort"),
+        TestCase("fileDisplayUsbPartitionSort").FilesSwa(),
         TestCase("fileDisplayPartitionFileTable"),
+        TestCase("fileDisplayPartitionFileTable").FilesSwa(),
         TestCase("fileSearch"),
+        TestCase("fileSearch").FilesSwa(),
         TestCase("fileDisplayWithoutDownloadsVolume").DontMountVolumes(),
         TestCase("fileDisplayWithoutDownloadsVolume")
             .DontMountVolumes()
@@ -314,17 +327,29 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
         TestCase("fileDisplayWithHiddenVolume"),
         TestCase("fileDisplayWithHiddenVolume").FilesSwa(),
         TestCase("fileDisplayMountWithFakeItemSelected"),
+        TestCase("fileDisplayMountWithFakeItemSelected").FilesSwa(),
         TestCase("fileDisplayUnmountDriveWithSharedWithMeSelected"),
+        TestCase("fileDisplayUnmountDriveWithSharedWithMeSelected").FilesSwa(),
         TestCase("fileDisplayUnmountRemovableRoot"),
+        TestCase("fileDisplayUnmountRemovableRoot").FilesSwa(),
         TestCase("fileDisplayUnmountFirstPartition"),
+        TestCase("fileDisplayUnmountFirstPartition").FilesSwa(),
         TestCase("fileDisplayUnmountLastPartition"),
+        TestCase("fileDisplayUnmountLastPartition").FilesSwa(),
         TestCase("fileSearchCaseInsensitive"),
+        TestCase("fileSearchCaseInsensitive").FilesSwa(),
         TestCase("fileSearchNotFound"),
+        TestCase("fileSearchNotFound").FilesSwa(),
         TestCase("fileDisplayDownloadsWithBlockedFileTaskRunner"),
+        TestCase("fileDisplayDownloadsWithBlockedFileTaskRunner").FilesSwa(),
         TestCase("fileDisplayCheckSelectWithFakeItemSelected"),
+        TestCase("fileDisplayCheckSelectWithFakeItemSelected").FilesSwa(),
         TestCase("fileDisplayCheckReadOnlyIconOnFakeDirectory"),
+        TestCase("fileDisplayCheckReadOnlyIconOnFakeDirectory").FilesSwa(),
         TestCase("fileDisplayCheckNoReadOnlyIconOnDownloads"),
+        TestCase("fileDisplayCheckNoReadOnlyIconOnDownloads").FilesSwa(),
         TestCase("fileDisplayCheckNoReadOnlyIconOnLinuxFiles"),
+        TestCase("fileDisplayCheckNoReadOnlyIconOnLinuxFiles").FilesSwa(),
         TestCase("fileDisplayStartupError")));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
