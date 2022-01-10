@@ -16,6 +16,7 @@ namespace exponential_backoff_helper {
 // exponential backoff after it encounters an error.
 class ExponentialBackoffChecker : public SingleClientStatusChangeChecker {
  public:
+  // Upon construction, it is expected that backoff hasn't started yet.
   explicit ExponentialBackoffChecker(syncer::SyncServiceImpl* sync_service);
   ~ExponentialBackoffChecker() override;
 
@@ -23,8 +24,8 @@ class ExponentialBackoffChecker : public SingleClientStatusChangeChecker {
   ExponentialBackoffChecker& operator=(const ExponentialBackoffChecker&) =
       delete;
 
-  // Checks if backoff is complete. Called repeatedly each time SyncServiceImpl
-  // notifies observers of a state change.
+  // SingleClientStatusChangeChecker overrides.
+  void OnSyncCycleCompleted(syncer::SyncService* sync_service) override;
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
@@ -41,10 +42,9 @@ class ExponentialBackoffChecker : public SingleClientStatusChangeChecker {
   static std::vector<DelayRange> BuildExpectedDelayTable();
 
   const std::vector<DelayRange> expected_delay_table_;
-  size_t retry_count_ = 0;
+  std::vector<base::TimeDelta> actual_delays_;
+
   base::Time last_sync_time_;
-  bool success_ = false;
-  bool done_ = false;
 };
 
 }  // namespace exponential_backoff_helper
