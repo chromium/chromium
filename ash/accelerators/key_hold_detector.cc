@@ -4,11 +4,11 @@
 
 #include "ash/accelerators/key_hold_detector.h"
 
+#include <tuple>
 #include <utility>
 
 #include "ash/shell.h"
 #include "base/bind.h"
-#include "base/ignore_result.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/aura/window_tree_host.h"
@@ -25,7 +25,7 @@ void DispatchPressedEvent(const ui::KeyEvent& key_event,
     return;
   ui::KeyEvent event(key_event);
   aura::Window* target = *(tracker->windows().begin());
-  ignore_result(target->GetHost()->GetEventSink()->OnEventFromSource(&event));
+  std::ignore = target->GetHost()->GetEventSink()->OnEventFromSource(&event);
 }
 
 void PostPressedEvent(ui::KeyEvent* event) {

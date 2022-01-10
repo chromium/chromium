@@ -4,6 +4,8 @@
 
 #include "ash/shelf/swipe_home_to_overview_controller.h"
 
+#include <tuple>
+
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_view.h"
@@ -18,7 +20,6 @@
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "base/bind.h"
-#include "base/ignore_result.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -118,8 +119,8 @@ class SwipeHomeToOverviewControllerTest : public AshTestBase {
 
     // Ensure there is one more frame presented after animation finishes
     // to allow animation throughput data is passed from cc to ui.
-    ignore_result(
-        ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(200)));
+    std::ignore =
+        ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(200));
   }
 
   void TapOnHomeLauncherSearchBox() {

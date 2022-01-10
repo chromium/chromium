@@ -4,6 +4,7 @@
 
 #include "ash/app_list/views/productivity_launcher_search_view.h"
 
+#include <tuple>
 #include <utility>
 
 #include "ash/app_list/app_list_controller_impl.h"
@@ -45,8 +46,8 @@ void WaitForLayerAnimation(ui::Layer* layer) {
 
   // Ensure there is one more frame presented after animation finishes
   // to allow animation throughput data is passed from cc to ui.
-  ignore_result(
-      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(200)));
+  std::ignore =
+      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(200));
 }
 }  // namespace
 

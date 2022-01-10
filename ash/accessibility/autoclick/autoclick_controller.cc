@@ -4,6 +4,8 @@
 
 #include "ash/accessibility/autoclick/autoclick_controller.h"
 
+#include <tuple>
+
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/autoclick/autoclick_drag_event_rewriter.h"
 #include "ash/accessibility/autoclick/autoclick_ring_handler.h"
@@ -18,7 +20,6 @@
 #include "ash/wm/fullscreen_window_finder.h"
 #include "ash/wm/window_util.h"
 #include "base/bind.h"
-#include "base/ignore_result.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/timer/timer.h"
@@ -252,7 +253,7 @@ void AutoclickController::DoScrollAction(ScrollPadAction action) {
                          0 /* x_offset_ordinal */, 0 /* y_offset_ordinal */,
                          2 /* finger_count */);
   ui::MouseWheelEvent wheel(scroll);
-  ignore_result(host->GetEventSink()->OnEventFromSource(&wheel));
+  std::ignore = host->GetEventSink()->OnEventFromSource(&wheel);
 }
 
 void AutoclickController::OnEnteredScrollButton() {

@@ -7,6 +7,7 @@
 #include <math.h>
 
 #include <memory>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -37,7 +38,6 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/command_line.h"
-#include "base/ignore_result.h"
 #include "base/numerics/math_constants.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -230,12 +230,12 @@ class TabletModeControllerTest : public AshTestBase {
   }
 
   // Wait one more frame presented for the metrics to get recorded.
-  // ignore_result() and timeout is because the frame could already be
+  // std::ignore and timeout is because the frame could already be
   // presented.
   void WaitForSmoothnessMetrics() {
-    ignore_result(ui::WaitForNextFrameToBePresented(
+    std::ignore = ui::WaitForNextFrameToBePresented(
         Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
-        base::Milliseconds(100)));
+        base::Milliseconds(100));
   }
 
  private:

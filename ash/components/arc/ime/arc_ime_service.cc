@@ -4,6 +4,7 @@
 
 #include "ash/components/arc/ime/arc_ime_service.h"
 
+#include <tuple>
 #include <utility>
 
 #include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
@@ -13,7 +14,6 @@
 #include "ash/components/arc/ime/key_event_result_receiver.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_types_util.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
@@ -392,7 +392,7 @@ void ArcImeService::SendKeyEvent(std::unique_ptr<ui::KeyEvent> key_event,
   ui::InputMethod* const input_method = GetInputMethod();
   receiver_->SetCallback(std::move(callback), key_event.get());
   if (input_method)
-    ignore_result(input_method->DispatchKeyEvent(key_event.get()));
+    std::ignore = input_method->DispatchKeyEvent(key_event.get());
 }
 
 ////////////////////////////////////////////////////////////////////////////////

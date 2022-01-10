@@ -5,6 +5,7 @@
 #include "ash/wm/window_util.h"
 
 #include <memory>
+#include <tuple>
 
 #include "ash/constants/app_types.h"
 #include "ash/multi_user/multi_user_window_manager_impl.h"
@@ -29,7 +30,6 @@
 #include "ash/wm/wm_event.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/ignore_result.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/frame/interior_resize_handler_targeter.h"
 #include "ui/aura/client/aura_constants.h"
@@ -385,10 +385,10 @@ void SendBackKeyEvent(aura::Window* root_window) {
   // TODO: Investigate if we should be using the current modifiers.
   ui::KeyEvent press_key_event(ui::ET_KEY_PRESSED, ui::VKEY_BROWSER_BACK,
                                ui::EF_NONE);
-  ignore_result(root_window->GetHost()->SendEventToSink(&press_key_event));
+  std::ignore = root_window->GetHost()->SendEventToSink(&press_key_event);
   ui::KeyEvent release_key_event(ui::ET_KEY_RELEASED, ui::VKEY_BROWSER_BACK,
                                  ui::EF_NONE);
-  ignore_result(root_window->GetHost()->SendEventToSink(&release_key_event));
+  std::ignore = root_window->GetHost()->SendEventToSink(&release_key_event);
 }
 
 WindowTransientDescendantIteratorRange GetVisibleTransientTreeIterator(

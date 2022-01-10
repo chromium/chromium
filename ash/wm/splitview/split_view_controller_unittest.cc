@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -59,7 +60,6 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/containers/contains.h"
-#include "base/ignore_result.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -314,9 +314,9 @@ class SplitViewControllerTest : public AshTestBase {
     // on the next frame presented after animation stops. Wait for the next
     // frame with a 100ms timeout for the report, regardless of whether there
     // is a next frame.
-    ignore_result(ui::WaitForNextFrameToBePresented(
+    std::ignore = ui::WaitForNextFrameToBePresented(
         Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
-        base::Milliseconds(100)));
+        base::Milliseconds(100));
 
     {
       SCOPED_TRACE(trace + std::string(".Enter"));

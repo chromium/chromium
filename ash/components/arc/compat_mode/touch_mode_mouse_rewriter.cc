@@ -4,11 +4,12 @@
 
 #include "ash/components/arc/compat_mode/touch_mode_mouse_rewriter.h"
 
+#include <tuple>
+
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/compat_mode/metrics.h"
 #include "ash/shell.h"
 #include "base/bind.h"
-#include "base/ignore_result.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/events/base_event_utils.h"
@@ -139,7 +140,7 @@ void TouchModeMouseRewriter::SendReleaseEvent(
                                original_event.root_location(),
                                ui::EventTimeForNow(), ui::EF_LEFT_MOUSE_BUTTON,
                                ui::EF_LEFT_MOUSE_BUTTON);
-  ignore_result(SendEvent(continuation, &release_event));
+  std::ignore = SendEvent(continuation, &release_event);
 }
 
 void TouchModeMouseRewriter::SendScrollEvent(
@@ -152,7 +153,7 @@ void TouchModeMouseRewriter::SendScrollEvent(
   ui::ScrollEvent scroll_event(ui::ET_SCROLL, original_event.location_f(),
                                original_event.root_location_f(),
                                ui::EventTimeForNow(), 0, 0, step, 0, step, 1);
-  ignore_result(SendEvent(continuation, &scroll_event));
+  std::ignore = SendEvent(continuation, &scroll_event);
   scroll_y_offset_ -= step;
   scroll_timeout_ -= kSmoothScrollEventInterval;
   if (scroll_timeout_.is_zero()) {
@@ -160,7 +161,7 @@ void TouchModeMouseRewriter::SendScrollEvent(
                                       original_event.location_f(),
                                       original_event.root_location_f(),
                                       ui::EventTimeForNow(), 0, 0, 0, 0, 0, 0);
-    ignore_result(SendEvent(continuation, &fling_start_event));
+    std::ignore = SendEvent(continuation, &fling_start_event);
   } else {
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,

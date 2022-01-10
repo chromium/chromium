@@ -7,13 +7,13 @@
 #include <string.h>
 
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "ash/components/disks/disk_mount_manager.h"
 #include "ash/components/disks/mock_disk_mount_manager.h"
 #include "base/bind.h"
 #include "base/files/file_util.h"
-#include "base/ignore_result.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
@@ -650,7 +650,7 @@ TEST_F(SmbFsMounterE2eTest, MountSuccess) {
       launch_options);
   ASSERT_TRUE(child_process.IsValid());
   // The child FD has been passed to the child process at this point.
-  ignore_result(child_fd.release());
+  std::ignore = child_fd.release();
 
   EXPECT_CALL(mock_disk_mount_manager_,
               MountPath(StartsWith(kMountUrlPrefix), _, kMountDir, _, _, _, _))

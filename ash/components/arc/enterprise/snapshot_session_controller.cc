@@ -4,7 +4,8 @@
 
 #include "ash/components/arc/enterprise/snapshot_session_controller.h"
 
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/time/time.h"
@@ -95,7 +96,7 @@ SnapshotSessionControllerImpl::SnapshotSessionControllerImpl(
     : apps_tracker_(std::move(apps_tracker)) {
   session_manager::SessionManager::Get()->AddObserver(this);
   // Start tracking apps for active MGS.
-  ignore_result(MaybeStartSession());
+  std::ignore = MaybeStartSession();
 }
 
 SnapshotSessionControllerImpl::~SnapshotSessionControllerImpl() {

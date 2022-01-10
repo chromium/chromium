@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -36,7 +37,6 @@
 #include "ash/style/ash_color_provider.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/test/ash_test_base.h"
-#include "base/ignore_result.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -96,8 +96,8 @@ void WaitForLayerAnimation(ui::Layer* layer) {
 
   // Ensure there is one more frame presented after animation finishes
   // to allow animation throughput data is passed from cc to ui.
-  ignore_result(
-      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(200)));
+  std::ignore =
+      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(200));
 }
 
 class AppListBubbleViewTest : public AshTestBase {
@@ -393,8 +393,8 @@ TEST_F(AppListBubbleViewTest, HideAnimationsRecordsSmoothnessHistogram) {
 
   // Ensure there is one more frame presented after animation finishes to allow
   // animation throughput data to be passed from cc to ui.
-  ignore_result(
-      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(200)));
+  std::ignore =
+      ui::WaitForNextFrameToBePresented(compositor, base::Milliseconds(200));
 
   // Smoothness was recorded.
   histograms.ExpectTotalCount(

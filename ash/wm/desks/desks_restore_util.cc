@@ -4,6 +4,8 @@
 
 #include "ash/wm/desks/desks_restore_util.h"
 
+#include <tuple>
+
 #include "ash/constants/ash_pref_names.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
@@ -12,7 +14,6 @@
 #include "ash/wm/desks/desks_histogram_enums.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/auto_reset.h"
-#include "base/ignore_result.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/clock.h"
@@ -111,8 +112,8 @@ bool IsNowInValidTimePeriod() {
 base::Time GetLocalEpoch() {
   static const base::Time local_epoch = [] {
     base::Time local_epoch;
-    ignore_result(base::Time::FromLocalExploded({2010, 1, 5, 1, 0, 0, 0, 0},
-                                                &local_epoch));
+    std::ignore = base::Time::FromLocalExploded({2010, 1, 5, 1, 0, 0, 0, 0},
+                                                &local_epoch);
     return local_epoch;
   }();
   return local_epoch;
