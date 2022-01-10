@@ -2015,7 +2015,11 @@ if __name__ == "__main__":
 
   try:
     sys.exit(auditor_ui.main())
-  except Exception as e:
+  except extractor.SourceCodeParsingError:
+    # Even with --error-resilient, CQ should turn red if C++/Java code doesn't
+    # parse.
+    raise
+  except Exception:
     if args.error_resilient:
       traceback.print_exc()
       sys.exit(0)
