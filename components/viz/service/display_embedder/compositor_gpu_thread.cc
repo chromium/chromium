@@ -152,7 +152,8 @@ void CompositorGpuThread::Init() {
 #endif
       /*metal_context_provider=*/nullptr,
       /*dawn_context_provider=*/nullptr,
-      /*peak_memory_monitor=*/weak_ptr_factory_.GetWeakPtr());
+      /*peak_memory_monitor=*/weak_ptr_factory_.GetWeakPtr(),
+      /*created_on_compositor_gpu_thread=*/true);
 
   const auto& workarounds = gpu_channel_manager_->gpu_driver_bug_workarounds();
   auto gles2_feature_info = base::MakeRefCounted<gpu::gles2::FeatureInfo>(

@@ -150,7 +150,8 @@ SharedContextState::SharedContextState(
     viz::VulkanContextProvider* vulkan_context_provider,
     viz::MetalContextProvider* metal_context_provider,
     viz::DawnContextProvider* dawn_context_provider,
-    base::WeakPtr<gpu::MemoryTracker::Observer> peak_memory_monitor)
+    base::WeakPtr<gpu::MemoryTracker::Observer> peak_memory_monitor,
+    bool created_on_compositor_gpu_thread)
     : use_virtualized_gl_contexts_(use_virtualized_gl_contexts),
       context_lost_callback_(std::move(context_lost_callback)),
       gr_context_type_(gr_context_type),
@@ -160,6 +161,7 @@ SharedContextState::SharedContextState(
       vk_context_provider_(vulkan_context_provider),
       metal_context_provider_(metal_context_provider),
       dawn_context_provider_(dawn_context_provider),
+      created_on_compositor_gpu_thread_(created_on_compositor_gpu_thread),
       share_group_(std::move(share_group)),
       context_(context),
       real_context_(std::move(context)),
@@ -691,7 +693,12 @@ void SharedContextState::PessimisticallyResetGrContext() const {
 }
 
 void SharedContextState::StoreVkPipelineCacheIfNeeded() {
-  if (gr_context_ && GrContextIsVulkan()) {
+  // GrShaderCache::StoreVkPipelineCacheIfNeeded() must be called only for gpu
+  // main thread. Hence using |created_on_compositor_gpu_thread_| to avoid
+  // calling it for CompositorGpuThread when DrDc is enabled. See
+  // GrShaderCache::StoreVkPipelineCacheIfNeeded for more details.
+  if (gr_context_ && GrContextIsVulkan() &&
+      !created_on_compositor_gpu_thread_) {
     gpu::raster::GrShaderCache::ScopedCacheUse use(gr_shader_cache_,
                                                    kDisplayCompositorClientId);
     gr_shader_cache_->StoreVkPipelineCacheIfNeeded(gr_context_);

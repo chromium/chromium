@@ -82,8 +82,8 @@ class GPU_GLES2_EXPORT SharedContextState
       viz::VulkanContextProvider* vulkan_context_provider = nullptr,
       viz::MetalContextProvider* metal_context_provider = nullptr,
       viz::DawnContextProvider* dawn_context_provider = nullptr,
-      base::WeakPtr<gpu::MemoryTracker::Observer> peak_memory_monitor =
-          nullptr);
+      base::WeakPtr<gpu::MemoryTracker::Observer> peak_memory_monitor = nullptr,
+      bool created_on_compositor_gpu_thread = false);
 
   SharedContextState(const SharedContextState&) = delete;
   SharedContextState& operator=(const SharedContextState&) = delete;
@@ -317,6 +317,7 @@ class GPU_GLES2_EXPORT SharedContextState
   const raw_ptr<viz::VulkanContextProvider> vk_context_provider_;
   const raw_ptr<viz::MetalContextProvider> metal_context_provider_;
   const raw_ptr<viz::DawnContextProvider> dawn_context_provider_;
+  bool created_on_compositor_gpu_thread_ = false;
   raw_ptr<GrDirectContext> gr_context_ = nullptr;
 
   scoped_refptr<gl::GLShareGroup> share_group_;
