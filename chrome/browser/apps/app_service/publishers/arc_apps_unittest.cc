@@ -77,7 +77,9 @@ class ArcAppsPublisherTest : public testing::Test {
 
     app_service_test_.SetUp(&profile_);
     apps::ArcAppsFactory::GetForProfile(profile());
-    app_service_test_.FlushMojoCalls();
+    // Ensure that the PreferredAppsList is fully initialized before running the
+    // test.
+    task_environment_.RunUntilIdle();
   }
 
   void TearDown() override { arc_test_.TearDown(); }
@@ -111,8 +113,7 @@ class ArcAppsPublisherTest : public testing::Test {
 
 // Verifies that a call to set the supported links preference from ARC persists
 // the setting in app service.
-// Flaky: https://crbug.com/1285361.
-TEST_F(ArcAppsPublisherTest, DISABLED_SetSupportedLinksFromArc) {
+TEST_F(ArcAppsPublisherTest, SetSupportedLinksFromArc) {
   constexpr char kTestAuthority[] = "www.example.com";
   const auto& fake_apps = arc_test()->fake_apps();
   std::string package_name = fake_apps[0].package_name;
