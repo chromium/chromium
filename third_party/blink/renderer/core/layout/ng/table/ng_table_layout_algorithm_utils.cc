@@ -242,8 +242,7 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
     cell_block_constraints->push_back(cell_block_constraint);
     is_constrained |= cell_block_constraint.is_constrained && rowspan == 1;
     row_baseline_tabulator.ProcessCell(
-        fragment, cell_block_constraint.min_block_size,
-        NGTableAlgorithmUtils::IsBaseline(cell_style.VerticalAlign()),
+        fragment, NGTableAlgorithmUtils::IsBaseline(cell_style.VerticalAlign()),
         is_parallel, rowspan > 1,
         layout_result->HasDescendantThatDependsOnPercentageBlockSize());
 
@@ -682,7 +681,6 @@ void NGColspanCellTabulator::ProcessCell(const NGBlockNode& cell) {
 
 void NGRowBaselineTabulator::ProcessCell(
     const NGBoxFragment& fragment,
-    const LayoutUnit cell_min_block_size,
     const bool is_baseline_aligned,
     const bool is_parallel,
     const bool is_rowspanned,
@@ -700,7 +698,7 @@ void NGRowBaselineTabulator::ProcessCell(
     } else {
       max_cell_descent_ =
           std::max(max_cell_descent_.value_or(LayoutUnit::Min()),
-                   cell_min_block_size - cell_baseline);
+                   fragment.BlockSize() - cell_baseline);
     }
   }
 
