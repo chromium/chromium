@@ -956,7 +956,9 @@ class ZoomToFindInPageRectMessageFilter
 }  // namespace
 
 // Tests activating the find match nearest to a given point.
-IN_PROC_BROWSER_TEST_P(FindRequestManagerTest, ActivateNearestFindMatch) {
+// TODO(crbug.com/1285135): Fix flaky failures.
+IN_PROC_BROWSER_TEST_P(FindRequestManagerTest,
+                       DISABLED_ActivateNearestFindMatch) {
   LoadAndWait("/find_in_page.html");
   bool test_with_oopif = GetParam();
   if (test_with_oopif)
