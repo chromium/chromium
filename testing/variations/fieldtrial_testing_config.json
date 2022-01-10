@@ -166,6 +166,23 @@
             ]
         }
     ],
+    "AndroidDynamicPerformanceFramework": [
+        {
+            "platforms": [
+                "android",
+                "android_weblayer"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "Adpf"
+                    ],
+                    "min_os_version": "12.0.0"
+                }
+            ]
+        }
+    ],
     "AndroidDynamicWideColorGamut": [
         {
             "platforms": [
