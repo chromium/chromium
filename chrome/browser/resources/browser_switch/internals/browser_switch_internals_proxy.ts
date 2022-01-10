@@ -30,7 +30,8 @@ export type TimestampPair = {
 export type RuleSetList = {
   gpo: RuleSet;
   ieem?: RuleSet;
-  external?: RuleSet;
+  external_sitelist?: RuleSet;
+  external_greylist?: RuleSet;
 };
 
 export type RuleSet = {

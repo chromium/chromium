@@ -386,9 +386,12 @@ void BrowserSwitchHandler::HandleGetAllRulesets(const base::ListValue* args) {
   retval.Set("gpo", std::move(gpo_dict));
   auto ieem_dict = RuleSetToDict(*service->sitelist()->GetIeemSitelist());
   retval.Set("ieem", std::move(ieem_dict));
-  auto external_dict =
+  auto external_sitelist_dict =
       RuleSetToDict(*service->sitelist()->GetExternalSitelist());
-  retval.Set("external", std::move(external_dict));
+  retval.Set("external_sitelist", std::move(external_sitelist_dict));
+  auto external_greylist_dict =
+      RuleSetToDict(*service->sitelist()->GetExternalGreylist());
+  retval.Set("external_greylist", std::move(external_greylist_dict));
 
   ResolveJavascriptCallback(args->GetList()[0], retval);
 }

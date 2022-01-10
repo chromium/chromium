@@ -3901,7 +3901,6 @@ if (!is_android && !is_fuchsia) {
     if (is_mac || is_win || (is_linux || is_chromeos_lacros)) {
       sources += [
         # Tests for non mobile and non CrOS (includes Linux, Win, Mac).
-        "../browser/browser_switcher/ieem_sitelist_parser_browsertest.cc",
         "../browser/extensions/api/image_writer_private/image_writer_utility_client_browsertest.cc",
         "../browser/profiles/profile_statistics_browsertest.cc",
       ]
@@ -7913,6 +7912,7 @@ test("unit_tests") {
       "../browser/browser_switcher/browser_switcher_navigation_throttle_unittest.cc",
       "../browser/browser_switcher/browser_switcher_prefs_unittest.cc",
       "../browser/browser_switcher/browser_switcher_sitelist_unittest.cc",
+      "../browser/browser_switcher/ieem_sitelist_parser_unittest.cc",
       "../browser/browser_switcher/mock_alternative_browser_driver.cc",
       "../browser/browser_switcher/mock_alternative_browser_driver.h",
     ]

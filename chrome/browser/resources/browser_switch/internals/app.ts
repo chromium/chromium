@@ -78,35 +78,27 @@ class BrowserSwitchInternalsAppElement extends
     if (listType === 'sitelist') {
       cells[1].innerText =
           rule.startsWith('!') ? getBrowserName() : getAltBrowserName();
-      cells[2].appendChild(
-          this.createRulesetColumnWithTooltip(rulesetName, listType));
+      cells[2].appendChild(this.createRulesetColumnWithTooltip(rulesetName));
     } else if (listType === 'greylist') {
-      cells[1].appendChild(
-          this.createRulesetColumnWithTooltip(rulesetName, listType));
+      cells[1].appendChild(this.createRulesetColumnWithTooltip(rulesetName));
     }
 
     return row;
   }
 
-  createRulesetColumnWithTooltip(rulesetName: string, listType: ListName):
-      HTMLSpanElement {
+  createRulesetColumnWithTooltip(rulesetName: string): HTMLSpanElement {
     const textSpan = document.createElement('span');
     textSpan.className = 'tooltip';
     textSpan.innerText = rulesetName;
     const tooltipSpan = document.createElement('span');
     tooltipSpan.className = 'right';
-    const rulesetToPolicy: Record<ListName, Record<string, string>> = {
-      'sitelist': {
-        'gpo': 'BrowserSwitcherUrlList',
-        'ieem': 'BrowserSwitcherUseIeSitelist',
-        'external': 'BrowserSwitcherExternalSitelistUrl',
-      },
-      'greylist': {
-        'gpo': 'BrowserSwitcherUrlGreylist',
-        'external': 'BrowserSwitcherExternalGreylistUrl',
-      }
+    const rulesetToPolicy: Record<string, string> = {
+      'gpo': 'BrowserSwitcherUrlList',
+      'ieem': 'BrowserSwitcherUseIeSitelist',
+      'external_sitelist': 'BrowserSwitcherExternalSitelistUrl',
+      'external_greylist': 'BrowserSwitcherExternalGreylistUrl',
     };
-    tooltipSpan.innerText = rulesetToPolicy[listType][rulesetName];
+    tooltipSpan.innerText = rulesetToPolicy[rulesetName];
     textSpan.appendChild(tooltipSpan);
     return textSpan;
   }

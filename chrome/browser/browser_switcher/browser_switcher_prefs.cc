@@ -66,6 +66,16 @@ Rule::Rule(base::StringPiece original_rule)
     : priority_(original_rule.size()),
       inverted_(base::StartsWith(original_rule, "!")) {}
 
+RawRuleSet::RawRuleSet() = default;
+RawRuleSet::RawRuleSet(RawRuleSet&&) = default;
+RawRuleSet::~RawRuleSet() = default;
+
+RawRuleSet::RawRuleSet(std::vector<std::string>&& sitelist_,
+                       std::vector<std::string>&& greylist_)
+    : sitelist(std::move(sitelist_)), greylist(std::move(greylist_)) {}
+
+RawRuleSet& RawRuleSet::operator=(RawRuleSet&& that) = default;
+
 RuleSet::RuleSet() = default;
 RuleSet::RuleSet(RuleSet&&) = default;
 RuleSet::~RuleSet() = default;

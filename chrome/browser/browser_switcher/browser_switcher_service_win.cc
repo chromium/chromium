@@ -58,6 +58,7 @@ MergedRuleSet GetRules(const BrowserSwitcherPrefs& prefs,
       &prefs.GetRules(),
       sitelist->GetIeemSitelist(),
       sitelist->GetExternalSitelist(),
+      sitelist->GetExternalGreylist(),
   };
   MergedRuleSet rules;
   for (const RuleSet* source : source_rulesets) {

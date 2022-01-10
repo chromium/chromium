@@ -8,9 +8,9 @@
 #include "base/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
-#include "chrome/test/base/in_process_browser_test.h"
-#include "content/public/test/browser_test.h"
+#include "base/test/task_environment.h"
 #include "services/data_decoder/public/cpp/safe_xml_parser.h"
+#include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace browser_switcher {
@@ -36,24 +36,28 @@ void TestParseXml(const std::string& xml, ParsedXml expected) {
 
 }  // namespace
 
-class IeemSitelistParserTest : public InProcessBrowserTest {
+class IeemSitelistParserTest : public testing::Test {
  public:
   IeemSitelistParserTest() = default;
   ~IeemSitelistParserTest() override = default;
+
+ private:
+  base::test::SingleThreadTaskEnvironment task_environment_;
+  data_decoder::test::InProcessDataDecoder data_decoder_;
 };
 
-IN_PROC_BROWSER_TEST_F(IeemSitelistParserTest, BadXml) {
+TEST_F(IeemSitelistParserTest, BadXml) {
   TestParseXml("", ParsedXml({}, "Invalid XML: bad content"));
   TestParseXml("thisisnotxml", ParsedXml({}, "Invalid XML: bad content"));
 }
 
-IN_PROC_BROWSER_TEST_F(IeemSitelistParserTest, BadXmlParsed) {
+TEST_F(IeemSitelistParserTest, BadXmlParsed) {
   TestParseXml("<bogus></bogus>", ParsedXml({}, "Invalid XML root element"));
   TestParseXml("<rules version=\"424\"><unknown></unknown></rules>",
                ParsedXml({}, absl::nullopt));
 }
 
-IN_PROC_BROWSER_TEST_F(IeemSitelistParserTest, V1OnlyBogusElements) {
+TEST_F(IeemSitelistParserTest, V1OnlyBogusElements) {
   std::string xml =
       "<rules version=\"424\">"
       "<unknown><more><docMode><domain>ignore.com</domain></docMode>"
@@ -63,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(IeemSitelistParserTest, V1OnlyBogusElements) {
   TestParseXml(xml, ParsedXml({}, absl::nullopt));
 }
 
-IN_PROC_BROWSER_TEST_F(IeemSitelistParserTest, V1Full) {
+TEST_F(IeemSitelistParserTest, V1Full) {
   std::string xml =
       "<rules version=\"424\"><unknown><more><docMode><domain>ignore"
       "</domain></docMode></more><emie><domain>ignoretoo.com<path>/ignored_path"
@@ -134,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(IeemSitelistParserTest, V1Full) {
   TestParseXml(xml, ParsedXml(std::move(expected_sitelist), absl::nullopt));
 }
 
-IN_PROC_BROWSER_TEST_F(IeemSitelistParserTest, V2Full) {
+TEST_F(IeemSitelistParserTest, V2Full) {
   // Very subtle issue in the closing element for rules.
   std::string xml =
       "<site-list version=\"205\"><!-- File creation header -->"

@@ -52,7 +52,23 @@ class NoCopyUrl {
   std::string spec_without_port_;
 };
 
-// A single "rule" from a sitelist or greylist.
+// A named pair type, for rules that haven't been pre-processed and
+// canonicalized (e.g., just loaded from prefs or policies).
+struct RawRuleSet {
+  RawRuleSet();
+  RawRuleSet(std::vector<std::string>&& sitelist,
+             std::vector<std::string>&& greylist);
+  RawRuleSet(RawRuleSet&&);
+  ~RawRuleSet();
+
+  RawRuleSet& operator=(RawRuleSet&&);
+
+  std::vector<std::string> sitelist;
+  std::vector<std::string> greylist;
+};
+
+// A single "rule" from a sitelist or greylist, after pre-processing and
+// canonicalization.
 class Rule {
  public:
   explicit Rule(base::StringPiece original_rule);
@@ -85,7 +101,7 @@ class Rule {
   bool inverted_;
 };
 
-// A named pair type.
+// A named pair type, for pre-processed and canonicalized rules.
 struct RuleSet {
   RuleSet();
   RuleSet(RuleSet&&);
@@ -243,6 +259,10 @@ class BrowserSwitcherPrefs : public KeyedService,
   std::vector<std::string> chrome_params_;
 #endif
 
+  // Rules from the BrowserSwitcherUrlList and BrowserSwitcherGreylist policies.
+  //
+  // Other rules are parsed from XML, and stored in BrowserSwitcherSitelist
+  // instead of here.
   RuleSet rules_;
 
   // List of prefs (pref names) that changed since the last policy refresh.

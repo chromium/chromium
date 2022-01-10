@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
+#include "chrome/browser/browser_switcher/ieem_sitelist_parser.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class GURL;
@@ -14,7 +15,6 @@ class GURL;
 namespace browser_switcher {
 
 class BrowserSwitcherPrefs;
-class ParsedXml;
 
 // Return a Rule object for |original_rule|, with the right type depending on
 // |parsing_mode|.
@@ -87,6 +87,7 @@ class BrowserSwitcherSitelist {
 
   virtual const RuleSet* GetIeemSitelist() const = 0;
   virtual const RuleSet* GetExternalSitelist() const = 0;
+  virtual const RuleSet* GetExternalGreylist() const = 0;
 };
 
 // Manages the sitelist configured by the administrator for
@@ -108,6 +109,7 @@ class BrowserSwitcherSitelistImpl : public BrowserSwitcherSitelist {
   void SetExternalGreylist(ParsedXml&& greylist) override;
   const RuleSet* GetIeemSitelist() const override;
   const RuleSet* GetExternalSitelist() const override;
+  const RuleSet* GetExternalGreylist() const override;
 
  private:
   // Returns true if there are any rules configured.
@@ -127,6 +129,7 @@ class BrowserSwitcherSitelistImpl : public BrowserSwitcherSitelist {
 
   RuleSet ieem_sitelist_;
   RuleSet external_sitelist_;
+  RuleSet external_greylist_;
 
   // Original values used for canonicalization.
   std::vector<std::string> original_ieem_sitelist_;

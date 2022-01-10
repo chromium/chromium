@@ -39,6 +39,13 @@ std::unique_ptr<base::Value> StringArrayToValue(
   return std::make_unique<base::Value>(values);
 }
 
+void CheckRuleSetSize(size_t expected_sitelist_size,
+                      size_t expected_greylist_size,
+                      const RuleSet* ruleset) {
+  ASSERT_EQ(expected_sitelist_size, ruleset->sitelist.size());
+  ASSERT_EQ(expected_greylist_size, ruleset->greylist.size());
+}
+
 }  // namespace
 
 class BrowserSwitcherSitelistTest : public testing::TestWithParam<ParsingMode> {
@@ -476,11 +483,10 @@ TEST_P(BrowserSwitcherSitelistTest, ReCanonicalizeWhenParsingModeChanges) {
   sitelist()->SetExternalGreylist(std::move(external_greylist));
 
   // Check initial state.
-  ASSERT_EQ(1u, prefs()->GetRules().sitelist.size());
-  ASSERT_EQ(1u, prefs()->GetRules().greylist.size());
-  ASSERT_EQ(1u, sitelist()->GetIeemSitelist()->sitelist.size());
-  ASSERT_EQ(1u, sitelist()->GetExternalSitelist()->sitelist.size());
-  ASSERT_EQ(1u, sitelist()->GetExternalSitelist()->greylist.size());
+  CheckRuleSetSize(1u, 1u, &prefs()->GetRules());
+  CheckRuleSetSize(1u, 0u, sitelist()->GetIeemSitelist());
+  CheckRuleSetSize(1u, 0u, sitelist()->GetExternalSitelist());
+  CheckRuleSetSize(0u, 1u, sitelist()->GetExternalGreylist());
   if (parsing_mode() == ParsingMode::kDefault) {
     EXPECT_EQ("google.com", prefs()->GetRules().sitelist[0]->ToString());
     EXPECT_EQ("mail.google.com", prefs()->GetRules().greylist[0]->ToString());
@@ -489,7 +495,7 @@ TEST_P(BrowserSwitcherSitelistTest, ReCanonicalizeWhenParsingModeChanges) {
     EXPECT_EQ("yahoo.com",
               sitelist()->GetExternalSitelist()->sitelist[0]->ToString());
     EXPECT_EQ("duckduckgo.com",
-              sitelist()->GetExternalSitelist()->greylist[0]->ToString());
+              sitelist()->GetExternalGreylist()->greylist[0]->ToString());
   } else {
     EXPECT_EQ("*://google.com/", prefs()->GetRules().sitelist[0]->ToString());
     EXPECT_EQ("*://mail.google.com/",
@@ -499,7 +505,7 @@ TEST_P(BrowserSwitcherSitelistTest, ReCanonicalizeWhenParsingModeChanges) {
     EXPECT_EQ("*://yahoo.com/",
               sitelist()->GetExternalSitelist()->sitelist[0]->ToString());
     EXPECT_EQ("*://duckduckgo.com/",
-              sitelist()->GetExternalSitelist()->greylist[0]->ToString());
+              sitelist()->GetExternalGreylist()->greylist[0]->ToString());
   }
 
   // Change parsing mode.
@@ -514,11 +520,10 @@ TEST_P(BrowserSwitcherSitelistTest, ReCanonicalizeWhenParsingModeChanges) {
   base::RunLoop().RunUntilIdle();
 
   // Check that canonicalization changed.
-  ASSERT_EQ(1u, prefs()->GetRules().sitelist.size());
-  ASSERT_EQ(1u, prefs()->GetRules().greylist.size());
-  ASSERT_EQ(1u, sitelist()->GetIeemSitelist()->sitelist.size());
-  ASSERT_EQ(1u, sitelist()->GetExternalSitelist()->sitelist.size());
-  ASSERT_EQ(1u, sitelist()->GetExternalSitelist()->greylist.size());
+  CheckRuleSetSize(1u, 1u, &prefs()->GetRules());
+  CheckRuleSetSize(1u, 0u, sitelist()->GetIeemSitelist());
+  CheckRuleSetSize(1u, 0u, sitelist()->GetExternalSitelist());
+  CheckRuleSetSize(0u, 1u, sitelist()->GetExternalGreylist());
   if (new_parsing_mode == ParsingMode::kDefault) {
     EXPECT_EQ("google.com", prefs()->GetRules().sitelist[0]->ToString());
     EXPECT_EQ("mail.google.com", prefs()->GetRules().greylist[0]->ToString());
@@ -527,7 +532,7 @@ TEST_P(BrowserSwitcherSitelistTest, ReCanonicalizeWhenParsingModeChanges) {
     EXPECT_EQ("yahoo.com",
               sitelist()->GetExternalSitelist()->sitelist[0]->ToString());
     EXPECT_EQ("duckduckgo.com",
-              sitelist()->GetExternalSitelist()->greylist[0]->ToString());
+              sitelist()->GetExternalGreylist()->greylist[0]->ToString());
   } else {
     EXPECT_EQ("*://google.com/", prefs()->GetRules().sitelist[0]->ToString());
     EXPECT_EQ("*://mail.google.com/",
@@ -537,7 +542,7 @@ TEST_P(BrowserSwitcherSitelistTest, ReCanonicalizeWhenParsingModeChanges) {
     EXPECT_EQ("*://yahoo.com/",
               sitelist()->GetExternalSitelist()->sitelist[0]->ToString());
     EXPECT_EQ("*://duckduckgo.com/",
-              sitelist()->GetExternalSitelist()->greylist[0]->ToString());
+              sitelist()->GetExternalGreylist()->greylist[0]->ToString());
   }
 }
 
