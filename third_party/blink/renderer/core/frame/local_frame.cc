@@ -1072,6 +1072,12 @@ void LocalFrame::SetPrinting(bool printing,
                                       : Document::kFinishingPrinting);
   View()->AdjustMediaTypeForPrinting(printing);
 
+  if (!printing) {
+    // Don't get stuck with the legacy engine when no longer printing.
+    if (Element* root = GetDocument()->documentElement())
+      root->ResetForceLegacyLayoutForPrinting();
+  }
+
   if (TextAutosizer* text_autosizer = GetDocument()->GetTextAutosizer())
     text_autosizer->UpdatePageInfo();
 

@@ -394,6 +394,22 @@ inline bool NeedsLegacyBlockFragmentation(const Element& element,
   return false;
 }
 
+bool NeedsLegacyLayoutForEntireDocument(Document& document) {
+  // Fall back to legacy layout for frameset documents. The frameset itself (and
+  // the frames) can only create legacy layout objects anyway (no NG counterpart
+  // for them yet). However, the layout object for the HTML root element would
+  // be an NG one. If we'd then print the document, we'd fall back to legacy
+  // layout (because of the above check), which would re-attach all layout
+  // objects, which would cause the frameset to lose state of some sort, leaving
+  // everything blank when printed.
+  if (document.IsFrameSet()) {
+    UseCounter::Count(document, WebFeature::kLegacyLayoutByFrameSet);
+    return true;
+  }
+
+  return false;
+}
+
 bool CalculateStyleShouldForceLegacyLayout(const Element& element,
                                            const ComputedStyle& style) {
   Document& document = element.GetDocument();
@@ -426,17 +442,8 @@ bool CalculateStyleShouldForceLegacyLayout(const Element& element,
     return true;
   }
 
-  // Fall back to legacy layout for frameset documents. The frameset itself (and
-  // the frames) can only create legacy layout objects anyway (no NG counterpart
-  // for them yet). However, the layout object for the HTML root element would
-  // be an NG one. If we'd then print the document, we'd fall back to legacy
-  // layout (because of the above check), which would re-attach all layout
-  // objects, which would cause the frameset to lose state of some sort, leaving
-  // everything blank when printed.
-  if (document.IsFrameSet()) {
-    UseCounter::Count(document, WebFeature::kLegacyLayoutByFrameSet);
+  if (NeedsLegacyLayoutForEntireDocument(document))
     return true;
-  }
 
   if (!RuntimeEnabledFeatures::LayoutNGTextCombineEnabled() &&
       style.HasTextCombine() && !style.IsHorizontalWritingMode()) {
@@ -3832,6 +3839,11 @@ void Element::SetRegionCaptureCropId(
 const RegionCaptureCropId* Element::GetRegionCaptureCropId() const {
   return HasRareData() ? GetElementRareData()->GetRegionCaptureCropId()
                        : nullptr;
+}
+
+void Element::ResetForceLegacyLayoutForPrinting() {
+  SetShouldForceLegacyLayoutForChild(
+      NeedsLegacyLayoutForEntireDocument(GetDocument()));
 }
 
 void Element::SetCustomElementDefinition(CustomElementDefinition* definition) {

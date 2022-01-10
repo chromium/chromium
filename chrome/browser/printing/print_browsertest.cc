@@ -836,6 +836,36 @@ IN_PROC_BROWSER_TEST_F(PrintBrowserTest, NoScrollingVerticalRl) {
                          "window.scrollX"));
 }
 
+// https://crbug.com/1285208
+IN_PROC_BROWSER_TEST_F(PrintBrowserTest, LegacyLayoutEngineFallback) {
+  ASSERT_TRUE(embedded_test_server()->Started());
+  GURL url(embedded_test_server()->GetURL(
+      "/printing/legacy-layout-engine-known-bug.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  auto* contents = browser()->tab_strip_model()->GetActiveWebContents();
+  const char kExpression[] = "target.offsetHeight";
+
+  // The non-printed document should be laid out with LayoutNG. We're testing
+  // this by looking for a known margin-collapsing / clearance bug in the legacy
+  // engine, not present in LayoutNG. The height should be 0 if the bug isn't
+  // present.
+
+  double old_height = content::EvalJs(contents, kExpression).ExtractDouble();
+  if (old_height != 0) {
+    // LayoutNG seems to be disabled. There's nothing useful to test here then.
+    return;
+  }
+
+  // Entering print preview may trigger legacy engine fallback, but this should
+  // only be temporary.
+  PrintAndWaitUntilPreviewIsReady(/*print_only_selection=*/false);
+
+  // The non-printed document should still be laid out with LayoutNG.
+  double new_height = content::EvalJs(contents, kExpression).ExtractDouble();
+  EXPECT_EQ(new_height, 0);
+}
+
 // Before invoking print preview, page scale is changed to a different value.
 // Test that when print preview is ready, in other words when printing is
 // finished, the page scale factor gets reset to initial scale.

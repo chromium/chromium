@@ -890,6 +890,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     return StyleShouldForceLegacyLayout() || ShouldForceLegacyLayoutForChild();
   }
 
+  void ResetForceLegacyLayoutForPrinting();
+
   virtual void BuildPendingResource() {}
 
   void SetCustomElementDefinition(CustomElementDefinition*);
