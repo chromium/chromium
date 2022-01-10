@@ -21,7 +21,7 @@ namespace ash {
 namespace {
 
 constexpr int kLongerEdge = kPreferredWidthDip + 10;
-constexpr int kShoterEdge = kPreferredWidthDip - 10;
+constexpr int kShorterEdge = kPreferredWidthDip - 10;
 
 class AssistantOptInViewUnittest : public AssistantAshTestBase {};
 
@@ -30,7 +30,10 @@ class AssistantOptInViewUnittest : public AssistantAshTestBase {};
 // |AssistantPageView| doesn't get bigger than |kPreferredWidthDip|. This test
 // case makes sure that styled label is relayouted correctly.
 TEST_F(AssistantOptInViewUnittest, RotateSmallScreen) {
-  UpdateDisplay(base::StringPrintf("%dx%d", kLongerEdge, kShoterEdge));
+  UpdateDisplay(base::StringPrintf("%dx%d", kLongerEdge, kShorterEdge));
+  // Test in tablet mode because ProductivityLauncher doesn't resize lower than
+  // 640 dips wide in clamshell.
+  SetTabletMode(true);
   ShowAssistantUi();
 
   const views::View* styled_label =
@@ -49,7 +52,7 @@ TEST_F(AssistantOptInViewUnittest, RotateSmallScreen) {
 
   // Rotate display 90 degree by changing bounds.
   int original_width = opt_in_view()->bounds().width();
-  UpdateDisplay(base::StringPrintf("%dx%d", kShoterEdge, kLongerEdge));
+  UpdateDisplay(base::StringPrintf("%dx%d", kShorterEdge, kLongerEdge));
 
   // Assert that relayout of |opt_in_view| is necessary.
   ASSERT_THAT(opt_in_view()->bounds().width(), testing::Ne(original_width));
