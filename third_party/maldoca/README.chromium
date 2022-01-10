@@ -18,3 +18,4 @@ Local Modifications:
   third_party
 - Utilizing features available via protobuf lite
 - Using static variables over ABSL_FLAG
+- Replace FALLTHROUGH macro with C++17 attribute [[fallthrough]]
