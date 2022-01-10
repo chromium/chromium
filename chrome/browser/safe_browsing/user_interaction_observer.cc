@@ -42,9 +42,9 @@ const char kDelayedWarningsWithElisionDisabledHistogram[] =
 const char kDelayedWarningsTimeOnPageWithElisionDisabledHistogram[] =
     "SafeBrowsing.DelayedWarnings.TimeOnPage_UrlElisionDisabled";
 
+WEB_CONTENTS_USER_DATA_KEY_IMPL(SafeBrowsingUserInteractionObserver);
+
 namespace {
-const char kWebContentsUserDataKey[] =
-    "web_contents_safe_browsing_user_interaction_observer";
 
 bool IsUrlElisionDisabled(Profile* profile,
                           const char* suspicious_site_reporter_extension_id) {
@@ -74,8 +74,9 @@ SafeBrowsingUserInteractionObserver::SafeBrowsingUserInteractionObserver(
     const security_interstitials::UnsafeResource& resource,
     bool is_main_frame,
     scoped_refptr<SafeBrowsingUIManager> ui_manager)
-    : content::WebContentsObserver(web_contents),
-      web_contents_(web_contents),
+    : content::WebContentsUserData<SafeBrowsingUserInteractionObserver>(
+          *web_contents),
+      content::WebContentsObserver(web_contents),
       resource_(resource),
       ui_manager_(ui_manager),
       creation_time_(base::Time::Now()),
@@ -112,10 +113,12 @@ SafeBrowsingUserInteractionObserver::~SafeBrowsingUserInteractionObserver() {
   if (permission_request_manager) {
     permission_request_manager->RemoveObserver(this);
   }
-  web_contents_->GetMainFrame()
+  web_contents()
+      ->GetMainFrame()
       ->GetRenderWidgetHost()
       ->RemoveKeyPressEventCallback(key_press_callback_);
-  web_contents_->GetMainFrame()
+  web_contents()
+      ->GetMainFrame()
       ->GetRenderWidgetHost()
       ->RemoveMouseEventCallback(mouse_event_callback_);
 }
@@ -130,21 +133,12 @@ void SafeBrowsingUserInteractionObserver::CreateForWebContents(
   // create an observer if there isn't one.
   // TODO(crbug.com/1057157): The observer should observe all unsafe resources
   // instead of the first one only.
-  if (FromWebContents(web_contents)) {
-    return;
-  }
   DCHECK(!web_contents->IsPortal());
-  auto observer = std::make_unique<SafeBrowsingUserInteractionObserver>(
-      web_contents, resource, is_main_frame, ui_manager);
-  web_contents->SetUserData(kWebContentsUserDataKey, std::move(observer));
-}
-
-// static
-SafeBrowsingUserInteractionObserver*
-SafeBrowsingUserInteractionObserver::FromWebContents(
-    content::WebContents* web_contents) {
-  return static_cast<SafeBrowsingUserInteractionObserver*>(
-      web_contents->GetUserData(kWebContentsUserDataKey));
+  content::WebContentsUserData<
+      SafeBrowsingUserInteractionObserver>::CreateForWebContents(web_contents,
+                                                                 resource,
+                                                                 is_main_frame,
+                                                                 ui_manager);
 }
 
 void SafeBrowsingUserInteractionObserver::RenderFrameHostChanged(
@@ -220,7 +214,7 @@ void SafeBrowsingUserInteractionObserver::Detach() {
     base::UmaHistogramLongTimes(kDelayedWarningsTimeOnPageHistogram,
                                 time_on_page);
   }
-  web_contents()->RemoveUserData(kWebContentsUserDataKey);
+  web_contents()->RemoveUserData(UserDataKey());
   // DO NOT add code past this point. |this| is destroyed.
 }
 
@@ -379,7 +373,7 @@ void SafeBrowsingUserInteractionObserver::ShowInterstitial(
 
 void SafeBrowsingUserInteractionObserver::CleanUp() {
   content::RenderWidgetHost* widget =
-      web_contents_->GetMainFrame()->GetRenderWidgetHost();
+      web_contents()->GetMainFrame()->GetRenderWidgetHost();
   widget->RemoveKeyPressEventCallback(key_press_callback_);
   widget->RemoveMouseEventCallback(mouse_event_callback_);
 }
