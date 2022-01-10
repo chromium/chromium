@@ -53,6 +53,10 @@ Berikut ini beberapa hal yang dapat Anda coba untuk memulai.</translation>
 <translation id="1247519845643687288">Aplikasi terbaru</translation>
 <translation id="1252999807265626933">Mengisi daya dari <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Gimana kondisi cuaca?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> sampai 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Pilih acara untuk mengetahui detail selengkapnya di Google Kalender.</translation>
 <translation id="1266097335951928626">Mulai kamera selfie</translation>
 <translation id="1267032506238418139">Perubahan pintasan</translation>
 <translation id="1269405891096105529">Periferal tidak didukung dalam mode Tamu</translation>
@@ -997,6 +1001,8 @@ Baru diinstal</translation>
 <translation id="7720410380936703141">COBA LAGI</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 notifikasi}other{# notifikasi}}</translation>
 <translation id="7724603315864178912">Potong</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Tampilkan aplikasi di rak</translation>
 <translation id="7749443890790263709">Jumlah halaman kerja maksimum tercapai.</translation>
 <translation id="7749640678855296659">Mikrofon Anda saat ini dinonaktifkan</translation>

@@ -500,6 +500,7 @@
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" /> को अपडेट करें</translation>
 <translation id="3912508018559818924">वेब की सबसे अच्छी जानकारी ढूंढी जा रही है…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> चालू है</translation>
+<translation id="3925830358619338299">Google पासवर्ड मैनेजर में सेव होने से पहले, पासवर्ड आपके डिवाइस पर एन्क्रिप्ट (सुरक्षित) कर लिए जाते हैं</translation>
 <translation id="3927692899758076493">Sans Serif</translation>
 <translation id="3928666092801078803">मेरा डेटा संयोजित करें</translation>
 <translation id="3934366560681368531">“</translation>
@@ -772,6 +773,7 @@
 <translation id="5483197086164197190">Navigate Chrome</translation>
 <translation id="5487521232677179737">डेटा साफ़ करें</translation>
 <translation id="549025011754480756">बोलकर खोजने का तरीका</translation>
+<translation id="5492637351392383067">डिवाइस पर पासवर्ड एन्क्रिप्ट (सुरक्षित) करना</translation>
 <translation id="5514904542973294328">इस डिवाइस के व्यवस्थापक ने अक्षम किया है</translation>
 <translation id="5515439363601853141">अपना पासवर्ड देखने के लिए अनलॉक करें</translation>
 <translation id="5517095782334947753">आपके पास <ph name="FROM_ACCOUNT" /> के बुकमार्क, इतिहास, पासवर्ड और अन्य सेटिंग हैं.</translation>
@@ -1321,6 +1323,7 @@
 <translation id="8427875596167638501">'झलक' टैब आधी स्क्रीन में खुला हुआ है</translation>
 <translation id="8428213095426709021">सेटिंग</translation>
 <translation id="8430824733382774043">सिर्फ़ स्क्रीनशॉट शेयर करें</translation>
+<translation id="8431730749911729314">Google पासवर्ड मैनेजर में सेव होने से पहले, पासवर्ड अपने डिवाइस पर एन्क्रिप्ट (सुरक्षित) करें</translation>
 <translation id="8438566539970814960">खोजों और ब्राउज़िंग को बेहतर बनाएं</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> - भाषा इस्तेमाल के लिए तैयार है. <ph name="APP_NAME" /> को रीस्टार्ट करें.</translation>
 <translation id="8442258441309440798">कोई भी कहानी उपलब्ध नहीं है</translation>

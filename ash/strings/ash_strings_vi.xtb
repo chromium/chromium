@@ -53,6 +53,10 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1247519845643687288">Ứng dụng gần đây</translation>
 <translation id="1252999807265626933">Đang sạc từ <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Tình hình thời tiết thế nào?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> đến 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Chọn để xem thêm thông tin chi tiết trong Lịch Google.</translation>
 <translation id="1266097335951928626">Bắt đầu máy ảnh ở chế độ tự chụp ảnh chân dung</translation>
 <translation id="1267032506238418139">Thay đổi phím tắt</translation>
 <translation id="1269405891096105529">Chế độ khách không hỗ trợ thiết bị ngoại vi</translation>
@@ -997,6 +1001,8 @@ Mới cài đặt</translation>
 <translation id="7720410380936703141">THỬ LẠI</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 thông báo}other{# thông báo}}</translation>
 <translation id="7724603315864178912">Cắt</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Hiện các ứng dụng trên kệ</translation>
 <translation id="7749443890790263709">Đã đạt đến số lượng không gian làm việc tối đa.</translation>
 <translation id="7749640678855296659">Micrô của bạn đang tắt</translation>

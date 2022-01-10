@@ -60,6 +60,7 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="1407135791313364759">Buka semua</translation>
 <translation id="1430915738399379752">Cetak</translation>
 <translation id="1434356225517321998">Browser Anda dikelola. <ph name="BEGIN_LINK" />Detail<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">Enkripsi di Perangkat</translation>
 <translation id="1449835205994625556">Sembunyikan Sandi</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> item</translation>
 <translation id="149095475893949513">Situs ini mencoba mendownload profil konfigurasi.</translation>
@@ -94,6 +95,7 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="1690731385917361335">Tidak ada item</translation>
 <translation id="1692118695553449118">Sinkronisasi aktif</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> dipilih</translation>
+<translation id="1726573592754903697">Pengelola Sandi Google</translation>
 <translation id="1740468249224277719">Ketuk dua kali untuk memasang.</translation>
 <translation id="1752547299766512813">Simpan Sandi</translation>
 <translation id="1753905327828125965">Sering Dibuka</translation>
@@ -284,6 +286,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3529024052484145543">Tidak aman</translation>
 <translation id="3533202363250687977">Tutup Semua Tab Samaran</translation>
 <translation id="3533436815740441613">Tab Baru</translation>
+<translation id="3536487890564466894">Mengenkripsi sandi sebelum disimpan ke Akun Google Anda.</translation>
 <translation id="3551320343578183772">Tutup Tab</translation>
 <translation id="3581564640715911333">Tawarkan penerjemahan halaman ke dalam bahasa lain</translation>
 <translation id="3588820906588687999">Buka Gambar di Tab Baru</translation>
@@ -501,6 +504,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="575902488528307720">Telusuri Gambar</translation>
 <translation id="5781453543752460388">Tambahkan ke Foto</translation>
 <translation id="5782227691023083829">Menerjemahkan...</translation>
+<translation id="5802829331520313983">Siapkan …</translation>
 <translation id="5803566855766646066">Yakin ingin menghapus kartu baru ini?</translation>
 <translation id="5812974770859303494">Tambahkan ke ...</translation>
 <translation id="5816228676161003208">Hal ini memungkinkan Anda menelusuri lebih cepat menggunakan suara.</translation>
@@ -560,6 +564,7 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6219688215832490856">Jangan Pernah Terjemahkan</translation>
 <translation id="6223816392543092032">Dapatkan bookmark, histori, sandi, dan setelan lainnya di semua perangkat Anda.</translation>
 <translation id="6232329973559504466">Penelusuran Samaran</translation>
+<translation id="6232736989810857397">Hal ini memungkinkan Anda membuat acara kalender dengan mudah menggunakan Google Lens.</translation>
 <translation id="6254066287920239840">Buka link di aplikasi, bukan di browser.</translation>
 <translation id="6255097610484507482">Edit Kartu Kredit</translation>
 <translation id="6284652193729350524">Tawarkan untuk menerjemahkan bahasa <ph name="LANGUAGE" /></translation>

@@ -3226,6 +3226,7 @@
 <translation id="4275830172053184480">अपना डिवाइस फिर से प्रारंभ करें</translation>
 <translation id="4278390842282768270">अनुमति है</translation>
 <translation id="4279129444466079448">आप इस डिवाइस पर <ph name="PROFILE_LIMIT" /> ई-सिम प्रोफ़ाइलें इंस्टॉल कर सकते हैं. अन्य प्रोफ़ाइल जोड़ने के लिए, पहले किसी मौजूदा प्रोफ़ाइल को हटाएं.</translation>
+<translation id="4280325816108262082">बंद होने पर या इस्तेमाल नहीं किए जाने पर डिवाइस अपने-आप डिसकनेक्ट हो जाएगा</translation>
 <translation id="4281844954008187215">सेवा की शर्तें</translation>
 <translation id="4282196459431406533">Smart Lock चालू है</translation>
 <translation id="4284755288573763878">बेहतर सुरक्षा वाली ब्राउज़िंग बंद करनी है?</translation>
@@ -4346,6 +4347,7 @@
 <translation id="5490721031479690399">ब्लूटूथ डिवाइस डिसकनेक्ट करें</translation>
 <translation id="5490798133083738649">Linux को अपना माइक्रोफ़ोन ऐक्सेस करने दें</translation>
 <translation id="549211519852037402">गहरा पीला और सफ़ेद</translation>
+<translation id="5492637351392383067">डिवाइस पर पासवर्ड एन्क्रिप्ट (सुरक्षित) करना</translation>
 <translation id="5493792505296048976">स्क्रीन चालू है</translation>
 <translation id="5494016731375030300">हाल ही में बंद किए गए टैब</translation>
 <translation id="5494362494988149300">&amp;पू्र्ण होने पर खोलें</translation>
@@ -6543,6 +6545,7 @@
 <translation id="7775694664330414886">टैब को बिना नाम वाले ग्रुप में ले जाया गया - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">जब तक आप इस साइट के लिए सभी टैब बंद नहीं कर देते, <ph name="ORIGIN" /> तब तक फाइलों को <ph name="FOLDERNAME" /> में देख पाएगी</translation>
 <translation id="7776701556330691704">कोई आवाज़ नहीं मिली</translation>
+<translation id="7777284276915203144">Google पासवर्ड मैनेजर में सेव होने से पहले, पासवर्ड आपके डिवाइस पर एन्क्रिप्ट (सुरक्षित) कर लिए जाते हैं</translation>
 <translation id="7781335840981796660">सभी 'उपयोगकर्ता खातों' और 'स्थानीय डेटा' को हटा दिया जाएगा.</translation>
 <translation id="7782102568078991263">Google की ओर से कोई और सुझाव नहीं</translation>
 <translation id="7782717250816686129">लॉगिन स्क्रीन पर लगातार दिख रहे डेटा को स्टोर करें और सेशन में क्रेडेंशियल डालें.</translation>
@@ -7194,6 +7197,7 @@
 <translation id="8428634594422941299">समझ लिया</translation>
 <translation id="84297032718407999">आपको <ph name="LOGOUT_TIME_LEFT" /> में साइन आउट कर दिया जाएगा</translation>
 <translation id="8431190899827883166">टैप दिखाएं</translation>
+<translation id="8431730749911729314">Google पासवर्ड मैनेजर में सेव होने से पहले, पासवर्ड अपने डिवाइस पर एन्क्रिप्ट (सुरक्षित) करें</translation>
 <translation id="8434480141477525001">NaCl डीबग पोर्ट</translation>
 <translation id="8435395510592618362"><ph name="APP_NAME" /> के ज़रिए अपनी पहचान की पुष्टि करें</translation>
 <translation id="8437209419043462667">यूएस</translation>
@@ -7984,6 +7988,7 @@
 <translation id="947667444780368238"><ph name="ORIGIN" /> की मदद से, इस फ़ोल्डर में मौजूद फ़ाइलें नहीं खोली जा सकतीं, क्योंकि इस फ़ोल्डर में सिस्टम फ़ाइलें हैं</translation>
 <translation id="950307215746360464">सेट अप गाइड</translation>
 <translation id="951991426597076286">अस्वीकार करें</translation>
+<translation id="952471655966876828">चालू होने पर या इस्तेमाल किए जाने पर डिवाइस अपने-आप कनेक्ट हो जाएगा</translation>
 <translation id="953434574221655299">साइटों को यह जानने की अनुमति है कि आप अपने डिवाइस का इस्तेमाल कब करते हैं</translation>
 <translation id="956500788634395331">आप ऐसे एक्सटेंशन से सुरक्षित हैं जो शायद नुकसान पहुंचा सकते हैं</translation>
 <translation id="957960681186851048">इस साइट ने अपने आप  कई फ़ाइलें डाउनलोड करने की कोशिश की है</translation>

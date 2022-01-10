@@ -53,6 +53,10 @@ Quyidagi narsalardan boshlashingiz mumkin.</translation>
 <translation id="1247519845643687288">Oxirgi ilovalar</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" /> orqali quvvat olmoqda</translation>
 <translation id="1255033239764210633">Ob-havo qanday?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" /> – 
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Google Taqvimda tafsilotlarini koʻrish uchun tadbirni tanlang.</translation>
 <translation id="1266097335951928626">Old kamerani yoqish</translation>
 <translation id="1267032506238418139">Tugmalar birikmasini o‘zgartirish</translation>
 <translation id="1269405891096105529">Mehmon rejimida tashqi qurilmalar ishlamaydi</translation>
@@ -997,6 +1001,8 @@ yangi oʻrnatilgan</translation>
 <translation id="7720410380936703141">QAYTADAN</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 ta bildirishnoma}other{# ta bildirishnoma}}</translation>
 <translation id="7724603315864178912">Qirqish</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Ilovalarni ishga tushirish panelida chiqarish</translation>
 <translation id="7749443890790263709">Ish stollari maksimal miqdorda.</translation>
 <translation id="7749640678855296659">Mikrofon hozir yoniq emas</translation>

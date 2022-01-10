@@ -60,6 +60,7 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="1407135791313364759">Barchasini ochish</translation>
 <translation id="1430915738399379752">Chop etish</translation>
 <translation id="1434356225517321998">Bu brauzer nazorat ostida. <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">Qurilmada shifrlash</translation>
 <translation id="1449835205994625556">Parolni berkitish</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> ta xatcho‘p</translation>
 <translation id="149095475893949513">Bu sayt konfiguratsiya profilini yuklab olishga harakat qilmoqda.</translation>
@@ -94,6 +95,7 @@ Qidiruv tizimingiz: <ph name="DSE_NAME" />. Imkon boʻlsa, qidiruv tarixini qand
 <translation id="1690731385917361335">Xatcho‘plar yo‘q</translation>
 <translation id="1692118695553449118">Sinxronlash yoniq</translation>
 <translation id="1700629756560807968"><ph name="NUMBER_OF_SELECTED_BOOKMARKS" /> ta xatcho‘p tanlandi</translation>
+<translation id="1726573592754903697">Google Parollar menejeri</translation>
 <translation id="1740468249224277719">O‘rnatish uchun ikki marta bosing.</translation>
 <translation id="1752547299766512813">Parollarni saqlash</translation>
 <translation id="1753905327828125965">Eng ko‘p ochilganlar</translation>
@@ -284,6 +286,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="3529024052484145543">Xavfsiz emas</translation>
 <translation id="3533202363250687977">Inkognito sahifalarni yopish</translation>
 <translation id="3533436815740441613">Yangi varaq</translation>
+<translation id="3536487890564466894">Parollarni Google hisobingizga saqlashdan oldin shifrlang.</translation>
 <translation id="3551320343578183772">Ichki oynani yopish</translation>
 <translation id="3581564640715911333">Boshqa tildagi sahifalarni tarjima qilish taklif qilinsin</translation>
 <translation id="3588820906588687999">Tasvirni yangi tabda ochish</translation>
@@ -501,6 +504,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="575902488528307720">Rasmni qidirish</translation>
 <translation id="5781453543752460388">Photos xizmatiga kiritish</translation>
 <translation id="5782227691023083829">Tarjima qilinmoqda...</translation>
+<translation id="5802829331520313983">Sozlash</translation>
 <translation id="5803566855766646066">Bu yangi karta inkor etilsinmi?</translation>
 <translation id="5812974770859303494">Kiritish...</translation>
 <translation id="5816228676161003208">Ovoz orqali tezroq qidirish imkonini beradi.</translation>
@@ -560,6 +564,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6219688215832490856">Hech qachon tarjima qilinmasin</translation>
 <translation id="6223816392543092032">Chrome brauzeriga kirganingizdan so‘ng xatcho‘plar, tarix, parollar va boshqa sozlamalaringiz barcha qurilmalaringizda sinxronlanadi.</translation>
 <translation id="6232329973559504466">Inkognito qidiruv</translation>
+<translation id="6232736989810857397">Bunda Google Lens yordamida taqvim tadbirlarini oson yaratish mumkin.</translation>
 <translation id="6254066287920239840">Havolalarni brauzerning o‘rniga boshqa ilovada oching.</translation>
 <translation id="6255097610484507482">Kartani tahrirlash</translation>
 <translation id="6284652193729350524">Bu tildagi sahifalar tarjimasi taklif qilinsin: <ph name="LANGUAGE" /></translation>
@@ -609,6 +614,7 @@ Har bir sayt uchun alohida parol ishlating.</translation>
 <translation id="6524918542306337007">Inkognito rejimi ishlamayapti</translation>
 <translation id="6537746030088321027">example.com</translation>
 <translation id="6561262006871132942">Yaqinlashtirish</translation>
+<translation id="6583087784430677195">Faolsizlantirish uchun avval <ph name="BEGIN_LINK" />Sozlamalar<ph name="END_LINK" />, keyin Parollarni avtomatik kiritish sahifasini oching.</translation>
 <translation id="6585618849026997638">Siz uchun muhim sahifalarga bukmark kiritish orqali qaytish mumkin</translation>
 <translation id="6603393121510733479">Inkognito rejimi tashkilotingiz tomonidan faolsizlantirildi.
 <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>

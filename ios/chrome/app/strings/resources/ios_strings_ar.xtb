@@ -60,6 +60,7 @@
 <translation id="1407135791313364759">فتح الكل</translation>
 <translation id="1430915738399379752">طباعة</translation>
 <translation id="1434356225517321998">تتم إدارة متصفّحك. <ph name="BEGIN_LINK" />التفاصيل<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">التشفير على الجهاز فقط</translation>
 <translation id="1449835205994625556">إخفاء كلمة المرور</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> من العناصر</translation>
 <translation id="149095475893949513">يحاول هذا الموقع الإلكتروني تنزيل ملف شخصي يتضمّن إعدادات.</translation>
@@ -286,6 +287,7 @@
 <translation id="3529024052484145543">غير آمن</translation>
 <translation id="3533202363250687977">إغلاق جميع علامات تبويب التصفُّح المتخفي</translation>
 <translation id="3533436815740441613">علامة تبويب جديدة</translation>
+<translation id="3536487890564466894">‏يمكنك تشفير كلمات المرور قبل حفظها في حسابك على Google.</translation>
 <translation id="3551320343578183772">إغلاق علامة التبويب</translation>
 <translation id="3581564640715911333">اقتراح ترجمة الصفحات المكتوبة بلغات أخرى</translation>
 <translation id="3588820906588687999">فتح صورة في علامة تبويب جديدة</translation>
@@ -503,6 +505,7 @@
 <translation id="575902488528307720">البحث عن الصور</translation>
 <translation id="5781453543752460388">‏إضافة إلى "صور Google"</translation>
 <translation id="5782227691023083829">جارٍ ترجمة...</translation>
+<translation id="5802829331520313983">بدء الإعداد…</translation>
 <translation id="5803566855766646066">هل تريد فعلاً تجاهل هذه البطاقة الجديدة؟</translation>
 <translation id="5812974770859303494">إضافة إلى...</translation>
 <translation id="5816228676161003208">هذا يتيح لك البحث بشكلٍ أسرع باستخدام صوتك.</translation>

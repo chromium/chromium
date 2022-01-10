@@ -3214,6 +3214,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4275830172053184480">Qurilmangizni qayta yuklang</translation>
 <translation id="4278390842282768270">Berilgan ruxsatnomalar</translation>
 <translation id="4279129444466079448">Bu qurilmada <ph name="PROFILE_LIMIT" /> gacha eSIM profillarini oʻrnatish mumkin. Boshqa profil kiritish uchun avval mavjud profillardan birini olib tashlang.</translation>
+<translation id="4280325816108262082">Qurilma faolsizlantirilganda yoki ishlatilmayotganda avtomatik ravishda uziladi</translation>
 <translation id="4281844954008187215">Xizmat shartlari</translation>
 <translation id="4282196459431406533">Smart Lock yoniq</translation>
 <translation id="4284755288573763878">Kengaytirilgan himoya oʻchirilsinmi?</translation>
@@ -3677,6 +3678,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="4785719467058219317">Elektron kalitingiz bu sayt roʻyxatidan oʻtkazilmagan</translation>
 <translation id="478708757211772586">Keyingi ekranga oʻtish uchun “Keyingi” tugmasini bosing</translation>
 <translation id="4788092183367008521">Tarmoq ulanishini tekshiring va qaytadan urining.</translation>
+<translation id="4789550509729954245">Yaqin-atrofdagi qurilmalar maʼlumot almashganda bildirishnomalarni koʻrsatilsin</translation>
 <translation id="4791000909649665275"><ph name="NUMBER" /> ta rasm</translation>
 <translation id="4791037424585594169">(UDP)</translation>
 <translation id="4792290259143007505">TrackPoint tezlatkichini yoqish</translation>
@@ -4038,6 +4040,7 @@ kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5171343362375269016">Swap xotirasi</translation>
 <translation id="5172855596271336236">Boshqariladigan 1 ta printer bor.</translation>
 <translation id="5173668317844998239">Elektron kalitga barmoq izlari kiritish va saqlanganlarini olib tashlash</translation>
+<translation id="5174169235862638850">Parol vaqtinchalik xotiraga nusxalandi</translation>
 <translation id="5175379009094579629">Qurilma nomi xato kiritilgan. Xatosiz kiriting va yana urining.</translation>
 <translation id="5177479852722101802">Kamera va mikrofonga ruxsat har doim bloklansin</translation>
 <translation id="5177549709747445269">Mobil internetdan foydalanilmoqda</translation>
@@ -4332,6 +4335,7 @@ Bu amal uchun bir nechta kalit tugma belgilash mumkin.</translation>
 <translation id="5490721031479690399">Bluetooth qurilmani uzish</translation>
 <translation id="5490798133083738649">Linux mikrofondan foydalanishiga ruxsat berish</translation>
 <translation id="549211519852037402">Sargʻish va oq</translation>
+<translation id="5492637351392383067">Qurilmada shifrlash</translation>
 <translation id="5493792505296048976">ekran yoniq</translation>
 <translation id="5494016731375030300">Oxirgi yopilgan varaqlar</translation>
 <translation id="5494362494988149300">&amp;Yakunlanishida ochish</translation>
@@ -6530,6 +6534,7 @@ Tayinlovni bekor qilish uchun belgilangan kalit yoki tugmani bosing.</translatio
 <translation id="7775694664330414886">Varaq nomsiz guruhga olindi – <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">Bu sayt uchun varaqlar yopilmasa, <ph name="ORIGIN" /> sayti <ph name="FOLDERNAME" /> jildidagi barcha fayllarni ocha oladi</translation>
 <translation id="7776701556330691704">Ovoz namunalari topilmadi</translation>
+<translation id="7777284276915203144">Parolingiz Google Parollar menejeriga saqlanishidan oldin qurilmangizda shifrlangan</translation>
 <translation id="7781335840981796660">Barcha hisoblar va mahalliy ma’lumotlar o‘chib ketadi.</translation>
 <translation id="7782102568078991263">Google‘dan boshqa takliflar yo‘q</translation>
 <translation id="7782717250816686129">Doimiy maʼlumotlarni kirish ekranida saqlash va hisob maʼlumotlarini seansga kiritish.</translation>
@@ -7180,6 +7185,7 @@ Kalit faylini ishonchli joyda saqlang. U kengaytmaning yangi versiyalarini yarat
 <translation id="8428634594422941299">OK</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" />dan keyin tizimdan chiqasiz</translation>
 <translation id="8431190899827883166">Vizual teginish</translation>
+<translation id="8431730749911729314">Parollarni Google Parollar menejeriga saqlashdan oldin qurilmangizda shifrlang</translation>
 <translation id="8434480141477525001">NaCl nosozliklarni ko‘rib chiqish porti</translation>
 <translation id="8435395510592618362">Shaxsingizni <ph name="APP_NAME" /> orqali tasdiqlang</translation>
 <translation id="8437209419043462667">Ingliz (AQSH)</translation>
@@ -7970,6 +7976,7 @@ parollar va boshqa sozlamalaringiz Google hisobingizga sinxronlanadi.</translati
 <translation id="947667444780368238"><ph name="ORIGIN" /> bu jilddagi fayllarni ocha olmaydi, chunki unda tizim fayllari mavjud</translation>
 <translation id="950307215746360464">Sozlash qoʻllanmasi</translation>
 <translation id="951991426597076286">Rad etish</translation>
+<translation id="952471655966876828">Qurilma yoqilganda yoki ishlatilayotganda avtomatik ravishda ulanadi</translation>
 <translation id="953434574221655299">Qurilmangizni faol ishlatayotgan vaqtini bilishga ruxsat berilgan saytlar</translation>
 <translation id="956500788634395331">Zararli kengaytmalardan himoyalangansiz</translation>
 <translation id="957960681186851048">Bu sayt bir necha fayllarni avtomatik yuklab olishga urinib ko‘rdi</translation>

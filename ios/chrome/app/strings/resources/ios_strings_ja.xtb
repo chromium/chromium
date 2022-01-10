@@ -60,6 +60,7 @@
 <translation id="1407135791313364759">すべて開く</translation>
 <translation id="1430915738399379752">印刷</translation>
 <translation id="1434356225517321998">お使いのブラウザは管理されています。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">オンデバイスの暗号化</translation>
 <translation id="1449835205994625556">パスワードを非表示にします</translation>
 <translation id="145015347812617860"><ph name="COUNT" />個のアイテム</translation>
 <translation id="149095475893949513">このウェブサイトが設定プロファイルをダウンロードしようとしています。</translation>
@@ -285,6 +286,7 @@
 <translation id="3529024052484145543">保護されていません</translation>
 <translation id="3533202363250687977">すべてのシークレット タブを閉じる</translation>
 <translation id="3533436815740441613">新しいタブ</translation>
+<translation id="3536487890564466894">Google アカウントに保存する前にパスワードを暗号化します。</translation>
 <translation id="3551320343578183772">タブを閉じる</translation>
 <translation id="3581564640715911333">他の言語のページで翻訳するかどうかを尋ねる</translation>
 <translation id="3588820906588687999">新しいタブで画像を開く</translation>
@@ -502,6 +504,7 @@
 <translation id="575902488528307720">画像を検索</translation>
 <translation id="5781453543752460388">フォトに追加</translation>
 <translation id="5782227691023083829">翻訳しています...</translation>
+<translation id="5802829331520313983">セットアップ…</translation>
 <translation id="5803566855766646066">この新しいカードを破棄してもよろしいですか？</translation>
 <translation id="5812974770859303494">追加先…</translation>
 <translation id="5816228676161003208">音声を使ってより速く検索できます。</translation>

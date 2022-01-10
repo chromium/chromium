@@ -60,6 +60,7 @@ Teie otsingumootor on <ph name="DSE_NAME" />. Vaadake selle juhiseid otsinguajal
 <translation id="1407135791313364759">Ava kõik</translation>
 <translation id="1430915738399379752">Printimine</translation>
 <translation id="1434356225517321998">Teie brauserit hallatakse. <ph name="BEGIN_LINK" />Üksikasjad<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">Krüpteerimine seadmes</translation>
 <translation id="1449835205994625556">Peida parool</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> üksust</translation>
 <translation id="149095475893949513">See veebisait üritab alla laadida seadistusprofiili.</translation>
@@ -284,6 +285,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3529024052484145543">Pole turvaline</translation>
 <translation id="3533202363250687977">Sule kõik inkognito vahelehed</translation>
 <translation id="3533436815740441613">Uus vaheleht</translation>
+<translation id="3536487890564466894">Krüpteerige oma paroolid, enne kui need teie Google'i kontole salvestatakse.</translation>
 <translation id="3551320343578183772">Sule vaheleht</translation>
 <translation id="3581564640715911333">Paku muudes keeltes olevate lehtede tõlkimist</translation>
 <translation id="3588820906588687999">Ava kujutis uuel vahelehel</translation>
@@ -501,6 +503,7 @@ Handoff peab olema lubatud seadete jaotises General ja seadmed peavad kasutama s
 <translation id="575902488528307720">Otsige pilte</translation>
 <translation id="5781453543752460388">Lisa teenusesse Photos</translation>
 <translation id="5782227691023083829">Tõlkimine...</translation>
+<translation id="5802829331520313983">Seadistus …</translation>
 <translation id="5803566855766646066">Kas soovite kindlasti sellest uuest kaardist loobuda?</translation>
 <translation id="5812974770859303494">Lisa …</translation>
 <translation id="5816228676161003208">See võimaldab häälkäskluste abil kiiremini otsida.</translation>

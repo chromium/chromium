@@ -53,6 +53,10 @@
 <translation id="1247519845643687288">최근 앱</translation>
 <translation id="1252999807265626933"><ph name="POWER_SOURCE" />에서 충전 중</translation>
 <translation id="1255033239764210633">날씨가 어때?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" />~
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Google Calendar에서 세부 사항을 선택하세요.</translation>
 <translation id="1266097335951928626">셀카 카메라 시작</translation>
 <translation id="1267032506238418139">단축키 변경</translation>
 <translation id="1269405891096105529">게스트 모드에서는 주변기기가 지원되지 않습니다.</translation>
@@ -997,6 +1001,8 @@
 <translation id="7720410380936703141">다시 시도</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{알림 1개}other{알림 #개}}</translation>
 <translation id="7724603315864178912">잘라내기</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">실행기에 앱 표시</translation>
 <translation id="7749443890790263709">최대 데스크 개수에 도달했습니다.</translation>
 <translation id="7749640678855296659">현재 마이크가 꺼져 있습니다.</translation>

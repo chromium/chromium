@@ -474,6 +474,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
       Jika kebijakan disetel ke Nonaktif, permintaan HTTP yang tidak aman akan dilarang menggunakan skema autentikasi <ph name="BASIC_AUTH" />; hanya HTTPS yang diizinkan.
 
       Setelan kebijakan ini akan diabaikan (dan <ph name="BASIC_AUTH" /> akan selalu dilarang) jika kebijakan <ph name="AUTH_SCHEMES_POLICY_NAME" /> disetel dan <ph name="BASIC_AUTH" /> tidak disertakan.</translation>
+<translation id="1574258262373444557">Jangan gunakan <ph name="AES_KL_NAME" /> sebagai algoritme enkripsi untuk enkripsi penyimpanan pengguna</translation>
 <translation id="1575015449587326319">Kebijakan konfigurasi untuk Chrome Enterprise Connector OnFileDownloaded</translation>
 <translation id="1583248206450240930">Gunakan <ph name="PRODUCT_FRAME_NAME" /> jika tidak diubah</translation>
 <translation id="1587042984081085960">Kebijakan ini memungkinkan admin menentukan bahwa halaman dapat mengirimkan permintaan XHR sinkron selama penutupan halaman.
@@ -605,6 +606,7 @@ Jika Anda menonaktifkan kebijakan ini, scroll halaman web ke fragmen teks terten
 <translation id="167514072300004091">Jika kebijakan disetel ke 3, situs akan meminta akses ke perangkat USB yang terhubung. Jika kebijakan disetel ke 2, akses ke perangkat USB yang terhubung akan ditolak.
 
       Jika tidak disetel, situs akan meminta akses tetapi pengguna dapat mengubah setelan ini.</translation>
+<translation id="1678137412645922426">Mengontrol penggunaan <ph name="AES_KL_NAME" /> untuk enkripsi penyimpanan pengguna jika didukung</translation>
 <translation id="1682063842123336408">Perlu ruang disk kosong (dalam GB) untuk menginstal <ph name="PLUGIN_VM_NAME" />.
 
       Jika kebijakan ini tidak disetel, penginstalan <ph name="PLUGIN_VM_NAME" /> akan gagal jika ruang disk kosong yang tersedia di perangkat kurang dari 20 GB (nilai default).
@@ -3892,6 +3894,12 @@ Jika disetel ke Salah (False), <ph name="PRODUCT_NAME" /> tidak akan menggunakan
 
       Jika kebijakan ini tidak ditetapkan, tindakan defaultnya adalah tidak diizinkan untuk pengguna yang dikelola perusahaan dan diizinkan untuk pengguna yang tidak dikelola.</translation>
 <translation id="5584132346604748282">Mengontrol layanan lokasi Google di Android</translation>
+<translation id="5585384603219625331">Kebijakan ini mengontrol apakah implementasi <ph name="AES_KL_NAME" /> akan diaktifkan untuk enkripsi penyimpanan pengguna bagi halaman beranda pengguna <ph name="DM_CRYPT" /> di Chrome OS, jika didukung.
+
+       Kebijakan ini hanya berlaku untuk halaman beranda pengguna yang menggunakan enkripsi <ph name="DM_CRYPT" />). Halaman beranda lama milik pengguna (yang tidak menggunakan <ph name="DM_CRYPT" />) tidak mendukung penggunaan <ph name="AES_KL_NAME" /> dan akan menggunakan <ph name="AES_NI_NAME" /> secara default.
+
+       Jika nilai kebijakan ini berubah, halaman beranda pengguna <ph name="DM_CRYPT" /> yang ada akan diakses menggunakan implementasi enkripsi yang dikonfigurasi oleh kebijakan ini karena implementasi <ph name="AES_ALGORITHM_NAME" /> kompatibel.
+       Jika kebijakan ini dinonaktifkan atau tidak disetel, enkripsi penyimpanan pengguna untuk halaman beranda pengguna <ph name="DM_CRYPT" /> akan menggunakan <ph name="AES_NI_NAME" /> secara default.</translation>
 <translation id="5586942249556966598">Tidak melakukan apa-apa</translation>
 <translation id="5598417829613725146">Canvas (didukung sejak versi 90)</translation>
 <translation id="5599461642204007579">Setelan pengelolaan <ph name="MS_AD_NAME" /></translation>
@@ -6550,6 +6558,7 @@ Kebijakan akan dihapus pada M75.</translation>
 <translation id="8626826495474944836">Memerlukan Isolasi Situs untuk setiap situs</translation>
 <translation id="8631434304112909927">sampai versi <ph name="UNTIL_VERSION" /></translation>
 <translation id="8631437968147930597">Daftar aplikasi pencatat yang diizinkan di layar kunci <ph name="PRODUCT_OS_NAME" /></translation>
+<translation id="8634062512783775032">Gunakan <ph name="AES_KL_NAME" /> sebagai algoritme enkripsi untuk enkripsi penyimpanan pengguna, jika didukung</translation>
 <translation id="8637566476051166626">Secara eksplisit mengizinkan port jaringan</translation>
 <translation id="8643838501942693770">Izinkan cookie pihak ketiga, tetapi izinkan pengguna mengubah setelan ini</translation>
 <translation id="8648844602494595665">Kebijakan ini mengontrol perlakuan terhadap ikon gembok di omnibox.

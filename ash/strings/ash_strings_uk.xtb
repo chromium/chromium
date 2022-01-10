@@ -53,6 +53,10 @@
 <translation id="1247519845643687288">Нещодавні додатки</translation>
 <translation id="1252999807265626933">Джерело заряджання: <ph name="POWER_SOURCE" /></translation>
 <translation id="1255033239764210633">Який прогноз погоди?</translation>
+<translation id="1262870540683925850"><ph name="START_TIME" />–
+        <ph name="END_TIME" />, 
+        <ph name="TIME_ZONE" />, 
+        <ph name="EVENT_SUMMARY" />. Виберіть подію, щоб переглянути відомості про неї в Google Календарі.</translation>
 <translation id="1266097335951928626">Увімкнути камеру для селфі</translation>
 <translation id="1267032506238418139">Зміна комбінацій клавіш</translation>
 <translation id="1269405891096105529">Периферійні пристрої не підтримуються в режимі гостя</translation>
@@ -997,6 +1001,8 @@
 <translation id="7720410380936703141">ПОВТОРИТИ</translation>
 <translation id="7723389094756330927">{NUM_NOTIFICATIONS,plural, =1{1 cповіщення}one{# сповіщення}few{# сповіщення}many{# сповіщень}other{# сповіщення}}</translation>
 <translation id="7724603315864178912">Вирізати</translation>
+<translation id="7734209118399753735"><ph name="EVENT_SUMMARY" />, 
+        <ph name="TIME_RANGE" /></translation>
 <translation id="7745560842763881396">Показати додатки на полиці</translation>
 <translation id="7749443890790263709">Ви додали максимальну кількість робочих столів.</translation>
 <translation id="7749640678855296659">Мікрофон наразі вимкнено</translation>

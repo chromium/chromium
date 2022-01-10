@@ -60,6 +60,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="1407135791313364759">Abrir todas</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1434356225517321998">Tu navegador está administrado. <ph name="BEGIN_LINK" />Detalles<ph name="END_LINK" /></translation>
+<translation id="1442838519825026149">Encriptación integrada en el dispositivo</translation>
 <translation id="1449835205994625556">Ocultar contraseña</translation>
 <translation id="145015347812617860"><ph name="COUNT" /> elementos</translation>
 <translation id="149095475893949513">Este sitio web intenta descargar un perfil de configuración.</translation>
@@ -284,6 +285,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3529024052484145543">No seguro</translation>
 <translation id="3533202363250687977">Cerrar todas las pestañas de incógnito</translation>
 <translation id="3533436815740441613">Nueva pestaña</translation>
+<translation id="3536487890564466894">Encripta tus contraseñas antes de que se guarden en tu Cuenta de Google.</translation>
 <translation id="3551320343578183772">Cerrar pestaña</translation>
 <translation id="3581564640715911333">Ofrecer la traducción de páginas en otros idiomas</translation>
 <translation id="3588820906588687999">Abrir imagen en nueva pestaña</translation>
@@ -501,6 +503,7 @@ Handoff también debe estar habilitado en la sección General de la configuraci�
 <translation id="575902488528307720">Buscar imagen</translation>
 <translation id="5781453543752460388">Agregar a fotos</translation>
 <translation id="5782227691023083829">Traduciendo...</translation>
+<translation id="5802829331520313983">Configuración…</translation>
 <translation id="5803566855766646066">¿Confirmas que quieres descartar esta tarjeta nueva?</translation>
 <translation id="5812974770859303494">Agregar a…</translation>
 <translation id="5816228676161003208">Te permite realizar búsquedas más rápidas con tu voz.</translation>

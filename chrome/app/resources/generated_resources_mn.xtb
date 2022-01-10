@@ -3222,6 +3222,7 @@
 <translation id="4275830172053184480">Төхөөрөмжийг дахин эхлүүл</translation>
 <translation id="4278390842282768270">Зөвшөөрөгдсөн</translation>
 <translation id="4279129444466079448">Та энэ төхөөрөмж дээр <ph name="PROFILE_LIMIT" /> хүртэлх eSIM-н профайл суулгах боломжтой. Өөр профайл нэмэхийн тулд эхлээд одоо байгаа аль нэг профайлыг хасна уу.</translation>
+<translation id="4280325816108262082">Төхөөрөмж унтраалттай эсвэл ашиглагдаагүй үедээ автоматаар сална</translation>
 <translation id="4281844954008187215">Үйлчилгээний нөхцөл</translation>
 <translation id="4282196459431406533">Smart Lock-г асаасан</translation>
 <translation id="4284755288573763878">Сайжруулсан хамгаалалтыг унтраах уу?</translation>
@@ -4342,6 +4343,7 @@
 <translation id="5490721031479690399">Bluetooth төхөөрөмжийг салгах</translation>
 <translation id="5490798133083738649">Linux-д таны микрофонд хандахыг зөвшөөрнө үү</translation>
 <translation id="549211519852037402">Хул ба цагаан</translation>
+<translation id="5492637351392383067">Төхөөрөмж дээрх шифрлэлт</translation>
 <translation id="5493792505296048976">дэлгэц асаалттай</translation>
 <translation id="5494016731375030300">Сүүлд хаасан табууд</translation>
 <translation id="5494362494988149300">Үйлдэл хийгдэж дууссаны дараа нээх</translation>
@@ -6539,6 +6541,7 @@
 <translation id="7775694664330414886">Табыг нэргүй бүлэг рүү зөөсөн - <ph name="GROUP_CONTENTS" /></translation>
 <translation id="7776156998370251340">Таныг энэ сайтын бүх табыг хаах хүртэл <ph name="ORIGIN" /> нь <ph name="FOLDERNAME" /> доторх файлуудыг үзэх боломжтой байна</translation>
 <translation id="7776701556330691704">Дуу хоолой олдсонгүй</translation>
+<translation id="7777284276915203144">Таны нууц үгийг Google-н Нууц үгний менежерт хадгалахаас нь өмнө төхөөрөмж дээр тань шифрлэдэг</translation>
 <translation id="7781335840981796660">Бүх хэрэглэгчийн бүртгэлүүд болон суурин өгөгдлүүд устах болно.</translation>
 <translation id="7782102568078991263">Google-ээс өөр зөвлөмж алга байна.</translation>
 <translation id="7782717250816686129">Нэвтрэх дэлгэц дээр байнгын өгөгдлийг хадгалж, харилцан үйлдэлд мандат үнэмлэхийг оруулах.</translation>
@@ -7188,6 +7191,7 @@
 <translation id="8428634594422941299">Ойлголоо</translation>
 <translation id="84297032718407999">Та <ph name="LOGOUT_TIME_LEFT" />-н дараа гарах болно</translation>
 <translation id="8431190899827883166">Товшилтыг харуулах</translation>
+<translation id="8431730749911729314">Өөрийн төхөөрөмж дээрх нууц үгнүүдийг Google-н Нууц үгний менежерт хадгалахаас нь өмнө шифрлэнэ үү</translation>
 <translation id="8434480141477525001">NaCl гүйцэтгэл сайжруулах порт</translation>
 <translation id="8435395510592618362">Аюулгүй байдлын түлхүүрээ <ph name="APP_NAME" />-р баталгаажуулна уу</translation>
 <translation id="8437209419043462667">АНУ</translation>
@@ -7975,6 +7979,7 @@
 <translation id="947667444780368238">Энэ фолдер системийн файл агуулдаг тул <ph name="ORIGIN" /> үүний файлыг нээх боломжгүй</translation>
 <translation id="950307215746360464">Тохируулгын хөтөч</translation>
 <translation id="951991426597076286">Татгалзах</translation>
+<translation id="952471655966876828">Төхөөрөмж асаалттай эсвэл ашиглагдах үедээ автоматаар холбогдоно</translation>
 <translation id="953434574221655299">Таныг төхөөрөмжөө хэзээ идэвхтэй ашиглаж буйг мэдэхийг зөвшөөрсөн</translation>
 <translation id="956500788634395331">Таныг аюултай байж болзошгүй өргөтгөлөөс хамгаалж байна</translation>
 <translation id="957960681186851048">Энэ сайт автоматаар олон файл татахаар оролдсон</translation>

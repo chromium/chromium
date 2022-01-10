@@ -500,6 +500,7 @@
 <translation id="3908308510347173149"><ph name="PRODUCT_NAME" />-г шинэчлэх</translation>
 <translation id="3912508018559818924">Вебээс шилдэг илэрцийг хайж байна…</translation>
 <translation id="3924911262913579434"><ph name="SAFE_BROWSING_MODE" /> идэвхтэй байна</translation>
+<translation id="3925830358619338299">Таны нууц үгийг Google-н Нууц үгний менежерт хадгалахаас нь өмнө төхөөрөмж дээр тань шифрлэдэг</translation>
 <translation id="3927692899758076493">Санс сериф</translation>
 <translation id="3928666092801078803">Миний өгөгдлийг нэгтгэх</translation>
 <translation id="3934366560681368531">“</translation>
@@ -771,6 +772,7 @@ Tаны Google бүртгэл <ph name="BEGIN_LINK" />history.google.com<ph name
 <translation id="5483197086164197190">Navigate Chrome</translation>
 <translation id="5487521232677179737">Өгөгдлийг устгах</translation>
 <translation id="549025011754480756">Хэрхэн дуу хоолойгоороо хайх вэ</translation>
+<translation id="5492637351392383067">Төхөөрөмж дээрх шифрлэлт</translation>
 <translation id="5514904542973294328">Энэ төхөөрөмжийн администратор цуцалсан</translation>
 <translation id="5515439363601853141">Нууц үгээ харах бол түгжээг тайлна уу</translation>
 <translation id="5517095782334947753">Танд <ph name="FROM_ACCOUNT" />-н хавчуурга, түүх, нууц үг болон бусад тохиргоо байна.</translation>
@@ -1320,6 +1322,7 @@ Privacy Sandbox-н туршилт нь идэвхтэй хөгжүүлэлтэд
 <translation id="8427875596167638501">Урьдчилан үзэх табыг хагас нээсэн</translation>
 <translation id="8428213095426709021">Тохиргоо</translation>
 <translation id="8430824733382774043">Зөвхөн дэлгэцийн агшин хуваалцана уу</translation>
+<translation id="8431730749911729314">Өөрийн төхөөрөмж дээрх нууц үгнүүдийг Google-н Нууц үгний менежерт хадгалахаас нь өмнө шифрлэнэ үү</translation>
 <translation id="8438566539970814960">Хайлт болон хөтлөх явцыг сайжруулаарай</translation>
 <translation id="8439974325294139057"><ph name="LANG" /> - Хэл бэлэн байна. <ph name="APP_NAME" />-г дахин эхлүүлнэ үү.</translation>
 <translation id="8442258441309440798">Түүх алга байна</translation>
