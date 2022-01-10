@@ -93,19 +93,6 @@ void PrefMetricsService::RecordLaunchPrefs() {
     }
   }
 #endif
-
-  // Android does not support pinned tabs.
-#if !defined(OS_ANDROID)
-  StartupTabs startup_tabs = PinnedTabCodec::ReadPinnedTabs(profile_);
-  for (size_t i = 0; i < startup_tabs.size(); ++i) {
-    GURL start_url(startup_tabs.at(i).url);
-    if (start_url.is_valid()) {
-      UMA_HISTOGRAM_ENUMERATION("Settings.PinnedTabEngineTypes",
-                                SearchEngineUtils::GetEngineType(start_url),
-                                SEARCH_ENGINE_MAX);
-    }
-  }
-#endif
 }
 
 // static
