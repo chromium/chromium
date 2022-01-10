@@ -13,7 +13,7 @@ export class WebsiteUsageBrowserProxyImpl implements WebsiteUsageBrowserProxy {
   }
 
   clearUsage(origin: string) {
-    chrome.send('clearUsage', [origin]);
+    chrome.send('clearUnpartitionedUsage', [origin]);
   }
 
   static getInstance(): WebsiteUsageBrowserProxy {
