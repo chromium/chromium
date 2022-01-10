@@ -45,7 +45,9 @@ struct StubScriptFunction {
   // The returned ScriptFunction can outlive the StubScriptFunction,
   // but it should not be called after the StubScriptFunction dies.
   v8::Local<v8::Function> GetFunction(ScriptState* script_state) {
-    return ScriptFunctionImpl::CreateFunction(script_state, *this);
+    return MakeGarbageCollected<NewScriptFunction>(
+               script_state, MakeGarbageCollected<ScriptFunctionImpl>(*this))
+        ->V8Function();
   }
 
   size_t CallCount() { return call_count_; }
@@ -56,20 +58,11 @@ struct StubScriptFunction {
   size_t call_count_;
   ScriptValue arg_;
 
-  class ScriptFunctionImpl : public ScriptFunction {
+  class ScriptFunctionImpl : public NewScriptFunction::Callable {
    public:
-    static v8::Local<v8::Function> CreateFunction(ScriptState* script_state,
-                                                  StubScriptFunction& owner) {
-      ScriptFunctionImpl* self =
-          MakeGarbageCollected<ScriptFunctionImpl>(script_state, owner);
-      return self->BindToV8Function();
-    }
+    explicit ScriptFunctionImpl(StubScriptFunction& owner) : owner_(owner) {}
 
-    ScriptFunctionImpl(ScriptState* script_state, StubScriptFunction& owner)
-        : ScriptFunction(script_state), owner_(owner) {}
-
-   private:
-    ScriptValue Call(ScriptValue arg) override {
+    ScriptValue Call(ScriptState*, ScriptValue arg) override {
       owner_.arg_ = arg;
       owner_.call_count_++;
       return ScriptValue();
