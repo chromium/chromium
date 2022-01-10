@@ -348,15 +348,6 @@ void FrameSinkManagerImpl::RequestCopyOfOutput(
       surface_id.local_surface_id(), SubtreeCaptureId(), std::move(request)});
 }
 
-void FrameSinkManagerImpl::SetHitTestAsyncQueriedDebugRegions(
-    const FrameSinkId& root_frame_sink_id,
-    const std::vector<FrameSinkId>& hit_test_async_queried_debug_queue) {
-  hit_test_manager_.SetHitTestAsyncQueriedDebugRegions(
-      root_frame_sink_id, hit_test_async_queried_debug_queue);
-  DCHECK(base::Contains(root_sink_map_, root_frame_sink_id));
-  root_sink_map_[root_frame_sink_id]->ForceImmediateDrawAndSwapIfPossible();
-}
-
 void FrameSinkManagerImpl::DestroyFrameSinkBundle(const FrameSinkBundleId& id) {
   bundle_map_.erase(id);
 }

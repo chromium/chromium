@@ -10,7 +10,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
-#include "content/browser/renderer_host/hit_test_debug_key_event_observer.h"
 #include "content/browser/renderer_host/input/touch_selection_controller_client_aura.h"
 #include "content/browser/renderer_host/overscroll_controller.h"
 #include "content/browser/renderer_host/render_view_host_delegate.h"
@@ -121,10 +120,7 @@ RenderWidgetHostViewEventHandler::RenderWidgetHostViewEventHandler(
       host_(host),
       host_view_(host_view),
       delegate_(delegate),
-      mouse_wheel_phase_handler_(host_view),
-      debug_observer_(features::IsVizHitTestingDebugEnabled()
-                          ? std::make_unique<HitTestDebugKeyEventObserver>(host)
-                          : nullptr) {}
+      mouse_wheel_phase_handler_(host_view) {}
 
 RenderWidgetHostViewEventHandler::~RenderWidgetHostViewEventHandler() {
   DCHECK(!mouse_locked_);

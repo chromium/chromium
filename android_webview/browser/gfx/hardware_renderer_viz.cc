@@ -294,7 +294,7 @@ void HardwareRendererViz::OnViz::DisplayWillDrawAndSwap(
     bool will_draw_and_swap,
     viz::AggregatedRenderPassList* render_passes) {
   DCHECK_CALLED_ON_VALID_THREAD(viz_thread_checker_);
-  hit_test_aggregator_->Aggregate(child_surface_id_, render_passes);
+  hit_test_aggregator_->Aggregate(child_surface_id_);
 }
 
 base::TimeDelta

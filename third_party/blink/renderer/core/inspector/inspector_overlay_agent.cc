@@ -561,16 +561,7 @@ Response InspectorOverlayAgent::setShowScrollBottleneckRects(bool show) {
 }
 
 Response InspectorOverlayAgent::setShowHitTestBorders(bool show) {
-  show_hit_test_borders_.Set(show);
-  if (show) {
-    Response response = CompositingEnabled();
-    if (!response.IsSuccess())
-      return response;
-  }
-  FrameWidget* widget = GetFrame()->GetWidgetForLocalRoot();
-  cc::LayerTreeDebugState debug_state = widget->GetLayerTreeDebugState();
-  debug_state.show_hit_test_borders = show;
-  widget->SetLayerTreeDebugState(debug_state);
+  // This CDP command has been deprecated. Don't do anything and return success.
   return Response::Success();
 }
 

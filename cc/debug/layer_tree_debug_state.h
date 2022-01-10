@@ -48,8 +48,6 @@ class CC_DEBUG_EXPORT LayerTreeDebugState {
   bool rasterize_only_visible_content = false;
   bool highlight_non_lcd_text_layers = false;
 
-  bool show_hit_test_borders = false;
-
   // This is part of the feature to show performance metrics on HUD. This
   // particular flag is set only in Blink.
   bool show_web_vital_metrics = false;

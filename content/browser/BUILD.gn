@@ -1406,8 +1406,6 @@ source_set("browser") {
     "renderer_host/frame_tree_node.h",
     "renderer_host/frame_tree_node_blame_context.cc",
     "renderer_host/frame_tree_node_blame_context.h",
-    "renderer_host/hit_test_debug_key_event_observer.cc",
-    "renderer_host/hit_test_debug_key_event_observer.h",
     "renderer_host/http_error_navigation_throttle.cc",
     "renderer_host/http_error_navigation_throttle.h",
     "renderer_host/input/fling_controller.cc",

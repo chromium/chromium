@@ -2510,7 +2510,7 @@ absl::optional<EventMetricsSet> LayerTreeHostImpl::DrawLayers(
                                                      events_metrics);
   layer_tree_frame_sink_->SubmitCompositorFrame(
       std::move(compositor_frame),
-      /*hit_test_data_changed=*/false, debug_state_.show_hit_test_borders);
+      /*hit_test_data_changed=*/false);
 
 #if DCHECK_IS_ON()
   if (!doing_sync_draw_) {

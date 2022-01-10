@@ -499,8 +499,7 @@ void RootCompositorFrameSinkImpl::DisplayWillDrawAndSwap(
     bool will_draw_and_swap,
     AggregatedRenderPassList* render_passes) {
   DCHECK(support_->GetHitTestAggregator());
-  support_->GetHitTestAggregator()->Aggregate(display_->CurrentSurfaceId(),
-                                              render_passes);
+  support_->GetHitTestAggregator()->Aggregate(display_->CurrentSurfaceId());
 }
 
 base::ScopedClosureRunner RootCompositorFrameSinkImpl::GetCacheBackBufferCb() {

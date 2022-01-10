@@ -6,8 +6,6 @@
 
 #include "base/trace_event/trace_event.h"
 #include "components/viz/common/hit_test/hit_test_region_list.h"
-#include "components/viz/common/quads/debug_border_draw_quad.h"
-#include "components/viz/common/quads/solid_color_draw_quad.h"
 #include "components/viz/service/hit_test/hit_test_aggregator_delegate.h"
 #include "components/viz/service/surfaces/latest_local_surface_id_lookup_delegate.h"
 #include "skia/ext/skia_matrix_44.h"
@@ -32,8 +30,7 @@ HitTestAggregator::HitTestAggregator(
 
 HitTestAggregator::~HitTestAggregator() = default;
 
-void HitTestAggregator::Aggregate(const SurfaceId& display_surface_id,
-                                  AggregatedRenderPassList* render_passes) {
+void HitTestAggregator::Aggregate(const SurfaceId& display_surface_id) {
   DCHECK(referenced_child_regions_.empty());
 
   // The index will only have changed when new hit-test data has been submitted.
@@ -52,84 +49,8 @@ void HitTestAggregator::Aggregate(const SurfaceId& display_surface_id,
   hit_test_data_size_ = 0;
   hit_test_data_.resize(hit_test_data_capacity_);
 
-  hit_test_debug_ = false;
-  hit_test_debug_ask_regions_ = 0;
-
   AppendRoot(display_surface_id);
   SendHitTestData();
-
-  if (hit_test_debug_ && render_passes) {
-    InsertHitTestDebugQuads(render_passes);
-  }
-}
-
-void HitTestAggregator::InsertHitTestDebugQuads(
-    AggregatedRenderPassList* render_passes) {
-  const base::flat_set<FrameSinkId>* hit_test_async_queried_debug_regions =
-      hit_test_manager_->GetHitTestAsyncQueriedDebugRegions(
-          root_frame_sink_id_);
-
-  QuadList& ql = render_passes->back()->quad_list;
-  ql.InsertBeforeAndInvalidateAllPointers<DebugBorderDrawQuad>(
-      ql.begin(), hit_test_data_size_);
-  ql.InsertBeforeAndInvalidateAllPointers<SolidColorDrawQuad>(
-      ql.begin(), hit_test_debug_ask_regions_);
-
-  SharedQuadState* sqs =
-      render_passes->back()->CreateAndAppendSharedQuadState();
-  sqs->opacity = 0.25f;
-
-  const SkColor colors[3] = {SK_ColorCYAN, SK_ColorGREEN, SK_ColorMAGENTA};
-
-  base::stack<uint32_t> parents;
-  base::stack<gfx::Transform> parent_transforms;
-  parent_transforms.push(gfx::Transform());
-
-  for (uint32_t i = 0, ask_i = 0; i < hit_test_data_size_; ++i) {
-    const AggregatedHitTestRegion& htr = hit_test_data_[i];
-
-    gfx::Transform child_to_parent;
-    // Hit-test transforms are guaranteed to be invertible.
-    if (!htr.transform().GetInverse(&child_to_parent)) {
-      return;
-    }
-
-    SkColor color = colors[parents.size() % 3];
-    if (hit_test_async_queried_debug_regions &&
-        hit_test_async_queried_debug_regions->count(htr.frame_sink_id)) {
-      color = SK_ColorRED;
-    }
-
-    parents.push(i);
-    // Concatenate transformation.
-    parent_transforms.push(parent_transforms.top() * child_to_parent);
-
-    // We can only transform gfx::RectF.
-    gfx::RectF rf(hit_test_data_[i].rect);
-    parent_transforms.top().TransformRect(&rf);
-    const gfx::Rect debug_rect = gfx::ToEnclosedRect(rf);
-
-    DebugBorderDrawQuad* debug_quad = static_cast<DebugBorderDrawQuad*>(
-        ql.ElementAt(hit_test_debug_ask_regions_ + i));
-    debug_quad->SetNew(sqs, debug_rect, debug_rect, color, /*width=*/5);
-
-    if (htr.flags & kHitTestAsk) {
-      SolidColorDrawQuad* ask_quad =
-          static_cast<SolidColorDrawQuad*>(ql.ElementAt(ask_i++));
-      ask_quad->SetNew(sqs, debug_rect, debug_rect, color,
-                       /*force_anti_aliasing_off=*/false);
-    }
-
-    while (!parents.empty()) {
-      uint32_t parent_index = parents.top();
-      uint32_t max_child_index =
-          parent_index + hit_test_data_[parent_index].child_count;
-      if (max_child_index > i)
-        break;
-      parents.pop();
-      parent_transforms.pop();
-    }
-  }
 }
 
 void HitTestAggregator::SendHitTestData() {
@@ -283,10 +204,6 @@ void HitTestAggregator::SetRegionAt(size_t index,
       AggregatedHitTestRegion(frame_sink_id, flags, rect, transform,
                               child_count, async_hit_test_reasons);
   hit_test_data_size_++;
-
-  hit_test_debug_ |= flags & kHitTestDebug;
-  if (flags & kHitTestAsk)
-    ++hit_test_debug_ask_regions_;
 }
 
 }  // namespace viz

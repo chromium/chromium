@@ -259,11 +259,6 @@ class RenderWidgetTargeter {
 
   uint64_t trace_id_;
 
-  const bool is_viz_hit_testing_debug_enabled_;
-  // Stores SurfaceIds for regions that were async queried if hit-test debugging
-  // is enabled. This allows us to send the queried regions in batches.
-  std::vector<viz::FrameSinkId> hit_test_async_queried_debug_queue_;
-
   const raw_ptr<Delegate> delegate_;
   base::WeakPtrFactory<RenderWidgetTargeter> weak_ptr_factory_{this};
 };

@@ -281,8 +281,7 @@ void SynchronousLayerTreeFrameSink::SetLocalSurfaceId(
 
 void SynchronousLayerTreeFrameSink::SubmitCompositorFrame(
     viz::CompositorFrame frame,
-    bool hit_test_data_changed,
-    bool show_hit_test_borders) {
+    bool hit_test_data_changed) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(sync_client_);
 

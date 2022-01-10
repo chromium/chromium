@@ -4,6 +4,9 @@
 
 #include "components/viz/common/switches.h"
 
+#include <algorithm>
+#include <string>
+
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
@@ -40,9 +43,6 @@ const char kEnableDeJelly[] = "enable-de-jelly";
 // Setting the flag to "single-fullscreen" will try to promote a single
 // fullscreen overlay and use it as main framebuffer where possible.
 const char kEnableHardwareOverlays[] = "enable-hardware-overlays";
-
-// Enables hit-test debug logging.
-const char kEnableVizHitTestDebug[] = "enable-viz-hit-test-debug";
 
 #if defined(OS_CHROMEOS)
 // ChromeOS uses one of two VideoDecoder implementations based on SoC/board

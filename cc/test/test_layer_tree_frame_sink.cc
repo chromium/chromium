@@ -177,8 +177,7 @@ void TestLayerTreeFrameSink::SetLocalSurfaceId(
 }
 
 void TestLayerTreeFrameSink::SubmitCompositorFrame(viz::CompositorFrame frame,
-                                                   bool hit_test_data_changed,
-                                                   bool show_hit_test_borders) {
+                                                   bool hit_test_data_changed) {
   DebugScopedSetImplThread impl(task_runner_provider_);
   DCHECK(frame.metadata.begin_frame_ack.has_damage);
   DCHECK(frame.metadata.begin_frame_ack.frame_id.IsSequenceValid());

@@ -139,10 +139,6 @@ class VIZ_SERVICE_EXPORT FrameSinkManagerImpl
   void EvictSurfaces(const std::vector<SurfaceId>& surface_ids) override;
   void RequestCopyOfOutput(const SurfaceId& surface_id,
                            std::unique_ptr<CopyOutputRequest> request) override;
-  void SetHitTestAsyncQueriedDebugRegions(
-      const FrameSinkId& root_frame_sink_id,
-      const std::vector<FrameSinkId>& hit_test_async_queried_debug_queue)
-      override;
   void CacheBackBuffer(uint32_t cache_id,
                        const FrameSinkId& root_frame_sink_id) override;
   void EvictBackBuffer(uint32_t cache_id,

@@ -216,13 +216,6 @@ void HostFrameSinkManager::OnFrameTokenChanged(
     data.client->OnFrameTokenChanged(frame_token, activation_time);
 }
 
-void HostFrameSinkManager::SetHitTestAsyncQueriedDebugRegions(
-    const FrameSinkId& root_frame_sink_id,
-    const std::vector<FrameSinkId>& hit_test_async_queried_debug_queue) {
-  frame_sink_manager_->SetHitTestAsyncQueriedDebugRegions(
-      root_frame_sink_id, hit_test_async_queried_debug_queue);
-}
-
 bool HostFrameSinkManager::RegisterFrameSinkHierarchy(
     const FrameSinkId& parent_frame_sink_id,
     const FrameSinkId& child_frame_sink_id) {

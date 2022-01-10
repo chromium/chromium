@@ -106,11 +106,10 @@ class SynchronousLayerTreeFrameSink : public TestLayerTreeFrameSink {
     InvalidateIfPossible();
   }
   void SubmitCompositorFrame(viz::CompositorFrame frame,
-                             bool hit_test_data_changed,
-                             bool show_hit_test_borders) override {
+                             bool hit_test_data_changed) override {
     frame_ack_pending_ = true;
-    TestLayerTreeFrameSink::SubmitCompositorFrame(
-        std::move(frame), hit_test_data_changed, show_hit_test_borders);
+    TestLayerTreeFrameSink::SubmitCompositorFrame(std::move(frame),
+                                                  hit_test_data_changed);
   }
   void DidReceiveCompositorFrameAck(
       std::vector<viz::ReturnedResource> resources) override {

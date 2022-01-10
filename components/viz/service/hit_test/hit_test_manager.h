@@ -62,12 +62,6 @@ class VIZ_SERVICE_EXPORT HitTestManager : public SurfaceObserver {
 
   int64_t GetTraceId(const SurfaceId& id) const;
 
-  const base::flat_set<FrameSinkId>* GetHitTestAsyncQueriedDebugRegions(
-      const FrameSinkId& root_frame_sink_id) const;
-  void SetHitTestAsyncQueriedDebugRegions(
-      const FrameSinkId& root_frame_sink_id,
-      const std::vector<FrameSinkId>& hit_test_async_queried_debug_queue);
-
   uint64_t submit_hit_test_region_list_index() const {
     return submit_hit_test_region_list_index_;
   }
@@ -81,25 +75,6 @@ class VIZ_SERVICE_EXPORT HitTestManager : public SurfaceObserver {
 
   std::map<SurfaceId, base::flat_map<uint64_t, HitTestRegionList>>
       hit_test_region_lists_;
-
-  struct HitTestAsyncQueriedDebugRegion {
-    HitTestAsyncQueriedDebugRegion();
-    explicit HitTestAsyncQueriedDebugRegion(
-        base::flat_set<FrameSinkId> regions);
-    ~HitTestAsyncQueriedDebugRegion();
-
-    HitTestAsyncQueriedDebugRegion(HitTestAsyncQueriedDebugRegion&&);
-    HitTestAsyncQueriedDebugRegion& operator=(HitTestAsyncQueriedDebugRegion&&);
-
-    base::flat_set<FrameSinkId> regions;
-    base::ElapsedTimer timer;
-  };
-
-  // We store the async queried regions for each |root_frame_sink_id|. If viz
-  // hit-test debug is enabled, We will highlight the regions red in
-  // HitTestAggregator for 2 seconds, or until the next async queried event.
-  base::flat_map<FrameSinkId, HitTestAsyncQueriedDebugRegion>
-      hit_test_async_queried_debug_regions_;
 
   // Keeps track of the number of submitted HitTestRegionLists. This allows the
   // HitTestAggregators to stay in sync with the HitTestManager and only

@@ -157,9 +157,8 @@ class AsyncLayerTreeFrameSinkSimpleTest : public testing::Test {
                      .SetRenderPassList(std::move(*pass_list))
                      .Build();
     pass_list->clear();
-    layer_tree_frame_sink_->SubmitCompositorFrame(
-        std::move(frame), hit_test_data_changed,
-        /*show_hit_test_borders=*/false);
+    layer_tree_frame_sink_->SubmitCompositorFrame(std::move(frame),
+                                                  hit_test_data_changed);
   }
 
   const viz::HitTestRegionList& GetHitTestData() const {

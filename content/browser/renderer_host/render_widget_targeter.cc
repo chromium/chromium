@@ -10,9 +10,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
-#include "components/viz/common/features.h"
-#include "components/viz/host/host_frame_sink_manager.h"
-#include "content/browser/compositor/surface_utils.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_view_base.h"
 #include "content/public/browser/site_isolation_policy.h"
@@ -176,8 +173,6 @@ const ui::LatencyInfo& RenderWidgetTargeter::TargetingRequest::GetLatency()
 RenderWidgetTargeter::RenderWidgetTargeter(Delegate* delegate)
     : async_hit_test_timeout_delay_(kAsyncHitTestTimeout),
       trace_id_(base::RandUint64()),
-      is_viz_hit_testing_debug_enabled_(
-          features::IsVizHitTestingDebugEnabled()),
       delegate_(delegate) {
   DCHECK(delegate_);
 }
@@ -388,11 +383,6 @@ void RenderWidgetTargeter::FoundFrameSinkId(
   target->host()->input_target_client().set_disconnect_handler(
       base::OnceClosure());
 
-  if (is_viz_hit_testing_debug_enabled_ && request.IsWebInputEventRequest() &&
-      request.GetEvent()->GetType() == blink::WebInputEvent::Type::kMouseDown) {
-    hit_test_async_queried_debug_queue_.push_back(target->GetFrameSinkId());
-  }
-
   auto* view = delegate_->FindViewFromFrameSinkId(frame_sink_id);
   if (!view)
     view = target.get();
@@ -439,14 +429,6 @@ void RenderWidgetTargeter::FoundTarget(
   // View will be valid but there will no longer be a RenderWidgetHostImpl.
   if (!request->GetRootView() || !request->GetRootView()->GetRenderWidgetHost())
     return;
-
-  if (is_viz_hit_testing_debug_enabled_ &&
-      !hit_test_async_queried_debug_queue_.empty()) {
-    GetHostFrameSinkManager()->SetHitTestAsyncQueriedDebugRegions(
-        request->GetRootView()->GetRootFrameSinkId(),
-        hit_test_async_queried_debug_queue_);
-    hit_test_async_queried_debug_queue_.clear();
-  }
 
   if (request->IsWebInputEventRequest()) {
     delegate_->DispatchEventToTarget(request->GetRootView(), target,

@@ -45,7 +45,6 @@ class OverscrollController;
 class RenderWidgetHostImpl;
 class RenderWidgetHostViewBase;
 class TouchSelectionControllerClientAura;
-class HitTestDebugKeyEventObserver;
 
 // Provides an implementation of ui::EventHandler for use with
 // RenderWidgetHostViewBase. A delegate is required in order to provide platform
@@ -316,8 +315,6 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
   const raw_ptr<Delegate> delegate_;
   raw_ptr<aura::Window> window_ = nullptr;
   MouseWheelPhaseHandler mouse_wheel_phase_handler_;
-
-  std::unique_ptr<HitTestDebugKeyEventObserver> debug_observer_;
 };
 
 }  // namespace content
