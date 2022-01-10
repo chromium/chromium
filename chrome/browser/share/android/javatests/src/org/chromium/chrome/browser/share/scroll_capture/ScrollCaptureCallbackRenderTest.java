@@ -4,7 +4,14 @@
 
 package org.chromium.chrome.browser.share.scroll_capture;
 
+import static org.hamcrest.Matchers.both;
+import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.lessThan;
+
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.os.CancellationSignal;
@@ -29,8 +36,9 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.Criteria;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
@@ -39,7 +47,6 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.RenderCoordinates;
-import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 import org.chromium.url.GURL;
@@ -63,7 +70,10 @@ public class ScrollCaptureCallbackRenderTest {
             new BlankCTATabInitialStateRule(sActivityTestRule, false);
 
     @Rule
-    public RenderTestRule mRenderTestRule = RenderTestRule.Builder.withPublicCorpus().build();
+    public RenderTestRule mRenderTestRule = RenderTestRule.Builder.withPublicCorpus()
+                                                    .setRevision(2)
+                                                    .setDescription("new test html")
+                                                    .build();
 
     private ScrollCaptureCallbackDelegate mCallback;
     private Tab mTab;
@@ -76,12 +86,24 @@ public class ScrollCaptureCallbackRenderTest {
         // TODO(https://crbug.com/1254801): create a page that checkboards in a gradient or
         // something more complex to generate better test images.
         GURL url = new GURL(sActivityTestRule.getTestServer().getURL(
-                "/chrome/test/data/android/very_long_google.html"));
+                "/chrome/test/data/android/share/checkerboard.html"));
         sActivityTestRule.loadUrl(url.getSpec());
         mCallback = new ScrollCaptureCallbackDelegate(
                 new ScrollCaptureCallbackDelegate.EntryManagerWrapper());
         mTab = sActivityTestRule.getActivity().getActivityTab();
         mCallback.setCurrentTab(mTab);
+        // Wait for the script to execute.
+        CriteriaHelper.pollUiThread(() -> {
+            String title = mTab.getWebContents().getTitle();
+            Criteria.checkThat("Render failed.", title, is("rendered"));
+        });
+        // Wait for the renderer to actually paint everything.
+        CriteriaHelper.pollUiThread(() -> {
+            RenderCoordinates renderCoordinates =
+                    RenderCoordinates.fromWebContents(mTab.getWebContents());
+            Criteria.checkThat("Drawing failed.", renderCoordinates.getContentHeightPixInt(),
+                    is(greaterThan(10000)));
+        });
     }
 
     @Test
@@ -100,16 +122,22 @@ public class ScrollCaptureCallbackRenderTest {
     @Test
     @LargeTest
     @Feature({"RenderTest"})
-    @FlakyTest(message = "https://crbug.com/1269583")
     public void testCaptureBottom() throws Exception {
-        WebContents webContents = mTab.getWebContents();
-        RenderCoordinates renderCoordinates = RenderCoordinates.fromWebContents(webContents);
+        RenderCoordinates renderCoordinates =
+                RenderCoordinates.fromWebContents(mTab.getWebContents());
         // Drive a scroll to the bottom of the page.
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            webContents.getEventForwarder().scrollBy(0,
-                    renderCoordinates.getContentHeightPixInt()
-                            - renderCoordinates.getLastFrameViewportHeightPixInt());
+        final int offset = renderCoordinates.getContentHeightPixInt()
+                - renderCoordinates.getLastFrameViewportHeightPixInt();
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { mTab.getWebContents().getEventForwarder().scrollBy(0, offset); });
+        // Wait for the scroll.
+        CriteriaHelper.pollUiThread(() -> {
+            RenderCoordinates scrolledCoordinates =
+                    RenderCoordinates.fromWebContents(mTab.getWebContents());
+            Criteria.checkThat("Scroll didn't occur.", scrolledCoordinates.getScrollYPixInt(),
+                    is(both(greaterThan(offset - 5)).and(lessThan(offset + 5))));
         });
+
         View view = mTab.getView();
         Size size = new Size(view.getWidth(), view.getHeight());
 
@@ -199,12 +227,21 @@ public class ScrollCaptureCallbackRenderTest {
      */
     private boolean captureViewport(CancellationSignal signal, Surface surface, Size initialSize,
             CallbackHelper surfaceChanged, String tag, int index) throws Exception {
-        final int callCount = surfaceChanged.getCallCount();
+        int callCount = surfaceChanged.getCallCount();
         CallbackHelper bitmapReady = new CallbackHelper();
         Callback<Rect> consume = r -> {
             mCapturedRect = r;
             bitmapReady.notifyCalled();
         };
+        // Clear any old content from the surface.
+        Canvas canvas =
+                surface.lockCanvas(new Rect(0, 0, initialSize.getWidth(), initialSize.getHeight()));
+        canvas.drawColor(0, PorterDuff.Mode.CLEAR);
+        surface.unlockCanvasAndPost(canvas);
+        surfaceChanged.waitForCallback(callCount, 1);
+
+        // Capture the content in the right location.
+        callCount = surfaceChanged.getCallCount();
         final int offset = index * initialSize.getHeight();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             Rect captureArea =
