@@ -58,6 +58,10 @@ void CSSParserSelector::SetSelectorList(
   selector_->SetSelectorList(std::move(selector_list));
 }
 
+void CSSParserSelector::SetContainsPseudoInsideHasPseudoClass() {
+  selector_->SetContainsPseudoInsideHasPseudoClass();
+}
+
 void CSSParserSelector::AppendTagHistory(
     CSSSelector::RelationType relation,
     std::unique_ptr<CSSParserSelector> selector) {

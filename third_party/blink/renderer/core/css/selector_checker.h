@@ -108,20 +108,27 @@ class CORE_EXPORT SelectorChecker {
     // Initial selector constructor
     explicit SelectorCheckingContext(Element* element) : element(element) {}
 
+    // Group fields by type to avoid perf test regression.
+    // https://crrev.com/c/3362008
     const CSSSelector* selector = nullptr;
+    const ContainerNode* scope = nullptr;
+
     Element* element = nullptr;
     Element* previous_element = nullptr;
-    const ContainerNode* scope = nullptr;
+    Element* vtt_originating_element = nullptr;
+    ContainerNode* relative_leftmost_element = nullptr;
+
     PseudoId pseudo_id = kPseudoIdNone;
+
     bool is_sub_selector = false;
     bool in_rightmost_compound = true;
     bool has_scrollbar_pseudo = false;
     bool has_selection_pseudo = false;
     bool treat_shadow_host_as_normal_scope = false;
-    Element* vtt_originating_element = nullptr;
     bool in_nested_complex_selector = false;
     bool is_inside_visited_link = false;
-    const ContainerNode* relative_leftmost_element = nullptr;
+    bool pseudo_has_in_rightmost_compound = true;
+    bool is_inside_has_pseudo_class = false;
   };
 
   struct MatchResult {

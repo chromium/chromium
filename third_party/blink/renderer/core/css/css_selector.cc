@@ -1058,6 +1058,11 @@ void CSSSelector::SetSelectorList(
   data_.rare_data_->selector_list_ = std::move(selector_list);
 }
 
+void CSSSelector::SetContainsPseudoInsideHasPseudoClass() {
+  CreateRareData();
+  data_.rare_data_->bits_.contains_pseudo_inside_has_pseudo_class_ = true;
+}
+
 static bool ValidateSubSelector(const CSSSelector* selector) {
   switch (selector->Match()) {
     case CSSSelector::kTag:
