@@ -6,9 +6,9 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 
 #include "base/environment.h"
-#include "base/ignore_result.h"
 #include "base/strings/string_number_conversions.h"
 #include "sandbox/linux/suid/common/sandbox.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -66,7 +66,7 @@ TEST(SetuidSandboxHost, SetupLaunchEnvironment) {
 TEST(SetuidSandboxHost, GetSandboxBinaryPath) {
   std::unique_ptr<SetuidSandboxHost> setuid_sandbox_host(
       SetuidSandboxHost::Create());
-  ignore_result(setuid_sandbox_host->GetSandboxBinaryPath());
+  std::ignore = setuid_sandbox_host->GetSandboxBinaryPath();
 }
 
 }  // namespace sandbox

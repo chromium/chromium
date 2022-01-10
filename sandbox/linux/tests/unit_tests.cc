@@ -15,9 +15,10 @@
 #include <time.h>
 #include <unistd.h>
 
+#include <tuple>
+
 #include "base/debug/leak_annotations.h"
 #include "base/files/file_util.h"
-#include "base/ignore_result.h"
 #include "base/posix/eintr_wrapper.h"
 #include "build/build_config.h"
 #include "sandbox/linux/tests/unit_tests.h"
@@ -85,7 +86,7 @@ static void SigAlrmHandler(int) {
   const char failure_message[] = "Timeout reached!\n";
   // Make sure that we never block here.
   if (!fcntl(2, F_SETFL, O_NONBLOCK)) {
-    ignore_result(write(2, failure_message, sizeof(failure_message) - 1));
+    std::ignore = write(2, failure_message, sizeof(failure_message) - 1);
   }
   _exit(kExitForTimeout);
 }

@@ -10,8 +10,9 @@
 #include <sys/prctl.h>
 #include <unistd.h>
 
+#include <tuple>
+
 #include "base/command_line.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/strings/safe_sprintf.h"
 #include "sandbox/policy/switches.h"
@@ -24,7 +25,7 @@ namespace {
 void DoChrootSignalHandler(int) {
   const int old_errno = errno;
   const char kFirstMessage[] = "Chroot signal handler called.\n";
-  ignore_result(write(STDERR_FILENO, kFirstMessage, sizeof(kFirstMessage) - 1));
+  std::ignore = write(STDERR_FILENO, kFirstMessage, sizeof(kFirstMessage) - 1);
 
   const int chroot_ret = chroot("/");
 
@@ -33,7 +34,7 @@ void DoChrootSignalHandler(int) {
       kSecondMessage, "chroot() returned %d. Errno is %d.\n", chroot_ret,
       errno);
   if (printed > 0 && printed < static_cast<ssize_t>(sizeof(kSecondMessage))) {
-    ignore_result(write(STDERR_FILENO, kSecondMessage, printed));
+    std::ignore = write(STDERR_FILENO, kSecondMessage, printed);
   }
   errno = old_errno;
 }

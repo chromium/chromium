@@ -6,13 +6,14 @@
 
 #include <sys/mman.h>
 #include <sys/types.h>
+
 #include <algorithm>
 #include <cstring>
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/scoped_file.h"
-#include "base/ignore_result.h"
 #include "base/memory/page_size.h"
 #include "base/posix/unix_domain_socket.h"
 #include "base/test/bind.h"
@@ -76,7 +77,7 @@ pid_t ForkWaitingChild(base::OnceCallback<void(int)>
   if (parent_sync_fd)
     *parent_sync_fd = std::move(parent_sync);
   else
-    ignore_result(parent_sync.release());  // Closes when parent dies.
+    std::ignore = parent_sync.release();  // Closes when parent dies.
   return pid;
 }
 
