@@ -493,7 +493,7 @@ void ExpectExtensionOnlyIn(const InsecureDownloadExtensions& ext,
       kInsecureDownloadHistogramTargetSecure,
       kInsecureDownloadHistogramTargetInsecure};
 
-  std::vector<const std::string> histograms;
+  std::vector<std::string> histograms;
   for (auto* initiator_init : initiator_types) {
     for (auto* download_init : download_types) {
       histograms.push_back(
