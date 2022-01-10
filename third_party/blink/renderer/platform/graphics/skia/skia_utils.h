@@ -34,6 +34,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_SKIA_SKIA_UTILS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_SKIA_SKIA_UTILS_H_
 
+#include <utility>
+
 #include "cc/paint/paint_canvas.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
@@ -70,8 +72,9 @@ SkBlendMode PLATFORM_EXPORT
     WebCoreCompositeToSkiaComposite(CompositeOperator,
                                     BlendMode = BlendMode::kNormal);
 SkBlendMode PLATFORM_EXPORT WebCoreBlendModeToSkBlendMode(BlendMode);
-CompositeOperator PLATFORM_EXPORT CompositeOperatorFromSkBlendMode(SkBlendMode);
-BlendMode PLATFORM_EXPORT BlendModeFromSkBlendMode(SkBlendMode);
+
+std::pair<CompositeOperator, BlendMode> PLATFORM_EXPORT
+CompositeAndBlendOpsFromSkBlendMode(SkBlendMode sk_blend_mode);
 
 // Multiply a color's alpha channel by an additional alpha factor where
 // alpha is in the range [0, 1].

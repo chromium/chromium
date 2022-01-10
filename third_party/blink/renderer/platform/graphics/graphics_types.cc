@@ -32,32 +32,34 @@
 
 namespace blink {
 
-static const char* const kCompositeOperatorNames[] = {"clear",
-                                                      "copy",
-                                                      "source-over",
-                                                      "source-in",
-                                                      "source-out",
-                                                      "source-atop",
-                                                      "destination-over",
-                                                      "destination-in",
-                                                      "destination-out",
-                                                      "destination-atop",
-                                                      "xor",
-                                                      "lighter"};
+// TODO(vmpstr): Move these closer to canvas, along with the parsing code.
+static const char* const kCanvasCompositeOperatorNames[] = {"clear",
+                                                            "copy",
+                                                            "source-over",
+                                                            "source-in",
+                                                            "source-out",
+                                                            "source-atop",
+                                                            "destination-over",
+                                                            "destination-in",
+                                                            "destination-out",
+                                                            "destination-atop",
+                                                            "xor",
+                                                            "lighter"};
 
-static const char* const kBlendModeNames[] = {
+static const char* const kCanvasBlendModeNames[] = {
     "normal",     "multiply",   "screen",      "overlay",
     "darken",     "lighten",    "color-dodge", "color-burn",
     "hard-light", "soft-light", "difference",  "exclusion",
     "hue",        "saturation", "color",       "luminosity"};
-const int kNumCompositeOperatorNames = base::size(kCompositeOperatorNames);
-const int kNumBlendModeNames = base::size(kBlendModeNames);
+const int kNumCompositeOperatorNames =
+    base::size(kCanvasCompositeOperatorNames);
+const int kNumBlendModeNames = base::size(kCanvasBlendModeNames);
 
 bool ParseCompositeAndBlendMode(const String& s,
                                 CompositeOperator& op,
                                 BlendMode& blend_op) {
   for (int i = 0; i < kNumCompositeOperatorNames; i++) {
-    if (s == kCompositeOperatorNames[i]) {
+    if (s == kCanvasCompositeOperatorNames[i]) {
       op = static_cast<CompositeOperator>(i);
       blend_op = BlendMode::kNormal;
       return true;
@@ -65,7 +67,7 @@ bool ParseCompositeAndBlendMode(const String& s,
   }
 
   for (int i = 0; i < kNumBlendModeNames; i++) {
-    if (s == kBlendModeNames[i]) {
+    if (s == kCanvasBlendModeNames[i]) {
       blend_op = static_cast<BlendMode>(i);
       op = kCompositeSourceOver;
       return true;
@@ -80,8 +82,8 @@ String CompositeOperatorName(CompositeOperator op, BlendMode blend_op) {
   DCHECK_LT(op, kNumCompositeOperatorNames);
   DCHECK_GE(static_cast<unsigned>(blend_op), 0u);
   if (blend_op != BlendMode::kNormal)
-    return kBlendModeNames[static_cast<unsigned>(blend_op)];
-  return kCompositeOperatorNames[op];
+    return kCanvasBlendModeNames[static_cast<unsigned>(blend_op)];
+  return kCanvasCompositeOperatorNames[op];
 }
 
 bool ParseImageEncodingMimeType(const String& mime_type_name,

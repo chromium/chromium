@@ -122,6 +122,10 @@ enum class BlendMode {
   kSaturation,
   kColor,
   kLuminosity,
+  // The following is only used in CSS mix-blend-mode, and maps to a composite
+  // operator. Canvas uses the same enum but the kPlusLighter is not a valid
+  // canvas value. We should consider splitting the enums.
+  kPlusLighter,
 };
 
 enum OpacityMode {

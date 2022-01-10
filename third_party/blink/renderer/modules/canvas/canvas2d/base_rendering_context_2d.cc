@@ -714,9 +714,10 @@ void BaseRenderingContext2D::setGlobalAlpha(double alpha) {
 }
 
 String BaseRenderingContext2D::globalCompositeOperation() const {
-  return CompositeOperatorName(
-      CompositeOperatorFromSkBlendMode(GetState().GlobalComposite()),
-      BlendModeFromSkBlendMode(GetState().GlobalComposite()));
+  auto compositing_blend_mode_pair =
+      CompositeAndBlendOpsFromSkBlendMode(GetState().GlobalComposite());
+  return CompositeOperatorName(compositing_blend_mode_pair.first,
+                               compositing_blend_mode_pair.second);
 }
 
 void BaseRenderingContext2D::setGlobalCompositeOperation(

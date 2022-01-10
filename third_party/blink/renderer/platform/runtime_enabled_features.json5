@@ -701,6 +701,10 @@
       name: "CSSMediaQueries4",
     },
     {
+      name: "CSSMixBlendModePlusLighter",
+      status: "test"
+    },
+    {
       name: "CSSModules",
       status: "stable",
     },
