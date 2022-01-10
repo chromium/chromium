@@ -9,9 +9,12 @@
 #include <vector>
 
 #include "ash/public/cpp/app_list/app_list_types.h"
+#include "base/i18n/string_compare.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 #include "components/sync/model/string_ordinal.h"
+#include "third_party/icu/source/i18n/unicode/coll.h"
 
 namespace app_list {
 namespace reorder {
@@ -47,14 +50,29 @@ struct SyncItemWrapper {
   T key_attribute;
 };
 
-template <typename T>
-bool operator<(const SyncItemWrapper<T>& lhs, const SyncItemWrapper<T>& rhs) {
-  return lhs.key_attribute < rhs.key_attribute;
-}
-template <typename T>
-bool operator>(const SyncItemWrapper<T>& lhs, const SyncItemWrapper<T>& rhs) {
-  return lhs.key_attribute > rhs.key_attribute;
-}
+// A comparator class used to compare ash::IconColor wrapper.
+class IconColorWrapperComparator {
+ public:
+  IconColorWrapperComparator();
+
+  // Returns true if lhs precedes rhs.
+  bool operator()(const reorder::SyncItemWrapper<ash::IconColor>& lhs,
+                  const reorder::SyncItemWrapper<ash::IconColor>& rhs) const;
+};
+
+// A comparator class used to compare std::u16string wrapper.
+class StringWrapperComparator {
+ public:
+  StringWrapperComparator(bool increasing, icu::Collator* collator);
+
+  // Returns true if lhs precedes rhs.
+  bool operator()(const reorder::SyncItemWrapper<std::u16string>& lhs,
+                  const reorder::SyncItemWrapper<std::u16string>& rhs) const;
+
+ private:
+  const bool increasing_;
+  icu::Collator* const collator_;
+};
 
 // Gets a list of wrappers based on the mappings from ids to sync items.
 template <typename T>
@@ -87,13 +105,13 @@ std::vector<SyncItemWrapper<T>> GenerateWrappersFromAppListItems(
   return wrappers;
 }
 
-// SyncItemWrapper<std::string> ------------------------------------------------
+// SyncItemWrapper<std::u16string> ---------------------------------------------
 
 template <>
-SyncItemWrapper<std::string>::SyncItemWrapper(
+SyncItemWrapper<std::u16string>::SyncItemWrapper(
     const AppListSyncableService::SyncItem& sync_item);
 template <>
-SyncItemWrapper<std::string>::SyncItemWrapper(
+SyncItemWrapper<std::u16string>::SyncItemWrapper(
     const ChromeAppListItem& app_list_item);
 
 // SyncItemWrapper<ash::IconColor> ---------------------------------------------

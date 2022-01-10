@@ -72,6 +72,42 @@ class TemporaryAppListSortTest : public test::AppListSyncableServiceTestBase {
   std::unique_ptr<test::TestAppListController> app_list_controller_;
 };
 
+// Verifies that sorting by app names is case insensitive.
+TEST_F(TemporaryAppListSortTest, SortIsCaseInsensitive) {
+  RemoveAllExistingItems();
+
+  // Add three apps.
+  const std::string kItemId1 = CreateNextAppId(GenerateId("app_id1"));
+  scoped_refptr<extensions::Extension> app1 =
+      MakeApp("aaa", kItemId1, extensions::Extension::NO_FLAGS);
+  InstallExtension(app1.get());
+
+  const std::string kItemId2 = CreateNextAppId(GenerateId("app_id2"));
+  scoped_refptr<extensions::Extension> app2 =
+      MakeApp("BBB", kItemId2, extensions::Extension::NO_FLAGS);
+  InstallExtension(app2.get());
+
+  const std::string kItemId3 = CreateNextAppId(GenerateId("app_id3"));
+  scoped_refptr<extensions::Extension> app3 =
+      MakeApp("ccc", kItemId3, extensions::Extension::NO_FLAGS);
+  InstallExtension(app3.get());
+
+  // Verify the default status. Note that when the order is kCustom, a new app
+  // should be placed at the front.
+  EXPECT_EQ(ash::AppListSortOrder::kCustom, GetSortOrderFromPrefs());
+  EXPECT_EQ(GetOrderedItemIdsFromModelUpdater(),
+            std::vector<std::string>({kItemId3, kItemId2, kItemId1}));
+
+  // Sort apps with name alphabetical order.
+  GetChromeModelUpdater()->RequestAppListSort(
+      ash::AppListSortOrder::kNameAlphabetical);
+
+  // The app positions stored in the model updater change, where the order of
+  // app names is case insensitive.
+  EXPECT_EQ(GetOrderedItemIdsFromModelUpdater(),
+            std::vector<std::string>({kItemId1, kItemId2, kItemId3}));
+}
+
 // Verifies sorting works as expected when the app list is under temporary sort.
 TEST_F(TemporaryAppListSortTest, SortUponTemporaryOrder) {
   RemoveAllExistingItems();

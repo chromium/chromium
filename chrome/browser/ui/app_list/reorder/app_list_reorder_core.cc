@@ -38,6 +38,29 @@ bool IsIncreasingOrder(ash::AppListSortOrder order) {
   }
 }
 
+template <typename T>
+void SortItems(std::vector<T>* items, ash::AppListSortOrder order);
+
+template <>
+void SortItems(std::vector<SyncItemWrapper<std::u16string>>* items,
+               ash::AppListSortOrder order) {
+  UErrorCode error = U_ZERO_ERROR;
+  std::unique_ptr<icu::Collator> collator(icu::Collator::createInstance(error));
+  if (U_FAILURE(error))
+    collator.reset();
+
+  StringWrapperComparator comparator(IsIncreasingOrder(order), collator.get());
+  std::sort(items->begin(), items->end(), comparator);
+}
+
+template <>
+void SortItems(std::vector<SyncItemWrapper<ash::IconColor>>* items,
+               ash::AppListSortOrder order) {
+  DCHECK(IsIncreasingOrder(order));
+  IconColorWrapperComparator comparator;
+  std::sort(items->begin(), items->end(), comparator);
+}
+
 // Sorts `wrappers` based on `order` and returns the longest subsequence in
 // increasing ordinal order (a.k.a the longest increasing subsequence or
 // "LIS"). Each element in LIS is an index of an element in `wrappers`.
@@ -46,26 +69,7 @@ std::vector<int> SortAndGetLis(
     ash::AppListSortOrder order,
     std::vector<reorder::SyncItemWrapper<T>>* wrappers) {
   DCHECK(!wrappers->empty());
-  std::sort(wrappers->begin(), wrappers->end(),
-            [order](const reorder::SyncItemWrapper<T>& wrapper1,
-                    const reorder::SyncItemWrapper<T>& wrapper2) {
-              // Always put folders in front.
-              // TODO(https://crbug.com/1261673): remove this code block when
-              // `SyncItemWrapper` comparison operators take item type into
-              // consideration.
-              // TODO(crbug.com/1270898): Color sort should place folders at the
-              // end of the app list.
-              if (wrapper1.is_folder != wrapper2.is_folder)
-                return wrapper1.is_folder;
-
-              bool comp = false;
-              if (IsIncreasingOrder(order)) {
-                comp = wrapper1 < wrapper2;
-              } else {
-                comp = wrapper1 > wrapper2;
-              }
-              return comp;
-            });
+  SortItems(wrappers, order);
 
   // The remaining code is needed to find the longest increasing subsequence
   // (LIS) through dynamic programming. Denote the LIS ending with the j-th
@@ -320,7 +324,7 @@ void CalculateNeighbors(
   auto lower_bound = std::lower_bound(
       first_non_folder_iter, sorted_subsequence.cend(), new_item_key_attribute,
       [&is_increasing](const reorder::SyncItemWrapper<T>& item,
-                       const std::string& val) {
+                       const std::u16string& val) {
         return is_increasing ? item.key_attribute < val
                              : item.key_attribute > val;
       });
@@ -452,15 +456,15 @@ bool CalculatePositionInNameOrder(
   DCHECK(order == ash::AppListSortOrder::kNameAlphabetical ||
          order == ash::AppListSortOrder::kNameReverseAlphabetical);
 
-  std::vector<reorder::SyncItemWrapper<std::string>> local_item_wrappers =
-      reorder::GenerateWrappersFromAppListItems<std::string>(local_items);
+  std::vector<reorder::SyncItemWrapper<std::u16string>> local_item_wrappers =
+      reorder::GenerateWrappersFromAppListItems<std::u16string>(local_items);
 
   if (local_item_wrappers.empty()) {
     *target_position = syncer::StringOrdinal::CreateInitialOrdinal();
     return true;
   }
 
-  std::vector<reorder::SyncItemWrapper<std::string>> sorted_subsequence;
+  std::vector<reorder::SyncItemWrapper<std::u16string>> sorted_subsequence;
   float entropy;
   CalculateEntropyAndGetSortedSubsequence(order, &local_item_wrappers, &entropy,
                                           &sorted_subsequence);
@@ -470,15 +474,18 @@ bool CalculatePositionInNameOrder(
     return false;
   }
 
+  // Use std::u16string for string comparison.
+  std::u16string item_name_utf16 = base::UTF8ToUTF16(new_item.name());
+
   syncer::StringOrdinal prev_neighbor;
   syncer::StringOrdinal next_neighbor;
-  CalculateNeighbors(order, new_item.name(), sorted_subsequence, &prev_neighbor,
+  CalculateNeighbors(order, item_name_utf16, sorted_subsequence, &prev_neighbor,
                      &next_neighbor);
 
   if (global_items) {
     AdjustNeighborsInGlobalScope(
-        order, reorder::SyncItemWrapper<std::string>(new_item),
-        reorder::GenerateWrappersFromSyncItems<std::string>(*global_items),
+        order, reorder::SyncItemWrapper<std::u16string>(new_item),
+        reorder::GenerateWrappersFromSyncItems<std::u16string>(*global_items),
         &prev_neighbor, &next_neighbor);
   }
 
@@ -496,8 +503,8 @@ std::vector<reorder::ReorderParam> GenerateReorderParamsForSyncItems(
   switch (order) {
     case ash::AppListSortOrder::kNameAlphabetical:
     case ash::AppListSortOrder::kNameReverseAlphabetical: {
-      std::vector<reorder::SyncItemWrapper<std::string>> wrappers =
-          reorder::GenerateWrappersFromSyncItems<std::string>(sync_item_map);
+      std::vector<reorder::SyncItemWrapper<std::u16string>> wrappers =
+          reorder::GenerateWrappersFromSyncItems<std::u16string>(sync_item_map);
       return GenerateReorderParamsImpl(order, &wrappers);
     }
     case ash::AppListSortOrder::kColor: {
@@ -518,8 +525,8 @@ std::vector<reorder::ReorderParam> GenerateReorderParamsForAppListItems(
   switch (order) {
     case ash::AppListSortOrder::kNameAlphabetical:
     case ash::AppListSortOrder::kNameReverseAlphabetical: {
-      std::vector<reorder::SyncItemWrapper<std::string>> wrappers =
-          reorder::GenerateWrappersFromAppListItems<std::string>(
+      std::vector<reorder::SyncItemWrapper<std::u16string>> wrappers =
+          reorder::GenerateWrappersFromAppListItems<std::u16string>(
               app_list_items);
       return GenerateReorderParamsImpl(order, &wrappers);
     }
@@ -593,13 +600,14 @@ float CalculateEntropyForTest(ash::AppListSortOrder order,
       return 0.f;
     case ash::AppListSortOrder::kNameAlphabetical:
     case ash::AppListSortOrder::kNameReverseAlphabetical:
-      std::vector<reorder::SyncItemWrapper<std::string>> local_item_wrappers =
-          reorder::GenerateWrappersFromAppListItems<std::string>(
-              model_updater->GetItems());
+      std::vector<reorder::SyncItemWrapper<std::u16string>>
+          local_item_wrappers =
+              reorder::GenerateWrappersFromAppListItems<std::u16string>(
+                  model_updater->GetItems());
       float entropy = 0.f;
       CalculateEntropyAndGetSortedSubsequence(
           order, &local_item_wrappers, &entropy,
-          static_cast<std::vector<reorder::SyncItemWrapper<std::string>>*>(
+          static_cast<std::vector<reorder::SyncItemWrapper<std::u16string>>*>(
               nullptr));
       return entropy;
   }
