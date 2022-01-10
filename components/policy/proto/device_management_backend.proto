@@ -503,7 +503,12 @@ message CustomerLogo {
 // This message is included in serialized form in PolicyFetchResponse below. It
 // may also be signed, with the signature being created for the serialized form.
 message PolicyData {
-  reserved 10;
+  reserved 10, 13, 14, 18, 19;
+  reserved "command_invalidation_name";
+  reserved "command_invalidation_source";
+  reserved "invalidation_name";
+  reserved "invalidation_source";
+  reserved "valid_serial_number_missing";
 
   // See PolicyFetchRequest.policy_type.
   optional string policy_type = 1;
@@ -574,18 +579,6 @@ message PolicyData {
   // This is only sent as part of device policy fetch.
   optional string service_account_identity = 12;
 
-  // TODO(crbug/1073504): Clean up after legacy Tango shutdown.
-  // The object source which hosts policy objects within the invalidation
-  // service. This value is combined with invalidation_name to form the object
-  // id used to register for invalidations to this policy.
-  optional int32 invalidation_source = 13;
-
-  // TODO(crbug/1073504): Clean up after legacy Tango shutdown.
-  // The name which uniquely identifies this policy within the invalidation
-  // service object source. This value is combined with invalidation_source to
-  // form the object id used to register for invalidations to this policy.
-  optional bytes invalidation_name = 14;
-
   // Server-provided identifier of the fetched policy. This is to be used
   // by the client when requesting Policy Posture assertion through an API
   // call or SAML flow. For details, see http://go/chrome-nac-server-design.
@@ -609,20 +602,6 @@ message PolicyData {
 
   // Indicates the state that the device should be in.
   optional DeviceState device_state = 17;
-
-  // TODO(crbug/1073504): Clean up after legacy Tango shutdown.
-  // The object source which hosts command queue objects within the
-  // invalidation service. This value is combined with
-  // command_invalidation_name to form the object ID used to
-  // register for invalidations to the command queue.
-  optional int32 command_invalidation_source = 18;
-
-  // TODO(crbug/1073504): Clean up after legacy Tango shutdown.
-  // The name which uniquely identifies this device’s queue within
-  // the invalidation service object source. This value is combined
-  // with command_invalidation_source to form the object ID used to
-  // register for invalidations to the command queue.
-  optional bytes command_invalidation_name = 19;
 
   // The free-text location info the admin enters to associate the device
   // with a location.
