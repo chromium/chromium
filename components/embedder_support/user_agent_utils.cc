@@ -273,6 +273,8 @@ blink::UserAgentBrandList GetBrandFullVersionList(
   return GetUserAgentBrandFullVersionList(enable_updated_grease_by_policy);
 }
 
+}  // namespace
+
 std::string GetProduct(const bool allow_version_override) {
   // FF Priority 1: force major version to 99 and minor version to major version
   // number.
@@ -294,12 +296,6 @@ std::string GetProduct(const bool allow_version_override) {
     return "Chrome/" + GetM100InMinorVersionNumber();
 
   return version_info::GetProductNameAndVersionForUserAgent();
-}
-
-}  // namespace
-
-std::string GetProduct() {
-  return GetProduct(/*allow_version_override=*/false);
 }
 
 std::string GetUserAgent() {

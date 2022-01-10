@@ -763,13 +763,24 @@ TEST_P(UserAgentUtilsTest, GetGreasedUserAgentBrandVersion) {
 }
 
 TEST_P(UserAgentUtilsTest, GetProduct) {
-  const std::string product = GetProduct();
+  std::string product = GetProduct(/*allow_override=*/false);
   std::string major_version;
   EXPECT_TRUE(
       re2::RE2::FullMatch(product, kChromeProductVersionRegex, &major_version));
   // Whether the force M100 experiment is on or not, the product value should
   // contain the actual major version number which is 0.
   EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
+
+  // Allow overrides in the product version.
+  product = GetProduct(/*allow_override=*/true);
+  major_version.clear();
+  EXPECT_TRUE(
+      re2::RE2::FullMatch(product, kChromeProductVersionRegex, &major_version));
+  if (ForceMajorVersionTo100()) {
+    EXPECT_EQ(major_version, "100");
+  } else {
+    EXPECT_EQ(major_version, version_info::GetMajorVersionNumber());
+  }
 }
 
 TEST_P(UserAgentUtilsTest, GetUserAgent) {
