@@ -141,7 +141,7 @@ bool WaylandDataDragController::StartSession(const OSExchangeData& data,
       icon_surface_->SetSurfaceBufferScale(origin_window->window_scale());
       icon_surface_->ApplyPendingState();
 
-      auto icon_offset = data.provider().GetDragImageOffset();
+      auto icon_offset = -data.provider().GetDragImageOffset();
       icon_offset_ =
           gfx::ScaleToRoundedPoint({icon_offset.x(), icon_offset.y()},
                                    1.0f / origin_window->window_scale());
