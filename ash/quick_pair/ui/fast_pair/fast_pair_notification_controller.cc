@@ -195,7 +195,6 @@ void FastPairNotificationController::ShowDiscoveryNotification(
 void FastPairNotificationController::ShowPairingNotification(
     const std::u16string& device_name,
     gfx::Image device_image,
-    base::RepeatingClosure on_cancel_clicked,
     base::OnceCallback<void(bool)> on_close) {
   // If we get to this point in the pairing flow where we are showing the
   // Pairing notification, then the user has elected to begin pairing and we
@@ -212,16 +211,13 @@ void FastPairNotificationController::ShowPairingNotification(
   pairing_notification->set_title(l10n_util::GetStringFUTF16(
       IDS_FAST_PAIR_PAIRING_NOTIFICATION_TITLE, device_name));
 
-  message_center::ButtonInfo cancel_button(
-      l10n_util::GetStringUTF16(IDS_FAST_PAIR_CANCEL_BUTTON));
-  pairing_notification->set_buttons({cancel_button});
-
   pairing_notification->set_delegate(base::MakeRefCounted<NotificationDelegate>(
-      /*on_primary_click=*/on_cancel_clicked,
+      /*on_primary_click=*/base::DoNothing(),
       /*on_close=*/std::move(on_close)));
   pairing_notification->set_type(message_center::NOTIFICATION_TYPE_PROGRESS);
   pairing_notification->set_progress(kInfiniteLoadingProgressValue);
   pairing_notification->set_image(device_image);
+  pairing_notification->set_pinned(true);
 
   MessageCenter::Get()->AddNotification(std::move(pairing_notification));
 }

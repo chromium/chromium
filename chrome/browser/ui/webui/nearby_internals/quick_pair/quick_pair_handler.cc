@@ -3874,7 +3874,7 @@ void QuickPairHandler::NotifyFastPairPairing(const base::ListValue* args) {
 
 void QuickPairHandler::OnImageDecodedFastPairPairing(gfx::Image image) {
   fast_pair_notification_controller_->ShowPairingNotification(
-      kTestDeviceName, image, base::DoNothing(), base::DoNothing());
+      kTestDeviceName, image, base::DoNothing());
 }
 
 void QuickPairHandler::NotifyFastPairAssociateAccountKey(

@@ -98,7 +98,7 @@ void FastPairPresenter::OnPairingMetadataRetrieved(
 
   notification_controller_->ShowPairingNotification(
       base::ASCIIToUTF16(device_metadata->GetDetails().name()),
-      device_metadata->image(), base::DoNothing(), base::DoNothing());
+      device_metadata->image(), base::DoNothing());
 }
 
 void FastPairPresenter::ShowPairingFailed(scoped_refptr<Device> device,
