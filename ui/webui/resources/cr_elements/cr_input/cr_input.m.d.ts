@@ -20,8 +20,8 @@ interface CrInputElement extends LegacyElementMixin, HTMLElement {
   inputmode: string|null|undefined;
   label: string|null|undefined;
   placeholder: string|null;
-  readonly: boolean|null|undefined;
-  required: boolean|null|undefined;
+  readonly: boolean|undefined;
+  required: boolean|undefined;
   tabindex: number|null;
   type: string|null|undefined;
   value: string;

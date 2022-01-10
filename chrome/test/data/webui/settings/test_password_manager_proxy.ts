@@ -362,7 +362,7 @@ export class TestPasswordManagerProxy extends TestBrowserProxy implements
    * Sets the value to be returned by getUrlCollection.
    */
   setGetUrlCollectionResponse(urlCollection:
-                                  chrome.passwordsPrivate.UrlCollection) {
+                                  chrome.passwordsPrivate.UrlCollection|null) {
     this.getUrlCollectionResponse_ = urlCollection;
   }
 

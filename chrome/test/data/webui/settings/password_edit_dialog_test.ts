@@ -7,9 +7,10 @@
 // clang-format off
 import 'chrome://settings/lazy_load.js';
 
-import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PasswordEditDialogElement} from 'chrome://settings/lazy_load.js';
 import {PasswordManagerImpl} from 'chrome://settings/settings.js';
+import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, flushTasks} from 'chrome://webui-test/test_util.js';
 
 import {createMultiStorePasswordEntry, PasswordSectionElementFactory} from './passwords_and_autofill_fake_data.js';
@@ -20,28 +21,28 @@ import {TestPasswordManagerProxy} from './test_password_manager_proxy.js';
 /**
  * Helper function to test if an element is visible.
  */
-function isElementVisible(element) {
+function isElementVisible(element: HTMLElement) {
   return element && !element.hidden;
 }
 
 /**
  * Helper function to test if all components of edit dialog are shown correctly.
  */
-function assertEditDialogParts(passwordDialog) {
+function assertEditDialogParts(passwordDialog: PasswordEditDialogElement) {
   assertEquals(
       passwordDialog.i18n('editPasswordTitle'),
-      passwordDialog.$.title.textContent.trim());
-  assertTrue(passwordDialog.$.websiteInput.readonly);
-  assertFalse(passwordDialog.$.usernameInput.readonly);
-  assertFalse(passwordDialog.$.passwordInput.readonly);
-  assertTrue(passwordDialog.$.passwordInput.required);
+      passwordDialog.$.title.textContent!.trim());
+  assertTrue(!!passwordDialog.$.websiteInput.readonly);
+  assertFalse(!!passwordDialog.$.usernameInput.readonly);
+  assertFalse(!!passwordDialog.$.passwordInput.readonly);
+  assertTrue(!!passwordDialog.$.passwordInput.required);
   assertFalse(isElementVisible(passwordDialog.$.storePicker));
-  assertTrue(!!passwordDialog.shadowRoot.querySelector('#showPasswordButton'));
+  assertTrue(!!passwordDialog.shadowRoot!.querySelector('#showPasswordButton'));
   assertTrue(isElementVisible(passwordDialog.$.footnote));
   assertTrue(isElementVisible(passwordDialog.$.cancel));
   assertEquals(
       passwordDialog.i18n('save'),
-      passwordDialog.$.actionButton.textContent.trim());
+      passwordDialog.$.actionButton.textContent!.trim());
   assertFalse(passwordDialog.$.actionButton.disabled);
 }
 
@@ -49,42 +50,43 @@ function assertEditDialogParts(passwordDialog) {
  * Helper function to test if all components of details dialog are shown
  * correctly.
  */
-function assertDetailsDialogParts(passwordDialog) {
+function assertDetailsDialogParts(passwordDialog: PasswordEditDialogElement) {
   assertEquals(
       passwordDialog.i18n('passwordDetailsTitle'),
-      passwordDialog.$.title.textContent.trim());
-  assertTrue(passwordDialog.$.websiteInput.readonly);
-  assertTrue(passwordDialog.$.usernameInput.readonly);
-  assertTrue(passwordDialog.$.passwordInput.readonly);
-  assertFalse(passwordDialog.$.passwordInput.required);
+      passwordDialog.$.title.textContent!.trim());
+  assertTrue(!!passwordDialog.$.websiteInput.readonly);
+  assertTrue(!!passwordDialog.$.usernameInput.readonly);
+  assertTrue(!!passwordDialog.$.passwordInput.readonly);
+  assertFalse(!!passwordDialog.$.passwordInput.required);
   assertFalse(isElementVisible(passwordDialog.$.storePicker));
-  assertFalse(!!passwordDialog.shadowRoot.querySelector('#showPasswordButton'));
+  assertFalse(
+      !!passwordDialog.shadowRoot!.querySelector('#showPasswordButton'));
   assertFalse(isElementVisible(passwordDialog.$.footnote));
   assertFalse(isElementVisible(passwordDialog.$.cancel));
   assertEquals(
       passwordDialog.i18n('done'),
-      passwordDialog.$.actionButton.textContent.trim());
+      passwordDialog.$.actionButton.textContent!.trim());
   assertFalse(passwordDialog.$.actionButton.disabled);
 }
 
 /**
  * Helper function to test if all components of add dialog are shown correctly.
  */
-function assertAddDialogParts(passwordDialog) {
+function assertAddDialogParts(passwordDialog: PasswordEditDialogElement) {
   assertEquals(
       passwordDialog.i18n('addPasswordTitle'),
-      passwordDialog.$.title.textContent.trim());
-  assertFalse(passwordDialog.$.websiteInput.readonly);
-  assertFalse(passwordDialog.$.usernameInput.readonly);
-  assertFalse(passwordDialog.$.passwordInput.readonly);
-  assertTrue(passwordDialog.$.passwordInput.required);
+      passwordDialog.$.title.textContent!.trim());
+  assertFalse(!!passwordDialog.$.websiteInput.readonly);
+  assertFalse(!!passwordDialog.$.usernameInput.readonly);
+  assertFalse(!!passwordDialog.$.passwordInput.readonly);
+  assertTrue(!!passwordDialog.$.passwordInput.required);
   assertFalse(isElementVisible(passwordDialog.$.storageDetails));
-  assertTrue(!!passwordDialog.shadowRoot.querySelector('#showPasswordButton'));
+  assertTrue(!!passwordDialog.shadowRoot!.querySelector('#showPasswordButton'));
   assertTrue(isElementVisible(passwordDialog.$.footnote));
   assertTrue(isElementVisible(passwordDialog.$.cancel));
   assertEquals(
       passwordDialog.i18n('save'),
-      passwordDialog.$.actionButton.textContent.trim());
+      passwordDialog.$.actionButton.textContent!.trim());
   assertTrue(passwordDialog.$.actionButton.disabled);
 }
 
@@ -92,7 +94,9 @@ function assertAddDialogParts(passwordDialog) {
  * Helper function to update website input and trigger validation.
  */
 async function updateWebsiteInput(
-    dialog, passwordManager, newValue, isValid = true) {
+    dialog: PasswordEditDialogElement,
+    passwordManager: TestPasswordManagerProxy, newValue: string,
+    isValid = true) {
   const shouldGetUrlCollection = !!newValue.length;
   if (shouldGetUrlCollection) {
     passwordManager.resetResolver('getUrlCollection');
@@ -117,13 +121,11 @@ async function updateWebsiteInput(
 
 /**
  * Helper function to test change saved password behavior.
- * @param {!PasswordEditDialogElement} editDialog
- * @param {!Array<number>} entryIds Ids to be called as a changeSavedPassword
- *     parameter.
- * @param {TestPasswordManagerProxy} passwordManager
+ * @param entryIds Ids to be called as a changeSavedPassword parameter.
  */
 async function changeSavedPasswordTestHelper(
-    editDialog, entryIds, passwordManager) {
+    editDialog: PasswordEditDialogElement, entryIds: number[],
+    passwordManager: TestPasswordManagerProxy) {
   const NEW_USERNAME = 'new_username';
   const NEW_PASSWORD = 'new_password';
 
@@ -151,13 +153,13 @@ async function changeSavedPasswordTestHelper(
 
 /**
  * Helper function to test add password behavior.
- * @param {!PasswordEditDialogElement} addDialog
- * @param {!TestPasswordManagerProxy} passwordManager
- * @param {boolean} expectedUseAccountStore True for account store, false for
- *     device store.
+ * @param expectedUseAccountStore True for account store, false for device
+ *     store.
  */
 async function addPasswordTestHelper(
-    addDialog, passwordManager, expectedUseAccountStore) {
+    addDialog: PasswordEditDialogElement,
+    passwordManager: TestPasswordManagerProxy,
+    expectedUseAccountStore: boolean) {
   const WEBSITE = 'example.com';
   const USERNAME = 'username';
   const PASSWORD = 'password';
@@ -179,14 +181,11 @@ async function addPasswordTestHelper(
 }
 
 suite('PasswordEditDialog', function() {
-  /** @type {TestPasswordManagerProxy} */
-  let passwordManager = null;
-
-  /** @type {PasswordSectionElementFactory} */
-  let elementFactory = null;
+  let passwordManager: TestPasswordManagerProxy;
+  let elementFactory: PasswordSectionElementFactory;
 
   setup(function() {
-    PolymerTest.clearBody();
+    document.body.innerHTML = '';
     // Override the PasswordManagerImpl for testing.
     passwordManager = new TestPasswordManagerProxy();
     PasswordManagerImpl.setInstance(passwordManager);
@@ -231,7 +230,7 @@ suite('PasswordEditDialog', function() {
     const editDialog = elementFactory.createPasswordEditDialog(accountEntry);
 
     return changeSavedPasswordTestHelper(
-        editDialog, [accountEntry.accountId], passwordManager);
+        editDialog, [accountEntry.accountId!], passwordManager);
   });
 
   test('changesPasswordForDeviceId', function() {
@@ -240,7 +239,7 @@ suite('PasswordEditDialog', function() {
     const editDialog = elementFactory.createPasswordEditDialog(deviceEntry);
 
     return changeSavedPasswordTestHelper(
-        editDialog, [deviceEntry.deviceId], passwordManager);
+        editDialog, [deviceEntry.deviceId!], passwordManager);
   });
 
   test('changesPasswordForBothId', function() {
@@ -249,7 +248,7 @@ suite('PasswordEditDialog', function() {
     const editDialog = elementFactory.createPasswordEditDialog(multiEntry);
 
     return changeSavedPasswordTestHelper(
-        editDialog, [multiEntry.accountId, multiEntry.deviceId],
+        editDialog, [multiEntry.accountId!, multiEntry.deviceId!],
         passwordManager);
   });
 
@@ -261,7 +260,7 @@ suite('PasswordEditDialog', function() {
           {url: 'goo.gl', username: 'mark', accountId: 0})
     ];
     const editDialog = elementFactory.createPasswordEditDialog(
-        accountPasswords[0], accountPasswords);
+        accountPasswords[0]!, accountPasswords);
 
     editDialog.$.usernameInput.value = 'mark';
     assertTrue(editDialog.$.usernameInput.invalid);
@@ -272,7 +271,7 @@ suite('PasswordEditDialog', function() {
     assertFalse(editDialog.$.actionButton.disabled);
 
     return changeSavedPasswordTestHelper(
-        editDialog, [accountPasswords[0].accountId], passwordManager);
+        editDialog, [accountPasswords[0]!.accountId!], passwordManager);
   });
 
   test('changesUsernameWhenReusedForDifferentStore', async function() {
@@ -381,10 +380,10 @@ suite('PasswordEditDialog', function() {
     assertEquals(false, addDialog.$.websiteInput.autofocus);
     assertEquals(
         addDialog.i18n('addPasswordStoreOptionAccount', addDialog.accountEmail),
-        picker.options[0].textContent.trim());
+        picker.options[0]!.textContent!.trim());
     assertEquals(
         addDialog.i18n('addPasswordStoreOptionDevice'),
-        picker.options[1].textContent.trim());
+        picker.options[1]!.textContent!.trim());
   });
 
   test('checksRequiredFieldsWhenAddPassword', async function() {
@@ -585,32 +584,32 @@ suite('PasswordEditDialog', function() {
         assertEquals(existingEntry.password, addDialog.$.passwordInput.value);
       });
 
+  // <if expr="not chromeos_ash and not chromeos_lacros">
   // On ChromeOS/Lacros the behavior is different (on failure we request token
   // and retry).
-  if (!isChromeOS && !isLacros) {
-    test(
-        'notSwitchToEditModeOnViewPasswordClickWhenRequestPlaintextPasswordFailed',
-        async function() {
-          const existingEntry = createMultiStorePasswordEntry(
-              {url: 'website.com', username: 'username', accountId: 0});
-          const addDialog =
-              elementFactory.createPasswordEditDialog(null, [existingEntry]);
-          assertFalse(isElementVisible(addDialog.$.viewExistingPasswordLink));
+  test(
+      'notSwitchToEditModeOnViewPasswordClickWhenRequestPlaintextPasswordFailed',
+      async function() {
+        const existingEntry = createMultiStorePasswordEntry(
+            {url: 'website.com', username: 'username', accountId: 0});
+        const addDialog =
+            elementFactory.createPasswordEditDialog(null, [existingEntry]);
+        assertFalse(isElementVisible(addDialog.$.viewExistingPasswordLink));
 
-          await updateWebsiteInput(
-              addDialog, passwordManager, existingEntry.urls.shown);
-          addDialog.$.usernameInput.value = existingEntry.username;
-          assertTrue(isElementVisible(addDialog.$.viewExistingPasswordLink));
+        await updateWebsiteInput(
+            addDialog, passwordManager, existingEntry.urls.shown);
+        addDialog.$.usernameInput.value = existingEntry.username;
+        assertTrue(isElementVisible(addDialog.$.viewExistingPasswordLink));
 
-          // By default requestPlaintextPassword fails if value not set.
-          addDialog.$.viewExistingPasswordLink.click();
-          const {id, reason} =
-              await passwordManager.whenCalled('requestPlaintextPassword');
-          assertEquals(existingEntry.getAnyId(), id);
-          assertEquals(chrome.passwordsPrivate.PlaintextReason.EDIT, reason);
-          await flushTasks();
+        // By default requestPlaintextPassword fails if value not set.
+        addDialog.$.viewExistingPasswordLink.click();
+        const {id, reason} =
+            await passwordManager.whenCalled('requestPlaintextPassword');
+        assertEquals(existingEntry.getAnyId(), id);
+        assertEquals(chrome.passwordsPrivate.PlaintextReason.EDIT, reason);
+        await flushTasks();
 
-          assertAddDialogParts(addDialog);
-        });
-  }
+        assertAddDialogParts(addDialog);
+      });
+  // </if>
 });

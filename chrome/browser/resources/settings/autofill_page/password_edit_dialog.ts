@@ -18,6 +18,7 @@ import '../settings_shared_css.js';
 import '../settings_vars_css.js';
 import './passwords_shared_css.js';
 
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
@@ -32,10 +33,16 @@ import {PasswordManagerImpl} from './password_manager_proxy.js';
 
 export interface PasswordEditDialogElement {
   $: {
+    actionButton: CrButtonElement,
+    cancel: CrButtonElement,
     dialog: CrDialogElement,
+    footnote: HTMLElement,
     passwordInput: CrInputElement,
+    storageDetails: HTMLElement,
     storePicker: HTMLSelectElement,
+    title: HTMLElement,
     usernameInput: CrInputElement,
+    viewExistingPasswordLink: HTMLElement,
     websiteInput: CrInputElement,
   };
 }
