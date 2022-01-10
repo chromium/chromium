@@ -189,8 +189,7 @@ void CookieStoreManager::AddSubscriptions(
     return;
   }
 
-  if (!origin.IsSameOriginWith(
-          url::Origin::Create(service_worker_registration->scope()))) {
+  if (!origin.IsSameOriginWith(service_worker_registration->key().origin())) {
     std::move(bad_message_callback).Run("Invalid service worker");
     std::move(callback).Run(false);
     return;
@@ -287,8 +286,7 @@ void CookieStoreManager::RemoveSubscriptions(
     return;
   }
 
-  if (!origin.IsSameOriginWith(
-          url::Origin::Create(service_worker_registration->scope()))) {
+  if (!origin.IsSameOriginWith(service_worker_registration->key().origin())) {
     std::move(bad_message_callback).Run("Invalid service worker");
     std::move(callback).Run(false);
     return;
