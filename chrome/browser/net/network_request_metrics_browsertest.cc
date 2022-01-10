@@ -361,13 +361,13 @@ IN_PROC_BROWSER_TEST_P(NetworkRequestMetricsBrowserTest,
                        NetErrorBeforeHeaders) {
   TestNavigationObserver navigation_observer(active_web_contents(), 1);
   StartNavigatingAndWaitForRequest();
-  // Not sending any body will result in failing with ERR_EMPTY_RESPONSE,
-  // without receiving any headers so the load won't be committed until the
-  // error page is seen.
+  interesting_http_response()->Send(
+      "HTTP/1.1 200 OK\r\nContent-Length: 42\r\nContent-Length: 43\r\n\r\n");
   interesting_http_response()->Done();
   navigation_observer.Wait();
 
-  CheckHistograms(net::ERR_EMPTY_RESPONSE, HeadersReceived::kNoHeadersReceived,
+  CheckHistograms(net::ERR_RESPONSE_HEADERS_MULTIPLE_CONTENT_LENGTH,
+                  HeadersReceived::kNoHeadersReceived,
                   NetworkAccessed::kNetworkAccessed);
 }
 
