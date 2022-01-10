@@ -76,12 +76,18 @@ base::flat_map<std::string, std::string> ParseCommandLine(int argc,
   for (int i = 1; i < argc; ++i) {
     std::string arg(argv[i]);
     bool new_key = last_arg.empty();
-    for (const std::string& prefix : {"--", "-"}) {
-      if (base::StartsWith(arg, prefix)) {
-        new_key = true;
-        arg = arg.substr(prefix.length());
-        break;
+    if (base::StartsWith(arg, "--")) {
+      new_key = true;
+      arg = arg.substr(2);
+    } else if (base::StartsWith(arg, "-")) {
+      // Multiple short options could be combined together. For example,
+      // command `ksadmin -pP com.google.Chrome` should print Chrome ticket.
+      // Split the option substring into switches character by character.
+      for (const char ch : arg.substr(1)) {
+        last_arg = ch;
+        result[last_arg] = "";
       }
+      continue;
     }
     if (new_key) {
       result[last_arg] = "";
