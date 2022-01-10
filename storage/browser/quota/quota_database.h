@@ -171,12 +171,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
                                        base::Time last_modified)
       WARN_UNUSED_RESULT;
 
-  // Register initial `storage_keys` info `type` to the database.
+  // Register initial `storage_keys_by_type` into the database.
   // This method is assumed to be called only after the installation or
   // the database schema reset.
-  bool RegisterInitialStorageKeyInfo(
-      const std::set<blink::StorageKey>& storage_keys,
-      blink::mojom::StorageType type);
+  QuotaError RegisterInitialStorageKeyInfo(
+      base::flat_map<blink::mojom::StorageType, std::set<blink::StorageKey>>
+          storage_keys_by_type);
 
   // Returns the BucketTableEntry for `bucket` if one exists. Returns a
   // QuotaError if not found or the operation has failed.
@@ -208,11 +208,12 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaDatabase {
       base::Time begin,
       base::Time end);
 
-  // Returns false if SetBootstrappedForEviction() has never
-  // been called before, which means existing storage keys may not have been
-  // registered.
-  bool IsBootstrappedForEviction();
-  bool SetBootstrappedForEviction(bool bootstrap_flag);
+  // Returns false if SetIsBootstrapped() has never been called before, which
+  // means existing storage keys may not have been registered. Bootstrapping
+  // ensures that there is a bucket entry in the buckets table for all storage
+  // keys that have stored data by quota managed Storage APIs.
+  bool IsBootstrapped();
+  QuotaError SetIsBootstrapped(bool bootstrap_flag);
 
   // Manually disable database to test database error scenarios for testing.
   void SetDisabledForTesting(bool disable) { is_disabled_ = disable; }

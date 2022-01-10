@@ -63,7 +63,6 @@ class MockQuotaEvictionHandler : public QuotaEvictionHandler {
   }
 
   void GetEvictionBucket(StorageType type,
-                         int64_t global_quota,
                          GetBucketCallback callback) override {
     if (bucket_order_.empty()) {
       std::move(callback).Run(absl::nullopt);

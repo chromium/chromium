@@ -81,7 +81,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaEvictionHandler {
   // Returns the next bucket to evict, or nullopt if there are no evictable
   // buckets.
   virtual void GetEvictionBucket(blink::mojom::StorageType type,
-                                 int64_t global_quota,
                                  GetBucketCallback callback) = 0;
 
   // Called to evict a bucket.
@@ -420,6 +419,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   void SetQuotaDatabaseForTesting(std::unique_ptr<QuotaDatabase> database);
 
+  void SetBootstrapDisabledForTesting(bool disable) {
+    bootstrap_disabled_for_testing_ = disable;
+  }
+
  protected:
   ~QuotaManagerImpl() override;
   void SetQuotaChangeCallbackForTesting(
@@ -438,6 +441,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   class EvictionRoundInfoHelper;
   class UsageAndQuotaInfoGatherer;
   class GetUsageInfoTask;
+  class StorageKeyGathererTask;
   class BucketDataDeleter;
   class StorageKeyDataDeleter;
   class HostDataDeleter;
@@ -462,6 +466,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   using BucketTableEntry = QuotaDatabase::BucketTableEntry;
   using QuotaTableEntries = std::vector<QuotaTableEntry>;
   using BucketTableEntries = std::vector<BucketTableEntry>;
+  using StorageKeysByType =
+      base::flat_map<blink::mojom::StorageType, std::set<blink::StorageKey>>;
 
   using QuotaSettingsCallback = base::OnceCallback<void(const QuotaSettings&)>;
 
@@ -485,13 +491,19 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // Initialize() must be called after all quota clients are added to the
   // manager by RegisterClient().
   void EnsureDatabaseOpened();
-  void DidOpenDatabase(bool is_database_bootstraped);
-  void BootstrapDatabaseForEviction(GetBucketCallback did_get_bucket_callback,
-                                    int64_t unused_usage,
-                                    int64_t unused_unlimited_usage);
-  void DidBootstrapDatabaseForEviction(
-      GetBucketCallback did_get_bucket_callback,
-      bool success);
+
+  // Bootstraps database with storage keys that may not have been registered.
+  // Bootstrapping ensures that there is a bucket entry in the buckets table for
+  // all storage keys that have stored data by quota managed Storage APIs. Will
+  // queue calls to QuotaDatabase during bootstrap to be run after bootstrapping
+  // is complete.
+  void BootstrapDatabase();
+  void DidGetBootstrapFlag(bool is_database_bootstrapped);
+  void DidGetStorageKeysForBootstrap(StorageKeysByType storage_keys_by_type);
+  void DidBootstrapDatabase(QuotaError error);
+  void DidSetDatabaseBootstrapped(QuotaError error);
+  // Runs all callbacks to QuotaDatabase that have been queued during bootstrap.
+  void RunDatabaseCallbacks();
 
   // Called by clients via proxy.
   // Registers a quota client to the manager.
@@ -547,7 +559,6 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   // QuotaEvictionHandler.
   void GetEvictionBucket(blink::mojom::StorageType type,
-                         int64_t global_quota,
                          GetBucketCallback callback) override;
   void EvictBucketData(const BucketLocator& bucket,
                        StatusCallback callback) override;
@@ -611,27 +622,27 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   absl::optional<int64_t> GetQuotaOverrideForStorageKey(
       const blink::StorageKey&);
 
-  // TODO(ayui): Replace instances to use result with QuotaErrorOr.
-  void PostTaskAndReplyWithResultForDBThread(
-      const base::Location& from_here,
-      base::OnceCallback<bool(QuotaDatabase*)> task,
-      base::OnceCallback<void(bool)> reply);
-
   template <typename ValueType>
   void PostTaskAndReplyWithResultForDBThread(
       base::OnceCallback<QuotaErrorOr<ValueType>(QuotaDatabase*)> task,
       base::OnceCallback<void(QuotaErrorOr<ValueType>)> reply,
-      const base::Location& from_here = base::Location::Current());
+      const base::Location& from_here = base::Location::Current(),
+      bool is_bootstrap_task = false);
 
   void PostTaskAndReplyWithResultForDBThread(
       base::OnceCallback<QuotaError(QuotaDatabase*)> task,
       base::OnceCallback<void(QuotaError)> reply,
-      const base::Location& from_here = base::Location::Current());
+      const base::Location& from_here = base::Location::Current(),
+      bool is_bootstrap_task = false);
 
   static std::tuple<int64_t, int64_t> CallGetVolumeInfo(
       GetVolumeInfoFn get_volume_info_fn,
       const base::FilePath& path);
   static std::tuple<int64_t, int64_t> GetVolumeInfo(const base::FilePath& path);
+
+  bool is_bootstrapping_database_for_testing() {
+    return is_bootstrapping_database_;
+  }
 
   bool is_db_disabled_for_testing() { return db_disabled_; }
 
@@ -645,12 +656,17 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   int db_error_count_ = 0;
   bool db_disabled_ = false;
   bool eviction_disabled_ = false;
+  bool bootstrap_disabled_for_testing_ = false;
+
   absl::optional<blink::StorageKey>
       storage_key_for_pending_storage_pressure_callback_;
   scoped_refptr<base::SingleThreadTaskRunner> io_thread_;
   scoped_refptr<base::SequencedTaskRunner> db_runner_;
   mutable std::unique_ptr<QuotaDatabase> database_;
-  bool is_database_bootstrapped_for_eviction_ = false;
+  bool is_bootstrapping_database_ = false;
+  // Queued callbacks to QuotaDatabase that will run after database bootstrap is
+  // complete.
+  std::vector<base::OnceClosure> database_callbacks_;
 
   GetQuotaSettingsFunc get_settings_function_;
   scoped_refptr<base::TaskRunner> get_settings_task_runner_;
@@ -730,6 +746,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
 
   std::unique_ptr<EvictionRoundInfoHelper> eviction_helper_;
   std::vector<std::unique_ptr<BucketDataDeleter>> bucket_data_deleters_;
+  std::unique_ptr<StorageKeyGathererTask> storage_key_gatherer_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
