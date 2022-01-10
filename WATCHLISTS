@@ -2794,7 +2794,6 @@
     'spellcheck': ['rlp+watch@chromium.org',
                    'rouslan+spell@chromium.org'],
     'startup': ['nicolaso+watch@chromium.org',
-                'pastarmovj+watch@chromium.org',
                 'ydago+watch@chromium.org'],
     'storage_service': ['dmurph+watching-storageservice@chromium.org'],
     'structured_headers': ['iclelland+watch@chromium.org'],
