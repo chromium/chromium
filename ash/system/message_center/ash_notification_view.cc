@@ -12,6 +12,7 @@
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
 #include "ash/system/message_center/ash_notification_expand_button.h"
@@ -829,6 +830,15 @@ void AshNotificationView::OnThemeChanged() {
   views::FocusRing::Get(this)->SetColor(
       AshColorProvider::Get()->GetControlsLayerColor(
           AshColorProvider::ControlsLayerType::kFocusRingColor));
+
+  auto* notification =
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          notification_id());
+  SkColor button_color = notification->accent_color().value_or(
+      AshColorProvider::Get()->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kButtonLabelColorBlue));
+  if (snooze_button_)
+    snooze_button_->SetIconColor(button_color);
 }
 
 std::unique_ptr<message_center::NotificationInputContainer>
@@ -941,23 +951,12 @@ void AshNotificationView::CreateOrUpdateSnoozeButton(
                                        views::MaximumFlexSizeRule::kUnbounded))
           .Build());
 
-  // TODO(crbug/1276581): Make sure the style of this snooze button is fit
-  // with the style of other action buttons.
-  action_buttons_row()->AddChildView(
-      views::Builder<views::ImageButton>()
-          .CopyAddressTo(&snooze_button_)
-          .SetCallback(
-              base::BindRepeating(&AshNotificationView::OnSnoozeButtonPressed,
-                                  base::Unretained(this)))
-          .SetTooltipText(l10n_util::GetStringUTF16(
-              IDS_MESSAGE_CENTER_NOTIFICATION_SNOOZE_BUTTON_TOOLTIP))
-          .Build());
-
-  SkColor button_color = notification.accent_color().value_or(
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kControlBackgroundColorActive));
-  views::SetImageFromVectorIcon(snooze_button_, kNotificationSnoozeButtonIcon,
-                                20, button_color);
+  auto snooze_button = std::make_unique<IconButton>(
+      base::BindRepeating(&AshNotificationView::OnSnoozeButtonPressed,
+                          base::Unretained(this)),
+      IconButton::Type::kSmallFloating, &kNotificationSnoozeButtonIcon,
+      IDS_MESSAGE_CENTER_NOTIFICATION_SNOOZE_BUTTON_TOOLTIP);
+  snooze_button_ = action_buttons_row()->AddChildView(std::move(snooze_button));
 }
 
 void AshNotificationView::UpdateMessageViewInExpandedState(

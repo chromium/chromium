@@ -119,6 +119,13 @@ void IconButton::SetVectorIcon(const gfx::VectorIcon& icon) {
   UpdateVectorIcon();
 }
 
+void IconButton::SetIconColor(const SkColor icon_color) {
+  if (icon_color_ == icon_color)
+    return;
+  icon_color_ = icon_color;
+  UpdateVectorIcon();
+}
+
 void IconButton::SetToggled(bool toggled) {
   if (!is_togglable_ || toggled_ == toggled)
     return;
@@ -186,8 +193,9 @@ void IconButton::UpdateVectorIcon() {
     return;
 
   auto* color_provider = AshColorProvider::Get();
-  const SkColor normal_icon_color = color_provider->GetContentLayerColor(
-      AshColorProvider::ContentLayerType::kButtonIconColor);
+  const SkColor normal_icon_color =
+      icon_color_.value_or(color_provider->GetContentLayerColor(
+          AshColorProvider::ContentLayerType::kButtonIconColor));
   const SkColor toggled_icon_color = color_provider->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kButtonIconColorPrimary);
   const SkColor icon_color = toggled_ ? toggled_icon_color : normal_icon_color;

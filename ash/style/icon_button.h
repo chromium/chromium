@@ -72,6 +72,10 @@ class IconButton : public views::ImageButton {
   // states.
   void SetVectorIcon(const gfx::VectorIcon& icon);
 
+  // Sets the icon's color. If the button is togglable, this will be the color
+  // when it's not toggled.
+  void SetIconColor(const SkColor icon_color);
+
   // Updates the `toggled_` state of the button.
   void SetToggled(bool toggled);
 
@@ -95,6 +99,9 @@ class IconButton : public views::ImageButton {
 
   // True if the button is currently toggled.
   bool toggled_ = false;
+
+  // Customized value for icon's color.
+  absl::optional<SkColor> icon_color_;
 
   DisabledButtonBehavior button_behavior_ = DisabledButtonBehavior::kNone;
 };

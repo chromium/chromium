@@ -19,7 +19,6 @@ class Notification;
 namespace views {
 class BoxLayout;
 class FlexLayoutView;
-class ImageButton;
 class LabelButton;
 class View;
 }  // namespace views
@@ -28,6 +27,7 @@ namespace ash {
 
 class RoundedImageView;
 class AshNotificationExpandButton;
+class IconButton;
 
 // Customized NotificationView for notification on ChromeOS. This view is used
 // to displays all current types of notification on ChromeOS (web, basic, image,
@@ -185,7 +185,7 @@ class ASH_EXPORT AshNotificationView
   views::LabelButton* turn_off_notifications_button_ = nullptr;
   views::LabelButton* inline_settings_cancel_button_ = nullptr;
   views::View* snooze_button_spacer_ = nullptr;
-  views::ImageButton* snooze_button_ = nullptr;
+  IconButton* snooze_button_ = nullptr;
 
   // These views below are dynamically created inside view hierarchy.
   NotificationTitleRow* title_row_ = nullptr;

@@ -6,6 +6,7 @@
 
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/icon_button.h"
 #include "ash/system/message_center/ash_notification_expand_button.h"
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/test/ash_test_base.h"
@@ -189,9 +190,7 @@ class AshNotificationViewTest : public AshTestBase, public views::ViewObserver {
   views::LabelButton* inline_settings_cancel_button() {
     return notification_view_->inline_settings_cancel_button_;
   }
-  views::ImageButton* snooze_button() {
-    return notification_view_->snooze_button_;
-  }
+  IconButton* snooze_button() { return notification_view_->snooze_button_; }
 
   scoped_refptr<NotificationTestDelegate> delegate() { return delegate_; }
 
