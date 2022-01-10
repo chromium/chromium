@@ -14,7 +14,7 @@
 #include <stdint.h>
 
 #include <memory>
-#include <vector>
+#include <set>
 
 #include "base/strings/string_piece.h"
 #include "net/base/completion_once_callback.h"
@@ -195,10 +195,10 @@ class NET_EXPORT_PRIVATE HttpStream {
   // Set the idempotency of the request. No-op by default.
   virtual void SetRequestIdempotency(Idempotency idempotency) {}
 
-  // Retrieves any DNS aliases for the remote endpoint. The alias chain order
-  // is preserved in reverse, from canonical name (i.e. address record name)
-  // through to query name.
-  virtual const std::vector<std::string>& GetDnsAliases() const = 0;
+  // Retrieves any DNS aliases for the remote endpoint. Includes all known
+  // aliases, e.g. from A, AAAA, or HTTPS, not just from the address used for
+  // the connection, in no particular order.
+  virtual const std::set<std::string>& GetDnsAliases() const = 0;
 
   // The value in the ACCEPT_CH frame received during TLS handshake via the
   // ALPS extension, or the empty string if the server did not send one.  Unlike

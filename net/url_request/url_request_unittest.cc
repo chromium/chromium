@@ -13081,7 +13081,7 @@ TEST_F(URLRequestDnsAliasTest, WithDnsAliases) {
 TEST_F(URLRequestDnsAliasTest, NoAdditionalDnsAliases) {
   GURL url(test_server_.GetURL("www.example.test", "/echo"));
   host_resolver_.rules()->AddIPLiteralRuleWithDnsAliases(
-      "www.example.test", "127.0.0.1", {} /* dns_aliases */);
+      "www.example.test", "127.0.0.1", /*dns_aliases=*/std::set<std::string>());
 
   std::unique_ptr<URLRequest> request(context_.CreateRequest(
       url, DEFAULT_PRIORITY, &test_delegate_, TRAFFIC_ANNOTATION_FOR_TESTS));

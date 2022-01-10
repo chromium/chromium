@@ -606,8 +606,8 @@ class PLATFORM_EXPORT ResourceResponse final {
   absl::optional<base::UnguessableToken> recursive_prefetch_token_;
 
   // Any DNS aliases for the requested URL, as read from CNAME records.
-  // The alias chain order is preserved in reverse, from canonical name (i.e.
-  // address record name) through to query name.
+  // Includes all known aliases, e.g. from A, AAAA, or HTTPS, not just from the
+  // address used for the connection, in no particular order.
   Vector<String> dns_aliases_;
 
   // The URL of WebBundle this response was loaded from. This value is only

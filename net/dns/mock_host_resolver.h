@@ -180,6 +180,9 @@ class MockHostResolverBase
     void AddIPLiteralRuleWithDnsAliases(base::StringPiece hostname_pattern,
                                         base::StringPiece ip_literal,
                                         std::vector<std::string> dns_aliases);
+    void AddIPLiteralRuleWithDnsAliases(base::StringPiece hostname_pattern,
+                                        base::StringPiece ip_literal,
+                                        std::set<std::string> dns_aliases);
     void AddSimulatedFailure(base::StringPiece hostname_pattern);
     void AddSimulatedTimeoutFailure(base::StringPiece hostname_pattern);
     void AddRuleWithFlags(base::StringPiece host_pattern,

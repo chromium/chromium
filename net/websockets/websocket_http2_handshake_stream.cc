@@ -5,6 +5,7 @@
 #include "net/websockets/websocket_http2_handshake_stream.h"
 
 #include <cstddef>
+#include <set>
 #include <utility>
 
 #include "base/bind.h"
@@ -44,7 +45,7 @@ WebSocketHttp2HandshakeStream::WebSocketHttp2HandshakeStream(
     std::vector<std::string> requested_sub_protocols,
     std::vector<std::string> requested_extensions,
     WebSocketStreamRequestAPI* request,
-    std::vector<std::string> dns_aliases)
+    std::set<std::string> dns_aliases)
     : result_(HandshakeResult::HTTP2_INCOMPLETE),
       session_(session),
       connect_delegate_(connect_delegate),
@@ -248,7 +249,7 @@ HttpStream* WebSocketHttp2HandshakeStream::RenewStreamForAuth() {
   return nullptr;
 }
 
-const std::vector<std::string>& WebSocketHttp2HandshakeStream::GetDnsAliases()
+const std::set<std::string>& WebSocketHttp2HandshakeStream::GetDnsAliases()
     const {
   return dns_aliases_;
 }

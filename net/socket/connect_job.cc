@@ -4,6 +4,7 @@
 
 #include "net/socket/connect_job.h"
 
+#include <set>
 #include <utility>
 
 #include "base/trace_event/trace_event.h"
@@ -133,9 +134,8 @@ scoped_refptr<SSLCertRequestInfo> ConnectJob::GetCertRequestInfo() {
   return nullptr;
 }
 
-void ConnectJob::SetSocket(
-    std::unique_ptr<StreamSocket> socket,
-    absl::optional<std::vector<std::string>> dns_aliases) {
+void ConnectJob::SetSocket(std::unique_ptr<StreamSocket> socket,
+                           absl::optional<std::set<std::string>> dns_aliases) {
   if (socket) {
     net_log().AddEvent(NetLogEventType::CONNECT_JOB_SET_SOCKET);
     if (dns_aliases)

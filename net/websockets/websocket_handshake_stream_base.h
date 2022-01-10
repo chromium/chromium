@@ -10,6 +10,7 @@
 // this file must not introduce any link-time dependencies on websockets.
 
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -110,7 +111,7 @@ class NET_EXPORT WebSocketHandshakeStreamBase : public HttpStream {
     // has been opened.  This cannot be called more than once.
     virtual std::unique_ptr<WebSocketHandshakeStreamBase> CreateHttp2Stream(
         base::WeakPtr<SpdySession> session,
-        std::vector<std::string> dns_aliases) = 0;
+        std::set<std::string> dns_aliases) = 0;
   };
 
   // After the handshake has completed, this method creates a WebSocketStream

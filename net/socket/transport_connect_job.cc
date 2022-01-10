@@ -13,6 +13,7 @@
 #include "base/compiler_specific.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/stl_util.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/trace_event.h"
@@ -400,7 +401,8 @@ int TransportConnectJob::DoTransportConnectComplete(int result) {
     HistogramDuration(connect_timing_, race_result);
 
     DCHECK(request_);
-    SetSocket(std::move(transport_socket_), request_->GetDnsAliasResults());
+    SetSocket(std::move(transport_socket_),
+              base::OptionalFromPtr(request_->GetDnsAliasResults()));
   } else {
     // Failure will be returned via |GetAdditionalErrorState|, so save
     // connection attempts from both sockets for use there.
@@ -480,7 +482,7 @@ void TransportConnectJob::DoIPv6FallbackTransportConnectComplete(int result) {
     HistogramDuration(connect_timing_, RACE_IPV4_WINS);
     DCHECK(request_);
     SetSocket(std::move(fallback_transport_socket_),
-              request_->GetDnsAliasResults());
+              base::OptionalFromPtr(request_->GetDnsAliasResults()));
     next_state_ = STATE_NONE;
   } else {
     // Failure will be returned via |GetAdditionalErrorState|, so save

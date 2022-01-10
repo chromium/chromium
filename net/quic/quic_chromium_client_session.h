@@ -288,9 +288,10 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
     bool WasEverUsed() const;
 
     // Retrieves any DNS aliases for the given session key from the map stored
-    // in `stream_factory_`. The alias chain order is preserved in reverse, from
-    // canonical name (i.e. address record name) through to query name.
-    const std::vector<std::string>& GetDnsAliasesForSessionKey(
+    // in `stream_factory_`. Includes all known aliases, e.g. from A, AAAA, or
+    // HTTPS, not just from the address used for the connection, in no
+    // particular order.
+    const std::set<std::string>& GetDnsAliasesForSessionKey(
         const QuicSessionKey& key) const;
 
    private:
@@ -868,9 +869,10 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   bool require_confirmation() const { return require_confirmation_; }
 
   // Retrieves any DNS aliases for the given session key from the map stored
-  // in `stream_factory_`. The alias chain order is preserved in reverse, from
-  // canonical name (i.e. address record name) through to query name.
-  const std::vector<std::string>& GetDnsAliasesForSessionKey(
+  // in `stream_factory_`. Includes all known aliases, e.g. from A, AAAA, or
+  // HTTPS, not just from the address used for the connection, in no particular
+  // order.
+  const std::set<std::string>& GetDnsAliasesForSessionKey(
       const QuicSessionKey& key) const;
 
  protected:

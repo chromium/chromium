@@ -10,6 +10,7 @@
 
 #include <stddef.h>
 
+#include <set>
 #include <string>
 #include <vector>
 
@@ -252,12 +253,12 @@ TEST_F(TCPClientSocketTest, DnsAliasesPersistForReuse) {
   EXPECT_TRUE(socket.GetDnsAliases().empty());
 
   // Set the aliases.
-  std::vector<std::string> dns_aliases({"alias1", "alias2", "host"});
+  std::set<std::string> dns_aliases({"alias1", "alias2", "host"});
   socket.SetDnsAliases(dns_aliases);
 
   // Verify that the aliases are set.
   EXPECT_THAT(socket.GetDnsAliases(),
-              testing::ElementsAre("alias1", "alias2", "host"));
+              testing::UnorderedElementsAre("alias1", "alias2", "host"));
 
   // Connect the socket.
   TestCompletionCallback connect_callback;

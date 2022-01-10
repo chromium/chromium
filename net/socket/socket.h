@@ -7,8 +7,8 @@
 
 #include <stdint.h>
 
+#include <set>
 #include <string>
-#include <vector>
 
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
@@ -88,15 +88,13 @@ class NET_EXPORT Socket {
 
   // DNS aliases must be stored in sockets in case of socket reuse.
   // Sets the field storing the aliases. Empty if using a proxy.
-  // The alias chain order is preserved in reverse, from canonical name (i.e.
-  // address record name) through to query name.
-  virtual void SetDnsAliases(std::vector<std::string> aliases);
+  virtual void SetDnsAliases(std::set<std::string> aliases);
 
   // Retrieves any DNS aliases for the socket's remote endpoint.
-  virtual const std::vector<std::string>& GetDnsAliases() const;
+  virtual const std::set<std::string>& GetDnsAliases() const;
 
  protected:
-  std::vector<std::string> dns_aliases_;
+  std::set<std::string> dns_aliases_;
 };
 
 }  // namespace net

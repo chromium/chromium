@@ -21,6 +21,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/stl_util.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -213,10 +214,9 @@ class MockHostResolverBase::RequestImpl
     return *nullopt_result;
   }
 
-  const absl::optional<std::vector<std::string>>& GetDnsAliasResults()
-      const override {
+  const std::set<std::string>* GetDnsAliasResults() const override {
     DCHECK(complete_);
-    return sanitized_dns_alias_results_;
+    return base::OptionalOrNullptr(fixed_up_dns_alias_results_);
   }
 
   net::ResolveErrorInfo GetResolveErrorInfo() const override {
@@ -264,8 +264,9 @@ class MockHostResolverBase::RequestImpl
 
     SetError(OK);
 
-    sanitized_dns_alias_results_ =
-        dns_alias_utility::SanitizeDnsAliases(address_results_->dns_aliases());
+    fixed_up_dns_alias_results_ = dns_alias_utility::FixUpDnsAliases(
+        std::set<std::string>(address_results_->dns_aliases().begin(),
+                              address_results_->dns_aliases().end()));
     staleness_ = std::move(staleness);
 
     endpoint_results_ = AddressListToEndpointResults(address_results_.value());
@@ -367,7 +368,7 @@ class MockHostResolverBase::RequestImpl
 
   absl::optional<AddressList> address_results_;
   absl::optional<std::vector<HostResolverEndpointResult>> endpoint_results_;
-  absl::optional<std::vector<std::string>> sanitized_dns_alias_results_;
+  absl::optional<std::set<std::string>> fixed_up_dns_alias_results_;
   absl::optional<HostCache::EntryStaleness> staleness_;
   ResolveErrorInfo resolve_error_info_;
 
@@ -634,6 +635,17 @@ void MockHostResolverBase::RuleResolver::AddIPLiteralRuleWithDnsAliases(
   CHECK_EQ(ParseAddressList(ip_literal, dns_aliases, &results), OK);
 
   AddRule(hostname_pattern, std::move(results));
+}
+
+void MockHostResolverBase::RuleResolver::AddIPLiteralRuleWithDnsAliases(
+    base::StringPiece hostname_pattern,
+    base::StringPiece ip_literal,
+    std::set<std::string> dns_aliases) {
+  std::vector<std::string> aliases_vector;
+  base::ranges::move(dns_aliases, std::back_inserter(aliases_vector));
+
+  AddIPLiteralRuleWithDnsAliases(hostname_pattern, ip_literal,
+                                 std::move(aliases_vector));
 }
 
 void MockHostResolverBase::RuleResolver::AddSimulatedFailure(
@@ -1422,8 +1434,7 @@ class HangingHostResolver::RequestImpl
     IMMEDIATE_CRASH();
   }
 
-  const absl::optional<std::vector<std::string>>& GetDnsAliasResults()
-      const override {
+  const std::set<std::string>* GetDnsAliasResults() const override {
     IMMEDIATE_CRASH();
   }
 

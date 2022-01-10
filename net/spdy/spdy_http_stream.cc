@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <list>
+#include <set>
 #include <string>
 #include <utility>
 
@@ -102,7 +103,7 @@ const size_t SpdyHttpStream::kRequestBodyBufferSize = kMaxSpdyFrameChunkSize;
 SpdyHttpStream::SpdyHttpStream(const base::WeakPtr<SpdySession>& spdy_session,
                                spdy::SpdyStreamId pushed_stream_id,
                                NetLogSource source_dependency,
-                               std::vector<std::string> dns_aliases)
+                               std::set<std::string> dns_aliases)
     : MultiplexedHttpStream(
           std::make_unique<MultiplexedSessionHandle>(spdy_session)),
       spdy_session_(spdy_session),
@@ -711,7 +712,7 @@ void SpdyHttpStream::SetPriority(RequestPriority priority) {
   }
 }
 
-const std::vector<std::string>& SpdyHttpStream::GetDnsAliases() const {
+const std::set<std::string>& SpdyHttpStream::GetDnsAliases() const {
   return dns_aliases_;
 }
 

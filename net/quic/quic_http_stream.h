@@ -9,8 +9,8 @@
 #include <stdint.h>
 
 #include <list>
+#include <set>
 #include <string>
-#include <vector>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
@@ -43,7 +43,7 @@ class NET_EXPORT_PRIVATE QuicHttpStream : public MultiplexedHttpStream {
  public:
   explicit QuicHttpStream(
       std::unique_ptr<QuicChromiumClientSession::Handle> session,
-      std::vector<std::string> dns_aliases);
+      std::set<std::string> dns_aliases);
 
   QuicHttpStream(const QuicHttpStream&) = delete;
   QuicHttpStream& operator=(const QuicHttpStream&) = delete;
@@ -74,7 +74,7 @@ class NET_EXPORT_PRIVATE QuicHttpStream : public MultiplexedHttpStream {
   void PopulateNetErrorDetails(NetErrorDetails* details) override;
   void SetPriority(RequestPriority priority) override;
   void SetRequestIdempotency(Idempotency idempotency) override;
-  const std::vector<std::string>& GetDnsAliases() const override;
+  const std::set<std::string>& GetDnsAliases() const override;
   base::StringPiece GetAcceptChViaAlps() const override;
 
   static HttpResponseInfo::ConnectionInfo ConnectionInfoFromQuicVersion(
@@ -228,11 +228,11 @@ class NET_EXPORT_PRIVATE QuicHttpStream : public MultiplexedHttpStream {
   // Session connect timing info.
   LoadTimingInfo::ConnectTiming connect_timing_;
 
-  // Stores any DNS aliases for the remote endpoint. The alias chain is
-  // preserved in reverse order, from canonical name (i.e. address record name)
-  // through to query name. These are stored in the stream instead of the
-  // session due to complications related to IP-pooling.
-  std::vector<std::string> dns_aliases_;
+  // Stores any DNS aliases for the remote endpoint. Includes all known
+  // aliases, e.g. from A, AAAA, or HTTPS, not just from the address used for
+  // the connection, in no particular order. These are stored in the stream
+  // instead of the session due to complications related to IP-pooling.
+  std::set<std::string> dns_aliases_;
 
   base::WeakPtrFactory<QuicHttpStream> weak_factory_{this};
 };

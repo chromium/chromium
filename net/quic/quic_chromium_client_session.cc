@@ -5,6 +5,7 @@
 #include "net/quic/quic_chromium_client_session.h"
 
 #include <memory>
+#include <set>
 #include <utility>
 
 #include "base/bind.h"
@@ -579,12 +580,12 @@ bool QuicChromiumClientSession::Handle::WasEverUsed() const {
   return session_->WasConnectionEverUsed();
 }
 
-const std::vector<std::string>&
+const std::set<std::string>&
 QuicChromiumClientSession::Handle::GetDnsAliasesForSessionKey(
     const QuicSessionKey& key) const {
-  static const base::NoDestructor<std::vector<std::string>> emptyvector_result;
+  static const base::NoDestructor<std::set<std::string>> emptyset_result;
   return session_ ? session_->GetDnsAliasesForSessionKey(key)
-                  : *emptyvector_result;
+                  : *emptyset_result;
 }
 
 bool QuicChromiumClientSession::Handle::CheckVary(
@@ -3797,12 +3798,12 @@ quic::QuicClientPromisedInfo* QuicChromiumClientSession::GetPromised(
   return push_promise_index_->GetPromised(url.spec());
 }
 
-const std::vector<std::string>&
+const std::set<std::string>&
 QuicChromiumClientSession::GetDnsAliasesForSessionKey(
     const QuicSessionKey& key) const {
-  static const base::NoDestructor<std::vector<std::string>> emptyvector_result;
+  static const base::NoDestructor<std::set<std::string>> emptyset_result;
   return stream_factory_ ? stream_factory_->GetDnsAliasesForSessionKey(key)
-                         : *emptyvector_result;
+                         : *emptyset_result;
 }
 
 bool QuicChromiumClientSession::ValidateStatelessReset(

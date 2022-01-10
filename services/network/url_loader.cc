@@ -173,8 +173,8 @@ void PopulateResourceResponse(net::URLRequest* request,
   response->auth_challenge_info = request->auth_challenge_info();
   response->has_range_requested = request->extra_request_headers().HasHeader(
       net::HttpRequestHeaders::kRange);
-  response->dns_aliases = request->response_info().dns_aliases;
-
+  base::ranges::copy(request->response_info().dns_aliases,
+                     std::back_inserter(response->dns_aliases));
   // [spec]: https://fetch.spec.whatwg.org/#http-network-or-cache-fetch
   // 13. Set response’s request-includes-credentials to includeCredentials.
   response->request_include_credentials = request->allow_credentials();

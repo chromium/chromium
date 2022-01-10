@@ -4,8 +4,9 @@
 
 #include "net/socket/websocket_transport_connect_sub_job.h"
 
+#include <set>
 #include <string>
-#include <vector>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/check_op.h"
@@ -63,10 +64,10 @@ class WebSocketStreamSocket final : public StreamSocket {
   int SetSendBufferSize(int32_t size) override {
     return wrapped_socket_->SetSendBufferSize(size);
   }
-  void SetDnsAliases(std::vector<std::string> aliases) override {
-    wrapped_socket_->SetDnsAliases(aliases);
+  void SetDnsAliases(std::set<std::string> aliases) override {
+    wrapped_socket_->SetDnsAliases(std::move(aliases));
   }
-  const std::vector<std::string>& GetDnsAliases() const override {
+  const std::set<std::string>& GetDnsAliases() const override {
     return wrapped_socket_->GetDnsAliases();
   }
 

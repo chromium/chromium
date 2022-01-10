@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <set>
 #include <utility>
 #include <vector>
 
@@ -702,7 +703,7 @@ class FakeWebSocketHandshakeStreamCreateHelper
   }
   std::unique_ptr<WebSocketHandshakeStreamBase> CreateHttp2Stream(
       base::WeakPtr<SpdySession> session,
-      std::vector<std::string> dns_aliases) override {
+      std::set<std::string> dns_aliases) override {
     NOTREACHED();
     return nullptr;
   }

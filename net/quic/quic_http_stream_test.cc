@@ -442,11 +442,11 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
     stream_ = std::make_unique<QuicHttpStream>(
         session_->CreateHandle(
             url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443)),
-        std::vector<std::string>() /* dns_aliases */);
+        /*dns_aliases=*/std::set<std::string>());
     promised_stream_ = std::make_unique<QuicHttpStream>(
         session_->CreateHandle(
             url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443)),
-        std::vector<std::string>() /* dns_aliases */);
+        /*dns_aliases=*/std::set<std::string>());
     push_promise_[":path"] = "/bar";
     push_promise_[":authority"] = "www.example.org";
     push_promise_[":version"] = "HTTP/1.1";
@@ -1055,7 +1055,7 @@ TEST_P(QuicHttpStreamTest, ElideHeadersInNetLog) {
   auto stream = std::make_unique<QuicHttpStream>(
       session_->CreateHandle(
           url::SchemeHostPort(url::kHttpsScheme, "www.example.org/foo", 443)),
-      std::vector<std::string>() /* dns_aliases */);
+      /*dns_aliases=*/std::set<std::string>());
   EXPECT_THAT(
       stream->InitializeStream(&request_, true, DEFAULT_PRIORITY,
                                net_log_with_source_, callback_.callback()),

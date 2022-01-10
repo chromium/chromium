@@ -6,8 +6,8 @@
 #define NET_SOCKET_SSL_CONNECT_JOB_H_
 
 #include <memory>
+#include <set>
 #include <string>
-#include <vector>
 
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
@@ -199,12 +199,12 @@ class NET_EXPORT_PRIVATE SSLConnectJob : public ConnectJob,
   // through an HTTPS CONNECT request or a SOCKS proxy).
   IPEndPoint server_address_;
 
-  // Any DNS aliases for the remote endpoint. The alias chain order is
-  // preserved in reverse, from canonical name (i.e. address record name)
-  // through to query name. Stored because `nested_connect_job_` has a
-  // limited lifetime and the aliases can no longer be retrieved from there by
-  // by the time that the aliases are needed to be passed in SetSocket.
-  std::vector<std::string> dns_aliases_;
+  // Any DNS aliases for the remote endpoint. Includes all known aliases, e.g.
+  // from A, AAAA, or HTTPS, not just from the address used for the connection,
+  // in no particular order. Stored because `nested_connect_job_` has a limited
+  // lifetime and the aliases can no longer be retrieved from there by by the
+  // time that the aliases are needed to be passed in SetSocket.
+  std::set<std::string> dns_aliases_;
 };
 
 }  // namespace net

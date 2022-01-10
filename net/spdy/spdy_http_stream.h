@@ -9,6 +9,7 @@
 
 #include <list>
 #include <memory>
+#include <set>
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
@@ -41,7 +42,7 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
   SpdyHttpStream(const base::WeakPtr<SpdySession>& spdy_session,
                  spdy::SpdyStreamId pushed_stream_id,
                  NetLogSource source_dependency,
-                 std::vector<std::string> dns_aliases);
+                 std::set<std::string> dns_aliases);
 
   SpdyHttpStream(const SpdyHttpStream&) = delete;
   SpdyHttpStream& operator=(const SpdyHttpStream&) = delete;
@@ -90,7 +91,7 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
   bool GetRemoteEndpoint(IPEndPoint* endpoint) override;
   void PopulateNetErrorDetails(NetErrorDetails* details) override;
   void SetPriority(RequestPriority priority) override;
-  const std::vector<std::string>& GetDnsAliases() const override;
+  const std::set<std::string>& GetDnsAliases() const override;
   base::StringPiece GetAcceptChViaAlps() const override;
 
   // SpdyStream::Delegate implementation.
@@ -222,11 +223,11 @@ class NET_EXPORT_PRIVATE SpdyHttpStream : public SpdyStream::Delegate,
 
   bool was_alpn_negotiated_;
 
-  // Stores any DNS aliases for the remote endpoint. The alias chain is
-  // preserved in reverse order, from canonical name (i.e. address record name)
-  // through to query name. These are stored in the stream instead of the
-  // session due to complications related to IP-pooling.
-  std::vector<std::string> dns_aliases_;
+  // Stores any DNS aliases for the remote endpoint. Includes all known aliases,
+  // e.g. from A, AAAA, or HTTPS, not just from the address used for the
+  // connection, in no particular order. These are stored in the stream instead
+  // of the session due to complications related to IP-pooling.
+  std::set<std::string> dns_aliases_;
 
   base::WeakPtrFactory<SpdyHttpStream> weak_factory_{this};
 };

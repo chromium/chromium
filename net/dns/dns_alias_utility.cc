@@ -48,25 +48,18 @@ bool IsValidAliasWithCanonicalOutput(const std::string& alias,
 
 namespace dns_alias_utility {
 
-std::vector<std::string> SanitizeDnsAliases(
-    const std::vector<std::string>& aliases) {
-  std::vector<std::string> sanitized_aliases;
-  std::unordered_set<std::string> aliases_seen;
+std::set<std::string> FixUpDnsAliases(const std::set<std::string>& aliases) {
+  std::set<std::string> fixed_aliases;
 
   for (const auto& alias : aliases) {
     std::string canonicalized_alias;
 
     if (IsValidAliasWithCanonicalOutput(alias, &canonicalized_alias)) {
-      // Skip adding any duplicate aliases.
-      if (aliases_seen.find(canonicalized_alias) != aliases_seen.end())
-        continue;
-
-      aliases_seen.insert(canonicalized_alias);
-      sanitized_aliases.push_back(std::move(canonicalized_alias));
+      fixed_aliases.insert(std::move(canonicalized_alias));
     }
   }
 
-  return sanitized_aliases;
+  return fixed_aliases;
 }
 
 }  // namespace dns_alias_utility

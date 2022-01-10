@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -54,7 +55,7 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
       std::vector<std::string> requested_sub_protocols,
       std::vector<std::string> requested_extensions,
       WebSocketStreamRequestAPI* request,
-      std::vector<std::string> dns_aliases);
+      std::set<std::string> dns_aliases);
 
   WebSocketHttp2HandshakeStream(const WebSocketHttp2HandshakeStream&) = delete;
   WebSocketHttp2HandshakeStream& operator=(
@@ -92,7 +93,7 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
   void SetPriority(RequestPriority priority) override;
   void PopulateNetErrorDetails(NetErrorDetails* details) override;
   HttpStream* RenewStreamForAuth() override;
-  const std::vector<std::string>& GetDnsAliases() const override;
+  const std::set<std::string>& GetDnsAliases() const override;
   base::StringPiece GetAcceptChViaAlps() const override;
 
   // WebSocketHandshakeStreamBase methods.
@@ -193,11 +194,11 @@ class NET_EXPORT_PRIVATE WebSocketHttp2HandshakeStream
   // to avoid including extension-related header files here.
   std::unique_ptr<WebSocketExtensionParams> extension_params_;
 
-  // Stores any DNS aliases for the remote endpoint. The alias chain is
-  // preserved in reverse order, from canonical name (i.e. address record name)
-  // through to query name. These are stored in the stream instead of the
-  // session due to complications related to IP-pooling.
-  std::vector<std::string> dns_aliases_;
+  // Stores any DNS aliases for the remote endpoint. Includes all known aliases,
+  // e.g. from A, AAAA, or HTTPS, not just from the address used for the
+  // connection, in no particular order. These are stored in the stream instead
+  // of the session due to complications related to IP-pooling.
+  std::set<std::string> dns_aliases_;
 
   base::WeakPtrFactory<WebSocketHttp2HandshakeStream> weak_ptr_factory_{this};
 };

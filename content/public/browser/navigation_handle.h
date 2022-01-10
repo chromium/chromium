@@ -448,9 +448,9 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // IsRendererInitiated() returns true.
   virtual const absl::optional<url::Origin>& GetInitiatorOrigin() = 0;
 
-  // Retrieves any DNS aliases for the requested URL. The alias chain order
-  // is preserved in reverse, from canonical name (i.e. address record name)
-  // through to query name.
+  // Retrieves any DNS aliases for the requested URL. Includes all known
+  // aliases, e.g. from A, AAAA, or HTTPS, not just from the address used for
+  // the connection, in no particular order.
   virtual const std::vector<std::string>& GetDnsAliases() = 0;
 
   // Whether the new document will be hosted in the same process as the current

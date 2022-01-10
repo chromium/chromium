@@ -389,7 +389,7 @@ HttpStream* WebSocketBasicHandshakeStream::RenewStreamForAuth() {
   return handshake_stream.release();
 }
 
-const std::vector<std::string>& WebSocketBasicHandshakeStream::GetDnsAliases()
+const std::set<std::string>& WebSocketBasicHandshakeStream::GetDnsAliases()
     const {
   return state_.GetDnsAliases();
 }

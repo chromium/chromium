@@ -4,6 +4,7 @@
 
 #include "net/dns/host_resolver.h"
 
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -69,11 +70,8 @@ class FailingRequestImpl : public HostResolver::ResolveHostRequest,
     return *nullopt_result;
   }
 
-  const absl::optional<std::vector<std::string>>& GetDnsAliasResults()
-      const override {
-    static const base::NoDestructor<absl::optional<std::vector<std::string>>>
-        nullopt_result;
-    return *nullopt_result;
+  const std::set<std::string>* GetDnsAliasResults() const override {
+    return nullptr;
   }
 
   ResolveErrorInfo GetResolveErrorInfo() const override {

@@ -4,6 +4,7 @@
 
 #include "net/websockets/websocket_basic_handshake_stream.h"
 
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -103,16 +104,18 @@ TEST(WebSocketBasicHandshakeStreamTest, DnsAliasesCanBeAccessed) {
   const int connect_result = socket->Connect(CompletionOnceCallback());
   EXPECT_EQ(connect_result, OK);
 
-  std::vector<std::string> aliases({"alias1", "alias2", "www.example.org"});
+  std::set<std::string> aliases({"alias1", "alias2", "www.example.org"});
   socket->SetDnsAliases(aliases);
-  EXPECT_THAT(socket->GetDnsAliases(),
-              testing::ElementsAre("alias1", "alias2", "www.example.org"));
+  EXPECT_THAT(
+      socket->GetDnsAliases(),
+      testing::UnorderedElementsAre("alias1", "alias2", "www.example.org"));
 
   const MockTCPClientSocket* const socket_ptr = socket.get();
   auto handle = std::make_unique<ClientSocketHandle>();
   handle->SetSocket(std::move(socket));
-  EXPECT_THAT(handle->socket()->GetDnsAliases(),
-              testing::ElementsAre("alias1", "alias2", "www.example.org"));
+  EXPECT_THAT(
+      handle->socket()->GetDnsAliases(),
+      testing::UnorderedElementsAre("alias1", "alias2", "www.example.org"));
 
   DummyConnectDelegate delegate;
   WebSocketEndpointLockManager endpoint_lock_manager;

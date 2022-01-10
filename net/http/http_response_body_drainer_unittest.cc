@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <cstring>
+#include <set>
 #include <utility>
 
 #include "base/bind.h"
@@ -149,9 +150,9 @@ class MockHttpStream : public HttpStream {
 
   void SetPriority(RequestPriority priority) override {}
 
-  const std::vector<std::string>& GetDnsAliases() const override {
-    static const base::NoDestructor<std::vector<std::string>> nullvector_result;
-    return *nullvector_result;
+  const std::set<std::string>& GetDnsAliases() const override {
+    static const base::NoDestructor<std::set<std::string>> nullset_result;
+    return *nullset_result;
   }
 
   base::StringPiece GetAcceptChViaAlps() const override { return {}; }

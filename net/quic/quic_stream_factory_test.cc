@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <ostream>
+#include <set>
 #include <utility>
 
 #include "base/bind.h"
@@ -312,7 +313,7 @@ class QuicStreamFactoryTestBase : public WithTaskEnvironment {
     if (!session || !session->IsConnected())
       return nullptr;
 
-    std::vector<std::string> dns_aliases =
+    std::set<std::string> dns_aliases =
         session->GetDnsAliasesForSessionKey(request->session_key());
     return std::make_unique<QuicHttpStream>(std::move(session),
                                             std::move(dns_aliases));
@@ -15354,11 +15355,21 @@ struct DnsAliasPoolingTestParams {
   quic::ParsedQuicVersion version;
   bool client_headers_include_h2_stream_dependency;
   bool use_dns_aliases;
-  std::vector<std::string> dns_aliases1;
-  std::vector<std::string> dns_aliases2;
-  std::vector<std::string> expected_dns_aliases1;
-  std::vector<std::string> expected_dns_aliases2;
+  std::set<std::string> dns_aliases1;
+  std::set<std::string> dns_aliases2;
+  std::set<std::string> expected_dns_aliases1;
+  std::set<std::string> expected_dns_aliases2;
 };
+
+std::string PrintToString(const std::set<std::string>& set) {
+  std::string joined;
+  for (const std::string& str : set) {
+    if (!joined.empty())
+      joined += "_";
+    joined += str;
+  }
+  return joined;
+}
 
 // Used by ::testing::PrintToStringParamName().
 std::string PrintToString(const DnsAliasPoolingTestParams& p) {
@@ -15366,8 +15377,7 @@ std::string PrintToString(const DnsAliasPoolingTestParams& p) {
       {ParsedQuicVersionToString(p.version), "_",
        (p.client_headers_include_h2_stream_dependency ? "" : "No"),
        "Dependency_", (p.use_dns_aliases ? "" : "DoNot"), "UseDnsAliases_1st_",
-       base::JoinString(p.dns_aliases1, "_"), "_2nd_",
-       base::JoinString(p.dns_aliases2, "_")});
+       PrintToString(p.dns_aliases1), "_2nd_", PrintToString(p.dns_aliases2)});
 }
 
 std::vector<DnsAliasPoolingTestParams> GetDnsAliasPoolingTestParams() {
@@ -15462,10 +15472,10 @@ class QuicStreamFactoryDnsAliasPoolingTest
         expected_dns_aliases2_(GetParam().expected_dns_aliases2) {}
 
   const bool use_dns_aliases_;
-  const std::vector<std::string> dns_aliases1_;
-  const std::vector<std::string> dns_aliases2_;
-  const std::vector<std::string> expected_dns_aliases1_;
-  const std::vector<std::string> expected_dns_aliases2_;
+  const std::set<std::string> dns_aliases1_;
+  const std::set<std::string> dns_aliases2_;
+  const std::set<std::string> expected_dns_aliases1_;
+  const std::set<std::string> expected_dns_aliases2_;
 };
 
 INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,

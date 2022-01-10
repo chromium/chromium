@@ -8,6 +8,7 @@
 #include <cmath>
 #include <limits>
 #include <memory>
+#include <set>
 #include <string>
 #include <tuple>
 #include <unordered_set>
@@ -758,8 +759,7 @@ class HostResolverManager::RequestImpl
     return results_ ? results_.value().hostnames() : *nullopt_result;
   }
 
-  const absl::optional<std::vector<std::string>>& GetDnsAliasResults()
-      const override {
+  const std::set<std::string>* GetDnsAliasResults() const override {
     DCHECK(complete_);
 
     // If `include_canonical_name` param was true, should only ever have at most
@@ -768,17 +768,19 @@ class HostResolverManager::RequestImpl
     if (parameters().include_canonical_name && fixed_up_dns_alias_results_) {
       DCHECK_LE(fixed_up_dns_alias_results_->size(), 1u);
       if (GetAddressResults()) {
-        DCHECK(GetAddressResults()->dns_aliases() ==
-               fixed_up_dns_alias_results_.value());
+        std::set<std::string> address_list_aliases_set(
+            GetAddressResults()->dns_aliases().begin(),
+            GetAddressResults()->dns_aliases().end());
+        DCHECK(address_list_aliases_set == fixed_up_dns_alias_results_.value());
         DCHECK_EQ(GetAddressResults()->GetCanonicalName(),
                   fixed_up_dns_alias_results_->empty()
                       ? ""
-                      : fixed_up_dns_alias_results_->front());
+                      : *fixed_up_dns_alias_results_->begin());
       }
     }
 #endif  // DCHECK_IS_ON()
 
-    return fixed_up_dns_alias_results_;
+    return base::OptionalOrNullptr(fixed_up_dns_alias_results_);
   }
 
   const absl::optional<std::vector<bool>>& GetExperimentalResultsForTesting()
@@ -900,16 +902,18 @@ class HostResolverManager::RequestImpl
       return;
     }
 
+    fixed_up_dns_alias_results_.emplace(
+        results_.value().addresses()->dns_aliases().begin(),
+        results_.value().addresses()->dns_aliases().end());
+
     // Skip fixups for `include_canonical_name` requests. Just use the
     // canonical name exactly as it was received from the system resolver.
     if (parameters().include_canonical_name) {
       DCHECK_LE(results_.value().addresses()->dns_aliases().size(), 1u);
-      fixed_up_dns_alias_results_ = results_.value().addresses()->dns_aliases();
-      return;
+    } else {
+      fixed_up_dns_alias_results_ = dns_alias_utility::FixUpDnsAliases(
+          fixed_up_dns_alias_results_.value());
     }
-
-    fixed_up_dns_alias_results_ = dns_alias_utility::SanitizeDnsAliases(
-        results_.value().addresses()->dns_aliases());
   }
 
  private:
@@ -979,7 +983,7 @@ class HostResolverManager::RequestImpl
   bool complete_;
   absl::optional<HostCache::Entry> results_;
   absl::optional<HostCache::EntryStaleness> stale_info_;
-  absl::optional<std::vector<std::string>> fixed_up_dns_alias_results_;
+  absl::optional<std::set<std::string>> fixed_up_dns_alias_results_;
   ResolveErrorInfo error_info_;
 
   const raw_ptr<const base::TickClock> tick_clock_;

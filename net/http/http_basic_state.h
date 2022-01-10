@@ -9,8 +9,8 @@
 #define NET_HTTP_HTTP_BASIC_STATE_H_
 
 #include <memory>
+#include <set>
 #include <string>
-#include <vector>
 
 #include "base/memory/ref_counted.h"
 #include "net/base/net_export.h"
@@ -70,10 +70,10 @@ class NET_EXPORT_PRIVATE HttpBasicState {
   // ClientSocketHandle::is_reused().
   bool IsConnectionReused() const;
 
-  // Retrieves any DNS aliases for the remote endpoint. The alias chain order
-  // is preserved in reverse, from canonical name (i.e. address record name)
-  // through to query name.
-  const std::vector<std::string>& GetDnsAliases() const;
+  // Retrieves any DNS aliases for the remote endpoint. Includes all known
+  // aliases, e.g. from A, AAAA, or HTTPS, not just from the address used for
+  // the connection, in no particular order.
+  const std::set<std::string>& GetDnsAliases() const;
 
  private:
   scoped_refptr<GrowableIOBuffer> read_buf_;

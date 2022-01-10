@@ -377,7 +377,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   }
 
   // Returns the stored DNS aliases for the session key.
-  const std::vector<std::string>& GetDnsAliasesForSessionKey(
+  const std::set<std::string>& GetDnsAliasesForSessionKey(
       const QuicSessionKey& key) const;
 
  private:
@@ -396,7 +396,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   using SessionPeerIPMap = std::map<QuicChromiumClientSession*, IPEndPoint>;
   using JobMap = std::map<QuicSessionKey, std::unique_ptr<Job>>;
   using DnsAliasesBySessionKeyMap =
-      std::map<QuicSessionKey, std::vector<std::string>>;
+      std::map<QuicSessionKey, std::set<std::string>>;
   using QuicCryptoClientConfigMap =
       std::map<NetworkIsolationKey,
                std::unique_ptr<QuicCryptoClientConfigOwner>>;
@@ -419,7 +419,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
                     NetworkChangeNotifier::NetworkHandle* network);
   void ActivateSession(const QuicSessionAliasKey& key,
                        QuicChromiumClientSession* session,
-                       std::vector<std::string> dns_aliases);
+                       std::set<std::string> dns_aliases);
   // Go away all active sessions. May disable session's connectivity monitoring
   // based on the |reason|.
   void MarkAllActiveSessionsGoingAway(AllActiveSessionsGoingAwayReason reason);
@@ -471,7 +471,7 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   // `key.session_key()` in `dns_aliases_by_session_key_`.
   void MapSessionToAliasKey(QuicChromiumClientSession* session,
                             const QuicSessionAliasKey& key,
-                            std::vector<std::string> dns_aliases);
+                            std::set<std::string> dns_aliases);
 
   // For all alias keys for `session` in `session_aliases_`, erase the
   // corresponding DNS aliases in `dns_aliases_by_session_key_`. Then erase

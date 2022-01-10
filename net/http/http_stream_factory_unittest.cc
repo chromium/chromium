@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <set>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -169,9 +170,9 @@ class MockWebSocketHandshakeStream : public WebSocketHandshakeStreamBase {
   void PopulateNetErrorDetails(NetErrorDetails* details) override { return; }
   void SetPriority(RequestPriority priority) override {}
   HttpStream* RenewStreamForAuth() override { return nullptr; }
-  const std::vector<std::string>& GetDnsAliases() const override {
-    static const base::NoDestructor<std::vector<std::string>> nullvector_result;
-    return *nullvector_result;
+  const std::set<std::string>& GetDnsAliases() const override {
+    static const base::NoDestructor<std::set<std::string>> nullset_result;
+    return *nullset_result;
   }
   base::StringPiece GetAcceptChViaAlps() const override { return {}; }
 
@@ -354,7 +355,7 @@ class WebSocketStreamCreateHelper
   }
   std::unique_ptr<WebSocketHandshakeStreamBase> CreateHttp2Stream(
       base::WeakPtr<SpdySession> session,
-      std::vector<std::string> dns_aliases) override {
+      std::set<std::string> dns_aliases) override {
     NOTREACHED();
     return nullptr;
   }
@@ -3144,8 +3145,8 @@ TEST_F(HttpStreamFactoryTest, MultiIPAliases) {
 TEST_F(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
   SpdySessionDependencies session_deps;
 
-  const std::vector<std::string> kDnsAliasesA({"alias1", "alias2"});
-  const std::vector<std::string> kDnsAliasesB({"b.com", "b.org", "b.net"});
+  const std::set<std::string> kDnsAliasesA({"alias1", "alias2"});
+  const std::set<std::string> kDnsAliasesB({"b.com", "b.org", "b.net"});
   const std::string kHostnameC("c.example.org");
 
   session_deps.host_resolver->rules()->AddIPLiteralRuleWithDnsAliases(
@@ -3153,7 +3154,7 @@ TEST_F(HttpStreamFactoryTest, SpdyIPPoolingWithDnsAliases) {
   session_deps.host_resolver->rules()->AddIPLiteralRuleWithDnsAliases(
       "b.example.org", "127.0.0.1", kDnsAliasesB);
   session_deps.host_resolver->rules()->AddIPLiteralRuleWithDnsAliases(
-      "c.example.org", "127.0.0.1", {});
+      "c.example.org", "127.0.0.1", /*dns_aliases=*/std::set<std::string>());
 
   // Prepare for an HTTPS connect.
   MockRead mock_read(SYNCHRONOUS, ERR_IO_PENDING);
@@ -3335,15 +3336,16 @@ TEST_P(HttpStreamFactoryBidirectionalQuicTest, QuicIPPoolingWithDnsAliases) {
   const GURL kUrlA("https://a.example.org");
   const GURL kUrlB("https://b.example.org");
   const GURL kUrlC("https://c.example.org");
-  const std::vector<std::string> kDnsAliasesA({"alias1", "alias2"});
-  const std::vector<std::string> kDnsAliasesB({"b.com", "b.org", "b.net"});
+  const std::set<std::string> kDnsAliasesA({"alias1", "alias2"});
+  const std::set<std::string> kDnsAliasesB({"b.com", "b.org", "b.net"});
 
   host_resolver()->rules()->AddIPLiteralRuleWithDnsAliases(
       kUrlA.host(), "127.0.0.1", kDnsAliasesA);
   host_resolver()->rules()->AddIPLiteralRuleWithDnsAliases(
       kUrlB.host(), "127.0.0.1", kDnsAliasesB);
-  host_resolver()->rules()->AddIPLiteralRuleWithDnsAliases(kUrlC.host(),
-                                                           "127.0.0.1", {});
+  host_resolver()->rules()->AddIPLiteralRuleWithDnsAliases(
+      kUrlC.host(), "127.0.0.1",
+      /*dns_aliases=*/std::set<std::string>());
 
   // Prepare mock QUIC data for a first session establishment.
   MockQuicData mock_quic_data(version());

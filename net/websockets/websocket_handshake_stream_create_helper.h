@@ -6,6 +6,7 @@
 #define NET_WEBSOCKETS_WEBSOCKET_HANDSHAKE_STREAM_CREATE_HELPER_H_
 
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -54,7 +55,7 @@ class NET_EXPORT_PRIVATE WebSocketHandshakeStreamCreateHelper
   // Creates a WebSocketHttp2HandshakeStream over an HTTP/2 connection.
   std::unique_ptr<WebSocketHandshakeStreamBase> CreateHttp2Stream(
       base::WeakPtr<SpdySession> session,
-      std::vector<std::string> dns_aliases) override;
+      std::set<std::string> dns_aliases) override;
 
  private:
   const raw_ptr<WebSocketStream::ConnectDelegate> connect_delegate_;

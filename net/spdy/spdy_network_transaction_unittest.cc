@@ -4151,7 +4151,7 @@ TEST_F(SpdyNetworkTransactionTest, SocketTagChangeSessionTagWithDnsAliases) {
                                      std::move(session_deps));
 
   GURL url = request_.url;
-  std::vector<std::string> dns_aliases({"alias1", "alias2", "alias3"});
+  std::set<std::string> dns_aliases({"alias1", "alias2", "alias3"});
   helper.session_deps()->host_resolver->rules()->AddIPLiteralRuleWithDnsAliases(
       url.host(), "127.0.0.1", dns_aliases);
 
@@ -4270,9 +4270,9 @@ TEST_F(SpdyNetworkTransactionTest,
   NormalSpdyTransactionHelper helper(request_, DEFAULT_PRIORITY, log_,
                                      std::move(session_deps));
   GURL url1 = request_.url;
-  std::vector<std::string> dns_aliases1({"alias1", "alias2", "alias3"});
+  std::set<std::string> dns_aliases1({"alias1", "alias2", "alias3"});
   GURL url2("https://example.test/");
-  std::vector<std::string> dns_aliases2({"example.net", "example.com"});
+  std::set<std::string> dns_aliases2({"example.net", "example.com"});
 
   helper.session_deps()->host_resolver->rules()->AddIPLiteralRuleWithDnsAliases(
       url1.host(), "127.0.0.1", dns_aliases1);

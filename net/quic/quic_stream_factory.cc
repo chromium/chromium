@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <set>
 #include <tuple>
 #include <utility>
 
@@ -20,6 +21,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -990,10 +992,10 @@ int QuicStreamFactory::Job::DoConfirmConnection(int rv) {
   }
   LogConnectionIpPooling(false);
 
-  std::vector<std::string> dns_aliases =
+  std::set<std::string> dns_aliases =
       use_dns_aliases_ && resolve_host_request_->GetDnsAliasResults()
-          ? resolve_host_request_->GetDnsAliasResults().value()
-          : std::vector<std::string>();
+          ? *resolve_host_request_->GetDnsAliasResults()
+          : std::set<std::string>();
   factory_->ActivateSession(key_, session_, std::move(dns_aliases));
 
   return OK;
@@ -1684,13 +1686,12 @@ base::TimeDelta QuicStreamFactory::GetTimeDelayForWaitingJob(
   return base::Microseconds(srtt);
 }
 
-const std::vector<std::string>& QuicStreamFactory::GetDnsAliasesForSessionKey(
+const std::set<std::string>& QuicStreamFactory::GetDnsAliasesForSessionKey(
     const QuicSessionKey& key) const {
   auto it = dns_aliases_by_session_key_.find(key);
 
   if (it == dns_aliases_by_session_key_.end()) {
-    static const base::NoDestructor<std::vector<std::string>>
-        emptyvector_result;
+    static const base::NoDestructor<std::set<std::string>> emptyvector_result;
     return *emptyvector_result;
   }
 
@@ -1712,10 +1713,13 @@ bool QuicStreamFactory::HasMatchingIpSession(const QuicSessionAliasKey& key,
         continue;
       active_sessions_[key.session_key()] = session;
 
-      std::vector<std::string> dns_aliases =
-          use_dns_aliases ? dns_alias_utility::SanitizeDnsAliases(
-                                address_list.dns_aliases())
-                          : std::vector<std::string>();
+      std::set<std::string> dns_aliases;
+      if (use_dns_aliases) {
+        base::ranges::copy(address_list.dns_aliases(),
+                           std::inserter(dns_aliases, dns_aliases.end()));
+        dns_aliases = dns_alias_utility::FixUpDnsAliases(dns_aliases);
+      }
+
       MapSessionToAliasKey(session, key, std::move(dns_aliases));
 
       return true;
@@ -1898,7 +1902,7 @@ int QuicStreamFactory::CreateSession(
 
 void QuicStreamFactory::ActivateSession(const QuicSessionAliasKey& key,
                                         QuicChromiumClientSession* session,
-                                        std::vector<std::string> dns_aliases) {
+                                        std::set<std::string> dns_aliases) {
   DCHECK(!HasActiveSession(key.session_key()));
   UMA_HISTOGRAM_COUNTS_1M("Net.QuicActiveSessions", active_sessions_.size());
   active_sessions_[key.session_key()] = session;
@@ -2150,7 +2154,7 @@ void QuicStreamFactory::ProcessGoingAwaySession(
 void QuicStreamFactory::MapSessionToAliasKey(
     QuicChromiumClientSession* session,
     const QuicSessionAliasKey& key,
-    std::vector<std::string> dns_aliases) {
+    std::set<std::string> dns_aliases) {
   session_aliases_[session].insert(key);
   dns_aliases_by_session_key_[key.session_key()] = std::move(dns_aliases);
 }

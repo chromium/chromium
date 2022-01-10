@@ -4,6 +4,7 @@
 
 #include "net/quic/quic_http_stream.h"
 
+#include <set>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -59,7 +60,7 @@ void NetLogQuicPushStream(const NetLogWithSource& net_log1,
 
 QuicHttpStream::QuicHttpStream(
     std::unique_ptr<QuicChromiumClientSession::Handle> session,
-    std::vector<std::string> dns_aliases)
+    std::set<std::string> dns_aliases)
     : MultiplexedHttpStream(std::move(session)),
       next_state_(STATE_NONE),
       stream_(nullptr),
@@ -438,7 +439,7 @@ void QuicHttpStream::OnReadResponseHeadersComplete(int rv) {
   }
 }
 
-const std::vector<std::string>& QuicHttpStream::GetDnsAliases() const {
+const std::set<std::string>& QuicHttpStream::GetDnsAliases() const {
   return dns_aliases_;
 }
 

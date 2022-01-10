@@ -9,6 +9,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -112,21 +113,20 @@ class NET_EXPORT HostResolver {
     GetHostnameResults() const = 0;
 
     // Any DNS record aliases, such as CNAME aliases, found as a result of an
-    // address query. The alias chain order is preserved in reverse, from
-    // canonical name (i.e. address record name) through to query name. Should
-    // only be called after Start() signals completion, either by invoking the
-    // callback or by returning a result other than `ERR_IO_PENDING`. Returns a
-    // list of aliases that has been fixed up and canonicalized (as URL
-    // hostnames), and thus may differ from the results stored directly in the
-    // AddressList.
+    // address query. Includes all known aliases, e.g. from A, AAAA, or HTTPS,
+    // not just from the address used for the connection, in no particular
+    // order. Should only be called after Start() signals completion, either by
+    // invoking the callback or by returning a result other than
+    // `ERR_IO_PENDING`. Returns a list of aliases that has been fixed up and
+    // canonicalized (as URL hostnames), and thus may differ from the results
+    // stored directly in the AddressList.
     //
     // If `ResolveHostParameters::include_canonical_name` was true, alias
     // results will always be the single "canonical name" received from the
-    // system resolver without URL hostname canonicalization (or an empty vector
-    // or `nullopt` in the unusual case that the system resolver did not give a
+    // system resolver without URL hostname canonicalization (or an empty set or
+    // `nullptr` in the unusual case that the system resolver did not give a
     // canonical name).
-    virtual const absl::optional<std::vector<std::string>>& GetDnsAliasResults()
-        const = 0;
+    virtual const std::set<std::string>* GetDnsAliasResults() const = 0;
 
     // Result of an experimental query. Meaning depends on the specific query
     // type, but each boolean value generally refers to a valid or invalid
