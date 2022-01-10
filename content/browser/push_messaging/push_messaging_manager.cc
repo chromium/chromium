@@ -193,8 +193,7 @@ void PushMessagingManager::Subscribe(
     return;
   }
 
-  url::Origin origin =
-      url::Origin::Create(service_worker_registration->scope());
+  const url::Origin& origin = service_worker_registration->key().origin();
 
   if (!ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessDataForOrigin(
           render_process_host_.GetID(), origin)) {
@@ -203,7 +202,7 @@ void PushMessagingManager::Subscribe(
     return;
   }
 
-  data.requesting_origin = std::move(origin);
+  data.requesting_origin = origin;
 
   DCHECK(!(data.options->application_server_key.empty() &&
            IsRequestFromDocument(render_frame_id_)));
@@ -505,8 +504,7 @@ void PushMessagingManager::Unsubscribe(int64_t service_worker_registration_id,
     return;
   }
 
-  url::Origin origin =
-      url::Origin::Create(service_worker_registration->scope());
+  const url::Origin& origin = service_worker_registration->key().origin();
 
   if (!ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessDataForOrigin(
           render_process_host_.GetID(), origin)) {
@@ -519,7 +517,7 @@ void PushMessagingManager::Unsubscribe(int64_t service_worker_registration_id,
       service_worker_registration_id, {kPushSenderIdServiceWorkerKey},
       base::BindOnce(&PushMessagingManager::UnsubscribeHavingGottenSenderId,
                      weak_factory_.GetWeakPtr(), std::move(callback),
-                     service_worker_registration_id, std::move(origin)));
+                     service_worker_registration_id, origin));
 }
 
 void PushMessagingManager::UnsubscribeHavingGottenSenderId(
@@ -598,10 +596,8 @@ void PushMessagingManager::GetSubscription(
       service_worker_context_->GetLiveRegistration(
           service_worker_registration_id);
   if (registration) {
-    url::Origin origin = url::Origin::Create(registration->scope());
-
     if (!ChildProcessSecurityPolicyImpl::GetInstance()->CanAccessDataForOrigin(
-            render_process_host_.GetID(), std::move(origin))) {
+            render_process_host_.GetID(), registration->key().origin())) {
       bad_message::ReceivedBadMessage(
           &render_process_host_,
           bad_message::PMM_GET_SUBSCRIPTION_INVALID_ORIGIN);
@@ -652,7 +648,7 @@ void PushMessagingManager::DidGetSubscription(
         break;
       }
 
-      const url::Origin origin = url::Origin::Create(registration->scope());
+      const url::Origin& origin = registration->key().origin();
 
       GetSubscriptionInfo(
           origin, service_worker_registration_id, application_server_key,
