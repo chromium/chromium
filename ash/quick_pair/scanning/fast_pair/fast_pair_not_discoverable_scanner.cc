@@ -219,9 +219,8 @@ void FastPairNotDiscoverableScanner::OnHandshakeComplete(
   device::BluetoothDevice* ble_device =
       adapter_->GetDevice(device->ble_address);
 
-  bool is_already_paired =
-      (classic_device ? classic_device->IsPaired() : false) ||
-      (ble_device && ble_device->IsPaired());
+  bool is_already_paired = (classic_device && classic_device->IsPaired()) ||
+                           (ble_device && ble_device->IsPaired());
 
   if (is_already_paired) {
     QP_LOG(INFO) << __func__ << ": Already paired with " << device;
