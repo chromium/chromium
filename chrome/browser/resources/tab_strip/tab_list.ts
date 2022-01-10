@@ -474,7 +474,7 @@ export class TabListElement extends CustomElement implements
     this.$<TabElement>('tabstrip-tab')!.focus();
   }
 
-  private updatePreviouslyActiveTabs(activeTabId: number) {
+  private updatePreviouslyActiveTabs_(activeTabId: number) {
     // There may be more than 1 TabElement marked as active if other events
     // have updated a Tab to have an active state. For example, if a
     // tab is created with an already active state, there may be 2 active
@@ -496,7 +496,7 @@ export class TabListElement extends CustomElement implements
     this.activatingTabId_ = undefined;
     this.activatingTabIdTimestamp_ = undefined;
 
-    this.updatePreviouslyActiveTabs(tabId);
+    this.updatePreviouslyActiveTabs_(tabId);
     const newlyActiveTab = this.findTabElement_(tabId);
     if (newlyActiveTab) {
       newlyActiveTab.tab =
@@ -555,7 +555,7 @@ export class TabListElement extends CustomElement implements
     this.placeTabElement(tabElement, tab.index, tab.pinned, tab.groupId);
     this.addAnimationPromise_(tabElement.slideIn());
     if (tab.active) {
-      this.updatePreviouslyActiveTabs(tab.id);
+      this.updatePreviouslyActiveTabs_(tab.id);
       this.scrollToTab_(tabElement);
     }
   }

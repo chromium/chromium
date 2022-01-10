@@ -421,6 +421,9 @@ bool TabStripPageHandler::PreHandleGestureEvent(
       if (!context_menu_after_tap_)
         page_->ShowContextMenu();
       return true;
+    case blink::WebInputEvent::Type::kGestureTwoFingerTap:
+      page_->ShowContextMenu();
+      return true;
     case blink::WebInputEvent::Type::kGestureLongTap:
       if (context_menu_after_tap_)
         page_->ShowContextMenu();
