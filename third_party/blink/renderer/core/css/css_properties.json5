@@ -753,15 +753,6 @@
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal", "ColorIncludingFallback"],
       interpolable: true,
       inherited: true,
-      // color isn't strictly independent of all other properties;
-      // it determines currentColor, which in turn can affect the used value of
-      // other properties (such as border colors, stops in gradients, etc.).
-      // However, changes to color generally also trigger paint invalidation,
-      // and paint invalidation resolves the color anew. (For the special case
-      // of gradient stops, we have logic within ComputedStyle::AdjustDiffForBackgroundVisuallyEqual
-      // that forces paint invalidation, recomputing the gradient and repainting
-      // the element.)
-      independent: true,
       field_group: "inherited",
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/css/style_color.h"],

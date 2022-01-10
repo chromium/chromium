@@ -6,7 +6,7 @@ onload = function() {
   var target = document.getElementById('target');
   target.style.color = 'green';
   if (window.internals) {
-    shouldBe('internals.updateStyleAndReturnAffectedElementCount()', '2');
+    shouldBe('internals.updateStyleAndReturnAffectedElementCount()', '3');
     shouldBe('internals.needsLayoutCount()', '0');
   }
 }
