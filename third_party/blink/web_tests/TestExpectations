@@ -7914,7 +7914,6 @@ crbug.com/1284572 [ Linux ] virtual/threaded/http/tests/devtools/isolated-code-c
 # Sheriff 2022-01-07
 crbug.com/1285348 [ Mac ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/hidpi/canvas-transform.https.html [ Failure Pass ]
 crbug.com/1285350 virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/parse-input-arguments-011.https.html [ Failure Pass ]
-crbug.com/1285373 [ Linux ] fast/multicol/dynamic/insert-block-before-spanner-before-content.html [ Crash Failure Pass ]
 crbug.com/1285426 [ Mac ] virtual/controls-refresh-hc/fast/forms/color-scheme/week-picker/week-picker-appearance-highlight-es.html [ Crash Pass ]
 crbug.com/1285438 fast/layers/clip-rects-transformed.html [ Failure Pass ]
 crbug.com/1285431 [ Mac ] virtual/backface-visibility-interop/compositing/overflow/transform-should-update-absolute-clip-rects.html [ Crash Failure Pass ]

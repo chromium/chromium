@@ -393,8 +393,12 @@ FragmentData* PrePaintTreeWalk::GetOrCreateFragmentData(
     fragment_id = 0;
 
   if (pre_paint_info.is_first_for_node) {
-    if (!allow_update)
+    if (allow_update) {
+      if (fragment_data->FragmentID() < fragment_id)
+        fragment_data->ClearNextFragment();
+    } else {
       DCHECK_EQ(fragment_data->FragmentID(), fragment_id);
+    }
   } else {
     FragmentData* last_fragment = nullptr;
     do {
