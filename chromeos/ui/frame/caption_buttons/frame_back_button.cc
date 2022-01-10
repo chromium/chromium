@@ -4,7 +4,8 @@
 
 #include "chromeos/ui/frame/caption_buttons/frame_back_button.h"
 
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -36,10 +37,10 @@ void FrameBackButton::ButtonPressed() {
   aura::Window* root_window = GetWidget()->GetNativeWindow()->GetRootWindow();
   ui::KeyEvent press_key_event(ui::ET_KEY_PRESSED, ui::VKEY_BROWSER_BACK,
                                ui::EF_NONE);
-  ignore_result(root_window->GetHost()->SendEventToSink(&press_key_event));
+  std::ignore = root_window->GetHost()->SendEventToSink(&press_key_event);
   ui::KeyEvent release_key_event(ui::ET_KEY_RELEASED, ui::VKEY_BROWSER_BACK,
                                  ui::EF_NONE);
-  ignore_result(root_window->GetHost()->SendEventToSink(&release_key_event));
+  std::ignore = root_window->GetHost()->SendEventToSink(&release_key_event);
 }
 
 }  // namespace chromeos
