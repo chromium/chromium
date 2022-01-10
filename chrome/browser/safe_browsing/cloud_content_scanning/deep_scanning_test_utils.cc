@@ -69,8 +69,8 @@ void EventReportValidator::ExpectUnscannedFileEvent(
 
 void EventReportValidator::ExpectUnscannedFileEvents(
     const std::string& expected_url,
-    const std::vector<const std::string>& expected_filenames,
-    const std::vector<const std::string>& expected_sha256s,
+    const std::vector<std::string>& expected_filenames,
+    const std::vector<std::string>& expected_sha256s,
     const std::string& expected_trigger,
     const std::string& expected_reason,
     const std::set<std::string>* expected_mimetypes,
@@ -165,8 +165,8 @@ void EventReportValidator::ExpectSensitiveDataEvent(
 
 void EventReportValidator::ExpectSensitiveDataEvents(
     const std::string& expected_url,
-    const std::vector<const std::string>& expected_filenames,
-    const std::vector<const std::string>& expected_sha256s,
+    const std::vector<std::string>& expected_filenames,
+    const std::vector<std::string>& expected_sha256s,
     const std::string& expected_trigger,
     const std::vector<enterprise_connectors::ContentAnalysisResponse::Result>&
         expected_dlp_verdicts,
