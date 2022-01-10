@@ -41,6 +41,10 @@ Chrome. Key concepts are explained briefly here:
   network. For example, a navigation may fail because hostname resolution fails,
   or because establishing a connection to the server fails, among other reasons.
 * There can be at most one committed load in a frame at any given time.
+* However, a committed load can be placed in the Back/Forward Cache (BFCache),
+  whereupon it is frozen, and another load can commit in the same frame, while
+  the original committed load is still 'live' (but frozen). Note that not every
+  page is eligible to be placed in the BFCache.
 * There is typically at most one provisional load in a frame at any given time,
   though there can be two provisional page loads in a frame in uncommon cases.
 
@@ -60,7 +64,9 @@ the following cases is encountered:
 
 * The hosting `WebContents` (a `WebContents` is essentially a browser tab) is destroyed
 * The navigation fails to commit
-* Another navigation in the frame commits and replaces the committed load, for page loads that committed (note: the documentation needs to be updated here for bfcache).
+* Another navigation in the frame commits and replaces the committed load, for page loads that committed, but are not eligible to enter the Back/Forward cache.
+* The page is placed in the Back/Forward Cache, and the `PageLoadMetricsObserver` in question responds to the resulting `OnEnterBackForwardCache` callback with `STOP_OBSERVING`.
+* The page is placed in the Back/Forward Cache, and is evicted without being restored.
 
 ### Example: `PageLoadMetricsObserver` lifetimes, for a WebContents with 3 page loads
 
@@ -145,6 +151,17 @@ Additionally, the following callbacks may be invoked during the lifetime of a
   * `OnUserInput` is invoked as user input events are received.
   * `OnLoadingBehaviorObserved` is invoked as certain page loading behaviors are
     observed. See the section on loading behaviors below for additional information.
+  * `OnEnterBackForwardCache` is invoked if the page will enter the Back/Forward
+    cache. Observers may return `STOP_OBSERVING` from this callback if they do
+    not wish to continue logging after a page has entered the BFCache, and this
+    is the default implementation for `PageLoadMetricsObserver` (it will also
+    call `OnComplete` at this time).
+  * `OnRestoreFromBackForwardCache` is invoked when the page is restored from
+    the Back/Forward cache. This callback is invoked with a `NavigationHandle`
+    which will have a different navigation ID to the original page load's.
+    Whether metrics should be logged using this new navigation ID, or the
+    original page load's ID, depends on the desired interpretation of the
+    metrics.
 
 ## Which page loads are tracked by `PageLoadMetricsObserver`s?
 
