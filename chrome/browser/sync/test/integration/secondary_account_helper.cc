@@ -45,7 +45,7 @@ base::CallbackListSubscription SetUpSigninClient(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void InitNetwork() {
-  auto* portal_detector = new chromeos::NetworkPortalDetectorTestImpl();
+  auto* portal_detector = new ash::NetworkPortalDetectorTestImpl();
 
   const chromeos::NetworkState* default_network =
       chromeos::NetworkHandler::Get()
@@ -56,7 +56,7 @@ void InitNetwork() {
 
   portal_detector->SetDetectionResultsForTesting(
       default_network->guid(),
-      chromeos::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204);
+      ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE, 204);
 
   // Takes ownership.
   chromeos::network_portal_detector::InitializeForTesting(portal_detector);

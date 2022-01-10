@@ -15,7 +15,7 @@
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 namespace {
@@ -28,8 +28,8 @@ using chromeos::network_config::mojom::ManagedPropertiesPtr;
 // and returns the result.
 class ArcPingRoutine : public NetworkDiagnosticsRoutine {
  public:
-  using RunArcHttpCallback =
-      mojom::NetworkDiagnosticsRoutines::RunArcPingCallback;
+  using RunArcHttpCallback = chromeos::network_diagnostics::mojom::
+      NetworkDiagnosticsRoutines::RunArcPingCallback;
 
   ArcPingRoutine();
   ArcPingRoutine(const ArcPingRoutine&) = delete;
@@ -37,7 +37,7 @@ class ArcPingRoutine : public NetworkDiagnosticsRoutine {
   ~ArcPingRoutine() override;
 
   // NetworkDiagnosticsRoutine:
-  mojom::RoutineType Type() override;
+  chromeos::network_diagnostics::mojom::RoutineType Type() override;
   void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
 
@@ -85,7 +85,7 @@ class ArcPingRoutine : public NetworkDiagnosticsRoutine {
 
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
-  std::vector<mojom::ArcPingProblem> problems_;
+  std::vector<chromeos::network_diagnostics::mojom::ArcPingProblem> problems_;
   std::vector<std::string> gateways_;
   std::vector<std::string> gateways_transport_names_;
   bool get_managed_properties_timeout_failure_ = false;
@@ -105,6 +105,6 @@ class ArcPingRoutine : public NetworkDiagnosticsRoutine {
 };
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  //  CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_ARC_PING_ROUTINE_H_

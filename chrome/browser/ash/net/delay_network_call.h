@@ -10,12 +10,10 @@
 #include "base/callback_forward.h"
 
 namespace base {
-
 class TimeDelta;
+}
 
-}  // namespace base
-
-namespace chromeos {
+namespace ash {
 
 // Default delay to be used as an argument to DelayNetworkCall().
 extern const unsigned kDefaultNetworkRetryDelayMS;
@@ -23,12 +21,6 @@ extern const unsigned kDefaultNetworkRetryDelayMS;
 // Delay callback until the network is connected or while on a captive portal.
 void DelayNetworkCall(base::TimeDelta retry, base::OnceClosure callback);
 
-}  // namespace chromeos
-
-// TODO(https://crbug.com/1164001): remove when moved to chrome/browser/ash/.
-namespace ash {
-using chromeos::DelayNetworkCall;
-using chromeos::kDefaultNetworkRetryDelayMS;
 }  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NET_DELAY_NETWORK_CALL_H_

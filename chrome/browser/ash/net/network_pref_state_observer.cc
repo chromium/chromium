@@ -15,7 +15,7 @@
 #include "chromeos/tpm/install_attributes.h"
 #include "content/public/browser/notification_service.h"
 
-namespace chromeos {
+namespace ash {
 
 NetworkPrefStateObserver::NetworkPrefStateObserver() {
   // Initialize NetworkHandler with device prefs only.
@@ -59,4 +59,4 @@ void NetworkPrefStateObserver::InitializeNetworkPrefServices(Profile* profile) {
       g_browser_process->local_state());
 }
 
-}  // namespace chromeos
+}  // namespace ash

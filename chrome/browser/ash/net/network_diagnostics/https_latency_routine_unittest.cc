@@ -19,9 +19,12 @@
 #include "services/network/test/test_network_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 namespace {
+
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace mojom = ::chromeos::network_diagnostics::mojom;
 
 const base::TimeDelta kNoProblemDelayMs = base::Milliseconds(100);
 const base::TimeDelta kHighLatencyDelayMs = base::Milliseconds(550);
@@ -383,4 +386,4 @@ TEST_F(HttpsLatencyRoutineTest, TestVeryHighLatency) {
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

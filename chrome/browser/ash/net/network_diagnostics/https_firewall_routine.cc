@@ -15,9 +15,12 @@
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 namespace {
+
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace mojom = ::chromeos::network_diagnostics::mojom;
 
 // Https port number.
 constexpr int kHttpsPort = 443;
@@ -160,4 +163,4 @@ std::unique_ptr<TlsProber> HttpsFirewallRoutine::CreateAndExecuteTlsProber(
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

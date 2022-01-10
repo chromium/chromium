@@ -263,10 +263,6 @@
 namespace ash {
 namespace {
 
-// TODO(https://crbug.com/1164001): remove after migrating to namespace ash.
-using ::chromeos::NetworkPortalDetectorImpl;
-namespace network_health = ::chromeos::network_health;
-
 void ChromeOSVersionCallback(const std::string& version) {
   base::SetLinuxDistro(std::string("CrOS ") + version);
 }

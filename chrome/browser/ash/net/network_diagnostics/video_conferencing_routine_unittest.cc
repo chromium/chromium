@@ -20,10 +20,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace mojom = ::chromeos::network_diagnostics::mojom;
 
 // Test implementation of UdpProber.
 class TestUdpProber final : public UdpProber {
@@ -521,4 +524,4 @@ TEST_F(VideoConferencingRoutineTest, TestTcpAndUdpAndMediaFailure) {
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

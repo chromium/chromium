@@ -12,7 +12,7 @@
 #include "net/dns/public/dns_config_overrides.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 HostResolver::ResolutionResult::ResolutionResult(
@@ -70,4 +70,4 @@ void HostResolver::OnMojoConnectionError() {
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

@@ -14,7 +14,7 @@
 #include "chrome/browser/ash/net/network_diagnostics/tls_prober.h"
 #include "net/base/host_port_pair.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 // Tests whether a firewall is blocking HTTP port 80.
@@ -45,7 +45,7 @@ class HttpFirewallRoutine : public NetworkDiagnosticsRoutine {
   ~HttpFirewallRoutine() override;
 
   // NetworkDiagnosticsRoutine:
-  mojom::RoutineType Type() override;
+  chromeos::network_diagnostics::mojom::RoutineType Type() override;
   void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
 
@@ -82,12 +82,13 @@ class HttpFirewallRoutine : public NetworkDiagnosticsRoutine {
   int tls_probe_failures_ = 0;
   int num_no_dns_failure_tls_probes_attempted_ = 0;
   std::unique_ptr<TlsProber> tls_prober_;
-  std::vector<mojom::HttpFirewallProblem> problems_;
+  std::vector<chromeos::network_diagnostics::mojom::HttpFirewallProblem>
+      problems_;
 
   base::WeakPtrFactory<HttpFirewallRoutine> weak_factory_{this};
 };
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_HTTP_FIREWALL_ROUTINE_H_

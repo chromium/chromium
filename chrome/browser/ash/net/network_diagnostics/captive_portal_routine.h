@@ -12,7 +12,7 @@
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 // Tests whether the internet connection is trapped behind a captive portal.
@@ -24,7 +24,7 @@ class CaptivePortalRoutine : public NetworkDiagnosticsRoutine {
   ~CaptivePortalRoutine() override;
 
   // NetworkDiagnosticsRoutine:
-  mojom::RoutineType Type() override;
+  chromeos::network_diagnostics::mojom::RoutineType Type() override;
   void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
 
@@ -35,17 +35,18 @@ class CaptivePortalRoutine : public NetworkDiagnosticsRoutine {
       std::vector<chromeos::network_config::mojom::NetworkStatePropertiesPtr>
           networks);
   void OnManagedPropertiesReceived(
-      network_config::mojom::ManagedPropertiesPtr managed_properties);
+      chromeos::network_config::mojom::ManagedPropertiesPtr managed_properties);
 
   bool no_active_networks_ = false;
   chromeos::network_config::mojom::PortalState portal_state_ =
       chromeos::network_config::mojom::PortalState::kUnknown;
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
-  std::vector<mojom::CaptivePortalProblem> problems_;
+  std::vector<chromeos::network_diagnostics::mojom::CaptivePortalProblem>
+      problems_;
 };
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_CAPTIVE_PORTAL_ROUTINE_H_

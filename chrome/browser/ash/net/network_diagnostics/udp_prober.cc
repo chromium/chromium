@@ -34,7 +34,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 // Implements the UdpProber class.
@@ -267,4 +267,4 @@ std::unique_ptr<UdpProber> UdpProber::Start(
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

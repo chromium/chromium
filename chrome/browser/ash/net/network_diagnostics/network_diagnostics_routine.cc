@@ -6,11 +6,12 @@
 
 #include "base/time/time.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 NetworkDiagnosticsRoutine::NetworkDiagnosticsRoutine() {
-  result_.verdict = mojom::RoutineVerdict::kNotRun;
+  result_.verdict =
+      chromeos::network_diagnostics::mojom::RoutineVerdict::kNotRun;
 }
 
 NetworkDiagnosticsRoutine::~NetworkDiagnosticsRoutine() = default;
@@ -36,4 +37,4 @@ void NetworkDiagnosticsRoutine::ExecuteCallback() {
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

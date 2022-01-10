@@ -12,7 +12,7 @@
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 // Tests whether the device is connected to a LAN. It is possible that the
@@ -28,7 +28,7 @@ class LanConnectivityRoutine : public NetworkDiagnosticsRoutine {
 
   // NetworkDiagnosticsRoutine:
   bool CanRun() override;
-  mojom::RoutineType Type() override;
+  chromeos::network_diagnostics::mojom::RoutineType Type() override;
   void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
 
@@ -41,10 +41,11 @@ class LanConnectivityRoutine : public NetworkDiagnosticsRoutine {
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
   bool lan_connected_ = false;
-  std::vector<mojom::LanConnectivityProblem> problems_;
+  std::vector<chromeos::network_diagnostics::mojom::LanConnectivityProblem>
+      problems_;
 };
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_LAN_CONNECTIVITY_ROUTINE_H_

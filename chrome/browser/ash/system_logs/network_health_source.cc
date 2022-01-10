@@ -174,10 +174,9 @@ std::string FormatNetworkDiagnosticResults(
 
 NetworkHealthSource::NetworkHealthSource(bool scrub)
     : SystemLogsSource("NetworkHealth"), scrub_(scrub) {
-  chromeos::network_health::NetworkHealthService::GetInstance()
-      ->BindHealthReceiver(
-          network_health_service_.BindNewPipeAndPassReceiver());
-  chromeos::network_health::NetworkHealthService::GetInstance()
+  ash::network_health::NetworkHealthService::GetInstance()->BindHealthReceiver(
+      network_health_service_.BindNewPipeAndPassReceiver());
+  ash::network_health::NetworkHealthService::GetInstance()
       ->BindDiagnosticsReceiver(
           network_diagnostics_service_.BindNewPipeAndPassReceiver());
 }

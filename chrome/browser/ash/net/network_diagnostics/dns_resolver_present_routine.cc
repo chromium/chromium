@@ -17,9 +17,13 @@
 #include "net/base/ip_address.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 namespace {
+
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace mojom = ::chromeos::network_diagnostics::mojom;
+namespace network_config = ::chromeos::network_config;
 
 // Filters the list of |name_servers| and returns those that are not
 // empty/default values.
@@ -171,4 +175,4 @@ void DnsResolverPresentRoutine::OnNetworkStateListReceived(
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

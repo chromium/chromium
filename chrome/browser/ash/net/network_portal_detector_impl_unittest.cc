@@ -44,13 +44,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-using testing::_;
-using testing::AnyNumber;
-using testing::Mock;
-
-namespace chromeos {
+namespace ash {
 
 namespace {
+
+using ::testing::_;
+using ::testing::AnyNumber;
+using ::testing::Mock;
 
 // Service path / guid for stub networks.
 const char kStubEthernet[] = "stub_ethernet";
@@ -917,4 +917,4 @@ TEST_F(NetworkPortalDetectorImplTest, RequestTimeouts2) {
   EXPECT_NE(State::STATE_IDLE, state());
 }
 
-}  // namespace chromeos
+}  // namespace ash

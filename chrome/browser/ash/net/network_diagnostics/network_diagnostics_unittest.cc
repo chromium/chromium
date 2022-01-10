@@ -32,10 +32,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace mojom = ::chromeos::network_diagnostics::mojom;
 
 // The IP v4 config path specified here must match the IP v4 config path
 // specified in NetworkStateTestHelper::ResetDevicesAndServices(), which itself
@@ -362,4 +365,4 @@ TEST_F(NetworkDiagnosticsTest, RunDnsResolverPresentReachability) {
 // TEST_F(NetworkDiagnosticsTest, DnsResolutionReachability) {}
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

@@ -11,10 +11,13 @@
 #include "net/dns/public/dns_protocol.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace mojom = ::chromeos::network_diagnostics::mojom;
 
 const int kNoProblemDelayMs = 100;
 const int kHighLatencyDelayMs = 450;
@@ -127,4 +130,4 @@ TEST_F(ArcDnsResolutionRoutineTest, TestVeryHighLatency) {
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

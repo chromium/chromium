@@ -12,15 +12,15 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_routine.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 // Performs HTTP GET requests from within ARC to a random set of URLs
 // and returns the result.
 class ArcHttpRoutine : public NetworkDiagnosticsRoutine {
  public:
-  using RunArcHttpCallback =
-      mojom::NetworkDiagnosticsRoutines::RunArcHttpCallback;
+  using RunArcHttpCallback = chromeos::network_diagnostics::mojom::
+      NetworkDiagnosticsRoutines::RunArcHttpCallback;
 
   ArcHttpRoutine();
   ArcHttpRoutine(const ArcHttpRoutine&) = delete;
@@ -28,7 +28,7 @@ class ArcHttpRoutine : public NetworkDiagnosticsRoutine {
   ~ArcHttpRoutine() override;
 
   // NetworkDiagnosticsRoutine:
-  mojom::RoutineType Type() override;
+  chromeos::network_diagnostics::mojom::RoutineType Type() override;
   void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
 
@@ -48,7 +48,7 @@ class ArcHttpRoutine : public NetworkDiagnosticsRoutine {
   void OnRequestComplete(arc::mojom::ArcHttpTestResultPtr result);
 
   std::vector<std::string> hostnames_to_request_http_;
-  std::vector<mojom::ArcHttpProblem> problems_;
+  std::vector<chromeos::network_diagnostics::mojom::ArcHttpProblem> problems_;
   bool successfully_requested_targets_ = true;
   bool failed_to_get_arc_service_manager_ = false;
   bool failed_to_get_net_instance_service_for_http_test_ = false;
@@ -58,6 +58,6 @@ class ArcHttpRoutine : public NetworkDiagnosticsRoutine {
 };
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  //  CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_ARC_HTTP_ROUTINE_H_

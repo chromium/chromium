@@ -23,7 +23,7 @@ class NetworkContext;
 }
 }  // namespace network
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 // Tests whether a DNS resolution can be completed successfully.
@@ -36,7 +36,7 @@ class DnsResolutionRoutine : public NetworkDiagnosticsRoutine,
   ~DnsResolutionRoutine() override;
 
   // NetworkDiagnosticsRoutine:
-  mojom::RoutineType Type() override;
+  chromeos::network_diagnostics::mojom::RoutineType Type() override;
   void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
 
@@ -68,12 +68,13 @@ class DnsResolutionRoutine : public NetworkDiagnosticsRoutine,
   int num_retries_ = kTotalNumRetries;
   bool resolved_address_received_ = false;
   net::AddressList resolved_addresses_;
-  std::vector<mojom::DnsResolutionProblem> problems_;
+  std::vector<chromeos::network_diagnostics::mojom::DnsResolutionProblem>
+      problems_;
   mojo::Receiver<network::mojom::ResolveHostClient> receiver_{this};
   mojo::Remote<network::mojom::HostResolver> host_resolver_;
 };
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_DNS_RESOLUTION_ROUTINE_H_

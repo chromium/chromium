@@ -28,7 +28,7 @@
 #include "services/network/test/test_network_context.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 namespace {
@@ -341,4 +341,4 @@ TEST_F(UdpProberWithFakeNetworkContextTest, ProbeTimeoutDuringUdpReceive) {
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

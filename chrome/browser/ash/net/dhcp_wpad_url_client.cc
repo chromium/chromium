@@ -10,11 +10,13 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
-namespace {
-GURL* g_pac_url_for_testing = nullptr;
-}
+namespace ash {
 
-namespace chromeos {
+namespace {
+
+GURL* g_pac_url_for_testing = nullptr;
+
+}
 
 void DhcpWpadUrlClient::GetPacUrl(GetPacUrlCallback callback) {
   if (g_pac_url_for_testing) {
@@ -57,4 +59,4 @@ void DhcpWpadUrlClient::SetPacUrlForTesting(const GURL& url) {
   g_pac_url_for_testing = new GURL(url);
 }
 
-}  // namespace chromeos
+}  // namespace ash

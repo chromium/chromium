@@ -10,7 +10,7 @@
 
 #include "base/logging.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_health {
 
 SignalStrengthTracker::SignalStrengthTracker() = default;
@@ -52,4 +52,4 @@ std::vector<uint8_t> SignalStrengthTracker::Samples() {
 }
 
 }  // namespace network_health
-}  // namespace chromeos
+}  // namespace ash

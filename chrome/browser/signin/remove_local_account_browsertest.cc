@@ -80,7 +80,7 @@ class RemoveLocalAccountTest : public MixinBasedInProcessBrowserTest {
     embedded_test_server_.StartAcceptingConnections();
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    // ChromeSigninClient uses chromeos::DelayNetworkCall() which requires
+    // `ChromeSigninClient` uses `ash::DelayNetworkCall()` which requires
     // simulating being online.
     network_portal_detector_.SimulateDefaultNetworkState(
         ash::NetworkPortalDetector::CAPTIVE_PORTAL_STATUS_ONLINE);

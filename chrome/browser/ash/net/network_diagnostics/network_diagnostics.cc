@@ -27,8 +27,11 @@
 #include "components/device_event_log/device_event_log.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
+
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace mojom = ::chromeos::network_diagnostics::mojom;
 
 NetworkDiagnostics::NetworkDiagnostics(
     chromeos::DebugDaemonClient* debug_daemon_client) {
@@ -170,4 +173,4 @@ void NetworkDiagnostics::HandleResult(
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

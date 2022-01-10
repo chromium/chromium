@@ -36,8 +36,8 @@ namespace {
 const char kDeviceUserHash[] = "";
 
 bool IsOwnershipTaken() {
-  return ash::DeviceSettingsService::Get()->GetOwnershipStatus() ==
-         ash::DeviceSettingsService::OwnershipStatus::OWNERSHIP_TAKEN;
+  return DeviceSettingsService::Get()->GetOwnershipStatus() ==
+         DeviceSettingsService::OwnershipStatus::OWNERSHIP_TAKEN;
 }
 
 bool IsDeviceEnterpriseEnrolled() {
@@ -314,9 +314,8 @@ std::string RollbackNetworkConfig::Exporter::SerializeNetworkConfigs() const {
   return serialized_config;
 }
 
-class RollbackNetworkConfig::Importer
-    : public ash::DeviceSettingsService::Observer,
-      public NetworkPolicyObserver {
+class RollbackNetworkConfig::Importer : public DeviceSettingsService::Observer,
+                                        public NetworkPolicyObserver {
  public:
   Importer();
   Importer(const Importer&) = delete;
@@ -351,15 +350,15 @@ class RollbackNetworkConfig::Importer
 };
 
 RollbackNetworkConfig::Importer::Importer() {
-  ash::DeviceSettingsService::Get()->AddObserver(this);
+  DeviceSettingsService::Get()->AddObserver(this);
   chromeos::NetworkHandler::Get()
       ->managed_network_configuration_handler()
       ->AddObserver(this);
 }
 
 RollbackNetworkConfig::Importer::~Importer() {
-  if (ash::DeviceSettingsService::Get()) {
-    ash::DeviceSettingsService::Get()->RemoveObserver(this);
+  if (DeviceSettingsService::Get()) {
+    DeviceSettingsService::Get()->RemoveObserver(this);
   }
   if (chromeos::NetworkHandler::Get()) {
     chromeos::NetworkHandler::Get()

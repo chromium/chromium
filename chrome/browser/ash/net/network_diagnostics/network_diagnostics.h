@@ -17,10 +17,13 @@
 
 namespace chromeos {
 class DebugDaemonClient;
+}
 
+namespace ash {
 namespace network_diagnostics {
 
-class NetworkDiagnostics : public mojom::NetworkDiagnosticsRoutines {
+class NetworkDiagnostics
+    : public chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines {
  public:
   explicit NetworkDiagnostics(chromeos::DebugDaemonClient* debug_daemon_client);
   NetworkDiagnostics(const NetworkDiagnostics&) = delete;
@@ -29,10 +32,12 @@ class NetworkDiagnostics : public mojom::NetworkDiagnosticsRoutines {
 
   // Binds this instance to |receiver|.
   void BindReceiver(
-      mojo::PendingReceiver<mojom::NetworkDiagnosticsRoutines> receiver);
+      mojo::PendingReceiver<
+          chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
+          receiver);
 
   // mojom::NetworkDiagnostics
-  void GetResult(const mojom::RoutineType type,
+  void GetResult(const chromeos::network_diagnostics::mojom::RoutineType type,
                  GetResultCallback callback) override;
   void GetAllResults(GetAllResultsCallback callback) override;
   void RunLanConnectivity(RunLanConnectivityCallback callback) override;
@@ -56,20 +61,25 @@ class NetworkDiagnostics : public mojom::NetworkDiagnosticsRoutines {
  private:
   void RunRoutine(std::unique_ptr<NetworkDiagnosticsRoutine> routine,
                   RoutineResultCallback callback);
-  void HandleResult(std::unique_ptr<NetworkDiagnosticsRoutine> routine,
-                    RoutineResultCallback callback,
-                    mojom::RoutineResultPtr result);
+  void HandleResult(
+      std::unique_ptr<NetworkDiagnosticsRoutine> routine,
+      RoutineResultCallback callback,
+      chromeos::network_diagnostics::mojom::RoutineResultPtr result);
   // An unowned pointer to the DebugDaemonClient instance.
   chromeos::DebugDaemonClient* debug_daemon_client_;
   // Receivers for external requests (WebUI, Feedback, CrosHealthdClient).
-  mojo::ReceiverSet<mojom::NetworkDiagnosticsRoutines> receivers_;
+  mojo::ReceiverSet<
+      chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
+      receivers_;
   // Holds the results of the routines.
-  base::flat_map<mojom::RoutineType, mojom::RoutineResultPtr> results_;
+  base::flat_map<chromeos::network_diagnostics::mojom::RoutineType,
+                 chromeos::network_diagnostics::mojom::RoutineResultPtr>
+      results_;
 
   base::WeakPtrFactory<NetworkDiagnostics> weak_ptr_factory_{this};
 };
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_NETWORK_DIAGNOSTICS_H_

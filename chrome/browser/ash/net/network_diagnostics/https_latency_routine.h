@@ -31,7 +31,7 @@ class NetworkContext;
 }
 }  // namespace network
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 // Tests whether the HTTPS latency is within established tolerance levels for
@@ -50,7 +50,7 @@ class HttpsLatencyRoutine : public NetworkDiagnosticsRoutine {
   ~HttpsLatencyRoutine() override;
 
   // NetworkDiagnosticsRoutine:
-  mojom::RoutineType Type() override;
+  chromeos::network_diagnostics::mojom::RoutineType Type() override;
   void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
 
@@ -103,11 +103,12 @@ class HttpsLatencyRoutine : public NetworkDiagnosticsRoutine {
   std::vector<base::TimeDelta> latencies_;
   std::unique_ptr<HostResolver> host_resolver_;
   std::unique_ptr<HttpRequestManager> http_request_manager_;
-  std::vector<mojom::HttpsLatencyProblem> problems_;
+  std::vector<chromeos::network_diagnostics::mojom::HttpsLatencyProblem>
+      problems_;
   base::WeakPtrFactory<HttpsLatencyRoutine> weak_factory_{this};
 };
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_HTTPS_LATENCY_ROUTINE_H_

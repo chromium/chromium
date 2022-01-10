@@ -24,8 +24,11 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
+
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace mojom = ::chromeos::network_diagnostics::mojom;
 
 class CaptivePortalRoutineTest : public ::testing::Test {
  public:
@@ -216,4 +219,4 @@ TEST_F(CaptivePortalRoutineTest, TestNoInternet) {
 // TODO(khegde): Add a test for unknown captive portal state.
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

@@ -9,10 +9,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace mojom = ::chromeos::network_diagnostics::mojom;
 
 const char* kInsecureSecurity = shill::kSecurityWep;
 const char* kSecureSecurity = shill::kSecurityPsk;
@@ -113,4 +116,4 @@ TEST_F(HasSecureWiFiConnectionRoutineTest, TestWiFiNotConnected) {
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

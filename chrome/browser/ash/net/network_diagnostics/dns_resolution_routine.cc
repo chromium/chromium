@@ -19,9 +19,12 @@
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 namespace {
+
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace mojom = ::chromeos::network_diagnostics::mojom;
 
 constexpr char kHostname[] = "ccd-testing-v4.gstatic.com";
 constexpr int kHttpPort = 80;
@@ -133,4 +136,4 @@ void DnsResolutionRoutine::OnComplete(
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

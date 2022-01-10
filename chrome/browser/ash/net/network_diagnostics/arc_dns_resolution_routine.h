@@ -13,15 +13,15 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_routine.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 // Performs DNS queries from within ARC to resolve a hardcoded set of hostnames
 // and returns the result.
 class ArcDnsResolutionRoutine : public NetworkDiagnosticsRoutine {
  public:
-  using RunArcDnsResolutionCallback =
-      mojom::NetworkDiagnosticsRoutines::RunArcDnsResolutionCallback;
+  using RunArcDnsResolutionCallback = chromeos::network_diagnostics::mojom::
+      NetworkDiagnosticsRoutines::RunArcDnsResolutionCallback;
 
   ArcDnsResolutionRoutine();
   ArcDnsResolutionRoutine(const ArcDnsResolutionRoutine&) = delete;
@@ -29,7 +29,7 @@ class ArcDnsResolutionRoutine : public NetworkDiagnosticsRoutine {
   ~ArcDnsResolutionRoutine() override;
 
   // NetworkDiagnosticsRoutine:
-  mojom::RoutineType Type() override;
+  chromeos::network_diagnostics::mojom::RoutineType Type() override;
   void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
 
@@ -49,7 +49,8 @@ class ArcDnsResolutionRoutine : public NetworkDiagnosticsRoutine {
   void OnQueryComplete(arc::mojom::ArcDnsResolutionTestResultPtr result);
 
   std::vector<std::string> hostnames_to_resolve_dns_;
-  std::vector<mojom::ArcDnsResolutionProblem> problems_;
+  std::vector<chromeos::network_diagnostics::mojom::ArcDnsResolutionProblem>
+      problems_;
   bool successfully_resolved_hostnames_ = true;
   bool failed_to_get_arc_service_manager_ = false;
   bool failed_to_get_net_instance_service_for_dns_resolution_test_ = false;
@@ -59,6 +60,6 @@ class ArcDnsResolutionRoutine : public NetworkDiagnosticsRoutine {
 };
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  //  CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_ARC_DNS_RESOLUTION_ROUTINE_H_

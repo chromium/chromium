@@ -11,7 +11,7 @@
 #include "base/containers/circular_deque.h"
 #include "chrome/browser/ash/net/network_health/network_health_constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_health {
 
 // The size is the list to use for the signal strength calculations. This is
@@ -49,6 +49,6 @@ class SignalStrengthTracker {
 };
 
 }  // namespace network_health
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_HEALTH_SIGNAL_STRENGTH_TRACKER_H_

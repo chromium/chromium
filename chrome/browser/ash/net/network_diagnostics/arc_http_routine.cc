@@ -12,10 +12,13 @@
 #include "net/http/http_status_code.h"
 #include "url/gurl.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace mojom = ::chromeos::network_diagnostics::mojom;
 
 constexpr int kTotalHostsToQuery = 3;
 // The length of a random eight letter prefix.
@@ -132,4 +135,4 @@ void ArcHttpRoutine::AnalyzeResultsAndExecuteCallback() {
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

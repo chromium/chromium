@@ -12,7 +12,7 @@
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 // Tests the Network Interface Controller (NIC) signal strength.
@@ -25,7 +25,7 @@ class SignalStrengthRoutine : public NetworkDiagnosticsRoutine {
 
   // NetworkDiagnosticRoutine:
   bool CanRun() override;
-  mojom::RoutineType Type() override;
+  chromeos::network_diagnostics::mojom::RoutineType Type() override;
   void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
 
@@ -40,10 +40,11 @@ class SignalStrengthRoutine : public NetworkDiagnosticsRoutine {
   // Represents the strength of an unknown signal.
   static constexpr int kUnknownSignalStrength = 0;
   int signal_strength_ = kUnknownSignalStrength;
-  std::vector<mojom::SignalStrengthProblem> problems_;
+  std::vector<chromeos::network_diagnostics::mojom::SignalStrengthProblem>
+      problems_;
 };
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_SIGNAL_STRENGTH_ROUTINE_H_

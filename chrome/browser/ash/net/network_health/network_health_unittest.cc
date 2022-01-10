@@ -18,9 +18,14 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-using chromeos::network_config::mojom::NetworkType;
+namespace ash {
+namespace network_health {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace network_config = ::chromeos::network_config;
+namespace network_health = ::chromeos::network_health;
 
 // Constant values for fake devices and services.
 constexpr char kEthServicePath[] = "/service/eth/0";
@@ -82,9 +87,6 @@ class FakeNetworkEventsObserver
 
 }  // namespace
 
-namespace chromeos {
-namespace network_health {
-
 class NetworkHealthTestImpl : public NetworkHealth {
  public:
   NetworkHealthTestImpl() {
@@ -137,7 +139,7 @@ class NetworkHealthTest : public ::testing::Test {
               initial_network_health_state->networks[0]->state);
   }
 
-  mojom::NetworkPtr GetNetworkHealthStateByType(
+  network_health::mojom::NetworkPtr GetNetworkHealthStateByType(
       network_config::mojom::NetworkType type) {
     const auto& network_health_state = network_health_.GetNetworkHealthState();
     for (auto& network : network_health_state->networks) {
@@ -561,4 +563,4 @@ TEST_F(NetworkHealthTest, AnalyzeSignalStrengthActive) {
 }
 
 }  // namespace network_health
-}  // namespace chromeos
+}  // namespace ash

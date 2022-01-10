@@ -14,7 +14,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 namespace {
@@ -197,4 +197,4 @@ TEST_F(HttpRequestManagerTest, TestManagerDestroyedWhenRequestPending) {
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

@@ -11,10 +11,13 @@
 #include "chrome/browser/ash/net/network_diagnostics/network_diagnostics_util.h"
 #include "net/dns/public/dns_protocol.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace mojom = ::chromeos::network_diagnostics::mojom;
 
 // These hostnames were chosen because they need to be resolved for a
 // successful ARC provisioning step.
@@ -126,4 +129,4 @@ void ArcDnsResolutionRoutine::AnalyzeResultsAndExecuteCallback() {
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

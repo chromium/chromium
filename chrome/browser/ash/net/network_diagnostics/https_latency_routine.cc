@@ -19,9 +19,12 @@
 #include "net/base/net_errors.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 namespace {
+
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace mojom = ::chromeos::network_diagnostics::mojom;
 
 constexpr int kTotalHostsToQuery = 3;
 // The length of a random eight letter prefix.
@@ -257,4 +260,4 @@ void HttpsLatencyRoutine::OnHttpsRequestComplete(bool connected) {
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

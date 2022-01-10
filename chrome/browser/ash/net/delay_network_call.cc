@@ -16,7 +16,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-namespace chromeos {
+namespace ash {
 
 const unsigned kDefaultNetworkRetryDelayMS = 3000;
 
@@ -55,4 +55,4 @@ void DelayNetworkCall(base::TimeDelta retry, base::OnceClosure callback) {
   }
 }
 
-}  // namespace chromeos
+}  // namespace ash

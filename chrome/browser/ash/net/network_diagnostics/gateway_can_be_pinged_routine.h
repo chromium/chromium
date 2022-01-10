@@ -15,7 +15,7 @@
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 // Tests whether a device can ping all the gateways it is connected to.
@@ -30,7 +30,7 @@ class GatewayCanBePingedRoutine : public NetworkDiagnosticsRoutine {
 
   // NetworkDiagnosticsRoutine:
   bool CanRun() override;
-  mojom::RoutineType Type() override;
+  chromeos::network_diagnostics::mojom::RoutineType Type() override;
   void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
 
@@ -60,7 +60,8 @@ class GatewayCanBePingedRoutine : public NetworkDiagnosticsRoutine {
 
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
-  std::vector<mojom::GatewayCanBePingedProblem> problems_;
+  std::vector<chromeos::network_diagnostics::mojom::GatewayCanBePingedProblem>
+      problems_;
   // An unowned pointer to the DebugDaemonClient instance.
   chromeos::DebugDaemonClient* debug_daemon_client_;
   std::vector<std::string> gateways_;
@@ -79,6 +80,6 @@ class GatewayCanBePingedRoutine : public NetworkDiagnosticsRoutine {
 };
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_GATEWAY_CAN_BE_PINGED_ROUTINE_H_

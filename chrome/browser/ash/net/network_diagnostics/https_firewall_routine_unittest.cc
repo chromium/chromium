@@ -16,10 +16,13 @@
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace mojom = ::chromeos::network_diagnostics::mojom;
 
 // The number of hosts the the routine tries to open socket connections to (if
 // DNS resolution is successful). Value equals the number of random hosts
@@ -229,4 +232,4 @@ TEST_F(HttpsFirewallRoutineTest, TestContinousRetries) {
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

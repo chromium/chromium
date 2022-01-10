@@ -341,7 +341,6 @@ using ::ash::kDeviceSecondFactorAuthenticationMode;
 using ::ash::kDeviceWebBasedAttestationAllowedUrls;
 using ::ash::kFineGrainedTimeZoneResolveEnabled;
 using ::ash::kLoginAuthenticationBehavior;
-using ::ash::kSystemProxySettings;
 using ::ash::kSystemTimezone;
 using ::ash::kSystemTimezonePolicy;
 using ::ash::kTPMFirmwareUpdateSettings;

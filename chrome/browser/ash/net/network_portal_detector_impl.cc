@@ -29,11 +29,11 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
-using captive_portal::CaptivePortalDetector;
-
-namespace chromeos {
+namespace ash {
 
 namespace {
+
+using ::captive_portal::CaptivePortalDetector;
 
 // Delay before portal detection caused by changes in proxy settings.
 constexpr int kProxyChangeDelaySec = 1;
@@ -469,4 +469,4 @@ void NetworkPortalDetectorImpl::ResetStrategyAndCounters() {
   strategy_->Reset();
 }
 
-}  // namespace chromeos
+}  // namespace ash

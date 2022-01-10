@@ -20,7 +20,7 @@ class NetworkContext;
 }
 }  // namespace network
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 // Number of retry attempts.
@@ -42,7 +42,7 @@ class HttpsFirewallRoutine : public NetworkDiagnosticsRoutine {
   ~HttpsFirewallRoutine() override;
 
   // NetworkDiagnosticsRoutine:
-  mojom::RoutineType Type() override;
+  chromeos::network_diagnostics::mojom::RoutineType Type() override;
   void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
 
@@ -87,12 +87,13 @@ class HttpsFirewallRoutine : public NetworkDiagnosticsRoutine {
   int num_no_dns_failure_tls_probes_attempted_ = 0;
   TlsProberGetterCallback tls_prober_getter_callback_;
   std::unique_ptr<TlsProber> tls_prober_;
-  std::vector<mojom::HttpsFirewallProblem> problems_;
+  std::vector<chromeos::network_diagnostics::mojom::HttpsFirewallProblem>
+      problems_;
 
   base::WeakPtrFactory<HttpsFirewallRoutine> weak_factory_{this};
 };
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // CHROME_BROWSER_ASH_NET_NETWORK_DIAGNOSTICS_HTTPS_FIREWALL_ROUTINE_H_

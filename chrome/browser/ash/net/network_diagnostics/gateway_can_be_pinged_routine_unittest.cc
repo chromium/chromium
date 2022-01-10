@@ -27,10 +27,13 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace mojom = ::chromeos::network_diagnostics::mojom;
 
 // Fake ICMP output. For more details, see:
 // https://gerrit.chromium.org/gerrit/#/c/30310/2/src/helpers/icmp.cc.
@@ -311,4 +314,4 @@ TEST_F(GatewayCanBePingedRoutineTest, TestDefaultNetworkNoReply) {
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

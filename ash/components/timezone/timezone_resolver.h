@@ -32,8 +32,7 @@ class COMPONENT_EXPORT(ASH_TIMEZONE) TimeZoneResolver {
   using ApplyTimeZoneCallback =
       base::RepeatingCallback<void(const TimeZoneResponseData*)>;
 
-  // chromeos::DelayNetworkCall cannot be used directly due to link
-  // restrictions.
+  // `ash::DelayNetworkCall` cannot be used directly due to link restrictions.
   using DelayNetworkCallClosure =
       base::RepeatingCallback<void(base::OnceClosure)>;
 

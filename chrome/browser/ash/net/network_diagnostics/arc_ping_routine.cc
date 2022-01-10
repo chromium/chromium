@@ -13,10 +13,14 @@
 #include "chromeos/services/network_config/in_process_instance.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace network_diagnostics {
 
 namespace {
+
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace mojom = ::chromeos::network_diagnostics::mojom;
+namespace network_config = ::chromeos::network_config;
 
 using chromeos::network_config::mojom::CrosNetworkConfig;
 using chromeos::network_config::mojom::FilterType;
@@ -260,4 +264,4 @@ std::string ArcPingRoutine::GetTransportName(
 }
 
 }  // namespace network_diagnostics
-}  // namespace chromeos
+}  // namespace ash

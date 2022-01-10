@@ -20,7 +20,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-using ::chromeos::network_diagnostics::NetworkDiagnostics;
+using ::ash::network_diagnostics::NetworkDiagnostics;
 using ::chromeos::network_diagnostics::mojom::HttpsLatencyResultValue;
 using ::chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines;
 using ::chromeos::network_diagnostics::mojom::RoutineProblems;
