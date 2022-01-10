@@ -202,29 +202,25 @@ void PrefetchURLLoaderService::CreateLoaderAndStart(
             ->prefetched_signed_exchange_cache;
   }
 
-  // For now we make self owned receiver for the loader to the request, while we
-  // can also possibly make the new loader owned by the factory so that they can
-  // live longer than the client (i.e. run in detached mode).
-  // TODO(kinuko): Revisit this.
-  mojo::MakeSelfOwnedReceiver(
-      std::make_unique<PrefetchURLLoader>(
-          request_id, options, current_context.frame_tree_node_id,
-          resource_request,
-          resource_request.trusted_params
-              ? resource_request.trusted_params->isolation_info
-                    .network_isolation_key()
-              : current_context.render_frame_host->GetNetworkIsolationKey(),
-          std::move(client), traffic_annotation,
-          std::move(network_loader_factory_to_use),
-          base::BindRepeating(
-              &PrefetchURLLoaderService::CreateURLLoaderThrottles, this,
-              resource_request, current_context.frame_tree_node_id),
-          browser_context_, signed_exchange_prefetch_metric_recorder_,
-          std::move(prefetched_signed_exchange_cache), accept_langs_,
-          base::BindOnce(
-              &PrefetchURLLoaderService::GenerateRecursivePrefetchToken, this,
-              current_context.weak_ptr_factory.GetWeakPtr())),
-      std::move(receiver));
+  // base::Unretained is safe here since |this| owns the loader.
+  auto loader = std::make_unique<PrefetchURLLoader>(
+      request_id, options, current_context.frame_tree_node_id, resource_request,
+      resource_request.trusted_params
+          ? resource_request.trusted_params->isolation_info
+                .network_isolation_key()
+          : current_context.render_frame_host->GetNetworkIsolationKey(),
+      std::move(client), traffic_annotation,
+      std::move(network_loader_factory_to_use),
+      base::BindRepeating(&PrefetchURLLoaderService::CreateURLLoaderThrottles,
+                          base::Unretained(this), resource_request,
+                          current_context.frame_tree_node_id),
+      browser_context_, signed_exchange_prefetch_metric_recorder_,
+      std::move(prefetched_signed_exchange_cache), accept_langs_,
+      base::BindOnce(&PrefetchURLLoaderService::GenerateRecursivePrefetchToken,
+                     base::Unretained(this),
+                     current_context.weak_ptr_factory.GetWeakPtr()));
+  auto* raw_loader = loader.get();
+  prefetch_receivers_.Add(raw_loader, std::move(receiver), std::move(loader));
 }
 
 PrefetchURLLoaderService::~PrefetchURLLoaderService() = default;

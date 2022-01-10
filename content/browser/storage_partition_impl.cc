@@ -1292,7 +1292,7 @@ void StoragePartitionImpl::Initialize(
       blob_context, filesystem_context_, fallback_blob_registry);
 
   prefetch_url_loader_service_ =
-      base::MakeRefCounted<PrefetchURLLoaderService>(browser_context_);
+      std::make_unique<PrefetchURLLoaderService>(browser_context_);
 
   cookie_store_manager_ =
       std::make_unique<CookieStoreManager>(service_worker_context_);
