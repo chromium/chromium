@@ -44,7 +44,7 @@ class AppListPresenterImplTest : public AshTestBase {
   ~AppListPresenterImplTest() override = default;
 
   AppListPresenterImpl* presenter() {
-    return Shell::Get()->app_list_controller()->presenter();
+    return Shell::Get()->app_list_controller()->fullscreen_presenter();
   }
 
   // Shows the app list on the primary display.

@@ -6203,7 +6203,8 @@ TEST_F(PersistentDesksBarTest, BentoBarWithShelfAlignment) {
 TEST_F(PersistentDesksBarTest, AppListFullscreen) {
   AppListControllerImpl* app_list_controller =
       Shell::Get()->app_list_controller();
-  AppListView* app_list_view = app_list_controller->presenter()->GetView();
+  AppListView* app_list_view =
+      app_list_controller->fullscreen_presenter()->GetView();
 
   // The bar should be created when the app list view remains null.
   NewDesk();
@@ -6214,7 +6215,7 @@ TEST_F(PersistentDesksBarTest, AppListFullscreen) {
   // The bar should be created when the app list view is created and
   // showing in kPeeking mode.
   app_list_controller->ShowAppList();
-  app_list_view = app_list_controller->presenter()->GetView();
+  app_list_view = app_list_controller->fullscreen_presenter()->GetView();
   ASSERT_TRUE(app_list_view);
   EXPECT_TRUE(app_list_view->app_list_state() == AppListViewState::kPeeking);
   EXPECT_TRUE(GetBarWidget());

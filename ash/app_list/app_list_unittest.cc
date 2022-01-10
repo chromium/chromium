@@ -29,7 +29,7 @@ bool GetPresenterVisibility() {
   auto* controller = Shell::Get()->app_list_controller();
   if (features::IsProductivityLauncherEnabled())
     return controller->bubble_presenter_for_test()->IsShowing();
-  return controller->presenter()->GetTargetVisibility();
+  return controller->fullscreen_presenter()->GetTargetVisibility();
 }
 
 }  // namespace

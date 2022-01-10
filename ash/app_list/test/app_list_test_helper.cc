@@ -149,7 +149,7 @@ bool AppListTestHelper::IsInFolderView() {
 }
 
 AppListView* AppListTestHelper::GetAppListView() {
-  return app_list_controller_->presenter()->GetView();
+  return app_list_controller_->fullscreen_presenter()->GetView();
 }
 
 SearchBoxView* AppListTestHelper::GetSearchBoxView() {

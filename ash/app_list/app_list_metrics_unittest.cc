@@ -131,7 +131,7 @@ class AppListMetricsTest : public AshTestBase {
     // first search container.
     ContentsView* contents_view = Shell::Get()
                                       ->app_list_controller()
-                                      ->presenter()
+                                      ->fullscreen_presenter()
                                       ->GetView()
                                       ->app_list_main_view()
                                       ->contents_view();
@@ -164,7 +164,7 @@ class AppListMetricsTest : public AshTestBase {
     SearchResultContainerView* suggestions_container_ =
         Shell::Get()
             ->app_list_controller()
-            ->presenter()
+            ->fullscreen_presenter()
             ->GetView()
             ->app_list_main_view()
             ->contents_view()
@@ -188,7 +188,7 @@ class AppListMetricsTest : public AshTestBase {
     model->AddItem(std::make_unique<AppListItem>("item 3"));
 
     AppListView::TestApi test_api(
-        Shell::Get()->app_list_controller()->presenter()->GetView());
+        Shell::Get()->app_list_controller()->fullscreen_presenter()->GetView());
 
     // Focus the first item in the root app grid.
     test_api.GetRootAppsGridView()->GetItemViewAt(0)->RequestFocus();

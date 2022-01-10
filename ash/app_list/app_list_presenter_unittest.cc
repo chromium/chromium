@@ -566,7 +566,7 @@ class PopulatedAppListTest : public AshTestBase {
  protected:
   void OpenAppListInFullscreen() {
     AppListPresenterImpl* presenter =
-        Shell::Get()->app_list_controller()->presenter();
+        Shell::Get()->app_list_controller()->fullscreen_presenter();
     presenter->Show(AppListViewState::kFullscreenAllApps,
                     GetPrimaryDisplay().id(), base::TimeTicks::Now(),
                     /*show_source=*/absl::nullopt);

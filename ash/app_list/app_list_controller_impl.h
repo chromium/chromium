@@ -89,8 +89,9 @@ class ASH_EXPORT AppListControllerImpl : public AppListController,
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
-  // TODO(crbug.com/1204554): Rename to fullscreen_presenter().
-  AppListPresenterImpl* presenter() { return fullscreen_presenter_.get(); }
+  AppListPresenterImpl* fullscreen_presenter() {
+    return fullscreen_presenter_.get();
+  }
 
   // AppListController:
   void SetClient(AppListClient* client) override;

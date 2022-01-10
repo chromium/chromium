@@ -998,42 +998,29 @@ TEST_P(ScrollableShelfViewRTLTest, MouseWheelOnEmptyShelfShouldExpandAppList) {
 
   // The app list's view is lazily loaded. Since this is the first time, and we
   // didn't scroll in the right spot, it shouldn't have been created yet.
-  EXPECT_EQ(nullptr,
-            Shell::Get()->app_list_controller()->presenter()->GetView());
+  auto* presenter = Shell::Get()->app_list_controller()->fullscreen_presenter();
+  EXPECT_EQ(nullptr, presenter->GetView());
 
   auto empty_shelf_point = scrollable_shelf_view_->GetBoundsInScreen().origin();
   empty_shelf_point.Offset(10, 10);
   GetEventGenerator()->MoveMouseTo(empty_shelf_point);
   GetEventGenerator()->MoveMouseWheel(0, shelf_scroll_threshold + 1);
-  EXPECT_EQ(AppListViewState::kPeeking, Shell::Get()
-                                            ->app_list_controller()
-                                            ->presenter()
-                                            ->GetView()
-                                            ->app_list_state());
+  auto* app_list_view = presenter->GetView();
+  EXPECT_EQ(AppListViewState::kPeeking, app_list_view->app_list_state());
 
   // Scrolling again should expand to all apps.
   GetEventGenerator()->MoveMouseWheel(0, shelf_scroll_threshold + 1);
-  EXPECT_EQ(AppListViewState::kFullscreenAllApps, Shell::Get()
-                                                      ->app_list_controller()
-                                                      ->presenter()
-                                                      ->GetView()
-                                                      ->app_list_state());
+  EXPECT_EQ(AppListViewState::kFullscreenAllApps,
+            app_list_view->app_list_state());
 
   // Scrolling up on fullscreen will do nothing.
   GetEventGenerator()->MoveMouseWheel(0, shelf_scroll_threshold + 1);
-  EXPECT_EQ(AppListViewState::kFullscreenAllApps, Shell::Get()
-                                                      ->app_list_controller()
-                                                      ->presenter()
-                                                      ->GetView()
-                                                      ->app_list_state());
+  EXPECT_EQ(AppListViewState::kFullscreenAllApps,
+            app_list_view->app_list_state());
 
   // Scrolling down will close the app list.
   GetEventGenerator()->MoveMouseWheel(0, -shelf_scroll_threshold - 1);
-  EXPECT_EQ(AppListViewState::kClosed, Shell::Get()
-                                           ->app_list_controller()
-                                           ->presenter()
-                                           ->GetView()
-                                           ->app_list_state());
+  EXPECT_EQ(AppListViewState::kClosed, app_list_view->app_list_state());
 }
 
 TEST_P(ScrollableShelfViewRTLTest, ScrollsByMouseWheelEvent) {
@@ -1090,7 +1077,7 @@ TEST_P(ScrollableShelfViewRTLTest, VerifyScrollEvent) {
                                         scroll_steps, num_fingers);
     EXPECT_EQ(AppListViewState::kPeeking, Shell::Get()
                                               ->app_list_controller()
-                                              ->presenter()
+                                              ->fullscreen_presenter()
                                               ->GetView()
                                               ->app_list_state());
     EXPECT_EQ(default_strategy,
@@ -1130,41 +1117,29 @@ TEST_P(ScrollableShelfViewRTLTest, HorizontalScrollingOnVerticalShelf) {
   GetEventGenerator()->ScrollSequence(start_point, base::TimeDelta(),
                                       -scroll_speed, /*y_offset*/ 0,
                                       scroll_steps, num_fingers);
-  EXPECT_EQ(AppListViewState::kFullscreenAllApps, Shell::Get()
-                                                      ->app_list_controller()
-                                                      ->presenter()
-                                                      ->GetView()
-                                                      ->app_list_state());
+  auto* app_list_view =
+      Shell::Get()->app_list_controller()->fullscreen_presenter()->GetView();
+  EXPECT_EQ(AppListViewState::kFullscreenAllApps,
+            app_list_view->app_list_state());
 
   // Scrolling the same way again should do nothing.
   GetEventGenerator()->ScrollSequence(start_point, base::TimeDelta(),
                                       -scroll_speed, /*y_offset*/ 0,
                                       scroll_steps, num_fingers);
-  EXPECT_EQ(AppListViewState::kFullscreenAllApps, Shell::Get()
-                                                      ->app_list_controller()
-                                                      ->presenter()
-                                                      ->GetView()
-                                                      ->app_list_state());
+  EXPECT_EQ(AppListViewState::kFullscreenAllApps,
+            app_list_view->app_list_state());
 
   // Scrolling toward the side of the screen the shelf is on should collapse it.
   GetEventGenerator()->ScrollSequence(start_point, base::TimeDelta(),
                                       scroll_speed, /*y_offset*/ 0,
                                       scroll_steps, num_fingers);
-  EXPECT_EQ(AppListViewState::kClosed, Shell::Get()
-                                           ->app_list_controller()
-                                           ->presenter()
-                                           ->GetView()
-                                           ->app_list_state());
+  EXPECT_EQ(AppListViewState::kClosed, app_list_view->app_list_state());
 
   // Scrolling the same way again should do nothing.
   GetEventGenerator()->ScrollSequence(start_point, base::TimeDelta(),
                                       scroll_speed, /*y_offset*/ 0,
                                       scroll_steps, num_fingers);
-  EXPECT_EQ(AppListViewState::kClosed, Shell::Get()
-                                           ->app_list_controller()
-                                           ->presenter()
-                                           ->GetView()
-                                           ->app_list_state());
+  EXPECT_EQ(AppListViewState::kClosed, app_list_view->app_list_state());
 
   // Now we test the opposite side with the opposite scroll values.
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kRight);
@@ -1175,21 +1150,14 @@ TEST_P(ScrollableShelfViewRTLTest, HorizontalScrollingOnVerticalShelf) {
   GetEventGenerator()->ScrollSequence(start_point, base::TimeDelta(),
                                       scroll_speed, /*y_offset*/ 0,
                                       scroll_steps, num_fingers);
-  EXPECT_EQ(AppListViewState::kFullscreenAllApps, Shell::Get()
-                                                      ->app_list_controller()
-                                                      ->presenter()
-                                                      ->GetView()
-                                                      ->app_list_state());
+  EXPECT_EQ(AppListViewState::kFullscreenAllApps,
+            app_list_view->app_list_state());
 
   // Scrolling toward the side of the screen the shelf is on should collapse it.
   GetEventGenerator()->ScrollSequence(start_point, base::TimeDelta(),
                                       -scroll_speed, /*y_offset*/ 0,
                                       scroll_steps, num_fingers);
-  EXPECT_EQ(AppListViewState::kClosed, Shell::Get()
-                                           ->app_list_controller()
-                                           ->presenter()
-                                           ->GetView()
-                                           ->app_list_state());
+  EXPECT_EQ(AppListViewState::kClosed, app_list_view->app_list_state());
 }
 
 // Verify that the ripple ring of the first/last app icon is fully shown

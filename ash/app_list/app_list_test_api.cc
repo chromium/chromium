@@ -43,7 +43,7 @@ namespace ash {
 namespace {
 
 AppListView* GetAppListView() {
-  return Shell::Get()->app_list_controller()->presenter()->GetView();
+  return Shell::Get()->app_list_controller()->fullscreen_presenter()->GetView();
 }
 
 PagedAppsGridView* GetPagedAppsGridView() {

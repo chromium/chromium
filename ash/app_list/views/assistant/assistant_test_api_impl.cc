@@ -248,7 +248,7 @@ ContentsView* AssistantTestApiImpl::contents_view() {
 
 ContentsView* AssistantTestApiImpl::contents_view_or_null() const {
   auto* app_list_view =
-      Shell::Get()->app_list_controller()->presenter()->GetView();
+      Shell::Get()->app_list_controller()->fullscreen_presenter()->GetView();
 
   if (!app_list_view)
     return nullptr;

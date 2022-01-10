@@ -92,7 +92,7 @@ AppListModel* GetAppListModel() {
 }
 
 AppListView* GetAppListView() {
-  return Shell::Get()->app_list_controller()->presenter()->GetView();
+  return Shell::Get()->app_list_controller()->fullscreen_presenter()->GetView();
 }
 
 ContentsView* GetContentsView() {
@@ -119,13 +119,13 @@ PagedAppsGridView* GetAppsGridView() {
 }
 
 void ShowAppListNow(AppListViewState state) {
-  Shell::Get()->app_list_controller()->presenter()->Show(
+  Shell::Get()->app_list_controller()->fullscreen_presenter()->Show(
       state, display::Screen::GetScreen()->GetPrimaryDisplay().id(),
       base::TimeTicks::Now(), /*show_source*/ absl::nullopt);
 }
 
 void DismissAppListNow() {
-  Shell::Get()->app_list_controller()->presenter()->Dismiss(
+  Shell::Get()->app_list_controller()->fullscreen_presenter()->Dismiss(
       base::TimeTicks::Now());
 }
 
@@ -223,7 +223,7 @@ TEST_F(AppListControllerImplTest, AppListHiddenWhenShelfAlignmentChanges) {
     ShowAppListNow(AppListViewState::kPeeking);
     EXPECT_TRUE(Shell::Get()
                     ->app_list_controller()
-                    ->presenter()
+                    ->fullscreen_presenter()
                     ->IsVisibleDeprecated());
     shelf->SetAlignment(alignment);
     EXPECT_EQ(AppListViewState::kClosed, GetAppListView()->app_list_state());
