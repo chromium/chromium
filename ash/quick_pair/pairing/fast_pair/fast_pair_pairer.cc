@@ -131,7 +131,7 @@ FastPairPairer::FastPairPairer(
 
       QP_LOG(VERBOSE) << "Key-based pairing changed. Address: "
                       << device_address << ". Found device: "
-                      << ((device != nullptr) ? "Yes" : "No") << ".";
+                      << ((device_ != nullptr) ? "Yes" : "No") << ".";
 
       if (bt_device) {
         bt_device->Pair(this, base::BindOnce(&FastPairPairer::OnPairConnected,
