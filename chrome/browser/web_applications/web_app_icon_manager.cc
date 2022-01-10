@@ -43,7 +43,7 @@ namespace {
 // If we weren't generating multithreaded errors we would just append the errors
 // to WebAppIconManager::error_log() directly.
 template <typename T>
-struct Result {
+struct TypedResult {
   T value = T();
   std::vector<std::string> error_log;
 
@@ -62,11 +62,11 @@ std::string CreateError(std::initializer_list<base::StringPiece> parts) {
 }
 
 // This is not a method on WebAppIconManager to avoid having to expose
-// Result<T> beyond this cc file.
+// TypedResult<T> beyond this cc file.
 template <typename T>
 void LogErrorsCallCallback(base::WeakPtr<WebAppIconManager> manager,
                            base::OnceCallback<void(T)> callback,
-                           Result<T> result) {
+                           TypedResult<T> result) {
   if (!manager)
     return;
 
@@ -86,16 +86,6 @@ struct IconId {
   IconPurpose purpose;
   SquareSizePx size;
 };
-
-Result<bool> CreateDirectory(scoped_refptr<FileUtilsWrapper> utils,
-                             const base::FilePath& path) {
-  if (!utils->CreateDirectory(path)) {
-    return {.error_log = {CreateError(
-                {"Could not create directory: ", path.AsUTF8Unsafe()})}};
-  }
-
-  return {.value = true};
-}
 
 // This is a private implementation detail of WebAppIconManager, where and how
 // to store icon files.
@@ -161,257 +151,6 @@ std::string GetDirectoryNameForUrl(const GURL& url) {
   return base::NumberToString(base::PersistentHash(url.spec()));
 }
 
-Result<bool> WriteIcon(scoped_refptr<FileUtilsWrapper> utils,
-                       const base::FilePath& icons_dir,
-                       const SkBitmap& bitmap) {
-  DCHECK_NE(bitmap.colorType(), kUnknown_SkColorType);
-  DCHECK_EQ(bitmap.width(), bitmap.height());
-  base::FilePath icon_file =
-      icons_dir.AppendASCII(base::StringPrintf("%i.png", bitmap.width()));
-
-  std::vector<unsigned char> image_data;
-  const bool discard_transparency = false;
-  if (!gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, discard_transparency,
-                                         &image_data)) {
-    return {.error_log = {CreateError({"Could not encode icon data for file ",
-                                       icon_file.AsUTF8Unsafe()})}};
-  }
-
-  const char* image_data_ptr = reinterpret_cast<const char*>(&image_data[0]);
-  int size = base::checked_cast<int>(image_data.size());
-  if (utils->WriteFile(icon_file, image_data_ptr, size) != size) {
-    return {.error_log = {CreateError(
-                {"Could not write icon file: ", icon_file.AsUTF8Unsafe()})}};
-  }
-
-  return {.value = true};
-}
-
-Result<bool> WriteProductIcons(scoped_refptr<FileUtilsWrapper> utils,
-                               const IconBitmaps& icon_bitmaps,
-                               const base::FilePath& base_dir) {
-  for (IconPurpose purpose : kIconPurposes) {
-    base::FilePath icons_dir = GetProductIconsDirectory(base_dir, purpose);
-
-    auto create_result = CreateDirectory(utils, icons_dir);
-    if (create_result.HasErrors())
-      return create_result;
-
-    for (const std::pair<const SquareSizePx, SkBitmap>& icon_bitmap :
-         icon_bitmaps.GetBitmapsForPurpose(purpose)) {
-      Result<bool> write_result =
-          WriteIcon(utils, icons_dir, icon_bitmap.second);
-      if (write_result.HasErrors())
-        return write_result;
-    }
-  }
-
-  return {.value = true};
-}
-
-// Writes shortcuts menu icons files to the Shortcut Icons directory. Creates a
-// new directory per shortcut item using its index in the vector.
-Result<bool> WriteShortcutsMenuIcons(
-    scoped_refptr<FileUtilsWrapper> utils,
-    const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps,
-    const base::FilePath& app_manifest_resources_directory) {
-  for (IconPurpose purpose : kIconPurposes) {
-    const base::FilePath shortcuts_menu_icons_dir =
-        app_manifest_resources_directory.Append(
-            GetAppShortcutsMenuIconsRelativeDirectory(purpose));
-    auto create_result = CreateDirectory(utils, shortcuts_menu_icons_dir);
-    if (create_result.HasErrors())
-      return create_result;
-
-    int shortcut_index = -1;
-    for (const IconBitmaps& icon_bitmaps : shortcuts_menu_icon_bitmaps) {
-      ++shortcut_index;
-      const std::map<SquareSizePx, SkBitmap>& bitmaps =
-          icon_bitmaps.GetBitmapsForPurpose(purpose);
-      if (bitmaps.empty())
-        continue;
-
-      const base::FilePath shortcuts_menu_icon_dir =
-          shortcuts_menu_icons_dir.AppendASCII(
-              base::NumberToString(shortcut_index));
-      create_result = CreateDirectory(utils, shortcuts_menu_icon_dir);
-      if (create_result.HasErrors())
-        return create_result;
-
-      for (const std::pair<const SquareSizePx, SkBitmap>& icon_bitmap :
-           bitmaps) {
-        Result<bool> write_result =
-            WriteIcon(utils, shortcuts_menu_icon_dir, icon_bitmap.second);
-        if (write_result.HasErrors())
-          return write_result;
-      }
-    }
-  }
-  return {.value = true};
-}
-
-Result<bool> WriteOtherIcons(
-    scoped_refptr<FileUtilsWrapper> utils,
-    const IconsMap& other_icons,
-    const base::FilePath& app_manifest_resources_directory) {
-  const base::FilePath general_icons_dir =
-      app_manifest_resources_directory.Append(GetOtherIconsRelativeDirectory());
-  auto create_result = CreateDirectory(utils, general_icons_dir);
-  if (create_result.HasErrors())
-    return create_result;
-
-  for (const std::pair<const GURL, std::vector<SkBitmap>>& entry :
-       other_icons) {
-    const base::FilePath subdir =
-        general_icons_dir.AppendASCII(GetDirectoryNameForUrl(entry.first));
-    create_result = CreateDirectory(utils, subdir);
-    if (create_result.HasErrors())
-      return create_result;
-
-    const std::vector<SkBitmap>& icon_bitmaps = entry.second;
-    for (const SkBitmap& icon_bitmap : icon_bitmaps) {
-      Result<bool> write_result = WriteIcon(utils, subdir, icon_bitmap);
-      if (write_result.HasErrors())
-        return write_result;
-    }
-  }
-  return {.value = true};
-}
-
-// Performs blocking I/O. Returns true if no errors occurred. This is used for
-// several kinds of icon data. The passed callbacks allow for varying the
-// implementation based on data type. `write_icons_callback` writes the icons
-// data under the passed base directory. `subdir_for_icons` is a relative
-// FilePath representing a directory which holds all the data written by
-// `write_icons_callback`. The path is relative to the app's manifest resources
-// directory.
-Result<bool> WriteIconsDataBlocking(
-    scoped_refptr<FileUtilsWrapper> utils,
-    const base::FilePath& web_apps_directory,
-    const AppId& app_id,
-    const base::RepeatingCallback<Result<bool>(const base::FilePath& path)>&
-        write_icons_callback,
-    const base::FilePath& subdir_for_icons) {
-  DCHECK(!subdir_for_icons.IsAbsolute());
-  // Create the temp directory under the web apps root.
-  // This guarantees it is on the same file system as the WebApp's eventual
-  // install target.
-  base::FilePath temp_dir = GetWebAppsTempDirectory(web_apps_directory);
-  Result<bool> create_result = CreateDirectory(utils, temp_dir);
-  if (create_result.HasErrors())
-    return create_result;
-
-  base::ScopedTempDir app_temp_dir;
-  if (!app_temp_dir.CreateUniqueTempDirUnderPath(temp_dir)) {
-    return {
-        .error_log = {CreateError({"Could not create temp directory under: ",
-                                   temp_dir.AsUTF8Unsafe()})}};
-  }
-
-  base::FilePath manifest_resources_directory =
-      GetManifestResourcesDirectory(web_apps_directory);
-  create_result = CreateDirectory(utils, manifest_resources_directory);
-  if (create_result.HasErrors())
-    return create_result;
-
-  Result<bool> write_result = write_icons_callback.Run(app_temp_dir.GetPath());
-  if (write_result.HasErrors())
-    return write_result;
-
-  base::FilePath app_dir =
-      GetManifestResourcesDirectoryForApp(web_apps_directory, app_id);
-  base::FilePath final_icons_dir = app_dir.Append(subdir_for_icons);
-  // Create app_dir if it doesn't already exist. We'll need this for
-  // WriteShortcutsMenuIconsData unittests.
-  if (final_icons_dir != app_dir) {
-    create_result = CreateDirectory(utils, app_dir);
-    if (create_result.HasErrors())
-      return create_result;
-  }
-
-  // Delete the destination. Needed for update. Ignore the result.
-  utils->DeleteFileRecursively(final_icons_dir);
-
-  base::FilePath temp_icons_dir =
-      app_temp_dir.GetPath().Append(subdir_for_icons);
-  // Commit: move whole icons data dir to final destination in one mv
-  // operation.
-  if (!utils->Move(temp_icons_dir, final_icons_dir)) {
-    return {.error_log = {
-                CreateError({"Could not move: ", temp_icons_dir.AsUTF8Unsafe(),
-                             " to: ", final_icons_dir.AsUTF8Unsafe()})}};
-  }
-
-  return {.value = true};
-}
-
-Result<bool> WriteProductIconsDataBlocking(
-    scoped_refptr<FileUtilsWrapper> utils,
-    const base::FilePath& web_apps_directory,
-    const AppId& app_id,
-    const IconBitmaps& icon_bitmaps) {
-  auto write_icons_callback =
-      base::BindRepeating(&WriteProductIcons, utils, icon_bitmaps);
-  // Place product icons directly in the app's directory.
-  base::FilePath subdir_for_icons;
-  return WriteIconsDataBlocking(utils, web_apps_directory, app_id,
-                                write_icons_callback, subdir_for_icons);
-}
-
-Result<bool> WriteShortcutsMenuIconsDataBlocking(
-    scoped_refptr<FileUtilsWrapper> utils,
-    const base::FilePath& web_apps_directory,
-    const AppId& app_id,
-    const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps) {
-  auto write_icons_callback = base::BindRepeating(
-      &WriteShortcutsMenuIcons, utils, shortcuts_menu_icon_bitmaps);
-  base::FilePath subdir_for_icons =
-      GetAppShortcutsMenuIconsRelativeDirectory(IconPurpose::ANY);
-
-  return WriteIconsDataBlocking(utils, web_apps_directory, app_id,
-                                write_icons_callback, subdir_for_icons);
-}
-
-Result<bool> WriteOtherIconsDataBlocking(
-    scoped_refptr<FileUtilsWrapper> utils,
-    const base::FilePath& web_apps_directory,
-    const AppId& app_id,
-    const IconsMap& other_icons) {
-  auto write_icons_callback =
-      base::BindRepeating(&WriteOtherIcons, utils, other_icons);
-  base::FilePath subdir_for_icons = GetOtherIconsRelativeDirectory();
-
-  return WriteIconsDataBlocking(utils, web_apps_directory, app_id,
-                                write_icons_callback, subdir_for_icons);
-}
-
-Result<bool> WriteDataBlocking(
-    scoped_refptr<FileUtilsWrapper> utils,
-    const base::FilePath& web_apps_directory,
-    const AppId& app_id,
-    const IconBitmaps& icon_bitmaps,
-    const ShortcutsMenuIconBitmaps& shortcuts_menu_icon_bitmaps,
-    const IconsMap& other_icons) {
-  auto result = WriteProductIconsDataBlocking(utils, web_apps_directory, app_id,
-                                              icon_bitmaps);
-  if (result.HasErrors())
-    return result;
-
-  if (!shortcuts_menu_icon_bitmaps.empty()) {
-    result = WriteShortcutsMenuIconsDataBlocking(
-        utils, web_apps_directory, app_id, shortcuts_menu_icon_bitmaps);
-    if (result.HasErrors())
-      return result;
-  }
-
-  if (!other_icons.empty()) {
-    result = WriteOtherIconsDataBlocking(utils, web_apps_directory, app_id,
-                                         other_icons);
-  }
-
-  return result;
-}
-
 // Performs blocking I/O. May be called on another thread.
 // Returns true if no errors occurred.
 bool DeleteDataBlocking(scoped_refptr<FileUtilsWrapper> utils,
@@ -455,9 +194,9 @@ base::FilePath GetManifestResourcesShortcutsMenuIconFileName(
 
 // Performs blocking I/O. May be called on another thread.
 // Returns empty SkBitmap if any errors occurred.
-Result<SkBitmap> ReadIconBlocking(scoped_refptr<FileUtilsWrapper> utils,
-                                  const base::FilePath& web_apps_directory,
-                                  const IconId& icon_id) {
+TypedResult<SkBitmap> ReadIconBlocking(scoped_refptr<FileUtilsWrapper> utils,
+                                       const base::FilePath& web_apps_directory,
+                                       const IconId& icon_id) {
   base::FilePath icon_file = GetIconFileName(web_apps_directory, icon_id);
 
   auto icon_data = base::MakeRefCounted<base::RefCountedString>();
@@ -467,7 +206,7 @@ Result<SkBitmap> ReadIconBlocking(scoped_refptr<FileUtilsWrapper> utils,
                 {"Could not read icon file: ", icon_file.AsUTF8Unsafe()})}};
   }
 
-  Result<SkBitmap> result;
+  TypedResult<SkBitmap> result;
 
   if (!gfx::PNGCodec::Decode(icon_data->front(), icon_data->size(),
                              &result.value)) {
@@ -480,7 +219,7 @@ Result<SkBitmap> ReadIconBlocking(scoped_refptr<FileUtilsWrapper> utils,
 
 // Performs blocking I/O. May be called on another thread.
 // Returns empty SkBitmap if any errors occurred.
-Result<SkBitmap> ReadShortcutsMenuIconBlocking(
+TypedResult<SkBitmap> ReadShortcutsMenuIconBlocking(
     scoped_refptr<FileUtilsWrapper> utils,
     const base::FilePath& web_apps_directory,
     const AppId& app_id,
@@ -497,7 +236,7 @@ Result<SkBitmap> ReadShortcutsMenuIconBlocking(
                 {"Could not read icon file: ", icon_file.AsUTF8Unsafe()})}};
   }
 
-  Result<SkBitmap> result;
+  TypedResult<SkBitmap> result;
 
   if (!gfx::PNGCodec::Decode(
           reinterpret_cast<const unsigned char*>(icon_data.c_str()),
@@ -511,14 +250,14 @@ Result<SkBitmap> ReadShortcutsMenuIconBlocking(
 
 // Performs blocking I/O. May be called on another thread.
 // Returns empty map if any errors occurred.
-Result<std::map<SquareSizePx, SkBitmap>> ReadIconAndResizeBlocking(
+TypedResult<std::map<SquareSizePx, SkBitmap>> ReadIconAndResizeBlocking(
     scoped_refptr<FileUtilsWrapper> utils,
     const base::FilePath& web_apps_directory,
     const IconId& icon_id,
     SquareSizePx target_icon_size_px) {
-  Result<std::map<SquareSizePx, SkBitmap>> result;
+  TypedResult<std::map<SquareSizePx, SkBitmap>> result;
 
-  Result<SkBitmap> read_result =
+  TypedResult<SkBitmap> read_result =
       ReadIconBlocking(utils, web_apps_directory, icon_id);
   if (read_result.HasErrors())
     return {.error_log = std::move(read_result.error_log)};
@@ -539,17 +278,17 @@ Result<std::map<SquareSizePx, SkBitmap>> ReadIconAndResizeBlocking(
 }
 
 // Performs blocking I/O. May be called on another thread.
-Result<std::map<SquareSizePx, SkBitmap>> ReadIconsBlocking(
+TypedResult<std::map<SquareSizePx, SkBitmap>> ReadIconsBlocking(
     scoped_refptr<FileUtilsWrapper> utils,
     const base::FilePath& web_apps_directory,
     const AppId& app_id,
     IconPurpose purpose,
     const std::vector<SquareSizePx>& icon_sizes) {
-  Result<std::map<SquareSizePx, SkBitmap>> result;
+  TypedResult<std::map<SquareSizePx, SkBitmap>> result;
 
   for (SquareSizePx icon_size_px : icon_sizes) {
     IconId icon_id(app_id, purpose, icon_size_px);
-    Result<SkBitmap> read_result =
+    TypedResult<SkBitmap> read_result =
         ReadIconBlocking(utils, web_apps_directory, icon_id);
     read_result.DepositErrorLog(result.error_log);
     if (!read_result.value.empty())
@@ -559,16 +298,16 @@ Result<std::map<SquareSizePx, SkBitmap>> ReadIconsBlocking(
   return result;
 }
 
-Result<IconBitmaps> ReadAllIconsBlocking(
+TypedResult<IconBitmaps> ReadAllIconsBlocking(
     scoped_refptr<FileUtilsWrapper> utils,
     const base::FilePath& web_apps_directory,
     const AppId& app_id,
     const std::map<IconPurpose, std::vector<SquareSizePx>>&
         icon_purposes_to_sizes) {
-  Result<IconBitmaps> result;
+  TypedResult<IconBitmaps> result;
 
   for (const auto& purpose_sizes : icon_purposes_to_sizes) {
-    Result<std::map<SquareSizePx, SkBitmap>> read_result =
+    TypedResult<std::map<SquareSizePx, SkBitmap>> read_result =
         ReadIconsBlocking(utils, web_apps_directory, app_id,
                           purpose_sizes.first, purpose_sizes.second);
     read_result.DepositErrorLog(result.error_log);
@@ -580,12 +319,12 @@ Result<IconBitmaps> ReadAllIconsBlocking(
 }
 
 // Performs blocking I/O. May be called on another thread.
-Result<ShortcutsMenuIconBitmaps> ReadShortcutsMenuIconsBlocking(
+TypedResult<ShortcutsMenuIconBitmaps> ReadShortcutsMenuIconsBlocking(
     scoped_refptr<FileUtilsWrapper> utils,
     const base::FilePath& web_apps_directory,
     const AppId& app_id,
     const std::vector<IconSizes>& shortcuts_menu_icons_sizes) {
-  Result<ShortcutsMenuIconBitmaps> results;
+  TypedResult<ShortcutsMenuIconBitmaps> results;
   int curr_index = 0;
   for (const auto& icon_sizes : shortcuts_menu_icons_sizes) {
     IconBitmaps result;
@@ -594,7 +333,7 @@ Result<ShortcutsMenuIconBitmaps> ReadShortcutsMenuIconsBlocking(
       std::map<SquareSizePx, SkBitmap> bitmaps;
 
       for (SquareSizePx icon_size_px : icon_sizes.GetSizesForPurpose(purpose)) {
-        Result<SkBitmap> read_result =
+        TypedResult<SkBitmap> read_result =
             ReadShortcutsMenuIconBlocking(utils, web_apps_directory, app_id,
                                           purpose, curr_index, icon_size_px);
         read_result.DepositErrorLog(results.error_log);
@@ -616,7 +355,7 @@ Result<ShortcutsMenuIconBitmaps> ReadShortcutsMenuIconsBlocking(
 
 // Performs blocking I/O. May be called on another thread.
 // Returns empty vector if any errors occurred.
-Result<std::vector<uint8_t>> ReadCompressedIconBlocking(
+TypedResult<std::vector<uint8_t>> ReadCompressedIconBlocking(
     scoped_refptr<FileUtilsWrapper> utils,
     const base::FilePath& web_apps_directory,
     const IconId& icon_id) {
@@ -690,6 +429,269 @@ void WrapReadCompressedIconCallback(
   std::move(callback).Run(std::move(data));
 }
 
+// A utility that manages writing icons to disk for a single app. Should only be
+// used on an I/O thread.
+class WriteIconsJob {
+ public:
+  static TypedResult<bool> WriteIconsBlocking(
+      scoped_refptr<FileUtilsWrapper> utils,
+      base::FilePath&& web_apps_directory,
+      AppId&& app_id,
+      IconBitmaps&& icon_bitmaps,
+      ShortcutsMenuIconBitmaps&& shortcuts_menu_icon_bitmaps,
+      IconsMap&& other_icons) {
+    WriteIconsJob job(std::move(utils), std::move(web_apps_directory),
+                      std::move(app_id), std::move(icon_bitmaps),
+                      std::move(shortcuts_menu_icon_bitmaps),
+                      std::move(other_icons));
+    return job.Execute();
+  }
+
+  WriteIconsJob(const WriteIconsJob& other) = delete;
+  WriteIconsJob& operator=(const WriteIconsJob& other) = delete;
+
+ private:
+  WriteIconsJob(scoped_refptr<FileUtilsWrapper> utils,
+                base::FilePath&& web_apps_directory,
+                AppId&& app_id,
+                IconBitmaps&& icon_bitmaps,
+                ShortcutsMenuIconBitmaps&& shortcuts_menu_icon_bitmaps,
+                IconsMap&& other_icons)
+      : utils_(utils),
+        web_apps_directory_(std::move(web_apps_directory)),
+        app_id_(std::move(app_id)),
+        icon_bitmaps_(std::move(icon_bitmaps)),
+        shortcuts_menu_icon_bitmaps_(std::move(shortcuts_menu_icon_bitmaps)),
+        other_icons_(std::move(other_icons)) {}
+  ~WriteIconsJob() = default;
+
+  TypedResult<bool> Execute() {
+    // Write product icons directly in the app's directory.
+    auto result = AtomicallyWriteIcons(
+        base::BindRepeating(&WriteIconsJob::WriteProductIcons,
+                            base::Unretained(this)),
+        /*subdir_for_icons=*/{});
+    if (result.HasErrors())
+      return result;
+
+    if (!shortcuts_menu_icon_bitmaps_.empty()) {
+      result = AtomicallyWriteIcons(
+          base::BindRepeating(&WriteIconsJob::WriteShortcutsMenuIcons,
+                              base::Unretained(this)),
+          /*subdir_for_icons=*/GetAppShortcutsMenuIconsRelativeDirectory(
+              IconPurpose::ANY));
+
+      if (result.HasErrors())
+        return result;
+    }
+
+    if (!other_icons_.empty()) {
+      result = AtomicallyWriteIcons(
+          base::BindRepeating(&WriteIconsJob::WriteOtherIcons,
+                              base::Unretained(this)),
+          /*subdir_for_icons=*/
+          GetOtherIconsRelativeDirectory());
+    }
+
+    return result;
+  }
+
+  // Manages writing a set of icons to a particular location on disk, making a
+  // best-effort to make it all-or-nothing. Returns true if no errors occurred.
+  // This is used for several kinds of icon data. The passed callbacks allow for
+  // varying the implementation based on data type. `write_icons_callback` is
+  // expected to write the icons data under the passed base directory.
+  // `subdir_for_icons` is a relative FilePath representing a directory which
+  // holds all the data written by `write_icons_callback`. The path is relative
+  // to the app's manifest resources directory.
+  TypedResult<bool> AtomicallyWriteIcons(
+      const base::RepeatingCallback<
+          TypedResult<bool>(const base::FilePath& path)>& write_icons_callback,
+      const base::FilePath& subdir_for_icons) {
+    DCHECK(!subdir_for_icons.IsAbsolute());
+    // Create the temp directory under the web apps root.
+    // This guarantees it is on the same file system as the WebApp's eventual
+    // install target.
+    base::FilePath temp_dir = GetWebAppsTempDirectory(web_apps_directory_);
+    TypedResult<bool> create_result = CreateDirectory(temp_dir);
+    if (create_result.HasErrors())
+      return create_result;
+
+    base::ScopedTempDir app_temp_dir;
+    if (!app_temp_dir.CreateUniqueTempDirUnderPath(temp_dir)) {
+      return {
+          .error_log = {CreateError({"Could not create temp directory under: ",
+                                     temp_dir.AsUTF8Unsafe()})}};
+    }
+
+    base::FilePath manifest_resources_directory =
+        GetManifestResourcesDirectory(web_apps_directory_);
+    create_result = CreateDirectory(manifest_resources_directory);
+    if (create_result.HasErrors())
+      return create_result;
+
+    TypedResult<bool> write_result =
+        write_icons_callback.Run(app_temp_dir.GetPath());
+    if (write_result.HasErrors())
+      return write_result;
+
+    base::FilePath app_dir =
+        GetManifestResourcesDirectoryForApp(web_apps_directory_, app_id_);
+    base::FilePath final_icons_dir = app_dir.Append(subdir_for_icons);
+    // Create app_dir if it doesn't already exist. We'll need this for
+    // WriteShortcutsMenuIconsData unittests.
+    if (final_icons_dir != app_dir) {
+      create_result = CreateDirectory(app_dir);
+      if (create_result.HasErrors())
+        return create_result;
+    }
+
+    // Delete the destination. Needed for update. Ignore the result.
+    utils_->DeleteFileRecursively(final_icons_dir);
+
+    base::FilePath temp_icons_dir =
+        app_temp_dir.GetPath().Append(subdir_for_icons);
+    // Commit: move whole icons data dir to final destination in one mv
+    // operation.
+    if (!utils_->Move(temp_icons_dir, final_icons_dir)) {
+      return {.error_log = {CreateError(
+                  {"Could not move: ", temp_icons_dir.AsUTF8Unsafe(),
+                   " to: ", final_icons_dir.AsUTF8Unsafe()})}};
+    }
+
+    return {.value = true};
+  }
+
+  TypedResult<bool> WriteProductIcons(const base::FilePath& base_dir) {
+    for (IconPurpose purpose : kIconPurposes) {
+      base::FilePath icons_dir = GetProductIconsDirectory(base_dir, purpose);
+
+      auto create_result = CreateDirectory(icons_dir);
+      if (create_result.HasErrors())
+        return create_result;
+
+      for (const std::pair<const SquareSizePx, SkBitmap>& icon_bitmap :
+           icon_bitmaps_.GetBitmapsForPurpose(purpose)) {
+        TypedResult<bool> write_result =
+            EncodeAndWriteIcon(icons_dir, icon_bitmap.second);
+        if (write_result.HasErrors())
+          return write_result;
+      }
+    }
+
+    return {.value = true};
+  }
+
+  // Writes shortcuts menu icons files to the Shortcut Icons directory. Creates
+  // a new directory per shortcut item using its index in the vector.
+  TypedResult<bool> WriteShortcutsMenuIcons(
+      const base::FilePath& app_manifest_resources_directory) {
+    for (IconPurpose purpose : kIconPurposes) {
+      const base::FilePath shortcuts_menu_icons_dir =
+          app_manifest_resources_directory.Append(
+              GetAppShortcutsMenuIconsRelativeDirectory(purpose));
+      auto create_result = CreateDirectory(shortcuts_menu_icons_dir);
+      if (create_result.HasErrors())
+        return create_result;
+
+      int shortcut_index = -1;
+      for (const IconBitmaps& icon_bitmaps : shortcuts_menu_icon_bitmaps_) {
+        ++shortcut_index;
+        const std::map<SquareSizePx, SkBitmap>& bitmaps =
+            icon_bitmaps.GetBitmapsForPurpose(purpose);
+        if (bitmaps.empty())
+          continue;
+
+        const base::FilePath shortcuts_menu_icon_dir =
+            shortcuts_menu_icons_dir.AppendASCII(
+                base::NumberToString(shortcut_index));
+        create_result = CreateDirectory(shortcuts_menu_icon_dir);
+        if (create_result.HasErrors())
+          return create_result;
+
+        for (const std::pair<const SquareSizePx, SkBitmap>& icon_bitmap :
+             bitmaps) {
+          TypedResult<bool> write_result =
+              EncodeAndWriteIcon(shortcuts_menu_icon_dir, icon_bitmap.second);
+          if (write_result.HasErrors())
+            return write_result;
+        }
+      }
+    }
+    return {.value = true};
+  }
+
+  TypedResult<bool> WriteOtherIcons(
+      const base::FilePath& app_manifest_resources_directory) {
+    const base::FilePath general_icons_dir =
+        app_manifest_resources_directory.Append(
+            GetOtherIconsRelativeDirectory());
+    auto create_result = CreateDirectory(general_icons_dir);
+    if (create_result.HasErrors())
+      return create_result;
+
+    for (const std::pair<const GURL, std::vector<SkBitmap>>& entry :
+         other_icons_) {
+      const base::FilePath subdir =
+          general_icons_dir.AppendASCII(GetDirectoryNameForUrl(entry.first));
+      create_result = CreateDirectory(subdir);
+      if (create_result.HasErrors())
+        return create_result;
+
+      const std::vector<SkBitmap>& icon_bitmaps = entry.second;
+      for (const SkBitmap& icon_bitmap : icon_bitmaps) {
+        TypedResult<bool> write_result =
+            EncodeAndWriteIcon(subdir, icon_bitmap);
+        if (write_result.HasErrors())
+          return write_result;
+      }
+    }
+    return {.value = true};
+  }
+
+  TypedResult<bool> CreateDirectory(const base::FilePath& path) {
+    if (!utils_->CreateDirectory(path)) {
+      return {.error_log = {CreateError(
+                  {"Could not create directory: ", path.AsUTF8Unsafe()})}};
+    }
+
+    return {.value = true};
+  }
+
+  // Encodes `bitmap` as a PNG and writes to the given directory.
+  TypedResult<bool> EncodeAndWriteIcon(const base::FilePath& icons_dir,
+                                       const SkBitmap& bitmap) {
+    DCHECK_NE(bitmap.colorType(), kUnknown_SkColorType);
+    DCHECK_EQ(bitmap.width(), bitmap.height());
+    base::FilePath icon_file =
+        icons_dir.AppendASCII(base::StringPrintf("%i.png", bitmap.width()));
+
+    std::vector<unsigned char> image_data;
+    const bool discard_transparency = false;
+    if (!gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, discard_transparency,
+                                           &image_data)) {
+      return {.error_log = {CreateError({"Could not encode icon data for file ",
+                                         icon_file.AsUTF8Unsafe()})}};
+    }
+
+    const char* image_data_ptr = reinterpret_cast<const char*>(&image_data[0]);
+    int size = base::checked_cast<int>(image_data.size());
+    if (utils_->WriteFile(icon_file, image_data_ptr, size) != size) {
+      return {.error_log = {CreateError(
+                  {"Could not write icon file: ", icon_file.AsUTF8Unsafe()})}};
+    }
+
+    return {.value = true};
+  }
+
+  scoped_refptr<FileUtilsWrapper> utils_;
+  base::FilePath web_apps_directory_;
+  AppId app_id_;
+  IconBitmaps icon_bitmaps_;
+  ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps_;
+  IconsMap other_icons_;
+};
+
 }  // namespace
 
 WebAppIconManager::WebAppIconManager(Profile* profile,
@@ -713,10 +715,10 @@ void WebAppIconManager::WriteData(
 
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, kTaskTraits,
-      base::BindOnce(WriteDataBlocking, utils_, web_apps_directory_,
-                     std::move(app_id), std::move(icon_bitmaps),
-                     std::move(shortcuts_menu_icon_bitmaps),
-                     std::move(other_icons_map)),
+      base::BindOnce(
+          &WriteIconsJob::WriteIconsBlocking, utils_, web_apps_directory_,
+          std::move(app_id), std::move(icon_bitmaps),
+          std::move(shortcuts_menu_icon_bitmaps), std::move(other_icons_map)),
       base::BindOnce(&LogErrorsCallCallback<bool>,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
