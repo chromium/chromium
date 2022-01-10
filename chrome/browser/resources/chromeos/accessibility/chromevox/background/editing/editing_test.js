@@ -2117,3 +2117,35 @@ TEST_F('ChromeVoxEditingTest', 'ContextMenus', function() {
         .replay();
   });
 });
+
+TEST_F('ChromeVoxEditingTest', 'NativeCharWordCommands', function() {
+  const mockFeedback = this.createMockFeedback();
+  const site = `
+    <p>start</p>
+    <div role="textbox" contenteditable>This is a test</div>
+  `;
+  this.runWithLoadedTree(site, async function(root) {
+    await this.focusFirstTextField(root);
+
+    const textField = root.find({role: RoleType.TEXT_FIELD});
+    mockFeedback.expectSpeech('Text area')
+        .call(this.press(KeyCode.HOME, {ctrl: true}))
+        .call(this.press(KeyCode.RIGHT))
+        .expectSpeech('h')
+        .call(this.press(KeyCode.RIGHT))
+        .expectSpeech('i')
+        .call(this.press(KeyCode.LEFT))
+        .expectSpeech('h')
+
+        .call(this.press(KeyCode.RIGHT, {ctrl: true}))
+        .expectSpeech('This')
+        .call(this.press(KeyCode.RIGHT, {ctrl: true}))
+        .expectSpeech('is')
+        .call(this.press(KeyCode.LEFT, {ctrl: true}))
+        .expectSpeech('is')
+        .call(this.press(KeyCode.LEFT, {ctrl: true}))
+        .expectSpeech('This')
+
+        .replay();
+  });
+});

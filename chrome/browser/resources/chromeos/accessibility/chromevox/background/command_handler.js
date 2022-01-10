@@ -442,7 +442,9 @@ CommandHandler.onCommand = function(command) {
         DesktopAutomationHandler.instance.textEditHandler.injectInferredIntents(
             [{
               command: chrome.automation.IntentCommandType.MOVE_SELECTION,
-              textBoundary: chrome.automation.IntentTextBoundaryType.WORD_END
+              textBoundary: command === 'nativeNextWord' ?
+                  chrome.automation.IntentTextBoundaryType.WORD_END :
+                  chrome.automation.IntentTextBoundaryType.WORD_START
             }]);
       }
       return true;
