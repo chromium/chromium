@@ -1127,6 +1127,10 @@ void HTMLElement::setSpellcheck(bool enable) {
 
 void HTMLElement::click() {
   DispatchSimulatedClick(nullptr, SimulatedClickCreationScope::kFromScript);
+  if (IsA<HTMLInputElement>(this)) {
+    UseCounter::Count(GetDocument(),
+                      WebFeature::kHTMLInputElementSimulatedClick);
+  }
 }
 
 void HTMLElement::AccessKeyAction(SimulatedClickCreationScope creation_scope) {
