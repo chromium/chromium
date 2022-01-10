@@ -535,9 +535,8 @@ class DescriberText(Describer):
           self._DescribeDeltaDict('Build config', diff.before.build_config,
                                   diff.after.build_config))
       for c in diff.containers:
-        name = c.name
         desc_list.append(('', ))
-        desc_list.append(('Container: <%s>' % name, ))
+        desc_list.append(('Container<%s>: %s' % (c.short_name, c.name), ))
         desc_list.append(
             self._DescribeDeltaDict('Metadata',
                                     c.before.metadata,
@@ -581,7 +580,7 @@ class DescriberText(Describer):
     for c in containers:
       if c.name:
         desc_list.append(('', ))
-        desc_list.append(('Container <%s>' % c.name, ))
+        desc_list.append(('Container<%s>: %s' % (c.short_name, c.name), ))
       desc_list.append(('Metadata:', ))
       desc_list.append('    %s' % line for line in DescribeDict(c.metadata))
       unsummed_sections, summed_sections = c.ClassifySections()

@@ -1082,6 +1082,7 @@ class SymbolGroup(BaseSymbol):
 
   def WhereInContainer(self, container):
     """|container| can be name, short_name, or container instance."""
+    container = str(container)  # Allow int to be used for short names.
     if isinstance(container, str):
       if container.isdigit():
         return self.Filter(lambda s: s.container_short_name == container)
