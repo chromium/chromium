@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.webauth;
 import static org.chromium.base.test.util.ScalableTimeout.scaleTimeout;
 
 import android.content.Intent;
+import android.os.Parcel;
 import android.os.SystemClock;
 import android.util.Base64;
 
@@ -44,8 +45,6 @@ import org.chromium.payments.mojom.PaymentCurrencyAmount;
 import org.chromium.url.internal.mojom.Origin;
 import org.chromium.url.mojom.Url;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 
@@ -77,9 +76,10 @@ import java.util.concurrent.TimeUnit;
 public class Fido2ApiTestHelper {
     // Test data.
     private static final String FILLER_ERROR_MSG = "Error Error";
+    private static final int OBJECT_MAGIC = 20293;
 
     /**
-     * This byte array is produced by
+     * This byte array was produced by
      * com.google.android.gms.fido.fido2.api.common.AuthenticatorAttestationResponse with test data,
      * i.e.:
      * AuthenticatorAttestationResponse response =
@@ -89,27 +89,30 @@ public class Fido2ApiTestHelper {
      *                 .setKeyHandle(TEST_KEY_HANDLE)
      *                 .build().serializeToBytes();
      *
-     * NOTE: See NO_BUILDER comment, above.
+     * NOTE: See NO_BUILDER comment, above. Additionally this byte array was modified by prepending
+     * an object header and tag with value four so that it's compatible with
+     * FIDO2_KEY_CREDENTIAL_EXTRA.
      */
     private static final byte[] TEST_AUTHENTICATOR_ATTESTATION_RESPONSE = new byte[] {69, 79, -1,
-            -1, 44, 1, 0, 0, 2, 0, -1, -1, 36, 0, 0, 0, 32, 0, 0, 0, 5, 6, 7, 8, 5, 6, 7, 8, 5, 6,
-            7, 8, 5, 6, 7, 8, 5, 6, 7, 8, 5, 6, 7, 8, 5, 6, 7, 8, 5, 6, 7, 9, 3, 0, -1, -1, 8, 0, 0,
-            0, 3, 0, 0, 0, 4, 5, 6, 0, 4, 0, -1, -1, -24, 0, 0, 0, -30, 0, 0, 0, -93, 99, 102, 109,
-            116, 100, 110, 111, 110, 101, 103, 97, 116, 116, 83, 116, 109, 116, -96, 104, 97, 117,
-            116, 104, 68, 97, 116, 97, 88, -60, 38, -67, 114, 120, -66, 70, 55, 97, -15, -6, -95,
-            -79, 10, -76, -60, -8, 38, 112, 38, -100, 65, 12, 114, 106, 31, -42, -32, 88, 85, -31,
-            -101, 70, 65, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 64, 124,
-            80, -60, -114, 69, -117, 44, -120, 122, -62, 63, 104, 18, -66, 2, -3, -56, 35, -24, 66,
-            -4, 74, 48, -128, -52, 80, -100, 46, 97, 93, -25, -21, -53, 40, 123, 90, -107, -20, 111,
-            -4, 15, 64, 122, 15, -84, -21, -33, -15, 26, 11, 35, 36, -49, 116, 52, -74, 107, 63,
-            113, -59, 125, -27, -120, -63, -91, 1, 2, 3, 38, 32, 1, 33, 88, 32, -75, -80, 118, 102,
-            -14, 124, -108, -9, -27, -91, 59, -48, -92, -102, -38, -44, 92, 95, 14, -62, 41, -117,
-            -70, 101, 9, 64, 35, 31, -20, 79, -71, -71, 34, 88, 32, -24, -33, 64, 97, -31, -34, 96,
-            -83, -119, -25, 21, -14, -56, -70, -37, -116, -21, -33, -128, -66, 61, 41, 107, 16, -25,
-            120, 106, -113, 54, -62, -102, 42, 0, 0};
+            -1, 60, 1, 0, 0, 4, 0, -1, -1, 52, 1, 0, 0, 69, 79, -1, -1, 44, 1, 0, 0, 2, 0, -1, -1,
+            36, 0, 0, 0, 32, 0, 0, 0, 5, 6, 7, 8, 5, 6, 7, 8, 5, 6, 7, 8, 5, 6, 7, 8, 5, 6, 7, 8, 5,
+            6, 7, 8, 5, 6, 7, 8, 5, 6, 7, 9, 3, 0, -1, -1, 8, 0, 0, 0, 3, 0, 0, 0, 4, 5, 6, 0, 4, 0,
+            -1, -1, -24, 0, 0, 0, -30, 0, 0, 0, -93, 99, 102, 109, 116, 100, 110, 111, 110, 101,
+            103, 97, 116, 116, 83, 116, 109, 116, -96, 104, 97, 117, 116, 104, 68, 97, 116, 97, 88,
+            -60, 38, -67, 114, 120, -66, 70, 55, 97, -15, -6, -95, -79, 10, -76, -60, -8, 38, 112,
+            38, -100, 65, 12, 114, 106, 31, -42, -32, 88, 85, -31, -101, 70, 65, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 64, 124, 80, -60, -114, 69, -117, 44, -120,
+            122, -62, 63, 104, 18, -66, 2, -3, -56, 35, -24, 66, -4, 74, 48, -128, -52, 80, -100,
+            46, 97, 93, -25, -21, -53, 40, 123, 90, -107, -20, 111, -4, 15, 64, 122, 15, -84, -21,
+            -33, -15, 26, 11, 35, 36, -49, 116, 52, -74, 107, 63, 113, -59, 125, -27, -120, -63,
+            -91, 1, 2, 3, 38, 32, 1, 33, 88, 32, -75, -80, 118, 102, -14, 124, -108, -9, -27, -91,
+            59, -48, -92, -102, -38, -44, 92, 95, 14, -62, 41, -117, -70, 101, 9, 64, 35, 31, -20,
+            79, -71, -71, 34, 88, 32, -24, -33, 64, 97, -31, -34, 96, -83, -119, -25, 21, -14, -56,
+            -70, -37, -116, -21, -33, -128, -66, 61, 41, 107, 16, -25, 120, 106, -113, 54, -62,
+            -102, 42, 0, 0};
 
     /**
-     * This byte array is produced by
+     * This byte array was produced by
      * com.google.android.gms.fido.fido2.api.common.AuthenticatorAssertionResponse with test data,
      * i.e.:
      * AuthenticatorAssertionResponse.Builder()
@@ -119,13 +122,16 @@ public class Fido2ApiTestHelper {
      *         .setKeyHandle(TEST_KEY_HANDLE)
      *         .build().serializeToBytes();
      *
-     * NOTE: See NO_BUILDER comment, above.
+     * NOTE: See NO_BUILDER comment, above. Additionally this byte array was modified by prepending
+     * an object header and tag with value five so that it's compatible with
+     * FIDO2_KEY_CREDENTIAL_EXTRA.
      */
-    private static final byte[] TEST_AUTHENTICATOR_ASSERTION_RESPONSE = new byte[] {69, 79, -1, -1,
-            92, 0, 0, 0, 2, 0, -1, -1, 36, 0, 0, 0, 32, 0, 0, 0, 5, 6, 7, 8, 5, 6, 7, 8, 5, 6, 7, 8,
-            5, 6, 7, 8, 5, 6, 7, 8, 5, 6, 7, 8, 5, 6, 7, 8, 5, 6, 7, 9, 3, 0, -1, -1, 8, 0, 0, 0, 3,
-            0, 0, 0, 4, 5, 6, 0, 4, 0, -1, -1, 8, 0, 0, 0, 3, 0, 0, 0, 7, 8, 9, 0, 5, 0, -1, -1, 8,
-            0, 0, 0, 3, 0, 0, 0, 10, 11, 12, 0};
+    private static final byte[] TEST_AUTHENTICATOR_ASSERTION_RESPONSE =
+            new byte[] {69, 79, -1, -1, 108, 0, 0, 0, 5, 0, -1, -1, 100, 0, 0, 0, 69, 79, -1, -1,
+                    92, 0, 0, 0, 2, 0, -1, -1, 36, 0, 0, 0, 32, 0, 0, 0, 5, 6, 7, 8, 5, 6, 7, 8, 5,
+                    6, 7, 8, 5, 6, 7, 8, 5, 6, 7, 8, 5, 6, 7, 8, 5, 6, 7, 8, 5, 6, 7, 9, 3, 0, -1,
+                    -1, 8, 0, 0, 0, 3, 0, 0, 0, 4, 5, 6, 0, 4, 0, -1, -1, 8, 0, 0, 0, 3, 0, 0, 0, 7,
+                    8, 9, 0, 5, 0, -1, -1, 8, 0, 0, 0, 3, 0, 0, 0, 10, 11, 12, 0};
 
     /**
      * This byte array is produced by
@@ -178,62 +184,6 @@ public class Fido2ApiTestHelper {
             2, 0, 0, 0, 2, 0, 4, 0, 2, 0, 0, 0, 3, 0, 4, 0, 4, 0, 0, 0, 32, 0, 0, 0, 69, 79, -1, -1,
             24, 0, 0, 0, 1, 0, 4, 0, 0, 2, 0, 0, 2, 0, 4, 0, 1, 0, 0, 0, 3, 0, 4, 0, 1, 0, 0, 0};
 
-    /**
-     * The following byte arrays are produced by
-     * com.google.android.gms.fido.fido2.api.common.AuthenticatorErrorResponse with
-     * com.google.android.gms.fido.fido2.api.common.ErrorCode and error message;
-     * i.e.:
-     * AuthenticatorErrorResponse.Builder()
-     *                           .setErrorCode(errorCode)
-     *                           .setErrorMessage(errorMsg)
-     *                           .build().serializeToBytes();
-     *
-     * NOTE: See NO_BUILDER comment, above.
-     */
-    private static final byte[] TEST_ERROR_WITH_FILLER_ERROR_MSG_RESPONSE_FRONT =
-            new byte[] {69, 79, -1, -1, 44, 0, 0, 0, 2, 0, 4, 0};
-    private static final byte[] TEST_ERROR_WITH_FILLER_ERROR_MSG_RESPONSE_TAIL =
-            new byte[] {0, 0, 0, 3, 0, -1, -1, 28, 0, 0, 0, 11, 0, 0, 0, 69, 0, 114, 0, 114, 0, 111,
-                    0, 114, 0, 32, 0, 69, 0, 114, 0, 114, 0, 111, 0, 114, 0, 0, 0};
-    private static final byte[] TEST_ERROR_WITH_NULL_ERROR_MSG_RESPONSE_FRONT = {
-            69, 79, -1, -1, 8, 0, 0, 0, 2, 0, 4, 0};
-    private static final byte[] TEST_ERROR_WITH_NULL_ERROR_MSG_RESPONSE_TAIL = {0, 0, 0};
-    private static final byte[] TEST_CONSTRAINTERROR_NOSCREENLOCK_RESPONSE =
-            new byte[] {69, 79, -1, -1, 116, 0, 0, 0, 2, 0, 4, 0, 29, 0, 0, 0, 3, 0, -1, -1, 100, 0,
-                    0, 0, 46, 0, 0, 0, 84, 0, 104, 0, 101, 0, 32, 0, 100, 0, 101, 0, 118, 0, 105, 0,
-                    99, 0, 101, 0, 32, 0, 105, 0, 115, 0, 32, 0, 110, 0, 111, 0, 116, 0, 32, 0, 115,
-                    0, 101, 0, 99, 0, 117, 0, 114, 0, 101, 0, 100, 0, 32, 0, 119, 0, 105, 0, 116, 0,
-                    104, 0, 32, 0, 97, 0, 110, 0, 121, 0, 32, 0, 115, 0, 99, 0, 114, 0, 101, 0, 101,
-                    0, 110, 0, 32, 0, 108, 0, 111, 0, 99, 0, 107, 0, 0, 0, 0, 0};
-    private static final byte[] TEST_EMPTYALLOWCRED_RESPONSE1 = new byte[] {69, 79, -1, -1, -128, 0,
-            0, 0, 2, 0, 4, 0, 35, 0, 0, 0, 3, 0, -1, -1, 112, 0, 0, 0, 52, 0, 0, 0, 65, 0, 117, 0,
-            116, 0, 104, 0, 101, 0, 110, 0, 116, 0, 105, 0, 99, 0, 97, 0, 116, 0, 105, 0, 111, 0,
-            110, 0, 32, 0, 114, 0, 101, 0, 113, 0, 117, 0, 101, 0, 115, 0, 116, 0, 32, 0, 109, 0,
-            117, 0, 115, 0, 116, 0, 32, 0, 104, 0, 97, 0, 118, 0, 101, 0, 32, 0, 110, 0, 111, 0,
-            110, 0, 45, 0, 101, 0, 109, 0, 112, 0, 116, 0, 121, 0, 32, 0, 97, 0, 108, 0, 108, 0,
-            111, 0, 119, 0, 76, 0, 105, 0, 115, 0, 116, 0, 0, 0, 0, 0};
-    private static final byte[] TEST_EMPTYALLOWCRED_RESPONSE2 = new byte[] {69, 79, -1, -1, -120, 0,
-            0, 0, 2, 0, 4, 0, 35, 0, 0, 0, 3, 0, -1, -1, 120, 0, 0, 0, 57, 0, 0, 0, 82, 0, 101, 0,
-            113, 0, 117, 0, 101, 0, 115, 0, 116, 0, 32, 0, 100, 0, 111, 0, 101, 0, 115, 0, 110, 0,
-            39, 0, 116, 0, 32, 0, 104, 0, 97, 0, 118, 0, 101, 0, 32, 0, 97, 0, 32, 0, 118, 0, 97, 0,
-            108, 0, 105, 0, 100, 0, 32, 0, 108, 0, 105, 0, 115, 0, 116, 0, 32, 0, 111, 0, 102, 0,
-            32, 0, 97, 0, 108, 0, 108, 0, 111, 0, 119, 0, 101, 0, 100, 0, 32, 0, 99, 0, 114, 0, 101,
-            0, 100, 0, 101, 0, 110, 0, 116, 0, 105, 0, 97, 0, 108, 0, 115, 0, 46, 0, 0, 0};
-    private static final byte[] TEST_INVALIDSTATEERROR_DUPLICATE_REGISTRATION_RESPONSE =
-            new byte[] {69, 79, -1, -1, -116, 0, 0, 0, 2, 0, 4, 0, 11, 0, 0, 0, 3, 0, -1, -1, 124,
-                    0, 0, 0, 58, 0, 0, 0, 79, 0, 110, 0, 101, 0, 32, 0, 111, 0, 102, 0, 32, 0, 116,
-                    0, 104, 0, 101, 0, 32, 0, 101, 0, 120, 0, 99, 0, 108, 0, 117, 0, 100, 0, 101, 0,
-                    100, 0, 32, 0, 99, 0, 114, 0, 101, 0, 100, 0, 101, 0, 110, 0, 116, 0, 105, 0,
-                    97, 0, 108, 0, 115, 0, 32, 0, 101, 0, 120, 0, 105, 0, 115, 0, 116, 0, 115, 0,
-                    32, 0, 111, 0, 110, 0, 32, 0, 116, 0, 104, 0, 101, 0, 32, 0, 108, 0, 111, 0, 99,
-                    0, 97, 0, 108, 0, 32, 0, 100, 0, 101, 0, 118, 0, 105, 0, 99, 0, 101, 0, 0, 0, 0,
-                    0};
-    private static final byte[] TEST_UNKNOWNERROR_CRED_NOT_RECOGNIZED_RESPONSE =
-            new byte[] {69, 79, -1, -1, 68, 0, 0, 0, 2, 0, 4, 0, 28, 0, 0, 0, 3, 0, -1, -1, 52, 0,
-                    0, 0, 22, 0, 0, 0, 76, 0, 111, 0, 119, 0, 32, 0, 108, 0, 101, 0, 118, 0, 101, 0,
-                    108, 0, 32, 0, 101, 0, 114, 0, 114, 0, 111, 0, 114, 0, 32, 0, 48, 0, 120, 0, 54,
-                    0, 97, 0, 56, 0, 48, 0, 0, 0, 0, 0};
-
     private static final byte[] TEST_KEY_HANDLE = BaseEncoding.base16().decode(
             "0506070805060708050607080506070805060708050607080506070805060709");
     private static final String TEST_ENCODED_KEY_HANDLE = Base64.encodeToString(
@@ -272,7 +222,7 @@ public class Fido2ApiTestHelper {
      */
     public static Intent createSuccessfulMakeCredentialIntent() {
         Intent intent = new Intent();
-        intent.putExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA, TEST_AUTHENTICATOR_ATTESTATION_RESPONSE);
+        intent.putExtra(Fido.FIDO2_KEY_CREDENTIAL_EXTRA, TEST_AUTHENTICATOR_ATTESTATION_RESPONSE);
         return intent;
     }
 
@@ -362,7 +312,7 @@ public class Fido2ApiTestHelper {
      */
     public static Intent createSuccessfulGetAssertionIntent() {
         Intent intent = new Intent();
-        intent.putExtra(Fido.FIDO2_KEY_RESPONSE_EXTRA, TEST_AUTHENTICATOR_ASSERTION_RESPONSE);
+        intent.putExtra(Fido.FIDO2_KEY_CREDENTIAL_EXTRA, TEST_AUTHENTICATOR_ASSERTION_RESPONSE);
         return intent;
     }
 
@@ -420,84 +370,43 @@ public class Fido2ApiTestHelper {
         Assert.assertTrue(elapsedTime < TIMEOUT_MS);
     }
 
-    /**
-     * Generates error response byte array with error message that only differs by a single
-     * errorCode byte.
-     * @return Error response byte array.
-     */
-    private static byte[] generateErrorResponseBytesWithErrorMessage(Integer errorCode) {
-        byte errorByte = errorCode.byteValue();
-        ByteArrayOutputStream error_response_output = new ByteArrayOutputStream();
-        try {
-            error_response_output.write(TEST_ERROR_WITH_FILLER_ERROR_MSG_RESPONSE_FRONT);
-        } catch (IOException e) {
-            e.printStackTrace();
+    private static void appendErrorResponseToParcel(
+            int errorCode, @Nullable String message, Parcel parcel) {
+        final int a = writeHeader(OBJECT_MAGIC, parcel);
+        final int b = writeHeader(6, parcel);
+        final int c = writeHeader(OBJECT_MAGIC, parcel);
+
+        int z = writeHeader(2, parcel);
+        parcel.writeInt(errorCode);
+        writeLength(z, parcel);
+
+        if (message != null) {
+            z = writeHeader(3, parcel);
+            parcel.writeString(message);
+            writeLength(z, parcel);
         }
-        try {
-            error_response_output.write(new byte[] {errorByte});
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            error_response_output.write(TEST_ERROR_WITH_FILLER_ERROR_MSG_RESPONSE_TAIL);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return error_response_output.toByteArray();
+
+        writeLength(c, parcel);
+        writeLength(b, parcel);
+        writeLength(a, parcel);
     }
 
-    /**
-     * Generates error response byte array without error message that only differs by a single
-     * errorCode byte.
-     * @return Error response byte array.
-     */
-    private static byte[] generateErrorResponseBytesWithoutErrorMessage(Integer errorCode) {
-        byte errorByte = errorCode.byteValue();
-        ByteArrayOutputStream error_response_output = new ByteArrayOutputStream();
-        try {
-            error_response_output.write(TEST_ERROR_WITH_NULL_ERROR_MSG_RESPONSE_FRONT);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            error_response_output.write(new byte[] {errorByte});
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            error_response_output.write(TEST_ERROR_WITH_NULL_ERROR_MSG_RESPONSE_TAIL);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return error_response_output.toByteArray();
+    private static int writeHeader(int tag, Parcel parcel) {
+        parcel.writeInt(0xffff0000 | tag);
+        return startLength(parcel);
     }
 
-    /**
-     * Constructs corresponding error response byte array based on errorCode and errorMsg.
-     * @return Error response byte array.
-     */
-    private static byte[] constructErrorResponseBytes(
-            ErrorCode errorCode, @Nullable String errorMsg) {
-        if (errorMsg == null) {
-            return generateErrorResponseBytesWithoutErrorMessage(errorCode.getCode());
-        }
-        if (FILLER_ERROR_MSG.equals(errorMsg)) {
-            return generateErrorResponseBytesWithErrorMessage(errorCode.getCode());
-        }
-        switch (errorMsg) {
-            case "The device is not secured with any screen lock":
-                return TEST_CONSTRAINTERROR_NOSCREENLOCK_RESPONSE;
-            case "One of the excluded credentials exists on the local device":
-                return TEST_INVALIDSTATEERROR_DUPLICATE_REGISTRATION_RESPONSE;
-            case "Authentication request must have non-empty allowList":
-                return TEST_EMPTYALLOWCRED_RESPONSE1;
-            case "Request doesn't have a valid list of allowed credentials.":
-                return TEST_EMPTYALLOWCRED_RESPONSE2;
-            case "Low level error 0x6a80":
-                return TEST_UNKNOWNERROR_CRED_NOT_RECOGNIZED_RESPONSE;
-            default:
-                return new byte[] {};
-        }
+    private static int startLength(Parcel parcel) {
+        int pos = parcel.dataPosition();
+        parcel.writeInt(0xdddddddd);
+        return pos;
+    }
+
+    private static void writeLength(int pos, Parcel parcel) {
+        int totalLength = parcel.dataPosition();
+        parcel.setDataPosition(pos);
+        parcel.writeInt(totalLength - pos - 4);
+        parcel.setDataPosition(totalLength);
     }
 
     /**
@@ -506,9 +415,11 @@ public class Fido2ApiTestHelper {
      * @return an Intent containing the error response.
      */
     public static Intent createErrorIntent(ErrorCode errorCode, @Nullable String errorMsg) {
+        Parcel parcel = Parcel.obtain();
+        appendErrorResponseToParcel(errorCode.getCode(), errorMsg, parcel);
+
         Intent intent = new Intent();
-        intent.putExtra(
-                Fido.FIDO2_KEY_ERROR_EXTRA, constructErrorResponseBytes(errorCode, errorMsg));
+        intent.putExtra(Fido.FIDO2_KEY_CREDENTIAL_EXTRA, parcel.marshall());
         return intent;
     }
 
