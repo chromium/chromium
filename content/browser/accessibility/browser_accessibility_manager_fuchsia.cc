@@ -65,15 +65,6 @@ void BrowserAccessibilityManagerFuchsia::FireFocusEvent(
   }
 }
 
-float BrowserAccessibilityManagerFuchsia::device_scale_factor() const {
-  ui::AccessibilityBridgeFuchsia* accessibility_bridge =
-      GetAccessibilityBridge();
-  if (!accessibility_bridge)
-    return 1.f;
-
-  return accessibility_bridge->GetDeviceScaleFactor();
-}
-
 // static
 ui::AXTreeUpdate BrowserAccessibilityManagerFuchsia::GetEmptyDocument() {
   ui::AXNodeData empty_document;
@@ -116,6 +107,15 @@ void BrowserAccessibilityManagerFuchsia::OnHitTestResult(
 
   GetAccessibilityBridge()->OnAccessibilityHitTestResult(action_request_id,
                                                          hit_result_id);
+}
+
+void BrowserAccessibilityManagerFuchsia::UpdateDeviceScaleFactor() {
+  ui::AccessibilityBridgeFuchsia* accessibility_bridge =
+      GetAccessibilityBridge();
+  if (accessibility_bridge)
+    device_scale_factor_ = accessibility_bridge->GetDeviceScaleFactor();
+  else
+    BrowserAccessibilityManager::UpdateDeviceScaleFactor();
 }
 
 }  // namespace content

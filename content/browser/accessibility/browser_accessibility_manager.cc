@@ -446,8 +446,8 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
 #endif  // DCHECK_IS_ON()
 
   // Update the cached device scale factor.
-  if (delegate_ && !use_custom_device_scale_factor_for_testing_)
-    device_scale_factor_ = delegate_->AccessibilityGetDeviceScaleFactor();
+  if (!use_custom_device_scale_factor_for_testing_)
+    UpdateDeviceScaleFactor();
 
   // Optionally merge multiple tree updates into fewer updates.
   const std::vector<ui::AXTreeUpdate>* tree_updates = &details.updates;
@@ -1820,6 +1820,11 @@ bool BrowserAccessibilityManager::ShouldFireEventForNode(
 
 float BrowserAccessibilityManager::device_scale_factor() const {
   return device_scale_factor_;
+}
+
+void BrowserAccessibilityManager::UpdateDeviceScaleFactor() {
+  if (delegate_)
+    device_scale_factor_ = delegate_->AccessibilityGetDeviceScaleFactor();
 }
 
 }  // namespace content

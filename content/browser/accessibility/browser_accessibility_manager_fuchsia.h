@@ -33,7 +33,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerFuchsia
                       BrowserAccessibility* node,
                       int action_request_id) override;
   void FireFocusEvent(BrowserAccessibility* node) override;
-  float device_scale_factor() const override;
+  void UpdateDeviceScaleFactor() override;
 
   // Sends hit test result to fuchsia.
   void OnHitTestResult(int action_request_id, BrowserAccessibility* node);

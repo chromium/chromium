@@ -455,14 +455,16 @@ class CONTENT_EXPORT BrowserAccessibilityManager
       const BrowserAccessibility& end_object,
       int end_offset);
 
+  // TODO(abrusher): Make this method non-virtual, or preferably remove
+  // altogether. This method is temporarily virtual, because fuchsia has a
+  // different path to retrieve the device scale factor. This is a temporary
+  // measure while the flatland migration is in progress (fxbug.dev/90502).
+  virtual void UpdateDeviceScaleFactor();
+
   // Accessors.
   ui::AXTreeID ax_tree_id() const { return ax_tree_id_; }
 
-  // TODO(abrusher): Make this method non-virtual.
-  // This method is temporarily virtual, because fuchsia has a different path to
-  // retrieve the device scale factor. This is a temporary measure while the
-  // flatland migration is in progress (fxbug.dev/90502).
-  virtual float device_scale_factor() const;
+  float device_scale_factor() const;
   ui::AXTree* ax_tree() const { return tree_.get(); }
 
   // AXTreeObserver implementation.
