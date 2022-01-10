@@ -15,7 +15,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/at_exit.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
@@ -6181,8 +6180,6 @@ class ExtensionServiceTestSimple : public testing::Test {
 };
 
 TEST_F(ExtensionServiceTestSimple, Enabledness) {
-  // Make sure the PluginService singleton is destroyed at the end of the test.
-  base::ShadowingAtExitManager at_exit_manager;
 #if BUILDFLAG(ENABLE_PLUGINS)
   content::PluginService::GetInstance()->Init();
 #endif

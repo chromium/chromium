@@ -2507,9 +2507,7 @@ class ScopedRegisterInternalPlugin {
 };
 
 // We use a slightly different test fixture for tests that touch plugins. SetUp
-// needs to disable plugin discovery and we rely on the base class'
-// ShadowingAtExitManager to discard the tainted PluginService. Unfortunately,
-// PluginService carries global state.
+// needs to disable plugin discovery.
 class DownloadTargetDeterminerTestWithPlugin
     : public DownloadTargetDeterminerTest {
  public:
