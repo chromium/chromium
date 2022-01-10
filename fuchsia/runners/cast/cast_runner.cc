@@ -603,6 +603,7 @@ CastRunner::GetIsolatedContextParamsWithFuchsiaDirs(
     std::vector<fuchsia::web::ContentDirectoryProvider> content_directories) {
   fuchsia::web::CreateContextParams params = GetCommonContextParams();
   EnsureSoftwareVideoDecodersAreDisabled(params.mutable_features());
+  *params.mutable_features() |= fuchsia::web::ContextFeatureFlags::NETWORK;
   params.set_remote_debugging_port(kEphemeralRemoteDebuggingPort);
   params.set_content_directories(std::move(content_directories));
   zx_status_t status = isolated_services_->ConnectClient(

@@ -27,12 +27,9 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/files/scoped_file.h"
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/process_context.h"
-#include "base/json/json_reader.h"
 #include "base/logging.h"
 #include "base/process/process.h"
 #include "base/strings/strcat.h"
@@ -70,9 +67,6 @@
 namespace cr_fuchsia {
 
 namespace {
-
-// Path to the definition file for web Component instances.
-constexpr char kWebInstanceComponentPath[] = "/pkg/meta/web_instance.cmx";
 
 // Test-only URL for web hosting Component instances with WebUI resources.
 const char kWebInstanceWithWebUiComponentUrl[] =
@@ -443,15 +437,105 @@ bool IsFuchsiaCdmSupported() {
 #endif
 }
 
-std::vector<std::string> LoadWebInstanceSandboxServices() {
-  std::string cmx;
-  CHECK(ReadFileToString(base::FilePath(kWebInstanceComponentPath), &cmx));
-  absl::optional<base::Value> json = base::JSONReader::Read(cmx);
-  const base::Value* services = json->FindListPath("sandbox.services");
-  std::vector<std::string> result;
-  for (auto& entry : services->GetList())
-    result.push_back(std::move(entry.GetString()));
-  return result;
+// Returns the names of all services required by a web_instance.cmx component
+// instance configured with the specified set of feature flags. The caller is
+// responsible for verifying that |params| specifies a valid combination of
+// settings, before calling this function.
+std::vector<std::string> GetRequiredServicesForConfig(
+    const fuchsia::web::CreateContextParams& params) {
+  // All web_instance.cmx instances require a common set of services, described
+  // at:
+  //   https://fuchsia.dev/reference/fidl/fuchsia.web#CreateContextParams.service_directory
+  std::vector<std::string> services{
+      "fuchsia.device.NameProvider",     "fuchsia.fonts.Provider",
+      "fuchsia.intl.PropertyProvider",   "fuchsia.logger.LogSink",
+      "fuchsia.memorypressure.Provider", "fuchsia.process.Launcher",
+      "fuchsia.settings.Display",  // Used if preferred theme is DEFAULT.
+      "fuchsia.sysmem.Allocator"};
+
+  // TODO(crbug.com/1209031): Provide these conditionally, once corresponding
+  // ContextFeatureFlags have been defined.
+  services.insert(services.end(), {"fuchsia.camera3.DeviceWatcher",
+                                   "fuchsia.media.ProfileProvider"});
+
+  // Additional services are required depending on particular configuration
+  // parameters.
+  if (params.has_playready_key_system()) {
+    services.emplace_back("fuchsia.media.drm.PlayReady");
+  }
+
+  // Additional services are required dependent on the set of features specified
+  // for the instance, as described at:
+  //   https://fuchsia.dev/reference/fidl/fuchsia.web#ContextFeatureFlags
+  // Features are listed here in order of their enum value.
+  fuchsia::web::ContextFeatureFlags features = {};
+  if (params.has_features())
+    features = params.features();
+
+  // TODO(crbug.com/1020273): Allow access to network services only if the
+  // NETWORK feature flag is set.
+  services.insert(services.end(), {
+                                      "fuchsia.net.interfaces.State",
+                                      "fuchsia.net.name.Lookup",
+                                      "fuchsia.posix.socket.Provider",
+                                  });
+
+  if ((features & fuchsia::web::ContextFeatureFlags::AUDIO) ==
+      fuchsia::web::ContextFeatureFlags::AUDIO) {
+    services.insert(services.end(),
+                    {
+                        "fuchsia.media.Audio",
+                        "fuchsia.media.AudioDeviceEnumerator",
+                        "fuchsia.media.SessionAudioConsumerFactory",
+                    });
+  }
+
+  if ((features & fuchsia::web::ContextFeatureFlags::VULKAN) ==
+      fuchsia::web::ContextFeatureFlags::VULKAN) {
+    services.emplace_back("fuchsia.vulkan.loader.Loader");
+  }
+
+  if ((features & fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER) ==
+      fuchsia::web::ContextFeatureFlags::HARDWARE_VIDEO_DECODER) {
+    services.emplace_back("fuchsia.mediacodec.CodecFactory");
+  }
+
+  // HARDWARE_VIDEO_DECODER_ONLY does not require any additional services.
+
+  if ((features & fuchsia::web::ContextFeatureFlags::WIDEVINE_CDM) ==
+      fuchsia::web::ContextFeatureFlags::WIDEVINE_CDM) {
+    services.emplace_back("fuchsia.media.drm.Widevine");
+  }
+
+  // HEADLESS instances cannot create Views and therefore do not require access
+  // to any View-based services.
+  if ((features & fuchsia::web::ContextFeatureFlags::HEADLESS) !=
+      fuchsia::web::ContextFeatureFlags::HEADLESS) {
+    services.insert(services.end(),
+                    {
+                        "fuchsia.accessibility.semantics.SemanticsManager",
+                        "fuchsia.ui.composition.Allocator",
+                        "fuchsia.ui.composition.Flatland",
+                        "fuchsia.ui.scenic.Scenic",
+                    });
+  }
+
+  if ((features & fuchsia::web::ContextFeatureFlags::LEGACYMETRICS) ==
+      fuchsia::web::ContextFeatureFlags::LEGACYMETRICS) {
+    services.emplace_back("fuchsia.legacymetrics.MetricsRecorder");
+  }
+
+  if ((features & fuchsia::web::ContextFeatureFlags::KEYBOARD) ==
+      fuchsia::web::ContextFeatureFlags::KEYBOARD) {
+    services.emplace_back("fuchsia.ui.input3.Keyboard");
+  }
+
+  if ((features & fuchsia::web::ContextFeatureFlags::VIRTUAL_KEYBOARD) ==
+      fuchsia::web::ContextFeatureFlags::VIRTUAL_KEYBOARD) {
+    services.emplace_back("fuchsia.input.virtualkeyboard.ControllerCreator");
+  }
+
+  return services;
 }
 
 }  // namespace
@@ -513,15 +597,19 @@ zx_status_t WebInstanceHost::CreateInstanceForContext(
     return ZX_ERR_INTERNAL;
   }
 
+  fuchsia::web::ContextFeatureFlags features = {};
+  if (params.has_features())
+    features = params.features();
+
   if (params.has_remote_debugging_port()) {
+    if ((features & fuchsia::web::ContextFeatureFlags::NETWORK) !=
+        fuchsia::web::ContextFeatureFlags::NETWORK) {
+      LOG(WARNING) << "Enabling remote debugging requires NETWORK feature.";
+    }
     launch_args.AppendSwitchNative(
         switches::kRemoteDebuggingPort,
         base::NumberToString(params.remote_debugging_port()));
   }
-
-  fuchsia::web::ContextFeatureFlags features = {};
-  if (params.has_features())
-    features = params.features();
 
   const bool is_headless =
       (features & fuchsia::web::ContextFeatureFlags::HEADLESS) ==
@@ -550,8 +638,8 @@ zx_status_t WebInstanceHost::CreateInstanceForContext(
     // VULKAN is required for DRM-protected video playback. Allow DRM to also be
     // enabled for HEADLESS Contexts, since Vulkan is never required for audio.
     if (!enable_vulkan && !is_headless) {
-      DLOG(ERROR) << "WIDEVINE_CDM and PLAYREADY_CDM features require VULKAN "
-                     " or HEADLESS.";
+      LOG(ERROR) << "WIDEVINE_CDM and PLAYREADY_CDM features require VULKAN "
+                    " or HEADLESS.";
       return ZX_ERR_NOT_SUPPORTED;
     }
     if (!params.has_cdm_data_directory()) {
@@ -717,12 +805,12 @@ zx_status_t WebInstanceHost::CreateInstanceForContext(
   // Pass on the caller's service-directory request.
   launch_info.directory_request = services_request.TakeChannel();
 
-  // Set |additional_services| to redirect requests for all services specified
-  // in the web instance component manifest to be satisfied by the caller-
-  // supplied service directory. This ensures that the instance cannot access
-  // any services outside those provided by the caller.
+  // Set |additional_services| to redirect requests for only those services
+  // required for the specified |params|, to be satisfied by the caller-
+  // supplied service directory. This reduces the risk of an instance being
+  // able to somehow exploit services other than those that it should be using.
   launch_info.additional_services = fuchsia::sys::ServiceList::New();
-  launch_info.additional_services->names = LoadWebInstanceSandboxServices();
+  launch_info.additional_services->names = GetRequiredServicesForConfig(params);
   launch_info.additional_services->host_directory =
       service_directory.TakeChannel();
 
