@@ -124,7 +124,9 @@ class PaintControllerPaintTest : public PaintTestConfigurations,
 };
 
 // Shorter names for frequently used display item types in core/ tests.
-const DisplayItem::Type kNonScrollingBackgroundChunkType =
+const DisplayItem::Type kBackgroundChunkType =
+    DisplayItem::PaintPhaseToDrawingType(PaintPhase::kBlockBackground);
+const DisplayItem::Type kHitTestChunkType =
     DisplayItem::PaintPhaseToDrawingType(PaintPhase::kSelfBlockBackgroundOnly);
 const DisplayItem::Type kScrollingBackgroundChunkType =
     DisplayItem::PaintPhaseToClipType(PaintPhase::kSelfBlockBackgroundOnly);

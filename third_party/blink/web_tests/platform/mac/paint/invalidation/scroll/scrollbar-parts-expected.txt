@@ -13,6 +13,13 @@
       "transform": 1
     },
     {
+      "name": "LayoutNGBlockFlow DIV",
+      "bounds": [150, 300],
+      "contentsOpaqueForText": true,
+      "drawsContent": false,
+      "transform": 1
+    },
+    {
       "name": "HorizontalScrollbar",
       "position": [0, 85],
       "bounds": [85, 15],
@@ -29,13 +36,6 @@
       "position": [85, 85],
       "bounds": [15, 15],
       "contentsOpaqueForText": true,
-      "transform": 1
-    },
-    {
-      "name": "LayoutNGBlockFlow DIV",
-      "bounds": [150, 300],
-      "contentsOpaqueForText": true,
-      "drawsContent": false,
       "transform": 1
     }
   ],

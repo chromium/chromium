@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_recorder.h"
 
+using testing::_;
 using testing::ElementsAre;
 
 namespace blink {
@@ -319,11 +320,10 @@ TEST_P(PaintControllerPaintTest, ScrollHitTestOrder) {
       ContentPaintChunks(),
       ElementsAre(
           VIEW_SCROLLING_BACKGROUND_CHUNK_COMMON,
-          IsPaintChunk(
-              1, 2,
-              PaintChunk::Id(container.Layer()->Id(), DisplayItem::kLayerChunk),
-              container.FirstFragment().LocalBorderBoxProperties(), nullptr,
-              gfx::Rect(0, 0, 200, 200)),
+          IsPaintChunk(1, 2,
+                       PaintChunk::Id(container.Id(), kBackgroundChunkType),
+                       container.FirstFragment().LocalBorderBoxProperties(),
+                       nullptr, gfx::Rect(0, 0, 200, 200)),
           IsPaintChunk(
               2, 2, PaintChunk::Id(container.Id(), DisplayItem::kScrollHitTest),
               container.FirstFragment().LocalBorderBoxProperties(),
@@ -331,7 +331,9 @@ TEST_P(PaintControllerPaintTest, ScrollHitTestOrder) {
           IsPaintChunk(
               2, 4,
               PaintChunk::Id(container.Id(), kScrollingBackgroundChunkType),
-              container.FirstFragment().ContentsProperties())));
+              container.FirstFragment().ContentsProperties()),
+          // Hit test chunk for forceDocumentScroll.
+          IsPaintChunk(4, 4)));
 }
 
 TEST_P(PaintControllerPaintTest, NonStackingScrollHitTestOrder) {
