@@ -81,21 +81,23 @@ class PolicyApplicator {
   void GetProfilePropertiesError(const std::string& error_name,
                                  const std::string& error_message);
 
-  // Called with the properties of the profile entry |entry|. Checks whether the
-  // entry was previously managed, whether a current policy applies and then
-  // either updates, deletes or not touches the entry.
-  void GetEntryCallback(const std::string& entry, base::Value entry_properties);
-  void GetEntryError(const std::string& entry,
+  // Called with the properties of the profile entry |entry_identifier|. Checks
+  // whether the entry was previously managed, whether a current policy applies
+  // and then either updates, deletes or not touches the entry.
+  void GetEntryCallback(const std::string& entry_identifier,
+                        base::Value entry_properties);
+  void GetEntryError(const std::string& entry_identifier,
                      const std::string& error_name,
                      const std::string& error_message);
 
-  // Applies |new_policy| for |entry|.
+  // Applies |new_policy| for |entry_identifier|.
   // |entry_properties| are the current properties for the entry. |ui_data| is
   // the NetworkUIData extracted from |entry_properties| and is passed so it
   // doesn't have to be re-extracted. |old_guid| is the current GUID of the
   // entry and may be empty.
-  // |callback| will be called when policy application for |entry| has finished.
-  void ApplyNewPolicy(const std::string& entry,
+  // |callback| will be called when policy application for |entry_identifier|
+  // has finished.
+  void ApplyNewPolicy(const std::string& entry_identifier,
                       const base::Value& entry_properties,
                       std::unique_ptr<NetworkUIData> ui_data,
                       const std::string& old_guid,
@@ -103,18 +105,20 @@ class PolicyApplicator {
                       const base::Value& new_policy,
                       base::OnceClosure callback);
 
-  // Applies the global network policy (if any) on |entry|,
+  // Applies the global network policy (if any) on |entry_identifier|,
   // |entry_properties|}  are the current properties for the entry.
-  // |callback| will be called when policy application for |entry| has finished
-  // or immediately if no global network policy is present.
+  // |callback| will be called when policy application for |entry_identifier|
+  // has finished or immediately if no global network policy is present.
   void ApplyGlobalPolicyOnUnmanagedEntry(
-      const std::string& entry,
+      const std::string& entry_identifier,
       const base::DictionaryValue& entry_properties,
       base::OnceClosure callback);
 
-  // Sends Shill the command to delete profile entry |entry| from |profile_|.
-  // |callback| will be called when the profile entry has been deleted in shill.
-  void DeleteEntry(const std::string& entry, base::OnceClosure callback);
+  // Sends Shill the command to delete profile entry |entry_identifier| from
+  // |profile_|. |callback| will be called when the profile entry has been
+  // deleted in shill.
+  void DeleteEntry(const std::string& entry_identifier,
+                   base::OnceClosure callback);
 
   // Applies |shill_dictionary| in shill. |policy_ is the ONC policy blob which
   // lead to the policy application. |callback| will be called when policy
@@ -124,19 +128,19 @@ class PolicyApplicator {
                                   base::Value policy,
                                   base::OnceClosure callback);
 
-  // Removes |entry| from the list of pending profile entries.
+  // Removes |entry_identifier| from the list of pending profile entries.
   // If all entries were processed, applies the remaining policies and notifies
   // |handler_|.
-  void ProfileEntryFinished(const std::string& entry);
+  void ProfileEntryFinished(const std::string& entry_identifier);
 
   // Creates new entries for all remaining policies, i.e. for which no matching
   // Profile entry was found.
   // This should only be called if all profile entries were processed.
   void ApplyRemainingPolicies();
 
-  // This is called when the remaining policy application for |entry| scheduled
+  // This is called when the remaining policy application for |guid| scheduled
   // by ApplyRemainingPolicies has finished.
-  void RemainingPolicyApplied(const std::string& entry);
+  void RemainingPolicyApplied(const std::string& guid);
 
   // Called after all policies are applied or an error occurred. Notifies
   // |handler_|.
