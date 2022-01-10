@@ -957,14 +957,25 @@ void LocalFrameMojoHandler::GetFirstRectForRange(const gfx::Range& range) {
   if (!client)
     return;
 
-  if (!client->GetCaretBoundsFromFocusedPlugin(rect)) {
-    // When request range is invalid we will try to obtain it from current
-    // frame selection. The fallback value will be 0.
-    uint32_t start = range.IsValid() ? range.start()
-                                     : GetCurrentCursorPositionInFrame(frame_);
+  WebPluginContainerImpl* plugin_container = frame_->GetWebPluginContainer();
+  if (plugin_container) {
+    // Pepper-free PDF will reach here.
+    FrameWidget* frame_widget = frame_->GetWidgetForLocalRoot();
+    rect = frame_widget->BlinkSpaceToEnclosedDIPs(
+        plugin_container->Plugin()->GetPluginCaretBounds());
+  } else {
+    // TODO(crbug.com/702990): Remove `pepper_has_caret` once pepper is removed.
+    bool pepper_has_caret = client->GetCaretBoundsFromFocusedPlugin(rect);
+    if (!pepper_has_caret) {
+      // When request range is invalid we will try to obtain it from current
+      // frame selection. The fallback value will be 0.
+      uint32_t start = range.IsValid()
+                           ? range.start()
+                           : GetCurrentCursorPositionInFrame(frame_);
 
-    WebLocalFrameImpl::FromFrame(frame_)->FirstRectForCharacterRange(
-        start, range.length(), rect);
+      WebLocalFrameImpl::FromFrame(frame_)->FirstRectForCharacterRange(
+          start, range.length(), rect);
+    }
   }
 
   TextInputHost().GotFirstRectForRange(rect);
