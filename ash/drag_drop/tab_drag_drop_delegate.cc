@@ -4,6 +4,7 @@
 
 #include "ash/drag_drop/tab_drag_drop_delegate.h"
 
+#include "ash/constants/app_types.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/presentation_time_recorder.h"
@@ -18,6 +19,8 @@
 #include "ash/wm/tablet_mode/tablet_mode_browser_window_drag_session_windows_hider.h"
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/crosapi/cpp/lacros_startup_state.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/dragdrop/os_exchange_data.h"
@@ -56,6 +59,12 @@ constexpr char kTabDraggingInTabletModeMaxLatencyHistogram[] =
     "Ash.TabDrag.PresentationTime.MaxLatency.TabletMode";
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kIsSourceWindowForDrag, false)
+
+bool IsLacrosWindow(const aura::Window* window) {
+  auto app_type =
+      static_cast<AppType>(window->GetProperty(aura::client::kAppType));
+  return app_type == AppType::LACROS;
+}
 
 }  // namespace
 
@@ -143,8 +152,17 @@ void TabDragDropDelegate::DropAndDeleteSelf(
 void TabDragDropDelegate::OnNewBrowserWindowCreated(
     const gfx::Point& location_in_screen,
     aura::Window* new_window) {
-  DCHECK(new_window) << "New browser window creation for tab detaching failed.";
+  auto is_lacros = IsLacrosWindow(source_window_);
+  if (!new_window && is_lacros &&
+      !crosapi::lacros_startup_state::IsLacrosPrimaryEnabled()) {
+    LOG(ERROR)
+        << "New browser window creation for tab detaching failed.\n"
+        << "Check whether about:flags#lacros-primary is enabled or "
+        << "--enable-features=LacrosPrimary is passed in when launching Ash";
+    return;
+  }
 
+  DCHECK(new_window) << "New browser window creation for tab detaching failed.";
   const gfx::Rect area =
       screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
           root_window_);
