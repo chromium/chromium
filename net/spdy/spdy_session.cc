@@ -8,11 +8,11 @@
 #include <limits>
 #include <map>
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/ignore_result.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -2317,7 +2317,7 @@ void SpdySession::PumpReadLoop(ReadState expected_read_state, int result) {
   if (availability_state_ == STATE_DRAINING) {
     return;
   }
-  ignore_result(DoReadLoop(expected_read_state, result));
+  std::ignore = DoReadLoop(expected_read_state, result);
 }
 
 int SpdySession::DoReadLoop(ReadState expected_read_state, int result) {
@@ -2977,7 +2977,7 @@ void SpdySession::InsertActivatedStream(std::unique_ptr<SpdyStream> stream) {
   std::pair<ActiveStreamMap::iterator, bool> result =
       active_streams_.insert(std::make_pair(stream_id, stream.get()));
   CHECK(result.second);
-  ignore_result(stream.release());
+  std::ignore = stream.release();
 }
 
 void SpdySession::DeleteStream(std::unique_ptr<SpdyStream> stream, int status) {

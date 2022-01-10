@@ -15,7 +15,6 @@
 #include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
-#include "base/ignore_result.h"
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
@@ -591,7 +590,7 @@ TEST_F(HttpStreamFactoryTest, PreconnectDirectWithExistingSpdySession) {
                        PRIVACY_MODE_DISABLED,
                        SpdySessionKey::IsProxySession::kFalse, SocketTag(),
                        NetworkIsolationKey(), SecureDnsPolicy::kAllow);
-    ignore_result(CreateFakeSpdySession(session->spdy_session_pool(), key));
+    std::ignore = CreateFakeSpdySession(session->spdy_session_pool(), key);
 
     CommonConnectJobParams common_connect_job_params =
         session->CreateCommonConnectJobParams();

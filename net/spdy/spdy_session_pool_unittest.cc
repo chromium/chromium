@@ -5,11 +5,11 @@
 #include "net/spdy/spdy_session_pool.h"
 
 #include <cstddef>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
-#include "base/ignore_result.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -204,7 +204,7 @@ class SessionOpeningDelegate : public SpdyStream::Delegate {
   void OnTrailers(const spdy::Http2HeaderBlock& trailers) override {}
 
   void OnClose(int status) override {
-    ignore_result(CreateFakeSpdySession(spdy_session_pool_, key_));
+    std::ignore = CreateFakeSpdySession(spdy_session_pool_, key_);
   }
 
   bool CanGreaseFrameType() const override { return false; }

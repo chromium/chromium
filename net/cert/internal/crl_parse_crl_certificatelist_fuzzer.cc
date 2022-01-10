@@ -5,7 +5,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "net/cert/internal/crl.h"
 #include "net/der/input.h"
 
@@ -16,8 +17,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   net::der::Input signature_algorithm_tlv;
   net::der::BitString signature_value;
 
-  ignore_result(net::ParseCrlCertificateList(
-      crl_der, &tbs_cert_list_tlv, &signature_algorithm_tlv, &signature_value));
+  std::ignore = net::ParseCrlCertificateList(
+      crl_der, &tbs_cert_list_tlv, &signature_algorithm_tlv, &signature_value);
 
   return 0;
 }

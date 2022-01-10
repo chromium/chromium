@@ -6,13 +6,13 @@
 
 #include <algorithm>
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/cxx17_backports.h"
-#include "base/ignore_result.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -3889,9 +3889,9 @@ class StreamCreatingDelegate : public test::StreamDelegateDoNothing {
 
   void OnClose(int status) override {
     GURL url(kDefaultUrl);
-    ignore_result(CreateStreamSynchronously(SPDY_REQUEST_RESPONSE_STREAM,
-                                            session_, url, MEDIUM,
-                                            NetLogWithSource()));
+    std::ignore =
+        CreateStreamSynchronously(SPDY_REQUEST_RESPONSE_STREAM, session_, url,
+                                  MEDIUM, NetLogWithSource());
   }
 
  private:

@@ -7,9 +7,9 @@
 #include <string.h>
 
 #include <string>
+#include <tuple>
 
 #include "base/check_op.h"
-#include "base/ignore_result.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
@@ -202,7 +202,7 @@ TEST_F(IPEndPointTest, WinBluetoothSockAddrCompareWithSelf) {
   EXPECT_DCHECK_DEATH(bt_endpoint.port());
   SockaddrStorage storage;
   EXPECT_DCHECK_DEATH(
-      ignore_result(bt_endpoint.ToSockAddr(storage.addr, &storage.addr_len)));
+      std::ignore = bt_endpoint.ToSockAddr(storage.addr, &storage.addr_len));
   EXPECT_DCHECK_DEATH(bt_endpoint.ToString());
   EXPECT_DCHECK_DEATH(bt_endpoint.ToStringWithoutPort());
 }
@@ -246,8 +246,8 @@ TEST_F(IPEndPointTest, WinBluetoothSockAddrCompareWithCopy) {
   // Test that IPv4/IPv6-only methods crash.
   EXPECT_DCHECK_DEATH(bt_endpoint_other.port());
   SockaddrStorage storage;
-  EXPECT_DCHECK_DEATH(ignore_result(
-      bt_endpoint_other.ToSockAddr(storage.addr, &storage.addr_len)));
+  EXPECT_DCHECK_DEATH(std::ignore = bt_endpoint_other.ToSockAddr(
+                          storage.addr, &storage.addr_len));
   EXPECT_DCHECK_DEATH(bt_endpoint_other.ToString());
   EXPECT_DCHECK_DEATH(bt_endpoint_other.ToStringWithoutPort());
 }
@@ -277,8 +277,8 @@ TEST_F(IPEndPointTest, WinBluetoothSockAddrCompareWithDifferentPort) {
   // Test that IPv4/IPv6-only methods crash.
   EXPECT_DCHECK_DEATH(bt_endpoint_other.port());
   SockaddrStorage storage;
-  EXPECT_DCHECK_DEATH(ignore_result(
-      bt_endpoint_other.ToSockAddr(storage.addr, &storage.addr_len)));
+  EXPECT_DCHECK_DEATH(std::ignore = bt_endpoint_other.ToSockAddr(
+                          storage.addr, &storage.addr_len));
   EXPECT_DCHECK_DEATH(bt_endpoint_other.ToString());
   EXPECT_DCHECK_DEATH(bt_endpoint_other.ToStringWithoutPort());
 }
@@ -307,8 +307,8 @@ TEST_F(IPEndPointTest, WinBluetoothSockAddrCompareWithDifferentAddress) {
   // Test that IPv4/IPv6-only methods crash.
   EXPECT_DCHECK_DEATH(bt_endpoint_other.port());
   SockaddrStorage storage;
-  EXPECT_DCHECK_DEATH(ignore_result(
-      bt_endpoint_other.ToSockAddr(storage.addr, &storage.addr_len)));
+  EXPECT_DCHECK_DEATH(std::ignore = bt_endpoint_other.ToSockAddr(
+                          storage.addr, &storage.addr_len));
   EXPECT_DCHECK_DEATH(bt_endpoint_other.ToString());
   EXPECT_DCHECK_DEATH(bt_endpoint_other.ToStringWithoutPort());
 }
