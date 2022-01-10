@@ -386,9 +386,8 @@ void StatisticsRecorder::SetRecordChecker(
 
 // static
 bool StatisticsRecorder::ShouldRecordHistogram(uint32_t histogram_hash) {
-  const absl::MutexLock auto_lock(lock_.Pointer());
-  EnsureGlobalRecorderWhileLocked();
-  return !top_->record_checker_ ||
+  const absl::ReaderMutexLock auto_lock(lock_.Pointer());
+  return !top_ || !top_->record_checker_ ||
          top_->record_checker_->ShouldRecord(histogram_hash);
 }
 
