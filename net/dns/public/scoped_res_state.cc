@@ -4,6 +4,7 @@
 
 #include "net/dns/public/scoped_res_state.h"
 
+#include <cstring>
 #include <memory>
 
 #include "base/check.h"
