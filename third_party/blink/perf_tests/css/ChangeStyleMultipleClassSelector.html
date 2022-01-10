@@ -15,7 +15,7 @@
         PerfTestRunner.measureTime({
             description: "Measures the performance of multiple class selectors.",
             run: function() {
-                var rule = applyCSSRule(".a .b { color: red; }");
+                var rule = applyCSSRule(".a .b { cursor: crosshair; }");
                 forceStyleRecalc(document.body);
                 rule.remove();
                 forceStyleRecalc(document.body);

@@ -19,7 +19,7 @@
         PerfTestRunner.measureTime({
             description: "Measures the performance of an qualified data attribute selector with a value.",
             run: function() {
-                var rule = applyCSSRule("div[data-a=\"foo\"] div[data-b=\"bar\"] { color: red; }");
+                var rule = applyCSSRule("div[data-a=\"foo\"] div[data-b=\"bar\"] { cursor: crosshair; }");
                 forceStyleRecalc(document.body);
                 rule.remove();
                 forceStyleRecalc(document.body);
