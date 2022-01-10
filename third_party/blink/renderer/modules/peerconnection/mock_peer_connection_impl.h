@@ -105,13 +105,32 @@ class FakeRtpTransceiver : public webrtc::RtpTransceiverInterface {
   rtc::scoped_refptr<webrtc::RtpSenderInterface> sender() const override;
   rtc::scoped_refptr<webrtc::RtpReceiverInterface> receiver() const override;
   bool stopped() const override;
+  bool stopping() const override;
   webrtc::RtpTransceiverDirection direction() const override;
   void SetDirection(webrtc::RtpTransceiverDirection new_direction) override;
   absl::optional<webrtc::RtpTransceiverDirection> current_direction()
       const override;
-  void Stop() override;
   void SetTransport(
       rtc::scoped_refptr<webrtc::DtlsTransportInterface> transport);
+  webrtc::RTCError SetCodecPreferences(
+      rtc::ArrayView<webrtc::RtpCodecCapability>) override {
+    RTC_DCHECK_NOTREACHED() << "Not implemented";
+    return {};
+  }
+  std::vector<webrtc::RtpHeaderExtensionCapability> HeaderExtensionsToOffer()
+      const override {
+    return {};
+  }
+  webrtc::RTCError SetOfferedRtpHeaderExtensions(
+      rtc::ArrayView<const webrtc::RtpHeaderExtensionCapability>
+          header_extensions_to_offer) override {
+    return webrtc::RTCError(webrtc::RTCErrorType::UNSUPPORTED_OPERATION);
+  }
+
+  std::vector<webrtc::RtpHeaderExtensionCapability> HeaderExtensionsNegotiated()
+      const override {
+    return {};
+  }
 
  private:
   cricket::MediaType media_type_;

@@ -284,6 +284,11 @@ bool FakeRtpTransceiver::stopped() const {
   return stopped_;
 }
 
+bool FakeRtpTransceiver::stopping() const {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 webrtc::RtpTransceiverDirection FakeRtpTransceiver::direction() const {
   return direction_;
 }
@@ -296,10 +301,6 @@ void FakeRtpTransceiver::SetDirection(
 absl::optional<webrtc::RtpTransceiverDirection>
 FakeRtpTransceiver::current_direction() const {
   return current_direction_;
-}
-
-void FakeRtpTransceiver::Stop() {
-  NOTIMPLEMENTED();
 }
 
 void FakeRtpTransceiver::SetTransport(
