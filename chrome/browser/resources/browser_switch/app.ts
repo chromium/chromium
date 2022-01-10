@@ -114,28 +114,29 @@ class BrowserSwitchAppElement extends BrowserSwitchAppElementBase {
 
   private computeTitle_(): string {
     if (this.error_) {
-      return this.i18n('errorTitle', getBrowserName());
+      return this.i18n('errorTitle', getAltBrowserName());
     }
     if (this.secondCounter_ > 0) {
-      return this.i18n('countdownTitle', this.secondCounter_, getBrowserName());
+      return this.i18n(
+          'countdownTitle', this.secondCounter_, getAltBrowserName());
     }
-    return this.i18n('openingTitle', getBrowserName());
+    return this.i18n('openingTitle', getAltBrowserName());
   }
 
   private computeDescription_(): string {
     if (this.error_) {
       return this.i18n(
-          this.error_, getUrlHostname(this.url_), getBrowserName());
+          this.error_, getUrlHostname(this.url_), getAltBrowserName());
     }
     return this.i18n(
-        'description', getUrlHostname(this.url_), getBrowserName());
+        'description', getUrlHostname(this.url_), getAltBrowserName());
   }
 }
 
 customElements.define(BrowserSwitchAppElement.is, BrowserSwitchAppElement);
 
-function getBrowserName(): string {
-  return loadTimeData.getString('browserName');
+function getAltBrowserName(): string {
+  return loadTimeData.getString('altBrowserName');
 }
 
 function getUrlHostname(url: string): string {
