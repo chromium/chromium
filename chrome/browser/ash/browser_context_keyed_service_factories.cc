@@ -34,7 +34,6 @@
 #include "chrome/browser/ash/secure_channel/nearby_connector_factory.h"
 #include "chrome/browser/ash/smb_client/smb_service_factory.h"
 #include "chrome/browser/ash/tether/tether_service_factory.h"
-#include "chrome/browser/ash/web_applications/crosh_loader_factory.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/chromeos/extensions/input_method_api.h"
 #include "chrome/browser/chromeos/extensions/media_player_api.h"
@@ -62,7 +61,6 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   bluetooth::DebugLogsManagerFactory::GetInstance();
   borealis::BorealisServiceFactory::GetInstance();
   cert_provisioning::CertProvisioningSchedulerUserServiceFactory::GetInstance();
-  CroshLoaderFactory::GetInstance();
   crostini::CrostiniEngagementMetricsService::Factory::GetInstance();
 #if defined(USE_CUPS)
   chromeos::CupsProxyServiceManagerFactory::GetInstance();

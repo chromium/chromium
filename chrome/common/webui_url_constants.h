@@ -321,6 +321,7 @@ extern const char kChromeUISmbShareHost[];
 extern const char kChromeUISmbShareURL[];
 extern const char kChromeUISysInternalsHost[];
 extern const char kChromeUISysInternalsUrl[];
+extern const char kChromeUIUntrustedCroshHost[];
 extern const char kChromeUIUntrustedCroshURL[];
 extern const char kChromeUIUntrustedTerminalHost[];
 extern const char kChromeUIUntrustedTerminalURL[];

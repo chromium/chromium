@@ -333,6 +333,7 @@ const char kChromeUISmbCredentialsHost[] = "smb-credentials-dialog";
 const char kChromeUISmbCredentialsURL[] = "chrome://smb-credentials-dialog/";
 const char kChromeUISysInternalsHost[] = "sys-internals";
 const char kChromeUISysInternalsUrl[] = "chrome://sys-internals";
+const char kChromeUIUntrustedCroshHost[] = "crosh";
 const char kChromeUIUntrustedCroshURL[] = "chrome-untrusted://crosh/";
 const char kChromeUIUntrustedTerminalHost[] = "terminal";
 const char kChromeUIUntrustedTerminalURL[] = "chrome-untrusted://terminal/";

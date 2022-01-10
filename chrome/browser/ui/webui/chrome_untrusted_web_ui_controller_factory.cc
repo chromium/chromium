@@ -31,6 +31,7 @@
 #include "ash/webui/file_manager/file_manager_untrusted_ui.h"
 #include "ash/webui/help_app_ui/help_app_kids_magazine_untrusted_ui.h"
 #include "ash/webui/personalization_app/untrusted_personalization_app_ui_config.h"
+#include "chrome/browser/ash/web_applications/crosh_ui.h"
 #include "chrome/browser/ash/web_applications/help_app/help_app_untrusted_ui_config.h"
 #include "chrome/browser/ash/web_applications/media_app/media_app_guest_ui_config.h"
 #include "chrome/browser/ash/web_applications/projector_app/untrusted_projector_ui_config.h"
@@ -70,6 +71,7 @@ WebUIConfigList CreateConfigs() {
 #endif  // defined(OS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+  register_config(std::make_unique<CroshUIConfig>());
   register_config(std::make_unique<TerminalUIConfig>());
   register_config(std::make_unique<ash::eche_app::UntrustedEcheAppUIConfig>());
   register_config(std::make_unique<MediaAppGuestUIConfig>());
