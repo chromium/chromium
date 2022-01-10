@@ -108,6 +108,8 @@ static_library("browser") {
     "leak_detection_dialog_utils.h",
     "login_database.cc",
     "login_database.h",
+    "login_database_async_helper.cc",
+    "login_database_async_helper.h",
     "manage_passwords_referrer.h",
     "move_password_to_account_store_helper.cc",
     "move_password_to_account_store_helper.h",

@@ -24,6 +24,7 @@
 #include "components/password_manager/core/browser/android_affiliation/mock_affiliated_match_helper.h"
 #include "components/password_manager/core/browser/fake_password_store_backend.h"
 #include "components/password_manager/core/browser/form_parsing/form_parser.h"
+#include "components/password_manager/core/browser/login_database.h"
 #include "components/password_manager/core/browser/mock_password_store_backend.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -122,64 +123,6 @@ class MockPasswordStoreConsumer : public PasswordStoreConsumer {
 
  private:
   base::WeakPtrFactory<MockPasswordStoreConsumer> weak_ptr_factory_{this};
-};
-
-class MockPasswordStoreSigninNotifier : public PasswordStoreSigninNotifier {
- public:
-  MOCK_METHOD(void,
-              SubscribeToSigninEvents,
-              (PasswordReuseManager * manager),
-              (override));
-  MOCK_METHOD(void, UnsubscribeFromSigninEvents, (), (override));
-};
-
-class MockMetadataStore : public PasswordStoreSync::MetadataStore {
- public:
-  MOCK_METHOD(void, DeleteAllSyncMetadata, (), (override));
-  MOCK_METHOD(void,
-              SetDeletionsHaveSyncedCallback,
-              (base::RepeatingCallback<void(bool)> callback),
-              (override));
-  MOCK_METHOD(bool, HasUnsyncedDeletions, (), (override));
-
-  std::unique_ptr<syncer::MetadataBatch> GetAllSyncMetadata() override {
-    return std::make_unique<syncer::MetadataBatch>();
-  }
-
-  bool UpdateSyncMetadata(syncer::ModelType model_type,
-                          const std::string& storage_key,
-                          const sync_pb::EntityMetadata& metadata) override {
-    return true;
-  }
-
-  bool ClearSyncMetadata(syncer::ModelType model_type,
-                         const std::string& storage_key) override {
-    return true;
-  }
-
-  bool UpdateModelTypeState(
-      syncer::ModelType model_type,
-      const sync_pb::ModelTypeState& model_type_state) override {
-    return true;
-  }
-
-  bool ClearModelTypeState(syncer::ModelType model_type) override {
-    return true;
-  }
-};
-
-class BackendImplWithMockedMetadataStore : public PasswordStoreBuiltInBackend {
- public:
-  explicit BackendImplWithMockedMetadataStore(
-      std::unique_ptr<LoginDatabase> login_database)
-      : PasswordStoreBuiltInBackend(std::move(login_database)) {}
-
-  PasswordStoreSync::MetadataStore* GetMetadataStore() override {
-    return &metadata_store_;
-  }
-
- private:
-  MockMetadataStore metadata_store_;
 };
 
 PasswordForm MakePasswordForm(const std::string& signon_realm) {
@@ -284,14 +227,6 @@ class PasswordStoreTest : public testing::Test {
         std::make_unique<LoginDatabase>(
             test_login_db_file_path(),
             password_manager::IsAccountStore(false))));
-  }
-
-  scoped_refptr<PasswordStore> CreatePasswordStoreWithMockedMetaData() {
-    return base::MakeRefCounted<PasswordStore>(
-        std::make_unique<BackendImplWithMockedMetadataStore>(
-            std::make_unique<LoginDatabase>(
-                test_login_db_file_path(),
-                password_manager::IsAccountStore(false))));
   }
 
   TestingPrefServiceSimple* pref_service() { return &pref_service_; }
@@ -1494,7 +1429,7 @@ TEST_F(PasswordStoreTest, TestGetLoginRequestCancelable) {
 }
 
 TEST_F(PasswordStoreTest, TestUnblockListEmptyStore) {
-  scoped_refptr<PasswordStore> store = CreatePasswordStoreWithMockedMetaData();
+  scoped_refptr<PasswordStore> store = CreatePasswordStore();
   store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
   WaitForPasswordStore();
 

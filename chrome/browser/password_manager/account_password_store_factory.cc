@@ -49,6 +49,7 @@
 
 using password_manager::PasswordStore;
 using password_manager::PasswordStoreInterface;
+using password_manager::UnsyncedCredentialsDeletionNotifier;
 
 #if !defined(OS_ANDROID)
 
@@ -72,7 +73,7 @@ void UpdateAllFormManagersAndPasswordReuseManager(Profile* profile) {
 }
 
 class UnsyncedCredentialsDeletionNotifierImpl
-    : public PasswordStore::UnsyncedCredentialsDeletionNotifier {
+    : public UnsyncedCredentialsDeletionNotifier {
  public:
   explicit UnsyncedCredentialsDeletionNotifierImpl(Profile* profile);
   ~UnsyncedCredentialsDeletionNotifierImpl() override = default;
@@ -107,7 +108,7 @@ void UnsyncedCredentialsDeletionNotifierImpl::Notify(
   ui_controller->NotifyUnsyncedCredentialsWillBeDeleted(std::move(credentials));
 }
 
-base::WeakPtr<PasswordStore::UnsyncedCredentialsDeletionNotifier>
+base::WeakPtr<UnsyncedCredentialsDeletionNotifier>
 UnsyncedCredentialsDeletionNotifierImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
