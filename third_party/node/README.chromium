@@ -125,3 +125,17 @@ Universal)
 
 Local Modifications:
 (none)
+
+
+Name: ESLint JSDoc Plugin
+Short Name: eslint-plugin-jsdoc
+URL: https://www.npmjs.com/package/eslint-plugin-jsdoc
+Version: 37.5.1
+License: BSD-3-Clause
+Security Critical: No. The ESLint checks are not shipped with Chrome and code are only linted with it.
+
+Description:
+JSDoc linting rules for ESLint.
+
+Local Modifications:
+(none)
