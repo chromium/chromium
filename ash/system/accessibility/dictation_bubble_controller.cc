@@ -62,6 +62,7 @@ void DictationBubbleController::MaybeInitialize() {
   dictation_bubble_view_ = new DictationBubbleView();
   widget_ =
       views::BubbleDialogDelegateView::CreateBubble(dictation_bubble_view_);
+  widget_->SetZOrderLevel(ui::ZOrderLevel::kFloatingUIElement);
   CollisionDetectionUtils::MarkWindowPriorityForCollisionDetection(
       widget_->GetNativeWindow(),
       CollisionDetectionUtils::RelativePriority::kDictationBubble);
