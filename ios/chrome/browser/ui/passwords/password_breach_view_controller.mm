@@ -35,22 +35,6 @@ constexpr CGFloat kLogoWidth = 180;
               kIOSEnablePasswordManagerBrandingUpdate)) {
     self.image = [UIImage imageNamed:@"password_breach_illustration"];
     self.showDismissBarButton = NO;
-
-    UIImageView* imageView = [[UIImageView alloc]
-        initWithImage:[UIImage imageNamed:@"passwords_logo_colored"]];
-    imageView.contentMode = UIViewContentModeScaleAspectFit;
-    imageView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.specificContentView addSubview:imageView];
-
-    [NSLayoutConstraint activateConstraints:@[
-      [imageView.topAnchor
-          constraintEqualToAnchor:self.specificContentView.topAnchor],
-      [imageView.centerXAnchor
-          constraintEqualToAnchor:self.specificContentView.centerXAnchor],
-      [imageView.widthAnchor constraintLessThanOrEqualToConstant:kLogoWidth],
-      [imageView.bottomAnchor
-          constraintEqualToAnchor:self.specificContentView.bottomAnchor],
-    ]];
   } else {
     self.image = [UIImage imageNamed:@"legacy_password_breach_illustration"];
   }
@@ -62,6 +46,33 @@ constexpr CGFloat kLogoWidth = 180;
   [super viewDidLoad];
   self.view.accessibilityIdentifier =
       kPasswordBreachViewAccessibilityIdentifier;
+
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kIOSEnablePasswordManagerBrandingUpdate)) {
+    UIImageView* logoImageView = [[UIImageView alloc]
+        initWithImage:[UIImage imageNamed:@"passwords_logo_colored"]];
+    logoImageView.contentMode = UIViewContentModeScaleAspectFit;
+    logoImageView.translatesAutoresizingMaskIntoConstraints = NO;
+
+    [self.specificContentSuperview addSubview:logoImageView];
+
+    logoImageView.isAccessibilityElement = YES;
+    logoImageView.accessibilityLabel = l10n_util::GetNSString(
+        IDS_IOS_PASSWORD_MANAGER_LOGO_ACCESSIBILITY_LABEL);
+
+    [NSLayoutConstraint activateConstraints:@[
+      [logoImageView.topAnchor
+          constraintEqualToAnchor:self.specificContentLayoutGuide.topAnchor],
+      [logoImageView.centerXAnchor
+          constraintEqualToAnchor:self.specificContentLayoutGuide
+                                      .centerXAnchor],
+      [logoImageView.widthAnchor
+          constraintLessThanOrEqualToConstant:kLogoWidth],
+      [logoImageView.bottomAnchor
+          constraintEqualToAnchor:self.specificContentLayoutGuide.bottomAnchor],
+    ]];
+  }
 }
 
 #pragma mark - PasswordBreachConsumer
