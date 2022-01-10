@@ -15,12 +15,6 @@
         [0, 0, 1, 16]
       ],
       "transform": 1
-    },
-    {
-      "name": "LayoutNGTextControlSingleLine INPUT id='target'",
-      "position": [360, 7],
-      "bounds": [30, 24],
-      "contentsOpaqueForText": true
     }
   ],
   "transforms": [

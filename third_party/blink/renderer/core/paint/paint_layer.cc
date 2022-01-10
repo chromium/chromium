@@ -2364,7 +2364,8 @@ bool PaintLayer::SupportsSubsequenceCaching() const {
 
 bool PaintLayer::ShouldBeSelfPaintingLayer() const {
   return GetLayoutObject().LayerTypeRequired() == kNormalPaintLayer ||
-         (scrollable_area_ && scrollable_area_->HasOverlayOverflowControls());
+         (scrollable_area_ && scrollable_area_->HasOverlayOverflowControls()) ||
+         ScrollsOverflow();
 }
 
 void PaintLayer::UpdateSelfPaintingLayer() {

@@ -17,7 +17,8 @@
     {
       "name": "Scroll corner of LayoutTextControl TEXTAREA",
       "position": [193, 18],
-      "bounds": [261, 140]
+      "bounds": [261, 126],
+      "contentsOpaqueForText": true
     },
     {
       "name": "LayoutTextControl TEXTAREA",
