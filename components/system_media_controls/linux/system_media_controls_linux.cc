@@ -40,6 +40,8 @@ namespace {
 
 constexpr int kNumMethodsToExport = 11;
 
+constexpr base::TimeDelta kUpdatePositionInterval = base::Milliseconds(100);
+
 }  // namespace
 
 const char kMprisAPIServiceNameFormatString[] =
@@ -47,6 +49,7 @@ const char kMprisAPIServiceNameFormatString[] =
 const char kMprisAPIObjectPath[] = "/org/mpris/MediaPlayer2";
 const char kMprisAPIInterfaceName[] = "org.mpris.MediaPlayer2";
 const char kMprisAPIPlayerInterfaceName[] = "org.mpris.MediaPlayer2.Player";
+const char kMprisAPISignalSeeked[] = "Seeked";
 
 SystemMediaControlsLinux::SystemMediaControlsLinux(
     const std::string& product_name)
@@ -112,6 +115,12 @@ void SystemMediaControlsLinux::SetPlaybackStatus(PlaybackStatus value) {
   };
   properties_->SetProperty(kMprisAPIPlayerInterfaceName, "PlaybackStatus",
                            status());
+
+  playing_ = (value == PlaybackStatus::kPlaying);
+  if (playing_ && position_.has_value())
+    StartPositionUpdateTimer();
+  else
+    StopPositionUpdateTimer();
 }
 
 void SystemMediaControlsLinux::SetTitle(const std::u16string& value) {
@@ -130,10 +139,20 @@ void SystemMediaControlsLinux::SetAlbum(const std::u16string& value) {
       "xesam:album", MakeDbusVariant(DbusString(base::UTF16ToUTF8(value))));
 }
 
+void SystemMediaControlsLinux::SetPosition(
+    const media_session::MediaPosition& position) {
+  position_ = position;
+  UpdatePosition(/*emit_signal=*/true);
+
+  if (playing_)
+    StartPositionUpdateTimer();
+}
+
 void SystemMediaControlsLinux::ClearMetadata() {
   SetTitle(std::u16string());
   SetArtist(std::u16string());
   SetAlbum(std::u16string());
+  ClearPosition();
 }
 
 std::string SystemMediaControlsLinux::GetServiceName() const {
@@ -341,6 +360,60 @@ void SystemMediaControlsLinux::SetMetadataPropertyInternal(
   DCHECK(dictionary);
   if (dictionary->Put(property_name, std::move(new_value)))
     properties_->PropertyUpdated(kMprisAPIPlayerInterfaceName, "Metadata");
+}
+
+void SystemMediaControlsLinux::ClearPosition() {
+  position_ = absl::nullopt;
+  StopPositionUpdateTimer();
+  UpdatePosition(/*emit_signal=*/true);
+}
+
+void SystemMediaControlsLinux::UpdatePosition(bool emit_signal) {
+  int64_t position = 0;
+  double rate = 1.0;
+  int64_t duration = 0;
+
+  if (position_.has_value()) {
+    position = position_->GetPosition().InMicroseconds();
+    rate = position_->playback_rate();
+    duration = position_->duration().InMicroseconds();
+  }
+
+  // We never emit a PropertiesChanged signal for the "Position" property. We
+  // only emit "Seeked" signals.
+  properties_->SetProperty(kMprisAPIPlayerInterfaceName, "Position",
+                           DbusInt64(position), /*emit_signal=*/false);
+
+  properties_->SetProperty(kMprisAPIPlayerInterfaceName, "Rate",
+                           DbusDouble(rate), emit_signal);
+  SetMetadataPropertyInternal("mpris:length",
+                              MakeDbusVariant(DbusInt64(duration)));
+
+  if (!service_ready_ || !emit_signal || !position_.has_value())
+    return;
+
+  dbus::Signal seeked_signal(kMprisAPIPlayerInterfaceName,
+                             kMprisAPISignalSeeked);
+  dbus::MessageWriter writer(&seeked_signal);
+  writer.AppendInt64(position);
+  exported_object_->SendSignal(&seeked_signal);
+}
+
+void SystemMediaControlsLinux::StartPositionUpdateTimer() {
+  // The timer should only run when the media is playing and has a position.
+  DCHECK(playing_);
+  DCHECK(position_.has_value());
+
+  // base::Unretained(this) is safe here since |this| owns
+  // |position_update_timer_|.
+  position_update_timer_.Start(
+      FROM_HERE, kUpdatePositionInterval,
+      base::BindRepeating(&SystemMediaControlsLinux::UpdatePosition,
+                          base::Unretained(this), /*emit_signal=*/false));
+}
+
+void SystemMediaControlsLinux::StopPositionUpdateTimer() {
+  position_update_timer_.Stop();
 }
 
 }  // namespace internal
