@@ -582,7 +582,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, DragDropOnOopif) {
                               ui::DragDropTypes::DRAG_COPY);
     view->OnDragEntered(event);
     EXPECT_TRUE(drag_dest_delegate_.GetDragInitializeCalled());
-    view->OnPerformDrop(event, std::move(data));
+    auto drop_cb = view->GetDropCallback(event);
+    ASSERT_TRUE(drop_cb);
+    ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+    std::move(drop_cb).Run(event, std::move(data), output_drag_op);
 
     run_loop.Run();
 
@@ -615,7 +618,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, DragDropOnOopif) {
                               ui::DragDropTypes::DRAG_COPY);
     view->OnDragEntered(event);
     EXPECT_TRUE(drag_dest_delegate_.GetDragInitializeCalled());
-    view->OnPerformDrop(event, std::move(data));
+    auto drop_cb = view->GetDropCallback(event);
+    ASSERT_TRUE(drop_cb);
+    ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+    std::move(drop_cb).Run(event, std::move(data), output_drag_op);
 
     run_loop.Run();
 
@@ -655,7 +661,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, OnPerformDrop_DeepScanOK) {
                             ui::DragDropTypes::DRAG_COPY);
   view->OnDragEntered(event);
   EXPECT_TRUE(drag_dest_delegate_.GetDragInitializeCalled());
-  view->OnPerformDrop(event, std::move(data));
+  auto drop_cb = view->GetDropCallback(event);
+  ASSERT_TRUE(drop_cb);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(event, std::move(data), output_drag_op);
 
   // The user should be able to drag other content over Chrome while the scan is
   // occurring without affecting it.
@@ -709,7 +718,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, OnPerformDrop_DeepScanBad) {
                             ui::DragDropTypes::DRAG_COPY);
   view->OnDragEntered(event);
   EXPECT_TRUE(drag_dest_delegate_.GetDragInitializeCalled());
-  view->OnPerformDrop(event, std::move(data));
+  auto drop_cb = view->GetDropCallback(event);
+  ASSERT_TRUE(drop_cb);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(event, std::move(data), output_drag_op);
 
   // The user should be able to drag other content over Chrome while the scan is
   // occurring without affecting it.
@@ -967,6 +979,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, GetDropCallback_Run) {
   view->OnDragEntered(event);
   EXPECT_TRUE(drag_dest_delegate_.GetDragInitializeCalled());
   auto drop_cb = view->GetDropCallback(event);
+  ASSERT_TRUE(drop_cb);
   ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
   std::move(drop_cb).Run(event, std::move(data), output_drag_op);
 
@@ -1003,6 +1016,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, GetDropCallback_Cancelled) {
   view->OnDragEntered(event);
   EXPECT_TRUE(drag_dest_delegate_.GetDragInitializeCalled());
   auto drop_cb = view->GetDropCallback(event);
+  ASSERT_TRUE(drop_cb);
   drop_cb.Reset();
 
   EXPECT_FALSE(drag_dest_delegate_.GetOnDropCalled());

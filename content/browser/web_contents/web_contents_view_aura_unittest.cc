@@ -310,7 +310,10 @@ TEST_F(WebContentsViewAuraTest, DragDropFiles) {
   base::RunLoop run_loop;
   async_drop_closure_ = run_loop.QuitClosure();
 
-  view->OnPerformDrop(event, std::move(data));
+  auto drop_cb = view->GetDropCallback(event);
+  ASSERT_TRUE(drop_cb);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(event, std::move(data), output_drag_op);
   run_loop.Run();
 
   CheckDropData(view);
@@ -397,7 +400,10 @@ TEST_F(WebContentsViewAuraTest, DragDropFilesOriginateFromRenderer) {
   base::RunLoop run_loop;
   async_drop_closure_ = run_loop.QuitClosure();
 
-  view->OnPerformDrop(event, std::move(data));
+  auto drop_cb = view->GetDropCallback(event);
+  ASSERT_TRUE(drop_cb);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(event, std::move(data), output_drag_op);
   run_loop.Run();
 
   CheckDropData(view);
@@ -484,7 +490,10 @@ TEST_F(WebContentsViewAuraTest, DragDropImageFromRenderer) {
   base::RunLoop run_loop;
   async_drop_closure_ = run_loop.QuitClosure();
 
-  view->OnPerformDrop(event, std::move(data));
+  auto drop_cb = view->GetDropCallback(event);
+  ASSERT_TRUE(drop_cb);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(event, std::move(data), output_drag_op);
   run_loop.Run();
 
   CheckDropData(view);
@@ -556,7 +565,10 @@ TEST_F(WebContentsViewAuraTest, DragDropVirtualFiles) {
   base::RunLoop run_loop;
   async_drop_closure_ = run_loop.QuitClosure();
 
-  view->OnPerformDrop(event, std::move(data));
+  auto drop_cb = view->GetDropCallback(event);
+  ASSERT_TRUE(drop_cb);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(event, std::move(data), output_drag_op);
   run_loop.Run();
 
   CheckDropData(view);
@@ -631,7 +643,10 @@ TEST_F(WebContentsViewAuraTest, DragDropVirtualFilesOriginateFromRenderer) {
   base::RunLoop run_loop;
   async_drop_closure_ = run_loop.QuitClosure();
 
-  view->OnPerformDrop(event, std::move(data));
+  auto drop_cb = view->GetDropCallback(event);
+  ASSERT_TRUE(drop_cb);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(event, std::move(data), output_drag_op);
   run_loop.Run();
 
   CheckDropData(view);
@@ -685,7 +700,10 @@ TEST_F(WebContentsViewAuraTest, DragDropUrlData) {
   base::RunLoop run_loop;
   async_drop_closure_ = run_loop.QuitClosure();
 
-  view->OnPerformDrop(event, std::move(data));
+  auto drop_cb = view->GetDropCallback(event);
+  ASSERT_TRUE(drop_cb);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(event, std::move(data), output_drag_op);
   run_loop.Run();
 
   CheckDropData(view);

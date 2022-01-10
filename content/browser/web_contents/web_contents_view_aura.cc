@@ -1610,22 +1610,6 @@ void WebContentsViewAura::FinishOnPerformDropCallback(
   current_drop_data_.reset();
 }
 
-DragOperation WebContentsViewAura::OnPerformDrop(
-    const ui::DropTargetEvent& event,
-    std::unique_ptr<ui::OSExchangeData> data) {
-  if (web_contents_->ShouldIgnoreInputEvents())
-    return DragOperation::kNone;
-
-  web_contents_->GetInputEventRouter()
-      ->GetRenderWidgetHostAtPointAsynchronously(
-          web_contents_->GetRenderViewHost()->GetWidget()->GetView(),
-          event.location_f(),
-          base::BindOnce(&WebContentsViewAura::PerformDropCallback,
-                         weak_ptr_factory_.GetWeakPtr(), event,
-                         std::move(data)));
-  return current_drag_op_;
-}
-
 aura::client::DragDropDelegate::DropCallback
 WebContentsViewAura::GetDropCallback(const ui::DropTargetEvent& event) {
   if (web_contents_->ShouldIgnoreInputEvents())

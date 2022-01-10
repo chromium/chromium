@@ -73,6 +73,8 @@ class AURA_EXPORT DragDropDelegate {
 
   // Invoked during a drag and drop session when the user release the mouse, but
   // the drop is held because of the DataTransferPolicyController.
+  // The returned callback may be NullCallback if there's nothing to do and the
+  // drop event is ignored.
   virtual DropCallback GetDropCallback(const ui::DropTargetEvent& event) = 0;
 
  protected:

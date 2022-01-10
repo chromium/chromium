@@ -216,9 +216,14 @@ class FakeDragDropDelegate : public aura::client::DragDropDelegate {
 
   void OnDragExited() override { ++num_exits_; }
 
-  DragOperation OnPerformDrop(
-      const ui::DropTargetEvent& event,
-      std::unique_ptr<ui::OSExchangeData> data) override {
+  DropCallback GetDropCallback(const ui::DropTargetEvent& event) override {
+    return base::BindOnce(&FakeDragDropDelegate::PerformDrop,
+                          base::Unretained(this));
+  }
+
+  void PerformDrop(const ui::DropTargetEvent& event,
+                   std::unique_ptr<ui::OSExchangeData> data,
+                   ui::mojom::DragOperation& output_drag_op) {
     // The event must always have valid data.  This will crash if it doesn't.
     // See crbug.com/1151836.
     auto dummy_copy = event.data().provider().Clone();
@@ -226,12 +231,7 @@ class FakeDragDropDelegate : public aura::client::DragDropDelegate {
     ++num_drops_;
     received_data_ = std::move(data);
     last_event_flags_ = event.flags();
-    return destination_operation_;
-  }
-
-  DropCallback GetDropCallback(const ui::DropTargetEvent& event) override {
-    NOTIMPLEMENTED();
-    return base::NullCallback();
+    output_drag_op = destination_operation_;
   }
 
   int num_enters_;
