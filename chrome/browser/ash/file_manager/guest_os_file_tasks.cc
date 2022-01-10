@@ -287,7 +287,7 @@ void ExecuteGuestOsTask(
     case guest_os::GuestOsRegistryService::VmType::
         ApplicationList_VmType_TERMINA:
       apps::RecordAppLaunchMetrics(
-          profile, apps::mojom::AppType::kCrostini, task.app_id,
+          profile, apps::AppType::kCrostini, task.app_id,
           apps::mojom::LaunchSource::kFromFileManager,
           apps::mojom::LaunchContainer::kLaunchContainerWindow);
       crostini::LaunchCrostiniApp(
@@ -312,7 +312,7 @@ void ExecuteGuestOsTask(
     case guest_os::GuestOsRegistryService::VmType::
         ApplicationList_VmType_PLUGIN_VM:
       apps::RecordAppLaunchMetrics(
-          profile, apps::mojom::AppType::kPluginVm, task.app_id,
+          profile, apps::AppType::kPluginVm, task.app_id,
           apps::mojom::LaunchSource::kFromFileManager,
           apps::mojom::LaunchContainer::kLaunchContainerWindow);
       DCHECK(plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile));

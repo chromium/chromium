@@ -273,7 +273,7 @@ void ExecuteTaskAfterMimeTypesCollected(
 
   DCHECK_EQ(task.task_type, TASK_TYPE_ARC_APP);
   apps::RecordAppLaunchMetrics(
-      profile, apps::mojom::AppType::kArc, task.app_id,
+      profile, apps::AppType::kArc, task.app_id,
       apps::mojom::LaunchSource::kFromFileManager,
       apps::mojom::LaunchContainer::kLaunchContainerWindow);
   ExecuteArcTask(profile, task, file_urls, *mime_types, std::move(done));

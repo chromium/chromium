@@ -13,6 +13,7 @@
 #include "chrome/browser/apps/app_service/metrics/app_platform_metrics_utils.h"
 #include "chrome/browser/apps/app_service/metrics/browser_to_tab_list.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
@@ -64,7 +65,7 @@ const std::set<apps::AppTypeName>& GetAppTypeNameSet();
 
 // Records metrics when launching apps.
 void RecordAppLaunchMetrics(Profile* profile,
-                            apps::mojom::AppType app_type,
+                            AppType app_type,
                             const std::string& app_id,
                             apps::mojom::LaunchSource launch_source,
                             apps::mojom::LaunchContainer container);
@@ -128,13 +129,13 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   void OnFiveMinutes();
 
   // Records UKM when launching an app.
-  void RecordAppLaunchUkm(apps::mojom::AppType app_type,
+  void RecordAppLaunchUkm(AppType app_type,
                           const std::string& app_id,
                           apps::mojom::LaunchSource launch_source,
                           apps::mojom::LaunchContainer container);
 
   // Records UKM when uninstalling an app.
-  void RecordAppUninstallUkm(apps::mojom::AppType app_type,
+  void RecordAppUninstallUkm(AppType app_type,
                              const std::string& app_id,
                              apps::mojom::UninstallSource uninstall_source);
 

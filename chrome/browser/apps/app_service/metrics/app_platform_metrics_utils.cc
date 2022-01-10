@@ -274,37 +274,37 @@ int GetUserTypeByDeviceTypeMetrics() {
 }
 
 AppTypeName GetAppTypeName(Profile* profile,
-                           apps::mojom::AppType app_type,
+                           AppType app_type,
                            const std::string& app_id,
                            apps::mojom::LaunchContainer container) {
   switch (app_type) {
-    case apps::mojom::AppType::kUnknown:
+    case AppType::kUnknown:
       return apps::AppTypeName::kUnknown;
-    case apps::mojom::AppType::kArc:
+    case AppType::kArc:
       return apps::AppTypeName::kArc;
-    case apps::mojom::AppType::kBuiltIn:
+    case AppType::kBuiltIn:
       return apps::AppTypeName::kBuiltIn;
-    case apps::mojom::AppType::kCrostini:
+    case AppType::kCrostini:
       return apps::AppTypeName::kCrostini;
-    case apps::mojom::AppType::kChromeApp:
+    case AppType::kChromeApp:
       return GetAppTypeNameForChromeApp(profile, app_id, container);
-    case apps::mojom::AppType::kWeb:
+    case AppType::kWeb:
       return GetAppTypeNameForWebApp(profile, app_id, container);
-    case apps::mojom::AppType::kMacOs:
+    case AppType::kMacOs:
       return apps::AppTypeName::kMacOs;
-    case apps::mojom::AppType::kPluginVm:
+    case AppType::kPluginVm:
       return apps::AppTypeName::kPluginVm;
-    case apps::mojom::AppType::kStandaloneBrowser:
+    case AppType::kStandaloneBrowser:
       return apps::AppTypeName::kStandaloneBrowser;
-    case apps::mojom::AppType::kRemote:
+    case AppType::kRemote:
       return apps::AppTypeName::kRemote;
-    case apps::mojom::AppType::kBorealis:
+    case AppType::kBorealis:
       return apps::AppTypeName::kBorealis;
-    case apps::mojom::AppType::kSystemWeb:
+    case AppType::kSystemWeb:
       return apps::AppTypeName::kSystemWeb;
-    case apps::mojom::AppType::kStandaloneBrowserChromeApp:
+    case AppType::kStandaloneBrowserChromeApp:
       return apps::AppTypeName::kStandaloneBrowserChromeApp;
-    case apps::mojom::AppType::kExtension:
+    case AppType::kExtension:
       return apps::AppTypeName::kExtension;
   }
 }

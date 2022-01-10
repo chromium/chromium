@@ -20,9 +20,6 @@ std::unique_ptr<App> AppPublisher::MakeApp(AppType app_type,
                                            Readiness readiness,
                                            const std::string& name) {
   std::unique_ptr<App> app = std::make_unique<App>(app_type, app_id);
-
-  app->app_type = app_type;
-  app->app_id = app_id;
   app->readiness = readiness;
   app->name = name;
   app->short_name = name;

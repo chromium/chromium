@@ -48,14 +48,13 @@ class AppPlatformMetricsBrowserTest : public InProcessBrowserTest {
 
   apps::AppTypeName GetWebAppTypeName(const std::string& app_id,
                                       apps::mojom::LaunchContainer container) {
-    return GetAppTypeName(profile(), apps::mojom::AppType::kWeb, app_id,
-                          container);
+    return GetAppTypeName(profile(), apps::AppType::kWeb, app_id, container);
   }
 
   apps::AppTypeName GetSystemWebAppTypeName(
       const std::string& app_id,
       apps::mojom::LaunchContainer container) {
-    return GetAppTypeName(profile(), apps::mojom::AppType::kSystemWeb, app_id,
+    return GetAppTypeName(profile(), apps::AppType::kSystemWeb, app_id,
                           container);
   }
 

@@ -23,6 +23,7 @@
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/sessions/core/session_id.h"
 #endif
 
@@ -57,12 +58,12 @@ content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
         web_app_launch_manager_.OpenApplication(std::move(params));
 
     if (!SessionID::IsValidValue(restore_id)) {
-      RecordAppLaunchMetrics(profile_, apps::mojom::AppType::kWeb, app_id,
+      RecordAppLaunchMetrics(profile_, apps::AppType::kWeb, app_id,
                              launch_source, container);
       return web_contents;
     }
 
-    RecordAppLaunchMetrics(profile_, apps::mojom::AppType::kWeb, app_id,
+    RecordAppLaunchMetrics(profile_, apps::AppType::kWeb, app_id,
                            apps::mojom::LaunchSource::kFromFullRestore,
                            container);
 
@@ -91,9 +92,9 @@ content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
   // If the restore id is available, save the launch parameters to the full
   // restore file.
   if (SessionID::IsValidValue(params.restore_id)) {
-    RecordAppLaunchMetrics(
-        profile_, apps::mojom::AppType::kChromeApp, params.app_id,
-        apps::mojom::LaunchSource::kFromFullRestore, params.container);
+    RecordAppLaunchMetrics(profile_, apps::AppType::kChromeApp, params.app_id,
+                           apps::mojom::LaunchSource::kFromFullRestore,
+                           params.container);
 
     AppLaunchParams params_for_restore(params.app_id, params.container,
                                        params.disposition, params.launch_source,
@@ -108,9 +109,8 @@ content::WebContents* BrowserAppLauncher::LaunchAppWithParams(
     full_restore::SaveAppLaunchInfo(profile_->GetPath(),
                                     std::move(launch_info));
   } else {
-    RecordAppLaunchMetrics(profile_, apps::mojom::AppType::kChromeApp,
-                           params.app_id, params.launch_source,
-                           params.container);
+    RecordAppLaunchMetrics(profile_, apps::AppType::kChromeApp, params.app_id,
+                           params.launch_source, params.container);
   }
 #endif
 

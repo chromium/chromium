@@ -127,7 +127,7 @@ int GetUserTypeByDeviceTypeMetrics();
 
 // Returns AppTypeName used for app launch metrics.
 AppTypeName GetAppTypeName(Profile* profile,
-                           apps::mojom::AppType app_type,
+                           AppType app_type,
                            const std::string& app_id,
                            apps::mojom::LaunchContainer container);
 

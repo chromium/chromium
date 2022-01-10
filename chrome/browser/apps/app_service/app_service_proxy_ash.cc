@@ -474,8 +474,8 @@ void AppServiceProxyAsh::RecordAppPlatformMetrics(
     const apps::AppUpdate& update,
     apps::mojom::LaunchSource launch_source,
     apps::mojom::LaunchContainer container) {
-  RecordAppLaunchMetrics(profile, update.AppType(), update.AppId(),
-                         launch_source, container);
+  RecordAppLaunchMetrics(profile, ConvertMojomAppTypToAppType(update.AppType()),
+                         update.AppId(), launch_source, container);
 }
 
 void AppServiceProxyAsh::InitAppPlatformMetrics() {
@@ -492,7 +492,7 @@ void AppServiceProxyAsh::PerformPostUninstallTasks(
   if (app_platform_metrics_service_ &&
       app_platform_metrics_service_->AppPlatformMetrics()) {
     app_platform_metrics_service_->AppPlatformMetrics()->RecordAppUninstallUkm(
-        app_type, app_id, uninstall_source);
+        ConvertMojomAppTypToAppType(app_type), app_id, uninstall_source);
   }
 }
 
