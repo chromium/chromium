@@ -28,8 +28,6 @@ constexpr float kSuggestionBorderRadius = 2;
 // Large enough to make the background a circle.
 constexpr float kIconBorderRadius = 100;
 constexpr int kWindowOffsetY = -4;
-const char16_t kSuggestionButtonAccessibleName[] = u"grammar suggestion button";
-const char16_t kIgnoreButtonAccessibleName[] = u"ignore button";
 
 bool ShouldHighlight(const views::Button& button) {
   return button.GetState() == views::Button::STATE_HOVERED ||
@@ -61,9 +59,7 @@ GrammarSuggestionWindow::GrammarSuggestionWindow(gfx::NativeView parent,
               .window_type =
                   ui::ime::AssistiveWindowType::kGrammarSuggestion})));
   suggestion_button_->SetBackground(nullptr);
-  suggestion_button_->SetAccessibleName(kSuggestionButtonAccessibleName);
-  suggestion_button_->SetFocusBehavior(
-      views::View::FocusBehavior::ACCESSIBLE_ONLY);
+  suggestion_button_->SetFocusBehavior(views::View::FocusBehavior::NEVER);
   suggestion_button_->SetVisible(true);
 
   ignore_button_ =
@@ -76,8 +72,7 @@ GrammarSuggestionWindow::GrammarSuggestionWindow(gfx::NativeView parent,
           })));
   ignore_button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   ignore_button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
-  ignore_button_->SetAccessibleName(kIgnoreButtonAccessibleName);
-  ignore_button_->SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY);
+  ignore_button_->SetFocusBehavior(views::View::FocusBehavior::NEVER);
   ignore_button_->SetVisible(true);
 
   // Highlights buttons when they are hovered or pressed.
