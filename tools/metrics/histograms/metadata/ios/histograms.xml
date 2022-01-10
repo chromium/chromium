@@ -1309,7 +1309,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.SiriShortcuts.Count" units="shortcuts"
-    expires_after="2022-02-06">
+    expires_after="2023-02-06">
   <owner>gujen@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <summary>
