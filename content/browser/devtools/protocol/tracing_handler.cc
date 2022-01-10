@@ -86,30 +86,24 @@ std::string ConvertFromCamelCase(const std::string& in_str, char separator) {
   return out_str;
 }
 
-std::unique_ptr<base::Value> ConvertDictKeyStyle(const base::Value& value) {
-  const base::DictionaryValue* dict = nullptr;
-  if (value.GetAsDictionary(&dict)) {
-    std::unique_ptr<base::DictionaryValue> out_dict(
-        new base::DictionaryValue());
-    for (base::DictionaryValue::Iterator it(*dict); !it.IsAtEnd();
-         it.Advance()) {
-      out_dict->SetKey(
-          ConvertFromCamelCase(it.key(), '_'),
-          base::Value::FromUniquePtrValue(ConvertDictKeyStyle(it.value())));
+base::Value ConvertDictKeyStyle(const base::Value& value) {
+  if (value.is_dict()) {
+    base::Value out(base::Value::Type::DICTIONARY);
+    for (auto kv : value.DictItems()) {
+      out.SetKey(ConvertFromCamelCase(kv.first, '_'),
+                 ConvertDictKeyStyle(kv.second));
     }
-    return std::move(out_dict);
+    return out;
   }
 
   if (value.is_list()) {
-    base::Value::ListStorage out_list_storage;
-    base::Value out_list(std::move(out_list_storage));
-    for (const auto& key : value.GetList())
-      out_list.Append(
-          base::Value::FromUniquePtrValue(ConvertDictKeyStyle(key)));
-    return base::Value::ToUniquePtrValue(out_list.Clone());
+    base::Value out(base::Value::Type::LIST);
+    for (const auto& v : value.GetList())
+      out.Append(ConvertDictKeyStyle(v));
+    return out;
   }
 
-  return base::Value::ToUniquePtrValue(value.Clone());
+  return value.Clone();
 }
 
 class DevToolsTraceEndpointProxy : public TracingController::TraceDataEndpoint {
@@ -734,8 +728,7 @@ void TracingHandler::Start(Maybe<std::string> categories,
               .get(),
           1000);
       if (value && value->is_dict()) {
-        browser_config = GetTraceConfigFromDevToolsConfig(
-            *static_cast<base::DictionaryValue*>(value.get()));
+        browser_config = GetTraceConfigFromDevToolsConfig(*value.get());
       }
     } else if (categories.isJust() || options.isJust()) {
       browser_config = base::trace_event::TraceConfig(categories.fromMaybe(""),
@@ -1151,17 +1144,11 @@ bool TracingHandler::IsStartupTracingActive() {
 
 // static
 base::trace_event::TraceConfig TracingHandler::GetTraceConfigFromDevToolsConfig(
-    const base::DictionaryValue& devtools_config) {
-  std::unique_ptr<base::Value> value = ConvertDictKeyStyle(devtools_config);
-  DCHECK(value && value->is_dict());
-  std::unique_ptr<base::DictionaryValue> tracing_dict(
-      static_cast<base::DictionaryValue*>(value.release()));
-
-  std::string mode;
-  if (tracing_dict->GetString(kRecordModeParam, &mode))
-    tracing_dict->SetString(kRecordModeParam, ConvertFromCamelCase(mode, '-'));
-
-  return base::trace_event::TraceConfig(*tracing_dict);
+    const base::Value& devtools_config) {
+  base::Value config = ConvertDictKeyStyle(devtools_config);
+  if (std::string* mode = config.FindStringPath(kRecordModeParam))
+    config.SetStringPath(kRecordModeParam, ConvertFromCamelCase(*mode, '-'));
+  return base::trace_event::TraceConfig(config);
 }
 
 }  // namespace protocol

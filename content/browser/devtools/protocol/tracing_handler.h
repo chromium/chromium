@@ -24,13 +24,12 @@
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 
 namespace base {
-class DictionaryValue;
 
 namespace trace_event {
 class TraceConfig;
 }
 class RepeatingTimer;
-}
+}  // namespace base
 
 namespace media {
 class VideoFrame;
@@ -131,8 +130,7 @@ class TracingHandler : public DevToolsDomainHandler, public Tracing::Backend {
   void EmitFrameTree();
   static bool IsStartupTracingActive();
   CONTENT_EXPORT static base::trace_event::TraceConfig
-      GetTraceConfigFromDevToolsConfig(
-          const base::DictionaryValue& devtools_config);
+  GetTraceConfigFromDevToolsConfig(const base::Value& devtools_config);
   perfetto::TraceConfig CreatePerfettoConfiguration(
       const base::trace_event::TraceConfig& browser_config,
       bool return_as_stream,

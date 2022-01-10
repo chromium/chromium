@@ -91,13 +91,11 @@ class TracingHandlerTest : public testing::Test {
 };
 
 TEST_F(TracingHandlerTest, GetTraceConfigFromDevToolsConfig) {
-  std::unique_ptr<base::Value> value =
-      base::JSONReader::ReadDeprecated(kCustomTraceConfigStringDevToolsStyle);
-  std::unique_ptr<base::DictionaryValue> devtools_style_dict(
-      static_cast<base::DictionaryValue*>(value.release()));
+  base::Value devtools_config =
+      base::JSONReader::Read(kCustomTraceConfigStringDevToolsStyle).value();
 
   base::trace_event::TraceConfig trace_config =
-      TracingHandler::GetTraceConfigFromDevToolsConfig(*devtools_style_dict);
+      TracingHandler::GetTraceConfigFromDevToolsConfig(devtools_config);
 
   EXPECT_STREQ(kCustomTraceConfigString, trace_config.ToString().c_str());
 }
