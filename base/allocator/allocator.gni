@@ -29,7 +29,7 @@ _is_partition_alloc_platform =
 # For all other platforms & configurations, the shim is required, to replace
 #     the default system allocators, e.g. with tcmalloc.
 if ((is_linux || is_chromeos || is_android || is_apple ||
-     (is_fuchsia && _is_partition_alloc_platform) ||
+     (is_fuchsia && _is_partition_alloc_platform && !is_component_build) ||
      (is_win && !is_component_build && !is_debug)) && !_is_using_sanitizers) {
   _default_use_allocator_shim = true
 } else {
