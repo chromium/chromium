@@ -10,6 +10,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/viz/common/surfaces/surface_id.h"
 #include "content/browser/portal/portal.h"
@@ -36,6 +37,8 @@
 #include "ui/gfx/geometry/size.h"
 
 namespace content {
+
+namespace {
 
 class RenderWidgetHostViewChildFrameBrowserTest : public ContentBrowserTest {
  public:
@@ -410,9 +413,21 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
   // Force the child to submit a new frame.
   ASSERT_TRUE(ExecJs(root->child_at(0)->current_frame_host(),
                      "document.write('Force a new frame.');"));
+
+  const base::TimeTicks start_time = base::TimeTicks::Now();
   do {
+    if (base::TimeTicks::Now() - start_time > TestTimeouts::action_timeout()) {
+      FAIL()
+          << "Timed out waiting for Browser.Tabs.TotalSwitchDuration. Received "
+             "these histograms instead: "
+          << ::testing::PrintToString(
+                 histogram_tester.GetTotalCountsForPrefix("Browser.Tabs."));
+    }
     FetchHistogramsFromChildProcesses();
     GiveItSomeTime();
+
+    // Once the tab switch completes the PresentationFeedback should cause a
+    // single TotalSwitchDuration histogram to be logged.
   } while (histogram_tester
                .GetTotalCountsForPrefix("Browser.Tabs.TotalSwitchDuration")
                .size() != 1);
@@ -709,5 +724,7 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewChildFrameBrowserTest,
           .GetString();
   EXPECT_EQ(oop_input_element_dir, "rtl");
 }
+
+}  // namespace
 
 }  // namespace content
