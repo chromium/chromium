@@ -75,7 +75,7 @@ std::string GetRandomCardNumber() {
 
 }  // namespace
 
-LocalFrameToken GetLocalFrameToken(RandomizeFrame randomize) {
+LocalFrameToken MakeLocalFrameToken(RandomizeFrame randomize) {
   if (*randomize) {
     return LocalFrameToken(base::UnguessableToken::Create());
   } else {
@@ -94,11 +94,11 @@ FieldRendererId MakeFieldRendererId() {
 }
 
 FormGlobalId MakeFormGlobalId(RandomizeFrame randomize) {
-  return {GetLocalFrameToken(randomize), MakeFormRendererId()};
+  return {MakeLocalFrameToken(randomize), MakeFormRendererId()};
 }
 
 FieldGlobalId MakeFieldGlobalId(RandomizeFrame randomize) {
-  return {GetLocalFrameToken(randomize), MakeFieldRendererId()};
+  return {MakeLocalFrameToken(randomize), MakeFieldRendererId()};
 }
 
 void SetFormGroupValues(FormGroup& form_group,
@@ -155,7 +155,7 @@ void CreateTestFormField(const char* label,
                          const char* value,
                          const char* type,
                          FormFieldData* field) {
-  field->host_frame = GetLocalFrameToken();
+  field->host_frame = MakeLocalFrameToken();
   field->unique_renderer_id = MakeFieldRendererId();
   field->label = ASCIIToUTF16(label);
   field->name = ASCIIToUTF16(name);
@@ -218,7 +218,7 @@ void CreateTestAddressFormData(FormData* form, const char* unique_id) {
 void CreateTestAddressFormData(FormData* form,
                                std::vector<ServerFieldTypeSet>* types,
                                const char* unique_id) {
-  form->host_frame = GetLocalFrameToken();
+  form->host_frame = MakeLocalFrameToken();
   form->unique_renderer_id = MakeFormRendererId();
   form->name = u"MyForm" + ASCIIToUTF16(unique_id ? unique_id : "");
   form->button_titles = {std::make_pair(

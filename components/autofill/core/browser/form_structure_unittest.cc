@@ -863,7 +863,7 @@ TEST_F(FormStructureTestImpl, IsCompleteCreditCardForm_Minimal) {
                     {.label = u"Expiration", .name = u"cc_exp"},
                     {.role = ServerFieldType::ADDRESS_HOME_ZIP}}},
         {.determine_heuristic_type = true,
-         .is_complete_credit_card_form = {true, true}},
+         .is_complete_credit_card_form = true},
         {}}});
 }
 
@@ -879,7 +879,7 @@ TEST_F(FormStructureTestImpl, IsCompleteCreditCardForm_Full) {
                      .name = u"submit",
                      .form_control_type = "submit"}}},
         {.determine_heuristic_type = true,
-         .is_complete_credit_card_form = {true, true}},
+         .is_complete_credit_card_form = true},
         {}}});
 }
 
@@ -889,7 +889,7 @@ TEST_F(FormStructureTestImpl, IsCompleteCreditCardForm_OnlyCCNumber) {
       {{{.description_for_logging = "IsCompleteCreditCardForm_OnlyCCNumber",
          .fields = {{.role = ServerFieldType::CREDIT_CARD_NUMBER}}},
         {.determine_heuristic_type = true,
-         .is_complete_credit_card_form = {true, false}},
+         .is_complete_credit_card_form = false},
         {}}});
 }
 
@@ -905,7 +905,7 @@ TEST_F(FormStructureTestImpl, IsCompleteCreditCardForm_AddressForm) {
                     {.label = u"Address", .name = u""},
                     {.role = ServerFieldType::ADDRESS_HOME_ZIP, .name = u""}}},
         {.determine_heuristic_type = true,
-         .is_complete_credit_card_form = {true, false}},
+         .is_complete_credit_card_form = false},
         {}}});
 }
 

@@ -86,14 +86,14 @@ FormFieldData CreateFieldByRole(ServerFieldType role) {
   return field;
 }
 
-FormData GetFormData(const TestFormAttributes& test_form_attributes) {
+FormData GetFormData(const FormDataDescription& test_form_attributes) {
   FormData form_data;
 
   form_data.url = GURL(test_form_attributes.url);
   form_data.action = GURL(test_form_attributes.action);
-  form_data.name = test_form_attributes.name.data();
+  form_data.name = test_form_attributes.name;
   form_data.host_frame =
-      test_form_attributes.host_frame.value_or(GetLocalFrameToken());
+      test_form_attributes.host_frame.value_or(MakeLocalFrameToken());
   form_data.unique_renderer_id =
       test_form_attributes.unique_renderer_id.value_or(MakeFormRendererId());
   if (test_form_attributes.main_frame_origin)
@@ -102,7 +102,7 @@ FormData GetFormData(const TestFormAttributes& test_form_attributes) {
   for (const FieldDataDescription& field_description :
        test_form_attributes.fields) {
     FormFieldData field = CreateFieldByRole(field_description.role);
-    field.form_control_type = field_description.form_control_type.data();
+    field.form_control_type = field_description.form_control_type;
     // Add selection options if the field control type is "select-one".
     if (field.form_control_type == "select-one" &&
         field_description.select_options.size() > 0) {
@@ -114,17 +114,15 @@ FormData GetFormData(const TestFormAttributes& test_form_attributes) {
         field_description.unique_renderer_id.value_or(MakeFieldRendererId());
     field.is_focusable = field_description.is_focusable;
     if (!field_description.autocomplete_attribute.empty()) {
-      field.autocomplete_attribute =
-          field_description.autocomplete_attribute.data();
+      field.autocomplete_attribute = field_description.autocomplete_attribute;
     }
     if (field_description.label != kLabelText)
-      field.label = field_description.label.data();
+      field.label = field_description.label;
     if (field_description.name != kNameText)
-      field.name = field_description.name.data();
+      field.name = field_description.name;
     if (field_description.value)
       field.value = *field_description.value;
-    if (field_description.is_autofilled)
-      field.is_autofilled = *field_description.is_autofilled;
+    field.is_autofilled = field_description.is_autofilled.value_or(false);
     field.origin =
         field_description.origin.value_or(form_data.main_frame_origin);
     field.should_autocomplete = field_description.should_autocomplete;
@@ -161,19 +159,18 @@ void FormStructureTest::CheckFormStructureTestData(
     if (test_case.form_flags.has_author_specified_upi_vpa_hint)
       EXPECT_TRUE(form_structure->has_author_specified_upi_vpa_hint());
 
-    if (test_case.form_flags.is_complete_credit_card_form.first) {
-      if (test_case.form_flags.is_complete_credit_card_form.second)
-        EXPECT_TRUE(form_structure->IsCompleteCreditCardForm());
-      else
-        EXPECT_FALSE(form_structure->IsCompleteCreditCardForm());
+    if (test_case.form_flags.is_complete_credit_card_form.has_value()) {
+      EXPECT_EQ(form_structure->IsCompleteCreditCardForm(),
+                *test_case.form_flags.is_complete_credit_card_form);
     }
-
-    if (test_case.form_flags.field_count)
+    if (test_case.form_flags.field_count) {
       ASSERT_EQ(*test_case.form_flags.field_count,
                 static_cast<int>(form_structure->field_count()));
-    if (test_case.form_flags.autofill_count)
+    }
+    if (test_case.form_flags.autofill_count) {
       ASSERT_EQ(*test_case.form_flags.autofill_count,
                 static_cast<int>(form_structure->autofill_count()));
+    }
     if (test_case.form_flags.section_count) {
       std::set<std::string> section_names;
       for (size_t i = 0; i < 9; ++i) {

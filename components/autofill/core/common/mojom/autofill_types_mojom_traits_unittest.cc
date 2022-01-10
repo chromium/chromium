@@ -250,7 +250,7 @@ TEST_F(AutofillTypeTraitsTestImpl, PassFormFieldData) {
   test::CreateTestSelectField("TestLabel", "TestName", "TestValue", kOptions,
                               kOptions, 4, &input);
   // Set other attributes to check if they are passed correctly.
-  input.host_frame = test::GetLocalFrameToken();
+  input.host_frame = test::MakeLocalFrameToken();
   input.unique_renderer_id = FieldRendererId(1234);
   input.id_attribute = u"id";
   input.name_attribute = u"name";
@@ -283,7 +283,7 @@ TEST_F(AutofillTypeTraitsTestImpl, PassDataListFormFieldData) {
   test::CreateTestDatalistField("DatalistLabel", "DatalistName",
                                 "DatalistValue", kOptions, kOptions, &input);
   // Set other attributes to check if they are passed correctly.
-  input.host_frame = test::GetLocalFrameToken();
+  input.host_frame = test::MakeLocalFrameToken();
   input.unique_renderer_id = FieldRendererId(1234);
   input.id_attribute = u"id";
   input.name_attribute = u"name";

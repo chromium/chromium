@@ -1549,8 +1549,8 @@ TEST_F(FormForestTestUnflattenSharedAutofillPolicy, FromOtherOrigin) {
 TEST(FormForestTest, FrameDataComparator) {
   FrameData::CompareByFrameToken less;
   std::unique_ptr<FrameData> null;
-  auto x = std::make_unique<FrameData>(test::GetLocalFrameToken());
-  auto xx = std::make_unique<FrameData>(test::GetLocalFrameToken());
+  auto x = std::make_unique<FrameData>(test::MakeLocalFrameToken());
+  auto xx = std::make_unique<FrameData>(test::MakeLocalFrameToken());
   auto y = std::make_unique<FrameData>(
       LocalFrameToken(base::UnguessableToken::Deserialize(
           x->frame_token->GetHighForSerialization() + 1,

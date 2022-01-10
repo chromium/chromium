@@ -960,7 +960,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
   // Different form structure.
   FormData form2;
-  form2.host_frame = test::GetLocalFrameToken();
+  form2.host_frame = test::MakeLocalFrameToken();
   form2.unique_renderer_id = test::MakeFormRendererId();
   form2.name = u"MyForm";
   form2.url = GURL("https://myform.com/form.html");
@@ -993,7 +993,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   FormData form2;
   FormFieldData field;
   test::CreateTestFormField("Querty", "qwerty", "", "text", &field);
-  form2.host_frame = test::GetLocalFrameToken();
+  form2.host_frame = test::MakeLocalFrameToken();
   form2.unique_renderer_id = test::MakeFormRendererId();
   form2.name = u"NonQueryable";
   form2.url = form1.url;
@@ -1021,7 +1021,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
   FormData form2;
   FormFieldData field;
   test::CreateTestFormField("Querty", "qwerty", "", "text", &field);
-  form2.host_frame = test::GetLocalFrameToken();
+  form2.host_frame = test::MakeLocalFrameToken();
   form2.unique_renderer_id = test::MakeFormRendererId();
   form2.name = u"NonQueryable";
   form2.url = form1.url;
@@ -5951,7 +5951,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
        OnLoadedServerPredictionsFromApi) {
   // First form on the page.
   FormData form;
-  form.host_frame = test::GetLocalFrameToken();
+  form.host_frame = test::MakeLocalFrameToken();
   form.unique_renderer_id = test::MakeFormRendererId();
   form.name = u"MyForm";
   form.url = GURL("https://myform.com/form.html");
@@ -5977,7 +5977,7 @@ TEST_P(BrowserAutofillManagerStructuredProfileTest,
 
   // Second form on the page.
   FormData form2;
-  form2.host_frame = test::GetLocalFrameToken();
+  form2.host_frame = test::MakeLocalFrameToken();
   form2.unique_renderer_id = test::MakeFormRendererId();
   form2.name = u"MyForm2";
   form2.url = GURL("https://myform.com/form.html");

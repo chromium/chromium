@@ -70,9 +70,9 @@ using FormGroupValues = std::vector<FormGroupValue>;
 
 using RandomizeFrame = base::StrongAlias<struct RandomizeFrameTag, bool>;
 
-// Creates non-empty LocalFrameToken. If `randomize` is true, the
-// LocalFrameToken is generated randomly, otherwise it is stable.
-LocalFrameToken GetLocalFrameToken(
+// Creates non-empty LocalFrameToken. If `randomize` is false, the
+// LocalFrameToken is stable across multiple calls.
+LocalFrameToken MakeLocalFrameToken(
     RandomizeFrame randomize = RandomizeFrame(false));
 
 // Creates new, pairwise distinct FormRendererIds.
@@ -82,7 +82,8 @@ FormRendererId MakeFormRendererId();
 FieldRendererId MakeFieldRendererId();
 
 // Creates new, pairwise distinct FormGlobalIds. If `randomize` is true, the
-// LocalFrameToken is generated randomly, otherwise it is stable.
+// LocalFrameToken is generated randomly, otherwise it is stable across multiple
+// calls.
 FormGlobalId MakeFormGlobalId(
     RandomizeFrame randomize_frame = RandomizeFrame(false));
 
