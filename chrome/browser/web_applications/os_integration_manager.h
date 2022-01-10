@@ -190,7 +190,7 @@ class OsIntegrationManager : public AppRegistrarObserver {
   virtual void UpdateFileHandlers(
       const AppId& app_id,
       FileHandlerUpdateAction file_handlers_need_os_update,
-      base::OnceClosure finished_callback);
+      ResultCallback finished_callback);
 
   // Updates protocol handler registrations with the OS.
   // If `force_shortcut_updates_if_needed` is true, then also update the
@@ -198,6 +198,10 @@ class OsIntegrationManager : public AppRegistrarObserver {
   virtual void UpdateProtocolHandlers(const AppId& app_id,
                                       bool force_shortcut_updates_if_needed,
                                       base::OnceClosure callback);
+
+  virtual void UpdateShortcuts(const AppId& app_id,
+                               base::StringPiece old_name,
+                               base::OnceClosure callback);
 
   // AppRegistrarObserver:
   void OnWebAppProfileWillBeDeleted(const AppId& app_id) override;
@@ -270,9 +274,6 @@ class OsIntegrationManager : public AppRegistrarObserver {
   virtual void UnregisterWebAppOsUninstallation(const AppId& app_id);
 
   // Update:
-  virtual void UpdateShortcuts(const AppId& app_id,
-                               base::StringPiece old_name,
-                               base::OnceClosure callback);
   virtual void UpdateShortcutsMenu(const AppId& app_id,
                                    const WebAppInstallInfo& web_app_info);
 

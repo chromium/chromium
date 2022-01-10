@@ -66,6 +66,7 @@
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
@@ -1911,6 +1912,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler, MAYBE_WebAppFileHandler) {
     }
   }
 #elif defined(OS_MAC)
+  std::vector<GURL> test_file_urls;
   for (auto extension : expected_extensions) {
     const base::FilePath test_file_path =
         shortcut_override->chrome_apps_folder.GetPath().AppendASCII("test." +
@@ -1918,11 +1920,34 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_FileHandler, MAYBE_WebAppFileHandler) {
     const base::File test_file(test_file_path, base::File::FLAG_CREATE_ALWAYS |
                                                    base::File::FLAG_WRITE);
     const GURL test_file_url = net::FilePathToFileURL(test_file_path);
+    test_file_urls.push_back(test_file_url);
     EXPECT_EQ(u"Manifest with file handlers",
               shell_integration::GetApplicationNameForProtocol(test_file_url))
         << "The default app to open the file is wrong. "
         << "File extension: " + extension;
   }
+
+  // Simulate the user permanently denying file handling permission. Regression
+  // test for crbug.com/1269387
+  base::RunLoop run_loop_remove_file_handlers;
+  PersistFileHandlersUserChoice(browser()->profile(), app_id, /*allowed=*/false,
+                                run_loop_remove_file_handlers.QuitClosure());
+  run_loop_remove_file_handlers.Run();
+
+  for (const auto& test_file_url : test_file_urls) {
+    // The system update is asynchronous (i.e.
+    // `LSCopyDefaultApplicationURLForURL()` won't immediately return the
+    // updated value), so unfortunately we must poll. If the unregistration of
+    // the file handlers failed, the test will time out.
+    while (u"Manifest with file handlers" ==
+           shell_integration::GetApplicationNameForProtocol(test_file_url)) {
+      base::RunLoop delay_loop;
+      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+          FROM_HERE, delay_loop.QuitClosure(), base::Milliseconds(100));
+      delay_loop.Run();
+    }
+  }
+
   ASSERT_TRUE(shortcut_override->chrome_apps_folder.Delete());
 #endif
 

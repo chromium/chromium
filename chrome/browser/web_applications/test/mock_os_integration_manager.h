@@ -113,7 +113,7 @@ class MockOsIntegrationManager : public OsIntegrationManager {
               UpdateFileHandlers,
               (const AppId& app_id,
                FileHandlerUpdateAction file_handlers_need_os_update,
-               base::OnceClosure finished_callback),
+               ResultCallback finished_callback),
               (override));
   MOCK_METHOD(void,
               UpdateShortcuts,

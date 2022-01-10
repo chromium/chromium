@@ -304,9 +304,28 @@ void PersistFileHandlersUserChoice(Profile* profile,
   if (allowed) {
     std::move(update_finished_callback).Run();
   } else {
+#if defined(OS_MAC)
+    // On Mac, the file handlers are encoded in the app shortcut. First
+    // unregister the file handlers (verifying that it finishes synchronously),
+    // then update the shortcut.
+    Result unregister_file_handlers_result = Result::kError;
     provider->os_integration_manager().UpdateFileHandlers(
         app_id, FileHandlerUpdateAction::kRemove,
-        std::move(update_finished_callback));
+        base::BindOnce(
+            [](Result* result_out, Result actual_result) {
+              *result_out = actual_result;
+            },
+            &unregister_file_handlers_result));
+    DCHECK_EQ(Result::kOk, unregister_file_handlers_result);
+    provider->os_integration_manager().UpdateShortcuts(
+        app_id, /*old_name=*/{}, std::move(update_finished_callback));
+#else
+    provider->os_integration_manager().UpdateFileHandlers(
+        app_id, FileHandlerUpdateAction::kRemove,
+        base::BindOnce([](base::OnceClosure closure,
+                          Result ignored) { std::move(closure).Run(); },
+                       std::move(update_finished_callback)));
+#endif
   }
 }
 

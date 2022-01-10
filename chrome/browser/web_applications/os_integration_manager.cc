@@ -287,8 +287,7 @@ void OsIntegrationManager::UpdateOsHooks(
 
   UpdateFileHandlers(app_id, file_handlers_need_os_update,
                      base::BindOnce(barrier->CreateBarrierCallbackForType(
-                                        OsHookType::kFileHandlers),
-                                    Result::kOk));
+                         OsHookType::kFileHandlers)));
   UpdateShortcuts(app_id, old_name,
                   base::BindOnce(barrier->CreateBarrierCallbackForType(
                                      OsHookType::kShortcuts),
@@ -626,18 +625,12 @@ void OsIntegrationManager::UpdateUrlHandlers(
 void OsIntegrationManager::UpdateFileHandlers(
     const AppId& app_id,
     FileHandlerUpdateAction file_handlers_need_os_update,
-    base::OnceClosure finished_callback) {
+    ResultCallback finished_callback) {
   if (!IsFileHandlingAPIAvailable(app_id) ||
       file_handlers_need_os_update == FileHandlerUpdateAction::kNoUpdate) {
-    std::move(finished_callback).Run();
+    std::move(finished_callback).Run(Result::kOk);
     return;
   }
-
-  // Convert `finished_callback` to a format that takes a Result.
-  auto finished_callback_with_Result =
-      base::BindOnce([](base::OnceClosure finished_callback,
-                        Result result) { std::move(finished_callback).Run(); },
-                     std::move(finished_callback));
 
   ResultCallback callback_after_removal;
   if (file_handlers_need_os_update == FileHandlerUpdateAction::kUpdate) {
@@ -655,11 +648,10 @@ void OsIntegrationManager::UpdateFileHandlers(
           os_integration_manager->RegisterFileHandlers(
               app_id, std::move(finished_callback));
         },
-        weak_ptr_factory_.GetWeakPtr(), app_id,
-        std::move(finished_callback_with_Result));
+        weak_ptr_factory_.GetWeakPtr(), app_id, std::move(finished_callback));
   } else {
     DCHECK_EQ(file_handlers_need_os_update, FileHandlerUpdateAction::kRemove);
-    callback_after_removal = std::move(finished_callback_with_Result);
+    callback_after_removal = std::move(finished_callback);
   }
 
   // Update file handlers via complete uninstallation, then potential
