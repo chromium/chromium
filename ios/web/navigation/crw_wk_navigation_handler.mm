@@ -46,6 +46,7 @@
 #import "net/base/mac/url_conversions.h"
 #include "net/base/net_errors.h"
 #include "net/cert/x509_util_ios.h"
+#include "net/http/http_content_disposition.h"
 #include "url/gurl.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -453,7 +454,7 @@ const web::CertVerificationErrorsCacheType::size_type kMaxCertErrorsCount = 100;
                     : WKNavigationResponsePolicyCancel);
       });
 
-  if ([self shouldRenderResponse:WKResponse]) {
+  if ([self shouldRenderResponse:WKResponse HTTPHeaders:headers.get()]) {
     const web::WebStatePolicyDecider::ResponseInfo response_info(
         WKResponse.forMainFrame);
     self.webStateImpl->ShouldAllowResponse(WKResponse.response, response_info,
@@ -1351,7 +1352,18 @@ const web::CertVerificationErrorsCacheType::size_type kMaxCertErrorsCount = 100;
 }
 
 // Returns YES if response should be rendered in WKWebView.
-- (BOOL)shouldRenderResponse:(WKNavigationResponse*)WKResponse {
+- (BOOL)shouldRenderResponse:(WKNavigationResponse*)WKResponse
+                 HTTPHeaders:(net::HttpResponseHeaders*)headers {
+  if (headers) {
+    std::string contentDisposition;
+    headers->GetNormalizedHeader("content-disposition", &contentDisposition);
+    net::HttpContentDisposition parsedContentDisposition(contentDisposition,
+                                                         std::string());
+    if (parsedContentDisposition.is_attachment()) {
+      return NO;
+    }
+  }
+
   if (_shouldPerformDownload) {
     DCHECK(web::features::IsNewDownloadAPIEnabled());
     return NO;
