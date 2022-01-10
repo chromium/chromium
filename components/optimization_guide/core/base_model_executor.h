@@ -69,9 +69,9 @@ class BaseModelExecutor : public TFLiteModelExecutor<OutputType, InputTypes...>,
   }
 
   // InferenceDelegate:
-  absl::Status Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
-                          InputTypes... input) override = 0;
-  OutputType Postprocess(
+  bool Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
+                  InputTypes... input) override = 0;
+  absl::optional<OutputType> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors) override = 0;
 };
 

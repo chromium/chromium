@@ -25,10 +25,10 @@ class PredictionModelExecutor : public optimization_guide::BaseModelExecutor<
 
  protected:
   // optimization_guide::BaseModelExecutor:
-  absl::Status Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
-                          const GeneratePredictionsRequest& input) override;
+  bool Preprocess(const std::vector<TfLiteTensor*>& input_tensors,
+                  const GeneratePredictionsRequest& input) override;
 
-  GeneratePredictionsResponse Postprocess(
+  absl::optional<GeneratePredictionsResponse> Postprocess(
       const std::vector<const TfLiteTensor*>& output_tensors) override;
 
  private:

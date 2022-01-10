@@ -8,13 +8,14 @@
 
 namespace optimization_guide {
 
-absl::Status TestTFLiteModelExecutor::Preprocess(
+bool TestTFLiteModelExecutor::Preprocess(
     const std::vector<TfLiteTensor*>& input_tensors,
     const std::vector<float>& input) {
-  return tflite::task::core::PopulateTensor<float>(input, input_tensors[0]);
+  return tflite::task::core::PopulateTensor<float>(input, input_tensors[0])
+      .ok();
 }
 
-std::vector<float> TestTFLiteModelExecutor::Postprocess(
+absl::optional<std::vector<float>> TestTFLiteModelExecutor::Postprocess(
     const std::vector<const TfLiteTensor*>& output_tensors) {
   std::vector<float> data;
   absl::Status status =

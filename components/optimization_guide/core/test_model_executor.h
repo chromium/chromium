@@ -6,7 +6,6 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_TEST_MODEL_EXECUTOR_H_
 
 #include "components/optimization_guide/core/model_executor.h"
-#include "third_party/abseil-cpp/absl/status/status.h"
 
 namespace optimization_guide {
 

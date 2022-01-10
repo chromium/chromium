@@ -1,7 +1,5 @@
 include_rules = [
   "+components/ukm/test_ukm_recorder.h",
   "+services/metrics/public/cpp",
-  "+third_party/abseil-cpp/absl/types/optional.h",
-  "+third_party/abseil-cpp/absl/status/status.h",
   "+ui/base/l10n",
 ]
