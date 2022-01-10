@@ -624,6 +624,21 @@
             ]
         }
     ],
+    "AndroidRDSGlobal": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RequestDesktopSiteGlobal"
+                    ]
+                }
+            ]
+        }
+    ],
     "AndroidRequestMobileSiteOption": [
         {
             "platforms": [
