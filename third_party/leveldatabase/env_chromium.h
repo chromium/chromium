@@ -6,24 +6,22 @@
 #define THIRD_PARTY_LEVELDATABASE_ENV_CHROMIUM_H_
 
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
 #include "base/callback.h"
-#include "base/containers/circular_deque.h"
 #include "base/containers/linked_list.h"
+#include "base/containers/span.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
-#include "base/synchronization/condition_variable.h"
-#include "build/build_config.h"
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "leveldb/cache.h"
 #include "leveldb/db.h"
 #include "leveldb/env.h"
 #include "leveldb/export.h"
 #include "port/port_chromium.h"
-#include "util/mutexlock.h"
 
 namespace base {
 namespace trace_event {
