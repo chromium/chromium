@@ -5,6 +5,7 @@
 #include "components/history_clusters/core/on_device_clustering_util.h"
 
 #include "base/containers/contains.h"
+#include "components/history_clusters/core/on_device_clustering_features.h"
 
 namespace history_clusters {
 
@@ -75,6 +76,12 @@ base::flat_set<history::VisitID> CalculateAllDuplicateVisitsForCluster(
                                visit.duplicate_visit_ids.end());
   }
   return duplicate_visit_ids;
+}
+
+bool IsNoisyVisit(const history::ClusterVisit& visit) {
+  return visit.engagement_score >
+             features::NoisyClusterVisitEngagementThreshold() &&
+         !visit.is_search_visit;
 }
 
 }  // namespace history_clusters

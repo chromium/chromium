@@ -62,7 +62,6 @@ TEST_F(ContentAnnotationsClusterProcessorTest, AboveThreshold) {
   cluster1.visits = {testing::CreateClusterVisit(visit),
                      testing::CreateClusterVisit(visit2),
                      testing::CreateClusterVisit(visit4)};
-  cluster1.keywords = {std::u16string(u"github"), std::u16string(u"google")};
   clusters.push_back(cluster1);
 
   // After the context clustering, visit5 will not be in the same cluster as
@@ -74,8 +73,6 @@ TEST_F(ContentAnnotationsClusterProcessorTest, AboveThreshold) {
   visit5.content_annotations.model_annotations.categories = {{"category", 1}};
   history::Cluster cluster2;
   cluster2.visits = {testing::CreateClusterVisit(visit5)};
-  cluster2.keywords = {std::u16string(u"github"),
-                       std::u16string(u"otherkeyword")};
   clusters.push_back(cluster2);
 
   std::vector<history::Cluster> result_clusters = ProcessClusters(clusters);
@@ -85,10 +82,6 @@ TEST_F(ContentAnnotationsClusterProcessorTest, AboveThreshold) {
           testing::VisitResult(1, 1.0), testing::VisitResult(2, 1.0),
           testing::VisitResult(4, 1.0), testing::VisitResult(10, 1.0))));
   ASSERT_EQ(result_clusters.size(), 1u);
-  EXPECT_THAT(
-      result_clusters.at(0).keywords,
-      UnorderedElementsAre(std::u16string(u"github"), std::u16string(u"google"),
-                           std::u16string(u"otherkeyword")));
 }
 
 TEST_F(ContentAnnotationsClusterProcessorTest, BelowThreshold) {
@@ -105,7 +98,6 @@ TEST_F(ContentAnnotationsClusterProcessorTest, BelowThreshold) {
   history::Cluster cluster1;
   cluster1.visits = {testing::CreateClusterVisit(visit),
                      testing::CreateClusterVisit(visit2)};
-  cluster1.keywords = {std::u16string(u"github"), std::u16string(u"google")};
   clusters.push_back(cluster1);
 
   // After the context clustering, visit4 will not be in the same cluster as
@@ -117,7 +109,6 @@ TEST_F(ContentAnnotationsClusterProcessorTest, BelowThreshold) {
   visit4.content_annotations.model_annotations.entities = {{"github", 1}};
   history::Cluster cluster2;
   cluster2.visits = {testing::CreateClusterVisit(visit4)};
-  cluster2.keywords = {std::u16string(u"github")};
   clusters.push_back(cluster2);
 
   // This visit has the same entities but no categories and shouldn't be
@@ -127,7 +118,6 @@ TEST_F(ContentAnnotationsClusterProcessorTest, BelowThreshold) {
   visit5.content_annotations.model_annotations.entities = {{"github", 1}};
   history::Cluster cluster3;
   cluster3.visits = {testing::CreateClusterVisit(visit5)};
-  cluster3.keywords = {std::u16string(u"irrelevant")};
   clusters.push_back(cluster3);
 
   // This visit has the same categories but no entities and shouldn't be
@@ -137,7 +127,6 @@ TEST_F(ContentAnnotationsClusterProcessorTest, BelowThreshold) {
   visit6.content_annotations.model_annotations.categories = {{"category", 1}};
   history::Cluster cluster4;
   cluster4.visits = {testing::CreateClusterVisit(visit6)};
-  cluster4.keywords = {std::u16string(u"category")};
   clusters.push_back(cluster4);
 
   // This visit has no content annotations and shouldn't be grouped with the
@@ -157,14 +146,6 @@ TEST_F(ContentAnnotationsClusterProcessorTest, BelowThreshold) {
                           ElementsAre(testing::VisitResult(11, 1.0)),
                           ElementsAre(testing::VisitResult(12, 1.0))));
   EXPECT_THAT(result_clusters.size(), 4u);
-  EXPECT_THAT(result_clusters.at(0).keywords,
-              UnorderedElementsAre(std::u16string(u"github"),
-                                   std::u16string(u"google")));
-  EXPECT_THAT(result_clusters.at(1).keywords,
-              UnorderedElementsAre(std::u16string(u"irrelevant")));
-  EXPECT_THAT(result_clusters.at(2).keywords,
-              UnorderedElementsAre(std::u16string(u"category")));
-  EXPECT_TRUE(result_clusters.at(3).keywords.empty());
 }
 
 class ContentAnnotationsIntersectionMetricTest
@@ -199,7 +180,6 @@ TEST_F(ContentAnnotationsIntersectionMetricTest, AboveThreshold) {
   cluster1.visits = {testing::CreateClusterVisit(visit),
                      testing::CreateClusterVisit(visit2),
                      testing::CreateClusterVisit(visit4)};
-  cluster1.keywords = {std::u16string(u"github"), std::u16string(u"google")};
   clusters.push_back(cluster1);
 
   // After the context clustering, visit5 will not be in the same cluster as
@@ -216,8 +196,6 @@ TEST_F(ContentAnnotationsIntersectionMetricTest, AboveThreshold) {
   history::Cluster cluster2;
   cluster2.visits = {testing::CreateClusterVisit(visit5),
                      testing::CreateClusterVisit(visit6)};
-  cluster2.keywords = {std::u16string(u"github"), std::u16string(u"google"),
-                       std::u16string(u"otherkeyword")};
   clusters.push_back(cluster2);
 
   std::vector<history::Cluster> result_clusters = ProcessClusters(clusters);
@@ -227,10 +205,6 @@ TEST_F(ContentAnnotationsIntersectionMetricTest, AboveThreshold) {
                   testing::VisitResult(4, 1.0), testing::VisitResult(10, 1.0),
                   testing::VisitResult(11, 1.0))));
   ASSERT_EQ(result_clusters.size(), 1u);
-  EXPECT_THAT(
-      result_clusters.at(0).keywords,
-      UnorderedElementsAre(std::u16string(u"github"), std::u16string(u"google"),
-                           std::u16string(u"otherkeyword")));
 }
 
 TEST_F(ContentAnnotationsIntersectionMetricTest, BelowThreshold) {
@@ -251,7 +225,6 @@ TEST_F(ContentAnnotationsIntersectionMetricTest, BelowThreshold) {
   cluster1.visits = {testing::CreateClusterVisit(visit),
                      testing::CreateClusterVisit(visit2),
                      testing::CreateClusterVisit(visit4)};
-  cluster1.keywords = {std::u16string(u"github"), std::u16string(u"google")};
   clusters.push_back(cluster1);
 
   // After the context clustering, visit5 will not be in the same cluster as
@@ -263,15 +236,10 @@ TEST_F(ContentAnnotationsIntersectionMetricTest, BelowThreshold) {
   visit5.content_annotations.model_annotations.categories = {{"category", 1}};
   history::Cluster cluster2;
   cluster2.visits = {testing::CreateClusterVisit(visit5)};
-  cluster2.keywords = {std::u16string(u"github"), std::u16string(u"google"),
-                       std::u16string(u"otherkeyword")};
   clusters.push_back(cluster2);
 
   std::vector<history::Cluster> result_clusters = ProcessClusters(clusters);
   ASSERT_EQ(result_clusters.size(), 2u);
-  EXPECT_THAT(result_clusters.at(0).keywords,
-              UnorderedElementsAre(std::u16string(u"github"),
-                                   std::u16string(u"google")));
 }
 
 }  // namespace

@@ -19,6 +19,10 @@ void MergeDuplicateVisitIntoCanonicalVisit(
 base::flat_set<history::VisitID> CalculateAllDuplicateVisitsForCluster(
     const history::Cluster& cluster);
 
+// Whether the visit is considered a noisy visit (i.e. high engagement,
+// non-SRP).
+bool IsNoisyVisit(const history::ClusterVisit& visit);
+
 }  // namespace history_clusters
 
 #endif  // COMPONENTS_HISTORY_CLUSTERS_CORE_ON_DEVICE_CLUSTERING_UTIL_H_

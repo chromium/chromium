@@ -132,7 +132,7 @@ ContentAnnotationsClusterProcessor::ProcessClusters(
   CreateBoWsForClusters(clusters, &cluster_idx_to_entity_bows,
                         &cluster_idx_to_category_bows);
 
-  // Now cluster on the keywords in each BoW between clusters.
+  // Now cluster on the entries in each BoW between clusters.
   std::vector<history::Cluster> aggregated_clusters;
   base::flat_set<int> merged_cluster_indices;
   for (size_t i = 0; i < clusters.size(); i++) {
@@ -142,8 +142,6 @@ ContentAnnotationsClusterProcessor::ProcessClusters(
     // Greedily combine clusters by checking if this cluster is similar to any
     // other unmerged clusters.
     history::Cluster aggregated_cluster = clusters[i];
-    base::flat_set<std::u16string> aggregated_cluster_keywords(
-        clusters[i].keywords.begin(), clusters[i].keywords.end());
     for (size_t j = i + 1; j < clusters.size(); j++) {
       if (merged_cluster_indices.find(j) != merged_cluster_indices.end()) {
         continue;
@@ -153,18 +151,13 @@ ContentAnnotationsClusterProcessor::ProcessClusters(
       float category_similarity = CalculateSimilarityScore(
           cluster_idx_to_category_bows[i], cluster_idx_to_category_bows[j]);
       if (ShouldMergeClusters(entity_similarity, category_similarity)) {
-        // Add the visits and keywords to the aggregated cluster.
+        // Add the visits to the aggregated cluster.
         merged_cluster_indices.insert(j);
         aggregated_cluster.visits.insert(aggregated_cluster.visits.end(),
                                          clusters[j].visits.begin(),
                                          clusters[j].visits.end());
-        aggregated_cluster_keywords.insert(clusters[j].keywords.begin(),
-                                           clusters[j].keywords.end());
       }
     }
-    aggregated_cluster.keywords =
-        std::vector<std::u16string>({aggregated_cluster_keywords.begin(),
-                                     aggregated_cluster_keywords.end()});
     aggregated_clusters.push_back(std::move(aggregated_cluster));
   }
   return aggregated_clusters;
