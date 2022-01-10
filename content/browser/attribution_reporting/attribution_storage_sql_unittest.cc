@@ -15,8 +15,8 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
-#include "content/browser/attribution_reporting/event_attribution_report.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/storable_trigger.h"
 #include "sql/database.h"
@@ -401,7 +401,7 @@ TEST_F(AttributionStorageSqlTest,
   EXPECT_THAT(storage()->GetActiveSources(), IsEmpty());
 
   task_environment_.FastForwardBy(base::Days(1));
-  EXPECT_TRUE(storage()->DeleteReport(EventAttributionReport::Id(1)));
+  EXPECT_TRUE(storage()->DeleteReport(AttributionReport::Id(1)));
   storage()->ClearData(
       base::Time::Min(), base::Time::Max(),
       base::BindRepeating(std::equal_to<url::Origin>(), impression_origin));
@@ -461,7 +461,7 @@ TEST_F(AttributionStorageSqlTest,
   EXPECT_THAT(storage()->GetActiveSources(), IsEmpty());
 
   task_environment_.FastForwardBy(base::Days(1));
-  EXPECT_TRUE(storage()->DeleteReport(EventAttributionReport::Id(1)));
+  EXPECT_TRUE(storage()->DeleteReport(AttributionReport::Id(1)));
   storage()->ClearData(
       base::Time::Min(), base::Time::Max(),
       base::BindRepeating(std::equal_to<url::Origin>(), conversion_origin));
@@ -542,7 +542,7 @@ TEST_F(AttributionStorageSqlTest, MaxUint64StorageSucceeds) {
 
   EXPECT_THAT(
       storage()->GetAttributionsToReport(base::Time::Now()),
-      ElementsAre(Property(&EventAttributionReport::trigger_data, kMaxUint64)));
+      ElementsAre(Property(&AttributionReport::trigger_data, kMaxUint64)));
 }
 
 TEST_F(AttributionStorageSqlTest, ImpressionNotExpired_NotDeleted) {
@@ -638,7 +638,7 @@ TEST_F(AttributionStorageSqlTest, ExpiredImpressionWithSentConversion_Deleted) {
   // Advance past the default report time.
   task_environment_.FastForwardBy(base::Milliseconds(kReportTime));
 
-  std::vector<EventAttributionReport> reports =
+  std::vector<AttributionReport> reports =
       storage()->GetAttributionsToReport(base::Time::Now());
   EXPECT_THAT(reports, SizeIs(1));
   EXPECT_TRUE(storage()->DeleteReport(*reports[0].report_id()));

@@ -15,7 +15,7 @@ using DeactivatedSource = ::content::AttributionStorage::DeactivatedSource;
 
 CreateReportResult::CreateReportResult(
     Status status,
-    absl::optional<EventAttributionReport> dropped_report,
+    absl::optional<AttributionReport> dropped_report,
     absl::optional<DeactivatedSource::Reason>
         dropped_report_source_deactivation_reason,
     absl::optional<base::Time> report_time)
@@ -50,8 +50,8 @@ CreateReportResult::Status CreateReportResult::status() const {
   return status_;
 }
 
-const absl::optional<EventAttributionReport>&
-CreateReportResult::dropped_report() const {
+const absl::optional<AttributionReport>& CreateReportResult::dropped_report()
+    const {
   return dropped_report_;
 }
 

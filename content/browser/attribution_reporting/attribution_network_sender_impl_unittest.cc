@@ -45,7 +45,7 @@ using Checkpoint = ::testing::MockFunction<void(int)>;
 const char kReportUrl[] =
     "https://report.test/.well-known/attribution-reporting/report-attribution";
 
-EventAttributionReport DefaultReport() {
+AttributionReport DefaultReport() {
   return ReportBuilder(SourceBuilder(base::Time()).Build()).Build();
 }
 
@@ -147,7 +147,7 @@ TEST_F(AttributionNetworkSenderTest, ReportSent_ReportBodySetCorrectly) {
                           .SetSourceEventId(100)
                           .SetSourceType(test_case.source_type)
                           .Build();
-    EventAttributionReport report =
+    AttributionReport report =
         ReportBuilder(impression).SetTriggerData(5).Build();
     network_sender_->SendReport(report.ReportURL(), report.ReportBody(),
                                 base::DoNothing());
@@ -168,7 +168,7 @@ TEST_F(AttributionNetworkSenderTest, ReportSent_RequestAttributesSet) {
           .SetReportingOrigin(url::Origin::Create(GURL("https://a.com")))
           .SetConversionOrigin(url::Origin::Create(GURL("https://sub.b.com")))
           .Build();
-  EventAttributionReport report = ReportBuilder(impression).Build();
+  AttributionReport report = ReportBuilder(impression).Build();
   network_sender_->SendReport(report.ReportURL(), report.ReportBody(),
                               base::DoNothing());
 

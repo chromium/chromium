@@ -13,8 +13,8 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
-#include "content/browser/attribution_reporting/event_attribution_report.h"
 #include "content/browser/attribution_reporting/send_result.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/storage_partition_impl.h"
@@ -78,7 +78,7 @@ void ForwardSourcesToWebUI(
 }
 
 mojom::WebUIAttributionReportPtr WebUIAttributionReport(
-    const EventAttributionReport& report,
+    const AttributionReport& report,
     int http_response_code,
     mojom::WebUIAttributionReport::Status status) {
   return mojom::WebUIAttributionReport::New(
@@ -94,10 +94,10 @@ mojom::WebUIAttributionReportPtr WebUIAttributionReport(
 
 void ForwardReportsToWebUI(
     mojom::AttributionInternalsHandler::GetReportsCallback web_ui_callback,
-    std::vector<EventAttributionReport> pending_reports) {
+    std::vector<AttributionReport> pending_reports) {
   std::vector<mojom::WebUIAttributionReportPtr> web_ui_reports;
   web_ui_reports.reserve(pending_reports.size());
-  for (const EventAttributionReport& report : pending_reports) {
+  for (const AttributionReport& report : pending_reports) {
     web_ui_reports.push_back(WebUIAttributionReport(
         report, /*http_response_code=*/0,
         mojom::WebUIAttributionReport::Status::kPending));
@@ -156,7 +156,7 @@ void AttributionInternalsHandlerImpl::GetReports(
 }
 
 void AttributionInternalsHandlerImpl::SendReports(
-    const std::vector<EventAttributionReport::Id>& ids,
+    const std::vector<AttributionReport::Id>& ids,
     mojom::AttributionInternalsHandler::SendReportsCallback callback) {
   if (AttributionManager* manager =
           manager_provider_->GetManager(web_ui_->GetWebContents())) {
@@ -214,7 +214,7 @@ void AttributionInternalsHandlerImpl::OnSourceDeactivated(
 }
 
 void AttributionInternalsHandlerImpl::OnReportSent(
-    const EventAttributionReport& report,
+    const AttributionReport& report,
     const SendResult& info) {
   mojom::WebUIAttributionReport::Status status;
   switch (info.status) {

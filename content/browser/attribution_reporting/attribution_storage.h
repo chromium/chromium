@@ -10,7 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "content/browser/attribution_reporting/event_attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -169,7 +169,7 @@ class AttributionStorage {
 
     explicit CreateReportResult(
         Status status,
-        absl::optional<EventAttributionReport> dropped_report = absl::nullopt,
+        absl::optional<AttributionReport> dropped_report = absl::nullopt,
         absl::optional<DeactivatedSource::Reason>
             dropped_report_source_deactivation_reason = absl::nullopt,
         absl::optional<base::Time> report_time = absl::nullopt);
@@ -183,7 +183,7 @@ class AttributionStorage {
 
     Status status() const;
 
-    const absl::optional<EventAttributionReport>& dropped_report() const;
+    const absl::optional<AttributionReport>& dropped_report() const;
 
     absl::optional<base::Time> report_time() const;
 
@@ -194,7 +194,7 @@ class AttributionStorage {
 
     // Null unless `status` is `kSuccessDroppedLowerPriority`,
     // `kRateLimited`, `kPriorityTooLow`, or `kDroppedForNoise`.
-    absl::optional<EventAttributionReport> dropped_report_;
+    absl::optional<AttributionReport> dropped_report_;
 
     // Null unless `dropped_report_`'s source was deactivated.
     absl::optional<DeactivatedSource::Reason>
@@ -214,7 +214,7 @@ class AttributionStorage {
   // |max_report_time|. This call is logically const, and does not modify the
   // underlying storage. |limit| limits the number of reports to return; use
   // a negative number for no limit.
-  virtual std::vector<EventAttributionReport> GetAttributionsToReport(
+  virtual std::vector<AttributionReport> GetAttributionsToReport(
       base::Time max_report_time,
       int limit = -1) WARN_UNUSED_RESULT = 0;
 
@@ -224,9 +224,8 @@ class AttributionStorage {
 
   // Returns the reports with the given IDs. This call is logically const, and
   // does not modify the underlying storage.
-  virtual std::vector<EventAttributionReport> GetReports(
-      const std::vector<EventAttributionReport::Id>& ids)
-      WARN_UNUSED_RESULT = 0;
+  virtual std::vector<AttributionReport> GetReports(
+      const std::vector<AttributionReport::Id>& ids) WARN_UNUSED_RESULT = 0;
 
   // Returns all active sources in storage. Active sources are all
   // sources that can still convert. Sources that: are past expiry,
@@ -239,12 +238,12 @@ class AttributionStorage {
 
   // Deletes the report with the given |report_id|. Returns
   // false if an error occurred.
-  virtual bool DeleteReport(EventAttributionReport::Id report_id) = 0;
+  virtual bool DeleteReport(AttributionReport::Id report_id) = 0;
 
   // Updates the number of failures associated with the given report, and sets
   // its report time to the given value. Should be called after a transient
   // failure to send the report so that it is retried later.
-  virtual bool UpdateReportForSendFailure(EventAttributionReport::Id report_id,
+  virtual bool UpdateReportForSendFailure(AttributionReport::Id report_id,
                                           base::Time new_report_time) = 0;
 
   // Adjusts the report time of all reports that should have been sent while the

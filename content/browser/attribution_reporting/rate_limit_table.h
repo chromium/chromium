@@ -28,7 +28,7 @@ class Origin;
 
 namespace content {
 
-class EventAttributionReport;
+class AttributionReport;
 
 struct AggregateHistogramContribution {
   std::string bucket;
@@ -60,14 +60,14 @@ class CONTENT_EXPORT RateLimitTable {
   // Adds a rate limit to the table for an event-level report.
   // Returns false on failure.
   bool AddRateLimit(sql::Database* db,
-                    const EventAttributionReport& report) WARN_UNUSED_RESULT;
+                    const AttributionReport& report) WARN_UNUSED_RESULT;
 
   // Checks if the given attribution is allowed according to the data in the
   // table and policy as specified by the delegate.
-  AttributionAllowedStatus AttributionAllowed(
-      sql::Database* db,
-      const EventAttributionReport& report,
-      base::Time now) WARN_UNUSED_RESULT;
+  AttributionAllowedStatus AttributionAllowed(sql::Database* db,
+                                              const AttributionReport& report,
+                                              base::Time now)
+      WARN_UNUSED_RESULT;
 
   // Attempts to add a set of histogram contributions to the rate limit. Returns
   // `kAllowed` if the contributions were added, `kNotAllowed` if the reports

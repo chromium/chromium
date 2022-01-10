@@ -21,8 +21,8 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage_sql_migrations.h"
-#include "content/browser/attribution_reporting/event_attribution_report.h"
 #include "content/browser/attribution_reporting/sql_utils.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/storable_trigger.h"
@@ -462,13 +462,13 @@ std::vector<DeactivatedSource> AttributionStorageSql::StoreSource(
     const base::Time report_time =
         delegate_->GetReportTime(source, trigger_time);
 
-    EventAttributionReport report(source, event_source_trigger_data,
-                                  /*trigger_time=*/trigger_time,
-                                  /*report_time=*/report_time,
-                                  /*priority=*/0,
-                                  /*external_report_id=*/
-                                  delegate_->NewReportID(),
-                                  /*report_id=*/absl::nullopt);
+    AttributionReport report(source, event_source_trigger_data,
+                             /*trigger_time=*/trigger_time,
+                             /*report_time=*/report_time,
+                             /*priority=*/0,
+                             /*external_report_id=*/
+                             delegate_->NewReportID(),
+                             /*report_id=*/absl::nullopt);
 
     if (!StoreReport(report, source_id))
       return {};
@@ -490,10 +490,10 @@ std::vector<DeactivatedSource> AttributionStorageSql::StoreSource(
 // one should be stored.
 AttributionStorageSql::MaybeReplaceLowerPriorityReportResult
 AttributionStorageSql::MaybeReplaceLowerPriorityReport(
-    const EventAttributionReport& report,
+    const AttributionReport& report,
     int num_conversions,
     int64_t conversion_priority,
-    absl::optional<EventAttributionReport>& replaced_report) {
+    absl::optional<AttributionReport>& replaced_report) {
   DCHECK(report.source().impression_id().has_value());
   DCHECK_GE(num_conversions, 0);
 
@@ -538,7 +538,7 @@ AttributionStorageSql::MaybeReplaceLowerPriorityReport(
   }
 
   int64_t min_priority = min_priority_statement.ColumnInt64(0);
-  EventAttributionReport::Id conversion_id_with_min_priority(
+  AttributionReport::Id conversion_id_with_min_priority(
       min_priority_statement.ColumnInt64(1));
 
   // If the new report's priority is less than all existing ones, or if its
@@ -550,7 +550,7 @@ AttributionStorageSql::MaybeReplaceLowerPriorityReport(
     return MaybeReplaceLowerPriorityReportResult::kDropNewReport;
   }
 
-  absl::optional<EventAttributionReport> replaced =
+  absl::optional<AttributionReport> replaced =
       GetReport(conversion_id_with_min_priority);
   if (!replaced.has_value()) {
     return MaybeReplaceLowerPriorityReportResult::kError;
@@ -658,12 +658,11 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
   const base::Time report_time =
       delegate_->GetReportTime(source_to_attribute->source,
                                /*trigger_time=*/current_time);
-  EventAttributionReport report(std::move(source_to_attribute->source),
-                                trigger_data,
-                                /*trigger_time=*/current_time,
-                                /*report_time=*/report_time, trigger.priority(),
-                                /*external_report_id=*/delegate_->NewReportID(),
-                                /*report_id=*/absl::nullopt);
+  AttributionReport report(std::move(source_to_attribute->source), trigger_data,
+                           /*trigger_time=*/current_time,
+                           /*report_time=*/report_time, trigger.priority(),
+                           /*external_report_id=*/delegate_->NewReportID(),
+                           /*report_id=*/absl::nullopt);
 
   switch (
       rate_limit_table_.AttributionAllowed(db_.get(), report, current_time)) {
@@ -681,7 +680,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     return CreateReportResult(CreateReportStatus::kInternalError);
   }
 
-  absl::optional<EventAttributionReport> replaced_report;
+  absl::optional<AttributionReport> replaced_report;
   const auto maybe_replace_lower_priority_report_result =
       MaybeReplaceLowerPriorityReport(report,
                                       source_to_attribute->num_conversions,
@@ -790,7 +789,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
       /*dropped_report_source_deactivation_reason=*/absl::nullopt, report_time);
 }
 
-bool AttributionStorageSql::StoreReport(const EventAttributionReport& report,
+bool AttributionStorageSql::StoreReport(const AttributionReport& report,
                                         StorableSource::Id source_id) {
   static constexpr char kStoreReportSql[] =
       "INSERT INTO conversions"
@@ -812,12 +811,12 @@ namespace {
 
 // Helper to deserialize report rows. See `GetReport()` for the expected
 // ordering of columns used for the input to this function.
-absl::optional<EventAttributionReport> ReadReportFromStatement(
+absl::optional<AttributionReport> ReadReportFromStatement(
     sql::Statement& statement) {
   uint64_t trigger_data = DeserializeUint64(statement.ColumnInt64(0));
   base::Time trigger_time = statement.ColumnTime(1);
   base::Time report_time = statement.ColumnTime(2);
-  EventAttributionReport::Id conversion_id(statement.ColumnInt64(3));
+  AttributionReport::Id conversion_id(statement.ColumnInt64(3));
   int64_t conversion_priority = statement.ColumnInt64(4);
   int failed_send_attempts = statement.ColumnInt(5);
   base::GUID external_report_id =
@@ -848,7 +847,7 @@ absl::optional<EventAttributionReport> ReadReportFromStatement(
     return absl::nullopt;
   }
 
-  // Create the source and EventAttributionReport objects from the retrieved
+  // Create the source and AttributionReport objects from the retrieved
   // columns.
   StorableSource source(source_event_id, std::move(impression_origin),
                         std::move(conversion_origin),
@@ -856,18 +855,18 @@ absl::optional<EventAttributionReport> ReadReportFromStatement(
                         expiry_time, *source_type, attribution_source_priority,
                         *attribution_logic, source_id);
 
-  EventAttributionReport report(std::move(source), trigger_data, trigger_time,
-                                report_time, conversion_priority,
-                                std::move(external_report_id), conversion_id);
+  AttributionReport report(std::move(source), trigger_data, trigger_time,
+                           report_time, conversion_priority,
+                           std::move(external_report_id), conversion_id);
   report.set_failed_send_attempts(failed_send_attempts);
   return report;
 }
 
 }  // namespace
 
-std::vector<EventAttributionReport>
-AttributionStorageSql::GetAttributionsToReport(base::Time max_report_time,
-                                               int limit) {
+std::vector<AttributionReport> AttributionStorageSql::GetAttributionsToReport(
+    base::Time max_report_time,
+    int limit) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
     return {};
@@ -890,9 +889,9 @@ AttributionStorageSql::GetAttributionsToReport(base::Time max_report_time,
   statement.BindTime(0, max_report_time);
   statement.BindInt(1, limit);
 
-  std::vector<EventAttributionReport> reports;
+  std::vector<AttributionReport> reports;
   while (statement.Step()) {
-    absl::optional<EventAttributionReport> report =
+    absl::optional<AttributionReport> report =
         ReadReportFromStatement(statement);
     if (report.has_value())
       reports.push_back(std::move(*report));
@@ -924,23 +923,23 @@ absl::optional<base::Time> AttributionStorageSql::GetNextReportTime(
   return absl::nullopt;
 }
 
-std::vector<EventAttributionReport> AttributionStorageSql::GetReports(
-    const std::vector<EventAttributionReport::Id>& ids) {
+std::vector<AttributionReport> AttributionStorageSql::GetReports(
+    const std::vector<AttributionReport::Id>& ids) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
     return {};
 
-  std::vector<EventAttributionReport> reports;
-  for (EventAttributionReport::Id id : ids) {
-    absl::optional<EventAttributionReport> report = GetReport(id);
+  std::vector<AttributionReport> reports;
+  for (AttributionReport::Id id : ids) {
+    absl::optional<AttributionReport> report = GetReport(id);
     if (report.has_value())
       reports.push_back(std::move(*report));
   }
   return reports;
 }
 
-absl::optional<EventAttributionReport> AttributionStorageSql::GetReport(
-    EventAttributionReport::Id conversion_id) {
+absl::optional<AttributionReport> AttributionStorageSql::GetReport(
+    AttributionReport::Id conversion_id) {
   static constexpr char kGetReportSql[] =
       "SELECT C.conversion_data,C.conversion_time,C.report_time,"
       "C.conversion_id,C.priority,C.failed_send_attempts,C.external_report_id,"
@@ -1018,7 +1017,7 @@ bool AttributionStorageSql::DeleteExpiredSources() {
   return delete_sources_from_paged_select(select_inactive_statement);
 }
 
-bool AttributionStorageSql::DeleteReport(EventAttributionReport::Id report_id) {
+bool AttributionStorageSql::DeleteReport(AttributionReport::Id report_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
     return true;
@@ -1026,7 +1025,7 @@ bool AttributionStorageSql::DeleteReport(EventAttributionReport::Id report_id) {
 }
 
 bool AttributionStorageSql::DeleteReportInternal(
-    EventAttributionReport::Id report_id) {
+    AttributionReport::Id report_id) {
   static constexpr char kDeleteReportSql[] =
       "DELETE FROM conversions WHERE conversion_id = ?";
   sql::Statement statement(
@@ -1036,7 +1035,7 @@ bool AttributionStorageSql::DeleteReportInternal(
 }
 
 bool AttributionStorageSql::UpdateReportForSendFailure(
-    EventAttributionReport::Id conversion_id,
+    AttributionReport::Id conversion_id,
     base::Time new_report_time) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!LazyInit(DbCreationPolicy::kIgnoreIfAbsent))
@@ -1124,7 +1123,7 @@ void AttributionStorageSql::ClearData(
   statement.BindTime(1, delete_end);
 
   std::vector<StorableSource::Id> source_ids_to_delete;
-  std::vector<EventAttributionReport::Id> conversion_ids_to_delete;
+  std::vector<AttributionReport::Id> conversion_ids_to_delete;
   while (statement.Step()) {
     if (filter.Run(DeserializeOrigin(statement.ColumnString(0))) ||
         filter.Run(DeserializeOrigin(statement.ColumnString(1))) ||
@@ -1157,7 +1156,7 @@ void AttributionStorageSql::ClearData(
   if (!DeleteSources(source_ids_to_delete))
     return;
 
-  for (EventAttributionReport::Id conversion_id : conversion_ids_to_delete) {
+  for (AttributionReport::Id conversion_id : conversion_ids_to_delete) {
     if (!DeleteReportInternal(conversion_id))
       return;
   }

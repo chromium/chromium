@@ -145,9 +145,8 @@ void MockAttributionManager::NotifySourceDeactivated(
     observer.OnSourceDeactivated(source);
 }
 
-void MockAttributionManager::NotifyReportSent(
-    const EventAttributionReport& report,
-    const SendResult& info) {
+void MockAttributionManager::NotifyReportSent(const AttributionReport& report,
+                                              const SendResult& info) {
   for (Observer& observer : observers_)
     observer.OnReportSent(report, info);
 }
@@ -315,15 +314,14 @@ ReportBuilder& ReportBuilder::SetExternalReportId(
 }
 
 ReportBuilder& ReportBuilder::SetReportId(
-    absl::optional<EventAttributionReport::Id> id) {
+    absl::optional<AttributionReport::Id> id) {
   report_id_ = id;
   return *this;
 }
 
-EventAttributionReport ReportBuilder::Build() const {
-  return EventAttributionReport(source_, trigger_data_, trigger_time_,
-                                report_time_, priority_, external_report_id_,
-                                report_id_);
+AttributionReport ReportBuilder::Build() const {
+  return AttributionReport(source_, trigger_data_, trigger_time_, report_time_,
+                           priority_, external_report_id_, report_id_);
 }
 
 // Custom comparator for `StorableSource` that does not take impression IDs
@@ -343,9 +341,8 @@ bool operator==(const StorableSource& a, const StorableSource& b) {
 // Custom comparator for comparing two vectors of conversion reports. Does not
 // compare impression and conversion IDs as they are set by the underlying
 // sqlite db and should not be tested.
-bool operator==(const EventAttributionReport& a,
-                const EventAttributionReport& b) {
-  const auto tie = [](const EventAttributionReport& conversion) {
+bool operator==(const AttributionReport& a, const AttributionReport& b) {
+  const auto tie = [](const AttributionReport& conversion) {
     return std::make_tuple(conversion.source(), conversion.trigger_data(),
                            conversion.trigger_time(), conversion.report_time(),
                            conversion.priority(),
@@ -498,8 +495,7 @@ std::ostream& operator<<(std::ostream& out, const StorableSource& impression) {
   return out << "]}";
 }
 
-std::ostream& operator<<(std::ostream& out,
-                         const EventAttributionReport& report) {
+std::ostream& operator<<(std::ostream& out, const AttributionReport& report) {
   return out << "{source=" << report.source()
              << ",trigger_data=" << report.trigger_data()
              << ",trigger_time=" << report.trigger_time()
@@ -542,16 +538,16 @@ std::ostream& operator<<(std::ostream& out,
              << ",reason=" << deactivated_source.reason << "}";
 }
 
-std::vector<EventAttributionReport> GetAttributionsToReportForTesting(
+std::vector<AttributionReport> GetAttributionsToReportForTesting(
     AttributionManagerImpl* manager,
     base::Time max_report_time) {
   base::RunLoop run_loop;
-  std::vector<EventAttributionReport> attribution_reports;
+  std::vector<AttributionReport> attribution_reports;
   manager->attribution_storage_
       .AsyncCall(&AttributionStorage::GetAttributionsToReport)
       .WithArgs(max_report_time, /*limit=*/-1)
       .Then(base::BindOnce(base::BindLambdaForTesting(
-          [&](std::vector<EventAttributionReport> reports) {
+          [&](std::vector<AttributionReport> reports) {
             attribution_reports = std::move(reports);
             run_loop.Quit();
           })));

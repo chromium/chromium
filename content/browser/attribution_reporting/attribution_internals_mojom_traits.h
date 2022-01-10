@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "content/browser/attribution_reporting/attribution_internals.mojom.h"
-#include "content/browser/attribution_reporting/event_attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
@@ -46,14 +46,12 @@ class EnumTraits<content::mojom::SourceType,
 
 template <>
 class StructTraits<content::mojom::AttributionReportIDDataView,
-                   content::EventAttributionReport::Id> {
+                   content::AttributionReport::Id> {
  public:
-  static int64_t value(const content::EventAttributionReport::Id& id) {
-    return *id;
-  }
+  static int64_t value(const content::AttributionReport::Id& id) { return *id; }
 
   static bool Read(content::mojom::AttributionReportIDDataView data,
-                   content::EventAttributionReport::Id* out);
+                   content::AttributionReport::Id* out);
 };
 
 }  // namespace mojo

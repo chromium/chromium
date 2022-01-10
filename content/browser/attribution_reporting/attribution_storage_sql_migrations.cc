@@ -8,8 +8,8 @@
 
 #include "base/guid.h"
 #include "base/metrics/histogram_functions.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_storage.h"
-#include "content/browser/attribution_reporting/event_attribution_report.h"
 #include "content/browser/attribution_reporting/sql_utils.h"
 #include "content/browser/attribution_reporting/storable_source.h"
 #include "net/base/schemeful_site.h"
@@ -29,8 +29,8 @@ StorableSource::Id NextImpressionId(StorableSource::Id id) {
 }
 
 WARN_UNUSED_RESULT
-EventAttributionReport::Id NextConversionId(EventAttributionReport::Id id) {
-  return EventAttributionReport::Id(*id + 1);
+AttributionReport::Id NextConversionId(AttributionReport::Id id) {
+  return AttributionReport::Id(*id + 1);
 }
 
 struct ImpressionIdAndConversionOrigin {
@@ -103,9 +103,9 @@ GetImpressionIdAndImpressionOrigins(sql::Database* db,
   return impressions;
 }
 
-std::vector<EventAttributionReport::Id> GetConversionIds(
+std::vector<AttributionReport::Id> GetConversionIds(
     sql::Database* db,
-    EventAttributionReport::Id start_conversion_id) {
+    AttributionReport::Id start_conversion_id) {
   static constexpr char kGetConversionsSql[] =
       "SELECT conversion_id FROM conversions "
       "WHERE conversion_id >= ? "
@@ -119,7 +119,7 @@ std::vector<EventAttributionReport::Id> GetConversionIds(
   const int kNumConversions = 100;
   statement.BindInt(1, kNumConversions);
 
-  std::vector<EventAttributionReport::Id> conversion_ids;
+  std::vector<AttributionReport::Id> conversion_ids;
   while (statement.Step()) {
     conversion_ids.emplace_back(statement.ColumnInt64(0));
   }
@@ -1164,8 +1164,8 @@ bool MigrateToVersion15(sql::Database* db,
   //
   // We update a subset of rows at a time to avoid pulling the entire
   // conversions table into memory.
-  std::vector<EventAttributionReport::Id> conversion_ids =
-      GetConversionIds(db, EventAttributionReport::Id(0));
+  std::vector<AttributionReport::Id> conversion_ids =
+      GetConversionIds(db, AttributionReport::Id(0));
 
   static constexpr char kUpdateExternalReportIdSql[] =
       "UPDATE new_conversions SET external_report_id = ? "
@@ -1175,7 +1175,7 @@ bool MigrateToVersion15(sql::Database* db,
 
   while (!conversion_ids.empty()) {
     // Perform the column updates for each row we pulled into memory.
-    for (EventAttributionReport::Id conversion_id : conversion_ids) {
+    for (AttributionReport::Id conversion_id : conversion_ids) {
       update_statement.Reset(/*clear_bound_vars=*/true);
 
       base::GUID external_report_id = delegate->NewReportID();

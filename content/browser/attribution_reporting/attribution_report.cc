@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/attribution_reporting/event_attribution_report.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
 
 #include <utility>
 
@@ -16,13 +16,13 @@
 
 namespace content {
 
-EventAttributionReport::EventAttributionReport(StorableSource source,
-                                               uint64_t trigger_data,
-                                               base::Time trigger_time,
-                                               base::Time report_time,
-                                               int64_t priority,
-                                               base::GUID external_report_id,
-                                               absl::optional<Id> report_id)
+AttributionReport::AttributionReport(StorableSource source,
+                                     uint64_t trigger_data,
+                                     base::Time trigger_time,
+                                     base::Time report_time,
+                                     int64_t priority,
+                                     base::GUID external_report_id,
+                                     absl::optional<Id> report_id)
     : source_(std::move(source)),
       trigger_data_(trigger_data),
       trigger_time_(trigger_time),
@@ -33,21 +33,19 @@ EventAttributionReport::EventAttributionReport(StorableSource source,
   DCHECK(external_report_id_.is_valid());
 }
 
-EventAttributionReport::EventAttributionReport(
-    const EventAttributionReport& other) = default;
+AttributionReport::AttributionReport(const AttributionReport& other) = default;
 
-EventAttributionReport& EventAttributionReport::operator=(
-    const EventAttributionReport& other) = default;
+AttributionReport& AttributionReport::operator=(
+    const AttributionReport& other) = default;
 
-EventAttributionReport::EventAttributionReport(EventAttributionReport&& other) =
+AttributionReport::AttributionReport(AttributionReport&& other) = default;
+
+AttributionReport& AttributionReport::operator=(AttributionReport&& other) =
     default;
 
-EventAttributionReport& EventAttributionReport::operator=(
-    EventAttributionReport&& other) = default;
+AttributionReport::~AttributionReport() = default;
 
-EventAttributionReport::~EventAttributionReport() = default;
-
-GURL EventAttributionReport::ReportURL() const {
+GURL AttributionReport::ReportURL() const {
   url::Replacements<char> replacements;
   static constexpr char kEndpointPath[] =
       "/.well-known/attribution-reporting/report-attribution";
@@ -55,7 +53,7 @@ GURL EventAttributionReport::ReportURL() const {
   return source_.reporting_origin().GetURL().ReplaceComponents(replacements);
 }
 
-std::string EventAttributionReport::ReportBody(bool pretty_print) const {
+std::string AttributionReport::ReportBody(bool pretty_print) const {
   base::Value dict(base::Value::Type::DICTIONARY);
 
   dict.SetStringKey("attribution_destination",
@@ -90,17 +88,16 @@ std::string EventAttributionReport::ReportBody(bool pretty_print) const {
   return output_json;
 }
 
-void EventAttributionReport::set_report_time(base::Time report_time) {
+void AttributionReport::set_report_time(base::Time report_time) {
   report_time_ = report_time;
 }
 
-void EventAttributionReport::set_failed_send_attempts(
-    int failed_send_attempts) {
+void AttributionReport::set_failed_send_attempts(int failed_send_attempts) {
   DCHECK_GE(failed_send_attempts, 0);
   failed_send_attempts_ = failed_send_attempts;
 }
 
-void EventAttributionReport::SetExternalReportIdForTesting(
+void AttributionReport::SetExternalReportIdForTesting(
     base::GUID external_report_id) {
   DCHECK(external_report_id.is_valid());
   external_report_id_ = std::move(external_report_id);
