@@ -74,4 +74,8 @@ void RecordWindowAndTabCountHistogram(DeskTemplate* desk_template) {
   base::UmaHistogramCounts100(kWindowAndTabCountHistogramName, total_count);
 }
 
+void RecordUnsupportedAppDialogShowHistogram() {
+  base::UmaHistogramBoolean(kUnsupportedAppDialogShowHistogramName, true);
+}
+
 }  // namespace ash

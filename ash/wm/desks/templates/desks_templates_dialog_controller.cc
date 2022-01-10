@@ -10,6 +10,7 @@
 #include "ash/wm/desks/templates/desks_templates_grid_view.h"
 #include "ash/wm/desks/templates/desks_templates_icon_container.h"
 #include "ash/wm/desks/templates/desks_templates_item_view.h"
+#include "ash/wm/desks/templates/desks_templates_metrics_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "base/bind.h"
@@ -184,6 +185,7 @@ void DesksTemplatesDialogController::ShowUnsupportedAppsDialog(
           .Build();
   icon_container->PopulateIconContainerFromWindows(unsupported_apps);
   CreateDialogWidget(std::move(dialog), root_window);
+  RecordUnsupportedAppDialogShowHistogram();
 }
 
 void DesksTemplatesDialogController::ShowReplaceDialog(

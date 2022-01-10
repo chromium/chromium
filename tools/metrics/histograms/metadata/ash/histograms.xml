@@ -1374,6 +1374,18 @@ chromium-metrics-reviews@google.com.
   <summary>Records the number of tabs in a template when it is saved.</summary>
 </histogram>
 
+<histogram name="Ash.DeskTemplate.UnsupportedAppDialogShow" units="count"
+    expires_after="2023-01-04">
+  <owner>avynn@google.com</owner>
+  <owner>janetmac@chromium.org</owner>
+  <summary>
+    Records the number of times the unsupported Apps dialog shows. This event is
+    triggered when a user attempts to save a template that contains an
+    unsupported app type. Currently the desks templates feature only supports
+    PWAs, Extensions, and browser instances.
+  </summary>
+</histogram>
+
 <histogram name="Ash.DeskTemplate.UserTemplateCount" units="count"
     expires_after="2022-07-14">
   <owner>richui@chromium.org</owner>
