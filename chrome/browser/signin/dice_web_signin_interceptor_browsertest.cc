@@ -482,9 +482,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorBrowserTest, SwitchAlreadyOpen) {
       profile_manager->GenerateNextProfileDirectoryPath();
   base::RunLoop loop;
   Profile* other_profile = nullptr;
-  ProfileManager::CreateCallback callback = base::BindLambdaForTesting(
-      [&other_profile, &loop](Profile* profile, Profile::CreateStatus status) {
-        DCHECK_EQ(status, Profile::CREATE_STATUS_INITIALIZED);
+  base::OnceCallback<void(Profile*)> callback =
+      base::BindLambdaForTesting([&other_profile, &loop](Profile* profile) {
         other_profile = profile;
         loop.Quit();
       });
@@ -1149,9 +1148,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorEnterpriseBrowserTest,
       profile_manager->GenerateNextProfileDirectoryPath();
   base::RunLoop loop;
   Profile* other_profile = nullptr;
-  ProfileManager::CreateCallback callback = base::BindLambdaForTesting(
-      [&other_profile, &loop](Profile* profile, Profile::CreateStatus status) {
-        DCHECK_EQ(status, Profile::CREATE_STATUS_INITIALIZED);
+  base::OnceCallback<void(Profile*)> callback =
+      base::BindLambdaForTesting([&other_profile, &loop](Profile* profile) {
         other_profile = profile;
         loop.Quit();
       });

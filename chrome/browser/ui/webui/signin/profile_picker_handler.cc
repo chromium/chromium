@@ -546,8 +546,8 @@ void ProfilePickerHandler::HandleLaunchSelectedProfile(
   }
   profiles::SwitchToProfile(
       *profile_path, /*always_create=*/false,
-      base::BindRepeating(&ProfilePickerHandler::OnSwitchToProfileComplete,
-                          weak_factory_.GetWeakPtr(), false, open_settings));
+      base::BindOnce(&ProfilePickerHandler::OnSwitchToProfileComplete,
+                     weak_factory_.GetWeakPtr(), false, open_settings));
 }
 
 void ProfilePickerHandler::HandleLaunchGuestProfile(
@@ -555,8 +555,8 @@ void ProfilePickerHandler::HandleLaunchGuestProfile(
   // TODO(crbug.com/1063856): Add check |IsGuestModeEnabled| once policy
   // checking has been added to the UI.
   profiles::SwitchToGuestProfile(
-      base::BindRepeating(&ProfilePickerHandler::OnSwitchToProfileComplete,
-                          weak_factory_.GetWeakPtr(), false, false));
+      base::BindOnce(&ProfilePickerHandler::OnSwitchToProfileComplete,
+                     weak_factory_.GetWeakPtr(), false, false));
 }
 
 void ProfilePickerHandler::HandleAskOnStartupChanged(
@@ -703,8 +703,8 @@ void ProfilePickerHandler::HandleConfirmProfileSwitch(
   // flow.
   profiles::SwitchToProfile(
       *profile_path, /*always_create=*/false,
-      base::BindRepeating(&ProfilePickerHandler::OnSwitchToProfileComplete,
-                          weak_factory_.GetWeakPtr(), false, false));
+      base::BindOnce(&ProfilePickerHandler::OnSwitchToProfileComplete,
+                     weak_factory_.GetWeakPtr(), false, false));
 }
 
 void ProfilePickerHandler::HandleCancelProfileSwitch(
@@ -766,8 +766,8 @@ void ProfilePickerHandler::OnProfileCreationSuccess(
   RecordNewProfileSpec(profile_color, create_shortcut);
   // Launch profile and close the picker.
   profiles::OpenBrowserWindowForProfile(
-      base::BindRepeating(&ProfilePickerHandler::OnSwitchToProfileComplete,
-                          weak_factory_.GetWeakPtr(), true, false),
+      base::BindOnce(&ProfilePickerHandler::OnSwitchToProfileComplete,
+                     weak_factory_.GetWeakPtr(), true, false),
       false,  // Don't create a window if one already exists.
       true,   // Create a first run window.
       false,  // There is no need to unblock all extensions because we only open
@@ -931,14 +931,11 @@ void ProfilePickerHandler::OnLoadSigninFinished(bool success) {
   FireWebUIListener("load-signin-finished", base::Value(success));
 }
 
-void ProfilePickerHandler::OnSwitchToProfileComplete(
-    bool new_profile,
-    bool open_settings,
-    Profile* profile,
-    Profile::CreateStatus profile_create_status) {
-  TRACE_EVENT2("browser", "ProfilePickerHandler::OnSwitchToProfileComplete",
-               "profile_path", profile->GetPath().AsUTF8Unsafe(),
-               "create_status", profile_create_status);
+void ProfilePickerHandler::OnSwitchToProfileComplete(bool new_profile,
+                                                     bool open_settings,
+                                                     Profile* profile) {
+  TRACE_EVENT1("browser", "ProfilePickerHandler::OnSwitchToProfileComplete",
+               "profile_path", profile->GetPath().AsUTF8Unsafe());
   Browser* browser = chrome::FindAnyBrowser(profile, false);
   DCHECK(browser);
   DCHECK(browser->window());

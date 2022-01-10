@@ -261,7 +261,7 @@ void ProfileMenuView::OnGuestProfileButtonClicked() {
   if (!perform_menu_actions())
     return;
   DCHECK(profiles::IsGuestModeEnabled());
-  profiles::SwitchToGuestProfile(ProfileManager::CreateCallback());
+  profiles::SwitchToGuestProfile();
 }
 
 void ProfileMenuView::OnExitProfileButtonClicked() {
@@ -381,8 +381,7 @@ void ProfileMenuView::OnOtherProfileSelected(
   if (!perform_menu_actions())
     return;
   Hide();
-  profiles::SwitchToProfile(profile_path, /*always_create=*/false,
-                            ProfileManager::CreateCallback());
+  profiles::SwitchToProfile(profile_path, /*always_create=*/false);
 }
 
 void ProfileMenuView::OnAddNewProfileButtonClicked() {

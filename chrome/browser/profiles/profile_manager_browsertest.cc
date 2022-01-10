@@ -59,8 +59,6 @@
 
 namespace {
 
-const ProfileManager::CreateCallback kOnProfileSwitchDoNothing;
-
 // An observer that returns back to test code after a new profile is
 // initialized.
 void OnUnblockOnProfileCreation(base::RunLoop* run_loop,
@@ -566,20 +564,20 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, SwitchToProfile) {
   EXPECT_EQ(1U, browser_list->size());
 
   // Open a browser window for the first profile.
-  profiles::SwitchToProfile(path_profile1, false, kOnProfileSwitchDoNothing);
+  profiles::SwitchToProfile(path_profile1, false);
   EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
   EXPECT_EQ(1U, browser_list->size());
   EXPECT_EQ(path_profile1, browser_list->get(0)->profile()->GetPath());
 
   // Open a browser window for the second profile.
-  profiles::SwitchToProfile(path_profile2, false, kOnProfileSwitchDoNothing);
+  profiles::SwitchToProfile(path_profile2, false);
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
   EXPECT_EQ(2U, browser_list->size());
   EXPECT_EQ(path_profile2, browser_list->get(1)->profile()->GetPath());
 
   // Switch to the first profile without opening a new window.
-  profiles::SwitchToProfile(path_profile1, false, kOnProfileSwitchDoNothing);
+  profiles::SwitchToProfile(path_profile1, false);
   EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
   EXPECT_EQ(2U, browser_list->size());
 
@@ -615,12 +613,12 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, PRE_AddMultipleProfiles) {
   EXPECT_EQ(1U, browser_list->size());
 
   // Open a browser window for the first profile.
-  profiles::SwitchToProfile(path_profile1, false, kOnProfileSwitchDoNothing);
+  profiles::SwitchToProfile(path_profile1, false);
   EXPECT_EQ(1U, chrome::GetTotalBrowserCount());
   ASSERT_EQ(1U, browser_list->size());
   EXPECT_EQ(path_profile1, browser_list->get(0)->profile()->GetPath());
   // Open a browser window for the second profile.
-  profiles::SwitchToProfile(path_profile2, false, kOnProfileSwitchDoNothing);
+  profiles::SwitchToProfile(path_profile2, false);
   EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
   ASSERT_EQ(2U, browser_list->size());
   EXPECT_EQ(path_profile2, browser_list->get(1)->profile()->GetPath());
@@ -665,14 +663,14 @@ IN_PROC_BROWSER_TEST_P(ProfileManagerBrowserTest, EphemeralProfile) {
   EXPECT_EQ(1U, browser_list->size());
 
   // Open a browser window for the second profile.
-  profiles::SwitchToProfile(path_profile2, false, kOnProfileSwitchDoNothing);
+  profiles::SwitchToProfile(path_profile2, false);
   content::RunAllTasksUntilIdle();
   EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
   EXPECT_EQ(2U, browser_list->size());
   EXPECT_EQ(path_profile2, browser_list->get(1)->profile()->GetPath());
 
   // Create a second window for the ephemeral profile.
-  profiles::SwitchToProfile(path_profile2, true, kOnProfileSwitchDoNothing);
+  profiles::SwitchToProfile(path_profile2, true);
   EXPECT_EQ(3U, chrome::GetTotalBrowserCount());
   EXPECT_EQ(3U, browser_list->size());
 

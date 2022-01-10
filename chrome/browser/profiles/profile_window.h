@@ -42,16 +42,12 @@ void FindOrCreateNewWindowForProfile(
     chrome::startup::IsFirstRun is_first_run,
     bool always_create);
 
-// Similar to `ProfileManager::CreateCallback` but only called once.
-using CreateOnceCallback =
-    base::OnceCallback<void(Profile*, Profile::CreateStatus)>;
-
 // Opens a Browser for |profile|.
 // If |always_create| is true a window is created even if one already exists.
 // If |is_new_profile| is true a first run window is created.
 // If |unblock_extensions| is true, all extensions are unblocked.
 // When the browser is opened, |callback| will be run if it isn't null.
-void OpenBrowserWindowForProfile(CreateOnceCallback callback,
+void OpenBrowserWindowForProfile(base::OnceCallback<void(Profile*)> callback,
                                  bool always_create,
                                  bool is_new_profile,
                                  bool unblock_extensions,
@@ -69,10 +65,12 @@ void LoadProfileAsync(const base::FilePath& path,
 // opened, |callback| will be run if it isn't null.
 void SwitchToProfile(const base::FilePath& path,
                      bool always_create,
-                     ProfileManager::CreateCallback callback);
+                     base::OnceCallback<void(Profile*)> callback =
+                         base::OnceCallback<void(Profile*)>());
 
 // Opens a Browser for the guest profile and runs |callback| if it isn't null.
-void SwitchToGuestProfile(ProfileManager::CreateCallback callback);
+void SwitchToGuestProfile(base::OnceCallback<void(Profile*)> callback =
+                              base::OnceCallback<void(Profile*)>());
 
 // Returns true if |profile| has potential profile switch targets, ie there's at
 // least one other profile available to switch to, not counting guest. This is
@@ -94,7 +92,7 @@ void BubbleViewModeFromAvatarBubbleMode(BrowserWindow::AvatarBubbleMode mode,
 // is created and the callback is executed.
 class BrowserAddedForProfileObserver : public BrowserListObserver {
  public:
-  BrowserAddedForProfileObserver(Profile* profile, CreateOnceCallback callback);
+  BrowserAddedForProfileObserver(Profile* profile, base::OnceClosure callback);
   ~BrowserAddedForProfileObserver() override;
 
   BrowserAddedForProfileObserver(const BrowserAddedForProfileObserver&) =
@@ -108,7 +106,7 @@ class BrowserAddedForProfileObserver : public BrowserListObserver {
 
   // Profile for which the browser should be opened.
   raw_ptr<Profile> profile_;
-  CreateOnceCallback callback_;
+  base::OnceClosure callback_;
 };
 
 }  // namespace profiles

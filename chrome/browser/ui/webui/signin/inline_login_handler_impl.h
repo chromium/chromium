@@ -160,8 +160,7 @@ class InlineSigninHelper : public GaiaAuthConsumer {
       override;
 
   void OnClientOAuthSuccessAndBrowserOpened(const ClientOAuthResult& result,
-                                            Profile* profile,
-                                            Profile::CreateStatus status);
+                                            Profile* profile);
 
   // Callback invoked once the user has responded to the signin confirmation UI.
   // If confirmed is false, the signin is aborted.

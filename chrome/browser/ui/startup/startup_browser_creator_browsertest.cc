@@ -4347,17 +4347,11 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorLacrosNoWindowTest, SingleProfile) {
 
   // Checks that it's possible to open a profile after startup.
   // Regression test for https://crbug.com/1278549
-  base::test::TestFuture<Profile*, Profile::CreateStatus> future;
-  ProfileManager::CreateCallback created_callback = base::BindLambdaForTesting(
-      [&future](Profile* profile, Profile::CreateStatus status) {
-        future.GetCallback().Run(profile, status);
-      });
+  base::test::TestFuture<Profile*> future;
   profiles::SwitchToProfile(GetDefaultProfileDir(),
-                            /*always_create=*/false, created_callback);
+                            /*always_create=*/false, future.GetCallback());
   Profile* profile = future.Get<0>();
-  Profile::CreateStatus status = future.Get<1>();
   EXPECT_NE(profile, nullptr);
-  EXPECT_EQ(status, Profile::CREATE_STATUS_INITIALIZED);
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
 
   // Checks that it's possible to open the profile picker.

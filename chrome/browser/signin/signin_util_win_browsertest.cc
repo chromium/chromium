@@ -510,7 +510,7 @@ void CreateAndSwitchToProfile(const std::string& basepath) {
   // loop is terminated by UnblockOnProfileInitialized.
   run_loop.Run();
 
-  profiles::SwitchToProfile(path, false, ProfileManager::CreateCallback());
+  profiles::SwitchToProfile(path, false);
 }
 
 struct ExistingWinBrowserProfilesSigninUtilTestParams {

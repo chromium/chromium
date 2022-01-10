@@ -95,8 +95,7 @@ void AvatarMenu::SwitchToProfile(size_t index, bool always_create) {
     return;
   }
 
-  profiles::SwitchToProfile(item.profile_path, always_create,
-                            ProfileManager::CreateCallback());
+  profiles::SwitchToProfile(item.profile_path, always_create);
 }
 
 void AvatarMenu::AddNewProfile(ProfileMetrics::ProfileAdd type) {

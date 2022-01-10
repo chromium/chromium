@@ -103,8 +103,7 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
                                    profiles::ProfileCategoryStats result);
   void OnSwitchToProfileComplete(bool new_profile,
                                  bool open_settings,
-                                 Profile* profile,
-                                 Profile::CreateStatus profile_create_status);
+                                 Profile* profile);
   void OnProfileCreated(absl::optional<SkColor> profile_color,
                         bool create_shortcut,
                         Profile* profile,

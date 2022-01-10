@@ -72,8 +72,7 @@ std::string DecryptRefreshToken(const std::string& cipher_text) {
 // already available or is delayed until a browser can first be opened.
 void FinishImportCredentialsFromProvider(const CoreAccountId& account_id,
                                          Browser* browser,
-                                         Profile* profile,
-                                         Profile::CreateStatus status) {
+                                         Profile* profile) {
   // DiceTurnSyncOnHelper deletes itself once done.
   if (GetDiceTurnSyncOnHelperDelegateForTestingStorage()->get()) {
     new DiceTurnSyncOnHelper(
@@ -125,15 +124,14 @@ void ImportCredentialsFromProvider(Profile* profile,
   if (turn_on_sync) {
     Browser* browser = chrome::FindLastActiveWithProfile(profile);
     if (browser) {
-      FinishImportCredentialsFromProvider(account_id, browser, profile,
-                                          Profile::CREATE_STATUS_CREATED);
+      FinishImportCredentialsFromProvider(account_id, browser, profile);
     } else {
       // If no active browser exists yet, this profile is in the process of
       // being created.  Wait for the browser to be created before finishing the
       // sign in.  This object deletes itself when done.
       new profiles::BrowserAddedForProfileObserver(
-          profile, base::BindRepeating(&FinishImportCredentialsFromProvider,
-                                       account_id, nullptr));
+          profile, base::BindOnce(&FinishImportCredentialsFromProvider,
+                                  account_id, nullptr, profile));
     }
   }
 

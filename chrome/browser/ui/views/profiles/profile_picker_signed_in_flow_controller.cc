@@ -420,8 +420,7 @@ void ProfilePickerSignedInFlowController::OnSignInContentsFreedUp() {
 
 void ProfilePickerSignedInFlowController::OnBrowserOpened(
     BrowserOpenedCallback finish_flow_callback,
-    Profile* profile,
-    Profile::CreateStatus profile_create_status) {
+    Profile* profile) {
   TRACE_EVENT1("browser",
                "ProfilePickerSignedInFlowController::OnBrowserOpened",
                "profile_path", profile_->GetPath().AsUTF8Unsafe());

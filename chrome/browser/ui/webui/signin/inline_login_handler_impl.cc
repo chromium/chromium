@@ -346,19 +346,18 @@ void InlineSigninHelper::OnClientOAuthSuccess(const ClientOAuthResult& result) {
     // TODO(https://crbug.com/1205147): In case of reauth, wait until cookies
     // are set before opening a browser window.
     profiles::OpenBrowserWindowForProfile(
-        base::BindRepeating(
+        base::BindOnce(
             &InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened,
             base::Unretained(this), result),
         true, false, true, profile_, create_status_);
   } else {
-    OnClientOAuthSuccessAndBrowserOpened(result, profile_, create_status_);
+    OnClientOAuthSuccessAndBrowserOpened(result, profile_);
   }
 }
 
 void InlineSigninHelper::OnClientOAuthSuccessAndBrowserOpened(
     const ClientOAuthResult& result,
-    Profile* /*profile*/,
-    Profile::CreateStatus /*status*/) {
+    Profile* /*profile*/) {
   HandlerSigninReason reason = GetHandlerSigninReason(current_url_);
   if (reason == HandlerSigninReason::kFetchLstOnly) {
     // Constants are only available on Windows for the Google Credential

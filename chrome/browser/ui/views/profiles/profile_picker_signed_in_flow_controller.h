@@ -116,8 +116,7 @@ class ProfilePickerSignedInFlowController
   // Internal callback to finish the last steps of the signed-in creation
   // flow.
   void OnBrowserOpened(BrowserOpenedCallback finish_flow_callback,
-                       Profile* profile,
-                       Profile::CreateStatus profile_create_status);
+                       Profile* profile);
 
   content::WebContents* contents() const { return contents_.get(); }
 
