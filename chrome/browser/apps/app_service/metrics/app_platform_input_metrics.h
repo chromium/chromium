@@ -75,7 +75,7 @@ class AppPlatformInputMetrics : public ui::EventHandler,
   void OnAppRegistryCacheWillBeDestroyed(AppRegistryCache* cache) override;
   void OnAppUpdate(const AppUpdate& update) override;
 
-  void SetAppInfoForActivatedWindow(mojom::AppType app_type,
+  void SetAppInfoForActivatedWindow(AppType app_type,
                                     const std::string& app_id,
                                     aura::Window* window,
                                     const base::UnguessableToken& instance_id);

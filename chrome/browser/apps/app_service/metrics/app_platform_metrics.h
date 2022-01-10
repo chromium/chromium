@@ -176,7 +176,7 @@ class AppPlatformMetrics : public apps::AppRegistryCache::Observer,
   // inactivated.
   void UpdateBrowserWindowStatus(const InstanceUpdate& update);
 
-  void SetWindowActivated(apps::mojom::AppType app_type,
+  void SetWindowActivated(AppType app_type,
                           AppTypeName app_type_name,
                           AppTypeNameV2 app_type_name_v2,
                           const std::string& app_id,

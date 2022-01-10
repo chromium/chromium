@@ -100,22 +100,22 @@ std::string GetInstallReason(apps::mojom::InstallReason install_reason) {
 
 // Returns AppTypeNameV2 used for app running metrics.
 apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
-                                     apps::mojom::AppType app_type,
+                                     apps::AppType app_type,
                                      const std::string& app_id,
                                      aura::Window* window) {
   switch (app_type) {
-    case apps::mojom::AppType::kUnknown:
+    case apps::AppType::kUnknown:
       return apps::AppTypeNameV2::kUnknown;
-    case apps::mojom::AppType::kArc:
+    case apps::AppType::kArc:
       return apps::AppTypeNameV2::kArc;
-    case apps::mojom::AppType::kBuiltIn:
+    case apps::AppType::kBuiltIn:
       return apps::AppTypeNameV2::kBuiltIn;
-    case apps::mojom::AppType::kCrostini:
+    case apps::AppType::kCrostini:
       return apps::AppTypeNameV2::kCrostini;
-    case apps::mojom::AppType::kChromeApp:
+    case apps::AppType::kChromeApp:
       return apps::IsBrowser(window) ? apps::AppTypeNameV2::kChromeAppTab
                                      : apps::AppTypeNameV2::kChromeAppWindow;
-    case apps::mojom::AppType::kWeb: {
+    case apps::AppType::kWeb: {
       apps::AppTypeName app_type_name =
           apps::GetAppTypeNameForWebAppWindow(profile, app_id, window);
       if (app_type_name == apps::AppTypeName::kChromeBrowser) {
@@ -126,21 +126,21 @@ apps::AppTypeNameV2 GetAppTypeNameV2(Profile* profile,
         return apps::AppTypeNameV2::kWebWindow;
       }
     }
-    case apps::mojom::AppType::kMacOs:
+    case apps::AppType::kMacOs:
       return apps::AppTypeNameV2::kMacOs;
-    case apps::mojom::AppType::kPluginVm:
+    case apps::AppType::kPluginVm:
       return apps::AppTypeNameV2::kPluginVm;
-    case apps::mojom::AppType::kStandaloneBrowser:
+    case apps::AppType::kStandaloneBrowser:
       return apps::AppTypeNameV2::kStandaloneBrowser;
-    case apps::mojom::AppType::kRemote:
+    case apps::AppType::kRemote:
       return apps::AppTypeNameV2::kRemote;
-    case apps::mojom::AppType::kBorealis:
+    case apps::AppType::kBorealis:
       return apps::AppTypeNameV2::kBorealis;
-    case apps::mojom::AppType::kSystemWeb:
+    case apps::AppType::kSystemWeb:
       return apps::AppTypeNameV2::kSystemWeb;
-    case apps::mojom::AppType::kStandaloneBrowserChromeApp:
+    case apps::AppType::kStandaloneBrowserChromeApp:
       return apps::AppTypeNameV2::kStandaloneBrowserChromeApp;
-    case apps::mojom::AppType::kExtension:
+    case apps::AppType::kExtension:
       return apps::AppTypeNameV2::kExtension;
   }
 }
@@ -384,20 +384,20 @@ ukm::SourceId AppPlatformMetrics::GetSourceId(Profile* profile,
   }
 
   ukm::SourceId source_id = ukm::kInvalidSourceId;
-  apps::mojom::AppType app_type = GetAppType(profile, app_id);
-  if (!ShouldRecordUkmForAppTypeName(ConvertMojomAppTypToAppType(app_type))) {
+  AppType app_type = GetAppType(profile, app_id);
+  if (!ShouldRecordUkmForAppTypeName(app_type)) {
     return ukm::kInvalidSourceId;
   }
 
   switch (app_type) {
-    case apps::mojom::AppType::kBuiltIn:
-    case apps::mojom::AppType::kChromeApp:
-    case apps::mojom::AppType::kExtension:
+    case AppType::kBuiltIn:
+    case AppType::kChromeApp:
+    case AppType::kExtension:
       source_id = ukm::AppSourceUrlRecorder::GetSourceIdForChromeApp(app_id);
       break;
-    case apps::mojom::AppType::kArc:
-    case apps::mojom::AppType::kWeb:
-    case apps::mojom::AppType::kSystemWeb: {
+    case AppType::kArc:
+    case AppType::kWeb:
+    case AppType::kSystemWeb: {
       std::string publisher_id;
       apps::mojom::InstallReason install_reason;
       apps::AppServiceProxyFactory::GetForProfile(profile)
@@ -410,12 +410,12 @@ ukm::SourceId AppPlatformMetrics::GetSourceId(Profile* profile,
       if (publisher_id.empty()) {
         return ukm::kInvalidSourceId;
       }
-      if (app_type == apps::mojom::AppType::kArc) {
+      if (app_type == AppType::kArc) {
         source_id = ukm::AppSourceUrlRecorder::GetSourceIdForArcPackageName(
             publisher_id);
         break;
       }
-      if (app_type == apps::mojom::AppType::kSystemWeb ||
+      if (app_type == AppType::kSystemWeb ||
           install_reason == apps::mojom::InstallReason::kSystem) {
         // For system web apps, call GetSourceIdForChromeApp to record the app
         // id because the url could be filtered by the server side.
@@ -426,18 +426,18 @@ ukm::SourceId AppPlatformMetrics::GetSourceId(Profile* profile,
           ukm::AppSourceUrlRecorder::GetSourceIdForPWA(GURL(publisher_id));
       break;
     }
-    case apps::mojom::AppType::kCrostini:
+    case AppType::kCrostini:
       source_id = GetSourceIdForCrostini(profile, app_id);
       break;
-    case apps::mojom::AppType::kBorealis:
+    case AppType::kBorealis:
       source_id = GetSourceIdForBorealis(profile, app_id);
       break;
-    case apps::mojom::AppType::kUnknown:
-    case apps::mojom::AppType::kMacOs:
-    case apps::mojom::AppType::kPluginVm:
-    case apps::mojom::AppType::kStandaloneBrowser:
-    case apps::mojom::AppType::kStandaloneBrowserChromeApp:
-    case apps::mojom::AppType::kRemote:
+    case AppType::kUnknown:
+    case AppType::kMacOs:
+    case AppType::kPluginVm:
+    case AppType::kStandaloneBrowser:
+    case AppType::kStandaloneBrowserChromeApp:
+    case AppType::kRemote:
       return ukm::kInvalidSourceId;
   }
   return source_id;
@@ -677,7 +677,7 @@ void AppPlatformMetrics::OnInstanceUpdate(const apps::InstanceUpdate& update) {
 
   auto app_id = update.AppId();
   auto app_type = GetAppType(profile_, app_id);
-  if (app_type == apps::mojom::AppType::kUnknown) {
+  if (app_type == AppType::kUnknown) {
     return;
   }
 
@@ -790,15 +790,14 @@ void AppPlatformMetrics::UpdateBrowserWindowStatus(
     // The browser window is activated, start calculating the browser window
     // running time.
     // TODO(crbug.com/1251501): Handle lacros window.
-    SetWindowActivated(apps::mojom::AppType::kChromeApp,
-                       AppTypeName::kChromeBrowser,
+    SetWindowActivated(AppType::kChromeApp, AppTypeName::kChromeBrowser,
                        AppTypeNameV2::kChromeBrowser,
                        extension_misc::kChromeAppId, browser_id);
   }
 }
 
 void AppPlatformMetrics::SetWindowActivated(
-    apps::mojom::AppType app_type,
+    AppType app_type,
     AppTypeName app_type_name,
     AppTypeNameV2 app_type_name_v2,
     const std::string& app_id,

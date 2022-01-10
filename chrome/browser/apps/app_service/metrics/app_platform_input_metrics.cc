@@ -154,7 +154,7 @@ void AppPlatformInputMetrics::OnAppUpdate(const AppUpdate& update) {
 }
 
 void AppPlatformInputMetrics::SetAppInfoForActivatedWindow(
-    mojom::AppType app_type,
+    AppType app_type,
     const std::string& app_id,
     aura::Window* window,
     const base::UnguessableToken& instance_id) {

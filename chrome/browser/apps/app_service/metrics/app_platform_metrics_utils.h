@@ -95,7 +95,7 @@ bool IsAppOpenedInTab(AppTypeName app_type_name, const std::string& app_id);
 // Returns true if the app with |app_type| is opened with a browser window.
 // Otherwise, return false.
 bool IsAppOpenedWithBrowserWindow(Profile* profile,
-                                  apps::mojom::AppType app_type,
+                                  AppType app_type,
                                   const std::string& app_id);
 
 // Determines what app type a web app should be logged as based on |window|. In
@@ -106,7 +106,7 @@ AppTypeName GetAppTypeNameForWebAppWindow(Profile* profile,
 
 // Returns AppTypeName used for app running metrics.
 AppTypeName GetAppTypeNameForWindow(Profile* profile,
-                                    apps::mojom::AppType app_type,
+                                    AppType app_type,
                                     const std::string& app_id,
                                     aura::Window* window);
 
@@ -134,7 +134,7 @@ AppTypeName GetAppTypeName(Profile* profile,
 // Gets the app type of a given app_id. Checks multiple sources, not just the
 // app registry cache, so can identify apps which aren't registered with app
 // service.
-mojom::AppType GetAppType(Profile* profile, const std::string& app_id);
+AppType GetAppType(Profile* profile, const std::string& app_id);
 
 }  // namespace apps
 
