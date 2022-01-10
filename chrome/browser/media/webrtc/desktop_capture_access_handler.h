@@ -73,22 +73,6 @@ class DesktopCaptureAccessHandler : public CaptureAccessHandlerBase,
       content::MediaResponseCallback callback,
       const extensions::Extension* extension);
 
-  // Returns whether desktop capture is always approved for |extension|.
-  // Currently component extensions and some external extensions are default
-  // approved.
-  static bool IsDefaultApproved(const extensions::Extension* extension);
-
-  // Returns whether desktop capture is always approved for |url|.
-  // Currently chrome://feedback/ is default approved.
-  static bool IsDefaultApproved(const GURL& url);
-
-  // Returns whether the request is approved or not. Some extensions do not
-  // require user approval, because they provide their own user approval UI. For
-  // others, shows a message box and asks for user approval.
-  static bool IsRequestApproved(content::WebContents* web_contents,
-                                const content::MediaStreamRequest& request,
-                                const extensions::Extension* extension);
-
   // WebContentsCollection::Observer:
   void WebContentsDestroyed(content::WebContents* web_contents) override;
 

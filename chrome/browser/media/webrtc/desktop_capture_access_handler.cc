@@ -168,6 +168,48 @@ bool ShouldCaptureAudio(const content::DesktopMediaID& media_id,
   return audio_permitted && audio_requested && audio_supported;
 }
 
+// Returns whether the request is approved or not. Some extensions do not
+// require user approval, because they provide their own user approval UI. For
+// others, shows a message box and asks for user approval.
+bool IsRequestApproved(content::WebContents* web_contents,
+                       const content::MediaStreamRequest& request,
+                       const extensions::Extension* extension,
+                       bool is_allowlisted_extension) {
+  // Component extensions and some external extensions are approved by default.
+  if (extension &&
+      (extension->location() == ManifestLocation::kComponent ||
+       extension->location() == ManifestLocation::kExternalComponent ||
+       is_allowlisted_extension)) {
+    return true;
+  }
+
+  // chrome://feedback/ is allowed by default.
+  // The user can still decide whether the screenshot taken is shared or not.
+  if (request.security_origin.spec() == chrome::kChromeUIFeedbackURL) {
+    return true;
+  }
+
+#if !defined(OS_ANDROID)
+  gfx::NativeWindow parent_window =
+      FindParentWindowForWebContents(web_contents);
+#else
+  gfx::NativeWindow parent_window = nullptr;
+#endif
+  const std::u16string application_name = base::UTF8ToUTF16(
+      extension ? extension->name() : request.security_origin.spec());
+  const std::u16string confirmation_text = l10n_util::GetStringFUTF16(
+      request.audio_type == blink::mojom::MediaStreamType::NO_SERVICE
+          ? IDS_MEDIA_SCREEN_CAPTURE_CONFIRMATION_TEXT
+          : IDS_MEDIA_SCREEN_AND_AUDIO_CAPTURE_CONFIRMATION_TEXT,
+      application_name);
+  const chrome::MessageBoxResult mb_result = chrome::ShowQuestionMessageBoxSync(
+      parent_window,
+      l10n_util::GetStringFUTF16(IDS_MEDIA_SCREEN_CAPTURE_CONFIRMATION_TITLE,
+                                 application_name),
+      confirmation_text);
+  return mb_result == chrome::MESSAGE_BOX_RESULT_YES;
+}
+
 }  // namespace
 
 DesktopCaptureAccessHandler::DesktopCaptureAccessHandler()
@@ -194,11 +236,13 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
   UpdateExtensionTrusted(request,
                          IsExtensionAllowedForScreenCapture(extension));
 
+  const bool is_allowlisted_extension =
+      IsExtensionAllowedForScreenCapture(extension);
+
   const bool screen_capture_enabled =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kEnableUserMediaScreenCapturing) ||
-      IsExtensionAllowedForScreenCapture(extension) ||
-      IsBuiltInFeedbackUI(request.security_origin);
+      is_allowlisted_extension || IsBuiltInFeedbackUI(request.security_origin);
 
   const bool origin_is_secure =
       network::IsUrlPotentiallyTrustworthy(request.security_origin) ||
@@ -212,7 +256,8 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
     return;
   }
 
-  if (!IsRequestApproved(web_contents, request, extension)) {
+  if (!IsRequestApproved(web_contents, request, extension,
+                         is_allowlisted_extension)) {
     std::move(callback).Run(
         blink::MediaStreamDevices(),
         blink::mojom::MediaStreamRequestResult::PERMISSION_DENIED, nullptr);
@@ -270,51 +315,6 @@ void DesktopCaptureAccessHandler::ProcessScreenCaptureAccessRequest(
 
   std::move(callback).Run(devices, blink::mojom::MediaStreamRequestResult::OK,
                           std::move(ui));
-}
-
-bool DesktopCaptureAccessHandler::IsDefaultApproved(
-    const extensions::Extension* extension) {
-  return extension &&
-         (extension->location() == ManifestLocation::kComponent ||
-          extension->location() == ManifestLocation::kExternalComponent ||
-          IsExtensionAllowedForScreenCapture(extension));
-}
-
-bool DesktopCaptureAccessHandler::IsDefaultApproved(const GURL& url) {
-  // allow the Feedback WebUI chrome://feedback/ to take screenshot without
-  // user's approval. The screenshot will not be shared by default. So the
-  // user can still decide whether the screenshot taken is shared or not.
-  return url.spec() == chrome::kChromeUIFeedbackURL;
-}
-
-bool DesktopCaptureAccessHandler::IsRequestApproved(
-    content::WebContents* web_contents,
-    const content::MediaStreamRequest& request,
-    const extensions::Extension* extension) {
-#if !defined(OS_ANDROID)
-  gfx::NativeWindow parent_window =
-      FindParentWindowForWebContents(web_contents);
-#else
-  gfx::NativeWindow parent_window = nullptr;
-#endif
-
-  if (IsDefaultApproved(extension) ||
-      IsDefaultApproved(request.security_origin))
-    return true;
-
-  const std::u16string application_name = base::UTF8ToUTF16(
-      extension ? extension->name() : request.security_origin.spec());
-  const std::u16string confirmation_text = l10n_util::GetStringFUTF16(
-      request.audio_type == blink::mojom::MediaStreamType::NO_SERVICE
-          ? IDS_MEDIA_SCREEN_CAPTURE_CONFIRMATION_TEXT
-          : IDS_MEDIA_SCREEN_AND_AUDIO_CAPTURE_CONFIRMATION_TEXT,
-      application_name);
-  const chrome::MessageBoxResult mb_result = chrome::ShowQuestionMessageBoxSync(
-      parent_window,
-      l10n_util::GetStringFUTF16(IDS_MEDIA_SCREEN_CAPTURE_CONFIRMATION_TITLE,
-                                 application_name),
-      confirmation_text);
-  return mb_result == chrome::MESSAGE_BOX_RESULT_YES;
 }
 
 bool DesktopCaptureAccessHandler::SupportsStreamType(
