@@ -41,7 +41,6 @@ import org.chromium.base.test.util.CloseableOnMainThread;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
@@ -288,7 +287,6 @@ public class HistoryActivityTest {
 
     @Test
     @SmallTest
-    @FlakyTest(message = "crbug.com/1285271")
     public void testSupervisedUser() throws Exception {
         final HistoryManagerToolbar toolbar = mHistoryManager.getToolbarForTests();
         final HistoryItemView item = (HistoryItemView) getItemView(2);
