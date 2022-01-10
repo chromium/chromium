@@ -1094,19 +1094,11 @@ int HttpNetworkTransaction::DoReadHeaders() {
 }
 
 int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
-  // We can get a certificate error or ERR_SSL_CLIENT_AUTH_CERT_NEEDED here
-  // due to SSL renegotiation.
-  if (IsCertificateError(result)) {
-    // We don't handle a certificate error during SSL renegotiation, so we
-    // have to return an error that's not in the certificate error range
-    // (-2xx).
-    //
-    // TODO(davidben): Remove this error. This is impossible now that server
-    // certificates are forbidden from changing in renegotiation.
-    LOG(ERROR) << "Got a server certificate with error " << result
-               << " during SSL renegotiation";
-    result = ERR_CERT_ERROR_IN_SSL_RENEGOTIATION;
-  } else if (result == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
+  // We can get a ERR_SSL_CLIENT_AUTH_CERT_NEEDED here due to SSL renegotiation.
+  // Server certificate errors are impossible. Rather than reverify the new
+  // server certificate, BoringSSL forbids server certificates from changing.
+  DCHECK(!IsCertificateError(result));
+  if (result == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
     DCHECK(stream_.get());
     DCHECK(IsSecureRequest());
     response_.cert_request_info = base::MakeRefCounted<SSLCertRequestInfo>();
