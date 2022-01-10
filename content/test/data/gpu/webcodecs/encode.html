@@ -20,7 +20,7 @@ Take frames coming from various sources and check that:
       const frames_in_one_pass = 15;
       let source = await createFrameSource(arg.source_type, width, height);
       if (!source) {
-        TEST.log('Skipping unsupported source: ' + arg.source_type);
+        TEST.skip('Unsupported source: ' + arg.source_type);
         return;
       }
 
@@ -39,7 +39,7 @@ Take frames coming from various sources and check that:
 
       let support = await VideoEncoder.isConfigSupported(encoder_config);
       if (!support.supported) {
-        TEST.log('Skipping unsupported codec: ' + arg.codec);
+        TEST.skip('Unsupported codec: ' + arg.codec);
         return;
       }
 

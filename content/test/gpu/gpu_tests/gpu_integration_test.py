@@ -9,6 +9,7 @@ import logging
 import re
 import sys
 import time
+import unittest
 
 from telemetry.internal.results import artifact_compatibility_wrapper as acw
 from telemetry.testing import serially_executed_browser_test_case
@@ -343,6 +344,9 @@ class GpuIntegrationTest(
       if os_name == 'android':
         self.browser.platform.android_action_runner.TurnScreenOn()
       self.RunActualGpuTest(url, *args)
+    except unittest.SkipTest:
+      self.programmaticSkipIsExpected = True  # pylint: disable=attribute-defined-outside-init
+      raise
     except Exception:
       if ResultType.Failure in expected_results or should_retry_on_failure:
         # We don't check the return value here since we'll be raising the

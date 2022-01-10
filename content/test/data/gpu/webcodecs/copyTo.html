@@ -84,7 +84,7 @@ Take frames coming from various sources and read them using copyTo().
     let source_type = arg.source_type;
     let source = await createFrameSource(source_type, 320, 240);
     if (!source) {
-      TEST.log('Skipping unsupported source: ' + source_type);
+      TEST.skip('Unsupported source: ' + source_type);
       return;
     }
 

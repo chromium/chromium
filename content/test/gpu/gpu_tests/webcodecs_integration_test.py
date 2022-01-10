@@ -105,6 +105,8 @@ class WebCodecsIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         'document.readyState == "complete"')
     tab.EvaluateJavaScript('TEST.run(' + json.dumps(arg_obj) + ')')
     tab.action_runner.WaitForJavaScriptCondition('TEST.finished', timeout=60)
+    if tab.EvaluateJavaScript('TEST.skipped'):
+      self.skipTest('Skipping test:' + tab.EvaluateJavaScript('TEST.summary()'))
     if not tab.EvaluateJavaScript('TEST.success'):
       self.fail('Test failure:' + tab.EvaluateJavaScript('TEST.summary()'))
 

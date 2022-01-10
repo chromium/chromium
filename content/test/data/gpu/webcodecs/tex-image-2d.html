@@ -33,7 +33,7 @@ WebGLRenderingContext.texImage2D().
       let source =
         await createFrameSource(source_type, canvas.width, canvas.height);
       if (!source) {
-        TEST.log('Skipping unsupported source: ' + source_type);
+        TEST.skip('Unsupported source: ' + source_type);
         return;
       }
 

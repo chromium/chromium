@@ -32,7 +32,7 @@ some chunks.
 
       let support = await VideoEncoder.isConfigSupported(encoder_config);
       if (!support.supported) {
-        TEST.log('Skipping unsupported codec: ' + arg.codec);
+        TEST.skip('Unsupported codec: ' + arg.codec);
         return;
       }
 

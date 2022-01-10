@@ -18,7 +18,7 @@ CanvasRenderingContext2D.drawImage().
       let ctx = cnv.getContext('2d');
       let source = await createFrameSource(source_type, cnv.width, cnv.height);
       if (!source) {
-        TEST.log('Skipping unsupported source: ' + source_type);
+        TEST.skip('Unsupported source: ' + source_type);
         return;
       }
 

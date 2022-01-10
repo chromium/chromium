@@ -7,10 +7,17 @@
 class TestHarness {
   finished = false;
   success = false;
+  skipped = false;
   message = 'ok';
   logs = [];
 
   constructor() {}
+
+  skip(message) {
+    this.skipped = true;
+    this.finished = true;
+    this.message = message;
+  }
 
   reportSuccess() {
     this.finished = true;
