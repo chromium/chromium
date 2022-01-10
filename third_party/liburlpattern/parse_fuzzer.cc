@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_util.h"
 #include "third_party/abseil-cpp/absl/status/statusor.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/abseil-cpp/absl/strings/string_view.h"
@@ -37,8 +38,11 @@ absl::optional<std::string> ParseAndCanonicalize(absl::string_view s) {
 std::string FancyHexDump(base::StringPiece label, base::StringPiece data) {
   std::string char_line, hex_line;
   for (char c : data) {
-    char_line.append(absl::StrFormat("%4c", c));
-    hex_line.append(absl::StrFormat("%4x", c));
+    if (!base::IsAsciiPrintable(c))
+      char_line.append(" [?]");
+    else
+      char_line.append(absl::StrFormat("%4c", c));
+    hex_line.append(absl::StrFormat("  %02x", c));
   }
   return base::StrCat({label, "\n", char_line, "\n", hex_line});
 }
@@ -68,7 +72,10 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
       << FancyHexDump("original : ", pattern_string) << "\n"
       << FancyHexDump("canonical: ", *canonical);
 
-  CHECK_EQ(*canonical, *canonical2);
+  CHECK_EQ(*canonical, *canonical2)
+      << "Canonical pattern and its recanonicalization are not equal.\n"
+      << FancyHexDump("canonical : ", *canonical) << "\n"
+      << FancyHexDump("canonical2: ", *canonical2);
   return 0;
 }
 }  // namespace liburlpattern
