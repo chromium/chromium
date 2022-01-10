@@ -184,7 +184,7 @@ ExtensionSyncService::MergeDataAndStartSyncing(
   std::unique_ptr<ExtensionSet> all_extensions =
       registry->GenerateInstalledExtensionsSet();
   for (const auto& extension : *all_extensions) {
-    if (extension->from_desprecated_bookmark()) {
+    if (extension->from_deprecated_bookmark()) {
       // Deleting deprecated bookmark apps.
       const std::string& id = extension->id();
       std::u16string error;

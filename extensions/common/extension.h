@@ -321,7 +321,7 @@ class Extension final : public base::RefCountedThreadSafe<Extension> {
   bool from_webstore() const { return (creation_flags_ & FROM_WEBSTORE) != 0; }
   // TODO(crbug.com/1065748): Retire this function when there are no old
   // entries.
-  bool from_desprecated_bookmark() const {
+  bool from_deprecated_bookmark() const {
     return (creation_flags_ & FROM_BOOKMARK) != 0;
   }
   bool may_be_untrusted() const {
