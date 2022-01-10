@@ -143,7 +143,7 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
   ReferrerChainProvider* GetReferrerChainProviderFromBrowserContext(
       content::BrowserContext* browser_context) override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   LoginReputationClientRequest::ReferringAppInfo GetReferringAppInfo(
       content::WebContents* web_contents) override;
 #endif

@@ -46,7 +46,7 @@ void ClearBinaryIntegrityForFile(IncidentReceiver* incident_receiver,
 }
 
 void RegisterBinaryIntegrityAnalysis() {
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   scoped_refptr<SafeBrowsingService> safe_browsing_service(
       g_browser_process->safe_browsing_service());
 

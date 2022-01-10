@@ -85,14 +85,14 @@ class SettingsResetPromptModelTest
     init_params.pref_file.clear();
     InitializeExtensionService(init_params);
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
     // In production code, the settings reset prompt profile preferences are
     // registered on Windows only. We explicitly register the prefs on
     // non-Windows systems so that we can continue testing the model on more
     // than just Windows.
     SettingsResetPromptPrefsManager::RegisterProfilePrefs(
         testing_pref_service()->registry());
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
     profile_->CreateWebDataService();
     TemplateURLServiceFactory::GetInstance()->SetTestingFactory(

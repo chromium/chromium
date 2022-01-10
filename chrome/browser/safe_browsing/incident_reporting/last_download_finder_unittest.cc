@@ -79,17 +79,17 @@ std::unique_ptr<KeyedService> BuildHistoryService(
   return nullptr;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 static const base::FilePath::CharType kBinaryFileName[] =
     FILE_PATH_LITERAL("spam.exe");
 static const base::FilePath::CharType kBinaryFileNameForOtherOS[] =
     FILE_PATH_LITERAL("spam.dmg");
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 static const base::FilePath::CharType kBinaryFileName[] =
     FILE_PATH_LITERAL("spam.dmg");
 static const base::FilePath::CharType kBinaryFileNameForOtherOS[] =
     FILE_PATH_LITERAL("spam.apk");
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 static const base::FilePath::CharType kBinaryFileName[] =
     FILE_PATH_LITERAL("spam.apk");
 static const base::FilePath::CharType kBinaryFileNameForOtherOS[] =
@@ -370,7 +370,7 @@ TEST_F(LastDownloadFinderTest, NonBinaryOnly) {
   EXPECT_TRUE(last_non_binary_download);
 }
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 // Tests that nothing happens if the binary is an executable for a different OS.
 TEST_F(LastDownloadFinderTest, DownloadForDifferentOs) {
   // Create a profile with a history service that is opted-in.

@@ -62,7 +62,7 @@
 
 // All tests related to extension is disabled on Android, because enterprise
 // reporting extension is not supported.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/safe_browsing/test_extension_event_observer.h"
 #include "chrome/common/extensions/api/safe_browsing_private.h"
@@ -82,7 +82,7 @@ using ::testing::_;
 using ::testing::Return;
 using ::testing::WithArg;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 namespace OnPolicySpecifiedPasswordReuseDetected = extensions::api::
     safe_browsing_private::OnPolicySpecifiedPasswordReuseDetected;
 namespace OnPolicySpecifiedPasswordChanged =
@@ -114,7 +114,7 @@ const char kPhishingURL[] = "http://phishing.com/";
 const char kTestEmail[] = "foo@example.com";
 const char kUserName[] = "username";
 const char kRedirectURL[] = "http://redirect.com";
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 const char kPasswordReuseURL[] = "http://login.example.com/";
 const char kTestGmail[] = "foo@gmail.com";
 #endif
@@ -279,7 +279,7 @@ class ChromePasswordProtectionServiceTest
         browser_sync::UserEventServiceFactory::GetInstance()
             ->SetTestingFactoryAndUse(browser_context(),
                                       GetFakeUserEventServiceFactory()));
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     test_event_router_ =
         extensions::CreateAndUseTestEventRouter(browser_context());
     extensions::SafeBrowsingPrivateEventRouterFactory::GetInstance()
@@ -424,7 +424,7 @@ class ChromePasswordProtectionServiceTest
       account_password_store_;
   // Owned by KeyedServiceFactory.
   raw_ptr<syncer::FakeUserEventService> fake_user_event_service_;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   raw_ptr<extensions::TestEventRouter> test_event_router_;
 #endif
   std::unique_ptr<VerdictCacheManager> cache_manager_;
@@ -574,7 +574,7 @@ TEST_F(ChromePasswordProtectionServiceWithProtectionForSignedInUsersEnabledTest,
       reused_password_type));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(
     ChromePasswordProtectionServiceWithProtectionForSignedInUsersDisabledTest,
     VerifyUserPopulationForSyncPasswordEntryPing) {
@@ -841,7 +841,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
 
 // The following tests are disabled on Android, because password capture events
 // are not enabled on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Check that the PasswordCapturedEvent timer is set for 1 min if password
 // hash is saved and no timer pref is set yet.
 TEST_F(ChromePasswordProtectionServiceTest,
@@ -1182,7 +1182,7 @@ TEST_F(ChromePasswordProtectionServiceTest,
 
 // The following tests are disabled on Android, because enterprise reporting
 // extension is not supported.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(ChromePasswordProtectionServiceTest,
        VerifyOnPolicySpecifiedPasswordChangedEvent) {
   TestExtensionEventObserver event_observer(test_event_router_);

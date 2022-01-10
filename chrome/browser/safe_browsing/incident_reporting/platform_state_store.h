@@ -17,7 +17,7 @@
 
 // Certain platforms provide their own storage of protobuf-serialized prune
 // state. On platforms where it is not supported, Load() and Store() are noops.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Store the state in the registry on Windows.
 #define USE_PLATFORM_STATE_STORE
 #endif

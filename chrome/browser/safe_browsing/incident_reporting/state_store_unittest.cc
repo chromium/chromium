@@ -28,13 +28,13 @@
 #include "extensions/browser/quota_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/test/test_reg_util_win.h"
 #endif
 
 namespace safe_browsing {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // A base test fixture that redirects HKCU for testing the platform state store
 // backed by the Windows registry to prevent interference with existing Chrome

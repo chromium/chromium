@@ -65,11 +65,11 @@
 #include "services/network/public/cpp/features.h"
 #include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/install_static/install_util.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/safe_browsing/android/safe_browsing_referring_app_bridge_android.h"
 #endif
 
@@ -233,7 +233,7 @@ SafeBrowsingService::GetReferrerChainProviderFromBrowserContext(
       browser_context);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 LoginReputationClientRequest::ReferringAppInfo
 SafeBrowsingService::GetReferringAppInfo(content::WebContents* web_contents) {
   return safe_browsing::GetReferringAppInfo(web_contents);
@@ -298,7 +298,7 @@ std::string SafeBrowsingService::GetProtocolConfigClientName() const {
   // On Windows, get the safe browsing client name from the browser
   // distribution classes in installer util. These classes don't yet have
   // an analog on non-Windows builds so just keep the name specified here.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   client_name = install_static::GetSafeBrowsingName();
 #else
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -308,11 +308,11 @@ std::string SafeBrowsingService::GetProtocolConfigClientName() const {
 #endif
 
   // Mark client string to allow server to differentiate mobile.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   client_name.append("-a");
 #endif
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   return client_name;
 }

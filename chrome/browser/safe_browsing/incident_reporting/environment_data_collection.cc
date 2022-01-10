@@ -89,7 +89,7 @@ void CollectEnvironmentData(ClientIncidentReport_EnvironmentData* data) {
   CollectProcessData(data->mutable_process());
 }
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 void CollectPlatformProcessData(
     ClientIncidentReport_EnvironmentData_Process* process) {
   // Empty implementation for platforms that do not (yet) have their own

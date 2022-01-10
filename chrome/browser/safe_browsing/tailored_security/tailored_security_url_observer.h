@@ -10,7 +10,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/safe_browsing/tailored_security/unconsented_message_android.h"
 #endif
 
@@ -56,7 +56,7 @@ class TailoredSecurityUrlObserver
 
   friend class content::WebContentsUserData<TailoredSecurityUrlObserver>;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void MessageDismissed();
 
   std::unique_ptr<TailoredSecurityUnconsentedMessageAndroid> message_;

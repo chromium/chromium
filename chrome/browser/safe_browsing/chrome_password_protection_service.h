@@ -56,7 +56,7 @@ using StringProvider = base::RepeatingCallback<std::string()>;
 using password_manager::metrics_util::PasswordType;
 using url::Origin;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Shows the desktop platforms specific password reuse modal dialog.
 // Implemented in password_reuse_modal_warning_dialog.
 void ShowPasswordReuseModalWarningDialog(
@@ -187,7 +187,7 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
 
 // The following functions are disabled on Android, because enterprise reporting
 // extension is not supported.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // If the browser is not incognito and the user is reusing their enterprise
   // password or is a GSuite user, triggers
   // safeBrowsingPrivate.OnPolicySpecifiedPasswordReuseDetected.
@@ -240,7 +240,7 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
       const std::vector<password_manager::MatchingReusedCredential>&
           matching_reused_credentials) override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   LoginReputationClientRequest::ReferringAppInfo GetReferringAppInfo(
       content::WebContents* web_contents) override;
 #endif
@@ -400,7 +400,7 @@ class ChromePasswordProtectionService : public PasswordProtectionService,
   FRIEND_TEST_ALL_PREFIXES(
       ChromePasswordProtectionServiceWithProtectionForSignedInUsersEnabledTest,
       VerifyUserPopulationForSyncPasswordEntryPing);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   FRIEND_TEST_ALL_PREFIXES(
       ChromePasswordProtectionServiceWithProtectionForSignedInUsersDisabledTest,
       VerifyUserPopulationForSyncPasswordEntryPing);

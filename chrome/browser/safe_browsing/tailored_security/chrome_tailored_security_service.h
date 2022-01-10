@@ -8,7 +8,7 @@
 #include "build/build_config.h"
 #include "components/safe_browsing/core/browser/tailored_security_service/tailored_security_service.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/safe_browsing/tailored_security/consented_message_android.h"
 #endif
 
@@ -30,7 +30,7 @@ class ChromeTailoredSecurityService : public TailoredSecurityService {
  private:
   void ShowSyncNotification(bool is_enabled);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void MessageDismissed();
 
   std::unique_ptr<TailoredSecurityConsentedModalAndroid> message_;

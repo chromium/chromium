@@ -215,7 +215,7 @@ TEST_F(FileAnalysisRequestTest, NormalFiles) {
 }
 
 // Disabled due to flakiness on Mac https://crbug.com/1229051
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_LargeFiles DISABLED_LargeFiles
 #else
 #define MAYBE_LargeFiles LargeFiles

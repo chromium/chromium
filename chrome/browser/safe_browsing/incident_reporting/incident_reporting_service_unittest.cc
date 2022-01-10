@@ -42,7 +42,7 @@
 #include "extensions/browser/quota_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/test/test_reg_util_win.h"
 #endif
 
@@ -204,7 +204,7 @@ class IncidentReportingServiceTest : public testing::Test {
 
   void SetUp() override {
     testing::Test::SetUp();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Redirect HKCU so that the platform state store used by the test doesn't
     // collide with existing Chrome installs or other tests running in parallel.
     ASSERT_NO_FATAL_FAILURE(
@@ -583,7 +583,7 @@ class IncidentReportingServiceTest : public testing::Test {
       receiver->AddIncidentForProcess(MakeTestIncident(nullptr));
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   registry_util::RegistryOverrideManager registry_override_manager_;
 #endif
 

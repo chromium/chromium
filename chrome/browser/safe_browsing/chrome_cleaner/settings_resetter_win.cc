@@ -203,7 +203,7 @@ PostCleanupSettingsResetter::~PostCleanupSettingsResetter() = default;
 
 // static
 bool PostCleanupSettingsResetter::IsEnabled() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return true;
 #else
   return false;

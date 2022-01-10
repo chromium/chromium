@@ -33,7 +33,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/common/safe_browsing/disk_image_type_sniffer_mac.h"
 #include "chrome/services/file_util/public/cpp/sandboxed_dmg_analyzer_mac.h"
 #endif

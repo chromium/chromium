@@ -19,6 +19,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
@@ -97,7 +98,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/password_manager/android/password_checkup_launcher_helper.h"
 #include "chrome/browser/safe_browsing/android/password_reuse_controller_android.h"
 #include "chrome/browser/safe_browsing/android/safe_browsing_referring_app_bridge_android.h"
@@ -304,7 +305,7 @@ void ChromePasswordProtectionService::Init() {
 // The following code is disabled on Android. RefreshTokenIsAvailable cannot be
 // used in unit tests, because it needs to interact with system accounts.
 // Considering avoid running it during unit tests. See: crbug.com/1009957.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // This code is shared by the normal ctor and testing ctor.
 
   sync_password_hash_ = GetSyncPasswordHashFromPrefs();
@@ -422,7 +423,7 @@ void ChromePasswordProtectionService::ShowModalWarning(
   if (web_contents->IsFullscreen())
     web_contents->ExitFullscreen(true);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   (new PasswordReuseControllerAndroid(
        web_contents, this, password_type,
        base::BindOnce(&ChromePasswordProtectionService::OnUserAction,
@@ -430,14 +431,14 @@ void ChromePasswordProtectionService::ShowModalWarning(
                       outcome, verdict_type, verdict_token,
                       WarningUIType::MODAL_DIALOG)))
       ->ShowDialog();
-#else   // !defined(OS_ANDROID)
+#else   // !BUILDFLAG(IS_ANDROID)
   ShowPasswordReuseModalWarningDialog(
       web_contents, this, password_type,
       base::BindOnce(&ChromePasswordProtectionService::OnUserAction,
                      base::Unretained(this), web_contents, password_type,
                      outcome, verdict_type, verdict_token,
                      WarningUIType::MODAL_DIALOG));
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   LogWarningAction(WarningUIType::MODAL_DIALOG, WarningAction::SHOWN,
                    password_type);
@@ -890,7 +891,7 @@ void ChromePasswordProtectionService::OnGaiaPasswordChanged(
     observer.OnGaiaPasswordChanged();
 
 // Disabled on Android, because enterprise reporting extension is not supported.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Only report if the current password changed is the primary account and it's
   // not a Gmail account or if the current password changed is a content area
   // account and it's not a Gmail account.
@@ -1026,7 +1027,7 @@ void ChromePasswordProtectionService::OpenChangePasswordUrl(
     OpenUrl(web_contents, GetDefaultChangePasswordURL(), content::Referrer(),
             /*in_new_tab=*/true);
   } else {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (base::FeatureList::IsEnabled(
             safe_browsing::
                 kSafeBrowsingPasswordCheckIntegrationForSavedPasswordsAndroid)) {
@@ -1162,7 +1163,7 @@ std::string ChromePasswordProtectionService::GetOrganizationName(
 }
 
 // Disabled on Android, because enterprise reporting extension is not supported.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void ChromePasswordProtectionService::MaybeReportPasswordReuseDetected(
     PasswordProtectionRequest* request,
     const std::string& username,
@@ -1430,7 +1431,7 @@ bool ChromePasswordProtectionService::IsPingingEnabled(
 // Only saved password and GAIA password reuse warnings are shown to users on
 // Android, so other types of password reuse events should be gated by Safe
 // Browsing extended reporting.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (password_type.account_type() ==
             ReusedPasswordAccountType::SAVED_PASSWORD ||
         IsSyncingGMAILPasswordWithSignedInProtectionEnabled(password_type)) {
@@ -1741,7 +1742,7 @@ void ChromePasswordProtectionService::RemovePhishedSavedPasswordCredential(
   }
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 LoginReputationClientRequest::ReferringAppInfo
 ChromePasswordProtectionService::GetReferringAppInfo(
     content::WebContents* web_contents) {
