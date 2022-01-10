@@ -4,11 +4,12 @@
 
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 
+#include <tuple>
+
 #include "base/base_paths.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
-#include "base/ignore_result.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -269,9 +270,9 @@ net::URLRequestContextGetter* TestChromeBrowserState::CreateRequestContext(
 }
 
 void TestChromeBrowserState::CreateWebDataService() {
-  ignore_result(
+  std::ignore =
       ios::WebDataServiceFactory::GetInstance()->SetTestingFactoryAndUse(
-          this, base::BindRepeating(&BuildWebDataService)));
+          this, base::BindRepeating(&BuildWebDataService));
 
   // Wait a bit after creating the WebDataService to allow the initialisation
   // to complete (otherwise the TestChromeBrowserState may be destroyed before
@@ -285,9 +286,9 @@ void TestChromeBrowserState::CreateBookmarkModel(bool delete_file) {
     base::DeleteFile(GetOriginalChromeBrowserState()->GetStatePath().Append(
         bookmarks::kBookmarksFileName));
   }
-  ignore_result(
+  std::ignore =
       ios::BookmarkModelFactory::GetInstance()->SetTestingFactoryAndUse(
-          this, base::BindRepeating(&BuildBookmarkModel)));
+          this, base::BindRepeating(&BuildBookmarkModel));
 }
 
 bool TestChromeBrowserState::CreateHistoryService() {

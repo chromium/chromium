@@ -7,8 +7,8 @@
 #import <UIKit/UIKit.h>
 
 #include <memory>
+#include <tuple>
 
-#include "base/ignore_result.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
@@ -336,7 +336,7 @@ TEST_F(TabUsageRecorderBrowserAgentTest, RendererTerminated) {
   // TabUsageRecorder count kAliveTabsCountAtRendererTermination tabs
   // as alive when mock_tab_a is evicted.
   for (int ii = 0; ii < kAliveTabsCountAtRendererTermination; ++ii) {
-    ignore_result(InsertFakeWebState(kURL, IN_MEMORY));
+    std::ignore = InsertFakeWebState(kURL, IN_MEMORY);
   }
 
   base::TimeTicks now = base::TimeTicks::Now();

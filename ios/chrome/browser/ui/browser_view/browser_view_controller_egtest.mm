@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include <map>
+#include <tuple>
 
 #include "base/feature_list.h"
-#include "base/ignore_result.h"
 #import "base/ios/ios_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/strings/grit/components_strings.h"
@@ -53,7 +53,7 @@
                                                             block:^BOOL {
                                                               return NO;
                                                             }];
-    ignore_result([myCondition waitWithTimeout:0.05]);
+    std::ignore = [myCondition waitWithTimeout:0.05];
 
     [ChromeEarlGrey openNewTab];
   }  // End of the sync disabler scope.
