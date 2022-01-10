@@ -262,11 +262,11 @@ public class KeyboardShortcuts {
                 int numCode = keyCode - KeyEvent.KEYCODE_0;
                 if (numCode > 0 && numCode <= Math.min(tabCount, 8)) {
                     // Ctrl+1 to Ctrl+8: select tab by index
-                    TabModelUtils.setIndex(currentTabModel, numCode - 1);
+                    TabModelUtils.setIndex(currentTabModel, numCode - 1, false);
                     return true;
                 } else if (numCode == 9 && tabCount != 0) {
                     // Ctrl+9: select last tab
-                    TabModelUtils.setIndex(currentTabModel, tabCount - 1);
+                    TabModelUtils.setIndex(currentTabModel, tabCount - 1, false);
                     return true;
                 }
             }
@@ -277,7 +277,7 @@ public class KeyboardShortcuts {
                 case KeyEvent.KEYCODE_BUTTON_R1:
                     if (tabSwitchingEnabled && tabCount > 1) {
                         TabModelUtils.setIndex(
-                                currentTabModel, (currentTabModel.index() + 1) % tabCount);
+                                currentTabModel, (currentTabModel.index() + 1) % tabCount, false);
                     }
                     return true;
                 case CTRL | SHIFT | KeyEvent.KEYCODE_TAB:
@@ -285,7 +285,7 @@ public class KeyboardShortcuts {
                 case KeyEvent.KEYCODE_BUTTON_L1:
                     if (tabSwitchingEnabled && tabCount > 1) {
                         TabModelUtils.setIndex(currentTabModel,
-                                (currentTabModel.index() + tabCount - 1) % tabCount);
+                                (currentTabModel.index() + tabCount - 1) % tabCount, false);
                     }
                     return true;
                 case CTRL | KeyEvent.KEYCODE_W:

@@ -107,7 +107,7 @@ public class UndoTabModelTest {
 
     private void selectTabOnUiThread(final TabModel model, final Tab tab) {
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> { model.setIndex(model.indexOf(tab), TabSelectionType.FROM_USER); });
+                () -> { model.setIndex(model.indexOf(tab), TabSelectionType.FROM_USER, false); });
     }
 
     private void closeTabOnUiThread(final TabModel model, final Tab tab, final boolean undoable)

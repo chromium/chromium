@@ -399,7 +399,7 @@ public class DownloadTest implements CustomMainActivityStart {
         final int count = model.getCount();
 
         InstrumentationRegistry.getInstrumentation().runOnMainSync(
-                () -> TabModelUtils.setIndex(model, count - 2));
+                () -> TabModelUtils.setIndex(model, count - 2, false));
 
         CriteriaHelper.pollUiThread(() -> {
             Tab tab = mDownloadTestRule.getActivity().getActivityTab();

@@ -243,7 +243,7 @@ public class StartSurfaceLayoutPerfTest {
                 // clang-format off
                 TestThreadUtils.runOnUiThreadBlocking(() ->
                         mActivityTestRule.getActivity().getCurrentTabModel().setIndex(
-                                lastIndex, TabSelectionType.FROM_USER)
+                                lastIndex, TabSelectionType.FROM_USER, false)
                 );
                 // clang-format on
             }
@@ -253,7 +253,7 @@ public class StartSurfaceLayoutPerfTest {
                 // clang-format off
                 TestThreadUtils.runOnUiThreadBlocking(() ->
                         mActivityTestRule.getActivity().getCurrentTabModel().setIndex(
-                                currentIndex, TabSelectionType.FROM_USER)
+                                currentIndex, TabSelectionType.FROM_USER, false)
                 );
                 // clang-format on
             }

@@ -494,7 +494,8 @@ public class TabUiTestHelper {
             if (fixPendingReadbacks && previousTabIndex != TabModel.INVALID_TAB_INDEX) {
                 // clang-format off
                 TestThreadUtils.runOnUiThreadBlocking(() ->
-                        previousTabModel.setIndex(previousTabIndex, TabSelectionType.FROM_USER)
+                        previousTabModel.setIndex(
+                            previousTabIndex, TabSelectionType.FROM_USER, false)
                 );
                 // clang-format on
             }
@@ -504,7 +505,7 @@ public class TabUiTestHelper {
             if (fixPendingReadbacks) {
                 // clang-format off
                 TestThreadUtils.runOnUiThreadBlocking(() -> currentTabModel.setIndex(
-                        currentTabIndex, TabSelectionType.FROM_USER)
+                        currentTabIndex, TabSelectionType.FROM_USER, false)
                 );
                 // clang-format on
             }

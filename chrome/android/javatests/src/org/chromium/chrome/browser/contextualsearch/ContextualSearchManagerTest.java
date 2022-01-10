@@ -1983,7 +1983,7 @@ public class ContextualSearchManagerTest {
                 TabModelUtils.getCurrentTab(sActivityTestRule.getActivity().getCurrentTabModel());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            TabModelUtils.setIndex(sActivityTestRule.getActivity().getCurrentTabModel(), 0);
+            TabModelUtils.setIndex(sActivityTestRule.getActivity().getCurrentTabModel(), 0, false);
         });
 
         triggerResolve("states");
