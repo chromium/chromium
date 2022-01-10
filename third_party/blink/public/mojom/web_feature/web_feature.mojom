@@ -3412,6 +3412,7 @@ enum WebFeature {
   kSecureContextIncorrectForWorker = 4103,
   kV8UDPSocket_Close_Method = 4104,
   kHTMLInputElementSimulatedClick = 4105,
+  kRTCLocalSdpModificationIceUfragPwd = 4106,
 
 
   // Add new features immediately above this line. Don't change assigned

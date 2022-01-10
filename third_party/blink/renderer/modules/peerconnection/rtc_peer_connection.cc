@@ -498,6 +498,37 @@ RTCOfferOptionsPlatform* ParseOfferOptions(const Dictionary& options,
   return rtc_offer_options;
 }
 
+bool SdpMismatch(String old_sdp, String new_sdp, String attribute) {
+  // Look for an attribute that is present in both old and new SDP
+  // and is modified which is not allowed.
+  String attribute_with_prefix = "\na=" + attribute + ":";
+  const wtf_size_t new_attribute_pos = new_sdp.Find(attribute_with_prefix);
+  if (new_attribute_pos == kNotFound) {
+    return true;
+  }
+  const wtf_size_t old_attribute_pos = old_sdp.Find(attribute_with_prefix);
+  if (old_attribute_pos == kNotFound) {
+    return true;
+  }
+  wtf_size_t old_attribute_end = old_sdp.Find("\r\n", old_attribute_pos + 1);
+  if (old_attribute_end == kNotFound) {
+    old_attribute_end = old_sdp.Find("\n", old_attribute_pos + 1);
+  }
+  wtf_size_t new_attribute_end = new_sdp.Find("\r\n", new_attribute_pos + 1);
+  if (new_attribute_end == kNotFound) {
+    new_attribute_end = new_sdp.Find("\n", new_attribute_pos + 1);
+  }
+  return old_sdp.Substring(old_attribute_pos,
+                           old_attribute_end - old_attribute_pos) !=
+         new_sdp.Substring(new_attribute_pos,
+                           new_attribute_end - new_attribute_pos);
+}
+
+bool IceUfragPwdMismatch(String old_sdp, String new_sdp) {
+  return SdpMismatch(old_sdp, new_sdp, "ice-ufrag") ||
+         SdpMismatch(old_sdp, new_sdp, "ice-pwd");
+}
+
 bool FingerprintMismatch(String old_sdp, String new_sdp) {
   // Check special case of externally generated SDP without fingerprints.
   // It's impossible to generate a valid fingerprint without createOffer
@@ -516,12 +547,12 @@ bool FingerprintMismatch(String old_sdp, String new_sdp) {
   // line endings ('\r\n' vs, '\n' when looking for the end of the fingerprint).
   wtf_size_t old_fingerprint_end =
       old_sdp.Find("\r\n", old_fingerprint_pos + 1);
-  if (old_fingerprint_end == WTF::kNotFound) {
+  if (old_fingerprint_end == kNotFound) {
     old_fingerprint_end = old_sdp.Find("\n", old_fingerprint_pos + 1);
   }
   wtf_size_t new_fingerprint_end =
       new_sdp.Find("\r\n", new_fingerprint_pos + 1);
-  if (new_fingerprint_end == WTF::kNotFound) {
+  if (new_fingerprint_end == kNotFound) {
     new_fingerprint_end = new_sdp.Find("\n", new_fingerprint_pos + 1);
   }
   return old_sdp.Substring(old_fingerprint_pos,
@@ -1124,6 +1155,10 @@ DOMException* RTCPeerConnection::checkSdpForStateErrors(
           UseCounter::Count(context,
                             WebFeature::kRTCLocalSdpModificationSimulcast);
         }
+        if (IceUfragPwdMismatch(last_offer_, parsed_sdp.sdp())) {
+          UseCounter::Count(context,
+                            WebFeature::kRTCLocalSdpModificationIceUfragPwd);
+        }
         return nullptr;
         // TODO(https://crbug.com/823036): Return failure for all modification.
       }
@@ -1138,6 +1173,10 @@ DOMException* RTCPeerConnection::checkSdpForStateErrors(
         if (ContainsLegacySimulcast(parsed_sdp.sdp())) {
           UseCounter::Count(context,
                             WebFeature::kRTCLocalSdpModificationSimulcast);
+        }
+        if (IceUfragPwdMismatch(last_answer_, parsed_sdp.sdp())) {
+          UseCounter::Count(context,
+                            WebFeature::kRTCLocalSdpModificationIceUfragPwd);
         }
         return nullptr;
         // TODO(https://crbug.com/823036): Return failure for all modification.
