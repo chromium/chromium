@@ -11,7 +11,7 @@
 namespace cc {
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 constexpr double kDistanceEstimatorScalar = 40;
 // The delta to be scrolled in next frame is 0.9 of the delta in last frame.
 constexpr double kRatio = 0.9;

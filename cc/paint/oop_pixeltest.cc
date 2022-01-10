@@ -50,7 +50,7 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gl/gl_implementation.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
@@ -1831,7 +1831,7 @@ class OopTextBlobPixelTest
     // and distinctly different from using the wrong glyph or text params.
     float error_pixels_percentage = 0.f;
     int max_abs_error = 0;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // The nexus5 and nexus5x bots are particularly susceptible to small changes
     // when bilerping an image (not visible).
     const int sdk = base::android::BuildInfo::GetInstance()->sdk_int();
@@ -2314,7 +2314,7 @@ TEST_F(OopPixelTest, ReadbackImagePixels) {
 // A workaround on Android that forces the use of GLES 2.0 instead of 3.0
 // prevents the use of the GL_RG textures required for NV12 format. This
 // test will be reactiviated on Android once the workaround is removed.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(OopPixelTest, ConvertNV12ToRGB) {
   RasterOptions options(gfx::Size(16, 16));
   RasterOptions uv_options(gfx::Size(options.resource_size.width() / 2,
@@ -2388,7 +2388,7 @@ TEST_F(OopPixelTest, ConvertNV12ToRGB) {
   sii->DestroySharedImage(sync_token, y_uv_mailboxes[0]);
   sii->DestroySharedImage(sync_token, y_uv_mailboxes[1]);
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class OopPathPixelTest : public OopPixelTest,
                          public ::testing::WithParamInterface<bool> {

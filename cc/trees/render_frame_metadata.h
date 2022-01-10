@@ -119,7 +119,7 @@ class CC_EXPORT RenderFrameMetadata {
   // set of VisualProperties arriving. See WidgetBase::UpdateVisualProperties.
   base::TimeDelta visual_properties_update_duration;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Used to position Android bottom bar, whose position is computed by the
   // renderer compositor.
   float bottom_controls_height = 0.f;

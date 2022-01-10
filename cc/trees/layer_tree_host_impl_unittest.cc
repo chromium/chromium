@@ -11890,7 +11890,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest,
       ui::INPUT_EVENT_LATENCY_BEGIN_RWH_COMPONENT, nullptr));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_P(ScrollUnifiedLayerTreeHostImplTest,
        SelectionBoundsPassedToCompositorFrameMetadata) {
   LayerImpl* root = SetupRootLayer<SolidColorLayerImpl>(
@@ -11955,7 +11955,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, HiddenSelectionBoundsStayHidden) {
   EXPECT_FALSE(selection_after.start.visible());
   EXPECT_FALSE(selection_after.end.visible());
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 TEST_P(ScrollUnifiedLayerTreeHostImplTest, SimpleSwapPromiseMonitor) {
   {
@@ -16549,7 +16549,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, RenderFrameMetadata) {
     EXPECT_EQ(gfx::PointF(), metadata.root_scroll_offset);
     EXPECT_EQ(1, metadata.page_scale_factor);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     EXPECT_EQ(gfx::SizeF(50, 50), metadata.scrollable_viewport_size);
     EXPECT_EQ(0.5f, metadata.min_page_scale_factor);
     EXPECT_EQ(4, metadata.max_page_scale_factor);
@@ -16579,7 +16579,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, RenderFrameMetadata) {
     EXPECT_EQ(gfx::PointF(0, 10), metadata.root_scroll_offset);
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Root "overflow: hidden" properties should be reflected on the outer
   // viewport scroll layer.
   {
@@ -16644,7 +16644,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, RenderFrameMetadata) {
     EXPECT_EQ(gfx::PointF(0, 10), metadata.root_scroll_offset);
     EXPECT_EQ(2, metadata.page_scale_factor);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     EXPECT_EQ(gfx::SizeF(25, 25), metadata.scrollable_viewport_size);
     EXPECT_EQ(0.5f, metadata.min_page_scale_factor);
     EXPECT_EQ(4, metadata.max_page_scale_factor);
@@ -16662,7 +16662,7 @@ TEST_P(ScrollUnifiedLayerTreeHostImplTest, RenderFrameMetadata) {
     EXPECT_EQ(gfx::PointF(0, 10), metadata.root_scroll_offset);
     EXPECT_EQ(4, metadata.page_scale_factor);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     EXPECT_EQ(gfx::SizeF(12.5f, 12.5f), metadata.scrollable_viewport_size);
     EXPECT_EQ(0.5f, metadata.min_page_scale_factor);
     EXPECT_EQ(4, metadata.max_page_scale_factor);

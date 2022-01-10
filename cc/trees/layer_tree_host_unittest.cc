@@ -2969,7 +2969,7 @@ class LayerTreeHostTestViewportRectChangeBlockedMainThread
 };
 
 // TODO(crbug.com/1223226): Disabled on Chrome OS due to flakiness.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 SINGLE_AND_MULTI_THREAD_TEST_F(
     LayerTreeHostTestViewportRectChangeBlockedMainThread);
 #endif
@@ -6096,7 +6096,7 @@ class LayerTreeHostTestElasticOverscroll : public LayerTreeHostTest {
 
   void VerifyOverscroll(const gfx::Vector2dF& stretch_amount,
                         const gfx::Transform& transform) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     gfx::Vector2dF scale = transform.Scale2d();
     // On android, overscroll stretches the content. We don't assert the amount
     // of stretch but there should be some stretch for overscroll and no stretch
@@ -6109,11 +6109,11 @@ class LayerTreeHostTestElasticOverscroll : public LayerTreeHostTest {
       EXPECT_EQ(1.f, scale.y());
     else
       EXPECT_GT(scale.y(), 1.f);
-#else   // defined(OS_ANDROID)
+#else   // BUILDFLAG(IS_ANDROID)
     gfx::Transform expected_draw_transform;
     expected_draw_transform.Translate(-stretch_amount);
     EXPECT_EQ(expected_draw_transform, transform);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   void DrawLayersOnThread(LayerTreeHostImpl* host_impl) override {
@@ -7591,7 +7591,7 @@ class LayerTreeHostTestCrispUpAfterPinchEndsWithOneCopy
     viz::TestGLES2Interface* gl =
         display_context_provider->UnboundTestContextGL();
     gl->set_support_sync_query(true);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     gl->set_support_texture_rectangle(true);
 #endif
     display_context_provider->BindToCurrentThread();

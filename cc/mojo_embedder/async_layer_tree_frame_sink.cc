@@ -51,7 +51,7 @@ AsyncLayerTreeFrameSink::AsyncLayerTreeFrameSink(
                          params->gpu_memory_buffer_manager),
       synthetic_begin_frame_source_(
           std::move(params->synthetic_begin_frame_source)),
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       io_thread_id_(params->io_thread_id),
 #endif
       pipes_(std::move(params->pipes)),
@@ -100,7 +100,7 @@ bool AsyncLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
   compositor_frame_sink_ptr_->InitializeCompositorFrameSinkType(
       viz::mojom::CompositorFrameSinkType::kLayerTree);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::vector<int32_t> thread_ids;
   thread_ids.push_back(base::PlatformThread::CurrentId());
   if (io_thread_id_ != base::kInvalidThreadId)

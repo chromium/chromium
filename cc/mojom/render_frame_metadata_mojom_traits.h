@@ -101,7 +101,7 @@ struct COMPONENT_EXPORT(CC_SHARED_MOJOM_TRAITS)
     return metadata.visual_properties_update_duration;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   static float bottom_controls_height(const cc::RenderFrameMetadata& metadata) {
     return metadata.bottom_controls_height;
   }

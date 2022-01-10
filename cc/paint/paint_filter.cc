@@ -30,7 +30,7 @@ namespace cc {
 namespace {
 const bool kHasNoDiscardableImages = false;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 struct StretchShaderUniforms {
   // multiplier to apply to scale effect
   float uMaxStretchIntensity;
@@ -1578,7 +1578,7 @@ StretchPaintFilter::StretchPaintFilter(SkScalar stretch_x,
       width_(width),
       height_(height),
       input_(std::move(input)) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   float normOverScrollDistX = stretch_x_;
   float normOverScrollDistY = stretch_y_;
   float distanceStretchedX =
@@ -1609,10 +1609,10 @@ StretchPaintFilter::StretchPaintFilter(SkScalar stretch_x,
   sk_sp<SkData> uniformVals = SkData::MakeWithCopy(&uniforms, sizeof(uniforms));
   cached_sk_filter_ = SkMakeRuntimeImageFilter(getStretchEffect(), uniformVals,
                                                GetSkFilter(input_.get()));
-#else   // defined(OS_ANDROID)
+#else   // BUILDFLAG(IS_ANDROID)
   // Stretch filter is only used on android and removed from other platforms
   // to reduce size. See https://crbug.com/1226170.
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 StretchPaintFilter::~StretchPaintFilter() = default;

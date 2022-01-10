@@ -33,7 +33,7 @@ void ScopedGpuRaster::BeginGpuRaster() {
   // arguments even when tracing is disabled.
   gl->TraceBeginCHROMIUM("ScopedGpuRaster", "GpuRasterization");
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // TODO(crbug.com/832810): The following reset should not be necessary.
   GrDirectContext* gr_context = context_provider_->GrContext();
   gr_context->resetContext();

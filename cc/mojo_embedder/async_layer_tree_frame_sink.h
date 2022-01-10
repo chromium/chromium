@@ -124,7 +124,7 @@ class CC_MOJO_EMBEDDER_EXPORT AsyncLayerTreeFrameSink
   viz::LocalSurfaceId local_surface_id_;
   std::unique_ptr<viz::ExternalBeginFrameSource> begin_frame_source_;
   std::unique_ptr<viz::SyntheticBeginFrameSource> synthetic_begin_frame_source_;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::PlatformThreadId io_thread_id_;
 #endif
 

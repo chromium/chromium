@@ -17,7 +17,7 @@
 #include "components/viz/test/buildflags.h"
 #include "components/viz/test/paths.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 namespace cc {
 namespace {

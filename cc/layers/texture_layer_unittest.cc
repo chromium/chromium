@@ -25,6 +25,7 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "cc/animation/animation_host.h"
 #include "cc/layers/solid_color_layer.h"
 #include "cc/layers/texture_layer_client.h"
@@ -1110,7 +1111,7 @@ class TextureLayerChangeInvisibleMailboxTest
 };
 
 // TODO(crbug.com/1197350): Test fails on chromeos-amd64-generic-rel.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_SINGLE_AND_MULTI_THREAD_TEST_F MULTI_THREAD_TEST_F
 #else
 #define MAYBE_SINGLE_AND_MULTI_THREAD_TEST_F SINGLE_AND_MULTI_THREAD_TEST_F

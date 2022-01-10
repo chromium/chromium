@@ -9,7 +9,7 @@
 #include "cc/paint/paint_flags.h"
 #include "third_party/skia/include/core/SkPixmap.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
@@ -18,7 +18,7 @@ namespace cc {
 class ImageDecodeCacheUtils {
  public:
   static bool CanResizeF16Image(PaintFlags::FilterQuality filter_quality) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Return false on Android KitKat or lower if filter quality is medium or
     // high (hence, mipmaps are used), return true otherwise. This is because
     // of skia:8410 which causes a crash when trying to scale a f16 image on

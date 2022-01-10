@@ -102,7 +102,7 @@ std::string ToStringTwoDecimalPrecision(double input) {
   return stream.str();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 struct MetricsDrawSizes {
   const int kTopPadding = 35;
   const int kPadding = 15;

@@ -166,7 +166,7 @@ class LayerTreeHostPerfTestJsonReader : public LayerTreeHostPerfTest {
 
 // Simulates a tab switcher scene with two stacks of 10 tabs each.
 // Timed out on Android: http://crbug.com/723821
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_TenTenSingleThread DISABLED_TenTenSingleThread
 #else
 #define MAYBE_TenTenSingleThread TenTenSingleThread
@@ -178,7 +178,7 @@ TEST_F(LayerTreeHostPerfTestJsonReader, MAYBE_TenTenSingleThread) {
 }
 
 // Timed out on Android: http://crbug.com/723821
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_TenTenThreaded DISABLED_TenTenThreaded
 #else
 #define MAYBE_TenTenThreaded TenTenThreaded
@@ -272,7 +272,7 @@ class ScrollingLayerTreePerfTest : public LayerTreeHostPerfTestJsonReader {
 };
 
 // Timed out on Android: http://crbug.com/723821
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_LongScrollablePageSingleThread \
     DISABLED_LongScrollablePageSingleThread
 #else
@@ -285,7 +285,7 @@ TEST_F(ScrollingLayerTreePerfTest, MAYBE_LongScrollablePageSingleThread) {
 }
 
 // Timed out on Android: http://crbug.com/723821
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_LongScrollablePageThreaded DISABLED_LongScrollablePageThreaded
 #else
 #define MAYBE_LongScrollablePageThreaded LongScrollablePageThreaded
@@ -389,7 +389,7 @@ TEST_F(BrowserCompositorInvalidateLayerTreePerfTest, DenseBrowserUIThreaded) {
 
 // Simulates a page with several large, transformed and animated layers.
 // Timed out on Android: http://crbug.com/723821
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_HeavyPageThreaded DISABLED_HeavyPageThreaded
 #else
 #define MAYBE_HeavyPageThreaded HeavyPageThreaded

@@ -1126,7 +1126,7 @@ void UpdateElasticOverscroll(
     ElementId overscroll_elasticity_effect_element_id,
     const gfx::Vector2dF& elastic_overscroll,
     const ScrollNode* inner_viewport) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On android, elastic overscroll is implemented by stretching the content
   // from the overscrolled edge.
   if (!overscroll_elasticity_effect_element_id &&
@@ -1184,7 +1184,7 @@ void UpdateElasticOverscroll(
   }
   overscroll_elasticity_transform_node->needs_local_transform_update = true;
   property_trees->transform_tree.set_needs_update(true);
-#else  // defined(OS_ANDROID)
+#else  // BUILDFLAG(IS_ANDROID)
   if (!overscroll_elasticity_transform_node) {
     DCHECK(elastic_overscroll.IsZero());
     return;
@@ -1202,7 +1202,7 @@ void UpdateElasticOverscroll(
   overscroll_elasticity_transform_node->needs_local_transform_update = true;
   property_trees->transform_tree.set_needs_update(true);
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void ComputeDrawPropertiesOfVisibleLayers(const LayerImplList* layer_list,

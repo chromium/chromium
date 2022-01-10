@@ -71,9 +71,9 @@ PixelTest::PixelTest(GraphicsBackend backend)
     init_vulkan = true;
   } else if (backend == kSkiaDawn) {
     scoped_feature_list_.InitAndEnableFeature(features::kSkiaDawn);
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     init_vulkan = true;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     // TODO(rivr): Initialize D3D12 for Windows.
 #else
     NOTREACHED();

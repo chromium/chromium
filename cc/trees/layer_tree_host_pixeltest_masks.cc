@@ -22,7 +22,7 @@
 #include "components/viz/test/buildflags.h"
 #include "third_party/skia/include/core/SkImage.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 namespace cc {
 namespace {
@@ -762,7 +762,7 @@ class LayerTreeHostMaskAsBlendingPixelTest
       small_error_allowed = 1;
     } else {
 #if defined(ARCH_CPU_ARM64)
-#if defined(OS_WIN) || defined(OS_FUCHSIA) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC)
       // ARM Windows, macOS, and Fuchsia has some pixels difference
       // Affected tests: RotatedClippedCircle, RotatedClippedCircleUnderflow
       // crbug.com/1030244, crbug.com/1048249, crbug.com/1128443
@@ -1162,4 +1162,4 @@ TEST_P(LayerTreeHostMasksForBackdropFiltersAndBlendPixelTest, Test) {
 }  // namespace
 }  // namespace cc
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)

@@ -225,7 +225,7 @@ class LayerTreeTest : public testing::Test, public TestHooks {
     return renderer_type_ == viz::RendererType::kSkiaVk;
   }
   bool use_d3d12() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     return renderer_type_ == viz::RendererType::kSkiaDawn;
 #else
     return false;

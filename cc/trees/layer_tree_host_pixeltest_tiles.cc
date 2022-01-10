@@ -17,7 +17,7 @@
 #include "components/viz/test/buildflags.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 namespace cc {
 namespace {
@@ -243,7 +243,7 @@ INSTANTIATE_TEST_SUITE_P(All,
                          ::testing::PrintToStringParamName());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || defined(MEMORY_SANITIZER) || \
-    defined(ADDRESS_SANITIZER) || defined(OS_FUCHSIA)
+    defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_FUCHSIA)
 // TODO(crbug.com/1045521): Flakes on all slower bots.
 #define MAYBE_PartialRaster DISABLED_PartialRaster
 #else
@@ -292,11 +292,11 @@ INSTANTIATE_TEST_SUITE_P(All,
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     LayerTreeHostTilesTestPartialInvalidationMultiThread);
 
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(THREAD_SANITIZER)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(THREAD_SANITIZER)
 // Flaky on Linux TSAN. https://crbug.com/707711
 #define MAYBE_PartialRaster DISABLED_PartialRaster
 #elif BUILDFLAG(IS_CHROMEOS_ASH) || defined(MEMORY_SANITIZER) || \
-    defined(ADDRESS_SANITIZER) || defined(OS_FUCHSIA)
+    defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_FUCHSIA)
 // TODO(crbug.com/1045521): Flakes on all slower bots.
 #define MAYBE_PartialRaster DISABLED_PartialRaster
 #else
@@ -399,4 +399,4 @@ TEST_P(LayerTreeHostTilesTestPartialInvalidationLowBitDepth,
 }  // namespace
 }  // namespace cc
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)

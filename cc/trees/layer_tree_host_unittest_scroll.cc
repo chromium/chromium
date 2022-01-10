@@ -1057,7 +1057,7 @@ MULTI_THREAD_TEST_F(LayerTreeHostScrollTestImplOnlyScroll);
 
 // TODO(crbug.com/574283): Mac currently doesn't support smooth scrolling wheel
 // events.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // This test simulates scrolling on the impl thread such that it starts a scroll
 // animation. It ensures that RequestScrollAnimationEndNotification() correctly
 // notifies the callback after the animation ends.
@@ -1163,7 +1163,7 @@ class SmoothScrollAnimationEndNotification : public LayerTreeHostScrollTest {
 };
 
 MULTI_THREAD_TEST_F(SmoothScrollAnimationEndNotification);
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 void DoGestureScroll(LayerTreeHostImpl* host_impl,
                      const scoped_refptr<Layer>& scroller,
@@ -1308,7 +1308,7 @@ class LayerTreeHostScrollTestImplOnlyScrollSnap
 };
 
 // TODO(crbug.com/1201662): Flaky on Fuchsia, ChromeOS, and Linux.
-#if !defined(OS_FUCHSIA) && !defined(OS_CHROMEOS) && !defined(OS_LINUX)
+#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX)
 MULTI_THREAD_TEST_F(LayerTreeHostScrollTestImplOnlyScrollSnap);
 #endif
 
@@ -1457,7 +1457,7 @@ class LayerTreeHostScrollTestImplOnlyMultipleScrollSnap
 };
 
 // TODO(crbug.com/1243814): Test is flaky on Chrome OS (both Ash and Lacros).
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 MULTI_THREAD_TEST_F(LayerTreeHostScrollTestImplOnlyMultipleScrollSnap);
 #endif
 
@@ -1725,7 +1725,7 @@ class LayerTreeHostScrollTestImplScrollUnderMainThreadScrollingParent
 
 // This test is flaky in the single threaded configuration, only on the
 // chromeos-amd64-generic-rel bot. https://crbug.com/1093078.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // SINGLE_THREAD_TEST_F(
 //    LayerTreeHostScrollTestImplScrollUnderMainThreadScrollingParent);
 MULTI_THREAD_TEST_F(

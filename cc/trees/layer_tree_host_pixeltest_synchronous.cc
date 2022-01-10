@@ -11,7 +11,7 @@
 #include "cc/test/pixel_comparator.h"
 #include "components/viz/test/test_types.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 namespace cc {
 namespace {

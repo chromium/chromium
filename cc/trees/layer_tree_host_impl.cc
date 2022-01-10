@@ -2391,7 +2391,7 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
       browser_controls_offset_manager_->TopControlsHeight();
   metadata.top_controls_shown_ratio =
       browser_controls_offset_manager_->TopControlsShownRatio();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   metadata.bottom_controls_height =
       browser_controls_offset_manager_->BottomControlsHeight();
   metadata.bottom_controls_shown_ratio =
@@ -2442,7 +2442,7 @@ RenderFrameMetadata LayerTreeHostImpl::MakeRenderFrameMetadata(
   }
 
   bool allocate_new_local_surface_id =
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       last_draw_render_frame_metadata_ &&
       (last_draw_render_frame_metadata_->top_controls_height !=
            metadata.top_controls_height ||
@@ -3480,10 +3480,10 @@ void LayerTreeHostImpl::OnMemoryPressure(
 
     // TODO(crbug.com/1189208): Unlocking decoded-image-tracker images causes
     // flickering in visible trees if Out-Of-Process rasterization is enabled.
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   if (use_oop_rasterization() && visible())
     return;
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
   ReleaseTileResources();
   active_tree_->OnPurgeMemory();

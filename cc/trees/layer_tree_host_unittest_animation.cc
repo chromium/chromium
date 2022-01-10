@@ -1067,7 +1067,7 @@ class LayerTreeHostPresentationDuringAnimation
 };
 
 // Disabled on ChromeOS due to test flakiness. See https://crbug.com/1246422
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 MULTI_THREAD_TEST_F(LayerTreeHostPresentationDuringAnimation);
 #endif
 
@@ -1756,7 +1756,7 @@ class LayerTreeHostAnimationTestRemoveKeyframeModel
 };
 
 // Disabled on ChromeOS due to test flakiness. See https://crbug.com/1246422
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 SINGLE_THREAD_TEST_F(LayerTreeHostAnimationTestRemoveKeyframeModel);
 #endif
 
