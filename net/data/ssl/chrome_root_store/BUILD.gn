@@ -14,6 +14,7 @@ compiled_action("gen_root_store_inc") {
     "--root-store-dir=" + rebase_path("store", root_build_dir),
     "--write-cpp=" + rebase_path("${target_gen_dir}/chrome-root-store-inc.cc",
                                  root_build_dir),
+    "--cpp-output-format=root",
     "--write-deps=" + rebase_path(depfile, root_build_dir),
   ]
 }
@@ -29,6 +30,7 @@ compiled_action("gen_root_store_test_inc") {
     "--write-cpp=" +
         rebase_path("${target_gen_dir}/chrome-root-store-test-data-inc.cc",
                     root_build_dir),
+    "--cpp-output-format=root",
     "--write-deps=" + rebase_path(depfile, root_build_dir),
   ]
 }
