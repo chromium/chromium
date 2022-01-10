@@ -14,6 +14,7 @@ import shlex
 import subprocess
 import sys
 import tempfile
+import xml.sax
 
 
 @functools.lru_cache(1)
@@ -242,6 +243,88 @@ def tsc(args):
         print('TypeScript check failed, return code =', e.returncode)
 
 
+RESOURCES_H_PATH = '../resources.h'
+I18N_STRING_TS_PATH = './js/i18n_string.ts'
+CAMERA_STRINGS_GRD_PATH = './strings/camera_strings.grd'
+
+
+def parse_resources_h():
+    with open(RESOURCES_H_PATH, 'r') as f:
+        content = f.read()
+        return set(re.findall(r'\{"(\w+)",\s*(\w+)\}', content))
+
+
+def parse_i18n_string_ts():
+    with open(I18N_STRING_TS_PATH, 'r') as f:
+        content = f.read()
+        return set([(name, f'IDS_{id}')
+                    for (id, name) in re.findall(r"(\w+) =\s*'(\w+)'", content)
+                    ])
+
+
+# Same as tools/check_grd_for_unused_strings.py
+class GrdIDExtractor(xml.sax.handler.ContentHandler):
+    """Extracts the IDs from messages in GRIT files"""
+
+    def __init__(self):
+        self.id_set_ = set()
+
+    def startElement(self, name, attrs):
+        if name == 'message':
+            self.id_set_.add(attrs['name'])
+
+    def allIDs(self):
+        """Return all the IDs found"""
+        return self.id_set_.copy()
+
+
+def parse_camera_strings_grd():
+    handler = GrdIDExtractor()
+    xml.sax.parse(CAMERA_STRINGS_GRD_PATH, handler)
+    return handler.allIDs()
+
+
+def check_strings(args):
+    returncode = 0
+
+    def check_name_id_consistent(strings, filename):
+        nonlocal returncode
+        bad = [(name, id) for (name, id) in strings
+               if id != f'IDS_{name.upper()}']
+        if bad:
+            print(f'{filename} includes string id with inconsistent name:')
+            for (name, id) in bad:
+                print(f'    {name}: Expect IDS_{name.upper()}, got {id}')
+            returncode = 1
+
+    def check_all_ids_exist(all_ids, ids, filename):
+        nonlocal returncode
+        missing = all_ids.difference(ids)
+        if missing:
+            print(f'{filename} is missing the following string id:')
+            print(f'    {", ".join(sorted(missing))}')
+            returncode = 1
+
+    resources_h_strings = parse_resources_h()
+    check_name_id_consistent(resources_h_strings, RESOURCES_H_PATH)
+    resources_h_ids = set([id for (name, id) in resources_h_strings])
+
+    i18n_string_ts_strings = parse_i18n_string_ts()
+    check_name_id_consistent(i18n_string_ts_strings, I18N_STRING_TS_PATH)
+    i18n_string_ts_ids = set([id for (name, id) in i18n_string_ts_strings])
+
+    camera_strings_grd_ids = parse_camera_strings_grd()
+
+    all_ids = resources_h_ids.union(i18n_string_ts_ids, camera_strings_grd_ids)
+
+    check_all_ids_exist(all_ids, resources_h_ids, RESOURCES_H_PATH)
+    check_all_ids_exist(all_ids, i18n_string_ts_ids, I18N_STRING_TS_PATH)
+    check_all_ids_exist(all_ids, camera_strings_grd_ids,
+                        CAMERA_STRINGS_GRD_PATH)
+
+    return returncode
+
+
 def parse_args(args):
     parser = argparse.ArgumentParser(description='CCA developer tools.')
     parser.add_argument('--debug', action='store_true')
@@ -280,6 +363,17 @@ def parse_args(args):
             Please build Chrome at least once before running the command.''')
     tsc_parser.set_defaults(func=tsc)
     tsc_parser.add_argument('board')
+
+    # TODO(pihsun): Add argument to automatically generate / fix the files to a
+    # consistent state.
+    check_strings_parser = subparsers.add_parser(
+        'check-strings',
+        help='check string resources',
+        description='''Ensure files related to string resources are having the
+            same strings. This includes resources.h,
+            resources/strings/camera_strings.grd and
+            resources/js/i18n_string.ts.''')
+    check_strings_parser.set_defaults(func=check_strings)
 
     parser.set_defaults(func=lambda _args: parser.print_help())
 
