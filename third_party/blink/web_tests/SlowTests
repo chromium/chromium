@@ -80,6 +80,7 @@ crbug.com/902685 virtual/split-http-cache-not-site-per-process/http/tests/devtoo
 crbug.com/243492 inspector-protocol/injected-script-discard.js [ Slow ]
 crbug.com/678482 http/tests/devtools/debugger/fetch-breakpoints.js [ Slow ]
 crbug.com/1236466 inspector-protocol/runtime/runtime-execution-contexts-events.js [ Slow ]
+crbug.com/1229701 http/tests/inspector-protocol/network/disable-cache-media-resource.js [ Slow ]
 
 crbug.com/510337 cssom/cssvalue-comparison.html [ Slow ]
 
