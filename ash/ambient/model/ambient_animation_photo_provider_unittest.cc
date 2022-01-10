@@ -93,10 +93,17 @@ class AmbientAnimationPhotoProviderTest : public ::testing::Test {
   std::vector<absl::optional<cc::SkottieFrameData>> GetFrameDataForAssets(
       const std::vector<scoped_refptr<ImageAsset>>& assets,
       float timestamp) {
+    // The timestamp for a given frame is not guaranteed to be the same for each
+    // asset per Skottie's API. Apply jitter to ensure the provider handles this
+    // correctly.
+    static constexpr float kTimestampJitter = 0.01f;
+    bool add_jitter = false;
     std::vector<absl::optional<cc::SkottieFrameData>> all_frame_data;
     for (const scoped_refptr<ImageAsset>& asset : assets) {
+      float jitter = add_jitter ? kTimestampJitter : 0.f;
       all_frame_data.push_back(
-          asset->GetFrameData(timestamp, kTestScaleFactor));
+          asset->GetFrameData(timestamp + jitter, kTestScaleFactor));
+      add_jitter = !add_jitter;
     }
     return all_frame_data;
   }

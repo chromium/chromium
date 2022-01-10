@@ -39,18 +39,14 @@ class ASH_EXPORT AmbientAnimationPhotoProvider
       const base::FilePath& resource_path) override;
 
  private:
-  static constexpr float kAnimationTimestampInvalid = -1.f;
-
   class DynamicImageAssetImpl;
 
-  void OnAnimationTimestampUpdated(float new_timestamp);
+  void RefreshDynamicImageAssets();
 
   // Unowned pointers. Must outlive the |AmbientAnimationPhotoProvider|.
   const AmbientAnimationStaticResources* const static_resources_;
   const AmbientBackendModel* const backend_model_;
 
-  // Last animation frame timestamp that was observed.
-  float last_observed_animation_timestamp_ = kAnimationTimestampInvalid;
   std::vector<scoped_refptr<DynamicImageAssetImpl>> dynamic_assets_;
   base::WeakPtrFactory<AmbientAnimationPhotoProvider> weak_factory_;
 };

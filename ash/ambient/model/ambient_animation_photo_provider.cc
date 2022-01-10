@@ -50,7 +50,7 @@ class StaticImageAssetImpl : public cc::SkottieFrameDataProvider::ImageAsset {
  public:
   StaticImageAssetImpl(base::StringPiece asset_id,
                        const AmbientAnimationStaticResources* static_resources)
-      : asset_id_(std::string(asset_id)), static_resources_(static_resources) {
+      : asset_id_(asset_id), static_resources_(static_resources) {
     DCHECK(!ambient::util::IsDynamicLottieAsset(asset_id_));
     DCHECK(static_resources_);
   }
@@ -67,6 +67,7 @@ class StaticImageAssetImpl : public cc::SkottieFrameDataProvider::ImageAsset {
     gfx::ImageSkia image = static_resources_->GetStaticImageAsset(asset_id_);
     DCHECK(!image.isNull())
         << "Static image asset " << asset_id_ << " is unknown.";
+    DVLOG(1) << "Returning static asset " << asset_id_;
     return BuildSkottieFrameData(image, scale_factor);
   }
 
@@ -85,12 +86,18 @@ class StaticImageAssetImpl : public cc::SkottieFrameDataProvider::ImageAsset {
 class AmbientAnimationPhotoProvider::DynamicImageAssetImpl
     : public cc::SkottieFrameDataProvider::ImageAsset {
  public:
-  using AnimationTimestampCallback =
-      base::RepeatingCallback<void(float new_timestamp)>;
-
-  explicit DynamicImageAssetImpl(AnimationTimestampCallback timestamp_cb)
-      : timestamp_cb_(std::move(timestamp_cb)) {
-    DCHECK(timestamp_cb_);
+  // |refresh_image_cb| is invoked whenever an asset detects a new animation
+  // cycle has started and it doesn't have a new image assigned to it yet. In
+  // practice, there may be multiple dynamic assets in an animation. So the
+  // first asset that detects a new animation cycle (which is arbitrary), will
+  // trigger a refresh and all of the dynamic assets will be assigned a new
+  // image when the callback is run. That is to say, for each animation cycle,
+  // the refresh callback will be run exactly once regardless of the number of
+  // frames in a cycle or dynamic assets in the animation.
+  DynamicImageAssetImpl(base::StringPiece asset_id,
+                        base::RepeatingClosure refresh_image_cb)
+      : asset_id_(asset_id), refresh_image_cb_(std::move(refresh_image_cb)) {
+    DCHECK(refresh_image_cb_);
   }
 
   void AssignNewImage(gfx::ImageSkia image) {
@@ -100,26 +107,42 @@ class AmbientAnimationPhotoProvider::DynamicImageAssetImpl
 
   absl::optional<cc::SkottieFrameData> GetFrameData(float t, float scale_factor)
       override {
-    // Run the callback first with the new animation timestamp to see if the
-    // provider will assign this asset a new image.
-    timestamp_cb_.Run(t);
-    // In practice, |new_image_| will only be non-null at the start of each
-    // animation cycle. For all other frames, return nullopt (no update).
-    if (new_image_.isNull())
+    DVLOG(4) << "GetFrameData for asset " << asset_id_ << " time " << t;
+    bool is_first_rendered_frame =
+        last_observed_animation_timestamp_ == kAnimationTimestampInvalid;
+    // The animation frame timestamp units are dictated by Skottie and are
+    // irrelevant here. The timestamp for each individual asset is monotonically
+    // increasing until the animation loops back to the beginning, indicating
+    // the start of a new cycle.
+    bool is_starting_new_cycle = t < last_observed_animation_timestamp_;
+    last_observed_animation_timestamp_ = t;
+    if (!is_first_rendered_frame && !is_starting_new_cycle) {
+      DVLOG(4) << "No update required to dynamic asset at this time";
       return absl::nullopt;
+    }
 
+    if (new_image_.isNull())
+      refresh_image_cb_.Run();
+
+    DCHECK(!new_image_.isNull());
     cc::SkottieFrameData frame_data =
         BuildSkottieFrameData(new_image_, scale_factor);
     new_image_ = gfx::ImageSkia();
+    DVLOG(4) << "Returning new image for dynamic asset " << asset_id_;
     return frame_data;
   }
 
  private:
+  static constexpr float kAnimationTimestampInvalid = -1.f;
+
   // Private destructor since cc::SkottieFrameDataProvider::ImageAsset is a
   // ref-counted API.
   ~DynamicImageAssetImpl() override = default;
 
-  const AnimationTimestampCallback timestamp_cb_;
+  const std::string asset_id_;
+  const base::RepeatingClosure refresh_image_cb_;
+  // Last animation frame timestamp that was observed.
+  float last_observed_animation_timestamp_ = kAnimationTimestampInvalid;
   gfx::ImageSkia new_image_;
 };
 
@@ -143,9 +166,10 @@ AmbientAnimationPhotoProvider::LoadImageAsset(
   // when the animation is initially loaded. So the set of assets does not
   // change once the animation starts rendering.
   if (ambient::util::IsDynamicLottieAsset(asset_id)) {
-    dynamic_assets_.push_back(
-        base::MakeRefCounted<DynamicImageAssetImpl>(base::BindRepeating(
-            &AmbientAnimationPhotoProvider::OnAnimationTimestampUpdated,
+    dynamic_assets_.push_back(base::MakeRefCounted<DynamicImageAssetImpl>(
+        asset_id,
+        base::BindRepeating(
+            &AmbientAnimationPhotoProvider::RefreshDynamicImageAssets,
             // In practice, this could be Unretained since the provider will
             // outlive the assets in the lottie::Animation class. But use a
             // WeakPtr here just to put the reader's mind at ease. If the
@@ -162,30 +186,8 @@ AmbientAnimationPhotoProvider::LoadImageAsset(
   }
 }
 
-// If there are N dynamic assets in the animation, then for each rendered frame
-// with timestamp T, OnAnimationTimestampUpdate(T) will be called N times. If a
-// new animation cycle is detected on the first call to
-// OnAnimationTimestampUpdate(T), the provider will pull a new set of images
-// from the model and assign them to all of the dynamic assets. The subsequent
-// N - 1 calls to OnAnimationTimestampUpdate(T) will be no-ops. That is to
-// say, for each animation cycle, this method will only trigger a refresh one
-// time regardless of the number of frames in a cycle or dynamic assets in the
-// animation.
-void AmbientAnimationPhotoProvider::OnAnimationTimestampUpdated(
-    float new_timestamp) {
-  bool is_first_rendered_frame =
-      last_observed_animation_timestamp_ == kAnimationTimestampInvalid;
-  // The animation frame timestamp units are dictated by Skottie and are
-  // irrelevant here. The timestamp is monotonically increasing until the
-  // animation loops back to the beginning, indicating the start of a new cycle.
-  bool is_starting_new_cycle =
-      new_timestamp < last_observed_animation_timestamp_;
-  last_observed_animation_timestamp_ = new_timestamp;
-  if (!is_first_rendered_frame && !is_starting_new_cycle) {
-    DVLOG(4) << "No update required to dynamic assets at this time";
-    return;
-  }
-
+void AmbientAnimationPhotoProvider::RefreshDynamicImageAssets() {
+  DVLOG(4) << __func__;
   const base::circular_deque<PhotoWithDetails>& all_available_topics =
       backend_model_->all_decoded_topics();
   DCHECK(!all_available_topics.empty())
