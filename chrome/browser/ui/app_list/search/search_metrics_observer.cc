@@ -151,7 +151,7 @@ void SearchMetricsObserver::OnLaunch(Location location,
     }
   }
   const std::string histogram_name = base::StrCat(
-      {kHistogramPrefix, GetViewString(location, query), ".Index"});
+      {kHistogramPrefix, GetViewString(location, query), ".LaunchIndex"});
   base::UmaHistogramExactLinear(histogram_name, launched_index, 50);
 }
 
