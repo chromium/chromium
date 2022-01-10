@@ -279,9 +279,13 @@ void SearchResultRanker::ScoreZeroStateItem(
     Mixer::SortData* result,
     RankingItemType type,
     base::flat_map<RankingItemType, int>* type_counts) const {
-  DCHECK(type == RankingItemType::kOmniboxGeneric ||
-         type == RankingItemType::kZeroStateFile ||
-         type == RankingItemType::kDriveQuickAccess);
+  if (type != RankingItemType::kOmniboxGeneric &&
+      type != RankingItemType::kZeroStateFile &&
+      type != RankingItemType::kDriveQuickAccess) {
+    // Sometimes search results are scored as zero-state results due to timing
+    // issues. Early-exit if that is the case. See crbug.com/1282329.
+    return;
+  }
 
   const float item_score =
       1.0f -
