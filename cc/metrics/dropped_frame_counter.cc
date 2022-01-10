@@ -75,6 +75,11 @@ double SlidingWindowHistogram::GetPercentDroppedFrameVariance() const {
   for (size_t i = 0; i < bin_count; ++i) {
     sum += histogram_bins_[i] * i;
   }
+
+  // Don't calculate if count is 1 or less. Avoid divide by zero.
+  if (total_count_ <= 1)
+    return 0;
+
   double average = sum / total_count_;
   sum = 0;  // Sum is reset to be used for variance calculation
 
@@ -85,8 +90,6 @@ double SlidingWindowHistogram::GetPercentDroppedFrameVariance() const {
     // histogram_bins_[i] times.
   }
 
-  if (total_count_ <= 1)
-    return 0;
   return sum / (total_count_ - 1);
 }
 
