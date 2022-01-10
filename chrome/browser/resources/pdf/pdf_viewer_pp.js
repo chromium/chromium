@@ -15,6 +15,7 @@ import {html} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.
 import {BrowserApi} from './browser_api.js';
 import {FittingType} from './constants.js';
 import {MessageData, PluginController, PrintPreviewParams} from './controller.js';
+import {ViewerPageIndicatorElement} from './elements/viewer-page-indicator.js';
 import {ViewerZoomToolbarElement} from './elements/viewer-zoom-toolbar.js';
 import {DeserializeKeyEvent, LoadState, SerializeKeyEvent} from './pdf_scripting_api.js';
 import {PDFViewerBaseElement} from './pdf_viewer_base.js';
@@ -65,6 +66,15 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
   }
 
   /**
+   * @return {!ViewerPageIndicatorElement}
+   * @private
+   */
+  getPageIndicator_() {
+    return /** @type {!ViewerPageIndicatorElement} */ (
+        this.$$('#page-indicator'));
+  }
+
+  /**
    * @return {!ViewerZoomToolbarElement}
    * @private
    */
@@ -82,6 +92,7 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
     /** @private {?PluginController} */
     this.pluginController_ = PluginController.getInstance();
 
+    this.getPageIndicator_().setViewport(this.viewport);
     this.toolbarManager_ = new ToolbarManager(window, this.getZoomToolbar_());
   }
 
@@ -165,7 +176,7 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
 
     // Update the page indicator.
     const visiblePage = this.viewport.getMostVisiblePage();
-    const pageIndicator = this.$$('#page-indicator');
+    const pageIndicator = this.getPageIndicator_();
     const lastIndex = pageIndicator.index;
     pageIndicator.index = visiblePage;
     if (this.documentDimensions.pageDimensions.length > 1 &&
@@ -235,7 +246,7 @@ class PDFViewerPPElement extends PDFViewerBaseElement {
         // Stash the scroll location so that it can be restored when the new
         // document is loaded.
         this.lastViewportPosition = this.viewport.position;
-        this.$$('#page-indicator').pageLabels = messageData.pageNumbers;
+        this.getPageIndicator_().pageLabels = messageData.pageNumbers;
 
         this.pluginController_.resetPrintPreviewMode(messageData);
         return true;

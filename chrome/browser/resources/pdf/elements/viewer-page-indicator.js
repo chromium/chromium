@@ -6,6 +6,8 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {isRTL} from 'chrome://resources/js/util.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {Viewport} from '../viewport.js';
+
 export class ViewerPageIndicatorElement extends PolymerElement {
   static get is() {
     return 'viewer-page-indicator';
@@ -27,8 +29,12 @@ export class ViewerPageIndicatorElement extends PolymerElement {
 
   constructor() {
     super();
+
     /** @type {number|undefined} */
     this.timerId = undefined;
+
+    /** @private @type {?Viewport} */
+    this.viewport_ = null;
   }
 
   /** @override */
@@ -38,6 +44,11 @@ export class ViewerPageIndicatorElement extends PolymerElement {
     window.addEventListener('scroll', function() {
       requestAnimationFrame(callback);
     });
+  }
+
+  /** @param {!Viewport} viewport */
+  setViewport(viewport) {
+    this.viewport_ = viewport;
   }
 
   /** @private */
