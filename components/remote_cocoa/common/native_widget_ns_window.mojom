@@ -8,6 +8,7 @@ import "components/remote_cocoa/common/select_file_dialog.mojom";
 import "mojo/public/mojom/base/string16.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "ui/base/mojom/ui_base_types.mojom";
+import "ui/events/mojom/event_constants.mojom";
 import "ui/gfx/geometry/mojom/geometry.mojom";
 import "ui/gfx/mojom/ca_layer_params.mojom";
 
@@ -225,6 +226,9 @@ interface NativeWidgetNSWindow {
 
   // Redispatch a keyboard event using the widget's window's CommandDispatcher.
   RedispatchKeyEvent(array<uint8> native_event_data);
+
+  // Enable or disable this widget's local event monitor.
+  SetLocalEventMonitorEnabled(bool enabled);
 
   // Add the overlay NSView for a PWA with window controls overlay
   // display override given a |overlay_type|.

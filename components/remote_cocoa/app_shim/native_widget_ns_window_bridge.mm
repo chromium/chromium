@@ -313,12 +313,15 @@ NativeWidgetNSWindowBridge::NativeWidgetNSWindowBridge(
     : id_(bridged_native_widget_id),
       host_(host),
       host_helper_(host_helper),
-      text_input_host_(text_input_host) {
+      text_input_host_(text_input_host),
+      ns_weak_factory_(this) {
   DCHECK(GetIdToWidgetImplMap().find(id_) == GetIdToWidgetImplMap().end());
   GetIdToWidgetImplMap().insert(std::make_pair(id_, this));
 }
 
 NativeWidgetNSWindowBridge::~NativeWidgetNSWindowBridge() {
+  SetLocalEventMonitorEnabled(false);
+  DCHECK(!key_down_event_monitor_);
   GetPendingWindowTitleMap().erase(window_.get());
   // The delegate should be cleared already. Note this enforces the precondition
   // that -[NSWindow close] is invoked on the hosted window before the
@@ -794,6 +797,38 @@ void NativeWidgetNSWindowBridge::ReleaseCapture() {
 
 bool NativeWidgetNSWindowBridge::HasCapture() {
   return mouse_capture_ && mouse_capture_->IsActive();
+}
+
+void NativeWidgetNSWindowBridge::SetLocalEventMonitorEnabled(bool enabled) {
+  if (enabled) {
+    // Create the event montitor if it does not exist yet.
+    if (key_down_event_monitor_)
+      return;
+
+    // Capture a WeakPtr via NSObject. This allows the block to detect another
+    // event monitor for the same event deleting `this`.
+    WeakPtrNSObject* handle = ns_weak_factory_.handle();
+    auto block = ^NSEvent*(NSEvent* event) {
+      auto* bridge =
+          ui::WeakPtrNSObjectFactory<NativeWidgetNSWindowBridge>::Get(handle);
+      if (!bridge)
+        return event;
+      std::unique_ptr<ui::Event> ui_event = ui::EventFromNative(event);
+      bool event_handled = false;
+      bridge->host_->DispatchMonitorEvent(std::move(ui_event), &event_handled);
+      return event_handled ? nil : event;
+    };
+    key_down_event_monitor_ =
+        [NSEvent addLocalMonitorForEventsMatchingMask:NSKeyDownMask
+                                              handler:block];
+  } else {
+    // Destroy the event monitor if it exists.
+    if (!key_down_event_monitor_)
+      return;
+
+    [NSEvent removeMonitor:key_down_event_monitor_];
+    key_down_event_monitor_ = nil;
+  }
 }
 
 bool NativeWidgetNSWindowBridge::HasWindowRestorationData() {

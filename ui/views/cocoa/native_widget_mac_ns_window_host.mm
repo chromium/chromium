@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/containers/contains.h"
 #include "base/mac/foundation_util.h"
 #include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
@@ -107,6 +108,11 @@ class BridgedNativeWidgetHostDummy
     ui::KeyEvent* key_event = event->AsKeyEvent();
     bool event_swallowed = false;
     std::move(callback).Run(event_swallowed, key_event->handled());
+  }
+  void DispatchMonitorEvent(std::unique_ptr<ui::Event> event,
+                            DispatchMonitorEventCallback callback) override {
+    bool event_handled = false;
+    std::move(callback).Run(event_handled);
   }
   void GetHasMenuController(GetHasMenuControllerCallback callback) override {
     bool has_menu_controller = false;
@@ -238,7 +244,8 @@ NativeWidgetMacNSWindowHost::NativeWidgetMacNSWindowHost(NativeWidgetMac* owner)
       native_widget_mac_(owner),
       root_view_id_(remote_cocoa::GetNewNSViewId()),
       accessibility_focus_overrider_(this),
-      text_input_host_(new TextInputHost(this)) {
+      text_input_host_(new TextInputHost(this)),
+      weak_factory_(this) {
   DCHECK(GetIdToWidgetHostImplMap().find(widget_id_) ==
          GetIdToWidgetHostImplMap().end());
   GetIdToWidgetHostImplMap().emplace(widget_id_, this);
@@ -741,6 +748,38 @@ void NativeWidgetMacNSWindowHost::UpdateLocalWindowFrame(
                           animate:NO];
 }
 
+std::unique_ptr<NativeWidgetMacEventMonitor>
+NativeWidgetMacNSWindowHost::AddEventMonitor(
+    NativeWidgetMacEventMonitor::Client* client) {
+  // Enable the local event monitor if this is the first registered monitor.
+  if (event_monitors_.empty())
+    GetNSWindowMojo()->SetLocalEventMonitorEnabled(true);
+
+  // Add the new monitor to `event_monitors_`.
+  auto* monitor = new NativeWidgetMacEventMonitor(client);
+  event_monitors_.push_back(monitor);
+
+  // Set up `monitor`'s remove closure to remove it from `event_monitors_`.
+  auto remove_lambda = [](base::WeakPtr<NativeWidgetMacNSWindowHost> weak_this,
+                          NativeWidgetMacEventMonitor* monitor) {
+    if (!weak_this)
+      return;
+    auto found = std::find(weak_this->event_monitors_.begin(),
+                           weak_this->event_monitors_.end(), monitor);
+    CHECK(found != weak_this->event_monitors_.end());
+    weak_this->event_monitors_.erase(found);
+
+    // If this was the last monitor to be removed, disable the local
+    // event monitor.
+    if (weak_this->event_monitors_.empty())
+      weak_this->GetNSWindowMojo()->SetLocalEventMonitorEnabled(false);
+  };
+  monitor->remove_closure_runner_.ReplaceClosure(
+      base::BindOnce(remove_lambda, weak_factory_.GetWeakPtr(), monitor));
+
+  return base::WrapUnique<NativeWidgetMacEventMonitor>(monitor);
+}
+
 // static
 NSView* NativeWidgetMacNSWindowHost::GetGlobalCaptureView() {
   // TODO(ccameron): This will not work across process boundaries.
@@ -877,6 +916,31 @@ bool NativeWidgetMacNSWindowHost::DispatchKeyEventToMenuControllerRemote(
     bool* event_handled) {
   *event_swallowed = DispatchKeyEventToMenuController(event->AsKeyEvent());
   *event_handled = event->handled();
+  return true;
+}
+
+bool NativeWidgetMacNSWindowHost::DispatchMonitorEvent(
+    std::unique_ptr<ui::Event> event,
+    bool* event_handled) {
+  // The calls to NativeWidgetMacEventMonitorOnEvent can add or remove monitors,
+  // so take a snapshot of `event_monitors_` before making any calls.
+  auto event_monitors_snapshot = event_monitors_;
+
+  // The calls to NativeWidgetMacEventMonitorOnEvent can delete `this`. Use
+  // `weak_this` to detect that.
+  auto weak_this = weak_factory_.GetWeakPtr();
+
+  *event_handled = false;
+  for (auto* event_monitor : event_monitors_snapshot) {
+    // Ensure `event_monitor` was not removed from `event_monitors_` by a
+    // previous call to NativeWidgetMacEventMonitorOnEvent.
+    if (!base::Contains(event_monitors_, event_monitor))
+      continue;
+    event_monitor->client_->NativeWidgetMacEventMonitorOnEvent(event.get(),
+                                                               event_handled);
+    if (!weak_this)
+      return true;
+  }
   return true;
 }
 
@@ -1283,6 +1347,14 @@ void NativeWidgetMacNSWindowHost::DispatchKeyEventToMenuControllerRemote(
   ui::KeyEvent* key_event = event->AsKeyEvent();
   bool event_swallowed = DispatchKeyEventToMenuController(key_event);
   std::move(callback).Run(event_swallowed, key_event->handled());
+}
+
+void NativeWidgetMacNSWindowHost::DispatchMonitorEvent(
+    std::unique_ptr<ui::Event> event,
+    DispatchMonitorEventCallback callback) {
+  bool event_handled = false;
+  DispatchMonitorEvent(std::move(event), &event_handled);
+  std::move(callback).Run(event_handled);
 }
 
 void NativeWidgetMacNSWindowHost::GetHasMenuController(

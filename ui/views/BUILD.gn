@@ -609,6 +609,8 @@ component("views") {
       "accessibility/ax_virtual_view_mac.mm",
       "cocoa/drag_drop_client_mac.h",
       "cocoa/drag_drop_client_mac.mm",
+      "cocoa/native_widget_mac_event_monitor.h",
+      "cocoa/native_widget_mac_event_monitor.mm",
       "cocoa/native_widget_mac_ns_window_host.mm",
       "cocoa/text_input_host.h",
       "cocoa/text_input_host.mm",

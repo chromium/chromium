@@ -8,6 +8,7 @@
 
 #include "ui/events/event.h"
 #include "ui/events/event_utils.h"
+#include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 #include "ui/views/controls/menu/menu_controller.h"
 #include "ui/views/widget/widget.h"
 
@@ -15,35 +16,25 @@ namespace views {
 
 MenuPreTargetHandlerMac::MenuPreTargetHandlerMac(MenuController* controller,
                                                  Widget* widget)
-    : controller_(controller), factory_(this) {
+    : controller_(controller) {
   gfx::NativeWindow target_window = widget->GetNativeWindow();
-
-  // Capture a WeakPtr via NSObject. This allows the block to detect another
-  // event monitor for the same event deleting |this|.
-  WeakPtrNSObject* handle = factory_.handle();
-
-  auto block = ^NSEvent*(NSEvent* event) {
-    if (!ui::WeakPtrNSObjectFactory<MenuPreTargetHandlerMac>::Get(handle))
-      return event;
-
-    if (!target_window || [event window] == target_window.GetNativeNSWindow()) {
-      std::unique_ptr<ui::Event> ui_event = ui::EventFromNative(event);
-      if (ui_event && ui_event->IsKeyEvent() &&
-          controller_->OnWillDispatchKeyEvent(ui_event->AsKeyEvent()) !=
-              ui::POST_DISPATCH_PERFORM_DEFAULT) {
-        // Return nil so the event will not proceed through normal dispatch.
-        return nil;
-      }
-    }
-    return event;
-  };
-
-  monitor_ = [NSEvent addLocalMonitorForEventsMatchingMask:NSKeyDownMask
-                                                   handler:block];
+  auto* host =
+      views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(target_window);
+  CHECK(host);
+  monitor_ = host->AddEventMonitor(this);
 }
 
-MenuPreTargetHandlerMac::~MenuPreTargetHandlerMac() {
-  [NSEvent removeMonitor:monitor_];
+MenuPreTargetHandlerMac::~MenuPreTargetHandlerMac() = default;
+
+void MenuPreTargetHandlerMac::NativeWidgetMacEventMonitorOnEvent(
+    ui::Event* ui_event,
+    bool* was_handled) {
+  if (*was_handled)
+    return;
+  if (!ui_event->IsKeyEvent())
+    return;
+  *was_handled = controller_->OnWillDispatchKeyEvent(ui_event->AsKeyEvent()) !=
+                 ui::POST_DISPATCH_PERFORM_DEFAULT;
 }
 
 // static

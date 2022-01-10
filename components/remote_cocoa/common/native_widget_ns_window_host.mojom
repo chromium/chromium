@@ -89,6 +89,11 @@ interface NativeWidgetNSWindowHost {
   DispatchKeyEventToMenuControllerRemote(ui.mojom.Event event) =>
       (bool event_swallowed, bool event_handled);
 
+  // Called when the NSEvent monitor observes an event. If `event_handled` is
+  // true, then do not continue dispatching the event.
+  [Sync]
+  DispatchMonitorEvent(ui.mojom.Event event) => (bool event_handled);
+
   // Synchronously return in  |has_menu_controller| whether or not a menu
   // controller exists for this widget.
   [Sync]
