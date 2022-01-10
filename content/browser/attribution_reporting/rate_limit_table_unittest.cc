@@ -50,7 +50,7 @@ class RateLimitTableTest : public testing::Test {
                              .SetImpressionId(impression_id)
                              .SetSourceType(source_type)
                              .Build())
-        .SetConversionTime(base::Time::Now())
+        .SetTriggerTime(base::Time::Now())
         .SetReportTime(base::Time::Now())
         .Build();
   }

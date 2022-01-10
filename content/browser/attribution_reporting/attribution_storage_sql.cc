@@ -458,12 +458,12 @@ std::vector<DeactivatedSource> AttributionStorageSql::StoreSource(
     uint64_t event_source_trigger_data =
         delegate_->GetFakeEventSourceTriggerData();
 
-    const base::Time conversion_time = source.impression_time();
+    const base::Time trigger_time = source.impression_time();
     const base::Time report_time =
-        delegate_->GetReportTime(source, conversion_time);
+        delegate_->GetReportTime(source, trigger_time);
 
     EventAttributionReport report(source, event_source_trigger_data,
-                                  /*conversion_time=*/conversion_time,
+                                  /*trigger_time=*/trigger_time,
                                   /*report_time=*/report_time,
                                   /*priority=*/0,
                                   /*external_report_id=*/
@@ -660,7 +660,7 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
                                /*trigger_time=*/current_time);
   EventAttributionReport report(std::move(source_to_attribute->source),
                                 trigger_data,
-                                /*conversion_time=*/current_time,
+                                /*trigger_time=*/current_time,
                                 /*report_time=*/report_time, trigger.priority(),
                                 /*external_report_id=*/delegate_->NewReportID(),
                                 /*report_id=*/absl::nullopt);
@@ -800,7 +800,7 @@ bool AttributionStorageSql::StoreReport(const EventAttributionReport& report,
       db_->GetCachedStatement(SQL_FROM_HERE, kStoreReportSql));
   store_report_statement.BindInt64(0, *source_id);
   store_report_statement.BindInt64(1, SerializeUint64(report.trigger_data()));
-  store_report_statement.BindTime(2, report.conversion_time());
+  store_report_statement.BindTime(2, report.trigger_time());
   store_report_statement.BindTime(3, report.report_time());
   store_report_statement.BindInt64(4, report.priority());
   store_report_statement.BindString(
@@ -815,7 +815,7 @@ namespace {
 absl::optional<EventAttributionReport> ReadReportFromStatement(
     sql::Statement& statement) {
   uint64_t trigger_data = DeserializeUint64(statement.ColumnInt64(0));
-  base::Time conversion_time = statement.ColumnTime(1);
+  base::Time trigger_time = statement.ColumnTime(1);
   base::Time report_time = statement.ColumnTime(2);
   EventAttributionReport::Id conversion_id(statement.ColumnInt64(3));
   int64_t conversion_priority = statement.ColumnInt64(4);
@@ -856,9 +856,9 @@ absl::optional<EventAttributionReport> ReadReportFromStatement(
                         expiry_time, *source_type, attribution_source_priority,
                         *attribution_logic, source_id);
 
-  EventAttributionReport report(
-      std::move(source), trigger_data, conversion_time, report_time,
-      conversion_priority, std::move(external_report_id), conversion_id);
+  EventAttributionReport report(std::move(source), trigger_data, trigger_time,
+                                report_time, conversion_priority,
+                                std::move(external_report_id), conversion_id);
   report.set_failed_send_attempts(failed_send_attempts);
   return report;
 }

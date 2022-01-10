@@ -18,7 +18,7 @@ namespace {
 constexpr base::TimeDelta kDefaultExpiry = base::Days(30);
 
 EventAttributionReport GetReport(base::Time impression_time,
-                                 base::Time conversion_time,
+                                 base::Time trigger_time,
                                  base::TimeDelta expiry = kDefaultExpiry,
                                  StorableSource::SourceType source_type =
                                      StorableSource::SourceType::kNavigation) {
@@ -26,7 +26,7 @@ EventAttributionReport GetReport(base::Time impression_time,
                            .SetExpiry(expiry)
                            .SetSourceType(source_type)
                            .Build())
-      .SetConversionTime(conversion_time)
+      .SetTriggerTime(trigger_time)
       .Build();
 }
 
@@ -35,22 +35,21 @@ EventAttributionReport GetReport(base::Time impression_time,
 TEST(AttributionStorageDelegateImplTest, ImmediateConversion_FirstWindowUsed) {
   base::Time impression_time = base::Time::Now();
   const EventAttributionReport report =
-      GetReport(impression_time, /*conversion_time=*/impression_time);
+      GetReport(impression_time, /*trigger_time=*/impression_time);
   EXPECT_EQ(impression_time + base::Days(2),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.source(), report.conversion_time()));
+                report.source(), report.trigger_time()));
 }
 
 TEST(AttributionStorageDelegateImplTest,
      ConversionImmediatelyBeforeWindow_NextWindowUsed) {
   base::Time impression_time = base::Time::Now();
-  base::Time conversion_time =
-      impression_time + base::Days(2) - base::Minutes(1);
+  base::Time trigger_time = impression_time + base::Days(2) - base::Minutes(1);
   const EventAttributionReport report =
-      GetReport(impression_time, conversion_time);
+      GetReport(impression_time, trigger_time);
   EXPECT_EQ(impression_time + base::Days(7),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.source(), report.conversion_time()));
+                report.source(), report.trigger_time()));
 }
 
 TEST(AttributionStorageDelegateImplTest,
@@ -59,83 +58,79 @@ TEST(AttributionStorageDelegateImplTest,
 
   // The deadline for a window is 1 hour before the window. Use a time just
   // before the deadline.
-  base::Time conversion_time =
-      impression_time + base::Days(2) - base::Minutes(61);
+  base::Time trigger_time = impression_time + base::Days(2) - base::Minutes(61);
   const EventAttributionReport report =
-      GetReport(impression_time, conversion_time);
+      GetReport(impression_time, trigger_time);
   EXPECT_EQ(impression_time + base::Days(2),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.source(), report.conversion_time()));
+                report.source(), report.trigger_time()));
 }
 
 TEST(AttributionStorageDelegateImplTest,
      ImpressionExpiryBeforeTwoDayWindow_TwoDayWindowUsed) {
   base::Time impression_time = base::Time::Now();
-  base::Time conversion_time = impression_time + base::Hours(1);
+  base::Time trigger_time = impression_time + base::Hours(1);
 
   // Set the impression to expire before the two day window.
-  const EventAttributionReport report =
-      GetReport(impression_time, conversion_time,
-                /*expiry=*/base::Hours(2));
+  const EventAttributionReport report = GetReport(impression_time, trigger_time,
+                                                  /*expiry=*/base::Hours(2));
   EXPECT_EQ(impression_time + base::Days(2),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.source(), report.conversion_time()));
+                report.source(), report.trigger_time()));
 }
 
 TEST(AttributionStorageDelegateImplTest,
      ImpressionExpiryBeforeSevenDayWindow_ExpiryWindowUsed) {
   base::Time impression_time = base::Time::Now();
-  base::Time conversion_time = impression_time + base::Days(3);
+  base::Time trigger_time = impression_time + base::Days(3);
 
   // Set the impression to expire before the two day window.
-  const EventAttributionReport report =
-      GetReport(impression_time, conversion_time,
-                /*expiry=*/base::Days(4));
+  const EventAttributionReport report = GetReport(impression_time, trigger_time,
+                                                  /*expiry=*/base::Days(4));
 
   // The expiry window is reported one hour after expiry time.
   EXPECT_EQ(impression_time + base::Days(4) + base::Hours(1),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.source(), report.conversion_time()));
+                report.source(), report.trigger_time()));
 }
 
 TEST(AttributionStorageDelegateImplTest,
      ImpressionExpiryAfterSevenDayWindow_ExpiryWindowUsed) {
   base::Time impression_time = base::Time::Now();
-  base::Time conversion_time = impression_time + base::Days(7);
+  base::Time trigger_time = impression_time + base::Days(7);
 
   // Set the impression to expire before the two day window.
-  const EventAttributionReport report =
-      GetReport(impression_time, conversion_time,
-                /*expiry=*/base::Days(9));
+  const EventAttributionReport report = GetReport(impression_time, trigger_time,
+                                                  /*expiry=*/base::Days(9));
 
   // The expiry window is reported one hour after expiry time.
   EXPECT_EQ(impression_time + base::Days(9) + base::Hours(1),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.source(), report.conversion_time()));
+                report.source(), report.trigger_time()));
 }
 
 TEST(AttributionStorageDelegateImplTest,
      SourceTypeEvent_ExpiryLessThanTwoDays_TwoDaysUsed) {
   base::Time impression_time = base::Time::Now();
-  base::Time conversion_time = impression_time + base::Days(3);
+  base::Time trigger_time = impression_time + base::Days(3);
   const EventAttributionReport report =
-      GetReport(impression_time, conversion_time,
+      GetReport(impression_time, trigger_time,
                 /*expiry=*/base::Days(1), StorableSource::SourceType::kEvent);
   EXPECT_EQ(impression_time + base::Days(2) + base::Hours(1),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.source(), report.conversion_time()));
+                report.source(), report.trigger_time()));
 }
 
 TEST(AttributionStorageDelegateImplTest,
      SourceTypeEvent_ExpiryGreaterThanTwoDays_ExpiryUsed) {
   base::Time impression_time = base::Time::Now();
-  base::Time conversion_time = impression_time + base::Days(3);
+  base::Time trigger_time = impression_time + base::Days(3);
   const EventAttributionReport report =
-      GetReport(impression_time, conversion_time,
+      GetReport(impression_time, trigger_time,
                 /*expiry=*/base::Days(4), StorableSource::SourceType::kEvent);
   EXPECT_EQ(impression_time + base::Days(4) + base::Hours(1),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.source(), report.conversion_time()));
+                report.source(), report.trigger_time()));
 }
 
 TEST(AttributionStorageDelegateImplTest, NewReportID_IsValidGUID) {

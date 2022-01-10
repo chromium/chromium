@@ -125,7 +125,7 @@ bool RateLimitTable::AddRateLimit(sql::Database* db,
                 SerializeOrigin(report.source().impression_origin()),
                 report.source().ConversionDestination().Serialize(),
                 SerializeOrigin(report.source().conversion_origin()),
-                report.conversion_time(),
+                report.trigger_time(),
                 // Rate limits for the event-level API do not have a bucket.
                 /*bucket=*/"",
                 // By supplying 1 here, rate limits for the event-level API act

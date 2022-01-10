@@ -308,7 +308,7 @@ class ReportBuilder {
 
   ReportBuilder& SetTriggerData(uint64_t trigger_data) WARN_UNUSED_RESULT;
 
-  ReportBuilder& SetConversionTime(base::Time time) WARN_UNUSED_RESULT;
+  ReportBuilder& SetTriggerTime(base::Time time) WARN_UNUSED_RESULT;
 
   ReportBuilder& SetReportTime(base::Time time) WARN_UNUSED_RESULT;
 
@@ -325,7 +325,7 @@ class ReportBuilder {
  private:
   StorableSource source_;
   uint64_t trigger_data_ = 0;
-  base::Time conversion_time_;
+  base::Time trigger_time_;
   base::Time report_time_;
   int64_t priority_ = 0;
   base::GUID external_report_id_;

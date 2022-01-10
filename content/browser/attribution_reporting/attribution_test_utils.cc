@@ -293,8 +293,8 @@ ReportBuilder& ReportBuilder::SetTriggerData(uint64_t trigger_data) {
   return *this;
 }
 
-ReportBuilder& ReportBuilder::SetConversionTime(base::Time time) {
-  conversion_time_ = time;
+ReportBuilder& ReportBuilder::SetTriggerTime(base::Time time) {
+  trigger_time_ = time;
   return *this;
 }
 
@@ -321,7 +321,7 @@ ReportBuilder& ReportBuilder::SetReportId(
 }
 
 EventAttributionReport ReportBuilder::Build() const {
-  return EventAttributionReport(source_, trigger_data_, conversion_time_,
+  return EventAttributionReport(source_, trigger_data_, trigger_time_,
                                 report_time_, priority_, external_report_id_,
                                 report_id_);
 }
@@ -347,8 +347,8 @@ bool operator==(const EventAttributionReport& a,
                 const EventAttributionReport& b) {
   const auto tie = [](const EventAttributionReport& conversion) {
     return std::make_tuple(conversion.source(), conversion.trigger_data(),
-                           conversion.conversion_time(),
-                           conversion.report_time(), conversion.priority(),
+                           conversion.trigger_time(), conversion.report_time(),
+                           conversion.priority(),
                            conversion.external_report_id(),
                            conversion.failed_send_attempts());
   };
@@ -502,7 +502,7 @@ std::ostream& operator<<(std::ostream& out,
                          const EventAttributionReport& report) {
   return out << "{source=" << report.source()
              << ",trigger_data=" << report.trigger_data()
-             << ",conversion_time=" << report.conversion_time()
+             << ",trigger_time=" << report.trigger_time()
              << ",report_time=" << report.report_time()
              << ",priority=" << report.priority()
              << ",external_report_id=" << report.external_report_id()

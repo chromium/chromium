@@ -18,14 +18,14 @@ namespace content {
 
 EventAttributionReport::EventAttributionReport(StorableSource source,
                                                uint64_t trigger_data,
-                                               base::Time conversion_time,
+                                               base::Time trigger_time,
                                                base::Time report_time,
                                                int64_t priority,
                                                base::GUID external_report_id,
                                                absl::optional<Id> report_id)
     : source_(std::move(source)),
       trigger_data_(trigger_data),
-      conversion_time_(conversion_time),
+      trigger_time_(trigger_time),
       report_time_(report_time),
       priority_(priority),
       external_report_id_(std::move(external_report_id)),

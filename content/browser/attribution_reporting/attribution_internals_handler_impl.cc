@@ -84,7 +84,7 @@ mojom::WebUIAttributionReportPtr WebUIAttributionReport(
   return mojom::WebUIAttributionReport::New(
       report.report_id(), report.source().ConversionDestination().Serialize(),
       report.ReportURL(),
-      /*trigger_time=*/report.conversion_time().ToJsTime(),
+      /*trigger_time=*/report.trigger_time().ToJsTime(),
       /*report_time=*/report.report_time().ToJsTime(), report.priority(),
       report.ReportBody(/*pretty_print=*/true),
       /*attributed_truthfully=*/report.source().attribution_logic() ==

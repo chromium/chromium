@@ -31,7 +31,7 @@ class CONTENT_EXPORT EventAttributionReport {
   // The conversion_id may not be set for a conversion report.
   EventAttributionReport(StorableSource source,
                          uint64_t trigger_data,
-                         base::Time conversion_time,
+                         base::Time trigger_time,
                          base::Time report_time,
                          int64_t priority,
                          base::GUID external_report_id,
@@ -52,7 +52,7 @@ class CONTENT_EXPORT EventAttributionReport {
 
   uint64_t trigger_data() const { return trigger_data_; }
 
-  base::Time conversion_time() const { return conversion_time_; }
+  base::Time trigger_time() const { return trigger_time_; }
 
   base::Time report_time() const { return report_time_; }
 
@@ -78,8 +78,8 @@ class CONTENT_EXPORT EventAttributionReport {
   // the source type, this contains the associated data in the trigger redirect.
   uint64_t trigger_data_;
 
-  // The time the conversion occurred.
-  base::Time conversion_time_;
+  // The time the trigger occurred.
+  base::Time trigger_time_;
 
   // The time this conversion report should be sent.
   base::Time report_time_;

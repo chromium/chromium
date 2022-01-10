@@ -13,7 +13,7 @@
 namespace content {
 
 base::Time ComputeReportTime(const StorableSource& impression,
-                             base::Time conversion_time) {
+                             base::Time trigger_time) {
   base::TimeDelta expiry_deadline =
       impression.expiry_time() - impression.impression_time();
 
@@ -53,12 +53,12 @@ base::Time ComputeReportTime(const StorableSource& impression,
 
   base::TimeDelta deadline_to_use = expiry_deadline;
 
-  // Given a conversion that happened at `conversion_time`, find the first
+  // Given a conversion that happened at `trigger_time`, find the first
   // applicable reporting window this conversion should be reported at.
   for (base::TimeDelta early_deadline : early_deadlines) {
     // If this window is valid for the conversion, use it.
-    // |conversion_time| is roughly ~now.
-    if (impression.impression_time() + early_deadline >= conversion_time &&
+    // |trigger_time| is roughly ~now.
+    if (impression.impression_time() + early_deadline >= trigger_time &&
         early_deadline < deadline_to_use) {
       deadline_to_use = early_deadline;
       break;

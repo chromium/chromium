@@ -108,14 +108,14 @@ void LogMetricsOnReportSend(const EventAttributionReport& report,
   // a long time while a conversion report is pending. Revisit this range if it
   // is non-ideal for real world data.
   base::Time original_report_time =
-      ComputeReportTime(report.source(), report.conversion_time());
+      ComputeReportTime(report.source(), report.trigger_time());
   base::TimeDelta time_since_original_report_time = now - original_report_time;
   base::UmaHistogramCustomTimes(
       "Conversions.ExtraReportDelay2", time_since_original_report_time,
       base::Seconds(1), base::Days(24), /*buckets=*/100);
 
   base::TimeDelta time_from_conversion_to_report_send =
-      report.report_time() - report.conversion_time();
+      report.report_time() - report.trigger_time();
   UMA_HISTOGRAM_COUNTS_1000("Conversions.TimeFromConversionToReportSend",
                             time_from_conversion_to_report_send.InHours());
 }

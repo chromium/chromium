@@ -262,7 +262,7 @@ TEST_F(AttributionManagerImplTest, ImpressionConverted_ReportReturnedToWebUI) {
   EventAttributionReport expected_report =
       ReportBuilder(impression)
           .SetTriggerData(conversion.trigger_data())
-          .SetConversionTime(base::Time::Now())
+          .SetTriggerTime(base::Time::Now())
           .SetReportTime(base::Time::Now() + kFirstReportingWindow)
           .Build();
 

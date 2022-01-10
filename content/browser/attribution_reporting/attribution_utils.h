@@ -18,7 +18,7 @@ class StorableSource;
 // Calculates the report time for a conversion associated with a given
 // impression.
 base::Time ComputeReportTime(const StorableSource& impression,
-                             base::Time conversion_time) WARN_UNUSED_RESULT;
+                             base::Time trigger_time) WARN_UNUSED_RESULT;
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_UTILS_H_

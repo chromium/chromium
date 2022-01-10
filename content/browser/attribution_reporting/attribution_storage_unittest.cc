@@ -83,7 +83,7 @@ class AttributionStorageTest : public testing::Test {
                                            const StorableTrigger& conversion) {
     return ReportBuilder(impression)
         .SetTriggerData(conversion.trigger_data())
-        .SetConversionTime(base::Time::Now())
+        .SetTriggerTime(base::Time::Now())
         .SetReportTime(impression.impression_time() +
                        base::Milliseconds(kReportTime))
         .SetPriority(conversion.priority())
@@ -1150,7 +1150,7 @@ TEST_F(AttributionStorageTest, FalselyAttributeImpression_ReportStored) {
   const EventAttributionReport expected_report =
       ReportBuilder(impression)
           .SetTriggerData(7)
-          .SetConversionTime(base::Time::Now())
+          .SetTriggerTime(base::Time::Now())
           .SetReportTime(base::Time::Now() + base::Milliseconds(kReportTime))
           .Build();
 
