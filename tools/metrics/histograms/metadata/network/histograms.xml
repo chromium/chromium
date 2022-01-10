@@ -3055,7 +3055,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Network.Shill.Wifi.TimeFromRekeyToFailureSeconds"
+<histogram name="Network.Shill.WiFi.TimeFromRekeyToFailureSeconds"
     units="seconds" expires_after="2022-12-01">
   <owner>billyzhao@chromium.org</owner>
   <owner>cros-network-metrics@google.com</owner>
