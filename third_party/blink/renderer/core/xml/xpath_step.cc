@@ -295,7 +295,7 @@ void Step::NodesInAxis(EvaluationContext& evaluation_context,
     case kParentAxis:
       if (auto* attr = DynamicTo<Attr>(context)) {
         Element* n = attr->ownerElement();
-        if (NodeMatches(evaluation_context, n, kParentAxis, GetNodeTest()))
+        if (n && NodeMatches(evaluation_context, n, kParentAxis, GetNodeTest()))
           nodes.Append(n);
       } else {
         ContainerNode* n = context->parentNode();
