@@ -3388,14 +3388,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="clickjacking.save_download" units="ms" expires_after="M77">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    The length of time between a dangerous download appearing on the download
-    shelf, and the &quot;Keep&quot; button being clicked.
-  </summary>
-</histogram>
-
 <histogram name="ClientHints.AcceptCHFrame" enum="AcceptCHFrameRestart"
     expires_after="2022-06-05">
   <owner>aarontag@chromium.org</owner>
