@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {Macro} from './macros/macro.js';
+
 const SpeechRecognitionType =
     chrome.speechRecognitionPrivate.SpeechRecognitionType;
 
@@ -18,6 +20,18 @@ export class MetricsUtils {
     this.locale_ = locale;
     /** @private {?Date} */
     this.speechRecognitionStartTime_ = null;
+  }
+
+  /** @param {!Macro} macro */
+  static recordMacroSucceeded(macro) {
+    chrome.metricsPrivate.recordSparseValue(
+        MetricsUtils.MACRO_SUCCEEDED_METRIC, macro.getMacroName());
+  }
+
+  /** @param {!Macro} macro */
+  static recordMacroFailed(macro) {
+    chrome.metricsPrivate.recordSparseValue(
+        MetricsUtils.MACRO_FAILED_METRIC, macro.getMacroName());
   }
 
   /** Records metrics when speech recognition starts. */
@@ -80,3 +94,16 @@ MetricsUtils.LISTENING_DURATION_METRIC_ON_DEVICE =
  */
 MetricsUtils.LISTENING_DURATION_METRIC_NETWORK =
     'Accessibility.CrosDictation.ListeningDuration.NetworkRecognition';
+
+/**
+ * The metric used to record that a macro succeeded.
+ * @const {string}
+ */
+MetricsUtils.MACRO_SUCCEEDED_METRIC =
+    'Accessibility.CrosDictation.MacroSucceeded';
+
+/**
+ * The metric used to record that a macro failed.
+ * @const {string}
+ */
+MetricsUtils.MACRO_FAILED_METRIC = 'Accessibility.CrosDictation.MacroFailed';

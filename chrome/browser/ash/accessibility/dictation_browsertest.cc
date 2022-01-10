@@ -67,6 +67,10 @@ const char* kNetworkListeningDurationMetric =
 const char* kLocaleMetric = "Accessibility.CrosDictation.Language";
 const char* kOnDeviceSpeechMetric =
     "Accessibility.CrosDictation.UsedOnDeviceSpeech";
+const char* kMacroSucceededMetric =
+    "Accessibility.CrosDictation.MacroSucceeded";
+const char* kMacroFailedMetric = "Accessibility.CrosDictation.MacroFailed";
+const int kInputTextViewMetricValue = 1;
 
 static const char* kEnglishDictationCommands[] = {
     "delete",
@@ -1135,6 +1139,22 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, CutCopyPaste) {
   WaitForTextAreaValue("");
 
   SendFinalSpeechResultAndWaitForTextAreaValue("  PaStE ", "StarStar");
+}
+
+// Ensures that a metric is recorded when a macro succeeds.
+// TODO(1247299): Add a test to ensure that a metric is recorded when a macro
+// fails.
+IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, MacroSucceededMetric) {
+  base::HistogramTester histogram_tester_;
+  SendFinalSpeechResultAndWaitForTextAreaValue(
+      "Vega is the brightest star in Lyra",
+      "Vega is the brightest star in Lyra");
+  histogram_tester_.ExpectUniqueSample(/*name=*/kMacroSucceededMetric,
+                                       /*sample=*/kInputTextViewMetricValue,
+                                       /*expected_bucket_count=*/1);
+  histogram_tester_.ExpectUniqueSample(/*name=*/kMacroFailedMetric,
+                                       /*sample=*/kInputTextViewMetricValue,
+                                       /*expected_bucket_count=*/0);
 }
 
 // TODO(1266696): DictationCommandsExtensionTest.Help is failing on

@@ -18353,6 +18353,30 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="3" label="UnableToRun"/>
 </enum>
 
+<enum name="CrosDictationMacroName">
+  <summary>
+    List of Dictation macro names. This list should be aligned with macro list
+    specified in Dictation JavaScript:
+    https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/resources/chromeos/accessibility/accessibility_common/dictation/macros/macro_names.js
+  </summary>
+  <int value="0" label="UNSPECIFID"/>
+  <int value="1" label="INPUT_TEXT_VIEW"/>
+  <int value="2" label="DELETE_PREV_CHAR"/>
+  <int value="3" label="NAV_PREV_CHAR"/>
+  <int value="4" label="NAV_NEXT_CHAR"/>
+  <int value="5" label="NAV_PREV_LINE"/>
+  <int value="6" label="NAV_NEXT_LINE"/>
+  <int value="7" label="COPY_SELECTED_TEXT"/>
+  <int value="8" label="PASTE_TEXT"/>
+  <int value="9" label="CUT_SELECTED_TEXT"/>
+  <int value="10" label="UNDO_TEXT_EDIT"/>
+  <int value="11" label="REDO_ACTION"/>
+  <int value="12" label="SELECT_ALL_TEXT"/>
+  <int value="13" label="UNSELECT_TEXT"/>
+  <int value="14" label="LIST_COMMANDS"/>
+  <int value="15" label="NEW_LINE"/>
+</enum>
+
 <enum name="CrosDictationToggleDictationMethod">
   <int value="0" label="Search+D"/>
   <int value="1" label="Click onscreen button"/>

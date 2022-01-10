@@ -7,6 +7,10 @@
  * google3/intelligence/dbw/proto/macros/user_intent.proto.
  * These should match semantic tags in Voice Access, see
  * voiceaccess_config.config and voiceaccess.patterns_template.
+ * These values are persisted to logs. Entries should not be renumbered and
+ * numeric values should never be reused.
+ * Ensure this enum stays in sync with the CrosDictationMacroName enum in
+ * tools/metrics/histograms/enums.xml.
  * @enum {number}
  */
 export const MacroName = {

@@ -259,14 +259,14 @@ export class Dictation {
     // TODO(crbug.com/1264544): Deal with ambiguous results here.
     const checkContextResult = macro.checkContext();
     if (!checkContextResult.canTryAction) {
-      this.showMacroExecutionFailed_(transcript);
+      this.showMacroExecutionFailed_(macro, transcript);
       return;
     }
 
     // Try to run the macro.
     const runMacroResult = macro.runMacro();
     if (!runMacroResult.isSuccess) {
-      this.showMacroExecutionFailed_(transcript);
+      this.showMacroExecutionFailed_(macro, transcript);
       return;
     }
     if (macro.getMacroName() === MacroName.LIST_COMMANDS) {
@@ -409,7 +409,7 @@ export class Dictation {
   /**
    * Shows that a macro was executed in the UI by putting a checkmark next to
    * the transcript.
-   * @param {Macro} macro
+   * @param {!Macro} macro
    * @param {string} transcript
    * @private
    */
@@ -418,6 +418,8 @@ export class Dictation {
       // Using chrome.input.ime for UI causes too much verbosity with ChromeVox.
       return;
     }
+
+    MetricsUtils.recordMacroSucceeded(macro);
 
     if (macro.getMacroName() === MacroName.INPUT_TEXT_VIEW ||
         macro.getMacroName() === MacroName.NEW_LINE) {
@@ -435,16 +437,19 @@ export class Dictation {
    * Shows a message in the UI that a command failed to execute.
    * TODO(crbug.com/1252037): Optionally use the MacroError to provide
    * additional context.
+   * @param {!Macro} macro
    * @param {string} transcript The user's spoken transcript, shown so they
    *     understand the final speech recognized which might be helpful in
    *     understanding why the command failed.
    * @private
    */
-  showMacroExecutionFailed_(transcript) {
+  showMacroExecutionFailed_(macro, transcript) {
     if (this.chromeVoxEnabled_ || !this.commandsFeatureEnabled_) {
       // Using chrome.input.ime for UI causes too much verbosity with ChromeVox.
       return;
     }
+
+    MetricsUtils.recordMacroFailed(macro);
 
     this.interimText_ = '';
     // TODO(crbug.com/1252037): Finalize string and internationalization.
