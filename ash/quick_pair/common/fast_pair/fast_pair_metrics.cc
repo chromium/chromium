@@ -151,6 +151,8 @@ const char kFastPairRepositoryCacheResult[] =
 const char kHandshakeResult[] = "Bluetooth.ChromeOS.FastPair.Handshake.Result";
 const char kHandshakeFailureReason[] =
     "Bluetooth.ChromeOS.FastPair.Handshake.FailureReason";
+const char kBleScanSessionResult[] =
+    "Bluetooth.ChromeOS.FastPair.Scanner.StartSession.Result";
 
 }  // namespace
 
@@ -417,6 +419,10 @@ void RecordHandshakeResult(bool success) {
 }
 void RecordHandshakeFailureReason(HandshakeFailureReason failure_reason) {
   base::UmaHistogramEnumeration(kHandshakeFailureReason, failure_reason);
+}
+
+void RecordBluetoothLowEnergyScannerStartSessionResult(bool success) {
+  base::UmaHistogramBoolean(kBleScanSessionResult, success);
 }
 
 }  // namespace quick_pair

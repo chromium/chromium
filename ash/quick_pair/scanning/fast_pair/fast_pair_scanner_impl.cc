@@ -5,6 +5,7 @@
 #include "ash/quick_pair/scanning/fast_pair/fast_pair_scanner_impl.h"
 
 #include "ash/quick_pair/common/constants.h"
+#include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/common/logging.h"
 #include "base/containers/contains.h"
 #include "base/time/time.h"
@@ -18,6 +19,11 @@ constexpr base::TimeDelta kFilterDeviceLostTimeout = base::Seconds(5);
 constexpr uint8_t kFilterPatternStartPosition = 0;
 const std::vector<uint8_t> kFastPairFilterPatternValue = {0x2c, 0xfe};
 
+}  // namespace
+
+namespace ash {
+namespace quick_pair {
+
 std::ostream& operator<<(
     std::ostream& out,
     const device::BluetoothLowEnergyScanSession::ErrorCode& error_code) {
@@ -28,10 +34,6 @@ std::ostream& operator<<(
   }
   return out;
 }
-}  // namespace
-
-namespace ash {
-namespace quick_pair {
 
 FastPairScannerImpl::FastPairScannerImpl() {
   device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
@@ -74,6 +76,9 @@ void FastPairScannerImpl::OnSessionStarted(
     device::BluetoothLowEnergyScanSession* scan_session,
     absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
         error_code) {
+  RecordBluetoothLowEnergyScannerStartSessionResult(
+      /*success=*/!error_code.has_value());
+
   if (error_code) {
     QP_LOG(ERROR) << "Bluetooth Low Energy Scan Session failed to start with "
                      "the following error: "

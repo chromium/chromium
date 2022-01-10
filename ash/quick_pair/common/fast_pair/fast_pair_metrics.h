@@ -210,6 +210,9 @@ void RecordHandshakeResult(bool success);
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordHandshakeFailureReason(HandshakeFailureReason failure_reason);
 
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordBluetoothLowEnergyScannerStartSessionResult(bool success);
+
 }  // namespace quick_pair
 }  // namespace ash
 
