@@ -8131,6 +8131,9 @@ Called by update_bad_message_reasons.py.-->
   <int value="254" label="RFH_CREATE_CHILD_FRAME_SANDBOX_FLAGS"/>
   <int value="255" label="RFPH_FOCUSED_FENCED_FRAME"/>
   <int value="258" label="RFH_FENCED_FRAME_MOJO_WHEN_DISABLED"/>
+  <int value="259" label="PMM_SUBSCRIBE_INVALID_ORIGIN"/>
+  <int value="260" label="PMM_UNSUBSCRIBE_INVALID_ORIGIN"/>
+  <int value="261" label="PMM_GET_SUBSCRIPTION_INVALID_ORIGIN"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">

@@ -282,6 +282,9 @@ enum BadMessageReason {
   RFH_CREATE_CHILD_FRAME_SANDBOX_FLAGS = 254,
   RFPH_FOCUSED_FENCED_FRAME = 255,
   RFH_FENCED_FRAME_MOJO_WHEN_DISABLED = 258,
+  PMM_SUBSCRIBE_INVALID_ORIGIN = 259,
+  PMM_UNSUBSCRIBE_INVALID_ORIGIN = 260,
+  PMM_GET_SUBSCRIPTION_INVALID_ORIGIN = 261,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the
