@@ -588,6 +588,7 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
     if (request.net_log_create_info) {
       mojo::ReportBadMessage(
           "CorsURLLoaderFactory: net_log_create_info field is not expected.");
+      return false;
     }
 
     // `net_log_reference_info` field is expected to be used within network
@@ -596,6 +597,7 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
       mojo::ReportBadMessage(
           "CorsURLLoaderFactory: net_log_reference_info field is not "
           "expected.");
+      return false;
     }
   }
 
