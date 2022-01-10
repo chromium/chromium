@@ -5836,16 +5836,20 @@ bool RenderFrameHostImpl::IsInactiveAndDisallowActivation(uint64_t reason) {
       CancelPrerendering(PrerenderHost::FinalStatus::kDestroyed);
       return true;
     case LifecycleStateImpl::kSpeculative:
-    case LifecycleStateImpl::kPendingCommit:
       // We do not expect speculative or pending commit RenderFrameHosts to
       // generate events that require an active/inactive check. Don't crash the
       // browser process in case it comes from a compromised renderer, but kill
       // the renderer to avoid further confusion.
+      bad_message::ReceivedBadMessage(
+          GetProcess(), bad_message::RFH_INACTIVE_CHECK_FROM_SPECULATIVE_RFH);
+      return false;
+    case LifecycleStateImpl::kPendingCommit:
       // TODO(https://crbug.com/1191469): Understand the expected behaviour to
       // disallow activation for kPendingCommit RenderFrameHosts and update
       // accordingly.
       bad_message::ReceivedBadMessage(
-          GetProcess(), bad_message::RFH_INACTIVE_CHECK_FROM_SPECULATIVE_RFH);
+          GetProcess(),
+          bad_message::RFH_INACTIVE_CHECK_FROM_PENDING_COMMIT_RFH);
       return false;
     case LifecycleStateImpl::kActive:
       return false;

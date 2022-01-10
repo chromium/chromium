@@ -8368,6 +8368,7 @@ Called by update_bad_message_reasons.py.-->
   <int value="259" label="PMM_SUBSCRIBE_INVALID_ORIGIN"/>
   <int value="260" label="PMM_UNSUBSCRIBE_INVALID_ORIGIN"/>
   <int value="261" label="PMM_GET_SUBSCRIPTION_INVALID_ORIGIN"/>
+  <int value="262" label="RFH_INACTIVE_CHECK_FROM_PENDING_COMMIT_RFH"/>
 </enum>
 
 <enum name="BadMessageReasonExtensions">
