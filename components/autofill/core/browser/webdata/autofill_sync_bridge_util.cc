@@ -104,6 +104,10 @@ CreditCard CardFromSpecifics(const sync_pb::WalletMaskedCreditCard& card) {
       state = CreditCard::ENROLLED;
       break;
     case sync_pb::WalletMaskedCreditCard::UNSPECIFIED:
+    case sync_pb::WalletMaskedCreditCard::UNENROLLED_AND_NOT_ELIGIBLE:
+    case sync_pb::WalletMaskedCreditCard::UNENROLLED_AND_ELIGIBLE:
+      // TODO(crbug.com/1261895): Modify enum in CreditCard and change this to
+      // correct values.
       state = CreditCard::UNSPECIFIED;
       break;
   }

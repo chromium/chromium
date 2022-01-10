@@ -232,8 +232,10 @@ message WalletMaskedCreditCard {
 
   enum VirtualCardEnrollmentState {
     UNSPECIFIED = 0;
-    UNENROLLED = 1;
+    UNENROLLED = 1 [deprecated = true];
     ENROLLED = 2;
+    UNENROLLED_AND_NOT_ELIGIBLE = 3;
+    UNENROLLED_AND_ELIGIBLE = 4;
   }
 
   // Server-generated unique ID string. This is opaque to the client.

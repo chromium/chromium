@@ -476,11 +476,14 @@ const char* ProtoEnumToString(
     sync_pb::WalletMaskedCreditCard::VirtualCardEnrollmentState
         virtual_card_enrollment_state) {
   ASSERT_ENUM_BOUNDS(sync_pb::WalletMaskedCreditCard,
-                     VirtualCardEnrollmentState, UNSPECIFIED, ENROLLED);
+                     VirtualCardEnrollmentState, UNSPECIFIED,
+                     UNENROLLED_AND_ELIGIBLE);
   switch (virtual_card_enrollment_state) {
     ENUM_CASE(sync_pb::WalletMaskedCreditCard, UNSPECIFIED);
     ENUM_CASE(sync_pb::WalletMaskedCreditCard, UNENROLLED);
     ENUM_CASE(sync_pb::WalletMaskedCreditCard, ENROLLED);
+    ENUM_CASE(sync_pb::WalletMaskedCreditCard, UNENROLLED_AND_NOT_ELIGIBLE);
+    ENUM_CASE(sync_pb::WalletMaskedCreditCard, UNENROLLED_AND_ELIGIBLE);
   }
   NOTREACHED();
   return "";
