@@ -15,7 +15,7 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
 
-Tutorial::StepBuilder::StepBuilder() {}
+Tutorial::StepBuilder::StepBuilder() = default;
 Tutorial::StepBuilder::StepBuilder(const TutorialDescription::Step& step)
     : step_(step) {}
 Tutorial::StepBuilder::~StepBuilder() = default;
@@ -206,7 +206,7 @@ Tutorial::Builder::~Builder() = default;
 
 // static
 std::unique_ptr<Tutorial> Tutorial::Builder::BuildFromDescription(
-    TutorialDescription description,
+    const TutorialDescription& description,
     TutorialService* tutorial_service,
     TutorialBubbleFactoryRegistry* bubble_factory_registry,
     ui::ElementContext context) {

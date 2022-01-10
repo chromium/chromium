@@ -8,9 +8,92 @@
 #include <string>
 #include <vector>
 
+#include "base/metrics/histogram_macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/interaction_sequence.h"
+
+// Holds the data required to properly store histograms for a given tutorial.
+// Abstract base class because best practice is to statically declare
+// histograms and so we need some compile-time polymorphism to actually
+// implement the RecordXXX() calls.
+//
+// Use MakeTutorialHistograms() below to create a concrete instance of this
+// class.
+class TutorialHistograms {
+ public:
+  TutorialHistograms() = default;
+  TutorialHistograms(const TutorialHistograms& other) = delete;
+  virtual ~TutorialHistograms() = default;
+  void operator=(const TutorialHistograms& other) = delete;
+
+  // Records whether the tutorial was completed or not.
+  virtual void RecordComplete(bool value) = 0;
+
+  // Records the step on which the tutorial was aborted.
+  virtual void RecordAbort(int step) = 0;
+
+  // Records whether, when an IPH offered the tutorial, the user opted into
+  // seeing the tutorial or not.
+  virtual void RecordIphLinkClicked(bool value) = 0;
+};
+
+namespace internal {
+
+constexpr char kTutorialHistogramPrefix[] = "Tutorial.";
+
+template <const char histogram_name[]>
+class TutorialHistogramsImpl : public TutorialHistograms {
+ public:
+  explicit TutorialHistogramsImpl(int max_steps)
+      : histogram_name_(histogram_name),
+        completed_name_(kTutorialHistogramPrefix + histogram_name_ +
+                        ".Completion"),
+        aborted_name_(kTutorialHistogramPrefix + histogram_name_ +
+                      ".AbortStep"),
+        link_clicked_name_(kTutorialHistogramPrefix + histogram_name_ +
+                           ".IPHLinkClickedWhenShown"),
+        max_steps_(max_steps) {}
+  ~TutorialHistogramsImpl() override = default;
+
+ protected:
+  void RecordComplete(bool value) override {
+    UMA_HISTOGRAM_BOOLEAN(completed_name_, value);
+  }
+
+  void RecordAbort(int step) override {
+    UMA_HISTOGRAM_EXACT_LINEAR(aborted_name_, step, max_steps_);
+  }
+
+  void RecordIphLinkClicked(bool value) override {
+    UMA_HISTOGRAM_BOOLEAN(link_clicked_name_, value);
+  }
+
+ private:
+  const std::string histogram_name_;
+  const std::string completed_name_;
+  const std::string aborted_name_;
+  const std::string link_clicked_name_;
+  const int max_steps_;
+};
+
+}  // namespace internal
+
+// Call to create a tutorial-specific histograms object for use with the
+// tutorial. The template parameter should be a reference to a const char[]
+// that is a compile-time constant. Also remember to add a matching entry to
+// the "TutorialID" variant in histograms.xml corresponding to your tutorial.
+//
+// Example:
+//   const char kMyTutorialName[] = "MyTutorial";
+//   tutorial_descriptions.histograms =
+//       MakeTutorialHistograms<kMyTutorialName>(
+//           tutorial_description.steps.size());
+template <const char* histogram_name>
+std::unique_ptr<TutorialHistograms> MakeTutorialHistograms(int max_steps) {
+  return std::make_unique<internal::TutorialHistogramsImpl<histogram_name>>(
+      max_steps);
+}
 
 // A Struct that provides all of the data necessary to construct a Tutorial.
 // A Tutorial Description is a list of Steps for a tutorial. Each step has info
@@ -23,7 +106,8 @@ struct TutorialDescription {
 
   TutorialDescription();
   ~TutorialDescription();
-  TutorialDescription(const TutorialDescription& description);
+  TutorialDescription(TutorialDescription&& other);
+  TutorialDescription& operator=(TutorialDescription&& other);
 
   struct Step {
     enum Arrow {
@@ -45,8 +129,8 @@ struct TutorialDescription {
          absl::optional<bool> must_remain_visible_ = absl::nullopt,
          bool transition_only_on_event_ = false,
          NameElementsCallback name_elements_callback_ = NameElementsCallback());
-    Step(const Step& step);
-    Step& operator=(const Step& step) = default;
+    Step(const Step& other);
+    Step& operator=(const Step& other);
     ~Step();
 
     absl::optional<std::u16string> title_text;
@@ -96,6 +180,10 @@ struct TutorialDescription {
 
   // the list of TutorialDescription steps
   std::vector<Step> steps;
+
+  // The histogram data to use. Use MakeTutorialHistograms() above to create a
+  // value to use, if you want to record specific histograms for this tutorial.
+  std::unique_ptr<TutorialHistograms> histograms;
 };
 
 #endif  // CHROME_BROWSER_UI_USER_EDUCATION_TUTORIAL_TUTORIAL_DESCRIPTION_H_

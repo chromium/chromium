@@ -538,7 +538,7 @@ TEST_F(FeaturePromoControllerViewsTest, StartsTutorial) {
   desc.steps.emplace_back(std::move(step2));
 
   TutorialServiceManager::GetInstance()->tutorial_registry()->AddTutorial(
-      kTestTutorialIdentifier, desc);
+      kTestTutorialIdentifier, std::move(desc));
 
   // Launch a feature promo that has a tutorial.
   EXPECT_CALL(*mock_tracker_, ShouldTriggerHelpUI(Ref(kTestIPHFeature)))

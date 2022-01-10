@@ -99,7 +99,7 @@ TEST(TutorialTest, TutorialRegistryRegistersTutorials) {
         u"title", u"description", ui::InteractionSequence::StepType::kShown,
         kTestIdentifier1, std::string(),
         TutorialDescription::Step::Arrow::NONE));
-    registry->AddTutorial(kTestTutorial1, description);
+    registry->AddTutorial(kTestTutorial1, std::move(description));
   }
 
   std::unique_ptr<TutorialBubbleFactoryRegistry> bubble_factory_registry =
@@ -132,7 +132,7 @@ TEST(TutorialTest, SingleInteractionTutorialRuns) {
       ui::InteractionSequence::StepType::kShown, kTestIdentifier1, "",
       TutorialDescription::Step::Arrow::NONE));
 
-  tutorial_registry->AddTutorial(kTestTutorial1, description);
+  tutorial_registry->AddTutorial(kTestTutorial1, std::move(description));
 
   EXPECT_CALL_IN_SCOPE(
       completed, Run,

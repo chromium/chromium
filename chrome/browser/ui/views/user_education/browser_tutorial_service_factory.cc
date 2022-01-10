@@ -96,7 +96,7 @@ void BrowserTutorialServiceFactory::RegisterTutorials() {
         u"Right Click on a Tab and select \"Add Tab To new Group\".",
         ui::InteractionSequence::StepType::kShown, kTabStripElementId,
         std::string(), TutorialDescription::Step::Arrow::TOP, absl::nullopt);
-    description.steps.emplace_back(step1);
+    description.steps.emplace_back(std::move(step1));
 
     TutorialDescription::Step step2(
         absl::nullopt, u"Select \"Enter a name for your Tab Group\".",
@@ -120,6 +120,7 @@ void BrowserTutorialServiceFactory::RegisterTutorials() {
         TutorialDescription::Step::Arrow::TOP, absl::nullopt);
     description.steps.emplace_back(std::move(step4));
 
-    tutorial_registry->AddTutorial("Tab Group Tutorial", description);
+    tutorial_registry->AddTutorial("Tab Group Tutorial",
+                                   std::move(description));
   }
 }

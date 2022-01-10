@@ -106,7 +106,7 @@ class Tutorial {
     ~Builder();
 
     static std::unique_ptr<Tutorial> BuildFromDescription(
-        TutorialDescription description,
+        const TutorialDescription& description,
         TutorialService* tutorial_service,
         TutorialBubbleFactoryRegistry* bubble_factory_registry,
         ui::ElementContext context);
