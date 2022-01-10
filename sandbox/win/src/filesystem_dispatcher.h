@@ -71,6 +71,12 @@ class FilesystemDispatcher : public Dispatcher {
                             uint32_t length,
                             uint32_t info_class);
 
+  // Evaluate the sandbox policy for the file system call.
+  EvalResult EvalPolicy(IpcTag ipc_tag,
+                        const std::wstring& name,
+                        uint32_t desired_access = 0,
+                        bool open_only = true);
+
   raw_ptr<PolicyBase> policy_base_;
 };
 

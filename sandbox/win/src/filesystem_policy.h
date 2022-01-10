@@ -16,8 +16,6 @@
 
 namespace sandbox {
 
-enum IsBroker { BROKER_FALSE, BROKER_TRUE };
-
 // This class centralizes most of the knowledge related to file system policy
 class FileSystemPolicy {
  public:
@@ -29,9 +27,6 @@ class FileSystemPolicy {
   static bool GenerateRules(const wchar_t* name,
                             TargetPolicy::Semantics semantics,
                             LowLevelPolicy* policy);
-
-  // Add basic file system rules.
-  static bool SetInitialRules(LowLevelPolicy* policy);
 
   // Performs the desired policy action on a create request with an
   // API that is compatible with the IPC-received parameters.

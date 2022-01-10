@@ -18,6 +18,36 @@
 
 namespace sandbox {
 
+namespace {
+// This checks for three conditions on whether to ask the broker.
+// - The path looks like a DOS device path (namely \??\something).
+// - The path looks like a short-name path.
+// - Whether the details match the policy.
+bool ShouldAskBroker(IpcTag ipc_tag,
+                     const std::unique_ptr<wchar_t, NtAllocDeleter>& name,
+                     size_t name_len,
+                     uint32_t desired_access = 0,
+                     bool open_only = true) {
+  const wchar_t* name_ptr = name.get();
+  if (name_len >= 4 && name_ptr[0] == L'\\' && name_ptr[1] == L'?' &&
+      name_ptr[2] == L'?' && name_ptr[3] == L'\\') {
+    return true;
+  }
+
+  for (size_t index = 0; index < name_len; ++index) {
+    if (name_ptr[index] == L'~')
+      return true;
+  }
+
+  CountedParameterSet<OpenFile> params;
+  params[OpenFile::NAME] = ParamPickerMake(name_ptr);
+  params[OpenFile::ACCESS] = ParamPickerMake(desired_access);
+  uint32_t open_only_int = open_only;
+  params[OpenFile::OPENONLY] = ParamPickerMake(open_only_int);
+  return QueryBroker(ipc_tag, params.GetBase());
+}
+}  // namespace
+
 NTSTATUS WINAPI TargetNtCreateFile(NtCreateFileFunction orig_CreateFile,
                                    PHANDLE file,
                                    ACCESS_MASK desired_access,
@@ -52,35 +82,24 @@ NTSTATUS WINAPI TargetNtCreateFile(NtCreateFileFunction orig_CreateFile,
       break;
 
     std::unique_ptr<wchar_t, NtAllocDeleter> name;
-    uint32_t attributes = 0;
+    size_t name_len;
+    uint32_t attributes;
     NTSTATUS ret =
-        AllocAndCopyName(object_attributes, &name, &attributes, nullptr);
-    if (!NT_SUCCESS(ret) || !name)
+        CopyNameAndAttributes(object_attributes, &name, &name_len, &attributes);
+    if (!NT_SUCCESS(ret) || !name || !name_len)
       break;
-
-    uint32_t desired_access_uint32 = desired_access;
-    uint32_t options_uint32 = options;
-    uint32_t disposition_uint32 = disposition;
-    uint32_t broker = BROKER_FALSE;
-    CountedParameterSet<OpenFile> params;
-    const wchar_t* name_ptr = name.get();
-    params[OpenFile::NAME] = ParamPickerMake(name_ptr);
-    params[OpenFile::ACCESS] = ParamPickerMake(desired_access_uint32);
-    params[OpenFile::DISPOSITION] = ParamPickerMake(disposition_uint32);
-    params[OpenFile::OPTIONS] = ParamPickerMake(options_uint32);
-    params[OpenFile::BROKER] = ParamPickerMake(broker);
-
-    if (!QueryBroker(IpcTag::NTCREATEFILE, params.GetBase()))
+    if (!ShouldAskBroker(IpcTag::NTCREATEFILE, name, name_len, desired_access,
+                         disposition == FILE_OPEN)) {
       break;
+    }
 
     SharedMemIPCClient ipc(memory);
     CrossCallReturn answer = {0};
     // The following call must match in the parameters with
     // FilesystemDispatcher::ProcessNtCreateFile.
-    ResultCode code =
-        CrossCall(ipc, IpcTag::NTCREATEFILE, name.get(), attributes,
-                  desired_access_uint32, file_attributes, sharing, disposition,
-                  options_uint32, &answer);
+    ResultCode code = CrossCall(ipc, IpcTag::NTCREATEFILE, name.get(),
+                                attributes, desired_access, file_attributes,
+                                sharing, disposition, options, &answer);
     if (SBOX_ALL_OK != code)
       break;
 
@@ -129,32 +148,21 @@ NTSTATUS WINAPI TargetNtOpenFile(NtOpenFileFunction orig_OpenFile,
       break;
 
     std::unique_ptr<wchar_t, NtAllocDeleter> name;
+    size_t name_len;
     uint32_t attributes;
     NTSTATUS ret =
-        AllocAndCopyName(object_attributes, &name, &attributes, nullptr);
-    if (!NT_SUCCESS(ret) || !name)
+        CopyNameAndAttributes(object_attributes, &name, &name_len, &attributes);
+    if (!NT_SUCCESS(ret) || !name || !name_len)
       break;
-
-    uint32_t desired_access_uint32 = desired_access;
-    uint32_t options_uint32 = options;
-    uint32_t disposition_uint32 = FILE_OPEN;
-    uint32_t broker = BROKER_FALSE;
-    const wchar_t* name_ptr = name.get();
-    CountedParameterSet<OpenFile> params;
-    params[OpenFile::NAME] = ParamPickerMake(name_ptr);
-    params[OpenFile::ACCESS] = ParamPickerMake(desired_access_uint32);
-    params[OpenFile::DISPOSITION] = ParamPickerMake(disposition_uint32);
-    params[OpenFile::OPTIONS] = ParamPickerMake(options_uint32);
-    params[OpenFile::BROKER] = ParamPickerMake(broker);
-
-    if (!QueryBroker(IpcTag::NTOPENFILE, params.GetBase()))
+    if (!ShouldAskBroker(IpcTag::NTOPENFILE, name, name_len, desired_access,
+                         true)) {
       break;
+    }
 
     SharedMemIPCClient ipc(memory);
     CrossCallReturn answer = {0};
-    ResultCode code =
-        CrossCall(ipc, IpcTag::NTOPENFILE, name.get(), attributes,
-                  desired_access_uint32, sharing, options_uint32, &answer);
+    ResultCode code = CrossCall(ipc, IpcTag::NTOPENFILE, name.get(), attributes,
+                                desired_access, sharing, options, &answer);
     if (SBOX_ALL_OK != code)
       break;
 
@@ -197,24 +205,17 @@ TargetNtQueryAttributesFile(NtQueryAttributesFileFunction orig_QueryAttributes,
       break;
 
     std::unique_ptr<wchar_t, NtAllocDeleter> name;
-    uint32_t attributes = 0;
+    size_t name_len;
+    uint32_t attributes;
     NTSTATUS ret =
-        AllocAndCopyName(object_attributes, &name, &attributes, nullptr);
-    if (!NT_SUCCESS(ret) || !name)
+        CopyNameAndAttributes(object_attributes, &name, &name_len, &attributes);
+    if (!NT_SUCCESS(ret) || !name || !name_len)
+      break;
+    if (!ShouldAskBroker(IpcTag::NTQUERYATTRIBUTESFILE, name, name_len))
       break;
 
     InOutCountedBuffer file_info(file_attributes,
                                  sizeof(FILE_BASIC_INFORMATION));
-
-    uint32_t broker = BROKER_FALSE;
-    CountedParameterSet<FileName> params;
-    const wchar_t* name_ptr = name.get();
-    params[FileName::NAME] = ParamPickerMake(name_ptr);
-    params[FileName::BROKER] = ParamPickerMake(broker);
-
-    if (!QueryBroker(IpcTag::NTQUERYATTRIBUTESFILE, params.GetBase()))
-      break;
-
     SharedMemIPCClient ipc(memory);
     CrossCallReturn answer = {0};
     ResultCode code = CrossCall(ipc, IpcTag::NTQUERYATTRIBUTESFILE, name.get(),
@@ -254,24 +255,17 @@ NTSTATUS WINAPI TargetNtQueryFullAttributesFile(
       break;
 
     std::unique_ptr<wchar_t, NtAllocDeleter> name;
-    uint32_t attributes = 0;
+    size_t name_len;
+    uint32_t attributes;
     NTSTATUS ret =
-        AllocAndCopyName(object_attributes, &name, &attributes, nullptr);
-    if (!NT_SUCCESS(ret) || !name)
+        CopyNameAndAttributes(object_attributes, &name, &name_len, &attributes);
+    if (!NT_SUCCESS(ret) || !name || !name_len)
+      break;
+    if (!ShouldAskBroker(IpcTag::NTQUERYFULLATTRIBUTESFILE, name, name_len))
       break;
 
     InOutCountedBuffer file_info(file_attributes,
                                  sizeof(FILE_NETWORK_OPEN_INFORMATION));
-
-    uint32_t broker = BROKER_FALSE;
-    CountedParameterSet<FileName> params;
-    const wchar_t* name_ptr = name.get();
-    params[FileName::NAME] = ParamPickerMake(name_ptr);
-    params[FileName::BROKER] = ParamPickerMake(broker);
-
-    if (!QueryBroker(IpcTag::NTQUERYFULLATTRIBUTESFILE, params.GetBase()))
-      break;
-
     SharedMemIPCClient ipc(memory);
     CrossCallReturn answer = {0};
     ResultCode code = CrossCall(ipc, IpcTag::NTQUERYFULLATTRIBUTESFILE,
@@ -334,18 +328,11 @@ TargetNtSetInformationFile(NtSetInformationFileFunction orig_SetInformationFile,
     }
 
     std::unique_ptr<wchar_t, NtAllocDeleter> name;
-    NTSTATUS ret =
-        AllocAndCopyName(&object_attributes, &name, nullptr, nullptr);
-    if (!NT_SUCCESS(ret) || !name)
+    size_t name_len;
+    NTSTATUS ret = CopyNameAndAttributes(&object_attributes, &name, &name_len);
+    if (!NT_SUCCESS(ret) || !name || !name_len)
       break;
-
-    uint32_t broker = BROKER_FALSE;
-    CountedParameterSet<FileName> params;
-    const wchar_t* name_ptr = name.get();
-    params[FileName::NAME] = ParamPickerMake(name_ptr);
-    params[FileName::BROKER] = ParamPickerMake(broker);
-
-    if (!QueryBroker(IpcTag::NTSETINFO_RENAME, params.GetBase()))
+    if (!ShouldAskBroker(IpcTag::NTSETINFO_RENAME, name, name_len))
       break;
 
     InOutCountedBuffer io_status_buffer(io_status, sizeof(IO_STATUS_BLOCK));

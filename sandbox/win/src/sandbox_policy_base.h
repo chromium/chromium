@@ -155,8 +155,6 @@ class PolicyBase final : public TargetPolicy {
   size_t memory_limit_;
   bool use_alternate_desktop_;
   bool use_alternate_winstation_;
-  // Helps the file system policy initialization.
-  bool file_system_init_;
   bool relaxed_interceptions_;
   HANDLE stdout_handle_;
   HANDLE stderr_handle_;

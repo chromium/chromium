@@ -116,11 +116,6 @@ bool FileSystemPolicy::GenerateRules(const wchar_t* name,
   PolicyRule rename(result);
 
   switch (semantics) {
-    case TargetPolicy::FILES_ALLOW_DIR_ANY: {
-      open.AddNumberMatch(IF, OpenFile::OPTIONS, FILE_DIRECTORY_FILE, AND);
-      create.AddNumberMatch(IF, OpenFile::OPTIONS, FILE_DIRECTORY_FILE, AND);
-      break;
-    }
     case TargetPolicy::FILES_ALLOW_READONLY: {
       // We consider all flags that are not known to be readonly as potentially
       // used for write.
@@ -129,9 +124,9 @@ bool FileSystemPolicy::GenerateRules(const wchar_t* name,
                             GENERIC_READ | GENERIC_EXECUTE | READ_CONTROL;
       DWORD restricted_flags = ~allowed_flags;
       open.AddNumberMatch(IF_NOT, OpenFile::ACCESS, restricted_flags, AND);
-      open.AddNumberMatch(IF, OpenFile::DISPOSITION, FILE_OPEN, EQUAL);
+      open.AddNumberMatch(IF, OpenFile::OPENONLY, true, EQUAL);
       create.AddNumberMatch(IF_NOT, OpenFile::ACCESS, restricted_flags, AND);
-      create.AddNumberMatch(IF, OpenFile::DISPOSITION, FILE_OPEN, EQUAL);
+      create.AddNumberMatch(IF, OpenFile::OPENONLY, true, EQUAL);
 
       // Read only access don't work for rename.
       rule_to_add &= ~kCallNtSetInfoRename;
@@ -165,76 +160,22 @@ bool FileSystemPolicy::GenerateRules(const wchar_t* name,
   }
 
   if ((rule_to_add & kCallNtQueryAttributesFile) &&
-      (!query.AddStringMatch(IF, FileName::NAME, name, CASE_INSENSITIVE) ||
+      (!query.AddStringMatch(IF, OpenFile::NAME, name, CASE_INSENSITIVE) ||
        !policy->AddRule(IpcTag::NTQUERYATTRIBUTESFILE, &query))) {
     return false;
   }
 
   if ((rule_to_add & kCallNtQueryFullAttributesFile) &&
-      (!query_full.AddStringMatch(IF, FileName::NAME, name, CASE_INSENSITIVE) ||
+      (!query_full.AddStringMatch(IF, OpenFile::NAME, name, CASE_INSENSITIVE) ||
        !policy->AddRule(IpcTag::NTQUERYFULLATTRIBUTESFILE, &query_full))) {
     return false;
   }
 
   if ((rule_to_add & kCallNtSetInfoRename) &&
-      (!rename.AddStringMatch(IF, FileName::NAME, name, CASE_INSENSITIVE) ||
+      (!rename.AddStringMatch(IF, OpenFile::NAME, name, CASE_INSENSITIVE) ||
        !policy->AddRule(IpcTag::NTSETINFO_RENAME, &rename))) {
     return false;
   }
-
-  return true;
-}
-
-// Right now we insert two rules, to be evaluated before any user supplied rule:
-// - go to the broker if the path doesn't look like the paths that we push on
-//    the policy (namely \??\something).
-// - go to the broker if it looks like this is a short-name path.
-//
-// It is possible to add a rule to go to the broker in any case; it would look
-// something like:
-//    rule = new PolicyRule(ASK_BROKER);
-//    rule->AddNumberMatch(IF_NOT, FileName::BROKER, true, AND);
-//    policy->AddRule(service, rule);
-bool FileSystemPolicy::SetInitialRules(LowLevelPolicy* policy) {
-  PolicyRule format(ASK_BROKER);
-  PolicyRule short_name(ASK_BROKER);
-
-  bool rv = format.AddNumberMatch(IF_NOT, FileName::BROKER, BROKER_TRUE, AND);
-  rv &= format.AddStringMatch(IF_NOT, FileName::NAME, L"\\/?/?\\*",
-                              CASE_SENSITIVE);
-
-  rv &= short_name.AddNumberMatch(IF_NOT, FileName::BROKER, BROKER_TRUE, AND);
-  rv &= short_name.AddStringMatch(IF, FileName::NAME, L"*~*", CASE_SENSITIVE);
-
-  if (!rv || !policy->AddRule(IpcTag::NTCREATEFILE, &format))
-    return false;
-
-  if (!policy->AddRule(IpcTag::NTCREATEFILE, &short_name))
-    return false;
-
-  if (!policy->AddRule(IpcTag::NTOPENFILE, &format))
-    return false;
-
-  if (!policy->AddRule(IpcTag::NTOPENFILE, &short_name))
-    return false;
-
-  if (!policy->AddRule(IpcTag::NTQUERYATTRIBUTESFILE, &format))
-    return false;
-
-  if (!policy->AddRule(IpcTag::NTQUERYATTRIBUTESFILE, &short_name))
-    return false;
-
-  if (!policy->AddRule(IpcTag::NTQUERYFULLATTRIBUTESFILE, &format))
-    return false;
-
-  if (!policy->AddRule(IpcTag::NTQUERYFULLATTRIBUTESFILE, &short_name))
-    return false;
-
-  if (!policy->AddRule(IpcTag::NTSETINFO_RENAME, &format))
-    return false;
-
-  if (!policy->AddRule(IpcTag::NTSETINFO_RENAME, &short_name))
-    return false;
 
   return true;
 }

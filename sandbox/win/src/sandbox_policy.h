@@ -40,8 +40,6 @@ class TargetPolicy {
                            // the file system supports.
     FILES_ALLOW_READONLY,  // Allows open or create with read access only.
     FILES_ALLOW_QUERY,     // Allows access to query the attributes of a file.
-    FILES_ALLOW_DIR_ANY,   // Allows open or create with directory semantics
-                           // only.
     NAMEDPIPES_ALLOW_ANY,  // Allows creation of a named pipe.
     FAKE_USER_GDI_INIT,    // Fakes user32 and gdi32 initialization. This can
                            // be used to allow the DLLs to load and initialize

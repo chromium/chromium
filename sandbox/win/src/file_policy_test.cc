@@ -274,9 +274,7 @@ SBOX_TESTS_COMMAND int File_CopyFile(int argc, wchar_t** argv) {
 
 TEST(FilePolicyTest, DenyNtCreateCalc) {
   TestRunner runner;
-  EXPECT_TRUE(
-      runner.AddRuleSys32(TargetPolicy::FILES_ALLOW_DIR_ANY, L"calc.exe"));
-
+  EXPECT_TRUE(runner.AddRuleSys32(TargetPolicy::FILES_ALLOW_ANY, L"calc.txt"));
   EXPECT_EQ(SBOX_TEST_DENIED, runner.RunTest(L"File_CreateSys32 calc.exe"));
 
   runner.SetTestState(BEFORE_REVERT);
@@ -530,18 +528,6 @@ TEST(FilePolicyTest, TestRename) {
   ::DeleteFile(temp_file_name8);
 }
 
-TEST(FilePolicyTest, OpenSys32FilesDenyBecauseOfDir) {
-  TestRunner runner;
-  EXPECT_TRUE(
-      runner.AddRuleSys32(TargetPolicy::FILES_ALLOW_DIR_ANY, L"notepad.exe"));
-
-  EXPECT_EQ(SBOX_TEST_DENIED, runner.RunTest(L"File_Win32Create notepad.exe"));
-
-  runner.SetTestState(BEFORE_REVERT);
-  EXPECT_EQ(SBOX_TEST_SUCCEEDED,
-            runner.RunTest(L"File_Win32Create notepad.exe"));
-}
-
 TEST(FilePolicyTest, OpenSys32FilesAllowNotepad) {
   TestRunner runner;
   EXPECT_TRUE(
@@ -567,7 +553,7 @@ TEST(FilePolicyTest, FileGetDiskSpace) {
   // Add an 'allow' rule in the windows\system32 such that GetDiskFreeSpaceEx
   // succeeds (it does an NtOpenFile) but windows\system32\notepad.exe is
   // denied since there is no wild card in the rule.
-  EXPECT_TRUE(runner.AddRuleSys32(TargetPolicy::FILES_ALLOW_DIR_ANY, L""));
+  EXPECT_TRUE(runner.AddRuleSys32(TargetPolicy::FILES_ALLOW_READONLY, L""));
   runner.SetTestState(BEFORE_REVERT);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(L"File_GetDiskSpace"));
 
