@@ -72,31 +72,35 @@ bool IsRetryOnTime(DelayInfo* delay_table,
   return time_elapsed >= delay_table[retry_count].min_delay;
 }
 
-RetryVerifier::RetryVerifier()
-    : retry_count_(0), success_(false), done_(false) {
+ExponentialBackoffChecker::ExponentialBackoffChecker(
+    syncer::SyncServiceImpl* sync_service)
+    : SingleClientStatusChangeChecker(sync_service) {
   memset(&delay_table_, 0, sizeof(delay_table_));
-}
 
-RetryVerifier::~RetryVerifier() {}
-
-// Initializes the state for verification.
-void RetryVerifier::Initialize(const syncer::SyncCycleSnapshot& snap) {
-  retry_count_ = 0;
+  const syncer::SyncCycleSnapshot& snap =
+      service()->GetLastCycleSnapshotForDebugging();
   last_sync_time_ = snap.sync_start_time();
-  FillDelayTable(delay_table_, kMaxRetry);
-  done_ = false;
-  success_ = false;
+  FillDelayTable(delay_table_, kMaxRetriesToVerify);
 }
 
-void RetryVerifier::VerifyRetryInterval(const syncer::SyncCycleSnapshot& snap) {
-  DCHECK(retry_count_ < kMaxRetry);
+ExponentialBackoffChecker::~ExponentialBackoffChecker() = default;
+
+bool ExponentialBackoffChecker::IsExitConditionSatisfied(std::ostream* os) {
+  DCHECK(retry_count_ < kMaxRetriesToVerify);
+
+  *os << "Verifying backoff intervals (" << retry_count_ << "/"
+      << kMaxRetriesToVerify << ")";
+
+  const syncer::SyncCycleSnapshot& snap =
+      service()->GetLastCycleSnapshotForDebugging();
+
   if (retry_count_ == 0) {
     if (snap.sync_start_time() != last_sync_time_) {
       retry_count_++;
       last_sync_time_ = snap.sync_start_time();
     }
     success_ = true;
-    return;
+    return false;
   }
 
   // Check if the sync start time has changed. If so indicates a new sync
@@ -106,27 +110,10 @@ void RetryVerifier::VerifyRetryInterval(const syncer::SyncCycleSnapshot& snap) {
     success_ = IsRetryOnTime(delay_table_, retry_count_ - 1, delta);
     last_sync_time_ = snap.sync_start_time();
     ++retry_count_;
-    done_ = (retry_count_ >= kMaxRetry);
-    return;
+    done_ = (retry_count_ >= kMaxRetriesToVerify);
   }
-}
 
-ExponentialBackoffChecker::ExponentialBackoffChecker(
-    syncer::SyncServiceImpl* sync_service)
-    : SingleClientStatusChangeChecker(sync_service) {
-  const syncer::SyncCycleSnapshot& snap =
-      service()->GetLastCycleSnapshotForDebugging();
-  retry_verifier_.Initialize(snap);
-}
-
-bool ExponentialBackoffChecker::IsExitConditionSatisfied(std::ostream* os) {
-  *os << "Verifying backoff intervals (" << retry_verifier_.retry_count() << "/"
-      << RetryVerifier::kMaxRetry << ")";
-
-  const syncer::SyncCycleSnapshot& snap =
-      service()->GetLastCycleSnapshotForDebugging();
-  retry_verifier_.VerifyRetryInterval(snap);
-  return (retry_verifier_.done() && retry_verifier_.Succeeded());
+  return done_ && success_;
 }
 
 }  // namespace exponential_backoff_helper
