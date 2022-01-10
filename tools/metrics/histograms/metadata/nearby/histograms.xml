@@ -23,8 +23,8 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Nearby.Connections.Bluetooth.Adapter.SetName.Result"
-    enum="BooleanSuccess" expires_after="2022-04-24">
-  <owner>hansberry@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="2023-02-01">
+  <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records whether the request to set the adapter's name has succeeded. Emitted
@@ -33,8 +33,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Nearby.Connections.Bluetooth.Adapter.SetScanMode.Result"
-    enum="BooleanSuccess" expires_after="2022-04-24">
-  <owner>hansberry@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="2023-02-01">
+  <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records whether the request to set the adapter's scan mode has succeeded.
@@ -44,8 +44,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Nearby.Connections.Bluetooth.ClassicMedium.ConnectToService.Duration"
-    units="ms" expires_after="2022-06-26">
-  <owner>hansberry@chromium.org</owner>
+    units="ms" expires_after="2023-02-01">
+  <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records time spent in milliseconds to establish a Bluetooth service
@@ -54,8 +54,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Nearby.Connections.Bluetooth.ClassicMedium.{Operation}.Result"
-    enum="BooleanSuccess" expires_after="2022-02-23">
-  <owner>hansberry@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="2023-02-01">
+  <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>Records the result of {Operation}.</summary>
   <token key="Operation">
@@ -67,8 +67,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Nearby.Connections.Bluetooth.LEMedium.StartAdvertising.Result"
-    enum="BooleanSuccess" expires_after="2022-06-26">
-  <owner>hansberry@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="2023-02-01">
+  <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records whether the request to start advertising has succeeded.
@@ -76,8 +76,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Nearby.Connections.Bluetooth.LEMedium.StartScanning.Result"
-    enum="BooleanSuccess" expires_after="2022-02-23">
-  <owner>hansberry@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="2023-02-01">
+  <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records whether BLE scanning has been initiated successfully.
@@ -85,8 +85,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Nearby.Connections.Bluetooth.LEMedium.StopAdvertising.Result"
-    enum="BooleanSuccess" expires_after="2022-02-23">
-  <owner>hansberry@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="2023-02-01">
+  <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records whether the request to stop advertising has succeeded.
@@ -94,15 +94,15 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Nearby.Connections.Bluetooth.LEMedium.StopScanning.Result"
-    enum="BooleanSuccess" expires_after="2022-04-24">
-  <owner>hansberry@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="2023-02-01">
+  <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>Records whether BLE scanning has been stopped successfully.</summary>
 </histogram>
 
 <histogram name="Nearby.Connections.Bluetooth.Socket.{Operation}.Result"
-    enum="BooleanSuccess" expires_after="2022-02-23">
-  <owner>hansberry@chromium.org</owner>
+    enum="BooleanSuccess" expires_after="2023-02-01">
+  <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>Records whether {Operation} has succeeded.</summary>
   <token key="Operation">
@@ -217,8 +217,8 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Nearby.Connections.UtilityProcessShutdownReason"
     enum="NearbyConnectionsUtilityProcessShutdownReason"
-    expires_after="2022-06-26">
-  <owner>hansberry@chromium.org</owner>
+    expires_after="2023-02-01">
+  <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records why the Sharing utility process, which hosts Nearby Connections, was
@@ -230,8 +230,8 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Nearby.Connections.UtilityProcessShutdownReason.DisconnectedMojoDependency"
     enum="NearbyConnectionsUtilityProcessMojoDependencyName"
-    expires_after="2022-04-24">
-  <owner>hansberry@chromium.org</owner>
+    expires_after="2023-02-01">
+  <owner>hansenmichael@google.com</owner>
   <owner>nearby-share-chromeos-eng@google.com</owner>
   <summary>
     Records which Mojo dependency of the Sharing utility process disconnected
