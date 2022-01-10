@@ -548,7 +548,7 @@ Response BrowserHandler::GetBrowserCommandLine(
   // contains kEnableAutomation.
   if (command_line->HasSwitch(switches::kEnableAutomation)) {
     for (const auto& arg : command_line->argv()) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       (*arguments)->emplace_back(base::WideToUTF8(arg));
 #else
       (*arguments)->emplace_back(arg);

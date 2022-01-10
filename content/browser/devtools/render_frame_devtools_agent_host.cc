@@ -65,7 +65,7 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/mojom/devtools/devtools_agent.mojom.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/browser/devtools/devtools_frame_trace_recorder.h"
 #include "content/browser/renderer_host/compositor_impl_android.h"
 #include "content/public/browser/render_widget_host_view.h"
@@ -364,9 +364,9 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
         std::make_unique<protocol::TracingHandler>(GetIOContext()));
   }
   session->AddHandler(std::make_unique<protocol::LogHandler>());
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   session->AddHandler(std::make_unique<protocol::WebAuthnHandler>());
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   if (sessions().empty()) {
 #ifdef OS_ANDROID
@@ -377,7 +377,7 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
       frame_trace_recorder_ = std::make_unique<DevToolsFrameTraceRecorder>();
 #endif
     UpdateRawHeadersAccess(frame_host_);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (acquire_wake_lock)
       GetWakeLock()->RequestWakeLock();
 #endif
@@ -388,11 +388,11 @@ bool RenderFrameDevToolsAgentHost::AttachSession(DevToolsSession* session,
 void RenderFrameDevToolsAgentHost::DetachSession(DevToolsSession* session) {
   // Destroying session automatically detaches in renderer.
   if (sessions().empty()) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     frame_trace_recorder_.reset();
 #endif
     UpdateRawHeadersAccess(frame_host_);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     GetWakeLock()->CancelWakeLock();
 #endif
   }
@@ -559,7 +559,7 @@ void RenderFrameDevToolsAgentHost::DestroyOnRenderFrameGone() {
   Release();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 device::mojom::WakeLock* RenderFrameDevToolsAgentHost::GetWakeLock() {
   // Here is a lazy binding, and will not reconnect after connection error.
   if (!wake_lock_) {
@@ -605,11 +605,11 @@ void RenderFrameDevToolsAgentHost::RenderProcessExited(
   switch (info.status) {
     case base::TERMINATION_STATUS_ABNORMAL_TERMINATION:
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED:
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM:
 #endif
     case base::TERMINATION_STATUS_PROCESS_CRASHED:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     case base::TERMINATION_STATUS_OOM_PROTECTED:
 #endif
     case base::TERMINATION_STATUS_LAUNCH_FAILED:
@@ -627,7 +627,7 @@ void RenderFrameDevToolsAgentHost::RenderProcessExited(
 
 void RenderFrameDevToolsAgentHost::OnVisibilityChanged(
     content::Visibility visibility) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!sessions().empty()) {
     if (visibility == content::Visibility::HIDDEN) {
       GetWakeLock()->CancelWakeLock();
@@ -827,7 +827,7 @@ base::TimeTicks RenderFrameDevToolsAgentHost::GetLastActivityTime() {
   return base::TimeTicks();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void RenderFrameDevToolsAgentHost::SignalSynchronousSwapCompositorFrame(
     RenderFrameHost* frame_host,
     const cc::RenderFrameMetadata& frame_metadata) {

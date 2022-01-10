@@ -73,7 +73,7 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/snapshot/snapshot.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/task/deferred_sequenced_task_runner.h"
 #include "base/tracing/perfetto_task_runner.h"
 #include "services/tracing/perfetto/system_test_utils.h"
@@ -453,7 +453,7 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
         encoding, from_surface, clip, clip_scale, capture_beyond_viewport);
 
     gfx::Rect matching_mask(gfx::SkIRectToRect(expected_bitmap.bounds()));
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // Mask out the corners, which may be drawn differently on Mac because of
     // rounded corners.
     matching_mask.Inset(4, 4, 4, 4);
@@ -539,7 +539,7 @@ class CaptureScreenshotTest : public DevToolsProtocolTest {
   }
 
  private:
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void SetUp() override {
     EnablePixelOutput();
     DevToolsProtocolTest::SetUp();
@@ -593,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest,
 // TODO(crbug.com/1147911) Android Lollipop has a problem with capturing
 // screenshot.
 // TODO(crbug.com/1156767) Flaky on linux-lacros-tester-rel
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || \
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_CaptureScreenshotBeyondViewport_InnerScrollbarsAreShown \
   DISABLED_CaptureScreenshotBeyondViewport_InnerScrollbarsAreShown
@@ -640,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // ChromeOS and Android don't support software compositing.
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
 class NoGPUCaptureScreenshotTest : public CaptureScreenshotTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -695,7 +695,7 @@ IN_PROC_BROWSER_TEST_F(NoGPUCaptureScreenshotTest, LargeScreenshot) {
   EXPECT_GT(static_cast<int>(SkColorGetB(bottom_left)), 128);
 }
 
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 
 // Setting frame size (through RWHV) is not supported on Android.
 // This test seems to be very flaky on all platforms: https://crbug.com/801173
@@ -791,7 +791,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, TransparentScreenshots) {
   expected_bitmap.eraseColor(SK_ColorTRANSPARENT);
   CaptureScreenshotAndCompareTo(expected_bitmap, ScreenshotEncoding::PNG, true);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   float device_scale_factor =
       display::Screen::GetScreen()->GetPrimaryDisplay().device_scale_factor();
 
@@ -806,7 +806,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, TransparentScreenshots) {
   CaptureScreenshotAndCompareTo(expected_bitmap, ScreenshotEncoding::PNG, true,
                                 device_scale_factor);
   SendCommand("Emulation.clearDeviceMetricsOverride", nullptr);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   {
     // Override background to a semi-transparent color.
@@ -823,7 +823,7 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, TransparentScreenshots) {
   expected_bitmap.eraseColor(SkColorSetARGB(16, 255, 0, 0));
   CaptureScreenshotAndCompareTo(expected_bitmap, ScreenshotEncoding::PNG, true);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Check that device emulation does not affect the transparency.
   params = std::make_unique<base::DictionaryValue>();
   params->SetIntKey("width", view_size.width());
@@ -835,10 +835,10 @@ IN_PROC_BROWSER_TEST_F(CaptureScreenshotTest, TransparentScreenshots) {
   CaptureScreenshotAndCompareTo(expected_bitmap, ScreenshotEncoding::PNG, true,
                                 device_scale_factor);
   SendCommand("Emulation.clearDeviceMetricsOverride", nullptr);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Disabled, see http://crbug.com/469947.
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, DISABLED_SynthesizePinchGesture) {
   GURL test_url = GetTestUrl("devtools", "synthetic_gesture_tests.html");
@@ -898,7 +898,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, DISABLED_SynthesizeTapGesture) {
   // than 0.
   ASSERT_GT(EvalJs(shell(), "document.body.scrollTop").ExtractInt(), 0);
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, PageCrash) {
   ASSERT_TRUE(embedded_test_server()->Start());
@@ -1073,7 +1073,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, CrossSiteNoDetach) {
 }
 
 // TODO(crbug.com/1280746): Flaky on MacOS.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_CrossSiteNavigation DISABLED_CrossSiteNavigation
 #else
 #define MAYBE_CrossSiteNavigation CrossSiteNavigation
@@ -1167,7 +1167,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
   WaitForNotification("Inspector.targetReloadedAfterCrash", true);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_InspectorTargetCrashedReload DISABLED_InspectorTargetCrashedReload
 #else
 #define MAYBE_InspectorTargetCrashedReload InspectorTargetCrashedReload
@@ -2042,7 +2042,7 @@ class DevToolsProtocolDeviceEmulationTest : public DevToolsProtocolTest {
 };
 
 // Setting frame size (through RWHV) is not supported on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_DeviceSize DISABLED_DeviceSize
 #else
 #define MAYBE_DeviceSize DeviceSize
@@ -2078,7 +2078,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolDeviceEmulationTest, MAYBE_DeviceSize) {
 }
 
 // Setting frame size (through RWHV) is not supported on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_RenderKillDoesNotCrashBrowser \
   DISABLED_RenderKillDoesNotCrashBrowser
 #else
@@ -2221,7 +2221,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolBackForwardCacheTest, Basic) {
 }
 
 // Download tests are flaky on Android: https://crbug.com/7546
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 namespace {
 
 static DownloadManagerImpl* DownloadManagerForShell(Shell* shell) {
@@ -2740,7 +2740,7 @@ IN_PROC_BROWSER_TEST_F(SystemTracingDevToolsProtocolTest,
   ASSERT_EQ(command_result, nullptr);
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 class PosixSystemTracingDevToolsProtocolTest
     : public SystemTracingDevToolsProtocolTest {
  public:
@@ -2838,7 +2838,7 @@ class FakeSystemTracingDevToolsProtocolTest
 };
 
 // No system consumer support on Android to reduce Chrome binary size.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_TracingWithFakeSystemBackend DISABLED_TracingWithFakeSystemBackend
 #else
 #define MAYBE_TracingWithFakeSystemBackend TracingWithFakeSystemBackend
@@ -2865,7 +2865,7 @@ class FakeSystemTracingForbiddenDevToolsProtocolTest
 };
 
 // No system consumer support on Android to reduce Chrome binary size.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_SystemConsumerForbidden DISABLED_SystemConsumerForbidden
 #else
 #define MAYBE_SystemConsumerForbidden SystemConsumerForbidden
@@ -2875,6 +2875,6 @@ IN_PROC_BROWSER_TEST_F(FakeSystemTracingForbiddenDevToolsProtocolTest,
   base::DictionaryValue* command_result = StartSystemTrace();
   ASSERT_EQ(command_result, nullptr);
 }
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 }  // namespace content

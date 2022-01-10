@@ -184,7 +184,7 @@ Response EmulationHandler::SetEmitTouchEventsForMouse(
 }
 
 Response EmulationHandler::CanEmulate(bool* result) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   *result = false;
 #else
   *result = true;
@@ -193,7 +193,7 @@ Response EmulationHandler::CanEmulate(bool* result) {
         host_->GetRenderWidgetHost()->auto_resize_enabled())
       *result = false;
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   return Response::Success();
 }
 

@@ -121,7 +121,7 @@ class DevToolsTrustTokenBrowsertestWithPlatformIssuance
   base::test::ScopedFeatureList features_;
 };
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // After a successful platform-provided issuance operation (which involves an
 // IPC to a system-local provider, not an HTTP request to a server), the
 // request's outcome should show as a cache hit in the network panel.
@@ -175,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(
   WaitForNotification("Network.loadingFinished", true);
   WaitForNotification("Network.trustTokenOperationDone", true);
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
 

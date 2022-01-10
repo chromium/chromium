@@ -50,11 +50,11 @@
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "v8/include/v8-version-string.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
-#if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 extern const int kCcompressedProtocolJSON;
 #endif
 
@@ -292,7 +292,7 @@ void StartServerOnHandlerThread(
       }
     }
   } else {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     // Android uses UNIX domain sockets which don't have an IP address.
     LOG(ERROR) << "Cannot start http server for devtools.";
 #endif
@@ -584,7 +584,7 @@ void DevToolsHttpHandler::OnJsonRequest(
     version.SetString(
         kTargetWebSocketDebuggerUrlField,
         base::StringPrintf("ws://%s%s", host.c_str(), browser_guid_.c_str()));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     version.SetString(
         "Android-Package",
         base::android::BuildInfo::GetInstance()->host_package_name());
@@ -659,7 +659,7 @@ void DevToolsHttpHandler::OnJsonRequest(
 }
 
 void DevToolsHttpHandler::DecompressAndSendJsonProtocol(int connection_id) {
-#if defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
   NOTREACHED();
 #else
   scoped_refptr<base::RefCountedMemory> bytes =
@@ -674,7 +674,7 @@ void DevToolsHttpHandler::DecompressAndSendJsonProtocol(int connection_id) {
       FROM_HERE, base::BindOnce(&ServerWrapper::SendResponse,
                                 base::Unretained(server_wrapper_.get()),
                                 connection_id, response));
-#endif  // defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 }
 
 void DevToolsHttpHandler::RespondToJsonList(
@@ -703,7 +703,7 @@ void DevToolsHttpHandler::OnDiscoveryPageRequest(int connection_id) {
 
 void DevToolsHttpHandler::OnFrontendResourceRequest(
     int connection_id, const std::string& path) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   Send404(connection_id);
 #else
   Send200(connection_id,
