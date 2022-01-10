@@ -5,10 +5,10 @@
 #include "services/network/public/cpp/network_connection_tracker.h"
 
 #include <memory>
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/ignore_result.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -337,7 +337,7 @@ TEST_F(NetworkConnectionTrackerTest, GetConnectionTypeUnavailable) {
   mojo::Remote<network::mojom::NetworkService>* network_service_remote =
       new mojo::Remote<network::mojom::NetworkService>;
 
-  ignore_result(network_service_remote->BindNewPipeAndPassReceiver());
+  std::ignore = network_service_remote->BindNewPipeAndPassReceiver();
   NetworkConnectionTracker::BindingCallback callback = base::BindRepeating(
       [](network::mojom::NetworkService* service,
          mojo::PendingReceiver<network::mojom::NetworkChangeManager> receiver) {

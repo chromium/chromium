@@ -10,13 +10,13 @@
 #include <sys/ioctl.h>
 
 #include <numeric>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/cancelable_callback.h"
 #include "base/containers/contains.h"
 #include "base/files/file_descriptor_watcher_posix.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/numerics/checked_math.h"
@@ -235,7 +235,7 @@ void UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper::ReleaseFileDescriptor() {
   // This method intentionally leaks the file descriptor.
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   watch_controller_.reset();
-  ignore_result(fd_.release());
+  std::ignore = fd_.release();
 }
 
 bool UsbDeviceHandleUsbfs::BlockingTaskRunnerHelper::SetConfiguration(

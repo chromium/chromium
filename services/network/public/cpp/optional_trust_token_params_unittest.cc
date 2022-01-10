@@ -4,7 +4,8 @@
 
 #include "services/network/public/cpp/optional_trust_token_params.h"
 
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "base/test/gtest_util.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
@@ -85,8 +86,8 @@ TEST(OptionalTrustTokenParams, Dereference) {
 
 TEST(OptionalTrustTokenParams, DereferenceEmpty) {
   OptionalTrustTokenParams in = absl::nullopt;
-  EXPECT_CHECK_DEATH(ignore_result(in->type));
-  EXPECT_CHECK_DEATH(ignore_result(in.value()));
+  EXPECT_CHECK_DEATH(std::ignore = in->type);
+  EXPECT_CHECK_DEATH(std::ignore = in.value());
   EXPECT_EQ(in.as_ptr(), mojom::TrustTokenParamsPtr());
 }
 

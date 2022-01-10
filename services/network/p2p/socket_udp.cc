@@ -4,9 +4,10 @@
 
 #include "services/network/p2p/socket_udp.h"
 
+#include <tuple>
+
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/ignore_result.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
@@ -410,7 +411,7 @@ void P2PSocketUdp::Send(
                          net::NetworkTrafficAnnotationTag(traffic_annotation));
 
     // We are not going to use |this| again, so it's safe to ignore the result.
-    ignore_result(DoSend(packet));
+    std::ignore = DoSend(packet);
   }
 }
 

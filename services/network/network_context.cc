@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 
 #include "base/barrier_closure.h"
@@ -16,7 +17,6 @@
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/ref_counted.h"
@@ -849,7 +849,7 @@ void NetworkContext::ClearTrustTokenData(mojom::ClearDataFilterPtr filter,
   trust_token_store_->ExecuteOrEnqueue(base::BindOnce(
       [](mojom::ClearDataFilterPtr filter, base::OnceClosure done,
          TrustTokenStore* store) {
-        ignore_result(store->ClearDataForFilter(std::move(filter)));
+        std::ignore = store->ClearDataForFilter(std::move(filter));
         std::move(done).Run();
       },
       std::move(filter), std::move(done)));
