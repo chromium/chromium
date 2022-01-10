@@ -1766,7 +1766,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Jank.FrameDuration{Scenario}" units="ms"
-    expires_after="2022-03-31">
+    expires_after="2022-06-30">
   <owner>salg@google.com</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
@@ -1790,7 +1790,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Jank.JankBursts{Scenario}" units="ms"
-    expires_after="2022-03-31">
+    expires_after="2022-06-30">
   <owner>salg@google.com</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
@@ -1816,7 +1816,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.Jank.MissedFrames{Scenario}" units="frames"
-    expires_after="2022-03-31">
+    expires_after="2022-06-30">
   <owner>salg@google.com</owner>
   <owner>ssid@chromium.org</owner>
   <summary>
