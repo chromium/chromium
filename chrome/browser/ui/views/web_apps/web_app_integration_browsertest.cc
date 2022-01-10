@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include "build/build_config.h"
-#include "build/buildflag.h"
 #include "chrome/browser/ui/views/web_apps/web_app_integration_test_driver.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "content/public/test/browser_test.h"
 
 namespace web_app {
@@ -23,6 +23,20 @@ IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest, ManifestUpdateScope) {
   helper_.ManifestUpdateScopeSiteAFooTo("SiteA");
   helper_.NavigateBrowser("SiteA");
   helper_.CheckLaunchIconShown();
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppIntegrationBrowserTest, VerifyWindowModeChanged) {
+  helper_.InstallCreateShortcutWindowed("SiteA");
+  helper_.CheckAppWindowMode("SiteA", apps::mojom::WindowMode::kWindow);
+  // Change to tabbed mode
+  helper_.ChangeAppSettingsWindowMode("SiteA",
+                                      apps::mojom::WindowMode::kTabbedWindow);
+#if defined(OS_CHROMEOS)
+  helper_.CheckAppWindowMode("SiteA", apps::mojom::WindowMode::kWindow);
+#else
+  // Verify change is propagated in W/M/L cases
+  helper_.CheckAppWindowMode("SiteA", apps::mojom::WindowMode::kTabbedWindow);
+#endif
 }
 
 // Automated tests:

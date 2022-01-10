@@ -262,6 +262,17 @@ void AppManagementPageHandler::GetOverlappingPreferredApps(
   std::move(callback).Run(std::move(app_ids).extract());
 }
 
+void AppManagementPageHandler::SetWindowMode(
+    const std::string& app_id,
+    apps::mojom::WindowMode window_mode) {
+#if defined(OS_CHROMEOS)
+  NOTREACHED();
+#else
+  apps::AppServiceProxyFactory::GetForProfile(profile_)->SetWindowMode(
+      app_id, std::move(window_mode));
+#endif
+}
+
 app_management::mojom::AppPtr AppManagementPageHandler::CreateUIAppPtr(
     const apps::AppUpdate& update) {
   base::flat_map<apps::mojom::PermissionType, apps::mojom::PermissionPtr>

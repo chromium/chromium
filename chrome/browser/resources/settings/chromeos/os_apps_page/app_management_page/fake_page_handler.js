@@ -5,7 +5,7 @@
 import {AppType, OptionalBool} from '//resources/cr_components/app_management/constants.js';
 import {PermissionType, PermissionValue, TriState} from '//resources/cr_components/app_management/permission_constants.js';
 import {createBoolPermission, createTriStatePermission, getTriStatePermissionValue} from '//resources/cr_components/app_management/permission_util.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 
 import {AppManagementStore} from './store.js';
@@ -287,6 +287,14 @@ export class FakePageHandler {
    * @param {string} appId
    */
   openNativeSettings(appId) {}
+
+  /**
+   * @param {string} appId
+   * @param {apps.mojom.WindowMode} windowMode
+   */
+  setWindowMode(appId, windowMode) {
+    assertNotReached();
+  }
 
   /**
    * @param {string} appId

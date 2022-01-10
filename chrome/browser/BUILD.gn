@@ -7903,7 +7903,11 @@ if (!is_android) {
       "//content/test:test_support",
     ]
 
-    public_deps = [ "//net:test_support" ]
+    public_deps = [
+      "//chrome/browser/web_applications/app_service:app_service",
+      "//net:test_support",
+      "//ui/webui/resources/cr_components/app_management:mojo_bindings",
+    ]
   }
 }
 

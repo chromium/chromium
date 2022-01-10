@@ -53,6 +53,8 @@ class AppManagementPageHandler
   void GetOverlappingPreferredApps(
       const std::string& app_id,
       GetOverlappingPreferredAppsCallback callback) override;
+  void SetWindowMode(const std::string& app_id,
+                     apps::mojom::WindowMode window_mode) override;
 
  private:
   app_management::mojom::AppPtr CreateUIAppPtr(const apps::AppUpdate& update);

@@ -134,6 +134,8 @@ class WebApps : public apps::PublisherBase,
   void InitWebApps();
   void StartPublishingWebApps(
       mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote);
+  void SetWindowMode(const std::string& app_id,
+                     apps::mojom::WindowMode window_mode) override;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // apps::mojom::Publisher overrides.
@@ -153,8 +155,6 @@ class WebApps : public apps::PublisherBase,
                                  int command_id,
                                  const std::string& shortcut_id,
                                  int64_t display_id) override;
-  void SetWindowMode(const std::string& app_id,
-                     apps::mojom::WindowMode window_mode) override;
 
   void GetAppShortcutMenuModel(const std::string& app_id,
                                apps::mojom::MenuItemsPtr menu_items,

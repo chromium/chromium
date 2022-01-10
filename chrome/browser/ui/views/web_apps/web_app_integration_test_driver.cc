@@ -23,6 +23,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -42,6 +43,9 @@
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
+#include "chrome/browser/ui/webui/app_management/app_management_page_handler.h"
+#include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
+#include "chrome/browser/web_applications/app_service/web_app_publisher_helper.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_constants.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -58,6 +62,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/services/app_service/public/mojom/types.mojom.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -74,6 +79,7 @@
 #include "third_party/re2/src/re2/re2.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/widget/any_widget_observer.h"
+#include "ui/webui/resources/cr_components/app_management/app_management.mojom-forward.h"
 
 #if defined(OS_CHROMEOS)
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -292,6 +298,7 @@ bool BrowserState::operator==(const BrowserState& other) const {
 AppState::AppState(web_app::AppId app_id,
                    const std::string app_name,
                    const GURL app_scope,
+                   const apps::mojom::WindowMode& window_mode,
                    const blink::mojom::DisplayMode& effective_display_mode,
                    const blink::mojom::DisplayMode& user_display_mode,
                    bool installed_locally,
@@ -299,6 +306,7 @@ AppState::AppState(web_app::AppId app_id,
     : id(app_id),
       name(app_name),
       scope(app_scope),
+      window_mode(window_mode),
       effective_display_mode(effective_display_mode),
       user_display_mode(user_display_mode),
       is_installed_locally(installed_locally),
@@ -307,6 +315,7 @@ AppState::~AppState() = default;
 AppState::AppState(const AppState&) = default;
 bool AppState::operator==(const AppState& other) const {
   return id == other.id && name == other.name && scope == other.scope &&
+         window_mode == other.window_mode &&
          effective_display_mode == other.effective_display_mode &&
          user_display_mode == other.user_display_mode &&
          is_installed_locally == other.is_installed_locally &&
@@ -454,6 +463,25 @@ void WebAppIntegrationTestDriver::TearDownOnMainThread() {
 #elif defined(OS_LINUX)
   if (shortcut_override_->desktop.IsValid())
     ASSERT_TRUE(shortcut_override_->desktop.Delete());
+#endif
+}
+
+void WebAppIntegrationTestDriver::ChangeAppSettingsWindowMode(
+    const std::string& site_mode,
+    apps::mojom::WindowMode window_mode) {
+#if !defined(OS_CHROMEOS)
+  BeforeStateChangeAction();
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      before_state_change_action_state_.get(), profile(), site_mode);
+  ASSERT_TRUE(app_state.has_value())
+      << "No app installed for site: " << site_mode;
+  mojo::PendingReceiver<app_management::mojom::Page> page;
+  mojo::Remote<app_management::mojom::PageHandler> handler;
+  AppManagementPageHandler app_management_page_handler(
+      handler.BindNewPipeAndPassReceiver(), page.InitWithNewPipeAndPassRemote(),
+      profile());
+  app_management_page_handler.SetWindowMode(app_state->id, window_mode);
+  AfterStateChangeAction();
 #endif
 }
 
@@ -735,9 +763,20 @@ void WebAppIntegrationTestDriver::SetOpenInTab(const std::string& site_mode) {
   ASSERT_TRUE(app_state.has_value())
       << "No app installed for site: " << site_mode;
   auto app_id = app_state->id;
+  // Will need to add feature flag based condition for web app settings page
+#if defined(OS_CHROMEOS)
   auto& sync_bridge = WebAppProvider::GetForTest(profile())->sync_bridge();
   sync_bridge.SetAppUserDisplayMode(app_id, blink::mojom::DisplayMode::kBrowser,
                                     true);
+#else
+  mojo::PendingReceiver<app_management::mojom::Page> page;
+  mojo::Remote<app_management::mojom::PageHandler> handler;
+  AppManagementPageHandler app_management_page_handler(
+      handler.BindNewPipeAndPassReceiver(), page.InitWithNewPipeAndPassRemote(),
+      profile());
+  app_management_page_handler.SetWindowMode(app_id,
+                                            apps::mojom::WindowMode::kBrowser);
+#endif
   AfterStateChangeAction();
 }
 
@@ -749,9 +788,20 @@ void WebAppIntegrationTestDriver::SetOpenInWindow(
   ASSERT_TRUE(app_state.has_value())
       << "No app installed for site: " << site_mode;
   auto app_id = app_state->id;
+  // Will need to add feature flag based condition for web app settings page.
+#if defined(OS_CHROMEOS)
   auto& sync_bridge = WebAppProvider::GetForTest(profile())->sync_bridge();
   sync_bridge.SetAppUserDisplayMode(
       app_id, blink::mojom::DisplayMode::kStandalone, true);
+#else
+  mojo::PendingReceiver<app_management::mojom::Page> page;
+  mojo::Remote<app_management::mojom::PageHandler> handler;
+  AppManagementPageHandler app_management_page_handler(
+      handler.BindNewPipeAndPassReceiver(), page.InitWithNewPipeAndPassRemote(),
+      profile());
+  app_management_page_handler.SetWindowMode(app_id,
+                                            apps::mojom::WindowMode::kWindow);
+#endif
   AfterStateChangeAction();
 }
 
@@ -989,6 +1039,17 @@ void WebAppIntegrationTestDriver::CheckAppShortcutNotExists(
       << "App has to be installed now or before last state change action";
 
   EXPECT_FALSE(IsShortcutCreated(profile(), app_state->name, app_state->id));
+  AfterStateCheckAction();
+}
+
+void WebAppIntegrationTestDriver::CheckAppWindowMode(
+    const std::string& site_mode,
+    apps::mojom::WindowMode window_mode) {
+  BeforeStateCheckAction();
+  absl::optional<AppState> app_state = GetAppBySiteMode(
+      after_state_change_action_state_.get(), profile(), site_mode);
+  ASSERT_TRUE(app_state);
+  EXPECT_EQ(app_state->window_mode, window_mode);
   AfterStateCheckAction();
 }
 
@@ -1303,11 +1364,16 @@ WebAppIntegrationTestDriver::ConstructStateSnapshot() {
     WebAppRegistrar& registrar = GetProviderForProfile(profile)->registrar();
     auto app_ids = registrar.GetAppIds();
     base::flat_map<AppId, AppState> app_state;
+    WebAppPublisherHelper web_app_publisher_helper(profile, provider(),
+                                                   apps::mojom::AppType::kWeb,
+                                                   /*delegate=*/nullptr, true);
     for (const auto& app_id : app_ids) {
       app_state.emplace(
           app_id,
           AppState(app_id, registrar.GetAppShortName(app_id),
                    registrar.GetAppScope(app_id),
+                   web_app_publisher_helper.ConvertDisplayModeToWindowMode(
+                       registrar.GetAppUserDisplayMode(app_id)),
                    registrar.GetAppEffectiveDisplayMode(app_id),
                    registrar.GetAppUserDisplayMode(app_id),
                    registrar.IsLocallyInstalled(app_id),

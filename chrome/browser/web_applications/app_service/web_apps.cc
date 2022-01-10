@@ -328,6 +328,11 @@ void WebApps::StartPublishingWebApps(
   subscribers_.Add(std::move(subscriber));
 }
 
+void WebApps::SetWindowMode(const std::string& app_id,
+                            apps::mojom::WindowMode window_mode) {
+  publisher_helper().SetWindowMode(app_id, window_mode);
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void WebApps::Uninstall(const std::string& app_id,
                         apps::mojom::UninstallSource uninstall_source,
@@ -514,10 +519,6 @@ void WebApps::ExecuteContextMenuCommand(const std::string& app_id,
   publisher_helper().ExecuteContextMenuCommand(app_id, shortcut_id, display_id);
 }
 
-void WebApps::SetWindowMode(const std::string& app_id,
-                            apps::mojom::WindowMode window_mode) {
-  publisher_helper().SetWindowMode(app_id, window_mode);
-}
 #endif
 
 }  // namespace web_app
