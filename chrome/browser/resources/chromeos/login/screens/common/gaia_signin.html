@@ -4,21 +4,32 @@
 
 <link rel="import" href="chrome://resources/html/polymer.html">
 
+
 <link rel="import" href="chrome://resources/cr_elements/icons.html">
 <link rel="import" href="chrome://resources/html/action_link.html">
+<link rel="import" href="chrome://resources/html/assert.html">
+<link rel="import" href="chrome://resources/html/cr.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
 
-<link rel="import" href="/components/oobe_icons.html">
-<link rel="import" href="/components/behaviors/login_screen_behavior.html">
-<link rel="import" href="/components/behaviors/multi_step_behavior.html">
-<link rel="import" href="/components/behaviors/oobe_i18n_behavior.html">
-<link rel="import" href="/components/buttons/oobe_back_button.html">
-<link rel="import" href="/components/buttons/oobe_next_button.html">
-<link rel="import" href="/components/common_styles/common_styles.html">
-<link rel="import" href="/components/common_styles/oobe_dialog_host_styles.html">
-<link rel="import" href="/components/dialogs/oobe_adaptive_dialog.html">
-<link rel="import" href="/components/dialogs/oobe_loading_dialog.html">
-<link rel="import" href="/components/throbber_notice.html">
+<link rel="import" href="../../../../gaia_auth_host/authenticator.html">
+<link rel="import" href="../../cr_ui.html">
+<link rel="import" href="../../display_manager.html">
+<link rel="import" href="../../components/display_manager_types.html">
+<link rel="import" href="../../components/notification_card.html">
+<link rel="import" href="../../components/security_token_pin.html">
+<link rel="import" href="../../components/gaia_dialog.html">
+<link rel="import" href="../../components/oobe_icons.html">
+<link rel="import" href="../../components/oobe_types.html">
+<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
+<link rel="import" href="../../components/behaviors/multi_step_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="../../components/buttons/oobe_back_button.html">
+<link rel="import" href="../../components/buttons/oobe_next_button.html">
+<link rel="import" href="../../components/common_styles/common_styles.html">
+<link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
+<link rel="import" href="../../components/dialogs/oobe_adaptive_dialog.html">
+<link rel="import" href="../../components/dialogs/oobe_loading_dialog.html">
+<link rel="import" href="../../components/throbber_notice.html">
 
 <dom-module id="gaia-signin-element">
   <template>
@@ -101,4 +112,5 @@
         link-label="[[i18nDynamic(locale, 'learnMoreButton')]]">
     </notification-card>
   </template>
+  <script src="gaia_signin.js"></script>
 </dom-module>

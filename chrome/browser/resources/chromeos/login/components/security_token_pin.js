@@ -13,11 +13,13 @@
  * @constructor
  * @extends {PolymerElement}
  * @implements {OobeI18nBehaviorInterface}
- * @implements {OobeDialogHostBehaviorInterface}
  */
 const SecurityTokenPinBase = Polymer.mixinBehaviors(
     [OobeI18nBehavior, OobeDialogHostBehavior], Polymer.Element);
 
+/**
+ * @polymer
+ */
 class SecurityTokenPin extends SecurityTokenPinBase {
   static get is() {
     return 'security-token-pin';

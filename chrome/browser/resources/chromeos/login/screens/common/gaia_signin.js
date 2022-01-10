@@ -6,9 +6,7 @@
  * @fileoverview Oobe signin screen implementation.
  */
 
-'use strict';
-
-(function() {
+/* #js_imports_placeholder */
 
 // GAIA animation guard timer. Started when GAIA page is loaded (Authenticator
 // 'ready' event) and is intended to guard against edge cases when 'showView'
@@ -30,7 +28,7 @@ const VIDEO_LOGIN_TIMEOUT = 90 * 1000;
  * The authentication mode for the screen.
  * @enum {number}
  */
-const AuthMode = {
+const ScreenAuthMode = {
   DEFAULT: 0,            // Default GAIA login flow.
   SAML_INTERSTITIAL: 1,  // Interstitial page before SAML redirection.
 };
@@ -54,261 +52,280 @@ const DialogMode = {
 const POSSIBLE_FIRST_SIGNIN_STEPS =
     [DialogMode.GAIA, DialogMode.GAIA_LOADING, DialogMode.SAML_INTERSTITIAL];
 
-Polymer({
-  is: 'gaia-signin-element',
+/**
+ * @constructor
+ * @extends {PolymerElement}
+ * @implements {LoginScreenBehaviorInterface}
+ * @implements {MultiStepBehaviorInterface}
+ * @implements {OobeI18nBehaviorInterface}
+ */
+const GaiaSigninElementBase = Polymer.mixinBehaviors(
+    [OobeI18nBehavior, LoginScreenBehavior, MultiStepBehavior],
+    Polymer.Element);
 
-  behaviors: [
-    OobeI18nBehavior,
-    LoginScreenBehavior,
-    MultiStepBehavior,
-  ],
+/**
+ * @polymer
+ */
+class GaiaSigninElement extends GaiaSigninElementBase {
+  static get is() {
+    return 'gaia-signin-element';
+  }
 
-  EXTERNAL_API: [
-    'loadAuthExtension',
-    'doReload',
-    'showAllowlistCheckFailedError',
-    'showPinDialog',
-    'closePinDialog',
-    'clickPrimaryButtonForTesting',
-  ],
+  /* #html_template_placeholder */
 
-  properties: {
+  static get properties() {
+    return {
+      /**
+       * Current mode of this screen.
+       * @private
+       */
+      screenMode_: {
+        type: Number,
+        value: ScreenAuthMode.DEFAULT,
+      },
+
+      /**
+       * Whether the screen contents are currently being loaded.
+       * @private
+       */
+      loadingFrameContents_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Whether the loading UI is shown.
+       * @private
+       */
+      isLoadingUiShown_: {
+        type: Boolean,
+        computed: 'computeIsLoadingUiShown_(loadingFrameContents_, ' +
+            'isAllowlistErrorShown_, authCompleted_)',
+      },
+
+      /**
+       * Whether the loading allowlist error UI is shown.
+       * @private
+       */
+      isAllowlistErrorShown_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Whether the navigation controls are enabled.
+       * @private
+       */
+      navigationEnabled_: {
+        type: Boolean,
+        value: true,
+      },
+
+      /**
+       * Whether the authenticator is currently in the |SAML| AuthFlow.
+       * @private
+       */
+      isSaml_: {
+        type: Boolean,
+        value: false,
+        observer: 'onSamlChanged_',
+      },
+
+      /**
+       * Whether the authenticator is or has been in the |SAML| AuthFlow during
+       * the current authentication attempt.
+       * @private
+       */
+      usedSaml_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Management domain or admin displayed on SAML interstitial page.
+       * @private
+       */
+      samlInterstitialDomainManager_: {
+        type: String,
+        value: null,
+      },
+
+      /**
+       * Contains the security token PIN dialog parameters object when the
+       * dialog is shown. Is null when no PIN dialog is shown.
+       * @type {?OobeTypes.SecurityTokenPinDialogParameters}
+       * @private
+       */
+      pinDialogParameters_: {
+        type: Object,
+        value: null,
+        observer: 'onPinDialogParametersChanged_',
+      },
+
+      /**
+       * Whether the SAML 3rd-party page is visible.
+       * @private
+       */
+      isSamlSsoVisible_: {
+        type: Boolean,
+        computed: 'computeSamlSsoVisible_(isSaml_, pinDialogParameters_)',
+      },
+
+      /**
+       * Bound to gaia-dialog::videoEnabled.
+       * @private
+       */
+      videoEnabled_: {
+        type: Boolean,
+        observer: 'onVideoEnabledChange_',
+      },
+
+      /**
+       * Bound to gaia-dialog::authFlow.
+       * @private
+       */
+      authFlow: {
+        type: Number,
+        observer: 'onAuthFlowChange_',
+      },
+
+      /**
+       * @private
+       */
+      navigationButtonsHidden_: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Bound to gaia-dialog::canGoBack.
+       * @private
+       */
+      canGaiaGoBack_: {
+        type: Boolean,
+      },
+
+      /*
+       * Updates whether the Guest and Apps button is allowed to be shown.
+       * (Note that the C++ side contains additional logic that decides whether
+       * the Guest button should be shown.)
+       * @private
+       */
+      isFirstSigninStep_: {
+        type: Boolean,
+        computed: 'isFirstSigninStep(uiStep, canGaiaGoBack_, isSaml_)',
+        observer: 'onIsFirstSigninStepChanged'
+      },
+
+      /*
+       * Whether the screen is shown.
+       * @private
+       */
+      isShown_: {
+        type: Boolean,
+        value: false,
+      },
+    };
+  }
+
+  constructor() {
+    super();
+    /**
+     * Saved authenticator load params.
+     * @type {?Object}
+     * @private
+     */
+    this.authenticatorParams_ = null;
 
     /**
-     * Current mode of this screen.
+     * Email of the user, which is logging in using offline mode.
+     * @type {string}
      * @private
      */
-    screenMode_: {
-      type: Number,
-      value: AuthMode.DEFAULT,
-    },
+    this.email_ = '';
 
     /**
-     * Whether the screen contents are currently being loaded.
+     * Timer id of pending load.
+     * @type {number|undefined}
      * @private
      */
-    loadingFrameContents_: {
-      type: Boolean,
-      value: false,
-    },
+    this.loadingTimer_ = undefined;
 
     /**
-     * Whether the loading UI is shown.
+     * Timer id of a guard timer that is fired in case 'showView' message is not
+     * received from GAIA.
+     * @type {number|undefined}
      * @private
      */
-    isLoadingUiShown_: {
-      type: Boolean,
-      computed: 'computeIsLoadingUiShown_(loadingFrameContents_, ' +
-          'isAllowlistErrorShown_, authCompleted_)',
-    },
+    this.loadAnimationGuardTimer_ = undefined;
 
     /**
-     * Whether the loading allowlist error UI is shown.
+     * Timer id of the video login timer.
+     * @type {number|undefined}
      * @private
      */
-    isAllowlistErrorShown_: {
-      type: Boolean,
-      value: false,
-    },
+    this.videoTimer_ = undefined;
 
     /**
-     * Whether the navigation controls are enabled.
+     * Whether we've processed 'showView' message - either from GAIA or from
+     * guard timer.
+     * @type {boolean}
      * @private
      */
-    navigationEnabled_: {
-      type: Boolean,
-      value: true,
-    },
+    this.showViewProcessed_ = false;
 
     /**
-     * Whether the authenticator is currently in the |SAML| AuthFlow.
+     * Whether we've processed 'authCompleted' message.
+     * @type {boolean}
      * @private
      */
-    isSaml_: {
-      type: Boolean,
-      value: false,
-      observer: 'onSamlChanged_',
-    },
+    this.authCompleted_ = false;
 
     /**
-     * Whether the authenticator is or has been in the |SAML| AuthFlow during
-     * the current authentication attempt.
+     * SAML password confirmation attempt count.
+     * @type {number}
      * @private
      */
-    usedSaml_: {
-      type: Boolean,
-      value: false,
-    },
+    this.samlPasswordConfirmAttempt_ = 0;
 
     /**
-     * Management domain or admin displayed on SAML interstitial page.
+     * Whether the result was reported to the handler for the most recent PIN
+     * dialog.
+     * @type {boolean}
      * @private
      */
-    samlInterstitialDomainManager_: {
-      type: String,
-      value: null,
-    },
+    this.pinDialogResultReported_ = false;
+  }
 
-    /**
-     * Contains the security token PIN dialog parameters object when the dialog
-     * is shown. Is null when no PIN dialog is shown.
-     * @type {OobeTypes.SecurityTokenPinDialogParameter}
-     * @private
-     */
-    pinDialogParameters_: {
-      type: Object,
-      value: null,
-      observer: 'onPinDialogParametersChanged_',
-    },
+  get EXTERNAL_API() {
+    return [
+      'loadAuthExtension', 'doReload', 'showAllowlistCheckFailedError',
+      'showPinDialog', 'closePinDialog', 'clickPrimaryButtonForTesting'
+    ];
+  }
 
-    /**
-     * Whether the SAML 3rd-party page is visible.
-     * @private
-     */
-    isSamlSsoVisible_: {
-      type: Boolean,
-      computed: 'computeSamlSsoVisible_(isSaml_, pinDialogParameters_)',
-    },
-
-    /**
-     * Bound to gaia-dialog::videoEnabled.
-     * @private
-     */
-    videoEnabled_: {
-      type: Boolean,
-      observer: 'onVideoEnabledChange_',
-    },
-
-    /**
-     * Bound to gaia-dialog::authFlow.
-     * @private
-     */
-    authFlow: {
-      type: Number,
-      observer: 'onAuthFlowChange_',
-    },
-
-    /**
-     * @private
-     */
-    navigationButtonsHidden_: {
-      type: Boolean,
-      value: false,
-    },
-
-    /**
-     * Bound to gaia-dialog::canGoBack.
-     * @private
-     */
-    canGaiaGoBack_: {
-      type: Boolean,
-    },
-
-    /*
-     * Updates whether the Guest and Apps button is allowed to be shown.
-     * (Note that the C++ side contains additional logic that decides whether
-     * the Guest button should be shown.)
-     * @private
-     */
-    isFirstSigninStep_: {
-      type: Boolean,
-      computed: 'isFirstSigninStep(uiStep, canGaiaGoBack_, isSaml_)',
-      observer: 'onIsFirstSigninStepChanged'
-    },
-
-    /*
-     * Whether the screen is shown.
-     * @private
-     */
-    isShown_: {
-      type: Boolean,
-      value: false,
-    },
-  },
-
-  observers: [
-    'refreshDialogStep_(isShown_, screenMode_, pinDialogParameters_,' +
-        'isLoadingUiShown_, isAllowlistErrorShown_)',
-  ],
-
-  /**
-   * Saved authenticator load params.
-   * @type {?string}
-   * @private
-   */
-  authenticatorParams_: null,
-
-  /**
-   * Email of the user, which is logging in using offline mode.
-   * @type {string}
-   * @private
-   */
-  email_: '',
-
-  /**
-   * Timer id of pending load.
-   * @type {number}
-   * @private
-   */
-  loadingTimer_: undefined,
-
-  /**
-   * Timer id of a guard timer that is fired in case 'showView' message is not
-   * received from GAIA.
-   * @type {number}
-   * @private
-   */
-  loadAnimationGuardTimer_: undefined,
-
-  /**
-   * Timer id of the video login timer.
-   * @type {number}
-   * @private
-   */
-  videoTimer_: undefined,
-
-  /**
-   * Whether we've processed 'showView' message - either from GAIA or from
-   * guard timer.
-   * @type {boolean}
-   * @private
-   */
-  showViewProcessed_: false,
-
-  /**
-   * Whether we've processed 'authCompleted' message.
-   * @type {boolean}
-   * @private
-   */
-  authCompleted_: false,
-
-  /**
-   * SAML password confirmation attempt count.
-   * @type {number}
-   * @private
-   */
-  samlPasswordConfirmAttempt_: 0,
-
-  /**
-   * Whether the result was reported to the handler for the most recent PIN
-   * dialog.
-   * @type {boolean}
-   * @private
-   */
-  pinDialogResultReported_: false,
+  static get observers() {
+    return [
+      'refreshDialogStep_(isShown_, screenMode_, pinDialogParameters_,' +
+          'isLoadingUiShown_, isAllowlistErrorShown_)',
+    ];
+  }
 
   defaultUIStep() {
     return DialogMode.GAIA;
-  },
+  }
 
-  UI_STEPS: DialogMode,
+  get UI_STEPS() {
+    return DialogMode;
+  }
 
   get authenticator_() {
     return this.$['signin-frame-dialog'].getAuthenticator();
-  },
+  }
 
   /** @override */
   ready() {
+    super.ready();
     this.authenticator_.confirmPasswordCallback =
         this.onAuthConfirmPassword_.bind(this);
     this.authenticator_.onePasswordCallback =
@@ -335,7 +352,7 @@ Polymer({
     this.initializeLoginScreen('GaiaSigninScreen', {
       resetAllowed: true,
     });
-  },
+  }
 
   /**
    * Whether the dialog could be closed.
@@ -346,7 +363,7 @@ Polymer({
    */
   isClosable_() {
     return Oobe.getInstance().hasUserPods;
-  },
+  }
 
   /**
    * Updates whether the Guest and Apps button is allowed to be shown. (Note
@@ -358,11 +375,11 @@ Polymer({
     return !this.isClosable_() &&
         POSSIBLE_FIRST_SIGNIN_STEPS.includes(uiStep) && !canGaiaGoBack &&
         !isSaml;
-  },
+  }
 
   onIsFirstSigninStepChanged(isFirstSigninStep) {
     chrome.send('setIsFirstSigninStep', [isFirstSigninStep]);
-  },
+  }
 
   /**
    * Handles clicks on "Back" button.
@@ -372,11 +389,11 @@ Polymer({
     if (!this.authCompleted_) {
       this.cancel(true /* isBackClicked */);
     }
-  },
+  }
 
   onInterstitialBackButtonClicked_() {
     this.cancel(true /* isBackClicked */);
-  },
+  }
 
   /**
    * Handles user closes the dialog on the SAML page.
@@ -384,7 +401,7 @@ Polymer({
    */
   closeSaml_() {
     this.cancel();
-  },
+  }
 
   /**
    * Loads the authenticator and updates the UI to reflect the loading state.
@@ -400,7 +417,7 @@ Polymer({
     this.authenticatorParams_.doSamlRedirect = doSamlRedirect;
     this.authenticator_.load(
         cr.login.Authenticator.AuthMode.DEFAULT, this.authenticatorParams_);
-  },
+  }
 
   /**
    * Whether the SAML 3rd-party page is visible.
@@ -411,7 +428,7 @@ Polymer({
    */
   computeSamlSsoVisible_(isSaml, pinDialogParameters) {
     return isSaml && !pinDialogParameters;
-  },
+  }
 
   /**
    * Handler for Gaia loading timeout.
@@ -422,7 +439,7 @@ Polymer({
       return;
     this.loadingTimer_ = undefined;
     chrome.send('showLoadingTimeoutError');
-  },
+  }
 
   /**
    * Clears loading timer.
@@ -433,7 +450,7 @@ Polymer({
       clearTimeout(this.loadingTimer_);
       this.loadingTimer_ = undefined;
     }
-  },
+  }
 
   /**
    * Sets up loading timer.
@@ -443,7 +460,7 @@ Polymer({
     this.clearLoadingTimer_();
     this.loadingTimer_ = setTimeout(
         this.onLoadingTimeOut_.bind(this), MAX_GAIA_LOADING_TIME_SEC * 1000);
-  },
+  }
 
   /**
    * Handler for GAIA animation guard timer.
@@ -452,7 +469,7 @@ Polymer({
   onLoadAnimationGuardTimer_() {
     this.loadAnimationGuardTimer_ = undefined;
     this.onShowView_();
-  },
+  }
 
   /**
    * Clears GAIA animation guard timer.
@@ -463,7 +480,7 @@ Polymer({
       clearTimeout(this.loadAnimationGuardTimer_);
       this.loadAnimationGuardTimer_ = undefined;
     }
-  },
+  }
 
   /**
    * Sets up GAIA animation guard timer.
@@ -474,11 +491,11 @@ Polymer({
     this.loadAnimationGuardTimer_ = setTimeout(
         this.onLoadAnimationGuardTimer_.bind(this),
         GAIA_ANIMATION_GUARD_MILLISEC);
-  },
+  }
 
   getOobeUIInitialState() {
     return OOBE_UI_STATE.GAIA_SIGNIN;
-  },
+  }
 
   /**
    * Event handler that is invoked just before the frame is shown.
@@ -497,7 +514,7 @@ Polymer({
     this.isShown_ = true;
 
     cr.ui.login.invokePolymerMethod(this.$.pinDialog, 'onBeforeShow');
-  },
+  }
 
   /**
    * @return {!Element}
@@ -505,29 +522,29 @@ Polymer({
    */
   getSigninFrame_() {
     return this.$['signin-frame-dialog'].getFrame();
-  },
+  }
 
   /** @private */
   getActiveFrame_() {
     switch (this.screenMode_) {
-      case AuthMode.DEFAULT:
+      case ScreenAuthMode.DEFAULT:
         return this.getSigninFrame_();
-      case AuthMode.SAML_INTERSTITIAL:
+      case ScreenAuthMode.SAML_INTERSTITIAL:
         return this.$['saml-interstitial'];
     }
-  },
+  }
 
   /** @private */
   focusActiveFrame_() {
     let activeFrame = this.getActiveFrame_();
     Polymer.RenderStatus.afterNextRender(this, () => activeFrame.focus());
-  },
+  }
 
   /** Event handler that is invoked after the screen is shown. */
   onAfterShow() {
     if (!this.isLoadingUiShown_)
       this.focusActiveFrame_();
-  },
+  }
 
   /**
    * Event handler that is invoked just before the screen is hidden.
@@ -535,17 +552,18 @@ Polymer({
   onBeforeHide() {
     chrome.send('loginUIStateChanged', ['gaia-signin', false]);
     this.isShown_ = false;
-  },
+  }
 
   /**
    * Loads the authentication extension into the iframe.
    * @param {!Object} data Extension parameters bag.
+   * @suppress {missingProperties}
    */
   loadAuthExtension(data) {
     // Redirect the webview to the blank page in order to stop the SAML IdP
     // page from working in a background (see crbug.com/613245).
-    if (this.screenMode_ == AuthMode.DEFAULT &&
-        data.screenMode != AuthMode.DEFAULT) {
+    if (this.screenMode_ == ScreenAuthMode.DEFAULT &&
+        data.screenMode != ScreenAuthMode.DEFAULT) {
       this.authenticator_.resetWebview();
     }
 
@@ -564,13 +582,15 @@ Polymer({
     this.closePinDialog();
 
     let params = {};
-    for (let i in cr.login.Authenticator.SUPPORTED_PARAMS) {
-      const name = cr.login.Authenticator.SUPPORTED_PARAMS[i];
-      if (data[name])
+    cr.login.Authenticator.SUPPORTED_PARAMS.forEach(name => {
+      if (data.hasOwnProperty(name)) {
         params[name] = data[name];
-    }
+      }
+    });
 
-    params.doSamlRedirect = (this.screenMode_ == AuthMode.SAML_INTERSTITIAL);
+
+    params.doSamlRedirect =
+        (this.screenMode_ == ScreenAuthMode.SAML_INTERSTITIAL);
     params.menuEnterpriseEnrollment =
         !(data.enterpriseManagedDevice || data.hasDeviceOwner);
     params.isFirstUser = !(data.enterpriseManagedDevice || data.hasDeviceOwner);
@@ -580,16 +600,16 @@ Polymer({
     this.authenticatorParams_ = params;
 
     switch (this.screenMode_) {
-      case AuthMode.DEFAULT:
+      case ScreenAuthMode.DEFAULT:
         this.loadAuthenticator_(false /* doSamlRedirect */);
         break;
-      case AuthMode.SAML_INTERSTITIAL:
+      case ScreenAuthMode.SAML_INTERSTITIAL:
         this.samlInterstitialDomainManager_ = data.enterpriseDomainManager;
         this.loadingFrameContents_ = false;
         break;
     }
     chrome.send('authExtensionLoaded');
-  },
+  }
 
   /**
    * Whether the current auth flow is SAML.
@@ -597,7 +617,7 @@ Polymer({
    */
   isSamlForTesting() {
     return this.isSaml_;
-  },
+  }
 
   /**
    * Clean up from a video-enabled SAML flow.
@@ -608,7 +628,7 @@ Polymer({
       clearTimeout(this.videoTimer_);
       this.videoTimer_ = undefined;
     }
-  },
+  }
 
   /**
    * @private
@@ -620,7 +640,7 @@ Polymer({
     } else {
       this.clearVideoTimer_();
     }
-  },
+  }
 
   /**
    * Invoked when the authFlow property is changed on the authenticator.
@@ -628,7 +648,7 @@ Polymer({
    */
   onAuthFlowChange_() {
     this.isSaml_ = this.authFlow == cr.login.Authenticator.AuthFlow.SAML;
-  },
+  }
 
   /**
    * Observer that is called when the |isSaml_| property gets changed.
@@ -643,7 +663,7 @@ Polymer({
     chrome.send('samlStateChanged', [this.isSaml_]);
 
     this.classList.toggle('saml', this.isSaml_);
-  },
+  }
 
   /**
    * Invoked when the authenticator emits 'ready' event or when another
@@ -655,17 +675,17 @@ Polymer({
     this.startLoadAnimationGuardTimer_();
     this.clearLoadingTimer_();
     // Workaround to hide flashing scroll bar.
-    this.async(function() {
+    setTimeout(function() {
       this.loadingFrameContents_ = false;
     }.bind(this), 100);
-  },
+  }
 
   /**
    * @private
    */
   onStartEnrollment_() {
     this.userActed('startEnrollment');
-  },
+  }
 
   /**
    * Invoked when the authenticator requests whether the specified user is a
@@ -679,7 +699,7 @@ Polymer({
   getIsSamlUserPasswordless_(email, gaiaId, callback) {
     cr.sendWithPromise('getIsSamlUserPasswordless', email, gaiaId)
         .then(callback);
-  },
+  }
 
   /**
    * Invoked when the authenticator emits 'showView' event or when corresponding
@@ -693,7 +713,7 @@ Polymer({
     this.showViewProcessed_ = true;
     this.clearLoadAnimationGuardTimer_();
     this.onLoginUIVisible_();
-  },
+  }
 
   /**
    * Called when UI is shown.
@@ -702,22 +722,28 @@ Polymer({
   onLoginUIVisible_() {
     chrome.send('loginWebuiReady');
     chrome.send('loginVisible', ['gaia-signin']);
-  },
+  }
 
   /**
+   * TODO(crbug.com/1229130) - Remove suppression.
+   * login.ConfirmSamlPasswordScreen has a `show` method exposed through its
+   * usage of LoginScreenBehavior. Suppressing for now, but this should be
+   * improved.
+   *
    * Invoked when the user has successfully authenticated via SAML,
    * the Chrome Credentials Passing API was not used and the authenticator needs
    * the user to confirm the scraped password.
    * @param {string} email The authenticated user's e-mail.
    * @param {number} passwordCount The number of passwords that were scraped.
    * @private
+   * @suppress {missingProperties}
    */
   onAuthConfirmPassword_(email, passwordCount) {
     if (this.samlPasswordConfirmAttempt_ == 0)
       chrome.send('scrapedPasswordCount', [passwordCount]);
 
     if (this.samlPasswordConfirmAttempt_ < 2) {
-      login.ConfirmSamlPasswordScreen.show(
+      window.login.ConfirmSamlPasswordScreen.show(
           email, false /* manual password entry */,
           this.samlPasswordConfirmAttempt_,
           this.onConfirmPasswordCollected_.bind(this));
@@ -726,7 +752,7 @@ Polymer({
       this.showFatalAuthError_(
           OobeTypes.FatalErrorCode.SCRAPED_PASSWORD_VERIFICATION_FAILURE);
     }
-  },
+  }
 
   /**
    * Invoked when the user has successfully authenticated via SAML,
@@ -736,7 +762,7 @@ Polymer({
    */
   onAuthOnePassword_() {
     chrome.send('scrapedPasswordCount', [1]);
-  },
+  }
 
   /**
    * Invoked when the confirm password screen is dismissed.
@@ -749,23 +775,28 @@ Polymer({
 
     // Shows signin UI again without changing states.
     Oobe.showScreen({id: SCREEN_GAIA_SIGNIN});
-  },
+  }
 
   /**
+   * TODO(crbug.com/1229130) - Remove suppression
+   * login.ConfirmSamlPasswordScreen has a `show` method exposed through its
+   * usage of LoginScreenBehavior. Suppressing for now, but this should be
+   * improved.
    * Invoked when the user has successfully authenticated via SAML, the
    * Chrome Credentials Passing API was not used and no passwords
    * could be scraped.
    * The user will be asked to pick a manual password for the device.
    * @param {string} email The authenticated user's e-mail.
    * @private
+   * @suppress {missingProperties} login.ConfirmSamlPasswordScreen
    */
   onAuthNoPassword_(email) {
     chrome.send('scrapedPasswordCount', [0]);
-    login.ConfirmSamlPasswordScreen.show(
+    window.login.ConfirmSamlPasswordScreen.show(
         email, true /* manual password entry */,
         this.samlPasswordConfirmAttempt_,
         this.onManualPasswordCollected_.bind(this));
-  },
+  }
 
   /**
    * Invoked when the dialog where the user enters a manual password for the
@@ -776,7 +807,7 @@ Polymer({
    */
   onManualPasswordCollected_(password) {
     this.authenticator_.completeAuthWithManualPassword(password);
-  },
+  }
 
   /**
    * Invoked when the authentication flow had to be aborted because content
@@ -789,17 +820,17 @@ Polymer({
   onInsecureContentBlocked_(url) {
     this.showFatalAuthError_(
         OobeTypes.FatalErrorCode.INSECURE_CONTENT_BLOCKED, {'url': url});
-  },
+  }
 
   /**
    * Shows the fatal auth error.
    * @param {OobeTypes.FatalErrorCode} error_code The error code
-   * @param {string} info Additional info
+   * @param {Object} [info] Additional info
    * @private
    */
   showFatalAuthError_(error_code, info) {
     chrome.send('onFatalError', [error_code, info || {}]);
-  },
+  }
 
   /**
    * Show fatal auth error when information is missing from GAIA.
@@ -807,7 +838,7 @@ Polymer({
    */
   missingGaiaInfo_() {
     this.showFatalAuthError_(OobeTypes.FatalErrorCode.MISSING_GAIA_INFO);
-  },
+  }
 
   /**
    * Record that SAML API was used during sign-in.
@@ -816,7 +847,7 @@ Polymer({
    */
   samlApiUsed_(isThirdPartyIdP) {
     chrome.send('usingSAMLAPI', [isThirdPartyIdP]);
-  },
+  }
 
   /**
    * Record SAML Provider that has signed-in
@@ -825,7 +856,7 @@ Polymer({
    */
   recordSAMLProvider_(X509Certificate) {
     chrome.send('recordSAMLProvider', [X509Certificate]);
-  },
+  }
 
   /**
    * Invoked when auth is completed successfully.
@@ -850,7 +881,7 @@ Polymer({
 
     this.clearVideoTimer_();
     this.authCompleted_ = true;
-  },
+  }
 
   /**
    * Invoked when onAuthCompleted message received.
@@ -860,7 +891,7 @@ Polymer({
    */
   onAuthCompletedMessage_(e) {
     this.onAuthCompleted_(e.detail);
-  },
+  }
 
   /**
    * Invoked when onLoadAbort message received.
@@ -872,7 +903,7 @@ Polymer({
    */
   onLoadAbortMessage_(e) {
     this.onWebviewError_(e.detail);
-  },
+  }
 
   /**
    * Invoked when exit message received.
@@ -881,7 +912,7 @@ Polymer({
    */
   onExitMessage_(e) {
     this.cancel();
-  },
+  }
 
   /**
    * Invoked when identifierEntered message received.
@@ -891,7 +922,7 @@ Polymer({
    */
   onIdentifierEnteredMessage_(e) {
     this.onIdentifierEntered_(e.detail);
-  },
+  }
 
   /**
    * Invoked when removeUserByEmail message received.
@@ -901,7 +932,7 @@ Polymer({
    */
   onRemoveUserByEmailMessage_(e) {
     this.onRemoveUserByEmail_(e.detail);
-  },
+  }
 
   /**
    * Clears input fields and switches to input mode.
@@ -913,19 +944,19 @@ Polymer({
     if (takeFocus) {
       Oobe.getInstance().setOobeUIState(OOBE_UI_STATE.GAIA_SIGNIN);
     }
-  },
+  }
 
   /**
    * Reloads extension frame.
    */
   doReload() {
-    if (this.screenMode_ != AuthMode.DEFAULT)
+    if (this.screenMode_ != ScreenAuthMode.DEFAULT)
       return;
     this.authenticator_.reload();
     this.loadingFrameContents_ = true;
     this.startLoadingTimer_();
     this.authCompleted_ = false;
-  },
+  }
 
   /**
    * Called when user canceled signin.
@@ -940,7 +971,7 @@ Polymer({
     }
 
     this.userActed(isBackClicked ? 'back' : 'cancel');
-  },
+  }
 
   /**
    * Handler for webview error handling.
@@ -951,7 +982,7 @@ Polymer({
    */
   onWebviewError_(data) {
     chrome.send('webviewLoadAborted', [data.error_code]);
-  },
+  }
 
   /**
    * Handler for identifierEntered event.
@@ -961,7 +992,7 @@ Polymer({
    */
   onIdentifierEntered_(data) {
     chrome.send('identifierEntered', [data.accountIdentifier]);
-  },
+  }
 
   /**
    * Handler for removeUserByEmail event.
@@ -972,7 +1003,7 @@ Polymer({
   onRemoveUserByEmail_(data) {
     chrome.send('removeUserByEmail', [data]);
     this.cancel();
-  },
+  }
 
   /**
    * Show/Hide error when user is not in allowlist. When UI is hidden GAIA is
@@ -984,7 +1015,7 @@ Polymer({
     if (show) {
       const isManaged = opt_data && opt_data.enterpriseManaged;
       const isFamilyLinkAllowed = opt_data && opt_data.familyLinkAllowed;
-      errorMessage = '';
+      let errorMessage = '';
       if (isManaged && isFamilyLinkAllowed) {
         errorMessage = 'allowlistErrorEnterpriseAndFamilyLink';
       } else if (isManaged) {
@@ -998,7 +1029,7 @@ Polymer({
       // To make animations correct, we need to make sure Gaia is completely
       // reloaded. Otherwise ChromeOS overlays hide and Gaia page is shown
       // somewhere in the middle of animations.
-      if (this.screenMode_ == AuthMode.DEFAULT)
+      if (this.screenMode_ == ScreenAuthMode.DEFAULT)
         this.authenticator_.resetWebview();
 
       // It might show the OOBE screen id=SCREEN_CONFIRM_PASSWORD.
@@ -1006,11 +1037,11 @@ Polymer({
       Oobe.showScreen({id: SCREEN_GAIA_SIGNIN});
       this.$['gaia-allowlist-error'].submitButton.focus();
     } else {
-      Oobe.showSigninUI();
+      Oobe.showSigninUI('');
     }
 
     this.isAllowlistErrorShown_ = show;
-  },
+  }
 
   /**
    * Shows the PIN dialog according to the given parameters.
@@ -1028,7 +1059,7 @@ Polymer({
     this.pinDialogParameters_ = parameters;
 
     this.pinDialogResultReported_ = false;
-  },
+  }
 
   /**
    * Closes the PIN dialog (that was previously opened using showPinDialog()).
@@ -1038,13 +1069,13 @@ Polymer({
     // Note that the update triggers the observer, that notifies the handler
     // about the closing.
     this.pinDialogParameters_ = null;
-  },
+  }
 
   /**
    * Observer that is called when the |pinDialogParameters_| property gets
    * changed.
-   * @param {OobeTypes.SecurityTokenPinDialogParameter} newValue
-   * @param {OobeTypes.SecurityTokenPinDialogParameter} oldValue
+   * @param {OobeTypes.SecurityTokenPinDialogParameters} newValue
+   * @param {OobeTypes.SecurityTokenPinDialogParameters} oldValue
    * @private
    */
   onPinDialogParametersChanged_(newValue, oldValue) {
@@ -1071,7 +1102,7 @@ Polymer({
       // before reporting the result.
       chrome.send('securityTokenPinEntered', [/*user_input=*/ '']);
     }
-  },
+  }
 
   /**
    * Invoked when the user cancels the PIN dialog.
@@ -1080,7 +1111,7 @@ Polymer({
   onPinDialogCanceled_(e) {
     this.closePinDialog();
     this.cancel();
-  },
+  }
 
   /**
    * Invoked when the PIN dialog is completed.
@@ -1089,13 +1120,13 @@ Polymer({
   onPinDialogCompleted_(e) {
     this.pinDialogResultReported_ = true;
     chrome.send('securityTokenPinEntered', [/*user_input=*/ e.detail]);
-  },
+  }
 
   /**
    * Updates current UI step based on internal state.
    * @param {boolean} isScreenShown
    * @param {number} mode
-   * @param {OobeTypes.SecurityTokenPinDialogParameter} pinParams
+   * @param {OobeTypes.SecurityTokenPinDialogParameters} pinParams
    * @param {boolean} isLoading
    * @param {boolean} isAllowlistError
    * @private
@@ -1109,7 +1140,7 @@ Polymer({
       return;
     }
     if (isLoading) {
-      if (mode == AuthMode.DEFAULT) {
+      if (mode == ScreenAuthMode.DEFAULT) {
         this.setUIStep(DialogMode.GAIA_LOADING);
       } else {
         this.setUIStep(DialogMode.LOADING);
@@ -1121,37 +1152,37 @@ Polymer({
       return;
     }
     switch (mode) {
-      case AuthMode.DEFAULT:
+      case ScreenAuthMode.DEFAULT:
         this.setUIStep(DialogMode.GAIA);
         break;
-      case AuthMode.SAML_INTERSTITIAL:
+      case ScreenAuthMode.SAML_INTERSTITIAL:
         this.setUIStep(DialogMode.SAML_INTERSTITIAL);
         break;
     }
-  },
+  }
 
   /**
    * Invoked when "Next" button is pressed on SAML Interstitial screen.
    * @param {!CustomEvent} e
    * @private
    */
-  onSamlInterstitialNext_() {
-    this.screenMode_ = AuthMode.DEFAULT;
+  onSamlInterstitialNext_(e) {
+    this.screenMode_ = ScreenAuthMode.DEFAULT;
     this.loadAuthenticator_(true /* doSamlRedirect */);
-  },
+  }
 
   /**
    * Invoked when "Change account" link is pressed on SAML Interstitial screen.
    * @param {!CustomEvent} e
    * @private
    */
-  onSamlPageChangeAccount_() {
+  onSamlPageChangeAccount_(e) {
     // The user requests to change the account. We must clear the email
     // field of the auth params.
     this.authenticatorParams_.email = '';
-    this.screenMode_ = AuthMode.DEFAULT;
+    this.screenMode_ = ScreenAuthMode.DEFAULT;
     this.loadAuthenticator_(false /* doSamlRedirect */);
-  },
+  }
 
   /**
    * Computes the value of the isLoadingUiShown_ property.
@@ -1161,10 +1192,10 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  computeIsLoadingUiShown_: function(
+  computeIsLoadingUiShown_(
       loadingFrameContents, isAllowlistErrorShown, authCompleted) {
     return (loadingFrameContents || authCompleted) && !isAllowlistErrorShown;
-  },
+  }
 
   /**
    * Checks if string is empty
@@ -1173,10 +1204,11 @@ Polymer({
    */
   isEmpty_(value) {
     return !value;
-  },
+  }
 
   clickPrimaryButtonForTesting() {
     this.$['signin-frame-dialog'].clickPrimaryButtonForTesting();
-  },
-});
-})();
+  }
+}
+
+customElements.define(GaiaSigninElement.is, GaiaSigninElement);

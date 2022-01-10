@@ -173,12 +173,12 @@ js_library("gaia_button.m") {
 js_library("gaia_dialog.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/gaia_dialog.m.js" ]
   deps = [
+    "../../../gaia_auth_host:authenticator.m",
     "./behaviors:oobe_dialog_host_behavior.m",
     "./behaviors:oobe_i18n_behavior.m",
     "./buttons:oobe_back_button.m",
     "./buttons:oobe_text_button.m",
     "./dialogs:oobe_content_dialog.m",
-    "//chrome/browser/resources/gaia_auth_host:authenticator.m",
     "//ui/webui/resources/js:cr.m",
   ]
   extra_deps = [ ":gaia_dialog_module" ]
@@ -290,7 +290,10 @@ js_library("oobe_types.m") {
 
 js_library("security_token_pin.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/components/security_token_pin.m.js" ]
-  deps = [ "./behaviors:oobe_i18n_behavior" ]
+  deps = [
+    ":oobe_types.m",
+    "./behaviors:oobe_i18n_behavior",
+  ]
   extra_deps = [ ":security_token_pin_module" ]
 }
 

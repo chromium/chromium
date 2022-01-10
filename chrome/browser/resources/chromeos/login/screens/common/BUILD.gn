@@ -23,6 +23,7 @@ group("polymer3_elements") {
     ":error_message_module",
     ":family_link_notice_module",
     ":fingerprint_setup_module",
+    ":gaia_signin_module",
     ":gesture_navigation_module",
     ":guest_tos_module",
     ":hw_data_collection_module",
@@ -62,6 +63,7 @@ js_type_check("closure_compile_module") {
     ":error_message.m",
     ":family_link_notice.m",
     ":fingerprint_setup.m",
+    ":gaia_signin.m",
     ":gesture_navigation.m",
     ":guest_tos.m",
     ":hw_data_collection.m",
@@ -248,6 +250,23 @@ js_library("gesture_navigation.m") {
     "//ui/webui/resources/js:cr.m",
   ]
   extra_deps = [ ":gesture_navigation_module" ]
+}
+
+js_library("gaia_signin.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/common/gaia_signin.m.js" ]
+  deps = [
+    "../..:display_manager.m",
+    "../../components:gaia_dialog.m",
+    "../../components:notification_card.m",
+    "../../components:oobe_types.m",
+    "../../components:security_token_pin.m",
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "//ui/webui/resources/js:cr.m",
+  ]
+  extra_deps = [ ":gaia_signin_module" ]
 }
 
 js_library("guest_tos.m") {
@@ -601,6 +620,14 @@ polymer_modulizer("family_link_notice") {
 polymer_modulizer("fingerprint_setup") {
   js_file = "fingerprint_setup.js"
   html_file = "fingerprint_setup.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("gaia_signin") {
+  js_file = "gaia_signin.js"
+  html_file = "gaia_signin.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites

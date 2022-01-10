@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {Oobe} from './cr_ui.m.js';
+import {invokePolymerMethod} from './display_manager.m.js';
 import {DebuggerUI} from './debug/debug.m.js';
 import {loadTimeData} from './i18n_setup.js';
 import 'chrome://oobe/components/test_util.m.js';
@@ -20,6 +21,7 @@ import 'chrome://oobe/screens/common/enable_kiosk.m.js';
 import 'chrome://oobe/screens/common/error_message.m.js';
 import 'chrome://oobe/screens/common/family_link_notice.m.js';
 import 'chrome://oobe/screens/common/fingerprint_setup.m.js';
+import 'chrome://oobe/screens/common/gaia_signin.m.js';
 import 'chrome://oobe/screens/common/gesture_navigation.m.js';
 import 'chrome://oobe/screens/common/guest_tos.m.js';
 import 'chrome://oobe/screens/common/hw_data_collection.m.js';
@@ -70,9 +72,13 @@ function prepareGlobalValues(globalValue) {
         globalValue.cr = {};
     }
     if (globalValue.cr.ui == undefined) {
-        globalValue.cr.ui = {};
+      globalValue.cr.ui = {};
+    }
+    if (globalValue.cr.ui.login == undefined) {
+      globalValue.cr.ui.login = {};
     }
 
+    // Expose some values in the global object that are needed by OOBE.
     globalValue.cr.ui.Oobe = Oobe;
     globalValue.Oobe = Oobe;
 }

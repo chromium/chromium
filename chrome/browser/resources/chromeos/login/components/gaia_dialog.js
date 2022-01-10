@@ -13,7 +13,6 @@
  * @constructor
  * @extends {PolymerElement}
  * @implements {OobeI18nBehaviorInterface}
- * @implements {OobeDialogHostBehaviorInterface}
  */
 const GaiaDialogBase = Polymer.mixinBehaviors(
     [OobeI18nBehavior, OobeDialogHostBehavior], Polymer.Element);
@@ -187,7 +186,7 @@ class GaiaDialog extends GaiaDialogBase {
   /** @override */
   ready() {
     super.ready();
-    const webview = this.$['signin-frame'];
+    const webview = /** @type {!WebView} */ (this.$['signin-frame']);
     this.authenticator_ = new cr.login.Authenticator(webview);
     /**
      * Event listeners for the events triggered by the authenticator.
