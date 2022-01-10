@@ -60,8 +60,6 @@
 #include "third_party/blink/public/web/web_memory_statistics.h"
 #include "ui/gfx/native_widget_types.h"
 
-class SkBitmap;
-
 namespace blink {
 class WebResourceRequestSenderDelegate;
 class WebVideoCaptureImplManager;
@@ -429,9 +427,6 @@ class CONTENT_EXPORT RenderThreadImpl
   void Init();
   void InitializeCompositorThread();
   void InitializeWebKit(mojo::BinderMap* binders);
-
-  void OnTransferBitmap(const SkBitmap& bitmap, int resource_id);
-  void OnGetAccessibilityTree();
 
   // mojom::Renderer:
   void CreateAgentSchedulingGroup(
