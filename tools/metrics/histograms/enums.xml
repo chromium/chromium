@@ -51848,6 +51848,7 @@ from previous Chrome versions.
   <int value="-1251359563" label="SharingRenameDevices:disabled"/>
   <int value="-1250965985" label="MediaFeeds:enabled"/>
   <int value="-1250611337" label="ChromeVoxArcSupport:disabled"/>
+  <int value="-1250240035" label="NearbySharingOnePageOnboarding:enabled"/>
   <int value="-1250222445" label="WebMidi:enabled"/>
   <int value="-1248478422" label="enable-zip-archiver-packer"/>
   <int value="-1246840031" label="OptInImeMenu:disabled"/>
@@ -52587,6 +52588,7 @@ from previous Chrome versions.
   <int value="-714543772" label="enable-gpu-service-logging"/>
   <int value="-714043324" label="OutOfBlinkCORS:enabled"/>
   <int value="-713705575" label="PhoneHubCallNotification:enabled"/>
+  <int value="-713136799" label="NearbySharingOnePageOnboarding:disabled"/>
   <int value="-713104676"
       label="DisablePeripheralDataAccessProtection:enabled"/>
   <int value="-711991950" label="SiteExplorationUi:enabled"/>

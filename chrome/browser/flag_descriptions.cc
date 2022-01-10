@@ -4984,6 +4984,11 @@ const char kNearbySharingBackgroundScanningDescription[] =
     "persistently scan and present a notification when a nearby device is "
     "attempting to share.";
 
+const char kNearbySharingOnePageOnboardingName[] =
+    "Nearby Sharing one-page Onboarding.";
+const char kNearbySharingOnePageOnboardingDescription[] =
+    "Enable new One-page onboarding workflow for Nearby Share.";
+
 const char kPcieBillboardNotificationName[] = "Pcie billboard notification";
 const char kPcieBillboardNotificationDescription[] =
     "Enable Pcie peripheral billboard notification.";
