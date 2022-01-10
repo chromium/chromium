@@ -7,10 +7,3 @@ source_set("risk_data_api") {
   sources = [ "risk_data_api.h" ]
   frameworks = [ "Foundation.framework" ]
 }
-
-source_set("test_risk_data") {
-  testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [ "test_risk_data.mm" ]
-  deps = [ ":risk_data_api" ]
-}

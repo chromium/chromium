@@ -89,7 +89,7 @@ source_set("test_support") {
   deps = [
     ":voice",
     "//base",
-    "//ios/public/provider/chrome/browser/voice_search:test_voice_search",
+    "//ios/chrome/test/providers/voice_search",
     "//testing/gtest",
   ]
 }

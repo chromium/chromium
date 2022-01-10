@@ -7,9 +7,3 @@ source_set("password_auto_fill_api") {
   sources = [ "password_auto_fill_api.h" ]
   frameworks = [ "Foundation.framework" ]
 }
-
-source_set("test_password_auto_fill") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [ "test_password_auto_fill.mm" ]
-  deps = [ ":password_auto_fill_api" ]
-}

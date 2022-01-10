@@ -1,7 +1,0 @@
-include_rules = []
-
-specific_include_rules = {
-  "test_text_zoom.mm": [
-    "+ios/chrome/browser/web/font_size/font_size_java_script_feature.h",
-  ]
-}

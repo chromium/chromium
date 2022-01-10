@@ -77,31 +77,3 @@ source_set("test_provider_factory") {
     ":test_support",
   ]
 }
-
-group("test_providers") {
-  testonly = true
-  deps = [
-    # The target providing the ChromeBrowserProvider factory.
-    ":test_provider_factory",
-
-    # The individual API implementations.
-    "//ios/public/provider/chrome/browser/app_distribution:test_app_distribution",
-    "//ios/public/provider/chrome/browser/branded_images:test_branded_images",
-    "//ios/public/provider/chrome/browser/lens:test_lens",
-    "//ios/public/provider/chrome/browser/modals:test_modals",
-    "//ios/public/provider/chrome/browser/omaha:test_omaha",
-    "//ios/public/provider/chrome/browser/overrides:test_overrides",
-    "//ios/public/provider/chrome/browser/password_auto_fill:test_password_auto_fill",
-    "//ios/public/provider/chrome/browser/risk_data:test_risk_data",
-    "//ios/public/provider/chrome/browser/signin:test_signin_error",
-    "//ios/public/provider/chrome/browser/signin:test_signin_resources",
-    "//ios/public/provider/chrome/browser/text_zoom:test_text_zoom",
-    "//ios/public/provider/chrome/browser/url_rewriters:test_url_rewriters",
-    "//ios/public/provider/chrome/browser/voice_search:test_voice_search",
-
-    # The provider API needs to provide MaterialDesignComponent API (as the
-    # internal provider provides an alternate implementation).
-    "//ios/third_party/material_components_ios:material_components_ios+bundle",
-    "//ios/third_party/material_components_ios:material_components_ios+link",
-  ]
-}

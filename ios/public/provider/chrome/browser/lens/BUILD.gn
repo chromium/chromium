@@ -11,13 +11,3 @@ source_set("lens_api") {
   ]
   deps = [ "//base" ]
 }
-
-source_set("test_lens") {
-  testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [ "test_lens.mm" ]
-  deps = [
-    ":lens_api",
-    "//base",
-  ]
-}

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_PUBLIC_PROVIDER_CHROME_BROWSER_VOICE_SEARCH_TEST_VOICE_SEARCH_H_
-#define IOS_PUBLIC_PROVIDER_CHROME_BROWSER_VOICE_SEARCH_TEST_VOICE_SEARCH_H_
+#ifndef IOS_CHROME_TEST_PROVIDERS_VOICE_SEARCH_TEST_VOICE_SEARCH_H_
+#define IOS_CHROME_TEST_PROVIDERS_VOICE_SEARCH_TEST_VOICE_SEARCH_H_
 
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 
@@ -18,4 +18,4 @@ void SetVoiceSearchEnabled(bool enabled);
 }  // namespace provider
 }  // namespace ios
 
-#endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_VOICE_SEARCH_TEST_VOICE_SEARCH_H_
+#endif  // IOS_CHROME_TEST_PROVIDERS_VOICE_SEARCH_TEST_VOICE_SEARCH_H_

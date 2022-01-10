@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/public/provider/chrome/browser/app_distribution/test_app_distribution.h"
+#include "ios/chrome/test/providers/app_distribution/test_app_distribution.h"
 
 #include "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
 

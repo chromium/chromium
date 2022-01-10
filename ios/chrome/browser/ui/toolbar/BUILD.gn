@@ -146,7 +146,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/web_state_list",
     "//ios/chrome/browser/web_state_list:test_support",
     "//ios/chrome/test:test_support",
-    "//ios/public/provider/chrome/browser/voice_search:test_voice_search",
+    "//ios/chrome/test/providers/voice_search",
     "//ios/public/provider/chrome/browser/voice_search:voice_search_api",
     "//ios/web",
     "//ios/web/public/test",

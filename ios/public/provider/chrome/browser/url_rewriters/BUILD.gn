@@ -6,10 +6,3 @@ source_set("url_rewriters_api") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [ "url_rewriters_api.h" ]
 }
-
-source_set("test_url_rewriters") {
-  testonly = true
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [ "test_url_rewriters.cc" ]
-  deps = [ ":url_rewriters_api" ]
-}

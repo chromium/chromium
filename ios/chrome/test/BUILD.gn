@@ -172,7 +172,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/app/resources:packed_resources",
 
     # Use the test implementation of the provider API.
-    "//ios/public/provider/chrome/browser:test_providers",
+    "//ios/chrome/test/providers",
 
     # Add unit_tests target here.
     "//ios/chrome/app:unit_tests",
