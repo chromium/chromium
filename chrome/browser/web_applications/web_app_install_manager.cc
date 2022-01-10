@@ -29,7 +29,6 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/url_constants.h"
 
 namespace web_app {
 
@@ -471,9 +470,8 @@ void WebAppInstallManager::MaybeStartQueuedTask() {
   current_queued_task_ = pending_task.task;
 
   // Load about:blank to ensure ready and clean up any left over state.
-  url_loader_->LoadUrl(
-      GURL(url::kAboutBlankURL), web_contents_.get(),
-      WebAppUrlLoader::UrlComparison::kExact,
+  url_loader_->PrepareForLoad(
+      web_contents_.get(),
       base::BindOnce(&WebAppInstallManager::OnWebContentsReadyRunTask,
                      GetWeakPtr(), std::move(pending_task)));
 }

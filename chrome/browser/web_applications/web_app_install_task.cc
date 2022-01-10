@@ -993,8 +993,6 @@ void WebAppInstallTask::LogHeaderIfLogEmpty(const std::string& url) {
   if (!error_dict_ || !error_dict_->DictEmpty())
     return;
 
-  // `install_source_` is kNoInstallSource for `UpdateWebAppFromInfo` and
-  // `OnIconsRetrievedFinalizeUpdate`.
   error_dict_->SetStringKey("!url", url);
   error_dict_->SetIntKey("install_source", static_cast<int>(install_source_));
   error_dict_->SetBoolKey("background_installation", background_installation_);
