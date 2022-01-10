@@ -263,8 +263,6 @@ crbug.com/1045599 external/wpt/css/css-grid/alignment/replaced-alignment-with-as
 crbug.com/1045599 external/wpt/css/css-grid/alignment/replaced-alignment-with-aspect-ratio-007.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/replaced-alignment-with-aspect-ratio-008.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/alignment/replaced-alignment-with-aspect-ratio-009.html [ Failure ]
-crbug.com/1045599 external/wpt/css/css-grid/alignment/replaced-alignment-with-aspect-ratio-001.tentative.html [ Failure ]
-crbug.com/1045599 external/wpt/css/css-grid/alignment/replaced-alignment-with-aspect-ratio-002.tentative.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/grid-definition/grid-auto-fill-columns-001.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/grid-definition/grid-auto-fill-rows-001.html [ Failure ]
 crbug.com/1045599 external/wpt/css/css-grid/grid-definition/grid-auto-fit-columns-001.html [ Failure ]
@@ -407,7 +405,6 @@ crbug.com/998423 external/wpt/css/css-multicol/with-custom-layout-on-same-elemen
 ### external/wpt/css/css-position/
 crbug.com/591099 external/wpt/css/css-position/position-absolute-center-003.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-position/position-absolute-center-004.html [ Failure ]
-crbug.com/591099 external/wpt/css/css-position/position-absolute-center-005.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-position/position-absolute-center-006.html [ Failure ]
 crbug.com/591099 external/wpt/css/css-position/position-absolute-crash-chrome-006.html [ Crash ]
 crbug.com/591099 external/wpt/css/css-position/position-absolute-dynamic-overflow-002.html [ Failure ]
@@ -451,7 +448,6 @@ crbug.com/1108830 external/wpt/css/css-pseudo/marker-text-transform-uppercase.ht
 crbug.com/1108830 external/wpt/css/css-pseudo/marker-word-break.html [ Failure ]
 crbug.com/1012289 external/wpt/css/css-pseudo/marker-unicode-bidi-default.html [ Failure ]
 crbug.com/1012289 external/wpt/css/css-pseudo/marker-unicode-bidi-normal.html [ Failure ]
-crbug.com/1147859 external/wpt/css/css-pseudo/selection-decoration-p3.html [ Failure ]
 crbug.com/1136817 external/wpt/css/css-pseudo/target-text-004.html [ Pass ]
 crbug.com/1136817 external/wpt/css/css-pseudo/target-text-007.html [ Failure ]
 crbug.com/1035708 wpt_internal/css/css-pseudo/spelling-error-color-001.html [ Failure ]
@@ -846,9 +842,7 @@ crbug.com/591099 media/media-controls-clone.html [ Failure ]
 
 # Newline painting difference with LayoutNG disabled.
 crbug.com/591099 external/wpt/forced-colors-mode/forced-colors-mode-14.html [ Failure ]
-crbug.com/591099 external/wpt/forced-colors-mode/forced-colors-mode-15.html [ Failure ]
 crbug.com/591099 virtual/forced-high-contrast-colors/external/wpt/forced-colors-mode/forced-colors-mode-14.html [ Failure ]
-crbug.com/591099 virtual/forced-high-contrast-colors/external/wpt/forced-colors-mode/forced-colors-mode-15.html [ Failure ]
 
 ### http/tests/credentialmanager/
 crbug.com/874695 http/tests/credentialmanager/credentialscontainer-create-with-virtual-authenticator.html [ Failure ]
