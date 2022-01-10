@@ -109,6 +109,8 @@ class PasswordStoreAndroidBackend
     base::Time start_ = base::Time::Now();
   };
 
+  class ClearAllLocalPasswordsMetricRecorder;
+
   // Wraps the handler for an asynchronous job (if successful) and invokes the
   // supplied metrics recorded upon completion. An object of this type shall be
   // created and stored in |request_for_job_| once an asynchronous begins, and

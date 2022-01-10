@@ -556,6 +556,9 @@ TEST_F(PasswordStoreAndroidBackendTest, DisableAutoSignInForOrigins) {
 }
 
 TEST_F(PasswordStoreAndroidBackendTest, RemoveAllLocalLogins) {
+  base::HistogramTester histogram_tester;
+  constexpr auto kLatencyDelta = base::Milliseconds(123u);
+
   backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
                         base::RepeatingClosure(), base::DoNothing());
 
@@ -575,8 +578,76 @@ TEST_F(PasswordStoreAndroidBackendTest, RemoveAllLocalLogins) {
       RemoveLogin(form_to_delete, PasswordStoreOperationTarget::kLocalStorage))
       .WillOnce(Return(kRemoveLoginJobId));
 
+  task_environment_.FastForwardBy(kLatencyDelta);
   consumer().OnCompleteWithLogins(kGetLoginsJobId, {form_to_delete});
   RunUntilIdle();
+
+  task_environment_.FastForwardBy(kLatencyDelta);
+  consumer().OnLoginsChanged(kRemoveLoginJobId, PasswordStoreChangeList());
+  RunUntilIdle();
+
+  histogram_tester.ExpectTimeBucketCount(
+      "PasswordManager.PasswordStoreAndroidBackend."
+      "ClearAllLocalPasswords."
+      "Latency",
+      kLatencyDelta * 2, 1);
+
+  histogram_tester.ExpectTotalCount(
+      "PasswordManager.PasswordStoreAndroidBackend."
+      "ClearAllLocalPasswords."
+      "Success",
+      1);
+}
+
+TEST_F(PasswordStoreAndroidBackendTest, RemoveAllLocalLoginsSuccessMetrics) {
+  base::HistogramTester histogram_tester;
+  backend().InitBackend(PasswordStoreAndroidBackend::RemoteChangesReceived(),
+                        base::RepeatingClosure(), base::DoNothing());
+
+  base::MockCallback<LoginsReply> mock_logins_reply;
+  const JobId kGetLoginsJobId{13387};
+  EXPECT_CALL(*bridge(),
+              GetAllLogins(PasswordStoreOperationTarget::kLocalStorage))
+      .WillOnce(Return(kGetLoginsJobId));
+  backend().ClearAllLocalPasswords();
+
+  // Imitate login retrieval and check that it triggers the removal of forms.
+  const JobId kRemoveLoginJobId1{13388}, kRemoveLoginJobId2{13389};
+  PasswordForm form = CreateTestLogin(kTestUsername, kTestPassword, kTestUrl,
+                                      base::Time::FromTimeT(1500));
+  EXPECT_CALL(*bridge(), RemoveLogin).WillOnce(Return(kRemoveLoginJobId1));
+
+  // Simulate GetLoginAsync returns two identical logins
+  consumer().OnCompleteWithLogins(kGetLoginsJobId, {form, form});
+  RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(bridge());
+
+  PasswordStoreChangeList changes = {
+      PasswordStoreChange(PasswordStoreChange::REMOVE, form)};
+  // Receiving callback after removing the first login should trigger
+  // removal of the second login.
+  EXPECT_CALL(*bridge(), RemoveLogin).WillOnce(Return(kRemoveLoginJobId2));
+  consumer().OnLoginsChanged(kRemoveLoginJobId1, changes);
+  RunUntilIdle();
+  testing::Mock::VerifyAndClearExpectations(bridge());
+
+  // Simulate that the second removal failed.
+  consumer().OnError(
+      kRemoveLoginJobId2,
+      AndroidBackendError(AndroidBackendErrorType::kUncategorized));
+  RunUntilIdle();
+
+  const char kTotalCountMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.ClearAllLocalPasswords."
+      "LoginsToRemove";
+  const char kSuccessRateMetric[] =
+      "PasswordManager.PasswordStoreAndroidBackend.ClearAllLocalPasswords."
+      "SuccessRate";
+
+  histogram_tester.ExpectTotalCount(kTotalCountMetric, 1);
+  histogram_tester.ExpectUniqueSample(kTotalCountMetric, 2, 1);
+  histogram_tester.ExpectTotalCount(kSuccessRateMetric, 1);
+  histogram_tester.ExpectUniqueSample(kSuccessRateMetric, 50, 1);
 }
 
 class PasswordStoreAndroidBackendTestForMetrics

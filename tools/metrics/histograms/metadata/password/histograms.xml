@@ -2223,6 +2223,29 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
+    name="PasswordManager.PasswordStoreAndroidBackend.ClearAllLocalPasswords.LoginsToRemove"
+    units="count" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Total number of logins to be removed by ClearAllLocalPasswords.
+  </summary>
+</histogram>
+
+<histogram
+    name="PasswordManager.PasswordStoreAndroidBackend.ClearAllLocalPasswords.SuccessRate"
+    units="%" expires_after="2022-06-30">
+  <owner>fhorschig@chromium.org</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Ratio between successfully removed logins and total number of logins in the
+    GMS's local storage. Removal is considered successful when change list is
+    non-empty. Recorded when all the logins have been processed. If total number
+    of logins is 0, nothing is recorded.
+  </summary>
+</histogram>
+
+<histogram
     name="PasswordManager.PasswordStoreAndroidBackend.{Function}.Latency"
     units="ms" expires_after="2022-06-30">
   <owner>fhorschig@chromium.org</owner>
@@ -2233,6 +2256,8 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Function">
     <variant name="AddLoginAsync" summary="add a login to"/>
+    <variant name="ClearAllLocalPasswords"
+        summary="clear all local passwords from"/>
     <variant name="DisableAutoSignInForOriginsAsync"
         summary="disable autosignin for matching logins in"/>
     <variant name="FillMatchingLoginsAsync"
@@ -2264,6 +2289,9 @@ chromium-metrics-reviews@google.com.
   <token key="Function">
     <variant name="AddLoginAsync"
         summary="AddLoginAsync() succeeded to add a login to"/>
+    <variant name="ClearAllLocalPasswords"
+        summary="ClearAllLocalPasswords() successfully obtained a list of all
+                 logins from"/>
     <variant name="DisableAutoSignInForOriginsAsync"
         summary="DisableAutoSignInForOriginsAsync() succeeded in disabling
                  autosignin for matching logins in"/>
