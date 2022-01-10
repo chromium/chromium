@@ -2992,6 +2992,10 @@ void NetworkHandler::LoadNetworkResource(
     auto factory = CreateNetworkFactoryForDevTools(
         gurl.scheme(), frame->GetProcess(), frame->GetRoutingID(),
         frame->GetLastCommittedOrigin(), std::move(params));
+    if (!factory.is_valid()) {
+      callback->sendFailure(Response::InvalidParams("Unsupported URL scheme"));
+      return;
+    }
 
     url_loader_factory.Bind(std::move(factory));
     auto loader = DevToolsNetworkResourceLoader::Create(
