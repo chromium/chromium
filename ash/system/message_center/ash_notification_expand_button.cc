@@ -17,12 +17,15 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/paint_vector_icon.h"
+#include "ui/gfx/text_constants.h"
 #include "ui/views/animation/animation_builder.h"
 #include "ui/views/animation/animation_sequence_block.h"
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
-#include "ui/views/layout/box_layout.h"
+#include "ui/views/layout/flex_layout.h"
+#include "ui/views/layout/layout_types.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 
@@ -32,18 +35,15 @@ END_METADATA
 AshNotificationExpandButton::AshNotificationExpandButton(
     PressedCallback callback)
     : Button(std::move(callback)) {
-  auto* layout_manager = SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal,
-      kNotificationExpandButtonInsets, kNotificationExpandButtonChildSpacing));
-  layout_manager->set_main_axis_alignment(
-      views::BoxLayout::MainAxisAlignment::kEnd);
+  SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetMainAxisAlignment(views::LayoutAlignment::kEnd);
 
   auto label = std::make_unique<views::Label>();
   label->SetFontList(gfx::FontList({kGoogleSansFont}, gfx::Font::NORMAL,
                                    kNotificationExpandButtonLabelFontSize,
                                    gfx::Font::Weight::MEDIUM));
-
-  label->SetPreferredSize(kNotificationExpandButtonLabelSize);
+  label->SetProperty(views::kMarginsKey, kNotificationExpandButtonLabelInsets);
+  label->SetElideBehavior(gfx::ElideBehavior::NO_ELIDE);
   label->SetText(base::NumberToString16(total_grouped_notifications_));
   label->SetVisible(ShouldShowLabel());
   label_ = AddChildView(std::move(label));
@@ -51,6 +51,7 @@ AshNotificationExpandButton::AshNotificationExpandButton(
   UpdateIcons();
 
   auto image = std::make_unique<views::ImageView>();
+  image->SetProperty(views::kMarginsKey, kNotificationExpandButtonImageInsets);
   image->SetImage(expanded_ ? expanded_image_ : collapsed_image_);
   image_ = AddChildView(std::move(image));
 
@@ -75,6 +76,9 @@ AshNotificationExpandButton::~AshNotificationExpandButton() = default;
 void AshNotificationExpandButton::SetExpanded(bool expanded) {
   if (expanded_ == expanded)
     return;
+
+  previous_bounds_ = GetContentsBounds();
+
   expanded_ = expanded;
 
   label_->SetText(base::NumberToString16(total_grouped_notifications_));
@@ -138,11 +142,6 @@ void AshNotificationExpandButton::PerformExpandCollapseAnimation() {
     message_center_utils::FadeInView(label_, kExpandButtonFadeInLabelDelayMs,
                                      kExpandButtonFadeInLabelDurationMs);
 
-    // The button is going from circle to pill shape, thus we need to add
-    // negative extra width to previous bounds.
-    extra_width = kNotificationExpandButtonSize.width() -
-                  kNotificationExpandButtonWithLabelSize.width();
-
     bounds_animation_duration = kExpandButtonShowLabelBoundsChangeDurationMs;
     bounds_animation_tween_type = gfx::Tween::LINEAR_OUT_SLOW_IN;
   } else {
@@ -162,11 +161,6 @@ void AshNotificationExpandButton::PerformExpandCollapseAnimation() {
             weak_factory_.GetWeakPtr(), label_),
         0, kExpandButtonFadeOutLabelDurationMs);
 
-    // The button is going from with pill to circle shape, thus we need to add
-    // positive extra width previous bounds.
-    extra_width = kNotificationExpandButtonWithLabelSize.width() -
-                  kNotificationExpandButtonSize.width();
-
     bounds_animation_duration = kExpandButtonHideLabelBoundsChangeDurationMs;
     bounds_animation_tween_type = gfx::Tween::ACCEL_20_DECEL_100;
   }
@@ -177,6 +171,9 @@ void AshNotificationExpandButton::PerformExpandCollapseAnimation() {
   // stay in the same location when the parent's bounds is moving.
   const gfx::Rect target_bounds = layer()->GetTargetBounds();
   const gfx::Rect image_target_bounds = image_->layer()->GetTargetBounds();
+
+  extra_width = previous_bounds_.width() - target_bounds.width();
+
   layer()->SetBounds(
       gfx::Rect(target_bounds.x() - extra_width, target_bounds.y(),
                 target_bounds.width() + extra_width, target_bounds.height()));
@@ -189,13 +186,6 @@ void AshNotificationExpandButton::PerformExpandCollapseAnimation() {
       .SetDuration(base::Milliseconds(bounds_animation_duration))
       .SetBounds(this, target_bounds, bounds_animation_tween_type)
       .SetBounds(image_, image_target_bounds, bounds_animation_tween_type);
-}
-
-gfx::Size AshNotificationExpandButton::CalculatePreferredSize() const {
-  if (ShouldShowLabel())
-    return kNotificationExpandButtonWithLabelSize;
-
-  return kNotificationExpandButtonSize;
 }
 
 void AshNotificationExpandButton::OnThemeChanged() {

@@ -47,7 +47,6 @@ class AshNotificationExpandButton : public views::Button {
   void PerformExpandCollapseAnimation();
 
   // views::Button:
-  gfx::Size CalculatePreferredSize() const override;
   void OnThemeChanged() override;
 
   views::Label* label_for_test() { return label_; }
@@ -60,6 +59,9 @@ class AshNotificationExpandButton : public views::Button {
   // Cached icons used to display the chevron in the button.
   gfx::ImageSkia expanded_image_;
   gfx::ImageSkia collapsed_image_;
+
+  // Used in layer bounds animation.
+  gfx::Rect previous_bounds_;
 
   // Total number of grouped child notifications in this button's parent view.
   int total_grouped_notifications_ = 0;
