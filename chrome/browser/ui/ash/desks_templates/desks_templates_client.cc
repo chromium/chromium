@@ -200,7 +200,8 @@ void DesksTemplatesClient::LaunchDeskTemplate(
 }
 
 void DesksTemplatesClient::LaunchAppsFromTemplate(
-    std::unique_ptr<ash::DeskTemplate> desk_template) {
+    std::unique_ptr<ash::DeskTemplate> desk_template,
+    base::TimeDelta delay) {
   DCHECK(desk_template);
   const app_restore::RestoreData* restore_data =
       desk_template->desk_restore_data();
@@ -209,6 +210,7 @@ void DesksTemplatesClient::LaunchAppsFromTemplate(
 
   MaybeCreateAppLaunchHandler();
   DCHECK(app_launch_handler_);
+  app_launch_handler_->set_delay(delay);
   app_launch_handler_->SetRestoreDataAndLaunch(restore_data->Clone());
 
   RecordLaunchFromTemplateHistogram();
@@ -340,7 +342,7 @@ void DesksTemplatesClient::OnCreateAndActivateNewDesk(
     return;
   }
 
-  LaunchAppsFromTemplate(std::move(desk_template));
+  LaunchAppsFromTemplate(std::move(desk_template), base::TimeDelta());
   std::move(callback).Run(std::string(""));
 }
 

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/i18n/number_formatting.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/app_restore/app_launch_info.h"
@@ -242,6 +243,19 @@ const AppRestoreData* RestoreData::GetAppRestoreData(const std::string& app_id,
     return nullptr;
 
   return data_it->second.get();
+}
+
+std::string RestoreData::ToString() const {
+  if (app_id_to_launch_list_.empty())
+    return "empty";
+
+  std::string result = "( ";
+  for (const auto& entry : app_id_to_launch_list_) {
+    result += base::StringPrintf(
+        "(App ID: %s, Count: %s)", entry.first.c_str(),
+        base::UTF16ToUTF8(base::FormatNumber(entry.second.size())).c_str());
+  }
+  return result + " )";
 }
 
 AppRestoreData* RestoreData::GetAppRestoreDataMutable(const std::string& app_id,

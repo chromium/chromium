@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "base/callback.h"
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace app_restore {
@@ -83,9 +84,11 @@ class ASH_PUBLIC_EXPORT DesksTemplatesDelegate {
       base::OnceCallback<void(const gfx::ImageSkia&)> callback) const = 0;
 
   // Launches apps into the active desk. Ran immediately after a desk is created
-  // for a template.
+  // for a template. `delay` is the time between each app launch, used for
+  // debugging.
   virtual void LaunchAppsFromTemplate(
-      std::unique_ptr<DeskTemplate> desk_template) = 0;
+      std::unique_ptr<DeskTemplate> desk_template,
+      base::TimeDelta delay) = 0;
 
   // Checks whether `window` is supported in the desks templates feature.
   virtual bool IsWindowSupportedForDeskTemplate(aura::Window* window) const = 0;

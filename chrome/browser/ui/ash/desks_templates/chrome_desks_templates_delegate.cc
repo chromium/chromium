@@ -329,7 +329,8 @@ void ChromeDesksTemplatesDelegate::GetIconForAppId(
 }
 
 void ChromeDesksTemplatesDelegate::LaunchAppsFromTemplate(
-    std::unique_ptr<ash::DeskTemplate> desk_template) {
+    std::unique_ptr<ash::DeskTemplate> desk_template,
+    base::TimeDelta delay) {
   const auto& launch_list =
       desk_template->desk_restore_data()->app_id_to_launch_list();
   std::vector<std::string> unavailable_apps =
@@ -337,7 +338,8 @@ void ChromeDesksTemplatesDelegate::LaunchAppsFromTemplate(
   // Show app unavailable toast.
   if (!unavailable_apps.empty())
     ShowUnavailableAppToast(unavailable_apps);
-  DesksTemplatesClient::Get()->LaunchAppsFromTemplate(std::move(desk_template));
+  DesksTemplatesClient::Get()->LaunchAppsFromTemplate(std::move(desk_template),
+                                                      delay);
 }
 
 // Returns true if `window` is supported in desk templates feature.

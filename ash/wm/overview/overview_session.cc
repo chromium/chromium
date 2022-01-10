@@ -1164,11 +1164,18 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
       }
       break;
     case ui::VKEY_T: {
-      // This is a debug only shortcut.
-      if (!debug::DeveloperAcceleratorsEnabled() ||
-          !desks_templates_util::AreDesksTemplatesEnabled()) {
+      // See default section to see why we want to consume events during the
+      // start animation.
+      if (shell->overview_controller()->IsInStartAnimation())
+        break;
+
+        // Make pressing t while in overview show the templates grid if there
+        // are templates to be viewed. This allows developers to view the
+        // templates grid slightly quicker.
+        // TODO(crbug.com/1281685): Remove before feature launch.
+#if !defined(OFFICIAL_BUILD)
+      if (!desks_templates_util::AreDesksTemplatesEnabled())
         return;
-      }
 
       // There are no templates to be viewed.
       if (!DesksTemplatesPresenter::Get()->should_show_templates_ui())
@@ -1177,6 +1184,9 @@ void OverviewSession::OnKeyEvent(ui::KeyEvent* event) {
       DCHECK(!grid_list_.empty());
       ShowDesksTemplatesGrids(grid_list_[0]->desks_bar_view()->IsZeroState());
       break;
+#else
+      return;
+#endif
     }
     case ui::VKEY_W: {
       if (!(event->flags() & ui::EF_CONTROL_DOWN))

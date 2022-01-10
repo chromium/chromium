@@ -128,13 +128,33 @@ void AppLaunchHandler::LaunchApps() {
     }
   });
 
+#if !defined(OFFICIAL_BUILD)
+  base::TimeDelta current_delay = delay_;
+#endif
   for (const auto& app_id : app_ids) {
     // Chrome browser web pages are restored separately, so we don't need to
     // launch browser windows.
     if (app_id == extension_misc::kChromeAppId)
       continue;
 
+#if !defined(OFFICIAL_BUILD)
+    // Make shift-click on the launch button launch apps with a delay. This
+    // allows developers to simulate delayed launch behaviors with ARC apps.
+    // TODO(crbug.com/1281685): Remove before feature launch.
+    if (delay_.is_zero()) {
+      LaunchApp(cache->GetAppType(app_id), app_id);
+    } else {
+      base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+          FROM_HERE,
+          base::BindOnce(&AppLaunchHandler::LaunchApp, base::Unretained(this),
+                         cache->GetAppType(app_id), app_id),
+          current_delay);
+      current_delay += delay_;
+    }
+#else
+    DCHECK(delay_.is_zero());
     LaunchApp(cache->GetAppType(app_id), app_id);
+#endif
   }
 }
 
