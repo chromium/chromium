@@ -1070,7 +1070,7 @@ void WallpaperControllerImpl::StartDecodeFromPath(
       base::BindOnce(&WallpaperControllerImpl::OnWallpaperDecoded,
                      weak_factory_.GetWeakPtr(), account_id, wallpaper_path,
                      info, show_wallpaper),
-      sequenced_task_runner_, wallpaper_path);
+      wallpaper_path);
 }
 
 void WallpaperControllerImpl::SetClient(WallpaperControllerClient* client) {
@@ -1107,7 +1107,7 @@ void WallpaperControllerImpl::SetCustomWallpaper(
       base::BindOnce(&WallpaperControllerImpl::OnCustomWallpaperDecoded,
                      set_wallpaper_weak_factory_.GetWeakPtr(), account_id,
                      file_path, layout, preview_mode, std::move(callback)),
-      sequenced_task_runner_, file_path);
+      file_path);
 }
 
 void WallpaperControllerImpl::SetCustomWallpaper(
@@ -1476,7 +1476,7 @@ void WallpaperControllerImpl::ShowAlwaysOnTopWallpaper(
   ReadAndDecodeWallpaper(
       base::BindOnce(&WallpaperControllerImpl::OnAlwaysOnTopWallpaperDecoded,
                      weak_factory_.GetWeakPtr(), info),
-      sequenced_task_runner_, image_path);
+      image_path);
 }
 
 void WallpaperControllerImpl::RemoveAlwaysOnTopWallpaper() {
@@ -1982,7 +1982,7 @@ void WallpaperControllerImpl::SetDefaultWallpaperImpl(
         base::BindOnce(&WallpaperControllerImpl::OnDefaultWallpaperDecoded,
                        weak_factory_.GetWeakPtr(), file_path, layout,
                        show_wallpaper),
-        sequenced_task_runner_, file_path);
+        file_path);
   }
 }
 
@@ -2014,7 +2014,6 @@ bool WallpaperControllerImpl::WallpaperIsAlreadyLoaded(
 
 void WallpaperControllerImpl::ReadAndDecodeWallpaper(
     DecodeImageCallback callback,
-    scoped_refptr<base::SequencedTaskRunner> task_runner,
     const base::FilePath& file_path) {
   decode_requests_for_testing_.push_back(file_path);
   if (bypass_decode_for_testing_) {
@@ -2047,7 +2046,7 @@ void WallpaperControllerImpl::SetOnlineWallpaperFromPath(
       base::BindOnce(&WallpaperControllerImpl::OnOnlineWallpaperDecoded,
                      set_wallpaper_weak_factory_.GetWeakPtr(), params,
                      /*save_file=*/false, std::move(callback)),
-      sequenced_task_runner_, file_path);
+      file_path);
 }
 
 void WallpaperControllerImpl::SetOnlineWallpaperFromVariantPaths(
@@ -2063,7 +2062,7 @@ void WallpaperControllerImpl::SetOnlineWallpaperFromVariantPaths(
       base::BindOnce(&WallpaperControllerImpl::OnOnlineWallpaperDecoded,
                      set_wallpaper_weak_factory_.GetWeakPtr(), params,
                      /*save_file=*/false, std::move(callback)),
-      sequenced_task_runner_, url_to_file_path_map.at(params.url.spec()));
+      url_to_file_path_map.at(params.url.spec()));
 }
 
 void WallpaperControllerImpl::OnOnlineWallpaperDecoded(
@@ -2163,7 +2162,7 @@ void WallpaperControllerImpl::SetWallpaperFromInfo(const AccountId& account_id,
         base::BindOnce(&WallpaperControllerImpl::OnWallpaperDecoded,
                        weak_factory_.GetWeakPtr(), account_id, wallpaper_path,
                        info, show_wallpaper),
-        sequenced_task_runner_, wallpaper_path);
+        wallpaper_path);
   } else {
     // Default wallpapers are migrated from M21 user profiles. A code
     // refactor overlooked that case and caused these wallpapers not being
@@ -2177,7 +2176,7 @@ void WallpaperControllerImpl::SetWallpaperFromInfo(const AccountId& account_id,
         base::BindOnce(&WallpaperControllerImpl::OnWallpaperDecoded,
                        weak_factory_.GetWeakPtr(), account_id, wallpaper_path,
                        info, show_wallpaper),
-        sequenced_task_runner_, wallpaper_path);
+        wallpaper_path);
   }
 }
 
@@ -2493,7 +2492,7 @@ void WallpaperControllerImpl::SetDevicePolicyWallpaper() {
   ReadAndDecodeWallpaper(
       base::BindOnce(&WallpaperControllerImpl::OnDevicePolicyWallpaperDecoded,
                      weak_factory_.GetWeakPtr()),
-      sequenced_task_runner_.get(), device_policy_wallpaper_path_);
+      device_policy_wallpaper_path_);
 }
 
 void WallpaperControllerImpl::OnDevicePolicyWallpaperDecoded(
@@ -2908,7 +2907,7 @@ void WallpaperControllerImpl::HandleCustomWallpaperInfoSyncedIn(
                      weak_factory_.GetWeakPtr(), account_id, file_name,
                      WallpaperType::kCustomized, info.layout,
                      /*show_wallpaper=*/true),
-      sequenced_task_runner_, drivefs_path);
+      drivefs_path);
 }
 
 void WallpaperControllerImpl::DriveFsWallpaperChanged(

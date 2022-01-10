@@ -435,10 +435,8 @@ class ASH_EXPORT WallpaperControllerImpl
 
   // Reads image from |file_path| on disk, and calls |OnWallpaperDataRead|
   // with the result of |ReadFileToString|.
-  void ReadAndDecodeWallpaper(
-      DecodeImageCallback callback,
-      scoped_refptr<base::SequencedTaskRunner> task_runner,
-      const base::FilePath& file_path);
+  void ReadAndDecodeWallpaper(DecodeImageCallback callback,
+                              const base::FilePath& file_path);
 
   // Sets wallpaper info for the user to default and saves it to local
   // state the user is not ephemeral. Returns false if this fails.
