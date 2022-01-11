@@ -1,0 +1,72 @@
+/*
+ * Copyright 2022 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ *
+ * The default style sheet used to render <selectmenu> elements
+ * (HTMLSelectMenuElement enabled).
+ */
+
+ @namespace "http://www.w3.org/1999/xhtml";
+
+selectmenu {
+  display: inline-block;
+}
+
+selectmenu::-internal-selectmenu-button {
+  display: inline-flex;
+  align-items: center;
+  background-color: -internal-light-dark(#ffffff, #3B3B3B);
+  padding: 0 0 0 3px;
+  border: 1px solid -internal-light-dark(#767676, #858585);
+  border-radius: 2px;
+  cursor: default;
+  appearance: none;
+}
+
+selectmenu::-internal-selectmenu-button-icon {
+  background-image: -internal-light-dark(-webkit-image-set(url(images/selectmenu_button_icon.svg) 1x), -webkit-image-set(url(images/selectmenu_button_icon_white.svg) 1x));
+  background-origin: content-box;
+  background-repeat: no-repeat;
+  background-size: contain;
+  height: 1.0em;
+  margin-inline-start: 4px;
+  opacity: 1;
+  outline: none;
+  padding-bottom: 2px;
+  padding-inline-start: 3px;
+  padding-inline-end: 3px;
+  padding-top: 2px;
+  width: 1.2em;
+}
+
+selectmenu:disabled::-internal-selectmenu-button {
+  background-color: -internal-light-dark(rgba(239, 239, 239, 0.3), rgba(59, 59, 59, 0.3));
+  border-color: -internal-light-dark(rgba(118, 118, 118, 0.3), rgba(195, 195, 195, 0.3));
+  color: -internal-light-dark(rgba(16, 16, 16, 0.3), rgba(255, 255, 255, 0.3));
+  opacity: 0.7;
+}
+
+selectmenu option:hover {
+  background-color: lightgray;
+  cursor: default;
+  user-select: none;
+}
+
+selectmenu option:disabled {
+  background-color: initial;
+  color: -internal-light-dark(rgba(16, 16, 16, 0.3), rgba(255, 255, 255, 0.3));
+}
+
+selectmenu option:checked:disabled {
+  background-color: -internal-light-dark(rgb(176, 176, 176), rgba(59, 59, 59, 0.3));
+}
+
+selectmenu::-internal-selectmenu-listbox {
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  box-shadow: 0px 12.8px 28.8px rgba(0, 0, 0, 0.13), 0px 0px 9.2px rgba(0, 0, 0, 0.11);
+  box-sizing: border-box;
+  overflow: auto;
+  padding: 4px;
+}
