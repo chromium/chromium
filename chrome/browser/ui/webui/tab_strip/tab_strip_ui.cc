@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_page_handler.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_embedder.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_layout.h"
-#include "chrome/browser/ui/webui/theme_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -91,9 +90,6 @@ TabStripUI::TabStripUI(content::WebUI* web_ui)
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
-
-  // TODO(crbug.com/1234500): Migrate to mojo as well.
-  web_ui->AddMessageHandler(std::make_unique<ThemeHandler>());
 }
 
 TabStripUI::~TabStripUI() = default;

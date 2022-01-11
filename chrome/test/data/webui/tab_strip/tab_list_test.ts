@@ -4,7 +4,6 @@
 
 import 'chrome://tab-strip.top-chrome/tab_list.js';
 
-import {webUIListenerCallback} from 'chrome://resources/js/cr.m.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {TabElement} from 'chrome://tab-strip.top-chrome/tab.js';
 import {TabGroupElement} from 'chrome://tab-strip.top-chrome/tab_group.js';
@@ -129,7 +128,8 @@ suite('TabList', () => {
       '--background-color': 'pink',
       '--foreground-color': 'blue',
     });
-    webUIListenerCallback('theme-changed');
+    callbackRouter.themeChanged();
+    await flushTasks();
     await testTabsApiProxy.whenCalled('getColors');
     assertEquals(tabList.style.getPropertyValue('--background-color'), 'pink');
     assertEquals(tabList.style.getPropertyValue('--foreground-color'), 'blue');
@@ -183,7 +183,8 @@ suite('TabList', () => {
         textColor: 'black',
       },
     });
-    webUIListenerCallback('theme-changed');
+    callbackRouter.themeChanged();
+    await flushTasks();
     await testTabsApiProxy.whenCalled('getGroupVisualData');
   });
 

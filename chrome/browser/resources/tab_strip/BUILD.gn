@@ -121,11 +121,7 @@ ts_library("build_ts") {
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
   ]
-  definitions = [
-    "//tools/typescript/definitions/chrome_send.d.ts",
-    "//tools/typescript/definitions/metrics_private.d.ts",
-    "//tools/typescript/definitions/tabs.d.ts",
-  ]
+  definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
   extra_deps = [
     ":preprocess",
     ":preprocess_generated",

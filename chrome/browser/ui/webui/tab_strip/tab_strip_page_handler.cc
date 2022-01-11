@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_properties.h"
 #include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -34,7 +35,9 @@
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_embedder.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_metrics.h"
 #include "chrome/browser/ui/webui/tab_strip/tab_strip_ui_util.h"
+#include "chrome/browser/ui/webui/theme_source.h"
 #include "chrome/browser/ui/webui/util/image_util.h"
+#include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -190,6 +193,12 @@ TabStripPageHandler::TabStripPageHandler(
   DCHECK(embedder_);
   web_ui_->GetWebContents()->SetDelegate(this);
   browser_->tab_strip_model()->AddObserver(this);
+
+  // Listen for theme installation.
+  ThemeServiceFactory::GetForProfile(browser_->profile())->AddObserver(this);
+
+  // Or native theme change.
+  theme_observation_.Observe(webui::GetNativeTheme(web_ui_->GetWebContents()));
 }
 
 void TabStripPageHandler::NotifyLayoutChanged() {
@@ -896,4 +905,32 @@ gfx::ImageSkia TabStripPageHandler::ThemeFavicon(const gfx::ImageSkia& source) {
           ThemeProperties::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE),
       embedder_->GetColor(
           ThemeProperties::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE));
+}
+
+void TabStripPageHandler::ActivateTab(int32_t tab_id) {
+  TabStripModel* tab_strip_model = browser_->tab_strip_model();
+  for (int index = 0; index < tab_strip_model->count(); ++index) {
+    content::WebContents* contents = tab_strip_model->GetWebContentsAt(index);
+    if (extensions::ExtensionTabUtil::GetTabId(contents) == tab_id) {
+      tab_strip_model->ActivateTabAt(index);
+    }
+  }
+}
+
+void TabStripPageHandler::OnThemeChanged() {
+  page_->ThemeChanged();
+}
+
+void TabStripPageHandler::OnNativeThemeUpdated(
+    ui::NativeTheme* observed_theme) {
+  // There are two types of theme update. a) The observed theme change. e.g.
+  // switch between light/dark mode. b) A different theme is enabled. e.g.
+  // switch between GTK and classic theme on Linux. Reset observer in case b).
+  ui::NativeTheme* current_theme =
+      webui::GetNativeTheme(web_ui_->GetWebContents());
+  if (observed_theme != current_theme) {
+    theme_observation_.Reset();
+    theme_observation_.Observe(current_theme);
+  }
+  page_->ThemeChanged();
 }

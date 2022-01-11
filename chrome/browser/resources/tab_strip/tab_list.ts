@@ -231,14 +231,6 @@ export class TabListElement extends CustomElement implements
 
     this.scrollListener_ = (e) => this.onScroll_(e);
 
-    this.addWebUIListener_('theme-changed', () => {
-      // Refetch theme colors, group color and tab favicons on theme change.
-      this.fetchAndUpdateColors_();
-      this.fetchAndUpdateGroupData_();
-      this.fetchAndUpdateTabs_();
-    });
-    this.tabsApi_.observeThemeChanges();
-
     const callbackRouter = this.tabsApi_.getCallbackRouter();
     callbackRouter.layoutChanged.addListener(
         this.applyCSSDictionary_.bind(this));
@@ -253,6 +245,13 @@ export class TabListElement extends CustomElement implements
 
     callbackRouter.receivedKeyboardFocus.addListener(
         () => this.onReceivedKeyboardFocus_());
+
+    callbackRouter.themeChanged.addListener(() => {
+      // Refetch theme colors, group color and tab favicons on theme change.
+      this.fetchAndUpdateColors_();
+      this.fetchAndUpdateGroupData_();
+      this.fetchAndUpdateTabs_();
+    });
 
     this.eventTracker_.add(
         document, 'contextmenu', e => this.onContextMenu_(e));
