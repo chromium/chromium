@@ -23,6 +23,11 @@ bool IsAssignToAllDesksCommand(int command_id) {
          chromeos::MoveToDesksMenuModel::TOGGLE_ASSIGN_TO_ALL_DESKS;
 }
 
+bool IsMoveToDeskCommand(int command_id) {
+  return command_id >= chromeos::MoveToDesksMenuModel::MOVE_TO_DESK_1 &&
+         command_id <= chromeos::MoveToDesksMenuModel::MOVE_TO_DESK_8;
+}
+
 }  // namespace
 
 namespace chromeos {
@@ -48,6 +53,9 @@ bool MoveToDesksMenuDelegate::IsCommandIdChecked(int command_id) const {
 bool MoveToDesksMenuDelegate::IsCommandIdEnabled(int command_id) const {
   if (IsAssignToAllDesksCommand(command_id))
     return true;
+
+  if (!IsMoveToDeskCommand(command_id))
+    return false;
 
   return MapCommandIdToDeskIndex(command_id) <
          DesksHelper::Get(widget_->GetNativeWindow())->GetNumberOfDesks();
