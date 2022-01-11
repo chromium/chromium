@@ -5,6 +5,7 @@
 #include "net/dns/host_cache.h"
 
 #include <algorithm>
+#include <map>
 #include <string>
 #include <utility>
 
@@ -13,13 +14,18 @@
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
 #include "base/format_macros.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
+#include "net/base/connection_endpoint_metadata.h"
 #include "net/base/network_isolation_key.h"
 #include "net/base/schemeful_site.h"
+#include "net/dns/host_resolver_results.h"
+#include "net/dns/host_resolver_results_test_util.h"
+#include "net/dns/https_record_rdata.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -29,6 +35,7 @@
 using ::testing::_;
 using ::testing::ElementsAre;
 using ::testing::ElementsAreArray;
+using ::testing::IsEmpty;
 using ::testing::Optional;
 using ::testing::Pair;
 using ::testing::Pointee;
@@ -61,6 +68,13 @@ class MockPersistenceDelegate : public HostCache::PersistenceDelegate {
  private:
   int num_changes_ = 0;
 };
+
+MATCHER_P(EntryContentsEqual,
+          entry,
+          base::StrCat({"contents ", negation ? "!=" : "==", " contents of ",
+                        testing::PrintToString(entry)})) {
+  return arg.ContentsEqual(entry);
+}
 
 }  // namespace
 
@@ -124,6 +138,63 @@ TEST(HostCacheTest, Basic) {
 
   EXPECT_FALSE(cache.Lookup(key1, now));
   EXPECT_FALSE(cache.Lookup(key2, now));
+}
+
+TEST(HostCacheTest, GetEndpoints) {
+  std::vector<IPEndPoint> ip_endpoints = {IPEndPoint(IPAddress(1, 1, 1, 1), 0),
+                                          IPEndPoint(IPAddress(2, 2, 2, 2), 0)};
+  HostCache::Entry entry(OK, ip_endpoints, HostCache::Entry::SOURCE_DNS);
+
+  EXPECT_THAT(entry.GetEndpoints(),
+              Optional(ElementsAre(ExpectEndpointResult(ip_endpoints))));
+}
+
+TEST(HostCacheTest, GetEmptyEndpoints) {
+  HostCache::Entry entry(ERR_NAME_NOT_RESOLVED, std::vector<IPEndPoint>(),
+                         HostCache::Entry::SOURCE_DNS);
+  EXPECT_THAT(entry.GetEndpoints(), Optional(IsEmpty()));
+}
+
+TEST(HostCacheTest, GetEmptyEndpointsWithMetadata) {
+  HostCache::Entry entry(ERR_NAME_NOT_RESOLVED, std::vector<IPEndPoint>(),
+                         HostCache::Entry::SOURCE_DNS);
+
+  // Merge in non-empty metadata.
+  ConnectionEndpointMetadata metadata;
+  metadata.supported_protocol_alpns = {"h3", "h2"};
+  HostCache::Entry metadata_entry(
+      OK,
+      std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>{
+          {1u, metadata}},
+      HostCache::Entry::SOURCE_DNS);
+
+  auto merged_entry = HostCache::Entry::MergeEntries(entry, metadata_entry);
+
+  // Result should still be empty.
+  EXPECT_THAT(merged_entry.GetEndpoints(), Optional(IsEmpty()));
+}
+
+TEST(HostCacheTest, GetMissingEndpoints) {
+  HostCache::Entry entry(ERR_NAME_NOT_RESOLVED, HostCache::Entry::SOURCE_DNS);
+  EXPECT_FALSE(entry.GetEndpoints());
+}
+
+TEST(HostCacheTest, GetMissingEndpointsWithMetadata) {
+  HostCache::Entry entry(ERR_NAME_NOT_RESOLVED, HostCache::Entry::SOURCE_DNS);
+
+  // Merge in non-empty metadata.
+  ConnectionEndpointMetadata metadata;
+  metadata.supported_protocol_alpns = {"h3", "h2"};
+  HostCache::Entry metadata_entry(
+      OK,
+      std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>{
+          {1u, metadata}},
+      HostCache::Entry::SOURCE_DNS);
+
+  auto merged_entry = HostCache::Entry::MergeEntries(entry, metadata_entry);
+
+  // Result should still be `nullopt`.
+  EXPECT_FALSE(merged_entry.GetEndpoints());
 }
 
 // Test that Keys without scheme are allowed and treated as completely different
@@ -880,14 +951,12 @@ TEST(HostCacheTest, PreserveActivePin) {
   base::TimeTicks now;
 
   // Make entry1 and entry2, identical except for IP and pinned flag.
-  IPAddress address1(192, 0, 2, 1);
-  IPAddress address2(192, 0, 2, 2);
-  IPEndPoint endpoint1(address1, 0);
-  IPEndPoint endpoint2(address2, 0);
-  HostCache::Entry entry1 = HostCache::Entry(OK, AddressList(endpoint1),
-                                             HostCache::Entry::SOURCE_UNKNOWN);
-  HostCache::Entry entry2 = HostCache::Entry(OK, AddressList(endpoint2),
-                                             HostCache::Entry::SOURCE_UNKNOWN);
+  IPEndPoint endpoint1(IPAddress(192, 0, 2, 1), 0);
+  IPEndPoint endpoint2(IPAddress(192, 0, 2, 2), 0);
+  HostCache::Entry entry1 = HostCache::Entry(
+      OK, std::vector<IPEndPoint>{endpoint1}, HostCache::Entry::SOURCE_UNKNOWN);
+  HostCache::Entry entry2 = HostCache::Entry(
+      OK, std::vector<IPEndPoint>{endpoint2}, HostCache::Entry::SOURCE_UNKNOWN);
   entry1.set_pinning(true);
 
   HostCache::Key key = Key("foobar.com");
@@ -898,7 +967,9 @@ TEST(HostCacheTest, PreserveActivePin) {
   const auto* pair1 = cache.Lookup(key, now);
   ASSERT_TRUE(pair1);
   const HostCache::Entry& result1 = pair1->second;
-  EXPECT_EQ(endpoint1, result1.addresses()->front());
+  EXPECT_THAT(
+      result1.GetEndpoints(),
+      Optional(ElementsAre(ExpectEndpointResult(ElementsAre(endpoint1)))));
   EXPECT_THAT(result1.pinning(), Optional(true));
 
   // Insert |entry2|, and verify that it when it is retrieved, it
@@ -907,7 +978,9 @@ TEST(HostCacheTest, PreserveActivePin) {
   const auto* pair2 = cache.Lookup(key, now);
   ASSERT_TRUE(pair2);
   const HostCache::Entry& result2 = pair2->second;
-  EXPECT_EQ(endpoint2, result2.addresses()->front());
+  EXPECT_THAT(
+      result2.GetEndpoints(),
+      Optional(ElementsAre(ExpectEndpointResult(ElementsAre(endpoint2)))));
   EXPECT_THAT(result2.pinning(), Optional(true));
 }
 
@@ -918,14 +991,12 @@ TEST(HostCacheTest, DontPreserveObsoletePin) {
   base::TimeTicks now;
 
   // Make entry1 and entry2, identical except for IP and "pinned" flag.
-  IPAddress address1(192, 0, 2, 1);
-  IPAddress address2(192, 0, 2, 2);
-  IPEndPoint endpoint1(address1, 0);
-  IPEndPoint endpoint2(address2, 0);
-  HostCache::Entry entry1 = HostCache::Entry(OK, AddressList(endpoint1),
-                                             HostCache::Entry::SOURCE_UNKNOWN);
-  HostCache::Entry entry2 = HostCache::Entry(OK, AddressList(endpoint2),
-                                             HostCache::Entry::SOURCE_UNKNOWN);
+  IPEndPoint endpoint1(IPAddress(192, 0, 2, 1), 0);
+  IPEndPoint endpoint2(IPAddress(192, 0, 2, 2), 0);
+  HostCache::Entry entry1 = HostCache::Entry(
+      OK, std::vector<IPEndPoint>{endpoint1}, HostCache::Entry::SOURCE_UNKNOWN);
+  HostCache::Entry entry2 = HostCache::Entry(
+      OK, std::vector<IPEndPoint>{endpoint2}, HostCache::Entry::SOURCE_UNKNOWN);
   entry1.set_pinning(true);
 
   HostCache::Key key = Key("foobar.com");
@@ -936,7 +1007,9 @@ TEST(HostCacheTest, DontPreserveObsoletePin) {
   const auto* pair1 = cache.Lookup(key, now);
   ASSERT_TRUE(pair1);
   const HostCache::Entry& result1 = pair1->second;
-  EXPECT_EQ(endpoint1, result1.addresses()->front());
+  EXPECT_THAT(
+      result1.GetEndpoints(),
+      Optional(ElementsAre(ExpectEndpointResult(ElementsAre(endpoint1)))));
   EXPECT_THAT(result1.pinning(), Optional(true));
 
   // Make entry1 obsolete.
@@ -948,7 +1021,9 @@ TEST(HostCacheTest, DontPreserveObsoletePin) {
   const auto* pair2 = cache.Lookup(key, now);
   ASSERT_TRUE(pair2);
   const HostCache::Entry& result2 = pair2->second;
-  EXPECT_EQ(endpoint2, result2.addresses()->front());
+  EXPECT_THAT(
+      result2.GetEndpoints(),
+      Optional(ElementsAre(ExpectEndpointResult(ElementsAre(endpoint2)))));
   EXPECT_THAT(result2.pinning(), Optional(false));
 }
 
@@ -960,14 +1035,12 @@ TEST(HostCacheTest, Unpin) {
   base::TimeTicks now;
 
   // Make entry1 and entry2, identical except for IP and pinned flag.
-  IPAddress address1(192, 0, 2, 1);
-  IPAddress address2(192, 0, 2, 2);
-  IPEndPoint endpoint1(address1, 0);
-  IPEndPoint endpoint2(address2, 0);
-  HostCache::Entry entry1 = HostCache::Entry(OK, AddressList(endpoint1),
-                                             HostCache::Entry::SOURCE_UNKNOWN);
-  HostCache::Entry entry2 = HostCache::Entry(OK, AddressList(endpoint2),
-                                             HostCache::Entry::SOURCE_UNKNOWN);
+  IPEndPoint endpoint1(IPAddress(192, 0, 2, 1), 0);
+  IPEndPoint endpoint2(IPAddress(192, 0, 2, 2), 0);
+  HostCache::Entry entry1 = HostCache::Entry(
+      OK, std::vector<IPEndPoint>{endpoint1}, HostCache::Entry::SOURCE_UNKNOWN);
+  HostCache::Entry entry2 = HostCache::Entry(
+      OK, std::vector<IPEndPoint>{endpoint2}, HostCache::Entry::SOURCE_UNKNOWN);
   entry1.set_pinning(true);
   entry2.set_pinning(false);
 
@@ -979,7 +1052,9 @@ TEST(HostCacheTest, Unpin) {
   const auto* pair1 = cache.Lookup(key, now);
   ASSERT_TRUE(pair1);
   const HostCache::Entry& result1 = pair1->second;
-  EXPECT_EQ(endpoint1, result1.addresses()->front());
+  EXPECT_THAT(
+      result1.GetEndpoints(),
+      Optional(ElementsAre(ExpectEndpointResult(ElementsAre(endpoint1)))));
   EXPECT_THAT(result1.pinning(), Optional(true));
 
   // Insert |entry2|, and verify that it when it is retrieved, it
@@ -988,7 +1063,9 @@ TEST(HostCacheTest, Unpin) {
   const auto* pair2 = cache.Lookup(key, now);
   ASSERT_TRUE(pair2);
   const HostCache::Entry& result2 = pair2->second;
-  EXPECT_EQ(endpoint2, result2.addresses()->front());
+  EXPECT_THAT(
+      result2.GetEndpoints(),
+      Optional(ElementsAre(ExpectEndpointResult(ElementsAre(endpoint2)))));
   EXPECT_THAT(result2.pinning(), Optional(false));
 }
 
@@ -1146,7 +1223,164 @@ TEST(HostCacheTest, KeyComparators) {
   }
 }
 
-TEST(HostCacheTest, SerializeAndDeserialize) {
+TEST(HostCacheTest, SerializeAndDeserializeWithExpirations) {
+  const base::TimeDelta kTTL = base::Seconds(10);
+
+  HostCache cache(kMaxCacheEntries);
+
+  // Start at t=0.
+  base::TimeTicks now;
+
+  HostCache::Key expire_by_time_key = Key("expire.by.time.test");
+  HostCache::Key expire_by_changes_key = Key("expire.by.changes.test");
+
+  IPEndPoint endpoint(IPAddress(1, 2, 3, 4), 0);
+  HostCache::Entry entry = HostCache::Entry(
+      OK, std::vector<IPEndPoint>{endpoint}, HostCache::Entry::SOURCE_UNKNOWN);
+
+  EXPECT_EQ(0u, cache.size());
+
+  // Add an entry for `expire_by_time_key` at t=0.
+  EXPECT_FALSE(cache.Lookup(expire_by_time_key, now));
+  cache.Set(expire_by_time_key, entry, now, kTTL);
+  EXPECT_THAT(cache.Lookup(expire_by_time_key, now),
+              Pointee(Pair(expire_by_time_key, EntryContentsEqual(entry))));
+
+  EXPECT_EQ(1u, cache.size());
+
+  // Advance to t=5.
+  now += base::Seconds(5);
+
+  // Add entry for `expire_by_changes_key` at t=5.
+  EXPECT_FALSE(cache.Lookup(expire_by_changes_key, now));
+  cache.Set(expire_by_changes_key, entry, now, kTTL);
+  EXPECT_TRUE(cache.Lookup(expire_by_changes_key, now));
+  EXPECT_EQ(2u, cache.size());
+
+  EXPECT_EQ(0u, cache.last_restore_size());
+
+  // Advance to t=12, and serialize/deserialize the cache.
+  now += base::Seconds(7);
+
+  base::Value serialized_cache(base::Value::Type::LIST);
+  cache.GetList(&serialized_cache, false /* include_staleness */,
+                HostCache::SerializationType::kRestorable);
+  HostCache restored_cache(kMaxCacheEntries);
+
+  restored_cache.RestoreFromListValue(serialized_cache);
+
+  HostCache::EntryStaleness stale;
+
+  // The `expire_by_time_key` entry is stale due to both network changes and
+  // expiration time.
+  EXPECT_FALSE(restored_cache.Lookup(expire_by_time_key, now));
+  EXPECT_THAT(restored_cache.LookupStale(expire_by_time_key, now, &stale),
+              Pointee(Pair(expire_by_time_key, EntryContentsEqual(entry))));
+  EXPECT_EQ(1, stale.network_changes);
+  // Time to TimeTicks conversion is fuzzy, so just check that expected and
+  // actual expiration times are close.
+  EXPECT_GT(base::Milliseconds(100),
+            (base::Seconds(2) - stale.expired_by).magnitude());
+
+  // The `expire_by_changes_key` entry is stale only due to network changes.
+  EXPECT_FALSE(restored_cache.Lookup(expire_by_changes_key, now));
+  EXPECT_THAT(restored_cache.LookupStale(expire_by_changes_key, now, &stale),
+              Pointee(Pair(expire_by_changes_key, EntryContentsEqual(entry))));
+  EXPECT_EQ(1, stale.network_changes);
+  EXPECT_GT(base::Milliseconds(100),
+            (base::Seconds(-3) - stale.expired_by).magnitude());
+
+  EXPECT_EQ(2u, restored_cache.last_restore_size());
+}
+
+// Test that any changes between serialization and restore are preferred over
+// old restored entries.
+TEST(HostCacheTest, SerializeAndDeserializeWithChanges) {
+  const base::TimeDelta kTTL = base::Seconds(10);
+
+  HostCache cache(kMaxCacheEntries);
+
+  // Start at t=0.
+  base::TimeTicks now;
+
+  HostCache::Key to_serialize_key1 = Key("to.serialize1.test");
+  HostCache::Key to_serialize_key2 = Key("to.serialize2.test");
+  HostCache::Key other_key = Key("other.test");
+
+  IPEndPoint endpoint(IPAddress(1, 1, 1, 1), 0);
+  HostCache::Entry serialized_entry = HostCache::Entry(
+      OK, std::vector<IPEndPoint>{endpoint}, HostCache::Entry::SOURCE_UNKNOWN);
+
+  IPEndPoint replacement_endpoint(IPAddress(2, 2, 2, 2), 0);
+  HostCache::Entry replacement_entry =
+      HostCache::Entry(OK, std::vector<IPEndPoint>{replacement_endpoint},
+                       HostCache::Entry::SOURCE_UNKNOWN);
+
+  IPEndPoint other_endpoint(IPAddress(3, 3, 3, 3), 0);
+  HostCache::Entry other_entry =
+      HostCache::Entry(OK, std::vector<IPEndPoint>{other_endpoint},
+                       HostCache::Entry::SOURCE_UNKNOWN);
+
+  EXPECT_EQ(0u, cache.size());
+
+  // Add `to_serialize_key1` and `to_serialize_key2`
+  EXPECT_FALSE(cache.Lookup(to_serialize_key1, now));
+  cache.Set(to_serialize_key1, serialized_entry, now, kTTL);
+  EXPECT_THAT(
+      cache.Lookup(to_serialize_key1, now),
+      Pointee(Pair(to_serialize_key1, EntryContentsEqual(serialized_entry))));
+  EXPECT_FALSE(cache.Lookup(to_serialize_key2, now));
+  cache.Set(to_serialize_key2, serialized_entry, now, kTTL);
+  EXPECT_THAT(
+      cache.Lookup(to_serialize_key2, now),
+      Pointee(Pair(to_serialize_key2, EntryContentsEqual(serialized_entry))));
+  EXPECT_EQ(2u, cache.size());
+
+  // Serialize the cache.
+  base::Value serialized_cache(base::Value::Type::LIST);
+  cache.GetList(&serialized_cache, false /* include_staleness */,
+                HostCache::SerializationType::kRestorable);
+  HostCache restored_cache(kMaxCacheEntries);
+
+  // Add entries for `to_serialize_key1` and `other_key` to the new cache
+  // before restoring the serialized one. The `to_serialize_key1` result is
+  // different from the original.
+  EXPECT_FALSE(restored_cache.Lookup(to_serialize_key1, now));
+  restored_cache.Set(to_serialize_key1, replacement_entry, now, kTTL);
+  EXPECT_THAT(
+      restored_cache.Lookup(to_serialize_key1, now),
+      Pointee(Pair(to_serialize_key1, EntryContentsEqual(replacement_entry))));
+  EXPECT_EQ(1u, restored_cache.size());
+
+  EXPECT_FALSE(restored_cache.Lookup(other_key, now));
+  restored_cache.Set(other_key, other_entry, now, kTTL);
+  EXPECT_THAT(restored_cache.Lookup(other_key, now),
+              Pointee(Pair(other_key, EntryContentsEqual(other_entry))));
+  EXPECT_EQ(2u, restored_cache.size());
+
+  EXPECT_EQ(0u, restored_cache.last_restore_size());
+
+  restored_cache.RestoreFromListValue(serialized_cache);
+  EXPECT_EQ(1u, restored_cache.last_restore_size());
+
+  HostCache::EntryStaleness stale;
+
+  // Expect `to_serialize_key1` has the replacement entry.
+  EXPECT_THAT(
+      restored_cache.Lookup(to_serialize_key1, now),
+      Pointee(Pair(to_serialize_key1, EntryContentsEqual(replacement_entry))));
+
+  // Expect `to_serialize_key2` has the original entry.
+  EXPECT_THAT(
+      restored_cache.LookupStale(to_serialize_key2, now, &stale),
+      Pointee(Pair(to_serialize_key2, EntryContentsEqual(serialized_entry))));
+
+  // Expect no change for `other_key`.
+  EXPECT_THAT(restored_cache.Lookup(other_key, now),
+              Pointee(Pair(other_key, EntryContentsEqual(other_entry))));
+}
+
+TEST(HostCacheTest, SerializeAndDeserializeLegacyAddresses) {
   const base::TimeDelta kTTL = base::Seconds(10);
 
   HostCache cache(kMaxCacheEntries);
@@ -1235,12 +1469,12 @@ TEST(HostCacheTest, SerializeAndDeserialize) {
       restored_cache.LookupStale(key1, now, &stale);
   EXPECT_TRUE(result1);
   EXPECT_TRUE(result1->first.secure);
-  ASSERT_TRUE(result1->second.addresses());
+  ASSERT_TRUE(result1->second.legacy_addresses());
   EXPECT_FALSE(result1->second.text_records());
   EXPECT_FALSE(result1->second.hostnames());
-  EXPECT_EQ(1u, result1->second.addresses().value().size());
+  EXPECT_EQ(1u, result1->second.legacy_addresses().value().size());
   EXPECT_EQ(address_ipv4,
-            result1->second.addresses().value().front().address());
+            result1->second.legacy_addresses().value().front().address());
   EXPECT_EQ(1, stale.network_changes);
   // Time to TimeTicks conversion is fuzzy, so just check that expected and
   // actual expiration times are close.
@@ -1253,11 +1487,12 @@ TEST(HostCacheTest, SerializeAndDeserialize) {
       restored_cache.LookupStale(key2, now, &stale);
   EXPECT_TRUE(result2);
   EXPECT_FALSE(result2->first.secure);
-  ASSERT_TRUE(result2->second.addresses());
-  EXPECT_EQ(2u, result2->second.addresses().value().size());
+  ASSERT_TRUE(result2->second.legacy_addresses());
+  EXPECT_EQ(2u, result2->second.legacy_addresses().value().size());
   EXPECT_EQ(address_ipv6,
-            result2->second.addresses().value().front().address());
-  EXPECT_EQ(address_ipv4, result2->second.addresses().value().back().address());
+            result2->second.legacy_addresses().value().front().address());
+  EXPECT_EQ(address_ipv4,
+            result2->second.legacy_addresses().value().back().address());
   EXPECT_EQ(1, stale.network_changes);
   EXPECT_GT(base::Milliseconds(100),
             (base::Seconds(-3) - stale.expired_by).magnitude());
@@ -1266,19 +1501,19 @@ TEST(HostCacheTest, SerializeAndDeserialize) {
   const std::pair<const HostCache::Key, HostCache::Entry>* result3 =
       restored_cache.Lookup(key3, now);
   EXPECT_TRUE(result3);
-  ASSERT_TRUE(result3->second.addresses());
-  EXPECT_EQ(1u, result3->second.addresses().value().size());
+  ASSERT_TRUE(result3->second.legacy_addresses());
+  EXPECT_EQ(1u, result3->second.legacy_addresses().value().size());
   EXPECT_EQ(address_ipv4,
-            result3->second.addresses().value().front().address());
+            result3->second.legacy_addresses().value().front().address());
 
   // The "foobar4.com" entry is still present and usable.
   const std::pair<const HostCache::Key, HostCache::Entry>* result4 =
       restored_cache.Lookup(key4, now);
   EXPECT_TRUE(result4);
-  ASSERT_TRUE(result4->second.addresses());
-  EXPECT_EQ(1u, result4->second.addresses().value().size());
+  ASSERT_TRUE(result4->second.legacy_addresses());
+  EXPECT_EQ(1u, result4->second.legacy_addresses().value().size());
   EXPECT_EQ(address_ipv4,
-            result4->second.addresses().value().front().address());
+            result4->second.legacy_addresses().value().front().address());
 
   EXPECT_EQ(2u, restored_cache.last_restore_size());
 }
@@ -1288,8 +1523,8 @@ TEST(HostCacheTest, SerializeAndDeserializeEntryWithoutScheme) {
 
   HostCache::Key key("host.test", DnsQueryType::UNSPECIFIED, 0,
                      HostResolverSource::ANY, NetworkIsolationKey());
-  HostCache::Entry entry =
-      HostCache::Entry(OK, AddressList(), HostCache::Entry::SOURCE_UNKNOWN);
+  HostCache::Entry entry = HostCache::Entry(OK, std::vector<IPEndPoint>(),
+                                            HostCache::Entry::SOURCE_UNKNOWN);
 
   base::TimeTicks now;
   HostCache cache(kMaxCacheEntries);
@@ -1307,7 +1542,7 @@ TEST(HostCacheTest, SerializeAndDeserializeEntryWithoutScheme) {
 
   HostCache::EntryStaleness staleness;
   EXPECT_THAT(restored_cache.LookupStale(key, now, &staleness),
-              Pointee(Pair(key, _)));
+              Pointee(Pair(key, EntryContentsEqual(entry))));
 }
 
 TEST(HostCacheTest, SerializeAndDeserializeWithNetworkIsolationKey) {
@@ -1324,10 +1559,10 @@ TEST(HostCacheTest, SerializeAndDeserializeWithNetworkIsolationKey) {
                       HostResolverSource::ANY, kNetworkIsolationKey);
   HostCache::Key key2(kHost, DnsQueryType::UNSPECIFIED, 0,
                       HostResolverSource::ANY, kOpaqueNetworkIsolationKey);
-  IPEndPoint endpoint(IPAddress(1, 2, 3, 4), 0);
 
-  HostCache::Entry entry = HostCache::Entry(OK, AddressList(endpoint),
-                                            HostCache::Entry::SOURCE_UNKNOWN);
+  IPEndPoint endpoint(IPAddress(1, 2, 3, 4), 0);
+  HostCache::Entry entry = HostCache::Entry(
+      OK, std::vector<IPEndPoint>{endpoint}, HostCache::Entry::SOURCE_UNKNOWN);
 
   base::TimeTicks now;
   HostCache cache(kMaxCacheEntries);
@@ -1351,14 +1586,8 @@ TEST(HostCacheTest, SerializeAndDeserializeWithNetworkIsolationKey) {
   EXPECT_EQ(1u, restored_cache.size());
 
   HostCache::EntryStaleness stale;
-  const std::pair<const HostCache::Key, HostCache::Entry>* result =
-      restored_cache.LookupStale(key1, now, &stale);
-  ASSERT_TRUE(result);
-  EXPECT_EQ(kNetworkIsolationKey, result->first.network_isolation_key);
-  EXPECT_THAT(result->first.host,
-              testing::VariantWith<url::SchemeHostPort>(kHost));
-  ASSERT_EQ(1u, result->second.addresses().value().size());
-  EXPECT_EQ(endpoint, result->second.addresses().value().front());
+  EXPECT_THAT(restored_cache.LookupStale(key1, now, &stale),
+              Pointee(Pair(key1, EntryContentsEqual(entry))));
   EXPECT_FALSE(restored_cache.Lookup(key2, now));
 }
 
@@ -1370,10 +1599,10 @@ TEST(HostCacheTest, SerializeForDebugging) {
 
   HostCache::Key key(kHost, DnsQueryType::UNSPECIFIED, 0,
                      HostResolverSource::ANY, kNetworkIsolationKey);
-  IPEndPoint endpoint(IPAddress(1, 2, 3, 4), 0);
 
-  HostCache::Entry entry = HostCache::Entry(OK, AddressList(endpoint),
-                                            HostCache::Entry::SOURCE_UNKNOWN);
+  IPEndPoint endpoint(IPAddress(1, 2, 3, 4), 0);
+  HostCache::Entry entry = HostCache::Entry(
+      OK, std::vector<IPEndPoint>{endpoint}, HostCache::Entry::SOURCE_UNKNOWN);
 
   base::TimeTicks now;
   HostCache cache(kMaxCacheEntries);
@@ -1426,12 +1655,8 @@ TEST(HostCacheTest, SerializeAndDeserialize_Text) {
   HostCache::EntryStaleness stale;
   const std::pair<const HostCache::Key, HostCache::Entry>* result =
       restored_cache.LookupStale(key, now, &stale);
-  ASSERT_TRUE(result);
-  EXPECT_TRUE(result->first.secure);
-  EXPECT_FALSE(result->second.addresses());
-  ASSERT_TRUE(result->second.text_records());
-  EXPECT_FALSE(result->second.hostnames());
-  EXPECT_EQ(text_records, result->second.text_records().value());
+  EXPECT_THAT(result, Pointee(Pair(key, EntryContentsEqual(entry))));
+  EXPECT_THAT(result->second.text_records(), Optional(text_records));
 }
 
 TEST(HostCacheTest, SerializeAndDeserialize_Hostname) {
@@ -1460,12 +1685,65 @@ TEST(HostCacheTest, SerializeAndDeserialize_Hostname) {
   HostCache::EntryStaleness stale;
   const std::pair<const HostCache::Key, HostCache::Entry>* result =
       restored_cache.LookupStale(key, now, &stale);
+  EXPECT_THAT(result, Pointee(Pair(key, EntryContentsEqual(entry))));
+  EXPECT_THAT(result->second.hostnames(), Optional(hostnames));
+}
+
+TEST(HostCacheTest, SerializeAndDeserializeEndpointResult) {
+  base::TimeTicks now;
+
+  base::TimeDelta ttl = base::Seconds(99);
+  HostCache::Key key(url::SchemeHostPort(url::kHttpsScheme, "example.com", 443),
+                     DnsQueryType::A, 0, HostResolverSource::DNS,
+                     NetworkIsolationKey());
+
+  std::vector<IPEndPoint> ip_endpoints = {
+      IPEndPoint(IPAddress(1, 1, 1, 1), 800),
+      IPEndPoint(IPAddress(2, 2, 2, 2), 900),
+      IPEndPoint(IPAddress(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4),
+                 100)};
+  HostCache::Entry entry(OK, ip_endpoints, HostCache::Entry::SOURCE_DNS, ttl);
+  std::set<std::string> aliases = {"ipv4_alias.test", "ipv6_alias.test",
+                                   "other_alias.test"};
+  entry.set_aliases(aliases);
+  EXPECT_TRUE(entry.GetEndpoints());
+
+  ConnectionEndpointMetadata metadata1;
+  metadata1.supported_protocol_alpns = {"h3", "h2"};
+  metadata1.ech_config_list = {'f', 'o', 'o'};
+  ConnectionEndpointMetadata metadata2;
+  metadata2.supported_protocol_alpns = {"h2", "h4"};
+  HostCache::Entry metadata_entry(
+      OK,
+      std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>{
+          {1u, metadata1}, {2u, metadata2}},
+      HostCache::Entry::SOURCE_DNS);
+
+  auto merged_entry = HostCache::Entry::MergeEntries(entry, metadata_entry);
+
+  HostCache cache(kMaxCacheEntries);
+  cache.Set(key, merged_entry, now, ttl);
+  EXPECT_EQ(1u, cache.size());
+
+  base::Value serialized_cache(base::Value::Type::LIST);
+  cache.GetList(&serialized_cache, false /* include_staleness */,
+                HostCache::SerializationType::kRestorable);
+  HostCache restored_cache(kMaxCacheEntries);
+  restored_cache.RestoreFromListValue(serialized_cache);
+
+  ASSERT_EQ(1u, restored_cache.size());
+  HostCache::EntryStaleness stale;
+  const std::pair<const HostCache::Key, HostCache::Entry>* result =
+      restored_cache.LookupStale(key, now, &stale);
+
   ASSERT_TRUE(result);
-  EXPECT_FALSE(result->first.secure);
-  EXPECT_FALSE(result->second.addresses());
-  EXPECT_FALSE(result->second.text_records());
-  ASSERT_TRUE(result->second.hostnames());
-  EXPECT_EQ(hostnames, result->second.hostnames().value());
+  EXPECT_THAT(result, Pointee(Pair(key, EntryContentsEqual(merged_entry))));
+  EXPECT_THAT(
+      result->second.GetEndpoints(),
+      Optional(ElementsAre(ExpectEndpointResult(ip_endpoints, metadata1),
+                           ExpectEndpointResult(ip_endpoints, metadata2),
+                           ExpectEndpointResult(ip_endpoints))));
+  EXPECT_THAT(result->second.aliases(), Pointee(aliases));
 }
 
 TEST(HostCacheTest, PersistenceDelegate) {
@@ -1477,21 +1755,14 @@ TEST(HostCacheTest, PersistenceDelegate) {
   HostCache::Key key1 = Key("foobar.com");
   HostCache::Key key2 = Key("foobar2.com");
 
-  IPAddress address_ipv4(1, 2, 3, 4);
-  IPAddress address_ipv6(0x20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-  IPEndPoint endpoint_ipv4(address_ipv4, 0);
-  IPEndPoint endpoint_ipv6(address_ipv6, 0);
-
-  HostCache::Entry entry1 = HostCache::Entry(OK, AddressList(endpoint_ipv4),
-                                             HostCache::Entry::SOURCE_UNKNOWN);
-  AddressList addresses2 = AddressList(endpoint_ipv6);
-  addresses2.push_back(endpoint_ipv4);
-  HostCache::Entry entry2 =
-      HostCache::Entry(OK, addresses2, HostCache::Entry::SOURCE_UNKNOWN);
-  HostCache::Entry entry3 = HostCache::Entry(
+  HostCache::Entry ok_entry = HostCache::Entry(
+      OK, std::vector<IPEndPoint>(), HostCache::Entry::SOURCE_UNKNOWN);
+  std::vector<IPEndPoint> other_endpoints = {
+      IPEndPoint(IPAddress(1, 1, 1, 1), 300)};
+  HostCache::Entry other_entry(OK, std::move(other_endpoints),
+                               HostCache::Entry::SOURCE_UNKNOWN);
+  HostCache::Entry error_entry = HostCache::Entry(
       ERR_NAME_NOT_RESOLVED, AddressList(), HostCache::Entry::SOURCE_UNKNOWN);
-  HostCache::Entry entry4 =
-      HostCache::Entry(OK, AddressList(), HostCache::Entry::SOURCE_UNKNOWN);
 
   // Start at t=0.
   base::TimeTicks now;
@@ -1499,13 +1770,13 @@ TEST(HostCacheTest, PersistenceDelegate) {
 
   // Add two entries at t=0.
   EXPECT_FALSE(cache.Lookup(key1, now));
-  cache.Set(key1, entry1, now, kTTL);
+  cache.Set(key1, ok_entry, now, kTTL);
   EXPECT_TRUE(cache.Lookup(key1, now));
   EXPECT_EQ(1u, cache.size());
   EXPECT_EQ(1, delegate.num_changes());
 
   EXPECT_FALSE(cache.Lookup(key2, now));
-  cache.Set(key2, entry3, now, kTTL);
+  cache.Set(key2, error_entry, now, kTTL);
   EXPECT_TRUE(cache.Lookup(key2, now));
   EXPECT_EQ(2u, cache.size());
   EXPECT_EQ(2, delegate.num_changes());
@@ -1516,14 +1787,14 @@ TEST(HostCacheTest, PersistenceDelegate) {
   // Changes that shouldn't trigger a write:
   // Add an entry for "foobar.com" with different expiration time.
   EXPECT_TRUE(cache.Lookup(key1, now));
-  cache.Set(key1, entry1, now, kTTL);
+  cache.Set(key1, ok_entry, now, kTTL);
   EXPECT_TRUE(cache.Lookup(key1, now));
   EXPECT_EQ(2u, cache.size());
   EXPECT_EQ(2, delegate.num_changes());
 
   // Add an entry for "foobar.com" with different TTL.
   EXPECT_TRUE(cache.Lookup(key1, now));
-  cache.Set(key1, entry1, now, kTTL - base::Seconds(5));
+  cache.Set(key1, ok_entry, now, kTTL - base::Seconds(5));
   EXPECT_TRUE(cache.Lookup(key1, now));
   EXPECT_EQ(2u, cache.size());
   EXPECT_EQ(2, delegate.num_changes());
@@ -1531,20 +1802,20 @@ TEST(HostCacheTest, PersistenceDelegate) {
   // Changes that should trigger a write:
   // Add an entry for "foobar.com" with different address list.
   EXPECT_TRUE(cache.Lookup(key1, now));
-  cache.Set(key1, entry2, now, kTTL);
+  cache.Set(key1, other_entry, now, kTTL);
   EXPECT_TRUE(cache.Lookup(key1, now));
   EXPECT_EQ(2u, cache.size());
   EXPECT_EQ(3, delegate.num_changes());
 
   // Add an entry for "foobar2.com" with different error.
   EXPECT_TRUE(cache.Lookup(key1, now));
-  cache.Set(key2, entry4, now, kTTL);
+  cache.Set(key2, ok_entry, now, kTTL);
   EXPECT_TRUE(cache.Lookup(key1, now));
   EXPECT_EQ(2u, cache.size());
   EXPECT_EQ(4, delegate.num_changes());
 }
 
-TEST(HostCacheTest, MergeEntries) {
+TEST(HostCacheTest, MergeLegacyAddressEntries) {
   const IPAddress kAddressFront(1, 2, 3, 4);
   const IPEndPoint kEndpointFront(kAddressFront, 0);
   std::vector<std::string> aliases_front({"alias1", "alias2", "alias3"});
@@ -1572,7 +1843,7 @@ TEST(HostCacheTest, MergeEntries) {
   EXPECT_EQ(HostCache::Entry::SOURCE_DNS, result.source());
 
   // Expect the IPv6 address to precede the IPv4 address.
-  EXPECT_THAT(result.addresses(),
+  EXPECT_THAT(result.legacy_addresses(),
               Optional(Property(&AddressList::endpoints,
                                 ElementsAre(kEndpointBack, kEndpointFront))));
   EXPECT_THAT(result.text_records(), Optional(ElementsAre("text1", "text2")));
@@ -1580,8 +1851,8 @@ TEST(HostCacheTest, MergeEntries) {
   EXPECT_THAT(result.hostnames(),
               Optional(ElementsAre(kHostnameFront, kHostnameBack)));
 
-  ASSERT_TRUE(result.addresses());
-  EXPECT_THAT(result.addresses().value().dns_aliases(),
+  ASSERT_TRUE(result.legacy_addresses());
+  EXPECT_THAT(result.legacy_addresses().value().dns_aliases(),
               ElementsAre("alias1", "alias2", "alias3", "alias4", "alias5"));
 }
 
@@ -1605,7 +1876,7 @@ std::vector<IPEndPoint> MakeEndpoints(std::vector<std::string> my_addresses) {
   return out;
 }
 
-TEST(HostCacheTest, SortsAndDeduplicatesAddresses) {
+TEST(HostCacheTest, SortsAndDeduplicatesLegacyAddresses) {
   IPAddressList front_addresses = MakeIPList({"0.0.0.1", "0.0.0.1", "0.0.0.2"});
   IPAddressList back_addresses =
       MakeIPList({"0.0.0.2", "0.0.0.2", "::3", "::3"});
@@ -1628,17 +1899,17 @@ TEST(HostCacheTest, SortsAndDeduplicatesAddresses) {
   EXPECT_EQ(HostCache::Entry::SOURCE_DNS, result.source());
 
   EXPECT_THAT(
-      result.addresses(),
+      result.legacy_addresses(),
       Optional(Property(
           &AddressList::endpoints,
           ElementsAreArray(MakeEndpoints({"::3", "0.0.0.1", "0.0.0.2"})))));
 
-  ASSERT_TRUE(result.addresses());
-  EXPECT_THAT(result.addresses().value().dns_aliases(),
+  ASSERT_TRUE(result.legacy_addresses());
+  EXPECT_THAT(result.legacy_addresses().value().dns_aliases(),
               ElementsAre("front", "back"));
 }
 
-TEST(HostCacheTest, PrefersAddressesWithIpv6) {
+TEST(HostCacheTest, PrefersLegacyAddressesWithIpv6) {
   IPAddressList front_addresses = MakeIPList({"::1", "0.0.0.2", "0.0.0.4"});
   IPAddressList back_addresses =
       MakeIPList({"0.0.0.2", "0.0.0.2", "::3", "::3", "0.0.0.4"});
@@ -1657,17 +1928,133 @@ TEST(HostCacheTest, PrefersAddressesWithIpv6) {
   HostCache::Entry result =
       HostCache::Entry::MergeEntries(std::move(front), std::move(back));
 
-  EXPECT_THAT(result.addresses(),
+  EXPECT_THAT(result.legacy_addresses(),
               Optional(Property(&AddressList::endpoints,
                                 ElementsAreArray(MakeEndpoints(
                                     {"::1", "::3", "0.0.0.2", "0.0.0.4"})))));
 
-  ASSERT_TRUE(result.addresses());
-  EXPECT_THAT(result.addresses().value().dns_aliases(),
+  ASSERT_TRUE(result.legacy_addresses());
+  EXPECT_THAT(result.legacy_addresses().value().dns_aliases(),
               ElementsAre("front", "back"));
 }
 
-TEST(HostCacheTest, MergeEntries_frontEmpty) {
+TEST(HostCacheTest, MergeEndpoints) {
+  std::vector<IPEndPoint> front_endpoints = {
+      IPEndPoint(IPAddress(1, 1, 1, 1), 800),
+      IPEndPoint(IPAddress(2, 2, 2, 2), 900)};
+  HostCache::Entry front(OK, front_endpoints, HostCache::Entry::SOURCE_DNS);
+
+  std::vector<IPEndPoint> back_endpoints = {IPEndPoint(
+      IPAddress(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4), 100)};
+  HostCache::Entry back(OK, back_endpoints, HostCache::Entry::SOURCE_DNS);
+
+  std::vector<IPEndPoint> expected_endpoints = {
+      IPEndPoint(IPAddress(1, 1, 1, 1), 800),
+      IPEndPoint(IPAddress(2, 2, 2, 2), 900),
+      IPEndPoint(IPAddress(1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4),
+                 100)};
+  HostCache::Entry expected(OK, expected_endpoints,
+                            HostCache::Entry::SOURCE_DNS);
+
+  HostCache::Entry result = HostCache::Entry::MergeEntries(front, back);
+  EXPECT_EQ(result, expected);
+}
+
+TEST(HostCacheTest, MergeMetadatas) {
+  ConnectionEndpointMetadata front_metadata;
+  front_metadata.supported_protocol_alpns = {"h5", "h6", "monster truck rally"};
+  front_metadata.ech_config_list = {'h', 'i'};
+  std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>
+      front_metadata_map{{4u, front_metadata}};
+  HostCache::Entry front(OK, front_metadata_map, HostCache::Entry::SOURCE_DNS);
+
+  ConnectionEndpointMetadata back_metadata;
+  back_metadata.supported_protocol_alpns = {"h5"};
+  std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>
+      back_metadata_map{{2u, back_metadata}};
+  HostCache::Entry back(OK, back_metadata_map, HostCache::Entry::SOURCE_DNS);
+
+  HostCache::Entry result = HostCache::Entry::MergeEntries(front, back);
+
+  // Expect `GetEndpoints()` to ignore metadatas if no `IPEndPoint`s.
+  EXPECT_FALSE(result.GetEndpoints());
+
+  // Expect order irrelevant for endpoint metadata merging.
+  result = HostCache::Entry::MergeEntries(back, front);
+  EXPECT_FALSE(result.GetEndpoints());
+}
+
+TEST(HostCacheTest, MergeMetadatasWithIpEndpoints) {
+  ConnectionEndpointMetadata front_metadata;
+  front_metadata.supported_protocol_alpns = {"h5", "h6", "monster truck rally"};
+  front_metadata.ech_config_list = {'h', 'i'};
+  std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>
+      front_metadata_map{{4u, front_metadata}};
+  HostCache::Entry front(OK, front_metadata_map, HostCache::Entry::SOURCE_DNS);
+
+  ConnectionEndpointMetadata back_metadata;
+  back_metadata.supported_protocol_alpns = {"h5"};
+  std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>
+      back_metadata_map{{2u, back_metadata}};
+  HostCache::Entry back(OK, back_metadata_map, HostCache::Entry::SOURCE_DNS);
+
+  HostCache::Entry merged_metadatas =
+      HostCache::Entry::MergeEntries(front, back);
+  HostCache::Entry reversed_merged_metadatas =
+      HostCache::Entry::MergeEntries(back, front);
+
+  // Expect `GetEndpoints()` to always ignore metadatas with no `IPEndPoint`s.
+  EXPECT_FALSE(merged_metadatas.GetEndpoints());
+  EXPECT_FALSE(reversed_merged_metadatas.GetEndpoints());
+
+  // Merge in an `IPEndPoint`.
+  IPEndPoint ip_endpoint(IPAddress(1, 1, 1, 1), 0);
+  HostCache::Entry with_ip_endpoint(OK, std::vector<IPEndPoint>{ip_endpoint},
+                                    HostCache::Entry::SOURCE_DNS);
+
+  HostCache::Entry result =
+      HostCache::Entry::MergeEntries(merged_metadatas, with_ip_endpoint);
+
+  // Expect `back_metadata` before `front_metadata` because it has lower
+  // priority number.
+  EXPECT_THAT(
+      result.GetEndpoints(),
+      Optional(ElementsAre(
+          ExpectEndpointResult(ElementsAre(ip_endpoint), back_metadata),
+          ExpectEndpointResult(ElementsAre(ip_endpoint), front_metadata),
+          ExpectEndpointResult(ElementsAre(ip_endpoint)))));
+
+  // Expect merge order irrelevant.
+  EXPECT_EQ(result, HostCache::Entry::MergeEntries(reversed_merged_metadatas,
+                                                   with_ip_endpoint));
+  EXPECT_EQ(result,
+            HostCache::Entry::MergeEntries(with_ip_endpoint, merged_metadatas));
+  EXPECT_EQ(result, HostCache::Entry::MergeEntries(with_ip_endpoint,
+                                                   reversed_merged_metadatas));
+}
+
+TEST(HostCacheTest, MergeAliases) {
+  HostCache::Entry front(OK, std::vector<IPEndPoint>(),
+                         HostCache::Entry::SOURCE_DNS);
+  front.set_aliases({"foo1.test", "foo2.test", "foo3.test"});
+
+  HostCache::Entry back(OK, std::vector<IPEndPoint>(),
+                        HostCache::Entry::SOURCE_DNS);
+  back.set_aliases({"foo2.test", "foo4.test"});
+
+  HostCache::Entry expected(OK, std::vector<IPEndPoint>(),
+                            HostCache::Entry::SOURCE_DNS);
+  expected.set_aliases({"foo1.test", "foo2.test", "foo3.test", "foo4.test"});
+
+  HostCache::Entry result = HostCache::Entry::MergeEntries(front, back);
+  EXPECT_EQ(result, expected);
+
+  // Expect order irrelevant for alias merging.
+  result = HostCache::Entry::MergeEntries(back, front);
+  EXPECT_EQ(result, expected);
+}
+
+TEST(HostCacheTest, MergeLegacyAddressEntries_frontEmpty) {
   HostCache::Entry front(ERR_NAME_NOT_RESOLVED, HostCache::Entry::SOURCE_DNS);
 
   const IPAddress kAddressBack(0x20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -1686,20 +2073,20 @@ TEST(HostCacheTest, MergeEntries_frontEmpty) {
   EXPECT_EQ(OK, result.error());
   EXPECT_EQ(HostCache::Entry::SOURCE_DNS, result.source());
 
-  ASSERT_TRUE(result.addresses());
-  EXPECT_THAT(result.addresses().value().endpoints(),
+  ASSERT_TRUE(result.legacy_addresses());
+  EXPECT_THAT(result.legacy_addresses().value().endpoints(),
               ElementsAre(kEndpointBack));
   EXPECT_THAT(result.text_records(), Optional(ElementsAre("text2")));
   EXPECT_THAT(result.hostnames(), Optional(ElementsAre(kHostnameBack)));
 
   EXPECT_EQ(base::Hours(4), result.ttl());
 
-  ASSERT_TRUE(result.addresses());
-  EXPECT_THAT(result.addresses().value().dns_aliases(),
+  ASSERT_TRUE(result.legacy_addresses());
+  EXPECT_THAT(result.legacy_addresses().value().dns_aliases(),
               ElementsAre("alias1", "alias2", "alias3"));
 }
 
-TEST(HostCacheTest, MergeEntries_backEmpty) {
+TEST(HostCacheTest, MergeLegacyAddressEntries_backEmpty) {
   const IPAddress kAddressFront(1, 2, 3, 4);
   const IPEndPoint kEndpointFront(kAddressFront, 0);
   std::vector<std::string> aliases_front({"alias1", "alias2", "alias3"});
@@ -1718,20 +2105,20 @@ TEST(HostCacheTest, MergeEntries_backEmpty) {
   EXPECT_EQ(OK, result.error());
   EXPECT_EQ(HostCache::Entry::SOURCE_DNS, result.source());
 
-  ASSERT_TRUE(result.addresses());
-  EXPECT_THAT(result.addresses().value().endpoints(),
+  ASSERT_TRUE(result.legacy_addresses());
+  EXPECT_THAT(result.legacy_addresses().value().endpoints(),
               ElementsAre(kEndpointFront));
   EXPECT_THAT(result.text_records(), Optional(ElementsAre("text1")));
   EXPECT_THAT(result.hostnames(), Optional(ElementsAre(kHostnameFront)));
 
   EXPECT_EQ(base::Minutes(5), result.ttl());
 
-  ASSERT_TRUE(result.addresses());
-  EXPECT_THAT(result.addresses().value().dns_aliases(),
+  ASSERT_TRUE(result.legacy_addresses());
+  EXPECT_THAT(result.legacy_addresses().value().dns_aliases(),
               ElementsAre("alias1", "alias2", "alias3"));
 }
 
-TEST(HostCacheTest, MergeEntries_bothEmpty) {
+TEST(HostCacheTest, MergeLegacyAddressEntries_bothEmpty) {
   HostCache::Entry front(ERR_NAME_NOT_RESOLVED, HostCache::Entry::SOURCE_DNS);
   HostCache::Entry back(ERR_NAME_NOT_RESOLVED, HostCache::Entry::SOURCE_DNS);
 
@@ -1741,18 +2128,19 @@ TEST(HostCacheTest, MergeEntries_bothEmpty) {
   EXPECT_EQ(ERR_NAME_NOT_RESOLVED, result.error());
   EXPECT_EQ(HostCache::Entry::SOURCE_DNS, result.source());
 
-  EXPECT_FALSE(result.addresses());
+  EXPECT_FALSE(result.legacy_addresses());
   EXPECT_FALSE(result.text_records());
   EXPECT_FALSE(result.hostnames());
   EXPECT_FALSE(result.has_ttl());
 }
 
-TEST(HostCacheTest, MergeEntries_frontWithAliasesNoAddressesBackWithBoth) {
+TEST(HostCacheTest,
+     MergeLegacyAddressEntries_frontWithAliasesNoAddressesBackWithBoth) {
   HostCache::Entry front(ERR_NAME_NOT_RESOLVED, HostCache::Entry::SOURCE_DNS);
   AddressList front_addresses;
   std::vector<std::string> aliases_front({"alias0", "alias1", "alias2"});
   front_addresses.SetDnsAliases(std::move(aliases_front));
-  front.set_addresses(front_addresses);
+  front.set_legacy_addresses(front_addresses);
 
   const IPAddress kAddressBack(0x20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                0);
@@ -1767,24 +2155,25 @@ TEST(HostCacheTest, MergeEntries_frontWithAliasesNoAddressesBackWithBoth) {
   EXPECT_EQ(OK, result.error());
   EXPECT_EQ(HostCache::Entry::SOURCE_DNS, result.source());
 
-  ASSERT_TRUE(result.addresses());
-  EXPECT_THAT(result.addresses().value().endpoints(),
+  ASSERT_TRUE(result.legacy_addresses());
+  EXPECT_THAT(result.legacy_addresses().value().endpoints(),
               ElementsAre(kEndpointBack));
 
   EXPECT_EQ(base::Hours(4), result.ttl());
 
-  ASSERT_TRUE(result.addresses());
-  EXPECT_THAT(result.addresses().value().dns_aliases(),
+  ASSERT_TRUE(result.legacy_addresses());
+  EXPECT_THAT(result.legacy_addresses().value().dns_aliases(),
               ElementsAre("alias0", "alias1", "alias2", "alias3"));
 }
 
-TEST(HostCacheTest, MergeEntries_backWithAliasesNoAddressesFrontWithBoth) {
+TEST(HostCacheTest,
+     MergeLegacyAddressEntries_backWithAliasesNoAddressesFrontWithBoth) {
   HostCache::Entry back(ERR_NAME_NOT_RESOLVED, HostCache::Entry::SOURCE_DNS);
   AddressList back_addresses;
   std::vector<std::string> aliases_back({"alias1", "alias2", "alias3"});
 
   back_addresses.SetDnsAliases(std::move(aliases_back));
-  back.set_addresses(back_addresses);
+  back.set_legacy_addresses(back_addresses);
 
   const IPAddress kAddressFront(0x20, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
                                 0);
@@ -1800,18 +2189,19 @@ TEST(HostCacheTest, MergeEntries_backWithAliasesNoAddressesFrontWithBoth) {
   EXPECT_EQ(OK, result.error());
   EXPECT_EQ(HostCache::Entry::SOURCE_DNS, result.source());
 
-  ASSERT_TRUE(result.addresses());
-  EXPECT_THAT(result.addresses().value().endpoints(),
+  ASSERT_TRUE(result.legacy_addresses());
+  EXPECT_THAT(result.legacy_addresses().value().endpoints(),
               ElementsAre(kEndpointFront));
 
   EXPECT_EQ(base::Hours(4), result.ttl());
 
-  ASSERT_TRUE(result.addresses());
-  EXPECT_THAT(result.addresses().value().dns_aliases(),
+  ASSERT_TRUE(result.legacy_addresses());
+  EXPECT_THAT(result.legacy_addresses().value().dns_aliases(),
               ElementsAre("alias0", "alias1", "alias2", "alias3"));
 }
 
-TEST(HostCacheTest, MergeEntries_frontWithAddressesNoAliasesBackWithBoth) {
+TEST(HostCacheTest,
+     MergeLegacyAddressEntries_frontWithAddressesNoAliasesBackWithBoth) {
   const IPAddress kAddressFront(1, 2, 3, 4);
   const IPEndPoint kEndpointFront(kAddressFront, 0);
   HostCache::Entry front(OK, AddressList(kEndpointFront),
@@ -1830,18 +2220,19 @@ TEST(HostCacheTest, MergeEntries_frontWithAddressesNoAliasesBackWithBoth) {
   EXPECT_EQ(OK, result.error());
   EXPECT_EQ(HostCache::Entry::SOURCE_DNS, result.source());
 
-  ASSERT_TRUE(result.addresses());
-  EXPECT_THAT(result.addresses().value().endpoints(),
+  ASSERT_TRUE(result.legacy_addresses());
+  EXPECT_THAT(result.legacy_addresses().value().endpoints(),
               ElementsAre(kEndpointBack, kEndpointFront));
 
   EXPECT_EQ(base::Hours(4), result.ttl());
 
-  ASSERT_TRUE(result.addresses());
-  EXPECT_THAT(result.addresses().value().dns_aliases(),
+  ASSERT_TRUE(result.legacy_addresses());
+  EXPECT_THAT(result.legacy_addresses().value().dns_aliases(),
               ElementsAre("alias1", "alias2", "alias3"));
 }
 
-TEST(HostCacheTest, MergeEntries_backWithAddressesNoAliasesFrontWithBoth) {
+TEST(HostCacheTest,
+     MergeLegacyAddressEntries_backWithAddressesNoAliasesFrontWithBoth) {
   const IPAddress kAddressFront(1, 2, 3, 4);
   const IPEndPoint kEndpointFront(kAddressFront, 0);
   std::vector<std::string> aliases_front({"alias1", "alias2", "alias3"});
@@ -1861,14 +2252,14 @@ TEST(HostCacheTest, MergeEntries_backWithAddressesNoAliasesFrontWithBoth) {
   EXPECT_EQ(OK, result.error());
   EXPECT_EQ(HostCache::Entry::SOURCE_DNS, result.source());
 
-  ASSERT_TRUE(result.addresses());
-  EXPECT_THAT(result.addresses().value().endpoints(),
+  ASSERT_TRUE(result.legacy_addresses());
+  EXPECT_THAT(result.legacy_addresses().value().endpoints(),
               ElementsAre(kEndpointBack, kEndpointFront));
 
   EXPECT_EQ(base::Hours(4), result.ttl());
 
-  ASSERT_TRUE(result.addresses());
-  EXPECT_THAT(result.addresses().value().dns_aliases(),
+  ASSERT_TRUE(result.legacy_addresses());
+  EXPECT_THAT(result.legacy_addresses().value().dns_aliases(),
               ElementsAre("alias1", "alias2", "alias3"));
 }
 
@@ -1884,7 +2275,7 @@ TEST(HostCacheTest, MergeEntries_differentTtl) {
   EXPECT_EQ(base::Seconds(42), result.ttl());
 }
 
-TEST(HostCacheTest, MergeEntries_FrontCannonnamePreserved) {
+TEST(HostCacheTest, MergeLegacyAddressEntries_FrontCannonnamePreserved) {
   AddressList addresses_front;
   const std::string kCanonicalNameFront = "name1";
   std::vector<std::string> front_aliases({kCanonicalNameFront});
@@ -1900,14 +2291,15 @@ TEST(HostCacheTest, MergeEntries_FrontCannonnamePreserved) {
   HostCache::Entry result =
       HostCache::Entry::MergeEntries(std::move(front), std::move(back));
 
-  ASSERT_TRUE(result.addresses());
-  EXPECT_EQ(kCanonicalNameFront, result.addresses().value().GetCanonicalName());
-  EXPECT_THAT(result.addresses().value().dns_aliases(),
+  ASSERT_TRUE(result.legacy_addresses());
+  EXPECT_EQ(kCanonicalNameFront,
+            result.legacy_addresses().value().GetCanonicalName());
+  EXPECT_THAT(result.legacy_addresses().value().dns_aliases(),
               ElementsAre("name1", "name2"));
 }
 
 // Test that the back canonname can be used if there is no front cannonname.
-TEST(HostCacheTest, MergeEntries_BackCannonnameUsable) {
+TEST(HostCacheTest, MergeLegacyAddressEntries_BackCannonnameUsable) {
   AddressList addresses_front;
   const std::string kCanonicalNameFront = "";
   std::vector<std::string> front_aliases({kCanonicalNameFront});
@@ -1923,9 +2315,11 @@ TEST(HostCacheTest, MergeEntries_BackCannonnameUsable) {
   HostCache::Entry result =
       HostCache::Entry::MergeEntries(std::move(front), std::move(back));
 
-  ASSERT_TRUE(result.addresses());
-  EXPECT_EQ(kCanonicalNameBack, result.addresses().value().GetCanonicalName());
-  EXPECT_THAT(result.addresses().value().dns_aliases(), ElementsAre("name2"));
+  ASSERT_TRUE(result.legacy_addresses());
+  EXPECT_EQ(kCanonicalNameBack,
+            result.legacy_addresses().value().GetCanonicalName());
+  EXPECT_THAT(result.legacy_addresses().value().dns_aliases(),
+              ElementsAre("name2"));
 }
 
 }  // namespace net

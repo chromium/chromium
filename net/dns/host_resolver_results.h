@@ -6,6 +6,7 @@
 #define NET_DNS_HOST_RESOLVER_RESULTS_H_
 
 #include <string>
+#include <tuple>
 #include <vector>
 
 #include "net/base/connection_endpoint_metadata.h"
@@ -25,6 +26,14 @@ struct NET_EXPORT_PRIVATE HostResolverEndpointResult {
       default;
   HostResolverEndpointResult(HostResolverEndpointResult&&);
   HostResolverEndpointResult& operator=(HostResolverEndpointResult&&) = default;
+
+  bool operator==(const HostResolverEndpointResult& other) const {
+    return std::tie(ip_endpoints, metadata) ==
+           std::tie(other.ip_endpoints, other.metadata);
+  }
+  bool operator!=(const HostResolverEndpointResult& other) const {
+    return !(*this == other);
+  }
 
   // IP endpoints at which to connect to the service.
   std::vector<net::IPEndPoint> ip_endpoints;

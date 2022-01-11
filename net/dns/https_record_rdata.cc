@@ -252,7 +252,7 @@ bool AliasFormHttpsRecordRdata::IsAlias() const {
 constexpr uint16_t ServiceFormHttpsRecordRdata::kSupportedKeys[];
 
 ServiceFormHttpsRecordRdata::ServiceFormHttpsRecordRdata(
-    uint16_t priority,
+    HttpsRecordPriority priority,
     std::string service_name,
     std::set<uint16_t> mandatory_keys,
     std::vector<std::string> alpn_ids,
@@ -330,7 +330,7 @@ std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
 
   if (reader.remaining() == 0) {
     return std::make_unique<ServiceFormHttpsRecordRdata>(
-        priority, std::move(service_name).value(),
+        HttpsRecordPriority{priority}, std::move(service_name).value(),
         std::set<uint16_t>() /* mandatory_keys */,
         std::vector<std::string>() /* alpn_ids */, true /* default_alpn */,
         absl::nullopt /* port */, std::vector<IPAddress>() /* ipv4_hint */,
@@ -446,9 +446,10 @@ std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
   }
 
   return std::make_unique<ServiceFormHttpsRecordRdata>(
-      priority, std::move(service_name).value(), std::move(mandatory_keys),
-      std::move(alpn_ids), default_alpn, port, std::move(ipv4_hint),
-      std::move(ech_config), std::move(ipv6_hint), std::move(unparsed_params));
+      HttpsRecordPriority{priority}, std::move(service_name).value(),
+      std::move(mandatory_keys), std::move(alpn_ids), default_alpn, port,
+      std::move(ipv4_hint), std::move(ech_config), std::move(ipv6_hint),
+      std::move(unparsed_params));
 }
 
 bool ServiceFormHttpsRecordRdata::IsCompatible() const {

@@ -11,6 +11,7 @@
 #include <map>
 #include <memory>
 #include <ostream>
+#include <set>
 #include <string>
 #include <tuple>
 #include <utility>
@@ -20,17 +21,22 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/numerics/clamped_math.h"
+#include "base/stl_util.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "net/base/address_family.h"
 #include "net/base/address_list.h"
+#include "net/base/connection_endpoint_metadata.h"
 #include "net/base/expiring_cache.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
 #include "net/base/net_export.h"
 #include "net/base/network_isolation_key.h"
 #include "net/dns/dns_util.h"
+#include "net/dns/host_resolver_results.h"
+#include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/host_resolver_source.h"
 #include "net/log/net_log_capture_mode.h"
@@ -150,15 +156,44 @@ class NET_EXPORT HostCache {
     Entry& operator=(const Entry& entry);
     Entry& operator=(Entry&& entry);
 
+    bool operator==(const Entry& other) const {
+      return ContentsEqual(other) &&
+             std::tie(source_, pinning_, ttl_, expires_, network_changes_,
+                      total_hits_, stale_hits_) ==
+                 std::tie(other.source_, other.pinning_, other.ttl_,
+                          other.expires_, other.network_changes_,
+                          other.total_hits_, other.stale_hits_);
+    }
+
+    bool ContentsEqual(const Entry& other) const {
+      return std::tie(error_, ip_endpoints_, endpoint_metadatas_, aliases_,
+                      legacy_addresses_, text_records_, hostnames_,
+                      experimental_results_) ==
+             std::tie(other.error_, other.ip_endpoints_,
+                      other.endpoint_metadatas_, other.aliases_,
+                      other.legacy_addresses_, other.text_records_,
+                      other.hostnames_, other.experimental_results_);
+    }
+
     int error() const { return error_; }
     bool did_complete() const {
       return error_ != ERR_NETWORK_CHANGED &&
              error_ != ERR_HOST_RESOLVER_QUEUE_TOO_LARGE;
     }
     void set_error(int error) { error_ = error; }
-    const absl::optional<AddressList>& addresses() const { return addresses_; }
-    void set_addresses(const absl::optional<AddressList>& addresses) {
-      addresses_ = addresses;
+    absl::optional<std::vector<HostResolverEndpointResult>> GetEndpoints()
+        const;
+    const std::set<std::string>* aliases() const {
+      return base::OptionalOrNullptr(aliases_);
+    }
+    void set_aliases(std::set<std::string> aliases) {
+      aliases_ = std::move(aliases);
+    }
+    const absl::optional<AddressList>& legacy_addresses() const {
+      return legacy_addresses_;
+    }
+    void set_legacy_addresses(const absl::optional<AddressList>& addresses) {
+      legacy_addresses_ = addresses;
     }
     const absl::optional<std::vector<std::string>>& text_records() const {
       return text_records_;
@@ -198,8 +233,8 @@ class NET_EXPORT HostCache {
     // for the same overall host resolution query.
     //
     // Merges lists, placing elements from |front| before elements from |back|.
-    // Further, dedupes address lists and moves IPv6 addresses before IPv4
-    // addresses (maintaining stable order otherwise).
+    // Further, dedupes legacy address lists and moves IPv6 addresses before
+    // IPv4 addresses (maintaining stable order otherwise).
     //
     // Fields that cannot be merged take precedence from |front|.
     static Entry MergeEntries(Entry front, Entry back);
@@ -212,6 +247,8 @@ class NET_EXPORT HostCache {
     HostCache::Entry CopyWithDefaultPort(uint16_t port) const;
 
    private:
+    using HttpsRecordPriority = uint16_t;
+
     friend class HostCache;
 
     Entry(const Entry& entry,
@@ -220,7 +257,12 @@ class NET_EXPORT HostCache {
           int network_changes);
 
     Entry(int error,
-          const absl::optional<AddressList>& addresses,
+          absl::optional<std::vector<IPEndPoint>> ip_endpoints,
+          absl::optional<
+              std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>>
+              endpoint_metadatas,
+          absl::optional<std::set<std::string>> aliases,
+          const absl::optional<AddressList>& legacy_addresses,
           absl::optional<std::vector<std::string>>&& text_results,
           absl::optional<std::vector<HostPortPair>>&& hostnames,
           absl::optional<std::vector<bool>>&& experimental_results,
@@ -230,7 +272,17 @@ class NET_EXPORT HostCache {
 
     void PrepareForCacheInsertion();
 
-    void SetResult(AddressList addresses) { addresses_ = std::move(addresses); }
+    void SetResult(std::vector<IPEndPoint> ip_endpoints) {
+      ip_endpoints_ = std::move(ip_endpoints);
+    }
+    void SetResult(
+        std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>
+            endpoint_metadatas) {
+      endpoint_metadatas_ = std::move(endpoint_metadatas);
+    }
+    void SetResult(AddressList addresses) {
+      legacy_addresses_ = std::move(addresses);
+    }
     void SetResult(std::vector<std::string> text_records) {
       text_records_ = std::move(text_records);
     }
@@ -250,9 +302,9 @@ class NET_EXPORT HostCache {
                       int network_changes,
                       EntryStaleness* out) const;
 
-    // Merges addresses from |source| into the stored list of addresses and
-    // deduplicates. The address list can be accessed with |addresses()|. This
-    // method performs a stable sort to ensure IPv6 addresses precede IPv4
+    // Merges legacy addresses from |source| into the stored list of addresses
+    // and deduplicates. The address list can be accessed with |addresses()|.
+    // This method performs a stable sort to ensure IPv6 addresses precede IPv4
     // addresses. IP versions being equal, addresses from |*this| will precede
     // those from |source|.
     //
@@ -263,15 +315,20 @@ class NET_EXPORT HostCache {
     // non-empty and therefore OK.
     void MergeAddressesFrom(const HostCache::Entry& source);
 
-    // Merges DNS aliases from |source| into the stored list of DNS aliases and
-    // deduplicates.
+    // Merges the legacy DNS aliases list from `source` into the stored list of
+    // DNS aliases and deduplicates.
     void MergeDnsAliasesFrom(const HostCache::Entry& source);
 
     base::Value GetAsValue(bool include_staleness) const;
 
     // The resolve results for this entry.
     int error_ = ERR_FAILED;
-    absl::optional<AddressList> addresses_;
+    absl::optional<std::vector<IPEndPoint>> ip_endpoints_;
+    absl::optional<
+        std::multimap<HttpsRecordPriority, ConnectionEndpointMetadata>>
+        endpoint_metadatas_;
+    absl::optional<std::set<std::string>> aliases_;
+    absl::optional<AddressList> legacy_addresses_;
     absl::optional<std::vector<std::string>> text_records_;
     absl::optional<std::vector<HostPortPair>> hostnames_;
     absl::optional<std::vector<bool>> experimental_results_;

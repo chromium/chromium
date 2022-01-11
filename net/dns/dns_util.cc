@@ -20,7 +20,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
-#include "net/base/address_list.h"
 #include "net/base/url_util.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/doh_provider_entry.h"
@@ -237,46 +236,6 @@ base::TimeDelta GetTimeDeltaForConnectionTypeFromFieldTrialOrDefault(
   if (!GetTimeDeltaForConnectionTypeFromFieldTrial(field_trial, type, &out))
     out = default_delta;
   return out;
-}
-
-AddressListDeltaType FindAddressListDeltaType(const AddressList& a,
-                                              const AddressList& b) {
-  bool pairwise_mismatch = false;
-  bool any_match = false;
-  bool any_missing = false;
-  bool same_size = a.size() == b.size();
-
-  for (size_t i = 0; i < a.size(); ++i) {
-    bool this_match = false;
-    for (size_t j = 0; j < b.size(); ++j) {
-      if (a[i] == b[j]) {
-        any_match = true;
-        this_match = true;
-        // If there is no match before, and the current match, this means
-        // DELTA_OVERLAP.
-        if (any_missing)
-          return DELTA_OVERLAP;
-      } else if (i == j) {
-        pairwise_mismatch = true;
-      }
-    }
-    if (!this_match) {
-      any_missing = true;
-      // If any match has occurred before, then there is no need to compare the
-      // remaining addresses. This means DELTA_OVERLAP.
-      if (any_match)
-        return DELTA_OVERLAP;
-    }
-  }
-
-  if (same_size && !pairwise_mismatch)
-    return DELTA_IDENTICAL;
-  else if (same_size && !any_missing)
-    return DELTA_REORDERED;
-  else if (any_match)
-    return DELTA_OVERLAP;
-  else
-    return DELTA_DISJOINT;
 }
 
 std::string CreateNamePointer(uint16_t offset) {

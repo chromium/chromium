@@ -727,20 +727,21 @@ class HostResolverManager::RequestImpl
   const absl::optional<AddressList>& GetAddressResults() const override {
     DCHECK(complete_);
     static const base::NoDestructor<absl::optional<AddressList>> nullopt_result;
-    return results_ ? results_.value().addresses() : *nullopt_result;
+    return results_ ? results_.value().legacy_addresses() : *nullopt_result;
   }
 
   absl::optional<std::vector<HostResolverEndpointResult>> GetEndpointResults()
       const override {
     DCHECK(complete_);
 
-    if (!results_.has_value() || !results_.value().addresses().has_value())
+    if (!results_.has_value() ||
+        !results_.value().legacy_addresses().has_value())
       return absl::nullopt;
 
     // TODO(crbug.com/1264933): Use HostResolverEndpointResult internally
     // instead of converting on output.
     return HostResolver::AddressListToEndpointResults(
-        results_.value().addresses().value());
+        results_.value().legacy_addresses().value());
   }
 
   const absl::optional<std::vector<std::string>>& GetTextResults()
@@ -896,20 +897,20 @@ class HostResolverManager::RequestImpl
   void FixupDnsAliasResults() {
     // If there are no address results, if there are no aliases, or if there
     // are already fixed up alias results, there is nothing to do.
-    if (!results_ || !results_.value().addresses() ||
-        results_.value().addresses()->dns_aliases().empty() ||
+    if (!results_ || !results_.value().legacy_addresses() ||
+        results_.value().legacy_addresses()->dns_aliases().empty() ||
         fixed_up_dns_alias_results_) {
       return;
     }
 
     fixed_up_dns_alias_results_.emplace(
-        results_.value().addresses()->dns_aliases().begin(),
-        results_.value().addresses()->dns_aliases().end());
+        results_.value().legacy_addresses()->dns_aliases().begin(),
+        results_.value().legacy_addresses()->dns_aliases().end());
 
     // Skip fixups for `include_canonical_name` requests. Just use the
     // canonical name exactly as it was received from the system resolver.
     if (parameters().include_canonical_name) {
-      DCHECK_LE(results_.value().addresses()->dns_aliases().size(), 1u);
+      DCHECK_LE(results_.value().legacy_addresses()->dns_aliases().size(), 1u);
     } else {
       fixed_up_dns_alias_results_ = dns_alias_utility::FixUpDnsAliases(
           fixed_up_dns_alias_results_.value());
@@ -1763,16 +1764,18 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
     // If there are multiple addresses, and at least one is IPv6, need to
     // sort them.
     bool at_least_one_ipv6_address =
-        results.addresses() && !results.addresses().value().empty() &&
-        (results.addresses().value()[0].GetFamily() == ADDRESS_FAMILY_IPV6 ||
-         std::any_of(results.addresses().value().begin(),
-                     results.addresses().value().end(), [](auto& e) {
+        results.legacy_addresses() &&
+        !results.legacy_addresses().value().empty() &&
+        (results.legacy_addresses().value()[0].GetFamily() ==
+             ADDRESS_FAMILY_IPV6 ||
+         std::any_of(results.legacy_addresses().value().begin(),
+                     results.legacy_addresses().value().end(), [](auto& e) {
                        return e.GetFamily() == ADDRESS_FAMILY_IPV6;
                      }));
 
     if (at_least_one_ipv6_address) {
       // Sort addresses if needed.  Sort could complete synchronously.
-      AddressList addresses = results.addresses().value();
+      AddressList addresses = results.legacy_addresses().value();
       client_->GetAddressSorter()->Sort(
           addresses,
           base::BindOnce(&DnsTask::OnSortComplete, AsWeakPtr(),
@@ -1788,7 +1791,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
                       bool secure,
                       bool success,
                       const AddressList& addr_list) {
-    results.set_addresses(addr_list);
+    results.set_legacy_addresses(addr_list);
 
     if (!success) {
       OnFailure(ERR_DNS_SORT_ERROR, results.GetOptionalTtl());
@@ -1994,7 +1997,7 @@ class HostResolverManager::DnsTask : public base::SupportsWeakPtr<DnsTask> {
 //-----------------------------------------------------------------------------
 
 struct HostResolverManager::JobKey {
-  JobKey(ResolveContext* resolve_context)
+  explicit JobKey(ResolveContext* resolve_context)
       : resolve_context(resolve_context->AsSafeRef()) {}
 
   bool operator<(const JobKey& other) const {
@@ -2593,7 +2596,8 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     // find address results, but DnsTask may claim success if any transaction,
     // e.g. a supplemental HTTPS transaction, finds results.
     if (key_.query_type == DnsQueryType::UNSPECIFIED && results.error() == OK &&
-        (!results.addresses() || results.addresses().value().empty())) {
+        (!results.legacy_addresses() ||
+         results.legacy_addresses().value().empty())) {
       results.set_error(ERR_NAME_NOT_RESOLVED);
     }
 
@@ -2616,8 +2620,8 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     base::TimeDelta bounded_ttl =
         std::max(results.ttl(), base::Seconds(kMinimumTTLSeconds));
 
-    if (results.addresses() &&
-        ContainsIcannNameCollisionIp(results.addresses().value())) {
+    if (results.legacy_addresses() &&
+        ContainsIcannNameCollisionIp(results.legacy_addresses().value())) {
       CompleteRequestsWithError(ERR_ICANN_NAME_COLLISION);
       return;
     }
@@ -2689,8 +2693,8 @@ class HostResolverManager::Job : public PrioritizedDispatcher::Job,
     // TODO(crbug.com/846423): Consider adding MDNS-specific logging.
 
     HostCache::Entry results = mdns_task_->GetResults();
-    if (results.addresses() &&
-        ContainsIcannNameCollisionIp(results.addresses().value())) {
+    if (results.legacy_addresses() &&
+        ContainsIcannNameCollisionIp(results.legacy_addresses().value())) {
       CompleteRequestsWithError(ERR_ICANN_NAME_COLLISION);
     } else {
       // MDNS uses a separate cache, so skip saving result to cache.

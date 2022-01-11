@@ -8,13 +8,18 @@
 #include <stdint.h>
 
 #include <string>
+#include <tuple>
 #include <vector>
+
+#include "base/values.h"
+#include "net/base/net_export.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
 // Metadata used to create UDP/TCP/TLS/etc connections or information about such
 // a connection.
-struct ConnectionEndpointMetadata {
+struct NET_EXPORT_PRIVATE ConnectionEndpointMetadata {
   // Expected to be parsed/consumed only by BoringSSL code and thus passed
   // around here only as a raw byte array.
   using EchConfigList = std::vector<uint8_t>;
@@ -27,6 +32,15 @@ struct ConnectionEndpointMetadata {
       default;
   ConnectionEndpointMetadata(ConnectionEndpointMetadata&&);
   ConnectionEndpointMetadata& operator=(ConnectionEndpointMetadata&&) = default;
+
+  bool operator==(const ConnectionEndpointMetadata& other) const {
+    return std::tie(supported_protocol_alpns, ech_config_list) ==
+           std::tie(other.supported_protocol_alpns, other.ech_config_list);
+  }
+
+  base::Value ToValue() const;
+  static absl::optional<ConnectionEndpointMetadata> FromValue(
+      const base::Value& value);
 
   // ALPN strings for protocols supported by the endpoint. Empty for default
   // non-protocol endpoint.

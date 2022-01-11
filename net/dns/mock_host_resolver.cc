@@ -996,7 +996,7 @@ int MockHostResolverBase::ResolveFromIPLiteralOrCache(
       rv = cache_result->second.error();
       if (rv == OK) {
         *addresses = AddressList::CopyWithPort(
-            cache_result->second.addresses().value(), GetPort(endpoint));
+            cache_result->second.legacy_addresses().value(), GetPort(endpoint));
         *out_stale_info = std::move(stale_info);
       }
 

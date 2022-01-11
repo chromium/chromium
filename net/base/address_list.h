@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/compiler_specific.h"
@@ -50,6 +51,12 @@ class NET_EXPORT AddressList {
 
   // Returns a copy of `list` with port on each element set to |port|.
   static AddressList CopyWithPort(const AddressList& list, uint16_t port);
+
+  bool operator==(const AddressList& other) const {
+    return std::tie(endpoints_, dns_aliases_) ==
+           std::tie(other.endpoints_, other.dns_aliases_);
+  }
+  bool operator!=(const AddressList& other) const { return !(*this == other); }
 
   // TODO(crbug.com/126134): Remove all references to canonical name
   // in net::AddressList.
