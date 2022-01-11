@@ -27,7 +27,6 @@
     <attr name="default_bg_color_dynamic" format="color"/>
     <attr name="divider_line_bg_color_dynamic" format="color"/>
 
-    <attr name="default_icon_color_secondary" format="color" />
     <attr name="default_icon_color_disabled" format="color" />
     <attr name="default_icon_color_disabled_inverse" format="color" />
 

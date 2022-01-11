@@ -645,7 +645,7 @@ public class SingleWebsiteSettings extends SiteSettingsPreferenceFragment
                     createReadOnlyCopyOf(preference, overrideSummary, value);
             newPreference.setImageView(R.drawable.permission_popups, 0,
                     unused -> launchOsChannelSettingsFromPreference(preference));
-            newPreference.setImageColor(R.color.default_icon_color_secondary);
+            newPreference.setImageColor(R.color.default_icon_color_secondary_tint_list);
             newPreference.setDefaultValue(value);
 
             newPreference.setOnPreferenceClickListener(unused -> {

@@ -70,7 +70,7 @@ public class HistoryItemView extends SelectableItemView<HistoryItem> {
         mRemoveButton.setContentDescription(getContext().getString((R.string.remove)));
         ApiCompatibilityUtils.setImageTintList(mRemoveButton,
                 AppCompatResources.getColorStateList(
-                        getContext(), R.color.default_icon_color_secondary));
+                        getContext(), R.color.default_icon_color_secondary_tint_list));
         mRemoveButton.setOnClickListener(v -> remove());
         mRemoveButton.setScaleType(ScaleType.CENTER_INSIDE);
         mRemoveButton.setPaddingRelative(

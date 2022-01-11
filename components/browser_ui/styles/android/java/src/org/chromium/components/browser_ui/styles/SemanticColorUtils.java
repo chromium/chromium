@@ -72,6 +72,12 @@ public class SemanticColorUtils {
         return resolve(R.attr.colorPrimary, R.color.default_icon_color_accent1_baseline, context);
     }
 
+    /** Returns the semantic color value that corresponds to default_icon_color_secondary. */
+    public static @ColorInt int getDefaultIconColorSecondary(Context context) {
+        return resolve(R.attr.colorOnSurfaceVariant, R.color.default_icon_color_secondary_baseline,
+                context);
+    }
+
     /** Returns the semantic color value that corresponds to divider_line_bg_color. */
     public static @ColorInt int getDividerLineBgColor(Context context) {
         return resolve(R.attr.colorSurfaceVariant, R.color.divider_line_bg_color_baseline, context);

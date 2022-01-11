@@ -182,9 +182,8 @@ public class MessageCardViewBinderTest extends DummyUiActivityTestCase {
                                 .getDefaultColor()));
         assertThat(actionButton.getCurrentTextColor(),
                 equalTo(SemanticColorUtils.getDefaultTextColorLink(mItemView.getContext())));
-        assertThat(closeButton.getImageTintList(),
-                equalTo(AppCompatResources.getColorStateList(
-                        getActivity(), R.color.default_icon_color_tint_list)));
+        assertThat(closeButton.getImageTintList().getDefaultColor(),
+                equalTo(getActivity().getColor(R.color.default_icon_color_tint_list)));
 
         mItemViewModel.set(MessageCardViewProperties.IS_INCOGNITO, true);
         assertThat(description.getCurrentTextColor(),
@@ -193,9 +192,8 @@ public class MessageCardViewBinderTest extends DummyUiActivityTestCase {
         assertThat(actionButton.getCurrentTextColor(),
                 equalTo(ApiCompatibilityUtils.getColor(
                         mItemView.getResources(), R.color.default_text_color_link_light)));
-        assertThat(closeButton.getImageTintList(),
-                equalTo(AppCompatResources.getColorStateList(
-                        getActivity(), R.color.default_icon_color_light)));
+        assertThat(closeButton.getImageTintList().getDefaultColor(),
+                equalTo(getActivity().getColor(R.color.default_icon_color_light)));
     }
 
     @Override

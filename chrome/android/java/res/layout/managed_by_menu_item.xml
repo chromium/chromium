@@ -26,7 +26,7 @@
         android:singleLine="true"
         android:drawableStart="@drawable/ic_business"
         android:drawablePadding="12dp"
-        app:chromeDrawableTint="?attr/default_icon_color_secondary"
+        app:chromeDrawableTint="@macro/default_icon_color_secondary"
         android:tintMode="src_in"
         app:drawableWidth="20dp"
         app:drawableHeight="20dp"/>

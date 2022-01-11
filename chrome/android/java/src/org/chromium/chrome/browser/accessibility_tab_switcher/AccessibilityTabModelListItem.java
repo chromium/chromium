@@ -222,8 +222,8 @@ public class AccessibilityTabModelListItem extends FrameLayout implements OnClic
         mDefaultIconColor = ChromeColors.getPrimaryIconTint(context, false);
         mIncognitoIconColor =
                 AppCompatResources.getColorStateList(context, R.color.default_icon_color_dark);
-        mDefaultCloseIconColor =
-                AppCompatResources.getColorStateList(context, R.color.default_icon_color_secondary);
+        mDefaultCloseIconColor = AppCompatResources.getColorStateList(
+                context, R.color.default_icon_color_secondary_tint_list);
         mIncognitoCloseIconColor =
                 AppCompatResources.getColorStateList(context, R.color.white_alpha_70);
         mDefaultLevel = getResources().getInteger(R.integer.list_item_level_default);
