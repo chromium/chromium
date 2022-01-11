@@ -177,9 +177,7 @@ build_recipe(
 
 build_recipe(
     name = "recipe:chromium_libfuzzer_trybot",
-    experiments = {
-        "luci.recipes.use_python3": 25,
-    },
+    use_python3 = True,
 )
 
 build_recipe(
