@@ -142,9 +142,10 @@ class CORE_EXPORT ElementRuleCollector {
   }
   void SetIncludeEmptyRules(bool include) { include_empty_rules_ = include; }
   bool IncludeEmptyRules() const { return include_empty_rules_; }
-  bool IsCollectingForPseudoElement() const {
-    return pseudo_style_request_.pseudo_id != kPseudoIdNone;
-  }
+
+  // Return the pseudo id if the style request is for rules associated with a
+  // pseudo element, or kPseudoNone if not.
+  PseudoId GetPseudoId() const { return pseudo_style_request_.pseudo_id; }
 
   void AddMatchedRulesToTracker(StyleRuleUsageTracker*) const;
 

@@ -31,6 +31,7 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/document_transition/document_transition_pseudo_element_base.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
 #include "third_party/blink/renderer/core/dom/element_rare_data.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
@@ -53,8 +54,11 @@ PseudoElement* PseudoElement::Create(
   if (pseudo_id == kPseudoIdFirstLetter) {
     return MakeGarbageCollected<FirstLetterPseudoElement>(parent);
   } else if (IsTransitionPseudoElement(pseudo_id)) {
-    return MakeGarbageCollected<DocumentTransitionPseudoElementBase>(
-        parent, pseudo_id, document_transition_tag);
+    auto* document_transition =
+        DocumentTransitionSupplement::FromIfExists(parent->GetDocument())
+            ->GetTransition();
+    return document_transition->CreatePseudoElement(parent, pseudo_id,
+                                                    document_transition_tag);
   }
   DCHECK(pseudo_id == kPseudoIdAfter || pseudo_id == kPseudoIdBefore ||
          pseudo_id == kPseudoIdBackdrop || pseudo_id == kPseudoIdMarker);

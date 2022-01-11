@@ -64,6 +64,7 @@
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
 #include "third_party/blink/renderer/core/css/vision_deficiency.h"
 #include "third_party/blink/renderer/core/display_lock/display_lock_utilities.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_supplement.h"
 #include "third_party/blink/renderer/core/dom/document_lifecycle.h"
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
@@ -1515,11 +1516,34 @@ void StyleEngine::EnsureUAStyleForElement(const Element& element) {
 
 void StyleEngine::EnsureUAStyleForPseudoElement(PseudoId pseudo_id) {
   DCHECK(global_rule_set_);
+
+  if (IsTransitionPseudoElement(pseudo_id)) {
+    EnsureUAStyleForTransitionPseudos();
+    return;
+  }
+
   if (CSSDefaultStyleSheets::Instance()
           .EnsureDefaultStyleSheetsForPseudoElement(pseudo_id)) {
     global_rule_set_->MarkDirty();
     UpdateActiveStyle();
   }
+}
+
+void StyleEngine::EnsureUAStyleForTransitionPseudos() {
+  if (ua_document_transition_style_)
+    return;
+
+  // Note that we don't need to mark any state dirty for style invalidation
+  // here. This is done externally by the code which invalidates this style
+  // sheet.
+  auto* document_transition =
+      DocumentTransitionSupplement::FromIfExists(GetDocument())
+          ->GetTransition();
+  auto* style_sheet_contents =
+      CSSDefaultStyleSheets::ParseUASheet(document_transition->UAStyleSheet());
+  ua_document_transition_style_ = MakeGarbageCollected<RuleSet>();
+  ua_document_transition_style_->AddRulesFromSheet(
+      style_sheet_contents, CSSDefaultStyleSheets::ScreenEval());
 }
 
 void StyleEngine::EnsureUAStyleForForcedColors() {
@@ -1530,6 +1554,15 @@ void StyleEngine::EnsureUAStyleForForcedColors() {
     if (GetDocument().IsActive())
       UpdateActiveStyle();
   }
+}
+
+RuleSet* StyleEngine::DefaultDocumentTransitionStyle() const {
+  DCHECK(ua_document_transition_style_);
+  return ua_document_transition_style_.Get();
+}
+
+void StyleEngine::InvalidateUADocumentTransitionStyle() {
+  ua_document_transition_style_ = nullptr;
 }
 
 bool StyleEngine::HasRulesForId(const AtomicString& id) const {
@@ -2895,6 +2928,7 @@ void StyleEngine::Trace(Visitor* visitor) const {
   visitor->Trace(text_tracks_);
   visitor->Trace(vtt_originating_element_);
   visitor->Trace(parent_for_detached_subtree_);
+  visitor->Trace(ua_document_transition_style_);
   FontSelectorClient::Trace(visitor);
 }
 

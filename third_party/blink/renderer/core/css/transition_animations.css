@@ -1,0 +1,30 @@
+/*
+ * The default animation style sheet used for document transitions.
+ * See third_party/blink/renderer/core/document_transition/README.md for details
+ *
+ * Copyright 2022 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+@namespace "http://www.w3.org/1999/xhtml";
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+}
+
+html::transition-new-content(*) {
+  animation: fade-in 0.25s;
+}
+
+@keyframes fade-out {
+  to {
+    opacity: 0;
+  }
+}
+
+html::transition-old-content(*) {
+  animation: fade-out 0.25s;
+}

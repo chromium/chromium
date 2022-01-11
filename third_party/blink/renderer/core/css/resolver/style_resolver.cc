@@ -71,6 +71,7 @@
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/style_rule_import.h"
 #include "third_party/blink/renderer/core/css/style_sheet_contents.h"
+#include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/core/dom/first_letter_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -99,6 +100,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/scrolling/snap_coordinator.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
+#include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/core/style/style_initial_data.h"
 #include "third_party/blink/renderer/core/style_property_shorthand.h"
 #include "third_party/blink/renderer/core/svg/svg_element.h"
@@ -266,6 +268,13 @@ bool TextAutosizingMultiplierChanged(const StyleResolverState& state,
   const ComputedStyle* old_style = state.GetElement().GetComputedStyle();
   return old_style && (old_style->TextAutosizingMultiplier() !=
                        base_computed_style.TextAutosizingMultiplier());
+}
+
+PseudoId GetPseudoId(const Element& element, ElementRuleCollector* collector) {
+  if (element.IsPseudoElement())
+    return element.GetPseudoId();
+
+  return collector ? collector->GetPseudoId() : kPseudoIdNone;
 }
 
 }  // namespace
@@ -543,7 +552,7 @@ static void MatchElementScopeRules(const Element& element,
 
   MatchVTTRules(element, collector);
   if (element.IsStyledElement() && element.InlineStyle() &&
-      !collector.IsCollectingForPseudoElement()) {
+      collector.GetPseudoId() == kPseudoIdNone) {
     // Inline style is immutable as long as there is no CSSOM wrapper.
     bool is_inline_style_cacheable = !element.InlineStyle()->IsMutable();
     collector.AddElementStyleProperties(element.InlineStyle(),
@@ -681,11 +690,13 @@ void StyleResolver::ForEachUARulesForElement(const Element& element,
   if (IsForcedColorsModeEnabled())
     func(default_style_sheets.DefaultForcedColorStyle());
 
-  if (element.IsPseudoElement() ||
-      (collector && collector->IsCollectingForPseudoElement())) {
-    if (RuleSet* default_pseudo_style =
-            default_style_sheets.DefaultPseudoElementStyleOrNull()) {
-      func(default_style_sheets.DefaultPseudoElementStyleOrNull());
+  const auto pseudo_id = GetPseudoId(element, collector);
+  if (pseudo_id != kPseudoIdNone) {
+    if (IsTransitionPseudoElement(pseudo_id)) {
+      func(GetDocument().GetStyleEngine().DefaultDocumentTransitionStyle());
+    } else if (auto* rule_set =
+                   default_style_sheets.DefaultPseudoElementStyleOrNull()) {
+      func(rule_set);
     }
   }
 }

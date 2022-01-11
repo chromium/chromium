@@ -1,0 +1,51 @@
+/*
+ * The default style sheet used for document transitions.
+ * See third_party/blink/renderer/core/document_transition/README.md for details
+ *
+ * Copyright 2022 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file.
+ */
+
+@namespace "http://www.w3.org/1999/xhtml";
+
+html::transition {
+  position: fixed;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+
+html::transition-container(*) {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+}
+
+html::transition-container(root) {
+  width: 100vw;
+  height: 100vh;
+}
+
+html::transition-old-content(*) {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  display: block;
+}
+
+html::transition-new-content(*) {
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  display: block;
+}

@@ -35,6 +35,7 @@ namespace blink {
 
 class Document;
 class Element;
+class MediaQueryEvaluator;
 class RuleFeatureSet;
 class RuleSet;
 class StyleSheetContents;
@@ -45,6 +46,7 @@ class CSSDefaultStyleSheets final
   CORE_EXPORT static CSSDefaultStyleSheets& Instance();
 
   static StyleSheetContents* ParseUASheet(const String&);
+  static const MediaQueryEvaluator& ScreenEval();
 
   CSSDefaultStyleSheets();
   CSSDefaultStyleSheets(const CSSDefaultStyleSheets&) = delete;

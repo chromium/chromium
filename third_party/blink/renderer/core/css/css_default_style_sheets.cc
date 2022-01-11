@@ -54,12 +54,6 @@ CSSDefaultStyleSheets& CSSDefaultStyleSheets::Instance() {
   return *css_default_style_sheets;
 }
 
-static const MediaQueryEvaluator& ScreenEval() {
-  DEFINE_STATIC_LOCAL(const Persistent<MediaQueryEvaluator>, static_screen_eval,
-                      (MakeGarbageCollected<MediaQueryEvaluator>("screen")));
-  return *static_screen_eval;
-}
-
 static const MediaQueryEvaluator& PrintEval() {
   DEFINE_STATIC_LOCAL(const Persistent<MediaQueryEvaluator>, static_print_eval,
                       (MakeGarbageCollected<MediaQueryEvaluator>("print")));
@@ -86,6 +80,13 @@ StyleSheetContents* CSSDefaultStyleSheets::ParseUASheet(const String& str) {
   // process and are intentionally leaked.
   LEAK_SANITIZER_IGNORE_OBJECT(sheet);
   return sheet;
+}
+
+// static
+const MediaQueryEvaluator& CSSDefaultStyleSheets::ScreenEval() {
+  DEFINE_STATIC_LOCAL(const Persistent<MediaQueryEvaluator>, static_screen_eval,
+                      (MakeGarbageCollected<MediaQueryEvaluator>("screen")));
+  return *static_screen_eval;
 }
 
 CSSDefaultStyleSheets::CSSDefaultStyleSheets()

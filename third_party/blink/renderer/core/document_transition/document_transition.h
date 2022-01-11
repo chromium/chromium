@@ -7,9 +7,11 @@
 
 #include <memory>
 
+#include "base/memory/scoped_refptr.h"
+#include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/document_transition/document_transition_container_element.h"
+#include "third_party/blink/renderer/core/document_transition/document_transition_style_tracker.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/graphics/document_transition_shared_element_id.h"
@@ -17,6 +19,10 @@
 
 namespace cc {
 class DocumentTransitionRequest;
+}
+
+namespace viz {
+class SharedElementResourceId;
 }
 
 namespace blink {
@@ -27,6 +33,7 @@ class DocumentTransitionPrepareOptions;
 class DocumentTransitionStartOptions;
 class Element;
 class ExceptionState;
+class PseudoElement;
 class ScriptPromise;
 class ScriptPromiseResolver;
 class ScriptState;
@@ -78,10 +85,18 @@ class CORE_EXPORT DocumentTransition
   // https://github.com/vmpstr/shared-element-transitions/issues/17
   void VerifySharedElements();
 
-  // Updates the transform on |transition_elements_| to be consistent with the
-  // post layout transform on shared elements. This must be called with a clean
-  // layout.
-  void UpdateTransforms();
+  // Dispatched during a lifecycle update after clean layout.
+  void RunPostLayoutSteps();
+
+  // Creates a pseudo element for the given |pseudo_id|.
+  PseudoElement* CreatePseudoElement(
+      Element* parent,
+      PseudoId pseudo_id,
+      const AtomicString& document_transition_tag);
+
+  // Returns the UA style sheet for the pseudo element tree generated during a
+  // transition.
+  const String& UAStyleSheet() const;
 
  private:
   friend class DocumentTransitionTest;
@@ -130,7 +145,7 @@ class CORE_EXPORT DocumentTransition
 
   // Created conditionally if renderer based SharedElementTransitions is
   // enabled.
-  HeapVector<Member<DocumentTransitionContainerElement>> transition_elements_;
+  Member<DocumentTransitionStyleTracker> style_tracker_;
 
   std::unique_ptr<Request> pending_request_;
 
@@ -147,6 +162,9 @@ class CORE_EXPORT DocumentTransition
   uint32_t document_tag_ = 0u;
 
   bool deferring_commits_ = false;
+
+  // Set only for tests.
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_testing_;
 };
 
 }  // namespace blink
