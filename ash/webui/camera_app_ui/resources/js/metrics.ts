@@ -71,7 +71,7 @@ export async function setMetricsEnabled(enabled: boolean): Promise<void> {
   await (await gaHelper).setMetricsEnabled(GA_ID, enabled);
 }
 
-const SCHEMA_VERSION = 2;
+const SCHEMA_VERSION = 3;
 
 /**
  * Initializes metrics with parameters.
@@ -273,7 +273,7 @@ export function sendCaptureEvent({
         [30, duration],
         // This is included in baseDimen.
         // [31, SCHEMA_VERSION]
-        [32, docFixType ?? ''],
+        [33, docFixType ?? ''],
       ]));
 }
 
