@@ -29,7 +29,7 @@
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_constants.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_mediator.h"
 #import "ios/chrome/browser/ui/settings/safety_check/safety_check_navigation_commands.h"
-#import "ios/chrome/browser/ui/settings/safety_check/safety_check_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/safety_check/safety_check_ui_swift.h"
 #import "ios/chrome/browser/ui/settings/settings_navigation_controller.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
