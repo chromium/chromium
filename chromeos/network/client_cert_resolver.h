@@ -114,6 +114,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ClientCertResolver
   // NetworkPolicyObserver overrides
   void PolicyAppliedToNetwork(const std::string& service_path) override;
 
+  // Forget the resolved certificate of |network| - ensures that the next
+  // ResolveNetwork run will reconfigure the certificate (and EAP Identity
+  // field) even if the certificate has not changed.
+  void ForgetResolvedCert(const NetworkState* network);
+
   // Check which networks of |networks| are configured with a client certificate
   // pattern. Search for certificates, on the worker thread, and configure the
   // networks for which a matching cert is found (see ConfigureCertificates).

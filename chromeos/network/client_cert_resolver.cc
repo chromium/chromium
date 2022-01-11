@@ -670,9 +670,19 @@ void ClientCertResolver::PolicyAppliedToNetwork(
   }
   NET_LOG(EVENT) << "ClientCertResolver: PolicyAppliedToNetwork: "
                  << GetNetworkIdWithGuid(network);
+
+  // Policy application may have wiped e.g. the 'EAP.Identity' field, so
+  // forget the resolved certificate and make sure to re-apply it.
+  ForgetResolvedCert(network);
+
   NetworkStateHandler::NetworkStateList networks;
   networks.push_back(network);
   ResolveNetworks(networks);
+}
+
+void ClientCertResolver::ForgetResolvedCert(const NetworkState* network) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  networks_status_.erase(network->path());
 }
 
 void ClientCertResolver::ResolveNetworks(
