@@ -170,6 +170,38 @@ TEST_P(RasterInvalidatorTest, LayerOffsetChangeWithCachedSubsequence) {
   FinishCycle(chunks);
 }
 
+TEST_P(RasterInvalidatorTest, LayerStateChangeWithCachedSubsequence) {
+  auto t1 = Create2DTranslation(t0(), 100, 50);
+  PropertyTreeState chunk_state(*t1, c0(), e0());
+  PaintChunkSubset chunks(
+      TestPaintArtifact().Chunk(0).Properties(chunk_state).Build());
+
+  invalidator_.Generate(base::DoNothing(), chunks, kDefaultLayerOffset,
+                        kDefaultLayerBounds, DefaultPropertyTreeState());
+  FinishCycle(chunks);
+
+  invalidator_.SetTracksRasterInvalidations(true);
+  auto new_layer_state = chunk_state;
+  PaintChunkSubset new_chunks(TestPaintArtifact()
+                                  .Chunk(0)
+                                  .Properties(chunk_state)
+                                  .IsMovedFromCachedSubsequence()
+                                  .Build());
+
+  invalidator_.Generate(base::DoNothing(), new_chunks, kDefaultLayerOffset,
+                        kDefaultLayerBounds, new_layer_state);
+  // Change of layer state causes change of chunk0's transform to layer.
+  auto old_mapper = [](gfx::Rect& r) { r.Offset(100, 50); };
+  EXPECT_THAT(
+      TrackedRasterInvalidations(),
+      ElementsAre(ChunkInvalidation(
+                      chunks, 0, PaintInvalidationReason::kPaintProperty,
+                      -kDefaultLayerOffset, base::BindRepeating(old_mapper)),
+                  ChunkInvalidation(chunks, 0,
+                                    PaintInvalidationReason::kPaintProperty)));
+  FinishCycle(chunks);
+}
+
 TEST_P(RasterInvalidatorTest, ReorderChunks) {
   PaintChunkSubset chunks(
       TestPaintArtifact().Chunk(0).Chunk(1).Chunk(2).Build());
