@@ -6975,29 +6975,27 @@
             ]
         }
     ],
-    "SafeBrowsingCsdComponentVersion25": [
+    "SafeBrowsingCompareCSDDesktop": [
         {
             "platforms": [
-                "chromeos",
-                "chromeos_lacros",
+                "windows",
                 "linux",
-                "mac",
-                "windows"
+                "mac"
             ],
             "experiments": [
                 {
-                    "name": "Enabled25_052021",
+                    "name": "EnabledTfLiteAndBaseline_20220111",
                     "params": {
-                        "reporter_omaha_tag": "25"
+                        "reporter_omaha_tag": "27.4"
                     },
                     "enable_features": [
                         "ClientSideDetectionTag"
                     ]
                 },
                 {
-                    "name": "Enabled26_052021",
+                    "name": "EnabledTfLiteOnly_20220111",
                     "params": {
-                        "reporter_omaha_tag": "26"
+                        "reporter_omaha_tag": "27.3"
                     },
                     "enable_features": [
                         "ClientSideDetectionTag"
