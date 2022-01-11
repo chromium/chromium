@@ -2072,7 +2072,6 @@ IN_PROC_BROWSER_TEST_F(PortalBrowserTest,
     AccessibilityNotificationWaiter waiter(web_contents_impl,
                                            ui::kAXModeComplete,
                                            ax::mojom::Event::kLayoutComplete);
-    waiter.WaitForNotification();
     EXPECT_EQ(blink::mojom::PortalActivateResult::kPredecessorWasAdopted,
               activated_observer.WaitForActivateResult());
     adoption_observer.WaitUntilPortalCreated();

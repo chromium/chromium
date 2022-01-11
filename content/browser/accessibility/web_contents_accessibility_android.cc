@@ -313,22 +313,35 @@ void WebContentsAccessibilityAndroid::SetAllowImageDescriptions(
 void WebContentsAccessibilityAndroid::SetAXMode(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
-    jboolean screen_reader_mode) {
-  if (!features::IsComputeAXModeEnabled())
-    return;
-
+    jboolean screen_reader_mode,
+    jboolean is_accessibility_enabled) {
   BrowserAccessibilityStateImpl* accessibility_state =
       BrowserAccessibilityStateImpl::GetInstance();
 
-  if (screen_reader_mode) {
-    accessibility_state->AddAccessibilityModeFlags(ui::kAXModeComplete);
-  } else {
-    // Remove the mode flags present in kAXModeComplete but not in
-    // kAXModeBasic, thereby reverting the mode to kAXModeBasic while
-    // not touching any other flags.
-    ui::AXMode remove_mode_flags(ui::kAXModeComplete.mode() &
-                                 ~ui::kAXModeBasic.mode());
-    accessibility_state->RemoveAccessibilityModeFlags(remove_mode_flags);
+  if (!features::IsComputeAXModeEnabled() &&
+      !features::IsAutoDisableAccessibilityEnabled()) {
+    return;
+  }
+
+  if (features::IsAutoDisableAccessibilityEnabled()) {
+    if (!is_accessibility_enabled) {
+      accessibility_state->DisableAccessibility();
+    } else {
+      accessibility_state->AddAccessibilityModeFlags(ui::kAXModeComplete);
+    }
+  }
+
+  if (features::IsComputeAXModeEnabled()) {
+    if (screen_reader_mode) {
+      accessibility_state->AddAccessibilityModeFlags(ui::kAXModeComplete);
+    } else {
+      // Remove the mode flags present in kAXModeComplete but not in
+      // kAXModeBasic, thereby reverting the mode to kAXModeBasic while
+      // not touching any other flags.
+      ui::AXMode remove_mode_flags(ui::kAXModeComplete.mode() &
+                                   ~ui::kAXModeBasic.mode());
+      accessibility_state->RemoveAccessibilityModeFlags(remove_mode_flags);
+    }
   }
 }
 

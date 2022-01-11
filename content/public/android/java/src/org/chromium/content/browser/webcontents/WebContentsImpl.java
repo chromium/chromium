@@ -41,6 +41,7 @@ import org.chromium.content.browser.framehost.RenderFrameHostDelegate;
 import org.chromium.content.browser.framehost.RenderFrameHostImpl;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
 import org.chromium.content_public.browser.ChildProcessImportance;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.ImageDownloadCallback;
 import org.chromium.content_public.browser.JavaScriptCallback;
@@ -572,7 +573,12 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     public void onShow() {
         checkNotDestroyed();
         WebContentsAccessibilityImpl wcax = WebContentsAccessibilityImpl.fromWebContents(this);
-        if (wcax != null) wcax.refreshState();
+        if (wcax != null) {
+            wcax.refreshState();
+            if (ContentFeatureList.isEnabled(ContentFeatureList.AUTO_DISABLE_ACCESSIBILITY)) {
+                wcax.updateAXModeFromNativeAccessibilityState();
+            }
+        }
         SelectionPopupControllerImpl controller = getSelectionPopupController();
         if (controller != null) controller.restoreSelectionPopupsIfNecessary();
         WebContentsImplJni.get().onShow(mNativeWebContentsAndroid, WebContentsImpl.this);

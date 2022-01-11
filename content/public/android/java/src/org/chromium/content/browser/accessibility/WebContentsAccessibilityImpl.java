@@ -756,8 +756,9 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         if (!isAccessibilityEnabled()) return;
 
         // Update the AXMode based on screen reader status.
-        WebContentsAccessibilityImplJni.get().setAXMode(
-                mNativeObj, WebContentsAccessibilityImpl.this, newScreenReaderEnabledState);
+        WebContentsAccessibilityImplJni.get().setAXMode(mNativeObj,
+                WebContentsAccessibilityImpl.this, newScreenReaderEnabledState,
+                /* isAccessibilityEnabled= */ true);
 
         // Update the list of events we dispatch to enabled services.
         if (ContentFeatureList.isEnabled(ContentFeatureList.ON_DEMAND_ACCESSIBILITY_EVENTS)) {
@@ -1072,6 +1073,14 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             moveAccessibilityFocusToId(id);
             scrollToMakeNodeVisible(mAccessibilityFocusId);
         }
+    }
+
+    public void updateAXModeFromNativeAccessibilityState() {
+        if (!isNativeInitialized()) return;
+        // Update the AXMode based on screen reader status.
+        WebContentsAccessibilityImplJni.get().setAXMode(mNativeObj,
+                WebContentsAccessibilityImpl.this, BrowserAccessibilityState.screenReaderMode(),
+                isAccessibilityEnabled());
     }
 
     // Returns true if the hover event is to be consumed by accessibility feature.
@@ -2325,7 +2334,8 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         void enable(long nativeWebContentsAccessibilityAndroid, WebContentsAccessibilityImpl caller,
                 boolean screenReaderMode);
         void setAXMode(long nativeWebContentsAccessibilityAndroid,
-                WebContentsAccessibilityImpl caller, boolean screenReaderMode);
+                WebContentsAccessibilityImpl caller, boolean screenReaderMode,
+                boolean isAccessibilityEnabled);
         boolean areInlineTextBoxesLoaded(long nativeWebContentsAccessibilityAndroid,
                 WebContentsAccessibilityImpl caller, int id);
         void loadInlineTextBoxes(long nativeWebContentsAccessibilityAndroid,
