@@ -5,6 +5,7 @@
 #ifndef ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_ANIMATION_REGISTRY_H_
 #define ASH_SYSTEM_HOLDING_SPACE_HOLDING_SPACE_ANIMATION_REGISTRY_H_
 
+#include "ash/ash_export.h"
 #include "ash/shell.h"
 #include "ash/shell_observer.h"
 #include "base/callback.h"
@@ -20,7 +21,7 @@ class HoldingSpaceProgressRingAnimation;
 // different UI components as well have a lifetime which is decoupled from UI
 // component lifetime. Note that the singleton may only exist while `Shell` is
 // alive and will automatically delete itself when `Shell` is being destroyed.
-class HoldingSpaceAnimationRegistry : public ShellObserver {
+class ASH_EXPORT HoldingSpaceAnimationRegistry : public ShellObserver {
  public:
   HoldingSpaceAnimationRegistry(const HoldingSpaceAnimationRegistry&) = delete;
   HoldingSpaceAnimationRegistry& operator=(
