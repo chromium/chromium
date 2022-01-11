@@ -16,6 +16,7 @@ import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getDeviceName} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
 import {getBluetoothConfig} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
+import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 
 import {loadTimeData} from '../../i18n_setup.js';
 import {Router} from '../../router.js';
@@ -121,6 +122,7 @@ class SettingsBluetoothSummaryElement extends
     super.ready();
 
     this.addFocusConfig(routes.BLUETOOTH_DEVICES, '.subpage-arrow');
+    IronA11yAnnouncer.requestAvailability();
   }
 
   /** @private */
@@ -146,6 +148,7 @@ class SettingsBluetoothSummaryElement extends
       return;
     }
     getBluetoothConfig().setBluetoothEnabledState(this.isBluetoothToggleOn_);
+    this.annouceBluetoothStateChange_();
   }
 
   /**
@@ -285,6 +288,19 @@ class SettingsBluetoothSummaryElement extends
     this.dispatchEvent(new CustomEvent('start-pairing', {
       bubbles: true,
       composed: true,
+    }));
+  }
+
+  /** @private */
+  annouceBluetoothStateChange_() {
+    this.dispatchEvent(new CustomEvent('iron-announce', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        text: this.isBluetoothToggleOn_ ?
+            this.i18n('bluetoothEnabledA11YLabel') :
+            this.i18n('bluetoothDisabledA11YLabel')
+      }
     }));
   }
 }

@@ -16,6 +16,7 @@ import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {getBluetoothConfig} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
 
 import {Route, Router} from '../../router.js';
 import {routes} from '../os_route.m.js';
@@ -108,6 +109,12 @@ class SettingsBluetoothDevicesSubpageElement extends
      * @private {?string}
      */
     this.lastSelectedDeviceId_ = null;
+  }
+
+  /** @override */
+  ready() {
+    super.ready();
+    IronA11yAnnouncer.requestAvailability();
   }
 
   /**
@@ -205,6 +212,7 @@ class SettingsBluetoothDevicesSubpageElement extends
       return;
     }
     getBluetoothConfig().setBluetoothEnabledState(this.isBluetoothToggleOn_);
+    this.annouceBluetoothStateChange_();
   }
 
   /**
@@ -245,6 +253,19 @@ class SettingsBluetoothDevicesSubpageElement extends
    */
   shouldShowNoDevicesFound_() {
     return !this.connectedDevices_.length && !this.unconnectedDevices_.length;
+  }
+
+  /** @private */
+  annouceBluetoothStateChange_() {
+    this.dispatchEvent(new CustomEvent('iron-announce', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        text: this.isBluetoothToggleOn_ ?
+            this.i18n('bluetoothEnabledA11YLabel') :
+            this.i18n('bluetoothDisabledA11YLabel')
+      }
+    }));
   }
 }
 

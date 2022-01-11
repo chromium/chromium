@@ -74,12 +74,31 @@ suite('OsBluetoothDevicesSubpageTest', function() {
     assertTrue(!!bluetoothDevicesSubpage);
   });
 
-  test('Toggle button creation', async function() {
+  test('Toggle button creation and a11y', async function() {
     bluetoothConfig.setSystemState(
         chromeos.bluetoothConfig.mojom.BluetoothSystemState.kEnabled);
-    await flushAsync();
     await init();
-    assertTrue(bluetoothDevicesSubpage.$.enableBluetoothToggle.checked);
+    const toggle = bluetoothDevicesSubpage.shadowRoot.querySelector(
+        '#enableBluetoothToggle');
+    assertTrue(toggle.checked);
+
+    let ironAnnouncerPromise =
+        test_util.eventToPromise('iron-announce', bluetoothDevicesSubpage);
+
+    toggle.click();
+    let result = await ironAnnouncerPromise;
+    assertEquals(
+        result.detail.text,
+        bluetoothDevicesSubpage.i18n('bluetoothDisabledA11YLabel'));
+
+    ironAnnouncerPromise =
+        test_util.eventToPromise('iron-announce', bluetoothDevicesSubpage);
+    toggle.click();
+
+    result = await ironAnnouncerPromise;
+    assertEquals(
+        result.detail.text,
+        bluetoothDevicesSubpage.i18n('bluetoothEnabledA11YLabel'));
   });
 
   test('Toggle button states', async function() {
