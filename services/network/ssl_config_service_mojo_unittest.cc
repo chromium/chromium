@@ -9,6 +9,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "crypto/sha2.h"
@@ -49,17 +50,14 @@ class TestSSLConfigServiceObserver : public net::SSLConfigService::Observer {
   }
 
   ~TestSSLConfigServiceObserver() override {
-    EXPECT_EQ(observed_changes_, changes_to_wait_for_);
+    EXPECT_TRUE(config_changed_calls_.IsEmpty())
+        << "Unexpected calls to OnSSLContextConfigChanged()";
     ssl_config_service_->RemoveObserver(this);
   }
 
   // net::SSLConfigService::Observer implementation:
   void OnSSLContextConfigChanged() override {
-    ++observed_changes_;
-    ssl_context_config_during_change_ =
-        ssl_config_service_->GetSSLContextConfig();
-    if (run_loop_)
-      run_loop_->Quit();
+    config_changed_calls_.AddValue(ssl_config_service_->GetSSLContextConfig());
   }
 
   // Waits for a SSLContextConfig change. The first time it's called, waits for
@@ -67,38 +65,25 @@ class TestSSLConfigServiceObserver : public net::SSLConfigService::Observer {
   // waits for the second, etc. Must be called once for each change that
   // happens, and fails if more than once change happens between calls, or
   // during a call.
-  void WaitForChange() {
-    EXPECT_FALSE(run_loop_);
-    ++changes_to_wait_for_;
-    if (changes_to_wait_for_ == observed_changes_)
-      return;
-    EXPECT_LT(observed_changes_, changes_to_wait_for_);
-
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
-    run_loop_.reset();
-    EXPECT_EQ(observed_changes_, changes_to_wait_for_);
+  net::SSLContextConfig WaitForChange() {
+    EXPECT_TRUE(config_changed_calls_.Wait())
+        << "Missing call to OnSSLContextConfigChanged()";
+    return config_changed_calls_.Take();
   }
-
-  const net::SSLContextConfig& ssl_context_config_during_change() const {
-    return ssl_context_config_during_change_;
-  }
-
-  int observed_changes() const { return observed_changes_; }
 
  private:
   const raw_ptr<net::SSLConfigService> ssl_config_service_;
-  int observed_changes_ = 0;
-  int changes_to_wait_for_ = 0;
-  net::SSLContextConfig ssl_context_config_during_change_;
-  std::unique_ptr<base::RunLoop> run_loop_;
+
+  // All calls to OnSSLContextConfigChanged().
+  base::test::RepeatingTestFuture<net::SSLContextConfig> config_changed_calls_;
 };
 
 class TestCertVerifierConfigObserver : public net::CertVerifier {
  public:
   TestCertVerifierConfigObserver() = default;
   ~TestCertVerifierConfigObserver() override {
-    EXPECT_EQ(observed_changes_, changes_to_wait_for_);
+    EXPECT_TRUE(set_config_calls_.IsEmpty())
+        << "Unexpected call to SetConfig()";
   }
 
   // CertVerifier implementation:
@@ -111,40 +96,21 @@ class TestCertVerifierConfigObserver : public net::CertVerifier {
     return net::ERR_FAILED;
   }
   void SetConfig(const Config& config) override {
-    ++observed_changes_;
-    verifier_config_during_change_ = config;
-    if (run_loop_)
-      run_loop_->Quit();
+    set_config_calls_.AddValue(config);
   }
 
   // Waits for a SSLConfig change. The first time it's called, waits for the
   // first change, if one hasn't been observed already, the second time, waits
   // for the second, etc. Must be called once for each change that happens, and
   // fails it more than once change happens between calls, or during a call.
-  void WaitForChange() {
-    EXPECT_FALSE(run_loop_);
-    ++changes_to_wait_for_;
-    if (changes_to_wait_for_ == observed_changes_)
-      return;
-    EXPECT_LT(observed_changes_, changes_to_wait_for_);
-
-    run_loop_ = std::make_unique<base::RunLoop>();
-    run_loop_->Run();
-    run_loop_.reset();
-    EXPECT_EQ(observed_changes_, changes_to_wait_for_);
+  net::CertVerifier::Config WaitForChange() {
+    EXPECT_TRUE(set_config_calls_.Wait()) << "Missing call to SetConfig()";
+    return set_config_calls_.Take();
   }
-
-  const net::CertVerifier::Config& verifier_config_during_change() const {
-    return verifier_config_during_change_;
-  }
-
-  int observed_changes() const { return observed_changes_; }
 
  private:
-  int observed_changes_ = 0;
-  int changes_to_wait_for_ = 0;
-  net::CertVerifier::Config verifier_config_during_change_;
-  std::unique_ptr<base::RunLoop> run_loop_;
+  // All calls to SetConfig().
+  base::test::RepeatingTestFuture<Config> set_config_calls_;
 };
 
 class NetworkServiceSSLConfigServiceTest : public testing::Test {
@@ -210,22 +176,22 @@ class NetworkServiceSSLConfigServiceTest : public testing::Test {
     TestSSLConfigServiceObserver observer(
         network_context_->url_request_context()->ssl_config_service());
     ssl_config_client_->OnSSLConfigUpdated(mojom::SSLConfig::New());
-    observer.WaitForChange();
+    net::SSLContextConfig config_during_change = observer.WaitForChange();
     EXPECT_TRUE(net::SSLConfigService::SSLContextConfigsAreEqualForTesting(
         GetSSLContextConfig(), net::SSLContextConfig()));
     EXPECT_TRUE(net::SSLConfigService::SSLContextConfigsAreEqualForTesting(
-        observer.ssl_context_config_during_change(), net::SSLContextConfig()));
+        config_during_change, net::SSLContextConfig()));
     // Sanity check.
     EXPECT_FALSE(net::SSLConfigService::SSLContextConfigsAreEqualForTesting(
         GetSSLContextConfig(), expected_net_config));
 
     // Set the configuration to |mojo_config| again, and check the results.
     ssl_config_client_->OnSSLConfigUpdated(mojo_config.Clone());
-    observer.WaitForChange();
+    config_during_change = observer.WaitForChange();
     EXPECT_TRUE(net::SSLConfigService::SSLContextConfigsAreEqualForTesting(
         GetSSLContextConfig(), expected_net_config));
     EXPECT_TRUE(net::SSLConfigService::SSLContextConfigsAreEqualForTesting(
-        observer.ssl_context_config_during_change(), expected_net_config));
+        config_during_change, expected_net_config));
   }
 
   // Runs two conversion tests for |mojo_config|.  Uses it as an initial
@@ -248,24 +214,22 @@ class NetworkServiceSSLConfigServiceTest : public testing::Test {
     SetUpNetworkContext(std::move(network_context_params));
 
     // Make sure the initial configuration is set.
-    observer.WaitForChange();
-    EXPECT_EQ(observer.verifier_config_during_change(), expected_net_config);
+    net::CertVerifier::Config config_during_change = observer.WaitForChange();
+    EXPECT_EQ(config_during_change, expected_net_config);
     // Sanity check.
-    EXPECT_NE(observer.verifier_config_during_change(),
-              net::CertVerifier::Config());
+    EXPECT_NE(config_during_change, net::CertVerifier::Config());
 
     // Reset the configuration to the default ones, and check the results.
     ssl_config_client_->OnSSLConfigUpdated(mojom::SSLConfig::New());
-    observer.WaitForChange();
-    EXPECT_EQ(observer.verifier_config_during_change(),
-              net::CertVerifier::Config());
+    config_during_change = observer.WaitForChange();
+    EXPECT_EQ(config_during_change, net::CertVerifier::Config());
     // Sanity check.
-    EXPECT_NE(observer.verifier_config_during_change(), expected_net_config);
+    EXPECT_NE(config_during_change, expected_net_config);
 
     // Set the configuration to |mojo_config| again, and check the results.
     ssl_config_client_->OnSSLConfigUpdated(mojo_config.Clone());
-    observer.WaitForChange();
-    EXPECT_EQ(observer.verifier_config_during_change(), expected_net_config);
+    config_during_change = observer.WaitForChange();
+    EXPECT_EQ(config_during_change, expected_net_config);
 
     // Reset the CertVerifier for subsequent invocations.
     NetworkContext::SetCertVerifierForTesting(nullptr);
@@ -317,10 +281,10 @@ TEST_F(NetworkServiceSSLConfigServiceTest, DefaultCertConfig) {
   network_context_params->initial_ssl_config = mojom::SSLConfig::New();
   SetUpNetworkContext(std::move(network_context_params));
 
-  observer.WaitForChange();
+  net::CertVerifier::Config config_during_change = observer.WaitForChange();
 
   net::CertVerifier::Config default_config;
-  EXPECT_EQ(observer.verifier_config_during_change(), default_config);
+  EXPECT_EQ(config_during_change, default_config);
 
   NetworkContext::SetCertVerifierForTesting(nullptr);
 }
