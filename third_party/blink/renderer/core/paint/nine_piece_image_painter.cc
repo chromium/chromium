@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/style/nine_piece_image.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/scoped_interpolation_quality.h"
+#include "ui/gfx/geometry/outsets.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
@@ -105,9 +106,11 @@ void PaintPieces(GraphicsContext& context,
       image_size.width() / unzoomed_image_size.width(),
       image_size.height() / unzoomed_image_size.height());
 
-  IntRectOutsets border_widths(
-      style.BorderTopWidth().ToInt(), style.BorderRightWidth().ToInt(),
-      style.BorderBottomWidth().ToInt(), style.BorderLeftWidth().ToInt());
+  auto border_widths = gfx::Outsets()
+                           .set_left_right(style.BorderLeftWidth().ToInt(),
+                                           style.BorderRightWidth().ToInt())
+                           .set_top_bottom(style.BorderTopWidth().ToInt(),
+                                           style.BorderBottomWidth().ToInt());
   NinePieceImageGrid grid(
       nine_piece_image, image_size, slice_scale, style.EffectiveZoom(),
       ToPixelSnappedRect(border_image_rect), border_widths, sides_to_include);

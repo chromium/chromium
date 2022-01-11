@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
+#include "ui/gfx/geometry/outsets_f.h"
 
 namespace blink {
 
@@ -868,13 +869,13 @@ PhysicalRect InlineTextBoxPainter::PaintSelection(
 
 void InlineTextBoxPainter::ExpandToIncludeNewlineForSelection(
     PhysicalRect& rect) {
-  FloatRectOutsets outsets = FloatRectOutsets();
+  gfx::OutsetsF outsets;
   float space_width = inline_text_box_.NewlineSpaceWidth();
   if (inline_text_box_.IsLeftToRightDirection())
-    outsets.SetRight(space_width);
+    outsets.set_right(space_width);
   else
-    outsets.SetLeft(space_width);
-  rect.Expand(outsets);
+    outsets.set_left(space_width);
+  rect.Expand(EnclosingLayoutRectOutsets(outsets));
 }
 
 void InlineTextBoxPainter::PaintStyleableMarkerUnderline(

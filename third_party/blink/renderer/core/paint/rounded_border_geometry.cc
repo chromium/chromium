@@ -93,9 +93,7 @@ FloatRoundedRect RoundedBorderGeometry::RoundedInnerBorder(
   if (style.HasBorderRadius()) {
     FloatRoundedRect::Radii radii =
         RoundedBorder(style, border_rect).GetRadii();
-    // Insets use negative values.
-    radii.Shrink(-insets.Top().ToFloat(), -insets.Bottom().ToFloat(),
-                 -insets.Left().ToFloat(), -insets.Right().ToFloat());
+    radii.Shrink(gfx::InsetsF(insets));
     float_inner_rect.SetRadii(radii);
   }
   return float_inner_rect;
@@ -145,12 +143,10 @@ FloatRoundedRect RoundedBorderGeometry::PixelSnappedRoundedBorderWithOutsets(
             .GetRadii();
     if (outsets.Top() <= 0 && outsets.Bottom() <= 0 && outsets.Left() <= 0 &&
         outsets.Right() <= 0) {
-      radii.Shrink(-outsets.Top().ToFloat(), -outsets.Bottom().ToFloat(),
-                   -outsets.Left().ToFloat(), -outsets.Right().ToFloat());
+      radii.Shrink(gfx::InsetsF(outsets));
     } else {
       // radii.Expand() will DCHECK if all values are >= 0.
-      radii.Expand(outsets.Top().ToFloat(), outsets.Bottom().ToFloat(),
-                   outsets.Left().ToFloat(), outsets.Right().ToFloat());
+      radii.Expand(gfx::OutsetsF(outsets));
     }
     ExcludeSides(sides_to_include, &radii);
     rounded_rect.SetRadii(radii);

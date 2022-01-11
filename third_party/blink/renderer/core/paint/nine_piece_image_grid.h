@@ -14,9 +14,11 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/size_f.h"
 
-namespace blink {
+namespace gfx {
+class Outsets;
+}
 
-class IntRectOutsets;
+namespace blink {
 
 enum NinePiece {
   kMinPiece = 0,
@@ -67,7 +69,7 @@ class CORE_EXPORT NinePieceImageGrid {
                      const gfx::Vector2dF& slice_scale,
                      float zoom,
                      const gfx::Rect& border_image_area,
-                     const IntRectOutsets& border_widths,
+                     const gfx::Outsets& border_widths,
                      PhysicalBoxSides sides_to_include = PhysicalBoxSides());
 
   struct CORE_EXPORT NinePieceDrawInfo {

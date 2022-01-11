@@ -458,7 +458,8 @@ absl::optional<PhysicalRect> NGInkOverflow::ComputeTextInkOverflow(
   if (ShadowList* text_shadow = style.TextShadow()) {
     LayoutRectOutsets text_shadow_logical_outsets =
         LineOrientationLayoutRectOutsets(
-            LayoutRectOutsets(text_shadow->RectOutsetsIncludingOriginal()),
+            EnclosingLayoutRectOutsets(
+                text_shadow->RectOutsetsIncludingOriginal()),
             writing_mode);
     text_shadow_logical_outsets.ClampNegativeToZero();
     ink_overflow.Expand(text_shadow_logical_outsets);

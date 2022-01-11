@@ -37,15 +37,17 @@ ShadowData ShadowData::NeutralValue() {
                     StyleColor(Color::kTransparent));
 }
 
-FloatRectOutsets ShadowData::RectOutsets() const {
+gfx::OutsetsF ShadowData::RectOutsets() const {
   // 3 * sigma is how Skia computes the box blur extent.
   // See also https://crbug.com/624175.
   // TODO(fmalita): since the blur extent must reflect rasterization bounds,
   // its value should be queried from Skia (pending API availability).
   float blur_and_spread = ceil(3 * BlurRadiusToStdDev(Blur())) + Spread();
-  return FloatRectOutsets(
-      blur_and_spread - Y() /* top */, blur_and_spread + X() /* right */,
-      blur_and_spread + Y() /* bottom */, blur_and_spread - X() /* left */);
+  return gfx::OutsetsF()
+      .set_left(blur_and_spread - X())
+      .set_right(blur_and_spread + X())
+      .set_top(blur_and_spread - Y())
+      .set_bottom(blur_and_spread + Y());
 }
 
 }  // namespace blink

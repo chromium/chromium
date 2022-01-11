@@ -5,8 +5,8 @@
 #include "third_party/blink/renderer/core/paint/nine_piece_image_grid.h"
 
 #include "base/numerics/clamped_math.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect_outsets.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
+#include "ui/gfx/geometry/outsets.h"
 
 namespace blink {
 
@@ -60,7 +60,7 @@ NinePieceImageGrid::NinePieceImageGrid(const NinePieceImage& nine_piece_image,
                                        const gfx::Vector2dF& slice_scale,
                                        float zoom,
                                        const gfx::Rect& border_image_area,
-                                       const IntRectOutsets& border_widths,
+                                       const gfx::Outsets& border_widths,
                                        PhysicalBoxSides sides_to_include)
     : border_image_area_(border_image_area),
       image_size_(image_size),
@@ -87,25 +87,25 @@ NinePieceImageGrid::NinePieceImageGrid(const NinePieceImage& nine_piece_image,
                                              zoom / slice_scale.y());
   const BorderImageLengthBox& border_slices = nine_piece_image.BorderSlices();
   top_.width = sides_to_include.top
-                   ? ComputeEdgeWidth(border_slices.Top(), border_widths.Top(),
+                   ? ComputeEdgeWidth(border_slices.Top(), border_widths.top(),
                                       top_.slice * auto_slice_adjustment.y(),
                                       border_image_area.height())
                    : 0;
   right_.width =
       sides_to_include.right
-          ? ComputeEdgeWidth(border_slices.Right(), border_widths.Right(),
+          ? ComputeEdgeWidth(border_slices.Right(), border_widths.right(),
                              right_.slice * auto_slice_adjustment.x(),
                              border_image_area.width())
           : 0;
   bottom_.width =
       sides_to_include.bottom
-          ? ComputeEdgeWidth(border_slices.Bottom(), border_widths.Bottom(),
+          ? ComputeEdgeWidth(border_slices.Bottom(), border_widths.bottom(),
                              bottom_.slice * auto_slice_adjustment.y(),
                              border_image_area.height())
           : 0;
   left_.width =
       sides_to_include.left
-          ? ComputeEdgeWidth(border_slices.Left(), border_widths.Left(),
+          ? ComputeEdgeWidth(border_slices.Left(), border_widths.left(),
                              left_.slice * auto_slice_adjustment.x(),
                              border_image_area.width())
           : 0;

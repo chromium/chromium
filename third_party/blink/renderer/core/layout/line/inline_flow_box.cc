@@ -1030,7 +1030,8 @@ inline void InlineFlowBox::AddBoxShadowVisualOverflow(
   if (!box_shadow)
     return;
 
-  LayoutRectOutsets outsets(box_shadow->RectOutsetsIncludingOriginal());
+  LayoutRectOutsets outsets =
+      EnclosingLayoutRectOutsets(box_shadow->RectOutsetsIncludingOriginal());
   // Similar to how glyph overflow works, if our lines are flipped, then it's
   // actually the opposite shadow that applies, since the line is "upside down"
   // in terms of block coordinates.
@@ -1101,11 +1102,14 @@ inline void InlineFlowBox::AddTextBoxVisualOverflow(
   if (it != text_box_data_map.end()) {
     const GlyphOverflow& glyph_overflow = it->value.second;
     bool is_flipped_line = style.IsFlippedLinesWritingMode();
-    visual_rect_outsets = EnclosingLayoutRectOutsets(FloatRectOutsets(
-        is_flipped_line ? glyph_overflow.bottom : glyph_overflow.top,
-        glyph_overflow.right,
-        is_flipped_line ? glyph_overflow.top : glyph_overflow.bottom,
-        glyph_overflow.left));
+    visual_rect_outsets = EnclosingLayoutRectOutsets(
+        gfx::OutsetsF()
+            .set_left(glyph_overflow.left)
+            .set_right(glyph_overflow.right)
+            .set_top(is_flipped_line ? glyph_overflow.bottom
+                                     : glyph_overflow.top)
+            .set_bottom(is_flipped_line ? glyph_overflow.top
+                                        : glyph_overflow.bottom));
   }
 
   if (float stroke_width = style.TextStrokeWidth()) {
@@ -1129,7 +1133,8 @@ inline void InlineFlowBox::AddTextBoxVisualOverflow(
   if (ShadowList* text_shadow = style.TextShadow()) {
     LayoutRectOutsets text_shadow_logical_outsets =
         LineOrientationLayoutRectOutsets(
-            LayoutRectOutsets(text_shadow->RectOutsetsIncludingOriginal()),
+            EnclosingLayoutRectOutsets(
+                text_shadow->RectOutsetsIncludingOriginal()),
             style.GetWritingMode());
     text_shadow_logical_outsets.ClampNegativeToZero();
     visual_rect_outsets += text_shadow_logical_outsets;

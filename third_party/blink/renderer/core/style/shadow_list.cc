@@ -31,23 +31,23 @@
 #include "third_party/blink/renderer/core/style/shadow_list.h"
 
 #include <memory>
+#include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
-FloatRectOutsets ShadowList::RectOutsetsIncludingOriginal() const {
-  FloatRectOutsets outsets;
+gfx::OutsetsF ShadowList::RectOutsetsIncludingOriginal() const {
+  gfx::OutsetsF outsets;
   for (const ShadowData& shadow : Shadows()) {
     if (shadow.Style() == ShadowStyle::kInset)
       continue;
-    outsets.Unite(shadow.RectOutsets());
+    outsets.SetToMax(shadow.RectOutsets());
   }
   return outsets;
 }
 
 void ShadowList::AdjustRectForShadow(gfx::RectF& rect) const {
-  auto outset = RectOutsetsIncludingOriginal();
-  rect.Outset(outset.Left(), outset.Top(), outset.Right(), outset.Bottom());
+  rect.Outset(RectOutsetsIncludingOriginal());
 }
 
 }  // namespace blink

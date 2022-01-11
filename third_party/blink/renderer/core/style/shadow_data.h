@@ -28,7 +28,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect_outsets.h"
+#include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
@@ -69,7 +69,7 @@ class CORE_EXPORT ShadowData {
 
   // Outsets needed to adjust a source rectangle to the one cast by this
   // shadow.
-  FloatRectOutsets RectOutsets() const;
+  gfx::OutsetsF RectOutsets() const;
 
  private:
   gfx::PointF location_;

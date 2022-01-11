@@ -2476,8 +2476,10 @@ LayoutRectOutsets ComputedStyle::BoxDecorationOutsets() const {
   DCHECK(HasVisualOverflowingEffect());
   LayoutRectOutsets outsets;
 
-  if (const ShadowList* box_shadow = BoxShadow())
-    outsets = LayoutRectOutsets(box_shadow->RectOutsetsIncludingOriginal());
+  if (const ShadowList* box_shadow = BoxShadow()) {
+    outsets =
+        EnclosingLayoutRectOutsets(box_shadow->RectOutsetsIncludingOriginal());
+  }
 
   if (HasBorderImageOutsets())
     outsets.Unite(BorderImageOutsets());

@@ -91,54 +91,49 @@ void FloatRoundedRect::Radii::Scale(float factor) {
     bottom_right_ = gfx::SizeF();
 }
 
-void FloatRoundedRect::Radii::Shrink(float top_width,
-                                     float bottom_width,
-                                     float left_width,
-                                     float right_width) {
-  DCHECK_GE(top_width, 0);
-  DCHECK_GE(bottom_width, 0);
-  DCHECK_GE(left_width, 0);
-  DCHECK_GE(right_width, 0);
+void FloatRoundedRect::Radii::Shrink(const gfx::InsetsF& insets) {
+  DCHECK_GE(insets.top(), 0);
+  DCHECK_GE(insets.bottom(), 0);
+  DCHECK_GE(insets.left(), 0);
+  DCHECK_GE(insets.right(), 0);
 
-  top_left_.set_width(std::max<float>(0, top_left_.width() - left_width));
-  top_left_.set_height(std::max<float>(0, top_left_.height() - top_width));
+  top_left_.set_width(std::max<float>(0, top_left_.width() - insets.left()));
+  top_left_.set_height(std::max<float>(0, top_left_.height() - insets.top()));
 
-  top_right_.set_width(std::max<float>(0, top_right_.width() - right_width));
-  top_right_.set_height(std::max<float>(0, top_right_.height() - top_width));
+  top_right_.set_width(std::max<float>(0, top_right_.width() - insets.right()));
+  top_right_.set_height(std::max<float>(0, top_right_.height() - insets.top()));
 
-  bottom_left_.set_width(std::max<float>(0, bottom_left_.width() - left_width));
+  bottom_left_.set_width(
+      std::max<float>(0, bottom_left_.width() - insets.left()));
   bottom_left_.set_height(
-      std::max<float>(0, bottom_left_.height() - bottom_width));
+      std::max<float>(0, bottom_left_.height() - insets.bottom()));
 
   bottom_right_.set_width(
-      std::max<float>(0, bottom_right_.width() - right_width));
+      std::max<float>(0, bottom_right_.width() - insets.right()));
   bottom_right_.set_height(
-      std::max<float>(0, bottom_right_.height() - bottom_width));
+      std::max<float>(0, bottom_right_.height() - insets.bottom()));
 }
 
-void FloatRoundedRect::Radii::Expand(float top_width,
-                                     float bottom_width,
-                                     float left_width,
-                                     float right_width) {
-  DCHECK_GE(top_width, 0);
-  DCHECK_GE(bottom_width, 0);
-  DCHECK_GE(left_width, 0);
-  DCHECK_GE(right_width, 0);
+void FloatRoundedRect::Radii::Expand(const gfx::OutsetsF& outsets) {
+  DCHECK_GE(outsets.top(), 0);
+  DCHECK_GE(outsets.bottom(), 0);
+  DCHECK_GE(outsets.left(), 0);
+  DCHECK_GE(outsets.right(), 0);
   if (top_left_.width() > 0 && top_left_.height() > 0) {
-    top_left_.set_width(top_left_.width() + left_width);
-    top_left_.set_height(top_left_.height() + top_width);
+    top_left_.set_width(top_left_.width() + outsets.left());
+    top_left_.set_height(top_left_.height() + outsets.top());
   }
   if (top_right_.width() > 0 && top_right_.height() > 0) {
-    top_right_.set_width(top_right_.width() + right_width);
-    top_right_.set_height(top_right_.height() + top_width);
+    top_right_.set_width(top_right_.width() + outsets.right());
+    top_right_.set_height(top_right_.height() + outsets.top());
   }
   if (bottom_left_.width() > 0 && bottom_left_.height() > 0) {
-    bottom_left_.set_width(bottom_left_.width() + left_width);
-    bottom_left_.set_height(bottom_left_.height() + bottom_width);
+    bottom_left_.set_width(bottom_left_.width() + outsets.left());
+    bottom_left_.set_height(bottom_left_.height() + outsets.bottom());
   }
   if (bottom_right_.width() > 0 && bottom_right_.height() > 0) {
-    bottom_right_.set_width(bottom_right_.width() + right_width);
-    bottom_right_.set_height(bottom_right_.height() + bottom_width);
+    bottom_right_.set_width(bottom_right_.width() + outsets.right());
+    bottom_right_.set_height(bottom_right_.height() + outsets.bottom());
   }
 }
 

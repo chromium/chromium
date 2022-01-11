@@ -304,6 +304,8 @@ _CONFIG = [
             # Chromium geometry types.
             'gfx::Insets',
             'gfx::InsetsF',
+            'gfx::Outsets',
+            'gfx::OutsetsF',
             'gfx::Point',
             'gfx::PointF',
             'gfx::Point3F',

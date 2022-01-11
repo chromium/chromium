@@ -36,6 +36,8 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/skia/include/core/SkRRect.h"
+#include "ui/gfx/geometry/insets_f.h"
+#include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
 #include "ui/gfx/geometry/skia_conversions.h"
@@ -98,17 +100,11 @@ class PLATFORM_EXPORT FloatRoundedRect {
 
     void Scale(float factor);
 
-    void Expand(float top_width,
-                float bottom_width,
-                float left_width,
-                float right_width);
-    void Expand(float size) { Expand(size, size, size, size); }
+    void Expand(const gfx::OutsetsF& outsets);
+    void Expand(float size) { Expand(gfx::OutsetsF(size)); }
 
-    void Shrink(float top_width,
-                float bottom_width,
-                float left_width,
-                float right_width);
-    void Shrink(float size) { Shrink(size, size, size, size); }
+    void Shrink(const gfx::InsetsF& insets);
+    void Shrink(float size) { Shrink(gfx::InsetsF(size)); }
 
     // Reshapes the corners based on the algorithm in
     // https://drafts.csswg.org/css-backgrounds-3/#shadow-shape.
