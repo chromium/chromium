@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_layout_algorithm.h"
 
+#include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_placement.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_box_fragment.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space_builder.h"
@@ -357,9 +358,9 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::LayoutInternal() {
     // automatic repetitions (this depends on available size), as this might
     // change the grid structure significantly (e.g. pull a child up into the
     // first row).
-    const auto& grid_data = BreakToken()->GridData();
-    intrinsic_block_size = grid_data.intrinsic_block_size;
-    grid_geometry = grid_data.grid_geometry;
+    const auto* grid_data = To<NGGridBreakTokenData>(BreakToken()->TokenData());
+    intrinsic_block_size = grid_data->intrinsic_block_size;
+    grid_geometry = grid_data->grid_geometry;
 
     column_track_collection = NGGridLayoutAlgorithmTrackCollection(
         column_block_track_collection,
@@ -389,9 +390,11 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::LayoutInternal() {
     Vector<LayoutUnit> row_offset_adjustments;
     Vector<EBreakBetween> row_break_between;
     if (IsResumingLayout(BreakToken())) {
-      offsets = BreakToken()->GridData().offsets;
-      row_offset_adjustments = BreakToken()->GridData().row_offset_adjustments;
-      row_break_between = BreakToken()->GridData().row_break_between;
+      const auto* grid_data =
+          To<NGGridBreakTokenData>(BreakToken()->TokenData());
+      offsets = grid_data->offsets;
+      row_offset_adjustments = grid_data->row_offset_adjustments;
+      row_break_between = grid_data->row_break_between;
     } else {
       row_offset_adjustments =
           Vector<LayoutUnit>(grid_geometry.row_geometry.sets.size());
@@ -404,10 +407,9 @@ scoped_refptr<const NGLayoutResult> NGGridLayoutAlgorithm::LayoutInternal() {
         grid_items, row_break_between, &grid_geometry, &offsets,
         &row_offset_adjustments, &intrinsic_block_size);
 
-    container_builder_.SetGridBreakTokenData(
-        std::make_unique<NGGridBreakTokenData>(
-            grid_geometry, offsets, row_offset_adjustments, row_break_between,
-            intrinsic_block_size));
+    container_builder_.SetBreakTokenData(std::make_unique<NGGridBreakTokenData>(
+        container_builder_.GetBreakTokenData(), grid_geometry, offsets,
+        row_offset_adjustments, row_break_between, intrinsic_block_size));
   } else {
     PlaceGridItems(grid_items, grid_geometry);
   }

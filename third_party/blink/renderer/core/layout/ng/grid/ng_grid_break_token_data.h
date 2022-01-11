@@ -6,6 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_GRID_NG_GRID_BREAK_TOKEN_DATA_H_
 
 #include "third_party/blink/renderer/core/layout/ng/grid/ng_grid_geometry.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_block_break_token_data.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -20,16 +21,18 @@ struct GridItemOffsets {
   LogicalOffset relative_offset;
 };
 
-struct NGGridBreakTokenData {
+struct NGGridBreakTokenData final : NGBlockBreakTokenData {
   USING_FAST_MALLOC(NGGridBreakTokenData);
 
  public:
-  NGGridBreakTokenData(const NGGridGeometry& grid_geometry,
+  NGGridBreakTokenData(const NGBlockBreakTokenData* break_token_data,
+                       const NGGridGeometry& grid_geometry,
                        const Vector<GridItemOffsets>& offsets,
                        const Vector<LayoutUnit>& row_offset_adjustments,
                        const Vector<EBreakBetween>& row_break_between,
                        LayoutUnit intrinsic_block_size)
-      : grid_geometry(grid_geometry),
+      : NGBlockBreakTokenData(kGridBreakTokenData, break_token_data),
+        grid_geometry(grid_geometry),
         offsets(offsets),
         row_offset_adjustments(row_offset_adjustments),
         row_break_between(row_break_between),
@@ -40,6 +43,13 @@ struct NGGridBreakTokenData {
   Vector<LayoutUnit> row_offset_adjustments;
   Vector<EBreakBetween> row_break_between;
   LayoutUnit intrinsic_block_size;
+};
+
+template <>
+struct DowncastTraits<NGGridBreakTokenData> {
+  static bool AllowFrom(const NGBlockBreakTokenData& token_data) {
+    return token_data.IsGridType();
+  }
 };
 
 }  // namespace blink
