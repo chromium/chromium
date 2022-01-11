@@ -966,7 +966,7 @@
   {
     "name": "conversion-measurement-debug-mode",
     "owners": [ "//content/browser/attribution_reporting/OWNERS" ],
-    "expiry_milestone": 98
+    "expiry_milestone": 105
   },
   {
     "name": "copy-link-to-text",
