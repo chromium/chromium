@@ -1733,9 +1733,9 @@ TextEmphasisPosition StyleBuilderConverter::ConvertTextTextEmphasisPosition(
   CSSValueID first = To<CSSIdentifierValue>(list.Item(0)).GetValueID();
   if (list.length() < 2) {
     if (first == CSSValueID::kOver)
-      return TextEmphasisPosition::kOver;
+      return TextEmphasisPosition::kOverRight;
     if (first == CSSValueID::kUnder)
-      return TextEmphasisPosition::kUnder;
+      return TextEmphasisPosition::kUnderRight;
     return TextEmphasisPosition::kOverRight;
   }
   CSSValueID second = To<CSSIdentifierValue>(list.Item(1)).GetValueID();

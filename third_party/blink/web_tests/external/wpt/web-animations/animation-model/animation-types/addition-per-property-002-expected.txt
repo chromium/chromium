@@ -194,8 +194,8 @@ PASS text-emphasis-color supports animating as color of #RGBa
 PASS text-emphasis-color supports animating as color of rgba()
 PASS text-emphasis-color supports animating as color of hsla()
 PASS text-emphasis-position (type: discrete) has testAddition function
-PASS text-emphasis-position: "under left" onto "over right"
-PASS text-emphasis-position: "over right" onto "under left"
+PASS text-emphasis-position: "under left" onto "over"
+PASS text-emphasis-position: "over" onto "under left"
 PASS text-emphasis-style (type: discrete) has testAddition function
 PASS text-emphasis-style: "open dot" onto "circle"
 PASS text-emphasis-style: "circle" onto "open dot"

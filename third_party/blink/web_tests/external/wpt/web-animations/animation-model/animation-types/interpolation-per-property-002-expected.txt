@@ -231,9 +231,9 @@ PASS text-emphasis-color supports animating as color of #RGBa
 PASS text-emphasis-color supports animating as color of rgba()
 PASS text-emphasis-color supports animating as color of hsla()
 PASS text-emphasis-position (type: discrete) has testInterpolation function
-PASS text-emphasis-position uses discrete animation when animating between "over right" and "under left" with linear easing
-PASS text-emphasis-position uses discrete animation when animating between "over right" and "under left" with effect easing
-PASS text-emphasis-position uses discrete animation when animating between "over right" and "under left" with keyframe easing
+PASS text-emphasis-position uses discrete animation when animating between "over" and "under left" with linear easing
+PASS text-emphasis-position uses discrete animation when animating between "over" and "under left" with effect easing
+PASS text-emphasis-position uses discrete animation when animating between "over" and "under left" with keyframe easing
 PASS text-emphasis-style (type: discrete) has testInterpolation function
 PASS text-emphasis-style uses discrete animation when animating between "circle" and "open dot" with linear easing
 PASS text-emphasis-style uses discrete animation when animating between "circle" and "open dot" with effect easing

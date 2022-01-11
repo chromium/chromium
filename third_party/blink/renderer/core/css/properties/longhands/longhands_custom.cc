@@ -8242,23 +8242,15 @@ const CSSValue* TextEmphasisPosition::CSSValueFromComputedStyleInternal(
     bool allow_visited_style) const {
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
   switch (style.GetTextEmphasisPosition()) {
-    case blink::TextEmphasisPosition::kOver:
-      list->Append(*CSSIdentifierValue::Create(CSSValueID::kOver));
-      break;
     case blink::TextEmphasisPosition::kOverRight:
       list->Append(*CSSIdentifierValue::Create(CSSValueID::kOver));
-      list->Append(*CSSIdentifierValue::Create(CSSValueID::kRight));
       break;
     case blink::TextEmphasisPosition::kOverLeft:
       list->Append(*CSSIdentifierValue::Create(CSSValueID::kOver));
       list->Append(*CSSIdentifierValue::Create(CSSValueID::kLeft));
       break;
-    case blink::TextEmphasisPosition::kUnder:
-      list->Append(*CSSIdentifierValue::Create(CSSValueID::kUnder));
-      break;
     case blink::TextEmphasisPosition::kUnderRight:
       list->Append(*CSSIdentifierValue::Create(CSSValueID::kUnder));
-      list->Append(*CSSIdentifierValue::Create(CSSValueID::kRight));
       break;
     case blink::TextEmphasisPosition::kUnderLeft:
       list->Append(*CSSIdentifierValue::Create(CSSValueID::kUnder));

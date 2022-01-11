@@ -317,24 +317,19 @@ enum class CSSBoxType : unsigned {
 };
 
 enum class TextEmphasisPosition : unsigned {
-  kOver,  // Same as kOverRight
   kOverRight,
   kOverLeft,
-  kUnder,  // Same as kUnderRight
   kUnderRight,
   kUnderLeft,
 };
 
 inline bool IsOver(TextEmphasisPosition position) {
-  return position == TextEmphasisPosition::kOver ||
-         position == TextEmphasisPosition::kOverRight ||
+  return position == TextEmphasisPosition::kOverRight ||
          position == TextEmphasisPosition::kOverLeft;
 }
 
 inline bool IsRight(TextEmphasisPosition position) {
-  return position == TextEmphasisPosition::kOver ||
-         position == TextEmphasisPosition::kOverRight ||
-         position == TextEmphasisPosition::kUnder ||
+  return position == TextEmphasisPosition::kOverRight ||
          position == TextEmphasisPosition::kUnderRight;
 }
 
