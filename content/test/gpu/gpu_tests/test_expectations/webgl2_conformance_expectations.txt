@@ -221,7 +221,6 @@ crbug.com/891861 conformance2/extensions/webgl-multi-draw-instanced-base-vertex-
 crbug.com/1131224 conformance2/rendering/framebuffer-mismatched-attachment-targets.html [ Failure ]
 crbug.com/1108086 [ no-passthrough ] conformance2/renderbuffers/framebuffer-object-attachment.html [ Failure ]
 crbug.com/angleproject/4807 [ win angle-d3d11 passthrough ] conformance2/glsl3/switch-case.html [ Failure ]
-crbug.com/1081973 conformance/buffers/buffer-data-and-buffer-sub-data.html [ Failure ]
 crbug.com/1082533 [ mac intel ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
 crbug.com/angleproject/5038 conformance/extensions/ext-color-buffer-half-float.html [ Failure ]
 crbug.com/1136231 [ win passthrough ] conformance/extensions/s3tc-and-rgtc.html [ Failure ]

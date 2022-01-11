@@ -482,9 +482,9 @@ interface mixin WebGLRenderingContextBase {
     // https://www.khronos.org/bugzilla/show_bug.cgi?id=1172
     void bufferData(GLenum target, GLsizeiptr size, GLenum usage);
     void bufferData(GLenum target, [AllowShared] ArrayBufferView data, GLenum usage);
-    void bufferData(GLenum target, ArrayBuffer? data, GLenum usage);
+    void bufferData(GLenum target, [AllowShared] ArrayBuffer? data, GLenum usage);
     void bufferSubData(GLenum target, GLintptr offset, [AllowShared, FlexibleArrayBufferView] ArrayBufferView data);
-    void bufferSubData(GLenum target, GLintptr offset, ArrayBuffer data);
+    void bufferSubData(GLenum target, GLintptr offset, [AllowShared] ArrayBuffer data);
 
     GLenum checkFramebufferStatus(GLenum target);
     [NoAllocDirectCall] void clear(GLbitfield mask);

@@ -264,7 +264,7 @@ void WebGL2RenderingContextBase::bufferData(GLenum target,
 }
 
 void WebGL2RenderingContextBase::bufferData(GLenum target,
-                                            DOMArrayBuffer* data,
+                                            DOMArrayBufferBase* data,
                                             GLenum usage) {
   WebGLRenderingContextBase::bufferData(target, data, usage);
 }
@@ -298,7 +298,7 @@ void WebGL2RenderingContextBase::bufferSubData(
 
 void WebGL2RenderingContextBase::bufferSubData(GLenum target,
                                                int64_t offset,
-                                               DOMArrayBuffer* data) {
+                                               DOMArrayBufferBase* data) {
   WebGLRenderingContextBase::bufferSubData(target, offset, data);
 }
 

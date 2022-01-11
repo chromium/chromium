@@ -293,7 +293,6 @@ crbug.com/1043953 [ chromeos chromeos-board-amd64-generic ] conformance/textures
 # ========================
 # Fails on all platforms
 
-crbug.com/1081973 conformance/buffers/buffer-data-and-buffer-sub-data.html [ Failure ]
 crbug.com/1082533 [ mac intel ] conformance/textures/misc/texture-copying-and-deletion.html [ Failure ]
 # TODO(crbug.com/1136231): Uncomment suppressions for s3tc-and-rgtc.html below
 # under crbug.com/963205 and crbug.com/964321 once these two failures are fixed.

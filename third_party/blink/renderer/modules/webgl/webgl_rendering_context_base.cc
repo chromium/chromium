@@ -2120,7 +2120,7 @@ void WebGLRenderingContextBase::bufferData(GLenum target,
 }
 
 void WebGLRenderingContextBase::bufferData(GLenum target,
-                                           DOMArrayBuffer* data,
+                                           DOMArrayBufferBase* data,
                                            GLenum usage) {
   if (isContextLost())
     return;
@@ -2128,7 +2128,7 @@ void WebGLRenderingContextBase::bufferData(GLenum target,
     SynthesizeGLError(GL_INVALID_VALUE, "bufferData", "no data");
     return;
   }
-  BufferDataImpl(target, data->ByteLength(), data->Data(), usage);
+  BufferDataImpl(target, data->ByteLength(), data->DataMaybeShared(), usage);
 }
 
 void WebGLRenderingContextBase::bufferData(GLenum target,
@@ -2162,11 +2162,12 @@ void WebGLRenderingContextBase::BufferSubDataImpl(GLenum target,
 
 void WebGLRenderingContextBase::bufferSubData(GLenum target,
                                               int64_t offset,
-                                              DOMArrayBuffer* data) {
+                                              DOMArrayBufferBase* data) {
   if (isContextLost())
     return;
   DCHECK(data);
-  BufferSubDataImpl(target, offset, data->ByteLength(), data->Data());
+  BufferSubDataImpl(target, offset, data->ByteLength(),
+                    data->DataMaybeShared());
 }
 
 void WebGLRenderingContextBase::bufferSubData(

@@ -1452,7 +1452,7 @@ Usage: Applies to arguments of methods. See modules/webgl/WebGLRenderingContextB
 
 ### [AllowShared] _(p)_
 
-Summary: `[AllowShared]` indicates that a parameter, which must be an ArrayBufferView (or subtype of, e.g. typed arrays), is allowed to be backed by a SharedArrayBuffer.
+Summary: `[AllowShared]` indicates that a parameter, which must be an ArrayBufferView (or subtype of, e.g. typed arrays), is allowed to be backed by a SharedArrayBuffer. It also indicates that an ArrayBuffer parameter allows a SharedArrayBuffer to be passed.
 
 Usage: `[AllowShared]` must be specified on a parameter to a method:
 
@@ -1460,10 +1460,13 @@ Usage: `[AllowShared]` must be specified on a parameter to a method:
 interface Context {
     void bufferData1([AllowShared] ArrayBufferView buffer);
     void bufferData2([AllowShared] Float32Array buffer);
+    void bufferData3([AllowShared] ArrayBuffer buffer);
 }
 ```
 
 A SharedArrayBuffer is a distinct type from an ArrayBuffer, but both types use ArrayBufferViews to view the data in the buffer. Most methods do not permit an ArrayBufferView that is backed by a SharedArrayBuffer, and will throw an exception. This attribute indicates that this method permits a shared ArrayBufferView.
+
+When applied to an ArrayBuffer argument, the underlying C++ method called by the bindings receives a `DOMArrayBufferBase*` instead of `DOMArrayBuffer*`.
 
 ### [PermissiveDictionaryConversion] _(p, d)_
 
