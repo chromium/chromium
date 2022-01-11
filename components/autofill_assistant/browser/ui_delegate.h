@@ -137,22 +137,6 @@ class UiDelegate {
   // Called when the user clicks the TTS button.
   virtual void OnTtsButtonClicked() = 0;
 
-  // Sets the start date of the date/time range.
-  virtual void SetDateTimeRangeStartDate(
-      const absl::optional<DateProto>& date) = 0;
-
-  // Sets the start timeslot of the date/time range.
-  virtual void SetDateTimeRangeStartTimeSlot(
-      const absl::optional<int>& timeslot_index) = 0;
-
-  // Sets the end date of the date/time range.
-  virtual void SetDateTimeRangeEndDate(
-      const absl::optional<DateProto>& date) = 0;
-
-  // Sets the end timeslot of the date/time range.
-  virtual void SetDateTimeRangeEndTimeSlot(
-      const absl::optional<int>& timeslot_index) = 0;
-
   // Sets an additional value.
   virtual void SetAdditionalValue(const std::string& client_memory_key,
                                   const ValueProto& value) = 0;

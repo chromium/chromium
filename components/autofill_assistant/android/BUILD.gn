@@ -84,7 +84,6 @@ android_resources("java_resources") {
     "internal/java/res/layout/autofill_assistant_button_hairline.xml",
     "internal/java/res/layout/autofill_assistant_contact_full.xml",
     "internal/java/res/layout/autofill_assistant_contact_summary.xml",
-    "internal/java/res/layout/autofill_assistant_datetime.xml",
     "internal/java/res/layout/autofill_assistant_details.xml",
     "internal/java/res/layout/autofill_assistant_form_checkbox.xml",
     "internal/java/res/layout/autofill_assistant_form_counter.xml",

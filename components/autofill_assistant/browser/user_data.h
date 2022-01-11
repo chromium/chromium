@@ -187,18 +187,12 @@ class UserData {
     BILLING_ADDRESS,
     LOGIN_CHOICE,
     TERMS_AND_CONDITIONS,
-    DATE_TIME_RANGE_START,
-    DATE_TIME_RANGE_END,
     ADDITIONAL_VALUES,
     AVAILABLE_PROFILES,
     AVAILABLE_PAYMENT_INSTRUMENTS,
   };
 
   TermsAndConditionsState terms_and_conditions_ = NOT_SELECTED;
-  absl::optional<DateProto> date_time_range_start_date_;
-  absl::optional<DateProto> date_time_range_end_date_;
-  absl::optional<int> date_time_range_start_timeslot_;
-  absl::optional<int> date_time_range_end_timeslot_;
 
   std::vector<std::unique_ptr<Contact>> available_contacts_;
   std::vector<std::unique_ptr<Address>> available_addresses_;
@@ -275,7 +269,6 @@ struct CollectUserDataOptions {
   bool request_shipping = false;
   bool request_payment_method = false;
   bool request_login_choice = false;
-  bool request_date_time_range = false;
   std::vector<AutofillContactField> contact_summary_fields;
   int contact_summary_max_lines;
   std::vector<AutofillContactField> contact_full_fields;
@@ -314,7 +307,6 @@ struct CollectUserDataOptions {
   UserActionProto confirm_action;
   std::vector<UserActionProto> additional_actions;
   TermsAndConditionsState initial_terms_and_conditions = NOT_SELECTED;
-  DateTimeRangeProto date_time_range;
   std::vector<UserFormSectionProto> additional_prepended_sections;
   std::vector<UserFormSectionProto> additional_appended_sections;
   absl::optional<GenericUserInterfaceProto> generic_user_interface_prepended;

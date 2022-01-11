@@ -89,13 +89,6 @@ public class AssistantCollectUserDataCoordinator {
                 new AssistantContactDetailsSection(mActivity, paymentRequestExpanderAccordion);
         createSeparator(paymentRequestExpanderAccordion);
 
-        AssistantDateSection dateRangeStartSection = new AssistantDateSection(
-                mActivity, paymentRequestExpanderAccordion, locale, dateFormat);
-        createSeparator(paymentRequestExpanderAccordion);
-        AssistantDateSection dateRangeEndSection = new AssistantDateSection(
-                mActivity, paymentRequestExpanderAccordion, locale, dateFormat);
-        createSeparator(paymentRequestExpanderAccordion);
-
         AssistantPaymentMethodSection paymentMethodSection =
                 new AssistantPaymentMethodSection(mActivity, paymentRequestExpanderAccordion);
         createSeparator(paymentRequestExpanderAccordion);
@@ -124,10 +117,6 @@ public class AssistantCollectUserDataCoordinator {
         paymentRequestExpanderAccordion.setTag(
                 AssistantTagsForTesting.COLLECT_USER_DATA_ACCORDION_TAG);
         loginSection.getView().setTag(AssistantTagsForTesting.COLLECT_USER_DATA_LOGIN_SECTION_TAG);
-        dateRangeStartSection.getView().setTag(
-                AssistantTagsForTesting.COLLECT_USER_DATA_DATE_RANGE_START_TAG);
-        dateRangeEndSection.getView().setTag(
-                AssistantTagsForTesting.COLLECT_USER_DATA_DATE_RANGE_END_TAG);
         contactDetailsSection.getView().setTag(
                 AssistantTagsForTesting.COLLECT_USER_DATA_CONTACT_DETAILS_SECTION_TAG);
         paymentMethodSection.getView().setTag(
@@ -143,9 +132,8 @@ public class AssistantCollectUserDataCoordinator {
         // Bind view and mediator through the model.
         mViewHolder = new AssistantCollectUserDataBinder.ViewHolder(mPaymentRequestUI,
                 paymentRequestExpanderAccordion, sectionToSectionPadding, loginSection,
-                contactDetailsSection, dateRangeStartSection, dateRangeEndSection,
-                paymentMethodSection, shippingAddressSection, termsSection, termsAsCheckboxSection,
-                infoSection, prependedSections, appendedSections,
+                contactDetailsSection, paymentMethodSection, shippingAddressSection, termsSection,
+                termsAsCheckboxSection, infoSection, prependedSections, appendedSections,
                 genericUserInterfaceContainerPrepended, genericUserInterfaceContainerAppended,
                 DIVIDER_TAG, mActivity);
         AssistantCollectUserDataBinder binder = new AssistantCollectUserDataBinder();

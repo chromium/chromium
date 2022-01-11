@@ -912,14 +912,6 @@ message CollectUserDataResultProto {
   // keys specified in |TextInputProto|. The values themselves are stored in the
   // client and do not leave the device.
   repeated string set_text_input_memory_keys = 10;
-  // The start date of the date/time range, if requested.
-  optional DateProto date_range_start_date = 11;
-  // The index of the selected timeslot for the start of the date/time range.
-  optional int32 date_range_start_timeslot = 12;
-  // The end date of the date/time range, if requested.
-  optional DateProto date_range_end_date = 13;
-  // The index of the selected timeslot for the end of the date/time range.
-  optional int32 date_range_end_timeslot = 14;
   // The values obtained from the additional sections.
   repeated ModelProto.ModelValue additional_sections_values = 15;
   // Indicates whether the UI was shown to the user. This can be false if
@@ -928,7 +920,7 @@ message CollectUserDataResultProto {
   // Indicates that the chosen login option was missing the username.
   optional bool login_missing_username = 17;
 
-  reserved 7, 8, 18 to 20;
+  reserved 7, 8, 11 to 14, 18 to 20;
 }
 
 message ActionTimingStats {
@@ -2274,46 +2266,6 @@ message LoginDetailsProto {
   repeated LoginOptionProto login_options = 2;
 }
 
-message DateTimeRangeProto {
-  message TimeSlot {
-    // The label to display.
-    optional string label = 1;
-    // The comparison value to be used to compare this timeslot
-    // to others. Smaller values indicate earlier times. This will be used to
-    // prevent start > end and vice-versa.
-    optional int32 comparison_value = 2;
-  }
-
-  // The initial start date of the date/time range.
-  optional DateProto start_date = 15;
-  // The index of the initial start time slot to select.
-  optional int32 start_time_slot = 13;
-  // The initial end date of the date/time range.
-  optional DateProto end_date = 16;
-  // The index of the initial end time slot to select.
-  optional int32 end_time_slot = 14;
-  // The minimum allowed date of the date/time range.
-  optional DateProto min_date = 3;
-  // The maximum allowed date of the date/time range.
-  optional DateProto max_date = 4;
-  // The label for the start date (e.g., 'Pick up date').
-  optional string start_date_label = 8;
-  // The label for the start time (e.g., 'Pick up time').
-  optional string start_time_label = 9;
-  // The label for the end date (e.g., 'Drop off date').
-  optional string end_date_label = 10;
-  // The label for the end time (e.g., 'Drop off time').
-  optional string end_time_label = 11;
-  // The time slots to offer (e.g., 08:00 AM, 08:30 AM, ...)
-  repeated TimeSlot time_slots = 12;
-  // The error message to display if the date is not set.
-  optional string date_not_set_error = 17;
-  // The error message to display if the time is not set.
-  optional string time_not_set_error = 18;
-
-  reserved 1, 2, 5, 6, 7;
-}
-
 // A section showing a simple text message.
 message StaticTextSectionProto {
   // The text to display. Can contain markup tags like <b>.
@@ -2479,8 +2431,6 @@ message CollectUserDataProto {
   optional string credit_card_expired_text = 23;
   // The login details that should be gathered.
   optional LoginDetailsProto login_details = 16;
-  // The date/time range that should be gathered.
-  optional DateTimeRangeProto date_time_range = 17;
   // An optional list of additional sections, which is above all other sections.
   repeated UserFormSectionProto additional_prepended_sections = 18;
   // An optional list of additional sections, which is below all other sections.
@@ -2541,7 +2491,7 @@ message CollectUserDataProto {
   }
   optional UserDataProto user_data = 37;
 
-  reserved 7, 10, 14, 15, 26;
+  reserved 7, 10, 14, 15, 17, 26;
 }
 
 // Stop Autofill Assistant.

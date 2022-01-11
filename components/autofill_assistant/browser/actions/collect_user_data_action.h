@@ -47,20 +47,6 @@ class CollectUserDataAction : public Action,
       const UserModel& user_model,
       const CollectUserDataOptions& collect_user_data_options);
 
-  // Ensures that |end| is > |start| by modifying either |start| or |end|,
-  // depending on |change_start|. Returns true if changes were performed.
-  static bool SanitizeDateTimeRange(
-      absl::optional<DateProto>* start_date,
-      absl::optional<int>* start_timeslot,
-      absl::optional<DateProto>* end_date,
-      absl::optional<int>* end_timeslot,
-      const CollectUserDataOptions& collect_user_data_options,
-      bool change_start);
-
-  // Comparison function for |DateProto|.
-  // Returns 0 if equal, < 0 if |first| < |second|, > 0 if |second| > |first|.
-  static int CompareDates(const DateProto& first, const DateProto& second);
-
  private:
   struct LoginDetails {
     LoginDetails(bool choose_automatically_if_no_stored_login,
@@ -127,10 +113,6 @@ class CollectUserDataAction : public Action,
   void UpdateSelectedContact(UserData* user_data);
   void UpdateSelectedShippingAddress(UserData* user_data);
   void UpdateSelectedCreditCard(UserData* user_data);
-  void UpdateDateTimeRangeStart(UserData* user_data,
-                                UserData::FieldChange* field_change = nullptr);
-  void UpdateDateTimeRangeEnd(UserData* user_data,
-                              UserData::FieldChange* field_change = nullptr);
   void MaybeLogMetrics();
 
   UserDataMetrics metrics_data_;

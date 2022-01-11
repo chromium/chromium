@@ -23,7 +23,6 @@ import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantChoiceL
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataDelegate;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel;
-import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantDateTime;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantLoginChoice;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantTermsAndConditionsState;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantUserDataEventType;
@@ -53,8 +52,6 @@ public class AutofillAssistantCollectUserDataTestHelper {
         final AssistantVerticalExpander mPaymentSection;
         final AssistantVerticalExpander mShippingSection;
         final AssistantVerticalExpander mLoginsSection;
-        final LinearLayout mDateRangeStartSection;
-        final LinearLayout mDateRangeEndSection;
         final LinearLayout mTermsSection;
         final TextView mInfoSection;
         final AssistantChoiceList mContactList;
@@ -74,10 +71,6 @@ public class AutofillAssistantCollectUserDataTestHelper {
                     AssistantTagsForTesting.COLLECT_USER_DATA_SHIPPING_ADDRESS_SECTION_TAG);
             mLoginsSection = coordinator.getView().findViewWithTag(
                     AssistantTagsForTesting.COLLECT_USER_DATA_LOGIN_SECTION_TAG);
-            mDateRangeStartSection = coordinator.getView().findViewWithTag(
-                    AssistantTagsForTesting.COLLECT_USER_DATA_DATE_RANGE_START_TAG);
-            mDateRangeEndSection = coordinator.getView().findViewWithTag(
-                    AssistantTagsForTesting.COLLECT_USER_DATA_DATE_RANGE_END_TAG);
             mTermsSection = coordinator.getView().findViewWithTag(
                     AssistantTagsForTesting.COLLECT_USER_DATA_RADIO_TERMS_SECTION_TAG);
             mInfoSection = coordinator.getView().findViewWithTag(
@@ -108,14 +101,6 @@ public class AutofillAssistantCollectUserDataTestHelper {
         AutofillAddress mAddress;
         AutofillPaymentInstrument mPaymentMethod;
         AssistantLoginChoice mLoginChoice;
-        @Nullable
-        AssistantDateTime mDateRangeStartDate;
-        @Nullable
-        AssistantDateTime mDateRangeEndDate;
-        @Nullable
-        Integer mDateRangeStartTimeSlot;
-        @Nullable
-        Integer mDateRangeEndTimeSlot;
 
         @AssistantTermsAndConditionsState
         int mTermsStatus;
@@ -159,26 +144,6 @@ public class AutofillAssistantCollectUserDataTestHelper {
         @Override
         public void onTextLinkClicked(int link) {
             mLastLinkClicked = link;
-        }
-
-        @Override
-        public void onDateTimeRangeStartDateChanged(@Nullable AssistantDateTime date) {
-            mDateRangeStartDate = date;
-        }
-
-        @Override
-        public void onDateTimeRangeStartTimeSlotChanged(@Nullable Integer index) {
-            mDateRangeStartTimeSlot = index;
-        }
-
-        @Override
-        public void onDateTimeRangeEndDateChanged(@Nullable AssistantDateTime date) {
-            mDateRangeEndDate = date;
-        }
-
-        @Override
-        public void onDateTimeRangeEndTimeSlotChanged(@Nullable Integer index) {
-            mDateRangeEndTimeSlot = index;
         }
 
         @Override

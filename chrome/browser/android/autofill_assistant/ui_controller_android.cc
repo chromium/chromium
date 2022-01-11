@@ -81,22 +81,6 @@ std::vector<float> ToFloatVector(const std::vector<RectF>& areas) {
   return flattened;
 }
 
-base::android::ScopedJavaLocalRef<jobject> CreateJavaDateTime(
-    JNIEnv* env,
-    const DateTimeProto& proto) {
-  return Java_AssistantCollectUserDataModel_createAssistantDateTime(
-      env, (int)proto.date().year(), proto.date().month(), proto.date().day(),
-      proto.time().hour(), proto.time().minute(), proto.time().second());
-}
-
-base::android::ScopedJavaLocalRef<jobject> CreateJavaDate(
-    JNIEnv* env,
-    const DateProto& proto) {
-  DateTimeProto date_time;
-  *date_time.mutable_date() = proto;
-  return CreateJavaDateTime(env, date_time);
-}
-
 ScopedJavaLocalRef<jobject> CreateOptionalJavaInfoPopup(
     JNIEnv* env,
     const LoginChoice& login_choice,
@@ -1145,50 +1129,6 @@ void UiControllerAndroid::OnFormActionLinkClicked(int link) {
   ui_delegate_->OnFormActionLinkClicked(link);
 }
 
-void UiControllerAndroid::OnDateTimeRangeStartDateChanged(int year,
-                                                          int month,
-                                                          int day) {
-  auto date = absl::make_optional<DateProto>();
-  date->set_year(year);
-  date->set_month(month);
-  date->set_day(day);
-  ui_delegate_->SetDateTimeRangeStartDate(date);
-}
-
-void UiControllerAndroid::OnDateTimeRangeStartDateCleared() {
-  ui_delegate_->SetDateTimeRangeStartDate(absl::nullopt);
-}
-
-void UiControllerAndroid::OnDateTimeRangeStartTimeSlotChanged(int index) {
-  ui_delegate_->SetDateTimeRangeStartTimeSlot(absl::make_optional<int>(index));
-}
-
-void UiControllerAndroid::OnDateTimeRangeStartTimeSlotCleared() {
-  ui_delegate_->SetDateTimeRangeStartTimeSlot(absl::nullopt);
-}
-
-void UiControllerAndroid::OnDateTimeRangeEndDateChanged(int year,
-                                                        int month,
-                                                        int day) {
-  auto date = absl::make_optional<DateProto>();
-  date->set_year(year);
-  date->set_month(month);
-  date->set_day(day);
-  ui_delegate_->SetDateTimeRangeEndDate(date);
-}
-
-void UiControllerAndroid::OnDateTimeRangeEndDateCleared() {
-  ui_delegate_->SetDateTimeRangeEndDate(absl::nullopt);
-}
-
-void UiControllerAndroid::OnDateTimeRangeEndTimeSlotChanged(int index) {
-  ui_delegate_->SetDateTimeRangeEndTimeSlot(absl::make_optional<int>(index));
-}
-
-void UiControllerAndroid::OnDateTimeRangeEndTimeSlotCleared() {
-  ui_delegate_->SetDateTimeRangeEndTimeSlot(absl::nullopt);
-}
-
 void UiControllerAndroid::OnKeyValueChanged(const std::string& key,
                                             const ValueProto& value) {
   ui_delegate_->SetAdditionalValue(key, value);
@@ -1287,52 +1227,6 @@ void UiControllerAndroid::OnCollectUserDataOptionsChanged(
         env, collect_user_data_options->login_choices,
         ui_delegate_->GetClientSettings(), GetInfoPageUtil());
     Java_AssistantCollectUserDataModel_setLoginChoices(env, jmodel, jlist);
-  }
-  Java_AssistantCollectUserDataModel_setRequestDateRange(
-      env, jmodel, collect_user_data_options->request_date_time_range);
-  if (collect_user_data_options->request_date_time_range) {
-    auto jmin_date = CreateJavaDate(
-        env, collect_user_data_options->date_time_range.min_date());
-    auto jmax_date = CreateJavaDate(
-        env, collect_user_data_options->date_time_range.max_date());
-    std::vector<std::string> time_slots;
-    for (const auto& slot :
-         collect_user_data_options->date_time_range.time_slots()) {
-      time_slots.emplace_back(slot.label());
-    }
-    auto jtime_slots = base::android::ToJavaArrayOfStrings(env, time_slots);
-    Java_AssistantCollectUserDataModel_setDateTimeRangeStartOptions(
-        env, jmodel, jmin_date, jmax_date, jtime_slots);
-    Java_AssistantCollectUserDataModel_setDateTimeRangeEndOptions(
-        env, jmodel, jmin_date, jmax_date, jtime_slots);
-    Java_AssistantCollectUserDataModel_setDateTimeRangeStartDateLabel(
-        env, jmodel,
-        ConvertUTF8ToJavaString(
-            env,
-            collect_user_data_options->date_time_range.start_date_label()));
-    Java_AssistantCollectUserDataModel_setDateTimeRangeStartTimeLabel(
-        env, jmodel,
-        ConvertUTF8ToJavaString(
-            env,
-            collect_user_data_options->date_time_range.start_time_label()));
-    Java_AssistantCollectUserDataModel_setDateTimeRangeEndDateLabel(
-        env, jmodel,
-        ConvertUTF8ToJavaString(
-            env, collect_user_data_options->date_time_range.end_date_label()));
-    Java_AssistantCollectUserDataModel_setDateTimeRangeEndTimeLabel(
-        env, jmodel,
-        ConvertUTF8ToJavaString(
-            env, collect_user_data_options->date_time_range.end_time_label()));
-    Java_AssistantCollectUserDataModel_setDateTimeRangeDateNotSetErrorMessage(
-        env, jmodel,
-        ConvertUTF8ToJavaString(
-            env,
-            collect_user_data_options->date_time_range.date_not_set_error()));
-    Java_AssistantCollectUserDataModel_setDateTimeRangeTimeNotSetErrorMessage(
-        env, jmodel,
-        ConvertUTF8ToJavaString(
-            env,
-            collect_user_data_options->date_time_range.time_not_set_error()));
   }
   Java_AssistantCollectUserDataModel_setTermsRequireReviewText(
       env, jmodel,
@@ -1590,45 +1484,6 @@ void UiControllerAndroid::OnUserDataChanged(
         env, jmodel, web_contents, jselected_card, jselected_billing_address,
         base::android::ToJavaArrayOfStrings(
             env, selected_payment_instrument_errors));
-  }
-
-  if (field_change == UserData::FieldChange::ALL ||
-      field_change == UserData::FieldChange::DATE_TIME_RANGE_START) {
-    if (user_data.date_time_range_start_date_.has_value()) {
-      Java_AssistantCollectUserDataModel_setDateTimeRangeStartDate(
-          env, jmodel,
-          CreateJavaDate(env, *user_data.date_time_range_start_date_));
-    } else {
-      Java_AssistantCollectUserDataModel_clearDateTimeRangeStartDate(env,
-                                                                     jmodel);
-    }
-
-    if (user_data.date_time_range_start_timeslot_.has_value()) {
-      Java_AssistantCollectUserDataModel_setDateTimeRangeStartTimeSlot(
-          env, jmodel, *user_data.date_time_range_start_timeslot_);
-    } else {
-      Java_AssistantCollectUserDataModel_clearDateTimeRangeStartTimeSlot(
-          env, jmodel);
-    }
-  }
-
-  if (field_change == UserData::FieldChange::ALL ||
-      field_change == UserData::FieldChange::DATE_TIME_RANGE_END) {
-    if (user_data.date_time_range_end_date_.has_value()) {
-      Java_AssistantCollectUserDataModel_setDateTimeRangeEndDate(
-          env, jmodel,
-          CreateJavaDate(env, *user_data.date_time_range_end_date_));
-    } else {
-      Java_AssistantCollectUserDataModel_clearDateTimeRangeEndDate(env, jmodel);
-    }
-
-    if (user_data.date_time_range_end_timeslot_.has_value()) {
-      Java_AssistantCollectUserDataModel_setDateTimeRangeEndTimeSlot(
-          env, jmodel, *user_data.date_time_range_end_timeslot_);
-    } else {
-      Java_AssistantCollectUserDataModel_clearDateTimeRangeEndTimeSlot(env,
-                                                                       jmodel);
-    }
   }
 
   if (field_change == UserData::FieldChange::ALL ||

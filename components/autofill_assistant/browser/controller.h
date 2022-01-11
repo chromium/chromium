@@ -243,13 +243,6 @@ class Controller : public ScriptExecutorDelegate,
   void OnTextLinkClicked(int link) override;
   void OnFormActionLinkClicked(int link) override;
   void OnTtsButtonClicked() override;
-  void SetDateTimeRangeStartDate(
-      const absl::optional<DateProto>& date) override;
-  void SetDateTimeRangeStartTimeSlot(
-      const absl::optional<int>& timeslot_index) override;
-  void SetDateTimeRangeEndDate(const absl::optional<DateProto>& date) override;
-  void SetDateTimeRangeEndTimeSlot(
-      const absl::optional<int>& timeslot_index) override;
   void SetAdditionalValue(const std::string& client_memory_key,
                           const ValueProto& value) override;
   void GetTouchableArea(std::vector<RectF>* area) const override;

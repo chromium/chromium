@@ -39,18 +39,6 @@ public interface AssistantCollectUserDataDelegate {
             @Nullable AssistantCollectUserDataModel.LoginChoiceModel loginChoiceModel,
             @AssistantUserDataEventType int eventType);
 
-    /** The start date of the date/time range has changed. */
-    void onDateTimeRangeStartDateChanged(@Nullable AssistantDateTime date);
-
-    /** The start time of the date/time range has changed. */
-    void onDateTimeRangeStartTimeSlotChanged(@Nullable Integer index);
-
-    /** The start date of the date/time range has changed. */
-    void onDateTimeRangeEndDateChanged(@Nullable AssistantDateTime date);
-
-    /** The end time of the date/time range has changed. */
-    void onDateTimeRangeEndTimeSlotChanged(@Nullable Integer index);
-
     /** The value of a key/value pair has changed. */
     void onKeyValueChanged(String key, AssistantValue value);
 

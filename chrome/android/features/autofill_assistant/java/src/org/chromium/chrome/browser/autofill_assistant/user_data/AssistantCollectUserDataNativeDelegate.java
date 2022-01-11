@@ -100,68 +100,6 @@ public class AssistantCollectUserDataNativeDelegate implements AssistantCollectU
     }
 
     @Override
-    public void onDateTimeRangeStartDateChanged(@Nullable AssistantDateTime date) {
-        if (mNativeAssistantCollectUserDataDelegate != 0) {
-            if (date != null) {
-                AssistantCollectUserDataNativeDelegateJni.get().onDateTimeRangeStartDateChanged(
-                        mNativeAssistantCollectUserDataDelegate,
-                        AssistantCollectUserDataNativeDelegate.this, date.getYear(),
-                        date.getMonth(), date.getDay());
-            } else {
-                AssistantCollectUserDataNativeDelegateJni.get().onDateTimeRangeStartDateCleared(
-                        mNativeAssistantCollectUserDataDelegate,
-                        AssistantCollectUserDataNativeDelegate.this);
-            }
-        }
-    }
-
-    @Override
-    public void onDateTimeRangeStartTimeSlotChanged(@Nullable Integer index) {
-        if (mNativeAssistantCollectUserDataDelegate != 0) {
-            if (index != null) {
-                AssistantCollectUserDataNativeDelegateJni.get().onDateTimeRangeStartTimeSlotChanged(
-                        mNativeAssistantCollectUserDataDelegate,
-                        AssistantCollectUserDataNativeDelegate.this, (int) index);
-            } else {
-                AssistantCollectUserDataNativeDelegateJni.get().onDateTimeRangeStartTimeSlotCleared(
-                        mNativeAssistantCollectUserDataDelegate,
-                        AssistantCollectUserDataNativeDelegate.this);
-            }
-        }
-    }
-
-    @Override
-    public void onDateTimeRangeEndDateChanged(@Nullable AssistantDateTime date) {
-        if (mNativeAssistantCollectUserDataDelegate != 0) {
-            if (date != null) {
-                AssistantCollectUserDataNativeDelegateJni.get().onDateTimeRangeEndDateChanged(
-                        mNativeAssistantCollectUserDataDelegate,
-                        AssistantCollectUserDataNativeDelegate.this, date.getYear(),
-                        date.getMonth(), date.getDay());
-            } else {
-                AssistantCollectUserDataNativeDelegateJni.get().onDateTimeRangeEndDateCleared(
-                        mNativeAssistantCollectUserDataDelegate,
-                        AssistantCollectUserDataNativeDelegate.this);
-            }
-        }
-    }
-
-    @Override
-    public void onDateTimeRangeEndTimeSlotChanged(@Nullable Integer index) {
-        if (mNativeAssistantCollectUserDataDelegate != 0) {
-            if (index != null) {
-                AssistantCollectUserDataNativeDelegateJni.get().onDateTimeRangeEndTimeSlotChanged(
-                        mNativeAssistantCollectUserDataDelegate,
-                        AssistantCollectUserDataNativeDelegate.this, (int) index);
-            } else {
-                AssistantCollectUserDataNativeDelegateJni.get().onDateTimeRangeEndTimeSlotCleared(
-                        mNativeAssistantCollectUserDataDelegate,
-                        AssistantCollectUserDataNativeDelegate.this);
-            }
-        }
-    }
-
-    @Override
     public void onKeyValueChanged(String key, AssistantValue value) {
         if (mNativeAssistantCollectUserDataDelegate != 0) {
             AssistantCollectUserDataNativeDelegateJni.get().onKeyValueChanged(
@@ -202,22 +140,6 @@ public class AssistantCollectUserDataNativeDelegate implements AssistantCollectU
                 AssistantCollectUserDataNativeDelegate caller, int link);
         void onLoginChoiceChanged(long nativeAssistantCollectUserDataDelegate,
                 AssistantCollectUserDataNativeDelegate caller, String choice, int eventType);
-        void onDateTimeRangeStartDateChanged(long nativeAssistantCollectUserDataDelegate,
-                AssistantCollectUserDataNativeDelegate caller, int year, int month, int day);
-        void onDateTimeRangeStartTimeSlotChanged(long nativeAssistantCollectUserDataDelegate,
-                AssistantCollectUserDataNativeDelegate caller, int index);
-        void onDateTimeRangeEndDateChanged(long nativeAssistantCollectUserDataDelegate,
-                AssistantCollectUserDataNativeDelegate caller, int year, int month, int day);
-        void onDateTimeRangeEndTimeSlotChanged(long nativeAssistantCollectUserDataDelegate,
-                AssistantCollectUserDataNativeDelegate caller, int index);
-        void onDateTimeRangeStartDateCleared(long nativeAssistantCollectUserDataDelegate,
-                AssistantCollectUserDataNativeDelegate caller);
-        void onDateTimeRangeStartTimeSlotCleared(long nativeAssistantCollectUserDataDelegate,
-                AssistantCollectUserDataNativeDelegate caller);
-        void onDateTimeRangeEndDateCleared(long nativeAssistantCollectUserDataDelegate,
-                AssistantCollectUserDataNativeDelegate caller);
-        void onDateTimeRangeEndTimeSlotCleared(long nativeAssistantCollectUserDataDelegate,
-                AssistantCollectUserDataNativeDelegate caller);
         void onKeyValueChanged(long nativeAssistantCollectUserDataDelegate,
                 AssistantCollectUserDataNativeDelegate caller, String key, AssistantValue value);
         void onInputTextFocusChanged(long nativeAssistantCollectUserDataDelegate,

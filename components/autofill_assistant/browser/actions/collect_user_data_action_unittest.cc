@@ -118,12 +118,6 @@ void AddCompleteCardEntriesToMap(
   (*values)[55] = MakeAutofillEntry("2050");
 }
 
-void SetDateProto(DateProto* proto, int year, int month, int day) {
-  proto->set_year(year);
-  proto->set_month(month);
-  proto->set_day(day);
-}
-
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::AnyOf;
@@ -673,36 +667,9 @@ TEST_F(CollectUserDataActionTest, EarlyActionReturnIfOnlyLoginRequested) {
     action.ProcessAction(callback_.Get());
   }
 
-  // Date/time range info requested, no early return.
+  // Generic UI model identifier set, no early return.
   proto->clear_request_payment_method();
   proto->clear_billing_address_name();
-  auto* date_time_range = proto->mutable_date_time_range();
-  SetDateProto(date_time_range->mutable_start_date(), 2020, 1, 1);
-  SetDateProto(date_time_range->mutable_end_date(), 2020, 1, 15);
-  SetDateProto(date_time_range->mutable_min_date(), 2020, 1, 1);
-  SetDateProto(date_time_range->mutable_max_date(), 2020, 12, 31);
-  date_time_range->set_start_time_slot(0);
-  date_time_range->set_end_time_slot(0);
-  date_time_range->set_start_date_label("Start date");
-  date_time_range->set_end_date_label("End date");
-  date_time_range->set_start_time_label("Start time");
-  date_time_range->set_end_time_label("End time");
-  date_time_range->set_date_not_set_error("Date not set");
-  date_time_range->set_time_not_set_error("Time not set");
-  auto* time_slot = date_time_range->add_time_slots();
-  time_slot->set_label("08:00 AM");
-  time_slot->set_comparison_value(0);
-  time_slot = date_time_range->add_time_slots();
-  time_slot->set_label("09:00 AM");
-  time_slot->set_comparison_value(1);
-  {
-    EXPECT_CALL(mock_action_delegate_, CollectUserData(_)).Times(1);
-    CollectUserDataAction action(&mock_action_delegate_, action_proto);
-    action.ProcessAction(callback_.Get());
-  }
-
-  // Generic UI model identifier set, no early return.
-  proto->clear_date_time_range();
   proto->set_additional_model_identifier_to_check("identifier");
   {
     EXPECT_CALL(mock_action_delegate_, CollectUserData(_)).Times(1);
@@ -1222,75 +1189,6 @@ TEST_F(CollectUserDataActionTest, UserDataCompleteShippingAddress) {
                                                         options));
 }
 
-TEST_F(CollectUserDataActionTest, UserDataCompleteDateTimeRange) {
-  UserData user_data;
-  CollectUserDataOptions options;
-  options.request_date_time_range = true;
-  auto* time_slot = options.date_time_range.add_time_slots();
-  time_slot->set_label("08:00 AM");
-  time_slot->set_comparison_value(0);
-  time_slot = options.date_time_range.add_time_slots();
-  time_slot->set_label("09:00 AM");
-  time_slot->set_comparison_value(1);
-
-  DateProto start_date;
-  SetDateProto(&start_date, 2020, 1, 1);
-  DateProto end_date;
-  SetDateProto(&end_date, 2020, 1, 15);
-  user_data.date_time_range_start_date_ = start_date;
-  user_data.date_time_range_end_date_ = end_date;
-  user_data.date_time_range_start_timeslot_ = 0;
-  user_data.date_time_range_end_timeslot_ = 0;
-
-  // Initial selection is valid.
-  EXPECT_TRUE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
-                                                        options));
-
-  // Start date not before end date is not ok.
-  SetDateProto(&*user_data.date_time_range_start_date_, 2020, 2, 7);
-  SetDateProto(&*user_data.date_time_range_end_date_, 2020, 1, 15);
-  EXPECT_FALSE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
-                                                         options));
-
-  // Same date with end time > start time is ok.
-  SetDateProto(&*user_data.date_time_range_start_date_, 2020, 1, 15);
-  SetDateProto(&*user_data.date_time_range_end_date_, 2020, 1, 15);
-  user_data.date_time_range_start_timeslot_ = 0;
-  user_data.date_time_range_end_timeslot_ = 1;
-  EXPECT_TRUE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
-                                                        options));
-
-  // Same date and same time is not ok.
-  user_data.date_time_range_start_timeslot_ = 0;
-  user_data.date_time_range_end_timeslot_ = 0;
-  EXPECT_FALSE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
-                                                         options));
-
-  // Same date and start time > end time is not ok.
-  user_data.date_time_range_start_timeslot_ = 1;
-  user_data.date_time_range_end_timeslot_ = 0;
-  EXPECT_FALSE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
-                                                         options));
-
-  // Start date before end date is ok.
-  SetDateProto(&*user_data.date_time_range_start_date_, 2020, 3, 1);
-  SetDateProto(&*user_data.date_time_range_end_date_, 2020, 3, 31);
-  user_data.date_time_range_start_timeslot_ = 0;
-  user_data.date_time_range_end_timeslot_ = 1;
-  EXPECT_TRUE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
-                                                        options));
-  user_data.date_time_range_start_timeslot_ = 1;
-  user_data.date_time_range_end_timeslot_ = 0;
-  EXPECT_TRUE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
-                                                        options));
-
-  // Proper date comparison across years.
-  SetDateProto(&*user_data.date_time_range_start_date_, 2019, 11, 10);
-  SetDateProto(&*user_data.date_time_range_end_date_, 2020, 1, 5);
-  EXPECT_TRUE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
-                                                        options));
-}
-
 TEST_F(CollectUserDataActionTest, UserDataCompleteChecksGenericUiCompleteness) {
   UserData user_data;
   CollectUserDataOptions options;
@@ -1312,71 +1210,6 @@ TEST_F(CollectUserDataActionTest, UserDataCompleteChecksGenericUiCompleteness) {
   user_model_.SetValue("generic_ui_valid", valid);
   EXPECT_TRUE(CollectUserDataAction::IsUserDataComplete(user_data, user_model_,
                                                         options));
-}
-
-TEST_F(CollectUserDataActionTest, SelectDateTimeRange) {
-  ActionProto action_proto;
-  auto* collect_user_data_proto = action_proto.mutable_collect_user_data();
-  collect_user_data_proto->set_request_terms_and_conditions(false);
-
-  auto* date_time_range = collect_user_data_proto->mutable_date_time_range();
-  SetDateProto(date_time_range->mutable_start_date(), 2020, 1, 1);
-  SetDateProto(date_time_range->mutable_end_date(), 2020, 1, 15);
-  SetDateProto(date_time_range->mutable_min_date(), 2020, 1, 1);
-  SetDateProto(date_time_range->mutable_max_date(), 2020, 12, 31);
-  date_time_range->set_start_time_slot(0);
-  date_time_range->set_end_time_slot(0);
-  date_time_range->set_start_date_label("Start date");
-  date_time_range->set_end_date_label("End date");
-  date_time_range->set_start_time_label("Start time");
-  date_time_range->set_end_time_label("End time");
-  date_time_range->set_date_not_set_error("Date not set");
-  date_time_range->set_time_not_set_error("Time not set");
-
-  auto* time_slot = date_time_range->add_time_slots();
-  time_slot->set_label("08:00 AM");
-  time_slot->set_comparison_value(0);
-  time_slot = date_time_range->add_time_slots();
-  time_slot->set_label("09:00 AM");
-  time_slot->set_comparison_value(1);
-
-  DateProto actual_pickup_date;
-  DateProto actual_return_date;
-  SetDateProto(&actual_pickup_date, 2020, 10, 21);
-  SetDateProto(&actual_return_date, 2020, 10, 25);
-  int actual_pickup_time = 1;
-  int actual_return_time = 1;
-  ON_CALL(mock_action_delegate_, CollectUserData(_))
-      .WillByDefault(
-          Invoke([&](CollectUserDataOptions* collect_user_data_options) {
-            user_data_.date_time_range_start_date_ = actual_pickup_date;
-            user_data_.date_time_range_start_timeslot_ = actual_pickup_time;
-            user_data_.date_time_range_end_date_ = actual_return_date;
-            user_data_.date_time_range_end_timeslot_ = actual_return_time;
-            std::move(collect_user_data_options->confirm_callback)
-                .Run(&user_data_, &user_model_);
-          }));
-
-  EXPECT_CALL(
-      callback_,
-      Run(Pointee(AllOf(
-          Property(&ProcessedActionProto::status, ACTION_APPLIED),
-          Property(&ProcessedActionProto::collect_user_data_result,
-                   Property(&CollectUserDataResultProto::date_range_start_date,
-                            Eq(actual_pickup_date))),
-          Property(
-              &ProcessedActionProto::collect_user_data_result,
-              Property(&CollectUserDataResultProto::date_range_start_timeslot,
-                       Eq(actual_pickup_time))),
-          Property(&ProcessedActionProto::collect_user_data_result,
-                   Property(&CollectUserDataResultProto::date_range_end_date,
-                            Eq(actual_return_date))),
-          Property(
-              &ProcessedActionProto::collect_user_data_result,
-              Property(&CollectUserDataResultProto::date_range_end_timeslot,
-                       Eq(actual_return_time)))))));
-  CollectUserDataAction action(&mock_action_delegate_, action_proto);
-  action.ProcessAction(callback_.Get());
 }
 
 TEST_F(CollectUserDataActionTest, StaticSectionValid) {

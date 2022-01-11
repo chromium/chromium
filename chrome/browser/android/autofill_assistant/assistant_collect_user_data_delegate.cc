@@ -121,62 +121,6 @@ void AssistantCollectUserDataDelegate::OnLoginChoiceChanged(
   ui_controller_->OnLoginChoiceChanged(identifier);
 }
 
-void AssistantCollectUserDataDelegate::OnDateTimeRangeStartDateChanged(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    jint year,
-    jint month,
-    jint day) {
-  ui_controller_->OnDateTimeRangeStartDateChanged(year, month, day);
-}
-
-void AssistantCollectUserDataDelegate::OnDateTimeRangeStartDateCleared(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) {
-  ui_controller_->OnDateTimeRangeStartDateCleared();
-}
-
-void AssistantCollectUserDataDelegate::OnDateTimeRangeStartTimeSlotChanged(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    jint index) {
-  ui_controller_->OnDateTimeRangeStartTimeSlotChanged(index);
-}
-
-void AssistantCollectUserDataDelegate::OnDateTimeRangeStartTimeSlotCleared(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) {
-  ui_controller_->OnDateTimeRangeStartTimeSlotCleared();
-}
-
-void AssistantCollectUserDataDelegate::OnDateTimeRangeEndDateChanged(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    jint year,
-    jint month,
-    jint day) {
-  ui_controller_->OnDateTimeRangeEndDateChanged(year, month, day);
-}
-
-void AssistantCollectUserDataDelegate::OnDateTimeRangeEndDateCleared(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) {
-  ui_controller_->OnDateTimeRangeEndDateCleared();
-}
-
-void AssistantCollectUserDataDelegate::OnDateTimeRangeEndTimeSlotChanged(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller,
-    jint index) {
-  ui_controller_->OnDateTimeRangeEndTimeSlotChanged(index);
-}
-
-void AssistantCollectUserDataDelegate::OnDateTimeRangeEndTimeSlotCleared(
-    JNIEnv* env,
-    const base::android::JavaParamRef<jobject>& jcaller) {
-  ui_controller_->OnDateTimeRangeEndTimeSlotCleared();
-}
-
 void AssistantCollectUserDataDelegate::OnKeyValueChanged(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jcaller,

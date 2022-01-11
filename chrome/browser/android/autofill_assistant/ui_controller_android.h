@@ -162,14 +162,6 @@ class UiControllerAndroid : public ControllerObserver {
   void OnLoginChoiceChanged(const std::string& identifier);
   void OnTextLinkClicked(int link);
   void OnFormActionLinkClicked(int link);
-  void OnDateTimeRangeStartDateChanged(int year, int month, int day);
-  void OnDateTimeRangeStartDateCleared();
-  void OnDateTimeRangeStartTimeSlotChanged(int index);
-  void OnDateTimeRangeStartTimeSlotCleared();
-  void OnDateTimeRangeEndDateChanged(int year, int month, int day);
-  void OnDateTimeRangeEndDateCleared();
-  void OnDateTimeRangeEndTimeSlotChanged(int index);
-  void OnDateTimeRangeEndTimeSlotCleared();
   void OnKeyValueChanged(const std::string& key, const ValueProto& value);
   void OnInputTextFocusChanged(bool is_text_focused);
 
