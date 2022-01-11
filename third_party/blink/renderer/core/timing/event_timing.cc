@@ -46,7 +46,7 @@ bool ShouldReportForEventTiming(WindowPerformance* performance) {
 
 // Record FID even when there's no event listener.
 const base::Feature kFirstInputDelayWithoutEventListener{
-    "FirstInputDelayWithoutEventListener", base::FEATURE_DISABLED_BY_DEFAULT};
+    "FirstInputDelayWithoutEventListener", base::FEATURE_ENABLED_BY_DEFAULT};
 
 EventTiming::EventTiming(base::TimeTicks processing_start,
                          WindowPerformance* performance,

@@ -38,7 +38,7 @@ constexpr base::TimeDelta kFirstInputDelayTraceEventThreshold =
 
 // A fix for FID computation.
 const base::Feature kFixFirstInputDelayForDesktop{
-    "FixFirstInputDelayForDesktop", base::FEATURE_DISABLED_BY_DEFAULT};
+    "FixFirstInputDelayForDesktop", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Required length of main thread and network quiet window for determining
 // Time to Interactive.
