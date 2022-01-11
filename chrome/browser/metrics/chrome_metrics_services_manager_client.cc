@@ -41,6 +41,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 #if BUILDFLAG(IS_ANDROID)
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/android/metrics/uma_session_stats.h"
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
@@ -61,7 +62,6 @@
 #include "components/metrics/structured/neutrino_logging.h"       // nogncheck
 #include "components/metrics/structured/neutrino_logging_util.h"  // nogncheck
 #include "components/metrics/structured/recorder.h"               // nogncheck
-
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -301,6 +301,7 @@ ChromeMetricsServicesManagerClient::GetMetricsStateManager() {
     startup_visibility = UmaSessionStats::HasVisibleActivity()
                              ? metrics::StartupVisibility::kForeground
                              : metrics::StartupVisibility::kBackground;
+    base::UmaHistogramEnumeration("UMA.StartupVisibility", startup_visibility);
 #else
     startup_visibility = metrics::StartupVisibility::kForeground;
 #endif  // BUILDFLAG(IS_ANDROID)

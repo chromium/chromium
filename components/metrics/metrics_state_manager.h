@@ -37,10 +37,14 @@ class MetricsProvider;
 // which the browser process starts; does some work, e.g. servicing a sync; and
 // ends without ever becoming visible. Note that the point in startup at which
 // this value is determined is likely before the UI is visible.
+//
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class StartupVisibility {
   kUnknown = 0,
   kBackground = 1,
   kForeground = 2,
+  kMaxValue = kForeground,
 };
 
 // Denotes the type of EntropyProvider to use for one-time randomization.

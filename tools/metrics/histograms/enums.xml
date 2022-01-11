@@ -84048,6 +84048,12 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Reset migration"/>
 </enum>
 
+<enum name="StartupVisibility">
+  <int value="0" label="Unknown"/>
+  <int value="1" label="Background"/>
+  <int value="2" label="Foreground"/>
+</enum>
+
 <enum name="State">
   <int value="0" label="Canceled"/>
   <int value="1" label="Dropped"/>
