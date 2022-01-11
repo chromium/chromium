@@ -409,3 +409,24 @@ async function workerFetchTest(t, { source, target, expected }) {
   assert_equals(status, expected.status, "response status");
   assert_equals(message, expected.message, "response body");
 }
+
+async function sharedWorkerFetchTest(t, { source, target, expected }) {
+  const targetUrl =
+      resolveUrl("resources/preflight.py", targetResolveOptions(target));
+
+  const sourceUrl =
+      resolveUrl("resources/shared-fetcher.js", sourceResolveOptions(source));
+  sourceUrl.searchParams.append("url", targetUrl.href);
+
+  const fetcherUrl = new URL("shared-worker-fetcher.html", sourceUrl);
+
+  const reply = futureMessage();
+  const iframe = await appendIframe(t, document, fetcherUrl);
+
+  iframe.contentWindow.postMessage({ url: sourceUrl.href }, "*");
+
+  const { error, status, message } = await reply;
+  assert_equals(error, expected.error, "fetch error");
+  assert_equals(status, expected.status, "response status");
+  assert_equals(message, expected.message, "response body");
+}
