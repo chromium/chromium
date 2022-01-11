@@ -167,8 +167,6 @@ android_resources("java_resources") {
     "java/res/drawable/password_checkup_warning.xml",
     "java/res/layout/password_check_edit_fragment.xml",
     "java/res/menu/password_check_editor_action_bar_menu.xml",
-    "java/res/values-night/colors.xml",
-    "java/res/values/colors.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",
