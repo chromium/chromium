@@ -20,7 +20,6 @@ missing,chrome/android/java/src/org/chromium/chrome/browser/download/OMADownload
 missing,chrome/android/java/src/org/chromium/chrome/browser/feedback/ConnectivityChecker.java
 missing,chrome/android/java/src/org/chromium/chrome/browser/net/connectivitydetector/ConnectivityDetector.java
 missing,chrome/android/java/src/org/chromium/chrome/browser/offlinepages/measurements/OfflineMeasurementsBackgroundTask.java
-missing,chrome/android/java/src/org/chromium/chrome/browser/omaha/OmahaBase.java
 missing,chrome/browser/android/compositor/scene_layer/contextual_search_scene_layer.cc
 missing,chrome/browser/android/feedback/connectivity_checker.cc
 missing,chrome/browser/android/webapk/webapk_installer.cc

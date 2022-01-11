@@ -402,6 +402,7 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="chrome_variations_service"/>
     </sender>
     <sender name="Updates">
+      <traffic_annotation unique_id="omaha_client_android_uc"/>
       <traffic_annotation unique_id="update_client"/>
     </sender>
     <sender name="Crash Reports">

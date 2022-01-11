@@ -445,11 +445,31 @@ public class OmahaBase {
      */
     @VisibleForTesting
     protected HttpURLConnection createConnection() throws RequestFailureException {
+        // TODO(crbug.com/1139505): Remove the note about UID when UID fallback is removed.
+        NetworkTrafficAnnotationTag annotation = NetworkTrafficAnnotationTag.createComplete(
+                "omaha_client_android_uc",
+                "semantics {"
+                        + "  sender: 'Updates'"
+                        + "  description: "
+                        + "    'This traffic checks whether the browser is up-to-date and '"
+                        + "    'provides basic browser telemetry using the Omaha protocol.'"
+                        + "  trigger: 'Manual or automatic checks for updates.'"
+                        + "  data:"
+                        + "    'Various OS and browser parameters such as version, '"
+                        + "    'architecture, channel, and the calendar date of the previous '"
+                        + "    'communication. '"
+                        + "    'A unique identifier for the device may be transmitted.'"
+                        + "  destination: GOOGLE_OWNED_SERVICE"
+                        + "}"
+                        + "policy {"
+                        + "  cookies_allowed: NO"
+                        + "  policy_exception_justification: 'Not implemented.'"
+                        + "  setting: 'This feature cannot be disabled.'"
+                        + "}");
         try {
             URL url = new URL(getRequestGenerator().getServerUrl());
             HttpURLConnection connection =
-                    (HttpURLConnection) ChromiumNetworkAdapter.openConnection(
-                            url, NetworkTrafficAnnotationTag.MISSING_TRAFFIC_ANNOTATION);
+                    (HttpURLConnection) ChromiumNetworkAdapter.openConnection(url, annotation);
             connection.setConnectTimeout(MS_CONNECTION_TIMEOUT);
             connection.setReadTimeout(MS_CONNECTION_TIMEOUT);
             return connection;
