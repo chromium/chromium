@@ -21,6 +21,17 @@ static_library("cpp") {
   ]
 }
 
+# Create separate build target to avoid circular dependencies with
+# //ash/services/nearby/public/mojom
+static_library("tcp_server_socket_port") {
+  sources = [
+    "tcp_server_socket_port.cc",
+    "tcp_server_socket_port.h",
+  ]
+
+  deps = [ "//base" ]
+}
+
 static_library("test_support") {
   testonly = true
 
@@ -41,5 +52,17 @@ static_library("test_support") {
     "//base",
     "//mojo/public/cpp/bindings/",
     "//testing/gmock",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "tcp_server_socket_port_unittest.cc" ]
+
+  deps = [
+    ":tcp_server_socket_port",
+    "//base",
+    "//testing/gtest",
   ]
 }

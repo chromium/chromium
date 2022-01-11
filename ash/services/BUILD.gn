@@ -18,6 +18,7 @@ source_set("unit_tests") {
   deps = [
     "//ash/services/ime:services_unittests",
     "//ash/services/ime:unit_tests",
+    "//ash/services/nearby/public/cpp:unit_tests",
     "//ash/services/quick_pair:unit_tests",
     "//chromeos/services/machine_learning/public/cpp:ash_unit_tests",
   ]

@@ -4,6 +4,7 @@
 
 #include "chrome/services/sharing/nearby/platform/wifi_lan_medium.h"
 
+#include "ash/services/nearby/public/cpp/tcp_server_socket_port.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/logging.h"
@@ -228,18 +229,34 @@ void WifiLanMedium::DoListenForService(
 
   pending_listen_waitable_events_.insert(listen_waitable_event);
 
+  // TcpServerSocketPort enforces any necessary restrictions on port number
+  // ranges. If |port| is 0, choose a random port from the acceptable range.
+  absl::optional<ash::nearby::TcpServerSocketPort> tcp_port =
+      port == 0 ? absl::make_optional<ash::nearby::TcpServerSocketPort>(
+                      ash::nearby::TcpServerSocketPort::Random())
+                : ash::nearby::TcpServerSocketPort::FromInt(port);
+  if (!tcp_port) {
+    LOG(WARNING)
+        << "WifiLanMedium::" << __func__
+        << ": Failed to construct a TcpServerSocketPort from port number "
+        << port;
+    FinishListenAttempt(listen_waitable_event);
+    return;
+  }
+
   // TODO(https://crbug.com/1261238): Implement local IP address fetching. We
   // temporarily use this hardcoding for unit tests.
   net::IPAddress address(192, 168, 86, 75);
   OnLocalIpAddressFetched(server_socket_parameters, listen_waitable_event,
-                          net::IPEndPoint(address, port));
+                          address, *tcp_port);
 }
 
 void WifiLanMedium::OnLocalIpAddressFetched(
     absl::optional<WifiLanServerSocket::ServerSocketParameters>*
         server_socket_parameters,
     base::WaitableEvent* listen_waitable_event,
-    const net::IPEndPoint& local_end_point) {
+    const net::IPAddress& ip_address,
+    const ash::nearby::TcpServerSocketPort& port) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   // TODO(https://crbug.com/1261238): Process fetched local IP address and log
@@ -248,12 +265,13 @@ void WifiLanMedium::OnLocalIpAddressFetched(
   mojo::PendingRemote<network::mojom::TCPServerSocket> tcp_server_socket;
   auto receiver = tcp_server_socket.InitWithNewPipeAndPassReceiver();
   network_context_->CreateTCPServerSocket(
-      local_end_point, kBacklog,
+      net::IPEndPoint(ip_address, port.port()), kBacklog,
       net::MutableNetworkTrafficAnnotationTag(kTrafficAnnotation),
       std::move(receiver),
       base::BindOnce(&WifiLanMedium::OnTcpServerSocketCreated,
                      base::Unretained(this), server_socket_parameters,
-                     listen_waitable_event, std::move(tcp_server_socket)));
+                     listen_waitable_event, std::move(tcp_server_socket),
+                     ip_address, port));
 }
 
 void WifiLanMedium::OnTcpServerSocketCreated(
@@ -261,6 +279,8 @@ void WifiLanMedium::OnTcpServerSocketCreated(
         server_socket_parameters,
     base::WaitableEvent* listen_waitable_event,
     mojo::PendingRemote<network::mojom::TCPServerSocket> tcp_server_socket,
+    const net::IPAddress& ip_address,
+    const ash::nearby::TcpServerSocketPort& port,
     int32_t result,
     const absl::optional<net::IPEndPoint>& local_addr) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -274,14 +294,27 @@ void WifiLanMedium::OnTcpServerSocketCreated(
     return;
   }
 
-  // TODO(https://crbug.com/1261238): Open firewall hole.
   DCHECK(tcp_server_socket);
   DCHECK(local_addr);
   VLOG(1) << "WifiLanMedium::" << __func__
           << ": Created TCP server socket. local_addr="
           << local_addr->ToString();
+
+  // TODO(https://crbug.com/1261238): Log metric.
+  if (local_addr->address() != ip_address ||
+      local_addr->port() != port.port()) {
+    LOG(WARNING) << "WifiLanMedium::" << __func__
+                 << ": TCP server socket's IP:port disagrees with "
+                    "input values. in="
+                 << ip_address.ToString() << ":" << port.port()
+                 << ", out=" << local_addr->ToString();
+    FinishListenAttempt(listen_waitable_event);
+    return;
+  }
+
+  // TODO(https://crbug.com/1261238): Open firewall hole.
   OnFirewallHoleCreated(server_socket_parameters, listen_waitable_event,
-                        std::move(tcp_server_socket), local_addr);
+                        std::move(tcp_server_socket), *local_addr);
 }
 
 void WifiLanMedium::OnFirewallHoleCreated(
@@ -289,13 +322,13 @@ void WifiLanMedium::OnFirewallHoleCreated(
         server_socket_parameters,
     base::WaitableEvent* listen_waitable_event,
     mojo::PendingRemote<network::mojom::TCPServerSocket> tcp_server_socket,
-    const absl::optional<net::IPEndPoint>& local_addr) {
+    const net::IPEndPoint& local_addr) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
 
   // TODO(https://crbug.com/1261238): Process firewall hole, log metric, and add
   // firewall hole to server socket parameters.
 
-  *server_socket_parameters = {*local_addr, std::move(tcp_server_socket)};
+  *server_socket_parameters = {local_addr, std::move(tcp_server_socket)};
 
   FinishListenAttempt(listen_waitable_event);
 }

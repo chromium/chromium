@@ -4,6 +4,7 @@
 
 #include "chrome/services/sharing/nearby/platform/wifi_lan_medium.h"
 
+#include "ash/services/nearby/public/cpp/tcp_server_socket_port.h"
 #include "base/task/thread_pool.h"
 #include "base/test/task_environment.h"
 #include "chrome/services/sharing/nearby/platform/fake_network_context.h"
@@ -12,6 +13,7 @@
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace location {
 namespace nearby {
@@ -20,12 +22,12 @@ namespace chrome {
 namespace {
 
 const char kLocalIpString[] = "\xC0\xA8\x56\x4B";
-const int kLocalPort = 44444;
+const int kLocalPort = ash::nearby::TcpServerSocketPort::kMin;
 const net::IPEndPoint kLocalAddress(net::IPAddress(192, 168, 86, 75),
                                     kLocalPort);
 
 const char kRemoteIpString[] = "\xC0\xA8\x56\x3E";
-const int kRemotePort = 33333;
+const int kRemotePort = ash::nearby::TcpServerSocketPort::kMax;
 
 }  // namespace
 
@@ -241,7 +243,7 @@ TEST_F(WifiLanMediumTest, Listen_Success_ConcurrentCalls) {
   run_loop.Run();
 }
 
-TEST_F(WifiLanMediumTest, Listen_Failure) {
+TEST_F(WifiLanMediumTest, Listen_Failure_CreateTcpServerSocket) {
   base::RunLoop run_loop;
   CallListenForServiceFromThreads(
       /*num_threads=*/1u,
@@ -252,7 +254,8 @@ TEST_F(WifiLanMediumTest, Listen_Failure) {
   run_loop.Run();
 }
 
-TEST_F(WifiLanMediumTest, Listen_Failure_ConcurrentCalls) {
+TEST_F(WifiLanMediumTest,
+       Listen_Failure_CreateTcpServerSocket_ConcurrentCalls) {
   const size_t kNumThreads = 3;
   base::RunLoop run_loop;
   CallListenForServiceFromThreads(
@@ -264,6 +267,11 @@ TEST_F(WifiLanMediumTest, Listen_Failure_ConcurrentCalls) {
     fake_network_context_->FinishNextCreateServerSocket(net::ERR_FAILED);
   }
   run_loop.Run();
+}
+
+TEST_F(WifiLanMediumTest, Listen_Failure_InvalidPort) {
+  base::ScopedAllowBaseSyncPrimitivesForTesting allow;
+  EXPECT_FALSE(wifi_lan_medium_->ListenForService(/*port=*/-1));
 }
 
 TEST_F(WifiLanMediumTest, Listen_DestroyWhileWaiting) {

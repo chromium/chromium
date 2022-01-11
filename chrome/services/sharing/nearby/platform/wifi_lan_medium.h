@@ -16,10 +16,18 @@
 #include "mojo/public/cpp/bindings/shared_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
 #include "net/base/address_list.h"
+#include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/nearby/src/cpp/platform/api/wifi_lan.h"
+
+namespace ash {
+namespace nearby {
+class TcpServerSocketPort;
+}  // namespace nearby
+}  // namespace ash
 
 namespace base {
 class SequencedTaskRunner;
@@ -89,12 +97,15 @@ class WifiLanMedium : public api::WifiLanMedium {
       absl::optional<WifiLanServerSocket::ServerSocketParameters>*
           server_socket_parameters,
       base::WaitableEvent* listen_waitable_event,
-      const net::IPEndPoint& local_end_point);
+      const net::IPAddress& ip_address,
+      const ash::nearby::TcpServerSocketPort& port);
   void OnTcpServerSocketCreated(
       absl::optional<WifiLanServerSocket::ServerSocketParameters>*
           server_socket_parameters,
       base::WaitableEvent* listen_waitable_event,
       mojo::PendingRemote<network::mojom::TCPServerSocket> tcp_server_socket,
+      const net::IPAddress& ip_address,
+      const ash::nearby::TcpServerSocketPort& port,
       int32_t result,
       const absl::optional<net::IPEndPoint>& local_addr);
   // TODO(https://crbug.com/1261238): Add firewall hole PendingRemote argument.
@@ -103,7 +114,7 @@ class WifiLanMedium : public api::WifiLanMedium {
           server_socket_parameters,
       base::WaitableEvent* listen_waitable_event,
       mojo::PendingRemote<network::mojom::TCPServerSocket> tcp_server_socket,
-      const absl::optional<net::IPEndPoint>& local_addr);
+      const net::IPEndPoint& local_addr);
   /*==========================================================================*/
 
   /*==========================================================================*/

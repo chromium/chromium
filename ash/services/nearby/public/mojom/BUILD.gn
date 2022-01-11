@@ -18,6 +18,7 @@ mojom("mojom") {
     "nearby_decoder.mojom",
     "nearby_decoder_types.mojom",
     "sharing.mojom",
+    "tcp_server_socket_port.mojom",
     "webrtc.mojom",
     "webrtc_signaling_messenger.mojom",
   ]
@@ -42,6 +43,18 @@ mojom("mojom") {
       traits_headers = [ "nearby_connections_mojom_traits.h" ]
       traits_sources = [ "nearby_connections_mojom_traits.cc" ]
       traits_deps = [ "//third_party/nearby:platform_api_types" ]
+    },
+    {
+      types = [
+        {
+          mojom = "sharing.mojom.TcpServerSocketPort"
+          cpp = "::ash::nearby::TcpServerSocketPort"
+        },
+      ]
+      traits_headers = [ "tcp_server_socket_port_mojom_traits.h" ]
+      traits_sources = [ "tcp_server_socket_port_mojom_traits.cc" ]
+      traits_deps =
+          [ "//ash/services/nearby/public/cpp:tcp_server_socket_port" ]
     },
   ]
 }
