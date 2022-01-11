@@ -24,10 +24,12 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "extensions/browser/extension_action.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
+#include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace extensions {
@@ -521,6 +523,90 @@ IN_PROC_BROWSER_TEST_F(FlagOffExtensionActionRunnerBrowserTest,
                        ScriptsExecuteWhenFlagAbsent_ExecuteScripts) {
   RunActiveScriptsTest("execute_scripts_all_hosts", ALL_HOSTS, EXECUTE_SCRIPT,
                        DONT_WITHHOLD_PERMISSIONS, DOES_NOT_REQUIRE_CONSENT);
+}
+
+class ExtensionActionRunnerFencedFrameBrowserTest
+    : public ExtensionActionRunnerBrowserTest {
+ public:
+  ExtensionActionRunnerFencedFrameBrowserTest() = default;
+  ~ExtensionActionRunnerFencedFrameBrowserTest() override = default;
+
+  ExtensionActionRunnerFencedFrameBrowserTest(
+      const ExtensionActionRunnerFencedFrameBrowserTest&) = delete;
+  ExtensionActionRunnerFencedFrameBrowserTest& operator=(
+      const ExtensionActionRunnerFencedFrameBrowserTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+    ExtensionActionRunnerBrowserTest::SetUpOnMainThread();
+  }
+
+ protected:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
+};
+
+// Tests that a fenced frame doesn't clear active extensions.
+IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerFencedFrameBrowserTest,
+                       FencedFrameDoesNotClearActiveExtensions) {
+  // Set a situation that |granted_extensions_| of ActiveTabPermissionGranter is
+  // not empty to test a fenced frame doesn't clear active extensions.
+  const Extension* extension = LoadExtension(
+      test_data_dir_.AppendASCII("blocked_actions/content_scripts"));
+  ASSERT_TRUE(extension);
+  ScriptingPermissionsModifier(profile(), extension)
+      .SetWithholdHostPermissions(true);
+
+  GURL initial_url = embedded_test_server()->GetURL("a.com", "/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ExtensionActionRunner* runner =
+      ExtensionActionRunner::GetForWebContents(web_contents);
+  ASSERT_TRUE(runner);
+
+  runner->set_default_bubble_close_action_for_testing(
+      std::make_unique<ToolbarActionsBarBubbleDelegate::CloseAction>(
+          ToolbarActionsBarBubbleDelegate::CLOSE_EXECUTE));
+
+  content::NavigationEntry* entry =
+      web_contents->GetController().GetLastCommittedEntry();
+  ASSERT_TRUE(entry);
+  const int first_nav_id = entry->GetUniqueID();
+
+  runner->RunAction(extension, true);
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+  entry = web_contents->GetController().GetLastCommittedEntry();
+  ASSERT_TRUE(entry);
+  EXPECT_GE(entry->GetUniqueID(), first_nav_id);
+  EXPECT_EQ("success", GetValue(web_contents));
+  EXPECT_FALSE(runner->WantsToRun(extension));
+
+  ActiveTabPermissionGranter* active_tab_granter =
+      TabHelper::FromWebContents(web_contents)->active_tab_permission_granter();
+  ASSERT_TRUE(active_tab_granter);
+  EXPECT_EQ(active_tab_granter->granted_extensions_.size(), 1U);
+
+  // The origin of |url| and |fenced_frame_url| should be different because
+  // ActiveTabPermissionGranter::DidFinishNavigation is only able to clear
+  // active extensions when the origins are different.
+  GURL fenced_frame_url =
+      embedded_test_server()->GetURL("b.com", "/fenced_frames/title1.html");
+  // Create a fenced frame and load the test url. Active extensions should not
+  // be cleared by the fenced frame navigation.
+  content::RenderFrameHost* fenced_frame_host =
+      fenced_frame_helper_.CreateFencedFrame(web_contents->GetMainFrame(),
+                                             fenced_frame_url);
+  ASSERT_TRUE(fenced_frame_host);
+  EXPECT_EQ(active_tab_granter->granted_extensions_.size(), 1U);
+
+  // Active extensions should be cleared after navigating a test url on the
+  // primary main frame.
+  GURL test_url = embedded_test_server()->GetURL("c.com", "/simple.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_url));
+  EXPECT_EQ(active_tab_granter->granted_extensions_.size(), 0U);
 }
 
 }  // namespace extensions

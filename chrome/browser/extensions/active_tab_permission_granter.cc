@@ -235,9 +235,6 @@ void ActiveTabPermissionGranter::RevokeForTesting() {
 void ActiveTabPermissionGranter::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   // Important: sub-frames don't get granted!
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (!navigation_handle->IsInPrimaryMainFrame() ||
       !navigation_handle->HasCommitted() ||
       navigation_handle->IsSameDocument()) {
@@ -245,16 +242,8 @@ void ActiveTabPermissionGranter::DidFinishNavigation(
   }
 
   // Only clear the granted permissions for cross-origin navigations.
-  // TODO(crbug.com/698985),  TODO(devlin): We likely shouldn't be using the
-  // visible entry. Instead, we should use WebContents::GetLastCommittedURL().
-  content::NavigationEntry* navigation_entry =
-      web_contents()->GetController().GetVisibleEntry();
-  if (navigation_entry &&
-      navigation_entry->GetURL().DeprecatedGetOriginAsURL() ==
-          navigation_handle->GetPreviousMainFrameURL()
-              .DeprecatedGetOriginAsURL()) {
+  if (navigation_handle->IsSameOrigin())
     return;
-  }
 
   ClearActiveExtensionsAndNotify();
 }
