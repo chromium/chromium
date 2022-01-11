@@ -1830,7 +1830,7 @@ void ArcBluetoothBridge::WriteGattDescriptor(
                          weak_factory_.GetWeakPtr(),
                          std::move(split_callback.first), char_id_str),
           base::BindOnce(&OnGattOperationError,
-                         std::move(split_callback.first)));
+                         std::move(split_callback.second)));
       return;
     }
     default:
