@@ -1637,14 +1637,7 @@ web_app::AppId InstallPWAWithName(Profile* profile,
   return web_app::test::InstallWebApp(profile, std::move(web_app_info));
 }
 
-// TODO(crbug.com/1281009): Fix flakes and re-enable.
-#if defined(OS_WIN)
-#define MAYBE_ListAppsForAllProfiles DISABLED_ListAppsForAllProfiles
-#else
-#define MAYBE_ListAppsForAllProfiles ListAppsForAllProfiles
-#endif
-IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
-                       MAYBE_ListAppsForAllProfiles) {
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, ListAppsForAllProfiles) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath user_data_dir = profile_manager->user_data_dir();
   Profile* profile1 = browser()->profile();
@@ -1738,27 +1731,20 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
       command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
       browser()->profile(), {}));
 
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    while (!base::PathExists(output_path))
-      base::RunLoop().RunUntilIdle();
-    std::string file_contents;
-    base::ReadFileToString(output_path, &file_contents);
-    ASSERT_EQ(expected_info, file_contents);
-  }
-
   CloseBrowserSynchronously(app_browser1);
   CloseBrowserSynchronously(app_browser2);
+  CloseBrowserSynchronously(browser());
+
+  content::RunAllTasksUntilIdle();
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    std::string file_contents;
+    ASSERT_TRUE(base::ReadFileToString(output_path, &file_contents));
+    ASSERT_EQ(expected_info, file_contents);
+  }
 }
 
-// TODO(crbug.com/1281009): Fix flakes and re-enable.
-#if defined(OS_WIN)
-#define MAYBE_ListAppsForGivenProfile DISABLED_ListAppsForGivenProfile
-#else
-#define MAYBE_ListAppsForGivenProfile ListAppsForGivenProfile
-#endif
-IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
-                       MAYBE_ListAppsForGivenProfile) {
+IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest, ListAppsForGivenProfile) {
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   base::FilePath user_data_dir = profile_manager->user_data_dir();
   Profile* profile1 = browser()->profile();
@@ -1846,17 +1832,17 @@ IN_PROC_BROWSER_TEST_F(StartupBrowserCreatorTest,
       command_line, base::FilePath(), chrome::startup::IsProcessStartup::kNo,
       browser()->profile(), {}));
 
-  {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    while (!base::PathExists(output_path))
-      base::RunLoop().RunUntilIdle();
-    std::string file_contents;
-    base::ReadFileToString(output_path, &file_contents);
-    ASSERT_EQ(expected_info, file_contents);
-  }
-
   CloseBrowserSynchronously(app_browser1);
   CloseBrowserSynchronously(app_browser2);
+  CloseBrowserSynchronously(browser());
+
+  content::RunAllTasksUntilIdle();
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    std::string file_contents;
+    ASSERT_TRUE(base::ReadFileToString(output_path, &file_contents));
+    ASSERT_EQ(expected_info, file_contents);
+  }
 }
 #endif  // defined(OS_LINUX) || defined(OS_MAC) || defined(OS_WIN)
 
