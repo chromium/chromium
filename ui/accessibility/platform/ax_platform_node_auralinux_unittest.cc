@@ -1300,7 +1300,8 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkTextCharacterGranularity) {
   AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kTextField;
-  root.SetValue("A decently long string \xE2\x98\xBA with an emoji.");
+  root.AddStringAttribute(ax::mojom::StringAttribute::kValue,
+                          "A decently long string \xE2\x98\xBA with an emoji.");
   Init(root);
 
   AtkObject* root_obj(GetRootAtkObject());
@@ -1518,8 +1519,7 @@ TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkTextSentenceGranularity) {
 }
 
 #if ATK_CHECK_VERSION(2, 10, 0)
-TEST_F(AXPlatformNodeAuraLinuxTest, DISABLED_TestAtkTextParagraphGranularity) {
-  // TODO(nektar): Enable navigating by paragraphs in plain text.
+TEST_F(AXPlatformNodeAuraLinuxTest, TestAtkTextParagraphGranularity) {
   AXNodeData root;
   root.id = 1;
   root.role = ax::mojom::Role::kTextField;

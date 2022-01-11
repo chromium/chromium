@@ -15,7 +15,6 @@
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom-forward.h"
 #include "ui/accessibility/ax_node.h"
-#include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_text_attributes.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate.h"
@@ -61,8 +60,6 @@ struct AX_EXPORT AXLegacyHypertext {
 
 class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
  public:
-  using AXPosition = AXNodePosition::AXPositionInstance;
-
   ~AXPlatformNodeBase() override;
   AXPlatformNodeBase(const AXPlatformNodeBase&) = delete;
   AXPlatformNodeBase& operator=(const AXPlatformNodeBase&) = delete;
@@ -351,7 +348,6 @@ class AX_EXPORT AXPlatformNodeBase : public AXPlatformNode {
   // This method finds text boundaries in the text used for platform text APIs.
   // Implementations may use side-channel data such as line or word indices to
   // produce appropriate results.
-  // Returns -1 if the requested boundary has not been found.
   virtual int FindTextBoundary(ax::mojom::TextBoundary boundary,
                                int offset,
                                ax::mojom::MoveDirection direction,
