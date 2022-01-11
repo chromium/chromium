@@ -161,6 +161,7 @@ build_recipe(
 
 build_recipe(
     name = "recipe:chromium_libfuzzer_trybot",
+    use_python3 = True,
 )
 
 build_recipe(
