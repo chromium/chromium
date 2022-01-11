@@ -140,4 +140,11 @@ void DualMediaSinkService::BindLogger(LoggerImpl* logger_impl) {
                      std::move(cast_discovery_pending_remote)));
 }
 
+void DualMediaSinkService::RemoveLogger() {
+  if (!logger_is_bound_)
+    return;
+  logger_is_bound_ = false;
+  cast_media_sink_service_->RemoveLogger();
+}
+
 }  // namespace media_router

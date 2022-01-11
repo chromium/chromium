@@ -12,6 +12,7 @@
 #include "chrome/browser/media/router/discovery/dial/dial_device_data.h"
 #include "chrome/browser/media/router/discovery/dial/dial_registry.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
+#include "components/media_router/browser/logger_impl.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -386,6 +387,27 @@ TEST_F(DialMediaSinkServiceImplTest, FetchDialAppInfoWithDiscoveryOnlySink) {
   media_sink_service_->AddOrUpdateSink(dial_sink_1_);
   base::CallbackListSubscription subscription1 =
       StartMonitoringAvailableSinksForApp("YouTube");
+}
+
+TEST_F(DialMediaSinkServiceImplTest, BindLogger) {
+  std::unique_ptr<LoggerImpl> logger_1 = std::make_unique<LoggerImpl>();
+  mojo::PendingRemote<mojom::Logger> pending_remote_1;
+  logger_1->Bind(pending_remote_1.InitWithNewPipeAndPassReceiver());
+  media_sink_service_->BindLogger(std::move(pending_remote_1));
+
+  // Trying to bind another pending remote no-ops instead of causing
+  // a DCHECK failure from binding to a remote that's already bound.
+  std::unique_ptr<LoggerImpl> logger_2 = std::make_unique<LoggerImpl>();
+  mojo::PendingRemote<mojom::Logger> pending_remote_2;
+  logger_2->Bind(pending_remote_2.InitWithNewPipeAndPassReceiver());
+  media_sink_service_->BindLogger(std::move(pending_remote_2));
+
+  // Trying to bind a disconnected receiver should work.
+  logger_1.reset();
+  std::unique_ptr<LoggerImpl> logger_3 = std::make_unique<LoggerImpl>();
+  mojo::PendingRemote<mojom::Logger> pending_remote_3;
+  logger_3->Bind(pending_remote_3.InitWithNewPipeAndPassReceiver());
+  media_sink_service_->BindLogger(std::move(pending_remote_3));
 }
 
 }  // namespace media_router

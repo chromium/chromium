@@ -75,6 +75,8 @@ class DualMediaSinkService {
   // Marked virtual for testing.
   virtual void BindLogger(LoggerImpl* logger_impl);
 
+  virtual void RemoveLogger();
+
   virtual void OnUserGesture();
 
   // Starts mDNS discovery on |cast_media_sink_service_| if it is not already

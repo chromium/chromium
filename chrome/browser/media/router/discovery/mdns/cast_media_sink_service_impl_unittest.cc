@@ -22,6 +22,7 @@
 #include "components/cast_channel/cast_socket.h"
 #include "components/cast_channel/cast_socket_service.h"
 #include "components/cast_channel/cast_test_util.h"
+#include "components/media_router/browser/logger_impl.h"
 #include "components/media_router/common/test/test_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -1331,6 +1332,27 @@ TEST_P(CastMediaSinkServiceImplTest, TestCreateCastSocketOpenParams) {
             open_params.connect_timeout.InSeconds());
   EXPECT_EQ(liveness_timeout_in_seconds,
             open_params.liveness_timeout.InSeconds());
+}
+
+TEST_P(CastMediaSinkServiceImplTest, BindLogger) {
+  std::unique_ptr<LoggerImpl> logger_1 = std::make_unique<LoggerImpl>();
+  mojo::PendingRemote<mojom::Logger> pending_remote_1;
+  logger_1->Bind(pending_remote_1.InitWithNewPipeAndPassReceiver());
+  media_sink_service_impl_.BindLogger(std::move(pending_remote_1));
+
+  // Trying to bind another pending remote no-ops instead of causing
+  // a DCHECK failure from binding to a remote that's already bound.
+  mojo::PendingRemote<mojom::Logger> pending_remote_2;
+  std::unique_ptr<LoggerImpl> logger_2 = std::make_unique<LoggerImpl>();
+  logger_2->Bind(pending_remote_2.InitWithNewPipeAndPassReceiver());
+  media_sink_service_impl_.BindLogger(std::move(pending_remote_2));
+
+  // Trying to bind a disconnected receiver should work.
+  logger_1.reset();
+  std::unique_ptr<LoggerImpl> logger_3 = std::make_unique<LoggerImpl>();
+  mojo::PendingRemote<mojom::Logger> pending_remote_3;
+  logger_3->Bind(pending_remote_3.InitWithNewPipeAndPassReceiver());
+  media_sink_service_impl_.BindLogger(std::move(pending_remote_3));
 }
 
 INSTANTIATE_TEST_SUITE_P(DialMediaSinkServiceEnabled,
