@@ -346,7 +346,9 @@
       "viz.quads") "," TRACE_DISABLED_BY_DEFAULT("devtools.timeline.layers")) \
   X(TRACE_DISABLED_BY_DEFAULT("cc.debug.display_items") "," \
       TRACE_DISABLED_BY_DEFAULT("cc.debug.picture") "," \
-      TRACE_DISABLED_BY_DEFAULT("devtools.timeline.picture"))
+      TRACE_DISABLED_BY_DEFAULT("devtools.timeline.picture"))                 \
+  X(TRACE_DISABLED_BY_DEFAULT("v8.inspector") "," TRACE_DISABLED_BY_DEFAULT(  \
+      "v8.stack_trace"))
 
 #define INTERNAL_TRACE_INIT_CATEGORY_NAME(name) name,
 
