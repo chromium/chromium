@@ -31,6 +31,8 @@ function addPrivacyChildRoutes(r: SettingsRoutes) {
 
   if (loadTimeData.getBoolean('enableSecurityKeysSubpage')) {
     r.SECURITY_KEYS = r.SECURITY.createChild('/securityKeys');
+    r.SECURITY_KEYS_PHONES =
+        r.SECURITY_KEYS.createChild('/securityKeys/phones');
   }
 
   r.SITE_SETTINGS_ALL = r.SITE_SETTINGS.createChild('all');

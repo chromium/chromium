@@ -2863,6 +2863,19 @@ void AddSecurityKeysStrings(content::WebUIDataSource* html_source) {
       {"securityKeysSetPinButton", IDS_SETTINGS_SECURITY_KEYS_SET_PIN_BUTTON},
       {"securityKeysSamePINAsCurrent",
        IDS_SETTINGS_SECURITY_KEYS_SAME_PIN_AS_CURRENT},
+      {"securityKeysPhoneEditDialogTitle",
+       IDS_SETTINGS_SECURITY_KEYS_PHONE_EDIT_DIALOG_TITLE},
+      {"securityKeysPhonesYourDevices",
+       IDS_SETTINGS_SECURITY_KEYS_PHONES_YOUR_DEVICES},
+      {"securityKeysPhonesSyncedDesc",
+       IDS_SETTINGS_SECURITY_KEYS_PHONES_SYNCED_DESC},
+      {"securityKeysPhonesLinkedDevices",
+       IDS_SETTINGS_SECURITY_KEYS_PHONES_LINKED_DEVICES},
+      {"securityKeysPhonesLinkedDesc",
+       IDS_SETTINGS_SECURITY_KEYS_PHONES_LINKED_DESC},
+      {"securityKeysPhonesManage", IDS_SETTINGS_SECURITY_KEYS_PHONES_MANAGE},
+      {"securityKeysPhonesManageDesc",
+       IDS_SETTINGS_SECURITY_KEYS_PHONES_MANAGE_DESC},
   };
   html_source->AddLocalizedStrings(kSecurityKeysStrings);
   bool win_native_api_available = false;
@@ -2875,6 +2888,9 @@ void AddSecurityKeysStrings(content::WebUIDataSource* html_source) {
                           !win_native_api_available);
   html_source->AddBoolean("enableSecurityKeysBioEnrollment",
                           !win_native_api_available);
+  html_source->AddBoolean(
+      "enableSecurityKeysPhonesSubpage",
+      base::FeatureList::IsEnabled(device::kWebAuthPhoneSupport));
 }
 
 void AddIPHStrings(content::WebUIDataSource* html_source) {

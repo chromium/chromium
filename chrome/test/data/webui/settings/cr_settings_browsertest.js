@@ -586,6 +586,7 @@ TEST_F('CrSettingsAdvancedPageTest', 'MAYBE_Load', function() {
  ['SearchPage', 'search_page_test.js'],
  ['Search', 'search_settings_test.js'],
  ['SecurityKeysSubpage', 'security_keys_subpage_test.js'],
+ ['SecurityKeysPhonesSubpage', 'security_keys_phones_subpage_test.js'],
  ['SecureDns', 'secure_dns_test.js'],
  ['SiteData', 'site_data_test.js'],
  ['SiteDataDetails', 'site_data_details_subpage_tests.js'],

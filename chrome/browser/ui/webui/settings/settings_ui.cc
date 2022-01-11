@@ -228,6 +228,7 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
   AddSettingsPageUIHandler(std::make_unique<SecurityKeysCredentialHandler>());
   AddSettingsPageUIHandler(
       std::make_unique<SecurityKeysBioEnrollmentHandler>());
+  AddSettingsPageUIHandler(std::make_unique<SecurityKeysPhonesHandler>());
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   InitBrowserSettingsWebUIHandlers();

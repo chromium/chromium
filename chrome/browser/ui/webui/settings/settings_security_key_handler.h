@@ -252,6 +252,24 @@ class SecurityKeysBioEnrollmentHandler : public SecurityKeysHandlerBase {
   base::WeakPtrFactory<SecurityKeysBioEnrollmentHandler> weak_factory_{this};
 };
 
+class SecurityKeysPhonesHandler : public SettingsPageUIHandler {
+ public:
+  SecurityKeysPhonesHandler();
+  ~SecurityKeysPhonesHandler() override;
+
+ protected:
+  void RegisterMessages() override;
+  void OnJavascriptAllowed() override;
+  void OnJavascriptDisallowed() override;
+
+ private:
+  void HandleEnumerate(const base::ListValue* args);
+  void HandleDelete(const base::ListValue* args);
+  void HandleRename(const base::ListValue* args);
+
+  void DoEnumerate(const base::Value& callback_id);
+};
+
 }  // namespace settings
 
 #endif  // CHROME_BROWSER_UI_WEBUI_SETTINGS_SETTINGS_SECURITY_KEY_HANDLER_H_

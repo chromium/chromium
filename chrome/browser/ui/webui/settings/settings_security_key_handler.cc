@@ -4,18 +4,26 @@
 
 #include "chrome/browser/ui/webui/settings/settings_security_key_handler.h"
 
+#include <algorithm>
+#include <string>
 #include <utility>
+#include <vector>
 
+#include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
 #include "chrome/browser/ui/webui/settings/settings_security_key_handler.h"
+#include "chrome/browser/webauthn/cablev2_devices.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
+#include "device/fido/cable/cable_discovery_data.h"
 #include "device/fido/credential_management.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/pin.h"
@@ -24,6 +32,7 @@
 #include "device/fido/reset_request_handler.h"
 #include "device/fido/set_pin_request_handler.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/icu/source/common/unicode/locid.h"
 #include "ui/base/l10n/l10n_util.h"
 
 using content::BrowserThread;
@@ -49,6 +58,17 @@ base::DictionaryValue EncodeEnrollment(const std::vector<uint8_t>& id,
   value.SetStringKey("name", name);
   value.SetStringKey("id", base::HexEncode(id.data(), id.size()));
   return value;
+}
+
+bool DecodePublicKey(const std::string& value,
+                     std::array<uint8_t, device::kP256X962Length>* out) {
+  std::string bytes;
+  if (!base::Base64Decode(value, &bytes) || bytes.size() != out->size()) {
+    return false;
+  }
+
+  std::copy(bytes.begin(), bytes.end(), out->begin());
+  return true;
 }
 
 }  // namespace
@@ -982,6 +1002,128 @@ void SecurityKeysBioEnrollmentHandler::HandleCancel(
   DCHECK(!callback_id_.empty());
   // OnEnrollmentFinished() will be invoked once the cancellation is complete.
   bio_->CancelEnrollment();
+}
+
+SecurityKeysPhonesHandler::SecurityKeysPhonesHandler() = default;
+SecurityKeysPhonesHandler::~SecurityKeysPhonesHandler() = default;
+
+void SecurityKeysPhonesHandler::OnJavascriptAllowed() {}
+void SecurityKeysPhonesHandler::OnJavascriptDisallowed() {}
+
+void SecurityKeysPhonesHandler::RegisterMessages() {
+  web_ui()->RegisterDeprecatedMessageCallback(
+      "securityKeyPhonesEnumerate",
+      base::BindRepeating(&SecurityKeysPhonesHandler::HandleEnumerate,
+                          base::Unretained(this)));
+  web_ui()->RegisterDeprecatedMessageCallback(
+      "securityKeyPhonesDelete",
+      base::BindRepeating(&SecurityKeysPhonesHandler::HandleDelete,
+                          base::Unretained(this)));
+  web_ui()->RegisterDeprecatedMessageCallback(
+      "securityKeyPhonesRename",
+      base::BindRepeating(&SecurityKeysPhonesHandler::HandleRename,
+                          base::Unretained(this)));
+}
+
+void SecurityKeysPhonesHandler::HandleEnumerate(const base::ListValue* args) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_EQ(1u, args->GetList().size());
+
+  AllowJavascript();
+  DoEnumerate(args->GetList()[0]);
+}
+
+void SecurityKeysPhonesHandler::HandleDelete(const base::ListValue* args) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_EQ(2u, args->GetList().size());
+
+  AllowJavascript();
+  const std::string public_key_base64 = args->GetList()[1].GetString();
+  std::array<uint8_t, device::kP256X962Length> public_key;
+  const bool ok = DecodePublicKey(public_key_base64, &public_key);
+  DCHECK(ok);
+
+  PrefService* const prefs =
+      Profile::FromBrowserContext(
+          web_ui()->GetWebContents()->GetBrowserContext())
+          ->GetPrefs();
+  cablev2::DeletePairingByPublicKey(prefs, public_key);
+
+  DoEnumerate(args->GetList()[0]);
+}
+
+void SecurityKeysPhonesHandler::HandleRename(const base::ListValue* args) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  DCHECK_EQ(3u, args->GetList().size());
+
+  AllowJavascript();
+  const std::string public_key_base64 = args->GetList()[1].GetString();
+  const std::string new_name = args->GetList()[2].GetString();
+  content::BrowserContext* const browser_ctx =
+      web_ui()->GetWebContents()->GetBrowserContext();
+
+  std::array<uint8_t, device::kP256X962Length> public_key;
+  const bool ok = DecodePublicKey(public_key_base64, &public_key);
+  DCHECK(ok);
+
+  // `existing_names` is built without calling `cablev2::MergeDevices` because
+  // that function will discard linked entries with duplicate public keys, which
+  // can hide some names that we would still like to avoid colliding with.
+  std::unique_ptr<cablev2::KnownDevices> known_devices =
+      cablev2::KnownDevices::FromProfile(
+          Profile::FromBrowserContext(browser_ctx));
+
+  // Remove the device that is getting renamed from the set of linked devices.
+  auto new_end = std::remove_if(
+      known_devices->linked_devices.begin(),
+      known_devices->linked_devices.end(),
+      [&public_key](const std::unique_ptr<device::cablev2::Pairing>& device)
+          -> bool { return device->peer_public_key_x962 == public_key; });
+  known_devices->linked_devices.erase(new_end,
+                                      known_devices->linked_devices.end());
+
+  PrefService* const prefs =
+      Profile::FromBrowserContext(browser_ctx)->GetPrefs();
+  cablev2::RenamePairing(prefs, public_key, new_name, known_devices->Names());
+
+  ResolveJavascriptCallback(args->GetList()[0], base::Value());
+}
+
+void SecurityKeysPhonesHandler::DoEnumerate(const base::Value& callback_id) {
+  const std::vector<std::unique_ptr<device::cablev2::Pairing>> pairings =
+      cablev2::MergeDevices(
+          cablev2::KnownDevices::FromProfile(Profile::FromBrowserContext(
+              web_ui()->GetWebContents()->GetBrowserContext())),
+          &icu::Locale::getDefault());
+
+  std::vector<base::Value> synced;
+  std::vector<base::Value> linked;
+  absl::optional<std::string> last_synced_device_name;
+  for (const auto& pairing : pairings) {
+    base::Value dict(base::Value::Type::DICTIONARY);
+    dict.SetKey("name", base::Value(pairing->name));
+    dict.SetKey("publicKey",
+                base::Value(base::Base64Encode(pairing->peer_public_key_x962)));
+
+    if (pairing->from_sync_deviceinfo) {
+      // Synced devices can have duplicate names. (E.g. if two or more
+      // channels are syncing from the same phone.) These are deduplicated
+      // here.
+      if (!last_synced_device_name ||
+          *last_synced_device_name != pairing->name) {
+        synced.emplace_back(std::move(dict));
+      }
+      last_synced_device_name = pairing->name;
+    } else {
+      linked.emplace_back(std::move(dict));
+    }
+  }
+
+  std::vector<base::Value> result;
+  result.emplace_back(std::move(synced));
+  result.emplace_back(std::move(linked));
+
+  ResolveJavascriptCallback(callback_id, base::ListValue(std::move(result)));
 }
 
 }  // namespace settings
