@@ -1190,6 +1190,47 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<!--
+These viewport metrics are in input/ since they're related to pinch-zoom, which
+is owned by the Blink input team.
+-->
+
+<histogram name="Viewport.DidScalePage" enum="BooleanDidScalePage"
+    expires_after="M108">
+  <owner>bokan@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Tracks the proportion of non-mobile optimized (i.e. zoom disabled or layout
+    width matches viewport) page views that had a user-initiated page scale
+    (e.g. pinch-zoom, double-tap). Recorded on navigation to a new page - on
+    Android only.
+  </summary>
+</histogram>
+
+<histogram name="Viewport.MaxPageScale" enum="PageScaleFactorRange"
+    expires_after="M108">
+  <owner>bokan@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    Tracks the maximum scale factor that a user has scaled to over the lifetime
+    of the page. The scale is counted at pinch end (e.g. zooming to 300% and
+    back out to 150% in one gesture would count as 150%). Reported only on
+    non-mobile optimized pages (i.e. zoom disabled or layout width matches
+    viewport) which have had a page scale changing gesture. Recorded on
+    navigation to a new page - on Android only.
+  </summary>
+</histogram>
+
+<histogram name="Viewport.MetaTagType" enum="MetaTagTypeEnum"
+    expires_after="M108">
+  <owner>bokan@chromium.org</owner>
+  <owner>input-dev@chromium.org</owner>
+  <summary>
+    The viewport meta tag type seen on each page load. Only recorded on Android.
+    Recorded when the page finishes loading.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>

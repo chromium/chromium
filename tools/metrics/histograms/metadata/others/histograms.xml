@@ -10565,53 +10565,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PerformanceManager.AgentsByTime" units="units"
-    expires_after="2020-12-04">
-  <obsolete>
-    Removed 2020-11.
-  </obsolete>
-  <owner>bokan@chromium.org</owner>
-  <owner>kouhei@chromium.org</owner>
-  <owner>platform-architecture-dev@chromium.org</owner>
-  <summary>
-    Tracks the total number of agents hosted by the browser by time. An entry in
-    bucket N corresponds to N agents being hosted across all live renderer
-    process for 1 second. Recorded on state changes and every 5 minutes.
-  </summary>
-</histogram>
-
-<histogram name="PerformanceManager.AgentsPerRendererByTime" units="units"
-    expires_after="2020-12-04">
-  <obsolete>
-    Removed 2020-11.
-  </obsolete>
-  <owner>bokan@chromium.org</owner>
-  <owner>kouhei@chromium.org</owner>
-  <owner>platform-architecture-dev@chromium.org</owner>
-  <summary>
-    Tracks the number of agents hosted per renderer by time. An entry in bucket
-    N corresponds to N agents being hosted by a renderer process for 1 second.
-    Recorded on state changes and every 5 minutes.
-  </summary>
-</histogram>
-
-<histogram name="PerformanceManager.AgentsUniqueByTime" units="units"
-    expires_after="2020-12-04">
-  <obsolete>
-    Removed 2020-11.
-  </obsolete>
-  <owner>bokan@chromium.org</owner>
-  <owner>kouhei@chromium.org</owner>
-  <owner>platform-architecture-dev@chromium.org</owner>
-  <summary>
-    Tracks the number of unique agents hosted by the browser by time. An entry
-    in bucket N corresponds to N unique agents being hosted across all live
-    renderer process for 1 second. Unique means that the agent count would
-    remain the same if they were in one process (i.e. they have different
-    protocol+site). Recorded on state changes and every 5 minutes.
-  </summary>
-</histogram>
-
 <histogram
     name="PerformanceManager.FrameSiteInstanceProcessRelationship.ByProcess2"
     enum="FrameSiteInstanceProcessRelationship" expires_after="2020-12-31">
@@ -16399,55 +16352,6 @@ regressions. -->
   <summary>
     Chrome OS Video Player: type of playback (eg. local play, cast). This is
     recorded when a video starts playing.
-  </summary>
-</histogram>
-
-<histogram name="Viewport.DidScalePage" enum="BooleanDidScalePage"
-    expires_after="M108">
-  <owner>bokan@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    Tracks the proportion of non-mobile optimized (i.e. zoom disabled or layout
-    width matches viewport) page views that had a user-initiated page scale
-    (e.g. pinch-zoom, double-tap). Recorded on navigation to a new page - on
-    Android only.
-  </summary>
-</histogram>
-
-<histogram name="Viewport.MaxPageScale" enum="PageScaleFactorRange"
-    expires_after="M108">
-  <owner>bokan@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    Tracks the maximum scale factor that a user has scaled to over the lifetime
-    of the page. The scale is counted at pinch end (e.g. zooming to 300% and
-    back out to 150% in one gesture would count as 150%). Reported only on
-    non-mobile optimized pages (i.e. zoom disabled or layout width matches
-    viewport) which have had a page scale changing gesture. Recorded on
-    navigation to a new page - on Android only.
-  </summary>
-</histogram>
-
-<histogram name="Viewport.MetaTagType" enum="MetaTagTypeEnum"
-    expires_after="M108">
-  <owner>bokan@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    The viewport meta tag type seen on each page load. Only recorded on Android.
-    Recorded when the page finishes loading.
-  </summary>
-</histogram>
-
-<histogram name="Viewport.OverviewZoom" units="%" expires_after="M85">
-  <obsolete>
-    Expired in M85.
-  </obsolete>
-  <owner>bokan@chromium.org</owner>
-  <owner>input-dev@chromium.org</owner>
-  <summary>
-    The screen width as a percentage of viewport width (i.e. zoom at which we
-    can see the whole page). Only recorded on Android and for viewport meta tags
-    with constant width.
   </summary>
 </histogram>
 
