@@ -6713,8 +6713,8 @@ experimental domain Overlay
       # True for showing scroll bottleneck rects
       boolean show
 
-  # Requests that backend shows hit-test borders on layers
-  command setShowHitTestBorders
+  # Deprecated, no longer has any effect.
+  deprecated command setShowHitTestBorders
     parameters
       # True for showing hit-test borders
       boolean show
