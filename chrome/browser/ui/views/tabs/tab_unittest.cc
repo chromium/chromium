@@ -606,8 +606,8 @@ TEST_F(TabTest, LayeredThrobber) {
   tab->SetData(data);
   EXPECT_FALSE(icon->GetShowingLoadingAnimation());
 
-  // Simulate a tab load starting and stopping during tab dragging (or with
-  // stacked tabs): no layer painting.
+  // Simulate a tab load starting and stopping during tab dragging:
+  // no layer painting.
   tab_controller->set_paint_throbber_to_layer(false);
   data.network_state = TabNetworkState::kWaiting;
   tab->SetData(data);
