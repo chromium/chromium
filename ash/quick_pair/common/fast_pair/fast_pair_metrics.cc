@@ -157,6 +157,8 @@ const char kBleScanFilterResult[] =
     "Bluetooth.ChromeOS.FastPair.CreateScanFilter.Result";
 const char kFastPairVersion[] =
     "Bluetooth.ChromeOS.FastPair.Discovered.Version";
+const char kNavigateToSettings[] =
+    "Bluetooth.ChromeOS.FastPair.NavigateToSettings.Result";
 
 }  // namespace
 
@@ -435,6 +437,10 @@ void RecordBluetoothLowEnergyScanFilterResult(bool success) {
 
 void RecordFastPairDiscoveredVersion(FastPairVersion version) {
   base::UmaHistogramEnumeration(kFastPairVersion, version);
+}
+
+void RecordNavigateToSettingsResult(bool success) {
+  base::UmaHistogramBoolean(kNavigateToSettings, success);
 }
 
 }  // namespace quick_pair

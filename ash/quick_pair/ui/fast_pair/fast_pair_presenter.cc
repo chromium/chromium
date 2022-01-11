@@ -135,9 +135,11 @@ void FastPairPresenter::OnPairingFailedMetadataRetrieved(
 void FastPairPresenter::OnNavigateToSettings(PairingFailedCallback callback) {
   if (TrayPopupUtils::CanOpenWebUISettings()) {
     Shell::Get()->system_tray_model()->client()->ShowBluetoothSettings();
+    RecordNavigateToSettingsResult(/*success=*/true);
   } else {
     QP_LOG(WARNING) << "Cannot open Bluetooth Settings since it's not possible "
                        "to opening WebUI settings";
+    RecordNavigateToSettingsResult(/*success=*/false);
   }
 
   callback.Run(PairingFailedAction::kNavigateToSettings);
