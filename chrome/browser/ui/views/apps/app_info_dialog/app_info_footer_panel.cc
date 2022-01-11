@@ -33,13 +33,6 @@
 #include "chrome/browser/ui/ash/shelf/chrome_shelf_controller_util.h"
 #endif
 
-base::OnceCallback<void(AppInfoFooterPanel*)>&
-AppInfoFooterPanel::InstanceCallbackForTesting() {
-  static base::NoDestructor<base::OnceCallback<void(AppInfoFooterPanel*)>>
-      callback;
-  return *callback;
-}
-
 AppInfoFooterPanel::AppInfoFooterPanel(Profile* profile,
                                        const extensions::Extension* app)
     : AppInfoPanel(profile, app) {
@@ -51,9 +44,6 @@ AppInfoFooterPanel::AppInfoFooterPanel(Profile* profile,
       provider->GetDistanceMetric(views::DISTANCE_RELATED_BUTTON_HORIZONTAL)));
 
   CreateButtons();
-
-  if (InstanceCallbackForTesting())
-    std::move(InstanceCallbackForTesting()).Run(this);
 }
 
 AppInfoFooterPanel::~AppInfoFooterPanel() {
@@ -135,15 +125,6 @@ void AppInfoFooterPanel::OnExtensionUninstallDialogClosed(
 }
 
 void AppInfoFooterPanel::CreateShortcuts() {
-  // This method is registered as a UI click handler. Because UI outlives the
-  // underlying Extensions system by a fraction of a second due to
-  // Widget::Close() being async we must check if we are in this state
-  // before accessing the Extensions system.
-  // TODO(crbug.com/1285753): Do this check in Views utility code more generally
-  // so it's less likely for Views clients to make this mistake.
-  if (GetWidget()->IsClosed())
-    return;
-
   DCHECK(CanCreateShortcuts(app_));
   chrome::ShowCreateChromeAppShortcutsDialog(GetWidget()->GetNativeWindow(),
                                              profile_, app_, base::DoNothing());
