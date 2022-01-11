@@ -5,8 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_SVG_OBJECT_PAINTER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_SVG_OBJECT_PAINTER_H_
 
+#include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -37,7 +37,7 @@ class SVGObjectPainter {
       bool is_rendering_clip_path_as_mask_image,
       const ComputedStyle&,
       LayoutSVGResourceMode,
-      PaintFlags& paint_flags,
+      cc::PaintFlags& paint_flags,
       const AffineTransform* additional_paint_server_transform = nullptr);
 
   void PaintResourceSubtree(GraphicsContext&);
@@ -46,7 +46,7 @@ class SVGObjectPainter {
   bool ApplyPaintResource(
       const SVGPaint& paint,
       const AffineTransform* additional_paint_server_transform,
-      PaintFlags& flags);
+      cc::PaintFlags& flags);
 
   const LayoutObject& layout_object_;
 };

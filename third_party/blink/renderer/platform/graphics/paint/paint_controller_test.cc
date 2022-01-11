@@ -1816,7 +1816,7 @@ void DrawPath(GraphicsContext& context,
   builder.lineTo(100, 0);
   builder.close();
   SkPath path = builder.detach();
-  PaintFlags flags;
+  cc::PaintFlags flags;
   flags.setAntiAlias(true);
   for (unsigned i = 0; i < count; i++)
     context.DrawPath(path, flags, AutoDarkMode::Disabled());

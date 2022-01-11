@@ -385,7 +385,7 @@ void SVGInlineTextBoxPainter::PaintDecoration(const PaintInfo& paint_info,
     switch (decoration_style.PaintOrderType(i)) {
       case PT_FILL:
         if (decoration_style.HasFill()) {
-          PaintFlags fill_flags;
+          cc::PaintFlags fill_flags;
           if (!SVGObjectPainter(*decoration_layout_object)
                    .PreparePaint(paint_info.context,
                                  paint_info.IsRenderingClipPathAsMaskImage(),
@@ -400,7 +400,7 @@ void SVGInlineTextBoxPainter::PaintDecoration(const PaintInfo& paint_info,
         break;
       case PT_STROKE:
         if (decoration_style.HasVisibleStroke()) {
-          PaintFlags stroke_flags;
+          cc::PaintFlags stroke_flags;
           if (!SVGObjectPainter(*decoration_layout_object)
                    .PreparePaint(paint_info.context,
                                  paint_info.IsRenderingClipPathAsMaskImage(),
@@ -437,7 +437,7 @@ bool SVGInlineTextBoxPainter::SetupTextPaint(
     const PaintInfo& paint_info,
     const ComputedStyle& style,
     LayoutSVGResourceMode resource_mode,
-    PaintFlags& flags,
+    cc::PaintFlags& flags,
     const AffineTransform* shader_transform) {
   LayoutSVGInlineText& text_layout_object = InlineText();
 
@@ -496,7 +496,7 @@ void SVGInlineTextBoxPainter::PaintText(const PaintInfo& paint_info,
                                         const SVGTextFragment& fragment,
                                         int start_position,
                                         int end_position,
-                                        const PaintFlags& flags) {
+                                        const cc::PaintFlags& flags) {
   LayoutSVGInlineText& text_layout_object = InlineText();
   const Font& scaled_font = text_layout_object.ScaledFont();
 
@@ -596,7 +596,7 @@ void SVGInlineTextBoxPainter::PaintText(
   // the regular style.
   TextRun text_run = svg_inline_text_box_.ConstructTextRun(style, fragment);
   if (!should_paint_selection || start_position >= end_position) {
-    PaintFlags flags;
+    cc::PaintFlags flags;
     if (SetupTextPaint(paint_info, style, resource_mode, flags,
                        shader_transform))
       PaintText(paint_info, text_run, fragment, 0, fragment.length, flags);
@@ -608,7 +608,7 @@ void SVGInlineTextBoxPainter::PaintText(
   bool paint_selected_text_only =
       paint_info.phase == PaintPhase::kSelectionDragImage;
   if (start_position > 0 && !paint_selected_text_only) {
-    PaintFlags flags;
+    cc::PaintFlags flags;
     if (SetupTextPaint(paint_info, style, resource_mode, flags,
                        shader_transform))
       PaintText(paint_info, text_run, fragment, 0, start_position, flags);
@@ -619,7 +619,7 @@ void SVGInlineTextBoxPainter::PaintText(
   {
     SelectionStyleScope scope(ParentInlineLayoutObject(), style,
                               selection_style);
-    PaintFlags flags;
+    cc::PaintFlags flags;
     if (SetupTextPaint(paint_info, selection_style, resource_mode, flags,
                        shader_transform)) {
       PaintText(paint_info, text_run, fragment, start_position, end_position,
@@ -631,7 +631,7 @@ void SVGInlineTextBoxPainter::PaintText(
   // selection to the end of the current chunk part.
   if (end_position < static_cast<int>(fragment.length) &&
       !paint_selected_text_only) {
-    PaintFlags flags;
+    cc::PaintFlags flags;
     if (SetupTextPaint(paint_info, style, resource_mode, flags,
                        shader_transform)) {
       PaintText(paint_info, text_run, fragment, end_position, fragment.length,
@@ -703,11 +703,11 @@ void SVGInlineTextBoxPainter::PaintTextMarkerForeground(
           : false,
       style.UsedColorScheme());
 
-  PaintFlags fill_flags;
+  cc::PaintFlags fill_flags;
   fill_flags.setColor(text_color.Rgb());
   fill_flags.setAntiAlias(true);
 
-  PaintFlags stroke_flags;
+  cc::PaintFlags stroke_flags;
   bool should_paint_stroke = false;
   if (SetupTextPaint(paint_info, style, kApplyToStrokeMode, stroke_flags,
                      nullptr)) {

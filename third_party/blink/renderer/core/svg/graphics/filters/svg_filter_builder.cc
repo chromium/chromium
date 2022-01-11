@@ -105,8 +105,8 @@ void SVGFilterGraphNodeMap::Trace(Visitor* visitor) const {
 
 SVGFilterBuilder::SVGFilterBuilder(FilterEffect* source_graphic,
                                    SVGFilterGraphNodeMap* node_map,
-                                   const PaintFlags* fill_flags,
-                                   const PaintFlags* stroke_flags)
+                                   const cc::PaintFlags* fill_flags,
+                                   const cc::PaintFlags* stroke_flags)
     : node_map_(node_map) {
   builtin_effects_.insert(FilterInputKeywords::GetSourceGraphic(),
                           source_graphic);

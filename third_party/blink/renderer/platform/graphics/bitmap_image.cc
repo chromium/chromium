@@ -32,13 +32,13 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image_metrics.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_filter_helper.h"
 #include "third_party/blink/renderer/platform/graphics/deferred_image_decoder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/image_observer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
@@ -252,7 +252,7 @@ String BitmapImage::FilenameExtension() const {
 }
 
 void BitmapImage::Draw(cc::PaintCanvas* canvas,
-                       const PaintFlags& flags,
+                       const cc::PaintFlags& flags,
                        const gfx::RectF& dst_rect,
                        const gfx::RectF& src_rect,
                        const ImageDrawOptions& draw_options) {

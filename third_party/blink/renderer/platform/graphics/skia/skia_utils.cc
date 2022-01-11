@@ -33,9 +33,9 @@
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
+#include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partitions.h"
 #include "third_party/skia/include/effects/SkCornerPathEffect.h"
@@ -407,10 +407,10 @@ SkRect LayoutRectToSkRect(const blink::LayoutRect& rect) {
                           SkFloatToScalar(rect.Height()));
 }
 
-static PaintFlags PaintFlagsForFocusRing(SkColor color, float width) {
-  PaintFlags flags;
+static cc::PaintFlags PaintFlagsForFocusRing(SkColor color, float width) {
+  cc::PaintFlags flags;
   flags.setAntiAlias(true);
-  flags.setStyle(PaintFlags::kStroke_Style);
+  flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setColor(color);
   flags.setStrokeWidth(width);
   return flags;
@@ -428,7 +428,7 @@ void DrawPlatformFocusRing(const SkPath& path,
                            SkColor color,
                            float width,
                            float corner_radius) {
-  PaintFlags path_flags = PaintFlagsForFocusRing(color, width);
+  cc::PaintFlags path_flags = PaintFlagsForFocusRing(color, width);
   if (corner_radius) {
     path_flags.setPathEffect(
         SkCornerPathEffect::Make(SkFloatToScalar(corner_radius)));

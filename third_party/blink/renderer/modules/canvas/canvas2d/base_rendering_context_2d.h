@@ -439,7 +439,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   }
 
   void CheckOverdraw(const SkRect&,
-                     const PaintFlags*,
+                     const cc::PaintFlags*,
                      CanvasRenderingContext2DState::ImageType,
                      BaseRenderingContext2D::OverdrawOp overdraw_op);
 
@@ -542,7 +542,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
                          const gfx::RectF& src_rect,
                          const gfx::RectF& dst_rect,
                          const SkSamplingOptions&,
-                         const PaintFlags*);
+                         const cc::PaintFlags*);
   void ClipInternal(const Path&,
                     const String& winding_rule_string,
                     UsePaintCache);
@@ -597,7 +597,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
 
 ALWAYS_INLINE void BaseRenderingContext2D::CheckOverdraw(
     const SkRect& rect,
-    const PaintFlags* flags,
+    const cc::PaintFlags* flags,
     CanvasRenderingContext2DState::ImageType image_type,
     BaseRenderingContext2D::OverdrawOp overdraw_op) {
   // Note on performance: because this method is inlined, all conditional
@@ -657,14 +657,14 @@ void BaseRenderingContext2D::DrawInternal(
                    paint_type, image_type);
   } else if (global_composite == SkBlendMode::kSrc) {
     ClearCanvasForSrcCompositeOp();  // Takes care of CheckOverdraw()
-    const PaintFlags* flags =
+    const cc::PaintFlags* flags =
         state.GetFlags(paint_type, kDrawForegroundOnly, image_type);
     draw_func(GetPaintCanvasForDraw(clip_bounds, draw_type), flags);
   } else {
     SkIRect dirty_rect;
     if (ComputeDirtyRect(gfx::SkRectToRectF(bounds), clip_bounds,
                          &dirty_rect)) {
-      const PaintFlags* flags =
+      const cc::PaintFlags* flags =
           state.GetFlags(paint_type, kDrawShadowAndForeground, image_type);
       if (paint_type != CanvasRenderingContext2DState::kStrokePaintType &&
           draw_covers_clip_bounds(clip_bounds)) {
@@ -744,17 +744,17 @@ void BaseRenderingContext2D::CompositedDraw(
           ShouldUseDropShadowPaintFilter(paint_type, image_type)));
   SkM44 ctm = c->getLocalToDevice();
   c->setMatrix(SkM44());
-  PaintFlags composite_flags;
+  cc::PaintFlags composite_flags;
   composite_flags.setBlendMode(state.GlobalComposite());
   if (state.ShouldDrawShadows()) {
     // unroll into two independently composited passes if drawing shadows
-    PaintFlags shadow_flags =
+    cc::PaintFlags shadow_flags =
         *state.GetFlags(paint_type, kDrawShadowOnly, image_type);
     int save_count = c->getSaveCount();
     c->save();
     if (canvas_filter ||
         ShouldUseDropShadowPaintFilter(paint_type, image_type)) {
-      PaintFlags foreground_flags =
+      cc::PaintFlags foreground_flags =
           *state.GetFlags(paint_type, kDrawForegroundOnly, image_type);
       shadow_flags.setImageFilter(sk_make_sp<ComposePaintFilter>(
           sk_make_sp<ComposePaintFilter>(foreground_flags.getImageFilter(),
@@ -780,7 +780,7 @@ void BaseRenderingContext2D::CompositedDraw(
 
   composite_flags.setImageFilter(std::move(canvas_filter));
   c->saveLayer(nullptr, &composite_flags);
-  PaintFlags foreground_flags =
+  cc::PaintFlags foreground_flags =
       *state.GetFlags(paint_type, kDrawForegroundOnly, image_type);
   foreground_flags.setBlendMode(SkBlendMode::kSrcOver);
   c->setMatrix(ctm);

@@ -164,8 +164,8 @@ LinkHighlightImpl::LinkHighlightFragment::PaintContentsToDisplayList() {
   cc::PaintCanvas* canvas =
       recorder.beginRecording(record_bounds.width(), record_bounds.height());
 
-  PaintFlags flags;
-  flags.setStyle(PaintFlags::kFill_Style);
+  cc::PaintFlags flags;
+  flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setAntiAlias(true);
   flags.setColor(color_.Rgb());
   canvas->drawPath(path_.GetSkPath(), flags);

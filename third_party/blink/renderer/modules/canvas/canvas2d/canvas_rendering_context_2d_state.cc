@@ -30,7 +30,6 @@
 #include "third_party/blink/renderer/platform/graphics/filters/filter_effect.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/skia/include/effects/SkDashPathEffect.h"
@@ -85,15 +84,15 @@ CanvasRenderingContext2DState::CanvasRenderingContext2DState()
       stroke_style_dirty_(true),
       line_dash_dirty_(false),
       image_smoothing_quality_(cc::PaintFlags::FilterQuality::kLow) {
-  fill_flags_.setStyle(PaintFlags::kFill_Style);
+  fill_flags_.setStyle(cc::PaintFlags::kFill_Style);
   fill_flags_.setAntiAlias(true);
-  image_flags_.setStyle(PaintFlags::kFill_Style);
+  image_flags_.setStyle(cc::PaintFlags::kFill_Style);
   image_flags_.setAntiAlias(true);
-  stroke_flags_.setStyle(PaintFlags::kStroke_Style);
+  stroke_flags_.setStyle(cc::PaintFlags::kStroke_Style);
   stroke_flags_.setStrokeWidth(1);
-  stroke_flags_.setStrokeCap(PaintFlags::kButt_Cap);
+  stroke_flags_.setStrokeCap(cc::PaintFlags::kButt_Cap);
   stroke_flags_.setStrokeMiter(10);
-  stroke_flags_.setStrokeJoin(PaintFlags::kMiter_Join);
+  stroke_flags_.setStrokeJoin(cc::PaintFlags::kMiter_Join);
   stroke_flags_.setAntiAlias(true);
   SetImageSmoothingEnabled(true);
 }
@@ -426,10 +425,10 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilterForOffscreenCanvas(
 
   // We can't reuse m_fillFlags and m_strokeFlags for the filter, since these
   // incorporate the global alpha, which isn't applicable here.
-  PaintFlags fill_flags_for_filter;
+  cc::PaintFlags fill_flags_for_filter;
   fill_style_->ApplyToFlags(fill_flags_for_filter);
   fill_flags_for_filter.setColor(fill_style_->PaintColor());
-  PaintFlags stroke_flags_for_filter;
+  cc::PaintFlags stroke_flags_for_filter;
   stroke_style_->ApplyToFlags(stroke_flags_for_filter);
   stroke_flags_for_filter.setColor(stroke_style_->PaintColor());
 
@@ -498,10 +497,10 @@ sk_sp<PaintFilter> CanvasRenderingContext2DState::GetFilter(
 
   // We can't reuse m_fillFlags and m_strokeFlags for the filter, since these
   // incorporate the global alpha, which isn't applicable here.
-  PaintFlags fill_flags_for_filter;
+  cc::PaintFlags fill_flags_for_filter;
   fill_style_->ApplyToFlags(fill_flags_for_filter);
   fill_flags_for_filter.setColor(fill_style_->PaintColor());
-  PaintFlags stroke_flags_for_filter;
+  cc::PaintFlags stroke_flags_for_filter;
   stroke_style_->ApplyToFlags(stroke_flags_for_filter);
   stroke_flags_for_filter.setColor(stroke_style_->PaintColor());
 
@@ -696,11 +695,11 @@ void CanvasRenderingContext2DState::UpdateFilterQuality(
   image_flags_.setFilterQuality(filter_quality);
 }
 
-const PaintFlags* CanvasRenderingContext2DState::GetFlags(
+const cc::PaintFlags* CanvasRenderingContext2DState::GetFlags(
     PaintType paint_type,
     ShadowMode shadow_mode,
     ImageType image_type) const {
-  PaintFlags* flags;
+  cc::PaintFlags* flags;
   switch (paint_type) {
     case kStrokePaintType:
       UpdateLineDash();

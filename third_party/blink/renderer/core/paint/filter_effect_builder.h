@@ -26,8 +26,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FILTER_EFFECT_BUILDER_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_FILTER_EFFECT_BUILDER_H_
 
+#include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/skia/include/core/SkTileMode.h"
@@ -48,8 +48,8 @@ class CORE_EXPORT FilterEffectBuilder final {
  public:
   FilterEffectBuilder(const gfx::RectF& reference_box,
                       float zoom,
-                      const PaintFlags* fill_flags = nullptr,
-                      const PaintFlags* stroke_flags = nullptr,
+                      const cc::PaintFlags* fill_flags = nullptr,
+                      const cc::PaintFlags* stroke_flags = nullptr,
                       SkTileMode blur_tile_mode = SkTileMode::kDecal);
 
   Filter* BuildReferenceFilter(const ReferenceFilterOperation&,
@@ -69,8 +69,8 @@ class CORE_EXPORT FilterEffectBuilder final {
   const gfx::RectF reference_box_;
   const float zoom_;
   float shorthand_scale_;  // Scale factor for shorthand filter functions.
-  const PaintFlags* fill_flags_;
-  const PaintFlags* stroke_flags_;
+  const cc::PaintFlags* fill_flags_;
+  const cc::PaintFlags* stroke_flags_;
   const SkTileMode blur_tile_mode_;
 };
 

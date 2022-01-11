@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/platform/fonts/font_selector_client.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_filter.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -188,14 +187,14 @@ class CanvasRenderingContext2DState final
   double LineWidth() const { return stroke_flags_.getStrokeWidth(); }
 
   void SetLineCap(LineCap line_cap) {
-    stroke_flags_.setStrokeCap(static_cast<PaintFlags::Cap>(line_cap));
+    stroke_flags_.setStrokeCap(static_cast<cc::PaintFlags::Cap>(line_cap));
   }
   LineCap GetLineCap() const {
     return static_cast<LineCap>(stroke_flags_.getStrokeCap());
   }
 
   void SetLineJoin(LineJoin line_join) {
-    stroke_flags_.setStrokeJoin(static_cast<PaintFlags::Join>(line_join));
+    stroke_flags_.setStrokeJoin(static_cast<cc::PaintFlags::Join>(line_join));
   }
   LineJoin GetLineJoin() const {
     return static_cast<LineJoin>(stroke_flags_.getStrokeJoin());
@@ -241,7 +240,9 @@ class CanvasRenderingContext2DState final
 
   // If paint will not be used for painting a bitmap, set bitmapOpacity to
   // Opaque.
-  const PaintFlags* GetFlags(PaintType, ShadowMode, ImageType = kNoImage) const;
+  const cc::PaintFlags* GetFlags(PaintType,
+                                 ShadowMode,
+                                 ImageType = kNoImage) const;
 
   SaveType GetSaveType() const { return save_type_; }
 
@@ -264,9 +265,9 @@ class CanvasRenderingContext2DState final
   Member<CanvasStyle> stroke_style_;
   Member<CanvasStyle> fill_style_;
 
-  mutable PaintFlags stroke_flags_;
-  mutable PaintFlags fill_flags_;
-  mutable PaintFlags image_flags_;
+  mutable cc::PaintFlags stroke_flags_;
+  mutable cc::PaintFlags fill_flags_;
+  mutable cc::PaintFlags image_flags_;
 
   gfx::Vector2dF shadow_offset_;
   double shadow_blur_;

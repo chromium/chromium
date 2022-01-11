@@ -12,7 +12,7 @@
 namespace blink {
 
 void PaintGeneratedImage::Draw(cc::PaintCanvas* canvas,
-                               const PaintFlags& flags,
+                               const cc::PaintFlags& flags,
                                const gfx::RectF& dest_rect,
                                const gfx::RectF& src_rect,
                                const ImageDrawOptions&) {

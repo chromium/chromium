@@ -125,8 +125,8 @@ Vector<float> SepiaMatrix(double amount) {
 
 FilterEffectBuilder::FilterEffectBuilder(const gfx::RectF& reference_box,
                                          float zoom,
-                                         const PaintFlags* fill_flags,
-                                         const PaintFlags* stroke_flags,
+                                         const cc::PaintFlags* fill_flags,
+                                         const cc::PaintFlags* stroke_flags,
                                          SkTileMode blur_tile_mode)
     : reference_box_(reference_box),
       zoom_(zoom),

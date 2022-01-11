@@ -542,7 +542,7 @@ void ConversionContext::StartEffect(const EffectPaintPropertyNode& effect) {
     // alpha value, but that breaks slimming paint reftests.
     auto alpha = base::ClampFloor<uint8_t>(255 * effect.Opacity());
     if (has_other_effects) {
-      PaintFlags flags;
+      cc::PaintFlags flags;
       flags.setBlendMode(effect.BlendMode());
       flags.setAlpha(alpha);
       save_layer_id = cc_list_.push<cc::SaveLayerOp>(nullptr, &flags);
@@ -554,7 +554,7 @@ void ConversionContext::StartEffect(const EffectPaintPropertyNode& effect) {
     // The size parameter is only used to computed the origin of zoom
     // operation, which we never generate.
     gfx::SizeF empty;
-    PaintFlags filter_flags;
+    cc::PaintFlags filter_flags;
     filter_flags.setImageFilter(cc::RenderSurfaceFilters::BuildImageFilter(
         effect.Filter().AsCcFilterOperations(), empty));
     save_layer_id = cc_list_.push<cc::SaveLayerOp>(nullptr, &filter_flags);

@@ -1050,7 +1050,6 @@ component("platform") {
     "graphics/paint/paint_controller.h",
     "graphics/paint/paint_controller_debug_data.cc",
     "graphics/paint/paint_filter.h",
-    "graphics/paint/paint_flags.h",
     "graphics/paint/paint_property_node.cc",
     "graphics/paint/paint_property_node.h",
     "graphics/paint/paint_record.h",

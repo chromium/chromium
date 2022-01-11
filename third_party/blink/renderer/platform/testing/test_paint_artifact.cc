@@ -6,11 +6,11 @@
 
 #include <memory>
 #include "cc/layers/layer.h"
+#include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item_client.h"
 #include "third_party/blink/renderer/platform/graphics/paint/drawing_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/foreign_layer_display_item.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_artifact.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -90,7 +90,7 @@ TestPaintArtifact& TestPaintArtifact::RectDrawing(DisplayItemClient& client,
   PaintRecorder recorder;
   cc::PaintCanvas* canvas = recorder.beginRecording(gfx::RectToSkRect(bounds));
   if (!bounds.IsEmpty()) {
-    PaintFlags flags;
+    cc::PaintFlags flags;
     flags.setColor(color.Rgb());
     canvas->drawRect(gfx::RectToSkRect(bounds), flags);
   }

@@ -118,8 +118,8 @@ void ScrollableAreaPainter::DrawPlatformResizerImage(
                   resizer_corner_rect.height() * 3 / 4);
   points[3].set_y(points[1].y());
 
-  PaintFlags paint_flags;
-  paint_flags.setStyle(PaintFlags::kStroke_Style);
+  cc::PaintFlags paint_flags;
+  paint_flags.setStyle(cc::PaintFlags::kStroke_Style);
   paint_flags.setStrokeWidth(std::ceil(paint_scale));
 
   SkPathBuilder line_path;

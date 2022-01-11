@@ -31,6 +31,7 @@
 #include <memory>
 
 #include "base/dcheck_is_on.h"
+#include "cc/paint/paint_flags.h"
 #include "third_party/blink/public/mojom/frame/color_scheme.mojom-blink-forward.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_filter.h"
@@ -215,8 +216,9 @@ class PLATFORM_EXPORT GraphicsContext {
   }
 
   SkSamplingOptions ImageSamplingOptions() const {
-    return PaintFlags::FilterQualityToSkSamplingOptions(
-        static_cast<PaintFlags::FilterQuality>(ImageInterpolationQuality()));
+    return cc::PaintFlags::FilterQualityToSkSamplingOptions(
+        static_cast<cc::PaintFlags::FilterQuality>(
+            ImageInterpolationQuality()));
   }
 
   // Specify the device scale factor which may change the way document markers
@@ -244,7 +246,7 @@ class PLATFORM_EXPORT GraphicsContext {
                 const gfx::Point&,
                 const AutoDarkMode& auto_dark_mode,
                 bool is_text_line = false,
-                const PaintFlags* flags = nullptr);
+                const cc::PaintFlags* flags = nullptr);
 
   void FillPath(const Path&, const AutoDarkMode& auto_dark_mode);
 
@@ -320,16 +322,16 @@ class PLATFORM_EXPORT GraphicsContext {
   // Also drawLine(const gfx::Point& point1, const gfx::Point& point2) and
   // fillRoundedRect().
   void DrawOval(const SkRect&,
-                const PaintFlags&,
+                const cc::PaintFlags&,
                 const AutoDarkMode& auto_dark_mode);
   void DrawPath(const SkPath&,
-                const PaintFlags&,
+                const cc::PaintFlags&,
                 const AutoDarkMode& auto_dark_mode);
   void DrawRect(const SkRect&,
-                const PaintFlags&,
+                const cc::PaintFlags&,
                 const AutoDarkMode& auto_dark_mode);
   void DrawRRect(const SkRRect&,
-                 const PaintFlags&,
+                 const cc::PaintFlags&,
                  const AutoDarkMode& auto_dark_mode);
 
   void Clip(const gfx::Rect& rect) { ClipRect(gfx::RectToSkRect(rect)); }
@@ -368,7 +370,7 @@ class PLATFORM_EXPORT GraphicsContext {
   void DrawText(const Font&,
                 const TextRunPaintInfo&,
                 const gfx::PointF&,
-                const PaintFlags&,
+                const cc::PaintFlags&,
                 DOMNodeId,
                 const AutoDarkMode& auto_dark_mode);
 
@@ -377,7 +379,7 @@ class PLATFORM_EXPORT GraphicsContext {
   void DrawText(const Font&,
                 const NGTextFragmentPaintInfo&,
                 const gfx::PointF&,
-                const PaintFlags&,
+                const cc::PaintFlags&,
                 DOMNodeId,
                 const AutoDarkMode& auto_dark_mode);
 
@@ -410,7 +412,7 @@ class PLATFORM_EXPORT GraphicsContext {
   void DrawLineForText(const gfx::PointF&,
                        float width,
                        const AutoDarkMode& auto_dark_mode,
-                       const PaintFlags* flags = nullptr);
+                       const cc::PaintFlags* flags = nullptr);
 
   // beginLayer()/endLayer() behave like save()/restore() for CTM and clip
   // states. Apply SkBlendMode when the layer is composited on the backdrop
@@ -444,13 +446,15 @@ class PLATFORM_EXPORT GraphicsContext {
                          float width,
                          const AutoDarkMode& auto_dark_mode);
 
-  const PaintFlags& FillFlags() const { return ImmutableState()->FillFlags(); }
+  const cc::PaintFlags& FillFlags() const {
+    return ImmutableState()->FillFlags();
+  }
   // If the length of the path to be stroked is known, pass it in for correct
   // dash or dot placement. Border painting uses a stroke thickness determined
   // by the corner miters. Set the dash_thickness to a non-zero number for
   // cases where dashes should be based on a different thickness.
-  const PaintFlags& StrokeFlags(const int length = 0,
-                                const int dash_thickness = 0) const {
+  const cc::PaintFlags& StrokeFlags(const int length = 0,
+                                    const int dash_thickness = 0) const {
     return ImmutableState()->StrokeFlags(length, dash_thickness);
   }
 
@@ -462,14 +466,15 @@ class PLATFORM_EXPORT GraphicsContext {
   void Translate(float x, float y);
   // ---------- End transformation methods -----------------
 
-  PaintFlags::FilterQuality ComputeFilterQuality(Image*,
-                                                 const gfx::RectF& dest,
-                                                 const gfx::RectF& src) const;
+  cc::PaintFlags::FilterQuality ComputeFilterQuality(
+      Image*,
+      const gfx::RectF& dest,
+      const gfx::RectF& src) const;
 
   SkSamplingOptions ComputeSamplingOptions(Image* image,
                                            const gfx::RectF& dest,
                                            const gfx::RectF& src) const {
-    return PaintFlags::FilterQualityToSkSamplingOptions(
+    return cc::PaintFlags::FilterQualityToSkSamplingOptions(
         ComputeFilterQuality(image, dest, src));
   }
 
@@ -532,7 +537,7 @@ class PLATFORM_EXPORT GraphicsContext {
   template <typename DrawTextFunc>
   void DrawTextPasses(const AutoDarkMode& auto_dark_mode, const DrawTextFunc&);
 
-  void SaveLayer(const SkRect* bounds, const PaintFlags*);
+  void SaveLayer(const SkRect* bounds, const cc::PaintFlags*);
   void RestoreLayer();
 
   // SkCanvas wrappers.
@@ -561,7 +566,7 @@ class PLATFORM_EXPORT GraphicsContext {
   class DarkModeFlags;
 
   bool ShouldDrawDarkModeTextContrastOutline(
-      const PaintFlags& original_flags,
+      const cc::PaintFlags& original_flags,
       const DarkModeFlags& dark_flags) const;
 
   // This is owned by paint_recorder_. Never delete this object.

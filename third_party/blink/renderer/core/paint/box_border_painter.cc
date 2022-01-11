@@ -282,9 +282,9 @@ void DrawBleedAdjustedDRRect(GraphicsContext& context,
       path.addRRect(SkRRect(inner));
       path.setFillType(SkPathFillType::kInverseWinding);
 
-      PaintFlags flags;
+      cc::PaintFlags flags;
       flags.setColor(color.Rgb());
-      flags.setStyle(PaintFlags::kFill_Style);
+      flags.setStyle(cc::PaintFlags::kFill_Style);
       flags.setAntiAlias(true);
       context.DrawPath(path, flags, auto_dark_mode);
 
@@ -620,7 +620,7 @@ void FillQuad(GraphicsContext& context,
   path.lineTo(gfx::PointFToSkPoint(quad[1]));
   path.lineTo(gfx::PointFToSkPoint(quad[2]));
   path.lineTo(gfx::PointFToSkPoint(quad[3]));
-  PaintFlags flags(context.FillFlags());
+  cc::PaintFlags flags(context.FillFlags());
   flags.setAntiAlias(antialias);
   flags.setColor(color.Rgb());
 

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/cxx17_backports.h"
+#include "cc/paint/paint_flags.h"
 #include "third_party/blink/public/resources/grit/blink_image_resources.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/platform/fonts/font.h"
@@ -18,7 +19,6 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/image_observer.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_recorder.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
@@ -51,7 +51,7 @@ constexpr int kTextPaddingY = 9;
 constexpr int kFontSize = 14;
 
 void DrawIcon(cc::PaintCanvas* canvas,
-              const PaintFlags& flags,
+              const cc::PaintFlags& flags,
               float x,
               float y,
               const SkSamplingOptions& sampling,
@@ -74,7 +74,7 @@ void DrawIcon(cc::PaintCanvas* canvas,
 }
 
 void DrawCenteredIcon(cc::PaintCanvas* canvas,
-                      const PaintFlags& flags,
+                      const cc::PaintFlags& flags,
                       const gfx::RectF& dest_rect,
                       const SkSamplingOptions& sampling,
                       float scale_factor) {
@@ -252,7 +252,7 @@ PaintImage PlaceholderImage::PaintImageForCurrentFrame() {
 
   PaintRecorder paint_recorder;
   Draw(paint_recorder.beginRecording(gfx::RectToSkRect(dest_rect)),
-       PaintFlags(), gfx::RectF(dest_rect), gfx::RectF(dest_rect),
+       cc::PaintFlags(), gfx::RectF(dest_rect), gfx::RectF(dest_rect),
        ImageDrawOptions());
 
   paint_record_for_current_frame_ = paint_recorder.finishRecordingAsPicture();
@@ -273,7 +273,7 @@ void PlaceholderImage::SetIconAndTextScaleFactor(
 }
 
 void PlaceholderImage::Draw(cc::PaintCanvas* canvas,
-                            const PaintFlags& base_flags,
+                            const cc::PaintFlags& base_flags,
                             const gfx::RectF& dest_rect,
                             const gfx::RectF& src_rect,
                             const ImageDrawOptions& draw_options) {
@@ -283,8 +283,8 @@ void PlaceholderImage::Draw(cc::PaintCanvas* canvas,
     return;
   }
 
-  PaintFlags flags(base_flags);
-  flags.setStyle(PaintFlags::kFill_Style);
+  cc::PaintFlags flags(base_flags);
+  flags.setStyle(cc::PaintFlags::kFill_Style);
   flags.setColor(SkColorSetARGB(0x80, 0xD9, 0xD9, 0xD9));
   canvas->drawRect(gfx::RectFToSkRect(dest_rect), flags);
 
@@ -356,7 +356,7 @@ void PlaceholderImage::Draw(cc::PaintCanvas* canvas,
 }
 
 void PlaceholderImage::DrawPattern(GraphicsContext& context,
-                                   const PaintFlags& base_flags,
+                                   const cc::PaintFlags& base_flags,
                                    const gfx::RectF& dest_rect,
                                    const ImageTilingInfo& tiling_info,
                                    const ImageDrawOptions& draw_options) {

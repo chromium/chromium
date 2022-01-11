@@ -98,7 +98,7 @@ void VideoPainter::PaintReplaced(const PaintInfo& paint_info,
     ImagePainter(layout_video_)
         .PaintIntoRect(context, replaced_rect, content_box_rect);
   } else {
-    PaintFlags video_flags = context.FillFlags();
+    cc::PaintFlags video_flags = context.FillFlags();
     video_flags.setColor(SK_ColorBLACK);
     layout_video_.VideoElement()->PaintCurrentFrame(
         context.Canvas(), snapped_replaced_rect, &video_flags);

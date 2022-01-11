@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/platform/graphics/pattern.h"
 
 #include "third_party/blink/renderer/platform/graphics/image_pattern.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_record.h"
 #include "third_party/blink/renderer/platform/graphics/paint_record_pattern.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
@@ -55,7 +54,7 @@ Pattern::Pattern(RepeatMode repeat_mode) : repeat_mode_(repeat_mode) {}
 
 Pattern::~Pattern() = default;
 
-void Pattern::ApplyToFlags(PaintFlags& flags,
+void Pattern::ApplyToFlags(cc::PaintFlags& flags,
                            const SkMatrix& local_matrix) const {
   if (!cached_shader_ || local_matrix != cached_shader_->GetLocalMatrix())
     cached_shader_ = CreateShader(local_matrix);

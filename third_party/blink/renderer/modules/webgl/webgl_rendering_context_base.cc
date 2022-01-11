@@ -1736,7 +1736,7 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
 
   gfx::Rect src_rect(image->Size());
   gfx::Rect dest_rect(resource_provider->Size());
-  PaintFlags flags;
+  cc::PaintFlags flags;
   flags.setBlendMode(SkBlendMode::kSrc);
   // We use this draw helper as we need to take into account the
   // ImageOrientation of the UnacceleratedStaticBitmapImage.
@@ -5167,7 +5167,7 @@ scoped_refptr<Image> WebGLRenderingContextBase::DrawImageIntoBuffer(
 
   gfx::Rect src_rect(image->Size());
   gfx::Rect dest_rect(size);
-  PaintFlags flags;
+  cc::PaintFlags flags;
   // TODO(ccameron): WebGL should produce sRGB images.
   // https://crbug.com/672299
   ImageDrawOptions draw_options;

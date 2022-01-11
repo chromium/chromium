@@ -86,7 +86,7 @@ TSAN_TEST(TextRendererThreadedTest, DrawText) {
     TextRunPaintInfo text_run_paint_info(text_run);
 
     MockPaintCanvas mpc;
-    PaintFlags flags;
+    cc::PaintFlags flags;
 
     EXPECT_CALL(mpc, getSaveCount()).WillOnce(Return(17));
     EXPECT_CALL(mpc, drawTextBlob(_, 0, 0, _)).Times(1);

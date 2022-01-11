@@ -171,7 +171,7 @@ sk_sp<PaintShader> Gradient::CreateShaderInternal(
   return shader;
 }
 
-void Gradient::ApplyToFlags(PaintFlags& flags,
+void Gradient::ApplyToFlags(cc::PaintFlags& flags,
                             const SkMatrix& local_matrix,
                             const ImageDrawOptions& draw_options) {
   if (is_dark_mode_enabled_ != draw_options.apply_dark_mode) {

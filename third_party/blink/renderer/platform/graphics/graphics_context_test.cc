@@ -143,7 +143,7 @@ TEST(GraphicsContextTest, UnboundedDrawsAreClipped) {
   Path path;
   path.MoveTo(gfx::PointF(10, 10));
   path.AddLineTo(gfx::PointF(40, 40));
-  PaintFlags flags;
+  cc::PaintFlags flags;
   flags.setColor(transparent.Rgb());
   flags.setBlendMode(SkBlendMode::kSrcOut);
   context.DrawPath(path.GetSkPath(), flags, AutoDarkModeDisabled());

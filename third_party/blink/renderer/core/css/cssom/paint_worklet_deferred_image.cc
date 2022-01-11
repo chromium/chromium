@@ -17,7 +17,7 @@ namespace blink {
 
 namespace {
 void DrawInternal(cc::PaintCanvas* canvas,
-                  const PaintFlags& flags,
+                  const cc::PaintFlags& flags,
                   const gfx::RectF& dest_rect,
                   const gfx::RectF& src_rect,
                   const ImageDrawOptions& draw_options,
@@ -30,7 +30,7 @@ void DrawInternal(cc::PaintCanvas* canvas,
 }  // namespace
 
 void PaintWorkletDeferredImage::Draw(cc::PaintCanvas* canvas,
-                                     const PaintFlags& flags,
+                                     const cc::PaintFlags& flags,
                                      const gfx::RectF& dest_rect,
                                      const gfx::RectF& src_rect,
                                      const ImageDrawOptions& draw_options) {

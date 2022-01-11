@@ -49,10 +49,10 @@ sk_sp<PaintRecord> RecordMarker(Color blink_color) {
                kMarkerWidth * 7 / 8, kMarkerHeight * 1 / 4,
                kMarkerWidth * 9 / 8, kMarkerHeight * 1 / 4);
 
-  PaintFlags flags;
+  cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setColor(color);
-  flags.setStyle(PaintFlags::kStroke_Style);
+  flags.setStyle(cc::PaintFlags::kStroke_Style);
   flags.setStrokeWidth(kMarkerHeight * 1 / 2);
 
   PaintRecorder recorder;
@@ -76,7 +76,7 @@ sk_sp<PaintRecord> RecordMarker(Color blink_color) {
   // Match the artwork used by the Mac.
   static const float kR = 1.5f;
 
-  PaintFlags flags;
+  cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setColor(color);
   PaintRecorder recorder;
@@ -106,7 +106,7 @@ void DrawDocumentMarker(GraphicsContext& context,
   const auto rect = SkRect::MakeWH(width, kMarkerHeight * zoom);
   const auto local_matrix = SkMatrix::Scale(zoom, zoom);
 
-  PaintFlags flags;
+  cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setShader(PaintShader::MakePaintRecord(
       sk_ref_sp(marker), SkRect::MakeWH(kMarkerWidth, kMarkerHeight),

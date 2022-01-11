@@ -31,7 +31,7 @@
 namespace blink {
 
 void GradientGeneratedImage::Draw(cc::PaintCanvas* canvas,
-                                  const PaintFlags& flags,
+                                  const cc::PaintFlags& flags,
                                   const gfx::RectF& dest_rect,
                                   const gfx::RectF& src_rect,
                                   const ImageDrawOptions& draw_options) {
@@ -45,7 +45,7 @@ void GradientGeneratedImage::Draw(cc::PaintCanvas* canvas,
   SkRect visible_dest_rect;
   transform.mapRect(&visible_dest_rect, visible_src_rect);
 
-  PaintFlags gradient_flags(flags);
+  cc::PaintFlags gradient_flags(flags);
   gradient_->ApplyToFlags(gradient_flags, transform, draw_options);
   canvas->drawRect(visible_dest_rect, gradient_flags);
 }
@@ -55,14 +55,14 @@ void GradientGeneratedImage::DrawTile(GraphicsContext& context,
                                       const ImageDrawOptions& draw_options) {
   // TODO(ccameron): This function should not ignore |context|'s color behavior.
   // https://crbug.com/672306
-  PaintFlags gradient_flags(context.FillFlags());
+  cc::PaintFlags gradient_flags(context.FillFlags());
   gradient_->ApplyToFlags(gradient_flags, SkMatrix::I(), draw_options);
 
   context.DrawRect(gfx::RectFToSkRect(src_rect), gradient_flags,
                    AutoDarkMode::Disabled());
 }
 
-bool GradientGeneratedImage::ApplyShader(PaintFlags& flags,
+bool GradientGeneratedImage::ApplyShader(cc::PaintFlags& flags,
                                          const SkMatrix& local_matrix,
                                          const gfx::RectF& dst_rect,
                                          const gfx::RectF& src_rect,

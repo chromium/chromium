@@ -181,7 +181,7 @@ void BaseRenderingContext2D::beginLayer() {
     // two layers, so the shadow and filter can properly interact with alpha.
     // We also need to flip how and where the shadows and filter are applied
     // if there are shadows.
-    PaintFlags flags;
+    cc::PaintFlags flags;
     GetState().FillStyle()->ApplyToFlags(flags);
     flags.setColor(GetState().FillStyle()->PaintColor());
     flags.setBlendMode(GetState().GlobalComposite());
@@ -195,7 +195,7 @@ void BaseRenderingContext2D::beginLayer() {
         GetState(), CanvasRenderingContext2DState::kDontCopyClipList,
         CanvasRenderingContext2DState::SaveType::kInternalLayer));
 
-    PaintFlags extra_flags;
+    cc::PaintFlags extra_flags;
     GetState().FillStyle()->ApplyToFlags(extra_flags);
     extra_flags.setColor(GetState().FillStyle()->PaintColor());
     extra_flags.setAlpha(globalAlpha() * 255);
@@ -203,7 +203,7 @@ void BaseRenderingContext2D::beginLayer() {
       extra_flags.setImageFilter(StateGetFilter());
     canvas->saveLayer(nullptr, &extra_flags);
   } else {
-    PaintFlags flags;
+    cc::PaintFlags flags;
     GetState().FillStyle()->ApplyToFlags(flags);
     flags.setColor(GetState().FillStyle()->PaintColor());
     flags.setBlendMode(GetState().GlobalComposite());
@@ -1013,7 +1013,7 @@ void BaseRenderingContext2D::DrawPathInternal(
 
   Draw<OverdrawOp::kNone>(
       [sk_path, use_paint_cache](cc::PaintCanvas* c,
-                                 const PaintFlags* flags)  // draw lambda
+                                 const cc::PaintFlags* flags)  // draw lambda
       { c->drawPath(sk_path, *flags, use_paint_cache); },
       [](const SkIRect& rect)  // overdraw test lambda
       { return false; },
@@ -1112,7 +1112,7 @@ void BaseRenderingContext2D::fillRect(double x,
 
   SkRect rect = SkRect::MakeXYWH(fx, fy, fwidth, fheight);
   Draw<OverdrawOp::kNone>(
-      [rect](cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
+      [rect](cc::PaintCanvas* c, const cc::PaintFlags* flags)  // draw lambda
       { c->drawRect(rect, *flags); },
       [rect, this](const SkIRect& clip_bounds)  // overdraw test lambda
       {
@@ -1128,8 +1128,8 @@ void BaseRenderingContext2D::fillRect(double x,
 
 static void StrokeRectOnCanvas(const gfx::RectF& rect,
                                cc::PaintCanvas* canvas,
-                               const PaintFlags* flags) {
-  DCHECK_EQ(flags->getStyle(), PaintFlags::kStroke_Style);
+                               const cc::PaintFlags* flags) {
+  DCHECK_EQ(flags->getStyle(), cc::PaintFlags::kStroke_Style);
   if ((rect.width() > 0) != (rect.height() > 0)) {
     // When stroking, we must skip the zero-dimension segments
     SkPath path;
@@ -1172,7 +1172,7 @@ void BaseRenderingContext2D::strokeRect(double x,
     return;
 
   Draw<OverdrawOp::kNone>(
-      [rect](cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
+      [rect](cc::PaintCanvas* c, const cc::PaintFlags* flags)  // draw lambda
       { StrokeRectOnCanvas(rect, c, flags); },
       kNoOverdraw, gfx::RectFToSkRect(bounds),
       CanvasRenderingContext2DState::kStrokePaintType,
@@ -1313,9 +1313,9 @@ void BaseRenderingContext2D::clearRect(double x,
                                                 width, height);
   }
 
-  PaintFlags clear_flags;
+  cc::PaintFlags clear_flags;
   clear_flags.setBlendMode(SkBlendMode::kClear);
-  clear_flags.setStyle(PaintFlags::kFill_Style);
+  clear_flags.setStyle(cc::PaintFlags::kFill_Style);
 
   // clamp to float to avoid float cast overflow when used as SkScalar
   AdjustRectForCanvas(x, y, width, height);
@@ -1507,11 +1507,11 @@ void BaseRenderingContext2D::DrawImageInternal(
     const gfx::RectF& src_rect,
     const gfx::RectF& dst_rect,
     const SkSamplingOptions& sampling,
-    const PaintFlags* flags) {
+    const cc::PaintFlags* flags) {
   cc::RecordPaintCanvas::DisableFlushCheckScope disable_flush_check_scope(
       static_cast<cc::RecordPaintCanvas*>(c));
   int initial_save_count = c->getSaveCount();
-  PaintFlags image_flags = *flags;
+  cc::PaintFlags image_flags = *flags;
 
   if (flags->getImageFilter()) {
     SkMatrix ctm = c->getTotalMatrix();
@@ -1536,7 +1536,7 @@ void BaseRenderingContext2D::DrawImageInternal(
     c->save();
     c->concat(inv_ctm);
 
-    PaintFlags layer_flags;
+    cc::PaintFlags layer_flags;
     layer_flags.setBlendMode(flags->getBlendMode());
     layer_flags.setImageFilter(flags->getImageFilter());
 
@@ -1683,10 +1683,10 @@ void BaseRenderingContext2D::drawImage(CanvasImageSource* image_source,
 
   Draw<OverdrawOp::kDrawImage>(
       [this, image_source, image, src_rect, dst_rect](
-          cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
+          cc::PaintCanvas* c, const cc::PaintFlags* flags)  // draw lambda
       {
         SkSamplingOptions sampling =
-            PaintFlags::FilterQualityToSkSamplingOptions(
+            cc::PaintFlags::FilterQualityToSkSamplingOptions(
                 flags ? flags->getFilterQuality()
                       : cc::PaintFlags::FilterQuality::kNone);
         DrawImageInternal(c, image_source, image.get(), src_rect, dst_rect,

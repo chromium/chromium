@@ -16,7 +16,7 @@ namespace blink {
 namespace {
 
 void CopyStateFromGraphicsContext(const GraphicsContext& context,
-                                  PaintFlags& flags) {
+                                  cc::PaintFlags& flags) {
   // TODO(fs): The color filter can be set when generating a picture for a mask
   // due to color-interpolation. We could also just apply the
   // color-interpolation property from the the shape itself (which could mean
@@ -44,7 +44,7 @@ void SVGObjectPainter::PaintResourceSubtree(GraphicsContext& context) {
 bool SVGObjectPainter::ApplyPaintResource(
     const SVGPaint& paint,
     const AffineTransform* additional_paint_server_transform,
-    PaintFlags& flags) {
+    cc::PaintFlags& flags) {
   SVGElementResourceClient* client = SVGResources::GetClient(layout_object_);
   if (!client)
     return false;
@@ -67,7 +67,7 @@ bool SVGObjectPainter::PreparePaint(
     bool is_rendering_clip_path_as_mask_image,
     const ComputedStyle& style,
     LayoutSVGResourceMode resource_mode,
-    PaintFlags& flags,
+    cc::PaintFlags& flags,
     const AffineTransform* additional_paint_server_transform) {
   if (is_rendering_clip_path_as_mask_image) {
     if (resource_mode == kApplyToStrokeMode)

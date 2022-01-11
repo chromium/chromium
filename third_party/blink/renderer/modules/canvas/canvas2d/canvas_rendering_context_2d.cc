@@ -35,6 +35,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
+#include "cc/paint/paint_flags.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
@@ -69,7 +70,6 @@
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_layer_bridge.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/stroke_data.h"
@@ -944,7 +944,8 @@ void CanvasRenderingContext2D::fillFormattedText(
       canvas()->GetDocument(), GetState().GetFontDescription(), x, y,
       wrap_width, bounds);
   Draw<OverdrawOp::kNone>(
-      [recording](cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
+      [recording](cc::PaintCanvas* c,
+                  const cc::PaintFlags* flags)  // draw lambda
       { c->drawPicture(recording); },
       [](const SkIRect& rect) { return false; }, gfx::RectFToSkRect(bounds),
       CanvasRenderingContext2DState::PaintType::kFillPaintType,
@@ -1052,7 +1053,7 @@ void CanvasRenderingContext2D::DrawTextInternal(
 
   Draw<OverdrawOp::kNone>(
       [this, text = std::move(text), direction, bidi_override, location](
-          cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
+          cc::PaintCanvas* c, const cc::PaintFlags* flags)  // draw lambda
       {
         TextRun text_run(text, 0, 0, TextRun::kAllowTrailingExpansion,
                          direction, bidi_override);

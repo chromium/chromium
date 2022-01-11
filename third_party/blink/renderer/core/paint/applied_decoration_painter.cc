@@ -10,7 +10,7 @@
 
 namespace blink {
 
-void AppliedDecorationPainter::Paint(const PaintFlags* flags) {
+void AppliedDecorationPainter::Paint(const cc::PaintFlags* flags) {
   context_.SetStrokeStyle(decoration_info_.StrokeStyle());
   context_.SetStrokeColor(decoration_info_.LineColor());
 
@@ -38,7 +38,7 @@ void AppliedDecorationPainter::Paint(const PaintFlags* flags) {
 }
 
 void AppliedDecorationPainter::StrokeWavyTextDecoration(
-    const PaintFlags* flags) {
+    const cc::PaintFlags* flags) {
   // We need this because of the clipping we're doing below, as we paint both
   // overlines and underlines here. That clip would hide the overlines, when
   // painting the underlines.

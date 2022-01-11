@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "cc/paint/paint_flags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
@@ -23,7 +24,6 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
@@ -59,7 +59,7 @@ class SVGImageTest : public testing::Test, private ScopedMockOverlayScrollbars {
     Image* image = image_.get();
     std::unique_ptr<SkCanvas> null_canvas = SkMakeNullCanvas();
     SkiaPaintCanvas canvas(null_canvas.get());
-    PaintFlags flags;
+    cc::PaintFlags flags;
     gfx::RectF dummy_rect(0, 0, 100, 100);
     image->Draw(&canvas, flags, dummy_rect, dummy_rect, ImageDrawOptions());
   }

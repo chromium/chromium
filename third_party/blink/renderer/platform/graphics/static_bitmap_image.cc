@@ -44,7 +44,7 @@ gfx::Size StaticBitmapImage::SizeWithConfig(SizeConfig config) const {
 }
 
 void StaticBitmapImage::DrawHelper(cc::PaintCanvas* canvas,
-                                   const PaintFlags& flags,
+                                   const cc::PaintFlags& flags,
                                    const gfx::RectF& dst_rect,
                                    const gfx::RectF& src_rect,
                                    const ImageDrawOptions& draw_options,

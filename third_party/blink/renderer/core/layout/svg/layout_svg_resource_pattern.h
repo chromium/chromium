@@ -52,7 +52,7 @@ class LayoutSVGResourcePattern final : public LayoutSVGResourcePaintServer {
                    const gfx::RectF& reference_box,
                    const AffineTransform* additional_transform,
                    const AutoDarkMode&,
-                   PaintFlags&) override;
+                   cc::PaintFlags&) override;
 
   static const LayoutSVGResourceType kResourceType = kPatternResourceType;
   LayoutSVGResourceType ResourceType() const override {

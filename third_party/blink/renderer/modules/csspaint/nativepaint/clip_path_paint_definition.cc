@@ -275,7 +275,7 @@ sk_sp<PaintRecord> ClipPathPaintDefinition::Paint(
   auto* rendering_context = MakeGarbageCollected<PaintRenderingContext2D>(
       gfx::ToRoundedSize(container_size), context_settings, 1, 1);
 
-  PaintFlags flags;
+  cc::PaintFlags flags;
   flags.setAntiAlias(true);
   rendering_context->GetPaintCanvas()->drawPath(path.GetSkPath(), flags);
 

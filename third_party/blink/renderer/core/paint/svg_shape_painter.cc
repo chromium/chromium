@@ -77,7 +77,7 @@ void SVGShapePainter::Paint(const PaintInfo& paint_info) {
       for (int i = 0; i < 3; i++) {
         switch (style.PaintOrderType(i)) {
           case PT_FILL: {
-            PaintFlags fill_flags;
+            cc::PaintFlags fill_flags;
             if (!SVGObjectPainter(layout_svg_shape_)
                      .PreparePaint(paint_info.context,
                                    paint_info.IsRenderingClipPathAsMaskImage(),
@@ -103,7 +103,7 @@ void SVGShapePainter::Paint(const PaintInfo& paint_info) {
                   return;
               }
 
-              PaintFlags stroke_flags;
+              cc::PaintFlags stroke_flags;
               if (!SVGObjectPainter(layout_svg_shape_)
                        .PreparePaint(
                            paint_info.context,
@@ -154,7 +154,7 @@ class PathWithTemporaryWindingRule {
 };
 
 void SVGShapePainter::FillShape(GraphicsContext& context,
-                                const PaintFlags& flags,
+                                const cc::PaintFlags& flags,
                                 SkPathFillType fill_type) {
   AutoDarkMode auto_dark_mode(PaintAutoDarkMode(
       layout_svg_shape_.StyleRef(), DarkModeFilter::ElementRole::kSVG));
@@ -180,7 +180,7 @@ void SVGShapePainter::FillShape(GraphicsContext& context,
 }
 
 void SVGShapePainter::StrokeShape(GraphicsContext& context,
-                                  const PaintFlags& flags) {
+                                  const cc::PaintFlags& flags) {
   DCHECK(layout_svg_shape_.StyleRef().HasVisibleStroke());
 
   AutoDarkMode auto_dark_mode(PaintAutoDarkMode(

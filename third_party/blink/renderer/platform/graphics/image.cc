@@ -202,7 +202,7 @@ sk_sp<PaintShader> CreatePatternShader(const PaintImage& image,
 
   PaintRecorder recorder;
   cc::PaintCanvas* canvas = recorder.beginRecording(tile_rect);
-  PaintFlags flags;
+  cc::PaintFlags flags;
   flags.setAntiAlias(should_antialias);
   canvas->drawImageRect(
       image, gfx::RectToSkRect(subset_rect),
@@ -289,7 +289,7 @@ void Image::DrawPattern(GraphicsContext& context,
   // If the shader could not be instantiated (e.g. non-invertible matrix),
   // draw transparent.
   // Note: we can't simply bail, because of arbitrary blend mode.
-  PaintFlags flags(base_flags);
+  cc::PaintFlags flags(base_flags);
   flags.setColor(tile_shader ? SK_ColorBLACK : SK_ColorTRANSPARENT);
   flags.setShader(std::move(tile_shader));
   if (draw_options.apply_dark_mode) {
@@ -330,7 +330,7 @@ PaintImageBuilder Image::CreatePaintImageBuilder() {
       .set_is_multipart(is_multipart_);
 }
 
-bool Image::ApplyShader(PaintFlags& flags,
+bool Image::ApplyShader(cc::PaintFlags& flags,
                         const SkMatrix& local_matrix,
                         const gfx::RectF& dst_rect,
                         const gfx::RectF& src_rect,

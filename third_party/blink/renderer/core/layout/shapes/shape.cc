@@ -33,6 +33,7 @@
 #include <memory>
 #include <utility>
 
+#include "cc/paint/paint_flags.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/core/css/basic_shape_functions.h"
 #include "third_party/blink/renderer/core/layout/shapes/box_shape.h"
@@ -48,7 +49,6 @@
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -247,7 +247,7 @@ static bool ExtractImageData(Image* image,
   // that loads SVG Images during paint invalidations to mark layoutObjects
   // for layout, which is not allowed. See https://crbug.com/429346
   ImageObserverDisabler disabler(image);
-  PaintFlags flags;
+  cc::PaintFlags flags;
   gfx::RectF image_source_rect(gfx::SizeF(image->Size()));
   gfx::Rect image_dest_rect(image_size);
   SkiaPaintCanvas canvas(surface->getCanvas());

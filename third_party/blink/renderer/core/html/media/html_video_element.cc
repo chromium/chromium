@@ -381,11 +381,11 @@ void HTMLVideoElement::RequestExitPictureInPicture() {
 
 void HTMLVideoElement::PaintCurrentFrame(cc::PaintCanvas* canvas,
                                          const gfx::Rect& dest_rect,
-                                         const PaintFlags* flags) const {
+                                         const cc::PaintFlags* flags) const {
   if (!GetWebMediaPlayer())
     return;
 
-  PaintFlags media_flags;
+  cc::PaintFlags media_flags;
   if (flags) {
     media_flags = *flags;
   } else {

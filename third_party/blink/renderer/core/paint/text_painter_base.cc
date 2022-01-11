@@ -224,7 +224,7 @@ void TextPainterBase::PaintDecorationsExceptLineThrough(
     const Vector<AppliedTextDecoration>& decorations,
     const TextPaintStyle& text_style,
     bool* has_line_through_decoration,
-    const PaintFlags* flags) {
+    const cc::PaintFlags* flags) {
   GraphicsContext& context = paint_info.context;
   GraphicsContextStateSaver state_saver(context);
   UpdateGraphicsContext(context, text_style, state_saver);
@@ -323,7 +323,7 @@ void TextPainterBase::PaintDecorationsOnlyLineThrough(
     const PaintInfo& paint_info,
     const Vector<AppliedTextDecoration>& decorations,
     const TextPaintStyle& text_style,
-    const PaintFlags* flags) {
+    const cc::PaintFlags* flags) {
   GraphicsContext& context = paint_info.context;
   GraphicsContextStateSaver state_saver(context);
   UpdateGraphicsContext(context, text_style, state_saver);
@@ -359,7 +359,7 @@ void TextPainterBase::PaintDecorationUnderOrOverLine(
     GraphicsContext& context,
     TextDecorationInfo& decoration_info,
     TextDecorationLine line,
-    const PaintFlags* flags) {
+    const cc::PaintFlags* flags) {
   AppliedDecorationPainter decoration_painter(context, decoration_info);
   if (decoration_info.Style().TextDecorationSkipInk() ==
       ETextDecorationSkipInk::kAuto) {

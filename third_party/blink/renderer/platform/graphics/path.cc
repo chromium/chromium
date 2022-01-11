@@ -92,7 +92,7 @@ SkPath Path::StrokePath(const StrokeData& stroke_data,
 
 SkPath Path::StrokePath(const StrokeData& stroke_data,
                         float stroke_precision) const {
-  PaintFlags flags;
+  cc::PaintFlags flags;
   stroke_data.SetupPaint(&flags);
 
   SkPath stroke_path;

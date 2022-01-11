@@ -23,10 +23,10 @@ GraphicsContextState::GraphicsContextState()
       interpolation_quality_(kInterpolationDefault),
       save_count_(0),
       should_antialias_(true) {
-  stroke_flags_.setStyle(PaintFlags::kStroke_Style);
+  stroke_flags_.setStyle(cc::PaintFlags::kStroke_Style);
   stroke_flags_.setStrokeWidth(SkFloatToScalar(stroke_data_.Thickness()));
-  stroke_flags_.setStrokeCap(PaintFlags::kDefault_Cap);
-  stroke_flags_.setStrokeJoin(PaintFlags::kDefault_Join);
+  stroke_flags_.setStrokeCap(cc::PaintFlags::kDefault_Cap);
+  stroke_flags_.setStrokeJoin(cc::PaintFlags::kDefault_Join);
   stroke_flags_.setStrokeMiter(SkFloatToScalar(stroke_data_.MiterLimit()));
   stroke_flags_.setFilterQuality(FilterQualityForPaint(interpolation_quality_));
   stroke_flags_.setAntiAlias(should_antialias_);
@@ -48,7 +48,7 @@ void GraphicsContextState::Copy(const GraphicsContextState& source) {
   new (this) GraphicsContextState(source);
 }
 
-const PaintFlags& GraphicsContextState::StrokeFlags(
+const cc::PaintFlags& GraphicsContextState::StrokeFlags(
     const int stroked_path_length,
     const int dash_thickness) const {
   stroke_data_.SetupPaintDashPathEffect(&stroke_flags_, stroked_path_length,
@@ -72,12 +72,12 @@ void GraphicsContextState::SetStrokeColor(const Color& color) {
 
 void GraphicsContextState::SetLineCap(LineCap cap) {
   stroke_data_.SetLineCap(cap);
-  stroke_flags_.setStrokeCap((PaintFlags::Cap)cap);
+  stroke_flags_.setStrokeCap(static_cast<cc::PaintFlags::Cap>(cap));
 }
 
 void GraphicsContextState::SetLineJoin(LineJoin join) {
   stroke_data_.SetLineJoin(join);
-  stroke_flags_.setStrokeJoin((PaintFlags::Join)join);
+  stroke_flags_.setStrokeJoin(static_cast<cc::PaintFlags::Join>(join));
 }
 
 void GraphicsContextState::SetMiterLimit(float miter_limit) {

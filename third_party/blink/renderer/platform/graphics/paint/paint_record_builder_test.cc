@@ -26,7 +26,7 @@ TEST_F(PaintRecordBuilderTest, TransientPaintController) {
   EXPECT_FALSE(ClientCacheIsValid(context.GetPaintController(), client));
 
   MockPaintCanvas canvas;
-  PaintFlags flags;
+  cc::PaintFlags flags;
   EXPECT_CALL(canvas, drawPicture(_)).Times(1);
   builder->EndRecording(canvas);
 
@@ -43,7 +43,7 @@ TEST_F(PaintRecordBuilderTest, LastingPaintController) {
       MakeGarbageCollected<PaintRecordBuilder>(GetPaintController());
   auto& context = builder->Context();
   MockPaintCanvas canvas;
-  PaintFlags flags;
+  cc::PaintFlags flags;
   {
     PaintController::CycleScope cycle_scope(GetPaintController());
     InitRootChunk();

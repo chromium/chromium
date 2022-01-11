@@ -180,7 +180,7 @@ bool LayoutSVGResourcePattern::ApplyShader(
     const gfx::RectF& reference_box,
     const AffineTransform* additional_transform,
     const AutoDarkMode&,
-    PaintFlags& flags) {
+    cc::PaintFlags& flags) {
   NOT_DESTROYED();
   ClearInvalidationMask();
 

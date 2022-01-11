@@ -109,7 +109,7 @@ bool LayoutSVGResourceGradient::ApplyShader(
     const gfx::RectF& reference_box,
     const AffineTransform* additional_transform,
     const AutoDarkMode& auto_dark_mode,
-    PaintFlags& flags) {
+    cc::PaintFlags& flags) {
   NOT_DESTROYED();
   ClearInvalidationMask();
 

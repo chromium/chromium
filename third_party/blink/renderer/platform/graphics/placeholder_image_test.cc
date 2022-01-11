@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/memory/scoped_refptr.h"
+#include "cc/paint/paint_flags.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -18,7 +19,6 @@
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/test/mock_paint_canvas.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
@@ -63,8 +63,9 @@ void ExpectDrawGrayBox(MockPaintCanvas& canvas,
                               FloatNear(expected_rect.width(), 0.01)),
                      Property(&SkRect::height,
                               FloatNear(expected_rect.height(), 0.01))),
-               AllOf(Property(&PaintFlags::getStyle, PaintFlags::kFill_Style),
-                     Property(&PaintFlags::getColor,
+               AllOf(Property(&cc::PaintFlags::getStyle,
+                              cc::PaintFlags::kFill_Style),
+                     Property(&cc::PaintFlags::getColor,
                               SkColorSetARGB(0x80, 0xD9, 0xD9, 0xD9)))))
       .Times(1);
 }
@@ -76,7 +77,7 @@ void DrawImageExpectingGrayBoxOnly(PlaceholderImage& image,
   EXPECT_CALL(canvas, drawImageRect(_, _, _, _, _, _)).Times(0);
   EXPECT_CALL(canvas, drawTextBlob(_, _, _, _)).Times(0);
 
-  image.Draw(&canvas, PaintFlags(), dest_rect,
+  image.Draw(&canvas, cc::PaintFlags(), dest_rect,
              gfx::RectF(0.0f, 0.0f, 100.0f, 100.0f), ImageDrawOptions());
 }
 
@@ -109,7 +110,7 @@ void DrawImageExpectingIconOnly(PlaceholderImage& image,
 
   ImageDrawOptions draw_options;
   draw_options.respect_orientation = kDoNotRespectImageOrientation;
-  image.Draw(&canvas, PaintFlags(), dest_rect,
+  image.Draw(&canvas, cc::PaintFlags(), dest_rect,
              gfx::RectF(0.0f, 0.0f, 100.0f, 100.0f), draw_options);
 }
 
@@ -188,8 +189,9 @@ void DrawImageExpectingIconAndTextLTR(PlaceholderImage& image,
                         scale_factor * (kBaseTextPaddingY + kBaseFontSize),
                     0.01),
           AllOf(
-              Property(&PaintFlags::getStyle, PaintFlags::kFill_Style),
-              Property(&PaintFlags::getColor, SkColorSetARGB(0xAB, 0, 0, 0)))))
+              Property(&cc::PaintFlags::getStyle, cc::PaintFlags::kFill_Style),
+              Property(&cc::PaintFlags::getColor,
+                       SkColorSetARGB(0xAB, 0, 0, 0)))))
       .WillOnce(InvokeWithoutArgs([&image, scale_factor]() {
         EXPECT_NEAR(
             scale_factor * kBaseFontSize,
@@ -199,7 +201,7 @@ void DrawImageExpectingIconAndTextLTR(PlaceholderImage& image,
 
   ImageDrawOptions draw_options;
   draw_options.respect_orientation = kDoNotRespectImageOrientation;
-  image.Draw(&canvas, PaintFlags(), dest_rect,
+  image.Draw(&canvas, cc::PaintFlags(), dest_rect,
              gfx::RectF(0.0f, 0.0f, 100.0f, 100.0f), draw_options);
 }
 
@@ -291,7 +293,7 @@ TEST_F(PlaceholderImageTest, DrawNonIntersectingSrcRect) {
   ImageDrawOptions draw_options;
   draw_options.respect_orientation = kDoNotRespectImageOrientation;
   PlaceholderImage::Create(nullptr, gfx::Size(800, 600), 0)
-      ->Draw(&canvas, PaintFlags(), gfx::RectF(0.0f, 0.0f, 800.0f, 600.0f),
+      ->Draw(&canvas, cc::PaintFlags(), gfx::RectF(0.0f, 0.0f, 800.0f, 600.0f),
              // The source rectangle is outside the 800x600 bounds of the image,
              // so nothing should be drawn.
              gfx::RectF(1000.0f, 0.0f, 800.0f, 600.0f), draw_options);
@@ -441,8 +443,9 @@ TEST_F(PlaceholderImageTest, DrawWithOriginalResourceSizeRTL) {
                         kScaleFactor * (kBaseTextPaddingY + kBaseFontSize),
                     0.01),
           AllOf(
-              Property(&PaintFlags::getStyle, PaintFlags::kFill_Style),
-              Property(&PaintFlags::getColor, SkColorSetARGB(0xAB, 0, 0, 0)))))
+              Property(&cc::PaintFlags::getStyle, cc::PaintFlags::kFill_Style),
+              Property(&cc::PaintFlags::getColor,
+                       SkColorSetARGB(0xAB, 0, 0, 0)))))
       .WillOnce(InvokeWithoutArgs([image]() {
         EXPECT_NEAR(
             kScaleFactor * kBaseFontSize,
@@ -452,7 +455,7 @@ TEST_F(PlaceholderImageTest, DrawWithOriginalResourceSizeRTL) {
 
   ImageDrawOptions draw_options;
   draw_options.respect_orientation = kDoNotRespectImageOrientation;
-  image->Draw(&canvas, PaintFlags(), dest_rect,
+  image->Draw(&canvas, cc::PaintFlags(), dest_rect,
               gfx::RectF(0.0f, 0.0f, 100.0f, 100.0f), draw_options);
 }
 

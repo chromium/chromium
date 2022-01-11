@@ -64,14 +64,14 @@ class SVGInlineTextBoxPainter {
   bool SetupTextPaint(const PaintInfo&,
                       const ComputedStyle&,
                       LayoutSVGResourceMode,
-                      PaintFlags&,
+                      cc::PaintFlags&,
                       const AffineTransform*);
   void PaintText(const PaintInfo&,
                  TextRun&,
                  const SVGTextFragment&,
                  int start_position,
                  int end_position,
-                 const PaintFlags&);
+                 const cc::PaintFlags&);
   void PaintText(const PaintInfo&,
                  const ComputedStyle&,
                  const ComputedStyle& selection_style,

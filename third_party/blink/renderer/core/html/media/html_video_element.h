@@ -87,10 +87,10 @@ class CORE_EXPORT HTMLVideoElement final
 
   // Used by canvas to gain raw pixel access
   //
-  // PaintFlags is optional. If unspecified, its blend mode defaults to kSrc.
+  // |paint_flags| is optional. If unspecified, its blend mode defaults to kSrc.
   void PaintCurrentFrame(cc::PaintCanvas*,
                          const gfx::Rect&,
-                         const cc::PaintFlags*) const;
+                         const cc::PaintFlags* paint_flags) const;
 
   bool HasAvailableVideoFrame() const;
 

@@ -389,7 +389,7 @@ gfx::SizeF SVGImage::DrawInfo::CalculateResidualScale() const {
 
 void SVGImage::DrawForContainer(const DrawInfo& draw_info,
                                 cc::PaintCanvas* canvas,
-                                const PaintFlags& flags,
+                                const cc::PaintFlags& flags,
                                 const gfx::RectF& dst_rect,
                                 const gfx::RectF& src_rect) {
   gfx::RectF unzoomed_src = src_rect;
@@ -434,8 +434,8 @@ void SVGImage::DrawPatternForContainer(const DrawInfo& draw_info,
     // spacing area.
     if (!tiling_info.spacing.IsZero())
       builder->Context().Clip(tile);
-    DrawForContainer(draw_info, builder->Context().Canvas(), PaintFlags(), tile,
-                     tiling_info.image_rect);
+    DrawForContainer(draw_info, builder->Context().Canvas(), cc::PaintFlags(),
+                     tile, tiling_info.image_rect);
   }
 
   sk_sp<PaintShader> tile_shader = PaintShader::MakePaintRecord(
@@ -445,7 +445,7 @@ void SVGImage::DrawPatternForContainer(const DrawInfo& draw_info,
   // If the shader could not be instantiated (e.g. non-invertible matrix),
   // draw transparent.
   // Note: we can't simply bail, because of arbitrary blend mode.
-  PaintFlags flags = base_flags;
+  cc::PaintFlags flags = base_flags;
   flags.setColor(tile_shader ? SK_ColorBLACK : SK_ColorTRANSPARENT);
   flags.setShader(std::move(tile_shader));
   // Reset filter quality.
@@ -467,7 +467,7 @@ void SVGImage::PopulatePaintRecordForCurrentFrameForContainer(
   const gfx::Rect dest_rect(gfx::ToRoundedSize(size));
   cc::PaintCanvas* canvas =
       recorder.beginRecording(gfx::RectToSkRect(dest_rect));
-  DrawForContainer(draw_info, canvas, PaintFlags(), gfx::RectF(dest_rect),
+  DrawForContainer(draw_info, canvas, cc::PaintFlags(), gfx::RectF(dest_rect),
                    gfx::RectF(size));
   builder.set_paint_record(recorder.finishRecordingAsPicture(), dest_rect,
                            PaintImage::GetNextContentId());
@@ -479,7 +479,7 @@ void SVGImage::PopulatePaintRecordForCurrentFrameForContainer(
 }
 
 bool SVGImage::ApplyShaderInternal(const DrawInfo& draw_info,
-                                   PaintFlags& flags,
+                                   cc::PaintFlags& flags,
                                    const SkMatrix& local_matrix) {
   if (draw_info.ContainerSize().IsEmpty())
     return false;
@@ -499,7 +499,7 @@ bool SVGImage::ApplyShaderInternal(const DrawInfo& draw_info,
   return true;
 }
 
-bool SVGImage::ApplyShader(PaintFlags& flags,
+bool SVGImage::ApplyShader(cc::PaintFlags& flags,
                            const SkMatrix& local_matrix,
                            const gfx::RectF& dst_rect,
                            const gfx::RectF& src_rect,
@@ -510,7 +510,7 @@ bool SVGImage::ApplyShader(PaintFlags& flags,
 }
 
 bool SVGImage::ApplyShaderForContainer(const DrawInfo& draw_info,
-                                       PaintFlags& flags,
+                                       cc::PaintFlags& flags,
                                        const SkMatrix& local_matrix) {
   // Compensate for the container size rounding.
   gfx::SizeF residual_scale =
@@ -522,7 +522,7 @@ bool SVGImage::ApplyShaderForContainer(const DrawInfo& draw_info,
 }
 
 void SVGImage::Draw(cc::PaintCanvas* canvas,
-                    const PaintFlags& flags,
+                    const cc::PaintFlags& flags,
                     const gfx::RectF& dst_rect,
                     const gfx::RectF& src_rect,
                     const ImageDrawOptions& draw_options) {
@@ -563,7 +563,7 @@ sk_sp<PaintRecord> SVGImage::PaintRecordForCurrentFrame(
   return view->GetPaintRecord();
 }
 
-static bool DrawNeedsLayer(const PaintFlags& flags) {
+static bool DrawNeedsLayer(const cc::PaintFlags& flags) {
   if (SkColorGetA(flags.getColor()) < 255)
     return true;
 
@@ -577,7 +577,7 @@ static bool DrawNeedsLayer(const PaintFlags& flags) {
 
 void SVGImage::DrawInternal(const DrawInfo& draw_info,
                             cc::PaintCanvas* canvas,
-                            const PaintFlags& flags,
+                            const cc::PaintFlags& flags,
                             const gfx::RectF& dst_rect,
                             const gfx::RectF& unzoomed_src_rect) {
   sk_sp<PaintRecord> record = PaintRecordForCurrentFrame(draw_info);
