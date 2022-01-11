@@ -4245,12 +4245,12 @@
   {
     "name": "omnibox-max-url-matches",
     "owners": [ "orinj", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 110
   },
   {
     "name": "omnibox-max-zero-suggest-matches",
     "owners": [ "manukh", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 100
+    "expiry_milestone": 110
   },
   {
     "name": "omnibox-most-visited-tiles",
@@ -4370,7 +4370,7 @@
   {
     "name": "omnibox-ui-max-autocomplete-matches",
     "owners": [ "jdonnelly", "chrome-omnibox-team@google.com" ],
-    "expiry_milestone": 95
+    "expiry_milestone": 110
   },
   {
     "name": "omnibox-updated-connection-security-indicators",
