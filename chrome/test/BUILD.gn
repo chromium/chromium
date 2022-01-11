@@ -2157,6 +2157,7 @@ if (!is_android && !is_fuchsia) {
 
         # https://crbug.com/1252812 The intent picker (launch icon) actions
         # are not working on Lacros.
+        "../browser/ui/views/intent_picker_bubble_view_browsertest.cc",
         "../browser/ui/views/web_apps/web_app_integration_browsertest.cc",
 
         # Lacros does not seem to have any actual WebView-based UI to test.
@@ -2403,11 +2404,6 @@ if (!is_android && !is_fuchsia) {
         "//components/account_manager_core:test_support",
         "//components/services/app_service/public/cpp:intents",
       ]
-    }
-
-    if (!is_chromeos) {
-      sources +=
-          [ "../browser/ui/views/intent_picker_bubble_view_browsertest.cc" ]
     }
 
     if (include_js_tests) {
