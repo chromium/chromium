@@ -349,9 +349,9 @@ public class BookmarkWidgetServiceImpl extends BookmarkWidgetService.Impl {
         public void onDestroy() {
             PostTask.runOrPostTask(UiThreadTaskTraits.DEFAULT, () -> {
                 if (mBookmarkModel != null) mBookmarkModel.destroy();
+                SystemNightModeMonitor.getInstance().removeObserver(this);
             });
             deleteWidgetState(mWidgetId);
-            SystemNightModeMonitor.getInstance().removeObserver(this);
         }
 
         @BinderThread
