@@ -40,8 +40,7 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
 
     private static final String SHARE_TEXT_TEMPLATE = "\"%s\"\n";
     private static final String INVALID_SELECTOR = "";
-    private static final long TIMEOUT_MS = 100;
-    private static final long AMP_TIMEOUT_MS = 200;
+    private static final int TIMEOUT_MS = 100;
     private static final Set<String> AMP_VIEWER_DOMAINS =
             new HashSet<>(Arrays.asList("google.com/amp/", "bing.com/amp"));
     private static final int LENGTH_AMP_DOMAIN = 15;
@@ -135,24 +134,19 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
         }
 
         if (mTab.getWebContents().getMainFrame() != mTab.getWebContents().getFocusedFrame()) {
-            if (ChromeFeatureList.isEnabled(ChromeFeatureList.SHARED_HIGHLIGHTING_AMP)
-                    && isAmpUrl(mShareUrl)) {
-                PostTask.postDelayedTask(
-                        UiThreadTaskTraits.DEFAULT, () -> timeout(), AMP_TIMEOUT_MS);
-                requestSelectorForCanonicalUrl();
+            if (!ChromeFeatureList.isEnabled(ChromeFeatureList.SHARED_HIGHLIGHTING_AMP)
+                    || !isAmpUrl(mShareUrl)) {
+                completeRequestWithFailure(LinkGenerationError.I_FRAME);
                 return;
             }
-
-            completeRequestWithFailure(LinkGenerationError.I_FRAME);
-            return;
         }
 
-        PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> timeout(), TIMEOUT_MS);
+        PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> timeout(), getTimeout());
         requestSelectorForCanonicalUrl();
     }
 
     private void reshareHighlightedText() {
-        PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> timeout(), TIMEOUT_MS);
+        PostTask.postDelayedTask(UiThreadTaskTraits.DEFAULT, () -> timeout(), getTimeout());
         setTextFragmentReceiver();
 
         if (mProducer == null) {
@@ -300,5 +294,11 @@ public class LinkToTextCoordinator extends EmptyTabObserver {
     private void completeRequestWithSuccess(String selector) {
         LinkToTextBridge.logSuccessMetrics();
         onSelectorReady(selector);
+    }
+
+    private int getTimeout() {
+        return ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                ChromeFeatureList.PREEMPTIVE_LINK_TO_TEXT_GENERATION, "TimeoutLengthMs",
+                TIMEOUT_MS);
     }
 }
