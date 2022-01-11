@@ -62,6 +62,11 @@ public class WebLayerSiteSettingsDelegate
     }
 
     @Override
+    public boolean isIncognitoModeEnabled() {
+        return true;
+    }
+
+    @Override
     public boolean isQuietNotificationPromptsFeatureEnabled() {
         return false;
     }

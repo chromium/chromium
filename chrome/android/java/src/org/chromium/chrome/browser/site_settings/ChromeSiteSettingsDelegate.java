@@ -18,6 +18,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.TrustedWebActivityPermissionManager;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxBridge;
 import org.chromium.chrome.browser.privacy_sandbox.PrivacySandboxSnackbarController;
@@ -166,6 +167,11 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
             default:
                 return true;
         }
+    }
+
+    @Override
+    public boolean isIncognitoModeEnabled() {
+        return IncognitoUtils.isIncognitoModeEnabled();
     }
 
     @Override

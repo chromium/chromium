@@ -51,6 +51,11 @@ public interface SiteSettingsDelegate {
     boolean isCategoryVisible(@SiteSettingsCategory.Type int type);
 
     /**
+     * @return true if Incognito mode is enabled.
+     */
+    boolean isIncognitoModeEnabled();
+
+    /**
      * @return true if the QuietNotificationPrompts Feature is enabled.
      */
     boolean isQuietNotificationPromptsFeatureEnabled();

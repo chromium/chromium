@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.browsing_data.BrowsingDataBridge;
 import org.chromium.chrome.browser.browsing_data.BrowsingDataType;
 import org.chromium.chrome.browser.browsing_data.TimePeriod;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.incognito.IncognitoUtils;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
 import org.chromium.chrome.browser.notifications.channels.SiteChannelsManager;
 import org.chromium.chrome.browser.permissions.PermissionTestRule;
@@ -268,19 +269,25 @@ public class SiteSettingsTest {
         });
     }
 
+    private enum ToggleButtonState { EnabledUnchecked, EnabledChecked, Disabled }
+
     /**
      * Checks if the button representing the given state matches the managed expectation.
      */
-    private void checkFourStateCookieToggleButtonEnabled(final SettingsActivity settingsActivity,
-            final CookieSettingsState state, final boolean expected) {
+    private void checkFourStateCookieToggleButtonState(final SettingsActivity settingsActivity,
+            final CookieSettingsState state, final ToggleButtonState toggleState) {
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             SingleCategorySettings preferences =
                     (SingleCategorySettings) settingsActivity.getMainFragment();
             FourStateCookieSettingsPreference fourStateCookieToggle =
                     (FourStateCookieSettingsPreference) preferences.findPreference(
                             SingleCategorySettings.FOUR_STATE_COOKIE_TOGGLE_KEY);
-            Assert.assertEquals(state + " button should be " + (expected ? "enabled" : "disabled"),
-                    expected, fourStateCookieToggle.isButtonEnabledForTesting(state));
+            boolean enabled = toggleState != ToggleButtonState.Disabled;
+            boolean checked = toggleState == ToggleButtonState.EnabledChecked;
+            Assert.assertEquals(state + " button should be " + (enabled ? "enabled" : "disabled"),
+                    enabled, fourStateCookieToggle.isButtonEnabledForTesting(state));
+            Assert.assertEquals(state + " button should be " + (checked ? "checked" : "unchecked"),
+                    checked, fourStateCookieToggle.isButtonCheckedForTesting(state));
         });
     }
 
@@ -538,12 +545,44 @@ public class SiteSettingsTest {
         // managed. This means that every button other than BLOCK is enabled.
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
-        checkFourStateCookieToggleButtonEnabled(settingsActivity, CookieSettingsState.ALLOW, true);
-        checkFourStateCookieToggleButtonEnabled(
-                settingsActivity, CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO, true);
-        checkFourStateCookieToggleButtonEnabled(
-                settingsActivity, CookieSettingsState.BLOCK_THIRD_PARTY, true);
-        checkFourStateCookieToggleButtonEnabled(settingsActivity, CookieSettingsState.BLOCK, false);
+        checkFourStateCookieToggleButtonState(
+                settingsActivity, CookieSettingsState.ALLOW, ToggleButtonState.EnabledUnchecked);
+        checkFourStateCookieToggleButtonState(settingsActivity,
+                CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO, ToggleButtonState.EnabledChecked);
+        checkFourStateCookieToggleButtonState(settingsActivity,
+                CookieSettingsState.BLOCK_THIRD_PARTY, ToggleButtonState.EnabledUnchecked);
+        checkFourStateCookieToggleButtonState(
+                settingsActivity, CookieSettingsState.BLOCK, ToggleButtonState.Disabled);
+        settingsActivity.finish();
+    }
+
+    /**
+     * Set the cookie content setting to allow through policy, disable incognito
+     * mode and ensure the correct radio buttons are enabled.
+     */
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    @Policies.Add({ @Policies.Item(key = "DefaultCookiesSetting", string = "1") })
+    public void testDefaultCookiesSettingManagedAllowWithIncognitoDisabled() throws Exception {
+        IncognitoUtils.setEnabledForTesting(false);
+        setFourStateCookieToggle(CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO);
+        checkDefaultCookiesSettingManaged(true);
+        checkThirdPartyCookieBlockingManaged(false);
+        // The ContentSetting is managed (and set to ALLOW) while ThirdPartyCookieBlocking managed.
+        // Cookie toggle is set to block third party incognito but since
+        // incognito is disabled the button should be disabled and the allow
+        // toggle should be checked.
+        SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
+        checkFourStateCookieToggleButtonState(
+                settingsActivity, CookieSettingsState.ALLOW, ToggleButtonState.EnabledChecked);
+        checkFourStateCookieToggleButtonState(settingsActivity,
+                CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO, ToggleButtonState.Disabled);
+        checkFourStateCookieToggleButtonState(settingsActivity,
+                CookieSettingsState.BLOCK_THIRD_PARTY, ToggleButtonState.EnabledUnchecked);
+        checkFourStateCookieToggleButtonState(
+                settingsActivity, CookieSettingsState.BLOCK, ToggleButtonState.Disabled);
         settingsActivity.finish();
     }
 
@@ -563,12 +602,14 @@ public class SiteSettingsTest {
         // options and all buttons except the active one should be disabled.
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
-        checkFourStateCookieToggleButtonEnabled(settingsActivity, CookieSettingsState.ALLOW, false);
-        checkFourStateCookieToggleButtonEnabled(
-                settingsActivity, CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO, false);
-        checkFourStateCookieToggleButtonEnabled(
-                settingsActivity, CookieSettingsState.BLOCK_THIRD_PARTY, false);
-        checkFourStateCookieToggleButtonEnabled(settingsActivity, CookieSettingsState.BLOCK, true);
+        checkFourStateCookieToggleButtonState(
+                settingsActivity, CookieSettingsState.ALLOW, ToggleButtonState.Disabled);
+        checkFourStateCookieToggleButtonState(settingsActivity,
+                CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO, ToggleButtonState.Disabled);
+        checkFourStateCookieToggleButtonState(settingsActivity,
+                CookieSettingsState.BLOCK_THIRD_PARTY, ToggleButtonState.Disabled);
+        checkFourStateCookieToggleButtonState(
+                settingsActivity, CookieSettingsState.BLOCK, ToggleButtonState.EnabledChecked);
         settingsActivity.finish();
     }
 
@@ -589,12 +630,14 @@ public class SiteSettingsTest {
         // these should be enabled.
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
-        checkFourStateCookieToggleButtonEnabled(settingsActivity, CookieSettingsState.ALLOW, false);
-        checkFourStateCookieToggleButtonEnabled(
-                settingsActivity, CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO, false);
-        checkFourStateCookieToggleButtonEnabled(
-                settingsActivity, CookieSettingsState.BLOCK_THIRD_PARTY, true);
-        checkFourStateCookieToggleButtonEnabled(settingsActivity, CookieSettingsState.BLOCK, true);
+        checkFourStateCookieToggleButtonState(
+                settingsActivity, CookieSettingsState.ALLOW, ToggleButtonState.Disabled);
+        checkFourStateCookieToggleButtonState(settingsActivity,
+                CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO, ToggleButtonState.Disabled);
+        checkFourStateCookieToggleButtonState(settingsActivity,
+                CookieSettingsState.BLOCK_THIRD_PARTY, ToggleButtonState.EnabledChecked);
+        checkFourStateCookieToggleButtonState(
+                settingsActivity, CookieSettingsState.BLOCK, ToggleButtonState.EnabledUnchecked);
         settingsActivity.finish();
     }
 
@@ -615,12 +658,14 @@ public class SiteSettingsTest {
         // only these should be enabled.
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
-        checkFourStateCookieToggleButtonEnabled(settingsActivity, CookieSettingsState.ALLOW, true);
-        checkFourStateCookieToggleButtonEnabled(
-                settingsActivity, CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO, false);
-        checkFourStateCookieToggleButtonEnabled(
-                settingsActivity, CookieSettingsState.BLOCK_THIRD_PARTY, false);
-        checkFourStateCookieToggleButtonEnabled(settingsActivity, CookieSettingsState.BLOCK, true);
+        checkFourStateCookieToggleButtonState(
+                settingsActivity, CookieSettingsState.ALLOW, ToggleButtonState.EnabledChecked);
+        checkFourStateCookieToggleButtonState(settingsActivity,
+                CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO, ToggleButtonState.Disabled);
+        checkFourStateCookieToggleButtonState(settingsActivity,
+                CookieSettingsState.BLOCK_THIRD_PARTY, ToggleButtonState.Disabled);
+        checkFourStateCookieToggleButtonState(
+                settingsActivity, CookieSettingsState.BLOCK, ToggleButtonState.EnabledUnchecked);
         settingsActivity.finish();
     }
 
@@ -644,12 +689,14 @@ public class SiteSettingsTest {
         // selected one should be disabled.
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
-        checkFourStateCookieToggleButtonEnabled(settingsActivity, CookieSettingsState.ALLOW, true);
-        checkFourStateCookieToggleButtonEnabled(
-                settingsActivity, CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO, false);
-        checkFourStateCookieToggleButtonEnabled(
-                settingsActivity, CookieSettingsState.BLOCK_THIRD_PARTY, false);
-        checkFourStateCookieToggleButtonEnabled(settingsActivity, CookieSettingsState.BLOCK, false);
+        checkFourStateCookieToggleButtonState(
+                settingsActivity, CookieSettingsState.ALLOW, ToggleButtonState.EnabledChecked);
+        checkFourStateCookieToggleButtonState(settingsActivity,
+                CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO, ToggleButtonState.Disabled);
+        checkFourStateCookieToggleButtonState(settingsActivity,
+                CookieSettingsState.BLOCK_THIRD_PARTY, ToggleButtonState.Disabled);
+        checkFourStateCookieToggleButtonState(
+                settingsActivity, CookieSettingsState.BLOCK, ToggleButtonState.Disabled);
         settingsActivity.finish();
     }
 
@@ -666,12 +713,39 @@ public class SiteSettingsTest {
         // should be enabled.
         SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
-        checkFourStateCookieToggleButtonEnabled(settingsActivity, CookieSettingsState.ALLOW, true);
-        checkFourStateCookieToggleButtonEnabled(
-                settingsActivity, CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO, true);
-        checkFourStateCookieToggleButtonEnabled(
-                settingsActivity, CookieSettingsState.BLOCK_THIRD_PARTY, true);
-        checkFourStateCookieToggleButtonEnabled(settingsActivity, CookieSettingsState.BLOCK, true);
+        checkFourStateCookieToggleButtonState(
+                settingsActivity, CookieSettingsState.ALLOW, ToggleButtonState.EnabledUnchecked);
+        checkFourStateCookieToggleButtonState(settingsActivity,
+                CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO, ToggleButtonState.EnabledChecked);
+        checkFourStateCookieToggleButtonState(settingsActivity,
+                CookieSettingsState.BLOCK_THIRD_PARTY, ToggleButtonState.EnabledUnchecked);
+        checkFourStateCookieToggleButtonState(
+                settingsActivity, CookieSettingsState.BLOCK, ToggleButtonState.EnabledUnchecked);
+        settingsActivity.finish();
+    }
+
+    /**
+     * Ensure no radio buttons are enforced when cookie settings are unmanaged.
+     */
+    @Test
+    @SmallTest
+    @Feature({"Preferences"})
+    public void testNoCookieSettingsManagedWithIncognitoDisabled() throws Exception {
+        IncognitoUtils.setEnabledForTesting(false);
+        checkDefaultCookiesSettingManaged(false);
+        checkThirdPartyCookieBlockingManaged(false);
+        // The ContentSetting and ThirdPartyCookieBlocking are unmanaged. This means all buttons
+        // should be enabled.
+        SettingsActivity settingsActivity =
+                SiteSettingsTestUtils.startSiteSettingsCategory(SiteSettingsCategory.Type.COOKIES);
+        checkFourStateCookieToggleButtonState(
+                settingsActivity, CookieSettingsState.ALLOW, ToggleButtonState.EnabledChecked);
+        checkFourStateCookieToggleButtonState(settingsActivity,
+                CookieSettingsState.BLOCK_THIRD_PARTY_INCOGNITO, ToggleButtonState.Disabled);
+        checkFourStateCookieToggleButtonState(settingsActivity,
+                CookieSettingsState.BLOCK_THIRD_PARTY, ToggleButtonState.EnabledUnchecked);
+        checkFourStateCookieToggleButtonState(
+                settingsActivity, CookieSettingsState.BLOCK, ToggleButtonState.EnabledUnchecked);
         settingsActivity.finish();
     }
 

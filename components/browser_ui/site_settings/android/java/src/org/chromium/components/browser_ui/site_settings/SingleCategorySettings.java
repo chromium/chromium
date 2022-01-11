@@ -1011,6 +1011,7 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
         params.cookieControlsMode = prefService.getInteger(COOKIE_CONTROLS_MODE);
         params.cookiesContentSettingEnforced = mCategory.isManaged();
         params.cookieControlsModeEnforced = prefService.isManagedPreference(COOKIE_CONTROLS_MODE);
+        params.isIncognitoModeEnabled = getSiteSettingsDelegate().isIncognitoModeEnabled();
         fourStateCookieToggle.setState(params);
     }
 
