@@ -34,9 +34,9 @@ constexpr base::TimeDelta kDefaultEventCheckingRateForTesting =
 
 constexpr base::TimeDelta kDefaultReportUploadFrequency = base::Hours(3);
 constexpr base::TimeDelta kDefaultNetworkTelemetryCollectionRate =
-    base::Minutes(10);
+    base::Minutes(60);
 constexpr base::TimeDelta kDefaultNetworkTelemetryEventCheckingRate =
-    base::Minutes(2);
+    base::Minutes(10);
 constexpr base::TimeDelta kDefaultAudioTelemetryCollectionRate =
     base::Minutes(10);
 
