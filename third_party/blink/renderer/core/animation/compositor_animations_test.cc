@@ -43,6 +43,7 @@
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/renderer/core/animation/animation.h"
 #include "third_party/blink/renderer/core/animation/css/compositor_keyframe_double.h"
+#include "third_party/blink/renderer/core/animation/document_animations.h"
 #include "third_party/blink/renderer/core/animation/document_timeline.h"
 #include "third_party/blink/renderer/core/animation/element_animations.h"
 #include "third_party/blink/renderer/core/animation/keyframe_effect.h"
@@ -2233,6 +2234,25 @@ TEST_P(AnimationCompositorAnimationsTest,
   EXPECT_NE(
       CheckCanStartElementOnCompositor(*target, *keyframe_animation_effect2_),
       CompositorAnimations::kNoFailure);
+}
+
+TEST_P(AnimationCompositorAnimationsTest, DetachCompositorTimelinesTest) {
+  LoadTestData("transform-animation.html");
+  Document* document = GetFrame()->GetDocument();
+  cc::AnimationHost* host = document->View()->GetCompositorAnimationHost();
+
+  Element* target = document->getElementById("target");
+  const Animation& animation =
+      *target->GetElementAnimations()->Animations().begin()->key;
+  EXPECT_TRUE(animation.GetCompositorAnimation());
+
+  CompositorAnimationTimeline* compositor_timeline =
+      animation.timeline()->CompositorTimeline();
+  ASSERT_TRUE(compositor_timeline);
+  int id = compositor_timeline->GetAnimationTimeline()->id();
+  ASSERT_TRUE(host->GetTimelineById(id));
+  document->GetDocumentAnimations().DetachCompositorTimelines();
+  ASSERT_FALSE(host->GetTimelineById(id));
 }
 
 TEST_P(AnimationCompositorAnimationsTest,

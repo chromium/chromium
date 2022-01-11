@@ -90,6 +90,11 @@ class CORE_EXPORT DocumentAnimations final
   // https://github.com/w3c/csswg-drafts/issues/5261
   void ValidateTimelines();
 
+  // Detach compositor timelines to prevent further ticking of any animations
+  // associated with the timelines.  Detached timelines may be subsequently
+  // reattached if needed.
+  void DetachCompositorTimelines();
+
   // Add an element to the set of elements with a pending animation update.
   // The elements in the set can be applied later using,
   // ApplyPendingElementUpdates.

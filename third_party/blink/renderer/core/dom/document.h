@@ -1429,7 +1429,6 @@ class CORE_EXPORT Document : public ContainerNode,
   }
 
   void AttachCompositorTimeline(CompositorAnimationTimeline*) const;
-  void DetachCompositorTimeline(CompositorAnimationTimeline*) const;
 
   void AddToTopLayer(Element*, const Element* before = nullptr);
   void RemoveFromTopLayer(Element*);
