@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script>
+// Records if 'onprerenderingchange' event is triggered at least once.
+let onprerenderingchange_observed = false;
+document.addEventListener('prerenderingchange', e => {
+  onprerenderingchange_observed = true;
+});
+</script>
+</head>
+</html>
