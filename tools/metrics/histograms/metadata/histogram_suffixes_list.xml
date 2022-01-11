@@ -496,26 +496,10 @@ chromium-metrics-reviews@google.com.
   <suffix name="PercentAds"
       label="The percentage of bytes loaded from within ad frames."/>
   <affected-histogram name="PageLoad.Clients.Ads.Bytes.FullPage.Network"/>
-  <affected-histogram name="PageLoad.Clients.Ads.Bytes.FullPage.Total">
-    <obsolete>
-      Deprecated 09/2019. Replaced with PercentAds2 suffix.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram
       name="PageLoad.Clients.Ads.NonVisible.Bytes.FullPage.Network"/>
   <affected-histogram
-      name="PageLoad.Clients.Ads.NonVisible.Bytes.FullPage.Total">
-    <obsolete>
-      Deprecated 09/2019. Replaced with PercentAds2 suffix.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
       name="PageLoad.Clients.Ads.Visible.Bytes.FullPage.Network"/>
-  <affected-histogram name="PageLoad.Clients.Ads.Visible.Bytes.FullPage.Total">
-    <obsolete>
-      Deprecated 09/2019. Replaced with PercentAds2 suffix.
-    </obsolete>
-  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="AdsPageLoadMetricsPercentAds2" separator=".">
@@ -1253,17 +1237,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="Added" label="Added"/>
   <suffix name="AddedOrRemoved" label="Added or removed"/>
   <suffix name="Removed" label="Removed"/>
-  <affected-histogram name="Autofill.WalletAddresses">
-    <obsolete>
-      Replaced with Autofill.WalletAddresses2 in 2018/12.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="Autofill.WalletAddresses2"/>
-  <affected-histogram name="Autofill.WalletCards">
-    <obsolete>
-      Replaced with Autofill.WalletAddresses2 in 2018/12.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="Autofill.WalletCards2"/>
 </histogram_suffixes>
 
@@ -1393,11 +1367,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="JPEG" label=""/>
   <suffix name="PNG" label=""/>
   <affected-histogram name="Blink.Canvas.ToBlob.CompleteEncodingDelay"/>
-  <affected-histogram name="Blink.Canvas.ToBlob.IdleEncodeDuration">
-    <obsolete>
-      Replaced with Blink.Canvas.ToBlob.CompleteEncodingDelay in 2017/12.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="Blink.Canvas.ToBlob.InitiateEncodingDelay"/>
 </histogram_suffixes>
 
@@ -1424,11 +1393,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="LessThan1ms" label="Ratio when main frame shorter than 1ms."/>
   <suffix name="MoreThan5ms" label="Ratio when main frame longer than 5ms."/>
   <affected-histogram name="Blink.MainFrame.AnimateRatio"/>
-  <affected-histogram name="Blink.MainFrame.CompositingAssignmentsRatio">
-    <obsolete>
-      No longer recorded after M97 with the launch of CompositeAfterPaint.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="Blink.MainFrame.CompositingCommitRatio"/>
   <affected-histogram name="Blink.MainFrame.CompositingInputsRatio"/>
   <affected-histogram name="Blink.MainFrame.CompositingRatio"/>
@@ -1455,11 +1419,6 @@ chromium-metrics-reviews@google.com.
       name="Blink.AnchorElementMetricsIntersectionObserver.UpdateTime"/>
   <affected-histogram name="Blink.Animate.UpdateTime"/>
   <affected-histogram name="Blink.Compositing.UpdateTime"/>
-  <affected-histogram name="Blink.CompositingAssignments.UpdateTime">
-    <obsolete>
-      No longer recorded after M97 with the launch of CompositeAfterPaint.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="Blink.CompositingCommit.UpdateTime"/>
   <affected-histogram name="Blink.CompositingInputs.UpdateTime"/>
   <affected-histogram name="Blink.ContentDocumentUpdate.UpdateTime"/>
@@ -1494,11 +1453,6 @@ chromium-metrics-reviews@google.com.
       name="Blink.AnchorElementMetricsIntersectionObserver.UpdateTime"/>
   <affected-histogram name="Blink.Animate.UpdateTime"/>
   <affected-histogram name="Blink.Compositing.UpdateTime"/>
-  <affected-histogram name="Blink.CompositingAssignments.UpdateTime">
-    <obsolete>
-      No longer recorded after M97 with the launch of CompositeAfterPaint.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="Blink.CompositingCommit.UpdateTime"/>
   <affected-histogram name="Blink.CompositingInputs.UpdateTime"/>
   <affected-histogram name="Blink.ContentDocumentUpdate.UpdateTime"/>
@@ -1533,11 +1487,6 @@ chromium-metrics-reviews@google.com.
       name="Blink.AnchorElementMetricsIntersectionObserver.UpdateTime"/>
   <affected-histogram name="Blink.Animate.UpdateTime"/>
   <affected-histogram name="Blink.Compositing.UpdateTime"/>
-  <affected-histogram name="Blink.CompositingAssignments.UpdateTime">
-    <obsolete>
-      No longer recorded after M97 with the launch of CompositeAfterPaint.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="Blink.CompositingCommit.UpdateTime"/>
   <affected-histogram name="Blink.CompositingInputs.UpdateTime"/>
   <affected-histogram name="Blink.ContentDocumentUpdate.UpdateTime"/>
@@ -1673,16 +1622,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Video"
       label="Showing cache patterns only for video resources."/>
   <affected-histogram name="HttpCache.Pattern"/>
-  <affected-histogram name="HttpCache.StaleEntry.FreshnessPeriodsSinceLastUsed">
-    <obsolete>
-      Deprecated in M77.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="HttpCache.ValidationCause">
-    <obsolete>
-      Deprecated in M77.
-    </obsolete>
-  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="CacheInstance" separator="." ordering="prefix">
@@ -1731,21 +1670,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="SimpleCache.Eviction.SizeWhenDone2"/>
   <affected-histogram name="SimpleCache.Eviction.TimeToDone"/>
   <affected-histogram name="SimpleCache.Eviction.TimeToSelectEntries"/>
-  <affected-histogram name="SimpleCache.FileDescriptorLimitHard">
-    <obsolete>
-      Removed January 2018, as the limit is independent of the backend type.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="SimpleCache.FileDescriptorLimitSoft">
-    <obsolete>
-      Removed January 2018, as the limit is independent of the backend type.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="SimpleCache.FileDescriptorLimitStatus">
-    <obsolete>
-      Removed January 2018, as the limit is independent of the backend type.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="SimpleCache.GlobalOpenEntryCount"/>
   <affected-histogram name="SimpleCache.HeaderSize"/>
   <affected-histogram name="SimpleCache.HeaderSizeChange"/>
@@ -2044,33 +1968,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="DocumentActivity"
       label="Activity launched in DOCUMENT mode (Tabs and apps together) on
              Android"/>
-  <affected-histogram name="MobileStartup.ToolbarFirstDrawTime">
-    <obsolete>
-      Removed and renamed to MobileStartup.ToolbarFirstDrawTime2 due to double
-      reporting bug (see https://crbug.com/857508).
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="MobileStartup.ToolbarFirstDrawTime2">
-    <obsolete>
-      No longer useful, deprecated in M82.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="MobileStartup.ToolbarFirstFocusStartupState">
-    <obsolete>
-      No longer useful, deprecated in M82 (see https://crbug.com/1053190).
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="MobileStartup.ToolbarFirstFocusTime">
-    <obsolete>
-      Removed and renamed to MobileStartup.ToolbarFirstFocusTime2 due to double
-      reporting bug (see https://crbug.com/857508).
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="MobileStartup.ToolbarFirstFocusTime2">
-    <obsolete>
-      No longer useful, deprecated in M82.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="MobileStartup.ToolbarInflationTime"/>
 </histogram_suffixes>
 
@@ -2088,11 +1985,6 @@ chromium-metrics-reviews@google.com.
       label="Download failed without an OK HTTP response code."/>
   <suffix name="DownloadSuccess" label="Download succeeded."/>
   <suffix name="NetworkError" label="Download failed due to a network error."/>
-  <affected-histogram name="SoftwareReporter.Cleaner.NumberOfDownloadAttempts">
-    <obsolete>
-      Removed Jan 2018
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="SoftwareReporter.Cleaner.TimeToCompleteDownload"/>
 </histogram_suffixes>
 
@@ -2408,205 +2300,11 @@ chromium-metrics-reviews@google.com.
       name="CompositorLatency.MissedDeadlineFrame.ScrollbarScroll"/>
   <affected-histogram name="CompositorLatency.MissedDeadlineFrame.TouchScroll"/>
   <affected-histogram name="CompositorLatency.MissedDeadlineFrame.WheelScroll"/>
-  <affected-histogram name="CompositorLatency.MissedFrame">
-    <obsolete>
-      Removed on 01/2020. MissedFrame changed to DroppedFrame for more clarity.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="CompositorLatency.MissedFrame.CompositorAnimation">
-    <obsolete>
-      Removed on 01/2020. MissedFrame changed to DroppedFrame for more clarity.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="CompositorLatency.MissedFrame.MainThreadAnimation">
-    <obsolete>
-      Removed on 01/2020. MissedFrame changed to DroppedFrame for more clarity.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="CompositorLatency.MissedFrame.PinchZoom">
-    <obsolete>
-      Removed on 01/2020. MissedFrame changed to DroppedFrame for more clarity.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="CompositorLatency.MissedFrame.RAF">
-    <obsolete>
-      Removed on 01/2020. MissedFrame changed to DroppedFrame for more clarity.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="CompositorLatency.MissedFrame.TouchScroll">
-    <obsolete>
-      Removed on 01/2020. MissedFrame changed to DroppedFrame for more clarity.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="CompositorLatency.MissedFrame.WheelScroll">
-    <obsolete>
-      Removed on 01/2020. MissedFrame changed to DroppedFrame for more clarity.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="CompositorLatency.MissedFrameLatencyIncrease">
-    <obsolete>
-      Removed on 9/2019. Did not provide enough information about latency.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="CompositorLatency.MissedFrameLatencyIncrease.CompositorAnimation">
-    <obsolete>
-      Removed on 9/2019. Did not provide enough information about latency.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="CompositorLatency.MissedFrameLatencyIncrease.MainThreadAnimation">
-    <obsolete>
-      Removed on 9/2019. Did not provide enough information about latency.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="CompositorLatency.MissedFrameLatencyIncrease.PinchZoom">
-    <obsolete>
-      Removed on 9/2019. Did not provide enough information about latency.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="CompositorLatency.MissedFrameLatencyIncrease.RAF">
-    <obsolete>
-      Removed on 9/2019. Did not provide enough information about latency.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="CompositorLatency.MissedFrameLatencyIncrease.TouchScroll">
-    <obsolete>
-      Removed on 9/2019. Did not provide enough information about latency.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="CompositorLatency.MissedFrameLatencyIncrease.WheelScroll">
-    <obsolete>
-      Removed on 9/2019. Did not provide enough information about latency.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="CompositorLatency.PinchZoom"/>
   <affected-histogram name="CompositorLatency.RAF"/>
   <affected-histogram name="CompositorLatency.ScrollbarScroll"/>
   <affected-histogram name="CompositorLatency.TouchScroll"/>
   <affected-histogram name="CompositorLatency.WheelScroll"/>
-  <affected-histogram name="SingleThreadedCompositorLatency">
-    <obsolete>
-      Removed on 9/2019: metric is not monitored for the UI compositor.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="SingleThreadedCompositorLatency.CompositorAnimation">
-    <obsolete>
-      Removed on 9/2019: metric is not monitored for the UI compositor.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="SingleThreadedCompositorLatency.MainThreadAnimation">
-    <obsolete>
-      Removed on 9/2019: metric is not monitored for the UI compositor.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="SingleThreadedCompositorLatency.MissedFrame">
-    <obsolete>
-      Removed on 9/2019: metric is not monitored for the UI compositor.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="SingleThreadedCompositorLatency.MissedFrame.CompositorAnimation">
-    <obsolete>
-      Removed on 9/2019: metric is not monitored for the UI compositor.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="SingleThreadedCompositorLatency.MissedFrame.MainThreadAnimation">
-    <obsolete>
-      Removed on 9/2019: metric is not monitored for the UI compositor.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="SingleThreadedCompositorLatency.MissedFrame.PinchZoom">
-    <obsolete>
-      Removed on 9/2019: metric is not monitored for the UI compositor.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="SingleThreadedCompositorLatency.MissedFrame.RAF">
-    <obsolete>
-      Removed on 9/2019: metric is not monitored for the UI compositor.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="SingleThreadedCompositorLatency.MissedFrame.TouchScroll">
-    <obsolete>
-      Removed on 9/2019: metric is not monitored for the UI compositor.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="SingleThreadedCompositorLatency.MissedFrame.WheelScroll">
-    <obsolete>
-      Removed on 9/2019: metric is not monitored for the UI compositor.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="SingleThreadedCompositorLatency.MissedFrameLatencyIncrease">
-    <obsolete>
-      Removed on 9/2019. Did not provide enough information about latency.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="SingleThreadedCompositorLatency.MissedFrameLatencyIncrease.CompositorAnimation">
-    <obsolete>
-      Removed on 9/2019. Did not provide enough information about latency.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="SingleThreadedCompositorLatency.MissedFrameLatencyIncrease.MainThreadAnimation">
-    <obsolete>
-      Removed on 9/2019. Did not provide enough information about latency.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="SingleThreadedCompositorLatency.MissedFrameLatencyIncrease.PinchZoom">
-    <obsolete>
-      Removed on 9/2019. Did not provide enough information about latency.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="SingleThreadedCompositorLatency.MissedFrameLatencyIncrease.RAF">
-    <obsolete>
-      Removed on 9/2019. Did not provide enough information about latency.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="SingleThreadedCompositorLatency.MissedFrameLatencyIncrease.TouchScroll">
-    <obsolete>
-      Removed on 9/2019. Did not provide enough information about latency.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="SingleThreadedCompositorLatency.MissedFrameLatencyIncrease.WheelScroll">
-    <obsolete>
-      Removed on 9/2019. Did not provide enough information about latency.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="SingleThreadedCompositorLatency.PinchZoom">
-    <obsolete>
-      Removed on 9/2019: metric is not monitored for the UI compositor.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="SingleThreadedCompositorLatency.RAF">
-    <obsolete>
-      Removed on 9/2019: metric is not monitored for the UI compositor.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="SingleThreadedCompositorLatency.TouchScroll">
-    <obsolete>
-      Removed on 9/2019: metric is not monitored for the UI compositor.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="SingleThreadedCompositorLatency.WheelScroll">
-    <obsolete>
-      Removed on 9/2019: metric is not monitored for the UI compositor.
-    </obsolete>
-  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="CompositorOnlyLatencyStages" separator=".">
@@ -2689,12 +2387,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Browser" label=""/>
   <suffix name="Renderer" label=""/>
   <affected-histogram name="Scheduling.BeginImplFrameLatency2"/>
-  <affected-histogram name="Scheduling.BeginMainFrameQueueDurationCritical2">
-    <obsolete>
-      Replaced by SendBeginMainFrameToCommit.BeginMainSentToStarted of
-      CompositorLatency metrics.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="Scheduling.BeginMainFrameStartToCommitDuration2"/>
   <affected-histogram name="Scheduling.CommitToReadyToActivateDuration2"/>
   <affected-histogram name="Scheduling.DrawDuration2"/>
@@ -3548,11 +3240,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Success" label="Successful detached request"/>
   <affected-histogram name="CustomTabs.DetachedResourceRequest.Duration"/>
   <affected-histogram name="CustomTabs.DetachedResourceRequest.RedirectsCount"/>
-  <affected-histogram name="CustomTabs.ResourcePrefetch.Duration">
-    <obsolete>
-      No longer recorded since M73.
-    </obsolete>
-  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="DataReductionProxy" separator="_">
@@ -3662,36 +3349,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="None" label="With no detected network"/>
   <suffix name="Unknown" label="On Unknown network"/>
   <suffix name="WiFi" label="On WiFi network"/>
-  <affected-histogram name="DataReductionProxy.AutoLoFiAccuracy">
-    <obsolete>
-      Functionality removed in M77.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="DataReductionProxy.AutoLoFiRequestHeaderState">
-    <obsolete>
-      Functionality removed in M77.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="DataReductionProxy.LoFi.Accuracy.15">
-    <obsolete>
-      Functionality removed in M77.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="DataReductionProxy.LoFi.Accuracy.30">
-    <obsolete>
-      Functionality removed in M77.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="DataReductionProxy.LoFi.Accuracy.60">
-    <obsolete>
-      Functionality removed in M77.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="DataReductionProxy.LoFi.ImplicitOptOutAction">
-    <obsolete>
-      Functionality removed in M77.
-    </obsolete>
-  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="DataReductionProxy_TamperingFingerprints"
@@ -3881,12 +3538,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Secure.NonCore"
       label="Records fetch attempts for the first non-core secure data
              reduction proxy"/>
-  <affected-histogram
-      name="DataReductionProxy.WarmupURL.FetchAttemptsBeforeSuccess">
-    <obsolete>
-      Obsoleted in March 2020.
-    </obsolete>
-  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="DataReductionProxy_WithValidOCL_LoFiOn" separator=".">
@@ -4009,16 +3660,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="DataSaverDisabled" label="Data Saver is disabled"/>
   <suffix name="DataSaverEnabled" label="Data Saver is enabled"/>
   <affected-histogram name="Previews.ContentLength"/>
-  <affected-histogram name="Previews.DataInflation">
-    <obsolete>
-      Obsolete as of 09/2020.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="Previews.DataInflationPercent">
-    <obsolete>
-      Obsolete as of 09/2020.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="Previews.DataSavings"/>
   <affected-histogram name="Previews.DataSavingsPercent"/>
   <affected-histogram name="Previews.OriginalContentLength"/>
@@ -4034,12 +3675,6 @@ chromium-metrics-reviews@google.com.
       label="Over a secure, core data saver proxy."/>
   <suffix name="SecureProxy.NonCore"
       label="Over a secure, non-core data saver proxy."/>
-  <affected-histogram
-      name="DataReductionProxy.WarmupURLFetcherCallback.SuccessfulFetch">
-    <obsolete>
-      Obsoleted in March 2020.
-    </obsolete>
-  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="DataUsageReportSubmissionBytes" separator=".">
@@ -4083,11 +3718,6 @@ chromium-metrics-reviews@google.com.
       label="Data use was recorded with Chrome in background."/>
   <suffix name="Foreground"
       label="Data use was recorded with Chrome in foreground."/>
-  <affected-histogram name="DataUse.BytesReceived.OS">
-    <obsolete>
-      Replaced by DataUse.BytesReceived2.OS in October, 2020.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="DataUse.BytesReceived2.OS"/>
   <affected-histogram name="DataUse.BytesSent.OS"/>
 </histogram_suffixes>
@@ -5269,17 +4899,6 @@ chromium-metrics-reviews@google.com.
       label="Triggered by entering overview by fading in from home"/>
   <suffix name="FadeOutOverview"
       label="Triggered by exiting overview by fading into home"/>
-  <affected-histogram name="Apps.StateTransition.AnimationSmoothness">
-    <obsolete>
-      Removed in 2019-11. Equivalent values are tracked by
-      Apps.HomeLauncherTransition.AnimationSmoothness.* histograms.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="KioskNextHome.StateTransition.AnimationSmoothness">
-    <obsolete>
-      Removed on 2019-07.
-    </obsolete>
-  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="Enterprise_ResourceCacheTiming" separator=".">
@@ -5327,21 +4946,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Event.Latency.OS2"/>
   <affected-histogram name="Event.Latency.OS_NO_VALIDATION.NEGATIVE"/>
   <affected-histogram name="Event.Latency.OS_NO_VALIDATION.POSITIVE"/>
-  <affected-histogram name="Event.Latency.OS_WIN.HIGH_RES">
-    <obsolete>
-      Removed 2021-04-22 - replaced by Event.Latency.OS2.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="Event.Latency.OS_WIN.LOW_RES">
-    <obsolete>
-      Removed 2021-04-22 - replaced by Event.Latency.OS2.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="Event.Latency.OS_WIN_IS_VALID">
-    <obsolete>
-      Removed 2021-04-22 - replaced by Event.Latency.OS2.
-    </obsolete>
-  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="ExitFunnels" separator=".">
@@ -5543,28 +5147,8 @@ chromium-metrics-reviews@google.com.
   <suffix name="JournalStorage" label="Database for journal storage."/>
   <affected-histogram name="ContentSuggestions.Feed.CommitMutationCount"/>
   <affected-histogram name="ContentSuggestions.Feed.Count"/>
-  <affected-histogram name="ContentSuggestions.Feed.InitialSuccess">
-    <obsolete>
-      Removed 4/2019 in favor of ProtoDB.InitStatus.*.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="ContentSuggestions.Feed.LoadKeysSuccess">
-    <obsolete>
-      Removed 4/2019 in favor of ProtoDB.LoadKeysSuccess.*.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="ContentSuggestions.Feed.LoadKeysTime"/>
-  <affected-histogram name="ContentSuggestions.Feed.LoadSuccess">
-    <obsolete>
-      Removed 4/2019 in favor of ProtoDB.LoadEntriesSuccess.*.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="ContentSuggestions.Feed.LoadTime"/>
-  <affected-histogram name="ContentSuggestions.Feed.OperationCommitSuccess">
-    <obsolete>
-      Removed 4/2019 in favor of ProtoDB.UpdateSuccess.*.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="ContentSuggestions.Feed.OperationCommitTime"/>
 </histogram_suffixes>
 
@@ -6000,11 +5584,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="PowerResume" label="PowerResume"/>
   <affected-histogram name="GPU.WatchdogThread.ExtraThreadTime"/>
   <affected-histogram name="GPU.WatchdogThread.Timeout"/>
-  <affected-histogram name="GPU.WatchdogThread.WaitTime">
-    <obsolete>
-      Used for an experiment only. Removed 11/2020.
-    </obsolete>
-  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="GPUBlocklistPerFeature" separator=".">
@@ -7176,20 +6755,8 @@ chromium-metrics-reviews@google.com.
       label="Recorded with between 20 and 39 live tabs open in the browser."/>
   <suffix name="ByLiveTabCount.40OrMoreTabs"
       label="Recorded with 40 or more live tabs open in the browser."/>
-  <affected-histogram
-      name="PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint">
-    <obsolete>
-      Deprecated 03/2021. FMP is being deprecated in favor of LCP.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="PageLoad.InteractiveTiming.FirstInputDelay"/>
   <affected-histogram name="PageLoad.InteractiveTiming.FirstInputDelay2"/>
-  <affected-histogram name="PageLoad.InteractiveTiming.FirstInputDelay3">
-    <obsolete>
-      Deprecated 12/2019. Recording suffixed version of
-      PageLoad.InteractiveTiming.FirstInputDelay4 instead.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="PageLoad.InteractiveTiming.FirstInputDelay4"/>
   <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
@@ -8127,13 +7694,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="NavigationPreloadEnabled" label="Navigation preload occurred."/>
   <affected-histogram
       name="ServiceWorker.ActivatedWorkerPreparationForMainFrame.Time"/>
-  <affected-histogram
-      name="ServiceWorker.ActivatedWorkerPreparationForMainFrame.Time_StartWorkerExistingProcess">
-    <obsolete>
-      Deprecated as of June 2017, in favor of
-      ServiceWorker.ActivatedWorkerPreparationForMainFrame.Time_WorkerStartOccurred_NavigationPreloadEnabled.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram
       name="ServiceWorker.ActivatedWorkerPreparationForMainFrame.Time_WorkerStartOccurred"/>
   <affected-histogram
@@ -9710,12 +9270,6 @@ chromium-metrics-reviews@google.com.
       name="NewTabPage.BackgroundService.Collections.RequestLatency"/>
   <affected-histogram
       name="NewTabPage.BackgroundService.Images.RequestLatency"/>
-  <affected-histogram
-      name="NewTabPage.BackgroundService.NextImage.RequestLatency">
-    <obsolete>
-      Never recorded. Marked obsolete 01/2021.
-    </obsolete>
-  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="NewTabPage_OneGoogleBar_RequestLatency" separator=".">
@@ -9896,26 +9450,11 @@ chromium-metrics-reviews@google.com.
   <suffix name="WebUI3PNTP" label="Loaded 3P WebUI NTP."/>
   <suffix name="WebUINTP" label="Loaded WebUI NTP."/>
   <affected-histogram name="NewTabPage.LoadTime"/>
-  <affected-histogram name="NewTabPage.TilesReceivedTime">
-    <obsolete>
-      Deprecated 06/2019.
-    </obsolete>
-  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="NewTabPageTimingsIsGoogle" separator=".">
   <suffix name="Google" label="Default search provider is Google."/>
   <suffix name="Other" label="Default search provider is not Google."/>
-  <affected-histogram name="NewTabPage.LoadTime.LocalNTP">
-    <obsolete>
-      Deprecated NTP replaced by WebUI NTP M91.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="NewTabPage.LoadTime.Web">
-    <obsolete>
-      Removed in 09 2021.
-    </obsolete>
-  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="NextTabState" separator="_">
@@ -10067,31 +9606,7 @@ chromium-metrics-reviews@google.com.
   <affected-histogram
       name="NQE.Accuracy.EffectiveConnectionType.EstimatedObservedDiff.Negative.15"/>
   <affected-histogram
-      name="NQE.Accuracy.EffectiveConnectionType.EstimatedObservedDiff.Negative.30">
-    <obsolete>
-      Deprecated 01/2017.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="NQE.Accuracy.EffectiveConnectionType.EstimatedObservedDiff.Negative.60">
-    <obsolete>
-      Deprecated 01/2017.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
       name="NQE.Accuracy.EffectiveConnectionType.EstimatedObservedDiff.Positive.15"/>
-  <affected-histogram
-      name="NQE.Accuracy.EffectiveConnectionType.EstimatedObservedDiff.Positive.30">
-    <obsolete>
-      Deprecated 01/2017.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="NQE.Accuracy.EffectiveConnectionType.EstimatedObservedDiff.Positive.60">
-    <obsolete>
-      Deprecated 01/2017.
-    </obsolete>
-  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="NQE_Accuracy_RTT_ObservedIntervals" separator=".">
@@ -10116,115 +9631,19 @@ chromium-metrics-reviews@google.com.
   <affected-histogram
       name="NQE.Accuracy.DownstreamThroughputKbps.EstimatedObservedDiff.Negative.15"/>
   <affected-histogram
-      name="NQE.Accuracy.DownstreamThroughputKbps.EstimatedObservedDiff.Negative.30">
-    <obsolete>
-      Deprecated 01/2017.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="NQE.Accuracy.DownstreamThroughputKbps.EstimatedObservedDiff.Negative.60">
-    <obsolete>
-      Deprecated 01/2017.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
       name="NQE.Accuracy.DownstreamThroughputKbps.EstimatedObservedDiff.Positive.15"/>
-  <affected-histogram
-      name="NQE.Accuracy.DownstreamThroughputKbps.EstimatedObservedDiff.Positive.30">
-    <obsolete>
-      Deprecated 01/2017.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="NQE.Accuracy.DownstreamThroughputKbps.EstimatedObservedDiff.Positive.60">
-    <obsolete>
-      Deprecated 01/2017.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram
       name="NQE.Accuracy.HttpRTT.EstimatedObservedDiff.Negative.15"/>
   <affected-histogram
-      name="NQE.Accuracy.HttpRTT.EstimatedObservedDiff.Negative.30">
-    <obsolete>
-      Deprecated 01/2017.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="NQE.Accuracy.HttpRTT.EstimatedObservedDiff.Negative.60">
-    <obsolete>
-      Deprecated 01/2017.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
       name="NQE.Accuracy.HttpRTT.EstimatedObservedDiff.Positive.15"/>
-  <affected-histogram
-      name="NQE.Accuracy.HttpRTT.EstimatedObservedDiff.Positive.30">
-    <obsolete>
-      Deprecated 01/2017.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="NQE.Accuracy.HttpRTT.EstimatedObservedDiff.Positive.60">
-    <obsolete>
-      Deprecated 01/2017.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram
       name="NQE.Accuracy.TransportRTT.EstimatedObservedDiff.Negative.15"/>
   <affected-histogram
-      name="NQE.Accuracy.TransportRTT.EstimatedObservedDiff.Negative.30">
-    <obsolete>
-      Deprecated 01/2017.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="NQE.Accuracy.TransportRTT.EstimatedObservedDiff.Negative.60">
-    <obsolete>
-      Deprecated 01/2017.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
       name="NQE.Accuracy.TransportRTT.EstimatedObservedDiff.Positive.15"/>
-  <affected-histogram
-      name="NQE.Accuracy.TransportRTT.EstimatedObservedDiff.Positive.30">
-    <obsolete>
-      Deprecated 01/2017.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="NQE.Accuracy.TransportRTT.EstimatedObservedDiff.Positive.60">
-    <obsolete>
-      Deprecated 01/2017.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram
       name="NQE.ExternalEstimateProvider.RTT.Accuracy.EstimatedObservedDiff.Negative.15"/>
   <affected-histogram
-      name="NQE.ExternalEstimateProvider.RTT.Accuracy.EstimatedObservedDiff.Negative.30">
-    <obsolete>
-      Deprecated 01/2017.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="NQE.ExternalEstimateProvider.RTT.Accuracy.EstimatedObservedDiff.Negative.60">
-    <obsolete>
-      Deprecated 01/2017.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
       name="NQE.ExternalEstimateProvider.RTT.Accuracy.EstimatedObservedDiff.Positive.15"/>
-  <affected-histogram
-      name="NQE.ExternalEstimateProvider.RTT.Accuracy.EstimatedObservedDiff.Positive.30">
-    <obsolete>
-      Deprecated 01/2017.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="NQE.ExternalEstimateProvider.RTT.Accuracy.EstimatedObservedDiff.Positive.60">
-    <obsolete>
-      Deprecated 01/2017.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram
       name="NQE.UnweightedAverage.Accuracy.HttpRTT.EstimatedObservedDiff.Negative.15"/>
   <affected-histogram
@@ -10248,12 +9667,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Level8" label="2000-4000"/>
   <suffix name="Level9" label="4000-8000"/>
   <suffix name="Level10" label="&gt;=8000"/>
-  <affected-histogram
-      name="NQE.CongestionAnalyzer.CountInflightRequestsForPeakQueueingDelay">
-    <obsolete>
-      Obsoleted in Apr 2020.
-    </obsolete>
-  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="NQE_DifferentPercentiles" separator=".">
@@ -10305,77 +9718,7 @@ chromium-metrics-reviews@google.com.
   <suffix name="Unknown" label="On Unknown network"/>
   <suffix name="WiFi" label="On WiFi network"/>
   <affected-histogram name="NQE.FastestRTT"/>
-  <affected-histogram name="NQE.MainFrame.EffectiveConnectionType">
-    <obsolete>
-      Deprecated 08/2017.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="NQE.MainFrame.Kbps.Percentile50">
-    <obsolete>
-      Deprecated 08/2017.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="NQE.MainFrame.RTT.Percentile50">
-    <obsolete>
-      Deprecated 08/2017.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="NQE.MainFrame.TransportRTT.Percentile50">
-    <obsolete>
-      Deprecated 08/2017.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="NQE.PeakKbps"/>
-  <affected-histogram name="NQE.RTT.Percentile0">
-    <obsolete>
-      Deprecated 01/2018.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="NQE.RTT.Percentile10">
-    <obsolete>
-      Deprecated 01/2018.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="NQE.RTT.Percentile100">
-    <obsolete>
-      Deprecated 01/2018.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="NQE.RTT.Percentile50">
-    <obsolete>
-      Deprecated 01/2018.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="NQE.RTT.Percentile90">
-    <obsolete>
-      Deprecated 01/2018.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="NQE.TransportRTT.Percentile0">
-    <obsolete>
-      Deprecated 01/2018.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="NQE.TransportRTT.Percentile10">
-    <obsolete>
-      Deprecated 01/2018.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="NQE.TransportRTT.Percentile100">
-    <obsolete>
-      Deprecated 01/2018.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="NQE.TransportRTT.Percentile50">
-    <obsolete>
-      Deprecated 01/2018.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="NQE.TransportRTT.Percentile90">
-    <obsolete>
-      Deprecated 01/2018.
-    </obsolete>
-  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="NQE_ObservationSources" separator=".">
@@ -10823,12 +10166,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram
       name="PageLoad.Clients.ServiceWorker.ParseTiming.NavigationToParseStart"/>
   <affected-histogram
-      name="PageLoad.Clients.ServiceWorker.Timing2.NavigationToFirstContentfulPaint">
-    <obsolete>
-      Deprecated in favor of PaintTiming equivalent.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
       name="PageLoad.Clients.ServiceWorker2.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram
       name="PageLoad.Clients.ServiceWorker2.ParseTiming.NavigationToParseStart"/>
@@ -10896,11 +10233,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="PageLoad.Experimental.AbortTiming.Other"/>
   <affected-histogram name="PageLoad.Experimental.AbortTiming.Reload"/>
   <affected-histogram name="PageLoad.Experimental.AbortTiming.Stop"/>
-  <affected-histogram name="PageLoad.Timing2.NavigationToFirstBackground">
-    <obsolete>
-      deprecated in favor of PageLoad.AbortTiming.Background.*
-    </obsolete>
-  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="PageLoadMetricsAfterBuffering" separator=".">
@@ -11085,12 +10417,6 @@ chromium-metrics-reviews@google.com.
       label="Percent of resources loaded through data reduction proxy."/>
   <suffix name="Proxied"
       label="Resources loaded through data reduction proxy."/>
-  <affected-histogram
-      name="PageLoad.Clients.DataReductionProxy.Experimental.CompletedResources.Network">
-    <obsolete>
-      Deprecated 10/2018
-    </obsolete>
-  </affected-histogram>
   <affected-histogram
       name="PageLoad.Clients.DataReductionProxy.Experimental.CompletedResources.Network2"/>
 </histogram_suffixes>
@@ -11321,18 +10647,8 @@ chromium-metrics-reviews@google.com.
              the NoScript Preview intervention."/>
   <affected-histogram
       name="PageLoad.DocumentTiming.NavigationToLoadEventFired"/>
-  <affected-histogram name="PageLoad.Experimental.Bytes.Network">
-    <obsolete>
-      Deprecated 12/2018.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram
       name="PageLoad.Experimental.Bytes.NetworkIncludingHeaders"/>
-  <affected-histogram name="PageLoad.Experimental.CompletedResources.Network">
-    <obsolete>
-      Functionality removed in M77.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram
       name="PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"/>
   <affected-histogram
@@ -11349,18 +10665,6 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.Clients.NoServiceWorker.DocumentTiming.NavigationToDOMContentLoadedEventFired"/>
   <affected-histogram
       name="PageLoad.Clients.NoServiceWorker.DocumentTiming.NavigationToLoadEventFired"/>
-  <affected-histogram
-      name="PageLoad.Clients.NoServiceWorker.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint">
-    <obsolete>
-      Removed in December 2020.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="PageLoad.Clients.NoServiceWorker.Experimental.PaintTiming.ParseStartToFirstMeaningfulPaint">
-    <obsolete>
-      Removed in December 2020.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram
       name="PageLoad.Clients.NoServiceWorker.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram
@@ -11438,18 +10742,8 @@ chromium-metrics-reviews@google.com.
              ResourceLoadingHints to show a Preview version of the page."/>
   <affected-histogram
       name="PageLoad.DocumentTiming.NavigationToLoadEventFired"/>
-  <affected-histogram name="PageLoad.Experimental.Bytes.Network">
-    <obsolete>
-      Deprecated 12/2018.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram
       name="PageLoad.Experimental.Bytes.NetworkIncludingHeaders"/>
-  <affected-histogram name="PageLoad.Experimental.CompletedResources.Network">
-    <obsolete>
-      Functionality removed in M77.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram
       name="PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint"/>
   <affected-histogram
@@ -11533,18 +10827,6 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.DocumentTiming.NavigationToDOMContentLoadedEventFired"/>
   <affected-histogram
       name="PageLoad.DocumentTiming.NavigationToLoadEventFired"/>
-  <affected-histogram
-      name="PageLoad.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint">
-    <obsolete>
-      Removed Dec 2020.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="PageLoad.Experimental.PaintTiming.ParseStartToFirstMeaningfulPaint">
-    <obsolete>
-      Removed Dec 2020.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="PageLoad.InteractiveTiming.FirstInputDelay"/>
   <affected-histogram name="PageLoad.InteractiveTiming.FirstInputDelay2"/>
   <affected-histogram name="PageLoad.InteractiveTiming.FirstInputDelay3"/>
@@ -11556,11 +10838,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram
       name="PageLoad.PaintTiming.ParseStartToFirstContentfulPaint"/>
   <affected-histogram name="PageLoad.ParseTiming.NavigationToParseStart"/>
-  <affected-histogram name="PageLoad.Timing2.NavigationToFirstContentfulPaint">
-    <obsolete>
-      Deprecated in favor of PaintTiming equivalent.
-    </obsolete>
-  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="PageLoadMetricsClientsServiceWorkerSpecialApps"
@@ -11578,18 +10855,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram
       name="PageLoad.Clients.ServiceWorker.DocumentTiming.NavigationToLoadEventFired"/>
   <affected-histogram
-      name="PageLoad.Clients.ServiceWorker.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint">
-    <obsolete>
-      Removed in December 2020.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="PageLoad.Clients.ServiceWorker.Experimental.PaintTiming.ParseStartToFirstMeaningfulPaint">
-    <obsolete>
-      Removed in December 2020.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
       name="PageLoad.Clients.ServiceWorker.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram
       name="PageLoad.Clients.ServiceWorker.PaintTiming.ParseStartToFirstContentfulPaint"/>
@@ -11599,18 +10864,6 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.Clients.ServiceWorker2.DocumentTiming.NavigationToDOMContentLoadedEventFired"/>
   <affected-histogram
       name="PageLoad.Clients.ServiceWorker2.DocumentTiming.NavigationToLoadEventFired"/>
-  <affected-histogram
-      name="PageLoad.Clients.ServiceWorker2.Experimental.PaintTiming.NavigationToFirstMeaningfulPaint">
-    <obsolete>
-      Removed in December 2020.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="PageLoad.Clients.ServiceWorker2.Experimental.PaintTiming.ParseStartToFirstMeaningfulPaint">
-    <obsolete>
-      Removed in December 2020.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram
       name="PageLoad.Clients.ServiceWorker2.PaintTiming.NavigationToFirstContentfulPaint"/>
   <affected-histogram
@@ -11810,13 +11063,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="UserGesture"
       label="Restricted to pages loaded via a user gesture."/>
   <affected-histogram
-      name="PageLoad.Clients.Reload.PaintTiming.NavigationToFirstContentfulPaint">
-    <obsolete>
-      Deprecated in favor of
-      PageLoad.PaintTiming.NavigationToFirstContentfulPaint.LoadType.Reload.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint.LoadType.Reload"/>
 </histogram_suffixes>
 
@@ -11828,24 +11074,6 @@ chromium-metrics-reviews@google.com.
       name="PageLoad.AbortTiming.ForwardBackNavigation.BeforeCommit"/>
   <affected-histogram name="PageLoad.AbortTiming.NewNavigation.BeforeCommit"/>
   <affected-histogram name="PageLoad.AbortTiming.Reload.BeforeCommit"/>
-  <affected-histogram
-      name="PageLoad.Experimental.AbortTiming.ForwardBackNavigation.BeforeCommit">
-    <obsolete>
-      Deprecated in favor of UserGesture/BrowserInitiated.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="PageLoad.Experimental.AbortTiming.NewNavigation.BeforeCommit">
-    <obsolete>
-      Deprecated in favor of UserGesture/BrowserInitiated.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="PageLoad.Experimental.AbortTiming.Reload.BeforeCommit">
-    <obsolete>
-      Deprecated in favor of UserGesture/BrowserInitiated.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram
       name="PageLoad.PaintTiming.NavigationToFirstContentfulPaint"/>
 </histogram_suffixes>
@@ -12343,16 +11571,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="UtilityProcess" label=""/>
   <suffix name="WorkerProcess" label=""/>
   <affected-histogram name="PerformanceMonitor.AverageCPU"/>
-  <affected-histogram name="PerformanceMonitor.AverageDisk">
-    <obsolete>
-      Removed 04/2021. Not needed for current investigations.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="PerformanceMonitor.HighCPU">
-    <obsolete>
-      Removed 04/2021.
-    </obsolete>
-  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="PermissionRequestGesture" separator=".">
@@ -12420,20 +11638,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="ContentSettings.PermissionActionsInsecureOrigin"/>
   <affected-histogram name="ContentSettings.PermissionActionsSecureOrigin"/>
   <affected-histogram name="Permissions.Action"/>
-  <affected-histogram name="Permissions.Action.InsecureOrigin">
-    <obsolete>
-      Removed on 2020-06-19 as most permissions are no longer exposed to
-      insecure origins to begin with, and even those few that are recorded no
-      useful data any longer.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="Permissions.Action.SecureOrigin">
-    <obsolete>
-      Removed on 2020-06-19 as most permissions are no longer exposed to
-      insecure origins to begin with, and even those few that are recorded no
-      useful data any longer.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="Permissions.DSE.AutoPermissionRevertTransition"/>
   <affected-histogram name="Permissions.DSE.EffectiveSetting"/>
   <affected-histogram
@@ -13545,11 +12749,6 @@ chromium-metrics-reviews@google.com.
              account"/>
   <suffix name="NonGAIA" label="Interaction was not initiated from GAIA"/>
   <affected-histogram name="Profile.AndroidAccountManagementMenu"/>
-  <affected-histogram name="Profile.DesktopMenu">
-    <obsolete>
-      Deprecated M81.
-    </obsolete>
-  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="ProfileOpenState" separator=".">
@@ -13741,11 +12940,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Net.QuicSession.ConnectRandomPort"/>
   <affected-histogram
       name="Net.QuicSession.ConnectRandomPortRequiringConfirmation"/>
-  <affected-histogram name="Net.QuicSession.ConnectSelectPort">
-    <obsolete>
-      Deprecated 04/2016.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="Net.QuicSession.HandshakeRoundTrips"/>
 </histogram_suffixes>
 
@@ -14707,14 +13901,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="UrlSuspiciousSite" label=""/>
   <suffix name="UrlUws" label=""/>
   <affected-histogram name="SafeBrowsing.V4Database.Size"/>
-  <affected-histogram
-      name="SafeBrowsing.V4ProcessFullUpdate.AdditionsHashesCount">
-    <obsolete>
-      Removed in M92 in favor of
-      SafeBrowsing.V4ProcessFullUpdate.AdditionsHashesCount2, which has a larger
-      maximum count.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram
       name="SafeBrowsing.V4ProcessFullUpdate.AdditionsHashesCount2"/>
   <affected-histogram
@@ -16047,16 +15233,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="SMS_FETCH_REQUEST" label="SMS Fetch Request"/>
   <suffix name="UNKNOWN_MESSAGE" label="Unknown Message"/>
   <suffix name="WEB_RTC_SIGNALING_FRAME" label="Web RTC Signalling Message"/>
-  <affected-histogram name="Sharing.DeviceLastUpdatedAge">
-    <obsolete>
-      Removed in M89.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="Sharing.MajorVersionComparison">
-    <obsolete>
-      Removed in M89.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="Sharing.MessageAckTime"/>
   <affected-histogram name="Sharing.MessageAckTime.Android"/>
   <affected-histogram name="Sharing.MessageAckTime.ChromeOS"/>
@@ -16067,11 +15243,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Sharing.MessageAckTime.Unknown"/>
   <affected-histogram name="Sharing.MessageAckTime.Windows"/>
   <affected-histogram name="Sharing.MessageHandlerTime"/>
-  <affected-histogram name="Sharing.MessageReceivedType">
-    <obsolete>
-      Removed 2020-01.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="Sharing.SendAckMessageResult"/>
   <affected-histogram name="Sharing.SendAckMessageResult.Android"/>
   <affected-histogram name="Sharing.SendAckMessageResult.ChromeOS"/>
@@ -16104,27 +15275,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Sharing.SendMessageResult.Mac"/>
   <affected-histogram name="Sharing.SendMessageResult.Unknown"/>
   <affected-histogram name="Sharing.SendMessageResult.Windows"/>
-</histogram_suffixes>
-
-<histogram_suffixes name="SharingSendMessageResult" separator=".">
-  <suffix name="AckTimeout" label="Timeout waiting for ack"/>
-  <suffix name="CommitTimeout" label="Commit timeout"/>
-  <suffix name="DeviceNotFound" label="Device is not found"/>
-  <suffix name="EncryptionError" label="Encryption error"/>
-  <suffix name="InternalError" label="Other internal error"/>
-  <suffix name="NetworkError" label="Network error"/>
-  <suffix name="PayloadTooLarge" label="Payload is too large"/>
-  <suffix name="Successful" label="Successful"/>
-  <affected-histogram name="Sharing.DeviceLastUpdatedAgeWithResult">
-    <obsolete>
-      Removed in M89.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="Sharing.SharedClipboardRetries">
-    <obsolete>
-      Removed in M89.
-    </obsolete>
-  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="SharingWebRtcTimingEvent" separator=".">
@@ -16414,16 +15564,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="CompositorLatency.CompositorOnlyFrame"/>
   <affected-histogram name="CompositorLatency.DroppedFrame"/>
   <affected-histogram name="CompositorLatency.MissedDeadlineFrame"/>
-  <affected-histogram name="CompositorLatency.MissedFrame">
-    <obsolete>
-      Removed on 01/2020. MissedFrame changed to DroppedFrame for more clarity.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="CompositorLatency.MissedFrameLatencyIncrease">
-    <obsolete>
-      Removed on 9/2019. Did not provide enough information about latency.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="CompositorLatency.Type"/>
   <affected-histogram name="Graphics.Smoothness.Checkerboarding"/>
   <affected-histogram name="Graphics.Smoothness.FrameSequenceLength"/>
@@ -16437,13 +15577,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram
       name="Graphics.Smoothness.PercentDroppedFrames.ScrollingThread"/>
   <affected-histogram
-      name="Graphics.Smoothness.PercentDroppedFrames.SlowerThread">
-    <obsolete>
-      Removed on 9/2020. No longer needed after 'Universal' metric was
-      deprecated.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
       name="Graphics.Smoothness.PercentMissedDeadlineFrames.CompositorThread"/>
   <affected-histogram
       name="Graphics.Smoothness.PercentMissedDeadlineFrames.MainThread"/>
@@ -16452,12 +15585,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Graphics.Smoothness.Stale"/>
   <affected-histogram name="SingleThreadedCompositorLatency"/>
   <affected-histogram name="SingleThreadedCompositorLatency.MissedFrame"/>
-  <affected-histogram
-      name="SingleThreadedCompositorLatency.MissedFrameLatencyIncrease">
-    <obsolete>
-      Removed on 9/2019. Did not provide enough information about latency.
-    </obsolete>
-  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="SmoothnessSequenceTypes_Universal" separator=".">
@@ -16473,13 +15600,6 @@ chromium-metrics-reviews@google.com.
       name="Graphics.Smoothness.PercentDroppedFrames.MainThread"/>
   <affected-histogram
       name="Graphics.Smoothness.PercentDroppedFrames.ScrollingThread"/>
-  <affected-histogram
-      name="Graphics.Smoothness.PercentDroppedFrames.SlowerThread">
-    <obsolete>
-      Removed on 9/2020. No longer needed after 'Universal' metric was
-      deprecated.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram
       name="Graphics.Smoothness.PercentMissedDeadlineFrames.CompositorThread"/>
   <affected-histogram
@@ -16781,28 +15901,11 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Startup.BrowserMessageLoopStartTimeFromMainEntry3"/>
   <affected-histogram name="Startup.BrowserOpenTabs"/>
   <affected-histogram name="Startup.BrowserWindow.FirstPaint"/>
-  <affected-histogram name="Startup.BrowserWindow.FirstPaint.CompositingEnded">
-    <obsolete>
-      Obsolete as of Feb 2021.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="Startup.BrowserWindowDisplay"/>
   <affected-histogram name="Startup.FirstWebContents.MainFrameLoad"/>
   <affected-histogram name="Startup.FirstWebContents.MainFrameLoad2"/>
   <affected-histogram name="Startup.FirstWebContents.MainNavigationFinished"/>
   <affected-histogram name="Startup.FirstWebContents.MainNavigationStart"/>
-  <affected-histogram
-      name="Startup.FirstWebContents.MainNavigationStart.MultiTabs">
-    <obsolete>
-      Obsolete as of Jan 2020.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="Startup.FirstWebContents.MainNavigationStart.SingleTab">
-    <obsolete>
-      Obsolete as of Jan 2020.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="Startup.FirstWebContents.NonEmptyPaint"/>
   <affected-histogram name="Startup.FirstWebContents.NonEmptyPaint2"/>
   <affected-histogram name="Startup.FirstWebContents.NonEmptyPaint3"/>
@@ -16957,12 +16060,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="SubresourceFilterOnly" label="subresource filter only pattern"/>
   <affected-histogram name="SubresourceFilter.PageLoad.FinalURLMatch"/>
   <affected-histogram name="SubresourceFilter.PageLoad.RedirectChainLength"/>
-  <affected-histogram
-      name="SubresourceFilter.PageLoad.RedirectChainMatchPattern">
-    <obsolete>
-      Obsolete as of April 2017
-    </obsolete>
-  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="SweeperCompletionTypes" separator=".">
@@ -17147,92 +16244,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Apps.AppListSuggestedChipOpenType"/>
   <affected-histogram name="Apps.ContextMenuExecuteCommand.FromApp"/>
   <affected-histogram name="Apps.ContextMenuExecuteCommand.NotFromApp"/>
-  <affected-histogram name="Apps.ContextMenuShowSource.AppGrid">
-    <obsolete>
-      Obsoleted in October 2021. Replaced this suffix with variants in
-      histogram.xml
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="Apps.ContextMenuShowSource.Desktop">
-    <obsolete>
-      Obsoleted in October 2021. Replaced this suffix with variants in
-      histogram.xml
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="Apps.ContextMenuShowSource.SearchResult">
-    <obsolete>
-      Obsoleted in October 2021. Replaced this suffix with variants in
-      histogram.xml
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="Apps.ContextMenuShowSource.Shelf">
-    <obsolete>
-      Obsoleted in October 2021. Replaced this suffix with variants in
-      histogram.xml
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="Apps.ContextMenuShowSource.ShelfButton">
-    <obsolete>
-      Obsoleted in October 2021. Replaced this suffix with variants in
-      histogram.xml
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="Apps.ContextMenuShowSource.SuggestedAppFullscreen">
-    <obsolete>
-      Obsoleted in October 2021. Replaced this suffix with variants in
-      histogram.xml
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="Apps.ContextMenuShowSource.SuggestedAppPeeking">
-    <obsolete>
-      Obsoleted in October 2021. Replaced this suffix with variants in
-      histogram.xml
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="Apps.ContextMenuUserJourneyTime.AppGrid">
-    <obsolete>
-      Obsoleted in October 2021. Replaced this suffix with variants in
-      histogram.xml
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="Apps.ContextMenuUserJourneyTime.Desktop">
-    <obsolete>
-      Obsoleted in October 2021. Replaced this suffix with variants in
-      histogram.xml
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="Apps.ContextMenuUserJourneyTime.SearchResult">
-    <obsolete>
-      Obsoleted in October 2021. Replaced this suffix with variants in
-      histogram.xml
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="Apps.ContextMenuUserJourneyTime.Shelf">
-    <obsolete>
-      Obsoleted in October 2021. Replaced this suffix with variants in
-      histogram.xml
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="Apps.ContextMenuUserJourneyTime.ShelfButton">
-    <obsolete>
-      Obsoleted in October 2021. Replaced this suffix with variants in
-      histogram.xml
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="Apps.ContextMenuUserJourneyTime.SuggestedAppFullscreen">
-    <obsolete>
-      Obsoleted in October 2021. Replaced this suffix with variants in
-      histogram.xml
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram
-      name="Apps.ContextMenuUserJourneyTime.SuggestedAppPeeking">
-    <obsolete>
-      Obsoleted in October 2021. Replaced this suffix with variants in
-      histogram.xml
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="Apps.PaginationTransition.AnimationSmoothness"/>
   <affected-histogram
       name="Apps.PaginationTransition.DragScroll.PresentationTime"/>
@@ -17274,21 +16285,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="MayBlock"
       label="Applies to tasks posted with MayBlock() or
              WithBaseSyncPrimitives()."/>
-  <affected-histogram name="TaskScheduler.TaskLatency.BackgroundTaskPriority">
-    <obsolete>
-      Deprecated 4/2017. Units changed from milliseconds to microseconds.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="TaskScheduler.TaskLatency.UserBlockingTaskPriority">
-    <obsolete>
-      Deprecated 4/2017. Units changed from milliseconds to microseconds.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="TaskScheduler.TaskLatency.UserVisibleTaskPriority">
-    <obsolete>
-      Deprecated 4/2017. Units changed from milliseconds to microseconds.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram
       name="TaskScheduler.TaskLatencyMicroseconds.BackgroundTaskPriority"/>
   <affected-histogram
@@ -17329,31 +16325,6 @@ chromium-metrics-reviews@google.com.
       label="Applies to tasks posted with a USER_BLOCKING priority."/>
   <suffix name="UserVisibleTaskPriority"
       label="Applies to tasks posted with a USER_VISIBLE priority."/>
-  <affected-histogram name="TaskScheduler.TaskLatency">
-    <obsolete>
-      Deprecated 4/2017. Units changed from milliseconds to microseconds.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="TaskScheduler.TaskLatency.BackgroundFileIOPool">
-    <obsolete>
-      Deprecated 12/2016. Pool name removed from task latency histogram name.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="TaskScheduler.TaskLatency.BackgroundPool">
-    <obsolete>
-      Deprecated 12/2016. Pool name removed from task latency histogram name.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="TaskScheduler.TaskLatency.ForegroundFileIOPool">
-    <obsolete>
-      Deprecated 12/2016. Pool name removed from task latency histogram name.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="TaskScheduler.TaskLatency.ForegroundPool">
-    <obsolete>
-      Deprecated 12/2016. Pool name removed from task latency histogram name.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="TaskScheduler.TaskLatencyMicroseconds"/>
 </histogram_suffixes>
 
@@ -17449,41 +16420,21 @@ chromium-metrics-reviews@google.com.
       Deprecated 01/2018. In favor of TaskSchedulerName suffix.
     </obsolete>
   </suffix>
-  <affected-histogram name="TaskScheduler.DetachDuration">
-    <obsolete>
-      Deprecated 01/2018. In favor of explicit .Browser suffix.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="TaskScheduler.DetachDuration.Browser"/>
   <affected-histogram name="TaskScheduler.DetachDuration.ContentChild"/>
   <affected-histogram name="TaskScheduler.DetachDuration.Renderer"/>
   <affected-histogram name="TaskScheduler.NumActiveWorkers.Browser"/>
   <affected-histogram name="TaskScheduler.NumActiveWorkers.ContentChild"/>
   <affected-histogram name="TaskScheduler.NumActiveWorkers.Renderer"/>
-  <affected-histogram name="TaskScheduler.NumTasksBeforeDetach">
-    <obsolete>
-      Deprecated 01/2018. In favor of explicit .Browser suffix.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="TaskScheduler.NumTasksBeforeDetach.Browser"/>
   <affected-histogram name="TaskScheduler.NumTasksBeforeDetach.ContentChild"/>
   <affected-histogram name="TaskScheduler.NumTasksBeforeDetach.Renderer"/>
-  <affected-histogram name="TaskScheduler.NumTasksBetweenWaits">
-    <obsolete>
-      Deprecated 01/2018. In favor of explicit .Browser suffix.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="TaskScheduler.NumTasksBetweenWaits.Browser"/>
   <affected-histogram name="TaskScheduler.NumTasksBetweenWaits.ContentChild"/>
   <affected-histogram name="TaskScheduler.NumTasksBetweenWaits.Renderer"/>
   <affected-histogram name="TaskScheduler.NumWorkers.Browser"/>
   <affected-histogram name="TaskScheduler.NumWorkers.ContentChild"/>
   <affected-histogram name="TaskScheduler.NumWorkers.Renderer"/>
-  <affected-histogram name="TaskScheduler.TaskLatency">
-    <obsolete>
-      Deprecated 12/2016. Pool name removed from task latency histogram name.
-    </obsolete>
-  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="TeamDrivesSupport" separator=".">
@@ -17647,11 +16598,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Secure.Quic"
       label="Recorded for Google servers (https) only when QUIC is used."/>
   <affected-histogram name="Net.HttpJob.TotalTime"/>
-  <affected-histogram name="Net.HttpJob.TotalTimeCached">
-    <obsolete>
-      Deprecated 10/2016, no longer used.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram name="Net.HttpJob.TotalTimeNotCached"/>
 </histogram_suffixes>
 
@@ -17770,14 +16716,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="RareNTPUser" label="Rare NTP user"/>
   <affected-histogram
       name="NewTabPage.ContentSuggestions.TimeUntilFirstShownTrigger"/>
-  <affected-histogram
-      name="NewTabPage.ContentSuggestions.TimeUntilFirstSoftTrigger">
-    <obsolete>
-      Deprecated as of July 2017, in favor of
-      NewTabPage.ContentSuggestions.TimeUntilFirstShownTrigger and
-      NewTabPage.ContentSuggestions.TimeUntilFirstStartupTrigger.
-    </obsolete>
-  </affected-histogram>
   <affected-histogram
       name="NewTabPage.ContentSuggestions.TimeUntilFirstStartupTrigger"/>
   <affected-histogram
@@ -18035,17 +16973,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="Primary" label="Regular user"/>
   <suffix name="SigninOrLockScreen" label="Sign in or lockscreen"/>
   <affected-histogram name="Webapp.InstallResult.System.Profiles"/>
-  <affected-histogram
-      name="Webapp.InstallResultExtensionDisabledReason.System.Profiles">
-    <obsolete>
-      Deprecated 11/2020. The affected histogram is deprecated.
-    </obsolete>
-  </affected-histogram>
-  <affected-histogram name="Webapp.InstallResultExtensionError.System.Profiles">
-    <obsolete>
-      Deprecated 11/2020. The affected histogram is deprecated.
-    </obsolete>
-  </affected-histogram>
 </histogram_suffixes>
 
 <histogram_suffixes name="WebappType" separator=".">
