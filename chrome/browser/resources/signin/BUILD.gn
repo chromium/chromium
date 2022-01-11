@@ -186,6 +186,7 @@ ts_library("build_ts") {
   deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
+    "//ui/webui/resources/cr_components/customize_themes:build_ts",
   ]
   extra_deps = [
     ":preprocess",
