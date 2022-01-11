@@ -214,12 +214,14 @@ version_info::Channel GetChannel(version_info::Channel channel) {
 // only some channels. If assigned to an experiment group, returns the name of
 // the group name, e.g. "Control"; otherwise, returns the empty string.
 std::string SetUpExtendedSafeModeTrial(version_info::Channel channel) {
+#if !defined(OS_IOS)
   if (channel != version_info::Channel::UNKNOWN &&
       channel != version_info::Channel::CANARY &&
       channel != version_info::Channel::DEV &&
       channel != version_info::Channel::BETA) {
     return std::string();
   }
+#endif  // !defined(OS_IOS)
 
   int default_group;
   scoped_refptr<base::FieldTrial> trial(
@@ -227,8 +229,9 @@ std::string SetUpExtendedSafeModeTrial(version_info::Channel channel) {
           kExtendedSafeModeTrial, 100, kDefaultGroup,
           base::FieldTrial::ONE_TIME_RANDOMIZED, &default_group));
 
-  trial->AppendGroup(kControlGroup, 50);
-  trial->AppendGroup(kSignalAndWriteViaFileUtilGroup, 50);
+  int group_probability = channel == version_info::Channel::STABLE ? 1 : 50;
+  trial->AppendGroup(kControlGroup, group_probability);
+  trial->AppendGroup(kSignalAndWriteViaFileUtilGroup, group_probability);
   return trial->group_name();
 }
 

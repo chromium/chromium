@@ -1019,9 +1019,15 @@ INSTANTIATE_TEST_SUITE_P(
         ChannelTestParams{.test_name = "Beta",
                           .channel = version_info::Channel::BETA,
                           .should_experiment_be_active = true},
+#if defined(OS_IOS)
+        ChannelTestParams{.test_name = "Stable",
+                          .channel = version_info::Channel::STABLE,
+                          .should_experiment_be_active = true}),
+#else
         ChannelTestParams{.test_name = "Stable",
                           .channel = version_info::Channel::STABLE,
                           .should_experiment_be_active = false}),
+#endif  // defined(OS_IOS)
     [](const ::testing::TestParamInfo<ChannelTestParams>& params) {
       return params.param.test_name;
     });
