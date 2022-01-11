@@ -105,21 +105,19 @@ class SetDisjunctionPermission : public APIPermission {
       std::string* error,
       std::vector<std::string>* unhandled_permissions) override {
     data_set_.clear();
-    const base::ListValue* list = NULL;
 
     if (!value) {
       // treat null as an empty list.
       return true;
     }
 
-    if (!value->GetAsList(&list)) {
+    if (!value->is_list()) {
       if (error)
         *error = "Cannot parse the permission list. It's not a list.";
       return false;
     }
 
-    for (size_t i = 0; i < list->GetList().size(); ++i) {
-      const base::Value& item_value = list->GetList()[i];
+    for (const base::Value& item_value : value->GetList()) {
       PermissionDataType data;
       if (data.FromValue(&item_value)) {
         data_set_.insert(data);

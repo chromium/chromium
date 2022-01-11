@@ -125,14 +125,13 @@ std::unique_ptr<DeclarativeManifestData> DeclarativeManifestData::FromValue(
   ErrorBuilder error_builder(error);
   std::unique_ptr<DeclarativeManifestData> result(
       new DeclarativeManifestData());
-  const base::ListValue* list = nullptr;
-  if (!value.GetAsList(&list)) {
+  if (!value.is_list()) {
     error_builder.Append("'event_rules' expected list, got %s",
                          base::Value::GetTypeName(value.type()));
     return nullptr;
   }
 
-  for (const auto& element : list->GetList()) {
+  for (const auto& element : value.GetList()) {
     const base::DictionaryValue* dict = nullptr;
     if (!element.GetAsDictionary(&dict)) {
       error_builder.Append("expected dictionary, got %s",
