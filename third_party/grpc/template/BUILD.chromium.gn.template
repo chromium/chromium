@@ -181,6 +181,16 @@
         'src/src/cpp/server/xds_server_credentials.cc',
         'src/src/cpp/server/xds_server_credentials.cc',
         'src/src/cpp/server/xds_server_credentials.h',
+        'src/src/core/ext/filters/rbac/rbac_filter.cc',
+        'src/src/core/ext/filters/rbac/rbac_filter.h',
+        'src/src/core/ext/filters/rbac/rbac_service_config_parser.cc',
+        'src/src/core/ext/filters/rbac/rbac_service_config_parser.h',
+        'src/src/core/lib/security/authorization/grpc_authorization_engine.cc',
+        'src/src/core/lib/security/authorization/grpc_authorization_engine.h',
+        'src/src/core/lib/security/authorization/matchers.cc',
+        'src/src/core/lib/security/authorization/matchers.h',
+        'src/src/core/lib/security/authorization/rbac_policy.cc',
+        'src/src/core/lib/security/authorization/rbac_policy.h',
     ]
     return s in file_names
 
