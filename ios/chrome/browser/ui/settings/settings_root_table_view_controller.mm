@@ -107,7 +107,7 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
                            target:nil
                            action:nil];
 
-  UIBarButtonItem* toolbarLeftButton = nil;
+  UIBarButtonItem* toolbarLeftButton = flexibleSpace;
   if (self.tableView.editing && self.shouldShowDeleteButtonInToolbar) {
     toolbarLeftButton = self.deleteButton;
   } else if (self.shouldShowAddButtonInToolbar) {
@@ -118,14 +118,8 @@ const CGFloat kActivityIndicatorDimensionIPhone = 56;
       self.tableView.editing ? [self createEditModeDoneButtonForToolbar:YES]
                              : [self createEditButtonForToolbar:YES];
 
-  if (toolbarLeftButton) {
-    [self
-        setToolbarItems:@[ toolbarLeftButton, flexibleSpace, editOrDoneButton ]
+  [self setToolbarItems:@[ toolbarLeftButton, flexibleSpace, editOrDoneButton ]
                animated:YES];
-  } else {
-    [self setToolbarItems:@[ flexibleSpace, editOrDoneButton, flexibleSpace ]
-                 animated:YES];
-  }
 
   if (self.tableView.editing) {
     self.deleteButton.enabled = NO;
