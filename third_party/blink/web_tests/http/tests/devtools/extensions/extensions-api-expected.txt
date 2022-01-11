@@ -55,6 +55,7 @@ RUNNING TEST: extension_testAPI
         }
         openResource : <function>
         setOpenResourceHandler : <function>
+        setThemeChangeHandler : <function>
         sources : {
             createSidebarPane : <function>
             onSelectionChanged : {
