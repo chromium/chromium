@@ -5,8 +5,6 @@
 
 <vector
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:targetApi="21"
     android:height="24dp"
     android:viewportHeight="36"
     android:viewportWidth="36"

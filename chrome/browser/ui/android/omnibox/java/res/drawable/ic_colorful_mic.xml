@@ -3,8 +3,6 @@
      Use of this source code is governed by a BSD-style license that can be
      found in the LICENSE file. -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        tools:targetApi="21"
         android:width="40dp"
         android:height="40dp"
         android:viewportWidth="56.0"
