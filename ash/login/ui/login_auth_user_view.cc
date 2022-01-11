@@ -1388,22 +1388,21 @@ void LoginAuthUserView::SetEasyUnlockIcon(
     EasyUnlockIconState icon_state,
     const std::u16string& accessibility_label) {
   if (smart_lock_ui_revamp_enabled_) {
-    DCHECK(smart_lock_auth_factor_model_);
-    smart_lock_auth_factor_model_->SetEasyUnlockIconState(icon_state);
-  } else {
-    password_view_->SetEasyUnlockIcon(icon_state, accessibility_label);
+    return;
+  }
 
-    const std::string& user_display_email =
-        current_user().basic_user_info.display_email;
-    if (icon_state == EasyUnlockIconState::UNLOCKED) {
-      password_view_->SetAccessibleName(l10n_util::GetStringFUTF16(
-          IDS_ASH_LOGIN_POD_AUTH_TAP_PASSWORD_FIELD_ACCESSIBLE_NAME,
-          base::UTF8ToUTF16(user_display_email)));
-    } else {
-      password_view_->SetAccessibleName(l10n_util::GetStringFUTF16(
-          IDS_ASH_LOGIN_POD_PASSWORD_FIELD_ACCESSIBLE_NAME,
-          base::UTF8ToUTF16(user_display_email)));
-    }
+  password_view_->SetEasyUnlockIcon(icon_state, accessibility_label);
+
+  const std::string& user_display_email =
+      current_user().basic_user_info.display_email;
+  if (icon_state == EasyUnlockIconState::UNLOCKED) {
+    password_view_->SetAccessibleName(l10n_util::GetStringFUTF16(
+        IDS_ASH_LOGIN_POD_AUTH_TAP_PASSWORD_FIELD_ACCESSIBLE_NAME,
+        base::UTF8ToUTF16(user_display_email)));
+  } else {
+    password_view_->SetAccessibleName(l10n_util::GetStringFUTF16(
+        IDS_ASH_LOGIN_POD_PASSWORD_FIELD_ACCESSIBLE_NAME,
+        base::UTF8ToUTF16(user_display_email)));
   }
 }
 

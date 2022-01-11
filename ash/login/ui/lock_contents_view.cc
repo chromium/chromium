@@ -2091,7 +2091,10 @@ void LockContentsView::OnBigUserChanged() {
   CurrentBigUserView()->RequestFocus();
 
   Shell::Get()->login_screen_controller()->OnFocusPod(big_user_account_id);
-  UpdateEasyUnlockIconForUser(big_user_account_id);
+
+  if (!base::FeatureList::IsEnabled(ash::features::kSmartLockUIRevamp)) {
+    UpdateEasyUnlockIconForUser(big_user_account_id);
+  }
 
   // The new auth user might have different last used detachable base - make
   // sure the detachable base pairing error is updated if needed.

@@ -26,32 +26,6 @@ void SmartLockAuthFactorModel::OnArrowButtonTapOrClickEvent() {
   }
 }
 
-void SmartLockAuthFactorModel::SetEasyUnlockIconState(
-    EasyUnlockIconState state) {
-  switch (state) {
-    case EasyUnlockIconState::NONE:
-      [[fallthrough]];
-    case EasyUnlockIconState::HARDLOCKED:
-      SetSmartLockState(SmartLockState::kDisabled);
-      break;
-    case EasyUnlockIconState::LOCKED_WITH_PROXIMITY_HINT:
-      SetSmartLockState(SmartLockState::kPhoneFoundLockedAndDistant);
-      break;
-    case EasyUnlockIconState::LOCKED:
-      SetSmartLockState(SmartLockState::kPhoneNotFound);
-      break;
-    case EasyUnlockIconState::LOCKED_TO_BE_ACTIVATED:
-      SetSmartLockState(SmartLockState::kPhoneFoundLockedAndProximate);
-      break;
-    case EasyUnlockIconState::UNLOCKED:
-      SetSmartLockState(SmartLockState::kPhoneAuthenticated);
-      break;
-    case EasyUnlockIconState::SPINNER:
-      SetSmartLockState(SmartLockState::kConnectingToPhone);
-      break;
-  }
-}
-
 void SmartLockAuthFactorModel::SetSmartLockState(SmartLockState state) {
   if (state_ == state)
     return;
