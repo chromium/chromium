@@ -394,7 +394,6 @@ TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesNoDevices) {
       .WillRepeatedly(Invoke(this, &FirmwareUpdateManagerTest::OnMethodCalled));
 
   dbus_responses_.push_back(CreateEmptyDeviceResponse());
-  firmware_update_manager_->RequestAllUpdates();
   FakeUpdateObserver update_observer;
   SetupObserver(&update_observer);
   const std::vector<firmware_update::mojom::FirmwareUpdatePtr>& updates =
@@ -409,7 +408,6 @@ TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesOneDeviceNoUpdates) {
 
   dbus_responses_.push_back(CreateOneDeviceResponse());
   dbus_responses_.push_back(CreateNoUpdateResponse());
-  firmware_update_manager_->RequestAllUpdates();
   FakeUpdateObserver update_observer;
   SetupObserver(&update_observer);
   const std::vector<firmware_update::mojom::FirmwareUpdatePtr>& updates =
@@ -425,7 +423,6 @@ TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesOneDeviceOneUpdate) {
 
   dbus_responses_.push_back(CreateOneDeviceResponse());
   dbus_responses_.push_back(CreateOneUpdateResponse());
-  firmware_update_manager_->RequestAllUpdates();
   FakeUpdateObserver update_observer;
   SetupObserver(&update_observer);
   const std::vector<firmware_update::mojom::FirmwareUpdatePtr>& updates =
@@ -452,7 +449,6 @@ TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesTwoDeviceOneWithUpdate) {
   dbus_responses_.push_back(CreateTwoDeviceResponse());
   dbus_responses_.push_back(CreateNoUpdateResponse());
   dbus_responses_.push_back(CreateOneUpdateResponse());
-  firmware_update_manager_->RequestAllUpdates();
   FakeUpdateObserver update_observer;
   SetupObserver(&update_observer);
   base::RunLoop().RunUntilIdle();

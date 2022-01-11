@@ -229,9 +229,8 @@ bool FirmwareUpdateManager::HasPendingUpdates() {
 void FirmwareUpdateManager::ObservePeripheralUpdates(
     mojo::PendingRemote<firmware_update::mojom::UpdateObserver> observer) {
   update_list_observers_.Add(std::move(observer));
-
-  if (HasPendingUpdates()) {
-    NotifyUpdateListObservers();
+  if (!HasPendingUpdates()) {
+    RequestAllUpdates();
   }
 }
 
