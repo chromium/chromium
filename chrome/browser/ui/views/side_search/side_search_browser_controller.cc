@@ -455,11 +455,6 @@ void SideSearchBrowserController::UpdateSidePanel() {
 
   const bool can_show_side_panel_for_page =
       tab_contents_helper->CanShowSidePanelForCommittedNavigation();
-  if (can_show_side_panel_for_page &&
-      tab_contents_helper->returned_to_previous_srp()) {
-    browser_view_->feature_promo_controller()->MaybeShowPromo(
-        feature_engagement::kIPHSideSearchFeature);
-  }
   const bool will_show_side_panel =
       can_show_side_panel_for_page && GetSidePanelToggledOpen();
 
@@ -482,6 +477,13 @@ void SideSearchBrowserController::UpdateSidePanel() {
         can_show_side_panel_for_page
             ? SideSearchAvailabilityChangeType::kBecomeAvailable
             : SideSearchAvailabilityChangeType::kBecomeUnavailable);
+  }
+
+  // Once the anchor element is visible, maybe show promo.
+  if (can_show_side_panel_for_page &&
+      tab_contents_helper->returned_to_previous_srp()) {
+    browser_view_->feature_promo_controller()->MaybeShowPromo(
+        feature_engagement::kIPHSideSearchFeature);
   }
 
   browser_view_->InvalidateLayout();
