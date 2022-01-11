@@ -18,9 +18,13 @@ import six.moves.urllib.error
 from threading import Thread
 
 import common
+import six
 import variations_seed_access_helper as seed_helper
 from variations_http_test_server import HTTPServer
 from variations_http_test_server import HTTPHandler
+
+if six.PY3:
+  import http
 
 _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 _SRC_DIR = os.path.join(_THIS_DIR, os.path.pardir, os.path.pardir)
@@ -46,7 +50,7 @@ _TEST_CASES = [
         'expected_text': 'Success',
     },
     {
-        'url': 'https://localhost:8000',
+        'url': 'http://localhost:8000',
         'expected_id': 'sites-chrome-userheader-title',
         'expected_text': 'The Chromium Projects',
     },
@@ -56,9 +60,17 @@ _TEST_CASES = [
 def _get_httpd():
   """Returns a HTTPServer instance."""
   hostname = "localhost"
-  port = 0
+  port = 8000
   directory = os.path.join(_THIS_DIR, _VARIATIONS_TEST_DATA, "http_server")
-  httpd = HTTPServer(directory, (hostname, port))
+  httpd = None
+  if six.PY3:
+    handler = partial(http.server.SimpleHTTPRequestHandler, directory=directory)
+    httpd = http.server.HTTPServer((hostname, port), handler)
+    httpd.timeout = 0.5
+    httpd.allow_reuse_address = True
+    httpd.server_bind()
+  else:
+    httpd = HTTPServer(directory, (hostname, port))
   return httpd
 
 
@@ -250,9 +262,15 @@ def _start_local_http_server():
     A local http.server.HTTPServer.
   """
   httpd = _get_httpd()
-  logging.info("%s is used as local http server.", httpd.address_string())
-  thread = Thread(target=httpd.server_forever)
-  thread.daemon = True
+  thread = None
+  if six.PY3:
+    address = "http://{}:{}".format(httpd.server_name, httpd.server_port)
+    logging.info("%s is used as local http server.", address)
+    thread = Thread(target=httpd.server_forever)
+    thread.setDaemon(True)
+  else:
+    thread = Thread(target=httpd.server_forever)
+    thread.daemon = True
   thread.start()
   return httpd
 

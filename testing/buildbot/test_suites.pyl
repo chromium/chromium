@@ -540,6 +540,13 @@
           'has_native_resultdb_integration',
         ],
       },
+      'variations_smoke_tests': {
+        'isolate_name': 'variations_smoke_tests',
+        'resultdb': {
+          'enable': True,
+          'result_format': 'single'
+        },
+      },
     },
 
     'chrome_public_tests': {
@@ -5315,6 +5322,16 @@
 
     'upload_perfetto': {
       'upload_trace_processor': {},
+    },
+
+    'variations_smoke_tests': {
+      'variations_smoke_tests': {
+        'isolate_name': 'variations_smoke_tests',
+        'resultdb': {
+          'enable': True,
+          'result_format': 'single'
+        },
+      },
     },
 
     # Not applicable for android x86 & x64 since the targets here assert
