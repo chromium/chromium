@@ -53,13 +53,17 @@ GpuArcVideoDecoder::~GpuArcVideoDecoder() {
   // Invalidate all weak pointers to stop incoming callbacks.
   weak_this_factory_.InvalidateWeakPtrs();
 
-  // The number of active instances should always be larger than zero. But if a
-  // bug causes an underflow we will permanently be unable to create new
-  // decoders, so an extra check is performed here (see b/173700103).
-  if (decoder_ && num_instances_ > 0) {
-    num_instances_--;
+  if (decoder_) {
+    // Destroy |decoder_| now in case it needs to use *|this| during tear-down.
+    decoder_.reset();
+
+    // The number of active instances should always be larger than zero. But if
+    // a bug causes an underflow we will permanently be unable to create new
+    // decoders, so an extra check is performed here (see b/173700103).
+    if (num_instances_ > 0) {
+      num_instances_--;
+    }
   }
-  decoder_.reset();
 
   client_video_frames_.clear();
   video_frame_pool_.reset();
