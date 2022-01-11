@@ -167,7 +167,7 @@ sk_sp<PaintRecord> CanvasFormattedText::PaintFormattedText(
   bounds = gfx::RectF(block->PhysicalVisualOverflowRect());
   auto* paint_record_builder = MakeGarbageCollected<PaintRecordBuilder>();
   PaintInfo paint_info(paint_record_builder->Context(), CullRect::Infinite(),
-                       PaintPhase::kForeground, kGlobalPaintNormalPhase, 0);
+                       PaintPhase::kForeground);
   NGBoxFragmentPainter(fragment).PaintObject(
       paint_info, PhysicalOffset(LayoutUnit(x), LayoutUnit(y)));
   return paint_record_builder->EndRecording();

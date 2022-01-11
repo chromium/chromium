@@ -189,13 +189,13 @@ Color HighlightColor(const Document& document,
                      Node* node,
                      PseudoId pseudo,
                      const CSSProperty& color_property,
-                     const GlobalPaintFlags global_paint_flags,
+                     PaintFlags paint_flags,
                      const AtomicString& pseudo_argument = g_null_atom) {
   if (pseudo == kPseudoIdSelection) {
     // If the element is unselectable, or we are only painting the selection,
     // don't override the foreground color with the selection foreground color.
     if ((node && !style.IsSelectable()) ||
-        (global_paint_flags & kGlobalPaintSelectionDragImageOnly)) {
+        (paint_flags & PaintFlag::kSelectionDragImageOnly)) {
       return style.VisitedDependentColor(color_property);
     }
   }
@@ -322,10 +322,10 @@ Color HighlightPaintingUtils::HighlightForegroundColor(
     const ComputedStyle& style,
     Node* node,
     PseudoId pseudo,
-    const GlobalPaintFlags global_paint_flags,
+    PaintFlags paint_flags,
     const AtomicString& pseudo_argument) {
   return HighlightColor(document, style, node, pseudo,
-                        GetCSSPropertyWebkitTextFillColor(), global_paint_flags,
+                        GetCSSPropertyWebkitTextFillColor(), paint_flags,
                         pseudo_argument);
 }
 
@@ -334,9 +334,9 @@ Color HighlightPaintingUtils::HighlightEmphasisMarkColor(
     const ComputedStyle& style,
     Node* node,
     PseudoId pseudo,
-    const GlobalPaintFlags global_paint_flags) {
+    PaintFlags paint_flags) {
   return HighlightColor(document, style, node, pseudo,
-                        GetCSSPropertyTextEmphasisColor(), global_paint_flags);
+                        GetCSSPropertyTextEmphasisColor(), paint_flags);
 }
 
 TextPaintStyle HighlightPaintingUtils::HighlightPaintingStyle(
@@ -349,7 +349,7 @@ TextPaintStyle HighlightPaintingUtils::HighlightPaintingStyle(
     const AtomicString& pseudo_argument) {
   TextPaintStyle highlight_style = text_style;
   bool uses_text_as_clip = paint_info.phase == PaintPhase::kTextClip;
-  const GlobalPaintFlags global_paint_flags = paint_info.GetGlobalPaintFlags();
+  const PaintFlags paint_flags = paint_info.GetPaintFlags();
 
   // Each highlight overlay’s shadows are completely independent of any shadows
   // specified on the originating element (or the other highlight overlays).
@@ -357,9 +357,9 @@ TextPaintStyle HighlightPaintingUtils::HighlightPaintingStyle(
 
   if (!uses_text_as_clip) {
     highlight_style.fill_color = HighlightForegroundColor(
-        document, style, node, pseudo, global_paint_flags, pseudo_argument);
-    highlight_style.emphasis_mark_color = HighlightEmphasisMarkColor(
-        document, style, node, pseudo, global_paint_flags);
+        document, style, node, pseudo, paint_flags, pseudo_argument);
+    highlight_style.emphasis_mark_color =
+        HighlightEmphasisMarkColor(document, style, node, pseudo, paint_flags);
   }
 
   if (scoped_refptr<const ComputedStyle> pseudo_style =

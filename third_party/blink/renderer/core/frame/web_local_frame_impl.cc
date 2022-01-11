@@ -431,8 +431,7 @@ class ChromePrintContext : public PrintContext {
     auto* builder = MakeGarbageCollected<PaintRecordBuilder>(context);
     frame_view->PaintOutsideOfLifecycle(
         builder->Context(),
-        kGlobalPaintNormalPhase | kGlobalPaintFlattenCompositingLayers |
-            kGlobalPaintAddUrlMetadata,
+        PaintFlag::kOmitCompositingInfo | PaintFlag::kAddUrlMetadata,
         CullRect(page_rect));
     {
       ScopedPaintChunkProperties scoped_paint_chunk_properties(
@@ -571,10 +570,9 @@ class PaintPreviewContext : public PrintContext {
 
     // This calls BeginRecording on |builder| with dimensions specified by the
     // CullRect.
-    GlobalPaintFlags flags =
-        kGlobalPaintNormalPhase | kGlobalPaintFlattenCompositingLayers;
+    PaintFlags flags = PaintFlag::kOmitCompositingInfo;
     if (include_linked_destinations)
-      flags |= kGlobalPaintAddUrlMetadata;
+      flags |= PaintFlag::kAddUrlMetadata;
 
     frame_view->PaintOutsideOfLifecycle(builder->Context(), flags,
                                         CullRect(bounds));

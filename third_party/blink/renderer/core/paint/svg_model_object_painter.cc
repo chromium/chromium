@@ -32,7 +32,7 @@ void SVGModelObjectPainter::RecordHitTestData(const LayoutObject& svg_object,
   DCHECK(paint_info.phase == PaintPhase::kForeground);
   // Hit test display items are only needed for compositing. This flag is used
   // for for printing and drag images which do not need hit testing.
-  if (paint_info.GetGlobalPaintFlags() & kGlobalPaintFlattenCompositingLayers)
+  if (paint_info.ShouldOmitCompositingInfo())
     return;
 
   paint_info.context.GetPaintController().RecordHitTestData(

@@ -1475,7 +1475,7 @@ TEST_F(WebPluginContainerTest, CompositedPlugin) {
   paint_controller->UpdateCurrentPaintChunkProperties(
       PropertyTreeState::Root());
   GraphicsContext graphics_context(*paint_controller);
-  container->Paint(graphics_context, kGlobalPaintNormalPhase,
+  container->Paint(graphics_context, PaintFlag::kNoFlag,
                    CullRect(gfx::Rect(10, 10, 400, 300)), gfx::Vector2d());
   paint_controller->CommitNewDisplayItems();
 

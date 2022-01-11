@@ -63,7 +63,7 @@ void BoxModelObjectPainter::PaintTextClipMask(
     const PhysicalOffset& paint_offset,
     bool object_has_multiple_boxes) {
   PaintInfo mask_paint_info(paint_info.context, CullRect(mask_rect),
-                            PaintPhase::kTextClip, kGlobalPaintNormalPhase, 0);
+                            PaintPhase::kTextClip);
   mask_paint_info.SetFragmentID(paint_info.FragmentID());
   if (flow_box_) {
     LayoutSize local_offset = ToLayoutSize(flow_box_->Location());

@@ -164,7 +164,7 @@ void WebPluginContainerImpl::UpdateAllLifecyclePhases() {
 }
 
 void WebPluginContainerImpl::Paint(GraphicsContext& context,
-                                   const GlobalPaintFlags,
+                                   PaintFlags,
                                    const CullRect& cull_rect,
                                    const gfx::Vector2d& paint_offset) const {
   // Don't paint anything if the plugin doesn't intersect.

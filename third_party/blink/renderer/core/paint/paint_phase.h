@@ -121,25 +121,6 @@ inline bool ShouldPaintDescendantOutlines(PaintPhase phase) {
          phase == PaintPhase::kDescendantOutlinesOnly;
 }
 
-// Those flags are meant as global tree operations. This means
-// that they should be constant for a paint phase.
-enum GlobalPaintFlag {
-  kGlobalPaintNormalPhase = 0,
-  // Used when painting selection as part of a drag-image. This
-  // flag disables a lot of the painting code and specifically
-  // triggers a PaintPhaseSelection.
-  kGlobalPaintSelectionDragImageOnly = 1 << 0,
-  // Used when painting a drag-image or printing in order to
-  // ignore the hardware layers and paint the whole tree
-  // into the topmost layer.
-  kGlobalPaintFlattenCompositingLayers = 1 << 1,
-  // Used when printing or painting a preview to in order to add URL
-  // metadata for links.
-  kGlobalPaintAddUrlMetadata = 1 << 2
-};
-
-typedef unsigned GlobalPaintFlags;
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_PHASE_H_

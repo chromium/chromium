@@ -2852,10 +2852,9 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode,
 
     // Draw the overlay layer (video or WebXR DOM overlay) if present.
     if (PaintLayer* full_screen_layer = GetFullScreenOverlayLayer()) {
-      PaintLayerPainter(*full_screen_layer)
-          .Paint(graphics_context, kGlobalPaintNormalPhase, 0);
+      PaintLayerPainter(*full_screen_layer).Paint(graphics_context);
     } else {
-      PaintFrame(graphics_context, kGlobalPaintNormalPhase);
+      PaintFrame(graphics_context);
 
       GetPage()->GetValidationMessageClient().PaintOverlay(graphics_context);
       ForAllNonThrottledLocalFrameViews(
@@ -3918,7 +3917,7 @@ bool LocalFrameView::CapturePaintPreview(
 }
 
 void LocalFrameView::Paint(GraphicsContext& context,
-                           const GlobalPaintFlags global_paint_flags,
+                           PaintFlags paint_flags,
                            const CullRect& cull_rect,
                            const gfx::Vector2d& paint_offset) const {
   const auto* owner_layout_object = GetFrame().OwnerLayoutObject();
@@ -3944,12 +3943,12 @@ void LocalFrameView::Paint(GraphicsContext& context,
 
   // |paint_offset| is not used because paint properties of the contents will
   // ensure the correct location.
-  PaintFrame(context, global_paint_flags);
+  PaintFrame(context, paint_flags);
 }
 
 void LocalFrameView::PaintFrame(GraphicsContext& context,
-                                GlobalPaintFlags global_paint_flags) const {
-  FramePainter(*this).Paint(context, global_paint_flags);
+                                PaintFlags paint_flags) const {
+  FramePainter(*this).Paint(context, paint_flags);
 }
 
 static bool PaintOutsideOfLifecycleIsAllowed(GraphicsContext& context,
@@ -3963,10 +3962,9 @@ static bool PaintOutsideOfLifecycleIsAllowed(GraphicsContext& context,
   return false;
 }
 
-void LocalFrameView::PaintOutsideOfLifecycle(
-    GraphicsContext& context,
-    const GlobalPaintFlags global_paint_flags,
-    const CullRect& cull_rect) {
+void LocalFrameView::PaintOutsideOfLifecycle(GraphicsContext& context,
+                                             const PaintFlags paint_flags,
+                                             const CullRect& cull_rect) {
   DCHECK(PaintOutsideOfLifecycleIsAllowed(context, *this));
 
   SCOPED_UMA_AND_UKM_TIMER(EnsureUkmAggregator(),
@@ -3980,7 +3978,7 @@ void LocalFrameView::PaintOutsideOfLifecycle(
   {
     OverriddenCullRectScope force_cull_rect(*GetLayoutView()->Layer(),
                                             cull_rect);
-    PaintFrame(context, global_paint_flags);
+    PaintFrame(context, paint_flags);
   }
 
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
@@ -3996,7 +3994,7 @@ void LocalFrameView::PaintForTest(const CullRect& cull_rect) {
   if (GetLayoutView()->Layer()->SelfOrDescendantNeedsRepaint()) {
     PaintController::CycleScope cycle_scope(paint_controller);
     GraphicsContext graphics_context(paint_controller);
-    PaintFrame(graphics_context, kGlobalPaintNormalPhase);
+    PaintFrame(graphics_context);
     paint_controller.CommitNewDisplayItems();
   }
   Lifecycle().AdvanceTo(DocumentLifecycle::kPaintClean);

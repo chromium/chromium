@@ -90,7 +90,7 @@ class CORE_EXPORT WebPluginContainerImpl final
   // |paint_offset| is used to to paint the contents at the correct location.
   // It should be issued as a transform operation before painting the contents.
   void Paint(GraphicsContext&,
-             const GlobalPaintFlags,
+             PaintFlags,
              const CullRect&,
              const gfx::Vector2d& paint_offset) const override;
   void UpdateGeometry() override;

@@ -30,20 +30,13 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
-// TODO(jchaffraix): Once we unify PaintBehavior and PaintLayerFlags, we should
-// move PaintLayerFlags to PaintPhase and rename it. Thus removing the need for
-// this #include
-// "third_party/blink/renderer/core/paint/paint_layer_painting_info.h"
-#include "third_party/blink/renderer/core/paint/paint_layer_painting_info.h"
+#include "third_party/blink/renderer/core/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/paint/paint_phase.h"
 #include "third_party/blink/renderer/platform/geometry/layout_rect.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
-#include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/paint/cull_rect.h"
 #include "third_party/blink/renderer/platform/graphics/paint/display_item.h"
-#include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
-#include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace blink {
@@ -55,13 +48,11 @@ struct CORE_EXPORT PaintInfo {
   PaintInfo(GraphicsContext& context,
             const CullRect& cull_rect,
             PaintPhase phase,
-            GlobalPaintFlags global_paint_flags,
-            PaintLayerFlags paint_flags)
+            PaintFlags paint_flags = PaintFlag::kNoFlag)
       : context(context),
         phase(phase),
         cull_rect_(cull_rect),
-        paint_flags_(paint_flags),
-        global_paint_flags_(global_paint_flags) {}
+        paint_flags_(paint_flags) {}
 
   PaintInfo(GraphicsContext& new_context,
             const PaintInfo& copy_other_fields_from)
@@ -69,10 +60,10 @@ struct CORE_EXPORT PaintInfo {
         phase(copy_other_fields_from.phase),
         cull_rect_(copy_other_fields_from.cull_rect_),
         fragment_id_(copy_other_fields_from.fragment_id_),
-        paint_flags_(copy_other_fields_from.paint_flags_),
-        global_paint_flags_(copy_other_fields_from.global_paint_flags_) {
-    // We should never pass the flag to other PaintInfo.
+        paint_flags_(copy_other_fields_from.paint_flags_) {
+    // We should never pass these flags to other PaintInfo.
     DCHECK(!copy_other_fields_from.is_painting_background_in_contents_space);
+    DCHECK(!copy_other_fields_from.skips_background_);
   }
 
   // Creates a PaintInfo for painting descendants. See comments about the paint
@@ -90,34 +81,29 @@ struct CORE_EXPORT PaintInfo {
     return result;
   }
 
+  bool ShouldOmitCompositingInfo() const {
+    return paint_flags_ & PaintFlag::kOmitCompositingInfo;
+  }
+
   bool IsRenderingClipPathAsMaskImage() const {
-    return paint_flags_ & kPaintLayerPaintingRenderingClipPathAsMask;
+    return paint_flags_ & PaintFlag::kPaintingClipPathAsMask;
   }
   bool IsRenderingResourceSubtree() const {
-    return paint_flags_ & kPaintLayerPaintingRenderingResourceSubtree;
+    return paint_flags_ & PaintFlag::kPaintingResourceSubtree;
   }
 
-  bool ShouldSkipBackground() const {
-    return paint_flags_ & kPaintLayerPaintingSkipBackground;
-  }
-  void SetSkipsBackground(bool b) {
-    if (b)
-      paint_flags_ |= kPaintLayerPaintingSkipBackground;
-    else
-      paint_flags_ &= ~kPaintLayerPaintingSkipBackground;
-  }
+  bool ShouldSkipBackground() const { return skips_background_; }
+  void SetSkipsBackground(bool b) { skips_background_ = b; }
 
   bool ShouldAddUrlMetadata() const {
-    return global_paint_flags_ & kGlobalPaintAddUrlMetadata;
+    return paint_flags_ & PaintFlag::kAddUrlMetadata;
   }
 
   DisplayItem::Type DisplayItemTypeForClipping() const {
     return DisplayItem::PaintPhaseToClipType(phase);
   }
 
-  GlobalPaintFlags GetGlobalPaintFlags() const { return global_paint_flags_; }
-
-  PaintLayerFlags PaintFlags() const { return paint_flags_; }
+  PaintFlags GetPaintFlags() const { return paint_flags_; }
 
   const CullRect& GetCullRect() const { return cull_rect_; }
   void SetCullRect(const CullRect& cull_rect) { cull_rect_ = cull_rect; }
@@ -196,8 +182,6 @@ struct CORE_EXPORT PaintInfo {
     descendant_painting_blocked_ = blocked;
   }
 
-  // FIXME: Introduce setters/getters at some point. Requires a lot of changes
-  // throughout paint/.
   GraphicsContext& context;
   PaintPhase phase;
 
@@ -212,17 +196,14 @@ struct CORE_EXPORT PaintInfo {
   // NGPhysicalFragment to FragmentData in such cases).
   wtf_size_t fragment_id_ = WTF::kNotFound;
 
-  PaintLayerFlags paint_flags_;
-  const GlobalPaintFlags global_paint_flags_;
+  const PaintFlags paint_flags_;
 
-  // For CAP only.
   bool is_painting_background_in_contents_space = false;
+  bool skips_background_ = false;
 
   // Used by display-locking.
   bool descendant_painting_blocked_ = false;
 };
-
-Image::ImageDecodingMode GetImageDecodingMode(Node*);
 
 }  // namespace blink
 

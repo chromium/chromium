@@ -1395,7 +1395,7 @@ void WebViewImpl::PaintContent(cc::PaintCanvas* canvas, const gfx::Rect& rect) {
          DocumentLifecycle::kPaintClean);
 
   auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
-  main_view.PaintOutsideOfLifecycle(builder->Context(), kGlobalPaintNormalPhase,
+  main_view.PaintOutsideOfLifecycle(builder->Context(), PaintFlag::kNoFlag,
                                     CullRect(rect));
   // Don't bother to save/restore here as the caller is expecting the canvas
   // to be modified and take care of it.

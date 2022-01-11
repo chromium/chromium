@@ -521,7 +521,7 @@ bool NGBoxFragmentPainter::ShouldRecordHitTestData(
 
   // Hit test data are only needed for compositing. This flag is used for for
   // printing and drag images which do not need hit testing.
-  if (paint_info.GetGlobalPaintFlags() & kGlobalPaintFlattenCompositingLayers)
+  if (paint_info.ShouldOmitCompositingInfo())
     return false;
 
   // If an object is not visible, it does not participate in hit testing.
@@ -1750,7 +1750,7 @@ void NGBoxFragmentPainter::PaintTextClipMask(const PaintInfo& paint_info,
                                              const PhysicalOffset& paint_offset,
                                              bool object_has_multiple_boxes) {
   PaintInfo mask_paint_info(paint_info.context, CullRect(mask_rect),
-                            PaintPhase::kTextClip, kGlobalPaintNormalPhase, 0);
+                            PaintPhase::kTextClip);
   mask_paint_info.SetFragmentID(paint_info.FragmentID());
   if (!object_has_multiple_boxes) {
     PaintObject(mask_paint_info, paint_offset);

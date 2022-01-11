@@ -37,10 +37,8 @@ void SVGForeignObjectPainter::PaintLayer(const PaintInfo& paint_info) {
 
   // <foreignObject> is a replaced normal-flow stacking element.
   // See IsReplacedNormalFlowStacking in paint_layer_painter.cc.
-  PaintLayerPaintingInfo layer_painting_info(layout_svg_foreign_object_.Layer(),
-                                             paint_info.GetGlobalPaintFlags());
   PaintLayerPainter(*layout_svg_foreign_object_.Layer())
-      .Paint(paint_info.context, layer_painting_info, paint_info.PaintFlags());
+      .Paint(paint_info.context, paint_info.GetPaintFlags());
 }
 
 void SVGForeignObjectPainter::Paint(const PaintInfo& paint_info) {

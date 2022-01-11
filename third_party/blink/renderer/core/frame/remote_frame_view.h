@@ -45,7 +45,7 @@ class RemoteFrameView final : public GarbageCollected<RemoteFrameView>,
   void SetFrameRect(const gfx::Rect&) override;
   void PropagateFrameRects() override;
   void Paint(GraphicsContext&,
-             const GlobalPaintFlags,
+             PaintFlags,
              const CullRect&,
              const gfx::Vector2d& paint_offset) const override;
   void UpdateGeometry() override;

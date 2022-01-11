@@ -1171,8 +1171,8 @@ std::unique_ptr<DragImage> DragController::DragImageForSelection(
   DCHECK(frame.GetDocument()->IsActive());
 
   gfx::RectF painting_rect = ClippedSelection(frame);
-  GlobalPaintFlags paint_flags =
-      kGlobalPaintSelectionDragImageOnly | kGlobalPaintFlattenCompositingLayers;
+  PaintFlags paint_flags =
+      PaintFlag::kSelectionDragImageOnly | PaintFlag::kOmitCompositingInfo;
 
   auto* builder = MakeGarbageCollected<PaintRecordBuilder>();
   frame.View()->PaintOutsideOfLifecycle(

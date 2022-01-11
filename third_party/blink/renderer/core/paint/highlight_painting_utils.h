@@ -8,7 +8,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/paint/paint_phase.h"
+#include "third_party/blink/renderer/core/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/style/applied_text_decoration.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -40,13 +40,13 @@ class CORE_EXPORT HighlightPaintingUtils {
       const ComputedStyle&,
       Node*,
       PseudoId,
-      const GlobalPaintFlags,
+      PaintFlags,
       const AtomicString& pseudo_argument = g_null_atom);
   static Color HighlightEmphasisMarkColor(const Document&,
                                           const ComputedStyle&,
                                           Node*,
                                           PseudoId,
-                                          const GlobalPaintFlags);
+                                          PaintFlags);
   static TextPaintStyle HighlightPaintingStyle(
       const Document&,
       const ComputedStyle&,

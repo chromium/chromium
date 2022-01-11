@@ -551,7 +551,7 @@ class CORE_EXPORT LocalFrameView final
   // PaintClean state when these functions are called.
   void PaintOutsideOfLifecycle(
       GraphicsContext&,
-      const GlobalPaintFlags,
+      PaintFlags,
       const CullRect& cull_rect = CullRect::Infinite());
 
   // For testing paint with a custom cull rect.
@@ -841,11 +841,11 @@ class CORE_EXPORT LocalFrameView final
 
   // EmbeddedContentView implementation
   void Paint(GraphicsContext&,
-             const GlobalPaintFlags,
+             PaintFlags,
              const CullRect&,
              const gfx::Vector2d&) const final;
 
-  void PaintFrame(GraphicsContext&, GlobalPaintFlags) const;
+  void PaintFrame(GraphicsContext&, PaintFlags = PaintFlag::kNoFlag) const;
 
   LayoutSVGRoot* EmbeddedReplacedContent() const;
 

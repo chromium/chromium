@@ -35,9 +35,9 @@ void CopyStateFromGraphicsContext(const GraphicsContext& context,
 void SVGObjectPainter::PaintResourceSubtree(GraphicsContext& context) {
   DCHECK(!layout_object_.SelfNeedsLayout());
 
-  PaintInfo info(context, CullRect::Infinite(), PaintPhase::kForeground,
-                 kGlobalPaintNormalPhase | kGlobalPaintFlattenCompositingLayers,
-                 kPaintLayerPaintingRenderingResourceSubtree);
+  PaintInfo info(
+      context, CullRect::Infinite(), PaintPhase::kForeground,
+      PaintFlag::kOmitCompositingInfo | PaintFlag::kPaintingResourceSubtree);
   layout_object_.Paint(info);
 }
 

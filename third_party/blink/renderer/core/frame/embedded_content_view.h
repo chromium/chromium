@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_EMBEDDED_CONTENT_VIEW_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/paint/paint_phase.h"
+#include "third_party/blink/renderer/core/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/heap/handle.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/vector2d.h"
@@ -33,11 +33,13 @@ class CORE_EXPORT EmbeddedContentView : public GarbageCollectedMixin {
   virtual LayoutEmbeddedContent* GetLayoutEmbeddedContent() const = 0;
   virtual void AttachToLayout() = 0;
   virtual void DetachFromLayout() = 0;
-  virtual void Paint(
-      GraphicsContext&,
-      const GlobalPaintFlags,
-      const CullRect&,
-      const gfx::Vector2d& paint_offset = gfx::Vector2d()) const = 0;
+  // |cull_rect| is in the same coordinate space as Location() and FrameRect().
+  // |paint_offset| is Location() mapped into the current coordinates space of
+  // the current paint context.
+  virtual void Paint(GraphicsContext&,
+                     PaintFlags,
+                     const CullRect& cull_rect,
+                     const gfx::Vector2d& paint_offset) const = 0;
   // Called when the size of the view changes.  Implementations of
   // EmbeddedContentView should call LayoutEmbeddedContent::UpdateGeometry in
   // addition to any internal logic.

@@ -71,8 +71,7 @@ void VideoPainter::PaintReplaced(const PaintInfo& paint_info,
   // Video frames are only painted in software for printing or capturing node
   // images via web APIs.
   bool force_software_video_paint =
-      paint_info.GetGlobalPaintFlags() & kGlobalPaintFlattenCompositingLayers &&
-      !force_video_poster;
+      paint_info.ShouldOmitCompositingInfo() && !force_video_poster;
 
   bool paint_with_foreign_layer = paint_info.phase == PaintPhase::kForeground &&
                                   !should_display_poster &&

@@ -209,8 +209,7 @@ void CustomScrollbarTheme::PaintIntoRect(
     GraphicsContext& graphics_context,
     const PhysicalRect& rect) {
   PaintInfo paint_info(graphics_context, CullRect(ToPixelSnappedRect(rect)),
-                       PaintPhase::kForeground, kGlobalPaintNormalPhase,
-                       kPaintLayerNoFlag);
+                       PaintPhase::kForeground);
   ObjectPainter(layout_custom_scrollbar_part)
       .PaintAllPhasesAtomically(paint_info);
 }

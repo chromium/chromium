@@ -6,9 +6,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_PAINT_PAINT_LAYER_PAINTER_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/paint/paint_flags.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_fragment.h"
-#include "third_party/blink/renderer/core/paint/paint_layer_painting_info.h"
 #include "third_party/blink/renderer/core/paint/paint_result.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -31,19 +31,11 @@ class CORE_EXPORT PaintLayerPainter {
 
   // Paints the layers from back to front. It assumes that the caller will
   // clip to the bounds of damage rect if necessary.
-  void Paint(GraphicsContext&,
-             const GlobalPaintFlags = kGlobalPaintNormalPhase,
-             PaintLayerFlags = kPaintLayerNoFlag);
-  // Paint() assumes that the caller will clip to the bounds of the painting
-  // dirty if necessary.
-  PaintResult Paint(GraphicsContext&,
-                    const PaintLayerPaintingInfo&,
-                    PaintLayerFlags);
+  PaintResult Paint(GraphicsContext&, PaintFlags = PaintFlag::kNoFlag);
   // PaintLayerContents() assumes that the caller will clip to the bounds of the
   // painting dirty rect if necessary.
   PaintResult PaintLayerContents(GraphicsContext&,
-                                 const PaintLayerPaintingInfo&,
-                                 PaintLayerFlags);
+                                 PaintFlags = PaintFlag::kNoFlag);
 
   // Returns true if the painted output of this PaintLayer and its children is
   // invisible and therefore can't impact painted output.
@@ -61,30 +53,17 @@ class CORE_EXPORT PaintLayerPainter {
 
   PaintResult PaintChildren(PaintLayerIteration children_to_visit,
                             GraphicsContext&,
-                            const PaintLayerPaintingInfo&,
-                            PaintLayerFlags);
+                            PaintFlags);
   void PaintFragmentWithPhase(PaintPhase,
                               const FragmentData&,
                               const NGPhysicalBoxFragment*,
                               GraphicsContext&,
-                              const PaintLayerPaintingInfo&,
-                              PaintLayerFlags);
-  void PaintWithPhase(PaintPhase,
-                      GraphicsContext&,
-                      const PaintLayerPaintingInfo&,
-                      PaintLayerFlags);
-  void PaintForegroundPhases(GraphicsContext&,
-                             const PaintLayerPaintingInfo&,
-                             PaintLayerFlags);
-  void PaintOverlayOverflowControls(GraphicsContext&,
-                                    const PaintLayerPaintingInfo&,
-                                    PaintLayerFlags);
+                              PaintFlags);
+  void PaintWithPhase(PaintPhase, GraphicsContext&, PaintFlags);
+  void PaintForegroundPhases(GraphicsContext&, PaintFlags);
+  void PaintOverlayOverflowControls(GraphicsContext&, PaintFlags);
 
-  bool ShouldUseInfiniteCullRectInternal(GlobalPaintFlags,
-                                         bool for_cull_rect_update);
-  void AdjustForPaintProperties(const GraphicsContext&,
-                                PaintLayerPaintingInfo&,
-                                PaintLayerFlags&);
+  bool ShouldUseInfiniteCullRectInternal(bool for_cull_rect_update);
 
   PaintLayer& paint_layer_;
 };

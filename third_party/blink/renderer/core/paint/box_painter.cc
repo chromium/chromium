@@ -263,7 +263,7 @@ void BoxPainter::RecordHitTestData(const PaintInfo& paint_info,
 
   // Hit test data are only needed for compositing. This flag is used for for
   // printing and drag images which do not need hit testing.
-  if (paint_info.GetGlobalPaintFlags() & kGlobalPaintFlattenCompositingLayers)
+  if (paint_info.ShouldOmitCompositingInfo())
     return;
 
   // If an object is not visible, it does not participate in hit testing.
@@ -298,7 +298,7 @@ void BoxPainter::RecordScrollHitTestData(
     const DisplayItemClient& background_client) {
   // Scroll hit test data are only needed for compositing. This flag is used for
   // printing and drag images which do not need hit testing.
-  if (paint_info.GetGlobalPaintFlags() & kGlobalPaintFlattenCompositingLayers)
+  if (paint_info.ShouldOmitCompositingInfo())
     return;
 
   // If an object is not visible, it does not scroll.

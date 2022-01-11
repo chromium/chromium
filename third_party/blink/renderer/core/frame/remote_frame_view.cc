@@ -265,7 +265,7 @@ void RemoteFrameView::PropagateFrameRects() {
 }
 
 void RemoteFrameView::Paint(GraphicsContext& context,
-                            const GlobalPaintFlags flags,
+                            PaintFlags flags,
                             const CullRect& rect,
                             const gfx::Vector2d& paint_offset) const {
   if (!rect.Intersects(FrameRect()))

@@ -40,7 +40,7 @@ TEST_F(HighlightPaintingUtilsTest, CachedPseudoStylesWindowInactive) {
 
   auto* body = GetDocument().body();
   auto* text_node = body->firstChild();
-  GlobalPaintFlags flags{0};
+  PaintFlags flags = PaintFlag::kNoFlag;
 
   Compositor().BeginFrame();
 
@@ -99,7 +99,7 @@ TEST_F(HighlightPaintingUtilsTest, CachedPseudoStylesNoWindowInactive) {
 
   auto* body = GetDocument().body();
   auto* text_node = body->firstChild();
-  GlobalPaintFlags flags{0};
+  PaintFlags flags = PaintFlag::kNoFlag;
 
   Compositor().BeginFrame();
 
@@ -170,8 +170,7 @@ TEST_F(HighlightPaintingUtilsTest, SelectedTextInputShadow) {
   std::unique_ptr<PaintController> controller{
       std::make_unique<PaintController>()};
   GraphicsContext context(*controller);
-  PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground,
-                       kGlobalPaintNormalPhase, 0 /* paint_flags */);
+  PaintInfo paint_info(context, CullRect(), PaintPhase::kForeground);
   TextPaintStyle paint_style;
 
   paint_style = HighlightPaintingUtils::HighlightPaintingStyle(
