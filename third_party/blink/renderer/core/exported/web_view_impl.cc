@@ -1790,8 +1790,6 @@ void WebView::ApplyWebPreferences(const web_pref::WebPreferences& prefs,
   settings->SetTouchDragDropEnabled(prefs.touch_drag_drop_enabled);
   settings->SetTouchDragEndContextMenu(prefs.touch_dragend_context_menu);
   settings->SetWebXRImmersiveArAllowed(prefs.webxr_immersive_ar_allowed);
-  settings->SetLitePageSubresourceRedirectOrigin(WebString::FromASCII(
-      prefs.litepage_subresource_redirect_origin.Serialize()));
 
 #if defined(OS_MAC)
   web_view_impl->SetMaximumLegibleScale(

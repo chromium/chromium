@@ -752,6 +752,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SubresourceRedirect.Blink.Ineligibility"
     enum="BlinkSubresourceRedirectIneligibility" expires_after="2022-05-01">
+  <obsolete>
+    Obsoleted 01/2022.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -762,6 +765,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SubresourceRedirect.BypassDuration" units="ms"
     expires_after="M96">
+  <obsolete>
+    Obsoleted 01/2022.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -775,6 +781,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SubresourceRedirect.CompressionAttempt.ResponseCode"
     enum="HttpResponseCode" expires_after="2022-06-19">
+  <obsolete>
+    Obsoleted 01/2022.
+  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -787,6 +796,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SubresourceRedirect.CompressionAttempt.ServerResponded"
     enum="Boolean" expires_after="M96">
+  <obsolete>
+    Obsoleted 01/2022.
+  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -798,6 +810,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SubresourceRedirect.CompressionFetchTimeout" enum="Boolean"
     expires_after="M96">
+  <obsolete>
+    Obsoleted 01/2022.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -808,6 +823,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SubresourceRedirect.DidCompress.BytesSaved" units="bytes"
     expires_after="2022-04-17">
+  <obsolete>
+    Obsoleted 01/2022.
+  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -818,6 +836,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SubresourceRedirect.DidCompress.CompressionPercent" units="%"
     expires_after="2022-04-17">
+  <obsolete>
+    Obsoleted 01/2022.
+  </obsolete>
   <owner>robertogden@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
   <summary>
@@ -828,6 +849,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SubresourceRedirect.ImageCompressionNotificationInfoBar"
     enum="HttpsImageCompressionInfoBarAction" expires_after="M96">
+  <obsolete>
+    Obsoleted 01/2022.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>src/components/data_reduction_proxy/OWNERS</owner>
   <summary>
@@ -838,6 +862,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SubresourceRedirect.LitePagesService.BypassResult"
     enum="Boolean" expires_after="M96">
+  <obsolete>
+    Obsoleted 01/2022.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -849,6 +876,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SubresourceRedirect.LoginRobotsDeciderAgent.RedirectResult"
     enum="SubresourceRedirectRedirectResult" expires_after="M96">
+  <obsolete>
+    Obsoleted 01/2022.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -873,6 +903,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SubresourceRedirect.RobotRulesDecider.ApplyDuration"
     units="ms" expires_after="M96">
+  <obsolete>
+    Obsoleted 01/2022.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -885,6 +918,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SubresourceRedirect.RobotRulesDecider.Count" units="count"
     expires_after="M96">
+  <obsolete>
+    Obsoleted 01/2022.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -896,6 +932,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SubresourceRedirect.RobotRulesDecider.ReceiveResult"
     enum="SubresourceRedirectRobotsRulesReceiveResult" expires_after="M96">
+  <obsolete>
+    Obsoleted 01/2022.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -907,6 +946,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SubresourceRedirect.RobotsRules.Browser.InMemoryCacheHit"
     units="BooleanCacheHit" expires_after="M96">
+  <obsolete>
+    Obsoleted 01/2022.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -918,6 +960,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SubresourceRedirect.RobotsRulesFetcher.CacheHit" units="ms"
     expires_after="M96">
+  <obsolete>
+    Obsoleted 01/2022.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -928,6 +973,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SubresourceRedirect.RobotsRulesFetcher.NetErrorCode"
     enum="NetErrorCodes" expires_after="M96">
+  <obsolete>
+    Obsoleted 01/2022.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>
@@ -938,6 +986,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SubresourceRedirect.RobotsRulesFetcher.ResponseCode"
     units="HttpResponseCode" expires_after="M96">
+  <obsolete>
+    Obsoleted 01/2022.
+  </obsolete>
   <owner>rajendrant@chromium.org</owner>
   <owner>mcrouse@chromium.org</owner>
   <summary>

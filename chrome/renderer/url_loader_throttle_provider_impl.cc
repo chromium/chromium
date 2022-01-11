@@ -17,9 +17,6 @@
 #include "chrome/renderer/chrome_content_renderer_client.h"
 #include "chrome/renderer/chrome_render_frame_observer.h"
 #include "chrome/renderer/chrome_render_thread_observer.h"
-#include "chrome/renderer/subresource_redirect/src_video_redirect_url_loader_throttle.h"
-#include "chrome/renderer/subresource_redirect/subresource_redirect_params.h"
-#include "chrome/renderer/subresource_redirect/subresource_redirect_url_loader_throttle.h"
 #include "components/no_state_prefetch/renderer/no_state_prefetch_helper.h"
 #include "components/safe_browsing/content/renderer/renderer_url_loader_throttle.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -194,17 +191,6 @@ URLLoaderThrottleProviderImpl::CreateThrottles(
       chrome_content_renderer_client_->GetChromeObserver()
           ->chromeos_listener()));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-
-  auto subresource_redirect_throttle =
-      subresource_redirect::SubresourceRedirectURLLoaderThrottle::
-          MaybeCreateThrottle(request, render_frame_id);
-  if (subresource_redirect_throttle)
-    throttles.emplace_back(std::move(subresource_redirect_throttle));
-  auto src_video_redirect_throttle =
-      subresource_redirect::SrcVideoRedirectURLLoaderThrottle::
-          MaybeCreateThrottle(request, render_frame_id);
-  if (src_video_redirect_throttle)
-    throttles.emplace_back(std::move(src_video_redirect_throttle));
 
   return throttles;
 }

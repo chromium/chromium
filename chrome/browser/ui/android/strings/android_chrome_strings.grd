@@ -5214,14 +5214,6 @@ To change this setting, <ph name="BEGIN_LINK">&lt;resetlink&gt;</ph>reset sync<p
         Viewing live page
       </message>
 
-      <!-- HTTPS image compression InfoBar -->
-      <message name="IDS_LITE_MODE_HTTPS_IMAGE_COMPRESSION_MESSAGE" desc="The text of the infobar notifying the user that Chrome's Lite mode will now also compresses HTTPS images.">
-        Lite mode now saves you more data by optimizing images on HTTPS pages.
-      </message>
-      <message name="IDS_LITE_MODE_HTTPS_IMAGE_COMPRESSION_SETTINGS_LINK" desc="This link opens the Lite Mode settings page to explain the feature and configure the settings.">
-        Manage
-      </message>
-
       <!-- Browser Promo Notification Strings -->
       <message name="IDS_CHROME_REENGAGEMENT_NOTIFICATION_1_TITLE" desc="The title of a notification shown to suggest that users use Chrome.  Users probably have not opened Chrome in a while.  Promotes relevant articles Chrome has.">
         Read today's news <ph name="NEWS_ICON">📰</ph>

@@ -767,11 +767,6 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::WebPreferencesDataView,
     return r.webxr_immersive_ar_allowed;
   }
 
-  static const url::Origin& litepage_subresource_redirect_origin(
-      const blink::web_pref::WebPreferences& r) {
-    return r.litepage_subresource_redirect_origin;
-  }
-
   static bool Read(blink::mojom::WebPreferencesDataView r,
                    blink::web_pref::WebPreferences* out);
 };

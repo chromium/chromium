@@ -46,9 +46,7 @@ bool StructTraits<blink::mojom::WebPreferencesDataView,
           &out->low_priority_iframes_threshold) ||
       !data.ReadNetworkQualityEstimatorWebHoldback(
           &out->network_quality_estimator_web_holdback) ||
-      !data.ReadWebAppScope(&out->web_app_scope) ||
-      !data.ReadLitepageSubresourceRedirectOrigin(
-          &out->litepage_subresource_redirect_origin)
+      !data.ReadWebAppScope(&out->web_app_scope)
 #if defined(OS_ANDROID)
       || !data.ReadDefaultVideoPosterUrl(&out->default_video_poster_url)
 #endif

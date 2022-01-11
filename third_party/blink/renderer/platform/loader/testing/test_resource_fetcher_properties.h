@@ -63,11 +63,6 @@ class TestResourceFetcherProperties final : public ResourceFetcherProperties {
     return IsMainFrame() ? 3 : 2;
   }
 
-  scoped_refptr<SecurityOrigin> GetLitePageSubresourceRedirectOrigin()
-      const override {
-    return nullptr;
-  }
-
   void SetIsMainFrame(bool value) { is_main_frame_ = value; }
   void SetControllerServiceWorkerMode(ControllerServiceWorkerMode mode) {
     service_worker_mode_ = mode;

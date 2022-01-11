@@ -69,7 +69,6 @@
 #include "chrome/browser/sharing/sharing_sync_preference.h"
 #include "chrome/browser/sharing_hub/sharing_hub_features.h"
 #include "chrome/browser/ssl/ssl_config_service_manager.h"
-#include "chrome/browser/subresource_redirect/https_image_compression_infobar_decider.h"
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/tracing/chrome_tracing_delegate.h"
 #include "chrome/browser/ui/browser_ui_prefs.h"
@@ -686,6 +685,10 @@ const char kStabilityIncompleteSessionEndCount[] =
 const char kStabilitySessionEndCompleted[] =
     "user_experience_metrics.stability.session_end_completed";
 
+// Deprecated 01/2022.
+constexpr char kHasSeenLiteModeInfoBar[] =
+    "litemode.https-image-compression.user-has-seen-infobar";
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Deprecated 12/2021.
 const char kEduCoexistenceSecondaryAccountsInvalidationVersion[] =
@@ -934,6 +937,8 @@ void RegisterProfilePrefsForMigration(
   registry->RegisterBooleanPref(kSearchGeolocationPostDisclosureMetricsRecorded,
                                 false);
 #endif
+
+  registry->RegisterBooleanPref(kHasSeenLiteModeInfoBar, false);
 }
 
 }  // namespace
@@ -1196,7 +1201,6 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   federated_learning::FlocId::RegisterPrefs(registry);
   history_clusters::prefs::RegisterProfilePrefs(registry);
   HostContentSettingsMap::RegisterProfilePrefs(registry);
-  HttpsImageCompressionInfoBarDecider::RegisterProfilePrefs(registry);
   image_fetcher::ImageCache::RegisterProfilePrefs(registry);
   site_engagement::ImportantSitesUtil::RegisterProfilePrefs(registry);
   IncognitoModePrefs::RegisterProfilePrefs(registry);
@@ -1818,6 +1822,9 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
   profile_prefs->ClearPref(kSearchGeolocationPreDisclosureMetricsRecorded);
   profile_prefs->ClearPref(kSearchGeolocationPostDisclosureMetricsRecorded);
 #endif  // defined(OS_ANDROID)
+
+  // Added 01/2022.
+  profile_prefs->ClearPref(kHasSeenLiteModeInfoBar);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

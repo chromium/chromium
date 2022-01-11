@@ -353,10 +353,6 @@ struct BLINK_COMMON_EXPORT WebPreferences {
   // change depending on the enterprise policy if the platform supports it.
   bool webxr_immersive_ar_allowed = true;
 
-  // LitePage origin the subresources such as images should be redirected to
-  // when the kSubresourceRedirect feature is enabled.
-  url::Origin litepage_subresource_redirect_origin;
-
   // We try to keep the default values the same as the default values in
   // chrome, except for the cases where it would require lots of extra work for
   // the embedder to use the same default value.

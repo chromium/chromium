@@ -24,7 +24,6 @@
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
-#include "chrome/browser/subresource_redirect/subresource_redirect_observer.h"
 #include "chrome/browser/ui/search_engines/search_engine_tab_helper.h"
 #include "chrome/common/buildflags.h"
 #include "components/autofill/content/browser/content_autofill_driver_factory.h"
@@ -585,16 +584,6 @@ void ChromeContentBrowserClient::
                subresource_filter::mojom::SubresourceFilterHost> receiver) {
           subresource_filter::ContentSubresourceFilterThrottleManager::
               BindReceiver(std::move(receiver), render_frame_host);
-        },
-        &render_frame_host));
-    associated_registry.AddInterface(base::BindRepeating(
-        [](content::RenderFrameHost* render_frame_host,
-           mojo::PendingAssociatedReceiver<
-               subresource_redirect::mojom::SubresourceRedirectService>
-               receiver) {
-          subresource_redirect::SubresourceRedirectObserver::
-              BindSubresourceRedirectService(std::move(receiver),
-                                             render_frame_host);
         },
         &render_frame_host));
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)

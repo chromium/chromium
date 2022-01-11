@@ -27,8 +27,6 @@ void DetachableResourceFetcherProperties::Detach() {
       properties_->IsSubframeDeprioritizationEnabled();
   web_bundle_physical_url_ = properties_->WebBundlePhysicalUrl();
   outstanding_throttled_limit_ = properties_->GetOutstandingThrottledLimit();
-  litepage_subresource_redirect_origin_ =
-      properties_->GetLitePageSubresourceRedirectOrigin();
 
   properties_ = nullptr;
 }

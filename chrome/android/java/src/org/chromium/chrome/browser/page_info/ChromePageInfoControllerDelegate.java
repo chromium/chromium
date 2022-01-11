@@ -32,8 +32,6 @@ import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils.OfflinePageLoadUrlDelegate;
 import org.chromium.chrome.browser.omnibox.ChromeAutocompleteSchemeClassifier;
 import org.chromium.chrome.browser.paint_preview.TabbedPaintPreview;
-import org.chromium.chrome.browser.previews.PreviewsAndroidBridge;
-import org.chromium.chrome.browser.previews.PreviewsUma;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.site_settings.ChromeSiteSettingsDelegate;
 import org.chromium.chrome.browser.tab.Tab;
@@ -99,7 +97,6 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
 
         initOfflinePageParams();
         mOfflinePageLoadUrlDelegate = offlinePageLoadUrlDelegate;
-        initHttpsImageCompressionStateAndRecordUMA();
 
         TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
                 .notifyEvent(EventConstants.PAGE_INFO_OPENED);
@@ -124,14 +121,6 @@ public class ChromePageInfoControllerDelegate extends PageInfoControllerDelegate
                 DateFormat df = DateFormat.getDateInstance(DateFormat.MEDIUM);
                 mOfflinePageCreationDate = df.format(creationDate);
             }
-        }
-    }
-
-    private void initHttpsImageCompressionStateAndRecordUMA() {
-        mIsHttpsImageCompressionApplied =
-                PreviewsAndroidBridge.getInstance().isHttpsImageCompressionApplied(mWebContents);
-        if (mIsHttpsImageCompressionApplied) {
-            PreviewsUma.recordHttpsImageCompressionPageInfoOpened();
         }
     }
 

@@ -21,10 +21,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.datareduction.DataReductionPromoUtils;
 import org.chromium.chrome.browser.datareduction.DataReductionProxyUma;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
-import org.chromium.chrome.browser.infobar.PreviewsLitePageInfoBar;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings.ContentLengths;
-import org.chromium.chrome.browser.previews.HttpsImageCompressionUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
@@ -49,8 +47,6 @@ public class DataReductionPreferenceFragment extends PreferenceFragmentCompat {
     private boolean mIsEnabled;
     private boolean mWasEnabledAtCreation;
     private boolean mFromMainMenu;
-    private boolean mFromInfobar;
-    private boolean mFromLiteModeHttpsImageCompressionInfoBar;
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
@@ -64,10 +60,6 @@ public class DataReductionPreferenceFragment extends PreferenceFragmentCompat {
         setHasOptionsMenu(true);
 
         mFromMainMenu = IntentUtils.safeGetBoolean(getArguments(), FROM_MAIN_MENU, false);
-        mFromInfobar = IntentUtils.safeGetBoolean(
-                getArguments(), PreviewsLitePageInfoBar.FROM_INFOBAR, false);
-        mFromLiteModeHttpsImageCompressionInfoBar = IntentUtils.safeGetBoolean(getArguments(),
-                HttpsImageCompressionUtils.FROM_LITE_MODE_HTTPS_IMAGE_COMPRESSION_INFOBAR, false);
     }
 
     @Override
@@ -87,24 +79,6 @@ public class DataReductionPreferenceFragment extends PreferenceFragmentCompat {
             } else {
                 statusChange = mIsEnabled ? DataReductionProxyUma.ACTION_MAIN_MENU_OFF_TO_ON
                                           : DataReductionProxyUma.ACTION_MAIN_MENU_OFF_TO_OFF;
-            }
-        } else if (mFromInfobar) {
-            if (mWasEnabledAtCreation) {
-                statusChange = mIsEnabled ? DataReductionProxyUma.ACTION_INFOBAR_ON_TO_ON
-                                          : DataReductionProxyUma.ACTION_INFOBAR_ON_TO_OFF;
-            } else {
-                statusChange = mIsEnabled ? DataReductionProxyUma.ACTION_INFOBAR_OFF_TO_ON
-                                          : DataReductionProxyUma.ACTION_INFOBAR_OFF_TO_OFF;
-            }
-        } else if (mFromLiteModeHttpsImageCompressionInfoBar) {
-            if (mWasEnabledAtCreation) {
-                statusChange = mIsEnabled
-                        ? DataReductionProxyUma.ACTION_HTTPS_IMAGE_COMPRESSION_INFOBAR_ON_TO_ON
-                        : DataReductionProxyUma.ACTION_HTTPS_IMAGE_COMPRESSION_INFOBAR_ON_TO_OFF;
-            } else {
-                statusChange = mIsEnabled
-                        ? DataReductionProxyUma.ACTION_HTTPS_IMAGE_COMPRESSION_INFOBAR_OFF_TO_ON
-                        : DataReductionProxyUma.ACTION_HTTPS_IMAGE_COMPRESSION_INFOBAR_OFF_TO_OFF;
             }
         } else if (mWasEnabledAtCreation) {
             statusChange = mIsEnabled ? DataReductionProxyUma.ACTION_ON_TO_ON

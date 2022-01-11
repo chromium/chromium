@@ -135,7 +135,6 @@ Refer to README.md for content description and update process.
  <item id="intranet_redirect_detector" added_in_milestone="62" content_hash_code="03b26f7b" os_list="linux,windows,chromeos" file_path="chrome/browser/intranet_redirect_detector.cc" />
  <item id="javascript_report_error" added_in_milestone="87" content_hash_code="006e4e54" os_list="linux" file_path="chrome/browser/error_reporting/chrome_js_error_report_processor_nonchromeos.cc" />
  <item id="lib_address_input" added_in_milestone="62" content_hash_code="0374aae8" os_list="linux,windows,chromeos,android" file_path="third_party/libaddressinput/chromium/chrome_metadata_source.cc" />
- <item id="litepages_robots_rules" added_in_milestone="89" content_hash_code="04534928" os_list="linux,windows,chromeos,android" file_path="chrome/browser/subresource_redirect/origin_robots_rules.cc" />
  <item id="load_autofill_gstatic_data" added_in_milestone="78" content_hash_code="07a1e952" os_list="linux,windows,chromeos,android" file_path="chrome/browser/autofill/autofill_gstatic_reader.cc" />
  <item id="logo_service" added_in_milestone="73" content_hash_code="013550c3" os_list="linux,windows,chromeos,android" file_path="components/search_provider_logos/logo_service_impl.cc" />
  <item id="lookup_single_password_leak" added_in_milestone="78" content_hash_code="00b98558" os_list="linux,windows,chromeos,android" file_path="components/password_manager/core/browser/leak_detection/leak_detection_request.cc" />

@@ -21,7 +21,6 @@
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/loader/frame_client_hints_preferences_context.h"
 #include "third_party/blink/renderer/core/loader/subresource_filter.h"
-#include "third_party/blink/renderer/core/loader/subresource_redirect_util.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/cors/cors.h"
@@ -517,12 +516,6 @@ BaseFetchContext::CheckCSPForRequestInternal(
     ContentSecurityPolicy::CheckHeaderType check_header_type) const {
   if (options.content_security_policy_option ==
       network::mojom::CSPDisposition::DO_NOT_CHECK) {
-    return absl::nullopt;
-  }
-
-  if (ShouldDisableCSPCheckForLitePageSubresourceRedirectOrigin(
-          GetResourceFetcherProperties().GetLitePageSubresourceRedirectOrigin(),
-          request_context, redirect_status, url)) {
     return absl::nullopt;
   }
 

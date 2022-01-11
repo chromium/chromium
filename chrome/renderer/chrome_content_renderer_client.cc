@@ -55,9 +55,6 @@
 #include "chrome/renderer/plugins/non_loadable_plugin_placeholder.h"
 #include "chrome/renderer/plugins/pdf_plugin_placeholder.h"
 #include "chrome/renderer/plugins/plugin_uma.h"
-#include "chrome/renderer/subresource_redirect/login_robots_decider_agent.h"
-#include "chrome/renderer/subresource_redirect/public_image_hints_decider_agent.h"
-#include "chrome/renderer/subresource_redirect/subresource_redirect_params.h"
 #include "chrome/renderer/sync_encryption_keys_extension.h"
 #include "chrome/renderer/url_loader_throttle_provider_impl.h"
 #include "chrome/renderer/v8_unwinder.h"
@@ -99,7 +96,6 @@
 #include "components/subresource_filter/content/renderer/subresource_filter_agent.h"
 #include "components/subresource_filter/content/renderer/unverified_ruleset_dealer.h"
 #include "components/subresource_filter/core/common/common_features.h"
-#include "components/subresource_redirect/common/subresource_redirect_features.h"
 #include "components/sync/engine/sync_engine_switches.h"
 #include "components/translate/content/renderer/per_frame_translate_agent.h"
 #include "components/translate/core/common/translate_util.h"
@@ -683,13 +679,6 @@ void ChromeContentRendererClient::RenderFrameCreated(
     subresource_filter_agent->Initialize();
   }
 
-  if (subresource_redirect::ShouldEnablePublicImageHintsBasedCompression()) {
-    new subresource_redirect::PublicImageHintsDeciderAgent(
-        associated_interfaces, render_frame);
-  } else if (subresource_redirect::ShouldEnableRobotsRulesFetching()) {
-    new subresource_redirect::LoginRobotsDeciderAgent(associated_interfaces,
-                                                      render_frame);
-  }
   if (translate::IsSubFrameTranslationEnabled()) {
     new translate::PerFrameTranslateAgent(
         render_frame, ISOLATED_WORLD_ID_TRANSLATE, associated_interfaces);

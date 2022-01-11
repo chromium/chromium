@@ -51,7 +51,6 @@
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_image.h"
 #include "third_party/blink/renderer/core/loader/importance_attribute.h"
 #include "third_party/blink/renderer/core/loader/lazy_image_helper.h"
-#include "third_party/blink/renderer/core/loader/subresource_redirect_util.h"
 #include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/svg/graphics/svg_image.h"
@@ -552,14 +551,6 @@ void ImageLoader::DoUpdateFromElement(
     if (was_deferred_explicitly_ &&
         lazy_image_load_state_ == LazyImageLoadState::kFullImage) {
       params.SetLazyImageNonBlocking();
-    }
-
-    if (ShouldEnableSubresourceRedirect(
-            DynamicTo<HTMLImageElement>(GetElement()), params.Url())) {
-      auto& subresource_request = params.MutableResourceRequest();
-      subresource_request.SetPreviewsState(
-          subresource_request.GetPreviewsState() |
-          PreviewsTypes::kSubresourceRedirectOn);
     }
 
     new_image_content = ImageResourceContent::Fetch(params, document.Fetcher());

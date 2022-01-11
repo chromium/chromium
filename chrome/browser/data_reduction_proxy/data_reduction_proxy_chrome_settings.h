@@ -22,12 +22,6 @@ namespace data_reduction_proxy {
 class DataStore;
 }  // namespace data_reduction_proxy
 
-namespace subresource_redirect {
-class OriginRobotsRulesCache;
-}
-
-class HttpsImageCompressionInfoBarDecider;
-class LitePagesServiceBypassDecider;
 class PrefService;
 
 // Data reduction proxy settings class suitable for use with a Chrome browser.
@@ -75,40 +69,12 @@ class DataReductionProxyChromeSettings
   // Public for testing.
   void MigrateDataReductionProxyOffProxyPrefs(PrefService* prefs);
 
-  HttpsImageCompressionInfoBarDecider*
-  https_image_compression_infobar_decider() {
-    return https_image_compression_infobar_decider_.get();
-  }
-
-  LitePagesServiceBypassDecider* litepages_service_bypass_decider() const {
-    return litepages_service_bypass_decider_.get();
-  }
-
-  subresource_redirect::OriginRobotsRulesCache* origin_robots_rules_cache()
-      const {
-    return origin_robots_rules_cache_.get();
-  }
-
  private:
   // Helper method for migrating the Data Reduction Proxy away from using the
   // proxy pref. Returns the ProxyPrefMigrationResult value indicating the
   // migration action taken.
   ProxyPrefMigrationResult MigrateDataReductionProxyOffProxyPrefsHelper(
       PrefService* prefs);
-
-  // Maintains the decider for this profile that decides whether to show infobar
-  // before triggering https image compression.
-  std::unique_ptr<HttpsImageCompressionInfoBarDecider>
-      https_image_compression_infobar_decider_;
-
-  // Maintains the decider for this profile to contain logic for LitePages
-  // service bypass.
-  std::unique_ptr<LitePagesServiceBypassDecider>
-      litepages_service_bypass_decider_;
-
-  // Maintains the cache of robots rules.
-  std::unique_ptr<subresource_redirect::OriginRobotsRulesCache>
-      origin_robots_rules_cache_;
 
   // Null before InitDataReductionProxySettings is called.
   raw_ptr<Profile> profile_;
