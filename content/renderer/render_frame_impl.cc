@@ -4765,14 +4765,18 @@ RenderFrameImpl::MakeDidCommitProvisionalLoadParams(
   params->app_history_key = item.GetAppHistoryKey().Utf8();
 
   // Note that the value of `referrer` will be overwritten in the browser with a
-  // browser-calculated value, except for renderer-initated same-document
-  // navigations and the synchronous about:blank commit (because the browser
-  // doesn't know anything about those navigations).
+  // browser-calculated value in most cases. The exceptions are
+  // renderer-initated same-document navigations and the synchronous about:blank
+  // commit (because the browser doesn't know anything about those navigations).
+  // In those cases, the referrer policy component will still be overwritten in
+  // the browser, because this navigation won't change it and the browser
+  // already had access to the previous one. Send ReferrerPolicy::kDefault as a
+  // placeholder.
   // TODO(https://crbug.com/1131832): Remove `referrer` from
   // DidCommitProvisionalLoadParams.
   params->referrer = blink::mojom::Referrer::New(
       blink::WebStringToGURL(document_loader->Referrer()),
-      document_loader->GetReferrerPolicy());
+      network::mojom::ReferrerPolicy::kDefault);
 
   if (!frame_->Parent()) {
     // Top-level navigation.

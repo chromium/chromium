@@ -10420,10 +10420,12 @@ bool RenderFrameHostImpl::DidCommitNavigationInternal(
     // If the navigation went through the browser before committing, it's
     // possible to calculate the referrer only using information known by the
     // browser.
-    // TODO(https://crbug.com/1131832): Calculate the referrer for same-document
-    // navigations and the synchronous about:blank commit in the browser too,
-    // and remove `referrer` from DidCommitProvisionalLoadParams.
+    // TODO(https://crbug.com/1131832): Get rid of params->referrer completely.
     params->referrer = GetReferrerForDidCommitParams(navigation_request.get());
+  } else {
+    // For renderer-initiated same-document navigations and the initial
+    // about:blank navigation, the referrer policy shouldn't change.
+    params->referrer->policy = policy_container_host_->referrer_policy();
   }
 
   if (!navigation_request) {

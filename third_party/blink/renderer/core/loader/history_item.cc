@@ -61,8 +61,12 @@ KURL HistoryItem::Url() const {
   return KURL(url_string_);
 }
 
-const Referrer& HistoryItem::GetReferrer() const {
+const String& HistoryItem::GetReferrer() const {
   return referrer_;
+}
+
+network::mojom::ReferrerPolicy HistoryItem::GetReferrerPolicy() const {
+  return referrer_policy_;
 }
 
 void HistoryItem::SetURLString(const String& url_string) {
@@ -74,10 +78,12 @@ void HistoryItem::SetURL(const KURL& url) {
   SetURLString(url.GetString());
 }
 
-void HistoryItem::SetReferrer(const Referrer& referrer) {
-  // This should be a CHECK.
-  referrer_ = SecurityPolicy::GenerateReferrer(referrer.referrer_policy, Url(),
-                                               referrer.referrer);
+void HistoryItem::SetReferrer(const String& referrer) {
+  referrer_ = referrer;
+}
+
+void HistoryItem::SetReferrerPolicy(network::mojom::ReferrerPolicy policy) {
+  referrer_policy_ = policy;
 }
 
 void HistoryItem::SetVisualViewportScrollOffset(const ScrollOffset& offset) {
@@ -157,8 +163,8 @@ void HistoryItem::SetAppHistoryState(
 ResourceRequest HistoryItem::GenerateResourceRequest(
     mojom::FetchCacheMode cache_mode) {
   ResourceRequest request(url_string_);
-  request.SetReferrerString(referrer_.referrer);
-  request.SetReferrerPolicy(referrer_.referrer_policy);
+  request.SetReferrerString(referrer_);
+  request.SetReferrerPolicy(referrer_policy_);
   request.SetCacheMode(cache_mode);
   if (form_data_) {
     request.SetHttpMethod(http_names::kPOST);

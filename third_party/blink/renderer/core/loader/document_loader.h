@@ -140,7 +140,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   const AtomicString& MimeType() const;
 
-  const Referrer& OriginalReferrer() const;
+  const AtomicString& OriginalReferrer() const;
 
   MHTMLArchive* Archive() const { return archive_.Get(); }
 
@@ -156,7 +156,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   const KURL& UrlForHistory() const;
   const AtomicString& HttpMethod() const;
-  const Referrer& GetReferrer() const;
+  const AtomicString& GetReferrer() const;
   const SecurityOrigin* GetRequestorOrigin() const;
   const KURL& UnreachableURL() const;
   const absl::optional<blink::mojom::FetchCacheMode>& ForceFetchCacheMode()
@@ -501,7 +501,8 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // These fields are copied from WebNavigationParams, see there for definition.
   KURL url_;
   AtomicString http_method_;
-  Referrer referrer_;
+  // The referrer on the final request for this document.
+  AtomicString referrer_;
   scoped_refptr<EncodedFormData> http_body_;
   AtomicString http_content_type_;
   PreviewsState previews_state_;
@@ -525,7 +526,7 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
 
   Member<SubresourceFilter> subresource_filter_;
 
-  const Referrer original_referrer_;
+  const AtomicString original_referrer_;
 
   ResourceResponse response_;
 

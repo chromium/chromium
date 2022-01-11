@@ -78,8 +78,8 @@ class WebHistoryItem {
 
   BLINK_EXPORT WebString GetReferrer() const;
   BLINK_EXPORT network::mojom::ReferrerPolicy GetReferrerPolicy() const;
-  BLINK_EXPORT void SetReferrer(const WebString&,
-                                network::mojom::ReferrerPolicy);
+  BLINK_EXPORT void SetReferrer(const WebString&);
+  BLINK_EXPORT void SetReferrerPolicy(network::mojom::ReferrerPolicy);
 
   BLINK_EXPORT const WebString& Target() const;
   BLINK_EXPORT void SetTarget(const WebString&);
