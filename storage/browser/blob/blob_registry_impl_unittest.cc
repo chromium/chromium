@@ -7,13 +7,13 @@
 #include <limits>
 #include <memory>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/scoped_temp_dir.h"
-#include "base/ignore_result.h"
 #include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -334,7 +334,7 @@ TEST_F(BlobRegistryImplTest, Register_ReferencedBlobClosedPipe) {
 
   std::vector<blink::mojom::DataElementPtr> elements;
   mojo::PendingRemote<blink::mojom::Blob> referenced_blob_remote;
-  ignore_result(referenced_blob_remote.InitWithNewPipeAndPassReceiver());
+  std::ignore = referenced_blob_remote.InitWithNewPipeAndPassReceiver();
   elements.push_back(
       blink::mojom::DataElement::NewBlob(blink::mojom::DataElementBlob::New(
           std::move(referenced_blob_remote), 0, 16)));
@@ -975,7 +975,7 @@ TEST_F(BlobRegistryImplTest, Register_BytesProviderClosedPipe) {
   const std::string kId = "id";
 
   mojo::PendingRemote<blink::mojom::BytesProvider> bytes_provider_remote;
-  ignore_result(bytes_provider_remote.InitWithNewPipeAndPassReceiver());
+  std::ignore = bytes_provider_remote.InitWithNewPipeAndPassReceiver();
 
   std::vector<blink::mojom::DataElementPtr> elements;
   elements.push_back(
