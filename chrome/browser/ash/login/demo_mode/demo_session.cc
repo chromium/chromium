@@ -377,32 +377,30 @@ base::Value DemoSession::GetCountryList() {
   const std::string current_locale = g_browser_process->GetApplicationLocale();
   bool country_selected = false;
 
-  // TODO(b/203105588): Use the new way of base::Value to create the country
-  // list.
   for (const std::string country : kSupportedCountries) {
-    base::DictionaryValue dict;
-    dict.SetString("value", country);
-    dict.SetString(
+    base::Value dict(base::Value::Type::DICTIONARY);
+    dict.SetStringKey("value", country);
+    dict.SetStringKey(
         "title", l10n_util::GetDisplayNameForCountry(country, current_locale));
     if (country == region) {
-      dict.SetBoolean("selected", true);
+      dict.SetBoolKey("selected", true);
       g_browser_process->local_state()->SetString(prefs::kDemoModeCountry,
                                                   country);
       country_selected = true;
     } else {
-      dict.SetBoolean("selected", false);
+      dict.SetBoolKey("selected", false);
     }
     country_list.Append(std::move(dict));
   }
   if (!country_selected) {
-    base::DictionaryValue countryNotSelectedDict;
-    countryNotSelectedDict.SetString("value",
-                                     DemoSession::kCountryNotSelectedId);
-    countryNotSelectedDict.SetString(
+    base::Value countryNotSelectedDict(base::Value::Type::DICTIONARY);
+    countryNotSelectedDict.SetStringKey("value",
+                                        DemoSession::kCountryNotSelectedId);
+    countryNotSelectedDict.SetStringKey(
         "title",
         l10n_util::GetStringUTF16(
             IDS_OOBE_DEMO_SETUP_PREFERENCES_SCREEN_COUNTRY_NOT_SELECTED_TITLE));
-    countryNotSelectedDict.SetBoolean("selected", true);
+    countryNotSelectedDict.SetBoolKey("selected", true);
     country_list.Append(std::move(countryNotSelectedDict));
   }
   return country_list;
