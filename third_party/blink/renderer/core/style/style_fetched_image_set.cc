@@ -48,6 +48,11 @@ StyleFetchedImageSet::StyleFetchedImageSet(ImageResourceContent* image,
 
 StyleFetchedImageSet::~StyleFetchedImageSet() = default;
 
+void StyleFetchedImageSet::Prefinalize() {
+  best_fit_image_->DidRemoveObserver();
+  best_fit_image_ = nullptr;
+}
+
 bool StyleFetchedImageSet::IsEqual(const StyleImage& other) const {
   if (!other.IsImageResourceSet())
     return false;

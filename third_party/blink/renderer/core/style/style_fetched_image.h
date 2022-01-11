@@ -26,6 +26,7 @@
 
 #include "third_party/blink/renderer/core/loader/resource/image_resource_observer.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -37,6 +38,7 @@ class Document;
 // url(...) function.)
 class StyleFetchedImage final : public StyleImage,
                                 public ImageResourceObserver {
+  USING_PRE_FINALIZER(StyleFetchedImage, Prefinalize);
 
  public:
   StyleFetchedImage(ImageResourceContent* image,
@@ -81,6 +83,7 @@ class StyleFetchedImage final : public StyleImage,
 
  private:
   bool IsEqual(const StyleImage&) const override;
+  void Prefinalize();
 
   // ImageResourceObserver overrides
   void ImageNotifyFinished(ImageResourceContent*) override;

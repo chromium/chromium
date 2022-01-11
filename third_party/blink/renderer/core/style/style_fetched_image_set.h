@@ -29,6 +29,7 @@
 #include "third_party/blink/renderer/core/loader/resource/image_resource_observer.h"
 #include "third_party/blink/renderer/core/style/style_image.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
+#include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
@@ -44,6 +45,7 @@ class ImageResourceObserver;
 // alternatives via the referenced CSSImageSetValue.
 class StyleFetchedImageSet final : public StyleImage,
                                    public ImageResourceObserver {
+  USING_PRE_FINALIZER(StyleFetchedImageSet, Prefinalize);
 
  public:
   StyleFetchedImageSet(ImageResourceContent*,
@@ -87,6 +89,7 @@ class StyleFetchedImageSet final : public StyleImage,
 
  private:
   bool IsEqual(const StyleImage& other) const override;
+  void Prefinalize();
 
   // ImageResourceObserver overrides
   String DebugName() const override { return "StyleFetchedImageSet"; }

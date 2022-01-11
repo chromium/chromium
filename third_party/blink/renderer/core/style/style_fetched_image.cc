@@ -61,6 +61,11 @@ StyleFetchedImage::StyleFetchedImage(ImageResourceContent* image,
 
 StyleFetchedImage::~StyleFetchedImage() = default;
 
+void StyleFetchedImage::Prefinalize() {
+  image_->DidRemoveObserver();
+  image_ = nullptr;
+}
+
 bool StyleFetchedImage::IsEqual(const StyleImage& other) const {
   if (!other.IsImageResource())
     return false;

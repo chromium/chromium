@@ -169,9 +169,13 @@ void ImageResourceContent::RemoveObserver(ImageResourceObserver* observer) {
     DCHECK(it != finished_observers_.end());
     fully_erased = finished_observers_.erase(it);
   }
-  info_->DidRemoveClientOrObserver();
+  DidRemoveObserver();
   if (fully_erased)
     observer->NotifyImageFullyRemoved(this);
+}
+
+void ImageResourceContent::DidRemoveObserver() {
+  info_->DidRemoveClientOrObserver();
 }
 
 static void PriorityFromObserver(const ImageResourceObserver* observer,

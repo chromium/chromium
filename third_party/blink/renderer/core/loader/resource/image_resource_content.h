@@ -79,6 +79,7 @@ class CORE_EXPORT ImageResourceContent final
 
   void AddObserver(ImageResourceObserver*);
   void RemoveObserver(ImageResourceObserver*);
+  void DidRemoveObserver();
 
   // The device pixel ratio we got from the server for this image, or 1.0.
   float DevicePixelRatioHeaderValue() const;
