@@ -482,6 +482,8 @@ bool VariationsFieldTrialCreator::HasSeedExpired(bool is_safe_seed) {
     if (!is_safe_seed) {
       // Store the current time as the last fetch time for Chrome's first run.
       GetSeedStore()->RecordLastFetchTime(base::Time::Now());
+      // Record freshness of "0", since we expect a first run seed to be fresh.
+      RecordSeedFreshness(base::TimeDelta());
     }
     return false;
   }

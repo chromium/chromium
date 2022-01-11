@@ -504,12 +504,12 @@ TEST_F(FieldTrialCreatorTest, SetUpFieldTrials_ValidSeed_NoLastFetchTime) {
   EXPECT_EQ(base::FieldTrialList::FindFullName(kTestSeedStudyName),
             kTestSeedExperimentName);
 
-  // Verify metrics. The seed freshness metric should not be recorded on first
-  // run.
+  // Verify metrics. The seed freshness metric should be recorded with a value
+  // of 0 on first run.
   histogram_tester.ExpectUniqueSample("Variations.CreateTrials.SeedExpiry",
                                       VariationsSeedExpiry::kFetchTimeMissing,
                                       1);
-  histogram_tester.ExpectTotalCount("Variations.SeedFreshness", 0);
+  histogram_tester.ExpectUniqueSample("Variations.SeedFreshness", 0, 1);
   histogram_tester.ExpectUniqueSample("Variations.SeedUsage",
                                       SeedUsage::kRegularSeedUsed, 1);
 }

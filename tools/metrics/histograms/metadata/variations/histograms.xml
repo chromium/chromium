@@ -541,6 +541,11 @@ chromium-metrics-reviews@google.com.
     seeds. Second, the metric was not previously recorded for regular seeds that
     were older than 30 days, but as of M93, the freshness is recorded for seeds
     that are older than 30 days and newer than the binary build time.
+
+    Prior to M99, this histogram would not be logged for first run seeds (where
+    they were not fetched by Chrome, but provided externally, such as part of
+    Chrome installation via Google Update). In M99+, this histogram will be
+    logged with a value of 0 minutes, so that the seed is considered fresh.
   </summary>
 </histogram>
 
