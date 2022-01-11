@@ -1691,18 +1691,6 @@ deps = {
       'dep_type': 'cipd',
       'condition': 'checkout_win',
   },
-  # TODO(crbug.com/1280002): Remove this entry once the autoroller has been
-  # updated to roll the mac_amd64 version.
-  'src/tools/skia_goldctl/mac': {
-      'packages': [
-        {
-          'package': 'skia/tools/goldctl/mac-amd64',
-          'version': 'zLP4FDegN-yg3uvzWUdf4zNRVHDwHd0VLm86FkZCP_MC',
-        },
-      ],
-      'dep_type': 'cipd',
-      'condition': 'checkout_mac',
-  },
 
   'src/tools/skia_goldctl/mac_amd64': {
       'packages': [
