@@ -2961,7 +2961,7 @@ class ClientHintsAcceptCHFrameObserverBrowserTest
       accept_ch_frame_observer_interceptor_;
 };
 
-#if defined(OS_CHROMEOS)
+#if defined(OS_CHROMEOS) || defined(OS_LINUX)
 // Flaky: https://crbug.com/1195790
 #define MAYBE_AcceptCHFrame DISABLED_AcceptCHFrame
 #else
