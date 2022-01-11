@@ -2440,10 +2440,8 @@ TEST_F(ServiceWorkerRegistryResourceTest, DeleteRegistration_ActiveVersion) {
   // Promote the worker to active and add a controllee.
   registration_->SetActiveVersion(registration_->waiting_version());
   registration_->active_version()->SetStatus(ServiceWorkerVersion::ACTIVATED);
-  registry()->UpdateToActiveState(
-      registration_->id(),
-      blink::StorageKey(url::Origin::Create(registration_->scope())),
-      base::DoNothing());
+  registry()->UpdateToActiveState(registration_->id(), registration_->key(),
+                                  base::DoNothing());
   ServiceWorkerRemoteContainerEndpoint remote_endpoint;
   base::WeakPtr<ServiceWorkerContainerHost> container_host =
       CreateContainerHostForWindow(

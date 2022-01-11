@@ -205,8 +205,7 @@ class ServiceWorkerVersionTest : public testing::Test {
     container_host->UpdateUrls(
         registration_->scope(),
         net::SiteForCookies::FromUrl(registration_->scope()),
-        url::Origin::Create(registration_->scope()),
-        blink::StorageKey(url::Origin::Create(registration_->scope())));
+        registration_->key().origin(), registration_->key());
     container_host->SetControllerRegistration(
         registration_, false /* notify_controllerchange */);
     EXPECT_TRUE(version_->HasControllee());
@@ -372,8 +371,7 @@ TEST_F(ServiceWorkerVersionTest, StartUnregisteredButStillLiveWorker) {
   absl::optional<blink::ServiceWorkerStatusCode> status;
   base::RunLoop run_loop;
   helper_->context()->registry()->DeleteRegistration(
-      registration_,
-      blink::StorageKey(url::Origin::Create(registration_->scope())),
+      registration_, registration_->key(),
       ReceiveServiceWorkerStatus(&status, run_loop.QuitClosure()));
   run_loop.Run();
   ASSERT_EQ(blink::ServiceWorkerStatusCode::kOk, status.value());
@@ -463,8 +461,7 @@ TEST_F(ServiceWorkerVersionTest, Doom) {
   container_host->UpdateUrls(
       registration_->scope(),
       net::SiteForCookies::FromUrl(registration_->scope()),
-      url::Origin::Create(registration_->scope()),
-      blink::StorageKey(url::Origin::Create(registration_->scope())));
+      registration_->key().origin(), registration_->key());
   container_host->SetControllerRegistration(registration_, false);
   EXPECT_TRUE(version_->HasControllee());
   EXPECT_TRUE(container_host->controller());
@@ -1259,8 +1256,7 @@ TEST_F(ServiceWorkerVersionTest,
   container_host->UpdateUrls(
       registration_->scope(),
       net::SiteForCookies::FromUrl(registration_->scope()),
-      url::Origin::Create(registration_->scope()),
-      blink::StorageKey(url::Origin::Create(registration_->scope())));
+      registration_->key().origin(), registration_->key());
   container_host->SetControllerRegistration(
       registration_, false /* notify_controllerchange */);
   EXPECT_TRUE(version_->HasControllee());
