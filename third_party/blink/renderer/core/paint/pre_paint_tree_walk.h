@@ -85,6 +85,11 @@ class CORE_EXPORT PrePaintTreeWalk final {
     // fragmentainer even if the OOF / float is there.
     bool is_inside_orphaned_object = false;
 
+    // True if we're visiting the parent for the first time, i.e. when we're in
+    // the first fragmentainer where the parent occurs (or if we're not
+    // fragmented at all).
+    bool is_parent_first_for_node = true;
+
     ContainingFragment current_fragmentainer;
     ContainingFragment absolute_positioned_container;
     ContainingFragment fixed_positioned_container;

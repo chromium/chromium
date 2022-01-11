@@ -964,7 +964,7 @@ void PrePaintTreeWalk::WalkLayoutObjectChildren(
             containing_fragment_info.fragmentation_nesting_level) {
           // Only walk OOFs once if they aren't contained within the current
           // fragmentation context.
-          if (!parent_fragment->IsFirstForNode())
+          if (!context.is_parent_first_for_node)
             continue;
         }
 
@@ -1164,6 +1164,9 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
   }
 
   if (!child_walk_blocked) {
+    if (pre_paint_info)
+      context.is_parent_first_for_node = pre_paint_info->is_first_for_node;
+
     WalkChildren(object, physical_fragment, context, is_inside_fragment_child);
 
     if (const auto* layout_embedded_content =
