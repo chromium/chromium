@@ -253,7 +253,7 @@ bool SharedImageRepresentationSkiaImpl::SupportsMultipleConcurrentReadAccess() {
 
 void SharedImageRepresentationSkiaImpl::CheckContext() {
 #if DCHECK_IS_ON()
-  if (context_)
+  if (!context_state_->context_lost() && context_)
     DCHECK(gl::GLContext::GetCurrent() == context_);
 #endif
 }
