@@ -501,6 +501,7 @@ preprocess_if_expr("preprocess_gen_v3") {
     "chromeos/os_apps_page/app_management_page/pwa_detail_view.js",
     "chromeos/os_apps_page/app_management_page/resize_lock_item.js",
     "chromeos/os_apps_page/app_management_page/shared_style.js",
+    "chromeos/os_apps_page/app_management_page/shared_vars.js",
     "chromeos/os_apps_page/app_management_page/supported_links_overlapping_apps_dialog.js",
     "chromeos/os_apps_page/app_management_page/supported_links_dialog.js",
     "chromeos/os_apps_page/app_management_page/supported_links_item.js",

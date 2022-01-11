@@ -27,6 +27,7 @@ js_type_check("closure_compile_module") {
     ":reducers",
     ":resize_lock_item",
     ":shared_style",
+    ":shared_vars",
     ":store",
     ":store_client",
     ":supported_links_dialog",
@@ -195,6 +196,10 @@ js_library("shared_style") {
   deps = []
 }
 
+js_library("shared_vars") {
+  deps = []
+}
+
 js_library("store") {
   deps = [
     "//ui/webui/resources/js:cr.m",
@@ -278,6 +283,7 @@ html_to_js("web_components") {
     "pwa_detail_view.js",
     "resize_lock_item.js",
     "shared_style.js",
+    "shared_vars.js",
     "supported_links_overlapping_apps_dialog.js",
     "supported_links_dialog.js",
     "supported_links_item.js",
