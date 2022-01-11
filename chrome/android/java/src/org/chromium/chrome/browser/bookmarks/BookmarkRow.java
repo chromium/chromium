@@ -111,7 +111,7 @@ public abstract class BookmarkRow
         mMoreIcon.setVisibility(GONE);
 
         if (mDelegate.getDragStateDelegate().getDragActive()) {
-            mDragHandle.setVisibility(bookmarkItem.isMovable() ? VISIBLE : GONE);
+            mDragHandle.setVisibility(bookmarkItem.isReorderable() ? VISIBLE : GONE);
             mDragHandle.setEnabled(isItemSelected());
         } else {
             mMoreIcon.setVisibility(bookmarkItem.isEditable() ? VISIBLE : GONE);

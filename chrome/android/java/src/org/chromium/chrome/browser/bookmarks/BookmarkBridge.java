@@ -257,9 +257,11 @@ public class BookmarkBridge {
 
         /**@return Whether this bookmark can be moved */
         public boolean isMovable() {
-            if (ReadingListUtils.isSwappableReadingListItem(mId)) {
-                return true;
-            }
+            return ReadingListUtils.isSwappableReadingListItem(mId) || isReorderable();
+        }
+
+        /**@return Whether this bookmark can be moved */
+        public boolean isReorderable() {
             return isEditable() && mId.getType() == BookmarkType.NORMAL;
         }
 
