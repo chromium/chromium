@@ -197,7 +197,7 @@ TEST_F(TypeConversionTest, TestConversion_InsetsToString) {
   std::u16string to_string =
       ui::metadata::TypeConverter<gfx::Insets>::ToString(kInsets);
 
-  EXPECT_EQ(to_string, base::ASCIIToUTF16(kInsets.ToString()));
+  EXPECT_EQ(to_string, u"3,5,7,9");
 }
 
 TEST_F(TypeConversionTest, TestConversion_StringToInsets) {

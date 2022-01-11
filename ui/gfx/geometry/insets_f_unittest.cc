@@ -27,49 +27,107 @@ TEST(InsetsFTest, InsetsF) {
   EXPECT_EQ(4.875f, insets.right());
 }
 
+TEST(InsetsFTest, SetTop) {
+  InsetsF insets = InsetsF(1.5f);
+  insets.set_top(2.75f);
+  EXPECT_EQ(2.75f, insets.top());
+  EXPECT_EQ(1.5f, insets.left());
+  EXPECT_EQ(1.5f, insets.bottom());
+  EXPECT_EQ(1.5f, insets.right());
+  EXPECT_EQ(insets, InsetsF(1.5f).set_top(2.75f));
+}
+
+TEST(InsetsFTest, SetBottom) {
+  InsetsF insets(1.5f);
+  insets.set_bottom(2.75f);
+  EXPECT_EQ(1.5f, insets.top());
+  EXPECT_EQ(1.5f, insets.left());
+  EXPECT_EQ(2.75f, insets.bottom());
+  EXPECT_EQ(1.5f, insets.right());
+  EXPECT_EQ(insets, InsetsF(1.5f).set_bottom(2.75f));
+}
+
+TEST(InsetsFTest, SetLeft) {
+  InsetsF insets(1.5f);
+  insets.set_left(2.75f);
+  EXPECT_EQ(1.5f, insets.top());
+  EXPECT_EQ(2.75f, insets.left());
+  EXPECT_EQ(1.5f, insets.bottom());
+  EXPECT_EQ(1.5f, insets.right());
+  EXPECT_EQ(insets, InsetsF(1.5f).set_left(2.75f));
+}
+
+TEST(InsetsFTest, SetRight) {
+  InsetsF insets(1.5f);
+  insets.set_right(2.75f);
+  EXPECT_EQ(1.5f, insets.top());
+  EXPECT_EQ(1.5f, insets.left());
+  EXPECT_EQ(1.5f, insets.bottom());
+  EXPECT_EQ(2.75f, insets.right());
+  EXPECT_EQ(insets, InsetsF(1.5f).set_right(2.75f));
+}
+
+TEST(InsetsFTest, Set) {
+  InsetsF insets;
+  insets.Set(1.25f, 2.5f, 3.75f, 4.875f);
+  EXPECT_EQ(1.25f, insets.top());
+  EXPECT_EQ(2.5f, insets.left());
+  EXPECT_EQ(3.75f, insets.bottom());
+  EXPECT_EQ(4.875f, insets.right());
+}
+
 TEST(InsetsFTest, WidthHeightAndIsEmpty) {
   InsetsF insets;
   EXPECT_EQ(0, insets.width());
   EXPECT_EQ(0, insets.height());
   EXPECT_TRUE(insets.IsEmpty());
 
-  insets.Set(0, 3.5f, 0, 4.25f);
+  insets.set_left(3.5f).set_right(4.25f);
   EXPECT_EQ(7.75f, insets.width());
   EXPECT_EQ(0, insets.height());
   EXPECT_FALSE(insets.IsEmpty());
 
-  insets.Set(1.5f, 0, 2.75f, 0);
+  insets.set_left(0).set_right(0).set_top(1.5f).set_bottom(2.75f);
   EXPECT_EQ(0, insets.width());
   EXPECT_EQ(4.25f, insets.height());
   EXPECT_FALSE(insets.IsEmpty());
 
-  insets.Set(1.5f, 4.25f, 2.75f, 5);
+  insets.set_left(4.25f).set_right(5);
   EXPECT_EQ(9.25f, insets.width());
   EXPECT_EQ(4.25f, insets.height());
   EXPECT_FALSE(insets.IsEmpty());
 }
 
 TEST(InsetsFTest, Operators) {
-  InsetsF insets(1.f, 2.5f, 3.3f, 4.1f);
-  insets += InsetsF(5.8f, 6.7f, 7.6f, 8.5f);
+  InsetsF insets =
+      InsetsF().set_left(2.5f).set_right(4.1f).set_top(1.f).set_bottom(3.3f);
+  insets +=
+      InsetsF().set_left(6.7f).set_right(8.5f).set_top(5.8f).set_bottom(7.6f);
   EXPECT_FLOAT_EQ(6.8f, insets.top());
   EXPECT_FLOAT_EQ(9.2f, insets.left());
   EXPECT_FLOAT_EQ(10.9f, insets.bottom());
   EXPECT_FLOAT_EQ(12.6f, insets.right());
 
-  insets -= InsetsF(-1.f, 0, 1.1f, 2.2f);
+  insets -=
+      InsetsF().set_left(0).set_right(2.2f).set_top(-1.f).set_bottom(1.1f);
   EXPECT_FLOAT_EQ(7.8f, insets.top());
   EXPECT_FLOAT_EQ(9.2f, insets.left());
   EXPECT_FLOAT_EQ(9.8f, insets.bottom());
   EXPECT_FLOAT_EQ(10.4f, insets.right());
 
-  insets = InsetsF(10, 10.1f, 10.01f, 10.001f) + InsetsF(5.5f, 5.f, 0, -20.2f);
+  insets =
+      InsetsF().set_left(10.1f).set_right(10.001f).set_top(10).set_bottom(
+          10.01f) +
+      InsetsF().set_left(5.f).set_right(-20.2f).set_top(5.5f).set_bottom(0);
   EXPECT_FLOAT_EQ(15.5f, insets.top());
   EXPECT_FLOAT_EQ(15.1f, insets.left());
   EXPECT_FLOAT_EQ(10.01f, insets.bottom());
   EXPECT_FLOAT_EQ(-10.199f, insets.right());
 
-  insets = InsetsF(10, 10.1f, 10.01f, 10.001f) - InsetsF(5.5f, 5.f, 0, -20.2f);
+  insets =
+      InsetsF().set_left(10.1f).set_right(10.001f).set_top(10).set_bottom(
+          10.01f) -
+      InsetsF().set_left(5.f).set_right(-20.2f).set_top(5.5f).set_bottom(0);
   EXPECT_FLOAT_EQ(4.5f, insets.top());
   EXPECT_FLOAT_EQ(5.1f, insets.left());
   EXPECT_FLOAT_EQ(10.01f, insets.bottom());
@@ -77,61 +135,91 @@ TEST(InsetsFTest, Operators) {
 }
 
 TEST(InsetsFTest, Equality) {
-  InsetsF insets1(1.1f, 2.2f, 3.3f, 4.4f);
+  InsetsF insets1 =
+      InsetsF().set_left(2.2f).set_right(4.4f).set_top(1.1f).set_bottom(3.3f);
   InsetsF insets2;
   // Test operator== and operator!=.
   EXPECT_FALSE(insets1 == insets2);
   EXPECT_TRUE(insets1 != insets2);
 
-  insets2.Set(1.1f, 2.2f, 3.3f, 4.4f);
+  insets2.set_left(2.2f).set_right(4.4f).set_top(1.1f).set_bottom(3.3f);
   EXPECT_TRUE(insets1 == insets2);
   EXPECT_FALSE(insets1 != insets2);
 }
 
 TEST(InsetsFTest, ToString) {
-  InsetsF insets(1.1f, 2.2f, 3.3f, 4.4f);
-  EXPECT_EQ("1.100000,2.200000,3.300000,4.400000", insets.ToString());
+  InsetsF insets =
+      InsetsF().set_left(2.2).set_right(4.4).set_top(1.1).set_bottom(3.3);
+  EXPECT_EQ("x:2.2,4.4 y:1.1,3.3", insets.ToString());
 }
 
 TEST(InsetsFTest, Scale) {
-  InsetsF in(7, 5, 3, 1);
+  InsetsF in = InsetsF().set_left(5).set_right(1).set_top(7).set_bottom(3);
   InsetsF testf = ScaleInsets(in, 2.5f, 3.5f);
-  EXPECT_EQ(InsetsF(24.5f, 12.5f, 10.5f, 2.5f), testf);
+  EXPECT_EQ(InsetsF().set_left(12.5f).set_right(2.5f).set_top(24.5f).set_bottom(
+                10.5f),
+            testf);
   testf = ScaleInsets(in, 2.5f);
-  EXPECT_EQ(InsetsF(17.5f, 12.5f, 7.5f, 2.5f), testf);
+  EXPECT_EQ(
+      InsetsF().set_left(12.5f).set_right(2.5f).set_top(17.5f).set_bottom(7.5f),
+      testf);
 
   in.Scale(2.5f, 3.5f);
-  EXPECT_EQ(InsetsF(24.5f, 12.5f, 10.5f, 2.5f), in);
+  EXPECT_EQ(InsetsF().set_left(12.5f).set_right(2.5f).set_top(24.5f).set_bottom(
+                10.5f),
+            in);
   in.Scale(-2.5f);
-  EXPECT_EQ(InsetsF(-61.25f, -31.25f, -26.25f, -6.25f), in);
+  EXPECT_EQ(
+      InsetsF().set_left(-31.25f).set_right(-6.25f).set_top(-61.25f).set_bottom(
+          -26.25f),
+      in);
 }
 
 TEST(InsetsFTest, ScaleNegative) {
-  InsetsF in = InsetsF(-7, -5, -3, -1);
+  InsetsF in = InsetsF().set_left(-5).set_right(-1).set_top(-7).set_bottom(-3);
 
   InsetsF testf = ScaleInsets(in, 2.5f, 3.5f);
-  EXPECT_EQ(InsetsF(-24.5f, -12.5f, -10.5f, -2.5f), testf);
+  EXPECT_EQ(
+      InsetsF().set_left(-12.5f).set_right(-2.5f).set_top(-24.5f).set_bottom(
+          -10.5f),
+      testf);
   testf = ScaleInsets(in, 2.5f);
-  EXPECT_EQ(InsetsF(-17.5f, -12.5f, -7.5f, -2.5f), testf);
+  EXPECT_EQ(
+      InsetsF().set_left(-12.5f).set_right(-2.5f).set_top(-17.5f).set_bottom(
+          -7.5f),
+      testf);
 
   in.Scale(2.5f, 3.5f);
-  EXPECT_EQ(InsetsF(-24.5f, -12.5f, -10.5f, -2.5f), in);
+  EXPECT_EQ(
+      InsetsF().set_left(-12.5f).set_right(-2.5f).set_top(-24.5f).set_bottom(
+          -10.5f),
+      in);
   in.Scale(-2.5f);
-  EXPECT_EQ(InsetsF(61.25f, 31.25f, 26.25f, 6.25f), in);
+  EXPECT_EQ(
+      InsetsF().set_left(31.25f).set_right(6.25f).set_top(61.25f).set_bottom(
+          26.25f),
+      in);
 }
 
 TEST(InsetsFTest, SetToMax) {
   InsetsF insets;
-  insets.SetToMax(InsetsF(-1.25f, 2.5f, -3.75f, 4.5f));
-  EXPECT_EQ(InsetsF(0, 2.5f, 0, 4.5f), insets);
+  insets.SetToMax(
+      InsetsF().set_left(2.5f).set_right(4.5f).set_top(-1.25f).set_bottom(
+          -2.5f));
+  EXPECT_EQ(InsetsF().set_left(2.5f).set_right(4.5f), insets);
   insets.SetToMax(InsetsF());
-  EXPECT_EQ(InsetsF(0, 2.5f, 0, 4.5f), insets);
-  insets.SetToMax(InsetsF(1.25f, 0, 3.75f, 0));
-  EXPECT_EQ(InsetsF(1.25f, 2.5f, 3.75f, 4.5f), insets);
-  insets.SetToMax(InsetsF(20, 30, 40, 50));
-  EXPECT_EQ(InsetsF(20, 30, 40, 50), insets);
+  EXPECT_EQ(InsetsF().set_left(2.5f).set_right(4.5f), insets);
+  insets.SetToMax(InsetsF().set_top(1.25f).set_bottom(3.75f));
+  EXPECT_EQ(
+      InsetsF().set_left(2.5f).set_right(4.5f).set_top(1.25f).set_bottom(3.75f),
+      insets);
+  insets.SetToMax(
+      InsetsF().set_left(30).set_right(50).set_top(20).set_bottom(40));
+  EXPECT_EQ(InsetsF().set_left(30).set_right(50).set_top(20).set_bottom(40),
+            insets);
 
-  InsetsF insets1(-1, -2, -3, -4);
+  InsetsF insets1 =
+      InsetsF().set_left(-2).set_right(-4).set_top(-1).set_bottom(-3);
   insets1.SetToMax(InsetsF());
   EXPECT_EQ(InsetsF(), insets1);
 }

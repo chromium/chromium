@@ -12,14 +12,15 @@
 namespace gfx {
 
 std::string Insets::ToString() const {
-  // Print members in the same order of the constructor parameters.
-  return base::StringPrintf("%d,%d,%d,%d", top(),  left(), bottom(), right());
+  return base::StringPrintf("x:%d,%d y:%d,%d", left(), right(), top(),
+                            bottom());
 }
 
 void Insets::Offset(const gfx::Vector2d& vector) {
-  Set(base::ClampAdd(top(), vector.y()), base::ClampAdd(left(), vector.x()),
-      base::ClampSub(bottom(), vector.y()),
-      base::ClampSub(right(), vector.x()));
+  set_left_right(base::ClampAdd(left(), vector.x()),
+                 base::ClampSub(right(), vector.x()));
+  set_top_bottom(base::ClampAdd(top(), vector.y()),
+                 base::ClampSub(bottom(), vector.y()));
 }
 
 void Insets::SetToMax(const gfx::Insets& other) {

@@ -14,14 +14,22 @@ namespace gfx {
 // A floating point version of gfx::Insets.
 class GEOMETRY_EXPORT InsetsF {
  public:
-  constexpr InsetsF() : top_(0.f), left_(0.f), bottom_(0.f), right_(0.f) {}
+  constexpr InsetsF() = default;
   constexpr explicit InsetsF(float all)
       : top_(all), left_(all), bottom_(all), right_(all) {}
+
+  // Avoid this constructor in blink code because it's easy to make mistakes in
+  // the order of the parameters. Use the other constructors and set_*()
+  // methods instead.
   constexpr InsetsF(float vertical, float horizontal)
       : top_(vertical),
         left_(horizontal),
         bottom_(vertical),
         right_(horizontal) {}
+
+  // Avoid this constructor in blink code because it's easy to make mistakes in
+  // the order of the parameters. Use the other constructors and set_*()
+  // methods instead.
   constexpr InsetsF(float top, float left, float bottom, float right)
       : top_(top), left_(left), bottom_(bottom), right_(right) {}
 
@@ -41,6 +49,31 @@ class GEOMETRY_EXPORT InsetsF {
   // Returns true if the insets are empty.
   bool IsEmpty() const { return width() == 0.f && height() == 0.f; }
 
+  // These setters can be used together with the default constructor and the
+  // single-parameter constructor to construct InsetsF instances, for example:
+  //                                                   // T, L, B, R
+  //   Insets a = InsetsF().set_top(2);                // 2, 0, 0, 0
+  //   Insets b = InsetsF().set_left(2).set_bottom(3); // 0, 2, 3, 0
+  //   Insets d = InsetsF(1).set_top(5);               // 5, 1, 1, 1
+  constexpr InsetsF& set_top(float top) {
+    top_ = top;
+    return *this;
+  }
+  constexpr InsetsF& set_left(float left) {
+    left_ = left;
+    return *this;
+  }
+  constexpr InsetsF& set_bottom(float bottom) {
+    bottom_ = bottom;
+    return *this;
+  }
+  constexpr InsetsF& set_right(float right) {
+    right_ = right;
+    return *this;
+  }
+
+  // Avoid this method in blink code because it's easy to make mistakes in the
+  // order of the parameters. Use the setter methods instead.
   void Set(float top, float left, float bottom, float right) {
     top_ = top;
     left_ = left;
@@ -91,10 +124,10 @@ class GEOMETRY_EXPORT InsetsF {
   std::string ToString() const;
 
  private:
-  float top_;
-  float left_;
-  float bottom_;
-  float right_;
+  float top_ = 0.f;
+  float left_ = 0.f;
+  float bottom_ = 0.f;
+  float right_ = 0.f;
 };
 
 // This is declared here for use in gtest-based unit tests but is defined in

@@ -25,17 +25,25 @@ class Vector2d;
 // represent a border that has a different thickness on each side.
 class GEOMETRY_EXPORT Insets {
  public:
-  constexpr Insets() : top_(0), left_(0), bottom_(0), right_(0) {}
+  constexpr Insets() = default;
   constexpr explicit Insets(int all)
       : top_(all),
         left_(all),
         bottom_(GetClampedValue(all, all)),
         right_(GetClampedValue(all, all)) {}
-  constexpr explicit Insets(int vertical, int horizontal)
+
+  // Avoid this constructor in blink code because it's easy to make mistakes in
+  // the order of the parameters. Use the other constructors and set_*()
+  // methods instead.
+  constexpr Insets(int vertical, int horizontal)
       : top_(vertical),
         left_(horizontal),
         bottom_(GetClampedValue(vertical, vertical)),
         right_(GetClampedValue(horizontal, horizontal)) {}
+
+  // Avoid this constructor in blink code because it's easy to make mistakes in
+  // the order of the parameters. Use the other constructors and set_*()
+  // methods instead.
   constexpr Insets(int top, int left, int bottom, int right)
       : top_(top),
         left_(left),
@@ -62,17 +70,47 @@ class GEOMETRY_EXPORT Insets {
   // Returns true if the insets are empty.
   bool IsEmpty() const { return width() == 0 && height() == 0; }
 
-  void set_top(int top) {
+  // These setters can be used together with the default constructor and the
+  // single-parameter constructor to construct Insets instances, for example:
+  //                                                  // T, L, B, R
+  //   Insets a = Insets().set_top(2);                // 2, 0, 0, 0
+  //   Insets b = Insets().set_left(2).set_bottom(3); // 0, 2, 3, 0
+  //   Insets c = Insets().set_left_right(1, 2).set_top_bottom(3, 4);
+  //                                                  // 3, 1, 4, 2
+  //   Insets d = Insets(1).set_top(5);               // 5, 1, 1, 1
+  constexpr Insets& set_top(int top) {
     top_ = top;
     bottom_ = GetClampedValue(top_, bottom_);
+    return *this;
   }
-  void set_left(int left) {
+  constexpr Insets& set_left(int left) {
     left_ = left;
     right_ = GetClampedValue(left_, right_);
+    return *this;
   }
-  void set_bottom(int bottom) { bottom_ = GetClampedValue(top_, bottom); }
-  void set_right(int right) { right_ = GetClampedValue(left_, right); }
+  constexpr Insets& set_bottom(int bottom) {
+    bottom_ = GetClampedValue(top_, bottom);
+    return *this;
+  }
+  constexpr Insets& set_right(int right) {
+    right_ = GetClampedValue(left_, right);
+    return *this;
+  }
+  // These are preferred to the above setters when setting a pair of edges
+  // because these have less clamping and better performance.
+  constexpr Insets& set_left_right(int left, int right) {
+    left_ = left;
+    right_ = GetClampedValue(left_, right);
+    return *this;
+  }
+  constexpr Insets& set_top_bottom(int top, int bottom) {
+    top_ = top;
+    bottom_ = GetClampedValue(top_, bottom);
+    return *this;
+  }
 
+  // Avoid this method in blink code because it's easy to make mistakes in the
+  // order of the parameters. Use set_*() methods instead.
   void Set(int top, int left, int bottom, int right) {
     top_ = top;
     left_ = left;
@@ -108,9 +146,11 @@ class GEOMETRY_EXPORT Insets {
   }
 
   Insets operator-() const {
-    return Insets(-base::MakeClampedNum(top_), -base::MakeClampedNum(left_),
-                  -base::MakeClampedNum(bottom_),
-                  -base::MakeClampedNum(right_));
+    return Insets()
+        .set_left_right(-base::MakeClampedNum(left_),
+                        -base::MakeClampedNum(right_))
+        .set_top_bottom(-base::MakeClampedNum(top_),
+                        -base::MakeClampedNum(bottom_));
   }
 
   // Adjusts the vertical and horizontal dimensions by the values described in
@@ -127,10 +167,10 @@ class GEOMETRY_EXPORT Insets {
   std::string ToString() const;
 
  private:
-  int top_;
-  int left_;
-  int bottom_;
-  int right_;
+  int top_ = 0;
+  int left_ = 0;
+  int bottom_ = 0;
+  int right_ = 0;
 
   // See ui/gfx/geometry/rect.h
   // Returns true iff a+b would overflow max int.
