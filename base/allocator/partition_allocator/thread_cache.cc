@@ -187,20 +187,6 @@ void ThreadCacheRegistry::ForcePurgeAllThreadAfterForkUnsafe() {
   }
 }
 
-void ThreadCacheRegistry::StartPeriodicPurge(
-    RunAfterDelayCallback run_after_delay_callback) {
-  ThreadCache::EnsureThreadSpecificDataInitialized();
-  PA_DCHECK(run_after_delay_callback);
-
-  // Can be called several times, don't post multiple tasks.
-  if (periodic_purge_running_)
-    return;
-
-  run_after_delay_callback_ = run_after_delay_callback;
-  periodic_purge_running_ = true;
-  PostDelayedPurgeTask();
-}
-
 void ThreadCacheRegistry::SetLargestActiveBucketIndex(
     uint8_t largest_active_bucket_index) {
   largest_active_bucket_index_ = largest_active_bucket_index;
@@ -237,16 +223,11 @@ void ThreadCacheRegistry::SetThreadCacheMultiplier(float multiplier) {
   }
 }
 
-void ThreadCacheRegistry::PostDelayedPurgeTask() {
-  run_after_delay_callback_(base::BindOnce(&ThreadCacheRegistry::PeriodicPurge,
-                                           base::Unretained(this)),
-                            purge_interval_);
-}
-
-void ThreadCacheRegistry::PeriodicPurge() {
-  // To stop periodic purge for testing.
-  if (!periodic_purge_running_)
-    return;
+void ThreadCacheRegistry::RunPeriodicPurge() {
+  if (!periodic_purge_is_initialized_) {
+    ThreadCache::EnsureThreadSpecificDataInitialized();
+    periodic_purge_is_initialized_ = true;
+  }
 
   // Summing across all threads can be slow, but is necessary. Otherwise we rely
   // on the assumption that the current thread is a good proxy for overall
@@ -282,21 +263,26 @@ void ThreadCacheRegistry::PeriodicPurge() {
   // of a renderer moving to foreground. To mitigate that, if cached memory
   // jumps is very large, make a greater leap to faster purging.
   if (cached_memory_approx > 10 * kMinCachedMemoryForPurging) {
-    purge_interval_ = std::min(kDefaultPurgeInterval, purge_interval_ / 2);
+    periodic_purge_next_interval_ =
+        std::min(kDefaultPurgeInterval, periodic_purge_next_interval_ / 2);
   } else if (cached_memory_approx > 2 * kMinCachedMemoryForPurging) {
-    purge_interval_ = std::max(kMinPurgeInterval, purge_interval_ / 2);
+    periodic_purge_next_interval_ =
+        std::max(kMinPurgeInterval, periodic_purge_next_interval_ / 2);
   } else if (cached_memory_approx < kMinCachedMemoryForPurging) {
-    purge_interval_ = std::min(kMaxPurgeInterval, purge_interval_ * 2);
+    periodic_purge_next_interval_ =
+        std::min(kMaxPurgeInterval, periodic_purge_next_interval_ * 2);
   }
 
   PurgeAll();
+}
 
-  PostDelayedPurgeTask();
+int64_t ThreadCacheRegistry::GetPeriodicPurgeNextIntervalInMicroseconds()
+    const {
+  return periodic_purge_next_interval_.InMicroseconds();
 }
 
 void ThreadCacheRegistry::ResetForTesting() {
-  purge_interval_ = kDefaultPurgeInterval;
-  periodic_purge_running_ = false;
+  periodic_purge_next_interval_ = kDefaultPurgeInterval;
 }
 
 // static

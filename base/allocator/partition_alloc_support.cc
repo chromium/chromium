@@ -139,16 +139,14 @@ namespace {
 
 bool g_memory_reclaimer_running = false;
 
-void DelayedPurgeActionForThreadCache(OnceClosure task, base::TimeDelta delay) {
+void RunThreadCachePeriodicPurge() {
+  TRACE_EVENT0("memory", "PeriodicPurge");
+  auto& instance = internal::ThreadCacheRegistry::Instance();
+  instance.RunPeriodicPurge();
+  TimeDelta delay =
+      Microseconds(instance.GetPeriodicPurgeNextIntervalInMicroseconds());
   ThreadTaskRunnerHandle::Get()->PostDelayedTask(
-      FROM_HERE,
-      BindOnce(
-          [](OnceClosure task) {
-            TRACE_EVENT0("memory", "PeriodicPurge");
-            std::move(task).Run();
-          },
-          std::move(task)),
-      delay);
+      FROM_HERE, BindOnce(RunThreadCachePeriodicPurge), delay);
 }
 
 base::RepeatingTimer& GetTimer() {
@@ -164,8 +162,11 @@ void ReclaimPeriodically() {
 }  // namespace
 
 void StartThreadCachePeriodicPurge() {
-  internal::ThreadCacheRegistry::Instance().StartPeriodicPurge(
-      DelayedPurgeActionForThreadCache);
+  auto& instance = internal::ThreadCacheRegistry::Instance();
+  TimeDelta delay =
+      Microseconds(instance.GetPeriodicPurgeNextIntervalInMicroseconds());
+  ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE, BindOnce(RunThreadCachePeriodicPurge), delay);
 }
 
 void StartMemoryReclaimer(scoped_refptr<SequencedTaskRunner> task_runner) {

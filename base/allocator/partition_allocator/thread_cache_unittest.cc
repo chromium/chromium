@@ -92,17 +92,6 @@ ThreadSafePartitionRoot* CreatePartitionRoot() {
   return root;
 }
 
-OnceClosure g_purge_task;
-
-void DelayedAction(OnceClosure task, base::TimeDelta delay) {
-  // Need to invoke purge_action manually.
-  g_purge_task = std::move(task);
-}
-
-void PurgeManually() {
-  std::move(g_purge_task).Run();
-}
-
 }  // namespace
 
 class PartitionAllocThreadCacheTest : public ::testing::Test {
@@ -143,7 +132,6 @@ class PartitionAllocThreadCacheTest : public ::testing::Test {
 
     ThreadCacheRegistry::Instance().ResetForTesting();
     tcache->ResetForTesting();
-    g_purge_task = base::OnceClosure();
   }
 
   size_t FillThreadCacheAndReturnIndex(size_t size, size_t count = 1) {
@@ -560,51 +548,46 @@ TEST_F(PartitionAllocThreadCacheTest, PurgeAll) NO_THREAD_SAFETY_ANALYSIS {
 
 TEST_F(PartitionAllocThreadCacheTest, PeriodicPurge) {
   auto& registry = ThreadCacheRegistry::Instance();
-  registry.StartPeriodicPurge(DelayedAction);
-  EXPECT_EQ(ThreadCacheRegistry::kDefaultPurgeInterval,
-            registry.purge_interval_for_testing());
+  auto NextInterval = [&registry]() {
+    return Microseconds(registry.GetPeriodicPurgeNextIntervalInMicroseconds());
+  };
+
+  EXPECT_EQ(NextInterval(), ThreadCacheRegistry::kDefaultPurgeInterval);
 
   // Small amount of memory, the period gets longer.
   auto* tcache = ThreadCache::Get();
   ASSERT_LT(tcache->CachedMemory(),
             ThreadCacheRegistry::kMinCachedMemoryForPurging);
-  PurgeManually();
-  EXPECT_EQ(2 * ThreadCacheRegistry::kDefaultPurgeInterval,
-            registry.purge_interval_for_testing());
-  PurgeManually();
-  EXPECT_EQ(4 * ThreadCacheRegistry::kDefaultPurgeInterval,
-            registry.purge_interval_for_testing());
+  registry.RunPeriodicPurge();
+  EXPECT_EQ(NextInterval(), 2 * ThreadCacheRegistry::kDefaultPurgeInterval);
+  registry.RunPeriodicPurge();
+  EXPECT_EQ(NextInterval(), 4 * ThreadCacheRegistry::kDefaultPurgeInterval);
 
   // Check that the purge interval is clamped at the maximum value.
-  while (registry.purge_interval_for_testing() <
-         ThreadCacheRegistry::kMaxPurgeInterval) {
-    PurgeManually();
+  while (NextInterval() < ThreadCacheRegistry::kMaxPurgeInterval) {
+    registry.RunPeriodicPurge();
   }
-  PurgeManually();
+  registry.RunPeriodicPurge();
 
   // Not enough memory to decrease the interval.
   FillThreadCacheWithMemory(ThreadCacheRegistry::kMinCachedMemoryForPurging +
                             1);
-  PurgeManually();
-  EXPECT_EQ(ThreadCacheRegistry::kMaxPurgeInterval,
-            registry.purge_interval_for_testing());
+  registry.RunPeriodicPurge();
+  EXPECT_EQ(NextInterval(), ThreadCacheRegistry::kMaxPurgeInterval);
 
   FillThreadCacheWithMemory(
       2 * ThreadCacheRegistry::kMinCachedMemoryForPurging + 1);
-  PurgeManually();
-  EXPECT_EQ(ThreadCacheRegistry::kMaxPurgeInterval / 2,
-            registry.purge_interval_for_testing());
+  registry.RunPeriodicPurge();
+  EXPECT_EQ(NextInterval(), ThreadCacheRegistry::kMaxPurgeInterval / 2);
 
   // Enough memory, interval doesn't change.
   FillThreadCacheWithMemory(ThreadCacheRegistry::kMinCachedMemoryForPurging);
-  PurgeManually();
-  EXPECT_EQ(ThreadCacheRegistry::kMaxPurgeInterval / 2,
-            registry.purge_interval_for_testing());
+  registry.RunPeriodicPurge();
+  EXPECT_EQ(NextInterval(), ThreadCacheRegistry::kMaxPurgeInterval / 2);
 
   // No cached memory, increase the interval.
-  PurgeManually();
-  EXPECT_EQ(ThreadCacheRegistry::kMaxPurgeInterval,
-            registry.purge_interval_for_testing());
+  registry.RunPeriodicPurge();
+  EXPECT_EQ(NextInterval(), ThreadCacheRegistry::kMaxPurgeInterval);
 
   // Cannot test the very large size with only one thread, this is tested below
   // in the multiple threads test.
@@ -614,34 +597,31 @@ TEST_F(PartitionAllocThreadCacheTest, PeriodicPurge) {
 TEST_F(PartitionAllocThreadCacheTest,
        DISABLED_PeriodicPurgeSumsOverAllThreads) {
   auto& registry = ThreadCacheRegistry::Instance();
-  registry.StartPeriodicPurge(DelayedAction);
-  EXPECT_EQ(ThreadCacheRegistry::kDefaultPurgeInterval,
-            registry.purge_interval_for_testing());
+  auto NextInterval = [&registry]() {
+    return Microseconds(registry.GetPeriodicPurgeNextIntervalInMicroseconds());
+  };
+  EXPECT_EQ(NextInterval(), ThreadCacheRegistry::kDefaultPurgeInterval);
 
   // Small amount of memory, the period gets longer.
   auto* tcache = ThreadCache::Get();
   ASSERT_LT(tcache->CachedMemory(),
             ThreadCacheRegistry::kMinCachedMemoryForPurging);
-  PurgeManually();
-  EXPECT_EQ(2 * ThreadCacheRegistry::kDefaultPurgeInterval,
-            registry.purge_interval_for_testing());
-  PurgeManually();
-  EXPECT_EQ(4 * ThreadCacheRegistry::kDefaultPurgeInterval,
-            registry.purge_interval_for_testing());
+  registry.RunPeriodicPurge();
+  EXPECT_EQ(NextInterval(), 2 * ThreadCacheRegistry::kDefaultPurgeInterval);
+  registry.RunPeriodicPurge();
+  EXPECT_EQ(NextInterval(), 4 * ThreadCacheRegistry::kDefaultPurgeInterval);
 
   // Check that the purge interval is clamped at the maximum value.
-  while (registry.purge_interval_for_testing() <
-         ThreadCacheRegistry::kMaxPurgeInterval) {
-    PurgeManually();
+  while (NextInterval() < ThreadCacheRegistry::kMaxPurgeInterval) {
+    registry.RunPeriodicPurge();
   }
-  PurgeManually();
+  registry.RunPeriodicPurge();
 
   // Not enough memory on this thread to decrease the interval.
   FillThreadCacheWithMemory(ThreadCacheRegistry::kMinCachedMemoryForPurging /
                             2);
-  PurgeManually();
-  EXPECT_EQ(ThreadCacheRegistry::kMaxPurgeInterval,
-            registry.purge_interval_for_testing());
+  registry.RunPeriodicPurge();
+  EXPECT_EQ(NextInterval(), ThreadCacheRegistry::kMaxPurgeInterval);
 
   std::atomic<int> allocations_done{0};
   std::atomic<bool> can_finish{false};
@@ -661,12 +641,12 @@ TEST_F(PartitionAllocThreadCacheTest,
   PlatformThread::Create(0, &delegate, &thread_handle_2);
 
   while (allocations_done.load(std::memory_order_acquire) != 2) {
+    PlatformThread::YieldCurrentThread();
   }
 
   // Many allocations on the other thread.
-  PurgeManually();
-  EXPECT_EQ(ThreadCacheRegistry::kDefaultPurgeInterval,
-            registry.purge_interval_for_testing());
+  registry.RunPeriodicPurge();
+  EXPECT_EQ(NextInterval(), ThreadCacheRegistry::kDefaultPurgeInterval);
 
   can_finish.store(true, std::memory_order_release);
   PlatformThread::Join(thread_handle);

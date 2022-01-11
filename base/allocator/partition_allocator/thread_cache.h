@@ -118,15 +118,15 @@ class BASE_EXPORT ThreadCacheRegistry {
   // a later point (during a deallocation).
   void PurgeAll();
 
-  typedef void (*RunAfterDelayCallback)(OnceClosure task,
-                                        base::TimeDelta delay);
-
-  // Starts purging all thread caches with the parameter:
-  // "run_after_delay_callback". The parameter: "run_after_delay_callback" takes
-  // 2 parameters: "purge_action" and "delay". ThreadCacheRegistry invokes
-  // "run_after_delay_clalback" to request the caller to execute "purge_action"
-  // after "delay" passes.
-  void StartPeriodicPurge(RunAfterDelayCallback run_afer_delay_callback);
+  // Runs `PurgeAll` and updates the next interval which
+  // `GetPeriodicPurgeNextIntervalInMicroseconds` returns.
+  //
+  // Note that it's a caller's responsibility to invoke this member function
+  // periodically with an appropriate interval. This function does not schedule
+  // any task nor timer.
+  void RunPeriodicPurge();
+  // Returns the appropriate interval to invoke `RunPeriodicPurge` next time.
+  int64_t GetPeriodicPurgeNextIntervalInMicroseconds() const;
 
   // Controls the thread cache size, by setting the multiplier to a value above
   // or below |ThreadCache::kDefaultMultiplier|.
@@ -138,8 +138,6 @@ class BASE_EXPORT ThreadCacheRegistry {
   // should only be called in a post-fork() handler.
   void ForcePurgeAllThreadAfterForkUnsafe();
 
-  base::TimeDelta purge_interval_for_testing() const { return purge_interval_; }
-
   void ResetForTesting();
 
   static constexpr TimeDelta kMinPurgeInterval = Seconds(1);
@@ -149,16 +147,12 @@ class BASE_EXPORT ThreadCacheRegistry {
 
  private:
   friend class tools::ThreadCacheInspector;
-
-  void PeriodicPurge();
-  void PostDelayedPurgeTask();
   friend class NoDestructor<ThreadCacheRegistry>;
   // Not using base::Lock as the object's constructor must be constexpr.
   PartitionLock lock_;
   ThreadCache* list_head_ GUARDED_BY(GetLock()) = nullptr;
-  base::TimeDelta purge_interval_ = kDefaultPurgeInterval;
-  bool periodic_purge_running_ = false;
-  RunAfterDelayCallback run_after_delay_callback_ = nullptr;
+  bool periodic_purge_is_initialized_ = false;
+  base::TimeDelta periodic_purge_next_interval_ = kDefaultPurgeInterval;
 
 #if defined(OS_NACL)
   // The thread cache is never used with NaCl, but its compiler doesn't
