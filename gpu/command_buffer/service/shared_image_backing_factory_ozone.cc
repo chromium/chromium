@@ -15,7 +15,6 @@
 #include "gpu/command_buffer/service/shared_image_backing_ozone.h"
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 #include "gpu/vulkan/vulkan_device_queue.h"
-#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/gpu_memory_buffer.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gl/buildflags.h"
@@ -188,6 +187,21 @@ bool SharedImageBackingFactoryOzone::IsSupported(
     bool is_pixel_used) {
   if (gmb_type != gfx::EMPTY_BUFFER && gmb_type != gfx::NATIVE_PIXMAP &&
       gmb_type != gfx::SHARED_MEMORY_BUFFER) {
+    return false;
+  }
+  // TODO(crbug.com/969114): Not all shared image factory implementations
+  // support concurrent read/write usage.
+  if (usage & SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) {
+    return false;
+  }
+
+  // TODO(hitawala): Until SharedImageBackingOzone supports all use cases prefer
+  // using SharedImageBackingGLImage instead
+  bool needs_interop_factory = (gr_context_type == GrContextType::kVulkan &&
+                                (usage & SHARED_IMAGE_USAGE_DISPLAY)) ||
+                               (usage & SHARED_IMAGE_USAGE_WEBGPU) ||
+                               (usage & SHARED_IMAGE_USAGE_VIDEO_DECODE);
+  if (!needs_interop_factory) {
     return false;
   }
 
