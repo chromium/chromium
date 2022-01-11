@@ -1267,6 +1267,7 @@ crbug.com/1285109 [ chromeos chromeos-board-kevin passthrough ] conformance/canv
 crbug.com/1285111 [ chromeos chromeos-board-kevin passthrough ] conformance/textures/misc/copy-tex-image-and-sub-image-2d.html [ Failure ]
 crbug.com/1285112 [ chromeos chromeos-board-kevin passthrough ] conformance2/rendering/blitframebuffer-multisampled-readbuffer.html [ Failure ]
 crbug.com/1285114 [ chromeos chromeos-board-kevin passthrough ] conformance2/transform_feedback/transform_feedback.html [ Failure ]
+crbug.com/1286099 [ chromeos chromeos-board-kevin passthrough ] conformance2/rendering/blitframebuffer-r11f-g11f-b10f.html [ Failure ]
 
 ##############################
 # Lacros-like Linux Failures #
