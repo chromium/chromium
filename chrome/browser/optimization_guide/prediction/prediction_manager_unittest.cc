@@ -431,7 +431,7 @@ class TestOptimizationGuideStore : public OptimizationGuideStore {
 class TestPredictionManager : public PredictionManager {
  public:
   TestPredictionManager(
-      OptimizationGuideStore* model_and_features_store,
+      base::WeakPtr<OptimizationGuideStore> model_and_features_store,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       PrefService* pref_service,
       Profile* profile)
@@ -507,7 +507,7 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
 
     model_and_features_store_ = CreateModelAndHostModelFeaturesStore();
     prediction_manager_ = std::make_unique<TestPredictionManager>(
-        model_and_features_store_.get(), url_loader_factory_,
+        model_and_features_store_->AsWeakPtr(), url_loader_factory_,
         pref_service_.get(), &testing_profile_);
     prediction_manager_->SetClockForTesting(task_environment_.GetMockClock());
   }
@@ -563,8 +563,10 @@ class PredictionManagerTestBase : public ProtoDatabaseProviderTestBase {
   }
 
   TestOptimizationGuideStore* models_and_features_store() const {
-    return static_cast<TestOptimizationGuideStore*>(
-        prediction_manager()->model_and_features_store());
+    base::WeakPtr<OptimizationGuideStore> store =
+        prediction_manager()->model_and_features_store();
+    DCHECK(store);
+    return static_cast<TestOptimizationGuideStore*>(store.get());
   }
 
   base::FilePath temp_dir() const { return temp_dir_.GetPath(); }
