@@ -11,10 +11,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
+import android.text.format.DateUtils;
 import android.util.SparseBooleanArray;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.ActivityState;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
@@ -264,11 +266,13 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
                 (ActivityManager) mActivity.getSystemService(Context.ACTIVITY_SERVICE);
         String launchActivityName = ChromeTabbedActivity.MAIN_LAUNCHER_ACTIVITY_NAME;
         if (activityManager != null) {
-            MultiInstanceState.maybeCreate(activityManager::getAppTasks,
+            MultiInstanceState state = MultiInstanceState.maybeCreate(activityManager::getAppTasks,
                     (activityName)
                             -> TextUtils.equals(activityName, ChromeTabbedActivity.class.getName())
                             || TextUtils.equals(activityName, launchActivityName));
+            state.addObserver(this::onMultiInstanceStateChanged);
         }
+        ApplicationStatus.registerStateListenerForActivity(this, mActivity);
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
@@ -566,6 +570,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
         // This handles a case where an instance is deleted within Chrome but not through
         // Window manager UI, and the task is removed by system. See https://crbug.com/1241719.
         removeInvalidInstanceData();
+        if (mInstanceId != INVALID_INSTANCE_ID) {
+            ApplicationStatus.unregisterActivityStateListener(this);
+        }
         super.onDestroy();
     }
 
@@ -588,9 +595,50 @@ class MultiInstanceManagerApi31 extends MultiInstanceManager implements Activity
     @Override
     public void onActivityStateChange(Activity activity, int newState) {
         if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) return;
-        // TODO: Update UMA metrics:
-        //       - instance/task count
-        //       - multi-instance session (enter/exit/duration)
+
+        if (newState != ActivityState.RESUMED && newState != ActivityState.STOPPED) return;
+
+        SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
+        // Check the max instance count in a day for every state update if needed.
+        long timestamp = prefs.readLong(ChromePreferenceKeys.MULTI_INSTANCE_MAX_COUNT_TIME, 0);
+        int maxCount = prefs.readInt(ChromePreferenceKeys.MULTI_INSTANCE_MAX_INSTANCE_COUNT, 0);
+        long current = System.currentTimeMillis();
+
+        if (current - timestamp > DateUtils.DAY_IN_MILLIS) {
+            if (timestamp != 0) {
+                RecordHistogram.recordExactLinearHistogram(
+                        "Android.MultiInstance.MaxInstanceCount", maxCount, mMaxInstances + 1);
+            }
+            prefs.writeLong(ChromePreferenceKeys.MULTI_INSTANCE_MAX_COUNT_TIME, current);
+            // Reset the count to 0 to be ready to obtain the max count for the next 24-hour period.
+            maxCount = 0;
+        }
+        int instanceCount = MultiWindowUtils.getInstanceCount();
+        if (instanceCount > maxCount) {
+            prefs.writeInt(ChromePreferenceKeys.MULTI_INSTANCE_MAX_INSTANCE_COUNT, instanceCount);
+        }
+    }
+
+    private void onMultiInstanceStateChanged(boolean inMultiInstanceMode) {
+        if (!MultiWindowUtils.isMultiInstanceApi31Enabled()) return;
+
+        SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
+        long startTime = prefs.readLong(ChromePreferenceKeys.MULTI_INSTANCE_START_TIME);
+        long current = System.currentTimeMillis();
+
+        // This method in invoked for every ChromeActivity instance. Logging metrics for the first
+        // ChromeActivity is enough. The pref |MULTI_INSTANCE_START_TIME| is set to non-zero once
+        // Android.MultiInstance.Enter is logged, and reset to zero after
+        // Android.MultiInstance.Exit to avoid duplicated logging.
+        if (startTime == 0 && inMultiInstanceMode) {
+            RecordUserAction.record("Android.MultiInstance.Enter");
+            prefs.writeLong(ChromePreferenceKeys.MULTI_INSTANCE_START_TIME, current);
+        } else if (startTime != 0 && !inMultiInstanceMode) {
+            RecordUserAction.record("Android.MultiInstance.Exit");
+            RecordHistogram.recordLongTimesHistogram(
+                    "Android.MultiInstance.TotalDuration", current - startTime);
+            prefs.writeLong(ChromePreferenceKeys.MULTI_INSTANCE_START_TIME, 0);
+        }
     }
 
     @VisibleForTesting

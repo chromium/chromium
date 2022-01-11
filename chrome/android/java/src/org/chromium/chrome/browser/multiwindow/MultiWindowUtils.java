@@ -30,6 +30,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.ChromeTabbedActivity2;
@@ -696,10 +697,11 @@ public class MultiWindowUtils implements ActivityStateListener {
                     SharedPreferencesManager prefs = SharedPreferencesManager.getInstance();
                     long startTime = prefs.readLong(ChromePreferenceKeys.MULTI_WINDOW_START_TIME);
                     if (startTime > 0) {
+                        long current = System.currentTimeMillis();
                         RecordUserAction.record("Android.MultiWindowMode.Exit");
+                        RecordHistogram.recordLongTimesHistogram(
+                                "Android.MultiWindowMode.TotalDuration", current - startTime);
                         prefs.writeLong(ChromePreferenceKeys.MULTI_WINDOW_START_TIME, 0);
-                        // TODO: Record histogram for time spent in multi-window mode by
-                        //       at least one Chrome instance.
                     }
                 } else {
                     RecordUserAction.record("Android.MultiWindowMode.Exit");

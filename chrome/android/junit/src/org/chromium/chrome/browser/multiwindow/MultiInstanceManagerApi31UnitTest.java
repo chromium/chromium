@@ -27,6 +27,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.stubbing.Answer;
 
 import org.chromium.base.ActivityState;
+import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ApplicationStatus.ActivityStateListener;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -238,6 +239,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 new TestMultiInstanceManagerApi31(mCurrentActivity, mTabModelOrchestratorSupplier,
                         mMultiWindowModeStateDispatcher, mActivityLifecycleDispatcher,
                         mModalDialogManagerSupplier, mMenuOrKeyboardActionController);
+        ApplicationStatus.onStateChangeForTesting(mCurrentActivity, ActivityState.CREATED);
         SharedPreferencesManager.getInstance().removeKeysWithPrefix(
                 ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP);
     }
@@ -247,6 +249,7 @@ public class MultiInstanceManagerApi31UnitTest {
         SharedPreferencesManager.getInstance().removeKeysWithPrefix(
                 ChromePreferenceKeys.MULTI_INSTANCE_TASK_MAP);
         TabWindowManagerSingleton.resetTabModelSelectorFactoryForTesting();
+        ApplicationStatus.destroyForJUnitTests();
     }
 
     @Test

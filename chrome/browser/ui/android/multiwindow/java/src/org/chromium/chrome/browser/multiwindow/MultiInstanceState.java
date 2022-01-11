@@ -62,11 +62,12 @@ public class MultiInstanceState implements ActivityStateListener {
      * @param baseActivityName Predicate that tells if a given string is a legitimate name of
      *     the base activity of Chrome task.
      */
-    public static void maybeCreate(
+    public static MultiInstanceState maybeCreate(
             Supplier<List<AppTask>> appTaskSupplier, BaseActivityName baseActivityName) {
         if (sInstance == null) {
             sInstance = new MultiInstanceState(appTaskSupplier, baseActivityName);
         }
+        return sInstance;
     }
 
     private MultiInstanceState(

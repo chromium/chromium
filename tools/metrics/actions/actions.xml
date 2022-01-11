@@ -2652,6 +2652,29 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Android.MultiInstance.Enter">
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <description>
+    Recorded when multiple Chrome instances become visible on the screen at the
+    same time (e.g. two Chrome windows running side-by-side in split-screen
+    mode). Only applicable on Android S. For Android R and below, see
+    Android.MultiWindowMode.MultiInstance.Enter.
+  </description>
+</action>
+
+<action name="Android.MultiInstance.Exit">
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <description>
+    The number of visible, foreground Chrome instances got down below one, which
+    virtually ends the multi-instance 'session'. This can happen when one of the
+    visible instances or both of them in split-screen mode closed or went to the
+    background, or split-screen mode itself exited so that only a single
+    instance remains visible on screen.
+  </description>
+</action>
+
 <action name="Android.MultiWindowMode.Enter">
   <owner>jinsukkim@chromium.org</owner>
   <owner>twellington@chromium.org</owner>

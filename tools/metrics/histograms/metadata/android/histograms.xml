@@ -2115,6 +2115,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.MultiInstance.MaxInstanceCount" units="instances"
+    expires_after="2022-08-16">
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    The maximum number of Chrome instances that ran at the same time in a
+    24-hour period. Checked whenever there is an activity state change to log
+    the stats once in 24 hours.
+  </summary>
+</histogram>
+
 <histogram name="Android.MultiInstance.NumActivities" units="activities"
     expires_after="2022-08-19">
   <owner>jinsukkim@chromium.org</owner>
@@ -2157,6 +2169,17 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records on every metrics upload whether the activity is running in Android N
     multi-window mode or not.
+  </summary>
+</histogram>
+
+<histogram name="Android.MultiWindowMode.TotalDuration" units="ms"
+    expires_after="2022-08-16">
+  <owner>jinsukkim@chromium.org</owner>
+  <owner>twellington@chromium.org</owner>
+  <owner>clank-app-team@google.com</owner>
+  <summary>
+    Total time spent in Android N+ multi-window (aka split-screen) mode.
+    Recorded when multi-window mode is exited.
   </summary>
 </histogram>
 
