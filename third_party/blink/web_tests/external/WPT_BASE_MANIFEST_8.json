@@ -288329,7 +288329,7 @@
       ],
       "resources": {
        "common.js": [
-        "86de148321d15b38a52cf1a0562de617e1633327",
+        "e11e2307defd6e4bba7006e2add47e7aad965a6f",
         []
        ],
        "serviceworker-partitioning-helper.js": [
@@ -442067,6 +442067,36 @@
           ]
          ],
          "timeout": "long"
+        }
+       ]
+      ],
+      "cache-storage.tentative.https.window.js": [
+       "9c18a7fae391fd883470859d09841b79b20bf935",
+       [
+        "html/cross-origin-embedder-policy/anonymous-iframe/cache-storage.tentative.https.window.html",
+        {
+         "script_metadata": [
+          [
+           "script",
+           "/common/get-host-info.sub.js"
+          ],
+          [
+           "script",
+           "/common/utils.js"
+          ],
+          [
+           "script",
+           "/common/dispatcher/dispatcher.js"
+          ],
+          [
+           "script",
+           "../credentialless/resources/common.js"
+          ],
+          [
+           "script",
+           "./resources/common.js"
+          ]
+         ]
         }
        ]
       ],

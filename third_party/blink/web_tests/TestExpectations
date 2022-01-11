@@ -3077,6 +3077,7 @@ crbug.com/626703 [ Mac11 ] external/wpt/css/css-flexbox/abspos/flex-abspos-stati
 crbug.com/626703 [ Mac11-arm64 ] external/wpt/css/css-flexbox/flexbox_flow-column-wrap.html [ Crash Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/geometry-border-image-002.https.html [ Failure ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/web-share/share-url-invalid.https.html [ Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/webxr/depth-sensing/cpu/depth_sensing_cpu_staleView.https.html [ Timeout ]
 crbug.com/626703 [ Mac11 ] virtual/off-main-thread-css-paint/external/wpt/css/css-paint-api/parse-input-arguments-009.https.html [ Failure ]
