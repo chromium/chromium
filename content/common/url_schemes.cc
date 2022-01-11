@@ -99,7 +99,7 @@ void RegisterContentSchemes(bool should_lock_registry) {
   for (auto& scheme : schemes.empty_document_schemes)
     url::AddEmptyDocumentScheme(scheme.c_str());
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (schemes.allow_non_standard_schemes_in_origins)
     url::EnableNonStandardSchemesForAndroidWebView();
 #endif

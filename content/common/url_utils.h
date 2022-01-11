@@ -12,7 +12,7 @@
 
 namespace content {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 CONTENT_EXPORT url::Origin OriginFromAndroidPackageName(
     const std::string& package_name);
 #endif

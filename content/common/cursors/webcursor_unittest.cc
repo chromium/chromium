@@ -14,7 +14,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "ui/base/win/win_cursor.h"
@@ -192,7 +192,7 @@ TEST(WebCursorTest, UnscaledImageCopy) {
 }
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void ScaleCursor(float scale, int hotspot_x, int hotspot_y) {
   ui::Cursor cursor(ui::mojom::CursorType::kCustom);
   cursor.set_custom_hotspot(gfx::Point(hotspot_x, hotspot_y));

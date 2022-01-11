@@ -22,7 +22,7 @@ struct BuildOSCpuInfoTestCases {
 
 TEST(UserAgentStringTest, BuildOSCpuInfoFromOSVersionAndCpuType) {
   const BuildOSCpuInfoTestCases test_cases[] = {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // On Windows, it's possible to have an empty string for CPU type.
     {
         /*os_version=*/"10.0",
@@ -56,7 +56,7 @@ TEST(UserAgentStringTest, BuildOSCpuInfoFromOSVersionAndCpuType) {
         /*cpu_type=*/"CPU TYPE",
         /*expected_os_cpu_info=*/"Windows NT VERSION; CPU TYPE",
     },
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
     {
         /*os_version=*/"10_15_4",
         /*cpu_type=*/"Intel",
@@ -92,7 +92,7 @@ TEST(UserAgentStringTest, BuildOSCpuInfoFromOSVersionAndCpuType) {
         /*cpu_type=*/"CPU TYPE",
         /*expected_os_cpu_info=*/"CrOS CPU TYPE VERSION",
     },
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
     {
         /*os_version=*/"7.1.1",
         /*cpu_type=*/"UNUSED",
@@ -110,7 +110,7 @@ TEST(UserAgentStringTest, BuildOSCpuInfoFromOSVersionAndCpuType) {
         /*cpu_type=*/"CPU TYPE",
         /*expected_os_cpu_info=*/"Android VERSION",
     },
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
     {
         /*os_version=*/"VERSION",
         /*cpu_type=*/"CPU TYPE",
@@ -129,8 +129,8 @@ TEST(UserAgentStringTest, BuildOSCpuInfoFromOSVersionAndCpuType) {
 TEST(UserAgentStringTest, LowEntropyCpuArchitecture) {
   std::string arch = GetLowEntropyCpuArchitecture();
 
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_POSIX) && !defined(OS_ANDROID))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID))
   EXPECT_TRUE("arm" == arch || "x86" == arch);
 #else
   EXPECT_EQ("", arch);

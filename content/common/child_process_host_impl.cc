@@ -39,12 +39,12 @@
 #include "services/resource_coordinator/public/mojom/memory_instrumentation/constants.mojom.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/linux_util.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "base/mac/foundation_util.h"
 #include "content/common/mac_helpers.h"
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
@@ -71,7 +71,7 @@ base::FilePath ChildProcessHost::GetChildPath(int flags) {
   child_path = base::CommandLine::ForCurrentProcess()->GetSwitchValuePath(
       switches::kBrowserSubprocessPath);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Use /proc/self/exe rather than our known binary path so updates
   // can't swap out the binary from underneath us.
   if (child_path.empty() && flags & CHILD_ALLOW_SELF)
@@ -83,7 +83,7 @@ base::FilePath ChildProcessHost::GetChildPath(int flags) {
   if (child_path.empty())
     base::PathService::Get(CHILD_PROCESS_EXE, &child_path);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   std::string child_base_name = child_path.BaseName().value();
 
   if (flags != CHILD_NORMAL && base::mac::AmIBundled()) {

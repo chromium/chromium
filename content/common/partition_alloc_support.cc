@@ -26,7 +26,7 @@
 #include "build/build_config.h"
 #include "content/public/common/content_switches.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/system/sys_info.h"
 #endif
 
@@ -373,20 +373,20 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
 
   base::allocator::StartThreadCachePeriodicPurge();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Lower thread cache limits to avoid stranding too much memory in the caches.
   if (base::SysInfo::IsLowEndDevice()) {
     base::internal::ThreadCacheRegistry::Instance().SetThreadCacheMultiplier(
         base::internal::ThreadCache::kDefaultMultiplier / 2.);
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Renderer processes are more performance-sensitive, increase thread cache
   // limits.
   if (process_type == switches::kRendererProcess &&
       base::FeatureList::IsEnabled(
           base::features::kPartitionAllocLargeThreadCacheSize)) {
-#if defined(OS_ANDROID) && !defined(ARCH_CPU_64_BITS)
+#if BUILDFLAG(IS_ANDROID) && !defined(ARCH_CPU_64_BITS)
     // Don't use a higher threshold on Android 32 bits, as long as memory usage
     // is not carefully tuned. Only control the threshold here to avoid changing
     // the rest of the code below.
@@ -398,7 +398,7 @@ void PartitionAllocSupport::ReconfigureAfterTaskRunnerInit(
         base::internal::ThreadCacheLimits::kLargeSizeThreshold;
     base::internal::ThreadCache::SetLargestCachedSize(
         base::internal::ThreadCacheLimits::kLargeSizeThreshold);
-#endif  // defined(OS_ANDROID) && !defined(ARCH_CPU_64_BITS)
+#endif  // BUILDFLAG(IS_ANDROID) && !defined(ARCH_CPU_64_BITS)
   }
 
 #endif  // defined(PA_THREAD_CACHE_SUPPORTED) &&

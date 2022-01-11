@@ -35,7 +35,7 @@ void InitializeSkia() {
 
   const int kMB = 1024 * 1024;
   size_t font_cache_limit;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   font_cache_limit = base::SysInfo::IsLowEndDevice() ? kMB : 8 * kMB;
   SkGraphics::SetFontCacheLimit(font_cache_limit);
 #else

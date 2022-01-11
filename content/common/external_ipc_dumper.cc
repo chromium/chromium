@@ -17,7 +17,7 @@ typedef void (*SetDumpDirectoryFunction)(const base::FilePath&);
 const char kFilterEntryName[] = "GetFilter";
 const char kSetDumpDirectoryEntryName[] = "SetDumpDirectory";
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define IPC_MESSAGE_DUMP_MODULE FILE_PATH_LITERAL("ipc_message_dump.dll")
 #else
 #define IPC_MESSAGE_DUMP_MODULE FILE_PATH_LITERAL("libipc_message_dump.so")
