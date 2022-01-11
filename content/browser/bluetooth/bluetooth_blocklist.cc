@@ -130,18 +130,6 @@ BluetoothBlocklist::BluetoothBlocklist() {
 void BluetoothBlocklist::PopulateWithDefaultValues() {
   blocklisted_uuids_.clear();
 
-  // Testing from Web Tests Note:
-  //
-  // Random UUIDs for object & exclude permutations that do not exist in the
-  // standard blocklist are included to facilitate integration testing from
-  // Web Tests.  Unit tests can dynamically modify the blocklist, but don't
-  // offer the full integration test to the Web Bluetooth Javascript bindings.
-  //
-  // This is done for simplicity as opposed to exposing a testing API that can
-  // add to the blocklist over time, which would be over engineered.
-  //
-  // Remove testing UUIDs if the specified blocklist is updated to include UUIDs
-  // that match the specific permutations.
   DCHECK(BluetoothUUID("00001800-0000-1000-8000-00805f9b34fb") ==
          BluetoothUUID("1800"));
 
@@ -161,12 +149,26 @@ void BluetoothBlocklist::PopulateWithDefaultValues() {
   Add(BluetoothUUID("2a02"), Value::EXCLUDE_WRITES);
   Add(BluetoothUUID("2a03"), Value::EXCLUDE);
   Add(BluetoothUUID("2a25"), Value::EXCLUDE);
-  // Characteristics for Web Tests:
-  Add(BluetoothUUID("bad1c9a2-9a5b-4015-8b60-1579bbbf2135"),
-      Value::EXCLUDE_READS);
   // Descriptors:
   Add(BluetoothUUID("2902"), Value::EXCLUDE_WRITES);
   Add(BluetoothUUID("2903"), Value::EXCLUDE_WRITES);
+
+  // Testing from Web Tests Note:
+  //
+  // Random UUIDs for object & exclude permutations that do not exist in the
+  // standard blocklist are included to facilitate integration testing from
+  // Web Tests.  Unit tests can dynamically modify the blocklist, but don't
+  // offer the full integration test to the Web Bluetooth Javascript bindings.
+  //
+  // This is done for simplicity as opposed to exposing a testing API that can
+  // add to the blocklist over time, which would be over engineered.
+  //
+  // Remove testing UUIDs if the specified blocklist is updated to include UUIDs
+  // that match the specific permutations.
+  //
+  // Characteristics for Web Tests:
+  Add(BluetoothUUID("bad1c9a2-9a5b-4015-8b60-1579bbbf2135"),
+      Value::EXCLUDE_READS);
   // Descriptors for Web Tests:
   Add(BluetoothUUID("bad2ddcf-60db-45cd-bef9-fd72b153cf7c"), Value::EXCLUDE);
   Add(BluetoothUUID("bad3ec61-3cc3-4954-9702-7977df514114"),
