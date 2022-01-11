@@ -83,7 +83,7 @@ class WPTAndroidAdapter(wpt_common.BaseWptScriptAdapter):
     env = os.environ.copy()
     if 'GTEST_SHARD_INDEX' in env:
       shard_index = int(env['GTEST_SHARD_INDEX'])
-      return 'wpt_reports_%s_%d.json' % (self.options.product, shard_index)
+      return 'wpt_reports_%s_%02d.json' % (self.options.product, shard_index)
     else:
       return 'wpt_reports_%s.json' % self.options.product
 

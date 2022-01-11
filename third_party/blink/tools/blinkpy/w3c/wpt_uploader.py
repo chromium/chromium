@@ -86,7 +86,14 @@ class WptReportUploader(object):
                 ... more artifacts
             ]
         }
-        Returns a list of URLs for wpt report
+        
+        An example of the url as below:
+        https://results.usercontent.cr.dev/invocations/ \
+        task-chromium-swarm.appspot.com-58590ed6228fd611/ \
+        artifacts/wpt_reports_android_webview_01.json? \
+        token=AXsiX2kiOiIxNjQxNzYyNzU0MDkxIiwiX3giOiIzNjAwMDAwIn24WM72ciT_oYJG0hGx6MShOXu8SyVxfB_fw
+        
+        Returns a sorted(based on shard number) list of URLs for wpt report
         """
 
         invocation = "invocations/build-%s" % build_id
@@ -106,6 +113,11 @@ class WptReportUploader(object):
         for artifact in artifacts:
             if artifact.get("artifactId").startswith("wpt_reports"):
                 rv.append(artifact.get("fetchUrl"))
+
+        if len(rv) > 0:
+            pos = rv[0].find("wpt_reports")
+            rv.sort(key=lambda x: x[pos:])
+
         return rv
 
     def fetch_latest_complete_build(self, project, bucket, builder_name):
@@ -167,9 +179,9 @@ class WptReportUploader(object):
                 return 0
             res = session.post(url=url, files=files)
             if res.status_code == 200:
-                _log.info("Successfully uploaded wpt report with response: " + res.text)
+                _log.info("Successfully uploaded wpt report with response: " + res.text.strip())
                 report_id = res.text.split()[1]
-                _log.info("Report uploaded to https://staging.wpt.fyi/api/runs?run_id=%s" % report_id)
+                _log.info("Report uploaded to https://staging.wpt.fyi/results?run_id=%s" % report_id)
                 return 0
             else:
                 _log.error("Upload wpt report failed with status code: %d", res.status_code)
