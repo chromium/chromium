@@ -212,7 +212,7 @@ void LoginFeedback::EnsureFeedbackUI() {
         /*show_questionnaire=*/false,
         /*from_chrome_labs_or_kaleidoscope=*/false);
 
-    FeedbackDialog::CreateOrShow(*info);
+    FeedbackDialog::CreateOrShow(ProfileManager::GetActiveUserProfile(), *info);
   } else {
     api->RequestFeedbackForFlow(
         description_, std::string(), "Login", std::string(), GURL(),

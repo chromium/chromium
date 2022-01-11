@@ -386,8 +386,14 @@ void ChromeInternalLogSource::Fetch(SysLogsSourceCallback callback) {
 }
 
 void ChromeInternalLogSource::PopulateSyncLogs(SystemLogsResponse* response) {
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // We are only interested in sync logs for the primary user profile.
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
+#else
+  // Get logs for the last used profile since there is no notion of primary
+  // profile.
+  Profile* profile = ProfileManager::GetLastUsedProfile();
+#endif
   if (!profile || !SyncServiceFactory::HasSyncService(profile))
     return;
 
@@ -452,7 +458,7 @@ void ChromeInternalLogSource::PopulateDataReductionProxyLogs(
   data_reduction_proxy::DataReductionProxySettings*
       data_reduction_proxy_settings =
           DataReductionProxyChromeSettingsFactory::GetForBrowserContext(
-              ProfileManager::GetActiveUserProfile());
+              ProfileManager::GetLastUsedProfile());
   bool data_saver_enabled =
       data_reduction_proxy_settings &&
       data_reduction_proxy_settings->IsDataReductionProxyEnabled();
