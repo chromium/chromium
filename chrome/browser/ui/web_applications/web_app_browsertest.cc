@@ -312,6 +312,17 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ShortcutBackgroundColor) {
   EXPECT_EQ(provider->registrar().GetAppBackgroundColor(app_id), SK_ColorBLUE);
 }
 
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ManifestWithColor) {
+  const GURL app_url =
+      https_server()->GetURL("/banners/no-sw-with-colors.html");
+  const AppId app_id = InstallWebAppFromPage(browser(), app_url);
+  auto* provider = WebAppProvider::GetForTest(profile());
+
+  EXPECT_EQ(provider->registrar().GetAppBackgroundColor(app_id),
+            SK_ColorYELLOW);
+  EXPECT_EQ(provider->registrar().GetAppThemeColor(app_id), SK_ColorGREEN);
+}
+
 // Base class for background color change browser tests parameterized by whether
 // to use a SWA or a non-SWA.
 class WebAppBackgroundColorChangeBrowserTest
