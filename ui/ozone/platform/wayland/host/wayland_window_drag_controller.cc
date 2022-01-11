@@ -433,8 +433,16 @@ void WaylandWindowDragController::HandleMotionEvent(LocatedEvent* event) {
 // about to finish.
 void WaylandWindowDragController::HandleDropAndResetState() {
   DCHECK_EQ(state_, State::kDropped);
-  DCHECK(drag_source_);
   DVLOG(1) << "Notifying drop. window=" << pointer_grab_owner_;
+
+  // StopDragging() may get called in response to bogus input events, eg:
+  // wl_pointer.button release, which would imply in multiple calls to this
+  // function for a single drop event. That results in ILL_ILLOPN crashes in
+  // below code, because |drag_source_| is null after the first call to this
+  // function. So, early out here in that case.
+  // TODO(crbug.com/1280981): Revert this once Exo-side issue gets solved.
+  if (!drag_source_.has_value())
+    return;
 
   if (*drag_source_ == DragSource::kMouse) {
     if (pointer_grab_owner_) {
