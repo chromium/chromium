@@ -102,7 +102,7 @@ ClientAndroid::ClientAndroid(content::WebContents* web_contents,
       java_object_(Java_AutofillAssistantClient_Constructor(
           AttachCurrentThread(),
           reinterpret_cast<intptr_t>(this),
-          dependencies->GetAccessTokenUtil())),
+          dependencies->CreateAccessTokenUtil())),
       dependencies_(std::move(dependencies)) {}
 
 ClientAndroid::~ClientAndroid() {

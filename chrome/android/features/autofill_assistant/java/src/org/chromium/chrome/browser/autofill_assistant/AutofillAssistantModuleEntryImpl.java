@@ -42,7 +42,7 @@ public class AutofillAssistantModuleEntryImpl implements AutofillAssistantModule
         return new AutofillAssistantActionHandlerImpl(
                 new OnboardingCoordinatorFactory(context, bottomSheetController, browserControls,
                         rootView, staticDependencies.getAccessibilityUtil(),
-                        staticDependencies.getInfoPageUtil()),
+                        staticDependencies.createInfoPageUtil()),
                 webContentsSupplier, dependenciesFactory);
     }
 }

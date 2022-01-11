@@ -120,7 +120,7 @@ public class AutofillAssistantDetailsUiTest {
                     new AssistantDependenciesFactoryChrome().createStaticDependencies();
 
             return new AssistantDetailsCoordinator(InstrumentationRegistry.getTargetContext(),
-                    staticDependencies.getInfoPageUtil(), model,
+                    staticDependencies.createInfoPageUtil(), model,
                     new AutofillAssistantUiTestUtil.MockImageFetcher(testImage, null));
         });
 

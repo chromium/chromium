@@ -1215,7 +1215,7 @@ void UiControllerAndroid::HideKeyboardIfFocusNotOnText() {
 }
 
 ScopedJavaGlobalRef<jobject> UiControllerAndroid::GetInfoPageUtil() const {
-  return Dependencies::GetInfoPageUtil(jstatic_dependencies_);
+  return Dependencies::CreateInfoPageUtil(jstatic_dependencies_);
 }
 
 void UiControllerAndroid::OnCollectUserDataOptionsChanged(

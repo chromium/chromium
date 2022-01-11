@@ -55,22 +55,22 @@ public class AssistantStaticDependenciesChrome implements AssistantStaticDepende
     }
 
     @Override
-    public AssistantInfoPageUtil getInfoPageUtil() {
+    public AssistantInfoPageUtil createInfoPageUtil() {
         return new AssistantInfoPageUtilChrome();
     }
 
     @Override
-    public AssistantFeedbackUtil getFeedbackUtil() {
+    public AssistantFeedbackUtil createFeedbackUtil() {
         return new AssistantFeedbackUtilChrome();
     }
 
     @Override
-    public AssistantTabUtil getTabUtil() {
+    public AssistantTabUtil createTabUtil() {
         return new AssistantTabUtilChrome();
     }
 
     @Override
-    public AssistantAccessTokenUtil getAccessTokenUtil() {
+    public AssistantAccessTokenUtil createAccessTokenUtil() {
         return new AssistantAccessTokenUtilChrome();
     }
 
@@ -85,7 +85,7 @@ public class AssistantStaticDependenciesChrome implements AssistantStaticDepende
 
     @Override
     @Nullable
-    public AssistantProfileImageUtil getProfileImageUtilOrNull(Context context) {
+    public AssistantProfileImageUtil createProfileImageUtilOrNull(Context context) {
         String signedInAccountEmail = getSignedInAccountEmailOrNull();
         if (signedInAccountEmail == null) return null;
 

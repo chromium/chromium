@@ -116,8 +116,9 @@ public class AutofillAssistantUiTest {
                     getActivity().getCompositorViewHolderForTesting(),
                     getActivity().getBrowserControlsManager(),
                     getActivity().getWindowAndroid().getApplicationBottomInsetProvider(),
-                    staticDependencies.getAccessibilityUtil(), staticDependencies.getInfoPageUtil(),
-                    staticDependencies.getProfileImageUtilOrNull(getActivity()));
+                    staticDependencies.getAccessibilityUtil(),
+                    staticDependencies.createInfoPageUtil(),
+                    staticDependencies.createProfileImageUtilOrNull(getActivity()));
             coordinator.show();
             return coordinator;
         });

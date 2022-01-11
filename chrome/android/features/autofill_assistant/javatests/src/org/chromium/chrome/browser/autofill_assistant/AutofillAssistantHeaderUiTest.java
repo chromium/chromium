@@ -107,7 +107,7 @@ public class AutofillAssistantHeaderUiTest {
             AssistantDependencies dependencies = new AssistantDependenciesChrome(getActivity());
             AssistantHeaderCoordinator coordinator = new AssistantHeaderCoordinator(getActivity(),
                     model, dependencies.getAccessibilityUtil(),
-                    dependencies.getProfileImageUtilOrNull(getActivity()));
+                    dependencies.createProfileImageUtilOrNull(getActivity()));
 
             CoordinatorLayout.LayoutParams lp = new CoordinatorLayout.LayoutParams(
                     ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);

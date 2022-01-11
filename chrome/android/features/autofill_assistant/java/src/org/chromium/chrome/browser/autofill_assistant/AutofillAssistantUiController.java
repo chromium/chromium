@@ -91,7 +91,7 @@ public class AutofillAssistantUiController {
 
         mNativeUiController = nativeUiController;
         mSnackbarFactory = dependencies.getSnackbarFactory();
-        mFeedbackUtil = dependencies.getFeedbackUtil();
+        mFeedbackUtil = dependencies.createFeedbackUtil();
 
         // NOTE: Only create one instance of this unless you know what you are doing.
         @Nullable
@@ -102,8 +102,8 @@ public class AutofillAssistantUiController {
                 tabObscuringUtil, overlayCoordinator, this::safeNativeOnKeyboardVisibilityChanged,
                 dependencies.getKeyboardVisibilityDelegate(), dependencies.getRootView(),
                 dependencies.getBrowserControls(), dependencies.getBottomInsetProvider(),
-                dependencies.getAccessibilityUtil(), dependencies.getInfoPageUtil(),
-                dependencies.getProfileImageUtilOrNull(mActivity));
+                dependencies.getAccessibilityUtil(), dependencies.createInfoPageUtil(),
+                dependencies.createProfileImageUtilOrNull(mActivity));
 
         mActivityTabObserver = new ActivityTabProvider.ActivityTabTabObserver(
                 dependencies.getActivityTabProvider(), /* shouldTrigger = */ true) {
@@ -255,7 +255,7 @@ public class AutofillAssistantUiController {
      */
     @CalledByNative
     private void scheduleCloseCustomTab() {
-        mDependencies.getTabUtil().scheduleCloseCustomTab(mActivity);
+        mDependencies.createTabUtil().scheduleCloseCustomTab(mActivity);
     }
 
     @CalledByNative

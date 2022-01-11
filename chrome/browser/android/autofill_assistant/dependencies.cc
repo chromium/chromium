@@ -31,17 +31,17 @@ ScopedJavaGlobalRef<jobject> Dependencies::GetJavaObject() const {
   return java_object_;
 }
 
-ScopedJavaGlobalRef<jobject> Dependencies::GetInfoPageUtil(
+ScopedJavaGlobalRef<jobject> Dependencies::CreateInfoPageUtil(
     const ScopedJavaGlobalRef<jobject>& java_object) {
   return ScopedJavaGlobalRef<jobject>(
-      Java_AssistantStaticDependencies_getInfoPageUtil(AttachCurrentThread(),
-                                                       java_object));
+      Java_AssistantStaticDependencies_createInfoPageUtil(AttachCurrentThread(),
+                                                          java_object));
 }
 
-ScopedJavaGlobalRef<jobject> Dependencies::GetAccessTokenUtil() const {
+ScopedJavaGlobalRef<jobject> Dependencies::CreateAccessTokenUtil() const {
   return ScopedJavaGlobalRef<jobject>(
-      Java_AssistantStaticDependencies_getAccessTokenUtil(AttachCurrentThread(),
-                                                          java_object_));
+      Java_AssistantStaticDependencies_createAccessTokenUtil(
+          AttachCurrentThread(), java_object_));
 }
 
 Dependencies::~Dependencies() = default;

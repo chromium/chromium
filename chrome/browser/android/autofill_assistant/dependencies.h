@@ -23,10 +23,10 @@ class Dependencies {
 
   base::android::ScopedJavaGlobalRef<jobject> GetJavaObject() const;
 
-  static base::android::ScopedJavaGlobalRef<jobject> GetInfoPageUtil(
+  static base::android::ScopedJavaGlobalRef<jobject> CreateInfoPageUtil(
       const base::android::ScopedJavaGlobalRef<jobject>& java_object);
 
-  base::android::ScopedJavaGlobalRef<jobject> GetAccessTokenUtil() const;
+  base::android::ScopedJavaGlobalRef<jobject> CreateAccessTokenUtil() const;
 
   virtual ~Dependencies();
 

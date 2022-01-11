@@ -32,18 +32,18 @@ public interface AssistantStaticDependencies {
     AssistantTabObscuringUtil getTabObscuringUtilOrNull(WindowAndroid windowAndroid);
 
     @CalledByNative
-    AssistantInfoPageUtil getInfoPageUtil();
+    AssistantInfoPageUtil createInfoPageUtil();
 
-    AssistantFeedbackUtil getFeedbackUtil();
+    AssistantFeedbackUtil createFeedbackUtil();
 
-    AssistantTabUtil getTabUtil();
+    AssistantTabUtil createTabUtil();
 
     @CalledByNative
-    AssistantAccessTokenUtil getAccessTokenUtil();
+    AssistantAccessTokenUtil createAccessTokenUtil();
 
     @Nullable
     String getSignedInAccountEmailOrNull();
 
     @Nullable
-    AssistantProfileImageUtil getProfileImageUtilOrNull(Context context);
+    AssistantProfileImageUtil createProfileImageUtilOrNull(Context context);
 }

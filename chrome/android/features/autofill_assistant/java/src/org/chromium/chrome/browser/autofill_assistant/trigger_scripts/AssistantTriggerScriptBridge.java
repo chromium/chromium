@@ -59,15 +59,15 @@ public class AssistantTriggerScriptBridge {
 
                     @Override
                     public void onFeedbackButtonClicked() {
-                        dependencies.getFeedbackUtil().showFeedback(dependencies.getActivity(),
-                                webContents, /* screenshotMode */ 0, /* debugContext */ null);
+                        dependencies.createFeedbackUtil().showFeedback(dependencies.getActivity(),
+                                webContents, /* screenshotMode= */ 0, /* debugContext= */ null);
                     }
                 };
 
         mTriggerScript = new AssistantTriggerScript(dependencies.getActivity(), delegate,
                 webContents, dependencies.getBottomSheetController(),
                 dependencies.getBottomInsetProvider(), dependencies.getAccessibilityUtil(),
-                dependencies.getProfileImageUtilOrNull(dependencies.getActivity()));
+                dependencies.createProfileImageUtilOrNull(dependencies.getActivity()));
 
         mKeyboardVisibilityListener = this::safeNativeOnKeyboardVisibilityChanged;
     }

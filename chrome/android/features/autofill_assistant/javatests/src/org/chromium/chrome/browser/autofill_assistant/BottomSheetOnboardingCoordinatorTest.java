@@ -110,7 +110,7 @@ public class BottomSheetOnboardingCoordinatorTest {
         mOnboardingCoordinatorFactory = new OnboardingCoordinatorFactory(mActivity,
                 mBottomSheetController, mActivity.getBrowserControlsManager(),
                 mActivity.getCompositorViewHolderForTesting(),
-                staticDependencies.getAccessibilityUtil(), staticDependencies.getInfoPageUtil());
+                staticDependencies.getAccessibilityUtil(), staticDependencies.createInfoPageUtil());
     }
 
     private BaseOnboardingCoordinator createCoordinator() {
