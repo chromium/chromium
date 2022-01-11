@@ -58,6 +58,14 @@ class MessageStreamLookupImpl : public MessageStreamLookup,
                    scoped_refptr<device::BluetoothSocket> socket);
   void OnConnectError(const std::string& error_message);
 
+  // Helper function to disconnect socket from a MessageStream instance and
+  // destroy the MessageStream instance. Used by both |RemoveMessageStream| and
+  // |DeviceRemoved|.
+  void EraseMessageStream(const std::string& device_address);
+
+  // Callback for disconnected the socket from the MessageStream.
+  void OnSocketDisconnected(const std::string& device_address);
+
   // Internal method called by BluetoothAdapterFactory to provide the adapter
   // object.
   void OnGetAdapter(scoped_refptr<device::BluetoothAdapter> adapter);

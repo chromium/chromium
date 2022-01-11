@@ -102,9 +102,31 @@ void MessageStream::ReceiveDataError(device::BluetoothSocket::ErrorReason error,
   Receive();
 }
 
+void MessageStream::Disconnect(base::OnceClosure on_disconnect_callback) {
+  // If we already have disconnected the socket, then we can run the callback.
+  // This can happen since the socket might have disconnected previously but
+  // we kept the MessageStream instance alive to preserve messages from the
+  // corresponding device.
+  if (!socket_) {
+    std::move(on_disconnect_callback).Run();
+    return;
+  }
+
+  socket_->Disconnect(base::BindOnce(
+      &MessageStream::OnSocketDisconnectedWithCallback,
+      weak_ptr_factory_.GetWeakPtr(), std::move(on_disconnect_callback)));
+}
+
 void MessageStream::OnSocketDisconnected() {
+  socket_ = nullptr;
   for (auto& obs : observers_)
     obs.OnDisconnected(device_address_);
+}
+
+void MessageStream::OnSocketDisconnectedWithCallback(
+    base::OnceClosure on_disconnect_callback) {
+  OnSocketDisconnected();
+  std::move(on_disconnect_callback).Run();
 }
 
 void MessageStream::ParseMessageStreamSuccess(

@@ -77,18 +77,38 @@ void MessageStreamLookupImpl::DeviceConnectedStateChanged(
 
 void MessageStreamLookupImpl::DeviceRemoved(device::BluetoothAdapter* adapter,
                                             device::BluetoothDevice* device) {
+  if (!device)
+    return;
+
   // Remove message stream if the device removed from the adapter has a
-  // message stream. It isn't expected to already have a MessageStream
-  // associated with it.
-  message_streams_.erase(device->GetAddress());
+  // message stream and disconnect from socket if applicable. It isn't expected
+  // to already have a MessageStream associated with it.
+  EraseMessageStream(device->GetAddress());
 }
 
 void MessageStreamLookupImpl::RemoveMessageStream(
     const std::string& device_address) {
   QP_LOG(VERBOSE) << __func__ << ": device address = " << device_address;
+  EraseMessageStream(device_address);
+}
 
+void MessageStreamLookupImpl::EraseMessageStream(
+    const std::string& device_address) {
   // Remove map entry if it exists. It may not exist if it was failed to be
   // created due to a |ConnectToService| error.
+  if (!base::Contains(message_streams_, device_address))
+    return;
+
+  // If the MessageStream still exists, we can attempt to gracefully disconnect
+  // the socket before erasing (and therefore destructing) the MessageStream
+  // instance.
+  message_streams_[device_address]->Disconnect(
+      base::BindOnce(&MessageStreamLookupImpl::OnSocketDisconnected,
+                     weak_ptr_factory_.GetWeakPtr(), device_address));
+}
+
+void MessageStreamLookupImpl::OnSocketDisconnected(
+    const std::string& device_address) {
   message_streams_.erase(device_address);
 }
 
