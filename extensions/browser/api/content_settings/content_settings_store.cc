@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <set>
+#include <string>
 #include <utility>
 
 #include "base/check_op.h"
@@ -22,6 +23,7 @@
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/website_settings_info.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/features.h"
@@ -55,8 +57,7 @@ ContentSettingsStore::ContentSettingsStore() {
   DCHECK(OnCorrectThread());
 }
 
-ContentSettingsStore::~ContentSettingsStore() {
-}
+ContentSettingsStore::~ContentSettingsStore() = default;
 
 constexpr char ContentSettingsStore::kContentSettingKey[];
 constexpr char ContentSettingsStore::kContentSettingsTypeKey[];
@@ -264,15 +265,15 @@ void ContentSettingsStore::ClearContentSettingsForExtensionAndContentType(
     NotifyOfContentSettingChanged(ext_id, scope != kExtensionPrefsScopeRegular);
 }
 
-std::unique_ptr<base::ListValue> ContentSettingsStore::GetSettingsForExtension(
+std::vector<base::Value> ContentSettingsStore::GetSettingsForExtension(
     const std::string& extension_id,
     ExtensionPrefsScope scope) const {
   base::AutoLock lock(lock_);
   const OriginIdentifierValueMap* map = GetValueMap(extension_id, scope);
   if (!map)
-    return nullptr;
+    return {};
 
-  auto settings = std::make_unique<base::ListValue>();
+  std::vector<base::Value> settings;
   for (const auto& it : *map) {
     const auto& key = it.first;
     std::unique_ptr<RuleIterator> rule_iterator(
@@ -283,13 +284,12 @@ std::unique_ptr<base::ListValue> ContentSettingsStore::GetSettingsForExtension(
 
     while (rule_iterator->HasNext()) {
       const Rule& rule = rule_iterator->Next();
-      std::unique_ptr<base::DictionaryValue> setting_dict(
-          new base::DictionaryValue());
-      setting_dict->SetString(kPrimaryPatternKey,
-                              rule.primary_pattern.ToString());
-      setting_dict->SetString(kSecondaryPatternKey,
-                              rule.secondary_pattern.ToString());
-      setting_dict->SetString(
+      base::Value setting_dict(base::Value::Type::DICTIONARY);
+      setting_dict.SetStringKey(kPrimaryPatternKey,
+                                rule.primary_pattern.ToString());
+      setting_dict.SetStringKey(kSecondaryPatternKey,
+                                rule.secondary_pattern.ToString());
+      setting_dict.SetStringKey(
           kContentSettingsTypeKey,
           content_settings_helpers::ContentSettingsTypeToString(key));
       ContentSetting content_setting =
@@ -300,47 +300,69 @@ std::unique_ptr<base::ListValue> ContentSettingsStore::GetSettingsForExtension(
           content_settings::ContentSettingToString(content_setting);
       DCHECK(!setting_string.empty());
 
-      setting_dict->SetString(kContentSettingKey, setting_string);
-      settings->Append(std::move(setting_dict));
+      setting_dict.SetStringKey(kContentSettingKey, setting_string);
+      settings.push_back(std::move(setting_dict));
     }
   }
   return settings;
 }
 
+#define LOG_INVALID_EXTENSION_PREFERENCE_DETAILS         \
+  LOG(ERROR) << "Found invalid extension pref: " << dict \
+             << " extension id: " << extension_id
+
 void ContentSettingsStore::SetExtensionContentSettingFromList(
     const std::string& extension_id,
-    const base::ListValue* list,
+    base::Value::ConstListView list,
     ExtensionPrefsScope scope) {
-  for (const auto& value : list->GetList()) {
-    const base::DictionaryValue* dict = nullptr;
-    if (!value.GetAsDictionary(&dict)) {
-      NOTREACHED();
+  for (const base::Value& dict : list) {
+    if (!dict.is_dict()) {
+      LOG_INVALID_EXTENSION_PREFERENCE_DETAILS;
       continue;
     }
-    std::string primary_pattern_str;
-    dict->GetString(kPrimaryPatternKey, &primary_pattern_str);
+
+    const std::string* primary_pattern_str =
+        dict.FindStringKey(kPrimaryPatternKey);
+    if (!primary_pattern_str) {
+      LOG_INVALID_EXTENSION_PREFERENCE_DETAILS;
+      continue;
+    }
     ContentSettingsPattern primary_pattern =
-        ContentSettingsPattern::FromString(primary_pattern_str);
-    DCHECK(primary_pattern.IsValid());
+        ContentSettingsPattern::FromString(*primary_pattern_str);
+    if (!primary_pattern.IsValid()) {
+      LOG_INVALID_EXTENSION_PREFERENCE_DETAILS;
+      continue;
+    }
 
-    std::string secondary_pattern_str;
-    dict->GetString(kSecondaryPatternKey, &secondary_pattern_str);
+    const std::string* secondary_pattern_str =
+        dict.FindStringKey(kSecondaryPatternKey);
+    if (!secondary_pattern_str) {
+      LOG_INVALID_EXTENSION_PREFERENCE_DETAILS;
+      continue;
+    }
     ContentSettingsPattern secondary_pattern =
-        ContentSettingsPattern::FromString(secondary_pattern_str);
-    DCHECK(secondary_pattern.IsValid());
+        ContentSettingsPattern::FromString(*secondary_pattern_str);
+    if (!secondary_pattern.IsValid()) {
+      LOG_INVALID_EXTENSION_PREFERENCE_DETAILS;
+      continue;
+    }
 
-    std::string content_settings_type_str;
-    dict->GetString(kContentSettingsTypeKey, &content_settings_type_str);
+    auto* content_settings_type_str =
+        dict.FindStringKey(kContentSettingsTypeKey);
+    if (!content_settings_type_str) {
+      LOG_INVALID_EXTENSION_PREFERENCE_DETAILS;
+      continue;
+    }
     ContentSettingsType content_settings_type =
         content_settings_helpers::StringToContentSettingsType(
-            content_settings_type_str);
+            *content_settings_type_str);
     if (content_settings_type == ContentSettingsType::DEFAULT) {
       // We'll end up with DEFAULT here if the type string isn't recognised.
       // This could be if it's a string from an old settings type that has been
       // deleted. DCHECK to make sure this is the case (not some random string).
-      DCHECK(content_settings_type_str == "fullscreen" ||
-             content_settings_type_str == "mouselock" ||
-             content_settings_type_str == "plugins");
+      DCHECK(*content_settings_type_str == "fullscreen" ||
+             *content_settings_type_str == "mouselock" ||
+             *content_settings_type_str == "plugins");
 
       // In this case, we just skip over that setting, effectively deleting it
       // from the in-memory model. This will implicitly delete these old
@@ -353,8 +375,9 @@ void ContentSettingsStore::SetExtensionContentSettingFromList(
             content_settings_type);
 
     if (secondary_pattern == primary_pattern &&
-        info->website_settings_info()->SupportsSecondaryPattern())
+        info->website_settings_info()->SupportsSecondaryPattern()) {
       secondary_pattern = ContentSettingsPattern::Wildcard();
+    }
 
     if (primary_pattern != secondary_pattern &&
         secondary_pattern != ContentSettingsPattern::Wildcard() &&
@@ -362,23 +385,33 @@ void ContentSettingsStore::SetExtensionContentSettingFromList(
       // Some types may have had embedded exceptions written even though they
       // aren't supported. This will implicitly delete these old settings from
       // the pref store when it is written back.
+      LOG_INVALID_EXTENSION_PREFERENCE_DETAILS;
       continue;
     }
 
-    std::string content_setting_string;
-    dict->GetString(kContentSettingKey, &content_setting_string);
     ContentSetting setting;
+    const std::string* content_setting_str =
+        dict.FindStringKey(kContentSettingKey);
+    if (!content_setting_str) {
+      LOG_INVALID_EXTENSION_PREFERENCE_DETAILS;
+      continue;
+    }
+
     bool result = content_settings::ContentSettingFromString(
-        content_setting_string, &setting);
-    DCHECK(result);
+        *content_setting_str, &setting);
     // The content settings extensions API does not support setting any content
     // settings to |CONTENT_SETTING_DEFAULT|.
-    DCHECK_NE(CONTENT_SETTING_DEFAULT, setting);
+    if (!result != CONTENT_SETTING_DEFAULT) {
+      LOG_INVALID_EXTENSION_PREFERENCE_DETAILS;
+      continue;
+    }
 
     SetExtensionContentSetting(extension_id, primary_pattern, secondary_pattern,
                                content_settings_type, setting, scope);
   }
 }
+
+#undef LOG_INVALID_EXTENSION_PREFERENCE_DETAILS
 
 void ContentSettingsStore::AddObserver(Observer* observer) {
   DCHECK(OnCorrectThread());

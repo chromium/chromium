@@ -175,10 +175,10 @@ TEST_F(PolicyProviderTest, AutoSelectCertificateList) {
   // certificates.
   std::string pattern_str("\"pattern\":\"[*.]google.com\"");
   std::string filter_str("\"filter\":{\"ISSUER\":{\"CN\":\"issuer name\"}}");
-  auto value = std::make_unique<base::ListValue>();
-  value->Append("{" + pattern_str + "," + filter_str + "}");
+  base::Value value(base::Value::Type::LIST);
+  value.Append("{" + pattern_str + "," + filter_str + "}");
   prefs->SetManagedPref(prefs::kManagedAutoSelectCertificateForUrls,
-                        std::move(value));
+                        base::Value::ToUniquePtrValue(std::move(value)));
   GURL youtube_url("https://www.youtube.com");
   EXPECT_EQ(base::Value(),
             TestUtils::GetContentSettingValue(

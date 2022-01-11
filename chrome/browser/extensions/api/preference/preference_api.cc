@@ -364,9 +364,7 @@ class PrefMapping {
   }
 
   struct PrefMapData {
-    PrefMapData()
-        : read_permission(APIPermissionID::kInvalid),
-          write_permission(APIPermissionID::kInvalid) {}
+    PrefMapData() = default;
 
     PrefMapData(const std::string& pref_name,
                 APIPermissionID read,
@@ -379,10 +377,10 @@ class PrefMapping {
     std::string pref_name;
 
     // Permission needed to read the preference.
-    APIPermissionID read_permission;
+    APIPermissionID read_permission = APIPermissionID::kInvalid;
 
     // Permission needed to write the preference.
-    APIPermissionID write_permission;
+    APIPermissionID write_permission = APIPermissionID::kInvalid;
   };
 
   using PrefMap = std::map<std::string, PrefMapData>;
@@ -619,16 +617,16 @@ void PreferenceAPI::OnContentSettingChanged(const std::string& extension_id,
                                             bool incognito) {
   if (incognito) {
     extension_prefs()->UpdateExtensionPref(
-        extension_id,
-        pref_names::kPrefIncognitoContentSettings,
-        content_settings_store()->GetSettingsForExtension(
-            extension_id, kExtensionPrefsScopeIncognitoPersistent));
+        extension_id, pref_names::kPrefIncognitoContentSettings,
+        base::Value::ToUniquePtrValue(
+            base::Value(content_settings_store()->GetSettingsForExtension(
+                extension_id, kExtensionPrefsScopeIncognitoPersistent))));
   } else {
     extension_prefs()->UpdateExtensionPref(
-        extension_id,
-        pref_names::kPrefContentSettings,
-        content_settings_store()->GetSettingsForExtension(
-            extension_id, kExtensionPrefsScopeRegular));
+        extension_id, pref_names::kPrefContentSettings,
+        base::Value::ToUniquePtrValue(
+            base::Value(content_settings_store()->GetSettingsForExtension(
+                extension_id, kExtensionPrefsScopeRegular))));
   }
 }
 

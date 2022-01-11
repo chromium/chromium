@@ -42,18 +42,17 @@ void ContentSettingsService::OnExtensionRegistered(
 void ContentSettingsService::OnExtensionPrefsLoaded(
     const std::string& extension_id,
     const ExtensionPrefs* prefs) {
-  const base::ListValue* content_settings = NULL;
+  const base::ListValue* content_settings = nullptr;
   if (prefs->ReadPrefAsList(
           extension_id, pref_names::kPrefContentSettings, &content_settings)) {
     content_settings_store_->SetExtensionContentSettingFromList(
-        extension_id, content_settings, kExtensionPrefsScopeRegular);
+        extension_id, content_settings->GetList(), kExtensionPrefsScopeRegular);
   }
   if (prefs->ReadPrefAsList(extension_id,
                             pref_names::kPrefIncognitoContentSettings,
                             &content_settings)) {
     content_settings_store_->SetExtensionContentSettingFromList(
-        extension_id,
-        content_settings,
+        extension_id, content_settings->GetList(),
         kExtensionPrefsScopeIncognitoPersistent);
   }
 }

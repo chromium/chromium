@@ -21,7 +21,7 @@
 #include "extensions/browser/extension_prefs_scope.h"
 
 namespace base {
-class ListValue;
+class Value;
 }
 
 namespace content_settings {
@@ -40,7 +40,7 @@ class ContentSettingsStore
  public:
   class Observer {
    public:
-    virtual ~Observer() {}
+    virtual ~Observer() = default;
 
     // Called when a content setting changes in the
     // ContentSettingsStore.
@@ -90,17 +90,16 @@ class ContentSettingsStore
       ContentSettingsType content_type);
 
   // Serializes all content settings set by the extension with ID |extension_id|
-  // and returns them as a ListValue. The caller takes ownership of the returned
-  // value.
-  std::unique_ptr<base::ListValue> GetSettingsForExtension(
+  // and returns them as a list of Values.
+  std::vector<base::Value> GetSettingsForExtension(
       const std::string& extension_id,
       ExtensionPrefsScope scope) const;
 
   // Deserializes content settings rules from |list| and applies them as set by
   // the extension with ID |extension_id|.
   void SetExtensionContentSettingFromList(const std::string& extension_id,
-                                           const base::ListValue* list,
-                                           ExtensionPrefsScope scope);
+                                          base::Value::ConstListView list,
+                                          ExtensionPrefsScope scope);
 
   // //////////////////////////////////////////////////////////////////////////
 
