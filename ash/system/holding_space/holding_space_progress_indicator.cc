@@ -13,7 +13,8 @@
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/system/holding_space/holding_space_progress_ring_indeterminate_animation.h"
+#include "ash/system/holding_space/holding_space_progress_icon_animation.h"
+#include "ash/system/holding_space/holding_space_progress_ring_animation.h"
 #include "base/scoped_observation.h"
 #include "third_party/skia/include/core/SkPath.h"
 #include "third_party/skia/include/core/SkPathBuilder.h"
@@ -304,6 +305,23 @@ HoldingSpaceProgressIndicator::HoldingSpaceProgressIndicator(
   HoldingSpaceAnimationRegistry* animation_registry =
       HoldingSpaceAnimationRegistry::GetInstance();
 
+  // Register to be notified of changes to the icon animation associated with
+  // this progress indicator's `animation_key_`. Note that it is safe to use a
+  // raw pointer here since `this` owns the subscription.
+  icon_animation_changed_subscription_ =
+      animation_registry->AddProgressIconAnimationChangedCallbackForKey(
+          animation_key_,
+          base::BindRepeating(
+              &HoldingSpaceProgressIndicator::OnProgressIconAnimationChanged,
+              base::Unretained(this)));
+
+  // If an `icon_animation` is already registered, perform additional
+  // initialization.
+  HoldingSpaceProgressIconAnimation* icon_animation =
+      animation_registry->GetProgressIconAnimationForKey(animation_key_);
+  if (icon_animation)
+    OnProgressIconAnimationChanged(icon_animation);
+
   // Register to be notified of changes to the ring animation associated with
   // this progress indicator's `animation_key_`. Note that it is safe to use a
   // raw pointer here since `this` owns the subscription.
@@ -314,11 +332,12 @@ HoldingSpaceProgressIndicator::HoldingSpaceProgressIndicator(
               &HoldingSpaceProgressIndicator::OnProgressRingAnimationChanged,
               base::Unretained(this)));
 
-  // If an `animation` is already registered, perform additional initialization.
-  HoldingSpaceProgressRingAnimation* animation =
+  // If `ring_animation` is already registered, perform additional
+  // initialization.
+  HoldingSpaceProgressRingAnimation* ring_animation =
       animation_registry->GetProgressRingAnimationForKey(animation_key_);
-  if (animation)
-    OnProgressRingAnimationChanged(animation);
+  if (ring_animation)
+    OnProgressRingAnimationChanged(ring_animation);
 }
 
 HoldingSpaceProgressIndicator::~HoldingSpaceProgressIndicator() = default;
@@ -384,7 +403,7 @@ void HoldingSpaceProgressIndicator::OnDeviceScaleFactorChanged(
 
 void HoldingSpaceProgressIndicator::OnPaintLayer(
     const ui::PaintContext& context) {
-  // Look up the associated `animation` (if one exists).
+  // Look up the associated `ring_animation` (if one exists).
   HoldingSpaceProgressRingAnimation* ring_animation =
       HoldingSpaceAnimationRegistry::GetInstance()
           ->GetProgressRingAnimationForKey(animation_key_);
@@ -501,6 +520,20 @@ void HoldingSpaceProgressIndicator::UpdateVisualState() {
   // Notify `progress_` changes.
   if (progress_ != previous_progress)
     progress_changed_callback_list_.Notify();
+}
+
+void HoldingSpaceProgressIndicator::OnProgressIconAnimationChanged(
+    HoldingSpaceProgressIconAnimation* animation) {
+  // Trigger repaint of this progress indicator on `animation` updates. Note
+  // that it is safe to use a raw pointer here since `this` owns the
+  // subscription.
+  if (animation) {
+    icon_animation_updated_subscription_ =
+        animation->AddAnimationUpdatedCallback(
+            base::BindRepeating(&HoldingSpaceProgressIndicator::InvalidateLayer,
+                                base::Unretained(this)));
+  }
+  InvalidateLayer();
 }
 
 void HoldingSpaceProgressIndicator::OnProgressRingAnimationChanged(

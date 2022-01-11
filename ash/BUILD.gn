@@ -1068,6 +1068,8 @@ component("ash") {
     "system/holding_space/holding_space_item_view.h",
     "system/holding_space/holding_space_item_views_section.cc",
     "system/holding_space/holding_space_item_views_section.h",
+    "system/holding_space/holding_space_progress_icon_animation.cc",
+    "system/holding_space/holding_space_progress_icon_animation.h",
     "system/holding_space/holding_space_progress_indicator.cc",
     "system/holding_space/holding_space_progress_indicator.h",
     "system/holding_space/holding_space_progress_indicator_animation.cc",
