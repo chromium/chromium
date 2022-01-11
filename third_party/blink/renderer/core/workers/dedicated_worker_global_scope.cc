@@ -163,7 +163,8 @@ DedicatedWorkerGlobalScope::DedicatedWorkerGlobalScope(
         back_forward_cache_controller_host)
     : WorkerGlobalScope(std::move(parsed_creation_params.creation_params),
                         thread,
-                        time_origin),
+                        time_origin,
+                        false),
       token_(thread->WorkerObjectProxy().token()),
       parent_token_(parsed_creation_params.parent_context_token),
       cross_origin_isolated_capability_(Agent::IsCrossOriginIsolated()),

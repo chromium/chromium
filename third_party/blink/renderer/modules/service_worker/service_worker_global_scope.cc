@@ -236,7 +236,7 @@ ServiceWorkerGlobalScope::ServiceWorkerGlobalScope(
     mojo::PendingRemote<mojom::blink::CacheStorage> cache_storage_remote,
     base::TimeTicks time_origin,
     const ServiceWorkerToken& service_worker_token)
-    : WorkerGlobalScope(std::move(creation_params), thread, time_origin),
+    : WorkerGlobalScope(std::move(creation_params), thread, time_origin, true),
       installed_scripts_manager_(std::move(installed_scripts_manager)),
       cache_storage_remote_(std::move(cache_storage_remote)),
       token_(service_worker_token) {

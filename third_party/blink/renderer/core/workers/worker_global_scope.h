@@ -235,7 +235,8 @@ class CORE_EXPORT WorkerGlobalScope
  protected:
   WorkerGlobalScope(std::unique_ptr<GlobalScopeCreationParams>,
                     WorkerThread*,
-                    base::TimeTicks time_origin);
+                    base::TimeTicks time_origin,
+                    bool is_service_worker_global_scope);
 
   // ExecutionContext
   void ExceptionThrown(ErrorEvent*) override;
