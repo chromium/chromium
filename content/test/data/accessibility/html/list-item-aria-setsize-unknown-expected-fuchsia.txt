@@ -1,0 +1,23 @@
+UNKNOWN focusable
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='Level 1, item 5 of set size unknown'
+++++++++++++UNKNOWN label='Level 1, item 5 of set size unknown'
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='Level 1, item 6 of set size unknown'
+++++++++++++UNKNOWN label='Level 1, item 6 of set size unknown'
+++++++++++UNKNOWN
+++++++++++++UNKNOWN
+++++++++++++++STATIC_TEXT label='Level 2, item 6 of set size unknown'
+++++++++++++++++UNKNOWN label='Level 2, item 6 of set size unknown'
+++++++++++++UNKNOWN
+++++++++++++++STATIC_TEXT label='Level 2, item 7 of set size unknown'
+++++++++++++++++UNKNOWN label='Level 2, item 7 of set size unknown'
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='Level 1, item 7 of set size 2'
+++++++++++++UNKNOWN label='Level 1, item 7 of set size 2'
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='Level 1, item 8 of set size 3'
+++++++++++++UNKNOWN label='Level 1, item 8 of set size 3'

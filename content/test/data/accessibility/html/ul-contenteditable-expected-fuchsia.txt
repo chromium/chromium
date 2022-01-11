@@ -1,0 +1,15 @@
+UNKNOWN focusable
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++TEXT_FIELD focusable actions='{DEFAULT, SET_VALUE}' value='Hello<newline><newline>Bye'
+++++++++UNKNOWN actions='{DEFAULT}'
+++++++++++UNKNOWN actions='{DEFAULT}'
+++++++++++++UNKNOWN label='%E2%80%A2 ' actions='{DEFAULT}'
+++++++++++++++STATIC_TEXT hidden label='%E2%80%A2 '
+++++++++++++STATIC_TEXT label='Hello'
+++++++++++++++UNKNOWN label='Hello'
+++++++++++UNKNOWN actions='{DEFAULT}'
+++++++++++++UNKNOWN label='%E2%80%A2 ' actions='{DEFAULT}'
+++++++++++++++STATIC_TEXT hidden label='%E2%80%A2 '
+++++++++++++STATIC_TEXT label='Bye'
+++++++++++++++UNKNOWN label='Bye'

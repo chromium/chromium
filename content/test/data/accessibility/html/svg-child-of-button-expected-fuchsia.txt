@@ -1,0 +1,5 @@
+UNKNOWN focusable
+++UNKNOWN hidden
+++++UNKNOWN
+++++++BUTTON focusable label='Search' actions='{DEFAULT}'
+++++++++IMAGE actions='{DEFAULT}'

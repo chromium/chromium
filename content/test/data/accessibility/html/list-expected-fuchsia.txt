@@ -1,0 +1,33 @@
+UNKNOWN focusable
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN
+++++++++UNKNOWN
+++++++++++UNKNOWN label='%E2%80%A2 '
+++++++++++++STATIC_TEXT hidden label='%E2%80%A2 '
+++++++++++STATIC_TEXT label='tic'
+++++++++++++UNKNOWN label='tic'
+++++++++UNKNOWN
+++++++++++UNKNOWN label='%E2%80%A2 '
+++++++++++++STATIC_TEXT hidden label='%E2%80%A2 '
+++++++++++STATIC_TEXT label='tac'
+++++++++++++UNKNOWN label='tac'
+++++++++UNKNOWN
+++++++++++UNKNOWN label='%E2%80%A2 '
+++++++++++++STATIC_TEXT hidden label='%E2%80%A2 '
+++++++++++STATIC_TEXT label='toe'
+++++++++++++UNKNOWN label='toe'
+++++++UNKNOWN
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='tic'
+++++++++++++UNKNOWN label='tic'
+++++++++STATIC_TEXT label=' '
+++++++++++UNKNOWN label=' '
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='tac'
+++++++++++++UNKNOWN label='tac'
+++++++++STATIC_TEXT label=' '
+++++++++++UNKNOWN label=' '
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='toe'
+++++++++++++UNKNOWN label='toe'

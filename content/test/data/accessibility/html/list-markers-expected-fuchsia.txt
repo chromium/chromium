@@ -1,0 +1,31 @@
+UNKNOWN focusable
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN
+++++++++UNKNOWN
+++++++++++UNKNOWN label='%E2%80%A2 '
+++++++++++++STATIC_TEXT hidden label='%E2%80%A2 '
+++++++++++STATIC_TEXT label='First item properly groups itself despite '
+++++++++++++UNKNOWN label='First item properly groups itself despite '
+++++++++++STATIC_TEXT label='bolded'
+++++++++++++UNKNOWN label='bolded'
+++++++++++STATIC_TEXT label=' text.'
+++++++++++++UNKNOWN label=' text.'
+++++++++UNKNOWN
+++++++++++UNKNOWN label='%E2%80%A2 '
+++++++++++++STATIC_TEXT hidden label='%E2%80%A2 '
+++++++++++STATIC_TEXT label='This should also be '
+++++++++++++UNKNOWN label='This should also be '
+++++++++++STATIC_TEXT label='seen'
+++++++++++++UNKNOWN label='seen'
+++++++++++STATIC_TEXT label=' as a group.'
+++++++++++++UNKNOWN label=' as a group.'
+++++++++UNKNOWN
+++++++++++UNKNOWN label='%E2%80%A2 '
+++++++++++++STATIC_TEXT hidden label='%E2%80%A2 '
+++++++++++STATIC_TEXT label='Some '
+++++++++++++UNKNOWN label='Some '
+++++++++++STATIC_TEXT label='more'
+++++++++++++UNKNOWN label='more'
+++++++++++STATIC_TEXT label=' text.'
+++++++++++++UNKNOWN label=' text.'

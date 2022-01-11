@@ -1,0 +1,50 @@
+UNKNOWN focusable
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++PARAGRAPH
+++++++++STATIC_TEXT label='This is a multi-leveled list'
+++++++++++UNKNOWN label='This is a multi-leveled list'
+++++++UNKNOWN
+++++++++UNKNOWN
+++++++++++UNKNOWN label='1. '
+++++++++++++STATIC_TEXT hidden label='1. '
+++++++++++STATIC_TEXT label='Sports'
+++++++++++++UNKNOWN label='Sports'
+++++++++++UNKNOWN
+++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='1. '
+++++++++++++++++STATIC_TEXT hidden label='1. '
+++++++++++++++STATIC_TEXT label='Tennis'
+++++++++++++++++UNKNOWN label='Tennis'
+++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='2. '
+++++++++++++++++STATIC_TEXT hidden label='2. '
+++++++++++++++STATIC_TEXT label='basketball'
+++++++++++++++++UNKNOWN label='basketball'
+++++++++UNKNOWN
+++++++++++UNKNOWN label='2. '
+++++++++++++STATIC_TEXT hidden label='2. '
+++++++++++STATIC_TEXT label='Books'
+++++++++++++UNKNOWN label='Books'
+++++++++++UNKNOWN
+++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='1. '
+++++++++++++++++STATIC_TEXT hidden label='1. '
+++++++++++++++STATIC_TEXT label='Oliver Twist'
+++++++++++++++++UNKNOWN label='Oliver Twist'
+++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='2. '
+++++++++++++++++STATIC_TEXT hidden label='2. '
+++++++++++++++STATIC_TEXT label='Kindred'
+++++++++++++++++UNKNOWN label='Kindred'
+++++++++++++UNKNOWN
+++++++++++++++UNKNOWN label='3. '
+++++++++++++++++STATIC_TEXT hidden label='3. '
+++++++++++++++STATIC_TEXT label='The Promise of Sleep'
+++++++++++++++++UNKNOWN label='The Promise of Sleep'
+++++++++UNKNOWN
+++++++++++UNKNOWN label='3. '
+++++++++++++STATIC_TEXT hidden label='3. '
+++++++++++STATIC_TEXT label='Recipes'
+++++++++++++UNKNOWN label='Recipes'
+++++++++UNKNOWN

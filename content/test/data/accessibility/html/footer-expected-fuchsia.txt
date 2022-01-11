@@ -1,0 +1,6 @@
+UNKNOWN focusable
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Footer element'
+++++++++++UNKNOWN label='Footer element'

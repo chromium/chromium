@@ -1,0 +1,6 @@
+UNKNOWN focusable
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Text in dialog'
+++++++++++UNKNOWN label='Text in dialog'

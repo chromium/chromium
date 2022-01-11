@@ -1,0 +1,13 @@
+UNKNOWN focusable
+++UNKNOWN hidden
+++++UNKNOWN
+++++++UNKNOWN
+++++++++STATIC_TEXT label='Choose a pokemon '
+++++++++++UNKNOWN label='Choose a pokemon '
+++++++++TEXT_FIELD_WITH_COMBO_BOX focusable label='Choose a pokemon' actions='{DEFAULT, SET_VALUE}'
+++++++++++UNKNOWN hidden
+++++++++++++UNKNOWN hidden
+++++++++++++++UNKNOWN
+++++++++++++UNKNOWN hidden
+++++++++++++++UNKNOWN hidden
+++++++++++++++++STATIC_TEXT hidden label='%E2%96%BE'

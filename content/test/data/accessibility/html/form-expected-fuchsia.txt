@@ -1,0 +1,11 @@
+UNKNOWN focusable
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN
+++++++++BUTTON focusable label='Submit' actions='{DEFAULT}'
+++++++++++STATIC_TEXT label='Submit'
+++++++++++++UNKNOWN label='Submit'
+++++++UNKNOWN label='Name'
+++++++++BUTTON focusable label='Submit' actions='{DEFAULT}'
+++++++++++STATIC_TEXT label='Submit'
+++++++++++++UNKNOWN label='Submit'

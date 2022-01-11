@@ -1,0 +1,9 @@
+UNKNOWN focusable
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN
+++++++++STATIC_TEXT label='This is main element.'
+++++++++++UNKNOWN label='This is main element.'
+++++++UNKNOWN
+++++++++STATIC_TEXT label='This is an ARIA role main.'
+++++++++++UNKNOWN label='This is an ARIA role main.'

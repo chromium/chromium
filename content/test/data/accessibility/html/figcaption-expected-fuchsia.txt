@@ -1,0 +1,8 @@
+UNKNOWN focusable
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN label='Fig.1 - A green Box'
+++++++++IMAGE label='This is a green box.'
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='Fig.1 - A green Box'
+++++++++++++UNKNOWN label='Fig.1 - A green Box'

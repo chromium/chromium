@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "content/browser/accessibility/accessibility_tree_formatter_fuchsia.h"
+#include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "content/browser/accessibility/browser_accessibility_fuchsia.h"
@@ -10,71 +12,155 @@
 namespace content {
 namespace {
 
+using FuchsiaAction = fuchsia::accessibility::semantics::Action;
+using FuchsiaCheckedState = fuchsia::accessibility::semantics::CheckedState;
+using FuchsiaRole = fuchsia::accessibility::semantics::Role;
+using FuchsiaToggledState = fuchsia::accessibility::semantics::ToggledState;
+
 constexpr const char* const kBoolAttributes[] = {
-    "hidden",
-    "focusable",
-    "has_input_focus",
-    "is_keyboard_key",
+    "hidden", "focusable", "has_input_focus", "is_keyboard_key", "selected",
 };
 
 constexpr const char* const kStringAttributes[] = {
-    "label",
-    "location",
-    "transform",
+    "label",           "actions",       "secondary_label",
+    "value",           "checked_state", "toggled_state",
+    "viewport_offset", "location",      "transform",
 };
 
-std::string FuchsiaRoleToString(
-    const fuchsia::accessibility::semantics::Role role) {
+constexpr const char* const kIntAttributes[] = {
+    "number_of_rows",   "number_of_columns", "row_index",
+    "cell_row_index",   "cell_column_index", "cell_row_span",
+    "cell_column_span",
+};
+
+constexpr const char* const kDoubleAttributes[] = {
+    "min_value",
+    "max_value",
+    "step_delta",
+};
+
+std::string FuchsiaRoleToString(const FuchsiaRole role) {
   switch (role) {
-    case fuchsia::accessibility::semantics::Role::BUTTON:
+    case FuchsiaRole::BUTTON:
       return "BUTTON";
-    case fuchsia::accessibility::semantics::Role::CELL:
+    case FuchsiaRole::CELL:
       return "CELL";
-    case fuchsia::accessibility::semantics::Role::CHECK_BOX:
+    case FuchsiaRole::CHECK_BOX:
       return "CHECK_BOX";
-    case fuchsia::accessibility::semantics::Role::COLUMN_HEADER:
+    case FuchsiaRole::COLUMN_HEADER:
       return "COLUMN_HEADER";
-    case fuchsia::accessibility::semantics::Role::GRID:
+    case FuchsiaRole::GRID:
       return "GRID";
-    case fuchsia::accessibility::semantics::Role::HEADER:
+    case FuchsiaRole::HEADER:
       return "HEADER";
-    case fuchsia::accessibility::semantics::Role::IMAGE:
+    case FuchsiaRole::IMAGE:
       return "IMAGE";
-    case fuchsia::accessibility::semantics::Role::LINK:
+    case FuchsiaRole::LINK:
       return "LINK";
-    case fuchsia::accessibility::semantics::Role::LIST:
+    case FuchsiaRole::LIST:
       return "LIST";
-    case fuchsia::accessibility::semantics::Role::LIST_ELEMENT_MARKER:
+    case FuchsiaRole::LIST_ELEMENT_MARKER:
       return "LIST_ELEMENT_MARKER";
-    case fuchsia::accessibility::semantics::Role::PARAGRAPH:
+    case FuchsiaRole::PARAGRAPH:
       return "PARAGRAPH";
-    case fuchsia::accessibility::semantics::Role::RADIO_BUTTON:
+    case FuchsiaRole::RADIO_BUTTON:
       return "RADIO_BUTTON";
-    case fuchsia::accessibility::semantics::Role::ROW_GROUP:
+    case FuchsiaRole::ROW_GROUP:
       return "ROW_GROUP";
-    case fuchsia::accessibility::semantics::Role::ROW_HEADER:
+    case FuchsiaRole::ROW_HEADER:
       return "ROW_HEADER";
-    case fuchsia::accessibility::semantics::Role::SEARCH_BOX:
+    case FuchsiaRole::SEARCH_BOX:
       return "SEARCH_BOX";
-    case fuchsia::accessibility::semantics::Role::SLIDER:
+    case FuchsiaRole::SLIDER:
       return "SLIDER";
-    case fuchsia::accessibility::semantics::Role::STATIC_TEXT:
+    case FuchsiaRole::STATIC_TEXT:
       return "STATIC_TEXT";
-    case fuchsia::accessibility::semantics::Role::TABLE:
+    case FuchsiaRole::TABLE:
       return "TABLE";
-    case fuchsia::accessibility::semantics::Role::TABLE_ROW:
+    case FuchsiaRole::TABLE_ROW:
       return "TABLE_ROW";
-    case fuchsia::accessibility::semantics::Role::TEXT_FIELD:
+    case FuchsiaRole::TEXT_FIELD:
       return "TEXT_FIELD";
-    case fuchsia::accessibility::semantics::Role::TEXT_FIELD_WITH_COMBO_BOX:
+    case FuchsiaRole::TEXT_FIELD_WITH_COMBO_BOX:
       return "TEXT_FIELD_WITH_COMBO_BOX";
-    case fuchsia::accessibility::semantics::Role::TOGGLE_SWITCH:
+    case FuchsiaRole::TOGGLE_SWITCH:
       return "TOGGLE_SWITCH";
-    case fuchsia::accessibility::semantics::Role::UNKNOWN:
+    case FuchsiaRole::UNKNOWN:
       return "UNKNOWN";
     default:
+      NOTREACHED();
       return std::string();
   }
+}
+
+std::string FuchsiaActionToString(FuchsiaAction action) {
+  switch (action) {
+    case FuchsiaAction::DEFAULT:
+      return "DEFAULT";
+    case FuchsiaAction::DECREMENT:
+      return "DECREMENT";
+    case FuchsiaAction::INCREMENT:
+      return "INCREMENT";
+    case FuchsiaAction::SECONDARY:
+      return "SECONDARY";
+    case FuchsiaAction::SET_FOCUS:
+      return "SET_FOCUS";
+    case FuchsiaAction::SET_VALUE:
+      return "SET_VALUE";
+    case FuchsiaAction::SHOW_ON_SCREEN:
+      return "SHOW_ON_SCREEN";
+    default:
+      NOTREACHED();
+      return std::string();
+  }
+}
+
+std::string FuchsiaActionsToString(const std::vector<FuchsiaAction>& actions) {
+  std::vector<std::string> fuchsia_actions;
+  for (const auto& action : actions) {
+    fuchsia_actions.push_back(FuchsiaActionToString(action));
+  }
+
+  if (fuchsia_actions.empty())
+    return std::string();
+
+  return "{" + base::JoinString(fuchsia_actions, ", ") + "}";
+}
+
+std::string CheckedStateToString(const FuchsiaCheckedState checked_state) {
+  switch (checked_state) {
+    case FuchsiaCheckedState::NONE:
+      return "NONE";
+    case FuchsiaCheckedState::CHECKED:
+      return "CHECKED";
+    case FuchsiaCheckedState::UNCHECKED:
+      return "UNCHECKED";
+    case FuchsiaCheckedState::MIXED:
+      return "MIXED";
+    default:
+      NOTREACHED();
+      return std::string();
+  }
+}
+
+std::string ToggledStateToString(const FuchsiaToggledState toggled_state) {
+  switch (toggled_state) {
+    case FuchsiaToggledState::ON:
+      return "ON";
+    case FuchsiaToggledState::OFF:
+      return "OFF";
+    case FuchsiaToggledState::INDETERMINATE:
+      return "INDETERMINATE";
+    default:
+      NOTREACHED();
+      return std::string();
+  }
+}
+
+std::string ViewportOffsetToString(
+    const fuchsia::ui::gfx::vec2& viewport_offset) {
+  return base::StringPrintf("(%.1f, %.1f)", viewport_offset.x,
+                            viewport_offset.y);
 }
 
 std::string Vec3ToString(const fuchsia::ui::gfx::vec3& vec) {
@@ -104,6 +190,15 @@ AccessibilityTreeFormatterFuchsia::AccessibilityTreeFormatterFuchsia() =
 AccessibilityTreeFormatterFuchsia::~AccessibilityTreeFormatterFuchsia() =
     default;
 
+void AccessibilityTreeFormatterFuchsia::AddDefaultFilters(
+    std::vector<AXPropertyFilter>* property_filters) {
+  // Exclude spatial semantics by default to avoid flakiness.
+  AddPropertyFilter(property_filters, "location", AXPropertyFilter::DENY);
+  AddPropertyFilter(property_filters, "transform", AXPropertyFilter::DENY);
+  AddPropertyFilter(property_filters, "viewport_offset",
+                    AXPropertyFilter::DENY);
+}
+
 base::Value AccessibilityTreeFormatterFuchsia::BuildTree(
     ui::AXPlatformNodeDelegate* root) const {
   CHECK(root);
@@ -128,13 +223,21 @@ void AccessibilityTreeFormatterFuchsia::RecursiveBuildTree(
 
   base::ListValue children;
 
-  for (size_t i = 0; i < node.PlatformChildCount(); ++i) {
-    BrowserAccessibility* child_node = node.PlatformGetChild(i);
+  fuchsia::accessibility::semantics::Node fuchsia_node =
+      static_cast<const BrowserAccessibilityFuchsia&>(node).ToFuchsiaNodeData();
+
+  for (uint32_t child_id : fuchsia_node.child_ids()) {
+    ui::AXPlatformNodeFuchsia* child_node =
+        static_cast<ui::AXPlatformNodeFuchsia*>(
+            ui::AXPlatformNodeBase::GetFromUniqueId(child_id));
     DCHECK(child_node);
+
+    BrowserAccessibilityFuchsia* child_browser_accessibility =
+        static_cast<BrowserAccessibilityFuchsia*>(child_node->GetDelegate());
 
     std::unique_ptr<base::DictionaryValue> child_dict(
         new base::DictionaryValue);
-    RecursiveBuildTree(*child_node, child_dict.get());
+    RecursiveBuildTree(*child_browser_accessibility, child_dict.get());
     children.Append(std::move(child_dict));
   }
   dict->SetKey(kChildrenDictAttr, std::move(children));
@@ -164,12 +267,71 @@ void AccessibilityTreeFormatterFuchsia::AddProperties(
   // Add fuchsia node attributes.
   dict->SetString("role", FuchsiaRoleToString(fuchsia_node.role()));
 
+  dict->SetString("actions", FuchsiaActionsToString(fuchsia_node.actions()));
+
   if (fuchsia_node.has_attributes()) {
     const fuchsia::accessibility::semantics::Attributes& attributes =
         fuchsia_node.attributes();
 
     if (attributes.has_label() && !attributes.label().empty())
       dict->SetString("label", attributes.label());
+
+    if (attributes.has_secondary_label() &&
+        !attributes.secondary_label().empty()) {
+      dict->SetString("secondary_label", attributes.secondary_label());
+    }
+
+    if (attributes.has_range()) {
+      const auto& range_attributes = attributes.range();
+
+      if (range_attributes.has_min_value())
+        dict->SetDouble("min_value", range_attributes.min_value());
+
+      if (range_attributes.has_max_value())
+        dict->SetDouble("max_value", range_attributes.max_value());
+
+      if (range_attributes.has_step_delta())
+        dict->SetDouble("step_delta", range_attributes.step_delta());
+    }
+
+    if (attributes.has_table_attributes()) {
+      const auto& table_attributes = attributes.table_attributes();
+
+      if (table_attributes.has_number_of_rows())
+        dict->SetInteger("number_of_rows", table_attributes.number_of_rows());
+
+      if (table_attributes.has_number_of_columns()) {
+        dict->SetInteger("number_of_columns",
+                         table_attributes.number_of_columns());
+      }
+    }
+
+    if (attributes.has_table_row_attributes()) {
+      const auto& table_row_attributes = attributes.table_row_attributes();
+
+      if (table_row_attributes.has_row_index())
+        dict->SetInteger("row_index", table_row_attributes.row_index());
+    }
+
+    if (attributes.has_table_cell_attributes()) {
+      const auto& table_cell_attributes = attributes.table_cell_attributes();
+
+      if (table_cell_attributes.has_row_index())
+        dict->SetInteger("cell_row_index", table_cell_attributes.row_index());
+
+      if (table_cell_attributes.has_column_index()) {
+        dict->SetInteger("cell_column_index",
+                         table_cell_attributes.column_index());
+      }
+
+      if (table_cell_attributes.has_row_span())
+        dict->SetInteger("cell_row_span", table_cell_attributes.row_span());
+
+      if (table_cell_attributes.has_column_span()) {
+        dict->SetInteger("cell_column_span",
+                         table_cell_attributes.column_span());
+      }
+    }
 
     if (attributes.has_is_keyboard_key())
       dict->SetBoolean("is_keyboard_key", attributes.is_keyboard_key());
@@ -179,8 +341,29 @@ void AccessibilityTreeFormatterFuchsia::AddProperties(
     const fuchsia::accessibility::semantics::States& states =
         fuchsia_node.states();
 
+    if (states.has_selected())
+      dict->SetBoolean("selected", states.selected());
+
+    if (states.has_checked_state()) {
+      dict->SetString("checked_state",
+                      CheckedStateToString(states.checked_state()));
+    }
+
     if (states.has_hidden())
       dict->SetBoolean("hidden", states.hidden());
+
+    if (states.has_value() && !states.value().empty())
+      dict->SetString("value", states.value());
+
+    if (states.has_viewport_offset()) {
+      dict->SetString("viewport_offset",
+                      ViewportOffsetToString(states.viewport_offset()));
+    }
+
+    if (states.has_toggled_state()) {
+      dict->SetString("toggled_state",
+                      ToggledStateToString(states.toggled_state()));
+    }
 
     if (states.has_focusable())
       dict->SetBoolean("focusable", states.focusable());
@@ -196,8 +379,6 @@ void AccessibilityTreeFormatterFuchsia::AddProperties(
     dict->SetString("transform",
                     Mat4ToString(fuchsia_node.node_to_container_transform()));
   }
-
-  // TODO(fuchsia:88125): Add more fields.
 }
 
 std::string AccessibilityTreeFormatterFuchsia::ProcessTreeForOutput(
@@ -230,11 +411,27 @@ std::string AccessibilityTreeFormatterFuchsia::ProcessTreeForOutput(
     if (!node.GetString(string_attribute, &value) || value.empty())
       continue;
 
-    bool include_by_default = strcmp(string_attribute, "transform") &&
-                              strcmp(string_attribute, "location");
     WriteAttribute(
-        include_by_default,
+        /*include_by_default=*/true,
         base::StringPrintf("%s='%s'", string_attribute, value.c_str()), &line);
+  }
+
+  for (unsigned i = 0; i < base::size(kIntAttributes); i++) {
+    const char* attribute_name = kIntAttributes[i];
+    int value = node.FindIntKey(attribute_name).value_or(0);
+    if (value == 0)
+      continue;
+    WriteAttribute(true, base::StringPrintf("%s=%d", attribute_name, value),
+                   &line);
+  }
+
+  for (unsigned i = 0; i < base::size(kDoubleAttributes); i++) {
+    const char* attribute_name = kDoubleAttributes[i];
+    int value = node.FindIntKey(attribute_name).value_or(0);
+    if (value == 0)
+      continue;
+    WriteAttribute(true, base::StringPrintf("%s=%d", attribute_name, value),
+                   &line);
   }
 
   return line;

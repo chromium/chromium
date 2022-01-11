@@ -1,0 +1,5 @@
+UNKNOWN focusable
+++UNKNOWN hidden
+++++UNKNOWN focusable label='Done' actions='{DEFAULT}'
+++++++UNKNOWN actions='{DEFAULT}'
+++++++UNKNOWN actions='{DEFAULT}'

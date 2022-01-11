@@ -1,0 +1,10 @@
+UNKNOWN focusable
+++UNKNOWN hidden
+++++UNKNOWN
+++++++TEXT_FIELD_WITH_COMBO_BOX focusable actions='{DEFAULT, SET_VALUE}'
+++++++++UNKNOWN hidden
+++++++++++UNKNOWN hidden
+++++++++++++UNKNOWN
+++++++++++UNKNOWN hidden
+++++++++++++UNKNOWN hidden
+++++++++++++++STATIC_TEXT hidden label='%E2%96%BE'

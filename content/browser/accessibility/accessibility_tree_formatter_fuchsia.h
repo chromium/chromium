@@ -27,6 +27,8 @@ class CONTENT_EXPORT AccessibilityTreeFormatterFuchsia
   base::Value BuildTree(ui::AXPlatformNodeDelegate* root) const override;
   base::Value BuildTreeForSelector(const AXTreeSelector&) const override;
   base::Value BuildNode(ui::AXPlatformNodeDelegate* node) const override;
+  void AddDefaultFilters(
+      std::vector<AXPropertyFilter>* property_filters) override;
 
  private:
   void RecursiveBuildTree(const BrowserAccessibility& node,

@@ -1,0 +1,19 @@
+UNKNOWN focusable
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN
+++++++++UNKNOWN
+++++++++++UNKNOWN label='%E2%80%A2 '
+++++++++++++STATIC_TEXT hidden label='%E2%80%A2 '
+++++++++++STATIC_TEXT label='Item 1'
+++++++++++++UNKNOWN label='Item 1'
+++++++++UNKNOWN
+++++++++++UNKNOWN label='%E2%80%A2 '
+++++++++++++STATIC_TEXT hidden label='%E2%80%A2 '
+++++++++++STATIC_TEXT label='Item 2'
+++++++++++++UNKNOWN label='Item 2'
+++++++++UNKNOWN
+++++++++++UNKNOWN label='%E2%80%A2 '
+++++++++++++STATIC_TEXT hidden label='%E2%80%A2 '
+++++++++++STATIC_TEXT label='Item 3'
+++++++++++++UNKNOWN label='Item 3'
