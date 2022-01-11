@@ -5042,11 +5042,6 @@
     "expiry_milestone": 96
   },
   {
-    "name": "settings-landing-page-redesign",
-    "owners": [ "dpapad@chromium.org", "johntlee@chromium.org" ],
-    "expiry_milestone": 95
-  },
-  {
     "name": "share-button-in-top-toolbar",
     "owners": [ "jeffreycohen", "chrome-sharing-eng@google.com" ],
     "expiry_milestone": 92
