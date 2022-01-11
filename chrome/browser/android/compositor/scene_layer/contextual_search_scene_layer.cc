@@ -218,15 +218,46 @@ void ContextualSearchSceneLayer::FetchThumbnail(
 
   GURL gurl(thumbnail_url_);
   Profile* profile = ProfileAndroid::FromProfileAndroid(j_profile);
+  // Semantic details for this "Thumbnail" request.
+  // The URLs processed access gstatic.com, which is considered a Google-owned
+  // service.
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("contextual_search_thumbnail",
+                                          R"(
+            semantics {
+              sender: "Contextual Search"
+              description:
+                "This request is for a thumbnail image to show in the "
+                "Contextual Search bottom sheet for an entity or similar "
+                "object identified by the selected text."
+              trigger:
+                "Triggered by a server response to the "
+                "contextual_search_resolve request which contains a thumbnail "
+                "URL."
+              data:
+                "The URL of the thumbnail."
+              destination: GOOGLE_OWNED_SERVICE
+            }
+            policy {
+              cookies_allowed: NO
+              setting:
+                "This feature can be disabled by turning off 'Touch to Search' "
+                "in Chrome for Android settings."
+              chrome_policy {
+                ContextualSearchEnabled {
+                    policy_options {mode: MANDATORY}
+                    ContextualSearchEnabled: false
+                }
+              }
+            })");
   network::mojom::URLLoaderFactory* loader_factory =
       profile->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess()
           .get();
-  fetcher_ =
-      std::make_unique<BitmapFetcher>(gurl, this, MISSING_TRAFFIC_ANNOTATION);
+  fetcher_ = std::make_unique<BitmapFetcher>(gurl, this, traffic_annotation);
   fetcher_->Init(
       net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
-      network::mojom::CredentialsMode::kInclude);
+      network::mojom::CredentialsMode::kOmit);
   fetcher_->Start(loader_factory);
 }
 

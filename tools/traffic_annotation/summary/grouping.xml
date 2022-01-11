@@ -24,7 +24,6 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="chime_sdk"/>
       <traffic_annotation unique_id="chrome_android_hats"/>
       <traffic_annotation unique_id="chrome_variations_android"/>
-      <traffic_annotation unique_id="contextual_search_resolve"/>
       <traffic_annotation unique_id="customtabs_parallel_request"/>
       <traffic_annotation unique_id="download_bitmap"/>
       <traffic_annotation unique_id="download_manager_service_retry"/>
@@ -392,6 +391,10 @@ hidden="true" so that these annotations don't show up in the document.
       <traffic_annotation unique_id="omnibox_zerosuggest"/>
       <traffic_annotation unique_id="one_google_bar_service"/>
       <traffic_annotation unique_id="search_prefetch_service"/>
+    </sender>
+    <sender name="Contextual Search">
+      <traffic_annotation unique_id="contextual_search_resolve"/>
+      <traffic_annotation unique_id="contextual_search_thumbnail"/>
     </sender>
   </group>
   <group name="Updates, Recovery, and Crash Reports">

@@ -177,7 +177,8 @@ void ContextualSearchDelegate::ResolveSearchTermFromContext() {
                "data to Google and the response identifies what to search for "
                "plus additional actionable information."
             trigger:
-              "Triggered by an unhandled tap on plain text on most pages."
+              "Triggered by an unhandled tap or touch and hold gesture on "
+              "plain text on most pages."
             data:
               "The URL and some page content from the current tab."
             destination: GOOGLE_OWNED_SERVICE
