@@ -193,3 +193,18 @@ interface ThemeProvider {
   // Disables or enables dark color mode.
   SetColorModePref(bool dark_mode_enabled);
 };
+
+// Contains information about the current user.
+struct UserInfo {
+  // The display email of the user.
+  string email;
+
+  // The display name of the user.
+  string name;
+};
+
+// Provides APIs to view information about the current user.
+interface UserProvider {
+  // Return information about the current user.
+  GetUserInfo() => (UserInfo user_info);
+};

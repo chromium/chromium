@@ -18,6 +18,8 @@ import {WallpaperImage} from './personalization_app.mojom-webui.js';
 import {PersonalizationState} from './personalization_state.js';
 import {themeReducers} from './theme/theme_reducers.js';
 import {ThemeState} from './theme/theme_state.js';
+import {userReducers} from './user/user_reducers.js';
+import {UserState} from './user/user_state.js';
 import {WallpaperActionName} from './wallpaper/wallpaper_actions.js';
 import {wallpaperReducers} from './wallpaper/wallpaper_reducers.js';
 import {WallpaperState} from './wallpaper/wallpaper_state.js';
@@ -96,9 +98,10 @@ function errorReducer(
 }
 
 const root = combineReducers<PersonalizationState>({
-  theme: combineReducers<ThemeState>(themeReducers),
-  wallpaper: combineReducers<WallpaperState>(wallpaperReducers),
   error: errorReducer,
+  theme: combineReducers<ThemeState>(themeReducers),
+  user: combineReducers<UserState>(userReducers),
+  wallpaper: combineReducers<WallpaperState>(wallpaperReducers),
 });
 
 export function reduce(

@@ -14,6 +14,7 @@ import {PersonalizationMainTest} from './personalization_main_element_test.js';
 import {PersonalizationRouterTest} from './personalization_router_element_test.js';
 import {PersonalizationThemeTest} from './personalization_theme_element_test.js';
 import {PersonalizationToastTest} from './personalization_toast_element_test.js';
+import {UserPreviewTest} from './user_preview_element_test.js';
 import {UserSubpageTest} from './user_subpage_element_test.js';
 import {WallpaperCollectionsTest} from './wallpaper_collections_element_test.js';
 import {WallpaperFullscreenTest} from './wallpaper_fullscreen_element_test.js';
@@ -36,6 +37,7 @@ const testCases = [
   PersonalizationRouterTest,
   PersonalizationThemeTest,
   PersonalizationToastTest,
+  UserPreviewTest,
   UserSubpageTest,
   WallpaperCollectionsTest,
   WallpaperFullscreenTest,

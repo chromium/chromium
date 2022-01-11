@@ -5,6 +5,7 @@
 import {Action} from 'chrome://resources/js/cr/ui/store.js';
 
 import {ThemeActions} from './theme/theme_actions.js';
+import {UserActions} from './user/user_actions.js';
 import {WallpaperActions} from './wallpaper/wallpaper_actions.js';
 
 /**
@@ -25,4 +26,5 @@ export function dismissErrorAction(): DismissErrorAction {
   return {name: PersonalizationActionName.DISMISS_ERROR};
 }
 
-export type Actions = ThemeActions|WallpaperActions|DismissErrorAction;
+export type Actions =
+    ThemeActions|UserActions|WallpaperActions|DismissErrorAction;

@@ -4,6 +4,9 @@
 
 #include "ash/webui/personalization_app/mojom/personalization_app_mojom_traits.h"
 
+#include <string>
+
+#include "ash/public/cpp/personalization_app/user_display_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
@@ -231,6 +234,27 @@ bool StructTraits<ash::personalization_app::mojom::WallpaperImageDataView,
   if (!image_url.is_valid())
     return true;
   return false;
+}
+
+const std::string&
+StructTraits<ash::personalization_app::mojom::UserInfoDataView,
+             ash::personalization_app::UserDisplayInfo>::
+    email(const ash::personalization_app::UserDisplayInfo& user_display_info) {
+  return user_display_info.email;
+}
+
+const std::string&
+StructTraits<ash::personalization_app::mojom::UserInfoDataView,
+             ash::personalization_app::UserDisplayInfo>::
+    name(const ash::personalization_app::UserDisplayInfo& user_display_info) {
+  return user_display_info.name;
+}
+
+bool StructTraits<ash::personalization_app::mojom::UserInfoDataView,
+                  ash::personalization_app::UserDisplayInfo>::
+    Read(ash::personalization_app::mojom::UserInfoDataView data,
+         ash::personalization_app::UserDisplayInfo* out) {
+  return data.ReadEmail(&out->email) && data.ReadName(&out->name);
 }
 
 }  // namespace mojo

@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview a singleton getter for the mojom interface used in
- * the Personalization SWA. Also contains utility functions around fetching
- * mojom data and mocking out the implementation for testing.
+ * @fileoverview a singleton getter for the wallpaper mojom interface used in
+ * the Personalization SWA. Also contains utility function for mocking out the
+ * implementation for testing.
  */
 
 import 'chrome://resources/mojo/mojo/public/js/bindings.js';

@@ -14,6 +14,7 @@ static_library("personalization_app") {
     "personalization_app_ui.h",
     "personalization_app_url_constants.cc",
     "personalization_app_url_constants.h",
+    "personalization_app_user_provider.h",
     "personalization_app_wallpaper_provider.h",
     "untrusted_personalization_app_ui_config.cc",
     "untrusted_personalization_app_ui_config.h",
@@ -49,6 +50,8 @@ source_set("browser_test_support") {
   sources = [
     "test/fake_personalization_app_theme_provider.cc",
     "test/fake_personalization_app_theme_provider.h",
+    "test/fake_personalization_app_user_provider.cc",
+    "test/fake_personalization_app_user_provider.h",
     "test/fake_personalization_app_wallpaper_provider.cc",
     "test/fake_personalization_app_wallpaper_provider.h",
     "test/personalization_app_browsertest_fixture.cc",

@@ -9,6 +9,7 @@
 #include "ash/webui/personalization_app/personalization_app_ui.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
 #include "ash/webui/personalization_app/test/fake_personalization_app_theme_provider.h"
+#include "ash/webui/personalization_app/test/fake_personalization_app_user_provider.h"
 #include "ash/webui/personalization_app/test/fake_personalization_app_wallpaper_provider.h"
 #include "chrome/test/base/mojo_web_ui_browser_test.h"
 
@@ -19,8 +20,11 @@ TestPersonalizationAppWebUIProvider::NewWebUI(content::WebUI* web_ui,
       std::make_unique<FakePersonalizationAppThemeProvider>(web_ui);
   auto wallpaper_provider =
       std::make_unique<FakePersonalizationAppWallpaperProvider>(web_ui);
+  auto user_provider =
+      std::make_unique<ash::FakePersonalizationAppUserProvider>(web_ui);
   return std::make_unique<ash::PersonalizationAppUI>(
-      web_ui, std::move(theme_provider), std::move(wallpaper_provider));
+      web_ui, std::move(theme_provider), std::move(user_provider),
+      std::move(wallpaper_provider));
 }
 
 void PersonalizationAppBrowserTestFixture::SetUpOnMainThread() {

@@ -48,6 +48,39 @@ class PersonalizationAppBrowserTest extends testing.Test {
   }
 }
 
+/**
+ * Wait until |func| returns true.
+ * If |timeoutMs| milliseconds elapse, will reject with |message|.
+ * Polls every |intervalMs| milliseconds.
+ */
+function waitUntil(func, message, intervalMs = 50, timeoutMs = 1001) {
+  let rejectTimer = null;
+  let pollTimer = null;
+
+  function cleanup() {
+    if (rejectTimer) {
+      window.clearTimeout(rejectTimer);
+    }
+    if (pollTimer) {
+      window.clearInterval(pollTimer);
+    }
+  }
+
+  return new Promise((resolve, reject) => {
+    rejectTimer = window.setTimeout(() => {
+      cleanup();
+      reject(message);
+    }, timeoutMs);
+
+    pollTimer = window.setInterval(() => {
+      if (func()) {
+        cleanup();
+        resolve();
+      }
+    }, intervalMs);
+  });
+}
+
 // TODO(crbug/1262025) revisit this workaround for js2gtest requiring "var"
 // declarations.
 this[PersonalizationAppBrowserTest.name] = PersonalizationAppBrowserTest;
@@ -76,6 +109,21 @@ TEST_F('PersonalizationAppBrowserTest', 'ShowsThemeButtons', () => {
   const darkButton = theme.shadowRoot.getElementById('darkMode');
   assertTrue(!!darkButton);
   assertEquals(darkButton.getAttribute('aria-pressed'), 'false');
+  testDone();
+});
+
+TEST_F('PersonalizationAppBrowserTest', 'ShowsUserInfo', async () => {
+  const preview = document.querySelector('personalization-router')
+                      .shadowRoot.querySelector('personalization-main')
+                      .shadowRoot.querySelector('user-preview');
+
+  await waitUntil(
+      () => preview.shadowRoot.getElementById('email'),
+      'failed to find user email');
+  assertEquals(
+      'fake-email', preview.shadowRoot.getElementById('email').innerText);
+  assertEquals(
+      'Fake Name', preview.shadowRoot.getElementById('name').innerText);
   testDone();
 });
 
