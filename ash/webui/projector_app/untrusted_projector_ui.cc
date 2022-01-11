@@ -14,8 +14,6 @@
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
-#include "ui/resources/grit/webui_generated_resources.h"
-#include "ui/resources/grit/webui_generated_resources_map.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(ENABLE_CROS_MEDIA_APP)
@@ -38,11 +36,6 @@ content::WebUIDataSource* CreateProjectorHTMLSource(
       base::make_span(kChromeosProjectorAppBundleResources,
                       kChromeosProjectorAppBundleResourcesSize));
   source->AddResourcePath("", IDR_ASH_PROJECTOR_APP_UNTRUSTED_APP_INDEX_HTML);
-
-  // Allows WebUI resources like Polymer and PostMessageAPI to be accessible
-  // inside the untrusted iframe.
-  source->AddResourcePaths(
-      base::make_span(kWebuiGeneratedResources, kWebuiGeneratedResourcesSize));
 
 #if BUILDFLAG(ENABLE_CROS_MEDIA_APP)
   // Loads WASM resources shipped to Chromium by chrome://media-app.

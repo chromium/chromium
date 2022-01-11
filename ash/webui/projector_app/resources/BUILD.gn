@@ -10,10 +10,6 @@ assert(is_chromeos_ash, "Projector is ChromeOS only")
 
 js_type_check("closure_compile") {
   is_polymer3 = true
-  closure_flags = default_closure_args + [
-                    "browser_resolver_prefix_replacements=\"chrome-untrusted://projector/js/post_message_api_client.m.js=./js/post_message_api_client.m.js\"",
-                    "browser_resolver_prefix_replacements=\"chrome-untrusted://projector/js/post_message_api_request_handler.m.js=./js/post_message_api_request_handler.m.js\"",
-                  ]
   deps = [
     ":message_types",
     ":projector_browser_proxy",
