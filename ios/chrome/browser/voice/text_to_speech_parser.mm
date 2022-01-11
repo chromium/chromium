@@ -8,7 +8,6 @@
 #include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/values.h"
-#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/web_state.h"

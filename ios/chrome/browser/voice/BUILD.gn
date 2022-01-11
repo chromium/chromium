@@ -71,7 +71,6 @@ source_set("tts") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
     "//ios/web",
-    "//ios/web/public/deprecated",
     "//ios/web/public/js_messaging:js_messaging",
     "//net",
     "//url",

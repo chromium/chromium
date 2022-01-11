@@ -15,7 +15,6 @@
 #include "components/google/core/common/google_util.h"
 #include "ios/chrome/browser/reading_list/favicon_web_state_dispatcher_impl.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
-#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
 #import "ios/web/public/js_messaging/web_frame.h"
 #import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/navigation/navigation_item.h"

@@ -49,7 +49,6 @@ source_set("reading_list") {
     "//ios/chrome/common",
     "//ios/components/webui:url_constants",
     "//ios/web/public",
-    "//ios/web/public/deprecated",
     "//ios/web/public/js_messaging:js_messaging",
     "//ios/web/public/security",
     "//net",
