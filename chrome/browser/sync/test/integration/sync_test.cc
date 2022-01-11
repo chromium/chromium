@@ -995,17 +995,12 @@ void SyncTest::TearDownOnMainThread() {
   // Closing all browsers created by this test. The calls here block until
   // they are closed. Other browsers created outside SyncTest setup should be
   // closed by the creator of that browser.
-  const size_t initial_total_browser_count = chrome::GetTotalBrowserCount();
-  size_t closed_browser_count = 0;
   for (Browser* browser : browsers_) {
     if (browser) {
       CloseBrowserSynchronously(browser);
-      closed_browser_count++;
     }
   }
   browsers_.clear();
-  ASSERT_EQ(chrome::GetTotalBrowserCount(),
-            initial_total_browser_count - closed_browser_count);
 #endif
   PlatformBrowserTest::TearDownOnMainThread();
 }
