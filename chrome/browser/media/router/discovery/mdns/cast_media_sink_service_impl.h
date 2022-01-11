@@ -100,6 +100,18 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
 
   void BindLogger(mojo::PendingRemote<mojom::Logger> pending_remote);
 
+  // Opens cast channel. This method will not open a channel if there is already
+  // a pending request for |ip_endpoint|, or if a channel for |ip_endpoint|
+  // already exists.
+  // |cast_sink|: Cast sink created from mDNS service description or DIAL sink.
+  // |backoff_entry|: backoff entry passed to |OnChannelOpened| callback.
+  void OpenChannel(const MediaSinkInternal& cast_sink,
+                   std::unique_ptr<net::BackoffEntry> backoff_entry,
+                   SinkSource sink_source);
+
+  // Check to see if the given cast sink exists the sinks_.
+  bool HasSink(const MediaSink::Id& sink_id);
+
  private:
   friend class CastMediaSinkServiceImplTest;
   FRIEND_TEST_ALL_PREFIXES(CastMediaSinkServiceImplTest,
@@ -159,6 +171,7 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
                            TestFailureOnChannelErrorRetry);
   FRIEND_TEST_ALL_PREFIXES(CastMediaSinkServiceImplTest,
                            OpenChannelNewIPSameSink);
+  FRIEND_TEST_ALL_PREFIXES(CastMediaSinkServiceImplTest, TestHasSink);
 
   // Holds parameters controlling Cast channel retry strategy.
   struct RetryParams {
@@ -222,15 +235,6 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
   // |sink|: Sink to open cast channel to.
   cast_channel::CastSocketOpenParams CreateCastSocketOpenParams(
       const MediaSinkInternal& sink);
-
-  // Opens cast channel. This method will not open a channel if there is already
-  // a pending request for |ip_endpoint|, or if a channel for |ip_endpoint|
-  // already exists.
-  // |cast_sink|: Cast sink created from mDNS service description or DIAL sink.
-  // |backoff_entry|: backoff entry passed to |OnChannelOpened| callback.
-  void OpenChannel(const MediaSinkInternal& cast_sink,
-                   std::unique_ptr<net::BackoffEntry> backoff_entry,
-                   SinkSource sink_source);
 
   // Invoked when opening cast channel on IO thread completes.
   // |cast_sink|: Cast sink created from mDNS service description or DIAL sink.

@@ -196,6 +196,8 @@ if (!is_android) {
     deps = [
       "discovery",
       "//chrome/test:test_support",
+      "//components/cast_channel:cast_channel",
+      "//components/cast_channel:test_support",
       "//components/media_router/browser:test_support",
       "//components/media_router/common:test_support",
       "//components/media_router/common/mojom:media_router",
@@ -204,6 +206,8 @@ if (!is_android) {
     ]
     public_deps = [ ":router" ]
     sources = [
+      "discovery/mdns/cast_media_sink_service_test_helpers.cc",
+      "discovery/mdns/cast_media_sink_service_test_helpers.h",
       "providers/test/test_media_route_provider.cc",
       "providers/test/test_media_route_provider.h",
       "test/media_router_mojo_test.cc",

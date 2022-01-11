@@ -72,7 +72,7 @@ class AccessCodeCastUI : public ui::MojoWebDialogUI,
       mojo::PendingReceiver<access_code_cast::mojom::PageHandler> page_handler)
       override;
 
-  std::unique_ptr<AccessCodeCastHandler> page_handler_;
+  std::unique_ptr<media_router::AccessCodeCastHandler> page_handler_;
   mojo::Receiver<access_code_cast::mojom::PageHandlerFactory> factory_receiver_{
       this};
 

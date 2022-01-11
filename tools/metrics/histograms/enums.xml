@@ -58785,6 +58785,7 @@ Called by update_use_counter_css.py.-->
   <int value="4" label="First by mDNS, then by DIAL"/>
   <int value="5" label="First by DIAL, then by mDNS"/>
   <int value="6" label="Connection retry on error"/>
+  <int value="7" label="Added by access code"/>
 </enum>
 
 <enum name="MediaRouterCreateRouteOutcome">

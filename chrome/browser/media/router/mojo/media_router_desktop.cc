@@ -181,7 +181,7 @@ void MediaRouterDesktop::InitializeCastMediaRouteProvider() {
           new CastMediaRouteProvider(
               cast_provider_remote.InitWithNewPipeAndPassReceiver(),
               std::move(media_router_remote),
-              media_sink_service_->GetCastMediaSinkServiceImpl(),
+              media_sink_service_->GetCastMediaSinkServiceBase(),
               media_sink_service_->cast_app_discovery_service(),
               GetCastMessageHandler(), GetHashToken(), task_runner),
           base::OnTaskRunnerDeleter(task_runner));

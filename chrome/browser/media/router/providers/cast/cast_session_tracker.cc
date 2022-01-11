@@ -21,7 +21,7 @@ CastSessionTracker* CastSessionTracker::GetInstance() {
     return instance_for_test_;
 
   static CastSessionTracker* instance = new CastSessionTracker(
-      DualMediaSinkService::GetInstance()->GetCastMediaSinkServiceImpl(),
+      DualMediaSinkService::GetInstance()->GetCastMediaSinkServiceBase(),
       GetCastMessageHandler(),
       cast_channel::CastSocketService::GetInstance()->task_runner());
   return instance;

@@ -23,7 +23,8 @@ namespace media_router {
 
 namespace {
 
-uint8_t ConvertDeviceCapabilitiesToInt(DeviceCapabilities proto) {
+uint8_t ConvertDeviceCapabilitiesToInt(
+    chrome_browser_media::proto::DeviceCapabilities proto) {
   // Meaning of capacity value for each bit:
   // NONE: 0,
   // VIDEO_OUT: 1 << 0,

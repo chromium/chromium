@@ -5,13 +5,25 @@
 #include "chrome/browser/ui/webui/access_code_cast/access_code_cast_handler.h"
 
 #include "base/test/bind.h"
+#include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/test_mock_time_task_runner.h"
+#include "base/test/test_simple_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_test_util.h"
+#include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_impl.h"
+#include "chrome/browser/media/router/discovery/mdns/cast_media_sink_service_test_helpers.h"
+#include "chrome/browser/media/router/providers/cast/cast_session_tracker.h"
+#include "chrome/browser/media/router/providers/cast/dual_media_sink_service.h"
+#include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "components/cast_channel/cast_socket.h"
+#include "components/cast_channel/cast_socket_service.h"
+#include "components/cast_channel/cast_test_util.h"
+#include "components/media_router/common/test/test_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -20,8 +32,13 @@
 using DiscoveryDevice = chrome_browser_media::proto::DiscoveryDevice;
 using access_code_cast::mojom::AddSinkResultCode;
 using MockAddSinkCallback =
-    base::MockCallback<AccessCodeCastHandler::AddSinkCallback>;
+    base::MockCallback<media_router::AccessCodeCastHandler::AddSinkCallback>;
 using ::testing::_;
+using ::testing::InvokeWithoutArgs;
+
+// TODO(b/213324920): Remove WebUI from the media_router namespace after
+// expiration module has been completed.
+namespace media_router {
 
 namespace {
 class MockPage : public access_code_cast::mojom::Page {
@@ -35,19 +52,36 @@ class MockPage : public access_code_cast::mojom::Page {
   }
   mojo::Receiver<access_code_cast::mojom::Page> receiver_{this};
 };
+
 }  // namespace
 
 class AccessCodeCastHandlerTest : public testing::Test {
  protected:
   AccessCodeCastHandlerTest()
-      : profile_manager_(TestingBrowserProcess::GetGlobal()) {}
+      : mock_time_task_runner_(new base::TestMockTimeTaskRunner()),
+        mock_cast_socket_service_(
+            new cast_channel::MockCastSocketService(mock_time_task_runner_)),
+        message_handler_(mock_cast_socket_service_.get()),
+        session_tracker_(
+            new CastSessionTracker(&dual_media_sink_service_,
+                                   &message_handler_,
+                                   mock_cast_socket_service_->task_runner())),
+        profile_manager_(TestingBrowserProcess::GetGlobal()),
+        mock_cast_media_sink_service_impl_(
+            new MockCastMediaSinkServiceImpl(mock_sink_discovered_cb_.Get(),
+                                             mock_cast_socket_service_.get(),
+                                             discovery_network_monitor_.get(),
+                                             &dual_media_sink_service_)) {
+    mock_cast_socket_service_->SetTaskRunnerForTest(mock_time_task_runner_);
+  }
 
   void SetUp() override {
     ASSERT_TRUE(profile_manager_.SetUp());
     handler_ = std::make_unique<AccessCodeCastHandler>(
         mojo::PendingReceiver<access_code_cast::mojom::PageHandler>(),
         page_.BindAndGetRemote(),
-        profile_manager()->CreateTestingProfile("foo_email"));
+        profile_manager()->CreateTestingProfile("foo_email"),
+        mock_cast_media_sink_service_impl_.get());
   }
   void TearDown() override { handler_.reset(); }
   AccessCodeCastHandler* handler() { return handler_.get(); }
@@ -55,11 +89,35 @@ class AccessCodeCastHandlerTest : public testing::Test {
   TestingProfileManager* profile_manager() { return &profile_manager_; }
 
  private:
-  std::unique_ptr<AccessCodeCastHandler> handler_;
   // Everything must be called on Chrome_UIThread.
   content::BrowserTaskEnvironment task_environment_;
+
+  scoped_refptr<base::TestMockTimeTaskRunner> mock_time_task_runner_;
+
+  static std::vector<DiscoveryNetworkInfo> GetFakeNetworkInfo() {
+    return {
+        DiscoveryNetworkInfo{std::string("enp0s2"), std::string("ethernet1")}};
+    ;
+  }
+
+  std::unique_ptr<DiscoveryNetworkMonitor> discovery_network_monitor_ =
+      DiscoveryNetworkMonitor::CreateInstanceForTest(&GetFakeNetworkInfo);
+
+  std::unique_ptr<AccessCodeCastHandler> handler_;
+
+  base::MockCallback<OnSinksDiscoveredCallback> mock_sink_discovered_cb_;
+
+  TestMediaSinkService dual_media_sink_service_;
+  std::unique_ptr<cast_channel::MockCastSocketService>
+      mock_cast_socket_service_;
+
+  testing::NiceMock<cast_channel::MockCastMessageHandler> message_handler_;
+  std::unique_ptr<media_router::CastSessionTracker> session_tracker_;
   testing::StrictMock<MockPage> page_;
   TestingProfileManager profile_manager_;
+
+  std::unique_ptr<MockCastMediaSinkServiceImpl>
+      mock_cast_media_sink_service_impl_;
 };
 
 TEST_F(AccessCodeCastHandlerTest, DiscoveryDeviceMissingWithOk) {
@@ -84,6 +142,9 @@ TEST_F(AccessCodeCastHandlerTest, ValidDiscoveryDeviceAndCode) {
   handler()->SetSinkCallbackForTesting(mock_callback.Get());
   handler()->OnAccessCodeValidated(discovery_device_proto,
                                    AddSinkResultCode::OK);
+
+  MediaSinkInternal cast_sink1 = CreateCastSink(1);
+  handler()->HandleSinkPresentInMediaRouter(cast_sink1, true);
 }
 
 TEST_F(AccessCodeCastHandlerTest, InvalidDiscoveryDevice) {
@@ -111,3 +172,4 @@ TEST_F(AccessCodeCastHandlerTest, NonOKResultCode) {
   handler()->OnAccessCodeValidated(absl::nullopt,
                                    AddSinkResultCode::AUTH_ERROR);
 }
+}  // namespace media_router

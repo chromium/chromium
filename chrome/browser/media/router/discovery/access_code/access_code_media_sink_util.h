@@ -13,7 +13,6 @@ namespace media_router {
 
 using DiscoveryDevice = chrome_browser_media::proto::DiscoveryDevice;
 using NetworkInfo = chrome_browser_media::proto::NetworkInfo;
-using DeviceCapabilities = chrome_browser_media::proto::DeviceCapabilities;
 
 // Creates a MediaSinkInternal from |discovery_device|. |cast_sink| is only
 // valid if the returned result is |kOk|.

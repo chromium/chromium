@@ -5294,6 +5294,8 @@ test("unit_tests") {
     "//components/browsing_data/core",
     "//components/captive_portal/content",
     "//components/captive_portal/core:buildflags",
+    "//components/cast_channel:cast_channel",
+    "//components/cast_channel:test_support",
     "//components/component_updater:test_support",
     "//components/content_settings/browser",
     "//components/content_settings/browser:test_support",

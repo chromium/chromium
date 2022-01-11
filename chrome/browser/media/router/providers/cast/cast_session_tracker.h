@@ -65,6 +65,7 @@ class CastSessionTracker : public MediaSinkServiceBase::Observer,
   friend class CastActivityManagerTest;
   friend class CastMediaRouteProviderTest;
   friend class CastActivityTestBase;
+  friend class AccessCodeCastHandlerTest;
 
   // Use |GetInstance()| instead.
   CastSessionTracker(

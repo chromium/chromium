@@ -719,4 +719,8 @@ void CastMediaSinkServiceImpl::BindLogger(
   logger_.reset_on_disconnect();
 }
 
+bool CastMediaSinkServiceImpl::HasSink(const MediaSink::Id& sink_id) {
+  return base::Contains(GetSinks(), sink_id);
+}
+
 }  // namespace media_router

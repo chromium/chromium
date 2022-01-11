@@ -1355,6 +1355,16 @@ TEST_P(CastMediaSinkServiceImplTest, BindLogger) {
   media_sink_service_impl_.BindLogger(std::move(pending_remote_3));
 }
 
+TEST_P(CastMediaSinkServiceImplTest, TestHasSink) {
+  MediaSinkInternal cast_sink1 = CreateCastSink(1);
+  MediaSinkInternal cast_sink2 = CreateCastSink(2);
+
+  media_sink_service_impl_.AddOrUpdateSink(cast_sink1);
+
+  EXPECT_TRUE(media_sink_service_impl_.HasSink(cast_sink1.id()));
+  EXPECT_FALSE(media_sink_service_impl_.HasSink(cast_sink2.id()));
+}
+
 INSTANTIATE_TEST_SUITE_P(DialMediaSinkServiceEnabled,
                          CastMediaSinkServiceImplTest,
                          testing::Bool());

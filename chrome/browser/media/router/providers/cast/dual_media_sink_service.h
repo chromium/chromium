@@ -24,6 +24,7 @@ namespace media_router {
 
 class CastAppDiscoveryService;
 class CastMediaSinkService;
+class CastMediaSinkServiceImpl;
 class DialMediaSinkService;
 class DialMediaSinkServiceImpl;
 class MediaSinkServiceBase;
@@ -54,7 +55,9 @@ class DualMediaSinkService {
   DialMediaSinkServiceImpl* GetDialMediaSinkServiceImpl();
 
   // Used by CastMediaRouteProvider only.
-  MediaSinkServiceBase* GetCastMediaSinkServiceImpl();
+  MediaSinkServiceBase* GetCastMediaSinkServiceBase();
+
+  CastMediaSinkServiceImpl* GetCastMediaSinkServiceImpl();
 
   CastAppDiscoveryService* cast_app_discovery_service() {
     return cast_app_discovery_service_.get();
@@ -95,10 +98,18 @@ class DualMediaSinkService {
 
  private:
   friend class DualMediaSinkServiceTest;
+  friend class AccessCodeCastHandlerTest;
+
   FRIEND_TEST_ALL_PREFIXES(DualMediaSinkServiceTest,
                            AddSinksDiscoveredCallback);
   FRIEND_TEST_ALL_PREFIXES(DualMediaSinkServiceTest,
                            AddSinksDiscoveredCallbackAfterDiscovery);
+  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastHandlerTest,
+                           DiscoveryDeviceMissingWithOk);
+  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastHandlerTest,
+                           ValidDiscoveryDeviceAndCode);
+  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastHandlerTest, InvalidDiscoveryDevice);
+  FRIEND_TEST_ALL_PREFIXES(AccessCodeCastHandlerTest, NonOKResultCode);
   friend class MediaRouterDesktopTest;
 
   static DualMediaSinkService* instance_for_test_;

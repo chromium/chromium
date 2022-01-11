@@ -84,8 +84,9 @@ class CastDeviceCountMetrics : public DeviceCountMetrics {
     kMdnsDial = 4,  // Device was first discovered via mDNS, then by DIAL.
     kDialMdns = 5,  // Device was first discovered via DIAL, then by mDNS.
     kConnectionRetryOnError = 6,
+    kAccessCode = 7,
 
-    kTotalCount = 7,
+    kTotalCount = 8,
   };
 
   static const char kHistogramCastKnownDeviceCount[];
