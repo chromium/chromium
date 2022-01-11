@@ -79,7 +79,7 @@ export function getSelectDropdownBackground(
   const iconElement = iconset.createIcon(iconName, isRTL()) as HTMLElement;
   const dark = inDarkMode();
   const fillColor = getComputedStyle(el).getPropertyValue(
-      dark ? '--google-grey-refresh-500' : '--google-grey-600');
+      dark ? '--google-grey-500' : '--google-grey-600');
   iconElement.style.fill = fillColor;
   const serializedIcon = serializer.serializeToString(iconElement);
   const uri = encodeURIComponent(serializedIcon);
