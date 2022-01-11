@@ -478,10 +478,10 @@ public class InstantStartTabSwitcherTest {
 
     @Test
     @MediumTest
+    @UseMethodParameter(LVTIsSRPTestParams.class)
     // clang-format off
     @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
-        INSTANT_START_TEST_BASE_PARAMS  + "/show_last_active_tab_only/true"})
-    @UseMethodParameter(LVTIsSRPTestParams.class)
+        INSTANT_START_TEST_BASE_PARAMS})
     public void testRecordLastVisitedTabIsSRPHistogram(boolean isSingleTabSwitcher, boolean isSRP)
             throws IOException {
         // clang-format on
