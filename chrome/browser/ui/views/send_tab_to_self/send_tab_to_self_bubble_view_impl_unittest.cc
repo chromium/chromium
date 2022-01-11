@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_bubble_controller.h"
 #include "chrome/browser/ui/views/send_tab_to_self/send_tab_to_self_bubble_device_button.h"
 #include "chrome/test/base/testing_profile.h"
@@ -108,7 +109,13 @@ TEST_F(SendTabToSelfBubbleViewImplTest, KeyboardAccessibilityConfigured) {
             container->children()[2]->GetGroup());
 }
 
-TEST_F(SendTabToSelfBubbleViewImplTest, ButtonPressed) {
+// TODO(crbug.com/1285538): Flaky on Linux TSAN
+#if defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#define MAYBE_ButtonPressed DISABLED_ButtonPressed
+#else
+#define MAYBE_ButtonPressed ButtonPressed
+#endif
+TEST_F(SendTabToSelfBubbleViewImplTest, MAYBE_ButtonPressed) {
   EXPECT_CALL(*controller_, OnDeviceSelected("Device_3", "device_guid_3"));
   const views::View* button_container = bubble_->GetButtonContainerForTesting();
   ASSERT_EQ(3U, button_container->children().size());
