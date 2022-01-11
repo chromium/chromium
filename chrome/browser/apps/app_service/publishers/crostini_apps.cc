@@ -345,9 +345,9 @@ std::unique_ptr<App> CrostiniApps::CreateApp(
       registration.VmType(),
       guest_os::GuestOsRegistryService::VmType::ApplicationList_VmType_TERMINA);
 
-  std::unique_ptr<App> app =
-      AppPublisher::MakeApp(AppType::kCrostini, registration.app_id(),
-                            Readiness::kReady, registration.Name());
+  std::unique_ptr<App> app = AppPublisher::MakeApp(
+      AppType::kCrostini, registration.app_id(), Readiness::kReady,
+      registration.Name(), InstallReason::kUser, InstallSource::kUnknown);
 
   if (generate_new_icon_key) {
     if (registration.app_id() == crostini::kCrostiniTerminalSystemAppId) {

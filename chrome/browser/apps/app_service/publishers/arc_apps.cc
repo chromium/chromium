@@ -1482,10 +1482,14 @@ std::unique_ptr<App> ArcApps::CreateApp(
     const std::string& app_id,
     const ArcAppListPrefs::AppInfo& app_info,
     bool update_icon) {
+  auto install_reason = ConvertMojomInstallReasonToInstallReason(
+      GetInstallReason(prefs, app_id, app_info));
   std::unique_ptr<App> app = AppPublisher::MakeApp(
       AppType::kArc, app_id,
       app_info.suspended ? Readiness::kDisabledByPolicy : Readiness::kReady,
-      app_info.name);
+      app_info.name, install_reason,
+      install_reason == InstallReason::kSystem ? InstallSource::kSystem
+                                               : InstallSource::kPlayStore);
 
   app->publisher_id = app_info.package_name;
 

@@ -25,6 +25,10 @@ std::unique_ptr<App> App::Clone() const {
     app->icon_key = apps::IconKey(icon_key->timeline, icon_key->resource_id,
                                   icon_key->icon_effects);
   }
+
+  app->install_reason = install_reason;
+  app->install_source = install_source;
+
   return app;
 }
 
@@ -85,6 +89,46 @@ Readiness ConvertMojomReadinessToReadiness(
   }
 }
 
+InstallReason ConvertMojomInstallReasonToInstallReason(
+    apps::mojom::InstallReason mojom_install_reason) {
+  switch (mojom_install_reason) {
+    case apps::mojom::InstallReason::kUnknown:
+      return InstallReason::kUnknown;
+    case apps::mojom::InstallReason::kSystem:
+      return InstallReason::kSystem;
+    case apps::mojom::InstallReason::kPolicy:
+      return InstallReason::kPolicy;
+    case apps::mojom::InstallReason::kOem:
+      return InstallReason::kOem;
+    case apps::mojom::InstallReason::kDefault:
+      return InstallReason::kDefault;
+    case apps::mojom::InstallReason::kSync:
+      return InstallReason::kSync;
+    case apps::mojom::InstallReason::kUser:
+      return InstallReason::kUser;
+    case apps::mojom::InstallReason::kSubApp:
+      return InstallReason::kSubApp;
+  }
+}
+
+InstallSource ConvertMojomInstallSourceToInstallSource(
+    apps::mojom::InstallSource mojom_install_source) {
+  switch (mojom_install_source) {
+    case apps::mojom::InstallSource::kUnknown:
+      return InstallSource::kUnknown;
+    case apps::mojom::InstallSource::kSystem:
+      return InstallSource::kSystem;
+    case apps::mojom::InstallSource::kSync:
+      return InstallSource::kSync;
+    case apps::mojom::InstallSource::kPlayStore:
+      return InstallSource::kPlayStore;
+    case apps::mojom::InstallSource::kChromeWebStore:
+      return InstallSource::kChromeWebStore;
+    case apps::mojom::InstallSource::kBrowser:
+      return InstallSource::kBrowser;
+  }
+}
+
 std::unique_ptr<App> ConvertMojomAppToApp(
     const apps::mojom::AppPtr& mojom_app) {
   DCHECK(mojom_app);
@@ -103,6 +147,12 @@ std::unique_ptr<App> ConvertMojomAppToApp(
                                   mojom_app->icon_key->resource_id,
                                   mojom_app->icon_key->icon_effects);
   }
+
+  app->install_reason =
+      ConvertMojomInstallReasonToInstallReason(mojom_app->install_reason);
+  app->install_source =
+      ConvertMojomInstallSourceToInstallSource(mojom_app->install_source);
+
   return app;
 }
 

@@ -64,7 +64,8 @@ void RemoteApps::DeleteApp(const std::string& app_id) {
 std::unique_ptr<App> RemoteApps::CreateApp(
     const ash::RemoteAppsModel::AppInfo& info) {
   std::unique_ptr<App> app = AppPublisher::MakeApp(
-      AppType::kRemote, info.id, Readiness::kReady, info.name);
+      AppType::kRemote, info.id, Readiness::kReady, info.name,
+      InstallReason::kUser, apps::InstallSource::kUnknown);
   app->icon_key =
       std::move(*icon_key_factory_.CreateIconKey(IconEffects::kNone));
   return app;

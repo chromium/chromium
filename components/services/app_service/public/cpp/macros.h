@@ -21,11 +21,11 @@ namespace apps {
          (!state_ || (delta_->VALUE() != state_->VALUE()));
 
 #define GET_VALUE_WITH_DEFAULT_VALUE(VALUE, DEFAULT_VALUE) \
-  if (delta_ && delta_->VALUE() != (DEFAULT_VALUE)) {      \
-    return delta_->VALUE();                                \
+  if (delta_ && delta_->VALUE != (DEFAULT_VALUE)) {        \
+    return delta_->VALUE;                                  \
   }                                                        \
   if (state_) {                                            \
-    return state_->VALUE();                                \
+    return state_->VALUE;                                  \
   }                                                        \
   return DEFAULT_VALUE;
 

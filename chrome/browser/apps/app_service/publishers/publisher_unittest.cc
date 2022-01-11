@@ -71,7 +71,7 @@ apps::mojom::AppPtr MakeMojomApp(apps::mojom::AppType app_type,
   apps::mojom::AppPtr app = apps::PublisherBase::MakeApp(
       app_type, app_id, apps::mojom::Readiness::kReady, name,
       apps::mojom::InstallReason::kUser);
-
+  app->install_source = apps::mojom::InstallSource::kSync;
   app->icon_key = apps::mojom::IconKey::New(
       /*timeline=*/1, apps::mojom::IconKey::kInvalidResourceId,
       /*icon_effects=*/0);
@@ -139,7 +139,9 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
   void VerifyApp(AppType app_type,
                  const std::string& app_id,
                  const std::string& name,
-                 apps::Readiness readiness) {
+                 apps::Readiness readiness,
+                 InstallReason install_reason,
+                 InstallSource install_source) {
     AppRegistryCache& cache =
         AppServiceProxyFactory::GetForProfile(profile())->AppRegistryCache();
 
@@ -149,6 +151,8 @@ class PublisherTest : public extensions::ExtensionServiceTestBase {
     EXPECT_EQ(name, cache.states_[app_id]->name.value());
     EXPECT_EQ(readiness, cache.states_[app_id]->readiness);
     ASSERT_TRUE(cache.states_[app_id]->icon_key.has_value());
+    EXPECT_EQ(install_reason, cache.states_[app_id]->install_reason);
+    EXPECT_EQ(install_source, cache.states_[app_id]->install_source);
   }
 
   void VerifyAppIsRemoved(const std::string& app_id) {
@@ -178,7 +182,11 @@ TEST_F(PublisherTest, ArcAppsOnApps) {
   for (const auto& app_id : prefs->GetAppIds()) {
     std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
     if (app_info) {
-      VerifyApp(AppType::kArc, app_id, app_info->name, Readiness::kReady);
+      VerifyApp(
+          AppType::kArc, app_id, app_info->name, Readiness::kReady,
+          app_info->sticky ? InstallReason::kSystem : InstallReason::kUser,
+          app_info->sticky ? InstallSource::kSystem
+                           : InstallSource::kPlayStore);
 
       // Simulate the app is removed.
       RemoveArcApp(app_id);
@@ -195,7 +203,11 @@ TEST_F(PublisherTest, ArcAppsOnApps) {
   for (const auto& app_id : prefs->GetAppIds()) {
     std::unique_ptr<ArcAppListPrefs::AppInfo> app_info = prefs->GetApp(app_id);
     if (app_info) {
-      VerifyApp(AppType::kArc, app_id, app_info->name, Readiness::kReady);
+      VerifyApp(
+          AppType::kArc, app_id, app_info->name, Readiness::kReady,
+          app_info->sticky ? InstallReason::kSystem : InstallReason::kUser,
+          app_info->sticky ? InstallSource::kSystem
+                           : InstallSource::kPlayStore);
     }
   }
 
@@ -212,7 +224,8 @@ TEST_F(PublisherTest, BuiltinAppsOnApps) {
     }
     VerifyApp(AppType::kBuiltIn, internal_app.app_id,
               l10n_util::GetStringUTF8(internal_app.name_string_resource_id),
-              Readiness::kReady);
+              Readiness::kReady, InstallReason::kSystem,
+              InstallSource::kSystem);
   }
 }
 
@@ -273,18 +286,19 @@ class StandaloneBrowserPublisherTest : public PublisherTest {
 
 TEST_F(StandaloneBrowserPublisherTest, StandaloneBrowserAppsOnApps) {
   VerifyApp(AppType::kStandaloneBrowser, extension_misc::kLacrosAppId, "Lacros",
-            Readiness::kReady);
+            Readiness::kReady, InstallReason::kSystem, InstallSource::kSystem);
 }
 
 TEST_F(StandaloneBrowserPublisherTest, StandaloneBrowserExtensionAppsOnApps) {
   ExtensionAppsOnApps();
   VerifyApp(AppType::kStandaloneBrowserChromeApp, "a", "TestApp",
-            Readiness::kReady);
+            Readiness::kReady, InstallReason::kUser, InstallSource::kSync);
 }
 
 TEST_F(StandaloneBrowserPublisherTest, WebAppsCrosapiOnApps) {
   WebAppsCrosapiOnApps();
-  VerifyApp(AppType::kWeb, "a", "TestApp", Readiness::kReady);
+  VerifyApp(AppType::kWeb, "a", "TestApp", Readiness::kReady,
+            InstallReason::kUser, InstallSource::kSync);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -299,17 +313,20 @@ TEST_F(PublisherTest, ExtensionAppsOnApps) {
   // Re-init AppService to verify the init process.
   AppServiceTest app_service_test;
   app_service_test.SetUp(profile());
-  VerifyApp(AppType::kChromeApp, store->id(), store->name(), Readiness::kReady);
+  VerifyApp(AppType::kChromeApp, store->id(), store->name(), Readiness::kReady,
+            InstallReason::kDefault, InstallSource::kChromeWebStore);
 
   // Uninstall the Chrome app.
   service_->UninstallExtension(
       store->id(), extensions::UNINSTALL_REASON_FOR_TESTING, nullptr);
   VerifyApp(AppType::kChromeApp, store->id(), store->name(),
-            Readiness::kUninstalledByUser);
+            Readiness::kUninstalledByUser, InstallReason::kDefault,
+            InstallSource::kChromeWebStore);
 
   // Reinstall the Chrome app.
   service_->AddExtension(store.get());
-  VerifyApp(AppType::kChromeApp, store->id(), store->name(), Readiness::kReady);
+  VerifyApp(AppType::kChromeApp, store->id(), store->name(), Readiness::kReady,
+            InstallReason::kDefault, InstallSource::kChromeWebStore);
 }
 
 TEST_F(PublisherTest, WebAppsOnApps) {
@@ -318,7 +335,8 @@ TEST_F(PublisherTest, WebAppsOnApps) {
   AppServiceTest app_service_test_;
   app_service_test_.SetUp(profile());
 
-  VerifyApp(AppType::kWeb, app_id, kAppName, Readiness::kReady);
+  VerifyApp(AppType::kWeb, app_id, kAppName, Readiness::kReady,
+            InstallReason::kSync, InstallSource::kBrowser);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)

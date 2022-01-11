@@ -73,6 +73,7 @@ component("app_update") {
     "app_update.h",
     "capability_access_update.cc",
     "capability_access_update.h",
+    "macros.h",
   ]
 
   defines = [ "IS_APP_UPDATE_IMPL" ]

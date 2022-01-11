@@ -395,7 +395,11 @@ std::unique_ptr<apps::App> WebAppPublisherHelper::CreateWebApp(
 
   std::unique_ptr<apps::App> app = apps::AppPublisher::MakeApp(
       apps::ConvertMojomAppTypToAppType(app_type()), web_app->app_id(),
-      readiness, web_app->name());
+      readiness, web_app->name(),
+      apps::ConvertMojomInstallReasonToInstallReason(
+          GetHighestPriorityInstallReason(web_app)),
+      apps::ConvertMojomInstallSourceToInstallSource(
+          GetInstallSource(profile()->GetPrefs(), web_app->app_id())));
 
   app->description = web_app->description();
 
@@ -404,6 +408,11 @@ std::unique_ptr<apps::App> WebAppPublisherHelper::CreateWebApp(
 
   app->icon_key =
       std::move(*icon_key_factory_.CreateIconKey(GetIconEffects(web_app)));
+
+  // For system web apps (only), the install source is |kSystem|.
+  DCHECK_EQ(web_app->IsSystemApp(),
+            app->install_reason == apps::InstallReason::kSystem);
+
   return app;
 }
 #endif

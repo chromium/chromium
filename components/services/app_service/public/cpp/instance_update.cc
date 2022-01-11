@@ -133,7 +133,7 @@ bool InstanceUpdate::LaunchIdChanged() const {
 }
 
 InstanceState InstanceUpdate::State() const {
-  GET_VALUE_WITH_DEFAULT_VALUE(State, InstanceState::kUnknown);
+  GET_VALUE_WITH_DEFAULT_VALUE(State(), InstanceState::kUnknown);
 }
 
 bool InstanceUpdate::StateChanged() const {

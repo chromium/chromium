@@ -9,6 +9,7 @@
 #include "base/time/time.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
+#include "components/services/app_service/public/cpp/macros.h"
 
 namespace {
 
@@ -515,6 +516,10 @@ apps::mojom::InstallReason AppUpdate::InstallReason() const {
   return apps::mojom::InstallReason::kUnknown;
 }
 
+apps::InstallReason AppUpdate::GetInstallReason() const {
+  GET_VALUE_WITH_DEFAULT_VALUE(install_reason, InstallReason::kUnknown)
+}
+
 bool AppUpdate::InstallReasonChanged() const {
   return mojom_delta_ &&
          (mojom_delta_->install_reason !=
@@ -532,6 +537,10 @@ apps::mojom::InstallSource AppUpdate::InstallSource() const {
     return mojom_state_->install_source;
   }
   return apps::mojom::InstallSource::kUnknown;
+}
+
+apps::InstallSource AppUpdate::GetInstallSource() const {
+  GET_VALUE_WITH_DEFAULT_VALUE(install_source, InstallSource::kUnknown)
 }
 
 bool AppUpdate::InstallSourceChanged() const {

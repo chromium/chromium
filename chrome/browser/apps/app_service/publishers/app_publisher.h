@@ -34,7 +34,9 @@ class AppPublisher {
   static std::unique_ptr<App> MakeApp(AppType app_type,
                                       const std::string& app_id,
                                       Readiness readiness,
-                                      const std::string& name);
+                                      const std::string& name,
+                                      InstallReason install_reason,
+                                      InstallSource install_source);
 
   // Registers this AppPublisher to AppServiceProxy, allowing it to receive App
   // Service API calls. This function must be called after the object's

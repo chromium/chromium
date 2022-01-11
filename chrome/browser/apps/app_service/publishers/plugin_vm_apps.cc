@@ -95,7 +95,8 @@ std::unique_ptr<apps::App> CreatePluginVmApp(Profile* profile, bool allowed) {
   std::unique_ptr<apps::App> app = apps::AppPublisher::MakeApp(
       apps::AppType::kPluginVm, plugin_vm::kPluginVmShelfAppId,
       allowed ? apps::Readiness::kReady : apps::Readiness::kDisabledByPolicy,
-      l10n_util::GetStringUTF8(IDS_PLUGIN_VM_APP_NAME));
+      l10n_util::GetStringUTF8(IDS_PLUGIN_VM_APP_NAME),
+      apps::InstallReason::kUser, apps::InstallSource::kUnknown);
 
   app->icon_key =
       apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
@@ -361,9 +362,9 @@ std::unique_ptr<App> PluginVmApps::CreateApp(
   DCHECK_EQ(registration.VmType(), guest_os::GuestOsRegistryService::VmType::
                                        ApplicationList_VmType_PLUGIN_VM);
 
-  std::unique_ptr<App> app =
-      AppPublisher::MakeApp(AppType::kPluginVm, registration.app_id(),
-                            Readiness::kReady, registration.Name());
+  std::unique_ptr<App> app = AppPublisher::MakeApp(
+      AppType::kPluginVm, registration.app_id(), Readiness::kReady,
+      registration.Name(), InstallReason::kUser, apps::InstallSource::kUnknown);
 
   if (generate_new_icon_key) {
     app->icon_key = std::move(

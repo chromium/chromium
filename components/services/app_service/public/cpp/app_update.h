@@ -124,9 +124,11 @@ class COMPONENT_EXPORT(APP_UPDATE) AppUpdate {
   bool PermissionsChanged() const;
 
   apps::mojom::InstallReason InstallReason() const;
+  apps::InstallReason GetInstallReason() const;
   bool InstallReasonChanged() const;
 
   apps::mojom::InstallSource InstallSource() const;
+  apps::InstallSource GetInstallSource() const;
   bool InstallSourceChanged() const;
 
   // An optional ID used for policy to identify the app.

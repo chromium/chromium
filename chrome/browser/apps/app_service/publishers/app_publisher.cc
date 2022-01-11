@@ -18,11 +18,17 @@ AppPublisher::~AppPublisher() = default;
 std::unique_ptr<App> AppPublisher::MakeApp(AppType app_type,
                                            const std::string& app_id,
                                            Readiness readiness,
-                                           const std::string& name) {
+                                           const std::string& name,
+                                           InstallReason install_reason,
+                                           InstallSource install_source) {
   std::unique_ptr<App> app = std::make_unique<App>(app_type, app_id);
   app->readiness = readiness;
   app->name = name;
   app->short_name = name;
+
+  app->install_reason = install_reason;
+  app->install_source = install_source;
+
   return app;
 }
 

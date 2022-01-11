@@ -72,7 +72,8 @@ std::unique_ptr<apps::App> CreateBorealisLauncher(Profile* profile,
   std::unique_ptr<apps::App> app = apps::AppPublisher::MakeApp(
       apps::AppType::kBorealis, borealis::kInstallerAppId,
       allowed ? apps::Readiness::kReady : apps::Readiness::kDisabledByPolicy,
-      l10n_util::GetStringUTF8(IDS_BOREALIS_APP_NAME));
+      l10n_util::GetStringUTF8(IDS_BOREALIS_APP_NAME),
+      apps::InstallReason::kDefault, apps::InstallSource::kUnknown);
 
   app->icon_key =
       apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
@@ -166,9 +167,9 @@ std::unique_ptr<App> BorealisApps::CreateApp(
   // it can't be converted.
   DCHECK_NE(registration.app_id(), borealis::kInstallerAppId);
 
-  std::unique_ptr<App> app =
-      AppPublisher::MakeApp(AppType::kBorealis, registration.app_id(),
-                            Readiness::kReady, registration.Name());
+  std::unique_ptr<App> app = AppPublisher::MakeApp(
+      AppType::kBorealis, registration.app_id(), Readiness::kReady,
+      registration.Name(), InstallReason::kUser, InstallSource::kUnknown);
 
   if (generate_new_icon_key) {
     app->icon_key = std::move(
@@ -434,7 +435,8 @@ void BorealisApps::OnAnonymousAppAdded(const std::string& shelf_app_id,
   PublisherBase::Publish(std::move(mojom_app), subscribers_);
 
   std::unique_ptr<App> app = AppPublisher::MakeApp(
-      AppType::kBorealis, shelf_app_id, Readiness::kReady, shelf_app_name);
+      AppType::kBorealis, shelf_app_id, Readiness::kReady, shelf_app_name,
+      InstallReason::kUser, InstallSource::kUnknown);
 
   app->icon_key = IconKey(IconKey::kDoesNotChangeOverTime,
                           IDR_LOGO_BOREALIS_DEFAULT_192, IconEffects::kNone);

@@ -37,7 +37,8 @@ std::unique_ptr<apps::App> CreateApp(
 
   std::unique_ptr<apps::App> app = apps::AppPublisher::MakeApp(
       apps::AppType::kBuiltIn, internal_app.app_id, apps::Readiness::kReady,
-      l10n_util::GetStringUTF8(internal_app.name_string_resource_id));
+      l10n_util::GetStringUTF8(internal_app.name_string_resource_id),
+      apps::InstallReason::kSystem, apps::InstallSource::kSystem);
 
   app->icon_key =
       apps::IconKey(apps::IconKey::kDoesNotChangeOverTime,
