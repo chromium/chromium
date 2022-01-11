@@ -155,4 +155,8 @@ const char kIncognitoAuthenticationSetting[] =
 // in ios/chrome/browser/policy/policy_util.h.
 const char kBrowserSigninPolicy[] = "signin.browser_signin_policy";
 
+// Preference that holds the string value indicating the NTP URL to use for the
+// NTP Location policy.
+const char kNewTabPageLocationOverride[] = "ios.ntp.location_override";
+
 }  // namespace prefs

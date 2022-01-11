@@ -923,6 +923,16 @@ NSMutableDictionary* CreateExperimentalTestingPolicies() {
     }];
   }
 
+  // If the New Tab Page URL is set (not empty) add the value to the list of
+  // test policies.
+  NSString* ntp_location = [defaults stringForKey:@"NTPLocation"];
+  if ([ntp_location length] > 0) {
+    NSString* ntp_location_key =
+        base::SysUTF8ToNSString(policy::key::kNewTabPageLocation);
+    [testing_policies
+        addEntriesFromDictionary:@{ntp_location_key : ntp_location}];
+  }
+
   // If any experimental policy was allowed, set the EnableExperimentalPolicies
   // policy.
   if ([allowed_experimental_policies count] > 0) {

@@ -32,6 +32,7 @@
 #include "ios/chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "ios/chrome/browser/ios_chrome_main_parts.h"
 #import "ios/chrome/browser/link_to_text/link_to_text_java_script_feature.h"
+#include "ios/chrome/browser/ntp/browser_policy_new_tab_page_rewriter.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/reading_list/offline_page_tab_helper.h"
 #include "ios/chrome/browser/reading_list/offline_url_utils.h"
@@ -270,6 +271,7 @@ void ChromeWebClient::GetAdditionalWebUISchemes(
 
 void ChromeWebClient::PostBrowserURLRewriterCreation(
     web::BrowserURLRewriter* rewriter) {
+  rewriter->AddURLRewriter(&WillHandleWebBrowserNewTabPageURLForPolicy);
   rewriter->AddURLRewriter(&WillHandleWebBrowserAboutURL);
   ios::provider::AddURLRewriters(rewriter);
 }

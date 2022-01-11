@@ -4,6 +4,8 @@
 
 source_set("ntp") {
   sources = [
+    "browser_policy_new_tab_page_rewriter.cc",
+    "browser_policy_new_tab_page_rewriter.h",
     "new_tab_page_tab_helper.h",
     "new_tab_page_tab_helper.mm",
     "new_tab_page_tab_helper_delegate.h",
@@ -12,9 +14,13 @@ source_set("ntp") {
   deps = [
     ":features",
     "//base:base",
+    "//components/prefs",
     "//components/strings:components_strings_grit",
+    "//components/url_formatter",
     "//ios/chrome/browser",
+    "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/ui:feature_flags",
+    "//ios/components/webui:url_constants",
     "//ios/web/common:features",
     "//ios/web/public",
     "//ui/base:base",
@@ -32,10 +38,15 @@ source_set("features") {
 source_set("unit_tests") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
-  sources = [ "new_tab_page_tab_helper_unittest.mm" ]
+  sources = [
+    "browser_policy_new_tab_page_rewriter_unittest.mm",
+    "new_tab_page_tab_helper_unittest.mm",
+  ]
   deps = [
     "//base/test:test_support",
+    "//components/prefs",
     "//components/strings:components_strings_grit",
+    "//components/sync_preferences:test_support",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/favicon:favicon",

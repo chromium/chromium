@@ -51,6 +51,8 @@ extern const char kIncognitoAuthenticationSetting[];
 
 extern const char kBrowserSigninPolicy[];
 
+extern const char kNewTabPageLocationOverride[];
+
 }  // namespace prefs
 
 #endif  // IOS_CHROME_BROWSER_PREF_NAMES_H_
