@@ -1,4 +1,4 @@
-// Copyright 2018 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -32,7 +32,7 @@ class AXFuchsiaSemanticProviderDelegate
   ~AXFuchsiaSemanticProviderDelegate() override = default;
 
   bool OnSemanticsManagerConnectionClosed() override {
-    on_semantics_manager_connectionClosed_called_ = true;
+    on_semantics_manager_connection_closed_called_ = true;
     return true;
   }
 
@@ -55,7 +55,7 @@ class AXFuchsiaSemanticProviderDelegate
     on_semantics_enabled_called_ = true;
   }
 
-  bool on_semantics_manager_connectionClosed_called_;
+  bool on_semantics_manager_connection_closed_called_;
   bool on_accessibility_action_called_;
   uint32_t on_accessibility_action_node_id_ = 10000000;
   fuchsia::accessibility::semantics::Action on_accessibility_action_action_;
@@ -116,6 +116,10 @@ class AXFuchsiaSemanticProviderTest
 
     semantic_provider_ = std::make_unique<AXFuchsiaSemanticProvider>(
         std::move(view_ref_pair.view_ref), 2.0f, delegate_.get());
+
+    // Spin the loop to allow registration with the SemanticsManager to be
+    // processed.
+    base::RunLoop().RunUntilIdle();
   }
 
  protected:
@@ -172,21 +176,23 @@ class AXFuchsiaSemanticProviderTest
 };
 
 TEST_F(AXFuchsiaSemanticProviderTest, HandlesOnSemanticsConnectionClosed) {
-  base::RunLoop loop;
-  loop.RunUntilIdle();
   semantic_tree_binding_.Close(ZX_ERR_PEER_CLOSED);
-  loop.RunUntilIdle();
-  EXPECT_TRUE(delegate_->on_semantics_manager_connectionClosed_called_);
+
+  // Spin the loop to allow the channel-close to be handled.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_TRUE(delegate_->on_semantics_manager_connection_closed_called_);
 }
 
 TEST_F(AXFuchsiaSemanticProviderTest, HandlesOnAccessibilityAction) {
-  base::RunLoop loop;
-  loop.RunUntilIdle();
   bool action_handled = false;
   semantic_listener_->OnAccessibilityActionRequested(
       /*node_id=*/1u, fuchsia::accessibility::semantics::Action::DEFAULT,
       [&action_handled](bool handled) { action_handled = handled; });
-  loop.RunUntilIdle();
+
+  // Spin the loop to handle the request, and receive the response.
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_TRUE(action_handled);
   EXPECT_TRUE(delegate_->on_accessibility_action_called_);
   EXPECT_EQ(delegate_->on_accessibility_action_node_id_, 1u);
@@ -195,9 +201,6 @@ TEST_F(AXFuchsiaSemanticProviderTest, HandlesOnAccessibilityAction) {
 }
 
 TEST_F(AXFuchsiaSemanticProviderTest, HandlesOnHitTest) {
-  base::RunLoop loop;
-  loop.RunUntilIdle();
-
   // Note that the point is sent here and will be converted according to the
   // device scale used. Only then it gets sent to the handler, which receives
   // the value already with the proper scaling.
@@ -205,72 +208,81 @@ TEST_F(AXFuchsiaSemanticProviderTest, HandlesOnHitTest) {
   point.x = 4;
   point.y = 6;
   semantic_listener_->HitTest(std::move(point), [](auto...) {});
-  loop.RunUntilIdle();
+
+  // Spin the loop to allow the call to be processed.
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_TRUE(delegate_->on_hit_test_called_);
   EXPECT_EQ(delegate_->on_hit_test_point_.x, 8.0);
   EXPECT_EQ(delegate_->on_hit_test_point_.y, 12.0);
 }
 
 TEST_F(AXFuchsiaSemanticProviderTest, HandlesOnSemanticsEnabled) {
-  base::RunLoop loop;
-  loop.RunUntilIdle();
   semantic_listener_->OnSemanticsModeChanged(false, [](auto...) {});
-  loop.RunUntilIdle();
+
+  // Spin the loop to handle the call.
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_TRUE(delegate_->on_semantics_enabled_called_);
 }
 
 TEST_F(AXFuchsiaSemanticProviderTest, SendsRootOnly) {
-  base::RunLoop loop;
-  loop.RunUntilIdle();
   Node root;
   root.set_node_id(0u);
   EXPECT_TRUE(semantic_provider_->Update(std::move(root)));
-  loop.RunUntilIdle();
+
+  // Spin the loop to process the update call.
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_EQ(num_update_semantic_nodes_called_, 1u);
   EXPECT_FALSE(semantic_provider_->HasPendingUpdates());
 }
 
 TEST_F(AXFuchsiaSemanticProviderTest, SendsNodesFromRootToLeaves) {
-  base::RunLoop loop;
-  loop.RunUntilIdle();
   auto tree_nodes = TreeNodes();
   for (auto& node : tree_nodes) {
     EXPECT_TRUE(semantic_provider_->Update(std::move(node)));
   }
-  loop.RunUntilIdle();
+
+  // Spin the loop to process the queued update calls.
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_EQ(num_update_semantic_nodes_called_, 1u);
   EXPECT_FALSE(semantic_provider_->HasPendingUpdates());
 }
 
 TEST_F(AXFuchsiaSemanticProviderTest, SendsNodesFromLeavesToRoot) {
-  base::RunLoop loop;
-  loop.RunUntilIdle();
   auto nodes = TreeNodes();
   std::reverse(nodes.begin(), nodes.end());
   for (auto& node : nodes) {
     EXPECT_TRUE(semantic_provider_->Update(std::move(node)));
   }
-  loop.RunUntilIdle();
-  EXPECT_EQ(num_update_semantic_nodes_called_, 1u);
 
+  // Spin the loop to process the queued update calls.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(num_update_semantic_nodes_called_, 1u);
   EXPECT_FALSE(semantic_provider_->HasPendingUpdates());
 }
 
 TEST_F(AXFuchsiaSemanticProviderTest,
        SendsNodesOnlyAfterParentNoLongerPointsToDeletedChild) {
-  base::RunLoop loop;
-  loop.RunUntilIdle();
   auto tree_nodes = TreeNodes();
   for (auto& node : tree_nodes) {
     EXPECT_TRUE(semantic_provider_->Update(std::move(node)));
   }
-  loop.RunUntilIdle();
+
+  // Spin the loop to process the queued update calls.
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_EQ(num_update_semantic_nodes_called_, 1u);
   EXPECT_FALSE(semantic_provider_->HasPendingUpdates());
 
   // Deletes node 5, which is a child of 4.
   EXPECT_TRUE(semantic_provider_->Delete(5u));
-  loop.RunUntilIdle();
+
+  // Spin the loop to process the deletion call.
+  base::RunLoop().RunUntilIdle();
 
   // Commit is pending, because the parent still points to the child.
   EXPECT_TRUE(semantic_provider_->HasPendingUpdates());
@@ -279,7 +291,10 @@ TEST_F(AXFuchsiaSemanticProviderTest,
   node_4.set_node_id(4u);
   node_4.set_child_ids({});
   EXPECT_TRUE(semantic_provider_->Update(std::move(node_4)));
-  loop.RunUntilIdle();
+
+  // Spin the loop to process the node update.
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_EQ(num_update_semantic_nodes_called_, 2u);
   EXPECT_EQ(num_delete_semantic_nodes_called_, 1u);
 
@@ -288,13 +303,14 @@ TEST_F(AXFuchsiaSemanticProviderTest,
 
 TEST_F(AXFuchsiaSemanticProviderTest,
        SendsNodesOnlyAfterDanglingChildIsDeleted) {
-  base::RunLoop loop;
-  loop.RunUntilIdle();
   auto tree_nodes = TreeNodes();
   for (auto& node : tree_nodes) {
     EXPECT_TRUE(semantic_provider_->Update(std::move(node)));
   }
-  loop.RunUntilIdle();
+
+  // Spin the loop to process the queued update calls.
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_EQ(num_update_semantic_nodes_called_, 1u);
   EXPECT_FALSE(semantic_provider_->HasPendingUpdates());
 
@@ -302,30 +318,40 @@ TEST_F(AXFuchsiaSemanticProviderTest,
   node_4.set_node_id(4u);
   node_4.set_child_ids({});  // This removes child 5.
   EXPECT_TRUE(semantic_provider_->Update(std::move(node_4)));
-  loop.RunUntilIdle();
+
+  // Spin the loop to process the update call.
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_TRUE(semantic_provider_->HasPendingUpdates());
 
   EXPECT_TRUE(semantic_provider_->Delete(5u));
-  loop.RunUntilIdle();
+
+  // Spin the loop to process the deletion.
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_EQ(num_update_semantic_nodes_called_, 2u);
   EXPECT_EQ(num_delete_semantic_nodes_called_, 1u);
   EXPECT_FALSE(semantic_provider_->HasPendingUpdates());
 }
 
 TEST_F(AXFuchsiaSemanticProviderTest, ReparentsNodeWithADeletion) {
-  base::RunLoop loop;
-  loop.RunUntilIdle();
   auto tree_nodes = TreeNodes();
   for (auto& node : tree_nodes) {
     EXPECT_TRUE(semantic_provider_->Update(std::move(node)));
   }
-  loop.RunUntilIdle();
+
+  // Spin the loop to process the queued update calls.
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_EQ(num_update_semantic_nodes_called_, 1u);
   EXPECT_FALSE(semantic_provider_->HasPendingUpdates());
 
   // Deletes node 4 to reparent its child (5).
   EXPECT_TRUE(semantic_provider_->Delete(4u));
-  loop.RunUntilIdle();
+
+  // Spin the loop to process the deletion.
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_TRUE(semantic_provider_->HasPendingUpdates());
 
   // Add child 5 to another node.
@@ -333,14 +359,19 @@ TEST_F(AXFuchsiaSemanticProviderTest, ReparentsNodeWithADeletion) {
   node_1.set_node_id(1u);
   node_1.set_child_ids({5u});
   EXPECT_TRUE(semantic_provider_->Update(std::move(node_1)));
-  loop.RunUntilIdle();
+
+  // Spin the loop to process the update.
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_TRUE(semantic_provider_->HasPendingUpdates());
 
   Node node_4;
   node_4.set_node_id(4u);
   node_4.set_child_ids({});
   EXPECT_TRUE(semantic_provider_->Update(std::move(node_4)));
-  loop.RunUntilIdle();
+
+  // Spin the loop to process the update.
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(num_update_semantic_nodes_called_, 2u);
   EXPECT_EQ(num_delete_semantic_nodes_called_, 1u);
@@ -348,13 +379,14 @@ TEST_F(AXFuchsiaSemanticProviderTest, ReparentsNodeWithADeletion) {
 }
 
 TEST_F(AXFuchsiaSemanticProviderTest, ReparentsNodeWithAnUpdate) {
-  base::RunLoop loop;
-  loop.RunUntilIdle();
   auto tree_nodes = TreeNodes();
   for (auto& node : tree_nodes) {
     EXPECT_TRUE(semantic_provider_->Update(std::move(node)));
   }
-  loop.RunUntilIdle();
+
+  // Spin the loop to process the queued update calls.
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_EQ(num_update_semantic_nodes_called_, 1u);
   EXPECT_FALSE(semantic_provider_->HasPendingUpdates());
 
@@ -364,7 +396,10 @@ TEST_F(AXFuchsiaSemanticProviderTest, ReparentsNodeWithAnUpdate) {
   node_1.set_node_id(1u);
   node_1.set_child_ids({5u});
   EXPECT_TRUE(semantic_provider_->Update(std::move(node_1)));
-  loop.RunUntilIdle();
+
+  // Spin the loop to process the update.
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_TRUE(semantic_provider_->HasPendingUpdates());
 
   // Updates node 4 to no longer point to 5.
@@ -372,7 +407,9 @@ TEST_F(AXFuchsiaSemanticProviderTest, ReparentsNodeWithAnUpdate) {
   node_4.set_node_id(4u);
   node_4.set_child_ids({});
   EXPECT_TRUE(semantic_provider_->Update(std::move(node_4)));
-  loop.RunUntilIdle();
+
+  // Spin the loop to process the update.
+  base::RunLoop().RunUntilIdle();
 
   EXPECT_EQ(num_update_semantic_nodes_called_, 2u);
   EXPECT_EQ(num_delete_semantic_nodes_called_, 0u);
@@ -380,13 +417,14 @@ TEST_F(AXFuchsiaSemanticProviderTest, ReparentsNodeWithAnUpdate) {
 }
 
 TEST_F(AXFuchsiaSemanticProviderTest, ChangesRoot) {
-  base::RunLoop loop;
-  loop.RunUntilIdle();
   auto tree_nodes = TreeNodes();
   for (auto& node : tree_nodes) {
     EXPECT_TRUE(semantic_provider_->Update(std::move(node)));
   }
-  loop.RunUntilIdle();
+
+  // Spin the loop to process the queued updated calls.
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_EQ(num_update_semantic_nodes_called_, 1u);
   EXPECT_FALSE(semantic_provider_->HasPendingUpdates());
 
@@ -394,15 +432,16 @@ TEST_F(AXFuchsiaSemanticProviderTest, ChangesRoot) {
   new_root.set_node_id(0u);
   new_root.set_child_ids({1u, 2u});
   EXPECT_TRUE(semantic_provider_->Update(std::move(new_root)));
-  loop.RunUntilIdle();
+
+  // Spin the loop to process the update.
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_EQ(num_update_semantic_nodes_called_, 2u);
   EXPECT_EQ(num_delete_semantic_nodes_called_, 0u);
   EXPECT_FALSE(semantic_provider_->HasPendingUpdates());
 }
 
 TEST_F(AXFuchsiaSemanticProviderTest, BatchesUpdates) {
-  base::RunLoop loop;
-  loop.RunUntilIdle();
   std::vector<Node> updates;
   for (uint32_t i = 0; i < 30; ++i) {
     Node node;
@@ -415,7 +454,9 @@ TEST_F(AXFuchsiaSemanticProviderTest, BatchesUpdates) {
   for (auto& node : updates) {
     EXPECT_TRUE(semantic_provider_->Update(std::move(node)));
   }
-  loop.RunUntilIdle();
+
+  // Spin the loop to process the queued update calls.
+  base::RunLoop().RunUntilIdle();
 
   // 30 nodes in batches of 16 (default value of maximum nodes per update call),
   // should result in two update calls to the semantics API.
@@ -424,18 +465,22 @@ TEST_F(AXFuchsiaSemanticProviderTest, BatchesUpdates) {
 }
 
 TEST_F(AXFuchsiaSemanticProviderTest, ClearsTree) {
-  base::RunLoop loop;
-  loop.RunUntilIdle();
   auto tree_nodes = TreeNodes();
   for (auto& node : tree_nodes) {
     EXPECT_TRUE(semantic_provider_->Update(std::move(node)));
   }
-  loop.RunUntilIdle();
+
+  // Spin the loop to process the queued update calls.
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_EQ(num_update_semantic_nodes_called_, 1u);
   EXPECT_FALSE(semantic_provider_->HasPendingUpdates());
 
   semantic_provider_->Clear();
-  loop.RunUntilIdle();
+
+  // Spin the loop to process the clear-tree call.
+  base::RunLoop().RunUntilIdle();
+
   EXPECT_EQ(num_update_semantic_nodes_called_, 1u);
   EXPECT_EQ(num_delete_semantic_nodes_called_, 1u);
   EXPECT_FALSE(semantic_provider_->HasPendingUpdates());

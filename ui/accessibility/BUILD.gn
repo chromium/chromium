@@ -286,7 +286,7 @@ test("accessibility_unittests") {
   ]
 
   if (is_fuchsia) {
-    sources += [ "platform/fuchsia/semantic_provider_test.cc" ]
+    sources += [ "platform/fuchsia/semantic_provider_unittest.cc" ]
 
     deps += [
       "//third_party/fuchsia-sdk/sdk/fidl/fuchsia.accessibility.semantics",
