@@ -616,19 +616,13 @@ TEST_F(OutOfMemoryHandledTest, NewReleasesReservation) {
 #endif  // defined(ARCH_CPU_32_BITS) && (defined(OS_WIN) || defined(OS_LINUX) ||
         // defined(OS_CHROMEOS))
 
-#if defined(OS_ANDROID) || defined(OS_FUCHSIA)
-// Fuchsia and Android do not allow overcommits, so very large
-// UncheckedMallocs will yield OOM errors on those platforms.
-
-#if defined(OS_ANDROID)
+#if defined(OS_ANDROID) || (defined(OS_FUCHSIA) && \
+    BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC))
+// Android's allocator does not allow overcommits, so very large
+// UncheckedMallocs will yield OOM errors.
 // TODO(crbug.com/1112840): Fails on some Android bots.
 #define MAYBE_UncheckedMallocDies DISABLED_UncheckedMallocDies
 #define MAYBE_UncheckedCallocDies DISABLED_UncheckedCallocDies
-#elif defined(OS_FUCHSIA)
-#define MAYBE_UncheckedMallocDies UncheckedMallocDies
-#define MAYBE_UncheckedCallocDies UncheckedCallocDies
-#endif  // defined(OS_ANDROID)
-
 TEST_F(OutOfMemoryDeathTest, MAYBE_UncheckedMallocDies) {
   ASSERT_OOM_DEATH({
     SetUpInDeathAssert();
