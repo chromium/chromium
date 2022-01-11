@@ -12494,6 +12494,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="RenderFrameHostImpl.DroppedInterfaceRequestName"
     enum="RenderFrameHostImpl.InterfaceNames" expires_after="M85">
+  <obsolete>
+    Removed in January 2022.
+  </obsolete>
   <owner>engedy@chromium.org</owner>
   <summary>
     For each load and dropped Mojo interface request in a frame, records a
@@ -12513,6 +12516,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="RenderFrameHostImpl.DroppedInterfaceRequests" units="count"
     expires_after="M85">
+  <obsolete>
+    Removed in January 2022.
+  </obsolete>
   <owner>engedy@chromium.org</owner>
   <summary>
     For each load in a frame, records the number of interface requests to

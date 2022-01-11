@@ -22,7 +22,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
-#include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
@@ -614,11 +613,6 @@ class RenderFrameHostFactoryForBeforeUnloadInterceptor
         std::move(browsing_context_state)));
   }
 };
-
-mojo::ScopedMessagePipeHandle CreateDisconnectedMessagePipeHandle() {
-  mojo::MessagePipe pipe;
-  return std::move(pipe.handle0);
-}
 
 }  // namespace
 
@@ -2547,103 +2541,6 @@ IN_PROC_BROWSER_TEST_F(
   // Cross site iframes should have an empty site-for-cookies.
   EXPECT_TRUE(
       innermost_iframe->current_frame_host()->ComputeSiteForCookies().IsNull());
-}
-
-// Verify that if the UMA histograms are correctly recording if interface
-// broker requests are getting dropped because they racily arrive from the
-// previously active document (after the next navigation already committed).
-IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
-                       DroppedInterfaceRequestCounter) {
-  const GURL kUrl1(embedded_test_server()->GetURL("/title1.html"));
-  const GURL kUrl2(embedded_test_server()->GetURL("/title2.html"));
-  const GURL kUrl3(embedded_test_server()->GetURL("/title3.html"));
-  const GURL kUrl4(embedded_test_server()->GetURL("/empty.html"));
-
-  // The 31-bit hash of the string "content.mojom.MojoWebTestHelper".
-  const int32_t kHashOfContentMojomMojoWebTestHelper = 0x77b7b3d6;
-
-  // Client ends of the fake interface broker receivers injected for the first
-  // and second navigations.
-  mojo::Remote<blink::mojom::BrowserInterfaceBroker> interface_broker_1;
-  mojo::Remote<blink::mojom::BrowserInterfaceBroker> interface_broker_2;
-
-  base::RunLoop wait_until_connection_error_loop_1;
-  base::RunLoop wait_until_connection_error_loop_2;
-
-  {
-    ScopedFakeInterfaceBrokerRequestInjector injector(web_contents());
-    injector.set_fake_receiver_for_next_commit(
-        interface_broker_1.BindNewPipeAndPassReceiver());
-    interface_broker_1.set_disconnect_handler(
-        wait_until_connection_error_loop_1.QuitClosure());
-    ASSERT_TRUE(NavigateToURLAndDoNotWaitForLoadStop(shell(), kUrl1));
-  }
-
-  // The test below only makes sense for same-RFH navigations, so we need to
-  // ensure that we won't trigger a same-site cross-RFH navigation.
-  DisableProactiveBrowsingInstanceSwapFor(web_contents()->GetMainFrame());
-
-  {
-    ScopedFakeInterfaceBrokerRequestInjector injector(web_contents());
-    injector.set_fake_receiver_for_next_commit(
-        interface_broker_2.BindNewPipeAndPassReceiver());
-    interface_broker_2.set_disconnect_handler(
-        wait_until_connection_error_loop_2.QuitClosure());
-    ASSERT_TRUE(NavigateToURLAndDoNotWaitForLoadStop(shell(), kUrl2));
-  }
-
-  // Simulate two interface requests corresponding to the first navigation
-  // arrived after the second navigation was committed, hence were dropped.
-  interface_broker_1->GetInterface(
-      mojo::PendingReceiver<mojom::MojoWebTestHelper>(
-          CreateDisconnectedMessagePipeHandle()));
-  interface_broker_1->GetInterface(
-      mojo::PendingReceiver<mojom::MojoWebTestHelper>(
-          CreateDisconnectedMessagePipeHandle()));
-
-  // RFHI destroys the DroppedInterfaceRequestLogger from navigation `n` on
-  // navigation `n+2`. Histrograms are recorded on destruction, there should
-  // be a single sample indicating two requests having been dropped for the
-  // first URL.
-  {
-    base::HistogramTester histogram_tester;
-    ASSERT_TRUE(NavigateToURLAndDoNotWaitForLoadStop(shell(), kUrl3));
-    histogram_tester.ExpectUniqueSample(
-        "RenderFrameHostImpl.DroppedInterfaceRequests", 2, 1);
-    histogram_tester.ExpectUniqueSample(
-        "RenderFrameHostImpl.DroppedInterfaceRequestName",
-        kHashOfContentMojomMojoWebTestHelper, 2);
-  }
-
-  // Simulate one interface request dropped for the second URL.
-  interface_broker_2->GetInterface(
-      mojo::PendingReceiver<mojom::MojoWebTestHelper>(
-          CreateDisconnectedMessagePipeHandle()));
-
-  // A final navigation should record the sample from the second URL.
-  {
-    base::HistogramTester histogram_tester;
-    ASSERT_TRUE(NavigateToURLAndDoNotWaitForLoadStop(shell(), kUrl4));
-
-    histogram_tester.ExpectUniqueSample(
-        "RenderFrameHostImpl.DroppedInterfaceRequests", 1, 1);
-    histogram_tester.ExpectUniqueSample(
-        "RenderFrameHostImpl.DroppedInterfaceRequestName",
-        kHashOfContentMojomMojoWebTestHelper, 1);
-  }
-
-  // Both the DroppedInterfaceRequestLogger for the first and second URLs are
-  // destroyed -- even more interfacerequests should not cause any crashes.
-  interface_broker_1->GetInterface(
-      mojo::PendingReceiver<mojom::MojoWebTestHelper>(
-          CreateDisconnectedMessagePipeHandle()));
-  interface_broker_2->GetInterface(
-      mojo::PendingReceiver<mojom::MojoWebTestHelper>(
-          CreateDisconnectedMessagePipeHandle()));
-
-  // The interface connections should be broken.
-  wait_until_connection_error_loop_1.Run();
-  wait_until_connection_error_loop_2.Run();
 }
 
 // Regression test for https://crbug.com/852350

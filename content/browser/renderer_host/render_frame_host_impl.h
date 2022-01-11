@@ -2591,7 +2591,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   FRIEND_TEST_ALL_PREFIXES(DocumentUserDataTest, CheckInPendingDeletionState);
   FRIEND_TEST_ALL_PREFIXES(WebContentsImplBrowserTest, FrozenAndUnfrozenIPC);
 
-  class DroppedInterfaceRequestLogger;
   class SubresourceLoaderFactoriesConfig;
 
   enum class FencedFrameStatus {
@@ -3738,14 +3737,6 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Currently, it is non-null pointer only if this RenderFrameHost is being
   // prerendered.
   std::unique_ptr<MojoBinderPolicyApplier> mojo_binder_policy_applier_;
-
-  // Logs interface requests that arrive after the frame has already committed a
-  // non-same-document navigation, and has already unbound
-  // |broker_receiver_| from the interface connection that had been used to
-  // service RenderFrame::GetBrowserInterfaceBroker for the previously active
-  // document in the frame.
-  std::unique_ptr<DroppedInterfaceRequestLogger>
-      dropped_interface_request_logger_;
 
   // IPC-friendly token that represents this host.
   const blink::LocalFrameToken frame_token_;

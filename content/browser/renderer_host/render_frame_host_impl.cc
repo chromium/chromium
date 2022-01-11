@@ -640,13 +640,6 @@ RenderFrameHostOrProxy LookupRenderFrameHostOrProxy(
                    process_id, frame_token.GetAs<blink::RemoteFrameToken>()));
 }
 
-// Takes the lower 31 bits of the metric-name-hash of a Mojo interface |name|.
-base::Histogram::Sample HashInterfaceNameToHistogramSample(
-    base::StringPiece name) {
-  return base::strict_cast<base::Histogram::Sample>(
-      static_cast<int32_t>(base::HashMetricName(name) & 0x7fffffffull));
-}
-
 // Set crash keys that will help understand the circumstances of a renderer
 // kill.  Note that the commit URL is already reported in a crash key, and
 // additional keys are logged in RenderProcessHostImpl::ShutdownForBadMessage.
@@ -1174,41 +1167,6 @@ class PepperPluginInstanceHost : public mojom::PepperPluginInstanceHost {
   mojo::AssociatedRemote<mojom::PepperPluginInstance> remote_;
 };
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
-
-class RenderFrameHostImpl::DroppedInterfaceRequestLogger
-    : public blink::mojom::BrowserInterfaceBroker {
- public:
-  explicit DroppedInterfaceRequestLogger(
-      mojo::PendingReceiver<blink::mojom::BrowserInterfaceBroker> receiver) {
-    receiver_.Bind(std::move(receiver));
-  }
-
-  DroppedInterfaceRequestLogger(const DroppedInterfaceRequestLogger&) = delete;
-  DroppedInterfaceRequestLogger& operator=(
-      const DroppedInterfaceRequestLogger&) = delete;
-
-  ~DroppedInterfaceRequestLogger() override {
-    UMA_HISTOGRAM_EXACT_LINEAR("RenderFrameHostImpl.DroppedInterfaceRequests",
-                               num_dropped_requests_, 20);
-  }
-
- protected:
-  // blink::mojom::BrowserInterfaceBroker
-  void GetInterface(mojo::GenericPendingReceiver receiver) override {
-    ++num_dropped_requests_;
-    auto interface_name = receiver.interface_name().value_or("");
-    base::UmaHistogramSparse(
-        "RenderFrameHostImpl.DroppedInterfaceRequestName",
-        HashInterfaceNameToHistogramSample(interface_name));
-    DLOG(WARNING)
-        << "InterfaceRequest was dropped, the document is no longer active: "
-        << interface_name;
-  }
-
- private:
-  mojo::Receiver<blink::mojom::BrowserInterfaceBroker> receiver_{this};
-  int num_dropped_requests_ = 0;
-};
 
 struct PendingNavigation {
   blink::mojom::CommonNavigationParamsPtr common_params;
@@ -11112,10 +11070,7 @@ void RenderFrameHostImpl::DidCommitNavigation(
 
   if (interface_params) {
     if (broker_receiver_.is_bound()) {
-      auto broker_receiver_of_previous_document = broker_receiver_.Unbind();
-      dropped_interface_request_logger_ =
-          std::make_unique<DroppedInterfaceRequestLogger>(
-              std::move(broker_receiver_of_previous_document));
+      broker_receiver_.reset();
     }
     BindBrowserInterfaceBrokerReceiver(
         std::move(interface_params->browser_interface_broker_receiver));
