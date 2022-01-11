@@ -31,12 +31,6 @@ enum : unsigned {
 
   // Used to paint SVG resource subtree for masks, filter images, etc.
   kPaintingResourceSubtree = 1 << 4,
-
-  // Paint overlay scrollbars and resizers which are above scrolling contents.
-  // This is only used by PaintLayerPainter internally.
-  // TODO(wangxianzhu): Refactor PaintLayerPainter to avoid using this flag and
-  // remove this flag.
-  kPaintingOverlayOverflowControls = 1 << 5,
 };
 }  // namespace PaintFlag
 

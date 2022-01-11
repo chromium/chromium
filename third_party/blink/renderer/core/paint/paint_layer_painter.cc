@@ -269,8 +269,6 @@ PaintResult PaintLayerPainter::PaintLayerContents(GraphicsContext& context,
       is_document_element_invisible);
 
   bool is_self_painting_layer = paint_layer_.IsSelfPaintingLayer();
-  bool is_painting_overlay_overflow_controls =
-      paint_flags & PaintFlag::kPaintingOverlayOverflowControls;
   bool is_unclipped_layout_view = IsUnclippedLayoutView(paint_layer_);
 
   bool should_paint_content =
@@ -278,8 +276,7 @@ PaintResult PaintLayerPainter::PaintLayerContents(GraphicsContext& context,
       // Content under a LayoutSVGHiddenContainer is auxiliary resources for
       // painting. Foreign content should never paint in this situation, as it
       // is primary, not auxiliary.
-      !paint_layer_.IsUnderSVGHiddenContainer() && is_self_painting_layer &&
-      !is_painting_overlay_overflow_controls;
+      !paint_layer_.IsUnderSVGHiddenContainer() && is_self_painting_layer;
 
   if (object.FirstFragment().NextFragment() || is_unclipped_layout_view) {
     result = kMayBeClippedByCullRect;
@@ -350,12 +347,9 @@ PaintResult PaintLayerPainter::PaintLayerContents(GraphicsContext& context,
     PaintWithPhase(PaintPhase::kSelfBlockBackgroundOnly, context, paint_flags);
   }
 
-  bool should_paint_children = !is_painting_overlay_overflow_controls;
-  if (should_paint_children) {
-    if (PaintChildren(kNegativeZOrderChildren, context, paint_flags) ==
-        kMayBeClippedByCullRect)
-      result = kMayBeClippedByCullRect;
-  }
+  if (PaintChildren(kNegativeZOrderChildren, context, paint_flags) ==
+      kMayBeClippedByCullRect)
+    result = kMayBeClippedByCullRect;
 
   if (should_paint_content) {
     // If the negative-z-order children created paint chunks, this gives the
@@ -373,27 +367,24 @@ PaintResult PaintLayerPainter::PaintLayerContents(GraphicsContext& context,
   }
 
   // Outline always needs to be painted even if we have no visible content.
-  bool should_paint_self_outline = is_self_painting_layer &&
-                                   !is_painting_overlay_overflow_controls &&
-                                   object.StyleRef().HasOutline();
+  bool should_paint_self_outline =
+      is_self_painting_layer && object.StyleRef().HasOutline();
 
   bool is_video = IsA<LayoutVideo>(object);
   if (!is_video && should_paint_self_outline)
     PaintWithPhase(PaintPhase::kSelfOutlineOnly, context, paint_flags);
 
-  if (should_paint_children) {
-    if (PaintChildren(kNormalFlowAndPositiveZOrderChildren, context,
-                      paint_flags) == kMayBeClippedByCullRect)
-      result = kMayBeClippedByCullRect;
-  }
+  if (PaintChildren(kNormalFlowAndPositiveZOrderChildren, context,
+                    paint_flags) == kMayBeClippedByCullRect)
+    result = kMayBeClippedByCullRect;
 
   if (paint_layer_.GetScrollableArea() &&
       paint_layer_.GetScrollableArea()
           ->ShouldOverflowControlsPaintAsOverlay()) {
-    if (is_painting_overlay_overflow_controls ||
-        !paint_layer_.NeedsReorderOverlayOverflowControls()) {
+    if (!paint_layer_.NeedsReorderOverlayOverflowControls())
       PaintOverlayOverflowControls(context, paint_flags);
-    }
+    // Otherwise the overlay overflow controls will be painted after scrolling
+    // children in PaintChildren().
   }
 
   if (is_video && should_paint_self_outline) {
@@ -442,10 +433,12 @@ PaintResult PaintLayerPainter::PaintChildren(
            *layers_painting_overlay_overflow_controls_after) {
         DCHECK(reparent_overflow_controls_layer
                    ->NeedsReorderOverlayOverflowControls());
-        if (PaintLayerPainter(*reparent_overflow_controls_layer)
-                .Paint(context, PaintFlag::kPaintingOverlayOverflowControls) ==
-            kMayBeClippedByCullRect)
+        PaintLayerPainter(*reparent_overflow_controls_layer)
+            .PaintOverlayOverflowControls(context, paint_flags);
+        if (reparent_overflow_controls_layer->PreviousPaintResult() ==
+            kMayBeClippedByCullRect) {
           result = kMayBeClippedByCullRect;
+        }
       }
     }
   }
@@ -455,16 +448,9 @@ PaintResult PaintLayerPainter::PaintChildren(
 
 void PaintLayerPainter::PaintOverlayOverflowControls(GraphicsContext& context,
                                                      PaintFlags paint_flags) {
+  DCHECK(paint_layer_.GetScrollableArea());
   DCHECK(
-      paint_layer_.GetScrollableArea() &&
       paint_layer_.GetScrollableArea()->ShouldOverflowControlsPaintAsOverlay());
-
-  // We don't need to paint composited overflow controls.
-  if (paint_layer_.GetScrollableArea()->HasLayerForHorizontalScrollbar() ||
-      paint_layer_.GetScrollableArea()->HasLayerForVerticalScrollbar() ||
-      paint_layer_.GetScrollableArea()->HasLayerForScrollCorner())
-    return;
-
   PaintWithPhase(PaintPhase::kOverlayOverflowControls, context, paint_flags);
 }
 
