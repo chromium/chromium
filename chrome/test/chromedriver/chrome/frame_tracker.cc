@@ -143,33 +143,38 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
   } else if (method == "Runtime.executionContextsCleared") {
     frame_to_context_map_.clear();
   } else if (method == "Page.frameAttached") {
-    std::string frame_id;
-    if (!params.GetString("frameId", &frame_id))
+    if (const std::string* frame_id = params.FindStringKey("frameId")) {
+      attached_frames_.insert(*frame_id);
+    } else {
       return Status(kUnknownError,
                     "missing frameId in Page.frameAttached event");
-    attached_frames_.insert(frame_id);
+    }
   } else if (method == "Page.frameDetached") {
-    std::string frame_id;
-    if (!params.GetString("frameId", &frame_id))
+    if (const std::string* frame_id = params.FindStringKey("frameId")) {
+      attached_frames_.erase(*frame_id);
+    } else {
       return Status(kUnknownError,
                     "missing frameId in Page.frameDetached event");
-    attached_frames_.erase(frame_id);
+    }
   } else if (method == "Page.frameNavigated") {
     if (!params.FindPath("frame.parentId"))
       frame_to_context_map_.clear();
   } else if (method == "Target.attachedToTarget") {
-    std::string type, target_id, session_id;
-    if (!params.GetString("targetInfo.type", &type))
+    const std::string* type = params.FindStringPath("targetInfo.type");
+    if (!type)
       return Status(kUnknownError,
                     "missing target type in Target.attachedToTarget event");
-    if (type == "iframe") {
-      if (!params.GetString("targetInfo.targetId", &target_id))
+    if (*type == "iframe") {
+      const std::string* target_id =
+          params.FindStringPath("targetInfo.targetId");
+      if (!target_id)
         return Status(kUnknownError,
                       "missing target ID in Target.attachedToTarget event");
-      if (!params.GetString("sessionId", &session_id))
+      const std::string* session_id = params.FindStringKey("sessionId");
+      if (!session_id)
         return Status(kUnknownError,
                       "missing session ID in Target.attachedToTarget event");
-      if (frame_to_target_map_.count(target_id) > 0) {
+      if (frame_to_target_map_.count(*target_id) > 0) {
         // Since chrome 70 we are seeing multiple Target.attachedToTarget events
         // for the same target_id.  This is causing crashes because:
         // - replacing the value in frame_to_target_map_ is causing the
@@ -181,20 +186,20 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
         // The fix is to not replace an pre-existing frame_to_target_map_ entry.
       } else {
         std::unique_ptr<WebViewImpl> child(
-            static_cast<WebViewImpl*>(web_view_)->CreateChild(session_id,
-                                                              target_id));
+            static_cast<WebViewImpl*>(web_view_)->CreateChild(*session_id,
+                                                              *target_id));
         WebViewImplHolder child_holder(child.get());
-        frame_to_target_map_[target_id] = std::move(child);
-        frame_to_target_map_[target_id]->SetUpDevTools();
+        frame_to_target_map_[*target_id] = std::move(child);
+        frame_to_target_map_[*target_id]->SetUpDevTools();
       }
     }
   } else if (method == "Target.detachedFromTarget") {
-    std::string target_id;
-    if (!params.GetString("targetId", &target_id))
+    const std::string* target_id = params.FindStringKey("targetId");
+    if (!target_id)
       // Some types of Target.detachedFromTarget events do not have targetId.
       // We are not interested in those types of targets.
       return Status(kOk);
-    auto target_iter = frame_to_target_map_.find(target_id);
+    auto target_iter = frame_to_target_map_.find(*target_id);
     if (target_iter == frame_to_target_map_.end())
       // There are some target types that we're not keeping track of, thus not
       // finding the target in frame_to_target_map_ is OK.
@@ -203,7 +208,7 @@ Status FrameTracker::OnEvent(DevToolsClient* client,
     if (target->IsLocked())
       target->SetDetached();
     else
-      frame_to_target_map_.erase(target_id);
+      frame_to_target_map_.erase(*target_id);
   }
   return Status(kOk);
 }
