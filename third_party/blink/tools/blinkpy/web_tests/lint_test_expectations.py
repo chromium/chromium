@@ -257,7 +257,7 @@ def _check_not_slow_and_timeout(host, port, path, expectations):
                 (ResultType.Skip not in exp.results) and
                 (test_expectations.get_expectations(exp.test).is_slow_test or
                     port.is_slow_wpt_test(exp.test))):
-            error = "{}:{} '{}' is a [ Slow ] and [ Timeout ] test.".format(
+            error = "{}:{} '{}' is a [ Slow ] and [ Timeout ] test: you must add [ Skip ] (see crrev.com/c/3381301).".format(
                 host.filesystem.basename(path), exp.lineno, exp.test)
             _log.warning(error)
             rv.append(error)
