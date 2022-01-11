@@ -4,7 +4,8 @@
 
 #include "gpu/vulkan/vulkan_util.h"
 
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "base/logging.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
 
@@ -39,7 +40,7 @@ VkSemaphore ImportVkSemaphoreHandle(VkDevice vk_device,
   }
 
   // If import is successful, the VkSemaphore takes the ownership of the fd.
-  ignore_result(win32_handle.Take());
+  std::ignore = win32_handle.Take();
 
   return semaphore;
 }

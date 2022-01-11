@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 #include "gpu/ipc/service/gpu_channel_test_common.h"
-#include "base/memory/raw_ptr.h"
 
 #include <memory>
+#include <tuple>
 
-#include "base/ignore_result.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -137,7 +137,7 @@ void GpuChannelTestCommon::CreateCommandBuffer(
   auto quit = loop.QuitClosure();
   mojo::PendingAssociatedRemote<mojom::CommandBuffer> remote;
   mojo::PendingAssociatedRemote<mojom::CommandBufferClient> client;
-  ignore_result(client.InitWithNewEndpointAndPassReceiver());
+  std::ignore = client.InitWithNewEndpointAndPassReceiver();
   client.EnableUnassociatedUsage();
   channel.CreateCommandBuffer(
       std::move(init_params), routing_id, std::move(shared_state),
