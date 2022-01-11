@@ -592,7 +592,7 @@ CHAR_LIMIT guidelines:
         For added safety, encrypt passwords on your device before they‘re saved to Google Password Manager
       </message>
       <message name="IDS_ANDROID_TRUSTED_VAULT_BANNER_SUB_LABEL_OPTED_IN" desc="Sub-label for the on-device encryption banner when the user is already opted in.">
-        Your password are encrypted on your device before they’re saved to Google Password Manager
+        Your passwords are encrypted on your device before they’re saved to Google Password Manager
       </message>
       <message name="IDS_SECTION_SAVED_PASSWORDS_EXCEPTIONS" desc="Header for the list of websites for which user selected to never save passwords. [CHAR_LIMIT=32]">
         Never saved

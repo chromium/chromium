@@ -733,7 +733,7 @@
     For added safety, encrypt passwords on your device before they‘re saved to Google Password Manager
   </message>
   <message name="IDS_SETTINGS_TRUSTED_VAULT_BANNER_SUB_LABEL_OPTED_IN" desc="Sub-label for the on-device encryption banner in settings, when the user is already opted in.">
-    Your password are encrypted on your device before they‘re saved to Google Password Manager
+    Your passwords are encrypted on your device before they‘re saved to Google Password Manager
   </message>
   <message name="IDS_SETTINGS_PASSWORD_SHOW_PASSWORD_A11Y" desc="The ARIA (accessibility) message for the 'Show Password' button, which sits in every row of the password list. For this row does not include a password, only information of the account. Reveals password when clicked.">
     Show password for <ph name="USERNAME">$1<ex>example@gmail.com</ex></ph> on <ph name="DOMAIN">$2<ex>www.google.com</ex></ph>
