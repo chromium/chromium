@@ -350,5 +350,6 @@ ts_definitions("generate_definitions") {
     # these files, instead of accidentally auto-generating them.
     ":copy_checked_in_dts_files",
     ":preprocess",
+    "mojo:library",
   ]
 }
