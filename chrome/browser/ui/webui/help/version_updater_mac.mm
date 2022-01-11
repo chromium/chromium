@@ -229,7 +229,7 @@ void VersionUpdaterMac::UpdateStatus(NSDictionary* dictionary) {
 
     case kAutoupdateRegisterFailed:
       enable_promote_button = false;
-      FALLTHROUGH;
+      [[fallthrough]];
     case kAutoupdateCheckFailed:
     case kAutoupdateInstallFailed:
     case kAutoupdatePromoteFailed:
@@ -328,7 +328,7 @@ void VersionUpdaterMac::UpdateStatusFromChromiumUpdater(
 
   switch (update_state.state) {
     case updater::UpdateService::UpdateState::State::kCheckingForUpdates:
-      FALLTHROUGH;
+      [[fallthrough]];
     case updater::UpdateService::UpdateState::State::kUpdateAvailable:
       status = VersionUpdater::Status::CHECKING;
       enable_promote_button = false;
@@ -336,7 +336,7 @@ void VersionUpdaterMac::UpdateStatusFromChromiumUpdater(
     case updater::UpdateService::UpdateState::State::kDownloading:
       progress = GetDownloadProgress(update_state.downloaded_bytes,
                                      update_state.total_bytes);
-      FALLTHROUGH;
+      [[fallthrough]];
     case updater::UpdateService::UpdateState::State::kInstalling:
       status = VersionUpdater::Status::UPDATING;
       enable_promote_button = false;
@@ -355,7 +355,7 @@ void VersionUpdaterMac::UpdateStatusFromChromiumUpdater(
           update_state.error_code, update_state.extra_code1);
       break;
     case updater::UpdateService::UpdateState::State::kNotStarted:
-      FALLTHROUGH;
+      [[fallthrough]];
     case updater::UpdateService::UpdateState::State::kUnknown:
       return;
   }

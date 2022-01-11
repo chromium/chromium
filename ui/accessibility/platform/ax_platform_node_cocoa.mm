@@ -696,7 +696,7 @@ bool IsAXSetter(SEL selector) {
       [axAttributes addObject:kTextAttributes];
       if (!_node->HasState(ax::mojom::State::kProtected))
         [axAttributes addObjectsFromArray:kUnprotectedTextAttributes];
-      FALLTHROUGH;
+      [[fallthrough]];
     case ax::mojom::Role::kCheckBox:
     case ax::mojom::Role::kComboBoxMenuButton:
     case ax::mojom::Role::kMenuItemCheckBox:
