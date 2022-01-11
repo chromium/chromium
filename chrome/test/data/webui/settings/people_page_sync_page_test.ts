@@ -533,6 +533,12 @@ suite('SyncSettingsTests', function() {
     assertTrue(encryptionRadioGroup.disabled);
     assertEquals(-1, encryptWithGoogle.$.button.tabIndex);
     assertEquals(-1, encryptWithPassphrase.$.button.tabIndex);
+
+    // Confirm that the page navigates away form the sync setup.
+    await browserProxy.whenCalled('didNavigateAwayFromSyncPage');
+    const router = Router.getInstance();
+    assertEquals(
+        (router.getRoutes() as SyncRoutes).PEOPLE, router.getCurrentRoute());
   });
 
   test('SyncAdvancedRow', function() {

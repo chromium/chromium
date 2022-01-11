@@ -589,16 +589,27 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
     this.browserProxy_.setDecryptionPassphrase(this.existingPassphrase_)
         .then(
             sucessfullySet => this.handlePageStatusChanged_(
-                sucessfullySet ? PageStatus.CONFIGURE :
-                                 PageStatus.PASSPHRASE_FAILED));
+                this.computePageStatusAfterPassphraseChange_(sucessfullySet)));
 
     this.existingPassphrase_ = '';
   }
 
   private onPassphraseChanged_(e: CustomEvent<{didChange: boolean}>) {
     this.handlePageStatusChanged_(
-        e.detail.didChange ? PageStatus.CONFIGURE :
-                             PageStatus.PASSPHRASE_FAILED);
+        this.computePageStatusAfterPassphraseChange_(e.detail.didChange));
+  }
+
+  private computePageStatusAfterPassphraseChange_(successfullyChanged: boolean):
+      PageStatus {
+    if (!successfullyChanged) {
+      return PageStatus.PASSPHRASE_FAILED;
+    }
+
+    // Stay on the setup page if the user hasn't approved sync settings yet.
+    // Otherwise, close sync setup.
+    return this.syncStatus && this.syncStatus.firstSetupInProgress ?
+        PageStatus.CONFIGURE :
+        PageStatus.DONE;
   }
 
   /**
