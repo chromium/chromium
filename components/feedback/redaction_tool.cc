@@ -768,6 +768,11 @@ bool IsUrlExempt(re2::StringPiece url,
   if (url.contains("?"))
     return false;
 
+  // Last part of an SELinux context is misdetected as a URL.
+  // e.g. "u:object_r:system_data_file:s0:c512,c768"
+  if (url.starts_with("file:s0"))
+    return true;
+
   // Check for chrome:// URLs that are exempt.
   if (url.starts_with("chrome://")) {
     // We allow everything in chrome://resources/.

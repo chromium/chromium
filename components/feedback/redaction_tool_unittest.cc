@@ -36,6 +36,8 @@ const StringWithRedaction kStringsWithRedactions[] = {
      "aaaaaaaa [SSID=<SSID: 1>]aaaaa", PIIType::kSSID},
     {"aaaaaaaahttp://tets.comaaaaaaa",  // URL.
      "aaaaaaaa<URL: 1>", PIIType::kURL},
+    {"u:object_r:system_data_file:s0:c512,c768",  // No PII, it is an SELinux context.
+     "u:object_r:system_data_file:s0:c512,c768", PIIType::kNone},
     {"aaaaaemail@example.comaaa",  // Email address.
      "<email: 1>", PIIType::kEmail},
     {"example@@1234",  // No PII, it is not a valid email address.
