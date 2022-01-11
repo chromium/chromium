@@ -30,6 +30,14 @@
 #include "ui/accessibility/platform/ichromeaccessible.h"
 #include "ui/gfx/range/range.h"
 
+// This nonstandard GUID is taken directly from the Mozilla sources
+// (https://searchfox.org/mozilla-central/source/accessible/windows/msaa/ServiceProvider.cpp#60).
+const GUID GUID_IAccessibleContentDocument = {
+    0xa5d8e1f3,
+    0x3571,
+    0x4d8f,
+    {0x95, 0x21, 0x07, 0xed, 0x28, 0xfb, 0x07, 0x2e}};
+
 // IMPORTANT!
 // These values are written to logs.  Do not renumber or delete
 // existing items; add new entries to the end of the list.

@@ -7,7 +7,6 @@
 
 #include <oleacc.h>
 
-#include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "content/common/content_export.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder.h"
@@ -15,14 +14,18 @@
 
 namespace content {
 
-class BrowserAccessibilityManager;
-
 class CONTENT_EXPORT AccessibilityEventRecorderWin
     : public ui::AXEventRecorder {
  public:
-  AccessibilityEventRecorderWin(BrowserAccessibilityManager* manager,
-                                base::ProcessId pid,
-                                const ui::AXTreeSelector& selector);
+  // Flag values that specify the way events are handled.
+  enum ListenerType {
+    kSync,   // Events are handled synchronously.
+    kAsync,  // Events are handled asynchronously.
+  };
+
+  AccessibilityEventRecorderWin(base::ProcessId pid,
+                                const ui::AXTreeSelector& selector,
+                                ListenerType listenerType = kSync);
 
   AccessibilityEventRecorderWin(const AccessibilityEventRecorderWin&) = delete;
   AccessibilityEventRecorderWin& operator=(
@@ -52,8 +55,6 @@ class CONTENT_EXPORT AccessibilityEventRecorderWin
                       DWORD event_time);
 
   HWINEVENTHOOK win_event_hook_handle_;
-  // TODO: should be either removed or converted to a weakptr.
-  const raw_ptr<BrowserAccessibilityManager> manager_;
   static AccessibilityEventRecorderWin* instance_;
 };
 

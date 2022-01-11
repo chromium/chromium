@@ -9,6 +9,7 @@
 
 #include <string>
 
+#include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -16,10 +17,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/scoped_bstr.h"
 #include "base/win/scoped_variant.h"
-#include "content/browser/accessibility/accessibility_event_recorder_uia_win.h"
-#include "content/browser/accessibility/browser_accessibility_manager.h"
-#include "content/browser/accessibility/browser_accessibility_win.h"
 #include "third_party/iaccessible2/ia2_api_all.h"
+#include "ui/accessibility/platform/ax_platform_node_win.h"
 #include "ui/accessibility/platform/inspect/ax_inspect_utils_win.h"
 #include "ui/base/win/atl_module.h"
 #include "ui/gfx/win/hwnd_util.h"
@@ -69,7 +68,7 @@ std::string BstrToPrettyUTF8(BSTR bstr) {
   // Pretty-print the embedded object character as <obj> so that test output
   // is human-readable.
   std::wstring embedded_character = base::UTF16ToWide(
-      std::u16string(1, BrowserAccessibilityComWin::kEmbeddedCharacter));
+      std::u16string(1, ui::AXPlatformNodeBase::kEmbeddedCharacter));
   base::ReplaceChars(wstr, embedded_character, L"<obj>", &wstr);
 
   return base::WideToUTF8(wstr);
@@ -101,10 +100,9 @@ CALLBACK void AccessibilityEventRecorderWin::WinEventHookThunk(
 }
 
 AccessibilityEventRecorderWin::AccessibilityEventRecorderWin(
-    BrowserAccessibilityManager* manager,
     base::ProcessId pid,
-    const ui::AXTreeSelector& selector)
-    : manager_(manager) {
+    const ui::AXTreeSelector& selector,
+    ListenerType listenerType) {
   CHECK(!instance_) << "There can be only one instance of"
                     << " AccessibilityEventRecorder at a time.";
 
@@ -118,12 +116,8 @@ AccessibilityEventRecorderWin::AccessibilityEventRecorderWin(
     }
   }
 
-  // For now, just use out of context events when running as a utility to watch
-  // events (no BrowserAccessibilityManager), because otherwise Chrome events
-  // are not getting reported. Being in context is better so that for
-  // TEXT_REMOVED and TEXT_INSERTED events, we can query the text that was
-  // inserted or removed and include that in the log.
-  int context = manager ? WINEVENT_INCONTEXT : WINEVENT_OUTOFCONTEXT;
+  int context =
+      listenerType == kSync ? WINEVENT_INCONTEXT : WINEVENT_OUTOFCONTEXT;
   win_event_hook_handle_ =
       SetWinEventHook(EVENT_MIN, EVENT_MAX, GetModuleHandle(NULL),
                       &AccessibilityEventRecorderWin::WinEventHookThunk, pid,

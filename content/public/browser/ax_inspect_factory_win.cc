@@ -71,9 +71,17 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
   }
 
   switch (type) {
-    case ui::AXApiType::kWinIA2:
-      return std::make_unique<AccessibilityEventRecorderWin>(manager, pid,
-                                                             selector);
+    case ui::AXApiType::kWinIA2: {
+      // For now, just use out of context events when running as a utility to
+      // watch events (no BrowserAccessibilityManager), because otherwise Chrome
+      // events are not getting reported. Being in context is better so that for
+      // TEXT_REMOVED and TEXT_INSERTED events, we can query the text that was
+      // inserted or removed and include that in the log.
+      return std::make_unique<AccessibilityEventRecorderWin>(
+          pid, selector,
+          manager ? AccessibilityEventRecorderWin::kSync
+                  : AccessibilityEventRecorderWin::kAsync);
+    }
     case ui::AXApiType::kWinUIA:
       return std::make_unique<AccessibilityEventRecorderUia>(manager, pid,
                                                              selector.pattern);
