@@ -20,12 +20,6 @@ namespace test {
 
 namespace {
 
-// Default label assigned to fields.
-constexpr char16_t kLabelText[] = u"label";
-
-// Default name attribute assigned to fields.
-constexpr char16_t kNameText[] = u"name";
-
 // Default form url.
 constexpr char kFormUrl[] = "http://example.com/form.html";
 
@@ -43,8 +37,8 @@ struct FieldDataDescription {
   absl::optional<LocalFrameToken> host_frame;
   absl::optional<FieldRendererId> unique_renderer_id;
   bool is_focusable = true;
-  const std::u16string label = kLabelText;
-  const std::u16string name = kNameText;
+  absl::optional<std::u16string> label;
+  absl::optional<std::u16string> name;
   absl::optional<std::u16string> value;
   const std::string autocomplete_attribute;
   const std::string form_control_type = "text";

@@ -105,10 +105,10 @@ FormData GetFormData(const FormDataDescription& d) {
     ff.is_focusable = dd.is_focusable;
     if (!dd.autocomplete_attribute.empty())
       ff.autocomplete_attribute = dd.autocomplete_attribute;
-    if (dd.label != kLabelText)
-      ff.label = dd.label;
-    if (dd.name != kNameText)
-      ff.name = dd.name;
+    if (dd.label)
+      ff.label = *dd.label;
+    if (dd.name)
+      ff.name = *dd.name;
     if (dd.value)
       ff.value = *dd.value;
     ff.is_autofilled = dd.is_autofilled.value_or(false);
@@ -159,37 +159,32 @@ void FormStructureTest::CheckFormStructureTestData(
     }
     if (test_case.form_flags.section_count) {
       std::set<std::string> section_names;
-      for (size_t i = 0; i < 9; ++i) {
-        section_names.insert(form_structure->field(i)->section);
-      }
+      for (const auto& field : *form_structure)
+        section_names.insert(field->section);
       EXPECT_EQ(*test_case.form_flags.section_count,
                 static_cast<int>(section_names.size()));
     }
 
-    if (!test_case.expected_field_types.expected_html_type.empty()) {
-      for (size_t i = 0;
-           i < test_case.expected_field_types.expected_html_type.size(); i++)
-        EXPECT_EQ(test_case.expected_field_types.expected_html_type[i],
-                  form_structure->field(i)->html_type());
+    for (size_t i = 0;
+         i < test_case.expected_field_types.expected_html_type.size(); i++) {
+      EXPECT_EQ(test_case.expected_field_types.expected_html_type[i],
+                form_structure->field(i)->html_type());
     }
-    if (!test_case.expected_field_types.expected_phone_part.empty()) {
-      for (size_t i = 0;
-           i < test_case.expected_field_types.expected_phone_part.size(); i++)
-        EXPECT_EQ(test_case.expected_field_types.expected_phone_part[i],
-                  form_structure->field(i)->phone_part());
+    for (size_t i = 0;
+         i < test_case.expected_field_types.expected_phone_part.size(); i++) {
+      EXPECT_EQ(test_case.expected_field_types.expected_phone_part[i],
+                form_structure->field(i)->phone_part());
     }
-    if (!test_case.expected_field_types.expected_heuristic_type.empty()) {
-      for (size_t i = 0;
-           i < test_case.expected_field_types.expected_heuristic_type.size();
-           i++)
-        EXPECT_EQ(test_case.expected_field_types.expected_heuristic_type[i],
-                  form_structure->field(i)->heuristic_type());
+    for (size_t i = 0;
+         i < test_case.expected_field_types.expected_heuristic_type.size();
+         i++) {
+      EXPECT_EQ(test_case.expected_field_types.expected_heuristic_type[i],
+                form_structure->field(i)->heuristic_type());
     }
-    if (!test_case.expected_field_types.expected_overall_type.empty()) {
-      for (size_t i = 0;
-           i < test_case.expected_field_types.expected_overall_type.size(); i++)
-        EXPECT_EQ(test_case.expected_field_types.expected_overall_type[i],
-                  form_structure->field(i)->Type().GetStorableType());
+    for (size_t i = 0;
+         i < test_case.expected_field_types.expected_overall_type.size(); i++) {
+      EXPECT_EQ(test_case.expected_field_types.expected_overall_type[i],
+                form_structure->field(i)->Type().GetStorableType());
     }
   }
 }
