@@ -15,7 +15,9 @@ namespace bluetooth_config {
 
 DeviceCacheImpl::UnpairedDevice::UnpairedDevice(
     const device::BluetoothDevice* device)
-    : device_properties(GenerateBluetoothDeviceMojoProperties(device)),
+    : device_properties(GenerateBluetoothDeviceMojoProperties(
+          device,
+          /*fast_pair_delegate=*/nullptr)),
       inquiry_rssi(device->GetInquiryRSSI()) {}
 
 DeviceCacheImpl::UnpairedDevice::~UnpairedDevice() = default;
@@ -23,10 +25,12 @@ DeviceCacheImpl::UnpairedDevice::~UnpairedDevice() = default;
 DeviceCacheImpl::DeviceCacheImpl(
     AdapterStateController* adapter_state_controller_param,
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
-    DeviceNameManager* device_name_manager)
+    DeviceNameManager* device_name_manager,
+    FastPairDelegate* fast_pair_delegate)
     : DeviceCache(adapter_state_controller_param),
       bluetooth_adapter_(std::move(bluetooth_adapter)),
-      device_name_manager_(device_name_manager) {
+      device_name_manager_(device_name_manager),
+      fast_pair_delegate_(fast_pair_delegate) {
   adapter_state_controller_observation_.Observe(adapter_state_controller());
   adapter_observation_.Observe(bluetooth_adapter_.get());
   device_name_manager_observation_.Observe(device_name_manager_);
@@ -293,7 +297,8 @@ DeviceCacheImpl::GeneratePairedBluetoothDeviceProperties(
     const device::BluetoothDevice* device) {
   mojom::PairedBluetoothDevicePropertiesPtr properties =
       mojom::PairedBluetoothDeviceProperties::New();
-  properties->device_properties = GenerateBluetoothDeviceMojoProperties(device);
+  properties->device_properties =
+      GenerateBluetoothDeviceMojoProperties(device, fast_pair_delegate_);
   properties->nickname =
       device_name_manager_->GetDeviceNickname(device->GetIdentifier());
   return properties;

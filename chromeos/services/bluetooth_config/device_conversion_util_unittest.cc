@@ -7,20 +7,33 @@
 #include <memory>
 
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/services/bluetooth_config/fake_fast_pair_delegate.h"
+#include "chromeos/services/bluetooth_config/public/cpp/device_image_info.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
 
 namespace chromeos {
 namespace bluetooth_config {
+
+namespace {
+
+constexpr char kTestDefaultImage[] = "data:image/png;base64,TestDefaultImage";
+constexpr char kTestLeftBudImage[] = "data:image/png;base64,TestLeftBudImage";
+constexpr char kTestRightBudImage[] = "data:image/png;base64,TestRightBudImage";
+constexpr char kTestCaseImage[] = "data:image/png;base64,TestCaseImage";
+
+}  // namespace
 
 // Tests basic usage of the GenerateBluetoothDeviceMojoProperties() conversion
 // function. Not meant to be an exhaustive test of each possible Bluetooth
 // property.
 class DeviceConversionUtilTest : public testing::Test {
  protected:
-  DeviceConversionUtilTest() = default;
+  DeviceConversionUtilTest()
+      : fake_fast_pair_delegate_(FakeFastPairDelegate()) {}
   DeviceConversionUtilTest(const DeviceConversionUtilTest&) = delete;
   DeviceConversionUtilTest& operator=(const DeviceConversionUtilTest&) = delete;
   ~DeviceConversionUtilTest() override = default;
@@ -51,9 +64,14 @@ class DeviceConversionUtilTest : public testing::Test {
         .WillByDefault(testing::Return(connected));
   }
 
+  FakeFastPairDelegate* fake_fast_pair_delegate() {
+    return &fake_fast_pair_delegate_;
+  }
+
  private:
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
   std::unique_ptr<testing::NiceMock<device::MockBluetoothDevice>> mock_device_;
+  FakeFastPairDelegate fake_fast_pair_delegate_;
 };
 
 TEST_F(DeviceConversionUtilTest, TestConversion) {
@@ -61,7 +79,8 @@ TEST_F(DeviceConversionUtilTest, TestConversion) {
       /*bluetooth_class=*/0u, /*name=*/"name", /*address=*/"address",
       /*paired=*/true, /*connected=*/true, /*is_blocked_by_policy=*/true);
   mojom::BluetoothDevicePropertiesPtr properties =
-      GenerateBluetoothDeviceMojoProperties(device);
+      GenerateBluetoothDeviceMojoProperties(device,
+                                            /*fast_pair_delegate=*/nullptr);
   ASSERT_TRUE(properties);
   EXPECT_EQ("address-Identifier", properties->id);
   EXPECT_EQ("address", properties->address);
@@ -80,7 +99,8 @@ TEST_F(DeviceConversionUtilTest, TestConversion_EmptyName) {
       /*bluetooth_class=*/0u, /*name=*/nullptr, /*address=*/"address",
       /*paired=*/true, /*connected=*/true, /*is_blocked_by_policy=*/true);
   mojom::BluetoothDevicePropertiesPtr properties =
-      GenerateBluetoothDeviceMojoProperties(device);
+      GenerateBluetoothDeviceMojoProperties(device,
+                                            /*fast_pair_delegate=*/nullptr);
   ASSERT_TRUE(properties);
 
   // A device with no name should have its name set as its address.
@@ -100,7 +120,8 @@ TEST_F(DeviceConversionUtilTest, TestConversion_DefaultBattery) {
   device->SetBatteryInfo(battery_info);
 
   mojom::BluetoothDevicePropertiesPtr properties =
-      GenerateBluetoothDeviceMojoProperties(device);
+      GenerateBluetoothDeviceMojoProperties(device,
+                                            /*fast_pair_delegate=*/nullptr);
   ASSERT_TRUE(properties);
 
   // If device is not connected, |battery_info| should be null.
@@ -109,7 +130,8 @@ TEST_F(DeviceConversionUtilTest, TestConversion_DefaultBattery) {
   // Set the device to connected.
   ChangeDeviceConnected(/*connected=*/true);
 
-  properties = GenerateBluetoothDeviceMojoProperties(device);
+  properties = GenerateBluetoothDeviceMojoProperties(
+      device, /*fast_pair_delegate=*/nullptr);
   ASSERT_TRUE(properties);
 
   EXPECT_TRUE(properties->battery_info->default_properties);
@@ -149,7 +171,8 @@ TEST_F(DeviceConversionUtilTest, TestConversion_MultipleBatteries) {
   device->SetBatteryInfo(case_battery_info);
 
   mojom::BluetoothDevicePropertiesPtr properties =
-      GenerateBluetoothDeviceMojoProperties(device);
+      GenerateBluetoothDeviceMojoProperties(device,
+                                            /*fast_pair_delegate=*/nullptr);
   ASSERT_TRUE(properties);
 
   // If device is not connected, |battery_info| should be null.
@@ -158,7 +181,8 @@ TEST_F(DeviceConversionUtilTest, TestConversion_MultipleBatteries) {
   // Set the device to connected.
   ChangeDeviceConnected(/*connected=*/true);
 
-  properties = GenerateBluetoothDeviceMojoProperties(device);
+  properties = GenerateBluetoothDeviceMojoProperties(
+      device, /*fast_pair_delegate=*/nullptr);
   ASSERT_TRUE(properties);
 
   EXPECT_FALSE(properties->battery_info->default_properties);
@@ -168,6 +192,89 @@ TEST_F(DeviceConversionUtilTest, TestConversion_MultipleBatteries) {
   EXPECT_EQ(properties->battery_info->right_bud_info->battery_percentage, 45);
   EXPECT_TRUE(properties->battery_info->case_info);
   EXPECT_EQ(properties->battery_info->case_info->battery_percentage, 50);
+}
+
+TEST_F(DeviceConversionUtilTest, TestConversion_NoImages) {
+  device::BluetoothDevice* device = InitDevice(
+      /*bluetooth_class=*/0u, /*name=*/"name", /*address=*/"address",
+      /*paired=*/true, /*connected=*/false, /*is_blocked_by_policy=*/false);
+
+  mojom::BluetoothDevicePropertiesPtr properties =
+      GenerateBluetoothDeviceMojoProperties(device, fake_fast_pair_delegate());
+  EXPECT_TRUE(properties);
+
+  EXPECT_FALSE(properties->image_info);
+}
+
+TEST_F(DeviceConversionUtilTest, TestConversion_DefaultDeviceImage) {
+  device::BluetoothDevice* device = InitDevice(
+      /*bluetooth_class=*/0u, /*name=*/"name", /*address=*/"address",
+      /*paired=*/true, /*connected=*/false, /*is_blocked_by_policy=*/false);
+  // Save a default image to be returned by the delegate.
+  DeviceImageInfo images = DeviceImageInfo(
+      /*default_image=*/kTestDefaultImage, /*left_bud_image=*/"",
+      /*right_bud_image=*/"", /*case_image=*/"");
+  // MockBluetoothDevice sets identifier as |address|-Identifier.
+  fake_fast_pair_delegate()->SetDeviceImageInfo("address-Identifier", images);
+
+  mojom::BluetoothDevicePropertiesPtr properties =
+      GenerateBluetoothDeviceMojoProperties(device, fake_fast_pair_delegate());
+  EXPECT_TRUE(properties);
+
+  EXPECT_TRUE(properties->image_info);
+  EXPECT_TRUE(properties->image_info->default_image_url);
+  EXPECT_EQ(properties->image_info->default_image_url, GURL(kTestDefaultImage));
+  EXPECT_FALSE(properties->image_info->true_wireless_images);
+}
+
+TEST_F(DeviceConversionUtilTest, TestConversion_TrueWirelessImages) {
+  device::BluetoothDevice* device = InitDevice(
+      /*bluetooth_class=*/0u, /*name=*/"name", /*address=*/"address",
+      /*paired=*/true, /*connected=*/false, /*is_blocked_by_policy=*/false);
+  // Save a default image and True Wireless images to be returned by the
+  // delegate.
+  DeviceImageInfo images = DeviceImageInfo(
+      /*default_image=*/kTestDefaultImage, /*left_bud_image=*/kTestLeftBudImage,
+      /*right_bud_image=*/kTestRightBudImage, /*case_image=*/kTestCaseImage);
+  // MockBluetoothDevice sets identifier as |address|-Identifier.
+  fake_fast_pair_delegate()->SetDeviceImageInfo("address-Identifier", images);
+
+  mojom::BluetoothDevicePropertiesPtr properties =
+      GenerateBluetoothDeviceMojoProperties(device, fake_fast_pair_delegate());
+  EXPECT_TRUE(properties);
+
+  EXPECT_TRUE(properties->image_info);
+  EXPECT_TRUE(properties->image_info->default_image_url);
+  EXPECT_EQ(properties->image_info->default_image_url, GURL(kTestDefaultImage));
+  EXPECT_TRUE(properties->image_info->true_wireless_images);
+  EXPECT_EQ(properties->image_info->true_wireless_images->left_bud_image_url,
+            GURL(kTestLeftBudImage));
+  EXPECT_EQ(properties->image_info->true_wireless_images->right_bud_image_url,
+            GURL(kTestRightBudImage));
+  EXPECT_EQ(properties->image_info->true_wireless_images->case_image_url,
+            GURL(kTestCaseImage));
+}
+
+TEST_F(DeviceConversionUtilTest, TestConversion_PartialTrueWirelessImages) {
+  device::BluetoothDevice* device = InitDevice(
+      /*bluetooth_class=*/0u, /*name=*/"name", /*address=*/"address",
+      /*paired=*/true, /*connected=*/false, /*is_blocked_by_policy=*/false);
+  // Simulate the case image being missing.
+  DeviceImageInfo images = DeviceImageInfo(
+      /*default_image=*/kTestDefaultImage, /*left_bud_image=*/kTestLeftBudImage,
+      /*right_bud_image=*/kTestRightBudImage, /*case_image=*/"");
+  // MockBluetoothDevice sets identifier as |address|-Identifier.
+  fake_fast_pair_delegate()->SetDeviceImageInfo("address-Identifier", images);
+
+  mojom::BluetoothDevicePropertiesPtr properties =
+      GenerateBluetoothDeviceMojoProperties(device, fake_fast_pair_delegate());
+  EXPECT_TRUE(properties);
+
+  EXPECT_TRUE(properties->image_info);
+  EXPECT_TRUE(properties->image_info->default_image_url);
+  EXPECT_EQ(properties->image_info->default_image_url, GURL(kTestDefaultImage));
+  // True Wireless images should only display if the full set exists.
+  EXPECT_FALSE(properties->image_info->true_wireless_images);
 }
 
 }  // namespace bluetooth_config

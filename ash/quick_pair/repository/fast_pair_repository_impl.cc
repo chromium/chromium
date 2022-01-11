@@ -289,7 +289,7 @@ bool FastPairRepositoryImpl::EvictDeviceImages(
   return device_image_store_->EvictDeviceImages(hex_model_id.value());
 }
 
-absl::optional<const chromeos::bluetooth_config::DeviceImageInfo>
+absl::optional<chromeos::bluetooth_config::DeviceImageInfo>
 FastPairRepositoryImpl::GetImagesForDevice(const std::string& device_id) {
   absl::optional<const std::string> hex_model_id =
       device_id_map_->GetModelIdForDeviceId(device_id);

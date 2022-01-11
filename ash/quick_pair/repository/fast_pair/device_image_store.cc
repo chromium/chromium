@@ -91,7 +91,7 @@ bool DeviceImageStore::EvictDeviceImages(const std::string& model_id) {
   return true;
 }
 
-absl::optional<const chromeos::bluetooth_config::DeviceImageInfo>
+absl::optional<chromeos::bluetooth_config::DeviceImageInfo>
 DeviceImageStore::GetImagesForDeviceModel(const std::string& model_id) {
   // Lazily load saved images from prefs the first time we get an image.
   if (!loaded_images_from_prefs_) {

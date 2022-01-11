@@ -5,6 +5,7 @@
 module chromeos.bluetooth_config.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
+import "url/mojom/url.mojom";
 
 // The maximum number of characters a Bluetooth device's nickname can be set
 // to.
@@ -83,6 +84,22 @@ struct DeviceBatteryInfo {
   BatteryProperties? case_info;
 };
 
+// True Wireless image info belonging to a device. Contains fields for
+// True Wireless images (stored as base64-encoded data URLs) for the left
+// earbud, right earbud, and case.
+struct TrueWirelessImageInfo {
+  url.mojom.Url left_bud_image_url;
+  url.mojom.Url right_bud_image_url;
+  url.mojom.Url case_image_url;
+};
+
+// Image info belonging to a device. Contains an optional default image (stored
+// as a base64-encoded data URL) as well as optional True Wireless images.
+struct DeviceImageInfo {
+  url.mojom.Url? default_image_url;
+  TrueWirelessImageInfo? true_wireless_images;
+};
+
 // Properties belonging to a Bluetooth device.
 struct BluetoothDeviceProperties {
   // Unique identifier for this device, which is stable across device reboots.
@@ -104,6 +121,9 @@ struct BluetoothDeviceProperties {
 
   // Null if no battery information is available for the device.
   DeviceBatteryInfo? battery_info;
+
+  // Null if no device images are available for the device.
+  DeviceImageInfo? image_info;
 
   DeviceConnectionState connection_state;
 

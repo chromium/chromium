@@ -92,7 +92,7 @@ bool FakeFastPairRepository::EvictDeviceImages(
 }
 
 // Unimplemented.
-absl::optional<const chromeos::bluetooth_config::DeviceImageInfo>
+absl::optional<chromeos::bluetooth_config::DeviceImageInfo>
 FakeFastPairRepository::GetImagesForDevice(const std::string& device_id) {
   return absl::nullopt;
 }

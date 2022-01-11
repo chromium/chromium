@@ -151,8 +151,8 @@ class DiscoveredDevicesProviderImplTest : public testing::Test {
   void UpdateDeviceCache() {
     std::vector<mojom::BluetoothDevicePropertiesPtr> unpaired_devices;
     for (auto& device : mock_devices_) {
-      unpaired_devices.push_back(
-          GenerateBluetoothDeviceMojoProperties(device.get()));
+      unpaired_devices.push_back(GenerateBluetoothDeviceMojoProperties(
+          device.get(), /*fast_pair_delegate=*/nullptr));
     }
     fake_device_cache_.SetUnpairedDevices(std::move(unpaired_devices));
   }

@@ -31,7 +31,8 @@ CrosBluetoothConfig::CrosBluetoothConfig(
       device_cache_(
           initializer.CreateDeviceCache(adapter_state_controller_.get(),
                                         bluetooth_adapter,
-                                        device_name_manager_.get())),
+                                        device_name_manager_.get(),
+                                        fast_pair_delegate)),
       system_properties_provider_(
           std::make_unique<SystemPropertiesProviderImpl>(
               adapter_state_controller_.get(),

@@ -154,8 +154,8 @@ class DiscoverySessionManagerImplTest : public testing::Test {
     // Add the device to the discovered devices provider's discovered devices.
     std::vector<mojom::BluetoothDevicePropertiesPtr> discovered_devices;
     for (auto& device : mock_devices_) {
-      discovered_devices.push_back(
-          GenerateBluetoothDeviceMojoProperties(device.get()));
+      discovered_devices.push_back(GenerateBluetoothDeviceMojoProperties(
+          device.get(), /*fast_pair_delegate=*/nullptr));
     }
     fake_discovered_devices_provider_.SetDiscoveredDevices(
         std::move(discovered_devices));

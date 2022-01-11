@@ -12,6 +12,7 @@
 #include "chromeos/services/bluetooth_config/device_operation_handler_impl.h"
 #include "chromeos/services/bluetooth_config/discovered_devices_provider_impl.h"
 #include "chromeos/services/bluetooth_config/discovery_session_manager_impl.h"
+#include "chromeos/services/bluetooth_config/fast_pair_delegate.h"
 
 namespace chromeos {
 namespace bluetooth_config {
@@ -48,10 +49,11 @@ std::unique_ptr<DeviceNameManager> InitializerImpl::CreateDeviceNameManager(
 std::unique_ptr<DeviceCache> InitializerImpl::CreateDeviceCache(
     AdapterStateController* adapter_state_controller,
     scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
-    DeviceNameManager* device_name_manager) {
-  return std::make_unique<DeviceCacheImpl>(adapter_state_controller,
-                                           std::move(bluetooth_adapter),
-                                           device_name_manager);
+    DeviceNameManager* device_name_manager,
+    FastPairDelegate* fast_pair_delegate) {
+  return std::make_unique<DeviceCacheImpl>(
+      adapter_state_controller, std::move(bluetooth_adapter),
+      device_name_manager, fast_pair_delegate);
 }
 
 std::unique_ptr<DiscoveredDevicesProvider>

@@ -5,9 +5,12 @@
 #ifndef CHROMEOS_SERVICES_BLUETOOTH_CONFIG_FAST_PAIR_DELEGATE_H_
 #define CHROMEOS_SERVICES_BLUETOOTH_CONFIG_FAST_PAIR_DELEGATE_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace chromeos {
 namespace bluetooth_config {
 
+class DeviceImageInfo;
 class DeviceNameManager;
 
 // Delegate class used to connect the bluetooth_config and Fast Pair systems,
@@ -17,6 +20,8 @@ class FastPairDelegate {
  public:
   virtual ~FastPairDelegate() = default;
 
+  virtual absl::optional<DeviceImageInfo> GetDeviceImageInfo(
+      const std::string& device_id) = 0;
   virtual void SetDeviceNameManager(DeviceNameManager* device_name_manager) = 0;
 };
 

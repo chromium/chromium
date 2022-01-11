@@ -82,7 +82,7 @@ class FastPairRepository {
   virtual bool EvictDeviceImages(const device::BluetoothDevice* device) = 0;
 
   // Returns device images belonging to |device_id|, if found.
-  virtual absl::optional<const chromeos::bluetooth_config::DeviceImageInfo>
+  virtual absl::optional<chromeos::bluetooth_config::DeviceImageInfo>
   GetImagesForDevice(const std::string& device_id) = 0;
 
  protected:

@@ -28,7 +28,7 @@ namespace {
 // user accounts which we don't want to expose to other users. Use an allowlist
 // to only show variations and UMA related fields which don't contain PII.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#define ENABLE_FILTERING true
+#define ENABLE_FILTERING false
 #else
 #define ENABLE_FILTERING false
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)

@@ -71,7 +71,7 @@ class DeviceImageStore {
 
   // Returns a DeviceImageInfo of device images belonging to |model_id|, if
   // found.
-  absl::optional<const chromeos::bluetooth_config::DeviceImageInfo>
+  absl::optional<chromeos::bluetooth_config::DeviceImageInfo>
   GetImagesForDeviceModel(const std::string& model_id);
 
  private:

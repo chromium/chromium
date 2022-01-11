@@ -55,7 +55,7 @@ class MockFastPairRepository : public FastPairRepository {
               EvictDeviceImages,
               (const device::BluetoothDevice* device),
               (override));
-  MOCK_METHOD(absl::optional<const chromeos::bluetooth_config::DeviceImageInfo>,
+  MOCK_METHOD(absl::optional<chromeos::bluetooth_config::DeviceImageInfo>,
               GetImagesForDevice,
               (const std::string& device_id),
               (override));

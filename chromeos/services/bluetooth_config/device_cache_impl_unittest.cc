@@ -13,6 +13,7 @@
 #include "base/test/task_environment.h"
 #include "chromeos/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/services/bluetooth_config/fake_device_name_manager.h"
+#include "chromeos/services/bluetooth_config/fake_fast_pair_delegate.h"
 #include "device/bluetooth/bluetooth_common.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
@@ -83,7 +84,7 @@ class DeviceCacheImplTest : public testing::Test {
   void Init() {
     device_cache_ = std::make_unique<DeviceCacheImpl>(
         &fake_adapter_state_controller_, mock_adapter_,
-        &fake_device_name_manager_);
+        &fake_device_name_manager_, &fake_fast_pair_delegate_);
     device_cache_->AddObserver(&fake_observer_);
   }
 
@@ -238,6 +239,7 @@ class DeviceCacheImplTest : public testing::Test {
 
   FakeAdapterStateController fake_adapter_state_controller_;
   FakeDeviceNameManager fake_device_name_manager_;
+  FakeFastPairDelegate fake_fast_pair_delegate_;
   scoped_refptr<testing::NiceMock<device::MockBluetoothAdapter>> mock_adapter_;
   FakeObserver fake_observer_;
 

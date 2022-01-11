@@ -136,7 +136,7 @@ TEST_F(DeviceImageStoreTest, GetImagesForDeviceModelValid) {
   device_image_store_->SaveDeviceImages(kTestModelId, device_metadata_.get(),
                                         base::DoNothing());
 
-  absl::optional<const DeviceImageInfo> images =
+  absl::optional<DeviceImageInfo> images =
       device_image_store_->GetImagesForDeviceModel(kTestModelId);
   EXPECT_TRUE(images);
 
@@ -150,7 +150,7 @@ TEST_F(DeviceImageStoreTest, GetImagesForDeviceModelValid) {
 
 TEST_F(DeviceImageStoreTest, GetImagesForDeviceModelInvalidUninitialized) {
   // Don't initialize the dictionary with any results.
-  absl::optional<const DeviceImageInfo> images =
+  absl::optional<DeviceImageInfo> images =
       device_image_store_->GetImagesForDeviceModel(kTestModelId);
   EXPECT_FALSE(images);
 }
@@ -159,7 +159,7 @@ TEST_F(DeviceImageStoreTest, GetImagesForDeviceModelInvalidNotAdded) {
   device_image_store_->SaveDeviceImages(kTestModelId, device_metadata_.get(),
                                         base::DoNothing());
   // Look for a model ID that wasn't added.
-  absl::optional<const DeviceImageInfo> images =
+  absl::optional<DeviceImageInfo> images =
       device_image_store_->GetImagesForDeviceModel("DEF456");
   EXPECT_FALSE(images);
 }

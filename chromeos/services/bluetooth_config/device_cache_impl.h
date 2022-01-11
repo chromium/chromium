@@ -10,6 +10,7 @@
 #include "chromeos/services/bluetooth_config/adapter_state_controller.h"
 #include "chromeos/services/bluetooth_config/device_cache.h"
 #include "chromeos/services/bluetooth_config/device_name_manager.h"
+#include "chromeos/services/bluetooth_config/fast_pair_delegate.h"
 #include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 
@@ -30,7 +31,8 @@ class DeviceCacheImpl : public DeviceCache,
  public:
   DeviceCacheImpl(AdapterStateController* adapter_state_controller,
                   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
-                  DeviceNameManager* device_name_manager);
+                  DeviceNameManager* device_name_manager,
+                  FastPairDelegate* fast_pair_delegate);
   ~DeviceCacheImpl() override;
 
  private:
@@ -136,6 +138,7 @@ class DeviceCacheImpl : public DeviceCache,
 
   scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   DeviceNameManager* device_name_manager_;
+  FastPairDelegate* fast_pair_delegate_;
 
   // Sorted by connection status.
   std::vector<mojom::PairedBluetoothDevicePropertiesPtr> paired_devices_;
