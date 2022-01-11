@@ -35,6 +35,10 @@
 #include "components/policy/core/common/android/policy_service_android.h"
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "components/policy/core/common/default_chrome_apps_migrator.h"
+#endif
+
 namespace policy {
 
 namespace {
@@ -349,6 +353,9 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
   // Merge from each provider in their order of priority.
   const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
   PolicyBundle bundle;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  DefaultChromeAppsMigrator chrome_apps_migrator;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   for (auto* provider : providers_) {
     PolicyBundle provided_bundle;
     provided_bundle.CopyFrom(provider->policies());
@@ -356,6 +363,12 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
     IgnoreUserCloudPrecedencePolicies(&provided_bundle.Get(chrome_namespace));
     DowngradeMetricsReportingToRecommendedPolicy(
         &provided_bundle.Get(chrome_namespace));
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    if (base::FeatureList::IsEnabled(
+            policy::features::kDefaultChromeAppsMigration)) {
+      chrome_apps_migrator.Migrate(&provided_bundle.Get(chrome_namespace));
+    }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
     bundle.MergeFrom(provided_bundle);
   }
 

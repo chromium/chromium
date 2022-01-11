@@ -280,6 +280,8 @@ source_set("internal") {
   if (is_chromeos_ash) {
     deps += [ "//chromeos/system" ]
     sources += [
+      "default_chrome_apps_migrator.cc",
+      "default_chrome_apps_migrator.h",
       "policy_scheduler.cc",
       "policy_scheduler.h",
     ]
@@ -474,6 +476,7 @@ source_set("unit_tests") {
   }
   if (is_chromeos_ash) {
     sources += [
+      "default_chrome_apps_migrator_unittest.cc",
       "policy_scheduler_unittest.cc",
       "proxy_policy_provider_unittest.cc",
     ]

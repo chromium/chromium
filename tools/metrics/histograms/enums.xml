@@ -54380,6 +54380,7 @@ from previous Chrome versions.
   <int value="630308195" label="SignInProfileCreation:enabled"/>
   <int value="630776247" label="USBGuard:disabled"/>
   <int value="630947363" label="touch-events"/>
+  <int value="631136125" label="EnableDefaultAppsMigration:enabled"/>
   <int value="631947048" label="WebRtcAnalogAgcClippingControl:disabled"/>
   <int value="632324382"
       label="ExperimentalAccessibilityDictationListening:disabled"/>
@@ -56372,6 +56373,7 @@ from previous Chrome versions.
   <int value="2089897928" label="enable-audio-focus"/>
   <int value="2089901626" label="QuickSettingsPWA:enabled"/>
   <int value="2091002949" label="RemoveNavigationHistory:disabled"/>
+  <int value="2091676363" label="EnableDefaultAppsMigration:disabled"/>
   <int value="2091943748"
       label="MigrateDefaultChromeAppToWebAppsGSuite:disabled"/>
   <int value="2092538671" label="UseStorkSmdsServerAddress:disabled"/>

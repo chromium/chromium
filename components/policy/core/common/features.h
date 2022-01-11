@@ -16,6 +16,9 @@ namespace features {
 // Enable chrome://management page on Android.
 POLICY_EXPORT extern const base::Feature kChromeManagementPageAndroid;
 
+// Enable force installed Chrome apps policy migration.
+POLICY_EXPORT extern const base::Feature kDefaultChromeAppsMigration;
+
 // PolicyBlocklistThrottle defers navigations until policies are loaded.
 POLICY_EXPORT extern const base::Feature
     kPolicyBlocklistThrottleRequiresPoliciesLoaded;

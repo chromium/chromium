@@ -91,6 +91,9 @@ extern const char kConversionMeasurementDebugModeDescription[];
 extern const char kDebugHistoryInterventionNoUserActivationName[];
 extern const char kDebugHistoryInterventionNoUserActivationDescription[];
 
+extern const char kDefaultChromeAppsMigrationName[];
+extern const char kDefaultChromeAppsMigrationDescription[];
+
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];
 

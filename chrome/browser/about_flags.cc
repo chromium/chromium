@@ -7034,6 +7034,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kVaapiAV1DecoderName,
      flag_descriptions::kVaapiAV1DecoderDescription, kOsCrOS | kOsLinux,
      FEATURE_VALUE_TYPE(media::kVaapiAV1Decoder)},
+
+    {"default-chrome-apps-migration",
+     flag_descriptions::kDefaultChromeAppsMigrationName,
+     flag_descriptions::kDefaultChromeAppsMigrationDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(policy::features::kDefaultChromeAppsMigration)},
 #endif  // defined(OS_CHROMEOS)
 
 #if defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
