@@ -1476,11 +1476,20 @@
   <message name="IDS_LOGIN_SAML_NOTICE" desc="Text message displayed above SAML portal to early indicate that the user is being redirected to another sign-in provider. This is the version of the string used in the GAIA flow.">
     This sign-in service is hosted by <ph name="SAML_DOMAIN">$1<ex>saml.com</ex></ph>
   </message>
+  <message name="IDS_LOGIN_SAML_NOTICE_SHORT" desc="Text message displayed above SAML portal to early indicate that the user is being redirected to another sign-in provider. This is the version of the string used in the GAIA flow.">
+    Sign-in hosted by <ph name="SAML_DOMAIN">$1<ex>saml.com</ex></ph>
+  </message>
   <message name="IDS_LOGIN_SAML_PASSWORD_CHANGE_NOTICE" desc="Text message displayed in the system dialog title. The dialog shows a web-page where the user can change their SAML password while staying in the session">
     This authentication service is hosted by <ph name="SAML_DOMAIN">$1<ex>saml.com</ex></ph>
   </message>
   <message name="IDS_LOGIN_SAML_NOTICE_WITH_VIDEO" desc="Text message displayed above SAML portal to early indicate that the user is being redirected to another sign-in provider which has requested video media access.">
     This sign-in service, hosted by <ph name="SAML_DOMAIN">$1<ex>saml.com</ex></ph>, is accessing your camera.
+  </message>
+  <message name="IDS_LOGIN_SAML_CHANGE_PROVIDER_MESSAGE" desc="Text message displayed below SAML portal to let user change sign-in provider.">
+    Wrong sign-in option?
+  </message>
+  <message name="IDS_LOGIN_SAML_CHANGE_PROVIDER_BUTTON" desc="Button to change sign-in provider.">
+    Enter Google Account info
   </message>
   <message name="IDS_LOGIN_CONFIRM_PASSWORD_TITLE" desc="Title for the confirm password dialog.">
     Please re-enter your password to update your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> profile.

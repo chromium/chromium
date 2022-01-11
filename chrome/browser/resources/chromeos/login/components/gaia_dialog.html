@@ -66,14 +66,16 @@
         };
       }
 
-      #saml-close-button {
+      #saml-close-button,
+      #saml-back-button {
         --cr-icon-button-margin-end: 0;
         --cr-icon-button-margin-start: 0;
       }
 
-      #saml-notice-container {
+      #saml-notice-container,
+      #saml-footer-container {
         align-items: center;
-        background: rgb(241, 243, 244); /* #F1F3F4 */
+        background: var(--google-grey-100);
         box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.17);
         display: flex;
         height: 44px;
@@ -86,7 +88,6 @@
       }
 
       #saml-notice-message {
-        color: rgb(106, 106, 106);
         font-size: 13px;
       }
 
@@ -131,6 +132,9 @@
           class="flex layout vertical">
         <div id="saml-notice-container" class="layout horizontal center"
             hidden$="[[!isSamlSsoVisible]]">
+          <cr-icon-button id="saml-back-button" iron-icon="cr:arrow-back"
+              on-click="close_" hidden="[[isSamlBackButtonHidden_]]">
+          </cr-icon-button>
           <div class="flex layout horizontal center-justified">
             <span id="saml-notice-recording-indicator"
                 hidden$="[[!videoEnabled]]">
@@ -139,9 +143,9 @@
             <span id="saml-notice-message">
               [[getSamlNoticeMessage_(locale, videoEnabled, authDomain_)]]
             </span>
-            </div>
+          </div>
           <cr-icon-button id="saml-close-button" iron-icon="cr:close"
-              on-click="close_">
+              on-click="close_" hidden="[[flagRedirectToDefaultIdPEnabled_]]">
           </cr-icon-button>
         </div>
         <h3 id="sshWarning" hidden>
@@ -149,6 +153,16 @@
         </h3>
         <webview id="signin-frame" class="flex" name="[[webviewName]]">
         </webview>
+        <div hidden="[[!flagRedirectToDefaultIdPEnabled_]]">
+          <div id="saml-footer-container" hidden="[[!isDefaultSsoProvider]]"
+              class="layout horizontal end-justified">
+            <div>[[i18nDynamic(locale, 'samlChangeProviderMessage')]]</div>
+            <oobe-text-button id="change-account"
+                text-key="samlChangeProviderButton"
+                on-click="onChangeSigninProviderClicked_">
+            </oobe-text-button>
+          </div>
+        </div>
       </div>
       <div slot="back-navigation" hidden$="[[navigationHidden]]">
         <oobe-back-button id="signin-back-button"

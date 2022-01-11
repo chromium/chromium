@@ -638,6 +638,11 @@ void GaiaScreenHandler::DeclareLocalizedValues(
                IDS_SAML_SECURITY_TOKEN_PIN_DIALOG_SUBTITLE);
 }
 
+void GaiaScreenHandler::GetAdditionalParameters(base::DictionaryValue* dict) {
+  dict->SetKey("isRedirectToDefaultIdPEnabled",
+               base::Value(features::IsRedirectToDefaultIdPEnabled()));
+}
+
 void GaiaScreenHandler::Initialize() {
   initialized_ = true;
   // This should be called only once on page load.
@@ -1158,7 +1163,10 @@ void GaiaScreenHandler::SetSAMLPrincipalsAPIUsed(bool is_third_party_idp,
 }
 
 void GaiaScreenHandler::Show() {
-  ShowScreen(GaiaView::kScreenId);
+  base::DictionaryValue data;
+  data.SetBoolean("hasUserPods",
+                  LoginDisplayHost::default_host()->HasUserPods());
+  ShowScreenWithData(GaiaView::kScreenId, &data);
   elapsed_timer_ = std::make_unique<base::ElapsedTimer>();
   hidden_ = false;
 }

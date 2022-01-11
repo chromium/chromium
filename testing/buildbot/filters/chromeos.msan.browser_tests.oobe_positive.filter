@@ -20,7 +20,12 @@ All/ParameterizedArcTermsOfServiceScreenTest.*
 All/PendingUpdateScreenTest.*
 All/PublicSessionOobeTest.*
 All/PublicSessionWithTermsOfServiceOobeTest.*
+All/SAMLDeviceAttestationEnrolledTest.*
+All/SAMLDeviceAttestationTest.*
+All/SAMLEnrollmentTest.*
 All/SAMLPasswordAttributesTest.*
+All/SAMLPolicyTest.*
+All/SamlTestWithFeatures.*
 All/SshWarningTest.*
 All/SyncConsentPolicyDisabledTest.*
 All/SyncConsentTestWithParams.*
@@ -131,10 +136,6 @@ ResetTestWithTpmFirmwareUpdatePowerwash.*
 ResetTestWithTpmFirmwareUpdatePreserve.*
 ResetTestWithTpmFirmwareUpdateRequested.*
 RestoreOnStartupTestChromeOS.*
-SAMLDeviceAttestationTest.*
-SAMLEnrollmentTest.*
-SAMLPolicyTest.*
-SamlTest.*
 SecurityTokenSamlTest.*
 SigninToUserProfileSwitchTest.*
 SiteIsolationFlagHandlingTest.*

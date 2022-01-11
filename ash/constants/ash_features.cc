@@ -1062,6 +1062,10 @@ const base::Feature kQuickUnlockPinAutosubmit{"QuickUnlockPinAutosubmit",
 const base::Feature kQuickUnlockPinAutosubmitBackfill{
     "QuickUnlockPinAutosubmitBackfill", base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enables redirect to default IdP without interstitial step.
+const base::Feature kRedirectToDefaultIdP{"RedirectToDefaultIdP",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enables suppression of Displays notifications other than resolution change.
 const base::Feature kReduceDisplayNotifications{
     "ReduceDisplayNotifications", base::FEATURE_ENABLED_BY_DEFAULT};
@@ -1802,6 +1806,10 @@ bool IsQuickDimEnabled() {
 
 bool IsQuickSettingsNetworkRevampEnabled() {
   return base::FeatureList::IsEnabled(kQuickSettingsNetworkRevamp);
+}
+
+bool IsRedirectToDefaultIdPEnabled() {
+  return base::FeatureList::IsEnabled(kRedirectToDefaultIdP);
 }
 
 bool IsReduceDisplayNotificationsEnabled() {
