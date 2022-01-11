@@ -129,11 +129,11 @@ bool ValueToTouchData(const base::DictionaryValue& value,
   display::TouchCalibrationData::CalibrationPointPairQuad* point_pair_quad =
       &(touch_calibration_data->point_pairs);
 
-  std::string str;
-  if (!value.GetString(kTouchCalibrationPointPairs, &str))
+  const std::string* str = value.FindStringKey(kTouchCalibrationPointPairs);
+  if (!str)
     return false;
 
-  if (!ParseTouchCalibrationStringValue(str, point_pair_quad))
+  if (!ParseTouchCalibrationStringValue(*str, point_pair_quad))
     return false;
 
   absl::optional<int> width = value.FindIntKey(kTouchCalibrationWidth);

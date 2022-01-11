@@ -523,11 +523,11 @@ void PowerButtonController::ParsePowerButtonPositionSwitch() {
     return;
   }
 
-  std::string edge;
+  const std::string* edge = position_info->FindStringKey(kEdgeField);
   absl::optional<double> position =
       position_info->FindDoubleKey(kPositionField);
 
-  if (!position_info->GetString(kEdgeField, &edge) || !position) {
+  if (!edge || !position) {
     LOG(ERROR) << "Both " << kEdgeField << " field and " << kPositionField
                << " are always needed if " << switches::kAshPowerButtonPosition
                << " is set";
@@ -536,13 +536,13 @@ void PowerButtonController::ParsePowerButtonPositionSwitch() {
 
   power_button_offset_percentage_ = *position;
 
-  if (edge == kLeftEdge) {
+  if (*edge == kLeftEdge) {
     power_button_position_ = PowerButtonPosition::LEFT;
-  } else if (edge == kRightEdge) {
+  } else if (*edge == kRightEdge) {
     power_button_position_ = PowerButtonPosition::RIGHT;
-  } else if (edge == kTopEdge) {
+  } else if (*edge == kTopEdge) {
     power_button_position_ = PowerButtonPosition::TOP;
-  } else if (edge == kBottomEdge) {
+  } else if (*edge == kBottomEdge) {
     power_button_position_ = PowerButtonPosition::BOTTOM;
   } else {
     LOG(ERROR) << "Invalid " << kEdgeField << " field in "

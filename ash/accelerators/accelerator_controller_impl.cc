@@ -2664,10 +2664,14 @@ void AcceleratorControllerImpl::ParseSideVolumeButtonLocationInfo() {
                << location_info;
     return;
   }
-  info_in_dict->GetString(kVolumeButtonRegion,
-                          &side_volume_button_location_.region);
-  info_in_dict->GetString(kVolumeButtonSide,
-                          &side_volume_button_location_.side);
+
+  const std::string* region = info_in_dict->FindStringKey(kVolumeButtonRegion);
+  if (region)
+    side_volume_button_location_.region = *region;
+
+  const std::string* side = info_in_dict->FindStringKey(kVolumeButtonSide);
+  if (side)
+    side_volume_button_location_.side = *side;
 }
 
 void AcceleratorControllerImpl::UpdateTabletModeVolumeAdjustHistogram() {

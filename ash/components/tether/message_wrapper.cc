@@ -93,13 +93,13 @@ std::unique_ptr<MessageWrapper> MessageWrapper::FromRawMessage(
   if (!message_type)
     return nullptr;
 
-  std::string encoded_message;
-  if (!json_dictionary->GetString(kJsonDataKey, &encoded_message)) {
+  const std::string* encoded_message =
+      json_dictionary->FindStringKey(kJsonDataKey);
+  if (!encoded_message)
     return nullptr;
-  }
 
   std::string decoded_message;
-  if (!base::Base64UrlDecode(encoded_message,
+  if (!base::Base64UrlDecode(*encoded_message,
                              base::Base64UrlDecodePolicy::REQUIRE_PADDING,
                              &decoded_message)) {
     return nullptr;

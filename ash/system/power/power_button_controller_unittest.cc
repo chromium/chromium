@@ -1088,20 +1088,20 @@ class PowerButtonControllerWithPositionTest
     base::DictionaryValue position_info;
     switch (power_button_position_) {
       case PowerButtonPosition::LEFT:
-        position_info.SetString(PowerButtonController::kEdgeField,
-                                PowerButtonController::kLeftEdge);
+        position_info.SetStringKey(PowerButtonController::kEdgeField,
+                                   PowerButtonController::kLeftEdge);
         break;
       case PowerButtonPosition::RIGHT:
-        position_info.SetString(PowerButtonController::kEdgeField,
-                                PowerButtonController::kRightEdge);
+        position_info.SetStringKey(PowerButtonController::kEdgeField,
+                                   PowerButtonController::kRightEdge);
         break;
       case PowerButtonPosition::TOP:
-        position_info.SetString(PowerButtonController::kEdgeField,
-                                PowerButtonController::kTopEdge);
+        position_info.SetStringKey(PowerButtonController::kEdgeField,
+                                   PowerButtonController::kTopEdge);
         break;
       case PowerButtonPosition::BOTTOM:
-        position_info.SetString(PowerButtonController::kEdgeField,
-                                PowerButtonController::kBottomEdge);
+        position_info.SetStringKey(PowerButtonController::kEdgeField,
+                                   PowerButtonController::kBottomEdge);
         break;
       default:
         return;

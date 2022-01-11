@@ -28,11 +28,11 @@ std::unique_ptr<base::DictionaryValue> CreateMessage(
   std::unique_ptr<base::DictionaryValue> sms =
       std::make_unique<base::DictionaryValue>();
   if (kDefaultNumber)
-    sms->SetString("number", kDefaultNumber);
+    sms->SetStringKey("number", kDefaultNumber);
   if (kDefaultMessage)
-    sms->SetString("text", kDefaultMessage);
+    sms->SetStringKey("text", kDefaultMessage);
   if (kDefaultTimestamp)
-    sms->SetString("timestamp", kDefaultMessage);
+    sms->SetStringKey("timestamp", kDefaultMessage);
   return sms;
 }
 

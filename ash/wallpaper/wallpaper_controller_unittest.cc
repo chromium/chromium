@@ -263,22 +263,22 @@ std::unique_ptr<base::DictionaryValue> CreateWallpaperInfoDict(
     WallpaperInfo info) {
   auto wallpaper_info_dict = std::make_unique<base::DictionaryValue>();
   if (info.asset_id.has_value()) {
-    wallpaper_info_dict->SetString(
+    wallpaper_info_dict->SetStringKey(
         WallpaperControllerImpl::kNewWallpaperAssetIdNodeName,
         base::NumberToString(info.asset_id.value()));
   }
   if (info.unit_id.has_value()) {
-    wallpaper_info_dict->SetStringPath(
+    wallpaper_info_dict->SetStringKey(
         WallpaperControllerImpl::kNewWallpaperUnitIdNodeName,
         base::NumberToString(info.unit_id.value()));
   }
   base::Value online_wallpaper_variant_list(base::Value::Type::LIST);
   for (const auto& variant : info.variants) {
     base::Value online_wallpaper_variant_dict(base::Value::Type::DICTIONARY);
-    online_wallpaper_variant_dict.SetStringPath(
+    online_wallpaper_variant_dict.SetStringKey(
         WallpaperControllerImpl::kNewWallpaperAssetIdNodeName,
         base::NumberToString(variant.asset_id));
-    online_wallpaper_variant_dict.SetStringPath(
+    online_wallpaper_variant_dict.SetStringKey(
         WallpaperControllerImpl::kOnlineWallpaperUrlNodeName,
         variant.raw_url.spec());
     online_wallpaper_variant_dict.SetIntPath(
@@ -290,13 +290,13 @@ std::unique_ptr<base::DictionaryValue> CreateWallpaperInfoDict(
   wallpaper_info_dict->SetKey(
       WallpaperControllerImpl::kNewWallpaperVariantListNodeName,
       std::move(online_wallpaper_variant_list));
-  wallpaper_info_dict->SetString(
+  wallpaper_info_dict->SetStringKey(
       WallpaperControllerImpl::kNewWallpaperCollectionIdNodeName,
       info.collection_id);
-  wallpaper_info_dict->SetString(
+  wallpaper_info_dict->SetStringKey(
       WallpaperControllerImpl::kNewWallpaperDateNodeName,
       base::NumberToString(info.date.ToInternalValue()));
-  wallpaper_info_dict->SetString(
+  wallpaper_info_dict->SetStringKey(
       WallpaperControllerImpl::kNewWallpaperLocationNodeName, info.location);
   wallpaper_info_dict->SetIntKey(
       WallpaperControllerImpl::kNewWallpaperLayoutNodeName, info.layout);

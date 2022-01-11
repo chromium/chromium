@@ -37,14 +37,22 @@ void ParseJson(const std::string& json,
       base::JSONReader::ReadDeprecated(json);
   base::DictionaryValue* message_dictionary;
   message_value->GetAsDictionary(&message_dictionary);
-  message_dictionary->GetString(kJsonDeviceNameKey, &device_name);
-  message_dictionary->GetString(kJsonBoardNameKey, &board_name);
+  const std::string* device_name_ptr =
+      message_dictionary->FindStringKey(kJsonDeviceNameKey);
+  if (device_name_ptr)
+    device_name = *device_name_ptr;
+  const std::string* board_name_ptr =
+      message_dictionary->FindStringKey(kJsonBoardNameKey);
+  if (board_name_ptr)
+    board_name = *board_name_ptr;
   absl::optional<bool> tablet_mode_opt =
       message_dictionary->FindBoolKey(kJsonTabletModeKey);
   if (tablet_mode_opt.has_value())
     tablet_mode = tablet_mode_opt.value();
-  message_dictionary->GetString(kJsonWifiConnectionStateKey,
-                                &wifi_connection_state);
+  const std::string* wifi_connection_state_ptr =
+      message_dictionary->FindStringKey(kJsonWifiConnectionStateKey);
+  if (wifi_connection_state_ptr)
+    wifi_connection_state = *wifi_connection_state_ptr;
   absl::optional<bool> debug_mode_opt =
       message_dictionary->FindBoolKey(kJsonDebugModeKey);
   if (debug_mode_opt.has_value())

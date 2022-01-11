@@ -50,9 +50,8 @@ std::string SerializeValueToJson(const base::Value& value) {
 // wrapper that should only be called when the |message| is known to specify its
 // message type, i.e. this should not be called for untrusted input.
 std::string GetMessageType(const base::DictionaryValue& message) {
-  std::string type;
-  message.GetString(kTypeKey, &type);
-  return type;
+  const std::string* type = message.FindStringKey(kTypeKey);
+  return type ? *type : std::string();
 }
 
 }  // namespace
@@ -78,8 +77,8 @@ void MessengerImpl::RemoveObserver(MessengerObserver* observer) {
 
 void MessengerImpl::DispatchUnlockEvent() {
   base::DictionaryValue message;
-  message.SetString(kTypeKey, kMessageTypeLocalEvent);
-  message.SetString(kNameKey, kUnlockEventName);
+  message.SetStringKey(kTypeKey, kMessageTypeLocalEvent);
+  message.SetStringKey(kNameKey, kUnlockEventName);
   queued_messages_.push_back(PendingMessage(message));
   ProcessMessageQueue();
 }
@@ -92,15 +91,15 @@ void MessengerImpl::RequestDecryption(const std::string& challenge) {
                         &encrypted_message_data_base64);
 
   base::DictionaryValue message;
-  message.SetString(kTypeKey, kMessageTypeDecryptRequest);
-  message.SetString(kEncryptedDataKey, encrypted_message_data_base64);
+  message.SetStringKey(kTypeKey, kMessageTypeDecryptRequest);
+  message.SetStringKey(kEncryptedDataKey, encrypted_message_data_base64);
   queued_messages_.push_back(PendingMessage(message));
   ProcessMessageQueue();
 }
 
 void MessengerImpl::RequestUnlock() {
   base::DictionaryValue message;
-  message.SetString(kTypeKey, kMessageTypeUnlockRequest);
+  message.SetStringKey(kTypeKey, kMessageTypeUnlockRequest);
   queued_messages_.push_back(PendingMessage(message));
   ProcessMessageQueue();
 }
@@ -155,12 +154,12 @@ void MessengerImpl::HandleRemoteStatusUpdateMessage(
 
 void MessengerImpl::HandleDecryptResponseMessage(
     const base::DictionaryValue& message) {
-  std::string base64_data;
+  const std::string* base64_data = message.FindStringKey(kDataKey);
   std::string decrypted_data;
-  if (!message.GetString(kDataKey, &base64_data) || base64_data.empty()) {
+  if (!base64_data || base64_data->empty()) {
     PA_LOG(ERROR) << "Decrypt response missing '" << kDataKey << "' value.";
   } else if (!base::Base64UrlDecode(
-                 base64_data, base::Base64UrlDecodePolicy::REQUIRE_PADDING,
+                 *base64_data, base::Base64UrlDecodePolicy::REQUIRE_PADDING,
                  &decrypted_data)) {
     PA_LOG(ERROR) << "Unable to base64-decode decrypt response.";
   }
@@ -197,15 +196,15 @@ void MessengerImpl::HandleMessage(const std::string& message) {
   bool success = message_value->GetAsDictionary(&message_dictionary);
   DCHECK(success);
 
-  std::string type;
-  if (!message_dictionary->GetString(kTypeKey, &type)) {
+  const std::string* type = message_dictionary->FindStringKey(kTypeKey);
+  if (!type) {
     PA_LOG(ERROR) << "Missing '" << kTypeKey << "' key in message:\n "
                   << message;
     return;
   }
 
   // Remote status updates can be received out of the blue.
-  if (type == kMessageTypeRemoteStatusUpdate) {
+  if (*type == kMessageTypeRemoteStatusUpdate) {
     HandleRemoteStatusUpdateMessage(*message_dictionary);
     return;
   }
@@ -225,16 +224,16 @@ void MessengerImpl::HandleMessage(const std::string& message) {
   else
     NOTREACHED();  // There are no other message types that expect a response.
 
-  if (type != expected_type) {
+  if (*type != expected_type) {
     PA_LOG(ERROR) << "Unexpected '" << kTypeKey << "' value in message. "
-                  << "Expected '" << expected_type << "' but received '" << type
-                  << "'.";
+                  << "Expected '" << expected_type << "' but received '"
+                  << *type << "'.";
     return;
   }
 
-  if (type == kMessageTypeDecryptResponse)
+  if (*type == kMessageTypeDecryptResponse)
     HandleDecryptResponseMessage(*message_dictionary);
-  else if (type == kMessageTypeUnlockResponse)
+  else if (*type == kMessageTypeUnlockResponse)
     HandleUnlockResponseMessage(*message_dictionary);
   else
     NOTREACHED();  // There are no other message types that expect a response.

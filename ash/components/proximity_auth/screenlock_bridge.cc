@@ -60,11 +60,11 @@ ScreenlockBridge::UserPodCustomIconInfo::~UserPodCustomIconInfo() {}
 std::unique_ptr<base::DictionaryValue>
 ScreenlockBridge::UserPodCustomIconInfo::ToDictionaryValue() const {
   auto result = std::make_unique<base::DictionaryValue>();
-  result->SetString("id", GetIDString());
+  result->SetStringKey("id", GetIDString());
 
   if (!tooltip_.empty()) {
     base::DictionaryValue tooltip_options;
-    tooltip_options.SetString("text", tooltip_);
+    tooltip_options.SetStringKey("text", tooltip_);
     tooltip_options.SetBoolean("autoshow", autoshow_tooltip_);
     result->SetKey("tooltip", std::move(tooltip_options));
   }
