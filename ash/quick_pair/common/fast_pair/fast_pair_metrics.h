@@ -74,6 +74,15 @@ enum class COMPONENT_EXPORT(QUICK_PAIR_COMMON) HandshakeFailureReason {
   kMaxValue = kFailedIncorrectResponseType,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused. This enum should be kept in sync
+// with the FastPairVersion enum in src/tools/metrics/histograms/enums.xml.
+enum class COMPONENT_EXPORT(QUICK_PAIR_COMMON) FastPairVersion {
+  kVersion1 = 0,
+  kVersion2 = 1,
+  kMaxValue = kVersion2,
+};
+
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void AttemptRecordingFastPairEngagementFlow(const Device& device,
                                             FastPairEngagementFlowEvent event);
@@ -205,8 +214,7 @@ void RecordFootprintsFetcherGetResult(bool success);
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordFastPairRepositoryCacheResult(bool success);
 
-COMPONENT_EXPORT(QUICK_PAIR_COMMON)
-void RecordHandshakeResult(bool success);
+COMPONENT_EXPORT(QUICK_PAIR_COMMON) void RecordHandshakeResult(bool success);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordHandshakeFailureReason(HandshakeFailureReason failure_reason);
@@ -220,6 +228,9 @@ void RecordBluetoothLowEnergyScannerStartSessionErrorReason(
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordBluetoothLowEnergyScanFilterResult(bool success);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordFastPairDiscoveredVersion(FastPairVersion version);
 
 }  // namespace quick_pair
 }  // namespace ash

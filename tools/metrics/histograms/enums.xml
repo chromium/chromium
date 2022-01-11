@@ -32220,6 +32220,11 @@ Called by update_extension_permission.py.-->
       label="Associate Account Dismissed By OS After Learn More Pressed"/>
 </enum>
 
+<enum name="FastPairVersion">
+  <int value="0" label="v1"/>
+  <int value="1" label="v2"/>
+</enum>
+
 <enum name="FaultTolerantHeap">
   <int value="0" label="FTH_OFF">FTH is completely off.</int>
   <int value="1" label="FTH_HKLM">FTH is enabled in HKLM.</int>

@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/quick_pair/common/device.h"
+#include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/quick_pair_browser_delegate.h"
 #include "ash/quick_pair/proto/fastpair.pb.h"
@@ -60,6 +61,9 @@ void FastPairPresenter::OnDiscoveryMetadataRetrieved(
           .empty()) {
     device->SetAdditionalData(Device::AdditionalDataType::kFastPairVersion,
                               {1});
+    RecordFastPairDiscoveredVersion(FastPairVersion::kVersion1);
+  } else {
+    RecordFastPairDiscoveredVersion(FastPairVersion::kVersion2);
   }
 
   notification_controller_->ShowDiscoveryNotification(
