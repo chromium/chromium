@@ -3500,8 +3500,6 @@ void Document::ImplicitClose() {
     return;
   }
 
-  fetcher_->ScheduleWarnUnusedPreloads();
-
   if (GetStyleEngine().HaveRenderBlockingStylesheetsLoaded())
     UpdateStyleAndLayout(DocumentUpdateReason::kUnknown);
 
@@ -3579,6 +3577,9 @@ bool Document::CheckCompletedInternal() {
   SetReadyState(kComplete);
   if (LoadEventStillNeeded())
     ImplicitClose();
+
+  DCHECK(fetcher_);
+  fetcher_->ScheduleWarnUnusedPreloads();
 
   // The readystatechanged or load event may have disconnected this frame.
   if (!GetFrame() || !GetFrame()->IsAttached())
