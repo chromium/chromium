@@ -17,10 +17,12 @@
 #include "ash/components/arc/session/arc_service_manager.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/ash/arc/arc_optin_uma.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -71,7 +73,10 @@ class ArcAuthServiceFactory
  private:
   friend struct base::DefaultSingletonTraits<ArcAuthServiceFactory>;
 
-  ArcAuthServiceFactory() { DependsOn(IdentityManagerFactory::GetInstance()); }
+  ArcAuthServiceFactory() {
+    DependsOn(IdentityManagerFactory::GetInstance());
+    DependsOn(ash::AccountAppsAvailabilityFactory::GetInstance());
+  }
   ~ArcAuthServiceFactory() override = default;
 };
 
@@ -227,6 +232,14 @@ ArcAuthService::ArcAuthService(content::BrowserContext* browser_context,
 
   ArcSessionManager::Get()->AddObserver(this);
   identity_manager_->AddObserver(this);
+
+  if (ash::IsAccountManagerAvailable(profile_) &&
+      ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+    account_apps_availability_ =
+        ash::AccountAppsAvailabilityFactory::GetForProfile(profile_);
+
+    account_apps_availability_->AddObserver(this);
+  }
 }
 
 ArcAuthService::~ArcAuthService() {
@@ -528,8 +541,58 @@ void ArcAuthService::HandleUpdateCredentialsRequest(const std::string& email) {
 
 void ArcAuthService::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
-  // TODO(sinhak): Identity Manager is specific to a Profile. Move this to a
-  // proper Profile independent entity once we have that.
+  // Should be consistent with OnAccountAvailableInArc.
+  // TODO(crbug/1260909): Remove IdentityManager::Observer implementation.
+  if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled())
+    return;
+
+  UpsertAccountToArc(account_info);
+}
+
+void ArcAuthService::OnExtendedAccountInfoRemoved(
+    const AccountInfo& account_info) {
+  // Should be consistent with OnAccountUnavailableInArc.
+  // TODO(crbug/1260909): Remove IdentityManager::Observer implementation.
+  if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled())
+    return;
+
+  DCHECK(!IsPrimaryGaiaAccount(account_info.gaia));
+
+  RemoveAccountFromArc(account_info.email);
+}
+
+void ArcAuthService::OnAccountAvailableInArc(
+    const account_manager::Account& account) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
+  DCHECK(ash::IsAccountManagerAvailable(profile_));
+
+  UpsertAccountToArc(identity_manager_->FindExtendedAccountInfoByEmailAddress(
+      account.raw_email));
+}
+
+void ArcAuthService::OnAccountUnavailableInArc(
+    const account_manager::Account& account) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled());
+  DCHECK(ash::IsAccountManagerAvailable(profile_));
+
+  DCHECK(!IsPrimaryGaiaAccount(account.key.id()));
+
+  RemoveAccountFromArc(account.raw_email);
+}
+
+void ArcAuthService::OnArcInitialStart() {
+  TriggerAccountsPushToArc(true /* filter_primary_account */);
+}
+
+void ArcAuthService::Shutdown() {
+  identity_manager_->RemoveObserver(this);
+  if (account_apps_availability_)
+    account_apps_availability_->RemoveObserver(this);
+}
+
+void ArcAuthService::UpsertAccountToArc(const CoreAccountInfo& account_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!ash::IsAccountManagerAvailable(profile_))
@@ -556,14 +619,11 @@ void ArcAuthService::OnRefreshTokenUpdatedForAccount(
   instance->OnAccountUpdated(account_name, mojom::AccountUpdateType::UPSERT);
 }
 
-void ArcAuthService::OnExtendedAccountInfoRemoved(
-    const AccountInfo& account_info) {
+void ArcAuthService::RemoveAccountFromArc(const std::string& email) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!ash::IsAccountManagerAvailable(profile_))
     return;
-
-  DCHECK(!IsPrimaryGaiaAccount(account_info.gaia));
 
   // Ignore the update if ARC has not been provisioned yet.
   if (!arc::IsArcProvisioned(profile_))
@@ -574,17 +634,8 @@ void ArcAuthService::OnExtendedAccountInfoRemoved(
   if (!instance)
     return;
 
-  DCHECK(!account_info.email.empty());
-  instance->OnAccountUpdated(account_info.email,
-                             mojom::AccountUpdateType::REMOVAL);
-}
-
-void ArcAuthService::OnArcInitialStart() {
-  TriggerAccountsPushToArc(true /* filter_primary_account */);
-}
-
-void ArcAuthService::Shutdown() {
-  identity_manager_->RemoveObserver(this);
+  DCHECK(!email.empty());
+  instance->OnAccountUpdated(email, mojom::AccountUpdateType::REMOVAL);
 }
 
 void ArcAuthService::OnActiveDirectoryEnrollmentTokenFetched(
@@ -796,6 +847,17 @@ void ArcAuthService::TriggerAccountsPushToArc(bool filter_primary_account) {
   if (!ash::IsAccountManagerAvailable(profile_))
     return;
 
+  VLOG(1) << "Pushing accounts to ARC "
+          << (filter_primary_account ? "without primary account"
+                                     : "with primary account");
+  if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+    VLOG(1) << "Using AccountAppsAvailability to get available accounts";
+    account_apps_availability_->GetAccountsAvailableInArc(
+        base::BindOnce(&ArcAuthService::CompleteAccountsPushToArc,
+                       weak_ptr_factory_.GetWeakPtr(), filter_primary_account));
+    return;
+  }
+
   const std::vector<CoreAccountInfo> accounts =
       identity_manager_->GetAccountsWithRefreshTokens();
   for (const CoreAccountInfo& account : accounts) {
@@ -803,6 +865,19 @@ void ArcAuthService::TriggerAccountsPushToArc(bool filter_primary_account) {
       continue;
 
     OnRefreshTokenUpdatedForAccount(account);
+  }
+}
+
+void ArcAuthService::CompleteAccountsPushToArc(
+    bool filter_primary_account,
+    const base::flat_set<account_manager::Account>& accounts) {
+  // TODO(crbug/1260909): call `SetAccounts` when the API is implemented in ARC.
+  for (const auto& account : accounts) {
+    DCHECK(account.key.account_type() == account_manager::AccountType::kGaia);
+    if (filter_primary_account && IsPrimaryGaiaAccount(account.key.id()))
+      continue;
+
+    OnAccountAvailableInArc(account);
   }
 }
 
