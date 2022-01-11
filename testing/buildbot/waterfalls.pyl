@@ -5940,14 +5940,6 @@
           'gtest_tests': 'webrtc_chromium_tests_with_baremetal_tests',
         },
       },
-      'WebRTC Chromium Win8 Tester': {
-        'mixins': [
-          'chromium-webrtc-rel-win8',
-        ],
-        'test_suites': {
-          'gtest_tests': 'webrtc_chromium_tests_with_baremetal_tests',
-        },
-      },
     },
   },
   {
@@ -6047,15 +6039,6 @@
         'mixins': [
           'x86-64',
           'win7',
-        ],
-        'test_suites': {
-          'gtest_tests': 'webrtc_chromium_gtests',
-        },
-      },
-      'WebRTC Chromium FYI Win8 Tester': {
-        'mixins': [
-          'x86-64',
-          'win8',
         ],
         'test_suites': {
           'gtest_tests': 'webrtc_chromium_gtests',

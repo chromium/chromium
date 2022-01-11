@@ -54,10 +54,5 @@ luci.console_view(
             category = "win",
             short_name = "7",
         ),
-        luci.console_view_entry(
-            builder = "webrtc/WebRTC Chromium Win8 Tester",
-            category = "win",
-            short_name = "8",
-        ),
     ],
 )

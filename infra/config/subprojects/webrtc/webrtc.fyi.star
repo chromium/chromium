@@ -140,12 +140,6 @@ builder(
 )
 
 builder(
-    name = "WebRTC Chromium FYI Win8 Tester",
-    os = os.WINDOWS_DEFAULT,
-    triggered_by = ["WebRTC Chromium FYI Win Builder"],
-)
-
-builder(
     name = "WebRTC Chromium FYI ios-device",
     executable = "recipe:webrtc/chromium_ios",
     goma_backend = goma.backend.RBE_PROD,

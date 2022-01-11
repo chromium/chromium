@@ -339,9 +339,6 @@
   'chromium-webrtc-rel-win10': {
     'perf_builder_name_alias': 'chromium-webrtc-rel-win10',
   },
-  'chromium-webrtc-rel-win8': {
-    'perf_builder_name_alias': 'chromium-webrtc-rel-win8',
-  },
   # Used for invert CQ tests selection. Adding ci_only: False to
   # test_suite_exceptions.pyl to select tests that are allowed on CQ builders.
   'ci_only': {
@@ -1151,13 +1148,6 @@
         'gpu': '10de:1cb3-24.21.14.1195',
         'os': 'Windows-2008ServerR2-SP1',
         'pool': 'chromium.tests.gpu',
-      },
-    },
-  },
-  'win8': {
-    'swarming': {
-      'dimensions': {
-        'os': 'Windows-8.1-SP0',
       },
     },
   },
