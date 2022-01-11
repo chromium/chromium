@@ -41,6 +41,7 @@ class FuchsiaMediaResourceProviderImpl final
           receiver);
 
   // media::mojom::FuchsiaMediaResourceProvider:
+  void ShouldUseAudioConsumer(ShouldUseAudioConsumerCallback callback) override;
   void CreateAudioConsumer(
       fidl::InterfaceRequest<fuchsia::media::AudioConsumer> request) override;
   void CreateAudioCapturer(

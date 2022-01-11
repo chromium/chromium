@@ -84,7 +84,9 @@ class FrameImpl : public fuchsia::web::Frame,
   FrameImpl(const FrameImpl&) = delete;
   FrameImpl& operator=(const FrameImpl&) = delete;
 
-  uint64_t media_session_id() const { return media_session_id_; }
+  absl::optional<uint64_t> media_session_id() const {
+    return media_session_id_;
+  }
 
   FramePermissionController* permission_controller() {
     return &permission_controller_;
@@ -360,7 +362,7 @@ class FrameImpl : public fuchsia::web::Frame,
 
   // Session ID to use for fuchsia.media.AudioConsumer. Set with
   // SetMediaSessionId().
-  uint64_t media_session_id_ = 0;
+  absl::optional<uint64_t> media_session_id_;
 
   // Stored settings for web contents in the current Frame.
   fuchsia::web::ContentAreaSettings content_area_settings_;

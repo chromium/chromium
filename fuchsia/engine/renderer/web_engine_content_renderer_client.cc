@@ -25,6 +25,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
+#include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
 
@@ -271,9 +272,22 @@ WebEngineContentRendererClient::GetBaseRendererFactory(
     media::DecoderFactory* decoder_factory,
     base::RepeatingCallback<media::GpuVideoAcceleratorFactories*()>
         get_gpu_factories_cb) {
+  auto* interface_broker = render_frame->GetBrowserInterfaceBroker();
+
+  mojo::Remote<media::mojom::FuchsiaMediaResourceProvider>
+      media_resource_provider;
+  interface_broker->GetInterface(
+      media_resource_provider.BindNewPipeAndPassReceiver());
+
+  bool use_audio_consumer = false;
+  if (!media_resource_provider->ShouldUseAudioConsumer(&use_audio_consumer) ||
+      !use_audio_consumer) {
+    return nullptr;
+  }
+
   return std::make_unique<WebEngineMediaRendererFactory>(
       media_log, decoder_factory, std::move(get_gpu_factories_cb),
-      render_frame->GetBrowserInterfaceBroker());
+      std::move(media_resource_provider));
 }
 
 bool WebEngineContentRendererClient::RunClosureWhenInForeground(
