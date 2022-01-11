@@ -439,17 +439,22 @@ blink::UserAgentBrandVersion GetGreasedUserAgentBrandVersion(
          greasey_chars[(seed + 1) % greasey_chars.size()], "A",
          greasey_chars[(seed + 2) % greasey_chars.size()], "Brand"});
     greasey_version = greased_versions[seed % greased_versions.size()];
+
+    return GetProcessedGreasedBrandVersion(
+        maybe_greasey_brand.value_or(greasey_brand),
+        maybe_greasey_version.value_or(greasey_version), output_version_type);
   } else {
     const std::vector<std::string> greasey_chars = {" ", " ", ";"};
     greasey_brand = base::StrCat({greasey_chars[permuted_order[0]], "Not",
                                   greasey_chars[permuted_order[1]], "A",
                                   greasey_chars[permuted_order[2]], "Brand"});
     greasey_version = "99";
-  }
 
-  return GetProcessedGreasedBrandVersion(
-      maybe_greasey_brand.value_or(greasey_brand),
-      maybe_greasey_version.value_or(greasey_version), output_version_type);
+    // The old algorithm is held constant; it does not respond to experiment
+    // overrides.
+    return GetProcessedGreasedBrandVersion(greasey_brand, greasey_version,
+                                           output_version_type);
+  }
 }
 // TODO(crbug.com/1103047): This can be removed/re-refactored once we use
 // "macOS" by default
