@@ -51769,6 +51769,7 @@ from previous Chrome versions.
   <int value="-1308600417" label="NewNetErrorPageUI:disabled"/>
   <int value="-1308389775" label="PermissionChipGestureSensitive:enabled"/>
   <int value="-1308184869" label="MediaFeedsBackgroundFetching:enabled"/>
+  <int value="-1306581260" label="AutofillParsingPatternProvider:enabled"/>
   <int value="-1304957199" label="OfflinePagesShowAlternateDinoPage:enabled"/>
   <int value="-1304758527" label="SyncSendTabToSelf:disabled"/>
   <int value="-1304401930" label="CSSContainerQueries:enabled"/>
@@ -52874,6 +52875,7 @@ from previous Chrome versions.
   <int value="-499723386" label="EnableFilesAppCopyImage:disabled"/>
   <int value="-499186481"
       label="OmniboxGroupSuggestionsBySearchVsUrl:disabled"/>
+  <int value="-498883807" label="AutofillParsingPatternProvider:disabled"/>
   <int value="-498740735" label="ArcUsbHost:disabled"/>
   <int value="-498463128" label="MacSystemShareMenu:enabled"/>
   <int value="-498412005" label="EnableDrDc:disabled"/>
@@ -54338,6 +54340,7 @@ from previous Chrome versions.
   <int value="602117675" label="NTPBookmarkSuggestions:enabled"/>
   <int value="602452004" label="WebBluetoothBondOnDemand:disabled"/>
   <int value="603326800" label="UsePasswordSeparatedSigninFlow:enabled"/>
+  <int value="603897763" label="AutofillPageLanguageDetection:disabled"/>
   <int value="603988014" label="NetworkService:enabled"/>
   <int value="604334859" label="Prerender2:enabled"/>
   <int value="605150752" label="WebUSB:disabled"/>
@@ -54543,6 +54546,7 @@ from previous Chrome versions.
   <int value="734900932" label="RecurrentInterstitialFeature:enabled"/>
   <int value="735393448" label="InsertKeyToggleMode:disabled"/>
   <int value="736911267" label="ExperimentalCrostiniUI:disabled"/>
+  <int value="737195667" label="AutofillPageLanguageDetection:enabled"/>
   <int value="737421745" label="enable-accessibility-object-model"/>
   <int value="738868972" label="GdiTextPrinting:disabled"/>
   <int value="738962107" label="ExoOrdinalMotion:disabled"/>

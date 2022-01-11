@@ -289,7 +289,7 @@ extern const base::Feature kAutofillPreventOverridingPrefilledValues{
 // Uses the pattern provider to retrieve parsing patterns for the heuristic
 // field type detection.
 // TODO(crbug/1121990): Remove once launched.
-extern const base::Feature kAutofillParsingPatternProvider{
+const base::Feature kAutofillParsingPatternProvider{
     "AutofillParsingPatternProvider", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls if language-specific patterns are used for the heuristic field type

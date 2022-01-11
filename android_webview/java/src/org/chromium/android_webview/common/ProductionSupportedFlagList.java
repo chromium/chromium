@@ -165,6 +165,10 @@ public final class ProductionSupportedFlagList {
                     "Fixes memory leaks in the renderer- and browser-form caches."),
             Flag.baseFeature(AutofillFeatures.AUTOFILL_USE_UNASSOCIATED_LISTED_ELEMENTS,
                     "Caches unowned listed elements in the document."),
+            Flag.baseFeature(AutofillFeatures.AUTOFILL_PARSING_PATTERN_PROVIDER,
+                    "Enables Autofill to use its new method to retrieve parsing patterns."),
+            Flag.baseFeature(AutofillFeatures.AUTOFILL_PAGE_LANGUAGE_DETECTION,
+                    "Enables Autofill to retrieve the page language for form parsing."),
             Flag.baseFeature(FeatureConstants.KEYBOARD_ACCESSORY_PAYMENT_VIRTUAL_CARD_FEATURE,
                     "When enabled, merchant bound virtual cards will be offered in the keyboard "
                             + "accessory."),
