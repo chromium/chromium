@@ -456,7 +456,7 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
         base::Time(), kMaxCountForKeywordCacheBatch,
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
                        weak_ptr_factory_.GetWeakPtr(), begin_time,
-                       std::make_unique<std::set<std::u16string>>(),
+                       std::make_unique<std::vector<std::u16string>>(),
                        &all_keywords_cache_),
         &cache_query_task_tracker_);
 
@@ -481,7 +481,7 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
         base::BindOnce(&HistoryClustersService::PopulateClusterKeywordCache,
                        weak_ptr_factory_.GetWeakPtr(),
                        all_keywords_cache_timestamp_,
-                       std::make_unique<std::set<std::u16string>>(),
+                       std::make_unique<std::vector<std::u16string>>(),
                        &short_keyword_cache_),
         &cache_query_task_tracker_);
   }
@@ -491,17 +491,10 @@ bool HistoryClustersService::DoesQueryMatchAnyCluster(
   if (query.length() <= 1)
     return false;
 
-  query_parser::QueryNodeVector query_nodes;
-  query_parser::QueryParser::ParseQueryNodes(
-      base::UTF8ToUTF16(query), query_parser::MatchingAlgorithm::DEFAULT,
-      &query_nodes);
+  auto query_lower = base::i18n::ToLower(base::UTF8ToUTF16(query));
 
-  return query_parser::QueryParser::DoesQueryMatch(all_keywords_cache_,
-                                                   query_nodes,
-                                                   /*exact=*/true) ||
-         query_parser::QueryParser::DoesQueryMatch(short_keyword_cache_,
-                                                   query_nodes,
-                                                   /*exact=*/true);
+  return short_keyword_cache_.contains(query_lower) ||
+         all_keywords_cache_.contains(query_lower);
 }
 
 // static
@@ -575,8 +568,8 @@ void HistoryClustersService::ClearKeywordCache() {
 
 void HistoryClustersService::PopulateClusterKeywordCache(
     base::Time begin_time,
-    std::unique_ptr<std::set<std::u16string>> keyword_accumulator,
-    query_parser::QueryWordVector* cache,
+    std::unique_ptr<std::vector<std::u16string>> keyword_accumulator,
+    KeywordSet* cache,
     QueryClustersResult result) {
   const size_t max_keyword_phrases = kMaxKeywordPhrases.Get();
 
@@ -587,8 +580,11 @@ void HistoryClustersService::PopulateClusterKeywordCache(
       // simple first-pass technique to avoid overtriggering the omnibox action.
       continue;
     }
-    keyword_accumulator->insert(cluster.keywords.begin(),
-                                cluster.keywords.end());
+    // Lowercase the keywords for case insensitive matching while adding to the
+    // accumulator.
+    for (auto& keyword : cluster.keywords) {
+      keyword_accumulator->push_back(base::i18n::ToLower(keyword));
+    }
 
     // Limit the cache size. It's possible for the `cache.size()` to exceed
     // `max_keyword_phrases` since:
@@ -620,19 +616,10 @@ void HistoryClustersService::PopulateClusterKeywordCache(
     return;
   }
 
-  // TODO(manukh) Even though `keyword_accumulator` is a `std::set`, we still
-  //  often end up with duplicate keywords since different strings in the
-  //  accumulator may contain the same words. We should add a metric to measure
-  //  the keyword cache size and consider preventing duplicate keywords being
-  //  inserted.
-
-  // We've got all the keywords now, time to populate the cache.
-  cache->clear();
-  for (auto& keyword : *keyword_accumulator) {
-    // Each `keyword` may itself have multiple terms that we need to extract.
-    query_parser::QueryParser::ExtractQueryWords(base::i18n::ToLower(keyword),
-                                                 cache);
-  }
+  // We've got all the keywords now. Move them all into the flat_set at once
+  // via the constructor for efficiency (as recommended by the flat_set docs).
+  // De-duplication is handled by the flat_set itself.
+  *cache = KeywordSet(*keyword_accumulator);
 
   // Record keyword phrase & keyword counts for the appropriate cache.
   if (cache == &all_keywords_cache_) {

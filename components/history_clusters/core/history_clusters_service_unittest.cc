@@ -800,7 +800,7 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
                            test_clustering_backend_->GetVisitById(1),
                            test_clustering_backend_->GetVisitById(2),
                        },
-                       {u"apples", u"oranges", u"z"},
+                       {u"apples", u"oranges", u"z", u"apples bananas"},
                        /*should_show_on_prominent_ui_surfaces=*/true));
   clusters.push_back(
       history::Cluster(0,
@@ -838,16 +838,22 @@ TEST_F(HistoryClustersServiceTest, DoesQueryMatchAnyCluster) {
   // Single character exact queries are also rejected.
   EXPECT_FALSE(history_clusters_service_->DoesQueryMatchAnyCluster("z"));
 
-  // Non-exact matches are rejected too.
+  // Non-exact (substring) matches are rejected too.
   EXPECT_FALSE(history_clusters_service_->DoesQueryMatchAnyCluster("appl"));
 
   // Adding a second non-exact query word also should make it no longer match.
   EXPECT_FALSE(
       history_clusters_service_->DoesQueryMatchAnyCluster("apples oran"));
 
-  // Multi-word queries with all exact matches should still work.
-  EXPECT_TRUE(
+  // A multi-word phrase shouldn't be considered a match against two separate
+  // keywords: "apples oranges" can't match keywords ["apples", "oranges"].
+  EXPECT_FALSE(
       history_clusters_service_->DoesQueryMatchAnyCluster("apples oranges"));
+
+  // But a multi-word phrases can still match against a keyword with multiple
+  // words: "apples bananas" matches ["apples bananas"].
+  EXPECT_TRUE(
+      history_clusters_service_->DoesQueryMatchAnyCluster("apples bananas"));
 
   // Deleting a history entry should clear the keyword cache.
   history_service_->DeleteURLs({GURL{"https://google.com/"}});
@@ -985,7 +991,8 @@ TEST_F(HistoryClustersServiceMaxKeywordsTest,
 
   // The 1st cluster's phrases should always be cached.
   EXPECT_TRUE(history_clusters_service_->DoesQueryMatchAnyCluster("one"));
-  EXPECT_TRUE(history_clusters_service_->DoesQueryMatchAnyCluster("six"));
+  EXPECT_TRUE(
+      history_clusters_service_->DoesQueryMatchAnyCluster("four five six"));
   // Phrases should be cached if we haven't reached 5 phrases even if we've
   // reached 5 words.
   EXPECT_TRUE(history_clusters_service_->DoesQueryMatchAnyCluster("seven"));
@@ -997,7 +1004,7 @@ TEST_F(HistoryClustersServiceMaxKeywordsTest,
   histogram_tester.ExpectUniqueSample(
       "History.Clusters.Backend.KeywordCache.AllKeywordPhraseCount", 5, 1);
   histogram_tester.ExpectUniqueSample(
-      "History.Clusters.Backend.KeywordCache.AllKeywordsCount", 7, 1);
+      "History.Clusters.Backend.KeywordCache.AllKeywordsCount", 5, 1);
   histogram_tester.ExpectTotalCount(
       "History.Clusters.Backend.KeywordCache.ShortKeywordPhraseCount", 0);
   histogram_tester.ExpectTotalCount(

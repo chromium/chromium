@@ -7,11 +7,11 @@
 
 #include <map>
 #include <memory>
-#include <set>
 #include <string>
 #include <vector>
 
 #include "base/callback.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -26,7 +26,6 @@
 #include "components/history_clusters/core/clustering_backend.h"
 #include "components/history_clusters/core/history_clusters_types.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/query_parser/query_parser.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
 class TemplateURLService;
@@ -79,6 +78,8 @@ class HistoryClustersService : public KeyedService {
   // Used to track incomplete, unpersisted visits.
   using IncompleteVisitMap =
       std::map<int64_t, IncompleteVisitContextAnnotations>;
+
+  using KeywordSet = base::flat_set<std::u16string>;
 
   // `url_loader_factory` is allowed to be nullptr, like in unit tests.
   // In that case, HistoryClustersService will never instantiate a clustering
@@ -176,8 +177,8 @@ class HistoryClustersService : public KeyedService {
   // another batch of clusters. Otherwise, will update the keyword cache.
   void PopulateClusterKeywordCache(
       base::Time begin_time,
-      std::unique_ptr<std::set<std::u16string>> keyword_accumulator,
-      query_parser::QueryWordVector* cache,
+      std::unique_ptr<std::vector<std::u16string>> keyword_accumulator,
+      KeywordSet* cache,
       QueryClustersResult result);
 
   // Internally used callback for `QueryClusters()`.
@@ -223,7 +224,7 @@ class HistoryClustersService : public KeyedService {
   // synchronously as the user types in the omnibox. Also save the timestamp
   // the cache was generated so we can periodically re-generate.
   // TODO(tommycli): Make a smarter mechanism for regenerating the cache.
-  query_parser::QueryWordVector all_keywords_cache_;
+  KeywordSet all_keywords_cache_;
   base::Time all_keywords_cache_timestamp_;
 
   // Like above, but will represent the clusters newer than
@@ -236,7 +237,7 @@ class HistoryClustersService : public KeyedService {
   //  2) Exclude keywords since keywords of size-1 clusters are not cached.
   // TODO(manukh) This is a "band aid" fix to missing keywords for recent
   //  visits.
-  query_parser::QueryWordVector short_keyword_cache_;
+  KeywordSet short_keyword_cache_;
   base::Time short_keyword_cache_timestamp_;
 
   base::CancelableTaskTracker cache_query_task_tracker_;
