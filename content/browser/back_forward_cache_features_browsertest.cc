@@ -3602,8 +3602,14 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WebMidiNotCached) {
       {}, {}, {}, FROM_HERE);
 }
 
+// TODO(https://crbug.com/1286474): This test is flaking on some Android bots.
+#if defined(OS_ANDROID)
+#define MAYBE_PresentationConnectionClosed DISABLED_PresentationConnectionClosed
+#else
+#define MAYBE_PresentationConnectionClosed PresentationConnectionClosed
+#endif  // defined(OS_ANDROID)
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
-                       PresentationConnectionClosed) {
+                       MAYBE_PresentationConnectionClosed) {
   ASSERT_TRUE(CreateHttpsServer()->Start());
   GURL url_a(https_server()->GetURL(
       "a.com", "/back_forward_cache/presentation_controller.html"));
