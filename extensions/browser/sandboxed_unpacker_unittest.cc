@@ -5,13 +5,13 @@
 #include "extensions/browser/sandboxed_unpacker.h"
 
 #include <memory>
+#include <tuple>
 
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/file_util.h"
-#include "base/ignore_result.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
@@ -501,7 +501,7 @@ TEST_F(SandboxedUnpackerTest, UnzipperServiceFails) {
   // receiver, effectively simulating a crashy service process.
   unzip::SetUnzipperLaunchOverrideForTesting(base::BindRepeating([]() -> auto {
     mojo::PendingRemote<unzip::mojom::Unzipper> remote;
-    ignore_result(remote.InitWithNewPipeAndPassReceiver());
+    std::ignore = remote.InitWithNewPipeAndPassReceiver();
     return remote;
   }));
 

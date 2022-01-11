@@ -6,7 +6,6 @@
 
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
-#include "base/ignore_result.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"

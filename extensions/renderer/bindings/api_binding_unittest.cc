@@ -4,11 +4,12 @@
 
 #include "extensions/renderer/bindings/api_binding.h"
 
+#include <tuple>
+
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
-#include "base/ignore_result.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -1660,8 +1661,8 @@ TEST_F(APIBindingUnittest, TestSendingRequestsAndSilentRequestsWithHooks) {
     v8::Local<v8::Value> args[] = {binding_object};
     v8::TryCatch try_catch(context->GetIsolate());
     // The throwException call will throw an exception; ignore it.
-    ignore_result(call->Call(context, v8::Undefined(context->GetIsolate()),
-                             base::size(args), args));
+    std::ignore = call->Call(context, v8::Undefined(context->GetIsolate()),
+                             base::size(args), args);
   };
 
   call_api_method("modifyArgs", "");

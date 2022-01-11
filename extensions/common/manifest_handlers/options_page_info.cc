@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/files/file_util.h"
-#include "base/ignore_result.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "extensions/common/api/extensions_manifest_types.h"

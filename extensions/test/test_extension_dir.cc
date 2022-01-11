@@ -4,8 +4,9 @@
 
 #include "extensions/test/test_extension_dir.h"
 
+#include <tuple>
+
 #include "base/files/file_util.h"
-#include "base/ignore_result.h"
 #include "base/strings/string_util.h"
 #include "base/threading/thread_restrictions.h"
 #include "extensions/browser/extension_creator.h"
@@ -21,8 +22,8 @@ TestExtensionDir::TestExtensionDir() {
 
 TestExtensionDir::~TestExtensionDir() {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  ignore_result(dir_.Delete());
-  ignore_result(crx_dir_.Delete());
+  std::ignore = dir_.Delete();
+  std::ignore = crx_dir_.Delete();
 }
 
 void TestExtensionDir::WriteManifest(base::StringPiece manifest) {

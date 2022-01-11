@@ -4,7 +4,8 @@
 
 #include "extensions/renderer/bindings/api_last_error.h"
 
-#include "base/ignore_result.h"
+#include <tuple>
+
 #include "gin/converter.h"
 #include "gin/data_object_builder.h"
 #include "gin/handle.h"
@@ -187,9 +188,9 @@ void APILastError::ClearError(v8::Local<v8::Context> context,
   }
   // These Delete()s can fail, but there's nothing to do if it does (the
   // exception will be caught by the TryCatch above).
-  ignore_result(parent->Delete(context, key));
+  std::ignore = parent->Delete(context, key);
   if (!secondary_parent.IsEmpty())
-    ignore_result(secondary_parent->Delete(context, key));
+    std::ignore = secondary_parent->Delete(context, key);
 }
 
 bool APILastError::HasError(v8::Local<v8::Context> context) {
@@ -261,8 +262,8 @@ void APILastError::SetErrorOnPrimaryParent(v8::Local<v8::Context> context,
     DCHECK(!last_error.IsEmpty());
     // This SetAccessor() can fail, but there's nothing to do if it does (the
     // exception will be caught by the TryCatch in SetError()).
-    ignore_result(parent->SetAccessor(context, key, &LastErrorGetter,
-                                      &LastErrorSetter, last_error));
+    std::ignore = parent->SetAccessor(context, key, &LastErrorGetter,
+                                      &LastErrorSetter, last_error);
   }
 }
 
@@ -281,9 +282,9 @@ void APILastError::SetErrorOnSecondaryParent(
   v8::Local<v8::String> key = gin::StringToSymbol(isolate, kLastErrorProperty);
   // This CreateDataProperty() can fail, but there's nothing to do if it does
   // (the exception will be caught by the TryCatch in SetError()).
-  ignore_result(secondary_parent->CreateDataProperty(
+  std::ignore = secondary_parent->CreateDataProperty(
       context, key,
-      gin::DataObjectBuilder(isolate).Set("message", error).Build()));
+      gin::DataObjectBuilder(isolate).Set("message", error).Build());
 }
 
 }  // namespace extensions
