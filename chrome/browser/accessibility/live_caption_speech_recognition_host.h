@@ -57,6 +57,7 @@ class LiveCaptionSpeechRecognitionHost
   void OnLanguageIdentificationEvent(
       media::mojom::LanguageIdentificationEventPtr event) override;
   void OnSpeechRecognitionError() override;
+  void OnSpeechRecognitionStopped() override;
 
  protected:
   // Mac and ChromeOS move the fullscreened window into a new workspace. When

@@ -60,6 +60,7 @@ class OnDeviceSpeechRecognizer
   void OnSpeechRecognitionError() override;
   void OnLanguageIdentificationEvent(
       media::mojom::LanguageIdentificationEventPtr event) override;
+  void OnSpeechRecognitionStopped() override;
 
  private:
   friend class OnDeviceSpeechRecognizerTest;

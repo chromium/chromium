@@ -69,6 +69,7 @@ class Dictation : public SpeechRecognizerDelegate,
   void OnSpeechSoundLevelChanged(int16_t level) override;
   void OnSpeechRecognitionStateChanged(
       SpeechRecognizerStatus new_state) override;
+  void OnSpeechRecognitionStopped() override {}
 
   // ui::InputMethodObserver:
   void OnTextInputStateChanged(const ui::TextInputClient* client) override;

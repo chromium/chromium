@@ -58,6 +58,7 @@ class FakeSpeechRecognitionService
   void SendAudioToSpeechRecognitionService(
       media::mojom::AudioDataS16Ptr buffer) override;
   void OnLanguageChanged(const std::string& language) override {}
+  void MarkDone() override;
 
   // Methods for testing plumbing to SpeechRecognitionRecognizerClient.
   void SendSpeechRecognitionResult(

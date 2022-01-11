@@ -52,6 +52,7 @@ class ASH_EXPORT ProjectorControllerImpl
       SpeechRecognitionAvailability availability) override;
   void OnTranscription(const media::SpeechRecognitionResult& result) override;
   void OnTranscriptionError() override;
+  void OnSpeechRecognitionStopped() override;
   bool IsEligible() const override;
   NewScreencastPrecondition GetNewScreencastPrecondition() const override;
   void OnToolSet(const AnnotatorTool& tool) override;

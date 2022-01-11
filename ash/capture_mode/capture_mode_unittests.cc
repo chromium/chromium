@@ -4788,6 +4788,11 @@ class ProjectorCaptureModeIntegrationTests
     CaptureModeTest::SetUp();
     auto* projector_controller = ProjectorController::Get();
     projector_controller->SetClient(&projector_client_);
+    ON_CALL(projector_client_, StopSpeechRecognition)
+        .WillByDefault(testing::Invoke([]() {
+          ProjectorController::Get()->OnSpeechRecognitionStopped();
+        }));
+
     // Simulate the availability of speech recognition.
     projector_controller->OnSpeechRecognitionAvailabilityChanged(
         SpeechRecognitionAvailability::kAvailable);
