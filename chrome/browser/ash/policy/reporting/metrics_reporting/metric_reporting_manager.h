@@ -126,6 +126,8 @@ class MetricReportingManager : public policy::ManagedSessionService::Observer,
 
   void InitNetworkCollectors();
 
+  void InitAudioCollectors();
+
   CrosReportingSettings reporting_settings_;
 
   std::vector<std::unique_ptr<Sampler>> samplers_;

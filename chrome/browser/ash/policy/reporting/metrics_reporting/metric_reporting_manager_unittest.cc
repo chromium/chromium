@@ -587,5 +587,197 @@ INSTANTIATE_TEST_SUITE_P(
     [](const testing::TestParamInfo<HealthdInfoReportingTest::ParamType>&
            info) { return info.param.test_name; });
 
+constexpr int kAudioCheckingRateMs = 60000;
+
+struct AudioReportingTestCase {
+  std::string test_name;
+  absl::optional<bool> is_feature_enabled;
+  bool is_deprovisioned;
+  bool is_affiliated;
+  int expected_telemetry_count;
+  int time_forward;
+};
+
+class AudioReportingTest
+    : public ::testing::TestWithParam<AudioReportingTestCase> {
+ protected:
+  AudioReportingTest() = default;
+
+  AudioReportingTest(const AudioReportingTest&) = delete;
+  AudioReportingTest& operator=(const AudioReportingTest&) = delete;
+
+  ~AudioReportingTest() override = default;
+
+  void SetUp() override {
+    ::ash::CrosHealthdClient::InitializeFake();
+
+    task_runner_ = base::ThreadPool::CreateSequencedTaskRunner({});
+
+    scoped_testing_cros_settings_.device_settings()->SetInteger(
+        ::ash::kReportDeviceAudioStatusCheckingRateMs, kAudioCheckingRateMs);
+
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void TearDown() override {
+    ::ash::CrosHealthdClient::Shutdown();
+    ::ash::cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
+  }
+
+  void EmitAudioSevereUnderrunEvent() {
+    base::RunLoop run_loop;
+    ::ash::cros_healthd::FakeCrosHealthdClient::Get()
+        ->EmitAudioSevereUnderrunEventForTesting();
+    base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                     run_loop.QuitClosure());
+    run_loop.Run();
+  }
+
+  void SetAudioResult() {
+    auto telemetry_info = chromeos::cros_healthd::mojom::TelemetryInfo::New();
+    telemetry_info->audio_result =
+        chromeos::cros_healthd::mojom::AudioResult::NewAudioInfo(
+            chromeos::cros_healthd::mojom::AudioInfo::New(
+                /*output_mute=*/true,
+                /*input_mute=*/true, /*output_volume=*/25,
+                /*output_device_name=*/"hey",
+                /*input_gain=*/50, /*input_device_name=*/"airpods",
+                /*underruns=*/0,
+                /*severe_underruns=*/1));
+    ::ash::cros_healthd::FakeCrosHealthdClient::Get()
+        ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
+  }
+
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+
+  ::ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
+};
+
+TEST_F(AudioReportingTest, AudioEvent) {
+  scoped_testing_cros_settings_.device_settings()->SetBoolean(
+      ::ash::kReportDeviceAudioStatus, true);
+
+  auto fake_delegate = std::make_unique<FakeDelegate>();
+  fake_delegate->SetIsAffiliated(true);
+
+  int event_reported_count = 0;
+  auto event_queue =
+      std::unique_ptr<MockReportQueue, base::OnTaskRunnerDeleter>(
+          new ::testing::NiceMock<MockReportQueue>(),
+          base::OnTaskRunnerDeleter(task_runner_));
+  ON_CALL(*event_queue, AddRecord).WillByDefault([&]() {
+    ++event_reported_count;
+  });
+  fake_delegate->SetEventQueue(std::move(event_queue));
+
+  auto metric_reporting_manager = MetricReportingManager::CreateForTesting(
+      std::move(fake_delegate), nullptr);
+
+  metric_reporting_manager->OnLogin(nullptr);
+  base::RunLoop run_loop;
+  EmitAudioSevereUnderrunEvent();
+  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                   run_loop.QuitClosure());
+  run_loop.Run();
+
+  EXPECT_EQ(event_reported_count, 1);
+}
+
+TEST_P(AudioReportingTest, Telemetry) {
+  const AudioReportingTestCase& test_case = GetParam();
+
+  if (test_case.is_feature_enabled.has_value()) {
+    scoped_testing_cros_settings_.device_settings()->SetBoolean(
+        ::ash::kReportDeviceAudioStatus, test_case.is_feature_enabled.value());
+  }
+
+  auto fake_delegate = std::make_unique<FakeDelegate>();
+  auto* const fake_delegate_ptr = fake_delegate.get();
+
+  fake_delegate->SetIsAffiliated(test_case.is_affiliated);
+  fake_delegate->SetIsDeprovisioned(test_case.is_deprovisioned);
+
+  SetAudioResult();
+
+  int telemetry_report_count = 0;
+  auto telemetry_queue =
+      std::unique_ptr<MockReportQueue, base::OnTaskRunnerDeleter>(
+          new ::testing::NiceMock<MockReportQueue>(),
+          base::OnTaskRunnerDeleter(task_runner_));
+  ON_CALL(*telemetry_queue, AddRecord).WillByDefault([&]() {
+    ++telemetry_report_count;
+  });
+  fake_delegate->SetTelemetryQueue(std::move(telemetry_queue));
+
+  auto metric_reporting_manager = MetricReportingManager::CreateForTesting(
+      std::move(fake_delegate), nullptr);
+  base::RunLoop run_loop;
+  base::SequencedTaskRunnerHandle::Get()->PostTask(FROM_HERE,
+                                                   run_loop.QuitClosure());
+  run_loop.Run();
+
+  task_environment_.FastForwardBy(base::Milliseconds(test_case.time_forward));
+  EXPECT_EQ(telemetry_report_count, 0);
+
+  metric_reporting_manager->OnLogin(nullptr);
+
+  task_environment_.FastForwardBy(base::Milliseconds(test_case.time_forward));
+  EXPECT_EQ(telemetry_report_count, test_case.expected_telemetry_count);
+
+  fake_delegate_ptr->SetIsDeprovisioned(true);
+  metric_reporting_manager->DeviceSettingsUpdated();
+
+  // Device is deprovisioned, so no reporting, reset all counts.
+  telemetry_report_count = 0;
+  task_environment_.FastForwardBy(base::Milliseconds(test_case.time_forward));
+  EXPECT_EQ(telemetry_report_count, 0);
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    AudioReportingTests,
+    AudioReportingTest,
+    ::testing::ValuesIn<AudioReportingTestCase>(
+        {{"Deprovisioned", /*is_feature_enabled=*/true,
+          /*is_deprovisioned=*/true,
+          /*is_affiliated=*/true,
+          /*expected_telemetry_count=*/0,
+          /*time_forward=*/kAudioCheckingRateMs},
+         {"NotAffiliated", /*is_feature_enabled=*/true,
+          /*is_deprovisioned=*/true,
+          /*is_affiliated=*/false,
+          /*expected_telemetry_count=*/0,
+          /*time_forward=*/kAudioCheckingRateMs},
+         {"Disabled", /*is_feature_enabled=*/false,
+          /*is_deprovisioned=*/false,
+          /*is_affiliated=*/true,
+          /*expected_telemetry_count=*/0,
+          /*time_forward=*/kAudioCheckingRateMs},
+         {"DefaultEnabled", /*is_feature_enabled=*/absl::nullopt,
+          /*is_deprovisioned=*/false,
+          /*is_affiliated=*/true,
+          /*expected_telemetry_count=*/1,
+          /*time_forward=*/kAudioCheckingRateMs},
+         {"Enabled", /*is_feature_enabled=*/true,
+          /*is_deprovisioned=*/false,
+          /*is_affiliated=*/true,
+          /*expected_telemetry_count=*/1,
+          /*time_forward=*/kAudioCheckingRateMs},
+         {"Enabled_DoubleTime", /*is_feature_enabled=*/true,
+          /*is_deprovisioned=*/false,
+          /*is_affiliated=*/true,
+          /*expected_telemetry_count=*/2,
+          /*time_forward=*/kAudioCheckingRateMs * 2},
+         {"Enabled_HalfTime", /*is_feature_enabled=*/true,
+          /*is_deprovisioned=*/false,
+          /*is_affiliated=*/true,
+          /*expected_telemetry_count=*/0,
+          /*time_forward=*/kAudioCheckingRateMs / 2}}),
+    [](const testing::TestParamInfo<AudioReportingTest::ParamType>& info) {
+      return info.param.test_name;
+    });
+
 }  // namespace
 }  // namespace reporting

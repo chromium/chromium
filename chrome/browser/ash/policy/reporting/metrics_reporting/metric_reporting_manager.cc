@@ -6,6 +6,7 @@
 
 #include "ash/components/settings/cros_settings_names.h"
 #include "base/logging.h"
+#include "chrome/browser/ash/policy/reporting/metrics_reporting/audio/audio_events_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/https_latency_sampler.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/network_events_observer.h"
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/network/network_info_sampler.h"
@@ -36,6 +37,8 @@ constexpr base::TimeDelta kDefaultNetworkTelemetryCollectionRate =
     base::Minutes(10);
 constexpr base::TimeDelta kDefaultNetworkTelemetryEventCheckingRate =
     base::Minutes(2);
+constexpr base::TimeDelta kDefaultAudioTelemetryCollectionRate =
+    base::Minutes(10);
 
 base::TimeDelta GetDefaultRate(base::TimeDelta default_rate,
                                base::TimeDelta testing_rate) {
@@ -178,6 +181,7 @@ void MetricReportingManager::Init() {
 
 void MetricReportingManager::InitOnAffiliatedLogin() {
   InitNetworkCollectors();
+  InitAudioCollectors();
 }
 
 std::unique_ptr<MetricReportQueue>
@@ -319,6 +323,25 @@ void MetricReportingManager::InitNetworkCollectors() {
       std::make_unique<NetworkEventsObserver>(),
       /*enable_setting_path=*/::ash::kReportDeviceNetworkStatus,
       kReportDeviceNetworkStatusDefaultValue);
+}
+
+void MetricReportingManager::InitAudioCollectors() {
+  const bool kReportDeviceAudioStatusDefaultValue = true;
+
+  CreateEventObserverManager(
+      std::make_unique<AudioEventsObserver>(),
+      /*enable_setting_path=*/::ash::kReportDeviceAudioStatus,
+      kReportDeviceAudioStatusDefaultValue);
+
+  auto audio_telemetry_sampler = std::make_unique<CrosHealthdMetricSampler>(
+      chromeos::cros_healthd::mojom::ProbeCategoryEnum::kAudio,
+      CrosHealthdMetricSampler::MetricType::kTelemetry);
+  CreatePeriodicCollector(
+      std::move(audio_telemetry_sampler),
+      /*enable_setting_path=*/::ash::kReportDeviceAudioStatus,
+      kReportDeviceAudioStatusDefaultValue,
+      ::ash::kReportDeviceAudioStatusCheckingRateMs,
+      GetDefaulCollectionRate(kDefaultAudioTelemetryCollectionRate));
 }
 
 }  // namespace reporting
