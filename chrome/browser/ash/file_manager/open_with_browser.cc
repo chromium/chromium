@@ -8,6 +8,7 @@
 
 #include "ash/components/drivefs/drivefs_util.h"
 #include "ash/components/drivefs/mojom/drivefs.mojom.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
@@ -19,27 +20,18 @@
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/fileapi/external_file_url_util.h"
-#include "chrome/browser/plugins/plugin_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/file_system_core_util.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/plugin_service.h"
-#include "content/public/common/pepper_plugin_info.h"
 #include "net/base/filename_util.h"
 #include "pdf/buildflags.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 using content::BrowserThread;
-using content::PluginService;
 
 namespace file_manager {
 namespace util {
@@ -69,22 +61,14 @@ bool IsViewableInBrowser(const base::FilePath& file_path) {
   return false;
 }
 
-void OpenNewTab(Profile* profile, const GURL& url) {
+void OpenNewTab(const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // Check the validity of the pointer so that the closure from
-  // base::BindOnce(&OpenNewTab, profile) can be passed between threads.
-  if (!g_browser_process->profile_manager()->IsValidProfile(profile))
+  if (!ash::NewWindowDelegate::GetPrimary()) {
     return;
-
-  chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-  chrome::AddSelectedTabWithURL(displayer.browser(), url,
-      ui::PAGE_TRANSITION_LINK);
-
-  // Since the ScopedTabbedBrowserDisplayer does not guarantee that the
-  // browser will be shown on the active desktop, we ensure the visibility.
-  multi_user_util::MoveWindowToCurrentDesktop(
-      displayer.browser()->window()->GetNativeWindow());
+  }
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(url,
+                                                /*from_user_interaction=*/true);
 }
 
 // Reads the alternate URL from a GDoc file. When it fails, returns a file URL
@@ -98,29 +82,28 @@ GURL ReadUrlFromGDocAsync(const base::FilePath& file_path) {
 }
 
 // Parse a local file to extract the Docs url and open this url.
-void OpenGDocUrlFromFile(const base::FilePath& file_path, Profile* profile) {
+void OpenGDocUrlFromFile(const base::FilePath& file_path) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&ReadUrlFromGDocAsync, file_path),
-      base::BindOnce(&OpenNewTab, profile));
+      base::BindOnce(&OpenNewTab));
 }
 
 // Open a hosted GDoc, from a path hosted in DriveFS.
 void OpenHostedDriveFsFile(const base::FilePath& file_path,
-                           Profile* profile,
                            drive::FileError error,
                            drivefs::mojom::FileMetadataPtr metadata) {
   if (error != drive::FILE_ERROR_OK)
     return;
   if (drivefs::IsLocal(metadata->type)) {
-    OpenGDocUrlFromFile(file_path, profile);
+    OpenGDocUrlFromFile(file_path);
     return;
   }
   GURL hosted_url(metadata->alternate_url);
   if (!hosted_url.is_valid())
     return;
 
-  OpenNewTab(profile, hosted_url);
+  OpenNewTab(hosted_url);
 }
 
 }  // namespace
@@ -141,7 +124,7 @@ bool OpenFileWithBrowser(Profile* profile,
     if (page_url.is_empty())
       page_url = net::FilePathToFileURL(file_path);
 
-    OpenNewTab(profile, page_url);
+    OpenNewTab(page_url);
     return true;
   }
 
@@ -154,7 +137,7 @@ bool OpenFileWithBrowser(Profile* profile,
       const GURL url =
           chromeos::FileSystemURLToExternalFileURL(file_system_url);
       DCHECK(!url.is_empty());
-      OpenNewTab(profile, url);
+      OpenNewTab(url);
     } else {
       drive::DriveIntegrationService* integration_service =
           drive::DriveIntegrationServiceFactory::FindForProfile(profile);
@@ -163,10 +146,10 @@ bool OpenFileWithBrowser(Profile* profile,
           integration_service->GetDriveFsInterface() &&
           integration_service->GetRelativeDrivePath(file_path, &path)) {
         integration_service->GetDriveFsInterface()->GetMetadata(
-            path, base::BindOnce(&OpenHostedDriveFsFile, file_path, profile));
+            path, base::BindOnce(&OpenHostedDriveFsFile, file_path));
         return true;
       }
-      OpenGDocUrlFromFile(file_path, profile);
+      OpenGDocUrlFromFile(file_path);
     }
     return true;
   }
