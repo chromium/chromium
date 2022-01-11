@@ -494,6 +494,11 @@ class SiteSettingsHandlerTest : public testing::Test {
         net::CookiePartitionKey::FromURLForTesting(
             GURL("https://google.com.au")));
     mock_browsing_data_cookie_helper->AddCookieSamples(
+        GURL("https://google.com.au"),
+        "__Host-A=1; Path=/; Partitioned; Secure;",
+        net::CookiePartitionKey::FromURLForTesting(
+            GURL("https://google.com.au")));
+    mock_browsing_data_cookie_helper->AddCookieSamples(
         GURL("https://www.another-example.com"),
         "__Host-A=1; Path=/; Partitioned; Secure;",
         net::CookiePartitionKey::FromURLForTesting(
@@ -963,20 +968,22 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
     ASSERT_TRUE(site_group.FindStringKey("etldPlus1"));
     ASSERT_EQ("google.com.au", *site_group.FindStringKey("etldPlus1"));
 
-    EXPECT_EQ(3, site_group.FindKey("numCookies")->GetDouble());
+    EXPECT_EQ(4, site_group.FindKey("numCookies")->GetDouble());
 
     const base::Value* origin_list = site_group.FindListKey("origins");
     ASSERT_TRUE(origin_list && origin_list->is_list());
 
     // The unpartitioned cookie set for google.com.au should be associated with
     // the eTLD+1, and thus won't have an origin entry as other origin entries
-    // exist for the unpartitioned storage.
-    EXPECT_EQ(2U, origin_list->GetList().size());
+    // exist for the unpartitioned storage. The partitioned cookie for
+    // google.com.au, partitioned by google.com.au should have also created an
+    // entry.
+    EXPECT_EQ(3U, origin_list->GetList().size());
 
     const base::Value& partitioned_origin_one_info = origin_list->GetList()[0];
     ASSERT_TRUE(partitioned_origin_one_info.is_dict());
 
-    EXPECT_EQ("https://www.another-example.com/",
+    EXPECT_EQ("https://google.com.au/",
               partitioned_origin_one_info.FindKey("origin")->GetString());
     EXPECT_EQ(0,
               partitioned_origin_one_info.FindKey("engagement")->GetDouble());
@@ -987,7 +994,7 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
         partitioned_origin_one_info.FindKey("isPartitioned")->GetBool());
 
     const base::Value& partitioned_origin_two_info = origin_list->GetList()[1];
-    EXPECT_EQ("https://www.example.com/",
+    EXPECT_EQ("https://www.another-example.com/",
               partitioned_origin_two_info.FindKey("origin")->GetString());
     EXPECT_EQ(0,
               partitioned_origin_two_info.FindKey("engagement")->GetDouble());
@@ -996,6 +1003,20 @@ TEST_F(SiteSettingsHandlerTest, OnStorageFetched) {
               partitioned_origin_two_info.FindKey("numCookies")->GetDouble());
     EXPECT_TRUE(
         partitioned_origin_two_info.FindKey("isPartitioned")->GetBool());
+
+    const base::Value& partitioned_origin_three_info =
+        origin_list->GetList()[2];
+    ASSERT_TRUE(partitioned_origin_three_info.is_dict());
+
+    EXPECT_EQ("https://www.example.com/",
+              partitioned_origin_three_info.FindKey("origin")->GetString());
+    EXPECT_EQ(0,
+              partitioned_origin_three_info.FindKey("engagement")->GetDouble());
+    EXPECT_EQ(0, partitioned_origin_three_info.FindKey("usage")->GetDouble());
+    EXPECT_EQ(1,
+              partitioned_origin_three_info.FindKey("numCookies")->GetDouble());
+    EXPECT_TRUE(
+        partitioned_origin_three_info.FindKey("isPartitioned")->GetBool());
   }
 }
 
@@ -2444,7 +2465,7 @@ TEST_F(SiteSettingsHandlerChooserExceptionTest,
 TEST_F(SiteSettingsHandlerTest, HandleClearEtldPlus1DataAndCookies) {
   SetUpCookiesTreeModel();
 
-  EXPECT_EQ(27, handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
+  EXPECT_EQ(28, handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
 
   auto verify_site_group = [](const base::Value& site_group,
                               std::string expected_etld_plus1) {
@@ -2485,7 +2506,7 @@ TEST_F(SiteSettingsHandlerTest, HandleClearEtldPlus1DataAndCookies) {
     EXPECT_TRUE(cookie->IsPartitioned());
   }
 
-  EXPECT_EQ(18, handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
+  EXPECT_EQ(19, handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
 
   storage_and_cookie_list = GetOnStorageFetchedSentListView();
   EXPECT_EQ(2U, storage_and_cookie_list.size());
@@ -2497,7 +2518,7 @@ TEST_F(SiteSettingsHandlerTest, HandleClearEtldPlus1DataAndCookies) {
   handler()->HandleClearEtldPlus1DataAndCookies(
       &base::Value::AsListValue(args));
 
-  EXPECT_EQ(10, handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
+  EXPECT_EQ(11, handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
 
   storage_and_cookie_list = GetOnStorageFetchedSentListView();
   EXPECT_EQ(1U, storage_and_cookie_list.size());
@@ -2534,7 +2555,7 @@ TEST_F(SiteSettingsHandlerTest, HandleClearEtldPlus1DataAndCookies) {
 TEST_F(SiteSettingsHandlerTest, HandleClearUnpartitionedUsage) {
   SetUpCookiesTreeModel();
 
-  EXPECT_EQ(27, handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
+  EXPECT_EQ(28, handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
 
   base::Value args(base::Value::Type::LIST);
   args.Append("https://www.example.com/");
@@ -2556,6 +2577,23 @@ TEST_F(SiteSettingsHandlerTest, HandleClearUnpartitionedUsage) {
     EXPECT_EQ("www.example.com", cookie->Domain());
     EXPECT_TRUE(cookie->IsPartitioned());
   }
+
+  // Partitioned storage, even when keyed on the cookie domain site, should
+  // not be cleared.
+  args = base::Value(base::Value::Type::LIST);
+  args.Append("https://google.com.au/");
+  handler()->HandleClearUnpartitionedUsage(&base::Value::AsListValue(args));
+
+  remaining_host_nodes = GetHostNodes(GURL("https://google.com.au"));
+
+  // A single partitioned cookie should remain.
+  ASSERT_EQ(1u, remaining_host_nodes.size());
+  ASSERT_EQ(1u, remaining_host_nodes[0]->children().size());
+  const auto& cookies_node = remaining_host_nodes[0]->children()[0];
+  ASSERT_EQ(1u, cookies_node->children().size());
+  const auto& cookie_node = cookies_node->children()[0];
+  const auto& cookie = cookie_node->GetDetailedInfo().cookie;
+  EXPECT_TRUE(cookie->IsPartitioned());
 }
 
 TEST_F(SiteSettingsHandlerTest, ClearUnpartitionedClearsHints) {
@@ -2608,7 +2646,7 @@ TEST_F(SiteSettingsHandlerTest, HandleClearPartitionedUsage) {
   // Confirm that removing unpartitioned storage correctly removes the
   // appropriate nodes.
   SetUpCookiesTreeModel();
-  EXPECT_EQ(27, handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
+  EXPECT_EQ(28, handler()->cookies_tree_model_->GetRoot()->GetTotalNodeCount());
 
   base::Value args(base::Value::Type::LIST);
   args.Append("https://www.example.com/");

@@ -227,8 +227,9 @@ void CreateOrAppendSiteGroupEntry(
     return;
   }
   // Case 2:
-  if (etld_plus1_cookie_url)
+  if (etld_plus1_cookie_url && !is_partitioned) {
     return;
+  }
   // Case 3:
   if (url_is_origin_with_cookies) {
     // Cookies ignore schemes, so try and see if a https schemed version
@@ -1040,7 +1041,7 @@ base::Value SiteSettingsHandler::PopulateCookiesAndUsageData(Profile* profile) {
         origin_info.SetKey(kNumCookies,
                            base::Value(origin_cookie_num_it->second));
         // Add cookies numbers for origins that isn't an eTLD+1.
-        if (origin_url.host() != etld_plus1)
+        if (origin_url.host() != etld_plus1 || is_partitioned)
           cookie_num += origin_cookie_num_it->second;
       }
     }
