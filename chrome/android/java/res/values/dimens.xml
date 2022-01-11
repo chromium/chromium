@@ -105,8 +105,6 @@
 
     <!-- Data Saver -->
     <dimen name="data_usage_chart_height">252dp</dimen>
-    <dimen name="data_reduction_main_menu_icon_width">24dp</dimen>
-    <dimen name="data_saver_menu_footer_min_show_height">240dp</dimen>
 
     <!-- The size of the text for tab titles. -->
     <dimen name="compositor_tab_title_text_size">13sp</dimen>

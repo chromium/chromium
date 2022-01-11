@@ -18,7 +18,6 @@ import org.chromium.chrome.browser.datareduction.settings.DataReductionStatsPref
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.settings.datareduction.DataReductionProxySavingsClearedReason;
-import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 
 import java.util.ArrayList;
@@ -62,9 +61,6 @@ public class DataReductionProxySettings {
     public static final String DATA_REDUCTION_PROXY_ENABLED_KEY = "Data Reduction Proxy Enabled";
 
     private static DataReductionProxySettings sSettings;
-
-    // The saved data threshold for showing the Lite mode menu footer.
-    private static final long DATA_REDUCTION_MAIN_MENU_ITEM_SAVED_KB_THRESHOLD = 100;
 
     // The received data threshold for showing the data reduction chart in settings.
     public static final long DATA_REDUCTION_SHOW_CHART_KB_THRESHOLD = 100;
@@ -168,16 +164,6 @@ public class DataReductionProxySettings {
     public boolean isDataReductionProxyEnabled() {
         return DataReductionProxySettingsJni.get().isDataReductionProxyEnabled(
                 mNativeDataReductionProxySettings, DataReductionProxySettings.this);
-    }
-
-    /**
-     * Returns true if the Data Reduction Proxy menu item should be shown in the main menu.
-     */
-    public boolean shouldUseDataReductionMainMenuItem() {
-        if (!isDataReductionProxyEnabled()) return false;
-
-        return ConversionUtils.bytesToKilobytes(getContentLengthSavedInHistorySummary())
-                >= DATA_REDUCTION_MAIN_MENU_ITEM_SAVED_KB_THRESHOLD;
     }
 
     /** Returns true if the SPDY proxy is managed by an administrator's policy. */

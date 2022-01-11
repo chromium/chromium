@@ -1432,12 +1432,6 @@ Your Google account may have other forms of browsing history like searches and a
       <message name="IDS_DATA_REDUCTION_INITIAL_TITLE" desc="This title states that the below chart will contain the user's data savings after they have started browsing.">
         Your data savings will appear here
       </message>
-      <message name="IDS_DATA_REDUCTION_SAVED_LABEL" desc="Summary text for the menu item that states the amount of mobile data that was saved by Lite mode (i.e. XX MB saved). Lite mode allows users to to reduce their mobile data usage by compressing network traffic.">
-        <ph name="data">%1$s<ex>1.0 GB</ex></ph> saved
-      </message>
-      <message name="IDS_DATA_REDUCTION_DATE_LABEL" desc="Summary text for the menu item that states the beginning date when the displayed mobile data was saved (i.e. XX MB saved 'since Feb 28')">
-        since <ph name="date">%1$s<ex>Feb 28</ex></ph>
-      </message>
       <message name="IDS_DATA_REDUCTION_BENEFITS_DESCRIPTION_LITE_MODE" desc="Description text about the benefits of the Lite mode feature. Seen only before the user has enabled the feature.">
          In Lite mode, Chrome loads pages faster and uses up to 60 percent less data.
       </message>

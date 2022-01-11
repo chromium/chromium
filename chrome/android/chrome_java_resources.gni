@@ -618,7 +618,6 @@ chrome_java_resources = [
   "java/res/layout/custom_tabs_toolbar_button.xml",
   "java/res/layout/custom_tabs_topbar.xml",
   "java/res/layout/custom_view_menu_item.xml",
-  "java/res/layout/data_reduction_main_menu_item.xml",
   "java/res/layout/data_reduction_stats_layout.xml",
   "java/res/layout/data_usage_breakdown.xml",
   "java/res/layout/data_usage_breakdown_row.xml",
