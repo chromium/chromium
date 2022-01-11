@@ -11,10 +11,9 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/profile_chooser_constants.h"
-#include "chrome/browser/ui/signin_view_controller_delegate.h"
+#include "chrome/browser/ui/signin_modal_dialog.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
@@ -56,7 +55,7 @@ enum class ReauthResult;
 // error dialog, reauth prompt). Sync confirmation is used on
 // Win/Mac/Linux/Chrome OS. Sign-in is only used on Win/Mac/Linux because
 // Chrome OS has its own sign-in flow and doesn't use DICE.
-class SigninViewController : public SigninViewControllerDelegate::Observer {
+class SigninViewController {
  public:
   // Handle that will stop ongoing reauths upon destruction.
   class ReauthAbortHandle {
@@ -69,7 +68,7 @@ class SigninViewController : public SigninViewControllerDelegate::Observer {
   SigninViewController(const SigninViewController&) = delete;
   SigninViewController& operator=(const SigninViewController&) = delete;
 
-  ~SigninViewController() override;
+  virtual ~SigninViewController();
 
   // Returns true if the signin flow should be shown for |mode|.
   static bool ShouldShowSigninForMode(profiles::BubbleViewMode mode);
@@ -109,7 +108,7 @@ class SigninViewController : public SigninViewControllerDelegate::Observer {
   void ShowModalSigninEmailConfirmationDialog(
       const std::string& last_email,
       const std::string& email,
-      base::OnceCallback<void(SigninEmailConfirmationDialog::Action)> callback);
+      SigninEmailConfirmationDialog::Callback callback);
 
   // Shows the reauth prompt for |account_id| as either:
   // - a tab-modal dialog on top of the currently active tab, or
@@ -154,8 +153,8 @@ class SigninViewController : public SigninViewControllerDelegate::Observer {
   // Sets the height of the modal signin dialog.
   void SetModalSigninHeight(int height);
 
-  // SigninViewControllerDelegate::Observer:
-  void OnModalSigninClosed() override;
+  // Called by a `dialog_`' when it closes.
+  void OnModalDialogClosed();
 
  private:
   FRIEND_TEST_ALL_PREFIXES(SignInViewControllerBrowserTest,
@@ -180,18 +179,18 @@ class SigninViewController : public SigninViewControllerDelegate::Observer {
   // Returns the web contents of the modal dialog.
   content::WebContents* GetModalDialogWebContentsForTesting();
 
-  // Returns the modal dialog delegate.
-  SigninViewControllerDelegate* GetModalDialogDelegateForTesting();
+  // Returns the currently displayed modal dialog, or nullptr if no modal dialog
+  // is currently displayed.
+  SigninModalDialog* GetModalDialogForTesting();
+
+  // Helper to create an on close callback for `SigninModalDialog`.
+  base::OnceClosure GetOnModalDialogClosedCallback();
 
   // Browser owning this controller.
   raw_ptr<Browser> browser_;
 
-  // |delegate_| owns itself and calls OnModalSigninClosed() before being
-  // destroyed.
-  raw_ptr<SigninViewControllerDelegate> delegate_ = nullptr;
-  base::ScopedObservation<SigninViewControllerDelegate,
-                          SigninViewControllerDelegate::Observer>
-      delegate_observation_{this};
+  // Currently displayed modal dialog, or nullptr if none is displayed.
+  std::unique_ptr<SigninModalDialog> dialog_;
 
   base::WeakPtrFactory<SigninViewController> weak_ptr_factory_{this};
 };

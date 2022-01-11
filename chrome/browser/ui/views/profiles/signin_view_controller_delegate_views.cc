@@ -129,7 +129,7 @@ bool SigninViewControllerDelegateViews::ShouldShowCloseButton() const {
 }
 
 void SigninViewControllerDelegateViews::CloseModalSignin() {
-  NotifyModalSigninClosed();
+  NotifyModalDialogClosed();
   // Either `modal_signin_widget_` or `owned_content_view_` is nullptr.
   if (modal_signin_widget_) {
     DCHECK(!owned_content_view_);
@@ -232,7 +232,7 @@ SigninViewControllerDelegateViews::SigninViewControllerDelegateViews(
   SetModalType(dialog_modal_type);
 
   RegisterDeleteDelegateCallback(base::BindOnce(
-      &SigninViewControllerDelegateViews::NotifyModalSigninClosed,
+      &SigninViewControllerDelegateViews::NotifyModalDialogClosed,
       base::Unretained(this)));
 
   if (!wait_for_size)

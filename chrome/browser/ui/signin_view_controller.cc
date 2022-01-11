@@ -4,8 +4,10 @@
 
 #include "chrome/browser/ui/signin_view_controller.h"
 
+#include <memory>
 #include <utility>
 
+#include "base/bind.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
@@ -13,7 +15,8 @@
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
-#include "chrome/browser/ui/signin_view_controller_delegate.h"
+#include "chrome/browser/ui/signin_modal_dialog.h"
+#include "chrome/browser/ui/signin_modal_dialog_impl.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -216,11 +219,9 @@ SigninViewController::ShowReauthPrompt(
     return abort_handle;
   }
 
-  // The delegate will delete itself on request of the UI code when the widget
-  // is closed.
-  delegate_ = new SigninReauthViewController(
-      browser_, account_id, access_point, std::move(wrapped_reauth_callback));
-  delegate_observation_.Observe(delegate_.get());
+  dialog_ = std::make_unique<SigninReauthViewController>(
+      browser_, account_id, access_point, GetOnModalDialogClosedCallback(),
+      std::move(wrapped_reauth_callback));
   chrome::RecordDialogCreation(chrome::DialogIdentifier::SIGNIN_REAUTH);
   return abort_handle;
 }
@@ -228,11 +229,9 @@ SigninViewController::ShowReauthPrompt(
 
 void SigninViewController::ShowModalSyncConfirmationDialog() {
   CloseModalSignin();
-  // The delegate will delete itself on request of the UI code when the widget
-  // is closed.
-  delegate_ =
-      SigninViewControllerDelegate::CreateSyncConfirmationDelegate(browser_);
-  delegate_observation_.Observe(delegate_.get());
+  dialog_ = std::make_unique<SigninModalDialogImpl>(
+      SigninViewControllerDelegate::CreateSyncConfirmationDelegate(browser_),
+      GetOnModalDialogClosedCallback());
   chrome::RecordDialogCreation(
       chrome::DialogIdentifier::SIGN_IN_SYNC_CONFIRMATION);
 }
@@ -244,16 +243,14 @@ void SigninViewController::ShowModalEnterpriseConfirmationDialog(
 #if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS_LACROS)
   CloseModalSignin();
-  // The delegate will delete itself on request of the UI code when the widget
-  // is closed.
-  delegate_ =
+  dialog_ = std::make_unique<SigninModalDialogImpl>(
       SigninViewControllerDelegate::CreateEnterpriseConfirmationDelegate(
           browser_, account_info, profile_color,
           base::BindOnce(
               [](Browser* browser, base::OnceCallback<void(bool)> callback,
                  bool result) { std::move(callback).Run(result); },
-              base::Unretained(browser_), std::move(callback)));
-  delegate_observation_.Observe(delegate_.get());
+              base::Unretained(browser_), std::move(callback))),
+      GetOnModalDialogClosedCallback());
   chrome::RecordDialogCreation(
       chrome::DialogIdentifier::SIGNIN_ENTERPRISE_INTERCEPTION);
 #else
@@ -263,33 +260,30 @@ void SigninViewController::ShowModalEnterpriseConfirmationDialog(
 
 void SigninViewController::ShowModalSigninErrorDialog() {
   CloseModalSignin();
-  // The delegate will delete itself on request of the UI code when the widget
-  // is closed.
-  delegate_ = SigninViewControllerDelegate::CreateSigninErrorDelegate(browser_);
-  delegate_observation_.Observe(delegate_.get());
+  dialog_ = std::make_unique<SigninModalDialogImpl>(
+      SigninViewControllerDelegate::CreateSigninErrorDelegate(browser_),
+      GetOnModalDialogClosedCallback());
   chrome::RecordDialogCreation(chrome::DialogIdentifier::SIGN_IN_ERROR);
 }
 
 bool SigninViewController::ShowsModalDialog() {
-  return delegate_ != nullptr;
+  return dialog_ != nullptr;
 }
 
 void SigninViewController::CloseModalSignin() {
-  if (delegate_)
-    delegate_->CloseModalSignin();
+  if (dialog_)
+    dialog_->CloseModalDialog();
 
-  DCHECK(!delegate_);
+  DCHECK(!dialog_);
 }
 
 void SigninViewController::SetModalSigninHeight(int height) {
-  if (delegate_)
-    delegate_->ResizeNativeView(height);
+  if (dialog_)
+    dialog_->ResizeNativeView(height);
 }
 
-void SigninViewController::OnModalSigninClosed() {
-  DCHECK(delegate_observation_.IsObservingSource(delegate_.get()));
-  delegate_observation_.Reset();
-  delegate_ = nullptr;
+void SigninViewController::OnModalDialogClosed() {
+  dialog_.reset();
 }
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
@@ -405,7 +399,6 @@ void SigninViewController::ShowDiceAddAccountTab(
 
 void SigninViewController::ShowGaiaLogoutTab(
     signin_metrics::SourceForRefreshTokenOperation source) {
-
   // Since the user may be triggering navigation from another UI element such as
   // a menu, ensure the web contents (and therefore the page that is about to be
   // shown) is focused. (See crbug/926492 for motivation.)
@@ -429,16 +422,15 @@ void SigninViewController::ShowGaiaLogoutTab(
 void SigninViewController::ShowModalSigninEmailConfirmationDialog(
     const std::string& last_email,
     const std::string& email,
-    base::OnceCallback<void(SigninEmailConfirmationDialog::Action)> callback) {
+    SigninEmailConfirmationDialog::Callback callback) {
   CloseModalSignin();
   content::WebContents* active_contents =
       browser_->tab_strip_model()->GetActiveWebContents();
-  // The delegate will delete itself on request of the UI code when the widget
-  // is closed.
-  delegate_ = SigninEmailConfirmationDialog::AskForConfirmation(
-      active_contents, browser_->profile(), last_email, email,
-      std::move(callback));
-  delegate_observation_.Observe(delegate_.get());
+  dialog_ = std::make_unique<SigninModalDialogImpl>(
+      SigninEmailConfirmationDialog::AskForConfirmation(
+          active_contents, browser_->profile(), last_email, email,
+          std::move(callback)),
+      GetOnModalDialogClosedCallback());
   chrome::RecordDialogCreation(
       chrome::DialogIdentifier::SIGN_IN_EMAIL_CONFIRMATION);
 }
@@ -446,12 +438,18 @@ void SigninViewController::ShowModalSigninEmailConfirmationDialog(
 
 content::WebContents*
 SigninViewController::GetModalDialogWebContentsForTesting() {
-  DCHECK(delegate_);
-  return delegate_->GetWebContents();
+  DCHECK(dialog_);
+  return dialog_->GetModalDialogWebContentsForTesting();  // IN-TEST
 }
 
-SigninViewControllerDelegate*
-SigninViewController::GetModalDialogDelegateForTesting() {
-  DCHECK(delegate_);
-  return delegate_;
+SigninModalDialog* SigninViewController::GetModalDialogForTesting() {
+  return dialog_.get();
+}
+
+base::OnceClosure SigninViewController::GetOnModalDialogClosedCallback() {
+  return base::BindOnce(
+      &SigninViewController::OnModalDialogClosed,
+      base::Unretained(this)  // `base::Unretained()` is safe because
+                              // `dialog_` is owned by `this`.
+  );
 }

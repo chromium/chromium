@@ -206,7 +206,7 @@ void SigninEmailConfirmationDialog::OnDialogClosed(
     action = CLOSE;
   }
 
-  NotifyModalSigninClosed();
+  NotifyModalDialogClosed();
 
   if (callback_)
     std::move(callback_).Run(action);

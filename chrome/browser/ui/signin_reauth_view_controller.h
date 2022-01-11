@@ -11,6 +11,7 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/signin_modal_dialog.h"
 #include "chrome/browser/ui/signin_view_controller_delegate.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/sync/protocol/user_consent_types.pb.h"
@@ -42,8 +43,9 @@ class ReauthTabHelper;
 //
 // The Gaia reauth page is loaded in background and gets shown to the user only
 // after the user confirms the reauth confirmation dialog.
+// TODO(https://crbug.com/1282157): rename to SigninReauthDialog.
 class SigninReauthViewController
-    : public SigninViewControllerDelegate,
+    : public SigninModalDialog,
       public SigninViewControllerDelegate::Observer {
  public:
   enum class GaiaReauthType;
@@ -116,6 +118,7 @@ class SigninReauthViewController
       Browser* browser,
       const CoreAccountId& account_id,
       signin_metrics::ReauthAccessPoint access_point,
+      base::OnceClosure on_close_callback,
       base::OnceCallback<void(signin::ReauthResult)> reauth_callback);
 
   SigninReauthViewController(const SigninReauthViewController&) = delete;
@@ -124,14 +127,13 @@ class SigninReauthViewController
 
   ~SigninReauthViewController() override;
 
-  // SigninViewControllerDelegate:
-  void CloseModalSignin() override;
+  // SigninModalDialog:
+  void CloseModalDialog() override;
   void ResizeNativeView(int height) override;
-  content::WebContents* GetWebContents() override;
-  void SetWebContents(content::WebContents* web_contents) override;
+  content::WebContents* GetModalDialogWebContentsForTesting() override;
 
   // SigninViewControllerDelegate::Observer:
-  void OnModalSigninClosed() override;
+  void OnModalDialogClosed() override;
 
   // Called when the user clicks the confirm button in the reauth confirmation
   // dialog.

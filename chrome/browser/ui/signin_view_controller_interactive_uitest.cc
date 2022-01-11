@@ -72,34 +72,6 @@ class SyncConfirmationClosedObserver : public LoginUIService::Observer {
   absl::optional<LoginUIService::SyncConfirmationUIClosedResult> result_;
 };
 
-class SigninDialogClosedObserver
-    : public SigninViewControllerDelegate::Observer {
- public:
-  explicit SigninDialogClosedObserver(SigninViewControllerDelegate* delegate)
-      : delegate_(delegate) {
-    delegate_->AddObserver(this);
-  }
-
-  ~SigninDialogClosedObserver() override {
-    if (delegate_) {
-      delegate_->RemoveObserver(this);
-    }
-  }
-
-  void WaitForDialogClosed() { dialog_closed_run_loop_.Run(); }
-
- private:
-  // SigninViewControllerDelegate::Observer:
-  void OnModalSigninClosed() override {
-    delegate_->RemoveObserver(this);
-    delegate_ = nullptr;
-    dialog_closed_run_loop_.Quit();
-  }
-
-  base::RunLoop dialog_closed_run_loop_;
-  raw_ptr<SigninViewControllerDelegate> delegate_;
-};
-
 }  // namespace
 
 class SignInViewControllerBrowserTest : public InProcessBrowserTest {
@@ -205,14 +177,16 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
   EXPECT_TRUE(browser()->signin_view_controller()->ShowsModalDialog());
   content_observer.Wait();
 
-  SigninDialogClosedObserver dialog_observer(
-      browser()->signin_view_controller()->GetModalDialogDelegateForTesting());
+  content::WebContentsDestroyedWatcher dialog_destroyed_watcher(
+      browser()
+          ->signin_view_controller()
+          ->GetModalDialogWebContentsForTesting());
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RETURN,
                                               /*control=*/false,
                                               /*shift=*/false, /*alt=*/false,
                                               /*command=*/false));
   // Default action simply closes the dialog.
-  dialog_observer.WaitForDialogClosed();
+  dialog_destroyed_watcher.Wait();
   EXPECT_FALSE(browser()->signin_view_controller()->ShowsModalDialog());
 }
 
@@ -237,14 +211,16 @@ IN_PROC_BROWSER_TEST_F(SignInViewControllerBrowserTest,
   EXPECT_TRUE(browser()->signin_view_controller()->ShowsModalDialog());
   content_observer.Wait();
 
-  SigninDialogClosedObserver dialog_observer(
-      browser()->signin_view_controller()->GetModalDialogDelegateForTesting());
+  content::WebContentsDestroyedWatcher dialog_destroyed_watcher(
+      browser()
+          ->signin_view_controller()
+          ->GetModalDialogWebContentsForTesting());
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(browser(), ui::VKEY_RETURN,
                                               /*control=*/false,
                                               /*shift=*/false, /*alt=*/false,
                                               /*command=*/false));
 
-  dialog_observer.WaitForDialogClosed();
+  dialog_destroyed_watcher.Wait();
   EXPECT_TRUE(result);
   EXPECT_FALSE(browser()->signin_view_controller()->ShowsModalDialog());
 }

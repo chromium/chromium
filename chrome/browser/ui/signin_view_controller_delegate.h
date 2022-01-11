@@ -30,13 +30,14 @@ enum class ReauthAccessPoint;
 // as well as managing the navigation inside them.
 // Subclasses are responsible for deleting themselves when the window they're
 // managing closes.
+// TODO(https://crbug.com/1282157): rename to SigninModalDialogDelegate.
 class SigninViewControllerDelegate {
  public:
   class Observer : public base::CheckedObserver {
    public:
     // Called when a dialog controlled by this SigninViewControllerDelegate is
     // closed.
-    virtual void OnModalSigninClosed() = 0;
+    virtual void OnModalDialogClosed() = 0;
   };
 
   SigninViewControllerDelegate(const SigninViewControllerDelegate&) = delete;
@@ -97,7 +98,7 @@ class SigninViewControllerDelegate {
   SigninViewControllerDelegate();
   virtual ~SigninViewControllerDelegate();
 
-  void NotifyModalSigninClosed();
+  void NotifyModalDialogClosed();
 
  private:
   base::ObserverList<Observer, true> observer_list_;
