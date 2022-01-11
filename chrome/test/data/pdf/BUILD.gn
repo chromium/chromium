@@ -260,6 +260,7 @@ js_library("viewport_test") {
   deps = [
     ":test_util",
     "//chrome/browser/resources/pdf:pdf_viewer_wrapper",
+    "//ui/webui/resources/js:cr.m",
   ]
   externs_list = [ "$externs_path/test.js" ]
 }

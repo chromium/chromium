@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {FittingType, PAGE_SHADOW, Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {isMac} from 'chrome://resources/js/cr.m.js';
 
 import {createMockUnseasonedPdfPluginForTest, getZoomableViewport, MockDocumentDimensions, MockElement, MockSizer, MockUnseasonedPdfPluginElement, MockViewportChangedCallback} from './test_util.js';
 
@@ -49,6 +50,31 @@ function whenRequestAnimationFrame() {
 }
 
 const tests = [
+  function testScrollbarWidth() {
+    const viewport = getZoomableViewport(
+        new MockElement(100, 100, null), new MockSizer(), 43, 1);
+
+    chrome.test.assertEq(43, viewport.scrollbarWidth);
+    chrome.test.succeed();
+  },
+
+  function testOverlayScrollbarWidth_local() {
+    const viewport = getZoomableViewport(
+        new MockElement(100, 100, null), new MockSizer(), 43, 1);
+
+    chrome.test.assertEq(isMac ? 16 : 0, viewport.overlayScrollbarWidth);
+    chrome.test.succeed();
+  },
+
+  function testOverlayScrollbarWidth_remote() {
+    const viewport = getZoomableViewport(
+        new MockElement(100, 100, null), new MockSizer(), 43, 1);
+    viewport.setRemoteContent(createMockUnseasonedPdfPluginForTest());
+
+    chrome.test.assertEq(isMac ? 16 : 43, viewport.overlayScrollbarWidth);
+    chrome.test.succeed();
+  },
+
   function testDocumentNeedsScrollbars() {
     const viewport = getZoomableViewport(
         new MockElement(100, 100, null), new MockSizer(), 10, 1);
