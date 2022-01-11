@@ -5,75 +5,58 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_BUBBLE_VIEW_H_
 
+#include "base/callback.h"
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs_item_view.h"
 #include "components/flags_ui/feature_entry.h"
-#include "components/flags_ui/flags_state.h"
-#include "components/flags_ui/flags_storage.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
-#include "ui/views/layout/flex_layout_view.h"
 
 class Browser;
 class ChromeLabsButton;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-class Profile;
-#endif
+class ChromeLabsItemView;
+struct LabInfo;
+
+namespace views {
+class FlexLayoutView;
+}
 
 // TODO(elainechien): Use composition instead of inheritance.
 class ChromeLabsBubbleView : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(ChromeLabsBubbleView);
-  static void Show(ChromeLabsButton* anchor_view,
-                   Browser* browser,
-                   const ChromeLabsBubbleViewModel* model,
-                   bool user_is_chromeos_owner);
-
-  static bool IsShowing();
-
-  static void Hide();
-
-  void RestartToApplyFlags();
-
+  ChromeLabsBubbleView(ChromeLabsButton* anchor_view, Browser* browser);
   ~ChromeLabsBubbleView() override;
+
+  ChromeLabsItemView* AddLabItem(
+      const LabInfo& lab,
+      int default_index,
+      const flags_ui::FeatureEntry* entry,
+      Browser* browser,
+      base::RepeatingCallback<void(ChromeLabsItemView* item_view)>
+          combobox_callback);
+
+  size_t GetNumLabItems();
+
+  base::CallbackListSubscription RegisterRestartCallback(
+      base::RepeatingClosureList::CallbackType callback);
+
+  void ShowRelaunchPrompt();
 
   // Getter functions for testing.
   static ChromeLabsBubbleView* GetChromeLabsBubbleViewForTesting();
-  flags_ui::FlagsState* GetFlagsStateForTesting();
   views::View* GetMenuItemContainerForTesting();
   bool IsRestartPromptVisibleForTesting();
 
  private:
-  ChromeLabsBubbleView(ChromeLabsButton* anchor_view,
-                       Browser* browser,
-                       const ChromeLabsBubbleViewModel* model,
-                       bool user_is_chromeos_owner);
-
-  std::unique_ptr<ChromeLabsItemView> CreateLabItem(
-      const LabInfo& lab,
-      int default_index,
-      const flags_ui::FeatureEntry* entry,
-      Browser* browser);
-
-  int GetIndexOfEnabledLabState(const flags_ui::FeatureEntry* entry);
-
-  void ShowRelaunchPrompt();
-
-  std::unique_ptr<flags_ui::FlagsStorage> flags_storage_;
-
-  raw_ptr<flags_ui::FlagsState> flags_state_;
+  void NotifyRestartCallback();
 
   // This view will hold all the child lab items.
   raw_ptr<views::FlexLayoutView> menu_item_container_;
 
-  raw_ptr<const ChromeLabsBubbleViewModel> model_;
-
   raw_ptr<views::View> restart_prompt_;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  Profile* profile_ = nullptr;
-#endif
+  base::RepeatingClosureList restart_callback_list_;
 };
 #endif  // CHROME_BROWSER_UI_VIEWS_TOOLBAR_CHROME_LABS_BUBBLE_VIEW_H_

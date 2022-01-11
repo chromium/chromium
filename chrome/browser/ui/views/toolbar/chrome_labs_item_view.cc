@@ -3,24 +3,18 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/views/toolbar/chrome_labs_item_view.h"
+#include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
-#include "base/time/time.h"
-#include "base/values.h"
 #include "build/build_config.h"
-#include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_process.h"
 #include "chrome/browser/flag_descriptions.h"
-#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/chrome_pages.h"
-#include "chrome/browser/ui/toolbar/chrome_labs_prefs.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_bubble_view_model.h"
-#include "chrome/browser/ui/views/toolbar/chrome_labs_utils.h"
 #include "chrome/browser/ui/views/user_education/new_badge_label.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/prefs/scoped_user_pref_update.h"
+#include "components/flags_ui/feature_entry.h"
 #include "extensions/browser/api/feedback_private/feedback_private_api.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -28,6 +22,7 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/md_text_button.h"
+#include "ui/views/controls/combobox/combobox.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_types.h"
@@ -48,12 +43,6 @@ void ShowFeedbackPage(Browser* browser,
           std::move(visible_name)),
       /*category_tag=*/std::move(feedback_category_name),
       /* extra_diagnostics=*/std::string());
-}
-
-// Returns the number of days since epoch (1970-01-01) in the local timezone.
-uint32_t GetCurrentDay() {
-  base::TimeDelta delta = base::Time::Now() - base::Time::UnixEpoch();
-  return base::saturated_cast<uint32_t>(delta.InDays());
 }
 
 }  // namespace
@@ -129,8 +118,11 @@ ChromeLabsItemView::ChromeLabsItemView(
 
   experiment_name_ =
       AddChildView(std::make_unique<NewBadgeLabel>(lab.visible_name));
-  experiment_name_->SetDisplayNewBadge(
-      ShouldShowNewBadge(browser->profile(), lab));
+  // The NewBadgeLabel’s default visibility is true. However, we only want the
+  // new badge to show if PrefService conditions are met. Here we set the
+  // default to false. Then, when the bubble is being shown the view controller
+  // will set the NewBadgeLabel’s visibility to true if applicable.
+  experiment_name_->SetDisplayNewBadge(false);
   experiment_name_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   experiment_name_->SetBadgePlacement(
       NewBadgeLabel::BadgePlacement::kImmediatelyAfterText);
@@ -231,46 +223,20 @@ ChromeLabsItemView::ChromeLabsItemView(
           .Build());
 }
 
+ChromeLabsItemView::~ChromeLabsItemView() = default;
+
 int ChromeLabsItemView::GetSelectedIndex() const {
   return lab_state_combobox_->GetSelectedIndex();
 }
 
-const flags_ui::FeatureEntry* ChromeLabsItemView::GetFeatureEntry() {
-  return feature_entry_;
+// Same as NewBadgeLabel::SetDisplayNewBadge this should only be called before
+// the label is shown.
+void ChromeLabsItemView::ShowNewBadge() {
+  experiment_name_->SetDisplayNewBadge(true);
 }
 
-bool ChromeLabsItemView::ShouldShowNewBadge(Profile* profile,
-                                            const LabInfo& lab) {
-  // This experiment was added before adding the new badge and is not new.
-  if (lab.internal_name == flag_descriptions::kScrollableTabStripFlagId) {
-    return false;
-  }
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  DictionaryPrefUpdateDeprecated update(
-      profile->GetPrefs(), chrome_labs_prefs::kChromeLabsNewBadgeDictAshChrome);
-#else
-  DictionaryPrefUpdateDeprecated update(
-      g_browser_process->local_state(),
-      chrome_labs_prefs::kChromeLabsNewBadgeDict);
-#endif
-
-  base::DictionaryValue* new_badge_prefs = update.Get();
-
-  DCHECK(new_badge_prefs->FindIntKey(lab.internal_name));
-  int start_day = *new_badge_prefs->FindIntKey(lab.internal_name);
-  if (start_day == chrome_labs_prefs::kChromeLabsNewExperimentPrefValue) {
-    // Set the dictionary value of this experiment to the number of days since
-    // epoch (1970-01-01). This value is the first day the user sees the new
-    // experiment in Chrome Labs and will be used to determine whether or not to
-    // show the new badge.
-    new_badge_prefs->SetInteger(lab.internal_name, GetCurrentDay());
-    return true;
-  }
-  int days_elapsed = GetCurrentDay() - start_day;
-  // Show the new badge for 7 days. If the users sets the clock such that the
-  // current day is now before |start_day| don’t show the new badge.
-  return (days_elapsed < 7) && (days_elapsed >= 0);
+const flags_ui::FeatureEntry* ChromeLabsItemView::GetFeatureEntry() {
+  return feature_entry_;
 }
 
 BEGIN_METADATA(ChromeLabsItemView, views::View)
