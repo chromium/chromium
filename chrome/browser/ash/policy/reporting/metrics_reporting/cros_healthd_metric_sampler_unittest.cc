@@ -39,6 +39,13 @@ namespace test {
 constexpr int64_t kTmeMaxKeys = 2;
 constexpr int64_t kTmeKeysLength = 4;
 
+// Boot Performance constants.
+constexpr int64_t kBootUpSeconds = 5054;
+constexpr int64_t kBootUpTimestampSeconds = 23;
+constexpr int64_t kShutdownSeconds = 44003;
+constexpr int64_t kShutdownTimestampSeconds = 49;
+constexpr char kShutdownReason[] = "user-request";
+
 cros_healthd::KeylockerInfoPtr CreateKeylockerInfo(bool configured) {
   return cros_healthd::KeylockerInfo::New(configured);
 }
@@ -115,6 +122,21 @@ cros_healthd::TelemetryInfoPtr CreateMemoryResult(
           /*total_memory=*/0, /*free_memory=*/0, /*available_memory=*/0,
           /*page_faults_since_last_boot=*/0,
           std::move(memory_encryption_info)));
+  return telemetry_info;
+}
+
+cros_healthd::TelemetryInfoPtr CreateBootPerformanceResult(
+    int64_t boot_up_seconds,
+    int64_t boot_up_timestamp_seconds,
+    int64_t shutdown_seconds,
+    int64_t shutdown_timestamp_seconds,
+    const std::string& shutdown_reason) {
+  auto telemetry_info = cros_healthd::TelemetryInfo::New();
+  telemetry_info->boot_performance_result =
+      cros_healthd::BootPerformanceResult::NewBootPerformanceInfo(
+          cros_healthd::BootPerformanceInfo::New(
+              boot_up_seconds, boot_up_timestamp_seconds, shutdown_seconds,
+              shutdown_timestamp_seconds, shutdown_reason));
   return telemetry_info;
 }
 
@@ -296,6 +318,17 @@ TEST_F(CrosHealthdMetricSamplerTest, TestMojomError) {
       std::move(telemetry_info), cros_healthd::ProbeCategoryEnum::kAudio,
       CrosHealthdMetricSampler::MetricType::kTelemetry);
   ASSERT_FALSE(audio_data.has_telemetry_data());
+
+  telemetry_info = cros_healthd::TelemetryInfo::New();
+  telemetry_info->boot_performance_result =
+      cros_healthd::BootPerformanceResult::NewError(
+          cros_healthd::ProbeError::New(cros_healthd::ErrorType::kFileReadError,
+                                        ""));
+  const auto& boot_performance_data =
+      CollectError(std::move(telemetry_info),
+                   cros_healthd::ProbeCategoryEnum::kBootPerformance,
+                   CrosHealthdMetricSampler::MetricType::kTelemetry);
+  ASSERT_FALSE(boot_performance_data.has_telemetry_data());
 }
 
 TEST_F(CrosHealthdMetricSamplerTest, TestAudioNormalTest) {
@@ -332,6 +365,35 @@ TEST_F(CrosHealthdMetricSamplerTest, TestAudioEmptyTest) {
   ASSERT_FALSE(result.telemetry_data().audio_telemetry().output_mute());
   ASSERT_FALSE(result.telemetry_data().audio_telemetry().input_mute());
   ASSERT_THAT(result.telemetry_data().audio_telemetry().output_volume(), Eq(0));
+}
+
+TEST_F(CrosHealthdMetricSamplerTest, BootPerformanceCommonBehavior) {
+  MetricData result = CollectData(
+      CreateBootPerformanceResult(kBootUpSeconds, kBootUpTimestampSeconds,
+                                  kShutdownSeconds, kShutdownTimestampSeconds,
+                                  kShutdownReason),
+      cros_healthd::ProbeCategoryEnum::kBootPerformance,
+      CrosHealthdMetricSampler::MetricType::kTelemetry, MetricData{});
+
+  ASSERT_TRUE(result.has_telemetry_data());
+  ASSERT_TRUE(result.telemetry_data().has_boot_performance_telemetry());
+  ASSERT_THAT(
+      result.telemetry_data().boot_performance_telemetry().boot_up_seconds(),
+      Eq(5054));
+  ASSERT_THAT(result.telemetry_data()
+                  .boot_performance_telemetry()
+                  .boot_up_timestamp_seconds(),
+              Eq(23));
+  ASSERT_THAT(
+      result.telemetry_data().boot_performance_telemetry().shutdown_seconds(),
+      Eq(44003));
+  ASSERT_THAT(result.telemetry_data()
+                  .boot_performance_telemetry()
+                  .shutdown_timestamp_seconds(),
+              Eq(49));
+  EXPECT_EQ(
+      result.telemetry_data().boot_performance_telemetry().shutdown_reason(),
+      "user-request");
 }
 
 INSTANTIATE_TEST_SUITE_P(
