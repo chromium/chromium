@@ -21,6 +21,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/trace_event/typed_macros.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/platform/bindings/parkable_string_manager.h"
 #include "third_party/blink/renderer/platform/crypto.h"
@@ -36,6 +37,7 @@
 #include "third_party/blink/renderer/platform/wtf/sanitizers.h"
 #include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
+#include "third_party/snappy/src/snappy.h"
 #include "third_party/zlib/google/compression_utils.h"
 
 namespace blink {
@@ -588,34 +590,47 @@ String ParkableStringImpl::UnparkInternal() {
   String uncompressed;
   base::StringPiece uncompressed_string_piece;
   size_t size = CharactersSizeInBytes();
+  char* char_data;
   if (is_8bit()) {
     LChar* data;
     uncompressed = String::CreateUninitialized(length(), data);
-    uncompressed_string_piece =
-        base::StringPiece(reinterpret_cast<const char*>(data), size);
+    char_data = reinterpret_cast<char*>(data);
   } else {
     UChar* data;
     uncompressed = String::CreateUninitialized(length(), data);
-    uncompressed_string_piece =
-        base::StringPiece(reinterpret_cast<const char*>(data), size);
+    char_data = reinterpret_cast<char*>(data);
   }
+  uncompressed_string_piece = base::StringPiece(char_data, size);
 
-  // If the buffer size is incorrect, then we have a corrupted data issue,
-  // and in such case there is nothing else to do than crash.
-  CHECK_EQ(compression::GetUncompressedSize(compressed_string_piece),
-           uncompressed_string_piece.size());
-  // If decompression fails, this is either because:
-  // 1. Compressed data is corrupted
-  // 2. Cannot allocate memory in zlib
-  //
-  // (1) is data corruption, and (2) is OOM. In all cases, we cannot
-  // recover the string we need, nothing else to do than to abort.
-  if (!compression::GzipUncompress(compressed_string_piece,
-                                   uncompressed_string_piece)) {
-    // Since this is almost always OOM, report it as such. We don't have
-    // certainty, but memory corruption should be much rarer, and could make us
-    // crash anywhere else.
-    OOM_CRASH(uncompressed_string_piece.size());
+  if (!features::ParkableStringsUseSnappy()) {
+    // If the buffer size is incorrect, then we have a corrupted data issue,
+    // and in such case there is nothing else to do than crash.
+    CHECK_EQ(compression::GetUncompressedSize(compressed_string_piece),
+             uncompressed_string_piece.size());
+    // If decompression fails, this is either because:
+    // 1. Compressed data is corrupted
+    // 2. Cannot allocate memory in zlib
+    //
+    // (1) is data corruption, and (2) is OOM. In all cases, we cannot
+    // recover the string we need, nothing else to do than to abort.
+    if (!compression::GzipUncompress(compressed_string_piece,
+                                     uncompressed_string_piece)) {
+      // Since this is almost always OOM, report it as such. We don't have
+      // certainty, but memory corruption should be much rarer, and could make
+      // us crash anywhere else.
+      OOM_CRASH(uncompressed_string_piece.size());
+    }
+  } else {
+    size_t uncompressed_size;
+
+    // As above, if size is incorrect, or if data is corrupted, prefer crashing.
+    CHECK(snappy::GetUncompressedLength(compressed_string_piece.data(),
+                                        compressed_string_piece.size(),
+                                        &uncompressed_size));
+    CHECK_EQ(uncompressed_size, size);
+    CHECK(snappy::RawUncompress(compressed_string_piece.data(),
+                                compressed_string_piece.size(), char_data))
+        << "Decompression failed, corrupted data?";
   }
 
   base::TimeDelta elapsed = timer.Elapsed();
@@ -677,8 +692,11 @@ void ParkableStringImpl::CompressInBackground(
     // discovered compressed size. This is done as a memory saving measure
     // because Vector::Shrink() does not resize the memory allocation.
     //
-    // The temporary buffer has the same size as the initial data. Compression
-    // will fail if this is not large enough.
+    // For zlib: the temporary buffer has the same size as the initial data.
+    // Compression will fail if this is not large enough.
+    // For snappy: the temporary buffer has size
+    // GetMaxCompressedLength(inital_data_size). If the compression does not
+    // compress, the result is discarded.
     //
     // This is not using:
     // - malloc() or any STL container: this is discouraged in blink, and there
@@ -686,18 +704,31 @@ void ParkableStringImpl::CompressInBackground(
     // - WTF::Vector<> as allocation failures result in an OOM crash, whereas
     //   we can fail gracefully. See crbug.com/905777 for an example of OOM
     //   triggered from there.
-    NullableCharBuffer buffer(params->size);
+    size_t buffer_size = features::ParkableStringsUseSnappy()
+                             ? snappy::MaxCompressedLength(params->size)
+                             : params->size;
+    NullableCharBuffer buffer(buffer_size);
     ok = buffer.data();
     size_t compressed_size;
+
     if (ok) {
-      // Use partition alloc for zlib's temporary data. This is crucial to avoid
-      // leaking memory on Android, see the details in crbug.com/931553.
-      auto fast_malloc = [](size_t size) {
-        return WTF::Partitions::FastMalloc(size, "ZlibTemporaryData");
-      };
-      ok = compression::GzipCompress(data, buffer.data(), buffer.size(),
-                                     &compressed_size, fast_malloc,
-                                     WTF::Partitions::FastFree);
+      if (features::ParkableStringsUseSnappy()) {
+        snappy::RawCompress(data.data(), params->size, buffer.data(),
+                            &compressed_size);
+
+        if (compressed_size > params->size) {
+          ok = false;
+        }
+      } else {
+        // Use partition alloc for zlib's temporary data. This is crucial to
+        // avoid leaking memory on Android, see the details in crbug.com/931553.
+        auto fast_malloc = [](size_t size) {
+          return WTF::Partitions::FastMalloc(size, "ZlibTemporaryData");
+        };
+        ok = compression::GzipCompress(data, buffer.data(), buffer.size(),
+                                       &compressed_size, fast_malloc,
+                                       WTF::Partitions::FastFree);
+      }
     }
 
 #if defined(ADDRESS_SANITIZER)

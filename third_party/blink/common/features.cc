@@ -744,11 +744,20 @@ const char kSkipTouchEventFilterFilteringProcessParamValueBrowserAndRenderer[] =
 const base::Feature kCompressParkableStrings{"CompressParkableStrings",
                                              base::FEATURE_ENABLED_BY_DEFAULT};
 
+// Enabling this will cause parkable strings to use Snappy for compression iff
+// kCompressParkableStrings is enabled.
+const base::Feature kUseSnappyForParkableStrings{
+    "UseSnappyForParkableStrings", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enabling this will delay the first aging of strings by 60 seconds instead of
 // the default. See comment around the use of the feature for the logic behind
 // the delay.
 const base::Feature kDelayFirstParkingOfStrings{
     "DelayFirstParkingOfStrings", base::FEATURE_DISABLED_BY_DEFAULT};
+
+bool ParkableStringsUseSnappy() {
+  return base::FeatureList::IsEnabled(kUseSnappyForParkableStrings);
+}
 
 bool IsParkableStringsToDiskEnabled() {
   // Always enabled as soon as compression is enabled.
