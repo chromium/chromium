@@ -47,6 +47,9 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   void UpdateAdInterestGroups() override;
   void RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
                     RunAdAuctionCallback callback) override;
+  void DeprecatedGetURLFromURN(
+      const GURL& urn_url,
+      DeprecatedGetURLFromURNCallback callback) override;
   void CreateAdRequest(blink::mojom::AdRequestConfigPtr config,
                        CreateAdRequestCallback callback) override;
   void FinalizeAd(const std::string& ads_guid,

@@ -29,6 +29,9 @@
   [RuntimeEnabled=Fledge, CallWith=ScriptState, Measure, RaisesException]
   sequence<USVString> adAuctionComponents([Clamp] unsigned short numComponents);
 
+  [RuntimeEnable=AllowURLsinIframes, CallWith=ScriptState, Measure, RaisesException]
+  Promise<USVString> deprecatedURNToURL(USVString uuid_url);
+
   [RuntimeEnabled=Parakeet, CallWith=ScriptState, Measure, RaisesException]
   Promise<Ads> createAdRequest(AdRequestConfig config);
 

@@ -928,6 +928,35 @@ Vector<String> NavigatorAuction::adAuctionComponents(
   return out;
 }
 
+ScriptPromise NavigatorAuction::deprecatedURNToURL(
+    ScriptState* script_state,
+    const String& uuid_url_string,
+    ExceptionState& exception_state) {
+  if (!uuid_url_string.StartsWithIgnoringCase("urn:uuid:")) {
+    exception_state.ThrowTypeError(
+        String::Format("Passed URL must start with 'urn:uuid:'."));
+    return ScriptPromise();
+  }
+
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  ScriptPromise promise = resolver->Promise();
+  KURL uuid_url(uuid_url_string);
+  ad_auction_service_->DeprecatedGetURLFromURN(
+      std::move(uuid_url),
+      WTF::Bind(&NavigatorAuction::GetURLFromURNComplete, WrapPersistent(this),
+                WrapPersistent(resolver)));
+  return promise;
+}
+
+ScriptPromise NavigatorAuction::deprecatedURNToURL(
+    ScriptState* script_state,
+    Navigator& navigator,
+    const String& uuid_url,
+    ExceptionState& exception_state) {
+  return From(ExecutionContext::From(script_state), navigator)
+      .deprecatedURNToURL(script_state, uuid_url, exception_state);
+}
+
 ScriptPromise NavigatorAuction::createAdRequest(
     ScriptState* script_state,
     const AdRequestConfig* config,
@@ -1058,6 +1087,19 @@ void NavigatorAuction::AuctionComplete(ScriptPromiseResolver* resolver,
     return;
   if (result_url) {
     resolver->Resolve(result_url);
+  } else {
+    resolver->Resolve(v8::Null(resolver->GetScriptState()->GetIsolate()));
+  }
+}
+
+void NavigatorAuction::GetURLFromURNComplete(
+    ScriptPromiseResolver* resolver,
+    const absl::optional<KURL>& decoded_url) {
+  if (!resolver->GetExecutionContext() ||
+      resolver->GetExecutionContext()->IsContextDestroyed())
+    return;
+  if (decoded_url) {
+    resolver->Resolve(*decoded_url);
   } else {
     resolver->Resolve(v8::Null(resolver->GetScriptState()->GetIsolate()));
   }

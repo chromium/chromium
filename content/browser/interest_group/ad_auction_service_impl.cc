@@ -336,6 +336,47 @@ void AdAuctionServiceImpl::RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
   auctions_.insert(std::move(auction));
 }
 
+namespace {
+class FencedFrameURLMappingObserver
+    : public FencedFrameURLMapping::MappingResultObserver {
+ public:
+  FencedFrameURLMappingObserver() = default;
+  ~FencedFrameURLMappingObserver() override = default;
+
+  void OnFencedFrameURLMappingComplete(
+      absl::optional<GURL> mapped_url,
+      absl::optional<FencedFrameURLMapping::PendingAdComponentsMap>
+          pending_ad_components_map) override {
+    mapped_url_ = mapped_url;
+    called_ = true;
+  }
+
+  bool called_;
+  absl::optional<GURL> mapped_url_;
+};
+
+}  // namespace
+
+void AdAuctionServiceImpl::DeprecatedGetURLFromURN(
+    const GURL& urn_url,
+    DeprecatedGetURLFromURNCallback callback) {
+  if (!FencedFrameURLMapping::IsValidUrnUuidURL(urn_url)) {
+    std::move(callback).Run(absl::nullopt);
+    return;
+  }
+  FencedFrameURLMappingObserver obs;
+  content::FencedFrameURLMapping& mapping =
+      static_cast<RenderFrameHostImpl*>(render_frame_host())
+          ->GetPage()
+          .fenced_frame_urls_map();
+  // FLEDGE URN URLs should already be mapped, so the observer will be called
+  // synchronously.
+  mapping.ConvertFencedFrameURNToURL(urn_url, &obs);
+  if (!obs.called_)
+    mapping.RemoveObserverForURN(urn_url, &obs);
+  std::move(callback).Run(std::move(obs.mapped_url_));
+}
+
 void AdAuctionServiceImpl::CreateAdRequest(
     blink::mojom::AdRequestConfigPtr config,
     CreateAdRequestCallback callback) {
