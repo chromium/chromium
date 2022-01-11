@@ -42,11 +42,13 @@ class CORE_EXPORT HighlightPaintingUtils {
       PseudoId,
       PaintFlags,
       const AtomicString& pseudo_argument = g_null_atom);
-  static Color HighlightEmphasisMarkColor(const Document&,
-                                          const ComputedStyle&,
-                                          Node*,
-                                          PseudoId,
-                                          PaintFlags);
+  static Color HighlightEmphasisMarkColor(
+      const Document&,
+      const ComputedStyle&,
+      Node*,
+      PseudoId,
+      PaintFlags,
+      const AtomicString& pseudo_argument = g_null_atom);
   static TextPaintStyle HighlightPaintingStyle(
       const Document&,
       const ComputedStyle&,

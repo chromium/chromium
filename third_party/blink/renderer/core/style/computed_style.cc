@@ -590,6 +590,12 @@ const ComputedStyle* ComputedStyle::AddCachedPseudoElementStyle(
   DCHECK(pseudo);
   DCHECK_GT(pseudo->StyleType(), kPseudoIdNone);
 
+  // The pseudo style cache assumes that only one entry will be added for any
+  // any given (PseudoId,argument). Adding more than one entry is a bug, even
+  // if the styles being cached are equal.
+  DCHECK(!GetCachedPseudoElementStyle(pseudo->StyleType(),
+                                      pseudo->PseudoArgument()));
+
   const ComputedStyle* result = pseudo.get();
 
   EnsurePseudoElementStyleCache().push_back(std::move(pseudo));

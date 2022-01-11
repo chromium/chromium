@@ -334,9 +334,11 @@ Color HighlightPaintingUtils::HighlightEmphasisMarkColor(
     const ComputedStyle& style,
     Node* node,
     PseudoId pseudo,
-    PaintFlags paint_flags) {
+    PaintFlags paint_flags,
+    const AtomicString& pseudo_argument) {
   return HighlightColor(document, style, node, pseudo,
-                        GetCSSPropertyTextEmphasisColor(), paint_flags);
+                        GetCSSPropertyTextEmphasisColor(), paint_flags,
+                        pseudo_argument);
 }
 
 TextPaintStyle HighlightPaintingUtils::HighlightPaintingStyle(
@@ -358,8 +360,8 @@ TextPaintStyle HighlightPaintingUtils::HighlightPaintingStyle(
   if (!uses_text_as_clip) {
     highlight_style.fill_color = HighlightForegroundColor(
         document, style, node, pseudo, paint_flags, pseudo_argument);
-    highlight_style.emphasis_mark_color =
-        HighlightEmphasisMarkColor(document, style, node, pseudo, paint_flags);
+    highlight_style.emphasis_mark_color = HighlightEmphasisMarkColor(
+        document, style, node, pseudo, paint_flags, pseudo_argument);
   }
 
   if (scoped_refptr<const ComputedStyle> pseudo_style =
