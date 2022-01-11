@@ -15,7 +15,6 @@ module chromeos.ime.mojom;
 // the ProcessMessage() method. All other proto messages must be mirrored with
 // a respective mojom method here in this interface for security (see
 // ash/services/ime/decoder/system_engine.cc for an example of mirroring).
-// TODO(crbug/1194372): Investigate using libmojo within ime shared lib.
 interface InputChannel {
   // Returns a serialized protobuf result after processing a serialized
   // protobuf message.
