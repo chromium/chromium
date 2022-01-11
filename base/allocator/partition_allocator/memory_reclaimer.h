@@ -42,12 +42,12 @@ class BASE_EXPORT PartitionAllocMemoryReclaimer {
   // Triggers an explicit reclaim now to reclaim as much free memory as
   // possible. The API callers need to invoke this method periodically
   // if they want to use memory reclaimer.
-  // c.f. See also GetRecommendedReclaimInterval()'s comment.
+  // See also GetRecommendedReclaimIntervalInMicroseconds()'s comment.
   void ReclaimNormal();
 
   // Returns a recommended interval to invoke ReclaimNormal.
-  static constexpr base::TimeDelta GetRecommendedReclaimInterval() {
-    return Seconds(4);
+  int64_t GetRecommendedReclaimIntervalInMicroseconds() {
+    return Seconds(4).InMicroseconds();
   }
 
   // Triggers an explicit reclaim now reclaiming all free memory
