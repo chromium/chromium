@@ -15,6 +15,7 @@
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/test_views.h"
 #include "ui/views/test/views_test_base.h"
 #include "ui/views/widget/widget.h"
@@ -298,15 +299,72 @@ TEST_F(TabbedPaneWithWidgetTest, AccessiblePaneContentsTitleTracksTabTitle) {
   EXPECT_EQ(kSecondTitle, GetAccessibleName(tab2_contents));
 }
 
-TEST_F(TabbedPaneWithWidgetTest, AccessiblePaneContentsRoleIsTab) {
+TEST_F(TabbedPaneWithWidgetTest, AccessiblePaneContentsRoleIsTabPanel) {
   const std::u16string kFirstTitle = u"Tab1";
   const std::u16string kSecondTitle = u"Tab2";
   View* const tab1_contents =
       tabbed_pane_->AddTab(kFirstTitle, std::make_unique<View>());
   View* const tab2_contents =
       tabbed_pane_->AddTab(kSecondTitle, std::make_unique<View>());
-  EXPECT_EQ(ax::mojom::Role::kTab, GetAccessibleRole(tab1_contents));
-  EXPECT_EQ(ax::mojom::Role::kTab, GetAccessibleRole(tab2_contents));
+  EXPECT_EQ(ax::mojom::Role::kTabPanel, GetAccessibleRole(tab1_contents));
+  EXPECT_EQ(ax::mojom::Role::kTabPanel, GetAccessibleRole(tab2_contents));
+}
+
+TEST_F(TabbedPaneWithWidgetTest, AccessibleEvents) {
+  tabbed_pane_->AddTab(u"Tab1", std::make_unique<View>());
+  tabbed_pane_->AddTab(u"Tab2", std::make_unique<View>());
+  test::AXEventCounter counter(views::AXEventManager::Get());
+
+  // This is needed for FocusManager::SetFocusedViewWithReason to notify
+  // observers observers of focus changes.
+  if (widget_ && !widget_->IsActive())
+    widget_->Activate();
+
+  EXPECT_EQ(0u, tabbed_pane_->GetSelectedTabIndex());
+
+  // Change the selected tab without giving the tab focus should result in a
+  // selection change for the new tab and a selected-children-changed for the
+  // tab list. No focus events should occur.
+  tabbed_pane_->SelectTabAt(1);
+  EXPECT_EQ(1u, tabbed_pane_->GetSelectedTabIndex());
+  EXPECT_EQ(
+      1, counter.GetCount(ax::mojom::Event::kSelection, ax::mojom::Role::kTab));
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kSelectedChildrenChanged,
+                                ax::mojom::Role::kTabList));
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kFocus));
+
+  counter.ResetAllCounts();
+
+  // Focusing the selected tab should only result in a focus event for that tab.
+  tabbed_pane_->GetFocusManager()->SetFocusedView(tabbed_pane_->GetTabAt(1));
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kFocus));
+  EXPECT_EQ(1,
+            counter.GetCount(ax::mojom::Event::kFocus, ax::mojom::Role::kTab));
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kSelection));
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kSelectedChildrenChanged));
+
+  counter.ResetAllCounts();
+
+  // Arrowing left to the first tab selects it. Therefore we should get the same
+  // events as we did when SelectTabAt() was called.
+  SendKeyPressToSelectedTab(ui::VKEY_LEFT);
+  EXPECT_EQ(0u, tabbed_pane_->GetSelectedTabIndex());
+  EXPECT_EQ(
+      1, counter.GetCount(ax::mojom::Event::kSelection, ax::mojom::Role::kTab));
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kSelectedChildrenChanged,
+                                ax::mojom::Role::kTabList));
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kFocus));
+
+  counter.ResetAllCounts();
+
+  // Focusing an unselected tab, if the UI allows it, a should only result in a
+  // focus event for that tab.
+  tabbed_pane_->GetFocusManager()->SetFocusedView(tabbed_pane_->GetTabAt(1));
+  EXPECT_EQ(1, counter.GetCount(ax::mojom::Event::kFocus));
+  EXPECT_EQ(1,
+            counter.GetCount(ax::mojom::Event::kFocus, ax::mojom::Role::kTab));
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kSelection));
+  EXPECT_EQ(0, counter.GetCount(ax::mojom::Event::kSelectedChildrenChanged));
 }
 
 }  // namespace test
