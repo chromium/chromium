@@ -7656,3 +7656,4 @@ crbug.com/1285436 virtual/partitioned-cookies/http/tests/inspector-protocol/netw
 
 # Sheriff 2022-01-11
 crbug.com/1286437 [ Mac ] media/picture-in-picture/v2/request-picture-in-picture-twice.html [ Failure Pass ]
+crbug.com/1286448 [ Mac ] virtual/without-coep-for-shared-worker/external/wpt/html/cross-origin-embedder-policy/anonymous-iframe/cache-storage.tentative.https.window.html [ Crash Pass ]
