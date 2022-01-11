@@ -724,8 +724,28 @@ public class StartSurfaceTest {
             // Disable feed placeholder animation because it causes waitForDeferredStartup() to time
             // out.
             FeedPlaceholderLayout.DISABLE_ANIMATION_SWITCH})
-    public void startSurfaceRecordHistogramsTest() {
+    public void startSurfaceRecordHistogramsTest_SingleTab() {
         // clang-format on
+        startSurfaceRecordHistogramsTest(true);
+    }
+
+    @Test
+    @MediumTest
+    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE})
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study",
+        ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
+        ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+    @CommandLineFlags.Add({BASE_PARAMS + "/single/show_last_active_tab_only/false",
+        // Disable feed placeholder animation because it causes waitForDeferredStartup() to time
+        // out.
+        FeedPlaceholderLayout.DISABLE_ANIMATION_SWITCH})
+    public void startSurfaceRecordHistogramsTest_CarouselTab() {
+        // clang-format on
+        startSurfaceRecordHistogramsTest(false);
+    }
+
+    private void startSurfaceRecordHistogramsTest(boolean isSingleTabSwitcher) {
         if (!mImmediateReturn) {
             assertNotEquals(0, ReturnToChromeExperimentsUtil.TAB_SWITCHER_ON_RETURN_MS.getValue());
             StartSurfaceTestUtils.pressHomePageButton(mActivityTestRule.getActivity());
@@ -734,20 +754,12 @@ public class StartSurfaceTest {
         }
 
         Assert.assertEquals("single", StartSurfaceConfiguration.START_SURFACE_VARIATION.getValue());
-        Assert.assertTrue(StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY.getValue());
+        Assert.assertEquals(isSingleTabSwitcher,
+                StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY.getValue());
         StartSurfaceTestUtils.waitForOverviewVisible(
                 mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
         mActivityTestRule.waitForActivityNativeInitializationComplete();
-
-        // Waits for the current Tab to complete loading. The deferred startup will be triggered
-        // after the loading.
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        if (tab != null && tab.isLoading()) {
-            CriteriaHelper.pollUiThread(()
-                                                -> !tab.isLoading(),
-                    MAX_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
-        }
-        assertTrue("Deferred startup never completed", mActivityTestRule.waitForDeferredStartup());
+        StartSurfaceTestUtils.waitForDeferredStartup(mActivityTestRule);
 
         boolean isInstantStart =
                 TabUiFeatureUtilities.supportInstantStart(false, mActivityTestRule.getActivity());
@@ -759,11 +771,18 @@ public class StartSurfaceTest {
         int expectedRecordCount = mImmediateReturn ? 1 : 0;
         // Histograms should be only recorded when StartSurface is shown immediately after
         // launch.
+        if (isSingleTabSwitcher) {
+            Assert.assertEquals(expectedRecordCount,
+                    RecordHistogram.getHistogramTotalCountForTesting(
+                            StartSurfaceConfiguration.getHistogramName(
+                                    SingleTabSwitcherMediator.SINGLE_TAB_TITLE_AVAILABLE_TIME_UMA,
+                                    isInstantStart)));
+        }
+
         Assert.assertEquals(expectedRecordCount,
                 RecordHistogram.getHistogramTotalCountForTesting(
-                        StartSurfaceConfiguration.getHistogramName(
-                                SingleTabSwitcherMediator.SINGLE_TAB_TITLE_AVAILABLE_TIME_UMA,
-                                isInstantStart)));
+                        ReturnToChromeExperimentsUtil
+                                .LAST_VISITED_TAB_IS_SRP_WHEN_OVERVIEW_IS_SHOWN_AT_LAUNCH_UMA));
 
         Assert.assertEquals(expectedRecordCount,
                 RecordHistogram.getHistogramTotalCountForTesting(

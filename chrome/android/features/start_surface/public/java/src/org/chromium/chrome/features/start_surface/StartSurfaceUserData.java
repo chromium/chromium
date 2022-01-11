@@ -18,7 +18,7 @@ public class StartSurfaceUserData implements UserData {
     private boolean mFocusOnOmnibox;
     private boolean mCreatedAsNtp;
     private boolean mOpenedFromStart;
-
+    private String mLastVisitedTabAtStartupUrl;
     // Saves the Feeds instance state.
     private String mFeedsInstanceState;
 
@@ -153,5 +153,20 @@ public class StartSurfaceUserData implements UserData {
     @Nullable
     protected String restoreFeedInstanceState() {
         return mFeedsInstanceState;
+    }
+
+    /**
+     * Sets the url of last visited tab at start up.
+     * @param lastVisitedTabAtStartupUrl The url of last visited tab at start up.
+     */
+    public void setLastVisitedTabAtStartupUrl(String lastVisitedTabAtStartupUrl) {
+        mLastVisitedTabAtStartupUrl = lastVisitedTabAtStartupUrl;
+    }
+
+    /**
+     * Returns the saved url of last visited tab at start up.
+     */
+    public String getLastVisitedTabAtStartupUrl() {
+        return mLastVisitedTabAtStartupUrl;
     }
 }

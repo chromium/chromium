@@ -47,6 +47,7 @@ import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.optimization_guide.proto.ModelsProto.OptimizationTarget;
 import org.chromium.components.segmentation_platform.SegmentationPlatformService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -67,6 +68,9 @@ public final class ReturnToChromeExperimentsUtil {
     @VisibleForTesting
     public static final long INVALID_DECISION_TIMESTAMP = -1L;
     public static final long MILLISECONDS_PER_DAY = TimeUtils.SECONDS_PER_DAY * 1000;
+    @VisibleForTesting
+    public static final String LAST_VISITED_TAB_IS_SRP_WHEN_OVERVIEW_IS_SHOWN_AT_LAUNCH_UMA =
+            "Startup.Android.LastVisitedTabIsSRPWhenOverviewShownAtLaunch";
 
     private static final String START_SEGMENTATION_PLATFORM_KEY = "chrome_start_android";
 
@@ -878,6 +882,17 @@ public final class ReturnToChromeExperimentsUtil {
      */
     public static void onMVTileOpened() {
         onUIClicked(ChromePreferenceKeys.TAP_MV_TILES_COUNT);
+    }
+
+    /**
+     * Record whether the last visited tab shown in the single tab switcher or carousel tab switcher
+     * is a search result page or not. This should be called when Start surface is shown at startup.
+     */
+    public static void recordLastVisitedTabIsSRPWhenOverviewIsShownAtLaunch() {
+        RecordHistogram.recordBooleanHistogram(
+                LAST_VISITED_TAB_IS_SRP_WHEN_OVERVIEW_IS_SHOWN_AT_LAUNCH_UMA,
+                UrlUtilitiesJni.get().isGoogleSearchUrl(
+                        StartSurfaceUserData.getInstance().getLastVisitedTabAtStartupUrl()));
     }
 
     @VisibleForTesting

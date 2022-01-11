@@ -71,6 +71,12 @@ import org.chromium.base.MathUtils;
 import org.chromium.base.NativeLibraryLoadedStatus;
 import org.chromium.base.SysUtils;
 import org.chromium.base.library_loader.LibraryLoader;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.test.params.ParameterAnnotations;
+import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
+import org.chromium.base.test.params.ParameterProvider;
+import org.chromium.base.test.params.ParameterSet;
+import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -108,7 +114,7 @@ import org.chromium.chrome.browser.toolbar.ToolbarDataProvider;
 import org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarCoordinator;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
-import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ActivityTestUtils;
@@ -120,6 +126,7 @@ import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependencies
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.components.embedder_support.util.UrlUtilitiesJni;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
@@ -128,6 +135,7 @@ import org.chromium.ui.test.util.ViewUtils;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
@@ -136,7 +144,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Integration tests of Instant Start which requires 2-stage initialization for Clank startup.
  */
-@RunWith(ChromeJUnit4ClassRunner.class)
+@RunWith(ParameterizedRunner.class)
+@ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 // clang-format off
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @EnableFeatures({ChromeFeatureList.TAB_GRID_LAYOUT_ANDROID,
@@ -164,6 +173,23 @@ public class InstantStartTest {
 
     @Rule
     public SuggestionsDependenciesRule mSuggestionsDeps = new SuggestionsDependenciesRule();
+
+    /**
+     * {@link ParameterProvider} used for parameterized test that provides whether it's single tab
+     * switcher or carousel tab switcher and whether last visited tab is a search result page.
+     */
+    public static class LVTIsSRPTestParams implements ParameterProvider {
+        private static final List<ParameterSet> sLVTIsSRPTestParams =
+                Arrays.asList(new ParameterSet().value(false, false).name("CarouselTab_NotSRP"),
+                        new ParameterSet().value(true, false).name("SingleTab_NotSRP"),
+                        new ParameterSet().value(false, true).name("CarouselTab_SRP"),
+                        new ParameterSet().value(true, true).name("SingleTab_SRP"));
+
+        @Override
+        public List<ParameterSet> getParameters() {
+            return sLVTIsSRPTestParams;
+        }
+    }
 
     @After
     public void tearDown() {
@@ -1313,6 +1339,69 @@ public class InstantStartTest {
     public void testMenuUpdateBadgeWithoutUpdate() throws IOException {
         // clang-format on
         testMenuUpdateBadge(/*shouldShowUpdateBadgeOnStartAndTabs=*/false);
+    }
+
+    @Test
+    @MediumTest
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
+        ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+    @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
+        "force-fieldtrials=Study/Group",
+        IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
+    @UseMethodParameter(LVTIsSRPTestParams.class)
+    public void testRecordLastVisitedTabIsSRPHistogram(boolean isSingleTabSwitcher, boolean isSRP)
+        throws IOException {
+        // clang-format on
+        testRecordLastVisitedTabIsSRP(isSingleTabSwitcher, isSRP);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures(ChromeFeatureList.INSTANT_START)
+    @UseMethodParameter(LVTIsSRPTestParams.class)
+    // clang-format off
+    @EnableFeatures({ChromeFeatureList.TAB_SWITCHER_ON_RETURN + "<Study,",
+        ChromeFeatureList.START_SURFACE_ANDROID + "<Study"})
+    @CommandLineFlags.Add({ChromeSwitches.DISABLE_NATIVE_INITIALIZATION,
+        "force-fieldtrials=Study/Group",
+        IMMEDIATE_RETURN_PARAMS + "/start_surface_variation/single"})
+    // clang-format on
+    public void
+    testRecordLastVisitedTabIsSRPHistogram_NoInstant(boolean isSingleTabSwitcher, boolean isSRP)
+            throws IOException {
+        testRecordLastVisitedTabIsSRP(isSingleTabSwitcher, isSRP);
+    }
+
+    private void testRecordLastVisitedTabIsSRP(boolean isSingleTabSwitcher, boolean isSRP)
+            throws IOException {
+        StartSurfaceConfiguration.START_SURFACE_LAST_ACTIVE_TAB_ONLY.setForTesting(
+                isSingleTabSwitcher);
+        StartSurfaceTestUtils.createTabStateFile(new int[] {0, 1},
+                new String[] {"https://www.google.com/search?q=test", "https://www.google.com"},
+                isSRP ? 0 : 1);
+        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(0);
+        StartSurfaceTestUtils.createThumbnailBitmapAndWriteToFile(1);
+        TabAttributeCache.setTitleForTesting(0, "Google SRP");
+        TabAttributeCache.setTitleForTesting(1, "Google Homepage");
+        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
+        startAndWaitNativeInitialization();
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForOverviewVisible(cta);
+        StartSurfaceTestUtils.waitForDeferredStartup(mActivityTestRule);
+
+        Assert.assertEquals(isSRP,
+                UrlUtilitiesJni.get().isGoogleSearchUrl(
+                        StartSurfaceUserData.getInstance().getLastVisitedTabAtStartupUrl()));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramTotalCountForTesting(
+                        ReturnToChromeExperimentsUtil
+                                .LAST_VISITED_TAB_IS_SRP_WHEN_OVERVIEW_IS_SHOWN_AT_LAUNCH_UMA));
+        Assert.assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        ReturnToChromeExperimentsUtil
+                                .LAST_VISITED_TAB_IS_SRP_WHEN_OVERVIEW_IS_SHOWN_AT_LAUNCH_UMA,
+                        isSRP ? 1 : 0));
     }
 
     private void testNewTabFromLauncherImpl() throws IOException {

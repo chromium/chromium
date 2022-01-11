@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.suggestions.SiteSuggestion;
 import org.chromium.chrome.browser.suggestions.tile.TileSectionType;
 import org.chromium.chrome.browser.suggestions.tile.TileSource;
 import org.chromium.chrome.browser.suggestions.tile.TileTitleSource;
+import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
@@ -56,6 +57,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.start_surface.R;
 import org.chromium.chrome.test.ChromeActivityTestRule;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.OverviewModeBehaviorWatcher;
 import org.chromium.chrome.test.util.browser.suggestions.SuggestionsDependenciesRule;
 import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVisitedSites;
@@ -374,6 +376,23 @@ public class StartSurfaceTestUtils {
         }
 
         return siteSuggestions;
+    }
+
+    /**
+     * Wait for the deferred startup to be triggered.
+     * @param activityTestRule The ChromeTabbedActivityTestRule under test.
+     */
+    public static void waitForDeferredStartup(ChromeTabbedActivityTestRule activityTestRule) {
+        // Waits for the current Tab to complete loading. The deferred startup will be triggered
+        // after the loading.
+        Tab tab = activityTestRule.getActivity().getActivityTab();
+        if (tab != null && tab.isLoading()) {
+            CriteriaHelper.pollUiThread(()
+                                                -> !tab.isLoading(),
+                    MAX_TIMEOUT_MS, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
+        }
+        Assert.assertTrue(
+                "Deferred startup never completed", activityTestRule.waitForDeferredStartup());
     }
 
     /**

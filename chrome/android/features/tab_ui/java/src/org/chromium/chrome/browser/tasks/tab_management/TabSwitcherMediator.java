@@ -774,7 +774,11 @@ class TabSwitcherMediator implements TabSwitcher.Controller, TabListRecyclerView
     }
 
     @Override
-    public void onOverviewShownAtLaunch(long activityCreationTimeMs) {}
+    public void onOverviewShownAtLaunch(long activityCreationTimeMs) {
+        if (mMode == TabListMode.CAROUSEL) {
+            ReturnToChromeExperimentsUtil.recordLastVisitedTabIsSRPWhenOverviewIsShownAtLaunch();
+        }
+    }
 
     /**
      * Do clean-up work after the overview hiding animation is finished.
