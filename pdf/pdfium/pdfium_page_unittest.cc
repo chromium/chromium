@@ -27,6 +27,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size_f.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/test/geometry_util.h"
 #include "ui/gfx/range/range.h"
 
@@ -762,15 +763,25 @@ class PDFiumPageThumbnailTest : public PDFiumTestBase {
                              const std::string& expectation_file_prefix) {
     PDFiumPage& page = GetPDFiumPageForTest(engine, page_index);
     Thumbnail thumbnail = page.GenerateThumbnail(device_pixel_ratio);
-    EXPECT_EQ(expected_thumbnail_size, gfx::Size(thumbnail.bitmap().width(),
-                                                 thumbnail.bitmap().height()));
+    EXPECT_EQ(expected_thumbnail_size, thumbnail.image_size());
     EXPECT_EQ(device_pixel_ratio, thumbnail.device_pixel_ratio());
+
+    auto image_info =
+        SkImageInfo::Make(gfx::SizeToSkISize(thumbnail.image_size()),
+                          kRGBA_8888_SkColorType, kPremul_SkAlphaType);
+    int stride = thumbnail.stride();
+    ASSERT_GT(stride, 0);
+    ASSERT_EQ(image_info.minRowBytes(), static_cast<size_t>(stride));
+    std::vector<uint8_t> data = thumbnail.TakeData();
+    SkBitmap bitmap;
+    EXPECT_TRUE(bitmap.installPixels(image_info, data.data(),
+                                     image_info.minRowBytes()));
 
     base::FilePath expectation_png_file_path = GetThumbnailTestData(
         expectation_file_prefix, page_index, device_pixel_ratio);
 
     EXPECT_TRUE(cc::MatchesPNGFile(
-        thumbnail.bitmap(), GetTestDataFilePath(expectation_png_file_path),
+        bitmap, GetTestDataFilePath(expectation_png_file_path),
         cc::ExactPixelComparator(/*discard_alpha=*/false)))
         << "Reference: " << expectation_png_file_path;
   }

@@ -1632,15 +1632,12 @@ void PdfViewPluginBase::SendMetadata() {
 }
 
 void PdfViewPluginBase::SendThumbnail(base::Value reply, Thumbnail thumbnail) {
-  const SkBitmap& bitmap = thumbnail.bitmap();
-  base::Value image_data(base::make_span(
-      static_cast<uint8_t*>(bitmap.getPixels()), bitmap.computeByteSize()));
-
   DCHECK_EQ(*reply.FindStringKey("type"), "getThumbnailReply");
   DCHECK(reply.FindStringKey("messageId"));
-  reply.SetKey("imageData", std::move(image_data));
-  reply.SetIntKey("width", bitmap.width());
-  reply.SetIntKey("height", bitmap.height());
+
+  reply.SetKey("imageData", base::Value(thumbnail.TakeData()));
+  reply.SetIntKey("width", thumbnail.image_size().width());
+  reply.SetIntKey("height", thumbnail.image_size().height());
   SendMessage(std::move(reply));
 }
 
