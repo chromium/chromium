@@ -103,13 +103,10 @@ preprocess_if_expr("preprocess") {
 }
 
 preprocess_if_expr("preprocess_generated") {
-  deps = [
-    ":web_components",
-    "untrusted:shared_vars_css_module",
-  ]
+  deps = [ ":web_components" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = polymer_js_files + [ "untrusted/untrusted_shared_vars_css.js" ]
+  in_files = polymer_js_files
 }
 
 copy("copy_mojo_to_trusted") {
@@ -119,26 +116,14 @@ copy("copy_mojo_to_trusted") {
       [ "$target_gen_dir/$preprocess_folder/trusted/{{source_file_part}}" ]
 }
 
-# This is to work around the problem untrusted/ cannot access shared resources
-# in chrome://. In the future when we merge trusted/ and untrusted/ we should
-# remove this.
-copy("copy_js_to_common") {
-  deps = [ "//ui/webui/resources/js:modulize_local" ]
-  sources = [ "$root_gen_dir/ui/webui/resources/js/assert.m.js" ]
-  outputs = [ "$target_gen_dir/$preprocess_folder/common/{{source_file_part}}" ]
-}
-
 ts_library("build_ts") {
   composite = true
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
 
-  in_files = static_js_files + polymer_js_files + [
-               "common/assert.m.js",
-               "trusted/personalization_app.mojom-webui.js",
-               "untrusted/untrusted_shared_vars_css.js",
-             ]
+  in_files = static_js_files + polymer_js_files +
+             [ "trusted/personalization_app.mojom-webui.js" ]
 
   deps = [
     "//third_party/polymer/v3_0:library",
@@ -146,19 +131,7 @@ ts_library("build_ts") {
     "//ui/webui/resources/mojo:library",
   ]
 
-  definitions = []
-
-  path_mappings = [
-    "chrome-untrusted://personalization/polymer/v3_0/polymer/polymer_bundled.min.js|" + rebase_path(
-            "//third_party/polymer/v3_0/components-chromium/polymer/polymer.d.ts",
-            target_gen_dir),
-    "chrome-untrusted://resources/js/load_time_data.m.js|" + rebase_path(
-            "$root_gen_dir/ui/webui/resources/preprocessed/js/load_time_data.m.d.ts",
-            target_gen_dir),
-  ]
-
   extra_deps = [
-    ":copy_js_to_common",
     ":copy_mojo_to_trusted",
     ":preprocess",
     ":preprocess_generated",

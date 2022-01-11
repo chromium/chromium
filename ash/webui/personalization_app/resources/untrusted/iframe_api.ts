@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from '../common/assert.m.js';
+import {assert} from '//resources/js/assert.m.js';
 import * as constants from '../common/constants.js';
 import {isNonEmptyArray, isNullOrArray, isNullOrNumber} from '../common/utils.js';
 

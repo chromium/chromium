@@ -16,10 +16,6 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom-shared.h"
-#include "ui/chromeos/styles/cros_styles.h"
-#include "ui/resources/grit/webui_generated_resources.h"
-#include "ui/resources/grit/webui_generated_resources_map.h"
-#include "ui/resources/grit/webui_resources.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -48,17 +44,6 @@ void AddBooleans(content::WebUIDataSource* source) {
                      features::IsWallpaperGooglePhotosIntegrationEnabled());
 }
 
-void AddCrosColors(content::WebUIDataSource* source) {
-  source->AddResourcePath("chromeos/colors/cros_styles.css",
-                          IDR_WEBUI_CROS_COLORS_CSS);
-
-  source->AddString(
-      "crosColorsDebugOverrides",
-      base::FeatureList::IsEnabled(features::kSemanticColorsDebugOverride)
-          ? cros_styles::kDebugOverrideCssString
-          : std::string());
-}
-
 class UntrustedPersonalizationAppUI : public ui::UntrustedWebUIController {
  public:
   explicit UntrustedPersonalizationAppUI(content::WebUI* web_ui)
@@ -78,12 +63,6 @@ class UntrustedPersonalizationAppUI : public ui::UntrustedWebUIController {
           base::StartsWith(resource.path, "common"))
         source->AddResourcePath(resource.path, resource.id);
     }
-    // Add WebUI resources like polymer and iron-list so that it is accessible
-    // inside untrusted iframe.
-    source->AddResourcePaths(base::make_span(kWebuiGeneratedResources,
-                                             kWebuiGeneratedResourcesSize));
-
-    AddCrosColors(source.get());
 
     source->AddFrameAncestor(GURL(kChromeUIPersonalizationAppURL));
 

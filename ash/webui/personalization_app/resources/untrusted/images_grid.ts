@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome-untrusted://personalization/polymer/v3_0/iron-list/iron-list.js';
+import '//resources/polymer/v3_0/iron-list/iron-list.js';
 import './setup.js';
 import './styles.js';
 
-import {html, PolymerElement} from 'chrome-untrusted://personalization/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert, assertNotReached} from '//resources/js/assert.m.js';
+import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {assert, assertNotReached} from '../common/assert.m.js';
 import {Events, EventType, ImageTile} from '../common/constants.js';
 import {isSelectionEvent} from '../common/utils.js';
 import {selectImage, validateReceivedData} from '../untrusted/iframe_api.js';

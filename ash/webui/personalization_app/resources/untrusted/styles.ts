@@ -6,7 +6,7 @@
  * @fileoverview styles for polymer components in untrusted code.
  */
 
-import 'chrome-untrusted://personalization/polymer/v3_0/polymer/polymer_bundled.min.js';
+import '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 const template = document.createElement('dom-module');
 template.innerHTML = `{__html_template__}`;
