@@ -25,10 +25,7 @@ FakeAshTestChromeBrowserMainExtraParts::FakeAshTestChromeBrowserMainExtraParts()
     : test_controller_ash_(std::make_unique<crosapi::TestControllerAsh>()) {}
 
 FakeAshTestChromeBrowserMainExtraParts::
-    ~FakeAshTestChromeBrowserMainExtraParts() {
-  crosapi::CrosapiManager::Get()->crosapi_ash()->SetTestControllerForTesting(
-      nullptr);
-}
+    ~FakeAshTestChromeBrowserMainExtraParts() = default;
 
 // Create a file so test_runner know ash is ready for testing.
 void AshIsReadyForTesting() {
@@ -68,6 +65,11 @@ void FakeAshTestChromeBrowserMainExtraParts::PostBrowserStart() {
 
   // Call this at the end of PostBrowserStart().
   AshIsReadyForTesting();
+}
+
+void FakeAshTestChromeBrowserMainExtraParts::PostMainMessageLoopRun() {
+  crosapi::CrosapiManager::Get()->crosapi_ash()->SetTestControllerForTesting(
+      nullptr);
 }
 
 }  // namespace test
