@@ -383,14 +383,12 @@ class ClientCertResolverTest : public testing::Test,
             policy_json,
             base::JSON_ALLOW_TRAILING_COMMAS | base::JSON_ALLOW_CONTROL_CHARS);
     ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
-
-    base::ListValue* policy = nullptr;
-    ASSERT_TRUE(parsed_json.value->GetAsList(&policy));
+    ASSERT_TRUE(parsed_json.value->is_list());
 
     std::string user_hash =
         onc_source == ::onc::ONC_SOURCE_USER_POLICY ? kUserHash : "";
     managed_config_handler_->SetPolicy(
-        onc_source, user_hash, *policy,
+        onc_source, user_hash, *parsed_json.value,
         base::DictionaryValue() /* no global network config */);
   }
 

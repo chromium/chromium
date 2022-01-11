@@ -342,18 +342,16 @@ class NetworkConnectionHandlerImplTest : public testing::Test {
         base::JSONReader::ReadAndReturnValueWithError(
             network_configs_json, base::JSON_ALLOW_TRAILING_COMMAS);
     ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
-
-    base::ListValue* network_configs = nullptr;
-    ASSERT_TRUE(parsed_json.value->GetAsList(&network_configs));
+    ASSERT_TRUE(parsed_json.value->is_list());
 
     if (user_policy) {
       managed_config_handler_->SetPolicy(::onc::ONC_SOURCE_USER_POLICY,
-                                         helper_.UserHash(), *network_configs,
+                                         helper_.UserHash(), *parsed_json.value,
                                          global_config);
     } else {
       managed_config_handler_->SetPolicy(::onc::ONC_SOURCE_DEVICE_POLICY,
                                          std::string(),  // no username hash
-                                         *network_configs, global_config);
+                                         *parsed_json.value, global_config);
     }
     task_environment_.RunUntilIdle();
   }

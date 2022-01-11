@@ -265,15 +265,14 @@ class AutoConnectHandlerTest : public testing::Test {
   void SetupPolicy(const std::string& network_configs_json,
                    const base::DictionaryValue& global_config,
                    bool user_policy) {
-    base::ListValue network_configs;
+    base::Value network_configs(base::Value::Type::LIST);
     if (!network_configs_json.empty()) {
       base::JSONReader::ValueWithError parsed_json =
           base::JSONReader::ReadAndReturnValueWithError(
               network_configs_json, base::JSON_ALLOW_TRAILING_COMMAS);
       ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
-      base::ListValue* network_configs_list = nullptr;
-      ASSERT_TRUE(parsed_json.value->GetAsList(&network_configs_list));
-      network_configs = std::move(*network_configs_list);
+      ASSERT_TRUE(parsed_json.value->is_list());
+      network_configs = std::move(*parsed_json.value);
     }
 
     if (user_policy) {
