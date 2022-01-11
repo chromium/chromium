@@ -771,11 +771,7 @@ void FieldTrialList::CreateTrialsFromCommandLine(const CommandLine& cmd_line,
     bool result = CreateTrialsFromSwitchValue(switch_value, fd_key);
     UMA_HISTOGRAM_BOOLEAN("ChildProcess.FieldTrials.CreateFromShmemSuccess",
                           result);
-#if !defined(OS_WIN)
-    // TODO(https://crbug.com/1262370): This check is triggered in a utility
-    // process when running XR tests on Windows.
     DCHECK(result);
-#endif
   }
 #endif  // !defined(OS_NACL) && !defined(OS_IOS)
 
@@ -1139,12 +1135,20 @@ std::string FieldTrialList::SerializeSharedMemoryRegionMetadata(
 
   std::stringstream ss;
 #if defined(OS_WIN)
+  // Elevated process might not need this, although it is harmless.
   launch_options->handles_to_inherit.push_back(shm.GetPlatformHandle());
 
   // Tell the child process the name of the inherited HANDLE.
   uintptr_t uintptr_handle =
       reinterpret_cast<uintptr_t>(shm.GetPlatformHandle());
   ss << uintptr_handle << ",";
+  if (launch_options->elevated) {
+    // Tell the child that it must open its parent and grab the handle.
+    ss << "p,";
+  } else {
+    // Tell the child that it inherited the handle.
+    ss << "i,";
+  }
 #elif defined(OS_MAC)
   launch_options->mach_ports_for_rendezvous.emplace(
       kFieldTrialRendezvousKey,
@@ -1153,6 +1157,8 @@ std::string FieldTrialList::SerializeSharedMemoryRegionMetadata(
   // The handle on Mac is looked up directly by the child, rather than being
   // transferred to the child over the command line.
   ss << kFieldTrialRendezvousKey << ",";
+  // Tell the child that the handle is looked up.
+  ss << "r,";
 #elif defined(OS_FUCHSIA)
   zx::vmo transfer_vmo;
   zx_status_t status = shm.GetPlatformHandle()->duplicate(
@@ -1165,10 +1171,12 @@ std::string FieldTrialList::SerializeSharedMemoryRegionMetadata(
   uint32_t handle_id = LaunchOptions::AddHandleToTransfer(
       &launch_options->handles_to_transfer, transfer_vmo.release());
   ss << handle_id << ",";
+  // Tell the child that the handle is inherited.
+  ss << "i,";
 #elif defined(OS_POSIX)
   // This is actually unused in the child process, but allows non-Mac Posix
   // platforms to have the same format as the others.
-  ss << "0,";
+  ss << "0,i,";
 #else
 #error Unsupported OS
 #endif
@@ -1184,18 +1192,24 @@ ReadOnlySharedMemoryRegion
 FieldTrialList::DeserializeSharedMemoryRegionMetadata(
     const std::string& switch_value,
     int fd) {
+  // Format: "handle,[irp],guid-high,guid-low,size".
   std::vector<StringPiece> tokens =
       SplitStringPiece(switch_value, ",", KEEP_WHITESPACE, SPLIT_WANT_ALL);
 
-  if (tokens.size() != 4)
+  if (tokens.size() != 5)
     return ReadOnlySharedMemoryRegion();
 
   int field_trial_handle = 0;
   if (!StringToInt(tokens[0], &field_trial_handle))
     return ReadOnlySharedMemoryRegion();
+
+    // token[1] has a fixed value but is ignored on all platforms except
+    // Windows, where it can be 'i' or 'p' to indicate that the handle is
+    // inherited or must be obtained from the parent.
 #if defined(OS_WIN)
   HANDLE handle = reinterpret_cast<HANDLE>(field_trial_handle);
-  if (IsCurrentProcessElevated()) {
+  if (tokens[1] == "p") {
+    DCHECK(IsCurrentProcessElevated());
     // LaunchElevatedProcess doesn't have a way to duplicate the handle,
     // but this process can since by definition it's not sandboxed.
     ProcessId parent_pid = GetParentProcessId(GetCurrentProcess());
@@ -1206,6 +1220,8 @@ FieldTrialList::DeserializeSharedMemoryRegionMetadata(
     DuplicateHandle(parent_handle, handle, GetCurrentProcess(), &handle, 0,
                     FALSE, DUPLICATE_SAME_ACCESS);
     CloseHandle(parent_handle);
+  } else if (tokens[1] != "i") {
+    return ReadOnlySharedMemoryRegion();
   }
   win::ScopedHandle scoped_handle(handle);
 #elif defined(OS_MAC)
@@ -1232,11 +1248,11 @@ FieldTrialList::DeserializeSharedMemoryRegionMetadata(
 #endif
 
   UnguessableToken guid;
-  if (!DeserializeGUIDFromStringPieces(tokens[1], tokens[2], &guid))
+  if (!DeserializeGUIDFromStringPieces(tokens[2], tokens[3], &guid))
     return ReadOnlySharedMemoryRegion();
 
   int size;
-  if (!StringToInt(tokens[3], &size))
+  if (!StringToInt(tokens[4], &size))
     return ReadOnlySharedMemoryRegion();
 
   auto platform_handle = subtle::PlatformSharedMemoryRegion::Take(

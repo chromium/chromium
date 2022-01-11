@@ -214,6 +214,7 @@ Process LaunchProcess(const CommandLine& cmdline,
 
 Process LaunchProcess(const CommandLine::StringType& cmdline,
                       const LaunchOptions& options) {
+  CHECK(!options.elevated);
   // Mitigate the issues caused by loading DLLs on a background thread
   // (http://crbug/973868).
   SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
@@ -409,6 +410,7 @@ Process LaunchProcess(const CommandLine::StringType& cmdline,
 
 Process LaunchElevatedProcess(const CommandLine& cmdline,
                               const LaunchOptions& options) {
+  CHECK(options.elevated);
   const FilePath::StringType file = cmdline.GetProgram().value();
   const CommandLine::StringType arguments = cmdline.GetArgumentsString();
 

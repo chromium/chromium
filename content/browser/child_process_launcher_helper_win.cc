@@ -48,7 +48,9 @@ bool ChildProcessLauncherHelper::BeforeLaunchOnLauncherThread(
     FileMappedForLaunch& files_to_register,
     base::LaunchOptions* options) {
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
-  if (!delegate_->ShouldLaunchElevated()) {
+  if (delegate_->ShouldLaunchElevated()) {
+    options->elevated = true;
+  } else {
     mojo_channel_->PrepareToPassRemoteEndpoint(&options->handles_to_inherit,
                                                command_line());
   }
@@ -64,10 +66,12 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
   DCHECK(CurrentlyOnProcessLauncherTaskRunner());
   *is_synchronous_launch = true;
   if (delegate_->ShouldLaunchElevated()) {
+    DCHECK(options.elevated);
     // When establishing a Mojo connection, the pipe path has already been added
     // to the command line.
     base::LaunchOptions win_options;
     win_options.start_hidden = true;
+    win_options.elevated = true;
     ChildProcessLauncherHelper::Process process;
     process.process = base::LaunchElevatedProcess(*command_line(), win_options);
     *launch_result = process.process.IsValid() ? LAUNCH_RESULT_SUCCESS

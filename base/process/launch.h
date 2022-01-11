@@ -94,6 +94,9 @@ struct BASE_EXPORT LaunchOptions {
 #if defined(OS_WIN)
   bool start_hidden = false;
 
+  // Process will be started using a shell helper so that it is elevated.
+  bool elevated = false;
+
   // Sets STARTF_FORCEOFFFEEDBACK so that the feedback cursor is forced off
   // while the process is starting.
   bool feedback_cursor_off = false;
