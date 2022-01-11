@@ -375,7 +375,7 @@ CookieMonster::CookieMonster(scoped_refptr<PersistentCookieStore> store,
       cookieable_schemes_.begin(), kDefaultCookieableSchemes,
       kDefaultCookieableSchemes + kDefaultCookieableSchemesCount);
   net_log_.BeginEvent(NetLogEventType::COOKIE_STORE_ALIVE, [&] {
-    return NetLogCookieMonsterConstructorParams(store != nullptr);
+    return NetLogCookieMonsterConstructorParams(store_ != nullptr);
   });
 }
 
