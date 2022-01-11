@@ -643,6 +643,10 @@ class VIEWS_EXPORT HWNDMessageHandler : public gfx::WindowImpl,
   // The current DPI.
   int dpi_;
 
+  // This is true if the window is created with a specific size/location, as
+  // opposed to having them set after window creation.
+  bool initial_bounds_valid_ = false;
+
   // Whether EnableNonClientDpiScaling was called successfully with this window.
   // This flag exists because EnableNonClientDpiScaling must be called during
   // WM_NCCREATE and EnableChildWindowDpiMessage is called after window
