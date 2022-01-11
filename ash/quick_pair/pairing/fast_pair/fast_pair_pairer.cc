@@ -176,11 +176,13 @@ void FastPairPairer::OnPairConnected(
 
 void FastPairPairer::OnConnectDevice(device::BluetoothDevice* device) {
   QP_LOG(VERBOSE) << "Connect device successful.";
+  RecordConnectDeviceResult(/*success=*/true);
 }
 
 void FastPairPairer::OnConnectError() {
   QP_LOG(WARNING) << "Failed to starting pairing procedure by connecting to "
                      "device address.";
+  RecordConnectDeviceResult(/*success=*/false);
   std::move(pair_failed_callback_).Run(device_, PairFailure::kAddressConnect);
 }
 

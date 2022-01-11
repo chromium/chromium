@@ -159,6 +159,8 @@ const char kFastPairVersion[] =
     "Bluetooth.ChromeOS.FastPair.Discovered.Version";
 const char kNavigateToSettings[] =
     "Bluetooth.ChromeOS.FastPair.NavigateToSettings.Result";
+const char kConnectDeviceResult[] =
+    "Bluetooth.ChromeOS.FastPair.ConnectDevice.Result";
 
 }  // namespace
 
@@ -441,6 +443,10 @@ void RecordFastPairDiscoveredVersion(FastPairVersion version) {
 
 void RecordNavigateToSettingsResult(bool success) {
   base::UmaHistogramBoolean(kNavigateToSettings, success);
+}
+
+void RecordConnectDeviceResult(bool success) {
+  base::UmaHistogramBoolean(kConnectDeviceResult, success);
 }
 
 }  // namespace quick_pair
