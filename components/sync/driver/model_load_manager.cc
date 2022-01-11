@@ -27,7 +27,9 @@ void ModelLoadManager::Initialize(ModelTypeSet desired_types,
                                   ModelTypeSet preferred_types,
                                   const ConfigureContext& context) {
   // |desired_types| must be a subset of |preferred_types|.
-  DCHECK(preferred_types.HasAll(desired_types));
+  DCHECK(preferred_types.HasAll(desired_types))
+      << " desired: " << ModelTypeSetToString(desired_types)
+      << ", preferred: " << ModelTypeSetToString(preferred_types);
 
   bool sync_mode_changed = configure_context_.sync_mode != context.sync_mode;
 
