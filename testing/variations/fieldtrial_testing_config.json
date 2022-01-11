@@ -6144,6 +6144,21 @@
             ]
         }
     ],
+    "PasswordChangeFromLeakWarning": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PasswordChange"
+                    ]
+                }
+            ]
+        }
+    ],
     "PdfUnseasoned": [
         {
             "platforms": [
