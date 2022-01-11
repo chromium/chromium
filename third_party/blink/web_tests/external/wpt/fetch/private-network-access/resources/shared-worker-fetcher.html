@@ -8,15 +8,11 @@
     const worker = new SharedWorker(url);
 
     worker.onerror = (evt) => {
-      parent.postMessage({ loaded: false }, "*");
+      parent.postMessage({ error: evt.message || "unknown error" }, "*");
     };
 
     worker.port.addEventListener("message", (evt) => {
-      const message = {
-        loaded: true,
-        message: evt.data,
-      };
-      parent.postMessage(message, "*");
+      parent.postMessage(evt.data, "*");
     });
     worker.port.start();
   });
