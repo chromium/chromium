@@ -97,90 +97,92 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   void OnJavascriptDisallowed() override;
 
   // Get the experiments that are currently enabled per Chrome instance.
-  void GetExperiments(const base::ListValue* args);
+  void GetExperiments(const base::Value::ConstListView args);
 
   // Get the Safe Browsing related preferences for the current user.
-  void GetPrefs(const base::ListValue* args);
+  void GetPrefs(const base::Value::ConstListView args);
 
   // Get the Safe Browsing related policies for the current user.
-  void GetPolicies(const base::ListValue* args);
+  void GetPolicies(const base::Value::ConstListView args);
 
   // Get the Safe Browsing cookie.
-  void GetCookie(const base::ListValue* args);
+  void GetCookie(const base::Value::ConstListView args);
 
   // Get the current captured passwords.
-  void GetSavedPasswords(const base::ListValue* args);
+  void GetSavedPasswords(const base::Value::ConstListView args);
 
   // Get the information related to the Safe Browsing database and full hash
   // cache.
-  void GetDatabaseManagerInfo(const base::ListValue* args);
+  void GetDatabaseManagerInfo(const base::Value::ConstListView args);
 
   // Get the download URLs that have been checked since the oldest currently
   // open chrome://safe-browsing tab was opened.
-  void GetDownloadUrlsChecked(const base::ListValue* args);
+  void GetDownloadUrlsChecked(const base::Value::ConstListView args);
 
   // Get the ClientDownloadRequests that have been collected since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetSentClientDownloadRequests(const base::ListValue* args);
+  void GetSentClientDownloadRequests(const base::Value::ConstListView args);
 
   // Get the ClientDownloadReponses that have been collected since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetReceivedClientDownloadResponses(const base::ListValue* args);
+  void GetReceivedClientDownloadResponses(
+      const base::Value::ConstListView args);
 
   // Get the ClientPhishingRequests that have been collected since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetSentClientPhishingRequests(const base::ListValue* args);
+  void GetSentClientPhishingRequests(const base::Value::ConstListView args);
 
   // Get the ClientPhishingResponses that have been collected since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetReceivedClientPhishingResponses(const base::ListValue* args);
+  void GetReceivedClientPhishingResponses(
+      const base::Value::ConstListView args);
 
   // Get the ThreatDetails that have been collected since the oldest currently
   // open chrome://safe-browsing tab was opened.
-  void GetSentCSBRRs(const base::ListValue* args);
+  void GetSentCSBRRs(const base::Value::ConstListView args);
 
   // Get the PhishGuard events that have been collected since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetPGEvents(const base::ListValue* args);
+  void GetPGEvents(const base::Value::ConstListView args);
 
   // Get the Security events that have been collected since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetSecurityEvents(const base::ListValue* args);
+  void GetSecurityEvents(const base::Value::ConstListView args);
 
   // Get the PhishGuard pings that have been sent since the oldest currently
   // open chrome://safe-browsing tab was opened.
-  void GetPGPings(const base::ListValue* args);
+  void GetPGPings(const base::Value::ConstListView args);
 
   // Get the PhishGuard responses that have been received since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetPGResponses(const base::ListValue* args);
+  void GetPGResponses(const base::Value::ConstListView args);
 
   // Get the real time lookup pings that have been sent since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetRTLookupPings(const base::ListValue* args);
+  void GetRTLookupPings(const base::Value::ConstListView args);
 
   // Get the real time lookup responses that have been received since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetRTLookupResponses(const base::ListValue* args);
+  void GetRTLookupResponses(const base::Value::ConstListView args);
 
   // Get the current referrer chain for a given URL.
-  void GetReferrerChain(const base::ListValue* args);
+  void GetReferrerChain(const base::Value::ConstListView args);
 
   // Get the referring app info that launches Chrome on Android. Always set to
   // null if it's called from platforms other than Android.
-  void GetReferringAppInfo(const base::ListValue* args);
+  void GetReferringAppInfo(const base::Value::ConstListView args);
 
   // Get the list of log messages that have been received since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetLogMessages(const base::ListValue* args);
+  void GetLogMessages(const base::Value::ConstListView args);
 
   // Get the reporting events that have been collected since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetReportingEvents(const base::ListValue* args);
+  void GetReportingEvents(const base::Value::ConstListView args);
 
   // Get the deep scanning requests that have been collected since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetDeepScans(const base::ListValue* args);
+  void GetDeepScans(const base::Value::ConstListView args);
 
   // Register callbacks for WebUI messages.
   void RegisterMessages() override;
