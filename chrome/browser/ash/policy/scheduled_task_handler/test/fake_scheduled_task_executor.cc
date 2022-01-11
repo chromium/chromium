@@ -56,8 +56,8 @@ void FakeScheduledTaskExecutor::Start(
       FROM_HERE, base::BindOnce(std::move(result_cb), true));
   delayed_task_handle_ =
       base::SequencedTaskRunnerHandle::Get()->PostCancelableDelayedTask(
-          FROM_HERE, base::BindOnce(std::move(timer_expired_cb)),
-          delay.value());
+          base::subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
+          base::BindOnce(std::move(timer_expired_cb)), delay.value());
 }
 
 void FakeScheduledTaskExecutor::Reset() {

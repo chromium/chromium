@@ -203,7 +203,7 @@ void TimerBase::ScheduleNewTask(TimeDelta delay) {
     delay = TimeDelta();
 
   delayed_task_handle_ = GetTaskRunner()->PostCancelableDelayedTask(
-      posted_from_,
+      base::subtle::PostDelayedTaskPassKey(), posted_from_,
       BindOnce(&TimerBase::OnScheduledTaskInvoked, Unretained(this),
                std::move(task_destruction_detector)),
       delay);

@@ -117,7 +117,8 @@ void TimerBase::SetNextFireTime(base::TimeTicks now, base::TimeDelta delay) {
     delayed_task_handle_.CancelTask();
 
     delayed_task_handle_ = web_task_runner_->PostCancelableDelayedTask(
-        location_, BindTimerClosure(), delay);
+        base::subtle::PostDelayedTaskPassKey(), location_, BindTimerClosure(),
+        delay);
   }
 }
 

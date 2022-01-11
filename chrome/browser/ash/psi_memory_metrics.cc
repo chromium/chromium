@@ -113,7 +113,7 @@ void PSIMemoryMetrics::ScheduleCollector() {
   }
 
   last_timer_ = runner_->PostCancelableDelayedTask(
-      FROM_HERE,
+      base::subtle::PostDelayedTaskPassKey(), FROM_HERE,
       base::BindOnce(&PSIMemoryMetrics::CollectEventsAndReschedule, this),
       collection_interval_);
 }

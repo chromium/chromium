@@ -18,6 +18,7 @@ bool SequencedTaskRunner::PostNonNestableTask(const Location& from_here,
 }
 
 DelayedTaskHandle SequencedTaskRunner::PostCancelableDelayedTask(
+    subtle::PostDelayedTaskPassKey,
     const Location& from_here,
     OnceClosure task,
     TimeDelta delay) {

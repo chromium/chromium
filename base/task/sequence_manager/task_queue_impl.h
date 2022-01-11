@@ -346,7 +346,8 @@ class BASE_EXPORT TaskQueueImpl {
         OnceClosure callback,
         TimeTicks delayed_run_time,
         base::subtle::DelayPolicy delay_policy) final;
-    DelayedTaskHandle PostCancelableDelayedTask(const Location& location,
+    DelayedTaskHandle PostCancelableDelayedTask(subtle::PostDelayedTaskPassKey,
+                                                const Location& location,
                                                 OnceClosure callback,
                                                 TimeDelta delay) final;
     bool PostNonNestableDelayedTask(const Location& location,

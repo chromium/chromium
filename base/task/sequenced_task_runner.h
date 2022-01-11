@@ -16,7 +16,19 @@
 #include "base/task/task_runner.h"
 #include "base/types/pass_key.h"
 
+namespace ash {
+class PSIMemoryMetrics;
+}
+
+namespace blink {
+class TimerBase;
+}
+
 namespace base {
+
+namespace internal {
+class TimerBase;
+}
 
 namespace subtle {
 
@@ -27,6 +39,11 @@ class PostDelayedTaskPassKey {
   // Avoid =default to disallow creation by uniform initialization.
   PostDelayedTaskPassKey() {}
 
+  friend class base::internal::TimerBase;
+  friend class blink::TimerBase;
+  // TODO(pmonette): Remove this once PSIMemoryMetrics no longer uses
+  // PostCancelableDelayedTask.
+  friend class ash::PSIMemoryMetrics;
   friend class PostDelayedTaskPassKeyForTesting;
 };
 
@@ -138,7 +155,9 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
                                           base::TimeDelta delay) = 0;
 
   // Posts the given |task| to be run only after |delay| has passed. Returns a
-  // handle that can be used to cancel the task.
+  // handle that can be used to cancel the task. This should not be used
+  // directly. Consider using higher level timer primitives in
+  // base/timer/timer.h.
   //
   // The handle is only valid while the task is pending execution. This means
   // that it will be invalid if the posting failed, and will be invalid while
@@ -147,14 +166,16 @@ class BASE_EXPORT SequencedTaskRunner : public TaskRunner {
   //
   // This method and the handle it returns are not thread-safe and can only be
   // used from the sequence this task runner runs its tasks on.
-  virtual DelayedTaskHandle PostCancelableDelayedTask(const Location& from_here,
-                                                      OnceClosure task,
-                                                      TimeDelta delay);
+  virtual DelayedTaskHandle PostCancelableDelayedTask(
+      subtle::PostDelayedTaskPassKey,
+      const Location& from_here,
+      OnceClosure task,
+      TimeDelta delay);
 
   // Posts the given |task| to be run at |delayed_run_time|, following
   // |delay_policy|. Returns a handle that can be used to cancel the task.
-  // This should not be used directly, consider using higher level base::Timer
-  // primitives.
+  // This should not be used directly. Consider using higher level timer
+  // primitives in base/timer/timer.h.
   WARN_UNUSED_RESULT virtual DelayedTaskHandle PostCancelableDelayedTaskAt(
       subtle::PostDelayedTaskPassKey,
       const Location& from_here,

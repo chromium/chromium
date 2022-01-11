@@ -112,8 +112,8 @@ TEST_F(SequencedTaskRunnerTest, DelayedTaskHandle_RunTask) {
   bool task_ran = false;
   DelayedTaskHandle delayed_task_handle =
       task_runner->PostCancelableDelayedTask(
-          FROM_HERE, BindLambdaForTesting([&task_ran]() { task_ran = true; }),
-          Seconds(1));
+          subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
+          BindLambdaForTesting([&task_ran]() { task_ran = true; }), Seconds(1));
   EXPECT_TRUE(delayed_task_handle.IsValid());
   EXPECT_TRUE(task_runner->HasPendingTask());
 
@@ -131,8 +131,8 @@ TEST_F(SequencedTaskRunnerTest, DelayedTaskHandle_CancelTask) {
   bool task_ran = false;
   DelayedTaskHandle delayed_task_handle =
       task_runner->PostCancelableDelayedTask(
-          FROM_HERE, BindLambdaForTesting([&task_ran]() { task_ran = true; }),
-          Seconds(1));
+          subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
+          BindLambdaForTesting([&task_ran]() { task_ran = true; }), Seconds(1));
   EXPECT_TRUE(delayed_task_handle.IsValid());
   EXPECT_TRUE(task_runner->HasPendingTask());
 
@@ -150,8 +150,8 @@ TEST_F(SequencedTaskRunnerTest, DelayedTaskHandle_DestroyTask) {
   bool task_ran = false;
   DelayedTaskHandle delayed_task_handle =
       task_runner->PostCancelableDelayedTask(
-          FROM_HERE, BindLambdaForTesting([&task_ran]() { task_ran = true; }),
-          Seconds(1));
+          subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
+          BindLambdaForTesting([&task_ran]() { task_ran = true; }), Seconds(1));
   EXPECT_TRUE(delayed_task_handle.IsValid());
   EXPECT_TRUE(task_runner->HasPendingTask());
 
@@ -171,8 +171,8 @@ TEST_F(SequencedTaskRunnerTest, DelayedTaskHandle_PostTaskFailed) {
   bool task_ran = false;
   DelayedTaskHandle delayed_task_handle =
       task_runner->PostCancelableDelayedTask(
-          FROM_HERE, BindLambdaForTesting([&task_ran]() { task_ran = true; }),
-          Seconds(1));
+          subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
+          BindLambdaForTesting([&task_ran]() { task_ran = true; }), Seconds(1));
   EXPECT_FALSE(delayed_task_handle.IsValid());
   EXPECT_FALSE(task_ran);
 }

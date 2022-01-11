@@ -131,7 +131,8 @@ TEST(TaskQueueTest, CanceledTaskRemovedIfFeatureEnabled) {
     bool task_ran = false;
     DelayedTaskHandle delayed_task_handle =
         task_runner->PostCancelableDelayedTask(
-            FROM_HERE, BindLambdaForTesting([&task_ran]() { task_ran = true; }),
+            subtle::PostDelayedTaskPassKeyForTesting(), FROM_HERE,
+            BindLambdaForTesting([&task_ran]() { task_ran = true; }),
             Seconds(20));
     EXPECT_EQ(queue->GetNumberOfPendingTasks(), 1u);
 
