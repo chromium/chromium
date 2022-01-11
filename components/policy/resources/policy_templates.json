@@ -5872,7 +5872,9 @@
       'tags': [],
       'desc': '''Setting the policy to 0 (the default) means you can access the developer tools and the JavaScript console, but not in the context of extensions installed by enterprise policy. Setting the policy to 1 means you can access the developer tools and the JavaScript console in all contexts, including that of extensions installed by enterprise policy. Setting the policy to 2 means you can't acess developer tools, and you can't inspect website elements.
 
-      This setting also turns off keyboard shortcuts and menu or context menu entries to open developer tools or the JavaScript console.''',
+      This setting also turns off keyboard shortcuts and menu or context menu entries to open developer tools or the JavaScript console.
+
+      As of <ph name="PRODUCT_NAME">$1<ex>Google Chrome</ex></ph> version 99, this setting also controls entry points for the 'View page source' feature. If you set this policy to 'DeveloperToolsDisallowed' (value 2), users cannot access source viewing via keyboard shortcut or the context menu. To fully block source viewing, you must also add 'view-source:*' to the <ph name="URL_BLOCKLIST_POLICY_NAME">URLBlocklist</ph> policy.''',
       'arc_support': '''This policy also controls access to Android Developer Options. If you set this policy to 'DeveloperToolsDisallowed' (value 2), users cannot access Developer Options. If you set this policy to another value or leave it unset, users can access Developer Options by tapping seven times on the build number in the Android settings app.''',
     },
     {

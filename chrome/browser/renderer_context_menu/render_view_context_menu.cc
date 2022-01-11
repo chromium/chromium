@@ -2934,6 +2934,10 @@ bool RenderViewContextMenu::IsViewSourceEnabled() const {
           source_web_contents_)) {
     return false;
   }
+  // Disallow ViewSource if DevTools are disabled.
+  if (!IsDevCommandEnabled(IDC_CONTENT_CONTEXT_INSPECTELEMENT)) {
+    return false;
+  }
   return (params_.media_type != ContextMenuDataMediaType::kPlugin) &&
          embedder_web_contents_->GetController().CanViewSource();
 }

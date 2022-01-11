@@ -1732,10 +1732,18 @@ Browser* OpenInChrome(Browser* hosted_app_browser) {
 }
 
 bool CanViewSource(const Browser* browser) {
-  return !browser->is_type_devtools() && browser->tab_strip_model()
-                                             ->GetActiveWebContents()
-                                             ->GetController()
-                                             .CanViewSource();
+  if (browser->is_type_devtools()) {
+    return false;
+  }
+
+  WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+
+  // Disallow ViewSource if DevTools are disabled.
+  if (!DevToolsWindow::AllowDevToolsFor(browser->profile(), web_contents)) {
+    return false;
+  }
+  return web_contents->GetController().CanViewSource();
 }
 
 bool CanToggleCaretBrowsing(Browser* browser) {
