@@ -45,6 +45,7 @@ const char kSendXhrCallback[] = "sendXhrCallback";
 const char kOnNewScreencastPreconditionChanged[] =
     "onNewScreencastPreconditionChanged";
 const char kOnSodaInstallProgressUpdated[] = "onSodaInstallProgressUpdated";
+const char kOnSodaInstalled[] = "onSodaInstalled";
 const char kOnSodaInstallError[] = "onSodaInstallError";
 
 const char kShouldDownloadSodaCallback[] = "shouldDownloadSodaCallbck";
@@ -293,6 +294,14 @@ TEST_F(ProjectorMessageHandlerUnitTest, OnSodaProgress) {
   EXPECT_EQ(call_data.function_name(), kWebUIListenerCall);
   EXPECT_EQ(call_data.arg1()->GetString(), kOnSodaInstallProgressUpdated);
   EXPECT_EQ(call_data.arg2()->GetInt(), 50);
+}
+
+TEST_F(ProjectorMessageHandlerUnitTest, OnSodaInstalled) {
+  static_cast<ProjectorAppClient::Observer*>(message_handler())
+      ->OnSodaInstalled();
+  const content::TestWebUI::CallData& call_data = FetchCallData(0);
+  EXPECT_EQ(call_data.function_name(), kWebUIListenerCall);
+  EXPECT_EQ(call_data.arg1()->GetString(), kOnSodaInstalled);
 }
 
 TEST_F(ProjectorMessageHandlerUnitTest, OnSodaError) {

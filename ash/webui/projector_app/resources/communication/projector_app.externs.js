@@ -355,6 +355,11 @@ projectorApp.AppApi.prototype.onSodaInstallProgressUpdated = function(
     progress) {};
 
 /**
+ * Notifies the Projector App when SODA download and installation is complete.
+ */
+projectorApp.AppApi.prototype.onSodaInstalled = function() {};
+
+/**
  * Notifies the Projector App when there is a SODA installation error.
  */
 projectorApp.AppApi.prototype.onSodaInstallError = function() {};

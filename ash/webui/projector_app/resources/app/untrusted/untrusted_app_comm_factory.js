@@ -184,6 +184,9 @@ export class UntrustedAppRequestHandler extends RequestHandler {
 
       getAppElement().onSodaInstallProgressUpdated(args[0]);
     });
+    this.registerMethod('onSodaInstalled', (args) => {
+      getAppElement().onSodaInstalled();
+    });
     this.registerMethod('onSodaInstallError', (args) => {
       getAppElement().onSodaInstallError();
     });

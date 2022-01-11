@@ -39,6 +39,13 @@ export class UntrustedAppClient extends PostMessageAPIClient {
   }
 
   /**
+   * Notifies the Projector App when SODA download and installation is complete.
+   */
+  onSodaInstalled() {
+    return this.callApiFn('onSodaInstalled', []);
+  }
+
+  /**
    * Notifies the Projector App when there is a SODA installation error.
    */
   onSodaInstallError() {

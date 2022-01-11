@@ -52,6 +52,10 @@ Polymer({
       client.onSodaInstallProgressUpdated(progress);
     });
 
+    this.addWebUIListener('onSodaInstalled', (args) => {
+      client.onSodaInstalled();
+    });
+
     this.addWebUIListener('onSodaInstallError', (args) => {
       client.onSodaInstallError();
     });
