@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {DriveHandlerRemote} from 'chrome://new-tab-page/drive.mojom-webui.js';
 import {$$, DriveProxy, driveV2Descriptor} from 'chrome://new-tab-page/new_tab_page.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {assertEquals, assertTrue} from 'chrome://test/chai_assert.js';
@@ -15,8 +16,7 @@ suite('NewTabPageModulesDriveModuleTest', () => {
 
   setup(() => {
     document.body.innerHTML = '';
-    handler =
-        installMock(drive.mojom.DriveHandlerRemote, DriveProxy.setHandler);
+    handler = installMock(DriveHandlerRemote, DriveProxy.setHandler);
   });
 
   test('module appears on render', async () => {

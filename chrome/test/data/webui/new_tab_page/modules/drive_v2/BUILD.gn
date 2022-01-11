@@ -7,6 +7,7 @@ import("//third_party/closure_compiler/compile_js.gni")
 js_library("module_test") {
   deps = [
     "../..:test_support",
+    "//chrome/browser/new_tab_page/modules/drive:mojo_bindings_webui_js",
     "//chrome/browser/resources/new_tab_page",
     "//chrome/test/data/webui:chai_assert",
     "//chrome/test/data/webui:test_browser_proxy",

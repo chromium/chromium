@@ -25,6 +25,9 @@ js_type_check("closure_compile") {
                     "js_module_root=" + rebase_path(
                             "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/photos",
                             root_build_dir),
+                    "js_module_root=" + rebase_path(
+                            "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/drive",
+                            root_build_dir),
                   ]
 
   deps = [
@@ -333,11 +336,11 @@ if (!is_official_build) {
 generate_grd("build_drive_mojo_grdp") {
   grd_prefix = grd_prefix
   out_grd = "$target_gen_dir/drive_mojo_resources.grdp"
-  input_files = [ "drive.mojom-lite.js" ]
+  input_files = [ "drive.mojom-webui.js" ]
   input_files_base_dir =
-      rebase_path("$root_gen_dir/chrome/browser/new_tab_page/modules/drive",
-                  root_build_dir)
-  resource_path_prefix = "modules/drive"
+      rebase_path(
+          "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/drive",
+          root_build_dir)
 }
 
 generate_grd("build_photos_mojo_grdp") {
@@ -517,7 +520,7 @@ if (optimize_webui) {
       "chrome://resources/js/browser_command/browser_command.mojom-webui.js",
       "new_tab_page.mojom-lite.js",
       "realbox/realbox.mojom-lite.js",
-      "modules/drive/drive.mojom-lite.js",
+      "drive.mojom-webui.js",
       "photos.mojom-webui.js",
       "modules/task_module/task_module.mojom-lite.js",
       "foo.mojom-webui.js",

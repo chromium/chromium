@@ -6,5 +6,6 @@ import("//mojo/public/tools/bindings/mojom.gni")
 
 mojom("mojo_bindings") {
   sources = [ "drive.mojom" ]
+  webui_module_path = "/"
   public_deps = [ "//url/mojom:url_mojom_gurl" ]
 }
