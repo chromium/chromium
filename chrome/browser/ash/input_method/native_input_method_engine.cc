@@ -34,6 +34,7 @@
 #include "components/prefs/pref_service.h"
 #include "ui/base/ime/ash/extension_ime_util.h"
 #include "ui/base/ime/ash/ime_bridge.h"
+#include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 #include "ui/base/ime/ash/input_method_ukm.h"
 #include "ui/events/keycodes/dom/keycode_converter.h"
@@ -473,6 +474,25 @@ InputFieldContext CreateInputFieldContext(AssistiveSuggester* suggester) {
   };
 }
 
+std::string MojomLayoutToXkbLayout(mojom::PinyinLayout layout) {
+  switch (layout) {
+    case mojom::PinyinLayout::kUsQwerty:
+      return "us";
+    case mojom::PinyinLayout::kDvorak:
+      return "us(dvorak)";
+    case mojom::PinyinLayout::kColemak:
+      return "us(colemak)";
+  }
+}
+
+void OverrideXkbLayoutIfNeeded(ImeKeyboard* keyboard,
+                               const mojom::InputMethodSettingsPtr& settings) {
+  if (settings && settings->is_pinyin_settings()) {
+    keyboard->SetCurrentKeyboardLayoutByName(
+        MojomLayoutToXkbLayout(settings->get_pinyin_settings()->layout));
+  }
+}
+
 }  // namespace
 
 NativeInputMethodEngine::NativeInputMethodEngine()
@@ -705,17 +725,20 @@ void NativeInputMethodEngine::ImeObserver::OnFocus(
           features::IsAssistiveMultiWordEnabled()
               ? CreateInputFieldContext(assistive_suggester_.get())
               : InputFieldContext{};
+      // TODO(b/200611333): Make input_method_->OnFocus return the overriding
+      // XKB layout instead of having the logic here in Chromium.
+      auto settings =
+          CreateSettingsFromPrefs(*prefs_, engine_id, input_field_context);
+      OverrideXkbLayoutIfNeeded(InputMethodManager::Get()->GetImeKeyboard(),
+                                settings);
 
-      input_method_->OnFocus(
-          mojom::InputFieldInfo::New(
-              TextInputTypeToMojoType(context.type),
-              AutocorrectFlagsToMojoType(context.flags),
-              context.should_do_learning
-                  ? mojom::PersonalizationMode::kEnabled
-                  : mojom::PersonalizationMode::kDisabled),
-          prefs_
-              ? CreateSettingsFromPrefs(*prefs_, engine_id, input_field_context)
-              : nullptr);
+      input_method_->OnFocus(mojom::InputFieldInfo::New(
+                                 TextInputTypeToMojoType(context.type),
+                                 AutocorrectFlagsToMojoType(context.flags),
+                                 context.should_do_learning
+                                     ? mojom::PersonalizationMode::kEnabled
+                                     : mojom::PersonalizationMode::kDisabled),
+                             prefs_ ? std::move(settings) : nullptr);
 
       // TODO(b/202224495): Send the surrounding text as part of InputFieldInfo.
       SendSurroundingTextToNativeMojoEngine(last_surrounding_text_);

@@ -26,7 +26,9 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/ime/ash/fake_ime_keyboard.h"
 #include "ui/base/ime/ash/ime_bridge.h"
+#include "ui/base/ime/ash/ime_keyboard.h"
 #include "ui/base/ime/ash/input_method_ash.h"
 #include "ui/base/ime/ash/mock_ime_input_context_handler.h"
 #include "ui/base/ime/ash/mock_input_method_manager.h"
@@ -51,6 +53,7 @@ using ::testing::StrictMock;
 
 constexpr char kEngineIdUs[] = "xkb:us::eng";
 constexpr char kEngineIdEs[] = "xkb:es::spa";
+constexpr char kEngineIdPinyin[] = "zh-t-i0-pinyin";
 
 class FakeSuggesterSwitch : public AssistiveSuggesterSwitch {
  public:
@@ -131,6 +134,13 @@ void SetInputMethodOptions(Profile& profile,
                           input_method_setting);
 }
 
+void SetPinyinLayoutPrefs(Profile& profile, const std::string& layout) {
+  base::Value input_method_setting(base::Value::Type::DICTIONARY);
+  input_method_setting.SetStringPath("pinyin.xkbLayout", layout);
+  profile.GetPrefs()->Set(::prefs::kLanguageInputMethodSpecificSettings,
+                          input_method_setting);
+}
+
 class TestInputEngineManager : public ime::mojom::InputEngineManager {
  public:
   explicit TestInputEngineManager(MockInputMethod* mock_input_method)
@@ -172,7 +182,10 @@ class TestInputMethodManager : public MockInputMethodManager {
     receiver_.Bind(std::move(receiver));
   }
 
+  ImeKeyboard* GetImeKeyboard() override { return &ime_keyboard_; }
+
  private:
+  FakeImeKeyboard ime_keyboard_;
   TestInputEngineManager test_input_engine_manager_;
   mojo::Receiver<ime::mojom::InputEngineManager> receiver_;
 };
@@ -200,6 +213,7 @@ class NativeInputMethodEngineTest : public ::testing::Test {
 
   void EnableDefaultFeatureList() {
     EnableFeatureList({
+        features::kSystemChinesePhysicalTyping,
         features::kAssistPersonalInfo,
         features::kAssistPersonalInfoEmail,
         features::kAssistPersonalInfoName,
@@ -430,6 +444,32 @@ TEST_F(NativeInputMethodEngineTest, FocusCallsRightMojoFunctions) {
   engine.Enable(kEngineIdUs);
   engine.FocusIn(input_context);
   engine.FlushForTesting();
+
+  InputMethodManager::Shutdown();
+}
+
+TEST_F(NativeInputMethodEngineTest, FocusUpdatesXkbLayout) {
+  TestingProfile testing_profile;
+  SetPinyinLayoutPrefs(testing_profile, "Colemak");
+
+  testing::StrictMock<MockInputMethod> mock_input_method;
+  InputMethodManager::Initialize(
+      new TestInputMethodManager(&mock_input_method));
+  NativeInputMethodEngine engine;
+  engine.Initialize(std::make_unique<StubInputMethodEngineObserver>(),
+                    /*extension_id=*/"", &testing_profile);
+
+  ui::IMEEngineHandlerInterface::InputContext input_context(
+      ui::TEXT_INPUT_TYPE_TEXT, ui::TEXT_INPUT_MODE_DEFAULT,
+      ui::TEXT_INPUT_FLAG_NONE, ui::TextInputClient::FOCUS_REASON_MOUSE,
+      /*should_do_learning=*/true);
+  engine.Enable(kEngineIdPinyin);
+  engine.FocusIn(input_context);
+
+  EXPECT_EQ(InputMethodManager::Get()
+                ->GetImeKeyboard()
+                ->GetCurrentKeyboardLayoutName(),
+            "us(colemak)");
 
   InputMethodManager::Shutdown();
 }
