@@ -7,8 +7,6 @@
 
 #include <stdint.h>
 
-#include <memory>
-
 #include "dbus/dbus_export.h"
 
 namespace base {
@@ -21,11 +19,10 @@ class MessageReader;
 class MessageWriter;
 
 // Pops a value from |reader| as a base::Value.
-// Returns NULL if an error occurs.
+// Returns base::Value() if an error occurs.
 // Note: Integer values larger than int32_t (including uint32_t) are converted
 // to double.  Non-string dictionary keys are converted to strings.
-CHROME_DBUS_EXPORT std::unique_ptr<base::Value> PopDataAsValue(
-    MessageReader* reader);
+CHROME_DBUS_EXPORT base::Value PopDataAsValue(MessageReader* reader);
 
 // Appends a basic type value to |writer|. Basic types are BOOLEAN, INTEGER,
 // DOUBLE, and STRING. Use this function for values that are known to be basic

@@ -711,69 +711,64 @@ DiskInfo::~DiskInfo() = default;
 // ]
 void DiskInfo::InitializeFromResponse(dbus::Response* response) {
   dbus::MessageReader reader(response);
-  std::unique_ptr<base::Value> value(dbus::PopDataAsValue(&reader));
-  base::DictionaryValue* properties = NULL;
-  if (!value || !value->GetAsDictionary(&properties))
+  base::Value value(dbus::PopDataAsValue(&reader));
+  if (!value.is_dict())
     return;
 
-  is_drive_ =
-      properties->FindBoolKey(cros_disks::kDeviceIsDrive).value_or(is_drive_);
-  is_read_only_ = properties->FindBoolKey(cros_disks::kDeviceIsReadOnly)
-                      .value_or(is_read_only_);
-  is_hidden_ = properties->FindBoolKey(cros_disks::kDevicePresentationHide)
+  is_drive_ = value.FindBoolKey(cros_disks::kDeviceIsDrive).value_or(is_drive_);
+  is_read_only_ =
+      value.FindBoolKey(cros_disks::kDeviceIsReadOnly).value_or(is_read_only_);
+  is_hidden_ = value.FindBoolKey(cros_disks::kDevicePresentationHide)
                    .value_or(is_hidden_);
-  has_media_ = properties->FindBoolKey(cros_disks::kDeviceIsMediaAvailable)
+  has_media_ = value.FindBoolKey(cros_disks::kDeviceIsMediaAvailable)
                    .value_or(has_media_);
-  on_boot_device_ = properties->FindBoolKey(cros_disks::kDeviceIsOnBootDevice)
+  on_boot_device_ = value.FindBoolKey(cros_disks::kDeviceIsOnBootDevice)
                         .value_or(on_boot_device_);
   on_removable_device_ =
-      properties->FindBoolKey(cros_disks::kDeviceIsOnRemovableDevice)
+      value.FindBoolKey(cros_disks::kDeviceIsOnRemovableDevice)
           .value_or(on_removable_device_);
-  is_virtual_ = properties->FindBoolKey(cros_disks::kDeviceIsVirtual)
-                    .value_or(is_virtual_);
-  is_auto_mountable_ = properties->FindBoolKey(cros_disks::kIsAutoMountable)
+  is_virtual_ =
+      value.FindBoolKey(cros_disks::kDeviceIsVirtual).value_or(is_virtual_);
+  is_auto_mountable_ = value.FindBoolKey(cros_disks::kIsAutoMountable)
                            .value_or(is_auto_mountable_);
-  MaybeGetStringFromDictionaryValue(*properties, cros_disks::kStorageDevicePath,
+  MaybeGetStringFromDictionaryValue(value, cros_disks::kStorageDevicePath,
                                     &storage_device_path_);
-  MaybeGetStringFromDictionaryValue(*properties, cros_disks::kDeviceFile,
+  MaybeGetStringFromDictionaryValue(value, cros_disks::kDeviceFile,
                                     &file_path_);
-  MaybeGetStringFromDictionaryValue(*properties, cros_disks::kVendorId,
-                                    &vendor_id_);
-  MaybeGetStringFromDictionaryValue(*properties, cros_disks::kVendorName,
+  MaybeGetStringFromDictionaryValue(value, cros_disks::kVendorId, &vendor_id_);
+  MaybeGetStringFromDictionaryValue(value, cros_disks::kVendorName,
                                     &vendor_name_);
-  MaybeGetStringFromDictionaryValue(*properties, cros_disks::kProductId,
+  MaybeGetStringFromDictionaryValue(value, cros_disks::kProductId,
                                     &product_id_);
-  MaybeGetStringFromDictionaryValue(*properties, cros_disks::kProductName,
+  MaybeGetStringFromDictionaryValue(value, cros_disks::kProductName,
                                     &product_name_);
-  MaybeGetStringFromDictionaryValue(*properties, cros_disks::kDriveModel,
+  MaybeGetStringFromDictionaryValue(value, cros_disks::kDriveModel,
                                     &drive_model_);
-  MaybeGetStringFromDictionaryValue(*properties, cros_disks::kIdLabel, &label_);
-  MaybeGetStringFromDictionaryValue(*properties, cros_disks::kIdUuid, &uuid_);
-  MaybeGetStringFromDictionaryValue(*properties, cros_disks::kFileSystemType,
+  MaybeGetStringFromDictionaryValue(value, cros_disks::kIdLabel, &label_);
+  MaybeGetStringFromDictionaryValue(value, cros_disks::kIdUuid, &uuid_);
+  MaybeGetStringFromDictionaryValue(value, cros_disks::kFileSystemType,
                                     &file_system_type_);
 
-  bus_number_ =
-      properties->FindIntKey(cros_disks::kBusNumber).value_or(bus_number_);
-  device_number_ = properties->FindIntKey(cros_disks::kDeviceNumber)
-                       .value_or(device_number_);
+  bus_number_ = value.FindIntKey(cros_disks::kBusNumber).value_or(bus_number_);
+  device_number_ =
+      value.FindIntKey(cros_disks::kDeviceNumber).value_or(device_number_);
 
   // dbus::PopDataAsValue() pops uint64_t as double.
   // The top 11 bits of uint64_t are dropped by the use of double. But, this
   // works
   // unless the size exceeds 8 PB.
   absl::optional<double> device_size_double =
-      properties->FindDoubleKey(cros_disks::kDeviceSize);
+      value.FindDoubleKey(cros_disks::kDeviceSize);
   if (device_size_double.has_value())
     total_size_in_bytes_ = device_size_double.value();
 
   // dbus::PopDataAsValue() pops uint32_t as double.
   absl::optional<double> media_type_double =
-      properties->FindDoubleKey(cros_disks::kDeviceMediaType);
+      value.FindDoubleKey(cros_disks::kDeviceMediaType);
   if (media_type_double.has_value())
     device_type_ = DeviceMediaTypeToDeviceType(media_type_double.value());
 
-  base::Value* mount_paths =
-      properties->FindListKey(cros_disks::kDeviceMountPaths);
+  base::Value* mount_paths = value.FindListKey(cros_disks::kDeviceMountPaths);
   if (mount_paths && !mount_paths->GetList().empty() &&
       mount_paths->GetList()[0].is_string()) {
     mount_path_ = mount_paths->GetList()[0].GetString();
