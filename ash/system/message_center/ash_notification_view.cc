@@ -10,6 +10,9 @@
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/root_window_controller.h"
+#include "ash/shelf/shelf.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
 #include "ash/style/icon_button.h"
@@ -21,6 +24,7 @@
 #include "ash/system/message_center/message_center_style.h"
 #include "ash/system/message_center/message_center_utils.h"
 #include "ash/system/tray/tray_constants.h"
+#include "ash/wm/work_area_insets.h"
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/time/time.h"
@@ -54,6 +58,7 @@
 #include "ui/views/controls/button/image_button_factory.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/flex_layout.h"
@@ -400,14 +405,23 @@ AshNotificationView::AshNotificationView(
                    .CopyAddressTo(&collapsed_summary_view_)
                    .Build());
 
-  AddChildView(views::Builder<views::BoxLayoutView>()
-                   .CopyAddressTo(&grouped_notifications_container_)
-                   .SetOrientation(Orientation::kVertical)
-                   .SetInsideBorderInsets(kGroupedNotificationContainerInsets)
-                   .SetBetweenChildSpacing(
-                       IsExpanded() ? kGroupedNotificationsExpandedSpacing
-                                    : kGroupedNotificationsCollapsedSpacing)
-                   .Build());
+  if (!notification.group_child()) {
+    AddChildView(
+        views::Builder<views::ScrollView>()
+            .CopyAddressTo(&grouped_notifications_scroll_view_)
+            .SetBackgroundColor(absl::nullopt)
+            .SetDrawOverflowIndicator(false)
+            .ClipHeightTo(0, std::numeric_limits<int>::max())
+            .SetContents(
+                views::Builder<views::BoxLayoutView>()
+                    .CopyAddressTo(&grouped_notifications_container_)
+                    .SetOrientation(Orientation::kVertical)
+                    .SetInsideBorderInsets(kGroupedNotificationContainerInsets)
+                    .SetBetweenChildSpacing(
+                        IsExpanded() ? kGroupedNotificationsExpandedSpacing
+                                     : kGroupedNotificationsCollapsedSpacing))
+            .Build());
+  }
 
   AddChildView(CreateActionsRow(std::make_unique<views::FlexLayout>()));
 
@@ -656,24 +670,30 @@ void AshNotificationView::UpdateViewForExpandedState(bool expanded) {
 
   expand_button_->SetExpanded(expanded);
 
-  static_cast<views::BoxLayout*>(
-      grouped_notifications_container_->GetLayoutManager())
-      ->set_between_child_spacing(expanded
-                                      ? kGroupedNotificationsExpandedSpacing
-                                      : kGroupedNotificationsCollapsedSpacing);
+  if (is_grouped_parent_view_) {
+    if (shown_in_popup_) {
+      grouped_notifications_scroll_view_->ClipHeightTo(
+          0, CalculateMaxHeightForGroupedNotifications());
+    }
 
-  int notification_count = 0;
-  for (auto* child : grouped_notifications_container_->children()) {
-    auto* notification_view = static_cast<AshNotificationView*>(child);
-    notification_view->AnimateGroupedChildExpandedCollapse(expanded);
-    notification_view->SetGroupedChildExpanded(expanded);
-    notification_count++;
-    if (notification_count >
-        message_center_style::kMaxGroupedNotificationsInCollapsedState) {
-      notification_view->SetVisible(expanded);
+    static_cast<views::BoxLayout*>(
+        grouped_notifications_container_->GetLayoutManager())
+        ->set_between_child_spacing(
+            expanded ? kGroupedNotificationsExpandedSpacing
+                     : kGroupedNotificationsCollapsedSpacing);
+
+    int notification_count = 0;
+    for (auto* child : grouped_notifications_container_->children()) {
+      auto* notification_view = static_cast<AshNotificationView*>(child);
+      notification_view->AnimateGroupedChildExpandedCollapse(expanded);
+      notification_view->SetGroupedChildExpanded(expanded);
+      notification_count++;
+      if (notification_count >
+          message_center_style::kMaxGroupedNotificationsInCollapsedState) {
+        notification_view->SetVisible(expanded);
+      }
     }
   }
-
   NotificationViewBase::UpdateViewForExpandedState(expanded);
 }
 
@@ -682,7 +702,9 @@ void AshNotificationView::UpdateWithNotification(
   is_grouped_child_view_ = notification.group_child();
   is_grouped_parent_view_ = notification.group_parent();
 
-  grouped_notifications_container_->SetVisible(is_grouped_parent_view_);
+  if (!is_grouped_child_view_)
+    grouped_notifications_container_->SetVisible(is_grouped_parent_view_);
+
   header_row()->SetVisible(!is_grouped_child_view_);
   UpdateMessageViewInExpandedState(notification);
 
@@ -1279,6 +1301,26 @@ void AshNotificationView::PerformToggleInlineSettingsAnimation(
   message_center_utils::FadeInView(main_right_view_,
                                    kToggleInlineSettingsFadeInDelayMs,
                                    kToggleInlineSettingsFadeInDurationMs);
+}
+
+int AshNotificationView::CalculateMaxHeightForGroupedNotifications() {
+  auto* shelf = Shell::GetPrimaryRootWindowController()->shelf();
+  const WorkAreaInsets* work_area =
+      WorkAreaInsets::ForWindow(shelf->GetWindow()->GetRootWindow());
+
+  const int bottom = shelf->IsHorizontalAlignment()
+                         ? shelf->GetShelfBoundsInScreen().y()
+                         : work_area->user_work_area_bounds().bottom();
+
+  const int free_space_height_above_anchor =
+      bottom - work_area->user_work_area_bounds().y();
+
+  const int vertical_margin = 2 * message_center::kMarginBetweenPopups +
+                              kNotificationViewPadding.height();
+
+  return free_space_height_above_anchor -
+         control_buttons_container_->bounds().height() -
+         main_view_->bounds().height() - vertical_margin;
 }
 
 }  // namespace ash
