@@ -75,7 +75,7 @@ scoped_refptr<const NGLayoutResult> NGTableRowLayoutAlgorithm::Layout() {
         cell_location_start_column == cell_location_end_column;
 
     return NGTableAlgorithmUtils::CreateTableCellConstraintSpace(
-        table_data.table_writing_direction, cell, cell_data.border_box_borders,
+        table_data.table_writing_direction, cell, cell_data.borders,
         {cell_inline_size, cell_block_size}, container_builder_.InlineSize(),
         row_baseline, start_column, !is_initial_block_size_definite,
         table_data.is_table_block_size_specified, is_hidden_for_paint,

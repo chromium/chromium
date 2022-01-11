@@ -234,31 +234,6 @@ NGTableTypes::Section NGTableTypes::CreateSection(
                  /* needs_redistribution */ false};
 }
 
-NGTableTypes::CellBlockConstraint NGTableTypes::CreateCellBlockConstraint(
-    const NGLayoutInputNode& node,
-    LayoutUnit computed_block_size,
-    const NGBoxStrut& border_box_borders,
-    wtf_size_t row_index,
-    wtf_size_t column_index,
-    wtf_size_t rowspan) {
-  bool is_constrained = node.Style().LogicalHeight().IsFixed();
-  return CellBlockConstraint{
-      computed_block_size, border_box_borders, row_index, column_index, rowspan,
-      is_constrained};
-}
-
-NGTableTypes::RowspanCell NGTableTypes::CreateRowspanCell(
-    wtf_size_t row_index,
-    wtf_size_t rowspan,
-    CellBlockConstraint* cell_block_constraint,
-    absl::optional<LayoutUnit> css_cell_block_size) {
-  if (css_cell_block_size) {
-    cell_block_constraint->min_block_size =
-        std::max(cell_block_constraint->min_block_size, *css_cell_block_size);
-  }
-  return RowspanCell{row_index, rowspan, *cell_block_constraint};
-}
-
 void NGTableTypes::CellInlineConstraint::Encompass(
     const NGTableTypes::CellInlineConstraint& other) {
   // Standard says:

@@ -87,20 +87,19 @@ class NGTableConstraintSpaceData
 
   // Data needed to layout a single cell.
   struct Cell {
-    Cell(NGBoxStrut border_box_borders,
+    Cell(NGBoxStrut borders,
          LayoutUnit block_size,
          wtf_size_t start_column,
          bool has_grown,
          bool is_constrained)
-        : border_box_borders(border_box_borders),
+        : borders(borders),
           block_size(block_size),
           start_column(start_column),
           has_grown(has_grown),
           is_constrained(is_constrained) {}
 
     bool operator==(const Cell& other) const {
-      return border_box_borders == other.border_box_borders &&
-             block_size == other.block_size &&
+      return borders == other.borders && block_size == other.block_size &&
              start_column == other.start_column &&
              has_grown == other.has_grown &&
              is_constrained == other.is_constrained;
@@ -108,7 +107,7 @@ class NGTableConstraintSpaceData
     bool operator!=(const Cell& other) const { return !(*this == other); }
 
     // Size of borders drawn on the inside of the border box.
-    const NGBoxStrut border_box_borders;
+    const NGBoxStrut borders;
     // Size of the cell. Need this for cells that span multiple rows.
     const LayoutUnit block_size;
     const wtf_size_t start_column;

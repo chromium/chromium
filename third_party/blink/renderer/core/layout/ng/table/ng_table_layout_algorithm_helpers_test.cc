@@ -241,10 +241,7 @@ TEST_F(NGTableAlgorithmHelpersTest, ComputeGridInlineMinMax) {
 }
 
 TEST_F(NGTableAlgorithmHelpersTest, DistributeRowspanCellToRows) {
-  NGTableTypes::CellBlockConstraint cell_block_constraint{
-      LayoutUnit(300), NGBoxStrut(), 0, 0, 3, true};
-  NGTableTypes::RowspanCell rowspan_cell = NGTableTypes::CreateRowspanCell(
-      0, 3, &cell_block_constraint, absl::nullopt);
+  NGTableTypes::RowspanCell rowspan_cell = {0, 3, LayoutUnit(300)};
   NGTableTypes::Rows rows;
 
   // Distribute to regular rows, rows grow in proportion to size.

@@ -227,15 +227,16 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
     const NGBoxFragment fragment(
         table_writing_direction,
         To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment()));
-    bool is_parallel =
-        IsParallelWritingMode(table_writing_direction.GetWritingMode(),
-                              cell.Style().GetWritingMode());
-
+    bool is_parallel = IsParallelWritingMode(
+        table_writing_direction.GetWritingMode(), cell_style.GetWritingMode());
+    const Length& cell_specified_block_length =
+        is_parallel ? cell_style.LogicalHeight() : cell_style.LogicalWidth();
     const wtf_size_t rowspan = cell.TableCellRowspan();
-    NGTableTypes::CellBlockConstraint cell_block_constraint =
-        NGTableTypes::CreateCellBlockConstraint(
-            cell, fragment.BlockSize(), cell_borders, row_index,
-            colspan_cell_tabulator->CurrentColumn(), rowspan);
+
+    NGTableTypes::CellBlockConstraint cell_block_constraint = {
+        fragment.BlockSize(), cell_borders,
+        colspan_cell_tabulator->CurrentColumn(), rowspan,
+        cell_specified_block_length.IsFixed()};
     colspan_cell_tabulator->ProcessCell(cell);
     cell_block_constraints->push_back(cell_block_constraint);
     is_constrained |= cell_block_constraint.is_constrained && rowspan == 1;
@@ -247,8 +248,6 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
     // Compute cell's css block size.
     absl::optional<LayoutUnit> cell_css_block_size;
     absl::optional<float> cell_css_percent;
-    const Length& cell_specified_block_length =
-        is_parallel ? cell_style.LogicalHeight() : cell_style.LogicalWidth();
 
     // TODO(1105272) Handle cell_specified_block_length.IsCalculated()
     if (cell_specified_block_length.IsPercent()) {
@@ -282,8 +281,11 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
                     cell_css_block_size.value_or(LayoutUnit())});
     } else {
       has_rowspan_start = true;
-      rowspan_cells->push_back(NGTableTypes::CreateRowspanCell(
-          row_index, rowspan, &cell_block_constraint, cell_css_block_size));
+      LayoutUnit min_block_size = cell_block_constraint.min_block_size;
+      if (cell_css_block_size)
+        min_block_size = std::max(min_block_size, *cell_css_block_size);
+      rowspan_cells->push_back(
+          NGTableTypes::RowspanCell{row_index, rowspan, min_block_size});
     }
   }
 

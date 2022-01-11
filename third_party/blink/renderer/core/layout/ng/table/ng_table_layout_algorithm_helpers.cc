@@ -1055,11 +1055,10 @@ void NGTableAlgorithmHelpers::DistributeRowspanCellToRows(
     LayoutUnit border_block_spacing,
     NGTableTypes::Rows* rows) {
   DCHECK_GE(rowspan_cell.span, 0u);
-  DistributeExcessBlockSizeToRows(
-      rowspan_cell.start_row, rowspan_cell.span,
-      rowspan_cell.cell_block_constraint.min_block_size,
-      /* desired_block_size_is_rowspan */ true, border_block_spacing,
-      kIndefiniteSize, rows);
+  DistributeExcessBlockSizeToRows(rowspan_cell.start_row, rowspan_cell.span,
+                                  rowspan_cell.min_block_size,
+                                  /* desired_block_size_is_rowspan */ true,
+                                  border_block_spacing, kIndefiniteSize, rows);
 }
 
 // Legacy code ignores section block size.
