@@ -155,8 +155,8 @@ TEST_F(WebCryptoRsaOaepTest, ExportPublicJwk) {
 }
 
 TEST_F(WebCryptoRsaOaepTest, EncryptDecryptKnownAnswerTest) {
-  base::ListValue tests;
-  ASSERT_TRUE(ReadJsonTestFileToList("rsa_oaep.json", &tests));
+  base::Value tests;
+  ASSERT_TRUE(ReadJsonTestFileAsList("rsa_oaep.json", &tests));
 
   for (size_t test_index = 0; test_index < tests.GetList().size();
        ++test_index) {

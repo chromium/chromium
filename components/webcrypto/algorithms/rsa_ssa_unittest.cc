@@ -202,8 +202,8 @@ TEST_F(WebCryptoRsaSsaTest, ImportRsaPrivateKeyJwkToPkcs8RoundTrip) {
 // be imported correctly, however every key after that would actually import
 // the first key.
 TEST_F(WebCryptoRsaSsaTest, ImportMultipleRSAPrivateKeysJwk) {
-  base::ListValue key_list;
-  ASSERT_TRUE(ReadJsonTestFileToList("rsa_private_keys.json", &key_list));
+  base::Value key_list;
+  ASSERT_TRUE(ReadJsonTestFileAsList("rsa_private_keys.json", &key_list));
 
   // For this test to be meaningful the keys MUST be kept alive before importing
   // new keys.
@@ -264,8 +264,8 @@ TEST_F(WebCryptoRsaSsaTest, ImportMultipleRSAPrivateKeysJwk) {
 // that the second import retrieves the first key. See http://crbug.com/378315
 // for how that could happen.
 TEST_F(WebCryptoRsaSsaTest, ImportJwkExistingModulusAndInvalid) {
-  base::ListValue key_list;
-  ASSERT_TRUE(ReadJsonTestFileToList("rsa_private_keys.json", &key_list));
+  base::Value key_list;
+  ASSERT_TRUE(ReadJsonTestFileAsList("rsa_private_keys.json", &key_list));
 
   // Import a 1024-bit private key.
   const base::Value& key1_props_value = key_list.GetList()[1];
@@ -639,8 +639,8 @@ TEST_F(WebCryptoRsaSsaTest, SignVerifyFailures) {
 }
 
 TEST_F(WebCryptoRsaSsaTest, SignVerifyKnownAnswer) {
-  base::ListValue tests;
-  ASSERT_TRUE(ReadJsonTestFileToList("pkcs1v15_sign.json", &tests));
+  base::Value tests;
+  ASSERT_TRUE(ReadJsonTestFileAsList("pkcs1v15_sign.json", &tests));
 
   // Import the key pair.
   blink::WebCryptoAlgorithm import_algorithm = CreateRsaHashedImportAlgorithm(
@@ -997,8 +997,8 @@ TEST_F(WebCryptoRsaSsaTest, ImportRsaSsaJwkBadUsageAndData) {
 
 // Imports invalid JWK/SPKI/PKCS8 data and verifies that it fails as expected.
 TEST_F(WebCryptoRsaSsaTest, ImportInvalidKeyData) {
-  base::ListValue tests;
-  ASSERT_TRUE(ReadJsonTestFileToList("bad_rsa_keys.json", &tests));
+  base::Value tests;
+  ASSERT_TRUE(ReadJsonTestFileAsList("bad_rsa_keys.json", &tests));
 
   for (size_t test_index = 0; test_index < tests.GetList().size();
        ++test_index) {

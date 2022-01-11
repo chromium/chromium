@@ -166,14 +166,15 @@ TEST_F(WebCryptoRsaPssTest, SignEmptyMessage) {
 //   * Verify over corrupted message should fail
 //   * Verification with corrupted signature should fail
 TEST_F(WebCryptoRsaPssTest, VerifyKnownAnswer) {
-  base::DictionaryValue test_data;
-  ASSERT_TRUE(ReadJsonTestFileToDictionary("rsa_pss.json", &test_data));
+  base::Value test_data;
+  ASSERT_TRUE(ReadJsonTestFile("rsa_pss.json", &test_data));
+  ASSERT_TRUE(test_data.is_dict());
 
-  const base::DictionaryValue* keys_dict = nullptr;
-  ASSERT_TRUE(test_data.GetDictionary("keys", &keys_dict));
+  const base::Value* keys_dict = test_data.FindDictKey("keys");
+  ASSERT_TRUE(keys_dict);
 
-  const base::ListValue* tests = nullptr;
-  ASSERT_TRUE(test_data.GetList("tests", &tests));
+  const base::Value* tests = test_data.FindListKey("tests");
+  ASSERT_TRUE(tests);
 
   for (size_t test_index = 0; test_index < tests->GetList().size();
        ++test_index) {

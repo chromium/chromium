@@ -22,8 +22,8 @@ namespace {
 class WebCryptoShaTest : public WebCryptoTestBase {};
 
 TEST_F(WebCryptoShaTest, DigestSampleSets) {
-  base::ListValue tests;
-  ASSERT_TRUE(ReadJsonTestFileToList("sha.json", &tests));
+  base::Value tests;
+  ASSERT_TRUE(ReadJsonTestFileAsList("sha.json", &tests));
 
   for (size_t test_index = 0; test_index < tests.GetList().size();
        ++test_index) {

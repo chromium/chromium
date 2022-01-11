@@ -30,8 +30,8 @@ blink::WebCryptoAlgorithm CreateAesCtrAlgorithm(
 class WebCryptoAesCtrTest : public WebCryptoTestBase {};
 
 TEST_F(WebCryptoAesCtrTest, EncryptDecryptKnownAnswer) {
-  base::ListValue tests;
-  ASSERT_TRUE(ReadJsonTestFileToList("aes_ctr.json", &tests));
+  base::Value tests;
+  ASSERT_TRUE(ReadJsonTestFileAsList("aes_ctr.json", &tests));
 
   for (size_t test_index = 0; test_index < tests.GetList().size();
        ++test_index) {

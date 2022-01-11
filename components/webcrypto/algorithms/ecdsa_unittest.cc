@@ -96,8 +96,8 @@ TEST_F(WebCryptoEcdsaTest, SignatureIsRandom) {
   // Import a public and private keypair from "ec_private_keys.json". It doesn't
   // really matter which one is used since they are all valid. In this case
   // using the first one.
-  base::ListValue private_keys;
-  ASSERT_TRUE(ReadJsonTestFileToList("ec_private_keys.json", &private_keys));
+  base::Value private_keys;
+  ASSERT_TRUE(ReadJsonTestFileAsList("ec_private_keys.json", &private_keys));
   const base::Value& key_value = private_keys.GetList()[0];
   ASSERT_TRUE(key_value.is_dict());
   const base::DictionaryValue* key_dict =
@@ -153,8 +153,8 @@ TEST_F(WebCryptoEcdsaTest, SignatureIsRandom) {
 // Tests verify() for ECDSA using an assortment of keys, curves and hashes.
 // These tests also include expected failures for bad signatures and keys.
 TEST_F(WebCryptoEcdsaTest, VerifyKnownAnswer) {
-  base::ListValue tests;
-  ASSERT_TRUE(ReadJsonTestFileToList("ecdsa.json", &tests));
+  base::Value tests;
+  ASSERT_TRUE(ReadJsonTestFileAsList("ecdsa.json", &tests));
 
   for (size_t test_index = 0; test_index < tests.GetList().size();
        ++test_index) {
@@ -237,8 +237,8 @@ blink::WebCryptoKeyUsageMask GetExpectedUsagesForKeyImport(
 
 // Tests importing bad public/private keys in a variety of formats.
 TEST_F(WebCryptoEcdsaTest, ImportBadKeys) {
-  base::ListValue tests;
-  ASSERT_TRUE(ReadJsonTestFileToList("bad_ec_keys.json", &tests));
+  base::Value tests;
+  ASSERT_TRUE(ReadJsonTestFileAsList("bad_ec_keys.json", &tests));
 
   for (size_t test_index = 0; test_index < tests.GetList().size();
        ++test_index) {
@@ -270,8 +270,8 @@ TEST_F(WebCryptoEcdsaTest, ImportBadKeys) {
 // The test imports a key first using JWK, and then exporting it to JWK and
 // PKCS8. It does the same thing using PKCS8 as the original source of truth.
 TEST_F(WebCryptoEcdsaTest, ImportExportPrivateKey) {
-  base::ListValue tests;
-  ASSERT_TRUE(ReadJsonTestFileToList("ec_private_keys.json", &tests));
+  base::Value tests;
+  ASSERT_TRUE(ReadJsonTestFileAsList("ec_private_keys.json", &tests));
 
   for (size_t test_index = 0; test_index < tests.GetList().size();
        ++test_index) {
