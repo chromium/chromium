@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill_assistant;
 
+import android.app.Activity;
+
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -11,6 +13,7 @@ import org.chromium.base.UserData;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.autofill_assistant.metrics.FeatureModuleInstallation;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
@@ -27,15 +30,15 @@ import java.util.Map;
  */
 @JNINamespace("autofill_assistant")
 public class Starter extends EmptyTabObserver implements UserData {
-    /** The tab that this starter tracks. */
-    private final Tab mTab;
+    /** A supplier for the activity of the tab that this starter tracks. */
+    private final Supplier<Activity> mActivitySupplier;
 
     private final AssistantIsGsaFunction mIsGsaFunction;
     private final AssistantIsMsbbEnabledFunction mIsMsbbEnabledFunction;
     private final AssistantModuleInstallUi.Provider mModuleInstallUiProvider;
 
     /**
-     * The WebContents associated with the Tab which this starter is monitoring, unless detached.
+     * The WebContents associated with the tab which this starter is monitoring, unless detached.
      */
     private @Nullable WebContents mWebContents;
 
@@ -68,7 +71,7 @@ public class Starter extends EmptyTabObserver implements UserData {
     public Starter(Tab tab, AssistantIsGsaFunction isGsaFunction,
             AssistantIsMsbbEnabledFunction isMsbbEnabledFunction,
             AssistantModuleInstallUi.Provider moduleInstallUiProvider) {
-        mTab = tab;
+        mActivitySupplier = () -> TabUtils.getActivity(tab);
         mIsGsaFunction = isGsaFunction;
         mIsMsbbEnabledFunction = isMsbbEnabledFunction;
         mModuleInstallUiProvider = moduleInstallUiProvider;
@@ -299,8 +302,8 @@ public class Starter extends EmptyTabObserver implements UserData {
     private Object[] getOrCreateDependenciesAndOnboardingHelper() {
         if (mDependencies == null) {
             AutofillAssistantModuleEntry module = getModuleOrThrow();
-            mDependencies = module.createDependenciesFactory().createDependencies(
-                    TabUtils.getActivity(mTab));
+            mDependencies =
+                    module.createDependenciesFactory().createDependencies(mActivitySupplier.get());
             mOnboardingHelper = module.createOnboardingHelper(mWebContents, mDependencies);
         }
 
@@ -309,7 +312,7 @@ public class Starter extends EmptyTabObserver implements UserData {
 
     @CalledByNative
     private boolean getIsTabCreatedByGSA() {
-        return mIsGsaFunction.apply(TabUtils.getActivity(mTab));
+        return mIsGsaFunction.apply(mActivitySupplier.get());
     }
 
     @NativeMethods
