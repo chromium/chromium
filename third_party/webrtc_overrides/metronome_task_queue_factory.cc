@@ -31,8 +31,9 @@ const base::FeatureParam<base::TimeDelta> kWebRtcMetronomeTaskQueueTick{
 const base::FeatureParam<bool> kWebRtcMetronomeTaskQueueExcludePacer{
     &kWebRtcMetronomeTaskQueue, "exclude_pacer", /*default_value=*/true};
 
-const base::FeatureParam<bool> kWebRtcMetronomeTaskQueueExcludeDecoders{
-    &kWebRtcMetronomeTaskQueue, "exclude_decoders", /*default_value=*/true};
+const base::FeatureParam<bool> kWebRtcMetronomeTaskQueueExcludeEncodeDecode{
+    &kWebRtcMetronomeTaskQueue, "exclude_encode_decode",
+    /*default_value=*/true};
 
 const base::FeatureParam<bool> kWebRtcMetronomeTaskQueueExcludeMisc{
     &kWebRtcMetronomeTaskQueue, "exclude_misc", /*default_value=*/false};
@@ -191,7 +192,8 @@ class WebrtcMetronomeTaskQueueFactory final : public webrtc::TaskQueueFactory {
       : metronome_source_(std::move(metronome_source)),
         high_priority_task_queue_factory_(CreateWebRtcTaskQueueFactory()),
         exclude_pacer_(kWebRtcMetronomeTaskQueueExcludePacer.Get()),
-        exclude_decoders_(kWebRtcMetronomeTaskQueueExcludeDecoders.Get()),
+        exclude_encode_decode_(
+            kWebRtcMetronomeTaskQueueExcludeEncodeDecode.Get()),
         exclude_misc_(kWebRtcMetronomeTaskQueueExcludeMisc.Get()) {}
 
   std::unique_ptr<webrtc::TaskQueueBase, webrtc::TaskQueueDeleter>
@@ -199,8 +201,9 @@ class WebrtcMetronomeTaskQueueFactory final : public webrtc::TaskQueueFactory {
     bool use_metronome;
     if (name.compare("TaskQueuePacedSender") == 0) {
       use_metronome = !exclude_pacer_;
-    } else if (name.compare("DecodingQueue") == 0) {
-      use_metronome = !exclude_decoders_;
+    } else if (name.compare("DecodingQueue") == 0 ||
+               name.compare("EncoderQueue") == 0) {
+      use_metronome = !exclude_encode_decode_;
     } else if (priority == webrtc::TaskQueueFactory::Priority::HIGH) {
       use_metronome = false;
     } else {
@@ -220,7 +223,7 @@ class WebrtcMetronomeTaskQueueFactory final : public webrtc::TaskQueueFactory {
   const std::unique_ptr<webrtc::TaskQueueFactory>
       high_priority_task_queue_factory_;
   const bool exclude_pacer_;
-  const bool exclude_decoders_;
+  const bool exclude_encode_decode_;
   const bool exclude_misc_;
 };
 
