@@ -1253,6 +1253,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="NewTabPage.NumberOfPreinstalledApps" units="count"
     expires_after="M97">
+  <obsolete>
+    Removed from code in 2022-01.
+  </obsolete>
   <owner>phillis@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>

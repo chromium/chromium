@@ -20261,6 +20261,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="NewTabPage.PreinstalledApps.Clicked">
+  <obsolete>Removed from code in 2022-01.</obsolete>
   <owner>phillis@chromium.org</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <description>
