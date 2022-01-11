@@ -104,26 +104,6 @@ void RecordAuthenticationMethod(AuthMethod method) {
   UMA_HISTOGRAM_ENUMERATION("NativeSmbFileShare.AuthenticationMethod", method);
 }
 
-base::ScopedFD MakeFdWithContents(const std::string& contents) {
-  const size_t content_size = contents.size();
-
-  base::ScopedFD read_fd;
-  base::ScopedFD write_fd;
-  if (!base::CreatePipe(&read_fd, &write_fd, true /* non_blocking */)) {
-    LOG(ERROR) << "Unable to create pipe";
-    return {};
-  }
-  bool success =
-      base::WriteFileDescriptor(
-          write_fd.get(), base::as_bytes(base::make_span(&content_size, 1))) &&
-      base::WriteFileDescriptor(write_fd.get(), contents);
-  if (!success) {
-    PLOG(ERROR) << "Unable to write contents to pipe";
-    return {};
-  }
-  return read_fd;
-}
-
 }  // namespace
 
 bool SmbService::disable_share_discovery_for_testing_ = false;
