@@ -90,7 +90,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
       IdpNetworkRequestManager::FetchStatus status,
       IdpNetworkRequestManager::AccountList accounts,
       IdentityProviderMetadata idp_metadata);
-  void OnAccountSelected(const std::string& account_id);
+  void OnAccountSelected(const std::string& account_id, bool is_sign_in);
   void OnTokenResponseReceived(IdpNetworkRequestManager::FetchStatus status,
                                const std::string& id_token);
   void DispatchOneLogout();

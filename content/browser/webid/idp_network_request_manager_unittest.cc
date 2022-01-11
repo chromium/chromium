@@ -598,8 +598,7 @@ TEST_F(IdpNetworkRequestManagerTest, Revoke) {
         ASSERT_EQ(network::DataElement::Tag::kBytes, elem.type());
         const network::DataElementBytes& byte_elem =
             elem.As<network::DataElementBytes>();
-        EXPECT_EQ("{\"request\":{\"client_id\":\"xxx\"},\"sub\":\"yyy\"}",
-                  byte_elem.AsStringPiece());
+        EXPECT_EQ("client_id=xxx&account_id=yyy", byte_elem.AsStringPiece());
       });
   test_url_loader_factory().SetInterceptor(interceptor);
   RevokeResponse status = SendRevokeRequestAndWaitForResponse("xxx", "yyy");

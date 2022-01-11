@@ -45,6 +45,36 @@ std::string FormatRequestParams(const std::string& client_id,
   }
   return query;
 }
+
+std::string FormatRequestParamsWithoutScope(const std::string& client_id,
+                                            const std::string& nonce,
+                                            const std::string& account_id,
+                                            bool is_sign_in) {
+  std::string query;
+  if (!client_id.empty())
+    query += "client_id=" + client_id;
+
+  if (!nonce.empty()) {
+    if (!query.empty())
+      query += "&";
+    query += "nonce=" + nonce;
+  }
+
+  if (!account_id.empty()) {
+    if (!query.empty())
+      query += "&";
+    query += "account_id=" + account_id;
+  }
+  // For returning users who are signing in instead of signing up, we do not
+  // show the privacy policy and terms of service on the consent sheet. This
+  // field indicates in the request that whether the user has granted consent
+  // after seeing the sheet with privacy policy and terms of service.
+  std::string consent_acquired = is_sign_in ? "false" : "true";
+  if (!query.empty())
+    query += "&consent_acquired=" + consent_acquired;
+  return query;
+}
+
 }  // namespace
 
 FederatedAuthRequestImpl::FederatedAuthRequestImpl(RenderFrameHost* host,
@@ -581,8 +611,8 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
   }
 }
 
-void FederatedAuthRequestImpl::OnAccountSelected(
-    const std::string& account_id) {
+void FederatedAuthRequestImpl::OnAccountSelected(const std::string& account_id,
+                                                 bool is_sign_in) {
   // This could happen if user didn't select any accounts.
   if (account_id.empty()) {
     CompleteRequest(RequestIdTokenStatus::kError, "");
@@ -598,7 +628,9 @@ void FederatedAuthRequestImpl::OnAccountSelected(
 
   account_id_ = account_id;
   network_manager_->SendTokenRequest(
-      endpoints_.token, account_id_, FormatRequestParams(client_id_, nonce_),
+      endpoints_.token, account_id_,
+      FormatRequestParamsWithoutScope(client_id_, nonce_, account_id,
+                                      is_sign_in),
       base::BindOnce(&FederatedAuthRequestImpl::OnTokenResponseReceived,
                      weak_ptr_factory_.GetWeakPtr()));
 }

@@ -601,7 +601,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
                       on_selected) {
                 displayed_accounts_ =
                     AccountList(accounts.begin(), accounts.end());
-                std::move(on_selected).Run(accounts[0].account_id);
+                std::move(on_selected)
+                    .Run(accounts[0].account_id, /*is_sign_in=*/false);
               }));
     }
 
@@ -972,7 +973,8 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForReturningUser) {
                   on_selected) {
             EXPECT_EQ(sign_in_mode, SignInMode::kAuto);
             displayed_accounts = AccountList(accounts.begin(), accounts.end());
-            std::move(on_selected).Run(accounts[0].account_id);
+            std::move(on_selected)
+                .Run(accounts[0].account_id, /*is_sign_in=*/true);
           }));
 
   EXPECT_EQ(test_case.config.Mediated_conf.accounts.size(), 1u);
@@ -1002,7 +1004,8 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInForFirstTimeUser) {
                   on_selected) {
             EXPECT_EQ(sign_in_mode, SignInMode::kExplicit);
             displayed_accounts = AccountList(accounts.begin(), accounts.end());
-            std::move(on_selected).Run(accounts[0].account_id);
+            std::move(on_selected)
+                .Run(accounts[0].account_id, /*is_sign_in=*/true);
           }));
 
   SetMockExpectations(test_case);
@@ -1052,7 +1055,8 @@ TEST_F(BasicFederatedAuthRequestImplTest, AutoSignInWithScreenReader) {
             // Auto sign in replaced by explicit sign in if screen reader is on.
             EXPECT_EQ(sign_in_mode, SignInMode::kExplicit);
             displayed_accounts = AccountList(accounts.begin(), accounts.end());
-            std::move(on_selected).Run(accounts[0].account_id);
+            std::move(on_selected)
+                .Run(accounts[0].account_id, /*is_sign_in=*/true);
           }));
 
   EXPECT_EQ(test_case.config.Mediated_conf.accounts.size(), 1u);

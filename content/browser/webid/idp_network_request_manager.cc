@@ -56,13 +56,13 @@ constexpr char kSigninUrlKey[] = "signin_url";
 constexpr char kIdTokenKey[] = "id_token";
 
 // Token request body keys
-constexpr char kAccountKey[] = "sub";
+constexpr char kAccountKey[] = "account_id";
 constexpr char kRequestKey[] = "request";
 
 // Revoke request body keys.
 constexpr char kClientIdKey[] = "client_id";
 
-constexpr char kJSONMimeType[] = "application/json";
+constexpr char kRequestBodyContentType[] = "application/x-www-form-urlencoded";
 
 // 1 MiB is an arbitrary upper bound that should account for any reasonable
 // response size that is a part of this protocol.
@@ -113,7 +113,7 @@ std::unique_ptr<network::ResourceRequest> CreateCredentialedResourceRequest(
   resource_request->url = target_url;
   resource_request->site_for_cookies = site_for_cookies;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
-                                      kJSONMimeType);
+                                      kRequestBodyContentType);
 
   // Using a random 64-bit header value. This is just to keep service
   // implementations from assuming any particular static value.
@@ -412,15 +412,13 @@ void IdpNetworkRequestManager::SendTokenRequest(const GURL& token_url,
   DCHECK(!token_request_callback_);
 
   token_request_callback_ = std::move(callback);
-
-  std::string token_request_body = CreateTokenRequestBody(account, request);
-  if (token_request_body.empty()) {
+  if (request.empty()) {
     std::move(token_request_callback_)
         .Run(FetchStatus::kInvalidRequestError, std::string());
     return;
   }
 
-  url_loader_ = CreateCredentialedUrlLoader(token_url, token_request_body);
+  url_loader_ = CreateCredentialedUrlLoader(token_url, request);
 
   url_loader_->DownloadToString(
       loader_factory_.get(),
@@ -463,8 +461,16 @@ void IdpNetworkRequestManager::SendRevokeRequest(const GURL& revoke_url,
 
   revoke_callback_ = std::move(callback);
 
-  std::string revoke_request_body =
-      CreateRevokeRequestBody(client_id, account_id);
+  std::string revoke_request_body;
+  if (!client_id.empty())
+    revoke_request_body += "client_id=" + client_id;
+
+  if (!account_id.empty()) {
+    if (!revoke_request_body.empty())
+      revoke_request_body += "&";
+    revoke_request_body += "account_id=" + account_id;
+  }
+
   if (revoke_request_body.empty()) {
     std::move(revoke_callback_).Run(RevokeResponse::kError);
     return;
@@ -828,7 +834,7 @@ IdpNetworkRequestManager::CreateUncredentialedUrlLoader(
   resource_request->credentials_mode =
       network::mojom::CredentialsMode::kInclude;
   resource_request->headers.SetHeader(net::HttpRequestHeaders::kAccept,
-                                      kJSONMimeType);
+                                      kRequestBodyContentType);
   // TODO(kenrb): Not following redirects is important for security because
   // this bypasses CORB. Ensure there is a test added.
   // https://crbug.com/1155312.
@@ -855,7 +861,7 @@ IdpNetworkRequestManager::CreateCredentialedUrlLoader(
   if (request_body) {
     resource_request->method = net::HttpRequestHeaders::kPostMethod;
     resource_request->headers.SetHeader(net::HttpRequestHeaders::kContentType,
-                                        kJSONMimeType);
+                                        kRequestBodyContentType);
   }
 
   auto traffic_annotation = CreateTrafficAnnotation();
@@ -863,7 +869,7 @@ IdpNetworkRequestManager::CreateCredentialedUrlLoader(
       network::SimpleURLLoader::Create(std::move(resource_request),
                                        traffic_annotation);
   if (request_body)
-    loader->AttachStringForUpload(*request_body, kJSONMimeType);
+    loader->AttachStringForUpload(*request_body, kRequestBodyContentType);
   return loader;
 }
 
