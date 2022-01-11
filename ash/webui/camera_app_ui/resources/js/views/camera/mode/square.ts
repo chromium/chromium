@@ -3,23 +3,24 @@
 // found in the LICENSE file.
 
 import {
-  Facing,      // eslint-disable-line no-unused-vars
-  Resolution,  // eslint-disable-line no-unused-vars
+  Facing,
+  Resolution,
 } from '../../../type.js';
 import * as util from '../../../util.js';
+import {ModeBase} from './mode_base.js';
 
 import {
   Photo,
   PhotoFactory,
-  PhotoHandler,  // eslint-disable-line no-unused-vars
+  PhotoHandler,
+  PhotoResult,
 } from './photo.js';
 
 /**
  * Crops out maximum possible centered square from the image blob.
- * @param {!Blob} blob
- * @return {!Promise<!Blob>} Promise with result cropped square image.
+ * @return Promise with result cropped square image.
  */
-async function cropSquare(blob) {
+async function cropSquare(blob: Blob): Promise<Blob> {
   const img = await util.blobToImage(blob);
   try {
     const side = Math.min(img.width, img.height);
@@ -27,7 +28,7 @@ async function cropSquare(blob) {
     ctx.drawImage(
         img, Math.floor((img.width - side) / 2),
         Math.floor((img.height - side) / 2), side, side, 0, 0, side, side);
-    const croppedBlob = await new Promise((resolve) => {
+    const croppedBlob = await new Promise<Blob>((resolve) => {
       // TODO(b/174190121): Patch important exif entries from input blob to
       // result blob.
       canvas.toBlob(resolve, 'image/jpeg');
@@ -40,44 +41,24 @@ async function cropSquare(blob) {
 
 /**
  * Cuts the returned photo into square and passed to underlying PhotoHandler.
- * @implements {PhotoHandler}
  */
-class SquarePhotoHandler {
-  /**
-   * @param {!PhotoHandler} handler
-   */
-  constructor(handler) {
-    /**
-     * @const {!PhotoHandler}
-     */
-    this.handler_ = handler;
+class SquarePhotoHandler implements PhotoHandler {
+  constructor(private readonly handler: PhotoHandler) {}
+
+  playShutterEffect(): void {
+    this.handler.playShutterEffect();
   }
 
-  /**
-   * @override
-   */
-  playShutterEffect() {
-    this.handler_.playShutterEffect();
+  waitPreviewReady(): Promise<void> {
+    return this.handler.waitPreviewReady();
   }
 
-  /**
-   * @override
-   */
-  waitPreviewReady() {
-    return this.handler_.waitPreviewReady();
+  onPhotoError(): void {
+    this.handler.onPhotoError();
   }
 
-  /**
-   * @override
-   */
-  onPhotoError() {
-    this.handler_.onPhotoError();
-  }
-
-  /**
-   * @override
-   */
-  async onPhotoCaptureDone(pendingPhotoResult) {
+  async onPhotoCaptureDone(pendingPhotoResult: Promise<PhotoResult>):
+      Promise<void> {
     const pendingSquarePhotoResult = (async () => {
       const photoResult = await pendingPhotoResult;
       const croppedBlob = await cropSquare(photoResult.blob);
@@ -86,7 +67,7 @@ class SquarePhotoHandler {
         blob: croppedBlob,
       };
     })();
-    await this.handler_.onPhotoCaptureDone(pendingSquarePhotoResult);
+    await this.handler.onPhotoCaptureDone(pendingSquarePhotoResult);
   }
 }
 
@@ -94,13 +75,12 @@ class SquarePhotoHandler {
  * Square mode capture controller.
  */
 export class Square extends Photo {
-  /**
-   * @param {!MediaStream} stream
-   * @param {!Facing} facing
-   * @param {!Resolution} captureResolution
-   * @param {!PhotoHandler} handler
-   */
-  constructor(stream, facing, captureResolution, handler) {
+  constructor(
+      stream: MediaStream,
+      facing: Facing,
+      captureResolution: Resolution,
+      handler: PhotoHandler,
+  ) {
     super(stream, facing, captureResolution, new SquarePhotoHandler(handler));
   }
 }
@@ -109,10 +89,7 @@ export class Square extends Photo {
  * Factory for creating square mode capture object.
  */
 export class SquareFactory extends PhotoFactory {
-  /**
-   * @override
-   */
-  produce() {
+  produce(): ModeBase {
     return new Square(
         this.previewStream, this.facing, this.captureResolution, this.handler);
   }
