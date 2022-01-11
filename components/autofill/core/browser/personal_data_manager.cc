@@ -1238,7 +1238,17 @@ PersonalDataManager::GetActiveAutofillPromoCodeOffersForOrigin(
   return promo_code_offers_for_origin;
 }
 
-gfx::Image* PersonalDataManager::GetCreditCardArtImageForUrl(
+raw_ptr<gfx::Image> PersonalDataManager::GetCreditCardArtImageForUrl(
+    const GURL& card_art_url) const {
+  raw_ptr<gfx::Image> cached_image = GetCachedCardArtImageForUrl(card_art_url);
+  if (cached_image)
+    return cached_image;
+
+  FetchImagesForUrls({card_art_url});
+  return nullptr;
+}
+
+raw_ptr<gfx::Image> PersonalDataManager::GetCachedCardArtImageForUrl(
     const GURL& card_art_url) const {
   if (!IsAutofillWalletImportEnabled())
     return nullptr;
@@ -1248,14 +1258,14 @@ gfx::Image* PersonalDataManager::GetCreditCardArtImageForUrl(
 
   auto images_iterator = credit_card_art_images_.find(card_art_url);
 
-  // Found an image and return it.
+  // If the cache contains the image, return it.
   if (images_iterator != credit_card_art_images_.end()) {
-    gfx::Image* image = images_iterator->second.get();
+    raw_ptr<gfx::Image> image = images_iterator->second.get();
     if (!image->IsEmpty())
       return image;
   }
 
-  FetchImagesForUrls({card_art_url});
+  // The cache does not contain the image, return nullptr.
   return nullptr;
 }
 

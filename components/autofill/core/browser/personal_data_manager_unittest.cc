@@ -1314,10 +1314,21 @@ TEST_F(PersonalDataManagerTest, AddAndGetCreditCardArtImage) {
 
   personal_data_->OnCardArtImagesFetched(std::move(images));
 
-  gfx::Image* actual_image = personal_data_->GetCreditCardArtImageForUrl(
-      GURL("https://www.example.com"));
+  raw_ptr<gfx::Image> actual_image =
+      personal_data_->GetCreditCardArtImageForUrl(
+          GURL("https://www.example.com"));
   ASSERT_TRUE(actual_image);
   EXPECT_TRUE(gfx::test::AreImagesEqual(expected_image, *actual_image));
+
+  // TODO(crbug.com/1284788): Look into integrating with PersonalDataManagerMock
+  // and checking that PersonalDataManager::FetchImagesForUrls() does not get
+  // triggered when PersonalDataManager::GetCachedCardArtImageForUrl() is
+  // called.
+  raw_ptr<gfx::Image> cached_image =
+      personal_data_->GetCachedCardArtImageForUrl(
+          GURL("https://www.example.com"));
+  ASSERT_TRUE(cached_image);
+  EXPECT_TRUE(gfx::test::AreImagesEqual(expected_image, *cached_image));
 }
 
 TEST_F(PersonalDataManagerMockTest, ProcessVirtualCardMetadataChanges) {
