@@ -422,12 +422,19 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     CreateNewFolder, /* create_new_folder.js */
     FilesAppBrowserTest,
-    ::testing::Values(TestCase("selectCreateFolderDownloads").InGuestMode(),
-                      TestCase("selectCreateFolderDownloads"),
-                      TestCase("createFolderDownloads").InGuestMode(),
-                      TestCase("createFolderDownloads"),
-                      TestCase("createFolderNestedDownloads"),
-                      TestCase("createFolderDrive")));
+    ::testing::Values(
+        TestCase("selectCreateFolderDownloads"),
+        TestCase("selectCreateFolderDownloads").FilesSwa(),
+        TestCase("selectCreateFolderDownloads").InGuestMode(),
+        TestCase("selectCreateFolderDownloads").InGuestMode().FilesSwa(),
+        TestCase("createFolderDownloads"),
+        TestCase("createFolderDownloads").FilesSwa(),
+        TestCase("createFolderDownloads").InGuestMode(),
+        TestCase("createFolderDownloads").InGuestMode().FilesSwa(),
+        TestCase("createFolderNestedDownloads"),
+        TestCase("createFolderNestedDownloads").FilesSwa(),
+        TestCase("createFolderDrive"),
+        TestCase("createFolderDrive").FilesSwa()));
 
 WRAPPED_INSTANTIATE_TEST_SUITE_P(
     KeyboardOperations, /* keyboard_operations.js */
