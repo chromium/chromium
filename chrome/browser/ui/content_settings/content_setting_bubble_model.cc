@@ -222,9 +222,8 @@ ContentSettingSimpleBubbleModel::AsSimpleBubbleModel() {
 }
 
 void ContentSettingSimpleBubbleModel::SetTitle() {
-  // TODO(https://crbug.com/1103176): Plumb the actual frame reference here
   PageSpecificContentSettings* content_settings =
-      PageSpecificContentSettings::GetForFrame(web_contents()->GetMainFrame());
+      PageSpecificContentSettings::GetForFrame(&GetPage().GetMainDocument());
 
   static const ContentSettingsTypeIdEntry kBlockedTitleIDs[] = {
       {ContentSettingsType::COOKIES, IDS_BLOCKED_COOKIES_TITLE},
@@ -260,7 +259,7 @@ void ContentSettingSimpleBubbleModel::SetTitle() {
 
 void ContentSettingSimpleBubbleModel::SetMessage() {
   PageSpecificContentSettings* content_settings =
-      PageSpecificContentSettings::GetForFrame(web_contents()->GetMainFrame());
+      PageSpecificContentSettings::GetForFrame(&GetPage().GetMainDocument());
 
   // TODO(https://crbug.com/978882): Make the two arrays below static again once
   // we no longer need to check base::FeatureList.
@@ -377,7 +376,7 @@ void ContentSettingMixedScriptBubbleModel::OnCustomLinkClicked() {
   if (mixed_content_settings) {
     // Update browser side settings to allow active mixed content.
     mixed_content_settings->AllowRunningOfInsecureContent(
-        *web_contents()->GetMainFrame());
+        GetPage().GetMainDocument());
   }
 
   // Update renderer side settings to allow active mixed content.
@@ -551,7 +550,7 @@ void ContentSettingSingleRadioGroup::SetRadioGroup() {
   std::u16string display_host = url_formatter::FormatUrlForSecurityDisplay(url);
 
   PageSpecificContentSettings* content_settings =
-      PageSpecificContentSettings::GetForFrame(web_contents()->GetMainFrame());
+      PageSpecificContentSettings::GetForFrame(&GetPage().GetMainDocument());
   bool allowed = !content_settings->IsContentBlocked(content_type());
 
   // For the frame busting case the content is blocked but its content type is
@@ -1238,7 +1237,7 @@ ContentSettingGeolocationBubbleModel::ContentSettingGeolocationBubbleModel(
   SetCustomLink();
 #if defined(OS_MAC)
   PageSpecificContentSettings* content_settings =
-      PageSpecificContentSettings::GetForFrame(web_contents->GetMainFrame());
+      PageSpecificContentSettings::GetForFrame(&GetPage().GetMainDocument());
   if (!content_settings)
     return;
 
@@ -1313,7 +1312,7 @@ void ContentSettingGeolocationBubbleModel::SetCustomLink() {
       web_contents()->GetBrowserContext());
   SettingInfo info;
   const GURL url =
-      web_contents()->GetMainFrame()->GetLastCommittedOrigin().GetURL();
+      GetPage().GetMainDocument().GetLastCommittedOrigin().GetURL();
   map->GetWebsiteSetting(url, url, ContentSettingsType::GEOLOCATION, &info);
   if (info.session_model == SessionModel::OneTime)
     set_custom_link(l10n_util::GetStringUTF16(IDS_GEOLOCATION_WILL_ASK_AGAIN));
