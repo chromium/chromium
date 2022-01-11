@@ -312,14 +312,14 @@ public class CriticalPersistedTabDataTest {
     @SmallTest
     @Test
     public void testWebContentsStateBug_crbug_1220839() throws InterruptedException {
-        try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
-            PersistedTabDataConfiguration.setUseTestConfig(false);
-            String url = mTestServer.getURL("/chrome/test/data/browsing_data/e.html");
-            Tab tab = sActivityTestRule.loadUrlInNewTab(url);
-            final Semaphore semaphore = new Semaphore(0);
-            // Saving serialized CriticalPersistedTabData ensures we get a direct ByteBuffer
-            // which is assumed in the rest of Clank. See crbug.com/1220839 for more details.
-            ThreadUtils.runOnUiThreadBlocking(() -> {
+        PersistedTabDataConfiguration.setUseTestConfig(false);
+        String url = mTestServer.getURL("/chrome/test/data/browsing_data/e.html");
+        Tab tab = sActivityTestRule.loadUrlInNewTab(url);
+        final Semaphore semaphore = new Semaphore(0);
+        // Saving serialized CriticalPersistedTabData ensures we get a direct ByteBuffer
+        // which is assumed in the rest of Clank. See crbug.com/1220839 for more details.
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
                 CriticalPersistedTabData criticalPersistedTabData =
                         new CriticalPersistedTabData(tab, "", "", PARENT_ID, ROOT_ID, TIMESTAMP,
                                 TabStateExtractor.getWebContentsState(tab), CONTENT_STATE_VERSION,
@@ -331,9 +331,11 @@ public class CriticalPersistedTabDataTest {
                 persistedTabDataStorage.save(tab.getId(), config.getId(), () -> {
                     return criticalPersistedTabData.getSerializeSupplier().get();
                 }, semaphore::release);
-            });
-            semaphore.acquire();
-            ThreadUtils.runOnUiThreadBlocking(() -> {
+            }
+        });
+        semaphore.acquire();
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            try (StrictModeContext ignored = StrictModeContext.allowAllThreadPolicies()) {
                 PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
                         CriticalPersistedTabData.class, tab.isIncognito());
 
@@ -345,8 +347,8 @@ public class CriticalPersistedTabDataTest {
                         deserialized.getWebContentsState().getDisplayTitleFromState());
                 Assert.assertEquals(
                         url, deserialized.getWebContentsState().getVirtualUrlFromState());
-            });
-        }
+            }
+        });
     }
 
     @UiThreadTest
