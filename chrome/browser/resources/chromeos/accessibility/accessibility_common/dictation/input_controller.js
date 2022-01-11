@@ -134,7 +134,7 @@ export class InputController {
 
   /**
    * Shows the bubble UI with the given text.
-   * @param {string} text
+   * @param {string=} text
    */
   showBubble(text) {
     chrome.accessibilityPrivate.updateDictationBubble(/*visible=*/ true, text);

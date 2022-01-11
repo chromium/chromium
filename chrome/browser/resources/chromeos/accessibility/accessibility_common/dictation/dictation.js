@@ -399,7 +399,7 @@ export class Dictation {
     }
 
     this.interimText_ = '';
-    this.inputController_.showBubble('');
+    this.inputController_.showBubble();
     if (this.clearUITextTimeoutId_) {
       clearTimeout(this.clearUITextTimeoutId_);
       this.clearUITextTimeoutId_ = null;

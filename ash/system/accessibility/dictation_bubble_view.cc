@@ -31,9 +31,12 @@ DictationBubbleView::DictationBubbleView() {
 DictationBubbleView::~DictationBubbleView() = default;
 
 void DictationBubbleView::Update(const absl::optional<std::u16string>& text) {
-  bool visible = text.has_value();
-  label_->SetVisible(visible);
-  label_->SetText(visible ? text.value() : std::u16string());
+  bool has_text = text.has_value();
+  // Show either the image view, which is a placeholder when there is no text
+  // to be displayed, or the label view. Never show both at the same time.
+  image_view_->SetVisible(!has_text);
+  label_->SetVisible(has_text);
+  label_->SetText(has_text ? text.value() : std::u16string());
   SizeToContents();
 }
 
