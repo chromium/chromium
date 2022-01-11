@@ -3556,6 +3556,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Android.WebView.AwDebugCall" enum="AwDebugCall"
     expires_after="2022-01-31">
+  <obsolete>
+    Removed in January 2022.
+  </obsolete>
   <owner>oksamyt@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
