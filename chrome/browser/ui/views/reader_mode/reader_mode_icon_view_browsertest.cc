@@ -29,6 +29,7 @@
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/views/animation/ink_drop.h"
 #include "ui/views/test/button_test_api.h"
 
 namespace {
@@ -170,6 +171,54 @@ IN_PROC_BROWSER_TEST_F(ReaderModeIconViewPrerenderBrowserTest,
   const bool is_visible_on_article = reader_mode_icon_->GetVisible();
   EXPECT_TRUE(is_visible_on_article);
   EXPECT_TRUE(observer.IsDistillabilityDriverTimerRunning());
+}
+
+IN_PROC_BROWSER_TEST_F(ReaderModeIconViewPrerenderBrowserTest,
+                       InkDropStateNotAffectedByPrerendering) {
+  dom_distiller::TestDistillabilityObserver observer(
+      browser()->tab_strip_model()->GetActiveWebContents());
+  dom_distiller::DistillabilityResult expected_result;
+  expected_result.is_distillable = true;
+  expected_result.is_last = false;
+  expected_result.is_mobile_friendly = false;
+
+  // Navigate to a distillable page.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), https_server_secure()->GetURL(kSimpleArticlePath)));
+  observer.WaitForResult(expected_result);
+
+  // The icon should be visible for the distillable page.
+  EXPECT_TRUE(reader_mode_icon_->GetVisible());
+
+  // Force the ink drop to activate for testing.
+  views::InkDrop::Get(reader_mode_icon_)
+      ->AnimateToState(views::InkDropState::ACTIVATED, nullptr);
+
+  // Prerender a page that is not distillable.
+  prerender_helper_.AddPrerender(
+      https_server_secure()->GetURL(kNonArticlePath));
+
+  // Prerendering does not affect the visibility of the icon and the ink drop
+  // state. So the icon should be still visible and the ink drop should be still
+  // activated.
+  EXPECT_TRUE(reader_mode_icon_->GetVisible());
+  EXPECT_EQ(views::InkDropState::ACTIVATED,
+            views::InkDrop::Get(reader_mode_icon_)
+                ->GetInkDrop()
+                ->GetTargetInkDropState());
+
+  // Make the prerendering page primary.
+  prerender_helper_.NavigatePrimaryPage(
+      https_server_secure()->GetURL(kNonArticlePath));
+  expected_result.is_distillable = false;
+  observer.WaitForResult(expected_result);
+
+  // The new primary page is not distillable. The icon should be invisible and
+  // the ink drop should be hidden.
+  EXPECT_FALSE(reader_mode_icon_->GetVisible());
+  EXPECT_EQ(views::InkDropState::HIDDEN, views::InkDrop::Get(reader_mode_icon_)
+                                             ->GetInkDrop()
+                                             ->GetTargetInkDropState());
 }
 
 class ReaderModeIconViewBrowserTestWithSettings
