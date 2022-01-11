@@ -239,10 +239,6 @@ const base::Feature kLacrosDisableChromeApps{"LacrosDisableChromeApps",
 const base::Feature kLacrosGooglePolicyRollout{
     "LacrosGooglePolicyRollout", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// Emergency switch to turn off profile migration via Finch.
-const base::Feature kLacrosProfileMigrationForceOff{
-    "LacrosProfileMigrationForceOff", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const Channel kLacrosDefaultChannel = Channel::DEV;
 
 const char kLacrosStabilitySwitch[] = "lacros-stability";
@@ -355,9 +351,8 @@ bool IsLacrosEnabled(Channel channel) {
 bool IsProfileMigrationEnabled(const AccountId& account_id) {
   // Emergency switch to turn off profile migration. Turn this on via Finch in
   // case profile migration needs to be turned off after launch.
-  if (base::FeatureList::IsEnabled(kLacrosProfileMigrationForceOff)) {
-    LOG(WARNING)
-        << "Profile migration is turned off by kLacrosProfileMigrationForceOff";
+  if (base::FeatureList::IsEnabled(
+          ash::features::kLacrosProfileMigrationForceOff)) {
     return false;
   }
 

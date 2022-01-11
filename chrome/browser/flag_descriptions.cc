@@ -4845,6 +4845,17 @@ const char kLacrosProfileMigrationForAnyUserDescription[] =
     "data migrated from ash. It also has a side effect that lacros will be "
     "disbled until profile migration is completed.";
 
+const char kLacrosProfileMigrationForceOffName[] = "Disable profile migration";
+const char kLacrosProfileMigrationForceOffDescription[] =
+    "Disables lacros profile migration. Lacros profile migration is being "
+    "rolled out to internal users first. Once lacros profile migration becomes "
+    "available to the user, the completion of profile migration becomes a "
+    "requirement to use lacros i.e. if profile migration gets rolled out to "
+    "the user and the migration fails, then lacros becomes unavailable until "
+    "the migration is completed. By enabling this flag, even if profile "
+    "migration is rolled out to the user, the migration will not run and the "
+    "user can continue to use lacros without profile migration.";
+
 const char kLimitShelfItemsToActiveDeskName[] =
     "Limit Shelf items to active desk";
 const char kLimitShelfItemsToActiveDeskDescription[] =

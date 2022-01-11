@@ -303,6 +303,8 @@ extern const base::Feature kForceProfileMigrationCompletion;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kLacrosProfileMigrationForAnyUser;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kLacrosProfileMigrationForceOff;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kLanguagePacksHandwriting;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kLanguageSettingsUpdate2;

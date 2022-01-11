@@ -3704,6 +3704,14 @@
     "expiry_milestone": 130
   },
   {
+    "name": "lacros-profile-migration-force-off",
+    "owners": ["ythjkt", "hidehiko", "lacros-team@google.com"],
+    // Once Lacros is launched, this flag can be removed. Until then, this
+    // absolutely must not expire. We do not yet have a launch milestone.
+    // TODO(https://crbug.com/1148474).
+    "expiry_milestone": 130
+  },
+  {
     "name": "lacros-selection",
     "owners": [ "kimjae", "erikchen", "lacros-team@google.com" ],
     "expiry_milestone": 130

@@ -799,6 +799,10 @@ const base::Feature kLacrosSupport{"LacrosSupport",
 const base::Feature kForceProfileMigrationCompletion{
     "ForceProfileMigrationCompletion", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Emergency switch to turn off profile migration.
+const base::Feature kLacrosProfileMigrationForceOff{
+    "LacrosProfileMigrationForceOff", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Enable this to turn on profile migration for non-googlers. Currently the
 // feature is only limited to googlers only.
 const base::Feature kLacrosProfileMigrationForAnyUser{

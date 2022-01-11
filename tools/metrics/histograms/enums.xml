@@ -52766,6 +52766,7 @@ from previous Chrome versions.
   <int value="-588669613"
       label="OmniboxClobberIsZeroSuggestEntrypoint:enabled"/>
   <int value="-585508682" label="DownloadRange:enabled"/>
+  <int value="-584866456" label="LacrosProfileMigrationForceOff:disabled"/>
   <int value="-582870536" label="BluetoothNextHandsfreeProfile:enabled"/>
   <int value="-581236612" label="ConnectivityDiagnosticsWebUi:disabled"/>
   <int value="-580897686" label="SharedHighlightingAmp:enabled"/>
@@ -54049,6 +54050,7 @@ from previous Chrome versions.
   <int value="379326303" label="enable-add-to-shelf"/>
   <int value="379428799" label="security-chip-animation"/>
   <int value="380372760" label="V8Orinoco:disabled"/>
+  <int value="380378407" label="LacrosProfileMigrationForceOff:enabled"/>
   <int value="382478170" label="SemanticColorDebugOverride:disabled"/>
   <int value="384677240" label="AssistMultiWordLacrosSupport:enabled"/>
   <int value="385969127" label="disable-win32k-lockdown"/>
