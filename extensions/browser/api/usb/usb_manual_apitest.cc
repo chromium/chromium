@@ -11,7 +11,7 @@ using UsbManualApiTest = extensions::ExtensionApiTest;
 
 // TODO(1020591): The win7 bots do not seem to recognize the MANUAL_ prefix,
 // so we explicitly disable this test.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_MANUAL_ListInterfaces DISABLED_MANUAL_ListInterfaces
 #else
 #define MAYBE_MANUAL_ListInterfaces MANUAL_ListInterfaces

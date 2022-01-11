@@ -23,7 +23,7 @@
 #include "ui/base/base_window.h"
 #include "ui/gfx/geometry/rect.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/win/shell.h"
 #endif
 
@@ -56,7 +56,7 @@ IN_PROC_BROWSER_TEST_F(ExperimentalAppWindowApiTest, SetIcon) {
 // TODO(crbug.com/794771): These fail on Linux with HEADLESS env var set.
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_OnMinimizedEvent DISABLED_OnMinimizedEvent
 #define MAYBE_OnMaximizedEvent DISABLED_OnMaximizedEvent
 #define MAYBE_OnRestoredEvent DISABLED_OnRestoredEvent
@@ -64,7 +64,7 @@ IN_PROC_BROWSER_TEST_F(ExperimentalAppWindowApiTest, SetIcon) {
 #define MAYBE_OnMinimizedEvent OnMinimizedEvent
 #define MAYBE_OnMaximizedEvent OnMaximizedEvent
 #define MAYBE_OnRestoredEvent OnRestoredEvent
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
 IN_PROC_BROWSER_TEST_F(AppWindowApiTest, MAYBE_OnMinimizedEvent) {
   EXPECT_TRUE(RunExtensionTest("platform_apps/windows_api_properties",
@@ -145,10 +145,10 @@ IN_PROC_BROWSER_TEST_F(AppWindowApiTest, MAYBE_AlphaEnabledHasPermissions) {
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(USE_AURA) && !(defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if defined(USE_AURA) && !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   test_dir = kHasAlphaDir;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!ui::win::IsAeroGlassEnabled()) {
     test_dir = kNoAlphaDir;
   }

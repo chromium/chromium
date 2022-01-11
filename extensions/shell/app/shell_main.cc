@@ -6,12 +6,12 @@
 #include "content/public/app/content_main.h"
 #include "extensions/shell/app/shell_main_delegate.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "content/public/app/sandbox_helper_win.h"
 #include "sandbox/win/src/sandbox_types.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 int APIENTRY wWinMain(HINSTANCE instance, HINSTANCE, wchar_t*, int) {
   extensions::ShellMainDelegate delegate;
   content::ContentMainParams params(&delegate);

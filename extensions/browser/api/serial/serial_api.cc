@@ -93,7 +93,7 @@ void SerialGetDevicesFunction::OnGotDevices(
       info.display_name = std::make_unique<std::string>(*device->display_name);
     results.push_back(std::move(info));
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     if (device->alternate_path) {
       extensions::api::serial::DeviceInfo alternate_info;
       alternate_info.path = device->alternate_path->AsUTF8Unsafe();
@@ -107,7 +107,7 @@ void SerialGetDevicesFunction::OnGotDevices(
       }
       results.push_back(std::move(alternate_info));
     }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   }
   Respond(ArgumentList(serial::GetDevices::Results::Create(results)));
 }

@@ -21,11 +21,11 @@ using SystemNetworkApiUnitTest = extensions::ApiUnitTest;
 }  // namespace
 
 // TODO(crbug.com/1255187): Fails on Fuchsia running with run-test-component.
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_GetNetworkInterfaces DISABLED_GetNetworkInterfaces
 #else
 #define MAYBE_GetNetworkInterfaces GetNetworkInterfaces
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 TEST_F(SystemNetworkApiUnitTest, MAYBE_GetNetworkInterfaces) {
   scoped_refptr<SystemNetworkGetNetworkInterfacesFunction> socket_function(
       new SystemNetworkGetNetworkInterfacesFunction());

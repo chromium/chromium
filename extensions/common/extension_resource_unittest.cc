@@ -62,7 +62,7 @@ TEST(ExtensionResourceTest, ResourcesOutsideOfPath) {
   ASSERT_EQ(1, base::WriteFile(inner_file, "X", 1));
   std::string extension_id = crx_file::id_util::GenerateId("test");
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   base::FilePath symlink_file = inner_dir.AppendASCII("symlink");
   base::CreateSymbolicLink(
       base::FilePath().AppendASCII("..").AppendASCII("outer"),
@@ -103,7 +103,7 @@ TEST(ExtensionResourceTest, ResourcesOutsideOfPath) {
   r4a.set_follow_symlinks_anywhere();
   EXPECT_TRUE(r4a.GetFilePath().empty());
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   // The non-packing extension should also not be able to access a resource that
   // symlinks out of the directory.
   ExtensionResource r5(extension_id, inner_dir,

@@ -6,6 +6,7 @@
 
 #include "base/cxx17_backports.h"
 #include "base/strings/string_piece.h"
+#include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 
@@ -117,7 +118,7 @@ const char kMimeTypePng[] = "image/png";
 
 namespace extension_misc {
 
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CHROMECAST)
 // The extension id for the built-in component extension.
 const char kChromeVoxExtensionId[] = "mndnfokpggljbaajbnioimlmbfngpief";
 #else

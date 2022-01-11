@@ -82,7 +82,7 @@ const char kStatusAdvertisementAlreadyExists[] =
     "An advertisement is already advertising";
 const char kStatusAdvertisementDoesNotExist[] =
     "This advertisement does not exist";
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 const char kStatusInvalidAdvertisingInterval[] =
     "Invalid advertising interval specified.";
 #endif
@@ -1228,7 +1228,7 @@ bool BluetoothLowEnergyResetAdvertisingFunction::ParseParams() {
 }
 
 void BluetoothLowEnergyResetAdvertisingFunction::DoWork() {
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   BluetoothLowEnergyEventRouter* event_router =
       GetEventRouter(browser_context());
 
@@ -1282,7 +1282,7 @@ bool BluetoothLowEnergySetAdvertisingIntervalFunction::ParseParams() {
 }
 
 void BluetoothLowEnergySetAdvertisingIntervalFunction::DoWork() {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   BluetoothLowEnergyEventRouter* event_router =
       GetEventRouter(browser_context());
   event_router->adapter()->SetAdvertisingInterval(
@@ -1303,7 +1303,7 @@ void BluetoothLowEnergySetAdvertisingIntervalFunction::SuccessCallback() {
 
 void BluetoothLowEnergySetAdvertisingIntervalFunction::ErrorCallback(
     device::BluetoothAdvertisement::ErrorCode status) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   switch (status) {
     case device::BluetoothAdvertisement::ErrorCode::
         ERROR_INVALID_ADVERTISEMENT_INTERVAL:
@@ -1325,7 +1325,7 @@ BluetoothLowEnergyCreateServiceFunction::
 
 bool BluetoothLowEnergyCreateServiceFunction::ParseParams() {
 // Causes link error on Windows. API will never be on Windows, so #ifdefing.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   params_ = apibtle::CreateService::Params::Create(args());
   return params_.get() != nullptr;
 #else
@@ -1338,7 +1338,7 @@ void BluetoothLowEnergyCreateServiceFunction::DoWork() {
 // TODO: Ideally this should be handled by our feature system, so that this
 // code doesn't even compile on OSes it isn't being used on, but currently this
 // is not possible.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   base::WeakPtr<device::BluetoothLocalGattService> service =
       device::BluetoothLocalGattService::Create(
           event_router_->adapter(),

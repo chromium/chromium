@@ -245,7 +245,7 @@ std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
     info->trace_id = std::make_unique<int>(manager->RequestTrace());
   }
   info->flow = flow;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   const bool use_system_window_frame = true;
 #else
   const bool use_system_window_frame = false;

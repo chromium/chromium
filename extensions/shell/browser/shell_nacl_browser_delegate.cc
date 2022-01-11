@@ -52,9 +52,9 @@ bool ShellNaClBrowserDelegate::DialogsAreSuppressed() {
 
 bool ShellNaClBrowserDelegate::GetCacheDirectory(base::FilePath* cache_dir) {
   // Just use the general cache directory, not a subdirectory like Chrome does.
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   return base::PathService::Get(base::DIR_CACHE, cache_dir);
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   // TODO(yoz): Find an appropriate persistent directory to use here.
   return base::PathService::Get(base::DIR_TEMP, cache_dir);
 #endif

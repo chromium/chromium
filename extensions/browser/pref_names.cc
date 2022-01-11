@@ -5,6 +5,7 @@
 #include "extensions/browser/pref_names.h"
 
 #include "base/notreached.h"
+#include "build/build_config.h"
 
 namespace extensions {
 namespace pref_names {
@@ -47,7 +48,7 @@ const char kStorageGarbageCollect[] = "extensions.storage.garbagecollect";
 const char kToolbar[] = "extensions.toolbar";
 const char kDeletedComponentExtensions[] =
     "extensions.deleted_component_extensions";
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 extern const char kChromeAppsEnabled[] = "extensions.chrome_apps_enabled";
 #endif
 const char kU2fSecurityKeyApiEnabled[] =

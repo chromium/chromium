@@ -37,11 +37,11 @@ class ShellMainDelegate : public content::ContentMainDelegate {
   content::ContentBrowserClient* CreateContentBrowserClient() override;
   content::ContentRendererClient* CreateContentRendererClient() override;
   void ProcessExiting(const std::string& process_type) override;
-#if defined(OS_POSIX) && !defined(OS_MAC) && !defined(OS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_ANDROID)
   void ZygoteStarting(std::vector<std::unique_ptr<content::ZygoteForkDelegate>>*
                           delegates) override;
 #endif
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void PreBrowserMain() override;
 #endif
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch

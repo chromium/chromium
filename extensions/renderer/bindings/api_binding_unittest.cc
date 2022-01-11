@@ -736,7 +736,7 @@ TEST_F(APIBindingUnittest, TestProperties) {
             GetStringPropertyFromObject(binding_object, context, "linuxOnly"));
   EXPECT_EQ("undefined", GetStringPropertyFromObject(binding_object, context,
                                                      "notLinuxOrLacros"));
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
   EXPECT_EQ("\"linux\"",
             GetStringPropertyFromObject(binding_object, context, "linuxOnly"));
   EXPECT_EQ("undefined", GetStringPropertyFromObject(binding_object, context,

@@ -368,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, GuestVisibilityChanged) {
 // The test launches an app with guest and closes the window on loadcommit. It
 // then launches the app window again. The process is repeated 3 times.
 // http://crbug.com/291278
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_CloseOnLoadcommit DISABLED_CloseOnLoadcommit
 #else
 #define MAYBE_CloseOnLoadcommit CloseOnLoadcommit
@@ -640,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestCanGoBack) {
 }
 
 // Crashes on Win only.  http://crbug.com/805903
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TestLoadStartLoadRedirect DISABLED_TestLoadStartLoadRedirect
 #else
 #define MAYBE_TestLoadStartLoadRedirect TestLoadStartLoadRedirect
@@ -773,7 +773,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestRemoveWebviewAfterNavigation) {
   RunTest("testRemoveWebviewAfterNavigation", "web_view/apitest");
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TestResizeWebviewResizesContent \
   DISABLED_TestResizeWebviewResizesContent
 #else
@@ -796,7 +796,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestWebRequestAPI) {
 }
 
 // Crashes on Win only.  http://crbug.com/805903
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TestWebRequestAPIWithHeaders DISABLED_TestWebRequestAPIWithHeaders
 #else
 #define MAYBE_TestWebRequestAPIWithHeaders TestWebRequestAPIWithHeaders

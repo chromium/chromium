@@ -13,7 +13,7 @@
 #include "build/build_config.h"
 #include "extensions/common/constants.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -68,7 +68,7 @@ bool ExtensionCreatorFilter::ShouldPackageFile(
     return false;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // It's correct that we use file_path, not base_name, here, because we
   // are working with the actual file.
   DWORD file_attributes = ::GetFileAttributes(file_path.value().c_str());

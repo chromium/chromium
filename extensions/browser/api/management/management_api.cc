@@ -752,7 +752,7 @@ ExtensionFunction::ResponseAction ManagementCreateAppShortcutFunction::Run() {
         ErrorUtils::FormatErrorMessage(keys::kNotAnAppError, params->id)));
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (!extension->is_platform_app())
     return RespondNow(Error(keys::kCreateOnlyPackagedAppShortcutMac));
 #endif

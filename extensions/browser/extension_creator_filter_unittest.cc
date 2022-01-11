@@ -15,7 +15,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -157,7 +157,7 @@ TEST_F(ExtensionCreatorFilterTest, IgnoreFilesInSpecialDir) {
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 struct StringBooleanWithBooleanTestData {
   const base::FilePath::CharType* input_char;
   bool input_bool;

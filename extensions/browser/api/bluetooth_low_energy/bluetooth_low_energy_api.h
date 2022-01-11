@@ -11,6 +11,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "build/build_config.h"
 #include "content/public/browser/browser_context.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
 #include "extensions/browser/api/api_resource_manager.h"
@@ -614,7 +615,7 @@ class BluetoothLowEnergyCreateServiceFunction
   bool ParseParams() override;
 
   // Causes link error on Windows. API will never be on Windows, so #ifdefing.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   std::unique_ptr<bluetooth_low_energy::CreateService::Params> params_;
 #endif
 };

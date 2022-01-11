@@ -61,7 +61,7 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/origin.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <CoreFoundation/CoreFoundation.h>
 #include "base/mac/foundation_util.h"
 #endif
@@ -159,7 +159,7 @@ bool GetFileTypesFromAcceptOption(
     for (std::vector<std::string>::const_iterator iter = list->begin();
          iter != list->end(); ++iter) {
       std::string extension = base::ToLowerASCII(*iter);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       extension_set.insert(base::UTF8ToWide(*iter));
 #else
       extension_set.insert(*iter);
@@ -185,8 +185,10 @@ const char kLastChooseEntryDirectory[] = "last_choose_file_directory";
 
 const int kGraylistedPaths[] = {
     base::DIR_HOME,
-#if defined(OS_WIN)
-    base::DIR_PROGRAM_FILES, base::DIR_PROGRAM_FILESX86, base::DIR_WINDOWS,
+#if BUILDFLAG(IS_WIN)
+    base::DIR_PROGRAM_FILES,
+    base::DIR_PROGRAM_FILESX86,
+    base::DIR_WINDOWS,
 #endif
 };
 

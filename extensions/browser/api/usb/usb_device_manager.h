@@ -73,11 +73,11 @@ class UsbDeviceManager : public BrowserContextKeyedAPI,
   const device::mojom::UsbDeviceInfo* GetDeviceInfo(const std::string& guid);
   bool UpdateActiveConfig(const std::string& guid, uint8_t config_value);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   void CheckAccess(
       const std::string& guid,
       device::mojom::UsbDeviceManager::CheckAccessCallback callback);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   void EnsureConnectionWithDeviceManager();
 

@@ -419,7 +419,7 @@ static std::string MakePathRelative(const base::FilePath& parent,
       parent.value().length());
   if (base::FilePath::IsSeparator(retval[0]))
     retval = retval.substr(1);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::WideToUTF8(retval);
 #else
   return retval;
@@ -2257,7 +2257,7 @@ void ExtensionPrefs::RegisterProfilePrefs(
   registry->RegisterStringPref(pref_names::kLastChromeVersion, std::string());
   registry->RegisterDictionaryPref(kInstallSignature);
   registry->RegisterListPref(kExternalUninstalls);
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   registry->RegisterBooleanPref(pref_names::kChromeAppsEnabled, false);
 #endif
   registry->RegisterBooleanPref(pref_names::kU2fSecurityKeyApiEnabled, false);
@@ -2270,7 +2270,7 @@ void ExtensionPrefs::RegisterProfilePrefs(
   // defined.
   registry->RegisterIntegerPref(kCorruptedDisableCount.name, 0);
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   registry->RegisterBooleanPref(pref_names::kAppFullscreenAllowed, true);
 #endif
 

@@ -55,7 +55,7 @@ TEST(ExtensionPathUtilTest, ResolveHomeDirTest) {
   const FilePath rel_path_with_tilde_no_separator(FILE_PATH_LITERAL("~foobar"));
 
 // This function is a no-op on Windows.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ(rel_path_with_tilde,
             path_util::ResolveHomeDirectory(rel_path_with_tilde));
 #else

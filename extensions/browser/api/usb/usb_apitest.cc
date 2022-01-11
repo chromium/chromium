@@ -115,11 +115,11 @@ class TestExtensionsAPIClient : public ShellExtensionsAPIClient {
     return std::make_unique<TestDevicePermissionsPrompt>(web_contents);
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   bool ShouldAllowDetachingUsb(int vid, int pid) const override {
     return vid == 1 && pid == 2;
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 };
 
 class UsbApiTest : public ShellApiTest {
@@ -366,7 +366,7 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, GetUserSelectedDevices) {
   ASSERT_TRUE(result_listener.WaitUntilSatisfied());
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(UsbApiTest, MassStorage) {
   ExtensionTestMessageListener ready_listener("ready", false);
   ready_listener.set_failure_message("failure");
@@ -398,6 +398,6 @@ IN_PROC_BROWSER_TEST_F(UsbApiTest, MassStorage) {
 
   ASSERT_TRUE(result_listener.WaitUntilSatisfied());
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace extensions

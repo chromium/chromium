@@ -141,7 +141,7 @@ static std::string TerminationStatusToString(base::TerminationStatus status) {
     case base::TERMINATION_STATUS_ABNORMAL_TERMINATION:
     case base::TERMINATION_STATUS_STILL_RUNNING:
       return "abnormal";
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
     case base::TERMINATION_STATUS_PROCESS_WAS_KILLED_BY_OOM:
       return "oom killed";
 #endif
@@ -153,7 +153,7 @@ static std::string TerminationStatusToString(base::TerminationStatus status) {
       return "crashed";
     case base::TERMINATION_STATUS_LAUNCH_FAILED:
       return "failed to launch";
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     case base::TERMINATION_STATUS_INTEGRITY_FAILURE:
       return "integrity failure";
 #endif
@@ -1069,7 +1069,7 @@ bool WebViewGuest::HandleKeyboardShortcuts(
         blink::mojom::PointerLockResult::kUserRejected);
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (event.GetModifiers() != blink::WebInputEvent::kMetaKey)
     return false;
 
