@@ -974,7 +974,6 @@ html element select
     property willValidate
 html element selectmenu
     property checkValidity
-    property disabled
     property form
     property labels
     property name

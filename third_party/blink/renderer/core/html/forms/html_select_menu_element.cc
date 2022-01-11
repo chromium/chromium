@@ -208,13 +208,27 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
 
   Document& document = GetDocument();
 
+  // TODO(crbug.com/1121840) Where to put the styles for the default elements in
+  // the shadow tree? For now, just set the style attributes with raw inline
+  // strings, but we should be able to do something better than this. Probably
+  // the solution is to have them in the UA styles (html.css).
+
   button_slot_ = MakeGarbageCollected<HTMLSlotElement>(document);
   button_slot_->setAttribute(html_names::kNameAttr, kButtonPartName);
 
   button_part_ = MakeGarbageCollected<HTMLButtonElement>(document);
   button_part_->setAttribute(html_names::kPartAttr, kButtonPartName);
   button_part_->setAttribute(html_names::kBehaviorAttr, kButtonPartName);
-  button_part_->SetShadowPseudoId(AtomicString("-internal-selectmenu-button"));
+  button_part_->setAttribute(html_names::kStyleAttr,
+                             R"CSS(
+      display: inline-flex;
+      align-items: center;
+      background-color: #ffffff;
+      padding: 0 0 0 3px;
+      border: 1px solid #767676;
+      border-radius: 2px;
+      cursor: default;
+  )CSS");
   button_part_listener_ =
       MakeGarbageCollected<HTMLSelectMenuElement::ButtonPartEventListener>(
           this);
@@ -230,8 +244,26 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
                                      kSelectedValuePartName);
 
   auto* button_icon = MakeGarbageCollected<HTMLDivElement>(document);
-  button_icon->SetShadowPseudoId(
-      AtomicString("-internal-selectmenu-button-icon"));
+  button_icon->setAttribute(html_names::kStyleAttr,
+                            R"CSS(
+    background-image: url(
+      'data:image/svg+xml,\
+      <svg width="20" height="14" viewBox="0 0 20 16" fill="none" xmlns="http://www.w3.org/2000/svg">\
+        <path d="M4 6 L10 12 L 16 6" stroke="WindowText" stroke-width="3" stroke-linejoin="round"/>\
+      </svg>');
+    background-origin: content-box;
+    background-repeat: no-repeat;
+    background-size: contain;
+    height: 1.0em;
+    margin-inline-start: 4px;
+    opacity: 1;
+    outline: none;
+    padding-bottom: 2px;
+    padding-inline-start: 3px;
+    padding-inline-end: 3px;
+    padding-top: 2px;
+    width: 1.2em;
+    )CSS");
 
   listbox_slot_ = MakeGarbageCollected<HTMLSlotElement>(document);
   listbox_slot_->setAttribute(html_names::kNameAttr, kListboxPartName);
@@ -239,8 +271,15 @@ void HTMLSelectMenuElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
   SetListboxPart(MakeGarbageCollected<HTMLPopupElement>(document));
   listbox_part_->setAttribute(html_names::kPartAttr, kListboxPartName);
   listbox_part_->setAttribute(html_names::kBehaviorAttr, kListboxPartName);
-  listbox_part_->SetShadowPseudoId(
-      AtomicString("-internal-selectmenu-listbox"));
+  listbox_part_->setAttribute(html_names::kStyleAttr,
+                              R"CSS(
+        border: 1px solid rgba(0, 0, 0, 0.15);
+        border-radius: 4px;
+        box-shadow: 0px 12.8px 28.8px rgba(0, 0, 0, 0.13), 0px 0px 9.2px rgba(0, 0, 0, 0.11);
+        box-sizing: border-box;
+        overflow: auto;
+        padding: 4px;
+  )CSS");
 
   auto* options_slot = MakeGarbageCollected<HTMLSlotElement>(document);
 
@@ -733,8 +772,6 @@ void HTMLSelectMenuElement::SelectNextOption() {
        node; node = SelectMenuPartTraversal::Next(*node, this)) {
     if (IsValidOptionPart(node, /*show_warning=*/false)) {
       auto* element = DynamicTo<HTMLOptionElement>(node);
-      if (element->IsDisabledFormControl())
-        continue;
       SetSelectedOption(element);
       element->focus();
       DispatchInputAndChangeEventsIfNeeded();
@@ -748,8 +785,6 @@ void HTMLSelectMenuElement::SelectPreviousOption() {
        node; node = SelectMenuPartTraversal::Previous(*node, this)) {
     if (IsValidOptionPart(node, /*show_warning=*/false)) {
       auto* element = DynamicTo<HTMLOptionElement>(node);
-      if (element->IsDisabledFormControl())
-        continue;
       SetSelectedOption(element);
       element->focus();
       DispatchInputAndChangeEventsIfNeeded();
@@ -775,8 +810,7 @@ void HTMLSelectMenuElement::ButtonPartEventListener::Invoke(ExecutionContext*,
     return;
 
   if (event->type() == event_type_names::kClick &&
-      !select_menu_element_->open() &&
-      !select_menu_element_->IsDisabledFormControl()) {
+      !select_menu_element_->open()) {
     select_menu_element_->OpenListbox();
   } else if (event->type() == event_type_names::kKeydown) {
     bool handled = false;
@@ -786,8 +820,7 @@ void HTMLSelectMenuElement::ButtonPartEventListener::Invoke(ExecutionContext*,
     switch (keyboard_event->keyCode()) {
       case VKEY_RETURN:
       case VKEY_SPACE:
-        if (!select_menu_element_->open() &&
-            !select_menu_element_->IsDisabledFormControl()) {
+        if (!select_menu_element_->open()) {
           select_menu_element_->OpenListbox();
         }
         handled = true;

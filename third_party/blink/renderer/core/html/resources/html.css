@@ -992,6 +992,27 @@ option {
     min-height: 1.2em;
 }
 
+/* selectmenu */
+
+selectmenu {
+    display: inline-block;
+}
+
+selectmenu option:hover {
+    background-color: lightgray;
+    cursor: default;
+    user-select: none;
+}
+
+selectmenu popup {
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  border-radius: 4px;
+  box-shadow: 0px 12.8px 28.8px rgba(0, 0, 0, 0.13), 0px 0px 9.2px rgba(0, 0, 0, 0.11);
+  box-sizing: border-box;
+  overflow: auto;
+  padding: 4px;
+}
+
 output {
     display: inline;
 }
