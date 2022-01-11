@@ -589,7 +589,7 @@ CHAR_LIMIT guidelines:
         On-device encryption
       </message>
       <message name="IDS_ANDROID_TRUSTED_VAULT_BANNER_SUB_LABEL_OFFER_OPT_IN" desc="Sub-label for the on-device encryption banner when the user is offered to opt in.">
-        Encrypt passwords on your device before they‘re saved to Google Password Manager
+        For added safety, encrypt passwords on your device before they‘re saved to Google Password Manager
       </message>
       <message name="IDS_ANDROID_TRUSTED_VAULT_BANNER_SUB_LABEL_OPTED_IN" desc="Sub-label for the on-device encryption banner when the user is already opted in.">
         Your password are encrypted on your device before they’re saved to Google Password Manager
