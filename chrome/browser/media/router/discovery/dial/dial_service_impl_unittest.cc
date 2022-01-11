@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/media/router/discovery/dial/dial_service.h"
+#include "chrome/browser/media/router/discovery/dial/dial_service_impl.h"
 
 #include <stddef.h>
 
@@ -48,9 +48,9 @@ class MockDialServiceClient : public DialService::Client {
   MOCK_METHOD(void, OnError, (DialService::DialServiceErrorCode));
 };
 
-class DialServiceTest : public testing::Test {
+class DialServiceImplTest : public testing::Test {
  public:
-  DialServiceTest()
+  DialServiceImplTest()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
         mock_ip_(net::IPAddress::IPv4AllZeros()),
         dial_service_(mock_client_, net::NetLog::Get()) {
@@ -65,7 +65,7 @@ class DialServiceTest : public testing::Test {
   MockDialServiceClient mock_client_;
 };
 
-TEST_F(DialServiceTest, TestSendMultipleRequests) {
+TEST_F(DialServiceImplTest, TestSendMultipleRequests) {
   // Setting the finish delay to zero disables the timer that invokes
   // FinishDiscovery().
   dial_service_.finish_delay_ = base::Seconds(0);
@@ -83,7 +83,7 @@ TEST_F(DialServiceTest, TestSendMultipleRequests) {
   dial_service_.FinishDiscovery();
 }
 
-TEST_F(DialServiceTest, TestMultipleNetworkInterfaces) {
+TEST_F(DialServiceImplTest, TestMultipleNetworkInterfaces) {
   // Setting the finish delay to zero disables the timer that invokes
   // FinishDiscovery().
   dial_service_.finish_delay_ = base::Seconds(0);
@@ -118,7 +118,7 @@ TEST_F(DialServiceTest, TestMultipleNetworkInterfaces) {
   dial_service_.FinishDiscovery();
 }
 
-TEST_F(DialServiceTest, TestOnDiscoveryRequest) {
+TEST_F(DialServiceImplTest, TestOnDiscoveryRequest) {
   dial_service_.discovery_active_ = true;
   dial_service_.num_requests_sent_ = 1;
   dial_service_.max_requests_ = 1;
@@ -127,12 +127,12 @@ TEST_F(DialServiceTest, TestOnDiscoveryRequest) {
   dial_socket_->OnSocketWrite(num_bytes, num_bytes);
 }
 
-TEST_F(DialServiceTest, TestNotifyOnError) {
+TEST_F(DialServiceImplTest, TestNotifyOnError) {
   EXPECT_CALL(mock_client_, OnError(DialService::DIAL_SERVICE_NO_INTERFACES));
   dial_socket_->OnSocketWrite(0, net::ERR_CONNECTION_REFUSED);
 }
 
-TEST_F(DialServiceTest, TestOnDeviceDiscovered) {
+TEST_F(DialServiceImplTest, TestOnDeviceDiscovered) {
   dial_service_.discovery_active_ = true;
   int response_size = base::size(kValidResponse) - 1;
   dial_socket_->recv_buffer_ =
@@ -148,7 +148,7 @@ TEST_F(DialServiceTest, TestOnDeviceDiscovered) {
   dial_socket_->OnSocketRead(response_size);
 }
 
-TEST_F(DialServiceTest, TestOnDiscoveryFinished) {
+TEST_F(DialServiceImplTest, TestOnDiscoveryFinished) {
   dial_service_.discovery_active_ = true;
 
   EXPECT_CALL(mock_client_, OnDiscoveryFinished()).Times(1);
@@ -156,7 +156,7 @@ TEST_F(DialServiceTest, TestOnDiscoveryFinished) {
   EXPECT_FALSE(dial_service_.discovery_active_);
 }
 
-TEST_F(DialServiceTest, TestResponseParsing) {
+TEST_F(DialServiceImplTest, TestResponseParsing) {
   Time now = Time::Now();
 
   // Force the socket address to match what is expected in the response.
