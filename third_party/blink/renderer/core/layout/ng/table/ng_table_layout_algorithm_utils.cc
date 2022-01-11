@@ -227,10 +227,11 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
     const NGBoxFragment fragment(
         table_writing_direction,
         To<NGPhysicalBoxFragment>(layout_result->PhysicalFragment()));
-    bool is_parallel = IsParallelWritingMode(
-        table_writing_direction.GetWritingMode(), cell_style.GetWritingMode());
     const Length& cell_specified_block_length =
-        is_parallel ? cell_style.LogicalHeight() : cell_style.LogicalWidth();
+        IsParallelWritingMode(table_writing_direction.GetWritingMode(),
+                              cell_style.GetWritingMode())
+            ? cell_style.LogicalHeight()
+            : cell_style.LogicalWidth();
     const wtf_size_t rowspan = cell.TableCellRowspan();
 
     NGTableTypes::CellBlockConstraint cell_block_constraint = {
@@ -242,7 +243,7 @@ NGTableTypes::Row ComputeMinimumRowBlockSize(
     is_constrained |= cell_block_constraint.is_constrained && rowspan == 1;
     row_baseline_tabulator.ProcessCell(
         fragment, NGTableAlgorithmUtils::IsBaseline(cell_style.VerticalAlign()),
-        is_parallel, rowspan > 1,
+        rowspan > 1,
         layout_result->HasDescendantThatDependsOnPercentageBlockSize());
 
     // Compute cell's css block size.
@@ -679,11 +680,10 @@ void NGColspanCellTabulator::ProcessCell(const NGBlockNode& cell) {
 void NGRowBaselineTabulator::ProcessCell(
     const NGBoxFragment& fragment,
     const bool is_baseline_aligned,
-    const bool is_parallel,
     const bool is_rowspanned,
     const bool descendant_depends_on_percentage_block_size) {
-  if (is_parallel && is_baseline_aligned &&
-      fragment.HasDescendantsForTablePart() && fragment.FirstBaseline()) {
+  if (is_baseline_aligned && fragment.HasDescendantsForTablePart() &&
+      fragment.FirstBaseline()) {
     max_cell_baseline_depends_on_percentage_block_descendant_ |=
         descendant_depends_on_percentage_block_size;
     const LayoutUnit cell_baseline = *fragment.FirstBaseline();

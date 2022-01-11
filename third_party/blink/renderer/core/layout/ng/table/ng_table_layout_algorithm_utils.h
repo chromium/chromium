@@ -117,7 +117,6 @@ class NGRowBaselineTabulator {
  public:
   void ProcessCell(const NGBoxFragment& fragment,
                    bool is_baseline_aligned,
-                   bool is_parallel,
                    bool is_rowspanned,
                    bool descendant_depends_on_percentage_block_size);
 

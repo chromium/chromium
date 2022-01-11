@@ -86,15 +86,12 @@ scoped_refptr<const NGLayoutResult> NGTableRowLayoutAlgorithm::Layout() {
   // differs from its intrinsic size. This might cause row baseline to move, if
   // cell was baseline-aligned.
   // To compute correct baseline, we need to do an initial layout pass.
-  WritingMode table_writing_mode = ConstraintSpace().GetWritingMode();
   LayoutUnit row_baseline = row.baseline;
   wtf_size_t cell_index = row.start_cell_index;
   if (row.has_baseline_aligned_percentage_block_size_descendants) {
     NGRowBaselineTabulator row_baseline_tabulator;
     for (NGBlockNode cell = To<NGBlockNode>(Node().FirstChild()); cell;
          cell = To<NGBlockNode>(cell.NextSibling()), ++cell_index) {
-      bool is_parallel = IsParallelWritingMode(table_writing_mode,
-                                               cell.Style().GetWritingMode());
       NGConstraintSpace cell_constraint_space =
           CreateCellConstraintSpace(cell, cell_index, absl::nullopt);
       scoped_refptr<const NGLayoutResult> layout_result =
@@ -105,7 +102,7 @@ scoped_refptr<const NGLayoutResult> NGTableRowLayoutAlgorithm::Layout() {
       row_baseline_tabulator.ProcessCell(
           fragment,
           NGTableAlgorithmUtils::IsBaseline(cell.Style().VerticalAlign()),
-          is_parallel, cell.TableCellRowspan() > 1,
+          cell.TableCellRowspan() > 1,
           layout_result->HasDescendantThatDependsOnPercentageBlockSize());
     }
     row_baseline = row_baseline_tabulator.ComputeBaseline(row.block_size);
@@ -128,12 +125,10 @@ scoped_refptr<const NGLayoutResult> NGTableRowLayoutAlgorithm::Layout() {
     NGBoxFragment fragment(
         table_data.table_writing_direction,
         To<NGPhysicalBoxFragment>(cell_result->PhysicalFragment()));
-    bool is_parallel = IsParallelWritingMode(table_writing_mode,
-                                             cell.Style().GetWritingMode());
     row_baseline_tabulator.ProcessCell(
         fragment,
         NGTableAlgorithmUtils::IsBaseline(cell.Style().VerticalAlign()),
-        is_parallel, cell.TableCellRowspan() > 1,
+        cell.TableCellRowspan() > 1,
         cell_result->HasDescendantThatDependsOnPercentageBlockSize());
   }
   container_builder_.SetFragmentBlockSize(row.block_size);
