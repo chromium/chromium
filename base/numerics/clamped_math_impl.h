@@ -105,8 +105,7 @@ struct ClampedSubOp<T,
   using result_type = typename MaxExponentPromotion<T, U>::type;
   template <typename V = result_type>
   static constexpr V Do(T x, U y) {
-    // TODO(jschuh) Make this "constexpr if" once we're C++17.
-    if (ClampedSubFastOp<T, U>::is_supported)
+    if constexpr (ClampedSubFastOp<T, U>::is_supported)
       return ClampedSubFastOp<T, U>::template Do<V>(x, y);
 
     static_assert(std::is_same<V, result_type>::value ||
@@ -132,8 +131,7 @@ struct ClampedMulOp<T,
   using result_type = typename MaxExponentPromotion<T, U>::type;
   template <typename V = result_type>
   static constexpr V Do(T x, U y) {
-    // TODO(jschuh) Make this "constexpr if" once we're C++17.
-    if (ClampedMulFastOp<T, U>::is_supported)
+    if constexpr (ClampedMulFastOp<T, U>::is_supported)
       return ClampedMulFastOp<T, U>::template Do<V>(x, y);
 
     V result = {};
