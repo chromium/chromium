@@ -14,9 +14,6 @@ export {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser
 export {NtpElement} from './app.js';
 export {BackgroundManager} from './background_manager.js';
 export {CustomizeDialogPage} from './customize_dialog_types.js';
-// <if expr="not is_official_build">
-export {FooHandlerRemote} from './foo.mojom-webui.js';
-// </if>
 export {recordDuration, recordLoadDuration, recordOccurence, recordPerdecage} from './metrics_utils.js';
 export {ChromeCartProxy} from './modules/cart/chrome_cart_proxy.js';
 export {chromeCartDescriptor} from './modules/cart/module.js';

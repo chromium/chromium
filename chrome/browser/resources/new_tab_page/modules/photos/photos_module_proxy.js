@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './photos.mojom-lite.js';
+import {PhotosHandler, PhotosHandlerRemote} from '../../photos.mojom-webui.js';
 
 /**
  * @fileoverview This file provides a class that exposes the Mojo handler
@@ -10,16 +10,16 @@ import './photos.mojom-lite.js';
  * and receiving the browser response.
  */
 
-/** @type {?photos.mojom.PhotosHandlerRemote} */
+/** @type {?PhotosHandlerRemote} */
 let handler = null;
 
 export class PhotosProxy {
-  /** @return {!photos.mojom.PhotosHandlerRemote} */
+  /** @return {!PhotosHandlerRemote} */
   static getHandler() {
-    return handler || (handler = photos.mojom.PhotosHandler.getRemote());
+    return handler || (handler = PhotosHandler.getRemote());
   }
 
-  /** @param {!photos.mojom.PhotosHandlerRemote} newHandler */
+  /** @param {!PhotosHandlerRemote} newHandler */
   static setHandler(newHandler) {
     handler = newHandler;
   }

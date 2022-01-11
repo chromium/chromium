@@ -10,6 +10,7 @@ import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v
 
 import {I18nBehavior, loadTimeData} from '../../i18n_setup.js';
 import {recordOccurence} from '../../metrics_utils.js';
+import {Memory} from '../../photos.mojom-webui.js';
 import {InfoDialogElement} from '../info_dialog.js';
 import {ModuleDescriptor} from '../module_descriptor.js';
 
@@ -32,7 +33,7 @@ class PhotosModuleElement extends mixinBehaviors
 
   static get properties() {
     return {
-      /** @type {Array<!photos.mojom.Memory>} */
+      /** @type {Array<!Memory>} */
       memories: Array,
 
       /** @type {boolean} */
