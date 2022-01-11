@@ -30,13 +30,11 @@ void EnsureDistributableColumnExists(
     wtf_size_t start_column_index,
     wtf_size_t span,
     NGTableTypes::Columns* column_constraints) {
-  if (span == 0)
-    return;
   DCHECK_LT(start_column_index, column_constraints->data.size());
+  DCHECK_GT(span, 1u);
+
   wtf_size_t effective_span =
       std::min(span, column_constraints->data.size() - start_column_index);
-  if (effective_span == 0)
-    return;
   NGTableTypes::Column* start_column =
       &column_constraints->data[start_column_index];
   NGTableTypes::Column* end_column = start_column + effective_span;
@@ -612,9 +610,6 @@ void NGTableAlgorithmUtils::ComputeSectionMinimumRowBlockSizes(
   // Redistribute rowspanned cell block sizes.
   std::stable_sort(rowspan_cells.begin(), rowspan_cells.end());
   for (NGTableTypes::RowspanCell& rowspan_cell : rowspan_cells) {
-    // Spec: rowspan of 0 means all remaining rows.
-    if (rowspan_cell.span == 0)
-      rowspan_cell.span = current_row - rowspan_cell.start_row;
     // Truncate rows that are too long.
     rowspan_cell.span =
         std::min(current_row - rowspan_cell.start_row, rowspan_cell.span);
