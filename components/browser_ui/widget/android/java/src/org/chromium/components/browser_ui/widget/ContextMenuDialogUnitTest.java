@@ -4,33 +4,55 @@
 
 package org.chromium.components.browser_ui.widget;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+
 import android.app.ActionBar.LayoutParams;
 import android.app.Activity;
+import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.FrameLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.mockito.Spy;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.Shadows;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowPhoneWindow;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.ui.widget.UiWidgetFactory;
 
 /** Unit test for {@link ContextMenuDialog}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowPhoneWindow.class})
 public class ContextMenuDialogUnitTest {
+    @Rule
+    public MockitoRule mockitoRule = MockitoJUnit.rule();
+
     ContextMenuDialog mDialog;
 
     Activity mActivity;
-    View mMenuContentView;
+    FrameLayout mMenuContentView;
     View mRootView;
+
+    @Mock
+    UiWidgetFactory mMockUiWidgetFactory;
+    @Spy
+    PopupWindow mSpyPopupWindow;
 
     @Before
     public void setup() {
@@ -38,15 +60,22 @@ public class ContextMenuDialogUnitTest {
         mRootView = new FrameLayout(mActivity);
         TextView textView = new TextView(mActivity);
         textView.setText("Test String");
-        mMenuContentView = textView;
+        mMenuContentView = new FrameLayout(mActivity);
+        mMenuContentView.addView(textView);
         mActivity.setContentView(
                 mRootView, new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+
+        mSpyPopupWindow = Mockito.spy(UiWidgetFactory.getInstance().createPopupWindow(mActivity));
+        UiWidgetFactory.setInstance(mMockUiWidgetFactory);
+        Mockito.when(mMockUiWidgetFactory.createPopupWindow(any())).thenReturn(mSpyPopupWindow);
+        Mockito.doNothing()
+                .when(mSpyPopupWindow)
+                .showAtLocation(any(View.class), anyInt(), anyInt(), anyInt());
     }
 
     @Test
     public void testCreate_usePopupStyle() {
-        mDialog = new ContextMenuDialog(mActivity, 0, 0, 0, 0, 0, 0, mRootView, mMenuContentView,
-                /*isPopup=*/false, /*shouldRemoveScrim=*/true, 0, 0);
+        mDialog = createContextMenuDialog(/*isPopup=*/false, /*shouldRemoveScrim=*/true);
         mDialog.show();
 
         ShadowPhoneWindow window = (ShadowPhoneWindow) Shadows.shadowOf(mDialog.getWindow());
@@ -67,8 +96,7 @@ public class ContextMenuDialogUnitTest {
 
     @Test
     public void testCreateDialog_useRegularStyle() {
-        mDialog = new ContextMenuDialog(mActivity, 0, 0, 0, 0, 0, 0, mRootView, mMenuContentView,
-                /*isPopup=*/false, /*shouldRemoveScrim=*/false, 0, 0);
+        mDialog = createContextMenuDialog(/*isPopup=*/false, /*shouldRemoveScrim=*/false);
         mDialog.show();
 
         // Only checks the flag is unset to make sure the setup for |shouldRemoveScrim| is not ran.
@@ -77,5 +105,46 @@ public class ContextMenuDialogUnitTest {
                 window.getFlag(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS));
         Assert.assertFalse("FLAG_NOT_TOUCH_MODAL is in window flags.",
                 window.getFlag(WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL));
+    }
+
+    @Test
+    public void testShowPopupWindow() {
+        mDialog = createContextMenuDialog(/*isPopup=*/true, /*shouldRemoveScrim=*/false);
+        mDialog.show();
+        // Request layout so #onLayoutChange is triggered.
+        mRootView.requestLayout();
+
+        final ArgumentCaptor<Integer> gravityCaptor = ArgumentCaptor.forClass(Integer.class);
+        Mockito.verify(mSpyPopupWindow)
+                .showAtLocation(
+                        eq(mRootView.getRootView()), gravityCaptor.capture(), anyInt(), anyInt());
+
+        Assert.assertEquals("Popup gravity should have Gravity.START.", Gravity.START,
+                (gravityCaptor.getValue() & Gravity.START));
+        Assert.assertEquals("Popup gravity should have Gravity.TOP.", Gravity.TOP,
+                (gravityCaptor.getValue() & Gravity.TOP), Gravity.TOP);
+
+        mDialog.dismiss();
+        Mockito.verify(mSpyPopupWindow).dismiss();
+    }
+
+    /**
+     * Inspired by https://crbug.com/1281011. If popup context menu is dismissed before
+     * #onLayoutRequest for the root view, popup menu should not get invoked.
+     */
+    @Test
+    public void testShowPopupWindow_BeforeOnLayout() {
+        mDialog = createContextMenuDialog(/*isPopup=*/true, /*shouldRemoveScrim=*/false);
+        mDialog.show();
+
+        mDialog.dismiss();
+        // Spy popup is not invoked because the dialog does not manage to create the popup window.
+        Mockito.verify(mSpyPopupWindow, Mockito.times(0)).dismiss();
+    }
+
+    private ContextMenuDialog createContextMenuDialog(boolean isPopup, boolean shouldRemoveScrim) {
+        return new ContextMenuDialog(mActivity, 0, 0, 0, 0, ContextMenuDialog.NO_CUSTOM_MARGIN,
+                ContextMenuDialog.NO_CUSTOM_MARGIN, mRootView, mMenuContentView, isPopup,
+                shouldRemoveScrim, 0, 0);
     }
 }
