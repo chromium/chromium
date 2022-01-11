@@ -12,6 +12,7 @@
 #include "base/cxx17_backports.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
@@ -103,7 +104,6 @@ class BidderWorkletTest : public testing::Test {
   // but test that set these can use this to reset values to default after each
   // test.
   void SetDefaultParameters() {
-    interest_group_owner_ = url::Origin::Create(GURL("https://foo.test"));
     interest_group_name_ = "Fred";
     interest_group_user_bidding_signals_ = absl::nullopt;
 
@@ -125,8 +125,7 @@ class BidderWorkletTest : public testing::Test {
 
     auction_signals_ = "[\"auction_signals\"]";
     per_buyer_signals_ = "[\"per_buyer_signals\"]";
-    browser_signal_top_window_origin_ =
-        url::Origin::Create(GURL("https://top.window.test/"));
+    top_window_origin_ = url::Origin::Create(GURL("https://top.window.test/"));
     browser_signal_seller_origin_ =
         url::Origin::Create(GURL("https://browser.signal.seller.test/"));
     seller_signals_ = "[\"seller_signals\"]";
@@ -212,7 +211,7 @@ class BidderWorkletTest : public testing::Test {
       const std::vector<std::string>& expected_errors,
       base::OnceClosure done_closure) {
     bidder_worklet->ReportWin(
-        auction_signals_, per_buyer_signals_, browser_signal_top_window_origin_,
+        interest_group_name_, auction_signals_, per_buyer_signals_,
         seller_signals_, browser_signal_render_url_, browser_signal_bid_,
         browser_signal_seller_origin_,
         base::BindOnce(
@@ -243,29 +242,20 @@ class BidderWorkletTest : public testing::Test {
     run_loop.Run();
   }
 
-  // Creates a BiddingInterestGroup based on test fixture configuration.
-  mojom::BiddingInterestGroupPtr CreateBiddingInterestGroup(const GURL& url) {
-    blink::InterestGroup interest_group;
-    interest_group.owner = interest_group_owner_;
-    interest_group.name = interest_group_name_;
-    interest_group.bidding_url = url;
-    interest_group.bidding_wasm_helper_url = interest_group_wasm_url_;
-    interest_group.user_bidding_signals = interest_group_user_bidding_signals_;
-    interest_group.trusted_bidding_signals_url =
-        interest_group_trusted_bidding_signals_url_;
-    interest_group.trusted_bidding_signals_keys =
-        interest_group_trusted_bidding_signals_keys_;
-    interest_group.ads = interest_group_ads_;
-    interest_group.ad_components = interest_group_ad_components_;
+  // Creates a BidderWorkletNonSharedParams based on test fixture
+  // configuration.
+  mojom::BidderWorkletNonSharedParamsPtr CreateBidderWorkletNonSharedParams() {
+    return mojom::BidderWorkletNonSharedParams::New(
+        interest_group_name_, interest_group_trusted_bidding_signals_keys_,
+        interest_group_user_bidding_signals_, interest_group_ads_,
+        interest_group_ad_components_);
+  }
 
-    mojom::BiddingBrowserSignalsPtr bidding_browser_signals =
-        mojom::BiddingBrowserSignals::New(
-            browser_signal_join_count_, browser_signal_bid_count_,
-            CloneWinList(browser_signal_prev_wins_));
-    mojom::BiddingInterestGroupPtr bidding_interest_group =
-        mojom::BiddingInterestGroup::New(std::move(interest_group),
-                                         std::move(bidding_browser_signals));
-    return bidding_interest_group;
+  // Creates a BiddingBrowserSignals based on test fixture configuration.
+  mojom::BiddingBrowserSignalsPtr CreateBiddingBrowserSignals() {
+    return mojom::BiddingBrowserSignals::New(
+        browser_signal_join_count_, browser_signal_bid_count_,
+        CloneWinList(browser_signal_prev_wins_));
   }
 
   // Create a BidderWorklet, returning the remote. If `out_bidder_worklet_impl`
@@ -283,8 +273,9 @@ class BidderWorkletTest : public testing::Test {
 
     auto bidder_worklet_impl = std::make_unique<BidderWorklet>(
         v8_helper_, pause_for_debugger_on_start, std::move(url_loader_factory),
-        CreateBiddingInterestGroup(url.is_empty() ? interest_group_bidding_url_
-                                                  : url));
+        url.is_empty() ? interest_group_bidding_url_ : url,
+        interest_group_wasm_url_, interest_group_trusted_bidding_signals_url_,
+        top_window_origin_);
     if (out_bidder_worklet_impl)
       *out_bidder_worklet_impl = bidder_worklet_impl.get();
 
@@ -296,8 +287,9 @@ class BidderWorkletTest : public testing::Test {
 
   void GenerateBid(mojom::BidderWorklet* bidder_worklet) {
     bidder_worklet->GenerateBid(
-        auction_signals_, per_buyer_signals_, browser_signal_top_window_origin_,
-        browser_signal_seller_origin_, auction_start_time_,
+        CreateBidderWorkletNonSharedParams(), auction_signals_,
+        per_buyer_signals_, browser_signal_seller_origin_,
+        CreateBiddingBrowserSignals(), auction_start_time_,
         base::BindOnce(&BidderWorkletTest::GenerateBidCallback,
                        base::Unretained(this)));
   }
@@ -340,9 +332,8 @@ class BidderWorkletTest : public testing::Test {
 
   // Values used to construct the BiddingInterestGroup passed to the
   // BidderWorklet.
-  url::Origin interest_group_owner_;
   std::string interest_group_name_;
-  const GURL interest_group_bidding_url_ = GURL("https://url.test/");
+  GURL interest_group_bidding_url_ = GURL("https://url.test/");
   absl::optional<GURL> interest_group_wasm_url_;
   absl::optional<std::string> interest_group_user_bidding_signals_;
   std::vector<blink::InterestGroup::Ad> interest_group_ads_;
@@ -357,7 +348,7 @@ class BidderWorkletTest : public testing::Test {
 
   absl::optional<std::string> auction_signals_;
   absl::optional<std::string> per_buyer_signals_;
-  url::Origin browser_signal_top_window_origin_;
+  url::Origin top_window_origin_;
   url::Origin browser_signal_seller_origin_;
   std::string seller_signals_;
   GURL browser_signal_render_url_;
@@ -899,9 +890,10 @@ TEST_F(BidderWorkletTest, GenerateBidParallel) {
     for (size_t i = 0; i < kNumGenerateBidCalls; ++i) {
       size_t bid_value = i + 1;
       bidder_worklet->GenerateBid(
+          CreateBidderWorkletNonSharedParams(),
           /*auction_signals_json=*/base::NumberToString(bid_value),
-          per_buyer_signals_, browser_signal_top_window_origin_,
-          browser_signal_seller_origin_, auction_start_time_,
+          per_buyer_signals_, browser_signal_seller_origin_,
+          CreateBiddingBrowserSignals(), auction_start_time_,
           base::BindLambdaForTesting(
               [&run_loop, &num_generate_bid_calls, bid_value](
                   mojom::BidderWorkletBidPtr bid,
@@ -952,9 +944,9 @@ TEST_F(BidderWorkletTest, GenerateBidNetworkErrorParallel) {
     size_t num_generate_bid_calls = 0;
     for (size_t i = 0; i < kNumGenerateBidCalls; ++i) {
       bidder_worklet->GenerateBid(
-          auction_signals_, per_buyer_signals_,
-          browser_signal_top_window_origin_, browser_signal_seller_origin_,
-          auction_start_time_,
+          CreateBidderWorkletNonSharedParams(), auction_signals_,
+          per_buyer_signals_, browser_signal_seller_origin_,
+          CreateBiddingBrowserSignals(), auction_start_time_,
           base::BindLambdaForTesting(
               [&run_loop, &num_generate_bid_calls](
                   mojom::BidderWorkletBidPtr bid,
@@ -1017,13 +1009,14 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallel1) {
   size_t num_generate_bid_calls = 0;
   for (size_t i = 0; i < kNumGenerateBidCalls; ++i) {
     size_t bid_value = i + 1;
-    // Use a different origin for each GenerateBid call, since it's the only
-    // GenerateBid parameter that affects the URL of bidding signals requests.
-    url::Origin top_window_origin =
-        url::Origin::Create(GURL(base::StringPrintf("https://%zu.test", i)));
+    // Append a different key for each request, so they request distinct URLs.
+    auto interest_group_fields = CreateBidderWorkletNonSharedParams();
+    interest_group_fields->trusted_bidding_signals_keys->push_back(
+        base::NumberToString(i));
     bidder_worklet->GenerateBid(
-        auction_signals_, per_buyer_signals_, top_window_origin,
-        browser_signal_seller_origin_, auction_start_time_,
+        std::move(interest_group_fields), auction_signals_, per_buyer_signals_,
+        browser_signal_seller_origin_, CreateBiddingBrowserSignals(),
+        auction_start_time_,
         base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, bid_value](
                 mojom::BidderWorkletBidPtr bid,
@@ -1056,10 +1049,11 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallel1) {
 
   // 3) The trusted bidding signals are loaded.
   for (size_t i = 0; i < kNumGenerateBidCalls; ++i) {
-    AddJsonResponse(&url_loader_factory_,
-                    GURL(base::StringPrintf(
-                        "https://signals.test/?hostname=%zu.test&keys=key", i)),
-                    base::StringPrintf(R"({"key":%zu})", i + 1));
+    AddJsonResponse(
+        &url_loader_factory_,
+        GURL(base::StringPrintf(
+            "https://signals.test/?hostname=top.window.test&keys=%zu,key", i)),
+        base::StringPrintf(R"({"key":%zu})", i + 1));
   }
 
   // The worklets can now generate bids.
@@ -1095,13 +1089,14 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallel2) {
   size_t num_generate_bid_calls = 0;
   for (size_t i = 0; i < kNumGenerateBidCalls; ++i) {
     size_t bid_value = i + 1;
-    // Use a different origin for each GenerateBid call, since it's the only
-    // GenerateBid parameter that affects the URL of bidding signals requests.
-    url::Origin top_window_origin =
-        url::Origin::Create(GURL(base::StringPrintf("https://%zu.test", i)));
+    // Append a different key for each request, so they request distinct URLs.
+    auto interest_group_fields = CreateBidderWorkletNonSharedParams();
+    interest_group_fields->trusted_bidding_signals_keys->push_back(
+        base::NumberToString(i));
     bidder_worklet->GenerateBid(
-        auction_signals_, per_buyer_signals_, top_window_origin,
-        browser_signal_seller_origin_, auction_start_time_,
+        std::move(interest_group_fields), auction_signals_, per_buyer_signals_,
+        browser_signal_seller_origin_, CreateBiddingBrowserSignals(),
+        auction_start_time_,
         base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, bid_value](
                 mojom::BidderWorkletBidPtr bid,
@@ -1125,10 +1120,11 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallel2) {
 
   // 2) The trusted bidding signals are loaded.
   for (size_t i = 0; i < kNumGenerateBidCalls; ++i) {
-    AddJsonResponse(&url_loader_factory_,
-                    GURL(base::StringPrintf(
-                        "https://signals.test/?hostname=%zu.test&keys=key", i)),
-                    base::StringPrintf(R"({"key":%zu})", i + 1));
+    AddJsonResponse(
+        &url_loader_factory_,
+        GURL(base::StringPrintf(
+            "https://signals.test/?hostname=top.window.test&keys=%zu,key", i)),
+        base::StringPrintf(R"({"key":%zu})", i + 1));
   }
 
   // No callbacks should have been invoked, since the worklet script hasn't
@@ -1179,13 +1175,14 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallel3) {
   size_t num_generate_bid_calls = 0;
   for (size_t i = 0; i < kNumGenerateBidCalls; ++i) {
     size_t bid_value = i + 1;
-    // Use a different origin for each GenerateBid call, since it's the only
-    // GenerateBid parameter that affects the URL of bidding signals requests.
-    url::Origin top_window_origin =
-        url::Origin::Create(GURL(base::StringPrintf("https://%zu.test", i)));
+    // Append a different key for each request, so they request distinct URLs.
+    auto interest_group_fields = CreateBidderWorkletNonSharedParams();
+    interest_group_fields->trusted_bidding_signals_keys->push_back(
+        base::NumberToString(i));
     bidder_worklet->GenerateBid(
-        auction_signals_, per_buyer_signals_, top_window_origin,
-        browser_signal_seller_origin_, auction_start_time_,
+        std::move(interest_group_fields), auction_signals_, per_buyer_signals_,
+        browser_signal_seller_origin_, CreateBiddingBrowserSignals(),
+        auction_start_time_,
         base::BindLambdaForTesting(
             [&run_loop, &num_generate_bid_calls, bid_value](
                 mojom::BidderWorkletBidPtr bid,
@@ -1208,10 +1205,11 @@ TEST_F(BidderWorkletTest, GenerateBidTrustedBiddingSignalsParallel3) {
 
   // 3) The trusted bidding signals are loaded.
   for (size_t i = 0; i < kNumGenerateBidCalls; ++i) {
-    AddJsonResponse(&url_loader_factory_,
-                    GURL(base::StringPrintf(
-                        "https://signals.test/?hostname=%zu.test&keys=key", i)),
-                    base::StringPrintf(R"({"key":%zu})", i + 1));
+    AddJsonResponse(
+        &url_loader_factory_,
+        GURL(base::StringPrintf(
+            "https://signals.test/?hostname=top.window.test&keys=%zu,key", i)),
+        base::StringPrintf(R"({"key":%zu})", i + 1));
   }
 
   // The worklets can now generate bids.
@@ -1309,14 +1307,14 @@ TEST_F(BidderWorkletTest, GenerateBidPerBuyerSignals) {
 }
 
 TEST_F(BidderWorkletTest, GenerateBidInterestGroupOwner) {
-  interest_group_owner_ = url::Origin::Create(GURL("https://foo.test/"));
+  interest_group_bidding_url_ = GURL("https://foo.test/bar");
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: interestGroup.owner, bid:1, render:"https://response.test/"})",
       mojom::BidderWorkletBid::New(
           R"("https://foo.test")", 1, GURL("https://response.test/"),
           /*ad_components=*/absl::nullopt, base::TimeDelta()));
 
-  interest_group_owner_ = url::Origin::Create(GURL("https://[::1]:40000/"));
+  interest_group_bidding_url_ = GURL("https://[::1]:40000/");
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: interestGroup.owner, bid:1, render:"https://response.test/"})",
       mojom::BidderWorkletBid::New(
@@ -1343,8 +1341,7 @@ TEST_F(BidderWorkletTest, GenerateBidBrowserSignalSellerOrigin) {
 }
 
 TEST_F(BidderWorkletTest, GenerateBidBrowserSignalTopWindowOrigin) {
-  browser_signal_top_window_origin_ =
-      url::Origin::Create(GURL("https://top.window.test/"));
+  top_window_origin_ = url::Origin::Create(GURL("https://top.window.test/"));
   RunGenerateBidWithReturnValueExpectingResult(
       R"({ad: browserSignals.topWindowHostname, bid:1, render:"https://response.test/"})",
       mojom::BidderWorkletBid::New(
@@ -1521,9 +1518,8 @@ TEST_F(BidderWorkletTest, WasmReportWin) {
 
   base::RunLoop run_loop;
   bidder_worklet->ReportWin(
-      /*auction_signals_json=*/"0", per_buyer_signals_,
-      browser_signal_top_window_origin_, seller_signals_,
-      browser_signal_render_url_, browser_signal_bid_,
+      interest_group_name_, /*auction_signals_json=*/"0", per_buyer_signals_,
+      seller_signals_, browser_signal_render_url_, browser_signal_bid_,
       browser_signal_seller_origin_,
       base::BindLambdaForTesting(
           [&run_loop](const absl::optional<GURL>& report_url,
@@ -1808,7 +1804,7 @@ TEST_F(BidderWorkletTest, DeleteBeforeReportWinCallback) {
 
   base::WaitableEvent* event_handle = WedgeV8Thread(v8_helper_.get());
   bidder_worklet->ReportWin(
-      auction_signals_, per_buyer_signals_, browser_signal_top_window_origin_,
+      interest_group_name_, auction_signals_, per_buyer_signals_,
       seller_signals_, browser_signal_render_url_, browser_signal_bid_,
       browser_signal_seller_origin_,
       base::BindOnce([](const absl::optional<GURL>& report_url,
@@ -1844,9 +1840,9 @@ TEST_F(BidderWorkletTest, ReportWinParallel) {
     size_t num_report_win_calls = 0;
     for (size_t i = 0; i < kNumReportWinCalls; ++i) {
       bidder_worklet->ReportWin(
+          interest_group_name_,
           /*auction_signals_json=*/base::NumberToString(i), per_buyer_signals_,
-          browser_signal_top_window_origin_, seller_signals_,
-          browser_signal_render_url_, browser_signal_bid_,
+          seller_signals_, browser_signal_render_url_, browser_signal_bid_,
           browser_signal_seller_origin_,
           base::BindLambdaForTesting(
               [&run_loop, &num_report_win_calls, i](
@@ -1893,9 +1889,9 @@ TEST_F(BidderWorkletTest, ReportWinNetworkErrorParallel) {
     size_t num_report_win_calls = 0;
     for (size_t i = 0; i < kNumReportWinCalls; ++i) {
       bidder_worklet->ReportWin(
+          interest_group_name_,
           /*auction_signals_json=*/base::NumberToString(i), per_buyer_signals_,
-          browser_signal_top_window_origin_, seller_signals_,
-          browser_signal_render_url_, browser_signal_bid_,
+          seller_signals_, browser_signal_render_url_, browser_signal_bid_,
           browser_signal_seller_origin_,
           base::BindLambdaForTesting(
               [&run_loop, &num_report_win_calls](
@@ -1992,7 +1988,7 @@ TEST_F(BidderWorkletTest, ReportWinSellerSignals) {
 }
 
 TEST_F(BidderWorkletTest, ReportWinInterestGroupOwner) {
-  interest_group_owner_ = url::Origin::Create(GURL("https://foo.test/"));
+  interest_group_bidding_url_ = GURL("https://foo.test/bar");
   // Add an extra ".test" because origin's shouldn't have a terminal slash,
   // unlike URLs. If an extra slash were added to the origin, this would end up
   // as https://foo.test/.test, instead.
@@ -2000,15 +1996,14 @@ TEST_F(BidderWorkletTest, ReportWinInterestGroupOwner) {
       R"(sendReportTo(browserSignals.interestGroupOwner + ".test"))",
       GURL("https://foo.test.test/"));
 
-  interest_group_owner_ = url::Origin::Create(GURL("https://[::1]:40000/"));
+  interest_group_bidding_url_ = GURL("https://[::1]:40000/");
   RunReportWinWithFunctionBodyExpectingResult(
       R"(sendReportTo(browserSignals.interestGroupOwner))",
       GURL("https://[::1]:40000/"));
 }
 
 TEST_F(BidderWorkletTest, ReportWinBrowserSignalTopWindowOrigin) {
-  browser_signal_top_window_origin_ =
-      url::Origin::Create(GURL("https://top.window.test/"));
+  top_window_origin_ = url::Origin::Create(GURL("https://top.window.test/"));
   RunReportWinWithFunctionBodyExpectingResult(
       R"(sendReportTo("https://" + browserSignals.topWindowHostname))",
       GURL("https://top.window.test/"));
@@ -2078,7 +2073,7 @@ TEST_F(BidderWorkletTest, ScriptIsolation) {
   for (int i = 0; i < 3; ++i) {
     base::RunLoop run_loop;
     bidder_worklet->ReportWin(
-        auction_signals_, per_buyer_signals_, browser_signal_top_window_origin_,
+        interest_group_name_, auction_signals_, per_buyer_signals_,
         seller_signals_, browser_signal_render_url_, browser_signal_bid_,
         browser_signal_seller_origin_,
         base::BindLambdaForTesting(

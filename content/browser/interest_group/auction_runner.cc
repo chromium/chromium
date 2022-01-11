@@ -305,10 +305,16 @@ void AuctionRunner::OnBidderWorkletProcessReceived(BidState* bid_state) {
                     /*disconnect_handler=*/base::BindOnce(
                         &AuctionRunner::OnGenerateBidCrashed,
                         base::Unretained(this), bid_state));
+  const blink::InterestGroup& interest_group =
+      bid_state->bidder.bidding_group->group;
   bid_state->bidder_worklet->GenerateBid(
+      auction_worklet::mojom::BidderWorkletNonSharedParams::New(
+          interest_group.name, interest_group.trusted_bidding_signals_keys,
+          interest_group.user_bidding_signals, interest_group.ads,
+          interest_group.ad_components),
       auction_config_->shareable_auction_ad_config->auction_signals,
-      PerBuyerSignals(bid_state), browser_signals_->top_frame_origin,
-      browser_signals_->seller, auction_start_time_,
+      PerBuyerSignals(bid_state), browser_signals_->seller,
+      bid_state->bidder.bidding_group->signals.Clone(), auction_start_time_,
       base::BindOnce(&AuctionRunner::OnGenerateBidComplete,
                      base::Unretained(this), bid_state));
 }
@@ -568,10 +574,11 @@ void AuctionRunner::ReportBidWin(
               {top_bidder_->bidder.bidding_group->group.bidding_url->spec(),
                " crashed while trying to run reportWin()."})));
   top_bidder_->bidder_worklet->ReportWin(
+      top_bidder_->bidder.bidding_group->group.name,
       auction_config_->shareable_auction_ad_config->auction_signals,
-      PerBuyerSignals(top_bidder_), browser_signals_->top_frame_origin,
-      signals_for_winner_arg, top_bidder_->bid_result->render_url,
-      top_bidder_->bid_result->bid, auction_config_->seller,
+      PerBuyerSignals(top_bidder_), signals_for_winner_arg,
+      top_bidder_->bid_result->render_url, top_bidder_->bid_result->bid,
+      auction_config_->seller,
       base::BindOnce(&AuctionRunner::OnReportBidWinComplete,
                      base::Unretained(this)));
 }
@@ -686,7 +693,10 @@ void AuctionRunner::LoadBidderWorklet(BidState& bid_state,
   bid_state.process_handle->GetService()->LoadBidderWorklet(
       std::move(worklet_receiver),
       bid_state.bidder_worklet_debug->should_pause_on_start(),
-      std::move(url_loader_factory), bidder->Clone());
+      std::move(url_loader_factory), *bidder->group.bidding_url,
+      bidder->group.bidding_wasm_helper_url,
+      bidder->group.trusted_bidding_signals_url,
+      browser_signals_->top_frame_origin);
   bid_state.bidder_worklet.set_disconnect_handler(
       std::move(disconnect_handler));
 }

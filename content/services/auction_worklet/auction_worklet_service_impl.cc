@@ -31,12 +31,16 @@ void AuctionWorkletServiceImpl::LoadBidderWorklet(
     bool pause_for_debugger_on_start,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         pending_url_loader_factory,
-    mojom::BiddingInterestGroupPtr bidding_interest_group) {
-  bidder_worklets_.Add(std::make_unique<BidderWorklet>(
-                           auction_v8_helper_, pause_for_debugger_on_start,
-                           std::move(pending_url_loader_factory),
-                           std::move(bidding_interest_group)),
-                       std::move(bidder_worklet_receiver));
+    const GURL& script_source_url,
+    const absl::optional<GURL>& wasm_helper_url,
+    const absl::optional<GURL>& trusted_bidding_signals_url,
+    const url::Origin& top_window_origin) {
+  bidder_worklets_.Add(
+      std::make_unique<BidderWorklet>(
+          auction_v8_helper_, pause_for_debugger_on_start,
+          std::move(pending_url_loader_factory), script_source_url,
+          wasm_helper_url, trusted_bidding_signals_url, top_window_origin),
+      std::move(bidder_worklet_receiver));
 }
 
 void AuctionWorkletServiceImpl::LoadSellerWorklet(

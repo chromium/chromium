@@ -48,11 +48,14 @@ class TestAuctionProcessManager
 
   void LoadBidderWorklet(
       mojo::PendingReceiver<auction_worklet::mojom::BidderWorklet>
-          bidder_worklet,
-      bool should_pause_on_start,
-      mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory,
-      auction_worklet::mojom::BiddingInterestGroupPtr bidding_interest_group)
-      override {
+          bidder_worklet_receiver,
+      bool pause_for_debugger_on_start,
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>
+          pending_url_loader_factory,
+      const GURL& script_source_url,
+      const absl::optional<GURL>& bidding_wasm_helper_url,
+      const absl::optional<GURL>& trusted_bidding_signals_url,
+      const url::Origin& top_window_origin) override {
     NOTREACHED();
   }
 
