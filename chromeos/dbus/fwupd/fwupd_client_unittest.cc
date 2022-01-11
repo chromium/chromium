@@ -29,11 +29,15 @@ const char kFakeUpdateVersionForTesting[] = "1.0.0";
 const char kFakeUpdateDescriptionForTesting[] =
     "This is a fake update for testing.";
 const uint32_t kFakeUpdatePriorityForTesting = 1;
+const char kFakeUpdateUriForTesting[] =
+    "file:///usr/share/fwupd/remotes.d/vendor/firmware/testFirmwarePath-V1.cab";
+const char kFakeUpdateFileNameForTesting[] = "testFirmwarePath-V1.cab";
 const char kNameKey[] = "Name";
 const char kIdKey[] = "DeviceId";
 const char kVersionKey[] = "Version";
 const char kDescriptionKey[] = "Description";
 const char kPriorityKey[] = "Urgency";
+const char kUriKey[] = "Uri";
 
 void RunResponseOrErrorCallback(
     dbus::ObjectProxy::ResponseOrErrorCallback callback,
@@ -128,6 +132,7 @@ class FwupdClientTest : public testing::Test {
     // that doesn't support unsigned numbers. So it needs to be casted to int.
     CHECK_EQ(static_cast<int>(kFakeUpdatePriorityForTesting),
              (*updates)[0].priority);
+    CHECK_EQ(kFakeUpdateFileNameForTesting, (*updates)[0].filepath.value());
   }
 
   void CheckInstallState(bool success) { CHECK_EQ(install_success_, success); }
@@ -291,6 +296,11 @@ TEST_F(FwupdClientTest, RequestUpgrades) {
   device_array_writer.OpenDictEntry(&dict_writer);
   dict_writer.AppendString(kPriorityKey);
   dict_writer.AppendVariantOfUint32(kFakeUpdatePriorityForTesting);
+  device_array_writer.CloseContainer(&dict_writer);
+
+  device_array_writer.OpenDictEntry(&dict_writer);
+  dict_writer.AppendString(kUriKey);
+  dict_writer.AppendVariantOfString(kFakeUpdateUriForTesting);
   device_array_writer.CloseContainer(&dict_writer);
 
   response_array_writer.CloseContainer(&device_array_writer);

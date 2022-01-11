@@ -5,6 +5,7 @@
 module ash.firmware_update.mojom;
 
 import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/file_path.mojom";
 
 // Represents the priority of an firmware update e.g. a security update may be
 // considered a critical priority.
@@ -32,6 +33,9 @@ struct FirmwareUpdate {
 
   // Priority of the device's firmware update.
   UpdatePriority priority;
+
+  // Filepath of the device's firmware update.
+  mojo_base.mojom.FilePath filepath;
 };
 
 // Contains the completion percentage and state of an in-progress firmware

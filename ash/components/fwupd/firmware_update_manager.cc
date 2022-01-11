@@ -122,6 +122,7 @@ firmware_update::mojom::FirmwareUpdatePtr CreateUpdate(
   update->device_description = base::UTF8ToUTF16(update_details.description);
   update->priority =
       firmware_update::mojom::UpdatePriority(update_details.priority);
+  update->filepath = update_details.filepath;
   return update;
 }
 

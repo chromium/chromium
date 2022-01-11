@@ -10,8 +10,10 @@ component("fwupd") {
 
   deps = [
     "//ash/constants",
+    "//base",
     "//chromeos/dbus:common",
     "//dbus",
+    "//url",
   ]
 
   sources = [

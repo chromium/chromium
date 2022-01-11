@@ -15,6 +15,7 @@ export const fakeFirmwareUpdates = [[
         `Update the firmware to the latest to enhance the security of your HP
          dock device`),
     priority: UpdatePriority.kCritical,
+    filepath: {'path': '1.cab'},
   },
   {
     deviceId: '2',
@@ -24,6 +25,7 @@ export const fakeFirmwareUpdates = [[
         `Updating your ColorHugALS device firmware improves performance and
          adds new features`),
     priority: UpdatePriority.kMedium,
+    filepath: {'path': '2.cab'},
   },
   {
     deviceId: '3',
@@ -32,6 +34,7 @@ export const fakeFirmwareUpdates = [[
     deviceDescription: stringToMojoString16(
         'Update firmware for Logitech keyboard to improve performance'),
     priority: UpdatePriority.kLow,
+    filepath: {'path': '3.cab'},
   },
 ]];
 
@@ -50,6 +53,7 @@ export const fakeFirmwareUpdate = {
   deviceDescription: stringToMojoString16(
       'Update firmware for Logitech keyboard to improve performance'),
   priority: UpdatePriority.kLow,
+  filepath: {'path': '1.cab'},
 };
 
 /** @type {!FirmwareUpdate} */
@@ -60,4 +64,5 @@ export const fakeCriticalFirmwareUpdate = {
   deviceDescription: stringToMojoString16(
       'Update firmware for Logitech keyboard to improve performance'),
   priority: UpdatePriority.kCritical,
+  filepath: {'path': '2.cab'},
 };

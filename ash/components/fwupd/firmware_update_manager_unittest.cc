@@ -39,12 +39,16 @@ const char kFakeUpdateDescriptionForTesting[] =
     "This is a fake update for testing.";
 const uint32_t kFakeUpdatePriorityForTesting = 1;
 const char kFakeUpdateVersionForTesting[] = "1.0.0";
+const char kFakeUpdateUriForTesting[] =
+    "file:///usr/share/fwupd/remotes.d/vendor/firmware/testFirmwarePath-V1.cab";
+const char kFakeUpdateFileNameForTesting[] = "testFirmwarePath-V1.cab";
 const char kFwupdServiceName[] = "org.freedesktop.fwupd";
 const char kFwupdServicePath[] = "/";
 const char kDescriptionKey[] = "Description";
 const char kIdKey[] = "DeviceId";
 const char kNameKey[] = "Name";
 const char kPriorityKey[] = "Urgency";
+const char kUriKey[] = "Uri";
 const char kVersionKey[] = "Version";
 const char kDownloadDir[] = "firmware-updates";
 const char kCacheDir[] = "cache";
@@ -291,6 +295,11 @@ class FirmwareUpdateManagerTest : public testing::Test {
     dict_writer.AppendVariantOfUint32(kFakeUpdatePriorityForTesting);
     device_array_writer.CloseContainer(&dict_writer);
 
+    device_array_writer.OpenDictEntry(&dict_writer);
+    dict_writer.AppendString(kUriKey);
+    dict_writer.AppendVariantOfString(kFakeUpdateUriForTesting);
+    device_array_writer.CloseContainer(&dict_writer);
+
     response_array_writer.CloseContainer(&device_array_writer);
     response_writer.CloseContainer(&response_array_writer);
 
@@ -433,6 +442,7 @@ TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesOneDeviceOneUpdate) {
   EXPECT_EQ(ash::firmware_update::mojom::UpdatePriority(
                 kFakeUpdatePriorityForTesting),
             updates[0]->priority);
+  EXPECT_EQ(kFakeUpdateFileNameForTesting, updates[0]->filepath.value());
 }
 
 TEST_F(FirmwareUpdateManagerTest, RequestAllUpdatesTwoDeviceOneWithUpdate) {

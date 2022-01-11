@@ -9,18 +9,42 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
+#include "base/files/file_path.h"
 #include "base/values.h"
 #include "chromeos/dbus/fwupd/dbus_constants.h"
 #include "chromeos/dbus/fwupd/fwupd_properties.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
+#include "url/gurl.h"
 
 namespace chromeos {
 
 namespace {
 
 FwupdClient* g_instance = nullptr;
+
+const char kCabFileExtension[] = ".cab";
+
+base::FilePath GetFilePathFromUri(const GURL uri) {
+  const std::string filepath = uri.ExtractFileName();
+
+  if (!filepath.empty()) {
+    // Verify that the extension is .cab.
+    std::size_t extension_delim = filepath.find_last_of(".");
+    if (extension_delim == std::string::npos ||
+        filepath.substr(extension_delim) != kCabFileExtension) {
+      // Bad file, return with empty file path;
+      LOG(ERROR) << "Bad file found: " << uri.spec();
+      return base::FilePath();
+    }
+
+    return base::FilePath(FILE_PATH_LITERAL(filepath));
+  }
+
+  // Return empty file path if filename can't be found.
+  return base::FilePath();
+}
 
 }  // namespace
 
@@ -186,16 +210,24 @@ class FwupdClientImpl : public FwupdClient {
       const auto* version = dict->FindKey("Version");
       const auto* description = dict->FindKey("Description");
       const auto* priority = dict->FindKey("Urgency");
+      const auto* uri = dict->FindKey("Uri");
+      base::FilePath filepath;
 
-      const bool success = version && description && priority;
+      if (uri) {
+        filepath = GetFilePathFromUri(GURL(uri->GetString()));
+      }
+
+      const bool success =
+          version && description && priority && !filepath.empty();
       // TODO(michaelcheco): Confirm that this is the expected behavior.
       if (success) {
         VLOG(1) << "fwupd: Found update version for device: " << device_id
                 << " with version: " << version->GetString();
         updates.emplace_back(version->GetString(), description->GetString(),
-                             priority->GetInt());
+                             priority->GetInt(), filepath);
       } else {
-        LOG(ERROR) << "Update version, description or priority is not found.";
+        LOG(ERROR) << "Update version, description, filepath or priority is "
+                   << "not found.";
       }
     }
 

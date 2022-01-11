@@ -5,6 +5,7 @@
 import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
 import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
+import '/file_path.mojom-lite.js';
 import './firmware_shared_css.js';
 import './firmware_shared_fonts.js';
 import './mojom/firmware_update.mojom-lite.js';

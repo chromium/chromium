@@ -13,6 +13,7 @@ assert(is_chromeos_ash)
 
 preprocessed_dir = "preprocessed"
 preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
+preprocess_external_mojo_manifest = "preprocessed_external_mojo_manifest.json"
 
 polymer_element_files = [
   "firmware_shared_css.js",
@@ -36,12 +37,17 @@ generate_grd("build_grd") {
   ]
   input_files_base_dir = rebase_path(".", "//")
   deps = [
+    ":preprocess_external_mojo",
     ":preprocess_firmware_update_mojom",
     ":preprocess_generated",
   ]
   manifest_files = [
     "$target_gen_dir/$preprocessed_gen_manifest",
     "$target_gen_dir/manifest_preprocess_mojo.json",
+    "$target_gen_dir/$preprocess_external_mojo_manifest",
+  ]
+  resource_path_rewrites = [
+    "mojo/public/mojom/base/file_path.mojom-lite.js|file_path.mojom-lite.js",
   ]
   grd_prefix = "ash_firmware_update_app"
   out_grd = "$target_gen_dir/${grd_prefix}_resources.grd"
@@ -154,6 +160,14 @@ preprocess_if_expr("preprocess_firmware_update_mojom") {
   out_folder = "$target_gen_dir/$preprocessed_dir"
   out_manifest = "$target_gen_dir/manifest_preprocess_mojo.json"
   in_files = [ "mojom/firmware_update.mojom-lite.js" ]
+}
+
+preprocess_if_expr("preprocess_external_mojo") {
+  deps = [ "//mojo/public/mojom/base:base_js__generator" ]
+  in_folder = "$root_gen_dir"
+  out_folder = "$target_gen_dir/preprocessed_external_mojo"
+  out_manifest = "$target_gen_dir/$preprocess_external_mojo_manifest"
+  in_files = [ "mojo/public/mojom/base/file_path.mojom-lite.js" ]
 }
 
 html_to_js("web_components") {
