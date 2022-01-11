@@ -2647,6 +2647,11 @@ list.autocomplete-suggestions > li {
   height: 32px;
 }
 
+/* "search drive" row */
+list.autocomplete-suggestions > li:first-of-type {
+  color: var(--cros-text-color-secondary);
+}
+
 list.autocomplete-suggestions > li > div.detail-icon {
   flex: none;
   height: 32px;
@@ -2660,7 +2665,6 @@ list.autocomplete-suggestions > li > div.detail-text {
 }
 
 list.autocomplete-suggestions > li > div.detail-text em {
-  color: var(--cros-text-color-secondary);
   font-style: normal;
 }
 
@@ -2668,7 +2672,7 @@ list.autocomplete-suggestions > li > div[search-icon] {
   -webkit-mask-image: url(../images/files/ui/search.svg);
   -webkit-mask-position: center;
   -webkit-mask-repeat: no-repeat;
-  background-color: var(--cros-menu-icon-color);
+  background-color: currentColor;
 }
 
 list.autocomplete-suggestions > [selected],
