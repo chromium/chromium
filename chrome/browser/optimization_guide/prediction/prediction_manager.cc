@@ -215,7 +215,7 @@ struct PredictionDecisionParams {
 };
 
 PredictionManager::PredictionManager(
-    OptimizationGuideStore* model_and_features_store,
+    base::WeakPtr<OptimizationGuideStore> model_and_features_store,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     PrefService* pref_service,
     Profile* profile)
@@ -227,8 +227,6 @@ PredictionManager::PredictionManager(
       pref_service_(pref_service),
       profile_(profile),
       clock_(base::DefaultClock::GetInstance()) {
-  DCHECK(model_and_features_store_);
-
   Initialize();
 }
 
@@ -238,10 +236,12 @@ PredictionManager::~PredictionManager() {
 }
 
 void PredictionManager::Initialize() {
-  model_and_features_store_->Initialize(
-      switches::ShouldPurgeModelAndFeaturesStoreOnStartup(),
-      base::BindOnce(&PredictionManager::OnStoreInitialized,
-                     ui_weak_ptr_factory_.GetWeakPtr()));
+  if (model_and_features_store_) {
+    model_and_features_store_->Initialize(
+        switches::ShouldPurgeModelAndFeaturesStoreOnStartup(),
+        base::BindOnce(&PredictionManager::OnStoreInitialized,
+                       ui_weak_ptr_factory_.GetWeakPtr()));
+  }
 }
 
 void PredictionManager::RegisterOptimizationTargets(
@@ -625,6 +625,10 @@ void PredictionManager::UpdateHostModelFeatures(
     const google::protobuf::RepeatedPtrField<proto::HostModelFeatures>&
         host_model_features) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!model_and_features_store_)
+    return;
+
   std::unique_ptr<StoreUpdateData> host_model_features_update_data =
       StoreUpdateData::CreateHostModelFeaturesStoreUpdateData(
           /*update_time=*/clock_->Now() +
@@ -654,6 +658,10 @@ void PredictionManager::UpdatePredictionModels(
     const google::protobuf::RepeatedPtrField<proto::PredictionModel>&
         prediction_models) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!model_and_features_store_)
+    return;
+
   std::unique_ptr<StoreUpdateData> prediction_model_update_data =
       StoreUpdateData::CreatePredictionModelStoreUpdateData(
           clock_->Now() + features::StoredModelsInactiveDuration());
@@ -721,6 +729,9 @@ void PredictionManager::OnModelReady(const proto::PredictionModel& model) {
   if (switches::IsModelOverridePresent())
     return;
 
+  if (!model_and_features_store_)
+    return;
+
   DCHECK(model.model_info().has_version() &&
          model.model_info().has_optimization_target());
 
@@ -782,6 +793,10 @@ void PredictionManager::OnPredictionModelsStored() {
 
 void PredictionManager::OnHostModelFeaturesStored() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!model_and_features_store_)
+    return;
+
   LOCAL_HISTOGRAM_BOOLEAN(
       "OptimizationGuide.PredictionManager.HostModelFeaturesStored", true);
 
@@ -832,6 +847,10 @@ void PredictionManager::OnStoreInitialized() {
 
 void PredictionManager::LoadHostModelFeatures() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (!model_and_features_store_)
+    return;
+
   // Load the host model features first, each prediction model requires the set
   // of host model features to be known before creation.
   model_and_features_store_->LoadAllHostModelFeatures(
@@ -876,6 +895,9 @@ void PredictionManager::LoadPredictionModels(
     return;
   }
 
+  if (!model_and_features_store_)
+    return;
+
   OptimizationGuideStore::EntryKey model_entry_key;
   for (const auto& optimization_target : optimization_targets) {
     // The prediction model for this optimization target has already been
@@ -909,6 +931,7 @@ void PredictionManager::OnProcessLoadedModel(
     const proto::PredictionModel& model,
     bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   if (success) {
     base::UmaHistogramSparse(
         "OptimizationGuide.PredictionModelLoadedVersion." +
@@ -920,7 +943,8 @@ void PredictionManager::OnProcessLoadedModel(
 
   // Remove model from store if it exists.
   OptimizationGuideStore::EntryKey model_entry_key;
-  if (model_and_features_store_->FindPredictionModelEntryKey(
+  if (model_and_features_store_ &&
+      model_and_features_store_->FindPredictionModelEntryKey(
           model.model_info().optimization_target(), &model_entry_key)) {
     LOCAL_HISTOGRAM_BOOLEAN(
         "OptimizationGuide.PredictionModelRemoved." +

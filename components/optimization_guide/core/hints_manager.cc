@@ -274,9 +274,9 @@ HintsManager::HintsManager(
     bool is_off_the_record,
     const std::string& application_locale,
     PrefService* pref_service,
-    optimization_guide::OptimizationGuideStore* hint_store,
-    optimization_guide::TopHostProvider* top_host_provider,
-    optimization_guide::TabUrlProvider* tab_url_provider,
+    base::WeakPtr<OptimizationGuideStore> hint_store,
+    TopHostProvider* top_host_provider,
+    TabUrlProvider* tab_url_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     network::NetworkConnectionTracker* network_connection_tracker,
     std::unique_ptr<optimization_guide::PushNotificationManager>
@@ -1372,7 +1372,7 @@ void HintsManager::OnDeferredStartup() {
     InitiateHintsFetchScheduling();
 }
 
-optimization_guide::OptimizationGuideStore* HintsManager::hint_store() {
+base::WeakPtr<OptimizationGuideStore> HintsManager::hint_store() {
   return hint_cache_->hint_store();
 }
 

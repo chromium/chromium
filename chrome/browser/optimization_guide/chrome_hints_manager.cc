@@ -65,7 +65,7 @@ namespace optimization_guide {
 ChromeHintsManager::ChromeHintsManager(
     Profile* profile,
     PrefService* pref_service,
-    optimization_guide::OptimizationGuideStore* hint_store,
+    base::WeakPtr<optimization_guide::OptimizationGuideStore> hint_store,
     optimization_guide::TopHostProvider* top_host_provider,
     optimization_guide::TabUrlProvider* tab_url_provider,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
