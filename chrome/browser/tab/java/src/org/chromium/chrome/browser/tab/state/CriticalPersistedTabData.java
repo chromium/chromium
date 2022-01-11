@@ -18,6 +18,7 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
+import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab.TabUserAgent;
 import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tab.WebContentsStateBridge;
@@ -567,13 +568,13 @@ public class CriticalPersistedTabData extends PersistedTabData {
      * Set root id
      */
     public void setRootId(int rootId) {
-        if (mRootId == rootId) return;
+        if (mRootId == rootId || mTab.isDestroyed()) return;
         // TODO(crbug.com/1059640) add in setters for all mutable fields
         mRootId = rootId;
         for (CriticalPersistedTabDataObserver observer : mObservers) {
             observer.onRootIdChanged(mTab, rootId);
         }
-        mTab.setIsTabStateDirty(true);
+        TabStateAttributes.from(mTab).setIsTabStateDirty(true);
         save();
     }
 

@@ -273,14 +273,6 @@ public interface Tab extends TabLifecycle {
     void goForward();
 
     /**
-     * Set whether the TabState representing this Tab has been updated.
-     * This method will ultimately be deprecated when the migration
-     * to CriticalPersistedTabData is complete.
-     * @param isDirty Whether the Tab's state has changed.
-     */
-    void setIsTabStateDirty(boolean isTabStateDirty);
-
-    /**
      * Set whether {@link Tab} metadata (specifically all {@link PersistedTabData})
      * will be saved. Not all Tabs need to be persisted across restarts.
      * The default value when a Tab is initialized is false.

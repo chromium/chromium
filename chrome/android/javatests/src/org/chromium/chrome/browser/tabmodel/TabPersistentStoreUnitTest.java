@@ -29,6 +29,7 @@ import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import org.chromium.base.UserDataHost;
 import org.chromium.base.task.TaskRunner;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
@@ -41,6 +42,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
+import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabModelSelectorMetadata;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore.TabRestoreDetails;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -135,8 +137,10 @@ public class TabPersistentStoreUnitTest {
         };
 
         TabImpl emptyNtpTab = mock(TabImpl.class);
+        UserDataHost emptyNtpTabUserDataHost = new UserDataHost();
+        when(emptyNtpTab.getUserDataHost()).thenReturn(emptyNtpTabUserDataHost);
         when(emptyNtpTab.getUrl()).thenReturn(new GURL(UrlConstants.NTP_URL));
-        when(emptyNtpTab.isTabStateDirty()).thenReturn(true);
+        TabStateAttributes.from(emptyNtpTab).setIsTabStateDirty(true);
         when(emptyNtpTab.canGoBack()).thenReturn(false);
         when(emptyNtpTab.canGoForward()).thenReturn(false);
 
@@ -144,8 +148,10 @@ public class TabPersistentStoreUnitTest {
         assertFalse(mPersistentStore.isTabPendingSave(emptyNtpTab));
 
         TabImpl ntpWithBackNavTab = mock(TabImpl.class);
+        UserDataHost ntpWithBackNavTabUserDataHost = new UserDataHost();
+        when(ntpWithBackNavTab.getUserDataHost()).thenReturn(ntpWithBackNavTabUserDataHost);
         when(ntpWithBackNavTab.getUrl()).thenReturn(new GURL(UrlConstants.NTP_URL));
-        when(ntpWithBackNavTab.isTabStateDirty()).thenReturn(true);
+        TabStateAttributes.from(ntpWithBackNavTab).setIsTabStateDirty(true);
         when(ntpWithBackNavTab.canGoBack()).thenReturn(true);
         when(ntpWithBackNavTab.canGoForward()).thenReturn(false);
 
@@ -153,8 +159,10 @@ public class TabPersistentStoreUnitTest {
         assertTrue(mPersistentStore.isTabPendingSave(ntpWithBackNavTab));
 
         TabImpl ntpWithForwardNavTab = mock(TabImpl.class);
+        UserDataHost ntpWithForwardNavTabUserDataHost = new UserDataHost();
+        when(ntpWithForwardNavTab.getUserDataHost()).thenReturn(ntpWithForwardNavTabUserDataHost);
         when(ntpWithForwardNavTab.getUrl()).thenReturn(new GURL(UrlConstants.NTP_URL));
-        when(ntpWithForwardNavTab.isTabStateDirty()).thenReturn(true);
+        TabStateAttributes.from(ntpWithForwardNavTab).setIsTabStateDirty(true);
         when(ntpWithForwardNavTab.canGoBack()).thenReturn(false);
         when(ntpWithForwardNavTab.canGoForward()).thenReturn(true);
 
@@ -162,8 +170,10 @@ public class TabPersistentStoreUnitTest {
         assertTrue(mPersistentStore.isTabPendingSave(ntpWithForwardNavTab));
 
         TabImpl ntpWithAllTheNavsTab = mock(TabImpl.class);
+        UserDataHost ntpWithAllTheNavsTabUserDataHost = new UserDataHost();
+        when(ntpWithAllTheNavsTab.getUserDataHost()).thenReturn(ntpWithAllTheNavsTabUserDataHost);
         when(ntpWithAllTheNavsTab.getUrl()).thenReturn(new GURL(UrlConstants.NTP_URL));
-        when(ntpWithAllTheNavsTab.isTabStateDirty()).thenReturn(true);
+        TabStateAttributes.from(ntpWithAllTheNavsTab).setIsTabStateDirty(true);
         when(ntpWithAllTheNavsTab.canGoBack()).thenReturn(true);
         when(ntpWithAllTheNavsTab.canGoForward()).thenReturn(true);
 
