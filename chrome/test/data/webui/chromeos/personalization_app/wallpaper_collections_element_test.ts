@@ -3,15 +3,13 @@
 // found in the LICENSE file.
 
 import {kMaximumGooglePhotosPreviews, kMaximumLocalImagePreviews} from 'chrome://personalization/common/constants.js';
-import {WallpaperCollection} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
+import {IFrameApi} from 'chrome://personalization/trusted/iframe_api.js';
 import {emptyState} from 'chrome://personalization/trusted/personalization_state.js';
-import {promisifyIframeFunctionsForTesting, WallpaperCollections} from 'chrome://personalization/trusted/wallpaper/wallpaper_collections_element.js';
-import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
-import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import {WallpaperCollections} from 'chrome://personalization/trusted/wallpaper/wallpaper_collections_element.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
-import {assertWindowObjectsEqual, baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
+import {assertWindowObjectsEqual, baseSetup, initElement, setupTestIFrameApi, teardownElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
@@ -34,8 +32,7 @@ export function WallpaperCollectionsTest() {
   });
 
   test('sends wallpaper collections when loaded', async () => {
-    const {sendCollections: sendCollectionsPromise} =
-        promisifyIframeFunctionsForTesting();
+    const testProxy = setupTestIFrameApi();
     wallpaperCollectionsElement = initElement(WallpaperCollections);
 
     personalizationStore.data.wallpaper.loading = {
@@ -47,9 +44,8 @@ export function WallpaperCollectionsTest() {
     personalizationStore.notifyObservers();
 
     // Wait for |sendCollections| to be called.
-    const [target, data] = await (
-        sendCollectionsPromise as
-        Promise<[Window, Array<WallpaperCollection>]>);
+    const [target, data] = await testProxy.whenCalled('sendCollections') as
+        Parameters<IFrameApi['sendCollections']>;
     await waitAfterNextRender(wallpaperCollectionsElement);
 
     const iframe =
@@ -61,8 +57,7 @@ export function WallpaperCollectionsTest() {
   });
 
   test('sends Google Photos count when loaded', async () => {
-    const {sendGooglePhotosCount: sendGooglePhotosCountPromise} =
-        promisifyIframeFunctionsForTesting();
+    const testProxy = setupTestIFrameApi();
 
     wallpaperCollectionsElement = initElement(WallpaperCollections);
 
@@ -71,8 +66,9 @@ export function WallpaperCollectionsTest() {
     personalizationStore.notifyObservers();
 
     // Wait for |sendGooglePhotosCount| to be called.
-    const [target, data] = await (
-        sendGooglePhotosCountPromise as Promise<[Window, number | null]>);
+    const [target, data] =
+        await testProxy.whenCalled('sendGooglePhotosCount') as
+        Parameters<IFrameApi['sendGooglePhotosCount']>;
     await waitAfterNextRender(wallpaperCollectionsElement);
 
     const iframe =
@@ -85,8 +81,7 @@ export function WallpaperCollectionsTest() {
   });
 
   test('sends Google Photos photos when loaded', async () => {
-    const {sendGooglePhotosPhotos: sendGooglePhotosPhotosPromise} =
-        promisifyIframeFunctionsForTesting();
+    const testProxy = setupTestIFrameApi();
 
     wallpaperCollectionsElement = initElement(WallpaperCollections);
 
@@ -97,8 +92,9 @@ export function WallpaperCollectionsTest() {
     personalizationStore.notifyObservers();
 
     // Wait for |sendGooglePhotosPhotos| to be called.
-    const [target, data] = await (
-        sendGooglePhotosPhotosPromise as Promise<[Window, Array<Url>| null]>);
+    const [target, data] =
+        await testProxy.whenCalled('sendGooglePhotosPhotos') as
+        Parameters<IFrameApi['sendGooglePhotosPhotos']>;
     await waitAfterNextRender(wallpaperCollectionsElement);
 
     const iframe =
@@ -125,25 +121,24 @@ export function WallpaperCollectionsTest() {
 
     wallpaperCollectionsElement = initElement(WallpaperCollections);
     // Wait for initial load to complete.
-    await promisifyIframeFunctionsForTesting().sendImageCounts;
+    const testProxy = setupTestIFrameApi();
+    await testProxy.whenCalled('sendImageCounts');
 
-    let {sendImageCounts: sendImageCountsPromise} =
-        promisifyIframeFunctionsForTesting();
-
+    testProxy.resetResolver('sendImageCounts');
     personalizationStore.data.wallpaper.backdrop.images = {
       'id_0': [wallpaperProvider.images![0]]
     };
     personalizationStore.data.wallpaper.loading.images = {'id_0': false};
     personalizationStore.notifyObservers();
 
-    let counts = (await (
-        sendImageCountsPromise as
-        Promise<[Window, {[key: string]: number | null}]>))[1];
+    let counts =
+        (await testProxy.whenCalled('sendImageCounts') as
+         Parameters<IFrameApi['sendImageCounts']>)[1];
     assertDeepEquals({'id_0': 1}, counts);
 
     // Load two collections in at once, and simulate one failure.
-    sendImageCountsPromise =
-        promisifyIframeFunctionsForTesting().sendImageCounts;
+    testProxy.resetResolver('sendImageCounts');
+
     personalizationStore.data.wallpaper.backdrop.images = {
       'id_0': [wallpaperProvider.images![0]],
       'id_1': [wallpaperProvider.images![0], wallpaperProvider.images![1]],
@@ -160,16 +155,15 @@ export function WallpaperCollectionsTest() {
     };
     personalizationStore.notifyObservers();
 
-    counts = (await (
-        sendImageCountsPromise as
-        Promise<[Window, {[key: string]: number | null}]>))[1];
+    counts =
+        (await testProxy.whenCalled('sendImageCounts') as
+         Parameters<IFrameApi['sendImageCounts']>)[1];
     assertDeepEquals(
         {'id_0': 1, 'id_1': 2, 'id_2': 0, 'id_3': null, 'id_4': 1}, counts);
   });
 
   test('sends local images when loaded', async () => {
-    const {sendLocalImages: sendLocalImagesPromise} =
-        promisifyIframeFunctionsForTesting();
+    const testProxy = setupTestIFrameApi();
 
     wallpaperCollectionsElement = initElement(WallpaperCollections);
 
@@ -185,8 +179,8 @@ export function WallpaperCollectionsTest() {
     personalizationStore.notifyObservers();
 
     // Wait for |sendLocalImages| to be called.
-    const [target, data] =
-        await (sendLocalImagesPromise as Promise<[Window, FilePath[]]>);
+    const [target, data] = await testProxy.whenCalled('sendLocalImages') as
+        Parameters<IFrameApi['sendLocalImages']>;
     await waitAfterNextRender(wallpaperCollectionsElement);
 
     const iframe =
@@ -198,10 +192,7 @@ export function WallpaperCollectionsTest() {
   });
 
   test('sends collections and local images when no internet', async () => {
-    const {
-      sendCollections: sendCollectionsPromise,
-      sendLocalImages: sendLocalImagesPromise
-    } = promisifyIframeFunctionsForTesting();
+    const testProxy = setupTestIFrameApi();
 
     wallpaperCollectionsElement = initElement(WallpaperCollections);
 
@@ -217,9 +208,8 @@ export function WallpaperCollectionsTest() {
     personalizationStore.notifyObservers();
 
     // Wait for |sendCollections| to be called.
-    let [target, data] = await (
-        sendCollectionsPromise as
-        Promise<[Window, Array<WallpaperCollection>]>);
+    let [target, data] = await testProxy.whenCalled('sendCollections') as
+        Parameters<IFrameApi['sendCollections']>;
     await waitAfterNextRender(wallpaperCollectionsElement);
 
     const iframe =
@@ -231,7 +221,8 @@ export function WallpaperCollectionsTest() {
 
     // Wait for |sendLocalImages| to be called.
     let [imageTarget, imageData] =
-        await (sendLocalImagesPromise as Promise<[Window, FilePath[]]>);
+        await testProxy.whenCalled('sendLocalImages') as
+        Parameters<IFrameApi['sendLocalImages']>;
     await waitAfterNextRender(wallpaperCollectionsElement);
 
     assertFalse(iframe!.hidden);
@@ -273,14 +264,12 @@ export function WallpaperCollectionsTest() {
     // Actually run the reducers.
     personalizationStore.setReducersEnabled(true);
 
-    const {sendCollections: sendCollectionsPromise} =
-        promisifyIframeFunctionsForTesting();
+    const testProxy = setupTestIFrameApi();
 
     wallpaperCollectionsElement = initElement(WallpaperCollections);
 
-    const [_, collections] = await (
-        sendCollectionsPromise as
-        Promise<[Window, Array<WallpaperCollection>]>);
+    const [_, collections] = await testProxy.whenCalled('sendCollections') as
+        Parameters<IFrameApi['sendCollections']>;
     assertDeepEquals(wallpaperProvider.collections, collections);
 
     assertDeepEquals(
@@ -323,12 +312,11 @@ export function WallpaperCollectionsTest() {
             wallpaperProvider.collections;
         personalizationStore.data.wallpaper.loading.collections = false;
 
-        const {sendLocalImages, sendLocalImageData} =
-            promisifyIframeFunctionsForTesting();
+        const testProxy = setupTestIFrameApi();
 
         wallpaperCollectionsElement = initElement(WallpaperCollections);
 
-        await sendLocalImages;
+        await testProxy.whenCalled('sendLocalImages');
 
         // No thumbnails loaded so none sent.
         assertFalse(wallpaperCollectionsElement['didSendLocalImageData_']);
@@ -364,8 +352,9 @@ export function WallpaperCollectionsTest() {
 
         // 2 thumbnails have now loaded. 1 failed. But there are no more
         // remaining to try loading, should send local image data anyway.
-        const [_, sentData] = await (
-            sendLocalImageData as Promise<[Window, Record<string, string>]>);
+        const [_, sentData] =
+            await testProxy.whenCalled('sendLocalImageData') as
+            Parameters<IFrameApi['sendLocalImageData']>;
 
         assertTrue(wallpaperCollectionsElement['didSendLocalImageData_']);
         assertDeepEquals(

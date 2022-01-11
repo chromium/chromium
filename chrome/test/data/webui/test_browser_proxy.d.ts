@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-export class TestBrowserProxy {
-  static fromClass<T>(clazz: {new(): T}): T&TestBrowserProxy;
-  constructor(methodNames?: Array<string>);
-  methodCalled(methodName: string, ...args: any[]): any;
-  whenCalled(methodName: string): Promise<any>;
-  resetResolver(methodName: string): void;
+export class TestBrowserProxy<T = any> {
+  static fromClass<T>(clazz: {new(): T}): T&TestBrowserProxy<T>;
+  constructor(methodNames?: Array<keyof T>);
+  methodCalled(methodName: keyof T, ...args: any[]): any;
+  whenCalled(methodName: keyof T): Promise<any>;
+  resetResolver(methodName: keyof T): void;
   reset(): void;
-  getCallCount(methodName: string): number;
-  getArgs(methodName: string): Array<any>;
-  setResultMapperFor(methodName: string, resultMapper: Function): void;
-  setResultFor(methodName: string, value: any): void;
+  getCallCount(methodName: keyof T): number;
+  getArgs(methodName: keyof T): Array<any>;
+  setResultMapperFor(methodName: keyof T, resultMapper: Function): void;
+  setResultFor(methodName: keyof T, value: any): void;
 }

@@ -16,60 +16,12 @@ import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/pol
 
 import {kMaximumGooglePhotosPreviews, kMaximumLocalImagePreviews} from '../../common/constants.js';
 import {isNonEmptyArray, isNullOrArray, isNullOrNumber, promisifyOnload} from '../../common/utils.js';
-import {sendCollections, sendGooglePhotosCount, sendGooglePhotosPhotos, sendImageCounts, sendLocalImageData, sendLocalImages, sendVisible} from '../iframe_api.js';
+import {IFrameApi} from '../iframe_api.js';
 import {WallpaperCollection, WallpaperImage, WallpaperProviderInterface} from '../personalization_app.mojom-webui.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {initializeBackdropData} from './wallpaper_controller.js';
 import {getWallpaperProvider} from './wallpaper_interface_provider.js';
-
-let sendCollectionsFunction = sendCollections;
-let sendGooglePhotosCountFunction = sendGooglePhotosCount;
-let sendGooglePhotosPhotosFunction = sendGooglePhotosPhotos;
-let sendImageCountsFunction = sendImageCounts;
-let sendLocalImagesFunction = sendLocalImages;
-let sendLocalImageDataFunction = sendLocalImageData;
-
-/**
- * Mock out the iframe api functions for testing. Return promises that are
- * resolved when the function is called by |WallpaperCollectionsElement|.
- */
-interface PromisifyResult {
-  sendCollections: Promise<unknown>;
-  sendGooglePhotosCount: Promise<unknown>;
-  sendGooglePhotosPhotos: Promise<unknown>;
-  sendImageCounts: Promise<unknown>;
-  sendLocalImages: Promise<unknown>;
-  sendLocalImageData: Promise<unknown>;
-}
-
-export function promisifyIframeFunctionsForTesting(): PromisifyResult {
-  const resolvers = {} as
-      {[key in keyof PromisifyResult]: (_: unknown) => void};
-  const promises = ([
-                     'sendCollections',
-                     'sendGooglePhotosCount',
-                     'sendGooglePhotosPhotos',
-                     'sendImageCounts',
-                     'sendLocalImages',
-                     'sendLocalImageData',
-                   ] as (keyof PromisifyResult)[])
-                       .reduce((result, next) => {
-                         result[next] =
-                             new Promise(resolve => resolvers[next] = resolve);
-                         return result;
-                       }, {} as PromisifyResult);
-  sendCollectionsFunction = (...args) => resolvers['sendCollections'](args);
-  sendGooglePhotosCountFunction = (...args) =>
-      resolvers['sendGooglePhotosCount'](args);
-  sendGooglePhotosPhotosFunction = (...args) =>
-      resolvers['sendGooglePhotosPhotos'](args);
-  sendImageCountsFunction = (...args) => resolvers['sendImageCounts'](args);
-  sendLocalImagesFunction = (...args) => resolvers['sendLocalImages'](args);
-  sendLocalImageDataFunction = (...args) =>
-      resolvers['sendLocalImageData'](args);
-  return promises;
-}
 
 export class WallpaperCollections extends WithPersonalizationStore {
   static get is() {
@@ -227,7 +179,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
       document.title = this.i18n('title');
     }
     const iframe = await this.iframePromise_;
-    sendVisible(iframe.contentWindow!, !hidden);
+    IFrameApi.getInstance().sendVisible(iframe.contentWindow!, !hidden);
   }
 
   private computeHasError_(
@@ -254,7 +206,8 @@ export class WallpaperCollections extends WithPersonalizationStore {
     // the iframe. Collections could be null/empty array.
     if (!collectionsLoading) {
       const iframe = await this.iframePromise_;
-      sendCollectionsFunction(iframe.contentWindow!, collections);
+      IFrameApi.getInstance().sendCollections(
+          iframe.contentWindow!, collections);
     }
   }
 
@@ -291,7 +244,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
                          return result;
                        }, {} as Record<string, number|null>);
     const iframe = await this.iframePromise_;
-    sendImageCountsFunction(iframe.contentWindow!, counts);
+    IFrameApi.getInstance().sendImageCounts(iframe.contentWindow!, counts);
   }
 
   /** Invoked on changes to the list of Google Photos photos. */
@@ -301,7 +254,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
       return;
     }
     const iframe = await this.iframePromise_;
-    sendGooglePhotosPhotosFunction(
+    IFrameApi.getInstance().sendGooglePhotosPhotos(
         iframe.contentWindow!,
         googlePhotos?.slice(0, kMaximumGooglePhotosPreviews) ?? null);
   }
@@ -313,7 +266,8 @@ export class WallpaperCollections extends WithPersonalizationStore {
       return;
     }
     const iframe = await this.iframePromise_;
-    sendGooglePhotosCountFunction(iframe.contentWindow!, googlePhotosCount);
+    IFrameApi.getInstance().sendGooglePhotosCount(
+        iframe.contentWindow!, googlePhotosCount);
   }
 
   /**
@@ -324,7 +278,8 @@ export class WallpaperCollections extends WithPersonalizationStore {
     this.didSendLocalImageData_ = false;
     if (!localImagesLoading && Array.isArray(localImages)) {
       const iframe = await this.iframePromise_;
-      sendLocalImagesFunction(iframe.contentWindow!, localImages);
+      IFrameApi.getInstance().sendLocalImages(
+          iframe.contentWindow!, localImages);
     }
   }
 
@@ -389,7 +344,7 @@ export class WallpaperCollections extends WithPersonalizationStore {
       this.didSendLocalImageData_ = true;
 
       const iframe = await this.iframePromise_;
-      sendLocalImageDataFunction(iframe.contentWindow!, data);
+      IFrameApi.getInstance().sendLocalImageData(iframe.contentWindow!, data);
     }
   }
 }

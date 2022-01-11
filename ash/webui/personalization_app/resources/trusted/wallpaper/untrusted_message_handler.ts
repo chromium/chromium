@@ -5,7 +5,7 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {Events, EventType, untrustedOrigin} from '../../common/constants.js';
-import {validateReceivedSelection} from '../iframe_api.js';
+import {IFrameApi} from '../iframe_api.js';
 import {PersonalizationRouter} from '../personalization_router_element.js';
 import {PersonalizationStore} from '../personalization_store.js';
 
@@ -27,7 +27,8 @@ export function onMessageReceived(event: MessageEvent) {
     case EventType.SELECT_COLLECTION:
       const collections = store.data.wallpaper.backdrop.collections;
 
-      const selectedCollection = validateReceivedSelection(event, collections);
+      const selectedCollection =
+          IFrameApi.getInstance().validateReceivedSelection(event, collections);
       PersonalizationRouter.instance().selectCollection(selectedCollection);
       break;
     case EventType.SELECT_GOOGLE_PHOTOS_COLLECTION:
@@ -43,7 +44,8 @@ export function onMessageReceived(event: MessageEvent) {
         return;
       }
       const images = store.data.wallpaper.backdrop.images[collectionId];
-      const selectedImage = validateReceivedSelection(event, images);
+      const selectedImage =
+          IFrameApi.getInstance().validateReceivedSelection(event, images);
       selectWallpaper(selectedImage, getWallpaperProvider(), store);
       break;
   }

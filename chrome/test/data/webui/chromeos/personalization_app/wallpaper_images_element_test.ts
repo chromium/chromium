@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ImageTile} from 'chrome://personalization/common/constants.js';
+import {IFrameApi} from 'chrome://personalization/trusted/iframe_api.js';
 import {WallpaperLayout, WallpaperType} from 'chrome://personalization/trusted/personalization_app.mojom-webui.js';
 import {PersonalizationRouter} from 'chrome://personalization/trusted/personalization_router_element.js';
-import {getDarkLightImageTiles, getRegularImageTiles, promisifyImagesIframeFunctionsForTesting, WallpaperImages} from 'chrome://personalization/trusted/wallpaper/wallpaper_images_element.js';
+import {getDarkLightImageTiles, getRegularImageTiles, WallpaperImages} from 'chrome://personalization/trusted/wallpaper/wallpaper_images_element.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertDeepEquals, assertEquals, assertFalse} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/test_util.js';
 
-import {assertWindowObjectsEqual, baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
+import {assertWindowObjectsEqual, baseSetup, initElement, setupTestIFrameApi, teardownElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
@@ -32,8 +32,7 @@ export function WallpaperImagesTest() {
   });
 
   test('send current wallpaper asset id', async () => {
-    let {sendCurrentWallpaperAssetId: sendCurrentWallpaperAssetIdPromise} =
-        promisifyImagesIframeFunctionsForTesting();
+    const testProxy = setupTestIFrameApi();
 
     // Set the current wallpaper as an online wallpaper.
     // The currentSelected asset id should be sent to iframe.
@@ -48,14 +47,14 @@ export function WallpaperImagesTest() {
 
     // Wait for iframe to receive data.
     let [targetWindow, data] =
-        await sendCurrentWallpaperAssetIdPromise as [Window, bigint | null];
+        await testProxy.whenCalled('sendCurrentWallpaperAssetId') as
+        Parameters<IFrameApi['sendCurrentWallpaperAssetId']>;
 
     assertEquals(iframe.contentWindow, targetWindow);
     assertDeepEquals(
         BigInt(personalizationStore.data.wallpaper.currentSelected.key), data);
 
-    sendCurrentWallpaperAssetIdPromise =
-        promisifyImagesIframeFunctionsForTesting().sendCurrentWallpaperAssetId;
+    testProxy.resetResolver('sendCurrentWallpaperAssetId');
 
     // Set the current wallpaper as a daily refresh wallpaper.
     // The currentSelected asset id should be sent to iframe.
@@ -70,13 +69,13 @@ export function WallpaperImagesTest() {
 
     // Wait for iframe to receive data.
     [targetWindow, data] =
-        await sendCurrentWallpaperAssetIdPromise as [Window, bigint | null];
+        await testProxy.whenCalled('sendCurrentWallpaperAssetId') as
+        Parameters<IFrameApi['sendCurrentWallpaperAssetId']>;
     assertEquals(iframe.contentWindow, targetWindow);
     assertDeepEquals(
         BigInt(personalizationStore.data.wallpaper.currentSelected.key), data);
 
-    sendCurrentWallpaperAssetIdPromise =
-        promisifyImagesIframeFunctionsForTesting().sendCurrentWallpaperAssetId;
+    testProxy.resetResolver('sendCurrentWallpaperAssetId');
 
     // Set the current wallpaper not as an online wallpaper.
     // No asset id is sent to iframe.
@@ -91,7 +90,8 @@ export function WallpaperImagesTest() {
 
     // Wait for iframe to receive data.
     [targetWindow, data] =
-        await sendCurrentWallpaperAssetIdPromise as [Window, bigint | null];
+        await testProxy.whenCalled('sendCurrentWallpaperAssetId') as
+        Parameters<IFrameApi['sendCurrentWallpaperAssetId']>;
     assertEquals(iframe.contentWindow, targetWindow);
     assertEquals(undefined, data);
   });
@@ -112,8 +112,7 @@ export function WallpaperImagesTest() {
     };
     personalizationStore.data.wallpaper.loading.collections = false;
 
-    let {sendImageTiles: sendImageTilesPromise} =
-        promisifyImagesIframeFunctionsForTesting();
+    const testProxy = setupTestIFrameApi();
     wallpaperImagesElement =
         initElement(WallpaperImages, {collectionId: 'id_0'});
 
@@ -121,8 +120,8 @@ export function WallpaperImagesTest() {
                        'images-iframe') as HTMLIFrameElement;
 
     // Wait for iframe to receive data.
-    let [targetWindow, data] =
-        await sendImageTilesPromise as [Window, ImageTile[]];
+    let [targetWindow, data] = await testProxy.whenCalled('sendImageTiles') as
+        Parameters<IFrameApi['sendImageTiles']>;
     assertEquals(iframe.contentWindow, targetWindow);
     assertDeepEquals(
         getRegularImageTiles(
@@ -132,12 +131,12 @@ export function WallpaperImagesTest() {
     await waitAfterNextRender(wallpaperImagesElement);
     assertFalse(iframe.hidden);
 
-    sendImageTilesPromise =
-        promisifyImagesIframeFunctionsForTesting().sendImageTiles;
+    testProxy.resetResolver('sendImageTiles');
     wallpaperImagesElement.collectionId = 'id_1';
 
     // Wait for iframe to receive new data.
-    [targetWindow, data] = await sendImageTilesPromise as [Window, ImageTile[]];
+    [targetWindow, data] = await testProxy.whenCalled('sendImageTiles') as
+        Parameters<IFrameApi['sendImageTiles']>;
 
     await waitAfterNextRender(wallpaperImagesElement);
 
@@ -167,8 +166,7 @@ export function WallpaperImagesTest() {
     };
     personalizationStore.data.wallpaper.loading.collections = false;
 
-    let {sendImageTiles: sendImageTilesPromise} =
-        promisifyImagesIframeFunctionsForTesting();
+    const testProxy = setupTestIFrameApi();
     wallpaperImagesElement =
         initElement(WallpaperImages, {collectionId: 'id_0'});
 
@@ -176,8 +174,8 @@ export function WallpaperImagesTest() {
                        'images-iframe') as HTMLIFrameElement;
 
     // Wait for iframe to receive data.
-    let [targetWindow, data] =
-        await sendImageTilesPromise as [Window, ImageTile[]];
+    let [targetWindow, data] = await testProxy.whenCalled('sendImageTiles') as
+        Parameters<IFrameApi['sendImageTiles']>;
     assertEquals(iframe.contentWindow, targetWindow);
     const tiles = getDarkLightImageTiles(
         false, personalizationStore.data.wallpaper.backdrop.images['id_0']);
@@ -192,12 +190,12 @@ export function WallpaperImagesTest() {
     await waitAfterNextRender(wallpaperImagesElement);
     assertFalse(iframe.hidden);
 
-    sendImageTilesPromise =
-        promisifyImagesIframeFunctionsForTesting().sendImageTiles;
+    testProxy.resetResolver('sendImageTiles');
     wallpaperImagesElement.collectionId = 'id_1';
 
     // Wait for iframe to receive new data.
-    [targetWindow, data] = await sendImageTilesPromise as [Window, ImageTile[]];
+    [targetWindow, data] = await testProxy.whenCalled('sendImageTiles') as
+        Parameters<IFrameApi['sendImageTiles']>;
 
     await waitAfterNextRender(wallpaperImagesElement);
 

@@ -17,40 +17,12 @@ import {afterNextRender, html} from 'chrome://resources/polymer/v3_0/polymer/pol
 
 import {ImageTile} from '../../common/constants.js';
 import {isNonEmptyArray, promisifyOnload} from '../../common/utils.js';
-import {sendCurrentWallpaperAssetId, sendImageTiles, sendPendingWallpaperAssetId, sendVisible} from '../iframe_api.js';
+import {IFrameApi} from '../iframe_api.js';
 import {CurrentWallpaper, OnlineImageType, WallpaperCollection, WallpaperImage, WallpaperType} from '../personalization_app.mojom-webui.js';
 import {DisplayableImage} from '../personalization_reducers.js';
 import {PersonalizationRouter} from '../personalization_router_element.js';
 import {WithPersonalizationStore} from '../personalization_store.js';
 import {isWallpaperImage} from '../utils.js';
-
-let sendCurrentWallpaperAssetIdFunction = sendCurrentWallpaperAssetId;
-let sendImageTilesFunction = sendImageTiles;
-
-/**
- * Mock out the images iframe api functions for testing. Return promises that
- * are resolved when the function is called by |WallpaperImagesElement|.
- */
-interface PromisifyResult {
-  sendCurrentWallpaperAssetId: Promise<unknown>;
-  sendImageTiles: Promise<unknown>;
-}
-
-export function promisifyImagesIframeFunctionsForTesting(): PromisifyResult {
-  const resolvers = {} as
-      {[key in keyof PromisifyResult]: (_: unknown) => void};
-  const promises = (['sendCurrentWallpaperAssetId', 'sendImageTiles'] as
-                    (keyof PromisifyResult)[])
-                       .reduce((result, next) => {
-                         result[next] =
-                             new Promise(resolve => resolvers[next] = resolve);
-                         return result;
-                       }, {} as PromisifyResult);
-  sendCurrentWallpaperAssetIdFunction = (...args) =>
-      resolvers['sendCurrentWallpaperAssetId'](args);
-  sendImageTilesFunction = (...args) => resolvers['sendImageTiles'](args);
-  return promises;
-}
 
 /**
  * If |current| is set and is an online wallpaper (include daily refresh
@@ -249,19 +221,20 @@ export class WallpaperImages extends WithPersonalizationStore {
       this.shadowRoot!.getElementById('main')!.focus();
     }
     const iframe = await this.iframePromise_;
-    sendVisible(iframe.contentWindow!, !hidden);
+    IFrameApi.getInstance().sendVisible(iframe.contentWindow!, !hidden);
   }
 
   private async onCurrentSelectedChanged_(selected: CurrentWallpaper|null) {
     const assetId = getAssetId(selected);
     const iframe = await this.iframePromise_;
-    sendCurrentWallpaperAssetIdFunction(iframe.contentWindow!, assetId);
+    IFrameApi.getInstance().sendCurrentWallpaperAssetId(
+        iframe.contentWindow!, assetId);
   }
 
   private async onPendingSelectedChanged_(pendingSelected: DisplayableImage|
                                           null) {
     const iframe = await this.iframePromise_;
-    sendPendingWallpaperAssetId(
+    IFrameApi.getInstance().sendPendingWallpaperAssetId(
         iframe.contentWindow!,
         isWallpaperImage(pendingSelected) ? pendingSelected.assetId :
                                             undefined);
@@ -323,11 +296,11 @@ export class WallpaperImages extends WithPersonalizationStore {
       const isDarkLightModeEnabled =
           loadTimeData.getBoolean('isDarkLightModeEnabled');
       if (isDarkLightModeEnabled) {
-        sendImageTilesFunction(
+        IFrameApi.getInstance().sendImageTiles(
             iframe.contentWindow!,
             getDarkLightImageTiles(isDarkModeActive, imageArr!));
       } else {
-        sendImageTilesFunction(
+        IFrameApi.getInstance().sendImageTiles(
             iframe.contentWindow!, getRegularImageTiles(imageArr!));
       }
     }
