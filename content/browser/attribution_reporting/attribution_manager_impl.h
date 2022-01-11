@@ -125,7 +125,6 @@ class CONTENT_EXPORT AttributionManagerImpl
 
   AttributionManagerImpl(
       StoragePartitionImpl* storage_partition,
-      network::NetworkConnectionTracker* network_connection_tracker,
       const base::FilePath& user_data_directory,
       std::unique_ptr<AttributionPolicy> policy,
       scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
@@ -176,8 +175,6 @@ class CONTENT_EXPORT AttributionManagerImpl
       base::Time max_report_time);
 
   raw_ptr<StoragePartitionImpl> storage_partition_;
-
-  raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
 
   base::SequenceBound<AttributionStorage> attribution_storage_;
 

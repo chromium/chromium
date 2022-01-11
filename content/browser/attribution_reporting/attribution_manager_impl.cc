@@ -119,6 +119,10 @@ void LogMetricsOnReportSend(const AttributionReport& report, base::Time now) {
                             time_from_conversion_to_report_send.InHours());
 }
 
+bool IsOffline() {
+  return content::GetNetworkConnectionTracker()->IsOffline();
+}
+
 }  // namespace
 
 AttributionManager* AttributionManagerProviderImpl::GetManager(
@@ -139,7 +143,6 @@ AttributionManagerImpl::AttributionManagerImpl(
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy)
     : AttributionManagerImpl(
           storage_partition,
-          content::GetNetworkConnectionTracker(),
           user_data_directory,
           std::make_unique<AttributionPolicy>(
               base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -148,13 +151,11 @@ AttributionManagerImpl::AttributionManagerImpl(
 
 AttributionManagerImpl::AttributionManagerImpl(
     StoragePartitionImpl* storage_partition,
-    network::NetworkConnectionTracker* network_connection_tracker,
     const base::FilePath& user_data_directory,
     std::unique_ptr<AttributionPolicy> policy,
     scoped_refptr<storage::SpecialStoragePolicy> special_storage_policy,
     std::unique_ptr<NetworkSender> network_sender)
     : storage_partition_(storage_partition),
-      network_connection_tracker_(network_connection_tracker),
       attribution_storage_(base::SequenceBound<AttributionStorageSql>(
           g_storage_task_runner.Get(),
           user_data_directory,
@@ -169,17 +170,16 @@ AttributionManagerImpl::AttributionManagerImpl(
                                 storage_partition)),
       weak_factory_(this) {
   DCHECK(storage_partition_);
-  DCHECK(network_connection_tracker_);
   DCHECK(attribution_policy_);
   DCHECK(network_sender_);
 
-  network_connection_tracker_->AddNetworkConnectionObserver(this);
+  content::GetNetworkConnectionTracker()->AddNetworkConnectionObserver(this);
 
   OnConnectionChanged(network::mojom::ConnectionType::CONNECTION_UNKNOWN);
 }
 
 AttributionManagerImpl::~AttributionManagerImpl() {
-  network_connection_tracker_->RemoveNetworkConnectionObserver(this);
+  content::GetNetworkConnectionTracker()->RemoveNetworkConnectionObserver(this);
 
   // Browser contexts are not required to have a special storage policy.
   if (!special_storage_policy_ ||
@@ -323,7 +323,7 @@ void AttributionManagerImpl::ClearData(
 
 void AttributionManagerImpl::OnConnectionChanged(
     network::mojom::ConnectionType connection_type) {
-  if (network_connection_tracker_->IsOffline()) {
+  if (IsOffline()) {
     get_reports_to_send_timer_.Stop();
   } else if (absl::optional<AttributionPolicy::OfflineReportDelayConfig> delay =
                  attribution_policy_->GetOfflineReportDelayConfig()) {
@@ -353,7 +353,7 @@ void AttributionManagerImpl::GetAndHandleReports(
 
 void AttributionManagerImpl::UpdateGetReportsToSendTimer(
     absl::optional<base::Time> time) {
-  if (!time.has_value() || network_connection_tracker_->IsOffline())
+  if (!time.has_value() || IsOffline())
     return;
 
   if (!get_reports_to_send_timer_.IsRunning() ||
@@ -364,7 +364,7 @@ void AttributionManagerImpl::UpdateGetReportsToSendTimer(
 }
 
 void AttributionManagerImpl::StartGetReportsToSendTimer() {
-  if (network_connection_tracker_->IsOffline())
+  if (IsOffline())
     return;
 
   attribution_storage_.AsyncCall(&AttributionStorage::GetNextReportTime)
@@ -374,7 +374,7 @@ void AttributionManagerImpl::StartGetReportsToSendTimer() {
 }
 
 void AttributionManagerImpl::GetReportsToSend() {
-  DCHECK(!network_connection_tracker_->IsOffline());
+  DCHECK(!IsOffline());
 
   // We only get the next report time strictly after now, because if we are
   // sending a report now but haven't finished doing so and it is still present
@@ -392,7 +392,7 @@ void AttributionManagerImpl::GetReportsToSend() {
 
 void AttributionManagerImpl::OnGetReportsToSend(
     std::vector<AttributionReport> reports) {
-  if (reports.empty() || network_connection_tracker_->IsOffline())
+  if (reports.empty() || IsOffline())
     return;
 
   // Shuffle new reports to provide plausible deniability on the ordering of
@@ -409,7 +409,7 @@ void AttributionManagerImpl::OnGetReportsToSend(
 void AttributionManagerImpl::OnGetReportsToSendFromWebUI(
     base::OnceClosure done,
     std::vector<AttributionReport> reports) {
-  if (reports.empty() || network_connection_tracker_->IsOffline()) {
+  if (reports.empty() || IsOffline()) {
     std::move(done).Run();
     return;
   }

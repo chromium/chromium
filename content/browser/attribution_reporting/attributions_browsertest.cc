@@ -11,6 +11,7 @@
 #include "base/test/values_test_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/public/common/content_switches.h"
@@ -38,6 +39,11 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "content/public/browser/network_service_instance.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
+#endif
+
+#if defined(OS_FUCHSIA)
+#include "content/public/browser/network_service_instance.h"
+#include "services/network/test/test_network_connection_tracker.h"
 #endif
 
 namespace content {
@@ -154,7 +160,19 @@ class ConnectionWaiter
 
 class AttributionsBrowserTest : public ContentBrowserTest {
  public:
-  AttributionsBrowserTest() { AttributionManagerImpl::RunInMemoryForTesting(); }
+  AttributionsBrowserTest() {
+    AttributionManagerImpl::RunInMemoryForTesting();
+
+#if defined(OS_FUCHSIA)
+    // Fuchsia's network connection tracker always seems to indicate offline in
+    // these tests, so override the tracker with a test one, which defaults to
+    // online. See crbug.com/1285057 for details.
+    network_connection_tracker_ =
+        network::TestNetworkConnectionTracker::CreateInstance();
+    content::SetNetworkConnectionTrackerForTesting(
+        network::TestNetworkConnectionTracker::GetInstance());
+#endif
+  }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kConversionsDebugMode);
@@ -192,6 +210,11 @@ class AttributionsBrowserTest : public ContentBrowserTest {
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
+
+#if defined(OS_FUCHSIA)
+  std::unique_ptr<network::TestNetworkConnectionTracker>
+      network_connection_tracker_;
+#endif
 };
 
 // Verifies that storage initialization does not hang when initialized in a

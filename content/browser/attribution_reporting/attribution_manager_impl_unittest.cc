@@ -32,6 +32,7 @@
 #include "content/browser/attribution_reporting/storable_trigger.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_utils.h"
@@ -163,6 +164,10 @@ class AttributionManagerImplTest : public testing::Test {
             base::MakeRefCounted<storage::MockSpecialStoragePolicy>()),
         network_sender_(new MockNetworkSender()) {
     EXPECT_TRUE(dir_.CreateUniqueTempDir());
+
+    content::SetNetworkConnectionTrackerForTesting(
+        network::TestNetworkConnectionTracker::GetInstance());
+
     CreateManager();
   }
 
@@ -170,8 +175,7 @@ class AttributionManagerImplTest : public testing::Test {
     attribution_manager_ = absl::WrapUnique(new AttributionManagerImpl(
         static_cast<StoragePartitionImpl*>(
             browser_context_->GetDefaultStoragePartition()),
-        network::TestNetworkConnectionTracker::GetInstance(), dir_.GetPath(),
-        std::make_unique<ConstantOfflineReportDelayPolicy>(),
+        dir_.GetPath(), std::make_unique<ConstantOfflineReportDelayPolicy>(),
         mock_storage_policy_, absl::WrapUnique(network_sender_.get())));
   }
 
