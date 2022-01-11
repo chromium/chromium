@@ -71,6 +71,7 @@ public class ContextMenuDialogUnitTest {
         Mockito.doNothing()
                 .when(mSpyPopupWindow)
                 .showAtLocation(any(View.class), anyInt(), anyInt(), anyInt());
+        Mockito.doNothing().when(mSpyPopupWindow).dismiss();
     }
 
     @Test
@@ -111,7 +112,8 @@ public class ContextMenuDialogUnitTest {
     public void testShowPopupWindow() {
         mDialog = createContextMenuDialog(/*isPopup=*/true, /*shouldRemoveScrim=*/false);
         mDialog.show();
-        // Request layout so #onLayoutChange is triggered.
+        // Change layout params and request layout so #onLayoutChange is triggered.
+        mRootView.setRight(mRootView.getRight() + 1);
         mRootView.requestLayout();
 
         final ArgumentCaptor<Integer> gravityCaptor = ArgumentCaptor.forClass(Integer.class);
@@ -125,6 +127,25 @@ public class ContextMenuDialogUnitTest {
                 (gravityCaptor.getValue() & Gravity.TOP), Gravity.TOP);
 
         mDialog.dismiss();
+        Mockito.verify(mSpyPopupWindow).dismiss();
+    }
+
+    @Test
+    public void testShowPopupWindow_2ndLayout() {
+        mDialog = createContextMenuDialog(/*isPopup=*/true, /*shouldRemoveScrim=*/false);
+        mDialog.show();
+        // Change layout params and request layout so #onLayoutChange is triggered.
+        mRootView.setRight(mRootView.getRight() + 1);
+        mRootView.requestLayout();
+        Mockito.verify(mSpyPopupWindow)
+                .showAtLocation(eq(mRootView.getRootView()), anyInt(), anyInt(), anyInt());
+
+        // Mock up popup window is showing.
+        Mockito.doReturn(true).when(mSpyPopupWindow).isShowing();
+
+        // Change layout params and request layout so #onLayoutChange is triggered.
+        mRootView.setRight(mRootView.getRight() - 1);
+        mRootView.requestLayout();
         Mockito.verify(mSpyPopupWindow).dismiss();
     }
 
