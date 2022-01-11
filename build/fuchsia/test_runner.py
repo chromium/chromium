@@ -222,8 +222,15 @@ def main():
     assert not args.code_coverage
 
   if args.code_coverage and not args.use_run_test_component:
-    raise ValueError('Collecting code coverage info requires using '
-                     'run-test-component.')
+    if args.enable_test_server:
+      # TODO(1254563): Tests that need access to the test server cannot be run
+      # as test component under CFv1. Because code coverage requires it, force
+      # the test to run as a test component. It is expected that test that tries
+      # to use the external test server will fail.
+      args.use_run_test_component = False
+    else:
+      raise ValueError('Collecting code coverage info requires using '
+                       'run-test-component.')
 
   ConfigureLogging(args)
 

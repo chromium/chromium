@@ -20302,8 +20302,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter",
-          "--use-run"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter"
         ],
         "merge": {
           "args": [],
@@ -21600,7 +21599,6 @@
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter",
-          "--use-run",
           "--device=aemu"
         ],
         "merge": {
@@ -23416,8 +23414,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter",
-          "--use-run"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter"
         ],
         "merge": {
           "args": [],
@@ -24736,8 +24733,7 @@
       },
       {
         "args": [
-          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter",
-          "--use-run"
+          "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.net_unittests.filter"
         ],
         "merge": {
           "args": [],

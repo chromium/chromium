@@ -2334,14 +2334,6 @@
         },
       },
     },
-    'replacements': {
-      # TODO(crbug.com/1254563): Remove when suite can use run-test-component.
-      'fuchsia-code-coverage': {
-        'args': {
-          '--use-run': None,
-        },
-      },
-    },
   },
   'not_site_per_process_blink_web_tests': {
     'remove_from': [

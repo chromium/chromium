@@ -230,7 +230,14 @@ template("fuchsia_test_runner") {
     }
 
     if (defined(invoker.use_test_server) && invoker.use_test_server) {
-      executable_args += [ "--enable-test-server" ]
+      # TODO(crbug.com/1254563): Tests that needs the test server need access
+      # to the network and run-test-component doesn't support it. Provide the
+      # necessary access via capability routing once the tests are running via
+      # CFv2.
+      executable_args += [
+        "--enable-test-server",
+        "--use-run",
+      ]
     }
 
     if (defined(invoker.use_cfv2) && invoker.use_cfv2) {
