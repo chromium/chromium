@@ -7,24 +7,14 @@
 
 This directory contains the integration and end-to-end browser tests for Media
 Router.  The Media Router uses various Media Route Providers to connect to
-different types of displays.
-
-## Media Route Providers
-
-The tests are run with one of two component extensions:
-
-* The open source Media Router component extension in
-  chrome/browser/resources/media_router/extension includes a mock Media Route
-  Provider, `mr.TestProvider`.
-* The closed source Media Router external component extension includes the Cast
-  Media Route Provider.
+different types of receivers (sinks).
 
 ## Tests
 
 * `MediaRouterIntegrationBrowserTest`: Tests that Media Router behaves as
 specified by the Presentation API, and that its dialog is shown as expected
-using the test provider `mr.TestProvider`. Test cases that specifically test the
-functionalities of the Media Router dialog are in
+using the test provider `TestMediaRouteProvider`. Test cases that specifically
+test the functionalities of the Media Router dialog are in
 `media_router_integration_ui_browsertest.cc`.
 
 * `MediaRouterIntegrationIncognitoBrowserTest`: Same as
@@ -32,8 +22,8 @@ functionalities of the Media Router dialog are in
 incognito profile.
 
 * `MediaRouterE2EBrowserTest`: Tests Chromecast-specific functionality of Media
-Router using the Cast Media Route Provider.  Requires installing the Media
-Router external component extension and an actual Chromecast device.
+Router using the Cast Media Route Provider.  Requires an actual Chromecast
+device.
 
 * `MediaRouterIntegrationOneUABrowserTest`: Tests that the Presentation API can
 be used to start presentations using offscreen tabs, and that basic Presentation
