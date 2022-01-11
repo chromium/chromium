@@ -35,6 +35,7 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_base.h"
 #include "ash/wm/overview/overview_test_util.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_util.h"
 #include "base/callback_helpers.h"
 #include "base/guid.h"
@@ -1026,7 +1027,7 @@ TEST_F(DesksTemplatesTest, EnteringInTabletMode) {
   auto test_window_1 = CreateAppWindow();
   AddEntry(base::GUID::GenerateRandomV4(), "template", base::Time::Now());
 
-  EnterTabletMode();
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
 
   // Test that the templates buttons are created but invisible. The save desk as
   // template button is not created.
@@ -1066,7 +1067,7 @@ TEST_F(DesksTemplatesTest, ClamshellToTabletMode) {
 
   // Tests that after transitioning, we remain in overview mode and all the
   // buttons are invisible.
-  EnterTabletMode();
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   ASSERT_TRUE(GetOverviewSession());
   EXPECT_FALSE(zero_state->GetVisible());
   EXPECT_FALSE(expanded_state->GetVisible());
@@ -1091,31 +1092,12 @@ TEST_F(DesksTemplatesTest, ShowingTemplatesGridToTabletMode) {
 
   // Tests that after transitioning, we remain in overview mode and the grid is
   // hidden.
-  EnterTabletMode();
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   ASSERT_TRUE(GetOverviewSession());
   EXPECT_FALSE(GetOverviewSession()
                    ->GetGridWithRootWindow(root_window)
                    ->desks_templates_grid_widget()
                    ->IsVisible());
-}
-
-// In certain cases there are activation issues when we enter tablet mode,
-// causing us to exit overview mode. This tests that if we save a template (and
-// get dropped into the templates grid), and then enter tablet mode, we remain
-// in overview mode. Regression test for https://crbug.com/1277769.
-TEST_F(DesksTemplatesTest, TabletModeActivationIssues) {
-  // Create a test window.
-  auto test_window = CreateAppWindow();
-
-  // Open overview and save a template.
-  OpenOverviewAndSaveTemplate(Shell::Get()->GetPrimaryRootWindow());
-  std::vector<DeskTemplate*> entries = GetAllEntries();
-  ASSERT_EQ(1ul, entries.size());
-
-  // Tests that after transitioning into tablet mode, the activation and focus
-  // is correct and we remain in overview mode.
-  EnterTabletMode();
-  ASSERT_TRUE(InOverviewSession());
 }
 
 TEST_F(DesksTemplatesTest, OverviewTabbing) {

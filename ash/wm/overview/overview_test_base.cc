@@ -19,7 +19,6 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/overview/overview_wallpaper_controller.h"
 #include "ash/wm/overview/scoped_overview_transform_window.h"
-#include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_preview_view.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/compositor/layer.h"
@@ -33,11 +32,9 @@ namespace ash {
 OverviewTestBase::~OverviewTestBase() = default;
 
 void OverviewTestBase::EnterTabletMode() {
-  // To avoid flaky failures due to mouse devices blocking entering tablet mode,
-  // we detach all mouse devices.
-  TabletModeControllerTestApi test_api;
-  test_api.DetachAllMice();
-  test_api.EnterTabletMode();
+  // Ensure calls to SetEnabledForTest complete.
+  base::RunLoop().RunUntilIdle();
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   base::RunLoop().RunUntilIdle();
 }
 

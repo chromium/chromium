@@ -2325,6 +2325,11 @@ void OverviewGrid::OnDesksTemplatesGridFadedOut() {
 
   desks_templates_grid_widget_->Hide();
 
+  // Activate the overview focus window to match the behavior of entering
+  // overview mode in the beginning. Otherwise there are cases where some
+  // overview windows are not able to be focused and activated.
+  wm::ActivateWindow(overview_session_->GetOverviewFocusWindow());
+
   desks_bar_view_->UpdateButtonsForDesksTemplatesGrid();
   desks_bar_view_->OnDesksTemplatesGridHidden();
   UpdateSaveDeskAsTemplateButton();

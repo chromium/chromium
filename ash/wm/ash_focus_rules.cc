@@ -11,7 +11,6 @@
 #include "ash/wm/container_finder.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/mru_window_tracker.h"
-#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/window_restore/window_restore_controller.h"
 #include "ash/wm/window_state.h"
 #include "base/containers/contains.h"
@@ -154,13 +153,7 @@ aura::Window* AshFocusRules::GetNextActivatableWindow(
   // start from the container of |ignore|.
   aura::Window* starting_window = nullptr;
   aura::Window* transient_parent = ::wm::GetTransientParent(ignore);
-  OverviewController* overview_controller = Shell::Get()->overview_controller();
-  if (overview_controller->InOverviewSession() &&
-      overview_controller->overview_session()->IsTemplatesUiLosingActivation(
-          ignore)) {
-    starting_window =
-        overview_controller->overview_session()->GetOverviewFocusWindow();
-  } else if (transient_parent) {
+  if (transient_parent) {
     starting_window = transient_parent;
   } else {
     MruWindowTracker* mru = Shell::Get()->mru_window_tracker();
