@@ -182,16 +182,6 @@ void ResourceLoadObserverForFrame::DidReceiveResponse(
     subresource_filter->ReportAdRequestId(response.RequestId());
 
   DCHECK(frame_client);
-  if (response.GetCTPolicyCompliance() ==
-      ResourceResponse::kCTPolicyDoesNotComply) {
-    CountUsage(
-        frame->IsMainFrame()
-            ? WebFeature::
-                  kCertificateTransparencyNonCompliantSubresourceInMainFrame
-            : WebFeature::
-                  kCertificateTransparencyNonCompliantResourceInSubframe);
-  }
-
   if (response_source == ResponseSource::kFromMemoryCache) {
     ResourceRequest resource_request(resource->GetResourceRequest());
 

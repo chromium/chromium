@@ -140,7 +140,6 @@ class WebURLResponse {
   BLINK_PLATFORM_EXPORT void VisitHttpHeaderFields(WebHTTPHeaderVisitor*) const;
 
   BLINK_PLATFORM_EXPORT void SetHasMajorCertificateErrors(bool);
-  BLINK_PLATFORM_EXPORT void SetCTPolicyCompliance(net::ct::CTPolicyCompliance);
   BLINK_PLATFORM_EXPORT void SetIsLegacyTLSVersion(bool);
   BLINK_PLATFORM_EXPORT void SetHasRangeRequested(bool);
   BLINK_PLATFORM_EXPORT void SetTimingAllowPassed(bool);

@@ -680,7 +680,6 @@ void WebURLLoader::PopulateURLResponse(
   response->SetExpectedContentLength(head.content_length);
   response->SetHasMajorCertificateErrors(
       net::IsCertStatusError(head.cert_status));
-  response->SetCTPolicyCompliance(head.ct_policy_compliance);
   response->SetIsLegacyTLSVersion(head.is_legacy_tls_version);
   response->SetHasRangeRequested(head.has_range_requested);
   response->SetTimingAllowPassed(head.timing_allow_passed);

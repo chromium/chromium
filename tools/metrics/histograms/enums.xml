@@ -34836,9 +34836,9 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="2357" label="WebkitCrossFade"/>
   <int value="2358" label="DisablePictureInPictureAttribute"/>
   <int value="2359"
-      label="CertificateTransparencyNonCompliantSubresourceInMainFrame"/>
+      label="OBSOLETE_CertificateTransparencyNonCompliantSubresourceInMainFrame"/>
   <int value="2360"
-      label="CertificateTransparencyNonCompliantResourceInSubframe"/>
+      label="OBSOLETE_CertificateTransparencyNonCompliantResourceInSubframe"/>
   <int value="2361" label="V8AbortController_Constructor"/>
   <int value="2362" label="ReplaceCharsetInXHRIgnoringCase"/>
   <int value="2363" label="HTMLIFrameElementGestureMedia"/>
