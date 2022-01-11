@@ -713,8 +713,8 @@ public class TabPersistentStore {
             boolean wasIncognitoTabModelSelected = mTabModelSelector.isIncognitoSelected();
             int selectedModelTabCount = mTabModelSelector.getCurrentModel().getCount();
 
-            // TODO(hanxi): Sets the correct value for skipLoadingTab.
-            TabModelUtils.setIndex(model, TabModelUtils.getTabIndexById(model, tabId), false);
+            TabModelUtils.setIndex(model, TabModelUtils.getTabIndexById(model, tabId),
+                    StartSurfaceUserData.getInstance().getUnusedTabRestoredAtStartup());
             StartSurfaceUserData.getInstance().setLastVisitedTabAtStartupUrl(tabToRestore.url);
             boolean isIncognitoTabModelSelected = mTabModelSelector.isIncognitoSelected();
 

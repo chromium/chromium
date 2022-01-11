@@ -65,6 +65,7 @@ import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ControlContainer;
 import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
+import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
 import org.chromium.components.content_capture.OnscreenContentProvider;
@@ -1421,7 +1422,13 @@ public class CompositorViewHolder extends FrameLayout
     }
 
     private void setTab(Tab tab) {
-        if (tab != null) tab.loadIfNeeded();
+        // The StartSurfaceUserData.getInstance().getUnusedTabRestoredAtStartup() is only true when
+        // the Start surface is showing in the startup and there isn't any Tab opened. Thus, no
+        // Tab needs to be loaded. Once a new Tab is opening and Start surface is hiding, this flag
+        // will be reset.
+        if (tab != null && !StartSurfaceUserData.getInstance().getUnusedTabRestoredAtStartup()) {
+            tab.loadIfNeeded();
+        }
 
         View newView = tab != null ? tab.getView() : null;
         if (mView == newView) return;

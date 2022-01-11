@@ -126,6 +126,7 @@ import org.chromium.chrome.test.util.browser.suggestions.mostvisited.FakeMostVis
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetTestSupport;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
+import org.chromium.content_public.browser.test.util.RenderProcessHostUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -2303,6 +2304,42 @@ public class StartSurfaceTest {
         ModelList menuItemsModelList =
                 AppMenuTestSupport.getMenuModelList(mActivityTestRule.getAppMenuCoordinator());
         assertEquals(hasUpdateMenuItem ? 12 : 11, menuItemsModelList.size());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    // clang-format off
+    @CommandLineFlags.Add({BASE_PARAMS + "/single"})
+    public void test_DoNotLoadLastSelectedTabOnStartup() {
+        // clang-format on
+        doTestNotLoadLastSelectedTabOnStartupImpl();
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"StartSurface"})
+    // clang-format off
+    @CommandLineFlags.Add({BASE_PARAMS + "/single/show_last_active_tab_only/true"})
+    public void test_DoNotLoadLastSelectedTabOnStartupV2() {
+        // clang-format on
+        doTestNotLoadLastSelectedTabOnStartupImpl();
+    }
+
+    private void doTestNotLoadLastSelectedTabOnStartupImpl() {
+        assumeTrue(mImmediateReturn);
+
+        ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        StartSurfaceTestUtils.waitForOverviewVisible(
+                mLayoutChangedCallbackHelper, mCurrentlyActiveLayout);
+        StartSurfaceTestUtils.waitForTabModel(cta);
+        TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
+        Assert.assertEquals(0, RenderProcessHostUtils.getCurrentRenderProcessCount());
+
+        StartSurfaceTestUtils.launchFirstMVTile(cta, /* currentTabCount = */ 1);
+        TabUiTestHelper.verifyTabModelTabCount(cta, 2, 0);
+        StartSurfaceTestUtils.waitForCurrentTabLoaded(mActivityTestRule);
+        Assert.assertEquals(1, RenderProcessHostUtils.getCurrentRenderProcessCount());
     }
 
     /**

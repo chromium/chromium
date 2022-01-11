@@ -1708,10 +1708,14 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                 ChromePreferenceKeys.TABBED_ACTIVITY_LAST_BACKGROUNDED_TIME_MS_PREF);
 
         assert getActivityTabStartupMetricsTracker() != null;
+        boolean shouldShowOverviewPageOnStart = shouldShowOverviewPageOnStart();
+        if (shouldShowOverviewPageOnStart) {
+            StartSurfaceUserData.getInstance().setUnusedTabRestoredAtStartup(true);
+        }
         if (StartupPaintPreviewHelper.isEnabled()) {
             StartupPaintPreviewHelper paintPreviewHelper = new StartupPaintPreviewHelper(
                     getWindowAndroid(), getOnCreateTimestampMs(), getBrowserControlsManager(),
-                    getTabModelSelector(), shouldShowOverviewPageOnStart(), () -> {
+                    getTabModelSelector(), shouldShowOverviewPageOnStart, () -> {
                         return getToolbarManager() == null
                                 ? null
                                 : getToolbarManager().getProgressBarCoordinator();

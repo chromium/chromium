@@ -1479,7 +1479,7 @@ public class InstantStartTest {
         Assert.assertFalse(HomepageManager.isHomepageEnabled());
 
         // Launches Chrome and verifies that the Tab switcher is showing.
-        mActivityTestRule.startMainActivityFromLauncher();
+        StartSurfaceTestUtils.startMainActivityFromLauncher(mActivityTestRule);
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         StartSurfaceTestUtils.waitForTabModel(cta);
         TabUiTestHelper.verifyTabModelTabCount(cta, 1, 0);
