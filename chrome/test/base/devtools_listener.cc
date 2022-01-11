@@ -156,9 +156,9 @@ void DevToolsListener::StopAndStoreJSCoverage(content::DevToolsAgentHost* host,
     base::DictionaryValue* entry = nullptr;
     CHECK(coverage_entries->GetDictionary(i, &entry));
 
-    std::string script_id;
-    CHECK(entry->GetString("scriptId", &script_id));
-    const auto it = script_id_map_.find(script_id);
+    std::string* script_id = entry->FindStringKey("scriptId");
+    CHECK(script_id);
+    const auto it = script_id_map_.find(*script_id);
     if (it == script_id_map_.end())
       continue;
 
@@ -194,14 +194,21 @@ void DevToolsListener::StoreScripts(content::DevToolsAgentHost* host,
                                     const base::FilePath& store) {
   for (size_t i = 0; i < script_.size(); ++i, value_.reset()) {
     std::string id;
-    CHECK(script_[i]->GetString("params.scriptId", &id));
-    CHECK(!id.empty());
+    {
+      std::string* id_ptr = script_[i]->FindStringPath("params.scriptId");
+      CHECK(id_ptr && !id_ptr->empty());
+      id = *id_ptr;
+    }
 
     std::string url;
-    if (!script_[i]->GetString("params.url", &url))
-      script_[i]->GetString("params.sourceURL", &url);
-    if (url.empty())
-      continue;
+    {
+      std::string* url_ptr = script_[i]->FindStringPath("params.url");
+      if (!url_ptr)
+        url_ptr = script_[i]->FindStringPath("params.sourceURL");
+      if (!url_ptr || url_ptr->empty())
+        continue;
+      url = *url_ptr;
+    }
 
     std::string get_script_source = base::StringPrintf(
         "{\"id\":50,\"method\":\"Debugger.getScriptSource\""
@@ -210,15 +217,23 @@ void DevToolsListener::StoreScripts(content::DevToolsAgentHost* host,
     SendCommandMessage(host, get_script_source);
     AwaitCommandResponse(50);
 
-    base::DictionaryValue* result = nullptr;
-    CHECK(value_->GetDictionary("result", &result));
     std::string text;
-    result->GetString("scriptSource", &text);
-    if (text.empty())
-      continue;
+    {
+      base::DictionaryValue* result = nullptr;
+      CHECK(value_->GetDictionary("result", &result));
+      std::string* text_ptr = result->FindStringKey("scriptSource");
+      if (!text_ptr || text_ptr->empty())
+        continue;
+      text = *text_ptr;
+    }
 
     std::string hash;
-    CHECK(script_[i]->GetString("params.hash", &hash));
+    {
+      std::string* hash_ptr = script_[i]->FindStringPath("params.hash");
+      CHECK(hash_ptr);
+      hash = *hash_ptr;
+    }
+
     if (script_id_map_.find(id) != script_id_map_.end())
       LOG(FATAL) << "Duplicate script by id " << url;
     script_id_map_[id] = hash;
