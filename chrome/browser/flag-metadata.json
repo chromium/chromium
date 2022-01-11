@@ -1155,7 +1155,7 @@
   {
     "name": "destroy-profile-on-browser-close",
     "owners": [ "nicolaso" ],
-    "expiry_milestone": 98
+    "expiry_milestone": 100
   },
   {
     "name": "detect-form-submission-on-form-clear",
