@@ -78,7 +78,7 @@ compile_js_files = [
   "views/camera/mode/record_time.ts",
   "views/camera/mode/scan.ts",
   "views/camera/mode/square.ts",
-  "views/camera/mode/video.js",
+  "views/camera/mode/video.ts",
   "views/camera/document_corner_overlay.js",
   "views/camera/options.js",
   "views/camera/preview.js",
