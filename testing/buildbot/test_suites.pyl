@@ -2786,6 +2786,37 @@
       },
     },
 
+    'gpu_fuchsia_common_telemetry_tests': {
+      'info_collection': {
+        'args': [
+          '--expected-vendor-id',
+          '${gpu_vendor_id}',
+          '$$MAGIC_SUBSTITUTION_GPUExpectedDeviceId',
+        ],
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+      },
+      'screenshot_sync': {
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+      },
+      'trace_test': {
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+      },
+      'webgl_conformance': {
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'swarming': {
+          'shards': 18,
+        },
+      }
+    },
+
     'gpu_fyi_and_optional_non_linux_gtests': {
       # gpu_unittests is killing the Swarmed Linux GPU bots similarly to
       # how content_unittests was: http://crbug.com/763498 .
@@ -6492,6 +6523,12 @@
 
     'gpu_desktop_representative_perf_fyi_isolated_scripts': [
       'rendering_desktop_representative_perf_tests_isolated_scripts',
+    ],
+
+    'gpu_fuchsia_telemetry_tests': [
+      'gpu_fuchsia_common_telemetry_tests',
+      'gpu_mediapipe_validating_telemetry_tests',
+      'gpu_validating_telemetry_tests',
     ],
 
     'gpu_fyi_android_gtests': [

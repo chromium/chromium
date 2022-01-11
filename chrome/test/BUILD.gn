@@ -668,15 +668,7 @@ static_library("test_support") {
   }
 }
 
-if (!is_android) {
-  group("telemetry_gpu_integration_test") {
-    testonly = true
-    data_deps = [
-      "//content/test:telemetry_gpu_integration_test_support",
-      "//tools/perf/chrome_telemetry_build:telemetry_chrome_test",
-    ]
-  }
-} else {
+if (is_android) {
   template("telemetry_gpu_integration_test_android_template") {
     forward_variables_from(invoker, [ "telemetry_target_suffix" ])
     group(target_name) {
@@ -693,6 +685,34 @@ if (!is_android) {
         "telemetry_gpu_integration_test${_target_suffix}") {
       telemetry_target_suffix = _target_suffix
     }
+  }
+} else if (is_fuchsia) {
+  group("telemetry_gpu_integration_test_fuchsia") {
+    testonly = true
+    data = [
+      "//content/test/gpu/run_gpu_integration_test_fuchsia.py",
+      "//content/test/gpu/fuchsia_util.py",
+    ]
+    data_deps = [
+      "//content/test:telemetry_gpu_integration_test_support",
+      "//tools/perf/chrome_telemetry_build:telemetry_chrome_test",
+    ]
+    if (fuchsia_browser_type == "web_engine_shell") {
+      data_deps += [
+        "//fuchsia/engine:web_engine_shell",
+        "//fuchsia/engine:web_engine_with_webui_installer",
+      ]
+    } else if (fuchsia_browser_type == "chrome") {
+      data_deps += [ "//chrome/app/chrome_fuchsia" ]
+    }
+  }
+} else {
+  group("telemetry_gpu_integration_test") {
+    testonly = true
+    data_deps = [
+      "//content/test:telemetry_gpu_integration_test_support",
+      "//tools/perf/chrome_telemetry_build:telemetry_chrome_test",
+    ]
   }
 }
 

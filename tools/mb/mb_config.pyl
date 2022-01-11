@@ -2196,6 +2196,7 @@
 
     'fuchsia_workstation_bot': [
       'release_bot', 'fuchsia', 'fuchsia_include_workstation_image',
+      'fuchsia_chrome'
     ],
 
     'gpu_fyi_tests_debug_trybot': [
@@ -3502,6 +3503,10 @@
 
     'fuchsia': {
       'gn_args': 'target_os="fuchsia"',
+    },
+
+    'fuchsia_chrome': {
+      'gn_args': 'fuchsia_browser_type="chrome"',
     },
 
     'fuchsia_code_coverage': {

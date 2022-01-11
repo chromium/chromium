@@ -399,6 +399,9 @@ class BBJSONGenerator(object):
   def is_chromeos(self, tester_config):
     return tester_config.get('os_type') == 'chromeos'
 
+  def is_fuchsia(self, tester_config):
+    return tester_config.get('os_type') == 'fuchsia'
+
   def is_lacros(self, tester_config):
     return tester_config.get('os_type') == 'lacros'
 
@@ -997,6 +1000,8 @@ class BBJSONGenerator(object):
       return (
           'telemetry_gpu_integration_test' +
           BROWSER_CONFIG_TO_TARGET_SUFFIX_MAP[tester_config['browser_config']])
+    elif self.is_fuchsia(tester_config):
+      return 'telemetry_gpu_integration_test_fuchsia'
     else:
       return 'telemetry_gpu_integration_test'
 

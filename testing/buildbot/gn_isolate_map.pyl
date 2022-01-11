@@ -1729,6 +1729,16 @@
     "script": "//testing/scripts/run_gpu_integration_test_as_googletest.py",
     "type": "script",
   },
+  "telemetry_gpu_integration_test_fuchsia": {
+    "args": [
+      "../../content/test/gpu/run_gpu_integration_test_fuchsia.py",
+      "--logs-dir",
+      "${ISOLATED_OUTDIR}",
+    ],
+    "label": "//chrome/test:telemetry_gpu_integration_test_fuchsia",
+    "script": "//testing/scripts/run_gpu_integration_test_as_googletest.py",
+    "type": "script",
+  },
   "telemetry_gpu_integration_test_scripts_only": {
     "label": "//chrome/test:telemetry_gpu_integration_test_scripts_only",
     "type": "additional_compile_target",

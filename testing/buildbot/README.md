@@ -366,9 +366,7 @@ Each bot's description is a dictionary containing the following:
 * `swarming`: a dictionary specifying Swarming parameters to be applied to all
   tests that run on the bot.
 
-* `os_type`: the type of OS this bot tests. The only useful value currently is
-  `'android'`, and enables outputting of certain Android-specific entries into
-  the JSON files.
+* `os_type`: the type of OS this bot tests.
 
 * `skip_cipd_packages`: (Android-specific) when True, disables emission of the
   `'cipd_packages'` Swarming dictionary entry. Not commonly used; further use is

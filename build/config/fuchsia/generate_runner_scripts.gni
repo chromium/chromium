@@ -30,6 +30,10 @@ declare_args() {
 
   # A list of additional Fuchsia boot images to include in the test isolates.
   fuchsia_additional_boot_images = []
+
+  # This variable controls the browser included in the Telemetry based test
+  # targets.
+  fuchsia_browser_type = "web_engine_shell"
 }
 
 # Generates a wrapper script under root_build_dir/bin that performs an

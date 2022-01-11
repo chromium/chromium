@@ -1735,7 +1735,7 @@
           'all',
         ],
         'browser_config': 'web-engine-shell',
-        'os_type': 'linux',
+        'os_type': 'fuchsia',
         'mixins': [
           'linux-xenial',
         ],
@@ -2818,10 +2818,7 @@
         'additional_compile_targets': [
           'all',
         ],
-        'browser_config': 'web-engine-shell',
-        'os_type': 'linux',
         'test_suites': {
-          'gpu_telemetry_tests': 'fuchsia_gpu_telemetry_tests',
           'gtest_tests': 'fuchsia_web_engine_non_graphical_gtests',
           'isolated_scripts': 'fuchsia_isolated_scripts',
         },
@@ -2885,7 +2882,7 @@
           'all',
         ],
         'browser_config': 'web-engine-shell',
-        'os_type': 'linux',
+        'os_type': 'fuchsia',
         'mixins': [
           'linux-bionic',
         ],
@@ -2897,13 +2894,13 @@
           ],
         },
         'test_suites': {
-          'gpu_telemetry_tests': 'fuchsia_gpu_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_tests',
           'gtest_tests': 'fuchsia_experimental_gtests',
         },
       },
       'fuchsia-fyi-x64-wst': {
-        'browser_config': 'web-engine-shell',
-        'os_type': 'linux',
+        'browser_config': 'fuchsia-chrome',
+        'os_type': 'fuchsia',
         'mixins': [
           'linux-bionic',
         ],
@@ -2918,7 +2915,7 @@
           ],
         },
         'test_suites': {
-          'gpu_telemetry_tests': 'fuchsia_gpu_telemetry_tests',
+          'gpu_telemetry_tests': 'gpu_fuchsia_telemetry_tests',
           'gtest_tests': 'fuchsia_experimental_gtests',
         },
       },
@@ -4850,7 +4847,7 @@
           'all',
         ],
         'browser_config': 'web-engine-shell',
-        'os_type': 'linux',
+        'os_type': 'fuchsia',
         'mixins': [
           'linux-bionic',
         ],

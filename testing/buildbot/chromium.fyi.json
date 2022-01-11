@@ -22122,408 +22122,6 @@
           "shards": 12
         },
         "test_id_prefix": "ninja://:blink_web_tests/"
-      },
-      {
-        "args": [
-          "context_lost",
-          "--show-stdout",
-          "--browser=web-engine-shell",
-          "--passthrough",
-          "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
-          "--device=aemu"
-        ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "context_lost_validating_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "inside_docker": "1",
-              "os": "Ubuntu-20.04"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "depth_capture",
-          "--show-stdout",
-          "--browser=web-engine-shell",
-          "--passthrough",
-          "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--device=aemu"
-        ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "depth_capture_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "inside_docker": "1",
-              "os": "Ubuntu-20.04"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "gpu_process",
-          "--show-stdout",
-          "--browser=web-engine-shell",
-          "--passthrough",
-          "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--device=aemu"
-        ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "gpu_process_launch_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "inside_docker": "1",
-              "os": "Ubuntu-20.04"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "hardware_accelerated_feature",
-          "--show-stdout",
-          "--browser=web-engine-shell",
-          "--passthrough",
-          "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--device=aemu"
-        ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "hardware_accelerated_feature_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "inside_docker": "1",
-              "os": "Ubuntu-20.04"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "info_collection",
-          "--show-stdout",
-          "--browser=web-engine-shell",
-          "--passthrough",
-          "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--expected-vendor-id",
-          "0",
-          "--expected-device-id",
-          "0",
-          "--device=aemu"
-        ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "info_collection_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "inside_docker": "1",
-              "os": "Ubuntu-20.04"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "maps",
-          "--show-stdout",
-          "--browser=web-engine-shell",
-          "--passthrough",
-          "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--device=aemu",
-          "--git-revision=${got_revision}"
-        ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "maps_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "inside_docker": "1",
-              "os": "Ubuntu-20.04"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chrome-gpu-gold@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "mediapipe",
-          "--show-stdout",
-          "--browser=web-engine-shell",
-          "--passthrough",
-          "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_higher_performance_gpu --use-cmd-decoder=validating",
-          "--device=aemu"
-        ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "mediapipe_validating_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "inside_docker": "1",
-              "os": "Ubuntu-20.04"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "pixel",
-          "--show-stdout",
-          "--browser=web-engine-shell",
-          "--passthrough",
-          "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--device=aemu",
-          "--git-revision=${got_revision}"
-        ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "pixel_tests",
-        "precommit_args": [
-          "--gerrit-issue=${patch_issue}",
-          "--gerrit-patchset=${patch_set}",
-          "--buildbucket-id=${buildbucket_build_id}"
-        ],
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "inside_docker": "1",
-              "os": "Ubuntu-20.04"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chrome-gpu-gold@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "screenshot_sync",
-          "--show-stdout",
-          "--browser=web-engine-shell",
-          "--passthrough",
-          "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--device=aemu"
-        ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "screenshot_sync_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "inside_docker": "1",
-              "os": "Ubuntu-20.04"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "trace_test",
-          "--show-stdout",
-          "--browser=web-engine-shell",
-          "--passthrough",
-          "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--device=aemu"
-        ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "trace_test",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "inside_docker": "1",
-              "os": "Ubuntu-20.04"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
-      },
-      {
-        "args": [
-          "webgl_conformance",
-          "--show-stdout",
-          "--browser=web-engine-shell",
-          "--passthrough",
-          "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
-          "--device=aemu"
-        ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
-        "name": "webgl_conformance_tests",
-        "resultdb": {
-          "enable": true,
-          "has_native_resultdb_integration": true
-        },
-        "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "inside_docker": "1",
-              "os": "Ubuntu-20.04"
-            }
-          ],
-          "idempotent": false,
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 18
-        },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
       }
     ]
   },
@@ -25281,7 +24879,7 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating"
         ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
+        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -25303,7 +24901,7 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
       },
       {
         "args": [
@@ -25314,7 +24912,7 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
+        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -25336,7 +24934,7 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
       },
       {
         "args": [
@@ -25347,7 +24945,7 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
+        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -25369,7 +24967,7 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
       },
       {
         "args": [
@@ -25380,7 +24978,7 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
+        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -25402,7 +25000,7 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
       },
       {
         "args": [
@@ -25417,7 +25015,7 @@
           "--expected-device-id",
           "0"
         ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
+        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -25439,7 +25037,7 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
       },
       {
         "args": [
@@ -25448,15 +25046,18 @@
           "--browser=web-engine-shell",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
+          "--dont-restore-color-profile-after-test",
+          "--test-machine-name",
+          "${buildername}",
           "--git-revision=${got_revision}"
         ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
+        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "maps_tests",
+        "name": "maps_pixel_validating_test",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
@@ -25478,7 +25079,7 @@
           "idempotent": false,
           "service_account": "chrome-gpu-gold@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
       },
       {
         "args": [
@@ -25489,7 +25090,7 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_higher_performance_gpu --use-cmd-decoder=validating"
         ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
+        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -25511,7 +25112,7 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
       },
       {
         "args": [
@@ -25520,15 +25121,18 @@
           "--browser=web-engine-shell",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
+          "--dont-restore-color-profile-after-test",
+          "--test-machine-name",
+          "${buildername}",
           "--git-revision=${got_revision}"
         ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
+        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "pixel_tests",
+        "name": "pixel_skia_gold_validating_test",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
@@ -25550,7 +25154,7 @@
           "idempotent": false,
           "service_account": "chrome-gpu-gold@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
       },
       {
         "args": [
@@ -25561,7 +25165,7 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
+        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -25583,7 +25187,41 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
+      },
+      {
+        "args": [
+          "screenshot_sync",
+          "--show-stdout",
+          "--browser=web-engine-shell",
+          "--passthrough",
+          "-v",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
+          "--dont-restore-color-profile-after-test"
+        ],
+        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "screenshot_sync_validating_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "should_retry_with_patch": false,
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "kvm": "1",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "idempotent": false,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
       },
       {
         "args": [
@@ -25594,7 +25232,7 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
+        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -25616,7 +25254,7 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
       },
       {
         "args": [
@@ -25627,7 +25265,7 @@
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc"
         ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
+        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -25650,7 +25288,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 18
         },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
       }
     ]
   },
@@ -25711,13 +25349,13 @@
         "args": [
           "context_lost",
           "--show-stdout",
-          "--browser=web-engine-shell",
+          "--browser=fuchsia-chrome",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
           "--custom-image=workstation.qemu-x64-release"
         ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
+        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -25739,19 +25377,19 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
       },
       {
         "args": [
           "depth_capture",
           "--show-stdout",
-          "--browser=web-engine-shell",
+          "--browser=fuchsia-chrome",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--custom-image=workstation.qemu-x64-release"
         ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
+        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -25773,19 +25411,19 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
       },
       {
         "args": [
           "gpu_process",
           "--show-stdout",
-          "--browser=web-engine-shell",
+          "--browser=fuchsia-chrome",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--custom-image=workstation.qemu-x64-release"
         ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
+        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -25807,19 +25445,19 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
       },
       {
         "args": [
           "hardware_accelerated_feature",
           "--show-stdout",
-          "--browser=web-engine-shell",
+          "--browser=fuchsia-chrome",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--custom-image=workstation.qemu-x64-release"
         ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
+        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -25841,13 +25479,13 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
       },
       {
         "args": [
           "info_collection",
           "--show-stdout",
-          "--browser=web-engine-shell",
+          "--browser=fuchsia-chrome",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
@@ -25857,7 +25495,7 @@
           "0",
           "--custom-image=workstation.qemu-x64-release"
         ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
+        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -25879,25 +25517,28 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
       },
       {
         "args": [
           "maps",
           "--show-stdout",
-          "--browser=web-engine-shell",
+          "--browser=fuchsia-chrome",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
+          "--dont-restore-color-profile-after-test",
+          "--test-machine-name",
+          "${buildername}",
           "--custom-image=workstation.qemu-x64-release",
           "--git-revision=${got_revision}"
         ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
+        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "maps_tests",
+        "name": "maps_pixel_validating_test",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
@@ -25919,19 +25560,19 @@
           "idempotent": false,
           "service_account": "chrome-gpu-gold@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
       },
       {
         "args": [
           "mediapipe",
           "--show-stdout",
-          "--browser=web-engine-shell",
+          "--browser=fuchsia-chrome",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --force_higher_performance_gpu --use-cmd-decoder=validating",
           "--custom-image=workstation.qemu-x64-release"
         ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
+        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -25953,25 +25594,28 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
       },
       {
         "args": [
           "pixel",
           "--show-stdout",
-          "--browser=web-engine-shell",
+          "--browser=fuchsia-chrome",
           "--passthrough",
           "-v",
-          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
+          "--dont-restore-color-profile-after-test",
+          "--test-machine-name",
+          "${buildername}",
           "--custom-image=workstation.qemu-x64-release",
           "--git-revision=${got_revision}"
         ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
+        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
         },
-        "name": "pixel_tests",
+        "name": "pixel_skia_gold_validating_test",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
           "--gerrit-patchset=${patch_set}",
@@ -25993,19 +25637,19 @@
           "idempotent": false,
           "service_account": "chrome-gpu-gold@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
       },
       {
         "args": [
           "screenshot_sync",
           "--show-stdout",
-          "--browser=web-engine-shell",
+          "--browser=fuchsia-chrome",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--custom-image=workstation.qemu-x64-release"
         ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
+        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -26027,19 +25671,54 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
+      },
+      {
+        "args": [
+          "screenshot_sync",
+          "--show-stdout",
+          "--browser=fuchsia-chrome",
+          "--passthrough",
+          "-v",
+          "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc --use-cmd-decoder=validating",
+          "--dont-restore-color-profile-after-test",
+          "--custom-image=workstation.qemu-x64-release"
+        ],
+        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
+        },
+        "name": "screenshot_sync_validating_tests",
+        "resultdb": {
+          "enable": true,
+          "has_native_resultdb_integration": true
+        },
+        "should_retry_with_patch": false,
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "kvm": "1",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "idempotent": false,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
       },
       {
         "args": [
           "trace_test",
           "--show-stdout",
-          "--browser=web-engine-shell",
+          "--browser=fuchsia-chrome",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--custom-image=workstation.qemu-x64-release"
         ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
+        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -26061,19 +25740,19 @@
           "idempotent": false,
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
       },
       {
         "args": [
           "webgl_conformance",
           "--show-stdout",
-          "--browser=web-engine-shell",
+          "--browser=fuchsia-chrome",
           "--passthrough",
           "-v",
           "--extra-browser-args=--enable-logging=stderr --js-flags=--expose-gc",
           "--custom-image=workstation.qemu-x64-release"
         ],
-        "isolate_name": "fuchsia_telemetry_gpu_integration_test",
+        "isolate_name": "telemetry_gpu_integration_test_fuchsia",
         "merge": {
           "args": [],
           "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
@@ -26096,7 +25775,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 18
         },
-        "test_id_prefix": "ninja://content/test:fuchsia_telemetry_gpu_integration_test/"
+        "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test_fuchsia/"
       }
     ]
   },
