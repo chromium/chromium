@@ -1,0 +1,79 @@
+This is a testharness.js-based test.
+Found 75 tests; 71 PASS, 4 FAIL, 0 TIMEOUT, 0 NOTRUN.
+PASS getStats succeeds
+PASS Validating stats
+PASS RTCRtpStreamStats's ssrc
+PASS RTCRtpStreamStats's kind
+PASS RTCRtpStreamStats's transportId
+PASS RTCRtpStreamStats's codecId
+PASS RTCReceivedRtpStreamStats's packetsReceived
+PASS RTCReceivedRtpStreamStats's packetsLost
+PASS RTCReceivedRtpStreamStats's jitter
+PASS RTCReceivedRtpStreamStats's packetsDiscarded
+PASS RTCReceivedRtpStreamStats's framesDropped
+FAIL RTCInboundRtpStreamStats's receiverId assert_true: Is receiverId present expected true got false
+PASS RTCInboundRtpStreamStats's remoteId
+PASS RTCInboundRtpStreamStats's framesDecoded
+PASS RTCInboundRtpStreamStats's nackCount
+PASS RTCInboundRtpStreamStats's framesReceived
+PASS RTCInboundRtpStreamStats's bytesReceived
+PASS RTCInboundRtpStreamStats's totalAudioEnergy
+PASS RTCInboundRtpStreamStats's totalSamplesDuration
+PASS RTCRemoteInboundRtpStreamStats's localId
+PASS RTCRemoteInboundRtpStreamStats's roundTripTime
+PASS RTCSentRtpStreamStats's packetsSent
+PASS RTCSentRtpStreamStats's bytesSent
+FAIL RTCOutboundRtpStreamStats's senderId assert_true: Is senderId present expected true got false
+PASS RTCOutboundRtpStreamStats's remoteId
+PASS RTCOutboundRtpStreamStats's framesEncoded
+PASS RTCOutboundRtpStreamStats's nackCount
+PASS RTCOutboundRtpStreamStats's framesSent
+PASS RTCRemoteOutboundRtpStreamStats's localId
+PASS RTCRemoteOutboundRtpStreamStats's remoteTimestamp
+PASS RTCPeerConnectionStats's dataChannelsOpened
+PASS RTCPeerConnectionStats's dataChannelsClosed
+PASS RTCDataChannelStats's label
+PASS RTCDataChannelStats's protocol
+PASS RTCDataChannelStats's dataChannelIdentifier
+PASS RTCDataChannelStats's state
+PASS RTCDataChannelStats's messagesSent
+PASS RTCDataChannelStats's bytesSent
+PASS RTCDataChannelStats's messagesReceived
+PASS RTCDataChannelStats's bytesReceived
+PASS RTCMediaSourceStats's trackIdentifier
+PASS RTCMediaSourceStats's kind
+PASS RTCAudioSourceStats's totalAudioEnergy
+PASS RTCAudioSourceStats's totalSamplesDuration
+PASS RTCVideoSourceStats's width
+PASS RTCVideoSourceStats's height
+PASS RTCVideoSourceStats's framesPerSecond
+FAIL RTCMediaHandlerStats's trackIdentifier assert_true: Is trackIdentifier present expected true got false
+PASS RTCCodecStats's payloadType
+PASS RTCCodecStats's mimeType
+PASS RTCCodecStats's clockRate
+PASS RTCCodecStats's channels
+PASS RTCCodecStats's sdpFmtpLine
+PASS RTCTransportStats's bytesSent
+PASS RTCTransportStats's bytesReceived
+PASS RTCTransportStats's selectedCandidatePairId
+PASS RTCTransportStats's localCertificateId
+PASS RTCTransportStats's remoteCertificateId
+PASS RTCIceCandidatePairStats's transportId
+PASS RTCIceCandidatePairStats's localCandidateId
+PASS RTCIceCandidatePairStats's remoteCandidateId
+PASS RTCIceCandidatePairStats's state
+PASS RTCIceCandidatePairStats's nominated
+PASS RTCIceCandidatePairStats's bytesSent
+PASS RTCIceCandidatePairStats's bytesReceived
+PASS RTCIceCandidatePairStats's totalRoundTripTime
+PASS RTCIceCandidatePairStats's currentRoundTripTime
+PASS RTCIceCandidateStats's address
+PASS RTCIceCandidateStats's port
+PASS RTCIceCandidateStats's protocol
+PASS RTCIceCandidateStats's candidateType
+FAIL RTCIceCandidateStats's url assert_true: Is url present expected true got false
+PASS RTCCertificateStats's fingerprint
+PASS RTCCertificateStats's fingerprintAlgorithm
+PASS RTCCertificateStats's base64Certificate
+Harness: the test ran to completion.
+
