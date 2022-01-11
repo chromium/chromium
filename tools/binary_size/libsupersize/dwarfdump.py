@@ -45,7 +45,7 @@ class _SourceMapper:
         return info[1]
 
     self._unmatched_queries_count += 1
-    return None
+    return ''
 
   def NumberOfPaths(self):
     return len(set(info[1] for info in self._range_info_list))
