@@ -15,6 +15,7 @@
 #include "media/base/decode_status.h"
 #include "media/base/format_utils.h"
 #include "media/base/video_types.h"
+#include "media/gpu/buffer_validation.h"
 #include "media/gpu/macros.h"
 #include "ui/gfx/buffer_format_util.h"
 
@@ -272,12 +273,24 @@ gfx::GpuMemoryBufferHandle GpuArcVideoFramePool::CreateGpuMemoryHandle(
     }
     gmb_handle.type = gfx::NATIVE_PIXMAP;
     gmb_handle.native_pixmap_handle = std::move(protected_native_pixmap);
+
+    // Explicitly verify the GPU Memory Buffer Handle here. Note that we do not
+    // do this for non-protected content because the verification happens on
+    // creation in that path.
+    if (!media::VerifyGpuMemoryBufferHandle(pixel_format, coded_size_,
+                                            gmb_handle)) {
+      VLOGF(1) << "Invalid GpuMemoryBufferHandle for protected content";
+      return gfx::GpuMemoryBufferHandle();
+    }
   } else {
     std::vector<base::ScopedFD> fds = DuplicateFD(std::move(fd), planes.size());
     if (fds.empty()) {
       VLOGF(1) << "Failed to duplicate fd";
       return gfx::GpuMemoryBufferHandle();
     }
+
+    // Verification of the GPU Memory Buffer Handle is handled under the hood in
+    // this call.
     auto handle = CreateGpuMemoryBufferHandle(
         pixel_format, modifier, coded_size_, std::move(fds), planes);
     if (!handle) {
