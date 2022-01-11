@@ -15,12 +15,12 @@
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/chromebox_for_meetings/fake_cfm_hotline_client.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
+#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/services/chromebox_for_meetings/public/cpp/fake_service_connection.h"
 #include "chromeos/services/chromebox_for_meetings/public/cpp/fake_service_context.h"
 #include "chromeos/services/chromebox_for_meetings/public/cpp/service_connection.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/cfm_service_manager.mojom.h"
 #include "chromeos/services/chromebox_for_meetings/public/mojom/meet_devices_diagnostics.mojom.h"
-#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd_client.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "content/public/test/test_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -42,9 +42,7 @@ class CfmDiagnosticsServiceTest : public ::testing::Test {
       delete;
 
   void SetUp() override {
-    ::ash::cros_healthd::FakeCrosHealthdClient::InitializeFake();
-    // Initialize cros_healthd::ServiceConnection.
-    cros_healthd::ServiceConnection::GetInstance();
+    CrosHealthdClient::InitializeFake();
     CfmHotlineClient::InitializeFake();
     ServiceConnection::UseFakeServiceConnectionForTesting(
         &fake_service_connection_);
@@ -93,19 +91,15 @@ class CfmDiagnosticsServiceTest : public ::testing::Test {
           ASSERT_EQ(interface_name, service_id);
           adaptor_remote_.Bind(std::move(pending_adaptor_remote));
           std::move(callback).Run(true);
-          run_loop.Quit();
         }));
 
     EXPECT_TRUE(GetClient()->FakeEmitSignal(interface_name));
-    run_loop.Run();
+    run_loop.RunUntilIdle();
 
-    EXPECT_TRUE(adaptor_remote_.is_bound());
     EXPECT_TRUE(adaptor_remote_.is_connected());
 
     adaptor_remote_->OnBindService(
         diagnostics_remote_.BindNewPipeAndPassReceiver().PassPipe());
-    adaptor_remote_.FlushForTesting();
-    EXPECT_TRUE(diagnostics_remote_.is_bound());
     EXPECT_TRUE(diagnostics_remote_.is_connected());
 
     return diagnostics_remote_;
@@ -159,7 +153,7 @@ TEST_F(CfmDiagnosticsServiceTest, GetCrosHealthdTelemetry) {
 TEST_F(CfmDiagnosticsServiceTest, GetCrosHealthdProcessInfo) {
   auto response = cros_healthd::mojom::ProcessResult::NewProcessInfo(
       cros_healthd::mojom::ProcessInfo::New());
-  ::ash::cros_healthd::FakeCrosHealthdClient::Get()
+  cros_healthd::FakeCrosHealthdClient::Get()
       ->SetProbeProcessInfoResponseForTesting(response);
   base::RunLoop run_loop;
   DiagnosticsService::Get()->GetCrosHealthdProcessInfo(

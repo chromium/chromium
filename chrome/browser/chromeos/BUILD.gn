@@ -4787,7 +4787,6 @@ source_set("unit_tests") {
     "//chromeos/login/login_state:test_support",
     "//chromeos/network",
     "//chromeos/network:test_support",
-    "//chromeos/services/cros_healthd/public/cpp:test",
     "//chromeos/services/device_sync:test_support",
     "//chromeos/services/device_sync/public/cpp:test_support",
     "//chromeos/services/machine_learning/public/cpp:stub",

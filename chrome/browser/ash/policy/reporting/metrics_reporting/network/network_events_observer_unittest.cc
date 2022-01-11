@@ -10,7 +10,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd_client.h"
+#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -35,9 +35,7 @@ class NetworkEventsObserverTest
 
   ~NetworkEventsObserverTest() override = default;
 
-  void SetUp() override {
-    ::chromeos::cros_healthd::FakeCrosHealthdClient::InitializeFake();
-  }
+  void SetUp() override { ::chromeos::CrosHealthdClient::InitializeFake(); }
 
   void TearDown() override { ::chromeos::CrosHealthdClient::Shutdown(); }
 

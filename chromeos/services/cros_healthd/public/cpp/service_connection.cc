@@ -15,19 +15,11 @@
 #include "base/sequence_checker.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
-#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
-#include "chromeos/services/cros_healthd/public/mojom/nullable_primitives.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/events/ozone/evdev/event_device_info.h"  // nogncheck
 
 namespace chromeos {
 namespace cros_healthd {
-
-#if !defined(USE_REAL_DBUS_CLIENTS)
-void InitFakeCrosHealthd();
-#endif
 
 namespace {
 
@@ -194,7 +186,6 @@ class ServiceConnectionImpl : public ServiceConnection {
       BindNetworkDiagnosticsRoutinesCallback callback) override;
   std::string FetchTouchpadLibraryName() override;
   void FlushForTesting() override;
-  void ResetCallbacksForTesting() override;
 
   // Uses |bind_network_health_callback_| if set to bind a remote to the
   // NetworkHealthService and send the PendingRemote to the CrosHealthdService.
@@ -207,9 +198,8 @@ class ServiceConnectionImpl : public ServiceConnection {
 
   // Binds the factory interface |cros_healthd_service_factory_| to an
   // implementation in the cros_healthd daemon, if it is not already bound. The
-  // binding is accomplished via D-Bus bootstrap. Returns true if bound
-  // successfully.
-  bool EnsureCrosHealthdServiceFactoryIsBound();
+  // binding is accomplished via D-Bus bootstrap.
+  void EnsureCrosHealthdServiceFactoryIsBound();
 
   // Uses |cros_healthd_service_factory_| to bind the diagnostics service remote
   // to an implementation in the cros_healethd daemon, if it is not already
@@ -647,28 +637,20 @@ void ServiceConnectionImpl::ProbeProcessInfo(
 void ServiceConnectionImpl::GetDiagnosticsService(
     mojom::CrosHealthdDiagnosticsServiceRequest service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(EnsureCrosHealthdServiceFactoryIsBound());
+  EnsureCrosHealthdServiceFactoryIsBound();
   cros_healthd_service_factory_->GetDiagnosticsService(std::move(service));
 }
 
 void ServiceConnectionImpl::SetBindNetworkHealthServiceCallback(
     BindNetworkHealthServiceCallback callback) {
   bind_network_health_callback_ = std::move(callback);
-  if (cros_healthd_service_factory_.is_bound()) {
-    BindAndSendNetworkHealthService();
-  } else {
-    DCHECK(EnsureCrosHealthdServiceFactoryIsBound());
-  }
+  BindAndSendNetworkHealthService();
 }
 
 void ServiceConnectionImpl::SetBindNetworkDiagnosticsRoutinesCallback(
     BindNetworkDiagnosticsRoutinesCallback callback) {
   bind_network_diagnostics_callback_ = std::move(callback);
-  if (cros_healthd_service_factory_.is_bound()) {
-    BindAndSendNetworkDiagnosticsRoutines();
-  } else {
-    DCHECK(EnsureCrosHealthdServiceFactoryIsBound());
-  }
+  BindAndSendNetworkDiagnosticsRoutines();
 }
 
 // This is a short-term solution for CloudReady. We should remove this work
@@ -719,32 +701,23 @@ void ServiceConnectionImpl::FlushForTesting() {
     cros_healthd_event_service_.FlushForTesting();
 }
 
-void ServiceConnectionImpl::ResetCallbacksForTesting() {
-  bind_network_health_callback_ = BindNetworkHealthServiceCallback();
-  bind_network_diagnostics_callback_ = BindNetworkDiagnosticsRoutinesCallback();
-}
-
 void ServiceConnectionImpl::BindAndSendNetworkHealthService() {
-  // If we are not ready to send the interface, just return and wait for it to
-  // be ready.
   if (bind_network_health_callback_.is_null())
     return;
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureCrosHealthdServiceFactoryIsBound();
   auto remote = bind_network_health_callback_.Run();
-  DCHECK(cros_healthd_service_factory_.is_bound());
   cros_healthd_service_factory_->SendNetworkHealthService(std::move(remote));
 }
 
 void ServiceConnectionImpl::BindAndSendNetworkDiagnosticsRoutines() {
-  // If we are not ready to send the interface, just return and wait for it to
-  // be ready.
   if (bind_network_diagnostics_callback_.is_null())
     return;
 
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  EnsureCrosHealthdServiceFactoryIsBound();
   auto remote = bind_network_diagnostics_callback_.Run();
-  DCHECK(cros_healthd_service_factory_.is_bound());
   cros_healthd_service_factory_->SendNetworkDiagnosticsRoutines(
       std::move(remote));
 }
@@ -752,36 +725,25 @@ void ServiceConnectionImpl::BindAndSendNetworkDiagnosticsRoutines() {
 void ServiceConnectionImpl::GetProbeService(
     mojom::CrosHealthdProbeServiceRequest service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(EnsureCrosHealthdServiceFactoryIsBound());
+  EnsureCrosHealthdServiceFactoryIsBound();
   cros_healthd_service_factory_->GetProbeService(std::move(service));
 }
 
-bool ServiceConnectionImpl::EnsureCrosHealthdServiceFactoryIsBound() {
+void ServiceConnectionImpl::EnsureCrosHealthdServiceFactoryIsBound() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (cros_healthd_service_factory_.is_bound())
-    return true;
+    return;
 
   auto* client = CrosHealthdClient::Get();
-  // The dbus client being not initialized only happens during testing. This is
-  // used to prevent reconnectting after shutdown the dbus client.
   if (!client)
-    return false;
+    return;
 
-  auto pipe = client->BootstrapMojoConnection(
+  cros_healthd_service_factory_ = client->BootstrapMojoConnection(
       base::BindOnce(&ServiceConnectionImpl::OnBootstrapMojoConnectionResponse,
                      weak_factory_.GetWeakPtr()));
-  cros_healthd_service_factory_.Bind(
-      mojo::PendingRemote<mojom::CrosHealthdServiceFactory>(std::move(pipe),
-                                                            0u /* version */));
 
   cros_healthd_service_factory_.set_disconnect_handler(base::BindOnce(
       &ServiceConnectionImpl::OnDisconnect, weak_factory_.GetWeakPtr()));
-
-  // Make sure all the services are set each time the connection is connected.
-  DCHECK(cros_healthd_service_factory_.is_bound());
-  BindAndSendNetworkHealthService();
-  BindAndSendNetworkDiagnosticsRoutines();
-  return true;
 }
 
 void ServiceConnectionImpl::BindCrosHealthdDiagnosticsServiceIfNeeded() {
@@ -789,10 +751,11 @@ void ServiceConnectionImpl::BindCrosHealthdDiagnosticsServiceIfNeeded() {
   if (cros_healthd_diagnostics_service_.is_bound())
     return;
 
-  DCHECK(EnsureCrosHealthdServiceFactoryIsBound());
+  EnsureCrosHealthdServiceFactoryIsBound();
   cros_healthd_service_factory_->GetDiagnosticsService(
       cros_healthd_diagnostics_service_.BindNewPipeAndPassReceiver());
-  cros_healthd_diagnostics_service_.reset_on_disconnect();
+  cros_healthd_diagnostics_service_.set_disconnect_handler(base::BindOnce(
+      &ServiceConnectionImpl::OnDisconnect, weak_factory_.GetWeakPtr()));
 }
 
 void ServiceConnectionImpl::BindCrosHealthdEventServiceIfNeeded() {
@@ -800,10 +763,11 @@ void ServiceConnectionImpl::BindCrosHealthdEventServiceIfNeeded() {
   if (cros_healthd_event_service_.is_bound())
     return;
 
-  DCHECK(EnsureCrosHealthdServiceFactoryIsBound());
+  EnsureCrosHealthdServiceFactoryIsBound();
   cros_healthd_service_factory_->GetEventService(
       cros_healthd_event_service_.BindNewPipeAndPassReceiver());
-  cros_healthd_event_service_.reset_on_disconnect();
+  cros_healthd_event_service_.set_disconnect_handler(base::BindOnce(
+      &ServiceConnectionImpl::OnDisconnect, weak_factory_.GetWeakPtr()));
 }
 
 void ServiceConnectionImpl::BindCrosHealthdProbeServiceIfNeeded() {
@@ -811,21 +775,15 @@ void ServiceConnectionImpl::BindCrosHealthdProbeServiceIfNeeded() {
   if (cros_healthd_probe_service_.is_bound())
     return;
 
-  DCHECK(EnsureCrosHealthdServiceFactoryIsBound());
+  EnsureCrosHealthdServiceFactoryIsBound();
   cros_healthd_service_factory_->GetProbeService(
       cros_healthd_probe_service_.BindNewPipeAndPassReceiver());
-  cros_healthd_probe_service_.reset_on_disconnect();
+  cros_healthd_probe_service_.set_disconnect_handler(base::BindOnce(
+      &ServiceConnectionImpl::OnDisconnect, weak_factory_.GetWeakPtr()));
 }
 
 ServiceConnectionImpl::ServiceConnectionImpl() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
-#if !defined(USE_REAL_DBUS_CLIENTS)
-  if (!CrosHealthdClient::Get())
-    InitFakeCrosHealthd();
-#endif
-  // Try to connect to healthd. This make sure that the healthd is connected
-  // when ServiceConnection is initialized, so the healthd can obtain the chrome
-  // services just after the chrome started.
   EnsureCrosHealthdServiceFactoryIsBound();
 }
 
@@ -838,8 +796,13 @@ void ServiceConnectionImpl::OnDisconnect() {
   cros_healthd_diagnostics_service_.reset();
   cros_healthd_event_service_.reset();
 
-  // Try to reconnect.
   EnsureCrosHealthdServiceFactoryIsBound();
+  // If the cros_healthd_service_factory_ was able to be rebound, resend the
+  // Chrome services to the CrosHealthd instance.
+  if (cros_healthd_service_factory_.is_bound()) {
+    BindAndSendNetworkHealthService();
+    BindAndSendNetworkDiagnosticsRoutines();
+  }
 }
 
 void ServiceConnectionImpl::OnBootstrapMojoConnectionResponse(

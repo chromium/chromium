@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_SERVICES_CROS_HEALTHD_PUBLIC_CPP_FAKE_CROS_HEALTHD_CLIENT_H_
-#define CHROMEOS_SERVICES_CROS_HEALTHD_PUBLIC_CPP_FAKE_CROS_HEALTHD_CLIENT_H_
+#ifndef CHROMEOS_DBUS_CROS_HEALTHD_FAKE_CROS_HEALTHD_CLIENT_H_
+#define CHROMEOS_DBUS_CROS_HEALTHD_FAKE_CROS_HEALTHD_CLIENT_H_
 
 #include <string>
 
@@ -11,7 +11,7 @@
 #include "base/files/scoped_file.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd_service.h"
+#include "chromeos/dbus/cros_healthd/fake_cros_healthd_service.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_diagnostics.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
@@ -36,16 +36,12 @@ class COMPONENT_EXPORT(CROS_HEALTHD) FakeCrosHealthdClient
 
   ~FakeCrosHealthdClient() override;
 
-  // Creates a global instance which can be shutdowned by
-  // CrosHealthdClient::Shutdown().
-  static void InitializeFake();
-
   // Checks that a FakeCrosHealthdClient instance was initialized and returns
   // it.
   static FakeCrosHealthdClient* Get();
 
   // CrosHealthdClient overrides:
-  mojo::ScopedMessagePipeHandle BootstrapMojoConnection(
+  mojo::Remote<mojom::CrosHealthdServiceFactory> BootstrapMojoConnection(
       BootstrapMojoConnectionCallback result_callback) override;
 
   // Set the list of routines that will be used in the response to any
@@ -172,4 +168,4 @@ using ::chromeos::cros_healthd::FakeCrosHealthdClient;
 }  // namespace cros_healthd
 }  // namespace ash
 
-#endif  // CHROMEOS_SERVICES_CROS_HEALTHD_PUBLIC_CPP_FAKE_CROS_HEALTHD_CLIENT_H_
+#endif  // CHROMEOS_DBUS_CROS_HEALTHD_FAKE_CROS_HEALTHD_CLIENT_H_

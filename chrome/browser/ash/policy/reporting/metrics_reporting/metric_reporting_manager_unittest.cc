@@ -22,9 +22,9 @@
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
+#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_test_helper.h"
-#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd_client.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "components/reporting/client/mock_report_queue.h"
@@ -146,7 +146,7 @@ class NetworkHealthReportingTest
   ~NetworkHealthReportingTest() override = default;
 
   void SetUp() override {
-    ::ash::cros_healthd::FakeCrosHealthdClient::InitializeFake();
+    ::ash::CrosHealthdClient::InitializeFake();
 
     task_runner_ = base::ThreadPool::CreateSequencedTaskRunner({});
 

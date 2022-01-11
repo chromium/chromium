@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd_service.h"
+#include "chromeos/dbus/cros_healthd/fake_cros_healthd_service.h"
 
 #include <utility>
 

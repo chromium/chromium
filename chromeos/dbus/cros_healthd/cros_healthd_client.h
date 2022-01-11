@@ -8,7 +8,10 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
-#include "mojo/public/cpp/system/message_pipe.h"
+#include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
+#include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace dbus {
 class Bus;
@@ -26,6 +29,9 @@ class COMPONENT_EXPORT(CROS_HEALTHD) CrosHealthdClient {
   // Creates and initializes the global instance. |bus| must not be null.
   static void Initialize(dbus::Bus* bus);
 
+  // Creates and initializes a fake global instance if not already created.
+  static void InitializeFake();
+
   // Destroys the global instance.
   static void Shutdown();
 
@@ -37,8 +43,8 @@ class COMPONENT_EXPORT(CROS_HEALTHD) CrosHealthdClient {
 
   // Uses D-Bus to bootstrap the Mojo connection between the cros_healthd daemon
   // and the browser. Returns a bound remote.
-  virtual mojo::ScopedMessagePipeHandle BootstrapMojoConnection(
-      BootstrapMojoConnectionCallback) = 0;
+  virtual mojo::Remote<cros_healthd::mojom::CrosHealthdServiceFactory>
+      BootstrapMojoConnection(BootstrapMojoConnectionCallback) = 0;
 
  protected:
   // Initialize/Shutdown should be used instead.

@@ -13,7 +13,7 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd_client.h"
+#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_probe.mojom.h"
@@ -40,7 +40,7 @@ constexpr auto kUmaPurpose =
 class CrosHealthdMetricsProviderTest : public testing::Test {
  public:
   CrosHealthdMetricsProviderTest() {
-    chromeos::cros_healthd::FakeCrosHealthdClient::InitializeFake();
+    chromeos::CrosHealthdClient::InitializeFake();
 
     chromeos::cros_healthd::mojom::NonRemovableBlockDeviceInfo storage_info;
     storage_info.vendor_id = chromeos::cros_healthd::mojom::BlockDeviceVendor::
