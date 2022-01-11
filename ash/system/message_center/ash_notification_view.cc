@@ -711,6 +711,7 @@ void AshNotificationView::UpdateWithNotification(
   NotificationViewBase::UpdateWithNotification(notification);
 
   CreateOrUpdateSnoozeButton(notification);
+  UpdateIconAndButtonsColor();
 }
 
 void AshNotificationView::CreateOrUpdateHeaderView(
@@ -844,8 +845,6 @@ void AshNotificationView::OnThemeChanged() {
   views::View::OnThemeChanged();
   UpdateBackground(top_radius_, bottom_radius_);
 
-  UpdateAppIconView();
-
   header_row()->SetColor(AshColorProvider::Get()->GetContentLayerColor(
       AshColorProvider::ContentLayerType::kTextColorSecondary));
 
@@ -853,14 +852,7 @@ void AshNotificationView::OnThemeChanged() {
       AshColorProvider::Get()->GetControlsLayerColor(
           AshColorProvider::ControlsLayerType::kFocusRingColor));
 
-  auto* notification =
-      message_center::MessageCenter::Get()->FindVisibleNotificationById(
-          notification_id());
-  SkColor button_color = notification->accent_color().value_or(
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kButtonLabelColorBlue));
-  if (snooze_button_)
-    snooze_button_->SetIconColor(button_color);
+  UpdateIconAndButtonsColor();
 }
 
 std::unique_ptr<message_center::NotificationInputContainer>
@@ -1043,23 +1035,9 @@ void AshNotificationView::UpdateAppIconView() {
       (is_grouped_child_view_ && !notification->icon().IsEmpty()))
     return;
 
-  SkColor accent_color = notification->accent_color().value_or(
-      AshColorProvider::Get()->GetControlsLayerColor(
-          AshColorProvider::ControlsLayerType::kControlBackgroundColorActive));
-
   SkColor icon_color = AshColorProvider::Get()->GetBaseLayerColor(
       AshColorProvider::BaseLayerType::kTransparent80);
-
-  // To ensure the app icon looks distinct enough in the notification
-  // background, we change the lightness of the accent color to generate app
-  // icon's background color.
-  color_utils::HSL hsl;
-  color_utils::SkColorToHSL(accent_color, &hsl);
-  hsl.l = AshColorProvider::Get()->IsDarkModeEnabled()
-              ? kAppIconLightnessInDarkMode
-              : kAppIconLightnessInLightMode;
-  SkColor icon_background_color =
-      color_utils::HSLToSkColor(hsl, SkColorGetA(accent_color));
+  SkColor icon_background_color = CalculateIconAndButtonsColor();
 
   // TODO(crbug.com/768748): figure out if this has a performance impact and
   // cache images if so.
@@ -1075,6 +1053,43 @@ void AshNotificationView::UpdateAppIconView() {
   app_icon_view_->SetImage(
       gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
           kAppIconViewSize / 2, icon_background_color, app_icon));
+}
+
+SkColor AshNotificationView::CalculateIconAndButtonsColor() {
+  auto* notification =
+      message_center::MessageCenter::Get()->FindVisibleNotificationById(
+          notification_id());
+
+  SkColor default_color = AshColorProvider::Get()->GetControlsLayerColor(
+      AshColorProvider::ControlsLayerType::kControlBackgroundColorActive);
+
+  if (!notification)
+    return default_color;
+
+  SkColor accent_color = notification->accent_color().value_or(default_color);
+
+  // To ensure the icon and buttons look distinct enough in the notification
+  // background, we change the lightness of the accent color to generate the
+  // desired color.
+  color_utils::HSL hsl;
+  color_utils::SkColorToHSL(accent_color, &hsl);
+  hsl.l = AshColorProvider::Get()->IsDarkModeEnabled()
+              ? kAppIconLightnessInDarkMode
+              : kAppIconLightnessInLightMode;
+  return color_utils::HSLToSkColor(hsl, SkColorGetA(accent_color));
+}
+
+void AshNotificationView::UpdateIconAndButtonsColor() {
+  UpdateAppIconView();
+
+  SkColor button_color = CalculateIconAndButtonsColor();
+
+  for (auto* action_button : action_buttons()) {
+    static_cast<PillButton*>(action_button)->SetButtonTextColor(button_color);
+  }
+
+  if (snooze_button_)
+    snooze_button_->SetIconColor(button_color);
 }
 
 void AshNotificationView::PerformExpandCollapseAnimation() {

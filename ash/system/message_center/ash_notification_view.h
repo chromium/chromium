@@ -160,6 +160,12 @@ class ASH_EXPORT AshNotificationView
   // Update the color and icon for `app_icon_view_`.
   void UpdateAppIconView();
 
+  // Calculate the color used for the app icon and action buttons.
+  SkColor CalculateIconAndButtonsColor();
+
+  // Update the color of icon and buttons.
+  void UpdateIconAndButtonsColor();
+
   // AshNotificationView will animate its expand/collapse in the parent's
   // ChildPreferredSizeChange(). Child views are animated here.
   void PerformExpandCollapseAnimation();

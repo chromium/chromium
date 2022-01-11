@@ -54,26 +54,6 @@ SkColor GetPillButtonBackgroundColor(PillButton::Type type) {
   return AshColorProvider::Get()->GetControlsLayerColor(color_id);
 }
 
-SkColor GetPillButtonTextColor(PillButton::Type type) {
-  AshColorProvider::ContentLayerType color_id =
-      AshColorProvider::ContentLayerType::kButtonLabelColor;
-  switch (type) {
-    case PillButton::Type::kIcon:
-    case PillButton::Type::kIconless:
-    case PillButton::Type::kIconlessProminent:
-    case PillButton::Type::kIconlessFloating:
-      break;
-    case PillButton::Type::kIconlessAlert:
-      color_id = AshColorProvider::ContentLayerType::kButtonLabelColorPrimary;
-      break;
-    case PillButton::Type::kIconlessAccent:
-    case PillButton::Type::kIconlessAccentFloating:
-      color_id = AshColorProvider::ContentLayerType::kButtonLabelColorBlue;
-      break;
-  }
-  return AshColorProvider::Get()->GetContentLayerColor(color_id);
-}
-
 int GetPillButtonWidth(bool has_icon) {
   int button_width = 2 * kPillButtonHorizontalSpacing;
   if (has_icon)
@@ -175,6 +155,37 @@ void PillButton::OnThemeChanged() {
   SetEnabledTextColors(enabled_text_color);
   SetTextColor(views::Button::STATE_DISABLED,
                AshColorProvider::GetDisabledColor(enabled_text_color));
+}
+
+void PillButton::SetButtonTextColor(const SkColor text_color) {
+  if (text_color_ == text_color)
+    return;
+  text_color_ = text_color;
+  OnThemeChanged();
+}
+
+SkColor PillButton::GetPillButtonTextColor(Type type) {
+  // Use customized text color if it is set.
+  if (text_color_)
+    return text_color_.value();
+
+  AshColorProvider::ContentLayerType color_id =
+      AshColorProvider::ContentLayerType::kButtonLabelColor;
+  switch (type) {
+    case PillButton::Type::kIcon:
+    case PillButton::Type::kIconless:
+    case PillButton::Type::kIconlessProminent:
+    case PillButton::Type::kIconlessFloating:
+      break;
+    case PillButton::Type::kIconlessAlert:
+      color_id = AshColorProvider::ContentLayerType::kButtonLabelColorPrimary;
+      break;
+    case PillButton::Type::kIconlessAccent:
+    case PillButton::Type::kIconlessAccentFloating:
+      color_id = AshColorProvider::ContentLayerType::kButtonLabelColorBlue;
+      break;
+  }
+  return AshColorProvider::Get()->GetContentLayerColor(color_id);
 }
 
 BEGIN_METADATA(PillButton, views::LabelButton)

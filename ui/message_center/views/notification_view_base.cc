@@ -299,6 +299,12 @@ void NotificationViewBase::CreateOrUpdateViews(
 
 NotificationViewBase::NotificationViewBase(const Notification& notification)
     : MessageView(notification) {
+  for_ash_notification_ = false;
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (ash::features::IsNotificationsRefreshEnabled())
+    for_ash_notification_ = true;
+#endif
+
   SetNotifyEnterExitOnChild(true);
 
   click_activator_ = std::make_unique<ClickActivator>(this);
@@ -444,16 +450,10 @@ NotificationViewBase::CreateControlButtonsBuilder() {
 views::Builder<NotificationHeaderView>
 NotificationViewBase::CreateHeaderRowBuilder() {
   DCHECK(!header_row_);
-  header_view_in_ash_notification_ = false;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (ash::features::IsNotificationsRefreshEnabled())
-    header_view_in_ash_notification_ = true;
-#endif
-
   auto header_row_builder = views::Builder<NotificationHeaderView>()
                                 .SetID(kHeaderRow)
                                 .CopyAddressTo(&header_row_);
-  if (!header_view_in_ash_notification_) {
+  if (!for_ash_notification_) {
     header_row_builder.SetCallback(base::BindRepeating(
         &NotificationViewBase::HeaderRowPressed, base::Unretained(this)));
   }
@@ -783,8 +783,11 @@ void NotificationViewBase::CreateOrUpdateActionButtonViews(
       action_button_to_placeholder_map_[action_buttons_[i]] =
           button_info.placeholder;
     }
-    // Change action button color to the accent color.
-    action_buttons_[i]->SetEnabledTextColors(notification.accent_color());
+
+    if (!for_ash_notification_) {
+      // Change action button color to the accent color.
+      action_buttons_[i]->SetEnabledTextColors(notification.accent_color());
+    }
   }
 
   // Inherit mouse hover state when action button views reset.
@@ -852,7 +855,7 @@ bool NotificationViewBase::HasInlineReply(
 }
 
 void NotificationViewBase::SetExpandButtonEnabled(bool enabled) {
-  if (!header_view_in_ash_notification_)
+  if (!for_ash_notification_)
     header_row_->SetExpandButtonEnabled(enabled);
 }
 
@@ -861,7 +864,7 @@ void NotificationViewBase::ToggleExpanded() {
 }
 
 void NotificationViewBase::UpdateViewForExpandedState(bool expanded) {
-  if (!header_view_in_ash_notification_)
+  if (!for_ash_notification_)
     header_row_->SetExpanded(expanded);
 
   if (!image_container_view_->children().empty())
@@ -881,7 +884,7 @@ void NotificationViewBase::UpdateViewForExpandedState(bool expanded) {
     status_view_->SetVisible(expanded);
 
   int max_items = expanded ? item_views_.size() : kMaxLinesForMessageView;
-  if (!header_view_in_ash_notification_ && list_items_count_ > max_items)
+  if (!for_ash_notification_ && list_items_count_ > max_items)
     header_row_->SetOverflowIndicator(list_items_count_ - max_items);
   else if (!item_views_.empty())
     header_row_->SetSummaryText(std::u16string());

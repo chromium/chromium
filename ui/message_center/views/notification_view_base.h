@@ -254,6 +254,8 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   views::View* action_buttons_row() { return action_buttons_row_; }
   const views::View* action_buttons_row() const { return action_buttons_row_; }
 
+  std::vector<views::LabelButton*> action_buttons() { return action_buttons_; }
+
   NotificationInputContainer* inline_reply() { return inline_reply_; }
 
   const views::Label* status_view() const { return status_view_; }
@@ -349,9 +351,10 @@ class MESSAGE_CENTER_EXPORT NotificationViewBase
   // Describes whether the view should display a hand pointer or not.
   bool clickable_;
 
-  // Describes whether the header view is used in an ash notification (ash
-  // notification uses a customized header view).
-  bool header_view_in_ash_notification_ = true;
+  // Describes whether this view is for an ash/ChromeOS notification (ash
+  // notification UI uses AshNotificationView, which has customized layout,
+  // header view, etc.).
+  bool for_ash_notification_ = true;
 
   // Describes whether the view can display inline settings or not.
   bool inline_settings_enabled_ = false;

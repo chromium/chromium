@@ -59,13 +59,24 @@ class ASH_EXPORT PillButton : public views::LabelButton {
   int GetHeightForWidth(int width) const override;
   void OnThemeChanged() override;
 
+  // Sets the text's color for the button. Note, do this only when the button
+  // wants to have a different text color from the defined ones (E.g: the action
+  // buttons of notifications align their color with the app icon's color).
+  void SetButtonTextColor(const SkColor text_color);
+
  private:
+  // Get text's color depending on the type used.
+  SkColor GetPillButtonTextColor(Type type);
+
   const Type type_;
   const gfx::VectorIcon* const icon_;
 
   // True if the button wants to use light colors when the D/L mode feature is
   // not enabled. Note, can be removed when D/L mode feature is fully launched.
   bool use_light_colors_;
+
+  // Customized value for text's color.
+  absl::optional<SkColor> text_color_;
 };
 
 }  // namespace ash
