@@ -44,6 +44,12 @@ class TaskModuleElement extends mixinBehaviors
       task: Object,
 
       /** @private {string} */
+      title_: {
+        type: String,
+        computed: 'computeTitle_(taskModuleType, task)',
+      },
+
+      /** @private {string} */
       dismissName_: {
         type: String,
         computed: 'computeDismissName_(taskModuleType, task)',
@@ -61,6 +67,21 @@ class TaskModuleElement extends mixinBehaviors
     super();
     /** @type {IntersectionObserver} */
     this.intersectionObserver_ = null;
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  computeTitle_() {
+    switch (this.taskModuleType) {
+      case taskModule.mojom.TaskModuleType.kRecipe:
+        return loadTimeData.getString('modulesRecipeTasksSentence');
+      case taskModule.mojom.TaskModuleType.kShopping:
+        return this.task.title;
+      default:
+        return '';
+    }
   }
 
   /**
