@@ -1629,7 +1629,7 @@ class BackForwardCacheBrowserTestForHighMemoryDevices
                               "memory_threshold_for_back_forward_cache_in_mb",
                               memory_threshold);
     EnableFeatureAndSetParams(blink::features::kLoadingTasksUnfreezable,
-                              "max_buffered_bytes", "1000");
+                              "max_buffered_bytes_per_process", "1000");
 
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
   }

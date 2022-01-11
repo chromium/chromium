@@ -32,7 +32,6 @@
 namespace blink {
 namespace {
 
-constexpr size_t kDefaultMaxBufferedBodyBytesPerRequest = 100 * 1000;
 constexpr base::TimeDelta kGracePeriodToFinishLoadingWhileInBackForwardCache =
     base::Seconds(60);
 
@@ -167,10 +166,7 @@ class MojoURLLoaderClient::BodyBuffer final
         writable_(std::move(writable)),
         writable_watcher_(FROM_HERE,
                           mojo::SimpleWatcher::ArmingPolicy::MANUAL,
-                          std::move(task_runner)),
-        max_bytes_drained_(GetLoadingTasksUnfreezableParamAsInt(
-            "max_buffered_bytes",
-            kDefaultMaxBufferedBodyBytesPerRequest)) {
+                          std::move(task_runner)) {
     pipe_drainer_ =
         std::make_unique<mojo::DataPipeDrainer>(this, std::move(readable));
     writable_watcher_.Watch(
@@ -191,15 +187,9 @@ class MojoURLLoaderClient::BodyBuffer final
     SCOPED_CRASH_KEY_STRING256("OnDataAvailable", "last_loaded_url",
                                owner_->last_loaded_url().GetString().Utf8());
 
-    total_bytes_drained_ += num_bytes;
-    TRACE_EVENT2("loading", "MojoURLLoaderClient::BodyBuffer::OnDataAvailable",
-                 "total_bytes_drained", static_cast<int>(total_bytes_drained_),
-                 "added_bytes", static_cast<int>(num_bytes));
-
     if (owner_->freeze_mode() == WebLoaderFreezeMode::kBufferIncoming) {
       owner_->DidBufferLoadWhileInBackForwardCache(num_bytes);
-      if (total_bytes_drained_ > max_bytes_drained_ ||
-          !owner_->CanContinueBufferingWhileInBackForwardCache()) {
+      if (!owner_->CanContinueBufferingWhileInBackForwardCache()) {
         owner_->EvictFromBackForwardCache(
             blink::mojom::RendererEvictionReason::kNetworkExceedsBufferLimit);
         return;
@@ -279,8 +269,6 @@ class MojoURLLoaderClient::BodyBuffer final
   // memory as soon as we finish sending a chunk completely.
   base::queue<std::vector<char>> buffered_body_;
   uint32_t offset_in_current_chunk_ = 0;
-  size_t total_bytes_drained_ = 0;
-  const size_t max_bytes_drained_;
   bool draining_ = true;
 };
 

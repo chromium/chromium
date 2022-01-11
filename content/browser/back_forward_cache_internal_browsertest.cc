@@ -1959,7 +1959,7 @@ class BackForwardCacheDisabledThroughCommandLineBrowserTest
     BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kDisableBackForwardCache);
     EnableFeatureAndSetParams(blink::features::kLoadingTasksUnfreezable,
-                              "max_buffered_bytes", "1000");
+                              "max_buffered_bytes_per_process", "1000");
   }
 };
 
