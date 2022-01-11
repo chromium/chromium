@@ -31,13 +31,12 @@
 
 #include <memory>
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
-#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
 
-class PLATFORM_EXPORT DynamicsCompressorKernel {
+class DynamicsCompressorKernel {
   DISALLOW_NEW();
 
  public:

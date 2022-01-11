@@ -30,9 +30,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_DYNAMICS_COMPRESSOR_H_
 
 #include <memory>
-
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/audio/dynamics_compressor_kernel.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -107,8 +107,8 @@ class PLATFORM_EXPORT DynamicsCompressor {
   float last_anchor_;
   float last_filter_stage_gain_;
 
-  std::unique_ptr<const float* []> source_channels_;
-  std::unique_ptr<float* []> destination_channels_;
+  std::unique_ptr<const float*[]> source_channels_;
+  std::unique_ptr<float*[]> destination_channels_;
 
   // The core compressor.
   DynamicsCompressorKernel compressor_;

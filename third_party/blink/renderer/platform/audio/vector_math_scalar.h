@@ -7,7 +7,6 @@
 
 #include <algorithm>
 #include <cmath>
-
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 

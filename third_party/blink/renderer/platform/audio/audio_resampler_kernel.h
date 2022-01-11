@@ -27,7 +27,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_RESAMPLER_KERNEL_H_
 
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
-#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -37,7 +36,7 @@ class AudioResampler;
 // AudioResamplerKernel does resampling on a single mono channel.
 // It uses a simple linear interpolation for good performance.
 
-class PLATFORM_EXPORT AudioResamplerKernel {
+class AudioResamplerKernel {
   USING_FAST_MALLOC(AudioResamplerKernel);
 
  public:

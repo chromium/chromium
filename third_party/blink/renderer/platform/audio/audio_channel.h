@@ -30,7 +30,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_CHANNEL_H_
 
 #include <memory>
-
 #include "base/numerics/checked_math.h"
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/platform_export.h"

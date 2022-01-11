@@ -30,7 +30,6 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_SOURCE_PROVIDER_H_
 
 #include <cstddef>
-#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -39,7 +38,7 @@ class AudioBus;
 class AudioSourceProviderClient;
 
 // Abstract base-class for a pull-model client.
-class PLATFORM_EXPORT AudioSourceProvider {
+class AudioSourceProvider {
   USING_FAST_MALLOC(AudioSourceProvider);
 
  public:

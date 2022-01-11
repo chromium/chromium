@@ -31,9 +31,9 @@
 
 #include <memory>
 #include <utility>
-
 #include "base/memory/ptr_util.h"
 #include "third_party/blink/renderer/platform/audio/fft_frame.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 

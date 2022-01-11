@@ -30,6 +30,7 @@
 #include "third_party/blink/renderer/platform/audio/fft_convolver.h"
 #include "third_party/blink/renderer/platform/audio/hrtf_database_loader.h"
 #include "third_party/blink/renderer/platform/audio/panner.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 
 namespace blink {
 

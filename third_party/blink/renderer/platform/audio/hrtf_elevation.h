@@ -30,9 +30,9 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_HRTF_ELEVATION_H_
 
 #include <memory>
-
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/platform/audio/hrtf_kernel.h"
+#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 

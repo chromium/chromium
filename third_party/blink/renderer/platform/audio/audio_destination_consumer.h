@@ -31,13 +31,11 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_DESTINATION_CONSUMER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_AUDIO_AUDIO_DESTINATION_CONSUMER_H_
 
-#include "third_party/blink/renderer/platform/platform_export.h"
-
 namespace blink {
 
 class AudioBus;
 
-class PLATFORM_EXPORT AudioDestinationConsumer {
+class AudioDestinationConsumer {
  public:
   virtual void SetFormat(int number_of_channels, float sample_rate) = 0;
   virtual void ConsumeAudio(AudioBus*, int number_of_frames) = 0;
