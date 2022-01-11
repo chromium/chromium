@@ -28,6 +28,9 @@ message ShoppingSpecifics {
 
   // Whether the product is currently being tracked.
   optional bool is_price_tracked = 5;
+
+  // The offer id for the product.
+  optional fixed64 offer_id = 6;
 }
 
 message ProductPrice {
