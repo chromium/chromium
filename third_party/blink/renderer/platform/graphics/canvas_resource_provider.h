@@ -280,6 +280,8 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   void ClearFrame() { clear_frame_ = true; }
 
+  static void NotifyWillTransfer(cc::PaintImage::ContentId content_id);
+
  protected:
   class CanvasImageProvider;
 
@@ -331,9 +333,10 @@ class PLATFORM_EXPORT CanvasResourceProvider
   mutable sk_sp<SkSurface> surface_;  // mutable for lazy init
   SkSurface::ContentChangeMode mode_ = SkSurface::kRetain_ContentChangeMode;
 
+  virtual void OnFlushForImage(cc::PaintImage::ContentId content_id);
+
  private:
   friend class FlushForImageListener;
-  void OnFlushForImage(cc::PaintImage::ContentId content_id);
   virtual sk_sp<SkSurface> CreateSkSurface() const = 0;
   virtual scoped_refptr<CanvasResource> CreateResource();
   virtual bool UseOopRasterization() { return false; }

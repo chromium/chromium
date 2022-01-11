@@ -647,6 +647,18 @@ class CanvasResourceProviderSharedImage : public CanvasResourceProvider {
     resource_->WaitSyncToken(sync_token);
   }
 
+  void OnFlushForImage(cc::PaintImage::ContentId content_id) override {
+    CanvasResourceProvider::OnFlushForImage(content_id);
+    if (cached_snapshot_ &&
+        cached_snapshot_->PaintImageForCurrentFrame().GetContentIdForFrame(0) ==
+            content_id) {
+      // This handles the case where the cached snapshot is referenced by an
+      // ImageBitmap that is being transferred to a worker.
+      cached_snapshot_.reset();
+    }
+  }
+
+ private:
   const bool is_accelerated_;
   const uint32_t shared_image_usage_flags_;
   bool current_resource_has_write_access_ = false;
@@ -1212,6 +1224,14 @@ SkSurface* CanvasResourceProvider::GetSkSurface() const {
   if (!surface_)
     surface_ = CreateSkSurface();
   return surface_.get();
+}
+
+void CanvasResourceProvider::NotifyWillTransfer(
+    cc::PaintImage::ContentId content_id) {
+  // This is called when an ImageBitmap is about to be transferred. All
+  // references to such a bitmap on the current thread must be released, which
+  // means that DisplayItemLists that reference it must be flushed.
+  GetFlushForImageListener()->NotifyFlushForImage(content_id);
 }
 
 void CanvasResourceProvider::EnsureSkiaCanvas() {
