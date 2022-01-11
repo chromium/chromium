@@ -384,7 +384,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.Clusters.Actions.DidMakeQuery" units="BooleanQueried"
+<histogram name="History.Clusters.Actions.DidMakeQuery" enum="BooleanQueried"
     expires_after="2022-06-12">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-memories@google.com</owner>
@@ -396,7 +396,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Actions.FinalState"
-    units="HistoryClustersFinalState" expires_after="2022-05-15">
+    enum="HistoryClustersFinalState" expires_after="2022-05-15">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-memories@google.com</owner>
   <summary>
@@ -408,7 +408,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.Actions.InitialState"
-    units="HistoryClustersInitialState" expires_after="2022-05-15">
+    enum="HistoryClustersInitialState" expires_after="2022-05-15">
   <owner>mcrouse@chromium.org</owner>
   <owner>chrome-memories@google.com</owner>
   <summary>
@@ -690,7 +690,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="History.Clusters.UIActions.ToggledVisibility"
-    units="BooleanVisible" expires_after="2022-02-25">
+    enum="BooleanVisible" expires_after="2022-02-25">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-memories@google.com</owner>
   <summary>
