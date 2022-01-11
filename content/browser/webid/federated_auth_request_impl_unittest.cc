@@ -616,6 +616,7 @@ class FederatedAuthRequestImplTest : public RenderViewHostTestHarness {
                   IdpNetworkRequestManager::TokenRequestCallback callback) {
                 std::move(callback).Run(*conf.token_response, delivered_token);
               }));
+      task_environment()->FastForwardBy(base::Seconds(3));
     }
   }
 

@@ -7,6 +7,8 @@
 #include "base/callback.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_piece.h"
+#include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/id_token_request_callback_data.h"
@@ -31,6 +33,8 @@ using SignInMode = content::IdentityRequestAccount::SignInMode;
 namespace content {
 
 namespace {
+static constexpr base::TimeDelta kIdTokenRequestDelay = base::Seconds(3);
+
 std::string FormatRequestParams(const std::string& client_id,
                                 const std::string& nonce) {
   std::string query;
@@ -627,6 +631,7 @@ void FederatedAuthRequestImpl::OnAccountSelected(const std::string& account_id,
   }
 
   account_id_ = account_id;
+  id_token_request_time_ = base::TimeTicks::Now();
   network_manager_->SendTokenRequest(
       endpoints_.token, account_id_,
       FormatRequestParamsWithoutScope(client_id_, nonce_, account_id,
@@ -636,6 +641,27 @@ void FederatedAuthRequestImpl::OnAccountSelected(const std::string& account_id,
 }
 
 void FederatedAuthRequestImpl::OnTokenResponseReceived(
+    IdpNetworkRequestManager::FetchStatus status,
+    const std::string& id_token) {
+  // When fetching id tokens we show a "Verify" sheet to users in case fetching
+  // takes a long time due to latency etc.. In case that the fetching process is
+  // fast, we still want to show the "Verify" sheet for at least
+  // |kIdTokenRequestDelay| seconds for better UX.
+  base::TimeTicks response_receive_time = base::TimeTicks::Now();
+  base::TimeDelta fetch_time = response_receive_time - id_token_request_time_;
+  if (fetch_time >= kIdTokenRequestDelay) {
+    CompleteIdTokenRequest(status, id_token);
+    return;
+  }
+
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&FederatedAuthRequestImpl::CompleteIdTokenRequest,
+                     weak_ptr_factory_.GetWeakPtr(), status, id_token),
+      kIdTokenRequestDelay - fetch_time);
+}
+
+void FederatedAuthRequestImpl::CompleteIdTokenRequest(
     IdpNetworkRequestManager::FetchStatus status,
     const std::string& id_token) {
   switch (status) {

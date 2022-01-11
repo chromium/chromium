@@ -91,6 +91,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
       IdpNetworkRequestManager::AccountList accounts,
       IdentityProviderMetadata idp_metadata);
   void OnAccountSelected(const std::string& account_id, bool is_sign_in);
+  void CompleteIdTokenRequest(IdpNetworkRequestManager::FetchStatus status,
+                              const std::string& id_token);
   void OnTokenResponseReceived(IdpNetworkRequestManager::FetchStatus status,
                                const std::string& id_token);
   void DispatchOneLogout();
@@ -168,6 +170,7 @@ class CONTENT_EXPORT FederatedAuthRequestImpl {
   // mediation flow.
   std::string account_id_;
   std::string id_token_;
+  base::TimeTicks id_token_request_time_;
   blink::mojom::FederatedAuthRequest::RequestIdTokenCallback
       auth_request_callback_;
 
