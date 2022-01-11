@@ -94,7 +94,9 @@ class Signer(object):
         resed.UpdateResource('B7', 1033, resource, extracted_7z)
         resed.Commit()
         self._sign_item(out_metainstaller)
-        return self._add_tagging_cert(out_metainstaller)
+        return out_metainstaller
+        # TODO(crbug.com/1281938): Re-enable tagging.
+        # return self._add_tagging_cert(out_metainstaller)
 
 
 def main():
