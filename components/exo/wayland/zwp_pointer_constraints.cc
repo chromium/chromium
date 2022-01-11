@@ -143,8 +143,8 @@ void pointer_constraints_confine_pointer(wl_client* client,
   // Confined pointer is not currently supported.
   wl_resource* confined_pointer_resource =
       wl_resource_create(client, &zwp_confined_pointer_v1_interface, 1, id);
-  SetImplementation<WaylandPointerConstraintDelegate>(
-      confined_pointer_resource, &confined_pointer_implementation, nullptr);
+  SetImplementation<int>(confined_pointer_resource,
+                         &confined_pointer_implementation, nullptr);
 }
 
 const struct zwp_pointer_constraints_v1_interface
