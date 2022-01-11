@@ -4,12 +4,10 @@
 
 #include "components/sync/engine/entity_data.h"
 
-#include <algorithm>
 #include <ostream>
 #include <utility>
 
 #include "base/json/json_writer.h"
-#include "base/strings/string_util.h"
 #include "base/trace_event/memory_usage_estimator.h"
 #include "base/values.h"
 #include "components/sync/base/time.h"
@@ -26,40 +24,29 @@ EntityData::~EntityData() = default;
 
 EntityData& EntityData::operator=(EntityData&& other) = default;
 
-#define ADD_TO_DICT(dict, value) \
-  dict->SetString(base::ToUpperASCII(#value), value);
-
-#define ADD_TO_DICT_WITH_TRANSFORM(dict, value, transform) \
-  dict->SetString(base::ToUpperASCII(#value), transform(value));
-
 std::unique_ptr<base::DictionaryValue> EntityData::ToDictionaryValue() {
   // This is used when debugging at sync-internals page. The code in
   // sync_node_browser.js is expecting certain fields names. e.g. CTIME, MTIME,
   // and IS_DIR.
-  base::Time ctime = creation_time;
-  base::Time mtime = modification_time;
   std::unique_ptr<base::DictionaryValue> dict =
       std::make_unique<base::DictionaryValue>();
   dict->SetKey("SPECIFICS", base::Value::FromUniquePtrValue(
                                 EntitySpecificsToValue(specifics)));
-  ADD_TO_DICT(dict, id);
-  ADD_TO_DICT(dict, client_tag_hash.value());
-  ADD_TO_DICT(dict, originator_cache_guid);
-  ADD_TO_DICT(dict, originator_client_item_id);
-  ADD_TO_DICT(dict, server_defined_unique_tag);
+  dict->SetString("ID", id);
+  dict->SetString("CLIENT_TAG_HASH", client_tag_hash.value());
+  dict->SetString("ORIGINATOR_CACHE_GUID", originator_cache_guid);
+  dict->SetString("ORIGINATOR_CLIENT_ITEM_ID", originator_client_item_id);
+  dict->SetString("SERVER_DEFINED_UNIQUE_TAG", server_defined_unique_tag);
   // The string "NON_UNIQUE_NAME" is used in sync-internals to identify the node
   // title.
   dict->SetString("NON_UNIQUE_NAME", name);
-  ADD_TO_DICT(dict, name);
+  dict->SetString("NAME", name);
   // The string "PARENT_ID" is used in sync-internals to build the node tree.
   dict->SetString("PARENT_ID", legacy_parent_id);
-  ADD_TO_DICT_WITH_TRANSFORM(dict, ctime, GetTimeDebugString);
-  ADD_TO_DICT_WITH_TRANSFORM(dict, mtime, GetTimeDebugString);
+  dict->SetString("CTIME", GetTimeDebugString(creation_time));
+  dict->SetString("MTIME", GetTimeDebugString(modification_time));
   return dict;
 }
-
-#undef ADD_TO_DICT
-#undef ADD_TO_DICT_WITH_TRANSFORM
 
 size_t EntityData::EstimateMemoryUsage() const {
   using base::trace_event::EstimateMemoryUsage;
