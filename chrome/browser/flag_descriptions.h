@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_FLAG_DESCRIPTIONS_H_
 
 // Includes needed for macros allowing conditional compilation of some strings.
-#include "base/check_op.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -14,17 +13,10 @@
 #include "chrome/common/buildflags.h"
 #include "components/nacl/common/buildflags.h"
 #include "components/paint_preview/buildflags/buildflags.h"
-#include "components/signin/public/base/signin_buildflags.h"
-#include "components/spellcheck/spellcheck_buildflags.h"
-#include "device/vr/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/buildflags.h"
-
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#include "base/allocator/buildflags.h"
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
 // This file declares strings used in chrome://flags. These messages are not
 // translated, because instead of end-users they target Chromium developers and
@@ -126,9 +118,6 @@ extern const char kEnableDrDcDescription[];
 extern const char kEnablePolicyBlocklistThrottleRequiresPoliciesLoadedName[];
 extern const char
     kEnablePolicyBlocklistThrottleRequiresPoliciesLoadedDescription[];
-
-extern const char kEnableSignedExchangePrefetchCacheForNavigationsName[];
-extern const char kEnableSignedExchangePrefetchCacheForNavigationsDescription[];
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 extern const char kWebFilterInterstitialRefreshName[];
@@ -286,9 +275,6 @@ extern const char kCheckOfflineCapabilityDescription[];
 extern const char kChromeLabsName[];
 extern const char kChromeLabsDescription[];
 
-extern const char kCompositeAfterPaintName[];
-extern const char kCompositeAfterPaintDescription[];
-
 extern const char kConsolidatedSiteStorageControlsName[];
 extern const char kConsolidatedSiteStorageControlsDescription[];
 
@@ -431,10 +417,6 @@ extern const char
     kEnableAutofillInfoBarAccountIndicationFooterForSyncUsersName[];
 extern const char
     kEnableAutofillInfoBarAccountIndicationFooterForSyncUsersDescription[];
-
-extern const char kEnableAutofillPasswordInfoBarAccountIndicationFooterName[];
-extern const char
-    kEnableAutofillPasswordInfoBarAccountIndicationFooterDescription[];
 
 extern const char kEnableAutofillSaveCardInfoBarAccountIndicationFooterName[];
 extern const char
@@ -610,10 +592,8 @@ extern const char kMemlogSamplingRate5MB[];
 
 extern const char kMemlogStackModeName[];
 extern const char kMemlogStackModeDescription[];
-extern const char kMemlogStackModeMixed[];
 extern const char kMemlogStackModeNative[];
 extern const char kMemlogStackModeNativeWithThreadNames[];
-extern const char kMemlogStackModePseudo[];
 
 extern const char kQuickActionSearchWidgetAndroidDinoVariantName[];
 extern const char kQuickActionSearchWidgetAndroidDinoVariantDescription[];
@@ -791,9 +771,6 @@ extern const char kForceUiDirectionDescription[];
 
 extern const char kGlobalMediaControlsModernUIName[];
 extern const char kGlobalMediaControlsModernUIDescription[];
-
-extern const char kGlobalMediaControlsOverlayControlsName[];
-extern const char kGlobalMediaControlsOverlayControlsDescription[];
 
 extern const char kOpenscreenCastStreamingSessionName[];
 extern const char kOpenscreenCastStreamingSessionDescription[];
@@ -1053,14 +1030,8 @@ extern const char kOmniboxMaxURLMatchesDescription[];
 extern const char kOmniboxDynamicMaxAutocompleteName[];
 extern const char kOmniboxDynamicMaxAutocompleteDescription[];
 
-extern const char kOmniboxWebUIOmniboxPopupName[];
-extern const char kOmniboxWebUIOmniboxPopupDescription[];
-
 extern const char kEnableSearchPrefetchName[];
 extern const char kEnableSearchPrefetchDescription[];
-
-extern const char kOopRasterizationName[];
-extern const char kOopRasterizationDescription[];
 
 extern const char kOopRasterizationDDLName[];
 extern const char kOopRasterizationDDLDescription[];
@@ -1189,9 +1160,6 @@ extern const char kPrivacyAdvisorDescription[];
 
 extern const char kPrivacyReviewName[];
 extern const char kPrivacyReviewDescription[];
-
-extern const char kSafeBrowsingPerProfileNetworkContextsName[];
-extern const char kSafeBrowsingPerProfileNetworkContextsDescription[];
 
 extern const char kProminentDarkModeActiveTabTitleName[];
 extern const char kProminentDarkModeActiveTabTitleDescription[];
@@ -1407,9 +1375,6 @@ extern const char kTabGroupsAutoCreateDescription[];
 extern const char kTabGroupsCollapseFreezingName[];
 extern const char kTabGroupsCollapseFreezingDescription[];
 
-extern const char kTabGroupsFeedbackName[];
-extern const char kTabGroupsFeedbackDescription[];
-
 extern const char kTabGroupsNewBadgePromoName[];
 extern const char kTabGroupsNewBadgePromoDescription[];
 
@@ -1595,14 +1560,10 @@ extern const char kSharedHighlightingV2Description[];
 extern const char kSharedHighlightingAmpName[];
 extern const char kSharedHighlightingAmpDescription[];
 
-extern const char kPreemptiveLinkToTextGenerationName[];
-extern const char kPreemptiveLinkToTextGenerationDescription[];
-
 extern const char kDraw1PredictedPoint12Ms[];
 extern const char kDraw2PredictedPoints6Ms[];
 extern const char kDraw1PredictedPoint6Ms[];
 extern const char kDraw2PredictedPoints3Ms[];
-extern const char kDrawPredictedPointsDefault[];
 extern const char kDrawPredictedPointsDescription[];
 extern const char kDrawPredictedPointsName[];
 
@@ -1991,9 +1952,6 @@ extern const char kSwapAndroidShareHubRowsDescription[];
 extern const char kRequestDesktopSiteForTabletsName[];
 extern const char kRequestDesktopSiteForTabletsDescription[];
 
-extern const char kSafeBrowsingClientSideDetectionAndroidName[];
-extern const char kSafeBrowsingClientSideDetectionAndroidDescription[];
-
 extern const char kScrollCaptureName[];
 extern const char kScrollCaptureDescription[];
 
@@ -2065,9 +2023,6 @@ extern const char kShareButtonInTopToolbarDescription[];
 extern const char kVoiceButtonInTopToolbarName[];
 extern const char kVoiceButtonInTopToolbarDescription[];
 
-extern const char kWalletRequiresFirstSyncSetupCompleteName[];
-extern const char kWalletRequiresFirstSyncSetupCompleteDescription[];
-
 extern const char kWebBluetoothRequestLargerMtuName[];
 extern const char kWebBluetoothRequestLargerMtuDescription[];
 
@@ -2076,9 +2031,6 @@ extern const char kWebFeedDescription[];
 
 extern const char kWebFeedSortName[];
 extern const char kWebFeedSortDescription[];
-
-extern const char kWebNotesStylizeName[];
-extern const char kWebNotesStylizeDescription[];
 
 extern const char kXsurfaceMetricsReportingName[];
 extern const char kXsurfaceMetricsReportingDescription[];
