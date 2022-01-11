@@ -108,6 +108,10 @@ public class FREMobileIdentityConsistencyFieldTrial {
                 oldFreWithUmaDialogPercent = 10;
                 break;
             case Channel.STABLE:
+                enabledPercent = 1;
+                disabledPercent = 1;
+                oldFreWithUmaDialogPercent = 1;
+                break;
         }
         assert enabledPercent + disabledPercent + oldFreWithUmaDialogPercent <= 100;
 
