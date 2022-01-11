@@ -1671,6 +1671,7 @@
       'boringssl_ssl_tests': {},
       'capture_unittests': {},
       'color_unittests': {},
+      'components_browsertests': {},
       'components_unittests': {
         'swarming': {
           'shards': 2,
@@ -1771,7 +1772,6 @@
     },
 
     'fuchsia_experimental_gtests': {
-      'components_browsertests': {},
       'content_browsertests': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.content_browsertests.filter',

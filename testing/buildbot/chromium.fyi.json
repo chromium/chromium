@@ -18550,6 +18550,24 @@
       },
       {
         "args": [
+          "--ram-size-mb=16384",
+          "--code-coverage",
+          "--code-coverage-dir=${ISOLATED_OUTDIR}"
+        ],
+        "isolate_profile_data": true,
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "components_browsertests",
+        "test_id_prefix": "ninja://components:components_browsertests/"
+      },
+      {
+        "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.components_unittests.filter",
           "--ram-size-mb=16384",
           "--code-coverage",
@@ -19827,6 +19845,25 @@
         "test_id_prefix": "ninja://ui/color:color_unittests/"
       },
       {
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "arm64",
+              "inside_docker": "1",
+              "os": "Ubuntu-20.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "components_browsertests",
+        "test_id_prefix": "ninja://components:components_browsertests/"
+      },
+      {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.components_unittests.filter"
         ],
@@ -21048,6 +21085,28 @@
         },
         "test": "color_unittests",
         "test_id_prefix": "ninja://ui/color:color_unittests/"
+      },
+      {
+        "args": [
+          "--device=aemu"
+        ],
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "cpu": "arm64",
+              "inside_docker": "1",
+              "os": "Ubuntu-20.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "components_browsertests",
+        "test_id_prefix": "ninja://components:components_browsertests/"
       },
       {
         "args": [
@@ -22476,25 +22535,6 @@
     ],
     "gtest_tests": [
       {
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "cpu": "arm64",
-              "inside_docker": "1",
-              "os": "Ubuntu-20.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "components_browsertests",
-        "test_id_prefix": "ninja://components:components_browsertests/"
-      },
-      {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.content_browsertests.filter",
           "--",
@@ -22838,6 +22878,24 @@
         },
         "test": "color_unittests",
         "test_id_prefix": "ninja://ui/color:color_unittests/"
+      },
+      {
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "kvm": "1",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "components_browsertests",
+        "test_id_prefix": "ninja://components:components_browsertests/"
       },
       {
         "args": [
@@ -24142,6 +24200,24 @@
         "test_id_prefix": "ninja://ui/color:color_unittests/"
       },
       {
+        "merge": {
+          "args": [],
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "swarming": {
+          "can_use_on_swarming_builders": true,
+          "dimension_sets": [
+            {
+              "kvm": "1",
+              "os": "Ubuntu-18.04"
+            }
+          ],
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "components_browsertests",
+        "test_id_prefix": "ninja://components:components_browsertests/"
+      },
+      {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.components_unittests.filter"
         ],
@@ -25152,24 +25228,6 @@
     ],
     "gtest_tests": [
       {
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "kvm": "1",
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "components_browsertests",
-        "test_id_prefix": "ninja://components:components_browsertests/"
-      },
-      {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.content_browsertests.filter",
           "--",
@@ -25602,27 +25660,6 @@
   },
   "fuchsia-fyi-x64-wst": {
     "gtest_tests": [
-      {
-        "args": [
-          "--custom-image=workstation.qemu-x64-release"
-        ],
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": true,
-          "dimension_sets": [
-            {
-              "kvm": "1",
-              "os": "Ubuntu-18.04"
-            }
-          ],
-          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
-        },
-        "test": "components_browsertests",
-        "test_id_prefix": "ninja://components:components_browsertests/"
-      },
       {
         "args": [
           "--test-launcher-filter-file=../../testing/buildbot/filters/fuchsia.content_browsertests.filter",
