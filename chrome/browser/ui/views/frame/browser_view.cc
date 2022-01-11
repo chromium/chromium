@@ -618,9 +618,15 @@ class BrowserView::AccessibilityModeObserver : public ui::AXModeObserver {
   void OnAXModeAdded(ui::AXMode mode) override {
     // This will have the effect of turning tablet mode off if a screen reader
     // is enabled while Chrome is already open. It will not return the browser
-    // to tablet mode if the user kills their screen reader.
-    if (mode.has_mode(ui::AXMode::kScreenReader))
-      browser_view_->MaybeInitializeWebUITabStrip();
+    // to tablet mode if the user kills their screen reader. This has to happen
+    // asynchronously since AXMode changes can happen while AXTree updates or
+    // notifications are in progress, and |MaybeInitializeWebUITabStrip| can
+    // destroy things synchronously.
+    if (mode.has_mode(ui::AXMode::kScreenReader)) {
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(&BrowserView::MaybeInitializeWebUITabStrip,
+                                    browser_view_->GetAsWeakPtr()));
+    }
   }
 
   const raw_ptr<BrowserView> browser_view_;
