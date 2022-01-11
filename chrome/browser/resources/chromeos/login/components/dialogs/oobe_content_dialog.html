@@ -105,6 +105,15 @@
         display: none;
       }
 
+      :host([fullscreen]) #scrollContainer {
+        padding-inline-end: 0;
+        padding-inline-start: 0;
+      }
+
+      :host([fullscreen]) #contentContainer {
+        width: 100%;
+      }
+
       .bottom-buttons-container {
         padding-bottom: var(--oobe-adaptive-dialog-buttons-vertical-padding);
         padding-inline-end:
