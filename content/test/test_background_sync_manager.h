@@ -140,7 +140,7 @@ class TestBackgroundSyncManager : public BackgroundSyncManager {
 
   // Override to avoid actual check for main frame, instead return the value set
   // by tests.
-  void HasMainFrameWindowClient(const url::Origin& origin,
+  void HasMainFrameWindowClient(const blink::StorageKey& key,
                                 BoolCallback callback) override;
 
  private:

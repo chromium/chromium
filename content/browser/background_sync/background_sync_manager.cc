@@ -795,7 +795,7 @@ void BackgroundSyncManager::RegisterCheckIfHasMainFrame(
   }
 
   HasMainFrameWindowClient(
-      url::Origin::Create(sw_registration->scope().DeprecatedGetOriginAsURL()),
+      sw_registration->key(),
       base::BindOnce(&BackgroundSyncManager::RegisterDidCheckIfMainFrame,
                      weak_ptr_factory_.GetWeakPtr(), sw_registration_id,
                      std::move(options), std::move(callback)));
@@ -856,9 +856,7 @@ void BackgroundSyncManager::RegisterImpl(
   }
 
   SyncAndNotificationPermissions permission = GetBackgroundSyncPermission(
-      service_worker_context_,
-      url::Origin::Create(sw_registration->scope().DeprecatedGetOriginAsURL()),
-      sync_type);
+      service_worker_context_, sw_registration->key().origin(), sync_type);
   RegisterDidAskForPermission(sw_registration_id, std::move(options),
                               std::move(callback), permission);
 }
@@ -892,8 +890,7 @@ void BackgroundSyncManager::RegisterDidAskForPermission(
       LookupActiveRegistration(blink::mojom::BackgroundSyncRegistrationInfo(
           sw_registration_id, options.tag, GetBackgroundSyncType(options)));
 
-  url::Origin origin =
-      url::Origin::Create(sw_registration->scope().DeprecatedGetOriginAsURL());
+  const url::Origin& origin = sw_registration->key().origin();
 
   if (GetBackgroundSyncType(options) ==
       blink::mojom::BackgroundSyncType::ONE_SHOT) {
@@ -1001,10 +998,8 @@ void BackgroundSyncManager::RegisterDidGetDelay(
           GetDelayAsString(registration.delay_until() - clock_->Now())}});
   }
 
-  AddOrUpdateActiveRegistration(
-      sw_registration_id,
-      url::Origin::Create(sw_registration->scope().DeprecatedGetOriginAsURL()),
-      registration);
+  AddOrUpdateActiveRegistration(sw_registration_id,
+                                sw_registration->key().origin(), registration);
 
   StoreRegistrations(
       sw_registration_id,
@@ -1415,10 +1410,10 @@ void BackgroundSyncManager::DispatchPeriodicSyncEvent(
   }
 }
 
-void BackgroundSyncManager::HasMainFrameWindowClient(const url::Origin& origin,
-                                                     BoolCallback callback) {
-  service_worker_context_->HasMainFrameWindowClient(blink::StorageKey(origin),
-                                                    std::move(callback));
+void BackgroundSyncManager::HasMainFrameWindowClient(
+    const blink::StorageKey& key,
+    BoolCallback callback) {
+  service_worker_context_->HasMainFrameWindowClient(key, std::move(callback));
 }
 
 void BackgroundSyncManager::GetRegistrationsImpl(
@@ -2011,8 +2006,7 @@ void BackgroundSyncManager::FireReadyEventsDidFindRegistration(
       registration->num_attempts() == registration->max_attempts() - 1;
 
   HasMainFrameWindowClient(
-      url::Origin::Create(
-          service_worker_registration->scope().DeprecatedGetOriginAsURL()),
+      service_worker_registration->key(),
       base::BindOnce(&BackgroundSyncMetrics::RecordEventStarted, sync_type));
 
   if (sync_type == BackgroundSyncType::ONE_SHOT) {
@@ -2069,18 +2063,16 @@ void BackgroundSyncManager::EventComplete(
 
   // The event ran to completion, we should count it, no matter what happens
   // from here.
-  url::Origin origin = url::Origin::Create(
-      service_worker_registration->scope().DeprecatedGetOriginAsURL());
+  const blink::StorageKey& key = service_worker_registration->key();
   HasMainFrameWindowClient(
-      origin,
-      base::BindOnce(&BackgroundSyncMetrics::RecordEventResult,
-                     registration_info->sync_type,
-                     status_code == blink::ServiceWorkerStatusCode::kOk));
+      key, base::BindOnce(&BackgroundSyncMetrics::RecordEventResult,
+                          registration_info->sync_type,
+                          status_code == blink::ServiceWorkerStatusCode::kOk));
 
   op_scheduler_.ScheduleOperation(base::BindOnce(
       &BackgroundSyncManager::EventCompleteImpl, weak_ptr_factory_.GetWeakPtr(),
-      std::move(registration_info), std::move(keepalive), status_code, origin,
-      op_scheduler_.WrapCallbackToRunNext(std::move(callback))));
+      std::move(registration_info), std::move(keepalive), status_code,
+      key.origin(), op_scheduler_.WrapCallbackToRunNext(std::move(callback))));
 }
 
 void BackgroundSyncManager::EventCompleteImpl(

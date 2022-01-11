@@ -227,7 +227,7 @@ class CONTENT_EXPORT BackgroundSyncManager
       const std::string& tag,
       scoped_refptr<ServiceWorkerVersion> active_version,
       ServiceWorkerVersion::StatusCallback callback);
-  virtual void HasMainFrameWindowClient(const url::Origin& origin,
+  virtual void HasMainFrameWindowClient(const blink::StorageKey& key,
                                         BoolCallback callback);
 
  private:
