@@ -689,6 +689,33 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.FastPair.PairDevice.ErrorReason"
+    enum="BluetoothDeviceConnectErrorCode" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the reason for failure to connect to the device after a successful
+    key exchange. We use PairDevice to establish a connection to the device when
+    we have a BluetoothDevice instance from the adapter. Emitted when we fail to
+    connect to the device to start the pairing procedure, and no metric is
+    emitted on success.
+  </summary>
+</histogram>
+
+<histogram name="Bluetooth.ChromeOS.FastPair.PairDevice.Result"
+    enum="BooleanSuccess" expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the success or failure of connecting to the device after a
+    successful key exchange. We use PairDevice to establish a connection to the
+    device when we have a BluetoothDevice instance from the adapter. Emitted
+    when we connect to the device to start the pairing procedure.
+  </summary>
+</histogram>
+
 <histogram
     name="Bluetooth.ChromeOS.FastPair.PairFailure.{FastPairPairingProtocol}"
     enum="FastPairPairFailure" expires_after="2022-09-20">

@@ -164,11 +164,14 @@ FastPairPairer::~FastPairPairer() {
 
 void FastPairPairer::OnPairConnected(
     absl::optional<device::BluetoothDevice::ConnectErrorCode> error) {
+  RecordPairDeviceResult(/*success=*/!error.has_value());
+
   if (error) {
     QP_LOG(WARNING) << "Failed to starting pairing procedure by pairing to "
                        "device due to error: "
                     << error.value();
     std::move(pair_failed_callback_).Run(device_, PairFailure::kPairingConnect);
+    RecordPairDeviceErrorReason(error.value());
     return;
   }
   QP_LOG(VERBOSE) << "Pair to device successful.";

@@ -161,6 +161,10 @@ const char kNavigateToSettings[] =
     "Bluetooth.ChromeOS.FastPair.NavigateToSettings.Result";
 const char kConnectDeviceResult[] =
     "Bluetooth.ChromeOS.FastPair.ConnectDevice.Result";
+const char kPairDeviceResult[] =
+    "Bluetooth.ChromeOS.FastPair.PairDevice.Result";
+const char kPairDeviceErrorReason[] =
+    "Bluetooth.ChromeOS.FastPair.PairDevice.ErrorReason";
 
 }  // namespace
 
@@ -447,6 +451,17 @@ void RecordNavigateToSettingsResult(bool success) {
 
 void RecordConnectDeviceResult(bool success) {
   base::UmaHistogramBoolean(kConnectDeviceResult, success);
+}
+
+void RecordPairDeviceResult(bool success) {
+  base::UmaHistogramBoolean(kPairDeviceResult, success);
+}
+
+void RecordPairDeviceErrorReason(
+    device::BluetoothDevice::ConnectErrorCode error_code) {
+  base::UmaHistogramEnumeration(
+      kPairDeviceErrorReason, error_code,
+      device::BluetoothDevice::NUM_CONNECT_ERROR_CODES);
 }
 
 }  // namespace quick_pair

@@ -78,6 +78,10 @@ const char kWriteAccountKeyCharacteristicResultMetric[] =
     "Bluetooth.ChromeOS.FastPair.AccountKey.Write.Result";
 const char kConnectDeviceResult[] =
     "Bluetooth.ChromeOS.FastPair.ConnectDevice.Result";
+const char kPairDeviceResult[] =
+    "Bluetooth.ChromeOS.FastPair.PairDevice.Result";
+const char kPairDeviceErrorReason[] =
+    "Bluetooth.ChromeOS.FastPair.PairDevice.ErrorReason";
 
 class FakeBluetoothAdapter
     : public testing::NiceMock<device::MockBluetoothAdapter> {
@@ -354,21 +358,29 @@ TEST_F(FastPairPairerTest, NoCallbackIsInvokedOnGattSuccess_Subsequent) {
 }
 
 TEST_F(FastPairPairerTest, SuccessfulDecryptedResponsePairFailure_Initial) {
+  histogram_tester().ExpectTotalCount(kPairDeviceResult, 0);
+  histogram_tester().ExpectTotalCount(kPairDeviceErrorReason, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
                                /*protocol=*/Protocol::kFastPairInitial);
   SetPairFailure();
   CreatePairer();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(GetPairFailure(), PairFailure::kPairingConnect);
+  histogram_tester().ExpectTotalCount(kPairDeviceResult, 1);
+  histogram_tester().ExpectTotalCount(kPairDeviceErrorReason, 1);
 }
 
 TEST_F(FastPairPairerTest, SuccessfulDecryptedResponsePairFailure_Subsequent) {
+  histogram_tester().ExpectTotalCount(kPairDeviceResult, 0);
+  histogram_tester().ExpectTotalCount(kPairDeviceErrorReason, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
                                /*protocol=*/Protocol::kFastPairSubsequent);
   SetPairFailure();
   CreatePairer();
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(GetPairFailure(), PairFailure::kPairingConnect);
+  histogram_tester().ExpectTotalCount(kPairDeviceResult, 1);
+  histogram_tester().ExpectTotalCount(kPairDeviceErrorReason, 1);
 }
 
 TEST_F(FastPairPairerTest, SuccessfulDecryptedResponsePairSuccess_Initial) {
