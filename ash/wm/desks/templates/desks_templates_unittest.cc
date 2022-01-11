@@ -1606,6 +1606,12 @@ TEST_F(DesksTemplatesTest, EditTemplateName) {
   WaitForDesksTemplatesUI();
   name_view = GetItemViewFromTemplatesGrid(0)->name_view();
   EXPECT_EQ(u"abc", name_view->GetText());
+
+  // There was a bug where a relayout could cause a revert of the name changes,
+  // and lead to a crash if the name view had highlight focus. This is a
+  // regression test for that. See https://crbug.com/1285113 for more details.
+  GetItemViewFromTemplatesGrid(0)->SetBoundsRect(gfx::Rect(150, 40));
+  EXPECT_EQ(u"abc", GetItemViewFromTemplatesGrid(0)->name_view()->GetText());
 }
 
 // Tests for checking that certain conditions will revert the template name to

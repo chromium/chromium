@@ -7,7 +7,6 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/overview/overview_highlightable_view.h"
-#include "base/guid.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
@@ -18,7 +17,6 @@
 namespace views {
 class Label;
 class Textfield;
-class ImageView;
 }  // namespace views
 
 namespace ash {
@@ -89,10 +87,6 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
   // changes.
   void OnTemplateNameChanged(const std::u16string& new_name);
 
-  // Layout `name_view_` given the current bounds of `this` as well as the
-  // contents of the textfield.
-  void LayoutTemplateNameView();
-
   // OverviewHighlightableView:
   views::View* GetView() override;
   void MaybeActivateHighlightedView() override;
@@ -112,9 +106,6 @@ class ASH_EXPORT DesksTemplatesItemView : public views::Button,
   PillButton* launch_button_ = nullptr;
   // Container used for holding all the views that appear on hover.
   views::View* hover_container_ = nullptr;
-
-  // The indicator to show if template is managed by admin.
-  views::ImageView* managed_status_indicator_ = nullptr;
 
   // When the `name_view_` is focused, we select all its text. However, if it is
   // focused via a mouse press event, on mouse release will clear the selection.

@@ -21,16 +21,28 @@ class DesksTemplatesNameView : public DesksTextfield {
   DesksTemplatesNameView& operator=(const DesksTemplatesNameView&) = delete;
   ~DesksTemplatesNameView() override;
 
+  static constexpr int kTemplateNameViewHeight = 24;
+
   // Commits an on-going template name change (if any) by bluring the focus away
   // from any view on `widget`, where `widget` should be the desks templates
   // grid widget.
   static void CommitChanges(views::Widget* widget);
 
+  // Called when the contents in the textfield change. Updates the preferred
+  // size of `this`, which invalidates the layout.
+  void OnContentsChanged();
+
   // DesksTextfield:
   void SetTextAndElideIfNeeded(const std::u16string& text) override;
+  gfx::Size CalculatePreferredSize() const override;
 
  private:
   friend class DesksTemplatesNameViewTestApi;
+
+  // Gets the available width for `this`. It is the largest width `this` can be
+  // based on the parent's and visible sibling's preferred sizes. Will always
+  // return a value greater than or equal to one.
+  int GetAvailableWidth() const;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, DesksTemplatesNameView, DesksTextfield)

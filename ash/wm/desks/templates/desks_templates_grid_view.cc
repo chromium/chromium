@@ -122,13 +122,13 @@ void DesksTemplatesGridView::UpdateGridUI(
       for (DesksTemplatesItemView* template_view : grid_items_) {
         if (template_view->IsViewHighlighted()) {
           highlight_controller->OnViewDestroyingOrDisabling(template_view);
-          return;
+          break;
         }
 
         if (template_view->name_view()->IsViewHighlighted()) {
           highlight_controller->OnViewDestroyingOrDisabling(
               template_view->name_view());
-          return;
+          break;
         }
       }
     }
