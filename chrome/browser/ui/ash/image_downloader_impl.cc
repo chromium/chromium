@@ -62,9 +62,9 @@ class DownloadTask : public BitmapFetcherDelegate {
     bitmap_fetcher_ =
         std::make_unique<BitmapFetcher>(url, this, annotation_tag);
 
-    bitmap_fetcher_->Init(
-        /*referrer=*/std::string(), net::ReferrerPolicy::NEVER_CLEAR,
-        network::mojom::CredentialsMode::kOmit, additional_headers);
+    bitmap_fetcher_->Init(net::ReferrerPolicy::NEVER_CLEAR,
+                          network::mojom::CredentialsMode::kOmit,
+                          additional_headers);
 
     bitmap_fetcher_->Start(profile->GetURLLoaderFactory().get());
   }

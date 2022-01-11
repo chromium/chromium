@@ -62,8 +62,7 @@ void ContextualSearchSceneLayer::CreateContextualSearchLayer(
   layer()->AddChild(contextual_search_layer_->layer());
 }
 
-ContextualSearchSceneLayer::~ContextualSearchSceneLayer() {
-}
+ContextualSearchSceneLayer::~ContextualSearchSceneLayer() {}
 
 void ContextualSearchSceneLayer::UpdateContextualSearchLayer(
     JNIEnv* env,
@@ -226,7 +225,6 @@ void ContextualSearchSceneLayer::FetchThumbnail(
   fetcher_ =
       std::make_unique<BitmapFetcher>(gurl, this, MISSING_TRAFFIC_ANNOTATION);
   fetcher_->Init(
-      std::string(),
       net::ReferrerPolicy::REDUCE_GRANULARITY_ON_TRANSITION_CROSS_ORIGIN,
       network::mojom::CredentialsMode::kInclude);
   fetcher_->Start(loader_factory);
@@ -247,16 +245,17 @@ void ContextualSearchSceneLayer::SetContentTree(
     const JavaParamRef<jobject>& jobj,
     const JavaParamRef<jobject>& jcontent_tree) {
   SceneLayer* content_tree = FromJavaObject(env, jcontent_tree);
-  if (!content_tree || !content_tree->layer()) return;
+  if (!content_tree || !content_tree->layer())
+    return;
 
-  if (!content_tree->layer()->parent()
-      || (content_tree->layer()->parent()->id() != content_container_->id())) {
+  if (!content_tree->layer()->parent() ||
+      (content_tree->layer()->parent()->id() != content_container_->id())) {
     content_container_->AddChild(content_tree->layer());
   }
 }
 
 void ContextualSearchSceneLayer::HideTree(JNIEnv* env,
-    const JavaParamRef<jobject>& jobj) {
+                                          const JavaParamRef<jobject>& jobj) {
   // TODO(mdjones): Create super class for this logic.
   if (contextual_search_layer_) {
     contextual_search_layer_->layer()->SetHideLayerAndSubtree(true);
