@@ -72,10 +72,14 @@ class CreditCard : public AutofillDataModel {
     // State unspecified. This is the default value of this enum. Should not be
     // ever used with cards.
     UNSPECIFIED = 0,
-    // Card is not enrolled and does not have related virtual card.
+    // Deprecated. Card is not enrolled and does not have related virtual card.
     UNENROLLED = 1,
     // Card is enrolled and has related virtual cards.
     ENROLLED = 2,
+    // Card is not enrolled and is not eligible for enrollment.
+    UNENROLLED_AND_NOT_ELIGIBLE = 3,
+    // Card is not enrolled but is eligible for enrollment.
+    UNENROLLED_AND_ELIGIBLE = 4,
   };
 
   CreditCard(const std::string& guid, const std::string& origin);

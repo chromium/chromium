@@ -547,13 +547,7 @@ void AutofillWalletSyncBridge::ProcessVirtualCardMetadataChanges(
     const std::vector<CreditCard>& new_data) {
   std::vector<std::string> updated_server_ids;
   for (const CreditCard& new_card : new_data) {
-    // If this new card is not enrolled for virtual cards, continue.
-    if (new_card.virtual_card_enrollment_state() !=
-        CreditCard::VirtualCardEnrollmentState::ENROLLED) {
-      continue;
-    }
-
-    // Otherwise try to find the old card with same server id.
+    // Try to find the old card with same server id.
     auto old_data_iterator =
         std::find_if(old_data.begin(), old_data.end(),
                      [&new_card](const std::unique_ptr<CreditCard>& old_card) {

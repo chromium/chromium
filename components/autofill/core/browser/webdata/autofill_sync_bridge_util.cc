@@ -103,12 +103,13 @@ CreditCard CardFromSpecifics(const sync_pb::WalletMaskedCreditCard& card) {
     case sync_pb::WalletMaskedCreditCard::ENROLLED:
       state = CreditCard::ENROLLED;
       break;
-    case sync_pb::WalletMaskedCreditCard::UNSPECIFIED:
     case sync_pb::WalletMaskedCreditCard::UNENROLLED_AND_NOT_ELIGIBLE:
+      state = CreditCard::UNENROLLED_AND_NOT_ELIGIBLE;
+      break;
     case sync_pb::WalletMaskedCreditCard::UNENROLLED_AND_ELIGIBLE:
-      // TODO(crbug.com/1261895): Modify enum in CreditCard and change this to
-      // correct values.
-      state = CreditCard::UNSPECIFIED;
+      state = CreditCard::UNENROLLED_AND_ELIGIBLE;
+      break;
+    case sync_pb::WalletMaskedCreditCard::UNSPECIFIED:
       break;
   }
   result.set_virtual_card_enrollment_state(state);
@@ -278,6 +279,12 @@ void SetAutofillWalletSpecificsFromServerCard(
       break;
     case CreditCard::ENROLLED:
       state = sync_pb::WalletMaskedCreditCard::ENROLLED;
+      break;
+    case CreditCard::UNENROLLED_AND_NOT_ELIGIBLE:
+      state = sync_pb::WalletMaskedCreditCard::UNENROLLED_AND_NOT_ELIGIBLE;
+      break;
+    case CreditCard::UNENROLLED_AND_ELIGIBLE:
+      state = sync_pb::WalletMaskedCreditCard::UNENROLLED_AND_ELIGIBLE;
       break;
     case CreditCard::UNSPECIFIED:
       state = sync_pb::WalletMaskedCreditCard::UNSPECIFIED;
