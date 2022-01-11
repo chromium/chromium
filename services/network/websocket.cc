@@ -453,7 +453,7 @@ WebSocket::WebSocket(
       throttling_profile_id_(throttling_profile_id) {
   DCHECK(handshake_client_);
   // |delay| should be zero if this connection is not throttled.
-  DCHECK(pending_connection_tracker.has_value() || delay.is_zero());
+  DCHECK(pending_connection_tracker_.has_value() || delay.is_zero());
   if (auth_handler_) {
     // Make sure the request dies if |auth_handler_| has an error, otherwise
     // requests can hang.
