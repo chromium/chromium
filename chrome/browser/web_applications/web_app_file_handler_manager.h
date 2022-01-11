@@ -73,12 +73,12 @@ class WebAppFileHandlerManager {
   // Gets all enabled file handlers for |app_id|. |nullptr| if the app has no
   // enabled file handlers. Note: The lifetime of the file handlers are tied to
   // the app they belong to.
-  const apps::FileHandlers* GetEnabledFileHandlers(const AppId& app_id);
+  const apps::FileHandlers* GetEnabledFileHandlers(const AppId& app_id) const;
 
   // Determines whether file handling is allowed for |app_id|. This is true if
   // the app has a valid origin trial token for the file handling API or if the
   // FileHandlingAPI flag is enabled.
-  bool IsFileHandlingAPIAvailable(const AppId& app_id);
+  bool IsFileHandlingAPIAvailable(const AppId& app_id) const;
 
   // Returns true when the system supports file type association icons.
   static bool IconsEnabled();
@@ -88,7 +88,8 @@ class WebAppFileHandlerManager {
   // handlers or if app_id was uninstalled.
   // Note: The lifetime of the file handlers are tied to the app they belong to.
   // `virtual` for testing.
-  virtual const apps::FileHandlers* GetAllFileHandlers(const AppId& app_id);
+  virtual const apps::FileHandlers* GetAllFileHandlers(
+      const AppId& app_id) const;
 
  private:
   // Removes file handlers whose origin trials have expired (assuming

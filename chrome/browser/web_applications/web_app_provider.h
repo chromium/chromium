@@ -128,6 +128,7 @@ class WebAppProvider : public KeyedService {
 
   // Manage all OS hooks that need to be deployed during Web Apps install
   OsIntegrationManager& os_integration_manager();
+  const OsIntegrationManager& os_integration_manager() const;
 
   // KeyedService:
   void Shutdown() override;

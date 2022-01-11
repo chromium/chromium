@@ -200,6 +200,11 @@ OsIntegrationManager& WebAppProvider::os_integration_manager() {
   return *os_integration_manager_;
 }
 
+const OsIntegrationManager& WebAppProvider::os_integration_manager() const {
+  CheckIsConnected();
+  return *os_integration_manager_;
+}
+
 void WebAppProvider::Shutdown() {
   ui_manager_->Shutdown();
   externally_managed_app_manager_->Shutdown();

@@ -134,7 +134,7 @@ void WebAppFileHandlerManager::DisableAndUnregisterOsFileHandlers(
 }
 
 const apps::FileHandlers* WebAppFileHandlerManager::GetEnabledFileHandlers(
-    const AppId& app_id) {
+    const AppId& app_id) const {
   if (ShouldOsIntegrationBeEnabled(app_id) &&
       IsFileHandlingAPIAvailable(app_id) &&
       !GetRegistrar()->IsAppFileHandlerPermissionBlocked(app_id)) {
@@ -144,7 +144,8 @@ const apps::FileHandlers* WebAppFileHandlerManager::GetEnabledFileHandlers(
   return nullptr;
 }
 
-bool WebAppFileHandlerManager::IsFileHandlingAPIAvailable(const AppId& app_id) {
+bool WebAppFileHandlerManager::IsFileHandlingAPIAvailable(
+    const AppId& app_id) const {
   if (base::FeatureList::IsEnabled(blink::features::kFileHandlingAPI))
     return true;
 
@@ -186,7 +187,7 @@ int WebAppFileHandlerManager::CleanupAfterOriginTrials() {
 }
 
 const apps::FileHandlers* WebAppFileHandlerManager::GetAllFileHandlers(
-    const AppId& app_id) {
+    const AppId& app_id) const {
   const WebApp* web_app = GetRegistrar()->GetAppById(app_id);
   return web_app && !web_app->file_handlers().empty()
              ? &web_app->file_handlers()

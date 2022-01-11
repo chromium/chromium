@@ -327,7 +327,7 @@ bool OsIntegrationManager::IsFileHandlingAPIAvailable(const AppId& app_id) {
 }
 
 const apps::FileHandlers* OsIntegrationManager::GetEnabledFileHandlers(
-    const AppId& app_id) {
+    const AppId& app_id) const {
   DCHECK(file_handler_manager_);
   return file_handler_manager_->GetEnabledFileHandlers(app_id);
 }

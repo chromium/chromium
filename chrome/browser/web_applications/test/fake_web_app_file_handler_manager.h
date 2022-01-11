@@ -26,7 +26,8 @@ class FakeWebAppFileHandlerManager : public WebAppFileHandlerManager {
       delete;
   ~FakeWebAppFileHandlerManager() override;
 
-  const apps::FileHandlers* GetAllFileHandlers(const AppId& app_id) override;
+  const apps::FileHandlers* GetAllFileHandlers(
+      const AppId& app_id) const override;
 
   using AcceptMap = std::map<std::string, base::flat_set<std::string>>;
   // Installs a file handler for |app_id| with the action url |handler|,

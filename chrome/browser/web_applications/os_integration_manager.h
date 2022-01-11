@@ -152,7 +152,7 @@ class OsIntegrationManager : public AppRegistrarObserver {
 
   // Proxy calls for WebAppFileHandlerManager.
   bool IsFileHandlingAPIAvailable(const AppId& app_id);
-  const apps::FileHandlers* GetEnabledFileHandlers(const AppId& app_id);
+  const apps::FileHandlers* GetEnabledFileHandlers(const AppId& app_id) const;
   const absl::optional<GURL> GetMatchingFileHandlerURL(
       const AppId& app_id,
       const std::vector<base::FilePath>& launch_files);
