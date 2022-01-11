@@ -5,8 +5,6 @@
 // Custom binding for the Tab Capture API.
 
 apiBridge.registerCustomHook(function(bindingsAPI, extensionId) {
-  var apiFunctions = bindingsAPI.apiFunctions;
-
   function proxyToGetUserMedia(callback, response) {
     if (!callback)
       return;
@@ -18,28 +16,25 @@ apiBridge.registerCustomHook(function(bindingsAPI, extensionId) {
       return;
     }
 
-    // Convenience function for processing webkitGetUserMedia() error objects to
+    // Convenience function for processing getUserMedia() error objects to
     // provide runtime.lastError messages for the tab capture API.
-    function getErrorMessage(error, fallbackMessage) {
+    const getErrorMessage = (error, fallbackMessage) => {
       if (!error || (typeof error.message !== 'string'))
         return fallbackMessage;
-      return error.message.replace(/(navigator\.)?(webkit)?GetUserMedia/gi,
+      return error.message.replace('navigator.mediaDevices.getUserMedia',
                                    'tabCapture.capture');
-    }
+    };
 
-    var options = {};
+    let constraints = {};
     if (response.audioConstraints)
-      options.audio = response.audioConstraints;
+      constraints.audio = response.audioConstraints;
     if (response.videoConstraints)
-      options.video = response.videoConstraints;
+      constraints.video = response.videoConstraints;
     try {
-      navigator.webkitGetUserMedia(
-          options,
-          function onSuccess(media_stream) {
-            callback(media_stream);
-          },
-          function onError(error) {
-            bindingUtil.runCallbackWithLastError(
+      navigator.mediaDevices.getUserMedia(constraints)
+          .then(callback)
+          .catch(error => {
+              bindingUtil.runCallbackWithLastError(
                 getErrorMessage(error, "Failed to start MediaStream."),
                 $Function.bind(callback, null, null));
           });
@@ -50,5 +45,5 @@ apiBridge.registerCustomHook(function(bindingsAPI, extensionId) {
     }
   }
 
-  apiFunctions.setCustomCallback('capture', proxyToGetUserMedia);
+  bindingsAPI.apiFunctions.setCustomCallback('capture', proxyToGetUserMedia);
 });
