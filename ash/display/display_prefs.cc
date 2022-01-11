@@ -471,7 +471,8 @@ void StoreDisplayLayoutPref(PrefService* pref_service,
   DCHECK(display::DisplayLayout::Validate(list, display_layout));
   std::string name = display::DisplayIdListToString(list);
 
-  DictionaryPrefUpdate update(pref_service, prefs::kSecondaryDisplays);
+  DictionaryPrefUpdateDeprecated update(pref_service,
+                                        prefs::kSecondaryDisplays);
   base::DictionaryValue* pref_data = update.Get();
   base::Value layout_value(base::Value::Type::DICTIONARY);
   if (pref_data->HasKey(name)) {
@@ -509,7 +510,8 @@ void StoreCurrentDisplayLayoutPrefs(PrefService* pref_service) {
 void StoreCurrentDisplayProperties(PrefService* pref_service) {
   display::DisplayManager* display_manager = GetDisplayManager();
 
-  DictionaryPrefUpdate update(pref_service, prefs::kDisplayProperties);
+  DictionaryPrefUpdateDeprecated update(pref_service,
+                                        prefs::kDisplayProperties);
   base::DictionaryValue* pref_data = update.Get();
 
   // Pre-process data related to legacy touch calibration to opitmize lookup.
@@ -632,7 +634,8 @@ void StoreCurrentDisplayPowerState(PrefService* pref_service) {
 void StoreDisplayRotationPrefs(PrefService* pref_service,
                                display::Display::Rotation rotation,
                                bool rotation_lock) {
-  DictionaryPrefUpdate update(pref_service, prefs::kDisplayRotationLock);
+  DictionaryPrefUpdateDeprecated update(pref_service,
+                                        prefs::kDisplayRotationLock);
   base::DictionaryValue* pref_data = update.Get();
   pref_data->SetBoolean("lock", rotation_lock);
   pref_data->SetInteger("orientation", static_cast<int>(rotation));
@@ -655,7 +658,8 @@ void StoreDisplayTouchAssociations(PrefService* pref_service) {
   display::TouchDeviceManager* touch_device_manager =
       GetDisplayManager()->touch_device_manager();
 
-  DictionaryPrefUpdate update(pref_service, prefs::kDisplayTouchAssociations);
+  DictionaryPrefUpdateDeprecated update(pref_service,
+                                        prefs::kDisplayTouchAssociations);
   base::DictionaryValue* pref_data = update.Get();
   pref_data->DictClear();
 
@@ -705,8 +709,8 @@ void StoreDisplayTouchAssociations(PrefService* pref_service) {
 
   // Store the port mappings. What display a touch device connected to a
   // particular port is associated with.
-  DictionaryPrefUpdate update_port(pref_service,
-                                   prefs::kDisplayTouchPortAssociations);
+  DictionaryPrefUpdateDeprecated update_port(
+      pref_service, prefs::kDisplayTouchPortAssociations);
   pref_data = update_port.Get();
   update_port->DictClear();
 
@@ -731,7 +735,8 @@ void StoreDisplayTouchAssociations(PrefService* pref_service) {
 
 // Stores mirror info for each external display.
 void StoreExternalDisplayMirrorInfo(PrefService* pref_service) {
-  ListPrefUpdate update(pref_service, prefs::kExternalDisplayMirrorInfo);
+  ListPrefUpdateDeprecated update(pref_service,
+                                  prefs::kExternalDisplayMirrorInfo);
   base::ListValue* pref_data = update.Get();
   pref_data->ClearList();
   const std::set<int64_t>& external_display_mirror_info =
@@ -745,8 +750,8 @@ void StoreExternalDisplayMirrorInfo(PrefService* pref_service) {
 void StoreDisplayMixedMirrorModeParams(
     PrefService* pref_service,
     const absl::optional<display::MixedMirrorModeParams>& mixed_params) {
-  DictionaryPrefUpdate update(pref_service,
-                              prefs::kDisplayMixedMirrorModeParams);
+  DictionaryPrefUpdateDeprecated update(pref_service,
+                                        prefs::kDisplayMixedMirrorModeParams);
   base::DictionaryValue* pref_data = update.Get();
   pref_data->DictClear();
 
@@ -903,7 +908,8 @@ void DisplayPrefs::LoadTouchAssociationPreferenceForTest() {
 void DisplayPrefs::StoreLegacyTouchDataForTest(
     int64_t display_id,
     const display::TouchCalibrationData& data) {
-  DictionaryPrefUpdate update(local_state_, prefs::kDisplayProperties);
+  DictionaryPrefUpdateDeprecated update(local_state_,
+                                        prefs::kDisplayProperties);
   base::DictionaryValue* pref_data = update.Get();
   base::DictionaryValue property_value;
   TouchDataToValue(data, &property_value);

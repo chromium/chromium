@@ -252,7 +252,8 @@ void PromoService::BlocklistPromo(const std::string& promo_id) {
     return;
   }
 
-  DictionaryPrefUpdate update(profile_->GetPrefs(), prefs::kNtpPromoBlocklist);
+  DictionaryPrefUpdateDeprecated update(profile_->GetPrefs(),
+                                        prefs::kNtpPromoBlocklist);
   double now = base::Time::Now().ToDeltaSinceWindowsEpoch().InSecondsF();
   update->SetDoubleKey(promo_id, now);
 
@@ -304,8 +305,8 @@ bool PromoService::IsBlockedAfterClearingExpired(
   }
 
   if (!expired_ids.empty()) {
-    DictionaryPrefUpdate update(profile_->GetPrefs(),
-                                prefs::kNtpPromoBlocklist);
+    DictionaryPrefUpdateDeprecated update(profile_->GetPrefs(),
+                                          prefs::kNtpPromoBlocklist);
     for (const std::string& key : expired_ids)
       update->RemoveKey(key);
   }

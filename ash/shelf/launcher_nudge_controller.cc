@@ -195,7 +195,7 @@ void LauncherNudgeController::HandleNudgeShown() {
     return;
 
   const int shown_count = GetShownCount(prefs);
-  DictionaryPrefUpdate update(prefs, prefs::kShelfLauncherNudge);
+  DictionaryPrefUpdateDeprecated update(prefs, prefs::kShelfLauncherNudge);
   update->SetIntPath(kShownCount, shown_count + 1);
   update->SetPath(kLastShownTime, base::TimeToValue(GetNow()));
 }
@@ -249,7 +249,7 @@ void LauncherNudgeController::OnActiveUserPrefServiceChanged(
   if (Shell::Get()->session_controller()->IsUserFirstLogin()) {
     // If the current logged in user is a new one, record the first login time
     // to know when to show the nudge.
-    DictionaryPrefUpdate update(prefs, prefs::kShelfLauncherNudge);
+    DictionaryPrefUpdateDeprecated update(prefs, prefs::kShelfLauncherNudge);
     update->SetPath(kFirstLoginTime, base::TimeToValue(GetNow()));
   } else if (GetFirstLoginTime(prefs).is_null()) {
     // For the users that has logged in before the nudge feature is landed, we
@@ -278,7 +278,7 @@ void LauncherNudgeController::OnAppListVisibilityChanged(bool shown,
     return;
 
   if (!WasLauncherShownPreviously(prefs) && shown) {
-    DictionaryPrefUpdate update(prefs, prefs::kShelfLauncherNudge);
+    DictionaryPrefUpdateDeprecated update(prefs, prefs::kShelfLauncherNudge);
     update->SetBoolPath(kWasLauncherShown, true);
   }
 }

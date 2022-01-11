@@ -247,8 +247,9 @@ TEST_F(AppMenuModelTest, DisableSettingsItem) {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   {
-    ListPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
-                          policy::policy_prefs::kSystemFeaturesDisableList);
+    ListPrefUpdateDeprecated update(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        policy::policy_prefs::kSystemFeaturesDisableList);
     base::ListValue* list = update.Get();
     list->Append(policy::SystemFeature::kBrowserSettings);
   }
@@ -261,8 +262,9 @@ TEST_F(AppMenuModelTest, DisableSettingsItem) {
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   {
-    ListPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
-                          policy::policy_prefs::kSystemFeaturesDisableList);
+    ListPrefUpdateDeprecated update(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        policy::policy_prefs::kSystemFeaturesDisableList);
     base::ListValue* list = update.Get();
     list->ClearList();
   }

@@ -399,7 +399,8 @@ void HatsService::RecordSurveyAsShown(std::string trigger_id) {
   UMA_HISTOGRAM_ENUMERATION(kHatsShouldShowSurveyReasonHistogram,
                             ShouldShowSurveyReasons::kYes);
 
-  DictionaryPrefUpdate update(profile_->GetPrefs(), prefs::kHatsSurveyMetadata);
+  DictionaryPrefUpdateDeprecated update(profile_->GetPrefs(),
+                                        prefs::kHatsSurveyMetadata);
   base::DictionaryValue* pref_data = update.Get();
   pref_data->SetIntPath(GetMajorVersionPath(trigger),
                         version_info::GetVersion().components()[0]);
@@ -416,7 +417,8 @@ void HatsService::HatsNextDialogClosed() {
 void HatsService::SetSurveyMetadataForTesting(
     const HatsService::SurveyMetadata& metadata) {
   const std::string& trigger = kHatsSurveyTriggerSettings;
-  DictionaryPrefUpdate update(profile_->GetPrefs(), prefs::kHatsSurveyMetadata);
+  DictionaryPrefUpdateDeprecated update(profile_->GetPrefs(),
+                                        prefs::kHatsSurveyMetadata);
   base::DictionaryValue* pref_data = update.Get();
   if (!metadata.last_major_version.has_value() &&
       !metadata.last_survey_started_time.has_value() &&
@@ -464,7 +466,8 @@ void HatsService::SetSurveyMetadataForTesting(
 void HatsService::GetSurveyMetadataForTesting(
     HatsService::SurveyMetadata* metadata) const {
   const std::string& trigger = kHatsSurveyTriggerSettings;
-  DictionaryPrefUpdate update(profile_->GetPrefs(), prefs::kHatsSurveyMetadata);
+  DictionaryPrefUpdateDeprecated update(profile_->GetPrefs(),
+                                        prefs::kHatsSurveyMetadata);
   base::DictionaryValue* pref_data = update.Get();
 
   absl::optional<int> last_major_version =
@@ -747,7 +750,8 @@ void HatsService::CheckSurveyStatusAndMaybeShow(
 
   // As soon as the HaTS Next dialog is created it will attempt to contact
   // the HaTS servers to check for a survey.
-  DictionaryPrefUpdate update(profile_->GetPrefs(), prefs::kHatsSurveyMetadata);
+  DictionaryPrefUpdateDeprecated update(profile_->GetPrefs(),
+                                        prefs::kHatsSurveyMetadata);
   update->SetPath(GetLastSurveyCheckTime(trigger),
                   base::TimeToValue(base::Time::Now()));
 

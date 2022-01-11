@@ -1428,8 +1428,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
   ASSERT_FALSE(
       GetManager().GetAppIdForSystemApp(SystemAppType::SETTINGS).has_value());
   {
-    ListPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
-                          policy::policy_prefs::kSystemFeaturesDisableList);
+    ListPrefUpdateDeprecated update(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        policy::policy_prefs::kSystemFeaturesDisableList);
     base::ListValue* list = update.Get();
     list->Append(policy::SystemFeature::kOsSettings);
   }
@@ -1444,8 +1445,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
               GetAppIconKey(*settings_id)->icon_effects);
 
   {
-    ListPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
-                          policy::policy_prefs::kSystemFeaturesDisableList);
+    ListPrefUpdateDeprecated update(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        policy::policy_prefs::kSystemFeaturesDisableList);
     base::ListValue* list = update.Get();
     list->ClearList();
   }
@@ -1466,8 +1468,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
   EXPECT_EQ(apps::mojom::Readiness::kReady, GetAppReadiness(*settings_id));
 
   {
-    ListPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
-                          policy::policy_prefs::kSystemFeaturesDisableList);
+    ListPrefUpdateDeprecated update(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        policy::policy_prefs::kSystemFeaturesDisableList);
     base::ListValue* list = update.Get();
     list->Append(policy::SystemFeature::kOsSettings);
   }
@@ -1480,8 +1483,9 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerAppSuspensionBrowserTest,
               GetAppIconKey(*settings_id)->icon_effects);
 
   {
-    ListPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
-                          policy::policy_prefs::kSystemFeaturesDisableList);
+    ListPrefUpdateDeprecated update(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        policy::policy_prefs::kSystemFeaturesDisableList);
     base::ListValue* list = update.Get();
     list->ClearList();
   }

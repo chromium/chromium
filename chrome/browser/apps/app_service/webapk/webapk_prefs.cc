@@ -46,8 +46,8 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
 void AddWebApk(Profile* profile,
                const std::string& app_id,
                const std::string& package_name) {
-  DictionaryPrefUpdate generated_webapks(profile->GetPrefs(),
-                                         kGeneratedWebApksPref);
+  DictionaryPrefUpdateDeprecated generated_webapks(profile->GetPrefs(),
+                                                   kGeneratedWebApksPref);
 
   generated_webapks->SetPath({app_id, kPackageNameKey},
                              base::Value(package_name));
@@ -100,8 +100,8 @@ base::flat_set<std::string> GetInstalledWebApkPackageNames(Profile* profile) {
 absl::optional<std::string> RemoveWebApkByPackageName(
     Profile* profile,
     const std::string& package_name) {
-  DictionaryPrefUpdate generated_webapks(profile->GetPrefs(),
-                                         kGeneratedWebApksPref);
+  DictionaryPrefUpdateDeprecated generated_webapks(profile->GetPrefs(),
+                                                   kGeneratedWebApksPref);
 
   for (auto kv : generated_webapks->DictItems()) {
     const std::string* item_package_name =
@@ -119,8 +119,8 @@ absl::optional<std::string> RemoveWebApkByPackageName(
 void SetUpdateNeededForApp(Profile* profile,
                            const std::string& app_id,
                            bool update_needed) {
-  DictionaryPrefUpdate generated_webapks(profile->GetPrefs(),
-                                         kGeneratedWebApksPref);
+  DictionaryPrefUpdateDeprecated generated_webapks(profile->GetPrefs(),
+                                                   kGeneratedWebApksPref);
   if (generated_webapks->HasKey(app_id)) {
     generated_webapks->SetPath({app_id, kUpdateNeededKey},
                                base::Value(update_needed));

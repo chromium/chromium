@@ -136,8 +136,8 @@ class AccountStorageSettingsReader {
 };
 
 // Helper class for updating account storage settings for a given account. Like
-// with DictionaryPrefUpdate, updates are only published once the instance gets
-// destroyed.
+// with DictionaryPrefUpdateDeprecated, updates are only published once the
+// instance gets destroyed.
 class ScopedAccountStorageSettingsUpdate {
  public:
   ScopedAccountStorageSettingsUpdate(PrefService* prefs,
@@ -178,7 +178,7 @@ class ScopedAccountStorageSettingsUpdate {
   void ClearAllSettings() { update_->RemoveKey(account_hash_); }
 
  private:
-  DictionaryPrefUpdate update_;
+  DictionaryPrefUpdateDeprecated update_;
   const std::string account_hash_;
 };
 }  // namespace
@@ -410,8 +410,8 @@ void KeepAccountStorageSettingsOnlyForUsers(
   // Now remove any settings for account that are *not* in the set of hashes.
   // DictionaryValue doesn't allow removing elements while iterating, so first
   // collect all the keys to remove, then actually remove them in a second pass.
-  DictionaryPrefUpdate update(pref_service,
-                              prefs::kAccountStoragePerAccountSettings);
+  DictionaryPrefUpdateDeprecated update(
+      pref_service, prefs::kAccountStoragePerAccountSettings);
   std::vector<std::string> keys_to_remove;
   for (auto kv : update->DictItems()) {
     if (!hashes_to_keep.contains(kv.first))

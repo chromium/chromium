@@ -252,7 +252,7 @@ void KnownUser::UpdatePrefs(const AccountId& account_id,
   if (!account_id.is_valid())
     return;
 
-  ListPrefUpdate update(local_state_, kKnownUsers);
+  ListPrefUpdateDeprecated update(local_state_, kKnownUsers);
   for (base::Value& element_value : update->GetList()) {
     if (element_value.is_dict()) {
       base::DictionaryValue* element =
@@ -783,7 +783,7 @@ void KnownUser::RemovePrefs(const AccountId& account_id) {
   if (!account_id.is_valid())
     return;
 
-  ListPrefUpdate update(local_state_, kKnownUsers);
+  ListPrefUpdateDeprecated update(local_state_, kKnownUsers);
   base::Value::ListView update_view = update->GetList();
   for (auto it = update_view.begin(); it != update_view.end(); ++it) {
     base::DictionaryValue* element = nullptr;
@@ -797,7 +797,7 @@ void KnownUser::RemovePrefs(const AccountId& account_id) {
 }
 
 void KnownUser::CleanEphemeralUsers() {
-  ListPrefUpdate update(local_state_, kKnownUsers);
+  ListPrefUpdateDeprecated update(local_state_, kKnownUsers);
   update->EraseListValueIf([](const auto& value) {
     if (!value.is_dict())
       return false;
@@ -808,7 +808,7 @@ void KnownUser::CleanEphemeralUsers() {
 }
 
 void KnownUser::CleanObsoletePrefs() {
-  ListPrefUpdate update(local_state_, kKnownUsers);
+  ListPrefUpdateDeprecated update(local_state_, kKnownUsers);
   for (base::Value& user_entry : update.Get()->GetList()) {
     if (!user_entry.is_dict())
       continue;

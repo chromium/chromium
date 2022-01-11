@@ -81,8 +81,8 @@ bool PolicyCertServiceFactory::MigrateLocalStatePrefIntoProfilePref(
 // static
 bool PolicyCertServiceFactory::ClearUsedPolicyCertificates(
     const std::string& user_email) {
-  ListPrefUpdate update(g_browser_process->local_state(),
-                        prefs::kUsedPolicyCertificates);
+  ListPrefUpdateDeprecated update(g_browser_process->local_state(),
+                                  prefs::kUsedPolicyCertificates);
   return (update->EraseListValue(base::Value(user_email)) > 0);
 }
 

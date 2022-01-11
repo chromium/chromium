@@ -1089,8 +1089,8 @@ TEST_F(HostContentSettingsMapTest, CanonicalizeExceptionsUnicodeOnly) {
 
   // Set utf-8 data.
   {
-    DictionaryPrefUpdate update(prefs,
-                                GetPrefName(ContentSettingsType::COOKIES));
+    DictionaryPrefUpdateDeprecated update(
+        prefs, GetPrefName(ContentSettingsType::COOKIES));
     base::Value* all_settings_dictionary = update.Get();
     ASSERT_TRUE(all_settings_dictionary);
 

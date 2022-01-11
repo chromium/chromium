@@ -319,7 +319,7 @@ void PutWallpaperInfoInPrefs(AccountId account_id,
                              WallpaperInfo info,
                              PrefService* pref_service,
                              const std::string& pref_name) {
-  DictionaryPrefUpdate wallpaper_update(pref_service, pref_name);
+  DictionaryPrefUpdateDeprecated wallpaper_update(pref_service, pref_name);
   auto wallpaper_info_dict = CreateWallpaperInfoDict(info);
   wallpaper_update->SetKey(
       account_id.GetUserEmail(),
@@ -3153,7 +3153,8 @@ class WallpaperControllerPrefTest : public AshTestBase,
     property.SetInteger("width", 800);
     property.SetInteger("height", 600);
 
-    DictionaryPrefUpdate update(local_state(), prefs::kDisplayProperties);
+    DictionaryPrefUpdateDeprecated update(local_state(),
+                                          prefs::kDisplayProperties);
     update.Get()->SetKey("2200000000", std::move(property));
   }
 

@@ -206,7 +206,7 @@ TEST_F(PromoServiceTest, GoodPromoWithBlockedID) {
   feature_list.InitAndEnableFeature(ntp_features::kDismissPromos);
 
   {
-    DictionaryPrefUpdate update(prefs(), prefs::kNtpPromoBlocklist);
+    DictionaryPrefUpdateDeprecated update(prefs(), prefs::kNtpPromoBlocklist);
     base::Time recent = base::Time::Now() - base::Hours(2);
     update->SetDoubleKey("42", recent.ToDeltaSinceWindowsEpoch().InSecondsF());
   }
@@ -264,7 +264,7 @@ TEST_F(PromoServiceTest, BlocklistExpiration) {
   feature_list.InitAndEnableFeature(ntp_features::kDismissPromos);
 
   {
-    DictionaryPrefUpdate update(prefs(), prefs::kNtpPromoBlocklist);
+    DictionaryPrefUpdateDeprecated update(prefs(), prefs::kNtpPromoBlocklist);
     ASSERT_EQ(0u, update->DictSize());
     base::Time past = base::Time::Now() - base::Days(365);
     update->SetDoubleKey("42", past.ToDeltaSinceWindowsEpoch().InSecondsF());
@@ -298,7 +298,7 @@ TEST_F(PromoServiceTest, BlocklistWrongExpiryType) {
   feature_list.InitAndEnableFeature(ntp_features::kDismissPromos);
 
   {
-    DictionaryPrefUpdate update(prefs(), prefs::kNtpPromoBlocklist);
+    DictionaryPrefUpdateDeprecated update(prefs(), prefs::kNtpPromoBlocklist);
     ASSERT_EQ(0u, update->DictSize());
     update->SetDoubleKey("42", 5);
     update->SetStringKey("84", "wrong type");

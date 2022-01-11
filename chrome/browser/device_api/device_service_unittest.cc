@@ -59,16 +59,16 @@ class DeviceAPIServiceTest : public ChromeRenderViewHostTestHarness {
   }
 
   void InstallTrustedApp() {
-    ListPrefUpdate update(profile()->GetPrefs(),
-                          prefs::kWebAppInstallForceList);
+    ListPrefUpdateDeprecated update(profile()->GetPrefs(),
+                                    prefs::kWebAppInstallForceList);
     base::DictionaryValue app_policy;
     app_policy.SetString(web_app::kUrlKey, kDefaultAppInstallUrl);
     update->Append(std::move(app_policy));
   }
 
   void RemoveTrustedApp() {
-    ListPrefUpdate update(profile()->GetPrefs(),
-                          prefs::kWebAppInstallForceList);
+    ListPrefUpdateDeprecated update(profile()->GetPrefs(),
+                                    prefs::kWebAppInstallForceList);
     update->ClearList();
   }
 
@@ -81,8 +81,8 @@ class DeviceAPIServiceTest : public ChromeRenderViewHostTestHarness {
   }
 
   void RemoveAllowedOrigin() {
-    ListPrefUpdate update(profile()->GetPrefs(),
-                          prefs::kDeviceAttributesAllowedForOrigins);
+    ListPrefUpdateDeprecated update(profile()->GetPrefs(),
+                                    prefs::kDeviceAttributesAllowedForOrigins);
     update->ClearList();
   }
 

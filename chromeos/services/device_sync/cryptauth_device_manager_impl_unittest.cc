@@ -551,8 +551,8 @@ class DeviceSyncCryptAuthDeviceManagerImplTest
     device_dictionary->SetKey("software_features", base::DictionaryValue());
 
     {
-      ListPrefUpdate update(&pref_service_,
-                            prefs::kCryptAuthDeviceSyncUnlockKeys);
+      ListPrefUpdateDeprecated update(&pref_service_,
+                                      prefs::kCryptAuthDeviceSyncUnlockKeys);
       update.Get()->Append(std::move(device_dictionary));
     }
 
@@ -723,8 +723,8 @@ TEST_F(DeviceSyncCryptAuthDeviceManagerImplTest, InitWithExistingPrefs) {
 TEST_F(
     DeviceSyncCryptAuthDeviceManagerImplTest,
     InitWithExistingPrefs_MigrateDeprecateBooleansFromPrefsToSoftwareFeature) {
-  ListPrefUpdate update_clear(&pref_service_,
-                              prefs::kCryptAuthDeviceSyncUnlockKeys);
+  ListPrefUpdateDeprecated update_clear(&pref_service_,
+                                        prefs::kCryptAuthDeviceSyncUnlockKeys);
   update_clear.Get()->ClearList();
 
   // Simulate a deprecated device being persisted to prefs.
@@ -738,7 +738,8 @@ TEST_F(
   device_dictionary->SetBoolean("mobile_hotspot_supported", true);
   device_dictionary->SetKey("software_features", base::DictionaryValue());
 
-  ListPrefUpdate update(&pref_service_, prefs::kCryptAuthDeviceSyncUnlockKeys);
+  ListPrefUpdateDeprecated update(&pref_service_,
+                                  prefs::kCryptAuthDeviceSyncUnlockKeys);
   update.Get()->Append(std::move(device_dictionary));
 
   device_manager_ = std::make_unique<TestCryptAuthDeviceManager>(

@@ -407,7 +407,7 @@ void KioskAppData::SetCache(const std::string& name,
   SaveIcon(icon, cache_dir);
 
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdate dict_update(local_state, dictionary_name());
+  DictionaryPrefUpdateDeprecated dict_update(local_state, dictionary_name());
   SaveToDictionary(dict_update);
 
   const std::string app_key = std::string(kKeyApps) + '.' + app_id();

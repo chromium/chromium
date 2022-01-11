@@ -1100,7 +1100,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, GaiaIdMigration) {
     pref_service_.SetInteger(prefs::kAccountIdMigrationState,
                              AccountTrackerService::MIGRATION_NOT_STARTED);
 
-    ListPrefUpdate update(&pref_service_, prefs::kAccountInfo);
+    ListPrefUpdateDeprecated update(&pref_service_, prefs::kAccountInfo);
     update->ClearList();
     auto dict = std::make_unique<base::DictionaryValue>();
     dict->SetString("account_id", email);
@@ -1163,7 +1163,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest,
     pref_service_.SetInteger(prefs::kAccountIdMigrationState,
                              AccountTrackerService::MIGRATION_NOT_STARTED);
 
-    ListPrefUpdate update(&pref_service_, prefs::kAccountInfo);
+    ListPrefUpdateDeprecated update(&pref_service_, prefs::kAccountInfo);
     update->ClearList();
     auto dict = std::make_unique<base::DictionaryValue>();
     dict->SetString("account_id", email1);

@@ -119,7 +119,8 @@ bool PersistedData::RemoveApp(const std::string& id) {
   if (!pref_service_)
     return false;
 
-  DictionaryPrefUpdate update(pref_service_, kPersistedDataPreference);
+  DictionaryPrefUpdateDeprecated update(pref_service_,
+                                        kPersistedDataPreference);
   base::Value* apps = update->FindDictKey("apps");
 
   return apps ? apps->RemoveKey(id) : false;
@@ -191,7 +192,8 @@ void PersistedData::SetString(const std::string& id,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!pref_service_)
     return;
-  DictionaryPrefUpdate update(pref_service_, kPersistedDataPreference);
+  DictionaryPrefUpdateDeprecated update(pref_service_,
+                                        kPersistedDataPreference);
   GetOrCreateAppKey(id, update.Get())->SetStringKey(key, value);
 }
 

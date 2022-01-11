@@ -112,8 +112,8 @@ class AudioDevicesPrefHandlerTest : public testing::TestWithParam<bool> {
     // are set when pref value sets up its internal state.
     std::string preset_key = GetPresetDeviceDeprecatedPrefKey();
     {
-      DictionaryPrefUpdate update(pref_service_.get(),
-                                  prefs::kAudioDevicesState);
+      DictionaryPrefUpdateDeprecated update(pref_service_.get(),
+                                            prefs::kAudioDevicesState);
       base::DictionaryValue* pref = update.Get();
       base::DictionaryValue state;
       state.SetBoolean("active", kPresetState.active);
@@ -122,15 +122,15 @@ class AudioDevicesPrefHandlerTest : public testing::TestWithParam<bool> {
     }
 
     {
-      DictionaryPrefUpdate update(pref_service_.get(),
-                                  prefs::kAudioDevicesVolumePercent);
+      DictionaryPrefUpdateDeprecated update(pref_service_.get(),
+                                            prefs::kAudioDevicesVolumePercent);
       base::DictionaryValue* pref = update.Get();
       pref->SetDoubleKey(preset_key, kPresetState.sound_level);
     }
 
     {
-      DictionaryPrefUpdate update(pref_service_.get(),
-                                  prefs::kAudioDevicesMute);
+      DictionaryPrefUpdateDeprecated update(pref_service_.get(),
+                                            prefs::kAudioDevicesMute);
       base::DictionaryValue* pref = update.Get();
       pref->SetInteger(preset_key, static_cast<int>(kPresetState.mute));
     }

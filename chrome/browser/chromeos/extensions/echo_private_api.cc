@@ -100,7 +100,8 @@ ExtensionFunction::ResponseAction EchoPrivateSetOfferInfoFunction::Run() {
       params->offer_info.additional_properties.DeepCopyWithoutEmptyChildren();
 
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdate offer_update(local_state, prefs::kEchoCheckedOffers);
+  DictionaryPrefUpdateDeprecated offer_update(local_state,
+                                              prefs::kEchoCheckedOffers);
   offer_update->SetKey("echo." + service_id,
                        base::Value::FromUniquePtrValue(std::move(dict)));
   return RespondNow(NoArguments());

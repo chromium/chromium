@@ -573,7 +573,8 @@ class InitializationSerializer {
 
     // Save the origin ID in the preference as long as it is not null.
     if (origin_id) {
-      DictionaryPrefUpdate update(pref_service, prefs::kMediaDrmStorage);
+      DictionaryPrefUpdateDeprecated update(pref_service,
+                                            prefs::kMediaDrmStorage);
       CreateOriginDictAndReturnSessionsDict(update.Get(), origin,
                                             origin_id.value());
     }
@@ -692,7 +693,7 @@ void MediaDrmStorageImpl::ClearMatchingLicenses(
     base::OnceClosure complete_cb) {
   DVLOG(1) << __func__ << ": Clear licenses [" << start << ", " << end << "]";
 
-  DictionaryPrefUpdate update(pref_service, prefs::kMediaDrmStorage);
+  DictionaryPrefUpdateDeprecated update(pref_service, prefs::kMediaDrmStorage);
 
   std::vector<base::UnguessableToken> no_license_origin_ids =
       ClearMatchingLicenseData(update.Get(), start, end, filter);
@@ -814,7 +815,7 @@ void MediaDrmStorageImpl::OnProvisioned(OnProvisionedCallback callback) {
     return;
   }
 
-  DictionaryPrefUpdate update(pref_service_, prefs::kMediaDrmStorage);
+  DictionaryPrefUpdateDeprecated update(pref_service_, prefs::kMediaDrmStorage);
   base::DictionaryValue* storage_dict = update.Get();
   DCHECK(storage_dict);
 
@@ -846,7 +847,7 @@ void MediaDrmStorageImpl::SavePersistentSession(
     return;
   }
 
-  DictionaryPrefUpdate update(pref_service_, prefs::kMediaDrmStorage);
+  DictionaryPrefUpdateDeprecated update(pref_service_, prefs::kMediaDrmStorage);
   base::DictionaryValue* storage_dict = update.Get();
   DCHECK(storage_dict);
 
@@ -947,7 +948,7 @@ void MediaDrmStorageImpl::RemovePersistentSession(
     return;
   }
 
-  DictionaryPrefUpdate update(pref_service_, prefs::kMediaDrmStorage);
+  DictionaryPrefUpdateDeprecated update(pref_service_, prefs::kMediaDrmStorage);
 
   base::Value* sessions_dict = GetSessionsDictFromStorageDict<base::Value>(
       update.Get(), origin().Serialize());

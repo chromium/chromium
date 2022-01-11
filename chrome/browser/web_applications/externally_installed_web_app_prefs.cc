@@ -94,7 +94,8 @@ bool ExternallyInstalledWebAppPrefs::HasAppId(const PrefService* pref_service,
 // TODO(crbug.com/1236159): Can be removed after M99.
 void ExternallyInstalledWebAppPrefs::RemoveTerminalPWA(
     PrefService* pref_service) {
-  DictionaryPrefUpdate update(pref_service, prefs::kWebAppsExtensionIDs);
+  DictionaryPrefUpdateDeprecated update(pref_service,
+                                        prefs::kWebAppsExtensionIDs);
   update->RemoveKey("chrome-untrusted://terminal/html/pwa.html");
 }
 
@@ -164,7 +165,8 @@ void ExternallyInstalledWebAppPrefs::Insert(
   dict.SetKey(kExtensionId, base::Value(app_id));
   dict.SetKey(kInstallSource, base::Value(static_cast<int>(install_source)));
 
-  DictionaryPrefUpdate update(pref_service_, prefs::kWebAppsExtensionIDs);
+  DictionaryPrefUpdateDeprecated update(pref_service_,
+                                        prefs::kWebAppsExtensionIDs);
   update->SetKey(url.spec(), std::move(dict));
 }
 
@@ -215,7 +217,8 @@ void ExternallyInstalledWebAppPrefs::SetIsPlaceholder(const GURL& url,
 
   DCHECK(pref_service_->GetDictionary(prefs::kWebAppsExtensionIDs)
              ->FindKey(url.spec()));
-  DictionaryPrefUpdate update(pref_service_, prefs::kWebAppsExtensionIDs);
+  DictionaryPrefUpdateDeprecated update(pref_service_,
+                                        prefs::kWebAppsExtensionIDs);
   base::Value* map = update.Get();
 
   auto* app_entry = map->FindKey(url.spec());

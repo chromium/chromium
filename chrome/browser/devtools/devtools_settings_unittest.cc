@@ -102,8 +102,8 @@ TEST_F(DevToolsSettingsTest, MovingUnsycnedToSyncedDoesNotOverwrite) {
   // 2) Simulate the update to synced plus setting of a new value on a
   //    different device.
   {
-    DictionaryPrefUpdate update(profile_.GetPrefs(),
-                                prefs::kDevToolsSyncedPreferencesSyncEnabled);
+    DictionaryPrefUpdateDeprecated update(
+        profile_.GetPrefs(), prefs::kDevToolsSyncedPreferencesSyncEnabled);
     update.Get()->SetKey("setting", base::Value("overwritten synced value"));
   }
 

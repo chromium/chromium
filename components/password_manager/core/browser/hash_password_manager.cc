@@ -135,7 +135,7 @@ bool HashPasswordManager::SavePasswordHash(const std::string username,
   // If we've already saved password hash for |username|, and the |password| is
   // unchanged, no need to save password hash again. Instead we update the last
   // sign in timestamp.
-  ListPrefUpdate update(prefs_, prefs::kPasswordHashDataList);
+  ListPrefUpdateDeprecated update(prefs_, prefs::kPasswordHashDataList);
   for (base::Value& password_hash_data : update.Get()->GetList()) {
     if (AreUsernamesSame(
             GetAndDecryptField(password_hash_data, kUsernameFieldKey),
@@ -183,7 +183,7 @@ void HashPasswordManager::ClearSavedPasswordHash(const std::string& username,
   if (!prefs_)
     return;
 
-  ListPrefUpdate update(prefs_, prefs::kPasswordHashDataList);
+  ListPrefUpdateDeprecated update(prefs_, prefs::kPasswordHashDataList);
   update->EraseListValueIf([&](const auto& dict) {
     return AreUsernamesSame(GetAndDecryptField(dict, kUsernameFieldKey),
                             IsGaiaPassword(dict), username, is_gaia_password);
@@ -194,7 +194,7 @@ void HashPasswordManager::ClearAllPasswordHash(bool is_gaia_password) {
   if (!prefs_)
     return;
 
-  ListPrefUpdate update(prefs_, prefs::kPasswordHashDataList);
+  ListPrefUpdateDeprecated update(prefs_, prefs::kPasswordHashDataList);
   update->EraseListValueIf([&](const auto& dict) {
     return GetAndDecryptField(dict, kIsGaiaFieldKey) ==
            BooleanToString(is_gaia_password);
@@ -205,7 +205,7 @@ void HashPasswordManager::ClearAllNonGmailPasswordHash() {
   if (!prefs_)
     return;
 
-  ListPrefUpdate update(prefs_, prefs::kPasswordHashDataList);
+  ListPrefUpdateDeprecated update(prefs_, prefs::kPasswordHashDataList);
   update->EraseListValueIf([](const base::Value& data) {
     if (GetAndDecryptField(data, kIsGaiaFieldKey) == "false") {
       return false;
@@ -313,7 +313,7 @@ bool HashPasswordManager::EncryptAndSave(
                                        base::Value(encrypted_is_gaia_value));
   encrypted_password_hash_entry.SetKey(
       kLastSignInTimeFieldKey, base::Value(base::Time::Now().ToDoubleT()));
-  ListPrefUpdate update(prefs_, prefs::kPasswordHashDataList);
+  ListPrefUpdateDeprecated update(prefs_, prefs::kPasswordHashDataList);
   size_t num_erased = update->EraseListValueIf([&](const auto& dict) {
     return AreUsernamesSame(GetAndDecryptField(dict, kUsernameFieldKey),
                             IsGaiaPassword(dict), password_hash_data.username,

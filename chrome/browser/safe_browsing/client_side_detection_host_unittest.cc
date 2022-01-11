@@ -1097,8 +1097,8 @@ TEST_F(ClientSideDetectionHostTest, TestPreClassificationCheckValidCached) {
 
 TEST_F(ClientSideDetectionHostTest, TestPreClassificationAllowlistedByPolicy) {
   // Configures enterprise allowlist.
-  ListPrefUpdate update(profile()->GetPrefs(),
-                        prefs::kSafeBrowsingAllowlistDomains);
+  ListPrefUpdateDeprecated update(profile()->GetPrefs(),
+                                  prefs::kSafeBrowsingAllowlistDomains);
   update->Append("example.com");
 
   EXPECT_CALL(*csd_service_, GetModelStr())

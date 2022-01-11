@@ -523,7 +523,7 @@ void AccountTrackerService::OnAccountImageUpdated(
     return;
 
   base::DictionaryValue* dict = nullptr;
-  ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
+  ListPrefUpdateDeprecated update(pref_service_, prefs::kAccountInfo);
   for (size_t i = 0; i < update->GetList().size(); ++i, dict = nullptr) {
     base::Value& dict_value = update->GetList()[i];
     if (dict_value.is_dict()) {
@@ -594,7 +594,7 @@ void AccountTrackerService::LoadFromPrefs() {
                                               ? signin::Tribool::kTrue
                                               : signin::Tribool::kFalse;
           // Migrate to kAccountChildAttributePath.
-          ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
+          ListPrefUpdateDeprecated update(pref_service_, prefs::kAccountInfo);
           base::Value* update_dict = &update->GetList()[i];
           DCHECK(update_dict->is_dict());
           SetAccountCapabilityPath(update_dict, kAccountChildAttributePath,
@@ -662,7 +662,7 @@ void AccountTrackerService::SaveToPrefs(const AccountInfo& account_info) {
     return;
 
   base::DictionaryValue* dict = nullptr;
-  ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
+  ListPrefUpdateDeprecated update(pref_service_, prefs::kAccountInfo);
   for (size_t i = 0; i < update->GetList().size(); ++i, dict = nullptr) {
     base::Value& dict_value = update->GetList()[i];
     if (dict_value.is_dict()) {
@@ -708,7 +708,7 @@ void AccountTrackerService::RemoveFromPrefs(const AccountInfo& account_info) {
   if (!pref_service_)
     return;
 
-  ListPrefUpdate update(pref_service_, prefs::kAccountInfo);
+  ListPrefUpdateDeprecated update(pref_service_, prefs::kAccountInfo);
   const std::string account_id = account_info.account_id.ToString();
   update->EraseListValueIf([&account_id](const base::Value& value) {
     if (!value.is_dict())

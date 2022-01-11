@@ -70,8 +70,8 @@ class ProximityAuthLocalStatePrefManagerTest : public testing::Test {
                         base::Value(kIsEasyUnlockEnabled1));
     user1_prefs->SetKey(prefs::kSmartLockEligiblePrefName,
                         base::Value(kIsSmartLockEligible1));
-    DictionaryPrefUpdate update1(&local_state_,
-                                 prefs::kEasyUnlockLocalStateUserPrefs);
+    DictionaryPrefUpdateDeprecated update1(
+        &local_state_, prefs::kEasyUnlockLocalStateUserPrefs);
     update1->SetKey(user1_.GetUserEmail(),
                     base::Value::FromUniquePtrValue(std::move(user1_prefs)));
 
@@ -86,8 +86,8 @@ class ProximityAuthLocalStatePrefManagerTest : public testing::Test {
                         base::Value(kIsEasyUnlockEnabled2));
     user2_prefs->SetKey(prefs::kSmartLockEligiblePrefName,
                         base::Value(kIsSmartLockEligible2));
-    DictionaryPrefUpdate update2(&local_state_,
-                                 prefs::kEasyUnlockLocalStateUserPrefs);
+    DictionaryPrefUpdateDeprecated update2(
+        &local_state_, prefs::kEasyUnlockLocalStateUserPrefs);
     update2->SetKey(user2_.GetUserEmail(),
                     base::Value::FromUniquePtrValue(std::move(user2_prefs)));
   }

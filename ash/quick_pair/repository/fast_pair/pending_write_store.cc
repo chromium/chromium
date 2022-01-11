@@ -43,7 +43,8 @@ void PendingWriteStore::AddPairedDevice(const std::string& mac_address,
     QP_LOG(WARNING) << __func__ << ": No user pref service available.";
     return;
   }
-  DictionaryPrefUpdate update(pref_service, kFastPairPendingWritesPref);
+  DictionaryPrefUpdateDeprecated update(pref_service,
+                                        kFastPairPendingWritesPref);
   update->SetStringKey(mac_address, hex_model_id);
 }
 
@@ -77,7 +78,8 @@ void PendingWriteStore::OnPairedDeviceSaved(const std::string& mac_address) {
     return;
   }
 
-  DictionaryPrefUpdate update(pref_service, kFastPairPendingWritesPref);
+  DictionaryPrefUpdateDeprecated update(pref_service,
+                                        kFastPairPendingWritesPref);
   update->RemoveKey(mac_address);
 }
 
@@ -88,7 +90,7 @@ void PendingWriteStore::DeletePairedDevice(const std::string& hex_account_key) {
     QP_LOG(WARNING) << __func__ << ": No user pref service available.";
     return;
   }
-  ListPrefUpdate update(pref_service, kFastPairPendingDeletesPref);
+  ListPrefUpdateDeprecated update(pref_service, kFastPairPendingDeletesPref);
   update->Append(hex_account_key);
 }
 
@@ -123,7 +125,7 @@ void PendingWriteStore::OnPairedDeviceDeleted(
     return;
   }
 
-  ListPrefUpdate update(pref_service, kFastPairPendingDeletesPref);
+  ListPrefUpdateDeprecated update(pref_service, kFastPairPendingDeletesPref);
   update->EraseListValue(base::Value(hex_account_key));
 }
 

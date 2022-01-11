@@ -305,7 +305,7 @@ ExtensionInstallStatus AddExtensionToPendingList(
     return status;
   }
 
-  DictionaryPrefUpdate pending_requests_update(
+  DictionaryPrefUpdateDeprecated pending_requests_update(
       profile->GetPrefs(), prefs::kCloudExtensionRequestIds);
   DCHECK(!pending_requests_update->FindKey(id));
   base::Value request_data(base::Value::Type::DICTIONARY);

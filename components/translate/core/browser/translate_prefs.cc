@@ -244,7 +244,8 @@ void TranslatePrefs::BlockLanguage(base::StringPiece input_language) {
   if (!IsBlockedLanguage(input_language)) {
     std::string canonical_lang(input_language);
     language::ToTranslateLanguageSynonym(&canonical_lang);
-    ListPrefUpdate update(prefs_, translate::prefs::kBlockedLanguages);
+    ListPrefUpdateDeprecated update(prefs_,
+                                    translate::prefs::kBlockedLanguages);
     update->Append(std::move(canonical_lang));
   }
   // Remove the blocked language from the always translate list if present.
@@ -259,7 +260,7 @@ void TranslatePrefs::UnblockLanguage(base::StringPiece input_language) {
   }
   std::string canonical_lang(input_language);
   language::ToTranslateLanguageSynonym(&canonical_lang);
-  ListPrefUpdate update(prefs_, translate::prefs::kBlockedLanguages);
+  ListPrefUpdateDeprecated update(prefs_, translate::prefs::kBlockedLanguages);
   update->EraseListValue(base::Value(std::move(canonical_lang)));
 }
 
@@ -557,14 +558,14 @@ bool TranslatePrefs::IsSiteOnNeverPromptList(base::StringPiece site) const {
 void TranslatePrefs::AddSiteToNeverPromptList(base::StringPiece site) {
   DCHECK(!site.empty());
   AddValueToNeverPromptList(kPrefNeverPromptSitesDeprecated, site);
-  DictionaryPrefUpdate update(prefs_, kPrefNeverPromptSitesWithTime);
+  DictionaryPrefUpdateDeprecated update(prefs_, kPrefNeverPromptSitesWithTime);
   update.Get()->SetKey(site, base::TimeToValue(base::Time::Now()));
 }
 
 void TranslatePrefs::RemoveSiteFromNeverPromptList(base::StringPiece site) {
   DCHECK(!site.empty());
   RemoveValueFromNeverPromptList(kPrefNeverPromptSitesDeprecated, site);
-  DictionaryPrefUpdate update(prefs_, kPrefNeverPromptSitesWithTime);
+  DictionaryPrefUpdateDeprecated update(prefs_, kPrefNeverPromptSitesWithTime);
   update.Get()->RemoveKey(site);
 }
 
@@ -607,7 +608,8 @@ bool TranslatePrefs::IsLanguagePairOnAlwaysTranslateList(
 void TranslatePrefs::AddLanguagePairToAlwaysTranslateList(
     base::StringPiece source_language,
     base::StringPiece target_language) {
-  DictionaryPrefUpdate update(prefs_, prefs::kPrefAlwaysTranslateList);
+  DictionaryPrefUpdateDeprecated update(prefs_,
+                                        prefs::kPrefAlwaysTranslateList);
   DCHECK(update.Get()) << "Always translated pref is unregistered";
 
   // Get translate version of language codes.
@@ -625,7 +627,8 @@ void TranslatePrefs::AddLanguagePairToAlwaysTranslateList(
 void TranslatePrefs::RemoveLanguagePairFromAlwaysTranslateList(
     base::StringPiece source_language,
     base::StringPiece target_language) {
-  DictionaryPrefUpdate update(prefs_, prefs::kPrefAlwaysTranslateList);
+  DictionaryPrefUpdateDeprecated update(prefs_,
+                                        prefs::kPrefAlwaysTranslateList);
   DCHECK(update.Get()) << "Always translate pref is unregistered";
 
   // Get translate version of language codes.
@@ -681,7 +684,7 @@ int TranslatePrefs::GetTranslationDeniedCount(
 
 void TranslatePrefs::IncrementTranslationDeniedCount(
     base::StringPiece language) {
-  DictionaryPrefUpdate update(prefs_, kPrefTranslateDeniedCount);
+  DictionaryPrefUpdateDeprecated update(prefs_, kPrefTranslateDeniedCount);
   base::Value* dict = update.Get();
 
   int count = dict->FindIntKey(language).value_or(0);
@@ -690,7 +693,7 @@ void TranslatePrefs::IncrementTranslationDeniedCount(
 }
 
 void TranslatePrefs::ResetTranslationDeniedCount(base::StringPiece language) {
-  DictionaryPrefUpdate update(prefs_, kPrefTranslateDeniedCount);
+  DictionaryPrefUpdateDeprecated update(prefs_, kPrefTranslateDeniedCount);
   update.Get()->SetIntKey(language, 0);
 }
 
@@ -702,7 +705,7 @@ int TranslatePrefs::GetTranslationIgnoredCount(
 
 void TranslatePrefs::IncrementTranslationIgnoredCount(
     base::StringPiece language) {
-  DictionaryPrefUpdate update(prefs_, kPrefTranslateIgnoredCount);
+  DictionaryPrefUpdateDeprecated update(prefs_, kPrefTranslateIgnoredCount);
   base::Value* dict = update.Get();
 
   int count = dict->FindIntKey(language).value_or(0);
@@ -711,7 +714,7 @@ void TranslatePrefs::IncrementTranslationIgnoredCount(
 }
 
 void TranslatePrefs::ResetTranslationIgnoredCount(base::StringPiece language) {
-  DictionaryPrefUpdate update(prefs_, kPrefTranslateIgnoredCount);
+  DictionaryPrefUpdateDeprecated update(prefs_, kPrefTranslateIgnoredCount);
   update.Get()->SetIntKey(language, 0);
 }
 
@@ -723,7 +726,7 @@ int TranslatePrefs::GetTranslationAcceptedCount(
 
 void TranslatePrefs::IncrementTranslationAcceptedCount(
     base::StringPiece language) {
-  DictionaryPrefUpdate update(prefs_, kPrefTranslateAcceptedCount);
+  DictionaryPrefUpdateDeprecated update(prefs_, kPrefTranslateAcceptedCount);
   base::Value* dict = update.Get();
 
   int count = dict->FindIntKey(language).value_or(0);
@@ -732,7 +735,7 @@ void TranslatePrefs::IncrementTranslationAcceptedCount(
 }
 
 void TranslatePrefs::ResetTranslationAcceptedCount(base::StringPiece language) {
-  DictionaryPrefUpdate update(prefs_, kPrefTranslateAcceptedCount);
+  DictionaryPrefUpdateDeprecated update(prefs_, kPrefTranslateAcceptedCount);
   update.Get()->SetIntKey(language, 0);
 }
 
@@ -746,7 +749,7 @@ int TranslatePrefs::GetTranslationAutoAlwaysCount(
 
 void TranslatePrefs::IncrementTranslationAutoAlwaysCount(
     base::StringPiece language) {
-  DictionaryPrefUpdate update(prefs_, kPrefTranslateAutoAlwaysCount);
+  DictionaryPrefUpdateDeprecated update(prefs_, kPrefTranslateAutoAlwaysCount);
   base::Value* dict = update.Get();
 
   int count = dict->FindIntKey(language).value_or(0);
@@ -756,7 +759,7 @@ void TranslatePrefs::IncrementTranslationAutoAlwaysCount(
 
 void TranslatePrefs::ResetTranslationAutoAlwaysCount(
     base::StringPiece language) {
-  DictionaryPrefUpdate update(prefs_, kPrefTranslateAutoAlwaysCount);
+  DictionaryPrefUpdateDeprecated update(prefs_, kPrefTranslateAutoAlwaysCount);
   update.Get()->SetIntKey(language, 0);
 }
 
@@ -768,7 +771,7 @@ int TranslatePrefs::GetTranslationAutoNeverCount(
 
 void TranslatePrefs::IncrementTranslationAutoNeverCount(
     base::StringPiece language) {
-  DictionaryPrefUpdate update(prefs_, kPrefTranslateAutoNeverCount);
+  DictionaryPrefUpdateDeprecated update(prefs_, kPrefTranslateAutoNeverCount);
   base::Value* dict = update.Get();
 
   int count = dict->FindIntKey(language).value_or(0);
@@ -778,7 +781,7 @@ void TranslatePrefs::IncrementTranslationAutoNeverCount(
 
 void TranslatePrefs::ResetTranslationAutoNeverCount(
     base::StringPiece language) {
-  DictionaryPrefUpdate update(prefs_, kPrefTranslateAutoNeverCount);
+  DictionaryPrefUpdateDeprecated update(prefs_, kPrefTranslateAutoNeverCount);
   update.Get()->SetIntKey(language, 0);
 }
 #endif  // defined(OS_ANDROID) || defined(OS_IOS)
@@ -955,11 +958,11 @@ void TranslatePrefs::MigrateNeverPromptSites() {
   // Migration copies any sites on the deprecated never prompt pref to
   // the new version and clears all references to the old one. This will
   // make subsequent calls to migrate no-ops.
-  DictionaryPrefUpdate never_prompt_list_update(prefs_,
-                                                kPrefNeverPromptSitesWithTime);
+  DictionaryPrefUpdateDeprecated never_prompt_list_update(
+      prefs_, kPrefNeverPromptSitesWithTime);
   base::Value* never_prompt_list = never_prompt_list_update.Get();
   if (never_prompt_list) {
-    ListPrefUpdate deprecated_prompt_list_update(
+    ListPrefUpdateDeprecated deprecated_prompt_list_update(
         prefs_, kPrefNeverPromptSitesDeprecated);
     base::Value* deprecated_list = deprecated_prompt_list_update.Get();
     for (auto& site : deprecated_list->GetList()) {
@@ -1003,7 +1006,7 @@ bool TranslatePrefs::IsValueOnNeverPromptList(const char* pref_id,
 
 void TranslatePrefs::AddValueToNeverPromptList(const char* pref_id,
                                                base::StringPiece value) {
-  ListPrefUpdate update(prefs_, pref_id);
+  ListPrefUpdateDeprecated update(prefs_, pref_id);
   base::Value* never_prompt_list = update.Get();
   if (!never_prompt_list) {
     NOTREACHED() << "Unregistered never-translate pref";
@@ -1018,7 +1021,7 @@ void TranslatePrefs::AddValueToNeverPromptList(const char* pref_id,
 
 void TranslatePrefs::RemoveValueFromNeverPromptList(const char* pref_id,
                                                     base::StringPiece value) {
-  ListPrefUpdate update(prefs_, pref_id);
+  ListPrefUpdateDeprecated update(prefs_, pref_id);
   base::Value* never_prompt_list = update.Get();
   if (!never_prompt_list) {
     NOTREACHED() << "Unregistered never-translate pref";

@@ -127,19 +127,19 @@ bool LoginManagerMixin::SetUpUserDataDirectory() {
 
 void LoginManagerMixin::SetUpLocalState() {
   for (const auto& user : initial_users_) {
-    ListPrefUpdate users_pref(g_browser_process->local_state(),
-                              "LoggedInUsers");
+    ListPrefUpdateDeprecated users_pref(g_browser_process->local_state(),
+                                        "LoggedInUsers");
     base::Value email_value(user.account_id.GetUserEmail());
     if (!base::Contains(users_pref->GetList(), email_value))
       users_pref->Append(std::move(email_value));
 
-    DictionaryPrefUpdate user_type_update(g_browser_process->local_state(),
-                                          "UserType");
+    DictionaryPrefUpdateDeprecated user_type_update(
+        g_browser_process->local_state(), "UserType");
     user_type_update->SetKey(user.account_id.GetAccountIdKey(),
                              base::Value(static_cast<int>(user.user_type)));
 
-    DictionaryPrefUpdate user_token_update(g_browser_process->local_state(),
-                                           "OAuthTokenStatus");
+    DictionaryPrefUpdateDeprecated user_token_update(
+        g_browser_process->local_state(), "OAuthTokenStatus");
     user_token_update->SetKey(user.account_id.GetUserEmail(),
                               base::Value(static_cast<int>(user.token_status)));
 

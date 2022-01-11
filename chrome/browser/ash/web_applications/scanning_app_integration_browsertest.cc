@@ -33,8 +33,9 @@ IN_PROC_BROWSER_TEST_P(ScanningAppIntegrationTest, ScanningAppInLauncher) {
 // set to be disabled via the SystemFeaturesDisableList policy.
 IN_PROC_BROWSER_TEST_P(ScanningAppIntegrationTest, ScanningAppDisabled) {
   {
-    ListPrefUpdate update(TestingBrowserProcess::GetGlobal()->local_state(),
-                          policy::policy_prefs::kSystemFeaturesDisableList);
+    ListPrefUpdateDeprecated update(
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        policy::policy_prefs::kSystemFeaturesDisableList);
     base::ListValue* list = update.Get();
     list->Append(policy::SystemFeature::kScanning);
   }

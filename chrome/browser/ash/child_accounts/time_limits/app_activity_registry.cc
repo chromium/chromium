@@ -627,7 +627,8 @@ void AppActivityRegistry::OnTimeLimitAllowlistChanged(
 
 void AppActivityRegistry::SaveAppActivity() {
   {
-    ListPrefUpdate update(pref_service_, prefs::kPerAppTimeLimitsAppActivities);
+    ListPrefUpdateDeprecated update(pref_service_,
+                                    prefs::kPerAppTimeLimitsAppActivities);
     base::ListValue* list_value = update.Get();
 
     const base::Time now = base::Time::Now();
@@ -698,7 +699,8 @@ void AppActivityRegistry::OnResetTimeReached(base::Time timestamp) {
 }
 
 void AppActivityRegistry::CleanRegistry(base::Time timestamp) {
-  ListPrefUpdate update(pref_service_, prefs::kPerAppTimeLimitsAppActivities);
+  ListPrefUpdateDeprecated update(pref_service_,
+                                  prefs::kPerAppTimeLimitsAppActivities);
 
   base::ListValue* list_value = update.Get();
 

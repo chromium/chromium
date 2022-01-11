@@ -37,7 +37,8 @@ void SavedDeviceRegistry::SaveAccountKey(
     return;
   }
   std::string encoded = base::Base64Encode(account_key);
-  DictionaryPrefUpdate update(pref_service, kFastPairSavedDevicesPref);
+  DictionaryPrefUpdateDeprecated update(pref_service,
+                                        kFastPairSavedDevicesPref);
   update->SetStringKey(mac_address, encoded);
 }
 

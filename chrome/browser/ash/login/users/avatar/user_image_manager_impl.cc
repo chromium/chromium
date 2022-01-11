@@ -465,7 +465,7 @@ void UserImageManagerImpl::Job::UpdateLocalState() {
     return;
   }
 
-  DictionaryPrefUpdate update(local_state, kUserImageProperties);
+  DictionaryPrefUpdateDeprecated update(local_state, kUserImageProperties);
 
   update->SetKey(account_id().GetUserEmail(), std::move(entry));
 
@@ -855,8 +855,8 @@ void UserImageManagerImpl::DownloadProfileData() {
 
 void UserImageManagerImpl::DeleteUserImageAndLocalStateEntry(
     const char* prefs_dict_root) {
-  DictionaryPrefUpdate update(g_browser_process->local_state(),
-                              prefs_dict_root);
+  DictionaryPrefUpdateDeprecated update(g_browser_process->local_state(),
+                                        prefs_dict_root);
   const base::DictionaryValue* image_properties;
   if (!update->GetDictionaryWithoutPathExpansion(account_id_.GetUserEmail(),
                                                  &image_properties))

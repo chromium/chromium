@@ -540,7 +540,7 @@ class LockScreenAppStateTest : public BrowserWithTestWindowTest {
     if (is_first_app_run_test_)
       return;
 
-    DictionaryPrefUpdate dict_update(
+    DictionaryPrefUpdateDeprecated dict_update(
         profile()->GetPrefs(), prefs::kNoteTakingAppsLockScreenToastShown);
     dict_update->SetBoolean(app_id, true);
   }

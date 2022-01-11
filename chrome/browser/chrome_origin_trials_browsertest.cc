@@ -61,7 +61,7 @@ class ChromeOriginTrialsTest : public InProcessBrowserTest {
     for (const std::string& feature : features) {
       disabled_feature_list.Append(feature);
     }
-    ListPrefUpdate update(
+    ListPrefUpdateDeprecated update(
         local_state(), embedder_support::prefs::kOriginTrialDisabledFeatures);
     update->Swap(&disabled_feature_list);
   }
@@ -71,8 +71,8 @@ class ChromeOriginTrialsTest : public InProcessBrowserTest {
     for (const std::string& token : tokens) {
       disabled_token_list.Append(token);
     }
-    ListPrefUpdate update(local_state(),
-                          embedder_support::prefs::kOriginTrialDisabledTokens);
+    ListPrefUpdateDeprecated update(
+        local_state(), embedder_support::prefs::kOriginTrialDisabledTokens);
     update->Swap(&disabled_token_list);
   }
 

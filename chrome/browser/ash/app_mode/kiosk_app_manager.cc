@@ -870,8 +870,8 @@ KioskAppManager::AutoLoginState KioskAppManager::GetAutoLoginState() const {
 
 void KioskAppManager::SetAutoLoginState(AutoLoginState state) {
   PrefService* prefs = g_browser_process->local_state();
-  DictionaryPrefUpdate dict_update(prefs,
-                                   KioskAppManager::kKioskDictionaryName);
+  DictionaryPrefUpdateDeprecated dict_update(
+      prefs, KioskAppManager::kKioskDictionaryName);
   dict_update->SetInteger(kKeyAutoLoginState, static_cast<int>(state));
   prefs->CommitPendingWrite();
 }

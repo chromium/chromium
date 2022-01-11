@@ -267,7 +267,7 @@ ProfileAttributesStorage::ProfileAttributesStorage(
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})),
       user_data_dir_(user_data_dir) {
   // Populate the attributes storage.
-  DictionaryPrefUpdate update(prefs_, prefs::kProfileAttributes);
+  DictionaryPrefUpdateDeprecated update(prefs_, prefs::kProfileAttributes);
   base::DictionaryValue* attributes = update.Get();
   for (auto kv : attributes->DictItems()) {
     base::Value& info = kv.second;
@@ -343,7 +343,7 @@ void ProfileAttributesStorage::RegisterPrefs(PrefRegistrySimple* registry) {
 
 void ProfileAttributesStorage::AddProfile(ProfileAttributesInitParams params) {
   std::string key = StorageKeyFromProfilePath(params.profile_path);
-  DictionaryPrefUpdate update(prefs_, prefs::kProfileAttributes);
+  DictionaryPrefUpdateDeprecated update(prefs_, prefs::kProfileAttributes);
   base::DictionaryValue* attributes = update.Get();
 
   base::Value info(base::Value::Type::DICTIONARY);
@@ -426,7 +426,7 @@ void ProfileAttributesStorage::RemoveProfile(
   for (auto& observer : observer_list_)
     observer.OnProfileWillBeRemoved(profile_path);
 
-  DictionaryPrefUpdate update(prefs_, prefs::kProfileAttributes);
+  DictionaryPrefUpdateDeprecated update(prefs_, prefs::kProfileAttributes);
   base::DictionaryValue* attributes = update.Get();
   std::string key = StorageKeyFromProfilePath(profile_path);
   attributes->RemoveKey(key);

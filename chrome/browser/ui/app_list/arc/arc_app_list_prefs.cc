@@ -108,7 +108,7 @@ class NotificationsEnabledDeferred {
   explicit NotificationsEnabledDeferred(PrefService* prefs) : prefs_(prefs) {}
 
   void Put(const std::string& app_id, bool enabled) {
-    DictionaryPrefUpdate update(
+    DictionaryPrefUpdateDeprecated update(
         prefs_, arc::prefs::kArcSetNotificationsEnabledDeferred);
     base::DictionaryValue* const dict = update.Get();
     dict->SetKey(app_id, base::Value(enabled));
@@ -121,7 +121,7 @@ class NotificationsEnabledDeferred {
   }
 
   void Remove(const std::string& app_id) {
-    DictionaryPrefUpdate update(
+    DictionaryPrefUpdateDeprecated update(
         prefs_, arc::prefs::kArcSetNotificationsEnabledDeferred);
     base::DictionaryValue* const dict = update.Get();
     dict->RemoveKey(app_id);
@@ -1391,7 +1391,7 @@ void ArcAppListPrefs::RemoveApp(const std::string& app_id) {
   ScheduleAppFolderDeletion(app_id);
 
   // Remove from prefs.
-  DictionaryPrefUpdate update(prefs_, arc::prefs::kArcApps);
+  DictionaryPrefUpdateDeprecated update(prefs_, arc::prefs::kArcApps);
   base::DictionaryValue* apps = update.Get();
   const bool removed = apps->RemoveKey(app_id);
   DCHECK(removed);
@@ -1504,7 +1504,7 @@ void ArcAppListPrefs::AddOrUpdatePackagePrefs(
 }
 
 void ArcAppListPrefs::RemovePackageFromPrefs(const std::string& package_name) {
-  DictionaryPrefUpdate(prefs_, arc::prefs::kArcPackages)
+  DictionaryPrefUpdateDeprecated(prefs_, arc::prefs::kArcPackages)
       .Get()
       ->RemoveKey(package_name);
 }

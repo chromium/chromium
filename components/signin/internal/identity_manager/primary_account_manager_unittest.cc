@@ -365,7 +365,7 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigration) {
   PrefService* client_prefs = signin_client()->GetPrefs();
   client_prefs->SetInteger(prefs::kAccountIdMigrationState,
                            AccountTrackerService::MIGRATION_NOT_STARTED);
-  ListPrefUpdate update(client_prefs, prefs::kAccountInfo);
+  ListPrefUpdateDeprecated update(client_prefs, prefs::kAccountInfo);
   update->ClearList();
   auto dict = std::make_unique<base::DictionaryValue>();
   dict->SetString("account_id", email);
@@ -398,7 +398,7 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigrationCrashInTheMiddle) {
   PrefService* client_prefs = signin_client()->GetPrefs();
   client_prefs->SetInteger(prefs::kAccountIdMigrationState,
                            AccountTrackerService::MIGRATION_NOT_STARTED);
-  ListPrefUpdate update(client_prefs, prefs::kAccountInfo);
+  ListPrefUpdateDeprecated update(client_prefs, prefs::kAccountInfo);
   update->ClearList();
   auto dict = std::make_unique<base::DictionaryValue>();
   dict->SetString("account_id", email);
@@ -431,7 +431,7 @@ TEST_F(PrimaryAccountManagerTest, GaiaIdMigration_ForceAllAccounts) {
   PrefService* client_prefs = signin_client()->GetPrefs();
   client_prefs->SetInteger(prefs::kAccountIdMigrationState,
                            AccountTrackerService::MIGRATION_NOT_STARTED);
-  ListPrefUpdate update(client_prefs, prefs::kAccountInfo);
+  ListPrefUpdateDeprecated update(client_prefs, prefs::kAccountInfo);
   update->ClearList();
   auto dict = std::make_unique<base::DictionaryValue>();
   dict->SetString("account_id", email);

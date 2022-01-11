@@ -382,7 +382,7 @@ TEST_F(PrefProviderTest, Deadlock) {
 
   DeadlockCheckerObserver observer(&prefs, &provider);
   {
-    DictionaryPrefUpdate update(&prefs, info->pref_name());
+    DictionaryPrefUpdateDeprecated update(&prefs, info->pref_name());
     base::Value* mutable_settings = update.Get();
     mutable_settings->SetKey("www.example.com,*",
                              base::Value(base::Value::Type::DICTIONARY));
@@ -529,7 +529,7 @@ TEST_F(PrefProviderTest, ClearAllContentSettingsRules) {
 
   // Expect the prefs are not empty before we trigger clearing them.
   for (const char* pref : cleared_prefs) {
-    DictionaryPrefUpdate update(&prefs, pref);
+    DictionaryPrefUpdateDeprecated update(&prefs, pref);
     const base::Value* dictionary = update.Get();
     ASSERT_FALSE(dictionary->DictEmpty());
   }
@@ -539,7 +539,7 @@ TEST_F(PrefProviderTest, ClearAllContentSettingsRules) {
 
   // Ensure they become empty afterwards.
   for (const char* pref : cleared_prefs) {
-    DictionaryPrefUpdate update(&prefs, pref);
+    DictionaryPrefUpdateDeprecated update(&prefs, pref);
     const base::Value* dictionary = update.Get();
     EXPECT_TRUE(dictionary->DictEmpty());
   }
@@ -551,7 +551,7 @@ TEST_F(PrefProviderTest, ClearAllContentSettingsRules) {
   };
 
   for (const char* pref : nonempty_prefs) {
-    DictionaryPrefUpdate update(&prefs, pref);
+    DictionaryPrefUpdateDeprecated update(&prefs, pref);
     const base::Value* dictionary = update.Get();
     EXPECT_EQ(1u, dictionary->DictSize());
   }

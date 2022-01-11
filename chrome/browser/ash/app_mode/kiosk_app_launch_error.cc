@@ -79,8 +79,8 @@ std::string KioskAppLaunchError::GetErrorMessage(Error error) {
 // static
 void KioskAppLaunchError::Save(KioskAppLaunchError::Error error) {
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdate dict_update(local_state,
-                                   KioskAppManager::kKioskDictionaryName);
+  DictionaryPrefUpdateDeprecated dict_update(
+      local_state, KioskAppManager::kKioskDictionaryName);
   dict_update->SetInteger(kKeyLaunchError, static_cast<int>(error));
   s_last_error = error;
 }
@@ -89,8 +89,8 @@ void KioskAppLaunchError::Save(KioskAppLaunchError::Error error) {
 void KioskAppLaunchError::SaveCryptohomeFailure(
     const AuthFailure& auth_failure) {
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdate dict_update(local_state,
-                                   KioskAppManager::kKioskDictionaryName);
+  DictionaryPrefUpdateDeprecated dict_update(
+      local_state, KioskAppManager::kKioskDictionaryName);
   dict_update->SetInteger(kKeyCryptohomeFailure, auth_failure.reason());
 }
 
@@ -115,8 +115,8 @@ KioskAppLaunchError::Error KioskAppLaunchError::Get() {
 // static
 void KioskAppLaunchError::RecordMetricAndClear() {
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdate dict_update(local_state,
-                                   KioskAppManager::kKioskDictionaryName);
+  DictionaryPrefUpdateDeprecated dict_update(
+      local_state, KioskAppManager::kKioskDictionaryName);
 
   absl::optional<int> error = dict_update->FindIntKey(kKeyLaunchError);
   if (error) {

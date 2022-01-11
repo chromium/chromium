@@ -293,8 +293,8 @@ void UninstallSodaForTesting() {
 }
 
 void ClearDictationOfflineNudgePref(const std::string& locale) {
-  DictionaryPrefUpdate update(GetActiveUserPrefs(),
-                              prefs::kAccessibilityDictationLocaleOfflineNudge);
+  DictionaryPrefUpdateDeprecated update(
+      GetActiveUserPrefs(), prefs::kAccessibilityDictationLocaleOfflineNudge);
   update.Get()->RemovePath(locale);
 }
 

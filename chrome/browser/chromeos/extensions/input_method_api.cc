@@ -393,7 +393,7 @@ ExtensionFunction::ResponseAction InputMethodPrivateSetSettingsFunction::Run() {
   const auto params = SetSettings::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params.get());
 
-  DictionaryPrefUpdate update(
+  DictionaryPrefUpdateDeprecated update(
       Profile::FromBrowserContext(browser_context())->GetPrefs(),
       prefs::kLanguageInputMethodSpecificSettings);
   update->SetPath(params->engine_id, params->settings.ToValue()->Clone());

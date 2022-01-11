@@ -38,7 +38,7 @@ void RemoveLoginDetectionData(PrefService* prefs) {
 }
 
 void SaveSiteToOAuthSignedInList(PrefService* pref_service, const GURL& url) {
-  DictionaryPrefUpdate update(pref_service, kOAuthSignedInSitesPref);
+  DictionaryPrefUpdateDeprecated update(pref_service, kOAuthSignedInSitesPref);
   base::DictionaryValue* dict = update.Get();
   dict->SetKey(GetSiteNameForURL(url), base::TimeToValue(base::Time::Now()));
 

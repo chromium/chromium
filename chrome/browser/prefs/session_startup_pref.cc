@@ -87,7 +87,7 @@ void SessionStartupPref::SetStartupPref(PrefService* prefs,
     // Always save the URLs, that way the UI can remain consistent even if the
     // user changes the startup type pref.
     // Ownership of the ListValue retains with the pref service.
-    ListPrefUpdate update(prefs, prefs::kURLsToRestoreOnStartup);
+    ListPrefUpdateDeprecated update(prefs, prefs::kURLsToRestoreOnStartup);
     base::ListValue* url_pref_list = update.Get();
     DCHECK(url_pref_list);
     url_pref_list->ClearList();

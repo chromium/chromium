@@ -512,7 +512,8 @@ void GuestOsSharePath::UnsharePath(const std::string& vm_name,
 
   if (unpersist) {
     PrefService* pref_service = profile_->GetPrefs();
-    DictionaryPrefUpdate update(pref_service, prefs::kGuestOSPathsSharedToVms);
+    DictionaryPrefUpdateDeprecated update(pref_service,
+                                          prefs::kGuestOSPathsSharedToVms);
     base::DictionaryValue* shared_paths = update.Get();
     RemovePersistedPathFromPrefs(shared_paths, vm_name, path);
   }
@@ -563,7 +564,8 @@ void GuestOsSharePath::SharePersistedPaths(const std::string& vm_name,
 void GuestOsSharePath::RegisterPersistedPath(const std::string& vm_name,
                                              const base::FilePath& path) {
   PrefService* pref_service = profile_->GetPrefs();
-  DictionaryPrefUpdate update(pref_service, prefs::kGuestOSPathsSharedToVms);
+  DictionaryPrefUpdateDeprecated update(pref_service,
+                                        prefs::kGuestOSPathsSharedToVms);
   base::DictionaryValue* shared_paths = update.Get();
   // Check if path is already shared so we know whether we need to add it.
   bool already_shared = false;

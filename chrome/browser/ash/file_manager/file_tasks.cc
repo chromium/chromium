@@ -446,16 +446,16 @@ void UpdateDefaultTask(PrefService* pref_service,
 
   std::string task_id = TaskDescriptorToId(task_descriptor);
   if (!mime_types.empty()) {
-    DictionaryPrefUpdate mime_type_pref(pref_service,
-                                        prefs::kDefaultTasksByMimeType);
+    DictionaryPrefUpdateDeprecated mime_type_pref(
+        pref_service, prefs::kDefaultTasksByMimeType);
     for (const std::string& mime_type : mime_types) {
       mime_type_pref->SetKey(mime_type, base::Value(task_id));
     }
   }
 
   if (!suffixes.empty()) {
-    DictionaryPrefUpdate mime_type_pref(pref_service,
-                                        prefs::kDefaultTasksBySuffix);
+    DictionaryPrefUpdateDeprecated mime_type_pref(pref_service,
+                                                  prefs::kDefaultTasksBySuffix);
     for (const std::string& suffix : suffixes) {
       // Suffixes are case insensitive.
       std::string lower_suffix = base::ToLowerASCII(suffix);

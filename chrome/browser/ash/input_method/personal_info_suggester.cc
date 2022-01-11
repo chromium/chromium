@@ -393,8 +393,8 @@ void PersonalInfoSuggester::ShowSuggestion(const std::u16string& text,
 }
 
 int PersonalInfoSuggester::GetPrefValue(const std::string& pref_name) {
-  DictionaryPrefUpdate update(profile_->GetPrefs(),
-                              prefs::kAssistiveInputFeatureSettings);
+  DictionaryPrefUpdateDeprecated update(profile_->GetPrefs(),
+                                        prefs::kAssistiveInputFeatureSettings);
   auto value = update->FindIntKey(pref_name);
   if (!value.has_value()) {
     update->SetIntKey(pref_name, 0);
@@ -408,8 +408,8 @@ void PersonalInfoSuggester::IncrementPrefValueTilCapped(
     int max_value) {
   int value = GetPrefValue(pref_name);
   if (value < max_value) {
-    DictionaryPrefUpdate update(profile_->GetPrefs(),
-                                prefs::kAssistiveInputFeatureSettings);
+    DictionaryPrefUpdateDeprecated update(
+        profile_->GetPrefs(), prefs::kAssistiveInputFeatureSettings);
     update->SetIntKey(pref_name, value + 1);
   }
 }

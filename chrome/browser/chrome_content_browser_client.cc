@@ -4397,7 +4397,7 @@ void ChromeContentBrowserClient::UpdateDevToolsBackgroundServiceExpiration(
   auto* pref_service = profile->GetPrefs();
   DCHECK(pref_service);
 
-  DictionaryPrefUpdate pref_update(
+  DictionaryPrefUpdateDeprecated pref_update(
       pref_service, prefs::kDevToolsBackgroundServicesExpirationDict);
   base::DictionaryValue* exp_dict = pref_update.Get();
 

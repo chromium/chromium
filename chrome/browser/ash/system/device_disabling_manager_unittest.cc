@@ -178,7 +178,8 @@ void DeviceDisablingManagerOOBETest::CheckWhetherDeviceDisabledDuringOOBE() {
 }
 
 void DeviceDisablingManagerOOBETest::SetDeviceDisabled(bool disabled) {
-  DictionaryPrefUpdate dict(&local_state_, prefs::kServerBackedDeviceState);
+  DictionaryPrefUpdateDeprecated dict(&local_state_,
+                                      prefs::kServerBackedDeviceState);
   if (disabled) {
     dict->SetString(policy::kDeviceStateMode, policy::kDeviceStateModeDisabled);
   } else {

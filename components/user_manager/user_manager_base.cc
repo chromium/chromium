@@ -404,8 +404,8 @@ void UserManagerBase::SaveUserOAuthStatus(
     return;
 
   {
-    DictionaryPrefUpdate oauth_status_update(GetLocalState(),
-                                             kUserOAuthTokenStatus);
+    DictionaryPrefUpdateDeprecated oauth_status_update(GetLocalState(),
+                                                       kUserOAuthTokenStatus);
     oauth_status_update->SetKey(
         account_id.GetUserEmail(),
         base::Value(static_cast<int>(oauth_token_status)));
@@ -427,8 +427,8 @@ void UserManagerBase::SaveForceOnlineSignin(const AccountId& account_id,
     return;
 
   {
-    DictionaryPrefUpdate force_online_update(GetLocalState(),
-                                             kUserForceOnlineSignin);
+    DictionaryPrefUpdateDeprecated force_online_update(GetLocalState(),
+                                                       kUserForceOnlineSignin);
     force_online_update->SetKey(account_id.GetUserEmail(),
                                 base::Value(force_online_signin));
   }
@@ -445,8 +445,8 @@ void UserManagerBase::SaveUserDisplayName(const AccountId& account_id,
     // Do not update local state if data stored or cached outside the user's
     // cryptohome is to be treated as ephemeral.
     if (!IsUserNonCryptohomeDataEphemeral(account_id)) {
-      DictionaryPrefUpdate display_name_update(GetLocalState(),
-                                               kUserDisplayName);
+      DictionaryPrefUpdateDeprecated display_name_update(GetLocalState(),
+                                                         kUserDisplayName);
       display_name_update->SetKey(account_id.GetUserEmail(),
                                   base::Value(display_name));
     }
@@ -476,7 +476,8 @@ void UserManagerBase::SaveUserDisplayEmail(const AccountId& account_id,
   if (IsUserNonCryptohomeDataEphemeral(account_id))
     return;
 
-  DictionaryPrefUpdate display_email_update(GetLocalState(), kUserDisplayEmail);
+  DictionaryPrefUpdateDeprecated display_email_update(GetLocalState(),
+                                                      kUserDisplayEmail);
   display_email_update->SetKey(account_id.GetUserEmail(),
                                base::Value(display_email));
 }
@@ -490,7 +491,7 @@ void UserManagerBase::SaveUserType(const User* user) {
   if (IsUserNonCryptohomeDataEphemeral(user->GetAccountId()))
     return;
 
-  DictionaryPrefUpdate user_type_update(GetLocalState(), kUserType);
+  DictionaryPrefUpdateDeprecated user_type_update(GetLocalState(), kUserType);
   user_type_update->SetKey(user->GetAccountId().GetAccountIdKey(),
                            base::Value(static_cast<int>(user->GetType())));
   GetLocalState()->CommitPendingWrite();
@@ -507,7 +508,8 @@ void UserManagerBase::UpdateUserAccountData(
     std::u16string given_name = account_data.given_name();
     user->set_given_name(given_name);
     if (!IsUserNonCryptohomeDataEphemeral(account_id)) {
-      DictionaryPrefUpdate given_name_update(GetLocalState(), kUserGivenName);
+      DictionaryPrefUpdateDeprecated given_name_update(GetLocalState(),
+                                                       kUserGivenName);
       given_name_update->SetKey(account_id.GetUserEmail(),
                                 base::Value(given_name));
     }
@@ -908,7 +910,8 @@ void UserManagerBase::GuestUserLoggedIn() {
 
 void UserManagerBase::AddUserRecord(User* user) {
   // Add the user to the front of the user list.
-  ListPrefUpdate prefs_users_update(GetLocalState(), kRegularUsersPref);
+  ListPrefUpdateDeprecated prefs_users_update(GetLocalState(),
+                                              kRegularUsersPref);
   prefs_users_update->Insert(prefs_users_update->GetList().begin(),
                              base::Value(user->GetAccountId().GetUserEmail()));
   users_.insert(users_.begin(), user);
@@ -1000,19 +1003,23 @@ bool UserManagerBase::LoadForceOnlineSignin(const AccountId& account_id) const {
 
 void UserManagerBase::RemoveNonCryptohomeData(const AccountId& account_id) {
   PrefService* prefs = GetLocalState();
-  DictionaryPrefUpdate prefs_display_name_update(prefs, kUserDisplayName);
+  DictionaryPrefUpdateDeprecated prefs_display_name_update(prefs,
+                                                           kUserDisplayName);
   prefs_display_name_update->RemoveKey(account_id.GetUserEmail());
 
-  DictionaryPrefUpdate prefs_given_name_update(prefs, kUserGivenName);
+  DictionaryPrefUpdateDeprecated prefs_given_name_update(prefs, kUserGivenName);
   prefs_given_name_update->RemoveKey(account_id.GetUserEmail());
 
-  DictionaryPrefUpdate prefs_display_email_update(prefs, kUserDisplayEmail);
+  DictionaryPrefUpdateDeprecated prefs_display_email_update(prefs,
+                                                            kUserDisplayEmail);
   prefs_display_email_update->RemoveKey(account_id.GetUserEmail());
 
-  DictionaryPrefUpdate prefs_oauth_update(prefs, kUserOAuthTokenStatus);
+  DictionaryPrefUpdateDeprecated prefs_oauth_update(prefs,
+                                                    kUserOAuthTokenStatus);
   prefs_oauth_update->RemoveKey(account_id.GetUserEmail());
 
-  DictionaryPrefUpdate prefs_force_online_update(prefs, kUserForceOnlineSignin);
+  DictionaryPrefUpdateDeprecated prefs_force_online_update(
+      prefs, kUserForceOnlineSignin);
   prefs_force_online_update->RemoveKey(account_id.GetUserEmail());
 
   KnownUser(prefs).RemovePrefs(account_id);
@@ -1026,7 +1033,8 @@ void UserManagerBase::RemoveNonCryptohomeData(const AccountId& account_id) {
 User* UserManagerBase::RemoveRegularOrSupervisedUserFromList(
     const AccountId& account_id,
     bool notify) {
-  ListPrefUpdate prefs_users_update(GetLocalState(), kRegularUsersPref);
+  ListPrefUpdateDeprecated prefs_users_update(GetLocalState(),
+                                              kRegularUsersPref);
   prefs_users_update->ClearList();
   User* user = nullptr;
   for (UserList::iterator it = users_.begin(); it != users_.end();) {

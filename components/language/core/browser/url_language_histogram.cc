@@ -117,7 +117,8 @@ float UrlLanguageHistogram::GetLanguageFrequency(
 }
 
 void UrlLanguageHistogram::OnPageVisited(const std::string& language_code) {
-  DictionaryPrefUpdate update(pref_service_, kUrlLanguageHistogramCounters);
+  DictionaryPrefUpdateDeprecated update(pref_service_,
+                                        kUrlLanguageHistogramCounters);
   base::Value* dict = update.Get();
   // If the key |language_code| does not exist, |counter_value| stays 0.
   int counter_value = dict->FindIntKey(language_code).value_or(0);

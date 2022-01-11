@@ -94,7 +94,7 @@ void StateStore::Transaction::ClearAll() {
 
 base::DictionaryValue* StateStore::Transaction::GetPrefDict() {
   if (!pref_update_) {
-    pref_update_ = std::make_unique<DictionaryPrefUpdate>(
+    pref_update_ = std::make_unique<DictionaryPrefUpdateDeprecated>(
         store_->profile_->GetPrefs(), prefs::kSafeBrowsingIncidentsSent);
     // Getting the dict will cause it to be created if it doesn't exist.
     // Unconditionally refresh the store's read-only view on the preference so

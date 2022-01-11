@@ -233,8 +233,8 @@ void AccuracyService::OnAccuracyTipClosed(base::TimeTicks time_opened,
                                           ukm::SourceId ukm_source_id,
                                           AccuracyTipInteraction interaction) {
   DCHECK(ui_task_runner_->RunsTasksInCurrentSequence());
-  ListPrefUpdate update(pref_service_,
-                        GetPreviousInteractionsPrefName(disable_ui_));
+  ListPrefUpdateDeprecated update(pref_service_,
+                                  GetPreviousInteractionsPrefName(disable_ui_));
   base::Value* interaction_list = update.Get();
   interaction_list->Append(static_cast<int>(interaction));
 

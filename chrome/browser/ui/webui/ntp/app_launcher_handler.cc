@@ -634,7 +634,7 @@ void AppLauncherHandler::FillAppDictionary(base::DictionaryValue* dictionary) {
 
   const base::Value* app_page_names = prefs->GetList(prefs::kNtpAppPageNames);
   if (!app_page_names || !app_page_names->GetList().size()) {
-    ListPrefUpdate update(prefs, prefs::kNtpAppPageNames);
+    ListPrefUpdateDeprecated update(prefs, prefs::kNtpAppPageNames);
     base::ListValue* list = update.Get();
     list->Append(l10n_util::GetStringUTF16(IDS_APP_DEFAULT_PAGE_NAME));
     dictionary->SetKey("appPageNames", list->Clone());
@@ -1074,7 +1074,7 @@ void AppLauncherHandler::HandleSaveAppPageName(const base::ListValue* args) {
 
   base::AutoReset<bool> auto_reset(&ignore_changes_, true);
   PrefService* prefs = Profile::FromWebUI(web_ui())->GetPrefs();
-  ListPrefUpdate update(prefs, prefs::kNtpAppPageNames);
+  ListPrefUpdateDeprecated update(prefs, prefs::kNtpAppPageNames);
   base::ListValue* list = update.Get();
   if (page_index < list->GetList().size()) {
     list->GetList()[page_index] = base::Value(name);

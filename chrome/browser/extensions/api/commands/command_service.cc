@@ -186,8 +186,8 @@ bool CommandService::AddKeybindingPref(
           command_name != manifest_values::kBrowserActionCommandEvent &&
           command_name != manifest_values::kActionCommandEvent));
 
-  DictionaryPrefUpdate updater(profile_->GetPrefs(),
-                               prefs::kExtensionCommands);
+  DictionaryPrefUpdateDeprecated updater(profile_->GetPrefs(),
+                                         prefs::kExtensionCommands);
   base::DictionaryValue* bindings = updater.Get();
 
   std::string key = GetPlatformKeybindingKeyForAccelerator(accelerator,
@@ -629,7 +629,8 @@ bool CommandService::IsCommandShortcutUserModified(
 
 void CommandService::RemoveKeybindingPrefs(const std::string& extension_id,
                                            const std::string& command_name) {
-  DictionaryPrefUpdate updater(profile_->GetPrefs(), prefs::kExtensionCommands);
+  DictionaryPrefUpdateDeprecated updater(profile_->GetPrefs(),
+                                         prefs::kExtensionCommands);
   base::DictionaryValue* bindings = updater.Get();
 
   typedef std::vector<std::string> KeysToRemove;

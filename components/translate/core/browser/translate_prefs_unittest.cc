@@ -944,7 +944,7 @@ TEST_F(TranslatePrefsTest, MigrateNeverPromptSites) {
                 .size(),
             2u);
   // Also put one of those sites on the new pref but migrated incorrectly.
-  DictionaryPrefUpdate never_prompt_list_update(
+  DictionaryPrefUpdateDeprecated never_prompt_list_update(
       &prefs_, TranslatePrefs::kPrefNeverPromptSitesWithTime);
   base::Value* never_prompt_list = never_prompt_list_update.Get();
   never_prompt_list->SetKey("migratedWrong.com", base::Value(0));

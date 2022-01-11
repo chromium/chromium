@@ -87,7 +87,7 @@ void PinnedTabCodec::WritePinnedTabs(Profile* profile,
   if (!prefs)
     return;
 
-  ListPrefUpdate update(prefs, prefs::kPinnedTabs);
+  ListPrefUpdateDeprecated update(prefs, prefs::kPinnedTabs);
   base::Value* values = update.Get();
   values->ClearList();
   for (const auto& tab : tabs)

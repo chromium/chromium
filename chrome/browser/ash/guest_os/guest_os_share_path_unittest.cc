@@ -247,8 +247,8 @@ class GuestOsSharePathTest : public testing::Test {
     share_path_ = root_.Append("path-to-share");
     shared_path_ = root_.Append("already-shared");
     ASSERT_TRUE(base::CreateDirectory(shared_path_));
-    DictionaryPrefUpdate update(profile()->GetPrefs(),
-                                prefs::kGuestOSPathsSharedToVms);
+    DictionaryPrefUpdateDeprecated update(profile()->GetPrefs(),
+                                          prefs::kGuestOSPathsSharedToVms);
     base::DictionaryValue* shared_paths = update.Get();
     base::Value termina(base::Value::Type::LIST);
     termina.Append(base::Value(crostini::kCrostiniDefaultVmName));
@@ -786,8 +786,8 @@ TEST_F(GuestOsSharePathTest, RegisterPersistedPaths) {
 
 TEST_F(GuestOsSharePathTest, UnsharePathSuccess) {
   SetUpVolume();
-  DictionaryPrefUpdate update(profile()->GetPrefs(),
-                              prefs::kGuestOSPathsSharedToVms);
+  DictionaryPrefUpdateDeprecated update(profile()->GetPrefs(),
+                                        prefs::kGuestOSPathsSharedToVms);
   base::DictionaryValue* shared_paths = update.Get();
   base::Value vms(base::Value::Type::LIST);
   vms.Append(base::Value("vm-running"));
@@ -813,8 +813,8 @@ TEST_F(GuestOsSharePathTest, UnsharePathRoot) {
 
 TEST_F(GuestOsSharePathTest, UnsharePathVmNotRunning) {
   SetUpVolume();
-  DictionaryPrefUpdate update(profile()->GetPrefs(),
-                              prefs::kGuestOSPathsSharedToVms);
+  DictionaryPrefUpdateDeprecated update(profile()->GetPrefs(),
+                                        prefs::kGuestOSPathsSharedToVms);
   base::DictionaryValue* shared_paths = update.Get();
   base::Value vms(base::Value::Type::LIST);
   vms.Append(base::Value("vm-not-running"));
@@ -830,8 +830,8 @@ TEST_F(GuestOsSharePathTest, UnsharePathVmNotRunning) {
 
 TEST_F(GuestOsSharePathTest, UnsharePathPluginVmNotRunning) {
   SetUpVolume();
-  DictionaryPrefUpdate update(profile()->GetPrefs(),
-                              prefs::kGuestOSPathsSharedToVms);
+  DictionaryPrefUpdateDeprecated update(profile()->GetPrefs(),
+                                        prefs::kGuestOSPathsSharedToVms);
   base::DictionaryValue* shared_paths = update.Get();
   base::Value vms(base::Value::Type::LIST);
   vms.Append(base::Value("PvmDefault"));
@@ -848,8 +848,8 @@ TEST_F(GuestOsSharePathTest, UnsharePathPluginVmNotRunning) {
 // Tests that it cannot unshare path when ARCVM is not running.
 TEST_F(GuestOsSharePathTest, UnsharePathArcvmNotRunning) {
   SetUpVolume();
-  DictionaryPrefUpdate update(profile()->GetPrefs(),
-                              prefs::kGuestOSPathsSharedToVms);
+  DictionaryPrefUpdateDeprecated update(profile()->GetPrefs(),
+                                        prefs::kGuestOSPathsSharedToVms);
   base::DictionaryValue* shared_paths = update.Get();
   base::Value vms(base::Value::Type::LIST);
   vms.Append(base::Value(arc::kArcVmName));

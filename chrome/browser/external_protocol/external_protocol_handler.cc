@@ -372,7 +372,7 @@ void ExternalProtocolHandler::SetBlockState(
   if (MayRememberAllowDecisionsForThisOrigin(&initiating_origin)) {
     PrefService* profile_prefs = profile->GetPrefs();
     if (profile_prefs) {  // May be NULL during testing.
-      DictionaryPrefUpdate update_allowed_origin_protocol_pairs(
+      DictionaryPrefUpdateDeprecated update_allowed_origin_protocol_pairs(
           profile_prefs, prefs::kProtocolHandlerPerOriginAllowedProtocols);
 
       const std::string serialized_origin = initiating_origin.Serialize();

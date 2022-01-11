@@ -863,8 +863,8 @@ void TaskManagerTableModel::StoreColumnsSettings() {
   if (!local_state)
     return;
 
-  DictionaryPrefUpdate dict_update(local_state,
-                                   prefs::kTaskManagerColumnVisibility);
+  DictionaryPrefUpdateDeprecated dict_update(
+      local_state, prefs::kTaskManagerColumnVisibility);
 
   base::DictionaryValue::Iterator it(*columns_settings_);
   while (!it.IsAtEnd()) {

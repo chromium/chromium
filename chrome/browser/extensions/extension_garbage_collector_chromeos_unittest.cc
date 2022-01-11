@@ -90,7 +90,8 @@ class ExtensionGarbageCollectorChromeOSUnitTest
                                   const std::string& version,
                                   const std::string& users_string,
                                   const base::FilePath& path) {
-    DictionaryPrefUpdate shared_extensions(testing_local_state_.Get(),
+    DictionaryPrefUpdateDeprecated shared_extensions(
+        testing_local_state_.Get(),
         ExtensionAssetsManagerChromeOS::kSharedExtensions);
 
     base::DictionaryValue* extension_info_weak = NULL;

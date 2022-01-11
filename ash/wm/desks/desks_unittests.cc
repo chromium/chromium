@@ -3255,7 +3255,7 @@ class DesksMultiUserTest : public NoSessionAshTestBase,
   void InitPrefsWithDesksRestoreData(PrefService* prefs,
                                      std::vector<std::string> desk_names) {
     DCHECK(prefs);
-    ListPrefUpdate update(prefs, prefs::kDesksNamesList);
+    ListPrefUpdateDeprecated update(prefs, prefs::kDesksNamesList);
     base::ListValue* pref_data = update.Get();
     ASSERT_TRUE(pref_data->GetList().empty());
     for (auto desk_name : desk_names)

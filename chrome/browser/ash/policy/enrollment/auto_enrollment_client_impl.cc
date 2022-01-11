@@ -1324,7 +1324,8 @@ bool AutoEnrollmentClientImpl::OnDeviceStateRequestCompletion(
   StateDownloadMessageProcessor::ParsedResponse parsed_response =
       std::move(parsed_response_opt.value());
   {
-    DictionaryPrefUpdate dict(local_state_, prefs::kServerBackedDeviceState);
+    DictionaryPrefUpdateDeprecated dict(local_state_,
+                                        prefs::kServerBackedDeviceState);
     UpdateDict(dict.Get(), kDeviceStateManagementDomain,
                parsed_response.management_domain.has_value(),
                std::make_unique<base::Value>(

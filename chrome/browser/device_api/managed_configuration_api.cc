@@ -315,8 +315,8 @@ void ManagedConfigurationAPI::ProcessDecodedConfiguration(
     PostStoreConfiguration(origin, base::DictionaryValue());
     return;
   }
-  DictionaryPrefUpdate update(profile_->GetPrefs(),
-                              prefs::kLastManagedConfigurationHashForOrigin);
+  DictionaryPrefUpdateDeprecated update(
+      profile_->GetPrefs(), prefs::kLastManagedConfigurationHashForOrigin);
   update.Get()->SetStringKey(GetOriginEncoded(origin), url_hash);
 
   // We need to transform each value into a string.

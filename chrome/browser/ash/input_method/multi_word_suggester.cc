@@ -69,8 +69,8 @@ void RecordTimeToDismiss(base::TimeDelta delta) {
 }
 
 std::optional<int> GetTimeFirstAcceptedSuggestion(Profile* profile) {
-  DictionaryPrefUpdate update(profile->GetPrefs(),
-                              prefs::kAssistiveInputFeatureSettings);
+  DictionaryPrefUpdateDeprecated update(profile->GetPrefs(),
+                                        prefs::kAssistiveInputFeatureSettings);
   auto value = update->FindIntKey(kMultiWordFirstAcceptTimeDays);
   if (value.has_value())
     return value.value();
@@ -78,8 +78,8 @@ std::optional<int> GetTimeFirstAcceptedSuggestion(Profile* profile) {
 }
 
 void SetTimeFirstAcceptedSuggestion(Profile* profile) {
-  DictionaryPrefUpdate update(profile->GetPrefs(),
-                              prefs::kAssistiveInputFeatureSettings);
+  DictionaryPrefUpdateDeprecated update(profile->GetPrefs(),
+                                        prefs::kAssistiveInputFeatureSettings);
   auto time_since_epoch = base::Time::Now() - base::Time::UnixEpoch();
   update->SetIntKey(kMultiWordFirstAcceptTimeDays,
                     time_since_epoch.InDaysFloored());

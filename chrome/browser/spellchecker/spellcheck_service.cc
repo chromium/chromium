@@ -120,7 +120,8 @@ SpellcheckService::SpellcheckService(content::BrowserContext* context)
     // preferences for non-Hunspell languages so that there is no attempt to
     // load a non-existent Hunspell dictionary, and so that Hunspell
     // spellchecking isn't broken because of the failed load.
-    ListPrefUpdate update(prefs, spellcheck::prefs::kSpellCheckDictionaries);
+    ListPrefUpdateDeprecated update(prefs,
+                                    spellcheck::prefs::kSpellCheckDictionaries);
     update->EraseListValueIf([](const base::Value& entry) {
       return spellcheck::GetCorrespondingSpellCheckLanguage(entry.GetString())
           .empty();
@@ -653,7 +654,8 @@ void SpellcheckService::InitWindowsDictionaryLanguages(
   DCHECK(prefs);
   // When following object goes out of scope, preference change observers will
   // be notified (even if there is no preference change).
-  ListPrefUpdate update(prefs, spellcheck::prefs::kSpellCheckDictionaries);
+  ListPrefUpdateDeprecated update(prefs,
+                                  spellcheck::prefs::kSpellCheckDictionaries);
   update->EraseListValueIf([this](const base::Value& entry) {
     const std::string dictionary_name = entry.GetString();
     return (!UsesWindowsDictionary(dictionary_name) &&
@@ -661,7 +663,7 @@ void SpellcheckService::InitWindowsDictionaryLanguages(
                 .empty());
   });
 
-  // No need to call LoadDictionaries() as when the ListPrefUpdate
+  // No need to call LoadDictionaries() as when the ListPrefUpdateDeprecated
   // object goes out of scope, the preference change handler will do this.
 }
 

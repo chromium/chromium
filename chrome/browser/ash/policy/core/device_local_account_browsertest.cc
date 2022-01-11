@@ -832,8 +832,8 @@ IN_PROC_BROWSER_TEST_F(DeviceLocalAccountTest, PRE_DataIsRemoved) {
 
   // Data for the account is normally added after successful authentication.
   // Shortcut that here.
-  DictionaryPrefUpdate given_name_update(g_browser_process->local_state(),
-                                         "UserGivenName");
+  DictionaryPrefUpdateDeprecated given_name_update(
+      g_browser_process->local_state(), "UserGivenName");
   given_name_update->SetKey(account_id_1_.GetUserEmail(),
                             base::Value("Elaine"));
 

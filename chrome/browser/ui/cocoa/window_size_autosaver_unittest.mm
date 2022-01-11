@@ -180,7 +180,7 @@ TEST_F(WindowSizeAutosaverTest, DoesNotRestoreButClearsEmptyRect) {
   PrefService* pref = profile()->GetPrefs();
   ASSERT_TRUE(pref);
 
-  DictionaryPrefUpdate update(pref, path_);
+  DictionaryPrefUpdateDeprecated update(pref, path_);
   base::Value* windowPref = update.Get();
   windowPref->SetIntKey("left", 50);
   windowPref->SetIntKey("right", 50);

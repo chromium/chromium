@@ -135,7 +135,7 @@ void SharingSyncPreference::SetVapidKey(
   base::Base64Encode(std::string(vapid_key.begin(), vapid_key.end()),
                      &base64_vapid_key);
 
-  DictionaryPrefUpdate update(prefs_, prefs::kSharingVapidKey);
+  DictionaryPrefUpdateDeprecated update(prefs_, prefs::kSharingVapidKey);
   update->SetStringKey(kVapidECPrivateKey, base64_vapid_key);
   update->SetKey(kVapidCreationTimestamp,
                  base::TimeToValue(creation_timestamp));
@@ -175,7 +175,7 @@ SharingSyncPreference::GetFCMRegistration() const {
 }
 
 void SharingSyncPreference::SetFCMRegistration(FCMRegistration registration) {
-  DictionaryPrefUpdate update(prefs_, prefs::kSharingFCMRegistration);
+  DictionaryPrefUpdateDeprecated update(prefs_, prefs::kSharingFCMRegistration);
   if (registration.authorized_entity) {
     update->SetStringKey(kRegistrationAuthorizedEntity,
                          std::move(*registration.authorized_entity));
@@ -211,7 +211,7 @@ void SharingSyncPreference::SetLocalSharingInfo(
     list_value.Append(feature);
   }
 
-  DictionaryPrefUpdate local_sharing_info_update(
+  DictionaryPrefUpdateDeprecated local_sharing_info_update(
       prefs_, prefs::kSharingLocalSharingInfo);
   local_sharing_info_update->SetKey(kSharingInfoVapidTargetInfo,
                                     std::move(vapid_target_info));

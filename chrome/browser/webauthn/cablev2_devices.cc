@@ -365,7 +365,7 @@ void AddPairing(PrefService* pref_service,
   // For Incognito/Guest profiles, pairings will only last for the duration of
   // that session. While an argument could be made that it's safe to persist
   // such pairing for longer, this seems like the safe option initially.
-  ListPrefUpdate update(pref_service, kWebAuthnCablePairingsPrefName);
+  ListPrefUpdateDeprecated update(pref_service, kWebAuthnCablePairingsPrefName);
 
   // Find any existing entries with the same public key and replace them. The
   // handshake protocol requires the phone to prove possession of the public
@@ -402,7 +402,7 @@ void AddPairing(PrefService* pref_service,
 void DeletePairingByPublicKey(
     PrefService* pref_service,
     std::array<uint8_t, device::kP256X962Length> public_key) {
-  ListPrefUpdate update(pref_service, kWebAuthnCablePairingsPrefName);
+  ListPrefUpdateDeprecated update(pref_service, kWebAuthnCablePairingsPrefName);
   DeletePairingByPublicKey(update.Get(), base::Base64Encode(public_key));
 }
 
@@ -414,7 +414,7 @@ bool RenamePairing(
   const std::string name = FindUniqueName(new_name, existing_names);
   const std::string public_key_base64 = base::Base64Encode(public_key);
 
-  ListPrefUpdate update(pref_service, kWebAuthnCablePairingsPrefName);
+  ListPrefUpdateDeprecated update(pref_service, kWebAuthnCablePairingsPrefName);
   base::Value::ListView list = update.Get()->GetList();
 
   for (base::Value& value : list) {

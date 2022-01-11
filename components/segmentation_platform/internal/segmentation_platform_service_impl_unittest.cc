@@ -155,7 +155,8 @@ class SegmentationPlatformServiceImplTest : public testing::Test {
   }
 
   virtual void SetUpPrefs() {
-    DictionaryPrefUpdate update(&pref_service_, kSegmentationResultPref);
+    DictionaryPrefUpdateDeprecated update(&pref_service_,
+                                          kSegmentationResultPref);
     base::DictionaryValue* dictionary = update.Get();
 
     base::Value segmentation_result(base::Value::Type::DICTIONARY);
@@ -372,7 +373,8 @@ TEST_F(SegmentationPlatformServiceImplEmptyConfigTest, InitializationFlow) {
 class SegmentationPlatformServiceImplMultiClientTest
     : public SegmentationPlatformServiceImplTest {
   void SetUpPrefs() override {
-    DictionaryPrefUpdate update(&pref_service_, kSegmentationResultPref);
+    DictionaryPrefUpdateDeprecated update(&pref_service_,
+                                          kSegmentationResultPref);
     base::DictionaryValue* dictionary = update.Get();
 
     base::Value segmentation_result(base::Value::Type::DICTIONARY);

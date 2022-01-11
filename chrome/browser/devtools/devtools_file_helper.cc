@@ -306,8 +306,8 @@ void DevToolsFileHelper::SaveAsFileSelected(const std::string& url,
   *g_last_save_path.Pointer() = path;
   saved_files_[url] = path;
 
-  DictionaryPrefUpdate update(profile_->GetPrefs(),
-                              prefs::kDevToolsEditedFiles);
+  DictionaryPrefUpdateDeprecated update(profile_->GetPrefs(),
+                                        prefs::kDevToolsEditedFiles);
   base::DictionaryValue* files_map = update.Get();
   files_map->SetKey(base::MD5String(url), base::FilePathToValue(path));
   std::string file_system_path = path.AsUTF8Unsafe();
@@ -374,8 +374,8 @@ void DevToolsFileHelper::AddUserConfirmedFileSystem(const std::string& type,
   std::string file_system_id = RegisterFileSystem(web_contents_, path);
   std::string file_system_path = path.AsUTF8Unsafe();
 
-  DictionaryPrefUpdate update(profile_->GetPrefs(),
-                              prefs::kDevToolsFileSystemPaths);
+  DictionaryPrefUpdateDeprecated update(profile_->GetPrefs(),
+                                        prefs::kDevToolsFileSystemPaths);
   base::DictionaryValue* file_systems_paths_value = update.Get();
   file_systems_paths_value->SetKey(file_system_path, base::Value(type));
 }
@@ -426,8 +426,8 @@ void DevToolsFileHelper::RemoveFileSystem(const std::string& file_system_path) {
   base::FilePath path = base::FilePath::FromUTF8Unsafe(file_system_path);
   isolated_context()->RevokeFileSystemByPath(path);
 
-  DictionaryPrefUpdate update(profile_->GetPrefs(),
-                              prefs::kDevToolsFileSystemPaths);
+  DictionaryPrefUpdateDeprecated update(profile_->GetPrefs(),
+                                        prefs::kDevToolsFileSystemPaths);
   base::DictionaryValue* file_systems_paths_value = update.Get();
   file_systems_paths_value->RemoveKey(file_system_path);
 }

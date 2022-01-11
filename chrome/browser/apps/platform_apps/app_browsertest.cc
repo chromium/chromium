@@ -1133,8 +1133,8 @@ IN_PROC_BROWSER_TEST_F(PlatformAppBrowserTest, PRE_ComponentAppBackgroundPage) {
   extensions::EventRouter::Get(browser()->profile())
       ->ClearRegisteredEventsForTest(extension->id());
 
-  DictionaryPrefUpdate update(extension_prefs->pref_service(),
-                              extensions::pref_names::kExtensions);
+  DictionaryPrefUpdateDeprecated update(extension_prefs->pref_service(),
+                                        extensions::pref_names::kExtensions);
   base::DictionaryValue* dict = update.Get();
   std::string key(extension->id());
   key += ".manifest.version";

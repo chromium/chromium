@@ -212,8 +212,8 @@ jboolean ForeignSessionHelper::GetForeignSessions(
   // Use a pref to keep track of sessions that were collapsed by the user.
   // To prevent the pref from accumulating stale sessions, clear it each time
   // and only add back sessions that are still current.
-  DictionaryPrefUpdate pref_update(profile_->GetPrefs(),
-                                   prefs::kNtpCollapsedForeignSessions);
+  DictionaryPrefUpdateDeprecated pref_update(
+      profile_->GetPrefs(), prefs::kNtpCollapsedForeignSessions);
   base::DictionaryValue* pref_collapsed_sessions = pref_update.Get();
   std::unique_ptr<base::DictionaryValue> collapsed_sessions(
       pref_collapsed_sessions->DeepCopy());

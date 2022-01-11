@@ -299,7 +299,7 @@ TEST_F(PrefServiceSyncableTest, ModelAssociationDoNotSyncDefaults) {
 TEST_F(PrefServiceSyncableTest, ModelAssociationEmptyCloud) {
   prefs_.SetString(kStringPrefName, kExampleUrl0);
   {
-    ListPrefUpdate update(GetPrefs(), kListPrefName);
+    ListPrefUpdateDeprecated update(GetPrefs(), kListPrefName);
     base::ListValue* url_list = update.Get();
     url_list->Append(kExampleUrl0);
     url_list->Append(kExampleUrl1);
@@ -318,7 +318,7 @@ TEST_F(PrefServiceSyncableTest, ModelAssociationEmptyCloud) {
 TEST_F(PrefServiceSyncableTest, ModelAssociationCloudHasData) {
   prefs_.SetString(kStringPrefName, kExampleUrl0);
   {
-    ListPrefUpdate update(GetPrefs(), kListPrefName);
+    ListPrefUpdateDeprecated update(GetPrefs(), kListPrefName);
     base::ListValue* url_list = update.Get();
     url_list->Append(kExampleUrl0);
   }
@@ -508,7 +508,7 @@ class PrefServiceSyncableMergeTest : public testing::Test {
 
 TEST_F(PrefServiceSyncableMergeTest, ShouldMergeSelectedListValues) {
   {
-    ListPrefUpdate update(&prefs_, kListPrefName);
+    ListPrefUpdateDeprecated update(&prefs_, kListPrefName);
     base::ListValue* url_list = update.Get();
     url_list->Append(kExampleUrl0);
     url_list->Append(kExampleUrl1);
@@ -589,7 +589,7 @@ TEST_F(PrefServiceSyncableMergeTest, ManagedListPreferences) {
 
 TEST_F(PrefServiceSyncableMergeTest, ShouldMergeSelectedDictionaryValues) {
   {
-    DictionaryPrefUpdate update(&prefs_, kDictPrefName);
+    DictionaryPrefUpdateDeprecated update(&prefs_, kDictPrefName);
     base::DictionaryValue* dict_value = update.Get();
     dict_value->Set("my_key1", std::make_unique<base::Value>("my_value1"));
     dict_value->Set("my_key3", std::make_unique<base::Value>("my_value3"));

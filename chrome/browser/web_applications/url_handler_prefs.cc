@@ -581,7 +581,8 @@ void SaveChoice(PrefService* local_state,
   DCHECK(choice != UrlHandlerSavedChoice::kInBrowser ||
          (app_id == nullptr && profile_path == nullptr));
 
-  DictionaryPrefUpdate update(local_state, prefs::kWebAppsUrlHandlerInfo);
+  DictionaryPrefUpdateDeprecated update(local_state,
+                                        prefs::kWebAppsUrlHandlerInfo);
   base::Value* const pref_value = update.Get();
   if (!pref_value || !pref_value->is_dict())
     return;
@@ -713,7 +714,8 @@ void AddWebApp(PrefService* local_state,
   if (profile_path.empty() || url_handlers.empty())
     return;
 
-  DictionaryPrefUpdate update(local_state, prefs::kWebAppsUrlHandlerInfo);
+  DictionaryPrefUpdateDeprecated update(local_state,
+                                        prefs::kWebAppsUrlHandlerInfo);
   base::Value* const pref_value = update.Get();
   if (!pref_value || !pref_value->is_dict())
     return;
@@ -758,7 +760,8 @@ void UpdateWebApp(PrefService* local_state,
                   const base::FilePath& profile_path,
                   apps::UrlHandlers new_url_handlers,
                   const base::Time& time) {
-  DictionaryPrefUpdate update(local_state, prefs::kWebAppsUrlHandlerInfo);
+  DictionaryPrefUpdateDeprecated update(local_state,
+                                        prefs::kWebAppsUrlHandlerInfo);
   base::Value* const pref_value = update.Get();
   if (!pref_value || !pref_value->is_dict())
     return;
@@ -851,7 +854,8 @@ void RemoveWebApp(PrefService* local_state,
   if (app_id.empty() || profile_path.empty())
     return;
 
-  DictionaryPrefUpdate update(local_state, prefs::kWebAppsUrlHandlerInfo);
+  DictionaryPrefUpdateDeprecated update(local_state,
+                                        prefs::kWebAppsUrlHandlerInfo);
   base::Value* const pref_value = update.Get();
   if (!pref_value || !pref_value->is_dict())
     return;
@@ -864,7 +868,8 @@ void RemoveProfile(PrefService* local_state,
   if (profile_path.empty())
     return;
 
-  DictionaryPrefUpdate update(local_state, prefs::kWebAppsUrlHandlerInfo);
+  DictionaryPrefUpdateDeprecated update(local_state,
+                                        prefs::kWebAppsUrlHandlerInfo);
   base::Value* const pref_value = update.Get();
   if (!pref_value || !pref_value->is_dict())
     return;
@@ -898,7 +903,8 @@ bool ProfileHasUrlHandlers(PrefService* local_state,
 }
 
 void Clear(PrefService* local_state) {
-  DictionaryPrefUpdate update(local_state, prefs::kWebAppsUrlHandlerInfo);
+  DictionaryPrefUpdateDeprecated update(local_state,
+                                        prefs::kWebAppsUrlHandlerInfo);
   base::Value* const pref_value = update.Get();
   pref_value->DictClear();
 }
@@ -942,7 +948,8 @@ void ResetSavedChoice(PrefService* local_state,
                       bool has_origin_wildcard,
                       const std::string& url_path,
                       const base::Time& time) {
-  DictionaryPrefUpdate update(local_state, prefs::kWebAppsUrlHandlerInfo);
+  DictionaryPrefUpdateDeprecated update(local_state,
+                                        prefs::kWebAppsUrlHandlerInfo);
   base::Value* const pref_value = update.Get();
   if (!pref_value || !pref_value->is_dict())
     return;

@@ -171,7 +171,7 @@ void MetadataTable::Store() {
   DCHECK(pref_service_);
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  DictionaryPrefUpdate update(pref_service_, kMetadataPrefPath);
+  DictionaryPrefUpdateDeprecated update(pref_service_, kMetadataPrefPath);
   update->SetKey(kMetadataContentKey, installed_items_.Clone());
 }
 

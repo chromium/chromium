@@ -634,7 +634,8 @@ void BackgroundContentsService::RegisterBackgroundContents(
   // already an entry for this application, no need to do anything.
   // TODO(atwilson): Verify that this is the desired behavior based on developer
   // feedback (http://crbug.com/47118).
-  DictionaryPrefUpdate update(prefs_, prefs::kRegisteredBackgroundContents);
+  DictionaryPrefUpdateDeprecated update(prefs_,
+                                        prefs::kRegisteredBackgroundContents);
   base::DictionaryValue* pref = update.Get();
   const std::string& appid = GetParentApplicationId(background_contents);
   base::DictionaryValue* current;
@@ -663,7 +664,8 @@ void BackgroundContentsService::UnregisterBackgroundContents(
     return;
   DCHECK(IsTracked(background_contents));
   const std::string& appid = GetParentApplicationId(background_contents);
-  DictionaryPrefUpdate update(prefs_, prefs::kRegisteredBackgroundContents);
+  DictionaryPrefUpdateDeprecated update(prefs_,
+                                        prefs::kRegisteredBackgroundContents);
   update.Get()->RemoveKey(appid);
 }
 

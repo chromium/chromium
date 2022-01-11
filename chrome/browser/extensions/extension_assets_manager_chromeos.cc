@@ -215,7 +215,8 @@ bool ExtensionAssetsManagerChromeOS::CleanUpSharedExtensions(
   if (!local_state)
     return false;
 
-  DictionaryPrefUpdate shared_extensions(local_state, kSharedExtensions);
+  DictionaryPrefUpdateDeprecated shared_extensions(local_state,
+                                                   kSharedExtensions);
   std::vector<std::string> extensions;
   extensions.reserve(shared_extensions->DictSize());
   for (base::DictionaryValue::Iterator it(*shared_extensions);
@@ -300,7 +301,8 @@ void ExtensionAssetsManagerChromeOS::CheckSharedExtension(
   }
 
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdate shared_extensions(local_state, kSharedExtensions);
+  DictionaryPrefUpdateDeprecated shared_extensions(local_state,
+                                                   kSharedExtensions);
   base::DictionaryValue* extension_info = NULL;
   base::DictionaryValue* version_info = NULL;
   base::ListValue* users = NULL;
@@ -387,7 +389,8 @@ void ExtensionAssetsManagerChromeOS::InstallSharedExtensionDone(
   }
 
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdate shared_extensions(local_state, kSharedExtensions);
+  DictionaryPrefUpdateDeprecated shared_extensions(local_state,
+                                                   kSharedExtensions);
   base::DictionaryValue* extension_info_weak = NULL;
   if (!shared_extensions->GetDictionary(id, &extension_info_weak)) {
     auto extension_info = std::make_unique<base::DictionaryValue>();
@@ -432,7 +435,8 @@ void ExtensionAssetsManagerChromeOS::MarkSharedExtensionUnused(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   PrefService* local_state = g_browser_process->local_state();
-  DictionaryPrefUpdate shared_extensions(local_state, kSharedExtensions);
+  DictionaryPrefUpdateDeprecated shared_extensions(local_state,
+                                                   kSharedExtensions);
   base::Value* extension_info = shared_extensions->FindDictKey(id);
   if (!extension_info) {
     NOTREACHED();

@@ -70,7 +70,7 @@ void MarkUserKeyCorporateInPref(const std::string& public_key_spki_der,
   std::string public_key_spki_der_b64;
   base::Base64Encode(public_key_spki_der, &public_key_spki_der_b64);
 
-  DictionaryPrefUpdate update(profile_prefs, prefs::kPlatformKeys);
+  DictionaryPrefUpdateDeprecated update(profile_prefs, prefs::kPlatformKeys);
 
   auto new_pref_entry = std::make_unique<base::DictionaryValue>();
   new_pref_entry->SetKey(kPrefKeyUsage, base::Value(kPrefKeyUsageCorporate));

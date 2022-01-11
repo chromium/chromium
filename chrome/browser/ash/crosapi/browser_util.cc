@@ -562,7 +562,7 @@ void RecordDataVer(PrefService* local_state,
                    const std::string& user_id_hash,
                    const base::Version& version) {
   DCHECK(version.IsValid());
-  DictionaryPrefUpdate update(local_state, kDataVerPref);
+  DictionaryPrefUpdateDeprecated update(local_state, kDataVerPref);
   base::DictionaryValue* dict = update.Get();
   dict->SetString(user_id_hash, version.GetString());
 }
@@ -729,16 +729,16 @@ bool IsProfileMigrationCompletedForUser(PrefService* local_state,
 
 void SetProfileMigrationCompletedForUser(PrefService* local_state,
                                          const std::string& user_id_hash) {
-  DictionaryPrefUpdate update(local_state,
-                              kProfileMigrationCompletedForUserPref);
+  DictionaryPrefUpdateDeprecated update(local_state,
+                                        kProfileMigrationCompletedForUserPref);
   base::DictionaryValue* dict = update.Get();
   dict->SetBoolKey(user_id_hash, true);
 }
 
 void ClearProfileMigrationCompletedForUser(PrefService* local_state,
                                            const std::string& user_id_hash) {
-  DictionaryPrefUpdate update(local_state,
-                              kProfileMigrationCompletedForUserPref);
+  DictionaryPrefUpdateDeprecated update(local_state,
+                                        kProfileMigrationCompletedForUserPref);
   base::DictionaryValue* dict = update.Get();
   dict->RemoveKey(user_id_hash);
 }

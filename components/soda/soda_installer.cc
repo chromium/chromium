@@ -261,14 +261,16 @@ void SodaInstaller::NotifyOnSodaLanguagePackProgress(
 
 void SodaInstaller::RegisterLanguage(const std::string& language,
                                      PrefService* global_prefs) {
-  ListPrefUpdate update(global_prefs, prefs::kSodaRegisteredLanguagePacks);
+  ListPrefUpdateDeprecated update(global_prefs,
+                                  prefs::kSodaRegisteredLanguagePacks);
   if (!base::Contains(update->GetList(), base::Value(language))) {
     update->Append(language);
   }
 }
 
 void SodaInstaller::UnregisterLanguages(PrefService* global_prefs) {
-  ListPrefUpdate update(global_prefs, prefs::kSodaRegisteredLanguagePacks);
+  ListPrefUpdateDeprecated update(global_prefs,
+                                  prefs::kSodaRegisteredLanguagePacks);
   update->ClearList();
 }
 

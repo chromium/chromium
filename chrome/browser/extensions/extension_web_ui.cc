@@ -236,7 +236,8 @@ void UpdateOverridesLists(Profile* profile,
   if (overrides.empty())
     return;
   PrefService* prefs = profile->GetPrefs();
-  DictionaryPrefUpdate update(prefs, ExtensionWebUI::kExtensionURLOverrides);
+  DictionaryPrefUpdateDeprecated update(prefs,
+                                        ExtensionWebUI::kExtensionURLOverrides);
   base::DictionaryValue* all_overrides = update.Get();
   for (const auto& page_override_pair : overrides) {
     base::ListValue* page_overrides = nullptr;
@@ -320,7 +321,8 @@ void ForEachOverrideList(
     Profile* profile,
     base::RepeatingCallback<void(base::ListValue*)> callback) {
   PrefService* prefs = profile->GetPrefs();
-  DictionaryPrefUpdate update(prefs, ExtensionWebUI::kExtensionURLOverrides);
+  DictionaryPrefUpdateDeprecated update(prefs,
+                                        ExtensionWebUI::kExtensionURLOverrides);
   base::DictionaryValue* all_overrides = update.Get();
 
   // DictionaryValue::Iterator cannot be used to modify the list. Generate the
@@ -538,7 +540,7 @@ void ExtensionWebUI::RegisterOrActivateChromeURLOverrides(
   if (overrides.empty())
     return;
   PrefService* prefs = profile->GetPrefs();
-  DictionaryPrefUpdate update(prefs, kExtensionURLOverrides);
+  DictionaryPrefUpdateDeprecated update(prefs, kExtensionURLOverrides);
   base::Value* all_overrides = update.Get();
   for (const auto& page_override_pair : overrides) {
     base::Value* page_overrides_weak =

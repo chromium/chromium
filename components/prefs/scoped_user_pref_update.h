@@ -62,11 +62,14 @@ class COMPONENTS_PREFS_EXPORT ScopedUserPrefUpdateBase {
 
 }  // namespace subtle
 
-// Class to support modifications to DictionaryValues and ListValues while
-// guaranteeing that PrefObservers are notified of changed values.
+// Class to support modifications to Values, DictionaryValues and ListValues
+// while guaranteeing that PrefObservers are notified of changed values.
 //
 // This class may only be used on the UI thread as it requires access to the
 // PrefService.
+//
+// TODO(crbug.com/1285745): Replace T with base::Value once the deprecated
+// ListValue and DictionaryValue options are removed.
 template <typename T, base::Value::Type type_enum_value>
 class ScopedUserPrefUpdate : public subtle::ScopedUserPrefUpdateBase {
  public:
@@ -103,10 +106,20 @@ class ScopedUserPrefUpdate : public subtle::ScopedUserPrefUpdateBase {
   }
 };
 
+// DictionaryPrefUpdateDeprecated and ListPrefUpdateDeprecated rely on the
+// deprecated base::DictionaryValue and base::ListValue. Use
+// DictionaryPrefUpdate and ListPrefUpdate going forward to modify dictionaries
+// and lists.
+// TODO(crbug.com/1285745): Remove deprecated options when no longer used.
 typedef ScopedUserPrefUpdate<base::DictionaryValue,
                              base::Value::Type::DICTIONARY>
-    DictionaryPrefUpdate;
+    DictionaryPrefUpdateDeprecated;
 typedef ScopedUserPrefUpdate<base::ListValue, base::Value::Type::LIST>
+    ListPrefUpdateDeprecated;
+
+typedef ScopedUserPrefUpdate<base::Value, base::Value::Type::DICTIONARY>
+    DictionaryPrefUpdate;
+typedef ScopedUserPrefUpdate<base::Value, base::Value::Type::LIST>
     ListPrefUpdate;
 
 #endif  // COMPONENTS_PREFS_SCOPED_USER_PREF_UPDATE_H_

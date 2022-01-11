@@ -1027,7 +1027,7 @@ TEST_F(AccountTrackerServiceTest, ChildStatusMigration) {
             account_tracker()
                 ->GetAccountInfo(AccountKeyToAccountId(kAccountKeyAlpha))
                 .is_child_account);
-  ListPrefUpdate update(prefs(), prefs::kAccountInfo);
+  ListPrefUpdateDeprecated update(prefs(), prefs::kAccountInfo);
   base::Value* dict = nullptr;
   update->Get(0, &dict);
   ASSERT_TRUE(dict && dict->is_dict());
@@ -1283,7 +1283,7 @@ TEST_F(AccountTrackerServiceTest, MigrateAccountIdToGaiaId) {
   const std::string email_beta = AccountKeyToEmail(kAccountKeyBeta);
   const std::string gaia_beta = AccountKeyToGaiaId(kAccountKeyBeta);
 
-  ListPrefUpdate update(prefs(), prefs::kAccountInfo);
+  ListPrefUpdateDeprecated update(prefs(), prefs::kAccountInfo);
 
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetStringKey("account_id", email_alpha);
@@ -1331,7 +1331,7 @@ TEST_F(AccountTrackerServiceTest, CanNotMigrateAccountIdToGaiaId) {
   const std::string gaia_alpha = AccountKeyToGaiaId(kAccountKeyAlpha);
   const std::string email_beta = AccountKeyToEmail(kAccountKeyBeta);
 
-  ListPrefUpdate update(prefs(), prefs::kAccountInfo);
+  ListPrefUpdateDeprecated update(prefs(), prefs::kAccountInfo);
 
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetStringKey("account_id", email_alpha);
@@ -1380,7 +1380,7 @@ TEST_F(AccountTrackerServiceTest, GaiaIdMigrationCrashInTheMiddle) {
   const std::string email_beta = AccountKeyToEmail(kAccountKeyBeta);
   const std::string gaia_beta = AccountKeyToGaiaId(kAccountKeyBeta);
 
-  ListPrefUpdate update(prefs(), prefs::kAccountInfo);
+  ListPrefUpdateDeprecated update(prefs(), prefs::kAccountInfo);
 
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetStringKey("account_id", email_alpha);
@@ -1713,7 +1713,7 @@ TEST_F(AccountTrackerServiceTest, CountOfLoadedAccounts_TwoAccounts) {
   const std::string email_beta = AccountKeyToEmail(kAccountKeyBeta);
   const std::string gaia_beta = AccountKeyToGaiaId(kAccountKeyBeta);
 
-  ListPrefUpdate update(prefs(), prefs::kAccountInfo);
+  ListPrefUpdateDeprecated update(prefs(), prefs::kAccountInfo);
 
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetStringKey("account_id", email_alpha);
@@ -1741,7 +1741,7 @@ TEST_F(AccountTrackerServiceTest, CountOfLoadedAccounts_TwoAccountsOneInvalid) {
   const std::string email_foobar = AccountKeyToEmail(kAccountKeyFooDotBar);
   const std::string gaia_foobar = AccountKeyToGaiaId(kAccountKeyFooDotBar);
 
-  ListPrefUpdate update(prefs(), prefs::kAccountInfo);
+  ListPrefUpdateDeprecated update(prefs(), prefs::kAccountInfo);
 
   base::Value dict(base::Value::Type::DICTIONARY);
   dict.SetStringKey("account_id", email_alpha);

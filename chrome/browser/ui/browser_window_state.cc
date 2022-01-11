@@ -48,11 +48,11 @@ bool ParseCommaSeparatedIntegers(const std::string& str,
   return true;
 }
 
-class WindowPlacementPrefUpdate : public DictionaryPrefUpdate {
+class WindowPlacementPrefUpdate : public DictionaryPrefUpdateDeprecated {
  public:
   WindowPlacementPrefUpdate(PrefService* service,
                             const std::string& window_name)
-      : DictionaryPrefUpdate(service, prefs::kAppWindowPlacement),
+      : DictionaryPrefUpdateDeprecated(service, prefs::kAppWindowPlacement),
         window_name_(window_name) {}
 
   WindowPlacementPrefUpdate(const WindowPlacementPrefUpdate&) = delete;
@@ -62,7 +62,8 @@ class WindowPlacementPrefUpdate : public DictionaryPrefUpdate {
   ~WindowPlacementPrefUpdate() override {}
 
   base::DictionaryValue* Get() override {
-    base::DictionaryValue* all_apps_dict = DictionaryPrefUpdate::Get();
+    base::DictionaryValue* all_apps_dict =
+        DictionaryPrefUpdateDeprecated::Get();
     base::DictionaryValue* this_app_dict_weak = nullptr;
     if (!all_apps_dict->GetDictionary(window_name_, &this_app_dict_weak)) {
       auto this_app_dict = std::make_unique<base::DictionaryValue>();
@@ -95,15 +96,15 @@ std::string GetWindowName(const Browser* browser) {
   }
 }
 
-std::unique_ptr<DictionaryPrefUpdate> GetWindowPlacementDictionaryReadWrite(
-    const std::string& window_name,
-    PrefService* prefs) {
+std::unique_ptr<DictionaryPrefUpdateDeprecated>
+GetWindowPlacementDictionaryReadWrite(const std::string& window_name,
+                                      PrefService* prefs) {
   DCHECK(!window_name.empty());
-  // A normal DictionaryPrefUpdate will suffice for non-app windows.
+  // A normal DictionaryPrefUpdateDeprecated will suffice for non-app windows.
   if (prefs->FindPreference(window_name)) {
-    return std::make_unique<DictionaryPrefUpdate>(prefs, window_name);
+    return std::make_unique<DictionaryPrefUpdateDeprecated>(prefs, window_name);
   }
-  return std::unique_ptr<DictionaryPrefUpdate>(
+  return std::unique_ptr<DictionaryPrefUpdateDeprecated>(
       new WindowPlacementPrefUpdate(prefs, window_name));
 }
 

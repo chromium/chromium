@@ -91,8 +91,8 @@ void Registry::RememberFileSystem(
   PrefService* const pref_service = profile_->GetPrefs();
   DCHECK(pref_service);
 
-  DictionaryPrefUpdate dict_update(pref_service,
-                                   prefs::kFileSystemProviderMounted);
+  DictionaryPrefUpdateDeprecated dict_update(pref_service,
+                                             prefs::kFileSystemProviderMounted);
 
   base::Value* file_systems_per_extension = dict_update->FindKeyOfType(
       file_system_info.provider_id().ToString(), base::Value::Type::DICTIONARY);
@@ -111,8 +111,8 @@ void Registry::ForgetFileSystem(const ProviderId& provider_id,
   PrefService* const pref_service = profile_->GetPrefs();
   DCHECK(pref_service);
 
-  DictionaryPrefUpdate dict_update(pref_service,
-                                   prefs::kFileSystemProviderMounted);
+  DictionaryPrefUpdateDeprecated dict_update(pref_service,
+                                             prefs::kFileSystemProviderMounted);
 
   base::DictionaryValue* file_systems_per_extension = NULL;
   if (!dict_update->GetDictionaryWithoutPathExpansion(
@@ -244,8 +244,8 @@ void Registry::UpdateWatcherTag(const ProvidedFileSystemInfo& file_system_info,
 
   // TODO(mtomasz): Consider optimizing it by moving information about watchers
   // or even file systems to leveldb.
-  DictionaryPrefUpdate dict_update(pref_service,
-                                   prefs::kFileSystemProviderMounted);
+  DictionaryPrefUpdateDeprecated dict_update(pref_service,
+                                             prefs::kFileSystemProviderMounted);
 
   // All of the following checks should not happen in healthy environment.
   // However, since they rely on storage, DCHECKs can't be used.

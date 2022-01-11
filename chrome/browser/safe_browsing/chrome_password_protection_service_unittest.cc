@@ -397,7 +397,7 @@ class ChromePasswordProtectionServiceTest
   }
 
   int GetSizeofUnhandledSyncPasswordReuses() {
-    DictionaryPrefUpdate unhandled_sync_password_reuses(
+    DictionaryPrefUpdateDeprecated unhandled_sync_password_reuses(
         profile()->GetPrefs(), prefs::kSafeBrowsingUnhandledGaiaPasswordReuses);
     return unhandled_sync_password_reuses->DictSize();
   }
@@ -1156,8 +1156,8 @@ TEST_F(ChromePasswordProtectionServiceTest,
   GURL url_b("https://www.phishingb.com");
   GURL url_c("https://www.phishingc.com");
 
-  DictionaryPrefUpdate update(profile()->GetPrefs(),
-                              prefs::kSafeBrowsingUnhandledGaiaPasswordReuses);
+  DictionaryPrefUpdateDeprecated update(
+      profile()->GetPrefs(), prefs::kSafeBrowsingUnhandledGaiaPasswordReuses);
   update->SetKey(Origin::Create(url_a).Serialize(),
                  base::Value("navigation_id_a"));
   update->SetKey(Origin::Create(url_b).Serialize(),

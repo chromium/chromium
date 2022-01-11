@@ -11,12 +11,12 @@ namespace arc {
 ArcAppScopedPrefUpdate::ArcAppScopedPrefUpdate(PrefService* service,
                                                const std::string& id,
                                                const std::string& path)
-    : DictionaryPrefUpdate(service, path), id_(id) {}
+    : DictionaryPrefUpdateDeprecated(service, path), id_(id) {}
 
 ArcAppScopedPrefUpdate::~ArcAppScopedPrefUpdate() = default;
 
 base::DictionaryValue* ArcAppScopedPrefUpdate::Get() {
-  base::DictionaryValue* dict = DictionaryPrefUpdate::Get();
+  base::DictionaryValue* dict = DictionaryPrefUpdateDeprecated::Get();
   base::Value* dict_item =
       dict->FindKeyOfType(id_, base::Value::Type::DICTIONARY);
   if (!dict_item)

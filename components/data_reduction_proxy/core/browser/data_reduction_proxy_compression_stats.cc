@@ -111,7 +111,7 @@ void AddToDictionaryPref(PrefService* pref_service,
                          const std::string& pref,
                          int key,
                          int value) {
-  DictionaryPrefUpdate pref_update(pref_service, pref);
+  DictionaryPrefUpdateDeprecated pref_update(pref_service, pref);
   base::Value* pref_dict = pref_update.Get();
   const std::string key_str = base::NumberToString(key);
   base::Value* dict_value = pref_dict->FindKey(key_str);
@@ -125,9 +125,9 @@ void AddToDictionaryPref(PrefService* pref_service,
 void MoveAndClearDictionaryPrefs(PrefService* pref_service,
                                  const std::string& pref_dst,
                                  const std::string& pref_src) {
-  DictionaryPrefUpdate pref_update_dst(pref_service, pref_dst);
+  DictionaryPrefUpdateDeprecated pref_update_dst(pref_service, pref_dst);
   base::DictionaryValue* pref_dict_dst = pref_update_dst.Get();
-  DictionaryPrefUpdate pref_update_src(pref_service, pref_src);
+  DictionaryPrefUpdateDeprecated pref_update_src(pref_service, pref_src);
   base::DictionaryValue* pref_dict_src = pref_update_src.Get();
   pref_dict_dst->DictClear();
   pref_dict_dst->Swap(pref_dict_src);
@@ -428,7 +428,7 @@ void DataReductionProxyCompressionStats::IncreaseInt64Pref(
 base::Value* DataReductionProxyCompressionStats::GetList(
     const char* pref_path) {
   if (delay_.is_zero())
-    return ListPrefUpdate(pref_service_, pref_path).Get();
+    return ListPrefUpdateDeprecated(pref_service_, pref_path).Get();
 
   DelayedWritePrefs();
   auto it = list_pref_map_.find(pref_path);
@@ -449,7 +449,7 @@ void DataReductionProxyCompressionStats::WritePrefs() {
   for (auto iter = list_pref_map_.begin(); iter != list_pref_map_.end();
        ++iter) {
     TransferList(iter->second,
-                 ListPrefUpdate(pref_service_, iter->first).Get());
+                 ListPrefUpdateDeprecated(pref_service_, iter->first).Get());
   }
 }
 

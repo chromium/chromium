@@ -133,7 +133,7 @@ ExtensionRequestReportGenerator::GenerateForProfile(Profile* profile) {
   }
 
   // Update the preference in the end.
-  DictionaryPrefUpdate uploaded_requests_update(
+  DictionaryPrefUpdateDeprecated uploaded_requests_update(
       profile->GetPrefs(), kCloudExtensionRequestUploadedIds);
 
   for (const auto& report : reports) {

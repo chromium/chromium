@@ -410,7 +410,8 @@ std::string ImportantSitesUtil::GetRegisterableDomainOrIPFromHost(
 
 bool ImportantSitesUtil::IsDialogDisabled(Profile* profile) {
   PrefService* service = profile->GetPrefs();
-  DictionaryPrefUpdate update(service, prefs::kImportantSitesDialogHistory);
+  DictionaryPrefUpdateDeprecated update(service,
+                                        prefs::kImportantSitesDialogHistory);
 
   return ShouldSuppressItem(update.Get());
 }
@@ -551,7 +552,8 @@ void ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
   } else {
     // Record that the user did not interact with the dialog.
     PrefService* service = profile->GetPrefs();
-    DictionaryPrefUpdate update(service, prefs::kImportantSitesDialogHistory);
+    DictionaryPrefUpdateDeprecated update(service,
+                                          prefs::kImportantSitesDialogHistory);
     RecordIgnore(update.Get());
   }
 

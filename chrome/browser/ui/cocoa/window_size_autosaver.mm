@@ -53,7 +53,7 @@ const int kMinWindowHeight = 17;
 }
 
 - (void)save:(NSNotification*)notification {
-  DictionaryPrefUpdate update(_prefService, _path);
+  DictionaryPrefUpdateDeprecated update(_prefService, _path);
   base::Value* windowPrefs = update.Get();
   NSRect frame = [_window frame];
   if ([_window styleMask] & NSResizableWindowMask) {
@@ -87,7 +87,7 @@ const int kMinWindowHeight = 17;
     if (x2.value() - x1.value() < kMinWindowWidth ||
         y2.value() - y1.value() < kMinWindowHeight) {
       // Windows should never be very small.
-      DictionaryPrefUpdate update(_prefService, _path);
+      DictionaryPrefUpdateDeprecated update(_prefService, _path);
       base::Value* mutableWindowPrefs = update.Get();
       mutableWindowPrefs->RemoveKey("left");
       mutableWindowPrefs->RemoveKey("right");

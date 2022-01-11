@@ -683,8 +683,8 @@ bool FileMetricsProvider::ProvideIndependentMetricsOnTaskRunner(
 }
 
 void FileMetricsProvider::AppendToSamplesCountPref(size_t samples_count) {
-  ListPrefUpdate update(pref_service_,
-                        metrics::prefs::kMetricsFileMetricsMetadata);
+  ListPrefUpdateDeprecated update(pref_service_,
+                                  metrics::prefs::kMetricsFileMetricsMetadata);
   update->Append(static_cast<int>(samples_count));
 }
 
@@ -924,8 +924,8 @@ bool FileMetricsProvider::SimulateIndependentMetrics() {
     return false;
   }
 
-  ListPrefUpdate list_value(pref_service_,
-                            metrics::prefs::kMetricsFileMetricsMetadata);
+  ListPrefUpdateDeprecated list_value(
+      pref_service_, metrics::prefs::kMetricsFileMetricsMetadata);
   if (list_value->GetList().empty())
     return false;
 

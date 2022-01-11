@@ -279,7 +279,8 @@ TEST_F(FamilyUserParentalControlMetricsTest, AppAndWebTimeLimitMetrics) {
                                            base::Hours(1), base::Time::Now()));
 
     builder.SetResetTime(6, 0);
-    DictionaryPrefUpdate update(GetPrefs(), prefs::kPerAppTimeLimitsPolicy);
+    DictionaryPrefUpdateDeprecated update(GetPrefs(),
+                                          prefs::kPerAppTimeLimitsPolicy);
     base::Value* value = update.Get();
     *value = builder.value().Clone();
   }
@@ -382,8 +383,8 @@ TEST_F(FamilyUserParentalControlMetricsTest, ManagedSiteListTypeMetric) {
 
   // Blocks `kExampleHost0`.
   {
-    DictionaryPrefUpdate hosts_update(GetPrefs(),
-                                      prefs::kSupervisedUserManualHosts);
+    DictionaryPrefUpdateDeprecated hosts_update(
+        GetPrefs(), prefs::kSupervisedUserManualHosts);
     base::DictionaryValue* hosts = hosts_update.Get();
     hosts->SetKey(kExampleHost0, base::Value(false));
   }
@@ -402,8 +403,8 @@ TEST_F(FamilyUserParentalControlMetricsTest, ManagedSiteListTypeMetric) {
 
   // Approves `kExampleHost0`.
   {
-    DictionaryPrefUpdate hosts_update(GetPrefs(),
-                                      prefs::kSupervisedUserManualHosts);
+    DictionaryPrefUpdateDeprecated hosts_update(
+        GetPrefs(), prefs::kSupervisedUserManualHosts);
     base::DictionaryValue* hosts = hosts_update.Get();
     hosts->SetKey(kExampleHost0, base::Value(true));
   }
@@ -422,8 +423,8 @@ TEST_F(FamilyUserParentalControlMetricsTest, ManagedSiteListTypeMetric) {
 
   // Blocks `kExampleURL1`.
   {
-    DictionaryPrefUpdate urls_update(GetPrefs(),
-                                     prefs::kSupervisedUserManualURLs);
+    DictionaryPrefUpdateDeprecated urls_update(
+        GetPrefs(), prefs::kSupervisedUserManualURLs);
     base::DictionaryValue* urls = urls_update.Get();
     urls->SetKey(kExampleURL1, base::Value(false));
   }

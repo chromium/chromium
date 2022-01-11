@@ -90,7 +90,7 @@ class HintsFetcherTest : public testing::Test,
   // expire at |host_invalid_time|.
   void SeedCoveredHosts(const std::vector<std::string>& hosts,
                         base::Time host_invalid_time) {
-    DictionaryPrefUpdate hosts_fetched(
+    DictionaryPrefUpdateDeprecated hosts_fetched(
         pref_service(), prefs::kHintsFetcherHostsSuccessfullyFetched);
 
     for (const std::string& host : hosts) {
@@ -520,7 +520,7 @@ TEST_P(HintsFetcherTest, HintsFetcherCoveredHostExpired) {
 
   // The first pair of hosts should be removed from the dictionary
   // pref as they have expired.
-  DictionaryPrefUpdate hosts_fetched(
+  DictionaryPrefUpdateDeprecated hosts_fetched(
       pref_service(), prefs::kHintsFetcherHostsSuccessfullyFetched);
   EXPECT_EQ(2u, hosts_fetched->DictSize());
 
@@ -535,7 +535,7 @@ TEST_P(HintsFetcherTest, HintsFetcherHostNotCovered) {
   base::Time host_invalid_time = base::Time::Now() + base::Hours(1);
 
   SeedCoveredHosts(hosts, host_invalid_time);
-  DictionaryPrefUpdate hosts_fetched(
+  DictionaryPrefUpdateDeprecated hosts_fetched(
       pref_service(), prefs::kHintsFetcherHostsSuccessfullyFetched);
   EXPECT_EQ(2u, hosts_fetched->DictSize());
 
@@ -563,7 +563,7 @@ TEST_P(HintsFetcherTest, HintsFetcherRemoveExpiredOnSuccessfullyFetched) {
 
   // The two expired hosts should be removed from the dictionary pref as they
   // have expired.
-  DictionaryPrefUpdate hosts_fetched(
+  DictionaryPrefUpdateDeprecated hosts_fetched(
       pref_service(), prefs::kHintsFetcherHostsSuccessfullyFetched);
   EXPECT_EQ(2u, hosts_fetched->DictSize());
 
@@ -597,7 +597,7 @@ TEST_P(HintsFetcherTest, HintsFetcherSuccessfullyFetchedHostsFull) {
   EXPECT_TRUE(hints_fetched());
 
   // Navigations to both the extra hosts should be recorded.
-  DictionaryPrefUpdate hosts_fetched(
+  DictionaryPrefUpdateDeprecated hosts_fetched(
       pref_service(), prefs::kHintsFetcherHostsSuccessfullyFetched);
   EXPECT_EQ(200u, hosts_fetched->DictSize());
 
@@ -633,7 +633,7 @@ TEST_P(HintsFetcherTest, MaxHostsForOptimizationGuideServiceHintsFetch) {
   if (!ShouldPersistHintsToDisk())
     return;
 
-  DictionaryPrefUpdate hosts_fetched(
+  DictionaryPrefUpdateDeprecated hosts_fetched(
       pref_service(), prefs::kHintsFetcherHostsSuccessfullyFetched);
   EXPECT_EQ(max_hosts_in_fetch_request, hosts_fetched->DictSize());
   EXPECT_EQ(all_hosts.size(), max_hosts_in_fetch_request + 5);

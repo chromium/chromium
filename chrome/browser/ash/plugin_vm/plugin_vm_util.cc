@@ -75,8 +75,8 @@ void SetFakePluginVmPolicy(Profile* profile,
                            const std::string& image_url,
                            const std::string& image_hash,
                            const std::string& license_key) {
-  DictionaryPrefUpdate update(profile->GetPrefs(),
-                              plugin_vm::prefs::kPluginVmImage);
+  DictionaryPrefUpdateDeprecated update(profile->GetPrefs(),
+                                        plugin_vm::prefs::kPluginVmImage);
   base::DictionaryValue* dict = update.Get();
   dict->SetPath(prefs::kPluginVmImageUrlKeyName, base::Value(image_url));
   dict->SetPath(prefs::kPluginVmImageHashKeyName, base::Value(image_hash));

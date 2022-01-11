@@ -82,7 +82,7 @@ void SetSuggestionGroupVisibility(PrefService* prefs,
                                   SuggestionGroupVisibility new_value) {
   DCHECK(prefs);
 
-  DictionaryPrefUpdate update(prefs, kSuggestionGroupVisibility);
+  DictionaryPrefUpdateDeprecated update(prefs, kSuggestionGroupVisibility);
   update->SetIntKey(base::NumberToString(suggestion_group_id), new_value);
 
   base::SparseHistogram::FactoryGet(

@@ -256,8 +256,8 @@ void TaskModuleService::GetPrimaryTask(
 void TaskModuleService::DismissTask(
     task_module::mojom::TaskModuleType task_module_type,
     const std::string& task_name) {
-  ListPrefUpdate update(profile_->GetPrefs(),
-                        GetDismissedTasksPrefName(task_module_type));
+  ListPrefUpdateDeprecated update(profile_->GetPrefs(),
+                                  GetDismissedTasksPrefName(task_module_type));
   base::Value task_name_value(task_name);
   if (!base::Contains(update->GetList(), task_name_value))
     update->Append(std::move(task_name_value));
@@ -266,8 +266,8 @@ void TaskModuleService::DismissTask(
 void TaskModuleService::RestoreTask(
     task_module::mojom::TaskModuleType task_module_type,
     const std::string& task_name) {
-  ListPrefUpdate update(profile_->GetPrefs(),
-                        GetDismissedTasksPrefName(task_module_type));
+  ListPrefUpdateDeprecated update(profile_->GetPrefs(),
+                                  GetDismissedTasksPrefName(task_module_type));
   update->EraseListValue(base::Value(task_name));
 }
 

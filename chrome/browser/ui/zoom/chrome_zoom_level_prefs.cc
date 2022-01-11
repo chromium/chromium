@@ -86,7 +86,8 @@ void ChromeZoomLevelPrefs::SetDefaultZoomLevelPref(double level) {
   if (blink::PageZoomValuesEqual(level, host_zoom_map_->GetDefaultZoomLevel()))
     return;
 
-  DictionaryPrefUpdate update(pref_service_, prefs::kPartitionDefaultZoomLevel);
+  DictionaryPrefUpdateDeprecated update(pref_service_,
+                                        prefs::kPartitionDefaultZoomLevel);
   update->SetDoubleKey(partition_key_, level);
   // For unregistered paths, OnDefaultZoomLevelChanged won't be called, so
   // set this manually.
@@ -120,8 +121,8 @@ void ChromeZoomLevelPrefs::OnZoomLevelChanged(
   if (change.mode != content::HostZoomMap::ZOOM_CHANGED_FOR_HOST)
     return;
   double level = change.zoom_level;
-  DictionaryPrefUpdate update(pref_service_,
-                              prefs::kPartitionPerHostZoomLevels);
+  DictionaryPrefUpdateDeprecated update(pref_service_,
+                                        prefs::kPartitionPerHostZoomLevels);
   base::DictionaryValue* host_zoom_dictionaries = update.Get();
   DCHECK(host_zoom_dictionaries);
 
@@ -204,8 +205,8 @@ void ChromeZoomLevelPrefs::ExtractPerHostZoomLevels(
   // Sanitize prefs to remove entries that match the default zoom level and/or
   // have an empty host.
   {
-    DictionaryPrefUpdate update(pref_service_,
-                                prefs::kPartitionPerHostZoomLevels);
+    DictionaryPrefUpdateDeprecated update(pref_service_,
+                                          prefs::kPartitionPerHostZoomLevels);
     base::DictionaryValue* host_zoom_dictionaries = update.Get();
     base::DictionaryValue* partition_dictionary = nullptr;
     host_zoom_dictionaries->GetDictionary(partition_key_,

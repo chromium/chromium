@@ -54,7 +54,7 @@ std::vector<std::string> UlpLanguageCodeLocator::GetLanguageCodes(
   S2CellId cell(S2LatLng::FromDegrees(latitude, longitude));
   std::vector<std::string> languages;
 
-  ListPrefUpdate update(prefs_, kCachedGeoLanguagesPref);
+  ListPrefUpdateDeprecated update(prefs_, kCachedGeoLanguagesPref);
   base::ListValue* celllangs_cached = update.Get();
   for (size_t index = 0; index < serialized_langtrees_.size(); index++) {
     std::string language;

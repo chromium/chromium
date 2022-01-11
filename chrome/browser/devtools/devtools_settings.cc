@@ -54,13 +54,13 @@ void DevToolsSettings::Register(const std::string& name,
       prefs->GetDictionary(dictionary_to_insert_into)->FindStringKey(name);
   if (dictionary_to_insert_into == prefs::kDevToolsPreferences ||
       !already_synced_value) {
-    DictionaryPrefUpdate insert_update(profile_->GetPrefs(),
-                                       dictionary_to_insert_into);
+    DictionaryPrefUpdateDeprecated insert_update(profile_->GetPrefs(),
+                                                 dictionary_to_insert_into);
     insert_update.Get()->SetKey(name, base::Value(*settings_value));
   }
 
-  DictionaryPrefUpdate remove_update(profile_->GetPrefs(),
-                                     dictionary_to_remove_from);
+  DictionaryPrefUpdateDeprecated remove_update(profile_->GetPrefs(),
+                                               dictionary_to_remove_from);
   remove_update.Get()->RemoveKey(name);
 }
 
@@ -101,8 +101,8 @@ void DevToolsSettings::Set(const std::string& name, const std::string& value) {
     return;
   }
 
-  DictionaryPrefUpdate update(profile_->GetPrefs(),
-                              GetDictionaryNameForSettingsName(name));
+  DictionaryPrefUpdateDeprecated update(profile_->GetPrefs(),
+                                        GetDictionaryNameForSettingsName(name));
   update.Get()->SetKey(name, base::Value(value));
 }
 
@@ -113,21 +113,21 @@ void DevToolsSettings::Remove(const std::string& name) {
     return;
   }
 
-  DictionaryPrefUpdate update(profile_->GetPrefs(),
-                              GetDictionaryNameForSettingsName(name));
+  DictionaryPrefUpdateDeprecated update(profile_->GetPrefs(),
+                                        GetDictionaryNameForSettingsName(name));
   update.Get()->RemoveKey(name);
 }
 
 void DevToolsSettings::Clear() {
   profile_->GetPrefs()->SetBoolean(prefs::kDevToolsSyncPreferences,
                                    kSyncDevToolsPreferencesDefault);
-  DictionaryPrefUpdate unsynced_update(profile_->GetPrefs(),
-                                       prefs::kDevToolsPreferences);
+  DictionaryPrefUpdateDeprecated unsynced_update(profile_->GetPrefs(),
+                                                 prefs::kDevToolsPreferences);
   unsynced_update.Get()->DictClear();
-  DictionaryPrefUpdate sync_enabled_update(
+  DictionaryPrefUpdateDeprecated sync_enabled_update(
       profile_->GetPrefs(), prefs::kDevToolsSyncedPreferencesSyncEnabled);
   sync_enabled_update.Get()->DictClear();
-  DictionaryPrefUpdate sync_disabled_update(
+  DictionaryPrefUpdateDeprecated sync_disabled_update(
       profile_->GetPrefs(), prefs::kDevToolsSyncedPreferencesSyncDisabled);
   sync_disabled_update.Get()->DictClear();
 }
@@ -169,9 +169,11 @@ void DevToolsSettings::DevToolsSyncPreferencesChanged() {
       sync_enabled ? prefs::kDevToolsSyncedPreferencesSyncDisabled
                    : prefs::kDevToolsSyncedPreferencesSyncEnabled;
 
-  DictionaryPrefUpdate target_update(profile_->GetPrefs(), target_dictionary);
+  DictionaryPrefUpdateDeprecated target_update(profile_->GetPrefs(),
+                                               target_dictionary);
   target_update.Get()->MergeDictionary(
       profile_->GetPrefs()->GetDictionary(source_dictionary));
-  DictionaryPrefUpdate source_update(profile_->GetPrefs(), source_dictionary);
+  DictionaryPrefUpdateDeprecated source_update(profile_->GetPrefs(),
+                                               source_dictionary);
   source_update.Get()->DictClear();
 }

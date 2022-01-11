@@ -109,7 +109,7 @@ HintsFetcher::~HintsFetcher() {
 
 // static
 void HintsFetcher::ClearHostsSuccessfullyFetched(PrefService* pref_service) {
-  DictionaryPrefUpdate hosts_fetched_list(
+  DictionaryPrefUpdateDeprecated hosts_fetched_list(
       pref_service, prefs::kHintsFetcherHostsSuccessfullyFetched);
   hosts_fetched_list->DictClear();
 }
@@ -134,7 +134,7 @@ bool HintsFetcher::WasHostCoveredByFetch(PrefService* pref_service,
     return false;
   }
 
-  DictionaryPrefUpdate hosts_fetched(
+  DictionaryPrefUpdateDeprecated hosts_fetched(
       pref_service, prefs::kHintsFetcherHostsSuccessfullyFetched);
   absl::optional<double> value =
       hosts_fetched->FindDoubleKey(HashHostForDictionary(host));
@@ -149,7 +149,7 @@ bool HintsFetcher::WasHostCoveredByFetch(PrefService* pref_service,
 // static
 void HintsFetcher::ClearSingleFetchedHost(PrefService* pref_service,
                                           const std::string& host) {
-  DictionaryPrefUpdate hosts_fetched_list(
+  DictionaryPrefUpdateDeprecated hosts_fetched_list(
       pref_service, prefs::kHintsFetcherHostsSuccessfullyFetched);
   hosts_fetched_list->RemovePath(HashHostForDictionary(host));
 }
@@ -158,7 +158,7 @@ void HintsFetcher::ClearSingleFetchedHost(PrefService* pref_service,
 void HintsFetcher::AddFetchedHostForTesting(PrefService* pref_service,
                                             const std::string& host,
                                             base::Time time) {
-  DictionaryPrefUpdate hosts_fetched_list(
+  DictionaryPrefUpdateDeprecated hosts_fetched_list(
       pref_service, prefs::kHintsFetcherHostsSuccessfullyFetched);
   hosts_fetched_list->SetDoubleKey(
       HashHostForDictionary(host),
@@ -363,7 +363,7 @@ void HintsFetcher::UpdateHostsSuccessfullyFetched(
     return;
   }
 
-  DictionaryPrefUpdate hosts_fetched_list(
+  DictionaryPrefUpdateDeprecated hosts_fetched_list(
       pref_service_, prefs::kHintsFetcherHostsSuccessfullyFetched);
 
   // Remove any expired hosts.
@@ -454,7 +454,7 @@ std::vector<std::string> HintsFetcher::GetSizeLimitedHostsDueForHintsRefresh(
     const std::vector<std::string>& hosts) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  DictionaryPrefUpdate hosts_fetched(
+  DictionaryPrefUpdateDeprecated hosts_fetched(
       pref_service_, prefs::kHintsFetcherHostsSuccessfullyFetched);
 
   std::vector<std::string> target_hosts;

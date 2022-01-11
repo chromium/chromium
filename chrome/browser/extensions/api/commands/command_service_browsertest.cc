@@ -109,8 +109,8 @@ IN_PROC_BROWSER_TEST_F(CommandServiceTest,
   const Extension* extension = InstallExtension(extension_dir, 1);
   ASSERT_TRUE(extension);
 
-  DictionaryPrefUpdate updater(browser()->profile()->GetPrefs(),
-                               prefs::kExtensionCommands);
+  DictionaryPrefUpdateDeprecated updater(browser()->profile()->GetPrefs(),
+                                         prefs::kExtensionCommands);
   base::DictionaryValue* bindings = updater.Get();
 
   // Simulate command |toggle-feature| has been assigned with a shortcut on

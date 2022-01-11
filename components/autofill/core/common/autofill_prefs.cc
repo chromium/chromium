@@ -286,7 +286,8 @@ void SetUserOptedInWalletSyncTransport(PrefService* prefs,
   base::Base64Encode(crypto::SHA256HashString(account_id.ToString()),
                      &account_hash);
 
-  DictionaryPrefUpdate update(prefs, prefs::kAutofillSyncTransportOptIn);
+  DictionaryPrefUpdateDeprecated update(prefs,
+                                        prefs::kAutofillSyncTransportOptIn);
   int value = GetSyncTransportOptInBitFieldForAccount(prefs, account_hash);
 
   // If the user has opted in, set that bit while leaving the others intact.
@@ -324,7 +325,8 @@ bool IsUserOptedInWalletSyncTransport(const PrefService* prefs,
 }
 
 void ClearSyncTransportOptIns(PrefService* prefs) {
-  DictionaryPrefUpdate update(prefs, prefs::kAutofillSyncTransportOptIn);
+  DictionaryPrefUpdateDeprecated update(prefs,
+                                        prefs::kAutofillSyncTransportOptIn);
   update->DictClear();
 }
 

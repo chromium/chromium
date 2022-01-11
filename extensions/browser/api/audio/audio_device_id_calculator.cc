@@ -54,7 +54,7 @@ std::string AudioDeviceIdCalculator::GenerateNewStableDeviceId(
   DCHECK(stable_id_map_loaded_);
   DCHECK_EQ(0u, stable_id_map_.count(audio_service_stable_id));
 
-  ListPrefUpdate update(
+  ListPrefUpdateDeprecated update(
       ExtensionsBrowserClient::Get()->GetPrefServiceForContext(context_),
       kAudioApiStableDeviceIds);
 

@@ -36,7 +36,7 @@ std::set<std::string> PrefServiceFlagsStorage::GetFlags() const {
 }
 
 bool PrefServiceFlagsStorage::SetFlags(const std::set<std::string>& flags) {
-  ListPrefUpdate update(prefs_, prefs::kAboutFlagsEntries);
+  ListPrefUpdateDeprecated update(prefs_, prefs::kAboutFlagsEntries);
   base::Value* experiments_list = update.Get();
   DCHECK(experiments_list->is_list());
 
@@ -61,7 +61,7 @@ std::string PrefServiceFlagsStorage::GetOriginListFlag(
 void PrefServiceFlagsStorage::SetOriginListFlag(
     const std::string& internal_entry_name,
     const std::string& origin_list_value) {
-  DictionaryPrefUpdate update(prefs_, prefs::kAboutFlagsOriginLists);
+  DictionaryPrefUpdateDeprecated update(prefs_, prefs::kAboutFlagsOriginLists);
   update->SetString(internal_entry_name, origin_list_value);
 }
 

@@ -142,7 +142,8 @@ TEST_F(PushMessagingAppIdentifierTest, FindLegacy) {
 
   // Create a legacy preferences entry (the test happens to use PersistToPrefs
   // since that currently works, but it's ok to change the behavior of
-  // PersistToPrefs; if so, this test can just do a raw DictionaryPrefUpdate).
+  // PersistToPrefs; if so, this test can just do a raw
+  // DictionaryPrefUpdateDeprecated).
   original_.app_id_ = legacy_app_id;
   original_.PersistToPrefs(profile());
 

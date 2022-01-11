@@ -154,7 +154,7 @@ bool DeserializePublicKey(const base::Value& parent_value,
 void CertProvisioningSerializer::SerializeWorkerToPrefs(
     PrefService* pref_service,
     const CertProvisioningWorkerImpl& worker) {
-  DictionaryPrefUpdate scoped_dict_updater(
+  DictionaryPrefUpdateDeprecated scoped_dict_updater(
       pref_service, GetPrefNameForSerialization(worker.cert_scope_));
   base::Value* saved_workers = scoped_dict_updater.Get();
   DCHECK(saved_workers);
@@ -165,7 +165,7 @@ void CertProvisioningSerializer::SerializeWorkerToPrefs(
 void CertProvisioningSerializer::DeleteWorkerFromPrefs(
     PrefService* pref_service,
     const CertProvisioningWorkerImpl& worker) {
-  DictionaryPrefUpdate scoped_dict_updater(
+  DictionaryPrefUpdateDeprecated scoped_dict_updater(
       pref_service, GetPrefNameForSerialization(worker.cert_scope_));
 
   base::Value* saved_workers = scoped_dict_updater.Get();

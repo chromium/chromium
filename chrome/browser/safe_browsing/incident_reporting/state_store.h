@@ -81,7 +81,7 @@ class StateStore {
 
     // A ScopedUserPrefUpdate through which changes to the incidents_sent
     // preference are made.
-    std::unique_ptr<DictionaryPrefUpdate> pref_update_;
+    std::unique_ptr<DictionaryPrefUpdateDeprecated> pref_update_;
   };
 
   explicit StateStore(Profile* profile);

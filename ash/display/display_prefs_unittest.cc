@@ -153,7 +153,8 @@ class DisplayPrefsTest : public AshTestBase {
       int offset,
       int64_t primary_id) {
     std::string name = display::DisplayIdListToString(list);
-    DictionaryPrefUpdate update(local_state(), prefs::kSecondaryDisplays);
+    DictionaryPrefUpdateDeprecated update(local_state(),
+                                          prefs::kSecondaryDisplays);
     display::DisplayLayout display_layout;
     display_layout.placement_list.emplace_back(position, offset);
     display_layout.primary_id = primary_id;
@@ -174,7 +175,8 @@ class DisplayPrefsTest : public AshTestBase {
                                    std::unique_ptr<base::Value> value) {
     std::string name = display::DisplayIdListToString(list);
 
-    DictionaryPrefUpdate update(local_state(), prefs::kSecondaryDisplays);
+    DictionaryPrefUpdateDeprecated update(local_state(),
+                                          prefs::kSecondaryDisplays);
     base::DictionaryValue* pref_data = update.Get();
 
     base::Value* layout_value = pref_data->FindKey(name);
@@ -202,7 +204,8 @@ class DisplayPrefsTest : public AshTestBase {
   }
 
   void StoreDisplayOverscan(int64_t id, const gfx::Insets& insets) {
-    DictionaryPrefUpdate update(local_state(), prefs::kDisplayProperties);
+    DictionaryPrefUpdateDeprecated update(local_state(),
+                                          prefs::kDisplayProperties);
     const std::string name = base::NumberToString(id);
 
     base::DictionaryValue* pref_data = update.Get();
@@ -223,7 +226,8 @@ class DisplayPrefsTest : public AshTestBase {
 
   void StoreExternalDisplayMirrorInfo(
       const std::set<int64_t>& external_display_mirror_info) {
-    ListPrefUpdate update(local_state(), prefs::kExternalDisplayMirrorInfo);
+    ListPrefUpdateDeprecated update(local_state(),
+                                    prefs::kExternalDisplayMirrorInfo);
     base::ListValue* pref_data = update.Get();
     pref_data->ClearList();
     for (const auto& id : external_display_mirror_info)

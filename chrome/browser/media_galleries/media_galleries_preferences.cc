@@ -798,8 +798,9 @@ MediaGalleryPrefId MediaGalleriesPreferences::AddOrUpdateGalleryInternal(
       return *pref_id_it;
 
     PrefService* prefs = profile_->GetPrefs();
-    std::unique_ptr<ListPrefUpdate> update(
-        new ListPrefUpdate(prefs, prefs::kMediaGalleriesRememberedGalleries));
+    std::unique_ptr<ListPrefUpdateDeprecated> update(
+        new ListPrefUpdateDeprecated(
+            prefs, prefs::kMediaGalleriesRememberedGalleries));
     base::ListValue* list = update->Get();
 
     for (auto& gallery_value : list->GetList()) {
@@ -871,7 +872,8 @@ MediaGalleryPrefId MediaGalleriesPreferences::AddOrUpdateGalleryInternal(
   gallery_info.default_gallery_type = default_gallery_type;
 
   {
-    ListPrefUpdate update(prefs, prefs::kMediaGalleriesRememberedGalleries);
+    ListPrefUpdateDeprecated update(prefs,
+                                    prefs::kMediaGalleriesRememberedGalleries);
     base::ListValue* list = update.Get();
     list->Append(CreateGalleryPrefInfoDictionary(gallery_info));
   }
@@ -894,8 +896,8 @@ void MediaGalleriesPreferences::UpdateDefaultGalleriesPaths() {
       base::PathService::Get(chrome::DIR_USER_VIDEOS, &videos_path);
 
   PrefService* prefs = profile_->GetPrefs();
-  std::unique_ptr<ListPrefUpdate> update(
-      new ListPrefUpdate(prefs, prefs::kMediaGalleriesRememberedGalleries));
+  std::unique_ptr<ListPrefUpdateDeprecated> update(new ListPrefUpdateDeprecated(
+      prefs, prefs::kMediaGalleriesRememberedGalleries));
   base::ListValue* list = update->Get();
 
   std::vector<MediaGalleryPrefId> pref_ids;
@@ -988,8 +990,8 @@ void MediaGalleriesPreferences::EraseOrBlocklistGalleryById(
     bool erase) {
   DCHECK(IsInitialized());
   PrefService* prefs = profile_->GetPrefs();
-  std::unique_ptr<ListPrefUpdate> update(
-      new ListPrefUpdate(prefs, prefs::kMediaGalleriesRememberedGalleries));
+  std::unique_ptr<ListPrefUpdateDeprecated> update(new ListPrefUpdateDeprecated(
+      prefs, prefs::kMediaGalleriesRememberedGalleries));
   base::ListValue* list = update->Get();
 
   if (!base::Contains(known_galleries_, id))

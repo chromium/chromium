@@ -1544,7 +1544,7 @@ TEST_F(ProfileManagerTest, CleanUpEphemeralProfiles) {
   local_state->SetString(prefs::kProfileLastUsed, profile_name1);
 
   // Set the last used profiles.
-  ListPrefUpdate update(local_state, prefs::kProfilesLastActive);
+  ListPrefUpdateDeprecated update(local_state, prefs::kProfilesLastActive);
   base::ListValue* initial_last_active_profile_list = update.Get();
   initial_last_active_profile_list->Append(
       std::make_unique<base::Value>(path1.BaseName().MaybeAsASCII()));
@@ -1615,7 +1615,7 @@ TEST_F(ProfileManagerGuestTest, CleanUpOnlyEphemeralProfiles) {
   local_state->SetString(prefs::kProfileLastUsed, guest_profile_name);
 
   // Set the last used profiles.
-  ListPrefUpdate update(local_state, prefs::kProfilesLastActive);
+  ListPrefUpdateDeprecated update(local_state, prefs::kProfilesLastActive);
   base::ListValue* initial_last_active_profile_list = update.Get();
   initial_last_active_profile_list->Append(
       std::make_unique<base::Value>(guest_path.BaseName().MaybeAsASCII()));

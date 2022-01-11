@@ -109,8 +109,8 @@ void ProximityAuthProfilePrefManager::SyncPrefsToLocalState() {
   user_prefs_dict->SetKey(prefs::kProximityAuthHasShownLoginDisabledMessage,
                           base::Value(has_shown_login_disabled_message));
 
-  DictionaryPrefUpdate update(local_state_,
-                              prefs::kEasyUnlockLocalStateUserPrefs);
+  DictionaryPrefUpdateDeprecated update(local_state_,
+                                        prefs::kEasyUnlockLocalStateUserPrefs);
   update->SetKey(account_id_.GetUserEmail(),
                  base::Value::FromUniquePtrValue(std::move(user_prefs_dict)));
 }

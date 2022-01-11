@@ -103,7 +103,7 @@ void DataUseTrackerPrefs::UpdateUsagePref(const std::string& pref_name,
   if (!pref_service_)
     return;
 
-  DictionaryPrefUpdate pref_updater(pref_service_, pref_name);
+  DictionaryPrefUpdateDeprecated pref_updater(pref_service_, pref_name);
   std::string todays_key = GetCurrentMeasurementDateAsString();
 
   const base::Value* user_pref_dict = pref_service_->GetDictionary(pref_name);

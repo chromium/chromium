@@ -718,7 +718,8 @@ void CryptAuthDeviceManagerImpl::OnGetMyDevicesSuccess(
       *devices_as_list !=
       *pref_service_->GetList(prefs::kCryptAuthDeviceSyncUnlockKeys);
   {
-    ListPrefUpdate update(pref_service_, prefs::kCryptAuthDeviceSyncUnlockKeys);
+    ListPrefUpdateDeprecated update(pref_service_,
+                                    prefs::kCryptAuthDeviceSyncUnlockKeys);
     update.Get()->Swap(devices_as_list.get());
   }
   UpdateUnlockKeysFromPrefs();

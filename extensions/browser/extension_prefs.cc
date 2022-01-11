@@ -1400,7 +1400,7 @@ void ExtensionPrefs::OnExtensionUninstalled(const std::string& extension_id,
   // true, which signifies that the registry key was deleted or the pref file
   // no longer lists the extension).
   if (!external_uninstall && Manifest::IsExternalLocation(location)) {
-    ListPrefUpdate update(prefs_, kExternalUninstalls);
+    ListPrefUpdateDeprecated update(prefs_, kExternalUninstalls);
     update->Append(extension_id);
   }
 
@@ -2303,7 +2303,7 @@ template <class ExtensionIdContainer>
 void ExtensionPrefs::SetExtensionPrefFromContainer(
     const char* pref,
     const ExtensionIdContainer& strings) {
-  ListPrefUpdate update(prefs_, pref);
+  ListPrefUpdateDeprecated update(prefs_, pref);
   base::Value* list_of_values = update.Get();
   list_of_values->ClearList();
   for (auto iter = strings.cbegin(); iter != strings.cend(); ++iter) {
@@ -2650,7 +2650,7 @@ void ExtensionPrefs::MigrateToNewExternalUninstallPref() {
   if (uninstalled_ids.empty())
     return;
 
-  ListPrefUpdate update(prefs_, kExternalUninstalls);
+  ListPrefUpdateDeprecated update(prefs_, kExternalUninstalls);
   base::Value* current_ids = update.Get();
   for (const auto& id : uninstalled_ids) {
     base::Value::ListView list = current_ids->GetList();
@@ -2723,7 +2723,8 @@ void ExtensionPrefs::MigrateOldBlocklistPrefs() {
 
 bool ExtensionPrefs::ShouldInstallObsoleteComponentExtension(
     const std::string& extension_id) {
-  ListPrefUpdate update(prefs_, pref_names::kDeletedComponentExtensions);
+  ListPrefUpdateDeprecated update(prefs_,
+                                  pref_names::kDeletedComponentExtensions);
   base::Value* current_ids = update.Get();
   base::Value::ListView list = current_ids->GetList();
   auto existing_entry = std::find_if(
@@ -2736,7 +2737,8 @@ bool ExtensionPrefs::ShouldInstallObsoleteComponentExtension(
 void ExtensionPrefs::MarkObsoleteComponentExtensionAsRemoved(
     const std::string& extension_id,
     const ManifestLocation location) {
-  ListPrefUpdate update(prefs_, pref_names::kDeletedComponentExtensions);
+  ListPrefUpdateDeprecated update(prefs_,
+                                  pref_names::kDeletedComponentExtensions);
   base::Value* current_ids = update.Get();
   base::Value::ListView list = current_ids->GetList();
   auto existing_entry = std::find_if(
@@ -2750,7 +2752,7 @@ void ExtensionPrefs::MarkObsoleteComponentExtensionAsRemoved(
 }
 
 void ExtensionPrefs::ClearExternalUninstallBit(const ExtensionId& id) {
-  ListPrefUpdate update(prefs_, kExternalUninstalls);
+  ListPrefUpdateDeprecated update(prefs_, kExternalUninstalls);
   base::Value* current_ids = update.Get();
   current_ids->EraseListValueIf([&id](const base::Value& value) {
     return value.is_string() && value.GetString() == id;

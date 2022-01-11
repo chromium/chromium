@@ -149,8 +149,8 @@ bool ProximityAuthLocalStatePrefManager::IsChromeOSLoginEnabled() const {
 
 void ProximityAuthLocalStatePrefManager::SetHasShownLoginDisabledMessage(
     bool has_shown) {
-  DictionaryPrefUpdate update(local_state_,
-                              prefs::kEasyUnlockLocalStateUserPrefs);
+  DictionaryPrefUpdateDeprecated update(local_state_,
+                                        prefs::kEasyUnlockLocalStateUserPrefs);
 
   base::DictionaryValue* current_user_prefs;
   update.Get()->GetDictionaryWithoutPathExpansion(active_user_.GetUserEmail(),

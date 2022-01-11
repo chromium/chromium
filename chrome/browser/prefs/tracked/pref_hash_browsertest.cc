@@ -740,8 +740,8 @@ class PrefHashBrowserTestChangedAtomic : public PrefHashBrowserTestBase {
     profile()->GetPrefs()->SetInteger(prefs::kRestoreOnStartup,
                                       SessionStartupPref::URLS);
 
-    ListPrefUpdate update(profile()->GetPrefs(),
-                          prefs::kURLsToRestoreOnStartup);
+    ListPrefUpdateDeprecated update(profile()->GetPrefs(),
+                                    prefs::kURLsToRestoreOnStartup);
     update->Append("http://example.com");
   }
 
