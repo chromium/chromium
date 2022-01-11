@@ -35,6 +35,7 @@ class ProtocolHandlerRegistry;
 }
 
 namespace content {
+class Page;
 class WebContents;
 }
 
@@ -244,6 +245,7 @@ class ContentSettingBubbleModel {
   Profile* GetProfile() const;
   Delegate* delegate() const { return delegate_; }
   int selected_item() const { return owner_->GetSelectedRadioOption(); }
+  content::Page& GetPage() const { return web_contents_->GetPrimaryPage(); }
 
   void set_title(const std::u16string& title) { bubble_content_.title = title; }
   void set_message(const std::u16string& message) {
