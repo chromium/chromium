@@ -223,7 +223,7 @@ wpt {
 
 When a test under `external/wpt/css/css-grid/` newly fails in a WPT import, the
 importer will automatically file a bug against the Blink>Layout>Grid component
-in [crbug.com][https://crbug.com], with details of which test failed and the
+in [crbug.com](https://crbug.com), with details of which test failed and the
 output.
 
 Note that we are considering making the notifications opt-out instead of
