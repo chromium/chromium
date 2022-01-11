@@ -11,6 +11,8 @@
 #include "ui/gfx/geometry/box_f.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/insets_f.h"
+#include "ui/gfx/geometry/outsets.h"
+#include "ui/gfx/geometry/outsets_f.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/point_f.h"
@@ -342,12 +344,20 @@ void PrintTo(const PointF& point, ::std::ostream* os) {
   *os << point.ToString();
 }
 
-void PrintTo(const Insets& insets, ::std::ostream* os) {
-  *os << insets.ToString();
+void PrintTo(const Insets& input, ::std::ostream* os) {
+  *os << input.ToString();
 }
 
-void PrintTo(const InsetsF& insets, ::std::ostream* os) {
-  *os << insets.ToString();
+void PrintTo(const InsetsF& input, ::std::ostream* os) {
+  *os << input.ToString();
+}
+
+void PrintTo(const Outsets& input, ::std::ostream* os) {
+  *os << input.ToString();
+}
+
+void PrintTo(const OutsetsF& input, ::std::ostream* os) {
+  *os << input.ToString();
 }
 
 void PrintTo(const QuadF& quad, ::std::ostream* os) {

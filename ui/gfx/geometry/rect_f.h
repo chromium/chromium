@@ -21,6 +21,7 @@ typedef struct CGRect CGRect;
 namespace gfx {
 
 class InsetsF;
+class OutsetsF;
 
 // A floating version of gfx::Rect.
 class GEOMETRY_EXPORT RectF {
@@ -109,6 +110,7 @@ class GEOMETRY_EXPORT RectF {
   void Outset(float left, float top, float right, float bottom) {
     Inset(-left, -top, -right, -bottom);
   }
+  void Outset(const OutsetsF& outsets);
 
   // Move the rectangle by a horizontal and vertical distance.
   void Offset(float horizontal, float vertical);

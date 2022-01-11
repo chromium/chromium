@@ -11,6 +11,7 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/outsets.h"
 
 #if defined(OS_WIN)
 #include <windows.h>
@@ -123,6 +124,10 @@ void Rect::Inset(int left, int top, int right, int bottom) {
   // overflow as well.
   set_width(base::ClampSub(width(), base::ClampAdd(left, right)));
   set_height(base::ClampSub(height(), base::ClampAdd(top, bottom)));
+}
+
+void Rect::Outset(const Outsets& outsets) {
+  Outset(outsets.left(), outsets.top(), outsets.right(), outsets.bottom());
 }
 
 void Rect::Offset(const Vector2d& distance) {
