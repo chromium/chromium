@@ -9,6 +9,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/clock.h"
@@ -79,6 +80,8 @@ class GoogleSearchDomainMixingMetricsEmitter : public KeyedService {
       std::make_unique<base::RepeatingTimer>();
   base::CancelableTaskTracker task_tracker_;
   scoped_refptr<base::SingleThreadTaskRunner> ui_thread_task_runner_;
+  base::WeakPtrFactory<GoogleSearchDomainMixingMetricsEmitter>
+      weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_GOOGLE_GOOGLE_SEARCH_DOMAIN_MIXING_METRICS_EMITTER_H_
