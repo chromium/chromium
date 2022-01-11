@@ -55,7 +55,7 @@ class ManifestTest : public testing::Test {
   };
 
   // Allows the test implementation to override a loaded test manifest's
-  // extension ID. Useful for testing features behind a whitelist.
+  // extension ID. Useful for testing features behind a allowlist.
   virtual std::string GetTestExtensionID() const;
 
   // Returns the path in which to find test manifest data files, for example

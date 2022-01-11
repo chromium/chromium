@@ -36,7 +36,7 @@ TEST(ComponentExtensionUrlPattern, AllUrls) {
 
 TEST(ComponentExtensionUrlPattern, ChromeVoxExtension) {
   // The ChromeVox extension has access to "chrome" scheme URLs through the
-  // "<all_urls>" meta-pattern because it's whitelisted.
+  // "<all_urls>" meta-pattern because it's allowlisted.
   auto all_urls = ExtensionBuilder("all urls")
                       .AddPermission("<all_urls>")
                       .SetLocation(mojom::ManifestLocation::kComponent)

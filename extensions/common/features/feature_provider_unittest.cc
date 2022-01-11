@@ -114,14 +114,14 @@ TEST(FeatureProviderTest, PermissionFeatureAvailability) {
                                        GURL())
                 .result());
 
-  // A permission only available to whitelisted extensions returns availability
-  // NOT_FOUND_IN_WHITELIST.
+  // A permission only available to allowlisted extensions returns availability
+  // NOT_FOUND_IN_ALLOWLIST.
   // TODO(https://crbug.com/1251347): Port //device/bluetooth to Fuchsia to
   // enable bluetooth extensions.
 #if !BUILDFLAG(IS_FUCHSIA)
   feature = provider->GetFeature("bluetoothPrivate");
   ASSERT_TRUE(feature);
-  EXPECT_EQ(Feature::NOT_FOUND_IN_WHITELIST,
+  EXPECT_EQ(Feature::NOT_FOUND_IN_ALLOWLIST,
             feature
                 ->IsAvailableToContext(app.get(), Feature::UNSPECIFIED_CONTEXT,
                                        GURL())

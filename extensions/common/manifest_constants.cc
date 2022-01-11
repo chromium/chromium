@@ -334,7 +334,7 @@ const char kInvalidCSPInsecureValueError[] =
     "'*': Insecure CSP value \"*\" in directive '*'.";
 const char kInvalidCSPMissingSecureSrc[] =
     "'*': CSP directive '*' must be specified (either explicitly, or "
-    "implicitly via 'default-src') and must whitelist only secure resources.";
+    "implicitly via 'default-src') and must allowlist only secure resources.";
 const char kInvalidDefaultLocale[] =
     "Invalid value for default locale - locale name must be a string.";
 const char16_t kInvalidDefaultLocale16[] =

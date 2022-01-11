@@ -164,7 +164,7 @@ const GURL& ChromeExtensionsClient::GetWebstoreUpdateURL() const {
   return webstore_update_url_;
 }
 
-bool ChromeExtensionsClient::IsBlacklistUpdateURL(const GURL& url) const {
+bool ChromeExtensionsClient::IsBlocklistUpdateURL(const GURL& url) const {
   // The extension blocklist URL is returned from the update service and
   // therefore not determined by Chromium. If the location of the blocklist file
   // ever changes, we need to update this function. A DCHECK in the

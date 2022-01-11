@@ -50,7 +50,7 @@ struct AllowlistInfo {
   }
   std::string hashed_id;
 };
-// A singleton copy of the --whitelisted-extension-id so that we don't need to
+// A singleton copy of the --allowlisted-extension-id so that we don't need to
 // copy it from the CommandLine each time.
 base::LazyInstance<AllowlistInfo>::Leaky g_allowlist_info =
     LAZY_INSTANCE_INITIALIZER;
@@ -309,8 +309,8 @@ std::string SimpleFeature::GetAvailabilityMessage(
   switch (result) {
     case IS_AVAILABLE:
       return std::string();
-    case NOT_FOUND_IN_WHITELIST:
-    case FOUND_IN_BLACKLIST:
+    case NOT_FOUND_IN_ALLOWLIST:
+    case FOUND_IN_BLOCKLIST:
       return base::StringPrintf(
           "'%s' is not allowed for specified extension ID.",
           name().c_str());
@@ -636,7 +636,7 @@ Feature::Availability SimpleFeature::GetManifestAvailability(
   }
 
   if (!blocklist_.empty() && IsIdInBlocklist(hashed_id))
-    return CreateAvailability(FOUND_IN_BLACKLIST);
+    return CreateAvailability(FOUND_IN_BLOCKLIST);
 
   // TODO(benwells): don't grant all component extensions.
   // See http://crbug.com/370375 for more details.
@@ -648,7 +648,7 @@ Feature::Availability SimpleFeature::GetManifestAvailability(
 
   if (!allowlist_.empty() && !IsIdInAllowlist(hashed_id) &&
       !IsAllowlistedForTest(hashed_id)) {
-    return CreateAvailability(NOT_FOUND_IN_WHITELIST);
+    return CreateAvailability(NOT_FOUND_IN_ALLOWLIST);
   }
 
   if (location_ && !MatchesManifestLocation(location) &&

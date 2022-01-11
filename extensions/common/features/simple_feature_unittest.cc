@@ -141,14 +141,14 @@ TEST_F(SimpleFeatureTest, Allowlist) {
                                        Feature::UNSPECIFIED_PLATFORM)
                 .result());
 
-  EXPECT_EQ(Feature::NOT_FOUND_IN_WHITELIST,
+  EXPECT_EQ(Feature::NOT_FOUND_IN_ALLOWLIST,
             feature
                 .IsAvailableToManifest(kIdBaz, Manifest::TYPE_UNKNOWN,
                                        ManifestLocation::kInvalidLocation, -1,
                                        Feature::UNSPECIFIED_PLATFORM)
                 .result());
   EXPECT_EQ(
-      Feature::NOT_FOUND_IN_WHITELIST,
+      Feature::NOT_FOUND_IN_ALLOWLIST,
       feature
           .IsAvailableToManifest(HashedExtensionId(), Manifest::TYPE_UNKNOWN,
                                  ManifestLocation::kInvalidLocation, -1,
@@ -157,7 +157,7 @@ TEST_F(SimpleFeatureTest, Allowlist) {
 
   feature.set_extension_types({Manifest::TYPE_LEGACY_PACKAGED_APP});
   EXPECT_EQ(
-      Feature::NOT_FOUND_IN_WHITELIST,
+      Feature::NOT_FOUND_IN_ALLOWLIST,
       feature
           .IsAvailableToManifest(kIdBaz, Manifest::TYPE_LEGACY_PACKAGED_APP,
                                  ManifestLocation::kInvalidLocation, -1,
@@ -188,14 +188,14 @@ TEST_F(SimpleFeatureTest, HashedIdAllowlist) {
                                        ManifestLocation::kInvalidLocation, -1,
                                        Feature::UNSPECIFIED_PLATFORM)
                 .result());
-  EXPECT_EQ(Feature::NOT_FOUND_IN_WHITELIST,
+  EXPECT_EQ(Feature::NOT_FOUND_IN_ALLOWLIST,
             feature
                 .IsAvailableToManifest(
                     HashedExtensionId("slightlytoooolongforanextensionid"),
                     Manifest::TYPE_UNKNOWN, ManifestLocation::kInvalidLocation,
                     -1, Feature::UNSPECIFIED_PLATFORM)
                 .result());
-  EXPECT_EQ(Feature::NOT_FOUND_IN_WHITELIST,
+  EXPECT_EQ(Feature::NOT_FOUND_IN_ALLOWLIST,
             feature
                 .IsAvailableToManifest(
                     HashedExtensionId("tooshortforanextensionid"),
@@ -211,13 +211,13 @@ TEST_F(SimpleFeatureTest, Blocklist) {
   SimpleFeature feature;
   feature.set_blocklist({kIdFoo.value().c_str(), kIdBar.value().c_str()});
 
-  EXPECT_EQ(Feature::FOUND_IN_BLACKLIST,
+  EXPECT_EQ(Feature::FOUND_IN_BLOCKLIST,
             feature
                 .IsAvailableToManifest(kIdFoo, Manifest::TYPE_UNKNOWN,
                                        ManifestLocation::kInvalidLocation, -1,
                                        Feature::UNSPECIFIED_PLATFORM)
                 .result());
-  EXPECT_EQ(Feature::FOUND_IN_BLACKLIST,
+  EXPECT_EQ(Feature::FOUND_IN_BLOCKLIST,
             feature
                 .IsAvailableToManifest(kIdBar, Manifest::TYPE_UNKNOWN,
                                        ManifestLocation::kInvalidLocation, -1,
@@ -248,14 +248,14 @@ TEST_F(SimpleFeatureTest, HashedIdBlocklist) {
 
   feature.set_blocklist({kIdFooHashed.c_str()});
 
-  EXPECT_EQ(Feature::FOUND_IN_BLACKLIST,
+  EXPECT_EQ(Feature::FOUND_IN_BLOCKLIST,
             feature
                 .IsAvailableToManifest(HashedExtensionId(kIdFoo),
                                        Manifest::TYPE_UNKNOWN,
                                        ManifestLocation::kInvalidLocation, -1,
                                        Feature::UNSPECIFIED_PLATFORM)
                 .result());
-  EXPECT_NE(Feature::FOUND_IN_BLACKLIST,
+  EXPECT_NE(Feature::FOUND_IN_BLOCKLIST,
             feature
                 .IsAvailableToManifest(HashedExtensionId(kIdFooHashed),
                                        Manifest::TYPE_UNKNOWN,
@@ -337,9 +337,12 @@ TEST_F(SimpleFeatureTest, Context) {
   ASSERT_TRUE(extension.get());
 
   feature.set_allowlist({"monkey"});
-  EXPECT_EQ(Feature::NOT_FOUND_IN_WHITELIST, feature.IsAvailableToContext(
-      extension.get(), Feature::BLESSED_EXTENSION_CONTEXT,
-      Feature::CHROMEOS_PLATFORM).result());
+  EXPECT_EQ(Feature::NOT_FOUND_IN_ALLOWLIST,
+            feature
+                .IsAvailableToContext(extension.get(),
+                                      Feature::BLESSED_EXTENSION_CONTEXT,
+                                      Feature::CHROMEOS_PLATFORM)
+                .result());
   feature.set_allowlist({});
 
   feature.set_extension_types({Manifest::TYPE_THEME});

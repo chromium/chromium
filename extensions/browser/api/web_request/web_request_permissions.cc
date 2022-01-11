@@ -336,7 +336,7 @@ bool WebRequestPermissions::HideRequest(
   // Safebrowsing and Chrome Webstore URLs are always protected, i.e. also
   // for requests from common renderers.
   if (extension_urls::IsWebstoreUpdateUrl(url) ||
-      extension_urls::IsBlacklistUpdateUrl(url) ||
+      extension_urls::IsBlocklistUpdateUrl(url) ||
       extension_urls::IsSafeBrowsingUrl(url::Origin::Create(url),
                                         url.path_piece()) ||
       (url.DomainIs("chrome.google.com") &&

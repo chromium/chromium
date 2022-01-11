@@ -126,9 +126,9 @@ const GURL& ShellExtensionsClient::GetWebstoreUpdateURL() const {
   return webstore_update_url_;
 }
 
-bool ShellExtensionsClient::IsBlacklistUpdateURL(const GURL& url) const {
+bool ShellExtensionsClient::IsBlocklistUpdateURL(const GURL& url) const {
   // TODO(rockot): Maybe we want to do something else here. For now we accept
-  // any URL as a blacklist URL because we don't really care.
+  // any URL as a blocklist URL because we don't really care.
   return true;
 }
 

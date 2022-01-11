@@ -42,7 +42,7 @@ class ChromeExtensionsClient : public ExtensionsClient {
   bool IsScriptableURL(const GURL& url, std::string* error) const override;
   const GURL& GetWebstoreBaseURL() const override;
   const GURL& GetWebstoreUpdateURL() const override;
-  bool IsBlacklistUpdateURL(const GURL& url) const override;
+  bool IsBlocklistUpdateURL(const GURL& url) const override;
   std::set<base::FilePath> GetBrowserImagePaths(
       const Extension* extension) override;
   void AddOriginAccessPermissions(

@@ -195,7 +195,7 @@ bool isNonWildcardTLD(const std::string& url,
   if (!is_wildcard_subdomain || !should_check_rcd)
     return true;
 
-  // Allow *.googleapis.com to be whitelisted for backwards-compatibility.
+  // Allow *.googleapis.com to be allowlisted for backwards-compatibility.
   // (crbug.com/409952)
   if (host == "googleapis.com")
     return true;
@@ -240,7 +240,7 @@ std::string GetSecureDirectiveValues(
     std::string source_lower = base::ToLowerASCII(source_literal);
     bool is_secure_csp_token = false;
 
-    // We might need to relax this whitelist over time.
+    // We might need to relax this allowlist over time.
     if (source_lower == kSelfSource || source_lower == kNoneSource ||
         source_lower == kWasmEvalSource || source_lower == "blob:" ||
         source_lower == "filesystem:" ||

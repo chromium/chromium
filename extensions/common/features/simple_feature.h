@@ -31,7 +31,7 @@ class ExtensionAPITest;
 
 class SimpleFeature : public Feature {
  public:
-  // Used by tests to override the cached --whitelisted-extension-id.
+  // Used by tests to override the cached --allowlisted-extension-id.
   // NOTE: Not thread-safe! This is because it sets extension id on global
   // singleton during its construction and destruction.
   class ScopedThreadUnsafeAllowlistForTest {

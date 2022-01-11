@@ -246,7 +246,7 @@ bool ParseHelper(Extension* extension,
     }
 
     // Sneaky check for "experimental", which we always allow for extensions
-    // installed from the Webstore. This way we can whitelist extensions to
+    // installed from the Webstore. This way we can allowlist extensions to
     // have access to experimental in just the store, and not have to push a
     // new version of the client. Otherwise, experimental goes through the
     // usual features check.

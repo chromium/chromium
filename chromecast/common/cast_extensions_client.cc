@@ -131,7 +131,7 @@ const GURL& CastExtensionsClient::GetWebstoreUpdateURL() const {
   return webstore_update_url_;
 }
 
-bool CastExtensionsClient::IsBlacklistUpdateURL(const GURL& url) const {
+bool CastExtensionsClient::IsBlocklistUpdateURL(const GURL& url) const {
   return true;
 }
 
