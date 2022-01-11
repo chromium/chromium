@@ -6,7 +6,6 @@
 #define GPU_COMMAND_BUFFER_CLIENT_WEBGPU_IMPLEMENTATION_H_
 
 #include <dawn/webgpu.h>
-#include <dawn_wire/WireClient.h>
 
 #include <memory>
 #include <utility>
@@ -21,10 +20,6 @@
 #include "gpu/command_buffer/client/webgpu_export.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
 #include "ui/gl/buildflags.h"
-
-namespace dawn_wire {
-class WireClient;
-}
 
 namespace gpu {
 namespace webgpu {
