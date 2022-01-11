@@ -25,9 +25,6 @@ constexpr char kDeviceToken[] = "fake_device_token";
 constexpr char kMachineName[] = "machine_name";
 constexpr char kPolicyInvalidationTopic[] = "policy_invalidation_topic";
 constexpr char kUsername[] = "user-for-policy@example.com";
-#if !BUILDFLAG(IS_ANDROID)
-constexpr char kExtensionId[] = "extension_id";
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -99,13 +96,15 @@ TEST_F(RequestHandlerForPolicyTest, HandleRequest_UnauthorizedPolicyType) {
   client_info.device_token = kDeviceToken;
   client_info.device_id = kDeviceId;
   client_info.machine_name = kMachineName;
-  client_info.allowed_policy_types.insert(dm_protocol::kChromeDevicePolicyType);
+  client_info.allowed_policy_types.insert(
+      dm_protocol::kChromeMachineLevelUserCloudPolicyType);
   client_storage()->RegisterClient(std::move(client_info));
 
   em::DeviceManagementRequest device_management_request;
   em::PolicyFetchRequest* fetch_request =
       device_management_request.mutable_policy_request()->add_requests();
-  fetch_request->set_policy_type(dm_protocol::kChromeRemoteCommandPolicyType);
+  fetch_request->set_policy_type(
+      dm_protocol::kChromeMachineLevelExtensionCloudPolicyType);
 
   SetDeviceTokenHeader(kDeviceToken);
   SetPayload(device_management_request);
@@ -286,82 +285,5 @@ TEST_F(RequestHandlerForPolicyTest,
                    .empty());
   EXPECT_FALSE(fetch_response.new_public_key_signature().empty());
 }
-
-#if !BUILDFLAG(IS_ANDROID)
-TEST_F(RequestHandlerForPolicyTest, HandleRequest_Success_ExtensionPolicies) {
-  ClientStorage::ClientInfo client_info;
-  client_info.device_token = kDeviceToken;
-  client_info.device_id = kDeviceId;
-  client_info.username = kUsername;
-  client_info.allowed_policy_types.insert(
-      dm_protocol::kChromeExtensionPolicyType);
-  client_storage()->RegisterClient(client_info);
-
-  em::CloudPolicySettings settings;
-  settings.mutable_extensionsettings()->mutable_value()->assign(
-      "extension-policy");
-  policy_storage()->SetPolicyPayload(dm_protocol::kChromeExtensionPolicyType,
-                                     kExtensionId,
-                                     settings.SerializeAsString());
-
-  em::DeviceManagementRequest device_management_request;
-  device_management_request.mutable_policy_request()
-      ->add_requests()
-      ->set_policy_type(dm_protocol::kChromeExtensionPolicyType);
-
-  SetDeviceTokenHeader(kDeviceToken);
-  SetPayload(device_management_request);
-
-  StartRequestAndWait();
-
-  EXPECT_EQ(GetResponseCode(), net::HTTP_OK);
-
-  ASSERT_TRUE(HasResponseBody());
-  em::DeviceManagementResponse device_management_response =
-      GetDeviceManagementResponse();
-
-  ASSERT_EQ(device_management_response.policy_response().responses_size(), 1);
-  const em::PolicyFetchResponse& fetch_response =
-      device_management_response.policy_response().responses(0);
-  em::PolicyData policy_data;
-  policy_data.ParseFromString(fetch_response.policy_data());
-  EXPECT_EQ(policy_data.policy_type(), dm_protocol::kChromeExtensionPolicyType);
-  EXPECT_EQ(policy_data.policy_value(),
-            policy_storage()->GetPolicyPayload(
-                dm_protocol::kChromeExtensionPolicyType, kExtensionId));
-}
-
-TEST_F(RequestHandlerForPolicyTest,
-       HandleRequest_ExtensionPoliciesWithMissingSigningKey) {
-  ClientStorage::ClientInfo client_info;
-  client_info.device_token = kDeviceToken;
-  client_info.device_id = kDeviceId;
-  client_info.username = kUsername;
-  client_info.allowed_policy_types.insert(
-      dm_protocol::kChromeMachineLevelExtensionCloudPolicyType);
-  client_storage()->RegisterClient(client_info);
-
-  em::CloudPolicySettings settings;
-  settings.mutable_extensionsettings()->mutable_value()->assign(
-      "extension-policy");
-  policy_storage()->SetPolicyPayload(
-      dm_protocol::kChromeMachineLevelExtensionCloudPolicyType, kExtensionId,
-      settings.SerializeAsString());
-  policy_storage()->signature_provider()->set_current_key_version(-1);
-
-  em::DeviceManagementRequest device_management_request;
-  device_management_request.mutable_policy_request()
-      ->add_requests()
-      ->set_policy_type(
-          dm_protocol::kChromeMachineLevelExtensionCloudPolicyType);
-
-  SetDeviceTokenHeader(kDeviceToken);
-  SetPayload(device_management_request);
-
-  StartRequestAndWait();
-
-  EXPECT_EQ(GetResponseCode(), net::HTTP_BAD_REQUEST);
-}
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace policy

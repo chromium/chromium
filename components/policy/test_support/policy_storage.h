@@ -29,19 +29,12 @@ class PolicyStorage {
   PolicyStorage& operator=(PolicyStorage&& policy_storage);
   virtual ~PolicyStorage();
 
-  // Returns the serialized proto associated with |policy_type| and optional
-  // |entity_id|. Returns empty string if there is no such association.
-  std::string GetPolicyPayload(
-      const std::string& policy_type,
-      const std::string& entity_id = std::string()) const;
-  std::vector<std::string> GetEntityIdsForType(const std::string& policy_type);
-
+  // Returns the serialized proto associated with |policy_type|. Returns empty
+  // string if there is no such association.
+  std::string GetPolicyPayload(const std::string& policy_type) const;
   // Associates the serialized proto stored in |policy_payload| with
-  // |policy_type| and optional |entity_id|.
+  // |policy_type|.
   void SetPolicyPayload(const std::string& policy_type,
-                        const std::string& policy_payload);
-  void SetPolicyPayload(const std::string& policy_type,
-                        const std::string& entity_id,
                         const std::string& policy_payload);
 
   SignatureProvider* signature_provider() const {

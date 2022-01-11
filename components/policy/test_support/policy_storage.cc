@@ -4,24 +4,9 @@
 
 #include "components/policy/test_support/policy_storage.h"
 #include "base/big_endian.h"
-#include "base/strings/strcat.h"
-#include "base/strings/string_util.h"
 #include "crypto/sha2.h"
 
 namespace policy {
-
-namespace {
-
-const char kPolicyKeySeparator[] = "/";
-
-std::string GetPolicyKey(const std::string& policy_type,
-                         const std::string& entity_id) {
-  if (entity_id.empty())
-    return policy_type;
-  return base::StrCat({policy_type, kPolicyKeySeparator, entity_id});
-}
-
-}  // namespace
 
 PolicyStorage::PolicyStorage()
     : signature_provider_(std::make_unique<SignatureProvider>()) {}
@@ -34,33 +19,14 @@ PolicyStorage& PolicyStorage::operator=(PolicyStorage&& policy_storage) =
 PolicyStorage::~PolicyStorage() = default;
 
 std::string PolicyStorage::GetPolicyPayload(
-    const std::string& policy_type,
-    const std::string& entity_id) const {
-  auto it = policy_payloads_.find(GetPolicyKey(policy_type, entity_id));
+    const std::string& policy_type) const {
+  auto it = policy_payloads_.find(policy_type);
   return it == policy_payloads_.end() ? std::string() : it->second;
 }
 
-std::vector<std::string> PolicyStorage::GetEntityIdsForType(
-    const std::string& policy_type) {
-  std::string prefix = base::StrCat({policy_type, kPolicyKeySeparator});
-  std::vector<std::string> ids;
-  const size_t prefix_length = prefix.length();
-  for (const auto& [policy_key, payload] : policy_payloads_) {
-    if (base::StartsWith(policy_key, prefix))
-      ids.push_back(policy_key.substr(prefix_length));
-  }
-  return ids;
-}
-
 void PolicyStorage::SetPolicyPayload(const std::string& policy_type,
                                      const std::string& policy_payload) {
-  SetPolicyPayload(policy_type, std::string(), policy_payload);
-}
-
-void PolicyStorage::SetPolicyPayload(const std::string& policy_type,
-                                     const std::string& entity_id,
-                                     const std::string& policy_payload) {
-  policy_payloads_[GetPolicyKey(policy_type, entity_id)] = policy_payload;
+  policy_payloads_[policy_type] = policy_payload;
 }
 
 void PolicyStorage::SetPsmEntry(const std::string& brand_serial_id,

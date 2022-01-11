@@ -20,7 +20,7 @@
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/helper.h"
 #include "chrome/browser/ash/login/startup_utils.h"
-#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/login_or_lock_screen_visible_waiter.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_waiter.h"
@@ -703,7 +703,7 @@ class PolicyProvidedCertsDeviceLocalAccountTest
     command_line->AppendSwitch(chromeos::switches::kOobeSkipPostLogin);
   }
 
-  ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
+  ash::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
 
   const AccountId device_local_account_id_ =
       AccountId::FromUserEmail(GenerateDeviceLocalAccountUserId(
@@ -731,11 +731,9 @@ class PolicyProvidedCertsPublicSessionTest
     account->set_type(
         em::DeviceLocalAccountInfoProto::ACCOUNT_TYPE_PUBLIC_SESSION);
     RefreshDevicePolicy();
-    policy_test_server_mixin_.UpdateDevicePolicy(proto);
+    ASSERT_TRUE(local_policy_mixin_.UpdateDevicePolicy(proto));
   }
 
-  // TODO(crbug/874831): Consider migrating to LoggedInMixin and deprecating
-  // this function.
   void StartLogin() {
     ash::WizardController::SkipPostLoginScreensForTesting();
     auto* const wizard_controller = ash::WizardController::default_controller();

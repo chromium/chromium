@@ -20,8 +20,9 @@
 #include "chrome/browser/ash/login/login_wizard.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screens/recommend_apps_screen.h"
-#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_test_server_setup_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
+#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "chrome/browser/ash/login/test/oobe_screen_exit_waiter.h"
@@ -649,9 +650,9 @@ class PublicAccountArcTermsOfServiceScreenTest
 
   void UploadDeviceLocalAccountPolicy() {
     BuildDeviceLocalAccountPolicy();
-    policy_test_server_mixin_.UpdatePolicy(
+    ASSERT_TRUE(local_policy_mixin_.server()->UpdatePolicy(
         policy::dm_protocol::kChromePublicAccountPolicyType, kAccountId,
-        device_local_account_policy_.payload().SerializeAsString());
+        device_local_account_policy_.payload().SerializeAsString()));
   }
 
   void UploadAndInstallDeviceLocalAccountPolicy() {
@@ -664,7 +665,7 @@ class PublicAccountArcTermsOfServiceScreenTest
     em::ChromeDeviceSettingsProto& proto(device_policy()->payload());
     policy::DeviceLocalAccountTestHelper::AddPublicSession(&proto, kAccountId);
     RefreshDevicePolicy();
-    policy_test_server_mixin_.UpdateDevicePolicy(proto);
+    ASSERT_TRUE(local_policy_mixin_.UpdateDevicePolicy(proto));
   }
 
   void WaitForDisplayName() {
@@ -713,7 +714,7 @@ class PublicAccountArcTermsOfServiceScreenTest
           policy::DeviceLocalAccount::TYPE_PUBLIC_SESSION));
   policy::DevicePolicyCrosTestHelper policy_helper_;
   policy::UserPolicyBuilder device_local_account_policy_;
-  EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
+  LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
   DeviceStateMixin device_state_{
       &mixin_host_, DeviceStateMixin::State::OOBE_COMPLETED_CLOUD_ENROLLED};
 };
