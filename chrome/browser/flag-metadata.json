@@ -4913,7 +4913,7 @@
   {
     "name": "sameparty-cookies-considered-first-party",
     "owners": ["cfredric", "chrome-first-party-sets@chromium.org"],
-    "expiry_milestone": 98
+    "expiry_milestone": 108
   },
   {
     "name": "sanitizer-api",
