@@ -407,9 +407,8 @@ void FullscreenController::EnterFullscreenModeInternal(
     auto* manager = PermissionManagerFactory::GetForProfile(
         exclusive_access_manager()->context()->GetProfile());
     if (!manager || !requesting_frame ||
-        manager->GetPermissionStatusForFrame(
-                   ContentSettingsType::WINDOW_PLACEMENT, requesting_frame,
-                   GetRequestingOrigin())
+        manager->GetPermissionStatusForCurrentDocument(
+                   ContentSettingsType::WINDOW_PLACEMENT, requesting_frame)
                 .content_setting != ContentSetting::CONTENT_SETTING_ALLOW) {
       display_id = display::kInvalidDisplayId;
     }
