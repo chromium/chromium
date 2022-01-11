@@ -21,7 +21,6 @@ js_type_check("closure_compile_module") {
     ":dom_switch",
     ":fake_page_handler",
     ":main_view",
-    ":more_permissions_item",
     ":pin_to_shelf_item",
     ":pwa_detail_view",
     ":reducers",
@@ -96,7 +95,6 @@ js_library("app_management_page") {
 js_library("arc_detail_view") {
   deps = [
     ":fake_page_handler",
-    ":more_permissions_item",
     ":pin_to_shelf_item",
     ":store_client",
     ":supported_links_item",
@@ -115,7 +113,6 @@ js_library("chrome_app_detail_view") {
   deps = [
     ":browser_proxy",
     ":fake_page_handler",
-    ":more_permissions_item",
     ":pin_to_shelf_item",
     ":store_client",
     ":util",
@@ -152,10 +149,6 @@ js_library("main_view") {
   ]
 }
 
-js_library("more_permissions_item") {
-  deps = [ "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m" ]
-}
-
 js_library("pin_to_shelf_item") {
   deps = [
     ":browser_proxy",
@@ -169,7 +162,6 @@ js_library("pin_to_shelf_item") {
 js_library("pwa_detail_view") {
   deps = [
     ":fake_page_handler",
-    ":more_permissions_item",
     ":pin_to_shelf_item",
     ":store_client",
     ":supported_links_item",
@@ -278,7 +270,6 @@ html_to_js("web_components") {
     "chrome_app_detail_view.js",
     "dom_switch.js",
     "main_view.js",
-    "more_permissions_item.js",
     "pin_to_shelf_item.js",
     "pwa_detail_view.js",
     "resize_lock_item.js",

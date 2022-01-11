@@ -1,11 +1,11 @@
 // Copyright 2018 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import './more_permissions_item.js';
 import './pin_to_shelf_item.js';
 import './supported_links_item.js';
 import './shared_style.js';
 import '//resources/cr_components/app_management/icons.js';
+import '//resources/cr_components/app_management/more_permissions_item.js';
 import '//resources/cr_components/app_management/permission_item.js';
 import '//resources/cr_elements/icons.m.js';
 

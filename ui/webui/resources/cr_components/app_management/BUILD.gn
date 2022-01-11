@@ -14,6 +14,7 @@ preprocess_folder =
 
 web_component_files = [
   "icons.ts",
+  "more_permissions_item.ts",
   "permission_item.ts",
   "shared_style.ts",
   "shared_vars.ts",
