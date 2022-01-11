@@ -30,13 +30,6 @@ class MODULES_EXPORT ImageBitmapRenderingContextBase
 
   void Trace(Visitor*) const override;
 
-  // TODO(juanmihd): Remove this method crbug.com/941579
-  HTMLCanvasElement* canvas() const {
-    if (Host()->IsOffscreenCanvas())
-      return nullptr;
-    return static_cast<HTMLCanvasElement*>(Host());
-  }
-
   bool CanCreateCanvas2dResourceProvider() const;
   V8UnionHTMLCanvasElementOrOffscreenCanvas* getHTMLOrOffscreenCanvas() const;
 
