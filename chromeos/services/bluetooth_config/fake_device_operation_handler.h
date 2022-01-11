@@ -5,6 +5,9 @@
 #ifndef CHROMEOS_SERVICES_BLUETOOTH_CONFIG_FAKE_DEVICE_OPERATION_HANDLER_H_
 #define CHROMEOS_SERVICES_BLUETOOTH_CONFIG_FAKE_DEVICE_OPERATION_HANDLER_H_
 
+#include <cstddef>
+#include <string>
+
 #include "chromeos/services/bluetooth_config/adapter_state_controller.h"
 #include "chromeos/services/bluetooth_config/device_operation_handler.h"
 
@@ -19,6 +22,14 @@ class FakeDeviceOperationHandler : public DeviceOperationHandler {
 
   void CompleteCurrentOperation(bool success);
 
+  size_t perform_connect_call_count() const {
+    return perform_connect_call_count_;
+  }
+
+  const std::string& last_perform_connect_device_id() const {
+    return last_perform_connect_device_id_;
+  }
+
  private:
   // DeviceOperationHandler:
   void PerformConnect(const std::string& device_id) override;
@@ -32,6 +43,9 @@ class FakeDeviceOperationHandler : public DeviceOperationHandler {
       absl::optional<base::Time> reconnection_attempt_start,
       absl::optional<device::BluetoothDevice::ConnectErrorCode> error_code)
       const override {}
+
+  size_t perform_connect_call_count_ = 0;
+  std::string last_perform_connect_device_id_;
 };
 
 }  // namespace bluetooth_config

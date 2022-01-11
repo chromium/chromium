@@ -17,7 +17,10 @@ void FakeDeviceOperationHandler::CompleteCurrentOperation(bool success) {
   HandleFinishedOperation(success);
 }
 
-void FakeDeviceOperationHandler::PerformConnect(const std::string& device_id) {}
+void FakeDeviceOperationHandler::PerformConnect(const std::string& device_id) {
+  perform_connect_call_count_++;
+  last_perform_connect_device_id_ = device_id;
+}
 
 void FakeDeviceOperationHandler::PerformDisconnect(
     const std::string& device_id) {}
