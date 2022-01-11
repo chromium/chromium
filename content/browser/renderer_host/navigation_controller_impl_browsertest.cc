@@ -4605,7 +4605,8 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
 // Tests that the initial NavigationEntry loses its "initial" status when
 // any navigation commits on the main frame, including navigations where the
-// initial NavigationEntry is reused.
+// initial NavigationEntry is reused. On subframe navigations, the "initial"
+// status will be removed iff a new NavigationEntry is created.
 IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
                        InitialNavigationEntryLosesStatus) {
   GURL main_window_url(embedded_test_server()->GetURL("/title1.html"));
@@ -4621,6 +4622,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     // Stop the navigation so that it won't affect future navigations.
     new_contents->Stop();
     NavigationControllerImpl& controller = new_contents->GetController();
+    EXPECT_EQ(1, controller.GetEntryCount());
     NavigationEntryImpl* last_entry = controller.GetLastCommittedEntry();
     EXPECT_TRUE(last_entry->IsInitialEntry());
     EXPECT_EQ(GURL::EmptyGURL(), last_entry->GetURL());
@@ -4630,6 +4632,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
     // We replaced the previous NavigationEntry and it's no longer on the
     // initial NavigationEntry.
+    EXPECT_EQ(1, controller.GetEntryCount());
     EXPECT_NE(last_entry, controller.GetLastCommittedEntry());
     last_entry = controller.GetLastCommittedEntry();
     EXPECT_FALSE(last_entry->IsInitialEntry());
@@ -4646,6 +4649,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     // Stop the navigation so that it won't affect future navigations.
     new_contents->Stop();
     NavigationControllerImpl& controller = new_contents->GetController();
+    EXPECT_EQ(1, controller.GetEntryCount());
     NavigationEntryImpl* last_entry = controller.GetLastCommittedEntry();
     EXPECT_TRUE(last_entry->IsInitialEntry());
     EXPECT_EQ(GURL::EmptyGURL(), last_entry->GetURL());
@@ -4658,6 +4662,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
 
     // We reused the previous NavigationEntry, but it loses its "initial"
     // status.
+    EXPECT_EQ(1, controller.GetEntryCount());
     EXPECT_EQ(last_entry, controller.GetLastCommittedEntry());
     EXPECT_FALSE(last_entry->IsInitialEntry());
     EXPECT_EQ(GURL("about:blank"), last_entry->GetURL());
@@ -4673,6 +4678,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     // Stop the navigation so that it won't affect future navigations.
     new_contents->Stop();
     NavigationControllerImpl& controller = new_contents->GetController();
+    EXPECT_EQ(1, controller.GetEntryCount());
     NavigationEntryImpl* last_entry = controller.GetLastCommittedEntry();
     EXPECT_TRUE(last_entry->IsInitialEntry());
     EXPECT_EQ(GURL::EmptyGURL(), last_entry->GetURL());
@@ -4688,6 +4694,7 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     // The initial NavigationEntry keeps its "initial" status even when a
     // subframe navigated and added a FrameNavigationEntry inside the initial
     // NavigationEntry.
+    EXPECT_EQ(1, controller.GetEntryCount());
     EXPECT_EQ(last_entry, controller.GetLastCommittedEntry());
     EXPECT_TRUE(last_entry->IsInitialEntry());
     EXPECT_EQ(GURL::EmptyGURL(), last_entry->GetURL());
@@ -4697,15 +4704,34 @@ IN_PROC_BROWSER_TEST_P(NavigationControllerBrowserTest,
     FrameNavigateParamsCapturer capturer(child);
     GURL subframe_url_2(embedded_test_server()->GetURL("/title2.html"));
     NavigateFrameToURL(child, subframe_url_2);
+    EXPECT_EQ(subframe_url_2, child->current_url());
     capturer.Wait();
 
-    // The subframe creates a new NavigationEntry, which replaces the initial
-    // NavigationEntry.
+    // The subframe appended a new NavigationEntry, which is not marked as the
+    // initial NavigationEntry, and also causes the original initial
+    // NavigationEntry to lose its "initial" status too, as it is no longer the
+    // only NavigationEntry.
+    EXPECT_EQ(2, controller.GetEntryCount());
     EXPECT_NE(last_entry, controller.GetLastCommittedEntry());
+    EXPECT_FALSE(last_entry->IsInitialEntry());
+    EXPECT_EQ(GURL("about:blank"), last_entry->GetURL());
+
     last_entry = controller.GetLastCommittedEntry();
     EXPECT_FALSE(last_entry->IsInitialEntry());
-    EXPECT_EQ(GURL::EmptyGURL(), last_entry->GetURL());
-    EXPECT_EQ(subframe_url_2, child->current_url());
+    EXPECT_EQ(GURL("about:blank"), last_entry->GetURL());
+
+    // Do a back navigation.
+    TestNavigationObserver back_load_observer(new_contents);
+    controller.GoBack();
+    back_load_observer.Wait();
+
+    // The new window is back on the first NavigationEntry, which is no longer
+    // marked as the initial NavigationEntry.
+    EXPECT_EQ(2, controller.GetEntryCount());
+    EXPECT_EQ(subframe_url, child->current_url());
+    last_entry = controller.GetLastCommittedEntry();
+    EXPECT_FALSE(last_entry->IsInitialEntry());
+    EXPECT_EQ(GURL("about:blank"), last_entry->GetURL());
   }
 }
 

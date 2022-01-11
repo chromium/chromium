@@ -430,9 +430,10 @@ class CONTENT_EXPORT NavigationEntryImpl : public NavigationEntry {
     back_forward_cache_metrics_ = metrics;
   }
 
-  void set_is_initial_entry(bool is_initial_entry) {
-    is_initial_entry_ = is_initial_entry;
-  }
+  // If this is an "initial NavigationEntry", removes the "initial" status and
+  // ensures that the URL saved in the entry is "about:blank" instead of an
+  // empty URL.
+  void RemoveInitialEntryStatusIfNecessary();
 
   void set_did_not_exist_without_initial_navigation_entry(
       bool did_not_exist_without_initial_navigation_entry) {
