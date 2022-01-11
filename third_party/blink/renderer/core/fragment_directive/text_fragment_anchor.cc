@@ -45,6 +45,9 @@ bool CheckSecurityRestrictions(LocalFrame& frame) {
   if (!frame.Loader().GetDocumentLoader()->ConsumeTextFragmentToken())
     return false;
 
+  if (frame.GetDocument()->contentType() != "text/html")
+    return false;
+
   // For cross origin initiated navigations, we only allow text
   // fragments if the frame is not script accessible by another frame, i.e. no
   // cross origin iframes or window.open.
