@@ -8,11 +8,11 @@
 #include "base/notreached.h"
 #include "base/win/com_init_util.h"
 #include "content/browser/accessibility/accessibility_event_recorder_uia_win.h"
-#include "content/browser/accessibility/accessibility_event_recorder_win.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_uia_win.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_win.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "ui/accessibility/platform/inspect/ax_event_recorder_win.h"
 
 namespace content {
 
@@ -77,10 +77,10 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
       // events are not getting reported. Being in context is better so that for
       // TEXT_REMOVED and TEXT_INSERTED events, we can query the text that was
       // inserted or removed and include that in the log.
-      return std::make_unique<AccessibilityEventRecorderWin>(
+      return std::make_unique<ui::AXEventRecorderWin>(
           pid, selector,
-          manager ? AccessibilityEventRecorderWin::kSync
-                  : AccessibilityEventRecorderWin::kAsync);
+          manager ? ui::AXEventRecorderWin::kSync
+                  : ui::AXEventRecorderWin::kAsync);
     }
     case ui::AXApiType::kWinUIA:
       return std::make_unique<AccessibilityEventRecorderUia>(manager, pid,

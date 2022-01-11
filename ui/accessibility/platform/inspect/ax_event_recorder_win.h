@@ -2,20 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EVENT_RECORDER_WIN_H_
-#define CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EVENT_RECORDER_WIN_H_
+#ifndef UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_EVENT_RECORDER_WIN_H_
+#define UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_EVENT_RECORDER_WIN_H_
 
 #include <oleacc.h>
 
 #include "base/process/process_handle.h"
-#include "content/common/content_export.h"
+#include "ui/accessibility/ax_export.h"
 #include "ui/accessibility/platform/inspect/ax_event_recorder.h"
 #include "ui/accessibility/platform/inspect/ax_inspect.h"
 
-namespace content {
+namespace ui {
 
-class CONTENT_EXPORT AccessibilityEventRecorderWin
-    : public ui::AXEventRecorder {
+class AX_EXPORT AXEventRecorderWin : public ui::AXEventRecorder {
  public:
   // Flag values that specify the way events are handled.
   enum ListenerType {
@@ -23,15 +22,14 @@ class CONTENT_EXPORT AccessibilityEventRecorderWin
     kAsync,  // Events are handled asynchronously.
   };
 
-  AccessibilityEventRecorderWin(base::ProcessId pid,
-                                const ui::AXTreeSelector& selector,
-                                ListenerType listenerType = kSync);
+  AXEventRecorderWin(base::ProcessId pid,
+                     const ui::AXTreeSelector& selector,
+                     ListenerType listenerType = kSync);
 
-  AccessibilityEventRecorderWin(const AccessibilityEventRecorderWin&) = delete;
-  AccessibilityEventRecorderWin& operator=(
-      const AccessibilityEventRecorderWin&) = delete;
+  AXEventRecorderWin(const AXEventRecorderWin&) = delete;
+  AXEventRecorderWin& operator=(const AXEventRecorderWin&) = delete;
 
-  ~AccessibilityEventRecorderWin() override;
+  ~AXEventRecorderWin() override;
 
   // Callback registered by SetWinEventHook. Just calls OnWinEventHook.
   static CALLBACK void WinEventHookThunk(HWINEVENTHOOK handle,
@@ -55,9 +53,9 @@ class CONTENT_EXPORT AccessibilityEventRecorderWin
                       DWORD event_time);
 
   HWINEVENTHOOK win_event_hook_handle_;
-  static AccessibilityEventRecorderWin* instance_;
+  static AXEventRecorderWin* instance_;
 };
 
-}  // namespace content
+}  // namespace ui
 
-#endif  // CONTENT_BROWSER_ACCESSIBILITY_ACCESSIBILITY_EVENT_RECORDER_WIN_H_
+#endif  // UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_EVENT_RECORDER_WIN_H_

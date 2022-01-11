@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/accessibility/accessibility_event_recorder_win.h"
+#include "ui/accessibility/platform/inspect/ax_event_recorder_win.h"
 
 #include <stdint.h>
 #include <wrl/client.h>
@@ -23,13 +23,7 @@
 #include "ui/base/win/atl_module.h"
 #include "ui/gfx/win/hwnd_util.h"
 
-namespace content {
-
-using ui::AccessibilityEventToString;
-using ui::GetHWNDBySelector;
-using ui::IAccessible2StateToString;
-using ui::IAccessibleRoleToString;
-using ui::IAccessibleStateToString;
+namespace ui {
 
 namespace {
 
@@ -68,7 +62,7 @@ std::string BstrToPrettyUTF8(BSTR bstr) {
   // Pretty-print the embedded object character as <obj> so that test output
   // is human-readable.
   std::wstring embedded_character = base::UTF16ToWide(
-      std::u16string(1, ui::AXPlatformNodeBase::kEmbeddedCharacter));
+      std::u16string(1, AXPlatformNodeBase::kEmbeddedCharacter));
   base::ReplaceChars(wstr, embedded_character, L"<obj>", &wstr);
 
   return base::WideToUTF8(wstr);
@@ -81,28 +75,25 @@ std::string AccessibilityEventToStringUTF8(int32_t event_id) {
 }  // namespace
 
 // static
-AccessibilityEventRecorderWin* AccessibilityEventRecorderWin::instance_ =
-    nullptr;
+AXEventRecorderWin* AXEventRecorderWin::instance_ = nullptr;
 
 // static
-CALLBACK void AccessibilityEventRecorderWin::WinEventHookThunk(
-    HWINEVENTHOOK handle,
-    DWORD event,
-    HWND hwnd,
-    LONG obj_id,
-    LONG child_id,
-    DWORD event_thread,
-    DWORD event_time) {
+CALLBACK void AXEventRecorderWin::WinEventHookThunk(HWINEVENTHOOK handle,
+                                                    DWORD event,
+                                                    HWND hwnd,
+                                                    LONG obj_id,
+                                                    LONG child_id,
+                                                    DWORD event_thread,
+                                                    DWORD event_time) {
   if (instance_) {
     instance_->OnWinEventHook(handle, event, hwnd, obj_id, child_id,
                               event_thread, event_time);
   }
 }
 
-AccessibilityEventRecorderWin::AccessibilityEventRecorderWin(
-    base::ProcessId pid,
-    const ui::AXTreeSelector& selector,
-    ListenerType listenerType) {
+AXEventRecorderWin::AXEventRecorderWin(base::ProcessId pid,
+                                       const AXTreeSelector& selector,
+                                       ListenerType listenerType) {
   CHECK(!instance_) << "There can be only one instance of"
                     << " AccessibilityEventRecorder at a time.";
 
@@ -120,25 +111,25 @@ AccessibilityEventRecorderWin::AccessibilityEventRecorderWin(
       listenerType == kSync ? WINEVENT_INCONTEXT : WINEVENT_OUTOFCONTEXT;
   win_event_hook_handle_ =
       SetWinEventHook(EVENT_MIN, EVENT_MAX, GetModuleHandle(NULL),
-                      &AccessibilityEventRecorderWin::WinEventHookThunk, pid,
+                      &AXEventRecorderWin::WinEventHookThunk, pid,
                       0,  // Hook all threads
                       context);
   CHECK(win_event_hook_handle_);
   instance_ = this;
 }
 
-AccessibilityEventRecorderWin::~AccessibilityEventRecorderWin() {
+AXEventRecorderWin::~AXEventRecorderWin() {
   UnhookWinEvent(win_event_hook_handle_);
   instance_ = nullptr;
 }
 
-void AccessibilityEventRecorderWin::OnWinEventHook(HWINEVENTHOOK handle,
-                                                   DWORD event,
-                                                   HWND hwnd,
-                                                   LONG obj_id,
-                                                   LONG child_id,
-                                                   DWORD event_thread,
-                                                   DWORD event_time) {
+void AXEventRecorderWin::OnWinEventHook(HWINEVENTHOOK handle,
+                                        DWORD event,
+                                        HWND hwnd,
+                                        LONG obj_id,
+                                        LONG child_id,
+                                        DWORD event_thread,
+                                        DWORD event_time) {
   Microsoft::WRL::ComPtr<IAccessible> browser_accessible;
   HRESULT hr = ::AccessibleObjectFromWindow(hwnd, obj_id,
                                             IID_PPV_ARGS(&browser_accessible));
@@ -335,4 +326,4 @@ void AccessibilityEventRecorderWin::OnWinEventHook(HWINEVENTHOOK handle,
   OnEvent(log);
 }
 
-}  // namespace content
+}  // namespace ui
