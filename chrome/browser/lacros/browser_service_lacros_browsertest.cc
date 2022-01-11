@@ -2,12 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "chrome/browser/chromeos/app_mode/app_session.h"
 #include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chrome/browser/lacros/browser_service_lacros.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/profile_picker.h"
@@ -128,20 +130,35 @@ IN_PROC_BROWSER_TEST_F(BrowserServiceLacrosBrowserTest,
                        ProfilePickerOpensOnStartup) {
   // Create an additional profile.
   ProfileManager* profile_manager = g_browser_process->profile_manager();
-  ProfileAttributesStorage& storage =
-      profile_manager->GetProfileAttributesStorage();
   base::FilePath path_profile2 =
       profile_manager->user_data_dir().Append(FILE_PATH_LITERAL("Profile 2"));
 
   base::RunLoop run_loop;
+  Profile* profile2;
   profile_manager->CreateProfileAsync(
       path_profile2, base::BindLambdaForTesting(
                          [&](Profile* profile, Profile::CreateStatus status) {
-                           run_loop.Quit();
+                           if (status == Profile::CREATE_STATUS_INITIALIZED) {
+                             profile2 = profile;
+                             run_loop.Quit();
+                           }
                          }));
   run_loop.Run();
-  ASSERT_EQ(2u, storage.GetNumberOfProfiles());
-  storage.GetProfileAttributesWithPath(path_profile2)->SetActiveTimeToNow();
+  // Open a browser window to make it the last used profile.
+  chrome::NewEmptyWindow(profile2);
+  ui_test_utils::WaitForBrowserToOpen();
+
+  // Profile picker does _not_ open for incognito windows. Instead, the
+  // incognito window for the last used profile is directly opened.
+  base::RunLoop run_loop2;
+  browser_service()->NewWindow(
+      /*incognito=*/true, /*should_trigger_session_restore=*/false,
+      /*callback=*/base::BindLambdaForTesting([&]() { run_loop2.Quit(); }));
+  run_loop2.Run();
+  EXPECT_FALSE(ProfilePicker::IsOpen());
+  Profile* profile = BrowserList::GetInstance()->GetLastActive()->profile();
+  EXPECT_EQ(profile->GetPath(), path_profile2);
+  EXPECT_TRUE(profile->IsOffTheRecord());
 
   browser_service()->NewWindow(
       /*incognito=*/false, /*should_trigger_session_restore=*/false,

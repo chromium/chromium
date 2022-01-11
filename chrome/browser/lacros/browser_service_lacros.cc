@@ -146,7 +146,9 @@ void BrowserServiceLacros::NewWindow(bool incognito,
       session_restore_available = true;
   }
 
-  if (ProfilePicker::ShouldShowAtLaunch() && !session_restore_available) {
+  if (ProfilePicker::ShouldShowAtLaunch() && !session_restore_available &&
+      !incognito) {
+    // Profile picker does not support passing through the incognito param.
     ProfilePicker::Show(
         ProfilePicker::EntryPoint::kNewSessionOnExistingProcess);
   } else {
