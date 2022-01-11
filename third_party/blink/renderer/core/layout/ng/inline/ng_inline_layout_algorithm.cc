@@ -333,15 +333,8 @@ void NGInlineLayoutAlgorithm::CreateLine(
     DCHECK(IsLtr(line_info->BaseDirection()));
   }
   const LayoutUnit hang_width = line_info->HangWidth();
-  LayoutUnit inline_size;
-  if (IsLtr(line_info->BaseDirection())) {
-    inline_size = box_states_->ComputeInlinePositions(
-        line_box, LayoutUnit(), line_info->IsBlockInInline());
-  } else {
-    inline_size = box_states_->ComputeInlinePositions(
-        line_box, -hang_width, line_info->IsBlockInInline());
-    inline_size += hang_width;
-  }
+  LayoutUnit inline_size = box_states_->ComputeInlinePositions(
+      line_box, LayoutUnit(), line_info->IsBlockInInline());
   if (UNLIKELY(hang_width)) {
     inline_size -= hang_width;
     container_builder_.SetHangInlineSize(hang_width);
@@ -979,17 +972,21 @@ LayoutUnit NGInlineLayoutAlgorithm::ApplyTextAlign(NGLineInfo* line_info) {
   LayoutUnit space =
       line_info->AvailableWidth() - line_info->WidthForAlignment();
 
+  bool is_rtl_allowing_hang = IsRtl(line_info->BaseDirection()) &&
+                              line_info->ShouldHangTrailingSpaces();
   ETextAlign text_align = line_info->TextAlign();
   if (text_align == ETextAlign::kJustify) {
     absl::optional<LayoutUnit> offset = ApplyJustify(space, line_info);
     if (offset)
-      return *offset;
+      return !is_rtl_allowing_hang ? *offset : *offset - line_info->HangWidth();
 
     // If justification fails, fallback to 'text-align: start'.
     text_align = ETextAlign::kStart;
   }
 
-  return LineOffsetForTextAlign(text_align, line_info->BaseDirection(), space);
+  LayoutUnit offset =
+      LineOffsetForTextAlign(text_align, line_info->BaseDirection(), space);
+  return !is_rtl_allowing_hang ? offset : offset - line_info->HangWidth();
 }
 
 LayoutUnit NGInlineLayoutAlgorithm::SetAnnotationOverflow(

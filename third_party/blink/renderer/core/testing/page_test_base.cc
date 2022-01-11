@@ -206,6 +206,27 @@ void PageTestBase::LoadAhem(LocalFrame& frame) {
                                                      exception_state);
 }
 
+void PageTestBase::LoadNoto() {
+  LoadNoto(GetFrame());
+}
+
+void PageTestBase::LoadNoto(LocalFrame& frame) {
+  Document& document = *frame.DomWindow()->document();
+  scoped_refptr<SharedBuffer> shared_buffer =
+      test::ReadFromFile(blink::test::PlatformTestDataPath(
+          "third_party/Noto/NotoNaskhArabic-regular.woff2"));
+  auto* buffer =
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
+          DOMArrayBuffer::Create(shared_buffer));
+  FontFace* noto = FontFace::Create(frame.DomWindow(), "NotoArabic", buffer,
+                                    FontFaceDescriptors::Create());
+
+  ScriptState* script_state = ToScriptStateForMainWorld(&frame);
+  DummyExceptionStateForTesting exception_state;
+  FontFaceSetDocument::From(document)->addForBinding(script_state, noto,
+                                                     exception_state);
+}
+
 // Both sets the inner html and runs the document lifecycle.
 void PageTestBase::SetBodyInnerHTML(const String& body_content) {
   GetDocument().body()->setInnerHTML(body_content, ASSERT_NO_EXCEPTION);
