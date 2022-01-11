@@ -2926,6 +2926,23 @@
                     ]
                 }
             ]
+        },
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "DrDc",
+                    "enable_features": [
+                        "EnableDrDc"
+                    ],
+                    "disable_features": [
+                        "DefaultPassthroughCommandDecoder",
+                        "RawDraw"
+                    ]
+                }
+            ]
         }
     ],
     "DeprioritizeTimersUntilDOMContentLoadedExperiment": [
@@ -3605,22 +3622,6 @@
                     },
                     "enable_features": [
                         "EnableDangerousDownloadDialog"
-                    ]
-                }
-            ]
-        }
-    ],
-    "EnableDrDc": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "EnableDrDc"
                     ]
                 }
             ]
