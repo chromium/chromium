@@ -71,9 +71,9 @@ const char kExternalDeviceKeyBeaconSeedEndMs[] = "beacon_seed_end_ms";
 const char kDictionaryKeySoftwareFeatures[] = "software_features";
 
 // Converts BeaconSeed protos to a list value that can be stored in user prefs.
-std::unique_ptr<base::ListValue> BeaconSeedsToListValue(
+base::Value BeaconSeedsToListValue(
     const google::protobuf::RepeatedPtrField<cryptauth::BeaconSeed>& seeds) {
-  std::unique_ptr<base::ListValue> list(new base::ListValue());
+  base::Value list(base::Value::Type::LIST);
 
   for (int i = 0; i < seeds.size(); i++) {
     cryptauth::BeaconSeed seed = seeds.Get(i);
@@ -85,8 +85,7 @@ std::unique_ptr<base::ListValue> BeaconSeedsToListValue(
       continue;
     }
 
-    std::unique_ptr<base::DictionaryValue> beacon_seed_value(
-        new base::DictionaryValue());
+    base::Value beacon_seed_value(base::Value::Type::DICTIONARY);
 
     // Note that the |BeaconSeed|s' data is stored in Base64Url encoding because
     // dictionary values must be valid UTF8 strings.
@@ -94,17 +93,17 @@ std::unique_ptr<base::ListValue> BeaconSeedsToListValue(
     base::Base64UrlEncode(seed.data(),
                           base::Base64UrlEncodePolicy::INCLUDE_PADDING,
                           &seed_data_b64);
-    beacon_seed_value->SetString(kExternalDeviceKeyBeaconSeedData,
-                                 seed_data_b64);
+    beacon_seed_value.SetStringKey(kExternalDeviceKeyBeaconSeedData,
+                                   seed_data_b64);
 
     // Set the timestamps as string representations of their numeric value
     // since there is no notion of a base::LongValue.
-    beacon_seed_value->SetString(kExternalDeviceKeyBeaconSeedStartMs,
-                                 std::to_string(seed.start_time_millis()));
-    beacon_seed_value->SetString(kExternalDeviceKeyBeaconSeedEndMs,
-                                 std::to_string(seed.end_time_millis()));
+    beacon_seed_value.SetStringKey(kExternalDeviceKeyBeaconSeedStartMs,
+                                   std::to_string(seed.start_time_millis()));
+    beacon_seed_value.SetStringKey(kExternalDeviceKeyBeaconSeedEndMs,
+                                   std::to_string(seed.end_time_millis()));
 
-    list->Append(std::move(beacon_seed_value));
+    list.Append(std::move(beacon_seed_value));
   }
 
   return list;
@@ -127,19 +126,17 @@ void RecordDeviceSyncResult(bool success) {
 
 // Converts supported and enabled SoftwareFeature protos to a single dictionary
 // value that can be stored in user prefs.
-std::unique_ptr<base::DictionaryValue>
-SupportedAndEnabledSoftwareFeaturesToDictionaryValue(
+base::Value SupportedAndEnabledSoftwareFeaturesToDictionaryValue(
     const google::protobuf::RepeatedPtrField<std::string>&
         supported_software_features,
     const google::protobuf::RepeatedPtrField<std::string>&
         enabled_software_features,
     bool legacy_unlock_key,
     bool legacy_mobile_hotspot_supported) {
-  std::unique_ptr<base::DictionaryValue> dictionary =
-      std::make_unique<base::DictionaryValue>();
+  base::Value dictionary(base::Value::Type::DICTIONARY);
 
   for (const auto& supported_software_feature : supported_software_features) {
-    dictionary->SetInteger(
+    dictionary.SetIntKey(
         supported_software_feature,
         static_cast<int>(multidevice::SoftwareFeatureState::kSupported));
   }
@@ -149,12 +146,12 @@ SupportedAndEnabledSoftwareFeaturesToDictionaryValue(
     cryptauth::SoftwareFeature software_feature =
         SoftwareFeatureStringToEnum(software_feature_key);
 
-    int software_feature_state;
+    absl::optional<int> software_feature_state =
+        dictionary.FindIntKey(software_feature_key);
     bool software_feature_success_result = true;
-    if (!dictionary->GetInteger(software_feature_key,
-                                &software_feature_state) ||
+    if (!software_feature_state ||
         static_cast<multidevice::SoftwareFeatureState>(
-            software_feature_state) !=
+            *software_feature_state) !=
             multidevice::SoftwareFeatureState::kSupported) {
       if (software_feature == cryptauth::SoftwareFeature::EASY_UNLOCK_HOST) {
         // Allow this known special-case for legacy purposes; fall-through to
@@ -172,7 +169,7 @@ SupportedAndEnabledSoftwareFeaturesToDictionaryValue(
     RecordDeviceSyncSoftwareFeaturesResult(
         software_feature_success_result /* success */, software_feature);
 
-    dictionary->SetInteger(
+    dictionary.SetIntKey(
         software_feature_key,
         static_cast<int>(multidevice::SoftwareFeatureState::kEnabled));
   }
@@ -181,21 +178,18 @@ SupportedAndEnabledSoftwareFeaturesToDictionaryValue(
   // been set, check to see if the deprecated corresponding booleans are
   // enabled. This can happen if the CryptAuth server is not yet serving
   // software features, and only serving the deprecated booleans.
-  int software_feature_state;
-  std::string software_feature_key;
-  software_feature_key =
+  std::string software_feature_key =
       SoftwareFeatureEnumToString(cryptauth::SoftwareFeature::EASY_UNLOCK_HOST);
-  if (legacy_unlock_key &&
-      !dictionary->GetInteger(software_feature_key, &software_feature_state)) {
-    dictionary->SetInteger(
+  if (legacy_unlock_key && !dictionary.FindIntKey(software_feature_key)) {
+    dictionary.SetIntKey(
         software_feature_key,
         static_cast<int>(multidevice::SoftwareFeatureState::kEnabled));
   }
   software_feature_key = SoftwareFeatureEnumToString(
       cryptauth::SoftwareFeature::MAGIC_TETHER_HOST);
   if (legacy_mobile_hotspot_supported &&
-      !dictionary->GetInteger(software_feature_key, &software_feature_state)) {
-    dictionary->SetInteger(
+      !dictionary.FindIntKey(software_feature_key)) {
+    dictionary.SetIntKey(
         software_feature_key,
         static_cast<int>(multidevice::SoftwareFeatureState::kSupported));
   }
@@ -255,8 +249,7 @@ base::Value UnlockKeyToDictionary(const cryptauth::ExternalDeviceInfo& device) {
   }
 
   dictionary.SetKey(kExternalDeviceKeyBeaconSeeds,
-                    base::Value::FromUniquePtrValue(
-                        BeaconSeedsToListValue(device.beacon_seeds())));
+                    BeaconSeedsToListValue(device.beacon_seeds()));
 
   if (device.has_arc_plus_plus()) {
     dictionary.SetBoolKey(kExternalDeviceKeyArcPlusPlus,
@@ -284,13 +277,11 @@ base::Value UnlockKeyToDictionary(const cryptauth::ExternalDeviceInfo& device) {
   bool legacy_mobile_hotspot_supported =
       device.has_mobile_hotspot_supported() &&
       device.mobile_hotspot_supported();
-  dictionary.SetKey(
-      kDictionaryKeySoftwareFeatures,
-      base::Value::FromUniquePtrValue(
-          SupportedAndEnabledSoftwareFeaturesToDictionaryValue(
-              device.supported_software_features(),
-              device.enabled_software_features(), legacy_unlock_key,
-              legacy_mobile_hotspot_supported)));
+  dictionary.SetKey(kDictionaryKeySoftwareFeatures,
+                    SupportedAndEnabledSoftwareFeaturesToDictionaryValue(
+                        device.supported_software_features(),
+                        device.enabled_software_features(), legacy_unlock_key,
+                        legacy_mobile_hotspot_supported));
 
   return dictionary;
 }
