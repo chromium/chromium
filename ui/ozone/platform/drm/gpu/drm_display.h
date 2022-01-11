@@ -41,8 +41,6 @@ class DrmDisplay {
     bool SetPrivacyScreenProperty(bool enabled);
 
    private:
-    uint64_t GetStateValue(drmModePropertyRes* property,
-                           const display::PrivacyScreenState& state) const;
     display::PrivacyScreenState GetPrivacyScreenState() const;
     bool ValidateCurrentStateAgainst(bool enabled) const;
     drmModePropertyRes* GetReadPrivacyScreenProperty() const;

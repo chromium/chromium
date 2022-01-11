@@ -18,9 +18,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -194,7 +192,9 @@ display::PrivacyScreenState GetPrivacyScreenState(int fd,
   if (sw_index >= 0 && hw_index >= 0) {
     const std::string hw_enum_value = GetNameForEnumValue(
         hw_property.get(), connector->prop_values[hw_index]);
-    return GetPrivacyScreenStateFromEnumValue(hw_enum_value);
+    const display::PrivacyScreenState* state =
+        GetInternalTypeValueFromDrmEnum(hw_enum_value, kPrivacyScreenStates);
+    return state ? *state : display::kNotSupported;
   }
 
   // If the new privacy screen UAPI properties are missing, try to fetch the
@@ -205,7 +205,9 @@ display::PrivacyScreenState GetPrivacyScreenState(int fd,
   if (legacy_index >= 0) {
     const std::string legacy_enum_value = GetNameForEnumValue(
         legacy_property.get(), connector->prop_values[legacy_index]);
-    return GetPrivacyScreenStateFromEnumValue(legacy_enum_value);
+    const display::PrivacyScreenState* state = GetInternalTypeValueFromDrmEnum(
+        legacy_enum_value, kPrivacyScreenStates);
+    return state ? *state : display::kNotSupported;
   }
 
   return display::PrivacyScreenState::kNotSupported;
@@ -686,16 +688,23 @@ std::vector<uint64_t> ParsePathBlob(const drmModePropertyBlobRes& path_blob) {
   return path;
 }
 
-display::PrivacyScreenState GetPrivacyScreenStateFromEnumValue(
-    const std::string& enum_value) {
-  for (auto mapping : kPrivacyScreenStates) {
-    if (enum_value == mapping.drm_enum)
-      return mapping.internal_state;
+std::string GetEnumNameForProperty(
+    const drmModePropertyRes& property,
+    const drmModeObjectProperties& property_values) {
+  for (uint32_t prop_idx = 0; prop_idx < property_values.count_props;
+       ++prop_idx) {
+    if (property_values.props[prop_idx] != property.prop_id)
+      continue;
+
+    for (int enum_idx = 0; enum_idx < property.count_enums; ++enum_idx) {
+      const drm_mode_property_enum& property_enum = property.enums[enum_idx];
+      if (property_enum.value == property_values.prop_values[prop_idx])
+        return property_enum.name;
+    }
   }
 
-  NOTREACHED() << "Failed to match privacy screen property enum '" << enum_value
-               << "' to an internal type.";
-  return display::kNotSupported;
+  NOTREACHED();
+  return std::string();
 }
 
 }  // namespace ui
