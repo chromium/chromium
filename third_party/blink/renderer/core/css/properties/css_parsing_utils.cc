@@ -3990,33 +3990,29 @@ CSSIdentifierValue* ConsumeFontVariantCSS21(CSSParserTokenRange& range) {
 
 Vector<String> ParseGridTemplateAreasColumnNames(const String& grid_row_names) {
   DCHECK(!grid_row_names.IsEmpty());
-  Vector<String> column_names;
+
   // Using StringImpl to avoid checks and indirection in every call to
   // String::operator[].
   StringImpl& text = *grid_row_names.Impl();
-
   StringBuilder area_name;
+  Vector<String> column_names;
   for (unsigned i = 0; i < text.length(); ++i) {
     if (IsCSSSpace(text[i])) {
-      if (!area_name.IsEmpty()) {
+      if (!area_name.IsEmpty())
         column_names.push_back(area_name.ReleaseString());
-      }
       continue;
     }
     if (text[i] == '.') {
       if (area_name == ".")
         continue;
-      if (!area_name.IsEmpty()) {
+      if (!area_name.IsEmpty())
         column_names.push_back(area_name.ReleaseString());
-      }
     } else {
       if (!IsNameCodePoint(text[i]))
         return Vector<String>();
-      if (area_name == ".") {
+      if (area_name == ".")
         column_names.push_back(area_name.ReleaseString());
-      }
     }
-
     area_name.Append(text[i]);
   }
 
@@ -4286,8 +4282,9 @@ bool ConsumeGridTemplateRowsAndAreasAndColumns(
     if (range.Peek().GetType() != kStringToken ||
         !ParseGridTemplateAreasRow(
             range.ConsumeIncludingWhitespace().Value().ToString(),
-            grid_area_map, row_count, column_count))
+            grid_area_map, row_count, column_count)) {
       return false;
+    }
     ++row_count;
 
     // Handle template-rows's track-size.
@@ -4478,8 +4475,9 @@ bool ParseGridTemplateAreasRow(const String& grid_row_names,
 
     wtf_size_t look_ahead_column = current_column + 1;
     while (look_ahead_column < column_count &&
-           column_names[look_ahead_column] == grid_area_name)
+           column_names[look_ahead_column] == grid_area_name) {
       look_ahead_column++;
+    }
 
     NamedGridAreaMap::iterator grid_area_it =
         grid_area_map.find(grid_area_name);

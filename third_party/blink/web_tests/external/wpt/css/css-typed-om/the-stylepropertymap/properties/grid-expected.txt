@@ -1,6 +1,0 @@
-This is a testharness.js-based test.
-FAIL 'grid' does not supported 'auto-flow / 1fr 1fr 1fr' assert_not_equals: Unsupported value must not be null got disallowed value null
-FAIL 'grid' does not supported 'auto-flow dense / 40px 40px 1fr' assert_not_equals: Unsupported value must not be null got disallowed value null
-FAIL 'grid' does not supported 'repeat(3, 80px) / auto-flow' assert_not_equals: Unsupported value must not be null got disallowed value null
-Harness: the test ran to completion.
-

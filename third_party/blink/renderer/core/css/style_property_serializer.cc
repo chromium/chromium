@@ -29,6 +29,7 @@
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/animation/css/css_animation_data.h"
 #include "third_party/blink/renderer/core/css/css_custom_property_declaration.h"
+#include "third_party/blink/renderer/core/css/css_grid_template_areas_value.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_markup.h"
 #include "third_party/blink/renderer/core/css/css_pending_substitution_value.h"
@@ -503,6 +504,10 @@ String StylePropertySerializer::SerializeShorthand(
       return GetShorthandValue(flexShorthand());
     case CSSPropertyID::kFlexFlow:
       return GetShorthandValue(flexFlowShorthand());
+    case CSSPropertyID::kGrid:
+      return GetShorthandValueForGrid(gridShorthand());
+    case CSSPropertyID::kGridTemplate:
+      return GetShorthandValueForGridTemplate(gridTemplateShorthand());
     case CSSPropertyID::kGridColumn:
       return GetShorthandValue(gridColumnShorthand(), " / ");
     case CSSPropertyID::kGridRow:
@@ -1208,6 +1213,154 @@ String StylePropertySerializer::GetShorthandValue(
     if (!result.IsEmpty())
       result.Append(separator);
     result.Append(value_text);
+  }
+  return result.ReleaseString();
+}
+
+namespace {
+
+String NamedGridAreaTextForPosition(const NamedGridAreaMap& grid_area_map,
+                                    wtf_size_t index) {
+  for (const auto& item : grid_area_map) {
+    const GridArea& area = item.value;
+    if (index >= area.rows.StartLine() && index < area.rows.EndLine())
+      return item.key;
+  }
+  return g_empty_string;
+}
+
+}  // namespace
+
+String StylePropertySerializer::GetShorthandValueForGrid(
+    const StylePropertyShorthand& shorthand) const {
+  DCHECK_EQ(shorthand.length(), 6u);
+
+  const CSSValue* auto_flow_values =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[3]);
+  const CSSValue* auto_row_values =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[4]);
+  const CSSValue* auto_column_values =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[5]);
+
+  // 1- <'grid-template'>
+  if (IsA<CSSIdentifierValue>(auto_flow_values) &&
+      To<CSSIdentifierValue>(auto_flow_values)->GetValueID() ==
+          CSSValueID::kRow &&
+      IsA<CSSIdentifierValue>(auto_row_values) &&
+      To<CSSIdentifierValue>(auto_row_values)->GetValueID() ==
+          CSSValueID::kAuto &&
+      IsA<CSSIdentifierValue>(auto_column_values) &&
+      To<CSSIdentifierValue>(auto_column_values)->GetValueID() ==
+          CSSValueID::kAuto) {
+    return GetShorthandValueForGridTemplate(shorthand);
+  }
+  const CSSValue* template_row_values =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[0]);
+  const CSSValue* template_column_values =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[1]);
+  const CSSValueList* auto_flow_value_list =
+      DynamicTo<CSSValueList>(auto_flow_values);
+
+  StringBuilder auto_flow_text;
+  auto_flow_text.Append("auto-flow ");
+  if (auto_flow_value_list->HasValue(
+          *CSSIdentifierValue::Create(CSSValueID::kDense))) {
+    auto_flow_text.Append("dense ");
+  }
+
+  // 2- <'grid-template-rows'> / [ auto-flow && dense? ] <'grid-auto-columns'>?
+  // | [ auto-flow && dense? ] <'grid-auto-rows'>? / <'grid-template-columns'>
+  StringBuilder result;
+  if (auto_flow_value_list->HasValue(
+          *CSSIdentifierValue::Create(CSSValueID::kColumn))) {
+    result.Append(template_row_values->CssText());
+    result.Append(" / ");
+    result.Append(auto_flow_text);
+    result.Append(auto_column_values->CssText());
+  } else {
+    result.Append(auto_flow_text);
+    result.Append(auto_row_values->CssText());
+    result.Append(" / ");
+    result.Append(template_column_values->CssText());
+  }
+  return result.ReleaseString();
+}
+
+String StylePropertySerializer::GetShorthandValueForGridTemplate(
+    const StylePropertyShorthand& shorthand) const {
+  const CSSValue* template_row_values =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[0]);
+  const CSSValue* template_column_values =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[1]);
+  const CSSValue* area_values =
+      property_set_.GetPropertyCSSValue(*shorthand.properties()[2]);
+
+  // 1- 'none' case.
+  if (IsA<CSSIdentifierValue>(template_row_values) &&
+      To<CSSIdentifierValue>(template_row_values)->GetValueID() ==
+          CSSValueID::kNone &&
+      IsA<CSSIdentifierValue>(template_column_values) &&
+      To<CSSIdentifierValue>(template_column_values)->GetValueID() ==
+          CSSValueID::kNone) {
+    return "none";
+  }
+
+  StringBuilder result;
+  // 2- <grid-template-rows> / <grid-template-columns>
+  if (IsA<CSSIdentifierValue>(area_values) &&
+      To<CSSIdentifierValue>(area_values)->GetValueID() == CSSValueID::kNone) {
+    result.Append(template_row_values->CssText());
+    result.Append(" / ");
+    result.Append(template_column_values->CssText());
+    return result.ReleaseString();
+  }
+
+  // 3- [ <line-names>? <string> <track-size>? <line-names>? ]+
+  // [ / <track-list> ]?
+  const auto* template_row_value_list =
+      DynamicTo<CSSValueList>(template_row_values);
+  if (template_row_value_list->length() == 1 &&
+      IsA<CSSIdentifierValue>(template_row_value_list->Item(0)) &&
+      To<CSSIdentifierValue>(template_row_value_list->Item(0)).GetValueID() ==
+          CSSValueID::kAuto) {
+    // If the |template_row_value_list| has only one value and it is 'auto',
+    // then we append the 'grid-template-area' values.
+    result.Append(area_values->CssText());
+  } else {
+    const NamedGridAreaMap& grid_area_map =
+        DynamicTo<cssvalue::CSSGridTemplateAreasValue>(area_values)
+            ->GridAreaMap();
+    wtf_size_t grid_area_index = 0;
+    for (const auto& row_value : *template_row_value_list) {
+      const String row_value_text = row_value->CssText();
+      if (row_value->IsGridLineNamesValue()) {
+        if (!result.IsEmpty())
+          result.Append(' ');
+        result.Append(row_value_text);
+        continue;
+      }
+      const String grid_area_text =
+          NamedGridAreaTextForPosition(grid_area_map, grid_area_index);
+      if (!grid_area_text.IsEmpty()) {
+        if (!result.IsEmpty())
+          result.Append(' ');
+        result.Append('"');
+        result.Append(grid_area_text);
+        result.Append('"');
+        ++grid_area_index;
+      }
+      if (row_value_text != "auto") {
+        if (!result.IsEmpty())
+          result.Append(' ');
+        result.Append(row_value_text);
+      }
+    }
+  }
+  if (!(IsA<CSSIdentifierValue>(template_column_values) &&
+        To<CSSIdentifierValue>(template_column_values)->GetValueID() ==
+            CSSValueID::kNone)) {
+    result.Append(" / ");
+    result.Append(template_column_values->CssText());
   }
   return result.ReleaseString();
 }

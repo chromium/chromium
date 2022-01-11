@@ -1568,7 +1568,7 @@ CSSValueList* ConsumeImplicitAutoFlow(
     const CSSIdentifierValue& flow_direction) {
   // [ auto-flow && dense? ]
   CSSValue* dense_algorithm = nullptr;
-  if ((css_parsing_utils::ConsumeIdent<CSSValueID::kAutoFlow>(range))) {
+  if (css_parsing_utils::ConsumeIdent<CSSValueID::kAutoFlow>(range)) {
     dense_algorithm =
         css_parsing_utils::ConsumeIdent<CSSValueID::kDense>(range);
   } else {
@@ -1628,16 +1628,16 @@ bool Grid::ParseShorthand(bool important,
     css_parsing_utils::AddProperty(
         CSSPropertyID::kGridAutoFlow, CSSPropertyID::kGrid,
         *(To<Longhand>(GetCSSPropertyGridAutoFlow()).InitialValue()), important,
-        css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+        css_parsing_utils::IsImplicitProperty::kImplicit, properties);
     css_parsing_utils::AddProperty(
         CSSPropertyID::kGridAutoColumns, CSSPropertyID::kGrid,
         *(To<Longhand>(GetCSSPropertyGridAutoColumns()).InitialValue()),
-        important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
+        important, css_parsing_utils::IsImplicitProperty::kImplicit,
         properties);
     css_parsing_utils::AddProperty(
         CSSPropertyID::kGridAutoRows, CSSPropertyID::kGrid,
         *(To<Longhand>(GetCSSPropertyGridAutoRows()).InitialValue()), important,
-        css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+        css_parsing_utils::IsImplicitProperty::kImplicit, properties);
     return true;
   }
 
@@ -1723,16 +1723,14 @@ bool Grid::ParseShorthand(bool important,
       properties);
   css_parsing_utils::AddProperty(
       CSSPropertyID::kGridAutoFlow, CSSPropertyID::kGrid, *grid_auto_flow,
-      important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
-      properties);
+      important, css_parsing_utils::IsImplicitProperty::kImplicit, properties);
   css_parsing_utils::AddProperty(
       CSSPropertyID::kGridAutoColumns, CSSPropertyID::kGrid,
       *auto_columns_value, important,
-      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
+      css_parsing_utils::IsImplicitProperty::kImplicit, properties);
   css_parsing_utils::AddProperty(
       CSSPropertyID::kGridAutoRows, CSSPropertyID::kGrid, *auto_rows_value,
-      important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
-      properties);
+      important, css_parsing_utils::IsImplicitProperty::kImplicit, properties);
   return true;
 }
 

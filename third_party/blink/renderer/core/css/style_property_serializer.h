@@ -56,6 +56,8 @@ class StylePropertySerializer {
   String PageBreakPropertyValue(const StylePropertyShorthand&) const;
   String GetShorthandValue(const StylePropertyShorthand&,
                            String separator = " ") const;
+  String GetShorthandValueForGrid(const StylePropertyShorthand&) const;
+  String GetShorthandValueForGridTemplate(const StylePropertyShorthand&) const;
   String ContainerValue() const;
   String FontValue() const;
   String FontSynthesisValue() const;
