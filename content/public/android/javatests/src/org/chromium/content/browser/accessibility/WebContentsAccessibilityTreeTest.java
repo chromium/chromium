@@ -1193,10 +1193,8 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.Q,
-            message = "Fails on Android 11: https://crbug.com/1280713")
-    public void
-    test_buttonWithListboxPopup() {
+    @DisabledTest(message = "https://crbug.com/1280713")
+    public void test_buttonWithListboxPopup() {
         performHtmlTest("button-with-listbox-popup.html");
     }
 
