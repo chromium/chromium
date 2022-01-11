@@ -1862,8 +1862,8 @@ class WebAppBrowserTest_FileHandler : public WebAppBrowserTest {
   base::test::ScopedFeatureList feature_list_;
 };
 
-// TODO(crbug.com/1270961): Flaky.
-#if defined(OS_WIN) || (defined(OS_MAC) && defined(ARCH_CPU_ARM64))
+// TODO(crbug.com/1270961): Flaky on Win and Mac.
+#if defined(OS_WIN) || defined(OS_MAC)
 #define MAYBE_WebAppFileHandler DISABLED_WebAppFileHandler
 #else
 #define MAYBE_WebAppFileHandler WebAppFileHandler
