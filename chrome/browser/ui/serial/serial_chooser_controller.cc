@@ -33,12 +33,10 @@ SerialChooserController::SerialChooserController(
       filters_(std::move(filters)),
       callback_(std::move(callback)),
       frame_tree_node_id_(render_frame_host->GetFrameTreeNodeId()) {
-  auto* web_contents =
-      content::WebContents::FromRenderFrameHost(render_frame_host);
-  origin_ = web_contents->GetMainFrame()->GetLastCommittedOrigin();
+  origin_ = render_frame_host->GetMainFrame()->GetLastCommittedOrigin();
 
   auto* profile =
-      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+      Profile::FromBrowserContext(render_frame_host->GetBrowserContext());
   chooser_context_ =
       SerialChooserContextFactory::GetForProfile(profile)->AsWeakPtr();
   DCHECK(chooser_context_);
