@@ -210,10 +210,10 @@ class DisplayPrefsTest : public AshTestBase {
 
     base::DictionaryValue* pref_data = update.Get();
     base::DictionaryValue insets_value;
-    insets_value.SetInteger("insets_top", insets.top());
-    insets_value.SetInteger("insets_left", insets.left());
-    insets_value.SetInteger("insets_bottom", insets.bottom());
-    insets_value.SetInteger("insets_right", insets.right());
+    insets_value.SetIntKey("insets_top", insets.top());
+    insets_value.SetIntKey("insets_left", insets.left());
+    insets_value.SetIntKey("insets_bottom", insets.bottom());
+    insets_value.SetIntKey("insets_right", insets.right());
     pref_data->SetKey(name, std::move(insets_value));
   }
 

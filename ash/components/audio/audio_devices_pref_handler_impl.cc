@@ -166,8 +166,8 @@ void AudioDevicesPrefHandlerImpl::SetMuteValue(const AudioDevice& device,
     std::string old_device_id = GetVersionedDeviceIdString(device, 1);
     device_mute_settings_->RemoveKey(old_device_id);
   }
-  device_mute_settings_->SetInteger(GetDeviceIdString(device),
-                                    mute ? kPrefMuteOn : kPrefMuteOff);
+  device_mute_settings_->SetIntKey(GetDeviceIdString(device),
+                                   mute ? kPrefMuteOn : kPrefMuteOff);
   SaveDevicesMutePref();
 }
 
@@ -378,7 +378,7 @@ void AudioDevicesPrefHandlerImpl::MigrateDeviceMuteSettings(
     // If there was no recorded value for deprecated device ID, use value from
     // global mute pref.
     int old_mute = local_state_->GetInteger(prefs::kAudioMute);
-    device_mute_settings_->SetInteger(device_key, old_mute);
+    device_mute_settings_->SetIntKey(device_key, old_mute);
   }
   SaveDevicesMutePref();
 }

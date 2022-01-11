@@ -298,9 +298,9 @@ std::unique_ptr<base::DictionaryValue> CreateWallpaperInfoDict(
       base::NumberToString(info.date.ToInternalValue()));
   wallpaper_info_dict->SetString(
       WallpaperControllerImpl::kNewWallpaperLocationNodeName, info.location);
-  wallpaper_info_dict->SetInteger(
+  wallpaper_info_dict->SetIntKey(
       WallpaperControllerImpl::kNewWallpaperLayoutNodeName, info.layout);
-  wallpaper_info_dict->SetInteger(
+  wallpaper_info_dict->SetIntKey(
       WallpaperControllerImpl::kNewWallpaperTypeNodeName,
       static_cast<int>(info.type));
   return wallpaper_info_dict;
@@ -3148,10 +3148,10 @@ class WallpaperControllerPrefTest : public AshTestBase,
  public:
   WallpaperControllerPrefTest() {
     base::DictionaryValue property;
-    property.SetInteger("rotation",
-                        static_cast<int>(display::Display::ROTATE_90));
-    property.SetInteger("width", 800);
-    property.SetInteger("height", 600);
+    property.SetIntKey("rotation",
+                       static_cast<int>(display::Display::ROTATE_90));
+    property.SetIntKey("width", 800);
+    property.SetIntKey("height", 600);
 
     DictionaryPrefUpdateDeprecated update(local_state(),
                                           prefs::kDisplayProperties);

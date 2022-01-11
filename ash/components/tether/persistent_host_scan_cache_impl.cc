@@ -34,8 +34,8 @@ std::unique_ptr<base::DictionaryValue> HostScanCacheEntryToDictionary(
   dictionary->SetString(kTetherNetworkGuidKey, entry.tether_network_guid);
   dictionary->SetString(kDeviceNameKey, entry.device_name);
   dictionary->SetString(kCarrierKey, entry.carrier);
-  dictionary->SetInteger(kBatteryPercentageKey, entry.battery_percentage);
-  dictionary->SetInteger(kSignalStrengthKey, entry.signal_strength);
+  dictionary->SetIntKey(kBatteryPercentageKey, entry.battery_percentage);
+  dictionary->SetIntKey(kSignalStrengthKey, entry.signal_strength);
   dictionary->SetBoolean(kSetupRequiredKey, entry.setup_required);
 
   return dictionary;
@@ -64,19 +64,20 @@ std::unique_ptr<HostScanCacheEntry> DictionaryToHostScanCacheEntry(
   }
   builder.SetCarrier(carrier);
 
-  int battery_percentage;
-  if (!dictionary.GetInteger(kBatteryPercentageKey, &battery_percentage) ||
-      battery_percentage < 0 || battery_percentage > 100) {
+  absl::optional<int> battery_percentage =
+      dictionary.FindIntKey(kBatteryPercentageKey);
+  if (!battery_percentage || *battery_percentage < 0 ||
+      *battery_percentage > 100) {
     return nullptr;
   }
-  builder.SetBatteryPercentage(battery_percentage);
+  builder.SetBatteryPercentage(*battery_percentage);
 
-  int signal_strength;
-  if (!dictionary.GetInteger(kSignalStrengthKey, &signal_strength) ||
-      signal_strength < 0 || signal_strength > 100) {
+  absl::optional<int> signal_strength =
+      dictionary.FindIntKey(kSignalStrengthKey);
+  if (!signal_strength || *signal_strength < 0 || *signal_strength > 100) {
     return nullptr;
   }
-  builder.SetSignalStrength(signal_strength);
+  builder.SetSignalStrength(*signal_strength);
 
   absl::optional<bool> setup_required =
       dictionary.FindBoolPath(kSetupRequiredKey);

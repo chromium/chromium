@@ -82,7 +82,7 @@ TrialGroupChecker::Status TrialGroupChecker::LookUpMembership(
   std::string upload_data;
   {
     base::DictionaryValue request;
-    request.SetInteger("group", static_cast<int>(group_id_));
+    request.SetIntKey("group", static_cast<int>(group_id_));
     base::JSONWriter::Write(request, &upload_data);
   }
 

@@ -303,11 +303,11 @@ void UpdatePrimaryUserDeskMetricsPrefs() {
   const auto& desks = desks_controller->desks();
   for (const auto& desk : desks) {
     base::DictionaryValue metrics_dict;
-    metrics_dict.SetInteger(
+    metrics_dict.SetIntKey(
         kCreationTimeKey,
         desk->creation_time().ToDeltaSinceWindowsEpoch().InMinutes());
-    metrics_dict.SetInteger(kFirstDayVisitedKey, desk->first_day_visited());
-    metrics_dict.SetInteger(kLastDayVisitedKey, desk->last_day_visited());
+    metrics_dict.SetIntKey(kFirstDayVisitedKey, desk->first_day_visited());
+    metrics_dict.SetIntKey(kLastDayVisitedKey, desk->last_day_visited());
     metrics_dict.SetBoolean(kInteractedWithThisWeekKey,
                             desk->interacted_with_this_week());
     metrics_pref_data->Append(std::move(metrics_dict));

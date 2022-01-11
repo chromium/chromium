@@ -87,10 +87,10 @@ bool ValueToInsets(const base::DictionaryValue& value, gfx::Insets* insets) {
 
 void InsetsToValue(const gfx::Insets& insets, base::DictionaryValue* value) {
   DCHECK(value);
-  value->SetInteger(kInsetsTopKey, insets.top());
-  value->SetInteger(kInsetsLeftKey, insets.left());
-  value->SetInteger(kInsetsBottomKey, insets.bottom());
-  value->SetInteger(kInsetsRightKey, insets.right());
+  value->SetIntKey(kInsetsTopKey, insets.top());
+  value->SetIntKey(kInsetsLeftKey, insets.left());
+  value->SetIntKey(kInsetsBottomKey, insets.bottom());
+  value->SetIntKey(kInsetsRightKey, insets.right());
 }
 
 // Unmarshalls the string containing CalibrationPointPairQuad and populates
@@ -549,22 +549,22 @@ void StoreCurrentDisplayProperties(PrefService* pref_service) {
         absl::optional<int> original_rotation =
             original_property->FindIntKey("rotation");
         if (original_rotation) {
-          property_value.SetInteger("rotation", *original_rotation);
+          property_value.SetIntKey("rotation", *original_rotation);
         }
       }
     } else {
-      property_value.SetInteger("rotation",
-                                static_cast<int>(info.GetRotation(
-                                    display::Display::RotationSource::USER)));
+      property_value.SetIntKey("rotation",
+                               static_cast<int>(info.GetRotation(
+                                   display::Display::RotationSource::USER)));
     }
 
     display::ManagedDisplayMode mode;
     if (!display.IsInternal() &&
         display_manager->GetSelectedModeForDisplayId(id, &mode) &&
         !mode.native()) {
-      property_value.SetInteger("width", mode.size().width());
-      property_value.SetInteger("height", mode.size().height());
-      property_value.SetInteger(
+      property_value.SetIntKey("width", mode.size().width());
+      property_value.SetIntKey("height", mode.size().height());
+      property_value.SetIntKey(
           "device-scale-factor",
           static_cast<int>(mode.device_scale_factor() * 1000));
 
@@ -638,7 +638,7 @@ void StoreDisplayRotationPrefs(PrefService* pref_service,
                                         prefs::kDisplayRotationLock);
   base::DictionaryValue* pref_data = update.Get();
   pref_data->SetBoolean("lock", rotation_lock);
-  pref_data->SetInteger("orientation", static_cast<int>(rotation));
+  pref_data->SetIntKey("orientation", static_cast<int>(rotation));
 }
 
 void StoreCurrentDisplayRotationLockPrefs(PrefService* pref_service) {

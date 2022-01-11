@@ -132,7 +132,7 @@ class AudioDevicesPrefHandlerTest : public testing::TestWithParam<bool> {
       DictionaryPrefUpdateDeprecated update(pref_service_.get(),
                                             prefs::kAudioDevicesMute);
       base::DictionaryValue* pref = update.Get();
-      pref->SetInteger(preset_key, static_cast<int>(kPresetState.mute));
+      pref->SetIntKey(preset_key, static_cast<int>(kPresetState.mute));
     }
 
     audio_pref_handler_ = new AudioDevicesPrefHandlerImpl(pref_service_.get());
