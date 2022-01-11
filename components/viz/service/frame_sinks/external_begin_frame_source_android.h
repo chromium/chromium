@@ -21,7 +21,9 @@ class VIZ_SERVICE_EXPORT ExternalBeginFrameSourceAndroid
     : public ExternalBeginFrameSource,
       public ExternalBeginFrameSourceClient {
  public:
-  ExternalBeginFrameSourceAndroid(uint32_t restart_id, float refresh_rate);
+  ExternalBeginFrameSourceAndroid(uint32_t restart_id,
+                                  float refresh_rate,
+                                  bool requires_align_with_java);
 
   ExternalBeginFrameSourceAndroid(const ExternalBeginFrameSourceAndroid&) =
       delete;

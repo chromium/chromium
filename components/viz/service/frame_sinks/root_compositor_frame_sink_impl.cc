@@ -91,8 +91,9 @@ RootCompositorFrameSinkImpl::Create(
 #if defined(OS_ANDROID)
     hw_support_for_multiple_refresh_rates = true;
     external_begin_frame_source =
-        std::make_unique<ExternalBeginFrameSourceAndroid>(restart_id,
-                                                          params->refresh_rate);
+        std::make_unique<ExternalBeginFrameSourceAndroid>(
+            restart_id, params->refresh_rate,
+            /*requires_align_with_java=*/false);
 #else
     if (params->disable_frame_rate_limit) {
       synthetic_begin_frame_source =

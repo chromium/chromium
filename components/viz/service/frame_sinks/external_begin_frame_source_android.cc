@@ -204,9 +204,17 @@ void ExternalBeginFrameSourceAndroid::AChoreographerImpl::
 
 ExternalBeginFrameSourceAndroid::ExternalBeginFrameSourceAndroid(
     uint32_t restart_id,
-    float refresh_rate)
+    float refresh_rate,
+    bool requires_align_with_java)
     : ExternalBeginFrameSource(this, restart_id) {
-  achoreographer_ = AChoreographerImpl::Create(this);
+  // Android WebView requires begin frame to be inside the "animate" stage of
+  // input-animate-draw stages of the java Choreographer, which requires using
+  // java Choreographer.
+  if (requires_align_with_java) {
+    achoreographer_ = nullptr;
+  } else {
+    achoreographer_ = AChoreographerImpl::Create(this);
+  }
   if (!achoreographer_) {
     j_object_ = Java_ExternalBeginFrameSourceAndroid_Constructor(
         base::android::AttachCurrentThread(), reinterpret_cast<jlong>(this),

@@ -126,7 +126,9 @@ RootBeginFrameSourceWebView* RootBeginFrameSourceWebView::GetInstance() {
 }
 
 RootBeginFrameSourceWebView::RootBeginFrameSourceWebView()
-    : begin_frame_source_(kNotRestartableId, 60.0f),
+    : begin_frame_source_(kNotRestartableId,
+                          60.0f,
+                          /*requires_align_with_java=*/true),
       j_object_(Java_RootBeginFrameSourceWebView_Constructor(
           base::android::AttachCurrentThread(),
           reinterpret_cast<jlong>(this))) {

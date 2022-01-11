@@ -43,7 +43,8 @@ class ExternalBeginFrameSourceAndroidTest : public ::testing::Test,
  private:
   void InitOnThread() {
     begin_frame_source_ = std::make_unique<ExternalBeginFrameSourceAndroid>(
-        BeginFrameSource::kNotRestartableId, 60.f);
+        BeginFrameSource::kNotRestartableId, 60.f,
+        /*requires_align_with_java=*/false);
   }
 
   void AddObserverOnThread(uint32_t frame_count) {
