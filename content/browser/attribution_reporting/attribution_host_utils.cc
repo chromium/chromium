@@ -67,7 +67,7 @@ VerifyResult VerifyAndStoreImpression(StorableSource::SourceType source_type,
                                         source_type),
       source_type, impression.priority,
       policy.GetAttributionLogicForImpression(source_type),
-      /*impression_id=*/absl::nullopt);
+      /*source_id=*/absl::nullopt);
 
   attribution_manager.HandleSource(std::move(storable_impression));
   return VerifyResult{.allowed = true, .stored = true};

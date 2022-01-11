@@ -34,13 +34,13 @@ AttributionReport::Id NextConversionId(AttributionReport::Id id) {
 }
 
 struct ImpressionIdAndConversionOrigin {
-  StorableSource::Id impression_id;
+  StorableSource::Id source_id;
   url::Origin conversion_origin;
 };
 
 std::vector<ImpressionIdAndConversionOrigin>
 GetImpressionIdAndConversionOrigins(sql::Database* db,
-                                    StorableSource::Id start_impression_id) {
+                                    StorableSource::Id start_source_id) {
   static constexpr char kGetImpressionsSql[] =
       "SELECT impression_id,conversion_origin "
       "FROM impressions "
@@ -50,18 +50,18 @@ GetImpressionIdAndConversionOrigins(sql::Database* db,
 
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kGetImpressionsSql));
-  statement.BindInt64(0, *start_impression_id);
+  statement.BindInt64(0, *start_source_id);
 
   const int kNumImpressions = 100;
   statement.BindInt(1, kNumImpressions);
 
   std::vector<ImpressionIdAndConversionOrigin> impressions;
   while (statement.Step()) {
-    StorableSource::Id impression_id(statement.ColumnInt64(0));
+    StorableSource::Id source_id(statement.ColumnInt64(0));
     url::Origin conversion_origin =
         DeserializeOrigin(statement.ColumnString(1));
 
-    impressions.push_back({impression_id, std::move(conversion_origin)});
+    impressions.push_back({source_id, std::move(conversion_origin)});
   }
   if (!statement.Succeeded())
     return {};
@@ -69,13 +69,13 @@ GetImpressionIdAndConversionOrigins(sql::Database* db,
 }
 
 struct ImpressionIdAndImpressionOrigin {
-  StorableSource::Id impression_id;
+  StorableSource::Id source_id;
   url::Origin impression_origin;
 };
 
 std::vector<ImpressionIdAndImpressionOrigin>
 GetImpressionIdAndImpressionOrigins(sql::Database* db,
-                                    StorableSource::Id start_impression_id) {
+                                    StorableSource::Id start_source_id) {
   static constexpr char kGetImpressionsSql[] =
       "SELECT impression_id,impression_origin "
       "FROM impressions "
@@ -85,18 +85,18 @@ GetImpressionIdAndImpressionOrigins(sql::Database* db,
 
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kGetImpressionsSql));
-  statement.BindInt64(0, *start_impression_id);
+  statement.BindInt64(0, *start_source_id);
 
   const int kNumImpressions = 100;
   statement.BindInt(1, kNumImpressions);
 
   std::vector<ImpressionIdAndImpressionOrigin> impressions;
   while (statement.Step()) {
-    StorableSource::Id impression_id(statement.ColumnInt64(0));
+    StorableSource::Id source_id(statement.ColumnInt64(0));
     url::Origin impression_origin =
         DeserializeOrigin(statement.ColumnString(1));
 
-    impressions.push_back({impression_id, std::move(impression_origin)});
+    impressions.push_back({source_id, std::move(impression_origin)});
   }
   if (!statement.Succeeded())
     return {};
@@ -204,13 +204,13 @@ bool MigrateToVersion2(sql::Database* db, sql::MetaTable* meta_table) {
       // dynamically.
       update_destination_statement.BindString(
           0, net::SchemefulSite(impression.conversion_origin).Serialize());
-      update_destination_statement.BindInt64(1, *impression.impression_id);
+      update_destination_statement.BindInt64(1, *impression.source_id);
       update_destination_statement.Run();
     }
 
     // Fetch the next batch of rows from the database.
     impressions = GetImpressionIdAndConversionOrigins(
-        db, NextImpressionId(impressions.back().impression_id));
+        db, NextImpressionId(impressions.back().source_id));
   }
 
   // Create the pre-existing impression table indices on the new table.
@@ -532,14 +532,14 @@ bool MigrateToVersion7(sql::Database* db, sql::MetaTable* meta_table) {
       // The impression site is derived from the impression origin dynamically.
       update_impression_site_statement.BindString(
           0, net::SchemefulSite(impression.impression_origin).Serialize());
-      update_impression_site_statement.BindInt64(1, *impression.impression_id);
+      update_impression_site_statement.BindInt64(1, *impression.source_id);
       if (!update_impression_site_statement.Run())
         return false;
     }
 
     // Fetch the next batch of rows from the database.
     impressions = GetImpressionIdAndImpressionOrigins(
-        db, NextImpressionId(impressions.back().impression_id));
+        db, NextImpressionId(impressions.back().source_id));
   }
 
   // Create the pre-existing impression table indices on the new table.
@@ -573,13 +573,13 @@ bool MigrateToVersion7(sql::Database* db, sql::MetaTable* meta_table) {
 }
 
 struct ImpressionIdAndImpressionData {
-  StorableSource::Id impression_id;
+  StorableSource::Id source_id;
   std::string impression_data;
 };
 
 std::vector<ImpressionIdAndImpressionData> GetImpressionIdAndImpressionData(
     sql::Database* db,
-    StorableSource::Id start_impression_id) {
+    StorableSource::Id start_source_id) {
   static constexpr char kGetImpressionsSql[] =
       "SELECT impression_id,impression_data "
       "FROM impressions "
@@ -589,17 +589,17 @@ std::vector<ImpressionIdAndImpressionData> GetImpressionIdAndImpressionData(
 
   sql::Statement statement(
       db->GetCachedStatement(SQL_FROM_HERE, kGetImpressionsSql));
-  statement.BindInt64(0, *start_impression_id);
+  statement.BindInt64(0, *start_source_id);
 
   const int kNumImpressions = 100;
   statement.BindInt(1, kNumImpressions);
 
   std::vector<ImpressionIdAndImpressionData> impressions;
   while (statement.Step()) {
-    StorableSource::Id impression_id(statement.ColumnInt64(0));
+    StorableSource::Id source_id(statement.ColumnInt64(0));
     std::string impression_data = statement.ColumnString(1);
 
-    impressions.push_back({impression_id, std::move(impression_data)});
+    impressions.push_back({source_id, std::move(impression_data)});
   }
   if (!statement.Succeeded())
     return {};
@@ -674,13 +674,13 @@ bool MigrateToVersion8(sql::Database* db, sql::MetaTable* meta_table) {
       update_impression_data_statement.Reset(/*clear_bound_vars=*/true);
       update_impression_data_statement.BindInt64(
           0, SerializeUint64(impression_data));
-      update_impression_data_statement.BindInt64(1, *impression.impression_id);
+      update_impression_data_statement.BindInt64(1, *impression.source_id);
       update_impression_data_statement.Run();
     }
 
     // Fetch the next batch of rows from the database.
     impressions = GetImpressionIdAndImpressionData(
-        db, NextImpressionId(impressions.back().impression_id));
+        db, NextImpressionId(impressions.back().source_id));
   }
 
   static constexpr char kDropOldImpressionTableSql[] = "DROP TABLE impressions";

@@ -210,9 +210,9 @@ SourceBuilder& SourceBuilder::SetAttributionLogic(
   return *this;
 }
 
-SourceBuilder& SourceBuilder::SetImpressionId(
-    absl::optional<StorableSource::Id> impression_id) {
-  impression_id_ = impression_id;
+SourceBuilder& SourceBuilder::SetSourceId(
+    absl::optional<StorableSource::Id> source_id) {
+  source_id_ = source_id;
   return *this;
 }
 
@@ -226,7 +226,7 @@ StorableSource SourceBuilder::Build() const {
       source_event_id_, impression_origin_, conversion_origin_,
       reporting_origin_, impression_time_,
       /*expiry_time=*/impression_time_ + expiry_, source_type_, priority_,
-      attribution_logic_, impression_id_);
+      attribution_logic_, source_id_);
   impression.SetDedupKeys(dedup_keys_);
   return impression;
 }
@@ -480,9 +480,9 @@ std::ostream& operator<<(std::ostream& out, const StorableSource& impression) {
       << ",source_type=" << impression.source_type()
       << ",priority=" << impression.priority()
       << ",attribution_logic=" << impression.attribution_logic()
-      << ",impression_id="
-      << (impression.impression_id()
-              ? base::NumberToString(**impression.impression_id())
+      << ",source_id="
+      << (impression.source_id()
+              ? base::NumberToString(**impression.source_id())
               : "null")
       << ",dedup_keys=[";
 

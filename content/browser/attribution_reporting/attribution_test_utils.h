@@ -236,8 +236,8 @@ class SourceBuilder {
   SourceBuilder& SetAttributionLogic(
       StorableSource::AttributionLogic attribution_logic) WARN_UNUSED_RESULT;
 
-  SourceBuilder& SetImpressionId(
-      absl::optional<StorableSource::Id> impression_id) WARN_UNUSED_RESULT;
+  SourceBuilder& SetSourceId(absl::optional<StorableSource::Id> source_id)
+      WARN_UNUSED_RESULT;
 
   SourceBuilder& SetDedupKeys(std::vector<int64_t> dedup_keys)
       WARN_UNUSED_RESULT;
@@ -256,7 +256,7 @@ class SourceBuilder {
   int64_t priority_ = 0;
   StorableSource::AttributionLogic attribution_logic_ =
       StorableSource::AttributionLogic::kTruthfully;
-  absl::optional<StorableSource::Id> impression_id_;
+  absl::optional<StorableSource::Id> source_id_;
   std::vector<int64_t> dedup_keys_;
 };
 

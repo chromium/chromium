@@ -1449,8 +1449,8 @@ TEST_F(AttributionStorageTest, NoIDReuse_Impression) {
   storage()->StoreSource(SourceBuilder().Build());
   auto sources = storage()->GetActiveSources();
   EXPECT_THAT(sources,
-              ElementsAre(Property(&StorableSource::impression_id, IsTrue())));
-  const StorableSource::Id id1 = *sources.front().impression_id();
+              ElementsAre(Property(&StorableSource::source_id, IsTrue())));
+  const StorableSource::Id id1 = *sources.front().source_id();
 
   storage()->ClearData(base::Time::Min(), base::Time::Max(),
                        base::NullCallback());
@@ -1459,8 +1459,8 @@ TEST_F(AttributionStorageTest, NoIDReuse_Impression) {
   storage()->StoreSource(SourceBuilder().Build());
   sources = storage()->GetActiveSources();
   EXPECT_THAT(sources,
-              ElementsAre(Property(&StorableSource::impression_id, IsTrue())));
-  const StorableSource::Id id2 = *sources.front().impression_id();
+              ElementsAre(Property(&StorableSource::source_id, IsTrue())));
+  const StorableSource::Id id2 = *sources.front().source_id();
 
   EXPECT_NE(id1, id2);
 }

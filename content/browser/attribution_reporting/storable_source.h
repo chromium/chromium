@@ -60,7 +60,7 @@ class CONTENT_EXPORT StorableSource {
                  SourceType source_type,
                  int64_t priority,
                  AttributionLogic attribution_logic,
-                 absl::optional<Id> impression_id);
+                 absl::optional<Id> source_id);
   StorableSource(const StorableSource& other);
   StorableSource& operator=(const StorableSource& other);
   StorableSource(StorableSource&& other);
@@ -89,9 +89,7 @@ class CONTENT_EXPORT StorableSource {
 
   base::Time expiry_time() const WARN_UNUSED_RESULT { return expiry_time_; }
 
-  absl::optional<Id> impression_id() const WARN_UNUSED_RESULT {
-    return impression_id_;
-  }
+  absl::optional<Id> source_id() const WARN_UNUSED_RESULT { return source_id_; }
 
   SourceType source_type() const WARN_UNUSED_RESULT { return source_type_; }
 
@@ -133,7 +131,7 @@ class CONTENT_EXPORT StorableSource {
   AttributionLogic attribution_logic_;
 
   // If null, an ID has not been assigned yet.
-  absl::optional<Id> impression_id_;
+  absl::optional<Id> source_id_;
 
   // Dedup keys associated with the impression. Only set in values returned from
   // `AttributionStorage::GetActiveImpressions()`.

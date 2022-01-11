@@ -181,7 +181,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;
 
   // Stores |report| in the database, but uses |source_id| rather than
-  // |AttributionReport::impression::impression_id()|, which may be null.
+  // |AttributionReport::source::source_id()|, which may be null.
   bool StoreReport(const AttributionReport& report,
                    StorableSource::Id source_id)
       VALID_CONTEXT_REQUIRED(sequence_checker_) WARN_UNUSED_RESULT;

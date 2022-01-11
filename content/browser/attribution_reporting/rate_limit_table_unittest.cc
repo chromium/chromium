@@ -41,13 +41,13 @@ class RateLimitTableTest : public testing::Test {
   AttributionReport NewConversionReport(
       url::Origin impression_origin,
       url::Origin conversion_origin,
-      StorableSource::Id impression_id = StorableSource::Id(0),
+      StorableSource::Id source_id = StorableSource::Id(0),
       StorableSource::SourceType source_type =
           StorableSource::SourceType::kNavigation) {
     return ReportBuilder(SourceBuilder()
                              .SetImpressionOrigin(std::move(impression_origin))
                              .SetConversionOrigin(std::move(conversion_origin))
-                             .SetImpressionId(impression_id)
+                             .SetSourceId(source_id)
                              .SetSourceType(source_type)
                              .Build())
         .SetTriggerTime(base::Time::Now())
@@ -469,7 +469,7 @@ TEST_F(RateLimitTableTest, ClearDataForOriginsInRange) {
                 SourceBuilder()
                     .SetImpressionOrigin(example_a)
                     .SetConversionOrigin(example_b)
-                    .SetImpressionId(StorableSource::Id(1))
+                    .SetSourceId(StorableSource::Id(1))
                     .Build(),
                 {{.bucket = "a", .value = 2}}));
   EXPECT_EQ(1u, GetRateLimitRows(&db));
@@ -589,7 +589,7 @@ TEST_F(RateLimitTableTest, Aggregate) {
       SourceBuilder()
           .SetImpressionOrigin(url::Origin::Create(GURL("https://a.example/")))
           .SetConversionOrigin(url::Origin::Create(GURL("https://b.example/")))
-          .SetImpressionId(StorableSource::Id(1))
+          .SetSourceId(StorableSource::Id(1))
           .Build();
 
   EXPECT_EQ(AttributionAllowedStatus::kAllowed,

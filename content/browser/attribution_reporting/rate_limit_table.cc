@@ -116,11 +116,11 @@ bool RateLimitTable::CreateTable(sql::Database* db) {
 bool RateLimitTable::AddRateLimit(sql::Database* db,
                                   const AttributionReport& report) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(report.source().impression_id().has_value());
+  DCHECK(report.source().source_id().has_value());
 
   return AddRow(db,
                 AttributionTypeFromSourceType(report.source().source_type()),
-                *report.source().impression_id(),
+                *report.source().source_id(),
                 report.source().ImpressionSite().Serialize(),
                 SerializeOrigin(report.source().impression_origin()),
                 report.source().ConversionDestination().Serialize(),
@@ -382,7 +382,7 @@ RateLimitTable::AddAggregateHistogramContributionsForTesting(
     const StorableSource& source,
     const std::vector<AggregateHistogramContribution>& contributions) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(source.impression_id().has_value());
+  DCHECK(source.source_id().has_value());
 
   base::Time now = base::Time::Now();
 
@@ -419,7 +419,7 @@ RateLimitTable::AddAggregateHistogramContributionsForTesting(
       SerializeOrigin(source.conversion_origin());
 
   for (const auto& contribution : contributions) {
-    if (!AddRow(db, AttributionType::kAggregate, *source.impression_id(),
+    if (!AddRow(db, AttributionType::kAggregate, *source.source_id(),
                 serialized_impression_site, serialized_impression_origin,
                 serialized_conversion_destination, serialized_conversion_origin,
                 now, contribution.bucket, contribution.value)) {
