@@ -131,9 +131,6 @@ static bool ShouldCreateSubsequence(const PaintLayer& paint_layer,
 }
 
 static bool IsUnclippedLayoutView(const PaintLayer& layer) {
-  // If MainFrameClipsContent is false which means that WebPreferences::
-  // record_whole_document is true, we should not cull the scrolling contents
-  // of the main frame.
   if (IsA<LayoutView>(layer.GetLayoutObject())) {
     const auto* frame = layer.GetLayoutObject().GetFrame();
     if (frame && !frame->ClipsContent())
@@ -275,9 +272,6 @@ PaintResult PaintLayerPainter::PaintLayerContents(GraphicsContext& context,
   bool is_painting_overlay_overflow_controls =
       paint_flags & PaintFlag::kPaintingOverlayOverflowControls;
   bool is_unclipped_layout_view = IsUnclippedLayoutView(paint_layer_);
-  bool is_painting_overflow_contents =
-      (paint_flags & PaintFlag::kPaintingOverflowContents) ||
-      is_unclipped_layout_view;
 
   bool should_paint_content =
       paint_layer_.HasVisibleContent() &&
@@ -311,7 +305,7 @@ PaintResult PaintLayerPainter::PaintLayerContents(GraphicsContext& context,
     }
 
     if (!cull_rect_intersects_self && !cull_rect_intersects_contents) {
-      if (!is_painting_overflow_contents && paint_layer_.KnownToClipSubtree()) {
+      if (!is_unclipped_layout_view && paint_layer_.KnownToClipSubtree()) {
         paint_layer_.SetPreviousPaintResult(kMayBeClippedByCullRect);
         return kMayBeClippedByCullRect;
       }
@@ -357,11 +351,8 @@ PaintResult PaintLayerPainter::PaintLayerContents(GraphicsContext& context,
   }
 
   bool should_paint_children = !is_painting_overlay_overflow_controls;
-  // kPaintingOverflowContents applies to the root layer only.
-  PaintFlags child_paint_flags =
-      paint_flags & ~PaintFlag::kPaintingOverflowContents;
   if (should_paint_children) {
-    if (PaintChildren(kNegativeZOrderChildren, context, child_paint_flags) ==
+    if (PaintChildren(kNegativeZOrderChildren, context, paint_flags) ==
         kMayBeClippedByCullRect)
       result = kMayBeClippedByCullRect;
   }
@@ -392,7 +383,7 @@ PaintResult PaintLayerPainter::PaintLayerContents(GraphicsContext& context,
 
   if (should_paint_children) {
     if (PaintChildren(kNormalFlowAndPositiveZOrderChildren, context,
-                      child_paint_flags) == kMayBeClippedByCullRect)
+                      paint_flags) == kMayBeClippedByCullRect)
       result = kMayBeClippedByCullRect;
   }
 

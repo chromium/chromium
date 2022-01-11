@@ -74,14 +74,6 @@ void FramePainter::Paint(GraphicsContext& context, PaintFlags paint_flags) {
 
   FontCachePurgePreventer font_cache_purge_preventer;
 
-  PaintFlags root_layer_paint_flags = paint_flags;
-  // This will prevent clipping the root PaintLayer to its visible content rect.
-  // TODO(crbug.com/1159814): This may be the cause of the bug. We should
-  // probably remove this, and rely on PaintLayerPainter checking the top-level
-  // frame's IsUnclippedLayoutView() status.
-  if (document->IsPrintingOrPaintingPreview())
-    root_layer_paint_flags |= PaintFlag::kPaintingOverflowContents;
-
   PaintLayer* root_layer = layout_view->Layer();
 
 #if DCHECK_IS_ON()
@@ -96,7 +88,7 @@ void FramePainter::Paint(GraphicsContext& context, PaintFlags paint_flags) {
       root_layer->GetLayoutObject().GetFrame());
   context.SetDeviceScaleFactor(device_scale_factor);
 
-  layer_painter.Paint(context, root_layer_paint_flags);
+  layer_painter.Paint(context, paint_flags);
 
   // Regions may have changed as a result of the visibility/z-index of element
   // changing.

@@ -663,6 +663,10 @@ void LayoutView::CalculateScrollbarModes(
   if (!frame)
     RETURN_SCROLLBAR_MODE(mojom::blink::ScrollbarMode::kAlwaysOff);
 
+  // ClipsContent() is false for the root printing frame, etc.
+  if (!frame->ClipsContent())
+    RETURN_SCROLLBAR_MODE(mojom::blink::ScrollbarMode::kAlwaysOff);
+
   if (FrameOwner* owner = frame->Owner()) {
     // Setting scrolling="no" on an iframe element disables scrolling.
     if (owner->ScrollbarMode() == mojom::blink::ScrollbarMode::kAlwaysOff)
@@ -674,14 +678,6 @@ void LayoutView::CalculateScrollbarModes(
     // Framesets can't scroll.
     if (body->GetLayoutObject() && body->GetLayoutObject()->IsFrameSet())
       RETURN_SCROLLBAR_MODE(mojom::blink::ScrollbarMode::kAlwaysOff);
-  }
-
-  if (document.IsPrintingOrPaintingPreview()) {
-    // When printing or painting preview, frame-level scrollbars are never
-    // displayed.
-    // TODO(szager): Figure out the right behavior when printing an overflowing
-    // iframe.  https://bugs.chromium.org/p/chromium/issues/detail?id=777528
-    RETURN_SCROLLBAR_MODE(mojom::blink::ScrollbarMode::kAlwaysOff);
   }
 
   if (LocalFrameView* frameView = GetFrameView()) {

@@ -1228,10 +1228,7 @@ bool PaintLayerScrollableArea::HasVerticalOverflow() const {
 }
 
 // This function returns true if the given box requires overflow scrollbars (as
-// opposed to the 'viewport' scrollbars managed by the PaintLayerCompositor).
-// FIXME: we should use the same scrolling machinery for both the viewport and
-// overflow. Currently, we need to avoid producing scrollbars here if they'll be
-// handled externally in the RLC.
+// opposed to the viewport scrollbars managed by VisualViewport).
 static bool CanHaveOverflowScrollbars(const LayoutBox& box) {
   return box.GetDocument().ViewportDefiningElement() != box.GetNode();
 }

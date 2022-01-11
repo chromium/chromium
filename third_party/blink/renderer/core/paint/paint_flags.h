@@ -37,11 +37,6 @@ enum : unsigned {
   // TODO(wangxianzhu): Refactor PaintLayerPainter to avoid using this flag and
   // remove this flag.
   kPaintingOverlayOverflowControls = 1 << 5,
-
-  // Paint overflow contents without clip. This flag should not be propagated
-  // to children.
-  // TODO(crbug.com/1159814): Remove this flag when fixing the bug.
-  kPaintingOverflowContents = 1 << 6,
 };
 }  // namespace PaintFlag
 
