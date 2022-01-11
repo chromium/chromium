@@ -915,19 +915,17 @@ class AuctionRunnerTest : public testing::Test,
 
     // Add previous wins and bids to the interest group manager.
     for (auto& bidder : bidders) {
-      for (int i = 0; i < bidder.bidding_group->signals->join_count; i++) {
+      for (int i = 0; i < bidder.bidding_browser_signals->join_count; i++) {
         interest_group_manager_->JoinInterestGroup(
-            bidder.bidding_group->group,
-            bidder.bidding_group->group.owner.GetURL());
+            bidder.interest_group, bidder.interest_group.owner.GetURL());
       }
-      for (int i = 0; i < bidder.bidding_group->signals->bid_count; i++) {
+      for (int i = 0; i < bidder.bidding_browser_signals->bid_count; i++) {
         interest_group_manager_->RecordInterestGroupBid(
-            bidder.bidding_group->group.owner,
-            bidder.bidding_group->group.name);
+            bidder.interest_group.owner, bidder.interest_group.name);
       }
-      for (const auto& prev_win : bidder.bidding_group->signals->prev_wins) {
+      for (const auto& prev_win : bidder.bidding_browser_signals->prev_wins) {
         interest_group_manager_->RecordInterestGroupWin(
-            bidder.bidding_group->group.owner, bidder.bidding_group->group.name,
+            bidder.interest_group.owner, bidder.interest_group.name,
             prev_win->ad_json);
         // Add some time between interest group wins, so that they'll be added
         // to the database in the order they appear. Their times will *not*
@@ -986,11 +984,11 @@ class AuctionRunnerTest : public testing::Test,
   void OnBidder1GroupsRetrieved(
       std::vector<StorageInterestGroup> storage_interest_groups) {
     for (auto& bidder : storage_interest_groups) {
-      if (bidder.bidding_group->group.owner == kBidder1 &&
-          bidder.bidding_group->group.name == kBidder1Name) {
-        result_.bidder1_bid_count = bidder.bidding_group->signals->bid_count;
+      if (bidder.interest_group.owner == kBidder1 &&
+          bidder.interest_group.name == kBidder1Name) {
+        result_.bidder1_bid_count = bidder.bidding_browser_signals->bid_count;
         result_.bidder1_prev_wins =
-            std::move(bidder.bidding_group->signals->prev_wins);
+            std::move(bidder.bidding_browser_signals->prev_wins);
         SortPrevWins(result_.bidder1_prev_wins);
         break;
       }
@@ -1003,11 +1001,11 @@ class AuctionRunnerTest : public testing::Test,
   void OnBidder2GroupsRetrieved(
       std::vector<StorageInterestGroup> storage_interest_groups) {
     for (auto& bidder : storage_interest_groups) {
-      if (bidder.bidding_group->group.owner == kBidder2 &&
-          bidder.bidding_group->group.name == kBidder2Name) {
-        result_.bidder2_bid_count = bidder.bidding_group->signals->bid_count;
+      if (bidder.interest_group.owner == kBidder2 &&
+          bidder.interest_group.name == kBidder2Name) {
+        result_.bidder2_bid_count = bidder.bidding_browser_signals->bid_count;
         result_.bidder2_prev_wins =
-            std::move(bidder.bidding_group->signals->prev_wins);
+            std::move(bidder.bidding_browser_signals->prev_wins);
         SortPrevWins(result_.bidder2_prev_wins);
         break;
       }
@@ -1016,7 +1014,7 @@ class AuctionRunnerTest : public testing::Test,
     auction_run_loop_->Quit();
   }
 
-  auction_worklet::mojom::BiddingInterestGroupPtr MakeInterestGroup(
+  StorageInterestGroup MakeInterestGroup(
       url::Origin owner,
       std::string name,
       absl::optional<GURL> bidding_url,
@@ -1053,16 +1051,18 @@ class AuctionRunnerTest : public testing::Test,
     previous_wins.push_back(auction_worklet::mojom::PreviousWin::New(
         base::Time::Now(), R"({"winner": -2})"));
 
-    return auction_worklet::mojom::BiddingInterestGroup::New(
-        blink::InterestGroup(
-            base::Time::Max(), std::move(owner), std::move(name),
-            std::move(bidding_url),
-            /* bidding_wasm_helper_url = */ absl::nullopt,
-            /* update_url = */ GURL(), std::move(trusted_bidding_signals_url),
-            std::move(trusted_bidding_signals_keys), absl::nullopt,
-            std::move(ads), std::move(ad_components)),
+    StorageInterestGroup storage_group;
+    storage_group.interest_group = blink::InterestGroup(
+        base::Time::Max(), std::move(owner), std::move(name),
+        std::move(bidding_url),
+        /* bidding_wasm_helper_url = */ absl::nullopt,
+        /* update_url = */ GURL(), std::move(trusted_bidding_signals_url),
+        std::move(trusted_bidding_signals_keys), absl::nullopt, std::move(ads),
+        std::move(ad_components));
+    storage_group.bidding_browser_signals =
         auction_worklet::mojom::BiddingBrowserSignals::New(
-            3, 5, std::move(previous_wins)));
+            3, 5, std::move(previous_wins));
+    return storage_group;
   }
 
   void StartStandardAuction() {

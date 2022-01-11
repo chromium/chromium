@@ -58,16 +58,6 @@ struct BiddingBrowserSignals {
   array<PreviousWin> prev_wins;
 };
 
-// Mojo struct no longer passed around via Mojo, but used extensively by storage
-// code.
-//
-// TODO(https://crbug.com/1276639): Remove this class, in favor of a C++
-// equivalent.
-struct BiddingInterestGroup {
-  blink.mojom.InterestGroup group;  // User JS specified, stored by browser.
-  BiddingBrowserSignals signals;  // Collected by browser.
-};
-
 // The results of running a FLEDGE generateBid() script.
 struct BidderWorkletBid {
   // JSON string to be passed to the scoring function.

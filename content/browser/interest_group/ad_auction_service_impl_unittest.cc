@@ -403,8 +403,8 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
 
   int GetJoinCount(const url::Origin& owner, const std::string& name) {
     for (const auto& interest_group : GetInterestGroupsForOwner(owner)) {
-      if (interest_group.bidding_group->group.name == name) {
-        return interest_group.bidding_group->signals->join_count;
+      if (interest_group.interest_group.name == name) {
+        return interest_group.bidding_browser_signals->join_count;
       }
     }
     return 0;
@@ -782,7 +782,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateAllUpdatableFields) {
   std::vector<StorageInterestGroup> groups =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups.size(), 1u);
-  const auto& group = groups[0].bidding_group->group;
+  const auto& group = groups[0].interest_group;
   EXPECT_EQ(group.name, kInterestGroupName);
   ASSERT_TRUE(group.bidding_url.has_value());
   EXPECT_EQ(group.bidding_url->spec(),
@@ -833,7 +833,7 @@ TEST_F(AdAuctionServiceImplTest, UpdatePartialPerformsMerge) {
   std::vector<StorageInterestGroup> groups =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups.size(), 1u);
-  const auto& group = groups[0].bidding_group->group;
+  const auto& group = groups[0].interest_group;
   EXPECT_EQ(group.name, kInterestGroupName);
   ASSERT_TRUE(group.bidding_url.has_value());
   EXPECT_EQ(
@@ -885,7 +885,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeExpiration) {
   const auto groups_before_update = GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups_before_update.size(), 1u);
   const base::Time kExpirationTime =
-      groups_before_update[0].bidding_group->group.expiry;
+      groups_before_update[0].interest_group.expiry;
 
   UpdateInterestGroupNoFlush();
   task_environment()->RunUntilIdle();
@@ -894,7 +894,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeExpiration) {
   std::vector<StorageInterestGroup> groups =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups.size(), 1u);
-  const auto& group = groups[0].bidding_group->group;
+  const auto& group = groups[0].interest_group;
   EXPECT_EQ(group.name, kInterestGroupName);
   EXPECT_EQ(group.expiry, kExpirationTime);
   ASSERT_TRUE(group.ads.has_value());
@@ -937,7 +937,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateSucceedsIfOptionalNameOwnerMatch) {
   std::vector<StorageInterestGroup> groups =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups.size(), 1u);
-  const auto& group = groups[0].bidding_group->group;
+  const auto& group = groups[0].interest_group;
   EXPECT_EQ(group.name, kInterestGroupName);
   ASSERT_TRUE(group.bidding_url.has_value());
   EXPECT_EQ(
@@ -995,7 +995,7 @@ TEST_F(AdAuctionServiceImplTest, NoUpdateIfOptionalNameDoesntMatch) {
   std::vector<StorageInterestGroup> groups =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups.size(), 1u);
-  const auto& group = groups[0].bidding_group->group;
+  const auto& group = groups[0].interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
@@ -1038,7 +1038,7 @@ TEST_F(AdAuctionServiceImplTest, NoUpdateIfOptionalOwnerDoesntMatch) {
   std::vector<StorageInterestGroup> groups =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups.size(), 1u);
-  const auto& group = groups[0].bidding_group->group;
+  const auto& group = groups[0].interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
@@ -1110,12 +1110,12 @@ TEST_F(AdAuctionServiceImplTest, UpdateMultipleInterestGroups) {
   std::vector<StorageInterestGroup> groups =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups.size(), 2u);
-  const auto& first_group = groups[0].bidding_group->group.name == kGroupName1
-                                ? groups[0].bidding_group->group
-                                : groups[1].bidding_group->group;
-  const auto& second_group = groups[0].bidding_group->group.name == kGroupName2
-                                 ? groups[0].bidding_group->group
-                                 : groups[1].bidding_group->group;
+  const auto& first_group = groups[0].interest_group.name == kGroupName1
+                                ? groups[0].interest_group
+                                : groups[1].interest_group;
+  const auto& second_group = groups[0].interest_group.name == kGroupName2
+                                 ? groups[0].interest_group
+                                 : groups[1].interest_group;
 
   EXPECT_EQ(first_group.name, kGroupName1);
   ASSERT_TRUE(first_group.ads.has_value());
@@ -1186,7 +1186,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateOnlyOwnOrigin) {
   std::vector<StorageInterestGroup> origin_b_groups =
       GetInterestGroupsForOwner(kOriginB);
   ASSERT_EQ(origin_b_groups.size(), 1u);
-  const auto& origin_b_group = origin_b_groups[0].bidding_group->group;
+  const auto& origin_b_group = origin_b_groups[0].interest_group;
   EXPECT_EQ(origin_b_group.name, kInterestGroupName);
   ASSERT_TRUE(origin_b_group.ads.has_value());
   ASSERT_EQ(origin_b_group.ads->size(), 1u);
@@ -1198,7 +1198,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateOnlyOwnOrigin) {
   std::vector<StorageInterestGroup> origin_a_groups =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(origin_a_groups.size(), 1u);
-  const auto& origin_a_group = origin_a_groups[0].bidding_group->group;
+  const auto& origin_a_group = origin_a_groups[0].interest_group;
   ASSERT_TRUE(origin_a_group.ads.has_value());
   ASSERT_EQ(origin_a_group.ads->size(), 1u);
   EXPECT_EQ(origin_a_group.ads.value()[0].render_url.spec(),
@@ -1288,7 +1288,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateFromCrossSiteIFrame) {
   std::vector<StorageInterestGroup> origin_c_groups =
       GetInterestGroupsForOwner(kOriginC);
   ASSERT_EQ(origin_c_groups.size(), 1u);
-  const auto& origin_c_group = origin_c_groups[0].bidding_group->group;
+  const auto& origin_c_group = origin_c_groups[0].interest_group;
   EXPECT_EQ(origin_c_group.name, kInterestGroupName);
   ASSERT_TRUE(origin_c_group.ads.has_value());
   ASSERT_EQ(origin_c_group.ads->size(), 1u);
@@ -1300,7 +1300,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateFromCrossSiteIFrame) {
   std::vector<StorageInterestGroup> origin_a_groups =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(origin_a_groups.size(), 1u);
-  const auto& origin_a_group = origin_a_groups[0].bidding_group->group;
+  const auto& origin_a_group = origin_a_groups[0].interest_group;
   ASSERT_TRUE(origin_a_group.ads.has_value());
   ASSERT_EQ(origin_a_group.ads->size(), 1u);
   EXPECT_EQ(origin_a_group.ads.value()[0].render_url.spec(),
@@ -1321,7 +1321,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateFromCrossSiteIFrame) {
   std::vector<StorageInterestGroup> origin_b_groups =
       GetInterestGroupsForOwner(kOriginB);
   ASSERT_EQ(origin_b_groups.size(), 1u);
-  const auto& origin_b_group = origin_b_groups[0].bidding_group->group;
+  const auto& origin_b_group = origin_b_groups[0].interest_group;
   ASSERT_TRUE(origin_b_group.ads.has_value());
   ASSERT_EQ(origin_b_group.ads->size(), 1u);
   EXPECT_EQ(origin_b_group.ads.value()[0].render_url.spec(),
@@ -1363,7 +1363,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidFieldCancelsAllUpdates) {
   std::vector<StorageInterestGroup> groups =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups.size(), 1u);
-  const auto& group = groups[0].bidding_group->group;
+  const auto& group = groups[0].interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
@@ -1398,7 +1398,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidJSONIgnored) {
   std::vector<StorageInterestGroup> groups =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups.size(), 1u);
-  const auto& group = groups[0].bidding_group->group;
+  const auto& group = groups[0].interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
@@ -1450,7 +1450,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateJSONParserCrash) {
   std::vector<StorageInterestGroup> groups =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups.size(), 1u);
-  const auto& group = groups[0].bidding_group->group;
+  const auto& group = groups[0].interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
@@ -1484,7 +1484,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateNetworkFailure) {
   std::vector<StorageInterestGroup> groups =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups.size(), 1u);
-  const auto& group = groups[0].bidding_group->group;
+  const auto& group = groups[0].interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
@@ -1519,7 +1519,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateTimeout) {
   std::vector<StorageInterestGroup> groups =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups.size(), 1u);
-  const auto& group = groups[0].bidding_group->group;
+  const auto& group = groups[0].interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
@@ -1715,7 +1715,7 @@ TEST_F(AdAuctionServiceImplTest, DoesntChangeGroupsWithNoUpdateUrl) {
   std::vector<StorageInterestGroup> groups =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups.size(), 1u);
-  const auto& group = groups[0].bidding_group->group;
+  const auto& group = groups[0].interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
@@ -1757,7 +1757,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeBrowserSignals) {
   std::vector<StorageInterestGroup> prev_groups =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(prev_groups.size(), 1u);
-  const auto& prev_signals = prev_groups[0].bidding_group->signals;
+  const auto& prev_signals = prev_groups[0].bidding_browser_signals;
   EXPECT_EQ(prev_signals->join_count, 1);
   EXPECT_EQ(prev_signals->bid_count, 2);
   EXPECT_EQ(prev_signals->prev_wins.size(), 1u);
@@ -1769,8 +1769,8 @@ TEST_F(AdAuctionServiceImplTest, UpdateDoesntChangeBrowserSignals) {
   std::vector<StorageInterestGroup> groups =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups.size(), 1u);
-  const auto& group = groups[0].bidding_group->group;
-  const auto& signals = groups[0].bidding_group->signals;
+  const auto& group = groups[0].interest_group;
+  const auto& signals = groups[0].bidding_browser_signals;
 
   EXPECT_EQ(signals->join_count, 1);
   EXPECT_EQ(signals->bid_count, 2);
@@ -1819,7 +1819,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterSuccessfulUpdate) {
   std::vector<StorageInterestGroup> groups =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups.size(), 1u);
-  const auto& group = groups[0].bidding_group->group;
+  const auto& group = groups[0].interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
@@ -1841,7 +1841,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterSuccessfulUpdate) {
   std::vector<StorageInterestGroup> groups2 =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups2.size(), 1u);
-  const auto& group2 = groups2[0].bidding_group->group;
+  const auto& group2 = groups2[0].interest_group;
   ASSERT_TRUE(group2.ads.has_value());
   ASSERT_EQ(group2.ads->size(), 1u);
   EXPECT_EQ(group2.ads.value()[0].render_url.spec(),
@@ -1860,7 +1860,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterSuccessfulUpdate) {
   std::vector<StorageInterestGroup> groups3 =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups3.size(), 1u);
-  const auto& group3 = groups3[0].bidding_group->group;
+  const auto& group3 = groups3[0].interest_group;
   ASSERT_TRUE(group3.ads.has_value());
   ASSERT_EQ(group3.ads->size(), 1u);
   EXPECT_EQ(group3.ads.value()[0].render_url.spec(),
@@ -1878,7 +1878,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterSuccessfulUpdate) {
   std::vector<StorageInterestGroup> groups4 =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups4.size(), 1u);
-  const auto& group4 = groups4[0].bidding_group->group;
+  const auto& group4 = groups4[0].interest_group;
   ASSERT_TRUE(group4.ads.has_value());
   ASSERT_EQ(group4.ads->size(), 1u);
   EXPECT_EQ(group4.ads.value()[0].render_url.spec(),
@@ -1918,7 +1918,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterBadUpdateResponse) {
   std::vector<StorageInterestGroup> groups =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups.size(), 1u);
-  const auto& group = groups[0].bidding_group->group;
+  const auto& group = groups[0].interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
@@ -1941,7 +1941,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterBadUpdateResponse) {
   std::vector<StorageInterestGroup> groups2 =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups2.size(), 1u);
-  const auto& group2 = groups2[0].bidding_group->group;
+  const auto& group2 = groups2[0].interest_group;
   ASSERT_TRUE(group2.ads.has_value());
   ASSERT_EQ(group2.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
@@ -1962,7 +1962,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterBadUpdateResponse) {
   std::vector<StorageInterestGroup> groups3 =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups3.size(), 1u);
-  const auto& group3 = groups3[0].bidding_group->group;
+  const auto& group3 = groups3[0].interest_group;
   ASSERT_TRUE(group3.ads.has_value());
   ASSERT_EQ(group3.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
@@ -1981,7 +1981,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterBadUpdateResponse) {
   std::vector<StorageInterestGroup> groups4 =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups4.size(), 1u);
-  const auto& group4 = groups4[0].bidding_group->group;
+  const auto& group4 = groups4[0].interest_group;
   ASSERT_TRUE(group4.ads.has_value());
   ASSERT_EQ(group4.ads->size(), 1u);
   EXPECT_EQ(group4.ads.value()[0].render_url.spec(),
@@ -2019,7 +2019,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterFailedUpdate) {
   std::vector<StorageInterestGroup> groups =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups.size(), 1u);
-  const auto& group = groups[0].bidding_group->group;
+  const auto& group = groups[0].interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
@@ -2042,7 +2042,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterFailedUpdate) {
   std::vector<StorageInterestGroup> groups2 =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups2.size(), 1u);
-  const auto& group2 = groups2[0].bidding_group->group;
+  const auto& group2 = groups2[0].interest_group;
   ASSERT_TRUE(group2.ads.has_value());
   ASSERT_EQ(group2.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
@@ -2062,7 +2062,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterFailedUpdate) {
   std::vector<StorageInterestGroup> groups3 =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups3.size(), 1u);
-  const auto& group3 = groups3[0].bidding_group->group;
+  const auto& group3 = groups3[0].interest_group;
   ASSERT_TRUE(group3.ads.has_value());
   ASSERT_EQ(group3.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
@@ -2081,7 +2081,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedAfterFailedUpdate) {
   std::vector<StorageInterestGroup> groups4 =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups4.size(), 1u);
-  const auto& group4 = groups4[0].bidding_group->group;
+  const auto& group4 = groups4[0].interest_group;
   ASSERT_TRUE(group4.ads.has_value());
   ASSERT_EQ(group4.ads->size(), 1u);
   EXPECT_EQ(group4.ads.value()[0].render_url.spec(),
@@ -2120,7 +2120,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateNotRateLimitedIfDisconnected) {
   std::vector<StorageInterestGroup> groups =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups.size(), 1u);
-  const auto& group = groups[0].bidding_group->group;
+  const auto& group = groups[0].interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
@@ -2143,7 +2143,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateNotRateLimitedIfDisconnected) {
   std::vector<StorageInterestGroup> groups2 =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups2.size(), 1u);
-  const auto& group2 = groups2[0].bidding_group->group;
+  const auto& group2 = groups2[0].interest_group;
   ASSERT_TRUE(group2.ads.has_value());
   ASSERT_EQ(group2.ads->size(), 1u);
   EXPECT_EQ(group2.ads.value()[0].render_url.spec(),
@@ -2187,7 +2187,7 @@ TEST_F(AdAuctionServiceImplTest, UpdateRateLimitedTightLoop) {
   std::vector<StorageInterestGroup> groups =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups.size(), 1u);
-  const auto& group = groups[0].bidding_group->group;
+  const auto& group = groups[0].interest_group;
   ASSERT_TRUE(group.ads.has_value());
   ASSERT_EQ(group.ads->size(), 1u);
   EXPECT_EQ(group.ads.value()[0].render_url.spec(),
@@ -2646,7 +2646,7 @@ TEST_F(AdAuctionServiceImplRestrictedPermissionsPolicyTest,
   std::vector<StorageInterestGroup> groups =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups.size(), 1u);
-  const auto& group = groups[0].bidding_group->group;
+  const auto& group = groups[0].interest_group;
   EXPECT_EQ(group.name, kInterestGroupName);
   ASSERT_TRUE(group.bidding_url.has_value());
   EXPECT_EQ(group.bidding_url->spec(),
@@ -2683,7 +2683,7 @@ TEST_F(AdAuctionServiceImplRestrictedPermissionsPolicyTest,
   std::vector<StorageInterestGroup> groups =
       GetInterestGroupsForOwner(kOriginA);
   ASSERT_EQ(groups.size(), 1u);
-  const auto& group = groups[0].bidding_group->group;
+  const auto& group = groups[0].interest_group;
   EXPECT_EQ(group.name, kInterestGroupName);
   ASSERT_TRUE(group.bidding_url.has_value());
   EXPECT_EQ(group.bidding_url->spec(),
@@ -2732,7 +2732,7 @@ TEST_F(AdAuctionServiceImplRestrictedPermissionsPolicyTest,
   std::vector<StorageInterestGroup> groups =
       GetInterestGroupsForOwner(kOriginC);
   ASSERT_EQ(groups.size(), 1u);
-  const auto& group = groups[0].bidding_group->group;
+  const auto& group = groups[0].interest_group;
   EXPECT_EQ(group.name, kInterestGroupName);
   ASSERT_TRUE(group.bidding_url.has_value());
   EXPECT_EQ(group.bidding_url->spec(),

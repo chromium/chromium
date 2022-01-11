@@ -136,7 +136,7 @@ class CONTENT_EXPORT InterestGroupManager {
   void DidUpdateInterestGroupsOfOwnerDbLoad(
       url::Origin owner,
       network::mojom::ClientSecurityStatePtr client_security_state,
-      std::vector<StorageInterestGroup> interest_groups);
+      std::vector<StorageInterestGroup> storage_groups);
   void DidUpdateInterestGroupsOfOwnerNetFetch(
       UrlLoadersList::iterator simple_url_loader,
       url::Origin owner,

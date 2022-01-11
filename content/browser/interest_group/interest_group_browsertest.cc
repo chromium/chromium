@@ -372,18 +372,18 @@ class InterestGroupBrowserTest : public ContentBrowserTest {
   std::vector<std::pair<url::Origin, std::string>> GetAllInterestGroups() {
     std::vector<std::pair<url::Origin, std::string>> interest_groups;
     for (const auto& owner : GetAllInterestGroupsOwners()) {
-      for (const auto& interest_group : GetInterestGroupsForOwner(owner)) {
-        interest_groups.emplace_back(interest_group.bidding_group->group.owner,
-                                     interest_group.bidding_group->group.name);
+      for (const auto& storage_group : GetInterestGroupsForOwner(owner)) {
+        interest_groups.emplace_back(storage_group.interest_group.owner,
+                                     storage_group.interest_group.name);
       }
     }
     return interest_groups;
   }
 
   int GetJoinCount(const url::Origin& owner, const std::string& name) {
-    for (const auto& interest_group : GetInterestGroupsForOwner(owner)) {
-      if (interest_group.bidding_group->group.name == name) {
-        return interest_group.bidding_group->signals->join_count;
+    for (const auto& storage_group : GetInterestGroupsForOwner(owner)) {
+      if (storage_group.interest_group.name == name) {
+        return storage_group.bidding_browser_signals->join_count;
       }
     }
     return 0;
@@ -2516,17 +2516,17 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
       GetInterestGroupsForOwner(origin);
   EXPECT_EQ(storage_interest_groups.size(), 1u);
   EXPECT_EQ(
-      storage_interest_groups.front().bidding_group->signals->prev_wins.size(),
+      storage_interest_groups.front().bidding_browser_signals->prev_wins.size(),
       0u);
-  EXPECT_EQ(storage_interest_groups.front().bidding_group->signals->bid_count,
+  EXPECT_EQ(storage_interest_groups.front().bidding_browser_signals->bid_count,
             0);
   std::vector<StorageInterestGroup> storage_interest_groups2 =
       GetInterestGroupsForOwner(origin2);
   EXPECT_EQ(storage_interest_groups2.size(), 1u);
-  EXPECT_EQ(
-      storage_interest_groups2.front().bidding_group->signals->prev_wins.size(),
-      0u);
-  EXPECT_EQ(storage_interest_groups2.front().bidding_group->signals->bid_count,
+  EXPECT_EQ(storage_interest_groups2.front()
+                .bidding_browser_signals->prev_wins.size(),
+            0u);
+  EXPECT_EQ(storage_interest_groups2.front().bidding_browser_signals->bid_count,
             0);
 
   std::string auction_config = JsReplace(
@@ -2545,21 +2545,21 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
   storage_interest_groups = GetInterestGroupsForOwner(origin);
   storage_interest_groups2 = GetInterestGroupsForOwner(origin2);
   EXPECT_EQ(
-      storage_interest_groups.front().bidding_group->signals->prev_wins.size(),
+      storage_interest_groups.front().bidding_browser_signals->prev_wins.size(),
       1u);
-  EXPECT_EQ(
-      storage_interest_groups2.front().bidding_group->signals->prev_wins.size(),
-      0u);
+  EXPECT_EQ(storage_interest_groups2.front()
+                .bidding_browser_signals->prev_wins.size(),
+            0u);
   EXPECT_EQ(
       storage_interest_groups.front()
-          .bidding_group->signals->prev_wins.front()
+          .bidding_browser_signals->prev_wins.front()
           ->ad_json,
       JsReplace(
           R"({"render_url":$1,"metadata":{"ad":"metadata","here":[1,2]}})",
           ad1_url));
-  EXPECT_EQ(storage_interest_groups.front().bidding_group->signals->bid_count,
+  EXPECT_EQ(storage_interest_groups.front().bidding_browser_signals->bid_count,
             1);
-  EXPECT_EQ(storage_interest_groups2.front().bidding_group->signals->bid_count,
+  EXPECT_EQ(storage_interest_groups2.front().bidding_browser_signals->bid_count,
             1);
 
   // Run auction again. Interest group shoes of owner `test_url2` wins.
@@ -2568,19 +2568,19 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
   storage_interest_groups = GetInterestGroupsForOwner(origin);
   storage_interest_groups2 = GetInterestGroupsForOwner(origin2);
   EXPECT_EQ(
-      storage_interest_groups.front().bidding_group->signals->prev_wins.size(),
-      1u);
-  EXPECT_EQ(
-      storage_interest_groups2.front().bidding_group->signals->prev_wins.size(),
+      storage_interest_groups.front().bidding_browser_signals->prev_wins.size(),
       1u);
   EXPECT_EQ(storage_interest_groups2.front()
-                .bidding_group->signals->prev_wins.front()
+                .bidding_browser_signals->prev_wins.size(),
+            1u);
+  EXPECT_EQ(storage_interest_groups2.front()
+                .bidding_browser_signals->prev_wins.front()
                 ->ad_json,
             JsReplace(R"({"render_url":$1})", ad2_url));
   // First interest group didn't bid this time.
-  EXPECT_EQ(storage_interest_groups.front().bidding_group->signals->bid_count,
+  EXPECT_EQ(storage_interest_groups.front().bidding_browser_signals->bid_count,
             1);
-  EXPECT_EQ(storage_interest_groups2.front().bidding_group->signals->bid_count,
+  EXPECT_EQ(storage_interest_groups2.front().bidding_browser_signals->bid_count,
             2);
 
   // Run auction third time, and only interest group "shoes" bids this time.
@@ -2597,19 +2597,19 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, RunAdAuctionMultipleAuctions) {
   storage_interest_groups = GetInterestGroupsForOwner(origin);
   storage_interest_groups2 = GetInterestGroupsForOwner(origin2);
   EXPECT_EQ(
-      storage_interest_groups.front().bidding_group->signals->prev_wins.size(),
+      storage_interest_groups.front().bidding_browser_signals->prev_wins.size(),
       1u);
-  EXPECT_EQ(
-      storage_interest_groups2.front().bidding_group->signals->prev_wins.size(),
-      2u);
   EXPECT_EQ(storage_interest_groups2.front()
-                .bidding_group->signals->prev_wins.back()
+                .bidding_browser_signals->prev_wins.size(),
+            2u);
+  EXPECT_EQ(storage_interest_groups2.front()
+                .bidding_browser_signals->prev_wins.back()
                 ->ad_json,
             JsReplace(R"({"render_url":$1})", ad2_url));
   // First interest group didn't bid this time.
-  EXPECT_EQ(storage_interest_groups.front().bidding_group->signals->bid_count,
+  EXPECT_EQ(storage_interest_groups.front().bidding_browser_signals->bid_count,
             1);
-  EXPECT_EQ(storage_interest_groups2.front().bidding_group->signals->bid_count,
+  EXPECT_EQ(storage_interest_groups2.front().bidding_browser_signals->bid_count,
             3);
 }
 
@@ -3452,7 +3452,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest, UpdateAllUpdatableFields) {
           [](const std::vector<StorageInterestGroup>& groups) {
             if (groups.size() != 1)
               return false;
-            const auto& group = groups[0].bidding_group->group;
+            const auto& group = groups[0].interest_group;
             return group.name == "cars" && group.bidding_url.has_value() &&
                    group.bidding_url->path() ==
                        "/interest_group/new_bidding_logic.js" &&
@@ -3519,7 +3519,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupBrowserTest,
           [](const std::vector<StorageInterestGroup>& groups) {
             if (groups.size() != 1)
               return false;
-            const auto& group = groups[0].bidding_group->group;
+            const auto& group = groups[0].interest_group;
             return group.name == "cars" && group.bidding_url.has_value() &&
                    group.bidding_url->path() ==
                        "/interest_group/bidding_logic.js" &&
@@ -4256,8 +4256,7 @@ IN_PROC_BROWSER_TEST_F(InterestGroupPrivateNetworkBrowserTest,
           [&](const std::vector<StorageInterestGroup>& storage_groups) {
             bool found_updated_group = false;
             for (const auto& storage_group : storage_groups) {
-              const blink::InterestGroup& group =
-                  storage_group.bidding_group->group;
+              const blink::InterestGroup& group = storage_group.interest_group;
               if (group.name == kPubliclyUpdateGroupName) {
                 EXPECT_EQ(initial_bidding_url, group.bidding_url);
               } else {

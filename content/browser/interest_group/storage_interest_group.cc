@@ -5,14 +5,11 @@
 #include "content/browser/interest_group/storage_interest_group.h"
 
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
+#include "third_party/blink/public/common/interest_group/interest_group.h"
 
 namespace content {
 
 StorageInterestGroup::StorageInterestGroup() = default;
-StorageInterestGroup::StorageInterestGroup(
-    auction_worklet::mojom::BiddingInterestGroupPtr group) {
-  this->bidding_group = std::move(group);
-}
 StorageInterestGroup::StorageInterestGroup(StorageInterestGroup&&) = default;
 StorageInterestGroup::~StorageInterestGroup() = default;
 
