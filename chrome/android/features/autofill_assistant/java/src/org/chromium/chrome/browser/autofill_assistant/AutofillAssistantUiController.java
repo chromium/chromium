@@ -13,13 +13,12 @@ import androidx.annotation.Nullable;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.chrome.autofill_assistant.R;
-import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChip;
 import org.chromium.chrome.browser.autofill_assistant.metrics.DropOutReason;
 import org.chromium.chrome.browser.autofill_assistant.overlay.AssistantOverlayCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
@@ -49,7 +48,7 @@ public class AutofillAssistantUiController {
     private final Activity mActivity;
     private final AssistantCoordinator mCoordinator;
     private final AssistantDependencies mDependencies;
-    private final ActivityTabProvider.ActivityTabTabObserver mActivityTabObserver;
+    private final Destroyable mTabObserverDestroyer;
     private WebContents mWebContents;
 
     private final AssistantSnackbarFactory mSnackbarFactory;
@@ -105,26 +104,26 @@ public class AutofillAssistantUiController {
                 dependencies.getAccessibilityUtil(), dependencies.createInfoPageUtil(),
                 dependencies.createProfileImageUtilOrNull(mActivity));
 
-        mActivityTabObserver = new ActivityTabProvider.ActivityTabTabObserver(
-                dependencies.getActivityTabProvider(), /* shouldTrigger = */ true) {
+        mTabObserverDestroyer = dependencies.observeTabChanges(new AssistantTabObserver() {
             @Override
-            protected void onObservingDifferentTab(Tab tab, boolean hint) {
+            public void onObservingDifferentTab(
+                    boolean isTabNull, @Nullable WebContents webContents, boolean isHint) {
                 if (mWebContents == null) {
-                    if (!hint) {
+                    if (!isHint) {
                         // This particular scenario would happen only if we're switching
                         // from a tab with no Autofill Assistant running to a tab with AA
                         // running with no tab switching hinting (i.e. a first notification
-                        // with |hint| set to true).
+                        // with |isHint| set to true).
                         // In this case the native side is not yet fully initialized, so we
                         // need to wait for the web contents to be set from native before
                         // notifying native that the tab was selected.
-                        setWebContentObserver(tab);
+                        setWebContentObserver(isTabNull, webContents);
                     }
                     return;
                 }
 
                 if (!allowTabSwitching) {
-                    if (tab == null || tab.getWebContents() != mWebContents) {
+                    if (isTabNull || webContents != mWebContents) {
                         safeNativeOnFatalError(
                                 mActivity.getString(R.string.autofill_assistant_give_up),
                                 DropOutReason.TAB_CHANGED);
@@ -136,19 +135,19 @@ public class AutofillAssistantUiController {
                 // confusion.
                 dismissSnackbar();
 
-                if (tab == null) {
+                if (isTabNull) {
                     safeOnTabSwitched(getModel().getBottomSheetState(),
                             /* activityChanged = */ false);
                     // A null tab indicates that there's no selected tab; Most likely, we're
                     // in the process of selecting a new tab. Hide the UI for possible reuse
                     // later.
                     safeNativeSetVisible(false);
-                } else if (tab.getWebContents() == mWebContents) {
+                } else if (webContents == mWebContents) {
                     // The original tab was re-selected. Show it again and force an
                     // expansion on the bottom sheet.
-                    if (!hint) {
+                    if (!isHint) {
                         // Here and below, we're only interested in restoring the UI for the
-                        // case where hint is false, meaning that the tab is shown. This is
+                        // case where isHint is false, meaning that the tab is shown. This is
                         // the only way to be sure that the bottomsheet is unsuppressed when
                         // we try to restore the status to what it was prior to switching.
                         safeOnTabSelected();
@@ -163,20 +162,21 @@ public class AutofillAssistantUiController {
                     AutofillAssistantClient client =
                             AutofillAssistantClient.fromWebContents(mWebContents);
                     if (client != null) {
-                        client.transferUiTo(tab.getWebContents());
+                        client.transferUiTo(webContents);
                     }
 
-                    if (!hint) {
+                    if (!isHint) {
                         safeOnTabSelected();
                     }
                 }
             }
 
             @Override
-            public void onActivityAttachmentChanged(Tab tab, @Nullable WindowAndroid window) {
+            public void onActivityAttachmentChanged(
+                    @Nullable WebContents webContents, @Nullable WindowAndroid window) {
                 if (mWebContents == null) return;
 
-                if (window == null && tab.getWebContents() == mWebContents) {
+                if (window == null && webContents == mWebContents) {
                     if (!allowTabSwitching) {
                         safeNativeStop(DropOutReason.TAB_DETACHED);
                         return;
@@ -198,19 +198,17 @@ public class AutofillAssistantUiController {
                     }
                 }
             }
-        };
+        });
     }
 
-    private void setWebContentObserver(Tab tab) {
+    private void setWebContentObserver(boolean isTabNull, @Nullable WebContents webContents) {
         getModel().addObserver(new PropertyObserver<PropertyKey>() {
             @Override
             public void onPropertyChanged(
                     PropertyObservable<PropertyKey> source, @Nullable PropertyKey propertyKey) {
                 if (AssistantModel.WEB_CONTENTS == propertyKey) {
                     getModel().removeObserver(this);
-                    if (tab != null
-                            && tab.getWebContents()
-                                    == getModel().get(AssistantModel.WEB_CONTENTS)) {
+                    if (!isTabNull && webContents == getModel().get(AssistantModel.WEB_CONTENTS)) {
                         safeOnTabSelected();
                     }
                 }
@@ -244,7 +242,7 @@ public class AutofillAssistantUiController {
     @CalledByNative
     private void clearNativePtr() {
         mNativeUiController = 0;
-        mActivityTabObserver.destroy();
+        mTabObserverDestroyer.destroy();
         mCoordinator.destroy();
         sActiveActivities.remove(mActivity);
     }

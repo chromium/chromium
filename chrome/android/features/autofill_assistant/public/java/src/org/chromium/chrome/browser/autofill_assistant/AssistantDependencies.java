@@ -9,9 +9,8 @@ import android.view.View;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
-import org.chromium.chrome.browser.ActivityTabProvider;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.KeyboardVisibilityDelegate;
@@ -47,13 +46,15 @@ public interface AssistantDependencies extends AssistantStaticDependencies {
 
     ApplicationViewportInsetSupplier getBottomInsetProvider();
 
-    ActivityTabProvider getActivityTabProvider();
-
-    TabObscuringHandler getTabObscuringHandler();
-
     View getRootView();
 
     AssistantSnackbarFactory getSnackbarFactory();
+
+    /**
+     * Observes tab changes.
+     * @return The destroyer that must be called to unregister the internal observer.
+     */
+    Destroyable observeTabChanges(AssistantTabObserver tabObserver);
 
     // Only called by native to guarantee future type safety.
     @CalledByNative

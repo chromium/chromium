@@ -9,12 +9,12 @@ import android.view.View;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.ui.TabObscuringHandler;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.content_public.browser.WebContents;
@@ -34,7 +34,6 @@ public class AssistantDependenciesChrome
     private KeyboardVisibilityDelegate mKeyboardVisibilityDelegate;
     private ApplicationViewportInsetSupplier mBottomInsetProvider;
     private ActivityTabProvider mActivityTabProvider;
-    private TabObscuringHandler mTabObscuringHandler;
     private View mRootView;
     private AssistantSnackbarFactory mSnackbarFactory;
 
@@ -57,7 +56,6 @@ public class AssistantDependenciesChrome
         mKeyboardVisibilityDelegate = mWindowAndroid.getKeyboardDelegate();
         mBottomInsetProvider = mWindowAndroid.getApplicationBottomInsetProvider();
         mActivityTabProvider = chromeActivity.getActivityTabProvider();
-        mTabObscuringHandler = chromeActivity.getTabObscuringHandler();
         mRootView = rootView.get();
         mSnackbarFactory =
                 new AssistantSnackbarFactoryChrome(mActivity, chromeActivity.getSnackbarManager());
@@ -103,16 +101,6 @@ public class AssistantDependenciesChrome
     }
 
     @Override
-    public ActivityTabProvider getActivityTabProvider() {
-        return mActivityTabProvider;
-    }
-
-    @Override
-    public TabObscuringHandler getTabObscuringHandler() {
-        return mTabObscuringHandler;
-    }
-
-    @Override
     public View getRootView() {
         return mRootView;
     }
@@ -120,5 +108,10 @@ public class AssistantDependenciesChrome
     @Override
     public AssistantSnackbarFactory getSnackbarFactory() {
         return mSnackbarFactory;
+    }
+
+    @Override
+    public Destroyable observeTabChanges(AssistantTabObserver tabObserver) {
+        return new AssistantTabObserverChrome(mActivityTabProvider, tabObserver);
     }
 }
