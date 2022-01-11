@@ -267,7 +267,6 @@ class AutomationInternalCustomBindings : public ObjectBackedNativeHandler {
 
   std::map<ui::AXTreeID, std::unique_ptr<AutomationAXTreeWrapper>>
       tree_id_to_tree_wrapper_map_;
-  std::map<ui::AXTree*, AutomationAXTreeWrapper*> axtree_to_tree_wrapper_map_;
   scoped_refptr<AutomationMessageFilter> message_filter_;
   bool is_active_profile_;
   std::vector<TreeChangeObserver> tree_change_observers_;

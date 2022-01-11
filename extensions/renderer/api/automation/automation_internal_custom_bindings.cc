@@ -1837,12 +1837,6 @@ void AutomationInternalCustomBindings::DestroyAccessibilityTree(
   if (tree_id == accessibility_focused_tree_id_)
     accessibility_focused_tree_id_ = ui::AXTreeIDUnknown();
 
-  auto iter = tree_id_to_tree_wrapper_map_.find(tree_id);
-  if (iter == tree_id_to_tree_wrapper_map_.end())
-    return;
-
-  AutomationAXTreeWrapper* tree_wrapper = iter->second.get();
-  axtree_to_tree_wrapper_map_.erase(tree_wrapper->tree());
   tree_id_to_tree_wrapper_map_.erase(tree_id);
 }
 
@@ -2421,8 +2415,6 @@ void AutomationInternalCustomBindings::OnAccessibilityEvents(
     tree_wrapper = new AutomationAXTreeWrapper(tree_id, this);
     tree_id_to_tree_wrapper_map_.insert(
         std::make_pair(tree_id, base::WrapUnique(tree_wrapper)));
-    axtree_to_tree_wrapper_map_.insert(
-        std::make_pair(tree_wrapper->tree(), tree_wrapper));
   } else {
     tree_wrapper = iter->second.get();
   }
@@ -2519,11 +2511,7 @@ bool AutomationInternalCustomBindings::SendTreeChangeEvent(
   if (!has_filter)
     return false;
 
-  auto iter = axtree_to_tree_wrapper_map_.find(tree);
-  if (iter == axtree_to_tree_wrapper_map_.end())
-    return false;
-
-  ui::AXTreeID tree_id = iter->second->GetTreeID();
+  ui::AXTreeID tree_id = tree->GetAXTreeID();
   bool did_send_event = false;
   for (const auto& observer : tree_change_observers_) {
     switch (observer.filter) {
@@ -2771,12 +2759,7 @@ void AutomationInternalCustomBindings::SendChildTreeIDEvent(
 void AutomationInternalCustomBindings::SendNodesRemovedEvent(
     ui::AXTree* tree,
     const std::vector<int>& ids) {
-  auto iter = axtree_to_tree_wrapper_map_.find(tree);
-  if (iter == axtree_to_tree_wrapper_map_.end())
-    return;
-
-  ui::AXTreeID tree_id = iter->second->GetTreeID();
-
+  ui::AXTreeID tree_id = tree->GetAXTreeID();
   base::Value args(base::Value::Type::LIST);
   args.Append(tree_id.ToString());
   {
