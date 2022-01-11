@@ -478,7 +478,7 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
 
 <histogram name="BackForwardCache.ReloadsAfterHistoryNavigation"
     enum="BackForwardCacheReloadsAfterHistoryNavigation"
-    expires_after="2022-02-06">
+    expires_after="2022-06-26">
   <owner>sreejakshetty@chromium.org</owner>
   <owner>altimin@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
