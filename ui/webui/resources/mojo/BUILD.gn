@@ -40,8 +40,14 @@ ts_library("library") {
   ]
 
   if (is_chromeos_ash) {
-    in_files += [ "ui/gfx/geometry/mojom/geometry.mojom-webui.js" ]
-    extra_deps += [ "//ui/gfx/geometry/mojom:mojom_js__generator" ]
+    in_files += [
+      "ui/gfx/geometry/mojom/geometry.mojom-webui.js",
+      "ui/gfx/range/mojom/range.mojom-webui.js",
+    ]
+    extra_deps += [
+      "//ui/gfx/geometry/mojom:mojom_js__generator",
+      "//ui/gfx/range/mojom:mojom_js__generator",
+    ]
   }
 }
 
