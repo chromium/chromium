@@ -23,6 +23,12 @@ export class MetricsUtils {
   }
 
   /** @param {!Macro} macro */
+  static recordMacroRecognized(macro) {
+    chrome.metricsPrivate.recordSparseValue(
+        MetricsUtils.MACRO_RECOGNIZED_METRIC, macro.getMacroName());
+  }
+
+  /** @param {!Macro} macro */
   static recordMacroSucceeded(macro) {
     chrome.metricsPrivate.recordSparseValue(
         MetricsUtils.MACRO_SUCCEEDED_METRIC, macro.getMacroName());
@@ -94,6 +100,13 @@ MetricsUtils.LISTENING_DURATION_METRIC_ON_DEVICE =
  */
 MetricsUtils.LISTENING_DURATION_METRIC_NETWORK =
     'Accessibility.CrosDictation.ListeningDuration.NetworkRecognition';
+
+/**
+ * The metric used to record that a macro was recognized.
+ * @const {string}
+ */
+MetricsUtils.MACRO_RECOGNIZED_METRIC =
+    'Accessibility.CrosDictation.MacroRecognized';
 
 /**
  * The metric used to record that a macro succeeded.

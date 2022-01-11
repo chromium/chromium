@@ -52,7 +52,7 @@ export class SpeechParser {
    * Parses user text to produce a macro command. Async to allow pumpkin to
    * complete loading if needed.
    * @param {string} text The text to parse.
-   * @return {Promise<Macro>}
+   * @return {!Promise<!Macro>}
    */
   async parse(text) {
     // Try pumpkin parsing first.
@@ -65,11 +65,13 @@ export class SpeechParser {
 
     // Fall-back to simple parsing.
     if (this.simpleParseStrategy_) {
-      return await this.simpleParseStrategy_.parse(text);
+      return await /** @type {!Promise<!Macro>} */ (
+          this.simpleParseStrategy_.parse(text));
     }
 
     // Input text as-is as a catch-all.
-    return await this.inputTextStrategy_.parse(text);
+    return await /** @type {!Promise<!Macro>} */ (
+        this.inputTextStrategy_.parse(text));
   }
 }
 

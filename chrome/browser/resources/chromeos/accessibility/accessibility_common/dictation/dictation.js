@@ -255,6 +255,7 @@ export class Dictation {
     }
 
     const macro = await this.speechParser_.parse(transcript);
+    MetricsUtils.recordMacroRecognized(macro);
     // Check if the macro can execute.
     // TODO(crbug.com/1264544): Deal with ambiguous results here.
     const checkContextResult = macro.checkContext();

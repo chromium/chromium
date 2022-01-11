@@ -67,6 +67,8 @@ const char* kNetworkListeningDurationMetric =
 const char* kLocaleMetric = "Accessibility.CrosDictation.Language";
 const char* kOnDeviceSpeechMetric =
     "Accessibility.CrosDictation.UsedOnDeviceSpeech";
+const char* kMacroRecognizedMetric =
+    "Accessibility.CrosDictation.MacroRecognized";
 const char* kMacroSucceededMetric =
     "Accessibility.CrosDictation.MacroSucceeded";
 const char* kMacroFailedMetric = "Accessibility.CrosDictation.MacroFailed";
@@ -1155,6 +1157,9 @@ IN_PROC_BROWSER_TEST_P(DictationCommandsExtensionTest, MacroSucceededMetric) {
   histogram_tester_.ExpectUniqueSample(/*name=*/kMacroFailedMetric,
                                        /*sample=*/kInputTextViewMetricValue,
                                        /*expected_bucket_count=*/0);
+  histogram_tester_.ExpectUniqueSample(/*name=*/kMacroRecognizedMetric,
+                                       /*sample=*/kInputTextViewMetricValue,
+                                       /*expected_bucket_count=*/1);
 }
 
 // TODO(1266696): DictationCommandsExtensionTest.Help is failing on

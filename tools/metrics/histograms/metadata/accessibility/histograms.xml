@@ -472,6 +472,13 @@ chromium-metrics-reviews@google.com.
   <summary>Recorded whenever Dictation fails to perform a macro.</summary>
 </histogram>
 
+<histogram name="Accessibility.CrosDictation.MacroRecognized"
+    enum="CrosDictationMacroName" expires_after="2023-01-30">
+  <owner>akihiroota@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>Recorded whenever Dictation recognizes a macro.</summary>
+</histogram>
+
 <histogram name="Accessibility.CrosDictation.MacroSucceeded"
     enum="CrosDictationMacroName" expires_after="2023-01-30">
   <owner>akihiroota@chromium.org</owner>
