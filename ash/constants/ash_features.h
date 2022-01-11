@@ -49,6 +49,8 @@ extern const base::FeatureParam<bool> kAmbientModeRssPhotosEnabled;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::FeatureParam<bool> kAmbientModeStreetArtAlbumEnabled;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kAmbientModeAnimationFeature;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kAmbientModeDevUseProdFeature;
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kAmbientModePhotoPreviewFeature;

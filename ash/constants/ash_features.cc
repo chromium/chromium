@@ -83,6 +83,14 @@ constexpr base::FeatureParam<bool> kAmbientModeRssPhotosEnabled{
 constexpr base::FeatureParam<bool> kAmbientModeStreetArtAlbumEnabled{
     &kAmbientModeFeature, "StreetArtAlbumEnabled", false};
 
+// Controls whether to launch the animated screensaver (as opposed to the
+// existing photo slideshow) when entering ambient mode. Currently, there is
+// only one animation theme available ("feel the breeze"), but a FeatureParam
+// will be introduced that allows the user to select a specific theme when more
+// become available.
+const base::Feature kAmbientModeAnimationFeature{
+    "ChromeOSAmbientModeAnimation", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // Controls whether to allow Dev channel to use Prod server feature.
 const base::Feature kAmbientModeDevUseProdFeature{
     "ChromeOSAmbientModeDevChannelUseProdServer",

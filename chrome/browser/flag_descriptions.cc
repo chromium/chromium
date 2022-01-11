@@ -3967,6 +3967,13 @@ const char kAllowTouchpadHapticClickSettingsName[] =
 const char kAllowTouchpadHapticClickSettingsDescription[] =
     "Shows settings to adjust click sensitivity for haptic touchpads.";
 
+const char kAmbientModeAnimationName[] =
+    "Launch the Lottie animated ChromeOS Screensaver";
+const char kAmbientModeAnimationDescription[] =
+    "Launches the animated screensaver (as opposed to the existing photo "
+    "slideshow) when entering ambient mode. Currently, there is only one "
+    "animation theme available (feel the breeze).";
+
 const char kAmbientModeNewUrlName[] =
     "Use new backend URL format for ChromeOS Screensaver";
 const char kAmbientModeNewUrlDescription[] =

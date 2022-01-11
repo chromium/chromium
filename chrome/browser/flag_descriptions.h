@@ -2278,6 +2278,9 @@ extern const char kAllowScrollSettingsDescription[];
 extern const char kAllowTouchpadHapticClickSettingsName[];
 extern const char kAllowTouchpadHapticClickSettingsDescription[];
 
+extern const char kAmbientModeAnimationName[];
+extern const char kAmbientModeAnimationDescription[];
+
 extern const char kAmbientModeNewUrlName[];
 extern const char kAmbientModeNewUrlDescription[];
 

@@ -2513,6 +2513,7 @@ constexpr FeatureEntry::FeatureVariation
          base::size(kPlatformProvidedTrustTokenIssuance), nullptr}};
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+constexpr char kAmbientModeAnimationInternalName[] = "ambient-mode-animation";
 constexpr char kPersonalizationHubInternalName[] = "personalization-hub";
 constexpr char kWallpaperFullScreenPreviewInternalName[] =
     "wallpaper-fullscreen-preview";
@@ -7807,6 +7808,13 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::kAutofillEnableUpdateVirtualCardEnrollment)},
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    {kAmbientModeAnimationInternalName,
+     flag_descriptions::kAmbientModeAnimationName,
+     flag_descriptions::kAmbientModeAnimationDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kAmbientModeAnimationFeature)},
+#endif
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
@@ -7906,8 +7914,9 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
   if (!strcmp(kWallpaperFullScreenPreviewInternalName, entry.internal_name))
     return !ash::features::IsWallpaperWebUIEnabled();
 
-  // personalization-hub is only available for Unknown/Canary/Dev channels.
-  if (!strcmp(kPersonalizationHubInternalName, entry.internal_name) &&
+  // Features that are only available for Unknown/Canary/Dev channels.
+  if ((!strcmp(kPersonalizationHubInternalName, entry.internal_name) ||
+       !strcmp(kAmbientModeAnimationInternalName, entry.internal_name)) &&
       channel != version_info::Channel::DEV &&
       channel != version_info::Channel::CANARY &&
       channel != version_info::Channel::UNKNOWN) {

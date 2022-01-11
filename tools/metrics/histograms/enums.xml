@@ -53913,6 +53913,7 @@ from previous Chrome versions.
   <int value="293134455" label="AutofillSendBillingCustomerNumber:disabled"/>
   <int value="293996306" label="ArrayPrototypeValues:disabled"/>
   <int value="294150128" label="RelatedSearchesSimplifiedUx:enabled"/>
+  <int value="294194537" label="ChromeOSAmbientModeAnimation:disabled"/>
   <int value="295661985" label="video-capture-use-gpu-memory-buffer"/>
   <int value="296066418" label="CCTResizableForThirdParties:disabled"/>
   <int value="296215399" label="WindowsMixedReality:disabled"/>
@@ -55656,6 +55657,7 @@ from previous Chrome versions.
   <int value="1579461102" label="MemoryCoordinator:disabled"/>
   <int value="1580606206" label="CameraAppDocumentManualCrop:disabled"/>
   <int value="1581002467" label="enable-explicit-dma-fences"/>
+  <int value="1582004845" label="ChromeOSAmbientModeAnimation:enabled"/>
   <int value="1582400283" label="VideoTutorials:enabled"/>
   <int value="1583543236" label="QuickSettingsNetworkRevamp:disabled"/>
   <int value="1584012382" label="UsbNotificationController:disabled"/>
