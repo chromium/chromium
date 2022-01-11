@@ -85,9 +85,6 @@ class PolicyBase final : public TargetPolicy {
   void SetAllowNoSandboxJob() override;
   bool GetAllowNoSandboxJob() override;
 
-  // Get the AppContainer profile as its internal type.
-  scoped_refptr<AppContainerBase> GetAppContainerBase();
-
   // Creates a Job object with the level specified in a previous call to
   // SetJobLevel().
   ResultCode MakeJobObject(base::win::ScopedHandle* job);

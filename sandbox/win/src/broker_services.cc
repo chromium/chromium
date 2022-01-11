@@ -520,8 +520,7 @@ ResultCode BrokerServicesBase::SpawnTarget(const wchar_t* exe_path,
   for (HANDLE handle : policy_handle_list)
     startup_info->AddInheritedHandle(handle);
 
-  scoped_refptr<AppContainerBase> container =
-      policy_base->GetAppContainerBase();
+  scoped_refptr<AppContainer> container = policy_base->GetAppContainer();
   if (container)
     startup_info->SetAppContainer(container);
 

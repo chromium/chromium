@@ -15,7 +15,6 @@
 #include "base/win/windows_types.h"
 #include "sandbox/win/src/app_container.h"
 #include "sandbox/win/src/sandbox_types.h"
-#include "sandbox/win/src/security_capabilities.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace sandbox {
@@ -47,19 +46,12 @@ class AppContainerBase final : public AppContainer {
   void SetEnableLowPrivilegeAppContainer(bool enable) override;
   bool GetEnableLowPrivilegeAppContainer() override;
   AppContainerType GetAppContainerType() override;
+  const std::vector<base::win::Sid>& GetCapabilities() override;
+  const std::vector<base::win::Sid>& GetImpersonationCapabilities() override;
+  std::unique_ptr<SecurityCapabilities> GetSecurityCapabilities() override;
 
   // Get the package SID for this AC.
   const base::win::Sid& GetPackageSid() const;
-
-  // Get an allocated SecurityCapabilities object for this App Container.
-  std::unique_ptr<SecurityCapabilities> GetSecurityCapabilities();
-
-  // Get a vector of capabilities.
-  const std::vector<base::win::Sid>& GetCapabilities();
-
-  // Get a vector of impersonation only capabilities. Used if the process needs
-  // a more privileged token to start.
-  const std::vector<base::win::Sid>& GetImpersonationCapabilities();
 
   // Creates a new AppContainer object. This will create a new profile
   // if it doesn't already exist. The profile must be deleted manually using

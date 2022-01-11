@@ -88,10 +88,7 @@ TEST_P(RendererFeatureSandboxWinTest, RendererGeneratedPolicyTest) {
               policy->GetAppContainer()->GetAppContainerType());
 
     ::sandbox::policy::EqualSidList(
-        static_cast<::sandbox::PolicyBase*>(policy.get())
-            ->GetAppContainerBase()
-            ->GetCapabilities(),
-        {});
+        policy->GetAppContainer()->GetCapabilities(), {});
   } else {
     EXPECT_EQ(policy->GetAppContainer().get(), nullptr);
   }

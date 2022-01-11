@@ -10,6 +10,7 @@
 #include "base/win/sid.h"
 #include "base/win/windows_types.h"
 #include "sandbox/win/src/acl.h"
+#include "sandbox/win/src/security_capabilities.h"
 
 namespace sandbox {
 
@@ -70,6 +71,16 @@ class AppContainer {
   virtual bool GetEnableLowPrivilegeAppContainer() = 0;
 
   virtual AppContainerType GetAppContainerType() = 0;
+
+  // Get a vector of capabilities.
+  virtual const std::vector<base::win::Sid>& GetCapabilities() = 0;
+
+  // Get a vector of impersonation only capabilities. Used if the process needs
+  // a more privileged token to start.
+  virtual const std::vector<base::win::Sid>& GetImpersonationCapabilities() = 0;
+
+  // Get an allocated SecurityCapabilities object for this App Container.
+  virtual std::unique_ptr<SecurityCapabilities> GetSecurityCapabilities() = 0;
 };
 
 }  // namespace sandbox

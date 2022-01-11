@@ -643,16 +643,12 @@ ResultCode PolicyBase::AddAppContainerProfile(const wchar_t* package_name,
 }
 
 scoped_refptr<AppContainer> PolicyBase::GetAppContainer() {
-  return GetAppContainerBase();
+  return app_container_;
 }
 
 void PolicyBase::SetEffectiveToken(HANDLE token) {
   CHECK(token);
   effective_token_ = token;
-}
-
-scoped_refptr<AppContainerBase> PolicyBase::GetAppContainerBase() {
-  return app_container_;
 }
 
 ResultCode PolicyBase::SetupAllInterceptions(TargetProcess& target) {
