@@ -111,7 +111,16 @@ void InitializeDBus() {
   // ConciergeClient depends on CiceroneClient.
   InitializeDBusClient<chromeos::ConciergeClient>(bus);
   InitializeDBusClient<chromeos::CrasAudioClient>(bus);
-  InitializeDBusClient<chromeos::CrosHealthdClient>(bus);
+#if defined(USE_REAL_DBUS_CLIENTS)
+  chromeos::CrosHealthdClient::Initialize(bus);
+#else
+  // We don't initialize a fake client here to prevent introducing the
+  // dependencies of cros_healthd. The cros_healthd ServiceConnection object
+  // will create a fake for testing if the global instance has not yet been
+  // created.
+  if (bus)
+    chromeos::CrosHealthdClient::Initialize(bus);
+#endif
   InitializeDBusClient<chromeos::CryptohomeMiscClient>(bus);
   InitializeDBusClient<chromeos::CryptohomePkcs11Client>(bus);
   InitializeDBusClient<chromeos::CupsProxyClient>(bus);
@@ -223,7 +232,8 @@ void ShutdownDBus() {
   chromeos::CupsProxyClient::Shutdown();
   chromeos::CryptohomePkcs11Client::Shutdown();
   chromeos::CryptohomeMiscClient::Shutdown();
-  chromeos::CrosHealthdClient::Shutdown();
+  if (chromeos::CrosHealthdClient::Get())
+    chromeos::CrosHealthdClient::Shutdown();
   chromeos::CrasAudioClient::Shutdown();
   chromeos::ConciergeClient::Shutdown();
   chromeos::CiceroneClient::Shutdown();

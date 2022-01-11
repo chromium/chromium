@@ -31,7 +31,8 @@ void FakeServiceConnectionImpl::CfMContextServiceStarted(
     bool is_available) {
   if (!is_available || callback_.is_null()) {
     pending_receiver.reset();
-    std::move(callback_).Run(std::move(pending_receiver), false);
+    if (!callback_.is_null())
+      std::move(callback_).Run(std::move(pending_receiver), false);
     return;
   }
 

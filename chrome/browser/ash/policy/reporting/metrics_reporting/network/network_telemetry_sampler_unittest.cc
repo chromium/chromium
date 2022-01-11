@@ -14,13 +14,13 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "chromeos/dbus/shill/shill_ipconfig_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/tether_constants.h"
+#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd_client.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/reporting/metrics/fake_sampler.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
@@ -166,7 +166,7 @@ chromeos::cros_healthd::mojom::TelemetryInfoPtr CreateWifiResult(
 class NetworkTelemetrySamplerTest : public testing::Test {
  public:
   NetworkTelemetrySamplerTest() {
-    chromeos::CrosHealthdClient::InitializeFake();
+    chromeos::cros_healthd::FakeCrosHealthdClient::InitializeFake();
   }
 
   ~NetworkTelemetrySamplerTest() override {

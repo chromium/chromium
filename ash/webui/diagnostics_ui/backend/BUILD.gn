@@ -110,6 +110,7 @@ source_set("unit_tests") {
     "//chromeos/dbus/shill",
     "//chromeos/login/login_state:login_state",
     "//chromeos/services/cros_healthd/public/cpp",
+    "//chromeos/services/cros_healthd/public/cpp:test",
     "//chromeos/services/cros_healthd/public/mojom",
     "//chromeos/services/network_config:in_process_instance",
     "//chromeos/services/network_config:network_config",

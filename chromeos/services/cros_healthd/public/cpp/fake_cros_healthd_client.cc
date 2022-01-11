@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
+#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd_client.h"
 
 #include "base/callback.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
@@ -28,18 +28,20 @@ FakeCrosHealthdClient::~FakeCrosHealthdClient() {
 }
 
 // static
+void FakeCrosHealthdClient::InitializeFake() {
+  // This instance will be stored in g_instance.
+  new FakeCrosHealthdClient();
+}
+
+// static
 FakeCrosHealthdClient* FakeCrosHealthdClient::Get() {
   return g_instance;
 }
 
-mojo::Remote<mojom::CrosHealthdServiceFactory>
-FakeCrosHealthdClient::BootstrapMojoConnection(
+mojo::ScopedMessagePipeHandle FakeCrosHealthdClient::BootstrapMojoConnection(
     BootstrapMojoConnectionCallback result_callback) {
-  mojo::Remote<mojom::CrosHealthdServiceFactory> remote(
-      receiver_.BindNewPipeAndPassRemote());
-
   std::move(result_callback).Run(/*success=*/true);
-  return remote;
+  return receiver_.BindNewPipeAndPassRemote().PassPipe();
 }
 
 void FakeCrosHealthdClient::SetAvailableRoutinesForTesting(

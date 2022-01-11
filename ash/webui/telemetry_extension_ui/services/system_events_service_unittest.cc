@@ -10,7 +10,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
+#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd_client.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -84,7 +84,7 @@ class MockPowerObserver : public health::mojom::PowerObserver {
 class SystemEventsServiceTest : public testing::Test {
  public:
   SystemEventsServiceTest() {
-    CrosHealthdClient::InitializeFake();
+    cros_healthd::FakeCrosHealthdClient::InitializeFake();
     system_events_service_ = std::make_unique<SystemEventsService>(
         remote_system_events_service_.BindNewPipeAndPassReceiver());
     mock_bluetooth_observer_ =
@@ -165,7 +165,7 @@ TEST_F(SystemEventsServiceTest, BluetoothObserverReconnect) {
   cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
 
   // Restart cros_healthd.
-  CrosHealthdClient::InitializeFake();
+  cros_healthd::FakeCrosHealthdClient::InitializeFake();
 
   // Ensure disconnect handler is called for bluetooth observer from System
   // Events Service. After this call, we will have a Mojo pending connection
@@ -202,7 +202,7 @@ TEST_F(SystemEventsServiceTest, LidObserverReconnect) {
   cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
 
   // Restart cros_healthd.
-  CrosHealthdClient::InitializeFake();
+  cros_healthd::FakeCrosHealthdClient::InitializeFake();
 
   // Ensure disconnect handler is called for lid observer from System Event
   // Service. After this call, we will have a Mojo pending connection task in
@@ -241,7 +241,7 @@ TEST_F(SystemEventsServiceTest, PowerObserverReconnect) {
   cros_healthd::ServiceConnection::GetInstance()->FlushForTesting();
 
   // Restart cros_healthd.
-  CrosHealthdClient::InitializeFake();
+  cros_healthd::FakeCrosHealthdClient::InitializeFake();
 
   // Ensure disconnect handler is called for power observer from System Event
   // Service. After this call, we will have a Mojo pending connection task in

@@ -10,7 +10,7 @@
 
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
+#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd_client.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "components/reporting/util/test_support_callbacks.h"
@@ -28,7 +28,9 @@ class AudioEventsObserverTest : public ::testing::Test {
 
   ~AudioEventsObserverTest() override = default;
 
-  void SetUp() override { ::chromeos::CrosHealthdClient::InitializeFake(); }
+  void SetUp() override {
+    ::chromeos::cros_healthd::FakeCrosHealthdClient::InitializeFake();
+  }
 
   void TearDown() override {
     ::chromeos::CrosHealthdClient::Shutdown();

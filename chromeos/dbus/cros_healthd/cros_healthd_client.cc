@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
@@ -33,8 +32,7 @@ class CrosHealthdClientImpl : public CrosHealthdClient {
   ~CrosHealthdClientImpl() override = default;
 
   // CrosHealthdClient overrides:
-  mojo::Remote<cros_healthd::mojom::CrosHealthdServiceFactory>
-  BootstrapMojoConnection(
+  mojo::ScopedMessagePipeHandle BootstrapMojoConnection(
       BootstrapMojoConnectionCallback result_callback) override {
     // Invalidate any pending attempts to bootstrap the mojo connection.
     bootstrap_weak_ptr_factory_.InvalidateWeakPtrs();
@@ -49,20 +47,12 @@ class CrosHealthdClientImpl : public CrosHealthdClient {
                                    base::kNullProcessHandle,
                                    platform_channel.TakeLocalEndpoint());
 
-    // Bind our end of |pipe| to our CrosHealthdService remote. The daemon
-    // should bind its end to a CrosHealthdService implementation.
-    mojo::Remote<cros_healthd::mojom::CrosHealthdServiceFactory>
-        cros_healthd_service_factory;
-    cros_healthd_service_factory.Bind(
-        mojo::PendingRemote<cros_healthd::mojom::CrosHealthdServiceFactory>(
-            std::move(pipe), 0u /* version */));
-
     cros_healthd_service_proxy_->WaitForServiceToBeAvailable(base::BindOnce(
         &CrosHealthdClientImpl::OnDbusServiceAvailable,
         bootstrap_weak_ptr_factory_.GetWeakPtr(), std::move(result_callback),
         std::move(platform_channel)));
 
-    return cros_healthd_service_factory;
+    return pipe;
   }
 
   void Init(dbus::Bus* const bus) {
@@ -129,11 +119,6 @@ CrosHealthdClient::~CrosHealthdClient() {
 void CrosHealthdClient::Initialize(dbus::Bus* bus) {
   DCHECK(bus);
   (new CrosHealthdClientImpl())->Init(bus);
-}
-
-// static
-void CrosHealthdClient::InitializeFake() {
-  new cros_healthd::FakeCrosHealthdClient();
 }
 
 // static

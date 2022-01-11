@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/args.gni")
+import("//chromeos/dbus/config/use_real_dbus_clients.gni")
 
 assert(is_chromeos, "Non-ChromeOS builds cannot depend on //chromeos")
 
@@ -24,6 +25,28 @@ source_set("cpp") {
     "//chromeos/services/cros_healthd/public/mojom",
     "//ui/events/ozone/evdev:event_device_info",
   ]
+  if (use_real_dbus_clients) {
+    defines += [ "USE_REAL_DBUS_CLIENTS" ]
+  } else {
+    sources += [ "service_connection_fake_dbus.cc" ]
+    deps += [ ":test" ]
+  }
+}
+
+source_set("test") {
+  deps = [
+    "//base",
+    "//chromeos/dbus/cros_healthd:cros_healthd",
+    "//chromeos/services/cros_healthd/public/mojom",
+    "//chromeos/services/network_health/public/mojom",
+    "//mojo/public/cpp/bindings",
+  ]
+  sources = [
+    "fake_cros_healthd_client.cc",
+    "fake_cros_healthd_client.h",
+    "fake_cros_healthd_service.cc",
+    "fake_cros_healthd_service.h",
+  ]
 }
 
 source_set("unit_tests") {
@@ -31,6 +54,7 @@ source_set("unit_tests") {
   sources = [ "service_connection_unittest.cc" ]
   deps = [
     ":cpp",
+    ":test",
     "//base/test:test_support",
     "//chromeos/dbus/cros_healthd",
     "//chromeos/services/cros_healthd/public/mojom",

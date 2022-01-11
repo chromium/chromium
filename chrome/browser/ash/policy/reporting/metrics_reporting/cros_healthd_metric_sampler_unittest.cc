@@ -7,7 +7,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/cros_healthd/cros_healthd_client.h"
-#include "chromeos/dbus/cros_healthd/fake_cros_healthd_client.h"
+#include "chromeos/services/cros_healthd/public/cpp/fake_cros_healthd_client.h"
 #include "chromeos/services/cros_healthd/public/cpp/service_connection.h"
 #include "components/reporting/util/test_support_callbacks.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -151,7 +151,7 @@ MetricData CollectError(cros_healthd::TelemetryInfoPtr telemetry_info,
 class CrosHealthdMetricSamplerTest : public testing::Test {
  public:
   CrosHealthdMetricSamplerTest() {
-    chromeos::CrosHealthdClient::InitializeFake();
+    chromeos::cros_healthd::FakeCrosHealthdClient::InitializeFake();
   }
 
   ~CrosHealthdMetricSamplerTest() override {
