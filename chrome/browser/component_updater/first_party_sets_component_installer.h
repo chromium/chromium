@@ -60,27 +60,27 @@ class FirstPartySetsComponentInstallerPolicy : public ComponentInstallerPolicy {
                                        base::StringPiece contents);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
                            NonexistentFile_OnComponentReady);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
                            NonexistentFile_OnRegistrationComplete);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
                            LoadsSets_OnComponentReady);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
                            LoadsSets_OnNetworkRestart);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
                            IgnoreNewSets_NoInitialComponent);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
                            IgnoreNewSets_OnComponentReady);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureEnabledTest,
                            IgnoreNewSets_OnNetworkRestart);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerFeatureDisabledTest,
                            GetInstallerAttributes_Disabled);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerNonDogFooderTest,
                            GetInstallerAttributes_NonDogfooder);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerDogFooderTest,
                            GetInstallerAttributes_Dogfooder);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerTest,
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsComponentInstallerV2FormatTest,
                            GetInstallerAttributes_V2OptOut);
 
   // The following methods override ComponentInstallerPolicy.

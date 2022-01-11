@@ -44,12 +44,14 @@ class FirstPartySetsComponentInstallerTest : public ::testing::Test {
  public:
   FirstPartySetsComponentInstallerTest() {
     CHECK(component_install_dir_.CreateUniqueTempDir());
-    scoped_feature_list_.InitAndEnableFeature(net::features::kFirstPartySets);
   }
 
   void TearDown() override {
     FirstPartySetsComponentInstallerPolicy::ResetForTesting();
   }
+
+  // Subclasses are expected to call this in their constructors.
+  virtual void InitializeFeatureList() = 0;
 
  protected:
   base::test::TaskEnvironment env_;
@@ -58,7 +60,31 @@ class FirstPartySetsComponentInstallerTest : public ::testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-TEST_F(FirstPartySetsComponentInstallerTest, FeatureDisabled) {
+class FirstPartySetsComponentInstallerFeatureEnabledTest
+    : public FirstPartySetsComponentInstallerTest {
+ public:
+  FirstPartySetsComponentInstallerFeatureEnabledTest() {
+    InitializeFeatureList();
+  }
+
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitAndEnableFeature(net::features::kFirstPartySets);
+  }
+};
+
+class FirstPartySetsComponentInstallerFeatureDisabledTest
+    : public FirstPartySetsComponentInstallerTest {
+ public:
+  FirstPartySetsComponentInstallerFeatureDisabledTest() {
+    InitializeFeatureList();
+  }
+
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitAndDisableFeature(net::features::kFirstPartySets);
+  }
+};
+
+TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest, FeatureDisabled) {
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitAndDisableFeature(net::features::kFirstPartySets);
   auto service =
@@ -73,7 +99,8 @@ TEST_F(FirstPartySetsComponentInstallerTest, FeatureDisabled) {
   env_.RunUntilIdle();
 }
 
-TEST_F(FirstPartySetsComponentInstallerTest, NonexistentFile_OnComponentReady) {
+TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest,
+       NonexistentFile_OnComponentReady) {
   SEQUENCE_CHECKER(sequence_checker);
 
   ASSERT_TRUE(
@@ -88,7 +115,7 @@ TEST_F(FirstPartySetsComponentInstallerTest, NonexistentFile_OnComponentReady) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(FirstPartySetsComponentInstallerTest,
+TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest,
        NonexistentFile_OnRegistrationComplete) {
   ASSERT_TRUE(
       base::DeleteFile(FirstPartySetsComponentInstallerPolicy::GetInstalledPath(
@@ -105,7 +132,8 @@ TEST_F(FirstPartySetsComponentInstallerTest,
   run_loop.Run();
 }
 
-TEST_F(FirstPartySetsComponentInstallerTest, LoadsSets_OnComponentReady) {
+TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest,
+       LoadsSets_OnComponentReady) {
   SEQUENCE_CHECKER(sequence_checker);
   const std::string expectation = "some first party sets";
   base::RunLoop run_loop;
@@ -131,7 +159,8 @@ TEST_F(FirstPartySetsComponentInstallerTest, LoadsSets_OnComponentReady) {
 // Test that when the first version of the component is installed,
 // ComponentReady is a no-op, because OnRegistrationComplete already executed
 // the OnceCallback.
-TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_NoInitialComponent) {
+TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest,
+       IgnoreNewSets_NoInitialComponent) {
   SEQUENCE_CHECKER(sequence_checker);
 
   int callback_calls = 0;
@@ -165,7 +194,8 @@ TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_NoInitialComponent) {
 
 // Test if a component has been installed, ComponentReady will be no-op when
 // newer versions are installed.
-TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_OnComponentReady) {
+TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest,
+       IgnoreNewSets_OnComponentReady) {
   SEQUENCE_CHECKER(sequence_checker);
   const std::string sets_v1 = "first party sets v1";
   const std::string sets_v2 = "first party sets v2";
@@ -206,7 +236,8 @@ TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_OnComponentReady) {
   EXPECT_EQ(callback_calls, 1);
 }
 
-TEST_F(FirstPartySetsComponentInstallerTest, LoadsSets_OnNetworkRestart) {
+TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest,
+       LoadsSets_OnNetworkRestart) {
   SEQUENCE_CHECKER(sequence_checker);
   const std::string expectation = "some first party sets";
 
@@ -250,7 +281,8 @@ TEST_F(FirstPartySetsComponentInstallerTest, LoadsSets_OnNetworkRestart) {
 // Test ReconfigureAfterNetworkRestart calls the callback with the correct
 // version, i.e. the first installed component, even if there are newer versions
 // installed after browser startup.
-TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_OnNetworkRestart) {
+TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest,
+       IgnoreNewSets_OnNetworkRestart) {
   SEQUENCE_CHECKER(sequence_checker);
   const std::string sets_v1 = "first party sets v1";
   const std::string sets_v2 = "first party sets v2";
@@ -299,10 +331,8 @@ TEST_F(FirstPartySetsComponentInstallerTest, IgnoreNewSets_OnNetworkRestart) {
   EXPECT_EQ(callback_calls, 1);
 }
 
-TEST_F(FirstPartySetsComponentInstallerTest, GetInstallerAttributes_Disabled) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndDisableFeature(net::features::kFirstPartySets);
-
+TEST_F(FirstPartySetsComponentInstallerFeatureDisabledTest,
+       GetInstallerAttributes_Disabled) {
   FirstPartySetsComponentInstallerPolicy policy(base::DoNothing());
 
   EXPECT_THAT(policy.GetInstallerAttributes(),
@@ -314,13 +344,22 @@ TEST_F(FirstPartySetsComponentInstallerTest, GetInstallerAttributes_Disabled) {
                        "true")));
 }
 
-TEST_F(FirstPartySetsComponentInstallerTest,
+class FirstPartySetsComponentInstallerNonDogFooderTest
+    : public FirstPartySetsComponentInstallerTest {
+ public:
+  FirstPartySetsComponentInstallerNonDogFooderTest() {
+    InitializeFeatureList();
+  }
+
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        net::features::kFirstPartySets,
+        {{net::features::kFirstPartySetsIsDogfooder.name, "false"}});
+  }
+};
+
+TEST_F(FirstPartySetsComponentInstallerNonDogFooderTest,
        GetInstallerAttributes_NonDogfooder) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      net::features::kFirstPartySets,
-      {{net::features::kFirstPartySetsIsDogfooder.name, "false"}});
-
   FirstPartySetsComponentInstallerPolicy policy(base::DoNothing());
 
   EXPECT_THAT(policy.GetInstallerAttributes(),
@@ -332,12 +371,20 @@ TEST_F(FirstPartySetsComponentInstallerTest,
                        "true")));
 }
 
-TEST_F(FirstPartySetsComponentInstallerTest, GetInstallerAttributes_Dogfooder) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      net::features::kFirstPartySets,
-      {{net::features::kFirstPartySetsIsDogfooder.name, "true"}});
+class FirstPartySetsComponentInstallerDogFooderTest
+    : public FirstPartySetsComponentInstallerTest {
+ public:
+  FirstPartySetsComponentInstallerDogFooderTest() { InitializeFeatureList(); }
 
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        net::features::kFirstPartySets,
+        {{net::features::kFirstPartySetsIsDogfooder.name, "true"}});
+  }
+};
+
+TEST_F(FirstPartySetsComponentInstallerDogFooderTest,
+       GetInstallerAttributes_Dogfooder) {
   FirstPartySetsComponentInstallerPolicy policy(base::DoNothing());
 
   EXPECT_THAT(policy.GetInstallerAttributes(),
@@ -349,12 +396,20 @@ TEST_F(FirstPartySetsComponentInstallerTest, GetInstallerAttributes_Dogfooder) {
                        "true")));
 }
 
-TEST_F(FirstPartySetsComponentInstallerTest, GetInstallerAttributes_V2OptOut) {
-  scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatures(
-      {}, {net::features::kFirstPartySets,
-           net::features::kFirstPartySetsV2ComponentFormat});
+class FirstPartySetsComponentInstallerV2FormatTest
+    : public FirstPartySetsComponentInstallerTest {
+ public:
+  FirstPartySetsComponentInstallerV2FormatTest() { InitializeFeatureList(); }
 
+  void InitializeFeatureList() override {
+    scoped_feature_list_.InitWithFeatures(
+        {}, {net::features::kFirstPartySets,
+             net::features::kFirstPartySetsV2ComponentFormat});
+  }
+};
+
+TEST_F(FirstPartySetsComponentInstallerV2FormatTest,
+       GetInstallerAttributes_V2OptOut) {
   FirstPartySetsComponentInstallerPolicy policy(base::DoNothing());
 
   EXPECT_THAT(policy.GetInstallerAttributes(),
