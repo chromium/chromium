@@ -8894,6 +8894,25 @@
             ]
         }
     ],
+    "WebRtcMetronomeTaskQueue": [
+        {
+            "platforms": [
+                "windows",
+                "mac",
+                "chromeos",
+                "chromeos_lacros",
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_V1",
+                    "enable_features": [
+                        "WebRtcMetronomeTaskQueue"
+                    ]
+                }
+            ]
+        }
+    ],
     "WebUICodeCache": [
         {
             "platforms": [
