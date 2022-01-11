@@ -543,50 +543,11 @@ class TRIVIAL_ABI raw_ptr {
   }
   RAW_PTR_FUNC_ATTRIBUTES T* operator->() const { return GetForDereference(); }
 
-  // PendingMemberFunctionCall implements a temporary object returned by
-  // operator->*.  PendingMemberFunctionCall::operator() runs the member
-  // function taking arguments.
-  template <typename PMF,  // PMF = pointer to member function
-            typename ReturnType,
-            typename... ArgTypes>
-  class PendingMemberFunctionCall {
-   public:
-    explicit PendingMemberFunctionCall(T* receiver, PMF pmf)
-        : receiver_(receiver), pmf_(pmf) {}
-    // It's possible to support copy and move semantics, but we don't need them
-    // at this moment.
-    PendingMemberFunctionCall(const PendingMemberFunctionCall&) = delete;
-    PendingMemberFunctionCall& operator=(const PendingMemberFunctionCall&) =
-        delete;
-
-    ReturnType operator()(ArgTypes... args) const {
-      return (receiver_->*pmf_)(std::forward<ArgTypes>(args)...);
-    }
-
-   private:
-    T* receiver_;
-    PMF pmf_;
-  };
-
-  // Implements `(my_raw_ptr->*pmf)(arg1, arg2, ...)` as a workaround for
+  // Disables `(my_raw_ptr->*pmf)(...)` as a workaround for
+  // the ICE in GCC parsing the code, reported at
   // https://gcc.gnu.org/bugzilla/show_bug.cgi?id=103455
-  template <typename ReceiverType, typename ReturnType, typename... ArgTypes>
-  RAW_PTR_FUNC_ATTRIBUTES auto operator->*(
-      ReturnType (ReceiverType::*pmf)(ArgTypes...) const) const -> const
-      PendingMemberFunctionCall<decltype(pmf), ReturnType, ArgTypes...> {
-    Impl::IncrementPointerToMemberOperatorCountForTest();
-    return PendingMemberFunctionCall<decltype(pmf), ReturnType, ArgTypes...>(
-        GetForDereference(), pmf);
-  }
-  template <typename ReceiverType, typename ReturnType, typename... ArgTypes>
-  RAW_PTR_FUNC_ATTRIBUTES auto operator->*(
-      ReturnType (ReceiverType::*pmf)(ArgTypes...)) const -> const
-      PendingMemberFunctionCall<decltype(pmf), ReturnType, ArgTypes...> {
-    Impl::IncrementPointerToMemberOperatorCountForTest();
-    return PendingMemberFunctionCall<decltype(pmf), ReturnType, ArgTypes...>(
-        GetForDereference(), pmf);
-  }
-  // Ref-qualified variants should be added on demand.
+  template <typename PMF>
+  void operator->*(PMF) const = delete;
 
   // Deliberately implicit, because raw_ptr is supposed to resemble raw ptr.
   // NOLINTNEXTLINE(runtime/explicit)

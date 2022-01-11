@@ -819,10 +819,10 @@ AXNode::ChildIteratorBase<NodeType,
   // increment the iterator past the end, we remain at the past-the-end iterator
   // condition.
   if (child_ && parent_) {
-    if (child_ == (parent_->*LastChild)())
+    if (child_ == (parent_.get()->*LastChild)())
       child_ = nullptr;
     else
-      child_ = (child_->*NextSibling)();
+      child_ = (child_.get()->*NextSibling)();
   }
 
   return *this;
@@ -847,12 +847,12 @@ AXNode::ChildIteratorBase<NodeType,
     // If the iterator is past the end, |child_=nullptr|, decrement the iterator
     // gives us the last iterator element.
     if (!child_)
-      child_ = (parent_->*LastChild)();
+      child_ = (parent_.get()->*LastChild)();
     // Decrement the iterator gives us the previous element, except when the
     // iterator is at the beginning; in which case, decrementing the iterator
     // remains at the beginning.
-    else if (child_ != (parent_->*FirstChild)())
-      child_ = (child_->*PreviousSibling)();
+    else if (child_ != (parent_.get()->*FirstChild)())
+      child_ = (child_.get()->*PreviousSibling)();
   }
 
   return *this;
