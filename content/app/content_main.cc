@@ -176,6 +176,7 @@ void InitializeMojo(mojo::core::Configuration* config) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
         false
 #else
+        !command_line.HasSwitch(switches::kDisableMojoBroker) &&
         !mojo::PlatformChannel::CommandLineHasPassedEndpoint(command_line)
 #endif
         ;

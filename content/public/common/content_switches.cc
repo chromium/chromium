@@ -221,6 +221,9 @@ const char kDisableLogging[]                = "disable-logging";
 // Disables using CODECAPI_AVLowLatencyMode when creating DXVA decoders.
 const char kDisableLowLatencyDxva[]         = "disable-low-latency-dxva";
 
+// Disables Mojo broker capabilities in the browser during Mojo initialization.
+const char kDisableMojoBroker[] = "disable-mojo-broker";
+
 // Disables clearing the rendering output of a renderer when it didn't commit
 // new output for a while after a top-frame navigation.
 const char kDisableNewContentRenderingTimeout[] =
