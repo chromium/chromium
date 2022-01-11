@@ -6,12 +6,14 @@
 #define BASE_CONTAINERS_FLAT_TREE_H_
 
 #include <algorithm>
+#include <array>
+#include <initializer_list>
 #include <iterator>
 #include <type_traits>
 #include <utility>
-#include <vector>
 
 #include "base/as_const.h"
+#include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/cxx17_backports.h"
 #include "base/functional/not_fn.h"
