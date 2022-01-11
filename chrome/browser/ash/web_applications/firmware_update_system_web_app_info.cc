@@ -16,6 +16,14 @@
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/display/screen.h"
+
+namespace {
+// The Firmware Update SWA window will be a fixed 600px * 640px portal per
+// the specification.
+constexpr int kFirmwareUpdateAppDefaultWidth = 600;
+constexpr int kFirmwareUpdateAppDefaultHeight = 640;
+}  // namespace
 
 // TODO(michaelcheco): Update to correct icon.
 std::unique_ptr<WebAppInstallInfo>
@@ -34,6 +42,14 @@ CreateWebAppInfoForFirmwareUpdateSystemWebApp() {
   return info;
 }
 
+gfx::Rect GetDefaultBoundsForFirmwareUpdateApp(Browser*) {
+  gfx::Rect bounds =
+      display::Screen::GetScreen()->GetDisplayForNewWindows().work_area();
+  bounds.ClampToCenteredSize(
+      {kFirmwareUpdateAppDefaultWidth, kFirmwareUpdateAppDefaultHeight});
+  return bounds;
+}
+
 FirmwareUpdateSystemAppDelegate::FirmwareUpdateSystemAppDelegate(
     Profile* profile)
     : web_app::SystemWebAppDelegate(web_app::SystemAppType::FIRMWARE_UPDATE,
@@ -50,6 +66,15 @@ bool FirmwareUpdateSystemAppDelegate::IsAppEnabled() const {
   return ash::features::IsFirmwareUpdaterAppEnabled();
 }
 
-gfx::Size FirmwareUpdateSystemAppDelegate::GetMinimumWindowSize() const {
-  return {600, 512};
+bool FirmwareUpdateSystemAppDelegate::ShouldAllowMaximize() const {
+  return false;
+}
+
+bool FirmwareUpdateSystemAppDelegate::ShouldAllowResize() const {
+  return false;
+}
+
+gfx::Rect FirmwareUpdateSystemAppDelegate::GetDefaultBounds(
+    Browser* browser) const {
+  return GetDefaultBoundsForFirmwareUpdateApp(browser);
 }
