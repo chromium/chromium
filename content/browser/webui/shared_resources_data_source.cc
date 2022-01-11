@@ -104,13 +104,12 @@ void AddResources(const std::set<int>& resource_ids,
   }
 }
 
-}  // namespace
-
-WebUIDataSource* CreateSharedResourcesDataSource() {
-  WebUIDataSource* source =
-      content::WebUIDataSource::Create(kChromeUIResourcesHost);
+void PopulateSharedResourcesDataSource(WebUIDataSource* source) {
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
+
+  // Note: Don't put generated Mojo bindings here. Please explicitly add them to
+  // each WebUI's own data source.
 
   AddResources(GetContentResourceIds(), kContentResources,
                kContentResourcesSize, source);
@@ -136,28 +135,21 @@ WebUIDataSource* CreateSharedResourcesDataSource() {
 
   source->AddString("fontFamily", webui::GetFontFamily());
   source->AddString("fontSize", webui::GetFontSize());
+}
 
+}  // namespace
+
+WebUIDataSource* CreateSharedResourcesDataSource() {
+  WebUIDataSource* source =
+      content::WebUIDataSource::Create(kChromeUIResourcesHost);
+  PopulateSharedResourcesDataSource(source);
   return source;
 }
 
 WebUIDataSource* CreateUntrustedSharedResourcesDataSource() {
-  // This data source only serves resources used by all chrome-untrusted://
-  // WebUI pages.
-  //
-  // Don't put generated Mojo bindings here. Please explicitly add them to each
-  // WebUI's own data source.
   WebUIDataSource* source =
       content::WebUIDataSource::Create(kChromeUIUntrustedResourcesURL);
-
-  source->AddResourcePaths(
-      base::make_span(kMojoBindingsResources, kMojoBindingsResourcesSize));
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Expose a small subset of shared resources to chrome-untrusted://resources/
-  AddResources({IDR_WEBUI_JS_LOAD_TIME_DATA_M_JS}, kWebuiGeneratedResources,
-               kWebuiGeneratedResourcesSize, source);
-#endif
-
+  PopulateSharedResourcesDataSource(source);
   return source;
 }
 
