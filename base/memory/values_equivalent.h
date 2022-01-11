@@ -29,7 +29,7 @@ bool ValuesEquivalent(const T* a, const T* b) {
 // Example usage:
 //   struct Example {
 //     std::unique_ptr<Child> child;
-//     bool operator(const Example& other) {
+//     bool operator==(const Example& other) const {
 //       return base::ValuesEquivalent(child, other.child);
 //     }
 //   };
@@ -46,7 +46,7 @@ bool ValuesEquivalent(const T& x, const T& y) {
 //   namespace blink {
 //   struct Example : public GarbageCollected<Example> {
 //     Member<Child> child;
-//     bool operator(const Example& other) {
+//     bool operator==(const Example& other) const {
 //       return base::ValuesEquivalent(child, other.child);
 //     }
 //     void Trace(Visitor*) const;
