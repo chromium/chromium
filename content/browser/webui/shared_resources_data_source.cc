@@ -111,8 +111,6 @@ WebUIDataSource* CreateSharedResourcesDataSource() {
       content::WebUIDataSource::Create(kChromeUIResourcesHost);
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::WorkerSrc, "worker-src blob: 'self';");
-  // TODO(crbug.com/1098690): Trusted Type Polymer
-  source->DisableTrustedTypesCSP();
 
   AddResources(GetContentResourceIds(), kContentResources,
                kContentResourcesSize, source);
