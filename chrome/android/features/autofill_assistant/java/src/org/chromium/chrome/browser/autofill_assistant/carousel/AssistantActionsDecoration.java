@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /**
  * Decoration added to the actions carousel that add offsets to each action to have the right inner
@@ -88,8 +89,7 @@ class AssistantActionsDecoration extends RecyclerView.ItemDecoration {
         mShadowPaint.setStyle(Paint.Style.STROKE);
         mShadowPaint.setStrokeWidth(mShadowLayerWidth);
 
-        mOverlayPaint.setColor(
-                ApiCompatibilityUtils.getColor(context.getResources(), R.color.sheet_bg_color));
+        mOverlayPaint.setColor(SemanticColorUtils.getSheetBgColor(context));
     }
 
     @Override

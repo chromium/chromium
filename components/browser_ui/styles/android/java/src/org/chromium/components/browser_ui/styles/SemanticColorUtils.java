@@ -15,7 +15,7 @@ import com.google.android.material.color.MaterialColors;
 
 /**
  * Provides semantic color values, typically in place of <macro>s which currently cannot be used in
- * Java code.
+ * Java code, or for surface colors that must be calculated to Java code.
  */
 public class SemanticColorUtils {
     private static final String TAG = "SemanticColorUtils";
@@ -117,6 +117,24 @@ public class SemanticColorUtils {
     /** Returns the semantic color value that corresponds to navigation_bubble_background_color. */
     public static @ColorInt int getNavigationBubbleBackgroundColor(Context context) {
         return getDefaultBgColorElev2(context);
+    }
+
+    /** Returns the surface color value of the conceptual dialog_bg_color. */
+    public static @ColorInt int getDialogBgColor(Context context) {
+        return resolveSurfaceColorElev(
+                R.dimen.dialog_bg_color_elev, R.color.dialog_bg_color, context);
+    }
+
+    /** Returns the surface color value of the conceptual sheet_bg_color. */
+    public static @ColorInt int getSheetBgColor(Context context) {
+        return resolveSurfaceColorElev(
+                R.dimen.sheet_bg_color_elev, R.color.sheet_bg_color, context);
+    }
+
+    /** Returns the surface color value of the conceptual snackbar_background_color_baseline. */
+    public static @ColorInt int getSnackbarBackgroundColor(Context context) {
+        return resolveSurfaceColorElev(R.dimen.snackbar_background_color_elev,
+                R.color.snackbar_background_color_baseline, context);
     }
 
     // Colors that will be experimented with. This is independent of |IS_FULL_DYNAMIC_COLORS|.
