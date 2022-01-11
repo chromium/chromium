@@ -234,9 +234,19 @@ bool VerifyFakeVideoBufferForTest(const DecoderBuffer& buffer,
 std::unique_ptr<::testing::StrictMock<MockDemuxerStream>>
 CreateMockDemuxerStream(DemuxerStream::Type type, bool encrypted);
 
-// Compares two media::Status by StatusCode only.
+// Compares two media::Status by StatusCode only.  Also allows the ok helper to
+// match kOk.  It's a special case because we don't know the TypedStatus traits
+// we'll be comparing against until now.
 MATCHER_P(SameStatusCode, status, "") {
-  return arg.code() == status.code();
+  if constexpr (std::is_convertible<
+                    decltype(status),
+                    const internal::OkStatusImplicitConstructionHelper&>::
+                    value) {
+    // Cast to the correct enum type to match whatever we're compared against.
+    return arg.code() == static_cast<decltype(arg.code())>(status);
+  } else {
+    return arg.code() == status.code();
+  }
 }
 
 // Compares an `arg` Status.code() to a test-supplied StatusCode.

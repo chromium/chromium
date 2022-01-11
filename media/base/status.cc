@@ -54,10 +54,16 @@ void StatusData::AddLocation(const base::Location& location) {
   frames.push_back(MediaSerialize(location));
 }
 
+std::ostream& operator<<(std::ostream& stream,
+                         const OkStatusImplicitConstructionHelper&) {
+  stream << "kOk";
+  return stream;
+}
+
 }  // namespace internal
 
-Status OkStatus() {
-  return Status(StatusCode::kOk);
+internal::OkStatusImplicitConstructionHelper OkStatus() {
+  return {};
 }
 
 }  // namespace media

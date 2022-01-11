@@ -73,9 +73,9 @@ Status IsConfigSupported(DecoderCapability capability, bool is_encrypted) {
     case kAlwaysFail:
       return StatusCode::kCodeOnlyForTesting;
     case kClearOnly:
-      return is_encrypted ? StatusCode::kCodeOnlyForTesting : OkStatus();
+      return is_encrypted ? StatusCode::kCodeOnlyForTesting : StatusCode::kOk;
     case kEncryptedOnly:
-      return is_encrypted ? OkStatus() : StatusCode::kCodeOnlyForTesting;
+      return is_encrypted ? StatusCode::kOk : StatusCode::kCodeOnlyForTesting;
     case kAlwaysSucceed:
       return OkStatus();
   }

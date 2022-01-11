@@ -55,6 +55,16 @@ struct NoDefaultHasOkTypeTraits {
   }
 };
 
+enum class NonZeroOkType : StatusCodeType {
+  kOk = 100,
+  kFoo = 101,
+};
+
+struct NonZeroOkTypeTraits {
+  using Codes = NonZeroOkType;
+  static constexpr StatusGroupType Group() { return "GroupWithNonZeroOkType"; }
+};
+
 struct MapValueCodeTraits {
   enum class Codes { kBadStartCode, kBadPtr, kLTZ, kNotSquare };
   static constexpr StatusGroupType Group() {
@@ -391,6 +401,29 @@ TEST_F(StatusTest, Okayness) {
   EXPECT_TRUE(TypedStatus<NoDefaultHasOkTypeTraits>(
                   NoDefaultHasOkTypeTraits::Codes::kOk)
                   .is_ok());
+
+  EXPECT_FALSE(
+      TypedStatus<NonZeroOkTypeTraits>(NonZeroOkTypeTraits::Codes::kFoo)
+          .is_ok());
+  EXPECT_TRUE(TypedStatus<NonZeroOkTypeTraits>(NonZeroOkTypeTraits::Codes::kOk)
+                  .is_ok());
+}
+
+TEST_F(StatusTest, CanConvertOkToCode) {
+  // OkStatus() should also be convertible to the enum directly.
+  NoDefaultHasOkTypeTraits::Codes code = OkStatus();
+  EXPECT_EQ(code, NoDefaultHasOkTypeTraits::Codes::kOk);
+}
+
+TEST_F(StatusTest, OkStatusInitializesToOk) {
+  // Construction from the return value of OkStatus() should be `kOk`, for any
+  // status traits that has `kOk`.  We only test explicit construction, though
+  // this is probably used as an implicit construction in practice when it's
+  // a return value.
+  EXPECT_EQ(TypedStatus<NoDefaultHasOkTypeTraits>(OkStatus()).code(),
+            NoDefaultHasOkTypeTraits::Codes::kOk);
+  EXPECT_EQ(TypedStatus<NonZeroOkTypeTraits>(OkStatus()).code(),
+            NonZeroOkTypeTraits::Codes::kOk);
 }
 
 TEST_F(StatusTest, StatusOrEqOp) {

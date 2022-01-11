@@ -121,6 +121,22 @@ struct OkStatusDetectorHelper<T, decltype(T::kOk)> {
 template <typename T>
 constexpr bool DoesHaveOkCode = OkStatusDetectorHelper<T, T>::has_ok;
 
+// Implicitly converts to `kOk` TypedStatus, for any traits.  Also converts to
+// the enum code 'kOk', for any enum that has a 'kOk'.
+struct OkStatusImplicitConstructionHelper {
+  template <typename T>
+  operator T() const {
+    return T::kOk;
+  }
+};
+
+// For gtest, so it can print this.  Otherwise, it tries to convert to an
+// integer for printing.  That'd be okay, except our implicit cast matches the
+// attempt to convert to long long, and tries to get `T::kOk` for `long long`.
+MEDIA_EXPORT std::ostream& operator<<(
+    std::ostream& stream,
+    const OkStatusImplicitConstructionHelper&);
+
 }  // namespace internal
 
 // See media/base/status.md for details and instructions for using TypedStatus.
@@ -155,6 +171,10 @@ class MEDIA_EXPORT TypedStatus {
 
   // default constructor to please the Mojo Gods.
   TypedStatus() = default;
+
+  // For TypedStatus(OkStatus())
+  TypedStatus(const internal::OkStatusImplicitConstructionHelper&)
+      : TypedStatus(Codes::kOk) {}
 
   // Constructor to create a new TypedStatus from a numeric code & message.
   // These are immutable; if you'd like to change them, then you likely should
@@ -455,7 +475,7 @@ using StatusOr = Status::Or<T>;
 // Convenience function to return |kOk|.
 // OK won't have a message, trace, or data associated with them, and DCHECK
 // if they are added.
-MEDIA_EXPORT Status OkStatus();
+MEDIA_EXPORT internal::OkStatusImplicitConstructionHelper OkStatus();
 
 }  // namespace media
 
