@@ -4,8 +4,8 @@
 
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 
-import {FirmwareUpdate, UpdateObserver, UpdateProviderInterface} from './firmware_update_types.js';
-import {setUseFakeProviders} from './mojo_interface_provider.js';
+import {FakeInstallControllerInterface, FirmwareUpdate, InstallControllerInterface, UpdateObserver, UpdateProviderInterface} from './firmware_update_types.js';
+import {getUpdateController, getUpdateProvider, setUseFakeProviders} from './mojo_interface_provider.js';
 
 // Method names.
 export const ON_UPDATE_LIST_CHANGED = 'UpdateObserver_onUpdateListChanged';
@@ -37,6 +37,17 @@ export class FakeUpdateProvider {
         this.observe_(ON_UPDATE_LIST_CHANGED, (firmwareUpdates) => {
           remote.onUpdateListChanged(firmwareUpdates);
         });
+  }
+
+  /**
+   * @param {string} deviceId
+   * @return {!Promise}
+   */
+  prepareForUpdate(deviceId) {
+    /** @type {InstallControllerInterface|FakeInstallControllerInterface} */
+    const controller = getUpdateController();
+    controller.setDeviceIdForUpdateInProgress(deviceId);
+    return new Promise((resolve) => resolve({controller}));
   }
 
   /**

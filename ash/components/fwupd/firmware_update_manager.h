@@ -33,7 +33,8 @@ namespace ash {
 // FirmwareUpdateManager contains all logic that runs the firmware update SWA.
 class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
     : public chromeos::FwupdClient::Observer,
-      public firmware_update::mojom::UpdateProvider {
+      public firmware_update::mojom::UpdateProvider,
+      public firmware_update::mojom::InstallController {
  public:
   FirmwareUpdateManager();
   FirmwareUpdateManager(const FirmwareUpdateManager&) = delete;
@@ -44,6 +45,16 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
   void ObservePeripheralUpdates(
       mojo::PendingRemote<firmware_update::mojom::UpdateObserver> observer)
       override;
+
+  void PrepareForUpdate(const std::string& device_id,
+                        PrepareForUpdateCallback callback) override;
+
+  // firmware_update::mojom::InstallController
+  void BeginUpdate() override;
+
+  void AddObserver(
+      mojo::PendingRemote<firmware_update::mojom::UpdateProgressObserver>
+          observer) override;
 
   // Gets the global instance pointer.
   static FirmwareUpdateManager* Get();
@@ -61,7 +72,7 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
   // TODO(jimmyxgong): Implement this function to send property updates via
   // mojo.
   void OnPropertiesChangedResponse(
-      chromeos::FwupdProperties* properties) override {}
+      chromeos::FwupdProperties* properties) override;
 
   // Query all updates for all devices.
   void RequestAllUpdates();
@@ -82,7 +93,6 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
   // TODO(swifton): Replace with mock observers.
   int on_device_list_response_count_for_testing_ = 0;
   int on_update_list_response_count_for_testing_ = 0;
-  int on_install_update_response_count_for_testing_ = 0;
 
  private:
   friend class FirmwareUpdateManagerTest;
@@ -124,6 +134,10 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
     fake_url_for_testing_ = fake_url;
   }
 
+  // Resets the mojo::Receiver |install_controller_receiver_|
+  // and |update_progress_observer_|.
+  void ResetInstallState();
+
   // Map of a device ID to `FwupdDevice` which is waiting for the list
   // of updates.
   base::flat_map<std::string, chromeos::FwupdDevice> devices_pending_update_;
@@ -135,14 +149,25 @@ class COMPONENT_EXPORT(ASH_FIRMWARE_UPDATE_MANAGER) FirmwareUpdateManager
   // Only used for testing if StartInstall() queries to a fake URL.
   std::string fake_url_for_testing_;
 
+  // The device ID of the device that is currently being updated.
+  std::string inflight_update_id_;
+
   // Remotes for tracking observers that will be notified of changes to the
   // list of firmware updates.
   mojo::RemoteSet<firmware_update::mojom::UpdateObserver>
       update_list_observers_;
 
+  // Remote for tracking observer that will be notified of changes to
+  // the in-progress update.
+  mojo::Remote<firmware_update::mojom::UpdateProgressObserver>
+      update_progress_observer_;
+
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   mojo::Receiver<firmware_update::mojom::UpdateProvider> receiver_{this};
+
+  mojo::Receiver<firmware_update::mojom::InstallController>
+      install_controller_receiver_{this};
 
   base::WeakPtrFactory<FirmwareUpdateManager> weak_ptr_factory_{this};
 };

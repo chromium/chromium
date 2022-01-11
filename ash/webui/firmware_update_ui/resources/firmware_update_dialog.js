@@ -14,8 +14,8 @@ import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import 'chrome://resources/polymer/v3_0/paper-progress/paper-progress.js';
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {FirmwareUpdate, InstallationProgress, UpdateControllerInterface} from './firmware_update_types.js';
-import {getUpdateController} from './mojo_interface_provider.js';
+import {FirmwareUpdate, InstallationProgress, InstallControllerRemote, UpdateProgressObserverInterface, UpdateProgressObserverReceiver, UpdateProviderInterface, UpdateState} from './firmware_update_types.js';
+import {getUpdateProvider} from './mojo_interface_provider.js';
 import {mojoString16ToString} from './mojo_utils.js';
 
 /** @enum {number} */
@@ -56,15 +56,16 @@ export class FirmwareUpdateDialogElement extends
         type: Object,
       },
 
+      /** @type {?InstallationProgress} */
+      installationProgress: {
+        type: Object,
+      },
+
       /** @type {!DialogState} */
       dialogState: {
         type: Number,
         value: DialogState.CLOSED,
-      },
-
-      /** @type {?InstallationProgress} */
-      installationProgress: {
-        type: Object,
+        computed: 'onStateChanged_(installationProgress.state)'
       },
     };
   }
@@ -73,8 +74,11 @@ export class FirmwareUpdateDialogElement extends
   constructor() {
     super();
 
-    /** @private {!UpdateControllerInterface} */
-    this.updateController_ = getUpdateController();
+    /** @private {!UpdateProviderInterface} */
+    this.updateProvider_ = getUpdateProvider();
+
+    /** @type {?InstallControllerRemote} */
+    this.installController_ = null;
 
     /**
      * Event callback for 'open-update-dialog'.
@@ -83,7 +87,7 @@ export class FirmwareUpdateDialogElement extends
      */
     this.openUpdateDialog_ = (e) => {
       this.update = e.detail.update;
-      this.startUpdate_();
+      this.prepareForUpdate_();
     };
   }
 
@@ -96,13 +100,29 @@ export class FirmwareUpdateDialogElement extends
   }
 
   /**
-   * Implements UpdateProgressObserver.onProgressChanged
-   * @param {!InstallationProgress} installationProgress
+   * Implements UpdateProgressObserver.onStatusChanged
+   * @param {!InstallationProgress} update
    */
-  onProgressChanged(installationProgress) {
-    this.installationProgress = installationProgress;
-    if (installationProgress.percentage === 100) {
-      this.dialogState = DialogState.UPDATE_DONE;
+  onStatusChanged(update) {
+    this.installationProgress = update;
+  }
+
+  /** @protected */
+  onStateChanged_() {
+    if (!this.installationProgress) {
+      return DialogState.CLOSED;
+    }
+    // TODO(michaelcheco): Handle restarting and failed states.
+    switch (this.installationProgress.state) {
+      case UpdateState.kUnknown:
+      case UpdateState.kIdle:
+        return DialogState.CLOSED;
+      case UpdateState.kUpdating:
+      case UpdateState.kRestarting:
+        return DialogState.UPDATING;
+      case UpdateState.kFailed:
+      case UpdateState.kSuccess:
+        return DialogState.UPDATE_DONE;
     }
   }
 
@@ -113,9 +133,30 @@ export class FirmwareUpdateDialogElement extends
   }
 
   /** @protected */
-  startUpdate_() {
-    this.dialogState = DialogState.UPDATING;
-    this.updateController_.startUpdate(this.update.deviceId, this);
+  async prepareForUpdate_() {
+    const response =
+        await this.updateProvider_.prepareForUpdate(this.update.deviceId);
+    if (!response.controller) {
+      // TODO(michaelcheco): Handle |StartInstall| failed case.
+      return;
+    }
+    this.installController_ =
+        /**@type {InstallControllerRemote} */ (response.controller);
+    this.beginUpdate_();
+  }
+
+  /** @protected */
+  beginUpdate_() {
+    /** @protected {?UpdateProgressObserverReceiver} */
+    this.updateProgressObserverReceiver_ = new UpdateProgressObserverReceiver(
+        /**
+         * @type {!UpdateProgressObserverInterface}
+         */
+        (this));
+
+    this.installController_.addObserver(
+        this.updateProgressObserverReceiver_.$.bindNewPipeAndPassRemote());
+    this.installController_.beginUpdate();
   }
 
   /**
@@ -162,7 +203,7 @@ export class FirmwareUpdateDialogElement extends
    * @return {string}
    */
   computeProgressText_() {
-    return this.i18n('installing', this.computePercentageValue_());
+    return this.i18n('installing', this.installationProgress.percentage);
   }
 
   /**

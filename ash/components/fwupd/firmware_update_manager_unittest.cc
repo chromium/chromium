@@ -11,6 +11,8 @@
 
 #include "ash/components/fwupd/fake_fwupd_download_client.h"
 #include "ash/constants/ash_features.h"
+#include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom-test-utils.h"
+#include "ash/webui/firmware_update_ui/mojom/firmware_update.mojom.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -76,6 +78,30 @@ class FakeUpdateObserver : public ash::firmware_update::mojom::UpdateObserver {
   mojo::Receiver<ash::firmware_update::mojom::UpdateObserver> receiver_{this};
 };
 
+class FakeUpdateProgressObserver
+    : public ash::firmware_update::mojom::UpdateProgressObserver {
+ public:
+  void OnStatusChanged(
+      ash::firmware_update::mojom::InstallationProgressPtr update) override {
+    update_ = std::move(update);
+  }
+
+  mojo::PendingRemote<ash::firmware_update::mojom::UpdateProgressObserver>
+  pending_remote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+  const ash::firmware_update::mojom::InstallationProgressPtr& GetLatestUpdate()
+      const {
+    return update_;
+  }
+
+ private:
+  ash::firmware_update::mojom::InstallationProgressPtr update_;
+  mojo::Receiver<ash::firmware_update::mojom::UpdateProgressObserver> receiver_{
+      this};
+};
+
 }  // namespace
 
 using chromeos::FwupdClient;
@@ -110,6 +136,8 @@ class FirmwareUpdateManagerTest : public testing::Test {
     dbus_client_->InitForTesting(bus_.get());
     fake_fwupd_download_client_ = std::make_unique<FakeFwupdDownloadClient>();
     firmware_update_manager_ = std::make_unique<FirmwareUpdateManager>();
+    firmware_update_manager_->BindInterface(
+        update_provider_remote_.BindNewPipeAndPassReceiver());
   }
   FirmwareUpdateManagerTest(const FirmwareUpdateManagerTest&) = delete;
   FirmwareUpdateManagerTest& operator=(const FirmwareUpdateManagerTest&) =
@@ -294,11 +322,6 @@ class FirmwareUpdateManagerTest : public testing::Test {
     return response;
   }
 
-  int GetOnInstallResponseCallbackCallCountForTesting() {
-    return firmware_update_manager_
-        ->on_install_update_response_count_for_testing_;
-  }
-
   void SetupObserver(FakeUpdateObserver* observer) {
     firmware_update_manager_->ObservePeripheralUpdates(
         observer->pending_remote());
@@ -309,10 +332,38 @@ class FirmwareUpdateManagerTest : public testing::Test {
     return fake_fwupd_download_client_->test_url_loader_factory();
   }
 
+  void SetupProgressObserver(FakeUpdateProgressObserver* observer) {
+    install_controller_remote_->AddObserver(observer->pending_remote());
+    base::RunLoop().RunUntilIdle();
+  }
+
+  bool PrepareForUpdate(const std::string& device_id) {
+    mojo::PendingRemote<ash::firmware_update::mojom::InstallController>
+        pending_remote;
+    ash::firmware_update::mojom::UpdateProviderAsyncWaiter(
+        update_provider_remote_.get())
+        .PrepareForUpdate(device_id, &pending_remote);
+    if (!pending_remote.is_valid())
+      return false;
+
+    install_controller_remote_.Bind(std::move(pending_remote));
+    base::RunLoop().RunUntilIdle();
+    return true;
+  }
+
+  void SetProperties(uint32_t percentage, uint32_t status) {
+    dbus_client_->SetPropertiesForTesting(percentage, status);
+    base::RunLoop().RunUntilIdle();
+  }
+
   // `FwupdClient` must be be before `FirmwareUpdateManager`.
   std::unique_ptr<FwupdClient> dbus_client_;
   std::unique_ptr<FakeFwupdDownloadClient> fake_fwupd_download_client_;
   std::unique_ptr<FirmwareUpdateManager> firmware_update_manager_;
+  mojo::Remote<ash::firmware_update::mojom::UpdateProvider>
+      update_provider_remote_;
+  mojo::Remote<ash::firmware_update::mojom::InstallController>
+      install_controller_remote_;
 
   // Mock bus for simulating calls.
   scoped_refptr<dbus::MockBus> bus_;
@@ -425,7 +476,9 @@ TEST_F(FirmwareUpdateManagerTest, RequestInstall) {
   SetFakeUrlForTesting(fake_url);
   GetTestUrlLoaderFactory().AddResponse(fake_url, "");
 
-  EXPECT_EQ(0, GetOnInstallResponseCallbackCallCountForTesting());
+  EXPECT_TRUE(PrepareForUpdate(std::string(kFakeDeviceIdForTesting)));
+  FakeUpdateProgressObserver update_progress_observer;
+  SetupProgressObserver(&update_progress_observer);
   StartInstall(std::string(kFakeDeviceIdForTesting), /*release=*/0);
 
   base::RunLoop().RunUntilIdle();
@@ -441,7 +494,36 @@ TEST_F(FirmwareUpdateManagerTest, RequestInstall) {
   // Check that that expected patch file was created.
   EXPECT_TRUE(base::PathExists(full_path));
 
-  EXPECT_EQ(1, GetOnInstallResponseCallbackCallCountForTesting());
+  EXPECT_EQ(ash::firmware_update::mojom::UpdateState::kSuccess,
+            update_progress_observer.GetLatestUpdate()->state);
+}
+
+TEST_F(FirmwareUpdateManagerTest, OnPropertiesChangedResponse) {
+  EXPECT_TRUE(PrepareForUpdate(std::string(kFakeDeviceIdForTesting)));
+  FakeUpdateProgressObserver update_progress_observer;
+  SetupProgressObserver(&update_progress_observer);
+
+  // Initial state.
+  SetProperties(/**percentage=*/0u, /**status=*/0u);
+  EXPECT_EQ(ash::firmware_update::mojom::UpdateState::kUnknown,
+            update_progress_observer.GetLatestUpdate()->state);
+  EXPECT_EQ(0u, update_progress_observer.GetLatestUpdate()->percentage);
+  // Install in progress.
+  SetProperties(/**percentage=*/1u, /**status=*/5u);
+  EXPECT_EQ(ash::firmware_update::mojom::UpdateState::kUpdating,
+            update_progress_observer.GetLatestUpdate()->state);
+  EXPECT_EQ(1u, update_progress_observer.GetLatestUpdate()->percentage);
+  // Device restarting
+  SetProperties(/**percentage=*/100u, /**status=*/4u);
+  EXPECT_EQ(ash::firmware_update::mojom::UpdateState::kRestarting,
+            update_progress_observer.GetLatestUpdate()->state);
+  EXPECT_EQ(100u, update_progress_observer.GetLatestUpdate()->percentage);
+
+  // Emitted once install is completed and device has been restarted.
+  SetProperties(/**percentage=*/100u, /**status=*/0u);
+  EXPECT_EQ(ash::firmware_update::mojom::UpdateState::kUnknown,
+            update_progress_observer.GetLatestUpdate()->state);
+  EXPECT_EQ(100u, update_progress_observer.GetLatestUpdate()->percentage);
 }
 
 }  // namespace ash

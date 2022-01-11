@@ -51,35 +51,72 @@ export const UpdateProviderInterface =
     ash.firmwareUpdate.mojom.UpdateProviderInterface;
 
 /**
- * @typedef {{
- *   status: string,
- *   percentage: number,
- * }}
+ * Type alias for the UpdateState.
+ * @typedef {ash.firmwareUpdate.mojom.UpdateState}
  */
-export let InstallationProgress;
+export const UpdateState = ash.firmwareUpdate.mojom.UpdateState;
 
 /**
- * Type alias for UpdateProgressObserver.
+ * Type alias for the UpdateProgressObserver.
+ * @typedef {ash.firmwareUpdate.mojom.UpdateProgressObserver}
+ */
+export const UpdateProgressObserver =
+    ash.firmwareUpdate.mojom.UpdateProgressObserver;
+
+/**
+ * Type alias for UpdateProgressObserverRemote.
+ * @typedef {ash.firmwareUpdate.mojom.UpdateProgressObserverRemote}
+ */
+export const UpdateProgressObserverRemote =
+    ash.firmwareUpdate.mojom.UpdateProgressObserverRemote;
+
+/**
+ * Type alias for InstallController.
+ * @typedef {ash.firmwareUpdate.mojom.InstallController}
+ */
+export const InstallController = ash.firmwareUpdate.mojom.InstallController;
+
+/**
+ * Type alias for the InstallControllerInterface.
+ * @typedef {ash.firmwareUpdate.mojom.InstallControllerInterface}
+ */
+export const InstallControllerInterface =
+    ash.firmwareUpdate.mojom.InstallControllerInterface;
+
+/**
+ * Type alias for the UpdateProgressObserverInterface.
+ * @typedef {ash.firmwareUpdate.mojom.UpdateProgressObserverInterface}
+ */
+export const UpdateProgressObserverInterface =
+    ash.firmwareUpdate.mojom.UpdateProgressObserverInterface;
+
+/**
+ * Type for methods needed for the fake UpdateProvider implementation.
  * @typedef {{
- *   onProgressChanged: !function(!InstallationProgress)
+ *   setDeviceIdForUpdateInProgress: !function(string),
  * }}
  */
-export let UpdateProgressObserver;
+export let FakeInstallControllerInterface;
+
+/**
+ * Type alias for InstallControllerRemote.
+ * @typedef {ash.firmwareUpdate.mojom.InstallControllerRemote}
+ */
+export const InstallControllerRemote =
+    ash.firmwareUpdate.mojom.InstallControllerRemote;
+
+/**
+ * Type alias for UpdateProgressObserverReceiver.
+ * @typedef {ash.firmwareUpdate.mojom.UpdateProgressObserverReceiver}
+ */
+export const UpdateProgressObserverReceiver =
+    ash.firmwareUpdate.mojom.UpdateProgressObserverReceiver;
 
 /**
  * Type of UpdateControllerInterface.startUpdateFunction function.
  * @typedef {!function(string, !UpdateProgressObserver): void}
  */
 export let startUpdateFunction;
-
-/**
- * Type alias for the UpdateControllerInterface.
- * TODO(michaelcheco): Replace with a real mojo type when implemented.
- * @typedef {{
- *   startUpdate: !startUpdateFunction,
- * }}
- */
-export let UpdateControllerInterface;
 
 /**
  * Type alias for UpdateObserverReceiver.
@@ -103,3 +140,10 @@ export const UpdateObserverInterface =
  * }}
  */
 export let FakeUpdateProviderInterface;
+
+/**
+ * Type alias for InstallationProgress.
+ * @typedef {ash.firmwareUpdate.mojom.InstallationProgress}
+ */
+export const InstallationProgress =
+    ash.firmwareUpdate.mojom.InstallationProgress;

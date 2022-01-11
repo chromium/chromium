@@ -6,8 +6,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {fakeFirmwareUpdates} from './fake_data.js';
 import {FakeUpdateController} from './fake_update_controller.js';
 import {FakeUpdateProvider} from './fake_update_provider.js';
-import {UpdateControllerInterface, UpdateProvider, UpdateProviderInterface} from './firmware_update_types.js';
-
+import {InstallController, InstallControllerInterface, UpdateProvider, UpdateProviderInterface} from './firmware_update_types.js';
 /**
  * @fileoverview
  * Provides singleton access to mojo interfaces with the ability
@@ -26,7 +25,7 @@ let useFakeProviders = false;
 let updateProvider = null;
 
 /**
- * @type {?UpdateControllerInterface}
+ * @type {?InstallControllerInterface}
  */
 let updateController = null;
 
@@ -45,7 +44,7 @@ export function setUpdateProviderForTesting(testProvider) {
 }
 
 /**
- * @param {!UpdateControllerInterface} testUpdateController
+ * @param {!InstallControllerInterface} testUpdateController
  */
 export function setUpdateControllerForTesting(testUpdateController) {
   updateController = testUpdateController;
@@ -86,11 +85,16 @@ export function getUpdateProvider() {
   return updateProvider;
 }
 
-/** @return {!UpdateControllerInterface} */
+/**
+ * @return {!InstallControllerInterface}
+ */
 export function getUpdateController() {
   if (!updateController) {
-    // TODO(michaelcheco): Instantiate a real mojo interface here.
-    setupFakeUpdateController();
+    if (useFakeProviders) {
+      setupFakeUpdateController();
+    } else {
+      updateController = InstallController.getRemote();
+    }
   }
 
   assert(!!updateController);

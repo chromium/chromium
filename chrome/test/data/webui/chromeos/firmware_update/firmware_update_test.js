@@ -104,6 +104,8 @@ export function firmwareUpdateAppTest() {
     await flushTasks();
     // Open dialog for first firmware update card.
     getUpdateCards()[0].shadowRoot.querySelector(`#updateButton`).click();
+    // Process |OnStateChanged| and |OnProgressChanged| calls.
+    await flushTasks();
     await flushTasks();
     assertTrue(getUpdateDialog().open);
   });
@@ -112,6 +114,8 @@ export function firmwareUpdateAppTest() {
     await flushTasks();
     // Open dialog for firmware update.
     getUpdateCards()[1].shadowRoot.querySelector(`#updateButton`).click();
+    // Process |OnStateChanged| and |OnProgressChanged| calls.
+    await flushTasks();
     await flushTasks();
     assertEquals(DialogState.UPDATING, getDialogState());
     const fakeFirmwareUpdate = getFirmwareUpdateFromDialog();
@@ -120,6 +124,7 @@ export function firmwareUpdateAppTest() {
         getUpdateDialogTitle().innerText.trim());
     // Allow firmware update to complete.
     await controller.getUpdateCompletedPromiseForTesting();
+    await flushTasks();
     assertEquals(DialogState.UPDATE_DONE, getDialogState());
     assertTrue(getUpdateDialog().open);
     assertEquals(

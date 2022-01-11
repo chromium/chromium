@@ -51,6 +51,11 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_FWUPD) FwupdClient : public DBusClient {
   // Used to call the protected initialization in unit tests.
   void InitForTesting(dbus::Bus* bus) { Init(bus); }
 
+  void SetPropertiesForTesting(uint32_t percentage, uint32_t status) {
+    properties_->percentage.ReplaceValue(percentage);
+    properties_->status.ReplaceValue(status);
+  }
+
   // Query fwupd for updates that are available for a particular device.
   virtual void RequestUpdates(const std::string& device_id) = 0;
 

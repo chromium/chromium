@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {FirmwareUpdate, InstallationProgress, UpdatePriority} from './firmware_update_types.js';
+import {FirmwareUpdate, InstallationProgress, UpdatePriority, UpdateState} from './firmware_update_types.js';
 import {stringToMojoString16} from './mojo_utils.js';
 
 /** @type {!Array<!Array<!FirmwareUpdate>>} */
@@ -37,18 +37,9 @@ export const fakeFirmwareUpdates = [[
 
 /** @type {!Array<!InstallationProgress>} */
 export const fakeInstallationProgress = [
-  {
-    status: '',
-    percentage: 33,
-  },
-  {
-    status: '',
-    percentage: 66,
-  },
-  {
-    status: '',
-    percentage: 100,
-  },
+  {percentage: 33, state: UpdateState.kUpdating},
+  {percentage: 66, state: UpdateState.kUpdating},
+  {percentage: 100, state: UpdateState.kSuccess},
 ];
 
 /** @type {!FirmwareUpdate} */
