@@ -14,7 +14,6 @@ include_rules = [
   "+base/command_line.h",
   "+base/compiler_specific.h",
   "+base/containers/circular_deque.h",
-  "+base/containers/small_map.h",
   "+base/feature_list.h",
   "+base/format_macros.h",
   "+base/gtest_prod_util.h",

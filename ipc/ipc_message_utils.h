@@ -21,7 +21,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
-#include "base/containers/small_map.h"
 #include "base/containers/stack_container.h"
 #include "base/files/file.h"
 #include "base/format_macros.h"
@@ -915,43 +914,6 @@ struct ParamTraits<base::StackVector<P, stack_capacity> > {
         l->append(" ");
       LogParam((p[i]), l);
     }
-  }
-};
-
-template <typename NormalMap,
-          int kArraySize,
-          typename EqualKey,
-          typename MapInit>
-struct ParamTraits<base::small_map<NormalMap, kArraySize, EqualKey, MapInit>> {
-  using param_type = base::small_map<NormalMap, kArraySize, EqualKey, MapInit>;
-  using K = typename param_type::key_type;
-  using V = typename param_type::data_type;
-  static void Write(base::Pickle* m, const param_type& p) {
-    WriteParam(m, base::checked_cast<int>(p.size()));
-    typename param_type::const_iterator iter;
-    for (iter = p.begin(); iter != p.end(); ++iter) {
-      WriteParam(m, iter->first);
-      WriteParam(m, iter->second);
-    }
-  }
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* r) {
-    int size;
-    if (!iter->ReadLength(&size))
-      return false;
-    for (int i = 0; i < size; ++i) {
-      K key;
-      if (!ReadParam(m, iter, &key))
-        return false;
-      V& value = (*r)[key];
-      if (!ReadParam(m, iter, &value))
-        return false;
-    }
-    return true;
-  }
-  static void Log(const param_type& p, std::string* l) {
-    l->append("<base::small_map>");
   }
 };
 

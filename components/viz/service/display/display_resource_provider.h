@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/containers/small_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/trace_event/memory_dump_provider.h"
