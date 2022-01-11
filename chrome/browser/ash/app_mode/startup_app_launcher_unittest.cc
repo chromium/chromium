@@ -641,7 +641,8 @@ TEST_F(StartupAppLauncherTest, OfflineLaunchWithPrimaryAppPreInstalled) {
   // Given that the app is offline enabled and installed, the app should be
   // launched immediately, without waiting for network or checking for updates.
   startup_launch_delegate_.WaitForLaunchStates({LaunchState::kReadyToLaunch});
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kReadyToLaunch}),
+  EXPECT_EQ(std::vector<LaunchState>(
+                {LaunchState::kInstallingApp, LaunchState::kReadyToLaunch}),
             startup_launch_delegate_.launch_state_changes());
   startup_launch_delegate_.ClearLaunchStateChanges();
 
@@ -683,7 +684,8 @@ TEST_F(StartupAppLauncherTest,
   // Given that the app is offline enabled and installed, the app should be
   // launched immediately, without waiting for network or checking for updates.
   startup_launch_delegate_.WaitForLaunchStates({LaunchState::kReadyToLaunch});
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kReadyToLaunch}),
+  EXPECT_EQ(std::vector<LaunchState>(
+                {LaunchState::kInstallingApp, LaunchState::kReadyToLaunch}),
             startup_launch_delegate_.launch_state_changes());
   startup_launch_delegate_.ClearLaunchStateChanges();
 
@@ -813,12 +815,6 @@ TEST_F(StartupAppLauncherTest, LaunchWithSecondaryApps) {
 
   ASSERT_TRUE(FinishPrimaryAppInstall(primary_app_builder));
 
-  // Installing primary app with a non-installed secondary app should notify
-  // delegate about pending app installation - in this case for secondary app.
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kInstallingApp}),
-            startup_launch_delegate_.launch_state_changes());
-  startup_launch_delegate_.ClearLaunchStateChanges();
-
   TestKioskExtensionBuilder secondary_app_builder(Manifest::TYPE_PLATFORM_APP,
                                                   kSecondaryAppId);
   secondary_app_builder.set_kiosk_enabled(false);
@@ -873,12 +869,6 @@ TEST_F(StartupAppLauncherTest, LaunchWithSecondaryExtension) {
 
   ASSERT_TRUE(FinishPrimaryAppInstall(primary_app_builder));
 
-  // Installing primary app with a non-installed secondary app should notify
-  // delegate about pending app installation - in this case for secondary app.
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kInstallingApp}),
-            startup_launch_delegate_.launch_state_changes());
-  startup_launch_delegate_.ClearLaunchStateChanges();
-
   TestKioskExtensionBuilder secondary_extension_builder(
       Manifest::TYPE_EXTENSION, kSecondaryAppId);
   secondary_extension_builder.set_kiosk_enabled(false);
@@ -923,7 +913,8 @@ TEST_F(StartupAppLauncherTest, OfflineWithPrimaryAndSecondaryAppInstalled) {
   // Given that the app is offline enabled and installed, the app should be
   // launched immediately, without waiting for network or checking for updates.
   startup_launch_delegate_.WaitForLaunchStates({LaunchState::kReadyToLaunch});
-  EXPECT_EQ(std::vector<LaunchState>({LaunchState::kReadyToLaunch}),
+  EXPECT_EQ(std::vector<LaunchState>(
+                {LaunchState::kInstallingApp, LaunchState::kReadyToLaunch}),
             startup_launch_delegate_.launch_state_changes());
   startup_launch_delegate_.ClearLaunchStateChanges();
 

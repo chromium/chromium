@@ -242,6 +242,9 @@ void StartupAppLauncher::FinalizeAppInstall() {
 }
 
 void StartupAppLauncher::BeginInstall(bool finalize_only) {
+  if (!finalize_only) {
+    delegate_->OnAppInstalling();
+  }
   installer_ = std::make_unique<ChromeAppKioskAppInstaller>(
       profile_, app_id_, delegate_, finalize_only);
   installer_->BeginInstall(base::BindOnce(

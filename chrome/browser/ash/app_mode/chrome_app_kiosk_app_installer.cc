@@ -49,7 +49,6 @@ void ChromeAppKioskAppInstaller::BeginInstall(InstallCallback callback) {
   extensions::file_util::SetUseSafeInstallation(true);
   KioskAppManager::Get()->UpdatePrimaryAppLoaderPrefs(app_id_);
   if (IsAppInstallPending(app_id_)) {
-    delegate_->OnAppInstalling();
     ObserveActiveInstallations();
     return;
   }
@@ -94,7 +93,6 @@ void ChromeAppKioskAppInstaller::MaybeInstallSecondaryApps() {
 
   KioskAppManager::Get()->UpdateSecondaryAppsLoaderPrefs(secondary_app_ids);
   if (IsAnySecondaryAppPending()) {
-    delegate_->OnAppInstalling();
     ObserveActiveInstallations();
     return;
   }
