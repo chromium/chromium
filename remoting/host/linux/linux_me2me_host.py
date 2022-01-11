@@ -829,12 +829,13 @@ class Desktop:
     """Send SIGTERM to all procs and wait for them to exit. Will fallback to
     SIGKILL if a process doesn't exit within 10 seconds.
     """
-    for proc, name in [(self.x_proc, "X server"),
-                       (self.pre_session_proc, "pre-session"),
+    for proc, name in [(self.host_proc, "host"),
                        (self.session_proc, "session"),
-                       (self.host_proc, "host")]:
+                       (self.pre_session_proc, "pre-session"),
+                       (self.x_proc, "X server")]:
+      logging.info("Shutting down %s: %s", name, proc and proc.pid)
       if proc is not None:
-        logging.info("Terminating " + name)
+        logging.info("Sending SIGTERM to %s proc.", name)
         try:
           psutil_proc = psutil.Process(proc.pid)
           psutil_proc.terminate()

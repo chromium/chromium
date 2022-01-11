@@ -283,6 +283,8 @@ class HostProcess : public ConfigWatcher::Delegate,
 
   void StartOnNetworkThread();
 
+  void ShutdownOnNetworkThread();
+
 #if defined(OS_POSIX)
   // Callback passed to RegisterSignalHandler() to handle SIGTERM events.
   void SigTermHandler(int signal_number);
@@ -500,7 +502,7 @@ HostProcess::~HostProcess() {
   // We might be getting deleted on one of the threads the |host_context| owns,
   // so we need to post it back to the caller thread to safely join & delete the
   // threads it contains.  This will go away when we move to AutoThread.
-  // |context_release()| will null |context_| before the method is invoked, so
+  // |context_.release()| will null |context_| before the method is invoked, so
   // we need to pull out the task-runner on which to call DeleteSoon first.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       context_->ui_task_runner();
@@ -736,6 +738,14 @@ void HostProcess::StartOnNetworkThread() {
 #endif  // defined(OS_POSIX)
 }
 
+void HostProcess::ShutdownOnNetworkThread() {
+  DCHECK(context_->network_task_runner()->BelongsToCurrentThread());
+  config_watcher_.reset();
+#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+  cert_watcher_.reset();
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+}
+
 #if defined(OS_POSIX)
 void HostProcess::SigTermHandler(int signal_number) {
   DCHECK(signal_number == SIGTERM);
@@ -793,13 +803,13 @@ void HostProcess::CreateAuthenticatorFactory() {
 #if defined(OS_LINUX) || defined(OS_CHROMEOS)
     if (!cert_watcher_) {
       cert_watcher_ = std::make_unique<CertificateWatcher>(
-          base::BindRepeating(&HostProcess::ShutdownHost, this,
-                              kSuccessExitCode),
+          base::BindRepeating(&HostProcess::ShutdownHost,
+                              base::Unretained(this), kSuccessExitCode),
           context_->file_task_runner());
       cert_watcher_->Start();
     }
     cert_watcher_->SetMonitor(host_->status_monitor());
-#endif
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
     scoped_refptr<protocol::TokenValidatorFactory> token_validator_factory =
         new TokenValidatorFactoryImpl(third_party_auth_config_, key_pair_,
@@ -812,7 +822,7 @@ void HostProcess::CreateAuthenticatorFactory() {
 #if defined(OS_POSIX)
   // On Linux and Mac, perform a PAM authorization step after authentication.
   factory = std::make_unique<PamAuthorizationFactory>(std::move(factory));
-#endif
+#endif  // defined(OS_POSIX)
   host_->SetAuthenticatorFactory(std::move(factory));
 }
 
@@ -951,6 +961,9 @@ void HostProcess::StartOnUiThread() {
 void HostProcess::ShutdownOnUiThread() {
   DCHECK(context_->ui_task_runner()->BelongsToCurrentThread());
 
+  context_->network_task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&HostProcess::ShutdownOnNetworkThread, this));
+
   // Tear down resources that need to be torn down on the UI thread.
   desktop_environment_factory_.reset();
   policy_watcher_.reset();
@@ -968,6 +981,10 @@ void HostProcess::ShutdownOnUiThread() {
   // TODO(wez): DesktopEnvironmentFactory should own the pipe reader.
   // See crbug.com/161373 and crbug.com/104544.
   AudioCapturerLinux::InitializePipeReader(nullptr, base::FilePath());
+
+  context_->input_task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce([]() { delete ui::X11EventSource::GetInstance(); }));
 #endif
 }
 
@@ -1575,6 +1592,7 @@ void HostProcess::InitializeSignaling() {
       context_->url_loader_factory());
   zombie_host_detector_ = std::make_unique<ZombieHostDetector>(base::BindOnce(
       &HostProcess::OnZombieStateDetected, base::Unretained(this)));
+
   auto ftl_signal_strategy = std::make_unique<FtlSignalStrategy>(
       std::make_unique<OAuthTokenGetterProxy>(
           oauth_token_getter_->GetWeakPtr()),
@@ -1884,7 +1902,7 @@ int HostProcessMain() {
   // Need to prime the host OS version value for linux to prevent IO on the
   // network thread. base::GetLinuxDistro() caches the result.
   base::GetLinuxDistro();
-#endif
+#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
   base::ThreadPoolInstance::CreateAndStartWithDefaultParams("Me2Me");
 
@@ -1892,7 +1910,7 @@ int HostProcessMain() {
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
   base::RunLoop run_loop;
   std::unique_ptr<ChromotingHostContext> context =
-      ChromotingHostContext::Create(new AutoThreadTaskRunner(
+      ChromotingHostContext::Create(base::MakeRefCounted<AutoThreadTaskRunner>(
           main_task_executor.task_runner(), run_loop.QuitClosure()));
   if (!context)
     return kInitializationFailed;
@@ -1906,10 +1924,9 @@ int HostProcessMain() {
   // (x11::Connection::Get()) can dispatch X events.
   auto event_source =
       std::make_unique<ui::X11EventSource>(x11::Connection::Get());
-  auto input_task_runner = context->input_task_runner();
-  input_task_runner->PostTask(FROM_HERE, base::BindOnce([]() {
-                                new ui::X11EventSource(x11::Connection::Get());
-                              }));
+  context->input_task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce([]() { new ui::X11EventSource(x11::Connection::Get()); }));
 #endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
   // Create & start the HostProcess using these threads.
@@ -1921,12 +1938,6 @@ int HostProcessMain() {
 
   // Run the main (also UI) task executor until the host no longer needs it.
   run_loop.Run();
-
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  input_task_runner->PostTask(FROM_HERE, base::BindOnce([]() {
-                                delete ui::X11EventSource::GetInstance();
-                              }));
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
 
   // Block until tasks blocking shutdown have completed their execution.
   base::ThreadPoolInstance::Get()->Shutdown();
