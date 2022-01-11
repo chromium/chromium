@@ -243,6 +243,19 @@ suite('network-config', function() {
         assertEquals('0.0.0.0/0', peer.allowedIps);
       });
     });
+
+    test('Preshared key display and config value', function() {
+      return flushAsync().then(() => {
+        const configProperties = networkConfig.get('configProperties_');
+        assertEquals(
+            '(credential)',
+            configProperties.typeConfig.vpn.wireguard.peers[0].presharedKey);
+        const configToSet = networkConfig.getPropertiesToSet_();
+        assertEquals(
+            undefined,
+            configToSet.typeConfig.vpn.wireguard.peers[0].presharedKey);
+      });
+    });
   });
 
   suite('Share', function() {

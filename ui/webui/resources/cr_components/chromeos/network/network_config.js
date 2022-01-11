@@ -41,6 +41,8 @@ const mojom = chromeos.networkConfig.mojom;
 /** @type {string}  */ const NO_CERTS_HASH = 'no-certs';
 /** @type {string}  */ const NO_USER_CERT_HASH = 'no-user-cert';
 
+/** @type {string}  */ const PLACEHOLDER_CREDENTIAL = '(credential)';
+
 Polymer({
   is: 'network-config',
 
@@ -887,7 +889,13 @@ Polymer({
     };
     if (wireguard.peers && wireguard.peers.activeValue) {
       for (const peer of wireguard.peers.activeValue) {
-        config.peers.push(Object.assign({}, peer));
+        const peerCopied = Object.assign({}, peer);
+        if (this.hasGuid_()) {
+          // Shill does not return exact value for crendential fields, showing
+          // a placeholder here.
+          peerCopied.presharedKey = PLACEHOLDER_CREDENTIAL;
+        }
+        config.peers.push(peerCopied);
       }
     }
     return config;
@@ -1645,7 +1653,8 @@ Polymer({
     if (!this.isValidWireGuardKey_(peer.publicKey)) {
       return false;
     }
-    if (!!peer.presharedKey && !this.isValidWireGuardKey_(peer.presharedKey)) {
+    if (!!peer.presharedKey && peer.presharedKey !== PLACEHOLDER_CREDENTIAL &&
+        !this.isValidWireGuardKey_(peer.presharedKey)) {
       return false;
     }
     // endpoint should be the form of IP:port or hostname:port
@@ -1823,6 +1832,14 @@ Polymer({
       delete wireguard.privateKey;
     } else if (this.wireguardKeyType_ === WireGuardKeyConfigType.GENERATE_NEW) {
       wireguard.privateKey = '';
+    }
+    assert(!!wireguard.peers);
+    for (const peer of wireguard.peers) {
+      if (peer.presharedKey === PLACEHOLDER_CREDENTIAL) {
+        delete peer.presharedKey;  // No modification
+      } else if (peer.presharedKey === undefined) {
+        peer.presharedKey = '';  // Explicitly removed
+      }
     }
   },
 
