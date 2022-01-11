@@ -476,6 +476,10 @@ bool TabStripPageHandler::CanDragEnter(
   return false;
 }
 
+bool TabStripPageHandler::IsPrivileged() {
+  return true;
+}
+
 void TabStripPageHandler::OnLongPressTimer() {
   page_->LongPress();
 }

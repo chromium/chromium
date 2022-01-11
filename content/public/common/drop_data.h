@@ -80,6 +80,9 @@ struct CONTENT_EXPORT DropData {
   // Whether this drag originated from a renderer.
   bool did_originate_from_renderer;
 
+  // Whether this drag is from a privileged Web Contents.
+  bool is_from_privileged = false;
+
   // User is dragging a link or image.
   GURL url;
   std::u16string url_title;  // The title associated with |url|.

@@ -57,10 +57,7 @@ using ::ui::mojom::DragOperation;
 
 constexpr gfx::Rect kBounds = gfx::Rect(0, 0, 20, 20);
 constexpr gfx::PointF kClientPt = {5, 10};
-
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
 constexpr gfx::PointF kScreenPt = {17, 3};
-#endif
 
 // Runs a specified callback when a ui::MouseEvent is received.
 class RunCallbackOnActivation : public WebContentsDelegate {
@@ -80,6 +77,12 @@ class RunCallbackOnActivation : public WebContentsDelegate {
 
  private:
   base::OnceClosure closure_;
+};
+
+class PrivilegedWebContentsDelegate : public WebContentsDelegate {
+ public:
+  // WebContentsDelegate:
+  bool IsPrivileged() override { return true; }
 };
 
 class TestDragDropClient : public aura::client::DragDropClient {
@@ -751,5 +754,72 @@ TEST_F(WebContentsViewAuraTest, StartDragging) {
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+TEST_F(WebContentsViewAuraTest,
+       RejectDragFromPrivilegedWebContentsToNonPrivilegedWebContents) {
+  WebContentsViewAura* view = GetView();
+  auto data = std::make_unique<ui::OSExchangeData>();
+  data->MarkAsFromPrivileged();
+  ui::DropTargetEvent event(*data.get(), kClientPt, kScreenPt,
+                            ui::DragDropTypes::DRAG_MOVE);
+  // Simulate drag enter.
+  EXPECT_EQ(nullptr, view->current_drop_data_);
+  view->OnDragEntered(event);
+  ASSERT_EQ(nullptr, view->current_drop_data_);
+}
+
+TEST_F(WebContentsViewAuraTest,
+       AcceptDragFromPrivilegedWebContentsToPrivilegedWebContents) {
+  WebContentsViewAura* view = GetView();
+  PrivilegedWebContentsDelegate delegate;
+  web_contents()->SetDelegate(&delegate);
+  auto data = std::make_unique<ui::OSExchangeData>();
+  data->MarkAsFromPrivileged();
+  ui::DropTargetEvent event(*data.get(), kClientPt, kScreenPt,
+                            ui::DragDropTypes::DRAG_MOVE);
+  // Simulate drag enter.
+  EXPECT_EQ(nullptr, view->current_drop_data_);
+  view->OnDragEntered(event);
+  ASSERT_NE(nullptr, view->current_drop_data_);
+}
+
+TEST_F(WebContentsViewAuraTest,
+       RejectDragFromNonPrivilegedWebContentsToPrivilegedWebContents) {
+  WebContentsViewAura* view = GetView();
+  PrivilegedWebContentsDelegate delegate;
+  web_contents()->SetDelegate(&delegate);
+  auto data = std::make_unique<ui::OSExchangeData>();
+  ui::DropTargetEvent event(*data.get(), kClientPt, kScreenPt,
+                            ui::DragDropTypes::DRAG_MOVE);
+  // Simulate drag enter.
+  EXPECT_EQ(nullptr, view->current_drop_data_);
+  view->OnDragEntered(event);
+  ASSERT_EQ(nullptr, view->current_drop_data_);
+}
+
+TEST_F(WebContentsViewAuraTest, StartDragFromPrivilegedWebContents) {
+  TestDragDropClient drag_drop_client;
+  aura::client::SetDragDropClient(root_window(), &drag_drop_client);
+
+  // Mark the Web Contents as native UI.
+  WebContentsViewAura* view = GetView();
+  PrivilegedWebContentsDelegate delegate;
+  web_contents()->SetDelegate(&delegate);
+
+  // This condition is needed to avoid calling WebContentsViewAura::EndDrag
+  // which will result NOTREACHED being called in
+  // `RenderWidgetHostViewBase::TransformPointToCoordSpaceForView`.
+  view->drag_in_progress_ = true;
+
+  DropData drop_data;
+  view->StartDragging(drop_data, blink::DragOperationsMask::kDragOperationNone,
+                      gfx::ImageSkia(), gfx::Vector2d(),
+                      blink::mojom::DragEventSourceInfo(),
+                      RenderWidgetHostImpl::From(rvh()->GetWidget()));
+
+  ui::OSExchangeData* exchange_data = drag_drop_client.GetDragDropData();
+  EXPECT_TRUE(exchange_data);
+  EXPECT_TRUE(exchange_data->IsFromPrivileged());
+}
 
 }  // namespace content

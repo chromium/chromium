@@ -78,6 +78,12 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
   void MarkOriginatedFromRenderer();
   bool DidOriginateFromRenderer() const;
 
+  // Marks drag data as from privileged WebContents. This is used to
+  // make sure non-privileged WebContents will not accept drop data from
+  // privileged WebContents or vise versa.
+  void MarkAsFromPrivileged();
+  bool IsFromPrivileged() const;
+
   // These functions add data to the OSExchangeData object of various Chrome
   // types. The OSExchangeData object takes care of translating the data into
   // a format suitable for exchange with the OS.
@@ -193,6 +199,8 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeData {
  private:
   // Provides the actual data.
   std::unique_ptr<OSExchangeDataProvider> provider_;
+
+  bool is_from_privileged_ = false;
 };
 
 }  // namespace ui

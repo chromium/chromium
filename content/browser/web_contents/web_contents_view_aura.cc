@@ -700,6 +700,7 @@ void WebContentsViewAura::PrepareDropData(
     DropData* drop_data,
     const ui::OSExchangeData& data) const {
   drop_data->did_originate_from_renderer = data.DidOriginateFromRenderer();
+  drop_data->is_from_privileged = data.IsFromPrivileged();
 
   std::u16string plain_text;
   data.GetString(&plain_text);
@@ -1145,6 +1146,9 @@ void WebContentsViewAura::StartDragging(
           ? nullptr
           : std::make_unique<ui::DataTransferEndpoint>(
                 web_contents_->GetMainFrame()->GetLastCommittedOrigin()));
+  WebContentsDelegate* delegate = web_contents_->GetDelegate();
+  if (delegate && delegate->IsPrivileged())
+    data->MarkAsFromPrivileged();
 
   if (!image.isNull())
     data->provider().SetDragImage(image, image_offset);
@@ -1348,11 +1352,27 @@ void WebContentsViewAura::DragEnteredCallback(
   blink::DragOperationsMask op_mask =
       ConvertToDragOperationsMask(event.source_operations());
 
-  // Give the delegate an opportunity to cancel the drag.
-  if (web_contents_->GetDelegate() &&
-      !web_contents_->GetDelegate()->CanDragEnter(
-          web_contents_, *current_drop_data_.get(), op_mask)) {
-    current_drop_data_.reset(nullptr);
+  WebContentsDelegate* delegate = web_contents_->GetDelegate();
+
+  auto allow_drag = [&]() {
+    // We only allow drags from privileged WebContents to
+    // another privileged WebContents.
+    // Do not allow dragging privileged WebContents to
+    // non-priviledged WebContents or vice versa.
+    if (current_drop_data_->is_from_privileged !=
+        (delegate && delegate->IsPrivileged())) {
+      return false;
+    }
+
+    // Give the delegate an opportunity to cancel the drag
+    if (delegate && !delegate->CanDragEnter(web_contents_,
+                                            *current_drop_data_.get(), op_mask))
+      return false;
+    return true;
+  };
+
+  if (!allow_drag()) {
+    current_drop_data_ = nullptr;
     return;
   }
 

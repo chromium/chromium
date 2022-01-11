@@ -754,6 +754,11 @@ class CONTENT_EXPORT WebContentsDelegate {
   // Returns a weak ptr to the web contents delegate.
   virtual base::WeakPtr<WebContentsDelegate> GetDelegateWeakPtr();
 
+  // Whether the WebContents is privileged.
+  // It's used to prevent drag and drop between privileged and non-privileged
+  // WebContents.
+  virtual bool IsPrivileged();
+
  protected:
   virtual ~WebContentsDelegate();
 

@@ -112,6 +112,17 @@ class CONTENT_EXPORT WebContentsViewAura
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, StartDragging);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, GetDropCallback_Run);
   FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest, GetDropCallback_Cancelled);
+  FRIEND_TEST_ALL_PREFIXES(
+      WebContentsViewAuraTest,
+      RejectDragFromPrivilegedWebContentsToNonPrivilegedWebContents);
+  FRIEND_TEST_ALL_PREFIXES(
+      WebContentsViewAuraTest,
+      AcceptDragFromPrivilegedWebContentsToPrivilegedWebContents);
+  FRIEND_TEST_ALL_PREFIXES(
+      WebContentsViewAuraTest,
+      RejectDragFromNonPrivilegedWebContentsToPrivilegedWebContents);
+  FRIEND_TEST_ALL_PREFIXES(WebContentsViewAuraTest,
+                           StartDragFromPrivilegedWebContents);
 
   class WindowObserver;
 

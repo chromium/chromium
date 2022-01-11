@@ -70,6 +70,7 @@ class TabStripPageHandler : public tab_strip::mojom::PageHandler,
   bool CanDragEnter(content::WebContents* source,
                     const content::DropData& data,
                     blink::DragOperationsMask operations_allowed) override;
+  bool IsPrivileged() override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(TabStripPageHandlerTest, CloseTab);

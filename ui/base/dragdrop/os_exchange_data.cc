@@ -34,6 +34,14 @@ bool OSExchangeData::DidOriginateFromRenderer() const {
   return provider_->DidOriginateFromRenderer();
 }
 
+void OSExchangeData::MarkAsFromPrivileged() {
+  is_from_privileged_ = true;
+}
+
+bool OSExchangeData::IsFromPrivileged() const {
+  return is_from_privileged_;
+}
+
 void OSExchangeData::SetString(const std::u16string& data) {
   provider_->SetString(data);
 }

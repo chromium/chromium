@@ -377,4 +377,8 @@ base::WeakPtr<WebContentsDelegate> WebContentsDelegate::GetDelegateWeakPtr() {
   return nullptr;
 }
 
+bool WebContentsDelegate::IsPrivileged() {
+  return false;
+}
+
 }  // namespace content
