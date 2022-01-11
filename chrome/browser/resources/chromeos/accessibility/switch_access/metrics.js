@@ -12,7 +12,7 @@ export const SwitchAccessMetrics = {
   recordMenuAction: (menuAction) => {
     const metricName = 'Accessibility.CrosSwitchAccess.MenuAction.' +
         SwitchAccessMetrics.toUpperCamelCase(menuAction);
-    chrome.metricsPrivate.recordBoolean(metricName, true);
+    chrome.metricsPrivate.recordUserAction(metricName);
   },
 
   /**

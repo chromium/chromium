@@ -1603,6 +1603,676 @@ should be able to be added at any place in this file.
   <description>A Chrome OS user manually starts Select To Speak.</description>
 </action>
 
+<action name="Accessibility.CrosSwitchAccess.MenuAction.ActionRecorder">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to open the
+    action recorder submenu.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.Copy">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to copy the
+    selected text.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.Cut">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to cut the
+    selected text.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.Decrement">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to decrement
+    the selected input.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.Dictation">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to dictate into
+    the focused input.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.DisplayBrightnessDown">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to turn down
+    brightness.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.DisplayBrightnessUp">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to turn up
+    brightness.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.DisplayMenu">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to open the
+    display submenu.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.DisplayMirror">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to mirror
+    display.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.DisplayRotate">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to rotate
+    screen.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.DisplayZoomIn">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to zoom in.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.DisplayZoomOut">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to zoom out.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.EndTextSelection">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to stop
+    changing the text selection.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.ExecuteMacro">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to execute the
+    recorded macro.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.Increment">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to increment
+    the selected input.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.ItemScan">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to begin
+    scanning through items on-screen.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.JumpToBeginningOfText">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to move the
+    cursor to the beginning of the text.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.JumpToEndOfText">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to move the
+    cursor to the end of the text.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.Keyboard">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to open the
+    onscreen keyboard.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.LeaveGroup">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to leave the
+    current group.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.LeftClick">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to left click
+    the location targetted by Point Scan.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.MediaFastforward">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to fastforward.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.MediaMenu">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to open the
+    media submenu.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.MediaMute">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to mute the
+    device's volume.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.MediaPlayPause">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to play or
+    pause media.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.MediaRewind">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to rewind
+    media.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.MediaVolumeDown">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to turn volume
+    down.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.MediaVolumeUp">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to turn volume
+    up.
+  </description>
+</action>
+
+<action
+    name="Accessibility.CrosSwitchAccess.MenuAction.MoveBackwardOneCharOfText">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to move the
+    cursor backward one character of text.
+  </description>
+</action>
+
+<action
+    name="Accessibility.CrosSwitchAccess.MenuAction.MoveBackwardOneWordOfText">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to move the
+    cursor backward one word of text.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.MoveCursor">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to start moving
+    the cursor.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.MoveDownOneLineOfText">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to move the
+    cursor down one line of text.
+  </description>
+</action>
+
+<action
+    name="Accessibility.CrosSwitchAccess.MenuAction.MoveForwardOneCharOfText">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to move the
+    cursor forward one character of text.
+  </description>
+</action>
+
+<action
+    name="Accessibility.CrosSwitchAccess.MenuAction.MoveForwardOneWordOfText">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to move the
+    cursor forward one word of text.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.MoveUpOneLineOfText">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to move the
+    cursor up one line of text.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.Paste">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to paste into
+    the text field.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.PointScan">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to start point
+    scanning.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.RightClick">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to right click
+    the location targetted by Point Scan.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.ScrollDown">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to scroll the
+    selected view down.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.ScrollLeft">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to scroll the
+    selected view left.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.ScrollRight">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to scroll the
+    selected view right.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.ScrollUp">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to scroll the
+    selected view up.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.Select">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to activate the
+    currently selected item.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.Settings">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to open the
+    Switch Access settings page.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.Shortcuts">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to open the
+    shortcuts submenu.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.StartRecording">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to start
+    recording a macro.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.StartTextSelection">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to start
+    selecting text.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.StopRecording">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to stop
+    recording a macro.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.SystemDiagnostics">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to open
+    diagnostics.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.SystemHelp">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to open the
+    system help page.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.SystemLauncher">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to jump to the
+    launcher.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.SystemMenu">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to open the
+    system submenu.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.SystemScreenshot">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to take a
+    screenshot.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.SystemStatusBar">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to jump to the
+    status area.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.SystemTaskManager">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to open task
+    manager.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.UserLock">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to locks the
+    device.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.UserMenu">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to open the
+    user submenu.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.UserNextUser">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to go to next
+    user.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.UserPreviousUser">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to go to
+    previous user.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.UserSignOut">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to sign out.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.WebBookmark">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to bookmark a
+    page.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.WebBottomOfPage">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to jump to
+    bottom of page.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.WebClearHistory">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to clear
+    history.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.WebDownloads">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to open
+    downloads.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.WebFindInPage">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to find in
+    page.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.WebMenu">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to open the web
+    submenu.
+  </description>
+</action>
+
+<action name="Accessibility.CrosSwitchAccess.MenuAction.WebTopOfPage">
+  <owner>anastasi@google.com</owner>
+  <owner>dtseng@chromium.org</owner>
+  <owner>ui/accessibility/OWNERS</owner>
+  <description>
+    Recorded when the user selects the Switch Access menu action to jump to top
+    of page.
+  </description>
+</action>
+
 <action name="Accessibility.NativeApi.DoDefault">
   <owner>aleventhal@chromium.org</owner>
   <owner>dtseng@chromium.org</owner>

@@ -805,6 +805,10 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Accessibility.CrosSwitchAccess.MenuAction.{SwitchAccessMenuAction}"
     enum="BooleanUsage" expires_after="2022-04-17">
+  <obsolete>
+    No longer recording as histogram in M99. Reverted back to recording User
+    Action Accessibility.CrosSwitchAccess.MenuAction.*.
+  </obsolete>
   <owner>dtseng@chromium.org</owner>
   <owner>anastasi@google.com</owner>
   <owner>chrome-a11y-core@google.com</owner>
