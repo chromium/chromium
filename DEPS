@@ -276,7 +276,7 @@ vars = {
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling googletest
   # and whatever else without interference from each other.
-  'googletest_revision': '6b74da4757a549563d7c37c8fae3e704662a043b',
+  'googletest_revision': '1d9f7c5fb2f56b4321b9eec0731b874eb6eef466',
   # Three lines of non-changing comments so that
   # the commit queue can handle CLs rolling lighttpd
   # and whatever else without interference from each other.
