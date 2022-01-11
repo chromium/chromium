@@ -5432,21 +5432,6 @@
             ]
         }
     ],
-    "OfflinePageServiceTurndownM91": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Turndown_Disabled",
-                    "disable_features": [
-                        "OfflinePagesPrefetching"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxBundledExperimentV1": [
         {
             "platforms": [
