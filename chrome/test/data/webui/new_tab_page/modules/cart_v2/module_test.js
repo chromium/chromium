@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {CartHandlerRemote} from 'chrome://new-tab-page/chrome_cart.mojom-webui.js';
 import {$$, ChromeCartProxy, chromeCartV2Descriptor, ModuleHeight} from 'chrome://new-tab-page/new_tab_page.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -21,8 +22,7 @@ suite('NewTabPageModulesChromeCartModuleTest', () => {
   setup(() => {
     document.body.innerHTML = '';
 
-    handler = installMock(
-        chromeCart.mojom.CartHandlerRemote, ChromeCartProxy.setHandler);
+    handler = installMock(CartHandlerRemote, ChromeCartProxy.setHandler);
     metrics = fakeMetricsPrivate();
     // Not show welcome surface by default.
     handler.setResultFor(

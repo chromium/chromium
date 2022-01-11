@@ -4,6 +4,7 @@
 
 import 'chrome://new-tab-page/lazy_load.js';
 
+import {CartHandlerRemote} from 'chrome://new-tab-page/chrome_cart.mojom-webui.js';
 import {$$, ChromeCartProxy, ModuleDescriptor, ModuleRegistry, NewTabPageProxy} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {fakeMetricsPrivate, MetricsTracker} from 'chrome://test/new_tab_page/metrics_test_support.js';
@@ -67,8 +68,7 @@ suite('NewTabPageCustomizeModulesTest', () => {
     moduleRegistry = installMock(ModuleRegistry);
     metrics = fakeMetricsPrivate();
     loadTimeData.overrideValues({modulesVisibleManagedByPolicy: false});
-    cartHandler = installMock(
-        chromeCart.mojom.CartHandlerRemote, ChromeCartProxy.setHandler);
+    cartHandler = installMock(CartHandlerRemote, ChromeCartProxy.setHandler);
     cartHandler.setResultFor(
         'getDiscountEnabled', Promise.resolve({enabled: false}));
   });

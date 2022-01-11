@@ -12,6 +12,7 @@ import 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
 
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {MerchantCart} from '../../chrome_cart.mojom-webui.js';
 import {I18nBehavior, loadTimeData} from '../../i18n_setup.js';
 import {recordOccurence} from '../../metrics_utils.js';
 import {$$} from '../../utils.js';
@@ -37,7 +38,7 @@ class ChromeCartModuleElement extends mixinBehaviors
 
   static get properties() {
     return {
-      /** @type {!Array<!chromeCart.mojom.MerchantCart>} */
+      /** @type {!Array<!MerchantCart>} */
       cartItems: Array,
 
       /** @type {string} */
