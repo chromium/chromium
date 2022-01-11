@@ -6199,8 +6199,12 @@ TEST_F(PersistentDesksBarTest, BentoBarWithShelfAlignment) {
 }
 
 // Tests that the bar will only be created when the app list is not in
-// fullscreen mode.
+// fullscreen mode. This test can be deleted when ProductivityLauncher is the
+// default.
 TEST_F(PersistentDesksBarTest, AppListFullscreen) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kProductivityLauncher);
+
   AppListControllerImpl* app_list_controller =
       Shell::Get()->app_list_controller();
   AppListView* app_list_view =
@@ -6240,9 +6244,34 @@ TEST_F(PersistentDesksBarTest, AppListFullscreen) {
               AppListViewState::kFullscreenAllApps);
   EXPECT_FALSE(GetBarWidget());
 
-  // The bar should be created when the app list is in kClosed mode.
-  app_list_view->SetState(AppListViewState::kClosed);
+  // The bar should be created when the app list is dismissed.
+  app_list_controller->DismissAppList();
   EXPECT_TRUE(app_list_view->app_list_state() == AppListViewState::kClosed);
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_TRUE(IsWidgetVisible());
+}
+
+// Tests that the bar is not affected by ProductivityLauncher.
+TEST_F(PersistentDesksBarTest, ProductivityLauncher) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kProductivityLauncher);
+
+  AppListControllerImpl* app_list_controller =
+      Shell::Get()->app_list_controller();
+
+  // The bar should be created when the app list is closed.
+  NewDesk();
+  EXPECT_EQ(2u, DesksController::Get()->desks().size());
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_TRUE(IsWidgetVisible());
+
+  // The bar should still exist when the app list is opened.
+  app_list_controller->ShowAppList();
+  EXPECT_TRUE(GetBarWidget());
+  EXPECT_TRUE(IsWidgetVisible());
+
+  // The bar should still exist when the app list is closed again.
+  app_list_controller->DismissAppList();
   EXPECT_TRUE(GetBarWidget());
   EXPECT_TRUE(IsWidgetVisible());
 }
