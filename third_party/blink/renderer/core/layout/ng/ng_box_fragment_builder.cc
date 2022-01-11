@@ -620,7 +620,8 @@ void NGBoxFragmentBuilder::CheckNoBlockFragmentation() const {
   DCHECK(!HasInflowChildBreakInside());
   DCHECK(!DidBreakSelf());
   DCHECK(!has_forced_break_);
-  DCHECK(!HasBreakTokenData());
+  DCHECK_EQ(consumed_block_size_, LayoutUnit());
+  DCHECK_EQ(consumed_block_size_legacy_adjustment_, LayoutUnit());
   DCHECK_EQ(minimal_space_shortage_, LayoutUnit::Max());
   DCHECK(!initial_break_before_);
   DCHECK_EQ(previous_break_after_, EBreakBetween::kAuto);

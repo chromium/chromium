@@ -13,7 +13,6 @@
 #include "third_party/blink/renderer/core/layout/layout_button.h"
 #include "third_party/blink/renderer/core/layout/layout_flexible_box.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/layout_ng_flexible_box.h"
-#include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_break_token_data.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_child_iterator.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_item_iterator.h"
 #include "third_party/blink/renderer/core/layout/ng/flex/ng_flex_line.h"
@@ -819,10 +818,9 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
   Vector<NGFlexLine> flex_line_outputs;
   bool use_empty_line_block_size;
   if (IsResumingLayout(BreakToken())) {
-    const NGFlexBreakTokenData* flex_data =
-        To<NGFlexBreakTokenData>(BreakToken()->TokenData());
-    total_intrinsic_block_size_ = flex_data->intrinsic_block_size;
-    flex_line_outputs = flex_data->flex_lines;
+    auto& flex_data = BreakToken()->FlexData();
+    total_intrinsic_block_size_ = flex_data.intrinsic_block_size;
+    flex_line_outputs = flex_data.flex_lines;
 
     use_empty_line_block_size =
         flex_line_outputs.IsEmpty() && Node().HasLineIfEmpty();
@@ -913,9 +911,9 @@ scoped_refptr<const NGLayoutResult> NGFlexLayoutAlgorithm::LayoutInternal() {
 #endif
 
   if (ConstraintSpace().HasBlockFragmentation()) {
-    container_builder_.SetBreakTokenData(std::make_unique<NGFlexBreakTokenData>(
-        container_builder_.GetBreakTokenData(), flex_line_outputs,
-        total_intrinsic_block_size_));
+    container_builder_.SetFlexBreakTokenData(
+        std::make_unique<NGFlexBreakTokenData>(flex_line_outputs,
+                                               total_intrinsic_block_size_));
   }
 
   // Un-freeze descendant scrollbars before we run the OOF layout part.
