@@ -7,7 +7,7 @@
 <script>
 const verify_headers = (header_list, response, verification_func) => {
   header_list.forEach(header => {
-    const value = response.headers.get(header+"-recieved");
+    const value = response.headers.get(header+"-received");
     if(value) {
       verification_func(value);
     }

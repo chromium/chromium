@@ -22,7 +22,7 @@ def main(request, response):
 
     for header in client_hint_headers:
         if request_client_hints[header] is not None:
-            response.headers.set(header + b"-recieved", request_client_hints[header])
+            response.headers.set(header + b"-received", request_client_hints[header])
 
     headers = []
     content = u""
