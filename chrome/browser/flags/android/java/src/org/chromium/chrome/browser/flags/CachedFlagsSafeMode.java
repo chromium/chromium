@@ -16,6 +16,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.version.ChromeVersionInfo;
@@ -129,9 +130,25 @@ class CachedFlagsSafeMode {
     void onEndCheckpoint(ValuesReturned safeValuesReturned) {
         SharedPreferencesManager.getInstance().writeInt(
                 ChromePreferenceKeys.FLAGS_CRASH_STREAK_BEFORE_CACHE, 0);
-        writeSafeValues(safeValuesReturned);
-        RecordHistogram.recordEnumeratedHistogram(
-                "Variations.SafeModeCachedFlags.Cached", mBehavior.get(), Behavior.NUM_ENTRIES);
+
+        new AsyncTask<Void>() {
+            @Override
+            protected Void doInBackground() {
+                try {
+                    writeSafeValues(safeValuesReturned);
+                } catch (Exception e) {
+                    Log.e(TAG, "Exception writing safe values.", e);
+                    cancel(true);
+                }
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void unused) {
+                RecordHistogram.recordEnumeratedHistogram("Variations.SafeModeCachedFlags.Cached",
+                        mBehavior.get(), Behavior.NUM_ENTRIES);
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
     private void engageSafeModeInNative() {
