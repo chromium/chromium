@@ -873,6 +873,23 @@ void OverviewSession::OnWindowActivating(
   EndOverview(OverviewEndAction::kWindowActivating);
 }
 
+bool OverviewSession::IsTemplatesUiLosingActivation(aura::Window* lost_active) {
+  if (!desks_templates_util::AreDesksTemplatesEnabled() || !lost_active)
+    return false;
+
+  for (auto& grid : grid_list_) {
+    if (grid->desks_templates_grid_widget() &&
+        lost_active == grid->desks_templates_grid_widget()->GetNativeWindow()) {
+      return true;
+    }
+  }
+
+  return desks_templates_dialog_controller_ &&
+         desks_templates_dialog_controller_->dialog_widget() &&
+         desks_templates_dialog_controller_->dialog_widget()
+                 ->GetNativeWindow() == lost_active;
+}
+
 aura::Window* OverviewSession::GetOverviewFocusWindow() {
   if (overview_focus_widget_)
     return overview_focus_widget_->GetNativeWindow();
@@ -1455,10 +1472,7 @@ bool OverviewSession::ShouldKeepOverviewOpenForDesksTemplatesDialog(
     return false;
 
   auto* dialog_window = dialog_widget->GetNativeWindow();
-  if (gained_active == dialog_window || lost_active == dialog_window)
-    return true;
-
-  return false;
+  return gained_active == dialog_window || lost_active == dialog_window;
 }
 
 }  // namespace ash
