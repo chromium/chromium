@@ -939,16 +939,20 @@
         <settings-subpage page-title="$i18n{siteSettingsWindowPlacement}"
             search-label="$i18n{siteSettingsAllSitesSearch}"
             search-term="{{searchFilter_}}">
-          <category-default-setting
-              toggle-off-label="$i18n{siteSettingsWindowPlacementBlock}"
-              toggle-on-label=
-                  "$i18n{siteSettingsWindowPlacementAskRecommended}"
-              category="[[contentSettingsTypesEnum_.WINDOW_PLACEMENT]]">
-          </category-default-setting>
+          <div class="content-settings-header secondary">
+            $i18n{siteSettingsWindowPlacementDescription}
+          </div>
+          <settings-category-default-radio-group
+              category="[[contentSettingsTypesEnum_.WINDOW_PLACEMENT]]"
+              allow-option-label="$i18n{siteSettingsWindowPlacementAsk}"
+              allow-option-icon="settings:window-placement"
+              block-option-label="$i18n{siteSettingsWindowPlacementBlocked}"
+              block-option-icon="settings:window-placement-off">
+          </settings-category-default-radio-group>
           <category-setting-exceptions
               category="[[contentSettingsTypesEnum_.WINDOW_PLACEMENT]]"
-              block-header="$i18n{siteSettingsBlock}"
-              allow-header="$i18n{siteSettingsAllow}"
+              allow-header="$i18n{siteSettingsWindowPlacementAskExceptions}"
+              block-header="$i18n{siteSettingsWindowPlacementBlockedExceptions}"
               search-filter="[[searchFilter_]]">
           </category-setting-exceptions>
         </settings-subpage>

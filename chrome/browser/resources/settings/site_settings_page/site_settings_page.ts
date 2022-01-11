@@ -295,7 +295,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       label: 'siteSettingsWindowPlacement',
       icon: 'settings:window-placement',
       enabledLabel: 'siteSettingsWindowPlacementAsk',
-      disabledLabel: 'siteSettingsWindowPlacementBlock',
+      disabledLabel: 'siteSettingsWindowPlacementBlocked',
     },
     {
       route: routes.SITE_SETTINGS_ZOOM_LEVELS,
