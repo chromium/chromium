@@ -1215,5 +1215,55 @@ TEST_F(AccessibilityTest, GetBoundsInFrameCoordinatesSvgText) {
   EXPECT_GT(bounds1.X(), bounds2.X());
 }
 
+TEST_F(AccessibilityTest, IsInertInDisplayNone) {
+  const Document& document = GetDocument();
+  ScopedInertAttributeForTest enabled_scope(true);
+  NonThrowableExceptionState exception_state;
+  SetBodyInnerHTML(R"HTML(
+    <div hidden>
+      foo
+      <p inert>
+        bar
+        <span>baz</span>
+      </p>
+    </div>
+  )HTML");
+
+  Element* body = document.body();
+  AXObject* ax_body = GetAXObjectCache().GetOrCreate(body);
+  ASSERT_NE(ax_body, nullptr);
+  ASSERT_FALSE(ax_body->IsInert());
+
+  Element* div = body->QuerySelector("div");
+  AXObject* ax_div = GetAXObjectCache().GetOrCreate(div);
+  ASSERT_NE(ax_div, nullptr);
+  ASSERT_FALSE(ax_div->IsInert());
+
+  Node* div_text = div->firstChild();
+  AXObject* ax_div_text = GetAXObjectCache().GetOrCreate(div_text);
+  ASSERT_NE(ax_div_text, nullptr);
+  ASSERT_FALSE(ax_div_text->IsInert());
+
+  Element* p = div->QuerySelector("p");
+  AXObject* ax_p = GetAXObjectCache().GetOrCreate(p);
+  ASSERT_NE(ax_p, nullptr);
+  ASSERT_TRUE(ax_p->IsInert());
+
+  Node* p_text = p->firstChild();
+  AXObject* ax_p_text = GetAXObjectCache().GetOrCreate(p_text);
+  ASSERT_NE(ax_p_text, nullptr);
+  ASSERT_TRUE(ax_p_text->IsInert());
+
+  Element* span = p->QuerySelector("span");
+  AXObject* ax_span = GetAXObjectCache().GetOrCreate(span);
+  ASSERT_NE(ax_span, nullptr);
+  ASSERT_TRUE(ax_span->IsInert());
+
+  Node* span_text = span->firstChild();
+  AXObject* ax_span_text = GetAXObjectCache().GetOrCreate(span_text);
+  ASSERT_NE(ax_span_text, nullptr);
+  ASSERT_TRUE(ax_span_text->IsInert());
+}
+
 }  // namespace test
 }  // namespace blink
