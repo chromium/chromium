@@ -26,12 +26,14 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.browserservices.intents.WebappConstants;
 import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.notifications.NotificationIntentInterceptor;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.CommerceSubscriptionType;
 import org.chromium.chrome.browser.subscriptions.CommerceSubscription.SubscriptionManagementType;
@@ -231,19 +233,40 @@ public class PriceDropNotificationManager {
                         String.format(
                                 Locale.US, "Failed to remove subscriptions. Status: %d", status));
             };
-            if (offerId != null) {
-                subscriptionsManager.unsubscribe(
-                        new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK, offerId,
-                                SubscriptionManagementType.CHROME_MANAGED, TrackingIdType.OFFER_ID),
-                        callback);
+            BookmarkBridge bookmarkBridge = new BookmarkBridge(Profile.getLastUsedRegularProfile());
+
+            Runnable unsubscribeRunnable = () -> {
+                if (offerId != null) {
+                    subscriptionsManager.unsubscribe(
+                            new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK, offerId,
+                                    SubscriptionManagementType.CHROME_MANAGED,
+                                    TrackingIdType.OFFER_ID),
+                            callback);
+                }
+                if (clusterId != null) {
+                    subscriptionsManager.unsubscribe(
+                            new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK,
+                                    clusterId, SubscriptionManagementType.USER_MANAGED,
+                                    TrackingIdType.PRODUCT_CLUSTER_ID),
+                            callback);
+                }
+            };
+
+            // Only attempt to unsubscribe once the corresponding bookmarks can also be updated.
+            if (bookmarkBridge.isBookmarkModelLoaded()) {
+                unsubscribeRunnable.run();
+            } else {
+                bookmarkBridge.addObserver(new BookmarkBridge.BookmarkModelObserver() {
+                    @Override
+                    public void bookmarkModelLoaded() {
+                        unsubscribeRunnable.run();
+                    }
+
+                    @Override
+                    public void bookmarkModelChanged() {}
+                });
             }
-            if (clusterId != null) {
-                subscriptionsManager.unsubscribe(
-                        new CommerceSubscription(CommerceSubscriptionType.PRICE_TRACK, clusterId,
-                                SubscriptionManagementType.USER_MANAGED,
-                                TrackingIdType.PRODUCT_CLUSTER_ID),
-                        callback);
-            }
+
             if (recordMetrics) {
                 NotificationUmaTracker.getInstance().onNotificationActionClick(
                         NotificationUmaTracker.ActionType.PRICE_DROP_TURN_OFF_ALERT,
