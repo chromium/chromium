@@ -537,7 +537,7 @@ void AttributionManagerImpl::OnReportSent(base::OnceClosure done,
             std::move(done), weak_factory_.GetWeakPtr(), *report.report_id()));
 
     base::UmaHistogramEnumeration(
-        "Conversion.ReportSendOutcome",
+        "Conversions.ReportSendOutcome",
         ConvertToConversionReportSendOutcome(info.status));
   }
 

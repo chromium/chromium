@@ -424,7 +424,7 @@ TEST_F(AttributionManagerImplTest,
       {SendResult::Status::kTransientFailure});
 
   // kFailed = 1.
-  histograms.ExpectUniqueSample("Conversion.ReportSendOutcome", 1, 1);
+  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome", 1, 1);
 }
 
 TEST_F(AttributionManagerImplTest, RetryLogicOverridesGetReportTimer) {
@@ -490,7 +490,7 @@ TEST_F(AttributionManagerImplTest,
   EXPECT_THAT(StoredReports(), IsEmpty());
 
   // kFailed = 1.
-  histograms.ExpectUniqueSample("Conversion.ReportSendOutcome", 1, 1);
+  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome", 1, 1);
 }
 
 TEST_F(AttributionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
@@ -527,7 +527,7 @@ TEST_F(AttributionManagerImplTest, QueuedReportAlwaysFails_StopsSending) {
   EXPECT_THAT(StoredReports(), IsEmpty());
 
   // kFailed = 1.
-  histograms.ExpectUniqueSample("Conversion.ReportSendOutcome", 1, 1);
+  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome", 1, 1);
 }
 
 TEST_F(AttributionManagerImplTest, ReportExpiredAtStartup_Sent) {
@@ -561,7 +561,7 @@ TEST_F(AttributionManagerImplTest, ReportSent_Deleted) {
   EXPECT_THAT(network_sender_->calls(), IsEmpty());
 
   // kSent = 0.
-  histograms.ExpectUniqueSample("Conversion.ReportSendOutcome", 0, 1);
+  histograms.ExpectUniqueSample("Conversions.ReportSendOutcome", 0, 1);
 }
 
 TEST_F(AttributionManagerImplTest, QueuedReportSent_ObserversNotified) {
@@ -616,11 +616,11 @@ TEST_F(AttributionManagerImplTest, QueuedReportSent_ObserversNotified) {
        SendResult::Status::kSent, SendResult::Status::kTransientFailure});
 
   // kSent = 0.
-  histograms.ExpectBucketCount("Conversion.ReportSendOutcome", 0, 2);
+  histograms.ExpectBucketCount("Conversions.ReportSendOutcome", 0, 2);
   // kFailed = 1.
-  histograms.ExpectBucketCount("Conversion.ReportSendOutcome", 1, 0);
+  histograms.ExpectBucketCount("Conversions.ReportSendOutcome", 1, 0);
   // kDropped = 2.
-  histograms.ExpectBucketCount("Conversion.ReportSendOutcome", 2, 1);
+  histograms.ExpectBucketCount("Conversions.ReportSendOutcome", 2, 1);
 }
 
 TEST_F(AttributionManagerImplTest, DroppedReport_ObserversNotified) {
@@ -1115,7 +1115,7 @@ TEST_F(AttributionManagerImplTest, EmbedderDisallowsReporting_ReportNotSent) {
   EXPECT_THAT(network_sender_->calls(), IsEmpty());
 
   // kDropped = 2.
-  histograms.ExpectBucketCount("Conversion.ReportSendOutcome", 2, 1);
+  histograms.ExpectBucketCount("Conversions.ReportSendOutcome", 2, 1);
 }
 
 TEST_F(AttributionManagerImplTest, Offline_NoReportSent) {
