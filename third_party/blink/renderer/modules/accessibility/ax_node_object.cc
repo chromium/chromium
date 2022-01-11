@@ -922,7 +922,7 @@ ax::mojom::blink::Role AXNodeObject::NativeRoleIgnoringAria() const {
     HTMLSelectMenuElement::PartType part_type =
         owner_select_menu->AssignedPartType(GetNode());
     if (part_type == HTMLSelectMenuElement::PartType::kButton) {
-      return ax::mojom::blink::Role::kPopUpButton;
+      return ax::mojom::blink::Role::kComboBoxMenuButton;
     } else if (part_type == HTMLSelectMenuElement::PartType::kListBox) {
       return ax::mojom::blink::Role::kListBox;
     } else if (part_type == HTMLSelectMenuElement::PartType::kOption) {
@@ -2914,7 +2914,7 @@ String AXNodeObject::GetValueForControl() const {
   }
 
   // An ARIA combobox can get value from inner contents.
-  if (AriaRoleAttribute() == ax::mojom::blink::Role::kComboBoxMenuButton) {
+  if (RoleValue() == ax::mojom::blink::Role::kComboBoxMenuButton) {
     AXObjectSet visited;
     return TextFromDescendants(visited, nullptr, false);
   }
