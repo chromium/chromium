@@ -235,6 +235,10 @@ build_recipe(
 )
 
 build_recipe(
+    name = "recipe:requires_testing_checker",
+)
+
+build_recipe(
     name = "recipe:swarming/deterministic_build",
     use_python3 = True,
 )

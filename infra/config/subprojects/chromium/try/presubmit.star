@@ -116,3 +116,10 @@ presubmit_builder(
     },
     tryjob = try_.job(),
 )
+
+# TODO(crbug.com/1279594) Switch to presubmit_builder, add to fallback CQ
+try_.builder(
+    name = "requires-testing-checker",
+    description_html = "prevents CLs that requires testing from landing on branches with no CQ",
+    executable = "recipe:requires_testing_checker",
+)
