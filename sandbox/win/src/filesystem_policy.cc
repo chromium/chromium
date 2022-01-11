@@ -82,6 +82,7 @@ bool FileSystemPolicy::GenerateRules(const wchar_t* name,
     return false;
   }
 
+  bool is_pipe = IsPipe(mod_name);
   if (!PreProcessName(&mod_name)) {
     // The path to be added might contain a reparse point.
     NOTREACHED();
@@ -171,7 +172,7 @@ bool FileSystemPolicy::GenerateRules(const wchar_t* name,
     return false;
   }
 
-  if ((rule_to_add & kCallNtSetInfoRename) &&
+  if ((rule_to_add & kCallNtSetInfoRename) && !is_pipe &&
       (!rename.AddStringMatch(IF, OpenFile::NAME, name, CASE_INSENSITIVE) ||
        !policy->AddRule(IpcTag::NTSETINFO_RENAME, &rename))) {
     return false;
