@@ -201,6 +201,15 @@ struct VisitContentModelAnnotations {
   VisitContentModelAnnotations(const VisitContentModelAnnotations& other);
   ~VisitContentModelAnnotations();
 
+  // Merges `category` into `categories`. It upgrades the weight if it already
+  // exists, and appends it if it doesn't.
+  static void MergeCategoryIntoVector(const Category& category,
+                                      std::vector<Category>* categories);
+
+  // Merges the max-score, categories, and entities from `other`, which is the
+  // content model annotations of a duplicate visit.
+  void MergeFrom(const VisitContentModelAnnotations& other);
+
   // A value from 0 to 1 that represents how prominent, or visible, the page
   // might be considered on UI surfaces.
   float visibility_score = kDefaultVisibilityScore;

@@ -5,6 +5,7 @@
 #include "components/history_clusters/core/on_device_clustering_util.h"
 
 #include "base/test/task_environment.h"
+#include "components/history/core/browser/url_row.h"
 #include "components/history_clusters/core/clustering_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -36,6 +37,13 @@ TEST_F(OnDeviceClusteringUtilTest, MergeDuplicateVisitIntoCanonicalVisit) {
   duplicate_visit.annotated_visit.context_annotations
       .total_foreground_duration = base::Seconds(20);
 
+  duplicate_visit.annotated_visit.content_annotations.model_annotations
+      .visibility_score = 0.6;
+  duplicate_visit.annotated_visit.content_annotations.model_annotations
+      .categories.emplace_back("category1", 40);
+  duplicate_visit.annotated_visit.content_annotations.model_annotations.entities
+      .emplace_back("entity1", 20);
+
   history::ClusterVisit canonical_visit =
       testing::CreateClusterVisit(testing::CreateDefaultAnnotatedVisit(
           2, GURL("https://example.com/normalized")));
@@ -54,6 +62,10 @@ TEST_F(OnDeviceClusteringUtilTest, MergeDuplicateVisitIntoCanonicalVisit) {
       false;
   canonical_visit.annotated_visit.context_annotations
       .total_foreground_duration = base::Seconds(20);
+  canonical_visit.annotated_visit.content_annotations.model_annotations
+      .visibility_score = 0.5;
+  canonical_visit.annotated_visit.content_annotations.model_annotations
+      .categories.emplace_back("category1", 20);
 
   MergeDuplicateVisitIntoCanonicalVisit(duplicate_visit, canonical_visit);
   EXPECT_TRUE(
@@ -76,6 +88,38 @@ TEST_F(OnDeviceClusteringUtilTest, MergeDuplicateVisitIntoCanonicalVisit) {
   EXPECT_EQ(canonical_visit.annotated_visit.context_annotations
                 .total_foreground_duration,
             base::Seconds(20 * 2));
+
+  EXPECT_FLOAT_EQ(canonical_visit.annotated_visit.content_annotations
+                      .model_annotations.visibility_score,
+                  0.5);
+
+  ASSERT_EQ(canonical_visit.annotated_visit.content_annotations
+                .model_annotations.categories.size(),
+            1U);
+  EXPECT_EQ(
+      canonical_visit.annotated_visit.content_annotations.model_annotations
+          .categories[0]
+          .id,
+      "category1");
+  EXPECT_EQ(
+      canonical_visit.annotated_visit.content_annotations.model_annotations
+          .categories[0]
+          .weight,
+      40);
+
+  ASSERT_EQ(canonical_visit.annotated_visit.content_annotations
+                .model_annotations.entities.size(),
+            1U);
+  EXPECT_EQ(
+      canonical_visit.annotated_visit.content_annotations.model_annotations
+          .entities[0]
+          .id,
+      "entity1");
+  EXPECT_EQ(
+      canonical_visit.annotated_visit.content_annotations.model_annotations
+          .entities[0]
+          .weight,
+      20);
 }
 
 TEST_F(OnDeviceClusteringUtilTest, CalculateAllDuplicateVisitsForCluster) {

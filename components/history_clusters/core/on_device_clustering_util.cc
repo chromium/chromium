@@ -43,6 +43,11 @@ void MergeDuplicateVisitIntoCanonicalVisit(
     }
   }
 
+  // Merge over the model annotations (categories and entities) too.
+  canonical_visit.annotated_visit.content_annotations.model_annotations
+      .MergeFrom(duplicate_visit.annotated_visit.content_annotations
+                     .model_annotations);
+
   // Roll up the visit duration from the duplicate visit into the canonical
   // visit.
   canonical_visit.annotated_visit.visit_row.visit_duration +=
