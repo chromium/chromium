@@ -229,7 +229,7 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
       kPrerenderingUrl, *GetActiveWebContents(), gfx::Size(50, 50));
 
   histogram_tester.ExpectUniqueSample(
-      "Prerender.Experimental.PrerenderHostFinalStatus",
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_DirectURLInput",
       /*PrerenderHost::FinalStatus::kTriggerDestroyed*/ 1, 0);
 
   StartOmniboxNavigationAndWaitForActivation(kPrerenderingUrl);
@@ -263,6 +263,32 @@ IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
   }
   StartOmniboxNavigationAndWaitForActivation(kPrerenderingUrl);
   EXPECT_EQ(GetActiveWebContents()->GetLastCommittedURL(), kPrerenderingUrl);
+}
+
+// Verifies that same url can be prerendered after activation.
+IN_PROC_BROWSER_TEST_F(PrerenderOmniboxUIBrowserTest,
+                       SameUrlPrerenderingCanBeUsedAgainAfterActivation) {
+  base::HistogramTester histogram_tester;
+  const GURL kInitialUrl = embedded_test_server()->GetURL("/empty.html");
+  ASSERT_TRUE(GetActiveWebContents());
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
+  const GURL kPrerenderingUrl =
+      embedded_test_server()->GetURL("/empty.html?prerendering");
+
+  GetAutocompleteActionPredictor()->StartPrerendering(
+      kPrerenderingUrl, *GetActiveWebContents(), gfx::Size(50, 50));
+  StartOmniboxNavigationAndWaitForActivation(kPrerenderingUrl);
+
+  // Test whether same prerendering url can be started successfully again and be
+  // activated.
+  ASSERT_TRUE(content::NavigateToURL(GetActiveWebContents(), kInitialUrl));
+  GetAutocompleteActionPredictor()->StartPrerendering(
+      kPrerenderingUrl, *GetActiveWebContents(), gfx::Size(50, 50));
+  StartOmniboxNavigationAndWaitForActivation(kPrerenderingUrl);
+
+  histogram_tester.ExpectUniqueSample(
+      "Prerender.Experimental.PrerenderHostFinalStatus.Embedder_DirectURLInput",
+      /*PrerenderHost::FinalStatus::kActivated*/ 0, 2);
 }
 
 }  // namespace

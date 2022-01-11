@@ -185,9 +185,6 @@ void AutocompleteActionPredictor::CancelPrerender() {
     no_state_prefetch_handle_->OnCancel();
     no_state_prefetch_handle_.reset();
   }
-
-  // TODO(https://crbug.com/1166085): Find a proper way to reset
-  // prerender_handle_ here.
 }
 
 void AutocompleteActionPredictor::StartPrerendering(
@@ -332,9 +329,6 @@ void AutocompleteActionPredictor::OnOmniboxOpenedUrl(const OmniboxLog& log) {
         "AutocompleteActionPredictor.NoStatePrefetchStatus",
         NoStatePrefetchStatus::kNotStarted);
   }
-
-  // TODO(https://crbug.com/1166085): Find a proper way to reset
-  // prerender_handle_ here.
 
   UpdateDatabaseFromTransitionalMatches(opened_url);
 }
@@ -690,6 +684,10 @@ void AutocompleteActionPredictor::OnHistoryServiceLoaded(
     history::HistoryService* history_service) {
   if (!initialized_)
     TryDeleteOldEntries(history_service);
+}
+
+void AutocompleteActionPredictor::OnFinishedNavigation() {
+  prerender_handle_.reset();
 }
 
 AutocompleteActionPredictor::TransitionalMatch::TransitionalMatch() {

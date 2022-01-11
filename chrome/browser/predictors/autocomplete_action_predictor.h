@@ -119,6 +119,9 @@ class AutocompleteActionPredictor
   // Should be called when a URL is opened from the omnibox.
   void OnOmniboxOpenedUrl(const OmniboxLog& log);
 
+  // Should be called when a navigation finished.
+  void OnFinishedNavigation();
+
  private:
   friend class AutocompleteActionPredictorTest;
   friend class ::PredictorsHandler;

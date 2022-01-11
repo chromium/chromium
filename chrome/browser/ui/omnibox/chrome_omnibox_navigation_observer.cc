@@ -295,6 +295,8 @@ void ChromeOmniboxNavigationObserver::DidFinishNavigation(
     ChromeOmniboxClient::OnSuccessfulNavigation(profile_, text_, match_);
   }
 
+  ChromeOmniboxClient::OnFinishedNavigation(profile_);
+
   if (navigation_handle->GetResponseHeaders()->response_code() == 404) {
     On404();
   }
