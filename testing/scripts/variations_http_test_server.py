@@ -32,7 +32,7 @@ class HTTPServer(BaseHTTPServer):
     BaseHTTPServer.__init__(self, server_address, RequestHandlerClass)
 
   #pylint: disable=unused-argument
-  def server_forever(self, poll_interval=0.1):
+  def serve_forever(self, poll_interval=0.1):
     self.stop = False
     while not self.stop:
       self.handle_request()

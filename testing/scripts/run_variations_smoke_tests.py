@@ -266,10 +266,10 @@ def _start_local_http_server():
   if six.PY3:
     address = "http://{}:{}".format(httpd.server_name, httpd.server_port)
     logging.info("%s is used as local http server.", address)
-    thread = Thread(target=httpd.server_forever)
+    thread = Thread(target=httpd.serve_forever)
     thread.setDaemon(True)
   else:
-    thread = Thread(target=httpd.server_forever)
+    thread = Thread(target=httpd.serve_forever)
     thread.daemon = True
   thread.start()
   return httpd
