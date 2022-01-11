@@ -263,7 +263,7 @@ class Browser : public TabStripModelObserver,
 
     CreationSource creation_source = CreationSource::kUnknown;
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if defined(OS_CHROMEOS)
     // The id from the restore data to restore the browser window.
     int32_t restore_id = kDefaultRestoreId;
 #endif

@@ -12,7 +12,9 @@ namespace apps {
 struct BrowserWindowInstanceUpdate {
   base::UnguessableToken id;
   std::string window_id;
-  bool is_active;
+  bool is_active = false;
+  uint32_t browser_session_id = 0;
+  uint32_t restored_browser_session_id = 0;
 };
 
 }  // namespace apps

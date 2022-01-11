@@ -464,7 +464,8 @@ void BrowserAppInstanceTracker::CreateAppInstance(
               : BrowserAppInstance::Type::kAppTab,
           std::move(app_id), browser->window()->GetNativeWindow(),
           base::UTF16ToUTF8(contents->GetTitle()), IsBrowserActive(browser),
-          IsWebContentsActive(browser, contents)));
+          IsWebContentsActive(browser, contents), browser->session_id().id(),
+          browser->create_params().restore_id));
   for (auto& observer : observers_) {
     observer.OnBrowserAppAdded(instance);
   }
@@ -474,10 +475,11 @@ void BrowserAppInstanceTracker::MaybeUpdateAppInstance(
     BrowserAppInstance& instance,
     Browser* browser,
     content::WebContents* contents) {
-  if (instance.MaybeUpdate(browser->window()->GetNativeWindow(),
-                           base::UTF16ToUTF8(contents->GetTitle()),
-                           IsBrowserActive(browser),
-                           IsWebContentsActive(browser, contents))) {
+  if (instance.MaybeUpdate(
+          browser->window()->GetNativeWindow(),
+          base::UTF16ToUTF8(contents->GetTitle()), IsBrowserActive(browser),
+          IsWebContentsActive(browser, contents), browser->session_id().id(),
+          browser->create_params().restore_id)) {
     for (auto& observer : observers_) {
       observer.OnBrowserAppUpdated(instance);
     }
@@ -495,11 +497,12 @@ void BrowserAppInstanceTracker::RemoveAppInstanceIfExists(
 }
 
 void BrowserAppInstanceTracker::CreateWindowInstance(Browser* browser) {
-  auto& instance =
-      AddInstance(window_instances_, browser,
-                  std::make_unique<BrowserWindowInstance>(
-                      GenerateId(), browser->window()->GetNativeWindow(),
-                      IsBrowserActive(browser)));
+  auto& instance = AddInstance(
+      window_instances_, browser,
+      std::make_unique<BrowserWindowInstance>(
+          GenerateId(), browser->window()->GetNativeWindow(),
+          browser->session_id().id(), browser->create_params().restore_id,
+          IsBrowserActive(browser)));
   for (auto& observer : observers_) {
     observer.OnBrowserWindowAdded(instance);
   }

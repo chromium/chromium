@@ -35,14 +35,18 @@ BrowserAppInstance::BrowserAppInstance(base::UnguessableToken id,
                                        aura::Window* window,
                                        std::string title,
                                        bool is_browser_active,
-                                       bool is_web_contents_active)
+                                       bool is_web_contents_active,
+                                       uint32_t browser_session_id,
+                                       uint32_t restored_browser_session_id)
     : id(id),
       type(type),
       app_id(app_id),
       window(window),
       title(title),
       is_browser_active(is_browser_active),
-      is_web_contents_active(is_web_contents_active) {}
+      is_web_contents_active(is_web_contents_active),
+      browser_session_id(browser_session_id),
+      restored_browser_session_id(restored_browser_session_id) {}
 
 BrowserAppInstance::BrowserAppInstance(BrowserAppInstanceUpdate update,
                                        aura::Window* window)
@@ -52,23 +56,31 @@ BrowserAppInstance::BrowserAppInstance(BrowserAppInstanceUpdate update,
       window(window),
       title(update.title),
       is_browser_active(update.is_browser_active),
-      is_web_contents_active(update.is_web_contents_active) {}
+      is_web_contents_active(update.is_web_contents_active),
+      browser_session_id(update.browser_session_id),
+      restored_browser_session_id(update.restored_browser_session_id) {}
 
 BrowserAppInstance::~BrowserAppInstance() = default;
 
 bool BrowserAppInstance::MaybeUpdate(aura::Window* window,
                                      std::string title,
                                      bool is_browser_active,
-                                     bool is_web_contents_active) {
+                                     bool is_web_contents_active,
+                                     uint32_t browser_session_id,
+                                     uint32_t restored_browser_session_id) {
   if (this->window == window && this->title == title &&
       this->is_browser_active == is_browser_active &&
-      this->is_web_contents_active == is_web_contents_active) {
+      this->is_web_contents_active == is_web_contents_active &&
+      this->browser_session_id == browser_session_id &&
+      this->restored_browser_session_id == restored_browser_session_id) {
     return false;
   }
   this->window = window;
   this->title = std::move(title);
   this->is_browser_active = is_browser_active;
   this->is_web_contents_active = is_web_contents_active;
+  this->browser_session_id = browser_session_id;
+  this->restored_browser_session_id = restored_browser_session_id;
   return true;
 }
 
@@ -81,17 +93,30 @@ BrowserAppInstanceUpdate BrowserAppInstance::ToUpdate() const {
   update.title = title;
   update.is_browser_active = is_browser_active;
   update.is_web_contents_active = is_web_contents_active;
+  update.browser_session_id = browser_session_id;
+  update.restored_browser_session_id = restored_browser_session_id;
   return update;
 }
 
-BrowserWindowInstance::BrowserWindowInstance(base::UnguessableToken id,
-                                             aura::Window* window,
-                                             bool is_active)
-    : id(id), window(window), is_active(is_active) {}
+BrowserWindowInstance::BrowserWindowInstance(
+    base::UnguessableToken id,
+    aura::Window* window,
+    uint32_t browser_session_id,
+    uint32_t restored_browser_session_id,
+    bool is_active)
+    : id(id),
+      window(window),
+      browser_session_id(browser_session_id),
+      restored_browser_session_id(restored_browser_session_id),
+      is_active(is_active) {}
 
 BrowserWindowInstance::BrowserWindowInstance(BrowserWindowInstanceUpdate update,
                                              aura::Window* window)
-    : id(update.id), window(window), is_active(update.is_active) {}
+    : id(update.id),
+      window(window),
+      browser_session_id(update.browser_session_id),
+      restored_browser_session_id(update.restored_browser_session_id),
+      is_active(update.is_active) {}
 
 BrowserWindowInstance::~BrowserWindowInstance() = default;
 
@@ -104,7 +129,9 @@ bool BrowserWindowInstance::MaybeUpdate(bool is_active) {
 }
 
 BrowserWindowInstanceUpdate BrowserWindowInstance::ToUpdate() const {
-  return BrowserWindowInstanceUpdate{id, GetWindowUniqueId(window), is_active};
+  return BrowserWindowInstanceUpdate{id, GetWindowUniqueId(window), is_active,
+                                     browser_session_id,
+                                     restored_browser_session_id};
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

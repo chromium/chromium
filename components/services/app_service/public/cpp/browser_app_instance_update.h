@@ -27,8 +27,10 @@ struct BrowserAppInstanceUpdate {
   std::string app_id;
   std::string window_id;
   std::string title;
-  bool is_browser_active;
-  bool is_web_contents_active;
+  bool is_browser_active = false;
+  bool is_web_contents_active = false;
+  uint32_t browser_session_id = 0;
+  uint32_t restored_browser_session_id = 0;
 };
 
 }  // namespace apps

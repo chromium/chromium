@@ -385,7 +385,9 @@ void BrowserAppInstanceRegistry::LacrosAppInstanceUpdated(
   BrowserAppInstance* instance = GetInstance(lacros_app_instances_, update.id);
   DCHECK(instance);
   if (instance->MaybeUpdate(window, update.title, update.is_browser_active,
-                            update.is_web_contents_active)) {
+                            update.is_web_contents_active,
+                            update.browser_session_id,
+                            update.restored_browser_session_id)) {
     for (auto& observer : observers_) {
       observer.OnBrowserAppUpdated(*instance);
     }
