@@ -39,10 +39,8 @@ source_set("feature_flags") {
 
   configs += [ "//build/config/compiler:enable_arc" ]
 
-  deps = [
-    "//base",
-    "//components/flags_ui",
-  ]
+  deps = [ "//components/flags_ui" ]
+  public_deps = [ "//base" ]
 }
 
 source_set("coordinators") {
