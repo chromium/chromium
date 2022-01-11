@@ -446,34 +446,26 @@ Decision BrowserSwitcherSitelistImpl::GetDecisionImpl(const GURL& url) const {
     return {kStay, kGreylist, reason_to_stay};
 }
 
-void BrowserSwitcherSitelistImpl::SetIeemSitelist(ParsedXml&& parsed_xml) {
-  DCHECK(!parsed_xml.error);
-
+void BrowserSwitcherSitelistImpl::SetIeemSitelist(RawRuleSet&& rules) {
   UMA_HISTOGRAM_COUNTS_100000("BrowserSwitcher.IeemSitelistSize",
-                              parsed_xml.rules.size());
-
-  StoreRules(&ieem_sitelist_.sitelist, parsed_xml.rules);
-  original_ieem_sitelist_ = std::move(parsed_xml.rules);
+                              rules.sitelist.size());
+  StoreRules(ieem_sitelist_, rules);
+  original_ieem_sitelist_ = std::move(rules);
 }
 
-void BrowserSwitcherSitelistImpl::SetExternalSitelist(ParsedXml&& parsed_xml) {
-  DCHECK(!parsed_xml.error);
-
+void BrowserSwitcherSitelistImpl::SetExternalSitelist(RawRuleSet&& rules) {
   UMA_HISTOGRAM_COUNTS_100000("BrowserSwitcher.ExternalSitelistSize",
-                              parsed_xml.rules.size());
-
-  StoreRules(&external_sitelist_.sitelist, parsed_xml.rules);
-  original_external_sitelist_ = std::move(parsed_xml.rules);
+                              rules.sitelist.size());
+  StoreRules(external_sitelist_, rules);
+  original_external_sitelist_ = std::move(rules);
 }
 
-void BrowserSwitcherSitelistImpl::SetExternalGreylist(ParsedXml&& parsed_xml) {
-  DCHECK(!parsed_xml.error);
-
+void BrowserSwitcherSitelistImpl::SetExternalGreylist(RawRuleSet&& rules) {
   UMA_HISTOGRAM_COUNTS_100000("BrowserSwitcher.ExternalGreylistSize",
-                              parsed_xml.rules.size());
-
-  StoreRules(&external_greylist_.greylist, parsed_xml.rules);
-  original_external_greylist_ = std::move(parsed_xml.rules);
+                              rules.sitelist.size());
+  DCHECK(rules.sitelist.empty());
+  StoreRules(external_greylist_, rules);
+  original_external_greylist_ = std::move(rules);
 }
 
 const RuleSet* BrowserSwitcherSitelistImpl::GetIeemSitelist() const {
@@ -488,15 +480,20 @@ const RuleSet* BrowserSwitcherSitelistImpl::GetExternalGreylist() const {
   return &external_greylist_;
 }
 
-void BrowserSwitcherSitelistImpl::StoreRules(
-    std::vector<std::unique_ptr<Rule>>* dst,
-    const std::vector<std::string>& src) {
-  dst->clear();
+void BrowserSwitcherSitelistImpl::StoreRules(RuleSet& dst,
+                                             const RawRuleSet& src) {
+  dst.sitelist.clear();
+  dst.greylist.clear();
   ParsingMode parsing_mode = prefs_->GetParsingMode();
-  for (const std::string& original_rule : src) {
+  for (const std::string& original_rule : src.sitelist) {
     std::unique_ptr<Rule> rule = CanonicalizeRule(original_rule, parsing_mode);
     if (rule)
-      dst->push_back(std::move(rule));
+      dst.sitelist.push_back(std::move(rule));
+  }
+  for (const std::string& original_rule : src.greylist) {
+    std::unique_ptr<Rule> rule = CanonicalizeRule(original_rule, parsing_mode);
+    if (rule)
+      dst.greylist.push_back(std::move(rule));
   }
 }
 
@@ -506,9 +503,9 @@ void BrowserSwitcherSitelistImpl::OnPrefsChanged(
   auto it = base::ranges::find(changed_prefs, prefs::kParsingMode);
   if (it != changed_prefs.end()) {
     // ParsingMode changed, re-canonicalize rules.
-    StoreRules(&ieem_sitelist_.sitelist, original_ieem_sitelist_);
-    StoreRules(&external_sitelist_.sitelist, original_external_sitelist_);
-    StoreRules(&external_greylist_.greylist, original_external_greylist_);
+    StoreRules(ieem_sitelist_, original_ieem_sitelist_);
+    StoreRules(external_sitelist_, original_external_sitelist_);
+    StoreRules(external_greylist_, original_external_greylist_);
   }
 }
 

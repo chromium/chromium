@@ -424,9 +424,8 @@ TEST_P(BrowserSwitcherSitelistTest, ShouldIgnoreNonManagedPrefs) {
 
 TEST_P(BrowserSwitcherSitelistTest, SetIeemSitelist) {
   Initialize({}, {});
-  ParsedXml ieem;
-  ieem.rules = {"example.com"};
-  sitelist()->SetIeemSitelist(std::move(ieem));
+  // XXX: Also do some tests that use ieem.rules.greylist.
+  sitelist()->SetIeemSitelist(RawRuleSet({"example.com"}, {}));
   EXPECT_TRUE(ShouldSwitch(GURL("http://example.com/")));
   EXPECT_TRUE(ShouldSwitch(GURL("http://bar.example.com/")));
   EXPECT_FALSE(ShouldSwitch(GURL("http://google.com/")));
@@ -434,9 +433,7 @@ TEST_P(BrowserSwitcherSitelistTest, SetIeemSitelist) {
 
 TEST_P(BrowserSwitcherSitelistTest, SetExternalSitelist) {
   Initialize({}, {});
-  ParsedXml external;
-  external.rules = {"example.com"};
-  sitelist()->SetExternalSitelist(std::move(external));
+  sitelist()->SetExternalSitelist(RawRuleSet({"example.com"}, {}));
   EXPECT_TRUE(ShouldSwitch(GURL("http://example.com/")));
   EXPECT_TRUE(ShouldSwitch(GURL("http://bar.example.com/")));
   EXPECT_FALSE(ShouldSwitch(GURL("http://google.com/")));
@@ -444,9 +441,7 @@ TEST_P(BrowserSwitcherSitelistTest, SetExternalSitelist) {
 
 TEST_P(BrowserSwitcherSitelistTest, SetExternalGreylist) {
   Initialize({"example.com"}, {});
-  ParsedXml external;
-  external.rules = {"foo.example.com"};
-  sitelist()->SetExternalGreylist(std::move(external));
+  sitelist()->SetExternalGreylist(RawRuleSet({}, {"foo.example.com"}));
   EXPECT_TRUE(ShouldSwitch(GURL("http://example.com/")));
   EXPECT_TRUE(ShouldSwitch(GURL("http://bar.example.com/")));
   EXPECT_FALSE(ShouldSwitch(GURL("http://foo.example.com/")));
@@ -455,12 +450,8 @@ TEST_P(BrowserSwitcherSitelistTest, SetExternalGreylist) {
 
 TEST_P(BrowserSwitcherSitelistTest, All3Sources) {
   Initialize({"google.com"}, {"mail.google.com"});
-  ParsedXml ieem;
-  ieem.rules = {"!maps.google.com"};
-  sitelist()->SetIeemSitelist(std::move(ieem));
-  ParsedXml external;
-  external.rules = {"yahoo.com"};
-  sitelist()->SetExternalSitelist(std::move(external));
+  sitelist()->SetIeemSitelist(RawRuleSet({"!maps.google.com"}, {}));
+  sitelist()->SetExternalSitelist(RawRuleSet({"yahoo.com"}, {}));
   EXPECT_TRUE(ShouldSwitch(GURL("http://google.com/")));
   EXPECT_TRUE(ShouldSwitch(GURL("http://drive.google.com/")));
   EXPECT_FALSE(ShouldSwitch(GURL("http://mail.google.com/")));
@@ -472,19 +463,13 @@ TEST_P(BrowserSwitcherSitelistTest, All3Sources) {
 TEST_P(BrowserSwitcherSitelistTest, ReCanonicalizeWhenParsingModeChanges) {
   // Configure all sitelists/greylists at the same time.
   Initialize({"google.com"}, {"mail.google.com"});
-  ParsedXml ieem;
-  ieem.rules = {"example.com"};
-  sitelist()->SetIeemSitelist(std::move(ieem));
-  ParsedXml external_sitelist;
-  external_sitelist.rules = {"yahoo.com"};
-  sitelist()->SetExternalSitelist(std::move(external_sitelist));
-  ParsedXml external_greylist;
-  external_greylist.rules = {"duckduckgo.com"};
-  sitelist()->SetExternalGreylist(std::move(external_greylist));
+  sitelist()->SetIeemSitelist(RawRuleSet({"example.com"}, {"grey.com"}));
+  sitelist()->SetExternalSitelist(RawRuleSet({"yahoo.com"}, {}));
+  sitelist()->SetExternalGreylist(RawRuleSet({}, {"duckduckgo.com"}));
 
   // Check initial state.
   CheckRuleSetSize(1u, 1u, &prefs()->GetRules());
-  CheckRuleSetSize(1u, 0u, sitelist()->GetIeemSitelist());
+  CheckRuleSetSize(1u, 1u, sitelist()->GetIeemSitelist());
   CheckRuleSetSize(1u, 0u, sitelist()->GetExternalSitelist());
   CheckRuleSetSize(0u, 1u, sitelist()->GetExternalGreylist());
   if (parsing_mode() == ParsingMode::kDefault) {
@@ -492,6 +477,8 @@ TEST_P(BrowserSwitcherSitelistTest, ReCanonicalizeWhenParsingModeChanges) {
     EXPECT_EQ("mail.google.com", prefs()->GetRules().greylist[0]->ToString());
     EXPECT_EQ("example.com",
               sitelist()->GetIeemSitelist()->sitelist[0]->ToString());
+    EXPECT_EQ("grey.com",
+              sitelist()->GetIeemSitelist()->greylist[0]->ToString());
     EXPECT_EQ("yahoo.com",
               sitelist()->GetExternalSitelist()->sitelist[0]->ToString());
     EXPECT_EQ("duckduckgo.com",
@@ -502,6 +489,8 @@ TEST_P(BrowserSwitcherSitelistTest, ReCanonicalizeWhenParsingModeChanges) {
               prefs()->GetRules().greylist[0]->ToString());
     EXPECT_EQ("*://example.com/",
               sitelist()->GetIeemSitelist()->sitelist[0]->ToString());
+    EXPECT_EQ("*://grey.com/",
+              sitelist()->GetIeemSitelist()->greylist[0]->ToString());
     EXPECT_EQ("*://yahoo.com/",
               sitelist()->GetExternalSitelist()->sitelist[0]->ToString());
     EXPECT_EQ("*://duckduckgo.com/",
@@ -521,7 +510,7 @@ TEST_P(BrowserSwitcherSitelistTest, ReCanonicalizeWhenParsingModeChanges) {
 
   // Check that canonicalization changed.
   CheckRuleSetSize(1u, 1u, &prefs()->GetRules());
-  CheckRuleSetSize(1u, 0u, sitelist()->GetIeemSitelist());
+  CheckRuleSetSize(1u, 1u, sitelist()->GetIeemSitelist());
   CheckRuleSetSize(1u, 0u, sitelist()->GetExternalSitelist());
   CheckRuleSetSize(0u, 1u, sitelist()->GetExternalGreylist());
   if (new_parsing_mode == ParsingMode::kDefault) {
@@ -529,6 +518,8 @@ TEST_P(BrowserSwitcherSitelistTest, ReCanonicalizeWhenParsingModeChanges) {
     EXPECT_EQ("mail.google.com", prefs()->GetRules().greylist[0]->ToString());
     EXPECT_EQ("example.com",
               sitelist()->GetIeemSitelist()->sitelist[0]->ToString());
+    EXPECT_EQ("grey.com",
+              sitelist()->GetIeemSitelist()->greylist[0]->ToString());
     EXPECT_EQ("yahoo.com",
               sitelist()->GetExternalSitelist()->sitelist[0]->ToString());
     EXPECT_EQ("duckduckgo.com",
@@ -539,6 +530,8 @@ TEST_P(BrowserSwitcherSitelistTest, ReCanonicalizeWhenParsingModeChanges) {
               prefs()->GetRules().greylist[0]->ToString());
     EXPECT_EQ("*://example.com/",
               sitelist()->GetIeemSitelist()->sitelist[0]->ToString());
+    EXPECT_EQ("*://grey.com/",
+              sitelist()->GetIeemSitelist()->greylist[0]->ToString());
     EXPECT_EQ("*://yahoo.com/",
               sitelist()->GetExternalSitelist()->sitelist[0]->ToString());
     EXPECT_EQ("*://duckduckgo.com/",

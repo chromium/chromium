@@ -21,7 +21,8 @@ void OnXmlParsed(base::RepeatingClosure quit_run_loop,
                  ParsedXml expected,
                  ParsedXml actual) {
   base::ScopedClosureRunner runner(std::move(quit_run_loop));
-  EXPECT_EQ(expected.rules, actual.rules);
+  EXPECT_EQ(expected.rules.sitelist, actual.rules.sitelist);
+  EXPECT_EQ(expected.rules.greylist, actual.rules.greylist);
   EXPECT_EQ(expected.error.has_value(), actual.error.has_value());
   if (expected.error.has_value() && actual.error.has_value())
     EXPECT_EQ(*expected.error, *actual.error);
@@ -47,14 +48,15 @@ class IeemSitelistParserTest : public testing::Test {
 };
 
 TEST_F(IeemSitelistParserTest, BadXml) {
-  TestParseXml("", ParsedXml({}, "Invalid XML: bad content"));
-  TestParseXml("thisisnotxml", ParsedXml({}, "Invalid XML: bad content"));
+  TestParseXml("", ParsedXml({}, {}, "Invalid XML: bad content"));
+  TestParseXml("thisisnotxml", ParsedXml({}, {}, "Invalid XML: bad content"));
 }
 
 TEST_F(IeemSitelistParserTest, BadXmlParsed) {
-  TestParseXml("<bogus></bogus>", ParsedXml({}, "Invalid XML root element"));
+  TestParseXml("<bogus></bogus>",
+               ParsedXml({}, {}, "Invalid XML root element"));
   TestParseXml("<rules version=\"424\"><unknown></unknown></rules>",
-               ParsedXml({}, absl::nullopt));
+               ParsedXml({}, {}, absl::nullopt));
 }
 
 TEST_F(IeemSitelistParserTest, V1OnlyBogusElements) {
@@ -64,7 +66,7 @@ TEST_F(IeemSitelistParserTest, V1OnlyBogusElements) {
       "</more><emie><domain>ignoretoo.com<path>/ignored_path</path>"
       "</domain></emie><domain>onemoreignored.com</domain>"
       "<path>/ignore_outside_of_domain></path></unknown></rules>";
-  TestParseXml(xml, ParsedXml({}, absl::nullopt));
+  TestParseXml(xml, ParsedXml({}, {}, absl::nullopt));
 }
 
 TEST_F(IeemSitelistParserTest, V1Full) {
@@ -135,7 +137,7 @@ TEST_F(IeemSitelistParserTest, V1Full) {
       "!yes.com/actuallyno",
       "!no.com",
   };
-  TestParseXml(xml, ParsedXml(std::move(expected_sitelist), absl::nullopt));
+  TestParseXml(xml, ParsedXml(std::move(expected_sitelist), {}, absl::nullopt));
 }
 
 TEST_F(IeemSitelistParserTest, V2Full) {
@@ -164,7 +166,7 @@ TEST_F(IeemSitelistParserTest, V2Full) {
       "!google.com",  "!good.site",     "www.cpandl.com",
       "!contoso.com", "!relecloud.com", "!relecloud.com/about",
   };
-  TestParseXml(xml, ParsedXml(std::move(expected_sitelist), absl::nullopt));
+  TestParseXml(xml, ParsedXml(std::move(expected_sitelist), {}, absl::nullopt));
 }
 
 }  // namespace browser_switcher

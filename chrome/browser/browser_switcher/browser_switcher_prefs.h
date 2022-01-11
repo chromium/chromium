@@ -171,18 +171,18 @@ class BrowserSwitcherPrefs : public KeyedService,
 
   // Retrieves or stores the locally cached external sitelist from the
   // PrefStore.
-  std::vector<std::string> GetCachedExternalSitelist() const;
-  void SetCachedExternalSitelist(const std::vector<std::string>& sitelist);
+  RawRuleSet GetCachedExternalSitelist() const;
+  void SetCachedExternalSitelist(const RawRuleSet& sitelist);
 
   // Retrieves or stores the locally cached external greylist from the
   // PrefStore.
-  std::vector<std::string> GetCachedExternalGreylist() const;
-  void SetCachedExternalGreylist(const std::vector<std::string>& greylist);
+  RawRuleSet GetCachedExternalGreylist() const;
+  void SetCachedExternalGreylist(const RawRuleSet& greylist);
 
 #if defined(OS_WIN)
   // Retrieves or stores the locally cached IEEM sitelist from the PrefStore.
-  std::vector<std::string> GetCachedIeemSitelist() const;
-  void SetCachedIeemSitelist(const std::vector<std::string>& sitelist);
+  RawRuleSet GetCachedIeemSitelist() const;
+  void SetCachedIeemSitelist(const RawRuleSet& sitelist);
 #endif
 
   // Returns the URL to download for an external XML sitelist. If the pref is
@@ -285,12 +285,14 @@ extern const char kUrlList[];
 extern const char kUrlGreylist[];
 extern const char kExternalSitelistUrl[];
 extern const char kCachedExternalSitelist[];
+extern const char kCachedExternalSitelistGreylist[];
 extern const char kExternalGreylistUrl[];
 extern const char kCachedExternalGreylist[];
 
 #if defined(OS_WIN)
 extern const char kUseIeSitelist[];
 extern const char kCachedIeSitelist[];
+extern const char kCachedIeSitelistGreylist[];
 extern const char kChromePath[];
 extern const char kChromeParameters[];
 #endif

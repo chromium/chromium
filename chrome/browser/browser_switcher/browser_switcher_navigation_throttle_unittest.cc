@@ -42,9 +42,9 @@ class MockBrowserSwitcherSitelist : public BrowserSwitcherSitelist {
   ~MockBrowserSwitcherSitelist() override = default;
 
   MOCK_CONST_METHOD1(GetDecision, Decision(const GURL&));
-  MOCK_METHOD1(SetIeemSitelist, void(ParsedXml&&));
-  MOCK_METHOD1(SetExternalSitelist, void(ParsedXml&&));
-  MOCK_METHOD1(SetExternalGreylist, void(ParsedXml&&));
+  MOCK_METHOD1(SetIeemSitelist, void(RawRuleSet&&));
+  MOCK_METHOD1(SetExternalSitelist, void(RawRuleSet&&));
+  MOCK_METHOD1(SetExternalGreylist, void(RawRuleSet&&));
   MOCK_CONST_METHOD0(GetIeemSitelist, const RuleSet*());
   MOCK_CONST_METHOD0(GetExternalSitelist, const RuleSet*());
   MOCK_CONST_METHOD0(GetExternalGreylist, const RuleSet*());

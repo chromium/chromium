@@ -29,21 +29,40 @@ namespace browser_switcher {
 
 namespace {
 
-std::vector<std::string> GetCachedRules(PrefService* prefs,
-                                        const std::string& pref_name) {
-  std::vector<std::string> rules;
-  for (const auto& url : prefs->GetList(pref_name)->GetList())
-    rules.push_back(url.GetString());
-  return rules;
+std::vector<std::string> GetListPref(PrefService* prefs,
+                                     const std::string& pref_name) {
+  std::vector<std::string> list;
+  if (pref_name.empty())
+    return list;
+  for (const auto& value : prefs->GetList(pref_name)->GetList())
+    list.push_back(value.GetString());
+  return list;
+}
+
+RawRuleSet GetCachedRules(PrefService* prefs,
+                          const std::string& sitelist_pref_name,
+                          const std::string& greylist_pref_name) {
+  return RawRuleSet(GetListPref(prefs, sitelist_pref_name),
+                    GetListPref(prefs, greylist_pref_name));
+}
+
+void SetListPref(PrefService* prefs,
+                 const std::string& pref_name,
+                 const std::vector<std::string>& list) {
+  if (pref_name.empty())
+    return;
+  base::ListValue list_value;
+  for (const auto& str : list)
+    list_value.Append(base::Value(str));
+  prefs->Set(pref_name, list_value);
 }
 
 void SetCachedRules(PrefService* prefs,
-                    const std::string& pref_name,
-                    const std::vector<std::string>& rules) {
-  base::ListValue rules_val;
-  for (const auto& url : rules)
-    rules_val.Append(base::Value(url));
-  prefs->Set(pref_name, rules_val);
+                    const std::string& sitelist_pref_name,
+                    const std::string& greylist_pref_name,
+                    const RawRuleSet& rules) {
+  SetListPref(prefs, sitelist_pref_name, rules.sitelist);
+  SetListPref(prefs, greylist_pref_name, rules.greylist);
 }
 
 }  // namespace
@@ -170,11 +189,13 @@ void BrowserSwitcherPrefs::RegisterProfilePrefs(
   registry->RegisterListPref(prefs::kUrlGreylist);
   registry->RegisterStringPref(prefs::kExternalSitelistUrl, "");
   registry->RegisterListPref(prefs::kCachedExternalSitelist);
+  registry->RegisterListPref(prefs::kCachedExternalSitelistGreylist);
   registry->RegisterStringPref(prefs::kExternalGreylistUrl, "");
   registry->RegisterListPref(prefs::kCachedExternalGreylist);
 #if defined(OS_WIN)
   registry->RegisterBooleanPref(prefs::kUseIeSitelist, false);
   registry->RegisterListPref(prefs::kCachedIeSitelist);
+  registry->RegisterListPref(prefs::kCachedIeSitelistGreylist);
   registry->RegisterStringPref(prefs::kChromePath, "");
   registry->RegisterListPref(prefs::kChromeParameters);
 #endif
@@ -210,34 +231,33 @@ const RuleSet& BrowserSwitcherPrefs::GetRules() const {
   return rules_;
 }
 
-std::vector<std::string> BrowserSwitcherPrefs::GetCachedExternalSitelist()
-    const {
-  return GetCachedRules(prefs_, prefs::kCachedExternalSitelist);
+RawRuleSet BrowserSwitcherPrefs::GetCachedExternalSitelist() const {
+  return GetCachedRules(prefs_, prefs::kCachedExternalSitelist,
+                        prefs::kCachedExternalSitelistGreylist);
 }
 
-void BrowserSwitcherPrefs::SetCachedExternalSitelist(
-    const std::vector<std::string>& sitelist) {
-  SetCachedRules(prefs_, prefs::kCachedExternalSitelist, sitelist);
+void BrowserSwitcherPrefs::SetCachedExternalSitelist(const RawRuleSet& rules) {
+  SetCachedRules(prefs_, prefs::kCachedExternalSitelist,
+                 prefs::kCachedExternalSitelistGreylist, rules);
 }
 
-std::vector<std::string> BrowserSwitcherPrefs::GetCachedExternalGreylist()
-    const {
-  return GetCachedRules(prefs_, prefs::kCachedExternalGreylist);
+RawRuleSet BrowserSwitcherPrefs::GetCachedExternalGreylist() const {
+  return GetCachedRules(prefs_, std::string(), prefs::kCachedExternalGreylist);
 }
 
-void BrowserSwitcherPrefs::SetCachedExternalGreylist(
-    const std::vector<std::string>& greylist) {
-  SetCachedRules(prefs_, prefs::kCachedExternalGreylist, greylist);
+void BrowserSwitcherPrefs::SetCachedExternalGreylist(const RawRuleSet& rules) {
+  SetCachedRules(prefs_, std::string(), prefs::kCachedExternalGreylist, rules);
 }
 
 #if defined(OS_WIN)
-std::vector<std::string> BrowserSwitcherPrefs::GetCachedIeemSitelist() const {
-  return GetCachedRules(prefs_, prefs::kCachedIeSitelist);
+RawRuleSet BrowserSwitcherPrefs::GetCachedIeemSitelist() const {
+  return GetCachedRules(prefs_, prefs::kCachedIeSitelist,
+                        prefs::kCachedIeSitelistGreylist);
 }
 
-void BrowserSwitcherPrefs::SetCachedIeemSitelist(
-    const std::vector<std::string>& sitelist) {
-  SetCachedRules(prefs_, prefs::kCachedIeSitelist, sitelist);
+void BrowserSwitcherPrefs::SetCachedIeemSitelist(const RawRuleSet& rules) {
+  SetCachedRules(prefs_, prefs::kCachedIeSitelist,
+                 prefs::kCachedIeSitelistGreylist, rules);
 }
 #endif
 
@@ -428,20 +448,27 @@ const char kUrlList[] = "browser_switcher.url_list";
 // List of hosts that should not trigger a transition in either browser.
 const char kUrlGreylist[] = "browser_switcher.url_greylist";
 
-// URL with an external XML sitelist file to load.
+// URL with an external XML sitelist file to load. The cached ruleset has 2
+// parts (sitelist and greylist).
 const char kExternalSitelistUrl[] = "browser_switcher.external_sitelist_url";
 const char kCachedExternalSitelist[] =
     "browser_switcher.cached_external_sitelist";
+const char kCachedExternalSitelistGreylist[] =
+    "browser_switcher.cached_external_sitelist_greylist";
 
-// URL with an external XML greylist file to load.
+// URL with an external XML greylist file to load. Unlike the other cached XML
+// rulesets, this one is just a greylist (rather than a pair of lists).
 const char kExternalGreylistUrl[] = "browser_switcher.external_greylist_url";
 const char kCachedExternalGreylist[] =
     "browser_switcher.cached_external_greylist";
 
 #if defined(OS_WIN)
-// If set to true, use the IE Enterprise Mode Sitelist policy.
+// If set to true, use the IE Enterprise Mode Sitelist policy. The cached
+// ruleset has 2 parts (sitelist and greylist).
 const char kUseIeSitelist[] = "browser_switcher.use_ie_sitelist";
 const char kCachedIeSitelist[] = "browser_switcher.cached_ie_sitelist";
+const char kCachedIeSitelistGreylist[] =
+    "browser_switcher.cached_ie_sitelist_greylist";
 
 // Path to the Chrome executable for the alternative browser.
 const char kChromePath[] = "browser_switcher.chrome_path";
