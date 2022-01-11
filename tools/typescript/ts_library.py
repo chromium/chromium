@@ -36,6 +36,7 @@ def main(argv):
   parser.add_argument('--out_dir', required=True)
   parser.add_argument('--tsconfig_base')
   parser.add_argument('--in_files', nargs='*')
+  parser.add_argument('--manifest_excludes', nargs='*')
   parser.add_argument('--definitions', nargs='*')
   parser.add_argument('--composite', action='store_true')
   args = parser.parse_args(argv)
@@ -120,8 +121,12 @@ def main(argv):
         as manifest_file:
       manifest_data = {}
       manifest_data['base_dir'] = args.out_dir
+      manifest_files = args.in_files
+      if args.manifest_excludes is not None:
+        manifest_files = filter(lambda f: f not in args.manifest_excludes,
+                                args.in_files)
       manifest_data['files'] = \
-          [re.sub(r'\.ts$', '.js', f) for f in args.in_files]
+          [re.sub(r'\.ts$', '.js', f) for f in manifest_files]
       json.dump(manifest_data, manifest_file)
 
 

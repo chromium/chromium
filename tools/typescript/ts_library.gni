@@ -14,6 +14,7 @@ template("ts_library") {
                              "extra_deps",
                              "in_files",
                              "tsconfig_base",
+                             "manifest_excludes",
                            ])
 
     inputs = [ "//tools/typescript/tsconfig_base.json" ]
@@ -62,6 +63,11 @@ template("ts_library") {
 
     if (defined(in_files)) {
       args += [ "--in_files" ] + in_files
+    }
+
+    if (defined(manifest_excludes)) {
+      assert(defined(in_files))
+      args += [ "--manifest_excludes" ] + manifest_excludes
     }
 
     if (defined(invoker.definitions)) {
