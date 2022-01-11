@@ -227,7 +227,7 @@ TEST(PatternStringTest, Group) {
 }
 
 TEST(PatternStringTest, GroupWithRegexp) {
-  RunPatternStringTest("/foo/{(bar)}", "/foo/(bar)");
+  RunPatternStringTest("/foo/{(bar)}", "/foo/{(bar)}");
 }
 
 TEST(PatternStringTest, GroupWithPrefixAndRegexp) {
@@ -355,11 +355,11 @@ TEST(PatternStringTest, NamedGroupInGroupingFollowedByWildcardInGrouping) {
 }
 
 TEST(PatternStringTest, NamedGroupInGroupingFollowedByWildcardWithSuffix) {
-  RunPatternStringTest("{:foo}{(.*)bar}", ":foo{(.*)bar}");
+  RunPatternStringTest("{:foo}{(.*)bar}", ":foo{*bar}");
 }
 
 TEST(PatternStringTest, NamedGroupInGroupingFollowedByWildcardWithPrefix) {
-  RunPatternStringTest("{:foo}{bar(.*)}", ":foo{bar(.*)}");
+  RunPatternStringTest("{:foo}{bar(.*)}", ":foo{bar*}");
 }
 
 TEST(PatternStringTest, NamedGroupInGroupingFollowedByWildcardWithCustomName) {
@@ -410,6 +410,27 @@ TEST(PatternStringTest, NamedGroupWithRegexpFollowedByWildcard) {
 
 TEST(PatternStringTest, NamedGroupWithRegexpAndValidNameSuffix) {
   RunPatternStringTest("{:foo(baz)bar}", "{:foo(baz)bar}");
+}
+
+TEST(PatternStringTest, WildcardSlashAndWildcard) {
+  RunPatternStringTest("*/*", "*/*");
+}
+
+TEST(PatternStringTest, WildcardEscapedSlashAndWildcard) {
+  // The backslash in the original input forces the `/` to not be an
+  // implicit prefix for the second `*`.  The generated pattern string
+  // must similarly prevent the implicit prefix from occuring.  This
+  // is done using the `{}` grouping instead, however, as its a bit more
+  // readable than escape backslashes.
+  RunPatternStringTest("*\\/*", "*/{*}");
+}
+
+TEST(PatternStringTest, WildcardSlashAndWildcardInGrouping) {
+  RunPatternStringTest("*/{*}", "*/{*}");
+}
+
+TEST(PatternStringTest, WildcardSlashSlashAndWildcard) {
+  RunPatternStringTest("*//*", "*//*");
 }
 
 TEST(
