@@ -41,8 +41,28 @@
 #include "chrome/updater/util.h"
 
 namespace updater {
+namespace {
 
-namespace ksadmin_internal {
+constexpr char kCommandDelete[] = "delete";
+constexpr char kCommandInstall[] = "install";
+constexpr char kCommandList[] = "list";
+constexpr char kCommandKsadminVersion[] = "ksadmin-version";
+constexpr char kCommandPrintTag[] = "print-tag";
+constexpr char kCommandPrintTickets[] = "print-tickets";
+constexpr char kCommandRegister[] = "register";
+constexpr char kCommandSystemStore[] = "system-store";
+constexpr char kCommandUserInitiated[] = "user-initiated";
+constexpr char kCommandUserStore[] = "user-store";
+constexpr char kCommandBrandKey[] = "brand-key";
+constexpr char kCommandBrandPath[] = "brand-path";
+constexpr char kCommandProductId[] = "productid";
+constexpr char kCommandTag[] = "tag";
+constexpr char kCommandTagKey[] = "tag-key";
+constexpr char kCommandTagPath[] = "tag-path";
+constexpr char kCommandVersion[] = "version";
+constexpr char kCommandVersionKey[] = "version-key";
+constexpr char kCommandVersionPath[] = "version-path";
+constexpr char kCommandXCPath[] = "xcpath";
 
 // base::CommandLine can't be used because it enforces that all switches are
 // lowercase, but ksadmin has case-sensitive switches. This argument parser
@@ -50,7 +70,7 @@ namespace ksadmin_internal {
 // `ksadmin --register --productid com.goog.chrome -v 1.2.3.4 e` to
 // `{"register": "", "productid": "com.goog.chrome", "v": "1.2.3.4", "e": ""}`.
 base::flat_map<std::string, std::string> ParseCommandLine(int argc,
-                                                          const char* argv[]) {
+                                                          char* argv[]) {
   base::flat_map<std::string, std::string> result;
   std::string last_arg;
   for (int i = 1; i < argc; ++i) {
@@ -81,31 +101,6 @@ base::flat_map<std::string, std::string> ParseCommandLine(int argc,
     result[last_arg] = "";
   return result;
 }
-
-}  // namespace ksadmin_internal
-
-namespace {
-
-constexpr char kCommandDelete[] = "delete";
-constexpr char kCommandInstall[] = "install";
-constexpr char kCommandList[] = "list";
-constexpr char kCommandKsadminVersion[] = "ksadmin-version";
-constexpr char kCommandPrintTag[] = "print-tag";
-constexpr char kCommandPrintTickets[] = "print-tickets";
-constexpr char kCommandRegister[] = "register";
-constexpr char kCommandSystemStore[] = "system-store";
-constexpr char kCommandUserInitiated[] = "user-initiated";
-constexpr char kCommandUserStore[] = "user-store";
-constexpr char kCommandBrandKey[] = "brand-key";
-constexpr char kCommandBrandPath[] = "brand-path";
-constexpr char kCommandProductId[] = "productid";
-constexpr char kCommandTag[] = "tag";
-constexpr char kCommandTagKey[] = "tag-key";
-constexpr char kCommandTagPath[] = "tag-path";
-constexpr char kCommandVersion[] = "version";
-constexpr char kCommandVersionKey[] = "version-key";
-constexpr char kCommandVersionPath[] = "version-path";
-constexpr char kCommandXCPath[] = "xcpath";
 
 bool HasSwitch(const std::string& arg,
                const base::flat_map<std::string, std::string>& switches) {
@@ -460,11 +455,11 @@ void KSAdminApp::FirstTaskRun() {
 
 }  // namespace
 
-int KSAdminAppMain(int argc, const char* argv[]) {
+int KSAdminAppMain(int argc, char* argv[]) {
   base::AtExitManager exit_manager;
   base::CommandLine::Init(argc, argv);
   base::flat_map<std::string, std::string> command_line =
-      ksadmin_internal::ParseCommandLine(argc, argv);
+      ParseCommandLine(argc, argv);
   updater::InitLogging(Scope(command_line), FILE_PATH_LITERAL("updater.log"));
   base::SingleThreadTaskExecutor main_task_executor(base::MessagePumpType::UI);
   return base::MakeRefCounted<KSAdminApp>(command_line)->Run();
