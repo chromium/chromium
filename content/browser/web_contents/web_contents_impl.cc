@@ -5828,6 +5828,7 @@ void WebContentsImpl::DocumentAvailableInMainFrame(
     RenderFrameHost* render_frame_host) {
   OPTIONAL_TRACE_EVENT0("content",
                         "WebContentsImpl::DocumentAvailableInMainFrame");
+  DCHECK(render_frame_host->IsInPrimaryMainFrame());
   SCOPED_UMA_HISTOGRAM_TIMER(
       "WebContentsObserver.DocumentAvailableInMainFrame");
   observers_.NotifyObservers(&WebContentsObserver::DocumentAvailableInMainFrame,

@@ -5423,10 +5423,13 @@ void RenderFrameHostImpl::DocumentAvailableInMainFrame(
   GetPage().set_is_document_available_in_main_document(true);
   GetPage().set_uses_temporary_zoom_level(uses_temporary_zoom_level);
 
-  // In case of prerendering, we dispatch DocumentAvailableInMainFrame on
-  // activation. This is done to avoid notifying observers about a load event
-  // triggered from an inactive RenderFrameHost.
-  if (lifecycle_state() == LifecycleStateImpl::kPrerendering)
+  // Don't dispatch DocumentAvailableInMainFrame for non-primary
+  // RenderFrameHosts. As most of the observers are interested only in taking
+  // into account and can interact with or send IPCs to only the current
+  // document in the primary main frame. Since the WebContents could be hosting
+  // more than one main frame (e.g., fenced frame, prerender pages or pending
+  // delete RFHs), return early for other cases.
+  if (!IsInPrimaryMainFrame())
     return;
 
   delegate_->DocumentAvailableInMainFrame(this);
