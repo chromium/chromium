@@ -62,6 +62,9 @@ class AuctionWorkletServiceImpl : public mojom::AuctionWorkletService {
       LoadSellerWorkletCallback load_seller_worklet_callback) override;
 
  private:
+  void DisconnectBidderWorklet(mojo::ReceiverId receiver_id,
+                               const std::string& reason);
+
   mojo::Receiver<mojom::AuctionWorkletService> receiver_;
 
   scoped_refptr<AuctionV8Helper> auction_v8_helper_;

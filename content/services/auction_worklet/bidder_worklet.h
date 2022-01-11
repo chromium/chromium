@@ -53,6 +53,11 @@ namespace auction_worklet {
 // interest group in different auctions.
 class BidderWorklet : public mojom::BidderWorklet {
  public:
+  // Deletes the worklet immediately and resets the BidderWorklet's Mojo pipe
+  // with the provided description. See mojo::Receiver::ResetWithReason().
+  using ClosePipeCallback =
+      base::OnceCallback<void(const std::string& description)>;
+
   // Starts loading the worklet script on construction, as well as the trusted
   // bidding data, if necessary. Will then call the script's generateBid()
   // function and invoke the callback with the results. Callback will always be
@@ -71,6 +76,15 @@ class BidderWorklet : public mojom::BidderWorklet {
   explicit BidderWorklet(const BidderWorklet&) = delete;
   ~BidderWorklet() override;
   BidderWorklet& operator=(const BidderWorklet&) = delete;
+
+  // Sets the callback to be invoked on errors which require closing the pipe.
+  // Callback will also immediately delete `this`. Not an argument to
+  // constructor because the Mojo ReceiverId needs to be bound to the callback,
+  // but can only get that after creating the worklet. Must be called
+  // immediately after creating a BidderWorklet.
+  void set_close_pipe_callback(ClosePipeCallback close_pipe_callback) {
+    close_pipe_callback_ = std::move(close_pipe_callback);
+  }
 
   int context_group_id_for_testing() const;
 
@@ -220,8 +234,6 @@ class BidderWorklet : public mojom::BidderWorklet {
     SEQUENCE_CHECKER(v8_sequence_checker_);
   };
 
-  enum class LoadState { kLoading, kSuccess, kFailure };
-
   void ResumeIfPaused();
   void Start();
 
@@ -246,10 +258,6 @@ class BidderWorklet : public mojom::BidderWorklet {
 
   void RunReportWin(ReportWinTaskList::iterator task);
 
-  // Fails all pending GenerateBid() and ReportWin() tasks, removing all tasks
-  // from both lists.
-  void FailAllPendingTasks();
-
   // Invokes the `callback` of `task` with the provided values, and removes
   // `task` from `generate_bid_tasks_`.
   void DeliverBidCallbackOnUserThread(GenerateBidTaskList::iterator task,
@@ -262,8 +270,9 @@ class BidderWorklet : public mojom::BidderWorklet {
                                     absl::optional<GURL> report_url,
                                     std::vector<std::string> errors);
 
-  // Combines `worklet_js_load_state_` and `worklet_wasm_load_state_`.
-  LoadState CodeLoadState() const;
+  // Returns true if unpaused and the script and WASM helper (if needed) have
+  // loaded.
+  bool IsCodeReady() const;
 
   scoped_refptr<base::SequencedTaskRunner> v8_runner_;
 
@@ -282,11 +291,9 @@ class BidderWorklet : public mojom::BidderWorklet {
   // Top window origin for the auctions sharing this BidderWorklet.
   const url::Origin top_window_origin_;
 
+  // These are deleted once each resource is loaded.
   std::unique_ptr<WorkletLoader> worklet_loader_;
-  LoadState worklet_js_load_state_ = LoadState::kLoading;
-
   std::unique_ptr<WorkletWasmLoader> wasm_loader_;
-  LoadState worklet_wasm_load_state_ = LoadState::kLoading;
 
   // Lives on `v8_runner_`. Since it's deleted there via DeleteSoon, tasks can
   // be safely posted from main thread to it with an Unretained pointer.
@@ -297,6 +304,8 @@ class BidderWorklet : public mojom::BidderWorklet {
   // to the v8 thread, so these need to be std::lists rather than std::vectors.
   GenerateBidTaskList generate_bid_tasks_;
   ReportWinTaskList report_win_tasks_;
+
+  ClosePipeCallback close_pipe_callback_;
 
   // Errors that occurred while loading the code, if any.
   std::vector<std::string> load_code_error_msgs_;

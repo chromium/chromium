@@ -179,13 +179,6 @@ BidderWorklet::BidderWorklet(
 
 BidderWorklet::~BidderWorklet() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
-  // Invoke any pending callbacks, since destroying uninvoked Mojo callbacks can
-  // sometimes cause issues if the pipe they're over is still open. This is not
-  // strictly necessary here, since the BidderWorklet's received pipe is
-  // destroyed before the BidderWorklet itself is, but makes the class safer
-  // against refactors of the Mojo API.
-  FailAllPendingTasks();
-
   debug_id_->AbortDebuggerPauses();
 }
 
@@ -214,15 +207,6 @@ void BidderWorklet::GenerateBid(
       std::move(bidding_browser_signals);
   generate_bid_task->auction_start_time = auction_start_time;
   generate_bid_task->callback = std::move(generate_bid_callback);
-
-  // If worklet script failed to load, or WASM was requested and failed, fail
-  // and exit early.
-  if (CodeLoadState() == LoadState::kFailure) {
-    DeliverBidCallbackOnUserThread(generate_bid_task,
-                                   mojom::BidderWorkletBidPtr(),
-                                   /*error_msgs=*/std::vector<std::string>());
-    return;
-  }
 
   const auto& trusted_bidding_signals_keys =
       generate_bid_task->bidder_worklet_non_shared_params
@@ -267,18 +251,9 @@ void BidderWorklet::ReportWin(
   report_win_task->browser_signal_seller_origin = browser_signal_seller_origin;
   report_win_task->callback = std::move(report_win_callback);
 
-  // If worklet script and, if requested, WASM, aren't loaded, can't run script
-  // immediately.
-  LoadState code_load_state = CodeLoadState();
-  if (code_load_state != LoadState::kSuccess) {
-    // If required files failed to load, fail and exit early.
-    if (code_load_state == LoadState::kFailure) {
-      DeliverReportWinOnUserThread(report_win_task,
-                                   /*report_url=*/absl::optional<GURL>(),
-                                   /*errors=*/std::vector<std::string>());
-    }
+  // If not yet ready, need to wait for load to complete.
+  if (!IsCodeReady())
     return;
-  }
 
   RunReportWin(report_win_task);
 }
@@ -724,9 +699,6 @@ void BidderWorklet::Start() {
         debug_id_,
         base::BindOnce(&BidderWorklet::OnWasmDownloaded,
                        base::Unretained(this)));
-  } else {
-    // WASM helper is optional if not specified.
-    worklet_wasm_load_state_ = LoadState::kSuccess;
   }
 }
 
@@ -736,16 +708,18 @@ void BidderWorklet::OnScriptDownloaded(WorkletLoader::Result worklet_script,
 
   worklet_loader_.reset();
 
-  // Fail all pending tasks if the script failed to load.
+  // On failure, close pipe and delete `this`, as it can't do anything without a
+  // loaded script.
   if (!worklet_script.success()) {
-    worklet_js_load_state_ = LoadState::kFailure;
-    if (error_msg.has_value())
-      load_code_error_msgs_.push_back(std::move(error_msg.value()));
-    FailAllPendingTasks();
+    std::move(close_pipe_callback_)
+        .Run(error_msg ? error_msg.value() : std::string());
+    // `this` should be deleted at this point.
     return;
   }
 
-  worklet_js_load_state_ = LoadState::kSuccess;
+  if (error_msg.has_value())
+    load_code_error_msgs_.push_back(std::move(error_msg.value()));
+
   v8_runner_->PostTask(FROM_HERE,
                        base::BindOnce(&BidderWorklet::V8State::SetWorkletScript,
                                       base::Unretained(v8_state_.get()),
@@ -760,16 +734,19 @@ void BidderWorklet::OnWasmDownloaded(WorkletWasmLoader::Result wasm_helper,
 
   wasm_loader_.reset();
 
-  // If the WASM helper is actually requested, its failure fails the bid.
+  // If the WASM helper is actually requested, delete `this` and inform the
+  // browser process of the failure. ReportWin() calls would theoretically still
+  // be allowed, but that adds a lot more complexity around BidderWorklet reuse.
   if (!wasm_helper.success()) {
-    worklet_wasm_load_state_ = LoadState::kFailure;
-    if (error_msg.has_value())
-      load_code_error_msgs_.push_back(std::move(error_msg.value()));
-    FailAllPendingTasks();
+    std::move(close_pipe_callback_)
+        .Run(error_msg ? error_msg.value() : std::string());
+    // `this` should be deleted at this point.
     return;
   }
 
-  worklet_wasm_load_state_ = LoadState::kSuccess;
+  if (error_msg.has_value())
+    load_code_error_msgs_.push_back(std::move(error_msg.value()));
+
   v8_runner_->PostTask(FROM_HERE,
                        base::BindOnce(&BidderWorklet::V8State::SetWasmHelper,
                                       base::Unretained(v8_state_.get()),
@@ -811,12 +788,8 @@ void BidderWorklet::OnTrustedBiddingSignalsDownloaded(
 
 void BidderWorklet::GenerateBidIfReady(GenerateBidTaskList::iterator task) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
-  // Script or WASM load failure should abort all tasks before getting here.
-  LoadState code_load_state = CodeLoadState();
-  DCHECK_NE(code_load_state, LoadState::kFailure);
-  if (task->trusted_bidding_signals || code_load_state != LoadState::kSuccess) {
+  if (task->trusted_bidding_signals || !IsCodeReady())
     return;
-  }
 
   // Other than the callback field, no fields of `task` are needed after this
   // point, so can consume them instead of copying them.
@@ -855,20 +828,6 @@ void BidderWorklet::RunReportWin(ReportWinTaskList::iterator task) {
                          weak_ptr_factory_.GetWeakPtr(), task)));
 }
 
-void BidderWorklet::FailAllPendingTasks() {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
-  while (!generate_bid_tasks_.empty()) {
-    DeliverBidCallbackOnUserThread(generate_bid_tasks_.begin(),
-                                   mojom::BidderWorkletBidPtr(),
-                                   /*error_msgs=*/std::vector<std::string>());
-  }
-  while (!report_win_tasks_.empty()) {
-    DeliverReportWinOnUserThread(report_win_tasks_.begin(),
-                                 /*report_url=*/absl::nullopt,
-                                 /*errors=*/std::vector<std::string>());
-  }
-}
-
 void BidderWorklet::DeliverBidCallbackOnUserThread(
     GenerateBidTaskList::iterator task,
     mojom::BidderWorkletBidPtr bid,
@@ -896,19 +855,11 @@ void BidderWorklet::DeliverReportWinOnUserThread(
   report_win_tasks_.erase(task);
 }
 
-BidderWorklet::LoadState BidderWorklet::CodeLoadState() const {
-  if (worklet_js_load_state_ == LoadState::kFailure ||
-      worklet_wasm_load_state_ == LoadState::kFailure) {
-    return LoadState::kFailure;
-  }
-
-  if (worklet_js_load_state_ == LoadState::kLoading ||
-      worklet_wasm_load_state_ == LoadState::kLoading) {
-    return LoadState::kLoading;
-  }
-  DCHECK_EQ(worklet_js_load_state_, LoadState::kSuccess);
-  DCHECK_EQ(worklet_wasm_load_state_, LoadState::kSuccess);
-  return LoadState::kSuccess;
+bool BidderWorklet::IsCodeReady() const {
+  // If `paused_`, loading hasn't started yet. Otherwise, null loaders indicate
+  // the worklet script has loaded successfully, and there's no WASM helper, or
+  // it has also loaded successfully.
+  return !paused_ && !worklet_loader_ && !wasm_loader_;
 }
 
 }  // namespace auction_worklet

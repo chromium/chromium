@@ -303,7 +303,7 @@ void AuctionRunner::OnBidderWorkletProcessReceived(BidState* bid_state) {
   bid_state->state = BidState::State::kGeneratingBid;
   LoadBidderWorklet(*bid_state,
                     /*disconnect_handler=*/base::BindOnce(
-                        &AuctionRunner::OnGenerateBidCrashed,
+                        &AuctionRunner::OnBidderWorkletDisconnected,
                         base::Unretained(this), bid_state));
   const blink::InterestGroup& interest_group = bid_state->bidder.interest_group;
   bid_state->bidder_worklet->GenerateBid(
@@ -318,11 +318,20 @@ void AuctionRunner::OnBidderWorkletProcessReceived(BidState* bid_state) {
                      base::Unretained(this), bid_state));
 }
 
-void AuctionRunner::OnGenerateBidCrashed(BidState* state) {
+void AuctionRunner::OnBidderWorkletDisconnected(
+    BidState* state,
+    uint32_t custom_reason,
+    const std::string& description) {
+  std::vector<std::string> errors;
+  if (description.empty()) {
+    errors.emplace_back(
+        base::StrCat({state->bidder.interest_group.bidding_url->spec(),
+                      " crashed while trying to run generateBid()."}));
+  } else {
+    errors.push_back(description);
+  }
   OnGenerateBidComplete(state, auction_worklet::mojom::BidderWorkletBidPtr(),
-                        std::vector<std::string>{base::StrCat(
-                            {state->bidder.interest_group.bidding_url->spec(),
-                             " crashed while trying to run generateBid()."})});
+                        errors);
 }
 
 void AuctionRunner::OnGenerateBidComplete(
@@ -563,12 +572,9 @@ void AuctionRunner::ReportBidWin(
 
   // Load the script for the top-scoring bidder worklet again, and invoke its
   // ReportWin() method.
-  LoadBidderWorklet(
-      *top_bidder_, /*disconnect_handler=*/base::BindOnce(
-          &AuctionRunner::FailAuction, base::Unretained(this),
-          AuctionResult::kWinningBidderWorkletCrashed,
-          base::StrCat({top_bidder_->bidder.interest_group.bidding_url->spec(),
-                        " crashed while trying to run reportWin()."})));
+  LoadBidderWorklet(*top_bidder_, /*disconnect_handler=*/base::BindOnce(
+                        &AuctionRunner::WinningBidderWorkletDisconnected,
+                        base::Unretained(this)));
   top_bidder_->bidder_worklet->ReportWin(
       top_bidder_->bidder.interest_group.name,
       auction_config_->shareable_auction_ad_config->auction_signals,
@@ -591,6 +597,24 @@ void AuctionRunner::OnReportBidWinComplete(
   bidder_report_url_ = bidder_report_url;
   errors_.insert(errors_.end(), errors.begin(), errors.end());
   ReportSuccess();
+}
+
+void AuctionRunner::WinningBidderWorkletDisconnected(
+    uint32_t custom_reason,
+    const std::string& description) {
+  std::vector<std::string> errors;
+  if (description.empty()) {
+    // Empty `description` means the process crashed.
+    FailAuction(
+        AuctionResult::kWinningBidderWorkletCrashed,
+        {base::StrCat({top_bidder_->bidder.interest_group.bidding_url->spec(),
+                       " crashed while trying to run reportWin()."})});
+  } else {
+    // Non-empty `description` means there was a different error (e.g., script
+    // failed to load). This currently does not fail the auction.
+    errors_.push_back(description);
+    ReportSuccess();
+  }
 }
 
 void AuctionRunner::ReportSuccess() {
@@ -661,8 +685,9 @@ void AuctionRunner::RecordResult(AuctionResult result) const {
   }
 }
 
-void AuctionRunner::LoadBidderWorklet(BidState& bid_state,
-                                      base::OnceClosure disconnect_handler) {
+void AuctionRunner::LoadBidderWorklet(
+    BidState& bid_state,
+    mojo::ConnectionErrorWithReasonCallback disconnect_handler) {
   const blink::InterestGroup& interest_group = bid_state.bidder.interest_group;
 
   mojo::PendingRemote<network::mojom::URLLoaderFactory> url_loader_factory;
@@ -691,7 +716,7 @@ void AuctionRunner::LoadBidderWorklet(BidState& bid_state,
       interest_group.bidding_wasm_helper_url,
       interest_group.trusted_bidding_signals_url,
       browser_signals_->top_frame_origin);
-  bid_state.bidder_worklet.set_disconnect_handler(
+  bid_state.bidder_worklet.set_disconnect_with_reason_handler(
       std::move(disconnect_handler));
 }
 

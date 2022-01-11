@@ -21,6 +21,7 @@
 #include "content/services/auction_worklet/public/mojom/auction_worklet_service.mojom.h"
 #include "content/services/auction_worklet/public/mojom/bidder_worklet.mojom.h"
 #include "content/services/auction_worklet/public/mojom/seller_worklet.mojom.h"
+#include "mojo/public/cpp/bindings/connection_error_callback.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/network/public/mojom/client_security_state.mojom-forward.h"
 #include "services/network/public/mojom/url_loader_factory.mojom-forward.h"
@@ -266,7 +267,9 @@ class CONTENT_EXPORT AuctionRunner {
   // bid.
   void OnBidderWorkletProcessReceived(BidState* bid_state);
 
-  void OnGenerateBidCrashed(BidState* state);
+  void OnBidderWorkletDisconnected(BidState* state,
+                                   uint32_t custom_reason,
+                                   const std::string& description);
   void OnGenerateBidComplete(BidState* state,
                              auction_worklet::mojom::BidderWorkletBidPtr bid,
                              const std::vector<std::string>& errors);
@@ -305,6 +308,11 @@ class CONTENT_EXPORT AuctionRunner {
   void OnReportBidWinComplete(const absl::optional<GURL>& bidder_report_url,
                               const std::vector<std::string>& error_msgs);
 
+  // Called when the BidderWorklet that won an auction is disconnected during
+  // the ReportWin() call.
+  void WinningBidderWorkletDisconnected(uint32_t custom_reason,
+                                        const std::string& description);
+
   // Completes the auction, invoking `callback_` and preventing any future
   // calls into `this` by closing mojo pipes and disposing of weak pointers. The
   // owner must be able to safely delete `this` when the callback is invoked.
@@ -319,8 +327,9 @@ class CONTENT_EXPORT AuctionRunner {
 
   // Loads a bidder worklet for `bid_state`, setting the provided disconnect
   // handler.
-  void LoadBidderWorklet(BidState& bid_state,
-                         base::OnceClosure disconnect_handler);
+  void LoadBidderWorklet(
+      BidState& bid_state,
+      mojo::ConnectionErrorWithReasonCallback disconnect_handler);
 
   const raw_ptr<Delegate> delegate_;
   const raw_ptr<InterestGroupManager> interest_group_manager_;

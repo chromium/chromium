@@ -32,11 +32,12 @@ interface AuctionWorkletService {
   // the DevTools hooks restrict sharing to auctions within a single
   // RenderFrame.
   //
-  // There is no return value - any error loading the worklet script may only be
-  // learned from the BidderWorklet API itself, when trying to run a script.
-  // This reduces roundtrips, and allows fetching per-auction bidding signals
-  // URL in parallel with fetching the bidding worklet script. It also makes the
-  // API more robust, not having any invocation ordering requirements.
+  // All methods may be invoked immediately upon creation. If there's a pending
+  // load of the script, callbacks will be delayed until it completes.
+  //
+  // On load error, the worklet will close its pipe with a reason string. The
+  // reason string, and worklet errors messages more generally, are considered
+  // privileged and should not be passed to renderer processes.
   //
   // Arguments:
   // `bidder_worklet` The pipe to communicate with the BidderWorklet. Closing
