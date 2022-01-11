@@ -22,12 +22,6 @@ source_set("browser") {
   frameworks = [ "CoreLocation.framework" ]
 }
 
-source_set("font_size_java_script_feature") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [ "font_size_java_script_feature.h" ]
-  public_deps = [ "//ios/chrome/browser/web/font_size" ]
-}
-
 group("provider_api") {
   deps = [
     # The individual APIs.

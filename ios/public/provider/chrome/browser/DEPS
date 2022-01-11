@@ -12,9 +12,3 @@ include_rules = [
   # provider is not allowed to depends on //ios/chrome.
   "-ios/public/provider/chrome/browser/browser_state/chrome_browser_state.h",
 ]
-
-specific_include_rules = {
-  "font_size_java_script_feature.h": [
-    "+ios/chrome/browser/web/font_size/font_size_java_script_feature.h"
-  ]
-}
