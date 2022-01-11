@@ -44,8 +44,12 @@ GeneratedCodeCacheContext::GeneratedCodeCacheContext() {
   DETACH_FROM_SEQUENCE(sequence_checker_);
   if (base::FeatureList::IsEnabled(
           features::kNavigationThreadingOptimizations)) {
-    task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
-        {base::TaskPriority::USER_VISIBLE});
+    if (base::FeatureList::IsEnabled(features::kThreadingOptimizationsOnIO)) {
+      task_runner_ = GetIOThreadTaskRunner({});
+    } else {
+      task_runner_ = base::ThreadPool::CreateSingleThreadTaskRunner(
+          {base::TaskPriority::USER_BLOCKING});
+    }
   } else {
     task_runner_ = GetUIThreadTaskRunner({});
   }
