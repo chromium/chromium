@@ -104,6 +104,7 @@ enum AXTextSource {
 };
 
 enum AXIgnoredReason {
+  kAXActiveFullscreenElement,
   kAXActiveModalDialog,
   kAXAriaModalDialog,
   kAXAriaHiddenElement,

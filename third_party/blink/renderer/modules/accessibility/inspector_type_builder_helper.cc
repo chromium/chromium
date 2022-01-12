@@ -20,6 +20,8 @@ std::unique_ptr<AXProperty> CreateProperty(const String& name,
 
 String IgnoredReasonName(AXIgnoredReason reason) {
   switch (reason) {
+    case kAXActiveFullscreenElement:
+      return "activeFullscreenElement";
     case kAXActiveModalDialog:
       return "activeModalDialog";
     case kAXAriaModalDialog:

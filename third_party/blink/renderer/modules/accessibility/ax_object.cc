@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/fullscreen/fullscreen.h"
 #include "third_party/blink/renderer/core/html/canvas/html_canvas_element.h"
 #include "third_party/blink/renderer/core/html/custom/element_internals.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
@@ -119,6 +120,8 @@ namespace {
 // inspector_type_builder_helper.cc.
 String IgnoredReasonName(AXIgnoredReason reason) {
   switch (reason) {
+    case kAXActiveFullscreenElement:
+      return "activeFullscreenElement";
     case kAXActiveModalDialog:
       return "activeModalDialog";
     case kAXAriaModalDialog:
@@ -461,10 +464,6 @@ static Vector<AtomicString>* CreateARIARoleNameVector() {
   }
 
   return role_name_vector;
-}
-
-HTMLDialogElement* GetActiveDialogElement(Node* node) {
-  return node->GetDocument().ActiveModalDialog();
 }
 
 void AddIntListAttributeFromObjects(ax::mojom::blink::IntListAttribute attr,
@@ -2561,16 +2560,10 @@ bool AXObject::ComputeIsInertViaStyle(const ComputedStyle* style,
   if (style) {
     if (style->IsInert()) {
       if (ignored_reasons) {
-        HTMLDialogElement* dialog = GetActiveDialogElement(GetNode());
-        if (dialog) {
-          AXObject* dialog_object = AXObjectCache().GetOrCreate(dialog);
-          if (dialog_object) {
-            ignored_reasons->push_back(
-                IgnoredReason(kAXActiveModalDialog, dialog_object));
-          } else {
-            ignored_reasons->push_back(IgnoredReason(kAXInertElement));
-          }
-        } else {
+        // The 'inert' attribute sets forced inertness, which cannot be escaped
+        // by descendants (see details in computed_style_extra_fields.json5).
+        // So we only need to check InertRoot() if inertness is forced.
+        if (style->IsForcedInert()) {
           const AXObject* inert_root_el = InertRoot();
           if (inert_root_el == this) {
             ignored_reasons->push_back(IgnoredReason(kAXInertElement));
@@ -2578,7 +2571,27 @@ bool AXObject::ComputeIsInertViaStyle(const ComputedStyle* style,
             ignored_reasons->push_back(
                 IgnoredReason(kAXInertSubtree, inert_root_el));
           }
+          return true;
         }
+        // If the inertness is overridable, it must have been set by a modal
+        // dialog or a fullscreen element (see AdjustStyleForInert).
+        Document& document = GetNode()->GetDocument();
+        if (HTMLDialogElement* dialog = document.ActiveModalDialog()) {
+          if (AXObject* dialog_object = AXObjectCache().GetOrCreate(dialog)) {
+            ignored_reasons->push_back(
+                IgnoredReason(kAXActiveModalDialog, dialog_object));
+            return true;
+          }
+        } else if (Element* fullscreen =
+                       Fullscreen::FullscreenElementFrom(document)) {
+          if (AXObject* fullscreen_object =
+                  AXObjectCache().GetOrCreate(fullscreen)) {
+            ignored_reasons->push_back(
+                IgnoredReason(kAXActiveFullscreenElement, fullscreen_object));
+            return true;
+          }
+        }
+        ignored_reasons->push_back(IgnoredReason(kAXInertElement));
       }
       return true;
     } else if (IsBlockedByAriaModalDialog(ignored_reasons)) {
