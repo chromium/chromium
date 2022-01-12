@@ -51,44 +51,22 @@ base::Value& ValueSetListKey(base::Value& v, rust::Str key) {
                    base::Value(base::Value::Type::LIST));
 }
 
-template <typename T>
-base::Value& DoSetVecItem(base::Value& v, size_t pos, T value) {
-  if (v.GetList().size() < pos + 1) {
-    auto list = std::move(v).TakeList();
-    list.resize(pos + 1);
-    v = base::Value(std::move(list));
-  }
-  auto list2 = v.GetList();
-  list2[pos] = base::Value(std::move(value));
-  return list2[pos];
+void ValueAppendNone(base::Value& v) {
+  v.Append(base::Value(base::Value::Type::NONE));
 }
 
-void ValueSetNoneElement(base::Value& v, size_t pos) {
-  DoSetVecItem(v, pos, base::Value::Type::NONE);
+void ValueAppendString(base::Value& v, rust::Str value) {
+  v.Append(base::RustStrToStringPiece(value));
 }
 
-void ValueSetBoolElement(base::Value& v, size_t pos, bool value) {
-  DoSetVecItem(v, pos, value);
+base::Value& ValueAppendDict(base::Value& v) {
+  v.Append(base::Value(base::Value::Type::DICTIONARY));
+  return v.GetList().back();
 }
 
-void ValueSetIntegerElement(base::Value& v, size_t pos, int value) {
-  DoSetVecItem(v, pos, value);
-}
-
-void ValueSetDoubleElement(base::Value& v, size_t pos, double value) {
-  DoSetVecItem(v, pos, value);
-}
-
-void ValueSetStringElement(base::Value& v, size_t pos, rust::Str value) {
-  DoSetVecItem(v, pos, base::RustStrToStringPiece(value));
-}
-
-base::Value& ValueSetDictElement(base::Value& v, size_t pos) {
-  return DoSetVecItem(v, pos, base::Value::Type::DICTIONARY);
-}
-
-base::Value& ValueSetListElement(base::Value& v, size_t pos) {
-  return DoSetVecItem(v, pos, base::Value::Type::LIST);
+base::Value& ValueAppendList(base::Value& v) {
+  v.Append(base::Value(base::Value::Type::LIST));
+  return v.GetList().back();
 }
 
 void ValueReserveSize(base::Value& v, size_t len) {

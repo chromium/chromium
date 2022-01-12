@@ -25,8 +25,17 @@ pub(crate) mod ffi {
         #[namespace=base]
         type Value;
 
-        // Free functions in C++ because none of the base::Value methods
-        // precisely line up with what we need in Rust.
+        // Bindings to existing base::Value methods which happen to
+        // line up with our needs precisely.
+        #[cxx_name = "Append"]
+        fn ValueAppendBool(self: Pin<&mut Value>, val: bool);
+        #[cxx_name = "Append"]
+        fn ValueAppendInteger(self: Pin<&mut Value>, val: i32);
+        #[cxx_name = "Append"]
+        fn ValueAppendDouble(self: Pin<&mut Value>, val: f64);
+
+        // Free functions in C++ for cases where existing base::Value
+        // APIs don't quite match our needs.
 
         // Set a key on a base::Value of type DICTIONARY to the given
         // value.
@@ -40,17 +49,13 @@ pub(crate) mod ffi {
         // Returns a new child base::Value, of type LIST.
         fn ValueSetListKey<'a>(v: Pin<&'a mut Value>, key: &str) -> Pin<&'a mut Value>;
 
-        // Set a given element of a base::Value of type LIST to the given
-        // value.
-        fn ValueSetNoneElement(v: Pin<&mut Value>, pos: usize);
-        fn ValueSetBoolElement(v: Pin<&mut Value>, pos: usize, val: bool);
-        fn ValueSetIntegerElement(v: Pin<&mut Value>, pos: usize, val: i32);
-        fn ValueSetDoubleElement(v: Pin<&mut Value>, pos: usize, val: f64);
-        fn ValueSetStringElement(v: Pin<&mut Value>, pos: usize, value: &str);
+        // Appends to a base::Value of type LIST.
+        fn ValueAppendNone(v: Pin<&mut Value>);
+        fn ValueAppendString(v: Pin<&mut Value>, value: &str);
         // Returns a new child base::Value, of type DICTIONARY.
-        fn ValueSetDictElement(v: Pin<&mut Value>, pos: usize) -> Pin<&mut Value>;
+        fn ValueAppendDict(v: Pin<&mut Value>) -> Pin<&mut Value>;
         // Returns a new child base::Value, of type LIST.
-        fn ValueSetListElement(v: Pin<&mut Value>, pos: usize) -> Pin<&mut Value>;
+        fn ValueAppendList(v: Pin<&mut Value>) -> Pin<&mut Value>;
         fn ValueReserveSize(v: Pin<&mut Value>, len: usize);
 
         /// Represents a slot (on stack or heap) into which a new

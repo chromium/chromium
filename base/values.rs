@@ -77,42 +77,42 @@ impl<'a> ListValueRef<'a> {
         self.0.as_mut()
     }
 
-    /// Sets a list item to a value of type `base::Value::Type::NONE`. Grows
+    /// Appends a value of type `base::Value::Type::NONE`. Grows
     /// the list as necessary.
-    pub fn set_none_element(&mut self, pos: usize) {
-        rs_glue::ffi::ValueSetNoneElement(self.raw_mut(), pos);
+    pub fn append_none(&mut self) {
+        rs_glue::ffi::ValueAppendNone(self.raw_mut());
     }
 
-    /// Sets a list item to a Boolean. Grows the list as necessary.
-    pub fn set_bool_element(&mut self, pos: usize, val: bool) {
-        rs_glue::ffi::ValueSetBoolElement(self.raw_mut(), pos, val);
+    /// Appends a Boolean. Grows the list as necessary.
+    pub fn append_bool(&mut self, val: bool) {
+        self.raw_mut().ValueAppendBool(val)
     }
 
-    /// Sets a list item to an integer. Grows the list as necessary.
-    pub fn set_integer_element(&mut self, pos: usize, val: i32) {
-        rs_glue::ffi::ValueSetIntegerElement(self.raw_mut(), pos, val);
+    /// Appends an integer. Grows the list as necessary.
+    pub fn append_integer(&mut self, val: i32) {
+        self.raw_mut().ValueAppendInteger(val)
     }
 
-    /// Sets a list item to a double. Grows the list as necessary.
-    pub fn set_double_element(&mut self, pos: usize, val: f64) {
-        rs_glue::ffi::ValueSetDoubleElement(self.raw_mut(), pos, val);
+    /// Appends a double. Grows the list as necessary.
+    pub fn append_double(&mut self, val: f64) {
+        self.raw_mut().ValueAppendDouble(val)
     }
 
-    /// Sets a list item to a new dictionary, and returns a reference to it.
+    /// Appends a string. Grows the list as necessary.
+    pub fn append_string(&mut self, val: &str) {
+        rs_glue::ffi::ValueAppendString(self.raw_mut(), val);
+    }
+
+    /// Appends a new dictionary, and returns a reference to it.
     /// Grows the list as necessary.
-    pub fn set_dict_element(&mut self, pos: usize) -> DictValueRef {
-        rs_glue::ffi::ValueSetDictElement(self.raw_mut(), pos).into()
+    pub fn append_dict(&mut self) -> DictValueRef {
+        rs_glue::ffi::ValueAppendDict(self.raw_mut()).into()
     }
 
-    /// Sets a list item to a string. Grows the list as necessary.
-    pub fn set_string_element(&mut self, pos: usize, val: &str) {
-        rs_glue::ffi::ValueSetStringElement(self.raw_mut(), pos, val);
-    }
-
-    /// Sets a list item to a new list, and returns a reference to it. Grows
+    /// Appends a new list, and returns a reference to it. Grows
     /// the list as necessary.
-    pub fn set_list_element(&mut self, pos: usize) -> ListValueRef {
-        rs_glue::ffi::ValueSetListElement(self.raw_mut(), pos).into()
+    pub fn append_list(&mut self) -> ListValueRef {
+        rs_glue::ffi::ValueAppendList(self.raw_mut()).into()
     }
 
     /// Reserves space for a given number of elements within a list. This is
@@ -233,7 +233,7 @@ mod tests {
         d.set_integer_key("fins", 2);
         d.set_double_key("bouyancy", 1.0);
         let mut nested_list = d.set_list_key("scales");
-        nested_list.set_string_element(0, "sea major");
+        nested_list.append_string("sea major");
         let mut nested_dict = d.set_dict_key("taxonomy");
         nested_dict.set_string_key("kingdom", "animalia");
         nested_dict.set_string_key("phylum", "chordata");
@@ -250,15 +250,15 @@ mod tests {
         let mut v = ValueSlotRef::from(&mut v);
         let mut l = v.construct_list();
         l.reserve_size(5);
-        l.set_bool_element(0, false);
-        l.set_none_element(1);
-        l.set_double_element(2, 2.0);
-        l.set_integer_element(3, 4);
-        let mut nested_list = l.set_list_element(4);
-        nested_list.set_none_element(0);
-        let mut nested_dict = l.set_dict_element(5);
+        l.append_bool(false);
+        l.append_none();
+        l.append_double(2.0);
+        l.append_integer(4);
+        let mut nested_list = l.append_list();
+        nested_list.append_none();
+        let mut nested_dict = l.append_dict();
         nested_dict.set_string_key("a", "b");
-        l.set_string_element(6, "hello");
+        l.append_string("hello");
         assert_eq!(
             format!("{:?}", v),
             "[ false, null, 2.0, 4, [ null ], {\n   \"a\": \"b\"\n}, \"hello\" ]\n"

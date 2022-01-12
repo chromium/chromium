@@ -15,7 +15,7 @@ namespace rs_glue {
 
 // This file has functions which are called from Rust code to populate
 // bits of a base::Value. The functions exist because Rust C++ FFI
-// is not yet quite good enough to operate on a base::Value directly
+// is not yet always good enough to operate on a base::Value directly
 // without these intermediate layer. With future inprovements in interop,
 // they may disappear.
 
@@ -30,13 +30,10 @@ void ValueSetDoubleKey(base::Value& v, rust::Str key, double value);
 void ValueSetStringKey(base::Value& v, rust::Str key, rust::Str value);
 base::Value& ValueSetDictKey(base::Value& v, rust::Str key);
 base::Value& ValueSetListKey(base::Value& v, rust::Str key);
-void ValueSetNoneElement(base::Value& v, size_t pos);
-void ValueSetBoolElement(base::Value& v, size_t pos, bool value);
-void ValueSetIntegerElement(base::Value& v, size_t pos, int value);
-void ValueSetDoubleElement(base::Value& v, size_t pos, double value);
-void ValueSetStringElement(base::Value& v, size_t pos, rust::Str value);
-base::Value& ValueSetDictElement(base::Value& v, size_t pos);
-base::Value& ValueSetListElement(base::Value& v, size_t pos);
+void ValueAppendNone(base::Value& v);
+void ValueAppendString(base::Value& v, rust::Str value);
+base::Value& ValueAppendDict(base::Value& v);
+base::Value& ValueAppendList(base::Value& v);
 void ValueReserveSize(base::Value& v, size_t len);
 std::unique_ptr<ValueSlot> NewValueSlot();
 rust::String DumpValueSlot(const ValueSlot& v);
