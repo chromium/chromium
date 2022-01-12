@@ -27,8 +27,10 @@
 #include "components/viz/service/frame_sinks/video_capture/in_flight_frame_delivery.h"
 #include "components/viz/service/frame_sinks/video_capture/video_capture_overlay.h"
 #include "components/viz/service/frame_sinks/video_capture/video_frame_pool.h"
+#include "components/viz/service/viz_service_export.h"
 #include "media/base/video_frame.h"
 #include "media/capture/content/video_capture_oracle.h"
+#include "media/video/renderable_gpu_memory_buffer_video_frame_pool.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -46,6 +48,7 @@ namespace viz {
 
 class CopyOutputResult;
 class FrameSinkVideoCapturerManager;
+class GmbVideoFramePoolContextProvider;
 
 // Captures the frames of a CompositorFrameSink's surface as a video stream. See
 // mojom for usage details.
@@ -74,11 +77,14 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
       public VideoCaptureOverlay::FrameSource,
       public mojom::FrameSinkVideoCapturer {
  public:
+  using GpuMemoryBufferVideoFramePoolContext =
+      media::RenderableGpuMemoryBufferVideoFramePool::Context;
   // |frame_sink_manager| must outlive this instance. Binds this instance to the
   // Mojo message pipe endpoint in |receiver|, but |receiver| may be empty for
   // unit testing.
   FrameSinkVideoCapturerImpl(
       FrameSinkVideoCapturerManager* frame_sink_manager,
+      GmbVideoFramePoolContextProvider* gmb_video_frame_pool_context_provider,
       mojo::PendingReceiver<mojom::FrameSinkVideoCapturer> receiver,
       std::unique_ptr<media::VideoCaptureOracle> oracle,
       bool log_to_webrtc);
@@ -377,6 +383,9 @@ class VIZ_SERVICE_EXPORT FrameSinkVideoCapturerImpl final
   //
   // Note: This is always set, but the instance is overridden for unit testing.
   absl::optional<base::OneShotTimer> refresh_frame_retry_timer_;
+
+  raw_ptr<GmbVideoFramePoolContextProvider>
+      gmb_video_frame_pool_context_provider_;
 
   // Provides a pool of VideoFrames that can be efficiently delivered across
   // processes. The size of this pool is used to limit the maximum number of

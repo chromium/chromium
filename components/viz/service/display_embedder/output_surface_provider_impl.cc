@@ -75,13 +75,13 @@ OutputSurfaceProviderImpl::OutputSurfaceProviderImpl(
     GpuServiceImpl* gpu_service_impl,
     gpu::CommandBufferTaskExecutor* task_executor,
     gpu::GpuChannelManagerDelegate* gpu_channel_manager_delegate,
-    std::unique_ptr<gpu::GpuMemoryBufferManager> gpu_memory_buffer_manager,
+    gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     gpu::ImageFactory* image_factory,
     bool headless)
     : gpu_service_impl_(gpu_service_impl),
       task_executor_(task_executor),
       gpu_channel_manager_delegate_(gpu_channel_manager_delegate),
-      gpu_memory_buffer_manager_(std::move(gpu_memory_buffer_manager)),
+      gpu_memory_buffer_manager_(gpu_memory_buffer_manager),
       image_factory_(image_factory),
       task_runner_(base::ThreadTaskRunnerHandle::Get()),
       headless_(headless) {}

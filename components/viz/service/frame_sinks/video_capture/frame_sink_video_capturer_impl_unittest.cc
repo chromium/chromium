@@ -464,7 +464,8 @@ class FrameSinkVideoCapturerTest : public testing::Test {
         true /* enable_auto_throttling */);
     oracle_ = oracle.get();
     capturer_ = std::make_unique<FrameSinkVideoCapturerImpl>(
-        &frame_sink_manager_, mojo::NullReceiver(), std::move(oracle), false);
+        &frame_sink_manager_, nullptr, mojo::NullReceiver(), std::move(oracle),
+        false);
   }
 
   void SetUp() override {

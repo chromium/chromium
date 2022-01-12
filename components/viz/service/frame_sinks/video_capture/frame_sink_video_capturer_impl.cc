@@ -71,6 +71,7 @@ constexpr float FrameSinkVideoCapturerImpl::kTargetPipelineUtilization;
 
 FrameSinkVideoCapturerImpl::FrameSinkVideoCapturerImpl(
     FrameSinkVideoCapturerManager* frame_sink_manager,
+    GmbVideoFramePoolContextProvider* gmb_video_frame_pool_context_provider,
     mojo::PendingReceiver<mojom::FrameSinkVideoCapturer> receiver,
     std::unique_ptr<media::VideoCaptureOracle> oracle,
     bool log_to_webrtc)
@@ -78,6 +79,8 @@ FrameSinkVideoCapturerImpl::FrameSinkVideoCapturerImpl(
       copy_request_source_(base::UnguessableToken::Create()),
       clock_(base::DefaultTickClock::GetInstance()),
       oracle_(std::move(oracle)),
+      gmb_video_frame_pool_context_provider_(
+          gmb_video_frame_pool_context_provider),
       frame_pool_(
           std::make_unique<SharedMemoryVideoFramePool>(kFramePoolCapacity)),
       feedback_weak_factory_(oracle_.get()),

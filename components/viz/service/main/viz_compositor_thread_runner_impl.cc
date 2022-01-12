@@ -21,6 +21,7 @@
 #include "components/viz/service/display_embedder/output_surface_provider_impl.h"
 #include "components/viz/service/display_embedder/server_shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/frame_sink_manager_impl.h"
+#include "components/viz/service/frame_sinks/gmb_video_frame_pool_context_provider_impl.h"
 #include "components/viz/service/gl/gpu_service_impl.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/config/gpu_switches.h"
@@ -160,14 +161,20 @@ void VizCompositorThreadRunnerImpl::CreateFrameSinkManagerOnCompositorThread(
   if (task_executor) {
     DCHECK(gpu_service);
     // Create OutputSurfaceProvider usable for GPU + software compositing.
-    auto gpu_memory_buffer_manager =
+    gpu_memory_buffer_manager_ =
         std::make_unique<InProcessGpuMemoryBufferManager>(
             gpu_service->gpu_memory_buffer_factory(),
             gpu_service->sync_point_manager());
     auto* image_factory = gpu_service->gpu_image_factory();
     output_surface_provider_ = std::make_unique<OutputSurfaceProviderImpl>(
         gpu_service, task_executor, gpu_service,
-        std::move(gpu_memory_buffer_manager), image_factory, headless);
+        gpu_memory_buffer_manager_.get(), image_factory, headless);
+
+    // Create video frame pool context provider that will enable the frame sink
+    // manager to create GMB-backed video frames.
+    gmb_video_frame_pool_context_provider_ =
+        std::make_unique<GmbVideoFramePoolContextProviderImpl>(
+            gpu_service, gpu_memory_buffer_manager_.get());
   } else {
     // Create OutputSurfaceProvider usable for software compositing only.
     output_surface_provider_ =
@@ -184,6 +191,8 @@ void VizCompositorThreadRunnerImpl::CreateFrameSinkManagerOnCompositorThread(
         params->activation_deadline_in_frames;
   }
   init_params.output_surface_provider = output_surface_provider_.get();
+  init_params.gmb_context_provider =
+      gmb_video_frame_pool_context_provider_.get();
   init_params.restart_id = params->restart_id;
   init_params.run_all_compositor_stages_before_draw =
       run_all_compositor_stages_before_draw;
@@ -209,6 +218,7 @@ void VizCompositorThreadRunnerImpl::TearDownOnCompositorThread() {
 
   frame_sink_manager_.reset();
   output_surface_provider_.reset();
+  gpu_memory_buffer_manager_.reset();
   server_shared_bitmap_manager_.reset();
 }
 
