@@ -13,7 +13,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/buildflags/buildflags.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/download/download_shelf_controller.h"
 #endif
 
@@ -77,7 +77,7 @@ class DownloadCoreServiceImpl : public DownloadCoreService {
   // should be destroyed before the latter.
   std::unique_ptr<DownloadUIController> download_ui_;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<DownloadShelfController> download_shelf_controller_;
 #endif
 

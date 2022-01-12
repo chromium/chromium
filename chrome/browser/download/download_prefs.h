@@ -121,8 +121,8 @@ class DownloadPrefs {
   // Disables auto-open based on file extension.
   void DisableAutoOpenByUserBasedOnExtension(const base::FilePath& file_name);
 
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
   // Store the user preference to disk. If |should_open| is true, also disable
   // the built-in PDF plugin. If |should_open| is false, enable the PDF plugin.
   void SetShouldOpenPdfInSystemReader(bool should_open);
@@ -152,7 +152,7 @@ class DownloadPrefs {
   raw_ptr<Profile> profile_;
 
   BooleanPrefMember prompt_for_download_;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   IntegerPrefMember prompt_for_download_android_;
   IntegerPrefMember prompt_for_download_later_;
 #endif
@@ -180,8 +180,8 @@ class DownloadPrefs {
 
   std::unique_ptr<policy::URLBlocklist> auto_open_allowed_by_urls_;
 
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
   bool should_open_pdf_in_system_reader_;
 #endif
 

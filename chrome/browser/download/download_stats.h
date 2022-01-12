@@ -170,18 +170,18 @@ void RecordDownloadShelfDragEvent(DownloadShelfDragEvent drag_event);
 
 void RecordDownloadStartPerProfileType(Profile* profile);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Records whether the download dialog is shown to the user.
 void RecordDownloadPromptStatus(DownloadPromptStatus status);
 
 // Records whether the download later dialog is shown to the user.
 void RecordDownloadLaterPromptStatus(DownloadLaterPromptStatus status);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Records that a notification for a download was suppressed.
 void RecordDownloadNotificationSuppressed();
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 enum class DownloadShelfContextMenuAction {
   // Drop down button for download shelf context menu is visible

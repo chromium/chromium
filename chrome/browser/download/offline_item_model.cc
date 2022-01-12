@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "chrome/browser/download/offline_item_model_manager.h"
 #include "chrome/browser/offline_items_collection/offline_content_aggregator_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -250,7 +251,7 @@ bool OfflineItemModel::ShouldPromoteOrigin() const {
   return offline_item_ && offline_item_->promote_origin;
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 bool OfflineItemModel::IsCommandEnabled(
     const DownloadCommands* download_commands,
     DownloadCommands::Command command) const {

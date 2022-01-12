@@ -56,7 +56,7 @@
 #include "chrome/common/chrome_paths_lacros.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/pdf/adobe_reader_info_win.h"
 #endif
 
@@ -70,14 +70,14 @@ namespace {
 // Consider downloads 'dangerous' if they go to the home directory on Linux and
 // to the desktop on any platform.
 bool DownloadPathIsDangerous(const base::FilePath& download_path) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   base::FilePath home_dir = base::GetHomeDir();
   if (download_path == home_dir) {
     return true;
   }
 #endif
 
-#if defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
   // Neither Fuchsia nor Android have a desktop dir.
   return false;
 #else
@@ -91,7 +91,7 @@ bool DownloadPathIsDangerous(const base::FilePath& download_path) {
 }
 
 base::FilePath::StringType StringToFilePathString(const std::string& src) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::UTF8ToWide(src);
 #else
   return src;
@@ -167,8 +167,8 @@ DownloadPrefs::DownloadPrefs(Profile* profile) : profile_(profile) {
                                 GetDefaultDownloadDirectoryForProfile()));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
   should_open_pdf_in_system_reader_ =
       prefs->GetBoolean(prefs::kOpenPdfDownloadInSystemReader);
 #endif
@@ -192,7 +192,7 @@ DownloadPrefs::DownloadPrefs(Profile* profile) : profile_(profile) {
   }
 
   prompt_for_download_.Init(prefs::kPromptForDownload, prefs);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   prompt_for_download_android_.Init(prefs::kPromptForDownloadAndroid, prefs);
   RecordDownloadPromptStatus(
       static_cast<DownloadPromptStatus>(*prompt_for_download_android_));
@@ -286,11 +286,11 @@ void DownloadPrefs::RegisterProfilePrefs(
                                  default_download_path);
   registry->RegisterFilePathPref(prefs::kSaveFileDefaultDirectory,
                                  default_download_path);
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
   registry->RegisterBooleanPref(prefs::kOpenPdfDownloadInSystemReader, false);
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   DownloadPromptStatus download_prompt_status =
       DownloadPromptStatus::SHOW_INITIAL;
 
@@ -376,7 +376,7 @@ bool DownloadPrefs::PromptForDownload() const {
   DCHECK(!download_path_.IsManaged() || !prompt_for_download_.GetValue());
 
 // Return the Android prompt for download only.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Use |prompt_for_download_| preference for enterprise policy.
   if (prompt_for_download_.IsManaged())
     return prompt_for_download_.GetValue();
@@ -391,7 +391,7 @@ bool DownloadPrefs::PromptForDownload() const {
 }
 
 bool DownloadPrefs::PromptDownloadLater() const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (prompt_for_download_.IsManaged())
     return false;
 
@@ -405,7 +405,7 @@ bool DownloadPrefs::PromptDownloadLater() const {
 }
 
 bool DownloadPrefs::HasDownloadLaterPromptShown() const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(download::features::kDownloadLater)) {
     return *prompt_for_download_later_ !=
            static_cast<int>(DownloadLaterPromptStatus::kShowInitial);
@@ -420,8 +420,8 @@ bool DownloadPrefs::IsDownloadPathManaged() const {
 }
 
 bool DownloadPrefs::IsAutoOpenByUserUsed() const {
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
   if (ShouldOpenPdfInSystemReader())
     return true;
 #endif
@@ -435,8 +435,8 @@ bool DownloadPrefs::IsAutoOpenEnabled(const GURL& url,
     return false;
   DCHECK(extension[0] == base::FilePath::kExtensionSeparator);
   extension.erase(0, 1);
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
   if (base::FilePath::CompareEqualIgnoreCase(extension,
                                              FILE_PATH_LITERAL("pdf")) &&
       ShouldOpenPdfInSystemReader())
@@ -490,8 +490,8 @@ void DownloadPrefs::DisableAutoOpenByUserBasedOnExtension(
   SaveAutoOpenState();
 }
 
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
 void DownloadPrefs::SetShouldOpenPdfInSystemReader(bool should_open) {
   if (should_open_pdf_in_system_reader_ == should_open)
     return;
@@ -501,7 +501,7 @@ void DownloadPrefs::SetShouldOpenPdfInSystemReader(bool should_open) {
 }
 
 bool DownloadPrefs::ShouldOpenPdfInSystemReader() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (IsAdobeReaderDefaultPDFViewer() &&
       !DownloadTargetDeterminer::IsAdobeReaderUpToDate()) {
       return false;
@@ -512,8 +512,8 @@ bool DownloadPrefs::ShouldOpenPdfInSystemReader() const {
 #endif
 
 void DownloadPrefs::ResetAutoOpenByUser() {
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
   SetShouldOpenPdfInSystemReader(false);
 #endif
   auto_open_by_user_.clear();
@@ -527,10 +527,10 @@ void DownloadPrefs::SkipSanitizeDownloadTargetPathForTesting() {
 void DownloadPrefs::SaveAutoOpenState() {
   std::string extensions;
   for (auto it : auto_open_by_user_) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // TODO(phajdan.jr): Why we're using Sys conversion here, but not in ctor?
     std::string this_extension = base::SysWideToUTF8(it);
-#else  // defined(OS_WIN)
+#else  // BUILDFLAG(IS_WIN)
     std::string this_extension = it;
 #endif
     extensions += this_extension + ":";

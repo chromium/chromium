@@ -196,7 +196,7 @@ struct MixedContentDownloadData {
     }
 
     // Extract extension.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     extension_ = base::WideToUTF8(path.FinalExtension());
 #else
     extension_ = path.FinalExtension();
@@ -339,7 +339,7 @@ bool IsDownloadPermittedByContentSettings(
     const absl::optional<url::Origin>& initiator) {
   // TODO(crbug.com/1048957): Checking content settings crashes unit tests on
   // Android. It shouldn't.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   ContentSettingsForOneType settings;
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile);

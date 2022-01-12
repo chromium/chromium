@@ -28,7 +28,7 @@ namespace {
 
 const char* kUserIDHash = "deadbeef";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 const char* kRelativeToDriveRoot = "/home/";
 #endif
 
@@ -71,7 +71,7 @@ TEST_F(DownloadDirPolicyHandlerTest, SetDownloadDirectory) {
   EXPECT_FALSE(value->GetBool());
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(DownloadDirPolicyHandlerTest, SetDownloadToDrive) {
   EXPECT_FALSE(store_->GetValue(prefs::kPromptForDownload, NULL));
 

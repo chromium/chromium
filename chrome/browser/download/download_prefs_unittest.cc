@@ -56,16 +56,16 @@ TEST(DownloadPrefsTest, RegisterPrefs) {
   content::BrowserTaskEnvironment task_environment_;
   base::HistogramTester histogram_tester;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(download::features::kDownloadLater);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Download prefs are registered when creating the profile.
   TestingProfile profile;
   DownloadPrefs prefs(&profile);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Download prompt prefs should be registered correctly.
   histogram_tester.ExpectBucketCount("MobileDownload.DownloadPromptStatus",
                                      DownloadPromptStatus::SHOW_INITIAL, 1);
@@ -81,7 +81,7 @@ TEST(DownloadPrefsTest, RegisterPrefs) {
           prefs::kDownloadLaterPromptStatus);
   EXPECT_EQ(download_later_prompt_status,
             static_cast<int>(DownloadLaterPromptStatus::kShowInitial));
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 TEST(DownloadPrefsTest, NoAutoOpenByUserForDisallowedFileTypes) {
@@ -413,7 +413,7 @@ TEST(DownloadPrefsTest, DefaultPathChangedToInvalidValue) {
             download_prefs.GetDefaultDownloadDirectory());
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 void ExpectValidDownloadDir(Profile* profile,
                             DownloadPrefs* prefs,
                             base::FilePath path) {
@@ -543,9 +543,9 @@ TEST(DownloadPrefsTest, DownloadDirSanitization) {
     EXPECT_EQ(prefs2.DownloadPath(), default_dir2);
   }
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST(DownloadPrefsTest, DownloadLaterPrefs) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(download::features::kDownloadLater);
@@ -597,6 +597,6 @@ TEST(DownloadPrefsTest, ManagedPromptForDownload) {
   EXPECT_FALSE(prefs.PromptForDownload());
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace

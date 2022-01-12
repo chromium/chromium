@@ -26,7 +26,7 @@
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #include "chrome/browser/download/android/download_manager_bridge.h"
 #include "chrome/browser/download/android/download_manager_service.h"
@@ -52,7 +52,7 @@ const int kThumbnailSizeInDP = 64;
 const base::TimeDelta kCheckExternallyRemovedDownloadsDelay =
     base::Milliseconds(100);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Invalid system download Id.
 const int kInvalidSystemDownloadId = -1;
 #endif
@@ -65,7 +65,7 @@ bool ShouldShowDownloadItem(const DownloadItem* item) {
 std::unique_ptr<OfflineItemShareInfo> CreateShareInfo(
     const DownloadItem* item) {
   auto share_info = std::make_unique<OfflineItemShareInfo>();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (item) {
     share_info->uri =
         DownloadUtils::GetUriStringForPath(item->GetTargetFilePath());
@@ -145,7 +145,7 @@ DownloadOfflineContentProvider::DownloadOfflineContentProvider(
       state_(State::UNINITIALIZED),
       profile_(nullptr) {
   aggregator_->RegisterProvider(name_space_, this);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   all_download_observer_ = std::make_unique<AllDownloadObserver>(this);
 #endif
 }
@@ -396,7 +396,7 @@ void DownloadOfflineContentProvider::RenameItem(const ContentId& id,
           &DownloadOfflineContentProvider::OnRenameDownloadCallbackDone,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback), item);
   base::FilePath::StringType filename;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   filename = base::UTF8ToWide(name);
 #else
   filename = name;
@@ -495,7 +495,7 @@ void DownloadOfflineContentProvider::OnDownloadRemoved(DownloadItem* item) {
   if (!ShouldShowDownloadItem(item))
     return;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   DownloadManagerBridge::RemoveCompletedDownload(item);
 #endif
 
@@ -508,7 +508,7 @@ void DownloadOfflineContentProvider::OnProfileCreated(Profile* profile) {
 }
 
 void DownloadOfflineContentProvider::AddCompletedDownload(DownloadItem* item) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::OnceCallback<void(int64_t)> cb =
       base::BindOnce(&DownloadOfflineContentProvider::AddCompletedDownloadDone,
                      weak_ptr_factory_.GetWeakPtr(), item->GetGuid());
@@ -525,7 +525,7 @@ void DownloadOfflineContentProvider::AddCompletedDownload(DownloadItem* item) {
 void DownloadOfflineContentProvider::AddCompletedDownloadDone(
     const std::string& download_guid,
     int64_t system_download_id) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   DownloadItem* item = GetDownload(download_guid);
   if (!item)
     return;
@@ -563,7 +563,7 @@ void DownloadOfflineContentProvider::CheckForExternallyRemovedDownloads() {
 
   checked_for_externally_removed_downloads_ = true;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   manager_->CheckForExternallyRemovedDownloads();
 #endif
 }

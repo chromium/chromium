@@ -23,7 +23,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/download/android/download_controller.h"
 #include "chrome/browser/download/android/download_controller_base.h"
 #else
@@ -34,16 +34,16 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/download/notification/download_notification_manager.h"
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 namespace {
 
 // DownloadShelfUIControllerDelegate{Android,} is used when a
 // DownloadUIController is
 // constructed without specifying an explicit Delegate.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 class AndroidUIControllerDelegate : public DownloadUIController::Delegate {
  public:
@@ -119,22 +119,22 @@ DownloadUIController::Delegate::~Delegate() {
 DownloadUIController::DownloadUIController(content::DownloadManager* manager,
                                            std::unique_ptr<Delegate> delegate)
     : download_notifier_(manager, this), delegate_(std::move(delegate)) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!delegate_)
     delegate_ = std::make_unique<AndroidUIControllerDelegate>();
-#elif defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_CHROMEOS)
   if (!delegate_) {
     // The Profile is guaranteed to be valid since DownloadUIController is owned
     // by DownloadService, which in turn is a profile keyed service.
     delegate_ = std::make_unique<DownloadNotificationManager>(
         Profile::FromBrowserContext(manager->GetBrowserContext()));
   }
-#else   // defined(OS_CHROMEOS)
+#else   // BUILDFLAG(IS_CHROMEOS)
   if (!delegate_) {
     delegate_ = std::make_unique<DownloadShelfUIControllerDelegate>(
         Profile::FromBrowserContext(manager->GetBrowserContext()));
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 DownloadUIController::~DownloadUIController() {
@@ -201,7 +201,7 @@ void DownloadUIController::OnDownloadUpdated(content::DownloadManager* manager,
   content::WebContents* web_contents =
       content::DownloadItemUtils::GetWebContents(item);
   if (web_contents) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     DownloadController::CloseTabIfEmpty(web_contents, item);
 #else
     Browser* browser = chrome::FindBrowserWithWebContents(web_contents);
@@ -217,7 +217,7 @@ void DownloadUIController::OnDownloadUpdated(content::DownloadManager* manager,
         !item->IsSavePackageDownload()) {
       web_contents->Close();
     }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   if (item->GetState() == download::DownloadItem::CANCELLED)

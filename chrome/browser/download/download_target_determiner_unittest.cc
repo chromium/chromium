@@ -388,7 +388,7 @@ void DownloadTargetDeterminerTest::SetUp() {
   test_virtual_dir_ = test_download_dir().Append(FILE_PATH_LITERAL("virtual"));
   delegate_.SetupDefaults();
   SetUpFileTypePolicies();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   profile()->GetTestingPrefService()->SetInteger(
       prefs::kPromptForDownloadAndroid,
       static_cast<int>(DownloadPromptStatus::DONT_SHOW));
@@ -474,7 +474,7 @@ void DownloadTargetDeterminerTest::SetManagedDownloadPath(
 void DownloadTargetDeterminerTest::SetPromptForDownload(bool prompt) {
   profile()->GetTestingPrefService()->
       SetBoolean(prefs::kPromptForDownload, prompt);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   DownloadPromptStatus download_prompt_status =
       prompt ? DownloadPromptStatus::SHOW_PREFERENCE
              : DownloadPromptStatus::DONT_SHOW;
@@ -2442,7 +2442,7 @@ void DummyGetPluginsCallback(
 }
 
 void ForceRefreshOfPlugins() {
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   // Prevent creation of a utility process for loading plugins. Doing so breaks
   // unit_tests since /proc/self/exe can't be run as a utility process.
   content::RenderProcessHost::SetRunRendererInProcess(true);
@@ -2451,7 +2451,7 @@ void ForceRefreshOfPlugins() {
   content::PluginService::GetInstance()->GetPlugins(
       base::BindOnce(&DummyGetPluginsCallback, run_loop.QuitClosure()));
   run_loop.Run();
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   content::RenderProcessHost::SetRunRendererInProcess(false);
 #endif
 }

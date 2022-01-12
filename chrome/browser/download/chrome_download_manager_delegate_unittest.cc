@@ -70,7 +70,7 @@
 #include "content/public/browser/plugin_service.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/download/download_prompt_status.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
@@ -175,7 +175,7 @@ class TestChromeDownloadManagerDelegate : public ChromeDownloadManagerDelegate {
         FROM_HERE, base::BindOnce(std::move(callback), result, path_to_return));
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void OnDownloadCanceled(download::DownloadItem* download,
                           bool has_no_external_storage) override {}
 #endif
@@ -324,7 +324,7 @@ void ChromeDownloadManagerDelegateTest::SetUp() {
   pref_service_ = profile()->GetTestingPrefService();
   web_contents()->SetDelegate(&web_contents_delegate_);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   pref_service_->SetInteger(prefs::kPromptForDownloadAndroid,
                             static_cast<int>(DownloadPromptStatus::DONT_SHOW));
 
@@ -855,7 +855,7 @@ TEST_F(ChromeDownloadManagerDelegateTest,
                         kInsecureDownloadHistogramTargetInsecure, histograms);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(ChromeDownloadManagerDelegateTest, InterceptDownloadByOfflinePages) {
   const GURL kUrl("http://example.com/foo");
   std::string mime_type = "text/html";
@@ -1160,7 +1160,7 @@ TEST_F(ChromeDownloadManagerDelegateTest, BlockedAsActiveContent_Block) {
 }
 
 // MIXEDSCRIPT content setting only applies to Desktop.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(ChromeDownloadManagerDelegateTest,
        BlockedAsActiveContent_PolicyOverride) {
   // Verifies that active mixed content download blocking is overridden by the
@@ -1251,7 +1251,7 @@ TEST_F(ChromeDownloadManagerDelegateTest, SanitizeGoogleSearchLink) {
   }
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 namespace {
 // Verify the file picker confirmation result matches |expected_result|. Run
 // |completion_closure| on completion.
@@ -1652,7 +1652,7 @@ TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
   run_loop.Run();
 }
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 // TODO(crbug.com/739204) Add a Windows version of this test.
 TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
        TrustedSourcesPolicyTrusted) {
@@ -1673,7 +1673,7 @@ TEST_F(ChromeDownloadManagerDelegateTestWithSafeBrowsing,
 #endif  // OS_WIN
 #endif  // FULL_SAFE_BROWSING
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 namespace {
 

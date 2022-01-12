@@ -92,7 +92,7 @@ class DownloadItemModel : public DownloadUIModel,
   bool HasUserGesture() const override;
   offline_items_collection::FailState GetLastFailState() const override;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   bool IsCommandEnabled(const DownloadCommands* download_commands,
                         DownloadCommands::Command command) const override;
   bool IsCommandChecked(const DownloadCommands* download_commands,

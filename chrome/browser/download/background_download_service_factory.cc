@@ -48,7 +48,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/download/android/service/download_task_scheduler.h"
 #endif
 
@@ -198,7 +198,7 @@ BackgroundDownloadServiceFactory::BuildServiceInstanceFor(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
 
     std::unique_ptr<download::TaskScheduler> task_scheduler;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     task_scheduler =
         std::make_unique<download::android::DownloadTaskScheduler>();
 #else

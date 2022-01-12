@@ -183,7 +183,7 @@ class DownloadDangerPromptTest : public InProcessBrowserTest {
 };
 
 // Disabled for flaky timeouts on Windows. crbug.com/446696
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TestAll DISABLED_TestAll
 #else
 #define MAYBE_TestAll TestAll

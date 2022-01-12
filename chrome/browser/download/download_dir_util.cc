@@ -5,6 +5,7 @@
 #include "chrome/browser/download/download_dir_util.h"
 
 #include "base/files/file_path.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/policy/policy_path_parser.h"
 #include "components/policy/core/browser/configuration_policy_handler_parameters.h"
@@ -16,16 +17,16 @@
 #endif
 
 namespace {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Drive root folder relative to its mount point.
 const base::FilePath::CharType* kRootRelativeToDriveMount =
     FILE_PATH_LITERAL("root");
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 }  // namespace
 
 namespace download_dir_util {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kDriveNamePolicyVariableName[] = "${google_drive}";
 
 bool DownloadToDrive(const base::FilePath::StringType& string_value,
@@ -62,7 +63,7 @@ bool ExpandDrivePolicyVariable(Profile* profile,
       position, strlen(kDriveNamePolicyVariableName), google_drive_root));
   return true;
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 base::FilePath::StringType ExpandDownloadDirectoryPath(
     const base::FilePath::StringType& string_value,
