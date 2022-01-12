@@ -108,8 +108,26 @@ constexpr int32_t kAbsoluteMaxPendingBuffers = 256;
 constexpr const char* kExternalDecoderName = "ExternalDecoder";
 
 // Number of RTCVideoDecoder instances right now that have started decoding.
-std::atomic_int* GetDecoderCounter() {
-  static std::atomic_int s_counter(0);
+class DecoderCounter {
+ public:
+  int Count() { return count_.load(); }
+
+  void IncrementCount() {
+    int c = ++count_;
+    DCHECK_GT(c, 0);
+  }
+
+  void DecrementCount() {
+    int c = --count_;
+    DCHECK_GE(c, 0);
+  }
+
+ private:
+  std::atomic_int count_{0};
+};
+
+DecoderCounter* GetDecoderCounter() {
+  static DecoderCounter s_counter;
   // Note that this will init only in the first call in the ctor, so it's still
   // single threaded.
   return &s_counter;
@@ -340,7 +358,7 @@ RTCVideoDecoderStreamAdapter::~RTCVideoDecoderStreamAdapter() {
 
     if (contributes_to_decoder_count_) {
       contributes_to_decoder_count_ = false;  // paranoia
-      --(*GetDecoderCounter());
+      GetDecoderCounter()->DecrementCount();
     }
   }
 }
@@ -452,7 +470,7 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
     // for sites to create unused rtc codecs.
     if (!contributes_to_decoder_count_ && !prefer_software_decoders_) {
       contributes_to_decoder_count_ = true;
-      ++(*GetDecoderCounter());
+      GetDecoderCounter()->IncrementCount();
     }
 
     // Note that it's okay to FallBackToSoftwareLocked without a software
@@ -467,7 +485,7 @@ int32_t RTCVideoDecoderStreamAdapter::Decode(
     // whatever threshold it uses.
     if (has_software_fallback && contributes_to_decoder_count_ &&
         current_resolution_.GetArea() < kMinResolution.GetArea() &&
-        GetDecoderCounter()->load() > kMaxDecoderInstances) {
+        GetDecoderCounter()->Count() > kMaxDecoderInstances) {
       return FallBackToSoftwareLocked();
     }
 
@@ -1127,7 +1145,7 @@ int32_t RTCVideoDecoderStreamAdapter::FallBackToSoftwareLocked() {
   // end up with the same hw decoder anyway.
   if (contributes_to_decoder_count_) {
     contributes_to_decoder_count_ = false;
-    --(*GetDecoderCounter());
+    GetDecoderCounter()->DecrementCount();
   }
 
   // If there aren't chrome sw decoders for DecoderStream to use, then give up
