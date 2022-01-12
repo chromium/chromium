@@ -2748,7 +2748,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("select-follows-focus-multiselect.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilitySelectMenu) {
+// Flaky on Android - crbug.com/1286650
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_AccessibilitySelectMenu DISABLED_AccessibilitySelectMenu
+#else
+#define MAYBE_AccessibilitySelectMenu AccessibilitySelectMenu
+#endif
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       MAYBE_AccessibilitySelectMenu) {
   RunHtmlTest(FILE_PATH_LITERAL("selectmenu.html"));
 }
 
