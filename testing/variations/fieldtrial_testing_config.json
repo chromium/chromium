@@ -1863,7 +1863,8 @@
             "platforms": [
                 "android",
                 "windows",
-                "mac"
+                "mac",
+                "chromeos"
             ],
             "experiments": [
                 {
