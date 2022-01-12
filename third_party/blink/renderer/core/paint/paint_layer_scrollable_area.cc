@@ -594,14 +594,6 @@ void PaintLayerScrollableArea::InvalidatePaintForScrollOffsetChange() {
       box->SetBackgroundNeedsFullPaintInvalidation();
     }
   }
-
-  // If any scrolling content might have been clipped by a cull rect, then
-  // that cull rect could be affected by scroll offset. For composited
-  // scrollers, this will be taken care of by the interest rect computation
-  // in CompositedLayerMapping.
-  if (!RuntimeEnabledFeatures::CullRectUpdateEnabled() &&
-      !UsesCompositedScrolling())
-    Layer()->SetNeedsRepaint();
 }
 
 gfx::Vector2d PaintLayerScrollableArea::ScrollOffsetInt() const {

@@ -230,13 +230,6 @@ struct PaintPropertyTreeBuilderContext final {
   // Note that the next four bitfields are conceptually bool, but are declared
   // as unsigned in order to be packed in the same word as the above bitfield.
 
-  // Whether a clip paint property node appeared, disappeared, or changed
-  // its clip since this variable was last set to false. This is used
-  // to find out whether a clip changed since the last transform update.
-  // Code outside of this class resets clip_changed to false when transforms
-  // change. Used only when CullRectUpdate is not enabled.
-  unsigned clip_changed : 1;
-
   // When printing, fixed-position objects and their descendants need to repeat
   // in each page.
   unsigned is_repeating_fixed_position : 1;

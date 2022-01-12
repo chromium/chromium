@@ -88,10 +88,6 @@ class PLATFORM_EXPORT RuntimeEnabledFeaturesBase {
 
   {% endfor %}
 
-  // TODO(crbug.com/471333): This is temporary to assist in the removal of
-  // the pre-CullRectUpdate code and will be removed shortly.
-  static bool CullRectUpdateEnabled() { return true; }
-
  protected:
   // See the comment in RuntimeEnabledFeatures for why these are protected.
   {% for feature_set in feature_sets %}

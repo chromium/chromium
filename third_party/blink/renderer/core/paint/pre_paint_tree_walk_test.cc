@@ -451,9 +451,6 @@ TEST_P(PrePaintTreeWalkTest, InsideBlockingWheelEventHandlerUpdate) {
 }
 
 TEST_P(PrePaintTreeWalkTest, CullRectUpdateOnSVGTransformChange) {
-  if (!RuntimeEnabledFeatures::CullRectUpdateEnabled())
-    return;
-
   SetBodyInnerHTML(R"HTML(
     <svg style="width: 200px; height: 200px">
       <rect id="rect"/>

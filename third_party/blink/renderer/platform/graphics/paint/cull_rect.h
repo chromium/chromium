@@ -47,11 +47,10 @@ class PLATFORM_EXPORT CullRect {
   // the cull rect is in the space of the parent the transform node.
   void ApplyTransform(const TransformPaintPropertyNode&);
 
-  // For CullRectUpdate only. Similar to the above but also applies clips and
-  // expands for all directly composited transforms (including scrolling and
-  // non-scrolling ones). |root| is used to calculate the expansion distance in
-  // the local space, to make the expansion distance approximately the same in
-  // the root space.
+  // Similar to the above but also applies clips and expands for all directly
+  // composited transforms (including scrolling and non-scrolling ones).
+  // |root| is used to calculate the expansion distance in the local space,
+  // to make the expansion distance approximately the same in the root space.
   // Returns whether the cull rect has been expanded.
   bool ApplyPaintProperties(const PropertyTreeState& root,
                             const PropertyTreeState& source,

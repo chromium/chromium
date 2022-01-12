@@ -107,7 +107,6 @@ PaintPropertyTreeBuilderFragmentContext::
 
 PaintPropertyTreeBuilderContext::PaintPropertyTreeBuilderContext()
     : force_subtree_update_reasons(0u),
-      clip_changed(false),
       is_repeating_fixed_position(false),
       has_svg_hidden_container_ancestor(false),
       supports_composited_raster_invalidation(true),
@@ -313,12 +312,6 @@ class FragmentPaintPropertyTreeBuilder {
   void OnUpdate(PaintPropertyChangeType change) {
     property_changed_ = std::max(property_changed_, change);
   }
-  // Like |OnUpdate| but sets |clip_changed| if the clip values change.
-  void OnUpdateClip(PaintPropertyChangeType change) {
-    OnUpdate(change);
-    full_context_.clip_changed |=
-        change >= PaintPropertyChangeType::kChangedOnlySimpleValues;
-  }
   // Like |OnUpdate| but forces a piercing subtree update if the scroll tree
   // hierarchy changes because the scroll tree does not have isolation nodes
   // and non-piercing updates can fail to update scroll descendants.
@@ -341,10 +334,6 @@ class FragmentPaintPropertyTreeBuilder {
       full_context_.force_subtree_update_reasons |=
           PaintPropertyTreeBuilderContext::kSubtreeUpdateIsolationPiercing;
     }
-  }
-  void OnClearClip(bool cleared) {
-    OnClear(cleared);
-    full_context_.clip_changed |= cleared;
   }
 
   CompositorElementId GetCompositorElementId(
@@ -1231,14 +1220,14 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
         // TODO(crbug.com/1248598): We use pixel-snapped mask clip and clip path
         // clip as the layout clip rect, which may cause wrong result when
         // mapping in layout coordinates.
-        OnUpdateClip(properties_->UpdateMaskClip(
+        OnUpdate(properties_->UpdateMaskClip(
             *context_.current.clip,
             ClipPaintPropertyNode::State(context_.current.transform,
                                          gfx::RectF(combined_clip),
                                          FloatRoundedRect(combined_clip))));
         output_clip = properties_->MaskClip();
       } else {
-        OnClearClip(properties_->ClearMaskClip());
+        OnClear(properties_->ClearMaskClip());
       }
 
       CompositorElementId mask_compositor_element_id;
@@ -1385,7 +1374,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateEffect() {
       OnClear(properties_->ClearEffect());
       OnClear(properties_->ClearMask());
       OnClear(properties_->ClearClipPathMask());
-      OnClearClip(properties_->ClearMaskClip());
+      OnClear(properties_->ClearMaskClip());
     }
   }
 
@@ -1586,13 +1575,13 @@ void FragmentPaintPropertyTreeBuilder::UpdateFragmentClip() {
   if (NeedsPaintPropertyUpdate()) {
     if (context_.fragment_clip) {
       const auto& clip_rect = *context_.fragment_clip;
-      OnUpdateClip(properties_->UpdateFragmentClip(
+      OnUpdate(properties_->UpdateFragmentClip(
           *context_.current.clip,
           ClipPaintPropertyNode::State(context_.current.transform,
                                        gfx::RectF(clip_rect),
                                        ToSnappedClipRect(clip_rect))));
     } else {
-      OnClearClip(properties_->ClearFragmentClip());
+      OnClear(properties_->ClearFragmentClip());
     }
   }
 
@@ -1620,13 +1609,13 @@ void FragmentPaintPropertyTreeBuilder::UpdateCssClip() {
       DCHECK(object_.CanContainAbsolutePositionObjects());
       const auto& clip_rect =
           To<LayoutBox>(object_).ClipRect(context_.current.paint_offset);
-      OnUpdateClip(properties_->UpdateCssClip(
+      OnUpdate(properties_->UpdateCssClip(
           *context_.current.clip,
           ClipPaintPropertyNode::State(context_.current.transform,
                                        gfx::RectF(clip_rect),
                                        ToSnappedClipRect(clip_rect))));
     } else {
-      OnClearClip(properties_->ClearCssClip());
+      OnClear(properties_->ClearCssClip());
     }
   }
 
@@ -1637,7 +1626,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateCssClip() {
 void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
   if (NeedsPaintPropertyUpdate()) {
     if (!NeedsClipPathClip(object_, fragment_data_)) {
-      OnClearClip(properties_->ClearClipPathClip());
+      OnClear(properties_->ClearClipPathClip());
     } else {
       // TODO(crbug.com/1248598): We use pixel-snapped clip path clip as the
       // layout clip rect, which may cause wrong result when mapping in layout
@@ -1647,8 +1636,8 @@ void FragmentPaintPropertyTreeBuilder::UpdateClipPathClip() {
           gfx::RectF(*fragment_data_.ClipPathBoundingBox()),
           FloatRoundedRect(*fragment_data_.ClipPathBoundingBox()));
       state.clip_path = fragment_data_.ClipPathPath();
-      OnUpdateClip(properties_->UpdateClipPathClip(*context_.current.clip,
-                                                   std::move(state)));
+      OnUpdate(properties_->UpdateClipPathClip(*context_.current.clip,
+                                               std::move(state)));
     }
   }
 
@@ -1786,10 +1775,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowControlsClip() {
     return;
 
   if (NeedsOverflowControlsClip()) {
-    // Clip overflow controls to the border box rect. Not wrapped with
-    // OnUpdateClip() because this clip doesn't affect descendants. Wrap with
-    // OnUpdate() to let PrePaintTreeWalk see the change. This may cause
-    // unnecessary subtree update, but is not a big deal because it is rare.
+    // Clip overflow controls to the border box rect. Though this clip doesn't
+    // affect descendants, wrap with OnUpdate() to let PrePaintTreeWalk see the
+    // change. This may cause unnecessary subtree update, but is not a big deal
+    // because it is rare.
     const auto& clip_rect = PhysicalRect(context_.current.paint_offset,
                                          To<LayoutBox>(object_).Size());
     OnUpdate(properties_->UpdateOverflowControlsClip(
@@ -1834,10 +1823,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateInnerBorderRadiusClip() {
                                              paint_clip_rect);
       ClipPaintPropertyNode::State state(context_.current.transform,
                                          layout_clip_rect, paint_clip_rect);
-      OnUpdateClip(properties_->UpdateInnerBorderRadiusClip(
-          *context_.current.clip, std::move(state)));
+      OnUpdate(properties_->UpdateInnerBorderRadiusClip(*context_.current.clip,
+                                                        std::move(state)));
     } else {
-      OnClearClip(properties_->ClearInnerBorderRadiusClip());
+      OnClear(properties_->ClearInnerBorderRadiusClip());
     }
   }
 
@@ -1912,10 +1901,10 @@ void FragmentPaintPropertyTreeBuilder::UpdateOverflowClip() {
         // the first parameter?
         state.SetClipRect(clip_rect, FloatRoundedRect(clip_rect));
       }
-      OnUpdateClip(properties_->UpdateOverflowClip(*context_.current.clip,
-                                                   std::move(state)));
+      OnUpdate(properties_->UpdateOverflowClip(*context_.current.clip,
+                                               std::move(state)));
     } else {
-      OnClearClip(properties_->ClearOverflowClip());
+      OnClear(properties_->ClearOverflowClip());
     }
   }
 

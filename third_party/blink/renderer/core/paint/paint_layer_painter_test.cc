@@ -468,14 +468,8 @@ TEST_P(PaintLayerPainterTest, CachedSubsequenceRetainsPreviousPaintResult) {
   GetLayoutView().GetScrollableArea()->SetScrollOffset(
       ScrollOffset(0, 3000), mojom::blink::ScrollType::kProgrammatic);
   UpdateAllLifecyclePhasesExceptPaint();
-  if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
-    // The layer needs repaint when its contents cull rect changes.
-    EXPECT_TRUE(target_layer->SelfNeedsRepaint());
-  } else {
-    // Scrolling doesn't set SelfNeedsRepaint flag. Change of paint dirty rect
-    // of a partially painted layer will trigger repaint.
-    EXPECT_FALSE(target_layer->SelfNeedsRepaint());
-  }
+  // The layer needs repaint when its contents cull rect changes.
+  EXPECT_TRUE(target_layer->SelfNeedsRepaint());
 
   counter.Reset();
   UpdateAllLifecyclePhasesForTest();

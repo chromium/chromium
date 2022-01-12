@@ -2783,8 +2783,6 @@ const PaintLayer* PaintLayer::CommonAncestor(const PaintLayer* other) const {
 }
 
 void PaintLayer::SetNeedsCullRectUpdate() {
-  DCHECK(RuntimeEnabledFeatures::CullRectUpdateEnabled());
-
   if (needs_cull_rect_update_)
     return;
   needs_cull_rect_update_ = true;
@@ -2792,8 +2790,6 @@ void PaintLayer::SetNeedsCullRectUpdate() {
 }
 
 void PaintLayer::SetForcesChildrenCullRectUpdate() {
-  DCHECK(RuntimeEnabledFeatures::CullRectUpdateEnabled());
-
   if (forces_children_cull_rect_update_)
     return;
   forces_children_cull_rect_update_ = true;

@@ -72,12 +72,6 @@ class CORE_EXPORT PrePaintTreeWalk final {
     // subtree may need to update.
     bool blocking_wheel_event_handler_changed = false;
 
-    // This is set to true once we see tree_builder_context->clip_changed is
-    // true. It will be propagated to descendant contexts even if we don't
-    // create tree_builder_context. Used only when CullRectUpdate is not
-    // enabled.
-    bool clip_changed = false;
-
     // True if we're fragment-traversing an object whose fragment wasn't found
     // and walked when walking the layout object tree. This may happen for
     // out-of-flow positioned and floated fragments inside block fragmentation,

@@ -76,16 +76,8 @@ void PrePaintTreeWalk::WalkTree(LocalFrameView& root_frame_view) {
   paint_invalidator_.ProcessPendingDelayedPaintInvalidations();
 
 #if DCHECK_IS_ON()
-  if (needs_tree_builder_context_update) {
-    if (!RuntimeEnabledFeatures::CullRectUpdateEnabled() && VLOG_IS_ON(2) &&
-        root_frame_view.GetLayoutView()) {
-      VLOG(2) << "PrePaintTreeWalk::Walk(root_frame_view=" << &root_frame_view
-              << ")\nPaintLayer tree:";
-      ShowLayerTree(root_frame_view.GetLayoutView()->Layer());
-    }
-    if (VLOG_IS_ON(1))
-      ShowAllPropertyTrees(root_frame_view);
-  }
+  if (needs_tree_builder_context_update && VLOG_IS_ON(1))
+    ShowAllPropertyTrees(root_frame_view);
 #endif
 
   // If the frame is invalidated, we need to inform the frame's chrome client
@@ -314,7 +306,7 @@ bool PrePaintTreeWalk::ContextRequiresChildPrePaint(
     const PrePaintTreeWalkContext& context) {
   return context.paint_invalidator_context.NeedsSubtreeWalk() ||
          context.effective_allowed_touch_action_changed ||
-         context.blocking_wheel_event_handler_changed || context.clip_changed;
+         context.blocking_wheel_event_handler_changed;
 }
 
 bool PrePaintTreeWalk::ObjectRequiresTreeBuilderContext(
@@ -512,13 +504,6 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
     property_changed =
         std::max(property_changed, property_tree_builder->UpdateForChildren());
 
-    if (!RuntimeEnabledFeatures::CullRectUpdateEnabled() &&
-        context.tree_builder_context->clip_changed) {
-      // Save clip_changed flag in |context| so that all descendants will see it
-      // even if we don't create tree_builder_context.
-      context.clip_changed = true;
-    }
-
     if (property_changed != PaintPropertyChangeType::kUnchanged) {
       if (property_changed >
           PaintPropertyChangeType::kChangedOnlyCompositedValues) {
@@ -533,15 +518,9 @@ void PrePaintTreeWalk::WalkInternal(const LayoutObject& object,
     }
   }
 
-  if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
-    if (property_changed != PaintPropertyChangeType::kUnchanged) {
-      CullRectUpdater::PaintPropertiesChanged(
-          object, *context.paint_invalidator_context.painting_layer);
-    }
-  } else if (context.clip_changed && object.HasLayer()) {
-    // When this or ancestor clip changed, the layer needs repaint because it
-    // may paint more or less results according to the changed clip.
-    To<LayoutBoxModelObject>(object).Layer()->SetNeedsRepaint();
+  if (property_changed != PaintPropertyChangeType::kUnchanged) {
+    CullRectUpdater::PaintPropertiesChanged(
+        object, *context.paint_invalidator_context.painting_layer);
   }
 }
 
@@ -1137,13 +1116,6 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
   PrePaintTreeWalkContext context(parent_context,
                                   needs_tree_builder_context_update);
 
-  if (object.HasTransform()) {
-    // Ignore clip changes from ancestor across transform boundaries.
-    context.clip_changed = false;
-    if (context.tree_builder_context)
-      context.tree_builder_context->clip_changed = false;
-  }
-
   WalkInternal(object, context, pre_paint_info);
 
   bool child_walk_blocked = object.ChildPrePaintBlockedByDisplayLock();
@@ -1155,9 +1127,7 @@ void PrePaintTreeWalk::Walk(const LayoutObject& object,
     // Note that |effective_allowed_touch_action_changed| and
     // |blocking_wheel_event_handler_changed| are special in that they requires
     // us to specifically recalculate this value on each subtree element. Other
-    // flags simply need a subtree walk. Some consideration needs to be given to
-    // |clip_changed| which ensures that we repaint every layer, but for the
-    // purposes of PrePaint, this flag is just forcing a subtree walk.
+    // flags simply need a subtree walk.
     object.GetDisplayLockContext()->SetNeedsPrePaintSubtreeWalk(
         context.effective_allowed_touch_action_changed,
         context.blocking_wheel_event_handler_changed);

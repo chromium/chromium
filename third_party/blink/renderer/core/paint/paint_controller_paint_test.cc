@@ -215,10 +215,8 @@ TEST_P(PaintControllerPaintTest, BlockScrollingNonLayeredContents) {
   auto& div3 = *GetLayoutObjectByElementId("div3");
   auto& div4 = *GetLayoutObjectByElementId("div4");
 
-  if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
-    EXPECT_EQ(gfx::Rect(0, 0, 4200, 4200),
-              container.FirstFragment().GetContentsCullRect().Rect());
-  }
+  EXPECT_EQ(gfx::Rect(0, 0, 4200, 4200),
+            container.FirstFragment().GetContentsCullRect().Rect());
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
                           IsSameId(div1.Id(), kBackgroundType),
@@ -249,10 +247,8 @@ TEST_P(PaintControllerPaintTest, BlockScrollingNonLayeredContents) {
       ScrollOffset(5000, 5000), mojom::blink::ScrollType::kProgrammatic);
   UpdateAllLifecyclePhasesForTest();
 
-  if (RuntimeEnabledFeatures::CullRectUpdateEnabled()) {
-    EXPECT_EQ(gfx::Rect(1000, 1000, 8100, 8100),
-              container.FirstFragment().GetContentsCullRect().Rect());
-  }
+  EXPECT_EQ(gfx::Rect(1000, 1000, 8100, 8100),
+            container.FirstFragment().GetContentsCullRect().Rect());
   EXPECT_THAT(ContentDisplayItems(),
               ElementsAre(VIEW_SCROLLING_BACKGROUND_DISPLAY_ITEM,
                           IsSameId(div2.Id(), kBackgroundType),

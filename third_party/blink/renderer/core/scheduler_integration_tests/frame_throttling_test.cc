@@ -1854,9 +1854,6 @@ TEST_P(FrameThrottlingTest, ForceUnthrottled) {
 }
 
 TEST_P(FrameThrottlingTest, CullRectUpdate) {
-  if (!RuntimeEnabledFeatures::CullRectUpdateEnabled())
-    return;
-
   SimRequest main_resource("https://example.com/", "text/html");
   SimRequest frame_resource("https://example.com/iframe.html", "text/html");
 

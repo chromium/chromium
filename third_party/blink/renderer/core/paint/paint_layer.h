@@ -586,23 +586,17 @@ class CORE_EXPORT PaintLayer : public GarbageCollected<PaintLayer>,
   void SetDescendantNeedsRepaint();
   void ClearNeedsRepaintRecursively();
 
-  bool NeedsCullRectUpdate() const {
-    DCHECK(RuntimeEnabledFeatures::CullRectUpdateEnabled());
-    return needs_cull_rect_update_;
-  }
+  bool NeedsCullRectUpdate() const { return needs_cull_rect_update_; }
   bool ForcesChildrenCullRectUpdate() const {
-    DCHECK(RuntimeEnabledFeatures::CullRectUpdateEnabled());
     return forces_children_cull_rect_update_;
   }
   bool DescendantNeedsCullRectUpdate() const {
-    DCHECK(RuntimeEnabledFeatures::CullRectUpdateEnabled());
     return descendant_needs_cull_rect_update_;
   }
   void SetNeedsCullRectUpdate();
   void SetForcesChildrenCullRectUpdate();
   void MarkCompositingContainerChainForNeedsCullRectUpdate();
   void ClearNeedsCullRectUpdate() {
-    DCHECK(RuntimeEnabledFeatures::CullRectUpdateEnabled());
     needs_cull_rect_update_ = false;
     forces_children_cull_rect_update_ = false;
     descendant_needs_cull_rect_update_ = false;

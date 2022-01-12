@@ -61,7 +61,6 @@ void CullRectUpdater::Update() {
 }
 
 void CullRectUpdater::UpdateInternal(const CullRect& input_cull_rect) {
-  DCHECK(RuntimeEnabledFeatures::CullRectUpdateEnabled());
   const auto& object = starting_layer_.GetLayoutObject();
   if (object.GetFrameView()->ShouldThrottleRendering())
     return;
@@ -376,9 +375,6 @@ void CullRectUpdater::PaintPropertiesChanged(const LayoutObject& object,
 OverriddenCullRectScope::OverriddenCullRectScope(PaintLayer& starting_layer,
                                                  const CullRect& cull_rect)
     : starting_layer_(starting_layer) {
-  if (!RuntimeEnabledFeatures::CullRectUpdateEnabled())
-    return;
-
   if (starting_layer.GetLayoutObject().GetFrame()->IsLocalRoot() &&
       !starting_layer.NeedsCullRectUpdate() &&
       !starting_layer.DescendantNeedsCullRectUpdate() &&
@@ -394,7 +390,7 @@ OverriddenCullRectScope::OverriddenCullRectScope(PaintLayer& starting_layer,
 }
 
 OverriddenCullRectScope::~OverriddenCullRectScope() {
-  if (RuntimeEnabledFeatures::CullRectUpdateEnabled() && updated_)
+  if (updated_)
     starting_layer_.SetNeedsCullRectUpdate();
 }
 

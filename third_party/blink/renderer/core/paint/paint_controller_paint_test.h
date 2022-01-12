@@ -47,8 +47,7 @@ class PaintControllerPaintTestBase : public RenderingTest {
         DocumentUpdateReason::kTest);
     // Run CullRectUpdater to ease testing of cull rects and repaint flags of
     // PaintLayers on cull rect change.
-    if (RuntimeEnabledFeatures::CullRectUpdateEnabled())
-      CullRectUpdater(*GetLayoutView().Layer()).Update();
+    CullRectUpdater(*GetLayoutView().Layer()).Update();
   }
 
   void PaintContents(const gfx::Rect& interest_rect) {

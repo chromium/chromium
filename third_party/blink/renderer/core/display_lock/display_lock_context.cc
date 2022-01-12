@@ -681,9 +681,6 @@ bool DisplayLockContext::MarkNeedsRepaintAndPaintArtifactCompositorUpdate() {
 
 bool DisplayLockContext::MarkNeedsCullRectUpdate() {
   DCHECK(ConnectedToView());
-  if (!RuntimeEnabledFeatures::CullRectUpdateEnabled())
-    return false;
-
   if (auto* layout_object = element_->GetLayoutObject()) {
     layout_object->PaintingLayer()->SetForcesChildrenCullRectUpdate();
     return true;

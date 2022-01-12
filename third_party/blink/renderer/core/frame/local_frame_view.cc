@@ -2601,9 +2601,8 @@ bool LocalFrameView::RunPrePaintLifecyclePhase(
                 layout_view->DescendantBlockingWheelEventHandlerChanged()) {
               owner->MarkDescendantBlockingWheelEventHandlerChanged();
             }
-            if (RuntimeEnabledFeatures::CullRectUpdateEnabled() &&
-                (layout_view->Layer()->NeedsCullRectUpdate() ||
-                 layout_view->Layer()->DescendantNeedsCullRectUpdate())) {
+            if (layout_view->Layer()->NeedsCullRectUpdate() ||
+                layout_view->Layer()->DescendantNeedsCullRectUpdate()) {
               layout_view->Layer()
                   ->MarkCompositingContainerChainForNeedsCullRectUpdate();
             }
@@ -2790,8 +2789,7 @@ bool LocalFrameView::PaintTree(PaintBenchmarkMode benchmark_mode,
   auto* layout_view = GetLayoutView();
   DCHECK(layout_view);
 
-  if (RuntimeEnabledFeatures::CullRectUpdateEnabled())
-    CullRectUpdater(*layout_view->Layer()).Update();
+  CullRectUpdater(*layout_view->Layer()).Update();
 
   bool debug_info_newly_enabled =
       UpdateLayerDebugInfoEnabled() && PaintDebugInfoEnabled();
