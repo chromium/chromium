@@ -27,6 +27,7 @@
 #include <iterator>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 #include "base/template_util.h"
 #include "build/build_config.h"
@@ -1289,7 +1290,7 @@ class Vector
 
   // Remove all the elements. This function actually releases the backing
   // buffer, thus any iterators will get invalidated (including begin()).
-  void clear() { ShrinkCapacity(0); }
+  REINITIALIZES_AFTER_MOVE void clear() { ShrinkCapacity(0); }
 
   // Insertion to the back. All of these functions except uncheckedAppend() may
   // cause a reallocation.
