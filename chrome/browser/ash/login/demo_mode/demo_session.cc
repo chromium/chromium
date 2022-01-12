@@ -354,7 +354,10 @@ static std::string GetDefaultRegion() {
       chromeos::system::StatisticsProvider::GetInstance()->GetMachineStatistic(
           chromeos::system::kRegionKey, &region_code);
   if (found_region_code) {
-    return region_code.substr(0, region_code.find("."));
+    std::string region_code_upper_case = base::ToUpperASCII(region_code);
+    std::string region_upper_case =
+        region_code_upper_case.substr(0, region_code_upper_case.find("."));
+    return region_upper_case.length() == 2 ? region_upper_case : "";
   }
   return "";
 }

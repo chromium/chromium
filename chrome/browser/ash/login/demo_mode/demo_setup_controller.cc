@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 
+#include <algorithm>
+#include <cctype>
 #include <utility>
 
 #include "ash/components/arc/arc_util.h"
@@ -500,12 +502,16 @@ std::string DemoSetupController::GetSubOrganizationEmail() {
   const std::string country =
       g_browser_process->local_state()->GetString(prefs::kDemoModeCountry);
 
+  std::string country_uppercase = base::ToUpperASCII(country);
+  std::string country_lowercase = base::ToLowerASCII(country);
+
   // Exclude US as it is the default country.
-  if (country != "us" &&
+  if (country_uppercase != "US" &&
       std::find(std::begin(DemoSession::kSupportedCountries),
                 std::end(DemoSession::kSupportedCountries),
-                country) != std::end(DemoSession::kSupportedCountries)) {
-    return "admin-" + country + "@" + policy::kDemoModeDomain;
+                country_uppercase) !=
+          std::end(DemoSession::kSupportedCountries)) {
+    return "admin-" + country_lowercase + "@" + policy::kDemoModeDomain;
   }
   return std::string();
 }
