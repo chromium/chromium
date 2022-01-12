@@ -137,28 +137,19 @@ action("browser_install_script") {
   ]
 }
 
-source_set("ksadmin_implementation") {
+executable("ksadmin") {
+  output_name = "ksadmin"
   sources = [
     "keystone/ksadmin.h",
     "keystone/ksadmin.mm",
+    "keystone/ksadmin_main.cc",
   ]
 
   deps = [
     "//base",
     "//chrome/updater:base",
-    "//chrome/updater:version_header",
-  ]
-}
-
-executable("ksadmin") {
-  output_name = "ksadmin"
-  sources = [ "keystone/ksadmin_main.cc" ]
-
-  public_deps = [ ":ksadmin_implementation" ]
-
-  deps = [
-    "//base",
     "//chrome/updater:constants_prod",
+    "//chrome/updater:version_header",
   ]
 
   frameworks = [ "CoreFoundation.framework" ]
