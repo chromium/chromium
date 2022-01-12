@@ -8,7 +8,7 @@ PASS Parsing: Access-Control-Expose-Headers%3A%20bb-8%0D%0AAccess-Control-Expose
 PASS Parsing: Access-Control-Expose-Headers%3A%20bb-8%0D%0AAccess-Control-Expose-Headers%3A%20no%20no
 PASS Parsing: Access-Control-Expose-Headers%3A%20no%0D%0AAccess-Control-Expose-Headers%3A%20bb-8
 FAIL Parsing: Access-Control-Expose-Headers%3A%0D%0AAccess-Control-Expose-Headers%3A%20bb-8 assert_equals: expected (string) "hey" but got (object) null
-FAIL Parsing: Access-Control-Expose-Headers%3A%20%2Cbb-8 assert_equals: expected (string) "hey" but got (object) null
+PASS Parsing: Access-Control-Expose-Headers%3A%20%2Cbb-8
 PASS Parsing: Access-Control-Expose-Headers%3A%20bb-8%0C
 PASS Parsing: Access-Control-Expose-Headers%3A%20bb-8%0B
 PASS Parsing: Access-Control-Expose-Headers%3A%20bb-8%0B%2Cbb-8
