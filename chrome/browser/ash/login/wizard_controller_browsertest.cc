@@ -2177,7 +2177,8 @@ IN_PROC_BROWSER_TEST_F(WizardControllerKioskFlowTest,
   // Make sure enterprise enrollment page shows up right after update screen.
   CheckCurrentScreen(EnrollmentScreenView::kScreenId);
   EXPECT_CALL(*mock_auto_enrollment_check_screen_, ShowImpl()).Times(1);
-  mock_enrollment_screen_->ExitScreen(EnrollmentScreen::Result::BACK);
+  mock_enrollment_screen_->ExitScreen(
+      EnrollmentScreen::Result::BACK_TO_AUTO_ENROLLMENT_CHECK);
 
   CheckCurrentScreen(AutoEnrollmentCheckScreenView::kScreenId);
   EXPECT_FALSE(StartupUtils::IsOobeCompleted());

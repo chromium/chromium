@@ -834,7 +834,8 @@ IN_PROC_BROWSER_TEST_F(AutoEnrollmentEmbeddedPolicyServer, ReenrollmentForced) {
   OobeScreenWaiter(EnrollmentScreenView::kScreenId).Wait();
   enrollment_ui_.SetExitHandler();
   enrollment_screen()->OnCancel();
-  EXPECT_EQ(EnrollmentScreen::Result::BACK, enrollment_ui_.WaitForScreenExit());
+  EXPECT_EQ(EnrollmentScreen::Result::BACK_TO_AUTO_ENROLLMENT_CHECK,
+            enrollment_ui_.WaitForScreenExit());
 }
 
 // Device is disabled.
@@ -990,7 +991,8 @@ IN_PROC_BROWSER_TEST_F(EnrollmentRecoveryTest, Success) {
   // User can't skip.
   enrollment_ui_.SetExitHandler();
   enrollment_screen()->OnCancel();
-  EXPECT_EQ(EnrollmentScreen::Result::BACK, enrollment_ui_.WaitForScreenExit());
+  EXPECT_EQ(EnrollmentScreen::Result::BACK_TO_AUTO_ENROLLMENT_CHECK,
+            enrollment_ui_.WaitForScreenExit());
 
   enrollment_screen()->OnLoginDone(FakeGaiaMixin::kEnterpriseUser1,
                                    FakeGaiaMixin::kFakeAuthCode);
@@ -1034,7 +1036,8 @@ IN_PROC_BROWSER_TEST_F(InitialEnrollmentTest, EnrollmentForced) {
   // User can't skip.
   enrollment_ui_.SetExitHandler();
   enrollment_screen()->OnCancel();
-  EXPECT_EQ(EnrollmentScreen::Result::BACK, enrollment_ui_.WaitForScreenExit());
+  EXPECT_EQ(EnrollmentScreen::Result::BACK_TO_AUTO_ENROLLMENT_CHECK,
+            enrollment_ui_.WaitForScreenExit());
 
   // Domain is actually different from what the server sent down. But Chrome
   // does not enforce that domain if device is not locked.
