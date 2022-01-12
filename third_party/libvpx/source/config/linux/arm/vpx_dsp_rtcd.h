@@ -535,7 +535,7 @@ void vpx_idct8x8_64_add_c(const tran_low_t* input, uint8_t* dest, int stride);
 int16_t vpx_int_pro_col_c(const uint8_t* ref, const int width);
 #define vpx_int_pro_col vpx_int_pro_col_c
 
-void vpx_int_pro_row_c(int16_t* hbuf,
+void vpx_int_pro_row_c(int16_t hbuf[16],
                        const uint8_t* ref,
                        const int ref_stride,
                        const int height);
