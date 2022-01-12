@@ -63,7 +63,7 @@ Element* ContainerQueryEvaluator::FindContainer(
 
   // TODO(crbug.com/1213888): Cache results.
   for (Element* element = container; element;
-       element = LayoutTreeBuilderTraversal::ParentElement(*element)) {
+       element = element->ParentOrShadowHostElement()) {
     if (const ComputedStyle* style = element->GetComputedStyle()) {
       if (style->IsContainerForContainerQueries(*element) &&
           Matches(*style, container_selector)) {

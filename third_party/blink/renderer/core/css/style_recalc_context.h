@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RECALC_CONTEXT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_STYLE_RECALC_CONTEXT_H_
 
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 namespace blink {
@@ -17,7 +18,7 @@ class Element;
 // Its purpose is to hold context related to the style recalc process as
 // a whole, i.e. information not directly associated to the specific element
 // style is being calculated for.
-class StyleRecalcContext {
+class CORE_EXPORT StyleRecalcContext {
   STACK_ALLOCATED();
 
  public:

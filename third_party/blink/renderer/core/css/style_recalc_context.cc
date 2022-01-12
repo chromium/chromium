@@ -10,22 +10,34 @@
 
 namespace blink {
 
+namespace {
+
+Element* ClosestInclusiveAncestorContainer(Element& element) {
+  for (auto* container = &element; container;
+       container = container->ParentOrShadowHostElement()) {
+    if (container->GetContainerQueryEvaluator())
+      return container;
+  }
+  return nullptr;
+}
+
+}  // namespace
+
 StyleRecalcContext StyleRecalcContext::FromInclusiveAncestors(
     Element& element) {
-  if (element.GetContainerQueryEvaluator())
-    return StyleRecalcContext{&element};
-  return FromAncestors(element);
+  if (!RuntimeEnabledFeatures::CSSContainerQueriesEnabled())
+    return StyleRecalcContext();
+
+  return StyleRecalcContext{ClosestInclusiveAncestorContainer(element)};
 }
 
 StyleRecalcContext StyleRecalcContext::FromAncestors(Element& element) {
-  Element* ancestor = &element;
-  // TODO(crbug.com/1145970): Avoid this work if we're not inside a container.
-  while ((ancestor = DynamicTo<Element>(
-              LayoutTreeBuilderTraversal::Parent(*ancestor)))) {
-    if (ancestor->GetContainerQueryEvaluator())
-      return StyleRecalcContext{ancestor};
-  }
+  if (!RuntimeEnabledFeatures::CSSContainerQueriesEnabled())
+    return StyleRecalcContext();
 
+  // TODO(crbug.com/1145970): Avoid this work if we're not inside a container
+  if (Element* shadow_including_parent = element.ParentOrShadowHostElement())
+    return FromInclusiveAncestors(*shadow_including_parent);
   return StyleRecalcContext();
 }
 

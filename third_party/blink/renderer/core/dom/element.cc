@@ -5369,10 +5369,7 @@ const ComputedStyle* Element::EnsureComputedStyle(
   HeapVector<Member<Element>> ancestors = CollectAncestorsToEnsure(*this);
 
   Element* top = ancestors.IsEmpty() ? this : ancestors.back().Get();
-  auto style_recalc_context =
-      RuntimeEnabledFeatures::CSSContainerQueriesEnabled()
-          ? StyleRecalcContext::FromAncestors(*top)
-          : StyleRecalcContext();
+  auto style_recalc_context = StyleRecalcContext::FromAncestors(*top);
 
   while (!ancestors.IsEmpty()) {
     Element* ancestor = ancestors.back();

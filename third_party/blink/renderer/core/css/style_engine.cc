@@ -2364,11 +2364,10 @@ void StyleEngine::UpdateStyleAndLayoutTreeForContainer(
   container.SetChildNeedsStyleRecalc();
   style_recalc_root_.Update(nullptr, &container);
 
-  // No need to initialize container for the StyleRecalcContext with
-  // FromAncestors because style will not be recalculated for "container, and
-  // Element::RecalcStyle for the "container" will initialize StyleRecalcContext
-  // with itself for its children.
-  RecalcStyle(change, StyleRecalcContext());
+  // TODO(crbug.com/1145970): Consider use a caching mechanism for FromAncestors
+  // as we typically will call it for all containers on the first style/layout
+  // pass.
+  RecalcStyle(change, StyleRecalcContext::FromAncestors(container));
 
   if (UNLIKELY(container.NeedsReattachLayoutTree())) {
     // Generally, the container itself should not be marked for re-attachment.
@@ -2439,14 +2438,8 @@ void StyleEngine::RecalcTransitionPseudoStyle() {
 }
 
 void StyleEngine::RecalcStyle() {
-  Element& root_element = style_recalc_root_.RootElement();
-
-  auto style_recalc_context =
-      RuntimeEnabledFeatures::CSSContainerQueriesEnabled()
-          ? StyleRecalcContext::FromAncestors(root_element)
-          : StyleRecalcContext();
-
-  RecalcStyle({}, style_recalc_context);
+  RecalcStyle(
+      {}, StyleRecalcContext::FromAncestors(style_recalc_root_.RootElement()));
   RecalcTransitionPseudoStyle();
 }
 

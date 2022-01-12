@@ -32,10 +32,7 @@ const ComputedStyle* SVGElementRareData::OverrideComputedStyle(
     const ComputedStyle* parent_style) {
   DCHECK(element);
   if (!override_computed_style_ || needs_override_computed_style_update_) {
-    auto style_recalc_context =
-        RuntimeEnabledFeatures::CSSContainerQueriesEnabled()
-            ? StyleRecalcContext::FromAncestors(*element)
-            : StyleRecalcContext();
+    auto style_recalc_context = StyleRecalcContext::FromAncestors(*element);
 
     StyleRequest style_request;
     style_request.parent_override = parent_style;
