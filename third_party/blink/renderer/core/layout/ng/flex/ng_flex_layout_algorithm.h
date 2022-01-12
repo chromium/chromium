@@ -16,6 +16,7 @@ class NGBlockNode;
 class NGBlockBreakToken;
 class NGBoxFragment;
 struct DevtoolsFlexInfo;
+struct NGFlexItem;
 
 class CORE_EXPORT NGFlexLayoutAlgorithm
     : public NGLayoutAlgorithm<NGBlockNode,

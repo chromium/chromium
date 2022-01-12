@@ -275,12 +275,14 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // Set how much of the block-size we've used so far for this box. This will be
   // the sum of the block-size of all previous fragments PLUS the one we're
   // building now.
-  void SetConsumedBlockSize(LayoutUnit size) { consumed_block_size_ = size; }
+  void SetConsumedBlockSize(LayoutUnit size) {
+    EnsureBreakTokenData()->consumed_block_size = size;
+  }
 
   // Set how much to adjust |consumed_block_size_| for legacy write-back. See
   // NGBlockBreakToken::ConsumedBlockSizeForLegacy() for more details.
   void SetConsumedBlockSizeLegacyAdjustment(LayoutUnit adjustment) {
-    consumed_block_size_legacy_adjustment_ = adjustment;
+    EnsureBreakTokenData()->consumed_block_size_legacy_adjustment = adjustment;
   }
 
   // Set how much of the column block-size we've used so far. This will be used
@@ -294,7 +296,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   }
 
   void SetSequenceNumber(unsigned sequence_number) {
-    sequence_number_ = sequence_number;
+    EnsureBreakTokenData()->sequence_number = sequence_number;
   }
 
   // During regular layout a break token is created at the end of layout, if
@@ -583,14 +585,19 @@ class CORE_EXPORT NGBoxFragmentBuilder final
     return *grid_layout_data_.get();
   }
 
-  void SetFlexBreakTokenData(
-      std::unique_ptr<const NGFlexBreakTokenData> flex_break_token_data) {
-    flex_break_token_data_ = std::move(flex_break_token_data);
+  bool HasBreakTokenData() const { return break_token_data_.get(); }
+
+  NGBlockBreakTokenData* EnsureBreakTokenData() {
+    if (!HasBreakTokenData())
+      break_token_data_ = std::make_unique<NGBlockBreakTokenData>();
+    return break_token_data_.get();
   }
 
-  void SetGridBreakTokenData(
-      std::unique_ptr<const NGGridBreakTokenData> grid_break_token_data) {
-    grid_break_token_data_ = std::move(grid_break_token_data);
+  NGBlockBreakTokenData* GetBreakTokenData() { return break_token_data_.get(); }
+
+  void SetBreakTokenData(
+      std::unique_ptr<NGBlockBreakTokenData> break_token_data) {
+    break_token_data_ = std::move(break_token_data);
   }
 
   // The |NGFragmentItemsBuilder| for the inline formatting context of this box.
@@ -677,10 +684,7 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   bool is_math_operator_ = false;
   bool is_at_block_end_ = false;
   bool disable_oof_descendants_propagation_ = false;
-  LayoutUnit consumed_block_size_;
-  LayoutUnit consumed_block_size_legacy_adjustment_;
   LayoutUnit block_offset_for_additional_columns_;
-  unsigned sequence_number_ = 0;
 
   LayoutUnit minimal_space_shortage_ = LayoutUnit::Max();
   LayoutUnit tallest_unbreakable_block_size_ = LayoutUnit::Min();
@@ -711,12 +715,10 @@ class CORE_EXPORT NGBoxFragmentBuilder final
   // Table cell specific types.
   absl::optional<wtf_size_t> table_cell_column_index_;
 
-  // Flex specific types.
-  std::unique_ptr<const NGFlexBreakTokenData> flex_break_token_data_;
+  std::unique_ptr<NGBlockBreakTokenData> break_token_data_;
 
   // Grid specific types.
   std::unique_ptr<NGGridLayoutData> grid_layout_data_;
-  std::unique_ptr<const NGGridBreakTokenData> grid_break_token_data_;
 
   LogicalBoxSides sides_to_include_;
 

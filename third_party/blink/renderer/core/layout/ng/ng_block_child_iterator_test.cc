@@ -22,6 +22,8 @@ const NGBlockBreakToken* CreateBreakToken(
   NGBoxFragmentBuilder builder(
       node, &node.Style(), /* space */ nullptr,
       WritingDirectionMode(WritingMode::kHorizontalTb, TextDirection::kLtr));
+  DCHECK(!builder.HasBreakTokenData());
+  builder.SetBreakTokenData(std::make_unique<NGBlockBreakTokenData>());
   if (has_seen_all_children)
     builder.SetHasSeenAllChildren();
   if (child_break_tokens) {
