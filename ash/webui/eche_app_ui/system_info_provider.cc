@@ -66,14 +66,14 @@ void SystemInfoProvider::GetSystemInfo(
   json_dictionary.SetStringKey(kJsonDeviceNameKey,
                                system_info_->GetDeviceName());
   json_dictionary.SetStringKey(kJsonBoardNameKey, system_info_->GetBoardName());
-  json_dictionary.SetBoolean(kJsonTabletModeKey,
+  json_dictionary.SetBoolKey(kJsonTabletModeKey,
                              TabletMode::Get()->InTabletMode());
   auto found_type = CONNECTION_STATE_TYPE.find(wifi_connection_state_);
   std::string connecton_state_string =
       found_type == CONNECTION_STATE_TYPE.end() ? "" : found_type->second;
   json_dictionary.SetStringKey(kJsonWifiConnectionStateKey,
                                connecton_state_string);
-  json_dictionary.SetBoolean(
+  json_dictionary.SetBoolKey(
       kJsonDebugModeKey,
       base::FeatureList::IsEnabled(features::kEcheSWADebugMode));
 

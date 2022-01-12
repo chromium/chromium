@@ -308,7 +308,7 @@ void UpdatePrimaryUserDeskMetricsPrefs() {
         desk->creation_time().ToDeltaSinceWindowsEpoch().InMinutes());
     metrics_dict.SetIntKey(kFirstDayVisitedKey, desk->first_day_visited());
     metrics_dict.SetIntKey(kLastDayVisitedKey, desk->last_day_visited());
-    metrics_dict.SetBoolean(kInteractedWithThisWeekKey,
+    metrics_dict.SetBoolKey(kInteractedWithThisWeekKey,
                             desk->interacted_with_this_week());
     metrics_pref_data->Append(std::move(metrics_dict));
   }

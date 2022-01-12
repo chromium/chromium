@@ -116,8 +116,8 @@ class AudioDevicesPrefHandlerTest : public testing::TestWithParam<bool> {
                                             prefs::kAudioDevicesState);
       base::DictionaryValue* pref = update.Get();
       base::DictionaryValue state;
-      state.SetBoolean("active", kPresetState.active);
-      state.SetBoolean("activate_by_user", kPresetState.activate_by_user);
+      state.SetBoolKey("active", kPresetState.active);
+      state.SetBoolKey("activate_by_user", kPresetState.activate_by_user);
       pref->SetPath(preset_key, std::move(state));
     }
 

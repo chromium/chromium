@@ -107,7 +107,8 @@ class WifiHotspotConnectorTest : public testing::Test {
     void CreateConfiguration(base::DictionaryValue* shill_properties,
                              bool shared) override {
       EXPECT_FALSE(shared);
-      last_configuration_ = shill_properties->CreateDeepCopy();
+      last_configuration_ = base::DictionaryValue::From(
+          base::Value::ToUniquePtrValue(shill_properties->Clone()));
 
       // Prevent nested RunLoops when ConfigureServiceWithLastNetworkConfig()
       // calls NetworkStateTestHelper::ConfigureService(); that causes threading

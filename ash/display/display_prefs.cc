@@ -475,12 +475,9 @@ void StoreDisplayLayoutPref(PrefService* pref_service,
                                         prefs::kSecondaryDisplays);
   base::DictionaryValue* pref_data = update.Get();
   base::Value layout_value(base::Value::Type::DICTIONARY);
-  if (pref_data->HasKey(name)) {
-    base::Value* value = nullptr;
-    if (pref_data->Get(name, &value) && value != nullptr) {
-      layout_value = value->Clone();
-    }
-  }
+  const base::Value* value = pref_data->FindKey(name);
+  if (value)
+    layout_value = value->Clone();
   if (display::DisplayLayoutToJson(display_layout, &layout_value))
     pref_data->SetPath(name, std::move(layout_value));
 }
@@ -569,7 +566,7 @@ void StoreCurrentDisplayProperties(PrefService* pref_service) {
           static_cast<int>(mode.device_scale_factor() * 1000));
 
       if (display::features::IsListAllDisplayModesEnabled()) {
-        property_value.SetBoolean("interlaced", mode.is_interlaced());
+        property_value.SetBoolKey("interlaced", mode.is_interlaced());
         property_value.SetDoubleKey("refresh-rate", mode.refresh_rate());
       }
     }
@@ -637,7 +634,7 @@ void StoreDisplayRotationPrefs(PrefService* pref_service,
   DictionaryPrefUpdateDeprecated update(pref_service,
                                         prefs::kDisplayRotationLock);
   base::DictionaryValue* pref_data = update.Get();
-  pref_data->SetBoolean("lock", rotation_lock);
+  pref_data->SetBoolKey("lock", rotation_lock);
   pref_data->SetIntKey("orientation", static_cast<int>(rotation));
 }
 

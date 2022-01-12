@@ -163,8 +163,8 @@ class DisplayPrefsTest : public AshTestBase {
 
     base::DictionaryValue* pref_data = update.Get();
     base::Value layout_value(base::Value::Type::DICTIONARY);
-    base::Value* value = nullptr;
-    if (pref_data->Get(name, &value) && value != nullptr)
+    const base::Value* value = pref_data->FindKey(name);
+    if (value)
       layout_value = value->Clone();
     if (display::DisplayLayoutToJson(display_layout, &layout_value))
       pref_data->SetPath(name, std::move(layout_value));
@@ -185,7 +185,7 @@ class DisplayPrefsTest : public AshTestBase {
                             base::Value::FromUniquePtrValue(std::move(value)));
     } else {
       base::DictionaryValue layout_value;
-      layout_value.SetBoolean(key, value != nullptr);
+      layout_value.SetBoolKey(key, value != nullptr);
       pref_data->SetPath(name, std::move(layout_value));
     }
   }

@@ -65,7 +65,7 @@ ScreenlockBridge::UserPodCustomIconInfo::ToDictionaryValue() const {
   if (!tooltip_.empty()) {
     base::DictionaryValue tooltip_options;
     tooltip_options.SetStringKey("text", tooltip_);
-    tooltip_options.SetBoolean("autoshow", autoshow_tooltip_);
+    tooltip_options.SetBoolKey("autoshow", autoshow_tooltip_);
     result->SetKey("tooltip", std::move(tooltip_options));
   }
 
@@ -73,7 +73,7 @@ ScreenlockBridge::UserPodCustomIconInfo::ToDictionaryValue() const {
     result->SetString("ariaLabel", aria_label_);
 
   if (hardlock_on_click_)
-    result->SetBoolean("hardlockOnClick", true);
+    result->SetBoolKey("hardlockOnClick", true);
 
   return result;
 }
