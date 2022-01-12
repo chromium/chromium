@@ -1324,7 +1324,7 @@ NetworkHandler::BuildProtocolReport(const net::ReportingReport& report) {
         .SetDepth(report.depth)
         .SetCompletedAttempts(report.attempts)
         .SetBody(protocol::DictionaryValue::cast(
-            protocol::toProtocolValue(report.body.get(), 1000)))
+            protocol::toProtocolValue(*report.body.get(), 1000)))
         .SetStatus(BuildReportStatus(report.status))
         .Build();
   }
@@ -2080,7 +2080,7 @@ void NetworkHandler::NavigationRequestWillBeSent(
       nav_request.begin_params().devtools_initiator;
   if (initiator_optional.has_value()) {
     initiator = protocol::ValueTypeConverter<Network::Initiator>::FromValue(
-        *toProtocolValue(&initiator_optional.value(), 1000));
+        *toProtocolValue(initiator_optional.value(), 1000));
   }
   if (!initiator) {
     initiator = Network::Initiator::Create()

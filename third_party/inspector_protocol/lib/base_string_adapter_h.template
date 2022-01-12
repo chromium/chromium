@@ -38,8 +38,8 @@ class {{config.lib.export_macro}} StringUtil {
   static size_t CharacterCount(const String& s) { return s.size(); }
 };
 
-std::unique_ptr<Value> toProtocolValue(const base::Value* value, int depth);
-std::unique_ptr<base::Value> toBaseValue(Value* value, int depth);
+std::unique_ptr<Value> toProtocolValue(const base::Value& value, int depth);
+base::Value toBaseValue(Value* value, int depth);
 
 {% for namespace in config.protocol.namespace %}
 } // namespace {{namespace}}

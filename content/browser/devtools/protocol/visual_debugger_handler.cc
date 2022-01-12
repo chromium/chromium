@@ -36,8 +36,7 @@ void VisualDebuggerHandler::Wire(UberDispatcher* dispatcher) {
 
 DispatchResponse VisualDebuggerHandler::FilterStream(
     std::unique_ptr<protocol::DictionaryValue> in_filter) {
-  std::unique_ptr<base::Value> dict =
-      toBaseValue(in_filter.get(), sMaxJsonDepth);
+  base::Value dict = toBaseValue(in_filter.get(), sMaxJsonDepth);
 
   GpuProcessHost::CallOnIO(
       GPU_PROCESS_KIND_SANDBOXED,
@@ -46,7 +45,7 @@ DispatchResponse VisualDebuggerHandler::FilterStream(
           [](base::Value json, GpuProcessHost* host) {
             host->gpu_host()->FilterVisualDebugStream(std::move(json));
           },
-          std::move(*dict.get())));
+          std::move(dict)));
 
   return DispatchResponse::Success();
 }
@@ -74,7 +73,7 @@ void VisualDebuggerHandler::OnFrameResponse(base::Value json) {
   // above and thus should be in the correct thread.
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   std::unique_ptr<protocol::DictionaryValue> dict =
-      protocol::DictionaryValue::cast(toProtocolValue(&json, sMaxJsonDepth));
+      protocol::DictionaryValue::cast(toProtocolValue(json, sMaxJsonDepth));
   frontend_->FrameResponse(std::move(dict));
 }
 

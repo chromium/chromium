@@ -240,12 +240,8 @@ void SendGetInfoResponse(std::unique_ptr<GetInfoCallback> callback) {
                     gpu_info.visibility_callback_call_count);
   enumerator.EndAuxAttributes();
 
-  std::unique_ptr<base::DictionaryValue> base_feature_status =
-      base::DictionaryValue::From(
-          std::make_unique<base::Value>(GetFeatureStatus()));
-  std::unique_ptr<protocol::DictionaryValue> feature_status =
-      protocol::DictionaryValue::cast(
-          protocol::toProtocolValue(base_feature_status.get(), 1000));
+  auto feature_status = protocol::DictionaryValue::cast(
+      protocol::toProtocolValue(GetFeatureStatus(), 1000));
 
   auto driver_bug_workarounds =
       std::make_unique<protocol::Array<std::string>>(GetDriverBugWorkarounds());
