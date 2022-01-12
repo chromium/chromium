@@ -480,18 +480,23 @@ PopupMenuTextItem* CreateEnterpriseInfoItem(NSString* imageName,
         [self createToolsMenuItems];
         break;
       case PopupMenuTypeNavigationForward:
+        DCHECK(!ShouldUseUIKitPopupMenu());
         [self createNavigationItemsForType:PopupMenuTypeNavigationForward];
         break;
       case PopupMenuTypeNavigationBackward:
+        DCHECK(!ShouldUseUIKitPopupMenu());
         [self createNavigationItemsForType:PopupMenuTypeNavigationBackward];
         break;
       case PopupMenuTypeTabGrid:
+        DCHECK(!ShouldUseUIKitPopupMenu());
         [self createTabGridMenuItems];
         break;
       case PopupMenuTypeTabStripTabGrid:
+        DCHECK(!ShouldUseUIKitPopupMenu());
         [self createTabGridMenuItems];
         break;
       case PopupMenuTypeNewTab:
+        DCHECK(!ShouldUseUIKitPopupMenu());
         [self createSearchMenuItems];
         break;
     }

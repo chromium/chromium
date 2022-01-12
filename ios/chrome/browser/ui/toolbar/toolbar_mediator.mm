@@ -5,24 +5,46 @@
 #import "ios/chrome/browser/ui/toolbar/toolbar_mediator.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/open_from_clipboard/clipboard_recent_content.h"
+#include "components/search_engines/template_url_service.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter_observer_bridge.h"
 #include "ios/chrome/browser/policy/policy_features.h"
+#import "ios/chrome/browser/policy/policy_util.h"
+#include "ios/chrome/browser/search_engines/search_engines_util.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/load_query_commands.h"
+#import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_consumer.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/url_loading/image_search_param_generator.h"
+#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
+#include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
+#include "ios/web/public/favicon/favicon_status.h"
+#import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/image/image.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+using base::RecordAction;
+using base::UserMetricsAction;
 
 @interface ToolbarMediator () <CRWWebStateObserver,
                                OverlayPresenterObserving,
@@ -158,6 +180,27 @@
   self.webState = newWebState;
 }
 
+#pragma mark - AdaptiveToolbarMenusProvider
+
+- (UIMenu*)menuForButtonOfType:(AdaptiveToolbarButtonType)buttonType {
+  switch (buttonType) {
+    case AdaptiveToolbarButtonTypeBack:
+      return [self menuForNavigationItems:self.webState->GetNavigationManager()
+                                              ->GetBackwardItems()];
+
+    case AdaptiveToolbarButtonTypeForward:
+      return [self menuForNavigationItems:self.webState->GetNavigationManager()
+                                              ->GetForwardItems()];
+
+    case AdaptiveToolbarButtonTypeNewTab:
+      return [self menuForNewTabButton];
+
+    case AdaptiveToolbarButtonTypeTabGrid:
+      return [self menuForTabGridButton];
+  }
+  return nil;
+}
+
 #pragma mark - Setters
 
 - (void)setIncognito:(BOOL)incognito {
@@ -284,6 +327,260 @@
 - (void)overlayPresenter:(OverlayPresenter*)presenter
     didHideOverlayForRequest:(OverlayRequest*)request {
   self.webContentAreaShowingOverlay = NO;
+}
+
+#pragma mark - Private
+
+// Returns a menu for the |navigationItems|.
+- (UIMenu*)menuForNavigationItems:
+    (const std::vector<web::NavigationItem*>)navigationItems {
+  NSMutableArray<UIMenuElement*>* actions = [NSMutableArray array];
+  for (web::NavigationItem* navigationItem : navigationItems) {
+    NSString* title;
+    UIImage* image;
+    if ([self shouldUseIncognitoNTPResourcesForURL:navigationItem
+                                                       ->GetVirtualURL()]) {
+      title = l10n_util::GetNSStringWithFixup(IDS_IOS_NEW_INCOGNITO_TAB);
+      image = [UIImage imageNamed:@"incognito_badge"];
+    } else {
+      title = base::SysUTF16ToNSString(navigationItem->GetTitleForDisplay());
+      const gfx::Image& gfxImage = navigationItem->GetFaviconStatus().image;
+      if (!gfxImage.IsEmpty()) {
+        image = gfxImage.ToUIImage();
+      } else {
+        image = [UIImage imageNamed:@"default_favicon"];
+      }
+    }
+
+    __weak __typeof(self) weakSelf = self;
+    UIAction* action =
+        [UIAction actionWithTitle:title
+                            image:image
+                       identifier:nil
+                          handler:^(UIAction* action) {
+                            [weakSelf navigateToPageForItem:navigationItem];
+                          }];
+    [actions addObject:action];
+  }
+  return [UIMenu menuWithTitle:@"" children:actions];
+}
+
+// Returns YES if incognito NTP title and image should be used for back/forward
+// item associated with |URL|.
+- (BOOL)shouldUseIncognitoNTPResourcesForURL:(const GURL&)URL {
+  return URL.DeprecatedGetOriginAsURL() == kChromeUINewTabURL &&
+         self.isIncognito &&
+         base::FeatureList::IsEnabled(kUpdateHistoryEntryPointsInIncognito);
+}
+
+// Returns the menu for the new tab button.
+- (UIMenu*)menuForNewTabButton {
+  __weak __typeof(self) weakSelf = self;
+  UIAction* QRCodeSearch = [UIAction
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_QR_SCANNER)
+                image:[UIImage imageNamed:@"popup_menu_qr_scanner"]
+           identifier:nil
+              handler:^(UIAction* action) {
+                RecordAction(UserMetricsAction("MobileMenuScanQRCode"));
+                [weakSelf.commandHandler showQRScanner];
+              }];
+
+  UIAction* voiceSearch = [UIAction
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_VOICE_SEARCH)
+                image:[UIImage imageNamed:@"popup_menu_voice_search"]
+           identifier:nil
+              handler:^(UIAction* action) {
+                RecordAction(UserMetricsAction("MobileMenuVoiceSearch"));
+                [weakSelf.commandHandler startVoiceSearch];
+              }];
+
+  UIAction* newSearch = [UIAction
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_SEARCH)
+                image:[UIImage imageNamed:@"popup_menu_search"]
+           identifier:nil
+              handler:^(UIAction* action) {
+                RecordAction(UserMetricsAction("MobileMenuSearch"));
+                OpenNewTabCommand* command =
+                    [OpenNewTabCommand commandWithIncognito:NO];
+                command.shouldFocusOmnibox = YES;
+                [weakSelf.commandHandler openURLInNewTab:command];
+              }];
+
+  if (IsIncognitoModeForced(self.prefService)) {
+    newSearch.attributes = UIMenuElementAttributesDisabled;
+  }
+
+  UIAction* newIncognitoSearch = [UIAction
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_SEARCH)
+                image:[UIImage imageNamed:@"popup_menu_new_incognito_tab"]
+           identifier:nil
+              handler:^(UIAction* action) {
+                RecordAction(UserMetricsAction("MobileMenuIncognitoSearch"));
+                OpenNewTabCommand* command =
+                    [OpenNewTabCommand commandWithIncognito:YES];
+                command.shouldFocusOmnibox = YES;
+                [weakSelf.commandHandler openURLInNewTab:command];
+              }];
+
+  if (IsIncognitoModeDisabled(self.prefService)) {
+    newIncognitoSearch.attributes = UIMenuElementAttributesDisabled;
+  }
+
+  NSArray* staticActions =
+      @[ newSearch, newIncognitoSearch, voiceSearch, QRCodeSearch ];
+
+  UIMenuElement* clipboardAction = [self menuElementForPasteboard];
+
+  if (clipboardAction) {
+    UIMenu* staticMenu = [UIMenu menuWithTitle:@""
+                                         image:nil
+                                    identifier:nil
+                                       options:UIMenuOptionsDisplayInline
+                                      children:staticActions];
+
+    return [UIMenu menuWithTitle:@"" children:@[ staticMenu, clipboardAction ]];
+  }
+  return [UIMenu menuWithTitle:@"" children:staticActions];
+}
+
+// Returns the menu for the TabGrid button.
+- (UIMenu*)menuForTabGridButton {
+  __weak __typeof(self) weakSelf = self;
+  UIAction* openNewTab = [UIAction
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_TAB)
+                image:[UIImage imageNamed:@"popup_menu_new_tab"]
+           identifier:nil
+              handler:^(UIAction* action) {
+                RecordAction(UserMetricsAction("MobileMenuNewTab"));
+                [weakSelf.commandHandler
+                    openURLInNewTab:[OpenNewTabCommand
+                                        commandWithIncognito:NO
+                                                 originPoint:CGPointZero]];
+              }];
+
+  if (IsIncognitoModeForced(self.prefService)) {
+    openNewTab.attributes = UIMenuElementAttributesDisabled;
+  }
+
+  UIAction* openNewIncognitoTab = [UIAction
+      actionWithTitle:l10n_util::GetNSString(
+                          IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB)
+                image:[UIImage imageNamed:@"popup_menu_new_incognito_tab"]
+           identifier:nil
+              handler:^(UIAction* action) {
+                RecordAction(UserMetricsAction("MobileMenuNewIncognitoTab"));
+                [weakSelf.commandHandler
+                    openURLInNewTab:[OpenNewTabCommand
+                                        commandWithIncognito:YES
+                                                 originPoint:CGPointZero]];
+              }];
+
+  if (IsIncognitoModeDisabled(self.prefService)) {
+    openNewIncognitoTab.attributes = UIMenuElementAttributesDisabled;
+  }
+
+  UIMenu* newTabActions =
+      [UIMenu menuWithTitle:@""
+                      image:nil
+                 identifier:nil
+                    options:UIMenuOptionsDisplayInline
+                   children:@[ openNewTab, openNewIncognitoTab ]];
+
+  UIAction* closeTab = [UIAction
+      actionWithTitle:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_CLOSE_TAB)
+                image:[UIImage imageNamed:@"popup_menu_close_tab"]
+           identifier:nil
+              handler:^(UIAction* action) {
+                RecordAction(UserMetricsAction("MobileMenuCloseTab"));
+                [weakSelf.commandHandler closeCurrentTab];
+              }];
+  closeTab.attributes = UIMenuElementAttributesDestructive;
+
+  return [UIMenu menuWithTitle:@"" children:@[ newTabActions, closeTab ]];
+}
+
+// Returns the UIMenuElement for the content of the pasteboard. Can return nil.
+- (UIMenuElement*)menuElementForPasteboard {
+  __weak __typeof(self) weakSelf = self;
+
+  ClipboardRecentContent* clipboardRecentContent =
+      ClipboardRecentContent::GetInstance();
+
+  absl::optional<GURL> optionalURL =
+      clipboardRecentContent->GetRecentURLFromClipboard();
+  absl::optional<std::u16string> optionalText =
+      clipboardRecentContent->GetRecentTextFromClipboard();
+
+  if (search_engines::SupportsSearchByImage(self.templateURLService) &&
+      clipboardRecentContent->HasRecentImageFromClipboard()) {
+    return [UIAction
+        actionWithTitle:l10n_util::GetNSString(
+                            IDS_IOS_TOOLS_MENU_SEARCH_COPIED_IMAGE)
+                  image:[UIImage imageNamed:@"popup_menu_paste_and_go"]
+             identifier:nil
+                handler:^(UIAction* action) {
+                  RecordAction(
+                      UserMetricsAction("MobileMenuSearchCopiedImage"));
+                  ClipboardRecentContent* clipboardRecentContent =
+                      ClipboardRecentContent::GetInstance();
+                  clipboardRecentContent->GetRecentImageFromClipboard(
+                      base::BindOnce(
+                          ^(absl::optional<gfx::Image> optionalImage) {
+                            if (!optionalImage) {
+                              return;
+                            }
+                            UIImage* image =
+                                [optionalImage.value().ToUIImage() copy];
+                            web::NavigationManager::WebLoadParams webParams =
+                                ImageSearchParamGenerator::LoadParamsForImage(
+                                    image, self.templateURLService);
+                            UrlLoadParams params =
+                                UrlLoadParams::InCurrentTab(webParams);
+
+                            self.URLLoadingBrowserAgent->Load(params);
+                          }));
+                }];
+  } else if (optionalURL) {
+    return [UIAction
+        actionWithTitle:l10n_util::GetNSString(
+                            IDS_IOS_TOOLS_MENU_VISIT_COPIED_LINK)
+                  image:[UIImage imageNamed:@"popup_menu_paste_and_go"]
+             identifier:nil
+                handler:^(UIAction* action) {
+                  RecordAction(UserMetricsAction("MobileMenuPasteAndGo"));
+                  [weakSelf.commandHandler
+                        loadQuery:base::SysUTF8ToNSString(
+                                      optionalURL.value().spec())
+                      immediately:YES];
+                }];
+
+  } else if (optionalText) {
+    return [UIAction
+        actionWithTitle:l10n_util::GetNSString(
+                            IDS_IOS_TOOLS_MENU_SEARCH_COPIED_TEXT)
+                  image:[UIImage imageNamed:@"popup_menu_paste_and_go"]
+             identifier:nil
+                handler:^(UIAction* action) {
+                  RecordAction(UserMetricsAction("MobileMenuPasteAndGo"));
+
+                  [weakSelf.commandHandler
+                        loadQuery:base::SysUTF16ToNSString(optionalText.value())
+                      immediately:YES];
+                }];
+  }
+
+  return nil;
+}
+
+// Navigates to the page associated with |item|.
+- (void)navigateToPageForItem:(web::NavigationItem*)item {
+  if (!self.webState)
+    return;
+
+  int index = self.webState->GetNavigationManager()->GetIndexOfItem(item);
+  DCHECK_NE(index, -1);
+  self.webState->GetNavigationManager()->GoToIndex(index);
 }
 
 @end

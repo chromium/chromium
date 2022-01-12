@@ -7,16 +7,25 @@
 #include <memory>
 
 #include "base/files/scoped_temp_dir.h"
+#import "base/mac/foundation_util.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/open_from_clipboard/clipboard_recent_content.h"
+#include "components/open_from_clipboard/fake_clipboard_recent_content.h"
+#include "components/prefs/pref_service.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
+#include "ios/chrome/browser/policy/policy_features.h"
+#import "ios/chrome/browser/policy/policy_util.h"
+#include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/toolbar/test/toolbar_test_navigation_manager.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_consumer.h"
 #include "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
+#include "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/providers/voice_search/test_voice_search.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #import "ios/web/public/test/fakes/fake_navigation_context.h"
@@ -24,9 +33,11 @@
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #include "ios/web/public/test/web_task_environment.h"
 #import "ios/web/public/web_state_observer_bridge.h"
+#include "testing/gtest_mac.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 #include "third_party/ocmock/gtest_support.h"
+#include "ui/base/l10n/l10n_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -64,6 +75,11 @@ class ToolbarMediatorTest : public PlatformTest {
     consumer_ = OCMProtocolMock(@protocol(ToolbarConsumer));
     strict_consumer_ = OCMStrictProtocolMock(@protocol(ToolbarConsumer));
     SetUpWebStateList();
+
+    [[UIPasteboard generalPasteboard] setItems:@[]];
+
+    ClipboardRecentContent::SetInstance(
+        std::make_unique<FakeClipboardRecentContent>());
   }
 
   // Explicitly disconnect the mediator so there won't be any WebStateList
@@ -368,6 +384,195 @@ TEST_F(ToolbarMediatorTest, TestUpdateConsumerForWebState) {
   [mediator_ updateConsumerForWebState:test_web_state.get()];
 
   EXPECT_OCMOCK_VERIFY(consumer_);
+}
+
+// Tests the menu elements.
+TEST_F(ToolbarMediatorTest, MenuElements) {
+  mediator_.webStateList = web_state_list_.get();
+  SetUpActiveWebState();
+
+  UIMenu* new_tab_menu =
+      [mediator_ menuForButtonOfType:AdaptiveToolbarButtonTypeNewTab];
+
+  ASSERT_EQ(4U, new_tab_menu.children.count);
+  for (UIMenuElement* element in new_tab_menu.children) {
+    ASSERT_TRUE([element isKindOfClass:[UIAction class]]);
+    UIAction* action = (UIAction*)element;
+    EXPECT_EQ(0U, action.attributes);
+  }
+
+  UIMenu* tab_grid_menu =
+      [mediator_ menuForButtonOfType:AdaptiveToolbarButtonTypeTabGrid];
+
+  ASSERT_EQ(2U, tab_grid_menu.children.count);
+
+  ASSERT_TRUE([tab_grid_menu.children[0] isKindOfClass:[UIMenu class]]);
+  UIMenu* open_tab_menu = (UIMenu*)tab_grid_menu.children[0];
+  ASSERT_EQ(2U, open_tab_menu.children.count);
+  for (UIMenuElement* element in open_tab_menu.children) {
+    ASSERT_TRUE([element isKindOfClass:[UIAction class]]);
+    UIAction* action = (UIAction*)element;
+    EXPECT_EQ(0U, action.attributes);
+  }
+
+  ASSERT_TRUE([tab_grid_menu.children[1] isKindOfClass:[UIAction class]]);
+  UIAction* close_tab = (UIAction*)tab_grid_menu.children[1];
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_CLOSE_TAB),
+              close_tab.title);
+  EXPECT_EQ(UIMenuElementAttributesDestructive, close_tab.attributes);
+}
+
+// Tests the menu elements when incognito is forced.
+TEST_F(ToolbarMediatorTest, MenuElementsForcedIncognito) {
+  mediator_.webStateList = web_state_list_.get();
+  SetUpActiveWebState();
+  sync_preferences::TestingPrefServiceSyncable* pref_service =
+      new sync_preferences::TestingPrefServiceSyncable();
+  pref_service->registry()->RegisterIntegerPref(
+      prefs::kIncognitoModeAvailability, 0);
+  pref_service->SetManagedPref(prefs::kIncognitoModeAvailability,
+                               std::make_unique<base::Value>(static_cast<int>(
+                                   IncognitoModePrefs::kForced)));
+  mediator_.prefService = pref_service;
+
+  UIMenu* new_tab_menu =
+      [mediator_ menuForButtonOfType:AdaptiveToolbarButtonTypeNewTab];
+
+  ASSERT_EQ(4U, new_tab_menu.children.count);
+  for (UIMenuElement* element in new_tab_menu.children) {
+    ASSERT_TRUE([element isKindOfClass:[UIAction class]]);
+    UIAction* action = (UIAction*)element;
+    if ([action.title
+            isEqual:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_SEARCH)]) {
+      EXPECT_EQ(UIMenuElementAttributesDisabled, action.attributes);
+    } else {
+      EXPECT_EQ(0U, action.attributes);
+    }
+  }
+
+  UIMenu* tab_grid_menu =
+      [mediator_ menuForButtonOfType:AdaptiveToolbarButtonTypeTabGrid];
+
+  ASSERT_EQ(2U, tab_grid_menu.children.count);
+  ASSERT_TRUE([tab_grid_menu.children[0] isKindOfClass:[UIMenu class]]);
+  UIMenu* open_tab_menu = (UIMenu*)tab_grid_menu.children[0];
+  ASSERT_EQ(2U, open_tab_menu.children.count);
+  for (UIMenuElement* element in open_tab_menu.children) {
+    ASSERT_TRUE([element isKindOfClass:[UIAction class]]);
+    UIAction* action = (UIAction*)element;
+    if ([action.title
+            isEqual:l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_NEW_TAB)]) {
+      EXPECT_EQ(UIMenuElementAttributesDisabled, action.attributes);
+    } else {
+      EXPECT_EQ(0U, action.attributes);
+    }
+  }
+
+  ASSERT_TRUE([tab_grid_menu.children[1] isKindOfClass:[UIAction class]]);
+  UIAction* close_tab = (UIAction*)tab_grid_menu.children[1];
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_CLOSE_TAB),
+              close_tab.title);
+  EXPECT_EQ(UIMenuElementAttributesDestructive, close_tab.attributes);
+}
+
+// Tests the menu elements when incognito is disabled.
+TEST_F(ToolbarMediatorTest, MenuElementsDisabledIncognito) {
+  mediator_.webStateList = web_state_list_.get();
+  SetUpActiveWebState();
+  sync_preferences::TestingPrefServiceSyncable* pref_service =
+      new sync_preferences::TestingPrefServiceSyncable();
+  pref_service->registry()->RegisterIntegerPref(
+      prefs::kIncognitoModeAvailability, 0);
+  pref_service->SetManagedPref(prefs::kIncognitoModeAvailability,
+                               std::make_unique<base::Value>(static_cast<int>(
+                                   IncognitoModePrefs::kDisabled)));
+  mediator_.prefService = pref_service;
+
+  UIMenu* new_tab_menu =
+      [mediator_ menuForButtonOfType:AdaptiveToolbarButtonTypeNewTab];
+
+  ASSERT_EQ(4U, new_tab_menu.children.count);
+  for (UIMenuElement* element in new_tab_menu.children) {
+    ASSERT_TRUE([element isKindOfClass:[UIAction class]]);
+    UIAction* action = (UIAction*)element;
+    if ([action.title isEqual:l10n_util::GetNSString(
+                                  IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_SEARCH)]) {
+      EXPECT_EQ(UIMenuElementAttributesDisabled, action.attributes);
+    } else {
+      EXPECT_EQ(0U, action.attributes);
+    }
+  }
+
+  UIMenu* tab_grid_menu =
+      [mediator_ menuForButtonOfType:AdaptiveToolbarButtonTypeTabGrid];
+
+  ASSERT_EQ(2U, tab_grid_menu.children.count);
+  ASSERT_TRUE([tab_grid_menu.children[0] isKindOfClass:[UIMenu class]]);
+  UIMenu* open_tab_menu = (UIMenu*)tab_grid_menu.children[0];
+  ASSERT_EQ(2U, open_tab_menu.children.count);
+  for (UIMenuElement* element in open_tab_menu.children) {
+    ASSERT_TRUE([element isKindOfClass:[UIAction class]]);
+    UIAction* action = (UIAction*)element;
+    if ([action.title isEqual:l10n_util::GetNSString(
+                                  IDS_IOS_TOOLS_MENU_NEW_INCOGNITO_TAB)]) {
+      EXPECT_EQ(UIMenuElementAttributesDisabled, action.attributes);
+    } else {
+      EXPECT_EQ(0U, action.attributes);
+    }
+  }
+
+  ASSERT_TRUE([tab_grid_menu.children[1] isKindOfClass:[UIAction class]]);
+  UIAction* close_tab = (UIAction*)tab_grid_menu.children[1];
+  EXPECT_NSEQ(l10n_util::GetNSString(IDS_IOS_TOOLS_MENU_CLOSE_TAB),
+              close_tab.title);
+  EXPECT_EQ(UIMenuElementAttributesDestructive, close_tab.attributes);
+}
+
+// Tests the back/forward items for the menu.
+TEST_F(ToolbarMediatorTest, MenuElementsBackForward) {
+  std::unique_ptr<web::FakeNavigationManager> navigation_manager =
+      std::make_unique<web::FakeNavigationManager>();
+
+  navigation_manager->AddItem(GURL("http://chromium.org/1"),
+                              ui::PageTransition::PAGE_TRANSITION_LINK);
+  navigation_manager->AddItem(GURL("http://chromium.org/2"),
+                              ui::PageTransition::PAGE_TRANSITION_LINK);
+
+  navigation_manager->AddItem(GURL("http://chromium.org/current"),
+                              ui::PageTransition::PAGE_TRANSITION_LINK);
+
+  navigation_manager->AddItem(GURL("http://chromium.org/4"),
+                              ui::PageTransition::PAGE_TRANSITION_LINK);
+  navigation_manager->AddItem(GURL("http://chromium.org/5"),
+                              ui::PageTransition::PAGE_TRANSITION_LINK);
+  navigation_manager->AddItem(GURL("http://chromium.org/6"),
+                              ui::PageTransition::PAGE_TRANSITION_LINK);
+  navigation_manager->GoBack();
+  navigation_manager->GoBack();
+  navigation_manager->GoBack();
+
+  auto web_state = std::make_unique<web::FakeWebState>();
+  web_state->SetBrowserState(chrome_browser_state_.get());
+  web_state->SetNavigationManager(std::move(navigation_manager));
+  web_state_list_->InsertWebState(
+      0, std::move(web_state), WebStateList::INSERT_ACTIVATE, WebStateOpener());
+
+  mediator_.webStateList = web_state_list_.get();
+  mediator_.consumer = consumer_;
+
+  UIMenu* back_menu =
+      [mediator_ menuForButtonOfType:AdaptiveToolbarButtonTypeBack];
+
+  ASSERT_EQ(2U, back_menu.children.count);
+  EXPECT_NSEQ(@"chromium.org/2", back_menu.children[0].title);
+  EXPECT_NSEQ(@"chromium.org/1", back_menu.children[1].title);
+
+  UIMenu* forward_menu =
+      [mediator_ menuForButtonOfType:AdaptiveToolbarButtonTypeForward];
+  ASSERT_EQ(3U, forward_menu.children.count);
+  EXPECT_NSEQ(@"chromium.org/4", forward_menu.children[0].title);
+  EXPECT_NSEQ(@"chromium.org/5", forward_menu.children[1].title);
+  EXPECT_NSEQ(@"chromium.org/6", forward_menu.children[2].title);
 }
 
 }  // namespace
