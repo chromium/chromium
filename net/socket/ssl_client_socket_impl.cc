@@ -1089,6 +1089,13 @@ int SSLClientSocketImpl::DoHandshakeComplete(int result) {
   }
   UMA_HISTOGRAM_ENUMERATION("Net.SSLHandshakeDetails", details);
 
+  // Measure TLS connections that implement the renegotiation_info extension.
+  // Note this records true for TLS 1.3. By removing renegotiation altogether,
+  // TLS 1.3 is implicitly patched against the bug. See
+  // https://crbug.com/850800.
+  base::UmaHistogramBoolean("Net.SSLRenegotiationInfoSupported",
+                            SSL_get_secure_renegotiation_support(ssl_.get()));
+
   completed_connect_ = true;
   next_handshake_state_ = STATE_NONE;
 
@@ -1776,6 +1783,7 @@ ssl_private_key_result_t SSLClientSocketImpl::PrivateKeySignCallback(
         client_private_key_.get());
   });
 
+  base::UmaHistogramSparse("Net.SSLClientCertSignatureAlgorithm", algorithm);
   signature_result_ = ERR_IO_PENDING;
   client_private_key_->Sign(
       algorithm, base::make_span(in, in_len),
