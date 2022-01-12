@@ -48,7 +48,7 @@ TEST(XRViewTest, ViewMatrices) {
   xr_view->field_of_view =
       device::mojom::blink::VRFieldOfView::New(kFov, kFov, kFov, kFov);
   xr_view->mojo_from_view = mojo_from_view;
-  xr_view->viewport = gfx::Size(kRenderSize, kRenderSize);
+  xr_view->viewport = gfx::Rect(0, 0, kRenderSize, kRenderSize);
 
   XRViewData* view_data =
       MakeGarbageCollected<XRViewData>(xr_view, kDepthNear, kDepthFar);

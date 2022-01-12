@@ -51,7 +51,7 @@ mojom::VRDisplayInfoPtr CreateVRDisplayInfo(const gfx::Size& frame_size) {
   view->field_of_view->right_degrees = horizontal_degrees;
   view->field_of_view->up_degrees = vertical_degrees;
   view->field_of_view->down_degrees = vertical_degrees;
-  view->viewport = gfx::Size(width, height);
+  view->viewport = gfx::Rect(0, 0, width, height);
 
   mojom::VRDisplayInfoPtr device = mojom::VRDisplayInfo::New();
   device->views.emplace_back(std::move(view));

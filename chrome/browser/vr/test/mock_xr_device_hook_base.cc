@@ -76,7 +76,7 @@ void MockXRDeviceHookBase::StopHooking() {
 }
 
 void MockXRDeviceHookBase::OnFrameSubmitted(
-    device_test::mojom::SubmittedFrameDataPtr frame_data,
+    std::vector<device_test::mojom::SubmittedFrameDataPtr> frame_data,
     device_test::mojom::XRTestHook::OnFrameSubmittedCallback callback) {
   std::move(callback).Run();
 }

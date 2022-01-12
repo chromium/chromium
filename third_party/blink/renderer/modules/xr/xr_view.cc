@@ -46,6 +46,19 @@ XRView::XRView(XRFrame* frame,
       transformationMatrixToDOMFloat32Array(view_data->ProjectionMatrix());
 }
 
+XRViewport* XRView::Viewport(double framebuffer_scale) {
+  if (!viewport_) {
+    const gfx::Rect& viewport = view_data_->Viewport();
+    double scale = framebuffer_scale * view_data_->CurrentViewportScale();
+
+    viewport_ = MakeGarbageCollected<XRViewport>(
+        viewport.x() * scale, viewport.y() * scale, viewport.width() * scale,
+        viewport.height() * scale);
+  }
+
+  return viewport_;
+}
+
 XRFrame* XRView::frame() const {
   return frame_;
 }
@@ -68,7 +81,7 @@ DOMFloat32Array* XRView::projectionMatrix() const {
 XRViewData::XRViewData(const device::mojom::blink::XRViewPtr& view,
                        double depth_near,
                        double depth_far)
-    : eye_(view->eye) {
+    : eye_(view->eye), viewport_(view->viewport) {
   UpdateView(view, depth_near, depth_far);
 }
 
@@ -84,6 +97,9 @@ void XRViewData::UpdateView(const device::mojom::blink::XRViewPtr& view,
       depth_far);
 
   mojo_from_view_ = TransformationMatrix(view->mojo_from_view.matrix());
+
+  viewport_ = view->viewport;
+  is_first_person_observer_ = view->is_first_person_observer;
 }
 
 void XRViewData::UpdateProjectionMatrixFromFoV(float up_rad,
@@ -205,11 +221,16 @@ XRCamera* XRView::camera() const {
   return nullptr;
 }
 
+bool XRView::isFirstPersonObserver() const {
+  return view_data_->IsFirstPersonObserver();
+}
+
 void XRView::Trace(Visitor* visitor) const {
   visitor->Trace(frame_);
   visitor->Trace(projection_matrix_);
   visitor->Trace(ref_space_from_view_);
   visitor->Trace(view_data_);
+  visitor->Trace(viewport_);
   ScriptWrappable::Trace(visitor);
 }
 
