@@ -55,7 +55,7 @@ class SyncSchedulerImpl : public SyncScheduler {
   void ScheduleLocalRefreshRequest(ModelTypeSet types) override;
   void ScheduleInvalidationNudge(
       ModelType type,
-      std::unique_ptr<InvalidationInterface> invalidation) override;
+      std::unique_ptr<SyncInvalidation> invalidation) override;
   void ScheduleInitialSyncNudge(ModelType model_type) override;
   void SetNotificationsEnabled(bool notifications_enabled) override;
 

@@ -13,8 +13,8 @@
 
 #include "base/compiler_specific.h"
 #include "base/time/time.h"
-#include "components/sync/base/invalidation_interface.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/base/sync_invalidation.h"
 #include "components/sync/engine/cycle/data_type_tracker.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 
@@ -72,7 +72,7 @@ class NudgeTracker {
   // Returns the nudge delay for a remote invalidation.
   base::TimeDelta RecordRemoteInvalidation(
       ModelType type,
-      std::unique_ptr<InvalidationInterface> invalidation);
+      std::unique_ptr<SyncInvalidation> invalidation);
 
   // Take note that an initial sync is pending for this type.
   void RecordInitialSyncRequired(ModelType type);

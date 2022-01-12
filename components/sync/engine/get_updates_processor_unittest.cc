@@ -28,7 +28,7 @@ namespace syncer {
 
 namespace {
 
-std::unique_ptr<InvalidationInterface> BuildInvalidation(
+std::unique_ptr<SyncInvalidation> BuildInvalidation(
     int64_t version,
     const std::string& payload) {
   return MockInvalidation::Build(version, payload);

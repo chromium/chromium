@@ -47,7 +47,7 @@ namespace {
 const base::FilePath::CharType kNigoriStorageFilename[] =
     FILE_PATH_LITERAL("Nigori.bin");
 
-class SyncInvalidationAdapter : public InvalidationInterface {
+class SyncInvalidationAdapter : public SyncInvalidation {
  public:
   explicit SyncInvalidationAdapter(const std::string& payload)
       : payload_(payload) {}
@@ -177,7 +177,7 @@ void SyncEngineBackend::DoOnIncomingInvalidation(
       for (invalidation::Invalidation invalidation : invalidation_set) {
         RecordRedundantInvalidationsMetric(invalidation, type);
 
-        std::unique_ptr<InvalidationInterface> inv_adapter(
+        std::unique_ptr<SyncInvalidation> inv_adapter(
             new InvalidationAdapter(invalidation));
         sync_manager_->OnIncomingInvalidation(type, std::move(inv_adapter));
         if (!invalidation.is_unknown_version())
@@ -475,7 +475,7 @@ void SyncEngineBackend::DoOnInvalidationReceived(const std::string& payload) {
     }
 
     // TODO(crbug.com/1119798): Use only enabled data types.
-    std::unique_ptr<InvalidationInterface> inv_adapter =
+    std::unique_ptr<SyncInvalidation> inv_adapter =
         std::make_unique<SyncInvalidationAdapter>(payload_message.hint());
     sync_manager_->OnIncomingInvalidation(model_type, std::move(inv_adapter));
   }

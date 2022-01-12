@@ -172,7 +172,7 @@ void FakeSyncManager::RefreshTypes(ModelTypeSet types) {
 
 void FakeSyncManager::OnIncomingInvalidation(
     ModelType type,
-    std::unique_ptr<InvalidationInterface> invalidation) {
+    std::unique_ptr<SyncInvalidation> invalidation) {
   num_invalidations_received_[type]++;
 }
 

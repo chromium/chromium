@@ -82,7 +82,7 @@ class FakeSyncManager : public SyncManager {
                        base::OnceClosure ready_task) override;
   void OnIncomingInvalidation(
       ModelType type,
-      std::unique_ptr<InvalidationInterface> interface) override;
+      std::unique_ptr<SyncInvalidation> interface) override;
   void SetInvalidatorEnabled(bool invalidator_enabled) override;
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;

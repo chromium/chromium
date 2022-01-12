@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_SYNC_BASE_INVALIDATION_INTERFACE_H_
-#define COMPONENTS_SYNC_BASE_INVALIDATION_INTERFACE_H_
+#ifndef COMPONENTS_SYNC_BASE_SYNC_INVALIDATION_H_
+#define COMPONENTS_SYNC_BASE_SYNC_INVALIDATION_H_
 
 #include <stdint.h>
 
@@ -13,14 +13,14 @@ namespace syncer {
 
 // An interface that wraps sync's interactions with the component that provides
 // it with invalidations.
-class InvalidationInterface {
+class SyncInvalidation {
  public:
   // Orders invalidations based on version number and IsUnknownVersion().
-  static bool LessThanByVersion(const InvalidationInterface& a,
-                                const InvalidationInterface& b);
+  static bool LessThanByVersion(const SyncInvalidation& a,
+                                const SyncInvalidation& b);
 
-  InvalidationInterface();
-  virtual ~InvalidationInterface();
+  SyncInvalidation();
+  virtual ~SyncInvalidation();
 
   // Returns true if this is an 'unknown version' invalidation.
   // Such invalidations have no valid payload or version number.
@@ -51,4 +51,4 @@ class InvalidationInterface {
 
 }  // namespace syncer
 
-#endif  // COMPONENTS_SYNC_BASE_INVALIDATION_INTERFACE_H_
+#endif  // COMPONENTS_SYNC_BASE_SYNC_INVALIDATION_H_

@@ -68,14 +68,13 @@ class NudgeTrackerTest : public ::testing::Test {
     nudge_tracker_.RecordSuccessfulSyncCycle({});
   }
 
-  std::unique_ptr<InvalidationInterface> BuildInvalidation(
+  std::unique_ptr<SyncInvalidation> BuildInvalidation(
       int64_t version,
       const std::string& payload) {
     return MockInvalidation::Build(version, payload);
   }
 
-  static std::unique_ptr<InvalidationInterface>
-  BuildUnknownVersionInvalidation() {
+  static std::unique_ptr<SyncInvalidation> BuildUnknownVersionInvalidation() {
     return MockInvalidation::BuildUnknownVersion();
   }
 

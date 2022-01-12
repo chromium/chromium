@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/base/invalidation_interface.h"
+#include "components/sync/base/sync_invalidation.h"
 
 namespace syncer {
 
-bool InvalidationInterface::LessThanByVersion(const InvalidationInterface& a,
-                                              const InvalidationInterface& b) {
+bool SyncInvalidation::LessThanByVersion(const SyncInvalidation& a,
+                                         const SyncInvalidation& b) {
   if (a.IsUnknownVersion() && !b.IsUnknownVersion())
     return true;
 
@@ -20,8 +20,8 @@ bool InvalidationInterface::LessThanByVersion(const InvalidationInterface& a,
   return a.GetVersion() < b.GetVersion();
 }
 
-InvalidationInterface::InvalidationInterface() = default;
+SyncInvalidation::SyncInvalidation() = default;
 
-InvalidationInterface::~InvalidationInterface() = default;
+SyncInvalidation::~SyncInvalidation() = default;
 
 }  // namespace syncer

@@ -17,8 +17,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/task_runner.h"
 #include "base/threading/thread_checker.h"
-#include "components/sync/base/invalidation_interface.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/base/sync_invalidation.h"
 #include "components/sync/base/weak_handle.h"
 #include "components/sync/engine/active_devices_invalidation_info.h"
 #include "components/sync/engine/configure_reason.h"
@@ -165,7 +165,7 @@ class SyncManager {
   // Inform the syncer that its cached information about a type is obsolete.
   virtual void OnIncomingInvalidation(
       ModelType type,
-      std::unique_ptr<InvalidationInterface> invalidation) = 0;
+      std::unique_ptr<SyncInvalidation> invalidation) = 0;
 
   // Adds a listener to be notified of sync events.
   // NOTE: It is OK (in fact, it's probably a good idea) to call this before

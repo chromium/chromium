@@ -391,7 +391,7 @@ class SyncSchedulerImplTest : public testing::Test {
     return scheduler_->retry_timer_.GetCurrentDelay();
   }
 
-  static std::unique_ptr<InvalidationInterface> BuildInvalidation(
+  static std::unique_ptr<SyncInvalidation> BuildInvalidation(
       int64_t version,
       const std::string& payload) {
     return MockInvalidation::Build(version, payload);
