@@ -7,6 +7,7 @@
 
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
+#include "cc/paint/skottie_color_map.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_image.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
@@ -91,11 +92,12 @@ class MockPaintCanvas : public cc::PaintCanvas {
                     const SkSamplingOptions&,
                     const cc::PaintFlags* flags,
                     SkCanvas::SrcRectConstraint constraint));
-  MOCK_METHOD4(drawSkottie,
+  MOCK_METHOD5(drawSkottie,
                void(scoped_refptr<cc::SkottieWrapper> skottie,
                     const SkRect& dst,
                     float t,
-                    cc::SkottieFrameDataMap images));
+                    cc::SkottieFrameDataMap images,
+                    const cc::SkottieColorMap& color_map));
   MOCK_METHOD4(drawBitmap,
                void(const SkBitmap& bitmap,
                     SkScalar left,

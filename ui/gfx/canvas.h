@@ -15,6 +15,7 @@
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/skia_paint_canvas.h"
+#include "cc/paint/skottie_color_map.h"
 #include "cc/paint/skottie_frame_data.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/image/image_skia.h"
@@ -366,7 +367,8 @@ class GFX_EXPORT Canvas {
   void DrawSkottie(scoped_refptr<cc::SkottieWrapper> skottie,
                    const Rect& dst,
                    float t,
-                   cc::SkottieFrameDataMap images);
+                   cc::SkottieFrameDataMap images,
+                   const cc::SkottieColorMap& color_map);
 
   // Draws text with the specified color, fonts and location. The text is
   // aligned to the left, vertically centered, clipped to the region. If the

@@ -14,6 +14,7 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
+#include "cc/paint/skottie_color_map.h"
 #include "cc/paint/skottie_frame_data.h"
 #include "cc/paint/skottie_frame_data_provider.h"
 #include "cc/paint/skottie_resource_metadata.h"
@@ -95,6 +96,7 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
   // animation does not contain any image assets.
   explicit Animation(
       scoped_refptr<cc::SkottieWrapper> skottie,
+      cc::SkottieColorMap color_map = cc::SkottieColorMap(),
       cc::SkottieFrameDataProvider* frame_data_provider = nullptr);
   Animation(const Animation&) = delete;
   Animation& operator=(const Animation&) = delete;
@@ -254,6 +256,7 @@ class COMPONENT_EXPORT(UI_LOTTIE) Animation final {
   raw_ptr<AnimationObserver> observer_ = nullptr;
 
   scoped_refptr<cc::SkottieWrapper> skottie_;
+  cc::SkottieColorMap color_map_;
   base::flat_map<cc::SkottieResourceIdHash,
                  scoped_refptr<cc::SkottieFrameDataProvider::ImageAsset>>
       image_assets_;

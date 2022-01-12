@@ -11,6 +11,7 @@
 #include "cc/paint/paint_canvas.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_record.h"
+#include "cc/paint/skottie_color_map.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/utils/SkNoDrawCanvas.h"
 
@@ -98,7 +99,8 @@ class CC_PAINT_EXPORT RecordPaintCanvas : public PaintCanvas {
   void drawSkottie(scoped_refptr<SkottieWrapper> skottie,
                    const SkRect& dst,
                    float t,
-                   SkottieFrameDataMap images) override;
+                   SkottieFrameDataMap images,
+                   const SkottieColorMap& color_map) override;
   void drawTextBlob(sk_sp<SkTextBlob> blob,
                     SkScalar x,
                     SkScalar y,

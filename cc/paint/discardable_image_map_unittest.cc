@@ -17,6 +17,7 @@
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_op_buffer.h"
 #include "cc/paint/paint_recorder.h"
+#include "cc/paint/skottie_color_map.h"
 #include "cc/paint/skottie_frame_data.h"
 #include "cc/paint/skottie_resource_metadata.h"
 #include "cc/test/fake_content_layer_client.h"
@@ -1185,7 +1186,8 @@ TEST_F(DiscardableImageMapTest,
   content_layer_client.set_bounds(visible_rect.size());
   content_layer_client.add_draw_skottie(FakeContentLayerClient::SkottieData(
       CreateSkottie(gfx::Size(2048, 2048), /*duration_secs=*/1.f),
-      /*dst=*/gfx::Rect(2048, 2048), /*t=*/0.1f, SkottieFrameDataMap()));
+      /*dst=*/gfx::Rect(2048, 2048), /*t=*/0.1f, SkottieFrameDataMap(),
+      SkottieColorMap()));
 
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
@@ -1215,7 +1217,7 @@ TEST_F(DiscardableImageMapTest, GetDiscardableImagesInRectSkottieWithImages) {
   content_layer_client.add_draw_skottie(FakeContentLayerClient::SkottieData(
       CreateSkottieFromString(kLottieDataWith2Assets),
       /*dst=*/gfx::Rect(1024, 0, 1024, 2048),
-      /*t=*/0.1f, images_in));
+      /*t=*/0.1f, images_in, SkottieColorMap()));
 
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();
@@ -1255,7 +1257,7 @@ TEST_F(DiscardableImageMapTest,
   content_layer_client.add_draw_skottie(FakeContentLayerClient::SkottieData(
       CreateSkottieFromString(kLottieDataWith2Assets),
       /*dst=*/visible_rect,
-      /*t=*/0.1f, images_in));
+      /*t=*/0.1f, images_in, SkottieColorMap()));
 
   scoped_refptr<DisplayItemList> display_list =
       content_layer_client.PaintContentsToDisplayList();

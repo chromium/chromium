@@ -16,6 +16,7 @@
 #include "cc/layers/content_layer_client.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_image_builder.h"
+#include "cc/paint/skottie_color_map.h"
 #include "cc/paint/skottie_frame_data.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -50,7 +51,8 @@ class FakeContentLayerClient : public ContentLayerClient {
     SkottieData(scoped_refptr<SkottieWrapper> skottie,
                 const gfx::Rect& dst,
                 float t,
-                SkottieFrameDataMap images);
+                SkottieFrameDataMap images,
+                SkottieColorMap color_map);
     SkottieData(const SkottieData& other);
     SkottieData& operator=(const SkottieData& other);
     ~SkottieData();
@@ -59,6 +61,7 @@ class FakeContentLayerClient : public ContentLayerClient {
     gfx::Rect dst;
     float t;
     SkottieFrameDataMap images;
+    SkottieColorMap color_map;
   };
 
   FakeContentLayerClient();

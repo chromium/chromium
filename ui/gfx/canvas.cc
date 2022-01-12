@@ -395,9 +395,10 @@ void Canvas::DrawImageInPath(const ImageSkia& image,
 void Canvas::DrawSkottie(scoped_refptr<cc::SkottieWrapper> skottie,
                          const Rect& dst,
                          float t,
-                         cc::SkottieFrameDataMap images) {
+                         cc::SkottieFrameDataMap images,
+                         const cc::SkottieColorMap& color_map) {
   canvas_->drawSkottie(std::move(skottie), RectToSkRect(dst), t,
-                       std::move(images));
+                       std::move(images), color_map);
 }
 
 void Canvas::DrawStringRect(const std::u16string& text,

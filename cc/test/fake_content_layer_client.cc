@@ -37,8 +37,13 @@ FakeContentLayerClient::SkottieData::SkottieData(
     scoped_refptr<SkottieWrapper> skottie,
     const gfx::Rect& dst,
     float t,
-    SkottieFrameDataMap images)
-    : skottie(std::move(skottie)), dst(dst), t(t), images(std::move(images)) {}
+    SkottieFrameDataMap images,
+    SkottieColorMap color_map)
+    : skottie(std::move(skottie)),
+      dst(dst),
+      t(t),
+      images(std::move(images)),
+      color_map(std::move(color_map)) {}
 
 FakeContentLayerClient::SkottieData::SkottieData(const SkottieData& other) =
     default;
@@ -103,9 +108,9 @@ FakeContentLayerClient::PaintContentsToDisplayList() {
 
   for (const SkottieData& skottie_data : skottie_data_) {
     display_list->StartPaint();
-    display_list->push<DrawSkottieOp>(skottie_data.skottie,
-                                      gfx::RectToSkRect(skottie_data.dst),
-                                      skottie_data.t, skottie_data.images);
+    display_list->push<DrawSkottieOp>(
+        skottie_data.skottie, gfx::RectToSkRect(skottie_data.dst),
+        skottie_data.t, skottie_data.images, skottie_data.color_map);
     display_list->EndPaintOfUnpaired(PaintableRegion());
   }
 

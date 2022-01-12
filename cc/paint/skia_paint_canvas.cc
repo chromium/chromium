@@ -4,6 +4,8 @@
 
 #include "cc/paint/skia_paint_canvas.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
@@ -321,7 +323,8 @@ void SkiaPaintCanvas::drawImageRect(const PaintImage& image,
 void SkiaPaintCanvas::drawSkottie(scoped_refptr<SkottieWrapper> skottie,
                                   const SkRect& dst,
                                   float t,
-                                  SkottieFrameDataMap images) {
+                                  SkottieFrameDataMap images,
+                                  const SkottieColorMap& color_map) {
   if (!images.empty()) {
     // This is not implemented solely because there's no use case yet. To
     // implement, we could retrieve the underlying SkImage from each
@@ -330,7 +333,8 @@ void SkiaPaintCanvas::drawSkottie(scoped_refptr<SkottieWrapper> skottie,
         << "Rendering skottie frames with image assets directly to a "
            "SkiaPaintCanvas is currently not supported.";
   }
-  skottie->Draw(canvas_, t, dst);
+  skottie->Draw(canvas_, t, dst, SkottieWrapper::FrameDataCallback(),
+                color_map);
 }
 
 void SkiaPaintCanvas::drawTextBlob(sk_sp<SkTextBlob> blob,

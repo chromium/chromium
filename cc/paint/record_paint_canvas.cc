@@ -311,8 +311,9 @@ void RecordPaintCanvas::drawImageRect(const PaintImage& image,
 void RecordPaintCanvas::drawSkottie(scoped_refptr<SkottieWrapper> skottie,
                                     const SkRect& dst,
                                     float t,
-                                    SkottieFrameDataMap images) {
-  push<DrawSkottieOp>(std::move(skottie), dst, t, std::move(images));
+                                    SkottieFrameDataMap images,
+                                    const SkottieColorMap& color_map) {
+  push<DrawSkottieOp>(std::move(skottie), dst, t, std::move(images), color_map);
 }
 
 void RecordPaintCanvas::drawTextBlob(sk_sp<SkTextBlob> blob,

@@ -292,7 +292,8 @@ class AnimationWithImageAssetsTest : public AnimationTest {
   void SetUp() override {
     canvas_ = std::make_unique<gfx::Canvas>(&record_canvas_, kCanvasImageScale);
     skottie_ = cc::CreateSkottieFromString(cc::kLottieDataWith2Assets);
-    animation_ = std::make_unique<Animation>(skottie_, &frame_data_provider_);
+    animation_ = std::make_unique<Animation>(skottie_, cc::SkottieColorMap(),
+                                             &frame_data_provider_);
     asset_0_ = frame_data_provider_.GetLoadedImageAsset("image_0");
     asset_1_ = frame_data_provider_.GetLoadedImageAsset("image_1");
     ASSERT_THAT(asset_0_, NotNull());

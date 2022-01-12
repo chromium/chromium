@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
 #include "cc/paint/paint_export.h"
+#include "cc/paint/skottie_color_map.h"
 #include "cc/paint/skottie_resource_metadata.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkSamplingOptions.h"
@@ -92,10 +93,8 @@ class CC_PAINT_EXPORT SkottieWrapper
   virtual void Draw(SkCanvas* canvas,
                     float t,
                     const SkRect& rect,
-                    FrameDataCallback frame_data_cb) = 0;
-  // Variant with null FrameDataCallback() if the animation does not have image
-  // assets.
-  void Draw(SkCanvas* canvas, float t, const SkRect& rect);
+                    FrameDataCallback frame_data_cb,
+                    const SkottieColorMap& color_map) = 0;
 
   virtual float duration() const = 0;
   virtual SkSize size() const = 0;

@@ -717,6 +717,13 @@ size_t DrawSkottieOp::Serialize(const PaintOp* base_op,
                  &scale_adjustment);
     helper.Write(frame_data.quality);
   }
+  // Write number of colors in the map first so that we know how many colors to
+  // read from the buffer during deserialization.
+  helper.WriteSize(op->color_map.size());
+  for (const auto& map_color : op->color_map) {
+    helper.WriteSize(map_color.first.GetUnsafeValue());
+    helper.Write(map_color.second);
+  }
   return helper.size();
 }
 
@@ -1236,6 +1243,25 @@ PaintOp* DrawSkottieOp::Deserialize(const volatile void* input,
     if (!new_entry)
       return deserializer.InvalidateAndFinalizeOp();
   }
+
+  size_t num_map_colors = 0u;
+  deserializer.ReadSize(&num_map_colors);
+  for (size_t i = 0u; i < num_map_colors; ++i) {
+    size_t node_name_hash_raw = 0u;
+    deserializer.ReadSize(&node_name_hash_raw);
+    const SkottieResourceIdHash node_name_hash =
+        SkottieResourceIdHash::FromUnsafeValue(node_name_hash_raw);
+
+    SkColor color = SK_ColorTRANSPARENT;
+    deserializer.Read(&color);
+    // If we are inserting a duplicate, that means the buffer specifies two
+    // colors for the same node name hash. This should not happen, by design,
+    // because |color_map| is a map with the node name hash as the key. But
+    // defend against it gracefully in case the underlying buffer is corrupted.
+    if (!deserializer->color_map.emplace(node_name_hash, color).second)
+      return deserializer.InvalidateAndFinalizeOp();
+  }
+
   return deserializer.FinalizeOp();
 }
 
@@ -1658,7 +1684,8 @@ void DrawSkottieOp::Raster(const DrawSkottieOp* op,
   op->skottie->Draw(
       canvas, op->t, op->dst,
       base::BindRepeating(&DrawSkottieOp::GetImageAssetForRaster,
-                          base::Unretained(op), canvas, std::cref(params)));
+                          base::Unretained(op), canvas, std::cref(params)),
+      op->color_map);
 }
 
 SkottieWrapper::FrameDataFetchResult DrawSkottieOp::GetImageAssetForRaster(
@@ -2153,6 +2180,9 @@ bool DrawSkottieOp::AreEqual(const PaintOp* base_left,
       return false;
     }
   }
+
+  if (left->color_map != right->color_map)
+    return false;
   return true;
 }
 
@@ -2686,12 +2716,14 @@ size_t DrawRecordOp::AdditionalOpCount() const {
 DrawSkottieOp::DrawSkottieOp(scoped_refptr<SkottieWrapper> skottie,
                              SkRect dst,
                              float t,
-                             SkottieFrameDataMap images)
+                             SkottieFrameDataMap images,
+                             const SkottieColorMap& color_map)
     : PaintOp(kType),
       skottie(std::move(skottie)),
       dst(dst),
       t(t),
-      images(std::move(images)) {}
+      images(std::move(images)),
+      color_map(color_map) {}
 
 DrawSkottieOp::DrawSkottieOp() : PaintOp(kType) {}
 

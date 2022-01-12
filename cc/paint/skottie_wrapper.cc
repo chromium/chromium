@@ -10,8 +10,4 @@ void SkottieWrapper::Seek(float t) {
   Seek(t, FrameDataCallback());
 }
 
-void SkottieWrapper::Draw(SkCanvas* canvas, float t, const SkRect& rect) {
-  Draw(canvas, t, rect, FrameDataCallback());
-}
-
 }  // namespace cc

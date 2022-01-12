@@ -34,6 +34,7 @@
 #include "cc/test/transfer_cache_test_helper.h"
 #include "skia/buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkMaskFilter.h"
 #include "third_party/skia/include/effects/SkColorMatrixFilter.h"
 #include "third_party/skia/include/effects/SkDashPathEffect.h"
@@ -1243,12 +1244,21 @@ std::vector<float> test_skottie_floats = {0, 0.1f, 1.f, 0.2f};
 std::vector<SkRect> test_skottie_rects = {
     SkRect::MakeXYWH(10, 20, 30, 40), SkRect::MakeXYWH(0, 5, 10, 20),
     SkRect::MakeXYWH(6, 0, 3, 50), SkRect::MakeXYWH(10, 10, 100, 100)};
+std::vector<SkottieColorMap> test_skottie_color_maps = {
+    {SkottieMapColor("green", SK_ColorGREEN),
+     SkottieMapColor("yellow", SK_ColorYELLOW),
+     SkottieMapColor("red", SK_ColorRED),
+     SkottieMapColor("blue", SK_ColorBLUE)},
+    {},
+    {SkottieMapColor("", SK_ColorGREEN)},
+    {SkottieMapColor("", SK_ColorTRANSPARENT)}};
 #else
 bool kIsSkottieSupported = false;
 
 std::vector<scoped_refptr<SkottieWrapper>> test_skotties;
 std::vector<float> test_skottie_floats;
 std::vector<SkRect> test_skottie_rects;
+std::vector<SkottieColorMap> test_skottie_color_maps;
 #endif
 
 // Writes as many ops in |buffer| as can fit in |output_size| to |output|.
@@ -1565,7 +1575,8 @@ void PushDrawSkottieOps(PaintOpBuffer* buffer) {
     buffer->push<DrawSkottieOp>(
         test_skotties[i], test_skottie_rects[i], test_skottie_floats[i],
         GetTestImagesForSkottie(*test_skotties[i], test_skottie_rects[i],
-                                PaintFlags::FilterQuality::kHigh, /*t=*/0));
+                                PaintFlags::FilterQuality::kHigh, /*t=*/0),
+        test_skottie_color_maps[i]);
   }
   ValidateOps<DrawSkottieOp>(buffer);
 }
@@ -3484,7 +3495,8 @@ TEST(PaintOpBufferTest,
   buffer.push<DrawSkottieOp>(
       skottie, input_rect, input_t,
       GetTestImagesForSkottie(*skottie, input_rect,
-                              PaintFlags::FilterQuality::kHigh, input_t));
+                              PaintFlags::FilterQuality::kHigh, input_t),
+      SkottieColorMap());
 
   // Serialize
   TestOptionsProvider options_provider;
@@ -3511,7 +3523,7 @@ TEST(PaintOpBufferTest, DrawSkottieOpRasterWithoutImageAssets) {
       CreateSkottie(gfx::Size(100, 100), /*duration_secs=*/5);
   SkRect skottie_rect = SkRect::MakeWH(100, 100);
   DrawSkottieOp skottie_op(skottie, skottie_rect, /*t=*/0.1,
-                           /*images=*/SkottieFrameDataMap());
+                           /*images=*/SkottieFrameDataMap(), SkottieColorMap());
   PlaybackParams playback_params(/*image_provider=*/nullptr);
   {
     NiceMock<MockCanvas> canvas;
@@ -3527,7 +3539,8 @@ TEST(PaintOpBufferTest, DrawSkottieOpRasterWithoutImageProvider) {
   SkottieFrameDataMap images_in = GetTestImagesForSkottie(
       *skottie, skottie_rect, PaintFlags::FilterQuality::kHigh, /*t=*/0.1f);
   ASSERT_FALSE(images_in.empty());
-  DrawSkottieOp skottie_op(skottie, skottie_rect, /*t=*/0.1, images_in);
+  DrawSkottieOp skottie_op(skottie, skottie_rect, /*t=*/0.1, images_in,
+                           SkottieColorMap());
   PlaybackParams playback_params(/*image_provider=*/nullptr);
   {
     NiceMock<MockCanvas> canvas;
@@ -3558,7 +3571,8 @@ TEST(PaintOpBufferTest, DrawSkottieOpRasterWithImageProvider) {
     SkottieFrameDataMap images_in = GetTestImagesForSkottie(
         *skottie, skottie_rect, PaintFlags::FilterQuality::kHigh, /*t=*/0.25f);
     ASSERT_THAT(images_in, Contains(Key(HashSkottieResourceId("image_0"))));
-    DrawSkottieOp skottie_op(skottie, skottie_rect, /*t=*/0.25, images_in);
+    DrawSkottieOp skottie_op(skottie, skottie_rect, /*t=*/0.25, images_in,
+                             SkottieColorMap());
     NiceMock<MockCanvas> canvas;
     EXPECT_CALL(canvas, onDrawImage2(NotNull(), _, _, _, _)).Times(AtLeast(1));
     DrawSkottieOp::Raster(&skottie_op, &canvas, playback_params);
@@ -3571,7 +3585,8 @@ TEST(PaintOpBufferTest, DrawSkottieOpRasterWithImageProvider) {
     SkottieFrameDataMap images_in = GetTestImagesForSkottie(
         *skottie, skottie_rect, PaintFlags::FilterQuality::kHigh, /*t=*/0.75f);
     ASSERT_THAT(images_in, Contains(Key(HashSkottieResourceId("image_1"))));
-    DrawSkottieOp skottie_op(skottie, skottie_rect, /*t=*/0.75, images_in);
+    DrawSkottieOp skottie_op(skottie, skottie_rect, /*t=*/0.75, images_in,
+                             SkottieColorMap());
     NiceMock<MockCanvas> canvas;
     EXPECT_CALL(canvas, onDrawImage2(NotNull(), _, _, _, _)).Times(AtLeast(1));
     DrawSkottieOp::Raster(&skottie_op, &canvas, playback_params);
@@ -3586,7 +3601,8 @@ TEST(PaintOpBufferTest, DiscardableImagesTrackingSkottieOpNoImages) {
   PaintOpBuffer buffer;
   buffer.push<DrawSkottieOp>(
       CreateSkottie(gfx::Size(100, 100), /*duration_secs=*/1),
-      /*dst=*/SkRect::MakeWH(100, 100), /*t=*/0.1f, SkottieFrameDataMap());
+      /*dst=*/SkRect::MakeWH(100, 100), /*t=*/0.1f, SkottieFrameDataMap(),
+      SkottieColorMap());
   EXPECT_FALSE(buffer.HasDiscardableImages());
 }
 
@@ -3598,14 +3614,15 @@ TEST(PaintOpBufferTest, DiscardableImagesTrackingSkottieOpWithImages) {
   SkottieFrameDataMap images_in = GetTestImagesForSkottie(
       *skottie, skottie_rect, PaintFlags::FilterQuality::kHigh, /*t=*/0.1f);
   ASSERT_FALSE(images_in.empty());
-  buffer.push<DrawSkottieOp>(skottie, skottie_rect, /*t=*/0.1f, images_in);
+  buffer.push<DrawSkottieOp>(skottie, skottie_rect, /*t=*/0.1f, images_in,
+                             SkottieColorMap());
   EXPECT_TRUE(buffer.HasDiscardableImages());
 }
 
 TEST(PaintOpBufferTest, OpHasDiscardableImagesSkottieOpNoImages) {
   DrawSkottieOp op(CreateSkottie(gfx::Size(100, 100), /*duration_secs=*/1),
                    /*dst=*/SkRect::MakeWH(100, 100), /*t=*/0.1f,
-                   SkottieFrameDataMap());
+                   SkottieFrameDataMap(), SkottieColorMap());
   EXPECT_FALSE(PaintOp::OpHasDiscardableImages(&op));
 }
 
@@ -3616,7 +3633,8 @@ TEST(PaintOpBufferTest, OpHasDiscardableImagesSkottieOpWithImages) {
   SkottieFrameDataMap images_in = GetTestImagesForSkottie(
       *skottie, skottie_rect, PaintFlags::FilterQuality::kHigh, /*t=*/0.1f);
   ASSERT_FALSE(images_in.empty());
-  DrawSkottieOp op(skottie, skottie_rect, /*t=*/0.1f, images_in);
+  DrawSkottieOp op(skottie, skottie_rect, /*t=*/0.1f, images_in,
+                   SkottieColorMap());
   EXPECT_TRUE(PaintOp::OpHasDiscardableImages(&op));
 }
 #endif  // BUILDFLAG(SKIA_SUPPORT_SKOTTIE)
