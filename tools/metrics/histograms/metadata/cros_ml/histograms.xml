@@ -296,29 +296,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="MachineLearningService.{ObsoleteRequestName}.CpuTimeMicrosec"
-    units="microseconds" expires_after="M95">
-  <obsolete>
-    Removed in M95.
-  </obsolete>
-  <owner>amoylan@chromium.org</owner>
-  <owner>alanlxl@chromium.org</owner>
-  <summary>
-    CPU time (for one CPU core) of obsolete {ObsoleteRequestName} request.
-  </summary>
-  <token key="ObsoleteRequestName">
-    <variant name="CreateGraphExecutorResult"/>
-    <variant name="ExecuteResult"/>
-    <variant name="LoadModelResult"/>
-    <variant name="smart_dim_model_20190521_v3.CreateGraphExecutorResult"/>
-    <variant name="smart_dim_model_20190521_v3.ExecuteResult"/>
-    <variant name="smart_dim_model_20190521_v3.LoadModelResult"/>
-    <variant name="TopCatModel.CreateGraphExecutorResult"/>
-    <variant name="TopCatModel.ExecuteResult"/>
-    <variant name="TopCatModel.LoadModelResult"/>
-  </token>
-</histogram>
-
 <histogram
     name="MachineLearningService.{ObsoleteRequestName}.CreateGraphExecutorResult.Event"
     enum="MachineLearningServiceCreateGraphExecutorResultEvent"
@@ -331,45 +308,6 @@ chromium-metrics-reviews@google.com.
   <token key="ObsoleteRequestName">
     <variant name="smart_dim_model_20190521_v3"/>
     <variant name="TopCatModel"/>
-  </token>
-</histogram>
-
-<histogram
-    name="MachineLearningService.{ObsoleteRequestName}.ElapsedTimeMicrosec"
-    units="microseconds" expires_after="2020-02-01">
-  <obsolete>
-    Removed 2020-02-01 because the elapsed time of {ObsoleteRequestName} request
-    should be measured by clients, if they need it.
-  </obsolete>
-  <owner>amoylan@chromium.org</owner>
-  <owner>alanlxl@chromium.org</owner>
-  <summary/>
-  <token key="ObsoleteRequestName">
-    <variant name="CreateGraphExecutorResult"/>
-    <variant name="ExecuteResult"/>
-    <variant name="HandwritingModel.LoadModelResult"/>
-    <variant name="HandwritingModel.Recognize"/>
-    <variant name="LoadModelResult"/>
-    <variant name="smart_dim_model_20190521_v3.CreateGraphExecutorResult"/>
-    <variant name="smart_dim_model_20190521_v3.ExecuteResult"/>
-    <variant name="smart_dim_model_20190521_v3.LoadModelResult"/>
-    <variant name="SmartDimModel.CreateGraphExecutorResult"/>
-    <variant name="SmartDimModel.ExecuteResult"/>
-    <variant name="SmartDimModel.LoadModelResult"/>
-    <variant name="TestModel.CreateGraphExecutorResult"/>
-    <variant name="TestModel.ExecuteResult"/>
-    <variant name="TestModel.LoadModelResult"/>
-    <variant name="TextClassifier.Annotate"/>
-    <variant name="TextClassifier.FindLanguages"/>
-    <variant name="TextClassifier.LoadModelResult"/>
-    <variant name="TextClassifier.SuggestSelection"/>
-    <variant name="TextSuggester.LoadModelResult"/>
-    <variant name="TextSuggester.Suggest"/>
-    <variant name="TopCatModel.CreateGraphExecutorResult"/>
-    <variant name="TopCatModel.ExecuteResult"/>
-    <variant name="TopCatModel.LoadModelResult"/>
-    <variant name="WebPlatformHandwritingModel.GetPrediction"/>
-    <variant name="WebPlatformHandwritingModel.LoadModelResult"/>
   </token>
 </histogram>
 

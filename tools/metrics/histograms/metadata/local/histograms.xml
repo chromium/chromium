@@ -379,19 +379,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="LocalStorageContext.MigrationFixUpNeeded" enum="Boolean"
-    expires_after="M87">
-  <obsolete>
-    Removed May 2021 as part of legacy migration code cleanup.
-  </obsolete>
-  <owner>mek@chromium.org</owner>
-  <summary>
-    Whether or not any fixes needed to be made to localstorage data, as a result
-    of bugs in the migration code in M61/M62. Recorded every time the browser
-    loads an initial snapshot of the localstorage data for an origin.
-  </summary>
-</histogram>
-
 <histogram name="LocalStorageContext.OnConnectionDestroyed" enum="Boolean"
     expires_after="M87">
   <owner>mek@chromium.org</owner>
@@ -418,11 +405,6 @@ chromium-metrics-reviews@google.com.
     {LocalStorageContextOpenReasons}
   </summary>
   <token key="LocalStorageContextOpenReasons">
-    <variant name="">
-      <obsolete>
-        Base histogram. Use suffixes of this histogram instead.
-      </obsolete>
-    </variant>
     <variant name="CommitErrors" summary="After too many commit errors."/>
     <variant name="InvalidVersion"
         summary="After an invalid version was read."/>
