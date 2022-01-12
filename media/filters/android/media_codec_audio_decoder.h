@@ -142,7 +142,7 @@ class MEDIA_EXPORT MediaCodecAudioDecoder : public AudioDecoder,
 
   // Calls DecodeCB with |decode_status| for every frame in |input_queue| and
   // then clears it.
-  void ClearInputQueue(DecodeStatus decode_status);
+  void ClearInputQueue(DecoderStatus decode_status);
 
   // Helper method to change the state.
   void SetState(State new_state);

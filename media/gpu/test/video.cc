@@ -553,12 +553,12 @@ void Video::DecodeTask(const std::vector<uint8_t> data,
   }
 
   // Setup the VP9 decoder.
-  media::Status init_result;
+  DecoderStatus init_result;
   VpxVideoDecoder decoder(
       media::OffloadableVideoDecoder::OffloadState::kOffloaded);
   media::VideoDecoder::InitCB init_cb =
-      base::BindOnce([](media::Status* save_to,
-                        media::Status save_from) { *save_to = save_from; },
+      base::BindOnce([](DecoderStatus* save_to,
+                        DecoderStatus save_from) { *save_to = save_from; },
                      &init_result);
   decoder.Initialize(config, false, nullptr, std::move(init_cb),
                      base::BindRepeating(&Video::OnFrameDecoded, resolution,
@@ -576,7 +576,7 @@ void Video::DecodeTask(const std::vector<uint8_t> data,
          num_decoded_frames < num_frames) {
     if (packet.stream_index == stream_index) {
       media::VideoDecoder::DecodeCB decode_cb = base::BindOnce(
-          [](bool* success, media::Status status) {
+          [](bool* success, DecoderStatus status) {
             *success = (status.is_ok());
           },
           success);

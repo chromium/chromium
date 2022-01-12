@@ -98,7 +98,8 @@ class AudioDecoderStreamTest : public testing::Test {
                 config.channel_layout(), config.channels(),
                 config.samples_per_second(), 1221, last_timestamp_)));
     base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(decode_cb), DecodeStatus::OK));
+        FROM_HERE,
+        base::BindOnce(std::move(decode_cb), DecoderStatus::Codes::kOk));
   }
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
@@ -109,7 +110,7 @@ class AudioDecoderStreamTest : public testing::Test {
     EXPECT_CALL(*decoder, Initialize_(_, _, _, _, _))
         .Times(AnyNumber())
         .WillRepeatedly(DoAll(SaveArg<3>(&decoder_output_cb_),
-                              RunOnceCallback<2>(OkStatus())));
+                              RunOnceCallback<2>(DecoderStatus::Codes::kOk)));
     decoder_ = decoder.get();
 
     std::vector<std::unique_ptr<AudioDecoder>> result;

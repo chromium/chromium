@@ -7,6 +7,7 @@
 
 #include "base/containers/span.h"
 #include "base/values.h"
+#include "media/base/decoder_status.h"
 #include "media/base/encoder_status.h"
 #include "media/base/ipc/media_param_traits.h"
 #include "media/base/status.h"

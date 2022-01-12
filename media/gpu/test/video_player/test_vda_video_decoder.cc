@@ -110,7 +110,7 @@ void TestVDAVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   if (!decoder_factory) {
     ASSERT_TRUE(decoder_) << "Failed to create VideoDecodeAccelerator factory";
-    std::move(init_cb).Run(StatusCode::kCodeOnlyForTesting);
+    std::move(init_cb).Run(DecoderStatus::Codes::kFailed);
     return;
   }
 
@@ -142,17 +142,17 @@ void TestVDAVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   if (!decoder_) {
     ASSERT_TRUE(decoder_) << "Failed to create VideoDecodeAccelerator factory";
-    std::move(init_cb).Run(StatusCode::kCodeOnlyForTesting);
+    std::move(init_cb).Run(DecoderStatus::Codes::kFailed);
     return;
   }
 
   if (!vda_config.is_deferred_initialization_allowed)
-    std::move(init_cb).Run(OkStatus());
+    std::move(init_cb).Run(DecoderStatus::Codes::kOk);
   else
     init_cb_ = std::move(init_cb);
 }
 
-void TestVDAVideoDecoder::NotifyInitializationComplete(Status status) {
+void TestVDAVideoDecoder::NotifyInitializationComplete(DecoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(vda_wrapper_sequence_checker_);
   DCHECK(init_cb_);
 
@@ -373,7 +373,7 @@ void TestVDAVideoDecoder::NotifyEndOfBitstreamBuffer(
       << "Couldn't find decode callback for picture buffer with id "
       << bitstream_buffer_id;
 
-  std::move(it->second).Run(DecodeStatus::OK);
+  std::move(it->second).Run(DecoderStatus::Codes::kOk);
   decode_cbs_.erase(it);
 }
 
@@ -381,7 +381,7 @@ void TestVDAVideoDecoder::NotifyFlushDone() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(vda_wrapper_sequence_checker_);
   DCHECK(flush_cb_);
 
-  std::move(flush_cb_).Run(DecodeStatus::OK);
+  std::move(flush_cb_).Run(DecoderStatus::Codes::kOk);
 }
 
 void TestVDAVideoDecoder::NotifyResetDone() {

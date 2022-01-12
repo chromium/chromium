@@ -13,7 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "media/base/decode_status.h"
+#include "media/base/decoder_status.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_frame.h"
 #include "media/video/gpu_video_accelerator_factories.h"
@@ -51,10 +51,10 @@ class CrossThreadVideoDecoderClient {
     int max_decode_requests;
   };
 
-  virtual void OnInitialize(media::Status status,
+  virtual void OnInitialize(media::DecoderStatus status,
                             absl::optional<DecoderDetails> details) = 0;
 
-  virtual void OnDecodeDone(int cb_id, media::Status status) = 0;
+  virtual void OnDecodeDone(int cb_id, media::DecoderStatus status) = 0;
 
   virtual void OnDecodeOutput(scoped_refptr<media::VideoFrame> frame,
                               bool can_read_without_stalling) = 0;
@@ -110,9 +110,9 @@ class MODULES_EXPORT VideoDecoderBroker : public media::VideoDecoder,
   int CreateCallbackId();
 
   // MediaVideoTaskWrapper::CrossThreadVideoDecoderClient
-  void OnInitialize(media::Status status,
+  void OnInitialize(media::DecoderStatus status,
                     absl::optional<DecoderDetails> details) override;
-  void OnDecodeDone(int cb_id, media::Status status) override;
+  void OnDecodeDone(int cb_id, media::DecoderStatus status) override;
   void OnDecodeOutput(scoped_refptr<media::VideoFrame> frame,
                       bool can_read_without_stalling) override;
   void OnReset(int cb_id) override;

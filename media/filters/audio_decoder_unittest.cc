@@ -124,7 +124,7 @@ class AudioDecoderTest
         params_(std::get<1>(GetParam())),
         pending_decode_(false),
         pending_reset_(false),
-        last_decode_status_(DecodeStatus::DECODE_ERROR) {
+        last_decode_status_(DecoderStatus::Codes::kFailed) {
     switch (decoder_type_) {
       case FFMPEG:
         decoder_ = std::make_unique<FFmpegAudioDecoder>(
@@ -151,7 +151,7 @@ class AudioDecoderTest
   void DecodeBuffer(scoped_refptr<DecoderBuffer> buffer) {
     ASSERT_FALSE(pending_decode_);
     pending_decode_ = true;
-    last_decode_status_ = DecodeStatus::DECODE_ERROR;
+    last_decode_status_ = DecoderStatus::Codes::kFailed;
 
     base::RunLoop run_loop;
     decoder_->Decode(
@@ -227,7 +227,7 @@ class AudioDecoderTest
                                    bool success) {
     decoder_->Initialize(config, nullptr,
                          base::BindOnce(
-                             [](bool success, Status status) {
+                             [](bool success, DecoderStatus status) {
                                EXPECT_EQ(status.is_ok(), success);
                              },
                              success),
@@ -280,7 +280,7 @@ class AudioDecoderTest
     decoded_audio_.push_back(std::move(buffer));
   }
 
-  void DecodeFinished(base::OnceClosure quit_closure, Status status) {
+  void DecodeFinished(base::OnceClosure quit_closure, DecoderStatus status) {
     EXPECT_TRUE(pending_decode_);
     EXPECT_FALSE(pending_reset_);
     pending_decode_ = false;
@@ -353,7 +353,9 @@ class AudioDecoderTest
   const scoped_refptr<AudioBuffer>& decoded_audio(size_t i) {
     return decoded_audio_[i];
   }
-  const Status& last_decode_status() const { return last_decode_status_; }
+  const DecoderStatus& last_decode_status() const {
+    return last_decode_status_;
+  }
 
  private:
   const TestAudioDecoderType decoder_type_;
@@ -373,7 +375,7 @@ class AudioDecoderTest
   std::unique_ptr<AudioDecoder> decoder_;
   bool pending_decode_;
   bool pending_reset_;
-  Status last_decode_status_;
+  DecoderStatus last_decode_status_ = DecoderStatus::Codes::kOk;
 
   base::circular_deque<scoped_refptr<AudioBuffer>> decoded_audio_;
   base::TimeDelta start_timestamp_;

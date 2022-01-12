@@ -169,13 +169,14 @@ void Dav1dVideoDecoder::Initialize(const VideoDecoderConfig& config,
   InitCB bound_init_cb = bind_callbacks_ ? BindToCurrentLoop(std::move(init_cb))
                                          : std::move(init_cb);
   if (config.is_encrypted()) {
-    std::move(bound_init_cb).Run(StatusCode::kEncryptedContentUnsupported);
+    std::move(bound_init_cb)
+        .Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
   }
 
   if (config.codec() != VideoCodec::kAV1) {
     std::move(bound_init_cb)
-        .Run(Status(StatusCode::kDecoderUnsupportedCodec)
+        .Run(DecoderStatus(DecoderStatus::Codes::kUnsupportedCodec)
                  .WithData("codec", config.codec()));
     return;
   }
@@ -211,14 +212,14 @@ void Dav1dVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   // TODO(tmathmeyer) write the dav1d error into the data for the media error.
   if (dav1d_open(&dav1d_decoder_, &s) < 0) {
-    std::move(bound_init_cb).Run(StatusCode::kDecoderFailedInitialization);
+    std::move(bound_init_cb).Run(DecoderStatus::Codes::kFailedToCreateDecoder);
     return;
   }
 
   config_ = config;
   state_ = DecoderState::kNormal;
   output_cb_ = output_cb;
-  std::move(bound_init_cb).Run(OkStatus());
+  std::move(bound_init_cb).Run(DecoderStatus::Codes::kOk);
 }
 
 void Dav1dVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
@@ -234,18 +235,18 @@ void Dav1dVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
                                  : std::move(decode_cb);
 
   if (state_ == DecoderState::kError) {
-    std::move(bound_decode_cb).Run(DecodeStatus::DECODE_ERROR);
+    std::move(bound_decode_cb).Run(DecoderStatus::Codes::kFailed);
     return;
   }
 
   if (!DecodeBuffer(std::move(buffer))) {
     state_ = DecoderState::kError;
-    std::move(bound_decode_cb).Run(DecodeStatus::DECODE_ERROR);
+    std::move(bound_decode_cb).Run(DecoderStatus::Codes::kFailed);
     return;
   }
 
   // VideoDecoderShim expects |decode_cb| call after |output_cb_|.
-  std::move(bound_decode_cb).Run(DecodeStatus::OK);
+  std::move(bound_decode_cb).Run(DecoderStatus::Codes::kOk);
 }
 
 void Dav1dVideoDecoder::Reset(base::OnceClosure reset_cb) {

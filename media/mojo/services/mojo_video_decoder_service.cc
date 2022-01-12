@@ -112,9 +112,7 @@ MojoVideoDecoderService::~MojoVideoDecoderService() {
   DVLOG(1) << __func__;
 
   if (init_cb_) {
-    OnDecoderInitialized(
-        Status(StatusCode::kMojoDecoderDeletedWithoutInitialization)
-            .WithData("decoder", "MojoVideoDecoder"));
+    OnDecoderInitialized(DecoderStatus::Codes::kInterrupted);
   }
 
   if (reset_cb_)
@@ -199,7 +197,7 @@ void MojoVideoDecoderService::Initialize(
   init_cb_ = std::move(callback);
 
   if (!decoder_) {
-    OnDecoderInitialized(StatusCode::kMojoDecoderNoWrappedDecoder);
+    OnDecoderInitialized(DecoderStatus::Codes::kFailedToCreateDecoder);
     return;
   }
 
@@ -215,7 +213,7 @@ void MojoVideoDecoderService::Initialize(
     } else if (cdm_id != cdm_id_) {
       // TODO(xhwang): Replace with mojo::ReportBadMessage().
       NOTREACHED() << "The caller should not switch CDM";
-      OnDecoderInitialized(StatusCode::kDecoderMissingCdmForEncryptedContent);
+      OnDecoderInitialized(DecoderStatus::Codes::kUnsupportedEncryptionMode);
       return;
     }
   }
@@ -228,7 +226,7 @@ void MojoVideoDecoderService::Initialize(
     DVLOG(1) << "CdmContext for "
              << CdmContext::CdmIdToString(base::OptionalOrNullptr(cdm_id))
              << " not found for encrypted video";
-    OnDecoderInitialized(StatusCode::kDecoderMissingCdmForEncryptedContent);
+    OnDecoderInitialized(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
   }
 
@@ -267,7 +265,7 @@ void MojoVideoDecoderService::Decode(mojom::DecoderBufferPtr buffer,
 
   if (!decoder_) {
     OnDecoderDecoded(std::move(callback), std::move(trace_event),
-                     DecodeStatus::DECODE_ERROR);
+                     DecoderStatus::Codes::kNotInitialized);
     return;
   }
 
@@ -310,7 +308,7 @@ void MojoVideoDecoderService::Reset(ResetCallback callback) {
       base::BindOnce(&MojoVideoDecoderService::OnReaderFlushed, weak_this_));
 }
 
-void MojoVideoDecoderService::OnDecoderInitialized(Status status) {
+void MojoVideoDecoderService::OnDecoderInitialized(DecoderStatus status) {
   DVLOG(1) << __func__;
   DCHECK(!status.is_ok() || decoder_);
   DCHECK(init_cb_);
@@ -341,7 +339,7 @@ void MojoVideoDecoderService::OnReaderRead(
 
   if (!buffer) {
     OnDecoderDecoded(std::move(callback), std::move(trace_event),
-                     DecodeStatus::DECODE_ERROR);
+                     DecoderStatus::Codes::kFailedToGetDecoderBuffer);
     return;
   }
 
@@ -359,7 +357,7 @@ void MojoVideoDecoderService::OnReaderFlushed() {
 void MojoVideoDecoderService::OnDecoderDecoded(
     DecodeCallback callback,
     std::unique_ptr<ScopedDecodeTrace> trace_event,
-    media::Status status) {
+    media::DecoderStatus status) {
   DVLOG(3) << __func__;
   if (trace_event) {
     TRACE_EVENT_ASYNC_STEP_PAST0("media", kDecodeTraceName, trace_event.get(),

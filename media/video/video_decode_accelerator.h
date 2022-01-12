@@ -16,9 +16,9 @@
 #include "media/base/bitstream_buffer.h"
 #include "media/base/cdm_context.h"
 #include "media/base/decoder_buffer.h"
+#include "media/base/decoder_status.h"
 #include "media/base/encryption_scheme.h"
 #include "media/base/overlay_info.h"
-#include "media/base/status.h"
 #include "media/base/video_decoder_config.h"
 #include "media/video/picture.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -207,7 +207,7 @@ class MEDIA_EXPORT VideoDecodeAccelerator {
     // call to VDA::Initialize returns true.
     // The default implementation is a NOTREACHED, since deferred initialization
     // is not supported by default.
-    virtual void NotifyInitializationComplete(Status status);
+    virtual void NotifyInitializationComplete(DecoderStatus status);
 
     // Callback to tell client how many and what size of buffers to provide.
     // Note that the actual count provided through AssignPictureBuffers() can be

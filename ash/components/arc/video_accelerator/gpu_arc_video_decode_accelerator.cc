@@ -421,8 +421,8 @@ void GpuArcVideoDecodeAccelerator::InitializeTask(
 }
 
 void GpuArcVideoDecodeAccelerator::NotifyInitializationComplete(
-    media::Status status) {
-  DVLOGF(4) << "status: " << status.code();
+    media::DecoderStatus status) {
+  DVLOGF(4) << "status: " << static_cast<int>(status.code());
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   OnInitializeDone(

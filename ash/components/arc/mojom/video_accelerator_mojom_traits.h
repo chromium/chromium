@@ -11,7 +11,7 @@
 #include "ash/components/arc/mojom/video_decoder.mojom-shared.h"
 #include "ash/components/arc/video_accelerator/video_frame_plane.h"
 #include "media/base/color_plane_layout.h"
-#include "media/base/decode_status.h"
+#include "media/base/decoder_status.h"
 #include "media/base/status.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame_layout.h"
@@ -135,18 +135,11 @@ struct StructTraits<arc::mojom::VideoFrameLayoutDataView,
 };
 
 template <>
-struct EnumTraits<arc::mojom::DecodeStatus, media::DecodeStatus> {
-  static arc::mojom::DecodeStatus ToMojom(media::DecodeStatus input);
+struct EnumTraits<arc::mojom::DecoderStatus, media::DecoderStatus> {
+  static arc::mojom::DecoderStatus ToMojom(media::DecoderStatus input);
 
-  static bool FromMojom(arc::mojom::DecodeStatus input,
-                        media::DecodeStatus* output);
-};
-
-template <>
-struct EnumTraits<arc::mojom::Status, media::Status> {
-  static arc::mojom::Status ToMojom(media::Status input);
-
-  static bool FromMojom(arc::mojom::Status input, media::Status* output);
+  static bool FromMojom(arc::mojom::DecoderStatus input,
+                        media::DecoderStatus* output);
 };
 
 }  // namespace mojo

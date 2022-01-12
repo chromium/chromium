@@ -152,7 +152,7 @@ VaapiVideoDecoder::~VaapiVideoDecoder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Abort all currently scheduled decode tasks.
-  ClearDecodeTaskQueue(DecodeStatus::ABORTED);
+  ClearDecodeTaskQueue(DecoderStatus::Codes::kAborted);
 
   weak_this_factory_.InvalidateWeakPtrs();
 
@@ -192,7 +192,7 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
       state_ == State::kExpectingReset) {
     LOG(ERROR)
         << "Don't call Initialize() while there are pending decode tasks";
-    std::move(init_cb).Run(StatusCode::kDecoderInitializationFailed);
+    std::move(init_cb).Run(DecoderStatus::Codes::kFailed);
     return;
   }
 
@@ -239,12 +239,12 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
   if (config.is_encrypted()) {
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     SetErrorState("encrypted content is not supported");
-    std::move(init_cb).Run(StatusCode::kEncryptedContentUnsupported);
+    std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
 #else
     if (!cdm_context || !cdm_context->GetChromeOsCdmContext()) {
       SetErrorState("cannot support encrypted stream w/out ChromeOsCdmContext");
-      std::move(init_cb).Run(StatusCode::kDecoderMissingCdmForEncryptedContent);
+      std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
       return;
     }
     bool encrypted_av1_support = false;
@@ -261,7 +261,7 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
       SetErrorState(
           base::StringPrintf("%s is not supported for encrypted content",
                              GetCodecName(config.codec()).c_str()));
-      std::move(init_cb).Run(StatusCode::kEncryptedContentUnsupported);
+      std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
       return;
     }
     cdm_event_cb_registration_ = cdm_context->RegisterEventCB(
@@ -278,7 +278,7 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
              !base::CommandLine::ForCurrentProcess()->HasSwitch(
                  switches::kEnableClearHevcForTesting)) {
     SetErrorState("clear HEVC content is not supported");
-    std::move(init_cb).Run(StatusCode::kClearContentUnsupported);
+    std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
 #endif
   }
@@ -303,7 +303,7 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
     SetErrorState(
         base::StringPrintf("failed initializing VaapiWrapper for profile %s, ",
                            GetProfileName(profile).c_str()));
-    std::move(init_cb).Run(StatusCode::kDecoderUnsupportedProfile);
+    std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedProfile);
     return;
   }
 
@@ -315,7 +315,7 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
   auto accel_status = CreateAcceleratedVideoDecoder();
   if (!accel_status.is_ok()) {
     SetErrorState("failed to create decoder delegate");
-    std::move(init_cb).Run(Status(Status::Codes::kDecoderInitializationFailed)
+    std::move(init_cb).Run(DecoderStatus(DecoderStatus::Codes::kFailed)
                                .AddCause(std::move(accel_status)));
     return;
   }
@@ -327,7 +327,7 @@ void VaapiVideoDecoder::Initialize(const VideoDecoderConfig& config,
   SetState(State::kWaitingForInput);
 
   // Notify client initialization was successful.
-  std::move(init_cb).Run(OkStatus());
+  std::move(init_cb).Run(DecoderStatus::Codes::kOk);
 }
 
 void VaapiVideoDecoder::OnCdmContextEvent(CdmContext::Event event) {
@@ -352,7 +352,7 @@ void VaapiVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     // VideoDecoder interface: |decode_cb| can't be called from within Decode().
     base::SequencedTaskRunnerHandle::Get()->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(decode_cb), DecodeStatus::DECODE_ERROR));
+        base::BindOnce(std::move(decode_cb), DecoderStatus::Codes::kFailed));
     return;
   }
 
@@ -417,7 +417,8 @@ void VaapiVideoDecoder::HandleDecodeTask() {
     case AcceleratedVideoDecoder::kRanOutOfStreamData:
       // Decoding was successful, notify client and try to schedule the next
       // task. Switch to the idle state if we ran out of buffers to decode.
-      std::move(current_decode_task_->decode_done_cb_).Run(DecodeStatus::OK);
+      std::move(current_decode_task_->decode_done_cb_)
+          .Run(DecoderStatus::Codes::kOk);
       current_decode_task_ = absl::nullopt;
       if (!decode_task_queue_.empty()) {
         ScheduleNextDecodeTask();
@@ -458,7 +459,7 @@ void VaapiVideoDecoder::HandleDecodeTask() {
   }
 }
 
-void VaapiVideoDecoder::ClearDecodeTaskQueue(DecodeStatus status) {
+void VaapiVideoDecoder::ClearDecodeTaskQueue(DecoderStatus status) {
   DVLOGF(4);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -1033,7 +1034,8 @@ void VaapiVideoDecoder::Flush() {
   DCHECK(output_frames_.empty());
 
   // Notify the client flushing is done.
-  std::move(current_decode_task_->decode_done_cb_).Run(DecodeStatus::OK);
+  std::move(current_decode_task_->decode_done_cb_)
+      .Run(DecoderStatus::Codes::kOk);
   current_decode_task_ = absl::nullopt;
 
   // Wait for new decodes, no decode tasks should be queued while flushing.
@@ -1192,7 +1194,7 @@ void VaapiVideoDecoder::SetState(State state) {
              state_ == State::kWaitingForProtected ||
              state_ == State::kChangingResolution ||
              state_ == State::kExpectingReset);
-      ClearDecodeTaskQueue(DecodeStatus::ABORTED);
+      ClearDecodeTaskQueue(DecoderStatus::Codes::kAborted);
       break;
     case State::kChangingResolution:
       DCHECK_EQ(state_, State::kDecoding);
@@ -1201,7 +1203,7 @@ void VaapiVideoDecoder::SetState(State state) {
       DCHECK_EQ(state_, State::kChangingResolution);
       break;
     case State::kError:
-      ClearDecodeTaskQueue(DecodeStatus::DECODE_ERROR);
+      ClearDecodeTaskQueue(DecoderStatus::Codes::kFailed);
       break;
   }
 

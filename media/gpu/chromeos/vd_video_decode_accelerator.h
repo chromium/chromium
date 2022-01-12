@@ -93,10 +93,10 @@ class MEDIA_GPU_EXPORT VdVideoDecodeAccelerator
       scoped_refptr<base::SequencedTaskRunner> task_runner);
 
   // Callback methods of |vd_|.
-  void OnInitializeDone(Status status);
-  void OnDecodeDone(int32_t bitstream_buffer_id, Status status);
+  void OnInitializeDone(DecoderStatus status);
+  void OnDecodeDone(int32_t bitstream_buffer_id, DecoderStatus status);
   void OnFrameReady(scoped_refptr<VideoFrame> frame);
-  void OnFlushDone(Status status);
+  void OnFlushDone(DecoderStatus status);
   void OnResetDone();
 
   // Get Picture instance that represents the same buffer as |frame|. Return

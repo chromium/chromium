@@ -29,29 +29,9 @@ enum class StatusCode : StatusCodeType {
   // General errors: 0x00
   kAborted = 0x0001,
   kInvalidArgument = 0x0002,
-  kKeyFrameRequired = 0x0003,
   kWrappedError = 0x0004,
 
   // Decoder Errors: 0x01
-  kDecoderInitializeNeverCompleted = 0x0101,
-  kDecoderFailedDecode = 0x0102,
-  kDecoderUnsupportedProfile = 0x0103,
-  kDecoderUnsupportedCodec = 0x0104,
-  kDecoderUnsupportedConfig = 0x0105,
-  kEncryptedContentUnsupported = 0x0106,
-  kClearContentUnsupported = 0x0107,
-  kDecoderMissingCdmForEncryptedContent = 0x0108,
-  kDecoderInitializationFailed = 0x0109,  // Prefer this one.
-  kDecoderFailedInitialization = kDecoderInitializationFailed,  // Do not use.
-  kDecoderCantChangeCodec = 0x010A,
-  kDecoderCreationFailed = 0x010B,                  // Prefer this one.
-  kDecoderFailedCreation = kDecoderCreationFailed,  // Do not use.
-  kInitializationUnspecifiedFailure = 0x010C,
-  kDecoderVideoFrameConstructionFailed = 0x010D,
-  kMakeContextCurrentFailed = 0x010E,
-  // This is a temporary error for use only by existing code during the
-  // DecodeStatus => Status conversion.
-  kDecodeErrorDoNotUse = 0x010F,
 
   // MojoDecoder Errors: 0x04
   kMojoDecoderNoWrappedDecoder = 0x0401,
@@ -109,19 +89,6 @@ enum class StatusCode : StatusCodeType {
   // This is a temporary error for use while the demuxer doesn't return a
   // proper status.
   kDecoderStreamDemuxerError = 0x0B02,
-
-  // DecodeStatus temporary codes.  These names were chosen to match the
-  // DecodeStatus enum, so that un-converted code can DecodeStatus::OK/etc.
-  // Note that OK must result in Status::is_ok(), since converted code will
-  // check for it.  These will be removed when the conversion is complete.
-  //
-  // DO NOT ADD NEW USES OF OK/ABORTED/DECODE_ERROR.
-  OK = kOk,  // Everything went as planned.
-  // Read aborted due to Reset() during pending read.
-  ABORTED = kAborted,  // Read aborted due to Reset() during pending read.
-  // Decoder returned decode error. Note: Prefixed by DECODE_
-  // since ERROR is a reserved name (special macro) on Windows.
-  DECODE_ERROR = kDecodeErrorDoNotUse,
 
   // Special codes
   kGenericErrorPleaseRemove = 0x7999,

@@ -224,7 +224,7 @@ class MEDIA_EXPORT TypedStatus {
   }
 
   const std::string group() const {
-    return data_ ? data_->group : Traits::Group();
+    return data_ ? data_->group : std::string(Traits::Group());
   }
 
   const std::string& message() const {

@@ -102,7 +102,7 @@ void DecoderStreamTraits<DemuxerStream::AUDIO>::InitializeDecoder(
 void DecoderStreamTraits<DemuxerStream::AUDIO>::OnDecoderInitialized(
     DecoderType* decoder,
     InitCB cb,
-    Status result) {
+    DecoderStatus result) {
   if (result.is_ok())
     stats_.audio_pipeline_info.decoder_type = decoder->GetDecoderType();
   std::move(cb).Run(result);
@@ -227,7 +227,7 @@ void DecoderStreamTraits<DemuxerStream::VIDEO>::InitializeDecoder(
 void DecoderStreamTraits<DemuxerStream::VIDEO>::OnDecoderInitialized(
     DecoderType* decoder,
     InitCB cb,
-    Status result) {
+    DecoderStatus result) {
   if (result.is_ok()) {
     stats_.video_pipeline_info.decoder_type = decoder->GetDecoderType();
     DVLOG(2) << stats_.video_pipeline_info.decoder_type;

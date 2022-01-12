@@ -36,7 +36,7 @@ void VideoThumbnailDecoder::Start(VideoFrameCallback video_frame_callback) {
       base::DoNothing());
 }
 
-void VideoThumbnailDecoder::OnVideoDecoderInitialized(Status status) {
+void VideoThumbnailDecoder::OnVideoDecoderInitialized(DecoderStatus status) {
   if (!status.is_ok()) {
     NotifyComplete(nullptr);
     return;
@@ -50,7 +50,7 @@ void VideoThumbnailDecoder::OnVideoDecoderInitialized(Status status) {
                                   weak_factory_.GetWeakPtr()));
 }
 
-void VideoThumbnailDecoder::OnVideoBufferDecoded(Status status) {
+void VideoThumbnailDecoder::OnVideoBufferDecoded(DecoderStatus status) {
   if (!status.is_ok()) {
     NotifyComplete(nullptr);
     return;
@@ -62,7 +62,7 @@ void VideoThumbnailDecoder::OnVideoBufferDecoded(Status status) {
                                   weak_factory_.GetWeakPtr()));
 }
 
-void VideoThumbnailDecoder::OnEosBufferDecoded(Status status) {
+void VideoThumbnailDecoder::OnEosBufferDecoded(DecoderStatus status) {
   if (!status.is_ok())
     NotifyComplete(nullptr);
 }

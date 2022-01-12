@@ -20,7 +20,7 @@ interface AudioDecoder {
   // bitstream conversion.
   Initialize(AudioDecoderConfig config,
              mojo_base.mojom.UnguessableToken? cdm_id)
-      => (Status success,
+      => (DecoderStatus success,
           bool needs_bitstream_conversion,
           AudioDecoderType decoder_type);
 
@@ -35,7 +35,7 @@ interface AudioDecoder {
   // pending buffers should be processed, the corresponding decoded buffers
   // should be returned to the proxy, and only then the service should return
   // DecoderStatus.
-  Decode(DecoderBuffer buffer) => (Status status);
+  Decode(DecoderBuffer buffer) => (DecoderStatus status);
 
   // Resets decoder state. Should be called only if Initialize() succeeds.
   // All pending Decode() requests will be finished or aborted, then the method

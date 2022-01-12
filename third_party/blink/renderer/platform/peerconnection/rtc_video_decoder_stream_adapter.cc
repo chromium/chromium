@@ -825,9 +825,9 @@ void RTCVideoDecoderStreamAdapter::OnFrameReady(
   pending_read_ = false;
 
   switch (result.code()) {
-    case media::StatusCode::kOk:
+    case media::DecoderStatus::Codes::kOk:
       break;
-    case media::StatusCode::kAborted:
+    case media::DecoderStatus::Codes::kAborted:
       // We're doing a Reset(), so just ignore it and keep going.
       return;
     default:

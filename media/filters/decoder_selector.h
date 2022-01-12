@@ -132,7 +132,7 @@ class MEDIA_EXPORT DecoderSelector {
  private:
   void CreateDecoders();
   void InitializeDecoder();
-  void OnDecoderInitializeDone(Status status);
+  void OnDecoderInitializeDone(DecoderStatus status);
   void ReturnNullDecoder();
   void InitializeDecryptingDemuxerStream();
   void OnDecryptingDemuxerStreamInitializeDone(PipelineStatus status);

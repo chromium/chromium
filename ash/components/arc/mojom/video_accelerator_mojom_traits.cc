@@ -228,85 +228,45 @@ bool StructTraits<arc::mojom::VideoFrameLayoutDataView,
 }
 
 // static
-arc::mojom::DecodeStatus
-EnumTraits<arc::mojom::DecodeStatus, media::DecodeStatus>::ToMojom(
-    media::DecodeStatus input) {
-  switch (input) {
-    case media::DecodeStatus::kOk:
-      return arc::mojom::DecodeStatus::OK;
-    case media::DecodeStatus::kAborted:
-      return arc::mojom::DecodeStatus::ABORTED;
-    case media::DecodeStatus::kDecoderFailedDecode:
-      return arc::mojom::DecodeStatus::DECODE_FAILED;
-    default:
-      NOTREACHED() << "unknown decode status: " << static_cast<int>(input);
-      return arc::mojom::DecodeStatus::DECODE_FAILED;
-  }
-}
-
-// static
-bool EnumTraits<arc::mojom::DecodeStatus, media::DecodeStatus>::FromMojom(
-    arc::mojom::DecodeStatus input,
-    media::DecodeStatus* output) {
-  switch (input) {
-    case arc::mojom::DecodeStatus::OK:
-      *output = media::DecodeStatus::kOk;
-      return true;
-    case arc::mojom::DecodeStatus::ABORTED:
-      *output = media::DecodeStatus::kAborted;
-      return true;
-    case arc::mojom::DecodeStatus::DECODE_FAILED:
-      *output = media::DecodeStatus::kDecoderFailedDecode;
-      return true;
-  }
-  NOTREACHED() << "unknown decode status: " << static_cast<int>(input);
-  return false;
-}
-
-// static
-arc::mojom::Status EnumTraits<arc::mojom::Status, media::Status>::ToMojom(
-    media::Status input) {
+arc::mojom::DecoderStatus
+EnumTraits<arc::mojom::DecoderStatus, media::DecoderStatus>::ToMojom(
+    media::DecoderStatus input) {
   switch (input.code()) {
-    case media::StatusCode::kOk:
-      return arc::mojom::Status::OK;
-    case media::StatusCode::kAborted:
-      return arc::mojom::Status::ABORTED;
-    case media::StatusCode::kInvalidArgument:
-      return arc::mojom::Status::INVALID_ARGUMENT;
-    case media::StatusCode::kDecoderFailedDecode:
-      return arc::mojom::Status::DECODER_DECODE_FAILED;
-    case media::StatusCode::kDecoderInitializationFailed:
-      return arc::mojom::Status::DECODER_INITIALIZATION_FAILED;
-    case media::StatusCode::kDecoderCreationFailed:
-      return arc::mojom::Status::DECODER_CREATION_FAILED;
+    case media::DecoderStatus::Codes::kOk:
+      return arc::mojom::DecoderStatus::OK;
+    case media::DecoderStatus::Codes::kAborted:
+      return arc::mojom::DecoderStatus::ABORTED;
+    case media::DecoderStatus::Codes::kFailed:
+      return arc::mojom::DecoderStatus::FAILED;
+    case media::DecoderStatus::Codes::kFailedToCreateDecoder:
+      return arc::mojom::DecoderStatus::CREATION_FAILED;
+    case media::DecoderStatus::Codes::kInvalidArgument:
+      return arc::mojom::DecoderStatus::INVALID_ARGUMENT;
     default:
       NOTREACHED() << "unknown status: " << static_cast<int>(input.code());
-      return arc::mojom::Status::INVALID_ARGUMENT;
+      return arc::mojom::DecoderStatus::INVALID_ARGUMENT;
   }
 }
 
 // static
-bool EnumTraits<arc::mojom::Status, media::Status>::FromMojom(
-    arc::mojom::Status input,
-    media::Status* output) {
+bool EnumTraits<arc::mojom::DecoderStatus, media::DecoderStatus>::FromMojom(
+    arc::mojom::DecoderStatus input,
+    media::DecoderStatus* output) {
   switch (input) {
-    case arc::mojom::Status::OK:
-      *output = media::StatusCode::kOk;
+    case arc::mojom::DecoderStatus::OK:
+      *output = media::DecoderStatus::Codes::kOk;
       return true;
-    case arc::mojom::Status::ABORTED:
-      *output = media::StatusCode::kAborted;
+    case arc::mojom::DecoderStatus::ABORTED:
+      *output = media::DecoderStatus::Codes::kAborted;
       return true;
-    case arc::mojom::Status::INVALID_ARGUMENT:
-      *output = media::StatusCode::kInvalidArgument;
+    case arc::mojom::DecoderStatus::FAILED:
+      *output = media::DecoderStatus::Codes::kFailed;
       return true;
-    case arc::mojom::Status::DECODER_DECODE_FAILED:
-      *output = media::StatusCode::kDecoderFailedDecode;
+    case arc::mojom::DecoderStatus::CREATION_FAILED:
+      *output = media::DecoderStatus::Codes::kFailedToCreateDecoder;
       return true;
-    case arc::mojom::Status::DECODER_INITIALIZATION_FAILED:
-      *output = media::StatusCode::kDecoderInitializationFailed;
-      return true;
-    case arc::mojom::Status::DECODER_CREATION_FAILED:
-      *output = media::StatusCode::kDecoderCreationFailed;
+    case arc::mojom::DecoderStatus::INVALID_ARGUMENT:
+      *output = media::DecoderStatus::Codes::kInvalidArgument;
       return true;
   }
   NOTREACHED() << "unknown status: " << static_cast<int>(input);

@@ -18,7 +18,7 @@
 #include "base/posix/eintr_wrapper.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/trace_event/trace_event.h"
-#include "media/base/decode_status.h"
+#include "media/base/decoder_status.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
 #include "media/gpu/accelerated_video_decoder.h"
@@ -422,7 +422,8 @@ bool V4L2StatelessVideoDecoderBackend::PumpDecodeTask() {
           enqueuing_timestamps_[current_decode_request_->buffer->timestamp()
                                     .InMilliseconds()] = base::TimeTicks::Now();
 
-          std::move(current_decode_request_->decode_cb).Run(DecodeStatus::OK);
+          std::move(current_decode_request_->decode_cb)
+              .Run(DecoderStatus::Codes::kOk);
           current_decode_request_ = absl::nullopt;
         }
 
@@ -498,7 +499,7 @@ void V4L2StatelessVideoDecoderBackend::PumpOutputSurfaces() {
       case OutputRequest::kFlushFence:
         DCHECK(output_request_queue_.empty());
         DVLOGF(2) << "Flush finished.";
-        std::move(flush_cb_).Run(DecodeStatus::OK);
+        std::move(flush_cb_).Run(DecoderStatus::Codes::kOk);
         resume_decode = true;
         client_->CompleteFlush();
         break;
@@ -617,7 +618,7 @@ void V4L2StatelessVideoDecoderBackend::OnStreamStopped(bool stop_input_queue) {
 }
 
 void V4L2StatelessVideoDecoderBackend::ClearPendingRequests(
-    DecodeStatus status) {
+    DecoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DVLOGF(3);
 

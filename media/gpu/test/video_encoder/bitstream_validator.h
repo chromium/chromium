@@ -17,6 +17,7 @@
 #include "base/thread_annotations.h"
 #include "base/threading/thread.h"
 #include "media/base/bitstream_buffer.h"
+#include "media/base/decoder_status.h"
 #include "media/base/video_decoder.h"
 #include "media/gpu/test/bitstream_helpers.h"
 #include "media/gpu/test/video_frame_helpers.h"
@@ -77,7 +78,7 @@ class BitstreamValidator : public BitstreamProcessor {
   void OutputFrameProcessed();
 
   // Functions for media::VideoDecoder.
-  void DecodeDone(int64_t timestamp, Status status);
+  void DecodeDone(int64_t timestamp, DecoderStatus status);
   void VerifyOutputFrame(scoped_refptr<VideoFrame> frame);
 
   // Construct the spatial index conversion table |original_spatial_indices_|

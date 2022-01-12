@@ -67,7 +67,9 @@ class MEDIA_EXPORT DecoderStreamTraits<DemuxerStream::AUDIO> {
                          InitCB init_cb,
                          const OutputCB& output_cb,
                          const WaitingCB& waiting_cb);
-  void OnDecoderInitialized(DecoderType* decoder, InitCB cb, Status status);
+  void OnDecoderInitialized(DecoderType* decoder,
+                            InitCB cb,
+                            DecoderStatus status);
   DecoderConfigType GetDecoderConfig(DemuxerStream* stream);
   void OnDecode(const DecoderBuffer& buffer);
   PostDecodeAction OnDecodeDone(OutputType* buffer);
@@ -126,7 +128,9 @@ class MEDIA_EXPORT DecoderStreamTraits<DemuxerStream::VIDEO> {
                          InitCB init_cb,
                          const OutputCB& output_cb,
                          const WaitingCB& waiting_cb);
-  void OnDecoderInitialized(DecoderType* decoder, InitCB cb, Status status);
+  void OnDecoderInitialized(DecoderType* decoder,
+                            InitCB cb,
+                            DecoderStatus status);
   void OnDecode(const DecoderBuffer& buffer);
   PostDecodeAction OnDecodeDone(OutputType* buffer);
   void OnStreamReset(DemuxerStream* stream);

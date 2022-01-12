@@ -8,9 +8,8 @@
 #include <stdint.h>
 #include <memory>
 
-#include "media/base/decode_status.h"
+#include "media/base/decoder_status.h"
 #include "media/base/media_log.h"
-#include "media/base/status.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
@@ -108,7 +107,7 @@ class MODULES_EXPORT DecoderTemplate
   // When |verify_key_frame| is true, clients are expected to verify and set the
   // DecoderBuffer::is_key_frame() value. I.e., they must process the encoded
   // data to ensure the value is actually what the chunk says it is.
-  virtual media::StatusOr<scoped_refptr<media::DecoderBuffer>>
+  virtual media::DecoderStatus::Or<scoped_refptr<media::DecoderBuffer>>
   MakeDecoderBuffer(const InputType& chunk, bool verify_key_frame) = 0;
 
  private:
@@ -146,7 +145,7 @@ class MODULES_EXPORT DecoderTemplate
     Member<ScriptPromiseResolver> resolver;
 
     // For reporting an error at the time when a request is processed.
-    media::Status status;
+    media::DecoderStatus status;
 
     // The value of |reset_generation_| at the time of this request. Used to
     // abort pending requests following a reset().
@@ -173,9 +172,9 @@ class MODULES_EXPORT DecoderTemplate
   void Shutdown(DOMException* ex = nullptr);
 
   // Called by |decoder_|.
-  void OnInitializeDone(media::Status status);
-  void OnDecodeDone(uint32_t id, media::Status);
-  void OnFlushDone(media::Status);
+  void OnInitializeDone(media::DecoderStatus status);
+  void OnDecodeDone(uint32_t id, media::DecoderStatus);
+  void OnFlushDone(media::DecoderStatus);
   void OnResetDone();
   void OnOutput(uint32_t reset_generation, scoped_refptr<MediaOutputType>);
 
@@ -204,7 +203,7 @@ class MODULES_EXPORT DecoderTemplate
   // Could be a configure, flush, or reset. Decodes go in |pending_decodes_|.
   Member<Request> pending_request_;
 
-  std::unique_ptr<CodecLogger<media::Status>> logger_;
+  std::unique_ptr<CodecLogger<media::DecoderStatus>> logger_;
 
   // Empty - GPU factories haven't been retrieved yet.
   // nullptr - We tried to get GPU factories, but acceleration is unavailable.

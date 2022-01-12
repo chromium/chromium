@@ -78,12 +78,12 @@ const char* GetPrepareTraceString<DemuxerStream::AUDIO>() {
   return "AudioDecoderStream::PrepareOutput";
 }
 
-const char* GetStatusString(const Status& status) {
+const char* GetStatusString(const DecoderStatus& status) {
   // TODO(crbug.com/1129662): Replace this with generic Status-to-string.
   switch (status.code()) {
-    case StatusCode::kOk:
+    case DecoderStatus::Codes::kOk:
       return "okay";
-    case StatusCode::kAborted:
+    case DecoderStatus::Codes::kAborted:
       return "aborted";
     default:
       return "decode_error";
@@ -127,7 +127,7 @@ DecoderStream<StreamType>::~DecoderStream() {
   }
   if (read_cb_) {
     read_cb_ = BindToCurrentLoop(std::move(read_cb_));
-    SatisfyRead(StatusCode::kAborted);
+    SatisfyRead(DecoderStatus::Codes::kAborted);
   }
   if (reset_cb_)
     task_runner_->PostTask(FROM_HERE, std::move(reset_cb_));
@@ -188,7 +188,7 @@ void DecoderStream<StreamType>::Read(ReadCB read_cb) {
     read_cb_ = BindToCurrentLoop(std::move(read_cb));
     // TODO(crbug.com/1129662): Consider attaching a caused-by of the original
     // error as well.
-    SatisfyRead(StatusCode::kDecoderStreamInErrorState);
+    SatisfyRead(DecoderStatus::Codes::kDecoderStreamInErrorState);
     return;
   }
 
@@ -223,7 +223,7 @@ void DecoderStream<StreamType>::Reset(base::OnceClosure closure) {
 
   if (read_cb_) {
     read_cb_ = BindToCurrentLoop(std::move(read_cb_));
-    SatisfyRead(StatusCode::kAborted);
+    SatisfyRead(DecoderStatus::Codes::kAborted);
   }
 
   ClearOutputs();
@@ -519,8 +519,9 @@ void DecoderStream<StreamType>::OnDecodeDone(
     int buffer_size,
     bool end_of_stream,
     std::unique_ptr<ScopedDecodeTrace> trace_event,
-    Status status) {
-  FUNCTION_DVLOG(status.is_ok() ? 3 : 1) << ": " << status.code();
+    DecoderStatus status) {
+  FUNCTION_DVLOG(status.is_ok() ? 3 : 1)
+      << ": " << static_cast<int>(status.code());
   DCHECK(state_ == STATE_NORMAL || state_ == STATE_FLUSHING_DECODER ||
          state_ == STATE_ERROR)
       << state_;
@@ -552,11 +553,11 @@ void DecoderStream<StreamType>::OnDecodeDone(
     return;
 
   switch (status.code()) {
-    case StatusCode::kAborted:
+    case DecoderStatus::Codes::kAborted:
       // Decoder can return kAborted during Reset() or during destruction.
       return;
 
-    case StatusCode::kOk:
+    case DecoderStatus::Codes::kOk:
       // Any successful decode counts!
       if (buffer_size > 0)
         traits_->ReportStatistics(statistics_cb_, buffer_size);
@@ -742,7 +743,7 @@ void DecoderStream<StreamType>::OnBufferReady(
     pending_buffers_.clear();
     ClearOutputs();
     if (read_cb_)
-      SatisfyRead(StatusCode::kDecoderStreamDemuxerError);
+      SatisfyRead(DecoderStatus::Codes::kDecoderStreamDemuxerError);
   }
 
   // Decoding has been stopped.
@@ -818,7 +819,7 @@ void DecoderStream<StreamType>::OnBufferReady(
 
   if (status == DemuxerStream::kAborted) {
     if (read_cb_)
-      SatisfyRead(StatusCode::kAborted);
+      SatisfyRead(DecoderStatus::Codes::kAborted);
     return;
   }
 
@@ -870,7 +871,7 @@ void DecoderStream<StreamType>::CompleteDecoderReinitialization(bool success) {
   if (state_ == STATE_ERROR) {
     MEDIA_LOG(ERROR, media_log_)
         << GetStreamTypeString() << " decoder reinitialization failed";
-    SatisfyRead(StatusCode::kDecoderStreamReinitFailed);
+    SatisfyRead(DecoderStatus::Codes::kDecoderStreamReinitFailed);
     return;
   }
 

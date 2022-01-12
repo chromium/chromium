@@ -21,8 +21,8 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/mailbox.h"
-#include "media/base/decode_status.h"
 #include "media/base/decoder_factory.h"
+#include "media/base/decoder_status.h"
 #include "media/base/media_util.h"
 #include "media/base/video_decoder.h"
 #include "media/base/video_decoder_config.h"
@@ -253,12 +253,11 @@ class RTCVideoDecoderStreamAdapterTest
 
   void SetUpMockDecoder(MockVideoDecoder* decoder, bool init_cb_result) {
     EXPECT_CALL(*decoder, Initialize_(_, _, _, _, _, _))
-        .WillOnce(DoAll(
-            SaveArg<0>(&vda_config_), SaveArg<4>(&output_cb_),
-            base::test::RunOnceCallback<3>(
-                init_cb_result
-                    ? media::OkStatus()
-                    : media::Status(media::StatusCode::kCodeOnlyForTesting))));
+        .WillOnce(
+            DoAll(SaveArg<0>(&vda_config_), SaveArg<4>(&output_cb_),
+                  base::test::RunOnceCallback<3>(
+                      init_cb_result ? media::DecoderStatus::Codes::kOk
+                                     : media::DecoderStatus::Codes::kFailed)));
   }
 
   // Set up our decoder factory to provide a decoder that will succeed or fail
@@ -452,7 +451,8 @@ TEST_P(RTCVideoDecoderStreamAdapterTest, DecodeOneFrame) {
   auto* decoder = decoder_factory_->decoder();
   EXPECT_TRUE(BasicSetup());
   EXPECT_CALL(*decoder, Decode_(_, _))
-      .WillOnce(base::test::RunOnceCallback<1>(media::DecodeStatus::OK));
+      .WillOnce(
+          base::test::RunOnceCallback<1>(media::DecoderStatus::Codes::kOk));
   EXPECT_EQ(Decode(0), WEBRTC_VIDEO_CODEC_OK);
   task_environment_.RunUntilIdle();
   EXPECT_CALL(decoded_cb_, Run(_));
@@ -469,7 +469,8 @@ TEST_P(RTCVideoDecoderStreamAdapterTest, SlowDecodingCausesReset) {
   // All Decodes succeed immediately.  The backup will come from the fact that
   // we won't run the media thread while sending decode requests in.
   EXPECT_CALL(*decoder, Decode_(_, _))
-      .WillRepeatedly(base::test::RunOnceCallback<1>(media::DecodeStatus::OK));
+      .WillRepeatedly(
+          base::test::RunOnceCallback<1>(media::DecoderStatus::Codes::kOk));
   // At some point, `adapter_` should trigger a reset.
   EXPECT_CALL(*decoder, Reset_(_)).WillOnce(base::test::RunOnceCallback<0>());
 
@@ -516,7 +517,8 @@ TEST_P(RTCVideoDecoderStreamAdapterTest, ReallySlowDecodingCausesFallback) {
   // All Decodes succeed immediately.  The backup will come from the fact that
   // we won't run the media thread while sending decode requests in.
   EXPECT_CALL(*decoder, Decode_(_, _))
-      .WillRepeatedly(base::test::RunOnceCallback<1>(media::DecodeStatus::OK));
+      .WillRepeatedly(
+          base::test::RunOnceCallback<1>(media::DecoderStatus::Codes::kOk));
   // At some point, `adapter_` should trigger a reset, before it falls back.  It
   // should not do so more than once, since we won't complete the reset.
   EXPECT_CALL(*decoder, Reset_(_)).WillOnce(base::test::RunOnceCallback<0>());
@@ -553,7 +555,8 @@ TEST_P(RTCVideoDecoderStreamAdapterTest, WontForwardFramesAfterRelease) {
   auto* decoder = decoder_factory_->decoder();
   EXPECT_TRUE(BasicSetup());
   EXPECT_CALL(*decoder, Decode_(_, _))
-      .WillOnce(base::test::RunOnceCallback<1>(media::DecodeStatus::OK));
+      .WillOnce(
+          base::test::RunOnceCallback<1>(media::DecoderStatus::Codes::kOk));
   EXPECT_EQ(Decode(0), WEBRTC_VIDEO_CODEC_OK);
   task_environment_.RunUntilIdle();
   // Should not be called.
@@ -602,7 +605,8 @@ TEST_P(RTCVideoDecoderStreamAdapterTest, LowResSelectsCorrectDecoder) {
   task_environment_.RunUntilIdle();
 
   EXPECT_CALL(*correct_decoder, Decode_(_, _))
-      .WillOnce(base::test::RunOnceCallback<1>(media::DecodeStatus::OK));
+      .WillOnce(
+          base::test::RunOnceCallback<1>(media::DecoderStatus::Codes::kOk));
   Decode(0);
   task_environment_.RunUntilIdle();
 }
@@ -615,7 +619,8 @@ TEST_P(RTCVideoDecoderStreamAdapterTest, UseD3D11ToDecodeVP9kSVCStream) {
   decoder->SetDecoderType(media::VideoDecoderType::kD3D11);
   EXPECT_TRUE(BasicSetup());
   EXPECT_CALL(*decoder, Decode_(_, _))
-      .WillOnce(base::test::RunOnceCallback<1>(media::DecodeStatus::OK));
+      .WillOnce(
+          base::test::RunOnceCallback<1>(media::DecoderStatus::Codes::kOk));
   EXPECT_EQ(Decode(0, false), WEBRTC_VIDEO_CODEC_OK);
   task_environment_.RunUntilIdle();
   EXPECT_CALL(decoded_cb_, Run(_));

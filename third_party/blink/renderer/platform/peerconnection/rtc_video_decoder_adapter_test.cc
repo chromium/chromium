@@ -20,7 +20,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "gpu/command_buffer/common/mailbox.h"
-#include "media/base/decode_status.h"
+#include "media/base/decoder_status.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/base/video_decoder.h"
@@ -183,12 +183,11 @@ class RTCVideoDecoderAdapterTest : public ::testing::Test {
 
   bool CreateAndInitialize(bool init_cb_result = true) {
     EXPECT_CALL(*video_decoder_, Initialize_(_, _, _, _, _, _))
-        .WillOnce(DoAll(
-            SaveArg<0>(&vda_config_), SaveArg<4>(&output_cb_),
-            base::test::RunOnceCallback<3>(
-                init_cb_result
-                    ? media::OkStatus()
-                    : media::Status(media::StatusCode::kCodeOnlyForTesting))));
+        .WillOnce(
+            DoAll(SaveArg<0>(&vda_config_), SaveArg<4>(&output_cb_),
+                  base::test::RunOnceCallback<3>(
+                      init_cb_result ? media::DecoderStatus::Codes::kOk
+                                     : media::DecoderStatus::Codes::kFailed)));
     rtc_video_decoder_adapter_ =
         RTCVideoDecoderAdapter::Create(&gpu_factories_, sdp_format_);
     return !!rtc_video_decoder_adapter_;
@@ -314,7 +313,8 @@ TEST_F(RTCVideoDecoderAdapterTest, Decode) {
   ASSERT_TRUE(BasicSetup());
 
   EXPECT_CALL(*video_decoder_, Decode_(_, _))
-      .WillOnce(base::test::RunOnceCallback<1>(media::DecodeStatus::OK));
+      .WillOnce(
+          base::test::RunOnceCallback<1>(media::DecoderStatus::Codes::kOk));
 
   ASSERT_EQ(Decode(0), WEBRTC_VIDEO_CODEC_OK);
 
@@ -328,7 +328,7 @@ TEST_F(RTCVideoDecoderAdapterTest, Decode_Error) {
 
   EXPECT_CALL(*video_decoder_, Decode_(_, _))
       .WillOnce(
-          base::test::RunOnceCallback<1>(media::DecodeStatus::DECODE_ERROR));
+          base::test::RunOnceCallback<1>(media::DecoderStatus::Codes::kFailed));
 
   ASSERT_EQ(Decode(0), WEBRTC_VIDEO_CODEC_OK);
   media_thread_.FlushForTesting();
@@ -383,13 +383,15 @@ TEST_F(RTCVideoDecoderAdapterTest, ReinitializesForHDRColorSpaceInitially) {
   // Decode() is expected to be called for EOS flush as well.
   EXPECT_CALL(*video_decoder_, Decode_(_, _))
       .Times(3)
-      .WillRepeatedly(base::test::RunOnceCallback<1>(media::DecodeStatus::OK));
+      .WillRepeatedly(
+          base::test::RunOnceCallback<1>(media::DecoderStatus::Codes::kOk));
   EXPECT_CALL(decoded_cb_, Run(_)).Times(2);
 
   // First Decode() should cause a reinitialize as new color space is given.
   EXPECT_CALL(*video_decoder_, Initialize_(_, _, _, _, _, _))
-      .WillOnce(DoAll(SaveArg<0>(&vda_config_),
-                      base::test::RunOnceCallback<3>(media::OkStatus())));
+      .WillOnce(DoAll(
+          SaveArg<0>(&vda_config_),
+          base::test::RunOnceCallback<3>(media::DecoderStatus::Codes::kOk)));
   webrtc::EncodedImage first_input_image = GetEncodedImageWithColorSpace(0);
   ASSERT_EQ(rtc_video_decoder_adapter_->Decode(first_input_image, false, 0),
             WEBRTC_VIDEO_CODEC_OK);
@@ -417,12 +419,13 @@ TEST_F(RTCVideoDecoderAdapterTest, HandlesReinitializeFailure) {
 
   // Decode() is expected to be called for EOS flush as well.
   EXPECT_CALL(*video_decoder_, Decode_(_, _))
-      .WillOnce(base::test::RunOnceCallback<1>(media::DecodeStatus::OK));
+      .WillOnce(
+          base::test::RunOnceCallback<1>(media::DecoderStatus::Codes::kOk));
 
   // Set Initialize() to fail.
   EXPECT_CALL(*video_decoder_, Initialize_(_, _, _, _, _, _))
-      .WillOnce(base::test::RunOnceCallback<3>(
-          media::Status(media::StatusCode::kCodeOnlyForTesting)));
+      .WillOnce(
+          base::test::RunOnceCallback<3>(media::DecoderStatus::Codes::kFailed));
   ASSERT_EQ(rtc_video_decoder_adapter_->Decode(input_image, false, 0),
             WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE);
 }
@@ -438,7 +441,8 @@ TEST_F(RTCVideoDecoderAdapterTest, HandlesFlushFailure) {
 
   // Decode() is expected to be called for EOS flush, set to fail.
   EXPECT_CALL(*video_decoder_, Decode_(_, _))
-      .WillOnce(base::test::RunOnceCallback<1>(media::DecodeStatus::ABORTED));
+      .WillOnce(base::test::RunOnceCallback<1>(
+          media::DecoderStatus::Codes::kAborted));
   ASSERT_EQ(rtc_video_decoder_adapter_->Decode(input_image, false, 0),
             WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE);
 }
@@ -454,7 +458,8 @@ TEST_F(RTCVideoDecoderAdapterTest, DecoderCountIsIncrementedByDecode) {
 
   // The first decode should increment the count.
   EXPECT_CALL(*video_decoder_, Decode_)
-      .WillOnce(base::test::RunOnceCallback<1>(media::DecodeStatus::OK));
+      .WillOnce(
+          base::test::RunOnceCallback<1>(media::DecoderStatus::Codes::kOk));
   EXPECT_EQ(Decode(0), WEBRTC_VIDEO_CODEC_OK);
   EXPECT_EQ(RTCVideoDecoderAdapter::GetCurrentDecoderCountForTesting(), 1);
 
@@ -525,7 +530,8 @@ TEST_F(RTCVideoDecoderAdapterTest, DoesNotFallBackForHighResolution) {
 
   // The first decode should increment the count and succeed.
   EXPECT_CALL(*video_decoder_, Decode_(_, _))
-      .WillOnce(base::test::RunOnceCallback<1>(media::DecodeStatus::OK));
+      .WillOnce(
+          base::test::RunOnceCallback<1>(media::DecoderStatus::Codes::kOk));
   EXPECT_EQ(Decode(0), WEBRTC_VIDEO_CODEC_OK);
   EXPECT_EQ(RTCVideoDecoderAdapter::GetCurrentDecoderCountForTesting(),
             RTCVideoDecoderAdapter::kMaxDecoderInstances + 1);
@@ -541,7 +547,8 @@ TEST_F(RTCVideoDecoderAdapterTest, UseD3D11ToDecodeVP9kSVCStream) {
   SetSpatialIndex(2);
   video_decoder_->SetDecoderType(media::VideoDecoderType::kD3D11);
   EXPECT_CALL(*video_decoder_, Decode_(_, _))
-      .WillOnce(base::test::RunOnceCallback<1>(media::DecodeStatus::OK));
+      .WillOnce(
+          base::test::RunOnceCallback<1>(media::DecoderStatus::Codes::kOk));
 
   ASSERT_EQ(Decode(0), WEBRTC_VIDEO_CODEC_OK);
 

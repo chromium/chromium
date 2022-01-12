@@ -23,7 +23,7 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_executor.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "media/base/decode_status.h"
+#include "media/base/decoder_status.h"
 #include "media/base/media_switches.h"
 #include "media/base/media_util.h"
 #include "media/cdm/cdm_type_conversion.h"
@@ -186,7 +186,7 @@ class VideoDecoderAdapter final : public CdmVideoDecoder {
   ~VideoDecoderAdapter() final = default;
 
   // CdmVideoDecoder implementation.
-  Status Initialize(const cdm::VideoDecoderConfig_3& config) final {
+  DecoderStatus Initialize(const cdm::VideoDecoderConfig_3& config) final {
     auto clear_config = ToClearMediaVideoDecoderConfig(config);
     DVLOG(1) << __func__ << ": " << clear_config.AsHumanReadableString();
     DCHECK(!last_init_result_.has_value());
@@ -244,7 +244,7 @@ class VideoDecoderAdapter final : public CdmVideoDecoder {
 
     // "kAborted" shouldn't happen during a sync decode, so treat it as an
     // error.
-    DCHECK_NE(decode_status.code(), StatusCode::kAborted);
+    DCHECK_NE(decode_status.code(), DecoderStatus::Codes::kAborted);
 
     if (!decode_status.is_ok())
       return cdm::kDecodeError;
@@ -261,7 +261,7 @@ class VideoDecoderAdapter final : public CdmVideoDecoder {
   }
 
  private:
-  void OnInitialized(base::OnceClosure quit_closure, Status status) {
+  void OnInitialized(base::OnceClosure quit_closure, DecoderStatus status) {
     DVLOG(1) << __func__ << " success = " << status.is_ok();
     DCHECK(!last_init_result_.has_value());
     last_init_result_ = std::move(status);
@@ -282,7 +282,7 @@ class VideoDecoderAdapter final : public CdmVideoDecoder {
     std::move(quit_closure).Run();
   }
 
-  void OnDecoded(base::OnceClosure quit_closure, Status decode_status) {
+  void OnDecoded(base::OnceClosure quit_closure, DecoderStatus decode_status) {
     DCHECK(!last_decode_status_.has_value());
     last_decode_status_ = std::move(decode_status);
     std::move(quit_closure).Run();
@@ -293,8 +293,8 @@ class VideoDecoderAdapter final : public CdmVideoDecoder {
 
   // Results of |video_decoder_| operations. Set iff the callback of the
   // operation has been called.
-  absl::optional<Status> last_init_result_;
-  absl::optional<Status> last_decode_status_;
+  absl::optional<DecoderStatus> last_init_result_;
+  absl::optional<DecoderStatus> last_decode_status_;
 
   // Queue of decoded video frames.
   using VideoFrameQueue = base::queue<scoped_refptr<VideoFrame>>;

@@ -96,11 +96,11 @@ class AudioRendererImplTest : public ::testing::Test,
     auto decoder = std::make_unique<MockAudioDecoder>();
     if (!enter_pending_decoder_init_) {
       EXPECT_CALL(*decoder, Initialize_(_, _, _, _, _))
-          .WillOnce(DoAll(SaveArg<3>(&output_cb_),
-                          RunOnceCallback<2>(
-                              expected_init_result_
-                                  ? OkStatus()
-                                  : Status(StatusCode::kCodeOnlyForTesting))));
+          .WillOnce(
+              DoAll(SaveArg<3>(&output_cb_),
+                    RunOnceCallback<2>(expected_init_result_
+                                           ? DecoderStatus::Codes::kOk
+                                           : DecoderStatus::Codes::kFailed)));
     } else {
       EXPECT_CALL(*decoder, Initialize_(_, _, _, _, _))
           .WillOnce(EnterPendingDecoderInitStateAction(this));
@@ -393,7 +393,7 @@ class AudioRendererImplTest : public ::testing::Test,
     }
     next_timestamp_->AddFrames(frames.value);
 
-    DeliverBuffer(DecodeStatus::OK, std::move(buffer));
+    DeliverBuffer(DecoderStatus::Codes::kOk, std::move(buffer));
   }
 
   void DeliverEndOfStream() {
@@ -406,12 +406,14 @@ class AudioRendererImplTest : public ::testing::Test,
 
     // Satify pending |decode_cb_| to trigger a new DemuxerStream::Read().
     main_thread_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(std::move(decode_cb_), DecodeStatus::OK));
+        FROM_HERE,
+        base::BindOnce(std::move(decode_cb_), DecoderStatus::Codes::kOk));
 
     WaitForPendingRead();
 
     main_thread_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(std::move(decode_cb_), DecodeStatus::OK));
+        FROM_HERE,
+        base::BindOnce(std::move(decode_cb_), DecoderStatus::Codes::kOk));
 
     base::RunLoop().RunUntilIdle();
     EXPECT_EQ(last_statistics_.audio_memory_usage,
@@ -566,7 +568,7 @@ class AudioRendererImplTest : public ::testing::Test,
     main_thread_task_runner_->PostTask(FROM_HERE, std::move(reset_cb));
   }
 
-  void DeliverBuffer(DecodeStatus status, scoped_refptr<AudioBuffer> buffer) {
+  void DeliverBuffer(DecoderStatus status, scoped_refptr<AudioBuffer> buffer) {
     CHECK(decode_cb_);
 
     if (buffer.get() && !buffer->end_of_stream())
@@ -914,7 +916,7 @@ TEST_F(AudioRendererImplTest, ChannelMask) {
   scoped_refptr<AudioBuffer> buffer = MakeAudioBuffer<float>(
       kSampleFormat, hw_params.channel_layout(), hw_params.channels(),
       kInputSamplesPerSecond, 1.0f, 0.0f, kInputFramesChunk, base::TimeDelta());
-  DeliverBuffer(DecodeStatus::OK, std::move(buffer));
+  DeliverBuffer(DecoderStatus::Codes::kOk, std::move(buffer));
 
   // All channels should now be enabled.
   mask = channel_mask();

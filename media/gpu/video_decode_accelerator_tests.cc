@@ -214,7 +214,7 @@ class VideoDecoderTest : public ::testing::Test {
 
     bool init_success = false;
     VideoDecoder::InitCB init_cb = base::BindOnce(
-        [](bool* init_success, media::Status result) {
+        [](bool* init_success, DecoderStatus result) {
           *init_success = result.is_ok();
         },
         &init_success);
@@ -231,7 +231,7 @@ class VideoDecoderTest : public ::testing::Test {
     while (!encoded_data_helper->ReachEndOfStream()) {
       bool decode_success = false;
       media::VideoDecoder::DecodeCB decode_cb = base::BindOnce(
-          [](bool* decode_success, media::Status status) {
+          [](bool* decode_success, DecoderStatus status) {
             *decode_success = status.is_ok();
           },
           &decode_success);
@@ -247,7 +247,7 @@ class VideoDecoderTest : public ::testing::Test {
     }
     bool flush_success = false;
     media::VideoDecoder::DecodeCB flush_cb = base::BindOnce(
-        [](bool* flush_success, media::Status status) {
+        [](bool* flush_success, DecoderStatus status) {
           *flush_success = status.is_ok();
         },
         &flush_success);

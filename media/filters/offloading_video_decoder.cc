@@ -35,7 +35,7 @@ class CancellationHelper {
   void Decode(scoped_refptr<DecoderBuffer> buffer,
               VideoDecoder::DecodeCB decode_cb) {
     if (cancellation_flag_->IsSet()) {
-      std::move(decode_cb).Run(DecodeStatus::ABORTED);
+      std::move(decode_cb).Run(DecoderStatus::Codes::kAborted);
       return;
     }
 

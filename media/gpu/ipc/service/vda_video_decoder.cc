@@ -232,10 +232,9 @@ void VdaVideoDecoder::Initialize(const VideoDecoderConfig& config,
   DCHECK(decode_cbs_.empty());
 
   if (has_error_) {
-    // TODO(tmathmeyer) generic error, please remove.
     parent_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(std::move(init_cb),
-                                  StatusCode::kGenericErrorPleaseRemove));
+        FROM_HERE,
+        base::BindOnce(std::move(init_cb), DecoderStatus::Codes::kFailed));
     return;
   }
 
@@ -306,8 +305,9 @@ void VdaVideoDecoder::Initialize(const VideoDecoderConfig& config,
                                     gpu_weak_this_));
     } else {
       parent_task_runner_->PostTask(
-          FROM_HERE, base::BindOnce(&VdaVideoDecoder::InitializeDone,
-                                    parent_weak_this_, OkStatus()));
+          FROM_HERE,
+          base::BindOnce(&VdaVideoDecoder::InitializeDone, parent_weak_this_,
+                         DecoderStatus::Codes::kOk));
     }
     return;
   }
@@ -344,7 +344,7 @@ void VdaVideoDecoder::InitializeOnGpuThread() {
       parent_task_runner_->PostTask(
           FROM_HERE,
           base::BindOnce(&VdaVideoDecoder::InitializeDone, parent_weak_this_,
-                         StatusCode::kDecoderInitializeNeverCompleted));
+                         DecoderStatus::Codes::kFailed));
       return;
     }
 
@@ -375,7 +375,7 @@ void VdaVideoDecoder::InitializeOnGpuThread() {
     parent_task_runner_->PostTask(
         FROM_HERE,
         base::BindOnce(&VdaVideoDecoder::InitializeDone, parent_weak_this_,
-                       StatusCode::kDecoderInitializeNeverCompleted));
+                       DecoderStatus::Codes::kFailedToCreateDecoder));
     return;
   }
 
@@ -388,13 +388,14 @@ void VdaVideoDecoder::InitializeOnGpuThread() {
   decode_on_parent_thread_ = vda_->TryToSetupDecodeOnSeparateThread(
       parent_weak_this_, parent_task_runner_);
 
-  parent_task_runner_->PostTask(FROM_HERE,
-                                base::BindOnce(&VdaVideoDecoder::InitializeDone,
-                                               parent_weak_this_, OkStatus()));
+  parent_task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&VdaVideoDecoder::InitializeDone,
+                                parent_weak_this_, DecoderStatus::Codes::kOk));
 }
 
-void VdaVideoDecoder::InitializeDone(Status status) {
-  DVLOG(1) << __func__ << " success = (" << status.code() << ")";
+void VdaVideoDecoder::InitializeDone(DecoderStatus status) {
+  DVLOG(1) << __func__ << " success = (" << static_cast<int>(status.code())
+           << ")";
   DCHECK(parent_task_runner_->BelongsToCurrentThread());
 
   if (has_error_)
@@ -422,7 +423,7 @@ void VdaVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   if (has_error_) {
     parent_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(decode_cb), DecodeStatus::DECODE_ERROR));
+        base::BindOnce(std::move(decode_cb), DecoderStatus::Codes::kFailed));
     return;
   }
 
@@ -504,8 +505,8 @@ int VdaVideoDecoder::GetMaxDecodeRequests() const {
   return 4;
 }
 
-void VdaVideoDecoder::NotifyInitializationComplete(Status status) {
-  DVLOG(2) << __func__ << "(" << status.code() << ")";
+void VdaVideoDecoder::NotifyInitializationComplete(DecoderStatus status) {
+  DVLOG(2) << __func__ << "(" << static_cast<int>(status.code()) << ")";
   DCHECK(gpu_task_runner_->BelongsToCurrentThread());
   DCHECK(vda_initialized_);
 
@@ -686,7 +687,7 @@ void VdaVideoDecoder::NotifyEndOfBitstreamBufferOnParentThread(
   // Run a local copy in case the decode callback modifies |decode_cbs_|.
   DecodeCB decode_cb = std::move(decode_cb_it->second);
   decode_cbs_.erase(decode_cb_it);
-  std::move(decode_cb).Run(DecodeStatus::OK);
+  std::move(decode_cb).Run(DecoderStatus::Codes::kOk);
 }
 
 void VdaVideoDecoder::NotifyFlushDone() {
@@ -711,7 +712,7 @@ void VdaVideoDecoder::NotifyFlushDoneOnParentThread() {
     return;
 
   DCHECK(decode_cbs_.empty());
-  std::move(flush_cb_).Run(DecodeStatus::OK);
+  std::move(flush_cb_).Run(DecoderStatus::Codes::kOk);
 }
 
 void VdaVideoDecoder::NotifyResetDone() {
@@ -744,13 +745,13 @@ void VdaVideoDecoder::NotifyResetDoneOnParentThread() {
   std::map<int32_t, DecodeCB> local_decode_cbs = std::move(decode_cbs_);
   decode_cbs_.clear();
   for (auto& it : local_decode_cbs) {
-    std::move(it.second).Run(DecodeStatus::ABORTED);
+    std::move(it.second).Run(DecoderStatus::Codes::kAborted);
     if (!weak_this)
       return;
   }
 
   if (weak_this && flush_cb_)
-    std::move(flush_cb_).Run(DecodeStatus::ABORTED);
+    std::move(flush_cb_).Run(DecoderStatus::Codes::kAborted);
 
   if (weak_this)
     std::move(reset_cb_).Run();
@@ -828,13 +829,13 @@ void VdaVideoDecoder::DestroyCallbacks() {
   std::map<int32_t, DecodeCB> local_decode_cbs = std::move(decode_cbs_);
   decode_cbs_.clear();
   for (auto& it : local_decode_cbs) {
-    std::move(it.second).Run(DecodeStatus::DECODE_ERROR);
+    std::move(it.second).Run(DecoderStatus::Codes::kFailed);
     if (!weak_this)
       return;
   }
 
   if (weak_this && flush_cb_)
-    std::move(flush_cb_).Run(DecodeStatus::DECODE_ERROR);
+    std::move(flush_cb_).Run(DecoderStatus::Codes::kFailed);
 
   // Note: |reset_cb_| cannot return failure, so the client won't actually find
   // out about the error until another operation is attempted.
@@ -842,7 +843,7 @@ void VdaVideoDecoder::DestroyCallbacks() {
     std::move(reset_cb_).Run();
 
   if (weak_this && init_cb_)
-    std::move(init_cb_).Run(StatusCode::kDecoderInitializeNeverCompleted);
+    std::move(init_cb_).Run(DecoderStatus::Codes::kFailed);
 }
 
 }  // namespace media

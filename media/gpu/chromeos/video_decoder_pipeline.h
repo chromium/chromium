@@ -198,9 +198,11 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   void ResetTask(base::OnceClosure reset_cb);
   void DecodeTask(scoped_refptr<DecoderBuffer> buffer, DecodeCB decode_cb);
 
-  void OnInitializeDone(InitCB init_cb, CdmContext* cdm_context, Status status);
+  void OnInitializeDone(InitCB init_cb,
+                        CdmContext* cdm_context,
+                        DecoderStatus status);
 
-  void OnDecodeDone(bool eos_buffer, DecodeCB decode_cb, Status status);
+  void OnDecodeDone(bool eos_buffer, DecodeCB decode_cb, DecoderStatus status);
   void OnResetDone(base::OnceClosure reset_cb);
   void OnError(const std::string& msg);
 
@@ -222,7 +224,7 @@ class MEDIA_GPU_EXPORT VideoDecoderPipeline : public VideoDecoder,
   void CallApplyResolutionChangeIfNeeded();
 
   // Call |client_flush_cb_| with |status|.
-  void CallFlushCbIfNeeded(DecodeStatus status);
+  void CallFlushCbIfNeeded(DecoderStatus status);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Callback for when transcryption of a buffer completes.

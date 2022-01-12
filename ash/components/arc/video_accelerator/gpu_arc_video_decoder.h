@@ -56,9 +56,9 @@ class GpuArcVideoDecoder : public mojom::VideoDecoder {
   using Request = base::OnceClosure;
 
   // Called by the decoder when initialization is done.
-  void OnInitializeDone(media::Status status);
+  void OnInitializeDone(media::DecoderStatus status);
   // Called by the decoder when the specified buffer has been decoded.
-  void OnDecodeDone(DecodeCallback callback, media::Status status);
+  void OnDecodeDone(DecodeCallback callback, media::DecoderStatus status);
   // Called by the decoder when a decoded frame is ready.
   void OnFrameReady(scoped_refptr<media::VideoFrame> frame);
   // Called by the decoder when a reset has been completed.
@@ -66,7 +66,7 @@ class GpuArcVideoDecoder : public mojom::VideoDecoder {
   // Called by the video frame pool when new frames have been requested.
   void OnRequestVideoFrames();
   // Called when an error occurred.
-  void OnError(base::Location location, const media::Status& status);
+  void OnError(media::DecoderStatus status);
 
   // Handle all requests that are currently in the |requests_| queue.
   void HandleRequests();

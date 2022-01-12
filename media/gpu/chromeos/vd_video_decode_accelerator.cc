@@ -270,7 +270,7 @@ bool VdVideoDecodeAccelerator::Initialize(const Config& config,
   return true;
 }
 
-void VdVideoDecodeAccelerator::OnInitializeDone(Status status) {
+void VdVideoDecodeAccelerator::OnInitializeDone(DecoderStatus status) {
   DVLOGF(3) << "success: " << status.is_ok();
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   DCHECK(client_);
@@ -313,12 +313,13 @@ void VdVideoDecodeAccelerator::Decode(scoped_refptr<DecoderBuffer> buffer,
 }
 
 void VdVideoDecodeAccelerator::OnDecodeDone(int32_t bitstream_buffer_id,
-                                            Status status) {
-  DVLOGF(4) << "status: " << status.code();
+                                            DecoderStatus status) {
+  DVLOGF(4) << "status: " << status.group() << ":"
+            << static_cast<int>(status.code());
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   DCHECK(client_);
 
-  if (!status.is_ok() && status.code() != StatusCode::kAborted) {
+  if (!status.is_ok() && status.code() != DecoderStatus::Codes::kAborted) {
     OnError(FROM_HERE, PLATFORM_FAILURE);
     return;
   }
@@ -364,16 +365,16 @@ void VdVideoDecodeAccelerator::Flush() {
       base::BindOnce(&VdVideoDecodeAccelerator::OnFlushDone, weak_this_));
 }
 
-void VdVideoDecodeAccelerator::OnFlushDone(Status status) {
-  DVLOGF(3) << "status: " << status.code();
+void VdVideoDecodeAccelerator::OnFlushDone(DecoderStatus status) {
+  DVLOGF(3) << "status: " << static_cast<int>(status.code());
   DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   DCHECK(client_);
 
   switch (status.code()) {
-    case StatusCode::kOk:
+    case DecoderStatus::Codes::kOk:
       client_->NotifyFlushDone();
       break;
-    case StatusCode::kAborted:
+    case DecoderStatus::Codes::kAborted:
       // Do nothing.
       break;
     default:

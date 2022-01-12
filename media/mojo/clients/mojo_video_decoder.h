@@ -91,12 +91,12 @@ class MojoVideoDecoder final : public VideoDecoder,
   }
 
  private:
-  void FailInit(InitCB init_cb, Status err);
-  void OnInitializeDone(const Status& status,
+  void FailInit(InitCB init_cb, DecoderStatus err);
+  void OnInitializeDone(const DecoderStatus& status,
                         bool needs_bitstream_conversion,
                         int32_t max_decode_requests,
                         VideoDecoderType decoder_type);
-  void OnDecodeDone(uint64_t decode_id, const Status& status);
+  void OnDecodeDone(uint64_t decode_id, const DecoderStatus& status);
   void OnResetDone();
 
   void InitAndBindRemoteDecoder(base::OnceClosure complete_cb);

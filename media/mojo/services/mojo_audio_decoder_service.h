@@ -51,7 +51,7 @@ class MEDIA_MOJO_EXPORT MojoAudioDecoderService final
 
  private:
   // Called by |decoder_| upon finishing initialization.
-  void OnInitialized(InitializeCallback callback, Status status);
+  void OnInitialized(InitializeCallback callback, DecoderStatus status);
 
   // Called by |mojo_decoder_buffer_reader_| when read is finished.
   void OnReadDone(DecodeCallback callback, scoped_refptr<DecoderBuffer> buffer);
@@ -60,7 +60,7 @@ class MEDIA_MOJO_EXPORT MojoAudioDecoderService final
   void OnReaderFlushDone(ResetCallback callback);
 
   // Called by |decoder_| when DecoderBuffer is accepted or rejected.
-  void OnDecodeStatus(DecodeCallback callback, media::Status status);
+  void OnDecodeStatus(DecodeCallback callback, DecoderStatus status);
 
   // Called by |decoder_| when reset sequence is finished.
   void OnResetDone(ResetCallback callback);

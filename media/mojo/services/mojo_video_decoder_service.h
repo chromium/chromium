@@ -13,7 +13,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/unguessable_token.h"
 #include "media/base/cdm_context.h"
-#include "media/base/decode_status.h"
+#include "media/base/decoder_status.h"
 #include "media/base/overlay_info.h"
 #include "media/base/video_decoder.h"
 #include "media/mojo/mojom/video_decoder.mojom.h"
@@ -70,13 +70,13 @@ class MEDIA_MOJO_EXPORT MojoVideoDecoderService final
   // running mojom::VideoDecoder callbacks after connection error happens and
   // |this| is deleted. It's not safe to run the callbacks after a connection
   // error.
-  void OnDecoderInitialized(Status status);
+  void OnDecoderInitialized(DecoderStatus status);
   void OnReaderRead(DecodeCallback callback,
                     std::unique_ptr<ScopedDecodeTrace> trace_event,
                     scoped_refptr<DecoderBuffer> buffer);
   void OnDecoderDecoded(DecodeCallback callback,
                         std::unique_ptr<ScopedDecodeTrace> trace_event,
-                        media::Status status);
+                        DecoderStatus status);
 
   // Called by |mojo_decoder_buffer_reader_| when reset is finished.
   void OnReaderFlushed();

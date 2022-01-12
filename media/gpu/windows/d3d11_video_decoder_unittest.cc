@@ -224,12 +224,12 @@ class D3D11VideoDecoderTest : public ::testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void CheckStatus(bool expectSuccess, Status actual) {
+  void CheckStatus(bool expectSuccess, DecoderStatus actual) {
     ASSERT_EQ(expectSuccess, actual.is_ok());
     MockInitCB(actual);
   }
 
-  MOCK_METHOD1(MockInitCB, void(Status));
+  MOCK_METHOD1(MockInitCB, void(DecoderStatus));
 
   base::test::TaskEnvironment task_environment_;
 

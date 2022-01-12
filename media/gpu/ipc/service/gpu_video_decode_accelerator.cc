@@ -312,7 +312,8 @@ GpuVideoDecodeAccelerator::GetCapabilities(
       gpu_preferences, workarounds);
 }
 
-void GpuVideoDecodeAccelerator::NotifyInitializationComplete(Status status) {
+void GpuVideoDecodeAccelerator::NotifyInitializationComplete(
+    DecoderStatus status) {
   decoder_client_->OnInitializationComplete(status.is_ok());
 }
 

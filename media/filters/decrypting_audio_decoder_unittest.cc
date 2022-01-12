@@ -89,7 +89,7 @@ class DecryptingAudioDecoderTest : public testing::Test {
     decoder_->Initialize(
         config, cdm_context_.get(),
         base::BindOnce(
-            [](bool success, Status status) {
+            [](bool success, DecoderStatus status) {
               EXPECT_EQ(status.is_ok(), success);
             },
             success),
@@ -132,7 +132,8 @@ class DecryptingAudioDecoderTest : public testing::Test {
         .WillOnce(RunOnceCallback<1>(true));
     decoder_->Initialize(
         new_config, cdm_context_.get(),
-        base::BindOnce([](Status status) { EXPECT_TRUE(status.is_ok()); }),
+        base::BindOnce(
+            [](DecoderStatus status) { EXPECT_TRUE(status.is_ok()); }),
         base::BindRepeating(&DecryptingAudioDecoderTest::FrameReady,
                             base::Unretained(this)),
         base::BindRepeating(&DecryptingAudioDecoderTest::OnWaiting,
@@ -140,7 +141,8 @@ class DecryptingAudioDecoderTest : public testing::Test {
   }
 
   // Decode |buffer| and expect DecodeDone to get called with |status|.
-  void DecodeAndExpect(scoped_refptr<DecoderBuffer> buffer, StatusCode status) {
+  void DecodeAndExpect(scoped_refptr<DecoderBuffer> buffer,
+                       DecoderStatus status) {
     EXPECT_CALL(*this, DecodeDone(HasStatusCode(status)));
     decoder_->Decode(buffer,
                      base::BindOnce(&DecryptingAudioDecoderTest::DecodeDone,
@@ -176,7 +178,7 @@ class DecryptingAudioDecoderTest : public testing::Test {
             Invoke(this, &DecryptingAudioDecoderTest::DecryptAndDecodeAudio));
     EXPECT_CALL(*this, FrameReady(decoded_frame_));
     for (int i = 0; i < kDecodingDelay + 1; ++i)
-      DecodeAndExpect(encrypted_buffer_, DecodeStatus::OK);
+      DecodeAndExpect(encrypted_buffer_, DecoderStatus::Codes::kOk);
   }
 
   // Sets up expectations and actions to put DecryptingAudioDecoder in an end
@@ -185,7 +187,8 @@ class DecryptingAudioDecoderTest : public testing::Test {
   void EnterEndOfStreamState() {
     // The codec in the |decryptor_| will be flushed.
     EXPECT_CALL(*this, FrameReady(decoded_frame_)).Times(kDecodingDelay);
-    DecodeAndExpect(DecoderBuffer::CreateEOSBuffer(), DecodeStatus::OK);
+    DecodeAndExpect(DecoderBuffer::CreateEOSBuffer(),
+                    DecoderStatus::Codes::kOk);
     EXPECT_EQ(0, num_frames_in_decryptor_);
   }
 
@@ -252,7 +255,7 @@ class DecryptingAudioDecoderTest : public testing::Test {
   }
 
   MOCK_METHOD1(FrameReady, void(scoped_refptr<AudioBuffer>));
-  MOCK_METHOD1(DecodeDone, void(Status));
+  MOCK_METHOD1(DecodeDone, void(DecoderStatus));
 
   MOCK_METHOD1(OnWaiting, void(WaitingReason));
 
@@ -329,7 +332,7 @@ TEST_F(DecryptingAudioDecoderTest, DecryptAndDecode_DecodeError) {
       .WillRepeatedly(
           RunOnceCallback<1>(Decryptor::kError, Decryptor::AudioFrames()));
 
-  DecodeAndExpect(encrypted_buffer_, DecodeStatus::DECODE_ERROR);
+  DecodeAndExpect(encrypted_buffer_, DecoderStatus::Codes::kFailed);
 }
 
 // Test the case where the decryptor returns multiple decoded frames.
@@ -353,7 +356,7 @@ TEST_F(DecryptingAudioDecoderTest, DecryptAndDecode_MultipleFrames) {
   EXPECT_CALL(*this, FrameReady(decoded_frame_));
   EXPECT_CALL(*this, FrameReady(frame_a));
   EXPECT_CALL(*this, FrameReady(frame_b));
-  DecodeAndExpect(encrypted_buffer_, DecodeStatus::OK);
+  DecodeAndExpect(encrypted_buffer_, DecoderStatus::Codes::kOk);
 }
 
 // Test the case where the decryptor receives end-of-stream buffer.
@@ -461,7 +464,7 @@ TEST_F(DecryptingAudioDecoderTest, Reset_DuringPendingDecode) {
   Initialize();
   EnterPendingDecodeState();
 
-  EXPECT_CALL(*this, DecodeDone(HasStatusCode(StatusCode::kAborted)));
+  EXPECT_CALL(*this, DecodeDone(HasStatusCode(DecoderStatus::Codes::kAborted)));
 
   Reset();
 }
@@ -471,7 +474,7 @@ TEST_F(DecryptingAudioDecoderTest, Reset_DuringWaitingForKey) {
   Initialize();
   EnterWaitingForKeyState();
 
-  EXPECT_CALL(*this, DecodeDone(HasStatusCode(StatusCode::kAborted)));
+  EXPECT_CALL(*this, DecodeDone(HasStatusCode(DecoderStatus::Codes::kAborted)));
 
   Reset();
 }

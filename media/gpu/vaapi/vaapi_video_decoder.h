@@ -134,7 +134,7 @@ class VaapiVideoDecoder : public VideoDecoderMixin,
   void HandleDecodeTask();
   // Clear the decode task queue. This is done when resetting or destroying the
   // decoder, or encountering an error.
-  void ClearDecodeTaskQueue(DecodeStatus status);
+  void ClearDecodeTaskQueue(DecoderStatus status);
 
   // Releases the local reference to the VideoFrame associated with the
   // specified |surface_id| on the decoder thread. This is called when

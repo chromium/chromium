@@ -18,8 +18,8 @@
 #include "base/time/time.h"
 #include "gpu/command_buffer/common/sync_token.h"
 #include "media/base/async_destroy_video_decoder.h"
-#include "media/base/decode_status.h"
 #include "media/base/decoder_buffer.h"
+#include "media/base/decoder_status.h"
 #include "media/base/media_util.h"
 #include "media/base/mock_media_log.h"
 #include "media/base/simple_sync_token_client.h"
@@ -179,7 +179,7 @@ class VdaVideoDecoderTest : public testing::TestWithParam<bool> {
   }
 
   void NotifyEndOfBitstreamBuffer(int32_t bitstream_id) {
-    EXPECT_CALL(decode_cb_, Run(HasStatusCode(DecodeStatus::OK)));
+    EXPECT_CALL(decode_cb_, Run(HasStatusCode(DecoderStatus::Codes::kOk)));
     if (GetParam()) {
       // TODO(sandersd): The VDA could notify on either thread. Test both.
       client_->NotifyEndOfBitstreamBuffer(bitstream_id);
@@ -328,8 +328,7 @@ TEST_P(VdaVideoDecoderTest, Initialize_UnsupportedSize) {
       VideoDecoderConfig::AlphaMode::kIsOpaque, VideoColorSpace::REC601(),
       kNoTransformation, gfx::Size(320, 240), gfx::Rect(320, 240),
       gfx::Size(320, 240), EmptyExtraData(), EncryptionScheme::kUnencrypted));
-  EXPECT_CALL(init_cb_,
-              Run(HasStatusCode(StatusCode::kDecoderInitializeNeverCompleted)));
+  EXPECT_CALL(init_cb_, Run(HasStatusCode(DecoderStatus::Codes::kFailed)));
   RunUntilIdle();
 }
 
@@ -339,8 +338,7 @@ TEST_P(VdaVideoDecoderTest, Initialize_UnsupportedCodec) {
       VideoDecoderConfig::AlphaMode::kIsOpaque, VideoColorSpace::REC709(),
       kNoTransformation, gfx::Size(1920, 1088), gfx::Rect(1920, 1080),
       gfx::Size(1920, 1080), EmptyExtraData(), EncryptionScheme::kUnencrypted));
-  EXPECT_CALL(init_cb_,
-              Run(HasStatusCode(StatusCode::kDecoderInitializeNeverCompleted)));
+  EXPECT_CALL(init_cb_, Run(HasStatusCode(DecoderStatus::Codes::kFailed)));
   RunUntilIdle();
 }
 
@@ -351,8 +349,7 @@ TEST_P(VdaVideoDecoderTest, Initialize_RejectedByVda) {
       VideoDecoderConfig::AlphaMode::kIsOpaque, VideoColorSpace::REC709(),
       kNoTransformation, gfx::Size(1920, 1088), gfx::Rect(1920, 1080),
       gfx::Size(1920, 1080), EmptyExtraData(), EncryptionScheme::kUnencrypted));
-  EXPECT_CALL(init_cb_,
-              Run(HasStatusCode(StatusCode::kDecoderInitializeNeverCompleted)));
+  EXPECT_CALL(init_cb_, Run(HasStatusCode(DecoderStatus::Codes::kFailed)));
   RunUntilIdle();
 }
 
@@ -376,7 +373,7 @@ TEST_P(VdaVideoDecoderTest, Decode_Reset) {
   vdavd_->Reset(reset_cb_.Get());
   RunUntilIdle();
 
-  EXPECT_CALL(decode_cb_, Run(HasStatusCode(DecodeStatus::ABORTED)));
+  EXPECT_CALL(decode_cb_, Run(HasStatusCode(DecoderStatus::Codes::kAborted)));
   EXPECT_CALL(reset_cb_, Run());
   NotifyResetDone();
 }

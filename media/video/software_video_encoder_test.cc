@@ -219,10 +219,10 @@ class SoftwareVideoEncoderTest
     auto enforcer = std::make_unique<CallEnforcer>();
     enforcer->location = loc.ToString();
     return base::BindLambdaForTesting(
-        [enforcer{std::move(enforcer)}](Status s) {
-          EXPECT_TRUE(s.is_ok())
-              << " Callback created: " << enforcer->location
-              << " Code: " << s.code() << " Error: " << s.message();
+        [enforcer{std::move(enforcer)}](DecoderStatus s) {
+          EXPECT_TRUE(s.is_ok()) << " Callback created: " << enforcer->location
+                                 << " Code: " << static_cast<int>(s.code())
+                                 << " Error: " << s.message();
           enforcer->called = true;
         });
   }
@@ -231,13 +231,14 @@ class SoftwareVideoEncoderTest
       scoped_refptr<DecoderBuffer> buffer,
       const base::Location& location = base::Location::Current()) {
     base::RunLoop run_loop;
-    decoder_->Decode(
-        std::move(buffer), base::BindLambdaForTesting([&](Status status) {
-          EXPECT_TRUE(status.is_ok())
-              << " Callback created: " << location.ToString()
-              << " Code: " << status.code() << " Error: " << status.message();
-          run_loop.Quit();
-        }));
+    decoder_->Decode(std::move(buffer),
+                     base::BindLambdaForTesting([&](DecoderStatus status) {
+                       EXPECT_TRUE(status.is_ok())
+                           << " Callback created: " << location.ToString()
+                           << " Code: " << static_cast<int>(status.code())
+                           << " Error: " << status.message();
+                       run_loop.Quit();
+                     }));
     run_loop.Run(location);
   }
 

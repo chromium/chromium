@@ -9,24 +9,17 @@ import "ash/components/arc/mojom/video_common.mojom";
 import "ash/components/arc/mojom/video_frame_pool.mojom";
 import "sandbox/policy/mojom/sandbox.mojom";
 
-// Based on media::Status, only a limited set of relevant status codes are
-// currently added here.
+// Based on media::DecoderStatus, only a limited set of relevant status codes
+// are currently added here.
+// TODO(b:189278506): ensure that the ARCVM side of the video decoder uses the
+// new entries listed here.
 [Extensible]
-enum Status {
+enum DecoderStatus {
   OK = 0,
   ABORTED = 1,
-  INVALID_ARGUMENT = 2,
-  DECODER_DECODE_FAILED = 3,
-  DECODER_INITIALIZATION_FAILED = 4,
-  DECODER_CREATION_FAILED = 5,
-};
-
-// Based on media::DecodeStatus
-[Extensible]
-enum DecodeStatus {
-  OK = 0,
-  ABORTED = 1,
-  DECODE_FAILED = 2,
+  FAILED = 2,
+  INVALID_ARGUMENT = 3,
+  CREATION_FAILED = 4,
 };
 
 // Based on media::DecoderBuffer
@@ -72,10 +65,10 @@ interface VideoDecoder {
   Initialize@0(VideoDecoderConfig config,
                pending_remote<VideoDecoderClient> client,
                pending_associated_receiver<VideoFramePool> video_frame_pool)
-               => (Status status);
+               => (DecoderStatus status);
 
   // Decode the specified frame, flushes if an EOS buffer is passed
-  Decode@1(DecoderBuffer buffer) => (DecodeStatus status);
+  Decode@1(DecoderBuffer buffer) => (DecoderStatus status);
 
   // Reset the decoder. All pending Decode requests will be finished or aborted
   // before the callback is called.
@@ -95,5 +88,5 @@ interface VideoDecoderClient {
                         int64 timestamp);
 
   // Notify the client an error happened while decoding the stream.
-  OnError@1(Status status);
+  OnError@1(DecoderStatus status);
 };

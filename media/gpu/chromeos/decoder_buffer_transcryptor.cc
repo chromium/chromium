@@ -36,7 +36,7 @@ DecoderBufferTranscryptor::DecoderBufferTranscryptor(
 
 DecoderBufferTranscryptor::~DecoderBufferTranscryptor() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  Reset(DecodeStatus::ABORTED);
+  Reset(DecoderStatus::Codes::kAborted);
 }
 
 void DecoderBufferTranscryptor::EnqueueBuffer(
@@ -47,7 +47,7 @@ void DecoderBufferTranscryptor::EnqueueBuffer(
   DecryptPendingBuffer();
 }
 
-void DecoderBufferTranscryptor::Reset(DecodeStatus status) {
+void DecoderBufferTranscryptor::Reset(DecoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (current_transcrypt_task_) {
     std::move(current_transcrypt_task_->decode_done_cb).Run(status);

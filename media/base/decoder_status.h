@@ -1,24 +1,49 @@
-// Copyright 2016 The Chromium Authors. All rights reserved.
+// Copyright 2021 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_BASE_DECODE_STATUS_H_
-#define MEDIA_BASE_DECODE_STATUS_H_
-
-#include <iosfwd>
+#ifndef MEDIA_BASE_DECODER_STATUS_H_
+#define MEDIA_BASE_DECODER_STATUS_H_
 
 #include "media/base/decoder_buffer.h"
-#include "media/base/media_export.h"
 #include "media/base/status.h"
-#include "media/base/status_codes.h"
 
 namespace media {
 
-// TODO(crbug.com/1129662): This is temporary, to allow DecodeStatus::OK to
-// work, while we replace DecodeStatus with actual status codes.
-using DecodeStatus = StatusCode;
+struct DecoderStatusTraits {
+  enum class Codes : StatusCodeType {
+    // Shared & General errors
+    kOk = 0,
+    kFailed = 1,
+    kAborted = 2,  // TODO(*) document _why_ aborted is a thing
+    kInvalidArgument = 3,
+    kInterrupted = 4,
 
-MEDIA_EXPORT const char* GetDecodeStatusString(DecodeStatus status);
+    // Reasons for failing to decode
+    kNotInitialized = 100,
+    kMissingCDM = 101,
+    kFailedToGetVideoFrame = 102,
+    kPlatformDecodeFailure = 103,
+    kMalformedBitstream = 104,
+    kFailedToGetDecoderBuffer = 107,
+    kDecoderStreamInErrorState = 108,
+    kDecoderStreamReinitFailed = 109,
+    kDecoderStreamDemuxerError = 110,
+    kKeyFrameRequired = 111,
+
+    // Reasons for failing to initialize
+    kUnsupportedProfile = 200,
+    kUnsupportedCodec = 201,
+    kUnsupportedConfig = 202,
+    kUnsupportedEncryptionMode = 203,
+    kCantChangeCodec = 204,
+    kFailedToCreateDecoder = 205,
+  };
+  static constexpr StatusGroupType Group() { return "DecoderStatusCodes"; }
+  static constexpr Codes DefaultEnumValue() { return Codes::kOk; }
+};
+
+using DecoderStatus = TypedStatus<DecoderStatusTraits>;
 
 // Helper class for ensuring that Decode() traces are properly unique and closed
 // if the Decode is aborted via a WeakPtr invalidation. We use the |this|
@@ -43,7 +68,7 @@ class MEDIA_EXPORT ScopedDecodeTrace {
   ~ScopedDecodeTrace();
 
   // Completes the Decode() trace with the given status.
-  void EndTrace(const Status& status);
+  void EndTrace(const DecoderStatus& status);
 
  private:
   const char* trace_name_;
@@ -52,4 +77,4 @@ class MEDIA_EXPORT ScopedDecodeTrace {
 
 }  // namespace media
 
-#endif  // MEDIA_BASE_DECODE_STATUS_H_
+#endif  // MEDIA_BASE_DECODER_STATUS_H_

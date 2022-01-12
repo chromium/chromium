@@ -325,12 +325,8 @@ mojom("media") {
           cpp = "media::VideoPixelFormat"
         },
         {
-          mojom = "arc.mojom.DecodeStatus"
-          cpp = "media::DecodeStatus"
-        },
-        {
-          mojom = "arc.mojom.Status"
-          cpp = "media::Status"
+          mojom = "arc.mojom.DecoderStatus"
+          cpp = "media::DecoderStatus"
         },
       ]
       traits_headers = [ "video_accelerator_mojom_traits.h" ]

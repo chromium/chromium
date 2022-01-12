@@ -185,7 +185,7 @@ class MediaCodecVideoDecoderTest : public testing::TestWithParam<VideoCodec> {
     if (!mcvd_)
       CreateMcvd();
     bool result = false;
-    auto init_cb = [](bool* result_out, Status result) {
+    auto init_cb = [](bool* result_out, DecoderStatus result) {
       *result_out = result.is_ok();
     };
     mcvd_->Initialize(
@@ -602,7 +602,7 @@ TEST_P(MediaCodecVideoDecoderTest,
 
 TEST_P(MediaCodecVideoDecoderTest, ResetAbortsPendingDecodes) {
   InitializeWithTextureOwner_OneDecodePending(TestVideoConfig::Large(codec_));
-  EXPECT_CALL(decode_cb_, Run(HasStatusCode(StatusCode::kAborted)));
+  EXPECT_CALL(decode_cb_, Run(HasStatusCode(DecoderStatus::Codes::kAborted)));
   DoReset();
   testing::Mock::VerifyAndClearExpectations(&decode_cb_);
 }
@@ -620,7 +620,8 @@ TEST_P(MediaCodecVideoDecoderTest, ResetAbortsPendingEosDecode) {
   codec->AcceptOneInput(MockMediaCodecBridge::kEos);
   PumpCodec();
 
-  EXPECT_CALL(eos_decode_cb, Run(HasStatusCode(StatusCode::kAborted)));
+  EXPECT_CALL(eos_decode_cb,
+              Run(HasStatusCode(DecoderStatus::Codes::kAborted)));
   DoReset();
   // Should be run before |mcvd_| is destroyed.
   testing::Mock::VerifyAndClearExpectations(&eos_decode_cb);

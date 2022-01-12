@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/channel_layout.h"
+#include "media/base/decoder_status.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_log.h"
 #include "media/base/pipeline_status.h"
@@ -261,7 +262,7 @@ MATCHER(IsOkStatus, "") {
 // True if and only if the Status would be interpreted as an error from a decode
 // callback (not okay, not aborted).
 MATCHER(IsDecodeErrorStatus, "") {
-  return !arg.is_ok() && arg.code() != StatusCode::kAborted;
+  return !arg.is_ok() && arg.code() != DecoderStatus::Codes::kAborted;
 }
 
 // Compares two {Audio|Video}DecoderConfigs

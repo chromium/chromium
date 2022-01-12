@@ -14,7 +14,7 @@
 #include "base/metrics/single_sample_metrics.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
-#include "media/base/decode_status.h"
+#include "media/base/decoder_status.h"
 #include "media/base/media_switches.h"
 #include "media/base/overlay_info.h"
 #include "media/base/status.h"

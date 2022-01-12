@@ -60,7 +60,7 @@ class GpuVideoDecodeAccelerator
       const gpu::GpuDriverBugWorkarounds& workarounds);
 
   // VideoDecodeAccelerator::Client implementation.
-  void NotifyInitializationComplete(Status status) override;
+  void NotifyInitializationComplete(DecoderStatus status) override;
   void ProvidePictureBuffers(uint32_t requested_num_of_buffers,
                              VideoPixelFormat format,
                              uint32_t textures_per_buffer,

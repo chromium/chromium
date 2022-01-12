@@ -265,24 +265,24 @@ void VideoDecoderPipeline::Initialize(const VideoDecoderConfig& config,
 
   if (!config.IsValidConfig()) {
     VLOGF(1) << "config is not valid";
-    std::move(init_cb).Run(StatusCode::kDecoderUnsupportedConfig);
+    std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedConfig);
     return;
   }
 #if BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
   if (config.is_encrypted() && !cdm_context) {
     VLOGF(1) << "Encrypted streams require a CdmContext";
-    std::move(init_cb).Run(StatusCode::kDecoderUnsupportedConfig);
+    std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedConfig);
     return;
   }
 #else   // BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
   if (config.is_encrypted() && !allow_encrypted_content_for_testing_) {
     VLOGF(1) << "Encrypted streams are not supported for this VD";
-    std::move(init_cb).Run(StatusCode::kEncryptedContentUnsupported);
+    std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
   }
   if (cdm_context && !allow_encrypted_content_for_testing_) {
     VLOGF(1) << "cdm_context is not supported.";
-    std::move(init_cb).Run(StatusCode::kEncryptedContentUnsupported);
+    std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
   }
 #endif  // !BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
@@ -320,7 +320,8 @@ void VideoDecoderPipeline::InitializeTask(const VideoDecoderConfig& config,
     OnError("|decoder_| creation failed.");
     client_task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(std::move(init_cb), StatusCode::kDecoderFailedCreation));
+        base::BindOnce(std::move(init_cb),
+                       DecoderStatus::Codes::kFailedToCreateDecoder));
     return;
   }
 
@@ -336,14 +337,14 @@ void VideoDecoderPipeline::InitializeTask(const VideoDecoderConfig& config,
 
 void VideoDecoderPipeline::OnInitializeDone(InitCB init_cb,
                                             CdmContext* cdm_context,
-                                            Status status) {
+                                            DecoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
-  DVLOGF(4) << "Initialization status = " << status.code();
+  DVLOGF(4) << "Initialization status = " << static_cast<int>(status.code());
 
   if (!status.is_ok()) {
     MEDIA_LOG(ERROR, media_log_)
         << "VideoDecoderPipeline |decoder_| Initialize() failed, status: "
-        << status.code();
+        << static_cast<int>(status.code());
     decoder_ = nullptr;
   }
   MEDIA_LOG(INFO, media_log_)
@@ -354,7 +355,7 @@ void VideoDecoderPipeline::OnInitializeDone(InitCB init_cb,
     if (!cdm_context) {
       VLOGF(1) << "CdmContext required for transcryption";
       decoder_ = nullptr;
-      status = Status(StatusCode::kDecoderMissingCdmForEncryptedContent);
+      status = DecoderStatus::Codes::kUnsupportedEncryptionMode;
     } else {
       // We need to enable transcryption for protected content.
       buffer_transcryptor_ = std::make_unique<DecoderBufferTranscryptor>(
@@ -402,10 +403,10 @@ void VideoDecoderPipeline::OnResetDone(base::OnceClosure reset_cb) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (buffer_transcryptor_)
-    buffer_transcryptor_->Reset(DecodeStatus::ABORTED);
+    buffer_transcryptor_->Reset(DecoderStatus::Codes::kAborted);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  CallFlushCbIfNeeded(DecodeStatus::ABORTED);
+  CallFlushCbIfNeeded(DecoderStatus::Codes::kAborted);
 
   if (need_frame_pool_rebuild_) {
     need_frame_pool_rebuild_ = false;
@@ -437,8 +438,8 @@ void VideoDecoderPipeline::DecodeTask(scoped_refptr<DecoderBuffer> buffer,
 
   if (has_error_) {
     client_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(std::move(decode_cb),
-                                  Status(DecodeStatus::DECODE_ERROR)));
+        FROM_HERE,
+        base::BindOnce(std::move(decode_cb), DecoderStatus::Codes::kFailed));
     return;
   }
 
@@ -461,16 +462,17 @@ void VideoDecoderPipeline::DecodeTask(scoped_refptr<DecoderBuffer> buffer,
 
 void VideoDecoderPipeline::OnDecodeDone(bool is_flush,
                                         DecodeCB decode_cb,
-                                        Status status) {
+                                        DecoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
-  DVLOGF(4) << "is_flush: " << is_flush << ", status: " << status.code();
+  DVLOGF(4) << "is_flush: " << is_flush
+            << ", status: " << static_cast<int>(status.code());
 
   if (has_error_)
-    status = Status(DecodeStatus::DECODE_ERROR);
+    status = DecoderStatus::Codes::kFailed;
 
   if (is_flush && status.is_ok()) {
     client_flush_cb_ = std::move(decode_cb);
-    CallFlushCbIfNeeded(DecodeStatus::OK);
+    CallFlushCbIfNeeded(DecoderStatus::Codes::kOk);
     return;
   }
 
@@ -526,7 +528,7 @@ void VideoDecoderPipeline::OnFrameConverted(scoped_refptr<VideoFrame> frame) {
       FROM_HERE, base::BindOnce(client_output_cb_, std::move(frame)));
 
   // After outputting a frame, flush might be completed.
-  CallFlushCbIfNeeded(DecodeStatus::OK);
+  CallFlushCbIfNeeded(DecoderStatus::Codes::kOk);
   CallApplyResolutionChangeIfNeeded();
 }
 
@@ -555,20 +557,20 @@ void VideoDecoderPipeline::OnError(const std::string& msg) {
   has_error_ = true;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (buffer_transcryptor_)
-    buffer_transcryptor_->Reset(DecodeStatus::DECODE_ERROR);
+    buffer_transcryptor_->Reset(DecoderStatus::Codes::kFailed);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  CallFlushCbIfNeeded(DecodeStatus::DECODE_ERROR);
+  CallFlushCbIfNeeded(DecoderStatus::Codes::kFailed);
 }
 
-void VideoDecoderPipeline::CallFlushCbIfNeeded(DecodeStatus status) {
+void VideoDecoderPipeline::CallFlushCbIfNeeded(DecoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
-  DVLOGF(3) << "status: " << status;
+  DVLOGF(3) << "status: " << static_cast<int>(status.code());
 
   if (!client_flush_cb_)
     return;
 
   // Flush is not completed yet.
-  if (status == DecodeStatus::OK && HasPendingFrames())
+  if (status == DecoderStatus::Codes::kOk && HasPendingFrames())
     return;
 
   client_task_runner_->PostTask(
@@ -782,7 +784,7 @@ void VideoDecoderPipeline::OnBufferTranscrypted(
   DCHECK(!has_error_);
   if (!transcrypted_buffer) {
     OnError("Error in buffer transcryption");
-    std::move(decode_callback).Run(DecodeStatus::DECODE_ERROR);
+    std::move(decode_callback).Run(DecoderStatus::Codes::kFailed);
     return;
   }
 

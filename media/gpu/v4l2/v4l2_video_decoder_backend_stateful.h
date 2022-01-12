@@ -49,7 +49,7 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
                        const gfx::Rect& visible_rect,
                        const size_t num_output_frames) override;
   void OnChangeResolutionDone(CroStatus status) override;
-  void ClearPendingRequests(DecodeStatus status) override;
+  void ClearPendingRequests(DecoderStatus status) override;
   bool StopInputQueueOnResChange() const override;
 
  private:

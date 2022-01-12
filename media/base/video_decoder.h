@@ -6,8 +6,8 @@
 #define MEDIA_BASE_VIDEO_DECODER_H_
 
 #include "base/memory/ref_counted.h"
-#include "media/base/decode_status.h"
 #include "media/base/decoder.h"
+#include "media/base/decoder_status.h"
 #include "media/base/media_export.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/waiting.h"
@@ -23,7 +23,7 @@ class VideoFrame;
 class MEDIA_EXPORT VideoDecoder : public Decoder {
  public:
   // Callback for Decoder initialization.
-  using InitCB = base::OnceCallback<void(Status)>;
+  using InitCB = base::OnceCallback<void(DecoderStatus)>;
 
   // Callback for VideoDecoder to return a decoded frame whenever it becomes
   // available. Only non-EOS frames should be returned via this callback.
@@ -35,7 +35,7 @@ class MEDIA_EXPORT VideoDecoder : public Decoder {
   // decode was aborted, which does not necessarily indicate an error.  For
   // example, a Reset() can trigger this.  Any other status code indicates that
   // the decoder encountered an error, and must be reset.
-  using DecodeCB = base::OnceCallback<void(Status)>;
+  using DecodeCB = base::OnceCallback<void(DecoderStatus)>;
 
   VideoDecoder();
   VideoDecoder(const VideoDecoder&) = delete;

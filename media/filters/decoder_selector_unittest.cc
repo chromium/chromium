@@ -68,16 +68,19 @@ bool DecoderCapabilitySupportsDecryption(DecoderCapability capability) {
   }
 }
 
-Status IsConfigSupported(DecoderCapability capability, bool is_encrypted) {
+DecoderStatus IsConfigSupported(DecoderCapability capability,
+                                bool is_encrypted) {
   switch (capability) {
     case kAlwaysFail:
-      return StatusCode::kCodeOnlyForTesting;
+      return DecoderStatus::Codes::kFailed;
     case kClearOnly:
-      return is_encrypted ? StatusCode::kCodeOnlyForTesting : StatusCode::kOk;
+      return is_encrypted ? DecoderStatus::Codes::kUnsupportedEncryptionMode
+                          : DecoderStatus::Codes::kOk;
     case kEncryptedOnly:
-      return is_encrypted ? StatusCode::kOk : StatusCode::kCodeOnlyForTesting;
+      return is_encrypted ? DecoderStatus::Codes::kOk
+                          : DecoderStatus::Codes::kUnsupportedEncryptionMode;
     case kAlwaysSucceed:
-      return OkStatus();
+      return DecoderStatus::Codes::kOk;
   }
 }
 

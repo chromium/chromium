@@ -565,9 +565,9 @@ void VideoRendererImpl::FrameReady(VideoDecoderStream::ReadResult result) {
 
   // Can happen when demuxers are preparing for a new Seek().
   switch (result.code()) {
-    case StatusCode::kOk:
+    case DecoderStatus::Codes::kOk:
       break;
-    case StatusCode::kAborted:
+    case DecoderStatus::Codes::kAborted:
       // TODO(liberato): This used to check specifically for the value
       // DEMUXER_READ_ABORTED, which was more specific than |kAborted|.
       // However, since it's a dcheck, this seems okay.

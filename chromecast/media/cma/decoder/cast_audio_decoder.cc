@@ -157,7 +157,7 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
                                          weak_this_, timestamp));
   }
 
-  void OnInitialized(::media::Status status) {
+  void OnInitialized(::media::DecoderStatus status) {
     DCHECK(!initialized_);
     initialized_ = true;
     if (status.is_ok()) {
@@ -185,7 +185,7 @@ class CastAudioDecoderImpl : public CastAudioDecoder {
   }
 
   void OnDecodeStatus(base::TimeDelta buffer_timestamp,
-                      ::media::Status status) {
+                      ::media::DecoderStatus status) {
     DCHECK(pending_decode_callback_);
 
     Status result_status = kDecodeOk;

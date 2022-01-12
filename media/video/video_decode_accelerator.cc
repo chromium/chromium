@@ -28,7 +28,7 @@ std::string VideoDecodeAccelerator::Config::AsHumanReadableString() const {
 }
 
 void VideoDecodeAccelerator::Client::NotifyInitializationComplete(
-    Status status) {
+    DecoderStatus status) {
   NOTREACHED() << "By default deferred initialization is not supported.";
 }
 

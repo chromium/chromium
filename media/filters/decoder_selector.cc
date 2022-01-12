@@ -321,9 +321,10 @@ void DecoderSelector<StreamType>::InitializeDecoder() {
 }
 
 template <DemuxerStream::Type StreamType>
-void DecoderSelector<StreamType>::OnDecoderInitializeDone(Status status) {
+void DecoderSelector<StreamType>::OnDecoderInitializeDone(
+    DecoderStatus status) {
   DVLOG(2) << __func__ << ": " << decoder_->GetDecoderType()
-           << " success=" << std::hex << status.code();
+           << " success=" << static_cast<int>(status.code());
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!status.is_ok()) {

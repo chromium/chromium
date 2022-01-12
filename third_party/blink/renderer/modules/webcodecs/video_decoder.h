@@ -74,8 +74,9 @@ class MODULES_EXPORT VideoDecoderTraits {
   static void UpdateDecoderLog(const MediaDecoderType& decoder,
                                const MediaConfigType& media_config,
                                media::MediaLog* media_log);
-  static media::StatusOr<OutputType*> MakeOutput(scoped_refptr<MediaOutputType>,
-                                                 ExecutionContext*);
+  static media::DecoderStatus::Or<OutputType*> MakeOutput(
+      scoped_refptr<MediaOutputType>,
+      ExecutionContext*);
   static const char* GetName();
 };
 
@@ -112,9 +113,8 @@ class MODULES_EXPORT VideoDecoder : public DecoderTemplate<VideoDecoderTraits> {
   CodecConfigEval MakeMediaConfig(const ConfigType& config,
                                   MediaConfigType* out_media_config,
                                   String* out_console_message) override;
-  media::StatusOr<scoped_refptr<media::DecoderBuffer>> MakeDecoderBuffer(
-      const InputType& input,
-      bool verify_key_frame) override;
+  media::DecoderStatus::Or<scoped_refptr<media::DecoderBuffer>>
+  MakeDecoderBuffer(const InputType& input, bool verify_key_frame) override;
 
   static ScriptPromise IsAcceleratedConfigSupported(ScriptState* script_state,
                                                     const VideoDecoderConfig*,

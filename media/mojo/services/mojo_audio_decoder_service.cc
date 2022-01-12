@@ -54,7 +54,7 @@ void MojoAudioDecoderService::Initialize(
       // TODO(xhwang): Replace with mojo::ReportBadMessage().
       NOTREACHED() << "The caller should not switch CDM";
       OnInitialized(std::move(callback),
-                    StatusCode::kDecoderMissingCdmForEncryptedContent);
+                    DecoderStatus::Codes::kUnsupportedEncryptionMode);
       return;
     }
   }
@@ -68,7 +68,7 @@ void MojoAudioDecoderService::Initialize(
              << CdmContext::CdmIdToString(base::OptionalOrNullptr(cdm_id))
              << " not found for encrypted audio";
     OnInitialized(std::move(callback),
-                  StatusCode::kDecoderMissingCdmForEncryptedContent);
+                  DecoderStatus::Codes::kUnsupportedEncryptionMode);
     return;
   }
 
@@ -107,7 +107,7 @@ void MojoAudioDecoderService::Reset(ResetCallback callback) {
 }
 
 void MojoAudioDecoderService::OnInitialized(InitializeCallback callback,
-                                            Status status) {
+                                            DecoderStatus status) {
   DVLOG(1) << __func__ << " success:" << status.is_ok();
 
   if (!status.is_ok()) {
@@ -132,7 +132,7 @@ void MojoAudioDecoderService::OnReadDone(DecodeCallback callback,
   DVLOG(3) << __func__ << " success:" << !!buffer;
 
   if (!buffer) {
-    std::move(callback).Run(DecodeStatus::DECODE_ERROR);
+    std::move(callback).Run(DecoderStatus::Codes::kFailedToGetDecoderBuffer);
     return;
   }
 
@@ -147,8 +147,9 @@ void MojoAudioDecoderService::OnReaderFlushDone(ResetCallback callback) {
 }
 
 void MojoAudioDecoderService::OnDecodeStatus(DecodeCallback callback,
-                                             const Status status) {
-  DVLOG(3) << __func__ << " status:" << status.code();
+                                             const DecoderStatus status) {
+  DVLOG(3) << __func__ << " status=" << status.group() << ":"
+           << static_cast<int>(status.code());
   std::move(callback).Run(std::move(status));
 }
 

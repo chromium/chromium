@@ -211,7 +211,7 @@ class MEDIA_GPU_EXPORT MediaCodecVideoDecoder final
   // if possible.
   void StartDrainingCodec(DrainType drain_type);
   void OnCodecDrained();
-  void CancelPendingDecodes(DecodeStatus status);
+  void CancelPendingDecodes(DecoderStatus status);
 
   // Sets |state_| and does common teardown for the terminal states. |state_|
   // must be either kSurfaceDestroyed or kError.  |reason| will be logged to

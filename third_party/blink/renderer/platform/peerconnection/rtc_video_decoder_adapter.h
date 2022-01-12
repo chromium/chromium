@@ -14,7 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
-#include "media/base/decode_status.h"
+#include "media/base/decoder_status.h"
 #include "media/base/status.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_codecs.h"
@@ -123,9 +123,9 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   void InitializeOnMediaThread(const media::VideoDecoderConfig& config,
                                InitCB init_cb);
   static void OnInitializeDone(base::OnceCallback<void(bool)> cb,
-                               media::Status status);
+                               media::DecoderStatus status);
   void DecodeOnMediaThread();
-  void OnDecodeDone(media::Status status);
+  void OnDecodeDone(media::DecoderStatus status);
   void OnOutput(scoped_refptr<media::VideoFrame> frame);
 
   bool ShouldReinitializeForSettingHDRColorSpace(
