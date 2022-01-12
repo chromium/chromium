@@ -1268,7 +1268,7 @@
 <translation id="2274840746523584236">Зарядите Chromebook</translation>
 <translation id="2276503375879033601">Добавить приложения</translation>
 <translation id="2276910256003242519">Удаление данных…</translation>
-<translation id="2277255602909579701">Все файлы cookie и данные сайта</translation>
+<translation id="2277255602909579701">Все файлы cookie и данные сайтов</translation>
 <translation id="2278562042389100163">Открыть окно браузера</translation>
 <translation id="2278668501808246459">Запуск менеджера контейнеров</translation>
 <translation id="2280486287150724112">Правое поле</translation>
@@ -2228,7 +2228,7 @@
 <translation id="3269689705184377744">{COUNT,plural, =1{Файл}one{# файл}few{# файла}many{# файлов}other{# файла}}</translation>
 <translation id="326999365752735949">Утилита diff скачивается</translation>
 <translation id="3270965368676314374">Доступ к фотографиям, музыке и другим медиафайлам на вашем компьютере, а также их изменение и удаление</translation>
-<translation id="327147043223061465">Все файлы cookie и данные сайта</translation>
+<translation id="327147043223061465">Все файлы cookie и данные сайтов</translation>
 <translation id="3274763671541996799">Вы перешли в полноэкранный режим.</translation>
 <translation id="3275778809241512831">Внутренний электронный ключ ненадежен. Удалите его из всех сервисов. Чтобы устранить проблему, сбросьте настройки электронного ключа.</translation>
 <translation id="3275778913554317645">Открыть в отдельном окне</translation>
@@ -3425,7 +3425,7 @@
 <translation id="4519935350946509010">Ошибка подключения.</translation>
 <translation id="4520385623207007473">Использование файлов cookie</translation>
 <translation id="452039078290142656">неизвестные устройства от <ph name="VENDOR_NAME" /></translation>
-<translation id="4522570452068850558">Детали</translation>
+<translation id="4522570452068850558">Сведения</translation>
 <translation id="4522600456902129422">Оставить этому сайту доступ к буферу обмена</translation>
 <translation id="4522890784888918985">Дочерние аккаунты не поддерживаются.</translation>
 <translation id="4524832533047962394">Режим регистрации устройства не поддерживается этой версией операционной системы. Убедитесь, что вы используете последнюю версию, и повторите попытку.</translation>
