@@ -11,8 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
-#include "remoting/host/desktop_display_info.h"
-#include "remoting/host/desktop_display_info_loader.h"
+#include "remoting/host/desktop_display_info_monitor.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 
 namespace base {
@@ -63,13 +62,11 @@ class DesktopCapturerProxy : public webrtc::DesktopCapturer {
 
   void OnFrameCaptured(webrtc::DesktopCapturer::Result result,
                        std::unique_ptr<webrtc::DesktopFrame> frame);
-  void OnDisplayInfoLoaded(DesktopDisplayInfo info);
 
   base::ThreadChecker thread_checker_;
 
   std::unique_ptr<Core> core_;
   scoped_refptr<base::SingleThreadTaskRunner> capture_task_runner_;
-  scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 
   raw_ptr<webrtc::DesktopCapturer::Callback> callback_;
 
@@ -78,11 +75,8 @@ class DesktopCapturerProxy : public webrtc::DesktopCapturer {
   // the same process as the DesktopCapturerProxy.
   base::WeakPtr<ClientSessionControl> client_session_control_;
 
-  // Contains the most recently gathered info about the desktop displays.
-  DesktopDisplayInfo desktop_display_info_;
-
-  // Created on the calling thread, but accessed and destroyed on the UI thread.
-  std::unique_ptr<DesktopDisplayInfoLoader> desktop_display_info_loader_;
+  // Monitors and stores info about the desktop displays.
+  DesktopDisplayInfoMonitor desktop_display_info_monitor_;
 
   base::WeakPtrFactory<DesktopCapturerProxy> weak_factory_{this};
 };

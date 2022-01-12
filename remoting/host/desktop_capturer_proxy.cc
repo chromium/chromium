@@ -133,20 +133,13 @@ DesktopCapturerProxy::DesktopCapturerProxy(
     scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner,
     base::WeakPtr<ClientSessionControl> client_session_control)
     : capture_task_runner_(capture_task_runner),
-      ui_task_runner_(ui_task_runner),
       client_session_control_(client_session_control),
-      desktop_display_info_loader_(DesktopDisplayInfoLoader::Create()) {
+      desktop_display_info_monitor_(ui_task_runner, client_session_control) {
   core_ = std::make_unique<Core>(weak_factory_.GetWeakPtr());
-  ui_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&DesktopDisplayInfoLoader::Init,
-                     base::Unretained(desktop_display_info_loader_.get())));
 }
 
 DesktopCapturerProxy::~DesktopCapturerProxy() {
   capture_task_runner_->DeleteSoon(FROM_HERE, core_.release());
-  ui_task_runner_->DeleteSoon(FROM_HERE,
-                              desktop_display_info_loader_.release());
 }
 
 void DesktopCapturerProxy::CreateCapturer(
@@ -201,11 +194,7 @@ bool DesktopCapturerProxy::GetSourceList(SourceList* sources) {
 bool DesktopCapturerProxy::SelectSource(SourceId id_index) {
   DCHECK(thread_checker_.CalledOnValidThread());
 
-  const DisplayGeometry* display =
-      desktop_display_info_.GetDisplayInfo(id_index);
-
-  SourceId id = (display ? display->id : webrtc::kFullDesktopScreenId);
-
+  SourceId id = desktop_display_info_monitor_.SourceIdFromIndex(id_index);
   capture_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&Core::SelectSource, base::Unretained(core_.get()), id));
@@ -220,38 +209,8 @@ void DesktopCapturerProxy::OnFrameCaptured(
   callback_->OnCaptureResult(result, std::move(frame));
 
   if (client_session_control_) {
-    ui_task_runner_->PostTaskAndReplyWithResult(
-        FROM_HERE,
-        base::BindOnce(&DesktopDisplayInfoLoader::GetCurrentDisplayInfo,
-                       base::Unretained(desktop_display_info_loader_.get())),
-        base::BindOnce(&DesktopCapturerProxy::OnDisplayInfoLoaded,
-                       weak_factory_.GetWeakPtr()));
+    desktop_display_info_monitor_.QueryDisplayInfo();
   }
-}
-
-void DesktopCapturerProxy::OnDisplayInfoLoaded(DesktopDisplayInfo info) {
-  DCHECK(thread_checker_.CalledOnValidThread());
-
-  if (!client_session_control_ || desktop_display_info_ == info) {
-    return;
-  }
-
-  desktop_display_info_ = std::move(info);
-
-  auto layout = std::make_unique<protocol::VideoLayout>();
-  LOG(INFO) << "DCP::OnDisplayInfoLoaded";
-  for (const auto& display : desktop_display_info_.displays()) {
-    protocol::VideoTrackLayout* track = layout->add_video_track();
-    track->set_position_x(display.x);
-    track->set_position_y(display.y);
-    track->set_width(display.width);
-    track->set_height(display.height);
-    track->set_x_dpi(display.dpi);
-    track->set_y_dpi(display.dpi);
-    LOG(INFO) << "   Display: " << display.x << "," << display.y << " "
-              << display.width << "x" << display.height << " @ " << display.dpi;
-  }
-  client_session_control_->OnDesktopDisplayChanged(std::move(layout));
 }
 
 }  // namespace remoting

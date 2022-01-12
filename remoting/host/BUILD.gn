@@ -258,6 +258,8 @@ static_library("common") {
     "desktop_display_info.cc",
     "desktop_display_info.h",
     "desktop_display_info_loader.h",
+    "desktop_display_info_monitor.cc",
+    "desktop_display_info_monitor.h",
     "desktop_process.cc",
     "desktop_process.h",
     "desktop_resizer.h",
