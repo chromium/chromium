@@ -23,31 +23,11 @@
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "components/device_event_log/device_event_log.h"
 #include "services/device/hid/hid_connection_mac.h"
+#include "services/device/utils/mac_utils.h"
 
 namespace device {
 
 namespace {
-
-std::string HexErrorCode(IOReturn error_code) {
-  return base::StringPrintf("0x%04x", error_code);
-}
-
-int32_t GetIntProperty(io_service_t service, CFStringRef key) {
-  base::ScopedCFTypeRef<CFNumberRef> ref(base::mac::CFCast<CFNumberRef>(
-      IORegistryEntryCreateCFProperty(service, key, kCFAllocatorDefault, 0)));
-  int32_t result;
-  if (ref && CFNumberGetValue(ref, kCFNumberSInt32Type, &result))
-    return result;
-  return 0;
-}
-
-std::string GetStringProperty(io_service_t service, CFStringRef key) {
-  base::ScopedCFTypeRef<CFStringRef> ref(base::mac::CFCast<CFStringRef>(
-      IORegistryEntryCreateCFProperty(service, key, kCFAllocatorDefault, 0)));
-  if (ref)
-    return base::SysCFStringRefToUTF8(ref);
-  return std::string();
-}
 
 bool TryGetHidDataProperty(io_service_t service,
                            CFStringRef key,
@@ -79,16 +59,22 @@ scoped_refptr<HidDeviceInfo> CreateDeviceInfo(
     HID_LOG(DEBUG) << "Device report descriptor not available.";
   }
 
-  int32_t location_id = GetIntProperty(service, CFSTR(kIOHIDLocationIDKey));
+  int32_t location_id =
+      GetIntegerProperty<int32_t>(service, CFSTR(kIOHIDLocationIDKey))
+          .value_or(0);
   std::string physical_device_id =
       location_id == 0 ? "" : base::NumberToString(location_id);
 
   return new HidDeviceInfo(
       entry_id, physical_device_id,
-      GetIntProperty(service, CFSTR(kIOHIDVendorIDKey)),
-      GetIntProperty(service, CFSTR(kIOHIDProductIDKey)),
-      GetStringProperty(service, CFSTR(kIOHIDProductKey)),
-      GetStringProperty(service, CFSTR(kIOHIDSerialNumberKey)),
+      GetIntegerProperty<int32_t>(service, CFSTR(kIOHIDVendorIDKey))
+          .value_or(0),
+      GetIntegerProperty<int32_t>(service, CFSTR(kIOHIDProductIDKey))
+          .value_or(0),
+      GetStringProperty<std::string>(service, CFSTR(kIOHIDProductKey))
+          .value_or(""),
+      GetStringProperty<std::string>(service, CFSTR(kIOHIDSerialNumberKey))
+          .value_or(""),
       // TODO(reillyg): Detect Bluetooth. crbug.com/443335
       mojom::HidBusType::kHIDBusTypeUSB, report_descriptor);
 }

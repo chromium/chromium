@@ -50,6 +50,7 @@ static_library("usb") {
     "//build:chromeos_buildflags",
     "//components/device_event_log",
     "//device/base",
+    "//services/device:utility",
     "//services/device/public/cpp/usb",
     "//services/device/public/mojom:usb",
   ]

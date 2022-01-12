@@ -480,3 +480,15 @@ source_set("usb_test_gadget") {
     "//tools/usb_gadget",
   ]
 }
+
+source_set("utility") {
+  sources = []
+
+  if (is_mac) {
+    sources += [
+      "utils/mac_utils.cc",
+      "utils/mac_utils.h",
+    ]
+  }
+  deps = [ "//base" ]
+}
