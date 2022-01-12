@@ -305,14 +305,6 @@ CONTENT_EXPORT extern const base::Feature kMacSyscallSandbox;
 CONTENT_EXPORT extern const base::Feature kRetryGetVideoCaptureDeviceInfos;
 #endif  // defined(OS_MAC)
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-CONTENT_EXPORT extern const base::Feature kSendWebUIJavaScriptErrorReports;
-CONTENT_EXPORT extern const char
-    kSendWebUIJavaScriptErrorReportsSendToProductionVariation[];
-CONTENT_EXPORT extern const base::FeatureParam<bool>
-    kWebUIJavaScriptErrorReportsSendToProductionParam;
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
-
 #if defined(WEBRTC_USE_PIPEWIRE)
 CONTENT_EXPORT extern const base::Feature kWebRtcPipeWireCapturer;
 #endif  // defined(WEBRTC_USE_PIPEWIRE)

@@ -1183,23 +1183,6 @@ const base::Feature kRetryGetVideoCaptureDeviceInfos{
 
 #endif  // defined(OS_MAC)
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-// If the JavaScript on a WebUI page has an error (such as an unhandled
-// exception), report that error back the crash reporting infrastructure, same
-// as we do for program crashes.
-const base::Feature kSendWebUIJavaScriptErrorReports{
-    "SendWebUIJavaScriptErrorReports", base::FEATURE_ENABLED_BY_DEFAULT};
-// Parameter: Should we send the error reports to the production server? If
-// false, we send to the staging server, which is useful for developers (doesn't
-// pollute the report database).
-const char kSendWebUIJavaScriptErrorReportsSendToProductionVariation[] =
-    "send_webui_js_errors_to_production";
-const base::FeatureParam<bool>
-    kWebUIJavaScriptErrorReportsSendToProductionParam{
-        &kSendWebUIJavaScriptErrorReports,
-        kSendWebUIJavaScriptErrorReportsSendToProductionVariation, true};
-#endif
-
 #if defined(WEBRTC_USE_PIPEWIRE)
 // Controls whether the PipeWire support for screen capturing is enabled on the
 // Wayland display server.

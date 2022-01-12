@@ -74,7 +74,6 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
     int32_t line_no,
     const std::u16string& source_id,
     const absl::optional<std::u16string>& untrusted_stack_trace) {
-  // TODO(iby) Change all VLOGs to DVLOGs once tast tests are stable.
   DVLOG(3) << "OnDidAddMessageToConsole called for " << message;
   if (untrusted_stack_trace) {
     DVLOG(3) << "stack is " << *untrusted_stack_trace;
@@ -134,8 +133,6 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
   if (untrusted_stack_trace) {
     report.stack_trace = base::UTF16ToUTF8(*untrusted_stack_trace);
   }
-  report.send_to_production_servers =
-      features::kWebUIJavaScriptErrorReportsSendToProductionParam.Get();
 
   GURL page_url = source_frame->GetLastCommittedURL();
   if (page_url.is_valid()) {
@@ -149,12 +146,6 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
 
 void WebUIMainFrameObserver::MaybeEnableWebUIJavaScriptErrorReporting(
     NavigationHandle* navigation_handle) {
-  if (!base::FeatureList::IsEnabled(
-          features::kSendWebUIJavaScriptErrorReports)) {
-    DVLOG(3) << "Experiment is off";
-    return;
-  }
-
   error_reporting_enabled_ =
       web_ui_->GetController()->IsJavascriptErrorReportingEnabled();
 

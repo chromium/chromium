@@ -2365,20 +2365,6 @@ const FeatureEntry::FeatureVariation kPasswordChangeFeatureVariations[] = {
      nullptr}};
 #endif  // defined(OS_ANDROID)
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-const FeatureEntry::FeatureParam
-    kSendWebUIJavaScriptErrorReportsVariationSendToStaging[] = {
-        {features::kSendWebUIJavaScriptErrorReportsSendToProductionVariation,
-         "false"}};
-
-const FeatureEntry::FeatureVariation
-    kSendWebUIJavaScriptErrorReportsVariations[] = {
-        {"Send reports to staging server.",
-         kSendWebUIJavaScriptErrorReportsVariationSendToStaging,
-         base::size(kSendWebUIJavaScriptErrorReportsVariationSendToStaging),
-         nullptr}};
-#endif
-
 #if defined(OS_ANDROID)
 // The variations of --metrics-settings-android.
 const FeatureEntry::FeatureParam kMetricsSettingsAndroidAlternativeOne[] = {
@@ -2780,16 +2766,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kWebKioskEnableLacrosDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kWebKioskEnableLacros)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-    {"send-webui-javascript-error-reports",
-     flag_descriptions::kSendWebUIJavaScriptErrorReportsName,
-     flag_descriptions::kSendWebUIJavaScriptErrorReportsDescription,
-     kOsLinux | kOsCrOS,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         features::kSendWebUIJavaScriptErrorReports,
-         kSendWebUIJavaScriptErrorReportsVariations,
-         "SendWebUIJavaScriptErrorReportsVariations")},
-#endif
 #if !defined(OS_ANDROID)
     {"enable-webrtc-remote-event-log",
      flag_descriptions::kWebRtcRemoteEventLogName,

@@ -5015,11 +5015,6 @@
     "expiry_milestone": 98
   },
   {
-    "name": "send-webui-javascript-error-reports",
-    "owners": ["iby", "cros-telemetry@google.com"],
-    "expiry_milestone": 97
-  },
-  {
     "name": "set-market-url-for-testing",
     "owners": [ "//chrome/android/java/src/org/chromium/chrome/browser/omaha/OWNERS" ],
     // This is required by test teams to verify functionality on devices which

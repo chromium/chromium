@@ -9,13 +9,11 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "components/crash/content/browser/error_reporting/javascript_error_report.h"  // nogncheck
 #include "components/crash/content/browser/error_reporting/js_error_report_processor.h"  // nogncheck
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_ui_controller.h"
-#include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_browser_context.h"
@@ -97,7 +95,6 @@ WEB_UI_CONTROLLER_TYPE_IMPL(MockWebUIController)
 class WebUIMainFrameObserverTest : public RenderViewHostTestHarness {
  public:
   void SetUp() override {
-    SetUpFeatureList();
     RenderViewHostTestHarness::SetUp();
     site_instance_ = SiteInstance::Create(browser_context());
     SetContents(TestWebContents::Create(browser_context(), site_instance_));
@@ -156,18 +153,10 @@ class WebUIMainFrameObserverTest : public RenderViewHostTestHarness {
   }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   scoped_refptr<SiteInstance> site_instance_;
   std::unique_ptr<WebUIImpl> web_ui_;
   scoped_refptr<FakeJsErrorReportProcessor> processor_;
   scoped_refptr<JsErrorReportProcessor> previous_processor_;
-
-  virtual void SetUpFeatureList() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kSendWebUIJavaScriptErrorReports,
-        {{features::kSendWebUIJavaScriptErrorReportsSendToProductionVariation,
-          "true"}});
-  }
 
   static constexpr char kMessage8[] = "An Error Is Me";
   static constexpr char16_t kMessage16[] = u"An Error Is Me";
@@ -180,21 +169,6 @@ class WebUIMainFrameObserverTest : public RenderViewHostTestHarness {
   static constexpr char16_t kStackTrace16[] =
       u"at badFunction (chrome://page/my.js:20:30)\n"
       u"at poorCaller (chrome://page/my.js:50:10)\n";
-};
-
-// Same as WebUIMainFrameObserverTest but with the
-// features::kSendWebUIJavaScriptErrorReports feature disabled.
-class WebUIMainFrameObserverFeatureDisabledTest
-    : public WebUIMainFrameObserverTest {
- public:
-  WebUIMainFrameObserverFeatureDisabledTest() = default;
-  ~WebUIMainFrameObserverFeatureDisabledTest() override = default;
-
- protected:
-  void SetUpFeatureList() override {
-    scoped_feature_list_.InitAndDisableFeature(
-        features::kSendWebUIJavaScriptErrorReports);
-  }
 };
 
 constexpr char WebUIMainFrameObserverTest::kMessage8[];
@@ -260,15 +234,6 @@ TEST_F(WebUIMainFrameObserverTest, NoProcessorDoesntCrash) {
                                blink::mojom::ConsoleMessageLevel::kError,
                                kMessage16, 5, kSourceURL16, kStackTrace16);
   task_environment()->RunUntilIdle();
-}
-
-TEST_F(WebUIMainFrameObserverFeatureDisabledTest, NotSentIfFlagDisabled) {
-  NavigateToPage();
-  CallOnDidAddMessageToConsole(web_ui_->frame_host(),
-                               blink::mojom::ConsoleMessageLevel::kError,
-                               kMessage16, 5, kSourceURL16, kStackTrace16);
-  task_environment()->RunUntilIdle();
-  EXPECT_EQ(processor_->error_report_count(), 0);
 }
 
 TEST_F(WebUIMainFrameObserverTest, NotSentIfInvalidURL) {
