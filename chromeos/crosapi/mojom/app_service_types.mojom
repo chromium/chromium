@@ -88,7 +88,6 @@ struct App {
   [MinVersion=12]
   // kTrue if the app is able to handle intents and should be shown in intent
   // surfaces.
-  // TODO(https://crbug.com/1285186): Consider using a more accurate name.
   OptionalBool handles_intents@26;
 };
 
