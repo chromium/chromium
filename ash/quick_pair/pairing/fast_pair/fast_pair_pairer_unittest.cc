@@ -82,6 +82,10 @@ const char kPairDeviceResult[] =
     "Bluetooth.ChromeOS.FastPair.PairDevice.Result";
 const char kPairDeviceErrorReason[] =
     "Bluetooth.ChromeOS.FastPair.PairDevice.ErrorReason";
+const char kConfirmPasskeyAskTime[] =
+    "Bluetooth.ChromeOS.FastPair.RequestPasskey.Latency";
+const char kConfirmPasskeyConfirmTime[] =
+    "Bluetooth.ChromeOS.FastPair.ConfirmPasskey.Latency";
 
 class FakeBluetoothAdapter
     : public testing::NiceMock<device::MockBluetoothAdapter> {
@@ -693,6 +697,8 @@ TEST_F(FastPairPairerTest, PairedDeviceLost_Subsequent) {
 }
 
 TEST_F(FastPairPairerTest, PairSuccess_Initial) {
+  histogram_tester().ExpectTotalCount(kConfirmPasskeyAskTime, 0);
+  histogram_tester().ExpectTotalCount(kConfirmPasskeyConfirmTime, 0);
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
                                /*protocol=*/Protocol::kFastPairInitial);
@@ -711,9 +717,13 @@ TEST_F(FastPairPairerTest, PairSuccess_Initial) {
   EXPECT_TRUE(IsDevicePaired());
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 1);
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 1);
+  histogram_tester().ExpectTotalCount(kConfirmPasskeyAskTime, 1);
+  histogram_tester().ExpectTotalCount(kConfirmPasskeyConfirmTime, 1);
 }
 
 TEST_F(FastPairPairerTest, PairSuccess_Subsequent) {
+  histogram_tester().ExpectTotalCount(kConfirmPasskeyAskTime, 0);
+  histogram_tester().ExpectTotalCount(kConfirmPasskeyConfirmTime, 0);
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 0);
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 0);
   SuccessfulDataEncryptorSetUp(/*fast_pair_v1=*/false,
@@ -733,6 +743,8 @@ TEST_F(FastPairPairerTest, PairSuccess_Subsequent) {
   EXPECT_TRUE(IsDevicePaired());
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptTime, 1);
   histogram_tester().ExpectTotalCount(kPasskeyCharacteristicDecryptResult, 1);
+  histogram_tester().ExpectTotalCount(kConfirmPasskeyAskTime, 1);
+  histogram_tester().ExpectTotalCount(kConfirmPasskeyConfirmTime, 1);
 }
 
 TEST_F(FastPairPairerTest, WriteAccountKey_Initial) {

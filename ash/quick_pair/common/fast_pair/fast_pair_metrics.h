@@ -214,7 +214,8 @@ void RecordFootprintsFetcherGetResult(bool success);
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordFastPairRepositoryCacheResult(bool success);
 
-COMPONENT_EXPORT(QUICK_PAIR_COMMON) void RecordHandshakeResult(bool success);
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordHandshakeResult(bool success);
 
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordHandshakeFailureReason(HandshakeFailureReason failure_reason);
@@ -244,6 +245,12 @@ void RecordPairDeviceResult(bool success);
 COMPONENT_EXPORT(QUICK_PAIR_COMMON)
 void RecordPairDeviceErrorReason(
     device::BluetoothDevice::ConnectErrorCode error_code);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordConfirmPasskeyConfirmTime(base::TimeDelta total_confirm_time);
+
+COMPONENT_EXPORT(QUICK_PAIR_COMMON)
+void RecordConfirmPasskeyAskTime(base::TimeDelta total_ask_time);
 
 }  // namespace quick_pair
 }  // namespace ash

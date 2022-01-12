@@ -98,6 +98,10 @@ class FastPairPairer : public device::BluetoothDevice::PairingDelegate,
 
   void OnGattClientInitializedCallback(absl::optional<PairFailure> failure);
 
+  // Initial timestamps used for metrics.
+  base::TimeTicks ask_confirm_passkey_initial_time_;
+  base::TimeTicks confirm_passkey_initial_time_;
+
   uint32_t expected_passkey_;
   scoped_refptr<device::BluetoothAdapter> adapter_;
   scoped_refptr<Device> device_;

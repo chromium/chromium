@@ -317,6 +317,18 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Bluetooth.ChromeOS.FastPair.ConfirmPasskey.Latency" units="ms"
+    expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the total time it takes after being asked to confirm a passkey from
+    the device for the Chromebook to confirm the passkey. Emitted on a
+    successful confirmation of the passkey. No metric is emitted on failure.
+  </summary>
+</histogram>
+
 <histogram name="Bluetooth.ChromeOS.FastPair.ConnectDevice.Result"
     enum="BooleanSuccess" expires_after="2022-09-20">
   <owner>shanefitz@google.com</owner>
@@ -843,6 +855,21 @@ chromium-metrics-reviews@google.com.
     Records success or failure of writing to the Passkey Gatt characteristic of
     the device during the pairing protocol. Emitted following the passkey
     request in the FastPairPairer.
+  </summary>
+</histogram>
+
+<histogram name="Bluetooth.ChromeOS.FastPair.RequestPasskey.Latency" units="ms"
+    expires_after="2022-09-20">
+  <owner>shanefitz@google.com</owner>
+  <owner>julietlevesque@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Records the total time it takes after connecting to the device following the
+    secret key exchange for the Chromebook to be asked by the device to confirm
+    the passkey. Emitted during the pairing protocol when the BluetoothDevice
+    pairing delegate is prompted to confirm the passkey. This metric is only
+    emitted to following a successful connection to the device, not emitted on
+    failure.
   </summary>
 </histogram>
 

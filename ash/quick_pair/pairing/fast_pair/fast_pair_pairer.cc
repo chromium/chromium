@@ -202,10 +202,13 @@ void FastPairPairer::OnPairConnected(
     RecordPairDeviceErrorReason(error.value());
     return;
   }
+
+  ask_confirm_passkey_initial_time_ = base::TimeTicks::Now();
   QP_LOG(VERBOSE) << "Pair to device successful.";
 }
 
 void FastPairPairer::OnConnectDevice(device::BluetoothDevice* device) {
+  ask_confirm_passkey_initial_time_ = base::TimeTicks::Now();
   QP_LOG(VERBOSE) << "Connect device successful.";
   RecordConnectDeviceResult(/*success=*/true);
 }
@@ -219,6 +222,10 @@ void FastPairPairer::OnConnectError() {
 
 void FastPairPairer::ConfirmPasskey(device::BluetoothDevice* device,
                                     uint32_t passkey) {
+  RecordConfirmPasskeyAskTime(base::TimeTicks::Now() -
+                              ask_confirm_passkey_initial_time_);
+  confirm_passkey_initial_time_ = base::TimeTicks::Now();
+
   pairing_device_address_ = device->GetAddress();
   expected_passkey_ = passkey;
   fast_pair_gatt_service_client_->WritePasskeyAsync(
@@ -278,6 +285,8 @@ void FastPairPairer::OnParseDecryptedPasskey(
   RecordPasskeyCharacteristicDecryptResult(/*success=*/true);
   RecordPasskeyCharacteristicDecryptTime(base::TimeTicks::Now() -
                                          decrypt_start_time);
+  RecordConfirmPasskeyConfirmTime(base::TimeTicks::Now() -
+                                  confirm_passkey_initial_time_);
 
   device::BluetoothDevice* pairing_device =
       adapter_->GetDevice(pairing_device_address_);

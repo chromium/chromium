@@ -165,6 +165,10 @@ const char kPairDeviceResult[] =
     "Bluetooth.ChromeOS.FastPair.PairDevice.Result";
 const char kPairDeviceErrorReason[] =
     "Bluetooth.ChromeOS.FastPair.PairDevice.ErrorReason";
+const char kConfirmPasskeyAskTime[] =
+    "Bluetooth.ChromeOS.FastPair.RequestPasskey.Latency";
+const char kConfirmPasskeyConfirmTime[] =
+    "Bluetooth.ChromeOS.FastPair.ConfirmPasskey.Latency";
 
 }  // namespace
 
@@ -462,6 +466,14 @@ void RecordPairDeviceErrorReason(
   base::UmaHistogramEnumeration(
       kPairDeviceErrorReason, error_code,
       device::BluetoothDevice::NUM_CONNECT_ERROR_CODES);
+}
+
+void RecordConfirmPasskeyConfirmTime(base::TimeDelta total_confirm_time) {
+  base::UmaHistogramTimes(kConfirmPasskeyConfirmTime, total_confirm_time);
+}
+
+void RecordConfirmPasskeyAskTime(base::TimeDelta total_ask_time) {
+  base::UmaHistogramTimes(kConfirmPasskeyAskTime, total_ask_time);
 }
 
 }  // namespace quick_pair
