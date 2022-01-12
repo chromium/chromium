@@ -677,37 +677,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="PageLoad.Clients.DocWrite.Block.Count" enum="Boolean"
-    expires_after="M85">
-  <owner>bmcquade@chromium.org</owner>
-  <summary>
-    Counts the number of pages where a script loaded via document.write could
-    have been blocked.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Clients.DocWrite.Block.DocumentWriteLoadingBehavior"
-    enum="DocumentWriteLoadingBehavior" expires_after="M77">
-  <owner>shivanisha@chromium.org</owner>
-  <owner>bmcquade@chromium.org</owner>
-  <owner>jkarlin@chromium.org</owner>
-  <summary>
-    This metric measures the counts of pages for various loading behaviors of
-    document.written scripts.
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Clients.DocWrite.Block.ReloadCount" units="units"
-    expires_after="M77">
-  <owner>shivanisha@chromium.org</owner>
-  <owner>bmcquade@chromium.org</owner>
-  <summary>
-    This metric measures reloads in pages that have synchronous, cross-origin
-    document.written scripts that could be blocked if document.write script
-    blocking feature is enabled.
-  </summary>
-</histogram>
-
 <histogram
     name="PageLoad.Clients.Prerender.InteractiveTiming.FirstInputDelay4{PrerenderTriggerType}"
     units="ms" expires_after="2022-06-27">

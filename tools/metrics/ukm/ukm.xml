@@ -8900,6 +8900,9 @@ be describing additional metrics about the same event.
 </event>
 
 <event name="Intervention.DocumentWrite.ScriptBlock" singular="True">
+  <obsolete>
+    Removed 12/2021.
+  </obsolete>
   <owner>bmcquade@chromium.org</owner>
   <summary>
     Recorded for page loads where the document.write script block intervention

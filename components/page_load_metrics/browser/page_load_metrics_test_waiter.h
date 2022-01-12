@@ -26,6 +26,7 @@ class PageLoadMetricsTestWaiter
     kFirstPaint = 1 << 0,
     kFirstContentfulPaint = 1 << 1,
     kFirstMeaningfulPaint = 1 << 2,
+    // kDocumentWriteBlockReload is deprecated.
     kDocumentWriteBlockReload = 1 << 3,
     kLoadEvent = 1 << 4,
     // kLoadTimingInfo waits for main frame timing info only.

@@ -998,8 +998,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NoDocumentWrite) {
                                       1);
   histogram_tester_->ExpectTotalCount(
       internal::kHistogramDocWriteBlockParseStartToFirstContentfulPaint, 0);
-  histogram_tester_->ExpectTotalCount(internal::kHistogramDocWriteBlockCount,
-                                      0);
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DocumentWriteBlock) {
@@ -1015,8 +1013,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DocumentWriteBlock) {
 
   histogram_tester_->ExpectTotalCount(
       internal::kHistogramDocWriteBlockParseStartToFirstContentfulPaint, 1);
-  histogram_tester_->ExpectTotalCount(internal::kHistogramDocWriteBlockCount,
-                                      1);
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DocumentWriteReload) {
@@ -1031,23 +1027,16 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DocumentWriteReload) {
 
   histogram_tester_->ExpectTotalCount(
       internal::kHistogramDocWriteBlockParseStartToFirstContentfulPaint, 1);
-  histogram_tester_->ExpectTotalCount(internal::kHistogramDocWriteBlockCount,
-                                      1);
 
   // Reload should not log the histogram as the script is not blocked.
   waiter = CreatePageLoadMetricsTestWaiter();
-  waiter->AddPageExpectation(TimingField::kDocumentWriteBlockReload);
   waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
                      "/page_load_metrics/document_write_script_block.html")));
   waiter->Wait();
 
-  histogram_tester_->ExpectTotalCount(
-      internal::kHistogramDocWriteBlockReloadCount, 1);
-
   waiter = CreatePageLoadMetricsTestWaiter();
-  waiter->AddPageExpectation(TimingField::kDocumentWriteBlockReload);
   waiter->AddPageExpectation(TimingField::kFirstContentfulPaint);
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), embedded_test_server()->GetURL(
@@ -1056,11 +1045,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DocumentWriteReload) {
 
   histogram_tester_->ExpectTotalCount(
       internal::kHistogramDocWriteBlockParseStartToFirstContentfulPaint, 1);
-
-  histogram_tester_->ExpectTotalCount(
-      internal::kHistogramDocWriteBlockReloadCount, 2);
-  histogram_tester_->ExpectTotalCount(internal::kHistogramDocWriteBlockCount,
-                                      1);
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DocumentWriteAsync) {
@@ -1077,8 +1061,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DocumentWriteAsync) {
                                       1);
   histogram_tester_->ExpectTotalCount(
       internal::kHistogramDocWriteBlockParseStartToFirstContentfulPaint, 0);
-  histogram_tester_->ExpectTotalCount(internal::kHistogramDocWriteBlockCount,
-                                      0);
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DocumentWriteSameDomain) {
@@ -1096,8 +1078,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, DocumentWriteSameDomain) {
                                       1);
   histogram_tester_->ExpectTotalCount(
       internal::kHistogramDocWriteBlockParseStartToFirstContentfulPaint, 0);
-  histogram_tester_->ExpectTotalCount(internal::kHistogramDocWriteBlockCount,
-                                      0);
 }
 
 IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NoDocumentWriteScript) {
@@ -1114,8 +1094,6 @@ IN_PROC_BROWSER_TEST_F(PageLoadMetricsBrowserTest, NoDocumentWriteScript) {
                                       1);
   histogram_tester_->ExpectTotalCount(
       internal::kHistogramDocWriteBlockParseStartToFirstContentfulPaint, 0);
-  histogram_tester_->ExpectTotalCount(internal::kHistogramDocWriteBlockCount,
-                                      0);
 }
 
 // TODO(crbug.com/712935): Flaky on Linux dbg.
