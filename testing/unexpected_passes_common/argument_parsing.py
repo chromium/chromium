@@ -4,6 +4,9 @@
 """Common argument parsing-related code for unexpected pass finders."""
 
 import logging
+import os
+
+from unexpected_passes_common import constants
 
 
 def AddCommonArguments(parser):
@@ -65,6 +68,32 @@ def AddCommonArguments(parser):
                             'from being removed before a sufficient amount of '
                             'data has been generated with the expectation '
                             'active. Set to a negative value to disable.'))
+  internal_group = parser.add_mutually_exclusive_group()
+  internal_group.add_argument('--include-internal-builders',
+                              action='store_true',
+                              dest='include_internal_builders',
+                              help=('Includes builders that are defined in '
+                                    'src-internal in addition to the public '
+                                    'ones. If left unset, will be '
+                                    'automatically determined by the presence '
+                                    'of src-internal.'))
+  internal_group.add_argument('--no-include-internal-builders',
+                              action='store_false',
+                              dest='include_internal_builders',
+                              help=('Does not include builders that are '
+                                    'defined in src-internal. If left unset, '
+                                    'will be automatically determined by the '
+                                    'presence of src-internal.'))
+
+
+def PerformCommonPostParseSetup(args):
+  """Helper function to perform all common post-parse setup.
+
+  Args:
+    args: Parsed arguments from an argparse.ArgumentParser.
+  """
+  SetLoggingVerbosity(args)
+  SetInternalBuilderInclusion(args)
 
 
 def SetLoggingVerbosity(args):
@@ -85,3 +114,20 @@ def SetLoggingVerbosity(args):
   else:
     level = logging.DEBUG
   logging.getLogger().setLevel(level)
+
+
+def SetInternalBuilderInclusion(args):
+  """Sets internal builder inclusion based on parsed arguments.
+
+  Args:
+    args: Parsed arguments from an argparse.ArgumentParser.
+  """
+  if args.include_internal_builders is not None:
+    return
+
+  if os.path.isdir(constants.SRC_INTERNAL_DIR):
+    # TODO(crbug.com/1280379): Switch this to "True" once internal builders are
+    # actually supported.
+    args.include_internal_builders = False
+  else:
+    args.include_internal_builders = False

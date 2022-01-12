@@ -1296,5 +1296,36 @@ class TestExpectationMapFilterOutUnusedExpectationsUnittest(unittest.TestCase):
     self.assertEqual(expectation_map, {})
 
 
+class BuilderEntryUnittest(unittest.TestCase):
+  def testProject(self):
+    """Tests that the project property functions as expected."""
+    be = data_types.BuilderEntry('', False)
+    self.assertEqual(be.project, 'chromium')
+    be = data_types.BuilderEntry('', True)
+    self.assertEqual(be.project, 'chrome')
+
+  def testEquality(self):
+    """Tests equality between two BuilderEntry instances."""
+    be = data_types.BuilderEntry('builder', False)
+    other = data_types.BuilderEntry('builder', False)
+    self.assertEqual(be, other)
+    other = data_types.BuilderEntry('builder', True)
+    self.assertNotEqual(be, other)
+    other = data_types.BuilderEntry('not_builder', False)
+    self.assertNotEqual(be, other)
+    self.assertNotEqual(be, 'builder')
+
+  def testHashability(self):
+    """Tests the hashability of the BuilderEntry class."""
+    be = data_types.BuilderEntry('builder', False)
+    _ = {be}
+    other = data_types.BuilderEntry('builder', False)
+    self.assertEqual(be.__hash__(), other.__hash__())
+    other = data_types.BuilderEntry('builder', True)
+    self.assertNotEqual(be.__hash__(), other.__hash__())
+    other = data_types.BuilderEntry('not_builder', False)
+    self.assertNotEqual(be.__hash__(), other.__hash__())
+
+
 if __name__ == '__main__':
   unittest.main(verbosity=2)

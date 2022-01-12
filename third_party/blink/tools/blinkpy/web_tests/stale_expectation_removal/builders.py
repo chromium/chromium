@@ -4,9 +4,15 @@
 """Web test-specific impl of the unexpected passes' builders module."""
 
 from unexpected_passes_common import builders
+from unexpected_passes_common import data_types
 
 
 class WebTestBuilders(builders.Builders):
+    def __init__(self, include_internal_builders):
+        super(WebTestBuilders, self).__init__(include_internal_builders)
+        self._fake_ci_builders = None
+        self._non_chromium_builders = None
+
     def _BuilderRunsTestOfInterest(self, test_map, _):
         tests = test_map.get('isolated_scripts', [])
         for t in tests:
@@ -28,65 +34,81 @@ class WebTestBuilders(builders.Builders):
     def GetFakeCiBuilders(self):
         # Some of these are weird in that they're explicitly defined trybots
         # instead of a mirror of a CI bot.
-        return {
-            # chromium.fyi
-            'linux-blink-optional-highdpi-rel-dummy': {
-                'linux-blink-optional-highdpi-rel',
-            },
-            'linux-blink-rel-dummy': {
-                'linux-blink-rel',
-                'v8_linux_blink_rel',
-            },
-            'mac10.12-blink-rel-dummy': {
-                'mac10.12-blink-rel',
-            },
-            'mac10.13-blink-rel-dummy': {
-                'mac10.13-blink-rel',
-            },
-            'mac10.14-blink-rel-dummy': {
-                'mac10.14-blink-rel',
-            },
-            'mac10.15-blink-rel-dummy': {
-                'mac10.15-blink-rel',
-            },
-            'mac11.0-blink-rel-dummy': {
-                'mac11.0-blink-rel',
-            },
-            'mac11.0.arm64-blink-rel-dummy': {
-                'mac11.0.arm64-blink-rel',
-            },
-            'WebKit Linux layout_ng_disabled Builder': {
-                'linux_layout_tests_layout_ng_disabled',
-            },
-            'win7-blink-rel-dummy': {
-                'win7-blink-rel',
-            },
-            'win10.20h2-blink-rel-dummy': {
-                'win10.20h2-blink-rel',
-            },
-            # tryserver.chromium.linux
-            # Explicit trybot.
-            'linux-blink-web-tests-force-accessibility-rel': {
-                'linux-blink-web-tests-force-accessibility-rel',
-            },
-            # Explicit trybot.
-            'linux-layout-tests-edit-ng': {
-                'linux-layout-tests-edit-ng',
-            },
-        }
+        if self._fake_ci_builders is None:
+            fake_try_builders = {
+                # chromium.fyi
+                'linux-blink-optional-highdpi-rel-dummy': {
+                    'linux-blink-optional-highdpi-rel',
+                },
+                'linux-blink-rel-dummy': {
+                    'linux-blink-rel',
+                    'v8_linux_blink_rel',
+                },
+                'mac10.12-blink-rel-dummy': {
+                    'mac10.12-blink-rel',
+                },
+                'mac10.13-blink-rel-dummy': {
+                    'mac10.13-blink-rel',
+                },
+                'mac10.14-blink-rel-dummy': {
+                    'mac10.14-blink-rel',
+                },
+                'mac10.15-blink-rel-dummy': {
+                    'mac10.15-blink-rel',
+                },
+                'mac11.0-blink-rel-dummy': {
+                    'mac11.0-blink-rel',
+                },
+                'mac11.0.arm64-blink-rel-dummy': {
+                    'mac11.0.arm64-blink-rel',
+                },
+                'WebKit Linux layout_ng_disabled Builder': {
+                    'linux_layout_tests_layout_ng_disabled',
+                },
+                'win7-blink-rel-dummy': {
+                    'win7-blink-rel',
+                },
+                'win10.20h2-blink-rel-dummy': {
+                    'win10.20h2-blink-rel',
+                },
+                # tryserver.chromium.linux
+                # Explicit trybot.
+                'linux-blink-web-tests-force-accessibility-rel': {
+                    'linux-blink-web-tests-force-accessibility-rel',
+                },
+                # Explicit trybot.
+                'linux-layout-tests-edit-ng': {
+                    'linux-layout-tests-edit-ng',
+                },
+            }
+            self._fake_ci_builders = {}
+            for ci_builder, try_builders in fake_try_builders.items():
+                ci_entry = data_types.BuilderEntry(ci_builder, False)
+                try_entries = {
+                    data_types.BuilderEntry(b, False)
+                    for b in try_builders
+                }
+                self._fake_ci_builders[ci_entry] = try_entries
+        return self._fake_ci_builders
 
     def GetNonChromiumBuilders(self):
-        return {
-            'devtools_frontend_linux_blink_light_rel',
-            'devtools_frontend_linux_blink_rel',
-            'DevTools Linux',
-            'DevTools Linux (chromium)',
-            # Could be used in the future, but has never run any builds.
-            'linux-exp-code-coverage',
-            'ToTMacOfficial',
-            'V8 Blink Linux',
-            'V8 Blink Linux Debug',
-            'V8 Blink Linux Future',
-            'V8 Blink Mac',
-            'V8 Blink Win',
-        }
+        if self._non_chromium_builders is None:
+            str_builders = {
+                'devtools_frontend_linux_blink_light_rel',
+                'devtools_frontend_linux_blink_rel',
+                'DevTools Linux',
+                'DevTools Linux (chromium)',
+                # Could be used in the future, but has never run any builds.
+                'linux-exp-code-coverage',
+                'ToTMacOfficial',
+                'V8 Blink Linux',
+                'V8 Blink Linux Debug',
+                'V8 Blink Linux Future',
+                'V8 Blink Mac',
+                'V8 Blink Win'
+            }
+            self._non_chromium_builders = {
+                data_types.BuilderEntry(b, False)
+                for b in str_builders
+            }
+        return self._non_chromium_builders

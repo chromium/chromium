@@ -212,7 +212,7 @@ class GpuBigQueryQuerier(queries_module.BigQueryQuerier):
         suite_filter_clause=self._GetSuiteFilterClause())
     query_results = self._RunBigQueryCommandsForJsonOutput(
         query, {'': {
-            'builder_name': builder
+            'builder_name': builder.name
         }})
     test_ids = ['"%s"' % r['test_id'] for r in query_results]
 

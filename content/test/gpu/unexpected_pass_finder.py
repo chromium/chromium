@@ -102,7 +102,7 @@ def ParseArgs():
       help='The test suite being checked.')
 
   args = parser.parse_args()
-  argument_parsing.SetLoggingVerbosity(args)
+  argument_parsing.PerformCommonPostParseSetup(args)
 
   if not (args.tests or args.expectation_file):
     args.expectation_file = os.path.join(
@@ -120,7 +120,7 @@ def ParseArgs():
 def main():
   args = ParseArgs()
 
-  builders_instance = gpu_builders.GpuBuilders()
+  builders_instance = gpu_builders.GpuBuilders(args.include_internal_builders)
   builders.RegisterInstance(builders_instance)
   expectations_instance = gpu_expectations.GpuExpectations()
 

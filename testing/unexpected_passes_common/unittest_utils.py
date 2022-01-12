@@ -139,6 +139,9 @@ class FakeProcess(object):
 
 
 class GenericBuilders(builders.Builders):
+  def __init__(self, include_internal_builders=False):
+    super(GenericBuilders, self).__init__(include_internal_builders)
+
   def _BuilderRunsTestOfInterest(self, test_map, suite):
     return True
 

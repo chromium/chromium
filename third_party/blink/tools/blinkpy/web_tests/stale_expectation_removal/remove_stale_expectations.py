@@ -23,7 +23,7 @@ def ParseArgs():
         'removed/modified.'))
     argument_parsing.AddCommonArguments(parser)
     args = parser.parse_args()
-    argument_parsing.SetLoggingVerbosity(args)
+    argument_parsing.PerformCommonPostParseSetup(args)
     return args
 
 
@@ -37,7 +37,8 @@ def main():
     common_data_types.SetTestExpectationMapImplementation(
         data_types.WebTestTestExpectationMap)
 
-    builders_instance = builders.WebTestBuilders()
+    builders_instance = builders.WebTestBuilders(
+        args.include_internal_builders)
     common_builders.RegisterInstance(builders_instance)
     expectations_instance = expectations.WebTestExpectations()
 

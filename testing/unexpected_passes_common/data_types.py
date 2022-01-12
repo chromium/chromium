@@ -632,6 +632,34 @@ class StepBuildStatsMap(BaseTypedMap):
     return BuildStats
 
 
+class BuilderEntry(object):
+  """Simple container for defining a builder."""
+
+  def __init__(self, name, is_internal_builder):
+    """
+    Args:
+      name: A string containing the name of the builder.
+      is_internal_builder: A boolean denoting whether the builder is internal or
+          not.
+    """
+    self.name = name
+    self.is_internal_builder = is_internal_builder
+
+  @property
+  def project(self):
+    return 'chrome' if self.is_internal_builder else 'chromium'
+
+  def __eq__(self, other):
+    return (isinstance(other, BuilderEntry) and self.name == other.name
+            and self.is_internal_builder == other.is_internal_builder)
+
+  def __ne__(self, other):
+    return not self.__eq__(other)
+
+  def __hash__(self):
+    return hash((self.name, self.is_internal_builder))
+
+
 def IsStringType(s):
   return isinstance(s, six.string_types)
 

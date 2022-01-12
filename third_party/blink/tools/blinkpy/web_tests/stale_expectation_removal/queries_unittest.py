@@ -101,7 +101,8 @@ class GetQueryGeneratorForBuilderUnittest(unittest.TestCase):
         """Tests that a special value is returned if no tests are found."""
         querier = wt_uu.CreateGenericWebTestQuerier(large_query_mode=True)
         self._query_mock.return_value = []
-        query_generator = querier._GetQueryGeneratorForBuilder('', '')
+        query_generator = querier._GetQueryGeneratorForBuilder(
+            common_data_types.BuilderEntry('builder', False), 'builder_type')
         self.assertIsNone(query_generator)
         self._query_mock.assert_called_once()
 
@@ -116,7 +117,8 @@ class GetQueryGeneratorForBuilderUnittest(unittest.TestCase):
                 'test_id': 'bar_test',
             },
         ]
-        query_generator = querier._GetQueryGeneratorForBuilder('', '')
+        query_generator = querier._GetQueryGeneratorForBuilder(
+            common_data_types.BuilderEntry('builder', False), 'builder_type')
         self.assertEqual(query_generator.GetClauses(),
                          ['AND test_id IN UNNEST(["foo_test", "bar_test"])'])
         self.assertIsInstance(query_generator,

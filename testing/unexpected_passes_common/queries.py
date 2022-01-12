@@ -104,7 +104,8 @@ class BigQueryQuerier(object):
     Args:
       expectation_map: A data_types.TestExpectationMap. Will be modified
           in-place.
-      builders: A list of strings containing the names of builders to query.
+      builders: An iterable of data_types.BuilderEntry containing the builders
+          to query.
       builder_type: A string containing the type of builder to query, either
           "ci" or "try".
 
@@ -158,7 +159,8 @@ class BigQueryQuerier(object):
     won't get any data from, and thus don't need to waste time querying.
 
     Args:
-      builders: A list of strings containing the names of builders to query.
+      builders: An iterable of data_types.BuilderEntry containing the builders
+          to query.
       builder_type: A string containing the type of builder to query, either
           "ci" or "try".
 
@@ -185,7 +187,7 @@ class BigQueryQuerier(object):
     # instantenous and we're optimizing for runtime, filtering is the better
     # option.
     active_builders = set([r['builder_name'] for r in results])
-    filtered_builders = [b for b in builders if b in active_builders]
+    filtered_builders = [b for b in builders if b.name in active_builders]
     return filtered_builders
 
   def _QueryAddCombined(self, inputs):
@@ -202,7 +204,8 @@ class BigQueryQuerier(object):
     builder, builder_type, expectation_map = inputs
     results, expectation_files = self.QueryBuilder(builder, builder_type)
 
-    prefixed_builder_name = '%s:%s' % (builder_type, builder)
+    prefixed_builder_name = '%s/%s:%s' % (builder.project, builder_type,
+                                          builder.name)
     unmatched_results = expectation_map.AddResultList(prefixed_builder_name,
                                                       results,
                                                       expectation_files)
@@ -213,7 +216,7 @@ class BigQueryQuerier(object):
     """Queries ResultDB for results from |builder|.
 
     Args:
-      builder: A string containing the name of the builder to query.
+      builder: A data_types.BuilderEntry containing the builder to query.
       builder_type: A string containing the type of builder to query, either
           "ci" or "try".
 
@@ -239,7 +242,7 @@ class BigQueryQuerier(object):
         query_results = self._RunBigQueryCommandsForJsonOutput(
             query_generator.GetQueries(), {
                 '': {
-                    'builder_name': builder
+                    'builder_name': builder.name
                 },
                 'INT64': {
                     'num_builds': self._num_samples
@@ -248,7 +251,7 @@ class BigQueryQuerier(object):
       except MemoryLimitError:
         logging.warning(
             'Query to builder %s hit BigQuery hard memory limit, trying again '
-            'with more query splitting.', builder)
+            'with more query splitting.', builder.name)
         query_generator.SplitQuery()
 
     results = []
@@ -258,7 +261,8 @@ class BigQueryQuerier(object):
               and builder in builders_module.GetInstance().GetFakeCiBuilders()):
         logging.warning(
             'Did not get results for "%s", but this may be because its '
-            'results do not apply to any expectations for this suite.', builder)
+            'results do not apply to any expectations for this suite.',
+            builder.name)
       return results, None
 
     # It's possible that a builder runs multiple versions of a test with
@@ -287,7 +291,7 @@ class BigQueryQuerier(object):
         continue
       results.append(self._ConvertJsonResultToResultObject(r))
     logging.debug('Got %d results for %s builder %s', len(results),
-                  builder_type, builder)
+                  builder_type, builder.name)
     return results, expectation_files
 
   def _ConvertJsonResultToResultObject(self, json_result):
@@ -336,7 +340,7 @@ class BigQueryQuerier(object):
     """Returns a _BaseQueryGenerator instance to only include relevant tests.
 
     Args:
-      builder: A string containing the name of the builder to query.
+      builder: A data_types.BuilderEntry containing the builder to query.
       builder_type: A string containing the type of builder to query, either
           "ci" or "try".
 

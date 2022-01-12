@@ -73,8 +73,8 @@ class QueryBuilderUnittest(unittest.TestCase):
     querier = gpu_uu.CreateGenericGpuQuerier(suite='webgl_conformance1')
     self._popen_mock.return_value = uu.FakeProcess(
         stdout=json.dumps(query_results))
-    results, expectation_files = querier.QueryBuilder('builder',
-                                                      constants.BuilderTypes.CI)
+    results, expectation_files = querier.QueryBuilder(
+        data_types.BuilderEntry('builder', False), constants.BuilderTypes.CI)
     self.assertEqual(len(results), 1)
     self.assertIsNone(expectation_files)
     self.assertEqual(
@@ -83,8 +83,8 @@ class QueryBuilderUnittest(unittest.TestCase):
                           'step_name', '1234'))
 
     querier = gpu_uu.CreateGenericGpuQuerier(suite='webgl_conformance2')
-    results, expectation_files = querier.QueryBuilder('builder',
-                                                      constants.BuilderTypes.CI)
+    results, expectation_files = querier.QueryBuilder(
+        data_types.BuilderEntry('builder', False), constants.BuilderTypes.CI)
     self.assertEqual(len(results), 1)
     self.assertIsNone(expectation_files)
     self.assertEqual(
@@ -104,27 +104,31 @@ class QueryBuilderUnittest(unittest.TestCase):
     querier = gpu_uu.CreateGenericGpuQuerier()
     with mock.patch.object(querier,
                            '_RunBigQueryCommandsForJsonOutput') as query_mock:
-      _ = querier.QueryBuilder('builder', constants.BuilderTypes.CI)
+      _ = querier.QueryBuilder(data_types.BuilderEntry('builder', False),
+                               constants.BuilderTypes.CI)
       assertSuiteInQuery('pixel_integration_test', query_mock.call_args)
 
     # Special-cased suites.
     querier = gpu_uu.CreateGenericGpuQuerier(suite='info_collection')
     with mock.patch.object(querier,
                            '_RunBigQueryCommandsForJsonOutput') as query_mock:
-      _ = querier.QueryBuilder('builder', constants.BuilderTypes.CI)
+      _ = querier.QueryBuilder(data_types.BuilderEntry('builder', False),
+                               constants.BuilderTypes.CI)
       assertSuiteInQuery('info_collection_test', query_mock.call_args)
 
     querier = gpu_uu.CreateGenericGpuQuerier(suite='power')
     with mock.patch.object(querier,
                            '_RunBigQueryCommandsForJsonOutput') as query_mock:
-      _ = querier.QueryBuilder('builder', constants.BuilderTypes.CI)
+      _ = querier.QueryBuilder(data_types.BuilderEntry('builder', False),
+                               constants.BuilderTypes.CI)
       assertSuiteInQuery('power_measurement_integration_test',
                          query_mock.call_args)
 
     querier = gpu_uu.CreateGenericGpuQuerier(suite='trace_test')
     with mock.patch.object(querier,
                            '_RunBigQueryCommandsForJsonOutput') as query_mock:
-      _ = querier.QueryBuilder('builder', constants.BuilderTypes.CI)
+      _ = querier.QueryBuilder(data_types.BuilderEntry('builder', False),
+                               constants.BuilderTypes.CI)
       assertSuiteInQuery('trace_integration_test', query_mock.call_args)
 
 
@@ -154,7 +158,8 @@ class GetQueryGeneratorForBuilderUnittest(unittest.TestCase):
     with mock.patch.object(querier,
                            '_RunBigQueryCommandsForJsonOutput',
                            return_value=[]) as query_mock:
-      test_filter = querier._GetQueryGeneratorForBuilder('', '')
+      test_filter = querier._GetQueryGeneratorForBuilder(
+          data_types.BuilderEntry('builder', False), 'builder_type')
       self.assertIsNone(test_filter)
       query_mock.assert_called_once()
 
@@ -168,7 +173,8 @@ class GetQueryGeneratorForBuilderUnittest(unittest.TestCase):
       }, {
           'test_id': 'bar_test'
       }]
-      test_filter = querier._GetQueryGeneratorForBuilder('', '')
+      test_filter = querier._GetQueryGeneratorForBuilder(
+          data_types.BuilderEntry('builder', False), 'builder_type')
       self.assertEqual(test_filter.GetClauses(),
                        ['AND test_id IN UNNEST(["foo_test", "bar_test"])'])
       self.assertIsInstance(test_filter, gpu_queries.GpuSplitQueryGenerator)

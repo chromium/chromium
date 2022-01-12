@@ -202,7 +202,7 @@ class WebTestBigQueryQuerier(queries_module.BigQueryQuerier):
         query = TEST_FILTER_QUERY_TEMPLATE.format(builder_type=builder_type)
         query_results = self._RunBigQueryCommandsForJsonOutput(
             query, {'': {
-                'builder_name': builder
+                'builder_name': builder.name
             }})
         test_ids = ['"%s"' % r['test_id'] for r in query_results]
 
