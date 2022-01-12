@@ -20,6 +20,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/task_traits.h"
@@ -27,6 +28,7 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/support_tool/data_collector.h"
 #include "components/feedback/pii_types.h"
+#include "components/feedback/redaction_tool.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/zlib/google/zip.h"
 
@@ -53,7 +55,16 @@ base::FilePath CreateTempDirForOutput() {
   return temp_dir.Take();
 }
 
-SupportToolHandler::SupportToolHandler() = default;
+SupportToolHandler::SupportToolHandler()
+    : task_runner_for_redaction_tool_(
+          base::ThreadPool::CreateSequencedTaskRunner(
+              {base::TaskPriority::USER_VISIBLE,
+               base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})),
+      redaction_tool_container_(
+          base::MakeRefCounted<feedback::RedactionToolContainer>(
+              task_runner_for_redaction_tool_,
+              nullptr)) {}
+
 SupportToolHandler::~SupportToolHandler() {
   CleanUp();
 }
@@ -95,9 +106,17 @@ void SupportToolHandler::CollectSupportData(
                      weak_ptr_factory_.GetWeakPtr()));
 
   for (auto& data_collector : data_collectors_) {
-    data_collector->CollectDataAndDetectPII(base::BindOnce(
-        &SupportToolHandler::OnDataCollected, weak_ptr_factory_.GetWeakPtr(),
-        collect_data_barrier_closure));
+    // DataCollectors will use `redaction_tool_container_` on
+    // `task_runner_for_redaction_tool_` to redact PII from the collected logs.
+    // All DataCollectors will use the same RedactionTool instance on the same
+    // task runner as we need to replace the same PII data with the same
+    // place-holder strings (that are stored in RedactionTool instance's data
+    // member) in all collected logs to avoid confusing the reader.
+    data_collector->CollectDataAndDetectPII(
+        base::BindOnce(&SupportToolHandler::OnDataCollected,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       collect_data_barrier_closure),
+        task_runner_for_redaction_tool_, redaction_tool_container_);
   }
 }
 

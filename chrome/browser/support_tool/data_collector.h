@@ -12,7 +12,10 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/feedback/pii_types.h"
+#include "components/feedback/redaction_tool.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // The error code that a Support Tool component can return.
@@ -22,6 +25,7 @@ enum class SupportToolError {
   kTestDataCollectorError,
   kDataExportTempDirCreationFailed,
   kDataExportCreateArchiveFailed,
+  kSystemLogSourceFetchFailed,
 };
 
 using PIIMap = std::map<feedback::PIIType, std::set<std::string>>;
@@ -47,10 +51,16 @@ class DataCollector {
   virtual const PIIMap& GetDetectedPII() = 0;
 
   // Collects all data that can be collected and detects the PII in the
-  // collected data. `on_data_collected_callback` won't be run if the
-  // DataCollector instance is deleted.
+  // collected data. DataCollector may use feedback::RedactionTool of
+  // `redaction_tool_container` on `task_runner_for_redaction_tool` for PII
+  // detection or implement their own PII detection functions.
+  // `on_data_collected_callback` won't be run if the DataCollector instance is
+  // deleted.
   virtual void CollectDataAndDetectPII(
-      DataCollectorDoneCallback on_data_collected_callback) = 0;
+      DataCollectorDoneCallback on_data_collected_callback,
+      scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
+      scoped_refptr<feedback::RedactionToolContainer>
+          redaction_tool_container) = 0;
 
   // Masks all PII found in the collected data except `pii_types_to_keep`.
   // Exports the collected data into file(s) in `target_directory`. Calls

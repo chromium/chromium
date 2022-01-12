@@ -53,7 +53,10 @@ class TestDataCollector : public DataCollector {
   const PIIMap& GetDetectedPII() override { return pii_map_; }
 
   void CollectDataAndDetectPII(
-      DataCollectorDoneCallback on_data_collected_callback) override {
+      DataCollectorDoneCallback on_data_collected_callback,
+      scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
+      scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container)
+      override {
     // Add fake PII for testing and return error to the callback if required.
     PrepareDataCollectionOutput(std::move(on_data_collected_callback));
   }

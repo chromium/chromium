@@ -4276,6 +4276,8 @@ static_library("browser") {
       "support_tool/support_tool_handler.h",
       "support_tool/support_tool_util.cc",
       "support_tool/support_tool_util.h",
+      "support_tool/system_log_source_data_collector_adaptor.cc",
+      "support_tool/system_log_source_data_collector_adaptor.h",
       "sync/glue/extension_model_type_controller.cc",
       "sync/glue/extension_model_type_controller.h",
       "sync/glue/extension_setting_model_type_controller.cc",

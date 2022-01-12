@@ -9,9 +9,12 @@
 
 #include "base/callback_forward.h"
 #include "base/files/file_path.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
+#include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/support_tool/data_collector.h"
 #include "components/feedback/pii_types.h"
+#include "components/feedback/redaction_tool.h"
 
 struct UIHierarchyData {
   UIHierarchyData(std::vector<std::string> window_titles, std::string data);
@@ -47,7 +50,10 @@ class UiHierarchyDataCollector : public DataCollector {
   const PIIMap& GetDetectedPII() override;
 
   void CollectDataAndDetectPII(
-      DataCollectorDoneCallback on_data_collected_callback) override;
+      DataCollectorDoneCallback on_data_collected_callback,
+      scoped_refptr<base::SequencedTaskRunner> task_runner_for_redaction_tool,
+      scoped_refptr<feedback::RedactionToolContainer> redaction_tool_container)
+      override;
 
   void ExportCollectedDataWithPII(
       std::set<feedback::PIIType> pii_types_to_keep,
