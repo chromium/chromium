@@ -5,6 +5,7 @@
 #include "ash/webui/personalization_app/mojom/personalization_app_mojom_traits.h"
 
 #include <string>
+#include <vector>
 
 #include "ash/public/cpp/personalization_app/user_display_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
@@ -16,6 +17,9 @@
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/webui/web_ui_util.h"
+#include "ui/gfx/image/image_skia.h"
+#include "url/gurl.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 
 namespace mojo {
@@ -250,11 +254,18 @@ StructTraits<ash::personalization_app::mojom::UserInfoDataView,
   return user_display_info.name;
 }
 
+const GURL& StructTraits<ash::personalization_app::mojom::UserInfoDataView,
+                         ash::personalization_app::UserDisplayInfo>::
+    avatar(const ash::personalization_app::UserDisplayInfo& user) {
+  return user.avatar;
+}
+
 bool StructTraits<ash::personalization_app::mojom::UserInfoDataView,
                   ash::personalization_app::UserDisplayInfo>::
     Read(ash::personalization_app::mojom::UserInfoDataView data,
          ash::personalization_app::UserDisplayInfo* out) {
-  return data.ReadEmail(&out->email) && data.ReadName(&out->name);
+  return data.ReadEmail(&out->email) && data.ReadName(&out->name) &&
+         data.ReadAvatar(&out->avatar);
 }
 
 }  // namespace mojo

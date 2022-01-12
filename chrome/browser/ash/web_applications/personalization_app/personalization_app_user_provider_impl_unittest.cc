@@ -19,6 +19,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
@@ -26,6 +27,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/gfx/image/image_skia.h"
 
 namespace {
 
@@ -91,6 +93,10 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
     return user_provider_.get();
   }
 
+  gfx::ImageSkia user_image() {
+    return user_manager::UserManager::Get()->GetActiveUser()->GetImage();
+  }
+
  private:
   content::BrowserTaskEnvironment task_environment_;
   user_manager::ScopedUserManager scoped_user_manager_;
@@ -106,9 +112,11 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
 
 TEST_F(PersonalizationAppUserProviderImplTest, GetsUserInfo) {
   user_provider_remote()->get()->GetUserInfo(base::BindLambdaForTesting(
-      [](ash::personalization_app::UserDisplayInfo user_display_info) {
+      [this](ash::personalization_app::UserDisplayInfo user_display_info) {
         EXPECT_EQ(kFakeTestEmail, user_display_info.email);
         EXPECT_EQ(kFakeTestName, user_display_info.name);
+        EXPECT_EQ(webui::GetBitmapDataUrl(*user_image().bitmap()),
+                  user_display_info.avatar);
       }));
   user_provider_remote()->FlushForTesting();
 }

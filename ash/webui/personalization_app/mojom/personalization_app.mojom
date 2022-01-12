@@ -201,6 +201,9 @@ struct UserInfo {
 
   // The display name of the user.
   string name;
+
+  // The device avatar image of the user as a data url.
+  url.mojom.Url avatar;
 };
 
 // Provides APIs to view information about the current user.

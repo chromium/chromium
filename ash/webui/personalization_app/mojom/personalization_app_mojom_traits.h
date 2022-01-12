@@ -6,6 +6,7 @@
 #define ASH_WEBUI_PERSONALIZATION_APP_MOJOM_PERSONALIZATION_APP_MOJOM_TRAITS_H_
 
 #include <string>
+#include <vector>
 
 #include "ash/public/cpp/personalization_app/user_display_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
@@ -81,6 +82,8 @@ struct StructTraits<ash::personalization_app::mojom::UserInfoDataView,
   static const std::string& email(
       const ash::personalization_app::UserDisplayInfo& user_display_info);
   static const std::string& name(
+      const ash::personalization_app::UserDisplayInfo& user_display_info);
+  static const GURL& avatar(
       const ash::personalization_app::UserDisplayInfo& user_display_info);
   static bool Read(ash::personalization_app::mojom::UserInfoDataView data,
                    ash::personalization_app::UserDisplayInfo* out);

@@ -10,7 +10,7 @@ assert(is_chromeos_ash)
 mojom("mojom") {
   sources = [ "personalization_app.mojom" ]
 
-  webui_module_path = "/ash/web/personalization_app"
+  webui_module_path = "/ash/webui/personalization_app"
 
   public_deps = [
     "//mojo/public/mojom/base",

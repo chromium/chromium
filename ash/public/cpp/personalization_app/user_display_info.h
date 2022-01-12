@@ -9,6 +9,7 @@
 
 #include "ash/public/cpp/ash_public_export.h"
 #include "components/user_manager/user.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -20,6 +21,10 @@ struct ASH_PUBLIC_EXPORT UserDisplayInfo {
 
   // The display name of the user.
   std::string name;
+
+  // Data url of avatar image. This is a data url because this class is designed
+  // to be sent to WebUI.
+  GURL avatar;
 
   UserDisplayInfo();
   explicit UserDisplayInfo(const user_manager::User& user_info);

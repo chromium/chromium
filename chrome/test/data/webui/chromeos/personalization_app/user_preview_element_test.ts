@@ -36,11 +36,17 @@ export function UserPreviewTest() {
     personalizationStore.data.user.info = userProvider.info;
     userPreviewElement = initElement(UserPreview);
     await waitAfterNextRender(userPreviewElement!);
+
     assertEquals(
         userProvider.info.email,
         userPreviewElement!.shadowRoot!.getElementById('email')!.innerText);
+
     assertEquals(
         userProvider.info.name,
         userPreviewElement!.shadowRoot!.getElementById('name')!.innerText);
+
+    const avatarImage = userPreviewElement!.shadowRoot!.getElementById(
+                            'avatar') as HTMLImageElement;
+    assertEquals(userProvider.info.avatar.url, avatarImage.src);
   });
 }

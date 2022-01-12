@@ -7,7 +7,11 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export class TestUserProvider extends TestBrowserProxy implements
     UserProviderInterface {
-  public info: UserInfo = {name: 'test name', email: 'test@email'};
+  public info: UserInfo = {
+    avatar: {url: 'data://avatar-url'},
+    name: 'test name',
+    email: 'test@email',
+  };
 
   constructor() {
     super(['getUserInfo']);
