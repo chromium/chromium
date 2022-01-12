@@ -25,7 +25,7 @@
     [
         CallWith=ScriptState,
         RuntimeEnabled=FileSystemAccessAccessHandle
-    ]  Promise<void> rename(USVString new_entry_name);
+    ]  Promise<void> move(USVString new_entry_name);
     [
         CallWith=ScriptState,
         RuntimeEnabled=FileSystemAccessAccessHandle

@@ -544,7 +544,6 @@ interface FileSystemFileHandle : FileSystemHandle
     method createWritable
     method getFile
     method move
-    method rename
 interface FileSystemHandle
     attribute @@toStringTag
     getter kind
@@ -554,7 +553,6 @@ interface FileSystemHandle
     method move
     method queryPermission
     method remove
-    method rename
     method requestPermission
 interface FileSystemWritableFileStream : WritableStream
     attribute @@toStringTag

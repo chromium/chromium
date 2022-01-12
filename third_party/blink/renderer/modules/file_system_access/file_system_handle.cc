@@ -97,13 +97,13 @@ ScriptPromise FileSystemHandle::requestPermission(
   return result;
 }
 
-ScriptPromise FileSystemHandle::rename(ScriptState* script_state,
-                                       const String& new_entry_name) {
+ScriptPromise FileSystemHandle::move(ScriptState* script_state,
+                                     const String& new_entry_name) {
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
   ScriptPromise result = resolver->Promise();
 
-  RenameImpl(
-      new_entry_name,
+  MoveImpl(
+      mojo::NullRemote(), new_entry_name,
       WTF::Bind(
           [](FileSystemHandle* handle, const String& new_name,
              ScriptPromiseResolver* resolver, FileSystemAccessErrorPtr result) {

@@ -42,7 +42,7 @@ class FileSystemHandle : public ScriptWrappable, public ExecutionContextClient {
   ScriptPromise requestPermission(ScriptState*,
                                   const FileSystemHandlePermissionDescriptor*);
 
-  ScriptPromise rename(ScriptState*, const String& new_entry_name);
+  ScriptPromise move(ScriptState*, const String& new_entry_name);
   ScriptPromise move(ScriptState*,
                      FileSystemDirectoryHandle* destination_directory);
   ScriptPromise move(ScriptState*,
@@ -67,9 +67,6 @@ class FileSystemHandle : public ScriptWrappable, public ExecutionContextClient {
       bool writable,
       base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
                               mojom::blink::PermissionStatus)>) = 0;
-  virtual void RenameImpl(
-      const String& new_entry_name,
-      base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr)>) = 0;
   virtual void MoveImpl(
       mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> dest,
       const String& new_entry_name,

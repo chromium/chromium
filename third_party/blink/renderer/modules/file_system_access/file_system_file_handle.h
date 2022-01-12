@@ -50,10 +50,6 @@ class FileSystemFileHandle final : public FileSystemHandle {
       bool writable,
       base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr,
                               mojom::blink::PermissionStatus)>) override;
-  void RenameImpl(
-      const String& new_entry_name,
-      base::OnceCallback<void(mojom::blink::FileSystemAccessErrorPtr)>)
-      override;
   void MoveImpl(
       mojo::PendingRemote<mojom::blink::FileSystemAccessTransferToken> dest,
       const String& new_entry_name,

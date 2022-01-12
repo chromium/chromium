@@ -475,7 +475,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method createWritable
 [Worker]     method getFile
 [Worker]     method move
-[Worker]     method rename
 [Worker] interface FileSystemHandle
 [Worker]     attribute @@toStringTag
 [Worker]     getter kind
@@ -485,7 +484,6 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     method move
 [Worker]     method queryPermission
 [Worker]     method remove
-[Worker]     method rename
 [Worker]     method requestPermission
 [Worker] interface FileSystemWritableFileStream : WritableStream
 [Worker]     attribute @@toStringTag
