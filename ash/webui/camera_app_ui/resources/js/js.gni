@@ -91,7 +91,7 @@ compile_js_files = [
   "views/review.ts",
   "views/settings.js",
   "views/view.ts",
-  "views/warning.js",
+  "views/warning.ts",
   "waitable_event.ts",
   "window_controller.ts",
 ]
