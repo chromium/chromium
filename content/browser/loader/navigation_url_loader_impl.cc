@@ -995,14 +995,6 @@ void NavigationURLLoaderImpl::OnAcceptCHFrameReceived(
     return;
   }
 
-  // While not a true redirect, a redirect loop can be simulated by repeatedly
-  // closing the socket and presenting a different ALPS setting with each new
-  // handshake.
-  if (redirect_limit_-- == 0) {
-    std::move(callback).Run(net::ERR_TOO_MANY_REDIRECTS);
-    return;
-  }
-
   net::HttpRequestHeaders modified_headers;
   client_hint_delegate->SetAdditionalClientHints(filtered_hints);
   AddNavigationRequestClientHintsHeaders(
@@ -1016,11 +1008,39 @@ void NavigationURLLoaderImpl::OnAcceptCHFrameReceived(
 
   LogAcceptCHFrameStatus(AcceptCHFrameRestart::kNavigationRestarted);
 
+  // Only restart if new headers are actually added. Given that header values
+  // can be changed via the navigation interceptors or previous restarts, the
+  // header values are ignored and only the presence of header names are
+  // checked.
+  bool restart = false;
+  net::HttpRequestHeaders::Iterator header_iter(modified_headers);
+  while (header_iter.GetNext()) {
+    if (!resource_request_->headers.HasHeader(header_iter.name())) {
+      restart = true;
+      break;
+    }
+  }
+
+  if (!restart) {
+    std::move(callback).Run(net::OK);
+    return;
+  }
+
+  // While not a true redirect, a redirect loop can be simulated by repeatedly
+  // closing the socket and presenting a different ALPS setting with each new
+  // handshake.
+  if (redirect_limit_-- == 0) {
+    std::move(callback).Run(net::ERR_TOO_MANY_REDIRECTS);
+    return;
+  }
+
+  std::move(callback).Run(net::ERR_ABORTED);
+
+  // If the request is restarted, all of the client hints should be replaced
+  // the "original"/non-edited values.
   resource_request_->headers.MergeFrom(modified_headers);
   url_loader_.reset();
   Restart();
-
-  std::move(callback).Run(net::ERR_ABORTED);
 }
 
 void NavigationURLLoaderImpl::Clone(
