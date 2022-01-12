@@ -1263,7 +1263,8 @@ String StylePropertySerializer::GetShorthandValueForGrid(
 
   StringBuilder auto_flow_text;
   auto_flow_text.Append("auto-flow ");
-  if (auto_flow_value_list->HasValue(
+  if (auto_flow_value_list &&
+      auto_flow_value_list->HasValue(
           *CSSIdentifierValue::Create(CSSValueID::kDense))) {
     auto_flow_text.Append("dense ");
   }
@@ -1271,7 +1272,8 @@ String StylePropertySerializer::GetShorthandValueForGrid(
   // 2- <'grid-template-rows'> / [ auto-flow && dense? ] <'grid-auto-columns'>?
   // | [ auto-flow && dense? ] <'grid-auto-rows'>? / <'grid-template-columns'>
   StringBuilder result;
-  if (auto_flow_value_list->HasValue(
+  if (auto_flow_value_list &&
+      auto_flow_value_list->HasValue(
           *CSSIdentifierValue::Create(CSSValueID::kColumn))) {
     result.Append(template_row_values->CssText());
     result.Append(" / ");
