@@ -129,7 +129,7 @@ TEST_P(TabStripRegionViewTest, NewTabButtonRightOfTabs) {
   CompleteAnimationAndLayout();
 
   EXPECT_EQ(tab_strip_region_view_->new_tab_button()->bounds().x(),
-            tab_strip_->ideal_bounds(0).right());
+            tab_strip_->tab_at(0)->bounds().right());
 }
 
 TEST_P(TabStripRegionViewTest, NewTabButtonInkDrop) {

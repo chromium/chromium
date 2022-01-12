@@ -210,14 +210,6 @@ class TabStrip : public views::View,
   // Invoked when a tab needs to show UI that it needs the user's attention.
   void SetTabNeedsAttention(int model_index, bool attention);
 
-  // Retrieves the ideal bounds for the Tab at the specified index.
-  const gfx::Rect& ideal_bounds(int tab_data_index) const {
-    return tabs_.ideal_bounds(tab_data_index);
-  }
-
-  // Retrieves the ideal bounds for the Tab Group Header at the specified group.
-  const gfx::Rect& ideal_bounds(tab_groups::TabGroupId group) const;
-
   // Returns the Tab at |index|.
   // TODO(pkasting): Make const correct
   Tab* tab_at(int index) const { return tabs_.view_at(index); }
@@ -571,6 +563,14 @@ class TabStrip : public views::View,
   // Called to update the visuals for a tab group when tabs in the group are
   // moved or resized.
   void UpdateTabGroupVisuals(tab_groups::TabGroupId tab_group_id);
+
+  // Retrieves the ideal bounds for the Tab at the specified index.
+  const gfx::Rect& ideal_bounds(int tab_data_index) const {
+    return tabs_.ideal_bounds(tab_data_index);
+  }
+
+  // Retrieves the ideal bounds for the Tab Group Header at the specified group.
+  const gfx::Rect& ideal_bounds(tab_groups::TabGroupId group) const;
 
   // views::View:
   bool OnMouseDragged(const ui::MouseEvent& event) override;
