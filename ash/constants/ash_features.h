@@ -240,6 +240,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFilesTrash;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFiltersInRecents;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFirmwareUpdaterApp;
 COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const base::Feature kFullscreenAfterUnlockAllowed;
+COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const base::Feature kFullscreenAlertBubble;
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const base::Feature kFuseBox;
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -559,6 +561,7 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFamilyLinkOnSchoolDeviceEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFastPairEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFileManagerSwaEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFirmwareUpdaterAppEnabled();
+COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFullscreenAfterUnlockAllowed();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsFullscreenAlertBubbleEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGaiaCloseViewMessageEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsGaiaReauthEndpointEnabled();

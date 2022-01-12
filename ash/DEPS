@@ -21,6 +21,7 @@ include_rules = [
   "+components/strings",
   "+components/sync",
   "+components/ui_devtools",
+  "+components/url_matcher",
   "+components/vector_icons",
   "+components/viz/common",
   "+components/viz/host",

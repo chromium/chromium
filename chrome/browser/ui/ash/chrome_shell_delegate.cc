@@ -59,6 +59,8 @@
 #include "content/public/browser/media_session_service.h"
 #include "content/public/browser/render_widget_host.h"
 #include "content/public/browser/render_widget_host_view.h"
+#include "extensions/browser/app_window/app_window.h"
+#include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
@@ -314,4 +316,25 @@ void ChromeShellDelegate::SetDisableLoggingRedirectForTesting(bool value) {
 // static
 void ChromeShellDelegate::ResetDisableLoggingRedirectForTesting() {
   disable_logging_redirect_for_testing.reset();
+}
+
+const GURL& ChromeShellDelegate::GetLastCommittedURLForWindowIfAny(
+    aura::Window* window) {
+  // Get the web content if the window is a browser window.
+  content::WebContents* contents =
+      GetActiveWebContentsForNativeBrowserWindow(window);
+
+  if (!contents) {
+    // Get the web content if the window is an app window.
+    Profile* profile = ProfileManager::GetLastUsedProfile();
+    if (profile) {
+      const extensions::AppWindow* app_window =
+          extensions::AppWindowRegistry::Get(profile)
+              ->GetAppWindowForNativeWindow(window);
+      if (app_window)
+        contents = app_window->web_contents();
+    }
+  }
+
+  return contents ? contents->GetLastCommittedURL() : GURL::EmptyGURL();
 }

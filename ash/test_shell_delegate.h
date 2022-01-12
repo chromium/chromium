@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -54,6 +55,7 @@ class TestShellDelegate : public ShellDelegate {
       override;
   bool IsSessionRestoreInProgress() const override;
   void SetUpEnvironmentForLockedFullscreen(bool locked) override {}
+  const GURL& GetLastCommittedURLForWindowIfAny(aura::Window* window) override;
 
   void SetCanGoBack(bool can_go_back);
   void SetShouldWaitForTouchAck(bool should_wait_for_touch_ack);
@@ -61,6 +63,7 @@ class TestShellDelegate : public ShellDelegate {
   bool IsLoggingRedirectDisabled() const override;
   base::FilePath GetPrimaryUserDownloadsFolder() const override;
   void OpenFeedbackPageForPersistentDesksBar() override {}
+  void SetLastCommittedURLForWindow(const GURL& url);
 
  private:
   // True if the current top window can go back.
@@ -79,6 +82,8 @@ class TestShellDelegate : public ShellDelegate {
   bool session_restore_in_progress_ = false;
 
   MultiDeviceSetupBinder multidevice_setup_binder_;
+
+  GURL last_committed_url_ = GURL::EmptyGURL();
 };
 
 }  // namespace ash

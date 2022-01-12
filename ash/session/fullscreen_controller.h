@@ -29,6 +29,8 @@ class FullscreenController : public chromeos::PowerManagerClient::Observer {
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  static bool ShouldExitFullscreenBeforeLock();
+
  private:
   // chromeos::PowerManagerClient::Observer:
   void SuspendImminent(power_manager::SuspendImminent::Reason reason) override;

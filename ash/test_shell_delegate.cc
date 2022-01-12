@@ -13,6 +13,7 @@
 #include "ash/system/tray/system_tray_notifier.h"
 #include "ash/wm/gestures/back_gesture/test_back_gesture_contextual_nudge_delegate.h"
 #include "ui/gfx/image/image.h"
+#include "url/gurl.h"
 
 namespace ash {
 
@@ -96,6 +97,15 @@ bool TestShellDelegate::IsLoggingRedirectDisabled() const {
 
 base::FilePath TestShellDelegate::GetPrimaryUserDownloadsFolder() const {
   return base::FilePath();
+}
+
+const GURL& TestShellDelegate::GetLastCommittedURLForWindowIfAny(
+    aura::Window* window) {
+  return last_committed_url_;
+}
+
+void TestShellDelegate::SetLastCommittedURLForWindow(const GURL& url) {
+  last_committed_url_ = url;
 }
 
 }  // namespace ash

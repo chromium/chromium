@@ -624,6 +624,10 @@ const base::Feature kFiltersInRecents{"FiltersInRecents",
 const base::Feature kFirmwareUpdaterApp = {"FirmwareUpdaterApp",
                                            base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Controls whether to allow keeping full screen mode after unlock.
+const base::Feature kFullscreenAfterUnlockAllowed = {
+    "FullscreenAfterUnlockAllowed", base::FEATURE_ENABLED_BY_DEFAULT};
+
 // When enabled, there will be an alert bubble showing up when the device
 // returns from low brightness (e.g., sleep, closed cover) without a lock screen
 // and the active window is in fullscreen.
@@ -1543,6 +1547,10 @@ bool IsFileManagerSwaEnabled() {
 
 bool IsFirmwareUpdaterAppEnabled() {
   return base::FeatureList::IsEnabled(kFirmwareUpdaterApp);
+}
+
+bool IsFullscreenAfterUnlockAllowed() {
+  return base::FeatureList::IsEnabled(kFullscreenAfterUnlockAllowed);
 }
 
 bool IsFullscreenAlertBubbleEnabled() {
