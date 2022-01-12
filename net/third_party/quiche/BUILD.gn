@@ -174,7 +174,6 @@ source_set("quiche") {
     "src/http2/platform/api/http2_flag_utils.h",
     "src/http2/platform/api/http2_flags.h",
     "src/http2/platform/api/http2_logging.h",
-    "src/http2/platform/api/http2_macros.h",
     "src/quic/core/congestion_control/bandwidth_sampler.cc",
     "src/quic/core/congestion_control/bandwidth_sampler.h",
     "src/quic/core/congestion_control/bbr2_drain.cc",
