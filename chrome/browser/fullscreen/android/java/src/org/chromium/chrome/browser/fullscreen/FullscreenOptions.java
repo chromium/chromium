@@ -10,6 +10,10 @@ package org.chromium.chrome.browser.fullscreen;
 public class FullscreenOptions {
     private boolean mShowNavigationBar;
 
+    // Used by FullscreenHtmlApiHandler internally to indicate that the fullscreen request
+    // associated with this option got canceled at the pending state.
+    private boolean mCanceled;
+
     /**
      * Constructs FullscreenOptions.
      *
@@ -24,6 +28,14 @@ public class FullscreenOptions {
      */
     public boolean showNavigationBar() {
         return mShowNavigationBar;
+    }
+
+    void setCanceled() {
+        mCanceled = true;
+    }
+
+    boolean canceled() {
+        return mCanceled;
     }
 
     @Override

@@ -355,9 +355,14 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
      * @param controlsHidden {@code true} if the controls are now hidden.
      */
     private void maybeEnterFullscreenFromPendingState(boolean controlsHidden) {
-        if (!controlsHidden) return;
-        if (mTab != null && mPendingFullscreenOptions != null) {
-            enterFullscreen(mTab, mPendingFullscreenOptions);
+        if (!controlsHidden || mTab == null) return;
+        if (mPendingFullscreenOptions != null) {
+            if (mPendingFullscreenOptions.canceled()) {
+                // Restore browser controls if the fullscreen process got canceled.
+                TabBrowserControlsConstraintsHelper.update(mTab, BrowserControlsState.SHOWN, true);
+            } else {
+                enterFullscreen(mTab, mPendingFullscreenOptions);
+            }
             mPendingFullscreenOptions = null;
         }
     }
@@ -373,7 +378,7 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
             } else {
                 assert mPendingFullscreenOptions
                         != null : "No content previously set to fullscreen.";
-                mPendingFullscreenOptions = null;
+                mPendingFullscreenOptions.setCanceled();
             }
             mWebContentsInFullscreen = null;
             mContentViewInFullscreen = null;
@@ -630,5 +635,9 @@ public class FullscreenHtmlApiHandler implements ActivityStateListener, WindowFo
         setContentView(null);
         if (mActiveTabObserver != null) mActiveTabObserver.destroy();
         if (mTabFullscreenObserver != null) mTabFullscreenObserver.destroy();
+    }
+
+    void setTabForTesting(Tab tab) {
+        mTab = tab;
     }
 }
