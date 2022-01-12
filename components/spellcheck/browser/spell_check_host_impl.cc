@@ -32,8 +32,10 @@ void SpellCheckHostImpl::CallSpellingService(
     CallSpellingServiceCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (text.empty())
+  if (text.empty()) {
     mojo::ReportBadMessage("Requested spelling service with empty text");
+    return;
+  }
 
   // This API requires Chrome-only features.
   std::move(callback).Run(false, std::vector<SpellCheckResult>());
@@ -46,8 +48,10 @@ void SpellCheckHostImpl::RequestTextCheck(const std::u16string& text,
                                           RequestTextCheckCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  if (text.empty())
+  if (text.empty()) {
     mojo::ReportBadMessage("Requested text check with empty text");
+    return;
+  }
 
   session_bridge_.RequestTextCheck(text, std::move(callback));
 }
