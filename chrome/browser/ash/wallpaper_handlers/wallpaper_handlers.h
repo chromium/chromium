@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_WALLPAPER_HANDLERS_WALLPAPER_HANDLERS_H_
 
 #include <memory>
-#include <tuple>
 
 #include "base/callback.h"
 #include "base/scoped_observation.h"
@@ -145,7 +144,8 @@ class BackdropSurpriseMeImageFetcher {
 };
 
 // Base class for common logic among fetchers that query the Google Photos API.
-template <typename... Args>
+// Parametrized by the client callback's argument type.
+template <typename T>
 class GooglePhotosFetcher : public signin::IdentityManager::Observer {
  public:
   GooglePhotosFetcher(
@@ -159,7 +159,7 @@ class GooglePhotosFetcher : public signin::IdentityManager::Observer {
   ~GooglePhotosFetcher() override;
 
   // Issues an API request if and only if one is not in progress.
-  using ClientCallback = base::OnceCallback<void(Args...)>;
+  using ClientCallback = base::OnceCallback<void(T)>;
   virtual void AddCallbackAndStartIfNecessary(ClientCallback callback);
 
  protected:
@@ -167,8 +167,7 @@ class GooglePhotosFetcher : public signin::IdentityManager::Observer {
   // was an error in sending the request, receiving the response, or parsing the
   // response; otherwise, it will hold a response in the API's specified
   // structure.
-  virtual std::tuple<Args...> ParseResponse(
-      absl::optional<base::Value> response) = 0;
+  virtual T ParseResponse(absl::optional<base::Value> response) = 0;
 
  private:
   void OnTokenReceived(GoogleServiceAuthError error,
@@ -218,7 +217,7 @@ class GooglePhotosCountFetcher : public GooglePhotosFetcher<int> {
 
  private:
   // GooglePhotosFetcher:
-  std::tuple<int> ParseResponse(absl::optional<base::Value> response) override;
+  int ParseResponse(absl::optional<base::Value> response) override;
 };
 
 }  // namespace wallpaper_handlers

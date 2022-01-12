@@ -4,7 +4,6 @@
 
 #include "chrome/browser/ash/wallpaper_handlers/wallpaper_handlers.h"
 
-#include <tuple>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -403,8 +402,8 @@ void BackdropSurpriseMeImageFetcher::OnResponseFetched(
                            surprise_me_image_response.resume_token());
 }
 
-template <typename... Args>
-GooglePhotosFetcher<Args...>::GooglePhotosFetcher(
+template <typename T>
+GooglePhotosFetcher<T>::GooglePhotosFetcher(
     Profile* profile,
     const char* service_url,
     const net::NetworkTrafficAnnotationTag& traffic_annotation)
@@ -419,11 +418,11 @@ GooglePhotosFetcher<Args...>::GooglePhotosFetcher(
   identity_manager_observation_.Observe(identity_manager_);
 }
 
-template <typename... Args>
-GooglePhotosFetcher<Args...>::~GooglePhotosFetcher() = default;
+template <typename T>
+GooglePhotosFetcher<T>::~GooglePhotosFetcher() = default;
 
-template <typename... Args>
-void GooglePhotosFetcher<Args...>::AddCallbackAndStartIfNecessary(
+template <typename T>
+void GooglePhotosFetcher<T>::AddCallbackAndStartIfNecessary(
     ClientCallback callback) {
   pending_client_callbacks_.push_back(std::move(callback));
   if (pending_client_callbacks_.size() > 1)
@@ -441,8 +440,8 @@ void GooglePhotosFetcher<Args...>::AddCallbackAndStartIfNecessary(
       signin::ConsentLevel::kSignin);
 }
 
-template <typename... Args>
-void GooglePhotosFetcher<Args...>::OnTokenReceived(
+template <typename T>
+void GooglePhotosFetcher<T>::OnTokenReceived(
     GoogleServiceAuthError error,
     signin::AccessTokenInfo token_info) {
   token_fetcher_.reset();
@@ -471,8 +470,8 @@ void GooglePhotosFetcher<Args...>::OnTokenReceived(
                      base::Unretained(this) /*`this` owns `url_loader_`.*/));
 }
 
-template <typename... Args>
-void GooglePhotosFetcher<Args...>::OnJsonReceived(
+template <typename T>
+void GooglePhotosFetcher<T>::OnJsonReceived(
     std::unique_ptr<std::string> response_body) {
   const int net_error = url_loader_->NetError();
   url_loader_.reset();
@@ -491,17 +490,13 @@ void GooglePhotosFetcher<Args...>::OnJsonReceived(
                                weak_factory_.GetWeakPtr())));
 }
 
-template <typename... Args>
-void GooglePhotosFetcher<Args...>::OnResponseReady(
+template <typename T>
+void GooglePhotosFetcher<T>::OnResponseReady(
     absl::optional<base::Value> response) {
-  std::tuple<Args...> args = ParseResponse(std::move(response));
-  std::apply(
-      [&](Args... args) {
-        for (auto& callback : pending_client_callbacks_)
-          std::move(callback).Run(std::forward<Args>(args)...);
-        pending_client_callbacks_.clear();
-      },
-      args);
+  T args = ParseResponse(std::move(response));
+  for (auto& callback : pending_client_callbacks_)
+    std::move(callback).Run(args);
+  pending_client_callbacks_.clear();
 }
 
 GooglePhotosCountFetcher::GooglePhotosCountFetcher(Profile* profile)
@@ -513,21 +508,21 @@ GooglePhotosCountFetcher::GooglePhotosCountFetcher(Profile* profile)
 
 GooglePhotosCountFetcher::~GooglePhotosCountFetcher() = default;
 
-std::tuple<int> GooglePhotosCountFetcher::ParseResponse(
+int GooglePhotosCountFetcher::ParseResponse(
     absl::optional<base::Value> response) {
   if (!response.has_value())
-    return std::make_tuple(-1);
+    return -1;
 
   const base::Value* user = response->FindDictPath("user");
   if (!user)
-    return std::make_tuple(-1);
+    return -1;
 
   const std::string* count_string = user->FindStringKey("numPhotos");
   int64_t count;
   if (!count_string || !base::StringToInt64(*count_string, &count))
-    return std::make_tuple(-1);
+    return -1;
 
-  return std::make_tuple(base::saturated_cast<int>(count));
+  return base::saturated_cast<int>(count);
 }
 
 }  // namespace wallpaper_handlers
