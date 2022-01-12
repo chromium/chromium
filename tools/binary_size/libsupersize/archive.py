@@ -12,6 +12,7 @@ import datetime
 import functools
 import gzip
 import itertools
+import json
 import logging
 import os
 import posixpath
@@ -33,7 +34,6 @@ import dir_metadata
 import dwarfdump
 import file_format
 import function_signature
-import json_config_parser
 import linker_map_parser
 import models
 import ninja_parser
@@ -90,12 +90,6 @@ class NativeSpec:
   elf_path: str = None  # Unstripped .so path.
   linker_name: str = None  # Requires map_path. Either 'gold' or 'lld'.
   track_string_literals: bool = True
-  # component to use for all symbols.
-  component: str = None
-  # Regular expression that will match generated files.
-  gen_dir_regex: str = None
-  # source_path prefix to use for all symbols.
-  source_path_prefix: str = None
 
   @property
   def algorithm(self):
@@ -259,18 +253,10 @@ def _NormalizeObjectPath(path):
   return path
 
 
-def _NormalizeSourcePath(path, gen_dir_pattern):
+def _NormalizeSourcePath(path):
   """Returns (is_generated, normalized_path)"""
-  # For apk other files, source_path is the path within the apk.
-  if path.startswith('$APK'):
+  if path.startswith('$'):  # E.g. $APK, $GOOGLE3
     return False, path
-  if gen_dir_pattern:
-    # Non-chromium gen_dir logic.
-    m = gen_dir_pattern.match(path)
-    if m:
-      return True, path[m.end():]
-    return False, path
-
   if path.startswith('gen/'):
     # Convert gen/third_party/... -> third_party/...
     return True, path[4:]
@@ -314,16 +300,15 @@ def _AddSourcePathsUsingAddress(dwarf_source_mapper, raw_symbols):
       + 'FindSourceForTextAddress() likely has a bug.')
 
 
-def _NormalizePaths(raw_symbols, gen_dir_regex=None):
+def _NormalizePaths(raw_symbols):
   """Fills in the |source_path| attribute and normalizes |object_path|."""
   logging.info('Normalizing source and object paths')
-  gen_dir_pattern = re.compile(gen_dir_regex) if gen_dir_regex else None
   for symbol in raw_symbols:
     if symbol.object_path:
       symbol.object_path = _NormalizeObjectPath(symbol.object_path)
     if symbol.source_path:
       symbol.generated_source, symbol.source_path = _NormalizeSourcePath(
-          symbol.source_path, gen_dir_pattern)
+          symbol.source_path)
 
 
 def _ComputeAncestorPath(path_list, symbol_count):
@@ -1009,7 +994,7 @@ class _ResourceSourceMapper:
     ret = self._res_info.get(path)
     if ret:
       return ret
-    return ''
+    return None
 
 
 class _ResourcePathDeobfuscator:
@@ -1063,7 +1048,9 @@ def _CalculateElfOverhead(section_ranges, elf_path):
   return 0
 
 
-def _AddUnattributedSectionSymbols(raw_symbols, section_ranges, source_path):
+def _AddUnattributedSectionSymbols(raw_symbols,
+                                   section_ranges,
+                                   source_path=None):
   # Create symbols for ELF sections not covered by existing symbols.
   logging.info('Searching for symbol gaps...')
   new_syms_by_section = collections.defaultdict(list)
@@ -1096,7 +1083,7 @@ def _AddUnattributedSectionSymbols(raw_symbols, section_ranges, source_path):
   unsummed_sections, summed_sections = models.ClassifySections(
       section_ranges.keys())
   ret = []
-  other_symbols = []
+  other_elf_symbols = []
   # Sort keys to ensure consistent order (> 1 sections may have address = 0).
   for section_name, (_, section_size) in list(section_ranges.items()):
     if section_name in seen_sections:
@@ -1104,7 +1091,7 @@ def _AddUnattributedSectionSymbols(raw_symbols, section_ranges, source_path):
     # Handle sections that don't appear in |raw_symbols|.
     if (section_name not in unsummed_sections
         and section_name not in summed_sections):
-      other_symbols.append(
+      other_elf_symbols.append(
           models.Symbol(models.SECTION_OTHER,
                         section_size,
                         full_name='** ELF Section: {}'.format(section_name),
@@ -1116,7 +1103,7 @@ def _AddUnattributedSectionSymbols(raw_symbols, section_ranges, source_path):
                         section_size,
                         full_name='** ELF Section: {}'.format(section_name),
                         source_path=source_path))
-  other_symbols.sort(key=lambda s: (s.address, s.full_name))
+  other_elf_symbols.sort(key=lambda s: (s.address, s.full_name))
 
   # TODO(agrieve): It would probably simplify things to use a dict of
   #     section_name->raw_symbols while creating symbols.
@@ -1125,7 +1112,7 @@ def _AddUnattributedSectionSymbols(raw_symbols, section_ranges, source_path):
       raw_symbols, lambda s: s.section_name):
     ret.extend(group)
     ret.extend(new_syms_by_section[section_name])
-  return ret, other_symbols
+  return ret, other_elf_symbols
 
 
 def _ParseNinjaFiles(output_directory, elf_path=None):
@@ -1251,15 +1238,16 @@ def _CreateNativeSymbols(*,
                                                   native_spec.tool_prefix)
       elf_overhead_size = _CalculateElfOverhead(section_ranges, f.name)
 
-  source_path = ''
+  source_path = None
   if native_spec.apk_so_path:
     # Put section symbols under $APK/lib/abi/libfoo.so.
     source_path = posixpath.join(models.APK_PREFIX_PATH,
                                  native_spec.apk_so_path)
 
-  raw_symbols, other_symbols = _AddUnattributedSectionSymbols(
+  raw_symbols, other_elf_symbols = _AddUnattributedSectionSymbols(
       raw_symbols, section_ranges, source_path)
 
+  other_symbols = other_elf_symbols
   if native_spec.elf_path:
     elf_overhead_symbol = models.Symbol(models.SECTION_OTHER,
                                         elf_overhead_size,
@@ -1280,7 +1268,7 @@ def _CreateNativeSymbols(*,
 
   # Path normalization must come before compacting aliases so that
   # ancestor paths do not mix generated and non-generated paths.
-  _NormalizePaths(raw_symbols, native_spec.gen_dir_regex)
+  _NormalizePaths(raw_symbols)
 
   logging.info('Converting excessive aliases into shared-path symbols')
   _CompactLargeAliasesIntoSharedSymbols(raw_symbols)
@@ -1413,7 +1401,7 @@ def _CreateApkOtherSymbols(*,
       resource_filename = resource_deobfuscator.MaybeRemapPath(
           zip_info.filename)
       source_path = res_source_mapper.FindSourceForPath(resource_filename)
-      if not source_path:
+      if source_path is None:
         source_path = posixpath.join(models.APK_PREFIX_PATH, resource_filename)
       raw_symbols.append(
           models.Symbol(
@@ -1452,13 +1440,8 @@ def CreateContainerSymbols(*, container_name, metadata, apk_spec, pak_spec,
                            resources_pathmap_path, pak_id_map):
   raw_symbols = []
   section_sizes = {}
-  default_component = apk_spec.default_component if apk_spec else ''
 
-  def add_syms(section_ranges,
-               new_raw_symbols,
-               source_path_prefix=None,
-               component=None,
-               paths_already_normalized=False):
+  def add_syms(section_ranges, new_raw_symbols):
     new_section_sizes = {
         k: size
         for k, (address, size) in section_ranges.items()
@@ -1472,38 +1455,17 @@ def CreateContainerSymbols(*, container_name, metadata, apk_spec, pak_spec,
         'Section collision: {}\n\n {}'.format(section_sizes, new_section_sizes))
     section_sizes.update(new_section_sizes)
 
-    # E.g.: _CreateNativeSymbols() already calls _NormalizePaths().
-    if not paths_already_normalized:
+    # _CreateNativeSymbols() already calls _NormalizePaths().
+    if new_raw_symbols and not new_raw_symbols[0].IsNative():
       _NormalizePaths(new_raw_symbols)
-
-    if source_path_prefix:
-      # Prefix the source_path for all symbols that have a source_path assigned,
-      # and that don't have it set to $APK or $GOOGLE3.
-      for s in new_raw_symbols:
-        if s.source_path and s.source_path[0] != '$':
-          s.source_path = source_path_prefix + s.source_path
-
-    if component is not None:
-      for s in new_raw_symbols:
-        s.component = component
-    else:
-      dir_metadata.PopulateComponents(new_raw_symbols,
-                                      source_directory,
-                                      default_component=default_component)
     raw_symbols.extend(new_raw_symbols)
 
   if native_spec:
-    section_ranges, new_raw_symbols = _CreateNativeSymbols(
-        metadata=metadata,
-        apk_spec=apk_spec,
-        native_spec=native_spec,
-        output_directory=output_directory,
-        pak_id_map=pak_id_map)
-    add_syms(section_ranges,
-             new_raw_symbols,
-             source_path_prefix=native_spec.source_path_prefix,
-             component=native_spec.component,
-             paths_already_normalized=True)
+    add_syms(*_CreateNativeSymbols(metadata=metadata,
+                                   apk_spec=apk_spec,
+                                   native_spec=native_spec,
+                                   output_directory=output_directory,
+                                   pak_id_map=pak_id_map))
 
   if pak_spec:
     add_syms(*_CreatePakSymbols(pak_spec=pak_spec,
@@ -1519,6 +1481,10 @@ def CreateContainerSymbols(*, container_name, metadata, apk_spec, pak_spec,
                                 native_spec=native_spec,
                                 resources_pathmap_path=resources_pathmap_path))
 
+  default_component = apk_spec.default_component if apk_spec else ''
+  dir_metadata.PopulateComponents(raw_symbols,
+                                  source_directory,
+                                  default_component=default_component)
   container = models.Container(name=container_name,
                                metadata=metadata,
                                section_sizes=section_sizes)
@@ -1800,15 +1766,8 @@ def ParseSsargs(lines):
   return sub_args_list
 
 
-def _MakeNativeSpec(tentative_output_dir, json_config, **kwargs):
+def _MakeNativeSpec(tentative_output_dir, **kwargs):
   native_spec = NativeSpec(**kwargs)
-  if native_spec.elf_path or native_spec.map_path:
-    basename = os.path.basename(native_spec.elf_path or native_spec.map_path)
-    native_spec.component = json_config.ComponentForNativeFile(basename)
-    native_spec.gen_dir_regex = json_config.GenDirRegexForNativeFile(basename)
-    native_spec.source_path_prefix = json_config.SourcePathPrefixForNativeFile(
-        basename)
-
   if not native_spec.map_path:
     # TODO(crbug.com/1193507): Implement string literal tracking without map
     #     files. nm emits some string literal symbols, but most are missing.
@@ -1842,7 +1801,7 @@ def _DeduceMapPath(elf_path, tool_prefix):
 def _CreateNativeSpecs(*, tentative_output_dir, apk_infolist, elf_path,
                        map_path, abi_filters, auto_abi_filters,
                        track_string_literals, ignore_linker_map, tool_prefix,
-                       json_config, on_config_error):
+                       on_config_error):
   if ignore_linker_map:
     map_path = None
   elif (map_path and not map_path.endswith('.map')
@@ -1857,7 +1816,6 @@ def _CreateNativeSpecs(*, tentative_output_dir, apk_infolist, elf_path,
     if map_path or elf_path:
       ret.append(
           _MakeNativeSpec(tentative_output_dir,
-                          json_config,
                           tool_prefix=tool_prefix,
                           apk_so_path=None,
                           map_path=map_path,
@@ -1915,7 +1873,6 @@ def _CreateNativeSpecs(*, tentative_output_dir, apk_infolist, elf_path,
 
     ret.append(
         _MakeNativeSpec(tentative_output_dir,
-                        json_config,
                         tool_prefix=tool_prefix,
                         apk_so_path=apk_so_path,
                         map_path=cur_map_path,
@@ -2019,9 +1976,12 @@ def _ProcessContainerArgs(top_args,
                                                'size-info',
                                                os.path.basename(apk_prefix))
     apk_spec.analyze_dex = bool(analyze_dex and apk_spec.size_info_prefix)
-    apk_spec.default_component = json_config.DefaultComponentForSplit(
-        split_name)
-    apk_spec.path_defaults = json_config.ApkPathDefaults()
+    apk_spec.path_defaults = {
+        k: v['source_path']
+        for k, v in json_config.get('apk_files', {}).items()
+    }
+    apk_spec.default_component = json_config.get('apk_splits', {}).get(
+        split_name, {}).get('default_component', '')
 
   pak_spec = None
   apk_pak_paths = None
@@ -2062,7 +2022,6 @@ def _ProcessContainerArgs(top_args,
         ignore_linker_map=(top_args.ignore_linker_map
                            or sub_args.ignore_linker_map),
         tool_prefix=tool_prefix_finder.Finalized(),
-        json_config=json_config,
         on_config_error=on_config_error)
 
     # For app bundles, use a consistent ABI for all splits.
@@ -2098,17 +2057,22 @@ def _IsOnDemand(apk_path):
   return on_demand
 
 
+def _ParseJsonConfig(path, on_config_error):
+  path = path or path_util.GetDefaultJsonConfigPath()
+  try:
+    with open(path) as f:
+      return json.load(f)
+  except Exception as e:
+    on_config_error(f'Error while parsing {path}: {e}')
+
+
 def _IterSubArgs(top_args, on_config_error):
   """Generates main paths (may be deduced) for each containers given by input.
 
   Yields:
     For each container, main paths and other info needed to create size_info.
   """
-  json_config_path = top_args.json_config
-  if not json_config_path:
-    json_config_path = path_util.GetDefaultJsonConfigPath()
-    logging.info('Using --json-config=%s', json_config_path)
-  json_config = json_config_parser.Parse(json_config_path, on_config_error)
+  json_config = _ParseJsonConfig(top_args.json_config, on_config_error)
 
   main_file = _IdentifyInputFile(top_args, on_config_error)
   if top_args.no_output_directory:
