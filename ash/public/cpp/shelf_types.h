@@ -6,6 +6,7 @@
 #define ASH_PUBLIC_CPP_SHELF_TYPES_H_
 
 #include <cstdint>
+#include <ostream>
 #include <string>
 
 #include "ash/public/cpp/ash_public_export.h"
@@ -105,6 +106,9 @@ enum class ShelfBackgroundType {
   // The background for the in-app shelf in tablet mode.
   kInApp,
 };
+
+ASH_PUBLIC_EXPORT std::ostream& operator<<(std::ostream& out,
+                                           ShelfBackgroundType type);
 
 // Source of the launch or activation request, for tracking.
 enum ShelfLaunchSource {
