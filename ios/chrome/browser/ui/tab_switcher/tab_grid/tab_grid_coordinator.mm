@@ -284,6 +284,10 @@
   self.baseViewController.activePage = page;
 }
 
+- (void)setActiveMode:(TabGridMode)mode {
+  self.baseViewController.tabGridMode = mode;
+}
+
 - (UIViewController*)activeViewController {
   if (self.bvcContainer) {
     // When installing the thumb strip while the tab grid is opened, there is no

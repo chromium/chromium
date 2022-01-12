@@ -2914,6 +2914,7 @@ bool IsSigninForcedByPolicy() {
 - (void)showTabSwitcher {
   DCHECK(self.mainCoordinator);
   [self.mainCoordinator setActivePage:self.activePage];
+  [self.mainCoordinator setActiveMode:TabGridModeNormal];
   [self.mainCoordinator showTabGrid];
 }
 

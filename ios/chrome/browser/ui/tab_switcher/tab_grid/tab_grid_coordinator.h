@@ -81,6 +81,9 @@ class Browser;
 // remote tabs.
 - (void)setActivePage:(TabGridPage)page;
 
+// Sets the |mode| as the active one.
+- (void)setActiveMode:(TabGridMode)mode;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_TAB_SWITCHER_TAB_GRID_TAB_GRID_COORDINATOR_H_
