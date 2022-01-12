@@ -2143,6 +2143,10 @@ def Run(top_args, on_config_error):
   # Iterate over each container.
   for (sub_args, apk_spec, pak_spec, native_specs, container_name,
        resources_pathmap_path) in _IterSubArgs(top_args, on_config_error):
+    # TODO(https://crbug.com/1286642): Re-enable dwarf mode specs.
+    if apk_spec:
+      native_specs = [s for s in native_specs if s.algorithm != 'dwarf']
+
     if not native_specs:
       native_specs = [None]
 
