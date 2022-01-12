@@ -1418,7 +1418,7 @@ JNIEnv* env${FIRST_PARAM_IN_DECLARATION}${PARAMS_IN_DECLARATION})""")
     function_header_template = Template("""\
 ${FUNCTION_SIGNATURE} {""")
     function_header_with_unused_template = Template("""\
-${FUNCTION_SIGNATURE} __attribute__ ((unused));
+[[maybe_unused]] ${FUNCTION_SIGNATURE};
 ${FUNCTION_SIGNATURE} {""")
     template = Template("""
 static std::atomic<jmethodID> g_${JAVA_CLASS}_${METHOD_ID_VAR_NAME}(nullptr);

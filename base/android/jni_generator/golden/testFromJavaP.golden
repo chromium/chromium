@@ -39,8 +39,8 @@ namespace JNI_InputStream {
 
 
 static std::atomic<jmethodID> g_java_io_InputStream_available(nullptr);
-static jint Java_InputStream_available(JNIEnv* env, const base::android::JavaRef<jobject>& obj)
-    __attribute__ ((unused));
+[[maybe_unused]] static jint Java_InputStream_available(JNIEnv* env, const
+    base::android::JavaRef<jobject>& obj);
 static jint Java_InputStream_available(JNIEnv* env, const base::android::JavaRef<jobject>& obj) {
   jclass clazz = java_io_InputStream_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
@@ -62,8 +62,8 @@ static jint Java_InputStream_available(JNIEnv* env, const base::android::JavaRef
 }
 
 static std::atomic<jmethodID> g_java_io_InputStream_close(nullptr);
-static void Java_InputStream_close(JNIEnv* env, const base::android::JavaRef<jobject>& obj)
-    __attribute__ ((unused));
+[[maybe_unused]] static void Java_InputStream_close(JNIEnv* env, const
+    base::android::JavaRef<jobject>& obj);
 static void Java_InputStream_close(JNIEnv* env, const base::android::JavaRef<jobject>& obj) {
   jclass clazz = java_io_InputStream_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
@@ -83,8 +83,8 @@ static void Java_InputStream_close(JNIEnv* env, const base::android::JavaRef<job
 }
 
 static std::atomic<jmethodID> g_java_io_InputStream_mark(nullptr);
-static void Java_InputStream_mark(JNIEnv* env, const base::android::JavaRef<jobject>& obj,
-    JniIntWrapper p0) __attribute__ ((unused));
+[[maybe_unused]] static void Java_InputStream_mark(JNIEnv* env, const
+    base::android::JavaRef<jobject>& obj, JniIntWrapper p0);
 static void Java_InputStream_mark(JNIEnv* env, const base::android::JavaRef<jobject>& obj,
     JniIntWrapper p0) {
   jclass clazz = java_io_InputStream_clazz(env);
@@ -105,8 +105,8 @@ static void Java_InputStream_mark(JNIEnv* env, const base::android::JavaRef<jobj
 }
 
 static std::atomic<jmethodID> g_java_io_InputStream_markSupported(nullptr);
-static jboolean Java_InputStream_markSupported(JNIEnv* env, const base::android::JavaRef<jobject>&
-    obj) __attribute__ ((unused));
+[[maybe_unused]] static jboolean Java_InputStream_markSupported(JNIEnv* env, const
+    base::android::JavaRef<jobject>& obj);
 static jboolean Java_InputStream_markSupported(JNIEnv* env, const base::android::JavaRef<jobject>&
     obj) {
   jclass clazz = java_io_InputStream_clazz(env);
@@ -129,8 +129,8 @@ static jboolean Java_InputStream_markSupported(JNIEnv* env, const base::android:
 }
 
 static std::atomic<jmethodID> g_java_io_InputStream_readI(nullptr);
-static jint Java_InputStream_readI(JNIEnv* env, const base::android::JavaRef<jobject>& obj)
-    __attribute__ ((unused));
+[[maybe_unused]] static jint Java_InputStream_readI(JNIEnv* env, const
+    base::android::JavaRef<jobject>& obj);
 static jint Java_InputStream_readI(JNIEnv* env, const base::android::JavaRef<jobject>& obj) {
   jclass clazz = java_io_InputStream_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
@@ -152,8 +152,8 @@ static jint Java_InputStream_readI(JNIEnv* env, const base::android::JavaRef<job
 }
 
 static std::atomic<jmethodID> g_java_io_InputStream_readI_AB(nullptr);
-static jint Java_InputStream_readI_AB(JNIEnv* env, const base::android::JavaRef<jobject>& obj, const
-    base::android::JavaRef<jbyteArray>& p0) __attribute__ ((unused));
+[[maybe_unused]] static jint Java_InputStream_readI_AB(JNIEnv* env, const
+    base::android::JavaRef<jobject>& obj, const base::android::JavaRef<jbyteArray>& p0);
 static jint Java_InputStream_readI_AB(JNIEnv* env, const base::android::JavaRef<jobject>& obj, const
     base::android::JavaRef<jbyteArray>& p0) {
   jclass clazz = java_io_InputStream_clazz(env);
@@ -176,10 +176,10 @@ static jint Java_InputStream_readI_AB(JNIEnv* env, const base::android::JavaRef<
 }
 
 static std::atomic<jmethodID> g_java_io_InputStream_readI_AB_I_I(nullptr);
-static jint Java_InputStream_readI_AB_I_I(JNIEnv* env, const base::android::JavaRef<jobject>& obj,
-    const base::android::JavaRef<jbyteArray>& p0,
+[[maybe_unused]] static jint Java_InputStream_readI_AB_I_I(JNIEnv* env, const
+    base::android::JavaRef<jobject>& obj, const base::android::JavaRef<jbyteArray>& p0,
     JniIntWrapper p1,
-    JniIntWrapper p2) __attribute__ ((unused));
+    JniIntWrapper p2);
 static jint Java_InputStream_readI_AB_I_I(JNIEnv* env, const base::android::JavaRef<jobject>& obj,
     const base::android::JavaRef<jbyteArray>& p0,
     JniIntWrapper p1,
@@ -204,8 +204,8 @@ static jint Java_InputStream_readI_AB_I_I(JNIEnv* env, const base::android::Java
 }
 
 static std::atomic<jmethodID> g_java_io_InputStream_reset(nullptr);
-static void Java_InputStream_reset(JNIEnv* env, const base::android::JavaRef<jobject>& obj)
-    __attribute__ ((unused));
+[[maybe_unused]] static void Java_InputStream_reset(JNIEnv* env, const
+    base::android::JavaRef<jobject>& obj);
 static void Java_InputStream_reset(JNIEnv* env, const base::android::JavaRef<jobject>& obj) {
   jclass clazz = java_io_InputStream_clazz(env);
   CHECK_CLAZZ(env, obj.obj(),
@@ -225,8 +225,8 @@ static void Java_InputStream_reset(JNIEnv* env, const base::android::JavaRef<job
 }
 
 static std::atomic<jmethodID> g_java_io_InputStream_skip(nullptr);
-static jlong Java_InputStream_skip(JNIEnv* env, const base::android::JavaRef<jobject>& obj, jlong
-    p0) __attribute__ ((unused));
+[[maybe_unused]] static jlong Java_InputStream_skip(JNIEnv* env, const
+    base::android::JavaRef<jobject>& obj, jlong p0);
 static jlong Java_InputStream_skip(JNIEnv* env, const base::android::JavaRef<jobject>& obj, jlong
     p0) {
   jclass clazz = java_io_InputStream_clazz(env);
@@ -249,8 +249,8 @@ static jlong Java_InputStream_skip(JNIEnv* env, const base::android::JavaRef<job
 }
 
 static std::atomic<jmethodID> g_java_io_InputStream_Constructor(nullptr);
-static base::android::ScopedJavaLocalRef<jobject> Java_InputStream_Constructor(JNIEnv* env)
-    __attribute__ ((unused));
+[[maybe_unused]] static base::android::ScopedJavaLocalRef<jobject>
+    Java_InputStream_Constructor(JNIEnv* env);
 static base::android::ScopedJavaLocalRef<jobject> Java_InputStream_Constructor(JNIEnv* env) {
   jclass clazz = java_io_InputStream_clazz(env);
   CHECK_CLAZZ(env, clazz,
