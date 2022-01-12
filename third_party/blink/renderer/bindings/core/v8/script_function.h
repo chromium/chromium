@@ -42,43 +42,6 @@
 
 namespace blink {
 
-// DEPRECATED: Use NewScriptFunction.
-class CORE_EXPORT ScriptFunction : public CustomWrappableAdapter {
- public:
-  ~ScriptFunction() override = default;
-
-  void Trace(Visitor*) const override;
-
-  const char* NameInHeapSnapshot() const override { return "ScriptFunction"; }
-
- protected:
-  explicit ScriptFunction(ScriptState* script_state)
-      : script_state_(script_state) {}
-
-  ScriptState* GetScriptState() const { return script_state_; }
-
-  // It is not usually necessary to set |length| unless the function is exposed
-  // to JavaScript.
-  v8::Local<v8::Function> BindToV8Function(int length = 0);
-
- private:
-  // Subclasses should implement one of Call() or CallRaw(). Most will implement
-  // Call().
-  virtual ScriptValue Call(ScriptValue);
-
-  // To support more than one argument, or for low-level access to the V8 API,
-  // implement CallRaw(). The default implementation delegates to Call().
-  virtual void CallRaw(const v8::FunctionCallbackInfo<v8::Value>&);
-
-  static void CallCallback(const v8::FunctionCallbackInfo<v8::Value>&);
-
-  Member<ScriptState> script_state_;
-#if DCHECK_IS_ON()
-  // BindToV8Function() must not be called twice.
-  bool bind_to_v8_function_already_called_ = false;
-#endif
-};
-
 // A `NewScriptFunction` represents a function that can be called from scripts.
 // You can define a subclass of `Callable` and put arbitrary logic by
 // overriding `Call` or `CallRaw` methods.
