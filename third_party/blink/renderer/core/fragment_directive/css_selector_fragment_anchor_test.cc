@@ -308,11 +308,12 @@ TEST_F(CssSelectorFragmentAnchorTest, DISABLED_CheckCssSelectorRestrictions) {
   EXPECT_EQ(GetDocument().Url(), "https://example.com/test.html");
 }
 
-// Make sure fragment is dismissed after user clicks
-TEST_F(CssSelectorFragmentAnchorTest, DismissFragmentAfterUserClicks) {
+// Make sure fragment is not dismissed after user clicks
+TEST_F(CssSelectorFragmentAnchorTest, FragmentStaysAfterUserClicks) {
   base::test::ScopedFeatureList feature_list_;
-  feature_list_.InitAndEnableFeature(
-      blink::features::kCssSelectorFragmentAnchor);
+  feature_list_.InitWithFeatures(
+      /*enabled_features=*/{blink::features::kCssSelectorFragmentAnchor},
+      /*disabled_features=*/{});
 
   SimRequest main_request(
       "https://example.com/"
@@ -343,6 +344,13 @@ TEST_F(CssSelectorFragmentAnchorTest, DismissFragmentAfterUserClicks) {
   test::RunPendingTasks();
   Compositor().BeginFrame();
 
+  KURL expected_url = GetDocument()
+                          .GetFrame()
+                          ->Loader()
+                          .GetDocumentLoader()
+                          ->GetHistoryItem()
+                          ->Url();
+
   Element& img = *GetDocument().getElementById("image");
   EXPECT_TRUE(IsVisibleInViewport(img))
       << "<img> Element wasn't scrolled into view, viewport's scroll offset: "
@@ -351,7 +359,7 @@ TEST_F(CssSelectorFragmentAnchorTest, DismissFragmentAfterUserClicks) {
 
   SimulateClick(100, 100);
 
-  EXPECT_FALSE(GetDocument().View()->GetFragmentAnchor());
+  EXPECT_TRUE(GetDocument().View()->GetFragmentAnchor());
 
   KURL url = GetDocument()
                  .GetFrame()
@@ -359,7 +367,8 @@ TEST_F(CssSelectorFragmentAnchorTest, DismissFragmentAfterUserClicks) {
                  .GetDocumentLoader()
                  ->GetHistoryItem()
                  ->Url();
-  EXPECT_EQ("https://example.com/test.html", url);
+
+  EXPECT_EQ(expected_url, url);
 }
 
 // Although parsed correctly, the element is not found, hence no scroll happens

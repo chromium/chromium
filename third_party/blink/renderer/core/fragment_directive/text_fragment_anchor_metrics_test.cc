@@ -1049,43 +1049,6 @@ TEST_P(TextFragmentAnchorScrollMetricsTest, TimeToScrollToTop) {
   }
 }
 
-// Test that the TapToDismiss feature gets use counted when the user taps to
-// dismiss the text highlight
-TEST_F(TextFragmentAnchorMetricsTest, TapToDismiss) {
-  SimRequest request("https://example.com/test.html#:~:text=test%20page",
-                     "text/html");
-  LoadURL("https://example.com/test.html#:~:text=test%20page");
-  request.Complete(R"HTML(
-    <!DOCTYPE html>
-    <style>
-      body {
-        height: 2200px;
-      }
-      p {
-        position: absolute;
-        top: 1000px;
-      }
-    </style>
-    <p>This is a test page</p>
-  )HTML");
-  RunAsyncMatchingTasks();
-
-  // Render two frames to handle the async step added by the beforematch event.
-  Compositor().BeginFrame();
-  BeginEmptyFrame();
-
-  EXPECT_TRUE(GetDocument().IsUseCounted(WebFeature::kTextFragmentAnchor));
-  EXPECT_TRUE(
-      GetDocument().IsUseCounted(WebFeature::kTextFragmentAnchorMatchFound));
-  EXPECT_FALSE(
-      GetDocument().IsUseCounted(WebFeature::kTextFragmentAnchorTapToDismiss));
-
-  SimulateClick(100, 100);
-
-  EXPECT_TRUE(
-      GetDocument().IsUseCounted(WebFeature::kTextFragmentAnchorTapToDismiss));
-}
-
 // Test counting cases where the fragment directive fails to parse.
 TEST_F(TextFragmentAnchorMetricsTest, InvalidFragmentDirective) {
   const int kUncounted = 0;

@@ -14,7 +14,7 @@ constexpr base::FeatureParam<int> kPreemptiveLinkGenTimeoutLengthMs{
     &kPreemptiveLinkToTextGeneration, "TimeoutLengthMs", 500};
 
 const base::Feature kSharedHighlightingV2{"SharedHighlightingV2",
-                                          base::FEATURE_DISABLED_BY_DEFAULT};
+                                          base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kSharedHighlightingAmp{"SharedHighlightingAmp",
                                            base::FEATURE_ENABLED_BY_DEFAULT};
