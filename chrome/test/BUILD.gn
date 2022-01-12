@@ -703,7 +703,7 @@ if (is_android) {
         "//fuchsia/engine:web_engine_with_webui_installer",
       ]
     } else if (fuchsia_browser_type == "chrome") {
-      data_deps += [ "//chrome/app/chrome_fuchsia" ]
+      data_deps += [ "//chrome/app:chrome_fuchsia" ]
     }
   }
 } else {
