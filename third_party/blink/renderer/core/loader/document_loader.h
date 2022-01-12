@@ -653,6 +653,9 @@ class CORE_EXPORT DocumentLoader : public GarbageCollected<DocumentLoader>,
   // contains URNs to the ad components returned by the winning bid. Null,
   // otherwise.
   absl::optional<Vector<KURL>> ad_auction_components_;
+
+  // Whether the document should be anonymous or not.
+  const bool anonymous_ = false;
 };
 
 DECLARE_WEAK_IDENTIFIER_MAP(DocumentLoader);

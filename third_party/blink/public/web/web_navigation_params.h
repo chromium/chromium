@@ -444,6 +444,9 @@ struct BLINK_EXPORT WebNavigationParams {
   // contains URNs mapped to the ad components returned by the winning bid.
   // Null, otherwise.
   absl::optional<WebVector<WebURL>> ad_auction_components;
+
+  // Whether or not this navigation will commit in an anonymous frame.
+  bool anonymous = false;
 };
 
 }  // namespace blink

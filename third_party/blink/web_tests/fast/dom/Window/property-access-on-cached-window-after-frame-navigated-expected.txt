@@ -2,6 +2,7 @@ Tests property access on a cached DOMWindow after the associated frame is naviga
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
+PASS oldChildWindow.anonymous is newChildWindow.anonymous
 PASS oldChildWindow.appHistory.canGoBack is newChildWindow.appHistory.canGoBack
 PASS oldChildWindow.appHistory.canGoForward is newChildWindow.appHistory.canGoForward
 PASS oldChildWindow.appHistory.current is newChildWindow.appHistory.current

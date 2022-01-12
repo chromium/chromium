@@ -206,6 +206,10 @@
 
     // TrustedTypes API: http://github.com/wicg/trusted-types
     [RuntimeEnabled=TrustedDOMTypes, CallWith=ScriptState] readonly attribute TrustedTypePolicyFactory trustedTypes;
+
+    // Anonymous iframe:
+    // https://github.com/camillelamy/explainers/blob/main/anonymous_iframes.md
+    [RuntimeEnabled=AnonymousIframe] readonly attribute boolean anonymous;
 };
 
 Window includes GlobalEventHandlers;

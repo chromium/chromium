@@ -489,4 +489,7 @@ struct CommitNavigationParams {
 
   // The time the commit was sent from the browser.
   mojo_base.mojom.TimeTicks commit_sent;
+
+  // Whether or not this navigation will commit in an anonymous frame.
+  bool anonymous = false;
 };

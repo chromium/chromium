@@ -11406,6 +11406,7 @@ namespace CSS
     attribute propertyNamesInGlobal
     attribute testRunner
     attribute textInputController
+    getter anonymous
     getter appHistory
     getter attributionReporting
     getter caches

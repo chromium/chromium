@@ -3569,7 +3569,7 @@ NavigationControllerImpl::CreateNavigationRequestFromLoadParams(
           std::vector<GURL>() /* early_hints_preloaded_resources */,
           absl::nullopt /* ad_auction_components */,
           // This timestamp will be populated when the commit IPC is sent.
-          base::TimeTicks() /* commit_sent */);
+          base::TimeTicks() /* commit_sent */, false /* anonymous */);
 #if defined(OS_ANDROID)
   if (ValidateDataURLAsString(params.data_url_as_string)) {
     commit_params->data_url_as_string = params.data_url_as_string->data();

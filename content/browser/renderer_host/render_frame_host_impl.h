@@ -4074,7 +4074,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Whether the current document is loaded inside an anonymous iframe. Updated
   // on every cross-document navigation.
-  bool anonymous_;
+  bool anonymous_ = false;
 
   // The PolicyContainerHost for the current document, containing security
   // policies that apply to it. It should never be null if the RenderFrameHost

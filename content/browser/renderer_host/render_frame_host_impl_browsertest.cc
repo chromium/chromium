@@ -6215,11 +6215,14 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplAnonymousIframeBrowserTest,
   WaitForLoadStop(web_contents());
 
   EXPECT_FALSE(main_rfh->anonymous());
+  EXPECT_EQ(false, EvalJs(main_rfh, "window.anonymous"));
   EXPECT_FALSE(main_rfh->storage_key().nonce().has_value());
 
   EXPECT_EQ(1U, main_rfh->child_count());
   EXPECT_TRUE(main_rfh->child_at(0)->anonymous());
   EXPECT_FALSE(main_rfh->child_at(0)->current_frame_host()->anonymous());
+  EXPECT_EQ(false, EvalJs(main_rfh->child_at(0)->current_frame_host(),
+                          "window.anonymous"));
   EXPECT_FALSE(main_rfh->child_at(0)
                    ->current_frame_host()
                    ->storage_key()
@@ -6324,6 +6327,7 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplAnonymousIframeNikBrowserTest,
     EXPECT_EQ(1U, main_rfh->child_count());
     RenderFrameHostImpl* iframe = main_rfh->child_at(0)->current_frame_host();
     EXPECT_EQ(anonymous, iframe->anonymous());
+    EXPECT_EQ(anonymous, EvalJs(iframe, "window.anonymous"));
 
     ResetNetworkState();
 

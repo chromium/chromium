@@ -1074,6 +1074,7 @@ void FillMiscNavigationParams(
 
   navigation_params->origin_agent_cluster = commit_params.origin_agent_cluster;
 
+  navigation_params->anonymous = commit_params.anonymous;
   navigation_params->enabled_client_hints.reserve(
       commit_params.enabled_client_hints.size());
   for (auto enabled_hint : commit_params.enabled_client_hints)

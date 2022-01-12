@@ -315,6 +315,7 @@ struct SameSizeAsDocumentLoader
   std::unique_ptr<CodeCacheHost> code_cache_host;
   HashSet<KURL> early_hints_preloaded_resources;
   absl::optional<Vector<KURL>> ad_auction_components;
+  bool anonymous;
 };
 
 // Asserts size of DocumentLoader, so that whenever a new attribute is added to
@@ -412,7 +413,8 @@ DocumentLoader::DocumentLoader(
       is_cross_site_cross_browsing_context_group_(
           params_->is_cross_site_cross_browsing_context_group),
       app_history_back_entries_(params_->app_history_back_entries),
-      app_history_forward_entries_(params_->app_history_forward_entries) {
+      app_history_forward_entries_(params_->app_history_forward_entries),
+      anonymous_(params_->anonymous) {
   DCHECK(frame_);
 
   // See `archive_` attribute documentation.
@@ -539,6 +541,7 @@ DocumentLoader::CreateWebNavigationParamsToCloneDocument() {
       CopyInitiatorOriginTrials(initiator_origin_trial_features_);
   params->force_enabled_origin_trials =
       CopyForceEnabledOriginTrials(force_enabled_origin_trials_);
+  params->anonymous = anonymous_;
   for (const auto& resource : early_hints_preloaded_resources_)
     params->early_hints_preloaded_resources.push_back(resource);
   if (ad_auction_components_) {
@@ -1970,11 +1973,24 @@ scoped_refptr<SecurityOrigin> DocumentLoader::CalculateOrigin(
 }
 
 bool ShouldReuseDOMWindow(LocalDOMWindow* window,
-                          SecurityOrigin* security_origin) {
-  // Secure transitions can only happen when navigating from the initial empty
-  // document.
-  return window && window->document()->IsInitialEmptyDocument() &&
-         window->GetSecurityOrigin()->CanAccess(security_origin);
+                          SecurityOrigin* security_origin,
+                          bool anonymous) {
+  if (!window) {
+    return false;
+  }
+
+  // Anonymous is tracked per-Window, so if it does not match, do not reuse it.
+  if (anonymous != window->anonymous()) {
+    return false;
+  }
+
+  // Only navigations from the initial empty document can reuse the window.
+  if (!window->document()->IsInitialEmptyDocument()) {
+    return false;
+  }
+
+  // The new origin must match the origin of the initial empty document.
+  return window->GetSecurityOrigin()->CanAccess(security_origin);
 }
 
 namespace {
@@ -2084,10 +2100,12 @@ void DocumentLoader::InitializeWindow(Document* owner_document) {
   // commits. To make that happen, we "securely transition" the existing
   // LocalDOMWindow to the Document that results from the network load. See also
   // Document::IsSecureTransitionTo.
-  if (!ShouldReuseDOMWindow(frame_->DomWindow(), security_origin.get())) {
+  if (!ShouldReuseDOMWindow(frame_->DomWindow(), security_origin.get(),
+                            anonymous_)) {
     auto* agent = GetWindowAgentForOrigin(frame_.Get(), security_origin.get(),
                                           origin_agent_cluster);
-    frame_->SetDOMWindow(MakeGarbageCollected<LocalDOMWindow>(*frame_, agent));
+    frame_->SetDOMWindow(
+        MakeGarbageCollected<LocalDOMWindow>(*frame_, agent, anonymous_));
 
     if (origin_policy_.has_value()) {
       // Convert from WebVector<WebString> to WTF::Vector<WTF::String>

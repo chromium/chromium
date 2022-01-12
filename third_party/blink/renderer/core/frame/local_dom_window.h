@@ -118,7 +118,7 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   static LocalDOMWindow* From(const ScriptState*);
 
-  LocalDOMWindow(LocalFrame&, WindowAgent*);
+  LocalDOMWindow(LocalFrame&, WindowAgent*, bool anonymous);
   ~LocalDOMWindow() override;
 
   // Returns the token identifying the frame that this ExecutionContext was
@@ -460,6 +460,9 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
   // destroyed in this ExecutionContext.
   void RemoveDedicatedWorker(DedicatedWorker* dedicated_worker);
 
+  // Whether the window is anonymous or not.
+  bool anonymous() const { return anonymous_; }
+
  protected:
   // EventTarget overrides.
   void AddedEventListener(const AtomicString& event_type,
@@ -584,6 +587,10 @@ class CORE_EXPORT LocalDOMWindow final : public DOMWindow,
 
   // The set of DedicatedWorkers that are created in this ExecutionContext.
   HeapHashSet<Member<DedicatedWorker>> dedicated_workers_;
+
+  // Anonymous Iframe:
+  // https://github.com/camillelamy/explainers/blob/main/anonymous_iframes.md
+  const bool anonymous_;
 };
 
 template <>

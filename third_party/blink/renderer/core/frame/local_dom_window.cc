@@ -201,7 +201,9 @@ class LocalDOMWindow::NetworkStateObserver final
       online_observer_handle_;
 };
 
-LocalDOMWindow::LocalDOMWindow(LocalFrame& frame, WindowAgent* agent)
+LocalDOMWindow::LocalDOMWindow(LocalFrame& frame,
+                               WindowAgent* agent,
+                               bool anonymous)
     : DOMWindow(frame),
       ExecutionContext(V8PerIsolateData::MainThreadIsolate(), agent),
       script_controller_(MakeGarbageCollected<ScriptController>(
@@ -219,8 +221,8 @@ LocalDOMWindow::LocalDOMWindow(LocalFrame& frame, WindowAgent* agent)
           MakeGarbageCollected<
               HeapHashMap<int, Member<ContentSecurityPolicy>>>()),
       token_(frame.GetLocalFrameToken()),
-      network_state_observer_(
-          MakeGarbageCollected<NetworkStateObserver>(this)) {}
+      network_state_observer_(MakeGarbageCollected<NetworkStateObserver>(this)),
+      anonymous_(anonymous) {}
 
 void LocalDOMWindow::BindContentSecurityPolicy() {
   DCHECK(!GetContentSecurityPolicy()->IsBound());

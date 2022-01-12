@@ -7790,6 +7790,7 @@ void RenderFrameHostImpl::CommitNavigation(
   DCHECK(navigation_request);
   DCHECK_EQ(this, navigation_request->GetRenderFrameHost());
 
+  commit_params->anonymous = navigation_request->anonymous();
   bool is_same_document =
       NavigationTypeUtils::IsSameDocument(common_params->navigation_type);
   bool is_mhtml_subframe = navigation_request->IsForMhtmlSubframe();
