@@ -926,6 +926,7 @@ NSMutableDictionary* CreateExperimentalTestingPolicies() {
         base::SysUTF8ToNSString(policy::key::kNewTabPageLocation);
     [testing_policies
         addEntriesFromDictionary:@{ntp_location_key : ntp_location}];
+    [allowed_experimental_policies addObject:ntp_location_key];
   }
 
   // If any experimental policy was allowed, set the EnableExperimentalPolicies

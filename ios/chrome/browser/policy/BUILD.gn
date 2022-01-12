@@ -22,6 +22,8 @@ source_set("policy") {
     "configuration_policy_handler_list_factory.mm",
     "device_management_service_configuration_ios.h",
     "device_management_service_configuration_ios.mm",
+    "new_tab_page_location_policy_handler.cc",
+    "new_tab_page_location_policy_handler.h",
     "policy_conversions_client_ios.h",
     "policy_conversions_client_ios.mm",
     "policy_watcher_browser_agent.h",
@@ -77,6 +79,7 @@ source_set("policy") {
     "//ios/chrome/common",
     "//ios/public/provider/chrome/browser/signin",
     "//services/network/public/cpp",
+    "//url",
   ]
 
   public_deps = [
@@ -168,6 +171,7 @@ source_set("unit_tests") {
     "browser_dm_token_storage_ios_unittest.mm",
     "browser_signin_policy_handler_unittest.mm",
     "client_data_delegate_ios_unittest.cc",
+    "new_tab_page_location_policy_handler_unittest.cc",
     "policy_unittest.mm",
     "policy_watcher_browser_agent_unittest.mm",
     "reporting/browser_report_generator_ios_unittest.mm",
