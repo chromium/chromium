@@ -45,6 +45,26 @@
     },
     {
       "name": "Scroll corner of LayoutNGTextControlMultiLine TEXTAREA id='editor'",
+      "position": [247, 29],
+      "bounds": [22, 22],
+      "contentsOpaque": true,
+      "invalidations": [
+        [0, 0, 22, 22]
+      ],
+      "transform": 1
+    },
+    {
+      "name": "Caret",
+      "position": [723, 5],
+      "bounds": [1, 22],
+      "contentsOpaque": true,
+      "invalidations": [
+        [0, 0, 1, 22]
+      ],
+      "transform": 2
+    },
+    {
+      "name": "LayoutNGTextControlMultiLine TEXTAREA id='editor'",
       "position": [-3, -3],
       "bounds": [277, 59],
       "contentsOpaqueForText": true,
