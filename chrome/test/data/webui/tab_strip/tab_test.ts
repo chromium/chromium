@@ -264,6 +264,14 @@ suite('Tab', function() {
     assertEquals(tabId, tab.id);
   });
 
+  test('ClickingElementClearsTouchPressedState', async () => {
+    const touchPressedAttrib = 'touch_pressed_';
+    tabElement.setTouchPressed(true);
+    assertTrue(tabElement.hasAttribute(touchPressedAttrib));
+    queryTab().click();
+    assertFalse(tabElement.hasAttribute(touchPressedAttrib));
+  });
+
   test('sets the title', () => {
     assertEquals(
         tab.title,

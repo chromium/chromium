@@ -204,6 +204,7 @@ export class TabElement extends CustomElement {
     this.onTabActivating_(tabId);
     this.tabsApi_.activateTab(tabId);
 
+    this.setTouchPressed(false);
     this.tabsApi_.closeContainer();
   }
 
