@@ -50,7 +50,7 @@ void AppendPrintersAndRunCallbackIfDone(base::ListValue* printers_out,
     const base::Value& printer = printers.GetList()[i];
     EXPECT_TRUE(printer.is_dict())
         << "Found invalid printer value at index " << i << ": " << printers;
-    printers_out->Append(printer.CreateDeepCopy());
+    printers_out->Append(printer.Clone());
   }
   if (done && !callback.is_null())
     std::move(callback).Run();
