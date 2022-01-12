@@ -4,12 +4,15 @@
 
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 
+#include "base/json/values_util.h"
 #include "base/time/time.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "net/cookies/site_for_cookies.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -136,6 +139,84 @@ bool PrivacySandboxSettings::ShouldSendConversionReport(
              reporting_origin.GetURL(), impression_origin, cookie_settings) &&
          IsPrivacySandboxAllowedForContext(reporting_origin.GetURL(),
                                            conversion_origin, cookie_settings);
+}
+
+void PrivacySandboxSettings::SetFledgeJoiningAllowed(
+    const std::string& top_frame_etld_plus1,
+    bool allowed) {
+  DictionaryPrefUpdate scoped_pref_update(
+      pref_service_, prefs::kPrivacySandboxFledgeJoinBlocked);
+  auto* pref_data = scoped_pref_update.Get();
+  DCHECK(pref_data);
+  DCHECK(pref_data->is_dict());
+
+  // Ensure that the provided etld_plus1 actually is an etld+1.
+  auto effective_top_frame_etld_plus1 =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          top_frame_etld_plus1,
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  DCHECK(effective_top_frame_etld_plus1 == top_frame_etld_plus1);
+
+  // Ignore attempts to configure an empty etld+1.
+  if (effective_top_frame_etld_plus1.length() == 0) {
+    NOTREACHED() << "Cannot control FLEDGE joining for empty eTLD+1";
+    return;
+  }
+
+  if (allowed) {
+    // Existence of the key implies blocking, so simply removing the key is
+    // sufficient. If the key wasn't already present, the following is a no-op.
+    pref_data->RemoveKey(effective_top_frame_etld_plus1);
+  } else {
+    // Overriding the creation date for keys which already exist is acceptable.
+    // Time range based deletions are typically started from the current time,
+    // and so this will be more aggressively removed. This decreases the chance
+    // a potentially sensitive website remains in preferences.
+    pref_data->SetKey(effective_top_frame_etld_plus1,
+                      base::TimeToValue(base::Time::Now()));
+  }
+}
+
+void PrivacySandboxSettings::ClearFledgeJoiningAllowedSettings(
+    base::Time start_time,
+    base::Time end_time) {
+  DictionaryPrefUpdate scoped_pref_update(
+      pref_service_, prefs::kPrivacySandboxFledgeJoinBlocked);
+  auto* pref_data = scoped_pref_update.Get();
+  DCHECK(pref_data);
+  DCHECK(pref_data->is_dict());
+
+  // Shortcut for maximum time range deletion
+  if (start_time == base::Time() && end_time == base::Time::Max()) {
+    pref_data->DictClear();
+    return;
+  }
+
+  std::vector<std::string> keys_to_remove;
+  for (auto entry : pref_data->DictItems()) {
+    absl::optional<base::Time> created_time = base::ValueToTime(entry.second);
+    if (created_time.has_value() && start_time <= created_time &&
+        created_time <= end_time) {
+      keys_to_remove.push_back(entry.first);
+    }
+  }
+
+  for (const auto& key : keys_to_remove)
+    pref_data->RemoveKey(key);
+}
+
+bool PrivacySandboxSettings::IsFledgeJoiningAllowed(
+    const url::Origin& top_frame_origin) const {
+  DictionaryPrefUpdate scoped_pref_update(
+      pref_service_, prefs::kPrivacySandboxFledgeJoinBlocked);
+  auto* pref_data = scoped_pref_update.Get();
+  DCHECK(pref_data);
+  DCHECK(pref_data->is_dict());
+  auto top_frame_etld_plus1 =
+      net::registry_controlled_domains::GetDomainAndRegistry(
+          top_frame_origin,
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
+  return !pref_data->FindKey(top_frame_etld_plus1);
 }
 
 bool PrivacySandboxSettings::IsFledgeAllowed(

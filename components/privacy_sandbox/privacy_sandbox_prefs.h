@@ -35,6 +35,11 @@ extern const char kPrivacySandboxFlocDataAccessibleSince[];
 // kPrivacySandboxApisEnabled preference be enabled to take effect.
 extern const char kPrivacySandboxFlocEnabled[];
 
+// Dictionary of entries representing top frame origins on which the profile
+// cannot be joined to an interest group. Keys are the blocked origins, and
+// values are the time the setting was applied.
+extern const char kPrivacySandboxFledgeJoinBlocked[];
+
 }  // namespace prefs
 
 namespace privacy_sandbox {

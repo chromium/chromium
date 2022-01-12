@@ -58,6 +58,10 @@ class PrivacySandboxSettingsTest : public testing::Test {
     return privacy_sandbox_settings_.get();
   }
 
+  content::BrowserTaskEnvironment* task_environment() {
+    return &browser_task_environment_;
+  }
+
  private:
   content::BrowserTaskEnvironment browser_task_environment_;
   sync_preferences::TestingPrefServiceSyncable prefs_;
@@ -529,6 +533,94 @@ TEST_F(PrivacySandboxSettingsTest, FlocDataAccessibleSince) {
 
   EXPECT_EQ(base::Time::Now(),
             privacy_sandbox_settings()->FlocDataAccessibleSince());
+}
+
+TEST_F(PrivacySandboxSettingsTest, FledgeJoiningAllowed) {
+  // Whether or not a site can join a user to an interest group is independent
+  // of any other profile state.
+  privacy_sandbox_test_util::SetupTestState(
+      prefs(), host_content_settings_map(),
+      /*privacy_sandbox_enabled=*/false,
+      /*block_third_party_cookies=*/true,
+      /*default_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
+      /*user_cookie_exceptions=*/
+      {{"https://example.com", "*", ContentSetting::CONTENT_SETTING_BLOCK}},
+      /*managed_cookie_setting=*/ContentSetting::CONTENT_SETTING_BLOCK,
+      /*managed_cookie_exceptions=*/
+      {{"https://example.com", "*", ContentSetting::CONTENT_SETTING_BLOCK}});
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://example.com"))));
+
+  // Settings should match at the eTLD + 1 level.
+  privacy_sandbox_settings()->SetFledgeJoiningAllowed("example.com", false);
+
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://subsite.example.com"))));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("http://example.com"))));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://example.com:888"))));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://example.com"))));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://example.com.au"))));
+
+  privacy_sandbox_settings()->SetFledgeJoiningAllowed("example.com", true);
+
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://example.com"))));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://subsite.example.com"))));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("http://example.com"))));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://example.com:888"))));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://example.com"))));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://example.com.au"))));
+}
+
+TEST_F(PrivacySandboxSettingsTest, FledgeJoinSettingTimeRangeDeletion) {
+  // Confirm that time range deletions work appropriately for FLEDGE join
+  // settings.
+  privacy_sandbox_settings()->SetFledgeJoiningAllowed("first.com", false);
+  task_environment()->AdvanceClock(base::Hours(1));
+
+  const base::Time kSecondSettingTime = base::Time::Now();
+  privacy_sandbox_settings()->SetFledgeJoiningAllowed("second.com", false);
+
+  task_environment()->AdvanceClock(base::Hours(1));
+  privacy_sandbox_settings()->SetFledgeJoiningAllowed("third.com", false);
+
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://first.com"))));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://second.com"))));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://third.com"))));
+
+  // Construct a deletion which only targets the second setting.
+  privacy_sandbox_settings()->ClearFledgeJoiningAllowedSettings(
+      kSecondSettingTime - base::Seconds(1),
+      kSecondSettingTime + base::Seconds(1));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://first.com"))));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://second.com"))));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://third.com"))));
+
+  // Perform a maximmal time range deletion, which should remove the two
+  // remaining settings.
+  privacy_sandbox_settings()->ClearFledgeJoiningAllowedSettings(
+      base::Time(), base::Time::Max());
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://first.com"))));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://second.com"))));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsFledgeJoiningAllowed(
+      url::Origin::Create(GURL("https://third.com"))));
 }
 
 class PrivacySandboxSettingsTestCookiesClearOnExitTurnedOff

@@ -25,6 +25,9 @@ const char kPrivacySandboxFlocDataAccessibleSince[] =
 
 extern const char kPrivacySandboxFlocEnabled[] = "privacy_sandbox.floc_enabled";
 
+extern const char kPrivacySandboxFledgeJoinBlocked[] =
+    "privacy_sandbox.fledge_join_blocked";
+
 }  // namespace prefs
 
 namespace privacy_sandbox {
@@ -44,6 +47,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(
       prefs::kPrivacySandboxFlocEnabled, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+  registry->RegisterDictionaryPref(prefs::kPrivacySandboxFledgeJoinBlocked);
 }
 
 }  // namespace privacy_sandbox
