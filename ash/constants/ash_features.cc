@@ -1165,11 +1165,6 @@ const base::Feature kShimlessRMAFlow{"ShimlessRMAFlow",
 const base::Feature kShowBluetoothDebugLogToggle{
     "ShowBluetoothDebugLogToggle", base::FEATURE_ENABLED_BY_DEFAULT};
 
-// Whether to show domain-related questionnaire in feedback report UI
-// (crbug/1241169).
-const base::Feature kShowFeedbackReportQuestionnaire{
-    "FeedbackReportQuestionnaire", base::FEATURE_ENABLED_BY_DEFAULT};
-
 // Shows the Play Store icon in Demo Mode.
 const base::Feature kShowPlayInDemoMode{"ShowPlayInDemoMode",
                                         base::FEATURE_ENABLED_BY_DEFAULT};

@@ -115,9 +115,7 @@ void RequestFeedbackFlow(const GURL& page_url,
   if (IsGoogleInternalAccount(profile)) {
     flow = feedback_private::FeedbackFlow::FEEDBACK_FLOW_GOOGLEINTERNAL;
     include_bluetooth_logs = IsFromUserInteraction(source);
-    show_questionnaire = base::FeatureList::IsEnabled(
-                             ash::features::kShowFeedbackReportQuestionnaire) &&
-                         IsFromUserInteraction(source);
+    show_questionnaire = IsFromUserInteraction(source);
   }
 #endif
 

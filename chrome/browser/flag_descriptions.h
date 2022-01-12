@@ -2903,9 +2903,6 @@ extern const char kChromeOSSharingHubDescription[];
 extern const char kShowBluetoothDebugLogToggleName[];
 extern const char kShowBluetoothDebugLogToggleDescription[];
 
-extern const char kShowFeedbackReportQuestionnaireName[];
-extern const char kShowFeedbackReportQuestionnaireDescription[];
-
 extern const char kBluetoothSessionizedMetricsName[];
 extern const char kBluetoothSessionizedMetricsDescription[];
 

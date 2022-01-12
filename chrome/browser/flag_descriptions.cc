@@ -5053,11 +5053,6 @@ const char kShowBluetoothDebugLogToggleDescription[] =
     "Enables a toggle which can enable debug (i.e., verbose) logs for "
     "Bluetooth";
 
-const char kShowFeedbackReportQuestionnaireName[] =
-    "Show feedback report questionnaire";
-const char kShowFeedbackReportQuestionnaireDescription[] =
-    "Show domain-related questionnaire in feedback report UI";
-
 const char kBluetoothSessionizedMetricsName[] =
     "Enable Bluetooth sessionized metrics";
 const char kBluetoothSessionizedMetricsDescription[] =
