@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#import "ios/chrome/browser/providers/chromium_logo_controller.h"
 #import "ios/public/provider/chrome/browser/discover_feed/discover_feed_provider.h"
 #import "ios/public/provider/chrome/browser/follow/follow_provider.h"
 #include "ios/public/provider/chrome/browser/signin/chrome_identity_service.h"
@@ -21,6 +22,16 @@ ChromiumBrowserProvider::ChromiumBrowserProvider()
       follow_provider_(std::make_unique<FollowProvider>()) {}
 
 ChromiumBrowserProvider::~ChromiumBrowserProvider() {}
+
+UITextField* ChromiumBrowserProvider::CreateStyledTextField() const {
+  return [[UITextField alloc] initWithFrame:CGRectZero];
+}
+
+id<LogoVendor> ChromiumBrowserProvider::CreateLogoVendor(
+    Browser* browser,
+    web::WebState* web_state) const {
+  return [[ChromiumLogoController alloc] init];
+}
 
 UserFeedbackProvider* ChromiumBrowserProvider::GetUserFeedbackProvider() const {
   return user_feedback_provider_.get();
