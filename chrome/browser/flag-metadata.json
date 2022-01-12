@@ -5188,6 +5188,11 @@
     "expiry_milestone" : 100
   },
   {
+    "name": "single-cell-content-suggestions",
+    "owners": [ "thegreenfrog@google.com", "sczs@google.com"],
+    "expiry_milestone": 106
+  },
+  {
     "name": "single-ntp",
     "owners": [ "thegreenfrog@google.com", "sczs@google.com"],
     "expiry_milestone": 106

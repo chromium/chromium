@@ -15,6 +15,10 @@ const base::Feature kDiscoverFeedInNtp{"DiscoverFeedInNtp",
 // Feature disabled by default.
 const base::Feature kSingleNtp{"SingleNTP", base::FEATURE_DISABLED_BY_DEFAULT};
 
+// Feature disabled by default.
+const base::Feature kSingleCellContentSuggestions{
+    "SingleCellContentSuggestions", base::FEATURE_DISABLED_BY_DEFAULT};
+
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
 const char kDiscoverFeedIsNativeUIEnabled[] = "DiscoverFeedIsNativeUIEnabled";
@@ -25,4 +29,8 @@ bool IsDiscoverFeedEnabled() {
 
 bool IsSingleNtpEnabled() {
   return base::FeatureList::IsEnabled(kSingleNtp);
+}
+
+bool IsSingleCellContentSuggestionsEnabled() {
+  return base::FeatureList::IsEnabled(kSingleCellContentSuggestions);
 }

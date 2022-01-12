@@ -423,6 +423,11 @@ extern const char kSharedHighlightingIOSDescription[];
 extern const char kShowAutofillTypePredictionsName[];
 extern const char kShowAutofillTypePredictionsDescription[];
 
+// Title and description for the flag to use one cell for the Content
+// Suggestions
+extern const char kSingleCellContentSuggestionsName[];
+extern const char kSingleCellContentSuggestionsDescription[];
+
 // Title and description for the flag to use one NTP for all tabs in a Browser.
 extern const char kSingleNtpName[];
 extern const char kSingleNtpDescription[];

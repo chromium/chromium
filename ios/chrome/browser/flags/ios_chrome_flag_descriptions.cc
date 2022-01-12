@@ -463,6 +463,11 @@ const char kSharedHighlightingIOSDescription[] =
     "Adds a Link to Text option in the Edit Menu which generates URLs with a "
     "text fragment.";
 
+const char kSingleCellContentSuggestionsName[] =
+    "Use Single Cell for Content Suggestions";
+const char kSingleCellContentSuggestionsDescription[] =
+    "Uses a single cell for all items in the NTP's content suggestions.";
+
 const char kSingleNtpName[] = "Enable Single NTP";
 const char kSingleNtpDescription[] =
     "When enabled, uses one NTP for all tabs in a Browser";
