@@ -734,15 +734,17 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
       if (params->disposition == WindowOpenDisposition::SWITCH_TO_TAB) {
         // Close orphaned NTP (and the like) with no history when the user
         // switches away from them.
-        if (params->source_contents->GetController().CanGoBack() ||
-            (params->source_contents->GetLastCommittedURL().spec() !=
-                 chrome::kChromeUINewTabURL &&
-             params->source_contents->GetLastCommittedURL().spec() !=
-                 url::kAboutBlankURL)) {
-          // Blur location bar before state save in ActivateTabAt() below.
-          params->source_contents->Focus();
-        } else {
-          should_close_this_tab = true;
+        if (params->source_contents) {
+          if (params->source_contents->GetController().CanGoBack() ||
+              (params->source_contents->GetLastCommittedURL().spec() !=
+                   chrome::kChromeUINewTabURL &&
+               params->source_contents->GetLastCommittedURL().spec() !=
+                   url::kAboutBlankURL)) {
+            // Blur location bar before state save in ActivateTabAt() below.
+            params->source_contents->Focus();
+          } else {
+            should_close_this_tab = true;
+          }
         }
       }
       params->browser->tab_strip_model()->ActivateTabAt(singleton_index,
