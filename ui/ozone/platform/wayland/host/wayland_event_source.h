@@ -128,7 +128,7 @@ class WaylandEventSource : public PlatformEventSource,
                     const gfx::Vector2dF& delta,
                     base::TimeTicks timestamp,
                     int device_id,
-                    absl::optional<float> scale) override;
+                    absl::optional<float> scale_delta) override;
 
   // WaylandZwpRelativePointerManager::Delegate:
   void SetRelativePointerMotionEnabled(bool enabled) override;

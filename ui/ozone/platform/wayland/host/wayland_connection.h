@@ -219,6 +219,10 @@ class WaylandConnection {
     return wayland_zwp_pointer_constraints_.get();
   }
 
+  WaylandZwpPointerGestures* wayland_zwp_pointer_gestures() const {
+    return wayland_zwp_pointer_gestures_.get();
+  }
+
   WaylandZwpRelativePointerManager* wayland_zwp_relative_pointer_manager()
       const {
     return wayland_zwp_relative_pointer_manager_.get();

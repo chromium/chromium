@@ -425,11 +425,11 @@ void WaylandEventSource::OnPinchEvent(EventType event_type,
                                       const gfx::Vector2dF& delta,
                                       base::TimeTicks timestamp,
                                       int device_id,
-                                      absl::optional<float> scale) {
+                                      absl::optional<float> scale_delta) {
   GestureEventDetails details(event_type);
   details.set_device_type(GestureDeviceType::DEVICE_TOUCHPAD);
-  if (scale)
-    details.set_scale(*scale);
+  if (scale_delta)
+    details.set_scale(*scale_delta);
 
   auto location = pointer_location_ + delta;
   GestureEvent event(location.x(), location.y(), 0 /* flags */, timestamp,

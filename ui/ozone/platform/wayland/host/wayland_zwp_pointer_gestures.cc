@@ -87,13 +87,15 @@ void WaylandZwpPointerGestures::OnPinchBegin(
     uint32_t time,
     struct wl_surface* surface,
     uint32_t fingers) {
-  auto* thiz = static_cast<WaylandZwpPointerGestures*>(data);
+  auto* self = static_cast<WaylandZwpPointerGestures*>(data);
 
   base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
 
-  thiz->delegate_->OnPinchEvent(ET_GESTURE_PINCH_BEGIN,
+  self->current_scale_ = 1;
+
+  self->delegate_->OnPinchEvent(ET_GESTURE_PINCH_BEGIN,
                                 gfx::Vector2dF() /*delta*/, timestamp,
-                                thiz->obj_.id());
+                                self->obj_.id());
 }
 
 // static
@@ -105,14 +107,23 @@ void WaylandZwpPointerGestures::OnPinchUpdate(
     wl_fixed_t dy,
     wl_fixed_t scale,
     wl_fixed_t rotation) {
-  auto* thiz = static_cast<WaylandZwpPointerGestures*>(data);
+  auto* self = static_cast<WaylandZwpPointerGestures*>(data);
+
+  // During the pinch zoom session, libinput sends the current scale relative to
+  // the start of the session.  On the other hand, the compositor expects the
+  // change of the scale relative to the previous update in form of a multiplier
+  // applied to the current value.
+  // See https://crbug.com/1283652
+  const auto new_scale = wl_fixed_to_double(scale);
+  const auto scale_delta = new_scale / self->current_scale_;
+  self->current_scale_ = new_scale;
 
   base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
 
   gfx::Vector2dF delta = {static_cast<float>(wl_fixed_to_double(dx)),
                           static_cast<float>(wl_fixed_to_double(dy))};
-  thiz->delegate_->OnPinchEvent(ET_GESTURE_PINCH_UPDATE, delta, timestamp,
-                                thiz->obj_.id(), wl_fixed_to_double(scale));
+  self->delegate_->OnPinchEvent(ET_GESTURE_PINCH_UPDATE, delta, timestamp,
+                                self->obj_.id(), scale_delta);
 }
 
 void WaylandZwpPointerGestures::OnPinchEnd(
@@ -121,13 +132,13 @@ void WaylandZwpPointerGestures::OnPinchEnd(
     uint32_t serial,
     uint32_t time,
     int32_t cancelled) {
-  auto* thiz = static_cast<WaylandZwpPointerGestures*>(data);
+  auto* self = static_cast<WaylandZwpPointerGestures*>(data);
 
   base::TimeTicks timestamp = base::TimeTicks() + base::Milliseconds(time);
 
-  thiz->delegate_->OnPinchEvent(ET_GESTURE_PINCH_END,
+  self->delegate_->OnPinchEvent(ET_GESTURE_PINCH_END,
                                 gfx::Vector2dF() /*delta*/, timestamp,
-                                thiz->obj_.id());
+                                self->obj_.id());
 }
 
 }  // namespace ui
