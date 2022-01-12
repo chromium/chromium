@@ -20,6 +20,7 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
+import org.chromium.chrome.browser.contextualsearch.ContextualSearchManagerSupplier;
 import org.chromium.chrome.browser.firstrun.DisableFirstRun;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
@@ -158,14 +159,15 @@ public class PreviewTabTest {
     @Feature({"PreviewTab"})
     public void testSuppressContextualSearch() throws Throwable {
         ChromeActivity activity = mActivityTestRule.getActivity();
-        ContextualSearchManager csManager = activity.getContextualSearchManager();
+        ContextualSearchManager csManager = TestThreadUtils.runOnUiThreadBlocking(() -> {
+            return ContextualSearchManagerSupplier.getValueOrNullFrom(activity.getWindowAndroid());
+        });
         Assert.assertFalse("Contextual Search should be active", csManager.isSuppressed());
 
-        TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> mEphemeralTabCoordinator.requestOpenSheet(
-                                new GURL(mTestServer.getServer().getURL(PREVIEW_TAB)), "PreviewTab",
-                                false));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            mEphemeralTabCoordinator.requestOpenSheet(
+                    new GURL(mTestServer.getServer().getURL(PREVIEW_TAB)), "PreviewTab", false);
+        });
         endAnimations();
         Assert.assertTrue("The Preview Tab did not open", mEphemeralTabCoordinator.isOpened());
         Assert.assertTrue("Contextual Search should be suppressed", csManager.isSuppressed());

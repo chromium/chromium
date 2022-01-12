@@ -4,15 +4,14 @@
 
 package org.chromium.chrome.browser.contextualsearch;
 
-import android.app.Activity;
 import android.content.Context;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchFieldTrial.ContextualSearchSwitch;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
@@ -48,12 +47,6 @@ public class ContextualSearchTabHelper
      * The WebContents associated with the Tab which this helper is monitoring, unless detached.
      */
     private WebContents mWebContents;
-
-    /**
-     * The {@link ContextualSearchManager} that's managing this tab. This may point to
-     * the manager from another activity during reparenting, or be {@code null} during startup.
-     */
-    private ContextualSearchManager mContextualSearchManager;
 
     /** The GestureListener used for handling events from the current WebContents. */
     private GestureStateListener mGestureStateListener;
@@ -102,7 +95,9 @@ public class ContextualSearchTabHelper
     public void onPageLoadStarted(Tab tab, GURL url) {
         updateHooksForTab(tab);
         ContextualSearchManager manager = getContextualSearchManager(tab);
-        if (manager != null) manager.onBasePageLoadStarted();
+        if (manager != null) {
+            manager.onBasePageLoadStarted();
+        }
     }
 
     @Override
@@ -151,7 +146,6 @@ public class ContextualSearchTabHelper
         }
         removeContextualSearchHooks(mWebContents);
         mWebContents = null;
-        mContextualSearchManager = null;
         mSelectionClientManager = null;
         mGestureStateListener = null;
     }
@@ -162,7 +156,6 @@ public class ContextualSearchTabHelper
             updateHooksForTab(tab);
         } else {
             removeContextualSearchHooks(mWebContents);
-            mContextualSearchManager = null;
         }
     }
 
@@ -195,8 +188,7 @@ public class ContextualSearchTabHelper
     private void updateHooksForTab(Tab tab) {
         WebContents currentWebContents = tab.getWebContents();
         boolean webContentsChanged = currentWebContents != mWebContents;
-        if (webContentsChanged || mContextualSearchManager != getContextualSearchManager(tab)) {
-            mContextualSearchManager = getContextualSearchManager(tab);
+        if (webContentsChanged) {
             if (webContentsChanged && currentWebContents != null) {
                 // Ensure the hooks are cleared on the old web contents before proceeding. All of
                 // the objects associated with the web content need to be recreated in order for
@@ -265,9 +257,9 @@ public class ContextualSearchTabHelper
                         mSelectionClientManager.removeContextualSearchSelectionClient());
             }
             // Also make sure the UI is hidden if the device is offline.
-            ContextualSearchManager contextualSearchManager = getContextualSearchManager(mTab);
-            if (contextualSearchManager != null && !isDeviceOnline(contextualSearchManager)) {
-                contextualSearchManager.hideContextualSearch(StateChangeReason.UNKNOWN);
+            ContextualSearchManager manager = getContextualSearchManager(mTab);
+            if (manager != null && !isDeviceOnline(manager)) {
+                manager.hideContextualSearch(StateChangeReason.UNKNOWN);
             }
         }
     }
@@ -320,16 +312,12 @@ public class ContextualSearchTabHelper
     }
 
     /**
-     * Gets the {@link ContextualSearchManager} associated with the given tab's activity.
+     * Gets the {@link ContextualSearchManager} associated with the given tab.
      * @param tab The {@link Tab} that we're getting the manager for.
      * @return The Contextual Search manager controlling that Tab.
      */
-    private ContextualSearchManager getContextualSearchManager(Tab tab) {
-        Activity activity = tab.getWindowAndroid().getActivity().get();
-        if (activity instanceof ChromeActivity) {
-            return ((ChromeActivity) activity).getContextualSearchManager();
-        }
-        return null;
+    private ContextualSearchManager getContextualSearchManager(@NonNull Tab tab) {
+        return ContextualSearchManagerSupplier.getValueOrNullFrom(tab.getWindowAndroid());
     }
 
     // ============================================================================================
@@ -353,9 +341,9 @@ public class ContextualSearchTabHelper
     @CalledByNative
     void onShowUnhandledTapUIIfNeeded(int x, int y, int fontSizeDips, int textRunLength) {
         // Only notify the manager if we currently have a valid listener.
-        if (mGestureStateListener != null && getContextualSearchManager(mTab) != null) {
-            getContextualSearchManager(mTab).onShowUnhandledTapUIIfNeeded(
-                    x, y, fontSizeDips, textRunLength);
+        ContextualSearchManager manager = getContextualSearchManager(mTab);
+        if (mGestureStateListener != null && manager != null) {
+            manager.onShowUnhandledTapUIIfNeeded(x, y, fontSizeDips, textRunLength);
         }
     }
 
