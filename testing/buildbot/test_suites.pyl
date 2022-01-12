@@ -4332,7 +4332,7 @@
     # lacros_skylab_poc
     'lacros_skylab_arm_tests': {
       'lacros_all_tast_tests': {
-        'tast_expr': '("group:mainline" && "dep:lacros" && "dep:lacros_unstable")',
+        'tast_expr': '("group:mainline" && "dep:lacros" && !informational)',
         'timeout_sec': 10800,
       },
       'ozone_unittests': {
