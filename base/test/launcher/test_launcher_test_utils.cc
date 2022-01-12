@@ -135,7 +135,8 @@ bool ValidateTestLocation(const Value* test_locations,
                           const std::string& test_name,
                           const std::string& file,
                           int line) {
-  const Value* val = test_locations->FindDictKey(test_name);
+  const Value* val =
+      test_locations->FindDictKey(TestNameWithoutDisabledPrefix(test_name));
   if (!val) {
     ADD_FAILURE() << "|test_locations| missing location for " << test_name;
     return false;

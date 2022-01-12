@@ -79,4 +79,26 @@ TEST(TestResultsTrackerTest, SaveSummaryAsJSONWithTimestampInResult) {
   EXPECT_THAT(content, HasSubstr(R"raw("timestamp":)raw"));
 }
 
+TEST(TestResultsTrackerTest, RepeatDisabledTests) {
+  constexpr char TEST_NAME[] = "DISABLED_Test1";
+  constexpr char TEST_NAME_WITHOUT_PREFIX[] = "Test1";
+  TestResultsTracker tracker;
+  tracker.AddTestPlaceholder(TEST_NAME);
+  tracker.OnTestIterationStarting();
+  tracker.GeneratePlaceholderIteration();
+  TestResult result;
+  result.full_name = TEST_NAME;
+  result.status = TestResult::TEST_SUCCESS;
+  for (int i = 0; i < 10; i++) {
+    tracker.AddTestResult(result);
+  }
+  TestResultsTracker::TestStatusMap results =
+      tracker.GetTestStatusMapForAllIterations();
+  ASSERT_TRUE(results[TestResult::TEST_SUCCESS].find(TEST_NAME) ==
+              results[TestResult::TEST_SUCCESS].end());
+  ASSERT_TRUE(
+      results[TestResult::TEST_SUCCESS].find(TEST_NAME_WITHOUT_PREFIX) !=
+      results[TestResult::TEST_SUCCESS].end());
+}
+
 }  // namespace base

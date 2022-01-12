@@ -243,7 +243,8 @@ void TestResultsTracker::AddDisabledTest(const std::string& test_name) {
 void TestResultsTracker::AddTestLocation(const std::string& test_name,
                                          const std::string& file,
                                          int line) {
-  test_locations_.insert(std::make_pair(test_name, CodeLocation(file, line)));
+  test_locations_.insert(std::make_pair(
+      TestNameWithoutDisabledPrefix(test_name), CodeLocation(file, line)));
 }
 
 void TestResultsTracker::AddTestPlaceholder(const std::string& test_name) {
@@ -292,6 +293,7 @@ void TestResultsTracker::AddTestResult(const TestResult& result) {
   }
 
   TestResult result_to_add = result;
+  result_to_add.full_name = test_name_without_disabled_prefix;
   if (!aggregate_test_result.test_results.empty()) {
     TestResult prev_result = aggregate_test_result.test_results.back();
     if (prev_result.full_name != test_name_without_disabled_prefix) {
@@ -327,7 +329,7 @@ void TestResultsTracker::GeneratePlaceholderIteration() {
     std::string test_name = TestNameWithoutDisabledPrefix(full_test_name);
 
     TestResult test_result;
-    test_result.full_name = full_test_name;
+    test_result.full_name = test_name;
     test_result.status = TestResult::TEST_NOT_RUN;
 
     // There shouldn't be any existing results when we generate placeholder
