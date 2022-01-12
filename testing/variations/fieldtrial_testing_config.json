@@ -2183,6 +2183,25 @@
             ]
         }
     ],
+    "ChromeOSRawPSIMetrics": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledGroup10s_20220107",
+                    "params": {
+                        "period": "10"
+                    },
+                    "enable_features": [
+                        "ArcVmMemoryPSIReports",
+                        "MemoryPressureMetricsDetail"
+                    ]
+                }
+            ]
+        }
+    ],
     "ChromeOSReinstallApps": [
         {
             "platforms": [
