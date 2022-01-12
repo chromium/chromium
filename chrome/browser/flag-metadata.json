@@ -620,7 +620,7 @@
   {
     "name": "button-arc-network-diagnostics",
     "owners": [ "arc-core@google.com"],
-    "expiry_milestone": 98
+    "expiry_milestone": 100
   },
   {
     "name": "bypass-app-banner-engagement-checks",
