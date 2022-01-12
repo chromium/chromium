@@ -6929,7 +6929,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"enable-first-party-sets", flag_descriptions::kEnableFirstPartySetsName,
      flag_descriptions::kEnableFirstPartySetsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(net::features::kFirstPartySets)},
+     FEATURE_VALUE_TYPE(features::kFirstPartySets)},
 
 #if defined(OS_ANDROID)
     {"autofill-enable-offers-in-clank-keyboard-accessory",

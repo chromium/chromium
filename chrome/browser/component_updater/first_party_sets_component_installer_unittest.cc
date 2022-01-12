@@ -16,10 +16,11 @@
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/version.h"
+#include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/component_updater/mock_component_updater_service.h"
-#include "net/base/features.h"
+#include "content/public/common/content_features.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -68,7 +69,7 @@ class FirstPartySetsComponentInstallerFeatureEnabledTest
   }
 
   void InitializeFeatureList() override {
-    scoped_feature_list_.InitAndEnableFeature(net::features::kFirstPartySets);
+    scoped_feature_list_.InitAndEnableFeature(features::kFirstPartySets);
   }
 };
 
@@ -80,13 +81,13 @@ class FirstPartySetsComponentInstallerFeatureDisabledTest
   }
 
   void InitializeFeatureList() override {
-    scoped_feature_list_.InitAndDisableFeature(net::features::kFirstPartySets);
+    scoped_feature_list_.InitAndDisableFeature(features::kFirstPartySets);
   }
 };
 
 TEST_F(FirstPartySetsComponentInstallerFeatureEnabledTest, FeatureDisabled) {
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitAndDisableFeature(net::features::kFirstPartySets);
+  scoped_feature_list_.InitAndDisableFeature(features::kFirstPartySets);
   auto service =
       std::make_unique<component_updater::MockComponentUpdateService>();
 
@@ -353,8 +354,8 @@ class FirstPartySetsComponentInstallerNonDogFooderTest
 
   void InitializeFeatureList() override {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        net::features::kFirstPartySets,
-        {{net::features::kFirstPartySetsIsDogfooder.name, "false"}});
+        features::kFirstPartySets,
+        {{features::kFirstPartySetsIsDogfooder.name, "false"}});
   }
 };
 
@@ -378,8 +379,8 @@ class FirstPartySetsComponentInstallerDogFooderTest
 
   void InitializeFeatureList() override {
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        net::features::kFirstPartySets,
-        {{net::features::kFirstPartySetsIsDogfooder.name, "true"}});
+        features::kFirstPartySets,
+        {{features::kFirstPartySetsIsDogfooder.name, "true"}});
   }
 };
 
@@ -403,8 +404,8 @@ class FirstPartySetsComponentInstallerV2FormatTest
 
   void InitializeFeatureList() override {
     scoped_feature_list_.InitWithFeatures(
-        {}, {net::features::kFirstPartySets,
-             net::features::kFirstPartySetsV2ComponentFormat});
+        {}, {features::kFirstPartySets,
+             features::kFirstPartySetsV2ComponentFormat});
   }
 };
 

@@ -84,14 +84,17 @@ CONTENT_EXPORT extern const base::Feature
     kExperimentalContentSecurityPolicyFeatures;
 CONTENT_EXPORT extern const base::Feature
     kExtraSafelistedRequestHeadersForOutOfBlinkCors;
+CONTENT_EXPORT extern const base::Feature kFedCm;
+CONTENT_EXPORT extern const char kFedCmInterceptionFieldTrialParamName[];
+CONTENT_EXPORT extern const base::Feature kFirstPartySets;
+CONTENT_EXPORT extern const base::FeatureParam<bool> kFirstPartySetsIsDogfooder;
+CONTENT_EXPORT extern const base::Feature kFirstPartySetsV2ComponentFormat;
 CONTENT_EXPORT extern const base::Feature kFontManagerEarlyInit;
 CONTENT_EXPORT extern const base::Feature kFontSrcLocalMatching;
 #if !defined(OS_ANDROID)
 CONTENT_EXPORT extern const base::Feature
     kForwardMemoryPressureEventsToGpuProcess;
 #endif
-CONTENT_EXPORT extern const base::Feature kFedCm;
-CONTENT_EXPORT extern const char kFedCmInterceptionFieldTrialParamName[];
 CONTENT_EXPORT extern const base::Feature kFractionalScrollOffsets;
 CONTENT_EXPORT extern const base::Feature kGreaseUACH;
 CONTENT_EXPORT extern const base::Feature kHistoryPreventSandboxedNavigation;

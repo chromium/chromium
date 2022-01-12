@@ -69,8 +69,9 @@ DelayedCookieMonsterChangeDispatcher::AddCallbackForAllChanges(
 }
 
 DelayedCookieMonster::DelayedCookieMonster()
-    : cookie_monster_(
-          new CookieMonster(nullptr /* store */, nullptr /* netlog */)),
+    : cookie_monster_(new CookieMonster(nullptr /* store */,
+                                        nullptr /* netlog */,
+                                        false /* first_party_sets_enabled */)),
       did_run_(false),
       result_(CookieAccessResult(CookieInclusionStatus(
           CookieInclusionStatus::EXCLUDE_FAILURE_TO_STORE))) {}

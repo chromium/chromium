@@ -121,8 +121,7 @@ GetSwitchDependentFeatureOverrides(const base::CommandLine& command_line) {
      std::cref(network::features::kCrossOriginOpenerPolicyByDefault),
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
 
-    {network::switches::kUseFirstPartySet,
-     std::cref(net::features::kFirstPartySets),
+    {network::switches::kUseFirstPartySet, std::cref(features::kFirstPartySets),
      base::FeatureList::OVERRIDE_ENABLE_FEATURE},
 
     // Overrides for headless

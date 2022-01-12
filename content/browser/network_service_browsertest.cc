@@ -554,7 +554,7 @@ class NetworkServiceWithoutFirstPartySetBrowserTest
     : public NetworkServiceBrowserTest {
  public:
   NetworkServiceWithoutFirstPartySetBrowserTest() {
-    scoped_feature_list_.InitAndDisableFeature(net::features::kFirstPartySets);
+    scoped_feature_list_.InitAndDisableFeature(features::kFirstPartySets);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

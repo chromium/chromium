@@ -10,6 +10,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -41,7 +42,7 @@ class CookieStoreSamePartyTest : public InProcessBrowserTest {
       : https_server_(net::EmbeddedTestServer::TYPE_HTTPS),
         enable_fps_(enable_fps) {
     if (!enable_fps) {
-      feature_list_.InitAndDisableFeature(net::features::kFirstPartySets);
+      feature_list_.InitAndDisableFeature(features::kFirstPartySets);
     }
     // If FPS is to be enabled, that happens in `SetUpCommandLine` when the
     // `kUseFirstPartySet` switch is provided.

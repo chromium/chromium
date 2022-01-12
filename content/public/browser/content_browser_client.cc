@@ -46,7 +46,6 @@
 #include "content/public/common/url_utils.h"
 #include "media/audio/audio_manager.h"
 #include "media/mojo/mojom/media_service.mojom.h"
-#include "net/base/features.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/ssl/client_cert_identity.h"
 #include "net/ssl/client_cert_store.h"
@@ -1306,7 +1305,7 @@ bool ContentBrowserClient::ShouldPreconnectNavigation(
 }
 
 bool ContentBrowserClient::IsFirstPartySetsEnabled() {
-  return base::FeatureList::IsEnabled(net::features::kFirstPartySets);
+  return base::FeatureList::IsEnabled(features::kFirstPartySets);
 }
 
 }  // namespace content

@@ -26,6 +26,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/storage_partition.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
@@ -36,7 +37,6 @@
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/test_extension_dir.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "net/base/features.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_request_headers.h"
 #include "net/test/embedded_test_server/controllable_http_response.h"
@@ -976,7 +976,7 @@ class ExtensionSamePartyCookiesTest : public ExtensionCookiesTest {
                             std::end(kSamePartyCookies)),
         no_same_party_cookies_(std::begin(kNoSamePartyCookies),
                                std::end(kNoSamePartyCookies)) {
-    feature_list_.InitAndEnableFeature(net::features::kFirstPartySets);
+    feature_list_.InitAndEnableFeature(features::kFirstPartySets);
   }
   ~ExtensionSamePartyCookiesTest() override = default;
   ExtensionSamePartyCookiesTest(const ExtensionSamePartyCookiesTest&) = delete;

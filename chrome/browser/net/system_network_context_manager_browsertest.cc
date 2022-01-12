@@ -23,6 +23,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/network_service_instance.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/network_service_util.h"
 #include "content/public/common/user_agent.h"
 #include "content/public/test/browser_test.h"
@@ -204,7 +205,7 @@ class SystemNetworkContextManagerWithFirstPartySetComponentBrowserTest
 
   void SetUpInProcessBrowserTestFixture() override {
     SystemNetworkContextManagerBrowsertest::SetUpInProcessBrowserTestFixture();
-    feature_list_.InitAndEnableFeature(net::features::kFirstPartySets);
+    feature_list_.InitAndEnableFeature(features::kFirstPartySets);
     CHECK(component_dir_.CreateUniqueTempDir());
     base::ScopedAllowBlockingForTesting allow_blocking;
 

@@ -1643,7 +1643,7 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
 
     // Only read and update the persisted sets when First-Party Sets component
     // will be installed.
-    if (base::FeatureList::IsEnabled(net::features::kFirstPartySets)) {
+    if (base::FeatureList::IsEnabled(features::kFirstPartySets)) {
       FirstPartySetsUtil::GetInstance()->SendAndUpdatePersistedSets(
           user_data_dir_,
           /*send_sets=*/

@@ -335,13 +335,6 @@ NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
 NET_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kTimeoutTcpConnectAttemptMax;
 
-// Enables usage of First Party Sets to determine cookie availability.
-NET_EXPORT extern const base::Feature kFirstPartySets;
-
-// Controls whether the client is considered a dogfooder for the FirstPartySets
-// feature.
-NET_EXPORT extern const base::FeatureParam<bool> kFirstPartySetsIsDogfooder;
-
 #if BUILDFLAG(ENABLE_REPORTING)
 // When enabled this feature will allow a new Reporting-Endpoints header to
 // configure reporting endpoints for report delivery. This is used to support
@@ -384,10 +377,6 @@ NET_EXPORT extern const base::Feature kPartitionedCookies;
 // TODO(crbug.com/1243852) Eventually enable this permanently and remove the
 // feature flag, assuming no breakage occurs with it enabled.
 NET_EXPORT extern const base::Feature kExtraCookieValidityChecks;
-
-// When enabled, the client will opt in to the V2 component format for the
-// First-Party Sets component.
-NET_EXPORT extern const base::Feature kFirstPartySetsV2ComponentFormat;
 
 // Enable recording UMAs for network activities which can wake-up radio on
 // Android.

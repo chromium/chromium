@@ -33,7 +33,8 @@ class CookieMonsterChangeDispatcher : public CookieChangeDispatcher {
       base::RepeatingCallbackList<void(const CookieChangeInfo&)>;
 
   // Expects |cookie_monster| to outlive this.
-  explicit CookieMonsterChangeDispatcher(const CookieMonster* cookie_monster);
+  CookieMonsterChangeDispatcher(const CookieMonster* cookie_monster,
+                                bool first_party_sets_enabled);
 
   CookieMonsterChangeDispatcher(const CookieMonsterChangeDispatcher&) = delete;
   CookieMonsterChangeDispatcher& operator=(
@@ -78,6 +79,7 @@ class CookieMonsterChangeDispatcher : public CookieChangeDispatcher {
                  std::string name_key,
                  GURL url,
                  absl::optional<CookiePartitionKey> cookie_partition_key,
+                 const bool first_party_sets_enabled,
                  net::CookieChangeCallback callback);
 
     Subscription(const Subscription&) = delete;
@@ -106,6 +108,7 @@ class CookieMonsterChangeDispatcher : public CookieChangeDispatcher {
     // nullopt means all Partitioned cookies will be ignored.
     const absl::optional<CookiePartitionKey> cookie_partition_key_;
     const net::CookieChangeCallback callback_;
+    const bool first_party_sets_enabled_;
 
     void DoDispatchChange(const CookieChangeInfo& change) const;
 
@@ -154,6 +157,8 @@ class CookieMonsterChangeDispatcher : public CookieChangeDispatcher {
   raw_ptr<const CookieMonster> cookie_monster_;
 
   CookieDomainMap cookie_domain_map_;
+
+  const bool first_party_sets_enabled_;
 
   THREAD_CHECKER(thread_checker_);
 

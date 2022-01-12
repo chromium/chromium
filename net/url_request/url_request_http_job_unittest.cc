@@ -1568,7 +1568,8 @@ TEST_F(URLRequestHttpJobTest, CookieSchemeRequestSchemeHistogram) {
   base::HistogramTester histograms;
   const std::string test_histogram = "Cookie.CookieSchemeRequestScheme";
 
-  CookieMonster cm(nullptr, nullptr);
+  CookieMonster cm(/*store=*/nullptr, /*net_log=*/nullptr,
+                   /*first_party_sets_enabled=*/false);
   TestURLRequestContext context(true);
   context.set_cookie_store(&cm);
   context.Init();
@@ -1661,7 +1662,8 @@ TEST_F(URLRequestHttpJobTest, PrivacyMode_ExclusionReason) {
   ASSERT_TRUE(test_server.Start());
 
   FilteringTestNetworkDelegate network_delegate;
-  CookieMonster cm(nullptr, nullptr);
+  CookieMonster cm(/*store=*/nullptr, /*net_log=*/nullptr,
+                   /*first_party_sets_enabled=*/false);
   TestURLRequestContext context(true);
   context.set_cookie_store(&cm);
   context.set_network_delegate(&network_delegate);
@@ -1732,7 +1734,8 @@ TEST_F(URLRequestHttpJobTest, IndividuallyBlockedCookies) {
   FilteringTestNetworkDelegate network_delegate;
   network_delegate.set_block_get_cookies_by_name(true);
   network_delegate.SetCookieFilter("blocked_");
-  CookieMonster cm(nullptr, nullptr);
+  CookieMonster cm(/*store=*/nullptr, /*net_log=*/nullptr,
+                   /*first_party_sets_enabled=*/false);
   TestURLRequestContext context(true);
   context.set_cookie_store(&cm);
   context.set_network_delegate(&network_delegate);
@@ -1809,7 +1812,8 @@ TEST_P(PartitionedCookiesURLRequestHttpJobTest, SetPartitionedCookie) {
   ASSERT_TRUE(https_test.Start());
 
   TestURLRequestContext context;
-  CookieMonster cookie_monster(nullptr, nullptr);
+  CookieMonster cookie_monster(nullptr, nullptr,
+                               false /* first_party_sets_enabled */);
   context.set_cookie_store(&cookie_monster);
 
   TestDelegate delegate;
@@ -1891,7 +1895,8 @@ TEST_P(PartitionedCookiesURLRequestHttpJobTest,
       kOwnerSite, std::set<SchemefulSite>({kOwnerSite, kMemberSite})));
 
   TestURLRequestContext context;
-  CookieMonster cookie_monster(nullptr, nullptr);
+  CookieMonster cookie_monster(nullptr, nullptr,
+                               false /* first_party_sets_enabled */);
   auto cookie_access_delegate = std::make_unique<TestCookieAccessDelegate>();
   cookie_access_delegate->SetFirstPartySets(first_party_sets);
   cookie_monster.SetCookieAccessDelegate(std::move(cookie_access_delegate));

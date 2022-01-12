@@ -382,7 +382,7 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
           {"PartitionedCookies", net::features::kPartitionedCookies},
           {"PrefersColorSchemeClientHintHeader",
            blink::features::kPrefersColorSchemeClientHintHeader},
-          {"FirstPartySets", net::features::kFirstPartySets},
+          {"FirstPartySets", features::kFirstPartySets},
           {"SanitizerAPI", blink::features::kSanitizerAPI},
           {"StorageAccessAPI", blink::features::kStorageAccessAPI},
           {"TargetBlankImpliesNoOpener",

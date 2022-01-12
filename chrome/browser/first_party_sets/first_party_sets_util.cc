@@ -10,6 +10,12 @@
 #include "base/logging.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
+#include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_thread.h"
+#include "content/public/common/content_features.h"
+#include "net/base/features.h"
 
 namespace {
 
@@ -43,6 +49,23 @@ void MaybeWriteSetsToDisk(const base::FilePath& path, const std::string& sets) {
   }
 }
 
+bool IsFirstPartySetsEnabledInternal() {
+  if (!base::FeatureList::IsEnabled(features::kFirstPartySets)) {
+    return false;
+  }
+  if (!g_browser_process) {
+    // If browser process doesn't exist (e.g. in minimal mode on android),
+    // default to the feature value which is true since we didn't return above.
+    return true;
+  }
+  PrefService* local_state = g_browser_process->local_state();
+  if (!local_state ||
+      !local_state->FindPreference(first_party_sets::kFirstPartySetsEnabled)) {
+    return true;
+  }
+  return local_state->GetBoolean(first_party_sets::kFirstPartySetsEnabled);
+}
+
 }  // namespace
 
 // static
@@ -50,6 +73,8 @@ FirstPartySetsUtil* FirstPartySetsUtil::GetInstance() {
   static base::NoDestructor<FirstPartySetsUtil> instance;
   return instance.get();
 }
+
+FirstPartySetsUtil::FirstPartySetsUtil() = default;
 
 void FirstPartySetsUtil::SendAndUpdatePersistedSets(
     const base::FilePath& user_data_dir,
@@ -67,6 +92,19 @@ void FirstPartySetsUtil::SendAndUpdatePersistedSets(
       base::BindOnce(&FirstPartySetsUtil::SendPersistedSets,
                      base::Unretained(this), std::move(send_sets),
                      persisted_sets_path));
+}
+
+bool FirstPartySetsUtil::IsFirstPartySetsEnabled() {
+  // This method invokes the private IsFirstPartySetsEnabledInternal method
+  // and uses the `enabled_` variable to memoize the result. We can memoize
+  // since the First-Party Sets enterprise policy doesn't support `dynamic
+  // refresh` and the base::Feature doesn't change after start up, the value
+  // of this method will not change in the same in any browser session.
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (!enabled_.has_value()) {
+    enabled_ = absl::make_optional(IsFirstPartySetsEnabledInternal());
+  }
+  return enabled_.value();
 }
 
 void FirstPartySetsUtil::OnGetUpdatedSets(const base::FilePath& path,

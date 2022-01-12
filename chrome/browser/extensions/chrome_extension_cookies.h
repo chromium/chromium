@@ -86,6 +86,7 @@ class ChromeExtensionCookies
     void CreateRestrictedCookieManager(
         const url::Origin& origin,
         const net::IsolationInfo& isolation_info,
+        bool first_party_sets_enabled,
         mojo::PendingReceiver<network::mojom::RestrictedCookieManager>
             receiver);
 
@@ -143,6 +144,8 @@ class ChromeExtensionCookies
   base::ScopedObservation<content_settings::CookieSettings,
                           content_settings::CookieSettings::Observer>
       cookie_settings_observation_{this};
+
+  const bool first_party_sets_enabled_;
 };
 
 }  // namespace extensions

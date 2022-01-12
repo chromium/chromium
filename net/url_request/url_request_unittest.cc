@@ -1982,8 +1982,8 @@ TEST_F(URLRequestTest, DelayedCookieCallbackAsync) {
   TestDelegate async_delegate;
 
   TestURLRequestContext sync_context;
-  std::unique_ptr<CookieMonster> cm =
-      std::make_unique<CookieMonster>(nullptr, nullptr);
+  std::unique_ptr<CookieMonster> cm = std::make_unique<CookieMonster>(
+      nullptr, nullptr, false /* first_party_sets_enabled */);
   sync_context.set_cookie_store(cm.get());
   FilteringTestNetworkDelegate sync_filter_network_delegate;
   sync_filter_network_delegate.SetCookieFilter("CookieBlockedOnCanGetCookie");
@@ -3216,7 +3216,7 @@ TEST_P(URLRequestSameSiteCookiesTest, SameSiteCookiesSpecialScheme) {
   auto cad = std::make_unique<TestCookieAccessDelegate>();
   cad->SetIgnoreSameSiteRestrictionsScheme("chrome", true);
 
-  CookieMonster cm(nullptr, nullptr);
+  CookieMonster cm(nullptr, nullptr, false /* first_party_sets_enabled */);
   cm.SetCookieAccessDelegate(std::move(cad));
 
   TestURLRequestContext context(true);
@@ -8050,7 +8050,7 @@ TEST_F(URLRequestTest, NoCookieInclusionStatusWarningIfWouldBeExcludedAnyway) {
 
   FilteringTestNetworkDelegate network_delegate;
   network_delegate.SetCookieFilter("blockeduserpreference");
-  CookieMonster cm(nullptr, nullptr);
+  CookieMonster cm(nullptr, nullptr, false /* first_party_sets_enabled */);
   TestURLRequestContext context(true);
   context.set_cookie_store(&cm);
   context.set_network_delegate(&network_delegate);
@@ -8303,8 +8303,8 @@ TEST_F(URLRequestTestHTTP, AuthChallengeWithFilteredCookies) {
     TestURLRequestContext context(true);
     context.set_network_delegate(&filtering_network_delegate);
 
-    std::unique_ptr<CookieMonster> cm =
-        std::make_unique<CookieMonster>(nullptr, nullptr);
+    std::unique_ptr<CookieMonster> cm = std::make_unique<CookieMonster>(
+        nullptr, nullptr, false /* first_party_sets_enabled */);
     auto another_cookie = CanonicalCookie::Create(
         url_requiring_auth_wo_cookies, "another_cookie=true", base::Time::Now(),
         absl::nullopt /* server_time */,
@@ -8728,8 +8728,8 @@ TEST_F(URLRequestTestHTTP, RedirectWithFilteredCookies) {
     filtering_network_delegate.set_block_annotate_cookies();
     TestURLRequestContext context(true);
     context.set_network_delegate(&filtering_network_delegate);
-    std::unique_ptr<CookieMonster> cm =
-        std::make_unique<CookieMonster>(nullptr, nullptr);
+    std::unique_ptr<CookieMonster> cm = std::make_unique<CookieMonster>(
+        nullptr, nullptr, false /* first_party_sets_enabled */);
     auto another_cookie = CanonicalCookie::Create(
         original_url, "another_cookie=true", base::Time::Now(),
         absl::nullopt /* server_time */,

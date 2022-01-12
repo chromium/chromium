@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class FirstPartySetsUtil {
  public:
@@ -31,10 +32,15 @@ class FirstPartySetsUtil {
       base::OnceCallback<void(base::OnceCallback<void(const std::string&)>,
                               const std::string&)> send_sets);
 
+  // This method returns whether First-Party Sets are enabled, checking that
+  // both the base::Feature is enabled and the First-Party Sets enterprise
+  // policy is enabled.
+  bool IsFirstPartySetsEnabled();
+
  private:
   friend class base::NoDestructor<FirstPartySetsUtil>;
 
-  FirstPartySetsUtil() = default;
+  FirstPartySetsUtil();
 
   // Called when the instance receives the "current" First-Party Sets.
   // Asynchronously writes those sets to disk.
@@ -48,6 +54,11 @@ class FirstPartySetsUtil {
                               const std::string&)> send_sets,
       const base::FilePath& path,
       const std::string& sets);
+
+  // This variable is used to memoize the value of IsFirstPartySetsEnabled()
+  // to avoid repeating unnecessary work.
+  absl::optional<bool> enabled_ GUARDED_BY_CONTEXT(sequence_checker_) =
+      absl::nullopt;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

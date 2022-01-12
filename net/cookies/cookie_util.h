@@ -238,7 +238,6 @@ ComputeSameSiteContextForSubresource(const GURL& url,
 
 // Returns whether the respective feature is enabled.
 NET_EXPORT bool IsSchemefulSameSiteEnabled();
-NET_EXPORT bool IsFirstPartySetsEnabled();
 
 // Computes the First-Party Sets metadata, determining which of the cookies for
 // `request_site` can be accessed. `isolation_info` must be fully populated.  If
@@ -255,7 +254,9 @@ ComputeFirstPartySetMetadata(const SchemefulSite& request_site,
 // kNoSamePartyEnforcement; if the cookie is SameParty but does not have a
 // valid context, returns kEnforceSamePartyExclude.
 NET_EXPORT CookieSamePartyStatus
-GetSamePartyStatus(const CanonicalCookie& cookie, const CookieOptions& options);
+GetSamePartyStatus(const CanonicalCookie& cookie,
+                   const CookieOptions& options,
+                   bool first_party_sets_enabled);
 
 // Takes a callback accepting a CookieAccessResult and returns a callback
 // that accepts a bool, setting the bool to true if the CookieInclusionStatus

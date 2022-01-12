@@ -21,11 +21,12 @@
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/first_party_sets/first_party_sets_pref_names.h"
+#include "chrome/browser/first_party_sets/first_party_sets_util.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_paths.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/network_service_instance.h"
-#include "net/base/features.h"
+#include "content/public/common/content_features.h"
 #include "net/cookies/cookie_util.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
@@ -60,26 +61,6 @@ base::FilePath& GetConfigPathInstance() {
   return *instance;
 }
 
-// Determine if First-Party Sets is enabled by checking both the feature
-// and the enterprise policy.
-bool IsFirstPartySetsEnabled() {
-  // TODO(https://crbug.com/1269360): move this logic into
-  // FirstPartySetsUtil
-  if (!base::FeatureList::IsEnabled(net::features::kFirstPartySets)) {
-    return false;
-  }
-  // Some java tests start the browser in minimal mode, in which
-  // `g_browser_process` is unset.
-  if (!g_browser_process)
-    return false;
-  auto* local_state = g_browser_process->local_state();
-  if (!local_state ||
-      !local_state->HasPrefPath(first_party_sets::kFirstPartySetsEnabled)) {
-    return true;
-  }
-  return local_state->GetBoolean(first_party_sets::kFirstPartySetsEnabled);
-}
-
 // Invokes `on_sets_ready`, if:
 // * First-Party Sets is enabled; and
 // * `on_sets_ready` is not null.
@@ -87,7 +68,8 @@ bool IsFirstPartySetsEnabled() {
 // If the component has been installed and can be read, we pass the component
 // file; otherwise, we pass an invalid file.
 void SetFirstPartySetsConfig(SetsReadyOnceCallback on_sets_ready) {
-  if (!IsFirstPartySetsEnabled() || on_sets_ready.is_null()) {
+  if (!FirstPartySetsUtil::GetInstance()->IsFirstPartySetsEnabled() ||
+      on_sets_ready.is_null()) {
     return;
   }
 
@@ -205,12 +187,12 @@ FirstPartySetsComponentInstallerPolicy::GetInstallerAttributes() const {
   return {
       {
           kDogfoodInstallerAttributeName,
-          BoolToString(net::features::kFirstPartySetsIsDogfooder.Get()),
+          BoolToString(features::kFirstPartySetsIsDogfooder.Get()),
       },
       {
           kV2FormatOptIn,
           BoolToString(base::FeatureList::IsEnabled(
-              net::features::kFirstPartySetsV2ComponentFormat)),
+              features::kFirstPartySetsV2ComponentFormat)),
       },
   };
 }

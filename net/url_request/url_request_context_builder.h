@@ -270,6 +270,9 @@ class NET_EXPORT URLRequestContextBuilder {
   void set_throttling_enabled(bool throttling_enabled) {
     throttling_enabled_ = throttling_enabled;
   }
+  void set_first_party_sets_enabled(bool enabled) {
+    first_party_sets_enabled_ = enabled;
+  }
 
   void set_ct_policy_enforcer(
       std::unique_ptr<CTPolicyEnforcer> ct_policy_enforcer);
@@ -349,6 +352,7 @@ class NET_EXPORT URLRequestContextBuilder {
   bool throttling_enabled_ = false;
   bool cookie_store_set_by_client_ = false;
   bool suppress_setting_socket_performance_watcher_factory_for_testing_ = false;
+  bool first_party_sets_enabled_ = false;
 
   HttpCacheParams http_cache_params_;
   HttpNetworkSessionParams http_network_session_params_;

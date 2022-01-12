@@ -125,7 +125,8 @@ void TestURLRequestContext::Init() {
   // In-memory cookie store.
   if (!cookie_store()) {
     context_storage_.set_cookie_store(std::make_unique<CookieMonster>(
-        nullptr /* store */, nullptr /* netlog */));
+        nullptr /* store */, nullptr /* netlog */,
+        false /* first_party_sets_enabled */));
   }
 
   if (!http_user_agent_settings()) {
@@ -195,8 +196,10 @@ std::unique_ptr<URLRequestContextBuilder> CreateTestURLRequestContextBuilder() {
   builder->SetHttpAuthHandlerFactory(HttpAuthHandlerFactory::CreateDefault());
   builder->SetHttpServerProperties(std::make_unique<HttpServerProperties>());
   builder->set_quic_context(std::make_unique<QuicContext>());
-  builder->SetCookieStore(std::make_unique<CookieMonster>(/*store=*/nullptr,
-                                                          /*netlog=*/nullptr));
+  builder->SetCookieStore(
+      std::make_unique<CookieMonster>(/*store=*/nullptr,
+                                      /*netlog=*/nullptr,
+                                      /*first_party_sets_enabled=*/false));
   builder->set_http_user_agent_settings(
       std::make_unique<StaticHttpUserAgentSettings>("en-us,fr", std::string()));
   return builder;

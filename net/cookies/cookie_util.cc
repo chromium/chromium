@@ -738,10 +738,6 @@ bool IsSchemefulSameSiteEnabled() {
   return base::FeatureList::IsEnabled(features::kSchemefulSameSite);
 }
 
-bool IsFirstPartySetsEnabled() {
-  return base::FeatureList::IsEnabled(features::kFirstPartySets);
-}
-
 // Returns First-Party Set metadata for the given context. Returns empty/default
 // metadata if `isolation_info` is not fully populated, or
 // `isolation_info.party_context` is nullopt.
@@ -765,8 +761,9 @@ FirstPartySetMetadata ComputeFirstPartySetMetadata(
 }
 
 CookieSamePartyStatus GetSamePartyStatus(const CanonicalCookie& cookie,
-                                         const CookieOptions& options) {
-  if (!IsFirstPartySetsEnabled() || !cookie.IsSameParty() ||
+                                         const CookieOptions& options,
+                                         const bool first_party_sets_enabled) {
+  if (!first_party_sets_enabled || !cookie.IsSameParty() ||
       !options.is_in_nontrivial_first_party_set()) {
     return CookieSamePartyStatus::kNoSamePartyEnforcement;
   }

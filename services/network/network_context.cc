@@ -708,7 +708,8 @@ void NetworkContext::GetRestrictedCookieManager(
       std::make_unique<RestrictedCookieManager>(
           role, url_request_context_->cookie_store(),
           cookie_manager_->cookie_settings(), origin, isolation_info,
-          std::move(cookie_observer)),
+          std::move(cookie_observer),
+          network_service_->first_party_sets()->is_enabled()),
       std::move(receiver));
 }
 
@@ -2208,8 +2209,9 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
 
   if (session_cleanup_cookie_store) {
     std::unique_ptr<net::CookieMonster> cookie_store =
-        std::make_unique<net::CookieMonster>(session_cleanup_cookie_store.get(),
-                                             net_log);
+        std::make_unique<net::CookieMonster>(
+            session_cleanup_cookie_store.get(), net_log,
+            network_service_->first_party_sets()->is_enabled());
     if (params_->persist_session_cookies)
       cookie_store->SetPersistSessionCookies(true);
 
@@ -2419,6 +2421,9 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
 
   builder.set_host_mapping_rules(
       command_line->GetSwitchValueASCII(switches::kHostResolverRules));
+
+  builder.set_first_party_sets_enabled(
+      network_service_->first_party_sets()->is_enabled());
 
   auto result =
       URLRequestContextOwner(std::move(pref_service), builder.Build());

@@ -228,12 +228,6 @@ extern const base::FeatureParam<base::TimeDelta> kTimeoutTcpConnectAttemptMax(
     "TimeoutTcpConnectAttemptMax",
     base::Seconds(30));
 
-constexpr base::Feature kFirstPartySets{"FirstPartySets",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
-
-const base::FeatureParam<bool> kFirstPartySetsIsDogfooder{
-    &kFirstPartySets, "FirstPartySetsIsDogfooder", false};
-
 #if BUILDFLAG(ENABLE_REPORTING)
 const base::Feature kDocumentReporting{"DocumentReporting",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
@@ -256,9 +250,6 @@ const base::Feature kPartitionedCookies{"PartitionedCookies",
 
 const base::Feature kExtraCookieValidityChecks{
     "ExtraCookieValidityChecks", base::FEATURE_ENABLED_BY_DEFAULT};
-
-const base::Feature kFirstPartySetsV2ComponentFormat{
-    "FirstPartySetsV2ComponentFormat", base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kRecordRadioWakeupTrigger{
     "RecordRadioWakeupTrigger", base::FEATURE_DISABLED_BY_DEFAULT};

@@ -225,14 +225,16 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
            const url::Origin& top_frame_origin,
            const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
            net::CookieOptions options,
-           mojo::PendingRemote<mojom::CookieChangeListener> mojo_listener)
+           mojo::PendingRemote<mojom::CookieChangeListener> mojo_listener,
+           const bool first_party_sets_enabled)
       : cookie_store_(cookie_store),
         restricted_cookie_manager_(restricted_cookie_manager),
         url_(url),
         site_for_cookies_(site_for_cookies),
         top_frame_origin_(top_frame_origin),
         options_(options),
-        mojo_listener_(std::move(mojo_listener)) {
+        mojo_listener_(std::move(mojo_listener)),
+        first_party_sets_enabled_(first_party_sets_enabled) {
     // TODO(pwnall): add a constructor w/options to net::CookieChangeDispatcher.
     cookie_store_subscription_ =
         cookie_store->GetChangeDispatcher().AddCallbackForUrl(
@@ -269,7 +271,8 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
     // CookieChangeDispatcher doesn't check for inclusion against `options_`, so
     // we need to double-check that.
     net::CookieSamePartyStatus same_party_status =
-        net::cookie_util::GetSamePartyStatus(change.cookie, options_);
+        net::cookie_util::GetSamePartyStatus(change.cookie, options_,
+                                             first_party_sets_enabled_);
 
     if (!change.cookie
              .IncludeForRequestURL(
@@ -318,6 +321,8 @@ class RestrictedCookieManager::Listener : public base::LinkNode<Listener> {
 
   mojo::Remote<mojom::CookieChangeListener> mojo_listener_;
 
+  const bool first_party_sets_enabled_;
+
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
@@ -327,13 +332,15 @@ RestrictedCookieManager::RestrictedCookieManager(
     const CookieSettings& cookie_settings,
     const url::Origin& origin,
     const net::IsolationInfo& isolation_info,
-    mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer)
+    mojo::PendingRemote<mojom::CookieAccessObserver> cookie_observer,
+    const bool first_party_sets_enabled)
     : role_(role),
       cookie_store_(cookie_store),
       cookie_settings_(cookie_settings),
       origin_(origin),
       isolation_info_(isolation_info),
-      cookie_observer_(std::move(cookie_observer)) {
+      cookie_observer_(std::move(cookie_observer)),
+      first_party_sets_enabled_(first_party_sets_enabled) {
   DCHECK(cookie_store);
   CHECK(origin_ == isolation_info_.frame_origin().value() ||
         role_ != mojom::RestrictedCookieManagerRole::SCRIPT);
@@ -666,7 +673,8 @@ void RestrictedCookieManager::AddChangeListener(
       cookie_store_->cookie_access_delegate());
   auto listener = std::make_unique<Listener>(
       cookie_store_, this, url, site_for_cookies, top_frame_origin,
-      cookie_partition_key_, net_options, std::move(mojo_listener));
+      cookie_partition_key_, net_options, std::move(mojo_listener),
+      first_party_sets_enabled_);
 
   listener->mojo_listener().set_disconnect_handler(
       base::BindOnce(&RestrictedCookieManager::RemoveChangeListener,

@@ -44,6 +44,8 @@ namespace net {
 
 using CookieDeletionInfo = CookieDeletionInfo;
 
+bool const kFirstPartySetsEnabled = false;
+
 namespace {
 
 #pragma mark NotificationTrampoline
@@ -408,7 +410,8 @@ CookieStoreIOS::CookieStoreIOS(
     std::unique_ptr<SystemCookieStore> system_store,
     NetLog* net_log)
     : cookie_monster_(new net::CookieMonster(persistent_store,
-                                             net_log)),
+                                             net_log,
+                                             net::kFirstPartySetsEnabled)),
       system_store_(std::move(system_store)),
       metrics_enabled_(false),
       cookie_cache_(new CookieCache()),
