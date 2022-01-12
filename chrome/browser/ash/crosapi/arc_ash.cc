@@ -273,8 +273,9 @@ void ArcAsh::ConvertTextSelectionActions(
     }
 
     // Generate ImageSkia icon.
+    auto icon_png_data = std::move(action->icon->icon_png_data);
     apps::ArcRawIconPngDataToImageSkia(
-        std::move(action->icon->icon_png_data), kSmallIconSizeInDip,
+        std::move(icon_png_data), kSmallIconSizeInDip,
         base::BindOnce(&ArcAsh::ConvertTextSelectionAction,
                        weak_ptr_factory_.GetWeakPtr(), converted_action,
                        std::move(action), barrier_closure));
