@@ -32,6 +32,7 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
+#include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_test_base.h"
 #include "ash/wm/overview/overview_test_util.h"
@@ -2073,6 +2074,35 @@ TEST_F(DesksTemplatesTest, SaveDeskRecordsWindowAndTabCountMetrics) {
   histogram_tester.ExpectBucketCount(kWindowCountHistogramName, 2, 1);
   histogram_tester.ExpectBucketCount(kTabCountHistogramName, 6, 1);
   histogram_tester.ExpectBucketCount(kWindowAndTabCountHistogramName, 6, 1);
+}
+
+// Tests that accessibility overrides are set as expected.
+TEST_F(DesksTemplatesTest, AccessibilityFocusAnnotatorInOverview) {
+  auto window = CreateTestWindow(gfx::Rect(100, 100));
+
+  ToggleOverview();
+  WaitForDesksTemplatesUI();
+
+  auto* focus_widget = views::Widget::GetWidgetForNativeWindow(
+      GetOverviewSession()->GetOverviewFocusWindow());
+  DCHECK(focus_widget);
+
+  OverviewGrid* grid = GetOverviewSession()->grid_list()[0].get();
+  auto* desk_widget = const_cast<views::Widget*>(grid->desks_widget());
+  DCHECK(desk_widget);
+
+  auto* save_widget =
+      GetSaveDeskAsTemplateButtonForRoot(Shell::GetPrimaryRootWindow());
+
+  // Overview items are in MRU order, so the expected order in the grid list is
+  // the reverse creation order.
+  auto* item_widget = GetOverviewItemForWindow(window.get())->item_widget();
+
+  // Order should be [focus_widget, save_widget, item_widget, desk_widget].
+  CheckA11yOverrides("focus", focus_widget, desk_widget, save_widget);
+  CheckA11yOverrides("save", save_widget, focus_widget, item_widget);
+  CheckA11yOverrides("item", item_widget, save_widget, desk_widget);
+  CheckA11yOverrides("desk", desk_widget, item_widget, focus_widget);
 }
 
 }  // namespace ash

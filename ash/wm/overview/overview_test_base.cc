@@ -24,6 +24,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/compositor/test/test_utils.h"
 #include "ui/gfx/geometry/transform_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
@@ -193,6 +194,18 @@ void OverviewTestBase::TearDown() {
 void OverviewTestBase::CheckForDuplicateTraceName(const std::string& trace) {
   DCHECK(!base::Contains(trace_names_, trace)) << trace;
   trace_names_.push_back(trace);
+}
+
+void OverviewTestBase::CheckA11yOverrides(const std::string& trace,
+                                          views::Widget* widget,
+                                          views::Widget* expected_previous,
+                                          views::Widget* expected_next) {
+  SCOPED_TRACE(trace);
+  views::View* contents_view = widget->GetContentsView();
+  views::ViewAccessibility& view_accessibility =
+      contents_view->GetViewAccessibility();
+  EXPECT_EQ(expected_previous, view_accessibility.GetPreviousFocus());
+  EXPECT_EQ(expected_next, view_accessibility.GetNextFocus());
 }
 
 void OverviewTestBase::CheckOverviewEnterExitHistogram(

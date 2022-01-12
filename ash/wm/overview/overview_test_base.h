@@ -103,6 +103,13 @@ class OverviewTestBase : public AshTestBase {
  protected:
   void CheckForDuplicateTraceName(const std::string& trace);
 
+  // Takes in a current widget and checks if the accessibility next
+  // and previous focus widgets match the given.
+  void CheckA11yOverrides(const std::string& trace,
+                          views::Widget* widget,
+                          views::Widget* expected_previous,
+                          views::Widget* expected_next);
+
   base::HistogramTester histograms_;
 
  private:

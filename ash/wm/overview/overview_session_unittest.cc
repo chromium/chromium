@@ -98,7 +98,6 @@
 #include "ui/gfx/geometry/point_conversions.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
-#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/widget/widget.h"
@@ -3142,6 +3141,11 @@ TEST_P(OverviewSessionTest, FadeOutExit) {
 // Tests that accessibility overrides are set as expected on overview related
 // widgets.
 TEST_P(OverviewSessionTest, AccessibilityFocusAnnotator) {
+  // If desks templates is enabled, the a11y order changes. This is tested in
+  // the desks templates test suite.
+  if (GetParam())
+    return;
+
   auto window3 = CreateTestWindow(gfx::Rect(100, 100));
   auto window2 = CreateTestWindow(gfx::Rect(100, 100));
   auto window1 = CreateTestWindow(gfx::Rect(100, 100));
@@ -3163,34 +3167,21 @@ TEST_P(OverviewSessionTest, AccessibilityFocusAnnotator) {
   auto* item_widget2 = GetOverviewItemForWindow(window2.get())->item_widget();
   auto* item_widget3 = GetOverviewItemForWindow(window3.get())->item_widget();
 
-  // Helper that takes in a current widget and checks if the accessibility next
-  // and previous focus widgets match the given.
-  auto check_a11y_overrides = [](const std::string& id, views::Widget* widget,
-                                 views::Widget* expected_previous,
-                                 views::Widget* expected_next) -> void {
-    SCOPED_TRACE(id);
-    views::View* contents_view = widget->GetContentsView();
-    views::ViewAccessibility& view_accessibility =
-        contents_view->GetViewAccessibility();
-    EXPECT_EQ(expected_previous, view_accessibility.GetPreviousFocus());
-    EXPECT_EQ(expected_next, view_accessibility.GetNextFocus());
-  };
-
   // Order should be [focus_widget, item_widget1, item_widget2, item_widget3,
   // desk_widget].
-  check_a11y_overrides("focus", focus_widget, desk_widget, item_widget1);
-  check_a11y_overrides("item1", item_widget1, focus_widget, item_widget2);
-  check_a11y_overrides("item2", item_widget2, item_widget1, item_widget3);
-  check_a11y_overrides("item3", item_widget3, item_widget2, desk_widget);
-  check_a11y_overrides("desk", desk_widget, item_widget3, focus_widget);
+  CheckA11yOverrides("focus", focus_widget, desk_widget, item_widget1);
+  CheckA11yOverrides("item1", item_widget1, focus_widget, item_widget2);
+  CheckA11yOverrides("item2", item_widget2, item_widget1, item_widget3);
+  CheckA11yOverrides("item3", item_widget3, item_widget2, desk_widget);
+  CheckA11yOverrides("desk", desk_widget, item_widget3, focus_widget);
 
   // Remove |window2|. The new order should be [focus_widget, item_widget1,
   // item_widget3, desk_widget].
   window2.reset();
-  check_a11y_overrides("focus", focus_widget, desk_widget, item_widget1);
-  check_a11y_overrides("item1", item_widget1, focus_widget, item_widget3);
-  check_a11y_overrides("item3", item_widget3, item_widget1, desk_widget);
-  check_a11y_overrides("desk", desk_widget, item_widget3, focus_widget);
+  CheckA11yOverrides("focus", focus_widget, desk_widget, item_widget1);
+  CheckA11yOverrides("item1", item_widget1, focus_widget, item_widget3);
+  CheckA11yOverrides("item3", item_widget3, item_widget1, desk_widget);
+  CheckA11yOverrides("desk", desk_widget, item_widget3, focus_widget);
 }
 
 // Tests that removing a transient child during overview does not result in a

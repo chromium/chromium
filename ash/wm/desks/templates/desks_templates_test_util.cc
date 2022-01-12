@@ -131,8 +131,7 @@ views::Button* GetSaveDeskAsTemplateButton() {
   const auto* overview_grid = GetPrimaryOverviewGrid();
   if (!overview_grid)
     return nullptr;
-  views::Widget* widget =
-      overview_grid->save_desk_as_template_widget_for_testing();
+  views::Widget* widget = overview_grid->save_desk_as_template_widget();
   return widget ? static_cast<views::Button*>(widget->GetContentsView())
                 : nullptr;
 }

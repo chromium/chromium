@@ -1012,6 +1012,62 @@ bool OverviewSession::IsShowingDesksTemplatesGrid() const {
                             : grid_list_.front()->IsShowingDesksTemplatesGrid();
 }
 
+void OverviewSession::UpdateAccessibilityFocus() {
+  if (is_shutting_down())
+    return;
+
+  // Construct the list of accessible widgets, these are the overview focus
+  // widget, desk bar widget, all the item widgets and the no window indicator
+  // widgets, if available.
+  std::vector<views::Widget*> a11y_widgets;
+  if (overview_focus_widget_)
+    a11y_widgets.push_back(overview_focus_widget_.get());
+
+  for (auto& grid : grid_list_) {
+    if (grid->IsSaveDeskAsTemplateButtonVisible())
+      a11y_widgets.push_back(grid->save_desk_as_template_widget());
+
+    for (const auto& item : grid->window_list())
+      a11y_widgets.push_back(item->item_widget());
+
+    if (grid->desks_widget())
+      a11y_widgets.push_back(const_cast<views::Widget*>(grid->desks_widget()));
+
+    auto* no_windows_widget = grid->no_windows_widget();
+    if (no_windows_widget) {
+      a11y_widgets.push_back(
+          static_cast<views::Widget*>(grid->no_windows_widget()));
+    }
+  }
+
+  if (a11y_widgets.empty())
+    return;
+
+  auto get_view_a11y = [&a11y_widgets](int index) -> views::ViewAccessibility& {
+    return a11y_widgets[index]->GetContentsView()->GetViewAccessibility();
+  };
+
+  // If there is only one widget left, clear the focus overrides so that they
+  // do not point to deleted objects.
+  if (a11y_widgets.size() == 1) {
+    get_view_a11y(/*index=*/0).OverridePreviousFocus(nullptr);
+    get_view_a11y(/*index=*/0).OverrideNextFocus(nullptr);
+    a11y_widgets[0]->GetContentsView()->NotifyAccessibilityEvent(
+        ax::mojom::Event::kTreeChanged, true);
+    return;
+  }
+
+  int size = a11y_widgets.size();
+  for (int i = 0; i < size; ++i) {
+    int previous_index = (i + size - 1) % size;
+    int next_index = (i + 1) % size;
+    get_view_a11y(i).OverridePreviousFocus(a11y_widgets[previous_index]);
+    get_view_a11y(i).OverrideNextFocus(a11y_widgets[next_index]);
+    a11y_widgets[i]->GetContentsView()->NotifyAccessibilityEvent(
+        ax::mojom::Event::kTreeChanged, true);
+  }
+}
+
 void OverviewSession::OnDeskAdded(const Desk* desk) {}
 void OverviewSession::OnDeskRemoved(const Desk* desk) {}
 void OverviewSession::OnDeskReordered(int old_index, int new_index) {}
@@ -1391,58 +1447,6 @@ void OverviewSession::OnItemAdded(aura::Window* window) {
   overview_focus_widget_->Show();
 
   UpdateAccessibilityFocus();
-}
-
-void OverviewSession::UpdateAccessibilityFocus() {
-  if (is_shutting_down())
-    return;
-
-  // Construct the list of accessible widgets, these are the overview focus
-  // widget, desk bar widget, all the item widgets and the no window indicator
-  // widgets, if available.
-  std::vector<views::Widget*> a11y_widgets;
-  if (overview_focus_widget_)
-    a11y_widgets.push_back(overview_focus_widget_.get());
-
-  for (auto& grid : grid_list_) {
-    for (const auto& item : grid->window_list())
-      a11y_widgets.push_back(item->item_widget());
-    if (grid->desks_widget())
-      a11y_widgets.push_back(const_cast<views::Widget*>(grid->desks_widget()));
-
-    auto* no_windows_widget = grid->no_windows_widget();
-    if (no_windows_widget) {
-      a11y_widgets.push_back(
-          static_cast<views::Widget*>(grid->no_windows_widget()));
-    }
-  }
-
-  if (a11y_widgets.empty())
-    return;
-
-  auto get_view_a11y = [&a11y_widgets](int index) -> views::ViewAccessibility& {
-    return a11y_widgets[index]->GetContentsView()->GetViewAccessibility();
-  };
-
-  // If there is only one widget left, clear the focus overrides so that they
-  // do not point to deleted objects.
-  if (a11y_widgets.size() == 1) {
-    get_view_a11y(/*index=*/0).OverridePreviousFocus(nullptr);
-    get_view_a11y(/*index=*/0).OverrideNextFocus(nullptr);
-    a11y_widgets[0]->GetContentsView()->NotifyAccessibilityEvent(
-        ax::mojom::Event::kTreeChanged, true);
-    return;
-  }
-
-  int size = a11y_widgets.size();
-  for (int i = 0; i < size; ++i) {
-    int previous_index = (i + size - 1) % size;
-    int next_index = (i + 1) % size;
-    get_view_a11y(i).OverridePreviousFocus(a11y_widgets[previous_index]);
-    get_view_a11y(i).OverrideNextFocus(a11y_widgets[next_index]);
-    a11y_widgets[i]->GetContentsView()->NotifyAccessibilityEvent(
-        ax::mojom::Event::kTreeChanged, true);
-  }
 }
 
 bool OverviewSession::ShouldKeepOverviewOpenForDesksTemplatesDialog(

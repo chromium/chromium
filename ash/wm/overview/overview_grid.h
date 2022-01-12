@@ -361,6 +361,8 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // button if it hasn't been created already, else it just sets its bounds.
   void UpdateSaveDeskAsTemplateButton();
 
+  bool IsSaveDeskAsTemplateButtonVisible() const;
+
   // SplitViewObserver:
   void OnSplitViewStateChanged(SplitViewController::State previous_state,
                                SplitViewController::State state) override;
@@ -420,7 +422,7 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
     return desks_templates_grid_widget_.get();
   }
 
-  views::Widget* save_desk_as_template_widget_for_testing() const {
+  views::Widget* save_desk_as_template_widget() const {
     return save_desk_as_template_widget_.get();
   }
 

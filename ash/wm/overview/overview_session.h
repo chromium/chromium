@@ -284,6 +284,11 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   void HideDesksTemplatesGrids();
   bool IsShowingDesksTemplatesGrid() const;
 
+  // Updates the focusable overview widgets so that they point to the correct
+  // next and previous widgets for a11y purposes. Needs to be updated when a
+  // piece of UI is shown or hidden.
+  void UpdateAccessibilityFocus();
+
   // DesksController::Observer:
   void OnDeskAdded(const Desk* desk) override;
   void OnDeskRemoved(const Desk* desk) override;
@@ -384,11 +389,6 @@ class ASH_EXPORT OverviewSession : public display::DisplayObserver,
   void RefreshNoWindowsWidgetBoundsOnEachGrid(bool animate);
 
   void OnItemAdded(aura::Window* window);
-
-  // Updates the focusable overview widgets so that they point to the correct
-  // next and previous widgets for a11y purposes. Needs to be updated when an
-  // overview item is added or removed.
-  void UpdateAccessibilityFocus();
 
   // Called when a window is activated or deactivated and the desks templates
   // feature is enabled. Returns true if we should keep overview open. Overview

@@ -1825,19 +1825,22 @@ void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
   // Do not create or show the save desk as template button if there are no
   // windows in this grid, during a window drag or in tablet mode, or the desks
   // templates grid is visible.
-  const bool visible =
+  const bool target_visible =
       !window_list_.empty() &&
       !overview_session_->GetCurrentDraggedOverviewItem() &&
       !Shell::Get()->tablet_mode_controller()->InTabletMode() &&
       !IsShowingDesksTemplatesGrid();
+  if (target_visible == IsSaveDeskAsTemplateButtonVisible())
+    return;
 
-  if (!visible) {
+  if (!target_visible) {
     if (save_desk_as_template_widget_) {
       PerformFadeOutLayer(
           save_desk_as_template_widget_->GetLayer(),
           base::BindOnce(&OverviewGrid::OnSaveDeskAsTemplateButtonFadedOut,
                          weak_ptr_factory_.GetWeakPtr()));
     }
+    overview_session_->UpdateAccessibilityFocus();
     return;
   }
 
@@ -1845,7 +1848,7 @@ void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
     save_desk_as_template_widget_ = SaveDeskAsTemplateWidget(root_window_);
     save_desk_as_template_widget_->SetContentsView(std::make_unique<PillButton>(
         base::BindRepeating(&OverviewGrid::OnSaveDeskAsTemplateButtonPressed,
-                            base::Unretained(this)),
+                            weak_ptr_factory_.GetWeakPtr()),
         l10n_util::GetStringUTF16(
             IDS_ASH_DESKS_TEMPLATES_SAVE_DESK_AS_TEMPLATE_BUTTON),
         PillButton::Type::kIcon, &kSaveDeskAsTemplateIcon));
@@ -1874,6 +1877,16 @@ void OverviewGrid::UpdateSaveDeskAsTemplateButton() {
       overview_item_bounds.x(),
       overview_item_bounds.y() - kSaveDeskAsTemplateOverviewItemSpacingDp,
       preferred_size.width(), preferred_size.height()));
+
+  overview_session_->UpdateAccessibilityFocus();
+}
+
+bool OverviewGrid::IsSaveDeskAsTemplateButtonVisible() const {
+  // The widget may be visible but in the process of fading away. We treat that
+  // as not visible.
+  return save_desk_as_template_widget_ &&
+         save_desk_as_template_widget_->IsVisible() &&
+         save_desk_as_template_widget_->GetLayer()->GetTargetOpacity() == 1.f;
 }
 
 void OverviewGrid::OnSplitViewStateChanged(
