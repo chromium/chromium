@@ -88,7 +88,8 @@ class ClientCertificateFetcherTest : public testing::Test {
 
     m->SetWebsiteSettingDefaultScope(
         GURL(kRequestingUrl), GURL(),
-        ContentSettingsType::AUTO_SELECT_CERTIFICATE, std::move(root));
+        ContentSettingsType::AUTO_SELECT_CERTIFICATE,
+        base::Value::FromUniquePtrValue(std::move(root)));
   }
 
   base::Value CreateFilterValue(const std::string& issuer,

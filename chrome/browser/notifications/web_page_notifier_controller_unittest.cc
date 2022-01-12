@@ -29,11 +29,11 @@ namespace {
 // TODO(tomdobro): enable other test cases after the problem is fixed.
 constexpr const char* kTestPatterns[] = {
     "https://full.test.com",
-    //"no_scheme.test.com",
-    //"[*.]any.test.com",
-    //"*://any_scheme.test.com",
-    //"https://[*.]scheme_any.test.com",
-    //"*://[*.]any_any.test.com",
+    // "no_scheme.test.com",
+    // "[*.]any.test.com",
+    // "*://any_scheme.test.com",
+    // "https://[*.]scheme_any.test.com",
+    // "*://[*.]any_any.test.com",
 };
 
 class MockObserver : public NotifierController::Observer {

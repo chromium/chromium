@@ -17,6 +17,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/permissions/permissions_client.h"
 #include "components/variations/variations_associated_data.h"
 #include "components/webapps/browser/banners/app_banner_manager.h"
@@ -116,9 +117,9 @@ class AppPrefs {
   void Save() {
     DCHECK(dict_);
     dict_ = nullptr;
-    settings_->SetWebsiteSettingDefaultScope(origin_, GURL(),
-                                             ContentSettingsType::APP_BANNER,
-                                             std::move(origin_dict_));
+    settings_->SetWebsiteSettingDefaultScope(
+        origin_, GURL(), ContentSettingsType::APP_BANNER,
+        content_settings::FromNullableUniquePtrValue(std::move(origin_dict_)));
   }
 
  private:
@@ -257,7 +258,7 @@ void AppBannerSettingsHelper::ClearHistoryForURLs(
       permissions::PermissionsClient::Get()->GetSettingsMap(browser_context);
   for (const GURL& origin_url : origin_urls) {
     settings->SetWebsiteSettingDefaultScope(
-        origin_url, GURL(), ContentSettingsType::APP_BANNER, nullptr);
+        origin_url, GURL(), ContentSettingsType::APP_BANNER, base::Value());
     settings->FlushLossyWebsiteSettings();
   }
 }

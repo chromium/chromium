@@ -97,6 +97,7 @@ void FormfillPageLoadMetricsObserver::OnFeaturesUsageObserved(
 
     settings_map->SetWebsiteSettingDefaultScope(
         origin.GetURL(), origin.GetURL(),
-        ContentSettingsType::FORMFILL_METADATA, std::move(formfill_metadata));
+        ContentSettingsType::FORMFILL_METADATA,
+        base::Value::FromUniquePtrValue(std::move(formfill_metadata)));
   }
 }

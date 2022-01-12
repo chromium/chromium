@@ -209,7 +209,8 @@ TEST_F(VerdictCacheManagerTest, TestParseInvalidVerdictEntry) {
 
   content_setting_map_->SetWebsiteSettingDefaultScope(
       GURL("http://www.google.com/"), GURL(),
-      ContentSettingsType::PASSWORD_PROTECTION, std::move(cache_dictionary));
+      ContentSettingsType::PASSWORD_PROTECTION,
+      base::Value::FromUniquePtrValue(std::move(cache_dictionary)));
 
   ReusedPasswordAccountType password_type;
   password_type.set_account_type(ReusedPasswordAccountType::GSUITE);
@@ -459,7 +460,8 @@ TEST_F(VerdictCacheManagerTest, TestCleanUpExpiredVerdictWithInvalidEntry) {
 
   content_setting_map_->SetWebsiteSettingDefaultScope(
       GURL("http://www.google.com/"), GURL(),
-      ContentSettingsType::PASSWORD_PROTECTION, std::move(cache_dictionary));
+      ContentSettingsType::PASSWORD_PROTECTION,
+      base::Value::FromUniquePtrValue(std::move(cache_dictionary)));
 
   ReusedPasswordAccountType password_type;
   password_type.set_account_type(ReusedPasswordAccountType::GSUITE);

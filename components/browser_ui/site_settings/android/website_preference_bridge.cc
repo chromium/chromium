@@ -663,7 +663,7 @@ static void JNI_WebsitePreferenceBridge_ClearBannerData(
   GetHostContentSettingsMap(jbrowser_context_handle)
       ->SetWebsiteSettingDefaultScope(
           GURL(ConvertJavaStringToUTF8(env, jorigin)), GURL(),
-          ContentSettingsType::APP_BANNER, nullptr);
+          ContentSettingsType::APP_BANNER, base::Value());
 }
 
 static void JNI_WebsitePreferenceBridge_ClearMediaLicenses(

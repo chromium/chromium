@@ -298,9 +298,9 @@ void AndroidSmsAppSetupControllerImpl::OnAppInstallResult(
                              num_attempts_so_far + 1, kMaxInstallRetryCount);
 
   // Grant notification permission for the PWA.
-  host_content_settings_map_->SetWebsiteSettingDefaultScope(
+  host_content_settings_map_->SetContentSettingDefaultScope(
       app_url, GURL() /* top_level_url */, ContentSettingsType::NOTIFICATIONS,
-      std::make_unique<base::Value>(ContentSetting::CONTENT_SETTING_ALLOW));
+      ContentSetting::CONTENT_SETTING_ALLOW);
 
   std::move(callback).Run(true /* success */);
 }

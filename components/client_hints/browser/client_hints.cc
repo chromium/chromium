@@ -184,7 +184,7 @@ void ClientHints::PersistClientHints(
   // when cookies are disabled for |primary_origin|.
   settings_map_->SetWebsiteSettingDefaultScope(
       primary_url, GURL(), ContentSettingsType::CLIENT_HINTS,
-      std::move(client_hints_dictionary),
+      base::Value::FromUniquePtrValue(std::move(client_hints_dictionary)),
       {base::Time(), content_settings::SessionModel::UserSession});
 
   UMA_HISTOGRAM_EXACT_LINEAR("ClientHints.UpdateEventCount", 1, 2);

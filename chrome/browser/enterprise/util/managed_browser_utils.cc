@@ -81,7 +81,7 @@ std::vector<base::Value> GetCertAutoSelectionFilters(
     // Therefore, delete the invalid value.
     host_content_settings_map->SetWebsiteSettingDefaultScope(
         requesting_url, requesting_url,
-        ContentSettingsType::AUTO_SELECT_CERTIFICATE, nullptr);
+        ContentSettingsType::AUTO_SELECT_CERTIFICATE, base::Value());
     return {};
   }
   return std::move(*filters).TakeList();

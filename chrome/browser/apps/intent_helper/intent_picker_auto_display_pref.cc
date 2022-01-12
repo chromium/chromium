@@ -9,6 +9,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 
 namespace {
 
@@ -120,5 +121,5 @@ IntentPickerAutoDisplayPref::QueryPlatform() {
 void IntentPickerAutoDisplayPref::Commit() {
   settings_map_->SetWebsiteSettingDefaultScope(
       origin_, origin_, ContentSettingsType::INTENT_PICKER_DISPLAY,
-      std::move(pref_dict_));
+      content_settings::FromNullableUniquePtrValue(std::move(pref_dict_)));
 }

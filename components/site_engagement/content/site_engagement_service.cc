@@ -483,7 +483,7 @@ void SiteEngagementService::CleanupEngagementScores(
 
     // This origin has a score of 0. Wipe it from content settings.
     settings_map->SetWebsiteSettingDefaultScope(
-        origin, GURL(), ContentSettingsType::SITE_ENGAGEMENT, nullptr);
+        origin, GURL(), ContentSettingsType::SITE_ENGAGEMENT, base::Value());
   }
 
   // Set the last engagement time to be consistent with the scores. This will

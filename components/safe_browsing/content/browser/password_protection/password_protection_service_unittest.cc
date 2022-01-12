@@ -489,7 +489,7 @@ class PasswordProtectionServiceBaseTest
             std::move(invalid_cache_expression_entry)));
     content_setting_map_->SetWebsiteSettingDefaultScope(
         invalid_hostname, GURL(), ContentSettingsType::PASSWORD_PROTECTION,
-        std::move(verdict_dictionary));
+        base::Value::FromUniquePtrValue(std::move(verdict_dictionary)));
   }
 
   size_t GetStoredVerdictCount(LoginReputationClientRequest::TriggerType type) {

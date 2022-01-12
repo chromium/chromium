@@ -681,9 +681,8 @@ class ProbablySameFilterMatcher
       const base::RepeatingCallback<bool(const GURL&)>& filter)
       : to_match_(filter) {}
 
-  virtual bool MatchAndExplain(
-      const base::RepeatingCallback<bool(const GURL&)>& filter,
-      MatchResultListener* listener) const {
+  bool MatchAndExplain(const base::RepeatingCallback<bool(const GURL&)>& filter,
+                       MatchResultListener* listener) const override {
     if (filter.is_null() && to_match_.is_null())
       return true;
     if (filter.is_null() != to_match_.is_null())
@@ -702,11 +701,11 @@ class ProbablySameFilterMatcher
     return true;
   }
 
-  virtual void DescribeTo(::std::ostream* os) const {
+  void DescribeTo(::std::ostream* os) const override {
     *os << "is probably the same url filter as " << &to_match_;
   }
 
-  virtual void DescribeNegationTo(::std::ostream* os) const {
+  void DescribeNegationTo(::std::ostream* os) const override {
     *os << "is definitely NOT the same url filter as " << &to_match_;
   }
 
@@ -773,7 +772,7 @@ class PersonalDataLoadedObserverMock
     : public autofill::PersonalDataManagerObserver {
  public:
   PersonalDataLoadedObserverMock() = default;
-  ~PersonalDataLoadedObserverMock() override {}
+  ~PersonalDataLoadedObserverMock() override = default;
   MOCK_METHOD0(OnPersonalDataChanged, void());
   MOCK_METHOD0(OnPersonalDataFinishedProfileTasks, void());
 };
@@ -2178,20 +2177,16 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
       HostContentSettingsMapFactory::GetForProfile(GetProfile());
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       kOrigin1, GURL(), ContentSettingsType::SITE_ENGAGEMENT,
-      base::Value::ToUniquePtrValue(
-          base::Value(base::Value::Type::DICTIONARY)));
+      base::Value(base::Value::Type::DICTIONARY));
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       kOrigin2, GURL(), ContentSettingsType::SITE_ENGAGEMENT,
-      base::Value::ToUniquePtrValue(
-          base::Value(base::Value::Type::DICTIONARY)));
+      base::Value(base::Value::Type::DICTIONARY));
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       kOrigin3, GURL(), ContentSettingsType::SITE_ENGAGEMENT,
-      base::Value::ToUniquePtrValue(
-          base::Value(base::Value::Type::DICTIONARY)));
+      base::Value(base::Value::Type::DICTIONARY));
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       kOrigin4, GURL(), ContentSettingsType::SITE_ENGAGEMENT,
-      base::Value::ToUniquePtrValue(
-          base::Value(base::Value::Type::DICTIONARY)));
+      base::Value(base::Value::Type::DICTIONARY));
 
   // Clear all except for origin1 and origin3.
   std::unique_ptr<BrowsingDataFilterBuilder> filter(
@@ -2334,14 +2329,14 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveSelectedClientHints) {
   const GURL kOrigin3("http://host3.com:1");
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       kOrigin1, GURL(), ContentSettingsType::CLIENT_HINTS,
-      base::Value::ToUniquePtrValue(client_hints_dictionary.Clone()));
+      client_hints_dictionary.Clone());
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       kOrigin2, GURL(), ContentSettingsType::CLIENT_HINTS,
-      base::Value::ToUniquePtrValue(client_hints_dictionary.Clone()));
+      client_hints_dictionary.Clone());
 
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       kOrigin3, GURL(), ContentSettingsType::CLIENT_HINTS,
-      base::Value::ToUniquePtrValue(client_hints_dictionary.Clone()));
+      client_hints_dictionary.Clone());
 
   // Clear all except for origin1 and origin3.
   std::unique_ptr<BrowsingDataFilterBuilder> filter(
@@ -2367,10 +2362,9 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveSelectedClientHints) {
             host_settings[1].primary_pattern)
       << host_settings[1].primary_pattern.ToString();
 
-  for (size_t i = 0; i < host_settings.size(); ++i) {
-    EXPECT_EQ(ContentSettingsPattern::Wildcard(),
-              host_settings.at(i).secondary_pattern);
-    EXPECT_EQ(client_hints_dictionary, host_settings.at(i).setting_value);
+  for (const auto& setting : host_settings) {
+    EXPECT_EQ(ContentSettingsPattern::Wildcard(), setting.secondary_pattern);
+    EXPECT_EQ(client_hints_dictionary, setting.setting_value);
   }
 }
 
@@ -2389,14 +2383,14 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, RemoveAllClientHints) {
 
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       GURL("http://host1.com:1"), GURL(), ContentSettingsType::CLIENT_HINTS,
-      base::Value::ToUniquePtrValue(client_hints_dictionary.Clone()));
+      client_hints_dictionary.Clone());
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       GURL("http://host2.com:1"), GURL(), ContentSettingsType::CLIENT_HINTS,
-      base::Value::ToUniquePtrValue(client_hints_dictionary.Clone()));
+      client_hints_dictionary.Clone());
 
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       GURL("http://host3.com:1"), GURL(), ContentSettingsType::CLIENT_HINTS,
-      base::Value::ToUniquePtrValue(client_hints_dictionary.Clone()));
+      client_hints_dictionary.Clone());
 
   // Clear all.
   BlockUntilBrowsingDataRemoved(AnHourAgo(), base::Time::Max(),
@@ -2973,9 +2967,8 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest, AllTypesAreGettingDeleted) {
       some_value = std::move(dict);
     }
     // Create an exception.
-    map->SetWebsiteSettingDefaultScope(
-        url, url, info->type(),
-        std::make_unique<base::Value>(some_value.Clone()));
+    map->SetWebsiteSettingDefaultScope(url, url, info->type(),
+                                       some_value.Clone());
 
     // Check that the exception was created.
     std::unique_ptr<base::Value> value =

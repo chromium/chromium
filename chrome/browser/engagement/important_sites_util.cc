@@ -547,7 +547,7 @@ void ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
 
       map->SetWebsiteSettingDefaultScope(
           origin, origin, ContentSettingsType::IMPORTANT_SITE_INFO,
-          std::move(dict));
+          base::Value::FromUniquePtrValue(std::move(dict)));
     }
   } else {
     // Record that the user did not interact with the dialog.
@@ -563,9 +563,9 @@ void ImportantSitesUtil::RecordExcludedAndIgnoredImportantSites(
     std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
     dict->SetInteger(kNumTimesIgnoredName, 0);
     dict->RemoveKey(kTimeLastIgnored);
-    map->SetWebsiteSettingDefaultScope(origin, origin,
-                                       ContentSettingsType::IMPORTANT_SITE_INFO,
-                                       std::move(dict));
+    map->SetWebsiteSettingDefaultScope(
+        origin, origin, ContentSettingsType::IMPORTANT_SITE_INFO,
+        base::Value::FromUniquePtrValue(std::move(dict)));
   }
 
   // Finally, record our old crossed-stats.

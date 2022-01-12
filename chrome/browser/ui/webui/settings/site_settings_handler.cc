@@ -793,7 +793,7 @@ void SiteSettingsHandler::HandleClearUnpartitionedUsage(
   // remove site client hints data before the issue is resolved.
   HostContentSettingsMapFactory::GetForProfile(profile_)
       ->SetWebsiteSettingDefaultScope(
-          url, GURL(), ContentSettingsType::CLIENT_HINTS, nullptr);
+          url, GURL(), ContentSettingsType::CLIENT_HINTS, base::Value());
 }
 
 void SiteSettingsHandler::HandleClearPartitionedUsage(

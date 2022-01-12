@@ -277,7 +277,7 @@ void SiteEngagementScore::Commit() {
 
   settings_map_->SetWebsiteSettingDefaultScope(
       origin_, GURL(), ContentSettingsType::SITE_ENGAGEMENT,
-      std::move(score_dict_));
+      base::Value::FromUniquePtrValue(std::move(score_dict_)));
 }
 
 blink::mojom::EngagementLevel SiteEngagementScore::GetEngagementLevel() const {

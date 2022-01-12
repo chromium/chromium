@@ -1236,7 +1236,8 @@ void ChromeFileSystemAccessPermissionContext::SetLastPickedDirectory(
 
   content_settings_->SetWebsiteSettingDefaultScope(
       origin.GetURL(), origin.GetURL(),
-      ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY, std::move(value));
+      ContentSettingsType::FILE_SYSTEM_LAST_PICKED_DIRECTORY,
+      base::Value::FromUniquePtrValue(std::move(value)));
 }
 
 ChromeFileSystemAccessPermissionContext::PathInfo

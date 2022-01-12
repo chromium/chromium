@@ -268,7 +268,7 @@ TEST_F(MediaEngagementScoreTest, ContentSettings) {
   score_dict->SetBoolean(MediaEngagementScore::kHasHighScoreKey, false);
   settings_map->SetWebsiteSettingDefaultScope(
       origin.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
-      std::move(score_dict));
+      base::Value::FromUniquePtrValue(std::move(score_dict)));
 
   // Make sure we read that data back correctly.
   MediaEngagementScore* score =
@@ -335,7 +335,7 @@ TEST_F(MediaEngagementScoreTest, HighScoreLegacy_High) {
     dict->SetInteger(MediaEngagementScore::kMediaPlaybacksKey, 6);
     settings_map->SetWebsiteSettingDefaultScope(
         origin.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
-        std::move(dict));
+        base::Value::FromUniquePtrValue(std::move(dict)));
   }
 
   {
@@ -358,7 +358,7 @@ TEST_F(MediaEngagementScoreTest, HighScoreLegacy_Low) {
     dict->SetInteger(MediaEngagementScore::kMediaPlaybacksKey, 4);
     settings_map->SetWebsiteSettingDefaultScope(
         origin.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
-        std::move(dict));
+        base::Value::FromUniquePtrValue(std::move(dict)));
   }
 
   {
@@ -386,7 +386,7 @@ TEST_F(MediaEngagementScoreTest, HighScoreUpdated) {
 
     settings_map->SetWebsiteSettingDefaultScope(
         origin.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
-        std::move(dict));
+        base::Value::FromUniquePtrValue((std::move(dict))));
   }
 
   {
@@ -524,7 +524,7 @@ TEST_F(MediaEngagementScoreTest, DoNotStoreDeprecatedFields) {
   score_dict->SetInteger(kNotDeprectedUnknown, 10);
   settings_map->SetWebsiteSettingDefaultScope(
       origin.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
-      std::move(score_dict));
+      base::Value::FromUniquePtrValue(std::move(score_dict)));
 
   // Run the data through media engagement score.
   auto score =

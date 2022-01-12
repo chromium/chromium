@@ -136,9 +136,9 @@ IN_PROC_BROWSER_TEST_F(ClientHintsBrowserTest,
       embedded_test_server()->base_url(), GURL(),
       ContentSettingsType::CLIENT_HINTS, nullptr);
   ASSERT_TRUE(setting);
-  settings_map->SetWebsiteSettingDefaultScope(
-      other_server.base_url(), GURL(), ContentSettingsType::CLIENT_HINTS,
-      std::make_unique<base::Value>(setting->Clone()));
+  settings_map->SetWebsiteSettingDefaultScope(other_server.base_url(), GURL(),
+                                              ContentSettingsType::CLIENT_HINTS,
+                                              setting->Clone());
 
   // Settings take affect after navigation only, so the header shouldn't be
   // there yet.

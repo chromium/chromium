@@ -106,9 +106,9 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, PRE_WebsiteCookiesSetting) {
   EXPECT_EQ(kCookieValue, GetCookies(browser()->profile(), GURL(kURL)));
   // Now set the policy and the cookie should be gone after another restart.
   HostContentSettingsMapFactory::GetForProfile(browser()->profile())
-      ->SetWebsiteSettingDefaultScope(
-          GURL(kURL), GURL(kURL), ContentSettingsType::COOKIES,
-          std::make_unique<base::Value>(CONTENT_SETTING_SESSION_ONLY));
+      ->SetContentSettingDefaultScope(GURL(kURL), GURL(kURL),
+                                      ContentSettingsType::COOKIES,
+                                      CONTENT_SETTING_SESSION_ONLY);
 }
 
 IN_PROC_BROWSER_TEST_F(PolicyTest, WebsiteCookiesSetting) {

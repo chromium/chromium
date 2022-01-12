@@ -261,7 +261,7 @@ void ObjectPermissionContextBase::SaveWebsiteSetting(
 
   if (origin_objects_it == objects().end()) {
     host_content_settings_map_->SetWebsiteSettingDefaultScope(
-        origin.GetURL(), GURL(), data_content_settings_type_, nullptr);
+        origin.GetURL(), GURL(), data_content_settings_type_, base::Value());
     return;
   }
 
@@ -273,7 +273,7 @@ void ObjectPermissionContextBase::SaveWebsiteSetting(
   website_setting_value.SetKey(kObjectListKey, std::move(objects_list));
   host_content_settings_map_->SetWebsiteSettingDefaultScope(
       origin.GetURL(), GURL(), data_content_settings_type_,
-      base::Value::ToUniquePtrValue(std::move(website_setting_value)));
+      std::move(website_setting_value));
 }
 
 void ObjectPermissionContextBase::ScheduleSaveWebsiteSetting(

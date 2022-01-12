@@ -179,7 +179,7 @@ TEST_F(SiteSettingsCounterTest, OnlyCountContentSettings) {
   map()->SetWebsiteSettingDefaultScope(
       GURL("http://maps.google.com"), GURL(),
       ContentSettingsType::SITE_ENGAGEMENT,
-      std::make_unique<base::Value>(base::Value::Type::DICTIONARY));
+      base::Value(base::Value::Type::DICTIONARY));
 
   counter()->Restart();
   EXPECT_EQ(1, GetResult());
@@ -190,7 +190,7 @@ TEST_F(SiteSettingsCounterTest, CountWebUsbSettings) {
   map()->SetWebsiteSettingDefaultScope(
       GURL("http://www.google.com"), GURL("http://www.google.com"),
       ContentSettingsType::USB_CHOOSER_DATA,
-      std::make_unique<base::Value>(base::Value::Type::DICTIONARY));
+      base::Value(base::Value::Type::DICTIONARY));
 
   counter()->Restart();
   EXPECT_EQ(1, GetResult());

@@ -15,6 +15,7 @@
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "url/gurl.h"
 
 namespace subresource_filter {
@@ -170,7 +171,9 @@ void SubresourceFilterContentSettingsManager::SetSiteMetadata(
 
   content_settings::ContentSettingConstraints constraints = {expiry_time};
   settings_map_->SetWebsiteSettingDefaultScope(
-      url, GURL(), ContentSettingsType::ADS_DATA, std::move(dict), constraints);
+      url, GURL(), ContentSettingsType::ADS_DATA,
+      content_settings::FromNullableUniquePtrValue(std::move(dict)),
+      constraints);
 }
 
 std::unique_ptr<base::DictionaryValue>

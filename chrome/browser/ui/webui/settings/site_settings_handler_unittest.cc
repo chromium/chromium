@@ -2623,7 +2623,7 @@ TEST_F(SiteSettingsHandlerTest, ClearUnpartitionedClearsHints) {
   for (const auto& host : hosts) {
     host_content_settings_map->SetWebsiteSettingDefaultScope(
         host, GURL(), ContentSettingsType::CLIENT_HINTS,
-        base::Value::ToUniquePtrValue(client_hints_dictionary.Clone()));
+        client_hints_dictionary.Clone());
   }
 
   // Clear unpartitioned usage data.

@@ -212,7 +212,8 @@ class HostContentSettingsMap : public content_settings::Observer,
 
   // Sets the |value| for the default scope of the url that is appropriate for
   // the given |content_type| applying any provided |constraints|. Setting the
-  // value to null removes the default pattern pair for this content type.
+  // value to NONE (base::Value()) removes the default pattern pair for this
+  // content type.
   //
   // Internally this will call SetWebsiteSettingCustomScope() with the default
   // scope patterns for the given |content_type|. Developers will generally want
@@ -222,7 +223,7 @@ class HostContentSettingsMap : public content_settings::Observer,
       const GURL& requesting_url,
       const GURL& top_level_url,
       ContentSettingsType content_type,
-      std::unique_ptr<base::Value> value,
+      base::Value value,
       const content_settings::ContentSettingConstraints& constraints = {});
 
   // Sets a rule to apply the |value| for all sites matching |pattern|,

@@ -453,7 +453,7 @@ void VerdictCacheManager::CachePhishGuardVerdict(
       base::Value::FromUniquePtrValue(std::move(verdict_entry)));
   content_settings_->SetWebsiteSettingDefaultScope(
       hostname, GURL(), ContentSettingsType::PASSWORD_PROTECTION,
-      std::move(cache_dictionary));
+      base::Value::FromUniquePtrValue(std::move(cache_dictionary)));
 }
 
 LoginReputationClientResponse::VerdictType
@@ -575,7 +575,7 @@ void VerdictCacheManager::CacheRealTimeUrlVerdict(
 
     content_settings_->SetWebsiteSettingDefaultScope(
         hostname, GURL(), ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA,
-        std::move(cache_dictionary));
+        base::Value::FromUniquePtrValue(std::move(cache_dictionary)));
   }
   base::UmaHistogramCounts10000(
       "SafeBrowsing.RT.CacheManager.RealTimeVerdictCount",
@@ -833,10 +833,11 @@ void VerdictCacheManager::RemoveContentSettingsOnURLsDeleted(
         GetStoredRealTimeUrlCheckVerdictCount() -
         GetRealTimeUrlCheckVerdictCountForURL(url_key);
     content_settings_->SetWebsiteSettingDefaultScope(
-        url_key, GURL(), ContentSettingsType::PASSWORD_PROTECTION, nullptr);
+        url_key, GURL(), ContentSettingsType::PASSWORD_PROTECTION,
+        base::Value());
     content_settings_->SetWebsiteSettingDefaultScope(
         url_key, GURL(), ContentSettingsType::SAFE_BROWSING_URL_CHECK_DATA,
-        nullptr);
+        base::Value());
   }
 }
 

@@ -72,7 +72,7 @@ void HistoryAwareSiteEngagementService::UpdateEngagementScores(
     // Remove origins that have no urls left.
     if (remaining == 0) {
       settings_map->SetWebsiteSettingDefaultScope(
-          origin, GURL(), ContentSettingsType::SITE_ENGAGEMENT, nullptr);
+          origin, GURL(), ContentSettingsType::SITE_ENGAGEMENT, base::Value());
       continue;
     }
 

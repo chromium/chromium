@@ -263,7 +263,8 @@ void StatefulSSLHostStateDelegate::AllowCert(
   // The map takes ownership of the value, so it is released in the call to
   // SetWebsiteSettingDefaultScope.
   host_content_settings_map_->SetWebsiteSettingDefaultScope(
-      url, GURL(), ContentSettingsType::SSL_CERT_DECISIONS, std::move(value));
+      url, GURL(), ContentSettingsType::SSL_CERT_DECISIONS,
+      base::Value::FromUniquePtrValue(std::move(value)));
 }
 
 void StatefulSSLHostStateDelegate::Clear(
@@ -395,7 +396,8 @@ void StatefulSSLHostStateDelegate::AllowHttpForHost(
   dict->SetKey(kHTTPAllowlistExpirationTimeKey,
                base::TimeToValue(expiration_time));
   host_content_settings_map_->SetWebsiteSettingDefaultScope(
-      url, GURL(), ContentSettingsType::HTTP_ALLOWED, std::move(dict));
+      url, GURL(), ContentSettingsType::HTTP_ALLOWED,
+      base::Value::FromUniquePtrValue(std::move(dict)));
 }
 
 bool StatefulSSLHostStateDelegate::IsHttpAllowedForHost(
@@ -437,9 +439,9 @@ void StatefulSSLHostStateDelegate::RevokeUserAllowExceptions(
   GURL url = GetSecureGURLForHost(host);
 
   host_content_settings_map_->SetWebsiteSettingDefaultScope(
-      url, GURL(), ContentSettingsType::SSL_CERT_DECISIONS, nullptr);
+      url, GURL(), ContentSettingsType::SSL_CERT_DECISIONS, base::Value());
   host_content_settings_map_->SetWebsiteSettingDefaultScope(
-      url, GURL(), ContentSettingsType::HTTP_ALLOWED, nullptr);
+      url, GURL(), ContentSettingsType::HTTP_ALLOWED, base::Value());
 
   // Decisions for non-default storage partitions are stored separately in
   // memory; delete those as well.

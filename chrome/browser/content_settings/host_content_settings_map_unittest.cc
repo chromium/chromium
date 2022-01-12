@@ -273,7 +273,7 @@ TEST_F(HostContentSettingsMapTest, GetWebsiteSettingsForOneType) {
                                  {std::move(client_hint_value)});
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       hosts[0], GURL(), ContentSettingsType::CLIENT_HINTS,
-      base::Value::ToUniquePtrValue(client_hints_dictionary.Clone()));
+      client_hints_dictionary.Clone());
 
   // Reading the settings should now return one setting.
   host_content_settings_map->GetSettingsForOneType(
@@ -291,7 +291,7 @@ TEST_F(HostContentSettingsMapTest, GetWebsiteSettingsForOneType) {
   // Add setting for hosts[1].
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       hosts[1], GURL(), ContentSettingsType::CLIENT_HINTS,
-      base::Value::ToUniquePtrValue(client_hints_dictionary.Clone()));
+      client_hints_dictionary.Clone());
 
   // Reading the settings should now return two settings.
   host_content_settings_map->GetSettingsForOneType(
@@ -309,7 +309,7 @@ TEST_F(HostContentSettingsMapTest, GetWebsiteSettingsForOneType) {
   // Add settings again for hosts[0].
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       hosts[0], GURL(), ContentSettingsType::CLIENT_HINTS,
-      base::Value::ToUniquePtrValue(client_hints_dictionary.Clone()));
+      client_hints_dictionary.Clone());
 
   // Reading the settings should still return two settings.
   host_content_settings_map->GetSettingsForOneType(
@@ -1006,8 +1006,7 @@ TEST_F(HostContentSettingsMapTest, IncognitoDontInheritSetting) {
   base::Value test_value(base::Value::Type::DICTIONARY);
   test_value.SetKey("test", base::Value("value"));
   host_content_settings_map->SetWebsiteSettingDefaultScope(
-      host, host, ContentSettingsType::USB_CHOOSER_DATA,
-      base::Value::ToUniquePtrValue(test_value.Clone()));
+      host, host, ContentSettingsType::USB_CHOOSER_DATA, test_value.Clone());
 
   // The setting is not inherted by |otr_map|.
   std::unique_ptr<base::Value> stored_value =
@@ -1416,7 +1415,7 @@ TEST_F(HostContentSettingsMapTest, InvalidPattern) {
   test_value.SetKey("test", base::Value("value"));
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       unsupported_url, unsupported_url, ContentSettingsType::APP_BANNER,
-      base::Value::ToUniquePtrValue(std::move(test_value)));
+      std::move(test_value));
   EXPECT_EQ(nullptr, host_content_settings_map->GetWebsiteSetting(
                          unsupported_url, unsupported_url,
                          ContentSettingsType::APP_BANNER, nullptr));
@@ -1480,17 +1479,14 @@ TEST_F(HostContentSettingsMapTest, ClearSettingsForOneTypeWithPredicate) {
   // Add settings.
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       url1, GURL(), ContentSettingsType::SITE_ENGAGEMENT,
-      base::Value::ToUniquePtrValue(
-          base::Value(base::Value::Type::DICTIONARY)));
+      base::Value(base::Value::Type::DICTIONARY));
   // This setting should override the one above, as it's the same origin.
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       url2, GURL(), ContentSettingsType::SITE_ENGAGEMENT,
-      base::Value::ToUniquePtrValue(
-          base::Value(base::Value::Type::DICTIONARY)));
+      base::Value(base::Value::Type::DICTIONARY));
   host_content_settings_map->SetWebsiteSettingDefaultScope(
       url3, GURL(), ContentSettingsType::SITE_ENGAGEMENT,
-      base::Value::ToUniquePtrValue(
-          base::Value(base::Value::Type::DICTIONARY)));
+      base::Value(base::Value::Type::DICTIONARY));
   // Verify we only have two.
   host_content_settings_map->GetSettingsForOneType(
       ContentSettingsType::SITE_ENGAGEMENT, &host_settings);
