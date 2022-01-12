@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/apps/app_service/app_shortcut_item.h"
 #include "chrome/browser/ui/ash/shelf/shelf_context_menu.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "extensions/common/constants.h"
 
@@ -78,7 +79,7 @@ class AppServiceShelfContextMenu : public ShelfContextMenu {
 
   void ExecutePublisherContextMenuCommand(int command_id);
 
-  apps::mojom::AppType app_type_;
+  apps::AppType app_type_;
 
   // The SimpleMenuModel used to hold the submenu items.
   std::unique_ptr<ui::SimpleMenuModel> submenu_;

@@ -65,6 +65,39 @@ AppType ConvertMojomAppTypToAppType(apps::mojom::AppType mojom_app_type) {
   }
 }
 
+mojom::AppType ConvertAppTypeToMojomAppType(AppType app_type) {
+  switch (app_type) {
+    case AppType::kUnknown:
+      return apps::mojom::AppType::kUnknown;
+    case AppType::kArc:
+      return apps::mojom::AppType::kArc;
+    case AppType::kBuiltIn:
+      return apps::mojom::AppType::kBuiltIn;
+    case AppType::kCrostini:
+      return apps::mojom::AppType::kCrostini;
+    case AppType::kChromeApp:
+      return apps::mojom::AppType::kChromeApp;
+    case AppType::kWeb:
+      return apps::mojom::AppType::kWeb;
+    case AppType::kMacOs:
+      return apps::mojom::AppType::kMacOs;
+    case AppType::kPluginVm:
+      return apps::mojom::AppType::kPluginVm;
+    case AppType::kStandaloneBrowser:
+      return apps::mojom::AppType::kStandaloneBrowser;
+    case AppType::kRemote:
+      return apps::mojom::AppType::kRemote;
+    case AppType::kBorealis:
+      return apps::mojom::AppType::kBorealis;
+    case AppType::kSystemWeb:
+      return apps::mojom::AppType::kSystemWeb;
+    case AppType::kStandaloneBrowserChromeApp:
+      return apps::mojom::AppType::kStandaloneBrowserChromeApp;
+    case AppType::kExtension:
+      return apps::mojom::AppType::kExtension;
+  }
+}
+
 Readiness ConvertMojomReadinessToReadiness(
     apps::mojom::Readiness mojom_readiness) {
   switch (mojom_readiness) {

@@ -72,13 +72,13 @@ AppServiceAppItem::AppServiceAppItem(
     const app_list::AppListSyncableService::SyncItem* sync_item,
     const apps::AppUpdate& app_update)
     : ChromeAppListItem(profile, app_update.AppId()),
-      app_type_(app_update.AppType()) {
+      app_type_(apps::ConvertMojomAppTypToAppType(app_update.AppType())) {
   OnAppUpdate(app_update, /*in_constructor=*/true);
   if (sync_item && sync_item->item_ordinal.IsValid()) {
     InitFromSync(sync_item);
   } else {
     // Handle the case that the app under construction is a remote app.
-    if (app_type_ == apps::mojom::AppType::kRemote) {
+    if (app_type_ == apps::AppType::kRemote) {
       ash::RemoteAppsManager* remote_manager =
           ash::RemoteAppsManagerFactory::GetForProfile(profile);
       if (remote_manager->ShouldAddToFront(app_update.AppId()))
@@ -97,7 +97,7 @@ AppServiceAppItem::AppServiceAppItem(
     }
 
     // Crostini apps and the Terminal System App start in the crostini folder.
-    if (app_type_ == apps::mojom::AppType::kCrostini ||
+    if (app_type_ == apps::AppType::kCrostini ||
         id() == crostini::kCrostiniTerminalSystemAppId) {
       DCHECK(folder_id().empty());
       SetChromeFolderId(ash::kCrostiniFolderId);
@@ -211,8 +211,7 @@ void AppServiceAppItem::ExecuteLaunchCommand(int event_flags) {
 
   // TODO(crbug.com/826982): drop the if, and call MaybeDismissAppList
   // unconditionally?
-  if (app_type_ == apps::mojom::AppType::kArc ||
-      app_type_ == apps::mojom::AppType::kRemote) {
+  if (app_type_ == apps::AppType::kArc || app_type_ == apps::AppType::kRemote) {
     MaybeDismissAppList();
   }
 }
@@ -231,15 +230,15 @@ void AppServiceAppItem::Launch(int event_flags,
 void AppServiceAppItem::CallLoadIcon(bool allow_placeholder_icon) {
   if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
     apps::AppServiceProxyFactory::GetForProfile(profile())->LoadIcon(
-        apps::ConvertMojomAppTypToAppType(app_type_), id(),
-        apps::IconType::kStandard,
+        app_type_, id(), apps::IconType::kStandard,
         ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
         allow_placeholder_icon,
         base::BindOnce(&AppServiceAppItem::OnLoadIcon,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {
     apps::AppServiceProxyFactory::GetForProfile(profile())->LoadIcon(
-        app_type_, id(), apps::mojom::IconType::kStandard,
+        apps::ConvertAppTypeToMojomAppType(app_type_), id(),
+        apps::mojom::IconType::kStandard,
         ash::SharedAppListConfig::instance().default_grid_icon_dimension(),
         allow_placeholder_icon,
         apps::MojomIconValueToIconValueCallback(base::BindOnce(

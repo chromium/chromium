@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/app_list/app_context_menu_delegate.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/app_update.h"
 #include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/mojom/types.mojom-forward.h"
@@ -49,7 +50,7 @@ class AppServiceAppItem : public ChromeAppListItem,
   void CallLoadIcon(bool allow_placeholder_icon);
   void OnLoadIcon(apps::IconValuePtr icon_value);
 
-  const apps::mojom::AppType app_type_;
+  const apps::AppType app_type_;
   bool is_platform_app_ = false;
 
   std::unique_ptr<app_list::AppContextMenu> context_menu_;

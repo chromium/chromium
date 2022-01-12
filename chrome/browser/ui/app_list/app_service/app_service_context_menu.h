@@ -13,6 +13,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/apps/app_service/app_shortcut_item.h"
 #include "chrome/browser/ui/app_list/app_context_menu.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 class AppContextMenuDelegate;
@@ -55,7 +56,7 @@ class AppServiceContextMenu : public app_list::AppContextMenu {
 
   void ExecutePublisherContextMenuCommand(int command_id);
 
-  apps::mojom::AppType app_type_ = apps::mojom::AppType::kUnknown;
+  apps::AppType app_type_ = apps::AppType::kUnknown;
 
   // The SimpleMenuModel used to hold the submenu items.
   std::unique_ptr<ui::SimpleMenuModel> submenu_;
