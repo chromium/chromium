@@ -6,14 +6,12 @@
 #define CONTENT_PUBLIC_BROWSER_BROWSING_DATA_FILTER_BUILDER_H_
 
 #include <memory>
-#include <ostream>
-#include <set>
 #include <string>
-#include <vector>
 
 #include "base/callback_forward.h"
 #include "content/common/content_export.h"
 #include "net/cookies/cookie_partition_key_collection.h"
+#include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
 class GURL;
