@@ -79,7 +79,7 @@ LayerTreePixelTest::CreateLayerTreeFrameSink(
     viz::RasterInterfaceType worker_ri_type;
     switch (raster_type()) {
       case TestRasterType::kGpu:
-        worker_ri_type = viz::RasterInterfaceType::GPU;
+        worker_ri_type = viz::RasterInterfaceType::OOPR;
         break;
       case TestRasterType::kOneCopy:
         worker_ri_type = viz::RasterInterfaceType::Software;
