@@ -1532,11 +1532,6 @@
     "expiry_milestone": 78
   },
   {
-    "name": "enable-autofill-save-card-info-bar-account-indication-footer",
-    "owners": [ "mdjones", "treib"],
-    "expiry_milestone": 97
-  },
-  {
     "name": "enable-autofill-upi-vpa",
     "owners": [ "cfroussios" ],
     "expiry_milestone": 98
