@@ -720,7 +720,6 @@ mojom("mojo_bindings") {
     "open_search_description_document_handler.mojom",
     "plugin.mojom",
     "renderer_configuration.mojom",
-    "subresource_redirect_service.mojom",
     "sync_encryption_keys_extension.mojom",
   ]
 

@@ -322,7 +322,6 @@ include_rules = [
   "+components/subresource_filter/core/browser",
   "+components/subresource_filter/core/common",
   "+components/subresource_filter/core/mojom",
-  "+components/subresource_redirect/common",
   "+components/supervised_user_error_page",
   "+components/sync",
   "+components/sync_bookmarks",

@@ -61,7 +61,6 @@ include_rules = [
   "+components/subresource_filter/content/common",
   "+components/subresource_filter/content/renderer",
   "+components/subresource_filter/core/common/common_features.h",
-  "+components/subresource_redirect/common",
   "+components/sync/driver/sync_driver_switches.h",
   "+components/sync/engine/sync_engine_switches.h",
   "+components/translate/content/common",
